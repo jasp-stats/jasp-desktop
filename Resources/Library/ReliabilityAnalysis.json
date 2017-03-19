@@ -18,6 +18,16 @@
 			"default" : false
         },
         {
+        	"name": "averageInterItemCor",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
+        	"name": "mcDonaldScale",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
         	"name": "meanScale",
         	"type": "Boolean",
 			"default" : false
@@ -34,6 +44,11 @@
         },
         {
         	"name": "gutmannItem",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
+        	"name": "mcDonaldItem",
         	"type": "Boolean",
 			"default" : false
         },

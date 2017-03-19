@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -86,6 +86,8 @@
 #include <QTabBar>
 #include <QMenuBar>
 #include <QDir>
+#include <QFileDialog>
+#include <QDesktopServices>
 
 #include "analysisloader.h"
 
@@ -99,8 +101,11 @@
 #include "lrnam.h"
 #include "activitylog.h"
 #include "aboutdialog.h"
+#include "preferencesdialog.h"
 #include <boost/filesystem.hpp>
 #include "dirs.h"
+
+using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -111,21 +116,23 @@ MainWindow::MainWindow(QWidget *parent) :
 	_currentOptionsWidget = NULL;
 	_currentAnalysis = NULL;
 
-	_optionsForm = NULL;
-
 	_package = new DataSetPackage();
 
 	_package->isModifiedChanged.connect(boost::bind(&MainWindow::packageChanged, this, _1));
+	_package->dataChanged.connect(boost::bind(&MainWindow::packageDataChanged, this, _1, _2, _3, _4));
+
 	QShortcut *saveShortcut = new QShortcut(QKeySequence("Ctrl+S"), this);
 	QObject::connect(saveShortcut, SIGNAL(activated()), this, SLOT(saveKeysSelected()));
 	QShortcut *openShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
 	QObject::connect(openShortcut, SIGNAL(activated()), this, SLOT(openKeysSelected()));
+	QShortcut *syncShortcut = new QShortcut(QKeySequence("Ctrl+Y"), this);
+	QObject::connect(syncShortcut, SIGNAL(activated()), this, SLOT(syncKeysSelected()));
 	QShortcut *refreshShortcut = new QShortcut(QKeySequence("Ctrl+R"), this);
 	QObject::connect(refreshShortcut, SIGNAL(activated()), this, SLOT(refreshKeysSelected()));
 
 	ui->setupUi(this);
 
-	int initalTableWidth = 530;
+	int initalTableWidth = 575;
 
 	QList<int> sizes = QList<int>();
 	sizes.append(initalTableWidth);
@@ -133,13 +140,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->tabBar->setFocusPolicy(Qt::NoFocus);
 	ui->tabBar->addTab("File");
-#ifdef QT_DEBUG
-	ui->tabBar->addTab("Variables"); // variables view
-#endif
 	ui->tabBar->addTab("Common");
-#ifndef __linux__
-	ui->tabBar->addOptionsTab(); // no SEM under linux for now
-#endif
+
 	ui->tabBar->addHelpTab();
 
 	connect(ui->tabBar, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
@@ -174,12 +176,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	_tableModel = new DataSetTableModel();
 	ui->tableView->setModel(_tableModel);
+	ui->tableView->setVariablesView(ui->variablesPage);
+	ui->variablesPage->hide();
 
-#ifdef QT_DEBUG  // variables view
-	ui->tabBar->setCurrentIndex(2);
-#else
 	ui->tabBar->setCurrentIndex(1);
-#endif
 
 	ui->tableView->setVerticalScrollMode(QTableView::ScrollPerPixel);
 	ui->tableView->setHorizontalScrollMode(QTableView::ScrollPerPixel);
@@ -198,6 +198,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonSummaryStatistics, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
+	connect(ui->variablesPage, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
+	connect(ui->variablesPage, SIGNAL(resetTableView()), this, SLOT(resetTableView()));
+	connect(ui->tableView, SIGNAL(dataTableColumnSelected()), this, SLOT(showVariablesPage()));
+	connect(ui->tableView, SIGNAL(dataTableDoubleClicked()), this, SLOT(startDataEditorHandler()));
+	connect(ui->tabBar, SIGNAL(dataAutoSynchronizationChanged(bool)), ui->backStage, SLOT(dataAutoSynchronizationChanged(bool)));
 
 	_progressIndicator = new ProgressWidget(ui->tableView);
 	_progressIndicator->setAutoFillBackground(true);
@@ -227,7 +232,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	_scrollbarWidth = qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
 #endif
 
-	_buttonPanel = new QWidget(ui->panelMid);
+	_buttonPanel = new QWidget(ui->panel_2_Options);
 	_buttonPanelLayout = new QVBoxLayout(_buttonPanel);
 	_buttonPanelLayout->setSpacing(6);
 	_buttonPanelLayout->setContentsMargins(0, _buttonPanelLayout->contentsMargins().top(), _buttonPanelLayout->contentsMargins().right(), 0);
@@ -248,7 +253,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	_buttonPanelLayout->addStretch();
 
 	_buttonPanel->resize(_buttonPanel->sizeHint());
-	_buttonPanel->move(ui->panelMid->width() - _buttonPanel->width() - _scrollbarWidth, 0);
+	_buttonPanel->move(ui->panel_2_Options->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 
 	connect(_okButton, SIGNAL(clicked()), this, SLOT(analysisOKed()));
 	connect(_runButton, SIGNAL(clicked()), this, SLOT(analysisRunned()));
@@ -265,7 +270,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	QUrl userGuide = QUrl::fromLocalFile(AppDirs::help() + "/index.html");
 	ui->webViewHelp->setUrl(userGuide);
 	connect(ui->webViewHelp, SIGNAL(loadFinished(bool)), this, SLOT(helpFirstLoaded(bool)));
-	ui->panelHelp->hide();
+	ui->panel_4_Help->hide();
 
 	setAcceptDrops(true);
 
@@ -273,9 +278,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	QApplication::setFont(ui->tableView->font());
 #endif
 
-	setupOptionPanelSize();
+	ui->panel_1_Data->show();
+	ui->panel_2_Options->hide();
 
-	ui->panelMid->hide();
 }
 
 void MainWindow::open(QString filepath)
@@ -330,7 +335,6 @@ void MainWindow::dropEvent(QDropEvent *event)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-
 	_odm->clearAuthenticationOnExit(OnlineDataManager::OSF);
 
 	if (_applicationExiting)
@@ -370,6 +374,11 @@ void MainWindow::refreshKeysSelected()
 	refreshAllAnalyses();
 }
 
+void MainWindow::syncKeysSelected()
+{
+	ui->backStage->sync();
+}
+
 void MainWindow::illegalOptionStateChanged()
 {
 	if (_currentOptionsWidget == NULL)
@@ -399,6 +408,97 @@ void MainWindow::packageChanged(DataSetPackage *package)
 		setWindowTitle(title);
 	}
 }
+
+void MainWindow::refreshAnalysesUsingColumns(vector<string> &changedColumns
+											, vector<string> &missingColumns
+											, map<string, string> &changeNameColumns)
+{
+	vector<string> oldColumnNames;
+	for (map<string, string>::iterator it = changeNameColumns.begin(); it != changeNameColumns.end(); ++it)
+		oldColumnNames.push_back(it->first);
+	sort(changedColumns.begin(), changedColumns.end());
+	sort(missingColumns.begin(), missingColumns.end());
+	sort(oldColumnNames.begin(), oldColumnNames.end());
+
+	vector<Analysis *> analyses_to_refresh;
+	for (Analyses::iterator analysis_it = _analyses->begin(); analysis_it != _analyses->end(); ++analysis_it)
+	{
+		Analysis* analysis = *analysis_it;
+		bool analyse_to_refresh = false;
+		const vector<OptionVariables *> &analysis_variables = analysis->getVariables();
+		for (vector<OptionVariables *>::const_iterator var_it = analysis_variables.begin();
+			 var_it != analysis_variables.end();
+			 ++var_it)
+		{
+			OptionVariables *option_variables = *var_it;
+			vector<string> variables = option_variables->variables();
+			vector<string> variables_sorted = variables;
+			sort(variables_sorted.begin(), variables_sorted.end());
+			vector<string> inter_changecol, inter_changename, inter_missingcol;
+			set_intersection(variables_sorted.begin(), variables_sorted.end(), changedColumns.begin(), changedColumns.end(), back_inserter(inter_changecol));
+			set_intersection(variables_sorted.begin(), variables_sorted.end(), oldColumnNames.begin(), oldColumnNames.end(), back_inserter(inter_changename));
+			set_intersection(variables_sorted.begin(), variables_sorted.end(), missingColumns.begin(), missingColumns.end(), back_inserter(inter_missingcol));
+
+			if (inter_changecol.size() > 0 && !analyse_to_refresh)
+			{
+				analyses_to_refresh.push_back(analysis);
+				analyse_to_refresh = true;
+			}
+
+			if (inter_changename.size() > 0)
+			{
+				for (vector<string>::iterator varname_it = inter_changename.begin(); varname_it != inter_changename.end(); ++varname_it)
+				{
+					string varname = *varname_it;
+					string newname = changeNameColumns[varname];
+					replace(variables.begin(), variables.end(), varname, newname);
+				}
+				analysis->setRefreshBlocked(true);
+				option_variables->setValue(variables);
+				if (!analyse_to_refresh)
+				{
+					analyses_to_refresh.push_back(analysis);
+					analyse_to_refresh = true;
+				}
+			}
+
+			if (inter_missingcol.size() > 0)
+			{
+				for (vector<string>::iterator varname_it = inter_missingcol.begin(); varname_it != inter_missingcol.end(); ++varname_it)
+				{
+					string varname = *varname_it;
+					variables.erase(remove(variables.begin(), variables.end(), varname), variables.end());
+				}
+				analysis->setRefreshBlocked(true);
+				option_variables->setValue(variables);
+				if (!analyse_to_refresh)
+				{
+					analyses_to_refresh.push_back(analysis);
+					analyse_to_refresh = true;
+				}
+			}
+		}
+	}
+
+	for (vector<Analysis *>::iterator it = analyses_to_refresh.begin(); it != analyses_to_refresh.end(); ++it)
+	{
+		Analysis *analysis = *it;
+		analysis->setRefreshBlocked(false);
+		analysis->refresh();
+	}
+}
+
+void MainWindow::packageDataChanged(DataSetPackage *package
+									, std::vector<std::string> &changedColumns
+									, std::vector<std::string> &missingColumns
+									, std::map<std::string, std::string> &changeNameColumns)
+{
+	_tableModel->setDataSet(_package->dataSet);
+	ui->variablesPage->setDataSet(_package->dataSet);
+
+	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns);
+}
+
 
 QString MainWindow::escapeJavascriptString(const QString &str)
 {
@@ -588,17 +688,6 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	return form;
 }
 
-void MainWindow::setupOptionPanelSize()
-{
-	//AnalysisForm* form = loadForm("Descriptives");
-
-	//int width = form->sizeHint().width() + _scrollbarWidth;// form->fontMetrics().width("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-
-	//QList<int> sizes = ui->splitter->sizes();
-	//sizes[0] = width;
-	//ui->splitter->setSizes(sizes);
-}
-
 void MainWindow::showForm(Analysis *analysis)
 {
 	closeCurrentOptionsWidget();
@@ -608,7 +697,7 @@ void MainWindow::showForm(Analysis *analysis)
 	if (_currentOptionsWidget != NULL)
 	{
 
-//sizing of options widget and panel to fit buttons and conform to largest size for consistency
+		//sizing of options widget and panel to fit buttons and conform to largest size for consistency
 
 		QObjectList siblings = _currentOptionsWidget->children();
 		for (QObjectList::Iterator itr = siblings.begin(); itr != siblings.end(); itr++) {
@@ -620,13 +709,14 @@ void MainWindow::showForm(Analysis *analysis)
 		}
 
 		int requiredSize = _currentOptionsWidget->sizeHint().width();
-		int currentOptionSpace = ui->panelMid->minimumWidth() - _scrollbarWidth;
+		int currentOptionSpace = ui->panel_2_Options->minimumWidth() - _scrollbarWidth;
 		if (requiredSize > currentOptionSpace) {
-			ui->panelMid->setMinimumWidth(requiredSize + _scrollbarWidth);
-			_buttonPanel->move(ui->panelMid->width() - _buttonPanel->width() - _scrollbarWidth, 0);
+			ui->panel_2_Options->setMinimumWidth(requiredSize + _scrollbarWidth);
+			_buttonPanel->move(ui->panel_2_Options->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 		}
-		_currentOptionsWidget->setMinimumWidth(ui->panelMid->minimumWidth() - _scrollbarWidth);
-//#########################
+		_currentOptionsWidget->setMinimumWidth(ui->panel_2_Options->minimumWidth() - _scrollbarWidth);
+
+		//#########################
 
 		Options *options = analysis->options();
 		DataSet *dataSet = _package->dataSet;
@@ -638,9 +728,10 @@ void MainWindow::showForm(Analysis *analysis)
 		_currentOptionsWidget->show();
 		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget,0, 0, Qt::AlignRight | Qt::AlignTop);
 
-		if (ui->panelMid->isVisible() == false)
+		if (ui->panel_2_Options->isVisible() == false)
 			showOptionsPanel();
 
+		_okButton->setVisible(_currentAnalysis->useData());
 		_runButton->setVisible(_currentAnalysis->isAutorun() == false);
 		_runButton->setEnabled(_currentAnalysis->status() == Analysis::InitedAndWaiting);
 		_buttonPanel->raise();
@@ -682,7 +773,9 @@ void MainWindow::analysisSelectedHandler(int id)
 
 void MainWindow::analysisUnselectedHandler()
 {
-	hideOptionsPanel();
+
+	if (_currentAnalysis->useData())
+		hideOptionsPanel();
 
 	if (_log != NULL && _currentAnalysis != NULL)
 	{
@@ -700,28 +793,9 @@ void MainWindow::tabChanged(int index)
 	{
 		ui->topLevelWidgets->setCurrentIndex(0);
 	}
-#ifdef QT_DEBUG  // if variables tab enabled
-	else if (index == 1)
-	{
-		ui->topLevelWidgets->setCurrentIndex(1);
-	}
-#endif
-#ifndef __linux__
-	else if (index == ui->tabBar->count() - 1)
-	{
-		if (_optionsForm == NULL)
-		{
-			_optionsForm = new OptionsForm(this);
-			ui->topLevelWidgets->addWidget(_optionsForm);
-			connect(_optionsForm, SIGNAL(optionsChanged()), this, SLOT(updateUIFromOptions()));
-		}
-
-		ui->topLevelWidgets->setCurrentWidget(_optionsForm);
-	}
-#endif
 	else
 	{
-		ui->topLevelWidgets->setCurrentIndex(2);
+		ui->topLevelWidgets->setCurrentIndex(1); //Should be a reference to the mainPage
 
 		QString currentActiveTab = ui->tabBar->getCurrentActiveTab();
 		if(currentActiveTab == "Common")
@@ -762,13 +836,13 @@ void MainWindow::helpToggled(bool on)
 		sizes[2] = resultsWidth;
 		sizes[3] = helpWidth;
 
-		ui->panelHelp->show();
+		ui->panel_4_Help->show();
 		ui->splitter->setSizes(sizes);
 	}
 	else
 	{
-		helpWidth = ui->panelHelp->width();
-		ui->panelHelp->hide();
+		helpWidth = ui->panel_4_Help->width();
+		ui->panel_4_Help->hide();
 	}
 }
 
@@ -792,11 +866,8 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			_progressIndicator->show();
 		}
 
-#ifdef QT_DEBUG // variables view
-		ui->tabBar->setCurrentIndex(2);
-#else
 		ui->tabBar->setCurrentIndex(1);
-#endif
+
 	}
 	else if (event->operation() == FileEvent::FileSave)
 	{		
@@ -850,6 +921,15 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 		_loader.io(event, _package);
 		_progressIndicator->show();
 	}
+	else if (event->operation() == FileEvent::FileSyncData)
+	{
+		if (_package->dataSet == NULL)
+			return;
+
+		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+		_loader.io(event, _package);
+		_progressIndicator->show();
+	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
 		if (_package->isModified())
@@ -880,6 +960,8 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			event->setComplete();
 			dataSetIOCompleted(event);
 		}
+		
+		ui->variablesPage->close();
 	}
 }
 
@@ -896,6 +978,23 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			populateUIfromDataSet();
 			QString name =  QFileInfo(event->path()).baseName();
 			setWindowTitle(name);
+			_currentFilePath = event->path();
+
+			if (event->type() == Utils::FileType::jasp && !_package->dataFilePath.empty() && !_package->dataFileReadOnly && strncmp("http", _package->dataFilePath.c_str(), 4) != 0)
+			{
+				QString dataFilePath = QString::fromStdString(_package->dataFilePath);
+				if (QFileInfo::exists(dataFilePath))
+				{
+					uint currentDataFileTimestamp = QFileInfo(dataFilePath).lastModified().toTime_t();
+					if (currentDataFileTimestamp > _package->dataFileTimestamp)
+						emit event->dataFileChanged(event->dataFilePath());
+				}
+				else
+				{
+					_package->dataFilePath = "";
+					_package->setModified(true);
+				}
+			}
 		}
 		else
 		{
@@ -924,7 +1023,13 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			QMessageBox::warning(this, "", "Unable to save file.\n\n" + event->message());
 		}
 	}
-	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileExportResults) {
+	else if (event->operation() == FileEvent::FileSyncData)
+	{
+		_package->setModified(true);
+		showAnalysis = true;
+	}
+	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileExportResults)
+	{
 		showAnalysis = true;
 	}
 	else if (event->operation() == FileEvent::FileClose)
@@ -940,6 +1045,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			updateMenuEnabledDisabledStatus();
 			ui->webViewResults->reload();
 			setWindowTitle("JASP");
+			ui->tableView->adjustAfterDataLoad(false);
 
 			if (_applicationExiting)
 				QApplication::exit();
@@ -952,11 +1058,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 	if (showAnalysis)
 	{
-#ifdef QT_DEBUG // variables view
-		ui->tabBar->setCurrentIndex(2);
-#else
 		ui->tabBar->setCurrentIndex(1);
-#endif
 
 	}
 }
@@ -966,10 +1068,10 @@ void MainWindow::populateUIfromDataSet()
 	_tableModel->setDataSet(_package->dataSet);
 	ui->variablesPage->setDataSet(_package->dataSet);
 
+
 	_analyses->clear();
 
-	ui->tableView->horizontalHeader()->setResizeContentsPrecision(50);
-	ui->tableView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+	ui->tableView->adjustAfterDataLoad(true);
 
 	_progressIndicator->hide();
 
@@ -1086,7 +1188,6 @@ void MainWindow::updateUIFromOptions()
 		ui->tabBar->addTab("Summary Stats");
 	else
 		ui->tabBar->removeTab("Summary Stats");
-
 }
 
 void MainWindow::resultsPageLoaded(bool success)
@@ -1199,7 +1300,7 @@ void MainWindow::itemSelected(const QString &item)
 		if (_log != NULL)
 			_log->log("Analysis Created", info);
 	}
-	catch (std::runtime_error& e)
+	catch (runtime_error& e)
 	{
 		_fatalError = tq(e.what());
 		fatalError();
@@ -1228,23 +1329,21 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 
 void MainWindow::exportSelected(const QString &filename)
 {
-	//_loader.exportData("C:\\test.csv", _package);
-
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('" + filename + "');");
 }
 
 void MainWindow::adjustOptionsPanelWidth()
 {
-	if (ui->panelMid->width() == ui->panelMid->maximumWidth() && ui->tableView->isHidden())
+	if (ui->panel_2_Options->width() == ui->panel_2_Options->maximumWidth() && ui->panel_1_Data->isHidden())
 	{
-		showTableView();
+		showDataPanel();
 	}
-	else if (ui->tableView->width() == ui->tableView->minimumWidth() && ui->tableView->isVisible() && ui->panelMid->isVisible())
+	else if (ui->panel_1_Data->width() == ui->panel_1_Data->minimumWidth() && ui->panel_1_Data->isVisible() && ui->panel_2_Options->isVisible())
 	{
-		hideTableView();
+		hideDataPanel();
 	}
 
-	_buttonPanel->move(ui->panelMid->width() - _buttonPanel->width() - _scrollbarWidth, 0);
+	_buttonPanel->move(ui->panel_2_Options->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 }
 
 void MainWindow::splitterMovedHandler(int, int)
@@ -1267,7 +1366,7 @@ void MainWindow::hideOptionsPanel()
 	{
 		newTableWidth += sizes.at(0);
 
-		if (ui->tableView->isVisible())
+		if (ui->panel_1_Data->isVisible())
 			newTableWidth += ui->splitter->handleWidth() + 2;
 
 		newTableWidth += sizes.at(1);
@@ -1276,8 +1375,8 @@ void MainWindow::hideOptionsPanel()
 	sizes[0] = newTableWidth;
 	sizes[1] = 0;
 
-	ui->panelMid->hide();
-	ui->tableView->show();
+	ui->panel_2_Options->hide();
+	ui->panel_1_Data->show();
 	ui->splitter->setSizes(sizes);
 }
 
@@ -1287,27 +1386,27 @@ void MainWindow::showOptionsPanel()
 
 	int tableWidth = sizes.at(0);
 	int newTableWidth = tableWidth;
-	newTableWidth -= ui->panelMid->minimumWidth();
+	newTableWidth -= ui->panel_2_Options->minimumWidth();
 	newTableWidth -= ui->splitter->handleWidth();
 
-	ui->panelMid->show();
+	ui->panel_2_Options->show();
 
-	if (newTableWidth < ui->tableView->minimumWidth())
+	if (newTableWidth < ui->panel_1_Data->minimumWidth())
 	{
 		int midPanelWidth = tableWidth;
-		if (midPanelWidth < ui->panelMid->minimumWidth())
+		if (midPanelWidth < ui->panel_2_Options->minimumWidth())
 		{
 			_tableViewWidthBeforeOptionsMadeVisible = midPanelWidth;
-			midPanelWidth = ui->panelMid->minimumWidth();
+			midPanelWidth = ui->panel_2_Options->minimumWidth();
 		}
 
 		int w = 0;
-		w += ui->panelMid->minimumWidth();
-		w += ui->tableView->minimumWidth();
+		w += ui->panel_2_Options->minimumWidth();
+		w += ui->panel_1_Data->minimumWidth();
 		w += ui->splitter->handleWidth();
 
-		ui->panelMid->setMaximumWidth(w+8);
-		ui->tableView->hide();
+		ui->panel_2_Options->setMaximumWidth(w+8);
+		ui->panel_1_Data->hide();
 
 		sizes[0] = 0;
 		sizes[1] = midPanelWidth;
@@ -1316,46 +1415,60 @@ void MainWindow::showOptionsPanel()
 	}
 	else
 	{
-		ui->panelMid->setMaximumWidth(ui->panelMid->minimumWidth());
+		ui->panel_2_Options->setMaximumWidth(ui->panel_2_Options->minimumWidth());
 
 		sizes[0] = newTableWidth - 2;
-		sizes[1] = ui->panelMid->minimumWidth();
+		sizes[1] = ui->panel_2_Options->minimumWidth();
 
 		ui->splitter->setSizes(sizes);
 	}
 
-	_buttonPanel->move(ui->panelMid->width() - _buttonPanel->width() - _scrollbarWidth, 0);
+	_buttonPanel->move(ui->panel_2_Options->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 }
 
-void MainWindow::showTableView()
+void MainWindow::showDataPanel()
 {
 	QList<int> sizes = ui->splitter->sizes();
 
-	sizes[0] = ui->tableView->minimumWidth()+8;
-	sizes[1] = ui->panelMid->minimumWidth();
+	sizes[0] = ui->panel_1_Data->minimumWidth()+8;
+	sizes[1] = ui->panel_2_Options->minimumWidth();
 
 	ui->splitter->setSizes(sizes);
 
-	ui->panelMid->setMaximumWidth(ui->panelMid->minimumWidth());
-	ui->tableView->show();
+	ui->panel_2_Options->setMaximumWidth(ui->panel_2_Options->minimumWidth());
+	ui->panel_1_Data->show();
 }
 
-void MainWindow::hideTableView()
+void MainWindow::hideDataPanel()
 {
 	QList<int> sizes = ui->splitter->sizes();
 
 	int w = 0;
-	w += ui->panelMid->minimumWidth();
-	w += ui->tableView->minimumWidth();
+	w += ui->panel_2_Options->minimumWidth();
+	w += ui->panel_1_Data->minimumWidth();
 	w += ui->splitter->handleWidth();
 
-	ui->panelMid->setMaximumWidth(w+8);
-	ui->tableView->hide();
+	ui->panel_2_Options->setMaximumWidth(w+8);
+	ui->panel_1_Data->hide();
 
 	sizes[0] = 0;
 	sizes[1] = w;
 
 	ui->splitter->setSizes(sizes);
+}
+
+void MainWindow::showVariablesPage()
+{
+	QList<int> datacurrentSizes = ui->data_splitter->sizes();
+
+	ui->variablesPage->show();
+
+	if (datacurrentSizes[0] < 1)
+	{
+		datacurrentSizes[0]+=250;
+		datacurrentSizes[1]-=250;
+		ui->data_splitter->setSizes(datacurrentSizes);
+	}
 }
 
 void MainWindow::analysisOKed()
@@ -1431,6 +1544,7 @@ void MainWindow::removeAllAnalyses()
 		for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
 		{
 			Analysis *analysis = *itr;
+			if (analysis == NULL) continue;
 			removeAnalysis(analysis);
 		}
 	}
@@ -1440,8 +1554,25 @@ void MainWindow::refreshAllAnalyses()
 {
 	for (Analyses::iterator it = _analyses->begin(); it != _analyses->end(); ++it)
 	{
-		(*it)->reRun();
+		Analysis *analysis = *it;
+		if (analysis == NULL) continue;
+		analysis->refresh();
 	}
+}
+
+void MainWindow::refreshAnalysesUsingColumn(QString col)
+{
+	std::vector<std::string> changedColumns, missingColumns;
+	std::map<std::string, std::string> changeNameColumns;
+	changedColumns.push_back(col.toStdString());
+	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns);
+
+	_package->setModified(false);
+}
+
+void MainWindow::resetTableView()
+{
+	ui->tableView->reset();
 }
 
 void MainWindow::pushToClipboardHandler(const QString &mimeType, const QString &data, const QString &html)
@@ -1604,8 +1735,6 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 	_analysisMenu->show();
 }
 
-
-
 void MainWindow::removeAnalysisRequestHandler(int id)
 {
 	Analysis *analysis = _analyses->get(id);
@@ -1689,40 +1818,30 @@ void MainWindow::updateUserDataHandler(int id, QString key)
 
 void MainWindow::collapseSelected()
 {
-
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.collapseMenuClicked();");
-
 }
 
 void MainWindow::removeSelected()
 {
-
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.removeMenuClicked();");
-
 }
 
 void MainWindow::editTitleSelected()
 {
-
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.editTitleMenuClicked();");
 	_package->setModified(true);
-
 }
 
 void MainWindow::copySelected()
 {
-
 	tempfiles_purgeClipboard();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.copyMenuClicked();");
-
 }
 
 void MainWindow::citeSelected()
 {
-
 	tempfiles_purgeClipboard();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.citeMenuClicked();");
-
 }
 
 void MainWindow::noteSelected()
@@ -1767,15 +1886,121 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 	parser.parse(utf8, root);
 
 	analysis->options()->set(root);
+}
 
+
+void MainWindow::startDataEditorHandler()
+{
+	QString path = QString::fromStdString(_package->dataFilePath);
+	if (path.isEmpty() || path.startsWith("http") || !QFileInfo::exists(path) || Utils::getFileSize(path.toStdString()) == 0 || _package->dataFileReadOnly)
+	{
+		QString message = "JASP was started without associated data file (csv, sav or ods file). But to edit the data, JASP starts a spreadsheet editor based on this file and synchronize the data when the file is saved. Does this data file exist already, or do you want to generate it?";
+		if (path.startsWith("http"))
+			message = "JASP was started with an online data file (csv, sav or ods file). But to edit the data, JASP needs this file on your computer. Does this data file also exist on your computer, or do you want to generate it?";
+		else if (_package->dataFileReadOnly)
+			message = "JASP was started with a read-only data file (probably from the examples). But to edit the data, JASP needs to write to the data file. Does the same file also exist on your computer, or do you want to generate it?";
+
+		QMessageBox msgBox(QMessageBox::Question, QString("Start Spreadsheet Editor"), message,
+						   QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+		msgBox.setButtonText(QMessageBox::Yes, QString("Generate Data File"));
+		msgBox.setButtonText(QMessageBox::No, QString("Find Data File"));
+		int reply = msgBox.exec();
+		if (reply == QMessageBox::Cancel)
+			return;
+
+		FileEvent *event = NULL;
+		if (reply == QMessageBox::Yes)
+		{
+			QString caption = "Generate Data File as CSV";
+			QString filter = "CSV Files (*.csv)";
+			QString name = windowTitle();
+			if (name.endsWith("*"))
+			{
+				name.truncate(name.length() - 1);
+				name = name.replace('#', '_');
+			}
+			if (!_currentFilePath.isEmpty())
+			{
+				QFileInfo file(_currentFilePath);
+				name = file.absolutePath() + QDir::separator() + file.baseName().replace('#', '_') + ".csv";
+			}
+
+			path = QFileDialog::getSaveFileName(this, caption, name, filter);
+			if (path == "")
+				return;
+
+			if (!path.endsWith(".csv", Qt::CaseInsensitive))
+				path.append(".csv");
+
+			event = new FileEvent(this, FileEvent::FileExportData);
+			connect(event, SIGNAL(completed(FileEvent*)), ui->backStage, SLOT(setSyncFile(FileEvent*)));
+		}
+		else
+		{
+			QString caption = "Find Data File";
+			QString filter = "Data File (*.csv *.txt *.sav *.ods)";
+
+			path = QFileDialog::getOpenFileName(this, caption, "", filter);
+			if (path == "")
+				return;
+
+			event = new FileEvent(this, FileEvent::FileSyncData);
+		}
+
+		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(startDataEditorEventCompleted(FileEvent*)));
+		connect(event, SIGNAL(completed(FileEvent*)), ui->backStage, SLOT(setSyncFile(FileEvent*)));
+		event->setPath(path);
+		_loader.io(event, _package);
+		_progressIndicator->show();
+	}
+	else
+		startDataEditor(path);
 
 }
 
-void MainWindow::showAbout()
+void MainWindow::startDataEditorEventCompleted(FileEvent* event)
 {
+	_progressIndicator->hide();
 
-	AboutDialog aboutdialog;
-	aboutdialog.setModal(true);
-	aboutdialog.exec();
+	if (event->successful())
+	{
+		_package->setModified(true);
+		startDataEditor(event->path());
+	}
+}
 
+void MainWindow::startDataEditor(QString path)
+{
+	QFileInfo fileInfo(path);
+
+	int useDefaultSpreadsheetEditor = _settings.value("useDefaultSpreadsheetEditor", 1).toInt();
+	QString appname = _settings.value("spreadsheetEditorName", "").toString();
+
+	if (QString::compare(fileInfo.suffix(), "sav", Qt::CaseInsensitive) == 0)
+	{
+		if (useDefaultSpreadsheetEditor == 0 && !appname.contains("SPSS", Qt::CaseInsensitive))
+			useDefaultSpreadsheetEditor = 1;
+	}
+
+	if (appname.isEmpty())
+		useDefaultSpreadsheetEditor = 1;
+
+	QString startProcess;
+	if (useDefaultSpreadsheetEditor == 0)
+	{
+#ifdef __APPLE__
+		startProcess = appname.mid(appname.lastIndexOf('/') + 1);
+		startProcess = "open -a \"" + startProcess + "\" \"" + path + "\"";
+#else
+		startProcess = "\"" + appname + "\" \"" + path + "\"";
+#endif
+		QProcess::startDetached(startProcess);
+	}
+	else
+	{
+		if (!QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode)))
+		{
+			QMessageBox::warning(this, QString("Start Spreadsheet Editor"), QString("No default spreadsheet editor for file ") + fileInfo.completeBaseName() + QString(". Use Preferences to set the right editor."), QMessageBox::Cancel);
+		}
+	}
 }

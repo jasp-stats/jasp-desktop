@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2016 University of Amsterdam
+// Copyright (C) 2015-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 #define FILEHEADERRECORD_H
 
 #include "readablerecord.h"
+#include "../codepageconvert.h"
 
 namespace spss
 {
@@ -71,13 +72,13 @@ public:
 	/**
 	 * @brief SPSSIMPORTER_READ_ATTRIB The number of variable records found to date.
 	 */
-	SPSSIMPORTER_READ_ATTRIB(size_t, varRecordCount)
+	SPSSIMPORTER_READ_ATTRIB(size_t, rawVariableCount)
 
 	/**
 	 * @brief incVarRecordCount Found another one!
 	 * @return new value
 	 */
-	int32_t incVarRecordCount() { return _varRecordCount++; }
+	int32_t incRawVariableCount() { return _rawVariableCount++; }
 
 	/**
 	 * @brief process Manipulates columns by adding the contents of thie record.
@@ -85,7 +86,7 @@ public:
 	 *
 	 * Implematations should examine columns to determine the record history.
 	 */
-	virtual void process(SPSSColumns & columns);
+	virtual void process(SPSSImporter* importer, SPSSImportDataSet* dataset);
 
 
 	/**

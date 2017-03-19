@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -136,8 +136,10 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 	{
 		QStringList values;
 		Labels &labels = _dataSet->column(term.asString()).labels();
-		for (uint i = 0; i < labels.size(); i++)
-			values.append(tq(labels.labelFor(i).text()));
+		for (Labels::const_iterator label_it = labels.begin(); label_it != labels.end(); ++label_it)
+		{
+			values.append(tq(label_it->text()));
+		}
 
 		return values;
 	}

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -81,9 +81,30 @@ AnovaRepeatedMeasuresBayesianForm::AnovaRepeatedMeasuresBayesianForm(QWidget *pa
 	connect(_designTableModel, SIGNAL(factorAdded(Terms)), _anovaModel, SLOT(addFixedFactors(Terms)));
 	connect(_designTableModel, SIGNAL(factorRemoved(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
+	_plotFactorsAvailableTableModel = new TableModelVariablesAvailable();
+	ui->plotVariables->setModel(_plotFactorsAvailableTableModel);
+	
+	_horizontalAxisTableModel = new TableModelVariablesAssigned(this);
+	_horizontalAxisTableModel->setSource(_plotFactorsAvailableTableModel);
+	ui->plotHorizontalAxis->setModel(_horizontalAxisTableModel);
+
+	_seperateLinesTableModel = new TableModelVariablesAssigned(this);
+	_seperateLinesTableModel->setSource(_plotFactorsAvailableTableModel);
+	ui->plotSeparateLines->setModel(_seperateLinesTableModel);
+
+	_seperatePlotsTableModel = new TableModelVariablesAssigned(this);
+	_seperatePlotsTableModel->setSource(_plotFactorsAvailableTableModel);
+	ui->plotSeparatePlots->setModel(_seperatePlotsTableModel);
+
+	ui->buttonAssignHorizontalAxis->setSourceAndTarget(ui->plotVariables, ui->plotHorizontalAxis);
+	ui->buttonAssignSeperateLines->setSourceAndTarget(ui->plotVariables, ui->plotSeparateLines);
+	ui->buttonAssignSeperatePlots->setSourceAndTarget(ui->plotVariables, ui->plotSeparatePlots);
+	
 	ui->containerModel->hide();
 	ui->advancedOptions->hide();
-
+	ui->containerDescriptivesPlot->hide();
+	
+	ui->plotCredibleIntervalInterval->setLabel("Credible interval");
 	ui->priorFixedEffects->setLabel("r scale fixed effects");
 	ui->priorRandomEffects->setLabel("r scale random effects");
 	ui->priorCovariates->setLabel("r scale covariates");
@@ -106,6 +127,7 @@ void AnovaRepeatedMeasuresBayesianForm::bindTo(Options *options, DataSet *dataSe
 	factorsAvailable.add(_betweenSubjectsFactorsListModel->assigned());
 
 	_anovaModel->setVariables(factorsAvailable);
+	_plotFactorsAvailableTableModel->setVariables(factorsAvailable);
 }
 
 void AnovaRepeatedMeasuresBayesianForm::withinSubjectsDesignChanged()
@@ -131,6 +153,21 @@ void AnovaRepeatedMeasuresBayesianForm::factorsChanging()
 
 void AnovaRepeatedMeasuresBayesianForm::factorsChanged()
 {
+	Terms factorsAvailable;
+
+	foreach (const Factor &factor, _designTableModel->design())
+		factorsAvailable.add(factor.first);
+
+	factorsAvailable.add(_betweenSubjectsFactorsListModel->assigned());
+	
+	_plotFactorsAvailableTableModel->setVariables(factorsAvailable);
+	
+	Terms plotVariablesAssigned;
+	plotVariablesAssigned.add(_horizontalAxisTableModel->assigned());
+	plotVariablesAssigned.add(_seperateLinesTableModel->assigned());
+	plotVariablesAssigned.add(_seperatePlotsTableModel->assigned());
+	_plotFactorsAvailableTableModel->notifyAlreadyAssigned(plotVariablesAssigned);
+	
 	if (_options != NULL)
 		_options->blockSignals(false);
 }

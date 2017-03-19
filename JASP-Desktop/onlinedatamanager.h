@@ -8,6 +8,7 @@
 #include "onlineusernode.h"
 
 #include <QSettings>
+#include <map>
 
 class OnlineDataManager : public QObject
 {
@@ -75,7 +76,7 @@ private slots:
 
 private:
 
-	QMap<OnlineDataManager::Provider, QNetworkAccessManager *> _providers;
+	std::map<OnlineDataManager::Provider, QNetworkAccessManager *> _providers;
 	QMap<OnlineDataManager::Provider, AuthData> _authList;
 	QMap<QString, OnlineDataNode*> _actionNodes;
 

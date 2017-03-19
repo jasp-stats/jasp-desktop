@@ -1,5 +1,5 @@
 
-QT += core gui webkit webkitwidgets svg network printsupport
+QT += core gui webkit webkitwidgets svg network printsupport xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -49,3 +49,7 @@ linux {
 }
 
 include(JASP-Desktop.pri)
+
+HEADERS +=
+
+SOURCES +=

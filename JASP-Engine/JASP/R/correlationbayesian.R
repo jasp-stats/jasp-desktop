@@ -157,9 +157,16 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	#
 	#
 	correlation.table <- list()
-	correlation.table[["citation"]] <- list(
-		"Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2015). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication."
-	)
+	if(pearson & kendallsTauB){
+	  correlation.table[["citation"]] <- list(
+		  "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2015). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication.\n \nvan Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2016). Bayesian Inference for Kendall’s Rank Correlation Coefficient. Manuscript submitted for publication."
+	  )} else if(pearson){
+	    correlation.table[["citation"]] <- list(
+	      "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2015). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication."
+    )} else if(kendallsTauB){
+	    correlation.table[["citation"]] <- list(
+	    "van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2016). Bayesian Inference for Kendall’s Rank Correlation Coefficient. Manuscript submitted for publication."
+	  )}
 	
 	if (perform == "init") {
 		if (length(variables) < 2)
@@ -495,6 +502,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							#
 							some.r <- cor(v1, v2)
 							some.n <- length(v1)
+							if(test == "kendall"){some.r <- cor(v1,v2,method = "kendall")}
 							
 							# Initialise output
 							all.bfs <- list(bf10=NA, bfPlus0=NA, bfMin0=NA)
@@ -553,6 +561,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 									# NO CI INTERVALS FOR credibleIntervalsInterval
 									all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=priorWidth, method="jeffreysApprox")
 								}
+							  if(test == "kendall"){
+							    all.bfs <- .bfCorrieKernelKendallTau(n=some.n, tau=some.r, kappa = priorWidth, var = 1)
+							  }
 							}
 							
 							# Store in State
@@ -659,7 +670,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				footnotesExcludeListwise=footnotesListExcludeListwise))
 }
 ## Help functions ------------------------------------------------------------
-# 0. Prior specification
+# 0.1 Prior specification Pearson's Rho
 .excludePairwiseCorData <- function(v1, v2){
 	# To exclude the data pairwise
 	#
@@ -676,15 +687,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	return(screened.data)
 }
 
-
-.scaledBeta <- function(rho, alpha, beta){
+.stretchedBeta <- function(rho, alpha, beta){
 	result <- 1/2*dbeta((rho+1)/2, alpha, beta)
 	return(result)
 }
 
 
 .priorRho <- function(rho, kappa=1) {
-	.scaledBeta(rho, 1/kappa, 1/kappa)
+	.stretchedBeta(rho, 1/kappa, 1/kappa)
 }
 
 .priorRhoPlus <- function(rho, kappa=1) {
@@ -703,6 +713,33 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	result <- rho*0
 	result[value.index] <- 2*.priorRho(rho[value.index], kappa)
 	return(result)
+}
+# 0.2 Prior specification Kendall's Tau
+.scaledBetaTau <- function(tau, alpha=1, beta=1){
+  result <-   ((pi*2^(-2*alpha))/beta(alpha,alpha))  * cos((pi*tau)/2)^(2*alpha-1)
+  return(result)
+}
+
+.priorTau <- function(tau, kappa){
+  .scaledBetaTau(tau, alpha = (1/kappa), beta = (1/kappa))
+}
+
+.priorTauPlus <- function(tau, kappa=1) {
+  non.negative.index <- tau >=0
+  less.than.one.index <- tau <=1
+  value.index <- as.logical(non.negative.index*less.than.one.index)
+  result <- tau*0
+  result[value.index] <- 2*.priorTau(tau[value.index], kappa)
+  return(result)
+}
+
+.priorTauMin <- function(tau, kappa=1) {
+  negative.index <- tau <=0
+  greater.than.min.one.index <- tau >= -1
+  value.index <- as.logical(negative.index*greater.than.min.one.index)
+  result <- tau*0
+  result[value.index] <- 2*.priorTau(tau[value.index], kappa)
+  return(result)
 }
 
 # 1.0. Built-up for likelihood functions
@@ -1134,7 +1171,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				# Avoid overflow in hypergeo
 				# Recalculate BF10
 				savageDickyNumerator <- .priorRho(0, kappa)
-				savageDickyDenominator <- .scaledBeta(0, someFit$betaA, someFit$betaB)
+				savageDickyDenominator <- .stretchedBeta(0, someFit$betaA, someFit$betaB)
 				#
 				output$bf10 <- savageDickyNumerator/savageDickyDenominator
 				
@@ -1213,7 +1250,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				# To avoid overflow in the hypergeometric function
 				# Recalculate BF10
 				savageDickyNumerator <- .priorRho(0, kappa)
-				savageDickyDenominator <- .scaledBeta(0, someFit$betaA, someFit$betaB)
+				savageDickyDenominator <- .stretchedBeta(0, someFit$betaA, someFit$betaB)
 				#
 				output$bf10 <- savageDickyNumerator/savageDickyDenominator
 				
@@ -1292,7 +1329,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				# To avoid overflow in the numerical integration
 				# Recalculate BF10
 				savageDickyNumerator <- .priorRho(0, kappa)
-				savageDickyDenominator <- .scaledBeta(0, someFit$betaA, someFit$betaB)
+				savageDickyDenominator <- .stretchedBeta(0, someFit$betaA, someFit$betaB)
 				#
 				output$bf10 <- savageDickyNumerator/savageDickyDenominator
 				
@@ -1336,7 +1373,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		
 		# Calculate bf10
 		savageDickyNumerator <- .priorRho(0, kappa)
-		savageDickyDenominator <- .scaledBeta(0, marsmanResult$betaA, marsmanResult$betaB)
+		savageDickyDenominator <- .stretchedBeta(0, marsmanResult$betaA, marsmanResult$betaB)
 		
 		# Save output
 		output$bf10 <- savageDickyNumerator/savageDickyDenominator
@@ -1477,6 +1514,52 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	return(output)
 }
 
+.postDensKendallTau <- function(delta,Tstar,n,kappa=1,var=var,test="two-sided"){ 
+  if(test == "two-sided"){priorDens <- .priorTau(delta,kappa)
+  } else if(test == "positive"){priorDens <- .priorTauPlus(delta,kappa)
+  } else if(test == "negative"){priorDens <- .priorTauMin(delta,kappa)}
+  priorDens <- .priorTau(delta,kappa)
+  dens <- dnorm(Tstar,(1.5*delta*sqrt(n)),sd=sqrt(var))* priorDens
+  return(dens)
+}
+.posteriorTau <- function(delta,kentau,n,kappa=1,var=1,test="two-sided"){
+  Tstar <- (kentau * ((n*(n-1))/2))/sqrt(n*(n-1)*(2*n+5)/18)
+  if(test == "two-sided"){lims <- c(-1,1)
+  } else if(test == "positive"){lims <- c(0,1)
+  } else if(test == "negative"){lims <- c(-1,0)}
+  logicalCensor <- (delta >= lims[1] & delta <= lims[2])
+  dens <- logicalCensor*.postDensKendallTau(delta,Tstar,n,kappa,var,test=test)/
+    integrate(function(delta){.postDensKendallTau(delta,Tstar,n,kappa,var,test=test)},lims[1],lims[2])$value
+} 
+
+.bfCorrieKernelKendallTau <- function(tau, n, kappa=1, var=1, ciValue=0.95){ 
+  tempList <- list(vector())
+  output <- list(n=n, r=tau, bf10=NA, bfPlus0=NA, bfMin0=NA, methodNumber=NA, betaA=NA, betaB=NA, 
+                 twoSidedTooPeaked=FALSE, plusSidedTooPeaked=FALSE, minSidedTooPeaked=FALSE, 
+                 CIs=tempList, ciValues=ciValue, acceptanceRate=1)
+  if (any(is.na(tau)) ){
+    output$methodNumber <- 6
+    output$twoSidedTooPeaked <- TRUE 
+    output$plusSidedTooPeaked <- TRUE 
+    output$minSidedTooPeaked <- TRUE
+    return(output)
+  }
+  if (kappa <= 0.002){
+    output$bf10 <- 1
+    output$bfPlus0 <- 1
+    output$bfMin0 <- 1
+    output$methodNumber <- 6
+    return(output)
+  }
+  
+  output$bf10 <- .priorTau(0,kappa)/.posteriorTau(0,tau,n,kappa=kappa,var=var,test="two-sided")
+  output$bfPlus0 <- .priorTauPlus(0,kappa)/.posteriorTau(0,tau,n,kappa=kappa,var=var,test="positive")
+  output$bfMin0 <- .priorTauMin(0,kappa)/.posteriorTau(0,tau,n,kappa=kappa,var=var,test="negative")
+  output$methodNumber <- NA
+  return(output)
+}
+
+
 # Replication Bayes factors
 # 
 .bfR0Josine <- function(nOri, rOri, nRep, rRep, kappa=1){
@@ -1513,13 +1596,27 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 }
 
 .posteriorRhoMin <- function(n, r, rho, kappa=1){
-	if (!is.na(r) && !r==0){
+	if (!is.na(r) && !r==0){.approximatePosteriorRho
 		return(1/.bfCorrieKernel(n, r, kappa, method="exact")$bfMin0*.hFunction(n, r, rho)*.priorRhoMin(rho, kappa))
 	} else if (!is.na(r) && r==0){
 		return(1/.bfCorrieKernel(n, r, kappa, method="jeffreysIntegrate")$bfMin0*.jeffreysApproxH(n, r, rho)*.priorRhoMin(rho, kappa))
 	}	
 	
 }
+
+
+.approximatePosteriorRho <- function(rho, n, r) {
+  1/(1-rho^2)*dnorm(atanh(rho), mean=atanh(r), sd=1/sqrt(n))
+}
+
+.approximatePosteriorRhoPlus <- function(rho, n, r) {
+  (.approximatePosteriorRho(rho,n,r) * (rho>0)) / (pnorm(0,mean=atanh(r),sd=1/sqrt(n),lower.tail = FALSE))
+}
+
+.approximatePosteriorRhoMin <- function(rho, n, r) {
+    (.approximatePosteriorRho(rho,n,r) * (rho<0)) / (pnorm(0,mean=atanh(r),sd=1/sqrt(n)))
+}
+  
 
 
 # 4.2 
@@ -1805,7 +1902,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 }
 
 #### Plotting Function for posterior ####
-.plotPosterior.BayesianCorrelationMatrix <- function(x, y, kappa=1, oneSided= FALSE, addInformation= FALSE, drawCI= FALSE, lwd= 2, cexPoints= 1.5, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.28, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2) {
+.plotPosterior.BayesianCorrelationMatrix <- function(x, y, kappa=1, oneSided= FALSE, addInformation= FALSE, drawCI= FALSE, lwd= 2, cexPoints= 1.5, cexAxis= 1.2, 
+                                                     cexYlab= 1.5, cexXlab= 1.28, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2, addRho= TRUE, addTau= FALSE) {
 	
 	tooPeaked <- FALSE
 	screenedData <- .excludePairwiseCorData(x, y)
@@ -1814,8 +1912,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	y <- screenedData$v2
 	
 	r <- cor(x, y)
+	tau <- cor(x,y,method="kendall")
 	n <- length(x)
-	
 	# set limits plot
 	xlim <- c(-1, 1)
 	
@@ -1847,6 +1945,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 		priorLine <- .priorRho(rho=rho, kappa=kappa)
 		posteriorLine <- .posteriorRho(rho=rho, n=n, r=r, kappa=kappa)
+		try(silent=TRUE, expr = {
+		  numIntegrate <- integrate(function(x){.posteriorRho(x, n=n, r=r, kappa=kappa)},lower = -1,upper=1)$value
+		  if(round(numIntegrate,digits=2) != 1){posteriorLine <- .approximatePosteriorRho(rho = rho, n = n, r = r)}
+		  })
+		posteriorLineTau <- .posteriorTau(delta=rho, kentau=tau, n=n, kappa=kappa, var=1, test="two-sided")
+		legendPosition <- c("topright","topleft")[ (which(posteriorLine == max(posteriorLine))>500)+1 ]
 		
 		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
 			
@@ -1855,7 +1959,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			if (any(is.na(c(betaA, betaB))))
 				tooPeaked <- TRUE
 			
-			posteriorLine <- .scaledBeta(alpha=betaA, beta=betaB, rho=rho)
+			posteriorLine <- .stretchedBeta(alpha=betaA, beta=betaB, rho=rho)
 			
 			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
 				tooPeaked <- TRUE
@@ -1865,6 +1969,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 		priorLine <- .priorRhoPlus(rho=rho, kappa=kappa)
 		posteriorLine <- .posteriorRhoPlus(rho=rho, n=n, r=r, kappa= kappa)
+		try(silent=TRUE, expr = {
+		  numIntegrate <- integrate(function(x){.posteriorRhoPlus(x, n=n, r=r, kappa=kappa)},lower = -1,upper=1)$value
+		  if(round(numIntegrate,digits=2) != 1){posteriorLine <- .approximatePosteriorRhoPlus(rho = rho, n = n, r = r)}
+		})
+		posteriorLineTau <- .posteriorTau(delta=rho, kentau=tau, n=n, kappa=kappa, var=1, test="positive")
+		legendPosition <- "topleft"
 		
 		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
 		
@@ -1873,7 +1983,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			if (any(is.na(c(betaA, betaB))))
 				tooPeaked <- TRUE
 			
-			posteriorLine <- .scaledBeta(alpha=betaA, beta=betaB, rho=rho) / pbeta(1/2,  betaA, betaB, lower.tail=FALSE)
+			posteriorLine <- .stretchedBeta(alpha=betaA, beta=betaB, rho=rho) / pbeta(1/2,  betaA, betaB, lower.tail=FALSE)
 			posteriorLine[rho < 0] <- 0
 			
 			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
@@ -1885,6 +1995,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 		priorLine <- .priorRhoMin(rho=rho, kappa=kappa)
 		posteriorLine <- .posteriorRhoMin(rho=rho, n=n, r=r, kappa=kappa)
+		try(silent=TRUE, expr = {
+		  numIntegrate <- integrate(function(x){.posteriorRhoMin(x, n=n, r=r, kappa=kappa)},lower = -1,upper=1)$value
+		  if(round(numIntegrate,digits=2) != 1){posteriorLine <- .approximatePosteriorRhoMin(rho = rho, n = n, r = r)}
+		})
+		posteriorLineTau <- .posteriorTau(delta=rho, kentau=tau, n=n, kappa=kappa, var=1, test="negative")
+		legendPosition <- "topright"
 		
 		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
 		
@@ -1893,7 +2009,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			if (any(is.na(c(betaA, betaB))))
 				tooPeaked <- TRUE
 			
-			posteriorLine <- .scaledBeta(alpha=betaA, beta=betaB, rho=rho) / pbeta(1/2,  betaA, betaB, lower.tail=TRUE)
+			posteriorLine <- .stretchedBeta(alpha=betaA, beta=betaB, rho=rho) / pbeta(1/2,  betaA, betaB, lower.tail=TRUE)
 			posteriorLine[rho > 0] <- 0
 			
 			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
@@ -1903,7 +2019,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 	}
 	
-	dmax <- max(posteriorLine)
+	dmax <- max(c(posteriorLine*addRho,posteriorLineTau*addTau))
 	
 	ylim <- vector("numeric", 2)
 	ylim[1] <- 0
@@ -1922,12 +2038,23 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 		plot(1, 1, xlim= xlim, ylim= ylim, ylab= "", xlab="", type= "n", axes= FALSE)
 		
-		lines(rho, posteriorLine, lwd= lwd)
-		
+	  if(addRho & addTau){
+	    lines(rho, posteriorLine, lwd= lwd)
+	    lines(rho,posteriorLineTau, lwd=lwd, lty=2)
+	    xlabExpression <- "Correlation Coefficient"
+	    legend(x=legendPosition[1],y=legendPosition[2], legend=c(expression(rho),expression(tau)), lty=1:2, cex=cexYlab, bty="n", lwd=lwd)
+	  } else if(addRho){
+	    lines(rho, posteriorLine, lwd= lwd)
+	    xlabExpression <- expression(rho)
+	  } else if(addTau){
+	    lines(rho,posteriorLineTau, lwd=lwd)
+	    xlabExpression <- expression(tau)
+	  }
+	  
 		axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
 		axis(2, at = c(ylim[1], mean(ylim), ylim[2]) , pos= range(xticks)- 0.08*diff(range(xticks)), labels = c("", "Density", ""), lwd.ticks=0, cex.axis= 1.7, mgp= c(3, 0.7, 0), las=0)
 		
-		mtext(expression(rho), side = 1, cex = cexXlab, line= 2.5)
+		mtext(xlabExpression, side = 1, cex = cexXlab, line= 2.5)
 	}
 	
 }
@@ -2147,7 +2274,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								if (options$plotPosteriors) {
 								
 									if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
-										.plotPosterior.BayesianCorrelationMatrix(dataset[[variables[col]]], dataset[[variables[row]]], oneSided=oneSided, kappa=options$priorWidth)
+										.plotPosterior.BayesianCorrelationMatrix(dataset[[variables[col]]], dataset[[variables[row]]], oneSided=oneSided, kappa=options$priorWidth, addRho= options$pearson, addTau=options$kendallsTauB)
 									} else {
 										errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
 										errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])

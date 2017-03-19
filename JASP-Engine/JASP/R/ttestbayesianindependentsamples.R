@@ -88,7 +88,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	if(is.null(options()$BFprogress)) options(BFprogress = interactive())
 	if(is.null(options()$BFfactorsMax)) options(BFfactorsMax = 5)
 	
-	descriptivesTable <- .ttestIndependentSamplesDescriptives(dataset, options, perform)
+	descriptivesTable <- .ttestBayesianIndependentSamplesDescriptives(dataset, options, perform)
 	results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives")
 	
 	if (options$hypothesis == "groupOneGreater") {
@@ -519,7 +519,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 							p <- try(silent= FALSE, expr= {
 									
 									image <- .beginSaveImage(530, 400)
-									.plotBF.robustnessCheck.ttest(x= group2, y= group1, BF10post=BF10post[i], paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
+									.plotBF.robustnessCheck.ttest(x= group2, y= group1, BF10post=ifelse((options$bayesFactorType=="LogBF10"), exp(BF10post[i]), BF10post[i]), paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
 									content <- .endSaveImage(image)
 									plot[["data"]]  <- content
 								})
@@ -1202,4 +1202,164 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			.base_breaks_x(summaryStat$groupingVariable)
 	
 	print(p)
+}
+
+.ttestBayesianIndependentSamplesDescriptives <- function(dataset, options, perform,
+												 state = NULL, diff = NULL) {
+	if (options$descriptives == FALSE) return(NULL)
+
+	descriptives = list("title" = "Group Descriptives")
+
+	## sets up the table for the descriptives
+	fields <- list(
+		list(name = "variable", title = "", type = "string", combine = TRUE),
+		list(name = "group", title = "Group", type = "string"),
+		list(name = "N", title = "N", type = "number"),
+		list(name = "mean", title = "Mean", type = "number", format = "sf:4;dp:3"),
+		list(name = "sd", title = "SD", type = "number", format = "sf:4;dp:3"),
+		list(name = "se", title = "SE", type = "number", format = "sf:4;dp:3")
+	)
+
+	## add credible interval values if asked for in plot
+	if (options$descriptivesPlots) {
+		interval <- 100 * options$descriptivesPlotsCredibleInterval
+		title <- paste0(interval, "% Credible Interval")
+		fields[[length(fields) + 1]] <- list(name = "lowerCI", type = "number",
+											 format = "sf:4;dp:3", title = "Lower",
+											 overTitle = title)
+		fields[[length(fields) + 1]] <- list(name = "upperCI", type = "number",
+											 format = "sf:4;dp:3", title = "Upper",
+											 overTitle = title)
+	}
+
+	descriptives[["schema"]] <- list(fields = fields)
+	data <- list()
+
+
+	## function to check if everything is alright with the options
+	isAllright <- function(variable, options, state = NULL, diff = NULL) {
+
+		# check if the variable is in the state variables
+		cond1 <- !is.null(state) && variable %in% state$options$variables
+
+		# check if either diff is true, or it's a list and descriptives,
+		# and groupingVariable, missingValues are FALSE
+		cond2 <- (!is.null(diff) && (is.logical(diff) && diff == FALSE) || (is.list(diff)
+				 && !any(diff$descriptives,diff$groupingVariable, diff$missingValues)))
+
+		cond1 && cond2
+	}
+
+	variables <- options$variables
+	if (length(variables) == 0) variables <- "."
+
+	for (variable in variables) {
+
+		if (isAllright(variable, options, state, diff)) {
+
+			stateDat <- state$results$descriptives$data
+			descriptivesVariables <- as.character(length(stateDat))
+
+			for (i in seq_along(stateDat))
+				descriptivesVariables[i] <- stateDat[[i]]$variable
+
+			indices <- which(descriptivesVariables == variable)
+			data[[length(data) + 1]] <- stateDat[[indices[1]]]
+			data[[length(data) + 1]] <- stateDat[[indices[2]]]
+
+		} else {
+			data[[length(data) + 1]] <- list(variable = variable, .isNewGroup = TRUE)
+			data[[length(data) + 1]] <- list(variable = variable)
+		}
+	}
+
+	## check if we are done with all this crap
+	done <- (!is.null(state) &&
+			 state$options$descriptives &&
+			 all(variables %in% state$options$variables))
+
+	if (done) descriptives[["status"]] <- "complete"
+
+	groups <- options$groupingVariable
+
+	## if we actually have to do the test, and we have a grouping variable
+	if (perform == "run" && groups != "") {
+		levels <- base::levels(dataset[[ .v(groups) ]])
+
+		## if people don't know what a t-test is...
+		if (length(levels) != 2) {
+			descriptives[["error"]] <- list(errorType = "badData")
+
+		} else {
+
+			rowNo <- 1
+			groupingData <- dataset[[.v(groups)]]
+
+			## do the whole loop as above again
+			for (variable in variables) {
+
+				# if everything is alright, add stuff to data
+				if (isAllright(variable, options, state, diff)) {
+
+					stateDat <- state$results$descriptives$data
+					descriptivesVariables <- as.character(length(stateDat))
+
+					for (i in seq_along(stateDat))
+						descriptivesVariables[i] <- stateDat[[i]]$variable
+
+					indices <- which(descriptivesVariables == variable)
+
+					data[[rowNo]] <- stateDat[[indices[1]]]
+					data[[rowNo]] <- stateDat[[indices[2]]]
+
+					rowNo <- rowNo + 2
+
+				} else {
+
+					for (i in 1:2) {
+
+					  level <- levels[i]
+					  variableData <- dataset[[.v(variable)]]
+
+					  groupData <- variableData[groupingData == level]
+					  groupDataOm <- na.omit(groupData)
+
+					  if (class(groupDataOm) != "factor") {
+
+							posteriorSummary <- .posteriorSummaryGroupMean(variable=groupDataOm, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
+							ciLower <- .clean(posteriorSummary$ciLower)
+							ciUpper <- .clean(posteriorSummary$ciUpper)
+
+						  n <- .clean(length(groupDataOm))
+						  mean <- .clean(mean(groupDataOm))
+						  std <- .clean(sd(groupDataOm))
+						  sem <- .clean(sd(groupDataOm) / sqrt(length(groupDataOm)))
+
+						  result <- list(variable = variable, group = level,
+										 N = n, mean = mean, sd = std, se = sem, lowerCI = ciLower,
+										 upperCI = ciUpper)
+
+					  } else {
+
+						n <- .clean(length(groupDataOm))
+						result <- list(variable = variable, group = "",
+									   N = n, mean = "", sd = "", se = "", lowerCI = "",
+										 upperCI = "")
+					}
+
+					if (i == 1) {
+						result[[".isNewGroup"]] <- TRUE
+					}
+
+					data[[rowNo]] <- result
+					rowNo <- rowNo + 1
+					}
+				}
+			}
+		}
+		descriptives[["status"]] <- "complete"
+	}
+
+	descriptives[["data"]] <- data
+	descriptives
 }

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 University of Amsterdam
+// Copyright (C) 2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -35,9 +35,8 @@ public:
 	/**
 	 * @brief _CodePageConvert CTor
 	 * @param ianaCSNameSrc The IANA name of the source we need to read from.
-	 * @param ianaCSNameDest The IANA name of the coding passed as Target values.
 	 */
-	CodePageConvert(const char *ianaCSNameSrc, const char *ianaCSNameDest = "UTF-8");
+	CodePageConvert(const char *ianaCSNameSrc);
 
 	virtual ~CodePageConvert();
 
@@ -63,7 +62,6 @@ private:
 	static QSet<QByteArray> _knownCPs;
 
 	QTextDecoder	*_source;
-	QTextEncoder	*_destination;
 };
 
 

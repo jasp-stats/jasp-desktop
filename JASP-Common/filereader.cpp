@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,6 +19,8 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+
+#include <sstream>
 
 #include "libzip/archive_entry.h"
 
@@ -79,9 +81,7 @@ void FileReader::openEntry(const string &archivePath, const string &entryPath)
 	boost::filesystem::path pathArchive = archivePath;
 	#endif
 
-	_archiveExists = boost::filesystem::exists(pathArchive);
-
-	if (_archiveExists)
+	if ((_archiveExists = boost::filesystem::exists(pathArchive)))
 	{
 		_archive = archive_read_new();
 		archive_read_support_filter_all(_archive);
@@ -112,9 +112,15 @@ void FileReader::openEntry(const string &archivePath, const string &entryPath)
 					break;
 				}
 			}
+			if (!success)
+			{
+				stringstream str;
+				str << "No entry (" << entryPath << ") found in archive file.";
+				throw runtime_error(str.str());
+			}
 		}
 		else
-			throw runtime_error("Archive Entry access failed.");
+			throw runtime_error("Archive entry access failed.");
 	}
 
 }
@@ -228,6 +234,28 @@ char* FileReader::readAllData(int blockSize, int &errorCode)
 	while (readData(&data[_currentRead - startOffset], blockSize, errorCode) > 0 && errorCode == 0);
 
 	return data;
+}
+
+QString FileReader::readAllData(int &errorCode)
+{
+	int size = bytesAvailable();
+	if (size == 0)
+		return NULL;
+
+	const size_t blockSize = 4096;
+
+	char *data = new char[ blockSize  + 1];
+
+	errorCode = 0;
+	int count = 0;
+	QString result;
+	while (((count = readData(data, blockSize, errorCode)) > 0) && (errorCode == 0))
+	{
+		data[count] = '\0';
+		result.append(data);
+	}
+
+	return result;
 }
 
 

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -49,6 +49,7 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 
 	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), this, SLOT(sendMessages()));
 	connect(_analyses, SIGNAL(analysisOptionsChanged(Analysis*)), this, SLOT(sendMessages()));
+	connect(_analyses, SIGNAL(analysisToRefresh(Analysis*)), this, SLOT(sendMessages()));
 
 	// delay start so as not to increase program start up time
 	QTimer::singleShot(100, this, SLOT(deleteOrphanedTempFiles()));
@@ -219,9 +220,9 @@ void EngineSync::process()
 			if (analysis->id() != id || analysis->revision() != revision)
 				continue;
 
-			if (status == "error")
+			if (status == "error" || status == "exception")
 			{
-				analysis->setStatus(Analysis::Complete);
+				analysis->setStatus(status == "error" ? Analysis::Error : Analysis::Exception);
 				analysis->setResults(results);
 				_analysesInProgress[i] = NULL;
 				sendMessages();

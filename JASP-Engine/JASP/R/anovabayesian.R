@@ -15,35 +15,35 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = function(...) list(status = "ok"), ...) {
+AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = function(...) list(status = "ok"), ...) {
 ##PREAMBLE
-	if (is.null (base::options ()$BFMaxModels))
-		base::options (BFMaxModels = 50000)
-	if (is.null (base::options ()$BFpretestIterations))
-		base::options (BFpretestIterations = 100)
-	if (is.null (base::options ()$BFapproxOptimizer))
-		base::options (BFapproxOptimizer = "optim")
-	if (is.null (base::options ()$BFapproxLimits))
-		base::options (BFapproxLimits = c (-15,15))
-	if (is.null (base::options ()$BFprogress))
-		base::options (BFprogress = interactive())
-	if (is.null (base::options ()$BFfactorsMax))
-		base::options (BFfactorsMax = 5)
+	if (is.null(base::options()$BFMaxModels))
+		base::options(BFMaxModels = 50000)
+	if (is.null(base::options()$BFpretestIterations))
+		base::options(BFpretestIterations = 100)
+	if (is.null(base::options()$BFapproxOptimizer))
+		base::options(BFapproxOptimizer = "optim")
+	if (is.null(base::options()$BFapproxLimits))
+		base::options(BFapproxLimits = c(-15, 15))
+	if (is.null(base::options()$BFprogress))
+		base::options(BFprogress = interactive())
+	if (is.null(base::options()$BFfactorsMax))
+		base::options(BFfactorsMax = 5)
 		
 	env <- environment()
 
 	.callbackBFpackage <- function(...) {
-		response <- .callbackBayesianLinearModels ()
+		response <- .callbackBayesianLinearModels()
 		if(response$status == "ok")
 			return(as.integer(0))
 		return(as.integer(1))
 	}
 
-	.callbackBayesianLinearModels <- function (results = NULL) {
+	.callbackBayesianLinearModels <- function(results = NULL) {
 		response <- callback(results)
 		if (response$status == "changed") {
 		
-			change <- .diff (env$options, response$options)
+			change <- .diff(env$options, response$options)
 			
 			env$options <- response$options
 			
@@ -55,16 +55,16 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 				change$priorRandomEffects ||
 				change$sampleMode ||
 				change$fixedSamplesNumber)
-				return (response)
+				return(response)
 			response$status <- "ok"
 		}
-		return (response)
+		return(response)
 	}
 
-	state <- .retrieveState ()
-	if ( ! is.null (state)) {
-		change <- .diff (options, state$options)
-		if ( ! base::identical(change, FALSE) && (change$modelTerms || 
+	state <- .retrieveState()
+	if (! is.null(state)) {
+		change <- .diff(options, state$options)
+		if (! base::identical(change, FALSE) && (change$modelTerms || 
 				change$dependent ||
 				change$fixedFactors ||
 				change$randomFactors ||
@@ -77,25 +77,40 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 			perform <- "run"
 		}
 	}
+	
 ## META
-	results <- list ()
-	meta <- list ()
-	meta [[1]] <- list (name = "title", type = "title")
-	meta [[2]] <- list (name = "model comparison", type = "table")
-	meta [[3]] <- list (name = "effects", type = "table")
-	meta [[4]] <- list (name = "estimates", type = "table")
-	results [[".meta"]] <- meta
-	results [["title"]] <- "Bayesian ANOVA"
+	results <- list()
+	meta <- list()
+	meta[[1]] <- list(name = "title", type = "title")
+	meta[[2]] <- list(name = "model comparison", type = "table")
+	meta[[3]] <- list(name = "effects", type = "table")
+	meta[[4]] <- list(name = "estimates", type = "table")
+	
+	wantsTwoPlots <- options$plotSeparatePlots
+	if (wantsTwoPlots == "") {
+		meta[[5]] <- list(
+			name = "descriptivesObj", type = "object", 
+			meta = list(list(name = "descriptivesTable", type = "table"), list(name = "descriptivesPlot", type = "image"))
+			)
+	} else {
+		meta[[5]] <- list(
+			name = "descriptivesObj", type = "object", 
+			meta = list(list(name = "descriptivesTable", type = "table"), list(name = "descriptivesPlot", type = "collection", meta = "image"))
+			)	
+	}
+	
+	results[[".meta"]] <- meta
+	results[["title"]] <- "Bayesian ANOVA"
 
 ## DATA
+	dataset <- .readBayesianLinearModelData(dataset, options, perform)
+	
 	if (is.null(state)) {
-		dataset <- .readBayesianLinearModelData (dataset, options, perform)
-
 ##STATUS (INITIAL)
-		status <- .setBayesianLinearModelStatus (dataset, options, perform)
+		status <- .setBayesianLinearModelStatus(dataset, options, perform)
 
 ## MODEL
-		model.object <- .theBayesianLinearModels (dataset, options, perform, status, .callbackBayesianLinearModels, .callbackBFpackage, results = results, analysisType = "ANOVA")
+		model.object <- .theBayesianLinearModels(dataset, options, perform, status, .callbackBayesianLinearModels, .callbackBFpackage, results, analysisType = "ANOVA")
 	
 		if (is.null(model.object))
 			return()
@@ -108,23 +123,55 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 	}
 
 ## Posterior Table
-	model.comparison <- .theBayesianLinearModelsComparison (model, options, perform, status, populate = FALSE)
-	results [["model comparison"]] <- model.comparison$modelTable
+	model.comparison <- .theBayesianLinearModelsComparison(model, options, perform, status, populate = FALSE)
+	results[["model comparison"]] <- model.comparison$modelTable
 	
-	if ( is.null (state))
+	if (is.null(state))
 		model <- model.comparison$model
 
 ## Effects Table
-	results [["effects"]] <- .theBayesianLinearModelsEffects (model, options, perform, status, populate = FALSE)
+	results[["effects"]] <- .theBayesianLinearModelsEffects(model, options, perform, status, populate = FALSE)
 
 ## Posterior Estimates
-	results [["estimates"]] <- .theBayesianLinearModelEstimates (model, options, perform, status)
+	results[["estimates"]] <- .theBayesianLinearModelEstimates(model, options, perform, status)
 
-	new.state <- list (options = options, model = model, status = status)
+## Descriptives Table
+	descriptivesTable <- .anovaDescriptivesTable(dataset, options, perform, status, stateDescriptivesTable = NULL)[["result"]]
+
+## Descriptives Plot
+	options$plotErrorBars <- options$plotCredibleInterval
+	options$errorBarType <- "confidenceInterval"
+	options$confidenceIntervalInterval <- options$plotCredibleIntervalInterval
+	plotOptionsChanged <- isTRUE( identical(wantsTwoPlots, options$plotSeparatePlots) == FALSE )
+	descriptivesPlot <- .anovaDescriptivesPlot(dataset, options, perform, status, stateDescriptivesPlot = NULL)[["result"]]
 	
-	if (perform == "run" || !status$ready || ! is.null (state)) {
-		return (list (results = results, status = "complete", state = new.state))
+	if (length(descriptivesPlot) == 1) {
+		results[["descriptivesObj"]] <- list(
+			title = "Descriptives", descriptivesTable = descriptivesTable, 
+			descriptivesPlot = descriptivesPlot[[1]]
+			)
+			
+		if (plotOptionsChanged) 
+			results[[".meta"]][[5]][["meta"]][[2]] <- list(name = "descriptivesPlot", type = "image")
+			
+	} else {	
+		results[["descriptivesObj"]] <- list(
+			title = "Descriptives", descriptivesTable = descriptivesTable, 
+			descriptivesPlot = list(collection = descriptivesPlot, title = "Descriptives Plots")
+			)
+			
+		if (plotOptionsChanged)
+			results[[".meta"]][[5]][["meta"]][[2]] <- list(name = "descriptivesPlot", type = "collection", meta = "image")
+			
+	}
+
+	keepDescriptivesPlot <- lapply(descriptivesPlot, function(x) x$data)
+	
+	new.state <- list(options = options, model = model, status = status, keep = keepDescriptivesPlot)
+	
+	if (perform == "run" || ! status$ready || ! is.null(state)) {
+		return(list(results = results, status = "complete", state = new.state))
 	} else {
-		return (list (results = results, status = "inited"))
+		return(list(results = results, status = "inited"))
 	}
 }

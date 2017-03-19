@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -22,6 +22,8 @@
 #include "column.h"
 #include "widgets/tablemodelvariablesassigned.h"
 #include "widgets/tablemodelanovamodelnuisancefactors.h"
+
+using namespace std;
 
 AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	AnalysisForm("AnovaRepeatedMeasuresForm", parent),

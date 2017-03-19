@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -48,10 +48,10 @@ TTestPairedSamplesForm::TTestPairedSamplesForm(QWidget *parent) :
 
 #ifdef QT_NO_DEBUG
 	// temporarily hides until the appropriate R code is implemented
-	ui->VovkSellkeMPR->hide();
+
 
 #else
-	ui->VovkSellkeMPR->setStyleSheet("background-color: pink;");
+
 
 #endif
 }

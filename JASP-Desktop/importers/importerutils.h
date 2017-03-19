@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2016 University of Amsterdam
+// Copyright (C) 2015-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,8 +15,33 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef DEBUG_COUT_H
-#define DEBUG_COUT_H
+#ifndef IMPORTERUTILS_H
+#define IMPORTERUTILS_H 1
+
+/*
+ * Macros to build attriutes of a class.
+ */
+#define _ATT_VALUE(type, name)		\
+private:							\
+	type _##name;					\
+
+#define READ_ATTR(type, name)		\
+	_ATT_VALUE(type, name)			\
+public:								\
+	const type & name() const		\
+		{ return _##name; }			\
+
+#define WRITE_ATTR(type, name)		\
+	_ATT_VALUE(type, name)			\
+public:								\
+	void name(const type &value)	\
+		{ _##name = value; }		\
+
+#define RW_ATTR(type, name)			\
+	READ_ATTR(type, name)			\
+public:								\
+	void name(const type &value)	\
+		{ _##name = value; }		\
 
 /*
  * Defines a series of DEBUG_COUT macros,
@@ -36,6 +61,8 @@
 #define DEBUG_COUT7(t, u, v, w, x, y, z) std::cout << t << u << v << w << x << y << z << std::endl; std::cout.flush()
 #define DEBUG_COUT8(s, t, u, v, w, x, y, z) std::cout << s << t << u << v << w << x << y << z << std::endl; std::cout.flush()
 #define DEBUG_COUT9(r, s, t, u, v, w, x, y, z) std::cout << r << s << t << u << v << w << x << y << z << std::endl; std::cout.flush()
+#define DEBUG_COUT10(q, r, s, t, u, v, w, x, y, z) std::cout << q << r << s << t << u << v << w << x << y << z << std::endl; std::cout.flush()
+#define DEBUG_COUT11(p, q, r, s, t, u, v, w, x, y, z) std::cout << p << q << r << s << t << u << v << w << x << y << z << std::endl; std::cout.flush()
 
 #else
 
@@ -48,6 +75,8 @@
 #define DEBUG_COUT7(t, u, v, w, x, y, z)
 #define DEBUG_COUT8(s, t, u, v, w, x, y, z)
 #define DEBUG_COUT9(r, s, t, u, v, w, x, y, z)
+#define DEBUG_COUT10(q, r, s, t, u, v, w, x, y, z)
+#define DEBUG_COUT11(p, q, r, s, t, u, v, w, x, y, z)
 #endif
 
 #endif // DEBUG_COUT_H

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 University of Amsterdam
+// Copyright (C) 2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -323,15 +323,12 @@ void BackstageOSF::saveClicked()
 
 void BackstageOSF::openSaveFile(const QString &nodePath, const QString &filename)
 {
-	bool storedata = (_mode == FileEvent::FileSave || _mode == FileEvent::FileExportResults || _mode ==FileEvent::FileExportData);
+	bool storedata = (_mode == FileEvent::FileSave || _mode == FileEvent::FileExportResults || _mode == FileEvent::FileExportData);
 
 	FileEvent *event = new FileEvent(this, _mode);
 
 	if (event->setPath(nodePath + "#file://" + filename))
 	{
-
-		if ( event->type() == Utils::jasp)
-			event->setReadOnly();
 		if (storedata)
 		{
 			_breadCrumbs->setEnabled(false);

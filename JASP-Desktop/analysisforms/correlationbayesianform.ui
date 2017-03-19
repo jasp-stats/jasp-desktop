@@ -200,7 +200,7 @@
             <item row="0" column="0">
              <widget class="BoundCheckBox" name="pearson">
               <property name="text">
-               <string>Pearson</string>
+               <string>Pearson's rho</string>
               </property>
              </widget>
             </item>
@@ -346,7 +346,7 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_2">
             <item row="0" column="0">
-             <widget class="QRadioButton" name="radioButton">
+             <widget class="QRadioButton" name="radioButton_1">
               <property name="text">
                <string>BF₁₀</string>
               </property>
@@ -431,7 +431,7 @@
             <item row="0" column="0">
              <widget class="QLabel" name="label_3">
               <property name="text">
-               <string>Beta* prior width</string>
+               <string>Stretched beta prior width</string>
               </property>
              </widget>
             </item>
@@ -550,11 +550,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -577,9 +572,14 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
-   <header location="global">widgets/expanderbutton.h</header>
+   <header>widgets/expanderbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

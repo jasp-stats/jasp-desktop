@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>606</width>
+    <width>651</width>
     <height>1088</height>
    </rect>
   </property>
@@ -218,9 +218,6 @@
       <item row="0" column="1">
        <widget class="QWidget" name="widget_7" native="true">
         <layout class="QGridLayout" name="gridLayout_5">
-         <property name="leftMargin">
-          <number>9</number>
-         </property>
          <item row="0" column="0">
           <widget class="BoundCheckBox" name="reportSignificance">
            <property name="text">
@@ -232,6 +229,13 @@
           <widget class="BoundCheckBox" name="flagSignificant">
            <property name="text">
             <string>Flag significant correlations</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="BoundCheckBox" name="confidenceIntervals">
+           <property name="text">
+            <string>Confidence intervals</string>
            </property>
           </widget>
          </item>
@@ -290,10 +294,16 @@
            </layout>
           </widget>
          </item>
-         <item row="2" column="0">
-          <widget class="BoundCheckBox" name="confidenceIntervals">
+         <item row="4" column="0">
+          <widget class="BoundCheckBox" name="VovkSellkeMPR">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="text">
-            <string>Confidence intervals</string>
+            <string>Vovk-Sellke Maximum p-Ratio</string>
            </property>
           </widget>
          </item>
@@ -343,7 +353,7 @@
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
          <item row="1" column="0">
-          <widget class="QRadioButton" name="_2correlatedInDirection">
+          <widget class="QRadioButton" name="_2correlatedPositively">
            <property name="text">
             <string>Correlated positively</string>
            </property>
@@ -357,7 +367,7 @@
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QRadioButton" name="radioButton">
+          <widget class="QRadioButton" name="_3correlatedNegatively">
            <property name="text">
             <string>Correlated negatively</string>
            </property>
@@ -500,11 +510,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -527,9 +532,14 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
+   <header location="global">widgets/expanderbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 University of Amsterdam
+// Copyright (C) 2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -24,15 +24,27 @@
 #include <QMovie>
 
 #include "fsentrywidget.h"
+#include <iostream>
 
-FSBrowser::FSBrowser(QWidget *parent) : QWidget(parent)
+
+FSBrowser::FSBrowser(QWidget *parent, FSBrowser::BrowseMode mode) : QWidget(parent)
 {
-	_browseMode = FSBrowser::BrowseOpenFile;
+	_browseMode = mode;
 	_viewType = FSBrowser::IconView;
 
 	QGridLayout *layout = new QGridLayout(this);
-	layout->setContentsMargins(0, 0, 0, 0);
+	layout->setContentsMargins(10, 10, 0, 0);
 	setLayout(layout);
+
+	if (mode == FSBrowser::BrowseCurrent)
+	{
+#ifdef __APPLE__
+		QString shortCutKey = "\u2318";
+#else
+		QString shortCutKey = "Ctrl";
+#endif
+		layout->addWidget(new QLabel(QString("Double-click on the file below to synchronize or use ") + shortCutKey + "-Y"));
+	}
 
 	_scrollArea = new VerticalScrollArea(this);
 	_scrollArea->setFrameShape(QScrollArea::NoFrame);
@@ -60,7 +72,6 @@ FSBrowser::FSBrowser(QWidget *parent) : QWidget(parent)
 
 	connect(_authWidget, SIGNAL(loginRequested(QString,QString)), this, SLOT(loginRequested(QString,QString)));
 }
-
 
 void FSBrowser::StartProcessing()
 {
@@ -158,6 +169,8 @@ void FSBrowser::refresh()
 			connect(button, SIGNAL(selected()), this, SLOT(entrySelectedHandler()));
 			connect(button, SIGNAL(opened()), this, SLOT(entryOpenedHandler()));
 		}
+
+
 	}
 }
 

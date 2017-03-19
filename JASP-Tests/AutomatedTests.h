@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 University of Amsterdam
+// Copyright (C) 2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,6 +17,12 @@
 
 #ifndef AUTOMATEDTESTS_H
 #define AUTOMATEDTESTS_H
+
+#ifdef __APPLE__
+#define TESTFILE_FOLDER "../Resources/TestFiles/"
+#else
+#define TESTFILE_FOLDER "Resources/TestFiles/"
+#endif
 
 #include <QtWidgets>
 #include <QtTest/QtTest>

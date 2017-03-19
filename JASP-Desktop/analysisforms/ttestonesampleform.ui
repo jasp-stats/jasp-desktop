@@ -766,7 +766,6 @@
   </layout>
   <zorder>topWidget</zorder>
   <zorder>widget_3</zorder>
-  <zorder>verticalSpacer_5</zorder>
  </widget>
  <customwidgets>
   <customwidget>

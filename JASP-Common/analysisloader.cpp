@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@ Analysis *AnalysisLoader::load(int id, string analysisName, Json::Value *data)
 			perror("malformed analysis definition");
 
 		bool autorun = analysisDesc.get("autorun", false).asBool();
+		bool usedata = analysisDesc.get("usedata", true).asBool();
 		Version version = Version(analysisDesc.get("version", "0.00").asString());
 
 		if (data != NULL)
@@ -53,7 +54,7 @@ Analysis *AnalysisLoader::load(int id, string analysisName, Json::Value *data)
 
 		file.close();
 
-		return new Analysis(id, analysisName, options, version, autorun);
+		return new Analysis(id, analysisName, options, version, autorun, usedata);
 	}
 
 	throw runtime_error("Could not access analysis definition.");

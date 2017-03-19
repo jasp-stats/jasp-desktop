@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -29,6 +29,8 @@ MainTableView::MainTableView(QWidget *parent) :
 	QTableView(parent)
 {
 	_dataSetModel = NULL;
+	_variablesPage = NULL;
+	_dataLoaded = false;
 
 	_infoPopup = new InfoPopup(this);
 	_infoPopup->setVisible(false);
@@ -40,6 +42,7 @@ MainTableView::MainTableView(QWidget *parent) :
 
 	_header = new MainTableHorizontalHeader();
 	connect(_header, SIGNAL(columnTypeChanged(int,Column::ColumnType)), this, SLOT(columnTypeChanged(int,Column::ColumnType)));
+	connect(_header, SIGNAL(columnNamePressed(int)), this, SLOT(showLabelView(int)));
 	setHorizontalHeader(_header);
 }
 
@@ -75,7 +78,8 @@ void MainTableView::badDataEnteredHandler(QModelIndex index)
 
 void MainTableView::columnTypeChanged(int columnIndex, Column::ColumnType newColumnType)
 {
-	_dataSetModel->setColumnType(columnIndex, newColumnType);
+	_dataSetModel->setColumnType(columnIndex, newColumnType);	
+	_variablesPage->setCurrentColumn(columnIndex);
 }
 
 void MainTableView::showInfoPopup(QModelIndex &index)
@@ -87,14 +91,6 @@ void MainTableView::showInfoPopup(QModelIndex &index)
 
 void MainTableView::moveInfoPopup()
 {
-	/*int headerWidth = this->verticalHeader()->width();
-	int headerHeight = this->horizontalHeader()->height();
-
-	QRect rect = this->visualRect(index);
-	_infoPopup->move(headerWidth + rect.x() +  _infoPopup->pointLength() / 2, headerHeight + rect.y() + rect.height() - _infoPopup->pointLength() / 2);
-	_infoPopup->setVisible(true);
-	_infoPopupVisible = true;*/
-
 	int headerWidth = this->verticalHeader()->width();
 	int headerHeight = this->horizontalHeader()->height();
 
@@ -137,4 +133,36 @@ void MainTableView::hideInfoPopup()
 		_infoPopup->hide();
 		_infoPopupVisible = false;
 	}
+}
+
+void MainTableView::showLabelView(int columnIndex)
+{	
+	if (_dataSetModel->getColumnType(columnIndex) == Column::ColumnTypeScale)
+		return;
+
+	_variablesPage->setCurrentColumn(columnIndex);
+	emit dataTableColumnSelected();
+}
+
+void MainTableView::setVariablesView(VariablesWidget *variablesPage)
+{
+	_variablesPage = variablesPage;
+}
+
+void MainTableView::adjustAfterDataLoad(bool dataLoaded)
+{
+	if (dataLoaded)
+	{
+		horizontalHeader()->setResizeContentsPrecision(50);
+		horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+	}
+	_dataLoaded = dataLoaded;
+	setToolTip(dataLoaded ? "Double-click to edit data" : "");
+
+}
+
+void MainTableView::mouseDoubleClickEvent(QMouseEvent *event)
+{
+	if (_dataLoaded)
+		emit dataTableDoubleClicked();
 }

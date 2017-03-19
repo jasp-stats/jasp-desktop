@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 University of Amsterdam
+// Copyright (C) 2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -23,13 +23,10 @@
 #include <QFileInfo>
 #include <QMessageBox>
 
-#include "fsbmrecent.h"
-
 OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 {
 	_mode = FileEvent::FileOpen;
-	_currentFileHasPath = false;
-	_currentFileReadOnly = false;
+	_currentFileType = Utils::FileType::unknown;
 
 	QGridLayout *layout = new QGridLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
@@ -60,10 +57,14 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	layout->addWidget(webWidget, 0, 1);
 
 	_fsmRecent   = new FSBMRecent(this);
+	_fsmCurrent  = new FSBMCurrent(this);
 	_fsmExamples = new FSBMExamples(this);
 
 	_bsRecent = new FSBrowser(_tabWidget);
 	_bsRecent->setFSModel(_fsmRecent);
+
+	_bsCurrent = new FSBrowser(_tabWidget, FSBrowser::BrowseCurrent);
+	_bsCurrent->setFSModel(_fsmCurrent);
 
 	_bsComputer = new BackstageComputer(_tabWidget);
 
@@ -74,28 +75,52 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	_bsExamples->setFSModel(_fsmExamples);
 
 	_tabWidget->addTab(_bsRecent, "Recent");
+	_tabWidget->addTab(_bsCurrent, "Current");
 	_tabWidget->addTab(_bsComputer, "Computer");
-
 	_tabWidget->addTab(_bsOSF, "OSF");
-
 	_tabWidget->addTab(_bsExamples, "Examples");
 
+	_tabWidget->hideTab(_bsCurrent);
+
 	connect(_bsRecent, SIGNAL(entryOpened(QString)), this, SLOT(dataSetOpenRequestHandler(QString)));
+	connect(_bsCurrent, SIGNAL(entryOpened(QString)), this, SLOT(dataSetOpenCurrentRequestHandler(QString)));
+	connect(&_watcher, SIGNAL(fileChanged(const QString&)), this, SLOT(dataFileModifiedHandler(const QString&)));
 	connect(_bsComputer, SIGNAL(dataSetIORequest(FileEvent *)), this, SLOT(dataSetIORequestHandler(FileEvent *)));
-
 	connect(_bsOSF, SIGNAL(dataSetIORequest(FileEvent *)), this, SLOT(dataSetIORequestHandler(FileEvent *)));
-
 	connect(_bsExamples, SIGNAL(entryOpened(QString)), this, SLOT(dataSetOpenExampleRequestHandler(QString)));
 
 	VerticalTabWidget *osvw = tabWidget();
 	VerticalTabBar *vtb = osvw->tabBar();
 	connect(vtb, SIGNAL(currentChanged(int)), this, SLOT(tabWidgetChanged(int)));
+	connect(vtb, SIGNAL(currentChanging(int,bool&)), this, SLOT(tabWidgetChanging(int,bool&)));
+}
+
+bool OpenSaveWidget::changeTabIfCurrentFileEmpty()
+{
+	bool empty = false;
+	if (_fsmCurrent->getCurrent().isEmpty())
+	{
+		_tabWidget->tabBar()->click(FileLocation::Computer);
+		empty = true;
+	}
+
+	return empty;
+}
+
+void OpenSaveWidget::tabWidgetChanging(int index, bool &cancel)
+{
+	if (index == FileLocation::Current)
+	{
+		// Do not set the current tab if no current file is present.
+		if (changeTabIfCurrentFileEmpty())
+			cancel = true;
+	}
 }
 
 void OpenSaveWidget::tabWidgetChanged(int index)
 {
 	//Check the OSF tab
-	if ( index==2 )
+	if (index == FileLocation::OSF)
 		_bsOSF->attemptToConnect();
 }
 
@@ -122,11 +147,20 @@ void OpenSaveWidget::setSaveMode(FileEvent::FileMode mode)
 
 	if (_mode == FileEvent::FileOpen)
 	{
+		_tabWidget->hideTab(_bsCurrent);
 		_tabWidget->showTab(_bsRecent);
 		_tabWidget->showTab(_bsExamples);
 	}
+	else if (_mode == FileEvent::FileSyncData)
+	{
+		_tabWidget->showTab(_bsCurrent);
+		_tabWidget->hideTab(_bsRecent);
+		_tabWidget->hideTab(_bsExamples);
+		_tabWidget->tabBar()->setTabEnabled(FileLocation::Current, !_fsmCurrent->getCurrent().isEmpty());
+	}
 	else
 	{
+		_tabWidget->hideTab(_bsCurrent);
 		_tabWidget->hideTab(_bsRecent);
 		_tabWidget->hideTab(_bsExamples);
 	}
@@ -144,10 +178,6 @@ FileEvent *OpenSaveWidget::open(const QString &path)
 {
 	FileEvent *event = new FileEvent(this, FileEvent::FileOpen);
 	event->setPath(path);
-
-	if ( ! path.endsWith(".jasp", Qt::CaseInsensitive))
-		event->setReadOnly();
-
 	dataSetIORequestHandler(event);
 
 	return event;
@@ -157,7 +187,7 @@ FileEvent *OpenSaveWidget::save()
 {
 	FileEvent *event;
 
-	if (_currentFileHasPath == false || _currentFileReadOnly)
+	if (_currentFileType != Utils::FileType::jasp)
 	{
 		event = _bsComputer->browseSave();
 		if (event->isCompleted())
@@ -166,8 +196,7 @@ FileEvent *OpenSaveWidget::save()
 	else
 	{
 		event = new FileEvent(this, FileEvent::FileSave);
-		event->setPath(_currentFilePath);
-		if (event->getLastError() != "")
+		if (!event->setPath(_currentFilePath))
 		{
 			QMessageBox::warning(this, "File Types", event->getLastError());
 			event->setComplete(false, "Failed to open file from OSF");
@@ -178,6 +207,13 @@ FileEvent *OpenSaveWidget::save()
 	dataSetIORequestHandler(event);
 
 	return event;
+}
+
+void OpenSaveWidget::sync()
+{
+	QString path = _fsmCurrent->getCurrent();
+	if (!path.isEmpty())
+		dataSetOpenCurrentRequestHandler(path);
 }
 
 FileEvent *OpenSaveWidget::close()
@@ -208,32 +244,98 @@ void OpenSaveWidget::dataSetIOCompleted(FileEvent *event)
 			if (_fsmExamples->contains(event->path()) == false)
 			{
 				//  don't add examples to the recent list
-
 				_fsmRecent->addRecent(event->path());
 				_bsComputer->addRecent(event->path());
 			}
+
+			if (event->operation() == FileEvent::FileOpen && !event->isReadOnly())
+				setCurrentDataFile(event->dataFilePath());
 
 			// all this stuff is a hack
 			QFileInfo info(event->path());
 			_bsComputer->setFileName(info.baseName());
 
 			_currentFilePath = event->path();
-			_currentFileHasPath = true;
-			_currentFileReadOnly = event->isReadOnly();
+			_currentFileType = event->type();
 		}
+	}
+	else if (event->operation() == FileEvent::FileSyncData)
+	{
+		if (event->successful())
+			setCurrentDataFile(event->dataFilePath());
+		else
+			std::cout << "Sync failed: " << event->getLastError().toStdString() << std::endl;
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
 		_bsComputer->clearFileName();
-
-		_currentFileHasPath = false;
 		_currentFilePath = "";
+		_currentFileType = Utils::FileType::unknown;
+		clearSyncData();
 	}
+}
+
+bool OpenSaveWidget::checkSyncFileExists(const QString &path)
+{
+    bool exists = path.startsWith("http") ? true : (QFileInfo::exists(path) && Utils::getFileSize(path.toStdString()) > 0);
+    if (!exists)
+	{
+        int attempts = 1;
+        while (!exists && attempts < 20)
+        {
+            Utils::sleep(100);
+            attempts++;
+            exists = QFileInfo::exists(path) && Utils::getFileSize(path.toStdString()) > 0;
+        }
+    }
+    if (!exists)
+    {
+        std::cout << "Sync file does not exist: " << path.toStdString() << std::endl;
+        std::cout.flush();
+		clearSyncData();
+	}
+
+	return exists;
+}
+
+void OpenSaveWidget::clearSyncData()
+{
+	setDataFileWatcher(false); // must be done before setting the current to empty.
+	_fsmCurrent->setCurrent(QString());
+	_tabWidget->tabBar()->setTabEnabled(FileLocation::Current, false);
+	_tabWidget->tabBar()->click(FileLocation::Computer);
+}
+
+void OpenSaveWidget::setCurrentDataFile(const QString &path)
+{
+	QString currentPath = _fsmCurrent->getCurrent();
+	if (!currentPath.isEmpty())
+		_watcher.removePath(currentPath);
+
+	bool setCurrentPath = true;
+	bool enableCurrentTab = false;
+	if (!path.isEmpty())
+	{
+		if (checkSyncFileExists(path))
+		{
+			enableCurrentTab = true;
+			int sync = _settings.value("dataAutoSynchronization", 1).toInt();
+			if (sync > 0)
+				_watcher.addPath(path);
+		}
+		else
+			setCurrentPath = false;
+	}
+
+	if (setCurrentPath)
+		_fsmCurrent->setCurrent(path);
+	_tabWidget->tabBar()->setTabEnabled(FileLocation::Current, enableCurrentTab);
 }
 
 void OpenSaveWidget::dataSetIORequestHandler(FileEvent *event)
 {
 	connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+	connect(event, SIGNAL(dataFileChanged(QString)), this, SLOT(dataFileModifiedHandler(QString)));
 	emit dataSetIORequest(event);
 }
 
@@ -251,3 +353,40 @@ void OpenSaveWidget::dataSetOpenExampleRequestHandler(QString path)
 	dataSetIORequestHandler(event);
 }
 
+void OpenSaveWidget::dataFileModifiedHandler(QString path)
+{
+	int autoSync = _settings.value("dataAutoSynchronization", 1).toInt();
+	if (autoSync > 0)
+		dataSetOpenCurrentRequestHandler(path);
+}
+
+void OpenSaveWidget::setDataFileWatcher(bool watch)
+{
+	QString path = _fsmCurrent->getCurrent();
+	if (!path.isEmpty())
+	{
+		if (watch && !_fsmCurrent->isOnlineFile())
+			_watcher.addPath(path);
+		else
+			_watcher.removePath(path);
+	}
+}
+
+Utils::FileType OpenSaveWidget::getCurrentFileType()
+{
+	return _currentFileType;
+}
+
+void OpenSaveWidget::dataSetOpenCurrentRequestHandler(QString path)
+{
+	if (path.isEmpty())
+		return;
+
+	if (checkSyncFileExists(path))
+	{
+		FileEvent *event = new FileEvent(this, FileEvent::FileSyncData);
+		event->setPath(path);
+
+		dataSetIORequestHandler(event);
+	}
+}

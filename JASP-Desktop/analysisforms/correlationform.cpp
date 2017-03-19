@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -42,8 +42,10 @@ CorrelationForm::CorrelationForm(QWidget *parent) :
 
 #ifdef QT_NO_DEBUG
 	ui->optionsWidget->hide();
+
 #else
 	ui->optionsWidget->setStyleSheet("background-color: pink ;");
+
 #endif
 
 	ui->confidenceIntervalsInterval->setLabel("Confidence intervals");

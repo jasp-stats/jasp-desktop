@@ -98,7 +98,8 @@
 		},
 		{
 			"name": "postHocTestsBonferroni",
-			"type": "Boolean"
+			"type": "Boolean",
+			"default": true
 		},
 		{
 			"name": "postHocTestsHolm",
@@ -106,8 +107,7 @@
 		},
 		{
 			"name": "postHocTestsTukey",
-			"type": "Boolean",
-			"default": true
+			"type": "Boolean"
 		},
 		{
 			"name": "postHocTestsScheffe",
@@ -224,6 +224,11 @@
 			"name": "confidenceIntervalInterval",
 			"type": "Number",
 			"value": 0.95
+		},
+		{
+  		"name": "VovkSellkeMPR",
+  		"type": "Boolean",
+  		"default": false
 		}
 	]
 }

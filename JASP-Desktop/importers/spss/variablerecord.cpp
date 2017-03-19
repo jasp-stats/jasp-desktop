@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2016 University of Amsterdam
+// Copyright (C) 2015-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-
+#include "spssimportdataset.h"
 #include "variablerecord.h"
-#include "debug_cout.h"
+#include "../importerutils.h"
 #include "stringutils.h"
 
 using namespace std;
@@ -54,7 +54,6 @@ VariableRecord::VariableRecord(const NumericConverter &fixer, RecordTypes fileTy
 		_name = buffer;
 	}
 
-	// Works if has_var_label not yet endded.
 	if (has_var_label() != 0)
 	{
 		SPSSIMPORTER_READ_MEMBER(label_len, from, fixer);
@@ -76,7 +75,7 @@ VariableRecord::VariableRecord(const NumericConverter &fixer, RecordTypes fileTy
 		_missing_values.push_back(val);
 	}
 
-	_dictionary_index = fileHeader->incVarRecordCount();
+	_dictIndex = fileHeader->incRawVariableCount();
 }
 
 
@@ -89,26 +88,25 @@ VariableRecord::~VariableRecord()
  * @brief createCol Appends a colum to the vector.
  *
  */
-void VariableRecord::process(SPSSColumns &columns)
+void VariableRecord::process(SPSSImporter* importer, SPSSImportDataSet *dataset)
 {
 
 	// check for string continuation.
 	if (isStringContinuation())
 	{
-		if ((columns.size() != 0) && (columns[columns.size()-1].cellType() == SPSSColumn::cellString))
-			columns[columns.size()-1].incrementColumnSpan();
+		ImportColumns::reverse_iterator iter = dataset->rbegin();
+		if (iter == dataset->rend())
+			throw runtime_error("Programming error: invalid last column found in VariableRecord::process.");
+
+		SPSSImportColumn* col = dynamic_cast<SPSSImportColumn*>(*iter);
+		if (col->cellType() == SPSSImportColumn::cellString)
+			col->incrementColumnSpan();
 
 //		DEBUG_COUT5("Existing column ", columns[columns.size()-1].spssName(), " spans ", columns[columns.size()-1].columnSpan(), " cols.");
 
 		return;
 	}
 
-	{
-		SPSSColumn col(name(), hasVarLabel() ? label() : name(), type(), _getType(print()), MissingValueChecker(n_missing_values(), missing_values()));
-		columns.push_back(col);
-	}
-
-	DEBUG_COUT7("VariableRecord::process() - Column ", columns.size(), ", print: ", print(), ", type: ", _getType(print()), ".");
-
-//	DEBUG_COUT4("VariableRecord::process() - Added column ", columns.back().spssName(), "/", columns.back().spssLabel());
+	SPSSImportColumn *col = new SPSSImportColumn(dataset, name(), label(), type(), _getType(print()), MissingValueChecker(n_missing_values(), missing_values()));
+	dataset->add(dictIndex(), col);
 }

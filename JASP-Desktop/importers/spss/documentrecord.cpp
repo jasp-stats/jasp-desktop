@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2016 University of Amsterdam
+// Copyright (C) 2015-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 //
 
 #include "documentrecord.h"
-#include "debug_cout.h"
+#include "../importerutils.h"
 
 using namespace std;
 using namespace boost;
@@ -55,27 +55,9 @@ DocumentRecord::~DocumentRecord()
  * @brief createCol Appends a colum to the vector.
  *
  */
-void DocumentRecord::process(SPSSColumns & columns)
+void DocumentRecord::process(SPSSImporter* importer, SPSSImportDataSet *dataset)
 {
 	// Chop the right most spaces off the lines.
 //	DEBUG_COUT1("Ignoring a found 'document record'.");
 }
 
-
-/**
- * @brief processStrings Converts any strings in the data fields.
- * @param dictData The
- *
- * Should be implemented in classes where holdStrings maybe or is true.
- *
- */
-void DocumentRecord::processStrings(const CodePageConvert &converter)
-{
-	for (size_t i = 0; i < _Lines.size(); ++i)
-	{
-		_Lines[i] = converter.convertCodePage( _Lines[i] );
-		size_t lastNonSpace = _Lines[i].find_last_not_of(" \t\r\n");
-		if (lastNonSpace != string::npos)
-			_Lines[i] = _Lines[i].substr(0, lastNonSpace + 1);
-	}
-}

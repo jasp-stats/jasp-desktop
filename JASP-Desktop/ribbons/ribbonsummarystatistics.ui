@@ -273,7 +273,6 @@
   <zorder>mainPanel</zorder>
   <zorder>otherPanel</zorder>
   <zorder>sep2</zorder>
-  <zorder>horizontalSpacer</zorder>
  </widget>
  <customwidgets>
   <customwidget>

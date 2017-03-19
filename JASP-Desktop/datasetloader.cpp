@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,36 +26,65 @@
 #include "importers/csvimporter.h"
 #include "importers/spssimporter.h"
 #include "importers/jaspimporter.h"
+#include "importers/odsimporter.h"
 
+#include <QFileInfo>
+#include <QSettings>
+
+using namespace std;
+using namespace spss;
 using namespace boost::interprocess;
 using namespace boost;
-using namespace std;
 
-void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
-{
+string DataSetLoader::getExtension(const string &locator, const string &extension) {
 	filesystem::path path(locator);
 	string ext = path.extension().generic_string();
 
 	if (!ext.length()) ext=extension;
+	return ext;
+}
 
-	//compare case insensitive file extension to choose importer
-	if (boost::iequals(ext,".sav"))
-		SPSSImporter::loadDataSet(packageData, locator, progress);
-	else if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt"))
-		CSVImporter::loadDataSet(packageData, locator, progress);
+Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const string &locator, const string &extension)
+{
+	Importer* result = NULL;
+	string ext = getExtension(locator, extension);
+
+	if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt"))
+		result = new CSVImporter(packageData);
+	else if (boost::iequals(ext,".sav"))
+		result = new SPSSImporter(packageData);
+	else if (boost::iequals(ext,".ods"))
+		result = new ODSImporter(packageData);
+
+	return result;
+}
+
+void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
+{
+	Importer* importer = getImporter(packageData, locator, extension);
+
+	if (importer)
+	{
+		importer->loadDataSet(locator, progress);
+		delete importer;
+	}
 	else
 		JASPImporter::loadDataSet(packageData, locator, progress);
 }
 
+void DataSetLoader::syncPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
+{
+	Importer* importer = getImporter(packageData, locator, extension);
+
+	if (importer)
+	{
+		importer->syncDataSet(locator, progress);
+		delete importer;
+	}
+}
 
 void DataSetLoader::freeDataSet(DataSet *dataSet)
 {
 	SharedMemory::deleteDataSet(dataSet);
 }
-
-DataSet *DataSetLoader::getDataSet()
-{
-	return SharedMemory::retrieveDataSet();
-}
-
 

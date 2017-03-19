@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 University of Amsterdam
+// Copyright (C) 2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -26,12 +26,16 @@ VerticalTabBar::VerticalTabBar(QWidget *parent) : QWidget(parent)
 {
 	_selectedIndex = 0;
 	_buttonGroup = new QButtonGroup(this);
-
 	_layout = new QVBoxLayout(this);
 	_layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
 	setLayout(_layout);
 
 	connect(_buttonGroup, SIGNAL(buttonClicked(int)), this, SLOT(buttonClicked(int)));
+}
+
+void VerticalTabBar::click(int index)
+{
+	_buttonGroup->button(index)->click();
 }
 
 void VerticalTabBar::addTab(const QString &label, const QIcon &icon)
@@ -109,7 +113,6 @@ int VerticalTabBar::count() const
 void VerticalTabBar::paintEvent(QPaintEvent *)
 {
 	// subclassed QWidgets don't paint stuff from their stylesheet, so we have to do this
-
 	QStyleOption option;
 	option.init(this);
 	QPainter painter(this);

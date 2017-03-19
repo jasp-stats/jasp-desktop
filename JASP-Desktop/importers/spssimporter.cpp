@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 University of Amsterdam
+// Copyright (C) 2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,7 +16,6 @@
 //
 
 #include "spssimporter.h"
-#include "./spss/spssrecinter.h"
 #include "./spss/floatinforecord.h"
 #include "./spss/variablerecord.h"
 #include "./spss/valuelabelvarsrecord.h"
@@ -30,45 +29,23 @@
 #include "./spss/dictionaryterminationrecord.h"
 #include "./spss/datarecords.h"
 
-#include "sharedmemory.h"
-#include "dataset.h"
-#include "./spss/debug_cout.h"
+#include "./convertedstringcontainer.h"
 
 using namespace std;
-
 using namespace boost;
 using namespace spss;
 
-
-FileHeaderRecord *SPSSImporter::_pFileHeaderRecord = 0;
-IntegerInfoRecord SPSSImporter::_integerInfo;
-FloatInfoRecord SPSSImporter::_floatInfo;
-double SPSSImporter::_fileSize = 0.0;
-
-
-
-void SPSSImporter::killFhr()
+SPSSImporter::SPSSImporter(DataSetPackage *packageData) : Importer(packageData)
 {
-	if (_pFileHeaderRecord != 0)
-	{
-		delete _pFileHeaderRecord;
-		_pFileHeaderRecord = 0;
-	}
+	_packageData->isArchive = false;
 }
 
-
-void SPSSImporter::loadDataSet(
-		DataSetPackage *packageData,
-		const std::string &locator,
-		boost::function<void (const std::string &, int)> progress)
+SPSSImporter::~SPSSImporter()
 {
-	(void)progress;
+}
 
-	packageData->isArchive = false;						 // SPSS/spss files are never archives.
-	packageData->dataSet = SharedMemory::createDataSet();   // Do our space.
-
-	killFhr();
-
+ImportDataSet* SPSSImporter::loadFile(const string &locator, boost::function<void(const string &, int)> progress)
+{
 	// Open the file.
 	SPSSStream stream(locator.c_str(), ios::in | ios::binary);
 
@@ -78,10 +55,13 @@ void SPSSImporter::loadDataSet(
 	stream.seekg(0, stream.beg);
 
 	// Data we have scraped to date.
-	SPSSColumns dictData;
+	SPSSImportDataSet *dataset = new SPSSImportDataSet();
 
 	// Fetch the dictionary.
 	bool processingDict = true;
+	FileHeaderRecord *pFileHeaderRecord = 0;
+	IntegerInfoRecord integerInfo;
+	FloatInfoRecord floatInfo;
 
 	while(stream.good() && processingDict)
 	{
@@ -93,28 +73,28 @@ void SPSSImporter::loadDataSet(
 		rec_type.u = rectype_unknown;
 		stream.read((char *) &rec_type.u, sizeof(rec_type.u));
 		// Endiness for rec_type, if known.
-		if (_pFileHeaderRecord != 0)
-			dictData.numericsConv().fixup(&rec_type.u);
+		if (pFileHeaderRecord != 0)
+			dataset->numericsConv().fixup(&rec_type.u);
 
 		// ... and the record type type is....
 		switch(rec_type.t)
 		{
 		case FileHeaderRecord::RECORD_TYPE:
-			_pFileHeaderRecord = new FileHeaderRecord(dictData.numericsConv(), rec_type.t, stream);
-			_pFileHeaderRecord->process(dictData);
+			pFileHeaderRecord = new FileHeaderRecord(dataset->numericsConv(), rec_type.t, stream);
+			pFileHeaderRecord->process(this, dataset);
 			break;
 
 		case VariableRecord::RECORD_TYPE:
 		{
-			VariableRecord record(dictData.numericsConv(), rec_type.t, _pFileHeaderRecord, stream);
-			record.process(dictData);
+			VariableRecord record(dataset->numericsConv(), rec_type.t, pFileHeaderRecord, stream);
+			record.process(this, dataset);
 		}
 			break;
 
 		case ValueLabelVarsRecord::RECORD_TYPE:
 		{
-			ValueLabelVarsRecord record(dictData.numericsConv(), rec_type.t, stream);
-			record.process(dictData);
+			ValueLabelVarsRecord record(dataset->numericsConv(), rec_type.t, stream);
+			record.process(this, dataset);
 		}
 			break;
 
@@ -123,62 +103,62 @@ void SPSSImporter::loadDataSet(
 			union { int32_t i; RecordSubTypes s; } sub_type;
 			sub_type.s = recsubtype_unknown;
 			stream.read((char *) &sub_type.i, sizeof(sub_type.i));
-			dictData.numericsConv().fixup(&sub_type.i);
+			dataset->numericsConv().fixup(&sub_type.i);
 			switch (sub_type.s)
 			{
 			case  IntegerInfoRecord::SUB_RECORD_TYPE:
 			{
-				_integerInfo = IntegerInfoRecord(dictData.numericsConv(), sub_type.s, rec_type.t, stream);
-				_integerInfo.process(dictData);
+				integerInfo = IntegerInfoRecord(dataset->numericsConv(), sub_type.s, rec_type.t, stream);
+				integerInfo.process(this, dataset);
 			}
 				break;
 
 			case FloatInfoRecord::SUB_RECORD_TYPE:
 			{
-				_floatInfo = FloatInfoRecord(dictData.numericsConv(), sub_type.s, rec_type.t, stream);
-				_floatInfo.process(dictData);
+				floatInfo = FloatInfoRecord(dataset->numericsConv(), sub_type.s, rec_type.t, stream);
+				floatInfo.process(this, dataset);
 			}
 				break;
 
 			case VarDisplayParamRecord::SUB_RECORD_TYPE:
 			{
-				VarDisplayParamRecord record(dictData.numericsConv(), sub_type.s, rec_type.t, dictData.size(), stream);
-				record.process(dictData);
+				VarDisplayParamRecord record(dataset->numericsConv(), sub_type.s, rec_type.t, dataset->columnCount(), stream);
+				record.process(this, dataset);
 			}
 				break;
 
 			case LongVarNamesRecord::SUB_RECORD_TYPE:
 			{
-				LongVarNamesRecord record(dictData.numericsConv(), sub_type.s, rec_type.t, stream);
-				record.process(dictData);
+				LongVarNamesRecord record(dataset->numericsConv(), sub_type.s, rec_type.t, stream);
+				record.process(this, dataset);
 			}
 				break;
 
 			case VeryLongStringRecord::SUB_RECORD_TYPE:
 			{
-				VeryLongStringRecord record(dictData.numericsConv(), sub_type.s, rec_type.t, stream);
-				record.process(dictData);
+				VeryLongStringRecord record(dataset->numericsConv(), sub_type.s, rec_type.t, stream);
+				record.process(this, dataset);
 			}
 				break;
 
 			case ExtNumberCasesRecord::SUB_RECORD_TYPE:
 			{
-				ExtNumberCasesRecord record(dictData.numericsConv(), sub_type.s, rec_type.t, stream);
-				record.process(dictData);
+				ExtNumberCasesRecord record(dataset->numericsConv(), sub_type.s, rec_type.t, stream);
+				record.process(this, dataset);
 			}
 				break;
 
 			case CharacterEncodingRecord::SUB_RECORD_TYPE:
 			{
-				CharacterEncodingRecord record(dictData.numericsConv(), sub_type.s, rec_type.t, stream);
-				record.process(dictData);
+				CharacterEncodingRecord record(dataset->numericsConv(), sub_type.s, rec_type.t, stream);
+				record.process(this, dataset);
 			}
 				break;
 
 			default:
 			{
-				MiscInfoRecord record(dictData.numericsConv(), sub_type.i, rec_type.t, stream);
-				record.process(dictData);
+				MiscInfoRecord record(dataset->numericsConv(), sub_type.i, rec_type.t, stream);
+				record.process(this, dataset);
 			}
 			}
 		}
@@ -186,220 +166,196 @@ void SPSSImporter::loadDataSet(
 
 		case DocumentRecord::RECORD_TYPE:
 		{
-			DocumentRecord dummy(dictData.numericsConv(), rec_type.t, stream);
-			dummy.process(dictData);
+			DocumentRecord dummy(dataset->numericsConv(), rec_type.t, stream);
+			dummy.process(this, dataset);
 		}
 			break;
 
 		case DictionaryTermination::RECORD_TYPE:
 		{
-			DictionaryTermination dummy(dictData.numericsConv(), rec_type.t, stream);
-			dummy.process(dictData);
+			DictionaryTermination dummy(dataset->numericsConv(), rec_type.t, stream);
+			dummy.process(this, dataset);
 		}
 			processingDict = false; // Got end of dictionary.
 			break;
 
 		case rectype_unknown:
 		default:
-        {
-            string msg("Unknown record type '");
-            msg.append(rec_type.c, sizeof(rec_type.c));
-            msg.append("' found.\nThe SAV importer cannot read this file.");
-            throw runtime_error(msg);
+		{
+			string msg("Unknown record type '"); msg.append(rec_type.u, sizeof(rec_type.u)); msg.append("' found.\n"
+				"The SAV importer cannot yet read this file.\n"
+				"Please report this error at \n"
+				"https://github.com/jasp-stats/jasp-desktop/issues\n"
+				"including a small sample .SAV file that produces this message.");
+			throw runtime_error(msg);
 			break;
 		}
-        }
+		}
 	}
 
 	//If we got a file header then..
-	if (_pFileHeaderRecord == 0)
+	if (pFileHeaderRecord == 0)
 		throw runtime_error("No header found in .SAV file.");
 
+	dataset->setHeaderInfo(integerInfo, floatInfo);
+
 	// Now convert the string in the header that we are interested in.,
-	RecordRoot::processAllStrings(dictData.stringsConv());
+	ConvertedStringContainer::processAllStrings(dataset->stringsConv());
+
+	// Set the right name for each column and build the name to col map
+	dataset->setColumnMap();
 
 	// read the data records from the file.
-	DataRecords data(dictData.numericsConv(), *_pFileHeaderRecord, dictData, stream, progress);
-	data.read(packageData);
+	DataRecords data(this, dataset, dataset->numericsConv(), *pFileHeaderRecord, stream, progress);
+	data.read();
 
-	dictData.processStringsPostLoad(progress);
+	_processStringsPostLoad(dataset, progress);
+
 
 	DEBUG_COUT5("Read ", data.numDbls(), " doubles and ", data.numStrs(), " string cells.");
 
 
 	// bail if unknown number of cases.
-	if (dictData.hasNoCases())
+	if (dataset->hasNoCases())
 		throw runtime_error("Found no cases in .SAV file.");
 
-	// Set the data size
-	setDataSetSize(*packageData, dictData.numCases(), dictData.size());
-
-	// Now go fetch the data.
-	for (size_t i = 0; i < dictData.size(); i++)
-	{
-		SPSSColumn &spssCol = dictData[i];
-		Column &column = packageData->dataSet->column(i);
-
-		column.setName(spssCol.spssLabel());
-		column.setColumnType( spssCol.getJaspColumnType() );
-		column.labels().clear();
-
-		DEBUG_COUT3("Getting col: ", i, ",\n");
-
-		{
-			switch(column.columnType())
-			{
-			default:	// Skip unknown columns
-				break;
-			case Column::ColumnTypeScale:
-			{
-				Column::Doubles::iterator doubleInputItr = column.AsDoubles.begin();
-				for (size_t row = 0; (row < dictData.numCases()) && (doubleInputItr != column.AsDoubles.end()) ; row++, doubleInputItr++)
-				{
-					double val = spssCol.numerics[row];
-					DEBUG_COUT5(".. Row: ", row+1, ", dbl data: ", val, ",");
-					// Jasp uses a NAN as missing value.
-					*doubleInputItr = spssCol.missingChecker().processMissingValue(_floatInfo, val);
-				}
-			}
-				break;
-			case Column::ColumnTypeNominal:
-			case Column::ColumnTypeOrdinal:
-			{
-				Column::Ints::iterator intsInputItr = column.AsInts.begin();
-				for (size_t row = 0; (row < dictData.numCases()) && (intsInputItr != column.AsInts.end()) ; row++, intsInputItr++)
-				{
-					DEBUG_COUT5(".. Row: ", row+1, ", int data: ", spssCol.numerics[row], ",");
-					*intsInputItr = static_cast<int>(spssCol.numerics[row]);
-				}
-			}
-				break;
-			case Column::ColumnTypeNominalText:
-			{
-				if (spssCol.cellType() == SPSSColumn::cellDouble)
-				{
-					for (size_t i = 0; i < spssCol.numerics.size(); i++)
-						spssCol.strings.push_back( spssCol.format(spssCol.numerics[i]) );
-				}
-				map<int, int> indexes; // index keyed by row.
-				{
-					set<string> unique;
-					for (size_t i = 0; i < spssCol.strings.size(); i++)
-					{
-						if (spssCol.strings[i].size() != 0)
-							unique.insert(spssCol.strings[i]);
-					}
-#ifndef QT_NO_DEBUG
-//					DEBUG_COUT3("Strings ex unique (N=", unique.size(), ")");
-//					for (set<string>::const_iterator  i = unique.begin(); i != unique.end(); i++)
-//					{
-//						DEBUG_COUT3("... \"", *i, "\".");
-//					}
-#endif				// Push all the unique values into the lables.
-					assert(column.labels().size() == 0);
-					for (set<string>::const_iterator i = unique.begin(); i != unique.end(); i++)
-						column.labels().add(*i);
-
-
-					// Build the indexes to the lables.
-					for (size_t row = 0; row < dictData.numCases(); row++)
-					{
-						set<string>::const_iterator is = unique.find(spssCol.strings[row]);
-						if ((is == unique.end()) || (is->length() == 0) || (*is == "") || (*is == " "))
-						{
-							indexes.insert( pair<int, int>(row, INT_MIN) );
-							DEBUG_COUT3(".. Row: ", row+1, ", index data: Not a value.");
-						}
-						else
-						{
-							indexes.insert( pair<int, int>(row, distance(unique.begin(), is)) );
-							DEBUG_COUT5(".. Row: ", row+1, ", index data: ", distance(unique.begin(), is), ".");
-						}
-					}
-
-					// Have done with strings in the dictionary - Ditch them.
-					spssCol.strings.clear();
-#ifndef QT_NO_DEBUG
-//					DEBUG_COUT3("Indexes (N=", indexes.size(), ")");
-//					for (map<int, int>::const_iterator  i = indexes.begin(); i != indexes.end(); i++)
-//					{
-//						DEBUG_COUT5("... row=", i->first, " index=", i->second, ".");
-//					}
-#endif
-				} // Done with unique.
-
-				Column::Ints::iterator intsInputItr = column.AsInts.begin();
-				for (size_t row = 0; (row < dictData.numCases()) && (intsInputItr != column.AsInts.end()); row++, intsInputItr++)
-				{
-					map<int, int>::iterator indexI = indexes.find(row);
-					assert(indexI != indexes.end());
-					*intsInputItr = indexI->second;
-#ifndef QT_NO_DEBUG
-					DEBUG_COUT5("Inserted index :", *intsInputItr, " for row :", row, ".");
-#endif
-				}
-			}
-				break;
-			}
-		}
-	}
-
-	if (stream.bad())
-	{
-		killFhr();
-		SharedMemory::deleteDataSet(packageData->dataSet);
-		throw runtime_error("Error reading .SAV file.");
-	}
-};
-
-
-/**
- * @brief setDataSetSize Sets the data set size in the passed
- * @param dataSet The Data set to manipluate.
- * @param rowCount The (real) number of rows we have.
- * @param colCount The number of columns.
- */
-void SPSSImporter::setDataSetSize(DataSetPackage &dataSetPg, size_t rowCount, size_t colCount)
-{
-	bool retry(true);
-	do
-	{
-		try {
-
-			dataSetPg.dataSet->setColumnCount(colCount);
-			dataSetPg.dataSet->setRowCount(rowCount);
-			retry = false;
-		}
-		catch (boost::interprocess::bad_alloc &e)
-		{
-
-			try {
-
-				dataSetPg.dataSet = SharedMemory::enlargeDataSet(dataSetPg.dataSet);
-				retry = false;
-			}
-			catch (std::exception &e)
-			{
-				DEBUG_COUT2("SPSSImporter::setDataSetSize(), reallocating. std::exeption: ", e.what());
-				throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
-			}
-		}
-		catch (std::exception e)
-		{
-			DEBUG_COUT2("SPSSImporter::setDataSetSize() std::exeption: ", e.what());
-			throw runtime_error("Exception when reading .SAV file.");
-		}
-		catch (...)
-		{
-			DEBUG_COUT1("SPSSImporter::setDataSetSize() unknown exception.");
-			throw runtime_error("Unidentified error when reading .SAV file.");
-		}
-	}
-	while (retry);
-
-
+	delete pFileHeaderRecord;
+	return dataset;
 }
 
+/**
+ * @brief _processStringsPostLoad - Deals with very Long strings (len > 255) and CP processes all strings.
+ * Call after the data is loaded!.
+ */
+void SPSSImporter::_processStringsPostLoad(SPSSImportDataSet *dataset, boost::function<void (const std::string &, int)> progress)
+{
+	// For every found very long string.
+	const SPSSImportDataSet::LongColsData &strLens = dataset->veryLongColsDat();
+	float numStrlens = distance(strLens.begin(), strLens.end());
+	for (map<string, size_t>::const_iterator ituple = strLens.begin(); ituple != strLens.end(); ituple++)
+	{
+		{ // report progress
+			float prog = 100.0 * ((float) distance(strLens.begin(), ituple)) / numStrlens;
+			static float lastProg = -1.0;
+			if ((prog - lastProg) >= 1.0)
+			{
+				progress("Processing long strings.", (int) (prog + 0.5));
+				lastProg = prog;
+			}
+
+		}
+		// find the root col...
+		ImportColumns::iterator rootIter;
+		for (rootIter = dataset->begin(); rootIter != dataset->end(); rootIter++)
+		{
+			SPSSImportColumn* col = dynamic_cast<SPSSImportColumn*>(*rootIter);
+			DEBUG_COUT7("Matching '", ituple->first, "' against '", col->spssRawColName(), "' size ", ituple->second, ".");
+			if (col->spssRawColName() == ituple->first)
+					break;
+		}
+
+		const long mergedStrlen = 252;
+		// Shouldn't happen..
+		if (rootIter == dataset->end())
+			throw runtime_error("Failed to process a very long string value.");
+
+		SPSSImportColumn* rootColumn = dynamic_cast<SPSSImportColumn*>(*rootIter);
+		// merged strings are slightly shorter than what is in the file.
+		// See Appendix B System File Format, PSPP devloper's Guide, release 0.10.2 pp69
+		if (rootColumn->spssStringLen() == 255)
+			rootColumn->spssStringLen(mergedStrlen);
+
+		// Chop the length of the strings in the root col.
+		for (size_t cse  = 0; cse < rootColumn->strings.size(); cse++)
+		{
+			string str = rootColumn->strings[cse].substr(0, rootColumn->spssStringLen());
+			rootColumn->strings[cse] = str;
+		}
+
+		while (rootColumn->spssStringLen() < ituple->second)
+		{
+			// Find the next segment, (Should be next one along)
+			ImportColumns::iterator nextcolIter = rootIter;
+			++nextcolIter;
+			SPSSImportColumn* nextcol = dynamic_cast<SPSSImportColumn*>(*nextcolIter);
+			// How much to fetch?
+			long needed = min(ituple->second - rootColumn->spssStringLen(), rootColumn->spssStringLen());
+			needed = min(mergedStrlen, needed);
+
+			// Concatinate all the strings, going down the cases.
+			for (size_t cse  = 0; cse < rootColumn->strings.size(); cse++)
+			{
+				if (needed > 0)
+					rootColumn->strings[cse].append(nextcol->strings[cse], 0, needed);
+			}
+			// Advance the string length.
+			rootColumn->spssStringLen( rootColumn->spssStringLen() + needed );
+			// Dump the column.
+			dataset->erase(nextcolIter);
+		}
+	}
+
+	// Trim trialing spaces for all strings in the data set.
+	size_t numCols = distance(dataset->begin(), dataset->end());
+	for (ImportColumns::iterator iCol = dataset->begin(); iCol != dataset->end(); ++iCol)
+	{
+		SPSSImportColumn *col = dynamic_cast<SPSSImportColumn*>(*iCol);
+		{ // report progress
+			float prog = 100.0 * ((float) distance(dataset->begin(), iCol)) / numCols;
+			static float lastProg = -1.0;
+			if ((prog - lastProg) >= 1.0)
+			{
+				progress("Processing strings.", (int) (prog + 0.5));
+				lastProg = prog;
+			}
+		}
+
+		if (col->cellType() == SPSSImportColumn::cellString)
+		{
+			DEBUG_COUT3("Dumping column '", col->spssRawColName(), "'.");
+			for (size_t cse  = 0; cse < col->strings.size(); cse++)
+			{
+				// Trim left and right.
+				StrUtils::lTrimWSIP(col->strings[cse]);
+				StrUtils::rTrimWSIP(col->strings[cse]);
+			}
+		}
+	}
+}
+
+void SPSSImporter::fillSharedMemoryColumn(ImportColumn *importColumn, Column &column)
+{
+	SPSSImportColumn* spssCol = dynamic_cast<SPSSImportColumn*>(importColumn);
+
+	switch(spssCol->getJaspColumnType())
+	{
+	default:	// Skip unknown columns
+		break;
+	case Column::ColumnTypeScale:
+		spssCol->setColumnScaleData(column);
+		break;
+
+	case Column::ColumnTypeNominal:
+	case Column::ColumnTypeOrdinal:
+		spssCol->setColumnAsNominalOrOrdinal(column, spssCol->getJaspColumnType());
+		break;
+
+	case Column::ColumnTypeNominalText:
+		switch(spssCol->cellType())
+		{
+		case SPSSImportColumn::cellString:
+			spssCol->setColumnConvertStringData(column);
+			break;
+
+		case SPSSImportColumn::cellDouble:
+			 // convert to UTF-8 strings.
+			spssCol->setColumnConvertDblToString(column);
+			break;
+		}
+		break;
+	}
+
+}
 
 /**
  * @brief ReportProgress Reports progress for stream.
@@ -416,5 +372,48 @@ void SPSSImporter::reportFileProgress(SPSSStream::pos_type position, boost::func
 		prgrss("Loading .SAV file", pg);
 		lastPC = thisPC;
 	}
+}
+
+/**
+ * @brief resetNextCol. reset the col iterator
+ *
+ */
+void SPSSImporter::resetNextCol(SPSSImportDataSet *dataset)
+{
+	_currentColIter = dataset->begin();
+	SPSSImportColumn *col = dynamic_cast<SPSSImportColumn*>(*_currentColIter);
+	_remainingColSpan = col->columnSpan();
+}
+
+
+/**
+ * @brief getNextColumn Get next column wrapping as required.
+ * @return
+ */
+SPSSImportColumn& SPSSImporter::getNextColumn(SPSSImportDataSet *dataset)
+{
+	// Grab what will be the result.
+	SPSSImportColumn *result = dynamic_cast<SPSSImportColumn*>(*_currentColIter);
+
+	// Set the spaning var.
+	_isSpaning = result->columnSpan() != _remainingColSpan;
+
+	// Anthing left (for next time)?
+	if (--_remainingColSpan == 0)
+	{
+		// Go to next column.
+		++_currentColIter;
+		// Dropped off end?
+		if (_currentColIter == dataset->end())
+		{
+			resetNextCol(dataset);
+		}
+		else
+		{
+			SPSSImportColumn* col = dynamic_cast<SPSSImportColumn*>(*_currentColIter);
+			_remainingColSpan = col->columnSpan();
+		}
+	}
+	return *result;
 }
 

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -16,34 +16,28 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef OPTIONSFORM_H
-#define OPTIONSFORM_H
+#ifndef FSBROWSERMODELCURRENT_H
+#define FSBROWSERMODELCURRENT_H
 
-#include <QWidget>
+#include "fsbmodel.h"
+
 #include <QSettings>
 
-namespace Ui {
-class OptionsForm;
-}
+#include "common.h"
 
-class OptionsForm : public QWidget
+class FSBMCurrent : public FSBModel
 {
-	Q_OBJECT
-
 public:
-	explicit OptionsForm(QWidget *parent = 0);
-	~OptionsForm();
+	FSBMCurrent(QObject *parent = NULL);
 
-signals:
-	void optionsChanged();
+	void refresh() OVERRIDE;
 
-private slots:
-	void optionChangedHandler(bool);
+	void setCurrent(const QString &path);
+	QString getCurrent() const;
+	bool isOnlineFile() const;
 
 private:
-	Ui::OptionsForm *ui;
-
-	QSettings _settings;
+	QString _current;
 };
 
-#endif // OPTIONSFORM_H
+#endif // FSBROWSERMODELCURRENT_H

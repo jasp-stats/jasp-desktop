@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -68,6 +68,13 @@ void AsyncLoader::io(FileEvent *event, DataSetPackage *package)
 			emit beginSave(event, package);
 			break;
 
+		case FileEvent::FileSyncData:
+		{
+			emit progress("Sync Data Set", 0);
+			emit beginLoad(event, package);
+			break;
+		}
+
 		case FileEvent::FileClose:
 			event->setComplete();
 			break;
@@ -135,11 +142,15 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 	}
 	catch (runtime_error e)
 	{
+		std::cout << "Runtime Exception in saveTask: " << e.what() << std::endl;
+		std::cout.flush();
 		Utils::removeFile(fq(tempPath));
 		event->setComplete(false, e.what());
 	}
 	catch (exception e)
 	{
+		std::cout << "Exception in saveTask: " << e.what() << std::endl;
+		std::cout.flush();
 		Utils::removeFile(fq(tempPath));
 		event->setComplete(false, e.what());
 	}
@@ -177,11 +188,12 @@ void AsyncLoader::loadPackage(QString id)
 		try
 		{
 			string path = fq(_currentEvent->path());
+			string extension = "";
 
 			if (_currentEvent->IsOnlineNode())
 			{
 				//Find file extension in the OSF
-				string extension=".jasp"; //default
+				extension=".jasp"; //default
 				QString qpath(path.c_str());
 				int slashPos = qpath.lastIndexOf("/");
 				int dotPos = qpath.lastIndexOf('.');
@@ -198,12 +210,17 @@ void AsyncLoader::loadPackage(QString id)
 
 				//Generated local path has no extension
 				path = fq(_odm->getLocalPath(_currentEvent->path()));
+			}
 
+			if (_currentEvent->operation() == FileEvent::FileSyncData)
+			{
+				_loader.syncPackage(_currentPackage, path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+			}
+			else
+			{
 				//loadPackage argument extension determines type
 				_loader.loadPackage(_currentPackage, path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
 			}
-			else
-				_loader.loadPackage(_currentPackage, path, "", boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
 
 			QString calcMD5 = fileChecksum(tq(path), QCryptographicHash::Md5);
 
@@ -223,6 +240,13 @@ void AsyncLoader::loadPackage(QString id)
 			else
 				_currentPackage->id = path;
 
+			if (_currentEvent->type() != Utils::FileType::jasp)
+			{
+				_currentPackage->dataFilePath = _currentEvent->path().toStdString();
+				_currentPackage->dataFileReadOnly = _currentEvent->isReadOnly();
+				_currentPackage->dataFileTimestamp = _currentEvent->IsOnlineNode() ? 0 : QFileInfo(_currentEvent->path()).lastModified().toTime_t();
+			}
+			_currentEvent->setDataFilePath(QString::fromStdString(_currentPackage->dataFilePath));
 			_currentEvent->setComplete();
 
 			if (dataNode != NULL)
@@ -230,12 +254,16 @@ void AsyncLoader::loadPackage(QString id)
 		}
 		catch (runtime_error e)
 		{
+			std::cout << "Runtime Exception in loadPackage: " << e.what() << std::endl;
+			std::cout.flush();
 			if (dataNode != NULL)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());
 		}
 		catch (exception e)
 		{
+			std::cout << "Exception in loadPackage: " << e.what() << std::endl;
+			std::cout.flush();
 			if (dataNode != NULL)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());
@@ -293,12 +321,16 @@ void AsyncLoader::uploadFileFinished(QString id)
 		}
 		catch (runtime_error e)
 		{
+			std::cout << "Runtime Exception in uploadFileFinished: " << e.what() << std::endl;
+			std::cout.flush();
 			if (dataNode != NULL)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());
 		}
 		catch (exception e)
 		{
+			std::cout << "Exception in uploadFileFinished: " << e.what() << std::endl;
+			std::cout.flush();
 			if (dataNode != NULL)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -94,13 +94,27 @@ void tempfiles_attach(long sessionId)
 }
 
 
-void tempfiles_deleteAll()
+void tempfiles_deleteAll(int id)
 {
+
 	system::error_code error;
+	filesystem::path dir;
 
-	filesystem::path sessionPath = Utils::osPath(_tempfiles_sessionDirName);
+	if (id >= 0)
+	{
+		stringstream ss;
+		ss << _tempfiles_sessionDirName;
+		ss << "/";
+		ss << "resources/";
+		ss << id;
+		dir = ss.str();
+	}
+	else
+	{
+		dir = Utils::osPath(_tempfiles_sessionDirName);
+	}
 
-	filesystem::remove_all(sessionPath, error);
+	filesystem::remove_all(dir, error);
 }
 
 

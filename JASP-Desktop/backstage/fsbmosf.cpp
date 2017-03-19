@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 University of Amsterdam
+// Copyright (C) 2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -308,10 +308,8 @@ void FSBMOSF::gotFilesAndFolders()
 					entryType = FSEntry::CSV;
 				else if (nodeData.name.endsWith(".html", Qt::CaseInsensitive) || nodeData.name.endsWith(".pdf", Qt::CaseInsensitive))
 					entryType = FSEntry::Other;
-		#ifdef QT_DEBUG
 				else if (nodeData.name.endsWith(".spss", Qt::CaseInsensitive))
 					entryType = FSEntry::SPSS;
-		#endif
 				else
 					continue;
 			}

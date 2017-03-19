@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,14 +30,18 @@ public:
 	int rowCount() const;
 	int columnCount() const;
 
-	Columns &columns();
+	Columns& columns();
 	Column& column(int index);
-	Column &column(std::string name);
+	Column& column(std::string name);
 
+	int getColumnIndex(std::string name);
 	void setRowCount(int rowCount);
 	void setColumnCount(int columnCount);
+	void removeColumn(std::string name);
 
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
+
+	std::string toString();
 
 private:
 

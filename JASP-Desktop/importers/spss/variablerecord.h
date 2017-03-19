@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2016 University of Amsterdam
+// Copyright (C) 2015-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 #include "readablerecord.h"
 #include "fileheaderrecord.h"
+#include "spssimportdataset.h"
 
 namespace spss
 {
@@ -61,10 +62,10 @@ public:
 	SPSSIMPORTER_READ_ATTRIB(VecDbls, missing_values)
 
 	// Not from the file, but from counting number times we are created,
-	SPSSIMPORTER_READ_ATTRIB(size_t, dictionary_index)
+	SPSSIMPORTER_READ_ATTRIB(size_t, dictIndex)
 
 	/*
-	 * Write and Print fields are in fact unions:
+	 * Write and Print fields are in fact bit-fields:
 	 * Inlines to break up extarct the fields;
 	 */
 	static unsigned char num_places(int32_t prField) { return ((prField >> 0) & 0xFF); }
@@ -92,7 +93,7 @@ public:
 	 *
 	 * Implematations should examine columns to determine the record history.
 	 */
-	virtual void process(SPSSColumns & columns);
+	virtual void process(SPSSImporter* importer, SPSSImportDataSet* dataset);
 
 private:
 	std::string  _name;

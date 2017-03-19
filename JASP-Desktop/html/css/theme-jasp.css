@@ -177,10 +177,19 @@ tbody tr:first-child td {
 
 tbody tr:nth-last-child(2) td.last-group-row,
 tbody tr:nth-last-child(2) td,
-tbody tr:nth-last-child(2) th
-{
+tbody tr:nth-last-child(2) th {
 
-	padding-bottom: .8em ;
+	margin-bottom: .8em ;
+}
+
+.jasp-analysis.selected tbody tr:nth-child(even) th,
+.jasp-analysis.selected tbody tr:nth-child(even) td {
+	background: rgb(245, 245, 245)
+}
+
+.jasp-analysis.selected tbody tr:nth-child(odd) th,
+.jasp-analysis.selected tbody tr:nth-child(odd) td {
+	background: #FFF
 }
 
 td.text {
@@ -221,7 +230,6 @@ svg > text
 }
 
 .error-state .jasp-image-image {
-
 	opacity: 0.33 ;
 }
 
@@ -256,6 +264,7 @@ svg > text
 
 	margin: 0 .7em .7em .7em ;
 	padding: 0 1em 1em 1em ;
+	position: relative;
 }
 
 #instructions {
@@ -329,8 +338,25 @@ div.image-status.waiting {
 }
 
 .error-state {
-
 	color: silver ;
+}
+
+.exception .error-message-box {
+	border-width: 3px;
+	border-style: double;
+}
+
+.analysis-error {
+	position: absolute;
+	top: 60px;
+	left: 40px;
+	right: 40px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.analysis-error.analysis-error-top-max {
+	top: 200px;
 }
 
 .error-message-positioner {
@@ -362,14 +388,34 @@ div.image-status.waiting {
 	z-index: 100 ;
 	padding: 1em ;
 	border-radius: .4em ;
-	min-width: 200px ;
-	max-width: 380px ;
+	min-width: 300px ;
 	white-space: normal;
-	margin-left: 50px ;
 }
 
 .error-message-message {
 
+}
+
+.stack-trace-selector div,
+.stack-trace-selector span {
+	
+  cursor: pointer ;
+  display: inline-block ;
+  vertical-align: middle ;
+}
+
+.stack-trace-arrow {
+	
+  background: center no-repeat url("images/expand.png") ;
+  background-size: 70% ;
+	width: 16px ;
+  height: 16px ;
+  margin-left: 2px ;
+}
+
+.stack-trace {
+	
+  display: none ;
 }
 
 td.squash-left

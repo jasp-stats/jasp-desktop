@@ -1283,6 +1283,17 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				splitPlot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable is not numeric!")
 				splitPlot[["status"]] <- "complete"
 
+				} else if (any(is.infinite(y))) {
+
+					image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+					plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="",
+							 ylab="")
+					axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
+					mtext(text = splitPlot[["name"]], side = 1, cex=1.5, line = 3)
+					splitPlot[["data"]] <- .endSaveImage(image)
+					splitPlot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity!")
+					splitPlot[["status"]] <- "complete"
+
 			} else if (!(options$splitPlotViolin || options$splitPlotBoxplot ||
 								 options$splitPlotJitter)) {
 
@@ -1304,7 +1315,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					boxWidth <- 0.5
 					vioWidth <- 0.3
 				} else {
-					group <- as.factor(dataset[[.v(options$splitby)]])
+					group <- as.factor(dataset[[.v(options$splitby)]])[!is.na(dataset[[.v(options$variables[[i]])]])]
 					xlab <- options$splitby
 					boxWidth <- 1
 					vioWidth <- 0.6
@@ -1340,7 +1351,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 					p <- p + ggplot2::geom_violin(trim = F, size = 0.75, width = vioWidth,
 																				scale = "width") +
-						ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, width = boxWidth/2 )+
+						ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, stat_params = list(width = boxWidth/2))+
 
 						ggplot2::geom_boxplot(size = 0.75, width = boxWidth,
 																	outlier.shape = NA) +
@@ -1354,7 +1365,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 					p <- p + ggplot2::geom_violin(trim = F, size = 0.75, width = vioWidth,
 																				scale = "width") +
-						ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, width = boxWidth/2 )+
+						ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, stat_params = list(width = boxWidth/2))+
 
 						ggplot2::geom_boxplot(size = 0.75, outlier.size = 1.5, width = boxWidth) +
 						ggplot2::geom_violin(trim = F, size = 0.75, width = vioWidth,
@@ -1362,7 +1373,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 				} else if (options$splitPlotBoxplot && options$splitPlotJitter) {
 
-					p <- p + ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, width = boxWidth/2 )+
+					p <- p + ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, stat_params = list(width = boxWidth/2))+
 
 						ggplot2::geom_boxplot(size = 0.75, outlier.shape = NA, width = boxWidth) +
 						ggplot2::geom_jitter(size = 2.5, shape = 1, stroke = 1,
@@ -1384,7 +1395,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 				} else if (options$splitPlotBoxplot){
 
-					p <- p + ggplot2::stat_boxplot(geom = "errorbar",size = 0.75, width = boxWidth/2 )+
+					p <- p + ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, stat_params = list(width = boxWidth/2))+
 
 						ggplot2::geom_boxplot(size = 0.75, outlier.size = 1.5, width = boxWidth)
 
@@ -1402,8 +1413,8 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 				### Theming & Cleaning
 				p <- p + ggplot2::xlab(xlab) +
-					ggplot2::ylab(options$variables[[i]]) +
-					base_breaks_y(y) +
+				 	ggplot2::ylab(options$variables[[i]]) +
+				 	base_breaks_y(y) +
 					ggplot2::theme_bw() +
 					ggplot2::theme(
 						panel.grid.minor = ggplot2::element_blank(),

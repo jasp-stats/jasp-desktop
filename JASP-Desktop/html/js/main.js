@@ -25,8 +25,6 @@ $(document).ready(function () {
 	var $instructions = $("#instructions")
 	var showInstructions = false;
 	
-
-
 	var analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
 
 	window.select = function (id) {
@@ -42,6 +40,12 @@ $(document).ready(function () {
 			selectedAnalysis.select();
 			$("body").addClass("selected")
 		}
+	}
+
+	window.setAppYear = function () {
+		var d = new Date();
+		var year = d.getFullYear();
+		$(".app-year").text(year);
 	}
 
 	window.setAppVersion = function (version) {
@@ -321,9 +325,10 @@ $(document).ready(function () {
 	window.unselectByClickingBody = function (event) {
 
 		var target = event.target || event.srcElement;
-
+		
+		var stacktraceClicked = $(target).is(".stack-trace-span, .stack-trace-arrow, .stack-trace-selector");
 		var noteClicked = $(target).is(".jasp-notes, .jasp-notes *");
-		var ignoreSelectionProcess = wasLastClickNote === true && noteClicked === false;
+		var ignoreSelectionProcess = (wasLastClickNote === true && noteClicked === false) || stacktraceClicked === true;
 		wasLastClickNote = noteClicked;
 		if (ignoreSelectionProcess)
 			return;
@@ -343,9 +348,11 @@ $(document).ready(function () {
 	var selectedHandler = function (event) {
 
 		var target = event.target || event.srcElement;
+		
+		var stacktraceClicked = $(target).is(".stack-trace-span, .stack-trace-arrow, .stack-trace-selector");
 		var noteClicked = $(target).is(".jasp-notes, .jasp-notes *");
 
-		var ignoreSelectionProcess = wasLastClickNote === true && noteClicked === false;
+		var ignoreSelectionProcess = (wasLastClickNote === true && noteClicked === false) || stacktraceClicked === true;
 
 		wasLastClickNote = noteClicked;
 
@@ -479,6 +486,19 @@ $(document).ready(function () {
 		if (selectedAnalysisId === analysis.id)
 			window.scrollIntoView(jaspWidget.$el);
 	}
+	
+	$("#results").on("click", ".stack-trace-selector", function() {
+		$(this).next(".stack-trace").slideToggle(function() {
+			var $selectedInner = $(this).parent().siblings(".jasp-analysis");
+			var errorBoxHeight = $(this).parent(".analysis-error").outerHeight(true);
+			if ($(this).next(".stack-trace").is(":hidden")) {
+				$selectedInner.css("height", "");
+			}
+			if ($selectedInner.height() < errorBoxHeight) {
+				$selectedInner.height(errorBoxHeight);
+			}
+		}.bind(this))
+	});
 
 	$("body").click(window.unselectByClickingBody)
 

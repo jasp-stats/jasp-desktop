@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 University of Amsterdam
+// Copyright (C) 2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,11 +25,9 @@ QSet<QByteArray> CodePageConvert::_knownCPs;
 /**
  * @brief _CodePageConvert CTor
  * @param ianaCSNameSrc The IANA name of the source we need to read from.
- * @param ianaCSNameDest The IANA name of the coding passed as Target values.
  */
-CodePageConvert::CodePageConvert(const char *ianaCSNameSrc, const char *ianaCSNameDest)
+CodePageConvert::CodePageConvert(const char *ianaCSNameSrc)
  : _source(0)
- , _destination(0)
 {
 	static const string msg("Cannot find charactor set ");
 
@@ -42,18 +40,13 @@ CodePageConvert::CodePageConvert(const char *ianaCSNameSrc, const char *ianaCSNa
 	}
 
 	// Just copy if no conversion required.
-	if (strcasecmp(ianaCSNameDest, ianaCSNameSrc) != 0)
+	if (strcasecmp("utf-8", ianaCSNameSrc) != 0)
 	{
 		// do we know of this codec?
 		if (_knownCPs.find(ianaCSNameSrc) != _knownCPs.end())
 			_source = QTextCodec::codecForName(ianaCSNameSrc)->makeDecoder();
 		else
 			throw runtime_error(msg + ianaCSNameSrc);
-
-		if (_knownCPs.find(ianaCSNameDest) != _knownCPs.end())
-			_destination = QTextCodec::codecForName(ianaCSNameDest)->makeEncoder();
-		else
-			throw runtime_error(msg + ianaCSNameDest);
 	}
 }
 
@@ -61,9 +54,6 @@ CodePageConvert::~CodePageConvert()
 {
 	if (_source != 0)
 		delete _source;
-	if (_destination != 0)
-		delete _destination;
-
 }
 
 /**
@@ -74,10 +64,12 @@ CodePageConvert::~CodePageConvert()
 string CodePageConvert::convertCodePage(const string &instring) const
 {
 
-	if (_destination != 0)
+	if (_source != 0)
 	{
-		QByteArray temp = _destination->fromUnicode(_source->toUnicode(instring.c_str(), instring.size()));
-		return string(temp.data(), temp.size());
+
+		QString temp1 =  _source->toUnicode(instring.c_str(), instring.size());
+		QByteArray temp2 = temp1.toUtf8();
+		return string(temp2.data(), temp2.size());
 	}
 	else
 		return instring;

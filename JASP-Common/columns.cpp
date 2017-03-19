@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -38,17 +38,20 @@ Column &Columns::get(string name)
 			return column;
 	}
 
-	throw exception();
+	string message = "Cannot find column ";
+	message += name;
+	throw runtime_error(message);
 }
 
 void Columns::setRowCount(int rowCount)
 {
 	BOOST_FOREACH(Column &column, *this)
-		column.setRowCount(rowCount);
+		column._setRowCount(rowCount);
 }
 
 void Columns::setColumnCount(int columnCount)
 {
+	_columnStore.reserve(columnCount);
 	for (int i = _columnStore.size(); i < columnCount; i++)
 		_columnStore.push_back(Column(_mem));
 }
@@ -56,6 +59,19 @@ void Columns::setColumnCount(int columnCount)
 Column &Columns::at(int index)
 {
 	return _columnStore.at(index);
+}
+
+void Columns::removeColumn(int index)
+{
+	int i = 0;
+	for (ColumnVector::iterator it = _columnStore.begin(); it != _columnStore.end(); ++it, ++i)
+	{
+		if (i == index)
+		{
+			_columnStore.erase(it);
+			break;
+		}
+	}
 }
 
 Columns::iterator Columns::begin()

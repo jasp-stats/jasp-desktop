@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>735</width>
-    <height>3100</height>
+    <height>3189</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1239,7 +1239,7 @@
                 <number>9</number>
                </property>
                <item row="2" column="0">
-                <widget class="QRadioButton" name="standardError">
+                <widget class="QRadioButton" name="_2standardError">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -1252,7 +1252,7 @@
                 </widget>
                </item>
                <item row="0" column="0">
-                <widget class="QRadioButton" name="confidenceInterval">
+                <widget class="QRadioButton" name="_1confidenceInterval">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -1341,8 +1341,8 @@
                </item>
               </layout>
               <zorder>widgetConfidenceIntervalInterval</zorder>
-              <zorder>confidenceInterval</zorder>
-              <zorder>standardError</zorder>
+              <zorder>_1confidenceInterval</zorder>
+              <zorder>_2standardError</zorder>
              </widget>
             </item>
             <item row="0" column="0">
@@ -1551,8 +1551,8 @@
            <property name="title">
             <string>Display</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_10">
-            <item row="2" column="0">
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="2" column="0" rowspan="2" colspan="2">
              <widget class="QWidget" name="widgetEffectSizeTypes" native="true">
               <property name="enabled">
                <bool>false</bool>
@@ -1618,6 +1618,19 @@
               </property>
              </widget>
             </item>
+            <item row="4" column="0">
+             <widget class="BoundCheckBox" name="VovkSellkeMPR">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Vovk-Sellke Maximum p-Ratio</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
@@ -1667,11 +1680,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -1694,6 +1702,11 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
    <class>boundSingleItemView</class>
    <extends>QListView</extends>
    <header>widgets/boundsingleitemview.h</header>
@@ -1704,15 +1717,15 @@
    <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
+  </customwidget>
+  <customwidget>
    <class>AnovaModelWidget</class>
    <extends>QWidget</extends>
    <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundComboBox</class>
-   <extends>QComboBox</extends>
-   <header>widgets/boundcombobox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundTableView</class>
@@ -1761,7 +1774,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>confidenceInterval</sender>
+   <sender>_1confidenceInterval</sender>
    <signal>toggled(bool)</signal>
    <receiver>widgetConfidenceIntervalInterval</receiver>
    <slot>setEnabled(bool)</slot>

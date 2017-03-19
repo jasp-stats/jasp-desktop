@@ -109,5 +109,6 @@ In order to run, you will need:
  - r-cran-effects *
  - r-cran-logspline *
  - r-cran-hypergeo *
+   r-cran-rjson
 
 Those marked with asterisks are available from Jonathon's PPA.

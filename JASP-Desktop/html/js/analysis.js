@@ -469,46 +469,60 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		var $innerElement = this.$el;
 
-		var $tempClone = $innerElement.clone();
-		this.$el.before($tempClone).detach(); 
+        var $tempClone = $innerElement.clone();
+        this.$el.before($tempClone).detach();
 
 		this.destroyViews();
 
 		this.views.push(this.viewNotes.firstNoteNoteBox);
 
-		$innerElement.empty();
+        $innerElement.empty();
 
 		var results = this.model.get("results");
-		if (results.error) {
+        if (results.error) {
 
+            var status = this.model.get("status");
 			var error = results.errorMessage
 
 			error = error.replace(/\n/g, '<br>')
 			error = error.replace(/  /g, '&nbsp;&nbsp;')
 
-			$innerElement.append('<div class="error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>' + error + '</div>')
+            $innerElement.append($tempClone.clone());
+            $innerElement.find('.analysis-error').remove();
+            $innerElement.addClass('error-state');
+            if (status === "exception") $innerElement.addClass("exception");
+            $innerElement.find(".status").removeClass("waiting");
+
+            $innerElement.append('<div class="analysis-error error-message-box ui-state-error"><span class="ui-icon ui-icon-' + (status === "exception" ? 'alert' : 'info') + '" style="float: left; margin-right: .3em;"></span>' + error + '</div>')
+            if ($innerElement.find('.jasp-display-item').length > 3) {
+                $innerElement.find('.analysis-error').addClass('analysis-error-top-max');
+            }
 
 		}
-		else if (results[".meta"]) {
+        else
+        {
+            $innerElement.removeClass("error-state");
+            if (results[".meta"]) {
 
-			var meta = results[".meta"]
+                var meta = results[".meta"]
 
-			for (var i = 0; i < meta.length; i++) {
+                for (var i = 0; i < meta.length; i++) {
 
-				var name = meta[i].name;
-				if (_.has(results, name)) {
-					var itemView = this.createChild(results[name], this.model.get("status"), meta[i])
-					if (itemView !== null) {
-						this.passUserDataToView([name], itemView);
+                    var name = meta[i].name;
+                    if (_.has(results, name)) {
+                        var itemView = this.createChild(results[name], this.model.get("status"), meta[i])
+                        if (itemView !== null) {
+                            this.passUserDataToView([name], itemView);
 
-						this.views.push(itemView);
-						this.volatileViews.push(itemView);
+                            this.views.push(itemView);
+                            this.volatileViews.push(itemView);
 
-						itemView.render();
-						$innerElement.append(itemView.$el);
-					}
-				}
-			}
+                            itemView.render();
+                            $innerElement.append(itemView.$el);
+                        }
+                    }
+                }
+            }
 
 		}
 
@@ -530,6 +544,12 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		$tempClone.replaceWith($innerElement);
 		$tempClone.empty();
+		
+		var errorBoxHeight = $innerElement.find(".analysis-error").outerHeight(true);
+		var $selectedAnalysis = $innerElement.find(".jasp-analysis");
+		if ($selectedAnalysis.height() < errorBoxHeight) {
+			$selectedAnalysis.height(errorBoxHeight);
+		}
 
 		return this;
 	},

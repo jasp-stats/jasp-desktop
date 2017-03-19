@@ -615,6 +615,18 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			list(name="sd",   title="SD",   type="number", format="sf:4;dp:3"),
 			list(name="se",   title="SE",   type="number", format="sf:4;dp:3"))
 		
+			## add credible interval values if asked for in plot
+			if (options$descriptivesPlots) {
+				interval <- 100 * options$descriptivesPlotsCredibleInterval
+				title <- paste0(interval, "% Credible Interval")
+				fields[[length(fields) + 1]] <- list(name = "lowerCI", type = "number",
+													 format = "sf:4;dp:3", title = "Lower",
+													 overTitle = title)
+				fields[[length(fields) + 1]] <- list(name = "upperCI", type = "number",
+													 format = "sf:4;dp:3", title = "Upper",
+													 overTitle = title)
+			}
+			
 		descriptives[["schema"]] <- list(fields=fields)
 		
 		descriptives.results <- list()
@@ -629,25 +641,32 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				
 				result <- try (silent = TRUE, expr = {
 					
-					n <- .clean(as.numeric(length(dataset[[ .v(variable) ]])))
-					m <- .clean(as.numeric(mean(dataset[[ .v(variable) ]], na.rm = TRUE)))
-					std <- .clean(as.numeric(sd(dataset[[ .v(variable) ]], na.rm = TRUE)))
+					variableData <- dataset[[.v(variable)]]
+					variableDataOm <- na.omit(variableData)
+
+					posteriorSummary <- .posteriorSummaryGroupMean(variable=variableDataOm, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
+					ciLower <- .clean(posteriorSummary$ciLower)
+					ciUpper <- .clean(posteriorSummary$ciUpper)
+
+					n <- .clean(as.numeric(length(variableDataOm)))
+					m <- .clean(as.numeric(mean(variableDataOm)))
+					std <- .clean(as.numeric(sd(variableDataOm)))
 					if(is.numeric(std)){
 						se <- .clean(as.numeric(std/sqrt(n)))}
 					else
 						se <- .clean(NaN)
 					
-					list(v=variable, N=n, mean=m, sd=std, se=se)
+						list(v=variable, N=n, mean=m, sd=std, se=se, lowerCI=ciLower, upperCI=ciUpper)
 				})
 				
 				if (class(result) == "try-error") {
 					
-					result <- list(v=variable, N="", mean="", sd="", se="")
+					result <- list(v=variable, N="", mean="", sd="", se="", lowerCI="", upperCI="")
 				}
 				
 			} else {
 				
-				result <- list(v=variable, N=".", mean=".", sd=".", se=".")
+				result <- list(v=variable, N=".", mean=".", sd=".", se=".", lowerCI=".", upperCI=".")
 			}
 			
 			descriptives.results[[length(descriptives.results)+1]] <- result
