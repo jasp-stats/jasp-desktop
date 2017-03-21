@@ -54,6 +54,7 @@ rm -rf app/JASPEngine.app/
 
 cp -r $R_FRAMEWORK app/JASP.app/Contents/Frameworks
 cp -r $JASP_DESKTOP/Resources/* app/JASP.app/Contents/Resources
+rm app/JASP.app/Contents/Resources/TestFiles.zip
 cp -r R           app/JASP.app/Contents/MacOS
 
 #Copy the Openssl from Qt to our Framework because OSF no longer supports tlsv1 traffic
