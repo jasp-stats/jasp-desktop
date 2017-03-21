@@ -26,3 +26,9 @@ std::string AppInfo::getShortDesc()
 	return AppInfo::name + " " + AppInfo::version.asString();
 }
 
+std::string AppInfo::getBuildYear()
+{
+	std::string datum = __DATE__;
+	return datum.substr(datum.length() - 4);
+}
+
