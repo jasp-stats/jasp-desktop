@@ -37,7 +37,10 @@
 		},
 		{
 			"name": "trainingDataManual",
-			"type": "Integer"
+            "type": "Integer",
+            "default": 80,
+            "min": 1,
+            "max": 99
 		},
 		{
 			"name": "noOfNearestNeighbours",
@@ -47,15 +50,18 @@
 		},
 		{
 			"name": "nearestNeighboursCount",
-			"type": "Integer"
+            "type": "Integer",
+            "default": 1
 		},
 		{
 			"name": "optimizedFrom",
-			"type": "Integer"
+            "type": "Integer",
+            "default": 1
 		},
 		{
 			"name": "optimizedTo",
-			"type": "Integer"
+            "type": "Integer",
+            "default": 2
 		},
 		{
 			"name": "tablePredictions",
@@ -89,6 +95,12 @@
 			"options": [ "auto", "manual", "optimized" ],
 			"default": "auto"
 		},
+        {
+            "name": "distanceParameterManual",
+            "type": "Integer",
+            "default": 2,
+            "min": 1
+        },
 		{
 			"name": "scaleEqualSD",
 			"type": "Boolean"
@@ -99,7 +111,9 @@
 		},
 		{
 			"name": "maxK",
-			"type": "Integer"
+            "type": "Integer",
+            "default": 5,
+            "min": 1
 		},
 		{
 			"name": "validationKFold",
@@ -107,7 +121,15 @@
 		},
 		{
 			"name": "noOfFolds",
-			"type": "Integer"
-		}
+            "type": "Integer",
+            "default": 4,
+            "min": 1
+        },
+        {
+            "name": "weights",
+            "type": "List",
+            "options": ["unweighted", "optimal", "triangular", "epanechnikov" , "biweight", "triweight", "cos", "inv", "gaussian", "rank" ],
+            "default": "unweighted"
+        }
 	]
 }

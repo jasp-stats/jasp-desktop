@@ -15,7 +15,9 @@
 		},
 		{
 			"name": "clusterSize",
-			"type": "Integer"
+            "type": "Integer",
+            "default": 2,
+            "min": 0
 		},
 		{
 			"name": "noOfIterations",
@@ -35,27 +37,39 @@
 		},
 		{
 			"name": "optimizedFrom",
-			"type": "Integer"
+            "type": "Integer",
+            "default": 2,
+            "min": 1
 		},
 		{
 			"name": "optimizedTo",
-			"type": "Integer"
+            "type": "Integer",
+            "default": 5,
+            "min": 4
 		},
 		{
 			"name": "robustFrom",
-			"type": "Integer"
+            "type": "Integer",
+            "default": 2,
+            "min": 1
 		},
 		{
 			"name": "robustTo",
-			"type": "Integer"
+            "type": "Integer",
+            "default": 3,
+            "min": 1
 		},
 		{
 			"name": "iterationsCount",
-			"type": "Integer"
+            "type": "Integer",
+            "default": 25,
+            "min": 1
 		},
 		{
 			"name": "randomSetCount",
-			"type": "Integer"
+            "type": "Integer",
+            "default": 15,
+            "min": 1
 		},
 		{
 			"name": "plot2dCluster",
@@ -119,8 +133,9 @@
 		},
 		{
 			"name": "criterion",
-			"options": [ "silhoutteLength" ],
-			"type": "List"
+            "options": [ "silhoutteLength", "Multiasw", "Calinski-Harabasz"],
+            "type": "List",
+            "default": "silhoutteLength"
 		}
 	]
 }
