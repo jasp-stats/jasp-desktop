@@ -15,11 +15,569 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-MLRegressionKNN <- function (dataset = NULL, options, perform = "run", callback = function(...) list(status = "ok"), ...) {
+MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+	
+	# standard perform is run
+	perform <- "run"
+	
+	# Read variables
+	predictors <- unlist(options['predictors'])
+	if (length(options['target']) > 0){
+		target <- unlist(options['target'])
+	}
+	variables.to.read <- c(predictors, target)
+	variables.to.read <- variables.to.read[variables.to.read != ""]
+	
+	if (is.null(dataset)) {
+		
+		if (perform == "run") {
+			
+			dataset <- .readDataSetToEnd(columns.as.numeric=variables.to.read)
+			
+		} else {
+			
+			dataset <- .readDataSetHeader(dataset, columns.as.numeric=variables.to.read)
+		}
+		
+	} else {
+		
+		dataset <- .vdf(columns.as.numeric=variables.to.read)
+	}
+	
+	# Set a seed
+	set.seed(1)
+	
+	# Set the analysis options from the options
+	opt <- .setOptions(options,dataset)
+	
+	# code variable names into base64
+	if(length(predictors[predictors!='']) > 0){
+		predictors <- .v(predictors)
+	}
+	if(length(target[target!='']) > 0){
+		target <- .v(target)
+	}
+	
+	# Create formula for the model
+	formula <- .makeformula(predictors,target)
+	
+	# Do the analysis
+	if(length(predictors[predictors!='']) > 0 & length(target[target!='']) > 0 & opt[['ntrain']] > 0){
+		
+		train.index <- sample(c(TRUE,FALSE),nrow(dataset),replace = TRUE,prob = c(opt[['ntrain']]*0.01,1-(opt[['ntrain']]*0.01)))
+		train <- dataset[which(train.index == TRUE), ]
+		test <- dataset[which(train.index == FALSE), ]
+		
+		res <- .DoKNNregression(dataset,options,opt,train,test,train.index,formula,target)
+		
+	}
+	
+	# create the results bundle
+	results <- list()
+	
+	# Provide the Meta to the results bundle
+	meta <- list(list(name = 'KNN regression', type = 'title'),
+				 list(name = 'Descriptions', type = 'table'),
+				 list(name = 'Predictions', type = 'table'),
+				 list(name = 'Weights', type = 'table'),
+				 list(name = 'Distances', type = 'table'),
+				 list(name = 'Plot', type = 'image'))
+	results[['.meta']] <- meta
+	
+	results[['title']] <- 'K-Nearest Neighbors Regression'
+	
+	results[['Descriptions']] <- .DescriptionsTable(predictors, target, opt, options, res, dataset, formula)
+	
+	# Create predictions table
+	if(options[['tablePredictions']]){
+		
+		results[['Predictions']] <- .PredictionsTable(options, opt, predictors, target, res)
+		
+	}
+	
+	# Create distances table
+	if(options[['tableDistances']]){
+		
+		results[['Distances']] <- .DistancesTable(predictors,target, opt, options, res)
+		
+	}
+	
+	# Create weights table
+	if(options[['tableWeights']]){
+		
+		results[['Weights']] <- .WeightsTable(predictors, target, opt, options, res)
+		
+	}
+	
+	# Create the Error vs K plot
+	if(options[['plotErrorVsK']]){
+		
+		if(options[['noOfNearestNeighbours']] == 'optimized' | options[['validationLeaveOneOut']]){
+		
+		results[['Plot']] <- .PlotErrorVsK(res,opt,options,dataset,formula)
+		
+		}
+		
+	}
+	
+	return(list(results = results, status = "complete"))
+	
+	
+}
 
-	return (list(
-			results = NULL,
-			status = "complete"
-		)
+.setOptions <- function(options,dataset){
+	opt <- list()
+	# set K
+	ifelse(test = options[['noOfNearestNeighbours']] == 'auto' & nrow(dataset) <= 1000,
+		   yes = opt[['NN']] <- 1,
+		   no = ifelse(test = options[['noOfNearestNeighbours']] == 'auto' & nrow(dataset) < 20000,
+		   			yes = opt[['NN']] <- 2*round(((nrow(dataset)*0.001)+1)/2)-1, 
+		   			no = ifelse(test = options[['noOfNearestNeighbours']] == 'auto' & nrow(dataset) > 21000, 
+		   						yes = opt[['NN']] <- 21,
+		   						no = opt[['NN']] <- 0)))
+	if (options[['noOfNearestNeighbours']] == 'manual'){
+		opt[['NN']] <- options[['nearestNeighboursCount']]
+	} else if (options[['noOfNearestNeighbours']] == 'optimized'){
+		opt[['NN']] <- options[['optimizedFrom']]:options[['optimizedTo']]
+	}
+	# set training data
+	if(options[['percentageTrainingData']] == 'auto'){
+		opt[['ntrain']] <- 80
+	} else if(options[['percentageTrainingData']] == 'manual'){
+		opt[['ntrain']] <- options[['trainingDataManual']]
+	}
+	# set distance parameter
+	if(options[['distanceParameter']] == 'auto'){
+		opt[['distance']] <- 2 
+	} else if (options[['distanceParameter']] == 'manual'){
+		opt[['distance']] <- options[['distanceParameterManual']]
+	} else if (options[['distanceParameter']] == 'optimized'){
+		opt[['distance']] <- 2
+	}
+	# set weights
+	if(options[['weights']]=='unweighted'){
+		opt[['weights']] <- 'rectangular'
+	} else {
+		opt[['weights']] <- options[['weights']]
+	}
+	# set NA action
+	if(options[['naAction']] == 'deleteListwise'){
+		opt[['NA']] <- na.omit
+	} else if (options[['naAction']] == 'predict'){
+		opt[['NA']] <- napredict 							# still has to be looked at
+	}
+	return(opt)
+}
+
+.makeformula <- function(predictors,target){
+	formula <- paste(target, "~", paste(predictors, collapse=" + "))
+	return(formula)
+}
+
+.DoKNNregression <- function(dataset,options,opt,train,test,train.index,formula,target){
+	
+	if(options[['noOfNearestNeighbours']] == 'auto' | options[['noOfNearestNeighbours']] == 'manual'){
+		
+		res <- .OneKregression(dataset,options,opt,train,test,train.index,formula,target)
+		
+	} else if (options[['noOfNearestNeighbours']] == 'optimized' & options[['optimizedFrom']] > 0){
+		
+		res <- .OptimizeKregression(dataset,options,opt,train,test,train.index,formula,target)
+		
+	} else {
+		
+		res <- NULL
+		
+	}
+	
+	return(res)
+	
+}
+
+.OneKregression <- function(dataset,options,opt,train,test,train.index,formula,target){
+	install.packages('kknn', repos="http://cran.rstudio.com/")
+	library(kknn)
+	knn.fit <- kknn::kknn(formula = formula,
+						  train = train,
+						  test = test,
+						  k = opt[['NN']],
+						  distance = opt[['distance']],
+						  kernel = opt[['weights']],
+						  na.action = opt[['NA']],
+						  scale = options[['scaleEqualSD']])
+	res <- list(
+		'predictions'=NULL,
+		'RMSE'=NULL,
+		'K' = NULL
 	)
+	y <- dataset[which(train.index == FALSE),target]
+	res[['predictions']] <- data.frame(
+		'Observation' = 1:nrow(test),
+		'Real' = y,
+		'Prediction'= knn.fit$fitted.values)
+	res[['RMSE']] <- mean((knn.fit$fitted.values - y)^2)^0.5
+	res[['Optimal.K']] <- opt[['NN']]
+	res[['Weights']] <- as.matrix(knn.fit$W)
+	res[['Distances']] <- as.matrix(knn.fit$D)
+	return(res)
+}
+
+.OptimizeKregression <- function(dataset,options,opt,train,test,train.index,formula,target){
+	install.packages('kknn', repos="http://cran.rstudio.com/")
+	library(kknn)
+	RMSE <- seq_along(opt[['NN']])
+	count <- 1
+	for( i in opt[['NN']]){
+		knn.fit <- kknn::kknn(formula = formula,
+							  train = train,
+							  test = test,
+							  k = i,
+							  distance = opt[['distance']],
+							  kernel = opt[['weights']],
+							  na.action = opt[['NA']],
+							  scale = options[['scaleEqualSD']])
+		y <- dataset[which(train.index == FALSE),target]
+		RMSE[count] <- mean((knn.fit$fitted.values - y)^2)^0.5
+		count <- count +1
+	}
+	knn.fit <- kknn::kknn(formula = formula,
+						  train = train,
+						  test = test,
+						  k = opt[['NN']][which.min(RMSE)],
+						  distance = opt[['distance']],
+						  kernel = opt[['weights']],
+						  na.action = opt[['NA']],
+						  scale = options[['scaleEqualSD']])
+	res <- list(
+		'predictions' = NULL,
+		'RMSE' = NULL,
+		'Optimal.K' = NULL,
+		'Minimal.RMSE' = NULL
+	)
+	res[['predictions']] <- data.frame(
+		'Observation' = 1:nrow(test),
+		'Real' = y,
+		'Prediction'= knn.fit$fitted.values)
+	res[['Weights']] <- as.matrix(knn.fit$W)
+	res[['Distances']] <- as.matrix(knn.fit$D)
+	res[['RMSE']] <- RMSE
+	res[['Minimal.RMSE']] <- min(RMSE)
+	res[['Optimal.K']] <- opt[['NN']][which.min(RMSE)]
+	res[['range']] <- opt[['NN']]
+	return(res)
+}
+
+.PlotKoptimizedRegression <- function(res,opt){
+	plot(opt[['NN']],
+		 res[['RMSE']],
+		 type = 'b',
+		 xlab = '',
+		 ylab = '',
+		 las = 1,
+		 main = '',
+		 bty = 'n')
+	mtext(expression('RMSE'), side = 2, line = 2, cex = 1.5, font = 2)
+	mtext("K", side = 1, line = 3, cex = 1.5, font = 2)
+	points(opt[['NN']][which.min(res[['RMSE']])],
+		   min(res[['RMSE']]),
+		   pch = 19,
+		   col = 'red')
+	
+}
+
+.DescriptionsTable <- function(predictors, target, opt, options, res, dataset, formula){
+	
+	### descriptions table
+	###
+	
+	fields_descriptions <- list(
+		list(name = 'model', title = '', type = 'string'),
+		list(name = 'nn', title = 'No. Nearest Neighbors', type = 'integer'),
+		list(name = 'predictors', title = 'No. Predictors', type = 'integer'),
+		list(name = 'rmse', title = 'RMSE', type = 'number', format = 'dp:3')
+	)
+	
+	data_descriptions <- list()
+	
+	if(length(predictors[predictors!='']) > 0 & length(target[target!='']) > 0 & opt[['ntrain']] > 0){
+		
+		if(options[['noOfNearestNeighbours']] == 'auto' | options[['noOfNearestNeighbours']] == 'manual'){
+			
+			data_descriptions[[1]] <- list(model = 'k-NN model', nn = opt[['NN']],predictors  = length(predictors), rmse = res[['RMSE']])
+			
+		} else if (options[['noOfNearestNeighbours']] == 'optimized'){
+			
+			if(options[['optimizedFrom']] > 0){
+				
+				data_descriptions[[1]] <- list(model = 'kNN model', nn = res[['Optimal.K']],predictors  = length(predictors), rmse = res[['Minimal.RMSE']])
+				
+			} else if (options[['optimizedFrom']] == 0){
+				
+				data_descriptions[[1]] <- list(model = 'kNN model', nn = 0,predictors  = length(predictors), rmse = 0)
+				
+			}
+			
+		}
+		
+	} else {
+		
+		data_descriptions[[1]] <- list(model = 'kNN model', nn = opt[['NN']],predictors  = length(predictors), rmse = 0)
+		
+	}
+
+	if(options[['validationLeaveOneOut']] & options[['maxK']] > 0){
+		result <- .LOOCVregression(dataset,options,opt,formula)
+		data_descriptions[[length(data_descriptions)+1]] <- list(model = 'Leave one out CV', nn = result[['OptimalK']], predictors = length(predictors), rmse = sqrt(result[['Minimal.MSE']]))
+	}
+	
+	if(options[['validationKFold']] & options[['noOfFolds']] > 0){
+		result_fold <- .Kfoldregression(dataset,options,opt,formula,res)	
+		data_descriptions[[length(data_descriptions)+1]] <- list(model = 'k-fold CV', nn = result_fold[['OptimalK']], predictors = length(predictors), rmse = result_fold[['RMSE']])
+	}
+
+	return(list(title = 'Evaluation',
+				schema = list(fields = fields_descriptions),
+				data = data_descriptions))
+	
+}
+
+.PredictionsTable <- function(options, opt, predictors, target, res){
+	
+	fields <- list(
+		list(name="number", title="Obs. number", type="integer"),
+		list(name="real", title="Observed", type="number",format = 'dp:2'),
+		list(name='predicted',title = 'Predicted', type = 'number', format = 'dp:2')
+	)
+	if(options[['tablePredictionsConfidence']]){
+		fields[[length(fields)+1]] <- list(name ='confidence',title = 'Confidence', type = 'number', format = 'dp:2')
+	}
+	
+	if(length(predictors[predictors!='']) > 0 & length(target[target!='']) > 0 & opt[['ntrain']] > 0){
+		
+		data <- list()
+		
+		if(options[['tablePredictionsConfidence']]){
+			
+			for(i in 1:nrow(res[['predictions']])){
+				
+				data[[length(data)+1]] <- list(number = res[['predictions']][i,1],
+											   real = res[['predictions']][i,2],
+											   predicted = res[['predictions']][i,3],
+											   confidence = runif(1,min = 0,max = 1),
+											   .isMainRow  = FALSE)
+				
+			}
+			
+		} else {
+			
+			for(i in 1:nrow(res[['predictions']])){
+				
+				data[[length(data)+1]] <- list(number = res[['predictions']][i,1],
+											   real = res[['predictions']][i,2],
+											   predicted = res[['predictions']][i,3],
+											   .isMainRow  = FALSE)
+				
+			}
+			
+		}
+		
+	}
+	
+	return(list(title = 'Predictions',
+				schema = list(fields = fields),
+				data = data))
+	
+}
+
+.DistancesTable <- function(predictors,target, opt, options, res){
+	
+	fields_distances <- list(
+		list(name="number", title="Obs. number", type="integer")
+	)
+	for(i in 1:res[['Optimal.K']]){
+		fields_distances[[length(fields_distances)+1]] <- list(name =paste('distance',i,sep = ''),title = paste('Distance',i,sep = ' '), type = 'number', format = 'dp:2')
+	}
+	
+	if(length(predictors[predictors!='']) > 0 & length(target[target!='']) > 0 & opt[['ntrain']] > 0){
+		
+		data_distances <- list()
+		
+		for(i in 1:nrow(res[['Distances']])){	
+			data_distances[[i]] <- list(number = i)
+			
+			if(options[['noOfNearestNeighbours']] == 'auto' | options[['noOfNearestNeighbours']] == 'manual'){
+				
+				for(k in 1:opt[['NN']]){
+					
+					data_distances[[i]][[paste('distance',k,sep = '')]] <- res[['Distances']][i,k]
+					
+				} 
+			} else if (options[['noOfNearestNeighbours']] == 'optimized'){
+				
+				for(k in 1:res[['Optimal.K']]){
+					
+					data_distances[[i]][[paste('distance',k,sep = '')]] <- res[['Distances']][i,k]
+					
+				} 
+				
+			}
+			
+			data_distances[[i]][['.isMainRow']] <- FALSE
+			
+		}
+		
+	}
+	
+	footnotes_distances <- .newFootnotes()
+	if(opt[['distance']]==1){
+	.addFootnote(footnotes_distances,paste('Distances shown are the Manhattan distances'))
+	} else if (opt[['distance']] == 2){
+		.addFootnote(footnotes_distances,paste('Distances shown are the Euclidian distances'))	
+	}
+	footnotes_distances <- as.list(footnotes_distances)
+	
+	return(list(title = 'Distances',
+				schema = list(fields = fields_distances),
+				data = data_distances,
+				footnotes = footnotes_distances))
+	
+}
+
+.WeightsTable <- function(predictors, target, opt, options, res){
+	
+	fields_weights <- list(
+		list(name="number", title="Obs. number", type="integer")
+	)
+	for(i in 1:res[['Optimal.K']]){
+		
+		fields_weights[[length(fields_weights)+1]] <- list(name =paste('weight',i,sep = ''),title = paste('Weight',i,sep = ' '), type = 'number', format = 'dp:2')
+		
+	}
+	
+	if(length(predictors[predictors!='']) > 0 & length(target[target!='']) > 0 & opt[['ntrain']] > 0){
+		
+		data_weights <- list()
+		
+		for(i in 1:nrow(res[['Weights']])){	
+			
+			data_weights[[i]] <- list(number = i)
+			
+			if(options[['noOfNearestNeighbours']] == 'auto' | options[['noOfNearestNeighbours']] == 'manual'){
+				
+				for(k in 1:opt[['NN']]){
+					
+					data_weights[[i]][[paste('weight',k,sep = '')]] <- res[['Weights']][i,k]
+					
+				}
+				
+			} else if (options[['noOfNearestNeighbours']] == 'optimized'){
+				
+				for(k in 1:res[['Optimal.K']]){
+					
+					data_weights[[i]][[paste('weight',k,sep = '')]] <- res[['Weights']][i,k]
+					
+				}
+				
+			}
+			
+			data_weights[[i]][['.isMainRow']] <- FALSE
+			
+		}	
+		
+	}
+	
+	footnotes_weights <- .newFootnotes()
+	.addFootnote(footnotes_weights,paste('Weights are calculated using the',opt[['weights']], 'weighting scheme.'))
+	footnotes_weights <- as.list(footnotes_weights)
+	
+	return(list(title = 'Weights',
+				schema = list(fields = fields_weights),
+				data = data_weights,
+				footnotes = footnotes_weights))
+	
+}
+
+.PlotErrorVsK <- function(res,opt,options,dataset,formula){
+	
+	if(options[['noOfNearestNeighbours']] == 'optimized' & options[['optimizedFrom']] > 0){
+	
+	image <- .beginSaveImage(640,480)
+	.PlotKoptimizedRegression(res,opt)
+	content <- .endSaveImage(image)
+	
+	} else if (options[['validationLeaveOneOut']] & options[['maxK']] > 0){
+		
+		image <- .beginSaveImage(640,480)
+		.PlotLOOCVregression(.LOOCVregression(dataset,options,opt,formula))
+		content <- .endSaveImage(image)
+		
+	}
+	
+	return(list(title = 'Error vs K',
+				width = 640,
+				height = 480,
+				data = content))
+	
+}
+
+.LOOCVregression <- function(dataset,options,opt,formula){
+	install.packages('kknn', repos="http://cran.rstudio.com/")
+	library(kknn)
+	knn.fit <- kknn::train.kknn(formula = formula,
+								data = dataset,
+								kmax = options[['maxK']],
+								distance = opt[['distance']],
+								kernel = opt[['weights']],
+								na.action = opt[['NA']])
+	res <- list(
+		'MSE' = NULL,
+		'OptimalK' = NULL,
+		'optimal.weights' = NULL,
+		'Minimal.MSE' = NULL
+	)
+	res[['MSE']] <- as.numeric(knn.fit$MEAN.SQU)
+	res[['OptimalK']] <- knn.fit$best.parameters[['k']]
+	res[['optimal.weights']] <- knn.fit$best.parameters[['kernel']]
+	res[['Minimal.MSE']] <- min(res[['MSE']])
+	return(res)
+}
+
+.PlotLOOCVregression <- function(res){
+	plot(seq_along(res[['MSE']]), 
+		 sqrt(res[['MSE']]), 
+		 xlab="", 
+		 main = '',
+		 type = 'b',
+		 las = 1,
+		 ylab = '',
+		 bty = 'n',
+		 pch = 19)
+	mtext(expression('RMSE'), side = 2, line = 2, cex = 1.5, font = 2)
+	mtext("K", side = 1, line = 3, cex = 1.5, font = 2)
+	points(seq_along(res[['MSE']])[which.min(sqrt(res[['MSE']]))],
+		   min(sqrt(res[['MSE']])),
+		   pch = 19,
+		   col = 'red')
+}
+
+.Kfoldregression <- function(dataset,options,opt,formula,res){
+	knn.fit <- kknn::cv.kknn(formula = formula,
+							 data = dataset,
+							 distance = opt[['distance']],
+							 kernel = opt[['weights']],
+							 na.action = opt[['NA']],
+							 kcv = options[['noOfFolds']],
+							 k = res[['Optimal.K']])
+	RMSE <- mean((knn.fit[[1]][,1] - knn.fit[[1]][,2])^2)^0.5
+	result <- list(
+		'Predictions' = NULL,
+		'RMSE' = NULL
+	)
+	result[['Predictions']] <- data.frame(
+		'Observation' = 1:nrow(dataset),
+		'True' = as.numeric(knn.fit[[1]][,1]),
+		'Prediction' = as.numeric(knn.fit[[1]][,2]))
+	result[['RMSE']] <- RMSE
+	result[['OptimalK']] <- res[['Optimal.K']]
+	return(result)
 }

@@ -156,6 +156,16 @@
                 <string>Silhoutte length</string>
                </property>
               </item>
+              <item>
+               <property name="text">
+                <string>Multi ASW</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Calinski-Harabasz</string>
+               </property>
+              </item>
              </widget>
             </item>
             <item row="0" column="0">
@@ -534,64 +544,6 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0" colspan="3">
-          <widget class="BoundCheckBox" name="plotPCACluster">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>PCA cluster plot</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0" colspan="3">
-          <widget class="BoundCheckBox" name="plotCriterionVsClusters">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Criterion vs clusters</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1" colspan="3">
-          <widget class="BoundCheckBox" name="plot2dClusterCentroids">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Show distances to centroids</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="1">
-          <widget class="BoundCheckBox" name="plotPCAClusterSquares">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Within sum of squares vs clusters</string>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="0" colspan="3">
           <widget class="BoundCheckBox" name="plot2dCluster">
            <property name="sizePolicy">
@@ -621,6 +573,67 @@
            </property>
            <property name="text">
             <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" colspan="3">
+          <widget class="BoundCheckBox" name="plotCriterionVsClusters">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Criterion vs clusters</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1" colspan="3">
+          <widget class="BoundCheckBox" name="plot2dClusterCentroids">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Show distances to centroids</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0" colspan="3">
+          <widget class="BoundCheckBox" name="plotPCACluster">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>PCA cluster plot</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="BoundCheckBox" name="plotPCAClusterSquares">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Within sum of squares vs clusters</string>
            </property>
           </widget>
          </item>
@@ -1037,18 +1050,34 @@
    </hints>
   </connection>
   <connection>
-   <sender>plotPCACluster</sender>
-   <signal>clicked(bool)</signal>
+   <sender>optimized_1</sender>
+   <signal>toggled(bool)</signal>
    <receiver>plotPCAClusterSquares</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>430</x>
-     <y>271</y>
+     <x>76</x>
+     <y>310</y>
     </hint>
     <hint type="destinationlabel">
-     <x>503</x>
-     <y>295</y>
+     <x>403</x>
+     <y>342</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>robust_1</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>plotCriterionVsClusters</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>76</x>
+     <y>336</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>354</x>
+     <y>296</y>
     </hint>
    </hints>
   </connection>
