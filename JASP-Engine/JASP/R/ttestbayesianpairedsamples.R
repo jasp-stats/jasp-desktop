@@ -495,6 +495,15 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 				} else {
 					
+					# error handling
+					errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+										 all.target = c(pair[[1]],pair[[2]]),
+										 observations.amount = '< 2')
+					
+					if (!identical(errors, FALSE)) {
+						errorMessage <- errors$message
+					}
+					
 					result <- try (silent = TRUE, expr = {
 						
 						subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])) )
@@ -546,26 +555,26 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 					if (class(result) == "try-error") {
 						
-						errorMessage <- .extractErrorMessage(result)
-						
-						if (errorMessage == "x or y must not contain missing or infinite values.") {
-							
-							errorMessage <- paste("Bayes factor is undefined - one or both of the variables contain infinity")
-							
-						} else if (errorMessage == "data are essentially constant") {
-							
-							errorMessage <- paste("Bayes factor is undefined - the sample contains all the same value (zero variance)")
-							
-						} else if (errorMessage == "Insufficient sample size for t analysis." || errorMessage == "not enough observations") {
-							
-							errorMessage <- "Bayes factor is undefined - one or both of the variables has too few observations (possibly only after missing values are excluded)"	
-						}
-						
+						# errorMessage <- .extractErrorMessage(result)
+						# 
+						# if (errorMessage == "x or y must not contain missing or infinite values.") {
+						# 	
+						# 	errorMessage <- paste("Bayes factor is undefined - one or both of the variables contain infinity")
+						# 	
+						# } else if (errorMessage == "data are essentially constant") {
+						# 	
+						# 	errorMessage <- paste("Bayes factor is undefined - the sample contains all the same value (zero variance)")
+						# 	
+						# } else if (errorMessage == "Insufficient sample size for t analysis." || errorMessage == "not enough observations") {
+						# 	
+						# 	errorMessage <- "Bayes factor is undefined - one or both of the variables has too few observations (possibly only after missing values are excluded)"	
+						# }
+						# 
 						pair.statuses[[i]] <- list(ready=FALSE, error=TRUE, errorMessage=errorMessage, unplotable=TRUE, unplotableMessage=errorMessage)
-						
+						# 
 						index <- .addFootnote(footnotes, errorMessage)
 						
-						errorFootnotes[i] <- errorMessage
+						# errorFootnotes[i] <- errorMessage
 						
 						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
 						
@@ -755,8 +764,16 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						
 					if (class(p) == "try-error") {
 						
-						errorMessageTmp <- .extractErrorMessage(p)
-						errorMessage <- paste0("Plotting not possible: ", errorMessageTmp)
+						errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+											 all.target = c(c1,c2),
+											 observations.amount = '< 2')
+
+						if (!identical(errors, FALSE)) {
+							errorMessage <- errors$message
+						}
+						
+						# errorMessageTmp <- .extractErrorMessage(p)
+						# errorMessage <- paste0("Plotting not possible: ", errorMessageTmp)
 						plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
 					}
 					

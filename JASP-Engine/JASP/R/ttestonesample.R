@@ -37,6 +37,13 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	} else {
 		dataset <- init[["dataset"]]
 	}
+	
+	if (length(options$variables) != 0) {
+	errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations','infinity'),
+						 all.target = options$variables,
+						 observations.amount = '< 2',
+						 exitAnalysisIfErrors = TRUE)
+	}
 
 	## call the specific one-sample T-Test functions
 	results[["ttest"]] <- .ttestOneSample(dataset, options, perform)
@@ -212,6 +219,10 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 
 	for (variable in variables) {
 
+		errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+							 all.target = variable,
+							 observations.amount = '< 2')
+
 		for (test in seq_len(length(whichTests))) {
 
 			currentTest <- whichTests[[test]]
@@ -220,6 +231,10 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 			if (!currentTest) {
 				next
 			}
+
+			if (!identical(errors, FALSE)) {
+				errorMessage <- errors$message
+			} 
 
 			if (perform == "run" && length(options$variables) > 0) {
 
@@ -263,24 +278,7 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 
 				## if there has been an error, find out which and log as a footnote
 				if (class(row) == "try-error") {
-
-					errorMessage <- .extractErrorMessage(row)
-
-					if (errorMessage == "missing value where TRUE/FALSE needed") {
-
-						err <- "t-statistic is undefined - the sample contains infinity"
-
-					} else if (errorMessage == "data are essentially constant") {
-
-						err <- paste0("t-statistic is undefined - the sample ",
-									  "contains all the same value (zero variance)")
-
-					} else if (errorMessage == "not enough 'x' observations") {
-
-						err <- "t-statistic is undefined - sample contains only one value"
-					}
-
-					index <- .addFootnote(footnotes, err)
+				index <- .addFootnote(footnotes, errorMessage)
 					row.footnotes <- list(t = list(index))
 
 					row <- list(v = variable, df = "", p = "", m = "",
@@ -307,7 +305,7 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 
 			ttest.rows[[rowNo]] <- row
 			rowNo <- rowNo + 1
-		}
+			}
 	}
 
 	ttest[["data"]] <- ttest.rows
@@ -487,8 +485,19 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	for (i in .indices(options$variables)) {
 
 		var <- options$variables[[i]]
-
 		descriptivesPlot <- list("title" = var)
+		#### new error handling
+		errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+							 all.target = var,
+							 observations.amount = '< 2')
+		
+		if (!identical(errors, FALSE)) {
+			errorMessage <- errors$message
+			
+			descriptivesPlot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+		} 
+		
+		####
 		descriptivesPlot[["width"]] <- options$plotWidth
 		descriptivesPlot[["height"]] <- options$plotHeight
 		descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
