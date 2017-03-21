@@ -36,7 +36,14 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		}
 	}
 	
+
 	# MarkUp: General: Make container for all the results
+	if (length(options$variables) != 0 && options$groupingVariable != '') {
+		errors <- .hasErrors(dataset, perform, type = 'factorLevels',
+							 factorLevels.target = options$groupingVariable, factorLevels.amount = '!= 2',
+							 exitAnalysisIfErrors = TRUE)
+	}
+	
 	results <- list()
 	
 	# MarkUp: General: Make container for the structure 
@@ -790,6 +797,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	    ttest[["status"]] <- "complete"
 	}
 		
+
 	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
 	    if (length(levels) != 2) {
 	        ttest[["error"]] <- list(errorType="badData", errorMessage="The Grouping Variable must have 2 levels")
@@ -805,6 +813,36 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	            # TODO: Add .hasErrors
 	            
 	            subDataSet <- subset(dataset, select=c(.v(variable), .v(options$groupingVariable)))
+	            
+		if (length(levels) != 2) {
+			
+			ttest[["error"]] <- list(errorType="badData", errorMessage="The Grouping Variable must have 2 levels")
+			
+			status <- rep("error", length(options$variables))
+			plottingError <- rep("Plotting is not possible: The Grouping Variable must have 2 levels", length(options$variables))
+			
+		} else {
+			
+			rowNo <- 1
+			
+			i <- 1
+			
+			
+			for (variable in options[["variables"]]) {
+				
+				errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+									 all.target = variable,
+									 observations.amount = '< 2')
+				
+				if (!identical(errors, FALSE)) {
+					errorMessage <- errors$message
+				}
+				
+				
+				# BayesFactor package doesn't handle NAs, so it is necessary to exclude them
+				
+				subDataSet <- subset(dataset, select=c(.v(variable), .v(options$groupingVariable)))
+
 				subDataSet <- na.omit(subDataSet)
 				
 				gs <- base::levels(levels)
@@ -870,6 +908,16 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				        bf    <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size)[1]
 				        bf.raw <- exp(as.numeric(bf@bayesFactor$bf))
 				        N1 <- length(group2)
+					
+					result <- try (silent=FALSE, expr= {
+						
+						
+						bf    <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size)[1]
+						
+						bf.raw <- exp(as.numeric(bf@bayesFactor$bf))
+						
+						N1 <- length(group2)
+
 						N2 <- length(group1)
 						
 						# sdPooled <- sqrt(((N1 - 1) * var(group2) + (N2 - 1) * var(group1)) / (N1 + N2))
@@ -1012,6 +1060,39 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 							status[rowNo] <- "error"
 							plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - one or both levels of the dependent contain too few observations"
 						}
+					if (class(result) == "try-error") {
+						
+						# errorMessage <- .extractErrorMessage(result)
+						# 
+						# plottingError[rowNo] <- paste("Plotting is not possible:", errorMessage, sep=" ")
+						# 
+						# if (errorMessage == "Dependent variable must not contain missing or infinite values.") {
+						# 	
+						# 	errorMessage <- "Bayes factor is undefined - the dependent variable contains infinity"
+						# 	status[rowNo] <- "error"
+						# 	plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - the dependent variable contains infinity"
+						# 	
+						# } else if (errorMessage == "grouping factor must have exactly 2 levels") {
+						# 	
+						# 	# We know that the grouping factor *does* have two levels, because we've checked this earlier on
+						# 	# This error means that all of one factor has been excluded because of missing values in the dependent
+						# 	
+						# 	errorMessage <- "Bayes factor is undefined - the grouping variable contains less than two levels once missing values in the dependent are excluded"
+						# 	status[rowNo] <- "error"
+						# 	plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - the grouping variable contains less than two levels once missing values in the dependent are excluded"
+						# 	
+						# } else if (errorMessage == "data are essentially constant") {
+						# 	
+						# 	errorMessage <- "Bayes factor is undefined - one or both levels of the dependent contain all the same value (zero variance)"
+						# 	status[rowNo] <- "error"
+						# 	plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - one or both levels of the dependent contain all the same value (zero variance)"
+						# 	
+						# } else if (errorMessage == "Insufficient sample size for t analysis." || errorMessage == "not enough observations") {
+						# 	
+						# 	errorMessage <- "Bayes factor is undefined - one or both levels of the dependent contain too few observations"
+						# 	status[rowNo] <- "error"
+						# 	plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - one or both levels of the dependent contain too few observations"
+						# }
 						
 						index <- .addFootnote(footnotes, errorMessage)
 						errorFootnotes[rowNo] <- errorMessage

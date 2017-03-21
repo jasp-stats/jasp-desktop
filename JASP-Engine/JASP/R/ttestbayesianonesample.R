@@ -47,7 +47,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	}
 	
 	results <- list()
-	
 	meta <- list()
 
 	meta[[1]] <- list(name="ttest", type="table")
@@ -68,7 +67,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	
 	ttest[["citation"]] <- list(
 		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
-		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
+		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225-237.")
 	
 	bf.type <- options$bayesFactorType
 	
@@ -551,6 +550,10 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		for (variable in options[["variables"]])
 		{
 			
+			errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+								 all.target = variable,
+								 observations.amount = '< 2')
+			
 			if (!is.null(state) && variable %in% state$options$variables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 				&& diff$bayesFactorType == FALSE && diff$testValue == FALSE && diff$missingValues == FALSE)))) {
 				
@@ -650,34 +653,11 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					list(Variable=variable, BF=BF, error=error)
 				})
 				
+				if (!identical(errors, FALSE)) {
+					errorMessage <- errors$message
+				} 
 				
 				if (class(result) == "try-error") {
-					
-					errorMessage <- .extractErrorMessage(result)
-					
-					if (errorMessage == "x or y must not contain missing or infinite values.") {
-						
-						errorMessage <- paste("Bayes factor is undefined - the sample contains infinity")
-						
-						status[i] <- "error"
-						plottingError[i] <- "Plotting is not possible: Bayes factor is undefined - the sample contains infinity"
-						
-						#} else if (errorMessage == "data are essentially constant") {
-						#				
-						#	errorMessage <- paste("Bayes factor is undefined - the sample contains all the same value (zero variance)")
-						#
-					} else if (errorMessage == "Insufficient sample size for t analysis." || errorMessage == "not enough observations") {
-						
-						errorMessage <- "Bayes factor is undefined - too few observations"	
-						
-						status[i] <- "error"
-						plottingError[i] <- "Plotting is not possible: Bayes factor is undefined - the sample has too few observations"
-					}
-					
-					status[i] <- "error"
-					plottingError[i] <- paste("Plotting is not possible:", errorMessage)
-					
-					errorFootnotes[i] <- errorMessage
 					
 					index <- .addFootnote(footnotes, errorMessage)
 					
@@ -734,6 +714,14 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		
 		for (variable in options[["variables"]])
 		{	
+			######################3
+			errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+								 all.target = variable,
+								 observations.amount = '< 2')
+			
+			if (!identical(errors, FALSE)) {
+				errorMessage <- errors$message
+			} 
 			
 			variableData <- dataset[[ .v(variable) ]]
 			variableData <- variableData[ ! is.na(variableData) ]
@@ -781,8 +769,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 						
 					if (class(p) == "try-error") {
 						
-						errorMessageTmp <- .extractErrorMessage(p)
-						errorMessage <- paste0("Plotting not possible: ", errorMessageTmp)
+						#errorMessageTmp <- .extractErrorMessage(p)
+						#errorMessage <- paste0("Plotting not possible: ", errorMessageTmp)
 						plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
 					}
 					
