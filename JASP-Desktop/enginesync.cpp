@@ -414,8 +414,10 @@ void EngineSync::startSlaveProcess(int no)
 #endif
 
 	QProcess *slave = new QProcess(this);
+	slave->setProcessChannelMode(QProcess::ForwardedChannels);
 	slave->setProcessEnvironment(env);
 	slave->start(engineExe, args);
+
 
 	_slaveProcesses.push_back(slave);
 

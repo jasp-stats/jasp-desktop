@@ -15,19 +15,35 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-.messages <- function(type, id) {
-  messages <- list()
-  # error
-  messages$error$opening <- "The following problem(s) occurred while running the analysis:"
-  messages$error$grouping <- 'after grouping on {{grouping}}'
-  messages$error$exception <- "This analysis terminated unexpectedly.<br><br>{{error}}<br><div class=stack-trace-selector><span class=stack-trace-span>Stack trace</span><div class=stack-trace-arrow></div></div><div class=stack-trace>{{stackTrace}}</div><br>To receive assistance with this problem, please report the message above at: https://jasp-stats.org/bug-reports"
-  messages$error$infinity <- "Infinity found in {{variables}}"
-  messages$error$factorLevels <- "Number of factor levels {{factorLevels.amount}} in {{variables}}"
-  messages$error$variance <- "Variance = {{variance.equalTo}} in {{variables}}"
-  messages$error$observations <- "Number of observations {{observations.amount}} in {{variables}}"
-  messages$error$levene <- "Cannot compute statistic reliably: number of observations {{observations.amount}} in {{variables}}"
+.messages <- function(class, type) {
   
-  messages$notes$leveneSign <- "Levene's test is significant (p < .05), suggesting a violation of the equal variance assumption"
-  return(messages[[type]][[id]])
+  m <- list()
+  
+  ### Error general
+  m$error$opening <- 
+  "The following problem(s) occurred while running the analysis:"
+  m$error$grouping <- 
+  "after grouping on {{grouping}}"
+  m$error$exception <- 
+  "This analysis terminated unexpectedly.<br><br>{{error}}<br><div class=stack-trace-selector><span>Stack trace</span><div class=stack-trace-arrow></div></div><div class=stack-trace>{{stackTrace}}</div><br>To receive assistance with this problem, please report the message above at: https://jasp-stats.org/bug-reports"
+  
+  ### Error checks
+  m$error$infinity <- 
+  "Infinity found in {{variables}}"  
+  m$error$factorLevels <- 
+  "Number of factor levels {{factorLevels.amount}} in {{variables}}"  
+  m$error$variance <- 
+  "Variance = {{variance.equalTo}} in {{variables}}"  
+  m$error$observations <- 
+  "Number of observations {{observations.amount}} in {{variables}}"  
+  m$error$levene <- 
+  "Cannot compute statistic reliably: number of observations {{observations.amount}} in {{variables}}"
+  
+  ### Footnotes
+  m$footnote$leveneSign <- 
+  "Levene's test is significant (p < .05), suggesting a violation of the equal variance assumption"
+  
+  
+  return(m[[class]][[type]])
+
 }
-# TODO: add citations, titles, (foot)notes, additional error messages
