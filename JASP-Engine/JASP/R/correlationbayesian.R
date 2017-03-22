@@ -560,19 +560,15 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							# Data screening block ---- 
 							#
 							# Note: Data and bfs check [start]
-							if (is.na(rObs) || nObs <= 1) {
-								# Note: Data: NOT ok, 
+							
+							errors <- .hasErrors(dataset, perform = "run", message = 'short', type = c('observations','variance', 'infinity'),
+							                     all.target = c(variableName, variable2Name), observations.amount = '< 2')
+
+							if (!identical(errors, FALSE)) {									
+							  # Note: Data: NOT ok, 
 								# 		bf10: can't
-								if (nObs <= 1){
-									obsFootnote <- "Pearson's sample correlation coefficient r is undefined -- too few observations"
-									index <- .addFootnote(footnotes, obsFootnote)
-								} else if (any(is.infinite(v1)) || any(is.infinite(v2))) {
-									obsFootnote <- "Pearson's sample correlation coefficient r is undefined -- one or more variables contain infinity"
-									index <- .addFootnote(footnotes, obsFootnote)
-								} else {
-									obsFootnote <- "Pearson's sample correlation coefficient r is undefined -- one or more variables do not vary"
-									index <- .addFootnote(footnotes, obsFootnote)
-								}
+							  obsFootnote <- errors$message
+							  index <- .addFootnote(footnotes, obsFootnote)
 								
 								rObs <- NA
 								
