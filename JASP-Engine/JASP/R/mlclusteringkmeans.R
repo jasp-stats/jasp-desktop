@@ -41,7 +41,18 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
 	
 	# code in base64
 	if(length(predictors[predictors!='']) > 0){
+	    
+	    for(i in 1:length(predictors)){
+	        
+	        errors <- .hasErrors(dataset, perform, type = c('infinity', 'observations'),
+	                             all.target = predictors[i],
+	                             observations.amount = "< 2",
+	                             exitAnalysisIfErrors = TRUE)
+	        
+	    }
+	    
 		predictors <- .v(predictors)
+		
 	}
 	
 	set.seed(1)
