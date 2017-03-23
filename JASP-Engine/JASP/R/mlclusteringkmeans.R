@@ -17,8 +17,6 @@
 
 MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callback = function(...) list(status = "ok"), ...) {
 	
-	perform = "run"
-	
 	# read variables
 	predictors <- unlist(options['predictors'])
 	predictors <- predictors[predictors != ""]
@@ -63,6 +61,14 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
 	results[['.meta']] <- meta
 	
 	results[['title']] <- 'K-means clustering'
+	##### added
+	if(perform == 'init'){
+	    
+	    results <- .initKmeans(options,results)
+	    
+	    return(list(results = results, status = "inited"))
+	    
+	} else {
 	
 	# Set the right options for the analysis
 	opt <- .OptionsSet(dataset,options)
@@ -106,6 +112,8 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
 	}
 	
 	return(list(results = results, status = "complete"))
+	
+	} 
 	
 }
 
@@ -636,6 +644,125 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
         
         results[['footnotes']] <- as.list(footnotes_BSS, footnotes_TSS)
         
+    }
+    
+    return(results)
+}
+
+.initKmeans <- function(options,results){
+    # init evaluation table
+    if(options[["noOfClusters"]] == "auto" | options[["noOfClusters"]] == 'manual'){
+        
+    fields_evaluation <- list(list(name = 'title', title = "", type = 'string'),
+                              list(name = 'clusters', title = 'No. clusters', type = 'string'),
+                              list(name = 'measure', title = 'R-squared', type = 'string'),
+                              list(name = 'aic', title = 'AIC', type = 'string'),
+                              list(name = 'bic', title = 'BIC', type = 'string'))
+    
+    } else {
+        
+        fields_evaluation <- list(list(name = 'title', title = "", type = 'string'),
+                                  list(name = 'clusters', title = 'No. clusters', type = 'integer'),
+                                  list(name = 'measure', title = 'R-squared', type = 'number', format = 'dp:2'),
+                                  list(name = 'aic', title = 'AIC', type = 'number', format = 'dp:1'),
+                                  list(name = "aicweights", title = "AIC Weights", type = "number", format = "dp:2"),
+                                  list(name = 'bic', title = 'BIC', type = 'number', format = 'dp:1'),
+                                  list(name = "bicweights", title = "BIC Weights", type = "number", format = "dp:2"))
+        
+    }
+    
+    if(options[['noOfClusters']]=='auto' | options[['noOfClusters']] == 'manual'){
+    
+    data_evaluation <- list(list(title = 'K-means model', clusters = ".", measure = ".", aic = ".", bic = "."))
+    
+    } else if (options[["noOfClusters"]] == 'optimized'){
+        
+        data_evaluation <- list()
+        
+        for(i in 1:length(options[["optimizedFrom"]]:options[["optimizedTo"]])){
+            
+            if (i == 1){
+                
+                data_evaluation[[1]] <- list(title = 'Best model', clusters = ".", measure = ".", aic = ".", aicweights = ".", bic = ".", bicweights = ".")
+            
+                } else {
+                
+                data_evaluation[[i]] <- list(title = '', clusters = ".", measure = ".", aic = ".", aicweights = ".", bic = ".", bicweights = ".")
+            }
+            
+        }
+        
+    } else {
+        
+        data_evaluation <- list()
+        
+        for(i in 1:length(options[["robustFrom"]]:options[["robustTo"]])){
+            
+            if (i == 1){
+                
+                data_evaluation[[1]] <- list(title = 'Best model', clusters = ".", measure = ".", aic = ".", aicweights = ".", bic = ".", bicweights = ".")
+                
+            } else {
+                
+                data_evaluation[[i]] <- list(title = '', clusters = ".", measure = ".", aic = ".", aicweights = ".", bic = ".", bicweights = ".")
+            }
+            
+        }
+        
+    }
+    results[['evaluation']] <- list(title = 'Evaluation',
+                                    schema = list(fields = fields_evaluation),
+                                    data = data_evaluation)
+    # init prediction table
+    if(options[["tablePredictions"]]){
+    fields_predictions <- list(list(name = 'number', title = "Obs. number", type = 'integer'),
+                               list(name = 'prediction', title = 'Prediction', type = 'integer'))
+
+    data_predictions <- list(list(number = ".", prediction = "."))
+
+    results[['predictions']] <- list(title = 'Predictions',
+                                     schema = list(fields = fields_predictions),
+                                     data = data_predictions)
+    }
+
+    # # init clusterinfo table
+    if(options[['tableClusterInformation']]){
+    fields_clusterinfo <- list(list(name = 'cluster', title = 'Cluster', type = 'integer'))
+    if (options[['tableClusterInfoSize']]){
+
+        fields_clusterinfo[[length(fields_clusterinfo)+1]] <- list(name = 'size', title = 'Size', type = 'integer')
+
+    }
+    if (options[['tableClusterInfoSumSquares']]){
+
+        fields_clusterinfo[[length(fields_clusterinfo)+1]] <- list(name = 'withinss', title = 'Within Sum of Squares', type = 'number', format = 'dp:2')
+
+    }
+
+    if(options[['tableClusterInfoCentroids']]){
+
+        fields_clusterinfo[[length(fields_clusterinfo)+1]] <- list(name = paste('centroid',1,sep = ''), title = "Centroid", type = 'number', format = 'dp:3')
+
+    }
+
+    if(options[['tableClusterInfoBetweenSumSquares']]){
+        footnotes_BSS <- .newFootnotes()
+        .addFootnote(footnotes_BSS,paste('The Between Sum of Squares of this model is', "."))
+        footnotes_BSS <- as.list(footnotes_BSS)
+    }
+
+    if(options[['tableClusterInfoTotalSumSquares']]){
+        footnotes_TSS <- .newFootnotes()
+        .addFootnote(footnotes_TSS,paste('The Total Sum of Squares of this model is', "."))
+                     footnotes_TSS <- as.list(footnotes_TSS)
+    }
+
+    data_clusterinfo <- list(list(cluster = ".", size = ".", withinss = ".", centroid1 = "."))
+
+    results[['clusterinfo']] <- list(title = 'Cluster information',
+                                     schema = list(fields = fields_clusterinfo),
+                                     data = data_clusterinfo)
+    
     }
     
     return(results)
