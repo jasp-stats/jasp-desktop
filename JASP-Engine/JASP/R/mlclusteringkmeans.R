@@ -71,93 +71,36 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
 	res <- .DoKmeansAnalysis(dataset,options,opt,predictors)
 	
 	# create the evaluation table
-	results[['evaluation']] <- .EvaluationTableKmeans(res)
+	results[['evaluation']] <- .EvaluationTableKmeans(res,options)
 	
-	# create the cluster information table
+	# create the cluster information table if the user want is
 	if (options[['tableClusterInformation']] & !is.null(res)){
-		
-		fields_clusterinfo <- list(list(name = 'cluster', title = 'Cluster', type = 'integer'))
-		if (options[['tableClusterInfoSize']]){
-			
-			fields_clusterinfo[[length(fields_clusterinfo)+1]] <- list(name = 'size', title = 'Size', type = 'integer')
-			
-		}
-		if (options[['tableClusterInfoSumSquares']]){
-			
-			fields_clusterinfo[[length(fields_clusterinfo)+1]] <- list(name = 'withinss', title = 'Within Sum of Squares', type = 'number', format = 'dp:2')
-			
-		}
-		
-		if(options[['tableClusterInfoCentroids']]){
-			
-			for( i in 1:length(predictors)){
-				fields_clusterinfo[[length(fields_clusterinfo)+1]] <- list(name = paste('centroid',i,sep = ''), title = paste('Centroid',i), type = 'number', format = 'dp:3')	
-			}
-			
-		}
-		
-		if(options[['tableClusterInfoBetweenSumSquares']]){
-			footnotes_BSS <- .newFootnotes()
-			.addFootnote(footnotes_BSS,paste('The Between Sum of Squares of this model is', round(res[['BSS']],2)))
-			footnotes_BSS <- as.list(footnotes_BSS)
-		}
-		
-		if(options[['tableClusterInfoTotalSumSquares']]){
-			footnotes_TSS <- .newFootnotes()
-			.addFootnote(footnotes_TSS,paste('The Total Sum of Squares of this model is', round(res[['TSS']],2)))
-			footnotes_TSS <- as.list(footnotes_TSS)
-		}
-		
-		data_clusterinfo <- list()
-		
-		for(i in 1:res[['clusters']]){
-			data_clusterinfo[[i]] <- list(cluster = i, size = res[['size']][i], withinss = res[['WSS']][[i]])
-			for( j in 1:length(predictors)){
-				data_clusterinfo[[i]][[paste('centroid',j,sep='')]] <- res[['centroids']][[i,j]]
-			}
-		}
-		
-		results[['clusterinfo']] <- list(title = 'Cluster information',
-										 schema = list(fields = fields_clusterinfo),
-										 data = data_clusterinfo)
-		
-		if(options[['tableClusterInfoBetweenSumSquares']] & !options[['tableClusterInfoTotalSumSquares']]){
-			
-			results[['clusterinfo']][['footnotes']] <- footnotes_BSS
-			
-		} else if (!options[['tableClusterInfoBetweenSumSquares']] & options[['tableClusterInfoTotalSumSquares']]){
-			
-			results[['clusterinfo']][['footnotes']] <- footnotes_TSS
-			
-		} else if (options[['tableClusterInfoBetweenSumSquares']] & options[['tableClusterInfoTotalSumSquares']]){
-			
-			results[['clusterinfo']][['footnotes']] <- as.list(footnotes_BSS, footnotes_TSS)
-			
-		}
+	    
+		results[["clusterinfo"]] <- .clusterInfoTable(options, res, predictors)
 		
 	}
 	
-	# Predictions table
+	# Create the predictions table if the user wants is
 	if(options[['tablePredictions']] & !is.null(res)){
 		results[['predictions']] <- .PredictionsTableKmeans(res,options)
 	}
 	
-	# PCA cluster plot
+	# Create the PCA cluster plot if the user wants it
 	if(options[['plotPCACluster']]){
 		results[['pcaplot']] <- .PCAplot(options,res,dataset,opt,predictors)
 	}
 	
-	# 2-d clusterplot
+	# Create the 2-d clusterplot if the user wants is
 	if(options[['plot2dCluster']]){
 		results[['2dplot']] <- .plot2d(dataset,res,opt,options,predictors)
 	}
 	
-	# within ss vs cluster plot	
+	# Create the within ss vs cluster plot if the user wants it	
 	if(options[['plotPCAClusterSquares']]){
 		results[['withinssvsclusters']] <- .WSSplot(options,res)
 	}
 	
-	# criterion vs cluster plot	
+	# Create the criterion vs cluster plot if the user wants it	
 	if(options[['plotCriterionVsClusters']]){
 		results[['criterionvsclusters']] <- .criterionplot(options,res)
 	}
@@ -296,69 +239,71 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
 					 alpha = 0.001,
 					 critout = FALSE,
 					 ns = 10)
-	res <- list(
-		'Predictions' = NULL,
-		'clusters' = NULL,
-		'criterion.krange' = NULL,
-		'clusterrange' = NULL,
-		'size' = NULL,
-		'centroids' = NULL,
-		'WSS' = NULL,
-		'BSS' = NULL,
-		'TSS' = NULL
-	)
+	res <- list()
 	res[['clusters']] <- fit$nc
 	res[['criterion.krange']] <- fit$crit[which(fit$crit!=0)]
-	kfit <- kmeans(dataset[,predictors],
-				   centers = fit$nc,
+	res[['clusterrange']] <- opt[['clusters']]
+	for(i in 1:length(opt[["clusters"]])){
+	kfit_tmp <- kmeans(dataset[,predictors],
+				   centers = opt[['clusters']][[i]],
 				   iter.max = opt[['iter']],
 				   nstart = opt[['sets']],
 				   algorithm = opt[['algorithm']])
-	
+	res[['TSS_tmp']][i] <- kfit_tmp$totss
+	res[['BSS_tmp']][i] <- kfit_tmp$betweenss
+	m = ncol(kfit_tmp$centers)
+	n = length(kfit_tmp$cluster)
+	k = nrow(kfit_tmp$centers)
+	D = kfit_tmp$tot.withinss
+	res[['AIC']][i] <- D + 2*m*k
+	res[['BIC']][i] <- D + log(n)*m*k
+	}
+	kfit <- kmeans(dataset[,predictors],
+	               centers = fit$nc,
+	               iter.max = opt[['iter']],
+	               nstart = opt[['sets']],
+	               algorithm = opt[['algorithm']])
 	res[['Predictions']] <- data.frame(
 		'Observation' = 1:nrow(dataset),
 		'Cluster' = kfit$cluster
 	)
-	res[['clusterrange']] <- opt[['clusters']]
 	res[['size']] <- kfit$size
 	res[['centroids']] <- kfit$centers
 	res[['WSS']] <- kfit$withinss
 	res[['TSS']] <- kfit$totss
 	res[['BSS']] <- kfit$betweenss
-	m = ncol(kfit$centers)
-	n = length(kfit$cluster)
-	k = nrow(kfit$centers)
-	D = kfit$tot.withinss
-	res[['AIC']] <- D + 2*m*k
-	res[['BIC']] <- D + log(n)*m*k
+	dAIC <- res[["AIC"]]-min(res[['AIC']])
+	res[['AICweights']] <- exp((-.5)*dAIC)/sum(exp((-.5)*dAIC))
+	dBIC <- res[['BIC']] - min(res[['BIC']])
+	res[["BICweights"]] <- exp((-.5)*dBIC)/sum(exp((-.5)*dBIC))
 	return(res)
 }
 
 .Kmeansoptimized <- function(dataset,options,opt, predictors){
 	WSS <- numeric(options[['optimizedTo']] - options[['optimizedFrom']])
 	clusters <- opt[['clusters']]
+	res<-list()
+	res[['clusterrange']] <- clusters
 	for(i in seq_along(clusters)){
 		index <- clusters[i]
-		kfit <- kmeans(dataset[,predictors],
+		kfit_tmp <- kmeans(dataset[,predictors],
 					   centers = index,
 					   iter.max = opt[['iter']],
 					   nstart = opt[['sets']],
 					   algorithm = opt[['algorithm']])
-		WSS[i] <- kfit$tot.withinss
+		res[['WithinSumSquares']][i] <- kfit_tmp$tot.withinss
+		m = ncol(kfit_tmp$centers)
+		n = length(kfit_tmp$cluster)
+		k = nrow(kfit_tmp$centers)
+		D = kfit_tmp$tot.withinss
+		res[['AIC']][i] <- D + 2*m*k
+		res[['BIC']][i] <- D + log(n)*m*k
+		res[['TSS_tmp']][i] <- kfit_tmp$totss
+		res[['BSS_tmp']][i] <- kfit_tmp$betweenss
+		
 	}
-	res<-list(
-		'Predictions' = NULL,
-		'WithinSumSquares' = NULL,
-		'optimalclusters' = NULL,
-		'clusters' = NULL,
-		'centroids' = NULL,
-		'size' = NULL,
-		'WSS' = NULL,
-		'BSS' = NULL,
-		'TSS' = NULL
-	)
-	res[['WithinSumSquares']] <- WSS
-	res[['clusters']] <- .determineoptimum(WSS,opt)
+	res[['clusters']] <- .determineoptimum(res, by = "AIC")
+	# predictions for best model.
 	kfit <- kmeans(dataset[,predictors],
 				   centers = res[['clusters']],
 				   iter.max = opt[['iter']],
@@ -368,54 +313,82 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
 		'Observation' = 1:nrow(dataset),
 		'Cluster' = kfit$cluster
 	)
-	res[['clusterrange']] <- clusters
 	res[['size']] <- kfit$size
 	res[['centroids']] <- kfit$centers
 	res[['WSS']] <- kfit$withinss
 	res[['TSS']] <- kfit$totss
 	res[['BSS']] <- kfit$betweenss
-	m = ncol(kfit$centers)
-	n = length(kfit$cluster)
-	k = nrow(kfit$centers)
-	D = kfit$tot.withinss
-	res[['AIC']] <- D + 2*m*k
-	res[['BIC']] <- D + log(n)*m*k
+	dAIC <- res[["AIC"]]-min(res[['AIC']])
+	res[['AICweights']] <- exp((-.5)*dAIC)/sum(exp((-.5)*dAIC))
+	dBIC <- res[['BIC']] - min(res[['BIC']])
+	res[["BICweights"]] <- exp((-.5)*dBIC)/sum(exp((-.5)*dBIC))
 	return(res)
 }
 
-.determineoptimum <- function(WSS,opt){
-	dif <- numeric(length(WSS)-1)
-	slope <- logical(length(dif)-1)
-	for(i in 1:(length(WSS)-1)){
-		dif[i] <- WSS[i+1] - WSS[i]
-	}
-	for( j in 1:(length(dif)-1)){
-		if(abs(dif[j+1]) < abs(dif[j]*0.5)){
-			slope[j]<-TRUE
-		}
-	}
-	optimum <- which(slope==TRUE)[1]+1
-	if(is.na(optimum)){
-		optimum <- opt[['clusters']][1]
-	}
-	return(optimum)
+.determineoptimum <- function(res,by = "AIC"){
+    if(by == "AIC"){
+        optimum <- res[["clusterrange"]][which.min(res[['AIC']])]
+    } else if (by == "BIC"){
+        optimum <- res[["clusterrange"]][which.min(res[['BIC']])]
+    }
+    return(optimum)
 }
 
-.EvaluationTableKmeans <- function(res){
+.EvaluationTableKmeans <- function(res,options){
+    
+    if(options[["noOfClusters"]] == "auto" | options[["noOfClusters"]] == 'manual'){
 	
 	fields_evaluation <- list(list(name = 'title', title = "", type = 'string'),
 							  list(name = 'clusters', title = 'No. clusters', type = 'integer'),
 							  list(name = 'measure', title = 'R-squared', type = 'number', format = 'dp:2'),
 							  list(name = 'aic', title = 'AIC', type = 'number', format = 'dp:1'),
 							  list(name = 'bic', title = 'BIC', type = 'number', format = 'dp:1'))
+    
+	} else {
+        
+        fields_evaluation <- list(list(name = 'title', title = "", type = 'string'),
+                                  list(name = 'clusters', title = 'No. clusters', type = 'integer'),
+                                  list(name = 'measure', title = 'R-squared', type = 'number', format = 'dp:2'),
+                                  list(name = 'aic', title = 'AIC', type = 'number', format = 'dp:1'),
+                                  list(name = "aicweights", title = "AIC Weights", type = "number", format = "dp:2"),
+                                  list(name = 'bic', title = 'BIC', type = 'number', format = 'dp:1'),
+                                  list(name = "bicweights", title = "BIC Weights", type = "number", format = "dp:2"))
+        
+    }
+	
 	if(is.null(res)){
 		
-		data_evaluation <- list(list(title = 'K-means model', clusters = 0, measure = 0, aic = 0, bic = 0))
+		data_evaluation <- list(list(title = 'K-means model', clusters = ".", measure = ".", aic = ".", bic = "."))
 		
 	} else {
+	    
+	    if(options[['noOfClusters']] == "auto" | options[['noOfClusters']] == "manual"){
 		
 		data_evaluation <- list(list(title = 'K-means model', clusters = res[['clusters']], measure = res[['BSS']]/res[['TSS']], aic = res[['AIC']], bic = res[['BIC']]))
-		
+	
+	    } else if (options[["noOfClusters"]]=="optimized" | options[['noOfClusters']] == "robust"){
+	        
+	        data_evaluation <- list()
+	        index_best_model <- which(res[['clusterrange']] == res[['clusters']])
+	        for(i in 1:length(res[['clusterrange']])){
+	            
+	            if(i == index_best_model){
+	                
+	                data_evaluation[[1]] <- list(title = "Best model", clusters = res[['clusterrange']][[i]], measure = res[["BSS_tmp"]][[i]]/res[["TSS_tmp"]][[i]], aic = res[["AIC"]][[i]], aicweights = res[["AICweights"]][[i]], bic = res[["BIC"]][[i]], bicweights = res[['BICweights']][[i]])
+	                
+	            } else if (i > index_best_model){
+	                
+	                data_evaluation[[i]] <- list(title = "", clusters = res[['clusterrange']][[i]], measure = res[["BSS_tmp"]][[i]]/res[["TSS_tmp"]][[i]], aic = res[["AIC"]][[i]], aicweights = res[["AICweights"]][[i]], bic = res[["BIC"]][[i]], bicweights = res[['BICweights']][[i]])
+	                
+	            } else if (i < index_best_model){
+	                
+	                data_evaluation[[i+1]] <- list(title = "", clusters = res[['clusterrange']][[i]], measure = res[["BSS_tmp"]][[i]]/res[["TSS_tmp"]][[i]], aic = res[["AIC"]][[i]], aicweights = res[["AICweights"]][[i]], bic = res[["BIC"]][[i]], bicweights = res[['BICweights']][[i]])
+	                
+	            }
+	        }
+	        
+	    }
+	    
 	}
 	
 	return(list(title = 'Evaluation',
@@ -602,4 +575,68 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
 		   max(res[['criterion.krange']]),
 		   pch = 19,
 		   col= 'red')
+}
+
+.clusterInfoTable <- function(options, res, predictors){
+    
+    fields_clusterinfo <- list(list(name = 'cluster', title = 'Cluster', type = 'integer'))
+    if (options[['tableClusterInfoSize']]){
+        
+        fields_clusterinfo[[length(fields_clusterinfo)+1]] <- list(name = 'size', title = 'Size', type = 'integer')
+        
+    }
+    if (options[['tableClusterInfoSumSquares']]){
+        
+        fields_clusterinfo[[length(fields_clusterinfo)+1]] <- list(name = 'withinss', title = 'Within Sum of Squares', type = 'number', format = 'dp:2')
+        
+    }
+    
+    if(options[['tableClusterInfoCentroids']]){
+        
+        for( i in 1:length(predictors)){
+            fields_clusterinfo[[length(fields_clusterinfo)+1]] <- list(name = paste('centroid',i,sep = ''), title = paste('Centroid',i), type = 'number', format = 'dp:3')	
+        }
+        
+    }
+    
+    if(options[['tableClusterInfoBetweenSumSquares']]){
+        footnotes_BSS <- .newFootnotes()
+        .addFootnote(footnotes_BSS,paste('The Between Sum of Squares of this model is', round(res[['BSS']],2)))
+        footnotes_BSS <- as.list(footnotes_BSS)
+    }
+    
+    if(options[['tableClusterInfoTotalSumSquares']]){
+        footnotes_TSS <- .newFootnotes()
+        .addFootnote(footnotes_TSS,paste('The Total Sum of Squares of this model is', round(res[['TSS']],2)))
+        footnotes_TSS <- as.list(footnotes_TSS)
+    }
+    
+    data_clusterinfo <- list()
+    
+    for(i in 1:res[['clusters']]){
+        data_clusterinfo[[i]] <- list(cluster = i, size = res[['size']][i], withinss = res[['WSS']][[i]])
+        for( j in 1:length(predictors)){
+            data_clusterinfo[[i]][[paste('centroid',j,sep='')]] <- res[['centroids']][[i,j]]
+        }
+    }
+    
+    results <- list(title = 'Cluster information',
+                    schema = list(fields = fields_clusterinfo),
+                    data = data_clusterinfo)
+    
+    if(options[['tableClusterInfoBetweenSumSquares']] & !options[['tableClusterInfoTotalSumSquares']]){
+        
+        results[['footnotes']] <- footnotes_BSS
+        
+    } else if (!options[['tableClusterInfoBetweenSumSquares']] & options[['tableClusterInfoTotalSumSquares']]){
+        
+        results[['footnotes']] <- footnotes_TSS
+        
+    } else if (options[['tableClusterInfoBetweenSumSquares']] & options[['tableClusterInfoTotalSumSquares']]){
+        
+        results[['footnotes']] <- as.list(footnotes_BSS, footnotes_TSS)
+        
+    }
+    
+    return(results)
 }
