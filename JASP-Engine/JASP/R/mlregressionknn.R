@@ -17,9 +17,6 @@
 
 MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 	
-	# standard perform is run
-	perform <- "run"
-	
 	# Read variables
 	predictors <- unlist(options['predictors'])
 	if (length(options['target']) > 0){
@@ -44,8 +41,39 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 		dataset <- .vdf(columns.as.numeric=variables.to.read)
 	}
 	
+	for(i in 1:length(variables.to.read)){
+	    
+	    errors <- .hasErrors(dataset, perform, type = c('infinity', 'observations'),
+	                         all.target = variables.to.read[i],
+	                         observations.amount = "< 2",
+	                         exitAnalysisIfErrors = TRUE)
+	    
+	}
+	
 	# Set a seed
 	set.seed(1)
+	
+	# create the results bundle
+	results <- list()
+	
+	# Provide the Meta to the results bundle
+	meta <- list(list(name = 'KNN regression', type = 'title'),
+	             list(name = 'Descriptions', type = 'table'),
+	             list(name = 'Predictions', type = 'table'),
+	             list(name = 'Weights', type = 'table'),
+	             list(name = 'Distances', type = 'table'),
+	             list(name = 'Plot', type = 'image'))
+	results[['.meta']] <- meta
+	
+	results[['title']] <- 'K-Nearest Neighbors Regression'
+	
+	if(perform == "init"){
+	    
+	    results <- .initKnnregression(options,results)
+	    
+	    return(list(results = results, status = "inited"))
+	    
+	} else {
 	
 	# Set the analysis options from the options
 	opt <- .setOptions(options,dataset)
@@ -62,7 +90,7 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 	formula <- .makeformula(predictors,target)
 	
 	# Do the analysis
-	if(length(predictors[predictors!='']) > 0 & length(target[target!='']) > 0 & opt[['ntrain']] > 0){
+	if(length(predictors[predictors!='']) > 0 & length(target[target!='']) > 0){
 		
 		train.index <- sample(c(TRUE,FALSE),nrow(dataset),replace = TRUE,prob = c(opt[['ntrain']]*0.01,1-(opt[['ntrain']]*0.01)))
 		train <- dataset[which(train.index == TRUE), ]
@@ -70,21 +98,11 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 		
 		res <- .DoKNNregression(dataset,options,opt,train,test,train.index,formula,target)
 		
+	} else {
+	    
+	    res <- NULL
+	    
 	}
-	
-	# create the results bundle
-	results <- list()
-	
-	# Provide the Meta to the results bundle
-	meta <- list(list(name = 'KNN regression', type = 'title'),
-				 list(name = 'Descriptions', type = 'table'),
-				 list(name = 'Predictions', type = 'table'),
-				 list(name = 'Weights', type = 'table'),
-				 list(name = 'Distances', type = 'table'),
-				 list(name = 'Plot', type = 'image'))
-	results[['.meta']] <- meta
-	
-	results[['title']] <- 'K-Nearest Neighbors Regression'
 	
 	results[['Descriptions']] <- .DescriptionsTable(predictors, target, opt, options, res, dataset, formula)
 	
@@ -121,6 +139,8 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 	}
 	
 	return(list(results = results, status = "complete"))
+	
+	}
 	
 	
 }
@@ -321,7 +341,7 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 		
 	} else {
 		
-		data_descriptions[[1]] <- list(model = 'kNN model', nn = opt[['NN']],predictors  = length(predictors), rmse = 0)
+		data_descriptions[[1]] <- list(model = 'kNN model', nn = ".",predictors  = ".", rmse = ".")
 		
 	}
 
@@ -352,8 +372,14 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 		fields[[length(fields)+1]] <- list(name ='confidence',title = 'Confidence', type = 'number', format = 'dp:2')
 	}
 	
-	if(length(predictors[predictors!='']) > 0 & length(target[target!='']) > 0 & opt[['ntrain']] > 0){
-		
+	if(is.null(res)){
+	    
+	    data <- list(list(number = ".",
+	                 real = ".",
+	                 predicted = "."))
+	    
+	} else {
+	    
 		data <- list()
 		
 		if(options[['tablePredictionsConfidence']]){
@@ -394,11 +420,19 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 	fields_distances <- list(
 		list(name="number", title="Obs. number", type="integer")
 	)
+	if(!is.null(res)){
 	for(i in 1:res[['Optimal.K']]){
 		fields_distances[[length(fields_distances)+1]] <- list(name =paste('distance',i,sep = ''),title = paste('Distance',i,sep = ' '), type = 'number', format = 'dp:2')
+	} 
+	} else {
+	    fields_distances[[2]] <- list(name = 'distance', title = "Distance", type = 'integer')
 	}
 	
-	if(length(predictors[predictors!='']) > 0 & length(target[target!='']) > 0 & opt[['ntrain']] > 0){
+	if(is.null(res)){
+	    
+	    data_distances <- list(list(number = ".", distance = "."))
+	    
+	} else {
 		
 		data_distances <- list()
 		
@@ -448,13 +482,21 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 	fields_weights <- list(
 		list(name="number", title="Obs. number", type="integer")
 	)
+	if(!is.null(res)){
 	for(i in 1:res[['Optimal.K']]){
 		
 		fields_weights[[length(fields_weights)+1]] <- list(name =paste('weight',i,sep = ''),title = paste('Weight',i,sep = ' '), type = 'number', format = 'dp:2')
 		
 	}
+	} else {
+	    fields_weights[[2]] <- list(name = 'weights', title = 'Weights', type = "integer")
+	}
 	
-	if(length(predictors[predictors!='']) > 0 & length(target[target!='']) > 0 & opt[['ntrain']] > 0){
+	if(is.null(res)){
+	    
+	    data_weights <- list(list(number = ".", weights = "."))
+	    
+	} else {
 		
 		data_weights <- list()
 		
@@ -580,4 +622,68 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 	result[['RMSE']] <- RMSE
 	result[['OptimalK']] <- res[['Optimal.K']]
 	return(result)
+}
+
+.initKnnregression <- function(options,results){
+    
+    fields_descriptions <- list(
+        list(name = 'model', title = '', type = 'string'),
+        list(name = 'nn', title = 'No. Nearest Neighbors', type = 'integer'),
+        list(name = 'predictors', title = 'No. Predictors', type = 'integer'),
+        list(name = 'rmse', title = 'RMSE', type = 'number', format = 'dp:3')
+    )
+    
+    data_descriptions <- list(list(model = 'k-NN model', nn = ".",predictors  = ".", rmse = "."))
+    
+    results[['Descriptions']] <- list(title = 'Evaluation',
+                                      schema = list(fields = fields_descriptions),
+                                      data = data_descriptions)
+    
+    if(options[["tablePredictions"]]){
+
+        fields_predictions <- list(
+            list(name="number", title="Obs. number", type="integer"),
+            list(name="real", title="Observed", type="number",format = 'dp:2'),
+            list(name='predicted',title = 'Predicted', type = 'number', format = 'dp:2')
+        )
+
+        data_predictions <- list(list(number = ".",
+                                      real = ".",
+                                      predicted = "."))
+
+        results[['Predictions']] <- list(title = 'Predictions',
+                                         schema = list(fields = fields_predictions),
+                                         data = data_predictions)
+
+    }
+
+    if(options[["tableDistances"]]){
+
+        fields_distances <- list(list(name="number", title="Obs. number", type="integer"),
+                                 list(name = 'distance', title = "Distance", type = 'integer'))
+        
+        data_distances <- list(list(number = ".", distance = "."))
+        
+        results[['Distances']] <- list(title = 'Distances',
+                                       schema = list(fields = fields_distances),
+                                       data = data_distances)
+
+    }
+
+    if(options[["tableWeights"]]){
+
+        fields_weights <- list(list(name="number", title="Obs. number", type="integer"),
+                                 list(name = 'weight', title = "Weight", type = 'integer'))
+        
+        data_weights <- list(list(number = ".", weight = "."))
+        
+        results[['Weights']] <- list(title = 'Weights',
+                                       schema = list(fields = fields_weights),
+                                       data = data_weights) 
+
+    }
+    
+    
+    return(results)
+    
 }
