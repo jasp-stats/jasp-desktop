@@ -310,49 +310,69 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 	### descriptions table
 	###
 	
-	fields_descriptions <- list(
-		list(name = 'model', title = '', type = 'string'),
-		list(name = 'nn', title = 'No. Nearest Neighbors', type = 'integer'),
-		list(name = 'predictors', title = 'No. Predictors', type = 'integer'),
-		list(name = 'rmse', title = 'RMSE', type = 'number', format = 'dp:3')
-	)
+	fields_descriptions <- list(list(name = 'model', title = '', type = 'string'))
+	
+	if(options[["validationLeaveOneOut"]] | options[["validationKFold"]]){
+	    
+	    fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "optim[type1]", title = "", type = "string")
+	    
+	}
+	
+	fields_descriptions[[length(fields_descriptions)+1]] <- list(name = 'nnc[nn]', title = 'No. Nearest Neighbors', type = 'integer')
+	fields_descriptions[[length(fields_descriptions)+1]] <- list(name = 'r[rmse]', title = 'RMSE', type = 'number', format = 'dp:3')
+	
+	if (options[['validationLeaveOneOut']]){
+	    
+	    fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "optim[type2]", title = "", type = "string")
+	    fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "nnc[nnloo]", title = "LOOCV nn", type = 'integer')
+	    fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "r[rmseoptim]", title = "RMSE", type = 'number', format = "dp:3")
+	    
+	}
+	
+	if (options[['validationKFold']]){
+	    
+	    fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "optim[type3]", title = "", type = "string")
+	    fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "nnc[nnkfold]", title = "K-fold nn", type = 'integer')
+	    fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "r[rmsekfold]", title = "RMSE", type = 'number', format = "dp:3")
+	    
+	}
 	
 	data_descriptions <- list()
 	
-	if(length(predictors[predictors!='']) > 0 & length(target[target!='']) > 0 & opt[['ntrain']] > 0){
+	if(!is.null(res)){
 		
-		if(options[['noOfNearestNeighbours']] == 'auto' | options[['noOfNearestNeighbours']] == 'manual'){
+		if(options[['noOfNearestNeighbours']] == 'auto'){
 			
-			data_descriptions[[1]] <- list(model = 'k-NN model', nn = opt[['NN']],predictors  = length(predictors), rmse = res[['RMSE']])
+			data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = opt[['NN']], "r[rmse]" = res[['RMSE']], "optim[type1]" = 'Auto')
 			
+		} else if (options[['noOfNearestNeighbours']] == 'manual'){
+		 
+		    data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = opt[['NN']], "r[rmse]" = res[['RMSE']], "optim[type1]" = 'Manual')
+		       
 		} else if (options[['noOfNearestNeighbours']] == 'optimized'){
-			
-			if(options[['optimizedFrom']] > 0){
 				
-				data_descriptions[[1]] <- list(model = 'kNN model', nn = res[['Optimal.K']],predictors  = length(predictors), rmse = res[['Minimal.RMSE']])
-				
-			} else if (options[['optimizedFrom']] == 0){
-				
-				data_descriptions[[1]] <- list(model = 'kNN model', nn = 0,predictors  = length(predictors), rmse = 0)
-				
-			}
+				data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = res[['Optimal.K']], "r[rmse]" = res[['Minimal.RMSE']], "optim[type1]" = "optimized")
 			
 		}
 		
 	} else {
 		
-		data_descriptions[[1]] <- list(model = 'kNN model', nn = ".",predictors  = ".", rmse = ".")
+		data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = ".", "r[rmse]" = ".", "optim[type1]" = "")
 		
 	}
 
-	if(options[['validationLeaveOneOut']] & options[['maxK']] > 0){
+	if(options[['validationLeaveOneOut']] & !is.null(res)){
 		result <- .LOOCVregression(dataset,options,opt,formula)
-		data_descriptions[[length(data_descriptions)+1]] <- list(model = 'Leave one out CV', nn = result[['OptimalK']], predictors = length(predictors), rmse = sqrt(result[['Minimal.MSE']]))
+		data_descriptions[[1]][["optim[type2]"]] <- "Leave-one-out"
+		data_descriptions[[1]][["nnc[nnloo]"]] <- result[['OptimalK']]
+		data_descriptions[[1]][["r[rmseoptim]"]] <- sqrt(result[['Minimal.MSE']])
 	}
 	
-	if(options[['validationKFold']] & options[['noOfFolds']] > 0){
-		result_fold <- .Kfoldregression(dataset,options,opt,formula,res)	
-		data_descriptions[[length(data_descriptions)+1]] <- list(model = 'k-fold CV', nn = result_fold[['OptimalK']], predictors = length(predictors), rmse = result_fold[['RMSE']])
+	if(options[['validationKFold']] & !is.null(res)){
+		result_fold <- .Kfoldregression(dataset,options,opt,formula,res)
+		data_descriptions[[1]][["optim[type3]"]] <- "K-fold"
+		data_descriptions[[1]][["nnc[nnkfold]"]] <- result_fold[['OptimalK']]
+		data_descriptions[[1]][['r[rmsekfold]']] <- result_fold[['RMSE']]
 	}
 
 	return(list(title = 'Evaluation',
@@ -626,14 +646,34 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 
 .initKnnregression <- function(options,results){
     
-    fields_descriptions <- list(
-        list(name = 'model', title = '', type = 'string'),
-        list(name = 'nn', title = 'No. Nearest Neighbors', type = 'integer'),
-        list(name = 'predictors', title = 'No. Predictors', type = 'integer'),
-        list(name = 'rmse', title = 'RMSE', type = 'number', format = 'dp:3')
-    )
+    fields_descriptions <- list(list(name = 'model', title = '', type = 'string'))
     
-    data_descriptions <- list(list(model = 'k-NN model', nn = ".",predictors  = ".", rmse = "."))
+    if(options[["validationLeaveOneOut"]] | options[["validationKFold"]]){
+        
+        fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "optim[type1]", title = "", type = "string")
+        
+    }
+    
+    fields_descriptions[[length(fields_descriptions)+1]] <- list(name = 'nnc[nn]', title = 'No. Nearest Neighbors', type = 'integer')
+    fields_descriptions[[length(fields_descriptions)+1]] <- list(name = 'r[rmse]', title = 'RMSE', type = 'number', format = 'dp:3')
+    
+    if (options[['validationLeaveOneOut']]){
+        
+        fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "optim[type2]", title = "", type = "string")
+        fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "nnc[nnloo]", title = "LOOCV nn", type = 'integer')
+        fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "r[rmseoptim]", title = "RMSE", type = 'number', format = "dp:3")
+        
+    }
+    
+    if (options[['validationKFold']]){
+        
+        fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "optim[type3]", title = "", type = "string")
+        fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "nnc[nnkfold]", title = "K-fold nn", type = 'integer')
+        fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "r[rmsekfold]", title = "RMSE", type = 'number', format = "dp:3")
+        
+    }
+    
+    data_descriptions <- list(list(model = 'k-NN model', nn = ".", rmse = "."))
     
     results[['Descriptions']] <- list(title = 'Evaluation',
                                       schema = list(fields = fields_descriptions),
