@@ -128,7 +128,7 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 	}
 	
 	# Create the Error vs K plot
-	if(options[['plotErrorVsK']]){
+	if(options[['plotErrorVsK']] & !is.null(res)){
 		
 		if(options[['noOfNearestNeighbours']] == 'optimized' | options[['validationLeaveOneOut']]){
 		
