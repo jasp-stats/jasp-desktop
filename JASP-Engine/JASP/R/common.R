@@ -88,6 +88,7 @@ run <- function(name, options.as.json.string, perform="run") {
 
 			state <- results$state
 			
+			state[["figures"]] <- c(state[["figures"]], .imgToState(results$results))
 			location <- .requestStateFileNameNative()
 
 			relativePath <- location$relativePath
