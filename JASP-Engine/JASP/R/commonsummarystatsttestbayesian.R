@@ -265,15 +265,23 @@
 		}
 
 		p <- try(silent = FALSE, expr = {
-			image <- .beginSaveImage(width, height)
-			.plotPosterior.summarystats.ttest(
+			# image <- .beginSaveImage(width, height)
+			# .plotPosterior.summarystats.ttest(
+			# 			t = options$tStatistic, n1 = options$n1Size, n2 = n2Value, paired = paired,
+			# 			BFH1H0 = BFH1H0, dontPlotData = dontPlotData, rscale = options$priorWidth,
+			# 			addInformation = options$plotPriorAndPosteriorAdditionalInfo,
+			# 			BF = ifelse(BFH1H0, exp(bayesFactorObject$bf), 1/exp(bayesFactorObject$bf)),
+			# 			oneSided = oneSided
+			# 	)
+			
+			.plotFunc <- function() {
+				.plotPosterior.summarystats.ttest(
 						t = options$tStatistic, n1 = options$n1Size, n2 = n2Value, paired = paired,
 						BFH1H0 = BFH1H0, dontPlotData = dontPlotData, rscale = options$priorWidth,
 						addInformation = options$plotPriorAndPosteriorAdditionalInfo,
 						BF = ifelse(BFH1H0, exp(bayesFactorObject$bf), 1/exp(bayesFactorObject$bf)),
 						oneSided = oneSided
 				)
-			plot[["data"]] <- .endSaveImage(image)
 		})
 
 		if (class(p) == "try-error") {
@@ -398,15 +406,12 @@
 
 		# plot Bayes factor robustness
 		p <- try(silent = FALSE, expr = {
-			image <- .beginSaveImage(width, height)
-			.plotBFrobustness.summarystats.ttest(
 						t = options$tStatistic, n1 = n1Value, n2 = n2Value,
 						BFH1H0 = BFH1H0, dontPlotData = dontPlotData,
 						rscale = options$priorWidth, oneSided = oneSided,
 						addInformation = options$plotBayesFactorRobustnessAdditionalInfo,
 						BF10post = BF10post
 				)
-			plot[["data"]] <- .endSaveImage(image)
 		})
 
 		if (class(p) == "try-error") {
