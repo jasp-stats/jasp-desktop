@@ -1,0 +1,113 @@
+{
+	"name": "MLClassificationKNN",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+		{
+			"name": "target",
+			"type": "Variable"
+		},
+		{
+			"name": "predictors",
+			"type": "Variables"
+		},
+		{
+			"name": "indicator",
+			"type": "Variable"
+		},
+		{
+			"name": "modelTerms",
+			"template": [
+				{
+					"name": "components",
+					"type": "Term"
+				},
+				{
+					"name": "isNuisance",
+					"type": "Boolean"
+				}
+			],
+			"type": "Table"
+		},
+		{
+			"name": "percentageTrainingData",
+			"type": "List",
+			"options": [ "auto", "manual" ],
+			"default": "auto"
+		},
+		{
+			"name": "trainingDataManual",
+			"type": "Integer"
+		},
+		{
+			"name": "noOfNearestNeighbours",
+			"type": "List",
+			"options": [ "auto", "manual", "optimized" ],
+			"default": "auto"
+		},
+		{
+			"name": "nearestNeighboursCount",
+			"type": "Integer"
+		},
+		{
+			"name": "optimizedFrom",
+			"type": "Integer"
+		},
+		{
+			"name": "optimizedTo",
+			"type": "Integer"
+		},
+		{
+			"name": "tablePredictions",
+			"type": "Boolean"
+		},
+		{
+			"name": "tablePredictionsConfidence",
+			"type": "Boolean"
+		},
+		{
+			"name": "tableDistances",
+			"type": "Boolean"
+		},
+		{
+			"name": "tableWeights",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotErrorVsK",
+			"type": "Boolean"
+		},
+		{
+			"name": "naAction",
+			"type": "List",
+			"options": [ "deleteListwise", "predict", "roughFix" ],
+			"default": "deleteListwise"
+		},
+		{
+			"name": "distanceParameter",
+			"type": "List",
+			"options": [ "auto", "manual", "optimized" ],
+			"default": "auto"
+		},
+		{
+			"name": "scaleEqualSD",
+			"type": "Boolean"
+		},
+		{
+			"name": "validationLeaveOneOut",
+			"type": "Boolean"
+		},
+		{
+			"name": "maxK",
+			"type": "Integer"
+		},
+		{
+			"name": "validationKFold",
+			"type": "Boolean"
+		},
+		{
+			"name": "noOfFolds",
+			"type": "Integer"
+		}
+	]
+}

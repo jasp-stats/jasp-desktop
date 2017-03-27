@@ -186,6 +186,7 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/MachineLearning/mlregressionrandomforestform.cpp \
         $$PWD/analysisforms/MachineLearning/mlregressionboostingform.cpp \
         $$PWD/analysisforms/MachineLearning/mlregressionknnform.cpp \
+        $$PWD/analysisforms/MachineLearning/mlclassificationknnform.cpp \
         $$PWD/analysisforms/MachineLearning/mlclusteringkmeansform.cpp \
 		$$PWD/simplecrypt.cpp \
 		$$PWD/importers/convertedstringcontainer.cpp \
@@ -382,6 +383,7 @@ HEADERS  += \
         $$PWD/analysisforms/MachineLearning/mlregressionrandomforestform.h \
         $$PWD/analysisforms/MachineLearning/mlregressionboostingform.h \
         $$PWD/analysisforms/MachineLearning/mlregressionknnform.h \
+        $$PWD/analysisforms/MachineLearning/mlclassificationknnform.h \
         $$PWD/analysisforms/MachineLearning/mlclusteringkmeansform.h \
 		$$PWD/simplecrypt.h \
 		$$PWD/simplecryptkey.h \
@@ -463,6 +465,7 @@ FORMS += \
         $$PWD/analysisforms/MachineLearning/mlregressionrandomforestform.ui \
         $$PWD/analysisforms/MachineLearning/mlregressionboostingform.ui \
         $$PWD/analysisforms/MachineLearning/mlregressionknnform.ui \
+        $$PWD/analysisforms/MachineLearning/mlclassificationknnform.ui \
         $$PWD/analysisforms/MachineLearning/mlclusteringkmeansform.ui \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.ui
 
