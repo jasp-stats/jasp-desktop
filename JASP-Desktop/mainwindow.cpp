@@ -424,6 +424,8 @@ void MainWindow::refreshAnalysesUsingColumns(vector<string> &changedColumns
 	for (Analyses::iterator analysis_it = _analyses->begin(); analysis_it != _analyses->end(); ++analysis_it)
 	{
 		Analysis* analysis = *analysis_it;
+		if (analysis == NULL) continue;
+
 		bool analyse_to_refresh = false;
 		const vector<OptionVariables *> &analysis_variables = analysis->getVariables();
 		for (vector<OptionVariables *>::const_iterator var_it = analysis_variables.begin();
