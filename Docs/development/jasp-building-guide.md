@@ -83,6 +83,10 @@ The directory structure should be as follows:
 Linux
 -----
 
+### Build
+
+#### Ubuntu (and alike)
+
 Jonathon maintains a number of packages for JASP and it's development under linux in his PPA [here](https://launchpad.net/~jonathon-love/+archive/ubuntu/jasp)
 
 To build JASP under Ubuntu, debian, and derivatives, you will need:
@@ -100,7 +104,28 @@ To build JASP under Ubuntu, debian, and derivatives, you will need:
  - r-cran-rinside *
  - libarchive-dev
 
-In order to run, you will need:
+#### Fedora
+Under Fedora, you need these packages:
+ - qt-devel
+ - qt5-qtwebkit-devel
+ - boost-devel
+ - libarchive-devel
+ 
+And (under fedora only), in R (started as root so packages are installed systemwide), you need to install:
+
+```
+install.packages(c("Rcpp","RInside"))
+```
+ 
+Finally, under Fedora only, you need to create a symlink so that R is found:
+
+```
+sudo ln -s /usr/lib64/R/ /usr/lib/R
+```
+
+### Runtime
+#### Ubuntu (and alike)
+In order to run, you will need (Ubuntu and alike):
 
  - r-cran-bayesfactor *
  - r-cran-lme4
@@ -109,6 +134,15 @@ In order to run, you will need:
  - r-cran-effects *
  - r-cran-logspline *
  - r-cran-hypergeo *
-   r-cran-rjson
-
+ - r-cran-rjson
+ 
 Those marked with asterisks are available from Jonathon's PPA.
+
+### Fedora
+It works under Fedora, if you install these R packages manually in R:
+
+```
+install.packages(c("BayesFactor","lme4","afex","car","effects","logspline","hypergeo","rjson"))
+```
+
+

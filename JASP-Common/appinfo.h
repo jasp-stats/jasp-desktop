@@ -28,6 +28,7 @@ public:
 	static const std::string builddate;
 
 	static std::string getShortDesc();
+	static std::string getBuildYear();
 };
 
 #endif // APPINFO_H

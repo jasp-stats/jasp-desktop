@@ -246,7 +246,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	QMenuBar *_mMenuBar = new QMenuBar(parent=0);
 	QMenu *aboutMenu = _mMenuBar->addMenu("JASP");
-	aboutMenu->addAction("About",this,SLOT(showAbout()));
+	aboutMenu->addAction("About",ui->tabBar,SLOT(showAbout()));
 	_mMenuBar->addMenu(aboutMenu);
 
 	_buttonPanelLayout->addWidget(_okButton);
@@ -425,6 +425,8 @@ void MainWindow::refreshAnalysesUsingColumns(vector<string> &changedColumns
 	for (Analyses::iterator analysis_it = _analyses->begin(); analysis_it != _analyses->end(); ++analysis_it)
 	{
 		Analysis* analysis = *analysis_it;
+		if (analysis == NULL) continue;
+
 		bool analyse_to_refresh = false;
 		const vector<OptionVariables *> &analysis_variables = analysis->getVariables();
 		for (vector<OptionVariables *>::const_iterator var_it = analysis_variables.begin();

@@ -81,10 +81,10 @@ void Analyses::clear()
 	for (Analyses::iterator itr = this->begin(); itr != this->end(); itr++)
 	{
 		Analysis *analysis = *itr;
-		if (analysis != NULL && analysis->status() != Analysis::Complete)
-			analysis->setStatus(Analysis::Aborted);
+		delete analysis;
 	}
 
+	_analyses.clear();
 	_defaults.clear();
 }
 
