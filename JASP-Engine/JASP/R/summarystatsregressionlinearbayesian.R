@@ -235,7 +235,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 										# 					BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObjectAlternative[["bf"]])/exp(bayesFactorObjectNull[["bf"]])), .clean(exp(bayesFactorObjectNull[["bf"]])/exp(bayesFactorObjectAlternative[["bf"]]))))
 										# plot[["data"]] <- .endSaveImage(image)
 										
-										.plotFun <- function() {
+										.plotFunc <- function() {
 											.plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariatesNull=options$numberOfCovariatesNull, unadjustedRSquaredNull=options$unadjustedRSquaredNull, nullModelSpecified=nullModelSpecified,, numberOfCovariatesAlternative=options$numberOfCovariatesAlternative, unadjustedRSquaredAlternative=options$unadjustedRSquaredAlternative, rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"),
 															BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObjectAlternative[["bf"]])/exp(bayesFactorObjectNull[["bf"]])), .clean(exp(bayesFactorObjectNull[["bf"]])/exp(bayesFactorObjectAlternative[["bf"]]))))
 										}
@@ -254,7 +254,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 										# 			rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), nullModelSpecified=nullModelSpecified, BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObject[["bf"]])), .clean(1/exp(bayesFactorObject[["bf"]]))))
 										# plot[["data"]] <- .endSaveImage(image)
 										
-										.plotFun <- function() {
+										.plotFunc <- function() {
 											.plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariatesNull=options$numberOfCovariatesNull, unadjustedRSquaredNull=options$unadjustedRSquaredNull, numberOfCovariatesAlternative=options$numberOfCovariatesAlternative, unadjustedRSquaredAlternative=options$unadjustedRSquaredAlternative,
 														rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), nullModelSpecified=nullModelSpecified, BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObject[["bf"]])), .clean(1/exp(bayesFactorObject[["bf"]]))))
 										}
@@ -356,7 +356,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 							# .plotBF.robustnessCheck.regression.summaryStatistics(BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= TRUE)
 							# plot[["data"]] <- .endSaveImage(image)
 							
-							.plotFun <- function() {
+							.plotFunc <- function() {
 								.plotBF.robustnessCheck.regression.summaryStatistics(BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= TRUE)
 							}
 							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)

@@ -243,18 +243,16 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 
 			
 			.plotFunc <- function() {
+				if (!BFH1H0) {
+					someBf <- 1 / someBf
+				}
 
-
-			if (!BFH1H0) {
-				someBf <- 1 / someBf
-			}
-
-			.plotPosterior.correlation(
-						r = cor.value, n = options$sampleSize, oneSided = oneSided,
-						corCoefficient = cor.coefficient, dontPlotData = dontPlotData,
-						kappa = options$priorWidth, BFH1H0 = BFH1H0, BF = someBf,
-						addInformation = options$plotPriorAndPosteriorAdditionalInfo
-					)
+				.plotPosterior.correlation(
+							r = cor.value, n = options$sampleSize, oneSided = oneSided,
+							corCoefficient = cor.coefficient, dontPlotData = dontPlotData,
+							kappa = options$priorWidth, BFH1H0 = BFH1H0, BF = someBf,
+							addInformation = options$plotPriorAndPosteriorAdditionalInfo
+						)
 			}
 			content <- .writeImage(width = width, height = height, plot = .plotFunc, obj = TRUE)
 			plot[["convertible"]] <- TRUE
@@ -383,7 +381,7 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 			# )
 			# plot[["data"]] <- .endSaveImage(image)
 
-			.plotFun <- function() {
+			.plotFunc <- function() {
 				.plotBF.robustnessCheck.summarystats.correlation(
 					r = cor.value, n = options$sampleSize, oneSided = oneSided, BFH1H0 = BFH1H0,
 					corCoefficient = cor.coefficient, kappa = options$priorWidth,
