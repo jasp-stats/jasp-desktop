@@ -19,8 +19,6 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 									callback = function(...) 0, ...) {
 	
 	state <- .retrieveState()
-  figstate <- try(state[["figures"]], silent = TRUE)
-  if (class(figstate) == "try-error") figstate <- list()
 	
 	## call the common initialization function
 	init <- .initializeTTest(dataset, options, perform, type = "independent-samples")
@@ -43,20 +41,17 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 
 
 	keep <- NULL
-	figstate <- list()
 	## if the user wants descriptive plots, s/he shall get them!
 	if (options$descriptivesPlots && length(options$variables) > 0) {
 
 		plotTitle <- ifelse(length(options$variables) > 1, "Descriptives Plots", "Descriptives Plot")
 		descriptivesPlots <- .independentSamplesTTestDescriptivesPlot(dataset, options, perform)
 		if (!is.null(descriptivesPlots[[1]][["obj"]])){
-			# Extract plot objects and save to state
-			figstate <- append(figstate, .imgToState(descriptivesPlots))
 			keep <- unlist(lapply(descriptivesPlots, function(x) x[["data"]]),NULL)
 		}
 		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, 
 																			title = "Descriptives", 
-																			descriptivesPlots = list(collection = .imgToResults(descriptivesPlots), 
+																			descriptivesPlots = list(collection = descriptivesPlots, 
 																															 title = plotTitle))
 
 	} else {
@@ -70,8 +65,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 		return(list(results=results, status="inited"))
 	} else {
 		return(list(results=results, status="complete", 
-								state = list(options = options, results = results, 
-														figures = figstate),
+								state = list(options = options, results = results),
 								keep = keep))
 	}
 }

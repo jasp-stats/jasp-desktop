@@ -61,11 +61,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	
 	state <- .retrieveState()
-	
-	figstate <- try(state[["figures"]], silent = TRUE)
-	if (class(figstate) == "try-error") figstate <- list()
-
-	
+		
 	diff <- NULL
 	
 	if (!is.null(state)) {
@@ -444,9 +440,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						descriptivesPlots[[descriptInd]] <- plot
 					}
 					
-					results[["descriptives"]][["descriptivesPlots"]][["collection"]] <- .imgToResults2(descriptivesPlots) # add plots without image object to results
-					figstate <- append(figstate, .imgToState2(descriptivesPlots)) # add image object to state
-					
+					results[["descriptives"]][["descriptivesPlots"]][["collection"]] <- descriptivesPlots
+
 					descriptInd <- descriptInd + 1
 					
 					if ( ! .shouldContinue(callback(results)))
@@ -535,8 +530,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 					plotGroups[[i]][["PriorPosteriorPlot"]] <- plots.ttest[[z]]
 					
-					figstate <- append(figstate, .imgToState2(plotGroups)) # add image object to state
-					results[["inferentialPlots"]][["collection"]] <- .imgToResults2(plotGroups) # add to results
+
+					results[["inferentialPlots"]][["collection"]] <- plotGroups
 					
 					z <- z + 1
 					
@@ -614,8 +609,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					}
 					
 					plotGroups[[i]][["BFrobustnessPlot"]] <- plots.ttest[[z]]
-					figstate <- append(figstate, .imgToState2(plotGroups)) # add image object to state
-					results[["inferentialPlots"]][["collection"]] <- .imgToResults2(plotGroups) # add plots without image object to results
+					results[["inferentialPlots"]][["collection"]] <- plotGroups # add plots without image object to results
 					
 					z <- z + 1
 					
@@ -705,8 +699,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					}
 					
 					plotGroups[[i]][["BFsequentialPlot"]] <- plots.ttest[[z]]
-					figstate <- append(figstate, .imgToState2(plotGroups)) # add image object to state
-					results[["inferentialPlots"]][["collection"]] <- .imgToResults2(plotGroups) # add plots without image object to results
+					results[["inferentialPlots"]][["collection"]] <- plotGroups
 					
 					
 					z <- z + 1
@@ -730,8 +723,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	for (plot in descriptivesPlots)
 		keep <- c(keep, plot$data)
 	
-	descriptivesPlots <- .imgToResults2(descriptivesPlots) # omit image object
-	plots.ttest <- .imgToResults2(plots.ttest)             # omit image object
+	descriptivesPlots <- descriptivesPlots
+	plots.ttest <- plots.ttest
 
 	if (perform == "init") {
 		
@@ -740,7 +733,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	} else {
 	
 		return(list(results=results, status="complete", state=list(options=options, results=results, plotsTtest=plots.ttest, plotTypes=plotTypes, plotVariables=plotVariables,
-		descriptPlotVariables=descriptPlotVariables, descriptivesPlots=descriptivesPlots, status=status, plottingError=plottingError, BF10post=BF10post, errorFootnotes=errorFootnotes), # figures=figstate),
+		descriptPlotVariables=descriptPlotVariables, descriptivesPlots=descriptivesPlots, status=status, plottingError=plottingError, BF10post=BF10post, errorFootnotes=errorFootnotes)),
 		keep=keep))
 	}
 	
@@ -1443,8 +1436,3 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	descriptives[["data"]] <- data
 	descriptives
 }
-
-
-# for
-.imgToResults2 <- identity
-.imgToState2 <- identity

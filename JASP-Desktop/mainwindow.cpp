@@ -597,8 +597,8 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 	Json::Reader parser;
 	parser.parse(utf8, root);
 
-	QString caption = "Save Image (with PNG or EPS format)";
-	QString filter = "Portable Network Graphics (*.png);;Encapsulated PostScript (*.eps);;TIFF (*.tiff)";
+	QString caption = "Save JASP Image";
+	QString filter = "Portable Network Graphics (*.png);;Tagged Image File Format (*.tiff);;Encapsulated PostScript (*.eps)";
     QString selectedFilter;
 
     QString finalPath = QFileDialog::getSaveFileName(this, caption, QString(), filter, &selectedFilter);
@@ -610,7 +610,7 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
             root["finalPath"] = finalPath.toStdString();
             analysis->saveImage(analysis, root);
 		}
-		else if (selectedFilter == "TIFF (*.tiff)")
+		else if (selectedFilter == "Tagged Image File Format (*.tiff)")
 		{
 			root["type"] = "tiff";
 			root["finalPath"] = finalPath.toStdString();
