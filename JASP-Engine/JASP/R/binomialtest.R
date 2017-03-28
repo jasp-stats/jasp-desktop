@@ -38,7 +38,6 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 
   # Retrieve state
   state <- .retrieveState()
-	figstate <- NULL
 	descriptPlots <- NULL
 	binomResults <- NULL
 
@@ -60,8 +59,6 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 				diff[["descriptivesPlotsConfidenceInterval"]],
 				diff[["plotWidth"]],
 				diff[["plotHeight"]])){
-			figstate <- try(state[["figures"]], silent = TRUE)
-		 	if (class(figstate) == "try-error") figstate <- list()
 			descriptPlots <- state$descriptPlots
 		}
 
@@ -112,7 +109,7 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 		  }
 		}
 
-    results[["descriptives"]] <- .imgToResults(descriptPlots)
+    results[["descriptives"]] <- descriptPlots
 		results[["descriptives"]][["title"]] <- "Descriptive Plots"
 
   } else {
@@ -131,7 +128,6 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 		state[["binomResults"]] <- binomResults
 		state[["binomTable"]] <- results[["binomial"]]
 		state[["descriptPlots"]] <- results[["descriptives"]]
-		state[["figures"]] <- .imgToState(descriptPlots)
 
     return(list(results=results, status="complete", state=state,
 								keep = plotPaths))

@@ -46,9 +46,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	state <- .retrieveState()
 
-	figstate <- try(state[["figures"]], silent = TRUE)
-	if (class(figstate) == "try-error") figstate <- list()
-
 	anovaModel <- NULL
 	statePostHoc <- NULL
 	stateqqPlot <- NULL
@@ -201,19 +198,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	if (is.null(stateqqPlot)) {
 
 		result <- .qqPlot(model, options, perform, status, stateqqPlot)
-		resultQQplot <- .imgToResults(result$result)
+		resultQQplot <- result$result
 		status <- result$status
 		stateqqPlot <- .imgToResults(result$stateqqPlot)
 
 	} else {
 
 		resultQQplot <- stateqqPlot
-
-	}
-
-	if (perform != "init") {
-
-		figstate <- append(figstate, .imgToState(result$result))
 
 	}
 
@@ -292,7 +283,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	if (is.null(stateDescriptivesPlot)) {
 
 		result <- .anovaDescriptivesPlot(dataset, options, perform, status, stateDescriptivesPlot)
-		descriptivesPlot <- .imgToResults(result$result)
+		descriptivesPlot <- result$result
 		status <- result$status
 		stateDescriptivesPlot <- .imgToResults(result$stateDescriptivesPlot)
 
@@ -301,13 +292,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		descriptivesPlot <- stateDescriptivesPlot
 
 	}
-
-	if (perform != "init") {
-
-		figstate <- append(figstate, .imgToState(result$result))
-
-	}
-
 
 	if (length(descriptivesPlot) == 1) {
 
@@ -353,7 +337,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	state[["stateLevene"]] <- stateLevene
 	state[["stateDescriptivesTable"]] <- stateDescriptivesTable
 	state[["stateMarginalMeans"]] <- stateMarginalMeans
-	state[["figures"]] <- figstate
+	
 
 	if (perform == "init" && status$ready && status$error == FALSE) {
 
