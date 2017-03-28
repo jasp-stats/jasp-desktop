@@ -598,7 +598,7 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 	parser.parse(utf8, root);
 
 	QString caption = "Save Image (with PNG or EPS format)";
-	QString filter = "Encapsulated PostScript (*.eps);;Portable Network Graphics (*.png)";
+	QString filter = "Portable Network Graphics (*.png);;Encapsulated PostScript (*.eps);;TIFF (*.tiff)";
     QString selectedFilter;
 
     QString finalPath = QFileDialog::getSaveFileName(this, caption, QString(), filter, &selectedFilter);
@@ -609,6 +609,12 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 			root["type"] = "eps";
             root["finalPath"] = finalPath.toStdString();
             analysis->saveImage(analysis, root);
+		}
+		else if (selectedFilter == "TIFF (*.tiff)")
+		{
+			root["type"] = "tiff";
+			root["finalPath"] = finalPath.toStdString();
+			analysis->saveImage(analysis, root);
 		}
 		else
 		{

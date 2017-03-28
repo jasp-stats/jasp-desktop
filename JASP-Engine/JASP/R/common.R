@@ -842,8 +842,8 @@ saveImage <- function(plotName, format, height, width){
 
   # create file location string
   location <- .requestTempFileNameNative("png") # to extract the root location
-	relativePath <- paste0(base::substr(plotName, start = 1, 
-																			stop = nchar(plotName)-3), format)
+	# finds the last dot and replaces everything after it with "format"
+	relativePath <- base::gsub("(?<=\\.)(?!.*\\.).*", "png", format, perl = TRUE)
   fullPath <- paste(location$root, relativePath, sep="/")
 	base::Encoding(relativePath) <- "UTF-8"
   base::Encoding(fullPath) <- "UTF-8"
@@ -852,10 +852,15 @@ saveImage <- function(plotName, format, height, width){
 	# Open correct graphics device
 	if (format == "eps"){
 		
-		grDevices::cairo_ps(filename=fullPath, width=width/.ppi*1.25, 
-												height=height/.ppi*1.25, bg="transparent")
+		grDevices::cairo_ps(filename=fullPath, width=width/(.ppi/96*72), 
+												height=height/(.ppi/96*72), bg="transparent")
 		
-  } else { # add optional other formats here in "else if"-statements
+  } else if (format == "tiff"){
+		
+		grDevices::tiff(filename=fullPath, width = width*4, height = height*4, 
+										res = (.ppi/96)*72*4, bg="transparent")
+		
+	} else { # add optional other formats here in "else if"-statements
 		stop("Format incorrectly specified")
 	}
 	
