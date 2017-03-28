@@ -307,9 +307,24 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
 				
-				image <- .beginSaveImage(530, 400)
-				.plotPosterior.ttest(x=NULL, y=NULL, paired=FALSE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, dontPlotData=TRUE)
-				plot[["data"]] <- .endSaveImage(image)
+				# image <- .beginSaveImage(530, 400)
+				# .plotPosterior.ttest(x=NULL, y=NULL, paired=FALSE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, dontPlotData=TRUE)
+				# plot[["data"]] <- .endSaveImage(image)
+				
+				.plotFunc <- function() {
+					.plotPosterior.ttest(x=NULL, y=NULL, paired=FALSE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, dontPlotData=TRUE)
+				}
+				
+				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
+				
+				# sink("C:/Users/donvd/Desktop/dput.txt")
+				# 
+				# print("str(content)")
+				# print(str(content))
+				
 				
 				plots.ttest[[length(plots.ttest)+1]] <- plot
 			}
@@ -350,9 +365,18 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
 				
-				image <- .beginSaveImage(530, 400)
-				.plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
-				plot[["data"]] <- .endSaveImage(image)
+				# image <- .beginSaveImage(530, 400)
+				# .plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+				# plot[["data"]] <- .endSaveImage(image)
+				
+				.plotFunc <- function() {
+					.plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+				}
+				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
 				
 				plots.ttest[[length(plots.ttest)+1]] <- plot
 			}
@@ -396,9 +420,18 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
 				
-				image <- .beginSaveImage(530, 400)
-				.plotSequentialBF.ttest(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
-				plot[["data"]] <- .endSaveImage(image)
+				# image <- .beginSaveImage(530, 400)
+				# .plotSequentialBF.ttest(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+				# plot[["data"]] <- .endSaveImage(image)
+				
+				.plotFunc <- function() {
+					.plotSequentialBF.ttest(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+				}
+				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
 				
 				plots.ttest[[length(plots.ttest)+1]] <- plot
 			}
@@ -732,10 +765,18 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					
 					p <- try(silent= FALSE, expr= {
 							
-							image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-							.plotGroupMeanBayesOneSampleTtest(variable=variableDataDescriptivesPlot, variableName=variable, testValueOpt=options$testValue, descriptivesPlotsCredibleInterval=options$
-							descriptivesPlotsCredibleInterval)
-							plot[["data"]] <- .endSaveImage(image)
+							# image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+							# .plotGroupMeanBayesOneSampleTtest(variable=variableDataDescriptivesPlot, variableName=variable, testValueOpt=options$testValue, descriptivesPlotsCredibleInterval=options$
+							# descriptivesPlotsCredibleInterval)
+							# plot[["data"]] <- .endSaveImage(image)
+							
+							obj <- .plotGroupMeanBayesOneSampleTtest(variable=variableDataDescriptivesPlot, variableName=variable, testValueOpt=options$testValue, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
+							content <- .writeImage(width = options$plotWidth, height = options$plotHeight, plot = obj, obj = TRUE)
+							
+							plot[["convertible"]] <- TRUE
+							plot[["obj"]] <- content[["obj"]]
+							plot[["data"]] <- content[["png"]]
+							
 						})
 						
 					if (class(p) == "try-error") {
@@ -796,9 +837,19 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 						
 						p <- try(silent= FALSE, expr= {
 								
-								image <- .beginSaveImage(530, 400)
-								.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post[i], BFH1H0=BFH1H0)
-								plot[["data"]] <- .endSaveImage(image)
+								# image <- .beginSaveImage(530, 400)
+								# .plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post[i], BFH1H0=BFH1H0)
+								# plot[["data"]] <- .endSaveImage(image)
+								
+								.plotFunc <- function() {
+									.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post[i], BFH1H0=BFH1H0)
+								}
+								
+								content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+								plot[["convertible"]] <- TRUE
+								plot[["obj"]] <- content[["obj"]]
+								plot[["data"]] <- content[["png"]]
+								
 							})
 							
 						if (class(p) == "try-error") {
@@ -859,10 +910,20 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 						
 						p <- try(silent= FALSE, expr= {
 								
-								image <- .beginSaveImage(530, 400)
-								.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, BF10post=BF10post[i], rscale = options$priorWidth, BFH1H0= BFH1H0)
-								content <- .endSaveImage(image)
-								plot[["data"]]  <- content
+								# image <- .beginSaveImage(530, 400)
+								# .plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, BF10post=BF10post[i], rscale = options$priorWidth, BFH1H0= BFH1H0)
+								# content <- .endSaveImage(image)
+								# plot[["data"]]  <- content
+								
+								.plotFunc <- function() {
+									.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, BF10post=BF10post[i], rscale = options$priorWidth, BFH1H0= BFH1H0)
+								}
+								content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+				
+								plot[["convertible"]] <- TRUE
+								plot[["obj"]] <- content[["obj"]]
+								plot[["data"]] <- content[["png"]]
+								
 							})
 							
 						if (class(p) == "try-error") {
@@ -937,11 +998,21 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 						
 						p <- try(silent= FALSE, expr= {
 								
-								image <- .beginSaveImage(530, 400)
-								.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, BF10post=BF10post[i], plotDifferentPriors= options$
-								plotSequentialAnalysisRobustness)
-								content <- .endSaveImage(image)
-								plot[["data"]]  <- content
+								# image <- .beginSaveImage(530, 400)
+								# .plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, BF10post=BF10post[i], plotDifferentPriors= options$
+								# plotSequentialAnalysisRobustness)
+								# content <- .endSaveImage(image)
+								# plot[["data"]]  <- content
+								
+								.plotFunc <- function() {
+									.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, BF10post=BF10post[i], plotDifferentPriors= options$plotSequentialAnalysisRobustness)
+								}
+								content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+				
+								plot[["convertible"]] <- TRUE
+								plot[["obj"]] <- content[["obj"]]
+								plot[["data"]] <- content[["png"]]
+								
 							})
 							
 						if (class(p) == "try-error") {
@@ -3839,6 +3910,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 						plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
 		.base_breaks_y2(summaryStat, testValueOpt)
 	
-	print(p)
-	
+	# print(p)
+	return(p)
 }

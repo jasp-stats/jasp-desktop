@@ -416,13 +416,14 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 												 plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) +
 					base_breaks_y(summaryStat, dfTestValue$testValue)
 
-					imgObj <- .writeImage(width = options$plotWidth, 
-																height = options$plotHeight, 
-																plot = p)
+					
+					content <- .writeImage(width = options$plotWidth, 
+										   height = options$plotHeight, 
+										   plot = p, obj = TRUE)
 
-					descriptivesPlot[["data"]] <- imgObj[["png"]]
-					descriptivesPlot[["obj"]] <- imgObj[["obj"]]
 					descriptivesPlot[["convertible"]] <- TRUE
+					descriptivesPlot[["obj"]] <- content[["obj"]]
+					descriptivesPlot[["data"]] <- content[["png"]]
 					descriptivesPlot[["status"]] <- "complete"
 
 				} else {

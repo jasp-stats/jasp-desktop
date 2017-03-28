@@ -254,9 +254,19 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
 				
-				image <- .beginSaveImage(530, 400)
-				.plotPosterior.ttest(x=NULL, y=NULL, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, dontPlotData=TRUE)
-				plot[["data"]] <- .endSaveImage(image)
+				# image <- .beginSaveImage(530, 400)
+				# .plotPosterior.ttest(x=NULL, y=NULL, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, dontPlotData=TRUE)
+				# plot[["data"]] <- .endSaveImage(image)
+				
+				.plotFunc <- function() {
+					.plotPosterior.ttest(x=NULL, y=NULL, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, dontPlotData=TRUE)
+				}
+				
+				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
+				
 				
 				plots.ttest[[length(plots.ttest)+1]] <- plot
 			}
@@ -298,9 +308,18 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
 				
-				image <- .beginSaveImage(530, 400)
-				.plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
-				plot[["data"]] <- .endSaveImage(image)
+				# image <- .beginSaveImage(530, 400)
+				# .plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+				# plot[["data"]] <- .endSaveImage(image)
+				
+				.plotFunc <- function() {
+					.plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+				}
+				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
 				
 				plots.ttest[[length(plots.ttest)+1]] <- plot
 			}
@@ -344,9 +363,18 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
 				
-				image <- .beginSaveImage(530, 400)
-				.plotSequentialBF.ttest(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
-				plot[["data"]] <- .endSaveImage(image)
+				# image <- .beginSaveImage(530, 400)
+				# .plotSequentialBF.ttest(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+				# plot[["data"]] <- .endSaveImage(image)
+				
+				.plotFunc <- function() {
+					.plotSequentialBF.ttest(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+				}
+				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
 				
 				plots.ttest[[length(plots.ttest)+1]] <- plot
 			}
@@ -750,9 +778,17 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 					p <- try(silent= FALSE, expr= {
 							
-							image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-							.plot2GroupMeansBayesIndTtest(v1 = c1, v2 = c2, nameV1 = pair[[1]], nameV2 = pair[[2]], descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
-							plot[["data"]] <- .endSaveImage(image)
+							# image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+							# .plot2GroupMeansBayesIndTtest(v1 = c1, v2 = c2, nameV1 = pair[[1]], nameV2 = pair[[2]], descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
+							# plot[["data"]] <- .endSaveImage(image)
+							
+							p <- .plot2GroupMeansBayesIndTtest(v1 = c1, v2 = c2, nameV1 = pair[[1]], nameV2 = pair[[2]], descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
+							content <- .writeImage(width = options$plotWidth, height = options$plotHeight, plot = p, obj = TRUE)
+							
+							plot[["convertible"]] <- TRUE
+							plot[["obj"]] <- content[["obj"]]
+							plot[["data"]] <- content[["png"]]
+							
 						})
 						
 					if (class(p) == "try-error") {
@@ -816,10 +852,20 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						
 						p <- try(silent= FALSE, expr= {
 							
-							image <- .beginSaveImage(530, 400)
-							.plotPosterior.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post[i], BFH1H0=BFH1H0)
-							plot[["data"]] <- .endSaveImage(image)
-							})
+							# image <- .beginSaveImage(530, 400)
+							# .plotPosterior.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post[i], BFH1H0=BFH1H0)
+							# plot[["data"]] <- .endSaveImage(image)
+							
+							.plotFunc <- function() {
+								.plotPosterior.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post[i], BFH1H0=BFH1H0)
+							}
+							
+							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+							plot[["convertible"]] <- TRUE
+							plot[["obj"]] <- content[["obj"]]
+							plot[["data"]] <- content[["png"]]
+							
+						})
 							
 							
 						if (class(p) == "try-error") {
@@ -883,11 +929,21 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 						p <- try(silent= FALSE, expr= {
 							
-							image <- .beginSaveImage(530, 400)
-							.plotBF.robustnessCheck.ttest(x=c1, y=c2, BF10post=BF10post[i], paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BFH1H0=BFH1H0)
-							content <- .endSaveImage(image)
-							plot[["data"]]  <- content
-							})
+							# image <- .beginSaveImage(530, 400)
+							# .plotBF.robustnessCheck.ttest(x=c1, y=c2, BF10post=BF10post[i], paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BFH1H0=BFH1H0)
+							# content <- .endSaveImage(image)
+							# plot[["data"]]  <- content
+							
+							.plotFunc <- function() {
+								.plotBF.robustnessCheck.ttest(x=c1, y=c2, BF10post=BF10post[i], paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BFH1H0=BFH1H0)
+							}
+							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+			
+							plot[["convertible"]] <- TRUE
+							plot[["obj"]] <- content[["obj"]]
+							plot[["data"]] <- content[["png"]]
+							
+						})
 							
 							
 						if (class(p) == "try-error") {
@@ -963,12 +1019,22 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						
 						p <- try(silent= FALSE, expr= {
 							
-							image <- .beginSaveImage(530, 400)
-							.plotSequentialBF.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BF10post=BF10post[i], plotDifferentPriors=options$plotSequentialAnalysisRobustness, BFH1H0=
-							BFH1H0)
-							content <- .endSaveImage(image)
-							plot[["data"]]  <- content
-							})
+							# image <- .beginSaveImage(530, 400)
+							# .plotSequentialBF.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BF10post=BF10post[i], plotDifferentPriors=options$plotSequentialAnalysisRobustness, BFH1H0=
+							# BFH1H0)
+							# content <- .endSaveImage(image)
+							# plot[["data"]]  <- content
+							
+							.plotFunc <- function() {
+								.plotSequentialBF.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BF10post=BF10post[i], plotDifferentPriors=options$plotSequentialAnalysisRobustness, BFH1H0=BFH1H0)
+							}
+							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+			
+							plot[["convertible"]] <- TRUE
+							plot[["obj"]] <- content[["obj"]]
+							plot[["data"]] <- content[["png"]]
+							
+						})
 							
 						if (class(p) == "try-error") {
 							

@@ -193,8 +193,9 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				correlation.plot <- plot
 				cexText <- 1.6
 
-				image <- .beginSaveImage(width, height)
+				# image <- .beginSaveImage(width, height)
 
+				.plotFunc <- function() {
 				if (l == 1) {
 
 					# par(mfrow= c(1, 1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
@@ -347,12 +348,17 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 						}
 					}
 				}
+				}
 
-				content <- .endSaveImage(image)
+				# content <- .endSaveImage(image)
+				content <- .writeImage(width = width, height = height, plot = .plotFunc, obj = TRUE)
 
 				plot <- correlation.plot
 
-				plot[["data"]]  <- content
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
+				# plot[["data"]]  <- content
 
 				correlation.plot <- plot
 			}

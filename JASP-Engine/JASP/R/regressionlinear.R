@@ -1846,15 +1846,22 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			plot[["height"]] <- 400
 			plot[["status"]] <- "waiting"
 
-			image <- .beginSaveImage(530, 400)
+			# image <- .beginSaveImage(530, 400)
 
+			.plotFunc <- function() {
 			if (length(options$modelTerms) > 0 && dependent.variable != "") {
 				.plotResiduals(xlab=dependent.variable, ylab="Residuals", dontPlotData=TRUE)
 			} else {
 				.plotResiduals(xlab="", ylab="Residuals", dontPlotData=TRUE)
 			}
+			}
 
-			plot[["data"]] <- .endSaveImage(image)
+			content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+			plot[["convertible"]] <- TRUE
+			plot[["obj"]] <- content[["obj"]]
+			plot[["data"]] <- content[["png"]]
+			
+			# plot[["data"]] <- .endSaveImage(image)
 
 			plots.regression[[length(plots.regression)+1]] <- plot
 			results[["plotResVsDep"]] <- plots.regression[[length(plots.regression)]]
@@ -1913,9 +1920,17 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
 
-				image <- .beginSaveImage(530, 400)
-				.plotResiduals(xlab=name, ylab="Residuals", dontPlotData=TRUE)
-				plot[["data"]] <- .endSaveImage(image)
+				# image <- .beginSaveImage(530, 400)
+				# .plotResiduals(xlab=name, ylab="Residuals", dontPlotData=TRUE)
+				# plot[["data"]] <- .endSaveImage(image)
+				
+				.plotFunc <- function() {
+					.plotResiduals(xlab=name, ylab="Residuals", dontPlotData=TRUE)
+				}
+				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
 
 				plots.regression[[length(plots.regression)+1]] <- plot
 				plotsResVsCov[[length(plotsResVsCov)+1]] <- plot
@@ -1955,9 +1970,17 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			plot[["height"]] <- 400
 			plot[["status"]] <- "waiting"
 
-			image <- .beginSaveImage(530, 400)
-			.plotResiduals(xlab="Predicted Values", ylab="Residuals", dontPlotData=TRUE)
-			plot[["data"]] <- .endSaveImage(image)
+			# image <- .beginSaveImage(530, 400)
+			# .plotResiduals(xlab="Predicted Values", ylab="Residuals", dontPlotData=TRUE)
+			# plot[["data"]] <- .endSaveImage(image)
+			
+			.plotFunc <- function() {
+					.plotResiduals(xlab="Predicted Values", ylab="Residuals", dontPlotData=TRUE)
+			}
+			content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+			plot[["convertible"]] <- TRUE
+			plot[["obj"]] <- content[["obj"]]
+			plot[["data"]] <- content[["png"]]
 
 			plots.regression[[length(plots.regression)+1]] <- plot
 
@@ -2005,9 +2028,17 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			plot[["height"]] <- 400
 			plot[["status"]] <- "waiting"
 
-			image <- .beginSaveImage(530, 400)
-			.plotResidualsHistogram(resName=resName, dontPlotData=TRUE)
-			plot[["data"]] <- .endSaveImage(image)
+			# image <- .beginSaveImage(530, 400)
+			# .plotResidualsHistogram(resName=resName, dontPlotData=TRUE)
+			# plot[["data"]] <- .endSaveImage(image)
+			
+			.plotFunc <- function() {
+				.plotResidualsHistogram(resName=resName, dontPlotData=TRUE)
+			}
+			content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+			plot[["convertible"]] <- TRUE
+			plot[["obj"]] <- content[["obj"]]
+			plot[["data"]] <- content[["png"]]
 
 			plots.regression[[length(plots.regression)+1]] <- plot
 
@@ -2044,9 +2075,17 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			plot[["height"]] <- 400
 			plot[["status"]] <- "waiting"
 
-			image <- .beginSaveImage(530, 400)
-			.plotQQresidualsRegression(dontPlotData=TRUE)
-			plot[["data"]] <- .endSaveImage(image)
+			# image <- .beginSaveImage(530, 400)
+			# .plotQQresidualsRegression(dontPlotData=TRUE)
+			# plot[["data"]] <- .endSaveImage(image)
+			
+			.plotFunc <- function() {
+				.plotQQresidualsRegression(dontPlotData=TRUE)
+			}
+			content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+			plot[["convertible"]] <- TRUE
+			plot[["obj"]] <- content[["obj"]]
+			plot[["data"]] <- content[["png"]]
 
 			plots.regression[[length(plots.regression)+1]] <- plot
 
@@ -2104,9 +2143,18 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 						p <- try(silent=FALSE, expr= {
 
-							image <- .beginSaveImage(530, 400)
-							.plotResiduals(xVar=dependent, res=res, xlab=dependent.variable, ylab="Residuals")
-							plot[["data"]] <- .endSaveImage(image)
+							# image <- .beginSaveImage(530, 400)
+							# .plotResiduals(xVar=dependent, res=res, xlab=dependent.variable, ylab="Residuals")
+							# plot[["data"]] <- .endSaveImage(image)
+							
+							.plotFunc <- function() {
+								.plotResiduals(xVar=dependent, res=res, xlab=dependent.variable, ylab="Residuals")
+							}
+							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+							plot[["convertible"]] <- TRUE
+							plot[["obj"]] <- content[["obj"]]
+							plot[["data"]] <- content[["png"]]
+							
 						})
 
 						if (class(p) == "try-error") {
@@ -2116,9 +2164,18 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 						}
 					} else {
 
-						image <- .beginSaveImage(530, 400)
-						.plotResiduals(dontPlotData=TRUE, xlab="", ylab="Residuals")
-						plot[["data"]] <- .endSaveImage(image)
+						# image <- .beginSaveImage(530, 400)
+						# .plotResiduals(dontPlotData=TRUE, xlab="", ylab="Residuals")
+						# plot[["data"]] <- .endSaveImage(image)
+						
+						.plotFunc <- function() {
+							.plotResiduals(dontPlotData=TRUE, xlab="", ylab="Residuals")
+						}
+						content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+						plot[["convertible"]] <- TRUE
+						plot[["obj"]] <- content[["obj"]]
+						plot[["data"]] <- content[["png"]]
+						
 					}
 				}
 
@@ -2195,9 +2252,18 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 						p <- try(silent=FALSE, expr= {
 
-							image <- .beginSaveImage(530, 400)
-							.plotResiduals(xVar=xVar, res=res, xlab=name, ylab="Residuals")
-							plot[["data"]] <- .endSaveImage(image)
+							# image <- .beginSaveImage(530, 400)
+							# .plotResiduals(xVar=xVar, res=res, xlab=name, ylab="Residuals")
+							# plot[["data"]] <- .endSaveImage(image)
+							
+							.plotFunc <- function() {
+								.plotResiduals(xVar=xVar, res=res, xlab=name, ylab="Residuals")
+							}
+							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+							plot[["convertible"]] <- TRUE
+							plot[["obj"]] <- content[["obj"]]
+							plot[["data"]] <- content[["png"]]
+							
 						})
 
 						if (class(p) == "try-error") {
@@ -2261,9 +2327,18 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 						p <- try(silent=FALSE, expr= {
 
-							image <- .beginSaveImage(530, 400)
-							.plotResiduals(xVar=pred, res=res, xlab="Predicted Values", ylab="Residuals")
-							plot[["data"]] <- .endSaveImage(image)
+							# image <- .beginSaveImage(530, 400)
+							# .plotResiduals(xVar=pred, res=res, xlab="Predicted Values", ylab="Residuals")
+							# plot[["data"]] <- .endSaveImage(image)
+							
+							.plotFunc <- function() {
+								.plotResiduals(xVar=pred, res=res, xlab="Predicted Values", ylab="Residuals")
+							}
+							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+							plot[["convertible"]] <- TRUE
+							plot[["obj"]] <- content[["obj"]]
+							plot[["data"]] <- content[["png"]]
+							
 						})
 
 						if (class(p) == "try-error") {
@@ -2274,9 +2349,18 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 					} else {
 
-						image <- .beginSaveImage(530, 400)
-						.plotResiduals(dontPlotData=TRUE, xlab="Predicted Values", ylab="Residuals")
-						plot[["data"]] <- .endSaveImage(image)
+						# image <- .beginSaveImage(530, 400)
+						# .plotResiduals(dontPlotData=TRUE, xlab="Predicted Values", ylab="Residuals")
+						# plot[["data"]] <- .endSaveImage(image)
+						
+						.plotFunc <- function() {
+							.plotResiduals(dontPlotData=TRUE, xlab="Predicted Values", ylab="Residuals")
+						}
+						content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+						plot[["convertible"]] <- TRUE
+						plot[["obj"]] <- content[["obj"]]
+						plot[["data"]] <- content[["png"]]
+						
 					}
 
 				}
@@ -2339,9 +2423,18 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 						p <- try(silent=FALSE, expr= {
 
-							image <- .beginSaveImage(530, 400)
-							.plotResidualsHistogram(res=res, resName=resName)
-							plot[["data"]] <- .endSaveImage(image)
+							# image <- .beginSaveImage(530, 400)
+							# .plotResidualsHistogram(res=res, resName=resName)
+							# plot[["data"]] <- .endSaveImage(image)
+							
+							.plotFunc <- function() {
+								.plotResidualsHistogram(res=res, resName=resName)
+							}
+							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+							plot[["convertible"]] <- TRUE
+							plot[["obj"]] <- content[["obj"]]
+							plot[["data"]] <- content[["png"]]
+							
 						})
 
 						if (class(p) == "try-error") {
@@ -2352,9 +2445,18 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 					} else {
 
-						image <- .beginSaveImage(530, 400)
-						.plotResidualsHistogram(dontPlotData=TRUE, resName=resName)
-						plot[["data"]] <- .endSaveImage(image)
+						# image <- .beginSaveImage(530, 400)
+						# .plotResidualsHistogram(dontPlotData=TRUE, resName=resName)
+						# plot[["data"]] <- .endSaveImage(image)
+						
+						.plotFunc <- function() {
+							.plotResidualsHistogram(dontPlotData=TRUE, resName=resName)
+						}
+						content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+						plot[["convertible"]] <- TRUE
+						plot[["obj"]] <- content[["obj"]]
+						plot[["data"]] <- content[["png"]]
+						
 					}
 				}
 
@@ -2409,9 +2511,18 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 						p <- try(silent=FALSE, expr= {
 
-							image <- .beginSaveImage(530, 400)
-							.plotQQresidualsRegression(res=resSt)
-							plot[["data"]] <- .endSaveImage(image)
+							# image <- .beginSaveImage(530, 400)
+							# .plotQQresidualsRegression(res=resSt)
+							# plot[["data"]] <- .endSaveImage(image)
+							
+							.plotFunc <- function() {
+								.plotQQresidualsRegression(res=resSt)
+							}
+							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+							plot[["convertible"]] <- TRUE
+							plot[["obj"]] <- content[["obj"]]
+							plot[["data"]] <- content[["png"]]
+							
 						})
 
 						if (class(p) == "try-error") {
@@ -2422,9 +2533,17 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 					} else {
 
-						image <- .beginSaveImage(530, 400)
-						.plotQQresidualsRegression(dontPlotData=TRUE)
-						plot[["data"]] <- .endSaveImage(image)
+						# image <- .beginSaveImage(530, 400)
+						# .plotQQresidualsRegression(dontPlotData=TRUE)
+						# plot[["data"]] <- .endSaveImage(image)
+						
+						.plotFunc <- function() {
+							.plotQQresidualsRegression(dontPlotData=TRUE)
+						}
+						content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+						plot[["convertible"]] <- TRUE
+						plot[["obj"]] <- content[["obj"]]
+						plot[["data"]] <- content[["png"]]
 
 					}
 

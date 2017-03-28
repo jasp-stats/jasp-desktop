@@ -2447,7 +2447,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			
 			p <- try(silent=FALSE, expr= {
 				
-				image <- .beginSaveImage(width, height)
+				# image <- .beginSaveImage(width, height)
+				.plotFunc <- function() {
 				
 				if (l == 1) {
 					
@@ -2566,11 +2567,15 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						}
 					}
 				}
-				
-				content <- .endSaveImage(image)
+				}
+				# content <- .endSaveImage(image)
+				content <- .writeImage(width = width, height = height, plot = .plotFunc, obj = TRUE)
 				
 				plot <- correlation.plot
-				plot[["data"]]  <- content
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
+				# plot[["data"]]  <- content
 			})
 			
 			if (class(p) == "try-error") {
