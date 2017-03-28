@@ -643,6 +643,13 @@ callback <- function(results=NULL) {
 	filename
 }
 
+.extractErrorMessage <- function(error) {
+
+	split <- base::strsplit(as.character(error), ":")[[1]]
+	last <- split[[length(split)]]
+	stringr::str_trim(last)
+}
+
 .clean <- function(value) {
 
 	if (is.list(value)) {
