@@ -48,7 +48,8 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 		diff <- .diff(options, state$options)  # compare old and new options
 
-		if (is.list(diff) && diff[['variables']] == FALSE && diff[['reverseScaledItems']] == FALSE) {
+		if (is.list(diff) && diff[['variables']] == FALSE && diff[['reverseScaledItems']] == FALSE
+			&& diff[['missingValues']] == FALSE) {
 
 			resultsAlpha <- state$resultsAlpha
 
@@ -124,8 +125,16 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 	if (perform == "run" && !is.null(variables) && length(variables) > 1) {
 
-		d <- as.matrix(dataset[complete.cases(dataset), ])
-
+		d <- as.matrix(dataset)
+		
+		# missing values: psych analyses by default use pairwise deletion, so we only 
+		# need to do something if the user wants listwise deletion
+		if (options[["missingValues"]] == "excludeCasesListwise") {
+			
+			d <- d[complete.cases(d), ]
+			
+		}
+		
 		# generate key for reverse scaled items
 		key <- NULL
 		if (length(options$reverseScaledItems) > 0) {
@@ -136,16 +145,27 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 		# calculate chronbach alpha and gutmanns lambda6
 		r <- psych::alpha(d, key = key)
+		
+		# calculate the greatest lower bound -- only possible for more than 2 variables.
+		if (length(variables) < 3) {
+			
+			r[["glb"]] <- "."
+			
+		} else { # try since the glb is rather error prone...
+			
+			r[["glb"]] <- try(psych::glb(r = d, key = key)[["glb.max"]], silent = TRUE)
+			
+		}
 
 		# calculate McDonalds omega
-		omega <- psych::omega(d, 1, flip = FALSE)[["omega.tot"]]
+		omega <- psych::omega(d, 1, flip = FALSE, plot = FALSE)[["omega.tot"]]
 
 		# calculate McDonalds omega if item dropped
 		omegaDropped <- NULL
 		if (ncol(d) > 2) {
 			omegaDropped = numeric(length = ncol(d))
 			for (i in 1:ncol(d)) {
-				omegaDropped[i] <- psych::omega(d[, -i], 1, flip = FALSE)$omega.tot
+				omegaDropped[i] <- psych::omega(d[, -i], 1, flip = FALSE, plot = FALSE)$omega.tot
 			}
 		}
 
@@ -181,6 +201,9 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 	if (options[["mcDonaldScale"]])
 		fields[[length(fields) + 1]] <- list(name="omega", title="McDonalds' \u03C9", type="number", format="sf:4;dp:3")
+	
+	if (options[["glbScale"]])
+		fields[[length(fields) + 1]] <- list(name="glb", title="Greatest lower bound", type="number", format="sf:4;dp:3")
 
 	if (options[["averageInterItemCor"]])
 		fields[[length(fields) + 1]] <- list(name="rho", title="Average interitem correlation", type="number", format="sf:4;dp:3")
@@ -194,20 +217,37 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 		footnotes <- .newFootnotes()
 
-		# is.null can be removed once options[["listwise"]] exists.
-		if (!is.null(options[["listwise"]])) {
-			exclwise = ifelse(options[["listwise"]], " listwise", " pairwise")
+		if (options[["missingValues"]] == "excludeCasesListwise") {
+			
+			exclwise = " listwise"
+			
 		} else {
-			exclwise = ""
+			
+			exclwise = " pairwise"
+			
 		}
 
-		nObs = nrow(dataset)
-		nExcluded = sum(!complete.cases(dataset))
-		nValid = nObs - nExcluded
+		nObs <- nrow(dataset)
+		nExcluded <- sum(!complete.cases(dataset))
+		nValid <- nObs - nExcluded
 
 		# message <- paste("Scale consists of items ", paste0(variables, collapse = ", "))
 		message <- sprintf("Of the observations, %d were used, %d were excluded%s, and %d were provided.",
 						   nValid, nExcluded, exclwise, nObs)
+		
+		if (options[["glbScale"]]) {
+			
+			if (length(variables) <= 2) {
+				
+				message <- paste(message, "Warning: Greatest lower bound can only be calculated for three or more variables.")
+				
+			} else if (inherits(class(r[["glb"]], "try-error"))) {
+				
+				message <- paste(message, "Warning: Greatest lower bound could not be calculated."
+				
+			}
+			
+		}
 
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
 
@@ -220,6 +260,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		sd <- NULL
 		rho <- NULL
 		omega <- NULL
+		glb <- NULL
 
 		if (options$alphaScale)
 			alpha <- .clean(r$total$raw_alpha)
@@ -238,14 +279,22 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 		if (options[["mcDonaldScale"]])
 			omega <- .clean(r[["omega"]])
+		
+		if (options[["glbScale"]]) {
+			if (r[["glb"]] == "." || inherits(class(r[["glb"]], "try-error")) { # unusable
+				glb <- "."
+			} else { # a useable value
+				glb <- .clean(r[["glb"]])
+			}
+		}
 
-		data[[1]] <- list(case="scale", alpha=alpha, lambda=lambda, omega = omega, rho=rho, mu=mu, sd=sd)
+		data[[1]] <- list(case="scale", alpha=alpha, lambda=lambda, omega = omega, glb = glb, rho=rho, mu=mu, sd=sd)
 
 		table[["status"]] <- "complete"
 
 	} else {
 
-		data[[1]] <- list(case="scale", alpha=".", lambda=".", omega = ".", rho =".", mean=".", sd=".")
+		data[[1]] <- list(case="scale", alpha=".", lambda=".", omega = ".", glb = ".", rho =".", mean=".", sd=".")
 
 	}
 

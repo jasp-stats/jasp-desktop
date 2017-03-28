@@ -7,14 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>638</width>
-    <height>690</height>
+    <height>955</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_6">
-   <item row="0" column="0">
+   <item row="0" column="0" colspan="2">
     <widget class="QWidget" name="topWidget" native="true">
      <layout class="QGridLayout" name="gridLayout_3">
       <property name="leftMargin">
@@ -103,7 +103,7 @@
      </layout>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item row="1" column="0" colspan="2">
     <widget class="QWidget" name="gridLayout_7" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -184,6 +184,13 @@
            </property>
           </widget>
          </item>
+         <item row="3" column="0">
+          <widget class="BoundCheckBox" name="glbScale">
+           <property name="text">
+            <string>Greatest lower bound</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
@@ -254,7 +261,7 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="2" column="0" colspan="2">
     <widget class="QWidget" name="revScaledItemsBox" native="true">
      <layout class="QGridLayout" name="gridLayout_4">
       <property name="leftMargin">
@@ -313,9 +320,82 @@
      </layout>
     </widget>
    </item>
+   <item row="4" column="0">
+    <widget class="QWidget" name="advancedOptionsBox" native="true">
+     <layout class="QGridLayout" name="gridLayout_8">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>3</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>3</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="ExpanderButton" name="expanderPosthoc_3">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Advanced Options</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="BoundGroupBox" name="missingValues">
+        <property name="title">
+         <string>Missing Values</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_13">
+         <property name="bottomMargin">
+          <number>13</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QRadioButton" name="_1excludeCasesListwise">
+           <property name="text">
+            <string>Exclude cases listwise</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QRadioButton" name="_2excludeCasesPairwise">
+           <property name="text">
+            <string>Exclude cases pairwise</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>BoundGroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/boundgroupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
   <customwidget>
    <class>AssignButton</class>
    <extends>QPushButton</extends>
@@ -327,25 +407,9 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundListView</class>
    <extends>QListView</extends>
    <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundGroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/boundgroupbox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
    <class>BoundAssignWidget</class>
