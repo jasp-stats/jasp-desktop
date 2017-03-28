@@ -52,9 +52,6 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 
 	state <- .retrieveState()
-	figstate <- try(state[["figures"]], silent = TRUE)
-	if (class(figstate) == "try-error") figstate <- list()
-
 	run <- perform == "run"
 
 	results <- list()
@@ -122,13 +119,8 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	}
 	
 	freqPltColl <- .descriptivesFrequencyPlots(dataset.factors, options, run, last.plots)
-	
-	if (!is.null(freqPltColl[[1]][["obj"]])){
-		# Save plot objects to figstate
-		figstate <- append(figstate, .imgToState(freqPltColl))
-	}
 
-	distrPlots <- list(collection=.imgToResults(freqPltColl), 
+	distrPlots <- list(collection=freqPltColl, 
 										 title=distrPlotsTitle)
 
 	#### SPLIT PLOTS
@@ -145,25 +137,17 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	# Generate all the plots
 	splPltColl <- .descriptivesSplitPlots(dataset, options, run, last.splitPlots)
 	
-	if (!is.null(splPltColl[[1]][["obj"]])){
-		# Save plot objects to state
-		figstate <- append(figstate, .imgToState(splPltColl))
-	}
-	
-	splitPlots <- list(collection=.imgToResults(splPltColl),
+	splitPlots <- list(collection=splPltColl,
 										 title=splitPlotsTitle)
 
 
 ####  MATRIX PLOT
 
 	corrPlot <- .descriptivesMatrixPlot(dataset, options, run)
-	if (!is.null(corrPlot[["obj"]])){
-		figstate <- append(figstate, .imgToState(corrPlot))
-	}
 	
 		
 	results[["plots"]] <- list(distributionPlots=distrPlots, 
-														 matrixPlot=.imgToResults(corrPlot),
+														 matrixPlot=corrPlot,
 														 splitPlots=splitPlots, title="Plots")
 
 	keep <- NULL
@@ -187,7 +171,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 	} else {
 
-		return(list(results=results, status="complete", state=list(options=options, results=results, figures=figstate), keep=keep))
+		return(list(results=results, status="complete", state=list(options=options, results=results), keep=keep))
 	}
 }
 

@@ -619,7 +619,11 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 		else
 		{
             QString imagePath = QString::fromStdString(tempfiles_sessionDirName()) + "/" + root.get("name", Json::nullValue).asCString();
-            QFile::copy(imagePath, finalPath);
+			if (QFile::exists(finalPath))
+			{
+				QFile::remove(finalPath);
+			}
+			QFile::copy(imagePath, finalPath);
         }
 	}
 }
