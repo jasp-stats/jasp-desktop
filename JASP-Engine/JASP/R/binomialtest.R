@@ -38,6 +38,7 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 
   # Retrieve state
   state <- .retrieveState()
+	figstate <- NULL
 	descriptPlots <- NULL
 	binomResults <- NULL
 
@@ -59,7 +60,8 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 				diff[["descriptivesPlotsConfidenceInterval"]],
 				diff[["plotWidth"]],
 				diff[["plotHeight"]])){
-
+			figstate <- try(state[["figures"]], silent = TRUE)
+		 	if (class(figstate) == "try-error") figstate <- list()
 			descriptPlots <- state$descriptPlots
 		}
 
@@ -95,10 +97,8 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
   if (options[["descriptivesPlots"]]){
 
 		if (is.null(descriptPlots)) {
-
 			descriptPlots <- .binomialDescriptivesPlot(dataset, options, variables,
 																								 perform)
-			descriptPlots[["title"]] <- "Descriptive Plots"
 		}
 
 		# select list of plot paths to keep when rerunning analysis.
@@ -112,7 +112,8 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 		  }
 		}
 
-    results[["descriptives"]] <- descriptPlots
+    results[["descriptives"]] <- .imgToResults(descriptPlots)
+		results[["descriptives"]][["title"]] <- "Descriptive Plots"
 
   } else {
 
@@ -130,6 +131,7 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 		state[["binomResults"]] <- binomResults
 		state[["binomTable"]] <- results[["binomial"]]
 		state[["descriptPlots"]] <- results[["descriptives"]]
+		state[["figures"]] <- .imgToState(descriptPlots)
 
     return(list(results=results, status="complete", state=state,
 								keep = plotPaths))
@@ -414,11 +416,13 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 												 plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) +
 					base_breaks_y(summaryStat, dfTestValue$testValue)
 
-					image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-					print(p)
-		      content <- .endSaveImage(image)
+					imgObj <- .writeImage(width = options$plotWidth, 
+																height = options$plotHeight, 
+																plot = p)
 
-		      descriptivesPlot[["data"]] <- content
+					descriptivesPlot[["data"]] <- imgObj[["png"]]
+					descriptivesPlot[["obj"]] <- imgObj[["obj"]]
+					descriptivesPlot[["convertible"]] <- TRUE
 					descriptivesPlot[["status"]] <- "complete"
 
 				} else {

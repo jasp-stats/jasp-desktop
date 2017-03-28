@@ -920,11 +920,13 @@ saveImage <- function(plotName, format, height, width){
 
 .imgToState <- function(imgobj){
   # Recursive function to save named list of image objects to state
-  result <- list()
+	result <- NULL
   if (is.list(imgobj[[1]])){
     result <- unlist(lapply(imgobj, .imgToState), recursive = FALSE)
   } else {
-    result[[imgobj[["data"]]]] <- imgobj[["obj"]]
+		if ("obj"%in%names(imgobj) && "data"%in%names(imgobj)){
+			result[[imgobj[["data"]]]] <- imgobj[["obj"]]
+		}
   }
   return(result)
 }
