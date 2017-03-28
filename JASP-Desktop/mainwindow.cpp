@@ -245,7 +245,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	QMenuBar *_mMenuBar = new QMenuBar(parent=0);
 	QMenu *aboutMenu = _mMenuBar->addMenu("JASP");
-	aboutMenu->addAction("About",this,SLOT(showAbout()));
+	aboutMenu->addAction("About",ui->tabBar,SLOT(showAbout()));
 	_mMenuBar->addMenu(aboutMenu);
 
 	_buttonPanelLayout->addWidget(_okButton);
