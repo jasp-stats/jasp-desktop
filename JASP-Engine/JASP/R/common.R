@@ -920,7 +920,6 @@ saveImage <- function(plotName, format, height, width){
 		imgobj <- imgobj[nms != "obj"]
 
 	return(lapply(imgobj, .imgToResults))
-
 }
 
 #.imgToState 
