@@ -40,7 +40,6 @@ BainTTestBayesianOneSampleForm::BainTTestBayesianOneSampleForm(QWidget *parent) 
 
 	ui->buttonAssign_main_fields->setSourceAndTarget(ui->listAvailableFields, ui->variables);
 
-	ui->priorWidth->setLabel("Prior width");
 }
 
 BainTTestBayesianOneSampleForm::~BainTTestBayesianOneSampleForm()

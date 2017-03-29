@@ -923,6 +923,7 @@ as.list.footnotes <- function(footnotes) {
 
 
 .writeImage <- function(width=320, height=320, plot, obj = TRUE){
+    
 	# Initialise output object
 	image <- list()
 
@@ -954,6 +955,7 @@ as.list.footnotes <- function(footnotes) {
 	} else {
 		print(plot)
 	}
+	
 	dev.off()
 	
 	# Save path & plot object to output

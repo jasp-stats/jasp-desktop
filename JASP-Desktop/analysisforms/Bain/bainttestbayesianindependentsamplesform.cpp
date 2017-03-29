@@ -44,7 +44,6 @@ BainTTestBayesianIndependentSamplesForm::BainTTestBayesianIndependentSamplesForm
 	ui->buttonAssignVariables->setSourceAndTarget(ui->listAvailableFields, ui->variables);
 	ui->buttonAssignGroupingVariable->setSourceAndTarget(ui->listAvailableFields, ui->groupingVariable);
 
-	ui->priorWidth->setLabel("Prior width");
 }
 
 BainTTestBayesianIndependentSamplesForm::~BainTTestBayesianIndependentSamplesForm()

@@ -9,7 +9,7 @@
 		},
 		{
 			"name": "hypothesis",
-			"options": [ "notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue" ],
+            "options": [ "notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue", "allTypes" ],
 			"default": "notEqualToTestValue",
 			"type": "List"
 		},
@@ -20,21 +20,8 @@
 			"type": "List"
 		},
 		{
-			"format": "",
-			"name": "priorWidth",
-			"type": "Number",
-			"value": 0.7070,
-			"min": 0,
-			"max": 2
-		},
-		{
 			"default": false,
 			"name": "plotPriorAndPosterior",
-			"type": "Boolean"
-		},
-		{
-			"default": false,
-			"name": "plotPriorAndPosteriorAdditionalInfo",
 			"type": "Boolean"
 		},
 		{
@@ -45,21 +32,6 @@
 		},
 		{
 			"name": "descriptives",
-			"type": "Boolean"
-		},
-		{
-			"default": false,
-			"name": "plotBayesFactorRobustness",
-			"type": "Boolean"
-		},
-		{
-			"default": false,
-			"name": "plotSequentialAnalysis",
-			"type": "Boolean"
-		},
-		{
-			"default": false,
-			"name": "plotSequentialAnalysisRobustness",
 			"type": "Boolean"
 		},
 		{
@@ -76,12 +48,12 @@
 			"value": 0.950
 		},
 		{
-			"default": 320,
+            "default": 420,
 			"name": "plotWidth",
 			"type": "Integer"
 		},
 		{
-			"default": 240,
+            "default": 340,
 			"name": "plotHeight",
 			"type": "Integer"
 		},

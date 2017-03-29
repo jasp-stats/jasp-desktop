@@ -43,8 +43,6 @@ BainTTestBayesianPairedSamplesForm::BainTTestBayesianPairedSamplesForm(QWidget *
 	ui->pairs->setModel(model);
 
 	ui->assignButton->setSourceAndTarget(ui->availableFields, ui->pairs);
-
-	ui->priorWidth->setLabel("Prior width");
 }
 
 BainTTestBayesianPairedSamplesForm::~BainTTestBayesianPairedSamplesForm()

@@ -18,7 +18,7 @@
 		},
 		{
 			"name": "hypothesis",
-			"options": [ "groupsNotEqual", "groupOneGreater", "groupTwoGreater" ],
+            "options": [ "groupsNotEqual", "groupOneGreater", "groupTwoGreater", "allTypes" ],
 			"default": "groupsNotEqual",
 			"type": "List"
 		},
@@ -27,40 +27,12 @@
 			"options": [ "excludeAnalysisByAnalysis", "excludeListwise" ],
 			"default": "excludeAnalysisByAnalysis",
 			"type": "List"
-		},
-		{
-			"format": "",
-			"name": "priorWidth",
-			"type": "Number",
-			"value": 0.7070,
-			"min": 0,
-			"max": 2
-		},
+        },
 		{
 			"default": false,
 			"name": "plotPriorAndPosterior",
 			"type": "Boolean"
-		},
-		{
-			"default": false,
-			"name": "plotPriorAndPosteriorAdditionalInfo",
-			"type": "Boolean"
-		},
-		{
-			"default": false,
-			"name": "plotBayesFactorRobustness",
-			"type": "Boolean"
-		},
-		{
-			"default": false,
-			"name": "plotSequentialAnalysis",
-			"type": "Boolean"
-		},
-		{
-			"default": false,
-			"name": "plotSequentialAnalysisRobustness",
-			"type": "Boolean"
-		},
+        },
 		{
 			"default": false,
 			"name": "descriptivesPlots",

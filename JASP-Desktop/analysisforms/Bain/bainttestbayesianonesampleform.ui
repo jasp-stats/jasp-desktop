@@ -196,52 +196,17 @@
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <item row="1" column="1">
-          <widget class="QWidget" name="widget_5" native="true">
-           <property name="minimumSize">
-            <size>
-             <width>240</width>
-             <height>0</height>
-            </size>
+         <item row="2" column="1">
+          <widget class="BoundGroupBox" name="hypothesis">
+           <property name="title">
+            <string>Hypothesis</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_5">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_3">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Test value:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="BoundTextBox" name="testValue">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>60</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>60</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <spacer name="horizontalSpacer_3">
+           <property name="flat">
+            <bool>false</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_9">
+            <item row="0" column="1" rowspan="2">
+             <spacer name="horizontalSpacer_4">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -253,20 +218,8 @@
               </property>
              </spacer>
             </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="5" column="1">
-          <widget class="GroupBox" name="groupBox">
-           <property name="title">
-            <string>Prior</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_11">
-            <property name="topMargin">
-             <number>6</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label">
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="_2oneTailedGreaterThan">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -274,44 +227,42 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Cauchy prior width</string>
+               <string>Equal vs. Bigger</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
-             <widget class="BoundTextBox" name="priorWidth">
+            <item row="2" column="0">
+             <widget class="QRadioButton" name="_3oneTailedLessThan">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
-              <property name="minimumSize">
-               <size>
-                <width>60</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>60</width>
-                <height>16777215</height>
-               </size>
+              <property name="text">
+               <string>Equal vs. Smaller</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="2">
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="_1twoTailed">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>81</width>
-                <height>20</height>
-               </size>
+              <property name="text">
+               <string>Equal vs. Not equal</string>
               </property>
-             </spacer>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QRadioButton" name="allTypes">
+              <property name="text">
+               <string>Equal vs. Bigger vs. Smaller</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -380,7 +331,7 @@
            </layout>
           </widget>
          </item>
-         <item row="6" column="1">
+         <item row="5" column="1">
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -393,17 +344,17 @@
            </property>
           </spacer>
          </item>
-         <item row="2" column="1">
-          <widget class="BoundGroupBox" name="hypothesis">
-           <property name="title">
-            <string>Hypothesis</string>
+         <item row="1" column="1">
+          <widget class="QWidget" name="widget_5" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>240</width>
+             <height>0</height>
+            </size>
            </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_9">
+           <layout class="QGridLayout" name="gridLayout_5">
             <item row="0" column="0">
-             <widget class="QRadioButton" name="_1twoTailed">
+             <widget class="QLabel" name="label_3">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -411,38 +362,34 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>≠ Test value</string>
+               <string>Test value:</string>
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QRadioButton" name="_3oneTailedLessThan">
+            <item row="0" column="1">
+             <widget class="BoundTextBox" name="testValue">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
-              <property name="text">
-               <string>&lt; Test value</string>
+              <property name="minimumSize">
+               <size>
+                <width>60</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>60</width>
+                <height>16777215</height>
+               </size>
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QRadioButton" name="_2oneTailedGreaterThan">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>&gt; Test value</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1" rowspan="2">
-             <spacer name="horizontalSpacer_4">
+            <item row="0" column="2">
+             <spacer name="horizontalSpacer_3">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -567,101 +514,7 @@
             <string>Plots</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_4">
-            <item row="5" column="0">
-             <widget class="QWidget" name="widget_4" native="true">
-              <property name="maximumSize">
-               <size>
-                <width>16</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="plotSequentialAnalysis">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Sequential analysis</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1" colspan="4">
-             <widget class="BoundCheckBox" name="plotPriorAndPosteriorAdditionalInfo">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Additional info</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="descriptivesPlots">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Descriptives plots</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="plotBayesFactorRobustness">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Bayes factor robustness check</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="plotPriorAndPosterior">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Prior and posterior</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="1" colspan="4">
-             <widget class="BoundCheckBox" name="plotSequentialAnalysisRobustness">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Robustness check</string>
-              </property>
-             </widget>
-            </item>
-            <item row="7" column="1" colspan="4">
+            <item row="3" column="1" colspan="3">
              <widget class="QWidget" name="horizontalWidget" native="true">
               <property name="enabled">
                <bool>false</bool>
@@ -730,6 +583,32 @@
               </layout>
              </widget>
             </item>
+            <item row="0" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="plotPriorAndPosterior">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Bayes factor comparison</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="descriptivesPlots">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Descriptives plots</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
@@ -766,11 +645,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -792,41 +666,14 @@
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
  </customwidgets>
  <resources/>
  <connections>
-  <connection>
-   <sender>plotSequentialAnalysis</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>plotSequentialAnalysisRobustness</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>405</x>
-     <y>440</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>420</x>
-     <y>467</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>plotPriorAndPosterior</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>plotPriorAndPosteriorAdditionalInfo</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>403</x>
-     <y>359</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>400</x>
-     <y>386</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>descriptivesPlots</sender>
    <signal>toggled(bool)</signal>

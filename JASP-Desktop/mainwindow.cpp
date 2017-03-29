@@ -63,8 +63,6 @@
 #include "analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h"
 #include "analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 #ifdef QT_DEBUG
 #include "analysisforms/basregressionlinearlinkform.h"
 #include "analysisforms/Bain/bainancovabayesianform.h"
@@ -782,8 +780,7 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	else if (name == "SummaryStatsRegressionLinearBayesian")
 		form = new SummaryStatsRegressionLinearBayesianForm(contentArea);
 	else if (name == "SummaryStatsCorrelationBayesianPairs")
-		form = new SummaryStatsCorrelationBayesianPairsForm(contentArea);
-<<<<<<< HEAD
+        form = new SummaryStatsCorrelationBayesianPairsForm(contentArea);
 
 #ifdef QT_DEBUG
 	else if (name == "BASRegressionLinearLink")
