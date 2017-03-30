@@ -4,6 +4,6 @@
 * OS name and version:
 * Analysis:
 ## Environment (for enhancement requests)
-<!--- Give a short and clear decription of your enhancement request --> 
+<!--- Give a short and clear description of your enhancement request --> 
 * Enhancement:
 * Purpose:
