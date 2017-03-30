@@ -93,6 +93,8 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
         # Do the analysis
         if(length(predictors[predictors!='']) > 0 & length(target[target!='']) > 0){
             
+            dataset <- na.omit(dataset)
+            
             train.index <- sample(c(TRUE,FALSE),nrow(dataset),replace = TRUE,prob = c(opt[['ntrain']]*0.01,1-(opt[['ntrain']]*0.01)))
             train <- dataset[which(train.index == TRUE), ]
             test <- dataset[which(train.index == FALSE), ]
@@ -216,7 +218,9 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
 }
 
 .OneKClassification <- function(dataset,options,opt,train,test,train.index,formula,target){
+    if(!"kknn" %in% installed.packages()){
     install.packages('kknn', repos="http://cran.rstudio.com/")
+    }
     library(kknn)
     knn.fit <- kknn::kknn(formula = formula,
                           train = train,
@@ -230,13 +234,13 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
     if(is.numeric(knn.fit$fitted.values)){
         res[['predictions']] <- data.frame(
             'Observation' = 1:nrow(test),
-            'Real' = test[,target],
+            'Real' = as.character(test[,target]),
             'Prediction' = round(knn.fit$fitted.values,0))
         res[['confusion.table']] <- table('Pred'=round(knn.fit$fitted.values,0),'Real'=test[,target])
     } else {
         res[['predictions']] <- data.frame(
             'Observation' = 1:nrow(test),
-            'Real' = test[,target],
+            'Real' = as.character(test[,target]),
             'Prediction' = as.character(knn.fit$fitted.values))
         res[['confusion.table']] <- table('Pred'=knn.fit$fit,'Real'=test[,target])
     }
@@ -250,7 +254,9 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
 }
 
 .OptimizeKClassification <- function(dataset,options,opt,train,test,train.index,formula,target){
-    install.packages('kknn', repos="http://cran.rstudio.com/")
+    if(!"kknn" %in% installed.packages()){
+        install.packages('kknn', repos="http://cran.rstudio.com/")
+    }
     library(kknn)
     error <- seq_along(opt[['NN']])
     count <- 1
@@ -432,7 +438,7 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
                 data[[length(data)+1]] <- list(number = as.numeric(res[['predictions']][i,1]),
                                                real = as.character(res[['predictions']][i,2]),
                                                predicted = as.character(res[['predictions']][i,3]),
-                                               confidence = as.numeric(res[["confidence"]][i,which.max(res[["confidence"]][i,])]))
+                                               confidence = as.numeric(res[["confidence"]][i,as.numeric(which.max(res[["confidence"]][i,]))]))
                 
             }
             
@@ -604,7 +610,9 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
 }
 
 .LOOCVClassification <- function(dataset,options,opt,formula){
-    install.packages('kknn', repos="http://cran.rstudio.com/")
+    if(!"kknn" %in% installed.packages()){
+        install.packages('kknn', repos="http://cran.rstudio.com/")
+    }
     library(kknn)
     knn.fit <- kknn::train.kknn(formula = formula,
                                 data = dataset,
