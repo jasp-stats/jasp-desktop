@@ -388,9 +388,6 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 		list(name="real", title="Observed", type="number",format = 'dp:2'),
 		list(name='predicted',title = 'Predicted', type = 'number', format = 'dp:2')
 	)
-	if(options[['tablePredictionsConfidence']]){
-		fields[[length(fields)+1]] <- list(name ='confidence',title = 'Confidence', type = 'number', format = 'dp:2')
-	}
 	
 	if(is.null(res)){
 	    
@@ -401,20 +398,6 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 	} else {
 	    
 		data <- list()
-		
-		if(options[['tablePredictionsConfidence']]){
-			
-			for(i in 1:nrow(res[['predictions']])){
-				
-				data[[length(data)+1]] <- list(number = res[['predictions']][i,1],
-											   real = res[['predictions']][i,2],
-											   predicted = res[['predictions']][i,3],
-											   confidence = runif(1,min = 0,max = 1),
-											   .isMainRow  = FALSE)
-				
-			}
-			
-		} else {
 			
 			for(i in 1:nrow(res[['predictions']])){
 				
@@ -423,7 +406,6 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 											   predicted = res[['predictions']][i,3],
 											   .isMainRow  = FALSE)
 				
-			}
 			
 		}
 		

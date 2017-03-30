@@ -68,10 +68,6 @@
 			"type": "Boolean"
 		},
 		{
-			"name": "tablePredictionsConfidence",
-			"type": "Boolean"
-		},
-		{
 			"name": "tableDistances",
 			"type": "Boolean"
 		},
