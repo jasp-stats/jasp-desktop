@@ -42,6 +42,54 @@
 			"type": "Boolean"
 		},
 		{
+			"name": "descriptives",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotHorizontalAxis",
+			"type": "Variable"
+		},
+		{
+			"name": "plotSeparateLines",
+			"type": "Variable"
+		},
+		{
+			"name": "plotSeparatePlots",
+			"type": "Variable"
+		},
+		{
+			"name": "plotWidthDescriptivesPlotLegend",
+			"type": "Integer",
+			"default": 450
+		},
+		{
+			"name": "plotHeightDescriptivesPlotLegend",
+			"type": "Integer",
+			"default": 300
+		},
+		{
+			"name": "plotWidthDescriptivesPlotNoLegend",
+			"type": "Integer",
+			"default": 350
+		},
+		{
+			"name": "plotHeightDescriptivesPlotNoLegend",
+			"type": "Integer",
+			"default": 300
+		},
+		{
+			"name": "plotCredibleInterval",
+			"type": "Boolean"
+		},
+		{
+			"format": "%",
+			"max": 0.999,
+			"min": 0.000,
+			"name": "plotCredibleIntervalInterval",
+			"type": "Number",
+			"value": 0.95
+		},
+		{
 			"name": "effectsStepwise",
 			"type": "Boolean"
 		},

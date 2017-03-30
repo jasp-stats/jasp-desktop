@@ -22,6 +22,7 @@
 #include "../JASP-Common/base64.h"
 #include "../JASP-Common/lib_json/json.h"
 #include "../JASP-Common/sharedmemory.h"
+#include "../JASP-Common/appinfo.h"
 
 RInside *rbridge_rinside;
 DataSet *rbridge_dataSet;
@@ -64,7 +65,7 @@ void rbridge_init()
 	rInside[".callbackNative"] = Rcpp::InternalFunction(&rbridge_callbackSEXP);
 	rInside[".requestTempFileNameNative"] = Rcpp::InternalFunction(&rbridge_requestTempFileNameSEXP);
 	rInside[".requestStateFileNameNative"] = Rcpp::InternalFunction(&rbridge_requestStateFileNameSEXP);
-	rInside[".baseCitation"] = "Love, J., Selker, R., Marsman, M., Jamil, T., Dropmann, D., Verhagen, A. J., Ly, A., Gronau, Q. F., Smira, M., Epskamp, S., Matzke, D., Wild, A., Knight, P., Rouder, J. N., Morey, R. D., & Wagenmakers, E.-J. (2015). JASP (Version 0.7.5)[Computer software].";
+	rInside[".baseCitation"] = "JASP Team (" + AppInfo::getBuildYear() + "). JASP (Version " + AppInfo::version.asString() + ") [Computer software].";
 
 	rInside["jasp.analyses"] = Rcpp::List();
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");

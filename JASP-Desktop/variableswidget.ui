@@ -13,11 +13,26 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
    <property name="topMargin">
     <number>0</number>
    </property>
    <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
     <number>0</number>
    </property>
    <item>
@@ -34,11 +49,28 @@
        <height>20</height>
       </size>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2">
+     <property name="styleSheet">
+      <string notr="true">#widget {
+border-top: 0px solid #929292;
+border-left: 1px solid #929292;
+border-right: 1px solid #929292;
+border-bottom: 0px;
+}</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2" rowstretch="0">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetMaximumSize</enum>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
       <property name="topMargin">
        <number>0</number>
       </property>
       <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
        <number>0</number>
       </property>
       <item row="0" column="0">
@@ -84,7 +116,11 @@
          <bool>false</bool>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color:white;border: 1px solid black;</string>
+         <string notr="true">background-color:white;
+border-top: 0px;
+border-bottom: 1px solid #929292;
+border-left: 1px solid #929292;
+border-right: 1px solid #929292;</string>
         </property>
         <property name="text">
          <string/>
@@ -112,9 +148,20 @@
    </item>
    <item>
     <widget class="QWidget" name="widget_2" native="true">
+     <property name="styleSheet">
+      <string notr="true">#widget_2 {
+border-top: 0px solid #929292;
+border-left: 1px solid #929292;
+border-right: 1px solid #929292;
+border-bottom: 0px solid #929292;
+}</string>
+     </property>
      <layout class="QGridLayout" name="gridLayout">
       <property name="topMargin">
        <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>12</number>
       </property>
       <item row="0" column="0">
        <widget class="QLabel" name="columnheader">

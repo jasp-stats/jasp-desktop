@@ -63,7 +63,6 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/widgets/itemmodelselectitem.cpp \
         $$PWD/widgets/itemmodelselectvariable.cpp \
         $$PWD/widgets/tabbar.cpp \
-        $$PWD/optionsform.cpp \
         $$PWD/widgets/textmodellavaan.cpp \
         $$PWD/terms.cpp \
         $$PWD/term.cpp \
@@ -255,7 +254,6 @@ HEADERS  += \
         $$PWD/widgets/itemmodelselectitem.h \
         $$PWD/widgets/itemmodelselectvariable.h \
         $$PWD/widgets/tabbar.h \
-        $$PWD/optionsform.h \
         $$PWD/widgets/textmodellavaan.h \
         $$PWD/term.h \
         $$PWD/terms.h \
@@ -388,7 +386,6 @@ HEADERS  += \
 		$$PWD/importers/ods/odssheetcell.h \
 		$$PWD/importers/ods/odstypes.h \
 		$$PWD/importers/ods/odsxmlcontentshandler.h \
-		$$PWD/importers/ods/odsxmlcontentshandler.h.orig \
 		$$PWD/importers/ods/odsxmlhandler.h \
 		$$PWD/importers/ods/odsxmlmanifesthandler.h
 

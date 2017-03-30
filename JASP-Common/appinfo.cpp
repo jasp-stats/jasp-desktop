@@ -17,12 +17,18 @@
 
 #include "appinfo.h"
 
-const Version AppInfo::version = Version(0, 8, 1, 255);
+const Version AppInfo::version = Version(0, 8, 1, 256);
 const std::string AppInfo::name = "JASP";
 const std::string AppInfo::builddate = __DATE__ " " __TIME__ " (Netherlands)" ;
 
 std::string AppInfo::getShortDesc()
 {
 	return AppInfo::name + " " + AppInfo::version.asString();
+}
+
+std::string AppInfo::getBuildYear()
+{
+	std::string datum = __DATE__;
+	return datum.substr(datum.length() - 4);
 }
 
