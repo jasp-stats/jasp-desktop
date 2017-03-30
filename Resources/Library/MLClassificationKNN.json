@@ -33,11 +33,14 @@
 			"name": "percentageTrainingData",
 			"type": "List",
 			"options": [ "auto", "manual" ],
-			"default": "auto"
+            "default": "auto"
 		},
 		{
 			"name": "trainingDataManual",
-			"type": "Integer"
+            "type": "Integer",
+            "min": 1,
+            "max": 100,
+            "default": 80
 		},
 		{
 			"name": "noOfNearestNeighbours",
@@ -47,15 +50,21 @@
 		},
 		{
 			"name": "nearestNeighboursCount",
-			"type": "Integer"
+            "type": "Integer",
+            "min": 1,
+            "default": 1
 		},
 		{
 			"name": "optimizedFrom",
-			"type": "Integer"
+            "type": "Integer",
+            "min": 1,
+            "default": 1
 		},
 		{
 			"name": "optimizedTo",
-			"type": "Integer"
+            "type": "Integer",
+            "min": 2,
+            "default": 2
 		},
 		{
 			"name": "tablePredictions",
@@ -99,7 +108,9 @@
 		},
 		{
 			"name": "maxK",
-			"type": "Integer"
+            "type": "Integer",
+            "min": 1,
+            "default": 5
 		},
 		{
 			"name": "validationKFold",
@@ -107,7 +118,15 @@
 		},
 		{
 			"name": "noOfFolds",
-			"type": "Integer"
-		}
+            "type": "Integer",
+            "min": 1,
+            "default": 5
+        },
+        {
+            "name": "weights",
+            "type": "List",
+            "options": ["unweighted", "optimal", "triangular", "epanechnikov" , "biweight", "triweight", "cos", "inv", "gaussian", "rank" ],
+            "default": "unweighted"
+        }
 	]
 }

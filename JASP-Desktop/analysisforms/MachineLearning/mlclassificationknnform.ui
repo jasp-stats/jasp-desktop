@@ -1006,6 +1006,9 @@
            <layout class="QGridLayout" name="gridLayout_10">
             <item row="0" column="0">
              <widget class="BoundCheckBox" name="plotErrorVsK">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>Error vs K</string>
               </property>
@@ -1116,7 +1119,7 @@
         </layout>
        </widget>
       </item>
-      <item row="0" column="5">
+      <item row="0" column="1">
        <widget class="BoundGroupBox" name="noOfTrees_2">
         <property name="title">
          <string>Weigths</string>
@@ -1132,7 +1135,52 @@
            </property>
            <item>
             <property name="text">
-             <string>Unweighted</string>
+             <string>unweighted</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>optimal</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>triangular</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>epanechnikov</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>biweight</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>triweight</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>cos</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>inv</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>gaussian</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>rank</string>
             </property>
            </item>
           </widget>
@@ -1160,6 +1208,27 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>AssignButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/assignbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AvailableFieldsListView</class>
+   <extends>QListView</extends>
+   <header>widgets/availablefieldslistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
@@ -1176,30 +1245,9 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
-   <class>GroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/groupbox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>AssignButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/assignbutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>AvailableFieldsListView</class>
-   <extends>QListView</extends>
-   <header location="global">widgets/availablefieldslistview.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>boundSingleItemView</class>
@@ -1297,6 +1345,38 @@
     <hint type="destinationlabel">
      <x>484</x>
      <y>1365</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>optimized_2</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>plotErrorVsK</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>76</x>
+     <y>902</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>868</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>validationLeaveOneOut</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>plotErrorVsK</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>405</x>
+     <y>1383</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>868</y>
     </hint>
    </hints>
   </connection>
