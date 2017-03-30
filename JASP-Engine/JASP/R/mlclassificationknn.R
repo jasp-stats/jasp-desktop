@@ -29,7 +29,7 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
         
         if (perform == "run") {
             
-            dataset <- .readDataSetToEnd(columns.as.numeric=variables.to.read)
+            dataset <- .readDataSetToEnd(columns = variables.to.read)
             
         } else {
             
@@ -84,7 +84,6 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
         }
         if(length(target[target!='']) > 0){
             target <- .v(target)
-            dataset[,target] <- as.factor(dataset[,target])
         }
         
         # Create formula for the model
@@ -242,9 +241,9 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
             'Observation' = 1:nrow(test),
             'Real' = as.character(test[,target]),
             'Prediction' = as.character(knn.fit$fitted.values))
-        res[['confusion.table']] <- table('Pred'=knn.fit$fit,'Real'=test[,target])
+        res[['confusion.table']] <- table('Pred'=knn.fit$fitted.values,'Real'=test[,target])
     }
-    res[['confidence']] <- knn.fit$prob
+    res[['confidence']] <- as.matrix(knn.fit$prob)
     res[['model.error']] <- 1 - sum(diag(prop.table(res[['confusion.table']])))
     res[['Optimal.K']] <- opt[['NN']]
     res[['Weights']] <- as.matrix(knn.fit$W)
@@ -289,15 +288,15 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
     if(is.numeric(knn.fit$fitted.values)){
         res[['predictions']] <- data.frame(
             'Observation' = 1:nrow(test),
-            'Real' = test[,target],
+            'Real' = as.character(test[,target]),
             'Prediction' = round(knn.fit$fitted.values,0))
         res[['confusion.table']] <- table('Pred'=round(knn.fit$fitted.values,0),'Real'=test[,target])
     } else {
         res[['predictions']] <- data.frame(
             'Observation' = 1:nrow(test),
-            'Real' = test[,target],
+            'Real' = as.character(test[,target]),
             'Prediction' = knn.fit$fitted.values)
-        res[['confusion.table']] <- table('Pred'=knn.fit$fit,'Real'=test[,target])
+        res[['confusion.table']] <- table('Pred'=knn.fit$fitted.values,'Real'=test[,target])
     }
     res[['confidence']] <- knn.fit$prob
     res[['Model.error']] <- error
@@ -438,7 +437,7 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
                 data[[length(data)+1]] <- list(number = as.numeric(res[['predictions']][i,1]),
                                                real = as.character(res[['predictions']][i,2]),
                                                predicted = as.character(res[['predictions']][i,3]),
-                                               confidence = as.numeric(res[["confidence"]][i,as.numeric(which.max(res[["confidence"]][i,]))]))
+                                               confidence = as.numeric(max(res[["confidence"]][i,])))
                 
             }
             
