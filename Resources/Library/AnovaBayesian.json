@@ -111,6 +111,12 @@
 			"type": "List"
 		},
 		{
+			"name": "bayesFactorOrder",
+			"options": [ "nullModelTop", "bestModelTop" ],
+			"default": "nullModelTop",
+			"type": "List"
+		},
+		{
 			"name": "posteriorEstimatesCredibleIntervalInterval",
 			"type": "Number",
 			"format": "%",

@@ -49,6 +49,12 @@
 			"type": "List"
 		},
 		{
+			"name": "bayesFactorOrder",
+			"options": [ "nullModelTop", "bestModelTop" ],
+			"default": "nullModelTop",
+			"type": "List"
+		},
+		{
 			"name": "posteriorEstimates",
 			"type": "Boolean"
 		},
