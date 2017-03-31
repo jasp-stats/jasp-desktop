@@ -123,6 +123,11 @@
             "default": 5
         },
         {
+           "name": "confusionTable",
+           "type": "Boolean",
+           "default": true
+        },
+        {
             "name": "weights",
             "type": "List",
             "options": ["unweighted", "optimal", "triangular", "epanechnikov" , "biweight", "triweight", "cos", "inv", "gaussian", "rank" ],

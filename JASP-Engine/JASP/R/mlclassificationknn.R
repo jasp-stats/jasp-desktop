@@ -59,6 +59,7 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
     # Provide the Meta to the results bundle
     meta <- list(list(name = 'KNN Classification', type = 'title'),
                  list(name = 'Descriptions', type = 'table'),
+                 list(name = "Confusion", type = "table"),
                  list(name = 'Predictions', type = 'table'),
                  list(name = 'Weights', type = 'table'),
                  list(name = 'Distances', type = 'table'),
@@ -107,6 +108,12 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
         }
         
         results[['Descriptions']] <- .DescriptionsTableClassification(predictors, target, opt, options, res, dataset, formula)
+        
+        if(options[['confusionTable']]){
+            
+            results[['Confusion']] <- .ConfusionTableClassifiaction(res, target, dataset)
+            
+        }
         
         # Create predictions table
         if(options[['tablePredictions']]){
@@ -693,6 +700,38 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
                                       schema = list(fields = fields_descriptions),
                                       data = data_descriptions)
     
+    if(options[['confusionTable']]){
+        
+        fields_confusion <- list(list(name = "varname_pred", title = "", type = "string"))
+        
+        for( i in 1:2){
+            
+            fields_confusion[[length(fields_confusion)+1]] <- list(name = paste("varname_real",i, sep = ""), title = ".", type = "integer")
+            
+        }
+        
+        data_confusion <- list()
+        
+        for( i in 1:2){
+            
+            dat_tmp <- list("varname_pred" = ".")
+            
+            for(j in 1:2){
+                
+                dat_tmp[[paste("varname_real",j,sep="")]] <- "."
+                
+            }
+            
+            data_confusion[[length(data_confusion)+1]] <- dat_tmp
+            
+        }
+        
+        results[["Confusion"]] <- list(title = "Confusion table",
+                                       schema = list(fields = fields_confusion),
+                                       data = data_confusion)
+        
+    }
+    
     if(options[["tablePredictions"]]){
         
         if(options[["tablePredictionsConfidence"]]){
@@ -756,5 +795,85 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
     
     
     return(results)
+    
+}
+
+.ConfusionTableClassifiaction <- function(res, target, dataset){
+    
+    if(!is.null(res)){
+    
+    fields_confusion <- list(list(name = "varname_pred", title = "", type = "string"))
+    
+    for( i in 1:length(rownames(res[["confusion.table"]]))){
+        
+        fields_confusion[[length(fields_confusion)+1]] <- list(name = paste("varname_real",i, sep = ""), title = as.character(rownames(res[["confusion.table"]])[i]), type = "integer")
+        
+    }
+    
+    data_confusion <- list()
+    
+    for( i in 1:length(rownames(res[["confusion.table"]]))){
+        
+        dat_tmp <- list("varname_pred" = as.character(rownames(res[["confusion.table"]]))[i])
+        
+        for(j in 1:length(rownames(res[["confusion.table"]]))){
+            
+            dat_tmp[[paste("varname_real",j,sep="")]] <- res[["confusion.table"]][i,j]
+            
+        }
+        
+        data_confusion[[length(data_confusion)+1]] <- dat_tmp
+        
+    }
+        
+    return(list(title = "Confusion table",
+                schema = list(fields = fields_confusion),
+                data = data_confusion))
+    
+    } else if (target != "" & is.null(res)){
+        
+        fields_confusion <- list(list(name = "varname_pred", title = "", type = "string"))
+        
+        for( i in 1:length(unique(dataset[,target]))){
+            
+            fields_confusion[[length(fields_confusion)+1]] <- list(name = paste("varname_real",i, sep = ""), title = as.character(sort(unique(dataset[,target]), decreasing = FALSE))[i], type = "integer")
+            
+        }
+        
+        data_confusion <- list()
+        
+        for( i in 1:length(unique(dataset[,target]))){
+            
+            dat_tmp <- list("varname_pred" = as.character(sort(unique(dataset[,target]), decreasing = FALSE))[i])
+            
+            for(j in 1:length(unique(dataset[,target]))){
+                
+                dat_tmp[[paste("varname_real",j,sep="")]] <- "."
+                
+            }
+            
+            data_confusion[[length(data_confusion)+1]] <- dat_tmp
+            
+        }
+        
+        return(list(title = "Confusion table",
+                    schema = list(fields = fields_confusion),
+                    data = data_confusion))
+        
+        
+    } else {
+        
+        fields_confusion <- list(list(name = "varname_pred", title = "", type = "string"),
+                                 list(name = "varname_real1", title = ".", type = "integer"),
+                                 list(name = "varname_real2", title = ".", type = 'integer'))
+        
+        data_confusion <- list(list(varname_pred = ".", varname_real1 = "", varname_real2= ""),
+                               list(varname_pred = ".", varname_real1= "", varname_real2= ""))
+        
+        return(list(title = "Confusion table",
+                    schema = list(fields = fields_confusion),
+                    data = data_confusion))
+        
+    } 
     
 }
