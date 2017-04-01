@@ -95,14 +95,14 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
     if (nrow(dataset)>0 && nVariable > 0){
       # Compute ev:
       image <- .beginSaveImage()
-      pa <- psych::fa.parallel(dataset)   
+      pa <- psych::fa.parallel(dataset)
       .endSaveImage(image)
       
       # Number of factors:
       nFactor <- sum(pa$pc.values > options$eigenValuesBox)
     } else {
       if (is.null(state$nFactor)){
-        nFactor <- 1          
+        nFactor <- 1
       } else {
         nFactor <- state$nFactor
       }
@@ -111,18 +111,31 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   } else if (options$factorMethod == "manual"){
     nFactor <- options$numberOfFactors
   }
-  
-  # Check if number of factors is correct:
-  if (length(options$variables) > 0 && nFactor > length(options$variables)){
-    error <- TRUE
-    errorMessage <- "Too many factors requested"
-  } else {
+
+
+  customChecks <- list(
+      function(){
+        if (length(options$variables) > 0 && nFactor > length(options$variables)){
+          return ("Too many factors requested")
+        }
+      }
+    )
+
+  # .pprint(dataset)
+  # .pprint(unlist(.v(options$variables)))
+  # hasErrors <- .hasErrors(dataset = dataset, perform = perform, type = "variance", variance.target = "debSame", custom = customChecks)
+  hasErrors <- .hasErrors(dataset = dataset, perform = perform, type = c("infinity", "variance"), custom = customChecks)
+
+  if (base::identical(hasErrors, FALSE)){
     error <- FALSE
     errorMessage <- ""
+  } else {
+    error <- TRUE
+    errorMessage <- hasErrors[["message"]]
   }
-  
-  
-  
+  # .pprint(hasErrors)
+
+
   if (perform == "run" && nrow(dataset) > 0 && is.null(analysisResults) && length(options$variables) > 1 && !error){
     
     analysisResults <- .estimatePCA(dataset, options, perform,nFactor)
@@ -134,7 +147,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   
   # Make factor loadings table:
   # if (newAnalysis){
-    results[["factorLoadings"]] <- .getLoadingsPCA(analysisResults, options,perform,nFactor,dataset)    
+  results[["factorLoadings"]] <- .getLoadingsPCA(analysisResults, options,perform,nFactor,dataset)    
 #   } else {
 #     results[["factorLoadings"]]  <- state$results[["factorLoadings"]] 
 #   }
@@ -142,7 +155,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   
   # Create factor correlation table:
   # if (newAnalysis || (is.list(diff) && diff[['incl_correlations']] && options$incl_correlations)){
-    results[["factorCorrelations"]] <- .getFactorCorrelationsPCA(analysisResults, options,perform)    
+  results[["factorCorrelations"]] <- .getFactorCorrelationsPCA(analysisResults, options,perform)    
 #   } else {
 #     results[["factorCorrelations"]] <- state$results[["factorCorrelations"]] 
 #   }
@@ -223,6 +236,14 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
     return(list(results=results, status="inited",state=state))
   }
 }
+
+.pprint <- function(x) {
+  y <- deparse(substitute(x))
+  print(y)
+  print(x)
+  #print(sprintf("%s = {%s}", y, capture.output(dput(x))))
+}
+
 
 ### Inner functions ###
 # Estimate PCA:
