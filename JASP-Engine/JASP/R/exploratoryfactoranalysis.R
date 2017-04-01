@@ -124,7 +124,9 @@ ExploratoryFactorAnalysis <- function(dataset = NULL, options, perform = "run",
       }
   )
 
-  hasErrors <- .hasErrors(dataset = dataset, perform = perform, type = c("infinity", "variance"), custom = customChecks)
+
+  hasErrors <- .hasErrors(dataset = dataset, perform = perform,
+    type = c("infinity", "variance"), custom = customChecks)
 
   if (base::identical(hasErrors, FALSE)){
     error <- FALSE
