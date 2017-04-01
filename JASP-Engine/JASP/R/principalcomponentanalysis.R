@@ -121,9 +121,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
       }
     )
 
-  # .pprint(dataset)
-  # .pprint(unlist(.v(options$variables)))
-  # hasErrors <- .hasErrors(dataset = dataset, perform = perform, type = "variance", variance.target = "debSame", custom = customChecks)
+
   hasErrors <- .hasErrors(dataset = dataset, perform = perform, type = c("infinity", "variance"), custom = customChecks)
 
   if (base::identical(hasErrors, FALSE)){
@@ -133,7 +131,6 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
     error <- TRUE
     errorMessage <- hasErrors[["message"]]
   }
-  # .pprint(hasErrors)
 
 
   if (perform == "run" && nrow(dataset) > 0 && is.null(analysisResults) && length(options$variables) > 1 && !error){
@@ -237,12 +234,6 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   }
 }
 
-.pprint <- function(x) {
-  y <- deparse(substitute(x))
-  print(y)
-  print(x)
-  #print(sprintf("%s = {%s}", y, capture.output(dput(x))))
-}
 
 
 ### Inner functions ###
