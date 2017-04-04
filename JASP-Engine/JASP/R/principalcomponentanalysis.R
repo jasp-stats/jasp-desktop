@@ -71,8 +71,9 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
     Rotation <- options$obliqueSelector
   }
   
+  error <- .hasErrors(dataset=dataset, perform=perform, type=c("infinity", "variance"), exitAnalysisIfErrors=TRUE)
   
-  # Number of factors:
+  #Number of factors:
   
   if (options$factorMethod == "parallelAnalysis"){
     
@@ -111,29 +112,18 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   } else if (options$factorMethod == "manual"){
     nFactor <- options$numberOfFactors
   }
-
-
+  
   customChecks <- list(
-      function(){
-        if (length(options$variables) > 0 && nFactor > length(options$variables)){
-          return ("Too many factors requested")
-        }
+    function() {
+      if (nVariable > 0 && nFactor > length(options$variables)) {
+        return(paste0("Too many factors requested (", nFactor, ") for the amount of included variables"))
       }
-    )
+    }
+  )
+  
+  error <- .hasErrors(dataset=dataset, perform=perform, custom=customChecks, exitAnalysisIfErrors=TRUE)
 
-
-  hasErrors <- .hasErrors(dataset = dataset, perform = perform, type = c("infinity", "variance"), custom = customChecks)
-
-  if (base::identical(hasErrors, FALSE)){
-    error <- FALSE
-    errorMessage <- ""
-  } else {
-    error <- TRUE
-    errorMessage <- hasErrors[["message"]]
-  }
-
-
-  if (perform == "run" && nrow(dataset) > 0 && is.null(analysisResults) && length(options$variables) > 1 && !error){
+  if (perform == "run" && nrow(dataset) > 0 && is.null(analysisResults) && length(options$variables) > 1){
     
     analysisResults <- .estimatePCA(dataset, options, perform,nFactor)
     
@@ -204,7 +194,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   results[[".meta"]] <- meta
   
   # Dummies:
-  status <- list(ready=TRUE, error=error,errorMessage=errorMessage)
+  status <- list(ready=TRUE, error=error)
   
   if (status$error == TRUE){
     results[["factorLoadings"]][["error"]] <-  list(errorType="badData", errorMessage=status$errorMessage)
@@ -263,11 +253,6 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   #   } else if (options$factorMethod == "manual"){
   #     nFactor <- options$numberOfFactors
   #   }
-  
-  if (nFactor == 0) stop("Number of factors must be > 0")
-  if (nFactor > nVariable){
-    stop("Too many factors requested")
-  }
   
   Results <- psych::principal(dataset,nFactor, rotate = Rotation)
   # Results <- factanal(dataset, nFactor, rotation = Rotation)
