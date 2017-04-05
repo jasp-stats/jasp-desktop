@@ -846,9 +846,17 @@ saveImage <- function(plotName, format, height, width){
 	# Retrieve plot object from state
 	state <- .retrieveState()
 	plt <- state[["figures"]][[plotName]]
-
+	
   # create file location string
   location <- .requestTempFileNameNative("png") # to extract the root location
+	
+	# Get file size in inches by creating a mock file and closing it
+	pngMultip <- .ppi / 96
+	png(filename=paste0(location, "/dpi.png"), width=width * pngMultip, 
+			height=height * pngMultip)
+	insize <- dev.size("in")
+	dev.off()
+	
 	# finds the last dot and replaces everything after it with "format"
 	relativePath <- base::gsub("(?<=\\.)(?!.*\\.).*", "png", format, perl = TRUE)
   fullPath <- paste(location$root, relativePath, sep="/")
@@ -859,8 +867,8 @@ saveImage <- function(plotName, format, height, width){
 	# Open correct graphics device
 	if (format == "eps"){
 		
-		grDevices::cairo_ps(filename=fullPath, width=width/(.ppi/96*72), 
-												height=height/(.ppi/96*72), bg="transparent")
+		grDevices::cairo_ps(filename=fullPath, width=insize[1], 
+												height=insize[2], bg="transparent")
 		
   } else if (format == "tiff"){
 		
