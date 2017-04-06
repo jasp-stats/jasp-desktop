@@ -1,7 +1,7 @@
 
 #QT -= core
 QT -= gui
-CURRENT_R_VERSION = 3.1
+CURRENT_R_VERSION = 3.3
 
 windows:CONFIG += c++11
 linux:CONFIG += c++11

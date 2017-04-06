@@ -1837,7 +1837,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
 					plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
 					panel.border = ggplot2::element_blank(),
-					axis.line = ggplot2::element_blank(),
 					axis.ticks = ggplot2::element_line(size = 0.5),
 					axis.ticks.margin = grid::unit(1,"mm"),
 					axis.ticks.length = grid::unit(3, "mm"),
