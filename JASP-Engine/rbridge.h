@@ -18,7 +18,7 @@
 #ifndef RBRIDGE_H
 #define RBRIDGE_H
 
-#include <RInside.h>
+#include <RInside/RInside.h>
 #include <Rcpp.h>
 
 #ifdef __WIN32__
