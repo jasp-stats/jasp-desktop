@@ -204,7 +204,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 			
 			errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
 													all.target = variable, all.grouping = options$groupingVariable,
-													observations.amount = '< 1')
+													observations.amount = '< 2')
 
 			variableData <- dataset[[ .v(variable) ]]
 

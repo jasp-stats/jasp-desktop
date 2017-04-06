@@ -354,7 +354,12 @@
     
   } else {
     
-    result <- plyr::ddply(dataset, .v(grouping), function(data, target) func(data[[.v(target)]]), target)
+    result <- plyr::ddply(dataset, .v(grouping), 
+      function(data, target) {
+        if (any(is.na(data[.v(grouping)])) == FALSE) {
+          func(data[[.v(target)]])
+        }
+      },  target)
     result <- result[[ncol(result)]] # The last column holds the func results.
     
   }
