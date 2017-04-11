@@ -33,6 +33,10 @@
 			"name": "plotVariableImportance",
 			"type": "Boolean"
 		},
+    {
+			"name": "plotTreesVsModelError",
+			"type": "Boolean"
+		},
 		{
 			"name": "plotVariableImportanceShowValues",
 			"type": "Boolean"
@@ -43,7 +47,8 @@
 		},
 		{
 			"name": "tableVariableImportance",
-			"type": "Boolean"
+			"type": "Boolean",
+      "default" : true
 		},
 		{
 			"name": "tableConfusion",
@@ -58,6 +63,11 @@
 			"type": "List",
 			"options": [ "auto", "manual" ],
 			"default": "auto"
+		},
+    {
+			"name": "numberOfTrees",
+			"type": "Integer",
+			"min": 1
 		},
 		{
 			"name": "noOfPredictors",
@@ -94,6 +104,16 @@
 			"type": "List",
 			"options": [ "auto", "manual" ],
 			"default": "auto"
+		},
+    		{
+			"default": 640,
+			"name": "plotWidth",
+			"type": "Integer"
+		},
+		{
+			"default": 480,
+			"name": "plotHeight",
+			"type": "Integer"
 		}
 	]
 }
