@@ -1358,8 +1358,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 					p <- p + ggplot2::geom_violin(trim = F, size = 0.75, width = vioWidth,
 																				scale = "width") +
-						ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, stat_params = list(width = boxWidth/2) )+
-
+						ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, width = boxWidth/2) +
 						ggplot2::geom_boxplot(size = 0.75, width = boxWidth,
 																	outlier.shape = NA) +
 						ggplot2::geom_violin(trim = F, size = 0.75, width = vioWidth,
@@ -1372,7 +1371,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 					p <- p + ggplot2::geom_violin(trim = F, size = 0.75, width = vioWidth,
 																				scale = "width") +
-						ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, stat_params = list(width = boxWidth/2) )+
+						ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, width = boxWidth/2)+
 
 						ggplot2::geom_boxplot(size = 0.75, outlier.size = 1.5, width = boxWidth) +
 						ggplot2::geom_violin(trim = F, size = 0.75, width = vioWidth,
@@ -1380,7 +1379,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 				} else if (options$splitPlotBoxplot && options$splitPlotJitter) {
 
-					p <- p + ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, stat_params = list(width = boxWidth/2) )+
+					p <- p + ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, width = boxWidth/2 ) +
 
 						ggplot2::geom_boxplot(size = 0.75, outlier.shape = NA, width = boxWidth) +
 						ggplot2::geom_jitter(size = 2.5, shape = 1, stroke = 1,
@@ -1402,7 +1401,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 				} else if (options$splitPlotBoxplot){
 
-					p <- p + ggplot2::stat_boxplot(geom = "errorbar",size = 0.75, stat_params = list(width = boxWidth/2) )+
+					p <- p + ggplot2::stat_boxplot(geom = "errorbar",size = 0.75, width = boxWidth/2 )+
 
 						ggplot2::geom_boxplot(size = 0.75, outlier.size = 1.5, width = boxWidth)
 
