@@ -43,12 +43,20 @@ run <- function(name, options.as.json.string, perform="run") {
 			return(env$callback(...))
 		}
 	}
-
+	
+	state <- NULL
+	if ('state' %in% names(formals(analysis))) {
+		state <- .retrieveState()
+		if (! is.null(state) && 'key' %in% names(attributes(state))) {
+			state <- .getStateItems(state=state, options=options, key=attributes(state)$key, keep=attributes(state)$keep)
+		}
+	}
+	
 	results <- tryCatch(expr={
 		
 				withCallingHandlers(expr={
 					
-					analysis(dataset=NULL, options=options, perform=perform, callback=the.callback)
+					analysis(dataset=NULL, options=options, perform=perform, callback=the.callback, state=state)
 					
 				}, 
 				error=.addStackTrace)
@@ -846,4 +854,58 @@ as.list.footnotes <- function(footnotes) {
 	}
 	
 	changed
+}
+
+.optionsChanged <- function(opts1, opts2, subset=NULL) {
+	
+  changed <- .diff(opts1, opts2)
+  if (! is.list(changed)) {
+    return(TRUE)
+  }
+  
+	if (! is.null(subset)) {
+	  changed <- changed[names(changed) %in% subset]
+	  if (length(changed) == 0) {
+	    stop(paste0("None of the gui options (", paste(subset, collapse=", "), ") is in the options list."))
+	  }
+	}
+  
+  if (sum(sapply(changed, isTRUE)) > 0) {
+    return(TRUE)
+  }
+  
+  return(FALSE)
+}
+
+.getStateItems <- function(state, options, key, keep=NULL) {
+	
+  if (is.null(names(state)) || is.null(names(state$options)) || 
+      is.null(names(options)) || is.null(names(key))) {
+    return(NULL)
+  }
+
+  result <- list()
+  for (item in names(state)) {
+    
+		if (! is.null(keep) && item %in% keep) {
+			result[[item]] <- state[[item]]
+			next
+	  } 
+		
+		if (item %in% names(key) == FALSE) {
+      next
+    }
+    
+    change <- .optionsChanged(state$options, options, key[[item]])
+    if (change == FALSE) {
+      result[[item]] <- state[[item]]
+		}
+    
+  }
+	
+	if (length(names(result)) > 0) {
+		return(result)
+	}
+  
+  return(NULL)
 }
