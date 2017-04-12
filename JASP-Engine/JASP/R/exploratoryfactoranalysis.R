@@ -855,7 +855,7 @@ ExploratoryFactorAnalysis <- function(dataset = NULL, options, perform = "run",
                      axis.ticks.length = grid::unit(3, "mm"),
                      plot.margin = grid::unit(c(0,0,.5,.5), "cm")) + 
       ggplot2::scale_linetype_discrete("") +  ggplot2::scale_shape_discrete("") +
-      ggplot2::theme(legend.position = c(0.99,0.99),legend.justification = c(1,1),#legend.key = ggplot2::element_blank(),
+      ggplot2::theme(legend.position = c(0.99,0.99),legend.justification = c(1,1),
                      legend.text=ggplot2::element_text(size=12.5),
                      panel.background=ggplot2::element_rect(fill="transparent",colour=NA),
                      plot.background=ggplot2::element_rect(fill="transparent",colour=NA),
