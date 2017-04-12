@@ -20,6 +20,8 @@
 
 #include "version.h"
 
+const std::string CURRENT_R_VERSION = "3.1";
+
 class AppInfo
 {
 public:
