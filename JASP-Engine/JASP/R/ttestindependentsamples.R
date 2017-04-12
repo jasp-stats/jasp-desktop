@@ -17,7 +17,9 @@
 
 TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 									callback = function(...) 0, ...) {
-
+	
+	state <- .retrieveState()
+	
 	## call the common initialization function
 	init <- .initializeTTest(dataset, options, perform, type = "independent-samples")
 
@@ -37,20 +39,35 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 	shapiroWilk <- .ttestIndependentSamplesNormalityTest(dataset, options, perform)
 	results[["assumptionChecks"]] <- list(shapiroWilk = shapiroWilk, levene = levene, title = "Assumption Checks")
 
+
+	keep <- NULL
 	## if the user wants descriptive plots, s/he shall get them!
-	if (options$descriptivesPlots) {
+	if (options$descriptivesPlots && length(options$variables) > 0) {
 
 		plotTitle <- ifelse(length(options$variables) > 1, "Descriptives Plots", "Descriptives Plot")
 		descriptivesPlots <- .independentSamplesTTestDescriptivesPlot(dataset, options, perform)
-		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives", descriptivesPlots = list(collection = descriptivesPlots, title = plotTitle))
+		if (!is.null(descriptivesPlots[[1]][["obj"]])){
+			keep <- unlist(lapply(descriptivesPlots, function(x) x[["data"]]),NULL)
+		}
+		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, 
+																			title = "Descriptives", 
+																			descriptivesPlots = list(collection = descriptivesPlots, 
+																															 title = plotTitle))
 
 	} else {
 
 		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives")
+	
 	}
-
+	
 	## return the results object
-	results
+	if (perform == "init") {
+		return(list(results=results, status="inited"))
+	} else {
+		return(list(results=results, status="complete", 
+								state = list(options = options, results = results),
+								keep = keep))
+	}
 }
 
 
@@ -204,7 +221,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 			
 			errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
 													all.target = variable, all.grouping = options$groupingVariable,
-													observations.amount = '< 1')
+													observations.amount = '< 2')
 
 			variableData <- dataset[[ .v(variable) ]]
 
@@ -258,7 +275,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 
 							## arbitrary cut-offs are arbitrary
 							if (!is.na(levene[1, 3]) && levene[1, 3] < 0.05) {
-								error <- .messages('notes', 'leveneSign')
+								error <- .messages('footnote', 'leveneSign')
 								foot.index <- .addFootnote(footnotes, error)
 								row.footnotes <- list(p = list(foot.index))
 
@@ -576,13 +593,13 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 				error <- FALSE
 
 				if (length(data) < 3) {
-					err <- .generateErrorMessage(type='levene', observations.amount='< 3', variables=variable, groupingVars=factor)
+					err <- .generateErrorMessage(type='levene', observations.amount='< 3', variables=variable, grouping=factor)
 					foot.index <- .addFootnote(footnotes, err)
 					row.footnotes <- list(W = list(foot.index), p = list(foot.index))
 					error <- TRUE
 
 				} else if (length(data) > 5000) {
-					err <- .generateErrorMessage(type='levene', observations.amount='> 5000', variables=variable, groupingVars=factor)
+					err <- .generateErrorMessage(type='levene', observations.amount='> 5000', variables=variable, grouping=factor)
 					foot.index <- .addFootnote(footnotes, err)
 					row.footnotes <- list(W = list(foot.index), p = list(foot.index))
 					error <- TRUE
@@ -686,11 +703,14 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 					"mm"), plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) +
 				base_breaks_y(summaryStat) + base_breaks_x(summaryStat$groupingVariable)
 
-			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-			print(p)
-			content <- .endSaveImage(image)
+			imgObj <- .writeImage(width = options$plotWidth, 
+														height = options$plotHeight, 
+														plot = p)
 
-			descriptivesPlot[["data"]] <- content
+			descriptivesPlot[["data"]] <- imgObj[["png"]]
+			descriptivesPlot[["obj"]] <- imgObj[["obj"]]
+			descriptivesPlot[["convertible"]] <- TRUE
+			descriptivesPlot[["status"]] <- "complete"
 			descriptivesPlotList[[var]] <- descriptivesPlot
 
 		}

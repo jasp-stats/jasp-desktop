@@ -262,7 +262,7 @@ string Dirs::rHomeDir()
 #ifdef __WIN32__
 	dir += "/R";
 #elif __APPLE__
-	dir += "/../Frameworks/R.framework/Versions/3.1/Resources";
+	dir += "/../Frameworks/R.framework/Versions/" + CURRENT_R_VERSION + "/Resources";
 #else
 	dir += "/R";
 #endif

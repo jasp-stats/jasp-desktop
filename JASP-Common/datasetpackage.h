@@ -43,6 +43,7 @@ public:
 
 	std::string dataFilePath;
 	uint dataFileTimestamp;
+	bool dataFileReadOnly;
 
 	bool hasAnalyses;
 

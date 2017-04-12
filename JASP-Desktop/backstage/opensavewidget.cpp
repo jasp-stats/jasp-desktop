@@ -26,8 +26,7 @@
 OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 {
 	_mode = FileEvent::FileOpen;
-	_currentFileHasPath = false;
-	_currentFileReadOnly = false;
+	_currentFileType = Utils::FileType::unknown;
 
 	QGridLayout *layout = new QGridLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
@@ -179,10 +178,6 @@ FileEvent *OpenSaveWidget::open(const QString &path)
 {
 	FileEvent *event = new FileEvent(this, FileEvent::FileOpen);
 	event->setPath(path);
-
-	if ( ! path.endsWith(".jasp", Qt::CaseInsensitive))
-		event->setReadOnly();
-
 	dataSetIORequestHandler(event);
 
 	return event;
@@ -192,7 +187,7 @@ FileEvent *OpenSaveWidget::save()
 {
 	FileEvent *event;
 
-	if (_currentFileHasPath == false || _currentFileReadOnly)
+	if (_currentFileType != Utils::FileType::jasp)
 	{
 		event = _bsComputer->browseSave();
 		if (event->isCompleted())
@@ -251,17 +246,17 @@ void OpenSaveWidget::dataSetIOCompleted(FileEvent *event)
 				//  don't add examples to the recent list
 				_fsmRecent->addRecent(event->path());
 				_bsComputer->addRecent(event->path());
-				if (event->operation() == FileEvent::FileOpen)
-					setCurrentDataFile(event->dataFilePath());
 			}
+
+			if (event->operation() == FileEvent::FileOpen && !event->isReadOnly())
+				setCurrentDataFile(event->dataFilePath());
 
 			// all this stuff is a hack
 			QFileInfo info(event->path());
 			_bsComputer->setFileName(info.baseName());
 
 			_currentFilePath = event->path();
-			_currentFileHasPath = true;
-			_currentFileReadOnly = event->isReadOnly();
+			_currentFileType = event->type();
 		}
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
@@ -274,10 +269,9 @@ void OpenSaveWidget::dataSetIOCompleted(FileEvent *event)
 	else if (event->operation() == FileEvent::FileClose)
 	{
 		_bsComputer->clearFileName();
-
-		setDataFileWatcher(false);
-		_currentFileHasPath = false;
 		_currentFilePath = "";
+		_currentFileType = Utils::FileType::unknown;
+		clearSyncData();
 	}
 }
 
@@ -298,15 +292,18 @@ bool OpenSaveWidget::checkSyncFileExists(const QString &path)
     {
         std::cout << "Sync file does not exist: " << path.toStdString() << std::endl;
         std::cout.flush();
-		setDataFileWatcher(false); // must be done before setting the current to empty.
-		_fsmCurrent->setCurrent(QString());
-		_tabWidget->tabBar()->setTabEnabled(FileLocation::Current, false);
-		_tabWidget->tabBar()->click(FileLocation::Computer);
-
-		//QMessageBox::warning(this, QString("Data Synchronization"), QString("The associated data file (") + path + ") does not exist. If you want to synchronize your data with another file, click on the 'File/Sync Data' menu.");
+		clearSyncData();
 	}
 
-    return exists;
+	return exists;
+}
+
+void OpenSaveWidget::clearSyncData()
+{
+	setDataFileWatcher(false); // must be done before setting the current to empty.
+	_fsmCurrent->setCurrent(QString());
+	_tabWidget->tabBar()->setTabEnabled(FileLocation::Current, false);
+	_tabWidget->tabBar()->click(FileLocation::Computer);
 }
 
 void OpenSaveWidget::setCurrentDataFile(const QString &path)
@@ -373,6 +370,11 @@ void OpenSaveWidget::setDataFileWatcher(bool watch)
 		else
 			_watcher.removePath(path);
 	}
+}
+
+Utils::FileType OpenSaveWidget::getCurrentFileType()
+{
+	return _currentFileType;
 }
 
 void OpenSaveWidget::dataSetOpenCurrentRequestHandler(QString path)

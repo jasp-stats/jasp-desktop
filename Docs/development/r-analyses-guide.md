@@ -10,12 +10,13 @@ Function definition
 
 Analyses in JASP, when implemented in R, should be of the following form:
 
-`AnalysisName <- function(dataset, options, perform="run", callback=function(...) 0, ...) {`
+`AnalysisName <- function(dataset=NULL, options, perform="run", callback=function(...) 0, state=NULL, ...) {`
 
 * `dataset` : will always be `NULL` in JASP. `dataset` is used when an analysis is run outside of JASP. Inside JASP you should read the dataset with the included functions (details below)
 * `options` : a list containing values corresponding to the state of each of the user interface elements in the analysis' user interface
 * `perform` : will either be equal to `"init"` or `"run"`, for initializing and running the analysis respectively
-* `callback` : a function to call periodically to notify JASP that the analysis is still running, and (not implemented yet) to provide progress updates (such as percentage complete). this function will return a non-zero value if the user has aborted the analysis, and your function should terminate in response to this.
+* `callback` : a function to call periodically to notify JASP that the analysis is still running, and (not implemented yet) to provide progress updates (such as percentage complete). this function will return a non-zero value if the user has aborted the analysis, and your function should terminate in response to this
+* `state` : a list containing re-usable items stored at the end of the previous analysis (granted the analysis uses the state system, omit otherwise).
 
 The function should return a series of nested lists containing the results. This results object is described below.
 
@@ -198,7 +199,7 @@ An example of a results bundle might be:
 
 - `results` : a results object, descriped below
 - `status` : the status, this can be either `"inited"` (typically to be returned when `perform == "init"`) or `"complete"` (typically returned when `perform == "run"`)
-- `state`  : arbitrary data that can be retrieved in a subsequent call of this analysis with a call to `.retrieveState()`
+- `state`  : arbitrary data that can be retrieved in a subsequent call of this analysis with a call to `.retrieveState()`, explained below
 - `keep` : a list of file descriptors (from `.endSaveImage()`). This instructs the temporary file system to keep these files, and not delete them.
 
 ### Results
@@ -448,6 +449,35 @@ It will return a named list with TRUE/FALSE values indicating which options have
     
     # otherwise continue
 
+### State
+
+The state is a storage system. This storage can be used to transfer useful data between different calls to an analysis.
+The main goal of the state is to prevent recalculating things that were already calculated once (and thus make analyses quicker). Let's use the Bayesian ANOVA as an example of its practical relevance. This analysis may take up to several minutes to fully calculate its result -- which is not that unusual for a Bayesian analysis. Now if a user decides he would also like to see descriptive statistics the analysis will be run again. If we had no storage system in place it would take several minutes to give an additional table with descriptive statistics because the ANOVA has to be calculated all over again -- eventhough we already did this. With the state system it becomes possible to store the outcome of the ANOVA and then re-use it. Asking for additional output such as a descriptives table will now result in a very short calculation because the ANOVA calculation can be avoided. It may be clear that it is not always possible to re-use output from an earlier call to the analysis. For example, if the dependent variable of the ANOVA is swapped for a different one, the old results become unusable.
+
+The state must be a named list. It may store any valid R object, as long as it always contains the options the analysis was run with. Example:
+```
+state <- list()
+state[["options"]] <- options
+state[["model"]] <- model
+state[["plot"]] <- plot
+```
+It is possible to let the engine automatically retrieve only the re-usable state items. To do so, you must specify a key in the state. The key should be defined close to the top of the analysis to make it clear to people unfamiliar with the analysis what is stored in the state and what these state items dependent on:
+```
+stateKey <- list()
+stateKey[["model"]] <- c("dependent", "fixedFactors", "sampleMode", "iterations")
+stateKey[["plot"]] <- c("dependent", "fixedFactors")
+```
+To add it as an attribute to the state:
+```
+attr(state, "key") <- stateKey
+```
+
+Now if the analysis is called again and e.g. `sampleMode` changes, only the plot will be returned.
+If there are state items you would like to keep indefinitely -- regardless of the options a user changes -- you may also specify this in the state, e.g.:
+```
+attr(state, "keep") <- c("model", "options")
+```
+
 ### Error handling
 
 #### Checking for errors
@@ -461,14 +491,31 @@ By finetuning the arguments given to `.hasErrors()` it can be used in a variety 
 - `dataset`: JASP dataset. [required]
 - `perform`: 'run' or 'init'. [required]
 - `type`: character vector containing any of the following: 'infinity', 'factorLevels', 'variance', 'observations'. [required]
-- `message`: 'short', 'default' [the default], or 'verbose'. [optional]
+- `custom`: a (named/unnamed list of) function(s) that perform some check and return an error message. [optional]
+- `message`: 'short' or 'default' [the default]. [optional]
 - `exitAnalysisIfErrors`: TRUE or FALSE [the default]. [optional]
 
-The optional argument `message` is used to specify what sort of error message should be returned. When it is set to `short` (for use in footnotes) only the first error encountered will be included in the message, without the opening statement "The following problem(s) occurred while running the analysis:". When it is set to `default` on the other hand it does include this opening statement and also includes all checks that fail, however it will only mention variables once. This is to prevent cases when one issue with a variable makes it fail multiple checks. `verbose` mentions variables in all checks they fail without any limitations, this should only be used for testing purposes. 
+The optional argument `custom` may be used when a small, analysis-specific check has to be performed. In general, if a data check is still missing it should be added to `.hasErrors()` (so others may use it too; as described further below), however, it may be the case that the check is only appropriate for a single analysis. In this case it can be defined in the body of the analysis function and passed to `.hasErrors()`. Example of an object that may be supplied in `custom`:
+```
+customChecks <- list(
+	function() {
+		if (options$Data == 'varcov' && options$groupingVariable != '') {
+			return('Multiple group analysis not (yet) supported when data is variance-covariance matrix')
+		}
+	},
+	function() {
+		if (options$Data == 'varcov' && isTRUE(options$includeMeanStructure)) {
+			return('Mean structure can not be included when data is variance-covariance matrix')
+		}
+	})
+```
+Note that the functions are defined in the environment of the analysis and therefore have access to its variables. It is unlikely you will need to supply arguments, but if you wish to do so, make sure the functions are defined in a named list (e.g., list(meanstruct = function(arg1) {...}) where arg1 can be called by supplying meanstruct.arg1=... to `.hasErrors()`. See below for more details about supplying arguments to check functions).
+
+The argument `message` is used to specify what sort of error message should be returned. When it is set to `short` (for use in footnotes) only the first error encountered will be included in the message. When it is set to `default` it includes all checks that fail and adds the opening statement "The following problem(s) occurred while running the analysis:". 
 
 The argument `exitAnalysisIfErrors` can be used to prevent the analysis from continuing to run when a check fails. It would be sensible to set this to `TRUE` in the case of the independent samples t-test with the single level grouping variable. The t-test package will not be able to run and graphs or tables would be nonsensical. When it is set to `FALSE` the function will simply return to the calling environment regardless of whether any checks failed.
 
-Additionally, we can pass arguments that tell the function how to perform the checks listed after `type`.
+In addition to the main arguments, we can pass arguments to the checks listed after `type` (or to the functions in `custom`).
 These arguments are always prefixed by their type name. So to check if the variance is zero in in the dependent variable 'dependentVar', we would call:
 
 `.hasErrors(dataset=dataset, perform=perform, type='variance', variance.target='dependentVar')`
@@ -486,28 +533,24 @@ All check arguments:
 
 | type         | argument      | description                                        |
 |--------------|---------------|----------------------------------------------------|
-| infinity     | dataset       | JASP dataset                                       |
-|              | target        | character vector of variable names                 |
-|              | grouping      | character vector of variable names                 |
-|              | groupingLevel | vector with levels for the grouping                |
-| factorLevels | dataset       | JASP dataset                                       |
-|              | target        | character vector of variable names                 |
+| infinity     | target        | character vector of variable names                 |
+|              | grouping      | character vector of grouping variable names        |
+|              | groupingLevel | vector with the levels for each grouping variable  |
+| factorLevels | target        | character vector of grouping variable names        |
 |              | amount\*      | (vector of) string(s) (e.g. "!= 2")                |
-| variance     | dataset       | JASP dataset                                       |
-|              | target        | character vector of variable names                 |
-|              | grouping      | character vector of variable names                 |
-|              | groupingLevel | vector with levels for the grouping                |
+| variance     | target        | character vector of variable names                 |
+|              | grouping      | character vector of grouping variable names        |
+|              | groupingLevel | vector with the levels for each grouping variable  |
 |              | equalTo       | numeric value to compare for equality [default: 0] |
-| observations | dataset       | JASP dataset                                       |
-|              | target        | character vector of variable names                 |
-|              | grouping      | character vector of variable names                 |
-|              | groupingLevel | vector with levels for the grouping                |
+| observations | target        | character vector of variable names                 |
+|              | grouping      | character vector of grouping variable names        |
+|              | groupingLevel | vector with the levels for each grouping variable  |
 |              | amount\*      | (vector of) string(s) (e.g. "> 5000")              |
 \* = required argument
 
 Note that when no target is provided to an error check, it will by default go over every variable in the dataset.
 
-To prevent very long function calls, we can also prefix arguments by `all.` (e.g. all.grouping=options$fixedFactor). When this prefix is used `.hasErrors()` will call each check with that specific grouping variable. Granted the check actually needs that parameter.
+To prevent very long function calls, we can also prefix arguments by `all.` (e.g. instead of using observations.grouping = options$fixedFactor, variance.grouping = options$fixedFactor, etc. we use all.grouping=options$fixedFactor). When this prefix is used `.hasErrors()` will call each check with that specific value; granted a check actually uses a parameter with that name.
 
 ##### The return value
 
@@ -515,15 +558,20 @@ To prevent very long function calls, we can also prefix arguments by `all.` (e.g
 
 ##### General use
 
-The function could be included at the start of the analysis if there are any 'dealbreakers', so to say; problems with the data (or selected options) that would render the output completely useless. The argument `exitAnalysisIfErrors` should be set to `TRUE` and for the remainder of the analysis you will not have to worry about implications of the 'dealbreakers' any longer.
-In addition, the function may be used when data errors only have a local effect. For example in an independent samples t-test with multiple dependent variables, if only one of the dependent variables contains infinity, the t-test for the other dependent variable can still be performed. `.hasErrors()` can be run multiple times in this case with `message` set to `short`. Alternatively, the function could be called just once for all variables and the named list it returns can be queried. The message can then be build by directly calling the function  `.generateErrorMessage()`.
+There are two ways `.hasErrors()` can be used. Firstly, it may included at the start of the analysis if there are any 'dealbreakers'; problems with the data (or selected options) that would render further computations useless. The argument `exitAnalysisIfErrors` should be set to `TRUE` and for the remainder of the analysis 'dealbreakers' will have no further implications. 
+
+Secondly, the function may be used when data errors only have a local effect. As an example, let's consider an independent samples t-test with multiple dependent variables. If only one of the dependent variables contains infinity, the t-test can still be performed on the other dependent variable. In this case `.hasErrors()` will have to be run multiple times with a different dependent as its target every time. If any errors are found the t-test for that dependent may be omitted and a footnote should be added (a footnote is generated by setting `message` to `short`). 
+
+As an alternative to calling `.hasErrors()` multiple times on parts of the data, the function could be called just once for all variables. The named list that is returned - which details for each check which variables failed it - may then be queried. Note that this method is more complicated to implement, but would save computation time, as data checks are not repeated. The main complication comes from the fact that the relevant error must be distilled from the list and the error message must be manually generated through `.generateErrorMessage()`.
 
 `.generateErrorMessage()` takes the arguments:
 
 - `type`: single character string containing one of the `.hasErrors()` types. [required]
-- `variables`: character vector of variables that failed the check. [optional]
-- `grouping`: character vector of variables that were used to group the dependent variables on. [optional]
-- `includeOpening`: TRUE or FALSE [the default]. [optional]
+- `opening`: boolean, should the statement "The following problem(s) occurred while running the analysis:" be included (TRUE) or left out (FALSE) [the default]. [optional]
+- `concatenate`: string with the error message it should be appended to. [optional]
+- `grouping`: character vector of variables that were used to group the dependent variables on. [optional] 
+
+`.generateErrorMessage()` expects the variables that are defined in the error messages to be supplied. All error messages can be found in commonmessages.R. Message variables are denoted by {{}}. If, for example, an error message contains {{levels}}, `.generateErrorMessage()` looks for the argument levels=... in its input.
 
 #### Adding new error checks
 
@@ -531,13 +579,18 @@ It is possible you want to check something that is not implemented. To prevent e
 
 1. Write a function that can perform the check and place it at the bottom of the file `commonerrorcheck.R`. Try to make it as generic as possible so it could also be applied in other situations than your own. Some things to bear in mind:
   * Its name could, in principle, be whatever you like. But to be consistent and avoid masking, start with .check followed by some short statement in camelCase. 
-  * It may take as many or as few arguments as you like. They can be optional or required, if they are optional they may be omitted in the call to `.hasErrors()`. The only requirement is that the check function takes `...` because every check will be called with all available arguments. Note that although `.hasErrors()` requires arguments to be prefixed, they do not need to be prefixed in the actual function definition.
-  * It must return a named list with at bare minimum the entry `error`. If your check determines there is an error it should be set to `TRUE` and otherwise to `FALSE`. If your function performs a check on the data (rather than on options), it should also have the entry `errorVars` which contains the variable names that failed your check.
+  * It may take as many or as few arguments as you like. They can be optional or required, if they are optional they may be omitted in the call to `.hasErrors()`. Note that although `.hasErrors()` requires arguments to be prefixed, they do not need to be prefixed in the actual function definition.
+  * It must return a named list with the entry `error`. If your check determines there is an error it should be set to `TRUE` and otherwise to `FALSE`. If your function performs a check on the data (rather than on options), it should also have the entry `errorVars` which contains the variable names that failed your check.
   An example:
   
   ```
-  # This is a short description of my check
-  .checkImaginary <- function(dataset, target, someArg=NULL, ...) {
+  .checkImaginary <- function(dataset, target, someArg=NULL) {
+  # This is a short description of my check.
+  # args:
+  #  dataset: JASP dataset.
+  #  target: String vector indicating the target variables.
+  #  someArg: Some description.
+  
       result <- list(error=FALSE, errorVars=NULL)
       
       for (v in target) {
@@ -555,6 +608,6 @@ It is possible you want to check something that is not implemented. To prevent e
       
   }
   ```
-2. Add a new entry to the `checks` list found at the top of `hasErrors()`. The index name determines how your error check can be called from an analysis. The entry needs a named list with `callback` which should be assigned the name of the function you just created. It should also have the option `addGroupingMsg` if your check allows grouping; this option adds the line "after grouping on {{grouping}}" when set to `TRUE` and grouping variables are found.
+2. Add a new entry to the `checks` list found at the top of `.hasErrors()`. The index value determines how your error check can be called from an analysis. The new entry should have a named list with the slots `callback` and `addGroupingMsg`. `callback` should be assigned the name of the function you just created. `addGroupingMsg` clarifies if your check allows grouping; this option adds the line "after grouping on {{grouping}}" when set to `TRUE` and grouping variables are found.
 
 3. Create a message in `.messages()`, this function can be found in `commonmessages.R`. Variables must be put between {{}}. These will be automatically parsed in `.generateErrorMessage()`.

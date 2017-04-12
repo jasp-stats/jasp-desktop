@@ -157,7 +157,7 @@ void MainTableView::adjustAfterDataLoad(bool dataLoaded)
 		horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
 	}
 	_dataLoaded = dataLoaded;
-	setToolTip(dataLoaded ? "Double-click to edit" : "");
+	setToolTip(dataLoaded ? "Double-click to edit data" : "");
 
 }
 

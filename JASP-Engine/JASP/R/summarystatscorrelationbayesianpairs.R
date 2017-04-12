@@ -228,24 +228,37 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 		}
 
 		p <- try(silent = FALSE, expr = {
-			image <- .beginSaveImage(width, height)
+
+			# image <- .beginSaveImage(width, height)
 			
 			# TODO: fix .plotPosterior.correlation take in bfObject and have switch bayesFactorObject$bf 
+
 			allBfs <- bayesFactorObject$bf
-			
+
 			someBf <- switch(options$hypothesis,
-			                 correlated = allBfs$bf10, 
-			                 correlatedPositively = allBfs$bfPlus0, 
+			                 correlated = allBfs$bf10,
+			                 correlatedPositively = allBfs$bfPlus0,
 			                 correlatedNegatively =allBfs$bfMin0
 			)
+
 			
-			.plotPosterior.correlation(
-						r = cor.value, n = options$sampleSize, oneSided = oneSided,
-						corCoefficient = cor.coefficient, dontPlotData = dontPlotData,
-						kappa = options$priorWidth, BFH1H0 = BFH1H0, BF = someBf,
-						addInformation = options$plotPriorAndPosteriorAdditionalInfo
-					)
-			plot[["data"]] <- .endSaveImage(image)
+			.plotFunc <- function() {
+				if (!BFH1H0) {
+					someBf <- 1 / someBf
+				}
+
+				.plotPosterior.correlation(
+							r = cor.value, n = options$sampleSize, oneSided = oneSided,
+							corCoefficient = cor.coefficient, dontPlotData = dontPlotData,
+							kappa = options$priorWidth, BFH1H0 = BFH1H0, BF = someBf,
+							addInformation = options$plotPriorAndPosteriorAdditionalInfo
+						)
+			}
+			content <- .writeImage(width = width, height = height, plot = .plotFunc, obj = TRUE)
+			plot[["convertible"]] <- TRUE
+			plot[["obj"]] <- content[["obj"]]
+			plot[["data"]] <- content[["png"]]
+			# plot[["data"]] <- .endSaveImage(image)
 		})
 
 		if (class(p) == "try-error") {
@@ -333,16 +346,16 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 			dontPlotData <- FALSE
 
 			if (!is.null(bayesFactorObject)) {
-			  
-			  # TODO: fix .plotPosterior.correlation take in bfObject and have switch bayesFactorObject$bf 
+
+			  # TODO: fix .plotPosterior.correlation take in bfObject and have switch bayesFactorObject$bf
 			  allBfs <- bayesFactorObject$bf
-			  
+
 			  someBf <- switch(options$hypothesis,
-			                   correlated = allBfs$bf10, 
-			                   correlatedPositively = allBfs$bfPlus0, 
+			                   correlated = allBfs$bf10,
+			                   correlatedPositively = allBfs$bfPlus0,
 			                   correlatedNegatively =allBfs$bfMin0
 			  )
-			  
+
 				BF10post <- ifelse(BFH1H0, someBf, 1/someBf)
 			}
 		} else {
@@ -359,15 +372,28 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 
 		# plot Bayes factor robustness
 		p <- try(silent = FALSE, expr = {
-			image <- .beginSaveImage(width, height)
-			.plotBF.robustnessCheck.summarystats.correlation(
-				r = cor.value, n = options$sampleSize, oneSided = oneSided, BFH1H0 = BFH1H0,
-				corCoefficient = cor.coefficient, kappa = options$priorWidth,
-				dontPlotData = dontPlotData, BF10post = BF10post,
-				addInformation = options$plotBayesFactorRobustnessAdditionalInfo
-			)
+			# image <- .beginSaveImage(width, height)
+			# .plotBF.robustnessCheck.summarystats.correlation(
+			# 	r = cor.value, n = options$sampleSize, oneSided = oneSided, BFH1H0 = BFH1H0,
+			# 	corCoefficient = cor.coefficient, kappa = options$priorWidth,
+			# 	dontPlotData = dontPlotData, BF10post = BF10post,
+			# 	addInformation = options$plotBayesFactorRobustnessAdditionalInfo
+			# )
+			# plot[["data"]] <- .endSaveImage(image)
 
-			plot[["data"]] <- .endSaveImage(image)
+			.plotFunc <- function() {
+				.plotBF.robustnessCheck.summarystats.correlation(
+					r = cor.value, n = options$sampleSize, oneSided = oneSided, BFH1H0 = BFH1H0,
+					corCoefficient = cor.coefficient, kappa = options$priorWidth,
+					dontPlotData = dontPlotData, BF10post = BF10post,
+					addInformation = options$plotBayesFactorRobustnessAdditionalInfo
+				)
+			}
+			content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+			plot[["convertible"]] <- TRUE
+			plot[["obj"]] <- content[["obj"]]
+			plot[["data"]] <- content[["png"]]
+
 		})
 
 		if (class(p) == "try-error") {
@@ -449,9 +475,9 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 	if (options$correlationCoefficient == "pearsonRho") {
 		some.r <- options$pearsonRhoValue
 		all.pValues <- .pValueFromCor(corrie=some.r, n=some.n, method="pearson")
-		
+
 		method.number <- 1
-		
+
 		while (any(is.na(c(all.bfs$bf10, all.bfs$bfPlus0, all.bfs$bfMin0))) && method.number <= 4) {
 			# Note: Try all normal methods
 			all.bfs <- .bfCorrieKernel(n = some.n, r = some.r, kappa = options$priorWidth,
@@ -471,7 +497,7 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 		all.pValues <- .pValueFromCor(corrie=some.r, n=some.n, method="kendall")
 	} else if (options$correlationCoefficient == "spearman"){
 	  # TODO: Johnny
-	  # Without code this will print a NULL, if we go through here 
+	  # Without code this will print a NULL, if we go through here
 	}
 	return(list(bf = all.bfs, pValue=all.pValues))
 }
@@ -521,8 +547,8 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 				# Note: allBfs contains infor about whether the posteriors are too peaked
 				allBfs <- bayesFactorObject$bf
 				allPValues <- bayesFactorObject$pValue
-				
-				# Note: Choose the right side of the Bfs and pValue 
+
+				# Note: Choose the right side of the Bfs and pValue
 				switch(options$hypothesis,
 				       correlated = {
 				         someBf <- allBfs$bf10
@@ -537,11 +563,11 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 				         rowsCorrelationBayesianPairs$pValue <- .clean(allPValues$minSided)
 				       }
 				)
-				
+
 				# Note: Choose the display mode for Bf
 				rowsCorrelationBayesianPairs$BF <- switch(options$bayesFactorType,
-				                                          BF10 = .clean(someBf), 
-				                                          BF01 = .clean(1 / someBf), 
+				                                          BF10 = .clean(someBf),
+				                                          BF01 = .clean(1 / someBf),
 				                                          LogBF10 = .clean(log(someBf))
 				)
 			}

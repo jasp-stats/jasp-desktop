@@ -80,7 +80,6 @@
 #include <QStringBuilder>
 #include <QWebHistory>
 #include <QDropEvent>
-#include <QFileInfo>
 #include <QShortcut>
 #include <QDesktopWidget>
 #include <QTabBar>
@@ -115,8 +114,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	_tableModel = NULL;
 	_currentOptionsWidget = NULL;
 	_currentAnalysis = NULL;
-
-	_optionsForm = NULL;
 
 	_package = new DataSetPackage();
 
@@ -191,6 +188,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(fatalError()));
 
 	connect(_analyses, SIGNAL(analysisResultsChanged(Analysis*)), this, SLOT(analysisResultsChangedHandler(Analysis*)));
+	connect(_analyses, SIGNAL(analysisImageSaved(Analysis*)), this, SLOT(analysisImageSavedHandler(Analysis*)));
 	connect(_analyses, SIGNAL(analysisUserDataLoaded(Analysis*)), this, SLOT(analysisUserDataLoadedHandler(Analysis*)));
 	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), ui->backStage, SLOT(analysisAdded(Analysis*)));
 
@@ -222,6 +220,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(pushImageToClipboard(QByteArray, QString)), this, SLOT(pushImageToClipboardHandler(QByteArray, QString)));
 	connect(this, SIGNAL(saveTextToFile(QString, QString)), this, SLOT(saveTextToFileHandler(QString, QString)));
 	connect(this, SIGNAL(analysisChangedDownstream(int, QString)), this, SLOT(analysisChangedDownstreamHandler(int, QString)));
+	connect(this, SIGNAL(analysisSaveImage(int, QString)), this, SLOT(analysisSaveImageHandler(int, QString)));
 	connect(this, SIGNAL(showAnalysesMenu(QString)), this, SLOT(showAnalysesMenuHandler(QString)));
 	connect(this, SIGNAL(removeAnalysisRequest(int)), this, SLOT(removeAnalysisRequestHandler(int)));
 	connect(this, SIGNAL(updateUserData(int, QString)), this, SLOT(updateUserDataHandler(int, QString)));
@@ -247,7 +246,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	QMenuBar *_mMenuBar = new QMenuBar(parent=0);
 	QMenu *aboutMenu = _mMenuBar->addMenu("JASP");
-	aboutMenu->addAction("About",this,SLOT(showAbout()));
+	aboutMenu->addAction("About",ui->tabBar,SLOT(showAbout()));
 	_mMenuBar->addMenu(aboutMenu);
 
 	_buttonPanelLayout->addWidget(_okButton);
@@ -426,6 +425,8 @@ void MainWindow::refreshAnalysesUsingColumns(vector<string> &changedColumns
 	for (Analyses::iterator analysis_it = _analyses->begin(); analysis_it != _analyses->end(); ++analysis_it)
 	{
 		Analysis* analysis = *analysis_it;
+		if (analysis == NULL) continue;
+
 		bool analyse_to_refresh = false;
 		const vector<OptionVariables *> &analysis_variables = analysis->getVariables();
 		for (vector<OptionVariables *>::const_iterator var_it = analysis_variables.begin();
@@ -585,6 +586,69 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 
 	if (_package->isLoaded())
 		_package->setModified(true);
+}
+
+void MainWindow::analysisSaveImageHandler(int id, QString options)
+{
+	Analysis *analysis = _analyses->get(id);
+	if (analysis == NULL)
+		return;
+
+	string utf8 = fq(options);
+	Json::Value root;
+	Json::Reader parser;
+	parser.parse(utf8, root);
+
+	QString caption = "Save JASP Image";
+	QString filter = "Portable Network Graphics (*.png);;Tagged Image File Format (*.tiff);;Encapsulated PostScript (*.eps)";
+    QString selectedFilter;
+
+    QString finalPath = QFileDialog::getSaveFileName(this, caption, QString(), filter, &selectedFilter);
+	if (!finalPath.isEmpty())
+	{
+        if (selectedFilter == "Encapsulated PostScript (*.eps)")
+		{
+			root["type"] = "eps";
+            root["finalPath"] = finalPath.toStdString();
+            analysis->saveImage(analysis, root);
+		}
+		else if (selectedFilter == "Tagged Image File Format (*.tiff)")
+		{
+			root["type"] = "tiff";
+			root["finalPath"] = finalPath.toStdString();
+			analysis->saveImage(analysis, root);
+		}
+		else
+		{
+            QString imagePath = QString::fromStdString(tempfiles_sessionDirName()) + "/" + root.get("name", Json::nullValue).asCString();
+			if (QFile::exists(finalPath))
+			{
+				QFile::remove(finalPath);
+			}
+			QFile::copy(imagePath, finalPath);
+        }
+	}
+}
+
+void MainWindow::analysisImageSavedHandler(Analysis *analysis)
+{
+	Json::Value results = analysis->asJSON().get("results", Json::nullValue);
+	if (results.isNull())
+		return;
+	Json::Value inputOptions = results.get("inputOptions", Json::nullValue);
+
+	QString imagePath = QString::fromStdString(tempfiles_sessionDirName()) + "/" + results.get("name", Json::nullValue).asCString();
+	QString finalPath = QString::fromStdString(inputOptions.get("finalPath", Json::nullValue).asCString());
+	if (!finalPath.isEmpty())
+	{
+		std::cout << "analysisImageSavedHandler, imagePath: " << imagePath.toStdString() << ", finalPath: " << finalPath.toStdString() << std::endl;
+		std::cout.flush();
+		if (QFile::exists(finalPath))
+		{
+			QFile::remove(finalPath);
+		}
+		QFile::copy(imagePath, finalPath);
+	}
 }
 
 AnalysisForm* MainWindow::loadForm(Analysis *analysis)
@@ -982,7 +1046,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			setWindowTitle(name);
 			_currentFilePath = event->path();
 
-			if (event->type() == Utils::FileType::jasp && !_package->dataFilePath.empty() && strncmp("http", _package->dataFilePath.c_str(), 4) != 0)
+			if (event->type() == Utils::FileType::jasp && !_package->dataFilePath.empty() && !_package->dataFileReadOnly && strncmp("http", _package->dataFilePath.c_str(), 4) != 0)
 			{
 				QString dataFilePath = QString::fromStdString(_package->dataFilePath);
 				if (QFileInfo::exists(dataFilePath))
@@ -1664,6 +1728,7 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 	QIcon _citeIcon = QIcon(":/icons/cite.png");
 	QIcon _collapseIcon = QIcon(":/icons/collapse.png");
 	QIcon _expandIcon = QIcon(":/icons/expand.png");
+	QIcon _saveImageIcon = QIcon(":/icons/document-save-as.png");
 
 	_analysisMenu->clear();
 
@@ -1690,6 +1755,11 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 	{
 		_analysisMenu->addSeparator();
 		_analysisMenu->addAction(_citeIcon, "Copy Citations", this, SLOT(citeSelected()));
+	}
+
+	if (menuOptions["hasSaveImg"].asBool())
+	{
+		_analysisMenu->addAction(_saveImageIcon, "Save Image As", this, SLOT(saveImage()));
 	}
 
 	if (menuOptions["hasNotes"].asBool())
@@ -1846,6 +1916,11 @@ void MainWindow::citeSelected()
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.citeMenuClicked();");
 }
 
+void MainWindow::saveImage()
+{
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.saveImageClicked();");
+}
+
 void MainWindow::noteSelected()
 {
 	QAction *action = (QAction *)this->sender();
@@ -1894,11 +1969,14 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 void MainWindow::startDataEditorHandler()
 {
 	QString path = QString::fromStdString(_package->dataFilePath);
-	if (path.isEmpty() || path.startsWith("http") || !QFileInfo::exists(path) || Utils::getFileSize(path.toStdString()) == 0)
+	if (path.isEmpty() || path.startsWith("http") || !QFileInfo::exists(path) || Utils::getFileSize(path.toStdString()) == 0 || _package->dataFileReadOnly)
 	{
-		QString message = path.startsWith("http") ?
-					"JASP was started with an online data file (csv, sav or ods file). But to edit the data, JASP needs this file on your computer. Does this data file also exist on your computer, or do you want to generate it?" :
-					"JASP was started without associated data file (csv, sav or ods file). But to edit the data, JASP starts a spreadsheet editor based on this file and synchronize the data when the file is saved. Does this data file exist already, or do you want to generate it?";
+		QString message = "JASP was started without associated data file (csv, sav or ods file). But to edit the data, JASP starts a spreadsheet editor based on this file and synchronize the data when the file is saved. Does this data file exist already, or do you want to generate it?";
+		if (path.startsWith("http"))
+			message = "JASP was started with an online data file (csv, sav or ods file). But to edit the data, JASP needs this file on your computer. Does this data file also exist on your computer, or do you want to generate it?";
+		else if (_package->dataFileReadOnly)
+			message = "JASP was started with a read-only data file (probably from the examples). But to edit the data, JASP needs to write to the data file. Does the same file also exist on your computer, or do you want to generate it?";
+
 		QMessageBox msgBox(QMessageBox::Question, QString("Start Spreadsheet Editor"), message,
 						   QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
 		msgBox.setButtonText(QMessageBox::Yes, QString("Generate Data File"));
@@ -1932,7 +2010,6 @@ void MainWindow::startDataEditorHandler()
 				path.append(".csv");
 
 			event = new FileEvent(this, FileEvent::FileExportData);
-			connect(event, SIGNAL(completed(FileEvent*)), ui->backStage, SLOT(setSyncFile(FileEvent*)));
 		}
 		else
 		{
@@ -1963,6 +2040,8 @@ void MainWindow::startDataEditorEventCompleted(FileEvent* event)
 
 	if (event->successful())
 	{
+		_package->dataFilePath = event->path().toStdString();
+		_package->dataFileReadOnly = false;
 		_package->setModified(true);
 		startDataEditor(event->path());
 	}

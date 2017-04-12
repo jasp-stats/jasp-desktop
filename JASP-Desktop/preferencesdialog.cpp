@@ -23,6 +23,9 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 	if (spreadsheetEditorName != "")
 		ui->spreadsheetEditorName->setText(spreadsheetEditorName);
 
+	// Remove Question mark Help sign (Only on windows )
+	this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
+
 	connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(savePreferences()));
 	connect(ui->useDefaultSpreadsheetEditor, SIGNAL(clicked(bool)), this, SLOT(setDefaultEditorCheck(bool)));
 	connect(ui->openEditor, SIGNAL(pressed()),this, SLOT(getSpreadsheetEditor()));

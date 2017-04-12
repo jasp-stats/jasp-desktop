@@ -4,6 +4,7 @@
 #include <boost/container/vector.hpp>
 #include <algorithm>
 #include <QDebug>
+#include <QColor>
 
 #include "qutils.h"
 
@@ -50,6 +51,9 @@ int LevelsTableModel::columnCount(const QModelIndex &parent) const
 
 QVariant LevelsTableModel::data(const QModelIndex &index, int role) const
 {
+	if (role == Qt::BackgroundColorRole && index.column() == 0)
+		return QColor(0xf6,0xf6,0xf6);
+
 	if (role != Qt::DisplayRole && role != Qt::EditRole)
 		return QVariant();
 
@@ -141,10 +145,10 @@ bool LevelsTableModel::setData(const QModelIndex & index, const QVariant & value
         const std::string &new_label = value.toString().toStdString();
         if (new_label != "") {
             Labels &labels = _column->labels();
-			labels.setLabelFromRow(index.row(), new_label);
-        }
+			if (labels.setLabelFromRow(index.row(), new_label))
+				emit dataChanged(index, index);
+		}
     }
 
-	emit dataChanged(index, index);
     return true;
 }

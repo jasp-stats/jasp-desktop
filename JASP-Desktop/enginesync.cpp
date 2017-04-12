@@ -32,6 +32,7 @@
 
 #include "processinfo.h"
 #include "common.h"
+#include "appinfo.h"
 #include "qutils.h"
 #include "tempfiles.h"
 
@@ -50,6 +51,7 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), this, SLOT(sendMessages()));
 	connect(_analyses, SIGNAL(analysisOptionsChanged(Analysis*)), this, SLOT(sendMessages()));
 	connect(_analyses, SIGNAL(analysisToRefresh(Analysis*)), this, SLOT(sendMessages()));
+	connect(_analyses, SIGNAL(analysisSaveImage(Analysis*)), this, SLOT(sendMessages()));
 
 	// delay start so as not to increase program start up time
 	QTimer::singleShot(100, this, SLOT(deleteOrphanedTempFiles()));
@@ -148,6 +150,11 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 		perform = "init";
 		analysis->setStatus(Analysis::Initing);
 	}
+	else if (analysis->status() == Analysis::SaveImg)
+	{
+		perform = "saveImg";
+		analysis->setStatus(Analysis::Initing);
+	}
 	else if (analysis->status() == Analysis::Aborting)
 	{
 		perform = "abort";
@@ -170,7 +177,10 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	if (analysis->status() != Analysis::Aborted)
 	{
 		json["name"] = analysis->name();
-		json["options"] = analysis->options()->asJSON();
+		if (perform == "saveImg")
+			json["image"] = analysis->getSaveImgOptions();
+		else
+			json["options"] = analysis->options()->asJSON();
 
 		Json::Value settings;
 		settings["ppi"] = _ppi;
@@ -234,6 +244,13 @@ void EngineSync::process()
 					_log->log("Analysis Error", info);
 				}
 			}
+			else if (status == "imageSaved")
+			{
+				analysis->setStatus(Analysis::Complete);
+				analysis->setImageResults(results);
+				_analysesInProgress[i] = NULL;
+				sendMessages();
+			}
 			else if (status == "complete")
 			{
 				analysis->setStatus(Analysis::Complete);
@@ -272,11 +289,6 @@ void EngineSync::process()
 
 void EngineSync::sendMessages()
 {
-#ifdef QT_DEBUG
-	std::cout << "send messages\n";
-	std::cout.flush();
-#endif
-
 	for (size_t i = 0; i < _analysesInProgress.size(); i++) // this loop handles changes in running analyses
 	{
 		Analysis *analysis = _analysesInProgress[i];
@@ -300,7 +312,7 @@ void EngineSync::sendMessages()
 		if (analysis == NULL)
 			continue;
 
-		if (analysis->status() == Analysis::Empty)
+		if (analysis->status() == Analysis::Empty || analysis->status() == Analysis::SaveImg)
 		{
 			bool sent = false;
 
@@ -348,7 +360,7 @@ void EngineSync::startSlaveProcess(int no)
 #ifdef __WIN32__
 	QString rHomePath = programDir.absoluteFilePath("R");
 #elif __APPLE__
-	QString rHomePath = programDir.absoluteFilePath("../Frameworks/R.framework/Versions/3.1/Resources");
+	QString rHomePath = programDir.absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(CURRENT_R_VERSION) + "/Resources");
 #else //linux
 
 #ifndef R_HOME
@@ -414,8 +426,10 @@ void EngineSync::startSlaveProcess(int no)
 #endif
 
 	QProcess *slave = new QProcess(this);
+	slave->setProcessChannelMode(QProcess::ForwardedChannels);
 	slave->setProcessEnvironment(env);
 	slave->start(engineExe, args);
+
 
 	_slaveProcesses.push_back(slave);
 

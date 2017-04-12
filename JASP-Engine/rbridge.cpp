@@ -22,6 +22,7 @@
 #include "../JASP-Common/base64.h"
 #include "../JASP-Common/lib_json/json.h"
 #include "../JASP-Common/sharedmemory.h"
+#include "../JASP-Common/appinfo.h"
 
 RInside *rbridge_rinside;
 DataSet *rbridge_dataSet;
@@ -64,7 +65,7 @@ void rbridge_init()
 	rInside[".callbackNative"] = Rcpp::InternalFunction(&rbridge_callbackSEXP);
 	rInside[".requestTempFileNameNative"] = Rcpp::InternalFunction(&rbridge_requestTempFileNameSEXP);
 	rInside[".requestStateFileNameNative"] = Rcpp::InternalFunction(&rbridge_requestStateFileNameSEXP);
-	rInside[".baseCitation"] = "Love, J., Selker, R., Marsman, M., Jamil, T., Dropmann, D., Verhagen, A. J., Ly, A., Gronau, Q. F., Smira, M., Epskamp, S., Matzke, D., Wild, A., Knight, P., Rouder, J. N., Morey, R. D., & Wagenmakers, E.-J. (2015). JASP (Version 0.7.5)[Computer software].";
+	rInside[".baseCitation"] = "JASP Team (" + AppInfo::getBuildYear() + "). JASP (Version " + AppInfo::version.asString() + ") [Computer software].";
 
 	rInside["jasp.analyses"] = Rcpp::List();
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");
@@ -135,6 +136,7 @@ string rbridge_run(const string &name, const string &options, const string &perf
 	rInside["options.as.json.string"] = options;
 	rInside["perform"] = perform;
 	rInside[".ppi"] = ppi;
+
 	rInside.parseEval("run(name=name, options.as.json.string=options.as.json.string, perform)", results);
 
 	rbridge_runCallback = NULL;
@@ -421,7 +423,6 @@ void rbridge_makeFactor(Rcpp::IntegerVector &v, const Labels &levels, bool ordin
 void rbridge_makeFactor(Rcpp::IntegerVector &v, const std::vector<string> &levels, bool ordinal)
 {
 	v.attr("levels") = levels;
-
 	vector<string> cla55;
 	if (ordinal)
 		cla55.push_back("ordered");
@@ -514,6 +515,25 @@ Rcpp::DataFrame rbridge_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumeri
 string rbridge_check()
 {
 	SEXP result = rbridge_rinside->parseEvalNT("checkPackages()");
+	if (Rf_isString(result))
+		return Rcpp::as<string>(result);
+	else
+		return "null";
+}
+
+string rbridge_saveImage(const string &name, const string &type, const int &height, const int &width)
+
+{
+	RInside &rInside = rbridge_rinside->instance();
+
+	rInside["plotName"] = name;
+	rInside["format"] = type;
+
+	rInside["height"] = height;
+	rInside["width"] = width;
+
+	SEXP result = rbridge_rinside->parseEvalNT("saveImage(plotName,format,height,width)");
+
 	if (Rf_isString(result))
 		return Rcpp::as<string>(result);
 	else
