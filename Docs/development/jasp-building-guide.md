@@ -33,7 +33,7 @@ Windows
 Building JASP under windows is the most temperamental, and the versions listed here are known to work; slight variations on these numbers probably won't work.
 
  - [Qt 5.2.1 win64 GCC 4.8.2](https://static.jasp-stats.org/development/x64-Qt-5.2.1+QtCreator-3.0.1-(gcc-4.8.2-seh).7z)
- - [R 3.1.2 win64](https://static.jasp-stats.org/development/R%20Win64%20for%20JASP%20%282015-09-04%29.zip)
+ - [R 3.3.3 win64](https://static.jasp-stats.org/development/R3.3%20Win%20(2017-04-06).zip)
  - [boost 1.54.0](https://static.jasp-stats.org/development/boost_1_54_0.7z)
  - [boost 1.54.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Additional%20Binary%20Deps%20Win64%20for%20JASP%20(2015-04-14).zip)
 
@@ -60,7 +60,7 @@ The directory structure should be as follows:
 Mac OS X
 --------
 
- - [R 3.1.2](https://static.jasp-stats.org/development/R%20OSX%20for%20JASP%20%282015-09-04%29.zip)
+ - [R 3.3.3](https://static.jasp-stats.org/development/R3.3%20OSX%20(2017-04-06).zip)
  - [boost 1.54.0](https://static.jasp-stats.org/development/boost_1_54_0.tar.bz2)
  - [boost 1.54.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Additional%20Binary%20Deps%20OSX%20for%20JASP%20(2015-04-14).zip)
 
