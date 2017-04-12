@@ -853,7 +853,7 @@ saveImage <- function(plotName, format, height, width){
 	# Get file size in inches by creating a mock file and closing it
 	pngMultip <- .ppi / 96
 	png(filename=paste0(location, "/dpi.png"), width=width * pngMultip, 
-			height=height * pngMultip)
+			height=height * pngMultip,res=72 * pngMultip)
 	insize <- dev.size("in")
 	dev.off()
 	
