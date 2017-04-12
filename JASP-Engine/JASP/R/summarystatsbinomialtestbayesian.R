@@ -169,15 +169,30 @@ SummaryStatsBinomialTestBayesian <- function(dataset = NULL, options, perform = 
 		}
 
 		p <- try(silent = FALSE, expr = {
-			image <- .beginSaveImage(width, height)
-			.plotPosterior.binomTest(
+			# image <- .beginSaveImage(width, height)
+			# .plotPosterior.binomTest(
+			# 		counts = options$successes, n = (options$failures + options$successes),
+			# 		theta0 = options$testValue, a = options$betaPriorParamA,
+			# 		b = options$betaPriorParamB, BF10 = bayesFactorObject, hypothesis = hyp,
+			# 		addInformation = options$plotPriorAndPosteriorAdditionalInfo,
+			# 		dontPlotData = dontPlotData
+			# 	)
+			# plot[["data"]] <- .endSaveImage(image)
+			
+			.plotFunc <- function() {
+				.plotPosterior.binomTest(
 					counts = options$successes, n = (options$failures + options$successes),
 					theta0 = options$testValue, a = options$betaPriorParamA,
 					b = options$betaPriorParamB, BF10 = bayesFactorObject, hypothesis = hyp,
 					addInformation = options$plotPriorAndPosteriorAdditionalInfo,
 					dontPlotData = dontPlotData
 				)
-			plot[["data"]] <- .endSaveImage(image)
+			}
+			content <- .writeImage(width = width, height = height, plot = .plotFunc, obj = TRUE)
+			plot[["convertible"]] <- TRUE
+			plot[["obj"]] <- content[["obj"]]
+			plot[["data"]] <- content[["png"]]
+			
 		})
 
 		if (class(p) == "try-error") {

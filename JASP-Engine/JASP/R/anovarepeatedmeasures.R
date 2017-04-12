@@ -2369,18 +2369,28 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 			if (options$plotSeparateLines != "") {
 
-				image <- .beginSaveImage(options$plotWidthDescriptivesPlotLegend, options$plotHeightDescriptivesPlotLegend)
+				# image <- .beginSaveImage(options$plotWidthDescriptivesPlotLegend, options$plotHeightDescriptivesPlotLegend)
+				content <- .writeImage(width = options$plotWidthDescriptivesPlotLegend, 
+									   height = options$plotHeightDescriptivesPlotLegend, 
+									   plot = p, obj = TRUE)
 
 			} else {
 
-				image <- .beginSaveImage(options$plotWidthDescriptivesPlotNoLegend, options$plotHeightDescriptivesPlotNoLegend)
+				# image <- .beginSaveImage(options$plotWidthDescriptivesPlotNoLegend, options$plotHeightDescriptivesPlotNoLegend)
+				content <- .writeImage(width = options$plotWidthDescriptivesPlotNoLegend, 
+									   height = options$plotHeightDescriptivesPlotNoLegend, 
+									   plot = p, obj = TRUE)
 
 			}
 
-			print(p)
-			content <- .endSaveImage(image)
+			# print(p)
+			# content <- .endSaveImage(image)
+			
+			descriptivesPlot[["convertible"]] <- TRUE
+			descriptivesPlot[["obj"]] <- content[["obj"]]
+			descriptivesPlot[["data"]] <- content[["png"]]
 
-			descriptivesPlot[["data"]] <- content
+			# descriptivesPlot[["data"]] <- content
 			descriptivesPlot[["status"]] <- "complete"
 
 			descriptivesPlotList[[i]] <- descriptivesPlot

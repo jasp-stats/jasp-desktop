@@ -228,9 +228,11 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 		}
 
 		p <- try(silent = FALSE, expr = {
-			image <- .beginSaveImage(width, height)
 
-			# TODO: fix .plotPosterior.correlation take in bfObject and have switch bayesFactorObject$bf
+			# image <- .beginSaveImage(width, height)
+			
+			# TODO: fix .plotPosterior.correlation take in bfObject and have switch bayesFactorObject$bf 
+
 			allBfs <- bayesFactorObject$bf
 
 			someBf <- switch(options$hypothesis,
@@ -239,17 +241,24 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 			                 correlatedNegatively =allBfs$bfMin0
 			)
 
-			if (!BFH1H0) {
-				someBf <- 1 / someBf
-			}
+			
+			.plotFunc <- function() {
+				if (!BFH1H0) {
+					someBf <- 1 / someBf
+				}
 
-			.plotPosterior.correlation(
-						r = cor.value, n = options$sampleSize, oneSided = oneSided,
-						corCoefficient = cor.coefficient, dontPlotData = dontPlotData,
-						kappa = options$priorWidth, BFH1H0 = BFH1H0, BF = someBf,
-						addInformation = options$plotPriorAndPosteriorAdditionalInfo
-					)
-			plot[["data"]] <- .endSaveImage(image)
+				.plotPosterior.correlation(
+							r = cor.value, n = options$sampleSize, oneSided = oneSided,
+							corCoefficient = cor.coefficient, dontPlotData = dontPlotData,
+							kappa = options$priorWidth, BFH1H0 = BFH1H0, BF = someBf,
+							addInformation = options$plotPriorAndPosteriorAdditionalInfo
+						)
+			}
+			content <- .writeImage(width = width, height = height, plot = .plotFunc, obj = TRUE)
+			plot[["convertible"]] <- TRUE
+			plot[["obj"]] <- content[["obj"]]
+			plot[["data"]] <- content[["png"]]
+			# plot[["data"]] <- .endSaveImage(image)
 		})
 
 		if (class(p) == "try-error") {
@@ -363,15 +372,28 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 
 		# plot Bayes factor robustness
 		p <- try(silent = FALSE, expr = {
-			image <- .beginSaveImage(width, height)
-			.plotBF.robustnessCheck.summarystats.correlation(
-				r = cor.value, n = options$sampleSize, oneSided = oneSided, BFH1H0 = BFH1H0,
-				corCoefficient = cor.coefficient, kappa = options$priorWidth,
-				dontPlotData = dontPlotData, BF10post = BF10post,
-				addInformation = options$plotBayesFactorRobustnessAdditionalInfo
-			)
+			# image <- .beginSaveImage(width, height)
+			# .plotBF.robustnessCheck.summarystats.correlation(
+			# 	r = cor.value, n = options$sampleSize, oneSided = oneSided, BFH1H0 = BFH1H0,
+			# 	corCoefficient = cor.coefficient, kappa = options$priorWidth,
+			# 	dontPlotData = dontPlotData, BF10post = BF10post,
+			# 	addInformation = options$plotBayesFactorRobustnessAdditionalInfo
+			# )
+			# plot[["data"]] <- .endSaveImage(image)
 
-			plot[["data"]] <- .endSaveImage(image)
+			.plotFunc <- function() {
+				.plotBF.robustnessCheck.summarystats.correlation(
+					r = cor.value, n = options$sampleSize, oneSided = oneSided, BFH1H0 = BFH1H0,
+					corCoefficient = cor.coefficient, kappa = options$priorWidth,
+					dontPlotData = dontPlotData, BF10post = BF10post,
+					addInformation = options$plotBayesFactorRobustnessAdditionalInfo
+				)
+			}
+			content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+			plot[["convertible"]] <- TRUE
+			plot[["obj"]] <- content[["obj"]]
+			plot[["data"]] <- content[["png"]]
+
 		})
 
 		if (class(p) == "try-error") {
