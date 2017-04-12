@@ -20,7 +20,7 @@
 
 #include "version.h"
 
-const std::string CURRENT_R_VERSION = "3.1";
+const std::string CURRENT_R_VERSION = "3.3";
 
 class AppInfo
 {
