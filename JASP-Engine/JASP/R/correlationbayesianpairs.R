@@ -515,41 +515,22 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					}
 					
 					errorMessage <- NULL
-					
+					errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('observations','variance', 'infinity'),
+
+					                     all.target = c(pair[[1]], pair[[2]]), observations.amount = '< 2')
 					# Note: Data and bfs check [start]
-					if (is.na(some.r) || some.n <= 1 || base::any(base::is.infinite(v1)) || base::any(base::is.infinite(v2)) || sd(v1) == 0 || sd(v2) == 0) {
-					
-						# Note: Data: NOT ok, 
-						# 		bf10: can't
-						if (some.n <= 1){
-						
-							index <- .addFootnote(footnotes, "Sample correlation co-efficient r is undefined - not enough observations")
-							unplotable <- TRUE
-							unplotableMessage <- "Sample correlation co-efficient r is undefined - not enough observations"
-							errorMessage <- "Sample correlation co-efficient r is undefined - not enough observations"
-							errorFootnotes[i] <- errorMessage
-							
-						} else if (base::any(base::is.infinite(v1)) || base::any(base::is.infinite(v2))) {
-						
-							index <- .addFootnote(footnotes, "Sample correlation co-efficient r is undefined - one (or more) variables contain infinity")
-							unplotable <- TRUE
-							unplotableMessage <- "Sample correlation co-efficient r is undefined - one (or more) variables contain infinity"
-							unplotableScatter <- TRUE
-							unplotableMessageScatter <- "One (or more) variables contain infinity"
-							errorMessage <- "Sample correlation co-efficient r is undefined - one (or more) variables contain infinity"
-							errorFootnotes[i] <- errorMessage
-							
-						} else if (sd(v1) == 0 || sd(v2) == 0) {
-						
-							index <- .addFootnote(footnotes, "Sample correlation co-efficient r is undefined - one (or more) variables do not vary")
-							unplotable <- TRUE
-							unplotableMessage <- "Sample correlation co-efficient r is undefined - one (or more) variables do not vary"
-							errorMessage <- "Sample correlation co-efficient r is undefined - one (or more) variables do not vary"
-							errorFootnotes[i] <- errorMessage
-							
-						}
-						#row.footnotes[[variable.2.name]] <- c(row.footnotes[[variable.name]], list(index))
-						#row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
+					if (!identical(errors, FALSE)) {			
+					  # Note: Data: NOT ok, 
+			      # bf10: can't compute
+					  errorMessage <- errors$message
+					  unplotable <- TRUE
+					  unplotableMessage <- errors$message
+					  unplotableScatter <- TRUE
+					  unplotableMessageScatter <- errors$message
+            
+
+				    obsFootnote <- errors$message
+				    index <- .addFootnote(footnotes, obsFootnote)
 						
 						some.r <- NaN
 						some.bf10 <- NaN
