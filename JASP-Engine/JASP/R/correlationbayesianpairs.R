@@ -515,7 +515,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					}
 					
 					errorMessage <- NULL
-					errors <- .hasErrors(dataset, perform = "run", message = 'short', type = c('observations','variance', 'infinity'),
+					errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('observations','variance', 'infinity'),
 					                     all.target = c(pair[[1]], pair[[2]]), observations.amount = '< 2')
 					# Note: Data and bfs check [start]
 					if (!identical(errors, FALSE)) {			

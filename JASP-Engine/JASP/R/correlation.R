@@ -697,7 +697,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 					 } else {
 
 						if (perform == "run") {
-						  errors <- .hasErrors(dataset, perform = "run", message = 'short', type = c('variance', 'infinity'),
+						  errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('variance', 'infinity'),
 						                       all.target = c(variable.name, variable.2.name))
 						  if (!identical(errors, FALSE)) {
 						    index <- .addFootnote(footnotes, errors$message)

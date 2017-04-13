@@ -561,7 +561,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							#
 							# Note: Data and bfs check [start]
 							
-							errors <- .hasErrors(dataset, perform = "run", message = 'short', type = c('observations','variance', 'infinity'),
+							errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('observations','variance', 'infinity'),
 							                     all.target = c(variableName, variable2Name), observations.amount = '< 2')
 
 							if (!identical(errors, FALSE)) {									
