@@ -66,7 +66,7 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
                  list(name = 'Plot', type = 'image'))
     results[['.meta']] <- meta
     
-    results[['title']] <- 'K-Nearest Neighbors Classification'
+    results[['title']] <- 'k-Nearest neighbors classification'
     
     if(perform == "init"){
         
@@ -317,14 +317,14 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
 
 .PlotKoptimizedClassification <- function(res,opt){
     plot(opt[['NN']],
-         res[['Model.error']],
+         1- res[['Model.error']],
          type = 'b',
          xlab = '',
          ylab = '',
          las = 1,
          main = '',
          bty = 'n')
-    mtext(expression('Model error'), side = 2, line = 2, cex = 1.5, font = 2)
+    mtext(expression('Accuracy'), side = 2, line = 2, cex = 1.5, font = 2)
     mtext("K", side = 1, line = 3, cex = 1.5, font = 2)
     points(opt[['NN']][which.min(res[["Model.error"]])],
            min(res[['Model.error']]),
@@ -346,14 +346,14 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
         
     }
     
-    fields_descriptions[[length(fields_descriptions)+1]] <- list(name = 'nnc[nn]', title = 'No. Nearest Neighbors', type = 'integer')
-    fields_descriptions[[length(fields_descriptions)+1]] <- list(name = 'r[rmse]', title = 'Model error', type = 'number', format = 'dp:3')
+    fields_descriptions[[length(fields_descriptions)+1]] <- list(name = 'nnc[nn]', title = 'No. nearest neighbors', type = 'integer')
+    fields_descriptions[[length(fields_descriptions)+1]] <- list(name = 'r[rmse]', title = 'Accuracy', type = 'number', format = 'dp:3')
     
     if (options[['validationLeaveOneOut']]){
         
         fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "optim[type2]", title = "", type = "string")
         fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "nnc[nnloo]", title = "LOOCV nn", type = 'integer')
-        fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "r[rmseoptim]", title = "Model error", type = 'number', format = "dp:3")
+        fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "r[rmseoptim]", title = "Accuracy", type = 'number', format = "dp:3")
         
     }
     
@@ -361,7 +361,7 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
         
         fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "optim[type3]", title = "", type = "string")
         fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "nnc[nnkfold]", title = "K-fold nn", type = 'integer')
-        fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "r[rmsekfold]", title = "Model error", type = 'number', format = "dp:3")
+        fields_descriptions[[length(fields_descriptions)+1]] <- list(name = "r[rmsekfold]", title = "Accuracy", type = 'number', format = "dp:3")
         
     }
     
@@ -371,22 +371,28 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
         
         if(options[['noOfNearestNeighbours']] == 'auto'){
             
-            data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = opt[['NN']], "r[rmse]" = res[['model.error']], "optim[type1]" = 'Auto')
+            data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = opt[['NN']], "r[rmse]" = 1-res[['model.error']], "optim[type1]" = 'Auto')
             
         } else if (options[['noOfNearestNeighbours']] == 'manual'){
             
-            data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = opt[['NN']], "r[rmse]" = res[['model.error']], "optim[type1]" = 'Manual')
+            data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = opt[['NN']], "r[rmse]" = 1-res[['model.error']], "optim[type1]" = 'Manual')
             
         } else if (options[['noOfNearestNeighbours']] == 'optimized'){
             
-            data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = res[['Optimal.K']], "r[rmse]" = res[['Minimal.error']], "optim[type1]" = "Optimized")
+            data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = res[['Optimal.K']], "r[rmse]" = 1-res[['Minimal.error']], "optim[type1]" = "Optimized")
             
         }
+        
+        footnotes_N <- .newFootnotes()
+        .addFootnote(footnotes_N,paste('The model is tested on ',nrow(res[["predictions"]]), "observations"), symbol = "")
+        footnotes_N <- as.list(footnotes_N)
         
     } else {
         
         data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = ".", "r[rmse]" = ".", "optim[type1]" = "")
-        
+        footnotes_N <- .newFootnotes()
+        .addFootnote(footnotes_N,paste('The model is tested on ',0, "observations"), symbol = "")
+        footnotes_N <- as.list(footnotes_N)
     }
     
     if(options[['validationLeaveOneOut']] & !is.null(res)){
@@ -405,11 +411,17 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
     
     return(list(title = 'Evaluation',
                 schema = list(fields = fields_descriptions),
-                data = data_descriptions))
+                data = data_descriptions,
+                footnotes = footnotes_N))
     
 }
 
 .PredictionsTableClassification <- function(options, opt, predictors, target, res){
+    
+
+    from <- options[["predictionsFrom"]]
+
+    to <- options[['predictionsTo']]
     
     fields <- list(
         list(name="number", title="Obs. number", type="integer"),
@@ -439,7 +451,7 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
         
         if(options[['tablePredictionsConfidence']]){
             
-            for(i in 1:nrow(res[['predictions']])){
+            for(i in from:to){
                 
                 data[[length(data)+1]] <- list(number = as.numeric(res[['predictions']][i,1]),
                                                real = as.character(res[['predictions']][i,2]),
@@ -450,7 +462,7 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
             
         } else {
             
-            for(i in 1:nrow(res[['predictions']])){
+            for(i in from:to){
                 
                 data[[length(data)+1]] <- list(number = as.numeric(res[['predictions']][i,1]),
                                                real = as.character(res[['predictions']][i,2]),
@@ -469,6 +481,10 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
 }
 
 .DistancesTableClassification <- function(predictors,target, opt, options, res){
+    
+    from <- options[["predictionsFrom"]]
+    
+    to <- options[['predictionsTo']]
     
     fields_distances <- list(
         list(name="number", title="Obs. number", type="integer")
@@ -489,7 +505,7 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
         
         data_distances <- list()
         
-        for(i in 1:nrow(res[['Distances']])){	
+        for(i in from:to){	
             data_distances[[i]] <- list(number = i)
             
             if(options[['noOfNearestNeighbours']] == 'auto' | options[['noOfNearestNeighbours']] == 'manual'){
@@ -532,6 +548,10 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
 
 .WeightsTableClassification <- function(predictors, target, opt, options, res){
     
+    from <- options[["predictionsFrom"]]
+    
+    to <- options[['predictionsTo']]
+    
     fields_weights <- list(
         list(name="number", title="Obs. number", type="integer")
     )
@@ -553,7 +573,7 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
         
         data_weights <- list()
         
-        for(i in 1:nrow(res[['Weights']])){	
+        for(i in from:to){	
             
             data_weights[[i]] <- list(number = i)
             
@@ -800,13 +820,19 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
 
 .ConfusionTableClassifiaction <- function(res, target, dataset){
     
-    if(!is.null(res)){
+    title_observed <- "Observed"
     
-    fields_confusion <- list(list(name = "varname_pred", title = "", type = "string"))
+    if(!is.null(res)){
+        
+    fields_confusion <- list()
+    
+    fields_confusion[[length(fields_confusion)+1]] <- list(name = "pred_name", title = "", type = "string")
+    
+    fields_confusion[[length(fields_confusion)+1]] <- list(name = "varname_pred", title = "", type = "string")
     
     for( i in 1:length(rownames(res[["confusion.table"]]))){
         
-        fields_confusion[[length(fields_confusion)+1]] <- list(name = paste("varname_real",i, sep = ""), title = as.character(rownames(res[["confusion.table"]])[i]), type = "integer")
+        fields_confusion[[length(fields_confusion)+1]] <- list(name = paste("varname_real",i, sep = ""), title = as.character(rownames(res[["confusion.table"]])[i]), type = "integer", overTitle = title_observed)
         
     }
     
@@ -822,6 +848,12 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
             
         }
         
+        if(i == 1){
+            dat_tmp[["pred_name"]] <- "Predicted"
+        } else {
+            dat_tmp[["pred_name"]] <- ""
+        }
+        
         data_confusion[[length(data_confusion)+1]] <- dat_tmp
         
     }
@@ -832,11 +864,15 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
     
     } else if (target != "" & is.null(res)){
         
-        fields_confusion <- list(list(name = "varname_pred", title = "", type = "string"))
+        fields_confusion <- list()
+        
+        fields_confusion[[length(fields_confusion)+1]] <- list(name = "pred_name", title = "", type = "string")
+        
+        fields_confusion[[length(fields_confusion)+1]] <- list(name = "varname_pred", title = "", type = "string")
         
         for( i in 1:length(unique(dataset[,target]))){
             
-            fields_confusion[[length(fields_confusion)+1]] <- list(name = paste("varname_real",i, sep = ""), title = as.character(sort(unique(dataset[,target]), decreasing = FALSE))[i], type = "integer")
+            fields_confusion[[length(fields_confusion)+1]] <- list(name = paste("varname_real",i, sep = ""), title = as.character(sort(unique(dataset[,target]), decreasing = FALSE))[i], type = "integer",overTitle = title_observed)
             
         }
         
@@ -852,6 +888,12 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
                 
             }
             
+            if(i == 1){
+                dat_tmp[["pred_name"]] <- "Predicted"
+            } else {
+                dat_tmp[["pred_name"]] <- ""
+            }
+            
             data_confusion[[length(data_confusion)+1]] <- dat_tmp
             
         }
@@ -863,12 +905,13 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
         
     } else {
         
-        fields_confusion <- list(list(name = "varname_pred", title = "", type = "string"),
-                                 list(name = "varname_real1", title = ".", type = "integer"),
-                                 list(name = "varname_real2", title = ".", type = 'integer'))
+        fields_confusion <- list(list(name = "pred_name", title = "", type = "string"),
+                                 list(name = "varname_pred", title = "", type = "string"),
+                                 list(name = "varname_real1", title = ".", type = "integer", overTitle = title_observed),
+                                 list(name = "varname_real2", title = ".", type = 'integer', overTitle = title_observed))
         
-        data_confusion <- list(list(varname_pred = ".", varname_real1 = "", varname_real2= ""),
-                               list(varname_pred = ".", varname_real1= "", varname_real2= ""))
+        data_confusion <- list(list(pred_name = "Predicted", varname_pred = ".", varname_real1 = "", varname_real2= ""),
+                               list(pred_name = "", varname_pred = ".", varname_real1= "", varname_real2= ""))
         
         return(list(title = "Confusion table",
                     schema = list(fields = fields_confusion),

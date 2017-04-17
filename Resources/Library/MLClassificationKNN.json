@@ -132,6 +132,21 @@
             "type": "List",
             "options": ["unweighted", "optimal", "triangular", "epanechnikov" , "biweight", "triweight", "cos", "inv", "gaussian", "rank" ],
             "default": "unweighted"
+        },
+        {
+            "name": "predictionsFrom",
+            "type": "Integer",
+            "min": 1,
+            "max": 999999,
+            "default": 1
+        },
+        {
+            "name": "predictionsTo",
+            "type": "Integer",
+            "min": 1,
+            "max": 999999,
+            "default": 10
         }
+
 	]
 }

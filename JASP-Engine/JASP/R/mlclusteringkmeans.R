@@ -71,7 +71,7 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
                  list(name = 'withinssvsclusters', type = 'image'))
     results[['.meta']] <- meta
     
-    results[['title']] <- 'K-means clustering'
+    results[['title']] <- 'k-Means clustering'
     ##### added
     if(perform == 'init'){
         
@@ -378,12 +378,16 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
     if(is.null(res)){
         
         data_evaluation <- list(list(title = 'K-means model', clusters = ".", measure = ".", aic = ".", bic = "."))
+        footnotes_N <- .newFootnotes()
+        .addFootnote(footnotes_N,paste('The model is tested on ',0, "observations"), symbol = "")
+        footnotes_N <- as.list(footnotes_N)
         
     } else {
         
         if(options[['noOfClusters']] == "auto" | options[['noOfClusters']] == "manual"){
             
             data_evaluation <- list(list(title = 'K-means model', clusters = res[['clusters']], measure = res[['BSS']]/res[['TSS']], aic = res[['AIC']], bic = res[['BIC']]))
+            
             
         } else if (options[["noOfClusters"]]=="optimized" | options[['noOfClusters']] == "robust"){
             
@@ -408,15 +412,23 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
             
         }
         
+        footnotes_N <- .newFootnotes()
+        .addFootnote(footnotes_N,paste('The model is tested on ',nrow(res[["Predictions"]]), "observations"), symbol = "")
+        footnotes_N <- as.list(footnotes_N)
+        
     }
     
     return(list(title = 'Evaluation',
                 schema = list(fields = fields_evaluation),
-                data = data_evaluation))
+                data = data_evaluation,
+                footnotes = footnotes_N))
     
 }
 
 .PredictionsTableKmeans <- function(res, options){
+    
+    from <- options[['predictionsFrom']]
+    to <- options[["predictionsTo"]]
     
     fields_predictions <- list(list(name = 'number', title = "Obs. number", type = 'integer'),
                                list(name = 'prediction', title = 'Prediction', type = 'integer'))
@@ -429,7 +441,7 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
         
     } else {
         
-        for(i in 1:nrow(res[['Predictions']])){
+        for(i in from:to){
             data_predictions[[i]] <- list(number = i, prediction = res[['Predictions']][[i,2]])
         }
         
