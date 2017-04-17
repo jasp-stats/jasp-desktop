@@ -578,6 +578,25 @@
 
 	## Populate table
 	if (perform == "run" && status$ready) {
+		
+		bestModelTop <- ! is.null(options$bayesFactorOrder) && options$bayesFactorOrder == "bestModelTop" && populate == FALSE
+		if (bestModelTop) {
+			ordering <- order(bayes.factors, decreasing=TRUE)	
+			bestModelIndex <- ordering[1] - 1 # The null model is not in the model list, so shift by 1
+			if (bestModelIndex != 0) {
+				bestModel <- model$models[[bestModelIndex]]$bf
+				bayes.factors[1] <- 0 - bestModel@bayesFactor$bf
+				numerical.error[1] <- bestModel@bayesFactor$error
+				for (m in 1:no.models) {
+					if (model$models[[m]]$ready) {
+						newBF <- model$models[[m]]$bf / bestModel
+						bayes.factors[m + 1] <- newBF@bayesFactor$bf
+						numerical.error[m + 1] <- newBF@bayesFactor$error 
+					}
+				}
+			}
+		}
+		
 		if (populate == FALSE) {
 			#This is set for intermediate populating of tables
 			ln.prob <- rep (NA, no.models + 1)
@@ -607,7 +626,17 @@
 			}
 		}
 		rows [[1]] [["BF10"]] <- 0
-		rows [[1]] [["error %"]] <- ""
+
+		if (bestModelTop && bestModelIndex != 0) {
+			rows[[1]][["error %"]] = .clean(100 * numerical.error[1])
+			if (options$bayesFactorType == "LogBF10") {
+				rows[[1]][["BF10"]] <- .clean(bayes.factors[1])
+			} else if (options$bayesFactorType == "BF10") {
+				rows[[1]][["BF10"]] <- .clean(bayes.factors[1] / log(10))
+			} else {
+				rows[[1]][["BF10"]] <- .clean(- bayes.factors[1] / log(10))
+			}
+		}
 
 		for (m in 1:no.models) {
 			if (model$models [[m]]$ready) {
@@ -638,6 +667,13 @@
 				}
 			}
 		}
+
+		if (bestModelTop) {
+			rows <- rows[ordering]
+		}
+
+	  rows[[1]][["error %"]] <- ""
+
 	}
 	
 	if (is.null(status$analysis.type) || status$analysis.type != "rmANOVA") {

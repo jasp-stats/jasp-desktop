@@ -10,12 +10,13 @@ Function definition
 
 Analyses in JASP, when implemented in R, should be of the following form:
 
-`AnalysisName <- function(dataset, options, perform="run", callback=function(...) 0, ...) {`
+`AnalysisName <- function(dataset=NULL, options, perform="run", callback=function(...) 0, state=NULL, ...) {`
 
 * `dataset` : will always be `NULL` in JASP. `dataset` is used when an analysis is run outside of JASP. Inside JASP you should read the dataset with the included functions (details below)
 * `options` : a list containing values corresponding to the state of each of the user interface elements in the analysis' user interface
 * `perform` : will either be equal to `"init"` or `"run"`, for initializing and running the analysis respectively
-* `callback` : a function to call periodically to notify JASP that the analysis is still running, and (not implemented yet) to provide progress updates (such as percentage complete). this function will return a non-zero value if the user has aborted the analysis, and your function should terminate in response to this.
+* `callback` : a function to call periodically to notify JASP that the analysis is still running, and (not implemented yet) to provide progress updates (such as percentage complete). this function will return a non-zero value if the user has aborted the analysis, and your function should terminate in response to this
+* `state` : a list containing re-usable items stored at the end of the previous analysis (granted the analysis uses the state system, omit otherwise).
 
 The function should return a series of nested lists containing the results. This results object is described below.
 
@@ -198,7 +199,7 @@ An example of a results bundle might be:
 
 - `results` : a results object, descriped below
 - `status` : the status, this can be either `"inited"` (typically to be returned when `perform == "init"`) or `"complete"` (typically returned when `perform == "run"`)
-- `state`  : arbitrary data that can be retrieved in a subsequent call of this analysis with a call to `.retrieveState()`
+- `state`  : arbitrary data that can be retrieved in a subsequent call of this analysis with a call to `.retrieveState()`, explained below
 - `keep` : a list of file descriptors (from `.endSaveImage()`). This instructs the temporary file system to keep these files, and not delete them.
 
 ### Results
@@ -447,6 +448,35 @@ It will return a named list with TRUE/FALSE values indicating which options have
     }
     
     # otherwise continue
+
+### State
+
+The state is a storage system. This storage can be used to transfer useful data between different calls to an analysis.
+The main goal of the state is to prevent recalculating things that were already calculated once (and thus make analyses quicker). Let's use the Bayesian ANOVA as an example of its practical relevance. This analysis may take up to several minutes to fully calculate its result -- which is not that unusual for a Bayesian analysis. Now if a user decides he would also like to see descriptive statistics the analysis will be run again. If we had no storage system in place it would take several minutes to give an additional table with descriptive statistics because the ANOVA has to be calculated all over again -- eventhough we already did this. With the state system it becomes possible to store the outcome of the ANOVA and then re-use it. Asking for additional output such as a descriptives table will now result in a very short calculation because the ANOVA calculation can be avoided. It may be clear that it is not always possible to re-use output from an earlier call to the analysis. For example, if the dependent variable of the ANOVA is swapped for a different one, the old results become unusable.
+
+The state must be a named list. It may store any valid R object, as long as it always contains the options the analysis was run with. Example:
+```
+state <- list()
+state[["options"]] <- options
+state[["model"]] <- model
+state[["plot"]] <- plot
+```
+It is possible to let the engine automatically retrieve only the re-usable state items. To do so, you must specify a key in the state. The key should be defined close to the top of the analysis to make it clear to people unfamiliar with the analysis what is stored in the state and what these state items dependent on:
+```
+stateKey <- list()
+stateKey[["model"]] <- c("dependent", "fixedFactors", "sampleMode", "iterations")
+stateKey[["plot"]] <- c("dependent", "fixedFactors")
+```
+To add it as an attribute to the state:
+```
+attr(state, "key") <- stateKey
+```
+
+Now if the analysis is called again and e.g. `sampleMode` changes, only the plot will be returned.
+If there are state items you would like to keep indefinitely -- regardless of the options a user changes -- you may also specify this in the state, e.g.:
+```
+attr(state, "keep") <- c("model", "options")
+```
 
 ### Error handling
 
