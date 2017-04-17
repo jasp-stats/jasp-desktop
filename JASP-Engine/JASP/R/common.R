@@ -44,11 +44,19 @@ run <- function(name, options.as.json.string, perform="run") {
 		}
 	}
 
+	state <- NULL
+	if ('state' %in% names(formals(analysis))) {
+		state <- .retrieveState()
+		if (! is.null(state) && 'key' %in% names(attributes(state))) {
+			state <- .getStateItems(state=state, options=options, key=attributes(state)$key, keep=attributes(state)$keep)
+		}
+	}
+	
 	results <- tryCatch(expr={
 		
 				withCallingHandlers(expr={
 					
-					analysis(dataset=NULL, options=options, perform=perform, callback=the.callback)
+					analysis(dataset=NULL, options=options, perform=perform, callback=the.callback, state=state)
 					
 				}, 
 				error=.addStackTrace)
@@ -88,6 +96,7 @@ run <- function(name, options.as.json.string, perform="run") {
 
 			state <- results$state
 			
+			state[["figures"]] <- c(state[["figures"]], .imgToState(results$results))
 			location <- .requestStateFileNameNative()
 
 			relativePath <- location$relativePath
@@ -102,6 +111,7 @@ run <- function(name, options.as.json.string, perform="run") {
 		
 		if ("results" %in% names(results)) {
 		
+			results <- .imgToResults(results)
 			results$results <- .addCitationToResults(results$results)
 			results$state   <- NULL # remove the state object
 			results$keep    <- c(results$keep, keep)  # keep the state file
@@ -543,7 +553,7 @@ callback <- function(results=NULL) {
 		if (is.null(results)) {
 			json.string <- "null"
 		} else {
-			json.string <- rjson::toJSON(results)
+			json.string <- rjson::toJSON(.imgToResults(results))
 		}
 	
 		response <- .callbackNative(json.string)
@@ -612,26 +622,25 @@ callback <- function(results=NULL) {
 
 .beginSaveImage <- function(width=320, height=320) {
 
-	#filename <- .requestTempFileNameNative("svg")
-	#grDevices::svg(filename=filename, width=width/72, height=height/72, bg="transparent")
-	
 	type <- "cairo"
 	
 	if (Sys.info()["sysname"]=="Darwin")  # OS X
 		type <- "quartz"
 	
-	multip <- .ppi / 96
-	
+	pngMultip <- .ppi / 96
+		
+	# create png file location
 	location <- .requestTempFileNameNative("png")
-	
 	relativePath <- location$relativePath
 	base::Encoding(relativePath) <- "UTF-8"
 	
-	fullPath <- paste(location$root, location$relativePath, sep="/")
-	base::Encoding(fullPath) <- "UTF-8"
+	fullPathpng <- paste(location$root, location$relativePath, sep="/")
+	base::Encoding(fullPathpng) <- "UTF-8"
 	
-	grDevices::png(filename=fullPath, width=width * multip, height=height * multip, bg="transparent", res=72 * multip, type=type)
-	
+	grDevices::png(filename=fullPathpng, width=width * pngMultip, 
+								height=height * pngMultip, bg="transparent", 
+								res=72 * pngMultip, type=type)
+		
 	relativePath
 }
 
@@ -647,50 +656,6 @@ callback <- function(results=NULL) {
 	split <- base::strsplit(as.character(error), ":")[[1]]
 	last <- split[[length(split)]]
 	stringr::str_trim(last)
-}
-
-.addFootnote <- function(footnotes, message, symbol=NULL) {
-	
-	if (length(footnotes) == 0) {
-		
-		if (is.null(symbol)) {
-			
-			footnotes <- list(message)
-			
-		} else {
-			
-			footnotes <- list(symbol=symbol, text=message)
-		}
-		
-		return(list(footnotes=footnotes, index=0))
-		
-	} else {
-		
-		for (i in 1:length(footnotes)) {
-			
-			footnote <- footnotes[[i]]
-			
-			if ("text" %in% names(footnote)) {
-				existingMessage <- footnote$text
-			} else {
-				existingMessage <- footnote
-			}
-				
-			if (existingMessage == message)
-				return(list(footnotes=footnotes, index=i-1))
-		}
-		
-		if (is.null(symbol)) {
-			new.footnote <- message
-		} else {
-			new.footnote <- list(symbol=symbol, message=message)
-		}
-	
-		index <- length(footnotes)+1
-		footnotes[[index]] <- new.footnote
-		
-		return(list(footnotes=footnotes, index=index-1))
-	}
 }
 
 .clean <- function(value) {
@@ -813,7 +778,7 @@ as.list.footnotes <- function(footnotes) {
 				item1 <- one[[name]]
 				item2 <- two[[name]]
 				
-				if (base::identical(item1, item2) == FALSE) {
+				if (identical(item1, item2) == FALSE) {
 				
 					changed[[name]] <- TRUE
 					
@@ -821,13 +786,7 @@ as.list.footnotes <- function(footnotes) {
 				
 					changed[[name]] <- FALSE
 				}
-				
-			} else {
-				
-				changed[[name]] <- TRUE
-				
 			}
-			
 		}
 		
 		for (name in names2) {
@@ -836,7 +795,7 @@ as.list.footnotes <- function(footnotes) {
 				changed[[name]] <- TRUE
 		}
 		
-	} else if (base::identical(one, two)) {
+	} else if (base::indentical(one, two)) {
 		
 		return(FALSE)
 		
@@ -847,3 +806,251 @@ as.list.footnotes <- function(footnotes) {
 	
 	changed
 }
+
+
+.optionsChanged <- function(opts1, opts2, subset=NULL) {
+	
+  changed <- .diff(opts1, opts2)
+  if (! is.list(changed)) {
+    return(TRUE)
+  }
+  
+	if (! is.null(subset)) {
+	  changed <- changed[names(changed) %in% subset]
+	  if (length(changed) == 0) {
+	    stop(paste0("None of the gui options (", paste(subset, collapse=", "), ") is in the options list."))
+	  }
+	}
+  
+  if (sum(sapply(changed, isTRUE)) > 0) {
+    return(TRUE)
+  }
+  
+  return(FALSE)
+}
+
+
+.getStateItems <- function(state, options, key, keep=NULL) {
+	
+  if (is.null(names(state)) || is.null(names(state$options)) || 
+      is.null(names(options)) || is.null(names(key))) {
+    return(NULL)
+  }
+
+  result <- list()
+  for (item in names(state)) {
+    
+		if (! is.null(keep) && item %in% keep) {
+			result[[item]] <- state[[item]]
+			next
+	  } 
+		
+		if (item %in% names(key) == FALSE) {
+      next
+    }
+    
+    change <- .optionsChanged(state$options, options, key[[item]])
+    if (change == FALSE) {
+      result[[item]] <- state[[item]]
+		}
+    
+  }
+	
+	if (length(names(result)) > 0) {
+		return(result)
+	}
+  
+  return(NULL)
+}
+
+
+.writeImage <- function(width=320, height=320, plot, obj = TRUE){
+	# Initialise output object
+	image <- list()
+
+	# Operating System information
+	type <- "cairo"  
+  if (Sys.info()["sysname"]=="Darwin")
+    type <- "quartz"
+  
+  # Calculate pixel multiplier
+  pngMultip <- .ppi / 96
+  
+  # Create png file location
+  location <- .requestTempFileNameNative("png")
+	relativePathpng <- location$relativePath
+  fullPathpng <- paste(location$root, relativePathpng, sep="/")
+	base::Encoding(relativePathpng) <- "UTF-8"
+  base::Encoding(fullPathpng) <- "UTF-8"
+
+	# Open graphics device and plot
+  grDevices::png(filename=fullPathpng, width=width * pngMultip, 
+                 height=height * pngMultip, bg="transparent", 
+                 res=72 * pngMultip, type=type)
+	if (class(plot) ==  "function"){
+		if (obj) dev.control('enable') # enable plot recording
+		eval(plot())
+		if (obj) plot <- recordPlot() # save plot to R object
+	} else {
+		print(plot)
+	}
+	dev.off()
+	
+	# Save path & plot object to output
+	image[["png"]] <- relativePathpng
+	if (obj) image[["obj"]] <- plot
+	
+	# Return relative paths in list
+	image
+}
+
+
+# not .saveImage() because RInside (interface to CPP) cannot handle that
+saveImage <- function(plotName, format, height, width){
+	# Retrieve plot object from state
+	state <- .retrieveState()
+	plt <- state[["figures"]][[plotName]]
+	
+  # create file location string
+  location <- .requestTempFileNameNative("png") # to extract the root location
+	
+	# Get file size in inches by creating a mock file and closing it
+	pngMultip <- .ppi / 96
+	png(filename=paste0(location, "/dpi.png"), width=width * pngMultip, 
+			height=height * pngMultip,res=72 * pngMultip)
+	insize <- dev.size("in")
+	dev.off()
+	
+	# finds the last dot and replaces everything after it with "format"
+	relativePath <- base::gsub("(?<=\\.)(?!.*\\.).*", "png", format, perl = TRUE)
+  fullPath <- paste(location$root, relativePath, sep="/")
+	base::Encoding(relativePath) <- "UTF-8"
+  base::Encoding(fullPath) <- "UTF-8"
+	print(fullPath)
+	
+	# Open correct graphics device
+	if (format == "eps"){
+		
+		grDevices::cairo_ps(filename=fullPath, width=insize[1], 
+												height=insize[2], bg="transparent")
+		
+  } else if (format == "tiff"){
+		
+		grDevices::tiff(filename=fullPath, width = width*4, height = height*4, 
+										res = (.ppi/96)*72*4, bg="transparent")
+		
+	} else { # add optional other formats here in "else if"-statements
+		stop("Format incorrectly specified")
+	}
+	
+	# Plot and close graphics device
+	if (class(plt) == "recordedplot"){
+		.redrawPlot(plt) #(see below)
+	} else if ("gg" %in% tolower(class(plt))){
+		print(plt) #ggplots
+	}
+	dev.off()
+	
+	# Create JSON string for interpretation by JASP front-end
+	result <- paste0("{ \"status\" : \"imageSaved\", \"results\" : { \"name\" : \"", 
+									relativePath , "\" } }")
+
+	# Return result
+	result
+}
+
+# Source: https://github.com/Rapporter/pander/blob/master/R/evals.R#L1389
+# THANK YOU FOR THIS FUNCTION!
+.redrawPlot <- function(rec_plot) {
+	if (getRversion() < '3.0.0') {
+	  for (i in 1:length(rec_plot[[1]])) {
+	    #@jeroenooms
+	    if ('NativeSymbolInfo' %in% class(rec_plot[[1]][[i]][[2]][[1]])) {
+	        rec_plot[[1]][[i]][[2]][[1]] <- getNativeSymbolInfo(rec_plot[[1]][[i]][[2]][[1]]$name)
+	    }
+	  }
+	} else {
+    for (i in 1:length(rec_plot[[1]])) {
+      #@jjallaire
+      symbol <- rec_plot[[1]][[i]][[2]][[1]]
+      if ('NativeSymbolInfo' %in% class(symbol)) {
+        if (!is.null(symbol$package)) {
+            name <- symbol$package[['name']]
+        } else {
+            name <- symbol$dll[['name']]
+        }
+        pkg_dll <- getLoadedDLLs()[[name]]
+        native_sumbol <- getNativeSymbolInfo(name = symbol$name,
+                                            PACKAGE = pkg_dll, withRegistrationInfo = TRUE)
+        rec_plot[[1]][[i]][[2]][[1]] <- native_sumbol
+      }
+    }
+	}
+	if (is.null(attr(rec_plot, 'pid')) || attr(rec_plot, 'pid') != Sys.getpid()) {
+    warning('Loading plot snapshot from a different session with possible side effects or errors.')
+    attr(rec_plot, 'pid') <- Sys.getpid()
+	}
+	suppressWarnings(grDevices::replayPlot(rec_plot))
+}
+
+#.imgToResults
+.imgToResults <- function(imgobj) {
+
+	if (!is.list(imgobj))
+		return(imgobj)
+
+	nms <- names(imgobj)
+	if (!is.null(nms))
+		imgobj <- imgobj[nms != "obj"]
+
+	return(lapply(imgobj, .imgToResults))
+}
+
+#.imgToState 
+.imgToState <- function(imgobj) {
+
+	result <- list()
+	if (!is.list(imgobj))
+		return(NULL)
+
+	if (all(c("data", "obj") %in% names(imgobj), is.character(imgobj[["data"]]))) {
+		
+		result[[imgobj[["data"]]]] <- imgobj[["obj"]]
+		return(result)
+
+	}
+
+	# unname to avoid name1.name2."data"
+	return(unlist(lapply(unname(imgobj), .imgToState), recursive = FALSE))
+
+}
+
+# .imgToResults <- function(imgobj){
+#   # Recursive function to return result with same structure as imgobj
+#   result <- list()
+#   if (length(imgobj) != 0) {
+#   	if (is.list(imgobj[[1]])) {
+#   		result <- lapply(imgobj, .imgToResults)
+#   	} else {
+#   		result <- imgobj[names(imgobj)!="obj"]
+#   	}
+#   	return(result)
+#   } else {
+#   	return(imgobj)
+#   }
+# }
+# 
+# .imgToState <- function(imgobj){
+#   # Recursive function to save named list of image objects to state
+#   result <- list()
+#   if (length(imgobj) != 0) {
+#   	if (is.list(imgobj[[1]])){
+#   		result <- unlist(lapply(imgobj, .imgToState), recursive = FALSE)
+#   	} else {
+#   		result[[imgobj[["data"]]]] <- imgobj[["obj"]]
+#   	}
+#   	return(result)
+#   } else {
+#   	return(imgobj)
+#   }
+# }

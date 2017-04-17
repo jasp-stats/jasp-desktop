@@ -223,9 +223,17 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
 				
-				image <- .beginSaveImage(530, 400)
-				.plotScatter.Bcorrelationpairs(xlab=pair[[1]], ylab=pair[[2]], dontPlotData=TRUE)
-				plot[["data"]] <- .endSaveImage(image)
+				# image <- .beginSaveImage(530, 400)
+				# .plotScatter.Bcorrelationpairs(xlab=pair[[1]], ylab=pair[[2]], dontPlotData=TRUE)
+				# plot[["data"]] <- .endSaveImage(image)
+				
+				.plotFunc <- function() {
+					.plotScatter.Bcorrelationpairs(xlab=pair[[1]], ylab=pair[[2]], dontPlotData=TRUE)
+				}
+				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
 				
 				plots.correlation[[length(plots.correlation)+1]] <- plot
 			}
@@ -267,9 +275,17 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
 				
-				image <- .beginSaveImage(530, 400)
-				.plotPosterior.correlation(r=NULL, n=NULL, oneSided=oneSided, dontPlotData=TRUE, addInformation=options$plotPriorAndPosteriorAdditionalInfo, corCoefficient=options$corcoefficient)
-				plot[["data"]] <- .endSaveImage(image)
+				# image <- .beginSaveImage(530, 400)
+				# .plotPosterior.correlation(r=NULL, n=NULL, oneSided=oneSided, dontPlotData=TRUE, addInformation=options$plotPriorAndPosteriorAdditionalInfo, corCoefficient=options$corcoefficient)
+				# plot[["data"]] <- .endSaveImage(image)
+				
+				.plotFunc <- function() {
+					.plotPosterior.correlation(r=NULL, n=NULL, oneSided=oneSided, dontPlotData=TRUE, addInformation=options$plotPriorAndPosteriorAdditionalInfo, corCoefficient=options$corcoefficient)
+				}
+				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
 				
 				plots.correlation[[length(plots.correlation)+1]] <- plot
 			}
@@ -309,9 +325,17 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
 				
-				image <- .beginSaveImage(530, 400)
-				.plotBF.robustnessCheck.correlation (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE, corCoefficient=options$corcoefficient)
-				plot[["data"]] <- .endSaveImage(image)
+				# image <- .beginSaveImage(530, 400)
+				# .plotBF.robustnessCheck.correlation (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE, corCoefficient=options$corcoefficient)
+				# plot[["data"]] <- .endSaveImage(image)
+				
+				.plotFunc <- function() {
+					.plotBF.robustnessCheck.correlation (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE, corCoefficient=options$corcoefficient)
+				}
+				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
 				
 				plots.correlation[[length(plots.correlation)+1]] <- plot
 			}
@@ -352,9 +376,17 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
 				
-				image <- .beginSaveImage(530, 400)
-				.plotSequentialBF.correlation(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE, corCoefficient=options$corcoefficient)
-				plot[["data"]] <- .endSaveImage(image)
+				# image <- .beginSaveImage(530, 400)
+				# .plotSequentialBF.correlation(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE, corCoefficient=options$corcoefficient)
+				# plot[["data"]] <- .endSaveImage(image)
+				
+				.plotFunc <- function() {
+					.plotSequentialBF.correlation(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE, corCoefficient=options$corcoefficient)
+				}
+				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
 				
 				plots.correlation[[length(plots.correlation)+1]] <- plot
 			}
@@ -483,41 +515,22 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					}
 					
 					errorMessage <- NULL
-					
+					errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('observations','variance', 'infinity'),
+
+					                     all.target = c(pair[[1]], pair[[2]]), observations.amount = '< 2')
 					# Note: Data and bfs check [start]
-					if (is.na(some.r) || some.n <= 1 || base::any(base::is.infinite(v1)) || base::any(base::is.infinite(v2)) || sd(v1) == 0 || sd(v2) == 0) {
-					
-						# Note: Data: NOT ok, 
-						# 		bf10: can't
-						if (some.n <= 1){
-						
-							index <- .addFootnote(footnotes, "Sample correlation co-efficient r is undefined - not enough observations")
-							unplotable <- TRUE
-							unplotableMessage <- "Sample correlation co-efficient r is undefined - not enough observations"
-							errorMessage <- "Sample correlation co-efficient r is undefined - not enough observations"
-							errorFootnotes[i] <- errorMessage
-							
-						} else if (base::any(base::is.infinite(v1)) || base::any(base::is.infinite(v2))) {
-						
-							index <- .addFootnote(footnotes, "Sample correlation co-efficient r is undefined - one (or more) variables contain infinity")
-							unplotable <- TRUE
-							unplotableMessage <- "Sample correlation co-efficient r is undefined - one (or more) variables contain infinity"
-							unplotableScatter <- TRUE
-							unplotableMessageScatter <- "One (or more) variables contain infinity"
-							errorMessage <- "Sample correlation co-efficient r is undefined - one (or more) variables contain infinity"
-							errorFootnotes[i] <- errorMessage
-							
-						} else if (sd(v1) == 0 || sd(v2) == 0) {
-						
-							index <- .addFootnote(footnotes, "Sample correlation co-efficient r is undefined - one (or more) variables do not vary")
-							unplotable <- TRUE
-							unplotableMessage <- "Sample correlation co-efficient r is undefined - one (or more) variables do not vary"
-							errorMessage <- "Sample correlation co-efficient r is undefined - one (or more) variables do not vary"
-							errorFootnotes[i] <- errorMessage
-							
-						}
-						#row.footnotes[[variable.2.name]] <- c(row.footnotes[[variable.name]], list(index))
-						#row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
+					if (!identical(errors, FALSE)) {			
+					  # Note: Data: NOT ok, 
+			      # bf10: can't compute
+					  errorMessage <- errors$message
+					  unplotable <- TRUE
+					  unplotableMessage <- errors$message
+					  unplotableScatter <- TRUE
+					  unplotableMessageScatter <- errors$message
+            
+
+				    obsFootnote <- errors$message
+				    index <- .addFootnote(footnotes, obsFootnote)
 						
 						some.r <- NaN
 						some.bf10 <- NaN
@@ -715,9 +728,18 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 						
 						p <- try(silent=FALSE, expr= {
 							
-							image <- .beginSaveImage(530, 400)
-							.plotScatter.Bcorrelationpairs(xVar=vs1, yVar=vs2, xlab=pair[[1]], ylab=pair[[2]])
-							plot[["data"]] <- .endSaveImage(image)
+							# image <- .beginSaveImage(530, 400)
+							# .plotScatter.Bcorrelationpairs(xVar=vs1, yVar=vs2, xlab=pair[[1]], ylab=pair[[2]])
+							# plot[["data"]] <- .endSaveImage(image)
+							
+							.plotFunc <- function() {
+								.plotScatter.Bcorrelationpairs(xVar=vs1, yVar=vs2, xlab=pair[[1]], ylab=pair[[2]])
+							}
+							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+							plot[["convertible"]] <- TRUE
+							plot[["obj"]] <- content[["obj"]]
+							plot[["data"]] <- content[["png"]]
+							
 						})
 						
 						if (class(p) == "try-error") {
@@ -781,11 +803,20 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					
 						p <- try(silent=FALSE, expr= {
 						
-							image <- .beginSaveImage(530, 400)
+							# image <- .beginSaveImage(530, 400)
+							# 
+							# .plotPosterior.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0, addInformation=options$plotPriorAndPosteriorAdditionalInfo, kappa=options$priorWidth,corCoefficient=options$corcoefficient)
+							# 
+							# plot[["data"]] <- .endSaveImage(image)
 							
-							.plotPosterior.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0, addInformation=options$plotPriorAndPosteriorAdditionalInfo, kappa=options$priorWidth,corCoefficient=options$corcoefficient)
+							.plotFunc <- function() {
+								.plotPosterior.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0, addInformation=options$plotPriorAndPosteriorAdditionalInfo, kappa=options$priorWidth,corCoefficient=options$corcoefficient)
+							}
+							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+							plot[["convertible"]] <- TRUE
+							plot[["obj"]] <- content[["obj"]]
+							plot[["data"]] <- content[["png"]]
 							
-							plot[["data"]] <- .endSaveImage(image)
 						})
 						
 						if (class(p) == "try-error") {
@@ -842,11 +873,20 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					
 						p <- try(silent=FALSE, expr= {
 						
-							image <- .beginSaveImage(530, 400)
+							# image <- .beginSaveImage(530, 400)
+							# 
+							# .plotBF.robustnessCheck.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF10post=BF10post[i], BFH1H0=BFH1H0, kappa=options$priorWidth, corCoefficient=options$corcoefficient)
+							# 
+							# plot[["data"]] <- .endSaveImage(image)
 							
-							.plotBF.robustnessCheck.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF10post=BF10post[i], BFH1H0=BFH1H0, kappa=options$priorWidth, corCoefficient=options$corcoefficient)
+							.plotFunc <- function() {
+								.plotBF.robustnessCheck.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF10post=BF10post[i], BFH1H0=BFH1H0, kappa=options$priorWidth, corCoefficient=options$corcoefficient)
+							}
+							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+							plot[["convertible"]] <- TRUE
+							plot[["obj"]] <- content[["obj"]]
+							plot[["data"]] <- content[["png"]]
 							
-							plot[["data"]] <- .endSaveImage(image)
 						})
 						
 						if (class(p) == "try-error") {
@@ -910,11 +950,20 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					if (status$unplotable == FALSE) {
 						p <- try(silent=FALSE, expr= {
 						
-							image <- .beginSaveImage(530, 400)
+							# image <- .beginSaveImage(530, 400)
+							# 
+							# .plotSequentialBF.correlation(x=v1, y=v2, oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0, kappa=options$priorWidth,corCoefficient=options$corcoefficient)
+							# 
+							# plot[["data"]] <- .endSaveImage(image)
 							
-							.plotSequentialBF.correlation(x=v1, y=v2, oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0, kappa=options$priorWidth,corCoefficient=options$corcoefficient)
+							.plotFunc <- function() {
+								.plotSequentialBF.correlation(x=v1, y=v2, oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0, kappa=options$priorWidth,corCoefficient=options$corcoefficient)
+							}
+							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+							plot[["convertible"]] <- TRUE
+							plot[["obj"]] <- content[["obj"]]
+							plot[["data"]] <- content[["png"]]
 							
-							plot[["data"]] <- .endSaveImage(image)
 						})
 						
 						if (class(p) == "try-error") {

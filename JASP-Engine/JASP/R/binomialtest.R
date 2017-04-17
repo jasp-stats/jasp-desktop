@@ -59,7 +59,6 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 				diff[["descriptivesPlotsConfidenceInterval"]],
 				diff[["plotWidth"]],
 				diff[["plotHeight"]])){
-
 			descriptPlots <- state$descriptPlots
 		}
 
@@ -95,10 +94,8 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
   if (options[["descriptivesPlots"]]){
 
 		if (is.null(descriptPlots)) {
-
 			descriptPlots <- .binomialDescriptivesPlot(dataset, options, variables,
 																								 perform)
-			descriptPlots[["title"]] <- "Descriptive Plots"
 		}
 
 		# select list of plot paths to keep when rerunning analysis.
@@ -113,6 +110,7 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 		}
 
     results[["descriptives"]] <- descriptPlots
+		results[["descriptives"]][["title"]] <- "Descriptive Plots"
 
   } else {
 
@@ -414,11 +412,14 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 												 plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) +
 					base_breaks_y(summaryStat, dfTestValue$testValue)
 
-					image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-					print(p)
-		      content <- .endSaveImage(image)
+					
+					content <- .writeImage(width = options$plotWidth, 
+										   height = options$plotHeight, 
+										   plot = p, obj = TRUE)
 
-		      descriptivesPlot[["data"]] <- content
+					descriptivesPlot[["convertible"]] <- TRUE
+					descriptivesPlot[["obj"]] <- content[["obj"]]
+					descriptivesPlot[["data"]] <- content[["png"]]
 					descriptivesPlot[["status"]] <- "complete"
 
 				} else {

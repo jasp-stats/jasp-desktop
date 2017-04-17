@@ -32,7 +32,7 @@ class Analysis
 {
 public:
 
-	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted, Error, Exception };
+	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted, Error, SaveImg, Exception };
 
 	Analysis(int id, std::string name, Options *options, Version version, bool isAutorun = true, bool usedata = true);
 	virtual ~Analysis();
@@ -43,10 +43,13 @@ public:
 
 	boost::signals2::signal<void (Analysis *source)> optionsChanged;
 	boost::signals2::signal<void (Analysis *source)> toRefresh;
+	boost::signals2::signal<void (Analysis *source, Json::Value &options)> saveImage;
+	boost::signals2::signal<void (Analysis *source)> imageSaved;
 	boost::signals2::signal<void (Analysis *source)> resultsChanged;
 	boost::signals2::signal<void (Analysis *source)> userDataLoaded;
 
 	void setResults(Json::Value results);
+	void setImageResults(Json::Value results);
 	void setUserData(Json::Value userData, bool silient = false);
 	const Json::Value &results() const;
 	const Json::Value &userData() const;
@@ -73,6 +76,9 @@ public:
 
 	int revision();
 
+	void setSaveImgOptions(Json::Value &options);
+	Json::Value getSaveImgOptions();
+
 	static Status parseStatus(std::string name);
 
 protected:
@@ -86,6 +92,7 @@ protected:
 
 	Json::Value _results;
 	Json::Value _userData;
+	Json::Value _saveImgOptions;
 
 	int callback(Json::Value results);
 
@@ -100,7 +107,6 @@ private:
 	int _revision;
 
 	void optionsChangedHandler(Option *option);
-
 };
 
 #endif // ANALYSIS_H

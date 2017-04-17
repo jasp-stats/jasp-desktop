@@ -560,19 +560,16 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							# Data screening block ---- 
 							#
 							# Note: Data and bfs check [start]
-							if (is.na(rObs) || nObs <= 1) {
-								# Note: Data: NOT ok, 
+							
+							errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('observations','variance', 'infinity'),
+
+							                     all.target = c(variableName, variable2Name), observations.amount = '< 2')
+
+							if (!identical(errors, FALSE)) {									
+							  # Note: Data: NOT ok, 
 								# 		bf10: can't
-								if (nObs <= 1){
-									obsFootnote <- "Pearson's sample correlation coefficient r is undefined -- too few observations"
-									index <- .addFootnote(footnotes, obsFootnote)
-								} else if (any(is.infinite(v1)) || any(is.infinite(v2))) {
-									obsFootnote <- "Pearson's sample correlation coefficient r is undefined -- one or more variables contain infinity"
-									index <- .addFootnote(footnotes, obsFootnote)
-								} else {
-									obsFootnote <- "Pearson's sample correlation coefficient r is undefined -- one or more variables do not vary"
-									index <- .addFootnote(footnotes, obsFootnote)
-								}
+							  obsFootnote <- errors$message
+							  index <- .addFootnote(footnotes, obsFootnote)
 								
 								rObs <- NA
 								
@@ -2509,7 +2506,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			
 			p <- try(silent=FALSE, expr= {
 				
-				image <- .beginSaveImage(width, height)
+				# image <- .beginSaveImage(width, height)
+				.plotFunc <- function() {
 				
 				if (l == 1) {
 					
@@ -2628,11 +2626,15 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						}
 					}
 				}
-				
-				content <- .endSaveImage(image)
+				}
+				# content <- .endSaveImage(image)
+				content <- .writeImage(width = width, height = height, plot = .plotFunc, obj = TRUE)
 				
 				plot <- correlation.plot
-				plot[["data"]]  <- content
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
+				# plot[["data"]]  <- content
 			})
 			
 			if (class(p) == "try-error") {

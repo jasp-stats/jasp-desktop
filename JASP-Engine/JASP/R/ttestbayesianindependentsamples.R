@@ -61,7 +61,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	
 	state <- .retrieveState()
-	
+		
 	diff <- NULL
 	
 	if (!is.null(state)) {
@@ -207,9 +207,18 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					plot[["height"]] <- 400
 					plot[["status"]] <- "waiting"
 					
-					image <- .beginSaveImage(530, 400)
-					.plotPosterior.ttest(x=NULL, y=NULL, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, dontPlotData=TRUE)
-					plot[["data"]] <- .endSaveImage(image)
+					# image <- .beginSaveImage(530, 400)
+					# .plotPosterior.ttest(x=NULL, y=NULL, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, dontPlotData=TRUE)
+					# plot[["data"]] <- .endSaveImage(image)
+					
+					.plotFunc <- function() {
+						.plotPosterior.ttest(x=NULL, y=NULL, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, dontPlotData=TRUE)
+					}
+					content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+					plot[["convertible"]] <- TRUE
+					plot[["obj"]] <- content[["obj"]]
+					plot[["data"]] <- content[["png"]]
 					
 					plots.ttest[[q]] <- plot
 				}
@@ -253,9 +262,18 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					plot[["height"]] <- 400
 					plot[["status"]] <- "waiting"
 					
-					image <- .beginSaveImage(530, 400)
-					.plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
-					plot[["data"]] <- .endSaveImage(image)
+					# image <- .beginSaveImage(530, 400)
+					# .plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+					# plot[["data"]] <- .endSaveImage(image)
+					
+					.plotFunc <- function() {
+						.plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+					}
+					content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+					plot[["convertible"]] <- TRUE
+					plot[["obj"]] <- content[["obj"]]
+					plot[["data"]] <- content[["png"]]
 					
 					plots.ttest[[q]] <- plot
 				}
@@ -301,9 +319,18 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					plot[["height"]] <- 400
 					plot[["status"]] <- "waiting"
 					
-					image <- .beginSaveImage(530, 400)
-					.plotSequentialBF.ttest(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
-					plot[["data"]] <- .endSaveImage(image)
+					# image <- .beginSaveImage(530, 400)
+					# .plotSequentialBF.ttest(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+					# plot[["data"]] <- .endSaveImage(image)
+					
+					.plotFunc <- function() {
+						.plotSequentialBF.ttest(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+					}
+					content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+					plot[["convertible"]] <- TRUE
+					plot[["obj"]] <- content[["obj"]]
+					plot[["data"]] <- content[["png"]]
 					
 					plots.ttest[[q]] <- plot
 				}
@@ -386,10 +413,19 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						
 						p <- try(silent= FALSE, expr= {
 								
-								image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-								.plot2GroupMeansBayesIndTtest(v1 = group2, v2 = group1, nameV1 = g1, nameV2 = g2, groupingName = options$groupingVariable, dependentName = variable, descriptivesPlotsCredibleInterval=
-								options$descriptivesPlotsCredibleInterval)
-								plot[["data"]] <- .endSaveImage(image)
+								# image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+								# .plot2GroupMeansBayesIndTtest(v1 = group2, v2 = group1, nameV1 = g1, nameV2 = g2, groupingName = options$groupingVariable, dependentName = variable, descriptivesPlotsCredibleInterval=
+								# options$descriptivesPlotsCredibleInterval)
+								# plot[["data"]] <- .endSaveImage(image)
+								
+								p <- .plot2GroupMeansBayesIndTtest(v1 = group2, v2 = group1, nameV1 = g1, nameV2 = g2, 
+																   groupingName = options$groupingVariable, dependentName = variable, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
+								content <- .writeImage(width = options$plotWidth, height = options$plotHeight, plot = p, obj = TRUE)
+								
+								plot[["convertible"]] <- TRUE
+								plot[["obj"]] <- content[["obj"]]
+								plot[["data"]] <- content[["png"]]
+								
 							})
 							
 						if (class(p) == "try-error") {
@@ -405,7 +441,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					}
 					
 					results[["descriptives"]][["descriptivesPlots"]][["collection"]] <- descriptivesPlots
-					
+
 					descriptInd <- descriptInd + 1
 					
 					if ( ! .shouldContinue(callback(results)))
@@ -450,10 +486,21 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 							
 							p <- try(silent= FALSE, expr= {
 									
-									image <- .beginSaveImage(530, 400)
-									.plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post
-									[i], BFH1H0=BFH1H0)
-									plot[["data"]] <- .endSaveImage(image)
+									# image <- .beginSaveImage(530, 400)
+									# .plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post
+									# [i], BFH1H0=BFH1H0)
+									# plot[["data"]] <- .endSaveImage(image)
+									
+									.plotFunc <- function() {
+										.plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth,
+															  addInformation= options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post[i], BFH1H0=BFH1H0)
+									}
+									content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+									plot[["convertible"]] <- TRUE
+									plot[["obj"]] <- content[["obj"]]
+									plot[["data"]] <- content[["png"]]
+									
 								})
 							
 							if (class(p) == "try-error") {
@@ -482,6 +529,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					}
 					
 					plotGroups[[i]][["PriorPosteriorPlot"]] <- plots.ttest[[z]]
+					
+
 					results[["inferentialPlots"]][["collection"]] <- plotGroups
 					
 					z <- z + 1
@@ -518,10 +567,20 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 							
 							p <- try(silent= FALSE, expr= {
 									
-									image <- .beginSaveImage(530, 400)
-									.plotBF.robustnessCheck.ttest(x= group2, y= group1, BF10post=ifelse((options$bayesFactorType=="LogBF10"), exp(BF10post[i]), BF10post[i]), paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
-									content <- .endSaveImage(image)
-									plot[["data"]]  <- content
+									# image <- .beginSaveImage(530, 400)
+									# .plotBF.robustnessCheck.ttest(x= group2, y= group1, BF10post=ifelse((options$bayesFactorType=="LogBF10"), exp(BF10post[i]), BF10post[i]), paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
+									# content <- .endSaveImage(image)
+									# plot[["data"]]  <- content
+									
+									.plotFunc <- function() {
+										.plotBF.robustnessCheck.ttest(x= group2, y= group1, BF10post=ifelse((options$bayesFactorType=="LogBF10"), exp(BF10post[i]), BF10post[i]), paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
+									}
+									content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+									plot[["convertible"]] <- TRUE
+									plot[["obj"]] <- content[["obj"]]
+									plot[["data"]] <- content[["png"]]
+									
 								})
 							
 							if (class(p) == "try-error") {
@@ -550,7 +609,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					}
 					
 					plotGroups[[i]][["BFrobustnessPlot"]] <- plots.ttest[[z]]
-					results[["inferentialPlots"]][["collection"]] <- plotGroups
+					results[["inferentialPlots"]][["collection"]] <- plotGroups # add plots without image object to results
 					
 					z <- z + 1
 					
@@ -596,11 +655,22 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 							
 							p <- try(silent= FALSE, expr= {
 									
-									image <- .beginSaveImage(530, 400)
-									.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, BF10post=BF10post[i],
+									# image <- .beginSaveImage(530, 400)
+									# .plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, BF10post=BF10post[i],
+									# 						plotDifferentPriors= options$plotSequentialAnalysisRobustness, subDataSet=subDataSet, level1=g1, level2=g2)
+									# content <- .endSaveImage(image)
+									# plot[["data"]]  <- content
+									
+									.plotFunc <- function() {
+										.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, BF10post=BF10post[i],
 															plotDifferentPriors= options$plotSequentialAnalysisRobustness, subDataSet=subDataSet, level1=g1, level2=g2)
-									content <- .endSaveImage(image)
-									plot[["data"]]  <- content
+									}
+									content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+									plot[["convertible"]] <- TRUE
+									plot[["obj"]] <- content[["obj"]]
+									plot[["data"]] <- content[["png"]]
+									
 								})
 							
 							if (class(p) == "try-error") {
@@ -631,6 +701,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					plotGroups[[i]][["BFsequentialPlot"]] <- plots.ttest[[z]]
 					results[["inferentialPlots"]][["collection"]] <- plotGroups
 					
+					
 					z <- z + 1
 					
 					if ( ! .shouldContinue(callback(results)))
@@ -652,7 +723,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	for (plot in descriptivesPlots)
 		keep <- c(keep, plot$data)
 	
-	
+	descriptivesPlots <- descriptivesPlots
+	plots.ttest <- plots.ttest
+
 	if (perform == "init") {
 		
 		return(list(results=results, status="inited", state=state, keep=keep))
@@ -1201,7 +1274,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			.base_breaks_y3(summaryStat) +
 			.base_breaks_x(summaryStat$groupingVariable)
 	
-	print(p)
+	return(p)
 }
 
 .ttestBayesianIndependentSamplesDescriptives <- function(dataset, options, perform,

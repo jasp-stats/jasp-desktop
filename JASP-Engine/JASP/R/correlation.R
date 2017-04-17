@@ -193,8 +193,9 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				correlation.plot <- plot
 				cexText <- 1.6
 
-				image <- .beginSaveImage(width, height)
+				# image <- .beginSaveImage(width, height)
 
+				.plotFunc <- function() {
 				if (l == 1) {
 
 					# par(mfrow= c(1, 1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
@@ -347,12 +348,17 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 						}
 					}
 				}
+				}
 
-				content <- .endSaveImage(image)
+				# content <- .endSaveImage(image)
+				content <- .writeImage(width = width, height = height, plot = .plotFunc, obj = TRUE)
 
 				plot <- correlation.plot
 
-				plot[["data"]]  <- content
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
+				# plot[["data"]]  <- content
 
 				correlation.plot <- plot
 			}
@@ -373,7 +379,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 								flagSignificant=options$flagSignificant, reportVovkSellkeMPR=options$VovkSellkeMPR,
 								meansAndStdDev=options$meansAndStdDev, crossProducts=options$crossProducts, state=state, diff=diff, options=options)
 
-	print(correlationTableOutput)
+	# print(correlationTableOutput)
 	tableVariables <- correlationTableOutput$variables
 	tableTests <- correlationTableOutput$tests
 	tableRows <- correlationTableOutput$rows
@@ -641,8 +647,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 					if (!is.null(state) && !is.null(diff) && test %in% state$tableTests && variable.name %in% state$tableVariables && column.name %in% names(state$tableRows[[which(state$tableVariable == variable.name)]])
 						&& ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$hypothesis == FALSE && diff$missingValues == FALSE && diff$confidenceIntervals == FALSE && diff$confidenceIntervalsInterval == FALSE)))) {
-
-						variableIndex <- which(state$tableVariable == variable.name)
+            
+					  variableIndex <- which(state$tableVariable == variable.name)
 						estimate <- state$tableRows[[variableIndex]][[column.name]]
 						p.value <- state$tablePValues[[variable.name]][[column.name]]
 						MPR <- state$tableMPRs[[variable.name]][[column.name]]
@@ -662,13 +668,6 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 							lowerCIs[[length(lowerCIs)+1]] <- .clean(lowerCI)
 						}
 
-
-					 	if (base::any(base::is.infinite(v1)) || base::any(base::is.infinite(v2))) {
-
-					 			index <- .addFootnote(footnotes, "Correlation co-efficient is undefined - one (or more) variables contain infinity")
-					 			row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
-
-					 	}
 
 					 	row[[length(row)+1]] <- estimate
 
@@ -698,6 +697,14 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 					 } else {
 
 						if (perform == "run") {
+						  errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('variance', 'infinity'),
+
+						                       all.target = c(variable.name, variable.2.name))
+						  if (!identical(errors, FALSE)) {
+						    index <- .addFootnote(footnotes, errors$message)
+						    row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
+						  }
+						  
 
 							if (hypothesis == "correlated") {
 
@@ -728,16 +735,6 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 							pValueList[[variable.name]][[column.name]] <- p.value
 							MPRList[[variable.name]][[column.name]] <- MPR
-
-							if (is.na(estimate)) {
-
-								if (base::any(base::is.infinite(v1)) || base::any(base::is.infinite(v2))) {
-
-									index <- .addFootnote(footnotes, "Correlation co-efficient is undefined - one (or more) variables contain infinity")
-									row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
-
-								}
-							}
 
 							row[[length(row)+1]] <- .clean(estimate)
 
