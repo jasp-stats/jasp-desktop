@@ -241,9 +241,9 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 				
 				message <- paste(message, "Warning: Greatest lower bound can only be calculated for three or more variables.")
 				
-			} else if (inherits(class(r[["glb"]], "try-error"))) {
+			} else if (isTryError(r[["glb"]])) {
 				
-				message <- paste(message, "Warning: Greatest lower bound could not be calculated."
+				message <- paste(message, "Warning: Greatest lower bound could not be calculated.")
 				
 			}
 			
@@ -281,7 +281,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 			omega <- .clean(r[["omega"]])
 		
 		if (options[["glbScale"]]) {
-			if (r[["glb"]] == "." || inherits(class(r[["glb"]], "try-error")) { # unusable
+			if (r[["glb"]] == "." || isTryError(r[["glb"]])) { # unusable information
 				glb <- "."
 			} else { # a useable value
 				glb <- .clean(r[["glb"]])
@@ -341,6 +341,14 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	if (length(options$reverseScaledItems) > 0) {
 		message <- "reverse-scaled item"
 		.addFootnote(footnotes, symbol = "\u207B", text=message)
+	}
+	
+	# can only be computed if there are at least 3 variables.
+	if (options[["mcDonaldItem"]] && length(variables) < 3) {
+			
+		message <- "Warning: McDonalds' \u03C9 if item dropped can only be calculated for three or more variables."
+		.addFootnote(footnotes, text = message)
+		
 	}
 
 	rowNames <- gsub("-","", rownames(r$alpha.drop))
