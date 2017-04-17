@@ -65,7 +65,7 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 	             list(name = 'Plot', type = 'image'))
 	results[['.meta']] <- meta
 	
-	results[['title']] <- 'K-Nearest Neighbors Regression'
+	results[['title']] <- 'k-Nearest neighbors regression'
 	
 	if(perform == "init"){
 	    
@@ -354,10 +354,17 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 				data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = res[['Optimal.K']], "r[rmse]" = res[['Minimal.RMSE']], "optim[type1]" = "optimized")
 			
 		}
+	    
+	    footnotes_N <- .newFootnotes()
+	    .addFootnote(footnotes_N,paste('The model is tested on ',nrow(res[["predictions"]]), "observations"), symbol = "")
+	    footnotes_N <- as.list(footnotes_N)
 		
 	} else {
 		
 		data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = ".", "r[rmse]" = ".", "optim[type1]" = "")
+		footnotes_N <- .newFootnotes()
+		.addFootnote(footnotes_N,paste('The model is tested on ',0, "observations"), symbol = "")
+		footnotes_N <- as.list(footnotes_N)
 		
 	}
 
@@ -377,11 +384,16 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 
 	return(list(title = 'Evaluation',
 				schema = list(fields = fields_descriptions),
-				data = data_descriptions))
+				data = data_descriptions,
+				footnotes = footnotes_N))
 	
 }
 
 .PredictionsTable <- function(options, opt, predictors, target, res){
+    
+    from <- options[['predictionsFrom']]
+    to <- options[["predictionsTo"]]
+
 	
 	fields <- list(
 		list(name="number", title="Obs. number", type="integer"),
@@ -399,7 +411,7 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 	    
 		data <- list()
 			
-			for(i in 1:nrow(res[['predictions']])){
+			for(i in from:to){
 				
 				data[[length(data)+1]] <- list(number = res[['predictions']][i,1],
 											   real = res[['predictions']][i,2],
@@ -418,6 +430,9 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 }
 
 .DistancesTable <- function(predictors,target, opt, options, res){
+    
+    from <- options[['predictionsFrom']]
+    to <- options[["predictionsTo"]]
 	
 	fields_distances <- list(
 		list(name="number", title="Obs. number", type="integer")
@@ -438,7 +453,7 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 		
 		data_distances <- list()
 		
-		for(i in 1:nrow(res[['Distances']])){	
+		for(i in from:to){	
 			data_distances[[i]] <- list(number = i)
 			
 			if(options[['noOfNearestNeighbours']] == 'auto' | options[['noOfNearestNeighbours']] == 'manual'){
@@ -480,6 +495,9 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 }
 
 .WeightsTable <- function(predictors, target, opt, options, res){
+    
+    from <- options[['predictionsFrom']]
+    to <- options[["predictionsTo"]]
 	
 	fields_weights <- list(
 		list(name="number", title="Obs. number", type="integer")
@@ -502,7 +520,7 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 		
 		data_weights <- list()
 		
-		for(i in 1:nrow(res[['Weights']])){	
+		for(i in from:to){	
 			
 			data_weights[[i]] <- list(number = i)
 			

@@ -97,7 +97,8 @@
 		},
 		{
 			"name": "tableClusterInfoSize",
-			"type": "Boolean"
+            "type": "Boolean",
+            "default": true
 		},
 		{
 			"name": "tableClusterInfoCentroids",
@@ -136,6 +137,20 @@
             "options": [ "silhoutteLength", "Multiasw", "Calinski-Harabasz"],
             "type": "List",
             "default": "silhoutteLength"
-		}
+        },
+        {
+            "name": "predictionsFrom",
+            "type": "Integer",
+            "min": 1,
+            "max": 999999,
+            "default": 1
+        },
+        {
+            "name": "predictionsTo",
+            "type": "Integer",
+            "min": 1,
+            "max": 999999,
+            "default": 10
+        }
 	]
 }

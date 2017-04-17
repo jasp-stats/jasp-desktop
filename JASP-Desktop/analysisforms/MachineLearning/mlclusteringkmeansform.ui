@@ -640,13 +640,58 @@
         </layout>
        </widget>
       </item>
-      <item row="1" column="3">
+      <item row="1" column="3" rowspan="2">
        <widget class="GroupBox" name="tables">
         <property name="title">
          <string>Tables</string>
         </property>
-        <layout class="QGridLayout" name="gridLayout_13">
-         <item row="3" column="2">
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="2" column="2" colspan="3">
+          <widget class="BoundCheckBox" name="tableClusterInfoCentroids">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Centroids</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="5">
+          <widget class="BoundCheckBox" name="tableClusterInfoBetweenSumSquares">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Between sum of squares</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="5">
+          <widget class="BoundCheckBox" name="tableClusterInformation">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Cluster Information</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="5">
           <widget class="BoundCheckBox" name="tableClusterInfoTotalSumSquares">
            <property name="enabled">
             <bool>false</bool>
@@ -662,7 +707,65 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="0">
+         <item row="5" column="3">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>To</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2" colspan="2">
+          <widget class="BoundCheckBox" name="tableClusterInfoSize">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Size</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="5">
+          <widget class="BoundCheckBox" name="tableClusterInfoSumSquares">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Within sum of squares</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="2">
+          <widget class="BoundTextBox" name="predictionsFrom">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>30</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
           <widget class="QLabel" name="label_19">
            <property name="minimumSize">
             <size>
@@ -681,39 +784,7 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
-          <widget class="BoundCheckBox" name="tableClusterInfoCentroids">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Centroids</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="2">
-          <widget class="BoundCheckBox" name="tableClusterInfoBetweenSumSquares">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Between sum of squares</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0" colspan="3">
+         <item row="4" column="0" colspan="3">
           <widget class="BoundCheckBox" name="tablePredictions">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -726,52 +797,14 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0" colspan="3">
-          <widget class="BoundCheckBox" name="tableClusterInformation">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
+         <item row="5" column="1">
+          <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Cluster Information</string>
+            <string>From</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
-          <widget class="BoundCheckBox" name="tableClusterInfoSize">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Size</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <widget class="BoundCheckBox" name="tableClusterInfoSumSquares">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Within sum of squares</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
+         <item row="1" column="0">
           <widget class="QWidget" name="widget_4" native="true">
            <property name="minimumSize">
             <size>
@@ -786,6 +819,38 @@
             </size>
            </property>
           </widget>
+         </item>
+         <item row="5" column="4">
+          <widget class="BoundTextBox" name="predictionsTo">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>30</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="5">
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </widget>
@@ -904,6 +969,27 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>AssignButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/assignbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AvailableFieldsListView</class>
+   <extends>QListView</extends>
+   <header>widgets/availablefieldslistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
@@ -920,30 +1006,9 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
-   <class>GroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/groupbox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>AssignButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/assignbutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>AvailableFieldsListView</class>
-   <extends>QListView</extends>
-   <header location="global">widgets/availablefieldslistview.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>BoundComboBox</class>
@@ -1078,6 +1143,38 @@
     <hint type="destinationlabel">
      <x>354</x>
      <y>296</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tablePredictions</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>predictionsFrom</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>333</x>
+     <y>520</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>388</x>
+     <y>550</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tablePredictions</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>predictionsTo</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>333</x>
+     <y>520</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>486</x>
+     <y>550</y>
     </hint>
    </hints>
   </connection>

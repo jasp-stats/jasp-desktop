@@ -783,19 +783,6 @@
             <bool>false</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_22">
-            <item row="1" column="0">
-             <widget class="QRadioButton" name="manual_1">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Manual</string>
-              </property>
-             </widget>
-            </item>
             <item row="1" column="1">
              <widget class="BoundTextBox" name="trainingDataManual">
               <property name="sizePolicy">
@@ -831,6 +818,19 @@
               </property>
              </spacer>
             </item>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="manual_1">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Manual</string>
+              </property>
+             </widget>
+            </item>
             <item row="0" column="0">
              <widget class="QRadioButton" name="auto_1">
               <property name="sizePolicy">
@@ -843,6 +843,19 @@
                <string>Auto</string>
               </property>
              </widget>
+            </item>
+            <item row="2" column="1">
+             <spacer name="verticalSpacer_6">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
             </item>
            </layout>
           </widget>
@@ -1117,8 +1130,50 @@
            <property name="title">
             <string>Tables</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_11">
-            <item row="1" column="0">
+           <layout class="QGridLayout" name="gridLayout_9">
+            <item row="5" column="0">
+             <widget class="QWidget" name="widget" native="true">
+              <property name="minimumSize">
+               <size>
+                <width>10</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>10</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="tablePredictions">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Predictions</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0" colspan="2">
+             <widget class="BoundCheckBox" name="tableWeights">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Weights</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0" colspan="2">
              <widget class="BoundCheckBox" name="tableDistances">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1150,45 +1205,49 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="0" colspan="2">
-             <widget class="BoundCheckBox" name="tablePredictions">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label">
               <property name="text">
-               <string>Predictions</string>
+               <string>From</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="0">
-             <widget class="QWidget" name="widget" native="true">
+            <item row="0" column="1">
+             <widget class="BoundTextBox" name="predictionsFrom">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>30</width>
+                <height>100</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="label_7">
+              <property name="text">
+               <string>To</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="BoundTextBox" name="predictionsTo">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
               <property name="minimumSize">
                <size>
-                <width>10</width>
+                <width>30</width>
                 <height>0</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>10</width>
+                <width>30</width>
                 <height>16777215</height>
                </size>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="BoundCheckBox" name="tableWeights">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Weights</string>
               </property>
              </widget>
             </item>
@@ -1218,6 +1277,27 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>AssignButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/assignbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AvailableFieldsListView</class>
+   <extends>QListView</extends>
+   <header>widgets/availablefieldslistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
@@ -1234,30 +1314,9 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
-   <class>GroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/groupbox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>AssignButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/assignbutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>AvailableFieldsListView</class>
-   <extends>QListView</extends>
-   <header location="global">widgets/availablefieldslistview.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>boundSingleItemView</class>
@@ -1265,15 +1324,15 @@
    <header>widgets/boundsingleitemview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundComboBox</class>
-   <extends>QComboBox</extends>
-   <header>widgets/boundcombobox.h</header>
-  </customwidget>
-  <customwidget>
    <class>AnovaModelWidget</class>
    <extends>QWidget</extends>
    <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
