@@ -215,14 +215,16 @@ ExploratoryFactorAnalysis <- function(dataset = NULL, options, perform = "run",
   
   if (perform == "run" && status$ready) {
     state <- list(options=options,analysisResults=analysisResults,nFactor=nFactor,results=results,complete=TRUE)
-    
-    return(list(results=results, status="complete", state=state))	    
-    
-    
+    retList <- list(results=results, status="complete", state=state)
+
   } else {
     state <- list(options=options,nFactor=nFactor,analysisResults=analysisResults,results=results,complete=FALSE)
-    return(list(results=results, status="inited",state=state))
+    
+    retList <- list(results=results, status="inited",state=state)
+
   }
+
+  return(retList)
 }
 
 ### Inner functions ###
