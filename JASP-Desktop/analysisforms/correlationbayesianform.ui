@@ -221,7 +221,10 @@
              <number>9</number>
             </property>
             <item row="4" column="1">
-             <widget class="QWidget" name="credibleIntervalsIntervalContainer" native="true">
+             <widget class="QWidget" name="ciValueContainer" native="true">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <layout class="QGridLayout" name="gridLayout_4">
                <property name="leftMargin">
                 <number>0</number>
@@ -253,7 +256,7 @@
                 </widget>
                </item>
                <item row="0" column="2">
-                <widget class="BoundTextBox" name="credibleIntervalsInterval">
+                <widget class="BoundTextBox" name="ciValue">
                  <property name="maximumSize">
                   <size>
                    <width>60</width>
@@ -293,7 +296,7 @@
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="BoundCheckBox" name="credibleIntervals">
+             <widget class="BoundCheckBox" name="credibleInterval">
               <property name="text">
                <string>Credible intervals</string>
               </property>
@@ -362,7 +365,7 @@
             <item row="2" column="0">
              <widget class="QRadioButton" name="radioButton_3">
               <property name="text">
-               <string>Log( BF₁₀ )</string>
+               <string>Log(BF₁₀)</string>
               </property>
              </widget>
             </item>
@@ -613,6 +616,22 @@
     <hint type="destinationlabel">
      <x>428</x>
      <y>493</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>credibleInterval</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ciValueContainer</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>343</x>
+     <y>315</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>340</x>
+     <y>342</y>
     </hint>
    </hints>
   </connection>
