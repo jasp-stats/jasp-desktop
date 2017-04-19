@@ -267,7 +267,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Mann-Whitney U</string>
+            <string>Mann-Whitney </string>
            </property>
           </widget>
          </item>

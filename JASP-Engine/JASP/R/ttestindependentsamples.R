@@ -120,7 +120,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 		testStat <- "t"
 	} else {
 
-		testStat <- "statistic"
+		testStat <- "Statistic"
 	}
 
 	ttest["title"] <- title
@@ -154,9 +154,17 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 	}
 
 	## add Cohen's d
-	if (wantsEffect) {
+	if (wantsEffect && !wantsWilcox) {
 		fields[[length(fields) + 1]] <- list(name = "d", title = "Cohen's d",
 											 type = "number", format = "sf:4;dp:3")
+	} else if (wantsEffect && wantsWilcox && onlyTest) {
+	  fields[[length(fields) + 1]] <- list(name = "d", title = "Rank-Biserial Correlation",
+	                                       type = "number", format = "sf:4;dp:3")
+	} else if (wantsEffect) {
+	  fields[[length(fields) + 1]] <- list(name = "d", title = "Effect Size",
+	                                       type = "number", format = "sf:4;dp:3")
+	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Effect sizes Cohen's <em>d</em>  reported for Welch's T-Test and 
+	               Student's T-Test; Rank-Biserial Correlation reported for the Mann-Whitney U Test.")
 	}
 
 	## I hope they know what they are doing! :)
@@ -248,6 +256,14 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 						ci <- options$confidenceIntervalInterval # what a mouthful!
 						f <- as.formula(paste(.v(variable), "~",
 											  .v(options$groupingVariable)))
+						
+						y <- dataset[[ .v(variable) ]]
+						groups <- dataset[[ .v(options$groupingVariable) ]]
+						
+						sds <- tapply(y, groups, sd, na.rm = TRUE)
+						ms <- tapply(y, groups, mean, na.rm = TRUE)
+						ns <- tapply(y, groups, function(x) length(na.omit(x)))
+						
 
 						if (test == 3) {
 							whatTest <- "Mann-Whitney"
@@ -255,15 +271,28 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 													alternative = direction,
 													conf.int = TRUE, conf.level = ci, paired = FALSE)
 							df <- ""
+							sed <- ""
+							stat <- as.numeric(r$statistic)
 							m <- as.numeric(r$estimate)
+							d <- abs(.clean(as.numeric(1-(2*stat)/(ns[1]*ns[2])))) * sign(m)
 
 						} else {
-							whatTest <- ifelse(test == 2, "Welch's", "Student's")
+							whatTest <- ifelse(test == 2, "Welch", "Student")
 							r <- stats::t.test(f, data = dataset, alternative = direction,
 											   var.equal = test != 2, conf.level = ci, paired = FALSE)
 
 							df <- as.numeric(r$parameter)
 							m <- as.numeric(r$estimate[1]) - as.numeric(r$estimate[2])
+							stat <- as.numeric(r$statistic)
+							
+							num <-  (ns[1] - 1) * sds[1]^2 + (ns[2] - 1) * sds[2]^2
+							sdPooled <- sqrt(num / (ns[1] + ns[2] - 2))
+							if(test==2){ # Use different SE when using Welch T test!
+							  sdPooled <- sqrt(((sds[1]^2)+(sds[2]^2))/2)
+							}
+							
+							d <- .clean(as.numeric((ms[1] - ms[2]) / sdPooled)) # Cohen's d
+							sed <-  .clean((as.numeric(r$estimate[1]) - as.numeric(r$estimate[2]))/stat)
 						}
 
 						## if the user doesn't want a Welch's t-test,
@@ -284,22 +313,9 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 
 						## same for all t-tests
 						p <- as.numeric(r$p.value)
-						stat <- as.numeric(r$statistic)
-						y <- dataset[[ .v(variable) ]]
-						groups <- dataset[[ .v(options$groupingVariable) ]]
 
-						sds <- tapply(y, groups, sd, na.rm = TRUE)
-						ms <- tapply(y, groups, mean, na.rm = TRUE)
-						ns <- tapply(y, groups, function(x) length(na.omit(x)))
-
-						num <- (ns[1] - 1) * sds[1]^2 + (ns[2] - 1) * sds[2]^2
-						sdPooled <- sqrt(num / (ns[1] + ns[2] - 2))
-						d <- as.numeric((ms[1] - ms[2]) / sdPooled) # Cohen's d
-
-						sed <- .clean(as.numeric(sqrt(sds[1]^2 / ns[1] + sds[2]^2 / ns[2])))
 						ciLow <- .clean(r$conf.int[1])
 						ciUp <- .clean(r$conf.int[2])
-
 						# this will be the results object
 						res <- list(v = variable, test = whatTest, df = df, p = p,
 												md = m, d = d, lowerCI = ciLow,
