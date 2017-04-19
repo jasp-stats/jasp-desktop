@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-SummaryStatsTTestBayesianIndependentSamples <- function(dataset = NULL, options, perform = "run", callback) {
+SummaryStatsTTestBayesianIndependentSamples <- function(dataset = NULL, options, perform = "run", callback = function(...) 0,  ...) {
 
 	run <- (perform == "run")
 	state <- .retrieveState()
