@@ -76,19 +76,26 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	# MarkUp: General: Table: Output for the table
 	#
 	correlation <- list()
-	
-	correlation[["title"]] <- "Bayesian Pearson Correlation"
-	if(useKendall){correlation[["title"]] <- "Bayesian Kendall Correlation"}
-	
-	
-	# MarkUp: General: Citation
-	if(usePearson){
-  	correlation[["citation"]] <- list(
-  		"Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2014). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication."
-  	)} else if(useKendall){
-  	  correlation[["citation"]] <- list(
-  	    "van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2016). Bayesian Inference for Kendall’s Rank Correlation Coefficient. Manuscript submitted for publication."
-	  )}
+	if (usePearson) {
+	    correlation[["title"]] <- "Bayesian Pearson Correlation"
+	    correlation[["citation"]] <- list(
+	        "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2014). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication."
+	    )
+	    nameForFields <- "r"
+	} else if (useKendall) { 
+	    correlation[["title"]] <- "Bayesian Kendall Correlation"
+	    correlation[["citation"]] <- list(
+	        "van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2016). Bayesian Inference for Kendall’s Rank Correlation Coefficient. Manuscript submitted for publication."
+	    )
+	    nameForFields <- "tau"
+	} else if (usePearson && useKendall) {
+	    correlation[["title"]] <- "Bayesian Correlation Table"
+	    correlation[["citation"]] <- list(
+	        "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2014). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication.",
+	        "van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2016). Bayesian Inference for Kendall’s Rank Correlation Coefficient. Manuscript submitted for publication."
+	    )
+	    nameForFields <- "Statistic"
+	}
   	
 	# MarkUp: General: Table: Choose the bf type in the table
 	#
@@ -132,12 +139,6 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		}
 	}
 	
-	# TODO: MarkUp: General: Table: used in the column naming convention
-	if(useKendall){
-	    nameForFields <- "tau"
-	} else {
-	    nameForFields <- "r"
-	}
 	
 	# MarkUp: General: Table: Define the columns
 	# 
@@ -173,7 +174,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	footnotes <- .newFootnotes()
 	
 	# MarkUp: Define footnotes
-	if (options$hypothesis == "correlatedPositively"){
+	if (options$hypothesis == "correlatedPositively") {
 		.addFootnote(footnotes, "For all tests, the alternative hypothesis specifies that the correlation is positive.", symbol="<i>Note</i>.")
 	} else if (options$hypothesis == "correlatedNegatively") {
 		.addFootnote(footnotes, "For all tests, the alternative hypothesis specifies that the correlation is negative.", symbol="<i>Note</i>.")
@@ -350,7 +351,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 			plotGroups[[i]][["BFrobustnessPlot"]] <- plots.correlation[[length(plots.correlation)]]
 		}
 		
-		if (options$plotSequentialAnalysis){
+		if (options$plotSequentialAnalysis) {
 		
 			if (!is.null(state) && currentPair %in% state$plotPairs && !is.null(diff) && (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$corcoefficient == FALSE
 				&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE)) && options$plotSequentialAnalysisRobustness && "sequentialRobustnessPlot" %in% state$plotTypes) {
@@ -413,7 +414,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		i <- i + 1
 	}
 	
-	if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis || options$plotScatter){
+	if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis || options$plotScatter) {
 	    results[["plots"]] <- list(title="Plots", collection=plotGroups)
 	}
 	
@@ -513,9 +514,9 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					v2 <- subDataSet[[ .v(pair[[2]]) ]]
 					
 					#----------------------- compute r & BF ----------------------#
-					if (usePearson){
+					if (usePearson) {
 					    some.r <- cor(v1, v2)
-					} else if(useKendall){
+					} else if (useKendall) {
 					    some.r <- cor(v1,v2,method = "kendall")
 					}
 					    
@@ -551,7 +552,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 						ns[i] <- some.n
 						rs[i] <- some.r
 					} else {
-					    if (usePearson){
+					    if (usePearson) {
 					        bfObject <- .bfPearsonCorrelation(n=some.n, r=some.r, kappa=options$priorWidth, ciValue=options$ciValue)
 					    } else if (useKendall) {
 					        # TODO Johnny I removed var=1 as default etc
@@ -570,7 +571,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					    someLowerCi <- bfObject$ci$twoSided[1]
 					    someUpperCi <- bfObject$ci$twoSided[3]
 					    
-					    if (options$bayesFactorType=="BF10"){
+					    if (options$bayesFactorType=="BF10") {
 					        BF10post[i] <-bfObject$bf10
 					    } else if (options$bayesFactorType == "BF01") {
 							BF10post[i] <- 1/bfObject$bf10
@@ -581,7 +582,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					    someLowerCi <- bfObject$ci$plusSided[1]
 					    someUpperCi <- bfObject$ci$plusSided[3]
 						
-						if (options$bayesFactorType=="BF10"){
+						if (options$bayesFactorType=="BF10") {
 						    BF10post[i] <- bfObject$bfPlus0
 						} else if (options$bayesFactorType == "BF01") {
 							BF10post[i] <- 1/bfObject$bfPlus0
@@ -592,7 +593,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					    someLowerCi <- bfObject$ci$minSided[1]
 						someUpperCi <- bfObject$ci$minSided[3]
 						
-						if (options$bayesFactorType=="BF10"){
+						if (options$bayesFactorType=="BF10") {
 						    BF10post[i] <- bfObject$bfMin0
 						} else if (options$bayesFactorType == "BF01") {
 						    BF10post[i] <- 1/bfObject$bfMin0
@@ -1101,7 +1102,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	xlabels <- c("-1", "-0.75", "-0.5", "-0.25", "0", "0.25", "0.5", "0.75", "1")
 	
 	# compute 95% credible interval & median:
-	if (usePearson){
+	if (usePearson) {
   	someFit <- .posteriorBetaParameters(n=n, r=r, kappa=kappa)
   	betaA <- someFit$betaA
   	betaB <- someFit$betaB
@@ -1187,7 +1188,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
   		}
   	}
 	}
-	if(useKendall){
+	if (useKendall) {
 	  betaApproximation <- FALSE
 	    if (oneSided == FALSE) {
 	    ci <- .credibleIntervalKendallTau(n=n, tauObs=r, ciValue = 0.95, kappa=kappa, test="two-sided")
@@ -1208,7 +1209,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	    CIhigh <- ci[[3]]
 	  }
 	  
-	  if (any(is.na(c(CIlow, medianPosterior, CIhigh)))){
+	  if (any(is.na(c(CIlow, medianPosterior, CIhigh)))) {
 	    drawCI <- FALSE
 	    }
 	  
@@ -1275,35 +1276,35 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 2.85)
 	}
 	
-	if(usePearson){
+	if (usePearson) {
 	  mtext(expression("Population correlation" ~ rho), side = 1, cex = cexXlab, line= 2.6)
-	}else{mtext(expression("Population correlation" ~ tau), side = 1, cex = cexXlab, line= 2.6)}
+	} else { 
+	    mtext(expression("Population correlation" ~ tau), side = 1, cex = cexXlab, line= 2.6)
+	}
 	
 	
 	evalPosterior <- posteriorLine[posteriorLine > 0]
 	
 	if (oneSided == "right") {
-		
-		heightPosteriorAtZero <- evalPosterior[1]
-		if(usePearson){
+	    heightPosteriorAtZero <- evalPosterior[1]
+	    
+		if (usePearson) {
 		  points(0, .priorRhoPlus(rho=0, kappa=kappa), col="black", pch=21, bg = "grey", cex=cexPoints)
-		} else if(useKendall){
+		} else if (useKendall) {
 		  points(0, .priorTauPlus(tauPop=0, kappa=kappa), col="black", pch=21, bg = "grey", cex=cexPoints)
 		}
 		points(0, heightPosteriorAtZero, col="black", pch=21, bg = "grey", cex= cexPoints)
 		
 	} else if (oneSided == "left") {
-		
 		heightPosteriorAtZero <- evalPosterior[length(evalPosterior)]
-		if(usePearson){
+		if (usePearson) {
 		  points(0, .priorRhoMin(rho=0, kappa=kappa), col="black", pch=21, bg = "grey", cex=cexPoints)
-		} else if(useKendall){
+		} else if (useKendall) {
 		  points(0, .priorTauMin(tauPop=0, kappa=kappa), col="black", pch=21, bg="grey", cex=cexPoints)
 		}		
 		points(1e-15, heightPosteriorAtZero, col="black", pch=21, bg="grey", cex=cexPoints)
 		
 	} else {
-	    
 		if (betaApproximation && usePearson) {
 		  points(0, .priorRho(rho=0, kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)
 			points(0, .stretchedBeta(alpha=betaA, beta=betaB, rho=0), col="black", pch=21, bg="grey", cex=cexPoints)
@@ -1311,7 +1312,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		    # Quentin: Will we ever get here?
 		    points(0, .priorRho(rho=0, kappa=kappa), col="black", pch=21, bg="grey", cex=cexPoints)
 		    points(1e-15, .posteriorRho(rho=1e-8, n=n, r=r, kappa=kappa), col="black", pch=21, bg="grey", cex=cexPoints)
-		} else if(useKendall){
+		} else if (useKendall) {
 		    points(1e-15, .posteriorTau(n=n, tauObs=r, tauPop=1e-8, kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)
 		    points(0, .priorTau(tauPop=0, kappa=kappa), col="black", pch=21, bg="grey", cex=cexPoints)
 		}
@@ -1329,8 +1330,8 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		medianText <- formatC(medianPosterior, digits=3, format="f")
 	}
 	
-	if (addInformation){
-		if (BFH1H0){
+	if (addInformation) {
+		if (BFH1H0) {
 			BF10 <- BF
 			BF01 <- 1 / BF10
 		} else {
@@ -1529,28 +1530,28 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	    }
 	    
 		if (oneSided == FALSE) {
-		    if (bfObject$bf10 == 0){
+		    if (bfObject$bf10 == 0) {
 		        bfObject$bf10 <- 1
 		    }
 			BF10[i] <- bfObject$bf10
 		} else if (oneSided == "right") {
-			if (is.na(bfObject$bfPlus0)){
+			if (is.na(bfObject$bfPlus0)) {
 			    bfObject$bfPlus0 <- 1
 			}
 			BF10[i] <- bfObject$bfPlus0
 		} else if (oneSided == "left") {
-			if (is.na(bfObject$bfMin0)){
+			if (is.na(bfObject$bfMin0)) {
 			    bfObject$bfMin0 <- 1
 			}
 		    BF10[i] <- bfObject$bfMin0
 		}
 		
 		
-		if (is.na(BF10[i])){
+		if (is.na(BF10[i])) {
 		    stop("One or more Bayes factors cannot be computed")
 		}
 
-		if (is.infinite(BF10[i])){
+		if (is.infinite(BF10[i])) {
 		    stop("One or more Bayes factors are infinity")
 		}
 	}
@@ -1834,7 +1835,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	}
 	
 	
-	if ( ! .shouldContinue(callback())){
+	if ( ! .shouldContinue(callback())) {
 	    return()
 	}
 	
@@ -1842,7 +1843,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	    interval <- as.numeric(strsplit(format(eval(parse(text=yLab[1])), digits=3, scientific=TRUE), "-", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(format(eval(parse(text=yLab[2])), digits=3, scientific=TRUE), "-", fixed= TRUE)[[1]][2])
 		pot <- as.numeric(strsplit(format(eval(parse(text=yLab[1])), digits=3, scientific=TRUE), "-", fixed= TRUE)[[1]][2]) + interval
 		
-		if (nchar(pot) == 1){
+		if (nchar(pot) == 1) {
 		    pot <- paste("0", pot, sep="")
 		}
 		
@@ -1854,7 +1855,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	    interval <- as.numeric(strsplit(format(eval(parse(text=yLab[length(yLab)])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(format(eval(parse(text=yLab[length(yLab)-1])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][2])
 		pot <- as.numeric(strsplit(format(eval(parse(text=yLab[length(yLab)])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][2]) + interval
 		
-		if (nchar(pot) == 1){
+		if (nchar(pot) == 1) {
 		    pot <- paste("0", pot, sep="")
 		}
 		
@@ -2150,7 +2151,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	
 	if (oneSided == FALSE) {
 	
-		if( BF10userText >= BF01userText) {
+		if ( BF10userText >= BF01userText) {
 			userBF <- bquote(BF[10]==.(BF10usert))
 		} else {
 			userBF <- bquote(BF[0][1]==.(BF01usert))
@@ -2503,7 +2504,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 			
 			for (i in 1:2) {
 				
-				if(grepl(pattern = "e",yLab1s[length(yLab1s)])){
+				if (grepl(pattern = "e",yLab1s[length(yLab1s)])) {
 					
 					newy <-  paste(strsplit(yLab1s[length(yLab1s)], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[length(yLab1s)], split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 					
@@ -2888,15 +2889,11 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		}
 	}
 	
-	if (oneSided == "right"){
-		
+	if (oneSided == "right") {
 		if (BFH1H0) {
-			
-			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
-			
+		    text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
 		} else {
-			
-			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H+", cex= cexText)
+		    text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H+", cex= cexText)
 		}
 	}
 	
