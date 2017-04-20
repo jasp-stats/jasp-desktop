@@ -151,7 +151,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	
 	if (isTRUE(options$credibleInterval)) {
 	    interval <- 100 * options$ciValue
-	    title <- paste0(interval, "% Credible Interval")
+	    title <- paste0(interval, "% Credible interval")
 	    
 	    fields[[length(fields) + 1]] <- list(name = "lowerCI", type = "number",
 	                                         format = "sf:4;dp:3", title = "Lower",

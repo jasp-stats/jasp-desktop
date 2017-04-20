@@ -104,7 +104,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 		testStat <- "t"
 	} else {
-		testStat <- "statistic"
+		testStat <- "Statistic"
 	}
 
 	ttest[["title"]] <- title
@@ -147,7 +147,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 	if (wantsConfidence) {
 		interval <- 100 * options$confidenceIntervalInterval
-		title <- paste0(interval, "% Confidence Interval")
+		title <- paste0(interval, "% Confidence interval")
 		fields[[length(fields) + 1]] <- list(name = "lowerCI", type = "number",
 											 format = "sf:4;dp:3",  title = "Lower",
 											 overTitle = title)
