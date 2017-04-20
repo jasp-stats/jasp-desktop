@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>606</width>
-    <height>472</height>
+    <height>475</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -264,7 +264,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>&amp;Log( BF₁₀ )</string>
+               <string>&amp;Log(BF₁₀)</string>
               </property>
              </widget>
             </item>
@@ -457,6 +457,12 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
@@ -471,12 +477,6 @@
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>GroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/groupbox.h</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

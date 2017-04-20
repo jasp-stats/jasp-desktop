@@ -312,7 +312,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>&amp;Log( BF₁₀ )</string>
+            <string>&amp;Log(BF₁₀)</string>
            </property>
           </widget>
          </item>

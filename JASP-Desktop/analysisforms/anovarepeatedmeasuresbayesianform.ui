@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>606</width>
-    <height>1355</height>
+    <width>645</width>
+    <height>1587</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -209,7 +209,7 @@
             <item row="2" column="0">
              <widget class="QRadioButton" name="_3">
               <property name="text">
-               <string>Log( BF₁₀ )</string>
+               <string>Log(BF₁₀)</string>
               </property>
              </widget>
             </item>
