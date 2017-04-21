@@ -61,6 +61,10 @@
 #include "analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h"
 #include "analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
 
+#ifdef QT_DEBUG
+#include "analysisforms/basregressionlinearlinkform.h"
+#endif
+
 #include "analysisforms/SEM/semsimpleform.h"
 #include "analysisforms/R11tLearn/r11tlearnform.h"
 
@@ -745,6 +749,10 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new SummaryStatsRegressionLinearBayesianForm(contentArea);
 	else if (name == "SummaryStatsCorrelationBayesianPairs")
 		form = new SummaryStatsCorrelationBayesianPairsForm(contentArea);
+#ifdef QT_DEBUG
+	else if (name == "BASRegressionLinearLink")
+		form = new BASRegressionLinearLinkForm(contentArea);
+#endif
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
@@ -936,7 +944,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 
 	}
 	else if (event->operation() == FileEvent::FileSave)
-	{		
+	{
 		if (_analyses->count() > 0)
 		{
 			_package->setWaitingForReady();
@@ -1026,7 +1034,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			event->setComplete();
 			dataSetIOCompleted(event);
 		}
-		
+
 		ui->variablesPage->close();
 	}
 }
