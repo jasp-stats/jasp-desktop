@@ -1,0 +1,121 @@
+{
+	"name": "BASRegressionLinearLink",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+		{
+			"name": "dependent",
+			"type": "Variable"
+		},
+		{
+			"name": "wlsWeights",
+			"type": "Variable"
+		},
+		{
+			"name": "betaBinomialParamA",
+			"type": "Number",
+			"value": 1.000,
+			"min": 0
+		},
+		{
+			"name": "betaBinomialParamB",
+			"type": "Number",
+			"value": 1.000,
+			"min": 0
+		},
+		{
+			"name": "bernoulliParam",
+			"type": "Number",
+			"value": 0.5,
+			"min": 0,
+			"max": 1
+		},
+		{
+			"name": "priorprobs",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "logmarg",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "covariates",
+			"type": "Variables"
+		},
+		{
+			"default": false,
+			"name": "plotLogPosteriorOdds",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotCoefficientsPosterior",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotResidualsVsFitted",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotModelProbabilities",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotModelComplexity",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotInclusionProbabilites",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotRobustnessCheck",
+			"type": "Boolean"
+		},
+		{
+			"options": ["AIC", "BIC", "EB-global", "EB-local", "g-prior", "hyper-g", "hyper-g-laplace", "hyper-g-n", "ZS-full", "ZS-null"],
+			"default": "ZS-null",
+			"name": "priorRegressionCoefficients",
+			"type": "List"
+		},
+		{
+			"default": true,
+			"name": "BAS",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "MCMC",
+			"type": "Boolean"
+		},
+		{
+			"name": "numberOfModels",
+			"type": "Number"
+		},
+		{
+			"name": "iterationsMCMC",
+			"type": "Integer",
+			"default": 0
+		},
+		{
+			"options": ["Bernoulli", "beta.binomial", "uniform"],
+			"default": "beta.binomial",
+			"name": "modelPrior",
+			"type": "List"
+		},
+		{
+			"name": "priorCovariates",
+			"type": "Number",
+			"value": 0.354,
+			"min": 0,
+			"max": 2
+		},
+		{
+			"name": "gPriorParameter",
+			"type": "Number",
+			"value": 3
+		}
+	]
+}
