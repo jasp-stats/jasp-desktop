@@ -438,7 +438,13 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							if (isTRUE(credibleInterval)) {
 							    if (ciValue != bfObject$ciValue) {
 							        bfObject$ciValue <- ciValue
-							        bfObject$ci <- .computePearsonCredibleInterval(alpha=bfObject$betaA, beta=bfObject$betaB, bfObject$ciValue)
+							        
+							        if (test=="pearson"){
+							            bfObject$ci <- .computePearsonCredibleInterval(alpha=bfObject$betaA, beta=bfObject$betaB, bfObject$ciValue)
+							        } else if (test=="kendall"){
+							            bfObject$ci <- .computeKendallCredibleInterval(n=bfObject$n, tauObs=bfObject$stat, kappa=priorWidth, ciValue=bfObject$ciValue)
+							        }
+							        
 							        
 							        # Store back into state
 							        memoryExcludePairwise[[priorLabel]][[variableName]][[columnName]] <- bfObject
@@ -494,7 +500,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 					                if (isTRUE(credibleInterval)) {
 					                    if (ciValue != bfObject$ciValue) {
 					                        bfObject$ciValue <- ciValue
-					                        bfObject$ci <- .computePearsonCredibleInterval(alpha=bfObject$betaA, beta=bfObject$betaB, bfObject$ciValue)
+					                        
+					                        if (test=="pearson"){
+					                            bfObject$ci <- .computePearsonCredibleInterval(alpha=bfObject$betaA, beta=bfObject$betaB, bfObject$ciValue)
+					                        } else if (test=="kendall"){
+					                            bfObject$ci <- .computeKendallCredibleInterval(n=bfObject$n, tauObs=bfObject$tauObs, kappa=bfObject$kappa, ciValue=bfObject$ciValue)
+					                        }
 					                        
 					                        # Store back into state with new ciValue
 					                        memoryExcludeListwise[[priorLabel]][[nLabel]][[rLabel]] <- bfObject
@@ -574,8 +585,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 					if (isTRUE(resultProcessing)) {
 						# Note: Result reporting: sample r
 					    
-					    # Report r value
-					    row[[length(row)+1]] <- .clean(bfObject$r)
+					    # Report r value or tauObs
+					    row[[length(row)+1]] <- .clean(bfObject$stat)
 					    
 					    retrievedFootnote <- bfObject$footnote
 					    
@@ -1372,7 +1383,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     # result <- list(n=n, r=r, kappa=kappa, bf10=NA, bfPlus0=NA, bfMin0=NA, methodNumber=NA, betaA=NA, betaB=NA, 
     # 			   twoSidedTooPeaked=FALSE, plusSidedTooPeaked=FALSE, minSidedTooPeaked=FALSE, 
     # 			   ci=tempList, ciValue=ciValue, acceptanceRate=1)
-    result <- list(n=n, r=r, kappa=kappa, bf10=NULL, bfPlus0=NULL, bfMin0=NULL, methodNumber=NULL, betaA=NULL, betaB=NULL, 
+    result <- list(n=n, stat=r, kappa=kappa, bf10=NULL, bfPlus0=NULL, bfMin0=NULL, methodNumber=NULL, betaA=NULL, betaB=NULL, 
                    twoSidedTooPeaked=NULL, plusSidedTooPeaked=NULL, minSidedTooPeaked=NULL, 
                    ci=tempList, ciValue=ciValue, acceptanceRate=1)
     
@@ -1569,6 +1580,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     }
     
     result$call <- paste0(".bfPearsonCorrelation(n=", n, ", r=", r, ", kappa=", kappa, ", ciValue=", ciValue, ", hyperGeoOverFlowThreshold=", hyperGeoOverFlowThreshold, ")")
+    result$stat <- r
     return(result)
 }
 
@@ -1625,12 +1637,13 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     # }
     result <- .bfCorrieKernelKendallTau(n=n, tauObs=tauObs, kappa=kappa, var=var, ciValue=ciValue)
     result$call <- paste0(".bfKendallTau(n=", n, ", tauObs=", tauObs, ", kappa=", kappa, ", var=", var, ", ciValue=", ciValue, ")")
+    result$stat <- tauObs
     return(result)
 }
 
 .bfCorrieKernelKendallTau <- function(n, tauObs, kappa=1, var=1, ciValue=0.95) { 
     tempList <- list(vector())
-    result <- list(n=n, r=tauObs, bf10=NA, bfPlus0=NA, bfMin0=NA, methodNumber=NA, betaA=NA, betaB=NA, 
+    result <- list(n=n, tauObs=tauObs, bf10=NA, bfPlus0=NA, bfMin0=NA, methodNumber=NA, betaA=NA, betaB=NA, 
                    twoSidedTooPeaked=FALSE, plusSidedTooPeaked=FALSE, minSidedTooPeaked=FALSE, 
                    ci=tempList, ciValue=ciValue, acceptanceRate=1)
     
