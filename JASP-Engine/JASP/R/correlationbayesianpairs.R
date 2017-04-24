@@ -290,7 +290,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				# plot[["data"]] <- .endSaveImage(image)
 				
 				.plotFunc <- function() {
-					.plotPosterior.correlation(r=NULL, n=NULL, oneSided=oneSided, dontPlotData=TRUE, addInformation=options$plotPriorAndPosteriorAdditionalInfo, corCoefficient=options$corcoefficient)
+					.plotPosterior.correlation(n=NULL, r=NULL, oneSided=oneSided, dontPlotData=TRUE, addInformation=options$plotPriorAndPosteriorAdditionalInfo, corCoefficient=options$corcoefficient)
 				}
 				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
 				plot[["convertible"]] <- TRUE
@@ -526,7 +526,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					
 					# Note: Store for the ith pair
 					#
-					rs[i] <- bfObject$r
+					rs[i] <- bfObject$stat
 					ns[i] <- bfObject$n
 					
 					# Extract infor from bfObject
@@ -575,9 +575,9 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					}
 					
 					if (!is.null(index)) {
-					    result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(bfObject$r), BF=.clean(BF10post[i]), .footnotes=list(r=list(index)), upperCI=.clean(someUpperCi), lowerCI=.clean(someLowerCi))
+					    result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(bfObject$stat), BF=.clean(BF10post[i]), .footnotes=list(r=list(index)), upperCI=.clean(someUpperCi), lowerCI=.clean(someLowerCi))
 					} else {
-						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(bfObject$r), BF=.clean(BF10post[i]), upperCI=.clean(someUpperCi), lowerCI=.clean(someLowerCi))
+						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(bfObject$stat), BF=.clean(BF10post[i]), upperCI=.clean(someUpperCi), lowerCI=.clean(someLowerCi))
 					}
 					
 					pairStatuses[[i]] <- list(ready=TRUE, error=FALSE, unplotable=unplotable, unplotableMessage=unplotableMessage, unplotableScatter=unplotableScatter, unplotableMessageScatter=unplotableMessageScatter)
@@ -1015,7 +1015,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	
 }
 
-.plotPosterior.correlation <- function(r, n, kappa=1, oneSided= FALSE, BF, BFH1H0, addInformation= TRUE, dontPlotData=FALSE, lwd= 2,corCoefficient="Pearson",
+.plotPosterior.correlation <- function(n, r, kappa=1, oneSided= FALSE, BF, BFH1H0, addInformation= TRUE, dontPlotData=FALSE, lwd= 2,corCoefficient="Pearson",
 										cexPoints= 1.5, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2) {
 	
   useKendall <- corCoefficient == "Kendall"
