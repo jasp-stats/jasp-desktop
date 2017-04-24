@@ -391,7 +391,7 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
         
         data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = ".", "r[rmse]" = ".", "optim[type1]" = "")
         footnotes_N <- .newFootnotes()
-        .addFootnote(footnotes_N,paste('The model is tested on ',0, "observations"), symbol = "")
+        .addFootnote(footnotes_N,paste("The model has not been applied to any data yet"), symbol = "")
         footnotes_N <- as.list(footnotes_N)
     }
     
@@ -399,14 +399,14 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
         result <- .LOOCVClassification(dataset,options,opt,formula)
         data_descriptions[[1]][["optim[type2]"]] <- "Leave-one-out"
         data_descriptions[[1]][["nnc[nnloo]"]] <- result[['Optimal.K']]
-        data_descriptions[[1]][["r[rmseoptim]"]] <- sqrt(result[['minimal.error']])
+        data_descriptions[[1]][["r[rmseoptim]"]] <- 1 - sqrt(result[['minimal.error']])
     }
     
     if(options[['validationKFold']] & !is.null(res)){
         result_fold <- .KfoldClassification(dataset,options,opt,formula,res)
         data_descriptions[[1]][["optim[type3]"]] <- "K-fold"
         data_descriptions[[1]][["nnc[nnkfold]"]] <- result_fold[['Optimal.K']]
-        data_descriptions[[1]][['r[rmsekfold]']] <- result_fold[['minimal.error']]
+        data_descriptions[[1]][['r[rmsekfold]']] <- 1 - result_fold[['minimal.error']]
     }
     
     return(list(title = 'Evaluation',

@@ -93,9 +93,9 @@
 		},
         {
             "name": "distanceParameterManual",
-            "type": "Integer",
-            "default": 2,
-            "min": 1
+            "type": "Number",
+            "value": 1,
+            "min": 0.1
         },
 		{
 			"name": "scaleEqualSD",

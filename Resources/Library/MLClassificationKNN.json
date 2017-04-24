@@ -98,6 +98,12 @@
 			"options": [ "auto", "manual", "optimized" ],
 			"default": "auto"
 		},
+        {
+            "name": "distanceParameterManual",
+            "type": "Number",
+            "value": 2,
+            "min": 0.1
+        },
 		{
 			"name": "scaleEqualSD",
 			"type": "Boolean"

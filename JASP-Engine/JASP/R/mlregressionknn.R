@@ -363,7 +363,7 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 		
 		data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = ".", "r[rmse]" = ".", "optim[type1]" = "")
 		footnotes_N <- .newFootnotes()
-		.addFootnote(footnotes_N,paste('The model is tested on ',0, "observations"), symbol = "")
+		.addFootnote(footnotes_N,paste("The model has not been applied to any data yet"), symbol = "")
 		footnotes_N <- as.list(footnotes_N)
 		
 	}
