@@ -379,7 +379,7 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
         
         data_evaluation <- list(list(title = 'K-means model', clusters = ".", measure = ".", aic = ".", bic = "."))
         footnotes_N <- .newFootnotes()
-        .addFootnote(footnotes_N,paste('The model is tested on ',0, "observations"), symbol = "")
+        .addFootnote(footnotes_N,paste("The model has not been applied to any data yet"), symbol = "")
         footnotes_N <- as.list(footnotes_N)
         
     } else {
