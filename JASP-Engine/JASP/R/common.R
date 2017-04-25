@@ -679,6 +679,9 @@ callback <- function(results=NULL) {
 	if (is.null(value))
 		return ("")
 
+	if (is.character(value))
+		return(value)
+
 	if (is.finite(value))
 		return(value)
 
