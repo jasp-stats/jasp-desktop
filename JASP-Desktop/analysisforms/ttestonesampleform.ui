@@ -711,7 +711,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Mann-Whitney </string>
+            <string>Wilcoxon signed-rank</string>
            </property>
           </widget>
          </item>
