@@ -71,17 +71,58 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
     Rotation <- options$obliqueSelector
   }
   
-  
-  # Number of factors:
+  checkAllNA <- list(
+    function() {
+      if (nVariable > 0) {
+        allNa <- FALSE
+        varNa <- c()
+        for (i in 1:length(options$variables)){
+          varName <- options$variables[i]
+          print(varName)
+          print(dataset[["varName"]])
+          if( sum(as.numeric(!is.na(dataset[["varName"]]))) < 2){
+            allNa <- TRUE
+            varNa <- c(varNa,varName)
+          }
+        }
+        if (allNa){
+          # return(paste0("Fail to load ", varNa, " for valid cases <= 1"))
+          return(paste0("Fail to load for valid cases <= 1"))
+        }
+        
+      }
+    }
+  )
+
+  # error <- .hasErrors(dataset=dataset, perform=perform, type=c("infinity", "variance"), exitAnalysisIfErrors=TRUE)
+  errorAllNa <- .hasErrors(dataset=dataset, perform=perform, type=c("infinity", "variance"), custom=checkAllNA, exitAnalysisIfErrors=TRUE)
+  #Number of factors:
   
   if (options$factorMethod == "parallelAnalysis"){
     
     if (nrow(dataset)>0 && nVariable > 0){
-      image <- .beginSaveImage()
-      pa <- psych::fa.parallel(dataset)   
-      .endSaveImage(image)
-      if (is.na(pa$ncomp)) pa$ncomp <- 1
-      nFactor <- max(1,pa$ncomp)
+      
+      p <- try(silent = FALSE, expr = {
+              image <- .beginSaveImage()
+              pa <- psych::fa.parallel(dataset)   
+              .endSaveImage(image)
+              if (is.na(pa$ncomp)) pa$ncomp <- 1
+              nFactor <- max(1,pa$ncomp)
+            })
+
+      if (class(p) == "try-error"){
+        errorMessageTmp <- .extractErrorMessage(p)
+        errorMessage <- paste0("Parallel Analysis not possible: ", errorMessageTmp)
+        results[["factorLoadings"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
+        nFactor <- 1
+      }
+
+      # image <- .beginSaveImage()
+      # pa <- psych::fa.parallel(dataset)   
+      # .endSaveImage(image)
+
+      # if (is.na(pa$ncomp)) pa$ncomp <- 1
+      # nFactor <- max(1,pa$ncomp)
       
     } else {
       if (is.null(state$nFactor)){
@@ -94,12 +135,25 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   } else if (options$factorMethod == "eigenValues"){
     if (nrow(dataset)>0 && nVariable > 0){
       # Compute ev:
-      image <- .beginSaveImage()
-      pa <- psych::fa.parallel(dataset)
-      .endSaveImage(image)
+      p <- try(silent = FALSE, expr = {
+              image <- .beginSaveImage()
+              pa <- psych::fa.parallel(dataset)
+              .endSaveImage(image)
+              nFactor <- sum(pa$pc.values > options$eigenValuesBox)
+            })
+
+      if (class(p) == "try-error"){
+        errorMessageTmp <- .extractErrorMessage(p)
+        errorMessage <- paste0("Eigen Values not possible: ", errorMessageTmp)
+        results[["factorLoadings"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
+        nFactor <- 1
+      }
+      # image <- .beginSaveImage()
+      # pa <- psych::fa.parallel(dataset)   
+      # .endSaveImage(image)
       
       # Number of factors:
-      nFactor <- sum(pa$pc.values > options$eigenValuesBox)
+      # nFactor <- sum(pa$pc.values > options$eigenValuesBox)
     } else {
       if (is.null(state$nFactor)){
         nFactor <- 1
@@ -111,29 +165,18 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   } else if (options$factorMethod == "manual"){
     nFactor <- options$numberOfFactors
   }
-
-
+  
   customChecks <- list(
-      function(){
-        if (length(options$variables) > 0 && nFactor > length(options$variables)){
-          return ("Too many factors requested")
-        }
+    function() {
+      if (nVariable > 0 && nFactor > length(options$variables)) {
+        return(paste0("Too many factors requested (", nFactor, ") for the amount of included variables"))
       }
-    )
+    }
+  )
+  
+  error <- .hasErrors(dataset=dataset, perform=perform, type=c("infinity", "variance"), custom=customChecks, exitAnalysisIfErrors=TRUE)
 
-
-  hasErrors <- .hasErrors(dataset = dataset, perform = perform, type = c("infinity", "variance"), custom = customChecks)
-
-  if (base::identical(hasErrors, FALSE)){
-    error <- FALSE
-    errorMessage <- ""
-  } else {
-    error <- TRUE
-    errorMessage <- hasErrors[["message"]]
-  }
-
-
-  if (perform == "run" && nrow(dataset) > 0 && is.null(analysisResults) && length(options$variables) > 1 && !error){
+  if (perform == "run" && nrow(dataset) > 0 && is.null(analysisResults) && length(options$variables) > 1){
     
     analysisResults <- .estimatePCA(dataset, options, perform,nFactor)
     
@@ -144,7 +187,18 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   
   # Make factor loadings table:
   # if (newAnalysis){
-  results[["factorLoadings"]] <- .getLoadingsPCA(analysisResults, options,perform,nFactor,dataset)    
+  p <- try(silent = FALSE, expr = {
+    results[["factorLoadings"]] <- .getLoadingsPCA(analysisResults, options,perform,nFactor,dataset)    
+    })
+
+  if(class(p) == "try-error"){
+    errorMessageTmp <- .extractErrorMessage(p)
+    errorMessage <- paste0("FactorLoadings not possible: ", errorMessageTmp)
+    results[["factorLoadings"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
+  }else{
+    results[["factorLoadings"]][["error"]] <- NULL
+  }
+  
 #   } else {
 #     results[["factorLoadings"]]  <- state$results[["factorLoadings"]] 
 #   }
@@ -152,22 +206,77 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   
   # Create factor correlation table:
   # if (newAnalysis || (is.list(diff) && diff[['incl_correlations']] && options$incl_correlations)){
-  results[["factorCorrelations"]] <- .getFactorCorrelationsPCA(analysisResults, options,perform)    
+  p <- try(silent = FALSE, expr = {
+    results[["factorCorrelations"]] <- .getFactorCorrelationsPCA(analysisResults, options,perform)    
+  })
+
+  if(class(p) == "try-error"){
+    errorMessageTmp <- .extractErrorMessage(p)
+    errorMessage <- paste0("Factor correlation table not possible: ", errorMessageTmp)
+    results[["factorCorrelations"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
+  }else{
+    results[["factorCorrelations"]][["error"]] <- NULL
+  }
+
 #   } else {
 #     results[["factorCorrelations"]] <- state$results[["factorCorrelations"]] 
 #   }
 
   
   # Create fit measures tables:
-  results[["goodnessOfFit"]] <- .goodnessOfFitPCA(analysisResults, options,perform)
-  results[["fitMeasures"]] <- .fitMeasuresPCA(analysisResults, options,perform)
+  p <- try(silent = FALSE, expr = {
+    results[["goodnessOfFit"]] <- .goodnessOfFitPCA(analysisResults, options,perform)
+  })
+
+  if(class(p) == "try-error"){
+    errorMessageTmp <- .extractErrorMessage(p)
+    errorMessage <- paste0("Goodness of fit table not possible: ", errorMessageTmp)
+    results[["goodnessOfFit"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
+  }else{
+    results[["goodnessOfFit"]][["error"]] <- NULL
+  }
+
+  p <- try(silent = FALSE, expr = {
+    results[["fitMeasures"]] <- .fitMeasuresPCA(analysisResults, options,perform)
+  })
+
+  if(class(p) == "try-error"){
+    errorMessageTmp <- .extractErrorMessage(p)
+    errorMessage <- paste0("Fit measures table not possible: ", errorMessageTmp)
+    results[["fitMeasures"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
+  }else{
+    results[["fitMeasures"]][["error"]] <- NULL
+  }
+  
   
   # Create path diagram:
-  results[["pathDiagram"]] <- .pathDiagramPCA(analysisResults, options,perform)
+  p <- try(silent = FALSE, expr = {
+    results[["pathDiagram"]] <- .pathDiagramPCA(analysisResults, options,perform)
+  })
+
+  if(class(p) == "try-error"){
+    errorMessageTmp <- .extractErrorMessage(p)
+    errorMessage <- paste0("Plotting path diagram not possible: ", errorMessageTmp)
+    results[["pathDiagram"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
+  }else{
+    results[["pathDiagram"]][["error"]] <- NULL
+  }
+
   
   # Scree plot:
-  results[["screePlot"]] <- .screePlot(dataset, options,perform)
-  
+  p <- try(silent = FALSE, expr = {
+    results[["screePlot"]] <- .screePlot(dataset, options,perform)
+  })
+
+  if(class(p) == "try-error"){
+    errorMessageTmp <- .extractErrorMessage(p)
+    errorMessage <- paste0("Plotting screen plot not possible: ", errorMessageTmp)
+    results[["screePlot"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
+  }else{
+    results[["screePlot"]][["error"]] <- NULL
+  }
+
+
   ## TEMP DEBUG THING:
   # save(dataset,results,init,options,perform,callback,...,file = "/Users/sachaepskamp/Dropbox/work/JASP/Rcodes/JASPinit.RData")
   
@@ -204,23 +313,23 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   results[[".meta"]] <- meta
   
   # Dummies:
-  status <- list(ready=TRUE, error=error,errorMessage=errorMessage)
+  status <- list(ready=TRUE, error=error)
   
-  if (status$error == TRUE){
-    results[["factorLoadings"]][["error"]] <-  list(errorType="badData", errorMessage=status$errorMessage)
-    results[["factorCorrelations"]][["error"]] <-  list(errorType="badData")
-    results[["goodnessOfFit"]][["error"]] <-  list(errorType="badData")
-    results[["fitMeasures"]][["error"]] <-  list(errorType="badData")
-    results[["pathDiagram"]][["error"]] <-  list(errorType="badData")
-    results[["screePlot"]][["error"]] <-  list(errorType="badData")
-  } else {
-    results[["factorLoadings"]][["error"]] <- NULL
-    results[["factorCorrelations"]][["error"]] <-  NULL
-    results[["goodnessOfFit"]][["error"]] <-  NULL
-    results[["fitMeasures"]][["error"]] <-  NULL
-    results[["pathDiagram"]][["error"]] <-  NULL
-    results[["screePlot"]][["error"]] <-  NULL
-  }
+  # if (status$error == TRUE){
+  #   results[["factorLoadings"]][["error"]] <-  list(errorType="badData", errorMessage=status$errorMessage)
+  #   results[["factorCorrelations"]][["error"]] <-  list(errorType="badData")
+  #   results[["goodnessOfFit"]][["error"]] <-  list(errorType="badData")
+  #   results[["fitMeasures"]][["error"]] <-  list(errorType="badData")
+  #   results[["pathDiagram"]][["error"]] <-  list(errorType="badData")
+  #   results[["screePlot"]][["error"]] <-  list(errorType="badData")
+  # } else {
+  #   results[["factorLoadings"]][["error"]] <- NULL
+  #   results[["factorCorrelations"]][["error"]] <-  NULL
+  #   results[["goodnessOfFit"]][["error"]] <-  NULL
+  #   results[["fitMeasures"]][["error"]] <-  NULL
+  #   results[["pathDiagram"]][["error"]] <-  NULL
+  #   results[["screePlot"]][["error"]] <-  NULL
+  # }
   
   if (perform == "run" && status$ready) {
     state <- list(options=options,analysisResults=analysisResults,nFactor=nFactor,results=results,complete=TRUE)
@@ -263,11 +372,6 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   #   } else if (options$factorMethod == "manual"){
   #     nFactor <- options$numberOfFactors
   #   }
-  
-  if (nFactor == 0) stop("Number of factors must be > 0")
-  if (nFactor > nVariable){
-    stop("Too many factors requested")
-  }
   
   Results <- psych::principal(dataset,nFactor, rotate = Rotation)
   # Results <- factanal(dataset, nFactor, rotation = Rotation)
@@ -448,7 +552,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   } else {
     
     
-    # image <- .beginSaveImage(pathDiagram$width,pathDiagram$height)
+    image <- .beginSaveImage(pathDiagram$width,pathDiagram$height)
 #     Lambda <- loadings(analysisResults)
 #     labels <- .unv(rownames(Lambda))
 #     Lambda <- matrix(c(Lambda),nrow(Lambda),ncol(Lambda))
@@ -587,7 +691,6 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
     # Plot:
     label.scale.equal <- c(rep(1,nFactor),rep(2,nIndicator))
  
-    .plotFunc <- function() {
     # Run once without plotting to obtain the scaled label sizes:
     qgraph::qgraph(E, layout = L, directed=TRUE, bidirectional=bidir, residuals = TRUE, residScale  = 10,
                    labels = c(factors,labels), curve = curve, curveScale = FALSE, edgeConnectPoints = ECP,
@@ -595,15 +698,9 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
                    residScale = 2, mar = c(5,10,5,12), normalize = FALSE, label.fill.vertical = 0.75, cut = options$highlightText,
                    bg = "transparent"
     )
-    }
     
-    content <- .writeImage(width = pathDiagram$width, height = pathDiagram$height, plot = .plotFunc, obj = TRUE)
-    pathDiagram[["convertible"]] <- TRUE
-	pathDiagram[["obj"]] <- content[["obj"]]
-	pathDiagram[["data"]] <- content[["png"]]
-
     
-    # pathDiagram$data <- .endSaveImage(image)
+    pathDiagram$data <- .endSaveImage(image)
     pathDiagram$status <- "complete"
     
   }
@@ -900,30 +997,24 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
                      panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
                      plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
                      panel.border = ggplot2::element_blank(),
+                     axis.line = ggplot2::element_blank(),
                      axis.ticks = ggplot2::element_line(size = 0.5),
                      axis.ticks.margin = grid::unit(1,"mm"),
                      axis.ticks.length = grid::unit(3, "mm"),
                      plot.margin = grid::unit(c(0,0,.5,.5), "cm")) + 
       ggplot2::scale_linetype_discrete("") +  ggplot2::scale_shape_discrete("") +
-      ggplot2::theme(legend.position = c(0.99,0.99),legend.justification = c(1,1),
+      ggplot2::theme(legend.position = c(0.99,0.99),legend.justification = c(1,1),legend.key = ggplot2::element_blank(),
                      legend.text=ggplot2::element_text(size=12.5),
                      panel.background=ggplot2::element_rect(fill="transparent",colour=NA),
                      plot.background=ggplot2::element_rect(fill="transparent",colour=NA),
                      legend.key = ggplot2::element_rect(fill = "transparent", colour = "transparent"),
                      legend.background=ggplot2::element_rect(fill="transparent",colour=NA))
     
-    # image <- .beginSaveImage(options$plotWidthScreePlot, options$plotHeightScreePlot)
-    # print(p)
-    # content <- .endSaveImage(image)
+    image <- .beginSaveImage(options$plotWidthScreePlot, options$plotHeightScreePlot)
+    print(p)
+    content <- .endSaveImage(image)
     
-    content <- .writeImage(width = options$plotWidthScreePlot, 
-    					   height = options$plotHeightScreePlot,
-    					   plot = p, obj = TRUE)
-    screePlot$data <- content[["png"]]
-    screePlot[["convertible"]] <- TRUE
-	screePlot[["obj"]] <- content[["obj"]]
-    
-    # screePlot$data <- content
+    screePlot$data <- content
     screePlot$status <- "complete"
     
     statescreePlot <- screePlot
