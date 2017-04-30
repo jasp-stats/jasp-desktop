@@ -16,9 +16,7 @@
 #
 
 RegressionLogLinearBayesian <- function(dataset, options, perform="run", callback, ...) {
-    
-
-	counts.var <- options$counts
+    counts.var <- options$counts
 	if (counts.var == "") {
 	    counts.var <- NULL
 	}
@@ -35,6 +33,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	error.message <- NULL
 		
 	if (options$counts != "" && perform == "run") {
+	    # Start tallying
 		variableNames <- NULL
 		
 		for (counts in options$counts) {
@@ -70,21 +69,33 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	 	dataset <- dataset
 	}
 	
+	# Data check here
 	if ( perform == "run" && length(listOfErrors)==0  ) { 
-		variableNames <- NULL
-		
-		for (factor in options$factors) {
-			if ( any(is.na(dataset[.v(factor)])) ){
-			    variableNames <- c (variableNames, factor)
-			}
-		}
-		
-		if ( !is.null(variableNames) ) {
-		    error.message <- "Bayes factor is undefined -- the factors contain(s) empty cell and/or NaN or incomplete contingency table."
-		    listOfErrors[[ length(listOfErrors) + 1 ]] <- error.message
-		}
+	    if (isTRUE(anyNA(dataset[.v(options$factors)]))) {
+	        error.message <- "Bayes factor is undefined -- the factors contain(s) empty cell and/or NaN or incomplete contingency table."
+	        listOfErrors[[ length(listOfErrors) + 1 ]] <- error.message
+	    }
+	    # 
+	#     
+	#     # Tally up variables names
+	# 	naVariables <- NULL #variableNames <- NULL
+	# 	
+	# 	
+	# 	for (factor in options$factors) {
+	# 		if ( any(is.na(dataset[.v(factor)])) ){
+	# 		    naVariables <- c (naVariables, factor)
+	# 		    error.message <- paste0("The factor ", factor, " contains an empty entry")
+	# 		    listOfErrors[[ length(listOfErrors) + 1 ]] <- error.message
+	# 		}
+	# 	}
+	# 	
+	# 	
+	# 	if ( !is.null(variableNames) ) {
+	# 	    error.message <- "Bayes factor is undefined -- the factors contain(s) empty cell and/or NaN or incomplete contingency table."
+	# 	    listOfErrors[[ length(listOfErrors) + 1 ]] <- error.message
+	# 	}
 	}
-			 	 	
+	
 	results <- list()
 	meta <- list()
 	.meta <-  list(list(name = "title", type = "title"),
@@ -98,9 +109,9 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	results[[".meta"]] <- .meta
 	results[["title"]] <- "Bayesian Log-Linear Regression"
 	
-	.LogLinearBayesianCitations <- 	list(
+	logLinearBayesianCitations <- 	list(
 		"Overstall, A., & King, R. (2014). conting: an R package for Bayesian analysis of complete and incomplete contingency tables. Journal of Statistical Software, 58(7), 1-27."
-		)
+	)
 
 
     #######################################
@@ -120,22 +131,17 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	 }
 	
 	if (length(options$modelTerms) > 0) {
-		
-		variables.in.model <- NULL
+	    variables.in.model <- NULL
 		variables.in.model.base64 <- NULL
 		
 		for (i in seq_along(options$modelTerms)) {
-			
-			components <- options$modelTerms[[i]]$components
-			
+		    components <- options$modelTerms[[i]]$components
+		    
 			if (length(components) == 1) {
-				
-				variables.in.model <- c(variables.in.model, components[[1]])
+			    variables.in.model <- c(variables.in.model, components[[1]])
 				variables.in.model.base64 <- c(variables.in.model.base64, .v(components[[1]]))
-				
 			} else {
-				
-				components.unlisted <- unlist(components)
+			    components.unlisted <- unlist(components)
 				term.base64 <- paste0(.v(components.unlisted), collapse=":")
 				term <- paste0(components.unlisted, collapse=":")
 				variables.in.model <- c(variables.in.model, term)
@@ -144,6 +150,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 		}
 		
 		independent.base64 <- variables.in.model.base64
+		# Remove empty stuff
 		variables.in.model <- variables.in.model[ variables.in.model != ""]
 		variables.in.model.copy <- variables.in.model
 	}
@@ -151,36 +158,37 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	dependent.base64 <- .v(dependent.variable)
 		
 	if (length(options$modelTerms) > 0) {
-		if (length(variables.in.model) > 0 ) {
-		    model.definition <- paste(dependent.base64, "~", paste(independent.base64, collapse = "+"))
+	    if (length(variables.in.model) > 0 ) {
+	        model.definition <- paste(dependent.base64, "~", paste(independent.base64, collapse = "+"))
 		} else {
 		    model.definition <- NULL #this model has no parameters				
 		}
+	    
 			
 		if (perform == "run"  && !is.null(model.definition) && length(listOfErrors) == 0 ) {
 		    model.formula <- as.formula(model.definition)
-
-			if (options$counts == ""){ 
-	 			names(dataset)[names(dataset)== "freq"]<- dependent.base64
+		    
+		    if (options$counts == ""){ 
+	 			names(dataset)[names(dataset)== "freq"] <- dependent.base64
 	 		}	 		
-			
-			logBlm.fit <- try( conting::bcct( model.formula, data = dataset, prior = "SBH", n.sample=2000, a=options$priorShape, b=options$priorScale), silent = TRUE)
-			
-			no.burnin = 2000 * 0.2
-			
-			if (options$sampleMode == "manual"){
-			    logBlm.fit <- try(conting::bcctu(object = logBlm.fit, n.sample = options$fixedSamplesNumber), silent = TRUE)				
+		    
+		    logBlm.fit <- try( conting::bcct(formula=model.formula, data = dataset, prior = "SBH", n.sample=2000, a=options$priorShape, b=options$priorScale), silent = TRUE)
+		    no.burnin = 2000 * 0.2
+		    
+		    # Always do auto and then manual adds additional samples
+		    if (options$sampleMode == "manual"){
+			    logBlm.fit <- try(conting::bcctu(object = logBlm.fit, n.sample = options$fixedSamplesNumber), silent = TRUE)
 			    n.sample = options$fixedSamplesNumber
 			    no.burnin = (2000 + n.sample)* 0.2
 			} 
 			
-			if ( class(logBlm.fit) == "bcct") {
+		    if (isTryError(logBlm.fit)) {
+		        error <- .extractErrorMessage (logBlm.fit)
+		        listOfErrors[[ length(listOfErrors) + 1 ]]  <- error
+		        logBlm.model <- list(logBlm.fit = NULL, variables = variables.in.model)
+		    } else if (class(logBlm.fit) == "bcct") {
 			    logBlm.model <- list(logBlm.fit = logBlm.fit, variables = variables.in.model)
-			} else if (inherits(logBlm.fit, "try-error")) {
-				error <- .extractErrorMessage (logBlm.fit)
-				listOfErrors[[ length(listOfErrors) + 1 ]]  <- error
-				logBlm.model <- list(logBlm.fit = NULL, variables = variables.in.model)
-			}
+			} 
 		} else {
 		    logBlm.model <- list(logBlm.fit = NULL, variables = variables.in.model)
 		}
@@ -195,7 +203,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	Bayesianposterior <- list()
 	
 	Bayesianposterior[["title"]] <- "Model Comparison"
-	Bayesianposterior[["citation"]] <- .LogLinearBayesianCitations
+	Bayesianposterior[["citation"]] <- logLinearBayesianCitations
 		
 	if (options$bayesFactorType == "BF10") {
 		bfTitle <- "BF<sub>10</sub>"
@@ -204,25 +212,28 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	} else {
 		bfTitle <- "Log(BF<sub>10</sub>)"
 	}
-
-		# Declare table elements		
+	
+	# Declare table elements
 	fields <- list(
 		list(name = "Number", type = "integer",title=" "),
 		list(name="model", type="string", title="Models"),
 		list(name="PMdata", type="number", format="dp:3", title="P(M|data)"),
-		list(name="BF", type="number", format="sf:4;dp:3", title=bfTitle))
+		list(name="BF", type="number", format="sf:4;dp:3", title=bfTitle)
+	)
 		
 	emptyRow <- list( #for empty elements in tables when given output
 		"Number" = "",
 		"Model" = "",
 		"PMdata" = "",
-		"BF" = "")
+		"BF" = ""
+	)
 		
 	dotted.line <- list( #for empty tables
 		"Number" = ".",
 		"Model" = ".",
 		"PMdata" = ".",
-		"BF" = ".")
+		"BF" = "."
+	)
 
 	Bayesianposterior[["schema"]] <- list(fields = fields)
 	
@@ -239,10 +250,8 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 			if (length(logBlm.model$variables) > 0) {
 			    variables.in.model <- logBlm.model$variables
 						
-				max.prob <- base::max(logBlm.posterior$table$prob)
-				BFactor <- logBlm.posterior$table$prob / max.prob
-				
-				print(logBlm.posterior)
+				max.prob <- base::max(logBlm.posterior$table$prob.Freq)
+				BFactor <- logBlm.posterior$table$prob.Freq / max.prob
  
 				if (options$bayesFactorType == "BF10") {
 	
@@ -281,7 +290,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 					
 					Bayesianposterior.result[[ len.Blogreg ]]$"Number" <-as.integer(i)
 					Bayesianposterior.result[[ len.Blogreg ]]$"model" <- model.name
-					Bayesianposterior.result[[ len.Blogreg ]]$"PMdata" <- as.numeric(logBlm.posterior$table$prob[i])			
+					Bayesianposterior.result[[ len.Blogreg ]]$"PMdata" <- as.numeric(logBlm.posterior$table$prob.Freq[i])			
 					Bayesianposterior.result[[ len.Blogreg ]]$"BF" <- as.numeric(BFactor[i])
 					Bayesianposterior.result[[ len.Blogreg ]]$ "footnotes" <- as.list (footnotes)					
 					
@@ -344,7 +353,6 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 		}
 		Bayesianposterior[["error"]] <- list(errorType="badData",errorMessage = error)
 	} else if (length(listOfErrors) == 1){
-	    print(5)
 		Bayesianposterior[["error"]] <- list(errorType = "badData", errorMessage = listOfErrors[[ 1 ]])
 	}
 		
@@ -359,7 +367,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	if (options$regressionCoefficientsEstimates  == TRUE){
 		Bayesianlogregression <- list()
 		Bayesianlogregression[["title"]] <- "Posterior Summary Statistics"
-		Bayesianlogregression[["citation"]] <- .LogLinearBayesianCitations
+		Bayesianlogregression[["citation"]] <- logLinearBayesianCitations
 		#ci.label <- paste(100*options$regressionCoefficientsCredibleIntervalsInterval, "% Highest posterior density intervals", sep="")
 		ci.label <- paste(100*options$regressionCoefficientsCredibleIntervalsInterval, "% Credible Intervals", sep="")
 		# Declare table elements
@@ -501,7 +509,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	if (options$regressionCoefficientsSubmodel  == TRUE){
 		BayesianSublogregression <- list()
 		BayesianSublogregression[["title"]] <-paste( "Posterior Summary Statistics For Submodel", options$regressionCoefficientsSubmodelNo, sep=" ")
-		BayesianSublogregression[["citation"]] <- .LogLinearBayesianCitations
+		BayesianSublogregression[["citation"]] <- logLinearBayesianCitations
 		ci.label <- paste(100*options$regressionCoefficientsSubmodelCredibleIntervalsInterval, "% Credible Intervals", sep="")
 		# Declare table elements
 		fields <- list(
@@ -630,9 +638,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 			len.Blogreg <- length(BayesianSublogregression.result) + 1
 
 			if (length(logBlm.model$variables) > 0) {
-
-				variables.in.model <- logBlm.model$variables
-				
+			    variables.in.model <- logBlm.model$variables
 			}
 
 			BayesianSublogregression.result[[ len.Blogreg ]] <- dotted.line
