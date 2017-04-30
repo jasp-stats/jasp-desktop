@@ -19,7 +19,7 @@
 CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
     # Note: This is the default failed bfObject for wrong data
     #
-    failedBfObject <- list(n=NaN, r=NaN, bf10=NA, bfPlus0=NA, bfPlus0=NA, bfMin0=NA, ciValue=options$ciValue, ci=list())
+    failedBfObject <- list(n=NaN, r=NaN, stat=NA, bf10=NA, bfPlus0=NA, bfPlus0=NA, bfMin0=NA, ciValue=options$ciValue, ci=list())
     
     useKendall <- options$corcoefficient == "Kendall"
     usePearson <- options$corcoefficient == "Pearson"
@@ -467,8 +467,23 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				    # Data checks TODOTODO: This works well for list wise
 				    errorMessage <- NULL
 				    
-				    errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('observations','variance', 'infinity'),
-					                     all.target = c(pair[[1]], pair[[2]]), observations.amount = '< 2')
+				    errors <- .hasErrors(dataset, perform = perform, message = 'short', 
+				                         type = c('observations','variance', 'infinity'),
+				                         all.target = c(pair[[1]], pair[[2]]), observations.amount = '< 2')
+				    
+				    # 
+				    # if (options$missingValues == "excludeListwise"){
+				    #     errors <- .hasErrors(dataset, perform = perform, message = 'short', 
+				    #                          type = c('observations','variance', 'infinity'),
+				    #                          all.target = c(pair[[1]], pair[[2]]), observations.amount = '< 2')
+				    # } else if (options$missingValues=="excludeAnalysisByAnalysis") {
+				    #     subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])) )
+				    #     subDataSet <- na.omit(subDataSet)
+				    #     
+				    #     errors <- .hasErrors(dataset = subDataSet, perform=perform, message="short", 
+				    #                          type = c('observations','variance', 'infinity'),
+				    #                          all.target = c(pair[[1]], pair[[2]]), observations.amount = '< 2')
+				    # } 
 					
 					# Note: Data and bfs check [start]
 					if (!identical(errors, FALSE)) {
@@ -487,14 +502,13 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					} else {
 					    # Data okay, load data
 					    #
-					    
 					    if (options$missingValues=="excludeAnalysisByAnalysis") {
 					        subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])) )
 					        subDataSet <- na.omit(subDataSet)
 					        
 					        v1 <- subDataSet[[ .v(pair[[1]]) ]]
 					        v2 <- subDataSet[[ .v(pair[[2]]) ]]
-					    } else {
+					    } else if (options$missingValues == "excludeListwise") {
 					        v1 <- dataset[[ .v(pair[[1]]) ]]
 					        v2 <- dataset[[ .v(pair[[2]]) ]]
 					    }
@@ -682,9 +696,8 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 							
 						})
 						
-						if (class(p) == "try-error") {
-						
-							errorMessage <- .extractErrorMessage(p)
+						if (isTryError(p)) {
+						    errorMessage <- .extractErrorMessage(p)
 							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
 						}
 					} else if (status$unplotableScatter && "unplotableMessageScatter" %in% names(status)) {
@@ -758,9 +771,8 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 							
 						})
 						
-						if (class(p) == "try-error") {
-						
-							errorMessage <- .extractErrorMessage(p)
+						if (isTryError(p)) {
+						    errorMessage <- .extractErrorMessage(p)
 							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
 						}
 						
@@ -828,7 +840,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 							
 						})
 						
-						if (class(p) == "try-error") {
+						if (isTryError(p)) {
 						
 							errorMessage <- .extractErrorMessage(p)
 							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
@@ -905,9 +917,8 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 							
 						})
 						
-						if (class(p) == "try-error") {
-						
-							errorMessage <- .extractErrorMessage(p)
+						if (isTryError(p)) {
+						    errorMessage <- .extractErrorMessage(p)
 							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
 						}
 						
@@ -1483,14 +1494,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	        bfObject <- .bfPearsonCorrelation(n=n, r=r, kappa=kappaValues[i], ciValue=NULL)
 	    } else if (useKendall) {
 	        # TODO (Johnny): I removed var=1, because it's done by default already, 
-	        print("hier")
 	        bfObject <- .bfCorrieKernelKendallTau(n=n, tauObs=r, kappa=kappaValues[i], var=1, ciValue=NULL)
-	        print("daar")
-	        print(bfObject)
-	        #bfObject <- .bfCorrieKernelKendallTau(n=n, tauObs=r, kappa=kappaValues[i], ciValue=NULL)
-	        #bfObject <- .bfKendallTau(n=n, tauObs=r, kappa=kappaValues[i], ciValue=NULL)
-	        #print("here")
-	        #print(bfObject)
 	    }
 	    
 		if (oneSided == FALSE) {

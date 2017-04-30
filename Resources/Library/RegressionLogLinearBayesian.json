@@ -41,8 +41,8 @@
 		{
 			"name": "maxModels",
 			"type": "Integer",
-			"default": 1,
-			"min" : 1
+			"default": 2,
+			"min" : 2
 		},
 		{
 			"name": "posteriorProbabilityCutOff",

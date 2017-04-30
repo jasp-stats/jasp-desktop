@@ -145,7 +145,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 									  state, diff) {
 	# Note: This is the default failed bfObject for wrong data
     #
-    failedBfObject <- list(n=NaN, r=NaN, bf10=NaN, bfPlus0=NA, bfPlus0=NA, bfMin0=NA, ciValue=ciValue, ci=list())
+    failedBfObject <- list(n=NaN, r=NaN, stat=NA, bf10=NaN, bfPlus0=NA, bfPlus0=NA, bfMin0=NA, ciValue=ciValue, ci=list())
     
 	correlationTable <- list()
 	if (pearson & kendallsTauB) {
@@ -533,6 +533,19 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							#
 						    errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('observations','variance', 'infinity'),
 						                         all.target = c(variableName, variable2Name), observations.amount = '< 2')
+						    
+						    # 
+						    # if (missingValues=="excludePairwise"){
+						    #     subDataSet <- subset(dataset, select=c(.v(variableName), .v(variable2Name)) )
+						    #     subDataSet <- na.omit(subDataSet)
+						    #     
+						    #     errors <- .hasErrors(dataset=subDataSet, perform = perform, message = 'short', type = c('observations','variance', 'infinity'),
+						    #                          all.target = c(variableName, variable2Name), observations.amount = '< 2')
+						    # } else if (missingValues=="excludeListwise"){
+						    #     errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('observations','variance', 'infinity'),
+						    #                          all.target = c(variableName, variable2Name), observations.amount = '< 2')
+						    # }
+						    # 
 						    
 							if (!identical(errors, FALSE)) {
 							    # Note: Data: NOT ok, 
@@ -1383,7 +1396,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     # result <- list(n=n, r=r, kappa=kappa, bf10=NA, bfPlus0=NA, bfMin0=NA, methodNumber=NA, betaA=NA, betaB=NA, 
     # 			   twoSidedTooPeaked=FALSE, plusSidedTooPeaked=FALSE, minSidedTooPeaked=FALSE, 
     # 			   ci=tempList, ciValue=ciValue, acceptanceRate=1)
-    result <- list(n=n, stat=r, kappa=kappa, bf10=NULL, bfPlus0=NULL, bfMin0=NULL, methodNumber=NULL, betaA=NULL, betaB=NULL, 
+    result <- list(n=n, r=r, kappa=kappa, bf10=NULL, bfPlus0=NULL, bfMin0=NULL, methodNumber=NULL, betaA=NULL, betaB=NULL, 
                    twoSidedTooPeaked=NULL, plusSidedTooPeaked=NULL, minSidedTooPeaked=NULL, 
                    ci=tempList, ciValue=ciValue, acceptanceRate=1)
     
