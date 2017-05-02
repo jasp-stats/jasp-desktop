@@ -90,7 +90,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 	## get the right statistics for the table and, if only one test type, add footnote
 	if (wantsWilcox && onlyTest) {
 
-		testname <- "Wilcoxon Signed-Rank Test"
+		testname <- "Wilcoxon signed-rank test"
 		testTypeFootnote <- paste0(testname, ".")
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
 		testStat <- "W"
@@ -98,7 +98,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 		fields <- fields[-4]
 	} else if (wantsStudents && onlyTest) {
 
-		testname <- "Student's T-Test"
+		testname <- "Student's t-test"
 		testTypeFootnote <- paste0(testname, ".")
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
 
@@ -140,7 +140,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 											 type = "number", format = "sf:4;dp:3")
 	}
 
-	if (wantsEffect) {
+	if (wantsEffect && wantsStudents) {
 		fields[[length(fields) + 1]] <- list(name = "d", title = "Cohen's d",
 											 type = "number",  format = "sf:4;dp:3")
 	}
@@ -247,7 +247,6 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 						sed <- .clean(sd(c1 - c2) / sqrt(length(c1)))
 						# num <- sqrt(sd(c1)^2 + sd(c2)^2 -  2 * cov(c1, c2))
 						# d <- .clean(mean(c1) - mean(c2) / num)
-						d <- mean(c1 - c2) / sd(c1 - c2)
 
 						m <- as.numeric(r$estimate)
 						ciLow <- ifelse(direction == "less", .clean(-Inf),
@@ -258,7 +257,8 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 						## paired t-test has it, wilcox doesn't!
 						df <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
-
+						d <- ifelse(is.null(r$parameter), "", .clean(mean(c1 - c2) / sd(c1 - c2)))
+						
 						# add things to the intermediate results object
 						row <- list(df = df, p = p, md = m, d = d,
 									lowerCI = ciLow, upperCI = ciUp,
@@ -329,7 +329,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 			## one called "Test" and "statistic" to differentiate Student's from Wilcoxon
 			if (!isFirst) {
 				row[["test"]] <- "Wilcoxon"
-				ttest.rows[[rowNo - 1]][["test"]] <- "Student's"
+				ttest.rows[[rowNo - 1]][["test"]] <- "Student"
 			}
 
 			ttest.rows[[rowNo]] <- row
