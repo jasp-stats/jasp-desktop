@@ -42,7 +42,6 @@ private slots:
 
 private:
     Ui::NetworkAnalysisForm *ui;
-
 };
 
 #endif // NETWORKANALYSISFORM_H

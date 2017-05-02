@@ -112,6 +112,7 @@ NetworkAnalysis <- function (
 	} else {
 	  results <- state[["initOutput"]]
 	}
+
 	defArgs <- c(
 		# data
 		"variables", "groupingVariable", "mgmVariableType",
@@ -210,6 +211,7 @@ NetworkAnalysis <- function (
 			if (is.null(network) && perform == "run") { # bootstrap was aborted
 			  return()
 			}
+
 		}
 
 	} else {
@@ -617,7 +619,7 @@ NetworkAnalysis <- function (
 		nGraphs <- length(allNetworks)
 
 		nCores <- .networkAnalysisGetNumberOfCores(options)
-		
+
 		# just calculate all statistics. 
 		statistics <- c("edge", "strength", "closeness", "betweenness")
 		# statistics <- statistics[unlist(options[c("StatisticsEdges", "StatisticsStrength", "StatisticsCloseness", "StatisticsBetweenness")])]
@@ -823,7 +825,7 @@ NetworkAnalysis <- function (
 	if (perform == "run") {
 
 		if (when == "before") {
-		  
+
 		  # the timing variable is always in SECONDS, until converted with timeFormat.
 		  # bootnet makes nCores - 1 clusters for some reason...
 		  # also better to make conservative time estimates
@@ -835,7 +837,7 @@ NetworkAnalysis <- function (
 			
 			table[["data"]][[1]][["start"]] <- format(Sys.time(), format = timeFormat)
 			table[["data"]][[1]][["ETA"]] <- format(Sys.time() + duration, format = timeFormat)
-			
+
 			# add footnote saying progress bar doesn's show
 			if (nCores > 1) {
 			  footnotes <- .newFootnotes()
@@ -852,6 +854,7 @@ NetworkAnalysis <- function (
 			
 		}
 
+		table[["status"]] <- "complete"
 	} 
 
 	return(table)
@@ -1067,6 +1070,7 @@ NetworkAnalysis <- function (
 			x = network[["layout"]][, 1],
 			y = network[["layout"]][, 2]
 		)
+
 
 	}
 
@@ -1348,6 +1352,7 @@ NetworkAnalysis <- function (
 
 }
 
+
 .networkAnalysisOneBootstrapPlot <- function() {
 
 	# eval(quote()) construction because this function is evaluated inside .writeImage()
@@ -1480,16 +1485,6 @@ getTempFileName <- function() {
 
 }
 
-# .quickStr <- function(...) {
-#   
-#   dots <- list(...)
-#   nms <- names(dots)
-#   for (i in seq_along(dots)) {
-#     cat(sprintf("Argument %d, Object: %s\n", i, nms[i]))
-#     str(dots[[i]], max.level = 3)
-#   }
-#   return(invisible())
-# }
 
 # saveDataToDput <- function(...) {
 # 
