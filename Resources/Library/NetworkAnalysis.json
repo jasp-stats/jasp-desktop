@@ -12,10 +12,27 @@
 			"type": "Variable"
 		},
 		{
+			"name": "colorNodesBy",
+			"type": "Variable"
+		},
+		{
+			"name": "mgmVariableType",
+			"type": "Variable"
+		},
+		{
+			"name": "layoutX",
+			"type": "Variable"
+		},
+		{
+			"name": "layoutY",
+			"type": "Variable"
+		},
+		{
 			"name": "estimator",
 			"type": "List",
 			"options": [
    				"EBICglasso",
+   				"cor",
 				"pcor",
 				"IsingFit",
 				"IsingSampler",
@@ -27,7 +44,7 @@
 		},
 		{
 			"default": false,
-			"name": "plotFitMeasures",
+			"name": "tableFitMeasures",
 			"type": "Boolean"
 		},
 		{
@@ -37,13 +54,23 @@
 		},
 		{
 			"default": false,
-			"name": "plotNetworkTable",
+			"name": "plotNetwork",
 			"type": "Boolean"
 		},
 		{
 			"default": false,
 			"name": "plotCentrality",
 			"type": "Boolean"
+		},
+		{
+			"name": "tableWeightsMatrix",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "tableLayout",
+			"type": "Boolean",
+			"default": false
 		},
 		{
 			"options": ["auto", "cor", "cov", "npn"],
@@ -53,7 +80,10 @@
 		},
 		{
 			"name": "tuningParameter",
-			"type": "Integer"
+			"type": "Number",
+			"value": 0.5,
+			"min": 0.0,
+			"max": 1.0
 		},
 		{
 			"options": ["ebic", "ric", "stars", "cv"],
@@ -69,7 +99,10 @@
 		},
 		{
 			"name": "nFolds",
-			"type": "Integer"
+			"type": "Integer",
+			"min": 3,
+			"max": 10000,
+			"default": 3
 		},
 		{
 			"options": ["mean", "median"],
@@ -84,93 +117,280 @@
 			"type": "List"
 		},
 		{
-			"options": ["excludePairwise", "excludeListwise"],
-			"default": "excludePairwise",
+			"options": ["pairwise", "listwise"],
+			"default": "pairwise",
 			"name": "missingValues",
 			"type": "List"
 		},
 		{
-			"default": false,
+			"default": true,
 			"name": "weightedNetwork",
 			"type": "Boolean"
 		},
 		{
-			"default": false,
+			"default": true,
 			"name": "signedNetwork",
 			"type": "Boolean"
 		},
 		{
-			"options": ["maximum", "minimum"],
+			"name": "thresholdBox",
+			"options": ["method", "value"],
+			"default": "value",
+			"type": "List"
+		},
+		{
+			"name": "thresholdString",
+			"type": "List",
+			"options": [
+   				"sig",
+   				"bonferroni",
+   				"locfdr",
+				"Holm",
+				"Hochberg",
+				"Hommel",
+				"BH",
+				"BY",
+				"fdr"
+			],
+			"default": "sig"
+		},
+		{
+			"name": "thresholdValue",
+			"type": "Number",
+			"value": 0.0,
+			"min": 0.0,
+			"max": 1e9
+		},
+		{
+			"options": ["maximum", "minimim"],
 			"default": "maximum",
 			"name": "sampleSize",
 			"type": "List"
 		},
 		{
-			"options": ["spring", "circle"],
+			"name": "normalizeCentrality",
+			"options": ["normalized", "raw", "relative"],
+			"default": "normalized",
+			"type": "List"
+		},
+		{
+			"name": "bootstrapOnOff",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "numberOfBootstraps",
+			"type": "Integer",
+			"min": 1,
+			"max": 100000,
+			"default": 3
+		},
+		{
+			"name": "parallelBootstrap",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "StatisticsEdges",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "StatisticsStrength",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "StatisticsCloseness",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "StatisticsBetweenness",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "BootstrapType",
+			"type": "List",
+			"options": ["nonparametric", "parametric", "node", "person", "case", "jackknife"],
+			"default": "nonparametric"
+		},
+		{
+			"options": ["spring", "circle", "data"],
 			"default": "spring",
 			"name": "layout",
 			"type": "List"
 		},
 		{
-			"name": "edgeColors",
-			"type": "List",
-			"options": [
-   				"Default",
-				"Binary: Logistic",
-				"Binary: Exponential",
-				"Multi-class: Multinomial logistic",
-				"Continue: Squared error",
-				"Continue:: Absolute error",
-				"Continue: Huber",
-				"Continue: Poisson",
-				"Continue: Coxph"
-			],
-			"default": "Default"
+			"name": "keepLayoutTheSame",
+			"type": "Boolean",
+			"default": false
 		},
 		{
 			"name": "repulsion",
-			"type": "Integer"
+			"type": "Number",
+			"value": 1.0,
+			"min": 0.0,
+			"max": 10.0
 		},
 		{
 			"name": "edgeSize",
-			"type": "Integer"
+			"type": "Number",
+			"value": 1.0
 		},
 		{
 			"name": "nodeSize",
-			"type": "Integer"
+			"type": "Number",
+			"value": 1.0,
+			"min": 0.0,
+			"max": 10.0
+		},
+		{
+			"name": "labelSize",
+			"type": "Number",
+			"value": 1.0,
+			"min": 0.0,
+			"max": 10.0
 		},
 		{
 			"name": "maxEdgeStrength",
-			"type": "Integer"
+			"type": "Number",
+			"value": 0.0,
+			"min": 0.0,
+			"max": 10.0
 		},
 		{
 			"name": "minEdgeStrength",
-			"type": "Integer"
+			"type": "Number",
+			"value": 0.0,
+			"min": 0.0,
+			"max": 10.0
 		},
 		{
 			"name": "cut",
-			"type": "Integer"
+			"type": "Number",
+			"value": 0.0,
+			"min": 0.0,
+			"max": 10.0
 		},
 		{
-			"default": false,
 			"name": "showDetails",
-			"type": "Boolean"
+			"type": "Boolean",
+			"default": true
+			
+		},
+		{
+			"name": "scaleLabels",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "abbreviateLabels",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "abbreviateNoChars",
+			"type": "Integer",
+			"default": 4,
+			"min": 1,
+			"max": 100000
+		},
+		{
+			"name": "showVariableNames",
+			"type": "List",
+			"options": [
+				"In legend",
+				"In nodes"
+			],
+			"default": "In nodes"
+		},
+		{
+			"name": "showLegend",
+			"type": "List",
+			"options": [
+				"No legend",
+				"All plots",
+				"In plot number: "
+			],
+			"default": "All plots"
+		},
+		{
+			"name": "legendNumber",
+			"type": "Integer",
+			"default": 1,
+			"min": 0
 		},
 		{
 			"name": "nodeColors",
 			"type": "List",
 			"options": [
-   				"Default",
-				"Binary: Logistic",
-				"Binary: Exponential",
-				"Multi-class: Multinomial logistic",
-				"Continue: Squared error",
-				"Continue:: Absolute error",
-				"Continue: Huber",
-				"Continue: Poisson",
-				"Continue: Coxph"
+   				"rainbow",
+				"colorblind",
+				"pastel",
+				"gray",
+				"R",
+				"ggplot2"
 			],
-			"default": "Default"
+			"default": "rainbow"
+		},
+		{
+			"name": "edgeColors",
+			"type": "List",
+			"options": [
+   				"classic",
+				"colorblind",
+				"gray",
+				"Hollywood",
+				"Borkulo",
+				"TeamFortress",
+				"Reddit",
+				"Fried"
+			],
+			"default": "classic"
+		},
+		{
+			"name": "showMgmVariableType",
+			"type": "List",
+			"options": ["mgmNoShow", "mgmNodeColor", "mgmNodeShape"],
+			"default": "mgmNodeShape"
+		},
+		{
+			"name": "graphSize",
+			"type": "List",
+			"options": ["graphSizeFixed", "graphSizeFree"],
+			"default": "graphSizeFixed"
+		},
+		{
+			"name": "plotWidthNetwork",
+			"type": "Integer",
+			"default": 480
+		},
+		{
+			"name": "plotHeightNetwork",
+			"type": "Integer",
+			"default": 320
+		},
+		{
+			"name": "plotWidthCentrality",
+			"type": "Integer",
+			"default": 480
+		},
+		{
+			"name": "plotHeightCentrality",
+			"type": "Integer",
+			"default": 320
+		},
+		{
+			"name": "plotWidthBootstrapPlot",
+			"type": "Integer",
+			"default": 480
+		},
+		{
+			"name": "plotHeightBootstrapPlot",
+			"type": "Integer",
+			"default": 320
 		}
 	]
 }
