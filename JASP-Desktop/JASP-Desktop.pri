@@ -173,6 +173,7 @@ SOURCES += $$PWD/main.cpp \
 		$$PWD/analysisforms/exploratoryfactoranalysisform.cpp \
         $$PWD/analysisforms/principalcomponentanalysisform.cpp \
         $$PWD/analysisforms/reliabilityanalysisform.cpp \
+        $$PWD/analysisforms/basregressionlinearlinkform.cpp \
         $$PWD/analysisforms/SEM/semsimpleform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.cpp \
@@ -363,6 +364,7 @@ HEADERS  += \
 		$$PWD/analysisforms/exploratoryfactoranalysisform.h \
         $$PWD/analysisforms/principalcomponentanalysisform.h \
         $$PWD/analysisforms/reliabilityanalysisform.h \
+        $$PWD/analysisforms/basregressionlinearlinkform.h \
         $$PWD/analysisforms/SEM/semsimpleform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.h \
@@ -439,6 +441,7 @@ FORMS += \
 		$$PWD/analysisforms/exploratoryfactoranalysisform.ui \
         $$PWD/analysisforms/principalcomponentanalysisform.ui \
         $$PWD/analysisforms/reliabilityanalysisform.ui \
+        $$PWD/analysisforms/basregressionlinearlinkform.ui \
         $$PWD/analysisforms/SEM/semsimpleform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.ui \

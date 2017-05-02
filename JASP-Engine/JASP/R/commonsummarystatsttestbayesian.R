@@ -112,46 +112,48 @@
   
   result <- list()
   
-  if (method == "pearson"){
-    # Use t-distribution based on bivariate normal assumption using r to t transformation
-    #
-    if (n > 2 ){
-      df <- n - 2
-    } else {
-      # TODO return error, n needs to be larger than 2
-      df <- 1
-    }
-    
-    t <- corrie*sqrt(df/(1-corrie^2))
-    result <- .pValueFromT(t=t, n1=n-1, n2=0, var.equal=TRUE)
-  } else if (method == "kendall"){
-    # TODO: Add support for SuppDists 
-    # if (n > 2 && n < 50) {
-    #   # Exact sampling distribution
-    #   # tau neq 0
-    #   result$twoSided <- 2*SuppDists::pKendall(-abs(corrie), N=n)
-    #   # tau < 0
-    #   result$minSided <- SuppDists::pKendall(corrie, N=n)
-    #   # tau > 0
-    #   result$plusSided <- SuppDists::pKendall(corrie, N=n, lower.tail = FALSE)
-    # 
-    # } else if (n >= 50){
-      # normal approximation 
-      #
-      someSd <- sqrt(2*(2*n+5)/(9*n*(n-1)))
+  if (n <= 2){
+      # Given NULL or NA result
       
-      # tau neq 0
-      result$twoSided <- 2 * stats::pnorm(-abs(corrie), sd=someSd)
+      result$twoSided <- NA
       # tau < 0
-      result$minSided <- stats::pnorm(corrie, sd=someSd)
+      result$minSided <- NA
       # tau > 0
-      result$plusSided <- stats::pnorm(corrie, sd=someSd, lower.tail = FALSE)
-    # }
-  } else if (method == "spearman"){
-    # TODO: Johnny
-    # Without code this will print a NULL, if we go through here 
+      result$plusSided <- NA
+      return(result)
   }
   
+  if (method == "pearson"){
+      # Use t-distribution based on bivariate normal assumption using r to t transformation
+      #
+      df <- n - 2
+      t <- corrie*sqrt(df/(1-corrie^2))
+      result <- .pValueFromT(t=t, n1=n-1, n2=0, var.equal=TRUE)
+  } else if (method == "kendall"){
+      if (n > 2 && n < 50) {
+          # Exact sampling distribution
+          # tau neq 0
+          result$twoSided <- 1 - SuppDists::pKendall(q=abs(corrie), N=n) + SuppDists::pKendall(q=-abs(corrie), N=n)
+          # tau < 0
+          result$minSided <- SuppDists::pKendall(q=corrie, N=n)
+          # tau > 0
+          result$plusSided <- SuppDists::pKendall(q=corrie, N=n, lower.tail = FALSE)
+      } else if (n >= 50){
+          # normal approximation 
+          #
+          someSd <- sqrt(2*(2*n+5)/(9*n*(n-1)))
+          
+          # tau neq 0
+          result$twoSided <- 2 * stats::pnorm(-abs(corrie), sd=someSd)
+          # tau < 0
+          result$minSided <- stats::pnorm(corrie, sd=someSd)
+          # tau > 0
+          result$plusSided <- stats::pnorm(corrie, sd=someSd, lower.tail = FALSE)
+      }
+  } else if (method == "spearman"){
+      # TODO: Johnny
+      # Without code this will print a NULL, if we go through here 
+  }
   return(result)
 }
 

@@ -39,25 +39,25 @@
 			"type": "Boolean"
 		},
 		{
-			"default": false,
-			"name": "credibleIntervals",
-			"type": "Boolean"
+			"name": "credibleInterval",
+			"type": "Boolean",
+			"default": false
 		},
 		{
-			"format": "%",
-			"max": 0.999,
-			"min": 0.0,
-			"name": "credibleIntervalsInterval",
+			"name": "ciValue",
 			"type": "Number",
-			"value": 0.950
+			"value": 0.950,
+			"format": "%",
+			"min": 0.0,
+			"max": 0.999
 		},
 		{
-			"format": "",
-			"min": 0.0,
-			"max": 2.0,
 			"name": "priorWidth",
 			"type": "Number",
-			"value": 1.0
+			"value": 1.0,
+			"format": "",
+			"min": 0.0,
+			"max": 2.0
 		},
 		{
 			"name": "missingValues",

@@ -679,6 +679,9 @@ callback <- function(results=NULL) {
 	if (is.null(value))
 		return ("")
 
+	if (is.character(value))
+		return(value)
+
 	if (is.finite(value))
 		return(value)
 
@@ -870,23 +873,25 @@ as.list.footnotes <- function(footnotes) {
 
 	# Operating System information
 	type <- "cairo"  
-  if (Sys.info()["sysname"]=="Darwin")
-    type <- "quartz"
-  
-  # Calculate pixel multiplier
-  pngMultip <- .ppi / 96
-  
-  # Create png file location
-  location <- .requestTempFileNameNative("png")
+	if (Sys.info()["sysname"]=="Darwin"){
+	    type <- "quartz"
+	}
+	
+	# Calculate pixel multiplier
+	pngMultip <- .ppi / 96
+	
+	# Create png file location
+	location <- .requestTempFileNameNative("png")
 	relativePathpng <- location$relativePath
-  fullPathpng <- paste(location$root, relativePathpng, sep="/")
+	fullPathpng <- paste(location$root, relativePathpng, sep="/")
 	base::Encoding(relativePathpng) <- "UTF-8"
-  base::Encoding(fullPathpng) <- "UTF-8"
+	base::Encoding(fullPathpng) <- "UTF-8"
 
 	# Open graphics device and plot
-  grDevices::png(filename=fullPathpng, width=width * pngMultip, 
-                 height=height * pngMultip, bg="transparent", 
-                 res=72 * pngMultip, type=type)
+	grDevices::png(filename=fullPathpng, width=width * pngMultip, 
+	               height=height * pngMultip, bg="transparent", 
+	               res=72 * pngMultip, type=type)
+	
 	if (class(plot) ==  "function"){
 		if (obj) dev.control('enable') # enable plot recording
 		eval(plot())
