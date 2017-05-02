@@ -175,11 +175,13 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 		    logBlm.fit <- try( conting::bcct(formula=model.formula, data = dataset, prior = "SBH", n.sample=2000, a=options$priorShape, b=options$priorScale), silent = TRUE)
 		    no.burnin = 2000 * 0.2
 		    
+		    # TODO: check the maximal number of models visited, if it's one, then sample more
+		    # dim(logBlm.fit$maximal.mod$x)[2] <- gives the max number of model visited
+		    
 		    # Always do auto and then manual adds additional samples
 		    if (options$sampleMode == "manual"){
 			    logBlm.fit <- try(conting::bcctu(object = logBlm.fit, n.sample = options$fixedSamplesNumber), silent = TRUE)
-			    n.sample = options$fixedSamplesNumber
-			    no.burnin = (2000 + n.sample)* 0.2
+			    no.burnin = (2000 + options$fixedSamplesNumber)* 0.2
 			} 
 			
 		    if (isTryError(logBlm.fit)) {
@@ -242,6 +244,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	
 	if (perform == "run" && length(listOfErrors) == 0 ) {		
 	    if ( class(logBlm.model$logBlm.fit) == "bcct") {
+	        # TODO: Here check logBlm.posterior$totmodsvisit if this is one, then nothing going on, resample
 	        logBlm.posterior <- conting::mod_probs(logBlm.fit, scale=0, best = options$maxModels)
 				
 			len.Blogreg <- length(Bayesianposterior.result) + 1
@@ -249,21 +252,23 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 				
 			if (length(logBlm.model$variables) > 0) {
 			    variables.in.model <- logBlm.model$variables
-						
-				max.prob <- base::max(logBlm.posterior$table$prob.Freq)
+			    
+			    max.prob <- base::max(logBlm.posterior$table$prob.Freq)
+			    
+			    # TODO: if numeric(0), then... 
+			    # identical(0, numeric(0)), then resample using bcctu or something
+			    # logBlm.fit <- try(conting::bcctu(object = logBlm.fit, n.sample = 1000), silent = TRUE)
+			    # n.sample = 1000
+			    # no.burnin = (2000 + 1000)* 0.2
 				BFactor <- logBlm.posterior$table$prob.Freq / max.prob
- 
+				
+				
 				if (options$bayesFactorType == "BF10") {
-	
-					BFactor <- .clean(BFactor)
-	
+				    BFactor <- .clean(BFactor)
 				} else if (options$bayesFactorType == "BF01") {
-	
-					BFactor <- .clean(1/BFactor)
-		
-				} else {
-	
-					BFactor <- .clean(log(BFactor))
+				    BFactor <- .clean(1/BFactor)
+				} else if (options$bayesFactorType == "LogBF10") {
+				    BFactor <- .clean(log(BFactor))
 				}
 	 
 				model.names <- logBlm.posterior$table$model_formula
@@ -281,8 +286,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 				}
 				
 				for (i in 1:totalmodels) {
-								  
-					Bayesianposterior.result[[ len.Blogreg ]] <- emptyRow
+				    Bayesianposterior.result[[ len.Blogreg ]] <- emptyRow
 					
 					model.name <- as.character(model.names[[i]])
 					model.name <- substring(model.name, 2)  # trim leading ~
