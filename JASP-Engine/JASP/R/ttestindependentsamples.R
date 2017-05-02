@@ -106,6 +106,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 		testStat <- "W"
 		## additionally, Wilcoxon's test doesn't have degrees of freedoms
 		fields <- fields[-3]
+		
 	} else if (wantsWelchs && onlyTest) {
 
 		testname <- "Welch's T-Test"
@@ -132,7 +133,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 									   format = "sf:4;dp:3")), 2)
 
   ## add max(BF_10) from commonBF
-	if (options$VovkSellkeMPR){
+	if (options$VovkSellkeMPR) {
 		.addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
 	  <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value, the maximum
 		possible odds in favor of H\u2081 over H\u2080 equals
@@ -149,8 +150,10 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 	if (wantsDifference) {
 		fields[[length(fields) + 1]] <- list(name = "md", title = "Mean Difference",
 											 type = "number", format = "sf:4;dp:3")
+		if (!(wantsWilcox && onlyTest)) { # Only add SE Difference if not only MannWhitney is requested
 		fields[[length(fields) + 1]] <- list(name = "sed", title = "SE Difference",
 											 type = "number", format = "sf:4;dp:3")
+		}
 	}
 
 	## add Cohen's d
@@ -160,11 +163,24 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 	} else if (wantsEffect && wantsWilcox && onlyTest) {
 	  fields[[length(fields) + 1]] <- list(name = "d", title = "Rank-Biserial Correlation",
 	                                       type = "number", format = "sf:4;dp:3")
-	} else if (wantsEffect) {
+	} else if (wantsEffect && wantsWilcox && wantsStudents && wantsWelchs) {
 	  fields[[length(fields) + 1]] <- list(name = "d", title = "Effect Size",
-	                                       type = "number", format = "sf:4;dp:3")
-	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Effect sizes Cohen's <em>d</em>  reported for Welch's T-Test and 
-	               Student's T-Test; Rank-Biserial Correlation reported for the Mann-Whitney U Test.")
+	                                       type = "number", format = "sf:4;dp:3") 
+	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test and Welch t-test, 
+	               effect size is given by Cohen's <em>d</em>; for the Mann-Whitney test, 
+	               effect size is given by the rank biserial correlation.")
+	} else if (wantsEffect && wantsWilcox && wantsStudents) {
+	  fields[[length(fields) + 1]] <- list(name = "d", title = "Effect Size",
+	                                       type = "number", format = "sf:4;dp:3") 
+	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test, 
+	               effect size is given by Cohen's <em>d</em>; for the Mann-Whitney test, 
+	               effect size is given by the rank biserial correlation.")
+	} else if (wantsEffect && wantsWilcox && wantsWelchs) {
+	  fields[[length(fields) + 1]] <- list(name = "d", title = "Effect Size",
+	                                       type = "number", format = "sf:4;dp:3") 
+	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Welch t-test, 
+	               effect size is given by Cohen's <em>d</em>; for the Mann-Whitney test, 
+	               effect size is given by the rank biserial correlation.")
 	}
 
 	## I hope they know what they are doing! :)

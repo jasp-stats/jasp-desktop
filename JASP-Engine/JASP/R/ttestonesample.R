@@ -108,7 +108,7 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 
 	if (wantsWilcox && onlyTest) {
 		#title <- "Mann-Whitney U Test"
-		testname <- "Mann-Whitney U Test"
+		testname <- "Wilcoxon signed-rank test"
 		testTypeFootnote <- paste0(testname, ".")
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
 		testStat <- "V"
@@ -117,7 +117,7 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 		fields <- fields[-2]
 	} else if (wantsStudents && onlyTest) {
 		#title <- "Student's T-Test"
-		testname <- "Student's T-Test"
+		testname <- "Student's t-test"
 		testTypeFootnote <- paste0(testname, ".")
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
 		testStat <- "t"
@@ -157,7 +157,7 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 											 type = "number", format = "sf:4;dp:3")
 	}
 
-	if (wantsEffect) {
+	if (wantsEffect && wantsStudents) {
 		fields[[length(fields) + 1]] <- list(name = "d", title = "Cohen's d",
 											 type = "number",  format = "sf:4;dp:3")
 	}
@@ -179,31 +179,29 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	###########################
 	### check the directionality
 	if (options$hypothesis == "greaterThanTestValue") {
-
 		direction <- "greater"
 		note <- "For all tests, the alternative hypothesis specifies that the mean
 					is greater than "
-		message <- paste0(note, options$testValue, ".")
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
-
 	} else if (options$hypothesis == "lessThanTestValue") {
-
 		direction <- "less"
 		note <- "For all tests, the alternative hypothesis specifies that the mean
 					is less than "
-		message <- paste0(note, options$testValue, ".")
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
-
 	} else {
-
-		if (options$testValue != 0) {
-
-			note <- "All tests, hypothesis is population mean is different from "
-			message <- paste0(note, options$testValue, ".")
-			.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
-
-		}
-		direction <- "two.sided"
+	  direction <- "two.sided"
+		note <- "For all tests, the alternative hypothesis specifies that the population mean is different from "
+	}
+	
+	if (options$testValue != 0) {
+  	message <- paste0(note, options$testValue, ".")
+  	if (wantsWilcox && !wantsStudents) {
+  	  message <- gsub(pattern = "mean", replacement = "median", x = message)
+  	} else if (wantsWilcox && wantsStudents){
+  	  tMessage <- gsub(pattern = "For all tests", replacement = "For the Student t-tests", x = paste0(note, options$testValue))
+  	  wilcoxMessage <- gsub(pattern = "mean", replacement = "median", x = paste0(note, options$testValue))
+  	  wilcoxMessage <- gsub(pattern = "For all tests", replacement = "for the Wilcoxon test", x = wilcoxMessage)
+  	  message <- paste0(tMessage, "; ", wilcoxMessage)
+  	}
+  	.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
 	}
 
 
@@ -260,11 +258,11 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 					m <- as.numeric(r$estimate - r$null.value)
 					ciLow <- .clean(as.numeric(r$conf.int[1]))
 					ciUp <- .clean(as.numeric(r$conf.int[2]))
-					d <- .clean((mean(dat) - options$testValue) / sd(dat))
 
 					## only for Student's t-test
 					df <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
-
+					d <- ifelse(is.null(r$parameter), "", .clean((mean(dat) - options$testValue) / sd(dat)))
+					
 					if (is.na(t)) {
 						stop("data are essentially constant")
 					}
@@ -301,8 +299,8 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 			hasBoth <- rowNo %% 2 == 0 && sum(allTests) == 2
 			if (hasBoth) {
 				row[["v"]] <- ""
-				row[["test"]] <- "Mann-Whitney"
-				ttest.rows[[rowNo - 1]][["test"]] <- "Student's"
+				row[["test"]] <- "Wilcoxon"
+				ttest.rows[[rowNo - 1]][["test"]] <- "Student"
 			}
 
 			ttest.rows[[rowNo]] <- row
