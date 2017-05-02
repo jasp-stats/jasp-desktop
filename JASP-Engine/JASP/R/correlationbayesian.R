@@ -259,7 +259,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	    # Initialise: the hierarchical structure of the state object
 		temp <- list()
 		
+		# Structure is [[priorLabel]][[variableName]][[columnName]] then bfObject
+		# TODO (Johnny): add [[test]] in front of it
 		memoryExcludePairwise <- list(list(list(list())))
+		
+		# Structure is [[priorLabel]][[variableName]][[columnName]] then bfObject
+		# TODO (Johnny): add [[test]] in front of it
 		memoryExcludeListwise <- list(list(list(list())))
 	}
 	
@@ -425,8 +430,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 					retrievalFailure <- TRUE
 					
 					if (missingValues=="excludePairwise") {
+					    # Try variableName then columnName
 					    bfObject <- memoryExcludePairwise[[priorLabel]][[variableName]][[columnName]]
 						
+					    if (is.null(bfObject)) {
+					        # Try variableName then columnName
+					        bfObject <- memoryExcludePairwise[[priorLabel]][[columnName]][[variableName]]
+					    }
+					    
 						if (!is.null(bfObject)) {
 							# State: retrieved
 							#
