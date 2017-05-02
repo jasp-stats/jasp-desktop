@@ -106,7 +106,7 @@
 		},
 		{
 			"name": "informativeStandardizedEffectSize",
-			"options": ["cauchy", "t", "normal"],
+			"options": ["cauchy", "normal", "t"],
 			"default": "cauchy",
 			"type": "List"
 		},
@@ -114,9 +114,9 @@
 			"format": "",
 			"name": "informativeCauchyLocation",
 			"type": "Number",
-			"value": 0.7070,
-			"min": 0,
-			"max": 2
+			"value": 0,
+			"min": -3,
+			"max": 3
 		},
 		{
 			"format": "",
@@ -130,9 +130,9 @@
 			"format": "",
 			"name": "informativeTLocation",
 			"type": "Number",
-			"value": 0.7070,
-			"min": 0,
-			"max": 2
+			"value": 0,
+			"min": -3,
+			"max": 3
 		},
 		{
 			"format": "",
@@ -146,17 +146,17 @@
 			"format": "",
 			"name": "informativeTDf",
 			"type": "Number",
-			"value": 0.7070,
-			"min": 0,
-			"max": 2
+			"value": 1,
+			"min": 1,
+			"max": 500
 		},
 		{
 			"format": "",
 			"name": "informativeNormalMean",
 			"type": "Number",
-			"value": 0.7070,
-			"min": 0,
-			"max": 2
+			"value": 0,
+			"min": -3,
+			"max": 3
 		},
 		{
 			"format": "",
