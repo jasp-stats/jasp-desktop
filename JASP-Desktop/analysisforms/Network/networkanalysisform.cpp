@@ -84,7 +84,6 @@ NetworkAnalysisForm::NetworkAnalysisForm(QWidget *parent) :
     ui->analysisOptions->hide();
     ui->bootstrapOptions->hide();
     ui->graphicalOptions->hide();
-
 }
 
 NetworkAnalysisForm::~NetworkAnalysisForm()
