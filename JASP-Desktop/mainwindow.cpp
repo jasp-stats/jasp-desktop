@@ -66,8 +66,8 @@
 
 #ifdef QT_DEBUG
 #include "analysisforms/basregressionlinearlinkform.h"
-#include "analysisforms/Network/networkanalysisform.h"
 #endif
+#include "analysisforms/Network/networkanalysisform.h"
 
 #include "analysisforms/SEM/semsimpleform.h"
 #include "analysisforms/R11tLearn/r11tlearnform.h"
@@ -387,7 +387,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	{
 		event->accept();
 	}
-	
+
 	PreferencesDialog *rd = ui->tabBar->getPreferencesDialog();
 	if (rd) rd->close();
 }
@@ -786,10 +786,10 @@ AnalysisForm* MainWindow::loadForm(const string name)
 #ifdef QT_DEBUG
 	else if (name == "BASRegressionLinearLink")
 		form = new BASRegressionLinearLinkForm(contentArea);
+#endif
 	else if (name == "NetworkAnalysis")
 		form = new NetworkAnalysisForm(contentArea);
-#endif
-    else
+	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
 	if (form != NULL)
@@ -1164,8 +1164,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 			if (_applicationExiting)
 				QApplication::exit();
-			
-			
+
+
 		}
 		else
 		{
@@ -1413,7 +1413,7 @@ void MainWindow::setExactPValuesHandler(bool exactPValues)
 }
 
 void MainWindow::setFixDecimalsHandler(QString numDecimals)
-{	
+{
 	if (numDecimals == "")
 		numDecimals = "\"\"";
 	QString js = "window.globSet.decimals = " + numDecimals + "; window.reRenderAnalyses();";
