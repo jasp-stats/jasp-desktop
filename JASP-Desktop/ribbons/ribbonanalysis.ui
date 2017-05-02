@@ -213,8 +213,8 @@
             <string>Network</string>
            </property>
            <property name="icon">
-            <iconset resource="../resources/icons.qrc">
-             <normaloff>:/icons/analysis-bayesian-crosstabs.svg</normaloff>:/icons/analysis-bayesian-crosstabs.svg</iconset>
+            <iconset>
+             <normaloff>:/icons/analysis-network.svg</normaloff>.:/icons/analysis-network.svg</iconset>
            </property>
            <property name="iconSize">
             <size>
