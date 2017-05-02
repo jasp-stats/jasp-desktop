@@ -54,6 +54,12 @@
       </item>
       <item row="4" column="0">
        <widget class="BoundGroupBox" name="dienesEffectSize">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="title">
          <string/>
         </property>
@@ -61,6 +67,18 @@
          <bool>false</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_17">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item row="2" column="6">
           <spacer name="horizontalSpacer_9">
            <property name="orientation">
@@ -274,6 +292,12 @@
       </item>
       <item row="1" column="0">
        <widget class="BoundGroupBox" name="effectSizeStandardized">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="title">
          <string/>
         </property>
@@ -281,8 +305,26 @@
          <bool>false</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_15">
-         <item row="4" column="1">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="4" column="0">
           <widget class="BoundGroupBox" name="informativeStandardizedEffectSize">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="title">
             <string/>
            </property>
@@ -290,6 +332,18 @@
             <bool>false</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_16">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
             <item row="3" column="3">
              <widget class="BoundTextBox" name="informativeTLocation">
               <property name="sizePolicy">
@@ -552,34 +606,14 @@
            </layout>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QRadioButton" name="defaultStandardEffectSize">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Default</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QRadioButton" name="informativeStandardEffectSize">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Informative (Gronau and Ly)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
+         <item row="1" column="0">
           <widget class="BoundGroupBox" name="defaultStandardizedEffectSize">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="title">
             <string/>
            </property>
@@ -587,6 +621,18 @@
             <bool>false</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_18">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
             <item row="0" column="1">
              <widget class="QRadioButton" name="cauchyDefault">
               <property name="sizePolicy">
@@ -656,12 +702,28 @@
           </widget>
          </item>
          <item row="0" column="0">
-          <widget class="QWidget" name="widget_7" native="true">
-           <property name="maximumSize">
-            <size>
-             <width>16</width>
-             <height>16777215</height>
-            </size>
+          <widget class="QRadioButton" name="defaultStandardEffectSize">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Default</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QRadioButton" name="informativeStandardEffectSize">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Informed</string>
            </property>
           </widget>
          </item>

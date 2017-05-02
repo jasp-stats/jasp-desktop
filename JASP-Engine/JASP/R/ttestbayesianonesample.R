@@ -4480,7 +4480,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
       rscale = options$priorWidth,
       nullInterval = nullInterval)
     bf <- exp(bfObject$bf)
-    error <- bfObject$properror
+    error <- 100*bfObject$properror
     
   } else if (options[["effectSizeStandardized"]] == "informative") {
     
@@ -4499,7 +4499,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
                           prior.scale = options[["informativeCauchyScale"]],
                           prior.df = 1)
       bf <- bfObject$bf
-      error <- bfObject$error
+      error <- 100*bfObject$error
     } else if (options[["informativeStandardizedEffectSize"]] == "t") {
       bfObject <- .bf10_t(t = tValue, ny = n1, nx = n2, oneSided = oneSided,
                           independentSamples = ! paired && !is.null(y),
@@ -4507,7 +4507,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
                           prior.scale = options[["informativeTScale"]],
                           prior.df = options[["informativeTDf"]])
       bf <- bfObject$bf
-      error <- bfObject$error
+      error <- 100*bfObject$error
     } else if (options[["informativeStandardizedEffectSize"]] == "normal") {
       bf <- .bf10_normal(t = tValue, ny = n1, nx = n2, oneSided = oneSided,
                          independentSamples = ! paired && !is.null(y),
