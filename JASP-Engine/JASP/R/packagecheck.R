@@ -350,12 +350,12 @@
 }
 
 
-.initPackages <- function(installed.packages) {
+.initPackages <- function(installedPackages) {
 	
 	packages <- c("BayesFactor") # Add any package that needs pre-loading
 	
 	for (package in packages) {
-		if (package %in% installed.packages && base::isNamespaceLoaded(package) == FALSE) {
+		if (package %in% installedPackages && base::isNamespaceLoaded(package) == FALSE) {
 			try(base::loadNamespace(package), silent=TRUE)
 		}
 	}
