@@ -482,7 +482,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Vovk-Sellke Maximum p-Ratio</string>
+               <string>Vovk-Sellke maximum p-ratio</string>
               </property>
              </widget>
             </item>
@@ -1016,7 +1016,7 @@
   <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
-   <header location="global">widgets/expanderbutton.h</header>
+   <header>widgets/expanderbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
