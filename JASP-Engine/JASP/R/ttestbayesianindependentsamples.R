@@ -565,7 +565,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						plot <- plots.ttest[[z]]
 						
 						if (options$effectSizeStandardized == "informative") {
-						  plot[["error"]] <- list(error="badData", errorMessage="Bayes factor robustness check plot currently not supported for informative prior.")
+						  plot[["error"]] <- list(error="badData", errorMessage="Bayes factor robustness check plot currently not supported for informed prior.")
 						} else if (status[statusInd] != "error") {
 							
 							p <- try(silent= FALSE, expr= {
@@ -656,7 +656,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						plot <- plots.ttest[[z]]
 						
 						if (options$plotSequentialAnalysisRobustness && options$effectSizeStandardized == "informative") {
-						  plot[["error"]] <- list(error="badData", errorMessage="Sequential analysis robustness check plot currently not supported for informative prior.")
+						  plot[["error"]] <- list(error="badData", errorMessage="Sequential analysis robustness check plot currently not supported for informed prior.")
 						} else if (status[statusInd] != "error" && status[statusInd] != "sequentialNotPossible") {
 							
 							p <- try(silent= FALSE, expr= {
