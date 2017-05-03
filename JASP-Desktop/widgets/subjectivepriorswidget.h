@@ -16,26 +16,38 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TTESTBAYESONESAMPLEFORM_H
-#define TTESTBAYESONESAMPLEFORM_H
+#ifndef SUBJECTIVEPRIORSWIDGET_H
+#define SUBJECTIVEPRIORSWIDGET_H
 
-#include "analysisform.h"
+#include <QWidget>
 
 
 namespace Ui {
-class TTestBayesianOneSampleForm;
+class SubjectivePriorsWidget;
 }
 
-class TTestBayesianOneSampleForm : public AnalysisForm
+class SubjectivePriorsWidget : public QWidget
 {
 	Q_OBJECT
 
 public:
-	explicit TTestBayesianOneSampleForm(QWidget *parent = 0);
-	~TTestBayesianOneSampleForm();
+	explicit SubjectivePriorsWidget(QWidget *parent = 0);
+	~SubjectivePriorsWidget();
+
+private slots:
+	void on__1standardizedEffectSize_clicked(bool checked);
+	void on__2dienesRawEffectSize_clicked(bool checked);
+	void on_defaultStandardEffectSize_clicked(bool checked);
+	void on_informativeStandardEffectSize_clicked(bool checked);
+	void on_cauchyInformative_clicked();
+	void on_normalInformative_clicked();
+	void on_tInformative_clicked();
+	void on_halfNormalDienes_clicked();
+	void on_normalDienes_clicked();
+	void on_uniformDienes_clicked();
 
 private:
-	Ui::TTestBayesianOneSampleForm *ui;
+	Ui::SubjectivePriorsWidget *ui;
 };
 
-#endif // TTESTBAYESONESAMPLEFORM_H
+#endif // SUBJECTIVEPRIORSWIDGET_H
