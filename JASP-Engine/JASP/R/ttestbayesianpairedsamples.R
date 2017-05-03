@@ -895,7 +895,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					plot <- plots.ttest[[j]]
 					
 					if (options$effectSizeStandardized == "informative") {
-					  plot[["error"]] <- list(error="badData", errorMessage="Bayes factor robustness check plot currently not supported for informative prior.")
+					  plot[["error"]] <- list(error="badData", errorMessage="Bayes factor robustness check plot currently not supported for informed prior.")
 					} else if (status$unplotable == FALSE) {
 					
 						p <- try(silent= FALSE, expr= {
@@ -985,7 +985,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					plot <- plots.ttest[[j]]
 					
 					if (options$plotSequentialAnalysisRobustness && options$effectSizeStandardized == "informative") {
-					  plot[["error"]] <- list(error="badData", errorMessage="Sequential analysis robustness check plot currently not supported for informative prior.")
+					  plot[["error"]] <- list(error="badData", errorMessage="Sequential analysis robustness check plot currently not supported for informed prior.")
 					} else if (status$unplotable == FALSE && sequentialIsViable) {
 						
 						p <- try(silent= FALSE, expr= {

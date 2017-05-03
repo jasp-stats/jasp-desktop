@@ -906,7 +906,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
           plot <- plots.ttest[[z]]
           
           if (options$effectSizeStandardized == "informative") {
-            plot[["error"]] <- list(error="badData", errorMessage="Bayes factor robustness check plot currently not supported for informative prior.")
+            plot[["error"]] <- list(error="badData", errorMessage="Bayes factor robustness check plot currently not supported for informed prior.")
           } else if (status[i] != "error") {
             
             p <- try(silent= FALSE, expr= {
@@ -1003,7 +1003,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
           plot <- plots.ttest[[z]]
           
           if (options$plotSequentialAnalysisRobustness && options$effectSizeStandardized == "informative") {
-            plot[["error"]] <- list(error="badData", errorMessage="Sequential analysis robustness check plot currently not supported for informative prior.")
+            plot[["error"]] <- list(error="badData", errorMessage="Sequential analysis robustness check plot currently not supported for informed prior.")
           } else if (status[i] != "error" && status[i] != "sequentialNotPossible") {
             
             p <- try(silent= FALSE, expr= {
@@ -3949,7 +3949,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
   
 }
 
-
 .C <- function(delta, t, n, nu) {
   
   Re(hypergeo::genhypergeo(U = (nu + 1)/2, L = 1/2,
@@ -4230,7 +4229,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
   # compute quantiles via Newton-Raphson method
   
   x.cur <- Inf
-  # get reasonable start value
+  # get reasonable starting value
   delta <- seq(-2, 2, length.out = 400)
   dens <- .posterior_normal(delta, t = t, ny = ny, nx = nx,
                             independentSamples = independentSamples,
@@ -4484,13 +4483,14 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
     
   } else if (options[["effectSizeStandardized"]] == "informative") {
     
-    ### informative prior ###
+    ### informed prior ###
     
     # Note that strictly speaking, in case of the independent samples t-test,
     # for the informed prior n1 corresponds to nx and n2 to ny and not vice-versa.
     # However, since in the expression for the Bayes factor they only appear
-    # as an "effective" sample size for which it does not matter whether we swap
-    # the two, we retain this order for easier extension of the one-sample case.
+    # as an "effective" sample size and in the degrees of freedom for which it does
+    # not matter whether we swap the two, we retain this order for easier extension
+    # of the one-sample case.
     
     if (options[["informativeStandardizedEffectSize"]] == "cauchy") {
       bfObject <- .bf10_t(t = tValue, ny = n1, nx = n2, oneSided = oneSided,
