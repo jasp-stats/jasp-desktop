@@ -34,7 +34,7 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 							)
 	bf.title <- bftype$bftitle
 	BFH1H0 <- bftype$BFH1H0
-	print(state)
+	
 	hypothesis.variables <- .hypothesisType.summarystats.ttest.paired(options$hypothesis)
 	oneSided <- hypothesis.variables$oneSided
 

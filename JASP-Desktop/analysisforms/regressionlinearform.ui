@@ -1079,7 +1079,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Vovk-Sellke Maximum p-Ratio</string>
+               <string>Vovk-Sellke maximum p-ratio</string>
               </property>
              </widget>
             </item>
@@ -1146,6 +1146,11 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
+   <class>boundSingleItemView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundsingleitemview.h</header>
+  </customwidget>
+  <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
@@ -1160,11 +1165,6 @@
    <class>BoundComboBox</class>
    <extends>QComboBox</extends>
    <header>widgets/boundcombobox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>boundSingleItemView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundsingleitemview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
