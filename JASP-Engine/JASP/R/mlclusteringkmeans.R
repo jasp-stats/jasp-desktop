@@ -15,13 +15,29 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callback = function(...) list(status = "ok"), ...) {
+MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = "run", callback = function(...) list(status = "ok"), ...) {
     
-    # read variables
+    # state creation ##
+    
+    state[["options"]] <- options
+    
+    stateKey <- list()
+    stateKey[["evaluation"]] <- c("predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "clusterSize", "optimizedFrom", "optimizedTo", "robustFrom", "robustTo", "criterion")
+    stateKey[["clusterinfo"]] <- c("tableClusterInformation","predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "clusterSize", "optimizedFrom", "optimizedTo", "robustFrom", "robustTo", "tableClusterInfoSize", "tableClusterInfoSumSquares", "tableClusterInfoCentroids", "tableClusterInfoBetweenSumSquares", "tableClusterInfoTotalSumSquares")
+    stateKey[["predictions"]] <- c("tablePredictions", "predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "clusterSize", "optimizedFrom", "optimizedTo", "robustFrom", "robustTo", "predictionsFrom", "predictionsTo")
+    stateKey[['2dplot']] <- c("predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm")
+    stateKey[['criterionvsclusters']] <- c("predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "robustFrom", "robustTo", "criterion")
+    stateKey[["pcaplot"]] <- c("tablePredictions", "predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "clusterSize", "optimizedFrom", "optimizedTo", "robustFrom", "robustTo")
+    stateKey[["withinssvsclusters"]] <- c("predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "optimizedFrom", "optimizedTo")
+    attr(state, "key") <- stateKey
+    
+    # read variables ##
+    
     predictors <- unlist(options['predictors'])
     predictors <- predictors[predictors != ""]
     
-    # read dataset
+    # read dataset ##
+    
     if (is.null(dataset)) {
         
         if (perform == "run") {
@@ -38,8 +54,8 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
         dataset <- .vdf(columns.as.numeric=predictors)
     }
     
+    # code variable names in base64 ##
     
-    # code in base64
     if(length(predictors[predictors!='']) > 0){
         
         for(i in 1:length(predictors)){
@@ -55,13 +71,18 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
         
     }
     
+    # set the seed so that every time the same set is chosen (to prevent random results) ##
+    
     set.seed(1)
     
-    # create results bundle
-    results <- list()
+    # create results bundle ##
     
-    # Provide the Meta to the results bundle
-    meta <- list(list(name = 'K-means clustering', type = 'title'),
+    results <- list()
+    results[['title']] <- 'k-Means clustering'
+    
+    # Provide the Meta to the results bundle ## 
+    
+    meta <- list(list(name = 'k-means clustering', type = 'title'),
                  list(name = 'evaluation', type = 'table'),
                  list(name = "clusterinfo", type = 'table'),
                  list(name = 'predictions', type = 'table'),
@@ -71,58 +92,80 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
                  list(name = 'withinssvsclusters', type = 'image'))
     results[['.meta']] <- meta
     
-    results[['title']] <- 'k-Means clustering'
-    ##### added
+    # init state ##
+    
     if(perform == 'init'){
         
-        results <- .initKmeans(options,results)
+        results <- .initKmeans(options = options, results = results, state = state)
         
-        return(list(results = results, status = "inited"))
+        return(list(results = results, status = "inited", state = state))
         
-    } else {
+    } 
+    
+    # run state ##
+    
+    else {
         
-        # Set the right options for the analysis
-        opt <- .OptionsSet(dataset,options)
+        # Set the right options for the analysis ##
         
-        # do the analysis
-        res <- .DoKmeansAnalysis(dataset,options,opt,predictors)
+        opt <- .OptionsSet(dataset = dataset,options = options)
         
-        # create the evaluation table
-        results[['evaluation']] <- .EvaluationTableKmeans(res,options)
+        # Run the analysis and save the results ##
         
-        # create the cluster information table if the user want is
+        res <- .DoKmeansAnalysis(dataset = dataset,options = options,opt = opt,predictors = predictors)
+        
+        # create the evaluation table ##
+        
+        results[['evaluation']] <- .EvaluationTableKmeans(res = res,options = options)
+        state[["evaluation"]] <- results[["evaluation"]]
+        
+        # create the cluster information table ##
+        
         if (options[['tableClusterInformation']]){
             
-            results[["clusterinfo"]] <- .clusterInfoTable(options, res, predictors)
+            results[["clusterinfo"]] <- .clusterInfoTable(options = options, res = res, predictors = predictors)
+            state[["clusterinfo"]] <- results[["clusterinfo"]]
             
         }
         
-        # Create the predictions table if the user wants is
+        # Create the predictions table ##
+        
         if(options[['tablePredictions']]){
-            results[['predictions']] <- .PredictionsTableKmeans(res,options)
+            results[['predictions']] <- .PredictionsTableKmeans(res = res,options = options)
+            state[["predictions"]] <- results[["predictions"]]
         }
         
-        # Create the PCA cluster plot if the user wants it
+        # Create the PCA cluster plot ##
+        
         if(options[['plotPCACluster']]){
-            results[['pcaplot']] <- .PCAplot(options,res,dataset,opt,predictors)
+            results[['pcaplot']] <- .PCAplot(options = options,res = res,dataset = dataset,opt = opt,predictors = predictors)
+            state[["pcaplot"]] <- results[["pcaplot"]]
         }
         
-        # Create the 2-d clusterplot if the user wants is
+        # Create the 2-d clusterplot ##
+        
         if(options[['plot2dCluster']]){
-            results[['2dplot']] <- .plot2d(dataset,res,opt,options,predictors)
+            results[['2dplot']] <- .plot2d(dataset = dataset,res = res,opt = opt,options = options,predictors = predictors)
+            state[["2dplot"]] <- results[['2dplot']]
         }
         
-        # Create the within ss vs cluster plot if the user wants it	
+        # Create the within ss vs cluster plot ##
+        
         if(options[['plotPCAClusterSquares']]){
-            results[['withinssvsclusters']] <- .WSSplot(options,res)
+            results[['withinssvsclusters']] <- .WSSplot(options = options,res = res)
+            state[["withinssvsclusters"]] <- results[['withinssvsclusters']]
         }
         
-        # Create the criterion vs cluster plot if the user wants it	
+        # Create the criterion vs cluster plot ##
+        
         if(options[['plotCriterionVsClusters']]){
-            results[['criterionvsclusters']] <- .criterionplot(options,res)
+            results[['criterionvsclusters']] <- .criterionplot(options = options,res = res)
+            state[["criterionvsclusters"]] <- results[['criterionvsclusters']]
         }
         
-        return(list(results = results, status = "complete"))
+        # return the results bundle and state ##
+        
+        return(list(results = results, status = "complete", state = state))
         
     } 
     
@@ -248,8 +291,8 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
 }
 
 .robustclustering <- function(dataset,options,opt,predictors){
-    install.packages('fpc', repos="http://cran.rstudio.com/")
-    library(fpc)
+    # install.packages('fpc', repos="http://cran.rstudio.com/")
+    # library(fpc)
     fit <- fpc::pamk(dataset[,predictors],
                      krange = opt[['clusters']],
                      criterion = opt[['criterion']],
@@ -377,7 +420,7 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
     
     if(is.null(res)){
         
-        data_evaluation <- list(list(title = 'K-means model', clusters = ".", measure = ".", aic = ".", bic = "."))
+        data_evaluation <- list(list(title = 'k-means model', clusters = ".", measure = ".", aic = ".", bic = "."))
         footnotes_N <- .newFootnotes()
         .addFootnote(footnotes_N,paste("The model has not been applied to any data yet"), symbol = "")
         footnotes_N <- as.list(footnotes_N)
@@ -386,7 +429,7 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
         
         if(options[['noOfClusters']] == "auto" | options[['noOfClusters']] == "manual"){
             
-            data_evaluation <- list(list(title = 'K-means model', clusters = res[['clusters']], measure = res[['BSS']]/res[['TSS']], aic = res[['AIC']], bic = res[['BIC']]))
+            data_evaluation <- list(list(title = 'k-means model', clusters = res[['clusters']], measure = res[['BSS']]/res[['TSS']], aic = res[['AIC']], bic = res[['BIC']]))
             
             
         } else if (options[["noOfClusters"]]=="optimized" | options[['noOfClusters']] == "robust"){
@@ -418,10 +461,13 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
         
     }
     
+    citation <- c("Hartigan, J. A., & Wong, M. A. (1979). Algorithm AS 136: A k-means clustering algorithm. Journal of the Royal Statistical Society. Series C (Applied Statistics), 28(1), 100-108.","Wagenmakers, E. J., & Farrell, S. (2004). AIC model selection using Akaike weights. Psychonomic bulletin & review, 11(1), 192-196.")
+    
     return(list(title = 'Evaluation',
                 schema = list(fields = fields_evaluation),
                 data = data_evaluation,
-                footnotes = footnotes_N))
+                footnotes = footnotes_N,
+                citation = citation))
     
 }
 
@@ -469,8 +515,8 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
 }
 
 .PCAclusplot <- function(dataset,res,options,opt,predictors){
-    install.packages('cluster',repos="http://cran.rstudio.com/")
-    library(cluster)
+    # install.packages('cluster',repos="http://cran.rstudio.com/")
+    # library(cluster)
     if(nrow(dataset) <= ncol(dataset)){
         stop('Should have more observations than variables')
     }
@@ -512,8 +558,8 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
 }
 
 .TwodClusterplot <- function(dataset,res,opt,options,predictors){
-    install.packages('vegan',repos="http://cran.rstudio.com/")
-    library(vegan)
+    # install.packages('vegan',repos="http://cran.rstudio.com/")
+    # library(vegan)
     if(length(predictors)!= 2){
         stop('Two variables must be specified')
     }
@@ -635,8 +681,8 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
         for( i in 1:length(predictors)){
             
             fields_clusterinfo[[length(fields_clusterinfo)+1]] <- list(name = paste('centroid',i,sep = ''), title = paste('Centroid',i), type = 'number', format = 'dp:3')	
-        
-            } 
+            
+        } 
         
     } else if(options[['tableClusterInfoCentroids']] & length(predictors) == 0){
         
@@ -698,119 +744,150 @@ MLClusteringKMeans <- function(dataset = NULL, options, perform = "run", callbac
     return(results)
 }
 
-.initKmeans <- function(options,results){
-    # init evaluation table
-    if(options[["noOfClusters"]] == "auto" | options[["noOfClusters"]] == 'manual'){
+.initKmeans <- function(options, results, state){
+    
+    # init evaluation table ##
+    
+    if(!is.null(state[["evaluation"]])){
         
-        fields_evaluation <- list(list(name = 'title', title = "", type = 'string'),
-                                  list(name = 'clusters', title = 'No. clusters', type = 'string'),
-                                  list(name = 'measure', title = 'R-squared', type = 'string'),
-                                  list(name = 'aic', title = 'AIC', type = 'string'),
-                                  list(name = 'bic', title = 'BIC', type = 'string'))
+        results[["evaluation"]] <- state[["evaluation"]]
         
     } else {
         
-        fields_evaluation <- list(list(name = 'title', title = "", type = 'string'),
-                                  list(name = 'clusters', title = 'No. clusters', type = 'integer'),
-                                  list(name = 'measure', title = 'R-squared', type = 'number', format = 'dp:2'),
-                                  list(name = 'aic', title = 'AIC', type = 'number', format = 'dp:1'),
-                                  list(name = "aicweights", title = "AIC Weights", type = "number", format = "dp:2"),
-                                  list(name = 'bic', title = 'BIC', type = 'number', format = 'dp:1'),
-                                  list(name = "bicweights", title = "BIC Weights", type = "number", format = "dp:2"))
+        if(options[["noOfClusters"]] == "auto" | options[["noOfClusters"]] == 'manual'){
+            
+            fields_evaluation <- list(list(name = 'title', title = "", type = 'string'),
+                                      list(name = 'clusters', title = 'No. clusters', type = 'string'),
+                                      list(name = 'measure', title = 'R-squared', type = 'string'),
+                                      list(name = 'aic', title = 'AIC', type = 'string'),
+                                      list(name = 'bic', title = 'BIC', type = 'string'))
+            
+        } else {
+            
+            fields_evaluation <- list(list(name = 'title', title = "", type = 'string'),
+                                      list(name = 'clusters', title = 'No. clusters', type = 'integer'),
+                                      list(name = 'measure', title = 'R-squared', type = 'number', format = 'dp:2'),
+                                      list(name = 'aic', title = 'AIC', type = 'number', format = 'dp:1'),
+                                      list(name = "aicweights", title = "AIC Weights", type = "number", format = "dp:2"),
+                                      list(name = 'bic', title = 'BIC', type = 'number', format = 'dp:1'),
+                                      list(name = "bicweights", title = "BIC Weights", type = "number", format = "dp:2"))
+            
+        }
+        
+        if(options[['noOfClusters']]=='auto' | options[['noOfClusters']] == 'manual'){
+            
+            data_evaluation <- list(list(title = 'k-means model', clusters = ".", measure = ".", aic = ".", bic = "."))
+            
+        } else if (options[["noOfClusters"]] == 'optimized'){
+            
+            data_evaluation <- list()
+            
+            for(i in 1:length(options[["optimizedFrom"]]:options[["optimizedTo"]])){
+                
+                if (i == 1){
+                    
+                    data_evaluation[[1]] <- list(title = 'Best model', clusters = ".", measure = ".", aic = ".", aicweights = ".", bic = ".", bicweights = ".")
+                    
+                } else {
+                    
+                    data_evaluation[[i]] <- list(title = '', clusters = ".", measure = ".", aic = ".", aicweights = ".", bic = ".", bicweights = ".")
+                }
+                
+            }
+            
+        } else {
+            
+            data_evaluation <- list()
+            
+            for(i in 1:length(options[["robustFrom"]]:options[["robustTo"]])){
+                
+                if (i == 1){
+                    
+                    data_evaluation[[1]] <- list(title = 'Best model', clusters = ".", measure = ".", aic = ".", aicweights = ".", bic = ".", bicweights = ".")
+                    
+                } else {
+                    
+                    data_evaluation[[i]] <- list(title = '', clusters = ".", measure = ".", aic = ".", aicweights = ".", bic = ".", bicweights = ".")
+                }
+                
+            }
+            
+        }
+        results[['evaluation']] <- list(title = 'Evaluation',
+                                        schema = list(fields = fields_evaluation),
+                                        data = data_evaluation)
         
     }
     
-    if(options[['noOfClusters']]=='auto' | options[['noOfClusters']] == 'manual'){
-        
-        data_evaluation <- list(list(title = 'K-means model', clusters = ".", measure = ".", aic = ".", bic = "."))
-        
-    } else if (options[["noOfClusters"]] == 'optimized'){
-        
-        data_evaluation <- list()
-        
-        for(i in 1:length(options[["optimizedFrom"]]:options[["optimizedTo"]])){
-            
-            if (i == 1){
-                
-                data_evaluation[[1]] <- list(title = 'Best model', clusters = ".", measure = ".", aic = ".", aicweights = ".", bic = ".", bicweights = ".")
-                
-            } else {
-                
-                data_evaluation[[i]] <- list(title = '', clusters = ".", measure = ".", aic = ".", aicweights = ".", bic = ".", bicweights = ".")
-            }
-            
-        }
-        
-    } else {
-        
-        data_evaluation <- list()
-        
-        for(i in 1:length(options[["robustFrom"]]:options[["robustTo"]])){
-            
-            if (i == 1){
-                
-                data_evaluation[[1]] <- list(title = 'Best model', clusters = ".", measure = ".", aic = ".", aicweights = ".", bic = ".", bicweights = ".")
-                
-            } else {
-                
-                data_evaluation[[i]] <- list(title = '', clusters = ".", measure = ".", aic = ".", aicweights = ".", bic = ".", bicweights = ".")
-            }
-            
-        }
-        
-    }
-    results[['evaluation']] <- list(title = 'Evaluation',
-                                    schema = list(fields = fields_evaluation),
-                                    data = data_evaluation)
-    # init prediction table
+    # init prediction table ##
+    
     if(options[["tablePredictions"]]){
-        fields_predictions <- list(list(name = 'number', title = "Obs. number", type = 'integer'),
-                                   list(name = 'prediction', title = 'Prediction', type = 'integer'))
         
-        data_predictions <- list(list(number = ".", prediction = "."))
+        if(!is.null(state[["predictions"]])){
+            
+            results[["predictions"]] <- state[["predictions"]]
+            
+        } else {
+            
+            
+            fields_predictions <- list(list(name = 'number', title = "Obs. number", type = 'integer'),
+                                       list(name = 'prediction', title = 'Prediction', type = 'integer'))
+            
+            data_predictions <- list(list(number = ".", prediction = "."))
+            
+            results[['predictions']] <- list(title = 'Predictions',
+                                             schema = list(fields = fields_predictions),
+                                             data = data_predictions)
+        }
         
-        results[['predictions']] <- list(title = 'Predictions',
-                                         schema = list(fields = fields_predictions),
-                                         data = data_predictions)
     }
     
-    # # init clusterinfo table
+    # init clusterinfo table ##
     if(options[['tableClusterInformation']]){
-        fields_clusterinfo <- list(list(name = 'cluster', title = 'Cluster', type = 'integer'))
-        if (options[['tableClusterInfoSize']]){
+        
+        if(!is.null(state[["clusterinfo"]])){
             
-            fields_clusterinfo[[length(fields_clusterinfo)+1]] <- list(name = 'size', title = 'Size', type = 'integer')
+            results[["clusterinfo"]] <- state[["clusterinfo"]]
+            
+        } else {
+            
+            fields_clusterinfo <- list(list(name = 'cluster', title = 'Cluster', type = 'integer'))
+            if (options[['tableClusterInfoSize']]){
+                
+                fields_clusterinfo[[length(fields_clusterinfo)+1]] <- list(name = 'size', title = 'Size', type = 'integer')
+                
+            }
+            if (options[['tableClusterInfoSumSquares']]){
+                
+                fields_clusterinfo[[length(fields_clusterinfo)+1]] <- list(name = 'withinss', title = 'Within Sum of Squares', type = 'number', format = 'dp:2')
+                
+            }
+            
+            if(options[['tableClusterInfoCentroids']]){
+                
+                fields_clusterinfo[[length(fields_clusterinfo)+1]] <- list(name = paste('centroid',1,sep = ''), title = "Centroid", type = 'number', format = 'dp:3')
+                
+            }
+            
+            if(options[['tableClusterInfoBetweenSumSquares']]){
+                footnotes_BSS <- .newFootnotes()
+                .addFootnote(footnotes_BSS,paste('The Between Sum of Squares of this model is', "."))
+                footnotes_BSS <- as.list(footnotes_BSS)
+            }
+            
+            if(options[['tableClusterInfoTotalSumSquares']]){
+                footnotes_TSS <- .newFootnotes()
+                .addFootnote(footnotes_TSS,paste('The Total Sum of Squares of this model is', "."))
+                footnotes_TSS <- as.list(footnotes_TSS)
+            }
+            
+            data_clusterinfo <- list(list(cluster = ".", size = ".", withinss = ".", centroid1 = "."))
+            
+            results[['clusterinfo']] <- list(title = 'Cluster information',
+                                             schema = list(fields = fields_clusterinfo),
+                                             data = data_clusterinfo)
             
         }
-        if (options[['tableClusterInfoSumSquares']]){
-            
-            fields_clusterinfo[[length(fields_clusterinfo)+1]] <- list(name = 'withinss', title = 'Within Sum of Squares', type = 'number', format = 'dp:2')
-            
-        }
-        
-        if(options[['tableClusterInfoCentroids']]){
-            
-            fields_clusterinfo[[length(fields_clusterinfo)+1]] <- list(name = paste('centroid',1,sep = ''), title = "Centroid", type = 'number', format = 'dp:3')
-            
-        }
-        
-        if(options[['tableClusterInfoBetweenSumSquares']]){
-            footnotes_BSS <- .newFootnotes()
-            .addFootnote(footnotes_BSS,paste('The Between Sum of Squares of this model is', "."))
-            footnotes_BSS <- as.list(footnotes_BSS)
-        }
-        
-        if(options[['tableClusterInfoTotalSumSquares']]){
-            footnotes_TSS <- .newFootnotes()
-            .addFootnote(footnotes_TSS,paste('The Total Sum of Squares of this model is', "."))
-            footnotes_TSS <- as.list(footnotes_TSS)
-        }
-        
-        data_clusterinfo <- list(list(cluster = ".", size = ".", withinss = ".", centroid1 = "."))
-        
-        results[['clusterinfo']] <- list(title = 'Cluster information',
-                                         schema = list(fields = fields_clusterinfo),
-                                         data = data_clusterinfo)
         
     }
     
