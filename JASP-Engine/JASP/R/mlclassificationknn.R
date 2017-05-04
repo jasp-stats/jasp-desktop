@@ -15,15 +15,34 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="run", callback=function(...) 0, ...) {
     
-    # Read variables
+    # state creation ##
+    
+    state[["options"]] <- options
+    
+    stateKey <- list()
+    stateKey[["Descriptions"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "scaleEqualSD", "validationLeaveOneOut", "validationKFold")
+    stateKey[["Confusion"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "scaleEqualSD")
+    stateKey[['Predictions']] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
+    stateKey[['Distances']] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
+    stateKey[["Weights"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
+    stateKey[["Plot"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
+          
+    attr(state, "key") <- stateKey
+    
+    # Read variables ##
+    
     predictors <- unlist(options['predictors'])
+    
     if (length(options['target']) > 0){
         target <- unlist(options['target'])
     }
+    
     variables.to.read <- c(predictors, target)
     variables.to.read <- variables.to.read[variables.to.read != ""]
+    
+    # read dataset ##
     
     if (is.null(dataset)) {
         
@@ -41,6 +60,8 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
         dataset <- .vdf(columns.as.numeric=variables.to.read)
     }
     
+    # error handling ##
+    
     for(i in 1:length(variables.to.read)){
         
         errors <- .hasErrors(dataset, perform, type = c('infinity', 'observations'),
@@ -50,13 +71,17 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
         
     }
     
-    # Set a seed
+    # set the seed so that every time the same set is chosen (to prevent random results) ##
+    
     set.seed(1)
     
-    # create the results bundle
-    results <- list()
+    # create results bundle ##
     
-    # Provide the Meta to the results bundle
+    results <- list()
+    results[['title']] <- 'k-Nearest neighbors classification'
+    
+    # Provide the Meta to the results bundle ##
+    
     meta <- list(list(name = 'KNN Classification', type = 'title'),
                  list(name = 'Descriptions', type = 'table'),
                  list(name = "Confusion", type = "table"),
@@ -66,20 +91,26 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
                  list(name = 'Plot', type = 'image'))
     results[['.meta']] <- meta
     
-    results[['title']] <- 'k-Nearest neighbors classification'
+    # init state ##
     
     if(perform == "init"){
         
-        results <- .initKnnClassification(options,results)
+        results <- .initKnnClassification(options = options, results = results, state = state)
         
-        return(list(results = results, status = "inited"))
+        return(list(results = results, status = "inited", state = state))
         
-    } else {
+    } 
+    
+    # run state ##
+    
+    else {
         
-        # Set the analysis options from the options
-        opt <- .setOptionsClassification(options,dataset)
+        # Set the right options for the analysis ##
         
-        # code variable names into base64
+        opt <- .setOptionsClassification(options = options,dataset = dataset)
+        
+        # code variable names into base64 ##
+        
         if(length(predictors[predictors!='']) > 0){
             predictors <- .v(predictors)
         }
@@ -87,10 +118,12 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
             target <- .v(target)
         }
         
-        # Create formula for the model
-        formula <- .makeformulaClassification(predictors,target)
+        # Create formula ##
         
-        # Do the analysis
+        formula <- .makeformulaClassification(predictors = predictors,target = target)
+        
+        # Run the analysis ##
+        
         if(length(predictors[predictors!='']) > 0 & length(target[target!='']) > 0){
             
             dataset <- na.omit(dataset)
@@ -99,7 +132,7 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
             train <- dataset[which(train.index == TRUE), ]
             test <- dataset[which(train.index == FALSE), ]
             
-            res <- .DoKNNClassification(dataset,options,opt,train,test,train.index,formula,target)
+            res <- .DoKNNClassification(dataset = dataset,options = options,opt = opt,train = train,test = test,train.index = train.index,formula = formula,target = target)
             
         } else {
             
@@ -107,50 +140,65 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
             
         }
         
-        results[['Descriptions']] <- .DescriptionsTableClassification(predictors, target, opt, options, res, dataset, formula)
+        # create the evaluation table ##
+        
+        results[['Descriptions']] <- .DescriptionsTableClassification(predictors = predictors, target = target, opt = opt, options = options, res = res, dataset = dataset, formula = formula)
+        state[["Descriptions"]] <- results[['Descriptions']]
+        
+        # Create the confusion table ##
         
         if(options[['confusionTable']]){
             
-            results[['Confusion']] <- .ConfusionTableClassifiaction(res, target, dataset)
+            results[['Confusion']] <- .ConfusionTableClassifiaction(res = res, target = target, dataset = dataset)
+            state[["Confusion"]] <- results[['Confusion']]
             
         }
         
-        # Create predictions table
+        # Create the predictions table ##
+        
         if(options[['tablePredictions']]){
             
-            results[['Predictions']] <- .PredictionsTableClassification(options, opt, predictors, target, res)
+            results[['Predictions']] <- .PredictionsTableClassification(options = options, opt = opt, predictors = predictors, target = target, res = res)
+            state[['Predictions']] <- results[['Predictions']]
             
         }
         
-        # Create distances table
+        # Create the distances table ##
+        
         if(options[['tableDistances']]){
             
-            results[['Distances']] <- .DistancesTableClassification(predictors,target, opt, options, res)
+            results[['Distances']] <- .DistancesTableClassification(predictors = predictors,target = target, opt = opt, options = options, res = res)
+            state[['Distances']] <- results[['Distances']]
             
         }
         
-        # Create weights table
+        # Create the weights table ##
+        
         if(options[['tableWeights']]){
             
-            results[['Weights']] <- .WeightsTableClassification(predictors, target, opt, options, res)
+            results[['Weights']] <- .WeightsTableClassification(predictors = predictors, target = target, opt = opt, options = options, res = res)
+            state[["Weights"]] <- results[['Weights']]
             
         }
         
-        # Create the Error vs K plot
+        # Create the Error vs K plot ##
+        
         if(options[['plotErrorVsK']] & !is.null(res)){
             
             if(options[['noOfNearestNeighbours']] == 'optimized' | options[['validationLeaveOneOut']]){
                 
-                results[['Plot']] <- .PlotErrorVsKClassification(res,opt,options,dataset,formula)
+                results[['Plot']] <- .PlotErrorVsKClassification(res = res,opt = opt,options = options,dataset = dataset,formula = formula)
+                state[["Plot"]] <- results[["Plot"]]
                 
             }
             
         }
         
-        return(list(results = results, status = "complete"))
+        # return the results ##
+        
+        return(list(results = results, status = "complete", state = state))
         
     }
-    
     
 }
 
@@ -224,10 +272,7 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
 }
 
 .OneKClassification <- function(dataset,options,opt,train,test,train.index,formula,target){
-    if(!"kknn" %in% installed.packages()){
-    install.packages('kknn', repos="http://cran.rstudio.com/")
-    }
-    library(kknn)
+
     knn.fit <- kknn::kknn(formula = formula,
                           train = train,
                           test = test,
@@ -260,10 +305,7 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
 }
 
 .OptimizeKClassification <- function(dataset,options,opt,train,test,train.index,formula,target){
-    if(!"kknn" %in% installed.packages()){
-        install.packages('kknn', repos="http://cran.rstudio.com/")
-    }
-    library(kknn)
+
     error <- seq_along(opt[['NN']])
     count <- 1
     for( i in opt[['NN']]){
@@ -418,7 +460,6 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
 
 .PredictionsTableClassification <- function(options, opt, predictors, target, res){
     
-
     from <- options[["predictionsFrom"]]
 
     to <- options[['predictionsTo']]
@@ -636,10 +677,7 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
 }
 
 .LOOCVClassification <- function(dataset,options,opt,formula){
-    if(!"kknn" %in% installed.packages()){
-        install.packages('kknn', repos="http://cran.rstudio.com/")
-    }
-    library(kknn)
+
     knn.fit <- kknn::train.kknn(formula = formula,
                                 data = dataset,
                                 kmax = options[['maxK']],
@@ -670,6 +708,7 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
 }
 
 .KfoldClassification <- function(dataset,options,opt,formula,res){
+
     knn.fit <- kknn::cv.kknn(formula = formula,
                              data = dataset,
                              distance = opt[['distance']],
@@ -685,7 +724,13 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
     return(result)    
 }
 
-.initKnnClassification <- function(options,results){
+.initKnnClassification <- function(options,results,state){
+    
+    if(!is.null(state[["Descriptions"]])){
+        
+        results[["Descriptions"]] <- state[["Descriptions"]]
+        
+    } else {
 
     fields_descriptions <- list(list(name = 'model', title = '', type = 'string'))
     
@@ -720,7 +765,15 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
                                       schema = list(fields = fields_descriptions),
                                       data = data_descriptions)
     
+    }
+    
     if(options[['confusionTable']]){
+        
+        if(!is.null(state[["Confusion"]])){
+            
+            results[["Confusion"]] <- state[["Confusion"]]
+            
+        } else {
         
         fields_confusion <- list(list(name = "varname_pred", title = "", type = "string"))
         
@@ -732,7 +785,7 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
         
         data_confusion <- list()
         
-        for( i in 1:2){
+        for(i in 1:2){
             
             dat_tmp <- list("varname_pred" = ".")
             
@@ -750,9 +803,17 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
                                        schema = list(fields = fields_confusion),
                                        data = data_confusion)
         
+        }
+        
     }
     
     if(options[["tablePredictions"]]){
+        
+        if(!is.null(state[["Predictions"]])){
+            
+            results[["Predictions"]] <- state[["Predictions"]]
+            
+        } else {
         
         if(options[["tablePredictionsConfidence"]]){
             
@@ -785,9 +846,17 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
                                          schema = list(fields = fields_predictions),
                                          data = data_predictions)
         
+        }
+        
     }
     
     if(options[["tableDistances"]]){
+        
+        if(!is.null(state[["Distances"]])){
+            
+            results[["Distances"]] <- state[["Distances"]]
+            
+        } else {
         
         fields_distances <- list(list(name="number", title="Obs. number", type="integer"),
                                  list(name = 'distance', title = "Distance", type = 'integer'))
@@ -798,9 +867,17 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
                                        schema = list(fields = fields_distances),
                                        data = data_distances)
         
+        }
+        
     }
     
     if(options[["tableWeights"]]){
+        
+        if(!is.null(state[["Weights"]])){
+            
+            results[["Weights"]] <- state[["Weights"]]
+            
+        } else {
         
         fields_weights <- list(list(name="number", title="Obs. number", type="integer"),
                                list(name = 'weight', title = "Weight", type = 'integer'))
@@ -810,6 +887,8 @@ MLClassificationKNN <- function(dataset=NULL, options, perform="run", callback=f
         results[['Weights']] <- list(title = 'Weights',
                                      schema = list(fields = fields_weights),
                                      data = data_weights) 
+        
+        }
         
     }
     

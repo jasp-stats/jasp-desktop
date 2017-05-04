@@ -15,15 +15,31 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", callback=function(...) 0, ...) {
 	
-	# Read variables
+    # state creation ##
+    
+    state[["options"]] <- options
+    
+    stateKey <- list()
+    stateKey[["Descriptions"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "scaleEqualSD", "validationLeaveOneOut", "validationKFold")
+    stateKey[['Predictions']] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD","tablePredictionsConfidence")
+    stateKey[['Distances']] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
+    stateKey[["Weights"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
+    stateKey[["Plot"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
+    
+    attr(state, "key") <- stateKey
+    
+    # Read variables ##
+    
 	predictors <- unlist(options['predictors'])
 	if (length(options['target']) > 0){
 		target <- unlist(options['target'])
 	}
 	variables.to.read <- c(predictors, target)
 	variables.to.read <- variables.to.read[variables.to.read != ""]
+	
+	# read dataset ##
 	
 	if (is.null(dataset)) {
 		
@@ -41,6 +57,8 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 		dataset <- .vdf(columns.as.numeric=variables.to.read)
 	}
 	
+	# error handling ##
+	
 	for(i in 1:length(variables.to.read)){
 	    
 	    errors <- .hasErrors(dataset, perform, type = c('infinity', 'observations'),
@@ -50,13 +68,17 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 	    
 	}
 	
-	# Set a seed
+	# set the seed so that every time the same set is chosen (to prevent random results) ##
+	
 	set.seed(1)
 	
-	# create the results bundle
-	results <- list()
+	# create results bundle ##
 	
-	# Provide the Meta to the results bundle
+	results <- list()
+	results[['title']] <- 'k-Nearest neighbors regression'
+	
+	# Provide the Meta to the results bundle ##
+	
 	meta <- list(list(name = 'KNN regression', type = 'title'),
 	             list(name = 'Descriptions', type = 'table'),
 	             list(name = 'Predictions', type = 'table'),
@@ -65,20 +87,26 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 	             list(name = 'Plot', type = 'image'))
 	results[['.meta']] <- meta
 	
-	results[['title']] <- 'k-Nearest neighbors regression'
+	# init state ##
 	
 	if(perform == "init"){
 	    
-	    results <- .initKnnregression(options,results)
+	    results <- .initKnnregression(options,results, state)
 	    
-	    return(list(results = results, status = "inited"))
+	    return(list(results = results, status = "inited", state = state))
 	    
-	} else {
+	} 
 	
-	# Set the analysis options from the options
+	# run state ##
+	
+	else {
+	
+	# Set the right options for the analysis ##
+	    
 	opt <- .setOptions(options,dataset)
 	
-	# code variable names into base64
+	# code variable names into base64 ##
+	
 	if(length(predictors[predictors!='']) > 0){
 		predictors <- .v(predictors)
 	}
@@ -86,10 +114,12 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 		target <- .v(target)
 	}
 	
-	# Create formula for the model
+	# Create formula ##
+	
 	formula <- .makeformula(predictors,target)
 	
-	# Do the analysis
+	# Run the analysis ##
+	
 	if(length(predictors[predictors!='']) > 0 & length(target[target!='']) > 0){
 		
 		train.index <- sample(c(TRUE,FALSE),nrow(dataset),replace = TRUE,prob = c(opt[['ntrain']]*0.01,1-(opt[['ntrain']]*0.01)))
@@ -104,12 +134,17 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 	    
 	}
 	
-	results[['Descriptions']] <- .DescriptionsTable(predictors, target, opt, options, res, dataset, formula)
+	# Create the evaluation table ##
 	
-	# Create predictions table
+	results[['Descriptions']] <- .DescriptionsTable(predictors, target, opt, options, res, dataset, formula)
+	state[["Descriptions"]] <- results[["Descriptions"]]
+	
+	# Create the predictions table ##
+	
 	if(options[['tablePredictions']]){
 		
 		results[['Predictions']] <- .PredictionsTable(options, opt, predictors, target, res)
+		state[['Predictions']] <- results[['Predictions']]
 		
 	}
 	
@@ -117,31 +152,37 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 	if(options[['tableDistances']]){
 		
 		results[['Distances']] <- .DistancesTable(predictors,target, opt, options, res)
+		state[['Distances']] <- results[['Distances']]
 		
 	}
 	
-	# Create weights table
+	# Create the weights table ##
+	
 	if(options[['tableWeights']]){
 		
 		results[['Weights']] <- .WeightsTable(predictors, target, opt, options, res)
+		state[['Weights']] <- results[['Weights']]
 		
 	}
 	
-	# Create the Error vs K plot
+	# Create the Error vs K plot ##
+	
 	if(options[['plotErrorVsK']] & !is.null(res)){
 		
 		if(options[['noOfNearestNeighbours']] == 'optimized' | options[['validationLeaveOneOut']]){
 		
 		results[['Plot']] <- .PlotErrorVsK(res,opt,options,dataset,formula)
+		state[["Plot"]] <- results[['Plot']]
 		
 		}
 		
 	}
 	
-	return(list(results = results, status = "complete"))
+	# return the results bundle ##
+	
+	return(list(results = results, status = "complete", state = state))
 	
 	}
-	
 	
 }
 
@@ -215,8 +256,7 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 }
 
 .OneKregression <- function(dataset,options,opt,train,test,train.index,formula,target){
-	install.packages('kknn', repos="http://cran.rstudio.com/")
-	library(kknn)
+
 	knn.fit <- kknn::kknn(formula = formula,
 						  train = train,
 						  test = test,
@@ -243,8 +283,7 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 }
 
 .OptimizeKregression <- function(dataset,options,opt,train,test,train.index,formula,target){
-	install.packages('kknn', repos="http://cran.rstudio.com/")
-	library(kknn)
+
 	RMSE <- seq_along(opt[['NN']])
 	count <- 1
 	for( i in opt[['NN']]){
@@ -583,8 +622,7 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 }
 
 .LOOCVregression <- function(dataset,options,opt,formula){
-	install.packages('kknn', repos="http://cran.rstudio.com/")
-	library(kknn)
+
 	knn.fit <- kknn::train.kknn(formula = formula,
 								data = dataset,
 								kmax = options[['maxK']],
@@ -644,7 +682,13 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 	return(result)
 }
 
-.initKnnregression <- function(options,results){
+.initKnnregression <- function(options,results, state){
+    
+    if(!is.null(state[["Descriptions"]])){
+        
+        results[["Descriptions"]] <- state[["Descriptions"]]
+        
+    } else {
     
     fields_descriptions <- list(list(name = 'model', title = '', type = 'string'))
     
@@ -679,7 +723,15 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
                                       schema = list(fields = fields_descriptions),
                                       data = data_descriptions)
     
+    }
+    
     if(options[["tablePredictions"]]){
+        
+        if(!is.null(state[["Predictions"]])){
+            
+            results[["Predictions"]] <- state[["Predictions"]]
+            
+        } else {
 
         fields_predictions <- list(
             list(name="number", title="Obs. number", type="integer"),
@@ -695,9 +747,17 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
                                          schema = list(fields = fields_predictions),
                                          data = data_predictions)
 
+        }
+        
     }
 
     if(options[["tableDistances"]]){
+        
+        if(!is.null(state[["Distances"]])){
+            
+            results[["Distances"]] <- state[["Distances"]]
+            
+        } else {
 
         fields_distances <- list(list(name="number", title="Obs. number", type="integer"),
                                  list(name = 'distance', title = "Distance", type = 'integer'))
@@ -708,9 +768,17 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
                                        schema = list(fields = fields_distances),
                                        data = data_distances)
 
+        }
+        
     }
 
     if(options[["tableWeights"]]){
+        
+        if(!is.null(state[["Weights"]])){
+            
+            results[["Weights"]] <- state[["Weights"]]
+            
+        } else {
 
         fields_weights <- list(list(name="number", title="Obs. number", type="integer"),
                                  list(name = 'weight', title = "Weight", type = 'integer'))
@@ -723,6 +791,7 @@ MLRegressionKNN <- function(dataset=NULL, options, perform="run", callback=funct
 
     }
     
+    }
     
     return(results)
     

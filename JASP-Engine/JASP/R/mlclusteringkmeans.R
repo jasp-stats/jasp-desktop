@@ -54,7 +54,7 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
         dataset <- .vdf(columns.as.numeric=predictors)
     }
     
-    # code variable names in base64 ##
+    # error handling & code variable names in base64 ##
     
     if(length(predictors[predictors!='']) > 0){
         
