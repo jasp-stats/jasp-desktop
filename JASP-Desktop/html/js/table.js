@@ -181,7 +181,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 					formatted = { content: "." }
 				}
 				else if (combine && rowNo > 0 && column[rowNo - 1].content == content) {
-
+                    clazz += " combined";
 					formatted = { content: "&nbsp;", class: clazz }
 					combined = true
 				}
@@ -992,6 +992,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 					cellClass += (cell.isStartOfGroup ? " new-group-row" : "")
 					cellClass += (cell.isStartOfSubGroup ? " new-sub-group-row" : "")
 					cellClass += (cell.isEndOfGroup ? " last-group-row" : "")
+                    cellClass += (cell.span > 1 ? " row-span" : "")
 
 					cellHtml += (cell.header ? '<th' : '<td')
 					cellHtml += ' class="value ' + cellClass + '"'

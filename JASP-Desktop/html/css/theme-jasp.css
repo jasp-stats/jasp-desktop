@@ -182,8 +182,8 @@ tbody tr:nth-last-child(2) th {
 	margin-bottom: .8em ;
 }
 
-.jasp-analysis tbody tr:nth-child(even) th,
-.jasp-analysis tbody tr:nth-child(even) td {
+.jasp-analysis tbody tr:nth-child(even) th:not(.row-span),
+.jasp-analysis tbody tr:nth-child(even) td:not(.row-span) {
 	background: rgb(235, 235, 235)
 }
 
