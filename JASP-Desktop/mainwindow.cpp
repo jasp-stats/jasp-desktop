@@ -108,6 +108,8 @@
 #include <boost/filesystem.hpp>
 #include "dirs.h"
 
+#include "options/optionvariablesgroups.h"
+
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -432,56 +434,104 @@ void MainWindow::refreshAnalysesUsingColumns(vector<string> &changedColumns
 		if (analysis == NULL) continue;
 
 		bool analyse_to_refresh = false;
-		const vector<OptionVariables *> &analysis_variables = analysis->getVariables();
-		for (vector<OptionVariables *>::const_iterator var_it = analysis_variables.begin();
-			 var_it != analysis_variables.end();
-			 ++var_it)
+		Options* options = analysis->options();
+		for (size_t i = 0; i < options->size(); ++i)
 		{
-			OptionVariables *option_variables = *var_it;
-			vector<string> variables = option_variables->variables();
-			vector<string> variables_sorted = variables;
-			sort(variables_sorted.begin(), variables_sorted.end());
-			vector<string> inter_changecol, inter_changename, inter_missingcol;
-			set_intersection(variables_sorted.begin(), variables_sorted.end(), changedColumns.begin(), changedColumns.end(), back_inserter(inter_changecol));
-			set_intersection(variables_sorted.begin(), variables_sorted.end(), oldColumnNames.begin(), oldColumnNames.end(), back_inserter(inter_changename));
-			set_intersection(variables_sorted.begin(), variables_sorted.end(), missingColumns.begin(), missingColumns.end(), back_inserter(inter_missingcol));
-
-			if (inter_changecol.size() > 0 && !analyse_to_refresh)
+			Option *option = options->get(i);
+			vector<string> variables;
+			OptionVariables *option_variables = dynamic_cast<OptionVariables *>(option);
+			if (option_variables != NULL)
 			{
-				analyses_to_refresh.push_back(analysis);
-				analyse_to_refresh = true;
+				variables = option_variables->variables();
 			}
 
-			if (inter_changename.size() > 0)
+			OptionVariablesGroups *option_variables_groups = dynamic_cast<OptionVariablesGroups *>(option);
+			if (option_variables_groups != NULL)
 			{
-				for (vector<string>::iterator varname_it = inter_changename.begin(); varname_it != inter_changename.end(); ++varname_it)
+				vector<vector<string> > values = option_variables_groups->value();
+				for (vector<vector<string> >::iterator it = values.begin(); it != values.end(); ++it)
 				{
-					string varname = *varname_it;
-					string newname = changeNameColumns[varname];
-					replace(variables.begin(), variables.end(), varname, newname);
+					variables.insert(variables.end(), it->begin(), it->end());
 				}
-				analysis->setRefreshBlocked(true);
-				option_variables->setValue(variables);
-				if (!analyse_to_refresh)
+			}
+
+			if (!variables.empty())
+			{
+				vector<string> variables_sorted = variables;
+				sort(variables_sorted.begin(), variables_sorted.end());
+				vector<string> inter_changecol, inter_changename, inter_missingcol;
+				set_intersection(variables_sorted.begin(), variables_sorted.end(), changedColumns.begin(), changedColumns.end(), back_inserter(inter_changecol));
+				set_intersection(variables_sorted.begin(), variables_sorted.end(), oldColumnNames.begin(), oldColumnNames.end(), back_inserter(inter_changename));
+				set_intersection(variables_sorted.begin(), variables_sorted.end(), missingColumns.begin(), missingColumns.end(), back_inserter(inter_missingcol));
+
+				if (inter_changecol.size() > 0 && !analyse_to_refresh)
 				{
 					analyses_to_refresh.push_back(analysis);
 					analyse_to_refresh = true;
 				}
-			}
 
-			if (inter_missingcol.size() > 0)
-			{
-				for (vector<string>::iterator varname_it = inter_missingcol.begin(); varname_it != inter_missingcol.end(); ++varname_it)
+				if (inter_changename.size() > 0)
 				{
-					string varname = *varname_it;
-					variables.erase(remove(variables.begin(), variables.end(), varname), variables.end());
+					analysis->setRefreshBlocked(true);
+					for (vector<string>::iterator varname_it = inter_changename.begin(); varname_it != inter_changename.end(); ++varname_it)
+					{
+						string varname = *varname_it;
+						string newname = changeNameColumns[varname];
+						if (option_variables != NULL)
+						{
+							replace(variables.begin(), variables.end(), varname, newname);
+							option_variables->setValue(variables);
+						}
+						else if (option_variables_groups != NULL)
+						{
+							vector<vector<string> > all_values = option_variables_groups->value();
+							vector<vector<string> > all_values_updated;
+							for (vector<vector<string> >::iterator all_values_it = all_values.begin(); all_values_it != all_values.end(); ++all_values_it)
+							{
+								vector<string> row = *all_values_it;
+								replace(row.begin(), row.end(), varname, newname);
+								all_values_updated.push_back(row);
+							}
+							option_variables_groups->setValue(all_values_updated);
+						}
+					}
+
+					if (!analyse_to_refresh)
+					{
+						analyses_to_refresh.push_back(analysis);
+						analyse_to_refresh = true;
+					}
 				}
-				analysis->setRefreshBlocked(true);
-				option_variables->setValue(variables);
-				if (!analyse_to_refresh)
+
+				if (inter_missingcol.size() > 0)
 				{
-					analyses_to_refresh.push_back(analysis);
-					analyse_to_refresh = true;
+					analysis->setRefreshBlocked(true);
+					for (vector<string>::iterator varname_it = inter_missingcol.begin(); varname_it != inter_missingcol.end(); ++varname_it)
+					{
+						string varname = *varname_it;
+						if (option_variables != NULL)
+						{
+							variables.erase(remove(variables.begin(), variables.end(), varname), variables.end());
+							option_variables->setValue(variables);
+						}
+						else if (option_variables_groups != NULL)
+						{
+							vector<vector<string> > all_values = option_variables_groups->value();
+							vector<vector<string> > all_values_updated;
+							for (vector<vector<string> >::iterator all_values_it = all_values.begin(); all_values_it != all_values.end(); ++all_values_it)
+							{
+								vector<string> row = *all_values_it;
+								if (std::find(row.begin(), row.end(), varname) == row.end())
+									all_values_updated.push_back(row);
+							}
+							option_variables_groups->setValue(all_values_updated);
+						}
+					}
+					if (!analyse_to_refresh)
+					{
+						analyses_to_refresh.push_back(analysis);
+						analyse_to_refresh = true;
+					}
 				}
 			}
 		}
