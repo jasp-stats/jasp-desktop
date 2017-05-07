@@ -74,6 +74,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 		# check for errors
 		anyErrors <- .hasErrors(dataset = dataset, perform = perform,
+								type = c("infinity", "variance", "observations"), observations.amount = " <= 2")
 
 		doUpdate <- base::identical(anyErrors, FALSE)
 
