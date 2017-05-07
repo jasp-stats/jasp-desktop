@@ -23,8 +23,8 @@
 # "hypothesis": "correlated", "correlatedPositively", "correlatedNegatively"
 # "reportBayesFactors": TRUE/FALSE
 # "flagSupported": TRUE/FALSE
-# "credibleIntervals": TRUE/FALSE
-# "credibleIntervalsInterval": OptionNumber(.95, 0, 1, "%"));
+# "credibleInterval": TRUE/FALSE
+# "ciValue": OptionNumber(.95, 0, 1, "%"));
 # "priorWidth": c(0, 2)
 # "missingValues": excludePairwise, excludeListwist
 # "bayesFactorType": BF10/BF01/LogBF10
@@ -75,8 +75,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								  hypothesis=options$hypothesis,
 								  reportBayesFactors=options$reportBayesFactors,
 								  flagSupported=options$flagSupported,
-								  credibleIntervals=options$credibleIntervals,
-								  credibleIntervalsInterval=options$credibleIntervalsInterval,
+								  credibleInterval=options$credibleInterval,
+								  ciValue=options$ciValue,
 								  priorWidth=options$priorWidth,
 								  bayesFactorType=options$bayesFactorType,
 								  missingValues=options$missingValues, state, diff) 
@@ -88,7 +88,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	results[["correlations"]] <- correlationTableOutput$correlationTable
 	
 	
-	if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$credibleIntervals == FALSE && diff$credibleIntervalsInterval == FALSE
+	if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$credibleInterval == FALSE && diff$ciValue == FALSE
 																										&& diff$hypothesis == FALSE && diff$kendallsTauB == FALSE && diff$missingValues == FALSE && diff$pearson == FALSE && diff$plotCorrelationMatrix == FALSE
 																										&& diff$plotDensitiesForVariables == FALSE && diff$plotPosteriors == FALSE && diff$spearman == FALSE && diff$variables == FALSE && diff$priorWidth == FALSE)))) {
 		
@@ -110,11 +110,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			return(results)
 		}
 	} else {
-		
-		
 		statedBFValuesExcludeListwise <- state$bfValuesExcludeListwise
 		statedFootnotesExcludeListwise <- state$footnotesExcludeListwise
-		
 		
 		return(list(results=results, status="complete", 
 					state=list(options=options, 
@@ -137,8 +134,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 # "hypothesis": "correlated", "correlatedPositively", "correlatedNegatively"
 # "reportBayesFactors": TRUE/FALSE
 # "flagSupported": TRUE/FALSE
-# "credibleIntervals": TRUE/FALSE
-# "credibleIntervalsInterval": OptionNumber(.95, 0, 1, "%"));
+# "credibleInterval": TRUE/FALSE
+# "ciValue": OptionNumber(.95, 0, 1, "%"));
 # "priorWidth": c(0.5, Inf)
 # "bayesFactorType": BF10/BF01
 .correlationTableBayesian <- function(dataset, perform, variables, pearson=TRUE,
@@ -146,8 +143,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 									  hypothesis="correlated",
 									  reportBayesFactors=TRUE,
 									  flagSupported=FALSE,
-									  credibleIntervals=FALSE,
-									  credibleIntervalsInterval=0.95,
+									  credibleInterval=FALSE,
+									  ciValue=0.95,
 									  priorWidth=priorWidth,
 									  bayesFactorType=bayesFactorType,
 									  missingValues="excludePairwise", 
@@ -157,42 +154,46 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	#
 	#
 	correlationTable <- list()
-	if(pearson & kendallsTauB){
-	  correlationTable[["citation"]] <- list(
-		  "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2015). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication.\n \nvan Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2016). Bayesian Inference for Kendall’s Rank Correlation Coefficient. Manuscript submitted for publication."
-	  )} else if(pearson){
+	if (pearson & kendallsTauB) {
+	    correlationTable[["citation"]] <- list(
+	        "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2015). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication.",
+	        "van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2016). Bayesian Inference for Kendall’s Rank Correlation Coefficient. Manuscript submitted for publication."
+	    )
+	} else if (pearson) {
 	    correlationTable[["citation"]] <- list(
 	      "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2015). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication."
-    )} else if(kendallsTauB){
+	    )
+	} else if (kendallsTauB) {
 	    correlationTable[["citation"]] <- list(
 	    "van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2016). Bayesian Inference for Kendall’s Rank Correlation Coefficient. Manuscript submitted for publication."
-	  )}
+	  )
+	}
 	
 	
 	# MarkUp: General: Choose BF type to report
 	#
 	if (hypothesis == "correlated") {
-		if (bayesFactorType=="BF10"){
+		if (bayesFactorType=="BF10") {
 			bfTitle <- "BF\u2081\u2080"
 		} else if (bayesFactorType == "BF01") {
 			bfTitle <- "BF\u2080\u2081"
-		} else if (bayesFactorType=="LogBF10"){
+		} else if (bayesFactorType=="LogBF10") {
 			bfTitle <- "log(BF\u2081\u2080)"
 		}
 	} else if (hypothesis == "correlatedPositively") {
-		if (bayesFactorType == "BF10"){
+		if (bayesFactorType == "BF10") {
 			bfTitle <- "BF\u208A\u2080"
 		} else if (bayesFactorType == "BF01") {
 			bfTitle <- "BF\u2080\u208A"
-		} else if (bayesFactorType=="LogBF10"){
+		} else if (bayesFactorType=="LogBF10") {
 			bfTitle <- "log(BF\u208A\u2080)"
 		}
-	} else if (hypothesis == "correlatedNegatively"){
-		if (bayesFactorType == "BF10"){
+	} else if (hypothesis == "correlatedNegatively") {
+		if (bayesFactorType == "BF10") {
 			bfTitle <- "BF\u208B\u2080"
 		} else if (bayesFactorType == "BF01") {
 			bfTitle <- "BF\u2080\u208B"
-		} else if (bayesFactorType=="LogBF10"){
+		} else if (bayesFactorType=="LogBF10") {
 			bfTitle <- "log(BF\u208B\u2080)"
 		}
 	}
@@ -243,7 +244,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	}
 	
 	if (flagSupported) {
-		if (bayesFactorType=="LogBF10"){
+		if (bayesFactorType=="LogBF10") {
 			.addFootnote(footnotes, paste(bfTitle, " > log(10), ** , ", bfTitle, " > log(30), *** ", bfTitle, " > log(100)"), symbol="*")
 		} else {
 			.addFootnote(footnotes, paste(bfTitle, " > 10, ** , ", bfTitle, " > 30, *** ", bfTitle, " > 100"), symbol="*")
@@ -252,7 +253,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 	# State: Processing
 	#
-	if (!is.null(state)){
+	if (!is.null(state)) {
 		# Retrieve from state, I could have done this directly on state$footnotes etc, 
 		# but then I have to check whether it is initialised and whether I can write to it
 		# for instance, in the writing to bfValuesList
@@ -269,10 +270,10 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		# State: Create the hierarchical structure of the state object
 	    # Initialise if there is no state
 		temp <- list()
-		for (levels in 1:3){
+		for (levels in 1:3) {
 			temp <- list(temp)
 			
-			if (levels==2){
+			if (levels==2) {
 				# Structure is [[variableName]][[columnName]]
 				rValuesListExcludePairwise <- temp
 				footnotesListExcludePairwise <- temp
@@ -280,7 +281,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				# Not necessary to consider the names only need the ns
 				# Structure is [[nLabel]][[rLabel]]
 				footnotesListExcludeListwise <- temp
-			} else if (levels==3){
+			} else if (levels==3) {
 				# Structure is [[priorLabel]][[variableName]][[columnName]]
 				bfValuesListExcludePairwise <- temp 
 				
@@ -297,9 +298,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	numberOfVariables <- length(variables)
 	
 	if (perform == "init") {
-	    if (numberOfVariables == 0){
+	    if (numberOfVariables == 0) {
 	        variables <- c(variables, "...", "... ")
-	    } else if (numberOfVariables == 1){
+	    } else if (numberOfVariables == 1) {
 	        variables <- c(variables, "... ")
 	    }
 	}
@@ -324,7 +325,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		#
 		for (test in tests) {
 			# Note: create columns per test
-			if (length(tests) > 1 || reportBayesFactors) {
+			if (length(tests) > 1 || reportBayesFactors || credibleInterval) {
+			    # Note: Column folding construction using ".test[", test, "]"
 				columnName <- paste(".test[", test, "]", sep="")
 				columnNames[[length(columnNames)+1]] <- columnName
 				fields[[length(fields)+1]] <- list(name=columnName, title="", type="string")
@@ -338,7 +340,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			}
 			
 			# Note: create column for bfs
-			if (reportBayesFactors) {
+			if (isTRUE(reportBayesFactors)) {
 				columnName <- paste(".test[", test, "Bf]", sep="")
 				columnNames[[length(columnNames)+1]] <- columnName
 				fields[[length(fields)+1]] <- list(name=columnName, title=bfTitle, type="string")
@@ -348,6 +350,29 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 					fields[[length(fields)+1]] <- list(name=columnName, title=variableName, type="number", format="sf:4;dp:3")
 				}
 			}
+		    
+		    # Note: create column for bfs
+		    if (isTRUE(credibleInterval)) {
+		        columnName <- paste(".test[", test, "-upperCI]", sep="")
+		        columnNames[[length(columnNames)+1]] <- columnName
+		        fields[[length(fields)+1]] <- list(name=columnName, title="", type="string")
+		        
+		        for (variableName in variables) {
+		            columnName <- paste(variableName, "[", test, "-upperCI]", sep="")
+		            columnNames[[length(columnNames)+1]] <- columnName
+		            fields[[length(fields)+1]] <- list(name=columnName, title=variableName, type="number", format="dp:3")
+		        }
+		        
+		        columnName <- paste(".test[", test, "-lowerCI]", sep="")
+		        columnNames[[length(columnNames)+1]] <- columnName
+		        fields[[length(fields)+1]] <- list(name=columnName, title="", type="string")
+		        
+		        for (variableName in variables) {
+		            columnName <- paste(variableName, "[", test, "-lowerCI]", sep="")
+		            columnNames[[length(columnNames)+1]] <- columnName
+		            fields[[length(fields)+1]] <- list(name=columnName, title=variableName, type="number", format="dp:3")
+		        }
+		    }
 		}
 		
 		for (i in 1:numberOfVariables) {
@@ -372,15 +397,25 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			    #       4. Fill in the bf from bayesFactorsList in the right row
 			    #           thus, bayesFactorsList should contain the bfs for 6,7,8 and is of length 3
 			    #
+			    # Make a list of bayesFactors for variable1Name compared to all subsequent variable2Name
 			    bayesFactorsList <- list()
+			    upperCiList <- list()
+			    lowerCiList <- list()
+			    
+				if (length(tests) > 1 || reportBayesFactors || credibleInterval) {
+				    # Note: Create test name for each test row given a column
+				    row[[length(row)+1]] <- testNames[[test]]
+				}
+					
+				if (isTRUE(reportBayesFactors)) {
+				    # Note: Create bf row each test given each column (variable)
+				    bayesFactorsList[[length(bayesFactorsList)+1]] <- bfTitle
+				}
 				
-				if (length(tests) > 1 || reportBayesFactors)
-					# Note: Create test name for each test row given a column
-					row[[length(row)+1]] <- testNames[[test]]
-				
-				if (reportBayesFactors)
-					# Note: Create bf row each test given each column (variable)
-					bayesFactorsList[[length(bayesFactorsList)+1]] <- bfTitle
+				if (isTRUE(credibleInterval)) {
+				    upperCiList[[length(upperCiList)+1]] <- paste("Upper ", 100 * ciValue, "% CI", sep="")
+				    lowerCiList[[length(lowerCiList)+1]] <- paste("Lower ", 100 * ciValue, "% CI", sep="")
+				}
 				
 				# Reporting: For this row, create blanks for everything before the current variable i
 				#   this yields an empty lower triangle. Left down is empty
@@ -389,10 +424,15 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 					# Note: Fill in blanks
 					row[[length(row)+1]] <- ""
 					bayesFactorsList[[length(bayesFactorsList)+1]] <- ""
+					upperCiList[[length(upperCiList)+1]] <- ""
+					lowerCiList[[length(lowerCiList)+1]] <- ""
 				}
 				
+			    # Note: fill in em-dash when comparing variable1Name with variable1Name
 				row[[length(row)+1]] <- "\u2014" # em-dash # Note: Fill in blanks
 				bayesFactorsList[[length(bayesFactorsList)+1]] <- "\u2014"
+				upperCiList[[length(upperCiList)+1]] <- "\u2014"
+				lowerCiList[[length(lowerCiList)+1]] <- "\u2014"
 				
 				# Reporting: For each next variable find the values
 				#
@@ -412,19 +452,18 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 					# Try to retrieve bfs, if no retrival, then either calculate or init
 					#
 					retrievalFailure <- TRUE
-					recalculateCIs <- FALSE
 					
-					if (missingValues=="excludePairwise"){
+					if (missingValues=="excludePairwise") {
 						retrievedBFs <- bfValuesListExcludePairwise[[priorLabel]][[variableName]][[columnName]]
 						
-						if (!is.null(retrievedBFs)){
+						if (!is.null(retrievedBFs)) {
 							# State: Retrieval
 							rObs <- unlist(rValuesListExcludePairwise[[variableName]][[columnName]])
 							bfObject <- retrievedBFs
 							
 							retrievedFootnote <- footnotesListExcludePairwise[[variableName]][[columnName]]
 							
-							if (!is.null(retrievedFootnote)){
+							if (!is.null(retrievedFootnote)) {
 								obsFootnote <- unlist(retrievedFootnote)
 								index <- .addFootnote(footnotes, obsFootnote)
 								rowFootnotes[[columnName]] <- c(rowFootnotes[[columnName]], list(index))
@@ -435,38 +474,27 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							
 							# CIs check:
 							#
-							if (credibleIntervals){
-								calculatedCIValues <- bfObject$ciValues
-								
-								if (!is.na(bfObject$bf10) && !(credibleIntervalsInterval %in% calculatedCIValues)){
-									# put this in for the next time
-									# Output prepare
-									newCiLabel <- as.character(round(credibleIntervalsInterval, 5))
-									calculatedCIValues <- c(calculatedCIValues, credibleIntervalsInterval)
-									ciList <- bfObject$CIs
-									
-									# Calculate
-									newCIList <- .credibleIntervals(alpha=bfObject$betaA, beta=bfObject$betaB, credibleIntervalsInterval)[[2]]
-									
-									# Store in State
-									ciList[[newCiLabel]] <- newCIList
-									bfObject$CIs <- ciList
-									bfObject$ciValues <- calculatedCIValues
-									bfValuesListExcludePairwise[[priorLabel]][[variableName]][[columnName]] <- bfObject
-								}	
+							if (isTRUE(credibleInterval)) {
+							    if (ciValue != bfObject$ciValue) {
+							        bfObject$ciValue <- ciValue
+							        bfObject$ci <- .computePearsonCredibleInterval(alpha=bfObject$betaA, beta=bfObject$betaB, bfObject$ciValue)
+							        
+							        # Store back into state
+							        bfValuesListExcludePairwise[[priorLabel]][[variableName]][[columnName]] <- bfObject
+							    }
 							}
 							#
 							# Close succesfull retrieval of bf
 						} else {
 							retrievalFailure <- TRUE
 						}
-					} else if (missingValues=="excludeListwise"){
+					} else if (missingValues=="excludeListwise") {
 						# Load: data
 						#
 						v1 <- dataset[[ .v(variableName) ]]
 						v2 <- dataset[[ .v(variable2Name) ]]
 						
-						if (!is.null(v1) && !is.null(v2)){
+						if (!is.null(v1) && !is.null(v2)) {
 							# Note: Data: PREPARE
 							#
 							nObs <- length(v1)
@@ -480,14 +508,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							#
 							retrievedBFs <- bfValuesListExcludeListwise[[priorLabel]][[nLabel]][[rLabel]]
 							
-							if (!is.null(retrievedBFs)){
+							if (!is.null(retrievedBFs)) {
 								# State: Retrieval
 								rObs <- rObs
 								bfObject <- retrievedBFs
 								
 								retrievedFootnote <- footnotesListExcludeListwise[[nLabel]][[rLabel]]
 								
-								if (!is.null(retrievedFootnote)){
+								if (!is.null(retrievedFootnote)) {
 									obsFootnote <- unlist(retrievedFootnote)
 									index <- .addFootnote(footnotes, obsFootnote)
 									rowFootnotes[[columnName]] <- c(rowFootnotes[[columnName]], list(index))
@@ -498,25 +526,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								
 								# CIs check:
 								#
-								if (credibleIntervals){
-									calculatedCIValues <- bfObject$ciValues
-									
-									if (!is.na(bfObject$bf10) && !(credibleIntervalsInterval %in% calculatedCIValues)){
-										# put this in for the next time
-										# Output prepare
-										newCiLabel <- as.character(round(credibleIntervalsInterval, 5))
-										calculatedCIValues <- c(calculatedCIValues, credibleIntervalsInterval)
-										ciList <- bfObject$CIs
-										
-										# Calculate
-										newCIList <- .credibleIntervals(alpha=bfObject$betaA, beta=bfObject$betaB, credibleIntervalsInterval)[[2]]
-										
-										# Store in State
-										ciList[[newCiLabel]] <- newCIList
-										bfObject$CIs <- ciList
-										bfObject$ciValues <- calculatedCIValues
-										bfValuesListExcludeListwise[[priorLabel]][[nLabel]][[rLabel]] <- bfObject
-									}	
+								if (isTRUE(credibleInterval)) {
+								    if (ciValue != bfObject$ciValue) {
+								        bfObject$ciValue <- ciValue
+								        bfObject$ci <- .computePearsonCredibleInterval(alpha=bfObject$betaA, beta=bfObject$betaB, bfObject$ciValue)
+								        
+								        # Store back into state with new ciValue
+								        bfValuesListExcludeListwise[[priorLabel]][[nLabel]][[rLabel]] <- bfObject
+								    }
 								}
 								#
 								# Close succesfull retrieval of bf
@@ -531,7 +548,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 					
 					# State: No retrieval: if perform==run, run the analysis ---
 					# Compute: 
-					if (retrievalFailure) {
+					if (isTRUE(retrievalFailure)) {
 						# Results cannot be retrieved from state
 						
 						if (perform == "run") {
@@ -540,7 +557,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							v1 <- dataset[[ .v(variableName) ]]
 							v2 <- dataset[[ .v(variable2Name) ]]
 							
-							if (missingValues=="excludePairwise"){
+							if (missingValues=="excludePairwise") {
 							    tempList <- .excludePairwiseCorData(v1, v2)
 								v1 <- tempList$v1
 								v2 <- tempList$v2
@@ -565,19 +582,19 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 							                     all.target = c(variableName, variable2Name), observations.amount = '< 2')
 
-							if (!identical(errors, FALSE)) {									
-							  # Note: Data: NOT ok, 
+							if (!identical(errors, FALSE)) {
+							    # Note: Data: NOT ok, 
 								# 		bf10: can't
-							  obsFootnote <- errors$message
-							  index <- .addFootnote(footnotes, obsFootnote)
+							    obsFootnote <- errors$message
+							    index <- .addFootnote(footnotes, obsFootnote)
 								
 								rObs <- NA
 								
 								# Store: Store in state
 								#
-								if (missingValues=="excludePairwise"){
+								if (missingValues=="excludePairwise") {
 									footnotesListExcludePairwise[[variableName]][[columnName]] <- list(obsFootnote)
-								} else if (missingValues=="excludeListwise"){
+								} else if (missingValues=="excludeListwise") {
 									# TODO: these should be defined above in the retrieval block
 									nLabel <- as.character(round(nObs))
 									rLabel <- as.character(round(rObs))
@@ -587,29 +604,31 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								#rowFootnotes[[variable2Name]] <- c(rowFootnotes[[variableName]], list(index))
 								rowFootnotes[[columnName]] <- c(rowFootnotes[[columnName]], list(index))
 								
-								if (nObs==1){
+								if (nObs==1) {
 									bfObject$bf10 <- 1
 								}
 							} else {
 								# Data: OK
 								# Try: Calculte bfs
 							    
-							    if (test == "pearson"){
+							    if (test == "pearson") {
 							        # TODO: perhaps call this .bfCorrelation(, method=..), where method="pearson", "kendall" or "spearman"
-							        bfObject <- .bfPearsonCorrelation(n=nObs, r=rObs, kappa=priorWidth, ciValue=credibleIntervalsInterval)
-							    } else if(test == "kendall"){
-							        bfObject <- .bfCorrieKernelKendallTau(n=nObs, tau=rObs, kappa = priorWidth, var = 1)
-							    } else {
-							        
+							        bfObject <- .bfPearsonCorrelation(n=nObs, r=rObs, kappa=priorWidth, ciValue=ciValue)
+							    } else if (test == "kendall") {
+							        # TODO (Johnny): now by default var=1
+							        bfObject <- .bfKendallTau(n=nObs, tauObs=rObs, kappa=priorWidth, ciValue=ciValue)
+							    } else if (test == "spearman") {
+							        # TODO (Johnny)
+							        # 
 							    }
 							}
 							
 							# Store in State
 							#
-							if (missingValues=="excludePairwise"){
-								rValuesListExcludePairwise[[variableName]][[columnName]] <- list(rObs)
+							if (missingValues=="excludePairwise") {
+							    rValuesListExcludePairwise[[variableName]][[columnName]] <- list(rObs)
 								bfValuesListExcludePairwise[[priorLabel]][[variableName]][[columnName]] <- bfObject
-							} else if (missingValues=="excludeListwise"){
+							} else if (missingValues=="excludeListwise") {
 								bfValuesListExcludeListwise[[priorLabel]][[nLabel]][[rLabel]] <- bfObject
 							}
 							resultProcessing <- TRUE
@@ -618,7 +637,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						
 					# Processing and reporting ---
 					# 
-					if (resultProcessing){
+					if (isTRUE(resultProcessing)) {
 						# Note: Result reporting: sample r
 						# TODO: also for other kappas and find place to report the credible interval
 						
@@ -630,22 +649,27 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						# 
 						if (hypothesis == "correlated") {
 							reportBf <- bfObject$bf10
+							reportLowerCi <- bfObject$ci$twoSided[1]
+							reportUpperCi <- bfObject$ci$twoSided[3]
 							
-							if (bayesFactorType == "BF01"){
+							if (bayesFactorType == "BF01") {
 								reportBf <- 1/reportBf
 							}
-						} else if (hypothesis == "correlatedPositively"){
+						} else if (hypothesis == "correlatedPositively") {
 							# TODO: Still need to implement this for general rho0, rather than rho0=0
-							
 							reportBf <- bfObject$bfPlus0
+							reportLowerCi <- bfObject$ci$plusSided[1]
+							reportUpperCi <- bfObject$ci$plusSided[3]
 							
-							if (bayesFactorType == "BF01"){
+							if (bayesFactorType == "BF01") {
 								reportBf <- 1/reportBf
 							}
 						} else if (hypothesis == "correlatedNegatively") {
 							reportBf <- bfObject$bfMin0
+							reportLowerCi <- bfObject$ci$minSided[1]
+							reportUpperCi <- bfObject$ci$minSided[3]
 							
-							if (bayesFactorType == "BF01"){
+							if (bayesFactorType == "BF01") {
 								reportBf <- 1/reportBf
 							}
 						} 
@@ -653,7 +677,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						# MarkUp: Per row (variable): add footnote per row
 						#
 						# Note: Flagging at the data [report]
-						if (flagSupported && is.na(reportBf) == FALSE) {
+						if (isTRUE(flagSupported) && is.na(reportBf) == FALSE) {
 							if (reportBf > 100) {
 								rowFootnotes[[columnName]] <- list("***")
 							} else if (reportBf > 30) {
@@ -664,22 +688,29 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						}
 						
 						# Note: Flagging and report bfs [report]
-						if (reportBayesFactors) {
+						if (isTRUE(reportBayesFactors)) {
 							if (bayesFactorType == "LogBF10") {
 								reportBf <- base::log10(reportBf)
 							}
 							
 							bayesFactorsList[[length(bayesFactorsList)+1]] <- .clean(reportBf)
 						}
+						
+						if (isTRUE(credibleInterval)) {
+						    upperCiList[[length(upperCiList)+1]] <- .clean(reportUpperCi)
+						    lowerCiList[[length(lowerCiList)+1]] <- .clean(reportLowerCi)
+						}
 					} # Close: Results reporting from 1 retrieved or 2 performed
 					
 					
 					# Note: No retrieval and no performance. Thus fill in full stops
 					#
-					if (retrievalFailure && perform!="run"){
+					if (retrievalFailure && perform!="run") {
 						# No data retrieved from state and nothing run
 						row[[length(row)+1]] <- "."
 						bayesFactorsList[[length(bayesFactorsList)+1]] <- "."
+						upperCiList[[length(upperCiList)+1]] <- "."
+						lowerCiList[[length(lowerCiList)+1]] <- "."
 					} # Close: Results reporting from initialisation
 				} # Close loop: each column
 				#
@@ -687,10 +718,20 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				
 				# Reporting: Take each bf in the list i+1, i+2, .. numberOfVariables and fill in
 				#
-				if (reportBayesFactors){
-					for (bf in bayesFactorsList){
+				if (isTRUE(reportBayesFactors)) {
+					for (bf in bayesFactorsList) {
 						row[[length(row)+1]] <- bf
 					}
+				}
+				
+				if (isTRUE(credibleInterval)) {
+				    for (upperCi in upperCiList) {
+				        row[[length(row)+1]] <- upperCi
+				    }
+				    
+				    for (lowerCi in lowerCiList) {
+				        row[[length(row)+1]] <- lowerCi
+				    }
 				}
 			} # Close loop: each test	
 			
@@ -721,7 +762,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 }
 ## Help functions ------------------------------------------------------------
 # 0.1 Prior specification Pearson's Rho
-.excludePairwiseCorData <- function(v1, v2){
+.excludePairwiseCorData <- function(v1, v2) {
 	# To exclude the data pairwise
 	#
 	screenedData <- list(v1=v1, v2=v2)
@@ -729,7 +770,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	removeIndex1 <- which(is.na(v1))
 	removeIndex2 <- which(is.na(v2))
 	removeIndex <- unique(c(removeIndex1, removeIndex2))
-	if (length(removeIndex) > 0){
+	if (length(removeIndex) > 0) {
 		screenedData$v1 <- v1[-(removeIndex)]
 		screenedData$v2 <- v2[-(removeIndex)]
 	}
@@ -737,7 +778,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	return(screenedData)
 }
 
-.stretchedBeta <- function(rho, alpha, beta){
+.stretchedBeta <- function(rho, alpha, beta) {
 	result <- 1/2*dbeta((rho+1)/2, alpha, beta)
 	return(result)
 }
@@ -765,30 +806,30 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	return(result)
 }
 # 0.2 Prior specification Kendall's Tau
-.scaledBetaTau <- function(tau, alpha=1, beta=1){
-  result <-   ((pi*2^(-2*alpha))/beta(alpha,alpha))  * cos((pi*tau)/2)^(2*alpha-1)
+.scaledBetaTau <- function(tauPop, alpha=1, beta=1) {
+  result <- ((pi*2^(-2*alpha))/beta(alpha,alpha))  * cos((pi*tauPop)/2)^(2*alpha-1)
   return(result)
 }
 
-.priorTau <- function(tau, kappa){
-  .scaledBetaTau(tau, alpha = (1/kappa), beta = (1/kappa))
+.priorTau <- function(tauPop, kappa) {
+  .scaledBetaTau(tauPop, alpha = (1/kappa), beta = (1/kappa))
 }
 
-.priorTauPlus <- function(tau, kappa=1) {
-  nonNegativeIndex <- tau >=0
-  lessThanOneIndex <- tau <=1
+.priorTauPlus <- function(tauPop, kappa=1) {
+  nonNegativeIndex <- tauPop >=0
+  lessThanOneIndex <- tauPop <=1
   valueIndex <- as.logical(nonNegativeIndex*lessThanOneIndex)
-  result <- tau*0
-  result[valueIndex] <- 2*.priorTau(tau[valueIndex], kappa)
+  result <- tauPop*0
+  result[valueIndex] <- 2*.priorTau(tauPop[valueIndex], kappa)
   return(result)
 }
 
-.priorTauMin <- function(tau, kappa=1) {
-  negativeIndex <- tau <=0
-  greaterThanMinOneIndex <- tau >= -1
+.priorTauMin <- function(tauPop, kappa=1) {
+  negativeIndex <- tauPop <=0
+  greaterThanMinOneIndex <- tauPop >= -1
   valueIndex <- as.logical(negativeIndex*greaterThanMinOneIndex)
-  result <- tau*0
-  result[valueIndex] <- 2*.priorTau(tau[valueIndex], kappa)
+  result <- tauPop*0
+  result[valueIndex] <- 2*.priorTau(tauPop[valueIndex], kappa)
   return(result)
 }
 
@@ -819,12 +860,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	return(result)
 }
 
-.hFunctionCombined <- function(nOri, rOri, nRep, rRep, rho){
+.hFunctionCombined <- function(nOri, rOri, nRep, rRep, rho) {
     result <- .hFunction(n=nOri, r=rOri, rho)*.hFunction(n=nRep, r=rRep, rho) 
     return(result)
 }
 
-.hFunctionCombinedTwoSided <- function(nOri, rOri, nRep, rRep, rho){
+.hFunctionCombinedTwoSided <- function(nOri, rOri, nRep, rRep, rho) {
     result <- .aFunction(n=nOri, r=rOri, rho)*.aFunction(n=nRep, r=rRep, rho) +
         .bFunction(n=nOri, r=rOri, rho)*.bFunction(n=nRep, r=rRep, rho)
     return(result)
@@ -855,9 +896,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# with parameter alpha. If kappa = 1 then uniform prior on rho
 	#
 	#
-	if (n <= 2){
+	if (n <= 2) {
 		return(1)
-	} else if (any(is.na(r))){
+	} else if (any(is.na(r))) {
 		return(NA)
 	}
 	# TODO: use or vectorise with an apply function
@@ -871,7 +912,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		lgamma((n+2/kappa-1)/2)-lgamma((n+2/kappa)/2)+logHyperTerm
     realResult <- exp(Re(logResult))
 	
-    if (realResult < 0){
+    if (realResult < 0) {
         return(NA)
     }
     
@@ -885,9 +926,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# Jeffreys (1961), pp. 289-292
 	# This is the exact result, see EJ
 	##
-	if (n <= 2){
+	if (n <= 2) {
 		return(1)
-	} else if ( any(is.na(r)) ){
+	} else if ( any(is.na(r)) ) {
 		return(NA)
 	}
 	
@@ -900,7 +941,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     logTerm <- lgamma((n+2/kappa-1)/2)-lgamma((n+2/kappa)/2)-lbeta(1/kappa, 1/kappa)
     result <- sqrt(pi)*2^(1-2/kappa)*exp(logTerm)*hyperTerm
 	
-    if (result < 0){
+    if (result < 0) {
         return(NA)
     }
     return(result)
@@ -909,14 +950,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 # 2.3 Two-sided third Bayes factor
 # .bfCorNumerical <- function(n, r, kappa=1, lowerRho=-1, upperRho=1) {
 # 	# Numerically integrate Jeffreys approximation of the likelihood
-# 	integrand <- function(rho){.hJeffreysApprox(n=n, r=r, rho)*.priorRho(rho, kappa)}
+# 	integrand <- function(rho) {.hJeffreysApprox(n=n, r=r, rho)*.priorRho(rho, kappa)}
 # 	someIntegral <- try(silent=TRUE, integrate(integrand, lowerRho, upperRho))
 # 	
-# 	if (isTryError(someIntegral)){
+# 	if (isTryError(someIntegral)) {
 # 		return(NA)
 # 	}
 # 	
-# 	if (someIntegral$message=="OK"){
+# 	if (someIntegral$message=="OK") {
 # 		return(someIntegral$value)
 # 	} else {
 # 		return(NA)
@@ -933,7 +974,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 # 	# 2. check for r=1, r=-1
 # 	#
 # 	# TODO: REMOVE ALL NUMERICAL STUFF
-# 	if ( any(is.na(r)) ){
+# 	if ( any(is.na(r)) ) {
 # 		return(NA)
 # 	}
 # 	# TODO: use which
@@ -945,9 +986,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 # 	# TODO: be very careful here, might integrate over non-finite function
 # 	jeffreysNumericalIntegrate <- .bfCorNumerical(n=n, r=r, kappa, lowerRho=-1, upperRho=1)
 # 	
-# 	if (is.na(jeffreysNumericalIntegrate) || jeffreysNumericalIntegrate < 0){
+# 	if (is.na(jeffreysNumericalIntegrate) || jeffreysNumericalIntegrate < 0) {
 # 		return(NA)
-# 	} else if (jeffreysNumericalIntegrate >= 0){
+# 	} else if (jeffreysNumericalIntegrate >= 0) {
 # 		# jeffreys numerical integrate success
 # 		return(jeffreysNumericalIntegrate)
 # 	} else {
@@ -958,7 +999,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 # }
 
 # 2.3 Savage-Dickey beta approximation
-.bfSavageDickeyBetaData <- function(n, r, kappa=1, rho0=0){
+.bfSavageDickeyBetaData <- function(n, r, kappa=1, rho0=0) {
     # Savage-Dickey based on a beta approximation
     #
     #
@@ -966,26 +1007,26 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     return(.bfSavageDickeyBeta(a=fit$betaA, b=fit$betaB, kappa=kappa, rho0=rho0))
 }
 
-.bfSavageDickeyOneSidedAdapt <- function(bf10, a, b, kappa=1, rho0=0){
+.bfSavageDickeyOneSidedAdapt <- function(bf10, a, b, kappa=1, rho0=0) {
     return(.bfSavageDickeyBeta(bf10=bf10, a=a, b=b, kappa))
 }
 
 
-.bfSavageDickeyBeta <- function(a, b, kappa=1, rho0=0, bf10=NULL){
+.bfSavageDickeyBeta <- function(a, b, kappa=1, rho0=0, bf10=NULL) {
     # Savage-Dickey based on a beta approximation
     # Default failure for infinite bf10
     # Depending on bf10 define the result list
     #
     #
     
-    if (is.null(bf10)){
+    if (is.null(bf10)) {
         result <- list(bf10=NA, bfPlus0=NA, bfMin0=NA, betaA=a, betaB=b)
         
         savageDickeyNumerator <- .priorRho(rho0, kappa)
         savageDickeyDenominator <- .stretchedBeta(rho0, alpha=a, beta=b)
         bf10 <- try(savageDickeyNumerator/savageDickeyDenominator)
         
-        if (isTryError(bf10)){
+        if (isTryError(bf10)) {
             # NAs
             return(result)
         } else {
@@ -995,24 +1036,24 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
         result <- list(bf10=bf10, bfPlus0=NA, bfMin0=NA, betaA=a, betaB=b)
     }
     
-    if (is.na(bf10)){
+    if (is.na(bf10)) {
         # Failure
         return(result)
     } 
     
-    if (bf10 < 0){
+    if (bf10 < 0) {
         # Total failure it's true
         return(result)
     }
     
-    if (is.infinite(bf10)){
+    if (is.infinite(bf10)) {
         # .bfCorrieKernel gives the default values for the one sided ones
         #
         result$bf10 <- Inf
         return(result)
     } 
     
-    if (is.finite(bf10)){
+    if (is.finite(bf10)) {
         # bf10 is finite, now calculate one-sided stuff
         #
         
@@ -1021,12 +1062,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
         
         leftProportion <- stats::pbeta(1/2, shape1=a, shape2=b)
         
-        if (is.na(leftProportion)){
+        if (is.na(leftProportion)) {
             result <- utils::modifyList(result, list(bfPlus0=NA, bfMin0=NA, minSidedTooPeaked=TRUE, plusSidedTooPeaked=TRUE))
             return(result)
         }
         
-        if (leftProportion > 0 && leftProportion < 1){
+        if (leftProportion > 0 && leftProportion < 1) {
             result$plusSidedTooPeaked <- FALSE
             result$minSidedTooPeaked <- FALSE
             
@@ -1035,16 +1076,16 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
         } else {
             rightProportion <- stats::pbeta(1/2, shape1=a, shape2=b, lower.tail=FALSE)
             
-            if (!is.na(rightProportion) && rightProportion < 1){
+            if (!is.na(rightProportion) && rightProportion < 1) {
                 result$plusSidedTooPeaked <- FALSE
                 result$minSidedTooPeaked <- FALSE
                 
                 result$bfMin0 <- 2*bf10*(1-rightProportion)
                 result$bfPlus0 <- 2*bf10*rightProportion
-            } else if (leftProportion >= 1){
+            } else if (leftProportion >= 1) {
                 result$bfMin0 <- 2*bf10
                 result$bfPlus0 <- 0
-            } else if (rightProportion >= 1){
+            } else if (rightProportion >= 1) {
                 result$bfMin0 <- 0
                 result$bfPlus0 <- 2*bf10
             } else {
@@ -1059,13 +1100,13 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 # 2.4 The Marsman MH sampler 
 
-.logTarget <- function(z, n, r, kappa){
+.logTarget <- function(z, n, r, kappa) {
 	# z is Fisher's transformation for r, but also use it for rho
 	# The Fisher z transform and the log (likelihood*prior*Jacobian) of the tranformation
 	(0.5*(n - 1))*log(1 - tanh(z)^2) - (n - 1 - 0.5)*log(1 - tanh(z)*r)+log(1-tanh(z)^2)/kappa
 }
 
-.logProposal <- function(z, n, r){
+.logProposal <- function(z, n, r) {
 	# z is Fisher's transformation for r, but also use it for rho
 	# The log sampling distribution as per Fisher approximation, however, swtiched the role of r and rho 
 	# in the mean. This is reasonable as the sampling distribution of r looks a bit like that of rho (the real one)
@@ -1094,7 +1135,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	}
 }
 
-.marsmanMHSampler <- function(n, r, kappa=1, nIters=50000){
+.marsmanMHSampler <- function(n, r, kappa=1, nIters=50000) {
 	rhoMetropolisChain <- NULL
 	yTemp <- r
 	
@@ -1120,9 +1161,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	#
     result <- list(bf10=NA, bfPlus0=NA, bfMin0=NA)
     
-	if (n <= 2){
+	if (n <= 2) {
 		return(1)
-	} else if ( any(is.na(r)) ){
+	} else if ( any(is.na(r)) ) {
 		return(NA)
 	}
 	# TODO: use which
@@ -1133,7 +1174,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     bf01 <- ((2*n-3)/pi)^(.5)*(1-r^2)^((n-4)/2)
     bf10 <- 1/bf01
     
-    if (bf10 < 0){
+    if (bf10 < 0) {
         return(result)
     }
     
@@ -1141,19 +1182,19 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
         return(result)
     }
     
-    if (is.finite(bf10)){
+    if (is.finite(bf10)) {
         result$bf10 <- bf10 
         result$twoSidedTooPeaked <- FALSE
         
         return(result)
     }
 	
-    if (is.infinite(bf10)){
+    if (is.infinite(bf10)) {
         # Note: Check extreme
-        if (r >= 0){
+        if (r >= 0) {
             result$bfPlus0 <- Inf
             result$bfMin0 <- 0
-        } else if (r < 0){
+        } else if (r < 0) {
             result$bfPlus0 <- 0
             result$bfMin0 <- Inf
         }
@@ -1169,7 +1210,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 # 3.0 One-sided preparation ----------------------------------------------------
 # For .bfPlus0Exact
 # For .bfPlus0Exact
-.mPlusExact <- function(n, r, kappa=1){
+.mPlusExact <- function(n, r, kappa=1) {
 	# Ly et al 2015
 	# This is the contribution of one-sided test
 	#
@@ -1196,7 +1237,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 }
 
 # For .bfPlus0EJeffreysIntegrate
-.mPlusJeffreysIntegrate <- function(n, r, kappa=1){
+.mPlusJeffreysIntegrate <- function(n, r, kappa=1) {
 	# Ly et al 2015
 	# This is the exact result with symmetric beta prior on rho
 	# This is the contribution of one-sided test
@@ -1210,7 +1251,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 }
 
 # 
-# .bfPlus0Numerical <- function(n, r, kappa=1, lowerRho=0, upperRho=1){
+# .bfPlus0Numerical <- function(n, r, kappa=1, lowerRho=0, upperRho=1) {
 # 	# Ly et al 2015
 # 	# This is a numerical approximation
 # 	# with parameter kappa. If kappa = 1 then uniform prior on rho
@@ -1220,12 +1261,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 # 	# This is the contribution of one-sided test
 # 	#
 # 	#
-# 	if ( any(is.na(r)) ){
+# 	if ( any(is.na(r)) ) {
 # 		return(NA)
 # 	}
 # 	if (kappa >= 1 && n > 2 && r>=1) {
 # 		return(Inf)
-# 	} else if (kappa >= 1 && n > 2 && r<=-1){
+# 	} else if (kappa >= 1 && n > 2 && r<=-1) {
 # 		return(0)
 # 	}
 # 	
@@ -1233,10 +1274,10 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 # 	# TODO: be very careful here, might integrate over non-finite function
 # 	# in particular with the exact h function. 
 # 	#
-# 	if (!is.na(my.numerical.Jeffreys) && my.numerical.Jeffreys >= 0){
+# 	if (!is.na(my.numerical.Jeffreys) && my.numerical.Jeffreys >= 0) {
 # 		# Note: Numerical Jeffreys okay
 # 		return(my.numerical.Jeffreys)
-# 	} else if (is.na(my.numerical.Jeffreys) || my.numerical.Jeffreys < 0){
+# 	} else if (is.na(my.numerical.Jeffreys) || my.numerical.Jeffreys < 0) {
 # 		# All numerical failed
 # 		return(NA)
 # 	} 
@@ -1244,7 +1285,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 # }
 
 ## Suit:
-.bfHypergeo <- function(n, r, kappa=1, methodNumber=1, hyperGeoOverFlowThreshold=24){
+.bfHypergeo <- function(n, r, kappa=1, methodNumber=1, hyperGeoOverFlowThreshold=24) {
     # Outputs: 
     #   list of bfs and the beta fits based on the exact form of the reduced likelihood,
     #   see Ly, Marsman and Wagenmakers (2017) "Analytic Posteriors for Pearson’s Correlation Coefficient".  
@@ -1262,29 +1303,28 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
                    try(silent=TRUE, .bf10JeffreysIntegrate(n=n, r=r, kappa))
     )
     
-    if (isTryError(bf10)){
+    if (isTryError(bf10)) {
         # all NAs
         return(result)
     } 
     
-    if (is.na(bf10)){
+    if (is.na(bf10)) {
         # all NAs
         return(result)
     } 
     
-    if (bf10 <0){
+    if (bf10 <0) {
         # Total failure it's true
         return(result)
     }
     
-    if (is.finite(bf10)){
+    if (is.finite(bf10)) {
         # Store
         result$bf10 <- bf10 
         result$twoSidedTooPeaked <- FALSE
         
-        if (log(bf10) < hyperGeoOverFlowThreshold){
+        if (log(bf10) < hyperGeoOverFlowThreshold) {
             # No overflow, can use exact result
-            
             switch(methodNumber, 
                    {
                        bfPlus0 <- try(silent=TRUE, bf10 + .mPlusExact(n=n, r=r, kappa))
@@ -1296,7 +1336,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
                    }
             )
             
-            if (is.finite(bfPlus0) && is.finite(bfMin0)){
+            if (is.finite(bfPlus0) && is.finite(bfMin0)) {
                 tempList <- list(bfPlus0=bfPlus0, bfMin0=bfMin0, plusSidedTooPeaked=FALSE, minSidedTooPeaked=FALSE) 
                 result <- utils::modifyList(result, tempList)
                 return(result)
@@ -1324,22 +1364,22 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
         bf10 <- try(silent=TRUE, exp=integrate(twoSidedIntegrand, -1, 1)$value)
         result$bf10 <- bf10
         
-        if (is.infinite(result$bf10)){
+        if (is.infinite(result$bf10)) {
             # .bfCorrieKernel gives the default values for the one sided ones
             #
             return(result)
         } 
         
-        if (is.finite(bf10)){
+        if (is.finite(bf10)) {
             # Numerical integrated bf10 is finite
             result$twoSidedTooPeaked <- FALSE
             
-            if (methodNumber==1){
+            if (methodNumber==1) {
                 plusSidedIntegrand <- function(x){.hFunction(n=n, r=r, x)*.priorRhoPlus(x, kappa=kappa)}
                 minSidedIntegrand <- function(x){.hFunction(n=n, r=r, x)*.priorRhoMin(x, kappa=kappa)}
             }
             
-            if (methodNumber==2){
+            if (methodNumber==2) {
                 plusSidedIntegrand <- function(x){.hJeffreysApprox(n=n, r=r, x)*.priorRhoPlus(x, kappa=kappa)}
                 minSidedIntegrand <- function(x){.hJeffreysApprox(n=n, r=r, x)*.priorRhoMin(x, kappa=kappa)}	    
             }
@@ -1347,7 +1387,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
             bfPlus0 <- try(silent=TRUE, exp=integrate(plusSidedIntegrand, 0, 1)$value)
             bfMin0 <- try(silent=TRUE, exp=integrate(minSidedIntegrand, -1, 0)$value)
             
-            if (is.finite(bfPlus0) && is.finite(bfMin0)){
+            if (is.finite(bfPlus0) && is.finite(bfMin0)) {
                 tempList <- list(bf10=bf10, bfMin0=bfMin0, bfPlus0=bfPlus0, plusSidedTooPeaked=FALSE, minSidedTooPeaked=FALSE)
                 result <- utils::modifyList(result, tempList)
                 return(result)
@@ -1371,7 +1411,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     return(result)
 }
 
-.bfCorrieKernel <- function(n, r, kappa=1, method="exact", ciValue=0.95, hyperGeoOverFlowThreshold=24){
+.bfCorrieKernel <- function(n, r, kappa=1, method="exact", ciValue=0.95, hyperGeoOverFlowThreshold=24) {
     # The idea is incremental when it comes to method numbers, if 1 doesn't work then go down. 
     # In particular, when 
     #	methodNumber=1: exact result Ly et al (2015)
@@ -1393,13 +1433,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     #
     
     tempList <- list()
-    # TODO: MIGHT just not fill in everything yet
     # result <- list(n=n, r=r, kappa=kappa, bf10=NA, bfPlus0=NA, bfMin0=NA, methodNumber=NA, betaA=NA, betaB=NA, 
     # 			   twoSidedTooPeaked=FALSE, plusSidedTooPeaked=FALSE, minSidedTooPeaked=FALSE, 
-    # 			   CIs=tempList, ciValues=ciValue, acceptanceRate=1)
+    # 			   ci=tempList, ciValue=ciValue, acceptanceRate=1)
     result <- list(n=n, r=r, kappa=kappa, bf10=NULL, bfPlus0=NULL, bfMin0=NULL, methodNumber=NULL, betaA=NULL, betaB=NULL, 
                    twoSidedTooPeaked=NULL, plusSidedTooPeaked=NULL, minSidedTooPeaked=NULL, 
-                   CIs=tempList, ciValues=ciValue, acceptanceRate=1)
+                   ci=tempList, ciValue=ciValue, acceptanceRate=1)
     
     # When bf10 is na, modify result with naList
     #
@@ -1421,7 +1460,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     
     # Note: Data check
     #
-    if (any(is.na(r)) ){
+    if (any(is.na(r)) ) {
         result$methodNumber <- 6
         result <- utils::modifyList(result, naList)
         return(result)
@@ -1431,20 +1470,20 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     # "No" prior, alternative model is the same as the null model
     # TODO: however this bound of 0.002 is arbitrarily chosen. I should choose this based on a trade off
     # between r and n, but it doesn't really matter. 
-    if (kappa <= 0.002){
+    if (kappa <= 0.002) {
         result <- utils::modifyList(result, predictiveMatchingList)
         return(result)
     }
     
-    check.r <- abs(r) >= 1 # check whether |r| >= 1
-    if (n <= 2 || kappa==0){
+    checkR <- abs(r) >= 1 # check whether |r| >= 1
+    if (n <= 2 || kappa==0) {
         result <- utils::modifyList(result, predictiveMatchingList)
         return(result)
-    } else if (kappa >= 1 && n > 2 && check.r) {
-        if (r > 0){
+    } else if (kappa >= 1 && n > 2 && checkR) {
+        if (r > 0) {
             result$bfPlus0 <- Inf
             result$bfMin0 <- 0
-        } else if (r <= 0){
+        } else if (r <= 0) {
             result$bfPlus0 <- 0
             result$bfMin0 <- Inf
         }
@@ -1454,25 +1493,25 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     
     # Note: Define different methods and method number
     #
-    if (method=="exact" || method==1){
+    if (method=="exact" || method==1) {
         result$methodNumber <- 1
         tempList <- .bfHypergeo(n=n, r=r, kappa=kappa, methodNumber=1, hyperGeoOverFlowThreshold=hyperGeoOverFlowThreshold)
         result <- utils::modifyList(result, tempList)
     } 
     
-    if (method=="jeffreysIntegrate" || method==2){
+    if (method=="jeffreysIntegrate" || method==2) {
         result$methodNumber <- 2
         tempList <- .bfHypergeo(n=n, r=r, kappa=kappa, methodNumber=2, hyperGeoOverFlowThreshold=hyperGeoOverFlowThreshold)
         result <- utils::modifyList(result, tempList)
     } 
     
-    if (method=="savageDickeyBeta" || method==3){
+    if (method=="savageDickeyBeta" || method==3) {
         result$methodNumber <- 3
         tempList <- .bfSavageDickeyBetaData(n=n, r=r, kappa=kappa)
         result <- utils::modifyList(result, tempList)
     } 
     
-    if  (method=="metropolisHastings" || method==4){
+    if  (method=="metropolisHastings" || method==4) {
         # We use the Marsman Sampler (c) here based on posterior model fit. 
         result$methodNumber <- 4
         marsmanResult <- .marsmanMHSampler(n=n, r=r, kappa=kappa)
@@ -1482,18 +1521,25 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
         result <- utils::modifyList(result, tempResult)
     } 
     
-    if (method=="jeffreysApprox" || method==5){
+    if (method=="jeffreysApprox" || method==5) {
         result$methodNumber <- 5
         tempResult <- .bf10JeffreysApprox(n=n, r=r)
         result <- utils::modifyList(result, tempResult)
         return(result)
     }
     
-    if (is.infinite(result$bf10)){
-        if (r >= 0){
+    # Note: bf10: CHECK
+    if (is.na(result$bf10)) {
+        # Posterior not interesting
+        result <- utils::modifyList(result, naList)
+        return(result)
+    }
+    
+    if (is.infinite(result$bf10)) {
+        if (r >= 0) {
             result$bfPlus0 <- Inf
             result$bfMin0 <- 0
-        } else if (r < 0){
+        } else if (r < 0) {
             result$bfPlus0 <- 0
             result$bfMin0 <- Inf
         }
@@ -1502,21 +1548,15 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
         return(result)
     }
     
-    # Note: bf10: CHECK
-    if (is.na(result$bf10)){
-        # Posterior not interesting
-        result <- utils::modifyList(result, naList)
-        return(result)
-    }
-    
     # Note: Calculate credible intervals
-    if (!any(is.na(result$betaA), is.na(result$betaB))) {
-        result$CIs <- .credibleIntervals(alpha=result$betaA, beta=result$betaB, ciValue=ciValue)
+    #
+    if (!is.null(ciValue)) {
+        # Note: ciValue=NULL, speeds up the calculations for sequential analysis
+        result$ci <- .computePearsonCredibleInterval(alpha=result$betaA, beta=result$betaB, ciValue=result$ciValue)
     }
-    
+
     # Note: bfPlus0, bfMin0: CHECK
     #
-    
     if (any(is.na(result$bfPlus0), is.na(result$bfMin0))) {
         # Note: bfPlus0, bfMin0: NOT ok
         # 	if one is NA, then both are NA
@@ -1529,13 +1569,13 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
         return(result)
     } 
     
-    if (any(c(result$bfPlus0, result$bfMin0)==0)){
+    if (any(c(result$bfPlus0, result$bfMin0)==0)) {
         # Note: bfPlus0, bfMin0: EXTREME
         # 	if one is extreme, so is the other
-        if (result$bfPlus0==0){
+        if (result$bfPlus0==0) {
             result$bfPlus0 <- 0
             result$bfMin0 <- Inf
-        } else if (result$bfMin0==0){
+        } else if (result$bfMin0==0) {
             result$bfPlus0 <- Inf
             result$bfMin0 <- 0
         }
@@ -1548,8 +1588,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     
     
     # Note: bfPlus0, bfMin0: CHECK COHERENCE:
-    if (result$bfPlus0 > 1 && result$bfMin0 > 1 || any(c(result$bfPlus0, result$bfMin0)<0)){
-        if (r>0){
+    if (result$bfPlus0 > 1 && result$bfMin0 > 1 || any(c(result$bfPlus0, result$bfMin0)<0)) {
+        if (r > 0) {
             # Note: Data: OK, 
             # 		bf10: OK. 
             #		bfPlus0: OK
@@ -1572,7 +1612,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     return(result)
 }
 
-.bfPearsonCorrelation <- function(n, r, kappa=1, ciValue=0.95, hyperGeoOverFlowThreshold=24){
+.bfPearsonCorrelation <- function(n, r, kappa=1, ciValue=0.95, hyperGeoOverFlowThreshold=24) {
     # Wrapper around .bfCorrieKernel
     #
     result <- list(bf10=NA, bfPlus0=NA, bfMin0=NA)
@@ -1580,7 +1620,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     
     while (any(is.na(c(result$bf10, result$bfPlus0, result$bfMin0)), 
                is.infinite(c(result$bf10, result$bfPlus0, result$bfMin0))) 
-           && methodNumber <= 4){
+           && methodNumber <= 4) {
         # Note: Try all normal methods
         # 1. Exact
         # 2. semi-exact result
@@ -1592,73 +1632,117 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
         methodNumber <- methodNumber+1
     }
     
-    if (any(is.na(c(result$bf10, result$bfPlus0, result$bfMin0)))  || 
-        any(is.infinite(c(result$bf10, result$bfPlus0, result$bfMin0)))
-    ){
-        # Note: all normal methods FAILED. Use Jeffreys approximation
-        # NO CI INTERVALS FOR credibleIntervalsInterval
-        result <- .bfCorrieKernel(n=n, r=r, kappa=kappa, method="jeffreysApprox")
-    }
-    
     result$call <- paste0(".bfPearsonCorrelation(n=", n, ", r=", r, ", kappa=", kappa, ", ciValue=", ciValue, ", hyperGeoOverFlowThreshold=", hyperGeoOverFlowThreshold, ")")
     return(result)
 }
 
-.postDensKendallTau <- function(delta,Tstar,n,kappa=1,var=var,test="two-sided"){ 
-  if(test == "two-sided"){priorDens <- .priorTau(delta,kappa)
-  } else if(test == "positive"){priorDens <- .priorTauPlus(delta,kappa)
-  } else if(test == "negative"){priorDens <- .priorTauMin(delta,kappa)}
-  priorDens <- .priorTau(delta,kappa)
-  dens <- stats::dnorm(Tstar,(1.5*delta*sqrt(n)),sd=sqrt(var))* priorDens
-  return(dens)
+.postDensKendallTau <- function(n, Tstar, tauPop, kappa=1, var=1, test="two-sided") { 
+    if (test == "two-sided") { 
+        priorDens <- .priorTau(tauPop, kappa)
+    } else if (test == "positive") { 
+        priorDens <- .priorTauPlus(tauPop, kappa)
+    } else if (test == "negative") { 
+        priorDens <- .priorTauMin(tauPop, kappa)
+    }
+    
+    priorDens <- .priorTau(tauPop, kappa)
+    dens <- stats::dnorm(Tstar, (1.5*tauPop*sqrt(n)), sd=sqrt(var))* priorDens
+    return(dens)
 }
-.posteriorTau <- function(delta,kentau,n,kappa=1,var=1,test="two-sided"){
-  Tstar <- (kentau * ((n*(n-1))/2))/sqrt(n*(n-1)*(2*n+5)/18)
-  if(test == "two-sided"){lims <- c(-1,1)
-  } else if(test == "positive"){lims <- c(0,1)
-  } else if(test == "negative"){lims <- c(-1,0)}
-  logicalCensor <- (delta >= lims[1] & delta <= lims[2])
-  dens <- logicalCensor*.postDensKendallTau(delta,Tstar,n,kappa,var,test=test)/
-    integrate(function(delta){.postDensKendallTau(delta,Tstar,n,kappa,var,test=test)},lims[1],lims[2])$value
+
+.posteriorTau <- function(n, tauObs, tauPop, kappa=1, var=1, test="two-sided") {
+    Tstar <- (tauObs * ((n*(n-1))/2))/sqrt(n*(n-1)*(2*n+5)/18)
+    if (test == "two-sided") {
+        lims <- c(-1, 1)
+    } else if (test == "positive") {
+        lims <- c(0, 1)
+    } else if (test == "negative") { 
+        lims <- c(-1, 0)
+    }
+    
+    logicalCensor <- (tauPop >= lims[1] & tauPop <= lims[2])
+    # TODO (Johnny): Wrap this into a try statement. and do an isTryError
+    dens <- logicalCensor*.postDensKendallTau(n=n, Tstar=Tstar, tauPop=tauPop, kappa=kappa, var=var, test=test)/
+        integrate(function(x){.postDensKendallTau(n=n, Tstar=Tstar, tauPop=x, kappa=kappa, var=var, test=test)}, lims[1], lims[2])$value
 } 
 
-.bfCorrieKernelKendallTau <- function(tau, n, kappa=1, var=1, ciValue=0.95){ 
-  tempList <- list(vector())
-  output <- list(n=n, r=tau, bf10=NA, bfPlus0=NA, bfMin0=NA, methodNumber=NA, betaA=NA, betaB=NA, 
-                 twoSidedTooPeaked=FALSE, plusSidedTooPeaked=FALSE, minSidedTooPeaked=FALSE, 
-                 CIs=tempList, ciValues=ciValue, acceptanceRate=1)
-  if (any(is.na(tau)) ){
-    output$methodNumber <- 6
-    output$twoSidedTooPeaked <- TRUE 
-    output$plusSidedTooPeaked <- TRUE 
-    output$minSidedTooPeaked <- TRUE
-    return(output)
-  }
-  if (kappa <= 0.002){
-    output$bf10 <- 1
-    output$bfPlus0 <- 1
-    output$bfMin0 <- 1
-    output$methodNumber <- 6
-    return(output)
-  }
-  
-  output$bf10 <- .priorTau(0,kappa)/.posteriorTau(0,tau,n,kappa=kappa,var=var,test="two-sided")
-  output$bfPlus0 <- .priorTauPlus(0,kappa)/.posteriorTau(0,tau,n,kappa=kappa,var=var,test="positive")
-  output$bfMin0 <- .priorTauMin(0,kappa)/.posteriorTau(0,tau,n,kappa=kappa,var=var,test="negative")
-  output$methodNumber <- NA
-  return(output)
+
+.bfKendallTau <- function(n, tauObs, kappa=1, var=1, ciValue=0.95) {
+    # TODO (Johnny): Wrapper around .bfCorrieKernelKendallTau to loop over the different methods, if any
+    #
+    result <- list(bf10=NA, bfPlus0=NA, bfMin0=NA)
+    methodNumber <- 1
+    
+    # # TODO (Johnny) loop number
+    # while (any(is.na(c(result$bf10, result$bfPlus0, result$bfMin0)), 
+    #            is.infinite(c(result$bf10, result$bfPlus0, result$bfMin0))) 
+    #        && methodNumber <= 4) {
+    #     # Note: Try all normal methods
+    #     # 1. Exact
+    #     # 2. semi-exact result
+    #     # 3. Savage-Dickey beta approximation
+    #     # 4. Marsman sampler
+    #     
+    #     result <- .bfCorrieKernel(n=n, r=r, kappa=kappa, method=methodNumber, ciValue=ciValue, hyperGeoOverFlowThreshold=hyperGeoOverFlowThreshold)
+    #     #}
+    #     methodNumber <- methodNumber+1
+    # }
+    result <- .bfCorrieKernelKendallTau(n=n, tauObs=tauObs, kappa=kappa, var=var, ciValue=ciValue)
+    result$call <- paste0(".bfKendallTau(n=", n, ", tauObs=", tauObs, ", kappa=", kappa, ", var=", var, ", ciValue=", ciValue, ")")
+    return(result)
+}
+
+.bfCorrieKernelKendallTau <- function(n, tauObs, kappa=1, var=1, ciValue=0.95) { 
+    tempList <- list(vector())
+    result <- list(n=n, r=tauObs, bf10=NA, bfPlus0=NA, bfMin0=NA, methodNumber=NA, betaA=NA, betaB=NA, 
+                   twoSidedTooPeaked=FALSE, plusSidedTooPeaked=FALSE, minSidedTooPeaked=FALSE, 
+                   ci=tempList, ciValue=ciValue, acceptanceRate=1)
+    
+    predictiveMatchingList <- list(bf10=1, bfPlus0=1, bfMin0=1, twoSidedTooPeaked=FALSE, plusSidedTooPeaked=FALSE, minSidedTooPeaked=FALSE, methodNumber=0)
+    
+    if (kappa <= 0.002) {
+        result <- utils::modifyList(result, predictiveMatchingList)
+        return(result)
+    }
+    
+    if (any(is.na(tauObs)) ) {
+        result$methodNumber <- 6
+        result$twoSidedTooPeaked <- TRUE 
+        result$plusSidedTooPeaked <- TRUE 
+        result$minSidedTooPeaked <- TRUE
+        return(result)
+    }
+    
+    checkTau <- abs(tauObs) >= 1 # check whether |tau| >= 1
+    if (n <= 2 || kappa==0) {
+        result <- utils::modifyList(result, predictiveMatchingList)
+        return(result)
+    }
+    
+    result$bf10 <- .priorTau(tauPop=0, kappa)/.posteriorTau(n=n, tauObs=tauObs, tauPop=0, kappa=kappa, var=var, test="two-sided")
+    result$bfPlus0 <- .priorTauPlus(tauPop=0, kappa)/.posteriorTau(n=n, tauObs=tauObs, tauPop=0, kappa=kappa, var=var, test="positive")
+    result$bfMin0 <- .priorTauMin(tauPop=0, kappa)/.posteriorTau(n=n, tauObs=tauObs, tauPop=0, kappa=kappa, var=var, test="negative")
+    result$methodNumber <- 1
+    
+    # Calculate credible intervals
+    if (!is.null(ciValue)) {
+        result$ci <- .computeKendallCredibleInterval(n=n, tauObs=tauObs, kappa=kappa, var=var, ciValue=ciValue)
+    }
+    return(result)
 }
 
 
 # Replication Bayes factors
 #
 
-.bfCorrieRepJosine <- function(nOri, rOri, nRep, rRep, kappa=1, hyperGeoOverFlowThreshold=24){
+.bfCorrieRepJosine <- function(nOri, rOri, nRep, rRep, kappa=1, hyperGeoOverFlowThreshold=24) {
     result <- list(combined=list(bf10=NA, bfPlus0=NA, bfMin0=NA))
     
     methodNumber <- 1
-    while (methodNumber <= 4 && any(is.na(c(result$combined$bf10, result$combined$bfPlus0, result$combined$bfMin0)), 
-                                            is.infinite(result$combined$bf10))) {
+    while (methodNumber <= 4 && any(is.na(c(result$combined$bf10, 
+                                            result$combined$bfPlus0, 
+                                            result$combined$bfMin0)), 
+                                    is.infinite(result$combined$bf10))) {
         result <- .bfCorrieRepJosineKernel(nOri=nOri, rOri=rOri, nRep=nRep, rRep=rRep, kappa=kappa, methodNumber=methodNumber, hyperGeoOverFlowThreshold=hyperGeoOverFlowThreshold)
         methodNumber <- methodNumber+1
     }
@@ -1669,7 +1753,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     return(result)
 }
 
-.bfCorrieRepJosineKernel <- function(nOri, rOri, nRep, rRep, kappa=1, methodNumber=1, hyperGeoOverFlowThreshold=24){
+.bfCorrieRepJosineKernel <- function(nOri, rOri, nRep, rRep, kappa=1, methodNumber=1, hyperGeoOverFlowThreshold=24) {
     # 
     #  Ly, A., Etz, A., Marsman, M., & Wagenmakers, E.--J. (2017) Replication Bayes factors. Manuscript in preparation
     #  Ly, A., Marsman, M., & Wagenmakers, E.-J. (2017) Analytic Posteriors for Pearson’s Correlation Coefficient. Under review
@@ -1706,17 +1790,17 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
                                     bf10=NA, bfPlus0=NA, bfMin0=NA), 
                    repMethodNumber=methodNumber)
     
-    if (is.infinite(oriObj$bf10)){
+    if (is.infinite(oriObj$bf10)) {
         # No use, too big too great, it's true
         #
         return(result)
     }
     
     # Calculate beta fits of the combined likelihood
-    if (kappa==1){
+    if (kappa==1) {
         #
         # methods 3 and 4 are highly dependent on the beta fits based on kappa = 1
-        if (methodNumber %in% 3:4 && any(is.na(c(oriObj$betaA, oriObj$betaB)))){
+        if (methodNumber %in% 3:4 && any(is.na(c(oriObj$betaA, oriObj$betaB)))) {
             # Total failure, real sad
             return(result)
         }
@@ -1724,7 +1808,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
         repObj <- .bfCorrieKernel(n=nRep, r=rRep, method=methodNumber, kappa=kappa)
         result$rep <- repObj
         
-        if (methodNumber %in% 3:4 && any(is.na(c(repObj$betaA, repObj$betaB)))){
+        if (methodNumber %in% 3:4 && any(is.na(c(repObj$betaA, repObj$betaB)))) {
             # Failed 
             return(result)
         }
@@ -1734,12 +1818,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     } else {
         # kappa \neq 1
         
-        if (methodNumber %in% 1:3){
+        if (methodNumber %in% 1:3) {
             oriLikelihoodFit <- .posteriorBetaParameters(n=nOri, r=rOri, kappa=1)
             repLikelihoodFit <- .posteriorBetaParameters(n=nRep, r=rRep, kappa=1)
         }
         
-        if (methodNumber==4){
+        if (methodNumber==4) {
             oriLikelihoodFit <- .marsmanMHSampler(n=nOri, r=rOri, kappa=1)
             
             if (is.na(oriLikelihoodFit$betaA) || is.na(oriLikelihoodFit$betaB)) {
@@ -1751,9 +1835,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
             repLikelihoodFit <- .marsmanMHSampler(n=nRep, r=rRep, kappa=1)
         }
         
-        if (methodNumber %in% 3:4){
+        if (methodNumber %in% 3:4) {
             if (any(is.na(c(oriLikelihoodFit$betaA, oriLikelihoodFit$betaB, 
-                            repLikelihoodFit$betaA, repLikelihoodFit$betaB)))){
+                            repLikelihoodFit$betaA, repLikelihoodFit$betaB)))) {
                 # Failure
                 return(result)
             }
@@ -1779,33 +1863,33 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     } 
     
     
-    if (methodNumber %in% 1:2){
+    if (methodNumber %in% 1:2) {
         bf10Combined <- try(silent=TRUE, exp=integrate(twoSidedIntegrand, -1, 1)$value)
         
-        if (isTryError(bf10Combined)){
+        if (isTryError(bf10Combined)) {
             # Total loser, can't even calculate the combined bf10
             return(result)
         }
         
-        if (is.na(bf10Combined)){
+        if (is.na(bf10Combined)) {
             # So sad combined bf10 not available
             result$combined$bf10 <- NA
             return(result)
         }
         
-        if (is.infinite(bf10Combined)){
+        if (is.infinite(bf10Combined)) {
             # So big, totally infinite
             #
             result$combined$bf10 <- Inf
             result$repGivenOri$bf10 <- Inf
             
-            if (r >= 0){
+            if (r >= 0) {
                 result$combined$bfPlus0 <- Inf
                 result$combined$bfMin0 <- 0
                 
                 result$repGivenOri$bfPlus0 <- Inf
                 result$repGivenOri$bfMin0 <- 0
-            } else if (r < 0){
+            } else if (r < 0) {
                 result$combined$bfPlus0 <- 0
                 result$combined$bfMin0 <- Inf
                 
@@ -1815,13 +1899,13 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
             return(result)
         }
         
-        if (is.finite(bf10Combined)){
+        if (is.finite(bf10Combined)) {
             # Total winner, real great, it's the best
             
             result$combined$bf10 <- bf10Combined
             result$repGivenOri$bf10 <- bf10Combined/oriObj$bf10
             
-            if (log(bf10Combined) > hyperGeoOverFlowThreshold){
+            if (log(bf10Combined) > hyperGeoOverFlowThreshold) {
                 # So big like my hands, can't handle it need to adjust
                 tempList <- .bfSavageDickeyOneSidedAdapt(bf10Combined, a=result$combined$betaA, b=result$combined$betaB, kappa=kappa)
                 
@@ -1833,7 +1917,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
                 bfPlus0Combined <- try(silent=TRUE, exp=integrate(plusSidedIntegrand, 0, 1)$value)
                 bfMin0Combined <- try(silent=TRUE, exp=integrate(minSidedIntegrand, -1, 0)$value)
                 
-                if (isTryError(list(bfPlus0Combined, bfMin0Combined))){
+                if (isTryError(list(bfPlus0Combined, bfMin0Combined))) {
                     # One sided failed
                     return(result)
                 }
@@ -1846,12 +1930,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
                 if (is.na(bfPlus0Combined) || is.na(bfMin0Combined) || 
                     is.infinite(bfPlus0Combined) || is.infinite(bfMin0Combined) || 
                     (bfPlus0Combined > 1 && bfMin0Combined > 1) || 
-                    (bfPlus0Combined < 1 && bfMin0Combined < 1) ){
+                    (bfPlus0Combined < 1 && bfMin0Combined < 1) ) {
                     tempList <- .bfSavageDickeyOneSidedAdapt(bf10Combined, a=result$combined$betaA, b=result$combined$betaB, kappa=kappa)
                     
                     result$combined$bfPlus0 <- tempList$bfPlus0
                     result$combined$bfMin0 <- tempList$bfMin0
-                } else{
+                } else {
                     # All good, store numerically calculated one-sided bfs
                     
                     result$combined$bfPlus0 <- bfPlus0Combined
@@ -1862,7 +1946,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     } 
     
     
-    if (methodNumber %in% 3:4){
+    if (methodNumber %in% 3:4) {
         # TODO:
         if (!is.na(result$combined$betaA) && !is.na(result$combined$betaB)) {
             # Use beta fit and Savage-Dickey 
@@ -1889,26 +1973,26 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 
 # 4.1 Two-sided
-.posteriorRho <- function(n, r, rho, kappa=1){
-	if (!is.na(r) && !r==0){
+.posteriorRho <- function(n, r, rho, kappa=1) {
+	if (!is.na(r) && !r==0) {
 		return(1/.bf10Exact(n=n, r=r, kappa)*.hFunction(n=n, r=r, rho)*.priorRho(rho, kappa))
-	} else if (!is.na(r) && r==0){
+	} else if (!is.na(r) && r==0) {
 		return(1/.bf10JeffreysIntegrate(n=n, r=r, kappa)*.hJeffreysApprox(n=n, r=r, rho)*.priorRho(rho, kappa))
 	}	
 }
 
-.posteriorRhoPlus <- function(n, r, rho, kappa=1){
-	if (!is.na(r) && !r==0){
+.posteriorRhoPlus <- function(n, r, rho, kappa=1) {
+	if (!is.na(r) && !r==0) {
 		return(1/.bfCorrieKernel(n=n, r=r, kappa, method="exact")$bfPlus0*.hFunction(n=n, r=r, rho)*.priorRhoPlus(rho, kappa))
-	} else if (!is.na(r) && r==0){
+	} else if (!is.na(r) && r==0) {
 		return(1/.bfCorrieKernel(n=n, r=r, kappa, method="jeffreysIntegrate")$bfPlus0*.hJeffreysApprox(n=n, r=r, rho)*.priorRhoPlus(rho, kappa))
 	}	
 }
 
-.posteriorRhoMin <- function(n, r, rho, kappa=1){
-	if (!is.na(r) && !r==0){.approximatePosteriorRho
+.posteriorRhoMin <- function(n, r, rho, kappa=1) {
+	if (!is.na(r) && !r==0) { 
 		return(1/.bfCorrieKernel(n=n, r=r, kappa, method="exact")$bfMin0*.hFunction(n=n, r=r, rho)*.priorRhoMin(rho, kappa))
-	} else if (!is.na(r) && r==0){
+	} else if (!is.na(r) && r==0) {
 		return(1/.bfCorrieKernel(n=n, r=r, kappa, method="jeffreysIntegrate")$bfMin0*.hJeffreysApprox(n=n, r=r, rho)*.priorRhoMin(rho, kappa))
 	}	
 	
@@ -1930,7 +2014,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 
 # 4.2 
-.posteriorMean <- function(n, r, kappa=1){
+.posteriorMean <- function(n, r, kappa=1) {
 	# Posterior mean of the .bf10Exact
 	#	That is, (rho+1)/2, thus, on 0,1 scale to estimate a, b in a beta distribution
 	#
@@ -1940,7 +2024,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	#	this is rather bad as a formal procedure due to the fact that it violates the 
 	#	definition of products of sum sequences. Though it yields a good approximation.
 	#
-	# 	if (abs(r) < 0.5 && n <= 200){
+	# 	if (abs(r) < 0.5 && n <= 200) {
 	# 		logTerm <- 2*(lgamma(n/2)-lgamma((n-1)/2))
 	# 		hyperTerm1 <- Re(hypergeo::hypergeo((n/2), (n/2), ((n+2/kappa+2)/2), r^2))
 	# 		hyperTerm2 <- Re(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), ((n+2/kappa)/2), r^2))
@@ -1992,15 +2076,15 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	#result <- 2*r/(n+2/kappa)*some.factor
 	#return(result)
 	
-	if (n <= 2){
+	if (n <= 2) {
 		return(NA)
-	} else if (any(is.na(r))){
+	} else if (any(is.na(r))) {
 		return(NA)
 	}
 	# TODO: use which
-	check.r <- abs(r) >= 1 # check whether |r| >= 1
+	checkR <- abs(r) >= 1 # check whether |r| >= 1
 	
-	if (kappa >= 1 && n > 2 && check.r) {
+	if (kappa >= 1 && n > 2 && checkR) {
 		return(r)
 	}
 	#logHyperTerm <- log(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), ((n+2/kappa)/2), r^2))
@@ -2010,7 +2094,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	logResult <- 2*(lgamma(n/2)-lgamma((n-1)/2))
 	result <- (2*kappa*r)/(2+n*kappa)*exp(logResult)*hyperTerm1/hyperTerm2
 	
-	if (is.na(result) || abs(result) > 1){
+	if (is.na(result) || abs(result) > 1) {
 		return(r)
 	} else {
 		return(result)
@@ -2018,18 +2102,18 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 }
 
 
-.posteriorSecondMoment <- function(n, r, kappa=1){
+.posteriorSecondMoment <- function(n, r, kappa=1) {
 	#
 	#
-	if (n <= 2){
+	if (n <= 2) {
 		return(NA)
-	} else if (any(is.na(r))){
+	} else if (any(is.na(r))) {
 		return(NA)
 	}
 	# TODO: use which
-	check.r <- abs(r) >= 1 # check whether |r| >= 1
+	checkR <- abs(r) >= 1 # check whether |r| >= 1
 	
-	if (kappa >= 1 && n > 2 && check.r) {
+	if (kappa >= 1 && n > 2 && checkR) {
 		return(r)
 	}
 	#log.hyper.term <- log(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), ((n+2/kappa)/2), r^2))
@@ -2039,14 +2123,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 	result <- kappa/(n*kappa+2)*hyperTerm1/hyperTerm2
 	
-	if (is.na(result) || result <= 0){
+	if (is.na(result) || result <= 0) {
 		return(NA)
 	} else {
 		return(result)
 	}
 }
 
-.posteriorVariance <- function(n, r, kappa=1){
+.posteriorVariance <- function(n, r, kappa=1) {
 	# Posterior mean of the .bf10Exact
 	#	That is, (rho+1)/2, thus, on 0,1 scale to estimate a, b in a beta distribution
 	#
@@ -2066,14 +2150,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 	result <- .posteriorSecondMoment(n,r,kappa)-(.posteriorMean(n,r,kappa))^2
 	
-	if (is.na(result) | result <= 0){
+	if (is.na(result) | result <= 0) {
 		return(NA)
-	} else{
+	} else {
 		return(result)
 	}
 }
 
-.betaParameterEstimates <- function(someMean, someVar){
+.betaParameterEstimates <- function(someMean, someVar) {
 	# someMean \in (0, 1)
 	# TODO: think about someMean = 0
 	some.a <- someMean*(someMean*(1-someMean)/someVar-1)
@@ -2083,95 +2167,133 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	return(result)
 }
 
-.posteriorBetaParameters <- function(n, r, kappa=1){
+.posteriorBetaParameters <- function(n, r, kappa=1) {
 	some.mu <- try((.posteriorMean(n=n, r=r, kappa)+1)/2)
 	some.var <- try(.posteriorVariance(n=n, r=r, kappa)/2^2)
 	
-	if (is(some.mu, "try-error") || is(some.var, "try-error") || is.na(some.mu) || is.na(some.var)){
+	if (is(some.mu, "try-error") || is(some.var, "try-error") || is.na(some.mu) || is.na(some.var)) {
 		# TODO: Before doing this try the MH sampler
 		return(list(betaA=NA, betaB=NA))
 	} else {
 		return(.betaParameterEstimates(some.mu, some.var))
 	}
 }
-# 
-# .posteriorAParameter <- function(n=n, r=r, alpha=1){
-# 	# Method of moments estimate for a beta distribution
-# 	# First scale back to means on the (0, 1) domain
-# 	
-# 	
-# 	myA <- .betaAParameterFit(some.mu, some.var)
-# 	return(myA)
-# }
-# 
-# .posteriorBParameter <- function(n=n, r=r, alpha=1){
-# 	# Method of moments estimate for a beta distribution
-# 	# First scale back to means on the (0, 1) domain
-# 	some.mu <- (.posteriorMean(n=n, r=r, alpha)+1)/2
-# 	some.var <- .posteriorVariance(n=n, r=r, alpha)/2^2
-# 	
-# 	myB <- (1-some.mu)*(some.mu*(1-some.mu)/some.var-1)
-# 	return(myB)
-# }
 
-.credibleIntervals <- function(alpha, beta, ciValue){
-	output <- list(betaA=alpha, betaB=beta, twoSidedCI=NA, minSidedCI=NA, plusSidedCI=NA)
-	typeOne <- 1-ciValue
-	excessLevel <- typeOne/2
-	# Two sided:
-	if (is.na(alpha) || is.na(beta)){
-		return(output)
-	} else {
-		lowerCIZeroOne <- try(qbeta(excessLevel, alpha, beta))
-		medianCIZeroOne <- try(qbeta(1/2, alpha, beta))
-		upperCIZeroOne <- try(qbeta(1-excessLevel, alpha, beta))
-		if (is(lowerCIZeroOne, "try-error") || is(medianCIZeroOne, "try-error") || is(upperCIZeroOne, "try-error")) {
-			return(output)
-		} else {
-			lowerCI <- 2*lowerCIZeroOne-1
-			medianCI <- 2*medianCIZeroOne-1
-			upperCI <- 2*upperCIZeroOne-1
-		}
-	}
-	output$twoSidedCI <- c(lowerCI, medianCI, upperCI)
-	# One sided:
-	output$minSidedCI <- .minSidedCredibleInterval(alpha, beta, ciValue)
-	# The problem is symmetric
-	temp  <- .minSidedCredibleInterval(beta, alpha, ciValue)
-	output$plusSidedCI <- c(-temp[3], -temp[2], -temp[1])
-	wrapOutput <- list(list())
-	ci.label <- as.character(round(ciValue, 5))
-	wrapOutput[[ci.label]] <- output
-	return(wrapOutput)
+.computePearsonCredibleInterval <- function(alpha, beta, ciValue) {
+    # Compute Pearson's correlation credible interval based on a beta fit
+    #
+    result <- list(twoSided=NA, minSided=NA, plusSided=NA)
+    
+    if (is.null(ciValue)) {
+        return(result)
+    }
+    
+    if (ciValue <= 0 || ciValue >= 1) {
+        # Note: Don't modify ciValue <- solve this at a higher level
+        return(result)
+    }
+    
+    typeOne <- 1-ciValue
+    excessLevel <- typeOne/2
+    
+    if (any(is.na(c(alpha, beta)), is.infinite(c(alpha, beta)))) {
+        return(result)
+    } else {
+        # Note: Zero one refers to the problem on the (0, 1) rather than on (-1, 1)
+        lowerCIZeroOne <- try(qbeta(excessLevel, alpha, beta))
+        medianCIZeroOne <- try(qbeta(1/2, alpha, beta))
+        upperCIZeroOne <- try(qbeta(1-excessLevel, alpha, beta))
+        
+        if (isTryError(list(lowerCIZeroOne, medianCIZeroOne, upperCIZeroOne))) {
+            return(result)
+        } else {
+            # Note: This is simply an application of the definition of the stretched beta
+            lowerCI <- 2*lowerCIZeroOne-1 
+            medianCI <- 2*medianCIZeroOne-1
+            upperCI <- 2*upperCIZeroOne-1
+        }
+    }
+    
+    
+    result$twoSided <- c(lowerCI, medianCI, upperCI)
+    
+    # One sided:
+    result$minSided <- .computePearsonMinSidedCredibleInterval(alpha, beta, ciValue)
+    # The problem is symmetric
+    temp  <- .computePearsonMinSidedCredibleInterval(beta, alpha, ciValue)
+    result$plusSided <- c(-temp[3], -temp[2], -temp[1])
+    
+    return(result)
 }
 
-.minSidedCredibleInterval <- function(alpha, beta, ciValue){
-	output <- NA
-	typeOne <- 1-ciValue
-	excessLevel <- typeOne/2
-	if (is.na(alpha) || is.na(beta)){
-		return(output)
-	} else {
-		leftArea <- pbeta(1/2, alpha, beta)
-		lowerCIZeroOne <- try(qbeta(excessLevel*leftArea, alpha, beta))
-		medianCIZeroOne <- try(qbeta(leftArea/2, alpha, beta))
-		upperCIZeroOne <- try(qbeta((1-excessLevel)*leftArea, alpha, beta))
-		if (is(lowerCIZeroOne, "try-error") || is(medianCIZeroOne, "try-error") || is(upperCIZeroOne, "try-error")) {
-			return(output)
-		} else {
-			lowerCI <- 2*lowerCIZeroOne-1
-			medianCI <- 2*medianCIZeroOne-1
-			upperCI <- 2*upperCIZeroOne-1
-		}
-	}
-	output <- c(lowerCI, medianCI, upperCI)
-	return(output)
+.computeKendallCredibleInterval <- function(n, tauObs, kappa=1, var=1, ciValue=0.95) {
+    # Compute Kendall's correlation credible interval based on a sampling
+    #
+    # tau is the observed Kendall's tau
+    #
+    result <- list(twoSided=NA, minSided=NA, plusSided=NA)
+    
+    if (is.null(ciValue)) {
+        return(result)
+    }
+    
+    if (ciValue <= 0 || ciValue >= 1) {
+        # Note: Don't modify ciValue <- solve this at a higher level
+        return(result)
+    }
+    
+    result$twoSided <- .credibleIntervalKendallTau(n=n, tauObs=tauObs, kappa=kappa, var=var, test="two-sided", ciValue=ciValue)
+    result$plusSided <- .credibleIntervalKendallTau(n=n, tauObs=tauObs, kappa=kappa, var=var, test="positive", ciValue=ciValue)
+    result$minSided <- .credibleIntervalKendallTau(n=n, tauObs=tauObs, kappa=kappa, var=var, test="negative", ciValue=ciValue)
+    return(result)
+}
+
+# Compute credible intervals kendalls tau
+.credibleIntervalKendallTau <- function(n, tauObs, kappa=1, var=1, test="two-sided", ciValue = 0.95) {
+    nSeqs <- 1000
+    lowCI <- (1-ciValue)/2
+    upCI <- (1+ciValue)/2
+    tauPopDomain <- seq(-1, 1, length.out=(nSeqs-1))
+    densVals <- .posteriorTau(n=n, tauObs=tauObs, tauPop=tauPopDomain, kappa=kappa, var=var, test=test)
+    cdfVals <- cumsum((densVals[1:(nSeqs-1)] + densVals[2:nSeqs]) * 0.5 * (tauPopDomain[2]-tauPopDomain[1]))
+    #densVals <- cumsum(densVals)/sum(densVals)
+    lowerCI <- tauPopDomain[which(cdfVals>=lowCI)[1]]
+    upperCI <- tauPopDomain[which(cdfVals>=upCI)[1]]
+    median <- tauPopDomain[which(cdfVals>=0.5)[1]]
+    return(c(lowerCI, median, upperCI))
+}
+
+.computePearsonMinSidedCredibleInterval <- function(alpha, beta, ciValue) {
+    # Compute min sided Pearson's correlation credible interval based on a beta fit
+    #
+    result <- NA
+    typeOne <- 1-ciValue
+    excessLevel <- typeOne/2
+    
+    if (any(is.na(c(alpha, beta)), is.infinite(c(alpha, beta)))) {
+        return(result)
+    } else {
+        leftArea <- pbeta(1/2, alpha, beta)
+        lowerCIZeroOne <- try(qbeta(excessLevel*leftArea, alpha, beta))
+        medianCIZeroOne <- try(qbeta(leftArea/2, alpha, beta))
+        upperCIZeroOne <- try(qbeta((1-excessLevel)*leftArea, alpha, beta))
+        
+        if (isTryError(list(lowerCIZeroOne, medianCIZeroOne, upperCIZeroOne))) {
+            return(result)
+        } else {
+            lowerCI <- 2*lowerCIZeroOne-1
+            medianCI <- 2*medianCIZeroOne-1
+            upperCI <- 2*upperCIZeroOne-1
+        }
+    }
+    result <- c(lowerCI, medianCI, upperCI)
+    return(result)
 }
 
 #}
 # 
 # 
-# .rhoQuantile <- function(n=n, r=r, kappa=1, ciPercentage=.95){
+# .rhoQuantile <- function(n=n, r=r, kappa=1, ciPercentage=.95) {
 # 	# Fitting parameters
 # 	beta.fit <- try(.posteriorBetaParameters(n=n, r=r, kappa))
 # 	
@@ -2179,7 +2301,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 # 		return(c(NA, r, NA))
 # 	}
 # 	
-# 	# Output median
+# 	# result median
 # 	some.median <- 2*qbeta(.5, beta.fit$alpha, beta.fit$beta)-1
 # 	
 # 	# Calculate CI
@@ -2189,7 +2311,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 # 	right.CI <- try(2*qbeta((1-type.one/2), beta.fit$alpha, beta.fit$beta)-1)
 # 	
 # 	# TODO: This actually doesn't override left.CI or rigthCI even if they are try-errors
-# 	if ( is(left.CI, "try-error") || is(right.CI, "try-error") || is.na(left.CI) || is.na(right.CI) ){
+# 	if ( is(left.CI, "try-error") || is(right.CI, "try-error") || is.na(left.CI) || is.na(right.CI) ) {
 # 		return(c(NA, r, NA))
 # 	} else {
 # 		return(c(left.CI, some.median, right.CI))
@@ -2256,10 +2378,13 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		priorLine <- .priorRho(rho=rho, kappa=kappa)
 		posteriorLine <- .posteriorRho(rho=rho, n=n, r=r, kappa=kappa)
 		try(silent=TRUE, expr = {
-		  numIntegrate <- integrate(function(x){.posteriorRho(x, n=n, r=r, kappa=kappa)},lower = -1,upper=1)$value
-		  if(round(numIntegrate,digits=2) != 1){posteriorLine <- .approximatePosteriorRho(rho = rho, n = n, r = r)}
-		  })
-		posteriorLineTau <- .posteriorTau(delta=rho, kentau=tau, n=n, kappa=kappa, var=1, test="two-sided")
+		    numIntegrate <- integrate(function(x){.posteriorRho(x, n=n, r=r, kappa=kappa)},lower = -1,upper=1)$value
+		    if (round(numIntegrate,digits=2) != 1) {
+		        posteriorLine <- .approximatePosteriorRho(rho = rho, n = n, r = r)
+		    }
+		})
+		
+		posteriorLineTau <- .posteriorTau(n=n, tauObs=tau, tauPop=rho, kappa=kappa, var=1, test="two-sided")
 		legendPosition <- c("topright","topleft")[ (which(posteriorLine == max(posteriorLine))>500)+1 ]
 		
 		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
@@ -2277,13 +2402,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 	} else if (oneSided == "right") {
 	
-		priorLine <- .priorRhoPlus(rho=rho, kappa=kappa)
-		posteriorLine <- .posteriorRhoPlus(rho=rho, n=n, r=r, kappa= kappa)
-		try(silent=TRUE, expr = {
-		  numIntegrate <- integrate(function(x){.posteriorRhoPlus(x, n=n, r=r, kappa=kappa)},lower = -1,upper=1)$value
-		  if(round(numIntegrate,digits=2) != 1){posteriorLine <- .approximatePosteriorRhoPlus(rho = rho, n = n, r = r)}
-		})
-		posteriorLineTau <- .posteriorTau(delta=rho, kentau=tau, n=n, kappa=kappa, var=1, test="positive")
+	    priorLine <- .priorRhoPlus(rho=rho, kappa=kappa)
+	    posteriorLine <- .posteriorRhoPlus(rho=rho, n=n, r=r, kappa= kappa)
+	    try(silent=TRUE, expr = {
+	        numIntegrate <- integrate(function(x){.posteriorRhoPlus(x, n=n, r=r, kappa=kappa)},lower = -1,upper=1)$value
+	        if (round(numIntegrate,digits=2) != 1){posteriorLine <- .approximatePosteriorRhoPlus(rho = rho, n = n, r = r)}
+	    })
+		 
+		posteriorLineTau <- .posteriorTau(n=n, tauObs=tau, tauPop=rho, kappa=kappa, var=1, test="positive")
 		legendPosition <- "topleft"
 		
 		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
@@ -2302,14 +2428,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		}
 			
 	} else if (oneSided == "left") {
-	
 		priorLine <- .priorRhoMin(rho=rho, kappa=kappa)
 		posteriorLine <- .posteriorRhoMin(rho=rho, n=n, r=r, kappa=kappa)
 		try(silent=TRUE, expr = {
 		  numIntegrate <- integrate(function(x){.posteriorRhoMin(x, n=n, r=r, kappa=kappa)},lower = -1,upper=1)$value
-		  if(round(numIntegrate,digits=2) != 1){posteriorLine <- .approximatePosteriorRhoMin(rho = rho, n = n, r = r)}
+		  if (round(numIntegrate,digits=2) != 1) {posteriorLine <- .approximatePosteriorRhoMin(rho = rho, n = n, r = r)}
 		})
-		posteriorLineTau <- .posteriorTau(delta=rho, kentau=tau, n=n, kappa=kappa, var=1, test="negative")
+		
+		posteriorLineTau <- .posteriorTau(n=n, tauObs=tau, tauPop=rho, kappa=kappa, var=1, test="negative")
 		legendPosition <- "topright"
 		
 		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
@@ -2348,15 +2474,15 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 		plot(1, 1, xlim= xlim, ylim= ylim, ylab= "", xlab="", type= "n", axes= FALSE)
 		
-	  if(addRho & addTau){
+	  if (addRho & addTau) {
 	    lines(rho, posteriorLine, lwd= lwd)
 	    lines(rho,posteriorLineTau, lwd=lwd, lty=2)
 	    xlabExpression <- "Correlation Coefficient"
 	    legend(x=legendPosition[1],y=legendPosition[2], legend=c(expression(rho),expression(tau)), lty=1:2, cex=cexYlab, bty="n", lwd=lwd)
-	  } else if(addRho){
+	  } else if (addRho) {
 	    lines(rho, posteriorLine, lwd= lwd)
 	    xlabExpression <- expression(rho)
-	  } else if(addTau){
+	  } else if (addTau) {
 	    lines(rho,posteriorLineTau, lwd=lwd)
 	    xlabExpression <- expression(tau)
 	  }
@@ -2563,9 +2689,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							}
 							
 							if (col > row) {
-								
 								if (options$plotCorrelationMatrix) {
-								
 									if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
 										.plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
 									} else {
@@ -2573,10 +2697,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 										errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
 										.displayError(errorMessagePlot, cexText=cexText)
 									}
-									
 								} else {
-								
-									plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+								    plot(1, type= "n", axes= FALSE, ylab="", xlab="")
 								}
 							}
 							

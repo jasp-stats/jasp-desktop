@@ -711,7 +711,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Mann-Whitney U</string>
+            <string>Wilcoxon signed-rank</string>
            </property>
           </widget>
          </item>
@@ -764,8 +764,6 @@
     </spacer>
    </item>
   </layout>
-  <zorder>topWidget</zorder>
-  <zorder>widget_3</zorder>
  </widget>
  <customwidgets>
   <customwidget>

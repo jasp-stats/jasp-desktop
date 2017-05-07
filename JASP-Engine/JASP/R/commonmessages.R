@@ -17,6 +17,7 @@
 
 .messages <- function(class, type) {
   
+
   m <- list()
   
   ### Error general
@@ -47,3 +48,4 @@
   return(m[[class]][[type]])
 
 }
+

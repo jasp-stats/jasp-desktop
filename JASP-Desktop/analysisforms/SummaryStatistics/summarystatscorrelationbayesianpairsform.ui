@@ -167,7 +167,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>&amp;Log( BF₁₀ )</string>
+               <string>&amp;Log(BF₁₀)</string>
               </property>
              </widget>
             </item>
@@ -394,9 +394,9 @@
          </item>
          <item row="3" column="0" colspan="3">
           <widget class="BoundCheckBox" name="plotBayesFactorRobustness">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -584,14 +584,14 @@
    <receiver>plotBayesFactorRobustnessAdditionalInfo</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
-	<hint type="sourcelabel">
-	 <x>318</x>
-	 <y>588</y>
-	</hint>
-	<hint type="destinationlabel">
-	 <x>325</x>
-	 <y>611</y>
-	</hint>
+    <hint type="sourcelabel">
+     <x>318</x>
+     <y>588</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>325</x>
+     <y>611</y>
+    </hint>
    </hints>
   </connection>
  </connections>

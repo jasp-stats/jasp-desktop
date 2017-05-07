@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>606</width>
-    <height>431</height>
+    <height>453</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -167,7 +167,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>&amp;Log( BF₁₀ )</string>
+               <string>&amp;Log(BF₁₀)</string>
               </property>
              </widget>
             </item>

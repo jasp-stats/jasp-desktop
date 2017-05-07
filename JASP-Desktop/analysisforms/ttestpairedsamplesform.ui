@@ -633,7 +633,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Wilcoxon signed rank</string>
+            <string>Wilcoxon signed-rank</string>
            </property>
           </widget>
          </item>

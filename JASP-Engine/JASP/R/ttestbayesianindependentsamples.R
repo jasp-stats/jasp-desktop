@@ -18,56 +18,49 @@
 TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 	
 	dependents <- unlist(options$variables)
-	
 	grouping   <- options$groupingVariable
 	
-	if (grouping == "")
-		grouping <- NULL
-	
-	if (is.null(dataset))
-	{	
-		if (perform == "run") {
-			
-			if (options$missingValues == "excludeListwise") {
-				
-				dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=c(dependents, grouping))
-			
-			} else {
-				
-				dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=grouping)
-			}
+	if (grouping == ""){
+	    grouping <- NULL
+	}
 		
+	if (is.null(dataset)) {	
+		if (perform == "run") {
+			if (options$missingValues == "excludeListwise") {
+				dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=c(dependents, grouping))
+			} else {
+			    dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=grouping)
+			}
 		} else {
-			
 			dataset <- .readDataSetHeader(columns.as.numeric=dependents, columns.as.factor=grouping)
 		}
 	}
 	
+	# MarkUp: General: Make container for all the results
 	results <- list()
 	
+	# MarkUp: General: Make container for the structure 
 	meta <- list()
 	
 	meta[[1]] <- list(name="ttest", type="table")
 	meta[[2]] <- list(name="descriptives", type="object", meta=list(list(name="descriptivesTable", type="table"), list(name = "descriptivesPlots", type = "collection", meta="image")))
-	meta[[3]] <- list(name="inferentialPlots", type="collection", meta=list(	name="plotGroups", type="object",
-																	meta=list(
-																				list(name="PriorPosteriorPlot", type="image"),
-																				list(name="BFrobustnessPlot", type="image"),
-																				list(name="BFsequentialPlot", type="image")
-																				)))
+	meta[[3]] <- list(name="inferentialPlots", type="collection", 
+	                  meta=list(name="plotGroups", type="object", 
+	                            meta=list(list(name="PriorPosteriorPlot", type="image"),
+	                                      list(name="BFrobustnessPlot", type="image"),
+	                                      list(name="BFsequentialPlot", type="image")
+	                            )
+	                  )
+	)
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian T-Test"
 	
-	
 	state <- .retrieveState()
-		
 	diff <- NULL
 	
 	if (!is.null(state)) {
-		
 		diff <- .diff(options, state$options)
-	
 	}
 	
 	ttest.results <- .ttestBayesianIndependentSamplesTTest(dataset, options, perform, state=state, diff=diff)
@@ -92,15 +85,10 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives")
 	
 	if (options$hypothesis == "groupOneGreater") {
-		
 		oneSided <- "right"
-		
 	} else if (options$hypothesis == "groupTwoGreater") {
-		  
-		oneSided <- "left"
-		
+	    oneSided <- "left"
 	} else {
-		
 		oneSided <- FALSE
 	}
 	
@@ -114,7 +102,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	
 	if (options$plotPriorAndPosterior || options$plotSequentialAnalysis || options$plotBayesFactorRobustness || options$descriptivesPlots) {
-		
 		iint <- 1
 		q <- 1
 		descriptInd <- 1
@@ -122,9 +109,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		BFtype <- options$bayesFactorType
 		BFtypeRequiresNewPlot <- TRUE
 		
-		if ( ! is.null(state)) {
-			
-			BFtypeRequiresNewPlot <- FALSE
+		if (!is.null(state)) {
+		    BFtypeRequiresNewPlot <- FALSE
 			BFtypeState <- state$options$bayesFactorType
 			
 			if ((BFtypeState == "LogBF10" || BFtypeState == "BF10") && BFtype == "BF01") {
@@ -135,28 +121,20 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		}
 		
 		for (variable in options[["variables"]]){
-			
-			plotGroups[[iint]] <- list()
+		    plotGroups[[iint]] <- list()
 			plotGroups[[iint]][["title"]] <- variable
 			plotGroups[[iint]][["name"]] <- variable
 			
 			if (options$descriptivesPlots) {
-				
-				if (!is.null(state) && variable %in% state$descriptPlotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$groupingVariable == FALSE &&
+			    if (!is.null(state) && variable %in% state$descriptPlotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$groupingVariable == FALSE &&
 					diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$descriptivesPlotsCredibleInterval == FALSE))) && options$descriptivesPlots) {
-					
-					
-					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+			        # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
 					
 					index <- which(state$descriptPlotVariables == variable)
-					
 					descriptivesPlots[[descriptInd]] <- state$descriptivesPlots[[index]]
-					
-					
-				} else {
-					
-					descriptivesPlot <- list()
+			    } else {
+			        descriptivesPlot <- list()
 					
 					descriptivesPlot[["title"]] <- variable
 					descriptivesPlot[["width"]] <- options$plotWidth
@@ -168,39 +146,31 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					descriptivesPlots[[descriptInd]] <- descriptivesPlot
 				}
 				
-				
 				descriptPlotVariables[[length(descriptPlotVariables)+1]] <- variable
-				
 				descriptInd <- descriptInd + 1
 			}
 			
 			if (options$plotPriorAndPosterior){
-				
-				if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
+			    if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 					&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) &&
 					options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes) {
-					
-					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+			        # 
+			        # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
 					
 					index <- which(state$plotVariables == variable & state$plotTypes == "posteriorPlotAddInfo")
-					
 					plots.ttest[[q]] <- state$plotsTtest[[index]]
-						
-				} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
+			    } else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 							&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) && 
 							!options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlot" %in% state$plotTypes) {
-					
-					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+			        # 
+			        # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# if the requested plot already exists use it
 					
 					index <- which(state$plotVariables == variable & state$plotTypes == "posteriorPlot")
-					
 					plots.ttest[[q]] <- state$plotsTtest[[index]]
-					
-				} else {
-					
-					plot <- list()
+			    } else {
+			        plot <- list()
 					
 					plot[["title"]] <- "Prior and Posterior"
 					plot[["width"]]  <- 530
@@ -225,37 +195,29 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				
 				
 				if (options$plotPriorAndPosteriorAdditionalInfo) {
-					
-					plotTypes[[length(plotTypes)+1]] <- "posteriorPlotAddInfo"
-					
+				    plotTypes[[length(plotTypes)+1]] <- "posteriorPlotAddInfo"
 				} else {
-					
-					plotTypes[[length(plotTypes)+1]] <- "posteriorPlot"
+				    plotTypes[[length(plotTypes)+1]] <- "posteriorPlot"
 				}
 				
 				plotGroups[[iint]][["PriorPosteriorPlot"]] <- plots.ttest[[q]]
 				plotVariables[[length(plotVariables)+1]] <- variable
 				
 				q <- q + 1
-				
-			}
+			} 
 			
 			if (options$plotBayesFactorRobustness) {
-				
-				if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
+			    if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 					&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) &&
 					"robustnessPlot" %in% state$plotTypes) {
-					
-					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+			        #
+			        # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
 					
 					index <- which(state$plotVariables == variable & state$plotTypes == "robustnessPlot")
-					
 					plots.ttest[[q]] <- state$plotsTtest[[index]]
-					
-				} else {
-					
-					plot <- list()
+			    } else {
+			        plot <- list()
 					
 					plot[["title"]] <- "Bayes Factor Robustness Check"
 					plot[["width"]]  <- 530
@@ -287,32 +249,26 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			}
 			
 			if (options$plotSequentialAnalysis) {
-				
-				if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
+			    if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 					&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) &&
 					options$plotSequentialAnalysisRobustness && "sequentialRobustnessPlot" %in% state$plotTypes) {
-					
-					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+			        #
+			        # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
 					
 					index <- which(state$plotVariables == variable & state$plotTypes == "sequentialRobustnessPlot")
-					
 					plots.ttest[[q]] <- state$plotsTtest[[index]]
-					
-				} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
+			    } else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 							&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) && 
 							!options$plotSequentialAnalysisRobustness && "sequentialPlot" %in% state$plotTypes) {
-					
-					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+			        #
+			        # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists use it
 					
 					index <- which(state$plotVariables == variable & state$plotTypes == "sequentialPlot")
-					
 					plots.ttest[[q]] <- state$plotsTtest[[index]]
-					
-				} else {
-					
-					plot <- list()
+			    } else {
+			        plot <- list()
 					
 					plot[["title"]] <- "Sequential Analysis"
 					plot[["width"]]  <- 530
@@ -337,49 +293,43 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				
 				
 				if (options$plotSequentialAnalysisRobustness) {
-					
-					plotTypes[[length(plotTypes)+1]] <- "sequentialRobustnessPlot"
-					
+				    plotTypes[[length(plotTypes)+1]] <- "sequentialRobustnessPlot"
 				} else {
-					
-					plotTypes[[length(plotTypes)+1]] <- "sequentialPlot"
+				    plotTypes[[length(plotTypes)+1]] <- "sequentialPlot"
 				}
 				
 				plotVariables[[length(plotVariables)+1]] <- variable
 				plotGroups[[iint]][["BFsequentialPlot"]] <- plots.ttest[[q]]
 				
 				q <- q + 1
-				
 			}
 			
 			iint <- iint + 1
-			
+		} 
+		
+		if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis){
+		    results[["inferentialPlots"]] <- list(title=ifelse(length(options[["variables"]]) > 1 || sum(c(options$plotPriorAndPosterior, options$plotBayesFactorRobustness, options$plotSequentialAnalysis)) > 1,
+		                                                       "Inferential Plots", "Inferential Plot"), collection=plotGroups)
 		}
-		
-		
-		if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis)
-			results[["inferentialPlots"]] <- list(title=ifelse(length(options[["variables"]]) > 1 || sum(c(options$plotPriorAndPosterior, options$plotBayesFactorRobustness, options$plotSequentialAnalysis)) > 1,
-				"Inferential Plots", "Inferential Plot"), collection=plotGroups)
-		
-		if (options$descriptivesPlots)
-			results[["descriptives"]][["descriptivesPlots"]] <- list(title=ifelse(length(options[["variables"]]) > 1, "Descriptives Plots", "Descriptives Plot"), collection=descriptivesPlots)
+			
+		if (options$descriptivesPlots){
+		    results[["descriptives"]][["descriptivesPlots"]] <- list(title=ifelse(length(options[["variables"]]) > 1, "Descriptives Plots", "Descriptives Plot"), collection=descriptivesPlots)
+		}
+			
 		
 		
 		if (perform == "run" && length(options$variables) > 0 && !is.null(grouping)) {
-			
-			if ( ! .shouldContinue(callback(results)))
-				return()
-			
-			statusInd <- 1
+			if ( ! .shouldContinue(callback(results))){
+			    return()
+			}
+		    
+		    statusInd <- 1
 			i <- 1
 			z <- 1
 			descriptInd <- 1
 			
-			
 			for (variable in options[["variables"]]) {
-				
-				
-				subDataSet <- subset(dataset, select=c(.v(variable), .v(options$groupingVariable)))
+			    subDataSet <- subset(dataset, select=c(.v(variable), .v(options$groupingVariable)))
 				subDataSet <- na.omit(subDataSet)
 				
 				r.size <- options$priorWidth
@@ -387,224 +337,188 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				group2 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== g1,.v(variable)] 
 				group1 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== g2,.v(variable)] 
 				
-				
 				if (options$descriptivesPlots) {
-					
-					
-					if (!is.null(state) && variable %in% state$descriptPlotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$groupingVariable == FALSE &&
+				    if (!is.null(state) && variable %in% state$descriptPlotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$groupingVariable == FALSE &&
 						diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$descriptivesPlotsCredibleInterval == FALSE))) && options$descriptivesPlots) {
-						
+				        #
 						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 						# then, if the requested plot already exists, use it
 						
 						index <- which(state$descriptPlotVariables == variable)
-						
 						descriptivesPlots[[descriptInd]] <- state$descriptivesPlots[[index]]
+				    } else {
+				        results[["descriptives"]][["descriptivesPlots"]][["collection"]][[i]][["status"]] <- "running"
 						
-						
-					} else {
-						
-						results[["descriptives"]][["descriptivesPlots"]][["collection"]][[i]][["status"]] <- "running"
-						
-						if ( ! .shouldContinue(callback(results)))
-							return()
-						
+						if ( ! .shouldContinue(callback(results))){
+						    return()
+						}
+							
 						plot <- descriptivesPlots[[descriptInd]]
 						
 						p <- try(silent= FALSE, expr= {
-								
-								# image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-								# .plot2GroupMeansBayesIndTtest(v1 = group2, v2 = group1, nameV1 = g1, nameV2 = g2, groupingName = options$groupingVariable, dependentName = variable, descriptivesPlotsCredibleInterval=
-								# options$descriptivesPlotsCredibleInterval)
-								# plot[["data"]] <- .endSaveImage(image)
-								
-								p <- .plot2GroupMeansBayesIndTtest(v1 = group2, v2 = group1, nameV1 = g1, nameV2 = g2, 
-																   groupingName = options$groupingVariable, dependentName = variable, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
-								content <- .writeImage(width = options$plotWidth, height = options$plotHeight, plot = p, obj = TRUE)
-								
-								plot[["convertible"]] <- TRUE
-								plot[["obj"]] <- content[["obj"]]
-								plot[["data"]] <- content[["png"]]
-								
-							})
-							
-						if (class(p) == "try-error") {
-							
-							errorMessageTmp <- .extractErrorMessage(p)
+						    # image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+						    # .plot2GroupMeansBayesIndTtest(v1 = group2, v2 = group1, nameV1 = g1, nameV2 = g2, groupingName = options$groupingVariable, dependentName = variable, descriptivesPlotsCredibleInterval=
+						    # options$descriptivesPlotsCredibleInterval)
+						    # plot[["data"]] <- .endSaveImage(image)
+						    
+						    p <- .plot2GroupMeansBayesIndTtest(v1 = group2, v2 = group1, nameV1 = g1, nameV2 = g2, 
+						                                       groupingName = options$groupingVariable, dependentName = variable, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
+						    content <- .writeImage(width = options$plotWidth, height = options$plotHeight, plot = p, obj = TRUE)
+						    
+						    plot[["convertible"]] <- TRUE
+						    plot[["obj"]] <- content[["obj"]]
+						    plot[["data"]] <- content[["png"]]
+						})
+						
+						if (isTryError(p)) {
+						    errorMessageTmp <- .extractErrorMessage(p)
 							errorMessage <- paste0("Plotting not possible: ", errorMessageTmp)
 							plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
 						}
 						
 						plot[["status"]] <- "complete"
-						
 						descriptivesPlots[[descriptInd]] <- plot
+				    }
+				    
+				    results[["descriptives"]][["descriptivesPlots"]][["collection"]] <- descriptivesPlots
+				    descriptInd <- descriptInd + 1
+					
+					if ( ! .shouldContinue(callback(results))){
+					    return()
 					}
-					
-					results[["descriptives"]][["descriptivesPlots"]][["collection"]] <- descriptivesPlots
-
-					descriptInd <- descriptInd + 1
-					
-					if ( ! .shouldContinue(callback(results)))
-						return()
-					
 				}
 				
 				if (options$plotPriorAndPosterior) {
-					
-					if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
+				    if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 						&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) &&
 						options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes) {
-						
-						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+				        #
+				        # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 						# then, if the requested plot already exists, use it
 						
 						index <- which(state$plotVariables == variable & state$plotTypes == "posteriorPlotAddInfo")
-						
 						plots.ttest[[z]] <- state$plotsTtest[[index]]
-						
-					} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE &&
+				    } else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE &&
 								diff$hypothesis == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) && 
 								!options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlot" %in% state$plotTypes) {
-						
-						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+				        #
+				        # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 						# if the requested plot already exists use it
 						
 						index <- which(state$plotVariables == variable & state$plotTypes == "posteriorPlot")
-						
 						plots.ttest[[z]] <- state$plotsTtest[[index]]
+				    } else {
+				        results[["inferentialPlots"]][["collection"]][[i]][["PriorPosteriorPlot"]][["status"]] <- "running"
 						
-					} else {
-						
-						results[["inferentialPlots"]][["collection"]][[i]][["PriorPosteriorPlot"]][["status"]] <- "running"
-						
-						if ( ! .shouldContinue(callback(results)))
-							return()
-						
-						plot <- plots.ttest[[z]]
-						
-						if (status[statusInd] != "error") {
-							
-							p <- try(silent= FALSE, expr= {
-									
-									# image <- .beginSaveImage(530, 400)
-									# .plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post
-									# [i], BFH1H0=BFH1H0)
-									# plot[["data"]] <- .endSaveImage(image)
-									
-									.plotFunc <- function() {
-										.plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth,
-															  addInformation= options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post[i], BFH1H0=BFH1H0)
-									}
-									content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
-
-									plot[["convertible"]] <- TRUE
-									plot[["obj"]] <- content[["obj"]]
-									plot[["data"]] <- content[["png"]]
-									
-								})
-							
-							if (class(p) == "try-error") {
-								
-								errorMessage <- .extractErrorMessage(p)
+						if ( ! .shouldContinue(callback(results))){
+						    return()
+						}
+				        
+				        plot <- plots.ttest[[z]]
+				        
+				        if (status[statusInd] != "error") {
+				            p <- try(silent= FALSE, expr= {
+				                # image <- .beginSaveImage(530, 400)
+				                # .plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post
+				                # [i], BFH1H0=BFH1H0)
+				                # plot[["data"]] <- .endSaveImage(image)
+				                
+				                .plotFunc <- function() {
+				                    .plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth,
+				                                         addInformation= options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post[i], BFH1H0=BFH1H0)
+				                }
+				                
+				                content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+				                
+				                plot[["convertible"]] <- TRUE
+				                plot[["obj"]] <- content[["obj"]]
+				                plot[["data"]] <- content[["png"]]
+				            })
+				            
+				            if (isTryError(p)) {
+				                errorMessage <- .extractErrorMessage(p)
 								
 								if (errorMessage == "not enough data") {
-									
-									errorMessage <- "Plotting is not possible: The Bayes factor is too small"
+								    errorMessage <- "Plotting is not possible: The Bayes factor is too small"
 								} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
-									
-									errorMessage <- "Plotting is not possible: The Bayes factor is too small"
+								    errorMessage <- "Plotting is not possible: The Bayes factor is too small"
 								}
 								
 								plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-							}
-							
-						} else {
-							
-							plot[["error"]] <- list(error="badData", errorMessage=plottingError[statusInd])
+				            }
+				        } else {
+				            plot[["error"]] <- list(error="badData", errorMessage=plottingError[statusInd])
 						}
 						
 						plot[["status"]] <- "complete"
-						
 						plots.ttest[[z]] <- plot
 					}
 					
 					plotGroups[[i]][["PriorPosteriorPlot"]] <- plots.ttest[[z]]
-					
-
 					results[["inferentialPlots"]][["collection"]] <- plotGroups
 					
 					z <- z + 1
 					
-					if ( ! .shouldContinue(callback(results)))
-						return()
+					if ( ! .shouldContinue(callback(results))){
+					    return()
+					}
 				}
 				
-				if (options$plotBayesFactorRobustness) {
-					
-					
-					if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
+				
+				if (isTRUE(options$plotBayesFactorRobustness)) {
+				    if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 						&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) &&
 						"robustnessPlot" %in% state$plotTypes) {
-						
-						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+				        # 
+				        # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 						# then, if the requested plot already exists, use it
 						
 						index <- which(state$plotVariables == variable & state$plotTypes == "robustnessPlot")
-						
 						plots.ttest[[z]] <- state$plotsTtest[[index]]
 						results[["inferentialPlots"]][["collection"]][[i]][["BFrobustnessPlot"]][["status"]] <- "complete"
+				    } else {
+				        results[["inferentialPlots"]][["collection"]][[i]][["BFrobustnessPlot"]][["status"]] <- "running"
 						
-					} else {
-						
-						results[["inferentialPlots"]][["collection"]][[i]][["BFrobustnessPlot"]][["status"]] <- "running"
-						
-						if ( ! .shouldContinue(callback(results)))
-							return()
-						
+						if ( ! .shouldContinue(callback(results))){
+						    return()
+						}
+							
 						plot <- plots.ttest[[z]]
 						
 						if (status[statusInd] != "error") {
-							
-							p <- try(silent= FALSE, expr= {
-									
-									# image <- .beginSaveImage(530, 400)
-									# .plotBF.robustnessCheck.ttest(x= group2, y= group1, BF10post=ifelse((options$bayesFactorType=="LogBF10"), exp(BF10post[i]), BF10post[i]), paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
-									# content <- .endSaveImage(image)
-									# plot[["data"]]  <- content
-									
-									.plotFunc <- function() {
-										.plotBF.robustnessCheck.ttest(x= group2, y= group1, BF10post=ifelse((options$bayesFactorType=="LogBF10"), exp(BF10post[i]), BF10post[i]), paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
-									}
-									content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
-
-									plot[["convertible"]] <- TRUE
-									plot[["obj"]] <- content[["obj"]]
-									plot[["data"]] <- content[["png"]]
-									
-								})
-							
-							if (class(p) == "try-error") {
-								
-								errorMessage <- .extractErrorMessage(p)
+						    p <- try(silent= FALSE, expr= {
+						        # image <- .beginSaveImage(530, 400)
+						        # .plotBF.robustnessCheck.ttest(x= group2, y= group1, BF10post=ifelse((options$bayesFactorType=="LogBF10"), exp(BF10post[i]), BF10post[i]), paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
+						        # content <- .endSaveImage(image)
+						        # plot[["data"]]  <- content
+						        
+						        .plotFunc <- function() {
+						            .plotBF.robustnessCheck.ttest(x= group2, y= group1, BF10post=ifelse((options$bayesFactorType=="LogBF10"), exp(BF10post[i]), BF10post[i]), 
+						                                          paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
+						        }
+						        
+						        content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+						        
+						        plot[["convertible"]] <- TRUE
+						        plot[["obj"]] <- content[["obj"]]
+						        plot[["data"]] <- content[["png"]]
+						    })
+						    
+						    if (isTryError(p)) {
+						        errorMessage <- .extractErrorMessage(p)
 								
 								if (errorMessage == "not enough data") {
-									
-									errorMessage <- "Plotting is not possible: The Bayes factor is too small"
+								    errorMessage <- "Plotting is not possible: The Bayes factor is too small"
 								} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
-									
-									errorMessage <- "Plotting is not possible: The Bayes factor is too small"
+								    errorMessage <- "Plotting is not possible: The Bayes factor is too small"
 								}
-								
-								plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-							}
-							
+						        plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+						    }
 						} else {
-							
-							plot[["error"]] <- list(error="badData", errorMessage=plottingError[statusInd])
+						    plot[["error"]] <- list(error="badData", errorMessage=plottingError[statusInd])
 						}
 						
 						plot[["status"]] <- "complete"
-						
 						plots.ttest[[z]] <- plot
 					}
 					
@@ -613,29 +527,28 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 					z <- z + 1
 					
-					if ( ! .shouldContinue(callback(results)))
-						return()
+					if ( ! .shouldContinue(callback(results))){
+					    return()
+					}
 				}
 				
-				if (options$plotSequentialAnalysis) {
-					
-					if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
+				if (isTRUE(options$plotSequentialAnalysis)) {
+				    if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 						&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) &&
 						options$plotSequentialAnalysisRobustness && "sequentialRobustnessPlot" %in% state$plotTypes) {
-						
-						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+				        #
+				        # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 						# then, if the requested plot already exists, use it
 						
 						index <- which(state$plotVariables == variable & state$plotTypes == "sequentialRobustnessPlot")
 						
 						plots.ttest[[z]] <- state$plotsTtest[[index]]
 						results[["inferentialPlots"]][["collection"]][[i]][["BFsequentialPlot"]][["status"]] <- "complete"
-						
-					} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE &&
+				    } else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE &&
 								diff$hypothesis == FALSE && BFtypeRequiresNewPlot == FALSE  && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE)))
 								&& !options$plotSequentialAnalysisRobustness && "sequentialPlot" %in% state$plotTypes) {
-						
-						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+				        # 
+				        # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 						# then, if the requested plot already exists use it
 						
 						index <- which(state$plotVariables == variable & state$plotTypes == "sequentialPlot")
@@ -643,69 +556,61 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						plots.ttest[[z]] <- state$plotsTtest[[index]]
 						results[["inferentialPlots"]][["collection"]][[i]][["BFsequentialPlot"]][["status"]] <- "complete"
 					} else {
+					    results[["inferentialPlots"]][["collection"]][[i]][["BFsequentialPlot"]][["status"]] <- "running"
 						
-						results[["inferentialPlots"]][["collection"]][[i]][["BFsequentialPlot"]][["status"]] <- "running"
-						
-						if ( ! .shouldContinue(callback(results)))
-							return()
+						if ( ! .shouldContinue(callback(results))){
+						    return()
+						}
 						
 						plot <- plots.ttest[[z]]
 						
 						if (status[statusInd] != "error" && status[statusInd] != "sequentialNotPossible") {
-							
-							p <- try(silent= FALSE, expr= {
-									
-									# image <- .beginSaveImage(530, 400)
-									# .plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, BF10post=BF10post[i],
-									# 						plotDifferentPriors= options$plotSequentialAnalysisRobustness, subDataSet=subDataSet, level1=g1, level2=g2)
-									# content <- .endSaveImage(image)
-									# plot[["data"]]  <- content
-									
-									.plotFunc <- function() {
-										.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, BF10post=BF10post[i],
-															plotDifferentPriors= options$plotSequentialAnalysisRobustness, subDataSet=subDataSet, level1=g1, level2=g2)
-									}
-									content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
-
-									plot[["convertible"]] <- TRUE
-									plot[["obj"]] <- content[["obj"]]
-									plot[["data"]] <- content[["png"]]
-									
-								})
-							
-							if (class(p) == "try-error") {
-								
-								errorMessage <- .extractErrorMessage(p)
+						    p <- try(silent= FALSE, expr= {
+						        # image <- .beginSaveImage(530, 400)
+						        # .plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, BF10post=BF10post[i],
+						        # 						plotDifferentPriors= options$plotSequentialAnalysisRobustness, subDataSet=subDataSet, level1=g1, level2=g2)
+						        # content <- .endSaveImage(image)
+						        # plot[["data"]]  <- content
+						        
+						        .plotFunc <- function() {
+						            .plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, BF10post=BF10post[i],
+						                                    plotDifferentPriors= options$plotSequentialAnalysisRobustness, subDataSet=subDataSet, level1=g1, level2=g2)
+						        }
+						        
+						        content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+						        
+						        plot[["convertible"]] <- TRUE
+						        plot[["obj"]] <- content[["obj"]]
+						        plot[["data"]] <- content[["png"]]
+						    })
+						    
+						    if (isTryError(p)) {
+						        errorMessage <- .extractErrorMessage(p)
 								
 								if (errorMessage == "not enough data") {
-									
-									errorMessage <- "Plotting is not possible: The Bayes factor is too small"
+								    errorMessage <- "Plotting is not possible: The Bayes factor is too small"
 								} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
-									
-									errorMessage <- "Plotting is not possible: The Bayes factor is too small"
+								    errorMessage <- "Plotting is not possible: The Bayes factor is too small"
 								}
 								
 								plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-							}
-							
+						    }
 						} else {
-							
-							plot[["error"]] <- list(error="badData", errorMessage=plottingError[statusInd])
+						    plot[["error"]] <- list(error="badData", errorMessage=plottingError[statusInd])
 						}
 						
 						plot[["status"]] <- "complete"
-						
 						plots.ttest[[z]] <- plot
 					}
 					
 					plotGroups[[i]][["BFsequentialPlot"]] <- plots.ttest[[z]]
 					results[["inferentialPlots"]][["collection"]] <- plotGroups
 					
-					
 					z <- z + 1
 					
-					if ( ! .shouldContinue(callback(results)))
-						return()
+					if ( ! .shouldContinue(callback(results))){
+					    return()
+					}
 				}
 				
 				statusInd <- statusInd + 1
@@ -717,49 +622,52 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	keep <- NULL
 	
-	for (plot in plots.ttest)
-		keep <- c(keep, plot$data)
-	
-	for (plot in descriptivesPlots)
-		keep <- c(keep, plot$data)
+	for (plot in plots.ttest){
+	    keep <- c(keep, plot$data)
+	}
+		
+	for (plot in descriptivesPlots){
+	    keep <- c(keep, plot$data)
+	}
 	
 	descriptivesPlots <- descriptivesPlots
+	# TODO why?
 	plots.ttest <- plots.ttest
 
 	if (perform == "init") {
-		
-		return(list(results=results, status="inited", state=state, keep=keep))
-		
+	    return(list(results=results, status="inited", state=state, keep=keep))
 	} else {
-	
-		return(list(results=results, status="complete", state=list(options=options, results=results, plotsTtest=plots.ttest, plotTypes=plotTypes, plotVariables=plotVariables,
+	    return(list(results=results, status="complete", state=list(options=options, results=results, plotsTtest=plots.ttest, plotTypes=plotTypes, plotVariables=plotVariables,
 		descriptPlotVariables=descriptPlotVariables, descriptivesPlots=descriptivesPlots, status=status, plottingError=plottingError, BF10post=BF10post, errorFootnotes=errorFootnotes),
 		keep=keep))
 	}
-	
 }
 
 
 .ttestBayesianIndependentSamplesTTest <- function(dataset, options, perform, state, diff) {
-	
-	
-	g1 <- NULL
+    g1 <- NULL
 	g2 <- NULL
 	
 	ttest <- list()
 	
 	ttest[["title"]] <- "Bayesian Independent Samples T-Test"
-	
 	ttest[["citation"]] <- list(
 		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
 		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
 	
+	## TODOTODO:setup table for the Bayesian independent samples t-test; 
+	#
+	# fields <- list(list(name = "v", title = "", type = "string", combine = TRUE),
+	#                list(name = "test", type = "string", title = "Test"),
+	#                list(name = "df", type = "number", format = "sf:4;dp:3"),
+	#                list(name = "p", type = "number", format = "dp:3;p:.001"))
+	
 	fields <- list(
-		list(name=".variable", title="", type="string", combine=TRUE))
+		list(name=".variable", title="", type="string", combine=TRUE)
+	)
 	
 	if (options$bayesFactorType == "BF01") {
-		
-		BFH1H0 <- FALSE
+	    BFH1H0 <- FALSE
 		
 		if (options$hypothesis == "groupsNotEqual"){
 			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2080\u2081")
@@ -772,8 +680,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		}
 		
 	} else if (options$bayesFactorType == "BF10") {
-		
-		BFH1H0 <- TRUE
+	    BFH1H0 <- TRUE
 		
 		if (options$hypothesis == "groupsNotEqual"){
 			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2081\u2080")
@@ -784,10 +691,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		if (options$hypothesis == "groupTwoGreater"){
 			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u208B\u2080")
 		}
-		
 	} else if (options$bayesFactorType == "LogBF10") {
-		
-		BFH1H0 <- TRUE
+	    BFH1H0 <- TRUE
 		
 		if (options$hypothesis == "groupsNotEqual"){
 			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="Log(\u2009\u0042\u0046\u2081\u2080\u2009)")
@@ -801,12 +706,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	}
 	
 	if (options$hypothesis == "groupsNotEqual") {
-		
-		fields[[length(fields)+1]] <- list(name="error", type="number", format="sf:4;dp:3", title="error %")
-		
+	    fields[[length(fields)+1]] <- list(name="error", type="number", format="sf:4;dp:3", title="error %")
 	} else {
-		
-		fields[[length(fields)+1]] <- list(name="error", type="number", format="sf:4;dp:3;~", title="error %")
+	    fields[[length(fields)+1]] <- list(name="error", type="number", format="sf:4;dp:3;~", title="error %")
 	}
 	
 	ttest[["schema"]] <- list(fields=fields)
@@ -816,27 +718,20 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	levels <- base::levels(dataset[[ .v(options$groupingVariable) ]])
 	
 	if (length(levels) != 2) {
-		
-		g1 <- "1"
+	    g1 <- "1"
 		g2 <- "2"
-		
 	} else {
-		
-		g1 <- levels[1]
+	    g1 <- levels[1]
 		g2 <- levels[2]
 	}
 	
 	if (options$hypothesis == "groupOneGreater") {
-		
-		message <- paste("For all tests, the alternative hypothesis specifies that group <em>", g1, "</em> is greater than group <em>", g2, "</em>.", sep="")
+	    message <- paste("For all tests, the alternative hypothesis specifies that group <em>", g1, "</em> is greater than group <em>", g2, "</em>.", sep="")
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
-		
 	} else if (options$hypothesis == "groupTwoGreater") {
-		
-		message <- paste("For all tests, the alternative hypothesis specifies that group <em>", g1, "</em> is less than group <em>", g2, "</em>.", sep="")
+	    message <- paste("For all tests, the alternative hypothesis specifies that group <em>", g1, "</em> is less than group <em>", g2, "</em>.", sep="")
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 	}
-	
 	
 	ttest.rows <- list()
 	
@@ -846,88 +741,70 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	errorFootnotes <- rep("no", length(options$variables))
 	
 	for (variable in options[["variables"]]) {
-		
-		if (!is.null(state) && variable %in% state$options$variables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
+	    if (!is.null(state) && variable %in% state$options$variables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 			&& diff$groupingVariable == FALSE && diff$missingValues == FALSE)))) {
-				
-				index <- which(state$options$variables == variable)
-				
-				if (state$errorFootnotes[index] == "no") {
-					
-					ttest.rows[[length(ttest.rows)+1]] <- state$results$ttest$data[[index]]
-					
-					if (! (is.logical(diff) && diff == FALSE) && diff$bayesFactorType) {
-						
-						if (state$options$bayesFactorType == "BF10") {
-							
-							if (options$bayesFactorType == "BF01") {
-								ttest.rows[[length(ttest.rows)]]$BF <- 1 / state$results$ttest$data[[index]]$BF
-							} else if (options$bayesFactorType == "LogBF10") {
-								ttest.rows[[length(ttest.rows)]]$BF <- log(state$results$ttest$data[[index]]$BF)
-							}
-							
-						} else if (state$options$bayesFactorType == "BF01") {
-							
-							if (options$bayesFactorType == "BF10") {
-								ttest.rows[[length(ttest.rows)]]$BF <- 1 / state$results$ttest$data[[index]]$BF
-							} else if (options$bayesFactorType == "LogBF10") {
-								ttest.rows[[length(ttest.rows)]]$BF <- log(1 / state$results$ttest$data[[index]]$BF)
-							}
-							
-						} else if (state$options$bayesFactorType == "LogBF10") {
-							
-							if (options$bayesFactorType == "BF10") {
-								ttest.rows[[length(ttest.rows)]]$BF <- exp(state$results$ttest$data[[index]]$BF)
-							} else if (options$bayesFactorType == "BF01") {
-								ttest.rows[[length(ttest.rows)]]$BF <- 1 / exp(state$results$ttest$data[[index]]$BF)
-							}
-						}
-					}
-					
-				} else {
-					
-					index2 <- .addFootnote(footnotes, state$errorFootnotes[index])
-					
-					ttest.rows[[length(ttest.rows)+1]] <- list(.variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index2)))
-				
-				}
-				
-			} else {
-				
-				ttest.rows[[length(ttest.rows)+1]] <- list(.variable=variable)
-			}
+	        # TODO: Note
+	        index <- which(state$options$variables == variable)
+	        
+	        if (state$errorFootnotes[index] == "no") {
+	            ttest.rows[[length(ttest.rows)+1]] <- state$results$ttest$data[[index]]
+	            
+	            if (! (is.logical(diff) && diff == FALSE) && diff$bayesFactorType) {
+	                if (state$options$bayesFactorType == "BF10") {
+	                    if (options$bayesFactorType == "BF01") {
+	                        ttest.rows[[length(ttest.rows)]]$BF <- 1 / state$results$ttest$data[[index]]$BF
+	                    } else if (options$bayesFactorType == "LogBF10") {
+	                        ttest.rows[[length(ttest.rows)]]$BF <- log(state$results$ttest$data[[index]]$BF)
+	                    }
+	                } else if (state$options$bayesFactorType == "BF01") {
+	                    if (options$bayesFactorType == "BF10") {
+	                        ttest.rows[[length(ttest.rows)]]$BF <- 1 / state$results$ttest$data[[index]]$BF
+	                    } else if (options$bayesFactorType == "LogBF10") {
+	                        ttest.rows[[length(ttest.rows)]]$BF <- log(1 / state$results$ttest$data[[index]]$BF)
+	                    }
+	                } else if (state$options$bayesFactorType == "LogBF10") {
+	                    if (options$bayesFactorType == "BF10") {
+	                        ttest.rows[[length(ttest.rows)]]$BF <- exp(state$results$ttest$data[[index]]$BF)
+	                    } else if (options$bayesFactorType == "BF01") {
+	                        ttest.rows[[length(ttest.rows)]]$BF <- 1 / exp(state$results$ttest$data[[index]]$BF)
+	                    }
+	                }
+	            }
+	        } else {
+	            index2 <- .addFootnote(footnotes, state$errorFootnotes[index])
+	            ttest.rows[[length(ttest.rows)+1]] <- list(.variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index2)))
+	        }
+	    } else {
+	        ttest.rows[[length(ttest.rows)+1]] <- list(.variable=variable)
+	    }
 	}
 	
 	rowCompleted <- logical(length(ttest.rows))
 	
-	for (i in seq_along(ttest.rows))
-		rowCompleted[i] <- ifelse(length(ttest.rows[[i]]) > 1, TRUE, FALSE)
+	for (i in seq_along(ttest.rows)){
+	    rowCompleted[i] <- ifelse(length(ttest.rows[[i]]) > 1, TRUE, FALSE)
+	}
 	
-	if (!is.null(state) && all(options[["variables"]] %in% state$options$variables) && options$groupingVariable == state$options$groupingVariable && all(rowCompleted))
-		ttest[["status"]] <- "complete"
-	
-	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
+	if (!is.null(state) && all(options[["variables"]] %in% state$options$variables) && options$groupingVariable == state$options$groupingVariable && all(rowCompleted)){
+	    # TODO: description
+	    ttest[["status"]] <- "complete"
+	}
 		
-		if (length(levels) != 2) {
-			
-			ttest[["error"]] <- list(errorType="badData", errorMessage="The Grouping Variable must have 2 levels")
-			
-			status <- rep("error", length(options$variables))
-			plottingError <- rep("Plotting is not possible: The Grouping Variable must have 2 levels", length(options$variables))
-			
-		} else {
-			
-			rowNo <- 1
-			
-			i <- 1
-			
-			
-			for (variable in options[["variables"]]) {
-				
-				
-				# BayesFactor package doesn't handle NAs, so it is necessary to exclude them
-				
-				subDataSet <- subset(dataset, select=c(.v(variable), .v(options$groupingVariable)))
+	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
+	    if (length(levels) != 2) {
+	        ttest[["error"]] <- list(errorType="badData", errorMessage="The Grouping Variable must have 2 levels")
+	        
+	        status <- rep("error", length(options$variables))
+	        plottingError <- rep("Plotting is not possible: The Grouping Variable must have 2 levels", length(options$variables))
+	    } else {
+	        rowNo <- 1
+	        i <- 1
+	        
+	        for (variable in options[["variables"]]) {
+	            # BayesFactor package doesn't handle NAs, so it is necessary to exclude them
+	            # TODO: Add .hasErrors
+	            
+	            subDataSet <- subset(dataset, select=c(.v(variable), .v(options$groupingVariable)))
 				subDataSet <- na.omit(subDataSet)
 				
 				gs <- base::levels(levels)
@@ -939,82 +816,60 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				r.size <- options$priorWidth
 				
 				if (options$hypothesis == "groupOneGreater") {
-					
-					null.interval <- c(0, Inf)
+				    null.interval <- c(0, Inf)
 					oneSided <- "right"
-					
 				} else if (options$hypothesis == "groupTwoGreater") {
-					
-					null.interval <- c(-Inf, 0)
+				    null.interval <- c(-Inf, 0)
 					oneSided <- "left"
-					
 				} else {
-					
-					null.interval <- c(-Inf, Inf)
+				    null.interval <- c(-Inf, Inf)
 					oneSided <- FALSE
 				}
 				
 				
 				if (!is.null(state) && variable %in% state$options$variables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-				&& diff$groupingVariable == FALSE && diff$missingValues == FALSE)))) {
-					
-					index <- which(state$options$variables == variable)
+				    && diff$groupingVariable == FALSE && diff$missingValues == FALSE)))) {
+				    
+				    index <- which(state$options$variables == variable)
 					
 					if (state$errorFootnotes[index] == "no") {
-						
-						ttest.rows[[rowNo]] <- state$results$ttest$data[[index]]
-						
-						if (! (is.logical(diff) && diff == FALSE) && diff$bayesFactorType) {
-							
-							if (state$options$bayesFactorType == "BF10") {
-								
-								if (options$bayesFactorType == "BF01") {
+					    ttest.rows[[rowNo]] <- state$results$ttest$data[[index]]
+					    
+					    if (! (is.logical(diff) && diff == FALSE) && diff$bayesFactorType) {
+					        if (state$options$bayesFactorType == "BF10") {
+					            if (options$bayesFactorType == "BF01") {
 									ttest.rows[[rowNo]]$BF <- 1 / state$results$ttest$data[[index]]$BF
 								} else if (options$bayesFactorType == "LogBF10") {
 									ttest.rows[[rowNo]]$BF <- log(state$results$ttest$data[[index]]$BF)
 								}
-								
-							} else if (state$options$bayesFactorType == "BF01") {
-								
-								if (options$bayesFactorType == "BF10") {
+					        } else if (state$options$bayesFactorType == "BF01") {
+					            if (options$bayesFactorType == "BF10") {
 									ttest.rows[[rowNo]]$BF <- 1 / state$results$ttest$data[[index]]$BF
 								} else if (options$bayesFactorType == "LogBF10") {
 									ttest.rows[[rowNo]]$BF <- log(1 / state$results$ttest$data[[index]]$BF)
 								}
-								
-							} else if (state$options$bayesFactorType == "LogBF10") {
-								
-								if (options$bayesFactorType == "BF10") {
+					        } else if (state$options$bayesFactorType == "LogBF10") {
+					            if (options$bayesFactorType == "BF10") {
 									ttest.rows[[rowNo]]$BF <- exp(state$results$ttest$data[[index]]$BF)
 								} else if (options$bayesFactorType == "BF01") {
 									ttest.rows[[rowNo]]$BF <- 1 / exp(state$results$ttest$data[[index]]$BF)
 								}
 							}
-						}
-						
+					    }
 					} else {
-						
-						index2 <- .addFootnote(footnotes, state$errorFootnotes[index])
-						
-						errorFootnotes[rowNo] <- state$errorFootnotes[index]
-						
-						ttest.rows[[rowNo]] <- list(.variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index2)))
-						
-					}
-					
-					BF10post[rowNo] <- ttest.rows[[rowNo]]$BF # state$BF10post[index]
+					    index2 <- .addFootnote(footnotes, state$errorFootnotes[index])
+					    errorFootnotes[rowNo] <- state$errorFootnotes[index]
+					    ttest.rows[[rowNo]] <- list(.variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index2)))
+					} 
+				    
+				    BF10post[rowNo] <- ttest.rows[[rowNo]]$BF # state$BF10post[index]
 					status[rowNo] <- state$status[index]
 					plottingError[rowNo] <- state$plottingError[index]
-					
 				} else {
-					
-					result <- try (silent=FALSE, expr= {
-						
-						bf    <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size)[1]
-						
-						bf.raw <- exp(as.numeric(bf@bayesFactor$bf))
-						
-						N1 <- length(group2)
+				    result <- try (silent=FALSE, expr= {
+				        bf    <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size)[1]
+				        bf.raw <- exp(as.numeric(bf@bayesFactor$bf))
+				        N1 <- length(group2)
 						N2 <- length(group1)
 						
 						# sdPooled <- sqrt(((N1 - 1) * var(group2) + (N2 - 1) * var(group1)) / (N1 + N2))
@@ -1026,24 +881,17 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						# 	sigmaStart <- .01
 						
 						if (oneSided == "right") {
-							
-							samples <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size, posterior = TRUE, iterations = 10000)
-							delta <- samples[, "delta"]
+						    samples <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size, posterior = TRUE, iterations = 10000)
+						    delta <- samples[, "delta"]
 							
 							if (is.infinite(bf.raw)) {
-								
-								if (mean(delta) > 0) {
-									
-									bf.raw <- Inf
-									
-								} else {
-								
-									bf.raw <- 1 / Inf
-								}
-							
+							    if (mean(delta) > 0) {
+							        bf.raw <- Inf
+							    } else {
+							        bf.raw <- 1 / Inf
+							    }
 							} else {
-								
-								bf.raw <- .oneSidedTtestBFRichardAdaptive(x=group2, y=group1, r=r.size, oneSided="right")
+							    bf.raw <- .oneSidedTtestBFRichardAdaptive(x=group2, y=group1, r=r.size, oneSided="right")
 								
 								# parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
 								# 
@@ -1057,24 +905,17 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						}
 						
 						if (oneSided == "left") {
-							
-							samples <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size, posterior = TRUE, iterations = 10000)
+						    samples <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size, posterior = TRUE, iterations = 10000)
 							delta <- samples[, "delta"]
 							
 							if (is.infinite(bf.raw)) {
-								
-								if (mean(delta) < 0) {
-									
-									bf.raw <- Inf
-									
-								} else {
-								
-									bf.raw <- 1 / Inf
-								}
-								
+							    if (mean(delta) < 0) {
+							        bf.raw <- Inf
+							    } else {
+							        bf.raw <- 1 / Inf
+							    }
 							} else {
-								
-								bf.raw <- .oneSidedTtestBFRichardAdaptive(x=group2, y=group1, r=r.size, oneSided="left")
+							    bf.raw <- .oneSidedTtestBFRichardAdaptive(x=group2, y=group1, r=r.size, oneSided="left")
 								# parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
 								# 
 								# if (class(parameters) == "try-error") {
@@ -1086,15 +927,15 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 							}
 						}
 						
-						if (options$bayesFactorType == "BF01")
-							bf.raw <- 1 / bf.raw
+						if (options$bayesFactorType == "BF01"){
+						    bf.raw <- 1 / bf.raw
+						}
 						
 						BF10post[i] <- bf.raw
 						BF <- .clean(bf.raw)
 						
 						if (options$bayesFactorType == "LogBF10") {
-							
-							BF <- log(BF10post[i])
+						    BF <- log(BF10post[i])
 							BF <- .clean(BF)
 						}
 						
@@ -1102,26 +943,20 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						errorMessage <- NULL
 						
 						if (is.na(bf.raw)) {
-							
-							status[rowNo] <- "error"
+						    status[rowNo] <- "error"
 							plottingError[rowNo] <- "Plotting is not possible: Bayes factor could not be calculated"
 						}
 						
-						if(is.infinite(bf.raw)){
-							
-							if(options$plotPriorAndPosterior | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness | options$plotBayesFactorRobustness){
-								
-								
-								status[rowNo] <- "error"
+						if (is.infinite(bf.raw)){
+						    if(options$plotPriorAndPosterior | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness | options$plotBayesFactorRobustness){
+						        status[rowNo] <- "error"
 								plottingError[rowNo] <- "Plotting is not possible: Bayes factor is infinite"
 							}
 						}
 						
 						if(is.infinite(1/bf.raw)){
-							
-							if(options$plotPriorAndPosterior | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness | options$plotBayesFactorRobustness){
-								
-								status[rowNo] <- "error"
+						    if(options$plotPriorAndPosterior | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness | options$plotBayesFactorRobustness){
+						        status[rowNo] <- "error"
 								plottingError[rowNo] <- "Plotting is not possible: The Bayes factor is too small"
 							}
 						}
@@ -1133,85 +968,67 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						idData2 <- sum((ind2+1)-(1:(length(ind2))) == 1)
 						
 						if(idData > 1 && idData2 > 1 && (options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
-							
-							if(options$plotPriorAndPosterior | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness | options$plotBayesFactorRobustness){
-								
-								# errorMessage <- paste("Sequential Analysis not possible: The first observations are identical")
+						    if(options$plotPriorAndPosterior | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness | options$plotBayesFactorRobustness){
+						        # errorMessage <- paste("Sequential Analysis not possible: The first observations are identical")
 								# index <- .addFootnote(footnotes, errorMessage)
-								
+								# 
 								# status[rowNo] <- "sequentialNotPossible"
 								# plottingError[rowNo] <- "Sequential Analysis not possible: The first observations are identical"
+						        # TODO: ?
 							}
 						}
 						
 						if(!is.null(errorMessage)){
-							
-							index <- .addFootnote(footnotes, errorMessage)
+						    index <- .addFootnote(footnotes, errorMessage)
 							list(.variable=variable, BF=BF, error=error, .footnotes=list(BF=list(index)))
 						} else {
-							
-							list(.variable=variable, BF=BF, error=error)
+						    list(.variable=variable, BF=BF, error=error)
 						}
 					})
 					
-					if (class(result) == "try-error") {
-						
-						errorMessage <- .extractErrorMessage(result)
-						
-						plottingError[rowNo] <- paste("Plotting is not possible:", errorMessage, sep=" ")
-						
-						if (errorMessage == "Dependent variable must not contain missing or infinite values.") {
-							
-							errorMessage <- "Bayes factor is undefined - the dependent variable contains infinity"
+					if (isTryError(result)) {
+					    errorMessage <- .extractErrorMessage(result)
+					    plottingError[rowNo] <- paste("Plotting is not possible:", errorMessage, sep=" ")
+					    
+					    if (errorMessage == "Dependent variable must not contain missing or infinite values.") {
+					        errorMessage <- "Bayes factor is undefined - the dependent variable contains infinity"
 							status[rowNo] <- "error"
 							plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - the dependent variable contains infinity"
-							
-						} else if (errorMessage == "grouping factor must have exactly 2 levels") {
-							
-							# We know that the grouping factor *does* have two levels, because we've checked this earlier on
+					    } else if (errorMessage == "grouping factor must have exactly 2 levels") {
+					        #
+					        # We know that the grouping factor *does* have two levels, because we've checked this earlier on
 							# This error means that all of one factor has been excluded because of missing values in the dependent
-							
+							#
 							errorMessage <- "Bayes factor is undefined - the grouping variable contains less than two levels once missing values in the dependent are excluded"
 							status[rowNo] <- "error"
 							plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - the grouping variable contains less than two levels once missing values in the dependent are excluded"
-							
-						} else if (errorMessage == "data are essentially constant") {
-							
-							errorMessage <- "Bayes factor is undefined - one or both levels of the dependent contain all the same value (zero variance)"
+					    } else if (errorMessage == "data are essentially constant") {
+					        #
+					        errorMessage <- "Bayes factor is undefined - one or both levels of the dependent contain all the same value (zero variance)"
 							status[rowNo] <- "error"
 							plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - one or both levels of the dependent contain all the same value (zero variance)"
-							
-						} else if (errorMessage == "Insufficient sample size for t analysis." || errorMessage == "not enough observations") {
-							
-							errorMessage <- "Bayes factor is undefined - one or both levels of the dependent contain too few observations"
+					    } else if (errorMessage == "Insufficient sample size for t analysis." || errorMessage == "not enough observations") {
+					        errorMessage <- "Bayes factor is undefined - one or both levels of the dependent contain too few observations"
 							status[rowNo] <- "error"
 							plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - one or both levels of the dependent contain too few observations"
 						}
 						
 						index <- .addFootnote(footnotes, errorMessage)
-						
 						errorFootnotes[rowNo] <- errorMessage
-						
 						result <- list(.variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
 						
 						status[rowNo] <- "error"
 					}
-					
-					ttest.rows[[rowNo]] <- result
-					
+				    ttest.rows[[rowNo]] <- result
 				}
-				
 				rowNo <- rowNo + 1
 				i <- i + 1
 			}
 		}
-		
 		ttest[["status"]] <- "complete"
 	}
-	
 	ttest[["footnotes"]] <- as.list(footnotes)
 	ttest[["data"]] <- ttest.rows
-	
 	
 	list(ttest, status, g1, g2, BFH1H0, plottingError, BF10post, errorFootnotes)
 }
