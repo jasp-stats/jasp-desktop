@@ -239,7 +239,7 @@
          <item row="2" column="0">
           <widget class="BoundCheckBox" name="mcDonaldScale">
            <property name="text">
-            <string>McDonalds' ω</string>
+            <string>McDonald's ω</string>
            </property>
           </widget>
          </item>
@@ -297,7 +297,7 @@
          <item row="2" column="0">
           <widget class="BoundCheckBox" name="mcDonaldItem">
            <property name="text">
-            <string>McDonalds' ω (if item dropped)</string>
+            <string>McDonald's ω (if item dropped)</string>
            </property>
           </widget>
          </item>
@@ -396,6 +396,16 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>AssignButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/assignbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AvailableFieldsListView</class>
+   <extends>QListView</extends>
+   <header>widgets/availablefieldslistview.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundGroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
@@ -410,16 +420,6 @@
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>AssignButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/assignbutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>AvailableFieldsListView</class>
-   <extends>QListView</extends>
-   <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
    <class>BoundListView</class>

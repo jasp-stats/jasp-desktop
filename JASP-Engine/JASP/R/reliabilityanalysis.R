@@ -74,7 +74,6 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 		# check for errors
 		anyErrors <- .hasErrors(dataset = dataset, perform = perform,
-								type = c("infinity", "variance"))
 
 		doUpdate <- base::identical(anyErrors, FALSE)
 
@@ -200,7 +199,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		fields[[length(fields) + 1]] <- list(name="lambda", title="Gutmann's \u03BB6", type="number", format="sf:4;dp:3")
 
 	if (options[["mcDonaldScale"]])
-		fields[[length(fields) + 1]] <- list(name="omega", title="McDonalds' \u03C9", type="number", format="sf:4;dp:3")
+		fields[[length(fields) + 1]] <- list(name="omega", title="McDonald's \u03C9", type="number", format="sf:4;dp:3")
 	
 	if (options[["glbScale"]])
 		fields[[length(fields) + 1]] <- list(name="glb", title="Greatest lower bound", type="number", format="sf:4;dp:3")
@@ -330,7 +329,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		fields[[length(fields) + 1]] <- list(name="lambda", title="Gutmann's \u03BB6", type="number", format="sf:4;dp:3", overTitle = overTitle)
 
 	if (options[["mcDonaldItem"]])
-		fields[[length(fields) + 1]] <- list(name="omega", title="McDonalds' \u03C9", type="number", format="sf:4;dp:3", overTitle = overTitle)
+		fields[[length(fields) + 1]] <- list(name="omega", title="McDonald's \u03C9", type="number", format="sf:4;dp:3", overTitle = overTitle)
 
 	table[["schema"]] <- list(fields = fields)
 
@@ -346,7 +345,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	# can only be computed if there are at least 3 variables.
 	if (options[["mcDonaldItem"]] && length(variables) < 3) {
 			
-		message <- "Warning: McDonalds' \u03C9 if item dropped can only be calculated for three or more variables."
+		message <- "Warning: McDonald's \u03C9 if item dropped can only be calculated for three or more variables."
 		.addFootnote(footnotes, text = message)
 		
 	}
