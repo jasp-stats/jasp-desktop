@@ -20,13 +20,10 @@
 
 #include <boost/uuid/uuid.hpp>
 
-#include <vector>
-
 #include "common.h"
 #include "version.h"
 
 #include "options/options.h"
-#include "options/optionvariables.h"
 
 class Analysis
 {
@@ -38,8 +35,6 @@ public:
 	virtual ~Analysis();
 
 	Options *options() const;
-
-	const std::vector<OptionVariables *> &getVariables() const;
 
 	boost::signals2::signal<void (Analysis *source)> optionsChanged;
 	boost::signals2::signal<void (Analysis *source)> toRefresh;
@@ -88,7 +83,6 @@ protected:
 	bool _refreshBlocked = false;
 
 	Options* _options;
-	std::vector<OptionVariables *> _variables;
 
 	Json::Value _results;
 	Json::Value _userData;

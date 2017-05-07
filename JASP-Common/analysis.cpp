@@ -40,14 +40,6 @@ Analysis::Analysis(int id, string name, Options *options, Version version, bool 
 	_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this, _1));
 
 	_status = Empty;
-
-	for (size_t i = 0; i < _options->size(); ++i)
-	{
-		Option *option = _options->get(i);
-		OptionVariables *variable = dynamic_cast<OptionVariables *>(option);
-		if (variable != NULL)
-			_variables.push_back(variable);
-	}
 }
 
 Analysis::~Analysis()
@@ -254,11 +246,6 @@ int Analysis::callback(Json::Value results)
 	{
 		return 1;
 	}
-}
-
-const std::vector<OptionVariables *> &Analysis::getVariables() const
-{
-	return _variables;
 }
 
 void Analysis::setSaveImgOptions(Json::Value &options)

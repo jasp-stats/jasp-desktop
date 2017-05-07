@@ -136,7 +136,7 @@
 }
 
 
-.hasErrors <- function(dataset, perform, type, custom=NULL, message='default', exitAnalysisIfErrors=FALSE, ...) {
+.hasErrors <- function(dataset, perform, type=NULL, custom=NULL, message='default', exitAnalysisIfErrors=FALSE, ...) {
   # Generic error checking function.
   # Args:
   #   dataset: Normal JASP dataset.
@@ -150,7 +150,7 @@
   # Returns:
   #   FALSE if no errors were found or a named list specifying for each check which variables violated it as well as a general error message.
   
-  if (! isTRUE(nrow(dataset) > 0) || perform != 'run' || length(type) == 0) {
+  if (! isTRUE(nrow(dataset) > 0) || perform != 'run' || (length(type) == 0 && length(custom) == 0)) {
     return(FALSE)
   }
   
@@ -213,8 +213,7 @@
         names(funcArgs)[names(funcArgs) != 'dataset'] <- paste0(type[[i]], '.', names(funcArgs)[names(funcArgs) != 'dataset'])
         
         # Fill in the 'all.*' arguments for this check
-        # TODO when R version 3.3 is installed we can use: argsAllPrefix <- args[startsWith(names(args), 'all.')]
-        argsAllPrefix <- args[substring(names(args), 1, 4) == 'all.']
+        argsAllPrefix <- args[startsWith(names(args), 'all.')]
         if (length(argsAllPrefix) > 0) {
           for (a in names(argsAllPrefix)) {
             funcArg <- gsub('all', type[[i]], a, fixed=TRUE)
