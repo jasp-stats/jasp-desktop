@@ -65,6 +65,7 @@
 
 #ifdef QT_DEBUG
 #include "analysisforms/basregressionlinearlinkform.h"
+#include "analysisforms/Network/networkanalysisform.h"
 #endif
 
 #include "analysisforms/SEM/semsimpleform.h"
@@ -777,6 +778,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
 #ifdef QT_DEBUG
 	else if (name == "BASRegressionLinearLink")
 		form = new BASRegressionLinearLinkForm(contentArea);
+	else if (name == "NetworkAnalysis")
+		form = new NetworkAnalysisForm(contentArea);
 #endif
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
