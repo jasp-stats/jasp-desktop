@@ -1,7 +1,7 @@
 #ifndef SPSSIMPORTCOLUMN_H
 #define SPSSIMPORTCOLUMN_H
 
-#include "spssutils.h"
+#include "../importerutils.h"
 #include "../convertedstringcontainer.h"
 #include "../importcolumn.h"
 #include "spssformattype.h"
@@ -142,10 +142,10 @@ public:
 	void setColumnConvertDblToString(Column &column);
 
 	/**
-	 * @brief setColumnLabeledData Sets numeric data into the column, with labels.
+	 * @brief setColumnAsNominalOrOrdinal Sets numeric data into the column, with labels.
 	 * @param column The columns to insert into.
 	 */
-	void setColumnLabeledData(Column &column);
+	void setColumnAsNominalOrOrdinal(Column &column, Column::ColumnType columnType);
 
 	/**
 	 * @brief setColumnScaleData Sets floating point / scalar data into the column.

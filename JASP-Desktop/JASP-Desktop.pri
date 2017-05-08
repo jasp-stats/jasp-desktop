@@ -25,6 +25,7 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/widgets/boundgroupbox.cpp \
         $$PWD/widgets/progresswidget.cpp \
         $$PWD/widgets/anovamodelwidget.cpp \
+        $$PWD/widgets/subjectivepriorswidget.cpp \
         $$PWD/widgets/listview.cpp \
         $$PWD/widgets/draganddrop.cpp \
         $$PWD/widgets/assignbuttonmenu.cpp \
@@ -63,7 +64,6 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/widgets/itemmodelselectitem.cpp \
         $$PWD/widgets/itemmodelselectvariable.cpp \
         $$PWD/widgets/tabbar.cpp \
-        $$PWD/optionsform.cpp \
         $$PWD/widgets/textmodellavaan.cpp \
         $$PWD/terms.cpp \
         $$PWD/term.cpp \
@@ -155,14 +155,25 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/importers/spss/vardisplayparamrecord.cpp \
         $$PWD/importers/spss/variablerecord.cpp \
         $$PWD/importers/spss/verylongstringrecord.cpp \
-        $$PWD/importers/codepageconvert.cpp \
-        $$PWD/importers/csv.cpp \
-        $$PWD/importers/csvimporter.cpp \
-        $$PWD/importers/jaspimporter.cpp \
-        $$PWD/importers/spssimporter.cpp \
-        $$PWD/analysisforms/exploratoryfactoranalysisform.cpp \
+		$$PWD/importers/spss/spssimportcolumn.cpp \
+		$$PWD/importers/spss/spssimportdataset.cpp \
+		$$PWD/importers/ods/odsimportcolumn.cpp \
+		$$PWD/importers/ods/odsimportdataset.cpp \
+		$$PWD/importers/ods/odssheetcell.cpp \
+		$$PWD/importers/ods/odstypes.cpp \
+		$$PWD/importers/ods/odsxmlcontentshandler.cpp \
+		$$PWD/importers/ods/odsxmlhandler.cpp \
+		$$PWD/importers/ods/odsxmlmanifesthandler.cpp \
+		$$PWD/importers/odsimporter.cpp \
+		$$PWD/importers/csv.cpp \
+		$$PWD/importers/csvimporter.cpp \
+		$$PWD/importers/jaspimporter.cpp \
+		$$PWD/importers/spssimporter.cpp \
+		$$PWD/importers/codepageconvert.cpp \
+		$$PWD/analysisforms/exploratoryfactoranalysisform.cpp \
         $$PWD/analysisforms/principalcomponentanalysisform.cpp \
         $$PWD/analysisforms/reliabilityanalysisform.cpp \
+        $$PWD/analysisforms/basregressionlinearlinkform.cpp \
         $$PWD/analysisforms/SEM/semsimpleform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.cpp \
@@ -177,8 +188,7 @@ SOURCES += $$PWD/main.cpp \
 		$$PWD/importers/importdataset.cpp \
 		$$PWD/importers/importcolumn.cpp \
 		$$PWD/importers/csvimportcolumn.cpp \
-    $$PWD/importers/spss/spssimportcolumn.cpp \
-    $$PWD/importers/spss/spssimportdataset.cpp
+		$$PWD/preferencesdialog.cpp
 
 HEADERS  += \
         $$PWD/aboutdialog.h \
@@ -206,6 +216,7 @@ HEADERS  += \
         $$PWD/asyncloader.h \
         $$PWD/widgets/progresswidget.h \
         $$PWD/widgets/anovamodelwidget.h \
+        $$PWD/widgets/subjectivepriorswidget.h \
         $$PWD/bound.h \
         $$PWD/widgets/boundmodel.h \
         $$PWD/widgets/listview.h \
@@ -246,7 +257,6 @@ HEADERS  += \
         $$PWD/widgets/itemmodelselectitem.h \
         $$PWD/widgets/itemmodelselectvariable.h \
         $$PWD/widgets/tabbar.h \
-        $$PWD/optionsform.h \
         $$PWD/widgets/textmodellavaan.h \
         $$PWD/term.h \
         $$PWD/terms.h \
@@ -354,6 +364,7 @@ HEADERS  += \
 		$$PWD/analysisforms/exploratoryfactoranalysisform.h \
         $$PWD/analysisforms/principalcomponentanalysisform.h \
         $$PWD/analysisforms/reliabilityanalysisform.h \
+        $$PWD/analysisforms/basregressionlinearlinkform.h \
         $$PWD/analysisforms/SEM/semsimpleform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.h \
@@ -368,10 +379,19 @@ HEADERS  += \
 		$$PWD/importers/importer.h \
 		$$PWD/importers/importdataset.h \
 		$$PWD/importers/importcolumn.h \
+		$$PWD/importers/importerutils.h \
+		$$PWD/importers/odsimporter.h \
 		$$PWD/importers/csvimportcolumn.h \
-    $$PWD/importers/spss/spssimportcolumn.h \
-    $$PWD/importers/spss/spssimportdataset.h \
-    $$PWD/importers/spss/spssutils.h
+		$$PWD/importers/spss/spssimportcolumn.h \
+		$$PWD/importers/spss/spssimportdataset.h \
+		$$PWD/preferencesdialog.h \
+		$$PWD/importers/ods/odsimportcolumn.h \
+		$$PWD/importers/ods/odsimportdataset.h \
+		$$PWD/importers/ods/odssheetcell.h \
+		$$PWD/importers/ods/odstypes.h \
+		$$PWD/importers/ods/odsxmlcontentshandler.h \
+		$$PWD/importers/ods/odsxmlhandler.h \
+		$$PWD/importers/ods/odsxmlmanifesthandler.h
 
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \
@@ -380,6 +400,7 @@ FORMS += \
         $$PWD/analysisforms/ttestbayesianonesampleform.ui \
         $$PWD/widgets/progresswidget.ui \
         $$PWD/widgets/anovamodelwidget.ui \
+        $$PWD/widgets/subjectivepriorswidget.ui \
         $$PWD/analysisforms/ancovaform.ui \
         $$PWD/analysisforms/anovaform.ui \
         $$PWD/analysisforms/descriptivesform.ui \
@@ -416,9 +437,11 @@ FORMS += \
         $$PWD/variableswidget.ui \
         $$PWD/backstage/authwidget.ui\
         $$PWD/aboutdialog.ui \
-        $$PWD/analysisforms/exploratoryfactoranalysisform.ui \
+		$$PWD/preferencesdialog.ui \
+		$$PWD/analysisforms/exploratoryfactoranalysisform.ui \
         $$PWD/analysisforms/principalcomponentanalysisform.ui \
         $$PWD/analysisforms/reliabilityanalysisform.ui \
+        $$PWD/analysisforms/basregressionlinearlinkform.ui \
         $$PWD/analysisforms/SEM/semsimpleform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.ui \
@@ -427,8 +450,6 @@ FORMS += \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.ui \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.ui
-
-
 
 RESOURCES += \
         $$PWD/backstage/backstage.qrc \

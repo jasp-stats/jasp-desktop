@@ -24,8 +24,6 @@
 
 BackStageWidget::BackStageWidget(QWidget *parent) : QWidget(parent)
 {
-	_dataSetHasPathAndIsntReadOnly = false;
-
 	_tabBar = new VerticalTabBar(this);
 	_tabPages = new QStackedWidget(this);
 
@@ -62,18 +60,14 @@ BackStageWidget::BackStageWidget(QWidget *parent) : QWidget(parent)
 	_tabBar->addTab("Save As");
 	_tabBar->addTab("Export Results");
 	_tabBar->addTab("Export Data");
-#ifdef QT_DEBUG
 	_tabBar->addTab("Sync Data");
-#endif
 	_tabBar->addTab("Close");
 
 	_tabBar->setTabEnabled(FileOperation::Save, false);
 	_tabBar->setTabEnabled(FileOperation::SaveAs, false);
 	_tabBar->setTabEnabled(FileOperation::ExportResults, false);
 	_tabBar->setTabEnabled(FileOperation::ExportData, false);
-#ifdef QT_DEBUG
 	_tabBar->setTabEnabled(FileOperation::SyncData, false);
-#endif
 	_tabBar->setTabEnabled(FileOperation::Close, false);
 
 	connect(_openAndSaveWidget, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequestHandler(FileEvent*)));
@@ -132,32 +126,24 @@ void BackStageWidget::dataSetIORequestCompleted(FileEvent *event)
 	{
 		if (event->operation() == FileEvent::FileOpen)
 		{
-			_dataSetHasPathAndIsntReadOnly = ! event->isReadOnly();
-
-			_tabBar->setTabEnabled(FileOperation::Save, _dataSetHasPathAndIsntReadOnly); //Save
+			_tabBar->setTabEnabled(FileOperation::Save, event->type() == Utils::FileType::jasp); //Save
 			_tabBar->setTabEnabled(FileOperation::SaveAs, true); //Save As
 			_tabBar->setTabEnabled(FileOperation::ExportResults, true); //Export Results
 			_tabBar->setTabEnabled(FileOperation::ExportData, true); //Export Data
-#ifdef QT_DEBUG
 			_tabBar->setTabEnabled(FileOperation::SyncData, true); //Close
-#endif
 			_tabBar->setTabEnabled(FileOperation::Close, true); //Close
 		}
 		else if (event->operation() == FileEvent::FileSave)
 		{
 			_tabBar->setTabEnabled(FileOperation::Save, true);
-			_dataSetHasPathAndIsntReadOnly = true;
 		}
 		else if (event->operation() == FileEvent::FileClose)
 		{
-			_dataSetHasPathAndIsntReadOnly = true;
 			_tabBar->setTabEnabled(FileOperation::Save, false);
 			_tabBar->setTabEnabled(FileOperation::SaveAs, false);
 			_tabBar->setTabEnabled(FileOperation::ExportResults, false);
 			_tabBar->setTabEnabled(FileOperation::ExportData, false);
-#ifdef QT_DEBUG
 			_tabBar->setTabEnabled(FileOperation::SyncData, false);
-#endif
 			_tabBar->setTabEnabled(FileOperation::Close, false);
 		}
 	}
@@ -173,7 +159,7 @@ void BackStageWidget::tabPageChanging(int index, bool &cancel)
 		break;
 
 	case FileOperation::Save:  // Save
-		if (_dataSetHasPathAndIsntReadOnly)
+		if (_openAndSaveWidget->getCurrentFileType() == Utils::FileType::jasp)
 			_openAndSaveWidget->save();
 		else
 		{
@@ -199,13 +185,11 @@ void BackStageWidget::tabPageChanging(int index, bool &cancel)
 		_tabPages->setCurrentWidget(_openAndSaveWidget);
 		break;
 
-#ifdef QT_DEBUG
 	case FileOperation::SyncData:  // Sync Data
 		_openAndSaveWidget->setSaveMode(FileEvent::FileSyncData);
 		_tabPages->setCurrentWidget(_openAndSaveWidget);
 		_openAndSaveWidget->changeTabIfCurrentFileEmpty();
 		break;
-#endif
 
 	case FileOperation::Close: // Close
 		_openAndSaveWidget->close();
@@ -215,4 +199,17 @@ void BackStageWidget::tabPageChanging(int index, bool &cancel)
 		cancel = true;
 		break;
 	}
+}
+
+void BackStageWidget::setSyncFile(FileEvent *event)
+{
+	if (event->successful())
+	{
+		_openAndSaveWidget->setCurrentDataFile(event->path());
+	}
+}
+
+void BackStageWidget::dataAutoSynchronizationChanged(bool on)
+{
+	_openAndSaveWidget->setDataFileWatcher(on);
 }

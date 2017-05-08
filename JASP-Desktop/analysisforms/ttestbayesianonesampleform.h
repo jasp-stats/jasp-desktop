@@ -21,6 +21,7 @@
 
 #include "analysisform.h"
 
+
 namespace Ui {
 class TTestBayesianOneSampleForm;
 }
@@ -28,11 +29,11 @@ class TTestBayesianOneSampleForm;
 class TTestBayesianOneSampleForm : public AnalysisForm
 {
 	Q_OBJECT
-	
+
 public:
 	explicit TTestBayesianOneSampleForm(QWidget *parent = 0);
 	~TTestBayesianOneSampleForm();
-	
+
 private:
 	Ui::TTestBayesianOneSampleForm *ui;
 };

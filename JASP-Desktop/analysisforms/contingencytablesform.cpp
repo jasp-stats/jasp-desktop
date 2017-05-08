@@ -77,7 +77,6 @@ ContingencyTablesForm::ContingencyTablesForm(QWidget *parent) :
 	ui->groupCochrans->hide();
 	ui->groupNominalByInterval->hide();
 
-	ui->VovkSellkeMPR->hide();
 #else
 	ui->lambda->setStyleSheet("background-color: pink;");
 	ui->uncertaintyCoefficient->setStyleSheet("background-color: pink;");
@@ -97,8 +96,6 @@ ContingencyTablesForm::ContingencyTablesForm(QWidget *parent) :
 
 	ui->groupCochrans->setStyleSheet("background-color: pink;");
 	ui->groupNominalByInterval->setStyleSheet("background-color: pink;");
-
-	ui->VovkSellkeMPR->setStyleSheet("background-color: pink;");
 
 #endif
 

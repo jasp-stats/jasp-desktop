@@ -30,7 +30,6 @@
 
 #include "analysisforms/analysisform.h"
 #include "asyncloader.h"
-#include "optionsform.h"
 #include "activitylog.h"
 #include "fileevent.h"
 
@@ -71,6 +70,11 @@ private:
 	Analyses *_analyses;
 	EngineSync* _engineSync;
 
+	void refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns
+									, std::vector<std::string> &missingColumns
+									, std::map<std::string, std::string> &changeNameColumns);
+
+
 	void packageChanged(DataSetPackage *package);
 	void packageDataChanged(DataSetPackage *package
 							, std::vector<std::string> &changedColumns
@@ -97,9 +101,6 @@ private:
 	QVBoxLayout *_buttonPanelLayout;
 	QPushButton *_okButton;
 	QPushButton *_runButton;
-	QTabBar *_mTabBar;
-
-	OptionsForm *_optionsForm;
 
 	std::map<std::string, AnalysisForm *> _analysisForms;
 
@@ -111,14 +112,18 @@ private:
 	QSettings _settings;
 	ActivityLog *_log;
 	QString _fatalError;
+	QString _currentFilePath;
 
 	QString escapeJavascriptString(const QString &str);
 	void getAnalysesUserData();
 	Json::Value getResultsMeta();
 
+	void startDataEditor(QString path);
+
 signals:
 	void analysisSelected(int id);
 	void analysisUnselected();
+	void analysisSaveImage(int id, QString options);
 	void analysisChangedDownstream(int id, QString options);
 	void saveTextToFile(QString filename, QString text);
 	void pushToClipboard(QString mimeType, QString data, QString html);
@@ -134,6 +139,7 @@ signals:
 
 private slots:
 	void analysisResultsChangedHandler(Analysis* analysis);
+	void analysisImageSavedHandler(Analysis* analysis);
 	void analysisUserDataLoadedHandler(Analysis *analysis);
 	void analysisSelectedHandler(int id);
 	void analysisUnselectedHandler();
@@ -143,6 +149,8 @@ private slots:
 	void saveTempImageHandler(int id, QString path, QByteArray data);
 	void displayMessageFromResultsHandler(QString msg);
 	void analysisChangedDownstreamHandler(int id, QString options);
+	void analysisSaveImageHandler(int id, QString options);
+
 
 	void resultsDocumentChangedHandler();
 	void simulatedMouseClickHandler(int x, int y, int count);
@@ -150,7 +158,7 @@ private slots:
 	void removeAnalysisRequestHandler(int id);
 	void removeAllAnalyses();
 	void refreshAllAnalyses();
-	void refreshCurrentAnalysis();
+	void refreshAnalysesUsingColumn(QString col);
 	void resetTableView();
 	void showAnalysesMenuHandler(QString options);
 	void removeSelected();
@@ -158,6 +166,7 @@ private slots:
 	void editTitleSelected();
 	void copySelected();
 	void citeSelected();
+	void saveImage();
 	void noteSelected();
 	void menuHidding();
 
@@ -171,13 +180,14 @@ private slots:
 
 	void adjustOptionsPanelWidth();
 	void splitterMovedHandler(int, int);
-	void data_splitterMovedHandler(int, int);
 
 	void hideOptionsPanel();
 	void showOptionsPanel();
 	void showDataPanel();
 	void hideDataPanel();
 	void showVariablesPage();
+	void startDataEditorHandler();
+	void startDataEditorEventCompleted(FileEvent *event);
 
 	void analysisOKed();
 	void analysisRunned();
@@ -198,7 +208,7 @@ private slots:
 
 	void helpFirstLoaded(bool ok);
 	void requestHelpPage(const QString &pageName);
-	void showAbout();
+
 };
 
 #endif // MAINWIDGET_H

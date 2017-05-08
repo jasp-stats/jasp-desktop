@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perform = "run", callback) {
+SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perform = "run", callback = function(...) 0,  ...) {
 
 	run <- (perform == "run")
 	state <- .retrieveState()
@@ -34,7 +34,7 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 							)
 	bf.title <- bftype$bftitle
 	BFH1H0 <- bftype$BFH1H0
-	print(state)
+	
 	hypothesis.variables <- .hypothesisType.summarystats.ttest.paired(options$hypothesis)
 	oneSided <- hypothesis.variables$oneSided
 
@@ -214,7 +214,16 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 
 				rowsTTestBayesianPairedSamples$BF <- BF
 				rowsTTestBayesianPairedSamples$errorEstimate <- .clean(bayesFactorObject$properror)
-				rowsTTestBayesianPairedSamples$pValue <- .clean(bayesFactorObject$pValue)
+				
+				allPValues <- bayesFactorObject$pValue
+				
+				if (hypothesis.variables$oneSided == FALSE){
+				  rowsTTestBayesianPairedSamples$pValue <- .clean(allPValues$twoSided)
+				} else if (hypothesis.variables$oneSided == "left") {
+				  rowsTTestBayesianPairedSamples$pValue <- .clean(allPValues$minSided)
+				} else if (hypothesis.variables$oneSided == "right") {
+				  rowsTTestBayesianPairedSamples$pValue <- .clean(allPValues$plusSided)
+				}
 			}
 		}
 	}

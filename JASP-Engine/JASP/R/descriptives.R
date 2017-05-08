@@ -16,7 +16,7 @@
 #
 
 Descriptives <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
-
+	
 	variables <- unlist(options$variables)
 	if (!options$splitby == ""){
 		if (is.null(dataset)) {
@@ -52,8 +52,6 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 
 	state <- .retrieveState()
-
-
 	run <- perform == "run"
 
 	results <- list()
@@ -95,7 +93,8 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 	if (options$frequencyTables) {
 
-		frequency.tables <- .descriptivesFrequencyTables(dataset.factors, options, run, last.frequency.tables)
+		frequency.tables <- .descriptivesFrequencyTables(dataset.factors, options, 
+																										 run, last.frequency.tables)
 
 		if (length(frequency.tables) > 0)
 			results[["frequenciesHeading"]] <- "Frequencies"
@@ -118,38 +117,41 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 		distrPlotsTitle <- "Distribution Plot"
 	}
+	
+	freqPltColl <- .descriptivesFrequencyPlots(dataset.factors, options, run, last.plots)
 
-	distrPlots <- list(collection=.descriptivesFrequencyPlots(dataset.factors, options, run, last.plots), title=distrPlotsTitle)
+	distrPlots <- list(collection=freqPltColl, 
+										 title=distrPlotsTitle)
 
 	#### SPLIT PLOTS
 	last.splitPlots <- NULL
 
 	if (is.list(state))
 		last.splitPlots <- state$results$plots$splitPlots$collection
-
 	if (length(variables) > 1) {
-
 		splitPlotsTitle <- "Boxplots"
-
 	} else {
-
 		splitPlotsTitle <- "Boxplot"
-
 	}
-
-	splitPlots <- list(collection=.descriptivesSplitPlots(dataset, options, run, last.splitPlots),
+	
+	# Generate all the plots
+	splPltColl <- .descriptivesSplitPlots(dataset, options, run, last.splitPlots)
+	
+	splitPlots <- list(collection=splPltColl,
 										 title=splitPlotsTitle)
 
 
-	####  MATRIX PLOT
+####  MATRIX PLOT
 
 	corrPlot <- .descriptivesMatrixPlot(dataset, options, run)
-
-	results[["plots"]] <- list(distributionPlots=distrPlots, matrixPlot=corrPlot,
+	
+		
+	results[["plots"]] <- list(distributionPlots=distrPlots, 
+														 matrixPlot=corrPlot,
 														 splitPlots=splitPlots, title="Plots")
 
 	keep <- NULL
-
+	
 	for (plot in results$plots$distributionPlots$collection)
 		keep <- c(keep, plot$data)
 	for (plot in results$plots$splitPlots$collection)
@@ -752,19 +754,24 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 			} else if (run == FALSE) {
 
-				image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-
-				.barplotJASP(variable=variable, dontPlotData=TRUE)
-
-				plot[["data"]] <- .endSaveImage(image)
-
+				plotFunc <- function(){
+					.barplotJASP(variable=variable, dontPlotData=TRUE)
+				}
+				imageObj <- .writeImage(options$plotWidth, options$plotHeight, plotFunc)
+																
+				plot[["data"]] <- imageObj[["png"]]
+				plot[["obj"]] <- imageObj[["obj"]]
+								
 			} else if (any(is.infinite(column))) {
 
-				image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-
-				.barplotJASP(variable=variable, dontPlotData=TRUE)
-
-				plot[["data"]] <- .endSaveImage(image)
+				plotFunc <- function(){
+					.barplotJASP(variable=variable, dontPlotData=TRUE)
+				}
+				imageObj <- .writeImage(options$plotWidth, options$plotHeight, plotFunc,
+																obj = FALSE)
+																
+				plot[["data"]] <- imageObj[["png"]]
+				plot[["obj"]] <- imageObj[["obj"]]
 				plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity")
 				plot[["status"]] <- "complete"
 
@@ -775,32 +782,42 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					column <- as.factor(column)
 				}
 
-				image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-
-				.barplotJASP(column, variable)
-
-				plot[["data"]] <- .endSaveImage(image)
+				plotFunc <- function(){
+					.barplotJASP(column, variable)
+				}
+				imageObj <- .writeImage(options$plotWidth, options$plotHeight, plotFunc)
+																
+				plot[["data"]] <- imageObj[["png"]]
+				plot[["obj"]] <- imageObj[["obj"]]
+				plot[["convertible"]] <- TRUE
 				plot[["status"]] <- "complete"
 
 			} else if (length(column) > 0 && !is.factor(column)) {
 
 				if (any(is.infinite(column))) {
 
-					image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-
-					.barplotJASP(variable=variable, dontPlotData=TRUE)
-
-					plot[["data"]] <- .endSaveImage(image)
+					plotFunc <- function(){
+						.barplotJASP(variable=variable, dontPlotData=TRUE)
+					}
+					imageObj <- .writeImage(options$plotWidth, options$plotHeight, plotFunc,
+																	obj = FALSE)
+																	
+					plot[["data"]] <- imageObj[["png"]]
+					plot[["obj"]] <- imageObj[["obj"]]
 					plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity")
 					plot[["status"]] <- "complete"
 
 				} else {
 
-					image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-
-					.plotMarginal(column, variableName=variable)
-
-					plot[["data"]] <- .endSaveImage(image)
+					plotFunc <- function(){
+						.plotMarginal(column, variableName=variable)
+					}
+					imageObj <- .writeImage(options$plotWidth, options$plotHeight, 
+																	plotFunc)
+																	
+					plot[["data"]] <- imageObj[["png"]]
+					plot[["obj"]] <- imageObj[["obj"]]
+					plot[["convertible"]] <- TRUE
 					plot[["status"]] <- "complete"
 				}
 
@@ -1137,9 +1154,8 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		}
 
 		if (length(variables) > 0) {
-
-			image <- .beginSaveImage(width, height)
-
+			
+			.matrixPlotFunc <- function(){
 				if (l == 1) {
 
 					par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 0, 0, 0))
@@ -1199,11 +1215,15 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 						mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.5, line= -0.1, las= 0)
 					}
 				}
+			}
 
-			content <- .endSaveImage(image)
+			imgObj <- .writeImage(width, height, plot=.matrixPlotFunc)
 
 			plot <- matrix.plot
-			plot[["data"]]  <- content
+			plot[["data"]]  <- imgObj[["png"]]
+			plot[["obj"]] <- imgObj[["obj"]]
+			plot[["convertible"]] <- TRUE
+			
 			matrix.plot <- plot
 
 		}
@@ -1215,10 +1235,18 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 .descriptivesSplitPlots <- function(dataset, options, run, last.plots){
 
 	splitPlots <- NULL
+	
+	# Initialisation plot
+	.initSplitPlot <- function(){
+		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="",
+				 ylab="")
+		axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
+		mtext(text = splitPlot[["name"]], side = 1, cex=1.5, line = 3)
+	}
 
 	if (options$splitPlots && length(options$variables) > 0){
 
-		### Define custom y axis function
+		# Define custom y axis function
 		base_breaks_y <- function(x){
 			b <- pretty(x)
 			d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
@@ -1229,7 +1257,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					 ggplot2::scale_y_continuous(breaks=b))
 		}
 
-		### Plot
+		# Plot
 		for (i in 1:length(options$variables)){
 
 			splitPlot <- list()
@@ -1261,63 +1289,42 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 			if (plotted) {
 
-				# already plotted, no nothing
+				# already plotted, nothing
 
 			} else if (run == FALSE){
-
-				image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-				plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="",
-						 ylab="")
-				axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
-				mtext(text = splitPlot[["name"]], side = 1, cex=1.5, line = 3)
-				splitPlot[["data"]] <- .endSaveImage(image)
+				
+				image <- .writeImage(width = options$plotWidth, height = options$plotHeight,
+														plot = .initSplitPlot, obj = FALSE)
+				splitPlot[["data"]] <- image[["png"]]
 
 			} else if (!is.numeric(y)) {
 
-				image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-				plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="",
-						 ylab="")
-				axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
-				mtext(text = splitPlot[["name"]], side = 1, cex=1.5, line = 3)
-				splitPlot[["data"]] <- .endSaveImage(image)
+				image <- .writeImage(width = options$plotWidth, height = options$plotHeight,
+														plot = .initSplitPlot, obj = FALSE)
+				splitPlot[["data"]] <- image[["png"]]
 				splitPlot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable is not numeric!")
 				splitPlot[["status"]] <- "complete"
-
-				} else if (any(is.infinite(y))) {
-
-					image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-					plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="",
-							 ylab="")
-					axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
-					mtext(text = splitPlot[["name"]], side = 1, cex=1.5, line = 3)
-					splitPlot[["data"]] <- .endSaveImage(image)
-					splitPlot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity!")
-					splitPlot[["status"]] <- "complete"
 
 			} else if (!(options$splitPlotViolin || options$splitPlotBoxplot ||
 								 options$splitPlotJitter)) {
 
-					image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-					plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="",
-							 ylab="")
-					axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
-					mtext(text = splitPlot[["name"]], side = 1, cex=1.5, line = 3)
-					splitPlot[["data"]] <- .endSaveImage(image)
-					splitPlot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: No plot type selected!")
-					splitPlot[["status"]] <- "complete"
-
-
+				image <- .writeImage(width = options$plotWidth, height = options$plotHeight,
+														plot = .initSplitPlot, obj = FALSE)
+				splitPlot[["data"]] <- image[["png"]]
+				splitPlot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: No plot type selected!")
+				splitPlot[["status"]] <- "complete"
+					
 			} else {
 
 				if (is.null(dataset[[.v(options$splitby)]])){
 					group <- factor(rep("",length(y)))
 					xlab <- "Total"
-					boxWidth <- 0.5
+					boxWidth <- 0.2
 					vioWidth <- 0.3
 				} else {
 					group <- as.factor(dataset[[.v(options$splitby)]])[!is.na(dataset[[.v(options$variables[[i]])]])]
 					xlab <- options$splitby
-					boxWidth <- 1
+					boxWidth <- 0.4
 					vioWidth <- 0.6
 				}
 
@@ -1351,8 +1358,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 					p <- p + ggplot2::geom_violin(trim = F, size = 0.75, width = vioWidth,
 																				scale = "width") +
-						ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, stat_params = list(width = boxWidth/2))+
-
+						ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, width = boxWidth/2) +
 						ggplot2::geom_boxplot(size = 0.75, width = boxWidth,
 																	outlier.shape = NA) +
 						ggplot2::geom_violin(trim = F, size = 0.75, width = vioWidth,
@@ -1365,7 +1371,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 					p <- p + ggplot2::geom_violin(trim = F, size = 0.75, width = vioWidth,
 																				scale = "width") +
-						ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, stat_params = list(width = boxWidth/2))+
+						ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, width = boxWidth/2)+
 
 						ggplot2::geom_boxplot(size = 0.75, outlier.size = 1.5, width = boxWidth) +
 						ggplot2::geom_violin(trim = F, size = 0.75, width = vioWidth,
@@ -1373,7 +1379,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 				} else if (options$splitPlotBoxplot && options$splitPlotJitter) {
 
-					p <- p + ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, stat_params = list(width = boxWidth/2))+
+					p <- p + ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, width = boxWidth/2 ) +
 
 						ggplot2::geom_boxplot(size = 0.75, outlier.shape = NA, width = boxWidth) +
 						ggplot2::geom_jitter(size = 2.5, shape = 1, stroke = 1,
@@ -1395,7 +1401,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 				} else if (options$splitPlotBoxplot){
 
-					p <- p + ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, stat_params = list(width = boxWidth/2))+
+					p <- p + ggplot2::stat_boxplot(geom = "errorbar",size = 0.75, width = boxWidth/2 )+
 
 						ggplot2::geom_boxplot(size = 0.75, outlier.size = 1.5, width = boxWidth)
 
@@ -1406,15 +1412,14 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 				}
 
-				print("for loop has not been broken!")
 				if (options$splitPlotOutlierLabel && (options$splitPlotBoxplot || options$splitPlotJitter)){
 					p <- p + ggplot2::geom_text(ggplot2::aes(label=label), hjust=-0.3)
 				}
 
 				### Theming & Cleaning
 				p <- p + ggplot2::xlab(xlab) +
-				 	ggplot2::ylab(options$variables[[i]]) +
-				 	base_breaks_y(y) +
+					ggplot2::ylab(options$variables[[i]]) +
+					base_breaks_y(y) +
 					ggplot2::theme_bw() +
 					ggplot2::theme(
 						panel.grid.minor = ggplot2::element_blank(),
@@ -1437,9 +1442,13 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 						legend.position = "none")
 
 
-				image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-				print(p)
-				splitPlot[["data"]] <- .endSaveImage(image)
+				image <- .writeImage(width = options$plotWidth, 
+														height = options$plotHeight, 
+														plot = p)
+				
+				splitPlot[["data"]] <- image[["png"]]
+				splitPlot[["obj"]] <- image[["obj"]]
+				splitPlot[["convertible"]] <- TRUE
 				splitPlot[["status"]] <- "complete"
 
 			}
@@ -1449,7 +1458,6 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		}
 	}
 
-	print(splitPlots)
   splitPlots
-
+	
 }

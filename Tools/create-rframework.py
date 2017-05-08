@@ -4,8 +4,10 @@ import os
 from subprocess import check_output
 from subprocess import call
 import shutil
+current = "3.3"
 
 def locate_libs(path):
+	
 
 	locations = set()
 
@@ -24,7 +26,7 @@ def locate_libs(path):
 	
 				line = line.strip()
 
-				if line.startswith("/Library/Frameworks/R.framework/Versions/3.1/Resources/") or line.startswith("/opt/") or line.startswith("/usr/local/"):
+				if line.startswith("/Library/Frameworks/R.framework/Versions/" + current + "/Resources/") or line.startswith("/opt/") or line.startswith("/usr/local/"):
 		
 					file = line.split()[0]
 					if os.path.isfile(file):
@@ -97,8 +99,8 @@ shutil.rmtree(os.path.join(wd, "R.framework"))
 shutil.copytree("/Library/Frameworks/R.framework/", os.path.join(wd, "R.framework"), symlinks=True)
 
 path = os.path.join(wd, "R.framework")
-libpath = os.path.join(wd, "R.framework/Versions/3.1/Resources/lib")
-out_lib_dir = os.path.join(wd, "R.framework/Versions/3.1/Resources/lib")
+libpath = os.path.join(wd, "R.framework/Versions/" + current + "/Resources/lib")
+out_lib_dir = os.path.join(wd, "R.framework/Versions/" + current + "/Resources/lib")
 
 libs = locate_libs(path)
 dependencies = extract_lib_dependencies(libs)
@@ -118,10 +120,10 @@ for dependency in dependencies:
 			
 		new_libs.append(dep_target)
 		
-		change = { "old" : dependency, "new" : "@executable_path/../Frameworks/R.framework/Versions/3.1/Resources/lib/" + dep_base }
+		change = { "old" : dependency, "new" : "@executable_path/../Frameworks/R.framework/Versions/" + current + "/Resources/lib/" + dep_base }
 		changes.append(change)
 
-		change = { "old" : dep_base, "new" : "@executable_path/../Frameworks/R.framework/Versions/3.1/Resources/lib/" + dep_base }
+		change = { "old" : dep_base, "new" : "@executable_path/../Frameworks/R.framework/Versions/" + current + "/Resources/lib/" + dep_base }
 		changes.append(change)
 		
 	else:
@@ -134,7 +136,7 @@ print(changes)
 for new_lib in new_libs:
 
 	lib_base = os.path.basename(new_lib)
-	new_path = "@executable_path/../Frameworks/R.framework/Versions/3.1/Resources/lib/" + lib_base
+	new_path = "@executable_path/../Frameworks/R.framework/Versions/" + current + "/Resources/lib/" + lib_base
 	call(["install_name_tool", "-id", new_path, new_lib])
 
 	change_dep_paths(new_lib, changes)
@@ -144,20 +146,20 @@ for lib in libs:
 	lib_base = os.path.basename(lib)
 	new_path = os.path.relpath(lib, path)
 	
-	new_path = new_path.replace("R.framework/Resources/", "R.framework/Versions/3.1/Resources/")
-	new_path = new_path.replace("R.framework/Versions/Current/", "R.framework/Versions/3.1/")
-	new_path = new_path.replace("R.framework/Libraries/", "R.framework/Versions/3.1/lib/")
+	new_path = new_path.replace("R.framework/Resources/", "R.framework/Versions/" + current + "/Resources/")
+	new_path = new_path.replace("R.framework/Versions/Current/", "R.framework/Versions/" + current + "/")
+	new_path = new_path.replace("R.framework/Libraries/", "R.framework/Versions/" + current + "/lib/")
 
 	if new_path.startswith(".."):
-		new_path = "@executable_path/../Frameworks/R.framework/Versions/3.1/Resources/lib/" + lib_base
+		new_path = "@executable_path/../Frameworks/R.framework/Versions/" + current + "/Resources/lib/" + lib_base
 	else:
 	
 		if new_path.startswith("Resources/"):
-			new_path = new_path.replace("Resources/", "Versions/3.1/Resources/")
+			new_path = new_path.replace("Resources/", "Versions/" + current + "/Resources/")
 		if new_path.startswith("Versions/Current/"):
-			new_path = new_path.replace("Versions/Current/", "Versions/3.1/")
+			new_path = new_path.replace("Versions/Current/", "Versions/" + current + "/")
 		if new_path.startswith("Libraries/"):
-			new_path = new_path.replace("Libraries/", "Versions/3.1/Resources/")
+			new_path = new_path.replace("Libraries/", "Versions/" + current + "/Resources/")
 	
 		new_path = "@executable_path/../Frameworks/R.framework/" + new_path
 
@@ -173,9 +175,9 @@ os.remove(os.path.join(wd, "R.framework/PrivateHeaders"))
 os.remove(os.path.join(wd, "R.framework/R"))
 os.remove(os.path.join(wd, "R.framework/Resources"))
 os.remove(os.path.join(wd, "R.framework/Versions/Current"))
-os.remove(os.path.join(wd, "R.framework/Versions/3.1/Headers"))
-os.remove(os.path.join(wd, "R.framework/Versions/3.1/R"))
-os.remove(os.path.join(wd, "R.framework/Versions/3.1/Resources/R"))
-shutil.rmtree(os.path.join(wd, "R.framework/Versions/3.1/PrivateHeaders"))
-shutil.rmtree(os.path.join(wd, "R.framework/Versions/3.1/Resources/man1"))
-shutil.rmtree(os.path.join(wd, "R.framework/Versions/3.1/Resources/doc"))
+os.remove(os.path.join(wd, "R.framework/Versions/" + current + "/Headers"))
+os.remove(os.path.join(wd, "R.framework/Versions/" + current + "/R"))
+os.remove(os.path.join(wd, "R.framework/Versions/" + current + "/Resources/R"))
+shutil.rmtree(os.path.join(wd, "R.framework/Versions/" + current + "/PrivateHeaders"))
+shutil.rmtree(os.path.join(wd, "R.framework/Versions/" + current + "/Resources/man1"))
+shutil.rmtree(os.path.join(wd, "R.framework/Versions/" + current + "/Resources/doc"))

@@ -25,8 +25,6 @@ $(document).ready(function () {
 	var $instructions = $("#instructions")
 	var showInstructions = false;
 	
-
-
 	var analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
 
 	window.select = function (id) {
@@ -91,6 +89,13 @@ $(document).ready(function () {
 
 		window.menuObject = null;
 	}
+
+    window.saveImageClicked = function () {
+        if (window.menuObject.saveImageClicked | window.menuObject.saveImageClicked())
+            window.menuObject.saveImageClicked();
+
+        window.menuObject = null;
+    }
 
 	window.collapseMenuClicked = function () {
 		if (window.menuObject.collapseMenuClicked)
@@ -327,9 +332,10 @@ $(document).ready(function () {
 	window.unselectByClickingBody = function (event) {
 
 		var target = event.target || event.srcElement;
-
+		
+		var stacktraceClicked = $(target).is(".stack-trace-span, .stack-trace-arrow, .stack-trace-selector");
 		var noteClicked = $(target).is(".jasp-notes, .jasp-notes *");
-		var ignoreSelectionProcess = wasLastClickNote === true && noteClicked === false;
+		var ignoreSelectionProcess = (wasLastClickNote === true && noteClicked === false) || stacktraceClicked === true;
 		wasLastClickNote = noteClicked;
 		if (ignoreSelectionProcess)
 			return;
@@ -349,9 +355,11 @@ $(document).ready(function () {
 	var selectedHandler = function (event) {
 
 		var target = event.target || event.srcElement;
+		
+		var stacktraceClicked = $(target).is(".stack-trace-span, .stack-trace-arrow, .stack-trace-selector");
 		var noteClicked = $(target).is(".jasp-notes, .jasp-notes *");
 
-		var ignoreSelectionProcess = wasLastClickNote === true && noteClicked === false;
+		var ignoreSelectionProcess = (wasLastClickNote === true && noteClicked === false) || stacktraceClicked === true;
 
 		wasLastClickNote = noteClicked;
 
@@ -378,11 +386,11 @@ $(document).ready(function () {
 
 	}
 
-	var analysisChangedDownstreamHandler = function (event, data) {
+    var analysisChangedDownstreamHandler = function (event, data) {
 
-		jasp.analysisChangedDownstream(data.id, JSON.stringify(data.model))
+        jasp.analysisChangedDownstream(data.id, JSON.stringify(data.model))
 
-	}
+    }
 
 	window.analysisChanged = function (analysis) {
 
@@ -463,6 +471,12 @@ $(document).ready(function () {
 
 			});
 
+            jaspWidget.on("saveimage", function (id, options) {
+
+                jasp.analysisSaveImage(id, JSON.stringify(options))
+
+            });
+
 			jaspWidget.on("toolbar:showMenu", function (obj, options) {
 
 				jasp.showAnalysesMenu(JSON.stringify(options));
@@ -485,6 +499,19 @@ $(document).ready(function () {
 		if (selectedAnalysisId === analysis.id)
 			window.scrollIntoView(jaspWidget.$el);
 	}
+	
+	$("#results").on("click", ".stack-trace-selector", function() {
+		$(this).next(".stack-trace").slideToggle(function() {
+			var $selectedInner = $(this).parent().siblings(".jasp-analysis");
+			var errorBoxHeight = $(this).parent(".analysis-error").outerHeight(true);
+			if ($(this).next(".stack-trace").is(":hidden")) {
+				$selectedInner.css("height", "");
+			}
+			if ($selectedInner.height() < errorBoxHeight) {
+				$selectedInner.height(errorBoxHeight);
+			}
+		}.bind(this))
+	});
 
 	$("body").click(window.unselectByClickingBody)
 

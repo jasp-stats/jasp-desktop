@@ -267,7 +267,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Mann-Whitney U</string>
+            <string>Mann-Whitney </string>
            </property>
           </widget>
          </item>
@@ -695,7 +695,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Vovk-Sellke Maximum p-Ratio</string>
+            <string>Vovk-Sellke maximum p-ratio</string>
            </property>
           </widget>
          </item>
@@ -732,6 +732,11 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -752,11 +757,6 @@
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>boundSingleItemView</class>

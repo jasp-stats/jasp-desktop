@@ -88,6 +88,7 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 
 	Json::Value &dataSet = metaData["dataSet"];
 	metaData["dataFilePath"] = Json::Value(package->dataFilePath);
+	metaData["dataFileReadOnly"] = Json::Value(package->dataFileReadOnly);
 	metaData["dataFileTimestamp"] = Json::Value(package->dataFileTimestamp);
 	dataSet["rowCount"] = Json::Value(dataset ? dataset->rowCount() : 0);
 	dataSet["columnCount"] = Json::Value(dataset ? dataset->columnCount(): 0);
@@ -126,23 +127,23 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 
 				for (Labels::const_iterator iter = labels.begin(); iter != labels.end(); iter++)
 				{
-					const std::pair<const int, Label> &pair = *iter;
+					const Label &label = *iter;
 					Json::Value keyValuePair = Json::arrayValue;
-					keyValuePair.append(pair.first);
-					keyValuePair.append(pair.second.text());
+					keyValuePair.append(label.value());
+					keyValuePair.append(label.text());
 					labelsMetaData.append(keyValuePair);
 					labelIndex += 1;
 				}
 
-				Json::Value &orgValuesMetaData = columnLabelData["orgValues"];
-				const std::map<int, std::string> &orgValues = labels.getOrgValues();
-				for (std::map<int, std::string>::const_iterator iter = orgValues.begin(); iter != orgValues.end(); ++iter)
+				Json::Value &orgStringValuesMetaData = columnLabelData["orgStringValues"];
+				std::map<int, std::string> &orgLabels = labels.getOrgStringValues();
+				for (std::map<int, std::string>::const_iterator iter = orgLabels.begin(); iter != orgLabels.end(); ++iter)
 				{
 					const std::pair<int, std::string> &pair = *iter;
 					Json::Value keyValuePair = Json::arrayValue;
 					keyValuePair.append(pair.first);
 					keyValuePair.append(pair.second);
-					orgValuesMetaData.append(keyValuePair);
+					orgStringValuesMetaData.append(keyValuePair);
 				}
 			}
 		}

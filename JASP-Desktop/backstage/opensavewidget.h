@@ -53,7 +53,13 @@ public:
 	FileEvent* open(const QString &path);
 	FileEvent* save();
 	void sync();
-	FileEvent *close();	
+	FileEvent *close();
+
+	void setCurrentDataFile(const QString &path);
+	void setDataFileWatcher(bool watch);
+
+	Utils::FileType getCurrentFileType();
+
 public slots:
 	void dataSetIOCompleted(FileEvent *event);
 
@@ -65,21 +71,20 @@ private slots:
 	void dataSetOpenRequestHandler(QString path);
 	void dataSetOpenExampleRequestHandler(QString path);
 	void dataSetOpenCurrentRequestHandler(QString path);
-	void setDataFileWatcher(bool watch);
 	void dataFileModifiedHandler(QString path);
 	void clearOnlineDataFromRecentList(int provider);
 	void tabWidgetChanged(int id);
 	void tabWidgetChanging(int index, bool &cancel);
 
 private:
-	void setCurrentDataFile(const QString &path);
 	bool checkSyncFileExists(const QString &path);
+	void clearSyncData();
+
 	static bool clearOSFFromRecentList(QString path);
 	OnlineDataManager *_odm = NULL;
 
-	bool _currentFileHasPath;
 	QString _currentFilePath;
-	bool _currentFileReadOnly;
+	Utils::FileType _currentFileType;
 
 	FileEvent::FileMode _mode;
 

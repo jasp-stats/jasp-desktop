@@ -785,31 +785,31 @@
             <string>Correction</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_6">
-            <item row="2" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsBonferroni">
-              <property name="text">
-               <string>Bonferroni</string>
-              </property>
-             </widget>
-            </item>
             <item row="3" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsHolm">
+             <widget class="BoundCheckBox" name="postHocTestsTukey">
               <property name="text">
-               <string>Holm</string>
+               <string>Tukey</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
+            <item row="5" column="0">
              <widget class="BoundCheckBox" name="postHocTestsScheffe">
               <property name="text">
                <string>Scheffe</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsTukey">
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsBonferroni">
               <property name="text">
-               <string>Tukey</string>
+               <string>Bonferroni</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsHolm">
+              <property name="text">
+               <string>Holm</string>
               </property>
              </widget>
             </item>
@@ -1577,7 +1577,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Vovk-Sellke Maximum p-Ratio</string>
+               <string>Vovk-Sellke maximum p-ratio</string>
               </property>
              </widget>
             </item>
@@ -1617,6 +1617,11 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -1639,25 +1644,20 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundComboBox</class>
-   <extends>QComboBox</extends>
-   <header>widgets/boundcombobox.h</header>
   </customwidget>
   <customwidget>
    <class>AnovaModelWidget</class>
    <extends>QWidget</extends>
    <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundTableView</class>

@@ -1,5 +1,5 @@
 
-QT += core gui webkit webkitwidgets svg network testlib printsupport
+QT += core gui webkit webkitwidgets svg network testlib printsupport xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

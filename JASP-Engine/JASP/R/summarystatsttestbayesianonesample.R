@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform = 'run', callback) {
+SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform = 'run', callback = function(...) 0,  ...) {
 
 	run <- (perform == "run")
 	state <- .retrieveState()
@@ -213,7 +213,16 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 
 				rowsTTestBayesianOneSample$BF <- BF
 				rowsTTestBayesianOneSample$errorEstimate <- .clean(bayesFactorObject$properror)
-				rowsTTestBayesianOneSample$pValue <- .clean(bayesFactorObject$pValue)
+				
+				allPValues <- bayesFactorObject$pValue
+				
+				if (hypothesis.variables$oneSided == FALSE){
+				  rowsTTestBayesianOneSample$pValue <- .clean(allPValues$twoSided)
+				} else if (hypothesis.variables$oneSided == "left") {
+				  rowsTTestBayesianOneSample$pValue <- .clean(allPValues$minSided)
+				} else if (hypothesis.variables$oneSided == "right") {
+				  rowsTTestBayesianOneSample$pValue <- .clean(allPValues$plusSided)
+				}
 			}
 		}
 	}

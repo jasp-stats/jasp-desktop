@@ -17,7 +17,7 @@
 
 #include "spssimportdataset.h"
 #include "variablerecord.h"
-#include "spssutils.h"
+#include "../importerutils.h"
 #include "stringutils.h"
 
 using namespace std;

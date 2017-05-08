@@ -76,6 +76,23 @@
 	}
 }
 
+.readBayesianRepeatedMeasuresShortData <- function (options = list (), perform = "init") {
+	numeric.vars <- c (unlist (options$repeatedMeasuresCells), unlist (options$covariates))
+	numeric.vars <- numeric.vars [numeric.vars != ""]
+	
+	factor.vars <- c (unlist (options$betweenSubjectFactors))
+	factor.vars <- factor.vars [factor.vars != ""]
+
+	if (perform == "run") {
+		dataset <- .readDataSetToEnd (columns.as.numeric = numeric.vars, columns.as.factor = factor.vars, 
+			exclude.na.listwise = c (numeric.vars, factor.vars))
+	} else {
+		dataset <- .readDataSetHeader (columns.as.numeric = numeric.vars, columns.as.factor = factor.vars)
+	}
+	
+	return (dataset)
+}
+
 .readBayesianLinearModelData <- function (dataset = NULL, options = list (), perform = "init") {
 	numeric.vars <- c (unlist (options$covariates), unlist (options$dependent))
 	numeric.vars <- numeric.vars [numeric.vars != ""]
@@ -181,9 +198,11 @@
 	}
 
 	if (!exists ("error.message"))
-		return (list (ready = TRUE, error.message = NULL))
-	if (exists ("error.message"))
-		return (list (ready = FALSE, error.message = error.message))
+		return (list (ready = TRUE, error = FALSE, error.message = NULL))
+	if (is.null(error.message))
+		return (list (ready = FALSE, error = FALSE, error.message = NULL))
+	if (!is.null(error.message))
+		return (list (ready = FALSE, error = TRUE, error.message = error.message))
 }
 
 .updateResultsBayesianLinearModels <- function (results, model.object, effects.matrix, interactions.matrix, neverExclude, null.model, options, status) {
@@ -251,7 +270,7 @@
 		rscaleCont <- options$priorCovariates
 	}
 	
-	if (!status$ready && is.null (status$error.message))
+	if (! status$ready && ! status$error)
 		return (list (model =  list (models = NULL, effects = NULL), status = status))
 
 	#Extract the model components and nuisance terms
@@ -288,8 +307,9 @@
 		whichModels = "withmain", neverExclude = paste ("^", neverExclude, "$", sep = "")), 
 		silent = TRUE)
 	if (class (model.list) == "try-error") {
-		if (is.null (status$error.message)) {
+		if (! status$error) {
 			status$ready <- FALSE
+			status$error <- TRUE
 			status$error.message <- "An unknown error occured. Please contact the authors."
 			return (list (model =  list (models = NULL, effects = NULL, interactions.matrix = NULL, 
 				nuisance = neverExclude, null.model = NULL), status = status))
@@ -333,6 +353,7 @@
 				if (message == "Operation cancelled by callback function.")
 					return()
 				status$ready <- FALSE
+				status$error <- TRUE
 				status$error.message <- "Bayes factor is undefined -- the null model could not be computed"
 			}
 		}
@@ -479,8 +500,9 @@
 			null.model = null.model), status = status))
 	} 
 
-	if (is.null (status$error.message)){
+	if (! status$error) {
 			status$ready <- FALSE
+			status$error <- TRUE
 			status$error.message <- "An unknown error occured. Please contact the authors."
 	}
 	return (list (model =  list (models = NULL, effects = NULL, interactions.matrix = NULL, 
@@ -522,7 +544,7 @@
 	}
 	modelTable [["schema"]] <- list (fields = fields)
 
-	if (!status$ready && is.null (status$error.message))
+	if (! status$ready && ! status$error)
 		return (list (modelTable = modelTable, model = model))
 
 	## Footnotes
@@ -556,6 +578,25 @@
 
 	## Populate table
 	if (perform == "run" && status$ready) {
+		
+		bestModelTop <- ! is.null(options$bayesFactorOrder) && options$bayesFactorOrder == "bestModelTop" && populate == FALSE
+		if (bestModelTop) {
+			ordering <- order(bayes.factors, decreasing=TRUE)	
+			bestModelIndex <- ordering[1] - 1 # The null model is not in the model list, so shift by 1
+			if (bestModelIndex != 0) {
+				bestModel <- model$models[[bestModelIndex]]$bf
+				bayes.factors[1] <- 0 - bestModel@bayesFactor$bf
+				numerical.error[1] <- bestModel@bayesFactor$error
+				for (m in 1:no.models) {
+					if (model$models[[m]]$ready) {
+						newBF <- model$models[[m]]$bf / bestModel
+						bayes.factors[m + 1] <- newBF@bayesFactor$bf
+						numerical.error[m + 1] <- newBF@bayesFactor$error 
+					}
+				}
+			}
+		}
+		
 		if (populate == FALSE) {
 			#This is set for intermediate populating of tables
 			ln.prob <- rep (NA, no.models + 1)
@@ -585,7 +626,17 @@
 			}
 		}
 		rows [[1]] [["BF10"]] <- 0
-		rows [[1]] [["error %"]] <- ""
+
+		if (bestModelTop && bestModelIndex != 0) {
+			rows[[1]][["error %"]] = .clean(100 * numerical.error[1])
+			if (options$bayesFactorType == "LogBF10") {
+				rows[[1]][["BF10"]] <- .clean(bayes.factors[1])
+			} else if (options$bayesFactorType == "BF10") {
+				rows[[1]][["BF10"]] <- .clean(bayes.factors[1] / log(10))
+			} else {
+				rows[[1]][["BF10"]] <- .clean(- bayes.factors[1] / log(10))
+			}
+		}
 
 		for (m in 1:no.models) {
 			if (model$models [[m]]$ready) {
@@ -616,6 +667,13 @@
 				}
 			}
 		}
+
+		if (bestModelTop) {
+			rows <- rows[ordering]
+		}
+
+	  rows[[1]][["error %"]] <- ""
+
 	}
 	
 	if (is.null(status$analysis.type) || status$analysis.type != "rmANOVA") {
@@ -624,7 +682,7 @@
 	modelTable [["data"]] <- rows
 	modelTable [["footnotes"]] <- as.list (footnotes)
 
-	if (!status$ready)
+	if (status$error)
 		modelTable [["error"]] <- list (errorType = "badData", errorMessage = status$error.message)
 	
 	return (list (modelTable = modelTable, model = model))
@@ -681,7 +739,7 @@
 
 	effectsTable [["schema"]] <- list (fields = fields)
 
-	if (!status$ready && is.null (status$error.message))
+	if (! status$ready && ! status$error)
 		return (effectsTable)
 
 	effects.matrix <- model$effects
@@ -788,7 +846,7 @@
 		effectsTable [["title"]] <- paste ("Analysis of Effects - ", options$dependent, sep = "")
 	}
 
-	if (!status$ready)
+	if (! status$ready) # TODO why do we need this?
 		effectsTable [["error"]] <- list (errorType = "badData")
 
 	return (effectsTable)
@@ -817,7 +875,7 @@
 		)
 	estimatesTable [["schema"]] <- list (fields = fields)
 
-	if ( !status$ready && is.null (status$error.message))
+	if (! status$ready && ! status$error)
 		return (estimatesTable)
 	
 	if ( perform == "init" && ! populate)
@@ -933,7 +991,7 @@
 		estimatesTable [["data"]] <- rows
 	}
 
-	if (!status$ready)
+	if (! status$ready)
 		estimatesTable [["error"]] <- list (errorType = "badData")
 
  	estimatesTable [["title"]] <- paste ("Parameter Estimates - ", options$dependent, sep = "")

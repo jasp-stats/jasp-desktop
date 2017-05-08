@@ -30,6 +30,7 @@ MainTableView::MainTableView(QWidget *parent) :
 {
 	_dataSetModel = NULL;
 	_variablesPage = NULL;
+	_dataLoaded = false;
 
 	_infoPopup = new InfoPopup(this);
 	_infoPopup->setVisible(false);
@@ -148,3 +149,20 @@ void MainTableView::setVariablesView(VariablesWidget *variablesPage)
 	_variablesPage = variablesPage;
 }
 
+void MainTableView::adjustAfterDataLoad(bool dataLoaded)
+{
+	if (dataLoaded)
+	{
+		horizontalHeader()->setResizeContentsPrecision(50);
+		horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+	}
+	_dataLoaded = dataLoaded;
+	setToolTip(dataLoaded ? "Double-click to edit data" : "");
+
+}
+
+void MainTableView::mouseDoubleClickEvent(QMouseEvent *event)
+{
+	if (_dataLoaded)
+		emit dataTableDoubleClicked();
+}

@@ -61,6 +61,10 @@
 #include "analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h"
 #include "analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
 
+#ifdef QT_DEBUG
+#include "analysisforms/basregressionlinearlinkform.h"
+#endif
+
 #include "analysisforms/SEM/semsimpleform.h"
 #include "analysisforms/R11tLearn/r11tlearnform.h"
 
@@ -80,12 +84,13 @@
 #include <QStringBuilder>
 #include <QWebHistory>
 #include <QDropEvent>
-#include <QFileInfo>
 #include <QShortcut>
 #include <QDesktopWidget>
 #include <QTabBar>
 #include <QMenuBar>
 #include <QDir>
+#include <QFileDialog>
+#include <QDesktopServices>
 
 #include "analysisloader.h"
 
@@ -99,8 +104,13 @@
 #include "lrnam.h"
 #include "activitylog.h"
 #include "aboutdialog.h"
+#include "preferencesdialog.h"
 #include <boost/filesystem.hpp>
 #include "dirs.h"
+
+#include "options/optionvariablesgroups.h"
+
+using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -111,8 +121,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	_currentOptionsWidget = NULL;
 	_currentAnalysis = NULL;
 
-	_optionsForm = NULL;
-
 	_package = new DataSetPackage();
 
 	_package->isModifiedChanged.connect(boost::bind(&MainWindow::packageChanged, this, _1));
@@ -122,10 +130,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect(saveShortcut, SIGNAL(activated()), this, SLOT(saveKeysSelected()));
 	QShortcut *openShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
 	QObject::connect(openShortcut, SIGNAL(activated()), this, SLOT(openKeysSelected()));
-#ifdef QT_DEBUG
 	QShortcut *syncShortcut = new QShortcut(QKeySequence("Ctrl+Y"), this);
 	QObject::connect(syncShortcut, SIGNAL(activated()), this, SLOT(syncKeysSelected()));
-#endif
 	QShortcut *refreshShortcut = new QShortcut(QKeySequence("Ctrl+R"), this);
 	QObject::connect(refreshShortcut, SIGNAL(activated()), this, SLOT(refreshKeysSelected()));
 
@@ -188,6 +194,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(fatalError()));
 
 	connect(_analyses, SIGNAL(analysisResultsChanged(Analysis*)), this, SLOT(analysisResultsChangedHandler(Analysis*)));
+	connect(_analyses, SIGNAL(analysisImageSaved(Analysis*)), this, SLOT(analysisImageSavedHandler(Analysis*)));
 	connect(_analyses, SIGNAL(analysisUserDataLoaded(Analysis*)), this, SLOT(analysisUserDataLoadedHandler(Analysis*)));
 	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), ui->backStage, SLOT(analysisAdded(Analysis*)));
 
@@ -197,9 +204,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonSummaryStatistics, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
-	connect(ui->variablesPage, SIGNAL(reRun()), this, SLOT(refreshCurrentAnalysis()));
+	connect(ui->variablesPage, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
 	connect(ui->variablesPage, SIGNAL(resetTableView()), this, SLOT(resetTableView()));
 	connect(ui->tableView, SIGNAL(dataTableColumnSelected()), this, SLOT(showVariablesPage()));
+	connect(ui->tableView, SIGNAL(dataTableDoubleClicked()), this, SLOT(startDataEditorHandler()));
+	connect(ui->tabBar, SIGNAL(dataAutoSynchronizationChanged(bool)), ui->backStage, SLOT(dataAutoSynchronizationChanged(bool)));
 
 	_progressIndicator = new ProgressWidget(ui->tableView);
 	_progressIndicator->setAutoFillBackground(true);
@@ -217,6 +226,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(pushImageToClipboard(QByteArray, QString)), this, SLOT(pushImageToClipboardHandler(QByteArray, QString)));
 	connect(this, SIGNAL(saveTextToFile(QString, QString)), this, SLOT(saveTextToFileHandler(QString, QString)));
 	connect(this, SIGNAL(analysisChangedDownstream(int, QString)), this, SLOT(analysisChangedDownstreamHandler(int, QString)));
+	connect(this, SIGNAL(analysisSaveImage(int, QString)), this, SLOT(analysisSaveImageHandler(int, QString)));
 	connect(this, SIGNAL(showAnalysesMenu(QString)), this, SLOT(showAnalysesMenuHandler(QString)));
 	connect(this, SIGNAL(removeAnalysisRequest(int)), this, SLOT(removeAnalysisRequestHandler(int)));
 	connect(this, SIGNAL(updateUserData(int, QString)), this, SLOT(updateUserDataHandler(int, QString)));
@@ -242,7 +252,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	QMenuBar *_mMenuBar = new QMenuBar(parent=0);
 	QMenu *aboutMenu = _mMenuBar->addMenu("JASP");
-	aboutMenu->addAction("About",this,SLOT(showAbout()));
+	aboutMenu->addAction("About",ui->tabBar,SLOT(showAbout()));
 	_mMenuBar->addMenu(aboutMenu);
 
 	_buttonPanelLayout->addWidget(_okButton);
@@ -256,7 +266,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(_runButton, SIGNAL(clicked()), this, SLOT(analysisRunned()));
 
 	connect(ui->splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(splitterMovedHandler(int,int)));
-	connect(ui->data_splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(data_splitterMovedHandler(int,int)));
 
 	_analysisMenu = new QMenu(this);
 	connect(_analysisMenu, SIGNAL(aboutToHide()), this, SLOT(menuHidding()));
@@ -407,87 +416,144 @@ void MainWindow::packageChanged(DataSetPackage *package)
 	}
 }
 
-void MainWindow::packageDataChanged(DataSetPackage *package
-									, std::vector<std::string> &changedColumns
-									, std::vector<std::string> &missingColumns
-									, std::map<std::string, std::string> &changeNameColumns)
+void MainWindow::refreshAnalysesUsingColumns(vector<string> &changedColumns
+											, vector<string> &missingColumns
+											, map<string, string> &changeNameColumns)
 {
-	std::vector<std::string> oldColumnNames;
-	for (std::map<std::string, std::string>::iterator it = changeNameColumns.begin(); it != changeNameColumns.end(); ++it)
+	vector<string> oldColumnNames;
+	for (map<string, string>::iterator it = changeNameColumns.begin(); it != changeNameColumns.end(); ++it)
 		oldColumnNames.push_back(it->first);
-	std::sort(changedColumns.begin(), changedColumns.end());
-	std::sort(missingColumns.begin(), missingColumns.end());
-	std::sort(oldColumnNames.begin(), oldColumnNames.end());
+	sort(changedColumns.begin(), changedColumns.end());
+	sort(missingColumns.begin(), missingColumns.end());
+	sort(oldColumnNames.begin(), oldColumnNames.end());
 
-	std::vector<Analysis *> analyses_to_refresh;
+	vector<Analysis *> analyses_to_refresh;
 	for (Analyses::iterator analysis_it = _analyses->begin(); analysis_it != _analyses->end(); ++analysis_it)
 	{
 		Analysis* analysis = *analysis_it;
+		if (analysis == NULL) continue;
+
 		bool analyse_to_refresh = false;
-		const std::vector<OptionVariables *> &analysis_variables = analysis->getVariables();
-		for (std::vector<OptionVariables *>::const_iterator var_it = analysis_variables.begin();
-			 var_it != analysis_variables.end();
-			 ++var_it)
+		Options* options = analysis->options();
+		for (size_t i = 0; i < options->size(); ++i)
 		{
-			OptionVariables *option_variables = *var_it;
-			std::vector<std::string> variables = option_variables->variables();
-			std::vector<std::string> variables_sorted = variables;
-			std::sort(variables_sorted.begin(), variables_sorted.end());
-			std::vector<std::string> inter_changecol, inter_changename, inter_missingcol;
-			std::set_intersection(variables_sorted.begin(), variables_sorted.end(), changedColumns.begin(), changedColumns.end(), std::back_inserter(inter_changecol));
-			std::set_intersection(variables_sorted.begin(), variables_sorted.end(), oldColumnNames.begin(), oldColumnNames.end(), std::back_inserter(inter_changename));
-			std::set_intersection(variables_sorted.begin(), variables_sorted.end(), missingColumns.begin(), missingColumns.end(), std::back_inserter(inter_missingcol));
-
-			if (inter_changecol.size() > 0 && !analyse_to_refresh)
+			Option *option = options->get(i);
+			vector<string> variables;
+			OptionVariables *option_variables = dynamic_cast<OptionVariables *>(option);
+			if (option_variables != NULL)
 			{
-				analyses_to_refresh.push_back(analysis);
-				analyse_to_refresh = true;
+				variables = option_variables->variables();
 			}
 
-			if (inter_changename.size() > 0)
+			OptionVariablesGroups *option_variables_groups = dynamic_cast<OptionVariablesGroups *>(option);
+			if (option_variables_groups != NULL)
 			{
-				for (std::vector<std::string>::iterator varname_it = inter_changename.begin(); varname_it != inter_changename.end(); ++varname_it)
+				vector<vector<string> > values = option_variables_groups->value();
+				for (vector<vector<string> >::iterator it = values.begin(); it != values.end(); ++it)
 				{
-					std::string varname = *varname_it;
-					std::string newname = changeNameColumns[varname];
-					std::replace(variables.begin(), variables.end(), varname, newname);
+					variables.insert(variables.end(), it->begin(), it->end());
 				}
-				analysis->setRefreshBlocked(true);
-				option_variables->setValue(variables);
-				if (!analyse_to_refresh)
+			}
+
+			if (!variables.empty())
+			{
+				vector<string> variables_sorted = variables;
+				sort(variables_sorted.begin(), variables_sorted.end());
+				vector<string> inter_changecol, inter_changename, inter_missingcol;
+				set_intersection(variables_sorted.begin(), variables_sorted.end(), changedColumns.begin(), changedColumns.end(), back_inserter(inter_changecol));
+				set_intersection(variables_sorted.begin(), variables_sorted.end(), oldColumnNames.begin(), oldColumnNames.end(), back_inserter(inter_changename));
+				set_intersection(variables_sorted.begin(), variables_sorted.end(), missingColumns.begin(), missingColumns.end(), back_inserter(inter_missingcol));
+
+				if (inter_changecol.size() > 0 && !analyse_to_refresh)
 				{
 					analyses_to_refresh.push_back(analysis);
 					analyse_to_refresh = true;
 				}
-			}
 
-			if (inter_missingcol.size() > 0)
-			{
-				for (std::vector<std::string>::iterator varname_it = inter_missingcol.begin(); varname_it != inter_missingcol.end(); ++varname_it)
+				if (inter_changename.size() > 0)
 				{
-					std::string varname = *varname_it;
-					variables.erase(std::remove(variables.begin(), variables.end(), varname), variables.end());
+					analysis->setRefreshBlocked(true);
+					for (vector<string>::iterator varname_it = inter_changename.begin(); varname_it != inter_changename.end(); ++varname_it)
+					{
+						string varname = *varname_it;
+						string newname = changeNameColumns[varname];
+						if (option_variables != NULL)
+						{
+							replace(variables.begin(), variables.end(), varname, newname);
+							option_variables->setValue(variables);
+						}
+						else if (option_variables_groups != NULL)
+						{
+							vector<vector<string> > all_values = option_variables_groups->value();
+							vector<vector<string> > all_values_updated;
+							for (vector<vector<string> >::iterator all_values_it = all_values.begin(); all_values_it != all_values.end(); ++all_values_it)
+							{
+								vector<string> row = *all_values_it;
+								replace(row.begin(), row.end(), varname, newname);
+								all_values_updated.push_back(row);
+							}
+							option_variables_groups->setValue(all_values_updated);
+						}
+					}
+
+					if (!analyse_to_refresh)
+					{
+						analyses_to_refresh.push_back(analysis);
+						analyse_to_refresh = true;
+					}
 				}
-				analysis->setRefreshBlocked(true);
-				option_variables->setValue(variables);
-				if (!analyse_to_refresh)
+
+				if (inter_missingcol.size() > 0)
 				{
-					analyses_to_refresh.push_back(analysis);
-					analyse_to_refresh = true;
+					analysis->setRefreshBlocked(true);
+					for (vector<string>::iterator varname_it = inter_missingcol.begin(); varname_it != inter_missingcol.end(); ++varname_it)
+					{
+						string varname = *varname_it;
+						if (option_variables != NULL)
+						{
+							variables.erase(remove(variables.begin(), variables.end(), varname), variables.end());
+							option_variables->setValue(variables);
+						}
+						else if (option_variables_groups != NULL)
+						{
+							vector<vector<string> > all_values = option_variables_groups->value();
+							vector<vector<string> > all_values_updated;
+							for (vector<vector<string> >::iterator all_values_it = all_values.begin(); all_values_it != all_values.end(); ++all_values_it)
+							{
+								vector<string> row = *all_values_it;
+								if (std::find(row.begin(), row.end(), varname) == row.end())
+									all_values_updated.push_back(row);
+							}
+							option_variables_groups->setValue(all_values_updated);
+						}
+					}
+					if (!analyse_to_refresh)
+					{
+						analyses_to_refresh.push_back(analysis);
+						analyse_to_refresh = true;
+					}
 				}
 			}
 		}
 	}
 
-	_tableModel->setDataSet(package->dataSet);
-	ui->variablesPage->setDataSet(package->dataSet);
-
-	for (std::vector<Analysis *>::iterator it = analyses_to_refresh.begin(); it != analyses_to_refresh.end(); ++it)
+	for (vector<Analysis *>::iterator it = analyses_to_refresh.begin(); it != analyses_to_refresh.end(); ++it)
 	{
 		Analysis *analysis = *it;
 		analysis->setRefreshBlocked(false);
 		analysis->refresh();
 	}
+}
+
+void MainWindow::packageDataChanged(DataSetPackage *package
+									, std::vector<std::string> &changedColumns
+									, std::vector<std::string> &missingColumns
+									, std::map<std::string, std::string> &changeNameColumns)
+{
+	_tableModel->setDataSet(_package->dataSet);
+	ui->variablesPage->setDataSet(_package->dataSet);
+
+	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns);
 }
 
 
@@ -574,6 +640,69 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 
 	if (_package->isLoaded())
 		_package->setModified(true);
+}
+
+void MainWindow::analysisSaveImageHandler(int id, QString options)
+{
+	Analysis *analysis = _analyses->get(id);
+	if (analysis == NULL)
+		return;
+
+	string utf8 = fq(options);
+	Json::Value root;
+	Json::Reader parser;
+	parser.parse(utf8, root);
+
+	QString caption = "Save JASP Image";
+	QString filter = "Portable Network Graphics (*.png);;Tagged Image File Format (*.tiff);;Encapsulated PostScript (*.eps)";
+    QString selectedFilter;
+
+    QString finalPath = QFileDialog::getSaveFileName(this, caption, QString(), filter, &selectedFilter);
+	if (!finalPath.isEmpty())
+	{
+        if (selectedFilter == "Encapsulated PostScript (*.eps)")
+		{
+			root["type"] = "eps";
+            root["finalPath"] = finalPath.toStdString();
+            analysis->saveImage(analysis, root);
+		}
+		else if (selectedFilter == "Tagged Image File Format (*.tiff)")
+		{
+			root["type"] = "tiff";
+			root["finalPath"] = finalPath.toStdString();
+			analysis->saveImage(analysis, root);
+		}
+		else
+		{
+            QString imagePath = QString::fromStdString(tempfiles_sessionDirName()) + "/" + root.get("name", Json::nullValue).asCString();
+			if (QFile::exists(finalPath))
+			{
+				QFile::remove(finalPath);
+			}
+			QFile::copy(imagePath, finalPath);
+        }
+	}
+}
+
+void MainWindow::analysisImageSavedHandler(Analysis *analysis)
+{
+	Json::Value results = analysis->asJSON().get("results", Json::nullValue);
+	if (results.isNull())
+		return;
+	Json::Value inputOptions = results.get("inputOptions", Json::nullValue);
+
+	QString imagePath = QString::fromStdString(tempfiles_sessionDirName()) + "/" + results.get("name", Json::nullValue).asCString();
+	QString finalPath = QString::fromStdString(inputOptions.get("finalPath", Json::nullValue).asCString());
+	if (!finalPath.isEmpty())
+	{
+		std::cout << "analysisImageSavedHandler, imagePath: " << imagePath.toStdString() << ", finalPath: " << finalPath.toStdString() << std::endl;
+		std::cout.flush();
+		if (QFile::exists(finalPath))
+		{
+			QFile::remove(finalPath);
+		}
+		QFile::copy(imagePath, finalPath);
+	}
 }
 
 AnalysisForm* MainWindow::loadForm(Analysis *analysis)
@@ -670,6 +799,10 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new SummaryStatsRegressionLinearBayesianForm(contentArea);
 	else if (name == "SummaryStatsCorrelationBayesianPairs")
 		form = new SummaryStatsCorrelationBayesianPairsForm(contentArea);
+#ifdef QT_DEBUG
+	else if (name == "BASRegressionLinearLink")
+		form = new BASRegressionLinearLinkForm(contentArea);
+#endif
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
@@ -861,7 +994,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 
 	}
 	else if (event->operation() == FileEvent::FileSave)
-	{		
+	{
 		if (_analyses->count() > 0)
 		{
 			_package->setWaitingForReady();
@@ -914,6 +1047,9 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
 	{
+		if (_package->dataSet == NULL)
+			return;
+
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 		_loader.io(event, _package);
 		_progressIndicator->show();
@@ -948,6 +1084,8 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			event->setComplete();
 			dataSetIOCompleted(event);
 		}
+
+		ui->variablesPage->close();
 	}
 }
 
@@ -964,8 +1102,9 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			populateUIfromDataSet();
 			QString name =  QFileInfo(event->path()).baseName();
 			setWindowTitle(name);
+			_currentFilePath = event->path();
 
-			if (event->type() == Utils::FileType::jasp && !_package->dataFilePath.empty())
+			if (event->type() == Utils::FileType::jasp && !_package->dataFilePath.empty() && !_package->dataFileReadOnly && strncmp("http", _package->dataFilePath.c_str(), 4) != 0)
 			{
 				QString dataFilePath = QString::fromStdString(_package->dataFilePath);
 				if (QFileInfo::exists(dataFilePath))
@@ -1010,6 +1149,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
 	{
+		_package->setModified(true);
 		showAnalysis = true;
 	}
 	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileExportResults)
@@ -1029,6 +1169,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			updateMenuEnabledDisabledStatus();
 			ui->webViewResults->reload();
 			setWindowTitle("JASP");
+			ui->tableView->adjustAfterDataLoad(false);
 
 			if (_applicationExiting)
 				QApplication::exit();
@@ -1054,8 +1195,7 @@ void MainWindow::populateUIfromDataSet()
 
 	_analyses->clear();
 
-	ui->tableView->horizontalHeader()->setResizeContentsPrecision(50);
-	ui->tableView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+	ui->tableView->adjustAfterDataLoad(true);
 
 	_progressIndicator->hide();
 
@@ -1284,7 +1424,7 @@ void MainWindow::itemSelected(const QString &item)
 		if (_log != NULL)
 			_log->log("Analysis Created", info);
 	}
-	catch (std::runtime_error& e)
+	catch (runtime_error& e)
 	{
 		_fatalError = tq(e.what());
 		fatalError();
@@ -1335,18 +1475,6 @@ void MainWindow::splitterMovedHandler(int, int)
 	adjustOptionsPanelWidth();
 	_tableViewWidthBeforeOptionsMadeVisible = -1;
 }
-
-void MainWindow::data_splitterMovedHandler(int pos, int index)
-{
-	int p = pos;
-	int i = index;
-	//if (p < 150)
-	//	ui->variablesPage->hide();
-
-	qDebug() << " Pos = " << pos;
-	qDebug() << " Index = " << index;
-}
-
 
 void MainWindow::hideOptionsPanel()
 {
@@ -1556,10 +1684,14 @@ void MainWindow::refreshAllAnalyses()
 	}
 }
 
-void MainWindow::refreshCurrentAnalysis()
+void MainWindow::refreshAnalysesUsingColumn(QString col)
 {
-	if (_currentAnalysis != NULL)
-		_currentAnalysis->refresh();
+	std::vector<std::string> changedColumns, missingColumns;
+	std::map<std::string, std::string> changeNameColumns;
+	changedColumns.push_back(col.toStdString());
+	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns);
+
+	_package->setModified(false);
 }
 
 void MainWindow::resetTableView()
@@ -1654,6 +1786,7 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 	QIcon _citeIcon = QIcon(":/icons/cite.png");
 	QIcon _collapseIcon = QIcon(":/icons/collapse.png");
 	QIcon _expandIcon = QIcon(":/icons/expand.png");
+	QIcon _saveImageIcon = QIcon(":/icons/document-save-as.png");
 
 	_analysisMenu->clear();
 
@@ -1680,6 +1813,11 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 	{
 		_analysisMenu->addSeparator();
 		_analysisMenu->addAction(_citeIcon, "Copy Citations", this, SLOT(citeSelected()));
+	}
+
+	if (menuOptions["hasSaveImg"].asBool())
+	{
+		_analysisMenu->addAction(_saveImageIcon, "Save Image As", this, SLOT(saveImage()));
 	}
 
 	if (menuOptions["hasNotes"].asBool())
@@ -1836,6 +1974,11 @@ void MainWindow::citeSelected()
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.citeMenuClicked();");
 }
 
+void MainWindow::saveImage()
+{
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.saveImageClicked();");
+}
+
 void MainWindow::noteSelected()
 {
 	QAction *action = (QAction *)this->sender();
@@ -1880,10 +2023,120 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 	analysis->options()->set(root);
 }
 
-void MainWindow::showAbout()
+
+void MainWindow::startDataEditorHandler()
 {
-	AboutDialog aboutdialog;
-	aboutdialog.setModal(true);
-	aboutdialog.exec();
+	QString path = QString::fromStdString(_package->dataFilePath);
+	if (path.isEmpty() || path.startsWith("http") || !QFileInfo::exists(path) || Utils::getFileSize(path.toStdString()) == 0 || _package->dataFileReadOnly)
+	{
+		QString message = "JASP was started without associated data file (csv, sav or ods file). But to edit the data, JASP starts a spreadsheet editor based on this file and synchronize the data when the file is saved. Does this data file exist already, or do you want to generate it?";
+		if (path.startsWith("http"))
+			message = "JASP was started with an online data file (csv, sav or ods file). But to edit the data, JASP needs this file on your computer. Does this data file also exist on your computer, or do you want to generate it?";
+		else if (_package->dataFileReadOnly)
+			message = "JASP was started with a read-only data file (probably from the examples). But to edit the data, JASP needs to write to the data file. Does the same file also exist on your computer, or do you want to generate it?";
+
+		QMessageBox msgBox(QMessageBox::Question, QString("Start Spreadsheet Editor"), message,
+						   QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+		msgBox.setButtonText(QMessageBox::Yes, QString("Generate Data File"));
+		msgBox.setButtonText(QMessageBox::No, QString("Find Data File"));
+		int reply = msgBox.exec();
+		if (reply == QMessageBox::Cancel)
+			return;
+
+		FileEvent *event = NULL;
+		if (reply == QMessageBox::Yes)
+		{
+			QString caption = "Generate Data File as CSV";
+			QString filter = "CSV Files (*.csv)";
+			QString name = windowTitle();
+			if (name.endsWith("*"))
+			{
+				name.truncate(name.length() - 1);
+				name = name.replace('#', '_');
+			}
+			if (!_currentFilePath.isEmpty())
+			{
+				QFileInfo file(_currentFilePath);
+				name = file.absolutePath() + QDir::separator() + file.baseName().replace('#', '_') + ".csv";
+			}
+
+			path = QFileDialog::getSaveFileName(this, caption, name, filter);
+			if (path == "")
+				return;
+
+			if (!path.endsWith(".csv", Qt::CaseInsensitive))
+				path.append(".csv");
+
+			event = new FileEvent(this, FileEvent::FileExportData);
+		}
+		else
+		{
+			QString caption = "Find Data File";
+			QString filter = "Data File (*.csv *.txt *.sav *.ods)";
+
+			path = QFileDialog::getOpenFileName(this, caption, "", filter);
+			if (path == "")
+				return;
+
+			event = new FileEvent(this, FileEvent::FileSyncData);
+		}
+
+		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(startDataEditorEventCompleted(FileEvent*)));
+		connect(event, SIGNAL(completed(FileEvent*)), ui->backStage, SLOT(setSyncFile(FileEvent*)));
+		event->setPath(path);
+		_loader.io(event, _package);
+		_progressIndicator->show();
+	}
+	else
+		startDataEditor(path);
+
 }
 
+void MainWindow::startDataEditorEventCompleted(FileEvent* event)
+{
+	_progressIndicator->hide();
+
+	if (event->successful())
+	{
+		_package->dataFilePath = event->path().toStdString();
+		_package->dataFileReadOnly = false;
+		_package->setModified(true);
+		startDataEditor(event->path());
+	}
+}
+
+void MainWindow::startDataEditor(QString path)
+{
+	QFileInfo fileInfo(path);
+
+	int useDefaultSpreadsheetEditor = _settings.value("useDefaultSpreadsheetEditor", 1).toInt();
+	QString appname = _settings.value("spreadsheetEditorName", "").toString();
+
+	if (QString::compare(fileInfo.suffix(), "sav", Qt::CaseInsensitive) == 0)
+	{
+		if (useDefaultSpreadsheetEditor == 0 && !appname.contains("SPSS", Qt::CaseInsensitive))
+			useDefaultSpreadsheetEditor = 1;
+	}
+
+	if (appname.isEmpty())
+		useDefaultSpreadsheetEditor = 1;
+
+	QString startProcess;
+	if (useDefaultSpreadsheetEditor == 0)
+	{
+#ifdef __APPLE__
+		startProcess = appname.mid(appname.lastIndexOf('/') + 1);
+		startProcess = "open -a \"" + startProcess + "\" \"" + path + "\"";
+#else
+		startProcess = "\"" + appname + "\" \"" + path + "\"";
+#endif
+		QProcess::startDetached(startProcess);
+	}
+	else
+	{
+		if (!QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode)))
+		{
+			QMessageBox::warning(this, QString("Start Spreadsheet Editor"), QString("No default spreadsheet editor for file ") + fileInfo.completeBaseName() + QString(". Use Preferences to set the right editor."), QMessageBox::Cancel);
+		}
+	}
+}

@@ -23,6 +23,16 @@
 			"default" : false
         },
         {
+        	"name": "mcDonaldScale",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
+        	"name": "glbScale",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
         	"name": "meanScale",
         	"type": "Boolean",
 			"default" : false
@@ -39,6 +49,11 @@
         },
         {
         	"name": "gutmannItem",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
+        	"name": "mcDonaldItem",
         	"type": "Boolean",
 			"default" : false
         },
@@ -60,6 +75,12 @@
         {
             "name": "reverseScaledItems",
             "type": "Variables"
+        },
+        {
+          "name": "missingValues",
+          "options": ["excludeCasesListwise", "excludeCasesPairwise"],
+          "default": "excludeCasesListwise",
+          "type": "List"
         },
 	]
 }

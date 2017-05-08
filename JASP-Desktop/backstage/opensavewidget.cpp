@@ -26,8 +26,7 @@
 OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 {
 	_mode = FileEvent::FileOpen;
-	_currentFileHasPath = false;
-	_currentFileReadOnly = false;
+	_currentFileType = Utils::FileType::unknown;
 
 	QGridLayout *layout = new QGridLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
@@ -84,11 +83,8 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	_tabWidget->hideTab(_bsCurrent);
 
 	connect(_bsRecent, SIGNAL(entryOpened(QString)), this, SLOT(dataSetOpenRequestHandler(QString)));
-#ifdef QT_DEBUG
 	connect(_bsCurrent, SIGNAL(entryOpened(QString)), this, SLOT(dataSetOpenCurrentRequestHandler(QString)));
-	connect(_bsCurrent, SIGNAL(dataSynchronization(bool)), this, SLOT(setDataFileWatcher(bool)));
 	connect(&_watcher, SIGNAL(fileChanged(const QString&)), this, SLOT(dataFileModifiedHandler(const QString&)));
-#endif
 	connect(_bsComputer, SIGNAL(dataSetIORequest(FileEvent *)), this, SLOT(dataSetIORequestHandler(FileEvent *)));
 	connect(_bsOSF, SIGNAL(dataSetIORequest(FileEvent *)), this, SLOT(dataSetIORequestHandler(FileEvent *)));
 	connect(_bsExamples, SIGNAL(entryOpened(QString)), this, SLOT(dataSetOpenExampleRequestHandler(QString)));
@@ -182,10 +178,6 @@ FileEvent *OpenSaveWidget::open(const QString &path)
 {
 	FileEvent *event = new FileEvent(this, FileEvent::FileOpen);
 	event->setPath(path);
-
-	if ( ! path.endsWith(".jasp", Qt::CaseInsensitive))
-		event->setReadOnly();
-
 	dataSetIORequestHandler(event);
 
 	return event;
@@ -195,7 +187,7 @@ FileEvent *OpenSaveWidget::save()
 {
 	FileEvent *event;
 
-	if (_currentFileHasPath == false || _currentFileReadOnly)
+	if (_currentFileType != Utils::FileType::jasp)
 	{
 		event = _bsComputer->browseSave();
 		if (event->isCompleted())
@@ -254,17 +246,17 @@ void OpenSaveWidget::dataSetIOCompleted(FileEvent *event)
 				//  don't add examples to the recent list
 				_fsmRecent->addRecent(event->path());
 				_bsComputer->addRecent(event->path());
-				if (event->operation() == FileEvent::FileOpen)
-					setCurrentDataFile(event->dataFilePath());
 			}
+
+			if (event->operation() == FileEvent::FileOpen && !event->isReadOnly())
+				setCurrentDataFile(event->dataFilePath());
 
 			// all this stuff is a hack
 			QFileInfo info(event->path());
 			_bsComputer->setFileName(info.baseName());
 
 			_currentFilePath = event->path();
-			_currentFileHasPath = true;
-			_currentFileReadOnly = event->isReadOnly();
+			_currentFileType = event->type();
 		}
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
@@ -277,9 +269,9 @@ void OpenSaveWidget::dataSetIOCompleted(FileEvent *event)
 	else if (event->operation() == FileEvent::FileClose)
 	{
 		_bsComputer->clearFileName();
-
-		_currentFileHasPath = false;
 		_currentFilePath = "";
+		_currentFileType = Utils::FileType::unknown;
+		clearSyncData();
 	}
 }
 
@@ -300,15 +292,18 @@ bool OpenSaveWidget::checkSyncFileExists(const QString &path)
     {
         std::cout << "Sync file does not exist: " << path.toStdString() << std::endl;
         std::cout.flush();
-		setDataFileWatcher(false); // must be done before setting the current to empty.
-		_fsmCurrent->setCurrent(QString());
-		_tabWidget->tabBar()->setTabEnabled(FileLocation::Current, false);
-		_tabWidget->tabBar()->click(FileLocation::Computer);
-
-		QMessageBox::warning(this, QString("Data Synchronization"), QString("The associated data file (") + path + ") does not exist. If you want to synchronize your data with another file, click on the 'File/Sync Data' menu.");
+		clearSyncData();
 	}
 
-    return exists;
+	return exists;
+}
+
+void OpenSaveWidget::clearSyncData()
+{
+	setDataFileWatcher(false); // must be done before setting the current to empty.
+	_fsmCurrent->setCurrent(QString());
+	_tabWidget->tabBar()->setTabEnabled(FileLocation::Current, false);
+	_tabWidget->tabBar()->click(FileLocation::Computer);
 }
 
 void OpenSaveWidget::setCurrentDataFile(const QString &path)
@@ -361,29 +356,6 @@ void OpenSaveWidget::dataSetOpenExampleRequestHandler(QString path)
 void OpenSaveWidget::dataFileModifiedHandler(QString path)
 {
 	int autoSync = _settings.value("dataAutoSynchronization", 1).toInt();
-	if (autoSync == 1)
-	{
-		QMessageBox msgBox(QMessageBox::Question, QString("Data Synchronization"), QString("The associated data file has been modified. Do you want to synchronize the data?"),
-						   QMessageBox::Yes|QMessageBox::No|QMessageBox::YesToAll);
-		msgBox.setButtonText(QMessageBox::YesToAll, QString("Always"));
-		int reply = msgBox.exec();
-		if (reply == QMessageBox::Yes)
-			autoSync = 1;
-		else if (reply == QMessageBox::YesToAll)
-			autoSync = 2;
-		else
-			autoSync = 0;
-
-		_settings.setValue("dataAutoSynchronization", autoSync);
-		_settings.sync();
-
-		if (autoSync == 0)
-		{
-			_bsCurrent->setSynchronizationCheckedButton(false);
-			setDataFileWatcher(false);
-		}
-	}
-
 	if (autoSync > 0)
 		dataSetOpenCurrentRequestHandler(path);
 }
@@ -398,6 +370,11 @@ void OpenSaveWidget::setDataFileWatcher(bool watch)
 		else
 			_watcher.removePath(path);
 	}
+}
+
+Utils::FileType OpenSaveWidget::getCurrentFileType()
+{
+	return _currentFileType;
 }
 
 void OpenSaveWidget::dataSetOpenCurrentRequestHandler(QString path)

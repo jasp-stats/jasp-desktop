@@ -436,7 +436,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   } else {
     
     
-    image <- .beginSaveImage(pathDiagram$width,pathDiagram$height)
+    # image <- .beginSaveImage(pathDiagram$width,pathDiagram$height)
 #     Lambda <- loadings(analysisResults)
 #     labels <- .unv(rownames(Lambda))
 #     Lambda <- matrix(c(Lambda),nrow(Lambda),ncol(Lambda))
@@ -575,6 +575,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
     # Plot:
     label.scale.equal <- c(rep(1,nFactor),rep(2,nIndicator))
  
+    .plotFunc <- function() {
     # Run once without plotting to obtain the scaled label sizes:
     qgraph::qgraph(E, layout = L, directed=TRUE, bidirectional=bidir, residuals = TRUE, residScale  = 10,
                    labels = c(factors,labels), curve = curve, curveScale = FALSE, edgeConnectPoints = ECP,
@@ -582,9 +583,15 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
                    residScale = 2, mar = c(5,10,5,12), normalize = FALSE, label.fill.vertical = 0.75, cut = options$highlightText,
                    bg = "transparent"
     )
+    }
     
+    content <- .writeImage(width = pathDiagram$width, height = pathDiagram$height, plot = .plotFunc, obj = TRUE)
+    pathDiagram[["convertible"]] <- TRUE
+	pathDiagram[["obj"]] <- content[["obj"]]
+	pathDiagram[["data"]] <- content[["png"]]
+
     
-    pathDiagram$data <- .endSaveImage(image)
+    # pathDiagram$data <- .endSaveImage(image)
     pathDiagram$status <- "complete"
     
   }
@@ -881,24 +888,30 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
                      panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
                      plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
                      panel.border = ggplot2::element_blank(),
-                     axis.line = ggplot2::element_blank(),
                      axis.ticks = ggplot2::element_line(size = 0.5),
                      axis.ticks.margin = grid::unit(1,"mm"),
                      axis.ticks.length = grid::unit(3, "mm"),
                      plot.margin = grid::unit(c(0,0,.5,.5), "cm")) + 
       ggplot2::scale_linetype_discrete("") +  ggplot2::scale_shape_discrete("") +
-      ggplot2::theme(legend.position = c(0.99,0.99),legend.justification = c(1,1),legend.key = ggplot2::element_blank(),
+      ggplot2::theme(legend.position = c(0.99,0.99),legend.justification = c(1,1),
                      legend.text=ggplot2::element_text(size=12.5),
                      panel.background=ggplot2::element_rect(fill="transparent",colour=NA),
                      plot.background=ggplot2::element_rect(fill="transparent",colour=NA),
                      legend.key = ggplot2::element_rect(fill = "transparent", colour = "transparent"),
                      legend.background=ggplot2::element_rect(fill="transparent",colour=NA))
     
-    image <- .beginSaveImage(options$plotWidthScreePlot, options$plotHeightScreePlot)
-    print(p)
-    content <- .endSaveImage(image)
+    # image <- .beginSaveImage(options$plotWidthScreePlot, options$plotHeightScreePlot)
+    # print(p)
+    # content <- .endSaveImage(image)
     
-    screePlot$data <- content
+    content <- .writeImage(width = options$plotWidthScreePlot, 
+    					   height = options$plotHeightScreePlot,
+    					   plot = p, obj = TRUE)
+    screePlot$data <- content[["png"]]
+    screePlot[["convertible"]] <- TRUE
+	screePlot[["obj"]] <- content[["obj"]]
+    
+    # screePlot$data <- content
     screePlot$status <- "complete"
     
     statescreePlot <- screePlot

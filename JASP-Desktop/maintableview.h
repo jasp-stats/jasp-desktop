@@ -38,14 +38,16 @@ public:
 
 	virtual void setModel(QAbstractItemModel *model) OVERRIDE;
 	void setVariablesView(VariablesWidget *variablesPage);
+	void adjustAfterDataLoad(bool dataLoaded);
 
 protected:
 	virtual void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) OVERRIDE;
 	virtual void verticalScrollbarValueChanged(int value) OVERRIDE;
-
+	virtual void mouseDoubleClickEvent(QMouseEvent *event) OVERRIDE;
 
 signals:
 	void dataTableColumnSelected();
+	void dataTableDoubleClicked();
 	
 public slots:
 
@@ -68,6 +70,7 @@ private:
 	void hideInfoPopup();
 
 	MainTableHorizontalHeader *_header;
+	bool _dataLoaded;
 	
 };
 

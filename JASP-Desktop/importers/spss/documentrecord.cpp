@@ -16,7 +16,7 @@
 //
 
 #include "documentrecord.h"
-#include "spssutils.h"
+#include "../importerutils.h"
 
 using namespace std;
 using namespace boost;

@@ -16,34 +16,38 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef OPTIONSFORM_H
-#define OPTIONSFORM_H
+#ifndef SUBJECTIVEPRIORSWIDGET_H
+#define SUBJECTIVEPRIORSWIDGET_H
 
 #include <QWidget>
-#include <QSettings>
+
 
 namespace Ui {
-class OptionsForm;
+class SubjectivePriorsWidget;
 }
 
-class OptionsForm : public QWidget
+class SubjectivePriorsWidget : public QWidget
 {
 	Q_OBJECT
 
 public:
-	explicit OptionsForm(QWidget *parent = 0);
-	~OptionsForm();
-
-signals:
-	void optionsChanged();
+	explicit SubjectivePriorsWidget(QWidget *parent = 0);
+	~SubjectivePriorsWidget();
 
 private slots:
-	void optionChangedHandler(bool);
+	void on__1standardizedEffectSize_clicked(bool checked);
+	void on__2dienesRawEffectSize_clicked(bool checked);
+	void on_defaultStandardEffectSize_clicked(bool checked);
+	void on_informativeStandardEffectSize_clicked(bool checked);
+	void on_cauchyInformative_clicked();
+	void on_normalInformative_clicked();
+	void on_tInformative_clicked();
+	void on_halfNormalDienes_clicked();
+	void on_normalDienes_clicked();
+	void on_uniformDienes_clicked();
 
 private:
-	Ui::OptionsForm *ui;
-
-	QSettings _settings;
+	Ui::SubjectivePriorsWidget *ui;
 };
 
-#endif // OPTIONSFORM_H
+#endif // SUBJECTIVEPRIORSWIDGET_H

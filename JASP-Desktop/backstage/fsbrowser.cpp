@@ -36,14 +36,14 @@ FSBrowser::FSBrowser(QWidget *parent, FSBrowser::BrowseMode mode) : QWidget(pare
 	layout->setContentsMargins(10, 10, 0, 0);
 	setLayout(layout);
 
-	_syncAutoCheckBox = NULL;
 	if (mode == FSBrowser::BrowseCurrent)
 	{
-		_syncAutoCheckBox = new QCheckBox("Synchronize automatically");
-		int checked = _settings.value("dataAutoSynchronization", 1).toInt();
-		_syncAutoCheckBox->setChecked(checked > 0);
-		layout->addWidget(_syncAutoCheckBox);
-		connect(_syncAutoCheckBox, SIGNAL(stateChanged(int)), this, SLOT(dataAutoSynchronization(int)));
+#ifdef __APPLE__
+		QString shortCutKey = "\u2318";
+#else
+		QString shortCutKey = "Ctrl";
+#endif
+		layout->addWidget(new QLabel(QString("Double-click on the file below to synchronize or use ") + shortCutKey + "-Y"));
 	}
 
 	_scrollArea = new VerticalScrollArea(this);
@@ -71,25 +71,6 @@ FSBrowser::FSBrowser(QWidget *parent, FSBrowser::BrowseMode mode) : QWidget(pare
 	layout->addWidget(_processLabel);
 
 	connect(_authWidget, SIGNAL(loginRequested(QString,QString)), this, SLOT(loginRequested(QString,QString)));
-}
-
-void FSBrowser::dataAutoSynchronization(int state)
-{
-	bool checked = (state == Qt::Checked);
-	_settings.setValue("dataAutoSynchronization", checked ? 1 : 0);
-	_settings.sync();
-	emit dataSynchronization(checked);
-}
-
-void FSBrowser::setSynchronizationCheckedButton(bool checked)
-{
-	if (_syncAutoCheckBox)
-	{
-		_syncAutoCheckBox->blockSignals(true);
-		_syncAutoCheckBox->setChecked(checked);
-		_syncAutoCheckBox->blockSignals(false);
-	}
-
 }
 
 void FSBrowser::StartProcessing()
@@ -184,9 +165,6 @@ void FSBrowser::refresh()
 
 			_buttonGroup->addButton(button, id++);
 			_scrollPaneLayout->addWidget(button);
-
-			if (_syncAutoCheckBox)
-				_syncAutoCheckBox->setEnabled(!entry.path.startsWith('http'));
 
 			connect(button, SIGNAL(selected()), this, SLOT(entrySelectedHandler()));
 			connect(button, SIGNAL(opened()), this, SLOT(entryOpenedHandler()));
