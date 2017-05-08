@@ -1,0 +1,176 @@
+{
+	"name": "NetworkAnalysis",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+		{
+			"name": "variables",
+			"type": "Variables"
+		},
+		{
+			"name": "groupingVariable",
+			"type": "Variable"
+		},
+		{
+			"name": "estimator",
+			"type": "List",
+			"options": [
+   				"EBICglasso",
+				"pcor",
+				"IsingFit",
+				"IsingSampler",
+				"huge",
+				"adalasso",
+				"mgm"
+			],
+			"default": "EBICglasso"
+		},
+		{
+			"default": false,
+			"name": "plotFitMeasures",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "tableCentrality",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotNetworkTable",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotCentrality",
+			"type": "Boolean"
+		},
+		{
+			"options": ["auto", "cor", "cov", "npn"],
+			"default": "auto",
+			"name": "correlationMethod",
+			"type": "List"
+		},
+		{
+			"name": "tuningParameter",
+			"type": "Integer"
+		},
+		{
+			"options": ["ebic", "ric", "stars", "cv"],
+			"default": "ebic",
+			"name": "criterion",
+			"type": "List"
+		},
+		{
+			"options": ["pseudoLikelihood", "univariateRegressions", "bivariateRegressions", "logLinear"],
+			"default": "pseudoLikelihood",
+			"name": "isingEstimator",
+			"type": "List"
+		},
+		{
+			"name": "nFolds",
+			"type": "Integer"
+		},
+		{
+			"options": ["mean", "median"],
+			"default": "mean",
+			"name": "split",
+			"type": "List"
+		},
+		{
+			"options": ["and", "or"],
+			"default": "and",
+			"name": "rule",
+			"type": "List"
+		},
+		{
+			"options": ["excludePairwise", "excludeListwise"],
+			"default": "excludePairwise",
+			"name": "missingValues",
+			"type": "List"
+		},
+		{
+			"default": false,
+			"name": "weightedNetwork",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "signedNetwork",
+			"type": "Boolean"
+		},
+		{
+			"options": ["maximum", "minimum"],
+			"default": "maximum",
+			"name": "sampleSize",
+			"type": "List"
+		},
+		{
+			"options": ["spring", "circle"],
+			"default": "spring",
+			"name": "layout",
+			"type": "List"
+		},
+		{
+			"name": "edgeColors",
+			"type": "List",
+			"options": [
+   				"Default",
+				"Binary: Logistic",
+				"Binary: Exponential",
+				"Multi-class: Multinomial logistic",
+				"Continue: Squared error",
+				"Continue:: Absolute error",
+				"Continue: Huber",
+				"Continue: Poisson",
+				"Continue: Coxph"
+			],
+			"default": "Default"
+		},
+		{
+			"name": "repulsion",
+			"type": "Integer"
+		},
+		{
+			"name": "edgeSize",
+			"type": "Integer"
+		},
+		{
+			"name": "nodeSize",
+			"type": "Integer"
+		},
+		{
+			"name": "maxEdgeStrength",
+			"type": "Integer"
+		},
+		{
+			"name": "minEdgeStrength",
+			"type": "Integer"
+		},
+		{
+			"name": "cut",
+			"type": "Integer"
+		},
+		{
+			"default": false,
+			"name": "showDetails",
+			"type": "Boolean"
+		},
+		{
+			"name": "nodeColors",
+			"type": "List",
+			"options": [
+   				"Default",
+				"Binary: Logistic",
+				"Binary: Exponential",
+				"Multi-class: Multinomial logistic",
+				"Continue: Squared error",
+				"Continue:: Absolute error",
+				"Continue: Huber",
+				"Continue: Poisson",
+				"Continue: Coxph"
+			],
+			"default": "Default"
+		}
+	]
+}

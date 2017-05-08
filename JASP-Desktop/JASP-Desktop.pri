@@ -181,6 +181,7 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.cpp \
+        $$PWD/analysisforms/Network/networkanalysisform.cpp \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.cpp \
 		$$PWD/simplecrypt.cpp \
 		$$PWD/importers/convertedstringcontainer.cpp \
@@ -373,6 +374,7 @@ HEADERS  += \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.h \
+        $$PWD/analysisforms/Network/networkanalysisform.h \
 		$$PWD/simplecrypt.h \
 		$$PWD/simplecryptkey.h \
 		$$PWD/importers/convertedstringcontainer.h \
@@ -449,6 +451,7 @@ FORMS += \
         $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.ui \
+        $$PWD/analysisforms/Network/networkanalysisform.ui \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.ui
 
 RESOURCES += \
