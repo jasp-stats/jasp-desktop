@@ -70,15 +70,28 @@ Option *OptionVariables::clone() const
 
 vector<string> OptionVariables::variables() const
 {
-	vector<string> variables;
+	vector<string> values;
 
 	for (size_t i = 0; i < _value.size(); i++)
 	{
 		const vector<string> &variable = _value.at(i);
 		if (variable.size() > 0)
-			variables.push_back(variable.at(0));
+			values.push_back(variable.at(0));
 	}
 
-	return variables;
+	return values;
 }
 
+void OptionVariables::replaceName(string oldName, string newName)
+{
+	vector<string> values = variables();
+	replace(values.begin(), values.end(), oldName, newName);
+	setValue(values);
+}
+
+void OptionVariables::removeName(string name)
+{
+	vector<string> values = variables();
+	values.erase(remove(values.begin(), values.end(), name), values.end());
+	setValue(values);
+}
