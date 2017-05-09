@@ -857,7 +857,7 @@
          </sizepolicy>
         </property>
         <property name="title">
-         <string>Plots</string>
+         <string>Output</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
@@ -1708,6 +1708,27 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundGroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/boundgroupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -1719,35 +1740,14 @@
    <header>widgets/boundtextbox.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundGroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/boundgroupbox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>boundSingleItemView</class>
    <extends>QListView</extends>
    <header>widgets/boundsingleitemview.h</header>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundComboBox</class>
    <extends>QComboBox</extends>
    <header>widgets/boundcombobox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
