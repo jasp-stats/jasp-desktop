@@ -44,6 +44,7 @@ ReliabilityAnalysisForm::ReliabilityAnalysisForm(QWidget *parent) :
 	connect(_variableListModel, SIGNAL(termsChanged()), this, SLOT(termsChanged()));
 
 	ui->containerRevScaledItems->hide();
+    ui->containerAdvOptions->hide();
 
 }
 

@@ -7,14 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>638</width>
-    <height>690</height>
+    <height>1057</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_6">
-   <item row="0" column="0">
+   <item row="0" column="0" colspan="2">
     <widget class="QWidget" name="topWidget" native="true">
      <layout class="QGridLayout" name="gridLayout_3">
       <property name="leftMargin">
@@ -103,7 +103,66 @@
      </layout>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item row="2" column="0" colspan="2">
+    <widget class="QWidget" name="revScaledItemsBox" native="true">
+     <layout class="QGridLayout" name="gridLayout_4">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>3</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>3</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="ExpanderButton" name="expanderPosthoc">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Reverse-Scaled Items</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QWidget" name="containerRevScaledItems" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="BoundAssignWidget" name="reverseScaledItems" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>160</height>
+            </size>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
     <widget class="QWidget" name="gridLayout_7" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -180,7 +239,14 @@
          <item row="2" column="0">
           <widget class="BoundCheckBox" name="mcDonaldScale">
            <property name="text">
-            <string>McDonalds' ω</string>
+            <string>McDonald's ω</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="BoundCheckBox" name="glbScale">
+           <property name="text">
+            <string>Greatest lower bound</string>
            </property>
           </widget>
          </item>
@@ -231,7 +297,7 @@
          <item row="2" column="0">
           <widget class="BoundCheckBox" name="mcDonaldItem">
            <property name="text">
-            <string>McDonalds' ω (if item dropped)</string>
+            <string>McDonald's ω (if item dropped)</string>
            </property>
           </widget>
          </item>
@@ -254,9 +320,9 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QWidget" name="revScaledItemsBox" native="true">
-     <layout class="QGridLayout" name="gridLayout_4">
+   <item row="4" column="0">
+    <widget class="QWidget" name="advancedOptionsBox" native="true">
+     <layout class="QGridLayout" name="gridLayout_11">
       <property name="leftMargin">
        <number>0</number>
       </property>
@@ -269,9 +335,22 @@
       <property name="bottomMargin">
        <number>3</number>
       </property>
+      <item row="0" column="0">
+       <widget class="ExpanderButton" name="expanderPosthoc_5">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Advanced Options</string>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="0">
-       <widget class="QWidget" name="containerRevScaledItems" native="true">
-        <layout class="QVBoxLayout" name="verticalLayout">
+       <widget class="QWidget" name="containerAdvOptions" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout_4">
          <property name="leftMargin">
           <number>0</number>
          </property>
@@ -282,32 +361,32 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="BoundAssignWidget" name="reverseScaledItems" native="true">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>160</height>
-            </size>
+          <widget class="BoundGroupBox" name="missingValues">
+           <property name="title">
+            <string>Missing Values</string>
            </property>
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
-           </property>
+           <layout class="QGridLayout" name="gridLayout_15">
+            <property name="bottomMargin">
+             <number>13</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="excludeCasesListwise">
+              <property name="text">
+               <string>Exclude cases listwise</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="excludeCasesPairwise">
+              <property name="text">
+               <string>Exclude cases pairwise</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="ExpanderButton" name="expanderPosthoc">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Reverse-Scaled Items</string>
-        </property>
        </widget>
       </item>
      </layout>
@@ -327,25 +406,25 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundGroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>BoundAssignWidget</class>
