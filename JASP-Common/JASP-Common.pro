@@ -128,5 +128,6 @@ HEADERS += \
 	sharedmemory.h \
 	tempfiles.h \
 	utils.h \
-	version.h
+	version.h \
+    options/optionvariablei.h
 
