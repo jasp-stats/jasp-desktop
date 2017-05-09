@@ -1447,7 +1447,7 @@
       }
       
       priorLower <- qnorm(lowerp, options[["informativeNormalMean"]], options[["informativeNormalStd"]])
-      priorUpper <- qnorm(lowerp, options[["informativeNormalMean"]], options[["informativeNormalStd"]])
+      priorUpper <- qnorm(upperp, options[["informativeNormalMean"]], options[["informativeNormalStd"]])
       
       # compute 95% credible interval & median:
       ci95PlusMedian <- .ciPlusMedian_normal(t = t, ny = n1, nx = n2, independentSamples = ! paired && !is.null(n2),
