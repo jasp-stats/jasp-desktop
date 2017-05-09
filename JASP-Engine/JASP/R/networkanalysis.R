@@ -100,8 +100,14 @@ NetworkAnalysis <- function (
 	if (options[["plotFitMeasures"]]) {
 		results[["fitMeasures"]] <- .fitMeasuresTB(networkResults, options, perform)
 	}
+	if (options[["tableCentrality"]]) {
+		results[["centralityTB"]] <- .centralityTB(networkResults, options, perform)
 	}
+	if (options[["plotCentrality"]]) {
+		results[["centralityPLT"]] <- .centralityPLT(networkResults, options, perform)
 	}
+	if (options[["plotNetworkTable"]]) {
+		results[["networkPLT"]] <- .fitMeasuresTB(networkResults, options, perform)
 	}
 
 	## Save State ##
