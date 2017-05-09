@@ -21,6 +21,7 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QFileInfo>
+#include <QFileDialog>
 #include <QMessageBox>
 
 OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
@@ -212,8 +213,21 @@ FileEvent *OpenSaveWidget::save()
 void OpenSaveWidget::sync()
 {
 	QString path = _fsmCurrent->getCurrent();
-	if (!path.isEmpty())
-		dataSetOpenCurrentRequestHandler(path);
+	if (path.isEmpty())
+	{
+		QString message = "JASP has no associated data file (csv, sav or ods file) to be synchronized with. Do you want to search for such a data file on your computer?\nNB: You can set this data file also via menu File/Sync Data.";
+		QMessageBox msgBox(QMessageBox::Question, QString("No associated data file"), message,
+						   QMessageBox::Yes|QMessageBox::Cancel);
+		int reply = msgBox.exec();
+		if (reply == QMessageBox::Cancel)
+			return;
+
+		QString caption = "Find Data File";
+		QString filter = "Data File (*.csv *.txt *.sav *.ods)";
+		path = QFileDialog::getOpenFileName(this, caption, "", filter);
+	}
+
+	dataSetOpenCurrentRequestHandler(path);
 }
 
 FileEvent *OpenSaveWidget::close()
