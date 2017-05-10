@@ -61,7 +61,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 																				)))
 	
 	results[[".meta"]] <- meta
-	results[["title"]] <- "Bayesian T-Test"
+	results[["title"]] <- "Bayesian Paired Samples T-Test"
 	
 	ttest <- list()
 	
