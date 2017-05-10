@@ -460,6 +460,17 @@ bool Column::isValueEqual(int rowIndex, int value)
 		return AsDoubles[rowIndex] == value;
 
 	int intValue = AsInts[rowIndex];
+	if (_columnType == Column::ColumnTypeNominal || _columnType == Column::ColumnTypeOrdinal)
+	{
+		bool result = (intValue == value);
+		if (!result)
+		{
+			std::cout << "Value not equal: " << intValue << " " << value << std::endl;
+			std::cout.flush();
+		}
+		return result;
+	}
+
 	if (intValue == INT_MIN)
 		return value == INT_MIN;
 
@@ -509,7 +520,7 @@ bool Column::isValueEqual(int rowIndex, const string &value)
 			}
 			else
 			{
-				result = (value == _labels.getValueFromIndex(index));
+				result = (value.substr(0, 128) == _labels.getValueFromIndex(index));
 			}
 		}
 

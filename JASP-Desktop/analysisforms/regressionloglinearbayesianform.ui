@@ -123,7 +123,7 @@
          <item row="2" column="0">
           <widget class="QRadioButton" name="_3">
            <property name="text">
-            <string>Log( BF₁₀ )</string>
+            <string>Log(BF₁₀)</string>
            </property>
           </widget>
          </item>

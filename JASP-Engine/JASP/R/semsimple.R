@@ -21,52 +21,52 @@
 	observedCov <- inspect(fit, "sampstat")$cov
 	fittedCov <- fitted(fit)$cov
 	residualCov <- observedCov - fittedCov
-	
+
 	varNames <- colnames(observedCov)
-	
+
 	covList <- list(
 		observed = observedCov,
 		fitted = fittedCov,
 		residual = residualCov)
-	
+
 	corList <- list(
 		observed = cov2cor(observedCov),
 		fitted = cov2cor(fittedCov),
 		residual = cov2cor(observedCov) - cov2cor(fittedCov))
-	
+
 	n <- ncol(covList[[1]])
-	
-	
+
+
 	matList <- mapply(cov = covList, cor = corList, type = names(covList), FUN=function(cov,cor, type){
-		cov[upper.tri(cov,diag=FALSE)] <- cor[upper.tri(cor,diag=FALSE)] 
+		cov[upper.tri(cov,diag=FALSE)] <- cor[upper.tri(cor,diag=FALSE)]
 		cbind(..sortingDummy = seq_len(NROW(cov)), ..varName = .unv(rownames(cov)), ..type = type, as.data.frame(cov),stringsAsFactors = FALSE)
 	}, SIMPLIFY = FALSE)
-	
+
 	matDF <- do.call(rbind, matList)
 	matDF <- matDF[matDF$..type %in% include,]
 	matDF$..type <- as.character(	matDF$..type)
 	matDF <- matDF[order(matDF$..sortingDummy),]
 	matDF <- matDF[,-1]
-	
+
 	# Empty object:
 	covariances <- list()
-	
+
 	# Fill:
 	covariances[["title"]] <- title
  # covariances[["cases"]] <- matDF$..varName
 #	covariances[["cases"]] <- rep("",length(matDF$..varName))
-	
+
 	fields <- list(list(name = "Variable", title = "", type="text"),list(name = "Type", title = "", type="text"))
-	
+
 	# Enter fields:
 	for (i in 1:n)
 	{
 		fields[[i+2]] <- list(name = varNames[i], title = .unv(varNames[i]), type="number", format="dp:3")
 	}
-	
+
 	# Enter rows:
 	rows <- list()
-	
+
 	for (i in seq_len(NROW(matDF)))
 	{
 		variable.name <- varNames[i]
@@ -76,9 +76,9 @@
 	}
 
 	schema <- list(fields=fields)
-	
+
 	covariances[["schema"]] <- schema
-	covariances[["data"]] <- rows	
+	covariances[["data"]] <- rows
 	return(covariances)
 }
 
@@ -95,20 +95,20 @@
 .extractVariables <- function(model) {
 
 	reserved.words <- c("c", "start", "equal", "NA")
-	
+
 	bytes <- c(charToRaw(model), 0)
-	
+
 	variables <- c()
-	
+
 	none <- 0
 	in.double.quote <- 1
 	in.single.quote <- 2
 	in.unquoted <- 3
 	in.comment <- 4
-	
+
 	parse.state <- none
 	token.start <- 1
-	
+
 	sq <- charToRaw("'")
 	dq <- charToRaw('"')
 	hash <- charToRaw('#')
@@ -116,7 +116,7 @@
 
 	i <- 1
  	while (i <= length(bytes)) {
-	
+
 		ch <- bytes[i]
 
 		if (parse.state == none) {
@@ -125,65 +125,65 @@
 			{
 				token.start <- i
 				parse.state <- in.unquoted
-				
+
 			} else if (ch == sq) {
-			
+
 				token.start <- i
 				parse.state <- in.single.quote
-				
+
 			} else if (ch == dq) {
-			
+
 				token.start <- i
 				parse.state <- in.double.quote
-			
+
 			} else if (ch == hash) {
-			
+
 				parse.state <- in.comment
 			}
-		
+
 		} else if (parse.state == in.single.quote) {
-		
+
 			if (ch == sq) {
-			
+
 				variable <- substr(model, token.start, i)
 				variables <- c(variables, variable)
 				parse.state <- none
 			}
-		
+
 		} else if (parse.state == in.double.quote) {
-		
+
 			if (ch == dq) {
-			
+
 				variable <- substr(model, token.start, i)
 				variables <- c(variables, variable)
 				parse.state <- none
 			}
-		
+
 		} else if (parse.state == in.unquoted) {
-		
+
 			if (.is.alpha.numeric(ch) == FALSE) {
-			
+
 				variable <- substr(model, token.start, i - 1)
 				variables <- c(variables, variable)
 				parse.state <- none
 				i <- i - 1
 			}
-			
+
 		} else if (parse.state == in.comment) {
-		
+
 			if (ch == nl)
 				parse.state <- none
-		
+
 		}
-	
+
 		i <- i + 1
 	}
-	
+
 	variables <- unique(variables)
 	variables <- variables[ ! (variables %in% reserved.words)]
-	
+
 	if (length(variables) > 0) {
-	
+
 		for (i in 1:length(variables))
 		{
 			variable <- variables[i]
@@ -191,11 +191,11 @@
 				variable <- substr(variable, 2, nchar(variable) - 1)
 			variables[i] <- variable
 		}
-	
+
 	}
-	
+
 	variables <- variables[ ! (variables %in% reserved.words)]
-	
+
 	variables
 }
 
@@ -207,35 +207,77 @@
 	variables <- variables[order(nchar(variables), decreasing=TRUE)]
 	with.s.quotes <- paste("'", variables, "'", sep="")
 	with.d.quotes <- paste('"', variables, '"', sep="")
-	
+
 	new.names <- .v(variables)
-	
+
 	for (i in 1:length(variables))
 		model <- gsub(with.d.quotes[i], new.names[i], model)
 	for (i in 1:length(variables))
 		model <- gsub(with.s.quotes[i], new.names[i], model)
 	for (i in 1:length(variables))
 		model <- gsub(variables[i], new.names[i], model)
-		
+
 	model
 }
 
 ### SEM Function:
 SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
+
 	variables <- .extractVariables(options$model)
 	model <- .translateModel(options$model, variables)
 
 	if (is.null(dataset)) {
-	
-		if (perform == "run") {
+
+		if (perform == "run" ||options$Data != "varcov") {
 			dataset <- .readDataSetToEnd(all.columns=TRUE)
 		} else {
 			dataset <- .readDataSetHeader(all.columns=TRUE)
 		}
 	}
 	
+	# Retrieve state:
+	state <- .retrieveState()
 	
+	if (is.null(state)) {  # is there state?
+	  state <- list(models = list())
+	}
+
+	
+	#### INPUT CHECK #####
+	if (options$Data == "varcov"){
+	  # Check if dataset is variance covariance matrix:
+	  errorCheck <- .hasErrors(dataset, perform = perform, type = c("varCovMatrix","infinity"), message='default', exitAnalysisIfErrors=TRUE)
+	} else {
+	  errorCheck <- .hasErrors(dataset, perform = perform, type = c("infinity"), message='default', exitAnalysisIfErrors=TRUE)
+	}
+	# Check mean structure:
+	if (options$Data == "varcov"){
+	  if (isTRUE(options$includeMeanStructure)){
+	    errorCheck <- list(error=TRUE,message = "Mean structure can not be included when data is variance-covariance matrix")
+	  }
+	  options$includeMeanStructure <- FALSE
+	  
+	  if (options$SampleSize == 0){
+	    errorCheck <- list(error=TRUE,message = "Please set the sample size!")
+	  }
+	  
+	  # Check for multiple groups:
+	  if (options$groupingVariable != ""){
+	    errorCheck <- list(error=TRUE,message = "Multiple group analysis not (yet) supported when data is variance-covariance matrix")
+	  }
+	} else {
+	  if (identical(errorCheck, FALSE)){
+	    if (!nrow(dataset) > ncol(dataset)){
+	      errorCheck <- list(error=TRUE,message = "Not more cases than number of variables. Is your data a variance-covariance matrix?")
+	    }
+	  }
+	}
+	  
+	inputCorrect <- base::identical(errorCheck, FALSE)
+	######################
+
+
 	errorMessage <- ""
 	groupVar <- NULL
 	if (.v(options$groupingVariable) %in% names(dataset))
@@ -244,31 +286,115 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 
 		print(class(dataset[[ groupVar ]]))
 	}
+	
+
+	# group equal:
+	groupEqual <- ""
+	if (isTRUE(options$eq_loadings)){
+	  groupEqual <- c(groupEqual, "loadings")
+	}
+	
+	if (isTRUE(options$eq_intercepts)){
+	  groupEqual <- c(groupEqual, "intercepts")
+	}
+	
+	if (isTRUE(options$eq_means)){
+	  groupEqual <- c(groupEqual, "means")
+	}
+	
+	if (isTRUE(options$eq_thresholds)){
+	  groupEqual <- c(groupEqual, "thresholds")
+	}
+	
+	if (isTRUE(options$eq_regressions)){
+	  groupEqual <- c(groupEqual, "regressions")
+	}
+	
+	
+	if (isTRUE(options$eq_residuals)){
+	  groupEqual <- c(groupEqual, "residuals")
+	}
+	
+	
+	if (isTRUE(options$eq_residualcovariances)){
+	  groupEqual <- c(groupEqual, "residual.covariances")
+	}
+	
+	if (isTRUE(options$eq_variances)){
+	  groupEqual <- c(groupEqual, "lv.variances")
+	}
+	
+	
+	if (isTRUE(options$eq_lvcovariances)){
+	  groupEqual <- c(groupEqual, "lv.covariances")
+	}
+	
+	if (length(groupEqual)>1){
+	  groupEqual <- groupEqual[groupEqual!=""]
+	}
+	
+	# Mean structure:
+	if (!isTRUE(options$includeMeanStructure)){
+	  options$includeMeanStructure <- "default"
+	}
+	
 	### RUN SEM ###
-# save(list = ls(), file = "~/foo.RData")
-	if (perform == "run") {
-		semResults <- try(lavaan:::lavaan(
-			model = model, 
-			data = dataset, 
-			auto.delta = options$addScalingParameters, 
-			auto.th = options$addThresholds,
-			orthogonal = options$assumeFactorsUncorrelated,
-			auto.cov.y = options$correlateDependentVariables,
-			auto.cov.lv.x = options$correlateExogenousLatents,
-			mimic = ifelse(options$emulation=="none","lavaan",options$emulation),
-			se = options$errorCalculation,
-			bootstrap = options$errorCalculationBootstrapSamples,
-			estimator = ifelse(options$estimator == "automatic", "default", options$estimator),
-			std.lv = options$factorStandardisation == "residualVariance",
-			auto.fix.first = options$factorStandardisation == "factorLoadings",
-			fixed.x = options$fixExogenousCovariates,
-			int.lv.free = !options$fixLatentInterceptsToZero,
-			int.ov.free = !options$fixManifestInterceptsToZero,
-			meanstructure = options$includeMeanStructure,
-			auto.fix.single = options$omitResidualSingleIndicator,
-			auto.var = options$residualVariances,
-			group = groupVar
-			))
+	if (perform == "run" && inputCorrect) {
+
+    # Raw data:
+	  if (options$Data == "raw"){
+	    semResults <- try(lavaan:::lavaan(
+	      model = model,
+	      data = dataset,
+	      auto.delta = options$addScalingParameters,
+	      auto.th = options$addThresholds,
+	      orthogonal = options$assumeFactorsUncorrelated,
+	      auto.cov.y = options$correlateDependentVariables,
+	      auto.cov.lv.x = options$correlateExogenousLatents,
+	      mimic = ifelse(options$emulation=="none","lavaan",options$emulation),
+	      se = options$errorCalculation,
+	      bootstrap = options$errorCalculationBootstrapSamples,
+	      estimator = ifelse(options$estimator == "automatic", "default", options$estimator),
+	      std.lv = options$factorStandardisation == "residualVariance",
+	      auto.fix.first = options$factorStandardisation == "factorLoadings",
+	      fixed.x = options$fixExogenousCovariates,
+	      int.lv.free = !options$fixLatentInterceptsToZero,
+	      int.ov.free = !options$fixManifestInterceptsToZero,
+	      meanstructure = options$includeMeanStructure,
+	      auto.fix.single = options$omitResidualSingleIndicator,
+	      auto.var = options$residualVariances,
+	      group = groupVar,
+	      group.equal = groupEqual
+	    ))
+	  } else {
+	    # Var-cov matrix
+	    semResults <- try(lavaan:::lavaan(
+	      model = model,
+	      sample.cov = as.matrix(dataset),
+	      sample.nobs = as.numeric(options$SampleSize),
+	      auto.delta = options$addScalingParameters,
+	      auto.th = options$addThresholds,
+	      orthogonal = options$assumeFactorsUncorrelated,
+	      auto.cov.y = options$correlateDependentVariables,
+	      auto.cov.lv.x = options$correlateExogenousLatents,
+	      mimic = ifelse(options$emulation=="none","lavaan",options$emulation),
+	      se = options$errorCalculation,
+	      bootstrap = options$errorCalculationBootstrapSamples,
+	      estimator = ifelse(options$estimator == "automatic", "default", options$estimator),
+	      std.lv = options$factorStandardisation == "residualVariance",
+	      auto.fix.first = options$factorStandardisation == "factorLoadings",
+	      fixed.x = options$fixExogenousCovariates,
+	      int.lv.free = !options$fixLatentInterceptsToZero,
+	      int.ov.free = !options$fixManifestInterceptsToZero,
+	      meanstructure = options$includeMeanStructure,
+	      auto.fix.single = options$omitResidualSingleIndicator,
+	      auto.var = options$residualVariances,
+	      group = groupVar,
+	      group.equal = groupEqual
+	    ))
+	  }
+
+		
 
 		# Check if worked:
 		if (is(semResults,"try-error"))	{
@@ -283,8 +409,8 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 		semResults <- NULL
 
 		lavModel <- try(lavaan:::lavaanify(
-			model = model, 
-			auto.delta = options$addScalingParameters, 
+			model = model,
+			auto.delta = options$addScalingParameters,
 			auto.th = options$addThresholds,
 			orthogonal = options$assumeFactorsUncorrelated,
 			auto.cov.y = options$correlateDependentVariables,
@@ -301,7 +427,9 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 			meanstructure = options$includeMeanStructure,
 			auto.fix.single = options$omitResidualSingleIndicator,
 			auto.var = options$residualVariances,
-  			ngroups = length(unique(dataset[[groupVar]]))
+  			ngroups = length(unique(dataset[[groupVar]])),
+			group.equal = groupEqual
+			
 			))
 
 		# Check if worked:
@@ -317,13 +445,17 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 		}
 	}
 
+	
+	# Overwrite resulting model in state:
+	if (!is.null(semResults)){
+	  state$models[[options$modelName]] <- semResults
+	}
+	
 	### Output object:
 	results <- list()
-	
-
 
 	meta <- list()
-	
+
 	meta[[1]]  <- list(name="fit", type="table")
 	meta[[2]]  <- list(name="parameterEstimates", type="table")
 	meta[[3]]  <- list(name="fitMeasures_modelTest", type="table")
@@ -335,10 +467,12 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 	meta[[9]]  <- list(name="covcor", type="table")
 	meta[[10]] <- list(name="modificationIndices", type="table")
 	meta[[11]] <- list(name="mardiasCoefficient", type="table")
-	
-	results[[".meta"]] <- meta
-	
 
+	results[[".meta"]] <- meta
+
+	# Error:
+	error <- !inputCorrect || (errorMessage!="" & perform == "run" & options$model != "")
+	
 	### ANOVA table ###
 	an0va <- list()
 	an0va[["title"]] <- "Chi Square Test Statistic (unscaled)"
@@ -358,14 +492,33 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 	### PERFORM = RUN
 	if (is.null(semResults))
 	{
-		sem_anova <- structure(list(Df = c(0, NA), AIC = c(NA, NA), 
+		sem_anova <- structure(list(Df = c(0, NA), AIC = c(NA, NA),
     BIC = c(NA, NA), Chisq = c(0, NA
-    ), `Chisq diff` = c(NA, NA), `Df diff` = c(NA, 
-   NA), `Pr(>Chisq)` = c(NA, NA)), .Names = c("Df", 
-"AIC", "BIC", "Chisq", "Chisq diff", "Df diff", "Pr(>Chisq)"), row.names = c("Saturated", 
-"Model"), class = c("anova", "data.frame"), heading = "Chi Square Test Statistic (unscaled)\n")
+    ), `Chisq diff` = c(NA, NA), `Df diff` = c(NA,
+   NA), `Pr(>Chisq)` = c(NA, NA)), .Names = c("Df",
+"AIC", "BIC", "Chisq", "Chisq diff", "Df diff", "Pr(>Chisq)"), row.names = c("Saturated",
+options$modelName), class = c("anova", "data.frame"), heading = "Chi Square Test Statistic (unscaled)\n")
 	} else {
-		sem_anova <- lavaan:::anova(semResults)
+	  # Current to saturated:
+	  sem_anova <- lavaan::lavTestLRT(semResults)
+	  rownames(sem_anova)[2] <- options$modelName
+	  
+	  # String to compare to other models:
+	  if (length(state$models) > 1){
+	    str <- paste0("lavaan::lavTestLRT(",paste("state$models[[",seq_along(state$models),"]]",collapse=", "),", model.names = names(state$models))")
+	    toOthers <- eval(parse(text=str))
+	    sem_anova <- rbind(sem_anova[1,,drop=FALSE],toOthers)
+	    sem_anova$`Df diff`[-1] <- diff(sem_anova$Df)
+	    sem_anova$`Chisq diff`[-1] <- abs(diff(sem_anova$Chisq))
+	    sem_anova$`Pr(>Chisq)`[-1] <- pchisq(sem_anova$`Chisq diff`[-1],sem_anova$`Df diff`[-1],lower.tail = FALSE)
+	    
+	    
+	  }
+	  # rownames(sem_anova) <- c("Saturated",options$modelName,names(state$models)[names(state$models) != options$modelName])
+	#   
+	#   models <- list(semResults)
+	#   names(models) <- options$modelName
+	# 	sem_anova <- do.call(lavaan::anova,models)
 	}
 
 	for (i in seq_len(NROW(sem_anova)))
@@ -375,9 +528,16 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 		names(an0va[["data"]][[i]]) <- gsub("Df","DF",	names(an0va[["data"]][[i]]))
 	}
 
-	if (errorMessage!="" & perform == "run" & options$model != "") an0va[['error']] <- list(errorType="badData", errorMessage=errorMessage)
+	if (error){
+	  if (!inputCorrect){
+	    errorMessage <- errorCheck$message
+	  } else {
+	    errorMessage <- paste0("Lavaan crashed with the following error: ",errorMessage)
+	  }
+	  
+	  an0va[['error']] <- list(errorType="badData", errorMessage=errorMessage)
+	}
 	results[['fit']] <- an0va
-
 
 	### PARAMETER ESTIMATES ####
 	parEstimates <- list()
@@ -396,11 +556,12 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 			list(name="ci.upper", title = "CI (upper)", type="number", format = "dp:3"),
 			list(name="std.lv", title = "std (lv)", type="number", format = "dp:3"),
 			list(name="std.all", title = "std (all)", type="number", format = "dp:3"),
-			list(name="std.nox", title = "std (nox)", type="number", format = "dp:3")
+			list(name="std.nox", title = "std (nox)", type="number", format = "dp:3"),
+			list(name="group",  title = "group", type="character")
 		))
 	parEstimates[["data"]] <- list()
 	if (errorMessage!="" & perform == "run" & options$model != "") parEstimates[['error']] <- list(errorType="badData")
-	
+
 	if (!is.null(semResults)) {
 		sem_parest <- lavaan:::parameterEstimates(semResults, standardized = TRUE)
 		# parEstimates[["cases"]] <- rep("",NROW(sem_parest))
@@ -408,7 +569,11 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 		{
 			estimates <- sem_parest[i,]
 			estimates["lhs"] <- .unv(estimates["lhs"])
-			estimates["rhs"] <- .unv(estimates["rhs"])
+			if (estimates["rhs"] == ""){
+			  estimates["rhs"] <- ""
+			} else {
+			  estimates["rhs"] <- .unv(estimates["rhs"])	
+			}
 			estimates[is.na(estimates)] <- '.'
 			parEstimates[["data"]][[i]] <- as.list(estimates)
 		}
@@ -417,14 +582,15 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 	}
 	results[["parameterEstimates"]] <- parEstimates
 
-
+# 
+# 
 	### MODIFICATION INDICES ###
 ## SORT THEM
 	if (options$outputModificationIndices) {
 
 		modIndices <- list()
 		modIndices[["title"]] <- "Modification Indices"
-		
+
 		modIndices[["schema"]] <- list(
 			fields = list(
 				list(name="lhs", title = "", type="character"),
@@ -437,7 +603,7 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 				list(name="sepc.nox",  title = "sepc (nox)",type="number", format = "dp:3")
 			)
 		)
-	
+
 		modIndices[["data"]] <- list()
 		if (!is.null(semResults))
 		{
@@ -481,21 +647,21 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 #   fitMeasures[["schema"]] <- list(fields = list(
 #     list(name="Type", title = "", type="string"),
 #     list(name="Measure", type="number", format="dp:3")))
-#   
-#   
-#   cases <- c("fmin", "chisq", "df", "pvalue", "baseline.chisq", "baseline.df", 
-#              "baseline.pvalue", "cfi", "tli", "nnfi", "rfi", "nfi", "pnfi", 
-#              "ifi", "rni", "logl", "unrestricted.logl", "npar", "aic", "bic", 
-#              "ntotal", "bic2", "rmsea", "rmsea.ci.lower", "rmsea.ci.upper", 
-#              "rmsea.pvalue", "rmr", "rmr_nomean", "srmr", "srmr_nomean", "cn_05", 
+#
+#
+#   cases <- c("fmin", "chisq", "df", "pvalue", "baseline.chisq", "baseline.df",
+#              "baseline.pvalue", "cfi", "tli", "nnfi", "rfi", "nfi", "pnfi",
+#              "ifi", "rni", "logl", "unrestricted.logl", "npar", "aic", "bic",
+#              "ntotal", "bic2", "rmsea", "rmsea.ci.lower", "rmsea.ci.upper",
+#              "rmsea.pvalue", "rmr", "rmr_nomean", "srmr", "srmr_nomean", "cn_05",
 #              "cn_01", "gfi", "agfi", "pgfi", "mfi", "ecvi")
-#   
+#
 #   if (!is.null(semResults))
 #   {
 #     sem_fitm <- unlist(lavaan:::fitMeasures(semResults))
 #     #data <- lapply(as.list(unname(sem_fitm)) , function(x) {names(x) <- "Measure";x})
 #   } #else data <- list()
-#   
+#
 #   for (i in seq_along(cases))
 #   {
 #     entry <- list(Type = cases[i], Measure = ".")
@@ -582,7 +748,7 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 			list(name="rmsea", title = "RMSEA", type="number", format = "dp:3"),
 			list(name="rmsea.ci", title = "90 Percent Confidence Interval", type="text"),
 			list(name="rmsea.pvalue", title = "P-value RMSEA <= 0.05 ", type="number", format="dp:3;p:0.001")
-		))		
+		))
 		fitMeasures_RMSEA[["data"]] <- list()
 
 		if (is.na(sem_fitm['rmsea.ci.lower'])) {
@@ -604,7 +770,7 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 			list(name="rmr", title = "RMR", type="number", format = "dp:3"),
 			list(name="rmr_nomean", title = "RMR (No Mean)", type="number", format = "dp:3"),
 			list(name="srmr", title = "SRMR", type="number", format = "dp:3")
-		))		
+		))
 		fitMeasures_RMR[["data"]] <- list()
 
 		 fitMeasures_RMR[["data"]][[1]] <- c(list(model = "Model"),as.list(sem_fitm[c('rmr','rmr_nomean','srmr')]))
@@ -635,7 +801,7 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 
 		if (errorMessage!="" & perform == "run" & options$model != "") fitMeasures[['error']] <- list(errorType="badData")
 
-		
+
 	}
 
 
@@ -669,14 +835,21 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 	}
 
 	### Covariance table:
-	# Only if observed, fitted or residual 
+	# Only if observed, fitted or residual
 	if( options$outputObservedCovarianceCorrelations | options$outputFittedCovarianceCorrelations | options$outputResidualCovarianceCorrelations) {
 		if (!is.null(semResults))
 		{
 			results[["covcor"]] <- .covTable(semResults, "Covariances (lower triangle) / correlations (upper triangle)", include = c("observed","fitted","residual")[ c(options$outputObservedCovarianceCorrelations , options$outputFittedCovarianceCorrelations ,options$outputResidualCovarianceCorrelations) ] )
 		}
 	}
-	
-	return(results)
+
+	# Return
+	status <- list(ready=TRUE, error=error,errorMessage=errorMessage)
+	if (perform == "run" && status$ready) {
+	  retList <- list(results=results, status="complete", state=state)
+	} else {
+	  retList <- list(results=results, status="inited",state=state)
+	}
+	return(retList)
 }
 

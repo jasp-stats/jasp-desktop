@@ -78,6 +78,19 @@
 			"options": [ "BF10", "BF01", "LogBF10" ],
 			"default": "BF10",
 			"type": "List"
+		},
+		{
+			"name": "credibleInterval",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "ciValue",
+			"type": "Number",
+			"format": "%",
+			"value": 0.950,
+			"min": 0.001,
+			"max": 0.999
 		}
 	]
 }

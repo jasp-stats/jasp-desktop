@@ -17,161 +17,174 @@
 
 
 CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
-  useKendall <- options$corcoefficient == "Kendall"
-  usePearson <- options$corcoefficient == "Pearson"
-	all.variables <- unique(unlist(options$pairs))
-	all.variables <- all.variables[all.variables != ""]
+    # Note: This is the default failed bfObject for wrong data
+    #
+    failedBfObject <- list(n=NaN, r=NaN, stat=NA, bf10=NA, bfPlus0=NA, bfPlus0=NA, bfMin0=NA, ciValue=options$ciValue, ci=list())
+    
+    useKendall <- options$corcoefficient == "Kendall"
+    usePearson <- options$corcoefficient == "Pearson"
+	allVariables <- unique(unlist(options$pairs))
+	allVariables <- allVariables[allVariables != ""]
 	
-	if (is.null(dataset))
-	{
+	if (is.null(dataset)) {
 		if (perform == "run") {
-		
-			if (options$missingValues == "excludeListwise") {
-		
-				dataset <- .readDataSetToEnd(columns.as.numeric=all.variables, exclude.na.listwise=all.variables)
-			
-			} else {
-		
-				dataset <- .readDataSetToEnd(columns.as.numeric=all.variables)
-			}
-			
+		    if (options$missingValues == "excludeListwise") {
+		        dataset <- .readDataSetToEnd(columns.as.numeric=allVariables, exclude.na.listwise=allVariables)
+		    } else {
+		        dataset <- .readDataSetToEnd(columns.as.numeric=allVariables)
+		    }
 		} else {
-		
-			dataset <- .readDataSetHeader(columns.as.numeric=all.variables)
+		    dataset <- .readDataSetHeader(columns.as.numeric=allVariables)
 		}
-		
 	} else {
-	
 		if (options$missingValues == "excludeListwise") {
-	
-			dataset <- .vdf(dataset, columns.as.numeric=all.variables, exclude.na.listwise=all.variables)
-		
+		    dataset <- .vdf(dataset, columns.as.numeric=allVariables, exclude.na.listwise=allVariables)
 		} else {
-	
-			dataset <- .vdf(dataset, columns.as.numeric=all.variables)
+		    dataset <- .vdf(dataset, columns.as.numeric=allVariables)
 		}
 	}
 	
 	
 	results <- list()
-	
 	meta <- list()
 	
+	# MarkUp: General: Tell the parser that correlation is a table
+	#
 	meta[[1]] <- list(name="correlation", type="table")
-	meta[[2]] <- list(name="plots", type="collection", meta=list(	name="plotGroups", type="object",
-																	meta=list(	list(name="ScatterPlot", type="image"),
-																				list(name="PriorPosteriorPlot", type="image"),
-																				list(name="BFrobustnessPlot", type="image"),
-																				list(name="BFsequentialPlot", type="image")
-																				)
-																)
-					)
 	
+	# MarkUp: General: Tell that plots are a collection
+	#   within colletion of plots, there is plotGroups which is an object, consisting of 
+	#       -1 Scatterplot  
+	#       -2 Prior posterior plot
+	#       -3 BF robustness plot
+	#       -4 BF sequential plot
+	meta[[2]] <- list(name="plots", type="collection", 
+	                  meta=list(name="plotGroups", type="object",
+	                            meta=list(list(name="ScatterPlot", type="image"),
+	                                      list(name="PriorPosteriorPlot", type="image"),
+	                                      list(name="BFrobustnessPlot", type="image"),
+	                                      list(name="BFsequentialPlot", type="image")
+	                             )
+	                  )
+	)
 	
+	# MarkUp: General: Store the meta in the results
+	#
 	results[[".meta"]] <- meta
+	
+	# MarkUp: General: Name the results object 
+	#
 	results[["title"]] <- "Bayesian Correlation Pairs"
 	
+	
+	# MarkUp: General: Table: Output for the table
+	#
 	correlation <- list()
-	
-	correlation[["title"]] <- "Bayesian Pearson Correlation"
-	if(useKendall){correlation[["title"]] <- "Bayesian Kendall Correlation"}
-	
-	if(usePearson){
-  	correlation[["citation"]] <- list(
-  		"Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2014). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication."
-  	)} else if(useKendall){
-  	  correlation[["citation"]] <- list(
-  	    "van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2016). Bayesian Inference for Kendall’s Rank Correlation Coefficient. Manuscript submitted for publication."
-	  )}
+	if (usePearson) {
+	    correlation[["title"]] <- "Bayesian Pearson Correlation"
+	    correlation[["citation"]] <- list(
+	        "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2014). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication."
+	    )
+	    nameForFields <- "r"
+	} else if (useKendall) { 
+	    correlation[["title"]] <- "Bayesian Kendall Correlation"
+	    correlation[["citation"]] <- list(
+	        "van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2016). Bayesian Inference for Kendall’s Rank Correlation Coefficient. Manuscript submitted for publication."
+	    )
+	    nameForFields <- "tau"
+	} else if (usePearson && useKendall) {
+	    correlation[["title"]] <- "Bayesian Correlation Table"
+	    correlation[["citation"]] <- list(
+	        "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2014). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication.",
+	        "van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2016). Bayesian Inference for Kendall’s Rank Correlation Coefficient. Manuscript submitted for publication."
+	    )
+	    nameForFields <- "Statistic"
+	}
   	
-	bf.type <- options$bayesFactorType
+	# MarkUp: General: Table: Choose the bf type in the table
+	#
+	bfType <- options$bayesFactorType
 	
-	if (bf.type == "BF10") {
-	
+	if (bfType == "BF10") {
 		BFH1H0 <- TRUE
-	
 		if (options$hypothesis == "correlated") {
-		
-			bf.title <- "BF\u2081\u2080"
+			bfTitle <- "BF\u2081\u2080"
 			oneSided <- FALSE
-			
 		} else if (options$hypothesis == "correlatedPositively") {
-		
-			bf.title <- "BF\u208A\u2080"
+			bfTitle <- "BF\u208A\u2080"
 			oneSided <- "right"
-			
 		} else if (options$hypothesis == "correlatedNegatively") {
-		
-			bf.title <- "BF\u208B\u2080"
+			bfTitle <- "BF\u208B\u2080"
 			oneSided <- "left"
 		}
-		
-	} else if (bf.type == "LogBF10") {
-		
+	} else if (bfType == "LogBF10") {
 		BFH1H0 <- TRUE
-		
 		if (options$hypothesis == "correlated") {
-		
-			bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
+			bfTitle <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
 			oneSided <- FALSE
-			
 		} else if (options$hypothesis == "correlatedPositively") {
-		
-			bf.title <- "Log(\u2009\u0042\u0046\u208A\u2080\u2009)"
+			bfTitle <- "Log(\u2009\u0042\u0046\u208A\u2080\u2009)"
 			oneSided <- "right"
-			
 		} else if (options$hypothesis == "correlatedNegatively") {
-		
-			bf.title <- "Log(\u2009\u0042\u0046\u208B\u2080\u2009)"
+			bfTitle <- "Log(\u2009\u0042\u0046\u208B\u2080\u2009)"
 			oneSided <- "left"
 		}
-		
-	} else if (bf.type == "BF01") {
-	
+	} else if (bfType == "BF01") {
 		BFH1H0 <- FALSE
-	
 		if (options$hypothesis == "correlated") {
-		
-			bf.title <- "BF\u2080\u2081"
+			bfTitle <- "BF\u2080\u2081"
 			oneSided <- FALSE
-			
 		} else if (options$hypothesis == "correlatedPositively") {
-		
-			bf.title <- "BF\u2080\u208A"
+			bfTitle <- "BF\u2080\u208A"
 			oneSided <- "right"
-			
 		} else if (options$hypothesis == "correlatedNegatively") {
-		
-			bf.title <- "BF\u2080\u208B"
+			bfTitle <- "BF\u2080\u208B"
 			oneSided <- "left"
 		}
 	}
 	
-	if(useKendall){nameForFields <- "t"} else{nameForFields <- "r"}
+	
+	# MarkUp: General: Table: Define the columns
+	# 
 	fields <- list(
 		list(name=".variable1", type="string", title=""),
 		list(name=".separator", type="separator", title=""),
 		list(name=".variable2", type="string", title=""),
 		list(name="r", type="number", format="sf:4;dp:3", title=nameForFields),
-		list(name="BF", type="number", format="sf:4;dp:3", title=bf.title)
-		)
-		
+		list(name="BF", type="number", format="sf:4;dp:3", title=bfTitle)
+	)
+	
+	if (isTRUE(options$credibleInterval)) {
+	    interval <- 100 * options$ciValue
+	    title <- paste0(interval, "% Credible interval")
+	    
+	    fields[[length(fields) + 1]] <- list(name = "lowerCI", type = "number",
+	                                         format = "sf:4;dp:3", title = "Lower",
+	                                         overTitle = title)
+	    fields[[length(fields) + 1]] <- list(name = "upperCI", type = "number",
+	                                         format = "sf:4;dp:3", title = "Upper",
+	                                         overTitle = title)
+	}
+	
+	# MarkUp: General: Table: Define the columns
 	correlation[["schema"]] <- list(fields=fields)
 	
+	# Define list of rows 
+	correlationRows <- list()
 	
-	correlation.rows <- list()
-	
-	pair.statuses <- list()
+	# TODO: Check 
+	pairStatuses <- list()
 	
 	footnotes <- .newFootnotes()
 	
-	if (options$hypothesis == "correlatedPositively"){
+	# MarkUp: Define footnotes
+	if (options$hypothesis == "correlatedPositively") {
 		.addFootnote(footnotes, "For all tests, the alternative hypothesis specifies that the correlation is positive.", symbol="<i>Note</i>.")
 	} else if (options$hypothesis == "correlatedNegatively") {
 		.addFootnote(footnotes, "For all tests, the alternative hypothesis specifies that the correlation is negative.", symbol="<i>Note</i>.")
 	}
 	
-	
+	# TODO MarkUp: Plots General: 
 	plotGroups <- list()
 	plots.correlation <- list()
 	
@@ -185,26 +198,23 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	diff <- NULL
 	
 	if (!is.null(state)) {
-	
 		diff <- .diff(options, state$options)
-	
 	}
 	
+	# TODO: looping
 	i <- 1
 	
 	for (pair in options$pairs)	{
-	
+	    # Markup: Table: Row. Create "variableName1 - variableName2"
 		currentPair <- paste(pair, collapse=" - ")
 		
 		if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis || options$plotScatter) {
-			
 			plotGroups[[i]] <- list()
 			plotGroups[[i]][["title"]] <- currentPair
 			plotGroups[[i]][["name"]] <- currentPair
 		}
 		
 		if (options$plotScatter) {
-		
 			if (!is.null(state) && currentPair %in% state$plotPairs && !is.null(diff) && (is.list(diff) && (diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE)) && "plotScatter" %in% state$plotTypes) {
 				
 				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
@@ -223,9 +233,17 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
 				
-				image <- .beginSaveImage(530, 400)
-				.plotScatter.Bcorrelationpairs(xlab=pair[[1]], ylab=pair[[2]], dontPlotData=TRUE)
-				plot[["data"]] <- .endSaveImage(image)
+				# image <- .beginSaveImage(530, 400)
+				# .plotScatter.Bcorrelationpairs(xlab=pair[[1]], ylab=pair[[2]], dontPlotData=TRUE)
+				# plot[["data"]] <- .endSaveImage(image)
+				
+				.plotFunc <- function() {
+					.plotScatter.Bcorrelationpairs(xlab=pair[[1]], ylab=pair[[2]], dontPlotData=TRUE)
+				}
+				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
 				
 				plots.correlation[[length(plots.correlation)+1]] <- plot
 			}
@@ -267,20 +285,25 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
 				
-				image <- .beginSaveImage(530, 400)
-				.plotPosterior.correlation(r=NULL, n=NULL, oneSided=oneSided, dontPlotData=TRUE, addInformation=options$plotPriorAndPosteriorAdditionalInfo, corCoefficient=options$corcoefficient)
-				plot[["data"]] <- .endSaveImage(image)
+				# image <- .beginSaveImage(530, 400)
+				# .plotPosterior.correlation(r=NULL, n=NULL, oneSided=oneSided, dontPlotData=TRUE, addInformation=options$plotPriorAndPosteriorAdditionalInfo, corCoefficient=options$corcoefficient)
+				# plot[["data"]] <- .endSaveImage(image)
+				
+				.plotFunc <- function() {
+					.plotPosterior.correlation(n=NULL, r=NULL, oneSided=oneSided, dontPlotData=TRUE, addInformation=options$plotPriorAndPosteriorAdditionalInfo, corCoefficient=options$corcoefficient)
+				}
+				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
 				
 				plots.correlation[[length(plots.correlation)+1]] <- plot
 			}
 			
 			if (options$plotPriorAndPosteriorAdditionalInfo) {
-			
-				plotTypes[[length(plotTypes)+1]] <- "posteriorPlotAddInfo"
-			
+			    plotTypes[[length(plotTypes)+1]] <- "posteriorPlotAddInfo"
 			} else {
-			
-				plotTypes[[length(plotTypes)+1]] <- "posteriorPlot"
+			    plotTypes[[length(plotTypes)+1]] <- "posteriorPlot"
 			}
 			
 			plotPairs[[length(plotPairs)+1]] <- paste(pair, collapse=" - ")
@@ -288,30 +311,34 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 			
 		}
 		if (options$plotBayesFactorRobustness) {
-		
-		
-			if (!is.null(state) && currentPair %in% state$plotPairs && !is.null(diff) && (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$corcoefficient == FALSE
+		    if (!is.null(state) && currentPair %in% state$plotPairs && !is.null(diff) && (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$corcoefficient == FALSE
 				&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE)) && "robustnessPlot" %in% state$plotTypes) {
-				
+		        #
 				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 				# then, if the requested plot already exists, use it
 				
 				stateIndex <- which(state$plotPairs == currentPair & state$plotTypes == "robustnessPlot")[1]
 				
 				plots.correlation[[length(plots.correlation)+1]] <- state$plotsCorrelation[[stateIndex]]
-				
-			} else {
-			
-				plot <- list()
+		    } else {
+		        plot <- list()
 				
 				plot[["title"]] <- "Bayes Factor Robustness Check"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
 				
-				image <- .beginSaveImage(530, 400)
-				.plotBF.robustnessCheck.correlation (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE, corCoefficient=options$corcoefficient)
-				plot[["data"]] <- .endSaveImage(image)
+				# image <- .beginSaveImage(530, 400)
+				# .plotBF.robustnessCheck.correlation (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE, corCoefficient=options$corcoefficient)
+				# plot[["data"]] <- .endSaveImage(image)
+				
+				.plotFunc <- function() {
+					.plotBF.robustnessCheck.correlation (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE, corCoefficient=options$corcoefficient)
+				}
+				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
 				
 				plots.correlation[[length(plots.correlation)+1]] <- plot
 			}
@@ -321,120 +348,98 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 			plotGroups[[i]][["BFrobustnessPlot"]] <- plots.correlation[[length(plots.correlation)]]
 		}
 		
-		if (options$plotSequentialAnalysis){
-		
-			if (!is.null(state) && currentPair %in% state$plotPairs && !is.null(diff) && (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$corcoefficient == FALSE
+		if (options$plotSequentialAnalysis) {
+		    if (!is.null(state) && currentPair %in% state$plotPairs && !is.null(diff) && (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$corcoefficient == FALSE
 				&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE)) && options$plotSequentialAnalysisRobustness && "sequentialRobustnessPlot" %in% state$plotTypes) {
-				
-				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+		        # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 				# then, if the requested plot already exists, use it
 				
 				stateIndex <- which(state$plotPairs == currentPair & state$plotTypes == "sequentialRobustnessPlot")[1]
-				
 				plots.correlation[[length(plots.correlation)+1]] <- state$plotsCorrelation[[stateIndex]]
-				
-			} else if (!is.null(state) && currentPair %in% state$plotPairs && !is.null(diff) && (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$corcoefficient == FALSE
+		    } else if (!is.null(state) && currentPair %in% state$plotPairs && !is.null(diff) && (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$corcoefficient == FALSE
 						&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE)) && !options$plotSequentialAnalysisRobustness  && "sequentialPlot" %in% state$plotTypes) {
-				
-				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+		        # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 				# if the requested plot already exists use it
 				
 				stateIndex <- which(state$plotPairs == currentPair & state$plotTypes == "sequentialPlot")[1]
-				
 				plots.correlation[[length(plots.correlation)+1]] <- state$plotsCorrelation[[stateIndex]]
-				
-			} else {
-				
-				plot <- list()
+		    } else {
+		        plot <- list()
 				
 				plot[["title"]] <- "Sequential Analysis"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
 				
-				image <- .beginSaveImage(530, 400)
-				.plotSequentialBF.correlation(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE, corCoefficient=options$corcoefficient)
-				plot[["data"]] <- .endSaveImage(image)
+				# image <- .beginSaveImage(530, 400)
+				# .plotSequentialBF.correlation(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE, corCoefficient=options$corcoefficient)
+				# plot[["data"]] <- .endSaveImage(image)
+				
+				.plotFunc <- function() {
+					.plotSequentialBF.correlation(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE, corCoefficient=options$corcoefficient)
+				}
+				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
 				
 				plots.correlation[[length(plots.correlation)+1]] <- plot
 			}
 			
 			if (options$plotSequentialAnalysisRobustness) {
-			
-				plotTypes[[length(plotTypes)+1]] <- "sequentialRobustnessPlot"
-			
+			    plotTypes[[length(plotTypes)+1]] <- "sequentialRobustnessPlot"
 			} else {
-			
-				plotTypes[[length(plotTypes)+1]] <- "sequentialPlot"
+			    plotTypes[[length(plotTypes)+1]] <- "sequentialPlot"
 			}
 			
 			plotPairs[[length(plotPairs)+1]] <- paste(pair, collapse=" - ")
 			plotGroups[[i]][["BFsequentialPlot"]] <- plots.correlation[[length(plots.correlation)]]
-			
 		}
-		
 		i <- i + 1
 	}
 	
-	if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis || options$plotScatter)
-		results[["plots"]] <- list(title="Plots", collection=plotGroups)
+	if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis || options$plotScatter) {
+	    results[["plots"]] <- list(title="Plots", collection=plotGroups)
+	}
 	
+	# TODO: Collection of r and s for each pairs Why not make a collection of bfObjects?
+	#
 	rs <- numeric()
 	ns <- numeric()
 	BF10post <- numeric()
 	
-	
 	for (i in .indices(options$pairs)) {
-	
-		index <- NULL
-	
-		pair <- options$pairs[[i]]
-		
-		tablePairs[[length(tablePairs)+1]] <- paste(pair, collapse=" - ")
+	    index <- NULL
+	    pair <- options$pairs[[i]]
+	    tablePairs[[length(tablePairs)+1]] <- paste(pair, collapse=" - ")
 	
 		if (pair[[1]] == "" || pair[[2]] == "") {
-		
-			p1 <- ifelse(pair[[1]] != "", pair[[1]], "...") 
+		    p1 <- ifelse(pair[[1]] != "", pair[[1]], "...") 
 			p2 <- ifelse(pair[[2]] != "", pair[[2]], "...")
 			
-			pair.statuses[[i]] <- list(ready=FALSE, error=FALSE, unplotable=TRUE, unplotableScatter=TRUE)
-			
+			pairStatuses[[i]] <- list(ready=FALSE, error=FALSE, unplotable=TRUE, unplotableScatter=TRUE)
 			result <- list(.variable1=p1, .separator="-", r="", .variable2=p2, BF="")
-		
 		} else {
-			
-			if (perform == "init") {
-			
-				if (!is.null(state) && tablePairs[[i]] %in% state$tablePairs && !is.null(diff) && (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
+		    if (perform == "init") {
+		        if (!is.null(state) && tablePairs[[i]] %in% state$tablePairs && !is.null(diff) && (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 					&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$corcoefficient == FALSE))) {
-				
-					stateIndex <- which(state$tablePairs == paste(pair, collapse=" - "))[1]
-					
-					pair.statuses[[i]] <- state$pairStatuses[[stateIndex]]
+		            
+		            stateIndex <- which(state$tablePairs == paste(pair, collapse=" - "))[1]
+		            pairStatuses[[i]] <- state$pairStatuses[[stateIndex]]
 				
 					if (state$errorFootnotes[stateIndex] == "no") {
-				
-						result <- state$results$correlation$data[[stateIndex]]
-					
+					    result <- state$results$correlation$data[[stateIndex]]
 					} else {
-					
-						index2 <- .addFootnote(footnotes, state$errorFootnotes[stateIndex])
-						
-						errorFootnotes[i] <- state$errorFootnotes[stateIndex]
-						
-						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(NaN), BF=.clean(NaN), .footnotes=list(r=list(index2)))
+					    index2 <- .addFootnote(footnotes, state$errorFootnotes[stateIndex])
+					    errorFootnotes[i] <- state$errorFootnotes[stateIndex]
+					    result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(NaN), BF=.clean(NaN), .footnotes=list(r=list(index2)))
 					}
-				
-				} else {
-					
-					pair.statuses[[i]] <- list(ready=FALSE, error=FALSE, unplotable=TRUE, unplotableScatter=TRUE)
-					
-					result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=".", BF=".")
-				}
-			
-			} else {
-			
-				unplotable <- FALSE
+		        } else {
+		            pairStatuses[[i]] <- list(ready=FALSE, error=FALSE, unplotable=TRUE, unplotableScatter=TRUE)
+		            result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=".", BF=".")
+		        }
+		    } else {
+		        unplotable <- FALSE
 				unplotableMessage <- NULL
 				unplotableScatter <- FALSE
 				unplotableMessageScatter <- NULL
@@ -445,200 +450,162 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					stateIndex <- which(state$tablePairs == paste(pair, collapse=" - "))[1]
 					
 					if (state$errorFootnotes[stateIndex] == "no") {
-					
-						result <- state$results$correlation$data[[stateIndex]]
-					
+					    # TODO: Is this the state retrieval? Retrieval of produced row
+					    #
+					    result <- state$results$correlation$data[[stateIndex]]
 					} else {
-					
-						index2 <- .addFootnote(footnotes, state$errorFootnotes[stateIndex])
-						
-						errorFootnotes[i] <- state$errorFootnotes[stateIndex]
-						
-						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(NaN), BF=.clean(NaN), .footnotes=list(r=list(index2)))
+					    index2 <- .addFootnote(footnotes, state$errorFootnotes[stateIndex])
+					    errorFootnotes[i] <- state$errorFootnotes[stateIndex]
+					    result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(NaN), BF=.clean(NaN), .footnotes=list(r=list(index2)))
 					}
 					
-					pair.statuses[[i]] <- state$pairStatuses[[stateIndex]]
-					
+					pairStatuses[[i]] <- state$pairStatuses[[stateIndex]]
 					BF10post[i] <- state$BF10post[stateIndex]
 					rs[i] <- state$rs[stateIndex]
 					ns[i] <- state$ns[stateIndex]
-				
 				} else {
-					
-					subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])) )
-					subDataSet <- na.omit(subDataSet)
-					
-					v1 <- subDataSet[[ .v(pair[[1]]) ]]
-					v2 <- subDataSet[[ .v(pair[[2]]) ]]
-					
-					#----------------------- compute r & BF ----------------------#
-					some.r <- cor(v1, v2)
-					if(useKendall){some.r <- cor(v1,v2,method = "kendall")}
-					some.n <- length(v1)
-
-					if (identical(all.equal(some.r, 1), TRUE) || identical(all.equal(some.r, -1), TRUE)) {
-					
-						unplotable <- TRUE
-						unplotableMessage <- "Sample correlation co-efficient r is 1 or -1"
-					}
-					
-					errorMessage <- NULL
+				    # Data checks TODOTODO: This works well for list wise
+				    errorMessage <- NULL
+				    
+				    errors <- .hasErrors(dataset, perform = perform, message = 'short', 
+				                         type = c('observations','variance', 'infinity'),
+				                         all.target = c(pair[[1]], pair[[2]]), observations.amount = '< 2')
+				    
+				    # 
+				    # if (options$missingValues == "excludeListwise"){
+				    #     errors <- .hasErrors(dataset, perform = perform, message = 'short', 
+				    #                          type = c('observations','variance', 'infinity'),
+				    #                          all.target = c(pair[[1]], pair[[2]]), observations.amount = '< 2')
+				    # } else if (options$missingValues=="excludeAnalysisByAnalysis") {
+				    #     subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])) )
+				    #     subDataSet <- na.omit(subDataSet)
+				    #     
+				    #     errors <- .hasErrors(dataset = subDataSet, perform=perform, message="short", 
+				    #                          type = c('observations','variance', 'infinity'),
+				    #                          all.target = c(pair[[1]], pair[[2]]), observations.amount = '< 2')
+				    # } 
 					
 					# Note: Data and bfs check [start]
-					if (is.na(some.r) || some.n <= 1 || base::any(base::is.infinite(v1)) || base::any(base::is.infinite(v2)) || sd(v1) == 0 || sd(v2) == 0) {
-					
-						# Note: Data: NOT ok, 
-						# 		bf10: can't
-						if (some.n <= 1){
+					if (!identical(errors, FALSE)) {
+					    # Note: Data: NOT ok, 
+					    # bf10: can't compute
+					    errorMessage <- errors$message
+					    unplotable <- TRUE
+					    unplotableMessage <- errors$message
+					    unplotableScatter <- TRUE
+					    unplotableMessageScatter <- errors$message
+					    
+					    obsFootnote <- errors$message
+					    index <- .addFootnote(footnotes, obsFootnote)
 						
-							index <- .addFootnote(footnotes, "Sample correlation co-efficient r is undefined - not enough observations")
-							unplotable <- TRUE
-							unplotableMessage <- "Sample correlation co-efficient r is undefined - not enough observations"
-							errorMessage <- "Sample correlation co-efficient r is undefined - not enough observations"
-							errorFootnotes[i] <- errorMessage
-							
-						} else if (base::any(base::is.infinite(v1)) || base::any(base::is.infinite(v2))) {
-						
-							index <- .addFootnote(footnotes, "Sample correlation co-efficient r is undefined - one (or more) variables contain infinity")
-							unplotable <- TRUE
-							unplotableMessage <- "Sample correlation co-efficient r is undefined - one (or more) variables contain infinity"
-							unplotableScatter <- TRUE
-							unplotableMessageScatter <- "One (or more) variables contain infinity"
-							errorMessage <- "Sample correlation co-efficient r is undefined - one (or more) variables contain infinity"
-							errorFootnotes[i] <- errorMessage
-							
-						} else if (sd(v1) == 0 || sd(v2) == 0) {
-						
-							index <- .addFootnote(footnotes, "Sample correlation co-efficient r is undefined - one (or more) variables do not vary")
-							unplotable <- TRUE
-							unplotableMessage <- "Sample correlation co-efficient r is undefined - one (or more) variables do not vary"
-							errorMessage <- "Sample correlation co-efficient r is undefined - one (or more) variables do not vary"
-							errorFootnotes[i] <- errorMessage
-							
-						}
-						#row.footnotes[[variable.2.name]] <- c(row.footnotes[[variable.name]], list(index))
-						#row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
-						
-						some.r <- NaN
-						some.bf10 <- NaN
-						some.bfPlus0 <- NaN
-						some.bfMin0 <- NaN
-						ns[i] <- some.n
-						rs[i] <- some.r
-						
+					    bfObject <- failedBfObject
 					} else {
-					
-						all.bfs <- list(bf10=NA, bfPlus0=NA, bfMin0=NA)
-						method.number <- 1
-						
-						while (any(is.na(c(all.bfs$bf10, all.bfs$bfPlus0, all.bfs$bfMin0))) && method.number <= 4){
-						
-							# Note: Try all normal methods
-							all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=options$priorWidth, method=method.number)
-							method.number <- method.number + 1
-						}
-						
-						if (any(is.na(all.bfs))){
-						
-							# Note: all normal methods FAILED. Use Jeffreys approximation
-							all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=options$priorWidth, method="jeffreysApprox")
-						}
-						
-						if(useKendall){
-						  all.bfs <- .bfCorrieKernelKendallTau(tau = some.r, n = some.n, kappa=1, var=1)
-						}
-						
-						some.bf10 <- all.bfs$bf10
-						some.bfPlus0 <- all.bfs$bfPlus0
-						some.bfMin0 <- all.bfs$bfMin0
-						# Note: Data: OK, 
-						
-						rs[i] <- some.r
-						ns[i] <- some.n
+					    # Data okay, load data
+					    #
+					    if (options$missingValues=="excludeAnalysisByAnalysis") {
+					        subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])) )
+					        subDataSet <- na.omit(subDataSet)
+					        
+					        v1 <- subDataSet[[ .v(pair[[1]]) ]]
+					        v2 <- subDataSet[[ .v(pair[[2]]) ]]
+					    } else if (options$missingValues == "excludeListwise") {
+					        v1 <- dataset[[ .v(pair[[1]]) ]]
+					        v2 <- dataset[[ .v(pair[[2]]) ]]
+					    }
+					    
+					    #----------------------- compute r & BF ----------------------#
+					    if (usePearson) {
+					        rObs <- cor(v1, v2)
+					    } else if (useKendall) {
+					        rObs <- cor(v1, v2, method="kendall")
+					    }
+					    
+					    nObs <- length(v1)
+					    
+					    # Data check
+					    #
+					    if (identical(all.equal(abs(rObs), 1), TRUE)) {
+					        unplotable <- TRUE
+					        unplotableMessage <- "Sample correlation coefficient r is 1 or -1"
+					    }
+					    
+					    if (usePearson) {
+					        bfObject <- .bfPearsonCorrelation(n=nObs, r=rObs, kappa=options$priorWidth, ciValue=options$ciValue)
+					    } else if (useKendall) {
+					        # TODO Johnny I removed var=1 as default etc
+					        bfObject <- .bfKendallTau(n=nObs, tauObs=rObs, kappa=options$priorWidth, ciValue=options$ciValue)
+					    }
 					}
 					
-					# Note: Assign bfs to be reported
+					
+					# Note: Store for the ith pair
+					#
+					rs[i] <- bfObject$stat
+					ns[i] <- bfObject$n
+					
+					# Extract infor from bfObject
+					# 
 					if (options$hypothesis == "correlated") {
-					
-						some.bf <- some.bf10
-						BF10post[i] <- some.bf
-						
-						if (options$bayesFactorType == "BF01") {
-						
-							some.bf <- 1/some.bf
-							BF10post[i] <- some.bf
-							
+					    someLowerCi <- bfObject$ci$twoSided[1]
+					    someUpperCi <- bfObject$ci$twoSided[3]
+					    
+					    if (options$bayesFactorType=="BF10") {
+					        BF10post[i] <-bfObject$bf10
+					    } else if (options$bayesFactorType == "BF01") {
+							BF10post[i] <- 1/bfObject$bf10
 						} else if (options$bayesFactorType == "LogBF10") {
-						
-							some.bf <- log(some.bf)
+						    BF10post[i] <-log(bfObject$bf10)
 						}
-					
-					
 					} else if (options$hypothesis == "correlatedPositively") {
-					
-						# TODO: Still need to implement this for general rho0, rather than rho0=0
-						some.bf <- some.bfPlus0
-						BF10post[i] <- some.bf
+					    someLowerCi <- bfObject$ci$plusSided[1]
+					    someUpperCi <- bfObject$ci$plusSided[3]
 						
-						if (options$bayesFactorType == "BF01") {
-						
-							some.bf <- 1/some.bf
-							BF10post[i] <- some.bf
-						
+						if (options$bayesFactorType=="BF10") {
+						    BF10post[i] <- bfObject$bfPlus0
+						} else if (options$bayesFactorType == "BF01") {
+							BF10post[i] <- 1/bfObject$bfPlus0
 						} else if (options$bayesFactorType == "LogBF10") {
-						
-							some.bf <- log(some.bf)
+						    BF10post[i] <- log(bfObject$bfPlus0)
 						}
-						
 					} else if (options$hypothesis == "correlatedNegatively") {
-					
-						some.bf <- some.bfMin0
-						BF10post[i] <- some.bf
+					    someLowerCi <- bfObject$ci$minSided[1]
+						someUpperCi <- bfObject$ci$minSided[3]
 						
-						if (options$bayesFactorType == "BF01") {
-						
-							some.bf <- 1/some.bf
-							BF10post[i] <- some.bf
-							
+						if (options$bayesFactorType=="BF10") {
+						    BF10post[i] <- bfObject$bfMin0
+						} else if (options$bayesFactorType == "BF01") {
+						    BF10post[i] <- 1/bfObject$bfMin0
 						} else if (options$bayesFactorType == "LogBF10") {
-						
-							some.bf <- log(some.bf)
+						    BF10post[i] <- log(bfObject$bfMin0)
 						}
 					}
 					
 					if (is.null(errorMessage) && is.infinite(BF10post[i])) {
-					
 						unplotable <- TRUE
 						unplotableMessage <- "Bayes factor is infinity"
-					
 					} else if (is.null(errorMessage) && BF10post[i] == 1 / Inf) {
-					
 						unplotable <- TRUE
 						unplotableMessage <- "The Bayes factor is too small"
 					}
 					
-					
 					if (!is.null(index)) {
-					
-						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(some.r), BF=.clean(some.bf), .footnotes=list(r=list(index)))
-					
+					    result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(bfObject$stat), BF=.clean(BF10post[i]), .footnotes=list(r=list(index)), upperCI=.clean(someUpperCi), lowerCI=.clean(someLowerCi))
 					} else {
-					
-						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(some.r), BF=.clean(some.bf))
+						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(bfObject$stat), BF=.clean(BF10post[i]), upperCI=.clean(someUpperCi), lowerCI=.clean(someLowerCi))
 					}
 					
-					pair.statuses[[i]] <- list(ready=TRUE, error=FALSE, unplotable=unplotable, unplotableMessage=unplotableMessage, unplotableScatter=unplotableScatter, unplotableMessageScatter=unplotableMessageScatter)
+					pairStatuses[[i]] <- list(ready=TRUE, error=FALSE, unplotable=unplotable, unplotableMessage=unplotableMessage, unplotableScatter=unplotableScatter, unplotableMessageScatter=unplotableMessageScatter)
 				}
 			}
 		}
 		
-		correlation.rows[[length(correlation.rows)+1]] <- result
+		correlationRows[[length(correlationRows)+1]] <- result
 	}
+
+	if (length(correlationRows) == 0)
+		correlationRows <- list(list(.variable1="...", .separator="-", .variable2="...", r= "", BF=""))
 	
-	if (length(correlation.rows) == 0)
-		correlation.rows <- list(list(.variable1="...", .separator="-", .variable2="...", r= "", BF=""))
-	
-	correlation[["data"]] <- correlation.rows
+	correlation[["data"]] <- correlationRows
 	correlation[["footnotes"]] <- as.list(footnotes)
 	
 	results[["correlation"]] <- correlation
@@ -657,7 +624,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 			
 			pair <- options$pairs[[i]]
 			
-			status <- pair.statuses[[i]]
+			status <- pairStatuses[[i]]
 			
 			p1 <- ifelse(pair[[1]] != "", pair[[1]], "...") 
 			p2 <- ifelse(pair[[2]] != "", pair[[2]], "...")
@@ -715,14 +682,22 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 						
 						p <- try(silent=FALSE, expr= {
 							
-							image <- .beginSaveImage(530, 400)
-							.plotScatter.Bcorrelationpairs(xVar=vs1, yVar=vs2, xlab=pair[[1]], ylab=pair[[2]])
-							plot[["data"]] <- .endSaveImage(image)
+							# image <- .beginSaveImage(530, 400)
+							# .plotScatter.Bcorrelationpairs(xVar=vs1, yVar=vs2, xlab=pair[[1]], ylab=pair[[2]])
+							# plot[["data"]] <- .endSaveImage(image)
+							
+							.plotFunc <- function() {
+								.plotScatter.Bcorrelationpairs(xVar=vs1, yVar=vs2, xlab=pair[[1]], ylab=pair[[2]])
+							}
+							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+							plot[["convertible"]] <- TRUE
+							plot[["obj"]] <- content[["obj"]]
+							plot[["data"]] <- content[["png"]]
+							
 						})
 						
-						if (class(p) == "try-error") {
-						
-							errorMessage <- .extractErrorMessage(p)
+						if (isTryError(p)) {
+						    errorMessage <- .extractErrorMessage(p)
 							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
 						}
 					} else if (status$unplotableScatter && "unplotableMessageScatter" %in% names(status)) {
@@ -781,16 +756,23 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					
 						p <- try(silent=FALSE, expr= {
 						
-							image <- .beginSaveImage(530, 400)
+							# image <- .beginSaveImage(530, 400)
+							# 
+							# .plotPosterior.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0, addInformation=options$plotPriorAndPosteriorAdditionalInfo, kappa=options$priorWidth,corCoefficient=options$corcoefficient)
+							# 
+							# plot[["data"]] <- .endSaveImage(image)
+							.plotFunc <- function() {
+								.plotPosterior.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0, addInformation=options$plotPriorAndPosteriorAdditionalInfo, kappa=options$priorWidth,corCoefficient=options$corcoefficient)
+							}
+							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+							plot[["convertible"]] <- TRUE
+							plot[["obj"]] <- content[["obj"]]
+							plot[["data"]] <- content[["png"]]
 							
-							.plotPosterior.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0, addInformation=options$plotPriorAndPosteriorAdditionalInfo, kappa=options$priorWidth,corCoefficient=options$corcoefficient)
-							
-							plot[["data"]] <- .endSaveImage(image)
 						})
 						
-						if (class(p) == "try-error") {
-						
-							errorMessage <- .extractErrorMessage(p)
+						if (isTryError(p)) {
+						    errorMessage <- .extractErrorMessage(p)
 							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
 						}
 						
@@ -842,14 +824,23 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					
 						p <- try(silent=FALSE, expr= {
 						
-							image <- .beginSaveImage(530, 400)
+							# image <- .beginSaveImage(530, 400)
+							# 
+							# .plotBF.robustnessCheck.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF10post=BF10post[i], BFH1H0=BFH1H0, kappa=options$priorWidth, corCoefficient=options$corcoefficient)
+							# 
+							# plot[["data"]] <- .endSaveImage(image)
 							
-							.plotBF.robustnessCheck.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF10post=BF10post[i], BFH1H0=BFH1H0, kappa=options$priorWidth, corCoefficient=options$corcoefficient)
+							.plotFunc <- function() {
+								.plotBF.robustnessCheck.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF10post=BF10post[i], BFH1H0=BFH1H0, kappa=options$priorWidth, corCoefficient=options$corcoefficient)
+							}
+							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+							plot[["convertible"]] <- TRUE
+							plot[["obj"]] <- content[["obj"]]
+							plot[["data"]] <- content[["png"]]
 							
-							plot[["data"]] <- .endSaveImage(image)
 						})
 						
-						if (class(p) == "try-error") {
+						if (isTryError(p)) {
 						
 							errorMessage <- .extractErrorMessage(p)
 							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
@@ -910,16 +901,24 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					if (status$unplotable == FALSE) {
 						p <- try(silent=FALSE, expr= {
 						
-							image <- .beginSaveImage(530, 400)
+							# image <- .beginSaveImage(530, 400)
+							# 
+							# .plotSequentialBF.correlation(x=v1, y=v2, oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0, kappa=options$priorWidth,corCoefficient=options$corcoefficient)
+							# 
+							# plot[["data"]] <- .endSaveImage(image)
 							
-							.plotSequentialBF.correlation(x=v1, y=v2, oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0, kappa=options$priorWidth,corCoefficient=options$corcoefficient)
+							.plotFunc <- function() {
+								.plotSequentialBF.correlation(x=v1, y=v2, oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0, kappa=options$priorWidth,corCoefficient=options$corcoefficient)
+							}
+							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+							plot[["convertible"]] <- TRUE
+							plot[["obj"]] <- content[["obj"]]
+							plot[["data"]] <- content[["png"]]
 							
-							plot[["data"]] <- .endSaveImage(image)
 						})
 						
-						if (class(p) == "try-error") {
-						
-							errorMessage <- .extractErrorMessage(p)
+						if (isTryError(p)) {
+						    errorMessage <- .extractErrorMessage(p)
 							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
 						}
 						
@@ -960,7 +959,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	} else {
 	
 		return(list(results=results, status="complete", state=list(options=options, results=results, plotsCorrelation=plots.correlation, plotTypes=plotTypes, plotPairs=plotPairs,
-		pairStatuses=pair.statuses, BF10post=BF10post, tablePairs=tablePairs, errorFootnotes=errorFootnotes, ns=ns, rs=rs), keep=keep))
+		pairStatuses=pairStatuses, BF10post=BF10post, tablePairs=tablePairs, errorFootnotes=errorFootnotes, ns=ns, rs=rs), keep=keep))
 	}
 }
 
@@ -1027,7 +1026,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	
 }
 
-.plotPosterior.correlation <- function(r, n, kappa=1, oneSided= FALSE, BF, BFH1H0, addInformation= TRUE, dontPlotData=FALSE, lwd= 2,corCoefficient="Pearson",
+.plotPosterior.correlation <- function(n, r, kappa=1, oneSided= FALSE, BF, BFH1H0, addInformation= TRUE, dontPlotData=FALSE, lwd= 2,corCoefficient="Pearson",
 										cexPoints= 1.5, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2) {
 	
   useKendall <- corCoefficient == "Kendall"
@@ -1078,30 +1077,24 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	xlabels <- c("-1", "-0.75", "-0.5", "-0.25", "0", "0.25", "0.5", "0.75", "1")
 	
 	# compute 95% credible interval & median:
-	if(usePearson){
+	if (usePearson) {
   	someFit <- .posteriorBetaParameters(n=n, r=r, kappa=kappa)
   	betaA <- someFit$betaA
   	betaB <- someFit$betaB
-  	ci <- .credibleIntervals(betaA, betaB, .95)
-  	
+  	ci <- .computePearsonCredibleInterval(betaA, betaB, .95)
+
   	if (oneSided == FALSE) {
-  	
-  		CIlow <- ci$"0.95"$twoSidedCI[1]
-  		medianPosterior <- ci$"0.95"$twoSidedCI[2]
-  		CIhigh <- ci$"0.95"$twoSidedCI[3]
-  	
+  		CIlow <- ci$twoSided[1]
+  		medianPosterior <- ci$twoSided[2]
+  		CIhigh <- ci$twoSided[3]
   	} else if (oneSided == "right") {
-  	
-  		CIlow <- ci$"0.95"$plusSidedCI[1]
-  		medianPosterior <- ci$"0.95"$plusSidedCI[2]
-  		CIhigh <- ci$"0.95"$plusSidedCI[3]
-  	
+  		CIlow <- ci$plusSided[1]
+  		medianPosterior <- ci$plusSided[2]
+  		CIhigh <- ci$plusSided[3]
   	} else if (oneSided == "left") {
-  	
-  		CIlow <- ci$"0.95"$minSidedCI[1]
-  		medianPosterior <- ci$"0.95"$minSidedCI[2]
-  		CIhigh <- ci$"0.95"$minSidedCI[3]
-  	
+  		CIlow <- ci$minSided[1]
+  		medianPosterior <- ci$minSided[2]
+  		CIhigh <- ci$minSided[3]
   	}
   	
   	if (any(is.na(c(CIlow, medianPosterior, CIhigh))))
@@ -1112,7 +1105,6 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
   	betaApproximation <- FALSE
   	
   	if (oneSided == FALSE) {
-  	
   		priorLine <- .priorRho(rho=rho, kappa=kappa)
   		posteriorLine <- .posteriorRho(rho=rho, n=n, r=r, kappa=kappa)
   		
@@ -1171,28 +1163,28 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
   		}
   	}
 	}
-	if(useKendall){
+	if (useKendall) {
 	  betaApproximation <- FALSE
 	    if (oneSided == FALSE) {
-	    ci <- .credibleIntervalKendallTau(n=n, kentau=r, var = 1, ciValue = 0.95, kappa=kappa, test="two-sided")
+	    ci <- .credibleIntervalKendallTau(n=n, tauObs=r, ciValue = 0.95, kappa=kappa, test="two-sided")
 	    CIlow <- ci[[1]]
 	    medianPosterior <- ci[[2]]
 	    CIhigh <- ci[[3]]
 	    
 	  } else if (oneSided == "right") {
-	    ci <- .credibleIntervalKendallTau(n=n, kentau=r, var = 1, ciValue = 0.95, kappa=kappa, test="positive")
+	    ci <- .credibleIntervalKendallTau(n=n, tauObs=r, ciValue = 0.95, kappa=kappa, test="positive")
 	    CIlow <- ci[[1]]
 	    medianPosterior <- ci[[2]]
 	    CIhigh <- ci[[3]]
 	    
 	  } else if (oneSided == "left") {
-	    ci <- .credibleIntervalKendallTau(n=n, kentau=r, var = 1, ciValue = 0.95, kappa=kappa, test="negative")
+	    ci <- .credibleIntervalKendallTau(n=n, tauObs=r, var = 1, ciValue = 0.95, kappa=kappa, test="negative")
 	    CIlow <- ci[[1]]
 	    medianPosterior <- ci[[2]]
 	    CIhigh <- ci[[3]]
 	  }
 	  
-	  if (any(is.na(c(CIlow, medianPosterior, CIhigh)))){
+	  if (any(is.na(c(CIlow, medianPosterior, CIhigh)))) {
 	    drawCI <- FALSE
 	    }
 	  
@@ -1200,8 +1192,8 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	  
 	  if (oneSided == FALSE) {
 	    
-	    priorLine <- .priorTau(tau = rho, kappa = kappa)
-	    posteriorLine <- .posteriorTau(delta = rho, n = n, kappa = kappa, kentau = r,var = 1, test="two-sided" )
+	    priorLine <- .priorTau(tauPop=rho, kappa=kappa)
+	    posteriorLine <- .posteriorTau(n=n, tauObs=r, tauPop=rho, kappa=kappa, var=1, test="two-sided" )
 
 	    if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
         stop("Posterior is too peaked")
@@ -1209,19 +1201,15 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	    
 	  } else if (oneSided == "right") {
 	    
-	    priorLine <- .priorTauPlus(tau = rho, kappa = kappa)
-	    posteriorLine <- .posteriorTau(delta = rho, n = n, kappa = kappa, kentau = r,var = 1, test="positive" )
+	    priorLine <- .priorTauPlus(tauPop= rho, kappa=kappa)
+	    posteriorLine <- .posteriorTau(n=n, tauObs=r, tauPop=rho, kappa=kappa, var=1, test="positive" )
 	    
 	    if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
 	      stop("Posterior is too peaked")
 	    }
-	    
-	    
 	  } else if (oneSided == "left") {
-	    
-	    priorLine <- .priorTauMin(tau = rho, kappa = kappa)
-	    posteriorLine <- .posteriorTau(delta = rho, n = n, kappa = kappa, kentau = r,var = 1, test="negative" )
-	    
+	    priorLine <- .priorTauMin(tauPop=rho, kappa=kappa)
+	    posteriorLine <- .posteriorTau(n=n, tauObs=r, tauPop=rho, kappa=kappa, var=1, test="negative" )
 	    if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
 	      stop("Posterior is too peaked")
 	    }
@@ -1263,46 +1251,45 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 2.85)
 	}
 	
-	if(usePearson){
+	if (usePearson) {
 	  mtext(expression("Population correlation" ~ rho), side = 1, cex = cexXlab, line= 2.6)
-	}else{mtext(expression("Population correlation" ~ tau), side = 1, cex = cexXlab, line= 2.6)}
+	} else { 
+	    mtext(expression("Population correlation" ~ tau), side = 1, cex = cexXlab, line= 2.6)
+	}
 	
 	
 	evalPosterior <- posteriorLine[posteriorLine > 0]
 	
 	if (oneSided == "right") {
-		
-		heightPosteriorAtZero <- evalPosterior[1]
-		if(usePearson){
-		  points(0, .priorRhoPlus(0,kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)
-		} else if(useKendall){
-		  points(0, .priorTauPlus(0,kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)
+	    heightPosteriorAtZero <- evalPosterior[1]
+	    
+		if (usePearson) {
+		  points(0, .priorRhoPlus(rho=0, kappa=kappa), col="black", pch=21, bg = "grey", cex=cexPoints)
+		} else if (useKendall) {
+		  points(0, .priorTauPlus(tauPop=0, kappa=kappa), col="black", pch=21, bg = "grey", cex=cexPoints)
 		}
 		points(0, heightPosteriorAtZero, col="black", pch=21, bg = "grey", cex= cexPoints)
 		
 	} else if (oneSided == "left") {
-		
 		heightPosteriorAtZero <- evalPosterior[length(evalPosterior)]
-		if(usePearson){
-		  points(0, .priorRhoMin(0,kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)
-		} else if(useKendall){
-		  points(0, .priorTauMin(0,kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)
+		if (usePearson) {
+		  points(0, .priorRhoMin(rho=0, kappa=kappa), col="black", pch=21, bg = "grey", cex=cexPoints)
+		} else if (useKendall) {
+		  points(0, .priorTauMin(tauPop=0, kappa=kappa), col="black", pch=21, bg="grey", cex=cexPoints)
 		}		
-		points(1e-15, heightPosteriorAtZero, col="black", pch=21, bg = "grey", cex= cexPoints)
+		points(1e-15, heightPosteriorAtZero, col="black", pch=21, bg="grey", cex=cexPoints)
 		
 	} else {
-		
 		if (betaApproximation && usePearson) {
-		  points(0, .priorRho(0,kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)
-			points(0, .stretchedBeta(alpha=betaA, beta=betaB, rho=0), col="black", pch=21, bg = "grey", cex= cexPoints)
-		
-		} else if(usePearson) {
-		    points(0, .priorRho(0,kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)
-			  points(1e-15, .posteriorRho(rho=1e-8, n=n, r=r, kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)
-		  
-		} else if(useKendall){
-		    points(1e-15, .posteriorTau(delta=1e-8, n=n, kentau=r, kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)
-		    points(0, .priorTau(0,kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)
+		  points(0, .priorRho(rho=0, kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)
+			points(0, .stretchedBeta(alpha=betaA, beta=betaB, rho=0), col="black", pch=21, bg="grey", cex=cexPoints)
+		} else if (usePearson) {
+		    # Quentin: Will we ever get here?
+		    points(0, .priorRho(rho=0, kappa=kappa), col="black", pch=21, bg="grey", cex=cexPoints)
+		    points(1e-15, .posteriorRho(rho=1e-8, n=n, r=r, kappa=kappa), col="black", pch=21, bg="grey", cex=cexPoints)
+		} else if (useKendall) {
+		    points(1e-15, .posteriorTau(n=n, tauObs=r, tauPop=1e-8, kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)
+		    points(0, .priorTau(tauPop=0, kappa=kappa), col="black", pch=21, bg="grey", cex=cexPoints)
 		}
 	}
 	
@@ -1314,21 +1301,15 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	yCI <- grconvertY(yCI, "ndc", "user")
 	
 	if (drawCI) {
-		
-		arrows(CIlow, yCI, CIhigh, yCI, angle = 90, code = 3, length= 0.1, lwd= lwd)
-		medianText <- formatC(medianPosterior, digits= 3, format="f")
+		arrows(CIlow, yCI, CIhigh, yCI, angle=90, code=3, length= 0.1, lwd= lwd)
+		medianText <- formatC(medianPosterior, digits=3, format="f")
 	}
 	
-	
 	if (addInformation) {
-		
 		if (BFH1H0) {
-		
 			BF10 <- BF
 			BF01 <- 1 / BF10
-			
 		} else {
-		
 			BF01 <- BF
 			BF10 <- 1 / BF01
 		}
@@ -1342,40 +1323,34 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		xx <- min(xticks)
 		
 		if (BF10 >= 1000000 | BF01 >= 1000000) {
-		
 			BF10t <- format(BF10, digits= 4, scientific = TRUE)
 			BF01t <- format(BF01, digits= 4, scientific = TRUE)
 		}
 		
 		if (BF10 < 1000000 & BF01 < 1000000) {
-		
-			BF10t <- formatC(BF10,3, format = "f")
+		    BF10t <- formatC(BF10,3, format = "f")
 			BF01t <- formatC(BF01,3, format = "f")
 		}
 		
 		if (oneSided == FALSE) {
-			
-			text(xx, yy2, bquote(BF[10]==.(BF10t)), cex= cexTextBF, pos = 4)
-			text(xx, yy, bquote(BF[0][1]==.(BF01t)), cex= cexTextBF, pos = 4)
+		    text(xx, yy2, bquote(BF[10]==.(BF10t)), cex=cexTextBF, pos=4)
+			text(xx, yy, bquote(BF[0][1]==.(BF01t)), cex= cexTextBF, pos=4)
 		}
 		
 		if (oneSided == "right") {
-			
-			text(xx, yy2, bquote(BF["+"][0]==.(BF10t)), cex= cexTextBF, pos = 4)
-			text(xx, yy, bquote(BF[0]["+"]==.(BF01t)), cex= cexTextBF, pos = 4)
+		    text(xx, yy2, bquote(BF["+"][0]==.(BF10t)), cex=cexTextBF, pos=4)
+			text(xx, yy, bquote(BF[0]["+"]==.(BF01t)), cex=cexTextBF, pos=4)
 		}
 		
-		if (oneSided == "left") {
-			
-			text(xx, yy2, bquote(BF["-"][0]==.(BF10t)), cex= cexTextBF, pos = 4)
-			text(xx, yy, bquote(BF[0]["-"]==.(BF01t)), cex= cexTextBF, pos = 4)
+		if (oneSided=="left") {
+		    text(xx, yy2, bquote(BF["-"][0]==.(BF10t)), cex=cexTextBF, pos=4)
+			text(xx, yy, bquote(BF[0]["-"]==.(BF01t)), cex=cexTextBF, pos=4)
 		}
 		
 		yy <- grconvertY(0.756 + offsetTopPart, "ndc", "user")
 		yy2 <- grconvertY(0.812 + offsetTopPart, "ndc", "user")
 		
 		if (drawCI) {
-			
 			CIText <- paste("95% CI: [",  bquote(.(formatC(CIlow,3, format="f"))), ", ",  bquote(.(formatC(CIhigh,3, format="f"))), "]", sep="")
 			medianLegendText <- paste("median =", medianText)
 			
@@ -1424,51 +1399,39 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		yy2 <- grconvertY(0.708 + offsetTopPart, "ndc", "user")
 		
 		if (oneSided == FALSE) {
-			
 			text(xx, yy, "data|H1", cex= cexCI)
 			text(xx, yy2, "data|H0", cex= cexCI)
 		}
 		
 		if (oneSided == "right") {
-			
 			text(xx, yy, "data|H+", cex= cexCI)
 			text(xx, yy2, "data|H0", cex= cexCI)
 		}
 		
 		if (oneSided == "left") {
-			
 			text(xx, yy, "data|H-", cex= cexCI)
 			text(xx, yy2, "data|H0", cex= cexCI)
 		}
 	}
 	
 	if (oneSided == "right") {
-		
 		legendPosition <- min(xticks)
  		legend(legendPosition, max(yticks), legend = c("Posterior", "Prior"), lty=c(1,3), bty= "n", lwd = c(lwd,lwd), cex= cexLegend, xjust= 0, yjust= 1)
-		
 	} else if (oneSided == "left") {
-		
 		legendPosition <- max(xticks)
  		legend(legendPosition, max(yticks), legend = c("Posterior", "Prior"), lty=c(1,3), bty= "n", lwd = c(lwd,lwd), cex= cexLegend, xjust= 1, yjust= 1)
-		
 	} else if (oneSided == FALSE) {
-		
-		if (r >= 0) {
-			
-			legendPosition <- min(xticks)
+	    if (r >= 0) {
+	        legendPosition <- min(xticks)
 			legend(legendPosition, max(yticks), legend = c("Posterior", "Prior"), lty=c(1,3), bty= "n", lwd = c(lwd,lwd), cex= cexLegend, xjust= 0, yjust= 1)
-			
 		} else {
 			legendPosition <- max(xticks)
-			legend(legendPosition, max(yticks), legend = c("Posterior", "Prior"), lty=c(1,3), bty= "n", lwd = c(lwd,lwd), cex= cexLegend, xjust= 1, yjust= 1)
-			
+			legend(legendPosition, max(yticks), legend = c("Posterior", "Prior"), lty=c(1,3), bty= "n", lwd = c(lwd,lwd), cex= cexLegend, xjust= 1, yjust= 1)	
 		}
 	}
 }
 
 .makeKappas <- function(n) {
-
 	someKappas <- sin(seq(1.5*pi, 2*pi, length=n))+1
 	someKappas[1] <- someKappas[2]/10
 	someKappas[n] <- 1
@@ -1477,66 +1440,49 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	return(someKappas)
 }
 
-.plotBF.robustnessCheck.correlation <- function(r=NULL, n=NULL, paired=FALSE, BF10post=NULL, kappa=1, callback=function(...) 0, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2,
-												cexYXlab= 1.5,  cexText=1.2, cexLegend= 1.4, lwdAxis= 1.2, cexEvidence= 1.6, BFH1H0 = TRUE, dontPlotData= FALSE,corCoefficient="Pearson") { 
-	
-  useKendall <- corCoefficient == "Kendall"
-  usePearson <- corCoefficient == "Pearson"
+.plotBF.robustnessCheck.correlation <- function(r=NULL, n=NULL, paired=FALSE, BF10post=NULL, kappa=1, callback=function(...) 0, oneSided=FALSE, lwd=2, cexPoints=1.4, cexAxis=1.2,
+                                                cexYXlab= 1.5, cexText=1.2, cexLegend= 1.4, lwdAxis=1.2, cexEvidence=1.6, BFH1H0 =TRUE, dontPlotData=FALSE, corCoefficient="Pearson") { 
+    useKendall <- corCoefficient == "Kendall"
+    usePearson <- corCoefficient == "Pearson"
   
-	par(mar= c(5, 6, 4, 7) + 0.1, las=1)
-	
-	
+	par(mar=c(5, 6, 4, 7) + 0.1, las=1)
+
 	if (dontPlotData) {
-	
-		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
-		
-		axis(1, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, xlab="")
+	    plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
+	    
+	    axis(1, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, xlab="")
 		axis(2, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, ylab="")
 		
-		
 		if (oneSided == FALSE) {
-			
-			if (BFH1H0) {
-				
-				mtext(text = expression(BF[1][0]), side = 2, las=0, cex = cexYXlab, line= 3.1)
-			
-			} else {
-				
+		    if (BFH1H0) {
+		        mtext(text = expression(BF[1][0]), side = 2, las=0, cex = cexYXlab, line= 3.1)
+		    } else {
 				mtext(text = expression(BF[0][1]), side = 2, las=0, cex = cexYXlab, line= 3.1)
 			}
 		}
 		
 		if (oneSided == "right") {
-			
 			if (BFH1H0) {
-				
 				mtext(text = expression(BF["+"][0]), side = 2, las=0, cex = cexYXlab, line= 3.1)
-			
 			} else {
-				
-				mtext(text = expression(BF[0]["+"]), side = 2, las=0, cex = cexYXlab, line= 3.1)
+			    mtext(text = expression(BF[0]["+"]), side = 2, las=0, cex = cexYXlab, line= 3.1)
 			}
 		}
 		
 		if (oneSided == "left") {
-			
-			if (BFH1H0) {
-				
-				mtext(text = expression(BF["-"][0]), side = 2, las=0, cex = cexYXlab, line= 3.1)
+		    if (BFH1H0) {
+		        mtext(text = expression(BF["-"][0]), side = 2, las=0, cex = cexYXlab, line= 3.1)
 			} else {
-				
-				mtext(text = expression(BF[0]["-"]), side = 2, las=0, cex = cexYXlab, line= 3.1)
+			    mtext(text = expression(BF[0]["-"]), side = 2, las=0, cex = cexYXlab, line= 3.1)
 			}
 		}
 		
 		mtext("Stretched beta prior width", side = 1, cex = cexYXlab, line= 2.5)
-		
 		return()
 	}
 	
 	#### get BFs ###
 	kappaValues <- .makeKappas(50)
-	
 	
 	# BF10
 	BF10 <- vector("numeric", length(kappaValues))
@@ -1544,56 +1490,38 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	
 	
 	for (i in seq_along(kappaValues)[-1]) {
-	
-		all.bfs <- list(bf10=NA, bfPlus0=NA, bfMin0=NA)
-		method.number <- 1
-	  if (usePearson) {
-  		while (any(is.na(c(all.bfs$bf10, all.bfs$bfPlus0, all.bfs$bfMin0))) && method.number <= 4) {
-  			
-  			# Note: Try all normal methods
-  			all.bfs <- .bfCorrieKernel(n=n, r=r, kappa=kappaValues[i], method=method.number)
-  			method.number <- method.number + 1
-  			
-  		}
-  		
-  		if (any(is.na(c(all.bfs$bf10, all.bfs$bfPlus0, all.bfs$bfMin0)))) {
-  			
-  			# Note: all normal methods FAILED. Use Jeffreys approximation
-  			all.bfs <- .bfCorrieKernel(n=n, r=r, kappa=kappaValues[i], method="jeffreysApprox")
-  		}
-	  } else if (useKendall) {
-		    all.bfs <- .bfCorrieKernelKendallTau(tau = r, n = n, kappa=kappaValues[i], var=1)
-		}
-		
-		
+	    if (usePearson) {
+	        bfObject <- .bfPearsonCorrelation(n=n, r=r, kappa=kappaValues[i], ciValue=NULL)
+	    } else if (useKendall) {
+	        # TODO (Johnny): I removed var=1, because it's done by default already, 
+	        bfObject <- .bfCorrieKernelKendallTau(n=n, tauObs=r, kappa=kappaValues[i], var=1, ciValue=NULL)
+	    }
+	    
 		if (oneSided == FALSE) {
-			
-			if (all.bfs$bf10 == 0)
-				all.bfs$bf10 <- 1
-			
-			BF10[i] <- all.bfs$bf10
-			
+		    if (bfObject$bf10 == 0) {
+		        bfObject$bf10 <- 1
+		    }
+			BF10[i] <- bfObject$bf10
 		} else if (oneSided == "right") {
-		
-			if (is.na(all.bfs$bfPlus0))
-				all.bfs$bfPlus0 <- 1
-		
-			BF10[i] <- all.bfs$bfPlus0
-			
+			if (is.na(bfObject$bfPlus0)) {
+			    bfObject$bfPlus0 <- 1
+			}
+			BF10[i] <- bfObject$bfPlus0
 		} else if (oneSided == "left") {
-		
-			if (is.na(all.bfs$bfMin0))
-				all.bfs$bfMin0 <- 1
-		
-			BF10[i] <- all.bfs$bfMin0
+			if (is.na(bfObject$bfMin0)) {
+			    bfObject$bfMin0 <- 1
+			}
+		    BF10[i] <- bfObject$bfMin0
 		}
 		
 		
-		if (is.na(BF10[i]))
-			stop("One or more Bayes factors cannot be computed")
-		
-		if (is.infinite(BF10[i]))
-			stop("One or more Bayes factors are infinity")
+		if (is.na(BF10[i])) {
+		    stop("One or more Bayes factors cannot be computed")
+		}
+
+		if (is.infinite(BF10[i])) {
+		    stop("One or more Bayes factors are infinity")
+		}
 	}
 	
 	
@@ -1607,12 +1535,9 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	####################### scale y axis ###########################
 	
 	BF <- c(BF10, BF10user)
-	
 	if (!BFH1H0) {
-		
-		BF <- 1 / BF
+	    BF <- 1 / BF
 		BF10 <- 1 / BF10
-		
 	}
 	
 	# y-axis labels larger than 1
@@ -1620,18 +1545,13 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	i <- 1
 	
 	while (eval(parse(text= y1h[i])) < max(BF10)) {
-		
 		if (grepl(pattern = "e",y1h[i])) {
-			
-			newy <- paste(strsplit(y1h[i], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(y1h[i],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
-		
+		    newy <- paste(strsplit(y1h[i], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(y1h[i],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 		} else {
-			
-			newy <- paste(y1h[i], "0", sep= "")
+		    newy <- paste(y1h[i], "0", sep= "")
 		}
 		
 		if (eval(parse(text=newy)) >= 10^6) {
-			
 			newy <- format(as.numeric(newy), digits= 3, scientific = TRUE)
 		}
 		
@@ -1643,18 +1563,13 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	i <- 1
 	
 	while (eval(parse(text= y3h[i])) < max(BF10)) {
-		
 		if (grepl(pattern = "e",y3h[i])) {
-			
-			newy <- paste(strsplit(y3h[i], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(y3h[i],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
-		
+		    newy <- paste(strsplit(y3h[i], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(y3h[i],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 		} else {
-			
-			newy <- paste(y3h[i], "0", sep= "")
+		    newy <- paste(y3h[i], "0", sep= "")
 		}
 		
 		if (as.numeric(newy) >= 10^6) {
-			
 			newy <- format(as.numeric(newy), digits= 3, scientific = TRUE)
 		}
 		
@@ -1667,15 +1582,12 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	e <- 1
 	
 	for (i in seq_along(yhigh)) {
-		
 		if (i %% 2 == 1) {
-			
 			yhigh[i] <- y1h[o]
 			o <- o + 1
 		}
 		
 		if (i %% 2 == 0) {
-			
 			yhigh[i] <- y3h[e]
 			e <- e + 1
 		}
@@ -1688,18 +1600,13 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	i <- 1
 	
 	while (eval(parse(text= y1l[i])) > min(BF10)) {
-		
 		if (grepl(pattern = "e",y1l[i])) {
-			
 			newy <- paste(strsplit(y1l[i], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(y1l[i],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
-		
 		} else {
-			
 			newy <- paste(y1l[i], "0", sep= "")
 		}
 		
 		if (eval(parse(text= newy)) <= 10^(-6)) {
-			
 			newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 			newy <-  sub("-", "+", x = newy)
 			newy <- paste0("1/", newy)
@@ -1713,14 +1620,10 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	i <- 1
 	
 	while (eval(parse(text= y3l[i])) > min(BF10)) {
-		
 		if (grepl(pattern = "e",y3l[i])) {
-			
 			newy <- paste(strsplit(y3l[i], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(y3l[i],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
-		
 		} else {
-			
-			newy <- paste(y3l[i], "0", sep= "")
+		    newy <- paste(y3l[i], "0", sep= "")
 		}
 		
 		if (newy == "1/3e+9") {
@@ -1728,7 +1631,6 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		}	
 		
 		if (eval(parse(text= newy)) <= 10^(-6) & eval(parse(text= newy)) > 10^(-9)) {
-			
 			newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 			newy <- paste(substring(newy, 1, nchar(newy)-1), as.numeric(substring(newy, nchar(newy), nchar(newy)))-1,sep="")
 			newy <- sub(".33", "", newy)
@@ -1748,15 +1650,12 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		return()
 	
 	for (i in seq_along(ylow)) {
-		
 		if (i %% 2 == 1) {
-			
-			ylow[i] <- y1l[o]
+		    ylow[i] <- y1l[o]
 			o <- o + 1
 		}
 		if (i %% 2 == 0) {
-			
-			ylow[i] <- y3l[e]
+		    ylow[i] <- y3l[e]
 			e <- e + 1
 		}
 	}
@@ -1767,43 +1666,31 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	omit3s <- FALSE
 	
 	if (length(yLab) > 9) {
-		
-		omit3s <- TRUE
+	    omit3s <- TRUE
 		
 		ind <- which(yLab == "3")
-		
 		yLabsHigh <- yLab[ind:length(yLab)]
 		
 		if (length(yLabsHigh) > 1) {
-			
 			yLabsHigh <- yLabsHigh[seq(2, length(yLabsHigh),2)]
-		
 		} else {
-			
 			yLabsHigh <- character(0)
 		}
 		
 		yLabsLow <- yLab[1:(ind-1)]
 		yLabsLow <- yLabsLow[-grep(pattern = "/3", x = yLab)]
-		
 		yLab1s <- c(yLabsLow, yLabsHigh)
 		
 		if (max(BF10) > eval(parse(text= yLab1s[length(yLab1s)]))) {
-			
 			for (i in 1:2) {
-				
 				if (grepl(pattern = "e",yLab1s[length(yLab1s)])) {
-					
 					newy <-  paste(strsplit(yLab1s[length(yLab1s)], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[length(yLab1s)],
 					split = "+", fixed=TRUE)[[1]][2])+1, sep="")
-				
 				} else {
-					
-					newy <- paste(yLab1s[length(yLab1s)], "0", sep= "")
+				    newy <- paste(yLab1s[length(yLab1s)], "0", sep= "")
 				}
 				
 				if (eval(parse(text=newy)) >= 10^6) {
-					
 					newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 				}
 				
@@ -1812,19 +1699,14 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		}
 		
 		if (max(BF10) > eval(parse(text= yLab1s[length(yLab1s)-1]))) {
-			
 			if (grepl(pattern = "e",yLab1s[length(yLab1s)])) {
-					
-				newy <-  paste(strsplit(yLab1s[length(yLab1s)], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[length(yLab1s)],
+			    newy <-  paste(strsplit(yLab1s[length(yLab1s)], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[length(yLab1s)],
 				split = "+", fixed=TRUE)[[1]][2])+1, sep="")
-			
 			} else {
-					
 				newy <- paste(yLab1s[length(yLab1s)], "0", sep= "")
 			}
 			
 			if (eval(parse(text=newy)) >= 10^6) {
-				
 				newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 			}
 			
@@ -1832,29 +1714,22 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		}
 		
 		if (yLab1s[1] == "1") {
-			
 			yLab1s <- c(paste0(yLab1s[1], "/", "10"), yLab1s)
 		}
+		
 		if (yLab1s[length(yLab1s)] == "1") {
-			
 			yLab1s <- c(yLab1s, "10")
 		}
 		
 		if (min(BF10) < eval(parse(text= yLab1s[1]))) {
-			
 			for (i in 1:2) {
-				
 				if (grepl(pattern = "e",yLab1s[1])) {
-					
 					newy <- paste(strsplit(yLab1s[1], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[1],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
-				
 				} else {
-					
 					newy <- paste(yLab1s[1], "0", sep= "")
 				}
 				
 				if (eval(parse(text= newy)) <= 10^(-6)) {
-					
 					newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 					newy <-  sub("-", "+", x = newy)
 					newy <- substring(newy, nchar(newy)-4, nchar(newy))
@@ -1866,24 +1741,18 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		}
 		
 		if (min(BF10) < eval(parse(text= yLab1s[2]))) {
-			
 			if (grepl(pattern = "e",yLab1s[1])) {
-				
-				newy <- paste(strsplit(yLab1s[1], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[1],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
-			
+			    newy <- paste(strsplit(yLab1s[1], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[1],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 			} else {
-				
-				newy <- paste(yLab1s[1], "0", sep= "")
+			    newy <- paste(yLab1s[1], "0", sep= "")
 			}
 				
 			if (eval(parse(text= newy)) <= 10^(-6)) {
-				
 				newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 				newy <-  sub("-", "+", x = newy)
 				newy <- substring(newy, nchar(newy)-4, nchar(newy))
 				newy <- paste0("1/", newy)
 			}
-			
 			
 			yLab1s <- c(newy, yLab1s)
 		}
@@ -1895,83 +1764,68 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		return()
 	
 	while (length(yLab) > 9) {
-		
 		ind <- which(yLab == "1")
 		
 		if (ind == 1) {
-			
 			yLabLow <- character(0)
-			
 		} else {
-			
 			yLabLow <- yLab[1:(ind-1)]
 		}
 		
 		if (ind == length(yLab)) {
-			
 			yLabHigh <- character(0)
-			
 		} else {
-			
-			yLabHigh <- yLab[(ind+1):length(yLab)]
+		    yLabHigh <- yLab[(ind+1):length(yLab)]
 		}
 		
 		if (length(yLabLow) > 1) {
-			
 			yLabLow <- yLabLow[seq(length(yLabLow)-1, 1, -2)]
-			
 		} else {
-			
-			yLabLow <- yLabLow
+		    yLabLow <- yLabLow
 		}
 		
 		
 		if (length(yLabHigh) > 1) {
-			
 			yLabHigh <- yLabHigh[seq(2, length(yLabHigh), 2)]
-			
 		} else {
-			
-			yLabHigh <- yLabHigh
+		    yLabHigh <- yLabHigh
 		}
 		
 		if (length(yLabLow) == 1) {
-			
 			yLabLow <- paste("1/", yLabHigh[1], sep="")
 		}
+		
 		if (length(yLabHigh) == 1) {
-			
 			yLabHigh <- strsplit(x = yLabLow[1], "/", fixed=TRUE)[[1]][2]
 		}
 		
 		yLab <- c(rev(yLabLow), "1", yLabHigh)
 	}
 	
-	if ( ! .shouldContinue(callback()))
-		return()
 	
+	if ( ! .shouldContinue(callback())) {
+	    return()
+	}
 	
 	while (eval(parse(text=yLab[2])) > min(BF10)) {
-	
-		interval <- as.numeric(strsplit(format(eval(parse(text=yLab[1])), digits=3, scientific=TRUE), "-", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(format(eval(parse(text=yLab[2])), digits=3, scientific=TRUE), "-", fixed= TRUE)[[1]][2])
+	    interval <- as.numeric(strsplit(format(eval(parse(text=yLab[1])), digits=3, scientific=TRUE), "-", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(format(eval(parse(text=yLab[2])), digits=3, scientific=TRUE), "-", fixed= TRUE)[[1]][2])
 		pot <- as.numeric(strsplit(format(eval(parse(text=yLab[1])), digits=3, scientific=TRUE), "-", fixed= TRUE)[[1]][2]) + interval
 		
-		if (nchar(pot) == 1)
-			pot <- paste("0", pot, sep="")
+		if (nchar(pot) == 1) {
+		    pot <- paste("0", pot, sep="")
+		}
 		
 		newy <- paste("1/1e", "+", pot, sep="")
 		yLab <- c(newy, yLab)
-		
 	}
 	
-	
 	while (eval(parse(text=yLab[length(yLab)-1])) < max(BF10)) {
-		
-		interval <- as.numeric(strsplit(format(eval(parse(text=yLab[length(yLab)])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(format(eval(parse(text=yLab[length(yLab)-1])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][2])
+	    interval <- as.numeric(strsplit(format(eval(parse(text=yLab[length(yLab)])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(format(eval(parse(text=yLab[length(yLab)-1])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][2])
 		pot <- as.numeric(strsplit(format(eval(parse(text=yLab[length(yLab)])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][2]) + interval
 		
-		if (nchar(pot) == 1)
-			pot <- paste("0", pot, sep="")
+		if (nchar(pot) == 1) {
+		    pot <- paste("0", pot, sep="")
+		}
 		
 		newy <- paste(strsplit(format(eval(parse(text=yLab[length(yLab)])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][1], "+", pot, sep="")
 		yLab <- c( yLab, newy)
@@ -1979,31 +1833,26 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	
 	
 	yAt <- vector("numeric", length(yLab))
-	
 	for (i in seq_along(yLab)) {
-		
-		yAt[i] <- log(eval(parse(text= yLab[i])))
+	    yAt[i] <- log(eval(parse(text= yLab[i])))
 	}
 	
 	
 	####################### plot ###########################
-	
 	xLab <- pretty(range(kappaValues))
 	xlim <- range(xLab)
 	ylow <- log(eval(parse(text= yLab[1])))
 	yhigh <- log(eval(parse(text= yLab[length(yLab)])))
 	ylim <- c(ylow, yhigh)
 	
-	plot(1,1, xlim= xlim, ylim= ylim, ylab= "", xlab="", type= "n", axes= FALSE)
+	plot(1, 1, xlim= xlim, ylim= ylim, ylab= "", xlab="", type= "n", axes= FALSE)
 	
 	
 	for (i in seq_along(yAt)) {
-		
-		lines(x= xlim, y= rep(yAt[i], 2), col='darkgrey', lwd= 1.3, lty=2)
+		lines(x=xlim, y=rep(yAt[i], 2), col='darkgrey', lwd= 1.3, lty=2)
 	}
 	
 	lines(xlim, rep(0, 2), lwd= lwd)
-	
 	axis(1, at= xLab, labels = xLab, cex.axis= cexAxis, lwd= lwdAxis)
 	axis(2, at= yAt, labels= yLab, cex.axis= cexAxis, lwd= lwdAxis)
 	
@@ -2014,22 +1863,25 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	yAthigh <- yAt[yAt >= 0]
 	
 	if (!omit3s & eval(parse(text= yLab[1])) >= 1/300 & eval(parse(text= yLab[length(yLab)])) <= 300) {
-		
-		for (i in 1:(length(yAthigh)-1)) {
+	    for (i in 1:(length(yAthigh)-1)) {
 			yy <- mean(c(yAthigh[i], yAthigh[i+1]))
 			
 			if (yAthigh[i] == log(1)) {
 				text(x = xx, yy,"Anecdotal", pos= 4, cex= cexText)
 			}
+			
 			if (yAthigh[i] == log(3)) {
 				text(x = xx, yy,"Moderate", pos= 4, cex= cexText)
 			}
+			
 			if (yAthigh[i] == log(10)) {
 				text(x = xx, yy,"Strong", pos= 4, cex= cexText)
 			}
+			
 			if (yAthigh[i] == log(30)) {
 				text(x = xx, yy,"Very strong", pos= 4, cex= cexText)
 			}
+			
 			if (yAthigh[i] == log(100)) {
 				text(x = xx, yy,"Extreme", pos= 4, cex= cexText)
 			}
@@ -2038,8 +1890,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		yAtlow <- rev(yAt[yAt <= 0])
 		
 		for (i in 1:(length(yAtlow)-1)) {
-		
-			yy <- mean(c(yAtlow[i], yAtlow[i+1]))
+		    yy <- mean(c(yAtlow[i], yAtlow[i+1]))
 			
 			if (yAtlow[i] == log(1)) {
 				text(x = xx, yy,"Anecdotal", pos= 4, cex= cexText)
@@ -2066,37 +1917,25 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	}
 	
 	if (omit3s) {
-	
-		if (eval(parse(text= yLab[1])) <= 1/10^6) {
-			
-			line <- 4.75
-			
-		} else {
-			
-			line <- 4.3
+	    if (eval(parse(text= yLab[1])) <= 1/10^6) {
+	        line <- 4.75
+	    } else {
+	        line <- 4.3
 		}
 		
 		if (oneSided == FALSE) {
-			
 			if (BFH1H0) {
-				
-				mtext(text = expression(BF[1][0]), side = 2, las=0, cex = cexYXlab, line= line)
-				
+			    mtext(text = expression(BF[1][0]), side = 2, las=0, cex = cexYXlab, line= line)
 			} else {
-				
-				mtext(text = expression(BF[0][1]), side = 2, las=0, cex = cexYXlab, line= line)
+			    mtext(text = expression(BF[0][1]), side = 2, las=0, cex = cexYXlab, line= line)
 			}
 		}
 		
 		if (oneSided == "right") {
-			
 			if (BFH1H0) {
-				
 				mtext(text = expression(BF["+"][0]), side = 2, las=0, cex = cexYXlab, line= line)
-				
 			} else {
-				
-				mtext(text = expression(BF[0]["+"]), side = 2, las=0, cex = cexYXlab, line= line)
+			    mtext(text = expression(BF[0]["+"]), side = 2, las=0, cex = cexYXlab, line= line)
 			}
 		}
 		
@@ -2280,7 +2119,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	
 	if (oneSided == FALSE) {
 	
-		if( BF10userText >= BF01userText) {
+		if ( BF10userText >= BF01userText) {
 			userBF <- bquote(BF[10]==.(BF10usert))
 		} else {
 			userBF <- bquote(BF[0][1]==.(BF01usert))
@@ -2399,42 +2238,28 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		
 		} else {
 		
-			some.n <- i
-	
-			all.bfs <- list(bf10=NA, bfPlus0=NA, bfMin0=NA)
-			method.number <- 1
+			nObs <- i
 			
 			if (usePearson) {
-			  some.r <- cor(x[1:i], y[1:i])
-			  while (any(is.na(c(all.bfs$bf10, all.bfs$bfPlus0, all.bfs$bfMin0))) && method.number <= 4) {
-			    
-			    # Note: Try all normal methods
-			    all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=kappa, method=method.number)
-			    method.number <- method.number + 1
-			    
-			  }
-			  
-			  if (any(is.na(c(all.bfs$bf10, all.bfs$bfPlus0, all.bfs$bfMin0)))) {
-			    
-			    # Note: all normal methods FAILED. Use Jeffreys approximation
-			    all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=kappa, method="jeffreysApprox")
-			  }
+			    rObs <- cor(x[1:i], y[1:i])
+			    bfObject <- .bfPearsonCorrelation(n=nObs, r=rObs, kappa=kappa, ciValue=NULL)
 			} else if (useKendall) {
-			  some.r <- cor(x[1:i], y[1:i],method="kendall")
-			  all.bfs <- .bfCorrieKernelKendallTau(tau = some.r, n = some.n, kappa=kappa, var=1)
+			    rObs <- cor(x[1:i], y[1:i], method="kendall")
+			    # TODO Johnny: I removed var=1 as it's default
+			    bfObject <- .bfKendallTau(n=nObs, tauObs=rObs, kappa=kappa, ciValue=NULL)
 			}
 			
 			if (oneSided == FALSE) {
 				
-				BF10[i] <- all.bfs$bf10
+				BF10[i] <- bfObject$bf10
 				
 			} else if (oneSided == "right") {
 			
-				BF10[i] <- all.bfs$bfPlus0
+				BF10[i] <- bfObject$bfPlus0
 				
 			} else if (oneSided == "left") {
 			
-				BF10[i] <- all.bfs$bfMin0
+				BF10[i] <- bfObject$bfMin0
 			}
 			
 			if (is.na(BF10[i]))
@@ -2647,7 +2472,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 			
 			for (i in 1:2) {
 				
-				if(grepl(pattern = "e",yLab1s[length(yLab1s)])){
+				if (grepl(pattern = "e",yLab1s[length(yLab1s)])) {
 					
 					newy <-  paste(strsplit(yLab1s[length(yLab1s)], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[length(yLab1s)], split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 					
@@ -3032,15 +2857,11 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		}
 	}
 	
-	if (oneSided == "right"){
-		
+	if (oneSided == "right") {
 		if (BFH1H0) {
-			
-			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
-			
+		    text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
 		} else {
-			
-			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H+", cex= cexText)
+		    text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H+", cex= cexText)
 		}
 	}
 	
@@ -3225,96 +3046,4 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	}
 }
 
-
-
-# Prior specification Kendall's Tau
-.scaledBetaTau <- function(tau, alpha=1, beta=1){
-  result <-   ((pi*2^(-2*alpha))/beta(alpha,alpha))  * cos((pi*tau)/2)^(2*alpha-1)
-  return(result)
-}
-
-.priorTau <- function(tau, kappa){
-  .scaledBetaTau(tau, alpha = (1/kappa), beta = (1/kappa))
-}
-
-.priorTauPlus <- function(tau, kappa=1) {
-  non.negative.index <- tau >=0
-  less.than.one.index <- tau <=1
-  value.index <- as.logical(non.negative.index*less.than.one.index)
-  result <- tau*0
-  result[value.index] <- 2*.priorTau(tau[value.index], kappa)
-  return(result)
-}
-
-.priorTauMin <- function(tau, kappa=1) {
-  negative.index <- tau <=0
-  greater.than.min.one.index <- tau >= -1
-  value.index <- as.logical(negative.index*greater.than.min.one.index)
-  result <- tau*0
-  result[value.index] <- 2*.priorTau(tau[value.index], kappa)
-  return(result)
-}
-
-
-# Posterior specification Kendall's Tau
-.postDensKendallTau <- function(delta,Tstar,n,kappa=1,var=var,test="two-sided"){ 
-  if(test == "two-sided"){priorDens <- .priorTau(delta,kappa)
-  } else if(test == "positive"){priorDens <- .priorTauPlus(delta,kappa)
-  } else if(test == "negative"){priorDens <- .priorTauMin(delta,kappa)}
-  priorDens <- .priorTau(delta,kappa)
-  dens <- dnorm(Tstar,(1.5*delta*sqrt(n)),sd=sqrt(var))* priorDens
-  return(dens)
-}
-.posteriorTau <- function(delta,kentau,n,kappa=1,var=1,test="two-sided"){
-  Tstar <- (kentau * ((n*(n-1))/2))/sqrt(n*(n-1)*(2*n+5)/18)
-  if(test == "two-sided"){lims <- c(-1,1)
-  } else if(test == "positive"){lims <- c(0,1)
-  } else if(test == "negative"){lims <- c(-1,0)}
-  logicalCensor <- (delta >= lims[1] & delta <= lims[2])
-  dens <- logicalCensor*.postDensKendallTau(delta,Tstar,n,kappa,var,test=test)/
-    integrate(function(delta){.postDensKendallTau(delta,Tstar,n,kappa,var,test=test)},lims[1],lims[2])$value
-} 
-
-# Bayes factor computation Kendall's Tau
-.bfCorrieKernelKendallTau <- function(tau, n, kappa=1, var=1, ciValue=0.95){ 
-  tempList <- list(vector())
-  output <- list(n=n, r=tau, bf10=NA, bfPlus0=NA, bfMin0=NA, methodNumber=NA, betaA=NA, betaB=NA, 
-                 twoSidedTooPeaked=FALSE, plusSidedTooPeaked=FALSE, minSidedTooPeaked=FALSE, 
-                 CIs=tempList, ciValues=ciValue, acceptanceRate=1)
-  if (any(is.na(tau)) ){
-    output$methodNumber <- 6
-    output$twoSidedTooPeaked <- TRUE 
-    output$plusSidedTooPeaked <- TRUE 
-    output$minSidedTooPeaked <- TRUE
-    return(output)
-  }
-  if (kappa <= 0.002){
-    output$bf10 <- 1
-    output$bfPlus0 <- 1
-    output$bfMin0 <- 1
-    output$methodNumber <- 6
-    return(output)
-  }
-  
-  output$bf10 <- .priorTau(0,kappa)/.posteriorTau(0,tau,n,kappa=kappa,var=var,test="two-sided")
-  output$bfPlus0 <- .priorTauPlus(0,kappa)/.posteriorTau(0,tau,n,kappa=kappa,var=var,test="positive")
-  output$bfMin0 <- .priorTauMin(0,kappa)/.posteriorTau(0,tau,n,kappa=kappa,var=var,test="negative")
-  output$methodNumber <- NA
-  return(output)
-}
-
-# Compute credible intervals kendalls tau
-.credibleIntervalKendallTau <- function(kentau,n,kappa=1,var=1, test="two-sided", ciValue = 0.95){
-  nSeqs <- 1000
-  lowCI <- (1-ciValue)/2
-  upCI <- (1+ciValue)/2
-  taus <- seq(-1,1,length.out = (nSeqs-1))
-  densVals <- .posteriorTau(taus, kentau, n, kappa = kappa, var = var, test = test)
-  densVals <- cumsum((densVals[1:(nSeqs-1)]+densVals[2:nSeqs])*0.5*(taus[2]-taus[1]))
-  #densVals <- cumsum(densVals)/sum(densVals)
-  lowerCI <- taus[which(densVals>=lowCI)[1]]
-  upperCI <- taus[which(densVals>=upCI)[1]]
-  median <- taus[which(densVals>=0.5)[1]]
-  return(list(lowerCI = lowerCI, median = median, upperCI = upperCI))
-}
 

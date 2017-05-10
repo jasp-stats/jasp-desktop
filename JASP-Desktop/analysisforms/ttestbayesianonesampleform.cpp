@@ -37,10 +37,10 @@ TTestBayesianOneSampleForm::TTestBayesianOneSampleForm(QWidget *parent) :
 	variablesModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	ui->variables->setModel(variablesModel);
 	ui->variables->setDoubleClickTarget(ui->listAvailableFields);
-
 	ui->buttonAssign_main_fields->setSourceAndTarget(ui->listAvailableFields, ui->variables);
 
-	ui->priorWidth->setLabel("Prior width");
+	// default
+	ui->subjectivePriors->hide();
 }
 
 TTestBayesianOneSampleForm::~TTestBayesianOneSampleForm()

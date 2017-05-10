@@ -40,14 +40,6 @@ Analysis::Analysis(int id, string name, Options *options, Version version, bool 
 	_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this, _1));
 
 	_status = Empty;
-
-	for (size_t i = 0; i < _options->size(); ++i)
-	{
-		Option *option = _options->get(i);
-		OptionVariables *variable = dynamic_cast<OptionVariables *>(option);
-		if (variable != NULL)
-			_variables.push_back(variable);
-	}
 }
 
 Analysis::~Analysis()
@@ -74,6 +66,12 @@ void Analysis::setResults(Json::Value results)
 {
 	_results = results;
 	resultsChanged(this);
+}
+
+void Analysis::setImageResults(Json::Value results)
+{
+	_results = results;
+	imageSaved(this);
 }
 
 void Analysis::setUserData(Json::Value userData, bool silient)
@@ -112,6 +110,8 @@ Analysis::Status Analysis::parseStatus(string name)
 		return Analysis::Complete;
 	else if (name == "aborted")
 		return Analysis::Aborted;
+	else if (name == "SaveImg")
+		return Analysis::SaveImg;
 	else if (name == "exception")
 		return Analysis::Exception;
 	else
@@ -146,6 +146,8 @@ Json::Value Analysis::asJSON() const
 	case Analysis::Aborted:
 		status = "aborted";
 		break;
+	case Analysis::SaveImg:
+		status = "SaveImg";
 	case Analysis::Exception:
 		status = "exception";
 		break;
@@ -246,8 +248,12 @@ int Analysis::callback(Json::Value results)
 	}
 }
 
-const std::vector<OptionVariables *> &Analysis::getVariables() const
+void Analysis::setSaveImgOptions(Json::Value &options)
 {
-	return _variables;
+	_saveImgOptions = options;
 }
 
+Json::Value Analysis::getSaveImgOptions()
+{
+	return _saveImgOptions;
+}

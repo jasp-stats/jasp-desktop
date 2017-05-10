@@ -34,7 +34,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 	} else {
 
-		dataset <- .vdf(dataset, columns.as.numeric=NULL, columns.as.factor=variables)
+		dataset <- .vdf(dataset, columns.as.numeric=variables, columns.as.factor=NULL)
 
 	}
 
@@ -48,7 +48,8 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 		diff <- .diff(options, state$options)  # compare old and new options
 
-		if (is.list(diff) && diff[['variables']] == FALSE && diff[['reverseScaledItems']] == FALSE) {
+		if (is.list(diff) && diff[['variables']] == FALSE && diff[['reverseScaledItems']] == FALSE
+			&& diff[['missingValues']] == FALSE) {
 
 			resultsAlpha <- state$resultsAlpha
 
@@ -73,28 +74,15 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 		# check for errors
 		anyErrors <- .hasErrors(dataset = dataset, perform = perform,
-								type = c("infinity", "variance"))
+								type = c("infinity", "variance", "observations"),
+								observations.amount = " < 3",
+								exitAnalysisIfErrors = TRUE)
 
-		doUpdate <- base::identical(anyErrors, FALSE)
+		resultsAlpha <- .reliabilityResults(dataset, options, variables, perform)
 
-		if (doUpdate) { # actually do reliability analysis
-
-			resultsAlpha <- .reliabilityResults(dataset, options, variables, perform)
-
-		} else { # show error message
-
-			errorList <- list(errorType = "badData", errorMessage = anyErrors$message)
-
-		}
-
-	} else { # implies results are retrieved from state
-
-		doUpdate <- TRUE
-
-	}
+	} # otherwise results retrieved from state
 
 	results[["reliabilityScale"]] <- .reliabalityScaleTable(resultsAlpha, dataset, options, variables, perform)
-	results[["reliabilityScale"]][["error"]] <- errorList
 
 	if (options$alphaItem || options$gutmannItem || options$itemRestCor || options$meanItem || options$sdItem || options[["mcDonaldItem"]]) {
 		results[["reliabilityItemsObj"]] <- list(title="Item Statistics", reliabilityItems=.reliabalityItemsTable(resultsAlpha, options, variables, perform))
@@ -120,41 +108,61 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 .reliabilityResults <- function (dataset, options, variables, perform) {
 
-	r <- NULL
+	relyFit <- NULL
 
 	if (perform == "run" && !is.null(variables) && length(variables) > 1) {
 
-		d <- as.matrix(dataset[complete.cases(dataset), ])
+		dataAsMatrix <- as.matrix(dataset)
+
+		# missing values: psych analyses by default use pairwise deletion, so we only
+		# need to do something if the user wants listwise deletion
+		if (options[["missingValues"]] == "excludeCasesListwise") {
+
+			dataAsMatrix <- dataAsMatrix[complete.cases(dataAsMatrix), ]
+
+		}
 
 		# generate key for reverse scaled items
 		key <- NULL
 		if (length(options$reverseScaledItems) > 0) {
 
-			key <- .v(unlist(options$reverseScaledItems))
+			key <- rep(1, length(variables))
+			key[match(.v(unlist(options$reverseScaledItems)), colnames(dataAsMatrix))] <- -1
 
 		}
 
 		# calculate chronbach alpha and gutmanns lambda6
-		r <- psych::alpha(d, key = key)
+		relyFit <- psych::alpha(dataAsMatrix, key = key)
+
+		# calculate the greatest lower bound -- only possible for more than 2 variables.
+		if (length(variables) < 3) {
+
+			relyFit[["glb"]] <- "."
+
+		} else { # try since the glb is error prone icm reverse scaled items. Requires further investigation/ this might be a bug in psych.
+
+			relyFit[["glb"]] <- try(psych::glb(r = dataAsMatrix, key = key)[["glb.max"]], silent = TRUE)
+
+		}
 
 		# calculate McDonalds omega
-		omega <- psych::omega(d, 1, flip = FALSE)[["omega.tot"]]
+		omega <- psych::omega(dataAsMatrix, 1, flip = FALSE, plot = FALSE)[["omega.tot"]]
 
 		# calculate McDonalds omega if item dropped
 		omegaDropped <- NULL
-		if (ncol(d) > 2) {
-			omegaDropped = numeric(length = ncol(d))
-			for (i in 1:ncol(d)) {
-				omegaDropped[i] <- psych::omega(d[, -i], 1, flip = FALSE)$omega.tot
+		if (ncol(dataAsMatrix) > 2) {
+			omegaDropped <- numeric(length = ncol(dataAsMatrix))
+			for (i in 1:ncol(dataAsMatrix)) {
+				omegaDropped[i] <- psych::omega(dataAsMatrix[, -i], 1, flip = FALSE, plot = FALSE)$omega.tot
 			}
 		}
 
-		r[["omega"]] <- omega
-		r[["omegaDropped"]] <- omegaDropped
+		relyFit[["omega"]] <- omega
+		relyFit[["omegaDropped"]] <- omegaDropped
 
 	}
 
-	return(r)
+	return(relyFit)
 
 }
 
@@ -180,7 +188,10 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		fields[[length(fields) + 1]] <- list(name="lambda", title="Gutmann's \u03BB6", type="number", format="sf:4;dp:3")
 
 	if (options[["mcDonaldScale"]])
-		fields[[length(fields) + 1]] <- list(name="omega", title="McDonalds' \u03C9", type="number", format="sf:4;dp:3")
+		fields[[length(fields) + 1]] <- list(name="omega", title="McDonald's \u03C9", type="number", format="sf:4;dp:3")
+
+	if (options[["glbScale"]])
+		fields[[length(fields) + 1]] <- list(name="glb", title="Greatest lower bound", type="number", format="sf:4;dp:3")
 
 	if (options[["averageInterItemCor"]])
 		fields[[length(fields) + 1]] <- list(name="rho", title="Average interitem correlation", type="number", format="sf:4;dp:3")
@@ -194,20 +205,37 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 		footnotes <- .newFootnotes()
 
-		# is.null can be removed once options[["listwise"]] exists.
-		if (!is.null(options[["listwise"]])) {
-			exclwise = ifelse(options[["listwise"]], " listwise", " pairwise")
+		if (options[["missingValues"]] == "excludeCasesListwise") {
+
+			exclwise = " listwise"
+
 		} else {
-			exclwise = ""
+
+			exclwise = " pairwise"
+
 		}
 
-		nObs = nrow(dataset)
-		nExcluded = sum(!complete.cases(dataset))
-		nValid = nObs - nExcluded
+		nObs <- nrow(dataset)
+		nExcluded <- sum(!complete.cases(dataset))
+		nValid <- nObs - nExcluded
 
 		# message <- paste("Scale consists of items ", paste0(variables, collapse = ", "))
 		message <- sprintf("Of the observations, %d were used, %d were excluded%s, and %d were provided.",
 						   nValid, nExcluded, exclwise, nObs)
+
+		if (options[["glbScale"]]) {
+
+			if (length(variables) <= 2) {
+
+				message <- paste(message, "Warning: Greatest lower bound can only be calculated for three or more variables.")
+
+			} else if (isTryError(r[["glb"]])) {
+
+				message <- paste(message, "Warning: Greatest lower bound could not be calculated.")
+
+			}
+
+		}
 
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
 
@@ -220,6 +248,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		sd <- NULL
 		rho <- NULL
 		omega <- NULL
+		glb <- NULL
 
 		if (options$alphaScale)
 			alpha <- .clean(r$total$raw_alpha)
@@ -239,13 +268,21 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		if (options[["mcDonaldScale"]])
 			omega <- .clean(r[["omega"]])
 
-		data[[1]] <- list(case="scale", alpha=alpha, lambda=lambda, omega = omega, rho=rho, mu=mu, sd=sd)
+		if (options[["glbScale"]]) {
+			if (r[["glb"]] == "." || isTryError(r[["glb"]])) { # unusable information
+				glb <- "."
+			} else { # a useable value
+				glb <- .clean(r[["glb"]])
+			}
+		}
+
+		data[[1]] <- list(case="scale", alpha=alpha, lambda=lambda, omega = omega, glb = glb, rho=rho, mu=mu, sd=sd)
 
 		table[["status"]] <- "complete"
 
 	} else {
 
-		data[[1]] <- list(case="scale", alpha=".", lambda=".", omega = ".", rho =".", mean=".", sd=".")
+		data[[1]] <- list(case="scale", alpha=".", lambda=".", omega = ".", glb = ".", rho =".", mean=".", sd=".")
 
 	}
 
@@ -281,7 +318,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		fields[[length(fields) + 1]] <- list(name="lambda", title="Gutmann's \u03BB6", type="number", format="sf:4;dp:3", overTitle = overTitle)
 
 	if (options[["mcDonaldItem"]])
-		fields[[length(fields) + 1]] <- list(name="omega", title="McDonalds' \u03C9", type="number", format="sf:4;dp:3", overTitle = overTitle)
+		fields[[length(fields) + 1]] <- list(name="omega", title="McDonald's \u03C9", type="number", format="sf:4;dp:3", overTitle = overTitle)
 
 	table[["schema"]] <- list(fields = fields)
 
@@ -292,6 +329,14 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	if (length(options$reverseScaledItems) > 0) {
 		message <- "reverse-scaled item"
 		.addFootnote(footnotes, symbol = "\u207B", text=message)
+	}
+
+	# can only be computed if there are at least 3 variables.
+	if (options[["mcDonaldItem"]] && length(variables) < 3) {
+
+		message <- "Warning: McDonald's \u03C9 if item dropped can only be calculated for three or more variables."
+		.addFootnote(footnotes, text = message)
+
 	}
 
 	rowNames <- gsub("-","", rownames(r$alpha.drop))
