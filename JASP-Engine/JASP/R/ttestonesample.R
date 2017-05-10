@@ -21,7 +21,7 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
  	state <- .retrieveState()
 
 	variables <- unlist(options$variables)
-	init <- .initializeTTest(dataset, options, perform)
+	init <- .initializeTTest(dataset, options, perform, type = "one-sample")
 	results <- init[["results"]]
 
 	## if the dataset is not null, let's change it a bit
