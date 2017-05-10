@@ -605,7 +605,12 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 	parser.parse(utf8, root);
 
 	QString caption = "Save JASP Image";
+#ifdef __APPLE__
+	//Temporarily disable saving tiff images on the Mac	
+	QString filter = "Portable Network Graphics (*.png);;Encapsulated PostScript (*.eps)";
+#else
 	QString filter = "Portable Network Graphics (*.png);;Tagged Image File Format (*.tiff);;Encapsulated PostScript (*.eps)";
+#endif
     QString selectedFilter;
 
     QString finalPath = QFileDialog::getSaveFileName(this, caption, QString(), filter, &selectedFilter);
