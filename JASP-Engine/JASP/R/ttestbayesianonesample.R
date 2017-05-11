@@ -61,7 +61,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
                                                                            )))
   
   results[[".meta"]] <- meta
-  results[["title"]] <- "Bayesian T-Test"
+  results[["title"]] <- "Bayesian One Sample T-Test"
   
   ttest <- list()
   

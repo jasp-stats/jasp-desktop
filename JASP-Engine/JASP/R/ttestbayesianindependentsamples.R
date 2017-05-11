@@ -57,7 +57,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 																				)))
 	
 	results[[".meta"]] <- meta
-	results[["title"]] <- "Bayesian T-Test"
+	results[["title"]] <- "Bayesian Independent Samples T-Test"
 	
 	
 	state <- .retrieveState()
