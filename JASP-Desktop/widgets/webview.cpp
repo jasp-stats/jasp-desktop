@@ -17,22 +17,25 @@
 //
 
 #include "webview.h"
-#include <QWebFrame>
 
 WebView::WebView(QWidget *parent):
-	QWebView(parent)
+	QWebEngineView(parent)
 {
 
 }
 
 void WebView::paintEvent(QPaintEvent * event)
 {
-	QWebView::paintEvent(event);
+	QWebEngineView::paintEvent(event);
 
-	QWebFrame *frameff = page()->mainFrame();
+	//QWebFrame *frameff = page()->mainFrame();
 
-	int hValue = frameff->scrollBarValue(Qt::Horizontal);
-	int vValue = frameff->scrollBarValue(Qt::Vertical);
+	QPointF pos = page()->scrollPosition();
+	int hValue = pos.x();
+	int vValue = pos.y();
+
+	//int hValue = frameff->scrollBarValue(Qt::Horizontal);
+	//int vValue = frameff->scrollBarValue(Qt::Vertical);
 
 	if (hValue != _lastHorizontalValue || vValue != _lastVerticalValue)
 	{

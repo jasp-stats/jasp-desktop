@@ -19,11 +19,11 @@
 #ifndef WEBVIEW_H
 #define WEBVIEW_H
 
-#include <QWebView>
+#include <QWebEngineView>
 
 #include "common.h"
 
-class WebView : public QWebView
+class WebView : public QWebEngineView
 {
 
 	Q_OBJECT

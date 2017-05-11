@@ -1,6 +1,6 @@
 
 QT -= gui
-QT += webkitwidgets
+QT += webenginewidgets
 
 DESTDIR = ..
 TARGET = JASP-Common
@@ -131,5 +131,5 @@ HEADERS += \
 	tempfiles.h \
 	utils.h \
 	version.h \
-    options/optionvariablei.h
+	options/optionvariablei.h
 

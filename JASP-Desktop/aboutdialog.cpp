@@ -20,7 +20,6 @@
 #include "ui_aboutdialog.h"
 
 #include "qutils.h"
-#include <QWebFrame>
 #include <QMessageBox>
 #include <QFile>
 #include <QTextStream>
@@ -32,8 +31,8 @@ AboutDialog::AboutDialog(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	_aboutWebView = new QWebView(this);
-	_aboutWebView->hide();
+	_aboutWebEngineView = new QWebEngineView(this);
+	_aboutWebEngineView->hide();
 	m_network_manager = new QNetworkAccessManager();
 	m_pBuffer = new QByteArray();
 
@@ -41,14 +40,14 @@ AboutDialog::AboutDialog(QWidget *parent) :
 	setWindowFlags(Qt::Tool | Qt::WindowTitleHint | Qt::WindowCloseButtonHint /* | Qt::WindowMaximizeButtonHint */ | Qt::CustomizeWindowHint);
 
 	//About core informataion with current version info
-	_aboutWebView->setUrl((QUrl(QString("qrc:///core/about.html"))));
+	_aboutWebEngineView->setUrl((QUrl(QString("qrc:///core/about.html"))));
 
 	//Check for new update information
 	QUrl url("https://jasp-stats.org/download/");
 	QNetworkRequest request(url);
 	m_network_reply = m_network_manager->get(request);
 
-	connect(_aboutWebView, SIGNAL(loadFinished(bool)), this, SLOT(aboutPageLoaded(bool)));
+	connect(_aboutWebEngineView, SIGNAL(loadFinished(bool)), this, SLOT(aboutPageLoaded(bool)));
 	connect(m_network_reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
 
  }
@@ -71,10 +70,12 @@ void AboutDialog::aboutPageLoaded(bool success)
 	{
 		QString version = tq(AppInfo::version.asString());
 		QString builddate = tq(AppInfo::builddate);
-		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppYear()");
-		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
-		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppBuildDate('" + builddate +"')");
-		QString html = _aboutWebView->page()->mainFrame()->toHtml();
+		_aboutWebEngineView->page()->runJavaScript("window.setAppYear()");
+		_aboutWebEngineView->page()->runJavaScript("window.setAppVersion('" + version + "')");
+		_aboutWebEngineView->page()->runJavaScript("window.setAppBuildDate('" + builddate +"')");
+		//QString html = _aboutWebEngineView->page()->mainFrame()->toHtml();
+		QString html;
+		_aboutWebEngineView->page()->toHtml([&html](const QString &result){ html.append(result); });
 		ui->label_2_About->setText(html);
 		ui->label_2_About->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse);
 	}

@@ -37,6 +37,22 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	_tabWidget->setMaximumWidth(800);
 
 	QWidget *webWidget = new QWidget(this);
+	/*QGridLayout *webWidgetLayout = new QGridLayout(webWidget);
+	webWidgetLayout->setMargin(36);
+
+	QFrame *webFrame = new QFrame(webWidget);
+	QGridLayout *webLayout = new QGridLayout(webFrame);
+	webFrame->setLayout(webLayout);
+	webLayout->setMargin(0);
+	webFrame->setFrameShape(QFrame::Box);
+	webFrame->setFrameStyle(QFrame::Panel);
+	webFrame->setLineWidth(1);
+	webFrame->setMinimumWidth(200);
+
+	QWebEngineView *webView = new QWebEngineView(webFrame);
+	webLayout->addWidget(webView);
+
+	webWidgetLayout->addWidget(webFrame);*/
 
 	layout->addWidget(_tabWidget, 0, 0);
 	layout->addWidget(webWidget, 0, 1);

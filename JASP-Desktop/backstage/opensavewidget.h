@@ -21,7 +21,7 @@
 
 #include <QWidget>
 
-#include <QWebView>
+#include <QWebEngineView>
 #include <QFileSystemWatcher>
 #include <QSettings>
 

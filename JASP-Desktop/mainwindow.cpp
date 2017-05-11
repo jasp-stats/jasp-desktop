@@ -73,16 +73,14 @@
 #include "analysisforms/principalcomponentanalysisform.h"
 
 #include <QDebug>
-#include <QWebFrame>
 #include <QFile>
 #include <QFileInfo>
 #include <QToolTip>
 #include <QClipboard>
-#include <QWebElement>
 #include <QMessageBox>
 #include <QTimer>
 #include <QStringBuilder>
-#include <QWebHistory>
+#include <QWebEngineHistory>
 #include <QDropEvent>
 #include <QShortcut>
 #include <QDesktopWidget>
@@ -91,6 +89,8 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QDesktopServices>
+#include <QWebEngineSettings>
+#include <QWebChannel>
 
 #include "analysisloader.h"
 
@@ -157,14 +157,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->ribbonR11tLearn->setDataSetLoaded(false);
 	ui->ribbonSummaryStatistics->setDataSetLoaded(false);
 
-#ifdef QT_DEBUG
-	ui->webViewResults->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
-	ui->webViewHelp->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
-#else
-	ui->webViewResults->setContextMenuPolicy(Qt::NoContextMenu);
-	ui->webViewHelp->setContextMenuPolicy(Qt::NoContextMenu);
-#endif
-
 	tempfiles_init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
 	_odm = new OnlineDataManager(this);
@@ -174,7 +166,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->backStage->setOnlineDataManager(_odm);
 
 	// the LRNAM adds mime types to local resources; important for SVGs
-	ui->webViewResults->page()->setNetworkAccessManager(new LRNAM(tq(tempfiles_sessionDirName()), this));
+	//ui->webViewResults->page()->setNetworkAccessManager(new LRNAM(tq(tempfiles_sessionDirName()), this));
 	ui->webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));
 	connect(ui->webViewResults, SIGNAL(loadFinished(bool)), this, SLOT(resultsPageLoaded(bool)));
 	connect(ui->webViewResults, SIGNAL(scrollValueChanged()), this, SLOT(scrollValueChangedHandle()));
@@ -553,7 +545,7 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 		if (_settings.value("instructionsShown", false).toBool() == false)
 		{
 			_settings.setValue("instructionsShown", true);
-			ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.showInstructions()");
+			ui->webViewResults->page()->runJavaScript("window.showInstructions()");
 		}
 
 		showInstructions = false;
@@ -580,7 +572,7 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 	results = escapeJavascriptString(results);
 	results = "window.analysisChanged(JSON.parse('" + results + "'));";
 
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(results);
+	ui->webViewResults->page()->runJavaScript(results);
 
 	if (_package->isLoaded())
 		_package->setModified(true);
@@ -938,7 +930,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			_package->setWaitingForReady();
 
 			getAnalysesUserData();
-			ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('%PREVIEW%');");
+			ui->webViewResults->page()->runJavaScript("window.exportHTML('%PREVIEW%');");
 
 			Json::Value analysesDataList = Json::arrayValue;
 			for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
@@ -971,7 +963,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	{
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 
-		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('%EXPORT%');");
+		ui->webViewResults->page()->runJavaScript("window.exportHTML('%EXPORT%');");
 
 		_loader.io(event, _package);
 		_progressIndicator->show();
@@ -1164,7 +1156,7 @@ void MainWindow::populateUIfromDataSet()
 					QString results = tq(analysesData["meta"].toStyledString());
 					results = escapeJavascriptString(results);
 					results = "window.setResultsMeta(JSON.parse('" + results + "'));";
-					ui->webViewResults->page()->mainFrame()->evaluateJavaScript(results);
+					ui->webViewResults->page()->runJavaScript(results);
 				}
 			}
 
@@ -1256,16 +1248,20 @@ void MainWindow::resultsPageLoaded(bool success)
 {
 	// clear history, to prevent backspace from going 'back'
 	ui->webViewResults->history()->clear();
-	ui->webViewResults->page()->mainFrame()->addToJavaScriptWindowObject("jasp", this);
+	QWebChannel *channel = new QWebChannel(this);
+	ui->webViewResults->page()->setWebChannel(channel);
+	channel->registerObject("jasp", this);
+	//ui->webViewResults->page()->mainFrame()->addToJavaScriptWindowObject("jasp", this);
 
 	if (success)
 	{
 		QString version = tq(AppInfo::version.asString());
-		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
+		ui->webViewResults->page()->runJavaScript("window.setAppVersion('" + version + "')");
 
 		setExactPValuesHandler(_settings.value("exactPVals", 0).toBool());
 
-		QVariant ppiv = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getPPI()");
+		QVariant ppiv;
+		ui->webViewResults->page()->runJavaScript("window.getPPI()", [&ppiv] (const QVariant &result) { ppiv = result; });
 
 		bool success;
 		int ppi = ppiv.toInt(&success);
@@ -1345,7 +1341,7 @@ void MainWindow::requestHelpPage(const QString &pageName)
 
 	QString js = "window.render(\"" + content + "\")";
 
-	ui->webViewHelp->page()->mainFrame()->evaluateJavaScript(js);
+	ui->webViewHelp->page()->runJavaScript(js);
 }
 
 void MainWindow::setExactPValuesHandler(bool exactPValues)
@@ -1362,7 +1358,7 @@ void MainWindow::itemSelected(const QString &item)
 		_currentAnalysis = _analyses->create(item);
 
 		showForm(_currentAnalysis);
-		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.select(" % QString::number(_currentAnalysis->id()) % ")");
+		ui->webViewResults->page()->runJavaScript("window.select(" % QString::number(_currentAnalysis->id()) % ")");
 
 		QString info("%1,%2");
 		info = info.arg(tq(_currentAnalysis->name()));
@@ -1400,7 +1396,7 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 
 void MainWindow::exportSelected(const QString &filename)
 {
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('" + filename + "');");
+	ui->webViewResults->page()->runJavaScript("window.exportHTML('" + filename + "');");
 }
 
 void MainWindow::adjustOptionsPanelWidth()
@@ -1558,7 +1554,7 @@ void MainWindow::analysisOKed()
 		_currentOptionsWidget = NULL;
 	}
 
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.unselect()");
+	ui->webViewResults->page()->runJavaScript("window.unselect()");
 
 	hideOptionsPanel();
 }
@@ -1599,7 +1595,7 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 	if (_log != NULL)
 		_log->log("Analysis Removed", info);
 
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.remove(" % QString::number(analysis->id()) % ")");
+	ui->webViewResults->page()->runJavaScript("window.remove(" % QString::number(analysis->id()) % ")");
 
 	if (selected)
 		hideOptionsPanel();
@@ -1714,7 +1710,7 @@ void MainWindow::saveTempImageHandler(int id, QString path, QByteArray data)
 	file.close();
 
 	QString eval = QString("window.imageSaved({ id: %1, fullPath: '%2'});").arg(id).arg(fullpath);
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(eval);
+	ui->webViewResults->page()->runJavaScript(eval);
 }
 
 void MainWindow::displayMessageFromResultsHandler(QString msg)
@@ -1820,7 +1816,8 @@ void MainWindow::removeAnalysisRequestHandler(int id)
 
 Json::Value MainWindow::getResultsMeta()
 {
-	QVariant metaData = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getResultsMeta();");
+	QVariant metaData;
+	ui->webViewResults->page()->runJavaScript("window.getResultsMeta();", [&metaData](const QVariant &result) { metaData = result; });
 
 	Json::Value meta;
 	Json::Reader parser;
@@ -1831,7 +1828,8 @@ Json::Value MainWindow::getResultsMeta()
 
 void MainWindow::getAnalysesUserData()
 {
-	QVariant userData = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getAllUserData();");
+	QVariant userData;
+	ui->webViewResults->page()->runJavaScript("window.getAllUserData();",  [&userData] (const QVariant &result) { userData = result; });
 
 	Json::Value data;
 	Json::Reader parser;
@@ -1895,35 +1893,35 @@ void MainWindow::updateUserDataHandler(int id, QString key)
 
 void MainWindow::collapseSelected()
 {
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.collapseMenuClicked();");
+	ui->webViewResults->page()->runJavaScript("window.collapseMenuClicked();");
 }
 
 void MainWindow::removeSelected()
 {
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.removeMenuClicked();");
+	ui->webViewResults->page()->runJavaScript("window.removeMenuClicked();");
 }
 
 void MainWindow::editTitleSelected()
 {
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.editTitleMenuClicked();");
+	ui->webViewResults->page()->runJavaScript("window.editTitleMenuClicked();");
 	_package->setModified(true);
 }
 
 void MainWindow::copySelected()
 {
 	tempfiles_purgeClipboard();
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.copyMenuClicked();");
+	ui->webViewResults->page()->runJavaScript("window.copyMenuClicked();");
 }
 
 void MainWindow::citeSelected()
 {
 	tempfiles_purgeClipboard();
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.citeMenuClicked();");
+	ui->webViewResults->page()->runJavaScript("window.citeMenuClicked();");
 }
 
 void MainWindow::saveImage()
 {
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.saveImageClicked();");
+	ui->webViewResults->page()->runJavaScript("window.saveImageClicked();");
 }
 
 void MainWindow::noteSelected()
@@ -1931,14 +1929,14 @@ void MainWindow::noteSelected()
 	QAction *action = (QAction *)this->sender();
 	QString call = action->data().toString();
 
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(call);
+	ui->webViewResults->page()->runJavaScript(call);
 
 	_package->setModified(true);
 }
 
 void MainWindow::menuHidding()
 {
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.analysisMenuHidden();");
+	ui->webViewResults->page()->runJavaScript("window.analysisMenuHidden();");
 }
 
 void MainWindow::scrollValueChangedHandle()
