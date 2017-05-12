@@ -1021,7 +1021,7 @@ saveImage <- function(plotName, format, height, width){
 .imgToState <- function(imgobj) {
 
 	result <- list()
-	if (!is.list(imgobj))
+	if (!is.list(imgobj) || is.null(names(imgobj)))
 		return(NULL)
 
 	if (all(c("data", "obj") %in% names(imgobj), is.character(imgobj[["data"]]))) {
