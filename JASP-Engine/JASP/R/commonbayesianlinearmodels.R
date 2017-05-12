@@ -711,31 +711,14 @@
 		backward.title <- "BF<sub>Backward</sub>"
 	}
 
-	if (options$effectsStepwise) {
-		fields <-
-			list (
-				list (name = "Effects", type = "string"),
-				list (name = "P(incl)", type = "number", format = "sf:4;dp:3"),
-				list (name = "P(incl|data)", type = "number", format = "sf:4;dp:3"),
-				list (name = "BF<sub>Inclusion</sub>", type="number", format = "sf:4;dp:3", 
-					title = paste (inclusion.title, sep = "")),
-				list (name = "BF<sub>Backward</sub>", type="number", format = "sf:4;dp:3", 
-					title = paste (backward.title, sep = "")),
-				list (name = "% errorB", type = "number", format = "sf:4;dp:3"),
-				list (name = "BF<sub>Forward</sub>", type = "number", format = "sf:4;dp:3", 
-					title = paste (forward.title, sep = "")),
-				list (name = "% errorF", type = "number", format = "sf:4;dp:3")
-			)
-	} else{
-		fields <-
-			list (
-				list (name = "Effects", type = "string"),
-				list (name = "P(incl)", type = "number", format = "sf:4;dp:3"),
-				list (name = "P(incl|data)", type = "number", format = "sf:4;dp:3"),
-				list (name = "BF<sub>Inclusion</sub>", type = "number", format = "sf:4;dp:3", 
-					title = paste (inclusion.title, sep = ""))
-			)
-	}
+
+	fields <- list (
+			list (name = "Effects", type = "string"),
+			list (name = "P(incl)", type = "number", format = "sf:4;dp:3"),
+			list (name = "P(incl|data)", type = "number", format = "sf:4;dp:3"),
+			list (name = "BF<sub>Inclusion</sub>", type = "number", format = "sf:4;dp:3", 
+				title = paste (inclusion.title, sep = ""))
+		)
 
 	effectsTable [["schema"]] <- list (fields = fields)
 
@@ -779,62 +762,6 @@
 					row$"BF<sub>Inclusion</sub>" = .clean (log (bayes.factor.inclusion [e]))
 				} else {
 					row$"BF<sub>Inclusion</sub>" = .clean (bayes.factor.inclusion [e])
-				}
-
-				if (options$effectsStepwise && no.effects > 1) {
-					#Forward
-					include <- which (effects.matrix[, e] == TRUE)
-					forward <- include [which (model.complexity [include] == min (model.complexity [include]))]
-					if (model.complexity [forward] > 1){
-						effects.forward <- effects.matrix [forward, ]
-						effects.forward [e] <- FALSE
-						forward.effects <- sapply (1:no.models, function (m) {
-							(sum (effects.matrix [m, effects.forward == TRUE]) == sum (effects.forward))
-						})
-						exclude <- which (!effects.matrix[, e] & forward.effects)
-						comparison <- exclude [which (model.complexity [exclude] == min (model.complexity [exclude]))]
-						if (model.complexity [comparison] < model.complexity [forward]) {
-							bf.forward <- model$models [[forward]]$bf / model$models [[comparison]]$bf
-						} else {
-							bf.forward <- model$models [[forward]]$bf
-						}
-					} else {
-						bf.forward <- model$models [[forward]]$bf
-					}
-					#Backward
-					if (sum (effects.matrix [, e]) == 1 ) {
-						bf.bacward <- model$models [[which (effects.matrix [, e] == TRUE)]]$bf
-					} else {
-						no.interactions <- sapply (1:no.models, function (m) {
-							sum (effects.matrix [m, model$interactions.matrix[e, ] == TRUE]) == 0
-						})
-						include <- which ((effects.matrix [, e] == TRUE) & no.interactions)
-						backward <- include [which (model.complexity [include] == max (model.complexity [include]))]
-						if (model.complexity [backward] > 1) {
-							effects.backward <- effects.matrix [backward, ]
-							effects.backward [e] <- FALSE
-							backward.effects <- sapply (1:no.models, function (m) {
-								((sum (effects.matrix [m, effects.backward == TRUE]) == sum (effects.backward))
-								&&
-								(sum (effects.matrix[m, effects.backward == FALSE]) == 0))
-							})
-							exclude <- which (backward.effects)
-							comparison <- exclude [which (model.complexity [exclude] == max (model.complexity [exclude]))]
-							bf.backward <- model$models [[backward]]$bf / model$models [[comparison]]$bf
-						} else {
-							bf.backward <- model$models [[backward]]$bf
-						}
-					}
-					#Output
-					if (options$bayesFactorType == "LogBF10"){
-						row [["BF<sub>Forward</sub>"]] <- .clean (bf.forward@bayesFactor$bf)
-						row [["BF<sub>Backward</sub>"]] <- .clean (bf.backward@bayesFactor$bf)
-					} else {
-						row [["BF<sub>Forward</sub>"]] <- .clean (exp (bf.forward@bayesFactor$bf))
-						row [["BF<sub>Backward</sub>"]] <- .clean (exp (bf.backward@bayesFactor$bf))
-					}
-					row [["% errorF"]] <- .clean (100 * bf.forward@bayesFactor$error)
-					row [["% errorB"]] <- .clean (100 * bf.backward@bayesFactor$error)
 				}
 			}
 			rows [[length (rows) + 1]] <- row
