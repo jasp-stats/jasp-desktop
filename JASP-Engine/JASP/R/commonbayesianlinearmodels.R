@@ -688,15 +688,15 @@
 	return (list (modelTable = modelTable, model = model))
 }
 
-.theBayesianLinearModelsEffects <- function (model = NULL, options = list (), perform = "init", status = list (), populate = TRUE) {
+.theBayesianLinearModelsEffects <- function(model = NULL, options = list(), perform = "init", status = list(), populate = TRUE) {
 
-	if ( ! options$effects)
+	if (! options$effects)
 		return (NULL)
 
-	effectsTable <- list ()
-	effectsTable [["title"]] <- "Analysis of Effects"
-	effectsTable [["citation"]] <-
-		list (
+	effectsTable <- list()
+	effectsTable[["title"]] <- "Analysis of Effects"
+	effectsTable[["citation"]] <-
+		list(
 			"Morey, R. D. & Rouder, J. N. (2015). BayesFactor (Version 0.9.10-2)[Computer software].",
 			"Rouder, J. N., Morey, R. D., Speckman, P. L., Province, J. M., (2012) Default Bayes Factors for ANOVA Designs. Journal of Mathematical Psychology. 56. p. 356-374."
 		)
@@ -712,71 +712,71 @@
 	}
 
 
-	fields <- list (
-			list (name = "Effects", type = "string"),
-			list (name = "P(incl)", type = "number", format = "sf:4;dp:3"),
-			list (name = "P(incl|data)", type = "number", format = "sf:4;dp:3"),
-			list (name = "BF<sub>Inclusion</sub>", type = "number", format = "sf:4;dp:3", 
-				title = paste (inclusion.title, sep = ""))
+	fields <- list(
+			list(name = "Effects", type = "string"),
+			list(name = "P(incl)", type = "number", format = "sf:4;dp:3"),
+			list(name = "P(incl|data)", type = "number", format = "sf:4;dp:3"),
+			list(name = "BF<sub>Inclusion</sub>", type = "number", format = "sf:4;dp:3", 
+				title = paste(inclusion.title, sep = ""))
 		)
 
-	effectsTable [["schema"]] <- list (fields = fields)
+	effectsTable[["schema"]] <- list(fields = fields)
 
 	if (! status$ready && ! status$error)
-		return (effectsTable)
+		return(effectsTable)
 
 	effects.matrix <- model$effects
 	if (perform == "run" && status$ready && !populate) {
-		prior.probabilities <- model$effects [, ncol (effects.matrix) - 1]
-		posterior.probabilities <- model$effects [, ncol (effects.matrix)]
-		effects.matrix <- matrix (model$effects [1:nrow (model$effects), 1:(ncol (model$effects) - 2)],
-			nrow = nrow (model$effects),
-			ncol = ncol (model$effects) - 2)
+		prior.probabilities <- model$effects[, ncol (effects.matrix) - 1]
+		posterior.probabilities <- model$effects[, ncol (effects.matrix)]
+		effects.matrix <- matrix(model$effects[1:nrow(model$effects), 1:(ncol(model$effects) - 2)],
+			nrow = nrow(model$effects),
+			ncol = ncol(model$effects) - 2)
 
-		effectNames <- colnames (effects.matrix) <- colnames (model$effects) [1:(ncol (model$effects) - 2)]
-		no.models <- nrow (effects.matrix)
-		no.effects <- ncol (effects.matrix)
+		effectNames <- colnames(effects.matrix) <- colnames(model$effects)[1:(ncol(model$effects) - 2)]
+		no.models <- nrow(effects.matrix)
+		no.effects <- ncol(effects.matrix)
 
-		dim (prior.probabilities) <- c (1, no.models)
-		dim (posterior.probabilities) <- c (1, no.models)
+		dim(prior.probabilities) <- c(1, no.models)
+		dim(posterior.probabilities) <- c(1, no.models)
 		prior.inclusion.probabilities <- prior.probabilities %*% effects.matrix
 		posterior.inclusion.probabilities <- posterior.probabilities %*% effects.matrix
 		posterior.inclusion.probabilities[posterior.inclusion.probabilities > 1] <- 1
 		posterior.inclusion.probabilities[posterior.inclusion.probabilities < 0] <- 0
 		bayes.factor.inclusion <- (posterior.inclusion.probabilities / (1 - posterior.inclusion.probabilities)) /
 			(prior.inclusion.probabilities / (1 - prior.inclusion.probabilities))
-		model.complexity <- rowSums (effects.matrix)
+		model.complexity <- rowSums(effects.matrix)
 	}
 
-	no.effects <- ncol (effects.matrix)
-	effectNames <- colnames (effects.matrix)
-	if (!is.null (no.effects) && no.effects > 0) {
-		rows <- list ()
+	no.effects <- ncol(effects.matrix)
+	effectNames <- colnames(effects.matrix)
+	if (! is.null(no.effects) && no.effects > 0) {
+		rows <- list()
 		for (e in 1:no.effects) {
 			row <- list ()
-			row$"Effects" <- .unvf (effectNames [e])
+			row$"Effects" <- .unvf(effectNames[e])
 			if (perform == "run" && status$ready && !populate) {
-				row$"P(incl)" = .clean (prior.inclusion.probabilities [e])
-				row$"P(incl|data)" = .clean (posterior.inclusion.probabilities [e])
+				row$"P(incl)" = .clean(prior.inclusion.probabilities[e])
+				row$"P(incl|data)" = .clean(posterior.inclusion.probabilities[e])
 				if (options$bayesFactorType == "LogBF10"){
-					row$"BF<sub>Inclusion</sub>" = .clean (log (bayes.factor.inclusion [e]))
+					row$"BF<sub>Inclusion</sub>" = .clean(log(bayes.factor.inclusion[e]))
 				} else {
-					row$"BF<sub>Inclusion</sub>" = .clean (bayes.factor.inclusion [e])
+					row$"BF<sub>Inclusion</sub>" = .clean(bayes.factor.inclusion[e])
 				}
 			}
-			rows [[length (rows) + 1]] <- row
+			rows[[length(rows) + 1]] <- row
 		}
-		effectsTable [["data"]] <- rows
+		effectsTable[["data"]] <- rows
 	}
 
 	if (is.null(status$analysis.type) || status$analysis.type != "rmANOVA") {
-		effectsTable [["title"]] <- paste ("Analysis of Effects - ", options$dependent, sep = "")
+		effectsTable[["title"]] <- paste("Analysis of Effects - ", options$dependent, sep = "")
 	}
 
-	if (! status$ready) # TODO why do we need this?
-		effectsTable [["error"]] <- list (errorType = "badData")
+	if (! status$ready)
+		effectsTable[["error"]] <- list(errorType = "badData")
 
-	return (effectsTable)
+	return(effectsTable)
 }
 
 .theBayesianLinearModelEstimates <- function (model = NULL, options = list (), perform = "init", status = list (), populate = FALSE) {
