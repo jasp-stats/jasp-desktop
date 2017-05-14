@@ -53,6 +53,7 @@ NetworkAnalysis <- function (
 	results <- list(
 		title = "Network Analysis",
 		.meta = list(
+			list(name = "generalTB",   type = "table"),
 			list(name = "fitMeasuresTB",  type = "table"),
 			list(name = "centralityTB",   type = "table"),
 			list(name = "networkPLT",     type = "image"),
@@ -101,17 +102,19 @@ NetworkAnalysis <- function (
 
 	## Create Output ##  ----
 
+	results[["generalTB"]] <- .NWgeneralTB(network, options, perform)
+
 	if (options[["tableFitMeasures"]]) {
-		results[["fitMeasures"]] <- .fitMeasuresTB(network, options, perform)
+		results[["fitMeasuresTB"]] <- .fitMeasuresTB(network, options, perform)
 	}
 	if (options[["tableCentrality"]]) {
 		results[["centralityTB"]] <- .centralityTB(network, options, perform)
 	}
 	if (options[["plotNetwork"]]) {
-		results[["networkPLT"]] <- .makeNetworkPlots(network, options, perform, oldPlot = state[["networkPLT"]], plotType = "network")
+		results[["networkPLT"]] <- .makeNetworkPLT(network, options, perform, oldPlot = state[["networkPLT"]], plotType = "network")
 	}
 	if (options[["plotCentrality"]]) {
-		results[["centralityPLT"]] <- .makeNetworkPlots(network, options, perform, oldPlot = state[["centralityPLT"]], plotType = "centrality")
+		results[["centralityPLT"]] <- .makeNetworkPLT(network, options, perform, oldPlot = state[["centralityPLT"]], plotType = "centrality")
 	}
 
 
@@ -130,11 +133,11 @@ NetworkAnalysis <- function (
 	# return to jasp
 	if (perform == "init") {
 
-		return(list(results=results, status="inited", state=state))
+		return(list(results = results, status = "inited", state = state))
 
 	} else {
 
-		return(list(results=results, status="complete", state=state))
+		return(list(results = results, status = "complete", state = state))
 
 	}
 
@@ -173,13 +176,39 @@ NetworkAnalysis <- function (
 # TB = table
 # PTL = plot
 
-.NWgeneralTable <- function(network, options, perform) {
+.NWgeneralTB <- function(network, options, perform) {
 
 	table <- list(
-		title = "Network Analysis>",
-		sch
-	table[["schema"]] <- list(fields=list())
-	table[["data"]] <- list()
+		title = "Summary of Network",
+		schema = list(fields = list(
+			list(name = "info", title = "", type = "string"),
+			list(name = "value", title = "", type = "number", format="sf:4;dp:3")
+		))
+	)
+
+	infos <- c("Number of nodes", "Number of non-zero edges", "Sparsity")
+
+	if (perform != "run") { # fill in with .
+
+		values <- rep(".", 3)
+		table[["status"]] <- "inited"
+
+	} else { # fill in with info from bootnet:::print.bootnet
+
+		values <- c(
+			nrow(network[["graph"]]),
+			sum(network[["graph"]][upper.tri(network[["graph"]], diag = FALSE)] == 0),
+			mean(network[["graph"]][upper.tri(network[["graph"]], diag = FALSE)] == 0)
+		)
+		table[["status"]] <- "complete"
+
+	}
+
+	data <- mapply(function(x, y) list(info = x, value = y),
+				   x = infos, y = values, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+	table[["data"]] <- data
+
+	return(table)
 
 }
 
@@ -216,7 +245,7 @@ NetworkAnalysis <- function (
 }
 
 
-.makeNetworkPlots <- function(network, options, perform, oldPlot = NULL, plotType) {
+.makeNetworkPLT <- function(network, options, perform, oldPlot = NULL, plotType) {
 
 	if (!is.null(oldPlot) && !identical(oldPlot[["data"]], ""))
 		return(oldPlot)

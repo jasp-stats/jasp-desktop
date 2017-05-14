@@ -21,13 +21,159 @@
 
 
 NetworkAnalysisForm::NetworkAnalysisForm(QWidget *parent) :
-	AnalysisForm("NetworkAnalysisForm", parent),
-	ui(new Ui::NetworkAnalysisForm)
+    AnalysisForm("NetworkAnalysisForm", parent),
+    ui(new Ui::NetworkAnalysisForm)
 {
-	ui->setupUi(this);
+    ui->setupUi(this);
+
+    ui->listAvailableFields->setModel(&_availableVariablesModel);
+    ui->listAvailableFields->setDoubleClickTarget(ui->variables);
+
+    TableModelVariablesAssigned *variablesModel = new TableModelVariablesAssigned(this);
+    variablesModel->setSource(&_availableVariablesModel);
+    variablesModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+    variablesModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
+    ui->variables->setModel(variablesModel);
+    ui->variables->setDoubleClickTarget(ui->listAvailableFields);
+
+    TableModelVariablesAssigned *groupingVariableModel = new TableModelVariablesAssigned(this);
+    groupingVariableModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
+    groupingVariableModel->setSource(&_availableVariablesModel);
+    ui->groupingVariable->setModel(groupingVariableModel);
+    ui->groupingVariable->setDoubleClickTarget(ui->listAvailableFields);
+
+    ui->buttonAssignVariables->setSourceAndTarget(ui->listAvailableFields, ui->variables);
+    ui->buttonAssignGroupingVariable->setSourceAndTarget(ui->listAvailableFields, ui->groupingVariable);
+
+    // Defaults
+    ui->estimator->setCurrentIndex(0);
+    ui->analysisOptions->hide();
+    ui->graphicalOptions->hide();
 }
 
 NetworkAnalysisForm::~NetworkAnalysisForm()
 {
-	delete ui;
+    delete ui;
+}
+
+void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice)
+{
+    std::string choice_str = choice.toStdString();
+
+    if (choice_str.compare("EBICglasso") == 0) {
+        ui->correlationMethod->setEnabled(true);
+        ui->criterion->setEnabled(true);
+        ui->tuningParameterBox->setEnabled(true);
+        ui->sampleSize->setEnabled(true);
+
+        ui->_4cv->setEnabled(false);
+        ui->isingEstimator->setEnabled(false);
+        ui->crossValidation->setEnabled(false);
+        ui->split->setEnabled(false);
+        ui->rule->setEnabled(false);
+        ui->network->setEnabled(false);
+    } else if (choice_str.compare("pcor") == 0) {
+        ui->correlationMethod->setEnabled(true);
+
+        ui->criterion->setEnabled(false);
+        ui->tuningParameterBox->setEnabled(false);
+        ui->sampleSize->setEnabled(false);
+        ui->isingEstimator->setEnabled(false);
+        ui->crossValidation->setEnabled(false);
+        ui->split->setEnabled(false);
+        ui->rule->setEnabled(false);
+        ui->network->setEnabled(false);
+    } else if (choice_str.compare("IsingFit") == 0) {
+        ui->tuningParameterBox->setEnabled(true);
+        ui->split->setEnabled(true);
+        ui->rule->setEnabled(true);
+
+        ui->correlationMethod->setEnabled(false);
+        ui->criterion->setEnabled(false);
+        ui->sampleSize->setEnabled(false);
+        ui->isingEstimator->setEnabled(false);
+        ui->crossValidation->setEnabled(false);
+        ui->network->setEnabled(false);
+    } else if (choice_str.compare("IsingSampler") == 0) {
+        ui->isingEstimator->setEnabled(true);
+        ui->split->setEnabled(true);
+
+        ui->tuningParameterBox->setEnabled(false);
+        ui->rule->setEnabled(false);
+        ui->correlationMethod->setEnabled(false);
+        ui->criterion->setEnabled(false);
+        ui->sampleSize->setEnabled(false);
+        ui->crossValidation->setEnabled(false);
+        ui->network->setEnabled(false);
+    } else if (choice_str.compare("huge") == 0) {
+        ui->tuningParameterBox->setEnabled(true);
+        ui->criterion->setEnabled(true);
+
+        ui->_4cv->setEnabled(false);
+        ui->isingEstimator->setEnabled(false);
+        ui->split->setEnabled(false);
+        ui->rule->setEnabled(false);
+        ui->correlationMethod->setEnabled(false);
+        ui->sampleSize->setEnabled(false);
+        ui->crossValidation->setEnabled(false);
+        ui->network->setEnabled(false);
+    } else if (choice_str.compare("adalasso") == 0) {
+        ui->crossValidation->setEnabled(true);
+
+        ui->tuningParameterBox->setEnabled(false);
+        ui->criterion->setEnabled(false);
+        ui->isingEstimator->setEnabled(false);
+        ui->split->setEnabled(false);
+        ui->rule->setEnabled(false);
+        ui->correlationMethod->setEnabled(false);
+        ui->sampleSize->setEnabled(false);
+        ui->network->setEnabled(false);
+    } else if (choice_str.compare("mgm") == 0) {
+        ui->tuningParameterBox->setEnabled(true);
+        ui->criterion->setEnabled(true);
+        ui->rule->setEnabled(true);
+        ui->_4cv->setEnabled(true);
+
+        ui->isingEstimator->setEnabled(false);
+        ui->split->setEnabled(false);
+        ui->correlationMethod->setEnabled(false);
+        ui->sampleSize->setEnabled(false);
+        ui->network->setEnabled(false);
+
+        if (ui->_4cv->isChecked()) {
+            ui->crossValidation->setEnabled(true);
+        } else {
+            ui->crossValidation->setEnabled(false);
+        }
+    }
+}
+
+void NetworkAnalysisForm::on__4cv_clicked()
+{
+    if (ui->estimator->currentIndex() == 6) {
+        ui->crossValidation->setEnabled(true);
+    } else {
+        ui->crossValidation->setEnabled(false);
+    }
+}
+
+void NetworkAnalysisForm::on__3stars_clicked()
+{
+    if (ui->estimator->currentIndex() == 6) {
+        ui->crossValidation->setEnabled(false);
+    }
+}
+
+void NetworkAnalysisForm::on__2ric_clicked()
+{
+    if (ui->estimator->currentIndex() == 6) {
+        ui->crossValidation->setEnabled(false);
+    }
+}
+
+void NetworkAnalysisForm::on__1ebic_clicked()
+{
+    if (ui->estimator->currentIndex() == 6) {
+        ui->crossValidation->setEnabled(false);
+    }
 }
