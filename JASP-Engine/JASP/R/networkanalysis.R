@@ -21,6 +21,7 @@ NetworkAnalysis <- function (
 	options,
 	perform = "run",
 	callback = function(...) list(status = "ok"),
+	state = NULL,
 	...
 ) {
 
@@ -31,58 +32,58 @@ NetworkAnalysis <- function (
 
 		if (perform == "run") {
 
-			dataset <- .readDataSetToEnd(columns.as.numeric=variables, columns.as.factor=NULL, exclude.na.listwise=NULL)
+			dataset <- .readDataSetToEnd(columns.as.numeric = variables, columns.as.factor = NULL, exclude.na.listwise = NULL)
 
 		} else {
 
-			dataset <- .readDataSetHeader(columns.as.numeric=variables, columns.as.factor=NULL)
+			dataset <- .readDataSetHeader(columns.as.numeric = variables, columns.as.factor = NULL)
 
 		}
 
 	} else {
 
-		dataset <- .vdf(dataset, columns.as.numeric=variables, columns.as.factor=NULL)
+		dataset <- .vdf(dataset, columns.as.numeric = variables, columns.as.factor = NULL)
 
 	}
 
 	# ensure order of variables matches order of columns in dataset
 	variables <- variables[match(.unv(colnames(dataset)), variables, nomatch = 0L)]
 
-
-	## Retrieve State ## (deprecated? state key?) ----
-
-	# state <- .retrieveState()
-	#
-	toFromState <- NULL
-	#
-	# if ( ! is.null(state)) {  # is there state?
-	#
-	# 	diff <- .diff(options, state$options)  # compare old and new options
-	#
-	# 	# if nothing important was changed retrieve state
-	# 	if (is.list(diff) && diff[['variables']] == FALSE) {
-	#
-	# 		toFromState <- state$results
-	#
-	# 	}
-	#
-	# }
-
-
-	## Initialize Results ## ----
+	## Initialize Results & statekey ## ----
 	results <- list(
 		title = "Network Analysis",
 		.meta = list(
 			list(name = "fitMeasuresTB",  type = "table"),
 			list(name = "centralityTB",   type = "table"),
-			list(name = "centralityPLT",  type = "image"),
-			list(name = "networkPLT",     type = "image")
+			list(name = "networkPLT",     type = "image"),
+			list(name = "centralityPLT",  type = "image")
 		)
+	)
+
+	# basically everything but plotting arguments
+	stateKey <- list(
+		network = c(
+			# data
+			"variables", "groupingVariable",
+			# what kind of network is estimated
+			"estimator",
+			# arguments for the network
+			"correlationMethod", "tuningParameter", "criterion", "isingEstimator",
+			"nFolds", "split", "rule", "sampleSize",
+			# general arguments
+			"weightedNetwork", "signedNetwork", "missingValues"),
+		networkPLT = c("plotWidthNetwork", "plotHeightNetwork",
+					   "layout", "edgeColors", "repulsion", "edgeSize", "nodeSize",
+					   "maxEdgeStrength", "minEdgeStrength", "cut", "showDetails", "nodeColors"),
+		centralityPLT = c("plotWidthCentrality", "plotHeightCentrality")
+
 	)
 
 	## Do Analysis ## ----
 
-	if (is.null(toFromState)) { # implies old state was unusable
+	if (is.null(state[["network"]])) { # old state is unusable
+
+		state <- NULL # delete state
 
 		# check for errors
 		anyErrors <- .hasErrors(dataset = dataset, perform = perform,
@@ -90,35 +91,43 @@ NetworkAnalysis <- function (
 								observations.amount = " < 3",
 								exitAnalysisIfErrors = TRUE)
 
-		networkResults <- .doNetworkAnalysis(dataset, options, variables, perform)
+		network <- .doNetworkAnalysis(dataset = dataset, options = options, variables = variables, perform = perform)
+
+	} else { # state is useable, skip estimation
+
+		network <- state[["network"]]
 
 	}
-
 
 	## Create Output ##  ----
 
-	if (options[["plotFitMeasures"]]) {
-		results[["fitMeasures"]] <- .fitMeasuresTB(networkResults, options, perform)
+	if (options[["tableFitMeasures"]]) {
+		results[["fitMeasures"]] <- .fitMeasuresTB(network, options, perform)
 	}
 	if (options[["tableCentrality"]]) {
-		results[["centralityTB"]] <- .centralityTB(networkResults, options, perform)
+		results[["centralityTB"]] <- .centralityTB(network, options, perform)
+	}
+	if (options[["plotNetwork"]]) {
+		results[["networkPLT"]] <- .makeNetworkPlots(network, options, perform, oldPlot = state[["networkPLT"]], plotType = "network")
 	}
 	if (options[["plotCentrality"]]) {
-		results[["centralityPLT"]] <- .centralityPLT(networkResults, options, perform)
-	}
-	if (options[["plotNetworkTable"]]) {
-		results[["networkPLT"]] <- .fitMeasuresTB(networkResults, options, perform)
+		results[["centralityPLT"]] <- .makeNetworkPlots(network, options, perform, oldPlot = state[["centralityPLT"]], plotType = "centrality")
 	}
 
-	## Save State ##
-
-	state <- list(
-		options = options,
-		networkResults = toFromState
-	)
 
 	## Exit Analysis ## ----
 
+	# Save State
+	state <- list(
+		options = options,
+		network = network,
+		networkPLT = results[["networkPLT"]],
+		centralityPLT = results[["centralityPLT"]]
+	)
+
+	attr(state, "key") <- stateKey
+
+	# return to jasp
 	if (perform == "init") {
 
 		return(list(results=results, status="inited", state=state))
@@ -132,17 +141,52 @@ NetworkAnalysis <- function (
 }
 
 # estimator ----
-.doNetworkAnalysis <- function(...) NULL
+.doNetworkAnalysis <- function(dataset, options, variables, perform) {
+
+	if (perform != "run")
+		return(NULL)
+
+	corMethod <- options[["correlationMethod"]]
+	if (corMethod  == "auto")
+		corMethod <- "cor_auto"
+
+	data("bfi", package = "psych")
+	dataset <- bfi[, 1:25]
+
+	msg <- capture.output(
+		network <- bootnet::estimateNetwork(
+			data = dataset,
+			default = options[["estimator"]],
+			corMethod = corMethod
+		)
+		, type = "message"
+	)
+
+	network[["corMessage"]] <- msg
+
+	return(network)
+
+}
 
 # wrappers for output ----
 # ABBREVIATIONS:
 # TB = table
 # PTL = plot
 
+.NWgeneralTable <- function(network, options, perform) {
+
+	table <- list(
+		title = "Network Analysis>",
+		sch
+	table[["schema"]] <- list(fields=list())
+	table[["data"]] <- list()
+
+}
+
 .fitMeasuresTB <- function(network, options, perform) {
 
 	table <- list()
-	table[["title"]] <- "Network Analysis>"
+	table[["title"]] <- "Fit Measures"
 	table[["schema"]] <- list(fields=list())
 	table[["data"]] <- list()
 
@@ -153,7 +197,7 @@ NetworkAnalysis <- function (
 .centralityTB <- function(network, options, perform) {
 
 	table <- list()
-	table[["title"]] <- "Network Analysis>"
+	table[["title"]] <- "Centrality Measures"
 	table[["schema"]] <- list(fields=list())
 	table[["data"]] <- list()
 
@@ -161,74 +205,60 @@ NetworkAnalysis <- function (
 
 }
 
-.centralityPLT <- function(network, options, perform) {
+.plotFunNetwork <- function() {
 
-	plot <- list(
-		width = 530,# options[["plotWidth"]],
-		height = 400, #options[["plotHeight"]],
-		# custom = list(width = "plotWidth", height = "plotHeight"),
-	)
+	# eval(quote()) construction because this function is evaluated inside .writeImage()
+	# which needs to look 2 levels up to find the objects network and options.
+	eval(quote(
+		qgraph::qgraph(input = network[["graph"]], layout = options[["layout"]], repulsion = options[["repulsion"]])
+	), envir = parent.frame(2))
 
-	if (perform == "run") {
-		.plotFunc <- function() {
-			plot(rnorm(100), bty = "n", las = 1)
-		}
+}
 
 
-		content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+.makeNetworkPlots <- function(network, options, perform, oldPlot = NULL, plotType) {
 
-		plot <- c(plot, list(
-			convertible = TRUE,
-			obj = content[["obj"]],
-			data = content[["png"]],
-			status = "complete"
-			)
+	if (!is.null(oldPlot) && !identical(oldPlot[["data"]], ""))
+		return(oldPlot)
+
+	if (plotType == "network") {
+
+		plot <- list(
+			title = "Network Plot",
+			width = options[["plotWidthNetwork"]],
+			height = options[["plotHeightNetwork"]],
+			custom = list(width="plotWidthNetwork", height="plotHeightNetwork"),
+			data = "", status = "inited"
 		)
 
+	} else if (plotType == "centrality") {
 
-	} else {
+		plot <- list(
+			title = "Centrality Plot",
+			width = options[["plotWidthCentrality"]],
+			height = options[["plotHeightCentrality"]],
+			custom = list(width="plotWidthCentrality", height="plotHeightCentrality"),
+			data = "", status = "inited"
+		)
 
-	#	plot[["data"]] <- ""
+	}
+
+	if (perform == "run") {
+
+		plotObjOrFun <- switch(plotType,
+			"network" = .plotFunNetwork,
+			"centrality" = qgraph::centralityPlot(network[["graph"]], print = FALSE)
+		)
+
+		content <- .writeImage(width = plot[["width"]], height = plot[["height"]], plot = plotObjOrFun)
+
+		plot[["convertible"]] <- TRUE
+		plot[["data"]] <- content[["png"]]
+		plot[["obj"]] <- content[["obj"]]
+		plot[["status"]] <- "complete"
 
 	}
 
 	return(plot)
 
 }
-
-.networkPLT <- function(network, options, perform) {
-
-	plot <- list(
-		width = 530,# options[["plotWidth"]],
-		height = 400, #options[["plotHeight"]],
-		# custom = list(width = "plotWidth", height = "plotHeight"),
-	)
-
-	if (perform == "run") {
-		.plotFunc <- function() {
-			plot(rnorm(100), bty = "n", las = 1)
-		}
-
-
-		content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
-
-		plot <- c(plot, list(
-			convertible = TRUE,
-			obj = content[["obj"]],
-			data = content[["png"]],
-			status = "complete"
-		)
-		)
-
-
-	} else {
-
-		#	plot[["data"]] <- ""
-
-	}
-
-	return(plot)
-
-
-}
-

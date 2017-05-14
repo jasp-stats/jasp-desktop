@@ -27,7 +27,7 @@
 		},
 		{
 			"default": false,
-			"name": "plotFitMeasures",
+			"name": "tableFitMeasures",
 			"type": "Boolean"
 		},
 		{
@@ -37,7 +37,7 @@
 		},
 		{
 			"default": false,
-			"name": "plotNetworkTable",
+			"name": "plotNetwork",
 			"type": "Boolean"
 		},
 		{
@@ -171,6 +171,26 @@
 				"Continue: Coxph"
 			],
 			"default": "Default"
+		},
+		{
+			"name": "plotWidthNetwork",
+			"type": "Integer",
+			"default": 480
+		},
+		{
+			"name": "plotHeightNetwork",
+			"type": "Integer",
+			"default": 320
+		},
+		{
+			"name": "plotWidthCentrality",
+			"type": "Integer",
+			"default": 480
+		},
+		{
+			"name": "plotHeightCentrality",
+			"type": "Integer",
+			"default": 320
 		}
 	]
 }
