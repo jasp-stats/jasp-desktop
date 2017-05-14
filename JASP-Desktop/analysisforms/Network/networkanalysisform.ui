@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>658</width>
-    <height>1587</height>
+    <width>672</width>
+    <height>1767</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -242,7 +242,7 @@
            </property>
            <layout class="QVBoxLayout" name="verticalLayout">
             <item>
-             <widget class="BoundCheckBox" name="plotFitMeasures">
+             <widget class="BoundCheckBox" name="tableFitMeasures">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -268,7 +268,7 @@
              </widget>
             </item>
             <item>
-             <widget class="BoundCheckBox" name="plotNetworkTable">
+             <widget class="BoundCheckBox" name="plotNetwork">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1691,6 +1691,27 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundGroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/boundgroupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -1702,35 +1723,14 @@
    <header>widgets/boundtextbox.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundGroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/boundgroupbox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>boundSingleItemView</class>
    <extends>QListView</extends>
    <header>widgets/boundsingleitemview.h</header>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundComboBox</class>
    <extends>QComboBox</extends>
    <header>widgets/boundcombobox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
