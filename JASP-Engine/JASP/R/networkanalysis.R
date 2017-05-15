@@ -102,6 +102,7 @@ NetworkAnalysis <- function (
 
 	## Create Output ##  ----
 
+	keep <- NULL
 	results[["generalTB"]] <- .NWgeneralTB(network, options, perform)
 
 	if (options[["tableFitMeasures"]]) {
@@ -112,9 +113,11 @@ NetworkAnalysis <- function (
 	}
 	if (options[["plotNetwork"]]) {
 		results[["networkPLT"]] <- .makeNetworkPLT(network, options, perform, oldPlot = state[["networkPLT"]], plotType = "network")
+		keep <- c(keep, results[["networkPLT"]][["data"]])
 	}
 	if (options[["plotCentrality"]]) {
 		results[["centralityPLT"]] <- .makeNetworkPLT(network, options, perform, oldPlot = state[["centralityPLT"]], plotType = "centrality")
+		keep <- c(keep, results[["centralityPLT"]][["data"]])
 	}
 
 
@@ -133,11 +136,11 @@ NetworkAnalysis <- function (
 	# return to jasp
 	if (perform == "init") {
 
-		return(list(results = results, status = "inited", state = state))
+		return(list(results = results, status = "inited", state = state, keep = keep))
 
 	} else {
 
-		return(list(results = results, status = "complete", state = state))
+		return(list(results = results, status = "complete", state = state, keep = keep))
 
 	}
 
@@ -155,6 +158,7 @@ NetworkAnalysis <- function (
 
 	data("bfi", package = "psych")
 	dataset <- bfi[, 1:25]
+	dataset <- .vdf(dataset, columns.as.ordinal = colnames(dataset))
 
 	msg <- capture.output(
 		network <- bootnet::estimateNetwork(
@@ -186,26 +190,27 @@ NetworkAnalysis <- function (
 		))
 	)
 
-	infos <- c("Number of nodes", "Number of non-zero edges", "Sparsity")
+	TBcolumns <- list(info = c("Number of nodes", "Number of non-zero edges", "Sparsity"))
 
 	if (perform != "run") { # fill in with .
 
-		values <- rep(".", 3)
+		TBcolumns[["value"]] <- rep(".", 3)
 		table[["status"]] <- "inited"
 
 	} else { # fill in with info from bootnet:::print.bootnet
 
-		values <- c(
+		TBcolumns[["value"]] <- c(
 			nrow(network[["graph"]]),
 			sum(network[["graph"]][upper.tri(network[["graph"]], diag = FALSE)] == 0),
 			mean(network[["graph"]][upper.tri(network[["graph"]], diag = FALSE)] == 0)
 		)
 		table[["status"]] <- "complete"
 
+		# add footnotes for detected as?
+
 	}
 
-	data <- mapply(function(x, y) list(info = x, value = y),
-				   x = infos, y = values, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+	data <- .TBcolumns2TBrows(TBcolumns)
 	table[["data"]] <- data
 
 	return(table)
@@ -225,26 +230,67 @@ NetworkAnalysis <- function (
 
 .centralityTB <- function(network, options, perform) {
 
-	table <- list()
-	table[["title"]] <- "Centrality Measures"
-	table[["schema"]] <- list(fields=list())
-	table[["data"]] <- list()
+	table <- list(
+		title = "Centrality measures per variable",
+		schema = list(fields = list(
+			list(name = "Variable",    title = "Variable",    type = "string"),
+			list(name = "Betweenness", title = "Betweenness", type = "number", format="sf:4;dp:3"),
+			list(name = "Closeness",   title = "Closeness",   type = "number", format="sf:4;dp:3"),
+			list(name = "Strength",    title = "Strength",    type = "number", format="sf:4;dp:3")
+		))
+	)
+
+	if (perform != "run") {
+
+		if (!is.null(options[["variables"]]) || !(length(options[["variables"]]) > 0)) {
+
+			TBcolumns <- list(".", ".", ".", ".")
+
+		} else {
+			# dataframe since reshape2 below returns dataframes
+			TBcolumns <- data.frame(
+				.v(options[["variables"]]),
+				rep(".", length(options[["variables"]])),
+				rep(".", length(options[["variables"]])),
+				rep(".", length(options[["variables"]]))
+			)
+		}
+
+		table[["status"]] <- "inited"
+
+	} else {
+
+		TBcolumns <- qgraph::centralityTable(network[["graph"]])
+		TBcolumns <- reshape2::dcast(TBcolumns, node ~ measure, value.var = "value")
+		TBcolumns[["node"]] <- .unv(TBcolumns[["node"]])
+		table[["status"]] <- "complete"
+
+	}
+
+	names(TBcolumns) <- c("Variable", "Betweenness", "Closeness", "Strength")
+	data <- .TBcolumns2TBrows(TBcolumns)
+	table[["data"]] <- data
 
 	return(table)
 
 }
+
+# perhaps move to common?
+.TBcolumns2TBrows <- function(infoByCol) do.call(mapply, c(FUN = base::list, infoByCol, SIMPLIFY = FALSE, USE.NAMES = FALSE))
+
 
 .plotFunNetwork <- function() {
 
 	# eval(quote()) construction because this function is evaluated inside .writeImage()
 	# which needs to look 2 levels up to find the objects network and options.
 	eval(quote(
-		qgraph::qgraph(input = network[["graph"]], layout = options[["layout"]], repulsion = options[["repulsion"]])
+		qgraph::qgraph(input = network[["graph"]], layout = options[["layout"]], repulsion = options[["repulsion"]],
+					   labels = .unv(network[["labels"]]))
 	), envir = parent.frame(2))
 
 }
 
-
+# general function that makes the json framework around plot functions
 .makeNetworkPLT <- function(network, options, perform, oldPlot = NULL, plotType) {
 
 	if (!is.null(oldPlot) && !identical(oldPlot[["data"]], ""))
@@ -276,7 +322,7 @@ NetworkAnalysis <- function (
 
 		plotObjOrFun <- switch(plotType,
 			"network" = .plotFunNetwork,
-			"centrality" = qgraph::centralityPlot(network[["graph"]], print = FALSE)
+			"centrality" = qgraph::centralityPlot(network[["graph"]], labels = .unv(network[["labels"]]), print = FALSE)
 		)
 
 		content <- .writeImage(width = plot[["width"]], height = plot[["height"]], plot = plotObjOrFun)
@@ -287,6 +333,9 @@ NetworkAnalysis <- function (
 		plot[["status"]] <- "complete"
 
 	}
+
+	# should go into .writeImage
+	grDevices::graphics.off()
 
 	return(plot)
 
