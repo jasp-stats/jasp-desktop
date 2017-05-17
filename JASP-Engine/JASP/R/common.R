@@ -1021,6 +1021,8 @@ saveImage <- function(plotName, format, height, width){
 .imgToState <- function(imgobj) {
 
 	result <- list()
+	
+	# if the state is empty, prevent that a figure entry is added
 	if (!is.list(imgobj) || is.null(names(imgobj)))
 		return(NULL)
 
