@@ -54,12 +54,12 @@ Option *OptionNumber::clone() const
 	return new OptionNumber(_value, _min, _max, _format);
 }
 
-double OptionNumber::min() const
+double OptionNumber::minimum() const
 {
 	return _min;
 }
 
-double OptionNumber::max() const
+double OptionNumber::maximum() const
 {
 	return _max;
 }

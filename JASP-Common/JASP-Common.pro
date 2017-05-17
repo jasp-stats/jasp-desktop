@@ -18,14 +18,14 @@ windows:INCLUDEPATH += ../../boost_1_64_0
 windows:LIBS += -lole32 -loleaut32 -larchive.dll
 
 
-QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
+macx:QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
-QMAKE_CXXFLAGS += -Wno-deprecated-declarations
+macx:QMAKE_CXXFLAGS += -Wno-deprecated-declarations
 macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 macx:QMAKE_CXXFLAGS += -stdlib=libc++
 
-windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
+windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -D__WIN32__
 
 SOURCES += \
 	analysis.cpp \

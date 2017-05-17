@@ -76,7 +76,7 @@ public:
 		iterator begin();
 		iterator end();
 
-		IntsStruct();
+		IntsStruct() {};
 
 	private:
 
@@ -115,7 +115,7 @@ public:
 		iterator end();
 
 	private:
-		DoublesStruct();
+		DoublesStruct() {};
 
 		Column *getParent();
 

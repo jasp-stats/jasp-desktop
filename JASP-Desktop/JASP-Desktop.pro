@@ -36,13 +36,13 @@ windows:LIBS += -lboost_filesystem-mgw48-mt-1_64 -lboost_system-mgw48-mt-1_64 -l
 windows:LIBS += -lole32 -loleaut32
   linux:LIBS += -lrt
 
-QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
+macx:QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
 macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 macx:QMAKE_CXXFLAGS += -stdlib=libc++
 
-windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
+windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -D__WIN32__
 
 linux {
         _R_HOME = $$(R_HOME)

@@ -641,7 +641,7 @@ void Column::append(int rows)
 
 		DataBlock *newBlock = _mem->construct<DataBlock>(anonymous_instance)();
 
-		int toInsert = std::min(rowsLeft, DataBlock::capacity());
+		int toInsert = min(rowsLeft, DataBlock::capacity());
 		newBlock->insert(toInsert);
 		rowsLeft -= toInsert;
 
@@ -715,9 +715,6 @@ void Column::_setRowCount(int rowCount)
 		truncate(this->rowCount() - rowCount);
 }
 
-Column::Ints::IntsStruct()
-{
-}
 
 Column *Column::IntsStruct::getParent()
 {
@@ -809,9 +806,6 @@ Column::Doubles::iterator::iterator(BlockMap::iterator blockItr, int pos)
 	_currentPos = pos;
 }
 
-Column::Doubles::DoublesStruct()
-{
-}
 
 Column *Column::DoublesStruct::getParent()
 {

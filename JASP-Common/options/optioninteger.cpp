@@ -49,12 +49,12 @@ Option *OptionInteger::clone() const
 	return new OptionInteger(value());
 }
 
-int OptionInteger::min() const
+int OptionInteger::minimum() const
 {
   return _min;
 }
 
-int OptionInteger::max() const
+int OptionInteger::maximum() const
 {
   return _max;
 }
