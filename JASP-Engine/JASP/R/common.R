@@ -142,9 +142,14 @@ checkPackages <- function() {
 
 isTryError <- function(obj){
     if (is.list(obj)){
-        return(any(sapply(obj, function(obj){isTRUE(class(obj)=="try-error")})))
+        return(any(sapply(obj, function(obj) {
+            inherits(obj, "try-error")
+        }))
+        )
     } else {
-        return(any(sapply(list(obj), function(obj){isTRUE(class(obj)=="try-error")})))
+        return(any(sapply(list(obj), function(obj){
+            inherits(obj, "try-error")
+        })))
     }
 }
 
@@ -687,6 +692,10 @@ callback <- function(results=NULL) {
 
 	if (is.na(value))
 		return("NaN")
+    
+    if (identical(value, numeric(0))) {
+        return("")
+    }
 
 	if (value == Inf)
 		return("\u221E")
