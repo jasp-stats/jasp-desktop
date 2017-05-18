@@ -142,11 +142,19 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	aboutLayout->addWidget(aboutOSF);
 	aboutLayout->addWidget(registerOSF);
 	aboutLayout->addStretch(1);
+	
+	_currentFileName = "";
 }
 
 void BackstageOSF::attemptToConnect()
 {
 	_model->attemptToConnect();
+}
+
+void BackstageOSF::setCurrentFileName(QString currentFileName)
+{
+	_currentFileName = currentFileName;
+	_fileNameTextBox->setText(_currentFileName);
 }
 
 void BackstageOSF::updateUserDetails()
