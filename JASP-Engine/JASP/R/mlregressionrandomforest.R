@@ -186,26 +186,34 @@ MLRegressionRandomForest <- function(dataset = NULL, options, perform = "run",
 		options[["noOfTrees"]] <- as.integer(options[["numberOfTrees"]])
 	}
 
-	if (is.character(options[["noOfPredictors"]]))
-		options[["noOfPredictors"]] <- ifelse(purpose == "regression",
-											  max(c(floor(length(variables) / 3), 1)),
-											  floor(sqrt(p)))
+	if (options[["noOfPredictors"]] == "auto") {
+		options[["noOfPredictors"]] <- max(c(floor(length(variables) / 3), 1))
+	} else if (options[["noOfPredictors"]] == "manual") {
+		options[["noOfPredictors"]] <- as.integer(options[["numberOfPredictors"]])
+	}
 
-	if (is.character(options[["dataBootstrapModel"]]))
+	if (is.character(options[["dataBootstrapModel"]]))  # aanpassen! for sampsize
 		options[["dataBootstrapModel"]] <- 1
 
-	if (is.character(options[["dataTrainingModel"]]))
+	if (is.character(options[["dataTrainingModel"]]))  # aanpassen! check CI whether [0, 1] or [0, 100]
 		options[["dataTrainingModel"]] <- .8
 
-	if (is.character(options[["maximumTerminalNodeSize"]]))
+	if (options[["maximumTerminalNodeSize"]] == "auto") {
 		options[["maximumTerminalNodeSize"]] <- NULL
+	} else if (options[["maximumTerminalNodeSize"]] == "manual") {
+		options[["maximumTerminalNodeSize"]] <- as.integer(options[["modelMaximumTerminalNode"]])
+	}
+		
+	if (options[["minimumTerminalNodeSize"]] == "auto") {
+		options[["minimumTerminalNodeSize"]] <- 5
+	} else if (options[["minimumTerminalNodeSize"]] == "manual") {
+		options[["minimumTerminalNodeSize"]] <- as.integer(options[["modelMinimumTerminalNode"]])
+	}
 
-	if (is.character(options[["minimumTerminalNodeSize"]]))
-		options[["minimumTerminalNodeSize"]] <- 1
-
-	# seed
-	if (is.numeric(options[["seed"]]))
+	# seed	
+	if (is.numeric(options[["seed"]])) {
 		set.seed(options[["seed"]])
+	}		
 
 	# training and test data
 	n <- nrow(dataset)
@@ -278,8 +286,7 @@ MLRegressionRandomForest <- function(dataset = NULL, options, perform = "run",
 		toTable <- randomForest::importance(toFromState$res)
 		toTable <- toTable[order(toTable[, 1], decreasing = TRUE), , drop = FALSE]
 		colnames(toTable) <- intNms
-		rownames(toTable) <- variables
-
+		rownames(toTable) <- variables[sort(randomForest::importance(toFromState$res)[,1], decr=T, index.return=T)$ix]  
 	}
 
 	# fields = list(list(name="case", title="", type="string", combine=TRUE))
@@ -419,7 +426,7 @@ MLRegressionRandomForest <- function(dataset = NULL, options, perform = "run",
 			Feature = variables,
 			Importance = unname(randomForest::importance(toFromState$res, type = 1))
 		)
-		toPlot <- toPlot[order(toPlot[["Importance"]], decreasing = TRUE), ]
+		toPlot <- toPlot[order(toPlot[["Importance"]], decreasing = FALSE), ]  # HELEN: decr=F
 
 		axisLimits <- range(pretty(toPlot[["Importance"]]))
 		axisLimits[1] <- min(c(0, axisLimits[1]))
