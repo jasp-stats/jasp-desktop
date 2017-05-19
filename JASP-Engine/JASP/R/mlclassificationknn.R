@@ -842,7 +842,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
             
             fields <- list(
                 list(name = "model", title = "", type = "string"),
-                list(name = "RMSE", title = "RMSE", type = "number", format = "sf:4;dp:3"),
+                list(name = "RMSE", title = "Accuracy", type = "number", format = "sf:4;dp:3"),
                 list(name = "k", title = "No. nearest neighbors", type = "integer"),
                 list(name = "weights", title = "Weights", type = "string"),
                 list(name = "distance", title = "Distance parameter", type = "number", format = "dp:3")
