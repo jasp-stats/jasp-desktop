@@ -322,13 +322,15 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 		        bfObject$hasErrors <- TRUE
 		        bfObject$errorMessages[[length(bfObject$errorMessages)+1]] <- list(errorMessage=error, 
 		                                                                           errorType="package")
-		    } else {
-		        # NAs: nModelsVisited, bf10s, postModelProbs
-		        bfObject <- modifyList(bfObject, errorBfObj)
-		        bfObject$hasErrors <- TRUE
-		        bfObject$errorMessages[[length(bfObject$errorMessages)+1]] <- list(errorMessage="No clue", 
-		                                                                           errorType="code")
-		    }
+		    } 
+		    # No clue error changed in to exception
+		    # else {
+		    #     # NAs: nModelsVisited, bf10s, postModelProbs
+		    #     bfObject <- modifyList(bfObject, errorBfObj)
+		    #     bfObject$hasErrors <- TRUE
+		    #     bfObject$errorMessages[[length(bfObject$errorMessages)+1]] <- list(errorMessage="No clue", 
+		    #                                                                        errorType="code")
+		    # }
 		} else if (isTRUE(bfObject$hasErrors)) {
 		    # NAs: nModelsVisited, bf10s, postModelProbs
 		    bfObject <- modifyList(bfObject, errorBfObj)
@@ -339,16 +341,18 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 		    bfObject$hasErrors <- TRUE
 		    bfObject$errorMessages[[length(bfObject$errorMessages)+1]] <- list(errorMessage="Cannot define model", 
 		                                                                       errorType="input")
-		} else { 
-		    # NAs: nModelsVisited, bf10s, postModelProbs
-		    bfObject <- modifyList(bfObject, errorBfObj)
-		    bfObject <- list(anthonyObj = NA, variables = variablesInModel)
-		    
-		    # Add error message to bfObject
-		    bfObject$hasErrors <- TRUE
-		    bfObject$errorMessages[[length(bfObject$errorMessages)+1]] <- list(errorMessage="No clue", 
-		                                                                       errorType="code")
 		}
+	    # No clue error changed in to exception
+	    # else { 
+		#     # NAs: nModelsVisited, bf10s, postModelProbs
+		#     bfObject <- modifyList(bfObject, errorBfObj)
+		#     bfObject <- list(anthonyObj = NA, variables = variablesInModel)
+		#     
+		#     # Add error message to bfObject
+		#     bfObject$hasErrors <- TRUE
+		#     bfObject$errorMessages[[length(bfObject$errorMessages)+1]] <- list(errorMessage="No clue", 
+		#                                                                        errorType="code")
+		# }
 	    
 	    # Post processing
 	    #########################################################################
@@ -384,15 +388,17 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	                        bfObject$hasErrors <- TRUE
 	                        bfObject$errorMessages <- list(errorMessages="R Package error: Cannot retrieve table probabilities", errorType="package")
 	                    }
-	                } else {
-	                    # This means that bfObject$nModelsVisited not >= 1
-	                    # TODO return error totally
-	                    # NAs: nModelsVisited, bf10s, postModelProbs
-	                    bfObject <- modifyList(bfObject, errorBfObj)
-	                    
-	                    bfObject$hasErrors <- TRUE
-	                    bfObject$errorMessages <- list(errorMessages="No clue", errorType="code")
 	                }
+	                # No clue error changed in to exception
+	                # else {
+	                #     # This means that bfObject$nModelsVisited not >= 1
+	                #     # TODO return error totally
+	                #     # NAs: nModelsVisited, bf10s, postModelProbs
+	                #     bfObject <- modifyList(bfObject, errorBfObj)
+	                #     
+	                #     bfObject$hasErrors <- TRUE
+	                #     bfObject$errorMessages <- list(errorMessages="No clue", errorType="code")
+	                # }
 	            } else if (isTryError(anthonySummary)) {
 	                # NAs: nModelsVisited, bf10s, postModelProbs
 	                bfObject <- modifyList(bfObject, errorBfObj)
@@ -402,16 +408,18 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	                bfObject$hasErrors <- TRUE
 	                bfObject$errorMessages[[length(bfObject$errorMessages)+1]] <- list(errorMessage=paste0("R Package error: ",.extractErrorMessage(anthonySummary)), 
 	                                                                                   errorType="package")
-	            } else {
-	                # NAs: nModelsVisited, bf10s, postModelProbs
-	                bfObject <- modifyList(bfObject, errorBfObj)
-	                
-	                # TODO: Tim centralised 
-	                #
-	                bfObject$hasErrors <- TRUE
-	                bfObject$errorMessages[[length(bfObject$errorMessages)+1]] <- list(errorMessage="No clue", 
-	                                                                                   errorType="code")
-	            }
+	            } 
+	            # No clue error changed in to exception
+	            # else {
+	            #     # NAs: nModelsVisited, bf10s, postModelProbs
+	            #     bfObject <- modifyList(bfObject, errorBfObj)
+	            #     
+	            #     # TODO: Tim centralised 
+	            #     #
+	            #     bfObject$hasErrors <- TRUE
+	            #     bfObject$errorMessages[[length(bfObject$errorMessages)+1]] <- list(errorMessage="No clue", 
+	            #                                                                        errorType="code")
+	            # }
 	        } else {
 	            # Here bfObject$anthonyObj is not of the right class "bcct"
 	            # NAs: nModelsVisited, bf10s, postModelProbs
