@@ -228,11 +228,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-<<<<<<< HEAD
-               <string>Log(BF₁₀)</string>
-=======
                <string>Measure 1 &lt; Measure 2</string>
->>>>>>> Added subjective priors to Bayesian TTests
               </property>
              </widget>
             </item>
