@@ -443,7 +443,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	} # ends performs=="run" to calculate a bfObject
 	
 	
-	# TODO: WHAT IS THIS TAHIRA???
+	# TODO: I'm not sure what this is about, perhaps I should ask Tahira
 	#
 	# if (length(listOfErrors) > 1){
 	#     anthonyObj <- try(conting::bcct(modelFormula, data = dataset,  prior = "SBH", n.sample=1000), silent = TRUE)
