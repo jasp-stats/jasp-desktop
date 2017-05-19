@@ -19,11 +19,11 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
     # Init end result
     results <- list()
     meta <- list()
-    .meta <-  list(list(name = "title", type = "title"),
-                   list(name = "table", type = "table"),
-                   list(name = "posteriorTable", type = "table"),
-                   list(name = "Bayesianlogregression", type = "table"),
-                   list(name = "BayesianSublogregression", type = "table")
+    .meta <-  list(list(name="title", type="title"),
+                   list(name="table", type="table"),
+                   list(name="posteriorTable", type="table"),
+                   list(name="Bayesianlogregression", type="table"),
+                   list(name="BayesianSublogregression", type="table")
     )
     
     
