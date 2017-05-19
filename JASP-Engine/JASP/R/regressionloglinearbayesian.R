@@ -292,9 +292,6 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 		    }
 
 		    # Calculate here
-		    checkForm <<- modelFormula
-		    checkData <<- dataset
-		    
 		    anthonyObj <- try(conting::bcct(formula=modelFormula, data = dataset, prior = "SBH", n.sample=2000, a=options$priorShape, b=options$priorScale), silent = TRUE)
 		    # anthonyObj <- conting::bcct(formula=modelFormula, data = dataset, prior = "SBH", n.sample=2000, a=options$priorShape, b=options$priorScale)
 		    bfObject$nBurnIn <- 2000 * 0.2
@@ -322,15 +319,11 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 		        # NAs: nModelsVisited, bf10s, postModelProbs
 		        bfObject <- modifyList(bfObject, errorBfObj)
 		        
-		        
 		        bfObject$hasErrors <- TRUE
-		        
-		        
 		        bfObject$errorMessages[[length(bfObject$errorMessages)+1]] <- list(errorMessage=error, 
 		                                                                           errorType="package")
 		    } else {
 		        # NAs: nModelsVisited, bf10s, postModelProbs
-		        print("clue1")
 		        bfObject <- modifyList(bfObject, errorBfObj)
 		        bfObject$hasErrors <- TRUE
 		        bfObject$errorMessages[[length(bfObject$errorMessages)+1]] <- list(errorMessage="No clue", 
@@ -347,14 +340,12 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 		    bfObject$errorMessages[[length(bfObject$errorMessages)+1]] <- list(errorMessage="Cannot define model", 
 		                                                                       errorType="input")
 		} else { 
-		    # No idea
-		    bfObject <- list(anthonyObj = NA, variables = variablesInModel)
 		    # NAs: nModelsVisited, bf10s, postModelProbs
 		    bfObject <- modifyList(bfObject, errorBfObj)
+		    bfObject <- list(anthonyObj = NA, variables = variablesInModel)
 		    
 		    # Add error message to bfObject
 		    bfObject$hasErrors <- TRUE
-		    print("clue2")
 		    bfObject$errorMessages[[length(bfObject$errorMessages)+1]] <- list(errorMessage="No clue", 
 		                                                                       errorType="code")
 		}
@@ -394,13 +385,12 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	                        bfObject$errorMessages <- list(errorMessages="R Package error: Cannot retrieve table probabilities", errorType="package")
 	                    }
 	                } else {
-	                    # This means that  bfObject$nModelsVisited not >= 1
+	                    # This means that bfObject$nModelsVisited not >= 1
 	                    # TODO return error totally
 	                    # NAs: nModelsVisited, bf10s, postModelProbs
 	                    bfObject <- modifyList(bfObject, errorBfObj)
 	                    
 	                    bfObject$hasErrors <- TRUE
-	                    print("clue3")
 	                    bfObject$errorMessages <- list(errorMessages="No clue", errorType="code")
 	                }
 	            } else if (isTryError(anthonySummary)) {
@@ -419,7 +409,6 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	                # TODO: Tim centralised 
 	                #
 	                bfObject$hasErrors <- TRUE
-	                print("clue4")
 	                bfObject$errorMessages[[length(bfObject$errorMessages)+1]] <- list(errorMessage="No clue", 
 	                                                                                   errorType="code")
 	            }
@@ -516,8 +505,6 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	
 	message <- paste ("Total number of models visited =", bfObject$nModelsVisited, sep=" ")
 	.addFootnote (footnotes, symbol = "<em>Note.</em>", text = message)
-	
-	oezo <<- bfObject
 	
 	if (isTRUE(bfObject$hasErrors)) {
 	    for (i in 1:length(bfObject$errorMessage)) {
