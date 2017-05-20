@@ -16,7 +16,10 @@
 #
 
 RegressionLogLinearBayesian <- function(dataset, options, perform="run", callback, ...) {
-    # Init end result
+    # Init end result container
+    endResults <- list()
+    
+    # subsresult containter 
     results <- list()
     meta <- list()
     .meta <-  list(list(name="title", type="title"),
@@ -823,18 +826,16 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	if (perform == "init") {
 	    if (options$counts == "" && numberOfModels < 2) {
 	        endResults <- list(results=results, status="complete") #, keep=keep)
-	        return(endResults)
 	    } else if (options$counts != "" && numberOfModels < 1) {
 	        endResults <- list(results=results, status="complete") #, keep=keep)
-	        return(endResults)
 	    } else {
 	        endResults <- list(results=results, status="inited") #, state=state, keep=keep)
-	        return(endResults)
 	    }
 	} else {
 	    endResults <- list(results=results, status="complete")
-	    return(endResults)
 	}
+	
+	return(endResults)
 }
 
 .regressionLogLinearBayesianBuildLookup <- function(dataset, factors) {

@@ -812,7 +812,10 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 		results[["fitMeasures_Other"]] <- fitMeasures_Other
 		
 		if (errorMessage != "" && perform == "run" && options$model != "") {
-		    fitMeasures[['error']] <- list(errorType="badData")
+		    # TODO (Sacha): which error message should this belong to?
+		    #   It used to be fitMeasures[['error']] <- list(errorType="badData")
+		    #   but fitMeasures is not initialised
+		    fitMeasures_Other[['error']] <- list(errorType="badData")
 		}
 	}
 	
