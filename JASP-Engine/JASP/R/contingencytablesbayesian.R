@@ -539,7 +539,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		odds.ratio.plot[["convertible"]] <- TRUE
 		odds.ratio.plot[["status"]] <- "complete"
 		
-		new.plot.state <- list(keep=plot)
+		new.plot.state <- list(keep=plot[["png"]])
 		
 		complete <- TRUE
 	
