@@ -142,9 +142,14 @@ checkPackages <- function() {
 
 isTryError <- function(obj){
     if (is.list(obj)){
-        return(any(sapply(obj, function(obj){isTRUE(class(obj)=="try-error")})))
+        return(any(sapply(obj, function(obj) {
+            inherits(obj, "try-error")
+        }))
+        )
     } else {
-        return(any(sapply(list(obj), function(obj){isTRUE(class(obj)=="try-error")})))
+        return(any(sapply(list(obj), function(obj){
+            inherits(obj, "try-error")
+        })))
     }
 }
 
@@ -659,41 +664,49 @@ callback <- function(results=NULL) {
 }
 
 .clean <- function(value) {
-
+    # Clean function value so it can be reported in json/html
+    
 	if (is.list(value)) {
-	
-		if (is.null(names(value))) {
-			
-			for (i in length(value))
-				value[[i]] <- .clean(value[[i]])
-				
+	    if (is.null(names(value))) {
+	        for (i in length(value)) {
+			    value[[i]] <- .clean(value[[i]])
+			}
 		} else {
-		
-			for (name in names(value))
-				value[[name]] <- .clean(value[[name]])
+		    for (name in names(value)) {
+			    value[[name]] <- .clean(value[[name]])
+			}
 		}
-		
 		return(value)
 	}
 
-	if (is.null(value))
-		return ("")
+	if (is.null(value)) {
+	    return ("")
+	}
 
-	if (is.character(value))
-		return(value)
+	if (is.character(value)) {
+	    return(value)
+	}
 
-	if (is.finite(value))
-		return(value)
+	if (is.finite(value)) {
+	    return(value)
+	}
 
-	if (is.na(value))
-		return("NaN")
+	if (is.na(value)) {
+	    return("NaN")
+	}
+    
+    if (identical(value, numeric(0))) {
+        return("")
+    }
 
-	if (value == Inf)
-		return("\u221E")
-
-	if (value == -Inf)
-		return("-\u221E")
-
+	if (value == Inf) {
+	    return("\u221E")
+	}
+		
+	if (value == -Inf) {
+	    return("-\u221E")
+	}
+		
 	stop("could not clean value")
 }
 
