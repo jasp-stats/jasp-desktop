@@ -21,6 +21,14 @@
 #' returns the result object and the dataset
 .initializeTTest <- function(dataset, options, perform, type = 'independent-samples') {
 	
+	if (type == "one-sample") {
+		analysisTitle <- "One Sample T-Test"
+	} else if (type == "paired") {
+		analysisTitle <- "Paired Samples T-Test"
+	} else {
+		analysisTitle <- "Independent Samples T-Test"
+	}
+	
 	groups <- options$groupingVariable
 	depvars <- unlist(options$variables)
 	
@@ -55,7 +63,7 @@
 	} 
 	
 	## this is the main object; we add stuff to it and return it
-	results <- list("title" = "T-Test")
+	results <- list("title" = analysisTitle)
 
 	#### META
 	meta <- list()

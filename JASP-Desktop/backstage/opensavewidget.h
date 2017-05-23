@@ -59,6 +59,8 @@ public:
 	void setDataFileWatcher(bool watch);
 
 	Utils::FileType getCurrentFileType();
+	QString getCurrentFilePath();
+	QString getDefaultOutFileName();
 
 public slots:
 	void dataSetIOCompleted(FileEvent *event);

@@ -20,12 +20,9 @@
 			"type": "List"
 		},
 		{
-			"format": "",
-			"name": "priorWidth",
-			"type": "Number",
-			"value": 0.7070,
-			"min": 0,
-			"max": 2
+			"name": "standardizedEffectSize",
+			"default": true,
+			"type": "Boolean"
 		},
 		{
 			"default": false,
@@ -90,6 +87,140 @@
 			"options": [ "BF10", "BF01", "LogBF10" ],
 			"default": "BF10",
 			"type": "List"
+		},
+		{
+			"name": "effectSize",
+			"options": ["standardized", "dienes"],
+			"default": "standardized",
+			"type": "List"
+		},
+		{
+			"name": "effectSizeStandardized",
+			"options": ["default", "informative"],
+			"default": "default",
+			"type": "List"
+		},
+		{
+			"name": "defaultStandardizedEffectSize",
+			"options": ["cauchy"],
+			"default": "cauchy",
+			"type": "List"
+		},
+		{
+			"format": "",
+			"name": "priorWidth",
+			"type": "Number",
+			"value": 0.7070,
+			"min": 0,
+			"max": 2
+		},
+		{
+			"name": "informativeStandardizedEffectSize",
+            "options": ["cauchy", "normal","t"],
+			"default": "cauchy",
+			"type": "List"
+		},
+		{
+			"format": "",
+			"name": "informativeCauchyLocation",
+			"type": "Number",
+			"value": 0,
+			"min": -3,
+			"max": 3
+		},
+		{
+			"format": "",
+			"name": "informativeCauchyScale",
+			"type": "Number",
+			"value": 0.7070,
+			"min": 0,
+			"max": 2
+		},
+		{
+			"format": "",
+			"name": "informativeTLocation",
+			"type": "Number",
+			"value": 0,
+			"min": -3,
+			"max": 3
+		},
+		{
+			"format": "",
+			"name": "informativeTScale",
+			"type": "Number",
+			"value": 0.7070,
+			"min": 0,
+			"max": 2
+		},
+		{
+			"format": "",
+			"name": "informativeTDf",
+			"type": "Number",
+			"value": 1,
+			"min": 1,
+			"max": 500
+		},
+		{
+			"format": "",
+			"name": "informativeNormalMean",
+			"type": "Number",
+			"value": 0,
+			"min": -3,
+			"max": 3
+		},
+		{
+			"format": "",
+			"name": "informativeNormalStd",
+			"type": "Number",
+			"value": 0.7070,
+			"min": 0,
+			"max": 2
+		},
+		{
+			"name": "dienesEffectSize",
+			"options": ["uniform", "normal", "half_normal"],
+			"default": "uniform",
+			"type": "List"
+		},
+		{
+			"format": "",
+			"name": "uniformDienesLowerBound",
+			"type": "Number",
+			"value": 0.7070,
+			"min": 0,
+			"max": 2
+		},
+		{
+			"format": "",
+			"name": "uniformDienesUpperBound",
+			"type": "Number",
+			"value": 0.7070,
+			"min": 0,
+			"max": 2
+		},
+		{
+			"format": "",
+			"name": "normalDienesMean",
+			"type": "Number",
+			"value": 0.7070,
+			"min": 0,
+			"max": 2
+		},
+		{
+			"format": "",
+			"name": "normalDienesStd",
+			"type": "Number",
+			"value": 0.7070,
+			"min": 0,
+			"max": 2
+		},
+		{
+			"format": "",
+			"name": "halfNormalDienesStd",
+			"type": "Number",
+			"value": 0.7070,
+			"min": 0,
+			"max": 2
 		}
 	]
 }

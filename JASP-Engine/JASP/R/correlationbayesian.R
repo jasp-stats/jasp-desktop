@@ -110,20 +110,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			return(results)
 		}
 	} else {
-		statedBFValuesExcludeListwise <- state$bfValuesExcludeListwise
-		statedFootnotesExcludeListwise <- state$footnotesExcludeListwise
-		
 		return(list(results=results, status="complete", 
 					state=list(options=options, 
 							   results=results, 
 							   tableVariables=tableVariables,
 							   tableTests=tableTests,
 							   tableRows=tableRows,
-							   rValuesExcludePairwise=correlationTableOutput$rValuesExcludePairwise,
-							   bfValuesExcludePairwise=correlationTableOutput$bfValuesExcludePairwise,
-							   footnotesExcludePairwise=correlationTableOutput$footnotesExcludePairwise,
-							   bfValuesExcludeListwise=correlationTableOutput$bfValuesExcludeListwise,
-							   footnotesExcludeListwise=correlationTableOutput$footnotesExcludeListwise,
+							   memoryExcludePairwise=correlationTableOutput$memoryExcludePairwise,
+							   memoryExcludeListwise=correlationTableOutput$memoryExcludeListwise,
 							   correlationPlot=results$plot), keep=keep))
 	}
 }
@@ -149,10 +143,10 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 									  bayesFactorType=bayesFactorType,
 									  missingValues="excludePairwise", 
 									  state, diff) {
-	# TODO: check for all arguments in particular meansAndStdDev,
-	# hypothesis="correlated"
-	#
-	#
+	# Note: This is the default failed bfObject for wrong data
+    #
+    failedBfObject <- list(n=NaN, r=NaN, stat=NA, bf10=NaN, bfPlus0=NA, bfPlus0=NA, bfMin0=NA, ciValue=ciValue, ci=list())
+    
 	correlationTable <- list()
 	if (pearson & kendallsTauB) {
 	    correlationTable[["citation"]] <- list(
@@ -254,42 +248,24 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# State: Processing
 	#
 	if (!is.null(state)) {
-		# Retrieve from state, I could have done this directly on state$footnotes etc, 
-		# but then I have to check whether it is initialised and whether I can write to it
-		# for instance, in the writing to bfValuesList
-		#
+		# Retrieve from state, 
 		# Pairwise based on names
-		rValuesListExcludePairwise <- state$rValuesExcludePairwise
-		bfValuesListExcludePairwise <- state$bfValuesExcludePairwise
-		footnotesListExcludePairwise <- state$footnotesExcludePairwise
+		memoryExcludePairwise <- state$memoryExcludePairwise
 		
-		# Pairwise based on n and r
-		bfValuesListExcludeListwise <- state$bfValuesExcludeListwise
-		footnotesListExcludeListwise <- state$footnotesExcludeListwise
+		# Listwise based on n and r
+		memoryExcludeListwise <- state$memoryExcludeListwise
 	} else {
-		# State: Create the hierarchical structure of the state object
-	    # Initialise if there is no state
+		# State is null
+	    # Initialise: the hierarchical structure of the state object
 		temp <- list()
-		for (levels in 1:3) {
-			temp <- list(temp)
-			
-			if (levels==2) {
-				# Structure is [[variableName]][[columnName]]
-				rValuesListExcludePairwise <- temp
-				footnotesListExcludePairwise <- temp
-				
-				# Not necessary to consider the names only need the ns
-				# Structure is [[nLabel]][[rLabel]]
-				footnotesListExcludeListwise <- temp
-			} else if (levels==3) {
-				# Structure is [[priorLabel]][[variableName]][[columnName]]
-				bfValuesListExcludePairwise <- temp 
-				
-				# Not necessary to consider the names only need the rs
-				# Structure is [[priorLabel]][[nLabel]][[rLabel]]
-				bfValuesListExcludeListwise <- temp
-			}
-		}
+		
+		# Structure is [[priorLabel]][[variableName]][[columnName]] then bfObject
+		# TODO (Johnny): add [[test]] in front of it
+		memoryExcludePairwise <- list(list(list(list())))
+		
+		# Structure is [[priorLabel]][[variableName]][[columnName]] then bfObject
+		# TODO (Johnny): add [[test]] in front of it
+		memoryExcludeListwise <- list(list(list(list())))
 	}
 	
 	
@@ -305,7 +281,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	    }
 	}
 	
-	# update number of variables, hence it's always >= 2, thus, outputting a table of 2 by 2
+	# Update number of variables, hence, from here it's always >= 2, thus, outputting a table of 2 by 2
 	#
 	numberOfVariables <- length(variables)
 	
@@ -454,21 +430,17 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 					retrievalFailure <- TRUE
 					
 					if (missingValues=="excludePairwise") {
-						retrievedBFs <- bfValuesListExcludePairwise[[priorLabel]][[variableName]][[columnName]]
+					    # Try variableName then columnName
+					    bfObject <- memoryExcludePairwise[[priorLabel]][[variableName]][[columnName]]
 						
-						if (!is.null(retrievedBFs)) {
-							# State: Retrieval
-							rObs <- unlist(rValuesListExcludePairwise[[variableName]][[columnName]])
-							bfObject <- retrievedBFs
-							
-							retrievedFootnote <- footnotesListExcludePairwise[[variableName]][[columnName]]
-							
-							if (!is.null(retrievedFootnote)) {
-								obsFootnote <- unlist(retrievedFootnote)
-								index <- .addFootnote(footnotes, obsFootnote)
-								rowFootnotes[[columnName]] <- c(rowFootnotes[[columnName]], list(index))
-							}
-							
+					    if (is.null(bfObject)) {
+					        # Try variableName then columnName
+					        bfObject <- memoryExcludePairwise[[priorLabel]][[columnName]][[variableName]]
+					    }
+					    
+						if (!is.null(bfObject)) {
+							# State: retrieved
+							#
 							retrievalFailure <- FALSE
 							resultProcessing <- TRUE
 							
@@ -477,10 +449,16 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							if (isTRUE(credibleInterval)) {
 							    if (ciValue != bfObject$ciValue) {
 							        bfObject$ciValue <- ciValue
-							        bfObject$ci <- .computePearsonCredibleInterval(alpha=bfObject$betaA, beta=bfObject$betaB, bfObject$ciValue)
+							        
+							        if (test=="pearson"){
+							            bfObject$ci <- .computePearsonCredibleInterval(alpha=bfObject$betaA, beta=bfObject$betaB, bfObject$ciValue)
+							        } else if (test=="kendall"){
+							            bfObject$ci <- .computeKendallCredibleInterval(n=bfObject$n, tauObs=bfObject$stat, kappa=priorWidth, ciValue=bfObject$ciValue)
+							        }
+							        
 							        
 							        # Store back into state
-							        bfValuesListExcludePairwise[[priorLabel]][[variableName]][[columnName]] <- bfObject
+							        memoryExcludePairwise[[priorLabel]][[variableName]][[columnName]] <- bfObject
 							    }
 							}
 							#
@@ -489,61 +467,71 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							retrievalFailure <- TRUE
 						}
 					} else if (missingValues=="excludeListwise") {
-						# Load: data
+						# Check data
 						#
-						v1 <- dataset[[ .v(variableName) ]]
-						v2 <- dataset[[ .v(variable2Name) ]]
-						
-						if (!is.null(v1) && !is.null(v2)) {
-							# Note: Data: PREPARE
-							#
-							nObs <- length(v1)
-							rObs <- cor(v1, v2)
-							
-							# For stateRetrieval
-							nLabel <- as.character(round(rObs, 5))
-							rLabel <- as.character(round(rObs, 5))
-							
-							# Try state retrieval
-							#
-							retrievedBFs <- bfValuesListExcludeListwise[[priorLabel]][[nLabel]][[rLabel]]
-							
-							if (!is.null(retrievedBFs)) {
-								# State: Retrieval
-								rObs <- rObs
-								bfObject <- retrievedBFs
-								
-								retrievedFootnote <- footnotesListExcludeListwise[[nLabel]][[rLabel]]
-								
-								if (!is.null(retrievedFootnote)) {
-									obsFootnote <- unlist(retrievedFootnote)
-									index <- .addFootnote(footnotes, obsFootnote)
-									rowFootnotes[[columnName]] <- c(rowFootnotes[[columnName]], list(index))
-								}
-								
-								retrievalFailure <- FALSE
-								resultProcessing <- TRUE
-								
-								# CIs check:
-								#
-								if (isTRUE(credibleInterval)) {
-								    if (ciValue != bfObject$ciValue) {
-								        bfObject$ciValue <- ciValue
-								        bfObject$ci <- .computePearsonCredibleInterval(alpha=bfObject$betaA, beta=bfObject$betaB, bfObject$ciValue)
-								        
-								        # Store back into state with new ciValue
-								        bfValuesListExcludeListwise[[priorLabel]][[nLabel]][[rLabel]] <- bfObject
-								    }
-								}
-								#
-								# Close succesfull retrieval of bf
-							} else {
-								retrievalFailure <- TRUE
-							}
-						} else {
-							# hence, no data
-							retrievalFailure <- TRUE
-						}
+					    errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('observations','variance', 'infinity'),
+					                         all.target = c(variableName, variable2Name), observations.amount = '< 2')
+					    
+					    if (!identical(errors, FALSE)) {
+					        # Note: Data: NOT ok, 
+					        # bf10: can't compute
+					        bfObject <- failedBfObject
+					        bfObject$footnote <- errors$message
+					        
+					        retrievalFailure <- FALSE
+					        resultProcessing <- TRUE
+					    } else {
+					        # Data is good, now try to retrieve bfObject
+					        #
+					        v1 <- dataset[[ .v(variableName) ]]
+					        v2 <- dataset[[ .v(variable2Name) ]]
+					        
+					        if (!is.null(v1) && !is.null(v2)) {
+					            # Note: Data: PREPARE
+					            # 
+					            nObs <- length(v1)
+					            rObs <- cor(v1, v2, method=test)
+					            
+					            # For stateRetrieval
+					            nLabel <- as.character(round(nObs, 5))
+					            rLabel <- as.character(round(rObs, 5))
+					            
+					            # Try state retrieval
+					            #
+					            bfObject <- memoryExcludeListwise[[priorLabel]][[nLabel]][[rLabel]]
+					            
+					            if (!is.null(bfObject)) {
+					                # State: Retrieved
+					                
+					                retrievalFailure <- FALSE
+					                resultProcessing <- TRUE
+					                
+					                # CIs if user changed ciValue, then recompute and store again
+					                #
+					                if (isTRUE(credibleInterval)) {
+					                    if (ciValue != bfObject$ciValue) {
+					                        bfObject$ciValue <- ciValue
+					                        
+					                        if (test=="pearson"){
+					                            bfObject$ci <- .computePearsonCredibleInterval(alpha=bfObject$betaA, beta=bfObject$betaB, bfObject$ciValue)
+					                        } else if (test=="kendall"){
+					                            bfObject$ci <- .computeKendallCredibleInterval(n=bfObject$n, tauObs=bfObject$tauObs, kappa=bfObject$kappa, ciValue=bfObject$ciValue)
+					                        }
+					                        
+					                        # Store back into state with new ciValue
+					                        memoryExcludeListwise[[priorLabel]][[nLabel]][[rLabel]] <- bfObject
+					                    }
+					                }
+					                #
+					                # Close succesfull retrieval of bf
+					            } else {
+					                retrievalFailure <- TRUE
+					            }
+					        } else {
+					            # hence, no data
+					            retrievalFailure <- TRUE
+					        }
+					    }
 					} # Close state retrieval block ---- 
 					
 					# State: No retrieval: if perform==run, run the analysis ---
@@ -554,62 +542,44 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						if (perform == "run") {
 							# Note: Data screening 
 							#
-							v1 <- dataset[[ .v(variableName) ]]
-							v2 <- dataset[[ .v(variable2Name) ]]
-							
-							if (missingValues=="excludePairwise") {
-							    tempList <- .excludePairwiseCorData(v1, v2)
-								v1 <- tempList$v1
-								v2 <- tempList$v2
-							}
-							
-							# Note: Data: PREPARE
-							#
-							# TODO (Johnny): add switch for test==pearson 
-							# Thus, always calculate pearson's r and "kendall" use switch or if else if 
-							
-							rObs <- cor(v1, v2, method = test)
-							nObs <- length(v1)
-							
-							# Initialise output
-							bfObject <- list(bf10=NA, bfPlus0=NA, bfMin0=NA)
-							
-							# Data screening block ---- 
-							#
-							# Note: Data and bfs check [start]
-							
-							errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('observations','variance', 'infinity'),
-
-							                     all.target = c(variableName, variable2Name), observations.amount = '< 2')
-
+						    errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('observations','variance', 'infinity'),
+						                         all.target = c(variableName, variable2Name), observations.amount = '< 2')
+						    
+						    # 
+						    # if (missingValues=="excludePairwise"){
+						    #     subDataSet <- subset(dataset, select=c(.v(variableName), .v(variable2Name)) )
+						    #     subDataSet <- na.omit(subDataSet)
+						    #     
+						    #     errors <- .hasErrors(dataset=subDataSet, perform = perform, message = 'short', type = c('observations','variance', 'infinity'),
+						    #                          all.target = c(variableName, variable2Name), observations.amount = '< 2')
+						    # } else if (missingValues=="excludeListwise"){
+						    #     errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('observations','variance', 'infinity'),
+						    #                          all.target = c(variableName, variable2Name), observations.amount = '< 2')
+						    # }
+						    # 
+						    
 							if (!identical(errors, FALSE)) {
 							    # Note: Data: NOT ok, 
 								# 		bf10: can't
-							    obsFootnote <- errors$message
-							    index <- .addFootnote(footnotes, obsFootnote)
-								
-								rObs <- NA
-								
-								# Store: Store in state
-								#
-								if (missingValues=="excludePairwise") {
-									footnotesListExcludePairwise[[variableName]][[columnName]] <- list(obsFootnote)
-								} else if (missingValues=="excludeListwise") {
-									# TODO: these should be defined above in the retrieval block
-									nLabel <- as.character(round(nObs))
-									rLabel <- as.character(round(rObs))
-									footnotesListExcludeListwise[[nLabel]][[rLabel]] <- list(obsFootnote)
-								}
-								
-								#rowFootnotes[[variable2Name]] <- c(rowFootnotes[[variableName]], list(index))
-								rowFootnotes[[columnName]] <- c(rowFootnotes[[columnName]], list(index))
-								
-								if (nObs==1) {
-									bfObject$bf10 <- 1
-								}
+							    bfObject <- failedBfObject
+							    bfObject$footnote <- errors$message
 							} else {
 								# Data: OK
 								# Try: Calculte bfs
+							    
+							    if (missingValues=="excludePairwise"){
+							        subDataSet <- subset(dataset, select=c(.v(variableName), .v(variable2Name)) )
+							        subDataSet <- na.omit(subDataSet)
+							        
+							        v1 <- subDataSet[[ .v(variableName) ]]
+							        v2 <- subDataSet[[ .v(variable2Name) ]]
+							    } else {
+							        v1 <- dataset[[ .v(variableName) ]]
+							        v2 <- dataset[[ .v(variable2Name) ]]
+							    }
+							    
+							    nObs <- length(v1)
+							    rObs <- cor(v1, v2, method=test)
 							    
 							    if (test == "pearson") {
 							        # TODO: perhaps call this .bfCorrelation(, method=..), where method="pearson", "kendall" or "spearman"
@@ -626,25 +596,30 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							# Store in State
 							#
 							if (missingValues=="excludePairwise") {
-							    rValuesListExcludePairwise[[variableName]][[columnName]] <- list(rObs)
-								bfValuesListExcludePairwise[[priorLabel]][[variableName]][[columnName]] <- bfObject
+								memoryExcludePairwise[[priorLabel]][[variableName]][[columnName]] <- bfObject
 							} else if (missingValues=="excludeListwise") {
-								bfValuesListExcludeListwise[[priorLabel]][[nLabel]][[rLabel]] <- bfObject
+								memoryExcludeListwise[[priorLabel]][[nLabel]][[rLabel]] <- bfObject
 							}
 							resultProcessing <- TRUE
 						} # Close perform == "run"
 					} # Close retrievalFailure==TRUE
 						
-					# Processing and reporting ---
+					# Processing and reporting --- Thus, bfObject exists
 					# 
 					if (isTRUE(resultProcessing)) {
 						# Note: Result reporting: sample r
-						# TODO: also for other kappas and find place to report the credible interval
-						
-						reportR <- rObs
-						row[[length(row)+1]] <- .clean(reportR)
-						
-						# MarkUp per variable: 
+					    
+					    # Report r value or tauObs
+					    row[[length(row)+1]] <- .clean(bfObject$stat)
+					    
+					    retrievedFootnote <- bfObject$footnote
+					    
+					    if (!is.null(retrievedFootnote)){
+					        tempList <- .addFootnote(footnotes, retrievedFootnote)
+					        rowFootnotes[[columnName]] <- c(rowFootnotes[[columnName]], list(tempList))
+					    }
+					    
+												# MarkUp per variable: 
 						# Note: Result processing: decide which BF to report
 						# 
 						if (hypothesis == "correlated") {
@@ -702,7 +677,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						}
 					} # Close: Results reporting from 1 retrieved or 2 performed
 					
-					
 					# Note: No retrieval and no performance. Thus fill in full stops
 					#
 					if (retrievalFailure && perform!="run") {
@@ -754,11 +728,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				test=tests, 
 				variables=variables, 
 				rows=allRows, 
-				rValuesExcludePairwise=rValuesListExcludePairwise,
-				bfValuesExcludePairwise=bfValuesListExcludePairwise,
-				footnotesExcludePairwise=footnotesListExcludePairwise,
-				bfValuesExcludeListwise=bfValuesListExcludeListwise,
-				footnotesExcludeListwise=footnotesListExcludeListwise))
+				memoryExcludePairwise=memoryExcludePairwise,
+				memoryExcludeListwise=memoryExcludeListwise))
 }
 ## Help functions ------------------------------------------------------------
 # 0.1 Prior specification Pearson's Rho
@@ -1444,7 +1415,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     #
     tooPeakedList <- list(twoSidedTooPeaked=TRUE, plusSidedTooPeaked=TRUE, minSidedTooPeaked=TRUE)
     
-    naList <- append(list(bfPlus0=NA, bfMin0=NA), tooPeakedList)
+    naList <- append(list(bf10=NA, bfPlus0=NA, bfMin0=NA), tooPeakedList)
     
     # When the prior is trivial (null is alternative) or when the data is predictively matched
     #
@@ -1633,6 +1604,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     }
     
     result$call <- paste0(".bfPearsonCorrelation(n=", n, ", r=", r, ", kappa=", kappa, ", ciValue=", ciValue, ", hyperGeoOverFlowThreshold=", hyperGeoOverFlowThreshold, ")")
+    result$stat <- r
     return(result)
 }
 
@@ -1689,12 +1661,13 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     # }
     result <- .bfCorrieKernelKendallTau(n=n, tauObs=tauObs, kappa=kappa, var=var, ciValue=ciValue)
     result$call <- paste0(".bfKendallTau(n=", n, ", tauObs=", tauObs, ", kappa=", kappa, ", var=", var, ", ciValue=", ciValue, ")")
+    result$stat <- tauObs
     return(result)
 }
 
 .bfCorrieKernelKendallTau <- function(n, tauObs, kappa=1, var=1, ciValue=0.95) { 
     tempList <- list(vector())
-    result <- list(n=n, r=tauObs, bf10=NA, bfPlus0=NA, bfMin0=NA, methodNumber=NA, betaA=NA, betaB=NA, 
+    result <- list(n=n, tauObs=tauObs, bf10=NA, bfPlus0=NA, bfMin0=NA, methodNumber=NA, betaA=NA, betaB=NA, 
                    twoSidedTooPeaked=FALSE, plusSidedTooPeaked=FALSE, minSidedTooPeaked=FALSE, 
                    ci=tempList, ciValue=ciValue, acceptanceRate=1)
     
@@ -2344,7 +2317,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	y <- screenedData$v2
 	
 	r <- cor(x, y)
-	tau <- cor(x,y,method="kendall")
+	tau <- cor(x, y, method="kendall")
 	n <- length(x)
 	# set limits plot
 	xlim <- c(-1, 1)

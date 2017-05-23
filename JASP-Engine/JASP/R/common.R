@@ -142,9 +142,14 @@ checkPackages <- function() {
 
 isTryError <- function(obj){
     if (is.list(obj)){
-        return(any(sapply(obj, function(obj){isTRUE(class(obj)=="try-error")})))
+        return(any(sapply(obj, function(obj) {
+            inherits(obj, "try-error")
+        }))
+        )
     } else {
-        return(any(sapply(list(obj), function(obj){isTRUE(class(obj)=="try-error")})))
+        return(any(sapply(list(obj), function(obj){
+            inherits(obj, "try-error")
+        })))
     }
 }
 
@@ -659,41 +664,49 @@ callback <- function(results=NULL) {
 }
 
 .clean <- function(value) {
-
+    # Clean function value so it can be reported in json/html
+    
 	if (is.list(value)) {
-	
-		if (is.null(names(value))) {
-			
-			for (i in length(value))
-				value[[i]] <- .clean(value[[i]])
-				
+	    if (is.null(names(value))) {
+	        for (i in length(value)) {
+			    value[[i]] <- .clean(value[[i]])
+			}
 		} else {
-		
-			for (name in names(value))
-				value[[name]] <- .clean(value[[name]])
+		    for (name in names(value)) {
+			    value[[name]] <- .clean(value[[name]])
+			}
 		}
-		
 		return(value)
 	}
 
-	if (is.null(value))
-		return ("")
+	if (is.null(value)) {
+	    return ("")
+	}
 
-	if (is.character(value))
-		return(value)
+	if (is.character(value)) {
+	    return(value)
+	}
 
-	if (is.finite(value))
-		return(value)
+	if (is.finite(value)) {
+	    return(value)
+	}
 
-	if (is.na(value))
-		return("NaN")
+	if (is.na(value)) {
+	    return("NaN")
+	}
+    
+    if (identical(value, numeric(0))) {
+        return("")
+    }
 
-	if (value == Inf)
-		return("\u221E")
-
-	if (value == -Inf)
-		return("-\u221E")
-
+	if (value == Inf) {
+	    return("\u221E")
+	}
+		
+	if (value == -Inf) {
+	    return("-\u221E")
+	}
+		
 	stop("could not clean value")
 }
 
@@ -781,7 +794,7 @@ as.list.footnotes <- function(footnotes) {
 				item1 <- one[[name]]
 				item2 <- two[[name]]
 				
-				if (identical(item1, item2) == FALSE) {
+				if (base::identical(item1, item2) == FALSE) {
 				
 					changed[[name]] <- TRUE
 					
@@ -789,7 +802,13 @@ as.list.footnotes <- function(footnotes) {
 				
 					changed[[name]] <- FALSE
 				}
+				
+			} else {
+				
+				changed[[name]] <- TRUE
+				
 			}
+			
 		}
 		
 		for (name in names2) {
@@ -798,7 +817,7 @@ as.list.footnotes <- function(footnotes) {
 				changed[[name]] <- TRUE
 		}
 		
-	} else if (base::indentical(one, two)) {
+	} else if (base::identical(one, two)) {
 		
 		return(FALSE)
 		
@@ -1015,7 +1034,9 @@ saveImage <- function(plotName, format, height, width){
 .imgToState <- function(imgobj) {
 
 	result <- list()
-	if (!is.list(imgobj))
+	
+	# if the state is empty, prevent that a figure entry is added
+	if (!is.list(imgobj) || is.null(names(imgobj)))
 		return(NULL)
 
 	if (all(c("data", "obj") %in% names(imgobj), is.character(imgobj[["data"]]))) {

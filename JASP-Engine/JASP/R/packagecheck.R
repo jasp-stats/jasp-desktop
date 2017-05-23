@@ -350,11 +350,14 @@
 }
 
 
-.initPackages <- function(installed) {
+.initPackages <- function(installedPackages) {
 	
-	# First call to BayesFactor initializes its functions and speeds up subsequent calls.
-	if ('BayesFactor' %in% installed) {
-		try(BayesFactor::BFInfo(print=FALSE), silent=TRUE)
+	packages <- c("BayesFactor") # Add any package that needs pre-loading
+	
+	for (package in packages) {
+		if (package %in% installedPackages && base::isNamespaceLoaded(package) == FALSE) {
+			try(base::loadNamespace(package), silent=TRUE)
+		}
 	}
 	
 }

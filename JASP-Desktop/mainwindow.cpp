@@ -108,6 +108,8 @@
 #include <boost/filesystem.hpp>
 #include "dirs.h"
 
+#include "options/optionvariablesgroups.h"
+
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -425,69 +427,60 @@ void MainWindow::refreshAnalysesUsingColumns(vector<string> &changedColumns
 	sort(missingColumns.begin(), missingColumns.end());
 	sort(oldColumnNames.begin(), oldColumnNames.end());
 
-	vector<Analysis *> analyses_to_refresh;
-	for (Analyses::iterator analysis_it = _analyses->begin(); analysis_it != _analyses->end(); ++analysis_it)
+	set<Analysis *> analysesToRefresh;
+	for (Analyses::iterator analysisIt = _analyses->begin(); analysisIt != _analyses->end(); ++analysisIt)
 	{
-		Analysis* analysis = *analysis_it;
+		Analysis* analysis = *analysisIt;
 		if (analysis == NULL) continue;
 
-		bool analyse_to_refresh = false;
-		const vector<OptionVariables *> &analysis_variables = analysis->getVariables();
-		for (vector<OptionVariables *>::const_iterator var_it = analysis_variables.begin();
-			 var_it != analysis_variables.end();
-			 ++var_it)
+		Options* options = analysis->options();
+		for (size_t i = 0; i < options->size(); ++i)
 		{
-			OptionVariables *option_variables = *var_it;
-			vector<string> variables = option_variables->variables();
-			vector<string> variables_sorted = variables;
-			sort(variables_sorted.begin(), variables_sorted.end());
-			vector<string> inter_changecol, inter_changename, inter_missingcol;
-			set_intersection(variables_sorted.begin(), variables_sorted.end(), changedColumns.begin(), changedColumns.end(), back_inserter(inter_changecol));
-			set_intersection(variables_sorted.begin(), variables_sorted.end(), oldColumnNames.begin(), oldColumnNames.end(), back_inserter(inter_changename));
-			set_intersection(variables_sorted.begin(), variables_sorted.end(), missingColumns.begin(), missingColumns.end(), back_inserter(inter_missingcol));
-
-			if (inter_changecol.size() > 0 && !analyse_to_refresh)
+			Option *option = options->get(i);
+			OptionVariableI *optionVariables = dynamic_cast<OptionVariableI *>(option);
+			if (optionVariables != NULL)
 			{
-				analyses_to_refresh.push_back(analysis);
-				analyse_to_refresh = true;
-			}
+				vector<string> variables = optionVariables->variables();
+				if (!variables.empty())
+				{
+					sort(variables.begin(), variables.end());
+					vector<string> interChangecol, interChangename, interMissingcol;
+					set_intersection(variables.begin(), variables.end(), changedColumns.begin(), changedColumns.end(), back_inserter(interChangecol));
+					set_intersection(variables.begin(), variables.end(), oldColumnNames.begin(), oldColumnNames.end(), back_inserter(interChangename));
+					set_intersection(variables.begin(), variables.end(), missingColumns.begin(), missingColumns.end(), back_inserter(interMissingcol));
 
-			if (inter_changename.size() > 0)
-			{
-				for (vector<string>::iterator varname_it = inter_changename.begin(); varname_it != inter_changename.end(); ++varname_it)
-				{
-					string varname = *varname_it;
-					string newname = changeNameColumns[varname];
-					replace(variables.begin(), variables.end(), varname, newname);
-				}
-				analysis->setRefreshBlocked(true);
-				option_variables->setValue(variables);
-				if (!analyse_to_refresh)
-				{
-					analyses_to_refresh.push_back(analysis);
-					analyse_to_refresh = true;
-				}
-			}
+					if (interChangecol.size() > 0)
+					{
+						analysesToRefresh.insert(analysis);
+					}
 
-			if (inter_missingcol.size() > 0)
-			{
-				for (vector<string>::iterator varname_it = inter_missingcol.begin(); varname_it != inter_missingcol.end(); ++varname_it)
-				{
-					string varname = *varname_it;
-					variables.erase(remove(variables.begin(), variables.end(), varname), variables.end());
-				}
-				analysis->setRefreshBlocked(true);
-				option_variables->setValue(variables);
-				if (!analyse_to_refresh)
-				{
-					analyses_to_refresh.push_back(analysis);
-					analyse_to_refresh = true;
+					if (interChangename.size() > 0)
+					{
+						analysis->setRefreshBlocked(true);
+						for (vector<string>::iterator varnameIt = interChangename.begin(); varnameIt != interChangename.end(); ++varnameIt)
+						{
+							string varname = *varnameIt;
+							string newname = changeNameColumns[varname];
+							optionVariables->replaceName(varname, newname);
+						}
+						analysesToRefresh.insert(analysis);
+					}
+
+					if (interMissingcol.size() > 0)
+					{
+						analysis->setRefreshBlocked(true);
+						for (vector<string>::iterator varnameIt= interMissingcol.begin(); varnameIt!= interMissingcol.end(); ++varnameIt)
+						{
+							optionVariables->removeName(*varnameIt);
+							analysesToRefresh.insert(analysis);
+						}
+					}
 				}
 			}
 		}
 	}
 
-	for (vector<Analysis *>::iterator it = analyses_to_refresh.begin(); it != analyses_to_refresh.end(); ++it)
+	for (set<Analysis *>::iterator it = analysesToRefresh.begin(); it != analysesToRefresh.end(); ++it)
 	{
 		Analysis *analysis = *it;
 		analysis->setRefreshBlocked(false);
@@ -604,7 +597,12 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 	parser.parse(utf8, root);
 
 	QString caption = "Save JASP Image";
+#ifdef __APPLE__
+	//Temporarily disable saving tiff images on the Mac	
+	QString filter = "Portable Network Graphics (*.png);;Encapsulated PostScript (*.eps)";
+#else
 	QString filter = "Portable Network Graphics (*.png);;Tagged Image File Format (*.tiff);;Encapsulated PostScript (*.eps)";
+#endif
     QString selectedFilter;
 
     QString finalPath = QFileDialog::getSaveFileName(this, caption, QString(), filter, &selectedFilter);
