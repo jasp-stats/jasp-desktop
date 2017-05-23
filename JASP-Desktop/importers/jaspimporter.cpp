@@ -51,7 +51,6 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, 
 	else if (compatibility == JASPImporter::Limited)
 		packageData->warningMessage = "This file was created by a newer version of JASP and may not have complete functionality.";
 
-
 	loadDataArchive(packageData, path, progressCallback);
 	loadJASPArchive(packageData, path, progressCallback);
 }
@@ -286,36 +285,37 @@ void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const strin
 {
 	Json::Value analysesData;
 
-	parseJsonEntry(analysesData, path, "analyses.json", false);
-
-	vector<string> resources = FileReader::getEntryPaths(path, "resources");
-
-	for (vector<string>::iterator iter = resources.begin(); iter != resources.end(); iter++)
+	if (parseJsonEntry(analysesData, path, "analyses.json", false))
 	{
-		string resource = *iter;
-
-		FileReader resourceEntry = FileReader(path, resource);
-
-		string filename = resourceEntry.fileName();
-		string dir = resource.substr(0, resource.length() - filename.length() - 1);
-
-		string destination = tempfiles_createSpecific(dir, resourceEntry.fileName());
-
-		boost::nowide::ofstream file(destination.c_str(),  ios::out | ios::binary);
-
-		char copyBuff[8016];
-		int bytes = 0;
-		int errorCode = 0;
-		while ((bytes = resourceEntry.readData(copyBuff, sizeof(copyBuff), errorCode)) > 0 && errorCode == 0) {
-			file.write(copyBuff, bytes);
+		vector<string> resources = FileReader::getEntryPaths(path, "resources");
+	
+		for (vector<string>::iterator iter = resources.begin(); iter != resources.end(); iter++)
+		{
+			string resource = *iter;
+	
+			FileReader resourceEntry = FileReader(path, resource);
+	
+			string filename = resourceEntry.fileName();
+			string dir = resource.substr(0, resource.length() - filename.length() - 1);
+	
+			string destination = tempfiles_createSpecific(dir, resourceEntry.fileName());
+	
+			boost::nowide::ofstream file(destination.c_str(),  ios::out | ios::binary);
+	
+			char copyBuff[8016];
+			int bytes = 0;
+			int errorCode = 0;
+			while ((bytes = resourceEntry.readData(copyBuff, sizeof(copyBuff), errorCode)) > 0 && errorCode == 0) {
+				file.write(copyBuff, bytes);
+			}
+			file.flush();
+			file.close();
+	
+			if (errorCode != 0)
+				throw runtime_error("Could not read resource files.");
 		}
-		file.flush();
-		file.close();
-
-		if (errorCode != 0)
-			throw runtime_error("Could not read resource files.");
 	}
-
+	
 	packageData->analysesData = analysesData;
 	packageData->hasAnalyses = analysesData.size() > 0;
 
@@ -368,12 +368,19 @@ void JASPImporter::readManifest(DataSetPackage *packageData, const string &path)
 
 bool JASPImporter::parseJsonEntry(Json::Value &root, const string &path,  const string &entry, bool required)
 {
-	FileReader dataEntry = FileReader(path, entry);
-
-	if (!dataEntry.archiveExists())
+	FileReader* dataEntry = NULL;
+	try
+	{
+		dataEntry = new FileReader(path, entry);
+	}
+	catch(...)
+	{
+		return false;
+	}
+	if (!dataEntry->archiveExists())
 		throw runtime_error("The selected JASP archive '" + path + "' could not be found.");
 
-	if (!dataEntry.exists())
+	if (!dataEntry->exists())
 	{
 		if (required)
 			throw runtime_error("Entry '" + entry + "' could not be found in JASP archive.");
@@ -381,13 +388,13 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const string &path,  const 
 		return false;
 	}
 
-	int size = dataEntry.bytesAvailable();
+	int size = dataEntry->bytesAvailable();
 	if (size > 0)
 	{
 		char *data = new char[size];
-		int startOffset = dataEntry.pos();
+		int startOffset = dataEntry->pos();
 		int errorCode = 0;
-		while (dataEntry.readData(&data[dataEntry.pos() - startOffset], 8016, errorCode) > 0 && errorCode == 0) ;
+		while (dataEntry->readData(&data[dataEntry->pos() - startOffset], 8016, errorCode) > 0 && errorCode == 0) ;
 
 		if (errorCode < 0)
 			throw runtime_error("Could not read Entry '" + entry + "' in JASP archive.");
@@ -398,8 +405,9 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const string &path,  const 
 		delete[] data;
 	}
 
-	dataEntry.close();
+	dataEntry->close();
 
+	delete dataEntry;
 	return true;
 }
 
