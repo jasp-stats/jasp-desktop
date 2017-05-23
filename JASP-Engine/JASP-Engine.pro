@@ -4,6 +4,7 @@ QT -= gui
 CURRENT_R_VERSION = 3.3
 
 windows:CONFIG += c++11
+macx:CONFIG += c++11
 linux:CONFIG += c++11
 linux:CONFIG += -pipe
 
@@ -20,8 +21,8 @@ PRE_TARGETDEPS += ../libJASP-Common.a
 
 LIBS += -L.. -lJASP-Common
 
-windows:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive.dll
-   macx:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz
+windows:LIBS += -lboost_filesystem-mgw48-mt-1_64 -lboost_system-mgw48-mt-1_64 -larchive.dll
+   macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz
   linux:LIBS += -lboost_filesystem    -lboost_system    -larchive
 
 _R_HOME = $$(R_HOME)
@@ -30,7 +31,7 @@ _R_HOME = $$(R_HOME)
 
 macx {
 
-	INCLUDEPATH += ../../boost_1_54_0
+	INCLUDEPATH += ../../boost_1_64_0
 
 	isEmpty(_R_HOME):_R_HOME = $$OUT_PWD/../../Frameworks/R.framework/Versions/$$CURRENT_R_VERSION/Resources
 	R_EXE  = $$_R_HOME/bin/R
@@ -54,7 +55,7 @@ windows {
 		ARCH = i386
 	}
 
-	INCLUDEPATH += ../../boost_1_54_0
+	INCLUDEPATH += ../../boost_1_64_0
 
 	isEmpty(_R_HOME):_R_HOME = $$OUT_PWD/../R
 	R_EXE  = $$_R_HOME/bin/$$ARCH/R
@@ -64,6 +65,7 @@ QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
 macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
+macx:QMAKE_CXXFLAGS += -stdlib=libc++
 
 win32:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
