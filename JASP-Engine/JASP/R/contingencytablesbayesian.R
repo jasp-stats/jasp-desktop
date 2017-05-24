@@ -561,7 +561,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 
 		if (status$error) {
 		
-			new.plot.state <- list(keep=plot, status=status)
+			new.plot.state <- list(keep=plot[["png"]], status=status)
 
 			message <- status$errorMessage
 			odds.ratio.plot[["error"]]  <- list(error = "badData", errorMessage=paste("Plotting is not possible:", message))
@@ -575,7 +575,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		}
 	}
 	
-	list(plot=odds.ratio.plot, state=new.plot.state, keep=plot, complete=complete)
+	list(plot=odds.ratio.plot, state=new.plot.state, keep=plot[["png"]], complete=complete)
 }
 
 
