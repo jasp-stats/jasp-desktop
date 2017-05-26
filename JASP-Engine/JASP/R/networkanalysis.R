@@ -152,12 +152,6 @@ NetworkAnalysis <- function (
 	if (perform != "run")
 		return(NULL)
 
-	allBootnetArgsInOpts <- c("correlationMethod", "tuningParameter", "criterion", "isingEstimator",
-							  "nFolds", "split", "rule", "missingValues",
-							  "weightedNetwork", "signedNetwork", "sampleSize")
-
-	names(options)
-
 	data("bfi", package = "psych")
 	dataset <- bfi[, 1:25]
 	dataset <- .vdf(dataset, columns.as.ordinal = colnames(dataset))
@@ -167,40 +161,38 @@ NetworkAnalysis <- function (
 	if (options[["correlationMethod"]]  == "auto")
 		options[["correlationMethod"]] <- "cor_auto"
 
-	# this does everything
-	.input <- checkInput2(
-		default    = options[["estimator"]],
-		corMethod  = options[["correlationMethod"]],
-		tuning     = options[["tuningParameter"]],
-		missing    = options[["missingValues"]],
-		method     = options[["isingEstimator"]],
-		rule       = options[["rule"]],
-		nFolds     = options[["nFolds"]],
-		weighted   = options[["weightedNetwork"]],
-		signed     = options[["signedNetwork"]],
-		sampleSize = options[["sampleSize"]],
-		split      = options[["split"]],
-		criterion  = options[["criterion"]],
-		verbose    = FALSE
+	options[["missingValues"]] <- switch(options[["missingValues"]],
+		"excludePairwise" = "pairwise",
+		"excludeListwise" = "listwise"
 	)
+
+	.dots <- list(
+		corMethod   = options[["correlationMethod"]],
+		tuning      = options[["tuningParameter"]],
+		missing     = options[["missingValues"]],
+		method      = options[["isingEstimator"]],
+		rule        = options[["rule"]],
+		nFolds      = options[["nFolds"]],
+		weighted    = options[["weightedNetwork"]],
+		signed      = options[["signedNetwork"]],
+		split       = options[["split"]],
+		criterion   = options[["criterion"]],
+		sampleSize  = options[["sampleSize"]]
+	)
+
+	# get available arguments for specific network estimation function.
+	# FOR FUTURE UPDATING: options[["estimator"]] MUST match name of function in bootnet literally.
+	nms2keep <- names(formals(getFromNamespace(paste0("bootnet_", options[["estimator"]]), ns = "bootnet")))
+	.dots <- .dots[names(.dots) %in% nms2keep]
 
 	msg <- capture.output(
 		network <- bootnet::estimateNetwork(
 			data = dataset,
-			.input = .input
+			default = options[["estimator"]],
+			.dots = .dots
 		)
 		, type = "message"
 	)
-
-	# msg <- capture.output(
-	# 	network <- bootnet::estimateNetwork(
-	# 		data = dataset,
-	# 		default = options[["estimator"]],
-	# 		corMethod = options[["correlationMethod"]],
-	# 		rule = options[["rule"]]
-	# 	)
-	# 	, type = "message"
-	# )
 
 	network[["corMessage"]] <- msg
 
@@ -318,6 +310,8 @@ NetworkAnalysis <- function (
 	# which needs to look 2 levels up to find the objects network and options.
 	eval(quote(
 		qgraph::qgraph(input = network[["graph"]], layout = options[["layout"]], repulsion = options[["repulsion"]],
+					   esize = options[["edgeSize"]], vsize = options[["nodeSize"]], maximum = options[["maxEdgeStrength"]],
+					   minimum = options[["minEdgeStrength"]], details = options[["showDetails"]],
 					   labels = .unv(network[["labels"]]))
 	), envir = parent.frame(2))
 
@@ -372,230 +366,4 @@ NetworkAnalysis <- function (
 
 	return(plot)
 
-}
-
-# identical to bootnet:::checkInput except that it removes any arguments not present in
-# the network function. Perhaps ask Sacha if this can just be done in bootnet.
-checkInput2 <- function (default = c("none", "EBICglasso", "pcor", "IsingFit",
-	"IsingSampler", "huge", "adalasso", "mgm", "relimp"), fun,
-	prepFun, prepArgs, estFun, estArgs, graphFun, graphArgs,
-	intFun, intArgs, sampleSize, verbose = TRUE, construct = c("default",
-		"function", "arguments"), .dots = list(), ...)
-{
-	if (default[[1]] == "glasso")
-		default <- "EBICglasso"
-	if (default[[1]] == "IsingSampler")
-		default <- "IsingSampler"
-	default <- match.arg(default)
-	construct <- match.arg(construct)
-	if (missing(fun)) {
-		fun <- NULL
-	}
-	dots <- c(.dots, list(...))
-	argNames <- character(0)
-	if (!missing(prepFun)) {
-		argNames <- c(argNames, "prepFun")
-	}
-	if (!missing(prepArgs)) {
-		argNames <- c(argNames, "prepArgs")
-	}
-	if (!missing(estFun)) {
-		argNames <- c(argNames, "estFun")
-	}
-	if (!missing(estArgs)) {
-		argNames <- c(argNames, "estArgs")
-	}
-	if (!missing(graphFun)) {
-		argNames <- c(argNames, "graphFun")
-	}
-	if (!missing(graphArgs)) {
-		argNames <- c(argNames, "graphArgs")
-	}
-	if (!missing(intFun)) {
-		argNames <- c(argNames, "intFun")
-	}
-	if (!missing(intArgs)) {
-		argNames <- c(argNames, "intArgs")
-	}
-	if (length(dots) > 0 && construct == "arguments") {
-		stop(paste0("Ambiguous argument specification. Old functonality is used (construct = 'arguments') in combination with new functionality arguments (implying construct = 'function'): ",
-			paste0("'", names(dots), "'", collapse = "; "),
-			". These arguments are NOT compatible!"))
-	}
-	if (construct == "arguments" & default == "relimp") {
-		stop("default = 'relimp' not supported with old bootnet style (construct = 'arguments')")
-	}
-	if (length(argNames) > 0 && construct == "function") {
-		stop(paste0("Ambiguous argument specification. New functonality is used (construct = 'function') in combination with old functionality arguments (implying construct = 'arguments'): ",
-			paste0("'", argNames, "'", collapse = "; "), ". These arguments are NOT compatible!"))
-	}
-	if (length(argNames) > 0 & length(dots) > 0) {
-		stop(paste0("Ambiguous argument specification. Both old functionality arguments are used, compatible with construct = 'arguments': ",
-			paste0("'", argNames, "'", collapse = "; "), ", as well as new functionality arguments are used, compatible with construct = 'function': ",
-			paste0("'", names(dots), "'", collapse = "; "),
-			". These two types of arguments are NOT compatible!"))
-	}
-	if (construct == "default") {
-		construct <- "function"
-		if (default == "none" && is.null(fun)) {
-			construct <- "arguments"
-		}
-		if (default != "none" && is.null(fun) && (!missing(prepFun) |
-			!missing(prepArgs) | !missing(estFun) | !missing(estArgs))) {
-			construct <- "arguments"
-		}
-	}
-	if (default == "none" && construct == "arguments") {
-		if (missing(prepFun) | missing(prepArgs) | missing(estFun) |
-			missing(estArgs)) {
-			stop("If 'default' is not set and 'fun' is missing, 'prepFun', 'prepArgs', 'estFun' and 'estArgs' may not be missing.")
-		}
-	}
-	if (construct == "function") {
-		Args <- dots
-		if (!missing(prepFun)) {
-			warning("'prepFun' argument is ignored as a function is used as arguments. To use 'prepFun', please set construct = 'arguments'")
-		}
-		if (!missing(prepArgs)) {
-			warning("'prepArgs' argument is ignored as a function is used as arguments. To use 'prepArgs', please set construct = 'arguments'")
-		}
-		if (!missing(estFun)) {
-			warning("'estFun' argument is ignored as a function is used as arguments. To use 'estFun', please set construct = 'arguments'")
-		}
-		if (!missing(estArgs)) {
-			warning("'estArgs' argument is ignored as a function is used as arguments. To use 'estArgs', please set construct = 'arguments'")
-		}
-		if (!missing(graphFun)) {
-			warning("'graphFun' argument is ignored as a function is used as arguments. To use 'graphFun', please set construct = 'arguments'")
-		}
-		if (!missing(graphArgs)) {
-			warning("'graphArgs' argument is ignored as a function is used as arguments. To use 'graphArgs', please set construct = 'arguments'")
-		}
-		if (!missing(intFun)) {
-			warning("'intFun' argument is ignored as a function is used as arguments. To use 'intFun', please set construct = 'arguments'")
-		}
-		if (!missing(intArgs)) {
-			warning("'intArgs' argument is ignored as a function is used as arguments. To use 'intArgs', please set construct = 'arguments'")
-		}
-		if (default == "none") {
-			Function <- fun
-		}
-		else if (default == "EBICglasso") {
-			Function <- bootnet_EBICglasso
-		}
-		else if (default == "IsingFit") {
-			Function <- bootnet_IsingFit
-		}
-		else if (default == "IsingSampler") {
-			Function <- bootnet_IsingSampler
-		}
-		else if (default == "pcor") {
-			Function <- bootnet_pcor
-		}
-		else if (default == "adalasso") {
-			Function <- bootnet_adalasso
-		}
-		else if (default == "huge") {
-			Function <- bootnet_huge
-		}
-		else if (default == "mgm") {
-			Function <- bootnet_mgm
-		}
-		else if (default == "relimp") {
-			Function <- bootnet_relimp
-		}
-		else stop("Currently not supported.")
-	}
-	else {
-		warning("Arguments (prepFun, estFun, etcetera) used to construct estimator. This functionality is deprecated and will no longer be supported in a future version of bootnet. Please consult the manual or contact the authors.")
-		if (length(dots) > 0) {
-			dotNames <- names(dots)
-			warning(paste0("Arguments (prepFun, estFun, etcetera) used to construct estimator. As a result, the following arguments are ignored: ",
-				paste0("'", dotNames, "'", collapse = ", "),
-				". To use these arguments use construct = 'function' and supply a default set or set the 'fun' argument. In addition, do not use the 'prepFun', 'estFun', etcetera arguments."))
-		}
-		if (!(default == "none")) {
-			if (missing(prepFun)) {
-				prepFun <- switch(default, EBICglasso = qgraph::cor_auto,
-					IsingFit = binarize, IsingSampler = binarize,
-					pcor = qgraph::cor_auto, huge = function(x) huge::huge.npn(na.omit(as.matrix(x)),
-						verbose = FALSE), adalasso = identity)
-			}
-			if (missing(prepArgs)) {
-				prepArgs <- switch(default, EBICglasso = ifElse(identical(prepFun,
-					qgraph::cor_auto), list(verbose = verbose),
-					ifElse(identical(prepFun, cor), list(use = "pairwise.complete.obs"),
-						list())), IsingFit = list(), pcor = ifElse(identical(prepFun,
-					qgraph::cor_auto), list(verbose = verbose),
-					ifElse(identical(prepFun, cor), list(use = "pairwise.complete.obs"),
-						list())), IsingSampler = list(), huge = list(),
-					adalasso = list())
-			}
-			if (missing(estFun)) {
-				estFun <- switch(default, EBICglasso = qgraph::EBICglasso,
-					pcor = corpcor::cor2pcor, IsingFit = IsingFit::IsingFit,
-					IsingSampler = IsingSampler::EstimateIsing,
-					huge = function(x) huge::huge.select(huge::huge(x,
-						method = "glasso", verbose = FALSE), criterion = "ebic",
-						verbose = FALSE), adalasso = parcor::adalasso.net)
-			}
-			if (missing(estArgs)) {
-				estArgs <- switch(default, EBICglasso = list(n = sampleSize,
-					returnAllResults = TRUE), IsingFit = list(plot = FALSE,
-					progress = FALSE), pcor = list(), IsingSampler = list(method = "ll"),
-					huge = list(), adalasso = list())
-			}
-			if (missing(graphFun)) {
-				graphFun <- switch(default, EBICglasso = function(x) x[["optnet"]],
-					IsingFit = function(x) x[["weiadj"]], pcor = function(x) as.matrix(Matrix::forceSymmetric(x)),
-					IsingSampler = function(x) x[["graph"]], huge = function(x) as.matrix(qgraph::wi2net(as.matrix(x$opt.icov))),
-					adalasso = function(x) as.matrix(Matrix::forceSymmetric(x$pcor.adalasso)))
-			}
-			if (missing(graphArgs)) {
-				graphArgs <- switch(default, EBICglasso = list(),
-					IsingFit = list(), pcor = list(), IsingSampler = list(),
-					huge = list(), adalasso = list())
-			}
-			if (missing(intFun)) {
-				intFun <- switch(default, EBICglasso = null,
-					IsingFit = function(x) x[["thresholds"]],
-					pcor = null, IsingSampler = function(x) x[["thresholds"]],
-					huge = null, adalasso = null)
-			}
-		}
-		if (missing(prepFun)) {
-			prepFun <- identity
-		}
-		if (missing(prepArgs)) {
-			prepArgs <- list()
-		}
-		if (missing(graphFun)) {
-			graphFun <- identity
-		}
-		if (missing(graphArgs)) {
-			graphArgs <- list()
-		}
-		if (missing(intFun)) {
-			intFun <- null
-		}
-		if (missing(intArgs)) {
-			intArgs <- list()
-		}
-		Function <- bootnet_argEstimator
-		Args <- list(prepFun = prepFun, prepArgs = prepArgs,
-			estFun = estFun, estArgs = estArgs, graphFun = graphFun,
-			graphArgs = graphArgs, intFun = intFun, intArgs = intArgs)
-	}
-	Output <- list(data = data, default = default, estimator = Function,
-		arguments = Args)
-
-	# remove unneeded arguments
-	nms <- names(Output[["arguments"]])
-	nmfs <- names(formals(Function))
-	nms2remove <- nms[!(nms %in% nmfs)]
-	Output[["arguments"]][nms2remove] <- NULL
-	if (verbose && length(nms2remove) > 0)
-		warning(sprintf("The following argument(s) are not used in this network type: %s", paste(nms2remove, collapse = ", ")))
-
-	return(Output)
 }
