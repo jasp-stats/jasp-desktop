@@ -1,10 +1,9 @@
-
 .jasp-no-select {
 	-webkit-user-select: none;
 }
 
 body {
-	font-family: sans-serif ;
+	font-family: Arial ;
 	margin: 0 ;
 	cursor: default;
 }
@@ -559,4 +558,3 @@ pre {
 	margin-left: .5em ;
 	padding-left: 0.8em ;
 }*/
-
