@@ -1109,5 +1109,5 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		.base_breaks_x(summaryStat$groupingVariable) +
 		ggplot2::scale_x_discrete(labels=c(nameV1, nameV2))
 	
-	print(p)
+	return(p)
 }
