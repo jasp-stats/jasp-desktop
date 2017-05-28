@@ -15,6 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+# ABBREVIATIONS:
+# TB = table
+# PTL = plot
+
 # main ----
 NetworkAnalysis <- function (
 	dataset = NULL,
@@ -61,8 +65,8 @@ NetworkAnalysis <- function (
 		)
 	)
 
-	# basically everything but plotting arguments
 	stateKey <- list(
+		# depends on everything but plotting arguments
 		network = c(
 			# data
 			"variables", "groupingVariable",
@@ -73,15 +77,18 @@ NetworkAnalysis <- function (
 			"nFolds", "split", "rule", "sampleSize",
 			# general arguments
 			"weightedNetwork", "signedNetwork", "missingValues"),
+		# depends only on plotting arguments
 		networkPLT = c("plotWidthNetwork", "plotHeightNetwork",
 					   "layout", "edgeColors", "repulsion", "edgeSize", "nodeSize",
 					   "maxEdgeStrength", "minEdgeStrength", "cut", "showDetails", "nodeColors"),
+		# depends only on plotting arguments
 		centralityPLT = c("plotWidthCentrality", "plotHeightCentrality")
 
 	)
 
 	## Do Analysis ## ----
-
+	
+	# Sort out whether things are set to defaults or not.
 	if (is.null(state[["network"]])) { # old state is unusable
 
 		state <- NULL # delete state
@@ -149,12 +156,9 @@ NetworkAnalysis <- function (
 # estimator ----
 .doNetworkAnalysis <- function(dataset, options, variables, perform) {
 
-	if (perform != "run")
+	# early return if init or too little variables
+	if (perform != "run" || length(variables) < 2)
 		return(NULL)
-
-	data("bfi", package = "psych")
-	dataset <- bfi[, 1:25]
-	dataset <- .vdf(dataset, columns.as.ordinal = colnames(dataset))
 
 	# fix input to match bootnet preferences.
 	options[["rule"]] <- toupper(options[["rule"]])
@@ -182,9 +186,10 @@ NetworkAnalysis <- function (
 
 	# get available arguments for specific network estimation function.
 	# FOR FUTURE UPDATING: options[["estimator"]] MUST match name of function in bootnet literally.
-	nms2keep <- names(formals(getFromNamespace(paste0("bootnet_", options[["estimator"]]), ns = "bootnet")))
+	nms2keep <- names(formals(utils::getFromNamespace(paste0("bootnet_", options[["estimator"]]), ns = "bootnet")))
 	.dots <- .dots[names(.dots) %in% nms2keep]
 
+	# capture.output to get relevant messages (i.e. from qgraph::cor_auto "variables detected as...")
 	msg <- capture.output(
 		network <- bootnet::estimateNetwork(
 			data = dataset,
@@ -201,10 +206,6 @@ NetworkAnalysis <- function (
 }
 
 # wrappers for output ----
-# ABBREVIATIONS:
-# TB = table
-# PTL = plot
-
 .NWgeneralTB <- function(network, options, perform) {
 
 	table <- list(
@@ -217,7 +218,7 @@ NetworkAnalysis <- function (
 
 	TBcolumns <- list(info = c("Number of nodes", "Number of non-zero edges", "Sparsity"))
 
-	if (perform != "run") { # fill in with .
+	if (perform != "run" || is.null(network)) { # fill in with .
 
 		TBcolumns[["value"]] <- rep(".", 3)
 		table[["status"]] <- "inited"
@@ -308,12 +309,26 @@ NetworkAnalysis <- function (
 
 	# eval(quote()) construction because this function is evaluated inside .writeImage()
 	# which needs to look 2 levels up to find the objects network and options.
-	eval(quote(
-		qgraph::qgraph(input = network[["graph"]], layout = options[["layout"]], repulsion = options[["repulsion"]],
-					   esize = options[["edgeSize"]], vsize = options[["nodeSize"]], maximum = options[["maxEdgeStrength"]],
-					   minimum = options[["minEdgeStrength"]], details = options[["showDetails"]],
-					   labels = .unv(network[["labels"]]))
-	), envir = parent.frame(2))
+	eval(quote({
+	
+	# ensure input makes sense or ignore these parameters
+	if (options[["maxEdgeStrength"]] == 0 || options[["maxEdgeStrength"]] <= options[["minEdgeStrength"]]) {
+		options[["minEdgeStrength"]] <- NULL
+		options[["maxEdgeStrength"]] <- NULL
+	}
+	
+	qgraph::qgraph(
+		input = network[["graph"]],
+		layout = options[["layout"]],
+		repulsion = options[["repulsion"]],
+		cut = options[["cut"]],
+		edge.width = options[["edgeSize"]],
+		node.width = options[["nodeSize"]],
+		maximum = options[["maxEdgeStrength"]],
+		minimum = options[["minEdgeStrength"]],
+		details = options[["showDetails"]],
+		labels = .unv(network[["labels"]])
+	)}), envir = parent.frame(2))
 
 }
 
@@ -329,8 +344,9 @@ NetworkAnalysis <- function (
 			title = "Network Plot",
 			width = options[["plotWidthNetwork"]],
 			height = options[["plotHeightNetwork"]],
-			custom = list(width="plotWidthNetwork", height="plotHeightNetwork"),
-			data = "", status = "inited"
+			custom = list(width = "plotWidthNetwork", height = "plotHeightNetwork"),
+			data = "", 
+			status = "inited"
 		)
 
 	} else if (plotType == "centrality") {
@@ -339,8 +355,9 @@ NetworkAnalysis <- function (
 			title = "Centrality Plot",
 			width = options[["plotWidthCentrality"]],
 			height = options[["plotHeightCentrality"]],
-			custom = list(width="plotWidthCentrality", height="plotHeightCentrality"),
-			data = "", status = "inited"
+			custom = list(width = "plotWidthCentrality", height = "plotHeightCentrality"),
+			data = "", 
+			status = "inited"
 		)
 
 	}
