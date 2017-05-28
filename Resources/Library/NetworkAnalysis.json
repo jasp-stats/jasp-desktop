@@ -112,44 +112,36 @@
 			"type": "List"
 		},
 		{
-			"name": "edgeColors",
-			"type": "List",
-			"options": [
-   				"Default",
-				"Binary: Logistic",
-				"Binary: Exponential",
-				"Multi-class: Multinomial logistic",
-				"Continue: Squared error",
-				"Continue:: Absolute error",
-				"Continue: Huber",
-				"Continue: Poisson",
-				"Continue: Coxph"
-			],
-			"default": "Default"
-		},
-		{
 			"name": "repulsion",
-			"type": "Integer"
+			"type": "Number",
+			"value": 1.0,
+			"min": 0.0,
+			"max": 10.0
 		},
 		{
 			"name": "edgeSize",
-			"type": "Integer"
+			"type": "Number",
+			"value": 1.0
 		},
 		{
 			"name": "nodeSize",
-			"type": "Integer"
+			"type": "Number",
+			"value": 1.0
 		},
 		{
 			"name": "maxEdgeStrength",
-			"type": "Integer"
+			"type": "Number",
+			"value": 0.0
 		},
 		{
 			"name": "minEdgeStrength",
-			"type": "Integer"
+			"type": "Number",
+			"value": 0.0
 		},
 		{
 			"name": "cut",
-			"type": "Integer"
+			"type": "Number",
+			"value": 0.0
 		},
 		{
 			"default": false,
@@ -157,18 +149,30 @@
 			"type": "Boolean"
 		},
 		{
+			"name": "edgeColors",
+			"type": "List",
+			"options": [
+   				"rainbow",
+				"colorblind",
+				"pastel",
+				"gray",
+				"R",
+				"ggplot2"
+			],
+			"default": "Default"
+		},
+		{
 			"name": "nodeColors",
 			"type": "List",
 			"options": [
-   				"Default",
-				"Binary: Logistic",
-				"Binary: Exponential",
-				"Multi-class: Multinomial logistic",
-				"Continue: Squared error",
-				"Continue:: Absolute error",
-				"Continue: Huber",
-				"Continue: Poisson",
-				"Continue: Coxph"
+   				"classic",
+				"colorblind",
+				"gray",
+				"Hollywood",
+				"Borkulo",
+				"TeamFortress",
+				"Reddit",
+				"Fried"
 			],
 			"default": "Default"
 		},
