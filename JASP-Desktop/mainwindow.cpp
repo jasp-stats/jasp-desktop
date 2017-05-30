@@ -623,7 +623,7 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 
 void MainWindow::analysisImageSavedHandler(Analysis *analysis)
 {
-	Json::Value results = analysis->asJSON().get("results", Json::nullValue);
+	Json::Value results = analysis->getImgResults();
 	if (results.isNull())
 		return;
 	Json::Value inputOptions = results.get("inputOptions", Json::nullValue);
