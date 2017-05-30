@@ -53,5 +53,19 @@
         <file>about.html</file>
         <file>css/images/tinylogo.svg</file>
         <file>welcome.html</file>
+        <file>css/images/waiting.svg</file>
+        <file>dist/bootstrap/css/bootstrap.min.css</file>
+        <file>dist/bootstrap/config.json</file>
+        <file>dist/css/style.css</file>
+        <file>dist/img/jasp-logo-blue.png</file>
+        <file>dist/img/jasp-logo-blue.svg</file>
+        <file>dist/img/jasp-logo.svg</file>
+        <file>dist/img/jasp-wave-down-blue-120-squat.svg</file>
+        <file>dist/img/jasp-wave-down-blue-120.svg</file>
+        <file>dist/img/jasp-wave-down-blue-150.svg</file>
+        <file>dist/img/jasp-wave-up-green-100.svg</file>
+        <file>dist/img/jasp-wave-up-green-120.svg</file>
+        <file>dist/img/ul-orange-dot.png</file>
+        <file>html.qrc</file>
     </qresource>
 </RCC>

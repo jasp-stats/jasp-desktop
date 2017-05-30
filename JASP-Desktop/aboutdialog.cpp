@@ -24,6 +24,7 @@
 #include <QMessageBox>
 #include <QFile>
 #include <QTextStream>
+#include <QDesktopServices>
 #include "appinfo.h"
 
 AboutDialog::AboutDialog(QWidget *parent) :
@@ -33,7 +34,11 @@ AboutDialog::AboutDialog(QWidget *parent) :
 	ui->setupUi(this);
 
 	_aboutWebView = new QWebView(this);
-	_aboutWebView->hide();
+	//_aboutWebView->hide();
+	_aboutWebView->setFixedWidth(900);
+	_aboutWebView->setFixedHeight(600);
+	
+	
 	m_network_manager = new QNetworkAccessManager();
 	m_pBuffer = new QByteArray();
 
@@ -49,13 +54,30 @@ AboutDialog::AboutDialog(QWidget *parent) :
 	m_network_reply = m_network_manager->get(request);
 
 	connect(_aboutWebView, SIGNAL(loadFinished(bool)), this, SLOT(aboutPageLoaded(bool)));
+	connect(_aboutWebView, SIGNAL( linkClicked( QUrl ) ), this, SLOT( linkClickedSlot( QUrl ) ) );
+	connect(this, SIGNAL(closeWindow()), this, SLOT(closeWindowHandler()));
+	
 	connect(m_network_reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
-
+	
+	_aboutWebView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+	_aboutWebView->page()->mainFrame()->addToJavaScriptWindowObject("about", this);
+	
+#ifdef QT_DEBUG
+	_aboutWebView->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+#else
+	_aboutWebView->setContextMenuPolicy(Qt::NoContextMenu);
+#endif
+		
  }
 
 AboutDialog::~AboutDialog()
 {
 	delete ui;
+}
+
+void AboutDialog::linkClickedSlot( QUrl url )
+{
+	QDesktopServices::openUrl ( url );
 }
 
 void AboutDialog::on_buttonBox_clicked(QAbstractButton *button)
@@ -72,11 +94,8 @@ void AboutDialog::aboutPageLoaded(bool success)
 		QString version = tq(AppInfo::version.asString());
 		QString builddate = tq(AppInfo::builddate);
 		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppYear()");
-		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
+		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version +"')");
 		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppBuildDate('" + builddate +"')");
-		QString html = _aboutWebView->page()->mainFrame()->toHtml();
-		ui->label_2_About->setText(html);
-		ui->label_2_About->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse);
 	}
 }
 
@@ -127,7 +146,12 @@ void AboutDialog::downloadFinished()
 		Version lv(numberversion.toStdString());
 		long cur = cv.major*100000 + cv.minor*10000 + cv.revision*1000 + cv.build;
 		long latest = lv.major*100000 + lv.minor*10000 + lv.revision*1000 + lv.build;
-		if (latest > cur )
-			ui->label_3_Update->setText(innerHtml);
+		//if (latest > cur )
+		//	ui->label_3_Update->setText(innerHtml);
 	}
+}
+
+void AboutDialog::closeWindowHandler()
+{
+	this->close();
 }
