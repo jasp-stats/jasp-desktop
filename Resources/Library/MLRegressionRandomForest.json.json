@@ -67,7 +67,8 @@
 		{
 			"name": "numberOfTrees",
 			"type": "Integer",
-			"min": 1
+			"min": 1,
+			"default": 1   
 		},
 		{
 			"name": "noOfPredictors", 
@@ -78,7 +79,8 @@
 		{
 			"name": "numberOfPredictors",
 			"type": "Integer",
-			"min": 1
+			"min": 1,
+                        "default": 1
 		},
 		{
 			"name": "minimumTerminalNodeSize",
@@ -115,7 +117,7 @@
 			"type": "Number",
                         "min": -10000000,
                         "max": 10000000,
-                        "default": 1
+                        "value": 1.0
 		},
     		{
 			"default": 640,

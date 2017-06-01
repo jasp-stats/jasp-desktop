@@ -211,8 +211,10 @@ MLRegressionRandomForest <- function(dataset = NULL, options, perform = "run",
 	}
 
 	# seed	
-	if (is.numeric(options[["seed"]])) {
+	if (options[["seedBox"]] == "manual") {
 		set.seed(options[["seed"]])
+	} else {
+		set.seed(Sys.time())
 	}		
 
 	# training and test data
@@ -447,7 +449,7 @@ MLRegressionRandomForest <- function(dataset = NULL, options, perform = "run",
 			image <- .beginSaveImage(width = options[["plotWidth"]], height = options[["plotHeight"]])
 
 		#print(p)
-		barplot(toPlot[[2]], names.arg = toPlot[[1]], horiz = TRUE)
+		barplot(toPlot[[2]], names.arg = toPlot[[1]], horiz = TRUE, xlab = "Mean decrease in accuracy")
 
 		if (!Sys.getenv("RSTUDIO") == "1") {
 			content <- .endSaveImage(image)
