@@ -168,3 +168,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 .multinomialDescriptives <- function(dataset, options, perform){
   # TODO
 }
+
+.multinomialDescriptivesPlot <- function(dataset, options, perform){
+  #TODO
+}
