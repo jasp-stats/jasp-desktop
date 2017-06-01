@@ -41,7 +41,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   
   
   # Then, we retrieve the state and initialise the output objects
-  state <- retrieveState()
+  state <- .retrieveState()
   
   chisqResults <- NULL # result of the chi-square test
   descriptivesTable <- NULL # expected versus observed
@@ -54,9 +54,9 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     diff <- .diff(options, state$options) # a list of TRUE/FALSE
     
     if (is.list(diff)){
-      if !any(diff[["factor"]], diff[["confidenceIntervalInterval"]],
+      if (!any(diff[["factor"]], diff[["confidenceIntervalInterval"]],
               diff[["hypothesis"]], diff[["counts"]], diff[["exProbVar"]],
-              diff[["expectedProbs"]]){
+              diff[["expectedProbs"]])){
                 
         chisqResults <- state[["chisqResults"]]
         
@@ -147,19 +147,21 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   # first determine the hypotheses
   levels <- nlevels(factor)
   hyps <- list()
-  if (options$multinomialtest){
-    hyps[["H1"]] <- rep(1/levels, levels)
-  } else {
-    # assign each hypothesis to the dadkj
-    for (h in options$hyptable){
-      # TODO
-    }
-  }
+  
+  # if (){
+  #   hyps[["H1"]] <- rep(1/levels, levels)
+  # } else {
+  #   # assign each hypothesis to the dadkj
+  #   for (h in options$hyptable){
+  #     # TODO
+  #   }
+  # }
   
   return()
 }
 
 # Transform chi-square test object into table for JASP
+# chisqResults = list(H1 = obj, H2 = obj, ....)
 .chisqTable <- function(chisqResults, options, perform){
   # TODO
 }
@@ -170,5 +172,5 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 }
 
 .multinomialDescriptivesPlot <- function(dataset, options, perform){
-  #TODO
+  # TODO
 }
