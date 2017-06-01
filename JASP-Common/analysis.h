@@ -73,6 +73,7 @@ public:
 
 	void setSaveImgOptions(Json::Value &options);
 	Json::Value getSaveImgOptions();
+	Json::Value getImgResults();
 
 	static Status parseStatus(std::string name);
 
@@ -85,6 +86,7 @@ protected:
 	Options* _options;
 
 	Json::Value _results;
+	Json::Value _imgResults;
 	Json::Value _userData;
 	Json::Value _saveImgOptions;
 
