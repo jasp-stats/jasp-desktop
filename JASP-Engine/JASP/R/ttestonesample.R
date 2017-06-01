@@ -18,8 +18,10 @@
 TTestOneSample <- function(dataset = NULL, options, perform = "run",
 						   callback = function(...) 0,  ...) {
 
+ 	state <- .retrieveState()
+
 	variables <- unlist(options$variables)
-	init <- .initializeTTest(dataset, options, perform)
+	init <- .initializeTTest(dataset, options, perform, type = "one-sample")
 	results <- init[["results"]]
 
 	## if the dataset is not null, let's change it a bit
@@ -42,20 +44,34 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	shapiroWilk <- .ttestOneSampleNormalityTest(dataset, options,  perform)
 	results[["assumptionChecks"]] <- list(shapiroWilk = shapiroWilk, title = "Assumption Checks")
 
+
+	keep <- NULL
+
 	## if the user wants descriptive plots, s/he shall get them!
 	if (options$descriptivesPlots) {
 
 		plotTitle <- ifelse(length(options$variables) > 1, "Descriptives Plots", "Descriptives Plot")
 		descriptivesPlots <- .ttestOneSamplesDescriptivesPlot(dataset, options, perform)
-		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives", descriptivesPlots = list(collection = descriptivesPlots, title = plotTitle))
-
+		if (!is.null(descriptivesPlots[[1]][["obj"]])){
+			keep <- unlist(lapply(descriptivesPlots, function(x) x[["data"]]),NULL)
+		}
+		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, 
+																			title = "Descriptives", 
+																			descriptivesPlots = list(collection = descriptivesPlots, 
+																															 title = plotTitle))
 	} else {
 
 		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives")
 	}
 
 	## return the results object
-	results
+	if (perform == "init") {
+		return(list(results=results, status="inited"))
+	} else {
+		return(list(results=results, status="complete", 
+								state = list(options = options, results = results),
+								keep = keep))
+	}
 }
 
 
@@ -85,7 +101,7 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 
 	if (wantsWilcox && onlyTest) {
 		#title <- "Mann-Whitney U Test"
-		testname <- "Mann-Whitney U Test"
+		testname <- "Wilcoxon signed-rank test"
 		testTypeFootnote <- paste0(testname, ".")
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
 		testStat <- "V"
@@ -94,13 +110,13 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 		fields <- fields[-2]
 	} else if (wantsStudents && onlyTest) {
 		#title <- "Student's T-Test"
-		testname <- "Student's T-Test"
+		testname <- "Student's t-test"
 		testTypeFootnote <- paste0(testname, ".")
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
 		testStat <- "t"
 	} else {
 		# title <- "One Sample T-Test"
-		testStat <- "statistic"
+		testStat <- "Statistic"
 	}
 
 	ttest[["title"]] <- title
@@ -134,14 +150,14 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 											 type = "number", format = "sf:4;dp:3")
 	}
 
-	if (wantsEffect) {
+	if (wantsEffect && wantsStudents) {
 		fields[[length(fields) + 1]] <- list(name = "d", title = "Cohen's d",
 											 type = "number",  format = "sf:4;dp:3")
 	}
 
 	if (wantsConfidence) {
 		interval <- 100 * options$confidenceIntervalInterval
-		title <- paste0(interval, "% Confidence Interval")
+		title <- paste0(interval, "% Confidence interval")
 
 		fields[[length(fields) + 1]] <- list(name = "lowerCI", type = "number",
 											 format = "sf:4;dp:3", title = "Lower",
@@ -156,31 +172,29 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	###########################
 	### check the directionality
 	if (options$hypothesis == "greaterThanTestValue") {
-
 		direction <- "greater"
 		note <- "For all tests, the alternative hypothesis specifies that the mean
 					is greater than "
-		message <- paste0(note, options$testValue, ".")
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
-
 	} else if (options$hypothesis == "lessThanTestValue") {
-
 		direction <- "less"
 		note <- "For all tests, the alternative hypothesis specifies that the mean
 					is less than "
-		message <- paste0(note, options$testValue, ".")
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
-
 	} else {
-
-		if (options$testValue != 0) {
-
-			note <- "All tests, hypothesis is population mean is different from "
-			message <- paste0(note, options$testValue, ".")
-			.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
-
-		}
-		direction <- "two.sided"
+	  direction <- "two.sided"
+		note <- "For all tests, the alternative hypothesis specifies that the population mean is different from "
+	}
+	
+	if (options$testValue != 0) {
+  	message <- paste0(note, options$testValue, ".")
+  	if (wantsWilcox && !wantsStudents) {
+  	  message <- gsub(pattern = "mean", replacement = "median", x = message)
+  	} else if (wantsWilcox && wantsStudents){
+  	  tMessage <- gsub(pattern = "For all tests", replacement = "For the Student t-tests", x = paste0(note, options$testValue))
+  	  wilcoxMessage <- gsub(pattern = "mean", replacement = "median", x = paste0(note, options$testValue))
+  	  wilcoxMessage <- gsub(pattern = "For all tests", replacement = "for the Wilcoxon test", x = wilcoxMessage)
+  	  message <- paste0(tMessage, "; ", wilcoxMessage)
+  	}
+  	.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
 	}
 
 
@@ -229,11 +243,11 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 					m <- as.numeric(r$estimate - r$null.value)
 					ciLow <- .clean(as.numeric(r$conf.int[1]))
 					ciUp <- .clean(as.numeric(r$conf.int[2]))
-					d <- .clean((mean(dat) - options$testValue) / sd(dat))
 
 					## only for Student's t-test
 					df <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
-
+					d <- ifelse(is.null(r$parameter), "", .clean((mean(dat) - options$testValue) / sd(dat)))
+					
 					if (is.na(t)) {
 						stop("data are essentially constant")
 					}
@@ -287,8 +301,8 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 			hasBoth <- rowNo %% 2 == 0 && sum(allTests) == 2
 			if (hasBoth) {
 				row[["v"]] <- ""
-				row[["test"]] <- "Mann-Whitney"
-				ttest.rows[[rowNo - 1]][["test"]] <- "Student's"
+				row[["test"]] <- "Wilcoxon"
+				ttest.rows[[rowNo - 1]][["test"]] <- "Student"
 			}
 
 			ttest.rows[[rowNo]] <- row
@@ -512,11 +526,14 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 				"mm"), axis.ticks.x = ggplot2::element_blank(), plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) +
 				base_breaks_y(summaryStat, options)
 
-			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-			print(p)
-			content <- .endSaveImage(image)
+			imgObj <- .writeImage(width = options$plotWidth, 
+														height = options$plotHeight, 
+														plot = p)
 
-			descriptivesPlot[["data"]] <- content
+			descriptivesPlot[["data"]] <- imgObj[["png"]]
+			descriptivesPlot[["obj"]] <- imgObj[["obj"]]
+			descriptivesPlot[["convertible"]] <- TRUE
+			descriptivesPlot[["status"]] <- "complete"
 
 		} else {
 

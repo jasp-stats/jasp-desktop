@@ -6,7 +6,7 @@
 !include "x64.nsh"
 
 !define MAIN_VERSION "0.8.1"
-!define PATCH_NUM "1"
+!define PATCH_NUM "2"
 !define VERSION "${MAIN_VERSION}.${PATCH_NUM}"
 !define BETA ""
 !define APP_NAME "JASP"
@@ -55,6 +55,11 @@ InstallDir "$PROGRAMFILES64\${APP_DISPLAY_NAME}"
 ######################################################################
 
 !include "MUI.nsh"
+
+!define MUI_ICON "${CONTENTS_DIR}\icon.ico"
+#!define MUI_HEADERIMAGE
+#!define MUI_HEADERIMAGE_BITMAP "${CONTENTS_DIR}\JASP.bmp"
+#!define MUI_HEADERIMAGE_RIGHT
 
 !define MUI_ABORTWARNING
 !define MUI_UNABORTWARNING

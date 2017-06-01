@@ -21,6 +21,7 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QFileInfo>
+#include <QFileDialog>
 #include <QMessageBox>
 
 OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
@@ -36,22 +37,6 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	_tabWidget->setMaximumWidth(800);
 
 	QWidget *webWidget = new QWidget(this);
-	/*QGridLayout *webWidgetLayout = new QGridLayout(webWidget);
-	webWidgetLayout->setMargin(36);
-
-	QFrame *webFrame = new QFrame(webWidget);
-	QGridLayout *webLayout = new QGridLayout(webFrame);
-	webFrame->setLayout(webLayout);
-	webLayout->setMargin(0);
-	webFrame->setFrameShape(QFrame::Box);
-	webFrame->setFrameStyle(QFrame::Panel);
-	webFrame->setLineWidth(1);
-	webFrame->setMinimumWidth(200);
-
-	QWebView *webView = new QWebView(webFrame);
-	webLayout->addWidget(webView);
-
-	webWidgetLayout->addWidget(webFrame);*/
 
 	layout->addWidget(_tabWidget, 0, 0);
 	layout->addWidget(webWidget, 0, 1);
@@ -69,7 +54,6 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	_bsComputer = new BackstageComputer(_tabWidget);
 
 	_bsOSF = new BackstageOSF(_tabWidget);
-
 
 	_bsExamples = new FSBrowser(_tabWidget);
 	_bsExamples->setFSModel(_fsmExamples);
@@ -122,6 +106,7 @@ void OpenSaveWidget::tabWidgetChanged(int index)
 	//Check the OSF tab
 	if (index == FileLocation::OSF)
 		_bsOSF->attemptToConnect();
+
 }
 
 VerticalTabWidget *OpenSaveWidget::tabWidget()
@@ -143,6 +128,7 @@ void OpenSaveWidget::setSaveMode(FileEvent::FileMode mode)
 	_bsComputer->setMode(_mode);
 
 	_bsOSF->setMode(_mode);
+	_bsOSF->setCurrentFileName(getDefaultOutFileName());
 
 
 	if (_mode == FileEvent::FileOpen)
@@ -212,8 +198,21 @@ FileEvent *OpenSaveWidget::save()
 void OpenSaveWidget::sync()
 {
 	QString path = _fsmCurrent->getCurrent();
-	if (!path.isEmpty())
-		dataSetOpenCurrentRequestHandler(path);
+	if (path.isEmpty())
+	{
+		QString message = "JASP has no associated data file (csv, sav or ods file) to be synchronized with. Do you want to search for such a data file on your computer?\nNB: You can set this data file also via menu File/Sync Data.";
+		QMessageBox msgBox(QMessageBox::Question, QString("No associated data file"), message,
+						   QMessageBox::Yes|QMessageBox::Cancel);
+		int reply = msgBox.exec();
+		if (reply == QMessageBox::Cancel)
+			return;
+
+		QString caption = "Find Data File";
+		QString filter = "Data File (*.csv *.txt *.sav *.ods)";
+		path = QFileDialog::getOpenFileName(this, caption, "", filter);
+	}
+
+	dataSetOpenCurrentRequestHandler(path);
 }
 
 FileEvent *OpenSaveWidget::close()
@@ -375,6 +374,41 @@ void OpenSaveWidget::setDataFileWatcher(bool watch)
 Utils::FileType OpenSaveWidget::getCurrentFileType()
 {
 	return _currentFileType;
+}
+
+QString OpenSaveWidget::getCurrentFilePath()
+{
+	return _currentFilePath;
+}
+
+QString OpenSaveWidget::getDefaultOutFileName()
+{
+	QString path = getCurrentFilePath();
+	QString DefaultOutFileName="";
+	
+	if (path != "")
+	{
+		QString name =  QFileInfo(path).baseName();
+		QString ext = QFileInfo(path).suffix();
+		switch (_mode)
+		{
+			case FileEvent::FileSave:
+				ext="jasp";
+				break;
+			case FileEvent::FileExportResults:
+				ext="html";
+				break;
+			case FileEvent::FileExportData:
+				ext = "csv";
+				break;
+			default:
+				break;
+		}
+		DefaultOutFileName = name + "." + ext;
+	}
+
+	return DefaultOutFileName;
+			
 }
 
 void OpenSaveWidget::dataSetOpenCurrentRequestHandler(QString path)

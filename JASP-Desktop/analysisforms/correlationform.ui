@@ -303,7 +303,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Vovk-Sellke Maximum p-Ratio</string>
+            <string>Vovk-Sellke maximum p-ratio</string>
            </property>
           </widget>
          </item>
@@ -510,6 +510,11 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -532,14 +537,9 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
-   <header location="global">widgets/expanderbutton.h</header>
+   <header>widgets/expanderbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

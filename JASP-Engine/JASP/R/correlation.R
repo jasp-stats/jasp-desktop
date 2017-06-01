@@ -16,55 +16,40 @@
 #
 
 Correlation <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
-
-
-	if (is.null(dataset))
-	{
-		if (perform == "run") {
-
-			if (options$missingValues == "excludeListwise") {
-
-				dataset <- .readDataSetToEnd(columns.as.numeric=options$variables, exclude.na.listwise=options$variables)
-
-			} else {
-
-				dataset <- .readDataSetToEnd(columns.as.numeric=options$variables)
+    if (is.null(dataset)) {
+        if (perform == "run") {
+            if (options$missingValues == "excludeListwise") {
+                dataset <- .readDataSetToEnd(columns.as.numeric=options$variables, exclude.na.listwise=options$variables)
+            } else {
+                dataset <- .readDataSetToEnd(columns.as.numeric=options$variables)
 			}
-
 		} else {
-
 			dataset <- .readDataSetHeader(columns.as.numeric=options$variables)
 		}
-	}
-
-	results <- list()
+    }
+    
+    results <- list()
 
 	meta <- list(
-		list(name="title", type="title"),
+	    list(name="title", type="title"),
 		list(name="correlations", type="table"),
 		list(name="plot", type="image"))
 
 	results[[".meta"]] <- meta
 
 	results[["title"]] <- "Correlation Matrix"
-
-
+	
 	state <- .retrieveState()
-
 	diff <- NULL
 
 	if (!is.null(state)) {
-
-		diff <- .diff(options, state$options)
-
+	    diff <- .diff(options, state$options)
 	}
-
+	
 	correlation.plot <- NULL
 
 	if (perform == "init" & options$plotCorrelationMatrix) {
-
-
-		if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$confidenceIntervals == FALSE && diff$confidenceIntervalsInterval == FALSE
+	    if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$confidenceIntervals == FALSE && diff$confidenceIntervalsInterval == FALSE
 			&& diff$hypothesis == FALSE && diff$kendallsTauB == FALSE && diff$missingValues == FALSE && diff$pearson == FALSE && diff$plotCorrelationMatrix == FALSE
 			&& diff$plotDensities == FALSE && diff$plotStatistics == FALSE && diff$spearman == FALSE && diff$variables == FALSE)))) {
 
@@ -193,8 +178,9 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				correlation.plot <- plot
 				cexText <- 1.6
 
-				image <- .beginSaveImage(width, height)
+				# image <- .beginSaveImage(width, height)
 
+				.plotFunc <- function() {
 				if (l == 1) {
 
 					# par(mfrow= c(1, 1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
@@ -347,12 +333,17 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 						}
 					}
 				}
+				}
 
-				content <- .endSaveImage(image)
+				# content <- .endSaveImage(image)
+				content <- .writeImage(width = width, height = height, plot = .plotFunc, obj = TRUE)
 
 				plot <- correlation.plot
 
-				plot[["data"]]  <- content
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
+				# plot[["data"]]  <- content
 
 				correlation.plot <- plot
 			}
@@ -373,7 +364,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 								flagSignificant=options$flagSignificant, reportVovkSellkeMPR=options$VovkSellkeMPR,
 								meansAndStdDev=options$meansAndStdDev, crossProducts=options$crossProducts, state=state, diff=diff, options=options)
 
-	print(correlationTableOutput)
+	# print(correlationTableOutput)
 	tableVariables <- correlationTableOutput$variables
 	tableTests <- correlationTableOutput$tests
 	tableRows <- correlationTableOutput$rows
@@ -411,14 +402,20 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 	correlation.table <- list()
 
+	numberOfVariables <- length(variables)
+	
 	if (perform == "init") {
-
-		if (length(variables) < 2)
-			variables <- c(variables, "...")
-		if (length(variables) < 2)
-			variables <- c(variables, "... ")
+	    if (numberOfVariables == 0){
+	        variables <- c(variables, "...", "... ")
+	    } else if (numberOfVariables == 1){
+	        variables <- c(variables, "... ")
+	    }
 	}
-
+	
+	# update number of variables, hence it's always >= 2, thus, outputting a table of 2 by 2
+	#
+	numberOfVariables <- length(variables)
+	
 	tests <- c()
 	if (pearson)
 		tests <- c(tests, "pearson")
@@ -491,16 +488,15 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	    1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
 	    (Sellke, Bayarri, & Berger, 2001).")
 		}
- }
+	}
 
-	v.c <- length(variables)
 	pValueList <- list()
 	MPRList <- list()
 	upperCIList <- list()
 	lowerCIList <- list()
 
 
-	if (v.c > 0) {
+	if (numberOfVariables > 0) {
 
 		test.names <- list(pearson="Pearson's r", spearman="Spearman's rho", kendall="Kendall's tau B")
 
@@ -580,7 +576,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 		}
 
 
-		for (i in 1:v.c) {
+		for (i in 1:numberOfVariables) {
 
 			row <- list()
 			row.footnotes <- list()
@@ -630,7 +626,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				lowerCIs[[length(lowerCIs)+1]] <- "\u2014"
 
 
-				for (j in .seqx(i+1, v.c)) {
+				for (j in .seqx(i+1, numberOfVariables)) {
 
 					variable.2.name <- variables[[j]]
 					column.name <- paste(variable.2.name, "[", test, "]", sep="")
@@ -641,8 +637,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 					if (!is.null(state) && !is.null(diff) && test %in% state$tableTests && variable.name %in% state$tableVariables && column.name %in% names(state$tableRows[[which(state$tableVariable == variable.name)]])
 						&& ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$hypothesis == FALSE && diff$missingValues == FALSE && diff$confidenceIntervals == FALSE && diff$confidenceIntervalsInterval == FALSE)))) {
-
-						variableIndex <- which(state$tableVariable == variable.name)
+            
+					  variableIndex <- which(state$tableVariable == variable.name)
 						estimate <- state$tableRows[[variableIndex]][[column.name]]
 						p.value <- state$tablePValues[[variable.name]][[column.name]]
 						MPR <- state$tableMPRs[[variable.name]][[column.name]]
@@ -662,13 +658,6 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 							lowerCIs[[length(lowerCIs)+1]] <- .clean(lowerCI)
 						}
 
-
-					 	if (base::any(base::is.infinite(v1)) || base::any(base::is.infinite(v2))) {
-
-					 			index <- .addFootnote(footnotes, "Correlation co-efficient is undefined - one (or more) variables contain infinity")
-					 			row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
-
-					 	}
 
 					 	row[[length(row)+1]] <- estimate
 
@@ -698,6 +687,14 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 					 } else {
 
 						if (perform == "run") {
+						  errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('variance', 'infinity'),
+
+						                       all.target = c(variable.name, variable.2.name))
+						  if (!identical(errors, FALSE)) {
+						    index <- .addFootnote(footnotes, errors$message)
+						    row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
+						  }
+						  
 
 							if (hypothesis == "correlated") {
 
@@ -728,16 +725,6 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 							pValueList[[variable.name]][[column.name]] <- p.value
 							MPRList[[variable.name]][[column.name]] <- MPR
-
-							if (is.na(estimate)) {
-
-								if (base::any(base::is.infinite(v1)) || base::any(base::is.infinite(v2))) {
-
-									index <- .addFootnote(footnotes, "Correlation co-efficient is undefined - one (or more) variables contain infinity")
-									row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
-
-								}
-							}
 
 							row[[length(row)+1]] <- .clean(estimate)
 

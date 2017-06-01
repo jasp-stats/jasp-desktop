@@ -79,7 +79,7 @@
   if (! is.null(args[['grouping']])) {
     message <- paste(message, .messages('error', 'grouping'))
   }
-  
+
   # Find all {{string}}'s that needs to be replaced by values.
   toBeReplaced <- regmatches(message, gregexpr("(?<=\\{{)\\S*?(?=\\}})", message, perl=TRUE))[[1]]
   if (base::identical(toBeReplaced, character(0)) == FALSE) { # Were there any {{string}}'s?
@@ -136,7 +136,7 @@
 }
 
 
-.hasErrors <- function(dataset, perform, type, custom=NULL, message='default', exitAnalysisIfErrors=FALSE, ...) {
+.hasErrors <- function(dataset, perform, type=NULL, custom=NULL, message='default', exitAnalysisIfErrors=FALSE, ...) {
   # Generic error checking function.
   # Args:
   #   dataset: Normal JASP dataset.
@@ -150,7 +150,7 @@
   # Returns:
   #   FALSE if no errors were found or a named list specifying for each check which variables violated it as well as a general error message.
   
-  if (! isTRUE(nrow(dataset) > 0) || perform != 'run' || length(type) == 0) {
+  if (! isTRUE(nrow(dataset) > 0) || perform != 'run' || (length(type) == 0 && length(custom) == 0)) {
     return(FALSE)
   }
   
@@ -164,6 +164,7 @@
   checks[['factorLevels']] <- list(callback=.checkFactorLevels)
   checks[['variance']] <- list(callback=.checkVariance, addGroupingMsg=TRUE)
   checks[['observations']] <- list(callback=.checkObservations, addGroupingMsg=TRUE)
+  checks[['varCovMatrix']] <- list(callback=.checkVarCovMatrix, addGroupingMsg=FALSE)
   
   args <- c(list(dataset=dataset), list(...))
   errors <- list(message=NULL)
@@ -212,8 +213,7 @@
         names(funcArgs)[names(funcArgs) != 'dataset'] <- paste0(type[[i]], '.', names(funcArgs)[names(funcArgs) != 'dataset'])
         
         # Fill in the 'all.*' arguments for this check
-        # TODO when R version 3.3 is installed we can use: argsAllPrefix <- args[startsWith(names(args), 'all.')]
-        argsAllPrefix <- args[substring(names(args), 1, 4) == 'all.']
+        argsAllPrefix <- args[startsWith(names(args), 'all.')]
         if (length(argsAllPrefix) > 0) {
           for (a in names(argsAllPrefix)) {
             funcArg <- gsub('all', type[[i]], a, fixed=TRUE)
@@ -354,7 +354,12 @@
     
   } else {
     
-    result <- plyr::ddply(dataset, .v(grouping), function(data, target) func(data[[.v(target)]]), target)
+    result <- plyr::ddply(dataset, .v(grouping), 
+      function(data, target) {
+        if (any(is.na(data[.v(grouping)])) == FALSE) {
+          func(data[[.v(target)]])
+        }
+      },  target)
     result <- result[[ncol(result)]] # The last column holds the func results.
     
   }
@@ -497,4 +502,28 @@
     
   }
   return(result)
+}
+
+# Check if data set is variance-covariance matrix
+.checkVarCovMatrix <- function(dataset,nrow=TRUE,symm=TRUE,posdef=TRUE,...){
+
+  # as matrix:
+  dataMatrix <- as.matrix(dataset)
+  
+  # number of rows equal to number of columns?
+  if (nrow && nrow(dataset) != ncol(dataset)){
+    return(list(error=TRUE,reason="Dataset is not a square matrix"))
+  }
+  
+  # Symmetrical?
+  if (symm && !all(round(dataset,10) == t(round(dataset,10)))){
+    return(list(error=TRUE,reason="Matrix is not symmetrical"))
+  }
+  
+  # Positive-definite?
+  if (posdef && any(round(eigen(dataset)$values,10) < 0)){
+    return(list(error=TRUE,reason="Matrix is not positive-definite"))
+  }
+  
+  return(list(error=FALSE, reason = ""))
 }

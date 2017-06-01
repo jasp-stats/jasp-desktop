@@ -33,9 +33,9 @@ Windows
 Building JASP under windows is the most temperamental, and the versions listed here are known to work; slight variations on these numbers probably won't work.
 
  - [Qt 5.2.1 win64 GCC 4.8.2](https://static.jasp-stats.org/development/x64-Qt-5.2.1+QtCreator-3.0.1-(gcc-4.8.2-seh).7z)
- - [R 3.1.2 win64](https://static.jasp-stats.org/development/R%20Win64%20for%20JASP%20%282015-09-04%29.zip)
+ - [R 3.3.3 win64](https://static.jasp-stats.org/development/R3.3%20Win%20(2017-04-06).zip)
  - [boost 1.54.0](https://static.jasp-stats.org/development/boost_1_54_0.7z)
- - [boost 1.54.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Additional Binary Deps Win64 for JASP (2015-04-14).zip)
+ - [boost 1.54.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Additional%20Binary%20Deps%20Win64%20for%20JASP%20(2015-04-14).zip)
 
 Qt: JASP for windows is built as 64-bit and is built with Mingw-W64. The Qt project does not ship a 64-bit version of Qt based on Mingw-W64, and so we rely on a version from [here](http://sourceforge.net/projects/mingwbuilds/files/external-binary-packages/Qt-Builds/). Once downloaded and unzipped to the desired location, it is necessary to run the `QtSDK-x86_64/qtbinpatcher.exe`, so it knows about it's current location.
 
@@ -60,9 +60,9 @@ The directory structure should be as follows:
 Mac OS X
 --------
 
- - [R 3.1.2](https://static.jasp-stats.org/development/R%20OSX%20for%20JASP%20%282015-09-04%29.zip)
+ - [R 3.3.3](https://static.jasp-stats.org/development/R3.3%20OSX%20(2017-04-06).zip)
  - [boost 1.54.0](https://static.jasp-stats.org/development/boost_1_54_0.tar.bz2)
- - [boost 1.54.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Additional Binary Deps OSX for JASP (2015-04-14).zip)
+ - [boost 1.54.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Additional%20Binary%20Deps%20OSX%20for%20JASP%20(2015-04-14).zip)
 
 XCode: Qt on OS X relies on XCode to function, you can install this through the App Store. It's easiest if you install this, run it, accept the license agreement, and then close it down before installing Qt.
 
@@ -83,6 +83,10 @@ The directory structure should be as follows:
 Linux
 -----
 
+### Build
+
+#### Ubuntu (and alike)
+
 Jonathon maintains a number of packages for JASP and it's development under linux in his PPA [here](https://launchpad.net/~jonathon-love/+archive/ubuntu/jasp)
 
 To build JASP under Ubuntu, debian, and derivatives, you will need:
@@ -100,7 +104,28 @@ To build JASP under Ubuntu, debian, and derivatives, you will need:
  - r-cran-rinside *
  - libarchive-dev
 
-In order to run, you will need:
+#### Fedora
+Under Fedora, you need these packages:
+ - qt-devel
+ - qt5-qtwebkit-devel
+ - boost-devel
+ - libarchive-devel
+ 
+And (under fedora only), in R (started as root so packages are installed systemwide), you need to install:
+
+```
+install.packages(c("Rcpp","RInside"))
+```
+ 
+Finally, under Fedora only, you need to create a symlink so that R is found:
+
+```
+sudo ln -s /usr/lib64/R/ /usr/lib/R
+```
+
+### Runtime
+#### Ubuntu (and alike)
+In order to run, you will need (Ubuntu and alike):
 
  - r-cran-bayesfactor *
  - r-cran-lme4
@@ -109,6 +134,15 @@ In order to run, you will need:
  - r-cran-effects *
  - r-cran-logspline *
  - r-cran-hypergeo *
-   r-cran-rjson
-
+ - r-cran-rjson
+ 
 Those marked with asterisks are available from Jonathon's PPA.
+
+### Fedora
+It works under Fedora, if you install these R packages manually in R:
+
+```
+install.packages(c("BayesFactor","lme4","afex","car","effects","logspline","hypergeo","rjson"))
+```
+
+

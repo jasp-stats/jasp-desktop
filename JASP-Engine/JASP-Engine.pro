@@ -1,6 +1,7 @@
 
 #QT -= core
 QT -= gui
+CURRENT_R_VERSION = 3.3
 
 windows:CONFIG += c++11
 linux:CONFIG += c++11
@@ -31,7 +32,7 @@ macx {
 
 	INCLUDEPATH += ../../boost_1_54_0
 
-	isEmpty(_R_HOME):_R_HOME = $$OUT_PWD/../../Frameworks/R.framework/Versions/3.1/Resources
+	isEmpty(_R_HOME):_R_HOME = $$OUT_PWD/../../Frameworks/R.framework/Versions/$$CURRENT_R_VERSION/Resources
 	R_EXE  = $$_R_HOME/bin/R
 }
 
@@ -68,26 +69,20 @@ win32:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
 INCLUDEPATH += \
 	$$_R_HOME/include \
-	$$_R_HOME/library/RInside/include \
 	$$_R_HOME/library/Rcpp/include
 
 linux:INCLUDEPATH += \
 	/usr/share/R/include \
-	$$_R_HOME/site-library/RInside/include \
 	$$_R_HOME/site-library/Rcpp/include
 
 macx:LIBS += \
-	-L$$_R_HOME/library/RInside/lib -lRInside \
 	-L$$_R_HOME/lib -lR
 
 linux:LIBS += \
-	-L$$_R_HOME/library/RInside/lib \
-	-L$$_R_HOME/site-library/RInside/lib -lRInside \
 	-L$$_R_HOME/lib -lR \
 	-lrt
 
 win32:LIBS += \
-	-L$$_R_HOME/library/RInside/lib/$$ARCH -lRInside \
 	-L$$_R_HOME/bin/$$ARCH -lR
 
 win32:LIBS += -lole32 -loleaut32
@@ -101,8 +96,17 @@ PRE_TARGETDEPS      += InstallJASPRPackage
 
 SOURCES += main.cpp \
 	engine.cpp \
-	rbridge.cpp
-
+	rbridge.cpp \
+        RInside/MemBuf.cpp \
+        RInside/RInside.cpp
+  
 HEADERS += \
 	engine.h \
-	rbridge.h
+	rbridge.h \
+        RInside/Callbacks.h \
+        RInside/MemBuf.h \
+        RInside/RInside.h \
+        RInside/RInsideAutoloads.h \
+        RInside/RInsideCommon.h \
+        RInside/RInsideConfig.h \
+        RInside/RInsideEnvVars.h

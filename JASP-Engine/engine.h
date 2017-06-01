@@ -49,6 +49,7 @@ private:
 
 	bool receiveMessages(int timeout = 0);
 	void runAnalysis();
+	void saveImage();
 	void sendResults();
 	std::string callback(const std::string &results);
 
@@ -56,7 +57,7 @@ private:
 	void provideTempFileName(const std::string &extension, std::string &root, std::string &relativePath);
 	void provideStateFileName(std::string &root, std::string &relativePath);
 
-	typedef enum { empty, toInit, initing, inited, toRun, running, changed, complete, error, exception, aborted, stopped } Status;
+	typedef enum { empty, toInit, initing, inited, toRun, running, changed, complete, error, exception, aborted, stopped, saveImg } Status;
 
 	Status _status;
 
@@ -65,6 +66,7 @@ private:
 	std::string _analysisName;
 	std::string _analysisOptions;
 	std::string _analysisResultsString;
+	Json::Value _imageOptions;
 	int _ppi;
 
 	bool _currentAnalysisKnowsAboutChange;

@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perform = "run", callback) {
+SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perform = "run", callback = function(...) 0,  ...) {
 
 	run <- (perform == "run")
 	state <- .retrieveState()
@@ -34,7 +34,7 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 							)
 	bf.title <- bftype$bftitle
 	BFH1H0 <- bftype$BFH1H0
-	print(state)
+	
 	hypothesis.variables <- .hypothesisType.summarystats.ttest.paired(options$hypothesis)
 	oneSided <- hypothesis.variables$oneSided
 
