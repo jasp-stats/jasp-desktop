@@ -250,11 +250,17 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 						plot[["height"]] <- 400
 					
 						p <- try(silent=FALSE, expr= {
+							
+									func <- function() { 
+										 .plotPosterior.binomTest(counts, n, options$testValue, a = a, b = b, BF10, hypothesis = hyp,
+ 											addInformation = options$plotPriorAndPosteriorAdditionalInfo)
+									}
+									imgObj <- .writeImage(530, 400, func)
 									
-									image <- .beginSaveImage(530, 400)
-									.plotPosterior.binomTest(counts, n, options$testValue, a = a, b = b, BF10, hypothesis = hyp,
-										addInformation = options$plotPriorAndPosteriorAdditionalInfo)
-									plot[["data"]] <- .endSaveImage(image)
+									plot[["data"]] <- imgObj[["png"]]
+									plot[["obj"]] <- imgObj[["obj"]]
+									plot[["convertible"]] <- TRUE
+									plot[["status"]] <- "complete"
 									
 								})
 								
@@ -378,9 +384,15 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 						plot[["width"]]  <- 530
 						plot[["height"]] <- 400
 						
-						image <- .beginSaveImage(530, 400)
-						.plotPosterior.binomTest(dontPlotData = TRUE, addInformation = options$plotPriorAndPosteriorAdditionalInfo)
-						plot[["data"]] <- .endSaveImage(image)
+						func <- function() {
+							.plotPosterior.binomTest(dontPlotData = TRUE, addInformation = options$plotPriorAndPosteriorAdditionalInfo)
+						}
+						imgObj <- .writeImage(530, 400, func)
+						
+						plot[["data"]] <- imgObj[["png"]]
+						plot[["obj"]] <- imgObj[["obj"]]
+						plot[["convertible"]] <- TRUE
+						plot[["status"]] <- "complete"
 					}
 					
 					plotGroups[[length(plotGroups)]][["PriorPosteriorPlot"]] <- plot

@@ -38,6 +38,7 @@ public:
 
 	void setOnlineDataManager(OnlineDataManager *odm);
 	void attemptToConnect();
+	void setCurrentFileName(QString currentFileName);
 
 	void setMode(FileEvent::FileMode mode) OVERRIDE;
 
@@ -75,6 +76,7 @@ private:
 	QLineEdit *_fileNameTextBox;
 	QPushButton *_saveButton;
 	QToolButton *_newFolderButton;
+	QString _currentFileName;
 
 	QSettings _settings;
 

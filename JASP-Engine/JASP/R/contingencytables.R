@@ -602,7 +602,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 		next.rows <- .crosstabsCreateOrdinalRows(analysis$rows, group.matrix, ordinal.footnotes, options, perform, group, status)
 		ordinal.rows <- c(ordinal.rows, next.rows)
 
-		next.rows <- .crosstabsCreateOrdinalTau(analysis$rows, group.matrix, ordinal.footnotes, options, perform, group, status)
+		next.rows <- .crosstabsCreateOrdinalTau(analysis$rows, group.matrix, kendalls.footnotes, options, perform, group, status)
 		kendalls.rows <- c(kendalls.rows, next.rows)
 	}
 
