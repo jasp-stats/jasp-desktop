@@ -119,6 +119,7 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/binomialtestbayesianform.cpp \
         $$PWD/analysisforms/bffromtform.cpp \
         $$PWD/ribbons/ribbonsummarystatistics.cpp \
+        $$PWD/ribbons/ribbonmachinelearning.cpp \
         $$PWD/variableswidget.cpp \
         $$PWD/variablespage/levelstablemodel.cpp \
         $$PWD/variablespage/variablestablemodel.cpp \
@@ -182,6 +183,11 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.cpp \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.cpp \
+        $$PWD/analysisforms/MachineLearning/mlregressionrandomforestform.cpp \
+        $$PWD/analysisforms/MachineLearning/mlregressionboostingform.cpp \
+        $$PWD/analysisforms/MachineLearning/mlregressionknnform.cpp \
+        $$PWD/analysisforms/MachineLearning/mlclassificationknnform.cpp \
+        $$PWD/analysisforms/MachineLearning/mlclusteringkmeansform.cpp \
 		$$PWD/simplecrypt.cpp \
 		$$PWD/importers/convertedstringcontainer.cpp \
 		$$PWD/importers/importer.cpp \
@@ -315,6 +321,7 @@ HEADERS  += \
         $$PWD/analysisforms/binomialtestbayesianform.h \
         $$PWD/analysisforms/bffromtform.h \
         $$PWD/ribbons/ribbonsummarystatistics.h \
+        $$PWD/ribbons/ribbonmachinelearning.h \
         $$PWD/variableswidget.h \
         $$PWD/variablespage/levelstablemodel.h \
         $$PWD/variablespage/variablestablemodel.h \
@@ -373,6 +380,11 @@ HEADERS  += \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.h \
+        $$PWD/analysisforms/MachineLearning/mlregressionrandomforestform.h \
+        $$PWD/analysisforms/MachineLearning/mlregressionboostingform.h \
+        $$PWD/analysisforms/MachineLearning/mlregressionknnform.h \
+        $$PWD/analysisforms/MachineLearning/mlclassificationknnform.h \
+        $$PWD/analysisforms/MachineLearning/mlclusteringkmeansform.h \
 		$$PWD/simplecrypt.h \
 		$$PWD/simplecryptkey.h \
 		$$PWD/importers/convertedstringcontainer.h \
@@ -434,6 +446,7 @@ FORMS += \
         $$PWD/analysisforms/binomialtestbayesianform.ui \
         $$PWD/analysisforms/bffromtform.ui \
         $$PWD/ribbons/ribbonsummarystatistics.ui \
+        $$PWD/ribbons/ribbonmachinelearning.ui \
         $$PWD/variableswidget.ui \
         $$PWD/backstage/authwidget.ui\
         $$PWD/aboutdialog.ui \
@@ -449,6 +462,11 @@ FORMS += \
         $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.ui \
+        $$PWD/analysisforms/MachineLearning/mlregressionrandomforestform.ui \
+        $$PWD/analysisforms/MachineLearning/mlregressionboostingform.ui \
+        $$PWD/analysisforms/MachineLearning/mlregressionknnform.ui \
+        $$PWD/analysisforms/MachineLearning/mlclassificationknnform.ui \
+        $$PWD/analysisforms/MachineLearning/mlclusteringkmeansform.ui \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.ui
 
 RESOURCES += \
@@ -574,6 +592,9 @@ OTHER_FILES += \
         $$PWD/resources/icons/analysis-bayesian-crosstabs.svg \
         $$PWD/resources/icons/analysis-classical-crosstabs.svg \
         $$PWD/resources/icons/analysis-bayesian-regression.svg \
+        $$PWD/resources/icons/analysis-ml-classification.svg \
+        $$PWD/resources/icons/analysis-ml-clustering.svg \
+        $$PWD/resources/icons/analysis-ml-regression.svg \
         $$PWD/resources/icons/toolbutton-menu-indicator.svg \
         $$PWD/html/js/image.js \
         $$PWD/resources/icons/variable-scale-inactive.svg \
