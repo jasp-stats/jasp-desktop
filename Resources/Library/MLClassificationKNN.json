@@ -33,11 +33,14 @@
 			"name": "percentageTrainingData",
 			"type": "List",
 			"options": [ "auto", "manual" ],
-			"default": "auto"
+            "default": "auto"
 		},
 		{
 			"name": "trainingDataManual",
-			"type": "Integer"
+            "type": "Integer",
+            "min": 1,
+            "max": 100,
+            "default": 80
 		},
 		{
 			"name": "noOfNearestNeighbours",
@@ -47,15 +50,21 @@
 		},
 		{
 			"name": "nearestNeighboursCount",
-			"type": "Integer"
+            "type": "Integer",
+            "min": 1,
+            "default": 1
 		},
 		{
 			"name": "optimizedFrom",
-			"type": "Integer"
+            "type": "Integer",
+            "min": 1,
+            "default": 1
 		},
 		{
 			"name": "optimizedTo",
-			"type": "Integer"
+            "type": "Integer",
+            "min": 2,
+            "default": 2
 		},
 		{
 			"name": "tablePredictions",
@@ -89,6 +98,12 @@
 			"options": [ "auto", "manual", "optimized" ],
 			"default": "auto"
 		},
+        {
+            "name": "distanceParameterManual",
+            "type": "Number",
+            "value": 2,
+            "min": 0.1
+        },
 		{
 			"name": "scaleEqualSD",
 			"type": "Boolean"
@@ -99,7 +114,9 @@
 		},
 		{
 			"name": "maxK",
-			"type": "Integer"
+            "type": "Integer",
+            "min": 1,
+            "default": 5
 		},
 		{
 			"name": "validationKFold",
@@ -107,7 +124,57 @@
 		},
 		{
 			"name": "noOfFolds",
-			"type": "Integer"
-		}
+            "type": "Integer",
+            "min": 1,
+            "default": 5
+        },
+        {
+           "name": "confusionTable",
+           "type": "Boolean",
+           "default": true
+        },
+        {
+            "name": "weights",
+            "type": "List",
+            "options": ["unweighted", "optimal", "triangular", "epanechnikov" , "biweight", "triweight", "cos", "inv", "gaussian", "rank" ],
+            "default": "unweighted"
+        },
+        {
+            "name": "predictionsFrom",
+            "type": "Integer",
+            "min": 1,
+            "max": 999999,
+            "default": 1
+        },
+        {
+            "name": "predictionsTo",
+            "type": "Integer",
+            "min": 1,
+            "max": 999999,
+            "default": 10
+        },
+        {
+            "name": "optimizeModel",
+            "type": "Boolean",
+            "default": false
+        },
+        {
+            "name": "optimizeModelMaxK",
+            "type": "Integer",
+            "default": 10,
+            "min": 1,
+            "max": 100
+        },
+        {
+            "default": 640,
+            "name": "plotWidth",
+            "type": "Integer"
+        },
+        {
+            "default": 480,
+            "name": "plotHeight",
+            "type": "Integer"
+        },
+
 	]
 }

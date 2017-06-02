@@ -20,20 +20,20 @@
 			"template": [
 				{
 					"name": "components",
-					"type": "Term" 
+					"type": "Term"
 				},
 				{
 					"name": "isNuisance",
 					"type": "Boolean"
 				}
 			],
-			"type": "Table"  
+			"type": "Table"
 		},
 		{
 			"name": "plotVariableImportance",
 			"type": "Boolean"
 		},
-                {
+     {
 			"name": "plotTreesVsModelError",
 			"type": "Boolean"
 		},
@@ -54,6 +54,7 @@
 			"name": "tableSummary",
 			"type": "Boolean",
                          "default" : true
+
 		},
 		{
 			"name": "calculateProximityMatrix",
@@ -132,8 +133,7 @@
 			"type": "Integer",
 			"min": 1,
 			"default": 1   
-		},		
-		
+		},				
 		{
 			"name": "seedBox",
 			"type": "List",

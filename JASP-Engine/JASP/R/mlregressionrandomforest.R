@@ -516,4 +516,3 @@ MLRegressionRandomForest <- function(dataset = NULL, options, perform = "run",
 	return(rfPlot)
 
 }
-
