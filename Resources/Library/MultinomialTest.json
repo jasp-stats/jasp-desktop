@@ -33,6 +33,11 @@
       "default": "count",
       "type": "List"
     },
+		{
+			"name": "descriptives",
+			"type": "Boolean",
+			"default": true
+		},
     {
 			"name": "confidenceInterval",
 			"type": "Boolean"
@@ -46,7 +51,7 @@
 			"value": 0.950
 		},
 		{
-			"name": "descriptivesPlots",
+			"name": "descriptivesPlot",
 			"type": "Boolean"
 		},
 		{

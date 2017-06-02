@@ -31,7 +31,7 @@ MultinomialTestForm::MultinomialTestForm(QWidget *parent) :
 	TableModelVariablesAssigned *factorModel = new TableModelVariablesAssigned(this);
 	factorModel->setSource(&_availableVariablesModel);
 	factorModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	factorModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	factorModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeNominalText);
 
 	ui->factor->setModel(factorModel);
 	ui->factor->setDoubleClickTarget(ui->listAvailableVariables);
