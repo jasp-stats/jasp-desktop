@@ -47,6 +47,7 @@ Engine::Engine()
 	_dataSet = NULL;
 	_channel = NULL;
 	_slaveNo = 0;
+	_ppi = 96;
 
 	_status = empty;
 
@@ -77,7 +78,7 @@ void Engine::saveImage()
 
 	int height = _imageOptions.get("height", Json::nullValue).asInt();
 	int width = _imageOptions.get("width", Json::nullValue).asInt();
-	std::string result = rbridge_saveImage(name, type, height, width);
+	std::string result = rbridge_saveImage(name, type, height, width, _ppi);
 
 
 	_status = complete;

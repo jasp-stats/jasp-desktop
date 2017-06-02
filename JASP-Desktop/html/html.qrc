@@ -53,5 +53,14 @@
         <file>about.html</file>
         <file>css/images/tinylogo.svg</file>
         <file>welcome.html</file>
+        <file>css/theme-intro.css</file>
+        <file>font/Lato-Light.ttf</file>
+        <file>font/Lato-Regular.ttf</file>
+        <file>img/jasp-logo.svg</file>
+        <file>img/jasp-wave-down-blue-120.svg</file>
+        <file>img/jasp-wave-down-blue-150.svg</file>
+        <file>img/jasp-wave-up-green-100.svg</file>
+        <file>img/jasp-wave-up-green-120.svg</file>
+        <file>img/ul-orange-dot.png</file>
     </qresource>
 </RCC>

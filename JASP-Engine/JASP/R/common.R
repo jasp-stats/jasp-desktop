@@ -96,7 +96,10 @@ run <- function(name, options.as.json.string, perform="run") {
 
 			state <- results$state
 			
-			state[["figures"]] <- c(state[["figures"]], .imgToState(results$results))
+			if (! is.null(names(state))) {
+				state[["figures"]] <- c(state[["figures"]], .imgToState(results$results))
+			}
+
 			location <- .requestStateFileNameNative()
 
 			relativePath <- location$relativePath
@@ -1017,66 +1020,40 @@ saveImage <- function(plotName, format, height, width){
 	suppressWarnings(grDevices::replayPlot(rec_plot))
 }
 
-#.imgToResults
-.imgToResults <- function(imgobj) {
+# This recursive function removes all non-jsonifyable image objects from a 
+# result list, while retaining the structure of said list.
+.imgToResults <- function(lst) {
 
-	if (!is.list(imgobj))
-		return(imgobj)
+	if (!is.list(lst))
+		return(lst) # we are at an end node, stop
+	
+	if (all(c("data", "obj") %in% names(lst)) && is.character(lst[["data"]])) {
+		# found a figure! remove its object!
+		lst <- lst[names(lst) != "obj"]
+	}
 
-	nms <- names(imgobj)
-	if (!is.null(nms))
-		imgobj <- imgobj[nms != "obj"]
-
-	return(lapply(imgobj, .imgToResults))
+	# recurse into next level
+	return(lapply(lst, .imgToResults))
 }
 
-#.imgToState 
-.imgToState <- function(imgobj) {
+# This recursive function takes a results object and extracts all the figure 
+# objects from it, irrespective of their location within the nested structure. 
+# It then returns a named list of image objects.
+.imgToState <- function(lst) {
 
 	result <- list()
 	
-	# if the state is empty, prevent that a figure entry is added
-	if (!is.list(imgobj) || is.null(names(imgobj)))
-		return(NULL)
+	if (!is.list(lst))
+		return(NULL) # we are at an end node, stop
 
-	if (all(c("data", "obj") %in% names(imgobj), is.character(imgobj[["data"]]))) {
-		
-		result[[imgobj[["data"]]]] <- imgobj[["obj"]]
+	if (all(c("data", "obj") %in% names(lst)) && is.character(lst[["data"]])) {
+		# Found a figure, add to the list!
+		result[[lst[["data"]]]] <- lst[["obj"]]
 		return(result)
-
 	}
 
-	# unname to avoid name1.name2."data"
-	return(unlist(lapply(unname(imgobj), .imgToState), recursive = FALSE))
+	# Recurse into the next level (unname to avoid concatenating list names 
+	# such as (name1.name2."data"))
+	return(unlist(lapply(unname(lst), .imgToState), recursive = FALSE))
 
 }
-
-# .imgToResults <- function(imgobj){
-#   # Recursive function to return result with same structure as imgobj
-#   result <- list()
-#   if (length(imgobj) != 0) {
-#   	if (is.list(imgobj[[1]])) {
-#   		result <- lapply(imgobj, .imgToResults)
-#   	} else {
-#   		result <- imgobj[names(imgobj)!="obj"]
-#   	}
-#   	return(result)
-#   } else {
-#   	return(imgobj)
-#   }
-# }
-# 
-# .imgToState <- function(imgobj){
-#   # Recursive function to save named list of image objects to state
-#   result <- list()
-#   if (length(imgobj) != 0) {
-#   	if (is.list(imgobj[[1]])){
-#   		result <- unlist(lapply(imgobj, .imgToState), recursive = FALSE)
-#   	} else {
-#   		result[[imgobj[["data"]]]] <- imgobj[["obj"]]
-#   	}
-#   	return(result)
-#   } else {
-#   	return(imgobj)
-#   }
-# }
