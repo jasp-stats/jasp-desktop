@@ -24,7 +24,7 @@
     {
       "name": "countProp",
       "options": [ "descCounts", "descProps" ],
-      "default": "count",
+      "default": "descCounts",
       "type": "List"
     },
     {

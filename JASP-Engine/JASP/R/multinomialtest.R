@@ -198,19 +198,64 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   table <- list()
   table[["title"]] <- "Descriptives table"
   
-  fields <- list(
-    list(name="level", title="Level", type="string"),
-    list(name="observed", title="Observed", type="integer")
-  )
+  countProp = "descCounts"
+  
+  if (countProp=="descCounts"){
+    numbertype = list(type="integer")
+  } else {
+    numbertype = list(type="number", format="sf:4;dp:3")
+  }
   
   
-  #if (!is.null(factor) && perform == "run"){
-  if (FALSE){
+  if (is.null(factor)){
+    # If we have no variable init table with generic name
+    
+    fields <- list(
+      list(name="factor", title="Factor", type = "string"),
+      list(name="observed", title="Observed", numbertype),
+      list(name="expected", title="Expected". numbertype)
+    )
+    rows <- list(factor = ".", observed = ".", expected = ".")
+  
+  } else if (perform != "run") {
+    # If we have a variable init table with factor name
+    
+    fields <- list(
+      list(name="factor", title=factor, type = "string"),
+      list(name="observed", title="Observed", numbertype),
+      list(name="expected", title="Expected". numbertype)
+    )
+    rows <- list(factor = ".", observed = ".", expected = ".")
+    
+    
+  } else {
+    
+    # now perform is run and we want to create the full table
+    
+    fields <- list(
+      list(name="factor", title=factor, type = "string"),
+      list(name="observed", title="Observed", numbertype),
+      list(name="expected", title="Expected". numbertype)
+    )
+    
     f <- dataset[[.v(factor)]]
     f <- f[!is.na(f)]
     nlev <- nlevels(f)
     val <- table(f)  
     hyps <- .multinomialHypotheses(options, nlev)
+    
+  }
+  
+  table[["schema"]] <- fields
+  table[["data"]] <- rows
+  
+  return(table)
+  
+  
+  #if (!is.null(factor) && perform == "run"){
+  if (FALSE){
+    
+    
     if (length(hyps) == 1) {
       fields[[length(fields)+1]] <- list(name=names(hyps), 
                                          title = paste0("Expected: ", names(hyps)),
@@ -230,7 +275,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     fields[[length(fields)+1]] <- list(name="expected", 
                                        title = "Expected",
                                        type = "integer")
-
+    table[["schema"]] <- fields
     row <- list()
     if (is.null(factor)){
       factor <- ""
@@ -241,7 +286,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     table[["data"]] <- row
   }
   
-  return(table)
+  
   
 }
 

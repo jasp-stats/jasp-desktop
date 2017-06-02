@@ -89,60 +89,6 @@
       <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout_8">
-      <item row="1" column="0">
-       <widget class="QWidget" name="countProp" native="true">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_7">
-         <item row="0" column="1">
-          <widget class="QRadioButton" name="_1descCounts">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Counts</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QRadioButton" name="_2descProps">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Proportions</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" rowspan="2">
-          <spacer name="horizontalSpacer_5">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </widget>
-      </item>
       <item row="3" column="0">
        <widget class="QWidget" name="widgetConfidenceIntervalInterval" native="true">
         <property name="enabled">
@@ -264,6 +210,60 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="0">
+       <widget class="BoundGroupBox" name="countProp">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_7">
+         <item row="0" column="1">
+          <widget class="QRadioButton" name="_1descCounts">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Counts</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QRadioButton" name="_2descProps">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Proportions</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <spacer name="horizontalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -370,7 +370,7 @@
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="BoundCheckBox" name="descriptivesPlots">
+       <widget class="BoundCheckBox" name="descriptivesPlot">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -409,8 +409,7 @@
        </spacer>
       </item>
      </layout>
-     <zorder>descriptivesPlots</zorder>
-     <zorder>_1multinomialTest_2</zorder>
+     <zorder>descriptivesPlot</zorder>
      <zorder>countPropPlot</zorder>
      <zorder>verticalSpacer_2</zorder>
     </widget>
@@ -589,7 +588,6 @@
      <zorder>factor</zorder>
      <zorder>counts</zorder>
      <zorder>exProbVar</zorder>
-     <zorder>hypothesis</zorder>
      <zorder>assignFactor</zorder>
      <zorder>assignExProbVar</zorder>
      <zorder>exProbVarLabel</zorder>
@@ -653,7 +651,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>descriptivesPlots</sender>
+   <sender>descriptivesPlot</sender>
    <signal>toggled(bool)</signal>
    <receiver>countPropPlot</receiver>
    <slot>setEnabled(bool)</slot>
@@ -665,22 +663,6 @@
     <hint type="destinationlabel">
      <x>437</x>
      <y>790</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>descriptives</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>countProp</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>62</x>
-     <y>679</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>82</x>
-     <y>725</y>
     </hint>
    </hints>
   </connection>
