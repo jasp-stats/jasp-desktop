@@ -1,0 +1,149 @@
+{
+	"name": "MLRegressionBoosting",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+		{
+			"name": "target",
+			"type": "Variable"
+		},
+		{
+			"name": "predictors",
+			"type": "Variables"
+		},
+		{
+			"name": "indicator",
+			"type": "Variable"
+		},
+		{
+			"name": "modelIterations",
+			"type": "Integer"
+		},
+		{
+			"name": "modelShrinkage",
+			"type": "Integer"
+		},
+		{
+			"name": "lossFunction",
+			"options": [ "Default", "Binary: Logistic", "Binary: Exponential",
+						"Multi-class: Multinomial logistic", "Continue: Squared error",
+						"Continue:: Absolute error", "Continue: Huber", "Continue: Poisson",
+						"Continue: Coxph" ],
+			"type": "List"
+		},
+		{
+			"name": "plotModelPerformance",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotModelPerformanceError",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotModelPerformanceAUC",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotVariableImportance",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotMarginalDependency",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotModelPerformanceErrorOneWay",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotModelPerformanceErrorTwoWay",
+			"type": "Boolean"
+		},
+		{
+			"name": "tableRelativeInfluence",
+			"type": "Boolean"
+		},
+		{
+			"name": "tableChiSquaredTest",
+			"type": "Boolean"
+		},
+		{
+			"name": "validationOutOfBag",
+			"type": "Boolean"
+		},
+		{
+			"name": "validationMethods",
+			"options": [ "auto", "manual" ],
+			"default": "auto",
+			"type": "List"
+		},
+		{
+			"name": "testValidationSet",
+			"type": "Boolean"
+		},
+		{
+			"name": "crossValidation",
+			"type": "Boolean"
+		},
+		{
+			"name": "crossValidationFolds",
+			"type": "Integer"
+		},
+		{
+			"name": "manualOutOfBagPercentage",
+			"type": "Integer"
+		},
+		{
+			"name": "manualOutOfBagCases",
+			"type": "Integer"
+		},
+		{
+			"name": "treeDepth",
+			"type": "Integer"
+		},
+		{
+			"name": "treeMinimumTerminalNodeSize",
+			"type": "Integer"
+		},
+		{
+			"name": "displayInteractionTable",
+			"type": "Number"
+		},
+		{
+			"name": "noOfCores",
+			"type": "List",
+			"options": [ "auto", "manual" ],
+			"default": "auto"
+		},
+		{
+			"name": "numberCores",
+			"type": "Integer"
+		},
+		{
+			"name": "subSampleRatioBox",
+			"type": "List",
+			"options": [ "auto", "manual" ],
+			"default": "auto"
+		},
+		{
+			"name": "subSampleRatio",
+			"type": "Number"
+		},
+		{
+			"name": "seed",
+			"type": "List",
+			"options": [ "auto", "manual" ],
+			"default": "auto"
+		},
+		{
+			"name": "seedManualSize",
+			"type": "Integer"
+		},
+		{
+			"name": "treeStructure",
+			"type": "List",
+			"options": [ "auto", "optimized", "manual" ],
+			"default": "auto"
+		}
+	]
+}
