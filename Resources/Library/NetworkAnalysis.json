@@ -69,7 +69,9 @@
 		},
 		{
 			"name": "nFolds",
-			"type": "Integer"
+			"type": "Integer",
+			"min": 1,
+			"max": 10000
 		},
 		{
 			"options": ["mean", "median"],
@@ -126,22 +128,30 @@
 		{
 			"name": "nodeSize",
 			"type": "Number",
-			"value": 1.0
+			"value": 1.0,
+			"min": 0.0,
+			"max": 10.0
 		},
 		{
 			"name": "maxEdgeStrength",
 			"type": "Number",
-			"value": 0.0
+			"value": 0.0,
+			"min": 0.0,
+			"max": 10.0
 		},
 		{
 			"name": "minEdgeStrength",
 			"type": "Number",
-			"value": 0.0
+			"value": 0.0,
+			"min": 0.0,
+			"max": 10.0
 		},
 		{
 			"name": "cut",
 			"type": "Number",
-			"value": 0.0
+			"value": 0.0,
+			"min": 0.0,
+			"max": 10.0
 		},
 		{
 			"default": false,
