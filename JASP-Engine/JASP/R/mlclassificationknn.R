@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
 MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="run", callback=function(...) 0, ...) {
     
     # state creation ##
@@ -1207,3 +1208,4 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     return(optimizationTable)
     
 }
+

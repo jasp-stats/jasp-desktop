@@ -1,0 +1,199 @@
+/* font */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 300;
+  src: url(../font/Lato-Light.ttf);
+}
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 500;
+  src: url(../font/Lato-Regular.ttf);
+}
+
+/*--------------------------------------------------------------
+# General
+--------------------------------------------------------------*/
+html {
+    font-size: 16px; /*set rem size*/
+}
+
+div#intro {
+  position:fixed;
+  position:absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  min-height: 40rem;
+  min-width: 36rem;
+  font-weight: 300;
+  font-family: Lato, sans-serif;
+  background-color: #8dc448;
+  
+  display: flex;
+  display: -webkit-flex;
+  -webkit-flex-grow:1;
+  flex-direction: column;
+  -webkit-flex-direction: column;
+}
+
+a {
+  color: #03C4EB;
+  transition: 0.5s;
+}
+
+a:hover, a:active, a:focus {
+  color: #03c5ec;
+  outline: none;
+  text-decoration: none;
+}
+
+
+p {
+  margin: 0 0 0.65em; 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+}
+
+/*--------------------------------------------------------------
+# Scaffolding
+--------------------------------------------------------------*/
+
+.container{
+    max-width: 45rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+section{
+    overflow: visible;
+}
+
+
+/*--------------------------------------------------------------
+# Header
+--------------------------------------------------------------*/
+
+#header{
+    position: relative;
+    padding-top: 1rem;
+    padding-bottom: 3rem;
+    background-image: url('../img/jasp-wave-down-blue-120.svg');
+    background-repeat: repeat-x;
+    background-position: bottom center;
+    background-position: calc(50% + 100px) bottom;
+    background-color: #23a1df;
+    /*flex-grow: 1;
+    -webkit-flex-grow: 1;
+    overflow: visible;
+    -webkit-overflow: visible;*/
+}
+.logo{
+    margin-bottom: 0.3em;
+    width: 174px;
+    height: 40px;
+}
+#header h1{
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: 500;
+    color: white;
+    line-height: 1.1em;
+    margin-bottom: 0.3em;
+    margin-top: 0.3em;
+}
+.header-ruler{
+    height: 3px;
+    background-color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 0.6em;
+}
+#header h2{
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: white;
+    line-height: 1.1em;
+    margin-bottom: .6em;
+}
+.jasp-version {
+    float: right;
+    font-size: 0.75rem;
+    color: white;
+
+}
+
+/*--------------------------------------------------------------
+# Welcome
+--------------------------------------------------------------*/
+
+#welcome {
+    font-size: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    background-color: white;
+    /*
+    flex-grow: 1;
+    -webkit-flex-grow: 1;*/
+}
+#welcome ul {
+    display: inline-block;
+    list-style-image: url('../img/ul-orange-dot.png');
+    padding-left: 5rem;
+    max-width: 45rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    font-weight: 300;
+}
+#welcome ul li {
+    line-height: 1.3em;
+    margin-bottom: 0.5em;
+}
+#welcome ul li span {
+    color: #23a1df;
+    font-weight: 500;
+}
+
+/*--------------------------------------------------------------
+# Action
+--------------------------------------------------------------*/
+
+#action{
+    text-align: center;
+    min-height: 126px;
+    background-image: url('../img/jasp-wave-up-green-100.svg');
+    background-repeat: repeat-x;
+    background-position: bottom center;
+    background-position: calc(50% + 260px) bottom;
+    background-color: white;
+    /*flex-grow: 1;
+    -webkit-flex-grow: 1;*/
+}
+.cta-title {
+    font-weight: 500;
+    font-size: 1.2rem;
+}
+
+/*--------------------------------------------------------------
+# Note
+--------------------------------------------------------------*/
+
+#note{
+    color: white;
+    font-size: 1rem;
+    padding-bottom: 1rem;
+    flex-grow: 1;
+    -webkit-flex-grow: 1;
+}
+#note p{
+    max-width: 45rem;
+    padding-left: 4rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}

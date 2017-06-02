@@ -747,7 +747,6 @@ AnalysisForm* MainWindow::loadForm(const string name)
 #ifdef QT_DEBUG
 	else if (name == "BASRegressionLinearLink")
 		form = new BASRegressionLinearLinkForm(contentArea);
-
 	else if (name == "MLRegressionRandomForest")
 		form = new MLRegressionRandomForestForm(contentArea);
 	else if (name == "MLRegressionBoosting")

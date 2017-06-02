@@ -31,6 +31,7 @@ MLClassificationKNNForm::MLClassificationKNNForm(QWidget *parent) :
 	_targetListModel->setSource(&_availableVariablesModel);
     _targetListModel->setVariableTypesSuggested(Column::ColumnTypeNominal);
     _targetListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeNominalText);
+
 	ui->target->setModel(_targetListModel);
 
 	_predictorsListModel = new TableModelVariablesAssigned(this);

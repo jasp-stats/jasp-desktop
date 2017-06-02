@@ -33,6 +33,10 @@
 			"name": "plotVariableImportance",
 			"type": "Boolean"
 		},
+     {
+			"name": "plotTreesVsModelError",
+			"type": "Boolean"
+		},
 		{
 			"name": "plotVariableImportanceShowValues",
 			"type": "Boolean"
@@ -43,11 +47,14 @@
 		},
 		{
 			"name": "tableVariableImportance",
-			"type": "Boolean"
+			"type": "Boolean",
+                         "default" : true
 		},
 		{
-			"name": "tableConfusion",
-			"type": "Boolean"
+			"name": "tableSummary",
+			"type": "Boolean",
+                         "default" : true
+
 		},
 		{
 			"name": "calculateProximityMatrix",
@@ -60,10 +67,22 @@
 			"default": "auto"
 		},
 		{
-			"name": "noOfPredictors",
+			"name": "numberOfTrees",
+			"type": "Integer",
+			"min": 1,
+			"default": 1   
+		},
+		{
+			"name": "noOfPredictors", 
 			"type": "List",
 			"options": [ "auto", "manual" ],
 			"default": "auto"
+		},
+		{
+			"name": "numberOfPredictors",
+			"type": "Integer",
+			"min": 1,
+                        "default": 1
 		},
 		{
 			"name": "minimumTerminalNodeSize",
@@ -72,11 +91,24 @@
 			"default": "auto"
 		},
 		{
+			"name": "modelMinimumTerminalNode",
+			"type": "Integer",
+			"min": 1,
+			"default": 1   
+		},			
+		{
 			"name": "dataBootstrapModel",
 			"type": "List",
 			"options": [ "auto", "manual" ],
 			"default": "auto"
 		},
+		{
+			"name": "percentageDataBootstrap",
+			"type": "Number",
+                        "min": 0,
+                        "max": 1,
+                        "value": 1.0
+		},		
 		{
 			"name": "dataTrainingModel",
 			"type": "List",
@@ -84,16 +116,46 @@
 			"default": "auto"
 		},
 		{
+			"name": "percentageDataTraining",
+			"type": "Number",
+                        "min": 0,
+                        "max": 1,
+                        "value": 1.0
+		},			
+		{
 			"name": "maximumTerminalNodeSize",
 			"type": "List",
 			"options": [ "auto", "manual" ],
 			"default": "auto"
-		},
+		},		
+		{
+			"name": "modelMaximumTerminalNode",
+			"type": "Integer",
+			"min": 1,
+			"default": 1   
+		},				
 		{
 			"name": "seedBox",
 			"type": "List",
 			"options": [ "auto", "manual" ],
 			"default": "auto"
+		},
+		{
+			"name": "seed",
+			"type": "Number",
+                        "min": -10000000,
+                        "max": 10000000,
+                        "value": 1.0
+		},
+    		{
+			"default": 640,
+			"name": "plotWidth",
+			"type": "Integer"
+		},
+		{
+			"default": 480,
+			"name": "plotHeight",
+			"type": "Integer"
 		}
 	]
 }
