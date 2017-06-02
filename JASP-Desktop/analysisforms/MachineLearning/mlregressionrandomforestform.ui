@@ -762,7 +762,7 @@
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="BoundCheckBox" name="tableConfusion">
+          <widget class="BoundCheckBox" name="tableSummary">
            <property name="text">
             <string>Confusion table (classification only)</string>
            </property>

@@ -93,7 +93,8 @@ MLRegressionRandomForest <- function(dataset = NULL, options, perform = "run",
 		title = "Random Forest Regression",
 		.meta = list(
 			list(name = "title",                     type = "title"),
-			list(name = "tableVariableImportance",   type = "table"),
+			list(name = "tableSummary",   type = "table"),				
+			list(name = "tableVariableImportance",   type = "table"),		
 			list(name = "plotVariableImportance",    type = "image"),
 			list(name = "plotTreesVsModelError",     type = "image")
 		)
@@ -129,6 +130,9 @@ MLRegressionRandomForest <- function(dataset = NULL, options, perform = "run",
 	## Create Output ## ----
 
 	if (doUpdate) { # no errors were found
+
+		if (options[["tableSummary"]])
+			results[["tableSummary"]] <- .MLRFSummary(toFromState = toFromState, variables = variables, perform = perform)			
 
 		if (options[["tableVariableImportance"]])
 			results[["tableVariableImportance"]] <- .MLRFVarImpTb(toFromState = toFromState, variables = variables, perform = perform)
@@ -192,11 +196,17 @@ MLRegressionRandomForest <- function(dataset = NULL, options, perform = "run",
 		options[["noOfPredictors"]] <- as.integer(options[["numberOfPredictors"]])
 	}
 
-	if (is.character(options[["dataBootstrapModel"]]))  # aanpassen! for sampsize
+	if (options[["dataBootstrapModel"]] == "auto") {
 		options[["dataBootstrapModel"]] <- 1
+	} else if (options[["dataBootstrapModel"]] == "manual") {
+		options[["dataBootstrapModel"]] <- options[["percentageDataBootstrap"]]  # removed as.integer()
+	}
 
-	if (is.character(options[["dataTrainingModel"]]))  # aanpassen! check CI whether [0, 1] or [0, 100]
+	if (options[["dataTrainingModel"]] == "auto") { # aanpassen! check CI whether [0, 1] or [0, 100]
 		options[["dataTrainingModel"]] <- .8
+	} else if (options[["dataTrainingModel"]] == "manual") {
+		options[["dataTrainingModel"]] <- options[["percentageDataTraining"]]  # removed as.integer()
+	}		
 
 	if (options[["maximumTerminalNodeSize"]] == "auto") {
 		options[["maximumTerminalNodeSize"]] <- NULL
@@ -270,6 +280,49 @@ MLRegressionRandomForest <- function(dataset = NULL, options, perform = "run",
 
 }
 
+# Summary table
+.MLRFSummary <- function(toFromState, variables, perform) {
+
+	table <- list(title = "Summary")
+
+	intNms = "MDiA" # internal names
+	extNms = c("Mean decrease in accuracy") # external names
+
+	if (any(perform != "run", is.null(toFromState), is.null(variables))) { # no/ bad input
+
+		toTable <- matrix(".", nrow = 1, ncol = 1,
+						  dimnames = list(".", intNms))
+
+	} else { # input that can become an actual table
+
+		# matrix for conversion to markup table
+		#toTable <- summary(toFromState)[1:2,1, drop=FALSE]  # continue HERE !!!
+		toTable <- randomForest::importance(toFromState$res)[,1, drop=FALSE]
+		toTable <- toTable[order(toTable[, 1], decreasing = TRUE), , drop = FALSE]
+		colnames(toTable) <- intNms
+		rownames(toTable) <- variables[sort(randomForest::importance(toFromState$res)[,1], decr=T, index.return=T)$ix]  
+	}
+
+	# fields = list(list(name="case", title="", type="string", combine=TRUE))
+	#
+	# for (i in seq_along(intNms)) {
+	#
+	# 	fields[[i]] <- list(name = intNms[i], name = extNms[i], type = type[i],
+	#
+	# }
+
+	table[["schema"]] <- list(
+		fields = list(list(name="case", title="", type="string", combine=TRUE),
+					  list(name = intNms[1], title = extNms[1], type="number", format="sf:4;dp:3"))
+	)
+
+	table[["data"]] <- .MLRFTables(toTable)
+
+	return(table)
+
+}
+
+# Variable importance table
 .MLRFVarImpTb <- function(toFromState, variables, perform) {
 
 	table <- list(title = "Variable Importance")
