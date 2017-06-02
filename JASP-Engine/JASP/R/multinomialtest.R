@@ -91,8 +91,6 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     chisqResults <- .chisquareTest(dataset, options, factor, perform)
   }
   
-  print(str(chisqResults))
-  
   results[["chisq"]] <- .chisqTable(chisqResults, options, perform)
     
   
@@ -100,7 +98,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   if (options[["descriptives"]]) {
     # Generate descriptives table
     if (is.null(descriptivesTable)) {
-      #descriptivesTable <- .multinomialDescriptives(dataset, options, factor, perform)
+      descriptivesTable <- .multinomialDescriptives(dataset, options, factor, perform)
     }
     
     results[["descriptivesTable"]] <- descriptivesTable
@@ -164,19 +162,13 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     f <- f[!is.na(f)]
     nlev <- nlevels(f)
     val <- table(f)
-    print(c("Observed: ", val))
-    
     hyps <- .multinomialHypotheses(options, nlev)
-    
-    print("Expected: ")
-    print(hyps)
+
     # create a named list with as values the chi-square result objects
     
     
     chisqResults <- lapply(hyps, function(h) {
       # catch warning message and append to object if necessary
-      print(val)
-      print(h)
       csr <- NULL
       warn <- NULL
       csr <- withCallingHandlers(
@@ -189,8 +181,6 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
       return(csr)
     })
   }
-  
-  print(str(chisqResults))
   
   # return the out object
   return(chisqResults)
@@ -205,9 +195,6 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 # Create multinomial descriptives table
 .multinomialDescriptives <- function(dataset, options, factor, perform) {
   # Expected vs. Observed table
-  if (perform == "run" && !is.null(factor)) {
-  
-  
   table <- list()
   table[["title"]] <- "Descriptives table"
   
@@ -216,20 +203,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     list(name="observed", title="Observed", type="integer")
   )
   
-  if (length(hyps) == 1) {
-    fields[[length(fields)+1]] <- list(name=names(hyps), 
-                                       title = paste0("Expected: ", names(hyps)),
-                                       type = "integer")
-  } else {
-    for (i in 1:length(hyps)) {
-      n <- names(hyps)[i]
-      fields[[length(fields)+1]] <- list(name=n, title=n, type="integer", 
-                                         overTitle = "Expected")
-    }
-  }
   
-  table[["schema"]] <- fields
-
   #if (!is.null(factor) && perform == "run"){
   if (FALSE){
     f <- dataset[[.v(factor)]]
@@ -237,17 +211,32 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     nlev <- nlevels(f)
     val <- table(f)  
     hyps <- .multinomialHypotheses(options, nlev)
+    if (length(hyps) == 1) {
+      fields[[length(fields)+1]] <- list(name=names(hyps), 
+                                         title = paste0("Expected: ", names(hyps)),
+                                         type = "integer")
+    } else {
+      for (i in 1:length(hyps)) {
+        n <- names(hyps)[i]
+        fields[[length(fields)+1]] <- list(name=n, title=n, type="integer", 
+                                           overTitle = "Expected")
+      }
+    }
+    table[["schema"]] <- fields
     #TODO
+    
   } else {
+    
+    fields[[length(fields)+1]] <- list(name="expected", 
+                                       title = "Expected",
+                                       type = "integer")
+
     row <- list()
     if (is.null(factor)){
       factor <- ""
     }
+    row[[1]] <- list(level=factor, observed=".", expected=".")
     
-    row[[1]] <- list(level=factor, observed=".")
-    for (h in names(hyps)){
-      row[[1]][[h]] <- "."
-    }
     
     table[["data"]] <- row
   }
