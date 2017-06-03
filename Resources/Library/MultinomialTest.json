@@ -29,14 +29,14 @@
     },
     {
       "name": "countPropPlot",
-      "options": [ "count", "proportion" ],
+      "options": [ "plotCounts", "plotProps" ],
       "default": "count",
       "type": "List"
     },
 		{
 			"name": "descriptives",
 			"type": "Boolean",
-			"default": true
+			"default": false
 		},
     {
 			"name": "confidenceInterval",

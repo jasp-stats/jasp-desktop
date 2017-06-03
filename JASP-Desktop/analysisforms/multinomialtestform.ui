@@ -89,6 +89,58 @@
       <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout_8">
+      <item row="2" column="1">
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="4" column="0" colspan="2">
+       <widget class="BoundCheckBox" name="VovkSellkeMPR">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Vovk-Sellke maximum p-ratio</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="BoundCheckBox" name="confidenceInterval">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Confidence interval</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="BoundCheckBox" name="descriptives">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Descriptives</string>
+        </property>
+       </widget>
+      </item>
       <item row="3" column="0">
        <widget class="QWidget" name="widgetConfidenceIntervalInterval" native="true">
         <property name="enabled">
@@ -158,58 +210,6 @@
         </layout>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="BoundCheckBox" name="confidenceInterval">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Confidence interval</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0" colspan="2">
-       <widget class="BoundCheckBox" name="VovkSellkeMPR">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Vovk-Sellke maximum p-ratio</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <spacer name="horizontalSpacer_3">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="0" column="0">
-       <widget class="BoundCheckBox" name="descriptives">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Descriptives</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="BoundGroupBox" name="countProp">
         <property name="enabled">
@@ -221,21 +221,11 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="title">
+         <string>Display</string>
+        </property>
         <layout class="QGridLayout" name="gridLayout_7">
-         <item row="0" column="1">
-          <widget class="QRadioButton" name="_1descCounts">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Counts</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
+         <item row="2" column="1">
           <widget class="QRadioButton" name="_2descProps">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -248,7 +238,20 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
+         <item row="1" column="1">
+          <widget class="QRadioButton" name="_1descCounts">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Counts</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
           <spacer name="horizontalSpacer_5">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -273,8 +276,47 @@
       <string>Plots</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
+      <item row="0" column="0">
+       <widget class="BoundCheckBox" name="descriptivesPlot">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Descriptive plots</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="0">
+       <spacer name="verticalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
       <item row="1" column="0">
-       <widget class="QWidget" name="countPropPlot" native="true">
+       <widget class="BoundGroupBox" name="countPropPlot">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -299,7 +341,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QRadioButton" name="_1count_2">
+          <widget class="QRadioButton" name="_1plotCounts">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -341,7 +383,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QRadioButton" name="_2prop_2">
+          <widget class="QRadioButton" name="_2plotProps">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -368,45 +410,6 @@
          </item>
         </layout>
        </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="BoundCheckBox" name="descriptivesPlot">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Descriptive plots</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="2" column="0">
-       <spacer name="verticalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
       </item>
      </layout>
      <zorder>descriptivesPlot</zorder>
@@ -651,18 +654,18 @@
    </hints>
   </connection>
   <connection>
-   <sender>descriptivesPlot</sender>
+   <sender>descriptives</sender>
    <signal>toggled(bool)</signal>
-   <receiver>countPropPlot</receiver>
+   <receiver>countProp</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>384</x>
-     <y>729</y>
+     <x>62</x>
+     <y>655</y>
     </hint>
     <hint type="destinationlabel">
-     <x>437</x>
-     <y>790</y>
+     <x>95</x>
+     <y>713</y>
     </hint>
    </hints>
   </connection>

@@ -65,25 +65,29 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     
     if (is.list(diff)){
       if (!any(diff[["factor"]], diff[["confidenceIntervalInterval"]],
-              diff[["hypothesis"]], diff[["counts"]], diff[["exProbVar"]],
+              diff[["hypothesis"]], diff[["exProbVar"]],
               diff[["expectedProbs"]])){
                 
         chisqResults <- state[["chisqResults"]]
         
       }
+      if (!any(diff[["factor"]],diff[["confidenceInterval"]],
+               diff[["hypothesis"]], diff[["exProbVar"]],
+               diff[["expectedProbs"]])) {
+        descriptivesTable <- state[["descriptivesTable"]]
+      }
+      
       #... etcetera
-      # TODO if (ahsdflkjah) descriptivesTable <- state[["descriptivesTable"]]
+      # TODO 
     }
     
   }
-  
   
   # Meta information
   results[["title"]] <- "Multinomial Test"
   results[[".meta"]] <- list(list(name = "chisq", type = "table"),
                              list(name = "descriptivesTable", type = "table"),
                              list(name = "descriptivesPlot", type = "image"))
-  
   
   # chi-square Table
   # Generate results
@@ -92,13 +96,14 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   }
   
   results[["chisq"]] <- .chisqTable(chisqResults, options, perform)
+  print(results[["chisq"]])
     
   
   # Descriptives Table
   if (options[["descriptives"]]) {
     # Generate descriptives table
     if (is.null(descriptivesTable)) {
-      descriptivesTable <- .multinomialDescriptives(dataset, options, factor, perform)
+      descriptivesTable <- .multinomialDescriptives(chisqResults, factor, options, perform)
     }
     
     results[["descriptivesTable"]] <- descriptivesTable
@@ -107,8 +112,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     
     results[["descriptivesTable"]] <- NULL
     
-  }
-  
+  }  
   
   # Multinomial Descriptives Plot
   if (options[["descriptivesPlot"]]) {
@@ -128,6 +132,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     
   }
   
+  print(descriptivesPlot)
   
   if (perform == "run") {
 
@@ -189,109 +194,116 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 # Transform chi-square test object into table for JASP
 # chisqResults = list(H1 = obj, H2 = obj, ....)
 .chisqTable <- function(chisqResults, options, perform) {
-  # TODO
+  #TODO
+  
+  return(
+         list(
+              title = "Chi-square table", 
+              schema = list(fields = list(list(name="hoi", title = "hoi", type="string"),
+                                          list(name="doei", title = "doei", type="string"))),
+              data = list(list("hoi"="jaja", "doei"="neenee"), 
+                          list("hoi"="jaja", "doei"="neenee")), 
+              status = "complete"
+         )
+  )
 }
 
 # Create multinomial descriptives table
-.multinomialDescriptives <- function(dataset, options, factor, perform) {
-  # Expected vs. Observed table
-  table <- list()
-  table[["title"]] <- "Descriptives table"
-  
-  countProp = "descCounts"
-  
-  if (countProp=="descCounts"){
-    numbertype = list(type="integer")
+.multinomialDescriptives <- function(chisqResults, factor, options, perform) {
+  if (options[["countProp"]]=="descCounts"){
+    numberType = list(type="integer")
   } else {
-    numbertype = list(type="number", format="sf:4;dp:3")
+    numberType = list(type="number", format="sf:4;dp:3")
   }
-  
+
+  # Expected vs. Observed table
+  table <- list("title" = "Descriptives table")
+
   
   if (is.null(factor)){
     # If we have no variable init table with generic name
     
     fields <- list(
       list(name="factor", title="Factor", type = "string"),
-      list(name="observed", title="Observed", numbertype),
-      list(name="expected", title="Expected". numbertype)
+      c(list(name="observed", title="Observed"), numberType),
+      c(list(name="expected", title="Expected"), numberType)
     )
-    rows <- list(factor = ".", observed = ".", expected = ".")
-  
+    rows <- list(list(factor = ".", observed = ".", expected = "."))
+    
+    
   } else if (perform != "run") {
-    # If we have a variable init table with factor name
+    # If we have a variable then init table with factor name
     
     fields <- list(
       list(name="factor", title=factor, type = "string"),
-      list(name="observed", title="Observed", numbertype),
-      list(name="expected", title="Expected". numbertype)
+      c(list(name="observed", title="Observed"), numberType),
+      c(list(name="expected", title="Expected"), numberType)
     )
-    rows <- list(factor = ".", observed = ".", expected = ".")
-    
+    rows <- list(list(factor = ".", observed = ".", expected = "."))
     
   } else {
     
-    # now perform is run and we want to create the full table
+    # now  we want to create the full table
     
+    # First we create the correct columns
     fields <- list(
       list(name="factor", title=factor, type = "string"),
-      list(name="observed", title="Observed", numbertype),
-      list(name="expected", title="Expected". numbertype)
+      c(list(name="observed", title="Observed"), numberType)
     )
+
+    nms <- names(chisqResults)
     
-    f <- dataset[[.v(factor)]]
-    f <- f[!is.na(f)]
-    nlev <- nlevels(f)
-    val <- table(f)  
-    hyps <- .multinomialHypotheses(options, nlev)
-    
-  }
-  
-  table[["schema"]] <- fields
-  table[["data"]] <- rows
-  
-  return(table)
-  
-  
-  #if (!is.null(factor) && perform == "run"){
-  if (FALSE){
-    
-    
-    if (length(hyps) == 1) {
-      fields[[length(fields)+1]] <- list(name=names(hyps), 
-                                         title = paste0("Expected: ", names(hyps)),
-                                         type = "integer")
+    if (length(nms) == 1) {
+      fields[[length(fields)+1]] <- c(list(name="expected", 
+                                           title = paste0("Expected: ", nms)), 
+                                      numberType)
     } else {
-      for (i in 1:length(hyps)) {
-        n <- names(hyps)[i]
-        fields[[length(fields)+1]] <- list(name=n, title=n, type="integer", 
-                                           overTitle = "Expected")
+      for (i in 1:length(nms)) {
+        fields[[length(fields)+1]] <- c(list(name=nms[i], 
+                                             title = nms[i]),
+                                        numberType)
       }
     }
-    table[["schema"]] <- fields
-    #TODO
     
-  } else {
-    
-    fields[[length(fields)+1]] <- list(name="expected", 
-                                       title = "Expected",
-                                       type = "integer")
-    table[["schema"]] <- fields
-    row <- list()
-    if (is.null(factor)){
-      factor <- ""
+    # Then we fill the columns with the information
+    if (options[["countProp"]]=="descCounts"){
+      n <- 1
+    } else {
+      n <- sum(chisqResults[[1]][["observed"]])
     }
-    row[[1]] <- list(level=factor, observed=".", expected=".")
     
+    tableFrame <- data.frame(factor = names(chisqResults[[1]][["observed"]]),
+                             observed = as.integer(chisqResults[[1]][["observed"]])/n, 
+                             stringsAsFactors = FALSE)
+
+
+    for (r in chisqResults){
+      tableFrame <- cbind(tableFrame, as.integer(r[["expected"]])/n)
+    }
     
-    table[["data"]] <- row
+    if (length(nms) == 1) {
+      colnames(tableFrame)[-(1:2)] <- "expected"
+    } else {
+      colnames(tableFrame)[-(1:2)] <- nms
+    }
+    
+    rows <- list()
+    
+    for (i in 1:nrow(tableFrame)){
+      rows[[i]] <- as.list(tableFrame[i,])
+    }
+    table[["status"]] <- "complete"
+    
   }
   
+  table[["schema"]] <- list(fields = fields)
+  table[["data"]] <- rows
   
-  
+  return(table)  
 }
 
-.multinomialDescriptivesPlot <- function(dataset, options, perform) {
-  # TODO
+.multinomialDescriptivesPlot <- function(dataset, options, factor, perform) {
+  #TODO
 }
 
 .multinomialHypotheses <- function(options, nlevels){
