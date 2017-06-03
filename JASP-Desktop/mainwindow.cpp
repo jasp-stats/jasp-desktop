@@ -598,12 +598,7 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 	parser.parse(utf8, root);
 
 	QString caption = "Save JASP Image";
-#ifdef __APPLE__
-	//Temporarily disable saving tiff images on the Mac	
 	QString filter = "Portable Network Graphics (*.png);;Encapsulated PostScript (*.eps)";
-#else
-	QString filter = "Portable Network Graphics (*.png);;Tagged Image File Format (*.tiff);;Encapsulated PostScript (*.eps)";
-#endif
     QString selectedFilter;
 
     QString finalPath = QFileDialog::getSaveFileName(this, caption, QString(), filter, &selectedFilter);
@@ -614,12 +609,6 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 			root["type"] = "eps";
             root["finalPath"] = finalPath.toStdString();
             analysis->saveImage(analysis, root);
-		}
-		else if (selectedFilter == "Tagged Image File Format (*.tiff)")
-		{
-			root["type"] = "tiff";
-			root["finalPath"] = finalPath.toStdString();
-			analysis->saveImage(analysis, root);
 		}
 		else
 		{
@@ -635,7 +624,7 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 
 void MainWindow::analysisImageSavedHandler(Analysis *analysis)
 {
-	Json::Value results = analysis->asJSON().get("results", Json::nullValue);
+	Json::Value results = analysis->getImgResults();
 	if (results.isNull())
 		return;
 	Json::Value inputOptions = results.get("inputOptions", Json::nullValue);

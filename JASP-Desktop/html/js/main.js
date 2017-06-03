@@ -402,16 +402,17 @@ $(document).ready(function () {
 
 				introHiding = true
 
-				$intro.hide("slide", { direction: "up", easing: "easeOutCubic" }, function () {
-
+				$intro.hide(10, function () {
+					
+					$("#style").attr("href","css/theme-jasp.css")
 					introHiding = false
 					introVisible = false
 
 					introHidingResultsWaiting.reverse()
-
+					
 					while (introHidingResultsWaiting.length > 0)
 						window.analysisChanged(introHidingResultsWaiting.pop())
-				})
+				});
 			}
 
 			return
