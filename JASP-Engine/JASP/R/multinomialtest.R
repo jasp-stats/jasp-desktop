@@ -73,7 +73,8 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
       }
       if (!any(diff[["factor"]],diff[["confidenceInterval"]],
                diff[["hypothesis"]], diff[["exProbVar"]],
-               diff[["expectedProbs"]])) {
+               diff[["expectedProbs"]], diff[["countProp"]],
+               diff[["confidenceIntervalInterval"]])) {
         descriptivesTable <- state[["descriptivesTable"]]
       }
       
@@ -228,6 +229,20 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
       c(list(name="observed", title="Observed"), numberType),
       c(list(name="expected", title="Expected"), numberType)
     )
+    if (options$confidenceInterval){
+      interval <- 100 * options$confidenceIntervalInterval
+      title <- paste0(interval, "% Confidence Interval")
+      fields[[length(fields)+1]] <- list(name="lowerCI",
+                                         title="Lower",
+                                         type = "number",
+                                         format = "sf:4;dp:3",
+                                         overTitle = title)
+      fields[[length(fields)+1]] <- list(name="upperCI",
+                                        title="Upper",
+                                        type = "number",
+                                        format = "sf:4;dp:3",
+                                        overTitle = title)
+    }
     rows <- list(list(factor = ".", observed = ".", expected = "."))
     
     
@@ -239,6 +254,20 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
       c(list(name="observed", title="Observed"), numberType),
       c(list(name="expected", title="Expected"), numberType)
     )
+    if (options$confidenceInterval){
+      interval <- 100 * options$confidenceIntervalInterval
+      title <- paste0(interval, "% Confidence Interval")
+      fields[[length(fields)+1]] <- list(name="lowerCI",
+                                         title="Lower",
+                                         type = "number",
+                                         format = "sf:4;dp:3",
+                                         overTitle = title)
+      fields[[length(fields)+1]] <- list(name="upperCI",
+                                        title="Upper",
+                                        type = "number",
+                                        format = "sf:4;dp:3",
+                                        overTitle = title)
+    }
     rows <- list(list(factor = ".", observed = ".", expected = "."))
     
   } else {
@@ -265,26 +294,56 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
       }
     }
     
+    if (options$confidenceInterval){
+      interval <- 100 * options$confidenceIntervalInterval
+      title <- paste0(interval, "% Confidence Interval")
+      fields[[length(fields)+1]] <- list(name="lowerCI",
+                                         title="Lower",
+                                         type = "number",
+                                         format = "sf:4;dp:3",
+                                         overTitle = title)
+      fields[[length(fields)+1]] <- list(name="upperCI",
+                                        title="Upper",
+                                        type = "number",
+                                        format = "sf:4;dp:3",
+                                        overTitle = title)
+    }
+    
     # Then we fill the columns with the information
     if (options[["countProp"]]=="descCounts"){
-      n <- 1
+      div <- 1
     } else {
-      n <- sum(chisqResults[[1]][["observed"]])
+      div <- sum(chisqResults[[1]][["observed"]])
     }
     
     tableFrame <- data.frame(factor = names(chisqResults[[1]][["observed"]]),
-                             observed = as.integer(chisqResults[[1]][["observed"]])/n, 
+                             observed = as.integer(chisqResults[[1]][["observed"]])/div, 
                              stringsAsFactors = FALSE)
 
 
     for (r in chisqResults){
-      tableFrame <- cbind(tableFrame, as.integer(r[["expected"]])/n)
+      tableFrame <- cbind(tableFrame, as.integer(r[["expected"]])/div)
     }
     
     if (length(nms) == 1) {
       colnames(tableFrame)[-(1:2)] <- "expected"
     } else {
       colnames(tableFrame)[-(1:2)] <- nms
+    }
+    
+    # Add confidenceInterval
+    if (options$confidenceInterval){
+      n <- sum(chisqResults[[1]][["observed"]])
+      # make a list of cis
+      ci <- lapply(chisqResults[[1]][["observed"]], function(l) {
+        bt <- binom.test(l,n,conf.level = options$confidenceIntervalInterval)
+        return(bt$conf.int * n) # on the count scale
+      })
+      
+      # add these to the tableFrame
+      ciDf <- t(data.frame(ci))
+      colnames(ciDf) <- c("lowerCI", "upperCI")
+      tableFrame <- cbind(tableFrame, ciDf/div) # to prop scale if needed
     }
     
     rows <- list()

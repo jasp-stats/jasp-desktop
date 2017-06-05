@@ -27,12 +27,6 @@
       "default": "descCounts",
       "type": "List"
     },
-    {
-      "name": "countPropPlot",
-      "options": [ "plotCounts", "plotProps" ],
-      "default": "count",
-      "type": "List"
-    },
 		{
 			"name": "descriptives",
 			"type": "Boolean",

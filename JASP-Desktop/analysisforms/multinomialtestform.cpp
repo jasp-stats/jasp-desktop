@@ -56,6 +56,8 @@ MultinomialTestForm::MultinomialTestForm(QWidget *parent) :
 	ui->exProbVar->setDoubleClickTarget(ui->listAvailableVariables);
 	ui->assignExProbVar->setSourceAndTarget(ui->listAvailableVariables, ui->exProbVar);
 
+	ui->tableView->setVisible(false);
+
 
 #ifdef QT_NO_DEBUG
 
