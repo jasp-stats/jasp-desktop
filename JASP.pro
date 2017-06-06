@@ -8,8 +8,7 @@ DESTDIR = .
 SUBDIRS += \
 	JASP-Common \
 	JASP-Engine \
-	JASP-Desktop \
-	JASP-Tests
+        JASP-Desktop
 
 JASP-Desktop.depends = JASP-Common
 JASP-Engine.depends = JASP-Common
