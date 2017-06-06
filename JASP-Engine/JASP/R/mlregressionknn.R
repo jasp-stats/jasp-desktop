@@ -77,7 +77,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	# create results bundle ##
 	
 	results <- list()
-	results[['title']] <- 'k-Nearest neighbors regression'
+	results[['title']] <- 'k-nearest neighbors regression'
 	
 	# Provide the Meta to the results bundle ##
 	

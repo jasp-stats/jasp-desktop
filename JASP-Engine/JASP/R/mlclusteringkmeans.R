@@ -78,7 +78,7 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
     # create results bundle ##
     
     results <- list()
-    results[['title']] <- 'k-Means clustering'
+    results[['title']] <- 'k-means clustering'
     
     # Provide the Meta to the results bundle ## 
     
