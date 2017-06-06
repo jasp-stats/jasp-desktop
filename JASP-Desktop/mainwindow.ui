@@ -166,6 +166,7 @@ QPushButton#first:checked {
           <widget class="RibbonSEM" name="ribbonSEM"/>
           <widget class="RibbonR11tLearn" name="ribbonR11tLearn"/>
           <widget class="RibbonSummaryStatistics" name="ribbonSummaryStatistics"/>
+          <widget class="RibbonMachineLearning" name="ribbonMachineLearning"/>
          </widget>
         </item>
         <item>
@@ -624,6 +625,12 @@ QTableView::item::last
    <class>RibbonSummaryStatistics</class>
    <extends>QWidget</extends>
    <header>ribbons/ribbonsummarystatistics.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RibbonMachineLearning</class>
+   <extends>QWidget</extends>
+   <header>ribbons/ribbonmachinelearning.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
