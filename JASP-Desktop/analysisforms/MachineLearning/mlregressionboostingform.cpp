@@ -20,126 +20,79 @@
 #include "ui_mlregressionboostingform.h"
 
 MLRegressionBoostingForm::MLRegressionBoostingForm(QWidget *parent) :
-	AnalysisForm("MLRegressionBoostingForm", parent),
-	ui(new Ui::MLRegressionBoostingForm)
+    AnalysisForm("MLRegressionBoostingForm", parent),
+    ui(new Ui::MLRegressionBoostingForm)
 {
-	ui->setupUi(this);
+    ui->setupUi(this);
 
-	ui->listAvailableFields->setModel(&_availableVariablesModel);
+    ui->listAvailableFields->setModel(&_availableVariablesModel);
 
-	_targetListModel = new TableModelVariablesAssigned(this);
-	_targetListModel->setSource(&_availableVariablesModel);
-	_targetListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->target->setModel(_targetListModel);
+    _targetListModel = new TableModelVariablesAssigned(this);
+    _targetListModel->setSource(&_availableVariablesModel);
+    _targetListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+    ui->target->setModel(_targetListModel);
 
-	_predictorsListModel = new TableModelVariablesAssigned(this);
-	_predictorsListModel->setSource(&_availableVariablesModel);
-	_predictorsListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->predictors->setModel(_predictorsListModel);
+    _predictorsListModel = new TableModelVariablesAssigned(this);
+    _predictorsListModel->setSource(&_availableVariablesModel);
+    _predictorsListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+    ui->predictors->setModel(_predictorsListModel);
 
-	_indicatorListModel = new TableModelVariablesAssigned(this);
-	_indicatorListModel->setSource(&_availableVariablesModel);
-	_indicatorListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
-	_indicatorListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->indicator->setModel(_indicatorListModel);
+    _indicatorListModel = new TableModelVariablesAssigned(this);
+    _indicatorListModel->setSource(&_availableVariablesModel);
+    _indicatorListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);//Column::ColumnTypeScale
+    //_indicatorListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+    ui->indicator->setModel(_indicatorListModel);
 
-	ui->buttonAssignFixed->setSourceAndTarget(ui->listAvailableFields, ui->target);
-	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->predictors);
-	ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->indicator);
+    ui->buttonAssignFixed->setSourceAndTarget(ui->listAvailableFields, ui->target);
+    ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->predictors);
+    ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->indicator);
 
-	connect(_targetListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
-	connect(_targetListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
+    connect(_targetListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
+    connect(_targetListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 
-	connect(_predictorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
-	connect(_predictorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
+    connect(_predictorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
+    connect(_predictorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 
-	connect(_indicatorListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
-	connect(_indicatorListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
+    connect(_indicatorListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
+    connect(_indicatorListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 
-	ui->advancedOptions->hide();
+    ui->advancedOptions->hide();
 
-	defaultOptions();
+    defaultOptions();
 }
 
 MLRegressionBoostingForm::~MLRegressionBoostingForm()
 {
-	delete ui;
+    delete ui;
 }
 
 void MLRegressionBoostingForm::defaultOptions()
 {
-	QSizePolicy retain = ui->numberCores->sizePolicy();
-	retain.setRetainSizeWhenHidden(true);
 
-	ui->numberCores->setSizePolicy(retain);
-	ui->numberCores->hide();
-
-	ui->subSampleRatio->setSizePolicy(retain);
-	ui->subSampleRatio->hide();
-
-	ui->seedManualSize->setSizePolicy(retain);
-	ui->seedManualSize->hide();
 }
 
 void MLRegressionBoostingForm::bindTo(Options *options, DataSet *dataSet)
 {
-	AnalysisForm::bindTo(options, dataSet);
+    AnalysisForm::bindTo(options, dataSet);
 
-	factorsChanging();
+    factorsChanging();
 
-	factorsChanged();
+    factorsChanged();
 }
 
 void MLRegressionBoostingForm::factorsChanging()
 {
-	if (_options != NULL)
-		_options->blockSignals(true);
+    if (_options != NULL)
+        _options->blockSignals(true);
 }
 
 void MLRegressionBoostingForm::factorsChanged()
 {
-	if (_options != NULL)
-		_options->blockSignals(false);
+    if (_options != NULL)
+        _options->blockSignals(false);
 }
 
-void MLRegressionBoostingForm::on_subSampleRatioManual_clicked(bool checked)
-{
-    if (checked) {
-        ui->subSampleRatio->show();
-    }
-}
-
-void MLRegressionBoostingForm::on_subSampleRatioAuto_clicked(bool checked)
-{
-    if (checked) {
-        ui->subSampleRatio->hide();
-    }
-}
-
-void MLRegressionBoostingForm::on_seedManual_clicked(bool checked)
-{
-    if (checked) {
-        ui->seedManualSize->show();
-    }
-}
-
-void MLRegressionBoostingForm::on_seedAuto_clicked(bool checked)
-{
-    if (checked) {
-        ui->seedManualSize->hide();
-    }
-}
-
-void MLRegressionBoostingForm::on_noOfCoresManual_clicked(bool checked)
-{
-    if (checked) {
-        ui->numberCores->show();
-    }
-}
-
-void MLRegressionBoostingForm::on_noOfCoresAuto_clicked(bool checked)
-{
-    if (checked) {
-        ui->numberCores->hide();
-    }
-}
+//void MLRegressionBoostingForm::on_seedAuto_clicked(bool checked)
+//{
+//        ui->plotMarginalPlotOneWay->setEnabled(true);
+//}

@@ -1,149 +1,229 @@
 {
-	"name": "MLRegressionBoosting",
-	"autorun": true,
-	"version": "1.00",
-	"options": [
+	"name":"MLRegressionBoosting",
+	"autorun":true,
+	"version":"1.00",
+	"options":[
 		{
-			"name": "target",
-			"type": "Variable"
+			"name":"predictors",
+			"type":"Variables"
 		},
 		{
-			"name": "predictors",
-			"type": "Variables"
+			"name":"target",
+			"type":"Variable"
 		},
 		{
-			"name": "indicator",
-			"type": "Variable"
+			"name":"indicator",
+			"type":"Variable"
 		},
 		{
-			"name": "modelIterations",
-			"type": "Integer"
+			"default":100,
+			"min": 1,
+			"name":"numberOfIterations",
+			"type":"Integer"
 		},
 		{
-			"name": "modelShrinkage",
-			"type": "Integer"
+			"value":0.1,
+			"format": "",
+			"name":"Shrinkage",
+			"type":"Number",
+			"min":0,
+			"max":1
 		},
 		{
-			"name": "lossFunction",
-			"options": [ "Default", "Binary: Logistic", "Binary: Exponential",
-						"Multi-class: Multinomial logistic", "Continue: Squared error",
-						"Continue:: Absolute error", "Continue: Huber", "Continue: Poisson",
-						"Continue: Coxph" ],
+			"name": "distribution",
+			"options": [ "gaussian","laplace","tdist","bernoulli","huberized","multinomial", "adaboost", "poisson"],
+			"default": "gaussian",
 			"type": "List"
 		},
 		{
-			"name": "plotModelPerformance",
-			"type": "Boolean"
+			"default":false,
+			"name":"tableRF",
+			"type":"Boolean"
 		},
 		{
-			"name": "plotModelPerformanceError",
-			"type": "Boolean"
+			"default":false,
+			"name":"tableChisq",
+			"type":"Boolean"
 		},
 		{
-			"name": "plotModelPerformanceAUC",
-			"type": "Boolean"
+			"default":false,
+			"name":"modelPerformance",
+			"type":"Boolean"
 		},
 		{
-			"name": "plotVariableImportance",
-			"type": "Boolean"
+			"default":false,
+			"name":"modelPerforamceShowError",
+			"type":"Boolean"
 		},
 		{
-			"name": "plotMarginalDependency",
-			"type": "Boolean"
+			"default":false,
+			"name":"modelPerforamceShowAUC",
+			"type":"Boolean"
 		},
 		{
-			"name": "plotModelPerformanceErrorOneWay",
-			"type": "Boolean"
+			"default":false,
+			"name":"plotRF",
+			"type":"Boolean"
 		},
 		{
-			"name": "plotModelPerformanceErrorTwoWay",
-			"type": "Boolean"
+			"default":false,
+			"name":"plotMarginalPlot",
+			"type":"Boolean"
 		},
 		{
-			"name": "tableRelativeInfluence",
-			"type": "Boolean"
+			"default":false,
+			"name":"plotMarginalPlotOneWay",
+			"type":"Boolean"
 		},
+
 		{
-			"name": "tableChiSquaredTest",
-			"type": "Boolean"
+			"default":false,
+			"name":"plotMarginalPlotTwoWay",
+			"type":"Boolean"
 		},
+
+		
 		{
-			"name": "validationOutOfBag",
-			"type": "Boolean"
+			"default":false,
+			"name":"plotHStatistics",
+			"type":"Boolean"
 		},
+
 		{
-			"name": "validationMethods",
-			"options": [ "auto", "manual" ],
-			"default": "auto",
-			"type": "List"
+			"name": "methodCV",
+			"type": "Boolean",
+			"default": false
 		},
+
 		{
-			"name": "testValidationSet",
-			"type": "Boolean"
+			"name":"value_numberOfFold",
+			"type":"Integer",
+			"min":0,
+			"default":3
 		},
+
 		{
-			"name": "crossValidation",
-			"type": "Boolean"
-		},
-		{
-			"name": "crossValidationFolds",
-			"type": "Integer"
-		},
-		{
-			"name": "manualOutOfBagPercentage",
-			"type": "Integer"
-		},
-		{
-			"name": "manualOutOfBagCases",
-			"type": "Integer"
-		},
-		{
-			"name": "treeDepth",
-			"type": "Integer"
-		},
-		{
-			"name": "treeMinimumTerminalNodeSize",
-			"type": "Integer"
-		},
-		{
-			"name": "displayInteractionTable",
-			"type": "Number"
-		},
-		{
-			"name": "noOfCores",
+			"name": "OOBBox",
 			"type": "List",
-			"options": [ "auto", "manual" ],
-			"default": "auto"
+			"options": [ "auto_subsample","manual_subsample" ],
+			"default": "auto_subsample"
 		},
+
 		{
-			"name": "numberCores",
-			"type": "Integer"
+			"value":0.5,
+			"format": "",
+			"name":"value_subsample",
+			"type":"Number",
+			"min":0.0,
+			"max":1.0
 		},
+
 		{
-			"name": "subSampleRatioBox",
+			"name": "testBox",
 			"type": "List",
-			"options": [ "auto", "manual" ],
-			"default": "auto"
+			"options": [ "auto_percentageTrain", "manual_percentageTrain"],
+			"default": "auto_percentageTrain"
 		},
+
 		{
-			"name": "subSampleRatio",
-			"type": "Number"
+			"format": "",
+			"name":"value_percentageTraining",
+			"type":"Number",
+			"min":0,
+			"max":1,
+			"value":0.5
 		},
+
+
 		{
-			"name": "seed",
+			"name": "TreeStructureBox",
 			"type": "List",
-			"options": [ "auto", "manual" ],
-			"default": "auto"
+			"options": [ "auto_TS","manual_TS", "optimized_TS"],
+			"default": "auto_TS"
 		},
+
 		{
-			"name": "seedManualSize",
-			"type": "Integer"
+			"name":"value_depthOfTree",
+			"type":"Integer",
+			"min":1,
+			"default":1
 		},
+
 		{
-			"name": "treeStructure",
+			"name":"value_depthOfTreeMin",
+			"type":"Integer",
+			"min":1,
+			"default":1
+		},
+
+		{
+			"name":"value_depthOfTreeMax",
+			"type":"Integer",
+			"min":1,
+			"default":5
+		},
+
+		{
+			"name":"value_depthOfTreeStep",
+			"type":"Integer",
+			"min":1,
+			"default":1
+		},
+
+		{
+			"name":"value_MinTermNodeSideMin",
+			"type":"Integer",
+			"min":1,
+			"default":5
+		},
+
+		{
+			"name":"value_MinTermNodeSideMax",
+			"type":"Integer",
+			"min":1,
+			"default":20
+		},
+
+		{
+			"name":"value_MinTermNodeSideStep",
+			"type":"Integer",
+			"min":1,
+			"default":5
+		},
+
+		{
+			"name":"value_MinTermNodeSide",
+			"type":"Integer",
+			"min":1,
+			"default":5
+		},
+
+		{
+			"name": "seedBox",
 			"type": "List",
-			"options": [ "auto", "optimized", "manual" ],
-			"default": "auto"
+			"options": [ "auto_seed", "manual_seed" ],
+			"default": "auto_seed"
+		},
+
+		{
+			"name": "coreBox",
+			"type": "List",
+			"options": [ "auto_numberOfCore", "manual_numberOfCore" ],
+			"default": "auto_numberOfCore"
+		},
+
+		{
+			"name":"value_seed",
+			"type":"Integer",
+			"min":0,
+			"default":1
+		},
+
+		{
+			"name":"value_numberOfCore",
+			"type":"Integer",
+			"min":1,
+			"default":1
 		}
 	]
 }
