@@ -61,7 +61,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	
 	state <- .retrieveState()
-		
 	diff <- NULL
 	
 	if (!is.null(state)) {
@@ -126,11 +125,11 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		BFtypeRequiresNewPlot <- TRUE
 		
 		if ( ! is.null(state)) {
-			
+		  
 			BFtypeRequiresNewPlot <- FALSE
 			BFtypeState <- state$options$bayesFactorType
 			
-			if ((BFtypeState == "LogBF10" || BFtypeState == "BF10") && BFtype == "BF01") {
+			if (is.null(BFtypeState) || ((BFtypeState == "LogBF10" || BFtypeState == "BF10") && BFtype == "BF01")) {
 				BFtypeRequiresNewPlot <- TRUE
 			} else if (BFtypeState == "BF01" && (BFtype == "LogBF10" || BFtype == "BF10")) {
 				BFtypeRequiresNewPlot <- TRUE
