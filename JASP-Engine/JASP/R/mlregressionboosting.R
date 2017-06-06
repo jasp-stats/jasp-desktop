@@ -591,7 +591,7 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 	mFeatures <- length(predictors)
 	if(any(perform == "init", is.null(target), is.null(predictors), is.null(res),isTryError(res))){
 
-		toTable <- matrix(".", nrow = 1, ncol = 1,
+		toTable <- matrix(".", nrow = 1, ncol = length(colNames),
 				  dimnames = list(".", colNames))
 
 		if(isTryError(res)){
