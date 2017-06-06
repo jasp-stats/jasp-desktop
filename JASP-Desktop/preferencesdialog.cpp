@@ -10,7 +10,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 
 
 	//Exact p-value
-	int check_exact_pval = _settings.value("exactPVals", 1).toInt();
+	int check_exact_pval = _settings.value("exactPVals", 0).toInt();
 	ui->displayExactPVals->setChecked(check_exact_pval > 0);
 
 	//Auto Sync

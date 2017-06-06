@@ -1263,7 +1263,7 @@ void MainWindow::resultsPageLoaded(bool success)
 		QString version = tq(AppInfo::version.asString());
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
 
-		setExactPValuesHandler(_settings.value("exactPVals", 1).toBool());
+		setExactPValuesHandler(_settings.value("exactPVals", 0).toBool());
 
 		QVariant ppiv = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getPPI()");
 
