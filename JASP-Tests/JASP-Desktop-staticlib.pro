@@ -29,16 +29,16 @@ INCLUDEPATH += ../JASP-Desktop/ \
 INCLUDEPATH += ../JASP-Common/
 INCLUDEPATH += ../icu-connector/
 
-   macx:INCLUDEPATH += ../../boost_1_54_0
-windows:INCLUDEPATH += ../../boost_1_54_0
+   macx:INCLUDEPATH += ../../boost_1_64_0
+windows:INCLUDEPATH += ../../boost_1_64_0
 
 PRE_TARGETDEPS += ../libJASP-Common.a
 
 LIBS += -L.. -lJASP-Common
  macx:LIBS += -licu-connector
 
-windows:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive.dll
-   macx:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz
+windows:LIBS += -lboost_filesystem-mgw48-mt-1_64 -lboost_system-mgw48-mt-1_64 -larchive.dll
+   macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz
   linux:LIBS += -lboost_filesystem    -lboost_system    -larchive
 
 windows:LIBS += -lole32 -loleaut32
