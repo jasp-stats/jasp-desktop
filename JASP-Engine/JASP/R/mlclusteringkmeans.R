@@ -114,7 +114,7 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
         
         res <- .DoKmeansAnalysis(dataset = dataset,options = options,opt = opt,predictors = predictors)
         
-        # create the evaluation table ##
+        # create the summary table ##
         
         results[['evaluation']] <- .EvaluationTableKmeans(res = res,options = options)
         state[["evaluation"]] <- results[["evaluation"]]
@@ -463,7 +463,7 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
     
     citation <- c("Hartigan, J. A., & Wong, M. A. (1979). Algorithm AS 136: A k-means clustering algorithm. Journal of the Royal Statistical Society. Series C (Applied Statistics), 28(1), 100-108.","Wagenmakers, E. J., & Farrell, S. (2004). AIC model selection using Akaike weights. Psychonomic bulletin & review, 11(1), 192-196.")
     
-    return(list(title = 'Evaluation',
+    return(list(title = 'Summary',
                 schema = list(fields = fields_evaluation),
                 data = data_evaluation,
                 footnotes = footnotes_N,
@@ -813,7 +813,7 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
             }
             
         }
-        results[['evaluation']] <- list(title = 'Evaluation',
+        results[['evaluation']] <- list(title = 'Summary',
                                         schema = list(fields = fields_evaluation),
                                         data = data_evaluation)
         

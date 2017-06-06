@@ -145,7 +145,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
             
         }
         
-        # create the evaluation table ##
+        # create the summary table ##
         
         results[['Descriptions']] <- .DescriptionsTableClassification(predictors = predictors, target = target, opt = opt, options = options, res = res, dataset = dataset, formula = formula)
         state[["Descriptions"]] <- results[['Descriptions']]
@@ -512,7 +512,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
         data_descriptions[[1]][['r[rmsekfold]']] <- 1 - result_fold[['minimal.error']]
     }
     
-    return(list(title = 'Evaluation',
+    return(list(title = 'Summary',
                 schema = list(fields = fields_descriptions),
                 data = data_descriptions,
                 footnotes = footnotes_N))
@@ -822,7 +822,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
         
         data_descriptions <- list(list(model = 'k-NN model', nn = ".", rmse = "."))
         
-        results[['Descriptions']] <- list(title = 'Evaluation',
+        results[['Descriptions']] <- list(title = 'Summary',
                                           schema = list(fields = fields_descriptions),
                                           data = data_descriptions)
         

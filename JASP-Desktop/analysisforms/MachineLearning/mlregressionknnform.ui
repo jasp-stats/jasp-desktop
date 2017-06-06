@@ -119,7 +119,7 @@
       <item row="3" column="0" rowspan="2" colspan="2">
        <widget class="QWidget" name="advancedOptions" native="true">
         <layout class="QGridLayout" name="gridLayout_7">
-         <item row="4" column="2">
+         <item row="5" column="2">
           <spacer name="verticalSpacer_5">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -186,35 +186,6 @@
                <string>Predict</string>
               </property>
              </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="BoundGroupBox" name="sampleMode_2">
-           <property name="title">
-            <string>Scale</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_15">
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="scaleEqualSD">
-              <property name="text">
-               <string>Equal SD</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <spacer name="verticalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
             </item>
            </layout>
           </widget>
@@ -299,7 +270,7 @@
            </layout>
           </widget>
          </item>
-         <item row="1" column="2">
+         <item row="2" column="2">
           <widget class="GroupBox" name="plotsGroup">
            <property name="title">
             <string>Cross validation</string>
@@ -445,6 +416,110 @@
                <size>
                 <width>40</width>
                 <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="BoundGroupBox" name="sampleMode_2">
+           <property name="title">
+            <string>Scale</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_15">
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="scaleEqualSD">
+              <property name="text">
+               <string>Equal SD</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <spacer name="verticalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="BoundGroupBox" name="groupBox">
+           <property name="title">
+            <string>Model optimization</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_11">
+            <item row="0" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="optimizeModel">
+              <property name="text">
+               <string>Optimize model</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <spacer name="horizontalSpacer_7">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>51</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>Max. K</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="BoundTextBox" name="optimizeModelMaxK">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <spacer name="horizontalSpacer_8">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>198</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="2" column="3">
+             <spacer name="verticalSpacer_8">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>55</height>
                </size>
               </property>
              </spacer>
@@ -1430,6 +1505,22 @@
     <hint type="destinationlabel">
      <x>609</x>
      <y>868</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>optimizeModel</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>optimizeModelMaxK</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>100</x>
+     <y>1330</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>148</x>
+     <y>1355</y>
     </hint>
    </hints>
   </connection>

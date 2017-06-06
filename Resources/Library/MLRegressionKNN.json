@@ -140,6 +140,28 @@
             "min": 1,
             "max": 999999,
             "default": 10
-        }
+        },
+        {
+            "name": "optimizeModel",
+            "type": "Boolean",
+            "default": false
+        },
+        {
+            "name": "optimizeModelMaxK",
+            "type": "Integer",
+            "default": 10,
+            "min": 1,
+            "max": 100
+        },
+        {
+            "default": 640,
+            "name": "plotWidth",
+            "type": "Integer"
+        },
+        {
+            "default": 480,
+            "name": "plotHeight",
+            "type": "Integer"
+        },
 	]
 }
