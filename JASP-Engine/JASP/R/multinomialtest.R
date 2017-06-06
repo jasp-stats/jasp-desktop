@@ -64,14 +64,15 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     diff <- .diff(options, state$options) # a list of TRUE/FALSE
     
     if (is.list(diff)){
-      if (!any(diff[["factor"]], diff[["confidenceIntervalInterval"]],
-              diff[["hypothesis"]], diff[["exProbVar"]],
-              diff[["expectedProbs"]])){
+      if (!any(diff[["factor"]], diff[["counts"]], 
+               diff[["confidenceIntervalInterval"]],
+               diff[["hypothesis"]], diff[["exProbVar"]],
+               diff[["expectedProbs"]])){
                 
         chisqResults <- state[["chisqResults"]]
         
       }
-      if (!any(diff[["factor"]],diff[["confidenceInterval"]],
+      if (!any(diff[["factor"]], diff[["counts"]], diff[["confidenceInterval"]],
                diff[["hypothesis"]], diff[["exProbVar"]],
                diff[["expectedProbs"]], diff[["countProp"]],
                diff[["confidenceIntervalInterval"]])) {
@@ -97,7 +98,6 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   }
   
   results[["chisq"]] <- .chisqTable(chisqResults, options, perform)
-  print(results[["chisq"]])
     
   
   # Descriptives Table
@@ -133,7 +133,6 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     
   }
   
-  print(descriptivesPlot)
   
   if (perform == "run") {
 
@@ -167,7 +166,15 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     f <- dataset[[.v(factor)]]
     f <- f[!is.na(f)]
     nlev <- nlevels(f)
+    
+    if (options$counts != ""){
+      # convert to "regular" factor
+      c <- dataset[[.v(options$counts)]]
+      f <- rep(f, c)
+    }
+    
     val <- table(f)
+    
     hyps <- .multinomialHypotheses(options, nlev)
 
     # create a named list with as values the chi-square result objects
@@ -343,7 +350,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
       # add these to the tableFrame
       ciDf <- t(data.frame(ci))
       colnames(ciDf) <- c("lowerCI", "upperCI")
-      tableFrame <- cbind(tableFrame, ciDf/div) # to prop scale if needed
+      tableFrame <- cbind(tableFrame, ciDf/div) 
     }
     
     rows <- list()
