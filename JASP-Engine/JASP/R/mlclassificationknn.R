@@ -150,12 +150,18 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
         results[['Descriptions']] <- .DescriptionsTableClassification(predictors = predictors, target = target, opt = opt, options = options, res = res, dataset = dataset, formula = formula)
         state[["Descriptions"]] <- results[['Descriptions']]
         
+        
         # create the optimization table ##
         
         if(options[["optimizeModel"]]){
             
-            results[["optimization"]] <- .optimizationTable(formula, dataset, options, res)
+            tmp_results <- .optimizationTable(formula, dataset, options, res)
+            
+            results[["optimization"]] <- tmp_results[["optimizationTable"]]
             state[["optimization"]] <- results[["optimization"]]
+            
+            # save result for plot 
+            plot_data <- tmp_results[["plot_data"]]
     
         }
         
@@ -235,7 +241,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
         if(options[["optimizeModel"]] && !is.null(res)){
             
             .plotFunc <- function(){
-                .plotOptimization(formula,dataset,options)
+                .plotOptimization(plot_data)
             }
             
             imgObj <- .writeImage(width = options$plotWidth, 
@@ -1143,29 +1149,31 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
                 "dist" = dist,
                 "lab" = lab,
                 "k" = k,
-                "kmax" = kmax))
+                "kmax" = kmax,
+                "plot_value" = value,
+                "plot_lab" = lab,
+                "plot_xlim" = range(dist),
+                "plot_clim" = switch(EXPR = length(unique(k))<3, 
+                                     clim = c(1,kmax),
+                                     clim = range(k))))
     
 }
 
-.plotOptimization <- function(formula,dataset,options){
+.plotOptimization <- function(plot_data){
     
-    res <- .optimizerKNN(formula,dataset,kmax = options[["optimizeModelMaxK"]],distance_from = 0.1,distance_to = 10)
-    
-    plot3D::scatter2D(y=res[["value"]], 
-              x = res[["dist"]], 
+    plot3D::scatter2D(y=plot_data[["plot_value"]], 
+              x = plot_data[["dist"]], 
               type = "l", 
               bty = "n",
               xlab = "Distance parameter", 
-              ylab = res[["lab"]],
+              ylab = plot_data[["plot_lab"]],
               las = 1, 
               lwd = 4,
-              colvar = res[["k"]],
-              clim = switch(EXPR = length(unique(res[["k"]]))<3, 
-                            clim = c(1,res[["kmax"]]),
-                            clim = range(res[["k"]])),
+              colvar = plot_data[["k"]],
+              clim = plot_data[["plot_clim"]],
               clab = "No. nearest neighbors",
               main = "",
-              xlim = range(res[["dist"]]),
+              xlim = plot_data[["plot_xlim"]],
               NAcol = "white")
     
 }
@@ -1198,12 +1206,14 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
         
         data <- list(
             list(model = "Optimal parameters", RMSE = ".", k = ".", weights = ".", distance = ".")
-        )  
+        ) 
+        
+        result <- NULL
         
     }
     
     optimizationTable[["data"]] <- data
     
-    return(optimizationTable)
+    return(list(optimizationTable = optimizationTable, plot_data = result))
     
 }

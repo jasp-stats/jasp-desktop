@@ -143,13 +143,16 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	results[['Descriptions']] <- .DescriptionsTable(predictors, target, opt, options, res, dataset, formula)
 	state[["Descriptions"]] <- results[["Descriptions"]]
 	
-
 	# Create optimization table ##
 	
 	if(options[["optimizeModel"]]){
 	    
-	    results[["optimization"]] <- .optimizationTableRegression(formula, dataset, options, res)
+	    tmp_results <- .optimizationTableRegression(formula, dataset, options, res)
+	    results[["optimization"]] <- tmp_results[["optimizationTable"]]
 	    state[["optimization"]] <- results[["optimization"]]
+	    
+	    # save result for plot 
+	    plot_data <- tmp_results[["plot_data"]]
 	    
 	}
 	
@@ -209,7 +212,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	if(options[["optimizeModel"]] && !is.null(res)){
 	    
 	    .plotFunc <- function(){
-	        .plotOptimizationRegression(formula,dataset,options)
+	        .plotOptimizationRegression(plot_data)
 	    }
 	    
 	    imgObj <- .writeImage(width = options$plotWidth, 
@@ -433,15 +436,15 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 		
 		if(options[['noOfNearestNeighbours']] == 'auto'){
 			
-			data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = opt[['NN']], "r[rmse]" = res[['RMSE']], "optim[type1]" = 'Auto')
+			data_descriptions[[1]] <- list(model = 'k-nn model', "nnc[nn]" = opt[['NN']], "r[rmse]" = res[['RMSE']], "optim[type1]" = 'Auto')
 			
 		} else if (options[['noOfNearestNeighbours']] == 'manual'){
 		 
-		    data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = opt[['NN']], "r[rmse]" = res[['RMSE']], "optim[type1]" = 'Manual')
+		    data_descriptions[[1]] <- list(model = 'k-nn model', "nnc[nn]" = opt[['NN']], "r[rmse]" = res[['RMSE']], "optim[type1]" = 'Manual')
 		       
 		} else if (options[['noOfNearestNeighbours']] == 'optimized'){
 				
-				data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = res[['Optimal.K']], "r[rmse]" = res[['Minimal.RMSE']], "optim[type1]" = "optimized")
+				data_descriptions[[1]] <- list(model = 'k-nn model', "nnc[nn]" = res[['Optimal.K']], "r[rmse]" = res[['Minimal.RMSE']], "optim[type1]" = "optimized")
 			
 		}
 	    
@@ -451,7 +454,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 		
 	} else {
 		
-		data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = ".", "r[rmse]" = ".", "optim[type1]" = "")
+		data_descriptions[[1]] <- list(model = 'k-nn model', "nnc[nn]" = ".", "r[rmse]" = ".", "optim[type1]" = "")
 		footnotes_N <- .newFootnotes()
 		.addFootnote(footnotes_N,paste("The model has not been applied to any data yet"), symbol = "")
 		footnotes_N <- as.list(footnotes_N)
@@ -768,7 +771,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
         
     }
     
-    data_descriptions <- list(list(model = 'k-NN model', nn = ".", rmse = "."))
+    data_descriptions <- list(list(model = 'k-nn model', nn = ".", rmse = "."))
     
     results[['Descriptions']] <- list(title = 'Summary',
                                       schema = list(fields = fields_descriptions),
@@ -882,25 +885,21 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
     
 }
 
-.plotOptimizationRegression <- function(formula,dataset,options){
+.plotOptimizationRegression <- function(plot_data){
     
-    res <- .optimizerKNN(formula,dataset,kmax = options[["optimizeModelMaxK"]],distance_from = 0.1,distance_to = 10)
-    
-    plot3D::scatter2D(y=res[["value"]], 
-                      x = res[["dist"]], 
+    plot3D::scatter2D(y=plot_data[["plot_value"]], 
+                      x = plot_data[["dist"]], 
                       type = "l", 
                       bty = "n",
                       xlab = "Distance parameter", 
-                      ylab = res[["lab"]],
+                      ylab = plot_data[["plot_lab"]],
                       las = 1, 
                       lwd = 4,
-                      colvar = res[["k"]],
-                      clim = switch(EXPR = length(unique(res[["k"]]))<3, 
-                                    clim = c(1,res[["kmax"]]),
-                                    clim = range(res[["k"]])),
+                      colvar = plot_data[["k"]],
+                      clim = plot_data[["plot_clim"]],
                       clab = "No. nearest neighbors",
                       main = "",
-                      xlim = range(res[["dist"]]),
+                      xlim = plot_data[["plot_xlim"]],
                       NAcol = "white")
     
 }
@@ -933,12 +932,14 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
         
         data <- list(
             list(model = "Optimal parameters", RMSE = ".", k = ".", weights = ".", distance = ".")
-        )  
+        )
+        
+        result <- NULL
         
     }
     
     optimizationTable[["data"]] <- data
     
-    return(optimizationTable)
+    return(list(optimizationTable = optimizationTable, plot_data = result))
     
 }
