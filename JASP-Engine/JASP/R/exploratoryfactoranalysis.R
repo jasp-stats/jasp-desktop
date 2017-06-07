@@ -114,16 +114,28 @@ ExploratoryFactorAnalysis <- function(dataset = NULL, options, perform = "run",
   }
   
   
-  # Check if number of factors is correct:
-  if (length(options$variables) > 0 && nFactor > length(options$variables)){
-    error <- TRUE
-    errorMessage <- "Too many factors requested"
-  } else {
+
+  
+  customChecks <- list(
+      function(){
+        if (length(options$variables) > 0 && nFactor > length(options$variables)){
+          return ("Too many factors requested")
+        }
+      }
+  )
+
+
+  hasErrors <- .hasErrors(dataset = dataset, perform = perform,
+    type = c("infinity", "variance"), custom = customChecks)
+
+  if (base::identical(hasErrors, FALSE)){
     error <- FALSE
     errorMessage <- ""
+  } else {
+    error <- TRUE
+    errorMessage <- hasErrors[["message"]]
   }
-  
-  
+
   if (perform == "run" && nrow(dataset) > 0 && is.null(analysisResults) && length(options$variables) > 1 && !error){
     
     analysisResults <- .estimateEFA(dataset, options, perform,nFactor)
