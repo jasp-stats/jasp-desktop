@@ -544,16 +544,25 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
 
 .plot2d <- function(dataset,res,opt,options,predictors){
     
-    if(options[['plot2dCluster']]){
+    if(options[['plot2dCluster']] && length(predictors) == 2){
         im <- .beginSaveImage(640,480)
         .TwodClusterplot(dataset,res,opt,options,predictors)
         cont <- .endSaveImage(im)
-    }
     
     return(list(title = '2-D cluster plot',
                 width = 640,
                 height = 480,
                 data = cont))
+        
+    } else {
+        
+        return(list(title = "2-D cluster plot",
+                    width = 640,
+                    height = 480,
+                    data = "",
+                    error = "You must specify 2 variables"))
+        
+    }
     
 }
 
@@ -561,7 +570,7 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
     # install.packages('vegan',repos="http://cran.rstudio.com/")
     # library(vegan)
     if(length(predictors)!= 2){
-        stop('Two variables must be specified')
+        return("")
     }
     if(options[['noOfClusters']] == 'auto' | options[['noOfClusters']] == 'manual'){
         clusters <- res[['clusters']]
