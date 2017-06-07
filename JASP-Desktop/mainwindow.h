@@ -209,6 +209,8 @@ private slots:
 	void helpFirstLoaded(bool ok);
 	void requestHelpPage(const QString &pageName);
 
+	void setExactPValuesHandler(bool exactPValues);
+
 };
 
 #endif // MAINWIDGET_H

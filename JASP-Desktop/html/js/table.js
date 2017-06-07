@@ -225,8 +225,15 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 			var f = formats[i]
 
-			if (f.indexOf("p:") != -1)
-				p = f.substring(2)
+			if (f.indexOf("p:") != -1) {
+				// override APA style if exact p-values wanted
+				if (window.globSet.pExact){
+					sf = 4;
+				} else {
+					p = f.substring(2);
+				}
+			}
+				
 
 			if (f.indexOf("dp:") != -1)
 				dp = f.substring(3)

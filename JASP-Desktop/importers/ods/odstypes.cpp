@@ -21,7 +21,6 @@
 
 #include "odstypes.h"
 
-using namespace std;
 using namespace ods;
 
 #ifndef QT_NO_DEBUG

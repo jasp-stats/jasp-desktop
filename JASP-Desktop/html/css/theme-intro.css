@@ -52,7 +52,7 @@ a:hover, a:active, a:focus {
 
 
 p {
-  margin: 0 0 0.65em; 0;
+  margin: 0 0 0.65rem; 0;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -144,6 +144,7 @@ section{
     display: inline-block;
     list-style-image: url('../img/ul-orange-dot.png');
     padding-left: 5rem;
+    padding-right: 3rem;
     max-width: 45rem;
     display: block;
     margin-left: auto;
@@ -192,7 +193,8 @@ section{
 }
 #note p{
     max-width: 45rem;
-    padding-left: 4rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
     display: block;
     margin-left: auto;
     margin-right: auto;
