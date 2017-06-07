@@ -54,6 +54,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   state <- .retrieveState()
   
   chisqResults <- NULL # result of the chi-square test
+  chisqTable <-
   descriptivesTable <- NULL # expected versus observed
   descriptivesPlot <- NULL # barplot of factor levels
   
@@ -71,14 +72,20 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
                 
         chisqResults <- state[["chisqResults"]]
         
+        # the following depend on chisqResults so in same if statement
+        if (!any(diff[["confidenceInterval"]],
+                 diff[["countProp"]])) {
+          descriptivesTable <- state[["descriptivesTable"]]
+        }
+        
+        if (!any(diff[["descriptivesPlotConfidenceInterval"]], 
+                 diff[["countProp"]], diff[["plotWidth"]],
+                 diff[["plotHeight"]])) {
+          descriptivesPlot <- state[["descriptivesPlot"]]
+        }
+        
       }
-      if (!any(diff[["factor"]], diff[["counts"]], diff[["confidenceInterval"]],
-               diff[["hypothesis"]], diff[["exProbVar"]],
-               diff[["expectedProbs"]], diff[["countProp"]],
-               diff[["confidenceIntervalInterval"]])) {
-        descriptivesTable <- state[["descriptivesTable"]]
-      }
-      
+
       #... etcetera
       # TODO 
     }
@@ -119,7 +126,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   if (options[["descriptivesPlot"]]) {
     # Generate descriptives plots
     if (is.null(descriptivesPlot)) {
-      descriptivesPlot <- .multinomialDescriptivesPlot(dataset, options, factor, perform)
+      descriptivesPlot <- .multinomialDescriptivesPlot(chisqResults, options, perform)
     }
     
     plotPath <- list(descriptivesPlot$data) # for keep later
@@ -173,9 +180,11 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
       f <- rep(f, c)
     }
     
-    val <- table(f)
+    # Create table in order of appearance of the dataset
+    t <- table(f)
+    val <- t[unique(f)]
     
-    hyps <- .multinomialHypotheses(options, nlev)
+    hyps <- .multinomialHypotheses(dataset, options, nlev)
 
     # create a named list with as values the chi-square result objects
     
@@ -297,7 +306,8 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
       for (i in 1:length(nms)) {
         fields[[length(fields)+1]] <- c(list(name=nms[i], 
                                              title = nms[i]),
-                                        numberType)
+                                        numberType,
+                                        overTitle = "Expected")
       }
     }
     
@@ -368,21 +378,145 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   return(table)  
 }
 
-.multinomialDescriptivesPlot <- function(dataset, options, factor, perform) {
-  #TODO
+# Create multinomial descriptives plot
+.multinomialDescriptivesPlot <- function(chisqResults, options, perform) {
+  
+  # init output object
+  descriptivesPlot <- list("title" = "Descriptives plot")
+  descriptivesPlot[["width"]] <- options$plotWidth
+  descriptivesPlot[["height"]] <- options$plotHeight
+  descriptivesPlot[["custom"]] <- list(width = "plotWidth",
+                                      height = "plotHeight")
+  
+  if (perform == "run"){
+    # Generate the plot
+    
+    # Counts or props
+    if (options[["countProp"]]=="descCounts"){
+      div <- 1
+      yname <- "Observed counts"
+    } else {
+      div <- sum(chisqResults[[1]][["observed"]])
+      yname <- "Observed proportions"
+    }
+
+    # Observed values
+    obs <- chisqResults[[1]][["observed"]]/div
+    
+    # Calculate confidence interval
+    cl <- options$descriptivesPlotConfidenceInterval
+    n <- sum(chisqResults[[1]][["observed"]])
+    ci <- lapply(chisqResults[[1]][["observed"]], function(l) {
+      bt <- binom.test(l,n,conf.level = cl)
+      return(bt$conf.int * n) # on the count scale
+    })
+    ciDf <- data.frame(t(data.frame(ci)))/div
+    colnames(ciDf) <- c("lowerCI", "upperCI")
+
+
+    # Define custom y axis function
+    base_breaks_y <- function(x){
+      b <- pretty(c(0,x))
+      d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
+      list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y,
+                                                      xend=xend, yend=yend),
+                                 size = 0.75,
+                                 inherit.aes=FALSE),
+           ggplot2::scale_y_continuous(breaks=b))
+    }
+
+    
+    # Create plot
+    p <- ggplot2::ggplot(mapping = ggplot2::aes(x = factor(names(obs), 
+                                                           levels = names(obs)), 
+                                                y = as.numeric(obs))) + 
+      ggplot2::geom_bar(stat = "identity", size = 0.75, colour="black", fill = "grey") +
+      ggplot2::geom_errorbar(ggplot2::aes(ymin=ciDf$lowerCI, ymax = ciDf$upperCI), 
+                             size = 0.75, width = 0.3) +
+      base_breaks_y(ciDf$upperCI) +
+      ggplot2::xlab(options$factor) +
+      ggplot2::ylab(yname) +
+      ggplot2::theme_bw() +
+      ggplot2::theme(
+        panel.grid.minor = ggplot2::element_blank(),
+        plot.title = ggplot2::element_text(size = 18),
+        panel.grid.major = ggplot2::element_blank(),
+        axis.title.x = ggplot2::element_text(size = 18, vjust=0.1),
+        axis.title.y = ggplot2::element_text(size = 18, vjust=0.9),
+        axis.text.x = ggplot2::element_text(size = 15),
+        axis.text.y = ggplot2::element_text(size = 15),
+        panel.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+        plot.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+        legend.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+        panel.border = ggplot2::element_blank(),
+        axis.line =  ggplot2::element_blank(),
+        legend.key = ggplot2::element_blank(),
+        axis.ticks = ggplot2::element_line(size = 0.5),
+        axis.ticks.length = grid::unit(3, "mm"),
+        axis.ticks.margin = grid::unit(1,"mm"),
+        plot.margin = grid::unit(c(0.1, 0.1, 0.6, 0.6), "cm"),
+        legend.position = "none")
+    
+    
+    # create plot object
+    content <- .writeImage(width = options$plotWidth, 
+                           height = options$plotHeight, 
+                           plot = p, obj = TRUE)
+
+    descriptivesPlot[["convertible"]] <- TRUE
+    descriptivesPlot[["obj"]] <- content[["obj"]]
+    descriptivesPlot[["data"]] <- content[["png"]]
+    descriptivesPlot[["status"]] <- "complete"
+    
+  } else {
+    descriptivesPlot[["data"]] <- ""
+  }
+  
+  return(descriptivesPlot)
+
 }
 
-.multinomialHypotheses <- function(options, nlevels){
+# Transform input into a list of hypotheses
+.multinomialHypotheses <- function(dataset, options, nlevels){
   # This function transforms the input into a list of hypotheses
   hyps <- list()
+  
   if (options$hypothesis == "multinomialTest"){
+    # Expected probabilities are simple now
     hyps[["Multinomial"]] <- rep(1/nlevels, nlevels)
+    
   } else {
+    
+    # First, generate a table with expected probabilities based on input
+    expectedDf <- .generateExpectedDf(dataset, options, nlevels)
+    
     # assign each hypothesis to the hyps object
-    for (i in 1:length(options$hyptable)) {
-      n <- colnames(options$hyptable)[i]
-      hyps[[n]] <- options$hyptable[,i]
-    }
+    hyps <- as.list(expectedDf)
+    
   }
   return(hyps)
+}
+
+# Parse expected probabilities/counts
+.generateExpectedDf <- function(dataset, options, nlevels){
+  # This function returns a data frame with in each named column the expected 
+  # probabilities. The column names are the hypothesis names.
+  
+  if (options$exProbVar != ""){
+    # use only exProbVar
+    eDf <- data.frame(dataset[[.v(options$exProbVar)]])
+    colnames(eDf) <- options$exProbVar
+    
+    if (nlevels != nrow(eDf)){
+      stop("Expected counts do not match number of levels of factor!")
+    }
+    
+    return(eDf)
+    
+  } else {
+    
+    stop("No expected counts entered!")
+    
+  }
+  
 }
