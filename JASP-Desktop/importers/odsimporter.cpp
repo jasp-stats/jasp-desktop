@@ -73,11 +73,11 @@ ImportDataSet* ODSImporter::loadFile(const string &locator, boost::function<void
 
 void ODSImporter::fillSharedMemoryColumn(ImportColumn *importColumn, Column &column)
 {
-	const ODSImportColumn &impCol = static_cast<const ODSImportColumn &> (*importColumn);
-	column.setColumnType( impCol.getJASPColumnType() );
+	ODSImportColumn *odsColumn = dynamic_cast<ODSImportColumn *>(importColumn);
+	const vector<string> &values = odsColumn->getData();
 
-	// Pass the message on to the columns, and find the maximum rows/cases.
-	impCol.fillSharedMemoryColumn(column);
+	fillSharedMemoryColumnWithStrings(values, column);
+
 
 }
 

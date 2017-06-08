@@ -124,6 +124,39 @@ void Importer::syncDataSet(const string &locator, boost::function<void(const str
 	delete importDataSet;
 }
 
+void Importer::fillSharedMemoryColumnWithStrings(const std::vector<string> &values, Column &column)
+{
+	// try to make the column nominal
+	bool success = true;
+	set<int> uniqueValues;
+	std::vector<int> intValues;
+	intValues.reserve(values.size());
+
+	if (ImportColumn::convertToInt(values, intValues, uniqueValues))
+	{
+		if (uniqueValues.size() <= 24)
+		{
+			column.setColumnAsNominalOrOrdinal(intValues, uniqueValues);
+			return;
+		}
+	}
+
+	// try to make the column scale
+	success = true;
+	vector<double> doubleValues;
+	doubleValues.reserve(values.size());
+
+	if (ImportColumn::convertToDouble(values, doubleValues))
+	{
+		column.setColumnAsScale(doubleValues);
+		return;
+	}
+
+	// if it can't be made nominal numeric or scale, make it nominal-text
+	column.setColumnAsNominalString(values);
+
+}
+
 DataSet* Importer::setDataSetSize(int columnCount, int rowCount)
 {
 	DataSet *dataSet = _packageData->dataSet;

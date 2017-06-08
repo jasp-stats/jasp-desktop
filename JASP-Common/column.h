@@ -46,7 +46,7 @@ class Column
 	typedef boost::interprocess::allocator<String, boost::interprocess::managed_shared_memory::segment_manager> StringAllocator;
 
 public:
-	static bool isEmptyValue(const std::string& val);
+	static bool isEmptyValue(const std::string& val, bool numericValue = true);
 
 	typedef struct IntsStruct
 	{
@@ -181,8 +181,6 @@ private:
 	static int count;
 
 	static const std::string _emptyValue;
-	static const std::string _emptyValues[];
-	static const int _emptyValuesCount;
 
 	void _setRowCount(int rowCount);
 	std::string _labelFromIndex(int index) const;

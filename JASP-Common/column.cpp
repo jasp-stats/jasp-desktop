@@ -22,6 +22,7 @@
 #include <string>
 
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 #include <cmath>
 #include <iostream>
 
@@ -32,16 +33,25 @@ using namespace std;
 int Column::count = 0;
 
 const string Column::_emptyValue = ".";
-const string Column::_emptyValues[] = {"NaN", "nan", "", " ", "."};
-const int Column::_emptyValuesCount = sizeof(_emptyValues) /sizeof(_emptyValues[0]);
 
-bool Column::isEmptyValue(const string& val)
+bool Column::isEmptyValue(const string& val, bool numericValue)
 {
-
-	for (int i = 0; i < _emptyValuesCount; ++i)
+	static string emptyNumericValues[] = {"NA", "NaN", "", " ", "."};
+	static string emptyStringValues[] = {"NA", "", " ", "."};
+	string *emptyValues = numericValue ? emptyNumericValues : emptyStringValues;
+	int emptyValuesCount = numericValue ? 5 : 4;
+	for (int i = 0; i < emptyValuesCount; ++i)
 	{
-		if (_emptyValues[i] == val)
+		std::cout << "isEmptyValue: " << val << ", " << emptyValues[i];
+		if (val == emptyValues[i])
+		{
+			std::cout << ": TRUE" << std::endl;
+			std::cout.flush();
 			return true;
+		}
+		std::cout << ": FALSE" << std::endl;
+		std::cout.flush();
+
 	}
 	return false;
 }
@@ -306,7 +316,7 @@ void Column::setColumnAsNominalString(const vector<string> &values, const map<st
 
 	for (vector<string>::iterator itr = cases.begin(); itr != cases.end(); itr++)
 	{
-		if (*itr == "" || *itr == " ") // remove empty string
+		if (isEmptyValue(*itr, false)) // remove empty string
 		{
 			cases.erase(itr);
 			break;
@@ -320,11 +330,15 @@ void Column::setColumnAsNominalString(const vector<string> &values, const map<st
 
 	BOOST_FOREACH (const string &value, values)
 	{
-		if (value == "" || value == " ")
+		if (isEmptyValue(value, false))
+		{
 			*intInputItr = INT_MIN;
+		}
 		else
+		{
 			//*intInputItr = distance(cases.begin(), find(cases.begin(), cases.end(), value));
 			*intInputItr = map[value];
+		}
 		intInputItr++;
 		nb_values++;
 	}

@@ -18,6 +18,8 @@ protected:
 	virtual ImportDataSet* loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback) = 0;
 	virtual void fillSharedMemoryColumn(ImportColumn *importColumn, Column &column) = 0;
 
+	void fillSharedMemoryColumnWithStrings(const std::vector<std::string> &values, Column &column);
+
 	DataSetPackage *_packageData;
 
 private:
