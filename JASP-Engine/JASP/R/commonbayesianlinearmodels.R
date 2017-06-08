@@ -470,6 +470,9 @@
 			}
 		}
 
+		effects.matrix <- rbind(rep(0, no.effects), effects.matrix)
+		row.names(effects.matrix)[1] <- "Null model"
+
 		if (options$posteriorEstimates && perform == "run" && status$ready) {
 			complexity <- rowSums (effects.matrix)
 			m <- which (complexity == max (complexity))
@@ -612,7 +615,7 @@
 					NA
 				}
 			})
-			model$effects <- cbind (model$effects, 1 / (no.models + 1), exp (ln.prob [-1]))
+			model$effects <- cbind (model$effects, 1 / (no.models + 1), exp (ln.prob))
 
 			rows [[1]] [["P(M)"]] <- .clean (1 / (no.models + 1))
 			rows [[1]] [["P(M|data)"]] <- .clean (ln.prob [1] / log (10))
@@ -691,7 +694,7 @@
 .theBayesianLinearModelsEffects <- function(model = NULL, options = list(), perform = "init", status = list(), populate = TRUE) {
 
 	if (! options$effects)
-		return (NULL)
+		return(NULL)
 
 	effectsTable <- list()
 	effectsTable[["title"]] <- "Analysis of Effects"
@@ -724,36 +727,93 @@
 
 	if (! status$ready && ! status$error)
 		return(effectsTable)
-
-	effects.matrix <- model$effects
-	if (perform == "run" && status$ready && !populate) {
-		prior.probabilities <- model$effects[, ncol (effects.matrix) - 1]
-		posterior.probabilities <- model$effects[, ncol (effects.matrix)]
-		effects.matrix <- matrix(model$effects[1:nrow(model$effects), 1:(ncol(model$effects) - 2)],
-			nrow = nrow(model$effects),
-			ncol = ncol(model$effects) - 2)
-
-		effectNames <- colnames(effects.matrix) <- colnames(model$effects)[1:(ncol(model$effects) - 2)]
-		no.models <- nrow(effects.matrix)
-		no.effects <- ncol(effects.matrix)
-
-		dim(prior.probabilities) <- c(1, no.models)
-		dim(posterior.probabilities) <- c(1, no.models)
-		prior.inclusion.probabilities <- prior.probabilities %*% effects.matrix
-		posterior.inclusion.probabilities <- posterior.probabilities %*% effects.matrix
-		posterior.inclusion.probabilities[posterior.inclusion.probabilities > 1] <- 1
-		posterior.inclusion.probabilities[posterior.inclusion.probabilities < 0] <- 0
-		bayes.factor.inclusion <- (posterior.inclusion.probabilities / (1 - posterior.inclusion.probabilities)) /
-			(prior.inclusion.probabilities / (1 - prior.inclusion.probabilities))
-		model.complexity <- rowSums(effects.matrix)
+	
+	if (options$effectsType == "matchedModels") {
+		footnotes <- .newFootnotes()
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Compares models that contain the effect to equivalent models 
+			stripped of the effect. Higher-order interactions are excluded. Analysis suggested by Sebastiaan Mathôt.")
+		effectsTable[["footnotes"]] <- as.list(footnotes)
 	}
-
+	
+	effects.matrix <- model$effects
 	no.effects <- ncol(effects.matrix)
-	effectNames <- colnames(effects.matrix)
+	effectNames <- names(effects.matrix) <- colnames(model$effects)
+	if (perform == "run" && status$ready && ! populate) {
+		no.effects <- ncol(effects.matrix) - 2 # last 2 columns hold (unnamed) prior & posterior probs
+		effectNames <- effectNames[1:no.effects]
+		
+		if (options$effectsType == "allModels") {
+			effects.matrix <- effects.matrix[-1, , drop=FALSE] # remove the null model
+			prior.probabilities <- effects.matrix[, ncol(effects.matrix) - 1]
+			posterior.probabilities <- effects.matrix[, ncol(effects.matrix)]
+			no.models <- nrow(effects.matrix)
+			
+			dim(prior.probabilities) <- c(1, no.models)
+			dim(posterior.probabilities) <- c(1, no.models)
+			prior.inclusion.probabilities <- prior.probabilities %*% effects.matrix
+			posterior.inclusion.probabilities <- posterior.probabilities %*% effects.matrix
+			posterior.inclusion.probabilities[posterior.inclusion.probabilities > 1] <- 1 #FIXME: why do we need this?
+			posterior.inclusion.probabilities[posterior.inclusion.probabilities < 0] <- 0
+			bayes.factor.inclusion <- (posterior.inclusion.probabilities / (1 - posterior.inclusion.probabilities)) /
+				(prior.inclusion.probabilities / (1 - prior.inclusion.probabilities))
+				
+			} else { # perform a targeted analysis on matched models
+				
+				effects.matrix <- as.data.frame(effects.matrix)
+				prior.inclusion.probabilities <- posterior.inclusion.probabilities <- 
+					bayes.factor.inclusion <- numeric(length(effectNames))
+				for (effect in effectNames) {
+					
+					# Exclude all higher-order interactions
+					higherInteractions <- effectNames[model$interactions.matrix[effect, ] == TRUE]
+					if (! is.null(dim(effects.matrix[, higherInteractions]))) {
+						hasInteraction <- rowSums(effects.matrix[, higherInteractions])
+					} else {
+						hasInteraction <- effects.matrix[, higherInteractions]
+					}
+					effect.matrix <- effects.matrix[hasInteraction == 0, ]
+					
+					# Find all models that contain the effect
+					hasEffect <- effect.matrix[[effect]] == 1
+					modelsWith <- effect.matrix[hasEffect, ]
+					inModelPriors <- modelsWith[[ncol(effects.matrix) - 1]]
+					inModelPosteriors <- modelsWith[[ncol(effects.matrix)]]
+					modelsWith <- modelsWith[, 1:(ncol(effects.matrix) - 2), drop=FALSE]
+					
+					# Get the remaining models
+					remaining <- effect.matrix[[effect]] == 0
+					modelsWithout <- effect.matrix[remaining, ]
+
+					# From the remaining models find all models equivalent to the effect models, but without the effect
+					if (nrow(modelsWithout) > 1) {
+						refMatrix <- modelsWithout[, 1:(ncol(effects.matrix) - 2), drop=FALSE]
+						refMatrix <- refMatrix[, names(refMatrix) != effect, drop=FALSE]
+						indices <- apply(modelsWith[, names(modelsWith) != effect, drop=FALSE], 1, function(row) {
+								intersection <- row == t(refMatrix)
+									which(colSums(intersection) == length(row))
+							})
+					} else { # There is only the null model
+						indices <- 1 
+					}
+					outModelPriors <- modelsWithout[indices, ncol(effects.matrix) - 1]
+					outModelPosteriors <- modelsWithout[indices, ncol(effects.matrix)]
+
+					# Calculate the inclusion probabilities
+					index <- which(effectNames == effect)
+					prior.inclusion.probabilities[index] <- sum(inModelPriors)
+					posterior.inclusion.probabilities[index] <- sum(inModelPosteriors)
+					bayes.factor.inclusion[index] <- (sum(inModelPosteriors) / sum(outModelPosteriors)) / (sum(inModelPriors) / sum(outModelPriors))
+				
+				}
+
+			}
+			
+	}
+	
 	if (! is.null(no.effects) && no.effects > 0) {
 		rows <- list()
 		for (e in 1:no.effects) {
-			row <- list ()
+			row <- list()
 			row$"Effects" <- .unvf(effectNames[e])
 			if (perform == "run" && status$ready && !populate) {
 				row$"P(incl)" = .clean(prior.inclusion.probabilities[e])
