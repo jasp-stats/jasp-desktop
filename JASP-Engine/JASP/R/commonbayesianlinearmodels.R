@@ -757,56 +757,56 @@
 			bayes.factor.inclusion <- (posterior.inclusion.probabilities / (1 - posterior.inclusion.probabilities)) /
 				(prior.inclusion.probabilities / (1 - prior.inclusion.probabilities))
 				
-			} else { # perform a targeted analysis on matched models
+		} else { # perform a targeted analysis on matched models
 				
-				effects.matrix <- as.data.frame(effects.matrix)
-				prior.inclusion.probabilities <- posterior.inclusion.probabilities <- 
-					bayes.factor.inclusion <- numeric(length(effectNames))
-				for (effect in effectNames) {
-					
-					# Exclude all higher-order interactions
-					higherInteractions <- effectNames[model$interactions.matrix[effect, ] == TRUE]
-					if (! is.null(dim(effects.matrix[, higherInteractions]))) {
-						hasInteraction <- rowSums(effects.matrix[, higherInteractions])
-					} else {
-						hasInteraction <- effects.matrix[, higherInteractions]
-					}
-					effect.matrix <- effects.matrix[hasInteraction == 0, ]
-					
-					# Find all models that contain the effect
-					hasEffect <- effect.matrix[[effect]] == 1
-					modelsWith <- effect.matrix[hasEffect, ]
-					inModelPriors <- modelsWith[[ncol(effects.matrix) - 1]]
-					inModelPosteriors <- modelsWith[[ncol(effects.matrix)]]
-					modelsWith <- modelsWith[, 1:(ncol(effects.matrix) - 2), drop=FALSE]
-					
-					# Get the remaining models
-					remaining <- effect.matrix[[effect]] == 0
-					modelsWithout <- effect.matrix[remaining, ]
-
-					# From the remaining models find all models equivalent to the effect models, but without the effect
-					if (nrow(modelsWithout) > 1) {
-						refMatrix <- modelsWithout[, 1:(ncol(effects.matrix) - 2), drop=FALSE]
-						refMatrix <- refMatrix[, names(refMatrix) != effect, drop=FALSE]
-						indices <- apply(modelsWith[, names(modelsWith) != effect, drop=FALSE], 1, function(row) {
-								intersection <- row == t(refMatrix)
-									which(colSums(intersection) == length(row))
-							})
-					} else { # There is only the null model
-						indices <- 1 
-					}
-					outModelPriors <- modelsWithout[indices, ncol(effects.matrix) - 1]
-					outModelPosteriors <- modelsWithout[indices, ncol(effects.matrix)]
-
-					# Calculate the inclusion probabilities
-					index <- which(effectNames == effect)
-					prior.inclusion.probabilities[index] <- sum(inModelPriors)
-					posterior.inclusion.probabilities[index] <- sum(inModelPosteriors)
-					bayes.factor.inclusion[index] <- (sum(inModelPosteriors) / sum(outModelPosteriors)) / (sum(inModelPriors) / sum(outModelPriors))
+			effects.matrix <- as.data.frame(effects.matrix)
+			prior.inclusion.probabilities <- posterior.inclusion.probabilities <- 
+				bayes.factor.inclusion <- numeric(length(effectNames))
+			for (effect in effectNames) {
 				
+				# Exclude all higher-order interactions
+				higherInteractions <- effectNames[model$interactions.matrix[effect, ] == TRUE]
+				if (! is.null(dim(effects.matrix[, higherInteractions]))) {
+					hasInteraction <- rowSums(effects.matrix[, higherInteractions])
+				} else {
+					hasInteraction <- effects.matrix[, higherInteractions]
 				}
+				effect.matrix <- effects.matrix[hasInteraction == 0, ]
+				
+				# Find all models that contain the effect
+				hasEffect <- effect.matrix[[effect]] == 1
+				modelsWith <- effect.matrix[hasEffect, ]
+				inModelPriors <- modelsWith[[ncol(effects.matrix) - 1]]
+				inModelPosteriors <- modelsWith[[ncol(effects.matrix)]]
+				modelsWith <- modelsWith[, 1:(ncol(effects.matrix) - 2), drop=FALSE]
+				
+				# Get the remaining models
+				remaining <- effect.matrix[[effect]] == 0
+				modelsWithout <- effect.matrix[remaining, ]
 
+				# From the remaining models find all models equivalent to the effect models, but without the effect
+				if (nrow(modelsWithout) > 1) {
+					refMatrix <- modelsWithout[, 1:(ncol(effects.matrix) - 2), drop=FALSE]
+					refMatrix <- refMatrix[, names(refMatrix) != effect, drop=FALSE]
+					indices <- apply(modelsWith[, names(modelsWith) != effect, drop=FALSE], 1, function(row) {
+							intersection <- row == t(refMatrix)
+								which(colSums(intersection) == length(row))
+						})
+				} else { # There is only the null model
+					indices <- 1 
+				}
+				outModelPriors <- modelsWithout[indices, ncol(effects.matrix) - 1]
+				outModelPosteriors <- modelsWithout[indices, ncol(effects.matrix)]
+
+				# Calculate the inclusion probabilities
+				index <- which(effectNames == effect)
+				prior.inclusion.probabilities[index] <- sum(inModelPriors)
+				posterior.inclusion.probabilities[index] <- sum(inModelPosteriors)
+				bayes.factor.inclusion[index] <- (sum(inModelPosteriors) / sum(outModelPosteriors)) / (sum(inModelPriors) / sum(outModelPriors))
+			
 			}
+
+		}
 			
 	}
 	
