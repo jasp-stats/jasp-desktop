@@ -18,16 +18,13 @@
 MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", callback = function(...) 0, ...) {
 
 	## Read Dataset ## ----
-	# print(perform)
-	# perform <- "init"
-	print(perform)
+
 	predictors <- unlist(options[["predictors"]])
 	predictorsList <- options[["predictors"]]
 
 	target <- options[["target"]]
 
 	if (target == ""){
-		print("target is still empty")
 		target <- NULL
 	}
 
@@ -44,13 +41,15 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 		if (perform == "run"){
 
-			# if(options[["distribution"]] != "multinomial"){
-			# 	dataset <- .readDataSetToEnd(columns.as.numeric = variablesToRead, columns.as.factor = indicator, exclude.na.listwise = c(variablesToRead, indicator))
-			# }
-			# if(options[["distribution"]] == "multinomial"){
-			# 	dataset <- .readDataSetToEnd(columns.as.numeric = predictors, columns.as.factor = c(indicator,target), exclude.na.listwise = c(predictors, indicator, target))
-			# }
-			dataset <- .readDataSetToEnd(columns.as.numeric = variablesToRead, columns.as.factor = indicator, exclude.na.listwise = c(variablesToRead, indicator))
+			if(options[["distribution"]] == "gaussian" || options[["distribution"]] == "laplace" || options[["distribution"]] == "tdist" || options[["distribution"]] == "poisson"){
+				dataset <- .readDataSetToEnd(columns.as.numeric = variablesToRead, columns.as.factor = indicator, exclude.na.listwise = c(variablesToRead, indicator))
+			}
+			if(options[["distribution"]] == "multinomial" || options[["distribution"]] == "bernoulli" || options[["distribution"]] == "adaboost" || options[["distribution"]] == "huberized"){
+				dataset <- .readDataSetToEnd(columns.as.numeric = predictors, columns.as.factor = c(indicator,target), exclude.na.listwise = c(predictors, indicator, target))
+			}
+
+			# dataset <- .readDataSetToEnd(columns.as.numeric = variablesToRead, columns.as.factor = indicator, exclude.na.listwise = c(variablesToRead, indicator))
+			# dataset <- .readDataSetToEnd(columns = variablesToRead, columns.as.factor = indicator, exclude.na.listwise = c(variablesToRead, indicator))
 
 		} else {
 
