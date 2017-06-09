@@ -18,7 +18,8 @@
 
 .DotIfNULL <- function(x){
 
-  if (is.null(x) || any(is.na(x)) || !is.finite(x)){
+  # if (is.null(x) || any(is.na(x)) || !is.finite(x)){
+  if (is.null(x) || is.na(x) || !is.finite(x)){
     return(".")
   } else {
     return(x)
@@ -36,314 +37,246 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   
   results <- init[["results"]]
   dataset <- init[["dataset"]]
+
+
+  ## initialize result ## ----
+
+  meta <- list(
+    list(name="title", type="title"),
+    list(name="factorLoadings", type = "table"),
+    list(name="factorCorrelations", type = "table"),
+    list(name="goodnessOfFit", type="table"),
+    list(name="fitMeasures", type="table"),
+    list(name="pathDiagram", type="image"),
+    list(name="screePlot", type="image"))
+
+  results[[".meta"]] = meta
   
+  # ## initialize state ## ----
+  # stateKey <- list(
+  #   analysis <- c('rotationMethod','orthogonalSelector','obliqueSelector','variables', 'factorMethod',
+  #     'eigenValuesBox','numberOfFactors')
+  #   table <- c()
+  #   plot <- c()
+  #   )
+
   # States:
   state <- .retrieveState()
   analysisResults <- NULL
   newAnalysis <- TRUE
-  # if ( ! is.null(state) && state$complete) {  # is there state?
+  error <- NULL
+
+  if ( ! is.null(state) && state$complete) {  # is there state?
   
-  if ( !is.null(state)) {  # is there state?
+  # if ( !is.null(state)) {  # is there state?
     
     diff <- .diff(options, state$options)  # compare old and new options
+    print("diff")
+    print("diff type:")
+    print(typeof(diff))
+    print(diff)
     
-    nVariable <- length(options$variables)
+    # nVariable <- length(options$variables)
     
     if (is.list(diff) && !diff[['rotationMethod']] && !diff[['orthogonalSelector']] && !diff[['obliqueSelector']] && !diff[['variables']] && !diff[['factorMethod']] && 
         !diff[['eigenValuesBox']] && !diff[['numberOfFactors']]) {
-      
+
       # old results can be used
       newAnalysis <- FALSE
       analysisResults <- state$analysisResults
+      error <- state$error
+      nFactor <- state$nFactor
+      message <- state$message
       
     }
     
   }
-  
-  
-  # Number of factors:
-  nVariable <- length(options$variables)
-  
-  # Rotation method:
-  if (options$rotationMethod == "orthogonal"){
-    Rotation <- options$orthogonalSelector
-  } else {
-    Rotation <- options$obliqueSelector
-  }
-  
-  checkAllNA <- list(
-    function() {
-      if (nVariable > 0) {
-        allNa <- FALSE
-        varNa <- c()
-        for (i in 1:length(options$variables)){
-          varName <- options$variables[i]
-          print(varName)
-          print(dataset[["varName"]])
-          if( sum(as.numeric(!is.na(dataset[["varName"]]))) < 2){
-            allNa <- TRUE
-            varNa <- c(varNa,varName)
-          }
+
+
+if(newAnalysis){
+
+    res <- .estimateNFactor(dataset, options, perform)
+    nFactor <- res$nFactor
+    message <- res$message
+
+    customChecks <- list(
+      function() {
+        if (nVariable > 0 && nFactor > length(options$variables)) {
+          return(paste0("Too many factors requested (", nFactor, ") for the amount of included variables"))
         }
-        if (allNa){
-          # return(paste0("Fail to load ", varNa, " for valid cases <= 1"))
-          return(paste0("Fail to load for valid cases <= 1"))
+      },
+      function(){
+        if(is.null(dataset)){
+          return(paste0("Dataset empty")) #(", nrow(dataset),")
         }
-        
+        if(!is.null(dataset) && nrow(dataset) < 3){
+          return(paste0("Not enough valid cases (", nrow(dataset),") for analysis"))
+        }
       }
-    }
-  )
-
-  # error <- .hasErrors(dataset=dataset, perform=perform, type=c("infinity", "variance"), exitAnalysisIfErrors=TRUE)
-  errorAllNa <- .hasErrors(dataset=dataset, perform=perform, type=c("infinity", "variance"), custom=checkAllNA, exitAnalysisIfErrors=TRUE)
-  #Number of factors:
-  
-  if (options$factorMethod == "parallelAnalysis"){
+    )
     
-    if (nrow(dataset)>0 && nVariable > 0){
+    error <- .hasErrors(dataset=dataset, perform=perform, type=c("infinity", "variance"), custom=customChecks, exitAnalysisIfErrors=TRUE)
+
+
+    if (perform == "run" && length(options$variables) > 1){
       
-      p <- try(silent = FALSE, expr = {
-              image <- .beginSaveImage()
-              pa <- psych::fa.parallel(dataset)   
-              .endSaveImage(image)
-              if (is.na(pa$ncomp)) pa$ncomp <- 1
-              nFactor <- max(1,pa$ncomp)
-            })
-
-      if (class(p) == "try-error"){
-        errorMessageTmp <- .extractErrorMessage(p)
-        errorMessage <- paste0("Parallel Analysis not possible: ", errorMessageTmp)
-        results[["factorLoadings"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
-        nFactor <- 1
-      }
-
-      # image <- .beginSaveImage()
-      # pa <- psych::fa.parallel(dataset)   
-      # .endSaveImage(image)
-
-      # if (is.na(pa$ncomp)) pa$ncomp <- 1
-      # nFactor <- max(1,pa$ncomp)
-      
-    } else {
-      if (is.null(state$nFactor)){
-        nFactor <- 1          
-      } else {
-        nFactor <- state$nFactor
-      }
+      analysisResults <- try(silent = FALSE, expr = {
+        .estimatePCA(dataset, options, perform, nFactor)
+        })    
     }
-    
-  } else if (options$factorMethod == "eigenValues"){
-    if (nrow(dataset)>0 && nVariable > 0){
-      # Compute ev:
-      p <- try(silent = FALSE, expr = {
-              image <- .beginSaveImage()
-              pa <- psych::fa.parallel(dataset)
-              .endSaveImage(image)
-              nFactor <- sum(pa$pc.values > options$eigenValuesBox)
-            })
-
-      if (class(p) == "try-error"){
-        errorMessageTmp <- .extractErrorMessage(p)
-        errorMessage <- paste0("Eigen Values not possible: ", errorMessageTmp)
-        results[["factorLoadings"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
-        nFactor <- 1
-      }
-      # image <- .beginSaveImage()
-      # pa <- psych::fa.parallel(dataset)   
-      # .endSaveImage(image)
-      
-      # Number of factors:
-      # nFactor <- sum(pa$pc.values > options$eigenValuesBox)
-    } else {
-      if (is.null(state$nFactor)){
-        nFactor <- 1
-      } else {
-        nFactor <- state$nFactor
-      }
-      
-    }
-  } else if (options$factorMethod == "manual"){
-    nFactor <- options$numberOfFactors
   }
-  
-  customChecks <- list(
-    function() {
-      if (nVariable > 0 && nFactor > length(options$variables)) {
-        return(paste0("Too many factors requested (", nFactor, ") for the amount of included variables"))
-      }
-    }
-  )
-  
-  error <- .hasErrors(dataset=dataset, perform=perform, type=c("infinity", "variance"), custom=customChecks, exitAnalysisIfErrors=TRUE)
 
-  if (perform == "run" && nrow(dataset) > 0 && is.null(analysisResults) && length(options$variables) > 1){
-    
-    analysisResults <- .estimatePCA(dataset, options, perform,nFactor)
-    
-  } else {
-    # Otherwise just keep the state
-    # analysisResults <- NULL
-  }
-  
+# Output
+
   # Make factor loadings table:
-  # if (newAnalysis){
-  p <- try(silent = FALSE, expr = {
-    results[["factorLoadings"]] <- .getLoadingsPCA(analysisResults, options,perform,nFactor,dataset)    
-    })
-
-  if(class(p) == "try-error"){
-    errorMessageTmp <- .extractErrorMessage(p)
-    errorMessage <- paste0("FactorLoadings not possible: ", errorMessageTmp)
-    results[["factorLoadings"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
-  }else{
-    results[["factorLoadings"]][["error"]] <- NULL
+  if (newAnalysis) {
+    results[["factorLoadings"]] <- .getLoadingsPCA(analysisResults, options, perform, nFactor, dataset, message)
+  } else {
+    results[["factorLoadings"]]  <- state$results[["factorLoadings"]] 
   }
-  
-#   } else {
-#     results[["factorLoadings"]]  <- state$results[["factorLoadings"]] 
-#   }
 
   
   # Create factor correlation table:
-  # if (newAnalysis || (is.list(diff) && diff[['incl_correlations']] && options$incl_correlations)){
-  p <- try(silent = FALSE, expr = {
-    results[["factorCorrelations"]] <- .getFactorCorrelationsPCA(analysisResults, options,perform)    
-  })
-
-  if(class(p) == "try-error"){
-    errorMessageTmp <- .extractErrorMessage(p)
-    errorMessage <- paste0("Factor correlation table not possible: ", errorMessageTmp)
-    results[["factorCorrelations"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
+  if(!newAnalysis && state$options[["incl_correlations"]] && options$incl_correlations){
+    results[["factorCorrelations"]] <- state$results[["factorCorrelations"]] 
   }else{
-    results[["factorCorrelations"]][["error"]] <- NULL
+    results[["factorCorrelations"]] <- .getFactorCorrelationsPCA(analysisResults, options,perform)
   }
-
-#   } else {
-#     results[["factorCorrelations"]] <- state$results[["factorCorrelations"]] 
-#   }
 
   
   # Create fit measures tables:
-  p <- try(silent = FALSE, expr = {
-    results[["goodnessOfFit"]] <- .goodnessOfFitPCA(analysisResults, options,perform)
-  })
-
-  if(class(p) == "try-error"){
-    errorMessageTmp <- .extractErrorMessage(p)
-    errorMessage <- paste0("Goodness of fit table not possible: ", errorMessageTmp)
-    results[["goodnessOfFit"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
+  if(newAnalysis){
+    results[["goodnessOfFit"]] <- .goodnessOfFitPCA(analysisResults, options, perform)
   }else{
-    results[["goodnessOfFit"]][["error"]] <- NULL
+    results[["goodnessOfFit"]] <- state$results[["goodnessOfFit"]]
   }
 
-  p <- try(silent = FALSE, expr = {
+
+  if(newAnalysis || (is.list(diff) && diff[['incl_fitIndices']] && options$incl_fitIndices)){
     results[["fitMeasures"]] <- .fitMeasuresPCA(analysisResults, options,perform)
-  })
-
-  if(class(p) == "try-error"){
-    errorMessageTmp <- .extractErrorMessage(p)
-    errorMessage <- paste0("Fit measures table not possible: ", errorMessageTmp)
-    results[["fitMeasures"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
   }else{
-    results[["fitMeasures"]][["error"]] <- NULL
+    results[["fitMeasures"]] <- state$results[["fitMeasures"]]
   }
+
+
   
   
   # Create path diagram:
-  p <- try(silent = FALSE, expr = {
-    results[["pathDiagram"]] <- .pathDiagramPCA(analysisResults, options,perform)
-  })
+  if(newAnalysis || (is.list(diff) && diff[['incl_pathDiagram']] && options$incl_pathDiagram)){
+    if(isTRUE(options$incl_pathDiagram)){
+      p <- try(silent = FALSE, expr = {
+        .pathDiagramPCA(analysisResults, options, perform)
+       })
 
-  if(class(p) == "try-error"){
-    errorMessageTmp <- .extractErrorMessage(p)
-    errorMessage <- paste0("Plotting path diagram not possible: ", errorMessageTmp)
-    results[["pathDiagram"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
+      if(isTryError(p)){
+        errorMessage <- .extractErrorMessage(p)
+        results[["pathDiagram"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
+      }else{
+        results[["pathDiagram"]] <- p
+      }
+      
+    }
   }else{
-    results[["pathDiagram"]][["error"]] <- NULL
+    results[["pathDiagram"]] <- state$results[["pathDiagram"]]
   }
+
 
   
   # Scree plot:
-  p <- try(silent = FALSE, expr = {
-    results[["screePlot"]] <- .screePlot(dataset, options,perform)
-  })
+  if(newAnalysis || (is.list(diff) && diff[['incl_screePlot']] && options$incl_screePlot)){
+    if(isTRUE(options$incl_screePlot)){
+      p <- try(silent = FALSE, expr = {
+        .screePlot(dataset, options,perform)
+       })
 
-  if(class(p) == "try-error"){
-    errorMessageTmp <- .extractErrorMessage(p)
-    errorMessage <- paste0("Plotting screen plot not possible: ", errorMessageTmp)
-    results[["screePlot"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
+      if(isTryError(p)){
+        errorMessage <- .extractErrorMessage(p)
+        results[["screePlot"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
+      }else{
+        results[["screePlot"]] <- p
+      }
+    }
   }else{
-    results[["screePlot"]][["error"]] <- NULL
+    results[["screePlot"]] <- state$results[["screePlot"]]
   }
 
 
   ## TEMP DEBUG THING:
   # save(dataset,results,init,options,perform,callback,...,file = "/Users/sachaepskamp/Dropbox/work/JASP/Rcodes/JASPinit.RData")
-  
-  
-  #### META
-  meta <- list(
-    list(name = "title", type = "title")
-  )
-  
-  if (isTRUE(options$incl_loadings)){
-    meta[[length(meta)+1]] <- list(name = "factorLoadings", type = "table")
-    
-  }
-  
-  if (isTRUE(options$incl_correlations)){
-    meta[[length(meta)+1]] <- list(name = "factorCorrelations", type = "table")
-  }
-  
-  if (isTRUE(options$incl_GoF)){
-    meta[[length(meta)+1]] <- list(name = "goodnessOfFit", type = "table")
-  }
-  if (isTRUE(options$incl_fitIndices)){
-    meta[[length(meta)+1]] <- list(name = "fitMeasures", type = "table")
-  }
-  if (isTRUE(options$incl_pathDiagram)){
-    meta[[length(meta)+1]] <- list(name = "pathDiagram", type = "image")
-  }
-  if (isTRUE(options$incl_screePlot)){
-    meta[[length(meta)+1]] <- list(name = "screePlot", type = "image")
-  }
-  
-  
-  
-  results[[".meta"]] <- meta
+
   
   # Dummies:
   status <- list(ready=TRUE, error=error)
-  
-  # if (status$error == TRUE){
-  #   results[["factorLoadings"]][["error"]] <-  list(errorType="badData", errorMessage=status$errorMessage)
-  #   results[["factorCorrelations"]][["error"]] <-  list(errorType="badData")
-  #   results[["goodnessOfFit"]][["error"]] <-  list(errorType="badData")
-  #   results[["fitMeasures"]][["error"]] <-  list(errorType="badData")
-  #   results[["pathDiagram"]][["error"]] <-  list(errorType="badData")
-  #   results[["screePlot"]][["error"]] <-  list(errorType="badData")
-  # } else {
-  #   results[["factorLoadings"]][["error"]] <- NULL
-  #   results[["factorCorrelations"]][["error"]] <-  NULL
-  #   results[["goodnessOfFit"]][["error"]] <-  NULL
-  #   results[["fitMeasures"]][["error"]] <-  NULL
-  #   results[["pathDiagram"]][["error"]] <-  NULL
-  #   results[["screePlot"]][["error"]] <-  NULL
-  # }
-  
-  if (perform == "run" && status$ready) {
-    state <- list(options=options,analysisResults=analysisResults,nFactor=nFactor,results=results,complete=TRUE)
+  print("perform")
+  print(perform)
+  if (perform == "run") {
+    print("completed")
+    state <- list(options=options,analysisResults=analysisResults,nFactor=nFactor,results=results, complete=TRUE)
     
     return(list(results=results, status="complete", state=state))	    
     
-    
   } else {
-    state <- list(options=options,nFactor=nFactor,analysisResults=analysisResults,results=results,complete=FALSE)
+    print("inited")
+    state <- list(options=options,analysisResults=analysisResults,nFactor=nFactor,results=results,complete=FALSE)
     return(list(results=results, status="inited",state=state))
   }
 }
 
 
+.estimateNFactor <- function(dataset, options, perform){
+    # Number of factors:
+    nVariable <- length(options$variables)
+
+    # get nFactor
+    nFactor <- 1
+    message <- NULL
+
+    if(perform == "run" && !is.null(dataset) && nrow(dataset)>1 && nVariable > 0){
+
+      if (options$factorMethod == "parallelAnalysis"){
+                
+        parallelAnalysis <- try(silent = FALSE, expr = {
+                image <- .beginSaveImage()
+                pa <- psych::fa.parallel(dataset)   
+                .endSaveImage(image)
+            })
+
+        if (class(parallelAnalysis) == "try-error"){
+          errorMessageTmp <- .extractErrorMessage(parallelAnalysis)
+          message <- paste0("Parallel analysis not possible: ", errorMessageTmp)
+          nFactor <- 1
+        }else{
+          if (is.na(pa$ncomp)) pa$ncomp <- 1
+          nFactor <- max(1,pa$ncomp)
+          message <- sprintf("Parallel analysis suggests that the number of factors =  %d  and the number of components =  %d.",
+          as.integer(pa$nfact), as.integer(pa$ncomp))
+
+        }
+        
+      } else if (options$factorMethod == "eigenValues"){
+          # Compute ev:
+          eigenValues <- try(silent = FALSE, expr = {
+                  image <- .beginSaveImage()
+                  pa <- psych::fa.parallel(dataset)
+                  .endSaveImage(image)
+                })
+
+          if (class(eigenValues) == "try-error"){
+            errorMessageTmp <- .extractErrorMessage(eigenValues)
+            message <- paste0("Eigen values not possible: ", errorMessageTmp)
+            nFactor <- 1
+          }else{
+            nFactor <- sum(pa$pc.values > options$eigenValuesBox)
+            message <- sprintf("Eigen values suggests that the number of factors =  %d  and the number of components =  %d.",
+             as.integer(pa$nfact), as.integer(pa$ncomp))
+          }
+      } else if (options$factorMethod == "manual"){
+        nFactor <- options$numberOfFactors
+      }
+    }
+
+    return(list(nFactor = nFactor, message = message))
+}
 
 ### Inner functions ###
 # Estimate PCA:
@@ -380,18 +313,56 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
 }
 
 # Get loadings matrix:
-.getLoadingsPCA <- function(analysisResults, options,perform, nFactor=1,dataset){
-  
+.getLoadingsPCA <- function(analysisResults, options, perform, nFactor=1, dataset, message){
+
+  # Create JASP table:
+  Loadings <- list()
+  Loadings[["title"]] <- "Component Loadings"
+  Loadings[["schema"]] <- list(fields = list(
+    #     list(name="model", title = "", type="text"),
+    #     list(name="cn_05", title = "Hoelter Critical N (CN) alpha=0.05", type="number", format = "dp:3"),
+    #     list(name="cn_01", title = "Hoelter Critical N (CN) alpha=0.01", type="number", format = "dp:3"),
+    #     list(name="gfi", title = "Goodness of Fit Index (GFI)", type="number", format = "dp:3"),
+    #     list(name="agfi", title = "Parsimony Goodness of Fit Index (GFI)", type="number", format = "dp:3"),
+    #     list(name="mfi", title = "McDonald Fit Index (MFI)", type="number", format = "dp:3"),
+    #     list(name="ecvi", title = "Expected Cross-Validation Index (ECVI)", type="number", format = "dp:3")
+  ))
+
+
   if (options$rotationMethod == "orthogonal"){
     Rotation <- options$orthogonalSelector
   } else {
     Rotation <- options$obliqueSelector
   }
   
+  footnotes <- .newFootnotes()
   # Extract loadings:
   # if (!is.null(analysisResults) & perform == "run"){
-  if (!is.null(analysisResults)){
+  if(is.null(analysisResults) || isTryError(analysisResults) || perform == "init"){
+    if (is.null(options$numberOfFactors)){
+      nFact <- 0
+    } else {
+      nFact <- options$numberOfFactors
+    }
     
+    loadingsMatrix <- matrix(NA,length(options$variables),nFactor+1)
+    
+    # if (options$rotationMethod == "orthogonal"){
+    #   Rotation <- options$orthogonalSelector
+    # } else {
+    #   Rotation <- options$obliqueSelector
+    # }
+    
+    colnames(loadingsMatrix) <- c( paste(ifelse(Rotation=="none","PC","RC"),seq_len(nFactor)),"Uniqueness")
+    rownames(loadingsMatrix) <- colnames(dataset)
+  
+    if(isTryError(analysisResults)){
+      # footnotes <- .newFootnotes()
+      errorMessage <- .extractErrorMessage(analysisResults)
+      .addFootnote(footnotes, symbol="<em>Error.</em>", text=errorMessage)
+    }
+
+  }else{
     loadingsMatrix <- as.matrix(loadings(analysisResults))    
     # loadingsMatrix <- matrix(unlist(loadingsMatrix),nrow(loadingsMatrix),ncol(loadingsMatrix))
     
@@ -406,40 +377,8 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
     # Add uniqueness:
     
     loadingsMatrix <- cbind(loadingsMatrix, Uniqueness = unname(analysisResults$uniquenesses))
-    
-  } else {
-    
-    if (is.null(options$numberOfFactors)){
-      nFact <- 0
-    } else {
-      nFact <- options$numberOfFactors
-    }
-    
-    loadingsMatrix <- matrix(NA,length(options$variables),nFactor+1)
-    
-    if (options$rotationMethod == "orthogonal"){
-      Rotation <- options$orthogonalSelector
-    } else {
-      Rotation <- options$obliqueSelector
-    }
-    
-    colnames(loadingsMatrix) <- c( paste(ifelse(Rotation=="none","PC","RC"),seq_len(nFactor)),"Uniqueness")
-    rownames(loadingsMatrix) <- colnames(dataset)
-    
   }
-  
-  # Create JASP table:
-  Loadings <- list()
-  Loadings[["title"]] <- "Component Loadings"
-  Loadings[["schema"]] <- list(fields = list(
-    #     list(name="model", title = "", type="text"),
-    #     list(name="cn_05", title = "Hoelter Critical N (CN) alpha=0.05", type="number", format = "dp:3"),
-    #     list(name="cn_01", title = "Hoelter Critical N (CN) alpha=0.01", type="number", format = "dp:3"),
-    #     list(name="gfi", title = "Goodness of Fit Index (GFI)", type="number", format = "dp:3"),
-    #     list(name="agfi", title = "Parsimony Goodness of Fit Index (GFI)", type="number", format = "dp:3"),
-    #     list(name="mfi", title = "McDonald Fit Index (MFI)", type="number", format = "dp:3"),
-    #     list(name="ecvi", title = "Expected Cross-Validation Index (ECVI)", type="number", format = "dp:3")
-  ))
+
   
   # Add columns:
   Loadings[["schema"]][["fields"]][[1]] <- list(name = "VAR", title = "", type="string")
@@ -448,6 +387,14 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
     Loadings[["schema"]][["fields"]][[j+1]] <- list(name = colnames(loadingsMatrix)[j], title = colnames(loadingsMatrix)[j], type="number", format = "dp:3")
   }
   
+  # add warning message
+  if(!is.null(message)){
+    .addFootnote(footnotes, symbol = "", text = message)
+  }
+
+    
+  Loadings[["footnotes"]] <- as.list(footnotes)
+
   Loadings[["data"]] <- list()
   
   # Add rows:
@@ -468,10 +415,9 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
       }
       
     }
-    
     names( Loadings[["data"]][[i]]) <- sapply(Loadings[["schema"]][["fields"]],"[[",'name')
   }
-  
+
   return(Loadings)
 }
 
@@ -480,6 +426,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   
   groups <- options$groupingVariable
   depvars <- unlist(options$variables)
+  depvars <- depvars[depvars != ""]
   
   
   if (!is.null(groups) && groups == "") groups <- NULL
@@ -495,7 +442,8 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
       #       }
       #
       dataset <- .readDataSetToEnd(columns.as.numeric = depvars,
-                                   columns.as.factor = groups)
+                                   columns.as.factor = groups,
+                                   exclude.na.listwise = c(depvars, groups))
       
       ## else just read in the headers (and create an empty table)
     } else {
@@ -714,40 +662,8 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
 
 
 # Factor correlations:
-.getFactorCorrelationsPCA <- function(analysisResults, options,perform){
-  
-  # Extract loadings:
-  if (!is.null(analysisResults)){
-    
-    corMatrix <- as.matrix(analysisResults$r.scores)
-    # loadingsMatrix <- matrix(unlist(loadingsMatrix),nrow(loadingsMatrix),ncol(loadingsMatrix))
-    
-    
-    # loadingsMatrix <- matrix(1,12,1)
-    
-  } else {
-    
-    if (is.null(options$numberOfFactors)){
-      nFact <- 0
-    } else {
-      nFact <- options$numberOfFactors
-    }
-    
-    corMatrix <- matrix(,0,0)
-    
-  }
-  
-  
-  if (options$rotationMethod == "orthogonal"){
-    Rotation <- options$orthogonalSelector
-  } else {
-    Rotation <- options$obliqueSelector
-  }
-  
-  if (ncol(corMatrix) > 0){
-    colnames(corMatrix) <- rownames(corMatrix) <- paste(ifelse(Rotation == "none","PC","RC"),seq_len(ncol(corMatrix)))
-  }
-  
+.getFactorCorrelationsPCA <- function(analysisResults, options, perform){
+  print("in .getFactorCorrelationsPCA...")
   # Create JASP table:
   FactorCorrelations <- list()
   FactorCorrelations[["title"]] <- "Component Correlations"
@@ -760,6 +676,39 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
     #     list(name="mfi", title = "McDonald Fit Index (MFI)", type="number", format = "dp:3"),
     #     list(name="ecvi", title = "Expected Cross-Validation Index (ECVI)", type="number", format = "dp:3")
   ))
+
+   # Extract loadings  
+  if(is.null(analysisResults) || isTryError(analysisResults) || perform == "init"){
+    if (is.null(options$numberOfFactors)){
+      nFact <- 0
+    } else {
+      nFact <- options$numberOfFactors
+    }
+    
+    corMatrix <- matrix(,0,0)
+
+    if(isTryError(analysisResults)){
+      footnotes <- .newFootnotes()
+      errorMessage <- .extractErrorMessage(analysisResults)
+      .addFootnote(footnotes, symbol="<em>Error.</em>", text=errorMessage)
+      FactorCorrelations[["footnotes"]] <- as.list(footnotes)
+    }    
+  }else{
+
+    corMatrix <- as.matrix(analysisResults$r.scores)
+
+  }
+
+  if (options$rotationMethod == "orthogonal"){
+    Rotation <- options$orthogonalSelector
+  } else {
+    Rotation <- options$obliqueSelector
+  }
+  
+  if (ncol(corMatrix) > 0){
+    colnames(corMatrix) <- rownames(corMatrix) <- paste(ifelse(Rotation == "none","PC","RC"),seq_len(ncol(corMatrix)))
+  }
+
   
   # Add columns:
   FactorCorrelations[["schema"]][["fields"]][[1]] <- list(name = "VAR", title = "", type="string")
@@ -786,65 +735,13 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
 }
 
 # Goodness of fit
-.goodnessOfFitPCA <- function(analysisResults, options,perform){
+.goodnessOfFitPCA <- function(analysisResults, options, perform){
 
-  # Extract loadings:
-  if (!is.null(analysisResults)){
-    
-#     print(analysisResults)
-#     print(analysisResults$RMSEA)
-#     
-#     Fits <- list(
-#       CHI = analysisResults$STATISTIC,
-#       PVAL = analysisResults$PVAL,
-#       DF = analysisResults$dof,
-#       RMSEA = analysisResults$RMSEA['RMSEA'],
-#       RMSEAlower = analysisResults$RMSEA['lower'],      
-#       RMSEAupper = analysisResults$RMSEA['upper'],      
-#       TLI = analysisResults$TLI,
-#       RMS = analysisResults$rms,
-#       CRMS = analysisResults$crms,
-#       BIC = analysisResults$BIC
-#     )
-
-
-    Fits <- list(
-      CHI = .DotIfNULL(analysisResults$STATISTIC),
-      PVAL = .DotIfNULL(analysisResults$PVAL),
-      DF = .DotIfNULL(analysisResults$dof)
-      # RMS = .DotIfNULL(analysisResults$rms)
-#       RMSEA = .DotIfNULL(unname(analysisResults$RMSEA['RMSEA'])),
-#       RMSEAlower = .DotIfNULL(unname(analysisResults$RMSEA['lower'])),
-#       RMSEAupper = .DotIfNULL(unname(analysisResults$RMSEA['upper'])),      
-#       TLI = .DotIfNULL(analysisResults$TLI),
-#       RMS = .DotIfNULL(analysisResults$rms),
-#       CRMS = .DotIfNULL(analysisResults$crms),
-#       BIC = .DotIfNULL(analysisResults$BIC)
-    )
-    
-  } else {
-    
-    Fits <- list(
-      CHI = ".",
-      PVAL = ".",
-      DF = "."
-      # RMS = "."
-#       RMSEA = ".",
-#       RMSEAlower = ".",      
-#       RMSEAupper = ".",
-#       TLI = ".",
-#       RMS = ".",
-#       CRMS = ".",
-#       BIC = "."
-    )
-    
-  }
-  
-  print(analysisResults$rms)
-  
   # Create JASP table:
   goodnessOfFit <- list()
   goodnessOfFit[["title"]] <- "Chi-squared Test"
+
+  footnotes <- .newFootnotes()
   
   # Create the columns:
   goodnessOfFit[["schema"]] <- list(fields = list(
@@ -854,7 +751,45 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
     list(name = "p", title = "p", type="number", format = "dp:3;p:.001")
     # list(name = "RMS", title = "RMS", type="number", format = "dp:3")
   ))
-  
+
+  # Extract loadings:
+  if(is.null(analysisResults) || isTryError(analysisResults) || perform == "init"){
+    Fits <- list(
+      CHI = ".",
+      PVAL = ".",
+      DF = "."
+#       RMS = "."
+#       RMSEA = ".",
+#       RMSEAlower = ".",      
+#       RMSEAupper = ".",
+#       TLI = ".",
+#       RMS = ".",
+#       CRMS = ".",
+#       BIC = "."
+    )
+
+    if(isTryError(analysisResults)){
+      errorMessage <- .extractErrorMessage(analysisResults)
+      .addFootnote(footnotes, symbol="<em>Error.</em>", text=errorMessage)
+    }
+  }else{
+    print("goodnessOfFit")
+
+    Fits <- list(
+      CHI = .DotIfNULL(analysisResults$STATISTIC),
+      PVAL = .DotIfNULL(analysisResults$PVAL),
+      DF = .DotIfNULL(analysisResults$dof)
+#       RMS = .DotIfNULL(analysisResults$rms)
+#       RMSEA = .DotIfNULL(unname(analysisResults$RMSEA['RMSEA'])),
+#       RMSEAlower = .DotIfNULL(unname(analysisResults$RMSEA['lower'])),
+#       RMSEAupper = .DotIfNULL(unname(analysisResults$RMSEA['upper'])),      
+#       TLI = .DotIfNULL(analysisResults$TLI),
+#       RMS = .DotIfNULL(analysisResults$rms),
+#       CRMS = .DotIfNULL(analysisResults$crms),
+#       BIC = .DotIfNULL(analysisResults$BIC)
+    )
+  }
+
   # Create and fill the row(s):
   goodnessOfFit[["data"]] <- list(
     list(
@@ -865,50 +800,17 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
       # RMS = Fits$RMS
     )
   )
+
+  if(Fits$DF <= 0) .addFootnote(footnotes, symbol="<em>Warning.</em>", text="Degree of freedom is not a valid number.")
   
-  
+  goodnessOfFit[["footnotes"]] <- as.list(footnotes)
+
   return(goodnessOfFit)
 }
 
 
 # fitMeasures
-.fitMeasuresPCA <- function(analysisResults, options,perform){
-  
-  # browser()
-
-  # Extract loadings:
-  if (!is.null(analysisResults)){
-
-    Fits <- list(
-      CHI = .DotIfNULL(analysisResults$STATISTIC),
-      PVAL = .DotIfNULL(analysisResults$PVAL),
-      DF = .DotIfNULL(analysisResults$dof),
-      RMSEA = .DotIfNULL(unname(analysisResults$RMSEA['RMSEA'])),
-      RMSEAlower = .DotIfNULL(unname(analysisResults$RMSEA['lower'])),
-      RMSEAupper = .DotIfNULL(unname(analysisResults$RMSEA['upper'])),      
-      TLI = .DotIfNULL(analysisResults$TLI),
-      RMS = .DotIfNULL(analysisResults$rms),
-      CRMS = .DotIfNULL(analysisResults$crms),
-      BIC = .DotIfNULL(analysisResults$BIC)
-    )
-    
-  } else {
-    
-    Fits <- list(
-      CHI = ".",
-      PVAL = ".",
-      DF = ".",
-      RMSEA = ".",
-      RMSEAlower = ".",      
-      RMSEAupper = ".",
-      TLI = ".",
-      RMS = ".",
-      CRMS = ".",
-      BIC = "."
-    )
-    
-  }
-  
+.fitMeasuresPCA <- function(analysisResults, options, perform){
   
   # Create JASP table:
   FitMeasures <- list()
@@ -922,7 +824,46 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
     list(name = "TLI", title = "TLI", type="number", format = "dp:3"),
     list(name = "BIC", title = "BIC", type="number", format = "dp:3")
   ))
-  
+
+  # Extract loadings:
+  if(is.null(analysisResults) || isTryError(analysisResults) || perform == "init"){
+    Fits <- list(
+      CHI = ".",
+      PVAL = ".",
+      DF = ".",
+      RMSEA = ".",
+      RMSEAlower = ".",      
+      RMSEAupper = ".",
+      TLI = ".",
+      RMS = ".",
+      CRMS = ".",
+      BIC = "."
+    )
+
+    if(isTryError(analysisResults)){
+      footnotes <- .newFootnotes()
+      errorMessage <- .extractErrorMessage(analysisResults)
+      .addFootnote(footnotes, symbol="<em>Error.</em>", text=errorMessage)
+      FitMeasures[["footnotes"]] <- as.list(footnotes)
+    }
+
+  }else{
+    Fits <- list(
+      CHI = .DotIfNULL(analysisResults$STATISTIC),
+      PVAL = .DotIfNULL(analysisResults$PVAL),
+      DF = .DotIfNULL(analysisResults$dof),
+      RMSEA = .DotIfNULL(unname(analysisResults$RMSEA['RMSEA'])),
+      RMSEAlower = .DotIfNULL(unname(analysisResults$RMSEA['lower'])),
+      RMSEAupper = .DotIfNULL(unname(analysisResults$RMSEA['upper'])),      
+      TLI = .DotIfNULL(analysisResults$TLI),
+      RMS = .DotIfNULL(analysisResults$rms),
+      CRMS = .DotIfNULL(analysisResults$crms),
+      BIC = .DotIfNULL(analysisResults$BIC)
+    )
+  }
+
+
+
   # Create and fill the row(s):
   if (is.numeric(Fits$RMSEAlower))
   {
@@ -952,6 +893,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
 ### Screeplot:
 
 .screePlot <- function(dataset, options, perform) {
+  print("in screePlot")
   
   screePlot <- list()
   
@@ -997,13 +939,13 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
                      panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
                      plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
                      panel.border = ggplot2::element_blank(),
-                     axis.line = ggplot2::element_blank(),
+                     #axis.line = ggplot2::element_blank(),
                      axis.ticks = ggplot2::element_line(size = 0.5),
                      axis.ticks.margin = grid::unit(1,"mm"),
                      axis.ticks.length = grid::unit(3, "mm"),
                      plot.margin = grid::unit(c(0,0,.5,.5), "cm")) + 
       ggplot2::scale_linetype_discrete("") +  ggplot2::scale_shape_discrete("") +
-      ggplot2::theme(legend.position = c(0.99,0.99),legend.justification = c(1,1),legend.key = ggplot2::element_blank(),
+      ggplot2::theme(legend.position = c(0.99,0.99),legend.justification = c(1,1),#legend.key = ggplot2::element_blank(),
                      legend.text=ggplot2::element_text(size=12.5),
                      panel.background=ggplot2::element_rect(fill="transparent",colour=NA),
                      plot.background=ggplot2::element_rect(fill="transparent",colour=NA),
