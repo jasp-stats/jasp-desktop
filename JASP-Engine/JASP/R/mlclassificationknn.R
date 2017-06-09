@@ -144,8 +144,8 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
             res <- NULL
             
         }
-        
-        # create the summary table ##
+       
+         # create the summary table ##
         
         results[['Descriptions']] <- .DescriptionsTableClassification(predictors = predictors, target = target, opt = opt, options = options, res = res, dataset = dataset, formula = formula)
         state[["Descriptions"]] <- results[['Descriptions']]
@@ -216,8 +216,6 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
         if ( ! .shouldContinue(callback(results)))
             return()
         
-        callback(results)
-        
         # Create the Error vs K plot ##
         
         if(options[['plotErrorVsK']] & !is.null(res)){
@@ -233,8 +231,6 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
         
         if ( ! .shouldContinue(callback(results)))
             return()
-        
-        callback(results)
         
         # create the optimization plot ##
         
@@ -498,7 +494,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
         
     } else {
         
-        data_descriptions[[1]] <- list(model = 'k-NN model', "nnc[nn]" = ".", "r[rmse]" = ".", "optim[type1]" = "")
+        data_descriptions[[1]] <- list(model = 'k-nn model', "nnc[nn]" = ".", "r[rmse]" = ".", "optim[type1]" = "")
         footnotes_N <- .newFootnotes()
         .addFootnote(footnotes_N,paste("The model has not been applied to any data yet"), symbol = "")
         footnotes_N <- as.list(footnotes_N)
@@ -517,19 +513,20 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
         data_descriptions[[1]][["nnc[nnkfold]"]] <- result_fold[['Optimal.K']]
         data_descriptions[[1]][['r[rmsekfold]']] <- 1 - result_fold[['minimal.error']]
     }
-    
-    return(list(title = 'Summary',
-                schema = list(fields = fields_descriptions),
-                data = data_descriptions,
-                footnotes = footnotes_N))
+        
+        return(list(title = 'Summary',
+                    schema = list(fields = fields_descriptions),
+                    data = data_descriptions,
+                    footnotes = footnotes_N))
+
     
 }
 
 .PredictionsTableClassification <- function(options, opt, predictors, target, res){
     
-    from <- options[["predictionsFrom"]]
+    from <- ifelse(test = options[["predictionsFrom"]] > nrow(res[["predictions"]]),yes = 1,no = options[["predictionsFrom"]])
     
-    to <- options[['predictionsTo']]
+    to <- ifelse(test = options[['predictionsTo']] > nrow(res[["predictions"]]),yes = nrow(res[["predictions"]]), no = options[["predictionsTo"]])
     
     fields <- list(
         list(name="number", title="Obs. number", type="integer"),
@@ -582,17 +579,33 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
         
     }
     
+    data <- data[!sapply(data,is.null)]
+    
+    if (!is.null(res) && (options[["predictionsFrom"]] > options[["predictionsTo"]])){
+        
+        error <- list(errorType = "badData",
+                      errorMessage = "Please specify a valid range of observation values")
+        
+        return(list(title = 'Predictions',
+                    schema = list(fields = fields),
+                    data = data,
+                    error = error))
+        
+    } else {
+    
     return(list(title = 'Predictions',
                 schema = list(fields = fields),
                 data = data))
+        
+    }
     
 }
 
 .DistancesTableClassification <- function(predictors,target, opt, options, res){
     
-    from <- options[["predictionsFrom"]]
+    from <- ifelse(test = options[["predictionsFrom"]] > nrow(res[["predictions"]]),yes = 1,no = options[["predictionsFrom"]])
     
-    to <- options[['predictionsTo']]
+    to <- ifelse(test = options[['predictionsTo']] > nrow(res[["predictions"]]),yes = nrow(res[["predictions"]]), no = options[["predictionsTo"]])
     
     fields_distances <- list(
         list(name="number", title="Obs. number", type="integer")
@@ -633,11 +646,11 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
                 
             }
             
-            data_distances[[i]][['.isMainRow']] <- FALSE
-            
         }
         
     }
+    
+    data_distances <- data_distances[!sapply(data_distances,is.null)]
     
     footnotes_distances <- .newFootnotes()
     if(opt[['distance']]==1){
@@ -647,18 +660,33 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     }
     footnotes_distances <- as.list(footnotes_distances)
     
-    return(list(title = 'Distances',
-                schema = list(fields = fields_distances),
-                data = data_distances,
-                footnotes = footnotes_distances))
+    if (!is.null(res) && (options[["predictionsFrom"]] > options[["predictionsTo"]])){
+        
+        error <- list(errorType = "badData",
+                      errorMessage = "Please specify a valid range of observation values")
+        
+        return(list(title = 'Distances',
+                    schema = list(fields = fields_distances),
+                    data = data_distances,
+                    footnotes = footnotes_distances,
+                    error = error))
+        
+    } else {
+        
+        return(list(title = 'Distances',
+                    schema = list(fields = fields_distances),
+                    data = data_distances,
+                    footnotes = footnotes_distances))
+        
+    }
     
 }
 
 .WeightsTableClassification <- function(predictors, target, opt, options, res){
     
-    from <- options[["predictionsFrom"]]
+    from <- ifelse(test = options[["predictionsFrom"]] > nrow(res[["predictions"]]),yes = 1,no = options[["predictionsFrom"]])
     
-    to <- options[['predictionsTo']]
+    to <- ifelse(test = options[['predictionsTo']] > nrow(res[["predictions"]]),yes = nrow(res[["predictions"]]), no = options[["predictionsTo"]])
     
     fields_weights <- list(
         list(name="number", title="Obs. number", type="integer")
@@ -703,20 +731,35 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
                 
             }
             
-            data_weights[[i]][['.isMainRow']] <- FALSE
-            
         }	
         
     }
+    
+    data_weights <- data_weights[!sapply(data_weights,is.null)]
     
     footnotes_weights <- .newFootnotes()
     .addFootnote(footnotes_weights,paste('Weights are calculated using the',opt[['weights']], 'weighting scheme.'))
     footnotes_weights <- as.list(footnotes_weights)
     
-    return(list(title = 'Weights',
-                schema = list(fields = fields_weights),
-                data = data_weights,
-                footnotes = footnotes_weights))
+    if (!is.null(res) && (options[["predictionsFrom"]] > options[["predictionsTo"]])){
+        
+        error <- list(errorType = "badData",
+                      errorMessage = "Please specify a valid range of observation values")
+        
+        return(list(title = 'Weights',
+                    schema = list(fields = fields_weights),
+                    data = data_weights,
+                    footnotes = footnotes_weights,
+                    error = error))
+        
+    } else {
+    
+        return(list(title = 'Weights',
+                    schema = list(fields = fields_weights),
+                    data = data_weights,
+                    footnotes = footnotes_weights))
+        
+    }
     
 }
 
@@ -826,7 +869,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
             
         }
         
-        data_descriptions <- list(list(model = 'k-NN model', nn = ".", rmse = "."))
+        data_descriptions <- list(list(model = 'k-nn model', nn = ".", rmse = "."))
         
         results[['Descriptions']] <- list(title = 'Summary',
                                           schema = list(fields = fields_descriptions),
@@ -848,7 +891,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
             
             fields <- list(
                 list(name = "model", title = "", type = "string"),
-                list(name = "RMSE", title = "Accuracy", type = "number", format = "sf:4;dp:3"),
+                list(name = "RMSE", title = "Accuracy", type = "number", format = "dp:3"),
                 list(name = "k", title = "No. nearest neighbors", type = "integer"),
                 list(name = "weights", title = "Weights", type = "string"),
                 list(name = "distance", title = "Distance parameter", type = "number", format = "dp:3")

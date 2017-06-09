@@ -484,8 +484,9 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 
 .PredictionsTable <- function(options, opt, predictors, target, res){
     
-    from <- options[['predictionsFrom']]
-    to <- options[["predictionsTo"]]
+    from <- ifelse(test = options[["predictionsFrom"]] > nrow(res[["predictions"]]),yes = 1,no = options[["predictionsFrom"]])
+    
+    to <- ifelse(test = options[['predictionsTo']] > nrow(res[["predictions"]]),yes = nrow(res[["predictions"]]), no = options[["predictionsTo"]])
 
 	
 	fields <- list(
@@ -516,16 +517,32 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 		
 	}
 	
+	data <- data[!sapply(data,is.null)]
+	
+	if (!is.null(res) && (options[["predictionsFrom"]] > options[["predictionsTo"]])){
+	    
+	    error <- list(errorType = "badData",
+	                  errorMessage = "Please specify a valid range of observation values")
+	    
+	    return(list(title = 'Predictions',
+	                schema = list(fields = fields),
+	                data = data,
+	                error = error))
+	} else {
+	
 	return(list(title = 'Predictions',
 				schema = list(fields = fields),
 				data = data))
+	    
+	}
 	
 }
 
 .DistancesTable <- function(predictors,target, opt, options, res){
     
-    from <- options[['predictionsFrom']]
-    to <- options[["predictionsTo"]]
+    from <- ifelse(test = options[["predictionsFrom"]] > nrow(res[["predictions"]]),yes = 1,no = options[["predictionsFrom"]])
+    
+    to <- ifelse(test = options[['predictionsTo']] > nrow(res[["predictions"]]),yes = nrow(res[["predictions"]]), no = options[["predictionsTo"]])
 	
 	fields_distances <- list(
 		list(name="number", title="Obs. number", type="integer")
@@ -572,6 +589,8 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 		
 	}
 	
+	data_distances <- data_distances[!sapply(data_distances,is.null)]
+	
 	footnotes_distances <- .newFootnotes()
 	if(opt[['distance']]==1){
 	.addFootnote(footnotes_distances,paste('Distances shown are the Manhattan distances'))
@@ -580,17 +599,33 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	}
 	footnotes_distances <- as.list(footnotes_distances)
 	
-	return(list(title = 'Distances',
-				schema = list(fields = fields_distances),
-				data = data_distances,
-				footnotes = footnotes_distances))
+	if (!is.null(res) && (options[["predictionsFrom"]] > options[["predictionsTo"]])){
+	    
+	    error <- list(errorType = "badData",
+	                  errorMessage = "Please specify a valid range of observation values")
+	    
+	    return(list(title = 'Distances',
+	                schema = list(fields = fields_distances),
+	                data = data_distances,
+	                footnotes = footnotes_distances,
+	                error = error))
+	    
+	} else {
+	    
+	    return(list(title = 'Distances',
+	                schema = list(fields = fields_distances),
+	                data = data_distances,
+	                footnotes = footnotes_distances))
+	    
+	}
 	
 }
 
 .WeightsTable <- function(predictors, target, opt, options, res){
     
-    from <- options[['predictionsFrom']]
-    to <- options[["predictionsTo"]]
+    from <- ifelse(test = options[["predictionsFrom"]] > nrow(res[["predictions"]]),yes = 1,no = options[["predictionsFrom"]])
+    
+    to <- ifelse(test = options[['predictionsTo']] > nrow(res[["predictions"]]),yes = nrow(res[["predictions"]]), no = options[["predictionsTo"]])
 	
 	fields_weights <- list(
 		list(name="number", title="Obs. number", type="integer")
@@ -641,14 +676,31 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 		
 	}
 	
+	data_weights <- data_weights[!sapply(data_weights,is.null)]
+	
 	footnotes_weights <- .newFootnotes()
 	.addFootnote(footnotes_weights,paste('Weights are calculated using the',opt[['weights']], 'weighting scheme.'))
 	footnotes_weights <- as.list(footnotes_weights)
+	
+	if (!is.null(res) && (options[["predictionsFrom"]] > options[["predictionsTo"]])){
+	    
+	    error <- list(errorType = "badData",
+	                  errorMessage = "Please specify a valid range of observation values")
+	    
+	    return(list(title = 'Weights',
+	                schema = list(fields = fields_weights),
+	                data = data_weights,
+	                footnotes = footnotes_weights,
+	                error = error))
+	    
+	} else {
 	
 	return(list(title = 'Weights',
 				schema = list(fields = fields_weights),
 				data = data_weights,
 				footnotes = footnotes_weights))
+	    
+	}
 	
 }
 

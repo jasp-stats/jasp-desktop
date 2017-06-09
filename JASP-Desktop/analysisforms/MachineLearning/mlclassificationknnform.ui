@@ -596,7 +596,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Leave one out</string>
+               <string>Leave-one-out</string>
               </property>
              </widget>
             </item>
@@ -619,7 +619,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>k fold</string>
+               <string>K-fold</string>
               </property>
              </widget>
             </item>
@@ -1133,7 +1133,7 @@
            </item>
            <item>
             <property name="text">
-             <string>gaussian</string>
+             <string>Gaussian</string>
             </property>
            </item>
            <item>
@@ -1255,7 +1255,7 @@
             <item row="0" column="2">
              <widget class="QLabel" name="label">
               <property name="text">
-               <string>To</string>
+               <string>to</string>
               </property>
              </widget>
             </item>

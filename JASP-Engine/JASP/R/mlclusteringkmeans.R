@@ -151,14 +151,14 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
         
         # Create the within ss vs cluster plot ##
         
-        if(options[['plotPCAClusterSquares']]){
+        if(options[['plotPCAClusterSquares']] && options[["noOfClusters"]] == "optimized"){
             results[['withinssvsclusters']] <- .WSSplot(options = options,res = res)
             state[["withinssvsclusters"]] <- results[['withinssvsclusters']]
         }
         
         # Create the criterion vs cluster plot ##
         
-        if(options[['plotCriterionVsClusters']]){
+        if(options[['plotCriterionVsClusters']] && options[["noOfClusters"]] == "robust"){
             results[['criterionvsclusters']] <- .criterionplot(options = options,res = res)
             state[["criterionvsclusters"]] <- results[['criterionvsclusters']]
         }
@@ -473,8 +473,9 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
 
 .PredictionsTableKmeans <- function(res, options){
     
-    from <- options[['predictionsFrom']]
-    to <- options[["predictionsTo"]]
+    from <- ifelse(test = options[["predictionsFrom"]] > nrow(res[["Predictions"]]),yes = 1,no = options[["predictionsFrom"]])
+    
+    to <- ifelse(test = options[['predictionsTo']] > nrow(res[["Predictions"]]),yes = nrow(res[["Predictions"]]), no = options[["predictionsTo"]])
     
     fields_predictions <- list(list(name = 'number', title = "Obs. number", type = 'integer'),
                                list(name = 'prediction', title = 'Prediction', type = 'integer'))
@@ -493,9 +494,24 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
         
     }
     
+    data_predictions <- data_predictions[!sapply(data_predictions,is.null)]
+    
+    if (!is.null(res) && (options[["predictionsFrom"]] > options[["predictionsTo"]])){
+        
+        error <- list(errorType = "badData",
+                      errorMessage = "Please specify a valid range of observation values")
+        
+        return(list(title = 'Predictions',
+                    schema = list(fields = fields_predictions),
+                    data = data_predictions,
+                    error = error))
+    } else {
+        
     return(list(title = 'Predictions',
                 schema = list(fields = fields_predictions),
                 data = data_predictions))
+        
+    }
     
 }
 
@@ -560,7 +576,7 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
                     width = 640,
                     height = 480,
                     data = "",
-                    error = "You must specify 2 variables"))
+                    error = list(error="badData", errorMessage="2 variables must be specified")))
         
     }
     
