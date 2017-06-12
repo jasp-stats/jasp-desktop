@@ -27,18 +27,25 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
     stateKey[['Predictions']] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD","tablePredictionsConfidence")
     stateKey[['Distances']] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[["Weights"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
+    stateKey[["newData"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[["Plot"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
-    stateKey[["optimizationPlot"]] <- c("optimizeModel", "optimizeModelMaxK")
+    stateKey[["optimizationPlot"]] <- c("optimizeModel", "optimizeModelMaxK", "optimizeModelMaxD")
     
     attr(state, "key") <- stateKey
     
     # Read variables ##
     
 	predictors <- unlist(options['predictors'])
+	
 	if (length(options['target']) > 0){
 		target <- unlist(options['target'])
 	}
-	variables.to.read <- c(predictors, target)
+	
+	if(length(options[["indicator"]]) > 0){
+	    indicator <- options[["indicator"]]
+	}
+	
+	variables.to.read <- c(predictors, target, indicator)
 	variables.to.read <- variables.to.read[variables.to.read != ""]
 	
 	# read dataset ##
@@ -87,6 +94,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	             list(name = 'Predictions', type = 'table'),
 	             list(name = 'Weights', type = 'table'),
 	             list(name = 'Distances', type = 'table'),
+	             list(name = "newData", type = "table"),
 	             list(name = 'Plot', type = 'image'),
 	             list(name = "optimizationPlot", type = "image"))
 	results[['.meta']] <- meta
@@ -189,6 +197,16 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 		results[['Weights']] <- .WeightsTable(predictors, target, opt, options, res)
 		state[['Weights']] <- results[['Weights']]
 		
+	}
+	
+	if ( ! .shouldContinue(callback(results)))
+	    return()
+	
+	if(options[["indicator"]] != "" && !is.null(res)){
+	    
+	    results[["newData"]] <- .predictKNNregression(dataset, options, predictors, formula, res, indicator, opt)
+	    state[["newData"]] <- results[["newData"]]
+	    
 	}
 	
 	if ( ! .shouldContinue(callback(results)))
@@ -903,18 +921,24 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
             results[["Weights"]] <- state[["Weights"]]
             
         } else {
-
-        fields_weights <- list(list(name="number", title="Obs. number", type="integer"),
-                                 list(name = 'weight', title = "Weight", type = 'integer'))
+            
+            fields_weights <- list(list(name="number", title="Obs. number", type="integer"),
+                                   list(name = 'weight', title = "Weight", type = 'integer'))
+            
+            data_weights <- list(list(number = ".", weight = "."))
+            
+            results[['Weights']] <- list(title = 'Weights',
+                                         schema = list(fields = fields_weights),
+                                         data = data_weights) 
+            
+        }
         
-        data_weights <- list(list(number = ".", weight = "."))
-        
-        results[['Weights']] <- list(title = 'Weights',
-                                       schema = list(fields = fields_weights),
-                                       data = data_weights) 
-
     }
     
+    if(options[["indicator"]] != "" && !is.null(state[["newData"]])){
+        
+        results[["newData"]] <- state[["newData"]]
+        
     }
     
     return(results)
@@ -977,5 +1001,69 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
     optimizationTable[["data"]] <- data
     
     return(list(optimizationTable = optimizationTable, plot_data = result))
+    
+}
+
+.predictKNNregression <- function(dataset, options, predictors, formula, res, indicator, opt){
+    
+    index_1 <- which(dataset[,.v(indicator)] == 1)
+    index_0 <- which(dataset[,.v(indicator)] == 0)
+    
+    knn.fit <- kknn::train.kknn(formula = formula,
+                                data = dataset[index_0,],
+                                ks = res[["Optimal.K"]],
+                                distance = opt[['distance']],
+                                kernel = opt[['weights']],
+                                na.action = opt[['NA']],
+                                scale = FALSE)
+    
+    predictions <- predict(knn.fit,newdata = dataset[index_1,])
+    
+    fields <- list()
+    
+    if(!is.null(res)){
+        
+        for(i in 1:length(predictors)){
+            
+            fields[[length(fields)+1]] <- list(name = paste("predictor",i,sep = ""),title = .unv(predictors[i]), type = 'number', format = 'dp:2')
+            
+        }
+        
+        fields[[length(fields)+1]] <- list(name = "predicted", title = paste("Predicted",options[['target']], sep=' '), type = "number", format = "dp:2")
+        
+    } else {
+        
+        fields[[1]] <- list(name = 'predictor1', title = "Predictor", type = "number")
+        fields[[2]] <- list(name = "predicted", title = paste("Predicted",options[['target']], sep=' '), type = "number")
+        
+    }
+    
+    if(is.null(res)){
+        
+        data <- list(list("predictor1" = ".", "predicted" = "."))
+        
+    } else {
+        
+        data <- list()
+        
+        for(i in 1:length(predictions)){	
+            
+            data[[i]] <- list()
+            
+            for(k in 1:length(predictors)){
+                
+                data[[i]][[paste('predictor',k,sep = '')]] <- .clean(dataset[index_1[i],predictors[k]])
+                
+            }
+            
+            data[[i]]["predicted"] <- .clean(predictions[i])
+            
+        }
+        
+    }
+    
+    return(list(title = 'Predictions for new data',
+                schema = list(fields = fields),
+                data = data))
     
 }

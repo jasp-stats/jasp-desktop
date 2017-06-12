@@ -664,9 +664,9 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
 
 .criterionplot<-function(options,res){
     
-    if(options[['plotCriterionVsClusters']] & !is.null(res)){
+    if(options[['plotCriterionVsClusters']] & !is.null(res) & options[["robustFrom"]] != 1){
 
-        g <- .PlotRobustOptimize(res)
+        g <- .PlotRobustOptimize(res, options)
         
         imgObj <- .writeImage(width = options$plotWidth, 
                               height = options$plotHeight, 
@@ -677,32 +677,49 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
     plot <- list()
     
     plot[["title"]] <- "Criterion vs. Cluster plot"
+    plot[["convertible"]] <- TRUE
+    
+    if(options[["robustFrom"]] == 1){
+        
+    plot[["error"]] <- list(error="badData", errorMessage="The minimum amount of clusters to plot is 2") 
+    plot[["data"]] <- ""
+    plot[["obj"]] <- ""
+        
+    } else {
+        
     plot[["data"]] <- imgObj[["png"]]
     plot[["obj"]] <- imgObj[["obj"]]
-    plot[["convertible"]] <- TRUE
+        
+    }
+    
     plot[["status"]] <- "complete"
     
     return(plot)
     
 }
 
-.PlotRobustOptimize <- function(res){
+.PlotRobustOptimize <- function(res, options){
     
     library(JASPgraphs) # remove later
     
-    xName = "No. Clusters"
-    yName = "Criterion"
-    x <- res[['clusterrange']]
-    y <- res[['criterion.krange']]
-    toPlot = data.frame(x = x, y = y)
+    if(options[["robustFrom"]] != 1){
+        
+        xName = "No. Clusters"
+        yName = "Criterion"
+        x <- res[['clusterrange']]
+        y <- res[['criterion.krange']]
+        toPlot = data.frame(x = x, y = y)
+        
+        g <- drawCanvas(xName = xName, yName = yName, dat = toPlot, xBreaks = seq(min(x), max(x), 1), xLabels = seq(min(x), max(x), 1))
+        g <- drawLines(g, dat = toPlot, alpha = .25)
+        g <- drawPoints(g, dat = toPlot, size = 5, alpha = .65)
+        g <- drawPoints(g, dat = data.frame(x = res[['clusterrange']][which.max(res[['criterion.krange']])], y = max(res[['criterion.krange']])),fill = "red", size = 5)
+        g <- themeJasp(g)
+        
+        return(g)
+        
+    }
     
-    g <- drawCanvas(xName = xName, yName = yName, dat = toPlot, xBreaks = seq(min(x), max(x), 1), xLabels = seq(min(x), max(x), 1))
-    g <- drawLines(g, dat = toPlot, alpha = .25)
-    g <- drawPoints(g, dat = toPlot, size = 5, alpha = .65)
-    g <- drawPoints(g, dat = data.frame(x = res[['clusterrange']][which.max(res[['criterion.krange']])], y = max(res[['criterion.krange']])),fill = "red", size = 5)
-    g <- themeJasp(g)
-    
-    return(g)
 }
 
 .clusterInfoTable <- function(options, res, predictors){
@@ -936,3 +953,5 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
     
     return(results)
 }
+
+

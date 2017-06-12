@@ -30,7 +30,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     stateKey[["Weights"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[["newData"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[["Plot"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
-    stateKey[["optimizationPlot"]] <- c("optimizeModel", "optimizeModelMaxK")
+    stateKey[["optimizationPlot"]] <- c("optimizeModel", "optimizeModelMaxK", "optimizeModelMaxD")
     
     attr(state, "key") <- stateKey
     
@@ -41,6 +41,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     if (length(options['target']) > 0){
         target <- unlist(options['target'])
     }
+    
     if(length(options[["indicator"]]) > 0){
         indicator <- options[["indicator"]]
     }
@@ -436,21 +437,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
 }
 
 .PlotKoptimizedClassification <- function(res,opt){
-    # plot(opt[['NN']],
-    #      1- res[['Model.error']],
-    #      type = 'b',
-    #      xlab = '',
-    #      ylab = '',
-    #      las = 1,
-    #      main = '',
-    #      bty = 'n')
-    # mtext(expression('Accuracy'), side = 2, line = 2, cex = 1.5, font = 2)
-    # mtext("K", side = 1, line = 3, cex = 1.5, font = 2)
-    # points(opt[['NN']][which.min(res[["Model.error"]])],
-    #        min(res[['Model.error']]),
-    #        pch = 19,
-    #        col = 'red')
-    
+
     library(JASPgraphs)
     
     xName = "No. nearest neighbors"
@@ -472,7 +459,6 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
 .DescriptionsTableClassification <- function(predictors, target, opt, options, res, dataset, formula){
     
     ### descriptions table
-    ###
     
     fields_descriptions <- list(list(name = 'model', title = '', type = 'string'))
     
@@ -1311,11 +1297,13 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
             
         }
         
-        fields[[length(fields)+1]] <- list(name = "predicted", title = paste("Predicted",options[['target']], sep=' '), type = "number", format = "dp:2")
+        fields[[length(fields)+1]] <- list(name = "predicted", title = paste("Predicted",options[['target']], sep=' '), type = "number", format = "dp:0")
         
     } else {
+        
         fields[[1]] <- list(name = 'predictor1', title = "Predictor", type = "number")
         fields[[2]] <- list(name = "predicted", title = paste("Predicted",options[['target']], sep=' '), type = "number")
+        
     }
     
     if(is.null(res)){
