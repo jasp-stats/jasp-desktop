@@ -623,68 +623,86 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
 .WSSplot <- function(options,res){
     
     if(options[['plotPCAClusterSquares']] & !is.null(res)){
-        im2 <-.beginSaveImage(640,480)
-        .PlotOptimizedkClustering(res)
-        cont2<-.endSaveImage(im2)
+
+        g <- .PlotOptimizedkClustering(res)
+
+        imgObj <- .writeImage(width = options$plotWidth, 
+                              height = options$plotHeight, 
+                              plot = g)
         
     }
     
-    return(list(title = 'Within Sum of Squares vs cluster plot',
-                width = 640,
-                height = 480,
-                data = cont2))
+    plot <- list()
+    
+    plot[["title"]] <- "Within sum of squares vs. Cluster plot"
+    plot[["data"]] <- imgObj[["png"]]
+    plot[["obj"]] <- imgObj[["obj"]]
+    plot[["convertible"]] <- TRUE
+    plot[["status"]] <- "complete"
+    
+    return(plot)
 }
 
 .PlotOptimizedkClustering <- function(res){
-    plot(res[['clusterrange']],
-         res[['WithinSumSquares']],
-         main = '',
-         type = 'b',
-         las = 1,
-         xlab = '',
-         ylab = '',
-         bty = 'n',
-         pch = 19)
-    mtext(expression('Total within sum of squares'), side = 2, line = 2, cex = 1.5, font = 2)
-    mtext("Clusters", side = 1, line = 3, cex = 1.5, font = 2)
-    points(res[['clusters']],
-           res[['WithinSumSquares']][which(res[['clusterrange']]==res[['clusters']])],
-           col='red',
-           pch=19)
+    
+    library(JASPgraphs) # remove later
+    
+    xName = "No. Clusters"
+    yName = "Total within sum of squares"
+    x <- res[['clusterrange']]
+    y <- res[['WithinSumSquares']]
+    toPlot = data.frame(x = x, y = y)
+    
+    g <- drawCanvas(xName = xName, yName = yName, dat = toPlot, xBreaks = seq(min(x), max(x), 1), xLabels = seq(min(x), max(x), 1))
+    g <- drawLines(g, dat = toPlot, alpha = .25)
+    g <- drawPoints(g, dat = toPlot, size = 5, alpha = .65)
+    g <- drawPoints(g, dat = data.frame(x = res[['clusters']], y = res[['WithinSumSquares']][which(res[['clusterrange']]==res[['clusters']])]),fill = "red", size = 5)
+    g <- themeJasp(g)
+    
+    return(g)
 }
 
 .criterionplot<-function(options,res){
     
     if(options[['plotCriterionVsClusters']] & !is.null(res)){
-        im3 <- .beginSaveImage(640,480)
-        .PlotRobustOptimize(res)
-        cont3 <- .endSaveImage(im3)
+
+        g <- .PlotRobustOptimize(res)
+        
+        imgObj <- .writeImage(width = options$plotWidth, 
+                              height = options$plotHeight, 
+                              plot = g)
         
     }
     
-    return(list(title ='Criterion vs cluster plot',
-                width = 640,
-                height = 480,
-                data = cont3))
+    plot <- list()
+    
+    plot[["title"]] <- "Criterion vs. Cluster plot"
+    plot[["data"]] <- imgObj[["png"]]
+    plot[["obj"]] <- imgObj[["obj"]]
+    plot[["convertible"]] <- TRUE
+    plot[["status"]] <- "complete"
+    
+    return(plot)
     
 }
 
 .PlotRobustOptimize <- function(res){
-    plot(res[['clusterrange']],
-         res[['criterion.krange']],
-         type='b',
-         pch=19,
-         xlab = '',
-         ylab = '',
-         bty = 'n',
-         main = '',
-         las = 1)
-    mtext(expression('Criterion'), side = 2, line = 2, cex = 1.5, font = 2)
-    mtext("Clusters", side = 1, line = 3, cex = 1.5, font = 2)
-    points(res[['clusterrange']][which.max(res[['criterion.krange']])],
-           max(res[['criterion.krange']]),
-           pch = 19,
-           col= 'red')
+    
+    library(JASPgraphs) # remove later
+    
+    xName = "No. Clusters"
+    yName = "Criterion"
+    x <- res[['clusterrange']]
+    y <- res[['criterion.krange']]
+    toPlot = data.frame(x = x, y = y)
+    
+    g <- drawCanvas(xName = xName, yName = yName, dat = toPlot, xBreaks = seq(min(x), max(x), 1), xLabels = seq(min(x), max(x), 1))
+    g <- drawLines(g, dat = toPlot, alpha = .25)
+    g <- drawPoints(g, dat = toPlot, size = 5, alpha = .65)
+    g <- drawPoints(g, dat = data.frame(x = res[['clusterrange']][which.max(res[['criterion.krange']])], y = max(res[['criterion.krange']])),fill = "red", size = 5)
+    g <- themeJasp(g)
+    
+    return(g)
 }
 
 .clusterInfoTable <- function(options, res, predictors){

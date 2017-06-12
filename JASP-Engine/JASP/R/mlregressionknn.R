@@ -23,7 +23,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
     
     stateKey <- list()
     stateKey[["Descriptions"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "scaleEqualSD", "validationLeaveOneOut", "validationKFold")
-    stateKey[["optimization"]] <- c("optimizeModel", "optimizeModelMaxK")
+    stateKey[["optimization"]] <- c("optimizeModel", "optimizeModelMaxK", "optimizeModelMaxD")
     stateKey[['Predictions']] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD","tablePredictionsConfidence")
     stateKey[['Distances']] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[["Weights"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
@@ -198,7 +198,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	
 	if(options[['plotErrorVsK']] & !is.null(res)){
 		
-		if(options[['noOfNearestNeighbours']] == 'optimized' | options[['validationLeaveOneOut']]){
+		if(options[['noOfNearestNeighbours']] == 'optimized'){
 		
 		results[['Plot']] <- .PlotErrorVsK(res,opt,options,dataset,formula)
 		state[["Plot"]] <- results[['Plot']]
@@ -381,27 +381,28 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 }
 
 .PlotKoptimizedRegression <- function(res,opt){
-	plot(opt[['NN']],
-		 res[['RMSE']],
-		 type = 'b',
-		 xlab = '',
-		 ylab = '',
-		 las = 1,
-		 main = '',
-		 bty = 'n')
-	mtext(expression('RMSE'), side = 2, line = 2, cex = 1.5, font = 2)
-	mtext("K", side = 1, line = 3, cex = 1.5, font = 2)
-	points(opt[['NN']][which.min(res[['RMSE']])],
-		   min(res[['RMSE']]),
-		   pch = 19,
-		   col = 'red')
+    
+    library(JASPgraphs) # remove later
+    
+    xName = "No. nearest neighbors"
+    yName = "RMSE"
+    x <- opt[["NN"]]
+    y <- res[["RMSE"]]
+    toPlot = data.frame(x = x, y = y)
+    
+    g <- drawCanvas(xName = xName, yName = yName, dat = toPlot, xBreaks = seq(min(x), max(x), 1), xLabels = seq(min(x), max(x), 1))
+    g <- drawLines(g, dat = toPlot, alpha = .25)
+    g <- drawPoints(g, dat = toPlot, size = 5, alpha = .65)
+    g <- drawPoints(g, dat = data.frame(x = opt[['NN']][which.min(res[["RMSE"]])], y = min(res[['RMSE']])),fill = "red", size = 5)
+    g <- themeJasp(g)
+    
+    return(g)
 	
 }
 
 .DescriptionsTable <- function(predictors, target, opt, options, res, dataset, formula){
 	
 	### descriptions table
-	###
 	
 	fields_descriptions <- list(list(name = 'model', title = '', type = 'string'))
 	
@@ -462,7 +463,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	}
 
 	if(options[['validationLeaveOneOut']] & !is.null(res)){
-		result <- .LOOCVregression(dataset,options,opt,formula)
+		result <- .LOOCVregression(dataset,options,opt,formula,res)
 		data_descriptions[[1]][["optim[type2]"]] <- "Leave-one-out"
 		data_descriptions[[1]][["nnc[nnloo]"]] <- result[['OptimalK']]
 		data_descriptions[[1]][["r[rmseoptim]"]] <- sqrt(result[['Minimal.MSE']])
@@ -470,7 +471,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	
 	if(options[['validationKFold']] & !is.null(res)){
 		result_fold <- .Kfoldregression(dataset,options,opt,formula,res)
-		data_descriptions[[1]][["optim[type3]"]] <- "K-fold"
+		data_descriptions[[1]][["optim[type3]"]] <- paste(options[['noOfFolds']],"-fold", sep = "")
 		data_descriptions[[1]][["nnc[nnkfold]"]] <- result_fold[['OptimalK']]
 		data_descriptions[[1]][['r[rmsekfold]']] <- result_fold[['RMSE']]
 	}
@@ -705,33 +706,34 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 }
 
 .PlotErrorVsK <- function(res,opt,options,dataset,formula){
+    
+    plot <- list()
 	
 	if(options[['noOfNearestNeighbours']] == 'optimized' & options[['optimizedFrom']] > 0){
+
+	g <- .PlotKoptimizedRegression(res,opt)
+
+	imgObj <- .writeImage(width = options$plotWidth, 
+	                      height = options$plotHeight, 
+	                      plot = g)
 	
-	image <- .beginSaveImage(640,480)
-	.PlotKoptimizedRegression(res,opt)
-	content <- .endSaveImage(image)
-	
-	} else if (options[['validationLeaveOneOut']] & options[['maxK']] > 0){
-		
-		image <- .beginSaveImage(640,480)
-		.PlotLOOCVregression(.LOOCVregression(dataset,options,opt,formula))
-		content <- .endSaveImage(image)
-		
 	}
 	
-	return(list(title = 'Error vs K',
-				width = 640,
-				height = 480,
-				data = content))
+    plot[["title"]] <- "RMSE vs. No. nearest neighbors"
+    plot[["data"]] <- imgObj[["png"]]
+    plot[["obj"]] <- imgObj[["obj"]]
+    plot[["convertible"]] <- TRUE
+    plot[["status"]] <- "complete"
+    
+    return(plot)
 	
 }
 
-.LOOCVregression <- function(dataset,options,opt,formula){
+.LOOCVregression <- function(dataset,options,opt,formula, res){
 
 	knn.fit <- kknn::train.kknn(formula = formula,
 								data = dataset,
-								kmax = options[['maxK']],
+								ks = res[["Optimal.K"]],
 								distance = opt[['distance']],
 								kernel = opt[['weights']],
 								na.action = opt[['NA']])
@@ -746,24 +748,6 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	res[['optimal.weights']] <- knn.fit$best.parameters[['kernel']]
 	res[['Minimal.MSE']] <- min(res[['MSE']])
 	return(res)
-}
-
-.PlotLOOCVregression <- function(res){
-	plot(seq_along(res[['MSE']]), 
-		 sqrt(res[['MSE']]), 
-		 xlab="", 
-		 main = '',
-		 type = 'b',
-		 las = 1,
-		 ylab = '',
-		 bty = 'n',
-		 pch = 19)
-	mtext(expression('RMSE'), side = 2, line = 2, cex = 1.5, font = 2)
-	mtext("K", side = 1, line = 3, cex = 1.5, font = 2)
-	points(seq_along(res[['MSE']])[which.min(sqrt(res[['MSE']]))],
-		   min(sqrt(res[['MSE']])),
-		   pch = 19,
-		   col = 'red')
 }
 
 .Kfoldregression <- function(dataset,options,opt,formula,res){
@@ -974,7 +958,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
     
     if(!is.null(res)){
         
-        result <- .optimizerKNN(formula = formula,dataset = dataset,kmax = options[["optimizeModelMaxK"]],distance_from = 0.1,distance_to = 10)
+        result <- .optimizerKNN(formula = formula,dataset = dataset,kmax = options[["optimizeModelMaxK"]],distance_from = 0.1,distance_to = options[["optimizeModelMaxD"]])
         
         data <- list(
             list(model = "Optimal parameters", RMSE = result[["MinStatistic"]], k = result[["OptK"]], weights = result[["OptWeights"]], distance = result[["OptDistance"]])

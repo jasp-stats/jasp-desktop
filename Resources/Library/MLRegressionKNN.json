@@ -88,7 +88,7 @@
 		{
 			"name": "distanceParameter",
 			"type": "List",
-			"options": [ "auto", "manual", "optimized" ],
+            "options": [ "auto", "manual" ],
 			"default": "auto"
 		},
         {
@@ -104,12 +104,6 @@
 		{
 			"name": "validationLeaveOneOut",
 			"type": "Boolean"
-		},
-		{
-			"name": "maxK",
-            "type": "Integer",
-            "default": 5,
-            "min": 1
 		},
 		{
 			"name": "validationKFold",
@@ -150,6 +144,13 @@
             "name": "optimizeModelMaxK",
             "type": "Integer",
             "default": 10,
+            "min": 1,
+            "max": 100
+        },
+        {
+            "name": "optimizeModelMaxD",
+            "type": "Number",
+            "value": 10,
             "min": 1,
             "max": 100
         },

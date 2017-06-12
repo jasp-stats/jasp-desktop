@@ -95,7 +95,7 @@
 		{
 			"name": "distanceParameter",
 			"type": "List",
-			"options": [ "auto", "manual", "optimized" ],
+            "options": [ "auto", "manual" ],
 			"default": "auto"
 		},
         {
@@ -111,13 +111,7 @@
 		{
 			"name": "validationLeaveOneOut",
 			"type": "Boolean"
-		},
-		{
-			"name": "maxK",
-            "type": "Integer",
-            "min": 1,
-            "default": 5
-		},
+        },
 		{
 			"name": "validationKFold",
 			"type": "Boolean"
@@ -126,7 +120,7 @@
 			"name": "noOfFolds",
             "type": "Integer",
             "min": 1,
-            "default": 5
+            "default": 4
         },
         {
            "name": "confusionTable",
@@ -162,6 +156,13 @@
             "name": "optimizeModelMaxK",
             "type": "Integer",
             "default": 10,
+            "min": 1,
+            "max": 100
+        },
+        {
+            "name": "optimizeModelMaxD",
+            "type": "Number",
+            "value": 10,
             "min": 1,
             "max": 100
         },
