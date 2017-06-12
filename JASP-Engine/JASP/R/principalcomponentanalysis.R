@@ -28,7 +28,7 @@
 
 
 PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
-                                      callback = function(...) 0, ...) {
+                                      callback = function(...) list(status="ok"), state = NULL, ...) {
   
 
   ## call the common initialization function
@@ -51,174 +51,195 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
     list(name="screePlot", type="image"))
 
   results[[".meta"]] = meta
-  
-  # ## initialize state ## ----
-  # stateKey <- list(
-  #   analysis <- c('rotationMethod','orthogonalSelector','obliqueSelector','variables', 'factorMethod',
-  #     'eigenValuesBox','numberOfFactors')
-  #   table <- c()
-  #   plot <- c()
-  #   )
 
-  # States:
-  state <- .retrieveState()
-  analysisResults <- NULL
+  ## initialize state ## ----
+
+  stateKey <- list(
+    analysisResults = c(
+      'rotationMethod',
+      'orthogonalSelector',
+      'obliqueSelector',
+      'variables', 
+      'factorMethod',
+      'eigenValuesBox',
+      'numberOfFactors'),
+    pathDiagram = c(
+      'rotationMethod',
+      'orthogonalSelector',
+      'obliqueSelector',
+      'variables', 
+      'factorMethod',
+      'eigenValuesBox',
+      'numberOfFactors',
+      'highlightSlider', 
+      'highlightText',
+      # 'incl_pathDiagram', 
+      'plotWidthPathDiagram',
+      'plotHeightPathDiagram'),
+    screePlot = c(
+      'rotationMethod',
+      'orthogonalSelector',
+      'obliqueSelector',
+      'variables', 
+      'factorMethod',
+      'eigenValuesBox',
+      'numberOfFactors',
+      # 'incl_screePlot',
+      'plotWidthScreePlot',
+      'plotHeightScreePlot')
+    )
+  keep <- NULL
+
+  # # States:
   newAnalysis <- TRUE
-  error <- NULL
+  state <- .retrieveState()
 
-  if ( ! is.null(state) && state$complete) {  # is there state?
+  if (!is.null(state) && !is.null(state[["analysisResults"]])) {  # is there state?
   
   # if ( !is.null(state)) {  # is there state?
     
-    diff <- .diff(options, state$options)  # compare old and new options
-    print("diff")
-    print("diff type:")
-    print(typeof(diff))
-    print(diff)
-    
     # nVariable <- length(options$variables)
+    diff <- .diff(options,state$options)
     
     if (is.list(diff) && !diff[['rotationMethod']] && !diff[['orthogonalSelector']] && !diff[['obliqueSelector']] && !diff[['variables']] && !diff[['factorMethod']] && 
         !diff[['eigenValuesBox']] && !diff[['numberOfFactors']]) {
 
       # old results can be used
       newAnalysis <- FALSE
-      analysisResults <- state$analysisResults
-      error <- state$error
-      nFactor <- state$nFactor
-      message <- state$message
-      
-    }
-    
-  }
-
-
-if(newAnalysis){
-
-    res <- .estimateNFactor(dataset, options, perform)
-    nFactor <- res$nFactor
-    message <- res$message
-
-    customChecks <- list(
-      function() {
-        if (nVariable > 0 && nFactor > length(options$variables)) {
-          return(paste0("Too many factors requested (", nFactor, ") for the amount of included variables"))
-        }
-      },
-      function(){
-        if(is.null(dataset)){
-          return(paste0("Dataset empty")) #(", nrow(dataset),")
-        }
-        if(!is.null(dataset) && nrow(dataset) < 3){
-          return(paste0("Not enough valid cases (", nrow(dataset),") for analysis"))
-        }
-      }
-    )
-    
-    error <- .hasErrors(dataset=dataset, perform=perform, type=c("infinity", "variance"), custom=customChecks, exitAnalysisIfErrors=TRUE)
-
-
-    if (perform == "run" && length(options$variables) > 1){
-      
-      analysisResults <- try(silent = FALSE, expr = {
-        .estimatePCA(dataset, options, perform, nFactor)
-        })    
     }
   }
 
-# Output
+  # state <- .retrieveState()
+  # print("is.null(state$analysisResults)")
+  # print(is.null(state[["analysisResults"]]))
 
-  # Make factor loadings table:
-  if (newAnalysis) {
-    results[["factorLoadings"]] <- .getLoadingsPCA(analysisResults, options, perform, nFactor, dataset, message)
-  } else {
-    results[["factorLoadings"]]  <- state$results[["factorLoadings"]] 
-  }
-
-  
-  # Create factor correlation table:
-  if(!newAnalysis && state$options[["incl_correlations"]] && options$incl_correlations){
-    results[["factorCorrelations"]] <- state$results[["factorCorrelations"]] 
-  }else{
-    results[["factorCorrelations"]] <- .getFactorCorrelationsPCA(analysisResults, options,perform)
-  }
-
-  
-  # Create fit measures tables:
+  # if(is.null(state[["analysisResults"]]) || ){#|| !change[["analysisResults"]]
   if(newAnalysis){
+
+    state <- NULL
+    analysisResults <- NULL
+
+    if (perform == "run" && !is.null(dataset) && nrow(dataset) > 1){
+
+      customChecks <- list(
+        function() {
+          if (length(options$variables) > 0 && options$numberOfFactors > length(options$variables)) {
+            return(paste0("Too many factors requested (", options$numberOfFactors, ") for the amount of included variables"))
+          }
+        },
+        function(){
+          if(length(options$variables) <= 1){
+            return(paste0("Not enough variables (", length(options$variables), ") for analysis."))
+          }
+        },
+        function(){
+          if(is.null(dataset)){
+            return(paste0("Dataset empty"))
+          }else if(nrow(dataset) < 3){
+            return(paste0("Not enough valid cases (", nrow(dataset),") for analysis"))
+          }
+        }
+      )
+    
+      error <- .hasErrors(dataset=dataset, perform=perform, type=c("infinity", "variance"), custom=customChecks, exitAnalysisIfErrors=TRUE)
+
+      analysisResults <- try(silent = FALSE, expr = {
+        .estimatePCA(dataset, options, perform)
+        })
+
+    }
+    print("rerun analysis...")
+    # output
+    # Make factor loadings table:
+    results[["factorLoadings"]] <- .getLoadingsPCA(analysisResults, dataset, options, perform)
+
+    # Create fit measures tables:
     results[["goodnessOfFit"]] <- .goodnessOfFitPCA(analysisResults, options, perform)
+    # # if(newAnalysis || (is.list(diff) && diff[['incl_fitIndices']] && options$incl_fitIndices)){
+    # if(options$incl_fitIndices){
+    #   results[["fitMeasures"]] <- .fitMeasuresPCA(analysisResults, options,perform)
+    # }else{
+    #   results[["fitMeasures"]] <- NULL
+    # }
+
+
   }else{
-    results[["goodnessOfFit"]] <- state$results[["goodnessOfFit"]]
+    print("reuse state...")
+    analysisResults <- state[["analysisResults"]]
+    results[["factorLoadings"]] <- state[["factorLoadings"]]
+    results[["goodnessOfFit"]] <- state[["goodnessOfFit"]]
+    # if(isTRUE(options$incl_correlations)) results[["factorCorrelations"]] <- state[["factorCorrelations"]]
+    # if(isTRUE(options$incl_fitIndices)) results[["fitMeasures"]] <- state[["fitMeasures"]]
   }
 
+    # Create factor correlation table:
 
-  if(newAnalysis || (is.list(diff) && diff[['incl_fitIndices']] && options$incl_fitIndices)){
-    results[["fitMeasures"]] <- .fitMeasuresPCA(analysisResults, options,perform)
-  }else{
-    results[["fitMeasures"]] <- state$results[["fitMeasures"]]
-  }
+    if(options$incl_correlations){
+      results[["factorCorrelations"]] <- .getFactorCorrelationsPCA(analysisResults, options, perform)
+    }
 
+  # Output Plot
 
-  
-  
   # Create path diagram:
-  if(newAnalysis || (is.list(diff) && diff[['incl_pathDiagram']] && options$incl_pathDiagram)){
-    if(isTRUE(options$incl_pathDiagram)){
-      p <- try(silent = FALSE, expr = {
-        .pathDiagramPCA(analysisResults, options, perform)
-       })
+  # if(newAnalysis || (is.list(diff) && diff[['incl_pathDiagram']] && options$incl_pathDiagram)){
+  if(isTRUE(options$incl_pathDiagram)){
+    p <- try(silent = FALSE, expr = {
+      .pathDiagramPCA(analysisResults, options, perform, oldPlot = state[["pathDiagramPCA"]])
+     })
 
-      if(isTryError(p)){
-        errorMessage <- .extractErrorMessage(p)
-        results[["pathDiagram"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
-      }else{
-        results[["pathDiagram"]] <- p
-      }
-      
+    if(isTryError(p)){
+      errorMessage <- .extractErrorMessage(p)
+      results[["pathDiagram"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
+    }else{
+      results[["pathDiagram"]] <- p
     }
-  }else{
-    results[["pathDiagram"]] <- state$results[["pathDiagram"]]
+    
   }
 
-
-  
   # Scree plot:
-  if(newAnalysis || (is.list(diff) && diff[['incl_screePlot']] && options$incl_screePlot)){
-    if(isTRUE(options$incl_screePlot)){
-      p <- try(silent = FALSE, expr = {
-        .screePlot(dataset, options,perform)
-       })
+  # if(newAnalysis || (is.list(diff) && diff[['incl_screePlot']] && options$incl_screePlot)){
+  if(isTRUE(options$incl_screePlot)){
+    p <- try(silent = FALSE, expr = {
+      .screePlot(dataset, options, perform, oldPlot = state[["screePlot"]])
+     })
 
-      if(isTryError(p)){
-        errorMessage <- .extractErrorMessage(p)
-        results[["screePlot"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
-      }else{
-        results[["screePlot"]] <- p
-      }
+    if(isTryError(p)){
+      errorMessage <- .extractErrorMessage(p)
+      results[["screePlot"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
+    }else{
+      results[["screePlot"]] <- p
     }
-  }else{
-    results[["screePlot"]] <- state$results[["screePlot"]]
   }
-
-
   ## TEMP DEBUG THING:
   # save(dataset,results,init,options,perform,callback,...,file = "/Users/sachaepskamp/Dropbox/work/JASP/Rcodes/JASPinit.RData")
 
   
-  # Dummies:
-  status <- list(ready=TRUE, error=error)
-  print("perform")
-  print(perform)
+  # # Dummies:
+  # status <- list(ready=TRUE, error=error)
+
+  #save state
+  state <- list(
+    options = options,
+    analysisResults = analysisResults,
+    factorLoadings = results[["factorLoadings"]],
+    factorCorrelations = results[["factorCorrelations"]],
+    goodnessOfFit = results[["goodnessOfFit"]],
+    fitMeasures = results[["fitMeasures"]],
+    pathDiagram = results[["pathDiagram"]],
+    screePlot = results[["screePlot"]]
+  )
+
+
+  attr(state, "key") <- stateKey
+  # attr(state, "keep") <- c("factorLoadings","factorCorrelations","goodnessOfFit","fitMeasures","pathDiagram","screePlot")
+
   if (perform == "run") {
-    print("completed")
-    state <- list(options=options,analysisResults=analysisResults,nFactor=nFactor,results=results, complete=TRUE)
-    
-    return(list(results=results, status="complete", state=state))	    
-    
+
+    return(list(results = results, status = "complete", state = state, keep = keep))
+
   } else {
-    print("inited")
-    state <- list(options=options,analysisResults=analysisResults,nFactor=nFactor,results=results,complete=FALSE)
-    return(list(results=results, status="inited",state=state))
+
+    return(list(results = results, status = "inited", state = state, keep = keep))
   }
 }
 
@@ -280,40 +301,28 @@ if(newAnalysis){
 
 ### Inner functions ###
 # Estimate PCA:
-.estimatePCA <- function(dataset, options, perform, nFactor=1) {
-  
-  nVariable <- length(options$variables)
-  
-  # Rotation method:
+.estimatePCA <- function(dataset, options, perform) {
+
+  print("in .estimatePCA...")
+
   if (options$rotationMethod == "orthogonal"){
-    Rotation <- options$orthogonalSelector
+      Rotation <- options$orthogonalSelector
   } else {
-    Rotation <- options$obliqueSelector
+      Rotation <- options$obliqueSelector
   }
-  
-  
-  #   # Number of factors:
-  #   if (options$factorMethod == "eigenValues"){
-  #     # Covariance matrix:
-  #     corMatrix <- cor(dataset, use = "pairwise.complete.obs") ### ADD MISSING OPTION
-  #     
-  #     # Eigenvalues:
-  #     EV <- eigen(corMatrix,only.values = TRUE)$values
-  #     
-  #     # Number of factors:
-  #     nFactor <- sum(EV > options$eigenValuesBox)
-  #   } else if (options$factorMethod == "manual"){
-  #     nFactor <- options$numberOfFactors
-  #   }
-  
-  Results <- psych::principal(dataset,nFactor, rotate = Rotation)
-  # Results <- factanal(dataset, nFactor, rotation = Rotation)
-  
-  return(Results)
+
+  res <- .estimateNFactor(dataset, options, perform)
+  nFactor <- res$nFactor
+  message <- res$message
+
+  Results <- psych::principal(dataset, nFactor, rotate = Rotation)
+
+  return(list(Results = Results, nFactor = nFactor, message = message))
+
 }
 
 # Get loadings matrix:
-.getLoadingsPCA <- function(analysisResults, options, perform, nFactor=1, dataset, message){
+.getLoadingsPCA <- function(analysisResults, dataset, options, perform){
 
   # Create JASP table:
   Loadings <- list()
@@ -340,22 +349,17 @@ if(newAnalysis){
   # if (!is.null(analysisResults) & perform == "run"){
   if(is.null(analysisResults) || isTryError(analysisResults) || perform == "init"){
     if (is.null(options$numberOfFactors)){
-      nFact <- 0
+      nFactor <- 0
     } else {
-      nFact <- options$numberOfFactors
+      nFactor <- options$numberOfFactors
     }
-    
+
     loadingsMatrix <- matrix(NA,length(options$variables),nFactor+1)
-    
-    # if (options$rotationMethod == "orthogonal"){
-    #   Rotation <- options$orthogonalSelector
-    # } else {
-    #   Rotation <- options$obliqueSelector
-    # }
-    
+
     colnames(loadingsMatrix) <- c( paste(ifelse(Rotation=="none","PC","RC"),seq_len(nFactor)),"Uniqueness")
     rownames(loadingsMatrix) <- colnames(dataset)
-  
+
+
     if(isTryError(analysisResults)){
       # footnotes <- .newFootnotes()
       errorMessage <- .extractErrorMessage(analysisResults)
@@ -363,7 +367,14 @@ if(newAnalysis){
     }
 
   }else{
-    loadingsMatrix <- as.matrix(loadings(analysisResults))    
+
+    message <- analysisResults$message
+    .addFootnote(footnotes, symbol = "", text = message)
+    print("message")
+    print(message)
+
+    analysisResults <- analysisResults$Results
+    loadingsMatrix <- as.matrix(loadings(analysisResults))
     # loadingsMatrix <- matrix(unlist(loadingsMatrix),nrow(loadingsMatrix),ncol(loadingsMatrix))
     
     
@@ -388,9 +399,6 @@ if(newAnalysis){
   }
   
   # add warning message
-  if(!is.null(message)){
-    .addFootnote(footnotes, symbol = "", text = message)
-  }
 
     
   Loadings[["footnotes"]] <- as.list(footnotes)
@@ -407,6 +415,7 @@ if(newAnalysis){
     dat <- loadingsMatrix[i,]
     
     Loadings[["data"]][[i]] <- list(VAR = .unv(rownames(loadingsMatrix)[i]))
+    # Loadings[["data"]][[i]] <- list(VAR = rownames(loadingsMatrix)[i])
     for (j in seq_along(dat)){
       if (is.na(dat[j])){
         Loadings[["data"]][[i]][[j+1]] <- "."
@@ -472,8 +481,11 @@ if(newAnalysis){
 
 
 # Path diagram:
-.pathDiagramPCA <- function(analysisResults, options, perform){
+.pathDiagramPCA <- function(analysisResults, options, perform, oldPlot=NULL){
   
+  if (!is.null(oldPlot) && !identical(oldPlot[["data"]], ""))
+    return(oldPlot)
+
   pathDiagram <- list()
   pathDiagram$title <- "Path Diagram"
   pathDiagram$width <- options$plotWidthPathDiagram
@@ -493,7 +505,7 @@ if(newAnalysis){
   
   # if (perform != "run" | is.null(analysisResults) | !isTRUE(options$incl_pathDiagram)){
   
-  if (is.null(analysisResults) || !isTRUE(options$incl_pathDiagram) || perform == "init"){
+  if (is.null(analysisResults) || !isTRUE(options$incl_pathDiagram) || perform == "init" || isTryError(analysisResults)){
     
     pathDiagram$data <- NULL
     
@@ -514,7 +526,9 @@ if(newAnalysis){
     
     # Via qgraph:
     # Model matrices:
-    LY <- as.matrix(loadings(analysisResults))
+    analysisResults <- analysisResults$Results
+
+    LY <- as.matrix(loadings(analysisResults)) #labels <- .unv(rownames(LY))
     TE <- diag(analysisResults$uniqueness)
     PS <- analysisResults$r.scores
     
@@ -664,6 +678,7 @@ if(newAnalysis){
 # Factor correlations:
 .getFactorCorrelationsPCA <- function(analysisResults, options, perform){
   print("in .getFactorCorrelationsPCA...")
+
   # Create JASP table:
   FactorCorrelations <- list()
   FactorCorrelations[["title"]] <- "Component Correlations"
@@ -695,6 +710,7 @@ if(newAnalysis){
     }    
   }else{
 
+    analysisResults <- analysisResults$Results
     corMatrix <- as.matrix(analysisResults$r.scores)
 
   }
@@ -773,7 +789,7 @@ if(newAnalysis){
       .addFootnote(footnotes, symbol="<em>Error.</em>", text=errorMessage)
     }
   }else{
-    print("goodnessOfFit")
+    analysisResults <- analysisResults$Results
 
     Fits <- list(
       CHI = .DotIfNULL(analysisResults$STATISTIC),
@@ -848,6 +864,7 @@ if(newAnalysis){
     }
 
   }else{
+    analysisResults <- analysisResults$Results
     Fits <- list(
       CHI = .DotIfNULL(analysisResults$STATISTIC),
       PVAL = .DotIfNULL(analysisResults$PVAL),
@@ -892,20 +909,21 @@ if(newAnalysis){
 
 ### Screeplot:
 
-.screePlot <- function(dataset, options, perform) {
-  print("in screePlot")
+.screePlot <- function(dataset, options, perform, oldPlot = NULL) {
+  # # After image can be wrote to file, the state system can be used to return unchanged screePlot
+  # if (!is.null(oldPlot) && !identical(oldPlot[["data"]], "") && !is.null(oldPlot[["data"]]))
+  #   return(oldPlot)
   
   screePlot <- list()
+  screePlot$title <- "Scree Plot"
+  screePlot$width <- options$plotWidthScreePlot
+  screePlot$height <- options$plotHeightScreePlot
+  screePlot$custom <- list(width="plotWidthScreePlot", height="plotHeightScreePlot")
   
   #   if (perform == "run" && status$ready && !status$error && !is.null(model)) {
   #    
-  if (perform == "run" && ncol(dataset) > 0 && nrow(dataset)> 0 && length(options$variables) > 1) {
-    
-    screePlot$title <- "Scree Plot"
-    screePlot$width <- options$plotWidthScreePlot
-    screePlot$height <- options$plotHeightScreePlot
-    screePlot$custom <- list(width="plotWidthScreePlot", height="plotHeightScreePlot")
-    
+  if (perform == "run" && !is.null(dataset) && ncol(dataset) > 1 && nrow(dataset)> 1 && length(options$variables) > 1 && isTRUE(options$incl_screePlot)) {
+
     # Compute ev:
     
     # Compute ev:
@@ -928,7 +946,9 @@ if(newAnalysis){
     )
     
     combined <- rbind(EV,PA)
-    
+
+    # image <- .beginSaveImage(options$plotWidthScreePlot, options$plotHeightScreePlot)
+
     p <- ggplot2::ggplot(combined, ggplot2::aes_string(x="id",y="ev",lty="type",pch="type")) + ggplot2::geom_point(na.rm = TRUE, size=3) +
       ggplot2::xlab("") + ggplot2::ylab("Eigenvalue")+ ggplot2::xlab("Components") +ggplot2::geom_line(na.rm = TRUE) +
       ggplot2::ggtitle("") + ggplot2::theme_bw() + ggplot2::geom_hline(yintercept = options$eigenValuesBox) +
@@ -953,24 +973,19 @@ if(newAnalysis){
                      legend.background=ggplot2::element_rect(fill="transparent",colour=NA))
     
     image <- .beginSaveImage(options$plotWidthScreePlot, options$plotHeightScreePlot)
-    print(p)
+    print(p) # Todo: Not sure what is the right to write image file when applying ggplot2 
     content <- .endSaveImage(image)
     
     screePlot$data <- content
     screePlot$status <- "complete"
     
-    statescreePlot <- screePlot
+    # statescreePlot <- screePlot
     
   } else {
-    
-    screePlot$title <- "Scree Plot"
-    screePlot$width <- options$plotWidthScreePlot
-    screePlot$height <- options$plotHeightScreePlot
-    screePlot$custom <- list(width="plotWidthScreePlot", height="plotHeightScreePlot")
-    
+
     screePlot$data <- NULL
     
-    statescreePlot <- NULL
+    # statescreePlot <- NULL
     
     #     if (status$error)
     #       screePlot$error <- list(errorType="badData")
