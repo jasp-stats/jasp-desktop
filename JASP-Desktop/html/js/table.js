@@ -181,7 +181,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 					formatted = { content: "." }
 				}
 				else if (combine && rowNo > 0 && column[rowNo - 1].content == content) {
-
+                    clazz += " combined";
 					formatted = { content: "&nbsp;", class: clazz }
 					combined = true
 				}
@@ -225,8 +225,15 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 			var f = formats[i]
 
-			if (f.indexOf("p:") != -1)
-				p = f.substring(2)
+			if (f.indexOf("p:") != -1) {
+				// override APA style if exact p-values wanted
+				if (window.globSet.pExact){
+					sf = 4;
+				} else {
+					p = f.substring(2);
+				}
+			}
+				
 
 			if (f.indexOf("dp:") != -1)
 				dp = f.substring(3)
@@ -992,6 +999,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 					cellClass += (cell.isStartOfGroup ? " new-group-row" : "")
 					cellClass += (cell.isStartOfSubGroup ? " new-sub-group-row" : "")
 					cellClass += (cell.isEndOfGroup ? " last-group-row" : "")
+                    cellClass += (cell.span > 1 ? " row-span" : "")
 
 					cellHtml += (cell.header ? '<th' : '<td')
 					cellHtml += ' class="value ' + cellClass + '"'

@@ -120,7 +120,7 @@
                <item row="2" column="0">
                 <widget class="QRadioButton" name="_3">
                  <property name="text">
-                  <string>&amp;Log( BF₁₀ )</string>
+                  <string>&amp;Log(BF₁₀)</string>
                  </property>
                 </widget>
                </item>
@@ -144,8 +144,6 @@
           </spacer>
          </item>
         </layout>
-        <zorder>widget_12</zorder>
-        <zorder>topWidget</zorder>
        </widget>
       </item>
      </layout>
@@ -490,6 +488,12 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
@@ -504,12 +508,6 @@
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>GroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/groupbox.h</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>ExpanderButton</class>

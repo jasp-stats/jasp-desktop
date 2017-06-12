@@ -8,11 +8,17 @@ window.getPPI = function () {
 
 
 
+
 $(document).ready(function () {
 	var ua = navigator.userAgent.toLowerCase();
 
 	if (ua.indexOf("windows") !== -1)
 		$("body").addClass("windows")
+
+	// Global settings for analysis output. Add here if making new setting.
+	window.globSet = {
+		"pExact" : false
+	}
 
 	var selectedAnalysisId = -1;
 	var selectedAnalysis = null
@@ -26,6 +32,10 @@ $(document).ready(function () {
 	var showInstructions = false;
 	
 	var analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
+	
+	window.reRenderAnalyses = function () {
+		analyses.reRender();
+	}
 
 	window.select = function (id) {
 
@@ -89,6 +99,13 @@ $(document).ready(function () {
 
 		window.menuObject = null;
 	}
+
+    window.saveImageClicked = function () {
+        if (window.menuObject.saveImageClicked | window.menuObject.saveImageClicked())
+            window.menuObject.saveImageClicked();
+
+        window.menuObject = null;
+    }
 
 	window.collapseMenuClicked = function () {
 		if (window.menuObject.collapseMenuClicked)
@@ -379,11 +396,11 @@ $(document).ready(function () {
 
 	}
 
-	var analysisChangedDownstreamHandler = function (event, data) {
+    var analysisChangedDownstreamHandler = function (event, data) {
 
-		jasp.analysisChangedDownstream(data.id, JSON.stringify(data.model))
+        jasp.analysisChangedDownstream(data.id, JSON.stringify(data.model))
 
-	}
+    }
 
 	window.analysisChanged = function (analysis) {
 
@@ -395,16 +412,17 @@ $(document).ready(function () {
 
 				introHiding = true
 
-				$intro.hide("slide", { direction: "up", easing: "easeOutCubic" }, function () {
-
+				$intro.hide(10, function () {
+					
+					$("#style").attr("href","css/theme-jasp.css")
 					introHiding = false
 					introVisible = false
 
 					introHidingResultsWaiting.reverse()
-
+					
 					while (introHidingResultsWaiting.length > 0)
 						window.analysisChanged(introHidingResultsWaiting.pop())
-				})
+				});
 			}
 
 			return
@@ -463,6 +481,12 @@ $(document).ready(function () {
 				jasp.analysisChangedDownstream(id, JSON.stringify(options))
 
 			});
+
+            jaspWidget.on("saveimage", function (id, options) {
+
+                jasp.analysisSaveImage(id, JSON.stringify(options))
+
+            });
 
 			jaspWidget.on("toolbar:showMenu", function (obj, options) {
 

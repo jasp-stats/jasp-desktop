@@ -97,6 +97,10 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 	getAnalysis: function(id) {
 		return _.find(this.analyses, function (cv) { return cv.model.get("id") === id; });
 	},
+	
+	reRender: function() {
+		this.analyses.forEach(function(analysis) {analysis.render();});
+	},
 
 	getAllUserData: function () {
 		var notes = [];

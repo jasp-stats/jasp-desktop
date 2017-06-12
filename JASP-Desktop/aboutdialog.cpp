@@ -76,6 +76,7 @@ void AboutDialog::aboutPageLoaded(bool success)
 		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppBuildDate('" + builddate +"')");
 		QString html = _aboutWebView->page()->mainFrame()->toHtml();
 		ui->label_2_About->setText(html);
+		ui->label_2_About->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse);
 	}
 }
 

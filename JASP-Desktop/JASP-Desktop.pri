@@ -25,6 +25,7 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/widgets/boundgroupbox.cpp \
         $$PWD/widgets/progresswidget.cpp \
         $$PWD/widgets/anovamodelwidget.cpp \
+        $$PWD/widgets/subjectivepriorswidget.cpp \
         $$PWD/widgets/listview.cpp \
         $$PWD/widgets/draganddrop.cpp \
         $$PWD/widgets/assignbuttonmenu.cpp \
@@ -172,6 +173,7 @@ SOURCES += $$PWD/main.cpp \
 		$$PWD/analysisforms/exploratoryfactoranalysisform.cpp \
         $$PWD/analysisforms/principalcomponentanalysisform.cpp \
         $$PWD/analysisforms/reliabilityanalysisform.cpp \
+        $$PWD/analysisforms/basregressionlinearlinkform.cpp \
         $$PWD/analysisforms/SEM/semsimpleform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.cpp \
@@ -214,6 +216,7 @@ HEADERS  += \
         $$PWD/asyncloader.h \
         $$PWD/widgets/progresswidget.h \
         $$PWD/widgets/anovamodelwidget.h \
+        $$PWD/widgets/subjectivepriorswidget.h \
         $$PWD/bound.h \
         $$PWD/widgets/boundmodel.h \
         $$PWD/widgets/listview.h \
@@ -361,6 +364,7 @@ HEADERS  += \
 		$$PWD/analysisforms/exploratoryfactoranalysisform.h \
         $$PWD/analysisforms/principalcomponentanalysisform.h \
         $$PWD/analysisforms/reliabilityanalysisform.h \
+        $$PWD/analysisforms/basregressionlinearlinkform.h \
         $$PWD/analysisforms/SEM/semsimpleform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.h \
@@ -396,6 +400,7 @@ FORMS += \
         $$PWD/analysisforms/ttestbayesianonesampleform.ui \
         $$PWD/widgets/progresswidget.ui \
         $$PWD/widgets/anovamodelwidget.ui \
+        $$PWD/widgets/subjectivepriorswidget.ui \
         $$PWD/analysisforms/ancovaform.ui \
         $$PWD/analysisforms/anovaform.ui \
         $$PWD/analysisforms/descriptivesform.ui \
@@ -436,6 +441,7 @@ FORMS += \
 		$$PWD/analysisforms/exploratoryfactoranalysisform.ui \
         $$PWD/analysisforms/principalcomponentanalysisform.ui \
         $$PWD/analysisforms/reliabilityanalysisform.ui \
+        $$PWD/analysisforms/basregressionlinearlinkform.ui \
         $$PWD/analysisforms/SEM/semsimpleform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.ui \

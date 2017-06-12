@@ -19,8 +19,9 @@
 #define OPTIONVARIABLES_H
 
 #include "optionterms.h"
+#include "optionvariablei.h"
 
-class OptionVariables : public OptionTerms
+class OptionVariables : public OptionTerms, public OptionVariableI
 {
 public:
 	OptionVariables();
@@ -29,7 +30,9 @@ public:
 	virtual void set(const Json::Value& value) OVERRIDE;
 	virtual Option* clone() const OVERRIDE;
 
-	std::vector<std::string> variables() const;
+	virtual std::vector<std::string> variables() const OVERRIDE;
+	virtual void replaceName(std::string oldName, std::string newName) OVERRIDE;
+	virtual void removeName(std::string name) OVERRIDE;
 
 protected:
 	OptionVariables(bool onlyOneTerm);

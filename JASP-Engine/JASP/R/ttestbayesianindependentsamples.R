@@ -57,11 +57,11 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 																				)))
 	
 	results[[".meta"]] <- meta
-	results[["title"]] <- "Bayesian T-Test"
+	results[["title"]] <- "Bayesian Independent Samples T-Test"
 	
 	
 	state <- .retrieveState()
-	
+		
 	diff <- NULL
 	
 	if (!is.null(state)) {
@@ -72,14 +72,17 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	ttest.results <- .ttestBayesianIndependentSamplesTTest(dataset, options, perform, state=state, diff=diff)
 	
-	results[["ttest"]] <- ttest.results[[1]]
-	status <- ttest.results[[2]]
-	g1 <- ttest.results[[3]]
-	g2 <- ttest.results[[4]]
-	BFH1H0 <- ttest.results[[5]]
-	plottingError <- ttest.results[[6]]
-	BF10post <- ttest.results[[7]]
-	errorFootnotes <- ttest.results[[8]]
+	results[["ttest"]] <- ttest.results[["ttest"]]
+	status <- ttest.results[["status"]]
+	g1 <- ttest.results[["g1"]]
+	g2 <- ttest.results[["g2"]]
+	BFH1H0 <- ttest.results[["BFH1H0"]]
+	plottingError <- ttest.results[["plottingError"]]
+	BF10post <- ttest.results[["BF10post"]]
+	errorFootnotes <- ttest.results[["errorFootnotes"]]
+	tValue <- ttest.results[["tValue"]]
+	n_group2 <- ttest.results[["n_group2"]]
+	n_group1 <- ttest.results[["n_group1"]]
 	
 	if(is.null(options()$BFMaxModels)) options(BFMaxModels = 50000)
 	if(is.null(options()$BFpretestIterations)) options(BFpretestIterations = 100)
@@ -177,7 +180,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			if (options$plotPriorAndPosterior){
 				
 				if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-					&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) &&
+					&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE &&
+					diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
+					diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
 					options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes) {
 					
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
@@ -188,7 +193,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					plots.ttest[[q]] <- state$plotsTtest[[index]]
 						
 				} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-							&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) && 
+							&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE &&
+							diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&	diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
+							diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && 
 							!options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlot" %in% state$plotTypes) {
 					
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
@@ -206,10 +213,15 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					plot[["width"]]  <- 530
 					plot[["height"]] <- 400
 					plot[["status"]] <- "waiting"
-					
-					image <- .beginSaveImage(530, 400)
-					.plotPosterior.ttest(x=NULL, y=NULL, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, dontPlotData=TRUE)
-					plot[["data"]] <- .endSaveImage(image)
+
+					.plotFunc <- function() {
+					  .plotPosterior.summarystats.ttest(addInformation = options$plotPriorAndPosteriorAdditionalInf, dontPlotData = TRUE)
+					}
+					content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+					plot[["convertible"]] <- TRUE
+					plot[["obj"]] <- content[["obj"]]
+					plot[["data"]] <- content[["png"]]
 					
 					plots.ttest[[q]] <- plot
 				}
@@ -234,7 +246,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			if (options$plotBayesFactorRobustness) {
 				
 				if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-					&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) &&
+					&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
+					diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE &&
+					diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
 					"robustnessPlot" %in% state$plotTypes) {
 					
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
@@ -253,9 +267,14 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					plot[["height"]] <- 400
 					plot[["status"]] <- "waiting"
 					
-					image <- .beginSaveImage(530, 400)
-					.plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
-					plot[["data"]] <- .endSaveImage(image)
+					.plotFunc <- function() {
+						.plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+					}
+					content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+					plot[["convertible"]] <- TRUE
+					plot[["obj"]] <- content[["obj"]]
+					plot[["data"]] <- content[["png"]]
 					
 					plots.ttest[[q]] <- plot
 				}
@@ -271,7 +290,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			if (options$plotSequentialAnalysis) {
 				
 				if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-					&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) &&
+					&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
+					diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE &&
+					diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
 					options$plotSequentialAnalysisRobustness && "sequentialRobustnessPlot" %in% state$plotTypes) {
 					
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
@@ -282,7 +303,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					plots.ttest[[q]] <- state$plotsTtest[[index]]
 					
 				} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-							&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) && 
+							&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
+							diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE &&
+							diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && 
 							!options$plotSequentialAnalysisRobustness && "sequentialPlot" %in% state$plotTypes) {
 					
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
@@ -301,9 +324,14 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					plot[["height"]] <- 400
 					plot[["status"]] <- "waiting"
 					
-					image <- .beginSaveImage(530, 400)
-					.plotSequentialBF.ttest(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
-					plot[["data"]] <- .endSaveImage(image)
+					.plotFunc <- function() {
+						.plotSequentialBF.ttest(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE, options = options)
+					}
+					content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+					plot[["convertible"]] <- TRUE
+					plot[["obj"]] <- content[["obj"]]
+					plot[["data"]] <- content[["png"]]
 					
 					plots.ttest[[q]] <- plot
 				}
@@ -386,10 +414,14 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						
 						p <- try(silent= FALSE, expr= {
 								
-								image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-								.plot2GroupMeansBayesIndTtest(v1 = group2, v2 = group1, nameV1 = g1, nameV2 = g2, groupingName = options$groupingVariable, dependentName = variable, descriptivesPlotsCredibleInterval=
-								options$descriptivesPlotsCredibleInterval)
-								plot[["data"]] <- .endSaveImage(image)
+								p <- .plot2GroupMeansBayesIndTtest(v1 = group2, v2 = group1, nameV1 = g1, nameV2 = g2, 
+																   groupingName = options$groupingVariable, dependentName = variable, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
+								content <- .writeImage(width = options$plotWidth, height = options$plotHeight, plot = p, obj = TRUE)
+								
+								plot[["convertible"]] <- TRUE
+								plot[["obj"]] <- content[["obj"]]
+								plot[["data"]] <- content[["png"]]
+								
 							})
 							
 						if (class(p) == "try-error") {
@@ -405,7 +437,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					}
 					
 					results[["descriptives"]][["descriptivesPlots"]][["collection"]] <- descriptivesPlots
-					
+
 					descriptInd <- descriptInd + 1
 					
 					if ( ! .shouldContinue(callback(results)))
@@ -416,7 +448,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				if (options$plotPriorAndPosterior) {
 					
 					if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-						&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) &&
+						&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE &&
+						diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&	diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
+						diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
 						options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes) {
 						
 						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
@@ -427,7 +461,10 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						plots.ttest[[z]] <- state$plotsTtest[[index]]
 						
 					} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE &&
-								diff$hypothesis == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) && 
+								diff$hypothesis == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
+								diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&
+								diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE &&
+								diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && 
 								!options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlot" %in% state$plotTypes) {
 						
 						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
@@ -449,11 +486,20 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						if (status[statusInd] != "error") {
 							
 							p <- try(silent= FALSE, expr= {
+							  
+							  .plotFunc <- function() {
+							    .plotPosterior.summarystats.ttest(t = tValue[i], n1 = n_group2[i], n2 = n_group1[i],
+							                                      paired = FALSE, oneSided = oneSided, BF = BF10post[i],
+							                                      BFH1H0 = BFH1H0, rscale = options$priorWidth,
+							                                      addInformation = options$plotPriorAndPosteriorAdditionalInfo,
+							                                      options = options)
+							  }
+									content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+									plot[["convertible"]] <- TRUE
+									plot[["obj"]] <- content[["obj"]]
+									plot[["data"]] <- content[["png"]]
 									
-									image <- .beginSaveImage(530, 400)
-									.plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post
-									[i], BFH1H0=BFH1H0)
-									plot[["data"]] <- .endSaveImage(image)
 								})
 							
 							if (class(p) == "try-error") {
@@ -482,6 +528,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					}
 					
 					plotGroups[[i]][["PriorPosteriorPlot"]] <- plots.ttest[[z]]
+					
+
 					results[["inferentialPlots"]][["collection"]] <- plotGroups
 					
 					z <- z + 1
@@ -494,7 +542,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 					
 					if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-						&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) &&
+						&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
+						diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&	diff$informativeCauchyScale == FALSE &&
+						diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
 						"robustnessPlot" %in% state$plotTypes) {
 						
 						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
@@ -514,14 +564,22 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						
 						plot <- plots.ttest[[z]]
 						
-						if (status[statusInd] != "error") {
+						if (options$effectSizeStandardized == "informative") {
+						  plot[["error"]] <- list(error="badData", errorMessage="Bayes factor robustness check plot currently not supported for informed prior.")
+						} else if (status[statusInd] != "error") {
 							
 							p <- try(silent= FALSE, expr= {
 									
-									image <- .beginSaveImage(530, 400)
-									.plotBF.robustnessCheck.ttest(x= group2, y= group1, BF10post=ifelse((options$bayesFactorType=="LogBF10"), exp(BF10post[i]), BF10post[i]), paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
-									content <- .endSaveImage(image)
-									plot[["data"]]  <- content
+									.plotFunc <- function() {
+										.plotBF.robustnessCheck.ttest(x= group2, y= group1, BF10post=ifelse((options$bayesFactorType=="LogBF10"), exp(BF10post[i]), BF10post[i]), paired= FALSE, oneSided= oneSided,
+										                              rscale = options$priorWidth, BFH1H0= BFH1H0)
+									}
+									content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+									plot[["convertible"]] <- TRUE
+									plot[["obj"]] <- content[["obj"]]
+									plot[["data"]] <- content[["png"]]
+									
 								})
 							
 							if (class(p) == "try-error") {
@@ -550,7 +608,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					}
 					
 					plotGroups[[i]][["BFrobustnessPlot"]] <- plots.ttest[[z]]
-					results[["inferentialPlots"]][["collection"]] <- plotGroups
+					results[["inferentialPlots"]][["collection"]] <- plotGroups # add plots without image object to results
 					
 					z <- z + 1
 					
@@ -561,7 +619,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				if (options$plotSequentialAnalysis) {
 					
 					if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-						&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) &&
+						&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
+						diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE &&
+						diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
 						options$plotSequentialAnalysisRobustness && "sequentialRobustnessPlot" %in% state$plotTypes) {
 						
 						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
@@ -573,7 +633,10 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						results[["inferentialPlots"]][["collection"]][[i]][["BFsequentialPlot"]][["status"]] <- "complete"
 						
 					} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE &&
-								diff$hypothesis == FALSE && BFtypeRequiresNewPlot == FALSE  && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE)))
+								diff$hypothesis == FALSE && BFtypeRequiresNewPlot == FALSE  && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE &&
+								diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&
+								diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE &&
+								diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE)))
 								&& !options$plotSequentialAnalysisRobustness && "sequentialPlot" %in% state$plotTypes) {
 						
 						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
@@ -592,15 +655,22 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						
 						plot <- plots.ttest[[z]]
 						
-						if (status[statusInd] != "error" && status[statusInd] != "sequentialNotPossible") {
+						if (options$plotSequentialAnalysisRobustness && options$effectSizeStandardized == "informative") {
+						  plot[["error"]] <- list(error="badData", errorMessage="Sequential analysis robustness check plot currently not supported for informed prior.")
+						} else if (status[statusInd] != "error" && status[statusInd] != "sequentialNotPossible") {
 							
 							p <- try(silent= FALSE, expr= {
+
+									.plotFunc <- function() {
+										.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, BF10post=BF10post[i],
+															plotDifferentPriors= options$plotSequentialAnalysisRobustness, subDataSet=subDataSet, level1=g1, level2=g2, options = options)
+									}
+									content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+									plot[["convertible"]] <- TRUE
+									plot[["obj"]] <- content[["obj"]]
+									plot[["data"]] <- content[["png"]]
 									
-									image <- .beginSaveImage(530, 400)
-									.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, BF10post=BF10post[i],
-															plotDifferentPriors= options$plotSequentialAnalysisRobustness, subDataSet=subDataSet, level1=g1, level2=g2)
-									content <- .endSaveImage(image)
-									plot[["data"]]  <- content
 								})
 							
 							if (class(p) == "try-error") {
@@ -631,6 +701,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					plotGroups[[i]][["BFsequentialPlot"]] <- plots.ttest[[z]]
 					results[["inferentialPlots"]][["collection"]] <- plotGroups
 					
+					
 					z <- z + 1
 					
 					if ( ! .shouldContinue(callback(results)))
@@ -652,7 +723,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	for (plot in descriptivesPlots)
 		keep <- c(keep, plot$data)
 	
-	
+	descriptivesPlots <- descriptivesPlots
+	plots.ttest <- plots.ttest
+
 	if (perform == "init") {
 		
 		return(list(results=results, status="inited", state=state, keep=keep))
@@ -660,7 +733,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	} else {
 	
 		return(list(results=results, status="complete", state=list(options=options, results=results, plotsTtest=plots.ttest, plotTypes=plotTypes, plotVariables=plotVariables,
-		descriptPlotVariables=descriptPlotVariables, descriptivesPlots=descriptivesPlots, status=status, plottingError=plottingError, BF10post=BF10post, errorFootnotes=errorFootnotes),
+		descriptPlotVariables=descriptPlotVariables, descriptivesPlots=descriptivesPlots, status=status, plottingError=plottingError, BF10post=BF10post, errorFootnotes=errorFootnotes,
+		tValue = tValue, n_group2 = n_group2, n_group1 = n_group1),
 		keep=keep))
 	}
 	
@@ -677,9 +751,14 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	ttest[["title"]] <- "Bayesian Independent Samples T-Test"
 	
-	ttest[["citation"]] <- list(
-		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
-		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
+	if (options$effectSizeStandardized == "default") {
+	  ttest[["citation"]] <- list(
+	    "Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
+	    "Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
+	} else if (options$effectSizeStandardized == "informative") {
+	  ttest[["citation"]] <- list(
+	    "Gronau, Q. F., Ly, A., & Wagenmakers, E.-J. (2017). Informed Bayesian T-Tests. Manuscript submitted for publication and uploaded to arXiv: https://arxiv.org/abs/1704.02479")
+	}
 	
 	fields <- list(
 		list(name=".variable", title="", type="string", combine=TRUE))
@@ -769,13 +848,18 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	status <- rep("ok", length(options$variables))
 	BF10post <- numeric(length(options$variables))
+	tValue <- rep(NA, length(options[["variables"]]))
+	n_group2 <- rep(NA, length(options[["variables"]]))
+	n_group1 <- rep(NA, length(options[["variables"]]))
 	plottingError <- rep("error", length(options$variables))
 	errorFootnotes <- rep("no", length(options$variables))
 	
 	for (variable in options[["variables"]]) {
 		
 		if (!is.null(state) && variable %in% state$options$variables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-			&& diff$groupingVariable == FALSE && diff$missingValues == FALSE)))) {
+			&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE &&
+			diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE &&
+			diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE)))) {
 				
 				index <- which(state$options$variables == variable)
 				
@@ -848,7 +932,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			
 			i <- 1
 			
-			
 			for (variable in options[["variables"]]) {
 				
 				
@@ -883,7 +966,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				
 				
 				if (!is.null(state) && variable %in% state$options$variables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-				&& diff$groupingVariable == FALSE && diff$missingValues == FALSE)))) {
+				&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE &&
+				diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE &&
+				diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE)))) {
 					
 					index <- which(state$options$variables == variable)
 					
@@ -930,6 +1015,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					}
 					
 					BF10post[rowNo] <- ttest.rows[[rowNo]]$BF # state$BF10post[index]
+					tValue[rowNo] <- state$tValue[index]
+					n_group2[rowNo] <- state$n_group2[index]
+					n_group1[rowNo] <- state$n_group1[index]
 					status[rowNo] <- state$status[index]
 					plottingError[rowNo] <- state$plottingError[index]
 					
@@ -937,82 +1025,12 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 					result <- try (silent=FALSE, expr= {
 						
-						bf    <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size)[1]
-						
-						bf.raw <- exp(as.numeric(bf@bayesFactor$bf))
-						
-						N1 <- length(group2)
-						N2 <- length(group1)
-						
-						# sdPooled <- sqrt(((N1 - 1) * var(group2) + (N2 - 1) * var(group1)) / (N1 + N2))
-						# deltaHat <- (mean(group2) - mean(group1)) / sdPooled
-						# df <- N1 + N2 - 2
-						# sigmaStart <- sqrt(N1 * N2 / (N1 + N2))
-						# 
-						# if (sigmaStart < .01) 
-						# 	sigmaStart <- .01
-						
-						if (oneSided == "right") {
-							
-							samples <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size, posterior = TRUE, iterations = 10000)
-							delta <- samples[, "delta"]
-							
-							if (is.infinite(bf.raw)) {
-								
-								if (mean(delta) > 0) {
-									
-									bf.raw <- Inf
-									
-								} else {
-								
-									bf.raw <- 1 / Inf
-								}
-							
-							} else {
-								
-								bf.raw <- .oneSidedTtestBFRichardAdaptive(x=group2, y=group1, r=r.size, oneSided="right")
-								
-								# parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
-								# 
-								# if (class(parameters) == "try-error") {
-								# 
-								# 	parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
-								# }
-								# 
-								# bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=FALSE)
-							}
-						}
-						
-						if (oneSided == "left") {
-							
-							samples <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size, posterior = TRUE, iterations = 10000)
-							delta <- samples[, "delta"]
-							
-							if (is.infinite(bf.raw)) {
-								
-								if (mean(delta) < 0) {
-									
-									bf.raw <- Inf
-									
-								} else {
-								
-									bf.raw <- 1 / Inf
-								}
-								
-							} else {
-								
-								bf.raw <- .oneSidedTtestBFRichardAdaptive(x=group2, y=group1, r=r.size, oneSided="left")
-								# parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
-								# 
-								# if (class(parameters) == "try-error") {
-								# 
-								# 	parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
-								# }
-								# 
-								# bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=TRUE)
-							}
-						}
-						
+					  r <- .generalTtestBF(x = group2, y = group1, paired = FALSE, oneSided = oneSided, options = options)
+					  bf.raw <- r[["bf"]]
+					  tValue[i] <- r[["tValue"]]
+					  n_group2[i] <- r[["n1"]]
+					  n_group1[i] <- r[["n2"]]
+					  
 						if (options$bayesFactorType == "BF01")
 							bf.raw <- 1 / bf.raw
 						
@@ -1025,7 +1043,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 							BF <- .clean(BF)
 						}
 						
-						error <- .clean(as.numeric(bf@bayesFactor$error))
+						# error <- .clean(as.numeric(bf@bayesFactor$error))
+						error <- .clean(r[["error"]])
 						errorMessage <- NULL
 						
 						if (is.na(bf.raw)) {
@@ -1140,7 +1159,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	ttest[["data"]] <- ttest.rows
 	
 	
-	list(ttest, status, g1, g2, BFH1H0, plottingError, BF10post, errorFootnotes)
+	list(ttest = ttest, status = status, g1 = g1, g2 = g2, BFH1H0 = BFH1H0, plottingError = plottingError,
+	     BF10post = BF10post, errorFootnotes = errorFootnotes, tValue = tValue, n_group2 = n_group2,
+	     n_group1 = n_group1)
 }
 
 .base_breaks_x <- function(x) {
@@ -1201,7 +1222,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			.base_breaks_y3(summaryStat) +
 			.base_breaks_x(summaryStat$groupingVariable)
 	
-	print(p)
+	return(p)
 }
 
 .ttestBayesianIndependentSamplesDescriptives <- function(dataset, options, perform,

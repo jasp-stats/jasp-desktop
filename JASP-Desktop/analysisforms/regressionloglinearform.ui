@@ -289,7 +289,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Vovk-Sellke Maximum p-Ratio</string>
+               <string>Vovk-Sellke maximum p-ratio</string>
               </property>
              </widget>
             </item>
@@ -428,6 +428,12 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
@@ -436,12 +442,6 @@
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>GroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/groupbox.h</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>boundSingleItemView</class>

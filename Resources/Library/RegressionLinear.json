@@ -47,7 +47,9 @@
 		{
 			"default": 95,
 			"name": "regressionCoefficientsConfidenceIntervalsInterval",
-			"type": "Integer"
+			"type": "Integer",
+			"min": 1,
+			"max": 99
 		},
 		{
 			"default": false,

@@ -17,7 +17,9 @@
 
 TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 							   callback = function(...) 0,  ...) {
-
+	
+	state <- .retrieveState()	
+	
 	## call the common initialization function
 	init <- .initializeTTest(dataset, options, perform, type = 'paired')
 
@@ -30,12 +32,20 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 	shapiroWilk <- .ttestPairedNormalityTest(dataset, options, perform)
 	results[["assumptionChecks"]] <- list(shapiroWilk = shapiroWilk, title = "Assumption Checks")
 
+
+	keep <- NULL
 	## if the user wants descriptive plots, s/he shall get them!
 	if (options$descriptivesPlots) {
 
 		plotTitle <- ifelse(length(options$pairs) > 1, "Descriptives Plots", "Descriptives Plot")
 		descriptivesPlots <- .pairedSamplesTTestDescriptivesPlot(dataset, options, perform)
-		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives", descriptivesPlots = list(collection = descriptivesPlots, title = plotTitle))
+		if (!is.null(descriptivesPlots[[1]][["obj"]])){
+			keep <- unlist(lapply(descriptivesPlots, function(x) x[["data"]]),NULL)
+		}
+		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, 
+																			title = "Descriptives", 
+																			descriptivesPlots = list(collection = descriptivesPlots, 
+																															 title = plotTitle))
 
 	} else {
 
@@ -43,7 +53,13 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 	}
 
 	## return the results object
-	results
+	if (perform == "init") {
+		return(list(results=results, status="inited"))
+	} else {
+		return(list(results=results, status="complete", 
+								state = list(options = options, results = results),
+								keep = keep))
+	}
 }
 
 
@@ -74,7 +90,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 	## get the right statistics for the table and, if only one test type, add footnote
 	if (wantsWilcox && onlyTest) {
 
-		testname <- "Wilcoxon Signed-Rank Test"
+		testname <- "Wilcoxon signed-rank test"
 		testTypeFootnote <- paste0(testname, ".")
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
 		testStat <- "W"
@@ -82,13 +98,13 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 		fields <- fields[-4]
 	} else if (wantsStudents && onlyTest) {
 
-		testname <- "Student's T-Test"
+		testname <- "Student's t-test"
 		testTypeFootnote <- paste0(testname, ".")
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
 
 		testStat <- "t"
 	} else {
-		testStat <- "statistic"
+		testStat <- "Statistic"
 	}
 
 	ttest[["title"]] <- title
@@ -124,14 +140,14 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 											 type = "number", format = "sf:4;dp:3")
 	}
 
-	if (wantsEffect) {
+	if (wantsEffect && wantsStudents) {
 		fields[[length(fields) + 1]] <- list(name = "d", title = "Cohen's d",
 											 type = "number",  format = "sf:4;dp:3")
 	}
 
 	if (wantsConfidence) {
 		interval <- 100 * options$confidenceIntervalInterval
-		title <- paste0(interval, "% Confidence Interval")
+		title <- paste0(interval, "% Confidence interval")
 		fields[[length(fields) + 1]] <- list(name = "lowerCI", type = "number",
 											 format = "sf:4;dp:3",  title = "Lower",
 											 overTitle = title)
@@ -231,7 +247,6 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 						sed <- .clean(sd(c1 - c2) / sqrt(length(c1)))
 						# num <- sqrt(sd(c1)^2 + sd(c2)^2 -  2 * cov(c1, c2))
 						# d <- .clean(mean(c1) - mean(c2) / num)
-						d <- mean(c1 - c2) / sd(c1 - c2)
 
 						m <- as.numeric(r$estimate)
 						ciLow <- ifelse(direction == "less", .clean(-Inf),
@@ -242,7 +257,8 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 						## paired t-test has it, wilcox doesn't!
 						df <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
-
+						d <- ifelse(is.null(r$parameter), "", .clean(mean(c1 - c2) / sd(c1 - c2)))
+						
 						# add things to the intermediate results object
 						row <- list(df = df, p = p, md = m, d = d,
 									lowerCI = ciLow, upperCI = ciUp,
@@ -313,7 +329,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 			## one called "Test" and "statistic" to differentiate Student's from Wilcoxon
 			if (!isFirst) {
 				row[["test"]] <- "Wilcoxon"
-				ttest.rows[[rowNo - 1]][["test"]] <- "Student's"
+				ttest.rows[[rowNo - 1]][["test"]] <- "Student"
 			}
 
 			ttest.rows[[rowNo]] <- row
@@ -530,11 +546,14 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 				plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) + base_breaks_y(summaryStat) +
 				base_breaks_x(summaryStat$groupingVariable) + ggplot2::scale_x_discrete(labels = c(pair[[1]], pair[[2]]))
 
-			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-			print(p)
-			content <- .endSaveImage(image)
+			imgObj <- .writeImage(width = options$plotWidth, 
+														height = options$plotHeight, 
+														plot = p)
 
-			descriptivesPlot[["data"]] <- content
+			descriptivesPlot[["data"]] <- imgObj[["png"]]
+			descriptivesPlot[["obj"]] <- imgObj[["obj"]]
+			descriptivesPlot[["convertible"]] <- TRUE
+			descriptivesPlot[["status"]] <- "complete"
 
 		} else {
 

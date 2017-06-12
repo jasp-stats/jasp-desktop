@@ -161,12 +161,12 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 
 	## Create Between Subjects Effects Table
-  if(length(unique(unlist(options$betweenSubjectFactors))) > 0 ){
+  # if(length(unique(unlist(options$betweenSubjectFactors))) > 0 ){
 	result <- .rmAnovaBetweenSubjectsTable(dataset, options, perform, model, status)
 
 	results[["betweenSubjectsEffects"]] <- result$result
 	status <- result$status
-  }
+  # }
 
 
 	## Create Sphericity Assumption Table
@@ -2369,18 +2369,28 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 			if (options$plotSeparateLines != "") {
 
-				image <- .beginSaveImage(options$plotWidthDescriptivesPlotLegend, options$plotHeightDescriptivesPlotLegend)
+				# image <- .beginSaveImage(options$plotWidthDescriptivesPlotLegend, options$plotHeightDescriptivesPlotLegend)
+				content <- .writeImage(width = options$plotWidthDescriptivesPlotLegend, 
+									   height = options$plotHeightDescriptivesPlotLegend, 
+									   plot = p, obj = TRUE)
 
 			} else {
 
-				image <- .beginSaveImage(options$plotWidthDescriptivesPlotNoLegend, options$plotHeightDescriptivesPlotNoLegend)
+				# image <- .beginSaveImage(options$plotWidthDescriptivesPlotNoLegend, options$plotHeightDescriptivesPlotNoLegend)
+				content <- .writeImage(width = options$plotWidthDescriptivesPlotNoLegend, 
+									   height = options$plotHeightDescriptivesPlotNoLegend, 
+									   plot = p, obj = TRUE)
 
 			}
 
-			print(p)
-			content <- .endSaveImage(image)
+			# print(p)
+			# content <- .endSaveImage(image)
+			
+			descriptivesPlot[["convertible"]] <- TRUE
+			descriptivesPlot[["obj"]] <- content[["obj"]]
+			descriptivesPlot[["data"]] <- content[["png"]]
 
-			descriptivesPlot[["data"]] <- content
+			# descriptivesPlot[["data"]] <- content
 			descriptivesPlot[["status"]] <- "complete"
 
 			descriptivesPlotList[[i]] <- descriptivesPlot
