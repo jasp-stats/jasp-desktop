@@ -752,7 +752,7 @@
 			dim(posterior.probabilities) <- c(1, no.models)
 			prior.inclusion.probabilities <- prior.probabilities %*% effects.matrix
 			posterior.inclusion.probabilities <- posterior.probabilities %*% effects.matrix
-			posterior.inclusion.probabilities[posterior.inclusion.probabilities > 1] <- 1 #FIXME: why do we need this?
+			posterior.inclusion.probabilities[posterior.inclusion.probabilities > 1] <- 1 # deals with numerical error
 			posterior.inclusion.probabilities[posterior.inclusion.probabilities < 0] <- 0
 			bayes.factor.inclusion <- (posterior.inclusion.probabilities / (1 - posterior.inclusion.probabilities)) /
 				(prior.inclusion.probabilities / (1 - prior.inclusion.probabilities))
@@ -798,11 +798,17 @@
 				outModelPriors <- modelsWithout[indices, ncol(effects.matrix) - 1]
 				outModelPosteriors <- modelsWithout[indices, ncol(effects.matrix)]
 
+				# Deal with numerical error around the extremes 0 and 1
+				sumInModelPost <- ifelse(sum(inModelPosteriors) < 0, 0, sum(inModelPosteriors))
+				sumInModelPost <- ifelse(sumInModelPost > 1, 1, sumInModelPost)
+				sumOutModelPost <- ifelse(sum(outModelPosteriors) < 0, 0, sum(outModelPosteriors))
+				sumOutModelPost <- ifelse(sumOutModelPost > 1, 1, sumOutModelPost)
+				
 				# Calculate the inclusion probabilities
 				index <- which(effectNames == effect)
 				prior.inclusion.probabilities[index] <- sum(inModelPriors)
-				posterior.inclusion.probabilities[index] <- sum(inModelPosteriors)
-				bayes.factor.inclusion[index] <- (sum(inModelPosteriors) / sum(outModelPosteriors)) / (sum(inModelPriors) / sum(outModelPriors))
+				posterior.inclusion.probabilities[index] <- sumInModelPost
+				bayes.factor.inclusion[index] <- (sumInModelPost / sumOutModelPost) / (sum(inModelPriors) / sum(outModelPriors))
 			
 			}
 
