@@ -22,14 +22,14 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     state[["options"]] <- options
     
     stateKey <- list()
-    stateKey[["Descriptions"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "scaleEqualSD", "validationLeaveOneOut", "validationKFold")
+    stateKey[["Descriptions"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "scaleEqualSD", "validationLeaveOneOut", "validationKFold")
     stateKey[["optimization"]] <- c("optimizeModel", "optimizeModelMaxK", "optimizeModelMaxD")
-    stateKey[["Confusion"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "scaleEqualSD")
-    stateKey[['Predictions']] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
-    stateKey[['Distances']] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
-    stateKey[["Weights"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
-    stateKey[["newData"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
-    stateKey[["Plot"]] <- c("noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
+    stateKey[["Confusion"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "scaleEqualSD")
+    stateKey[['Predictions']] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
+    stateKey[['Distances']] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
+    stateKey[["Weights"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
+    stateKey[["newData"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
+    stateKey[["Plot"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[["optimizationPlot"]] <- c("optimizeModel", "optimizeModelMaxK", "optimizeModelMaxD")
     
     attr(state, "key") <- stateKey
@@ -80,7 +80,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     
     # set the seed so that every time the same set is chosen (to prevent random results) ##
     
-    set.seed(1)
+    set.seed(options[["seed"]])
     
     # create results bundle ##
     

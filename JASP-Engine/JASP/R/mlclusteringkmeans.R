@@ -22,13 +22,13 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
     state[["options"]] <- options
     
     stateKey <- list()
-    stateKey[["evaluation"]] <- c("predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "clusterSize", "optimizedFrom", "optimizedTo", "robustFrom", "robustTo", "criterion")
-    stateKey[["clusterinfo"]] <- c("tableClusterInformation","predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "clusterSize", "optimizedFrom", "optimizedTo", "robustFrom", "robustTo", "tableClusterInfoSize", "tableClusterInfoSumSquares", "tableClusterInfoCentroids", "tableClusterInfoBetweenSumSquares", "tableClusterInfoTotalSumSquares")
-    stateKey[["predictions"]] <- c("tablePredictions", "predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "clusterSize", "optimizedFrom", "optimizedTo", "robustFrom", "robustTo", "predictionsFrom", "predictionsTo")
-    stateKey[['2dplot']] <- c("predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm")
-    stateKey[['criterionvsclusters']] <- c("predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "robustFrom", "robustTo", "criterion")
-    stateKey[["pcaplot"]] <- c("tablePredictions", "predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "clusterSize", "optimizedFrom", "optimizedTo", "robustFrom", "robustTo")
-    stateKey[["withinssvsclusters"]] <- c("predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "optimizedFrom", "optimizedTo")
+    stateKey[["evaluation"]] <- c("seed", "predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "clusterSize", "optimizedFrom", "optimizedTo", "robustFrom", "robustTo", "criterion")
+    stateKey[["clusterinfo"]] <- c("seed", "tableClusterInformation","predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "clusterSize", "optimizedFrom", "optimizedTo", "robustFrom", "robustTo", "tableClusterInfoSize", "tableClusterInfoSumSquares", "tableClusterInfoCentroids", "tableClusterInfoBetweenSumSquares", "tableClusterInfoTotalSumSquares")
+    stateKey[["predictions"]] <- c("seed", "tablePredictions", "predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "clusterSize", "optimizedFrom", "optimizedTo", "robustFrom", "robustTo", "predictionsFrom", "predictionsTo")
+    stateKey[['2dplot']] <- c("seed", "predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm")
+    stateKey[['criterionvsclusters']] <- c("seed", "predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "robustFrom", "robustTo", "criterion")
+    stateKey[["pcaplot"]] <- c("seed", "tablePredictions", "predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "clusterSize", "optimizedFrom", "optimizedTo", "robustFrom", "robustTo")
+    stateKey[["withinssvsclusters"]] <- c("seed", "predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "optimizedFrom", "optimizedTo")
     attr(state, "key") <- stateKey
     
     # read variables ##
@@ -73,7 +73,7 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
     
     # set the seed so that every time the same set is chosen (to prevent random results) ##
     
-    set.seed(1)
+    set.seed(options[["seed"]])
     
     # create results bundle ##
     

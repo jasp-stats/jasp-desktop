@@ -164,5 +164,12 @@
             "name": "plotHeight",
             "type": "Integer"
         },
+        {
+            "name": "seed",
+            "type": "Integer",
+            "default": 1,
+            "min": 1,
+            "max": 999
+        }
 	]
 }
