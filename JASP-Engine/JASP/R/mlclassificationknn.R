@@ -1186,7 +1186,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     if(kfit$response=="continuous"){
         lab = "RMSE"
     } else {
-        lab = "Misclassification"
+        lab = "Accuracy"
     }
     
     index <- which.min(value)
@@ -1194,6 +1194,12 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     optimal.weights <- kernel[index]
     optimal.distance <- dist[index]
     statistic <- min(value)
+    
+    if(kfit$response != "continuous"){
+        plot_value <- 1-value
+    } else {
+        plot_value <- value
+    }
     
     return(list("OptK" = optimal.k,
                 "OptWeights" = optimal.weights,
@@ -1204,7 +1210,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
                 "lab" = lab,
                 "k" = k,
                 "kmax" = kmax,
-                "plot_value" = value,
+                "plot_value" = plot_value,
                 "plot_lab" = lab,
                 "plot_xlim" = range(dist),
                 "plot_clim" = switch(EXPR = length(unique(k))<3, 
