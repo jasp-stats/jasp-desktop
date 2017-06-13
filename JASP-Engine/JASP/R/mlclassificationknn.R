@@ -1283,9 +1283,9 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
                                 distance = opt[['distance']],
                                 kernel = opt[['weights']],
                                 na.action = opt[['NA']],
-                                scale = FALSE)
+                                scale = options[["scaleEqualSD"]])
     
-    predictions <- predict(knn.fit,newdata = dataset[index_1,])
+    predictions <- as.vector(predict(knn.fit,newdata = dataset[index_1,]))
     
     fields <- list()
     
@@ -1297,7 +1297,15 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
             
         }
         
-        fields[[length(fields)+1]] <- list(name = "predicted", title = paste("Predicted",options[['target']], sep=' '), type = "number", format = "dp:0")
+        if(is.character(predictions)){
+        
+        fields[[length(fields)+1]] <- list(name = "predicted", title = paste("Predicted",options[['target']], sep=' '), type = "string")
+        
+        } else {
+            
+            fields[[length(fields)+1]] <- list(name = "predicted", title = paste("Predicted",options[['target']], sep=' '), type = "number", format = "dp:0")
+            
+        }
         
     } else {
         

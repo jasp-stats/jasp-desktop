@@ -740,7 +740,7 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
         
         for( i in 1:length(predictors)){
             
-            fields_clusterinfo[[length(fields_clusterinfo)+1]] <- list(name = paste('centroid',i,sep = ''), title = paste('Centroid',i), type = 'number', format = 'dp:3')	
+            fields_clusterinfo[[length(fields_clusterinfo)+1]] <- list(name = paste('centroid',i,sep = ''), title = paste('Centroid',.unv(predictors[i])), type = 'number', format = 'dp:3')	
             
         } 
         
@@ -750,21 +750,39 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
         
     }
     
+    footnotes_BSS <- .newFootnotes()
+    
     if(!is.null(res)){
         
         if(options[['tableClusterInfoBetweenSumSquares']]){
-            footnotes_BSS <- .newFootnotes()
+            
             .addFootnote(footnotes_BSS,paste('The Between Sum of Squares of this model is', round(res[['BSS']],2)))
-            footnotes_BSS <- as.list(footnotes_BSS)
+            
         }
         
         if(options[['tableClusterInfoTotalSumSquares']]){
-            footnotes_TSS <- .newFootnotes()
-            .addFootnote(footnotes_TSS,paste('The Total Sum of Squares of this model is', round(res[['TSS']],2)))
-            footnotes_TSS <- as.list(footnotes_TSS)
+            
+            .addFootnote(footnotes_BSS,paste('The Total Sum of Squares of this model is', round(res[['TSS']],2)))
+            
+        }
+        
+    } else if (is.null(res)){
+        
+        if(options[['tableClusterInfoBetweenSumSquares']]){
+            
+            .addFootnote(footnotes_BSS,'The Between Sum of Squares of this model is not yet computed')
+
+        }
+        
+        if(options[['tableClusterInfoTotalSumSquares']]){
+            
+            .addFootnote(footnotes_BSS,'The Total Sum of Squares of this model is not yet computed')
+
         }
         
     }
+    
+    footnotes_BSS <- as.list(footnotes_BSS)
     
     if(is.null(res)){
         
@@ -785,21 +803,8 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
     
     results <- list(title = 'Cluster information',
                     schema = list(fields = fields_clusterinfo),
-                    data = data_clusterinfo)
-    
-    if(options[['tableClusterInfoBetweenSumSquares']] & !options[['tableClusterInfoTotalSumSquares']] & !is.null(res)){
-        
-        results[['footnotes']] <- footnotes_BSS
-        
-    } else if (!options[['tableClusterInfoBetweenSumSquares']] & options[['tableClusterInfoTotalSumSquares']] & !is.null(res)){
-        
-        results[['footnotes']] <- footnotes_TSS
-        
-    } else if (options[['tableClusterInfoBetweenSumSquares']] & options[['tableClusterInfoTotalSumSquares']] & !is.null(res)){
-        
-        results[['footnotes']] <- as.list(footnotes_BSS, footnotes_TSS)
-        
-    }
+                    data = data_clusterinfo,
+                    footnotes = footnotes_BSS)
     
     return(results)
 }
@@ -929,23 +934,28 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
                 
             }
             
+            footnotes_BSS <- .newFootnotes()
+            
             if(options[['tableClusterInfoBetweenSumSquares']]){
-                footnotes_BSS <- .newFootnotes()
-                .addFootnote(footnotes_BSS,paste('The Between Sum of Squares of this model is', "."))
-                footnotes_BSS <- as.list(footnotes_BSS)
+                
+                .addFootnote(footnotes_BSS,'The Between Sum of Squares of this model is not yet computed')
+                
             }
             
             if(options[['tableClusterInfoTotalSumSquares']]){
-                footnotes_TSS <- .newFootnotes()
-                .addFootnote(footnotes_TSS,paste('The Total Sum of Squares of this model is', "."))
-                footnotes_TSS <- as.list(footnotes_TSS)
+                
+                .addFootnote(footnotes_BSS,'The Total Sum of Squares of this model is not yet computed')
+                
             }
+            
+            footnotes_BSS <- as.list(footnotes_BSS)
             
             data_clusterinfo <- list(list(cluster = ".", size = ".", withinss = ".", centroid1 = "."))
             
             results[['clusterinfo']] <- list(title = 'Cluster information',
                                              schema = list(fields = fields_clusterinfo),
-                                             data = data_clusterinfo)
+                                             data = data_clusterinfo,
+                                             footnotes = footnotes_BSS)
             
         }
         
