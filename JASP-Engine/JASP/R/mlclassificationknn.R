@@ -43,7 +43,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     }
     
     if(length(options[["indicator"]]) > 0){
-        indicator <- options[["indicator"]]
+        indicator <- unlist(options[["indicator"]])
     }
     
     variables.to.read <- c(predictors, target, indicator)
@@ -127,6 +127,11 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
         }
         if(length(target[target!='']) > 0){
             target <- .v(target)
+        }
+        
+        if(length(indicator[indicator!=""]) > 0){
+            indicator <- .v(indicator)
+            dataset_indicator <- dataset
         }
         
         # Create formula ##
@@ -224,7 +229,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
         
         if(options[["indicator"]] != "" && !is.null(res)){
             
-            results[["newData"]] <- .predictKNNclassification(dataset, options, predictors, formula, res, indicator, opt)
+            results[["newData"]] <- .predictKNNclassification(dataset_indicator, options, predictors, formula, res, indicator, opt)
             state[["newData"]] <- results[["newData"]]
             
         }
@@ -1278,20 +1283,20 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     
 }
 
-.predictKNNclassification <- function(dataset, options, predictors, formula, res, indicator, opt){
+.predictKNNclassification <- function(dataset_indicator, options, predictors, formula, res, indicator, opt){
     
-    index_1 <- which(dataset[,.v(indicator)] == 1)
-    index_0 <- which(dataset[,.v(indicator)] == 0)
+    index_1 <- which(dataset_indicator[,indicator] == 1)
+    index_0 <- which(dataset_indicator[,indicator] == 0)
     
     knn.fit <- kknn::train.kknn(formula = formula,
-                                data = dataset[index_0,],
+                                data = dataset_indicator[index_0,],
                                 ks = res[["Optimal.K"]],
                                 distance = opt[['distance']],
                                 kernel = opt[['weights']],
                                 na.action = opt[['NA']],
                                 scale = options[["scaleEqualSD"]])
     
-    predictions <- as.vector(predict(knn.fit,newdata = dataset[index_1,]))
+    predictions <- as.vector(predict(knn.fit,newdata = dataset_indicator[index_1,]))
     
     fields <- list()
     
@@ -1334,7 +1339,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
             
             for(k in 1:length(predictors)){
                 
-                data[[i]][[paste('predictor',k,sep = '')]] <- .clean(dataset[index_1[i],predictors[k]])
+                data[[i]][[paste('predictor',k,sep = '')]] <- .clean(dataset_indicator[index_1[i],predictors[k]])
                 
             }
             

@@ -125,6 +125,10 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	if(length(target[target!='']) > 0){
 		target <- .v(target)
 	}
+	if(length(indicator[indicator!=""]) > 0){
+	    indicator <- .v(indicator)
+	    dataset_indicator <- dataset
+	}
 	
 	# Create formula ##
 	
@@ -133,6 +137,8 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	# Run the analysis ##
 	
 	if(length(predictors[predictors!='']) > 0 & length(target[target!='']) > 0){
+	    
+	    dataset <- na.omit(dataset)
 		
 		train.index <- sample(c(TRUE,FALSE),nrow(dataset),replace = TRUE,prob = c(opt[['ntrain']]*0.01,1-(opt[['ntrain']]*0.01)))
 		train <- dataset[which(train.index == TRUE), ]
@@ -204,7 +210,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	
 	if(options[["indicator"]] != "" && !is.null(res)){
 	    
-	    results[["newData"]] <- .predictKNNregression(dataset, options, predictors, formula, res, indicator, opt)
+	    results[["newData"]] <- .predictKNNregression(dataset_indicator, options, predictors, formula, res, indicator, opt)
 	    state[["newData"]] <- results[["newData"]]
 	    
 	}
@@ -1004,20 +1010,20 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
     
 }
 
-.predictKNNregression <- function(dataset, options, predictors, formula, res, indicator, opt){
+.predictKNNregression <- function(dataset_indicator, options, predictors, formula, res, indicator, opt){
     
-    index_1 <- which(dataset[,.v(indicator)] == 1)
-    index_0 <- which(dataset[,.v(indicator)] == 0)
+    index_1 <- which(dataset_indicator[,indicator] == 1)
+    index_0 <- which(dataset_indicator[,indicator] == 0)
     
     knn.fit <- kknn::train.kknn(formula = formula,
-                                data = dataset[index_0,],
+                                data = dataset_indicator[index_0,],
                                 ks = res[["Optimal.K"]],
                                 distance = opt[['distance']],
                                 kernel = opt[['weights']],
                                 na.action = opt[['NA']],
                                 scale = FALSE)
     
-    predictions <- predict(knn.fit,newdata = dataset[index_1,])
+    predictions <- predict(knn.fit,newdata = dataset_indicator[index_1,])
     
     fields <- list()
     
@@ -1052,7 +1058,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
             
             for(k in 1:length(predictors)){
                 
-                data[[i]][[paste('predictor',k,sep = '')]] <- .clean(dataset[index_1[i],predictors[k]])
+                data[[i]][[paste('predictor',k,sep = '')]] <- .clean(dataset_indicator[index_1[i],predictors[k]])
                 
             }
             

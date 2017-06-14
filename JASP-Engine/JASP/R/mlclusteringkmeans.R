@@ -106,6 +106,8 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
     
     else {
         
+        dataset <- na.omit(dataset)
+        
         # Set the right options for the analysis ##
         
         opt <- .OptionsSet(dataset = dataset,options = options)

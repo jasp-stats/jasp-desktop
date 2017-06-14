@@ -40,7 +40,7 @@ MLClassificationKNNForm::MLClassificationKNNForm(QWidget *parent) :
 
 	_indicatorListModel = new TableModelVariablesAssigned(this);
 	_indicatorListModel->setSource(&_availableVariablesModel);
-	_indicatorListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+    _indicatorListModel->setVariableTypesSuggested(Column::ColumnTypeNominal);
 	_indicatorListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->indicator->setModel(_indicatorListModel);
 
