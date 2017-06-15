@@ -598,7 +598,7 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 	parser.parse(utf8, root);
 
 	QString caption = "Save JASP Image";
-	QString filter = "Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;High-Resolution Tagged Image File (*.tiff)";
+	QString filter = "Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff)";
     QString selectedFilter;
 
     QString finalPath = QFileDialog::getSaveFileName(this, caption, QString(), filter, &selectedFilter);
@@ -616,7 +616,7 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 			root["finalPath"] = finalPath.toStdString();
 			analysis->saveImage(analysis, root);
 		}
-		else if (selectedFilter == "High-Resolution Tagged Image File (*.tiff)")
+		else if (selectedFilter == "300 dpi Tagged Image File (*.tiff)")
 		{
 			root["type"] = "tiff";
 			root["finalPath"] = finalPath.toStdString();
