@@ -1451,14 +1451,14 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>boundSingleItemView</class>
@@ -1466,11 +1466,64 @@
    <header>widgets/boundsingleitemview.h</header>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listAvailableFields</tabstop>
+  <tabstop>buttonAssign_main_fields</tabstop>
+  <tabstop>variables</tabstop>
+  <tabstop>frequencyTables</tabstop>
+  <tabstop>pushButton_6</tabstop>
+  <tabstop>plotVariables</tabstop>
+  <tabstop>plotCorrelationMatrix</tabstop>
+  <tabstop>splitPlots</tabstop>
+  <tabstop>splitPlotOutlierLabel</tabstop>
+  <tabstop>splitPlotColour</tabstop>
+  <tabstop>splitPlotBoxplot</tabstop>
+  <tabstop>splitPlotViolin</tabstop>
+  <tabstop>splitPlotJitter</tabstop>
+  <tabstop>splitby</tabstop>
+  <tabstop>buttonAssignSplitby</tabstop>
+  <tabstop>pushButton_3</tabstop>
+  <tabstop>percentileValuesQuartiles</tabstop>
+  <tabstop>percentileValuesEqualGroups</tabstop>
+  <tabstop>percentileValuesEqualGroupsNo</tabstop>
+  <tabstop>percentileValuesPercentiles</tabstop>
+  <tabstop>percentileValuesPercentilesPercentiles</tabstop>
+  <tabstop>mean</tabstop>
+  <tabstop>median</tabstop>
+  <tabstop>mode</tabstop>
+  <tabstop>sum</tabstop>
+  <tabstop>statisticsValuesAreGroupMidpoints</tabstop>
+  <tabstop>standardDeviation</tabstop>
+  <tabstop>minimum</tabstop>
+  <tabstop>variance</tabstop>
+  <tabstop>maximum</tabstop>
+  <tabstop>range</tabstop>
+  <tabstop>standardErrorMean</tabstop>
+  <tabstop>skewness</tabstop>
+  <tabstop>kurtosis</tabstop>
+  <tabstop>pushButton_4</tabstop>
+  <tabstop>_1noCharts</tabstop>
+  <tabstop>_2barCharts</tabstop>
+  <tabstop>_3pieCharts</tabstop>
+  <tabstop>_4histograms</tabstop>
+  <tabstop>chartShowNormalCurve</tabstop>
+  <tabstop>_1frequencies</tabstop>
+  <tabstop>_2percentages</tabstop>
+  <tabstop>pushButton_5</tabstop>
+  <tabstop>_1ascendingValues</tabstop>
+  <tabstop>_2descendingValues</tabstop>
+  <tabstop>_3ascendingCounts</tabstop>
+  <tabstop>_4descendingCounts</tabstop>
+  <tabstop>_1compareVariables</tabstop>
+  <tabstop>_2organiseOutputByVariables</tabstop>
+  <tabstop>suppressTablesWithManyCategories</tabstop>
+  <tabstop>lineEdit_3</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

@@ -592,6 +592,30 @@
    <header>widgets/boundpairstable.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>availableFields</tabstop>
+  <tabstop>assignButton</tabstop>
+  <tabstop>pairs</tabstop>
+  <tabstop>radioButton</tabstop>
+  <tabstop>radioButton_2</tabstop>
+  <tabstop>credibleInterval</tabstop>
+  <tabstop>ciValue</tabstop>
+  <tabstop>_1twoTailed</tabstop>
+  <tabstop>_2oneTailedGreaterThan</tabstop>
+  <tabstop>_3oneTailedLessThan</tabstop>
+  <tabstop>plotScatter</tabstop>
+  <tabstop>plotPriorAndPosterior</tabstop>
+  <tabstop>plotPriorAndPosteriorAdditionalInfo</tabstop>
+  <tabstop>plotBayesFactorRobustness</tabstop>
+  <tabstop>plotSequentialAnalysis</tabstop>
+  <tabstop>plotSequentialAnalysisRobustness</tabstop>
+  <tabstop>_1</tabstop>
+  <tabstop>_2</tabstop>
+  <tabstop>_3</tabstop>
+  <tabstop>priorWidth</tabstop>
+  <tabstop>_1excludeAnalysisByAnalysis</tabstop>
+  <tabstop>_2excludeListwise</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

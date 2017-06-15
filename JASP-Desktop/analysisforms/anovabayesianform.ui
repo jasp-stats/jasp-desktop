@@ -1169,11 +1169,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -1191,6 +1186,11 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
@@ -1201,9 +1201,9 @@
    <header>widgets/boundsingleitemview.h</header>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>AnovaModelWidget</class>
@@ -1212,6 +1212,39 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listAvailableFields</tabstop>
+  <tabstop>buttonAssignDependent</tabstop>
+  <tabstop>dependent</tabstop>
+  <tabstop>buttonAssignFixed</tabstop>
+  <tabstop>fixedFactors</tabstop>
+  <tabstop>buttonAssignRandom</tabstop>
+  <tabstop>randomFactors</tabstop>
+  <tabstop>_1</tabstop>
+  <tabstop>_2</tabstop>
+  <tabstop>_3</tabstop>
+  <tabstop>effects</tabstop>
+  <tabstop>descriptives</tabstop>
+  <tabstop>__3</tabstop>
+  <tabstop>__4</tabstop>
+  <tabstop>expanderModel</tabstop>
+  <tabstop>expanderDescriptivesPlot</tabstop>
+  <tabstop>plotVariables</tabstop>
+  <tabstop>buttonAssignHorizontalAxis</tabstop>
+  <tabstop>plotHorizontalAxis</tabstop>
+  <tabstop>buttonAssignSeperateLines</tabstop>
+  <tabstop>plotSeparateLines</tabstop>
+  <tabstop>buttonAssignSeperatePlots</tabstop>
+  <tabstop>plotSeparatePlots</tabstop>
+  <tabstop>plotCredibleInterval</tabstop>
+  <tabstop>plotCredibleIntervalInterval</tabstop>
+  <tabstop>expanderAdvanced</tabstop>
+  <tabstop>priorFixedEffects</tabstop>
+  <tabstop>priorRandomEffects</tabstop>
+  <tabstop>_1auto</tabstop>
+  <tabstop>_2fixed</tabstop>
+  <tabstop>fixedSamplesNumber</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
