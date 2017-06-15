@@ -963,11 +963,12 @@ saveImage <- function(plotName, format, height, width){
 		
   } else if (format == "tiff") {
 		
-		hiResMultip <- 300/((.ppi/96)*72)
+		hiResMultip <- 300/72
 		grDevices::tiff(filename=fullPath, 
 										width = width * hiResMultip, 
 										height = height * hiResMultip, 
-										res = 300, bg="transparent")
+										res = 300, bg="transparent",
+										compression = "lzw")
 		
 	} else if (format == "pdf") {
 		
