@@ -968,7 +968,8 @@ saveImage <- function(plotName, format, height, width){
 										width = width * hiResMultip, 
 										height = height * hiResMultip, 
 										res = 300, bg="transparent",
-										compression = "lzw")
+										compression = "lzw",
+										type = "cairo")
 		
 	} else if (format == "pdf") {
 		
