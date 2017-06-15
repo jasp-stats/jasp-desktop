@@ -32,7 +32,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   
 
   ## call the common initialization function
-  init <- .initializePCA(dataset, options, perform)
+init <- .initializePCA(dataset, options, perform)
   
   
   results <- init[["results"]]
@@ -91,30 +91,25 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   keep <- NULL
 
   # # States:
-  newAnalysis <- TRUE
-  state <- .retrieveState()
-
-  if (!is.null(state) && !is.null(state[["analysisResults"]])) {  # is there state?
-  
-  # if ( !is.null(state)) {  # is there state?
-    
-    # nVariable <- length(options$variables)
-    diff <- .diff(options,state$options)
-    
-    if (is.list(diff) && !diff[['rotationMethod']] && !diff[['orthogonalSelector']] && !diff[['obliqueSelector']] && !diff[['variables']] && !diff[['factorMethod']] && 
-        !diff[['eigenValuesBox']] && !diff[['numberOfFactors']]) {
-
-      # old results can be used
-      newAnalysis <- FALSE
-    }
-  }
-
+  # newAnalysis <- TRUE
   # state <- .retrieveState()
-  # print("is.null(state$analysisResults)")
-  # print(is.null(state[["analysisResults"]]))
 
-  # if(is.null(state[["analysisResults"]]) || ){#|| !change[["analysisResults"]]
-  if(newAnalysis){
+  # if (!is.null(state) && !is.null(state[["analysisResults"]])) {  # is there state?
+  
+  # # if ( !is.null(state)) {  # is there state?
+    
+  #   # nVariable <- length(options$variables)
+  #   diff <- .diff(options,state$options)
+    
+  #   if (is.list(diff) && !diff[['rotationMethod']] && !diff[['orthogonalSelector']] && !diff[['obliqueSelector']] && !diff[['variables']] && !diff[['factorMethod']] && 
+  #       !diff[['eigenValuesBox']] && !diff[['numberOfFactors']]) {
+
+  #     # old results can be used
+  #     newAnalysis <- FALSE
+  #   }
+  # }
+
+  if(is.null(state[["analysisResults"]])){
 
     state <- NULL
     analysisResults <- NULL
@@ -142,37 +137,25 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
       )
     
       error <- .hasErrors(dataset=dataset, perform=perform, type=c("infinity", "variance"), custom=customChecks, exitAnalysisIfErrors=TRUE)
-
+      print("rerun analysis...")
       analysisResults <- try(silent = FALSE, expr = {
         .estimatePCA(dataset, options, perform)
         })
 
     }
-    print("rerun analysis...")
-    # output
-    # Make factor loadings table:
-    results[["factorLoadings"]] <- .getLoadingsPCA(analysisResults, dataset, options, perform)
-
-    # Create fit measures tables:
-    results[["goodnessOfFit"]] <- .goodnessOfFitPCA(analysisResults, options, perform)
-    # # if(newAnalysis || (is.list(diff) && diff[['incl_fitIndices']] && options$incl_fitIndices)){
-    # if(options$incl_fitIndices){
-    #   results[["fitMeasures"]] <- .fitMeasuresPCA(analysisResults, options,perform)
-    # }else{
-    #   results[["fitMeasures"]] <- NULL
-    # }
 
 
   }else{
     print("reuse state...")
     analysisResults <- state[["analysisResults"]]
-    results[["factorLoadings"]] <- state[["factorLoadings"]]
-    results[["goodnessOfFit"]] <- state[["goodnessOfFit"]]
-    # if(isTRUE(options$incl_correlations)) results[["factorCorrelations"]] <- state[["factorCorrelations"]]
-    # if(isTRUE(options$incl_fitIndices)) results[["fitMeasures"]] <- state[["fitMeasures"]]
   }
 
+
+    # Output table
+    # Create fit measures tables:
+    results[["goodnessOfFit"]] <- .goodnessOfFitPCA(analysisResults, options, perform)
     # Create factor correlation table:
+    results[["factorLoadings"]] <- .getLoadingsPCA(analysisResults, dataset, options, perform)
 
     if(options$incl_correlations){
       results[["factorCorrelations"]] <- .getFactorCorrelationsPCA(analysisResults, options, perform)
@@ -181,10 +164,10 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   # Output Plot
 
   # Create path diagram:
-  # if(newAnalysis || (is.list(diff) && diff[['incl_pathDiagram']] && options$incl_pathDiagram)){
+
   if(isTRUE(options$incl_pathDiagram)){
     p <- try(silent = FALSE, expr = {
-      .pathDiagramPCA(analysisResults, options, perform, oldPlot = state[["pathDiagramPCA"]])
+      .pathDiagramPCA(analysisResults, options, perform, oldPlot = state[["pathDiagram"]])
      })
 
     if(isTryError(p)){
@@ -192,12 +175,12 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
       results[["pathDiagram"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
     }else{
       results[["pathDiagram"]] <- p
+      keep <- c(keep, results[["pathDiagram"]][["data"]])
     }
     
   }
 
   # Scree plot:
-  # if(newAnalysis || (is.list(diff) && diff[['incl_screePlot']] && options$incl_screePlot)){
   if(isTRUE(options$incl_screePlot)){
     p <- try(silent = FALSE, expr = {
       .screePlot(dataset, options, perform, oldPlot = state[["screePlot"]])
@@ -208,6 +191,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
       results[["screePlot"]][["error"]] <- list(error="badData", errorMessage=errorMessage)
     }else{
       results[["screePlot"]] <- p
+      keep <- c(keep, results[["screePlot"]][["data"]])
     }
   }
   ## TEMP DEBUG THING:
@@ -221,17 +205,14 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   state <- list(
     options = options,
     analysisResults = analysisResults,
-    factorLoadings = results[["factorLoadings"]],
-    factorCorrelations = results[["factorCorrelations"]],
-    goodnessOfFit = results[["goodnessOfFit"]],
-    fitMeasures = results[["fitMeasures"]],
     pathDiagram = results[["pathDiagram"]],
     screePlot = results[["screePlot"]]
   )
 
-
   attr(state, "key") <- stateKey
-  # attr(state, "keep") <- c("factorLoadings","factorCorrelations","goodnessOfFit","fitMeasures","pathDiagram","screePlot")
+  # attr(state, "keep") <- c("pathDiagram","screePlot")
+  print("check state in the end...")
+  print(is.null(state[["screePlot"]]))
 
   if (perform == "run") {
 
@@ -303,8 +284,6 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
 # Estimate PCA:
 .estimatePCA <- function(dataset, options, perform) {
 
-  print("in .estimatePCA...")
-
   if (options$rotationMethod == "orthogonal"){
       Rotation <- options$orthogonalSelector
   } else {
@@ -348,7 +327,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   footnotes <- .newFootnotes()
   # Extract loadings:
   # if (!is.null(analysisResults) & perform == "run"){
-  if(is.null(analysisResults) || isTryError(analysisResults) || perform == "init"){
+  if(is.null(analysisResults) || isTryError(analysisResults)){#|| perform == "init"
     if (is.null(options$numberOfFactors)){
       nFactor <- 0
     } else {
@@ -371,8 +350,6 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
 
     message <- analysisResults$message
     .addFootnote(footnotes, symbol = "", text = message)
-    print("message")
-    print(message)
 
     analysisResults <- analysisResults$Results
     loadingsMatrix <- as.matrix(loadings(analysisResults))
@@ -484,8 +461,9 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
 # Path diagram:
 .pathDiagramPCA <- function(analysisResults, options, perform, oldPlot=NULL){
   
-  if (!is.null(oldPlot) && !identical(oldPlot[["data"]], ""))
+  if (!is.null(oldPlot) && !identical(oldPlot[["data"]], "")){ #&& !is.null(oldPlot[["data"]])
     return(oldPlot)
+  }
 
   pathDiagram <- list()
   pathDiagram$title <- "Path Diagram"
@@ -506,14 +484,15 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   
   # if (perform != "run" | is.null(analysisResults) | !isTRUE(options$incl_pathDiagram)){
   
-  if (is.null(analysisResults) || !isTRUE(options$incl_pathDiagram) || perform == "init" || isTryError(analysisResults)){
+  if (is.null(analysisResults) || isTryError(analysisResults)){ # || !isTRUE(options$incl_pathDiagram || perform == "init"
     
     pathDiagram$data <- NULL
     
   } else {
+  # if(perform == "run"){
     
     
-    image <- .beginSaveImage(pathDiagram$width,pathDiagram$height)
+    # image <- .beginSaveImage(pathDiagram$width,pathDiagram$height)
 #     Lambda <- loadings(analysisResults)
 #     labels <- .unv(rownames(Lambda))
 #     Lambda <- matrix(c(Lambda),nrow(Lambda),ncol(Lambda))
@@ -650,21 +629,30 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
       rep(12,nFactor),
       rep( 7,nIndicator)
     )
-    
+
+    # image <- .beginSaveImage(pathDiagram$width,pathDiagram$height)
     # Plot:
     label.scale.equal <- c(rep(1,nFactor),rep(2,nIndicator))
  
     # Run once without plotting to obtain the scaled label sizes:
-    qgraph::qgraph(E, layout = L, directed=TRUE, bidirectional=bidir, residuals = TRUE, residScale  = 10,
-                   labels = c(factors,labels), curve = curve, curveScale = FALSE, edgeConnectPoints = ECP,
-                   loopRotation=loopRotation, shape = shape, vsize = size1, vsize2 = size2,label.scale.equal=label.scale.equal,
-                   residScale = 2, mar = c(5,10,5,12), normalize = FALSE, label.fill.vertical = 0.75, cut = options$highlightText,
-                   bg = "transparent"
-    )
+    .plotFunc <- function(){
+      qgraph::qgraph(E, layout = L, directed=TRUE, bidirectional=bidir, residuals = TRUE, residScale  = 10,
+                     labels = c(factors,labels), curve = curve, curveScale = FALSE, edgeConnectPoints = ECP,
+                     loopRotation=loopRotation, shape = shape, vsize = size1, vsize2 = size2,label.scale.equal=label.scale.equal,
+                     residScale = 2, mar = c(5,10,5,12), normalize = FALSE, label.fill.vertical = 0.75, cut = options$highlightText,
+                     bg = "transparent"
+      )
+    }
     
     
-    pathDiagram$data <- .endSaveImage(image)
-    pathDiagram$status <- "complete"
+    # pathDiagram$data <- .endSaveImage(image)
+    # pathDiagram$status <- "complete"
+    content <- .writeImage(width = pathDiagram$width, 
+      height = pathDiagram$height, plot = .plotFunc, obj = TRUE)
+    pathDiagram[["convertible"]] <- TRUE
+    pathDiagram[["obj"]] <- content[["obj"]]
+    pathDiagram[["data"]] <- content[["png"]]
+    pathDiagram[["status"]] <- "complete"
     
   }
   
@@ -678,7 +666,6 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
 
 # Factor correlations:
 .getFactorCorrelationsPCA <- function(analysisResults, options, perform){
-  print("in .getFactorCorrelationsPCA...")
 
   # Create JASP table:
   FactorCorrelations <- list()
@@ -694,7 +681,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   ))
 
    # Extract loadings  
-  if(is.null(analysisResults) || isTryError(analysisResults) || perform == "init"){
+  if(is.null(analysisResults) || isTryError(analysisResults)){#|| perform == "init"
     if (is.null(options$numberOfFactors)){
       nFact <- 0
     } else {
@@ -770,7 +757,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   ))
 
   # Extract loadings:
-  if(is.null(analysisResults) || isTryError(analysisResults) || perform == "init"){
+  if(is.null(analysisResults) || isTryError(analysisResults)){# || perform == "init"
     Fits <- list(
       CHI = ".",
       PVAL = ".",
@@ -843,7 +830,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   ))
 
   # Extract loadings:
-  if(is.null(analysisResults) || isTryError(analysisResults) || perform == "init"){
+  if(is.null(analysisResults) || isTryError(analysisResults)){#|| perform == "init"
     Fits <- list(
       CHI = ".",
       PVAL = ".",
@@ -911,10 +898,13 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
 ### Screeplot:
 
 .screePlot <- function(dataset, options, perform, oldPlot = NULL) {
-  # # After image can be wrote to file, the state system can be used to return unchanged screePlot
-  # if (!is.null(oldPlot) && !identical(oldPlot[["data"]], "") && !is.null(oldPlot[["data"]]))
-  #   return(oldPlot)
+  # After image can be wrote to file, the state system can be used to return unchanged screePlot
+  if (!is.null(oldPlot) && !identical(oldPlot[["data"]], "") && !is.null(oldPlot[["data"]])){
+    print("reuse screePlot from state...")
+    return(oldPlot)
+  }
   
+  # print("drawing screePlot...")
   screePlot <- list()
   screePlot$title <- "Scree Plot"
   screePlot$width <- options$plotWidthScreePlot
@@ -922,9 +912,12 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   screePlot$custom <- list(width="plotWidthScreePlot", height="plotHeightScreePlot")
   
   #   if (perform == "run" && status$ready && !status$error && !is.null(model)) {
-  #    
-  if (perform == "run" && !is.null(dataset) && ncol(dataset) > 1 && nrow(dataset)> 1 && length(options$variables) > 1 && isTRUE(options$incl_screePlot)) {
-
+  #
+  print(!is.null(dataset))
+  print(nrow(dataset)> 1)
+  print(length(options$variables) > 1)
+  if (!is.null(dataset) && nrow(dataset)> 1 && length(options$variables) > 1) { # && ncol(dataset) > 1 && nrow(dataset)> 1 && perform == "run" && isTRUE(options$incl_screePlot)
+    print("drawing screePlot...")
     # Compute ev:
     
     # Compute ev:
@@ -973,17 +966,22 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
                      legend.key = ggplot2::element_rect(fill = "transparent", colour = "transparent"),
                      legend.background=ggplot2::element_rect(fill="transparent",colour=NA))
     
-    image <- .beginSaveImage(options$plotWidthScreePlot, options$plotHeightScreePlot)
-    print(p) # Todo: Not sure what is the right to write image file when applying ggplot2 
-    content <- .endSaveImage(image)
-    
-    screePlot$data <- content
-    screePlot$status <- "complete"
+    # image <- .beginSaveImage(options$plotWidthScreePlot, options$plotHeightScreePlot)
+    # print(p) # Todo: Not sure what is the right to write image file when applying ggplot2 
+    # content <- .endSaveImage(image)
+    # screePlot$data <- content
+    # screePlot$status <- "complete"
+
+    content <- .writeImage(width = options$plotWidthScreePlot, height = options$plotHeightScreePlot, plot = p, obj = TRUE)
+    screePlot[["convertible"]] <- TRUE
+    screePlot[["obj"]] <- content[["obj"]]
+    screePlot[["data"]] <- content[["png"]]
+    screePlot[["status"]] <- "complete"
     
     # statescreePlot <- screePlot
     
   } else {
-
+    print("screePlot can not be drawn now...")
     screePlot$data <- NULL
     
     # statescreePlot <- NULL
