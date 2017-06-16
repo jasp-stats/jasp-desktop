@@ -1,5 +1,5 @@
 
-QT += core gui webenginewidgets svg network printsupport xml
+QT += core gui webenginewidgets webchannel svg network printsupport xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -51,7 +51,3 @@ linux {
 }
 
 include(JASP-Desktop.pri)
-
-HEADERS +=
-
-SOURCES +=

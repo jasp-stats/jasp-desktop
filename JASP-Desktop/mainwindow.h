@@ -32,6 +32,9 @@
 #include "asyncloader.h"
 #include "activitylog.h"
 #include "fileevent.h"
+#include "resultsjsinterface.h"
+
+class ResultsJsInterface;
 
 namespace Ui {
 class MainWindow;
@@ -41,10 +44,12 @@ class MainWindow : public QMainWindow
 {
 	Q_OBJECT
 
+	friend class ResultsJsInterface;
 public:
 	explicit MainWindow(QWidget *parent = 0);
 	void open(QString filepath);
 	~MainWindow();
+
 
 protected:
 	virtual void resizeEvent(QResizeEvent *event) OVERRIDE;
@@ -55,15 +60,13 @@ protected:
 private:
 	Ui::MainWindow *ui;
 
+	ResultsJsInterface *_resultsJsInterface;
 	AnalysisForm *_currentOptionsWidget;
-	QMenu* _analysisMenu;
 	DataSetPackage *_package;
 	DataSetTableModel *_tableModel;
 	Analysis *_currentAnalysis;
 
 	int _scrollbarWidth = 0;
-
-	double _webViewZoom;
 
 	OnlineDataManager *_odm;
 
@@ -119,56 +122,26 @@ private:
 	Json::Value getResultsMeta();
 
 	void startDataEditor(QString path);
+	void resultsPageLoaded(bool success, int ppi);
+	void analysisUnselectedHandler();
+	void setPackageModified();
+	void analysisSelectedHandler(int id);
+	void saveTextToFileHandler(const QString &filename, const QString &data);
+	void analysisChangedDownstreamHandler(int id, QString options);
+	void analysisSaveImageHandler(int id, QString options);
+	void removeAnalysisRequestHandler(int id);
 
 signals:
-	void analysisSelected(int id);
-	void analysisUnselected();
-	void analysisSaveImage(int id, QString options);
-	void analysisChangedDownstream(int id, QString options);
-	void saveTextToFile(QString filename, QString text);
-	void pushToClipboard(QString mimeType, QString data, QString html);
-	void pushImageToClipboard(QByteArray base64, QString html);
-	void saveTempImage(int id, QString path, QByteArray data);
-	void displayMessageFromResults(QString path);
-	void showAnalysesMenu(QString options);
-	void removeAnalysisRequest(int id);
-	void updateUserData(int id, QString key);
 	void updateAnalysesUserData(QString userData);
-	void simulatedMouseClick(int x, int y, int count);
-	void resultsDocumentChanged();
 
 private slots:
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisImageSavedHandler(Analysis* analysis);
-	void analysisUserDataLoadedHandler(Analysis *analysis);
-	void analysisSelectedHandler(int id);
-	void analysisUnselectedHandler();
-	void pushImageToClipboardHandler(const QByteArray &base64, const QString &html);
-	void saveTextToFileHandler(const QString &filename, const QString &data);
-	void pushToClipboardHandler(const QString &mimeType, const QString &data, const QString &html);
-	void saveTempImageHandler(int id, QString path, QByteArray data);
-	void displayMessageFromResultsHandler(QString msg);
-	void analysisChangedDownstreamHandler(int id, QString options);
-	void analysisSaveImageHandler(int id, QString options);
 
-
-	void resultsDocumentChangedHandler();
-	void simulatedMouseClickHandler(int x, int y, int count);
-	void updateUserDataHandler(int id, QString key);
-	void removeAnalysisRequestHandler(int id);
 	void removeAllAnalyses();
 	void refreshAllAnalyses();
 	void refreshAnalysesUsingColumn(QString col);
 	void resetTableView();
-	void showAnalysesMenuHandler(QString options);
-	void removeSelected();
-	void collapseSelected();
-	void editTitleSelected();
-	void copySelected();
-	void citeSelected();
-	void saveImage();
-	void noteSelected();
-	void menuHidding();
 
 	void tabChanged(int index);
 	void helpToggled(bool on);
@@ -176,7 +149,6 @@ private slots:
 	void dataSetIOCompleted(FileEvent *event);
 	void populateUIfromDataSet();
 	void itemSelected(const QString &item);
-	void exportSelected(const QString &filename);
 
 	void adjustOptionsPanelWidth();
 	void splitterMovedHandler(int, int);
@@ -195,9 +167,6 @@ private slots:
 	void updateMenuEnabledDisabledStatus();
 	void updateUIFromOptions();
 
-	void resultsPageLoaded(bool success);
-	void scrollValueChangedHandle();
-
 	void saveKeysSelected();
 	void openKeysSelected();
 	void syncKeysSelected();
@@ -208,8 +177,6 @@ private slots:
 
 	void helpFirstLoaded(bool ok);
 	void requestHelpPage(const QString &pageName);
-
-	void setExactPValuesHandler(bool exactPValues);
 
 };
 

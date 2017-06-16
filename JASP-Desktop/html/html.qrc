@@ -62,5 +62,6 @@
         <file>img/jasp-wave-up-green-100.svg</file>
         <file>img/jasp-wave-up-green-120.svg</file>
         <file>img/ul-orange-dot.png</file>
+        <file>js/qwebchannel.js</file>
     </qresource>
 </RCC>

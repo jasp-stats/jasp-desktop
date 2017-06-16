@@ -88,8 +88,6 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/regressionlinearbayesianform.cpp \
         $$PWD/qutils.cpp \
         $$PWD/activitylog.cpp \
-        $$PWD/lrnamreply.cpp \
-        $$PWD/lrnam.cpp \
         $$PWD/widgets/webview.cpp \
         $$PWD/widgets/button.cpp \
         $$PWD/ribbons/ribbonr11tlearn.cpp \
@@ -188,7 +186,9 @@ SOURCES += $$PWD/main.cpp \
 		$$PWD/importers/importdataset.cpp \
 		$$PWD/importers/importcolumn.cpp \
 		$$PWD/importers/csvimportcolumn.cpp \
-		$$PWD/preferencesdialog.cpp
+        $$PWD/preferencesdialog.cpp \
+        $$PWD/webresultpage.cpp \
+        $$PWD/resultsjsinterface.cpp
 
 HEADERS  += \
         $$PWD/aboutdialog.h \
@@ -282,8 +282,6 @@ HEADERS  += \
         $$PWD/analysisforms/regressionlinearbayesianform.h \
         $$PWD/qutils.h \
         $$PWD/activitylog.h \
-        $$PWD/lrnamreply.h \
-        $$PWD/lrnam.h \
         $$PWD/widgets/groupbox.h \
         $$PWD/widgets/button.h \
         $$PWD/widgets/webview.h \
@@ -391,7 +389,9 @@ HEADERS  += \
 		$$PWD/importers/ods/odstypes.h \
 		$$PWD/importers/ods/odsxmlcontentshandler.h \
 		$$PWD/importers/ods/odsxmlhandler.h \
-		$$PWD/importers/ods/odsxmlmanifesthandler.h
+        $$PWD/importers/ods/odsxmlmanifesthandler.h \
+        $$PWD/webresultpage.h \
+        $$PWD/resultsjsinterface.h
 
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \
