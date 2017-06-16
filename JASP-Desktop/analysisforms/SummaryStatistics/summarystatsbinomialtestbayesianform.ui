@@ -419,6 +419,21 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>successes</tabstop>
+  <tabstop>failures</tabstop>
+  <tabstop>testValue</tabstop>
+  <tabstop>_1twoTailed</tabstop>
+  <tabstop>_2oneTailedGreaterThan</tabstop>
+  <tabstop>_3oneTailedLessThan</tabstop>
+  <tabstop>plotPriorAndPosterior</tabstop>
+  <tabstop>plotPriorAndPosteriorAdditionalInfo</tabstop>
+  <tabstop>_1</tabstop>
+  <tabstop>_2</tabstop>
+  <tabstop>_3</tabstop>
+  <tabstop>betaPriorParamA</tabstop>
+  <tabstop>betaPriorParamB</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

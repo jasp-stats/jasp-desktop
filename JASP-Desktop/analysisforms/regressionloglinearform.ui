@@ -423,11 +423,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -437,6 +432,11 @@
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
    <class>BoundCheckBox</class>
@@ -449,9 +449,9 @@
    <header>widgets/boundsingleitemview.h</header>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>AnovaModelWidget</class>
@@ -460,6 +460,19 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listAvailableFields</tabstop>
+  <tabstop>buttonAssignCounts</tabstop>
+  <tabstop>counts</tabstop>
+  <tabstop>buttonAssignFactors</tabstop>
+  <tabstop>factors</tabstop>
+  <tabstop>expanderModel</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>regressionCoefficientsEstimates</tabstop>
+  <tabstop>regressionCoefficientsConfidenceIntervals</tabstop>
+  <tabstop>regressionCoefficientsConfidenceIntervalsInterval</tabstop>
+  <tabstop>VovkSellkeMPR</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

@@ -440,14 +440,19 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>boundSingleItemView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundsingleitemview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>AnovaModelWidget</class>
@@ -455,12 +460,19 @@
    <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
   </customwidget>
-  <customwidget>
-   <class>boundSingleItemView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundsingleitemview.h</header>
-  </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listAvailableFields</tabstop>
+  <tabstop>buttonAssignDependent</tabstop>
+  <tabstop>dependents</tabstop>
+  <tabstop>buttonAssignFixed</tabstop>
+  <tabstop>fixedFactors</tabstop>
+  <tabstop>buttonAssignCovariates</tabstop>
+  <tabstop>covariates</tabstop>
+  <tabstop>buttonAssignWLSWeights</tabstop>
+  <tabstop>wlsWeights</tabstop>
+  <tabstop>expanderModel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

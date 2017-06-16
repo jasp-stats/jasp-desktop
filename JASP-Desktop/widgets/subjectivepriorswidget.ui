@@ -748,6 +748,32 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>_1standardizedEffectSize</tabstop>
+  <tabstop>defaultStandardEffectSize</tabstop>
+  <tabstop>cauchyDefault</tabstop>
+  <tabstop>priorWidth</tabstop>
+  <tabstop>informativeStandardEffectSize</tabstop>
+  <tabstop>cauchyInformative</tabstop>
+  <tabstop>informativeCauchyLocation</tabstop>
+  <tabstop>informativeCauchyScale</tabstop>
+  <tabstop>normalInformative</tabstop>
+  <tabstop>informativeNormalMean</tabstop>
+  <tabstop>informativeNormalStd</tabstop>
+  <tabstop>tInformative</tabstop>
+  <tabstop>informativeTLocation</tabstop>
+  <tabstop>informativeTScale</tabstop>
+  <tabstop>informativeTDf</tabstop>
+  <tabstop>_2dienesRawEffectSize</tabstop>
+  <tabstop>halfNormalDienes</tabstop>
+  <tabstop>halfNormalDienesStd</tabstop>
+  <tabstop>normalDienes</tabstop>
+  <tabstop>normalDienesMean</tabstop>
+  <tabstop>normalDienesStd</tabstop>
+  <tabstop>uniformDienes</tabstop>
+  <tabstop>uniformDienesLowerBound</tabstop>
+  <tabstop>uniformDienesUpperBound</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

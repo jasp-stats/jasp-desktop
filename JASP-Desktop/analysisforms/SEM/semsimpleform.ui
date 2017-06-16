@@ -1054,9 +1054,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BoundTextBox</class>
+   <extends>QLineEdit</extends>
+   <header>widgets/boundtextbox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
@@ -1070,15 +1076,9 @@
    <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
-   <class>GroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/groupbox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundTextBox</class>
-   <extends>QLineEdit</extends>
-   <header>widgets/boundtextbox.h</header>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundComboBox</class>
@@ -1091,6 +1091,59 @@
    <header>widgets/boundtextedit.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>model</tabstop>
+  <tabstop>Raw</tabstop>
+  <tabstop>VarCov</tabstop>
+  <tabstop>SampleSize</tabstop>
+  <tabstop>modelName</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>_1standard</tabstop>
+  <tabstop>_2robust</tabstop>
+  <tabstop>_3bootstrap</tabstop>
+  <tabstop>errorCalculationBootstrapSamples</tabstop>
+  <tabstop>outputAdditionalFitMeasures</tabstop>
+  <tabstop>outputFittedCovarianceCorrelations</tabstop>
+  <tabstop>outputObservedCovarianceCorrelations</tabstop>
+  <tabstop>outputResidualCovarianceCorrelations</tabstop>
+  <tabstop>outputMardiasCoefficients</tabstop>
+  <tabstop>outputModificationIndices</tabstop>
+  <tabstop>outputModificationIndicesHideLowIndices</tabstop>
+  <tabstop>outputModificationIndicesHideLowIndicesThreshold</tabstop>
+  <tabstop>pushButton_2</tabstop>
+  <tabstop>groupingVariable</tabstop>
+  <tabstop>eq_loadings</tabstop>
+  <tabstop>eq_intercepts</tabstop>
+  <tabstop>eq_residuals</tabstop>
+  <tabstop>eq_residualcovariances</tabstop>
+  <tabstop>eq_means</tabstop>
+  <tabstop>eq_thresholds</tabstop>
+  <tabstop>eq_regressions</tabstop>
+  <tabstop>eq_variances</tabstop>
+  <tabstop>eq_lvcovariances</tabstop>
+  <tabstop>_1automatic</tabstop>
+  <tabstop>_2ML</tabstop>
+  <tabstop>_3GLS</tabstop>
+  <tabstop>_4WLS</tabstop>
+  <tabstop>_5ULS</tabstop>
+  <tabstop>_6DWLS</tabstop>
+  <tabstop>includeMeanStructure</tabstop>
+  <tabstop>assumeFactorsUncorrelated</tabstop>
+  <tabstop>fixExogenousCovariates</tabstop>
+  <tabstop>factorStandardisation</tabstop>
+  <tabstop>pushButton_3</tabstop>
+  <tabstop>fixManifestInterceptsToZero</tabstop>
+  <tabstop>fixLatentInterceptsToZero</tabstop>
+  <tabstop>omitResidualSingleIndicator</tabstop>
+  <tabstop>residualVariances</tabstop>
+  <tabstop>correlateExogenousLatents</tabstop>
+  <tabstop>addThresholds</tabstop>
+  <tabstop>addScalingParameters</tabstop>
+  <tabstop>correlateDependentVariables</tabstop>
+  <tabstop>_1none</tabstop>
+  <tabstop>_2Mplus</tabstop>
+  <tabstop>_3EQS</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

@@ -232,6 +232,12 @@
    <header>widgets/tableview.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listFactorsAvailable</tabstop>
+  <tabstop>buttonAssignCross</tabstop>
+  <tabstop>listModelTerms</tabstop>
+  <tabstop>buttonAssignMenu</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -1617,11 +1617,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -1639,25 +1634,30 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>AnovaModelWidget</class>
    <extends>QWidget</extends>
    <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundComboBox</class>
-   <extends>QComboBox</extends>
-   <header>widgets/boundcombobox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundTableView</class>
@@ -1671,6 +1671,53 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listAvailableFields</tabstop>
+  <tabstop>repeatedMeasuresFactors</tabstop>
+  <tabstop>buttonAssignRMCells</tabstop>
+  <tabstop>repeatedMeasuresCells</tabstop>
+  <tabstop>buttonAssignBSFactors</tabstop>
+  <tabstop>betweenSubjectFactors</tabstop>
+  <tabstop>buttonAssignCovariates</tabstop>
+  <tabstop>covariates</tabstop>
+  <tabstop>expanderModel</tabstop>
+  <tabstop>sumOfSquares</tabstop>
+  <tabstop>expanderAssumptions</tabstop>
+  <tabstop>sphericityTests</tabstop>
+  <tabstop>sphericityCorrections</tabstop>
+  <tabstop>sphericityNone</tabstop>
+  <tabstop>sphericityGreenhouseGeisser</tabstop>
+  <tabstop>sphericityHuynhFeldt</tabstop>
+  <tabstop>homogeneityTests</tabstop>
+  <tabstop>expanderContrasts</tabstop>
+  <tabstop>contrasts</tabstop>
+  <tabstop>expanderPosthoc</tabstop>
+  <tabstop>postHocTestsBonferroni</tabstop>
+  <tabstop>postHocTestsHolm</tabstop>
+  <tabstop>postHocTestsTukey</tabstop>
+  <tabstop>postHocTestsScheffe</tabstop>
+  <tabstop>expanderDescriptivesPlot</tabstop>
+  <tabstop>plotVariables</tabstop>
+  <tabstop>buttonAssignHorizontalAxis</tabstop>
+  <tabstop>plotHorizontalAxis</tabstop>
+  <tabstop>buttonAssignSeperateLines</tabstop>
+  <tabstop>plotSeparateLines</tabstop>
+  <tabstop>buttonAssignSeperatePlots</tabstop>
+  <tabstop>plotSeparatePlots</tabstop>
+  <tabstop>plotErrorBars</tabstop>
+  <tabstop>_1confidenceInterval</tabstop>
+  <tabstop>confidenceIntervalInterval</tabstop>
+  <tabstop>_2standardError</tabstop>
+  <tabstop>expanderOptions</tabstop>
+  <tabstop>marginalMeansCompareMainEffects</tabstop>
+  <tabstop>marginalMeansCIAdjustment</tabstop>
+  <tabstop>descriptives</tabstop>
+  <tabstop>effectSizeEstimates</tabstop>
+  <tabstop>effectSizeEtaSquared</tabstop>
+  <tabstop>effectSizePartialEtaSquared</tabstop>
+  <tabstop>effectSizeOmegaSquared</tabstop>
+  <tabstop>VovkSellkeMPR</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

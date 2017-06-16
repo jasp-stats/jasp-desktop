@@ -956,16 +956,26 @@ saveImage <- function(plotName, format, height, width){
 	print(fullPath)
 	
 	# Open correct graphics device
-	if (format == "eps"){
+	if (format == "eps") {
 		
 		grDevices::cairo_ps(filename=fullPath, width=insize[1], 
 												height=insize[2], bg="transparent")
 		
-  } else if (format == "tiff"){
+  } else if (format == "tiff") {
 		
-		grDevices::tiff(filename=fullPath, width = width*4, height = height*4, 
-										res = (.ppi/96)*72*4, bg="transparent")
+		hiResMultip <- 300/72
+		grDevices::tiff(filename=fullPath, 
+										width = width * hiResMultip, 
+										height = height * hiResMultip, 
+										res = 300, bg="transparent",
+										compression = "lzw",
+										type = "cairo")
 		
+	} else if (format == "pdf") {
+		
+		grDevices::cairo_pdf(filename=fullPath, width=insize[1], 
+												 height=insize[2], bg="transparent")
+	
 	} else { # add optional other formats here in "else if"-statements
 		stop("Format incorrectly specified")
 	}
