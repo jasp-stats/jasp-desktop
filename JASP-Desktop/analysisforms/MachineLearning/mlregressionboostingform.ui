@@ -104,7 +104,7 @@
                <item row="4" column="1">
                 <widget class="BoundTextBox" name="value_percentageTraining">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -131,6 +131,12 @@
             </item>
             <item row="3" column="0">
              <widget class="BoundCheckBox" name="methodCV">
+              <property name="minimumSize">
+               <size>
+                <width>140</width>
+                <height>0</height>
+               </size>
+              </property>
               <property name="text">
                <string>Cross validation</string>
               </property>
@@ -174,7 +180,7 @@
                <item row="11" column="1">
                 <widget class="BoundTextBox" name="value_subsample">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -201,6 +207,9 @@
             </item>
             <item row="3" column="1">
              <widget class="QLabel" name="label_9">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="maximumSize">
                <size>
                 <width>80</width>
@@ -215,7 +224,7 @@
             <item row="3" column="2">
              <widget class="BoundTextBox" name="value_numberOfFold">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -308,7 +317,7 @@
             <item row="1" column="2">
              <widget class="BoundTextBox" name="value_seed">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -366,7 +375,7 @@
             <item row="1" column="2">
              <widget class="BoundTextBox" name="value_numberOfCore">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -427,7 +436,7 @@
             <item row="7" column="3">
              <widget class="BoundTextBox" name="value_MinTermNodeSideMax">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="minimumSize">
                <size>
@@ -446,7 +455,7 @@
             <item row="6" column="2">
              <widget class="BoundTextBox" name="value_depthOfTreeMin">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="minimumSize">
                <size>
@@ -465,7 +474,7 @@
             <item row="6" column="4">
              <widget class="BoundTextBox" name="value_depthOfTreeStep">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="minimumSize">
                <size>
@@ -510,7 +519,7 @@
             <item row="12" column="3">
              <widget class="BoundTextBox" name="value_MinTermNodeSide">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -542,7 +551,7 @@
             <item row="7" column="4">
              <widget class="BoundTextBox" name="value_MinTermNodeSideStep">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="minimumSize">
                <size>
@@ -561,7 +570,7 @@
             <item row="6" column="3">
              <widget class="BoundTextBox" name="value_depthOfTreeMax">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="minimumSize">
                <size>
@@ -580,7 +589,7 @@
             <item row="7" column="2">
              <widget class="BoundTextBox" name="value_MinTermNodeSideMin">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="minimumSize">
                <size>
@@ -599,7 +608,7 @@
             <item row="11" column="3">
              <widget class="BoundTextBox" name="value_depthOfTree">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -1361,7 +1370,7 @@
    <sender>manual_TS</sender>
    <signal>clicked(bool)</signal>
    <receiver>value_depthOfTree</receiver>
-   <slot>setEnabled(bool)</slot>
+   <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>418</x>
@@ -1377,7 +1386,7 @@
    <sender>manual_numberOfCore</sender>
    <signal>clicked(bool)</signal>
    <receiver>value_numberOfCore</receiver>
-   <slot>setEnabled(bool)</slot>
+   <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>487</x>
@@ -1393,7 +1402,7 @@
    <sender>manual_seed</sender>
    <signal>clicked(bool)</signal>
    <receiver>value_seed</receiver>
-   <slot>setEnabled(bool)</slot>
+   <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>485</x>
@@ -1409,7 +1418,7 @@
    <sender>manual_TS</sender>
    <signal>clicked(bool)</signal>
    <receiver>value_MinTermNodeSide</receiver>
-   <slot>setEnabled(bool)</slot>
+   <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>418</x>
@@ -1425,7 +1434,7 @@
    <sender>manual_subsample</sender>
    <signal>clicked(bool)</signal>
    <receiver>value_subsample</receiver>
-   <slot>setEnabled(bool)</slot>
+   <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>169</x>
@@ -1441,7 +1450,7 @@
    <sender>manual_percentageTrain</sender>
    <signal>clicked(bool)</signal>
    <receiver>value_percentageTraining</receiver>
-   <slot>setEnabled(bool)</slot>
+   <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>207</x>
@@ -1457,7 +1466,7 @@
    <sender>methodCV</sender>
    <signal>clicked(bool)</signal>
    <receiver>value_numberOfFold</receiver>
-   <slot>setEnabled(bool)</slot>
+   <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>103</x>
@@ -1594,6 +1603,22 @@
     <hint type="destinationlabel">
      <x>645</x>
      <y>1234</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>methodCV</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>label_9</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>112</x>
+     <y>1366</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>222</x>
+     <y>1366</y>
     </hint>
    </hints>
   </connection>

@@ -5,6 +5,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 windows:CONFIG += c++11
 linux:CONFIG += c++11
+macx:CONFIG += c++11
 linux:CONFIG += -pipe
 
 DESTDIR = ..
@@ -18,8 +19,8 @@ INCLUDEPATH += ../JASP-Desktop/ \
 	../JASP-Common/ \
 	../JASP-Engine/
 
-   macx:INCLUDEPATH += ../../boost_1_54_0
-windows:INCLUDEPATH += ../../boost_1_54_0
+   macx:INCLUDEPATH += ../../boost_1_64_0
+windows:INCLUDEPATH += ../../boost_1_64_0
 
 PRE_TARGETDEPS += ../libJASP-Desktop.a
 LIBS += -L.. -lJASP-Desktop
@@ -29,8 +30,8 @@ PRE_TARGETDEPS += ../libJASP-Common.a
 LIBS += -L.. -lJASP-Common
 
 
-windows:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive.dll
-   macx:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz
+windows:LIBS += -lboost_filesystem-mgw48-mt-1_64 -lboost_system-mgw48-mt-1_64 -larchive.dll
+   macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz
   linux:LIBS += -lboost_filesystem    -lboost_system    -larchive -lrt
 
 
@@ -40,6 +41,8 @@ QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
 macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
+macx:QMAKE_CXXFLAGS += -stdlib=libc++
+
 
 QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 

@@ -119,10 +119,10 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 			# check manual percentage training
 			function(){
 				if(options[["testBox"]]=="manual_percentageTrain"){
-					if(options[["value_percentageTraining"]] < 0.1){
+					if(options[["value_percentageTraining"]] < 1){
 						return("Percentage of training too small!")
 					}
-					if(options[["value_percentageTraining"]] > 0.99){
+					if(options[["value_percentageTraining"]] > 99){
 						return("Percentage of training too large to run test-set validation")
 					}
 				}
@@ -130,10 +130,10 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 			# check manual subsample ratio
 			function(){
 				if(options[["OOBBox"]]=="manual_subsample" ){
-					if (options[["value_subsample"]] < 0.05){
+					if (options[["value_subsample"]] < 1){
 						return("Percentage of subsample too small!")
 					}
-					if (options[["value_subsample"]] > 0.95){
+					if (options[["value_subsample"]] > 99){
 						return("Percentage of subsample too large to run out-of-bag validation!")
 					}
 				}
@@ -277,6 +277,7 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 		bag.fraction <- 0.5
 	}else{
 		bag.fraction <- as.numeric(options[["value_subsample"]])
+		bag.fraction <- bag.fraction/100
 	}
 
 	# setup No. cores
@@ -290,6 +291,7 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 		train.fraction <- 0.5
 	}else if (options[["testBox"]]=="manual_percentageTrain"){
 		train.fraction <- options[["value_percentageTraining"]]
+		train.fraction <- train.fraction/100
 	}else{
 		nTrain <- options[["value_numberTraining"]]
 	}
@@ -687,6 +689,9 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 				Importance = as.numeric(varRF[,2])
 			)
 
+			# sort variables on desending order
+			toPlot <- toPlot[order(-toPlot[,2],toPlot[,1]), ]
+
 			# toPlot <- toPlot[order(toPlot[["Importance"]], decreasing = TRUE), ]
 			axisLimits <- range(pretty(toPlot[["Importance"]]))
 			axisLimits[1] <- min(c(0, axisLimits[1]))
@@ -723,7 +728,7 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 	ylab = yName[[options[["distribution"]]]]
 
 	plot <- list(
-		title = "Error v.s. Iteration",
+		title = "Error vs Iteration",
 		width = 600,
 		height = 400
 	)

@@ -68,7 +68,74 @@ MLRegressionBoostingForm::~MLRegressionBoostingForm()
 
 void MLRegressionBoostingForm::defaultOptions()
 {
+    QSizePolicy retain = ui->value_subsample->sizePolicy();
+    retain.setRetainSizeWhenHidden(true);
 
+    ui->value_subsample->setSizePolicy(retain);
+    ui->value_subsample->hide();
+
+    ui->value_percentageTraining->setSizePolicy(retain);
+    ui->value_percentageTraining->hide();
+
+    ui->value_numberOfFold->setSizePolicy(retain);
+    ui->value_numberOfFold->hide();
+
+    ui->value_numberOfCore->setSizePolicy(retain);
+    ui->value_numberOfCore->hide();
+
+    ui->value_seed->setSizePolicy(retain);
+    ui->value_seed->hide();
+
+    ui->value_depthOfTree->setSizePolicy(retain);
+    ui->value_depthOfTree->hide();
+
+    ui->value_MinTermNodeSide->setSizePolicy(retain);
+    ui->value_MinTermNodeSide->hide();
+
+    ui->value_depthOfTreeMin->setSizePolicy(retain);
+    ui->value_depthOfTreeMin->hide();
+
+    ui->value_depthOfTreeMax->setSizePolicy(retain);
+    ui->value_depthOfTreeMax->hide();
+
+    ui->value_depthOfTreeStep->setSizePolicy(retain);
+    ui->value_depthOfTreeStep->hide();
+
+    ui->value_MinTermNodeSideMin->setSizePolicy(retain);
+    ui->value_MinTermNodeSideMin->hide();
+
+    ui->value_MinTermNodeSideMax->setSizePolicy(retain);
+    ui->value_MinTermNodeSideMax->hide();
+
+    ui->value_MinTermNodeSideStep->setSizePolicy(retain);
+    ui->value_MinTermNodeSideStep->hide();
+
+    retain = ui->label_9->sizePolicy();
+    retain.setRetainSizeWhenHidden(true);
+
+    ui->label_9->setSizePolicy(retain);
+    ui->label_9->hide();
+
+    ui->label_16->setSizePolicy(retain);
+    ui->label_16->hide();
+
+    ui->label_20->setSizePolicy(retain);
+    ui->label_20->hide();
+
+    ui->label_8->setSizePolicy(retain);
+    ui->label_8->hide();
+
+    ui->label_12->setSizePolicy(retain);
+    ui->label_12->hide();
+
+    ui->label_7->setSizePolicy(retain);
+    ui->label_7->hide();
+
+    ui->label_10->setSizePolicy(retain);
+    ui->label_10->hide();
+
+    ui->label_11->setSizePolicy(retain);
+    ui->label_11->hide();
 }
 
 void MLRegressionBoostingForm::bindTo(Options *options, DataSet *dataSet)
@@ -96,3 +163,133 @@ void MLRegressionBoostingForm::factorsChanged()
 //{
 //        ui->plotMarginalPlotOneWay->setEnabled(true);
 //}
+void MLRegressionBoostingForm::on_manual_subsample_clicked(bool checked)
+{
+    if (checked) {
+        ui->value_subsample->show();
+    }
+}
+
+void MLRegressionBoostingForm::on_auto_subsample_clicked(bool checked)
+{
+    if (checked) {
+        ui->value_subsample->hide();
+    }
+}
+
+void MLRegressionBoostingForm::on_manual_percentageTrain_clicked(bool checked)
+{
+    if (checked) {
+        ui->value_percentageTraining->show();
+    }
+}
+
+void MLRegressionBoostingForm::on_auto_percentageTrain_clicked(bool checked)
+{
+    if (checked) {
+        ui->value_percentageTraining->hide();
+    }
+}
+
+void MLRegressionBoostingForm::on_methodCV_clicked(bool checked)
+{
+    if (checked) {
+        ui->value_numberOfFold->show();
+        ui->label_9->show();
+    }
+}
+
+void MLRegressionBoostingForm::on_manual_numberOfCore_clicked(bool checked)
+{
+    if (checked) {
+        ui->value_numberOfCore->show();
+    }
+}
+
+void MLRegressionBoostingForm::on_auto_numberOfCore_clicked(bool checked)
+{
+    if (checked) {
+        ui->value_numberOfCore->hide();
+    }
+}
+
+void MLRegressionBoostingForm::on_manual_seed_clicked(bool checked)
+{
+    if (checked) {
+        ui->value_seed->show();
+    }
+}
+
+void MLRegressionBoostingForm::on_auto_seed_clicked(bool checked)
+{
+    if (checked) {
+        ui->value_seed->hide();
+    }
+}
+
+void MLRegressionBoostingForm::on_manual_TS_clicked(bool checked)
+{
+    if (checked) {
+        ui->value_depthOfTree->show();
+        ui->value_MinTermNodeSide->show();
+        ui->label_16->show();
+        ui->label_20->show();
+
+        ui->value_depthOfTreeMin->hide();
+        ui->value_depthOfTreeMax->hide();
+        ui->value_depthOfTreeStep->hide();
+        ui->value_MinTermNodeSideMin->hide();
+        ui->value_MinTermNodeSideMax->hide();
+        ui->value_MinTermNodeSideStep->hide();
+        ui->label_8->hide();
+        ui->label_12->hide();
+        ui->label_7->hide();
+        ui->label_10->hide();
+        ui->label_11->hide();
+    }
+}
+
+void MLRegressionBoostingForm::on_optimized_TS_clicked(bool checked)
+{
+    if (checked) {
+        ui->value_depthOfTree->hide();
+        ui->value_MinTermNodeSide->hide();
+        ui->label_16->hide();
+        ui->label_20->hide();
+
+        ui->value_depthOfTreeMin->show();
+        ui->value_depthOfTreeMax->show();
+        ui->value_depthOfTreeStep->show();
+        ui->value_MinTermNodeSideMin->show();
+        ui->value_MinTermNodeSideMax->show();
+        ui->value_MinTermNodeSideStep->show();
+        ui->label_8->show();
+        ui->label_12->show();
+        ui->label_7->show();
+        ui->label_10->show();
+        ui->label_11->show();
+    }
+}
+
+void MLRegressionBoostingForm::on_auto_TS_clicked(bool checked)
+{
+    if (checked) {
+        ui->value_depthOfTree->hide();
+        ui->value_MinTermNodeSide->hide();
+        ui->label_16->hide();
+        ui->label_20->hide();
+
+        ui->value_depthOfTreeMin->hide();
+        ui->value_depthOfTreeMax->hide();
+        ui->value_depthOfTreeStep->hide();
+        ui->value_MinTermNodeSideMin->hide();
+        ui->value_MinTermNodeSideMax->hide();
+        ui->value_MinTermNodeSideStep->hide();
+        ui->label_8->hide();
+        ui->label_12->hide();
+        ui->label_7->hide();
+        ui->label_10->hide();
+        ui->label_11->hide();
+    }
+}
+

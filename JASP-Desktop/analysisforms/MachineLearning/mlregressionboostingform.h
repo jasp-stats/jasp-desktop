@@ -53,12 +53,18 @@ private:
 private slots:
 	void factorsChanging();
 	void factorsChanged();
-//    void on_subSampleRatioManual_clicked(bool checked);
-//    void on_subSampleRatioAuto_clicked(bool checked);
-//    void on_seedManual_clicked(bool checked);
-//    void on_seedAuto_clicked(bool checked);
-//    void on_noOfCoresManual_clicked(bool checked);
-//    void on_noOfCoresAuto_clicked(bool checked);
+	void on_manual_subsample_clicked(bool checked);
+	void on_auto_subsample_clicked(bool checked);
+	void on_manual_seed_clicked(bool checked);
+	void on_auto_seed_clicked(bool checked);
+	void on_manual_numberOfCore_clicked(bool checked);
+	void on_auto_numberOfCore_clicked(bool checked);
+	void on_manual_percentageTrain_clicked(bool checked);
+	void on_auto_percentageTrain_clicked(bool checked);
+	void on_methodCV_clicked(bool checked);
+	void on_manual_TS_clicked(bool checked);
+	void on_optimized_TS_clicked(bool checked);
+	void on_auto_TS_clicked(bool checked);
 };
 
 #endif // MLREGRESSIONBOOSTINGFORM_H
