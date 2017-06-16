@@ -545,12 +545,12 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 			descriptivesPlot[["obj"]] <- imgObj[["obj"]]
 			descriptivesPlot[["convertible"]] <- TRUE
 			descriptivesPlot[["status"]] <- "complete"
-
+			
 		} else {
-
-			descriptivesPlot[["data"]] <- ""
+		    
+		    descriptivesPlot[["data"]] <- ""
 		}
-
+		
 		descriptivesPlotList[[i]] <- descriptivesPlot
 	}
 	descriptivesPlotList

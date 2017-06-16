@@ -677,12 +677,12 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 
 .independentSamplesTTestDescriptivesPlot <- function(dataset, options, perform) {
 
-	descriptivesPlotList <- list()
-
 	variables <- options$variables
 	groups <- options$groupingVariable
 
 	if (perform == "run" && length(variables) > 0 && groups != "") {
+	    
+	    descriptivesPlotList <- list()
 
 		base_breaks_x <- function(x) {
 			b <- unique(as.numeric(x))
@@ -699,13 +699,30 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 				 yend = yend), inherit.aes = FALSE, size = 1),
 				 ggplot2::scale_y_continuous(breaks = c(min(b), max(b))))
 		}
-
+		
 		for (var in .indices(variables)) {
-			descriptivesPlot <- list("title" = variables[var])
-			descriptivesPlot[["width"]] <- options$plotWidth
-			descriptivesPlot[["height"]] <- options$plotHeight
-			descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
-
+		    
+		    descriptivesPlot <- list("title" = variables[var])
+		    
+		    errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+		                         all.target = variables[var],
+		                         observations.amount = '< 2')
+		    
+		    if (!identical(errors, FALSE)) {
+		        errorMessage <- errors$message
+		        
+		        descriptivesPlot[["data"]] <- ""
+		        descriptivesPlot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+		    } else {
+		        errorMessage <- NULL
+		    }
+		    
+		    if(is.null(errorMessage)){
+		        
+		        descriptivesPlot[["width"]] <- options$plotWidth
+		        descriptivesPlot[["height"]] <- options$plotHeight
+		        descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
+			
 			summaryStat <- .summarySE(as.data.frame(dataset), measurevar = .v(options$variables[var]),
 				groupvars = .v(options$groupingVariable), conf.interval = options$descriptivesPlotsConfidenceInterval,
 				na.rm = TRUE, .drop = FALSE)
@@ -741,23 +758,26 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 
 			descriptivesPlot[["data"]] <- imgObj[["png"]]
 			descriptivesPlot[["obj"]] <- imgObj[["obj"]]
+			
+		    }
+		    
 			descriptivesPlot[["convertible"]] <- TRUE
 			descriptivesPlot[["status"]] <- "complete"
+			
 			descriptivesPlotList[[var]] <- descriptivesPlot
 
 		}
 
+	} 
+	
+	if (perform == "run" && length(variables) > 0 && groups != "") {
+	    
+	    return(descriptivesPlotList)
+	    
 	} else {
-
-		for (var in .indices(variables)) {
-			descriptivesPlot <- list("title" = variables[var])
-			descriptivesPlot[["width"]] <- options$plotWidth
-			descriptivesPlot[["height"]] <- options$plotHeight
-			descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
-			descriptivesPlot[["data"]] <- ""
-			descriptivesPlotList[[var]] <- descriptivesPlot
-		}
+	    
+	    return(NULL)
+	    
 	}
-
-	descriptivesPlotList
+	
 }
