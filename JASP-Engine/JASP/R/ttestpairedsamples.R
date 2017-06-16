@@ -26,12 +26,13 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 	results <- init[["results"]]
 	dataset <- init[["dataset"]]
 	
-	# if (length(options$pairs) != 0) {
-	# 	errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations','infinity'),
-	# 						 all.target = unique(as.character(unlist(options$pairs)))[unique(as.character(unlist(options$pairs)))!=""],
-	# 						 observations.amount = '< 2',
-	# 						 exitAnalysisIfErrors = TRUE)
-	# }
+
+	if (length(options$pairs) != 0) {
+		errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations','infinity'),
+							 all.target = unique(as.character(unlist(options$pairs)))[unique(as.character(unlist(options$pairs)))!=""],
+							 observations.amount = '< 2',
+							 exitAnalysisIfErrors = TRUE)
+	}
 	
 	## call the specific paired T-Test functions
 	results[["ttest"]] <- .ttestPairedSamples(dataset, options, perform)
@@ -218,6 +219,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 			
 			if (!identical(errors, FALSE)) {
 				errorMessage <- errors$message
+
 			} else {
 			    errorMessage <- NULL
 			}
@@ -292,7 +294,9 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 					## however, if there has been an error
 					## find out which and log it as a footnote
+
 					}  else if (!is.null(errorMessage)){
+
 
 						index <- .addFootnote(footnotes, errorMessage)
 						row.footnotes <- list(t = list(index))
@@ -526,6 +530,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 			}
 			
 			if(is.null(errorMessage)){
+
 			####
 			data <- data.frame(id = rep(1:length(c1), 2), dependent = c(c1, c2),
 				groupingVariable = c(rep(paste("1.", pair[[1]], sep = ""), length(c1)),

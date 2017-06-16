@@ -38,12 +38,12 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 		dataset <- init[["dataset"]]
 	}
 	
-	# if (length(options$variables) != 0) {
-	# errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations','infinity'),
-	# 					 all.target = options$variables,
-	# 					 observations.amount = '< 2',
-	# 					 exitAnalysisIfErrors = TRUE)
-	# }
+	if (length(options$variables) != 0) {
+	errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations','infinity'),
+						 all.target = options$variables,
+						 observations.amount = '< 2',
+						 exitAnalysisIfErrors = TRUE)
+	}
 
 	## call the specific one-sample T-Test functions
 	results[["ttest"]] <- .ttestOneSample(dataset, options, perform)
@@ -279,7 +279,9 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 				})
 
 				## if there has been an error, find out which and log as a footnote
+
 				if (!is.null(errorMessage)) {
+
 				index <- .addFootnote(footnotes, errorMessage)
 					row.footnotes <- list(t = list(index))
 

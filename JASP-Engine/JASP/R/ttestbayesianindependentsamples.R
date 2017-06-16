@@ -1311,6 +1311,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
     list(ttest = ttest, status = status, g1 = g1, g2 = g2, BFH1H0 = BFH1H0, plottingError = plottingError,
          BF10post = BF10post, errorFootnotes = errorFootnotes, tValue = tValue, n_group2 = n_group2,
          n_group1 = n_group1)
+
 }
 
 .base_breaks_x <- function(x) {
