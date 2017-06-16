@@ -32,7 +32,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   
 
   ## call the common initialization function
-init <- .initializePCA(dataset, options, perform)
+init <- .initialize(dataset, options, perform)
   
   
   results <- init[["results"]]
@@ -40,7 +40,7 @@ init <- .initializePCA(dataset, options, perform)
 
 
   ## initialize result ## ----
-
+  results[["title"]] = "Principal Component Analysis"
   meta <- list(
     list(name="title", type="title"),
     list(name="factorLoadings", type = "table"),
@@ -51,6 +51,8 @@ init <- .initializePCA(dataset, options, perform)
     list(name="screePlot", type="image"))
 
   results[[".meta"]] = meta
+
+
 
   ## initialize state ## ----
 
@@ -116,6 +118,8 @@ init <- .initializePCA(dataset, options, perform)
 
     if (perform == "run" && !is.null(dataset) && nrow(dataset) > 1){
 
+      error0 <- .hasErrors(dataset=dataset, perform=perform, type=c("infinity", "variance"), exitAnalysisIfErrors=TRUE)
+
       customChecks <- list(
         function() {
           if (length(options$variables) > 0 && options$numberOfFactors > length(options$variables)) {
@@ -133,11 +137,38 @@ init <- .initializePCA(dataset, options, perform)
           }else if(nrow(dataset) < 3){
             return(paste0("Not enough valid cases (", nrow(dataset),") for analysis"))
           }
+        },
+        # check whether all row variance == 0
+        function(){
+          if(!is.null(dataset) && nrow(dataset)>1){
+            varianceZero <- 0
+            for (i in 1:nrow(dataset)){
+              if(sd(dataset[i,], na.rm = TRUE) == 0) varianceZero <- varianceZero + 1
+            }
+            if(varianceZero == nrow(dataset)){
+              return("Data not valid: variance is zero in each row")
+            }
+          }
+        },
+        # check whether all variables correlates to each other
+        function(){
+          if(!is.null(dataset) && nrow(dataset)>1){
+            allCorr <- 0
+            nVar <- ncol(dataset)
+            for (i in 1:(nVar-1)){
+              for (j in (i+1):nVar){
+                if(cor(dataset[,i],dataset[,j]) > 0.98) allCorr <- allCorr + 1
+              }
+            }
+            if(allCorr == nVar*(nVar-1)/2){
+              return("Data not valid: all variables correlate with each other")
+            }
+          }
         }
       )
     
       error <- .hasErrors(dataset=dataset, perform=perform, type=c("infinity", "variance"), custom=customChecks, exitAnalysisIfErrors=TRUE)
-      print("rerun analysis...")
+
       analysisResults <- try(silent = FALSE, expr = {
         .estimatePCA(dataset, options, perform)
         })
@@ -146,19 +177,19 @@ init <- .initializePCA(dataset, options, perform)
 
 
   }else{
-    print("reuse state...")
+
     analysisResults <- state[["analysisResults"]]
   }
 
 
     # Output table
     # Create fit measures tables:
-    results[["goodnessOfFit"]] <- .goodnessOfFitPCA(analysisResults, options, perform)
+    results[["goodnessOfFit"]] <- .goodnessOfFit(analysisResults, options, perform)
     # Create factor correlation table:
-    results[["factorLoadings"]] <- .getLoadingsPCA(analysisResults, dataset, options, perform)
+    results[["factorLoadings"]] <- .getLoadings(analysisResults, dataset, options, perform, "pca")
 
     if(options$incl_correlations){
-      results[["factorCorrelations"]] <- .getFactorCorrelationsPCA(analysisResults, options, perform)
+      results[["factorCorrelations"]] <- .getFactorCorrelations(analysisResults, options, perform, "pca")
     }
 
   # Output Plot
@@ -183,7 +214,7 @@ init <- .initializePCA(dataset, options, perform)
   # Scree plot:
   if(isTRUE(options$incl_screePlot)){
     p <- try(silent = FALSE, expr = {
-      .screePlot(dataset, options, perform, oldPlot = state[["screePlot"]])
+      .screePlot(dataset, options, perform, oldPlot = state[["screePlot"]],"pca")
      })
 
     if(isTryError(p)){
@@ -210,9 +241,7 @@ init <- .initializePCA(dataset, options, perform)
   )
 
   attr(state, "key") <- stateKey
-  # attr(state, "keep") <- c("pathDiagram","screePlot")
-  print("check state in the end...")
-  print(is.null(state[["screePlot"]]))
+
 
   if (perform == "run") {
 
@@ -224,7 +253,7 @@ init <- .initializePCA(dataset, options, perform)
   }
 }
 
-.estimateNFactor <- function(dataset, options, perform){
+.estimateNFactorPCA <- function(dataset, options, perform){
     # Number of factors:
     nVariable <- length(options$variables)
 
@@ -291,7 +320,7 @@ init <- .initializePCA(dataset, options, perform)
       Rotation <- options$obliqueSelector
   }
 
-  res <- .estimateNFactor(dataset, options, perform)
+  res <- .estimateNFactorPCA(dataset, options, perform)
   nFactor <- res$nFactor
   message <- res$message
 
@@ -302,7 +331,8 @@ init <- .initializePCA(dataset, options, perform)
 }
 
 # Get loadings matrix:
-.getLoadingsPCA <- function(analysisResults, dataset, options, perform){
+.getLoadings <- function(analysisResults, dataset, options, perform, type){
+
 
   # Create JASP table:
   Loadings <- list()
@@ -323,6 +353,14 @@ init <- .initializePCA(dataset, options, perform)
   } else {
     Rotation <- options$obliqueSelector
   }
+
+  if(type == "pca"){
+    colName = ifelse(Rotation=="none","PC","RC")
+  }
+
+  if(type == "efa"){
+    colName = "Factor"
+  }
   
   footnotes <- .newFootnotes()
   # Extract loadings:
@@ -336,7 +374,7 @@ init <- .initializePCA(dataset, options, perform)
 
     loadingsMatrix <- matrix(NA,length(options$variables),nFactor+1)
 
-    colnames(loadingsMatrix) <- c( paste(ifelse(Rotation=="none","PC","RC"),seq_len(nFactor)),"Uniqueness")
+    colnames(loadingsMatrix) <- c( paste(colName,seq_len(nFactor)),"Uniqueness")
     rownames(loadingsMatrix) <- colnames(dataset)
 
 
@@ -360,7 +398,7 @@ init <- .initializePCA(dataset, options, perform)
     
     
     if (ncol(loadingsMatrix) > 0){
-      colnames(loadingsMatrix) <- paste(ifelse(Rotation=="none","PC","RC"),seq_len(ncol(loadingsMatrix)))
+      colnames(loadingsMatrix) <- paste(colName,seq_len(ncol(loadingsMatrix)))
     }
     
     # Add uniqueness:
@@ -409,7 +447,7 @@ init <- .initializePCA(dataset, options, perform)
 }
 
 # Init:
-.initializePCA <- function(dataset, options, perform) {
+.initialize <- function(dataset, options, perform) {
   
   groups <- options$groupingVariable
   depvars <- unlist(options$variables)
@@ -421,18 +459,10 @@ init <- .initializePCA(dataset, options, perform)
   if (is.null(dataset)) {
     ## if we are ready to run, read in the dataset
     if (perform == "run" && length(options$variables) > 1) {
-      #
-      #       if (options$missingValues == "excludeListwise") {
-      #         exclude <- depvars
-      #       } else {
-      #         exclude <- NULL
-      #       }
-      #
+
       dataset <- .readDataSetToEnd(columns.as.numeric = depvars,
                                    columns.as.factor = groups,
                                    exclude.na.listwise = c(depvars, groups))
-      
-      ## else just read in the headers (and create an empty table)
     } else {
       dataset <- .readDataSetHeader(columns.as.numeric = depvars,
                                     columns.as.factor = groups)
@@ -441,19 +471,10 @@ init <- .initializePCA(dataset, options, perform)
   
   ## this is the main object; we add stuff to it and return it
   results <- list(
-    "title" = "Principal Component Analysis",
     "citation" = list("Revelle, W. (2015) psych: Procedures for Personality and Psychological Research, Northwestern University,
   Evanston, Illinois, USA, http://CRAN.R-project.org/package=psych Version = 1.5.8.")
   )
-  
-  #### META
-  # meta <- list()
-  # meta[[1]] <- list(name = "title", type = "title")
-  #   meta[[2]] <- list(name = "ttest", type = "table")
-  #   meta[[3]] <- list(name="assumptionChecks", type="object", meta=list(list(name="shapiroWilk", type="table"), list(name="levene", type="table")))
-  #   meta[[4]] <- list(name="descriptives", type="object", meta=list(list(name="descriptivesTable", type="table"), list(name = "descriptivesPlots", type = "collection", meta="image")))
-  #
-  # results[[".meta"]] <- meta
+
   list("results" = results, "dataset" = dataset)
 }
 
@@ -467,6 +488,15 @@ init <- .initializePCA(dataset, options, perform)
 
   pathDiagram <- list()
   pathDiagram$title <- "Path Diagram"
+
+  if (options$rotationMethod == "orthogonal"){
+    Rotation <- options$orthogonalSelector
+  } else {
+    Rotation <- options$obliqueSelector
+  }
+
+  xName <- ifelse(Rotation == "none", "PC", "RC")
+
   pathDiagram$width <- options$plotWidthPathDiagram
   pathDiagram$height <- options$plotHeightPathDiagram
   if (pathDiagram$height==0){
@@ -474,54 +504,21 @@ init <- .initializePCA(dataset, options, perform)
   }
   pathDiagram$custom <- list(width="plotWidthPathDiagram", height="plotHeightPathDiagram")
   
-  
-  #   filename <- .requestTempFileNameNative("svg")
-  #   grDevices::svg(filename=filename, width=width/72, height=height/72, bg="transparent")
-  #   
-  #   relativePath <- filename$relativePath
-  #   base::Encoding(filename) <- "UTF-8"
-  #   
-  
-  # if (perform != "run" | is.null(analysisResults) | !isTRUE(options$incl_pathDiagram)){
-  
-  if (is.null(analysisResults) || isTryError(analysisResults)){ # || !isTRUE(options$incl_pathDiagram || perform == "init"
+  if (is.null(analysisResults) || isTryError(analysisResults)){ 
     
     pathDiagram$data <- NULL
     
   } else {
-  # if(perform == "run"){
-    
-    
-    # image <- .beginSaveImage(pathDiagram$width,pathDiagram$height)
-#     Lambda <- loadings(analysisResults)
-#     labels <- .unv(rownames(Lambda))
-#     Lambda <- matrix(c(Lambda),nrow(Lambda),ncol(Lambda))
-#     Theta <- analysisResults$uniquenesses
-#     Psi <- analysisResults$r.scores
-#     
-#     qgraph::qgraph.loadings(Lambda, factorCors = Psi, resid = Theta,model="reflective",
-#                             cut = options$highlightText, residSize = 0.25,labels = 
-#                               labels)
-#     
-    
-    # Via qgraph:
-    # Model matrices:
+
     analysisResults <- analysisResults$Results
 
-    LY <- as.matrix(loadings(analysisResults)) #labels <- .unv(rownames(LY))
+    LY <- as.matrix(loadings(analysisResults))
     TE <- diag(analysisResults$uniqueness)
     PS <- analysisResults$r.scores
     
-    if (options$rotationMethod == "orthogonal"){
-      Rotation <- options$orthogonalSelector
-    } else {
-      Rotation <- options$obliqueSelector
-    }
-    
-    
     # Variable names:
     labels <- .unv(rownames(LY))
-    factors <- paste0(ifelse(Rotation == "none", "PC", "RC"),seq_len(ncol(LY)))
+    factors <- paste0(xName,seq_len(ncol(LY)))
     
     # Number of variables:
     nFactor <- length(factors)
@@ -665,20 +662,11 @@ init <- .initializePCA(dataset, options, perform)
 
 
 # Factor correlations:
-.getFactorCorrelationsPCA <- function(analysisResults, options, perform){
+.getFactorCorrelations <- function(analysisResults, options, perform, type){
 
   # Create JASP table:
   FactorCorrelations <- list()
-  FactorCorrelations[["title"]] <- "Component Correlations"
-  FactorCorrelations[["schema"]] <- list(fields = list(
-    #     list(name="model", title = "", type="text"),
-    #     list(name="cn_05", title = "Hoelter Critical N (CN) alpha=0.05", type="number", format = "dp:3"),
-    #     list(name="cn_01", title = "Hoelter Critical N (CN) alpha=0.01", type="number", format = "dp:3"),
-    #     list(name="gfi", title = "Goodness of Fit Index (GFI)", type="number", format = "dp:3"),
-    #     list(name="agfi", title = "Parsimony Goodness of Fit Index (GFI)", type="number", format = "dp:3"),
-    #     list(name="mfi", title = "McDonald Fit Index (MFI)", type="number", format = "dp:3"),
-    #     list(name="ecvi", title = "Expected Cross-Validation Index (ECVI)", type="number", format = "dp:3")
-  ))
+  FactorCorrelations[["title"]] <- ifelse(type == "pca","Component Correlations", "Factor Correlations")
 
    # Extract loadings  
   if(is.null(analysisResults) || isTryError(analysisResults)){#|| perform == "init"
@@ -689,6 +677,7 @@ init <- .initializePCA(dataset, options, perform)
     }
     
     corMatrix <- matrix(,0,0)
+
 
     if(isTryError(analysisResults)){
       footnotes <- .newFootnotes()
@@ -708,13 +697,16 @@ init <- .initializePCA(dataset, options, perform)
   } else {
     Rotation <- options$obliqueSelector
   }
-  
+
+  xName = ifelse(type == "pca",ifelse(Rotation == "none","PC","RC"), "Factor")
+
   if (ncol(corMatrix) > 0){
-    colnames(corMatrix) <- rownames(corMatrix) <- paste(ifelse(Rotation == "none","PC","RC"),seq_len(ncol(corMatrix)))
+    colnames(corMatrix) <- rownames(corMatrix) <- paste(xName,seq_len(ncol(corMatrix)))
   }
 
   
   # Add columns:
+  FactorCorrelations[["schema"]] <- list(fields = list())
   FactorCorrelations[["schema"]][["fields"]][[1]] <- list(name = "VAR", title = "", type="string")
   
   for (j in seq_len(ncol(corMatrix))){
@@ -739,7 +731,7 @@ init <- .initializePCA(dataset, options, perform)
 }
 
 # Goodness of fit
-.goodnessOfFitPCA <- function(analysisResults, options, perform){
+.goodnessOfFit <- function(analysisResults, options, perform){
 
   # Create JASP table:
   goodnessOfFit <- list()
@@ -762,14 +754,6 @@ init <- .initializePCA(dataset, options, perform)
       CHI = ".",
       PVAL = ".",
       DF = "."
-#       RMS = "."
-#       RMSEA = ".",
-#       RMSEAlower = ".",      
-#       RMSEAupper = ".",
-#       TLI = ".",
-#       RMS = ".",
-#       CRMS = ".",
-#       BIC = "."
     )
 
     if(isTryError(analysisResults)){
@@ -783,14 +767,6 @@ init <- .initializePCA(dataset, options, perform)
       CHI = .DotIfNULL(analysisResults$STATISTIC),
       PVAL = .DotIfNULL(analysisResults$PVAL),
       DF = .DotIfNULL(analysisResults$dof)
-#       RMS = .DotIfNULL(analysisResults$rms)
-#       RMSEA = .DotIfNULL(unname(analysisResults$RMSEA['RMSEA'])),
-#       RMSEAlower = .DotIfNULL(unname(analysisResults$RMSEA['lower'])),
-#       RMSEAupper = .DotIfNULL(unname(analysisResults$RMSEA['upper'])),      
-#       TLI = .DotIfNULL(analysisResults$TLI),
-#       RMS = .DotIfNULL(analysisResults$rms),
-#       CRMS = .DotIfNULL(analysisResults$crms),
-#       BIC = .DotIfNULL(analysisResults$BIC)
     )
   }
 
@@ -801,7 +777,6 @@ init <- .initializePCA(dataset, options, perform)
       chisq = ifelse(Fits$DF>0,Fits$CHI,"."),
       df = ifelse(Fits$DF>0,Fits$DF,"."),
       p = ifelse(Fits$DF>0,Fits$PVAL,".")
-      # RMS = Fits$RMS
     )
   )
 
@@ -814,7 +789,7 @@ init <- .initializePCA(dataset, options, perform)
 
 
 # fitMeasures
-.fitMeasuresPCA <- function(analysisResults, options, perform){
+.fitMeasures <- function(analysisResults, options, perform){
   
   # Create JASP table:
   FitMeasures <- list()
@@ -897,10 +872,10 @@ init <- .initializePCA(dataset, options, perform)
 
 ### Screeplot:
 
-.screePlot <- function(dataset, options, perform, oldPlot = NULL) {
+.screePlot <- function(dataset, options, perform, oldPlot = NULL, plotType) {
+
   # After image can be wrote to file, the state system can be used to return unchanged screePlot
   if (!is.null(oldPlot) && !identical(oldPlot[["data"]], "") && !is.null(oldPlot[["data"]])){
-    print("reuse screePlot from state...")
     return(oldPlot)
   }
   
@@ -911,13 +886,7 @@ init <- .initializePCA(dataset, options, perform)
   screePlot$height <- options$plotHeightScreePlot
   screePlot$custom <- list(width="plotWidthScreePlot", height="plotHeightScreePlot")
   
-  #   if (perform == "run" && status$ready && !status$error && !is.null(model)) {
-  #
-  print(!is.null(dataset))
-  print(nrow(dataset)> 1)
-  print(length(options$variables) > 1)
-  if (!is.null(dataset) && nrow(dataset)> 1 && length(options$variables) > 1) { # && ncol(dataset) > 1 && nrow(dataset)> 1 && perform == "run" && isTRUE(options$incl_screePlot)
-    print("drawing screePlot...")
+  if (!is.null(dataset) && nrow(dataset)> 1 && length(options$variables) > 1) { 
     # Compute ev:
     
     # Compute ev:
@@ -925,17 +894,28 @@ init <- .initializePCA(dataset, options, perform)
     pa <- psych::fa.parallel(dataset)   
     .endSaveImage(image)
     
+    if(plotType == "pca"){
+      ev_ev <- pa$pc.values
+      pa_ev <- pa$pc.sim
+      xName = "Components"
+    }
+
+    if(plotType == "efa"){
+      ev_ev <- pa$fa.values
+      pa_ev <- pa$fa.sim
+      xName = "Factors"
+    }
     # Eigenvalues:
     EV <- data.frame(
       id = seq_len(ncol(dataset)),
-      ev = pa$pc.values,
+      ev = ev_ev,
       type = "Data"
     )
     
     # Parallel analysis:
     PA <- data.frame(
       id = seq_len(ncol(dataset)),
-      ev = pa$pc.sim,
+      ev = pa_ev,
       type = "Simulated (95th quantile)"
     )
     
@@ -944,7 +924,7 @@ init <- .initializePCA(dataset, options, perform)
     # image <- .beginSaveImage(options$plotWidthScreePlot, options$plotHeightScreePlot)
 
     p <- ggplot2::ggplot(combined, ggplot2::aes_string(x="id",y="ev",lty="type",pch="type")) + ggplot2::geom_point(na.rm = TRUE, size=3) +
-      ggplot2::xlab("") + ggplot2::ylab("Eigenvalue")+ ggplot2::xlab("Components") +ggplot2::geom_line(na.rm = TRUE) +
+      ggplot2::xlab("") + ggplot2::ylab("Eigenvalue")+ ggplot2::xlab(xName) +ggplot2::geom_line(na.rm = TRUE) +
       ggplot2::ggtitle("") + ggplot2::theme_bw() + ggplot2::geom_hline(yintercept = options$eigenValuesBox) +
       ggplot2::theme(panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
                      panel.grid.major=ggplot2::element_blank(), axis.line = ggplot2::element_line(colour = "black", size=1.2),
@@ -965,12 +945,6 @@ init <- .initializePCA(dataset, options, perform)
                      plot.background=ggplot2::element_rect(fill="transparent",colour=NA),
                      legend.key = ggplot2::element_rect(fill = "transparent", colour = "transparent"),
                      legend.background=ggplot2::element_rect(fill="transparent",colour=NA))
-    
-    # image <- .beginSaveImage(options$plotWidthScreePlot, options$plotHeightScreePlot)
-    # print(p) # Todo: Not sure what is the right to write image file when applying ggplot2 
-    # content <- .endSaveImage(image)
-    # screePlot$data <- content
-    # screePlot$status <- "complete"
 
     content <- .writeImage(width = options$plotWidthScreePlot, height = options$plotHeightScreePlot, plot = p, obj = TRUE)
     screePlot[["convertible"]] <- TRUE
@@ -978,17 +952,10 @@ init <- .initializePCA(dataset, options, perform)
     screePlot[["data"]] <- content[["png"]]
     screePlot[["status"]] <- "complete"
     
-    # statescreePlot <- screePlot
-    
   } else {
-    print("screePlot can not be drawn now...")
+
     screePlot$data <- NULL
-    
-    # statescreePlot <- NULL
-    
-    #     if (status$error)
-    #       screePlot$error <- list(errorType="badData")
-    
+
   } 
   
   return(screePlot)
