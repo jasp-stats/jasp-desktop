@@ -90,8 +90,10 @@
 			"value": 0.95
 		},
 		{
-			"name": "effectsStepwise",
-			"type": "Boolean"
+			"name": "effectsType",
+			"options": [ "allModels", "matchedModels" ],
+			"default": "allModels",
+			"type": "List"
 		},
 		{
 			"name": "bayesFactorType",

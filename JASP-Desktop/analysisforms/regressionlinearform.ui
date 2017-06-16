@@ -1119,11 +1119,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -1141,6 +1136,11 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
@@ -1151,9 +1151,14 @@
    <header>widgets/boundsingleitemview.h</header>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>AnovaModelWidget</class>
@@ -1161,12 +1166,53 @@
    <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
   </customwidget>
-  <customwidget>
-   <class>BoundComboBox</class>
-   <extends>QComboBox</extends>
-   <header>widgets/boundcombobox.h</header>
-  </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listAvailableFields</tabstop>
+  <tabstop>buttonAssignDependent</tabstop>
+  <tabstop>dependent</tabstop>
+  <tabstop>method</tabstop>
+  <tabstop>buttonAssignCovariates</tabstop>
+  <tabstop>covariates</tabstop>
+  <tabstop>buttonAssignFactors</tabstop>
+  <tabstop>factors</tabstop>
+  <tabstop>buttonAssignWlsWeights</tabstop>
+  <tabstop>wlsWeights</tabstop>
+  <tabstop>expanderModel</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>regressionCoefficientsEstimates</tabstop>
+  <tabstop>regressionCoefficientsConfidenceIntervals</tabstop>
+  <tabstop>regressionCoefficientsConfidenceIntervalsInterval</tabstop>
+  <tabstop>regressionCoefficientsCovarianceMatrix</tabstop>
+  <tabstop>modelFit</tabstop>
+  <tabstop>rSquaredChange</tabstop>
+  <tabstop>descriptives</tabstop>
+  <tabstop>partAndPartialCorrelations</tabstop>
+  <tabstop>collinearityDiagnostics</tabstop>
+  <tabstop>residualsDurbinWatson</tabstop>
+  <tabstop>residualsCasewiseDiagnostics</tabstop>
+  <tabstop>_1outliersOutside</tabstop>
+  <tabstop>residualsCasewiseDiagnosticsOutliersOutside</tabstop>
+  <tabstop>_2allCases</tabstop>
+  <tabstop>pushButton_2</tabstop>
+  <tabstop>_1usePValue</tabstop>
+  <tabstop>steppingMethodCriteriaPEntry</tabstop>
+  <tabstop>steppingMethodCriteriaPRemoval</tabstop>
+  <tabstop>_2useFValue</tabstop>
+  <tabstop>steppingMethodCriteriaFEntry</tabstop>
+  <tabstop>steppingMethodCriteriaFRemoval</tabstop>
+  <tabstop>VovkSellkeMPR</tabstop>
+  <tabstop>includeConstant</tabstop>
+  <tabstop>_1excludeCasesListwise</tabstop>
+  <tabstop>_2excludeCasesPairwise</tabstop>
+  <tabstop>pushButton_3</tabstop>
+  <tabstop>plotResidualsDependent</tabstop>
+  <tabstop>plotResidualsCovariates</tabstop>
+  <tabstop>plotResidualsPredicted</tabstop>
+  <tabstop>plotResidualsHistogram</tabstop>
+  <tabstop>plotResidualsHistogramStandardized</tabstop>
+  <tabstop>plotResidualsQQ</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

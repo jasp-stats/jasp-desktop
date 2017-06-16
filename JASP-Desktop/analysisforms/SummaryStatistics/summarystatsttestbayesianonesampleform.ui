@@ -493,6 +493,21 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>tStatistic</tabstop>
+  <tabstop>n1Size</tabstop>
+  <tabstop>_1twoTailed</tabstop>
+  <tabstop>_2oneTailedGreaterThan</tabstop>
+  <tabstop>_3oneTailedLessThan</tabstop>
+  <tabstop>plotPriorAndPosterior</tabstop>
+  <tabstop>plotPriorAndPosteriorAdditionalInfo</tabstop>
+  <tabstop>plotBayesFactorRobustness</tabstop>
+  <tabstop>plotBayesFactorRobustnessAdditionalInfo</tabstop>
+  <tabstop>_1</tabstop>
+  <tabstop>_2</tabstop>
+  <tabstop>_3</tabstop>
+  <tabstop>priorWidth</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

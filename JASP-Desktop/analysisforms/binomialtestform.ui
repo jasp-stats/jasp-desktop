@@ -485,11 +485,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
@@ -505,7 +500,26 @@
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listAvailableVariables</tabstop>
+  <tabstop>assignButton</tabstop>
+  <tabstop>variables</tabstop>
+  <tabstop>testValue</tabstop>
+  <tabstop>_1notEqual</tabstop>
+  <tabstop>_2groupOneGreater</tabstop>
+  <tabstop>_3groupTwoGreater</tabstop>
+  <tabstop>confidenceInterval</tabstop>
+  <tabstop>confidenceIntervalInterval</tabstop>
+  <tabstop>VovkSellkeMPR</tabstop>
+  <tabstop>descriptivesPlots</tabstop>
+  <tabstop>descriptivesPlotsConfidenceInterval</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
