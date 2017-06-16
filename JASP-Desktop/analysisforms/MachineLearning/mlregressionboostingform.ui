@@ -208,7 +208,7 @@
             <item row="3" column="1">
              <widget class="QLabel" name="label_9">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="maximumSize">
                <size>
@@ -996,42 +996,42 @@
              <widget class="BoundComboBox" name="distribution">
               <item>
                <property name="text">
-                <string>gaussian</string>
+                <string>Gaussian</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>laplace</string>
+                <string>Laplace</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>tdist</string>
+                <string>T-distribution</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>bernoulli</string>
+                <string>Bernoulli</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>huberized</string>
+                <string>Huberized</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>multinomial</string>
+                <string>Multinomial</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>adaboost</string>
+                <string>Adaboost</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>poisson</string>
+                <string>Poisson</string>
                </property>
               </item>
              </widget>

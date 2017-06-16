@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", callback = function(...) 0, ...) {
+MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", callback = function(...) list(status = "ok"), state = NULL, ...) {
 
 	## Read Dataset ## ----
 
@@ -86,9 +86,9 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 		list(name="title", type="title"),
 		list(name="tableFE", type = "table"),
 		list(name="tablePrediction", type = "table"),
-		list(name="plotError", type="image"),
 		list(name="tableRF", type="table"),
 		list(name="tableChisqTest", type="table"),
+		list(name="plotError", type="image"),
 		list(name="plotRF", type="image"),
 		list(name="plotMarginalPlot", type="image"),
 		list(name="tableBestTune", type = "table"))
@@ -97,101 +97,122 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 	results[["title"]] = "Boosting Regression"
 
+	stateKey <- list(
+		res = c("OOBBox",
+				"Shrinkage",
+				"TreeStructureBox",
+				"distribution",
+				"indicator",
+				"methodCV",
+				"numberOfIterations",
+				"predictors",
+				"seedBox",
+				"target",
+				"testBox")
+		)
+	keep <- NULL
 
 
 
 	## Do analysis ## ----
-	errorDataType <- NULL
-	res <- NULL
-	hasError <- FALSE
-	errorMessage <- NULL
 
-	if(perform == "run" && !is.null(dataset)){
 
-		customChecks <- list(
-			# check custom n.cores
-			function(){
-				maxCore <- parallel::detectCores()-1
-				if (options[["coreBox"]] == "manual_numberOfCore" && (options[["value_numberOfCore"]] > maxCore)){
-					return (sprintf("Core number should not be greater than %d",maxCore))
+	if(is.null(state[["res"]])){
+
+		errorDataType <- NULL
+		res <- NULL
+		hasError <- FALSE
+		errorMessage <- NULL
+
+		if(perform == "run" && !is.null(dataset)){
+
+			customChecks <- list(
+				# check custom n.cores
+				function(){
+					maxCore <- parallel::detectCores()-1
+					if (options[["coreBox"]] == "manual_numberOfCore" && (options[["value_numberOfCore"]] > maxCore)){
+						return (sprintf("Core number should not be greater than %d",maxCore))
+					}
+				},
+				# check manual percentage training
+				function(){
+					if(options[["testBox"]]=="manual_percentageTrain"){
+						if(options[["value_percentageTraining"]] < 1){
+							return("Percentage of training too small!")
+						}
+						if(options[["value_percentageTraining"]] > 99){
+							return("Percentage of training too large to run test-set validation")
+						}
+					}
+				},
+				# check manual subsample ratio
+				function(){
+					if(options[["OOBBox"]]=="manual_subsample" ){
+						if (options[["value_subsample"]] < 1){
+							return("Percentage of subsample too small!")
+						}
+						if (options[["value_subsample"]] > 99){
+							return("Percentage of subsample too large to run out-of-bag validation!")
+						}
+					}
+				},
+				# check optimization search range
+				function(){
+					if(options[["TreeStructureBox"]] == "optimized_TS"){
+						if(options[["value_depthOfTreeMin"]] > options[["value_depthOfTreeMax"]]){
+							return("Not a valid range for depth of tree !")
+						}
+						if(options[["value_MinTermNodeSideMin"]] > options[["value_MinTermNodeSideMax"]]){
+							return("Not a a valid range for min leaf node size")
+						}
+					}
+				},
+				# check depth of tree is calculates H statistic
+				function(){
+					if(options[["plotHStatistics"]]){
+						if(options[["value_depthOfTree"]] < 2){
+							return("Depth of tree should be grater than 1 to compute H statistic")
+						}
+						if(!is.null(predictors) && length(predictors) < 2){
+							return("Number of predictor should be greater than 1 to compute H statistics")
+						}
+					}
+				},
+				# check indicator type: should be boolean
+				function(){
+					print("check indicator type")
+					if(!is.null(indicator) && !base::identical(levels(as.factor(dataset[,.v(indicator)])), c("0","1"))){
+						return("Indicator should be {0,1}")
+					}
 				}
-			},
-			# check manual percentage training
-			function(){
-				if(options[["testBox"]]=="manual_percentageTrain"){
-					if(options[["value_percentageTraining"]] < 1){
-						return("Percentage of training too small!")
-					}
-					if(options[["value_percentageTraining"]] > 99){
-						return("Percentage of training too large to run test-set validation")
-					}
-				}
-			},
-			# check manual subsample ratio
-			function(){
-				if(options[["OOBBox"]]=="manual_subsample" ){
-					if (options[["value_subsample"]] < 1){
-						return("Percentage of subsample too small!")
-					}
-					if (options[["value_subsample"]] > 99){
-						return("Percentage of subsample too large to run out-of-bag validation!")
-					}
-				}
-			},
-			# check optimization search range
-			function(){
-				if(options[["TreeStructureBox"]] == "optimized_TS"){
-					if(options[["value_depthOfTreeMin"]] > options[["value_depthOfTreeMax"]]){
-						return("Not a valid range for depth of tree !")
-					}
-					if(options[["value_MinTermNodeSideMin"]] > options[["value_MinTermNodeSideMax"]]){
-						return("Not a a valid range for min leaf node size")
-					}
-				}
-			},
-			# check depth of tree is calculates H statistic
-			function(){
-				if(options[["plotHStatistics"]]){
-					if(options[["value_depthOfTree"]] < 2){
-						return("Depth of tree should be grater than 1 to compute H statistic")
-					}
-					if(!is.null(predictors) && length(predictors) < 2){
-						return("Number of predictor should be greater than 1 to compute H statistics")
-					}
-				}
-			},
-			# check indicator type: should be boolean
-			function(){
-				print("check indicator type")
-				if(!is.null(indicator) && !base::identical(levels(as.factor(dataset[,.v(indicator)])), c("0","1"))){
-					return("Indicator should be {0,1}")
-				}
+			)
+
+			anyErrors <- .hasErrors(dataset = dataset, perform = perform, type = c("infinity", "variance"), custom = customChecks, exitAnalysisIfErrors=TRUE)
+			hasError <- base::identical(anyErrors, TRUE)
+
+			if(!hasError){
+
+				res <- try(silent = FALSE, expr ={
+					.BoostingAnalysis(dataset, options, predictors, target, indicator, perform = perform)
+					})
+			}else{
+
+				results[["tableFE"]][["error"]] <- list(errorType = "badData", errorMessage = anyErrors[["message"]])
+
 			}
-		)
-
-		anyErrors <- .hasErrors(dataset = dataset, perform = perform, type = c("infinity", "variance"), custom = customChecks, exitAnalysisIfErrors=TRUE)
-		hasError <- base::identical(anyErrors, TRUE)
-
-		if(!hasError){
-
-			res <- try(silent = FALSE, expr ={
-				.BoostingAnalysis(dataset, options, predictors, target, indicator, perform = perform)
-				})
-		}else{
-
-			results[["tableFE"]][["error"]] <- list(errorType = "badData", errorMessage = anyErrors[["message"]])
 
 		}
 
-	}
+		if(isTryError(res)){
+			errorMessageTmp <- .extractErrorMessage(res)
+			print("errorMessage in analysis:")
+			print(errorMessageTmp)
+		}
 
-	print("done analysis...")
-	print(typeof(res))
-	print(res)
-	if(isTryError(res)){
-		errorMessageTmp <- .extractErrorMessage(res)
-		print("errorMessage in analysis:")
-		print(errorMessageTmp)
+	}else{
+
+		res <- state[["res"]]
+
 	}
 
 
@@ -224,17 +245,34 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 	if(!is.null(indicator))
 		results[["tablePrediction"]] <- .tablePrediction(res, predictors, target, perform = perform)
 
-	if (perform == "init"){
+	# if (perform == "init"){
 
-		results <- list(results=results, status="inited")
+	# 	results <- list(results=results, status="inited")
 
-	}else{
+	# }else{
 
-		results <- list(results=results, status="complete")
+	# 	results <- list(results=results, status="complete")
+
+	# }
+
+	# return(results)
+	state <- list(
+		options = options,
+		res = res
+	)
+
+	attr(state, "key") <- stateKey
+
+	# return to jasp
+	if (perform == "init") {
+
+		return(list(results = results, status = "inited", state = state, keep = keep))
+
+	} else {
+
+		return(list(results = results, status = "complete", state = state, keep = keep))
 
 	}
-
-	return(results)
 
 }
 
@@ -472,7 +510,7 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 .tableChisqTest <- function(res, predictors,target,  perform){
 	table <- list(title="Chi-square Test")
 	colNames = c("Value", "df", "p")
-	rowNames = c("Pearson Chi-square")
+	rowNames = c("Variables")
 
 	if(any(perform == "init", is.null(predictors), is.null(target), isTryError(res), is.null(res))){
 
@@ -491,6 +529,7 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 		toTable <- varRF$chisqTestStas
 		toTable <- matrix(toTable, nrow = 1, ncol = 3, byrow = TRUE)
 		colnames(toTable) <- colNames
+		rownames(toTable) <- rowNames
 	}
 
 	table[["schema"]] <- list(
@@ -666,10 +705,10 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 		if (len < 4){
 			width <- 400
-			height <- 400
+			height <- 300
 		}else{
-			width <- len*100
-			height <- len*100
+			width <- 400
+			height <- 300 + (len-3)*30
 		}
 
 		plotRF[["width"]] <- width
@@ -690,7 +729,7 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 			)
 
 			# sort variables on desending order
-			toPlot <- toPlot[order(-toPlot[,2],toPlot[,1]), ]
+			toPlot <- toPlot[order(toPlot[,2],toPlot[,1]), ]
 
 			# toPlot <- toPlot[order(toPlot[["Importance"]], decreasing = TRUE), ]
 			axisLimits <- range(pretty(toPlot[["Importance"]]))
@@ -698,9 +737,18 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 			axisLimits[2] <- max(c(0, axisLimits[2]))
 
 			image <- .beginSaveImage(width = plotRF[["width"]], height = plotRF[["height"]])
-			barplot(toPlot[[2]], rep(1,len), horiz = TRUE, xlim = c(axisLimits[1],axisLimits[2]), xlab = "")
-			# barplot(toPlot[[2]], horiz = FALSE, xlim = c(axisLimits[1],axisLimits[2]), xlab = "")
-			axis(side = 2, pos = -1, at = seq(1,len,1), tick = FALSE, cex.axis = 1.5, labels = toPlot[[1]], las = 2)
+			# par(mar=c(5.1, 6.1, 4.1, 2.1), mgp=c(3, 1, 0), las=0)
+			# barplot(toPlot[[2]], rep(1,len), legend.text=TRUE,beside=TRUE,
+			# 	names.arg = toPlot[[1]],
+			# 	horiz = TRUE, xlim = c(axisLimits[1],axisLimits[2]), 
+			# 	xlab = "",cex.names=1.5, las=1)
+########################################################
+			g <- JASPgraphs::drawCanvas(xName = "", yName = "")
+			g <- JASPgraphs::drawBars(g, dat = toPlot, size = 4, stat = "",
+				mapping = ggplot2::aes(x = x, fill = x)) + ggplot2::xlab("")
+			g <- JASPgraphs::themeJasp(g, horizontal = TRUE)
+			print(g)
+########################################################
 			content <- .endSaveImage(image)
 
 			plotRF[["data"]] <- content
