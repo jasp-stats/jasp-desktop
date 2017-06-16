@@ -37,13 +37,6 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	} else {
 		dataset <- init[["dataset"]]
 	}
-	
-	if (length(options$variables) != 0) {
-	errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations','infinity'),
-						 all.target = options$variables,
-						 observations.amount = '< 2',
-						 exitAnalysisIfErrors = TRUE)
-	}
 
 	## call the specific one-sample T-Test functions
 	results[["ttest"]] <- .ttestOneSample(dataset, options, perform)

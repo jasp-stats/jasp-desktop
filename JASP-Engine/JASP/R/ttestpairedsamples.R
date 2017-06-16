@@ -26,14 +26,6 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 	results <- init[["results"]]
 	dataset <- init[["dataset"]]
 	
-
-	if (length(options$pairs) != 0) {
-		errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations','infinity'),
-							 all.target = unique(as.character(unlist(options$pairs)))[unique(as.character(unlist(options$pairs)))!=""],
-							 observations.amount = '< 2',
-							 exitAnalysisIfErrors = TRUE)
-	}
-	
 	## call the specific paired T-Test functions
 	results[["ttest"]] <- .ttestPairedSamples(dataset, options, perform)
 	descriptivesTable <- .ttestPairedSamplesDescriptives(dataset, options, perform)
