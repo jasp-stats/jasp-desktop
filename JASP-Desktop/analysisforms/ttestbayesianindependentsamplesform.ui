@@ -704,17 +704,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>BoundTextBox</class>
-   <extends>QLineEdit</extends>
-   <header>widgets/boundtextbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundGroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/boundgroupbox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>AssignButton</class>
    <extends>QPushButton</extends>
    <header>widgets/assignbutton.h</header>
@@ -731,14 +720,15 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
+   <class>BoundTextBox</class>
+   <extends>QLineEdit</extends>
+   <header>widgets/boundtextbox.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
+   <class>BoundGroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/boundgroupbox.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>ExpanderButton</class>
@@ -746,17 +736,51 @@
    <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
-   <class>SubjectivePriorsWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">widgets/subjectivepriorswidget.h</header>
-   <container>1</container>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
    <class>boundSingleItemView</class>
    <extends>QListView</extends>
    <header>widgets/boundsingleitemview.h</header>
   </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SubjectivePriorsWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/subjectivepriorswidget.h</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listAvailableFields</tabstop>
+  <tabstop>buttonAssignVariables</tabstop>
+  <tabstop>variables</tabstop>
+  <tabstop>buttonAssignGroupingVariable</tabstop>
+  <tabstop>groupingVariable</tabstop>
+  <tabstop>_1twoTailed</tabstop>
+  <tabstop>_2oneTailedGreaterThan</tabstop>
+  <tabstop>_3oneTailedLessThan</tabstop>
+  <tabstop>plotPriorAndPosterior</tabstop>
+  <tabstop>plotPriorAndPosteriorAdditionalInfo</tabstop>
+  <tabstop>plotBayesFactorRobustness</tabstop>
+  <tabstop>plotSequentialAnalysis</tabstop>
+  <tabstop>plotSequentialAnalysisRobustness</tabstop>
+  <tabstop>descriptivesPlots</tabstop>
+  <tabstop>descriptivesPlotsCredibleInterval</tabstop>
+  <tabstop>_1</tabstop>
+  <tabstop>_2</tabstop>
+  <tabstop>_3</tabstop>
+  <tabstop>descriptives</tabstop>
+  <tabstop>_1excludeAnalysisByAnalysis</tabstop>
+  <tabstop>_2excludeListwise</tabstop>
+  <tabstop>expanderPrior</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

@@ -505,16 +505,29 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
   </customwidget>
+  <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
+  </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>sampleSize</tabstop>
+  <tabstop>numberOfCovariatesNull</tabstop>
+  <tabstop>unadjustedRSquaredNull</tabstop>
+  <tabstop>numberOfCovariatesAlternative</tabstop>
+  <tabstop>unadjustedRSquaredAlternative</tabstop>
+  <tabstop>_1</tabstop>
+  <tabstop>_2</tabstop>
+  <tabstop>_3</tabstop>
+  <tabstop>plotBayesFactorRobustness</tabstop>
+  <tabstop>expanderAdvanced</tabstop>
+  <tabstop>priorWidth</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

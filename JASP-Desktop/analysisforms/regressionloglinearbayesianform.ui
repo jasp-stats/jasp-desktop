@@ -849,11 +849,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -871,6 +866,11 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
@@ -881,9 +881,9 @@
    <header>widgets/boundsingleitemview.h</header>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>AnovaModelWidget</class>
@@ -892,6 +892,34 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listAvailableFields</tabstop>
+  <tabstop>buttonAssignCounts</tabstop>
+  <tabstop>counts</tabstop>
+  <tabstop>buttonAssignFactors</tabstop>
+  <tabstop>factors</tabstop>
+  <tabstop>_1</tabstop>
+  <tabstop>_2</tabstop>
+  <tabstop>_3</tabstop>
+  <tabstop>priorShape</tabstop>
+  <tabstop>priorScale</tabstop>
+  <tabstop>maxModels</tabstop>
+  <tabstop>posteriorProbabilityCutOff</tabstop>
+  <tabstop>expanderModel</tabstop>
+  <tabstop>pushButton_2</tabstop>
+  <tabstop>regressionCoefficientsEstimates</tabstop>
+  <tabstop>regressionCoefficientsCredibleIntervals</tabstop>
+  <tabstop>regressionCoefficientsCredibleIntervalsInterval</tabstop>
+  <tabstop>regressionCoefficientsSubmodel</tabstop>
+  <tabstop>regressionCoefficientsSubmodelNo</tabstop>
+  <tabstop>regressionCoefficientsSubmodelEstimates</tabstop>
+  <tabstop>regressionCoefficientsSubmodelCredibleIntervals</tabstop>
+  <tabstop>regressionCoefficientsSubmodelCredibleIntervalsInterval</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>_1auto</tabstop>
+  <tabstop>_2fixed</tabstop>
+  <tabstop>fixedSamplesNumber</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
