@@ -66,6 +66,42 @@
       <item row="3" column="0" rowspan="2" colspan="2">
        <widget class="QWidget" name="advancedOptions" native="true">
         <layout class="QGridLayout" name="gridLayout_7">
+         <item row="7" column="0">
+          <widget class="QWidget" name="widget_3" native="true">
+           <widget class="QWidget" name="widget_4" native="true">
+            <property name="geometry">
+             <rect>
+              <x>80</x>
+              <y>0</y>
+              <width>10</width>
+              <height>16</height>
+             </rect>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>10</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>10</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+           <widget class="QWidget" name="widget_5" native="true">
+            <property name="geometry">
+             <rect>
+              <x>110</x>
+              <y>50</y>
+              <width>120</width>
+              <height>80</height>
+             </rect>
+            </property>
+           </widget>
+          </widget>
+         </item>
          <item row="2" column="0">
           <widget class="GroupBox" name="bayesFactorType_4">
            <property name="title">
@@ -78,7 +114,7 @@
             <item row="1" column="0" colspan="3">
              <widget class="BoundGroupBox" name="testBox">
               <property name="title">
-               <string>Validation % training data</string>
+               <string>% Training data</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_13">
                <item row="4" column="0">
@@ -145,7 +181,7 @@
             <item row="0" column="0" colspan="3">
              <widget class="BoundGroupBox" name="OOBBox">
               <property name="title">
-               <string>Out of bag % subsample</string>
+               <string>% Subsample data</string>
               </property>
               <property name="flat">
                <bool>false</bool>
@@ -249,55 +285,6 @@
            </layout>
           </widget>
          </item>
-         <item row="7" column="0">
-          <widget class="QWidget" name="widget_3" native="true">
-           <widget class="QWidget" name="widget_4" native="true">
-            <property name="geometry">
-             <rect>
-              <x>80</x>
-              <y>0</y>
-              <width>10</width>
-              <height>16</height>
-             </rect>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>10</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>10</width>
-              <height>16777215</height>
-             </size>
-            </property>
-           </widget>
-           <widget class="QWidget" name="widget_5" native="true">
-            <property name="geometry">
-             <rect>
-              <x>110</x>
-              <y>50</y>
-              <width>120</width>
-              <height>80</height>
-             </rect>
-            </property>
-           </widget>
-          </widget>
-         </item>
-         <item row="7" column="3">
-          <spacer name="verticalSpacer_6">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
          <item row="4" column="3">
           <widget class="BoundGroupBox" name="seedBox">
            <property name="title">
@@ -355,6 +342,19 @@
             </item>
            </layout>
           </widget>
+         </item>
+         <item row="7" column="3">
+          <spacer name="verticalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
          </item>
          <item row="4" column="0">
           <widget class="BoundGroupBox" name="coreBox">
@@ -416,15 +416,137 @@
          </item>
          <item row="2" column="3">
           <widget class="BoundGroupBox" name="TreeStructureBox">
+           <property name="minimumSize">
+            <size>
+             <width>325</width>
+             <height>285</height>
+            </size>
+           </property>
            <property name="title">
             <string>Tree structure</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_14">
-            <item row="8" column="1">
-             <widget class="QOpenGLWidget" name="openGLWidget_3"/>
+            <item row="6" column="2">
+             <widget class="BoundTextBox" name="value_MinTermNodeSideMin">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>30</width>
+                <height>21</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>30</width>
+                <height>21</height>
+               </size>
+              </property>
+             </widget>
             </item>
-            <item row="2" column="1">
-             <widget class="QOpenGLWidget" name="openGLWidget_4"/>
+            <item row="5" column="3">
+             <widget class="BoundTextBox" name="value_depthOfTreeMax">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>30</width>
+                <height>21</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>30</width>
+                <height>21</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="3">
+             <widget class="BoundTextBox" name="value_depthOfTree">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>60</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>60</width>
+                <height>20</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="1" colspan="2">
+             <widget class="QLabel" name="label_16">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="text">
+               <string>       Depth of tree</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QRadioButton" name="optimized_TS">
+              <property name="text">
+               <string>Optimized</string>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="1">
+             <widget class="QRadioButton" name="manual_TS">
+              <property name="text">
+               <string>Manual</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0" colspan="2">
+             <widget class="QLabel" name="label_12">
+              <property name="text">
+               <string>Min leaf node size</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="3">
+             <widget class="QLabel" name="label_10">
+              <property name="text">
+               <string>max</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="4">
+             <widget class="QLabel" name="label_11">
+              <property name="text">
+               <string>step</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="2">
+             <widget class="QLabel" name="label_7">
+              <property name="text">
+               <string>min</string>
+              </property>
+             </widget>
+            </item>
+            <item row="10" column="1" colspan="2">
+             <widget class="QLabel" name="label_20">
+              <property name="text">
+               <string>Min leaf node size</string>
+              </property>
+             </widget>
             </item>
             <item row="1" column="1">
              <widget class="QRadioButton" name="auto_TS">
@@ -433,71 +555,89 @@
               </property>
              </widget>
             </item>
-            <item row="7" column="3">
-             <widget class="BoundTextBox" name="value_MinTermNodeSideMax">
+            <item row="6" column="4">
+             <widget class="BoundTextBox" name="value_MinTermNodeSideStep">
               <property name="enabled">
-               <bool>true</bool>
+               <bool>false</bool>
               </property>
               <property name="minimumSize">
                <size>
                 <width>30</width>
-                <height>0</height>
+                <height>21</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>30</width>
-                <height>16777215</height>
+                <height>21</height>
                </size>
               </property>
              </widget>
             </item>
-            <item row="6" column="2">
+            <item row="10" column="3">
+             <widget class="BoundTextBox" name="value_MinTermNodeSide">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>60</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>60</width>
+                <height>20</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="2">
              <widget class="BoundTextBox" name="value_depthOfTreeMin">
               <property name="enabled">
-               <bool>true</bool>
+               <bool>false</bool>
               </property>
               <property name="minimumSize">
                <size>
                 <width>30</width>
-                <height>0</height>
+                <height>21</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>30</width>
-                <height>16777215</height>
+                <height>21</height>
                </size>
               </property>
              </widget>
             </item>
-            <item row="6" column="4">
-             <widget class="BoundTextBox" name="value_depthOfTreeStep">
+            <item row="6" column="3">
+             <widget class="BoundTextBox" name="value_MinTermNodeSideMax">
               <property name="enabled">
-               <bool>true</bool>
+               <bool>false</bool>
               </property>
               <property name="minimumSize">
                <size>
                 <width>30</width>
-                <height>0</height>
+                <height>21</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>30</width>
-                <height>16777215</height>
+                <height>21</height>
                </size>
               </property>
              </widget>
             </item>
-            <item row="6" column="0" colspan="2">
-             <widget class="QLabel" name="label_8">
-              <property name="text">
-               <string>        Depth of tree</string>
-              </property>
-             </widget>
-            </item>
-            <item row="18" column="0">
+            <item row="16" column="0">
              <widget class="QLabel" name="label_19">
               <property name="minimumSize">
                <size>
@@ -516,166 +656,29 @@
               </property>
              </widget>
             </item>
-            <item row="12" column="3">
-             <widget class="BoundTextBox" name="value_MinTermNodeSide">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>60</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>60</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="12" column="1" colspan="2">
-             <widget class="QLabel" name="label_20">
-              <property name="text">
-               <string>Min leaf node size</string>
-              </property>
-             </widget>
-            </item>
-            <item row="7" column="4">
-             <widget class="BoundTextBox" name="value_MinTermNodeSideStep">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>30</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="3">
-             <widget class="BoundTextBox" name="value_depthOfTreeMax">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>30</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="7" column="2">
-             <widget class="BoundTextBox" name="value_MinTermNodeSideMin">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>30</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="11" column="3">
-             <widget class="BoundTextBox" name="value_depthOfTree">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>60</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>60</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <widget class="QRadioButton" name="optimized_TS">
-              <property name="text">
-               <string>Optimized</string>
-              </property>
-             </widget>
-            </item>
-            <item row="9" column="1">
-             <widget class="QRadioButton" name="manual_TS">
-              <property name="text">
-               <string>Manual</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="2">
-             <widget class="QLabel" name="label_7">
-              <property name="text">
-               <string>min</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="3">
-             <widget class="QLabel" name="label_10">
-              <property name="text">
-               <string>max</string>
-              </property>
-             </widget>
-            </item>
             <item row="5" column="4">
-             <widget class="QLabel" name="label_11">
-              <property name="text">
-               <string>step</string>
+             <widget class="BoundTextBox" name="value_depthOfTreeStep">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>30</width>
+                <height>21</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>30</width>
+                <height>21</height>
+               </size>
               </property>
              </widget>
             </item>
-            <item row="7" column="0" colspan="2">
-             <widget class="QLabel" name="label_12">
+            <item row="5" column="0" colspan="2">
+             <widget class="QLabel" name="label_8">
               <property name="text">
-               <string>Min leaf node size</string>
-              </property>
-             </widget>
-            </item>
-            <item row="11" column="1" colspan="2">
-             <widget class="QLabel" name="label_16">
-              <property name="text">
-               <string>       Depth of tree</string>
+               <string>        Depth of tree</string>
               </property>
              </widget>
             </item>
@@ -1264,22 +1267,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>AssignButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/assignbutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>AvailableFieldsListView</class>
-   <extends>QListView</extends>
-   <header>widgets/availablefieldslistview.h</header>
-  </customwidget>
-  <customwidget>
-   <class>GroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/groupbox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
@@ -1296,19 +1283,35 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AssignButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/assignbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AvailableFieldsListView</class>
+   <extends>QListView</extends>
+   <header>widgets/availablefieldslistview.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundListView</class>
    <extends>QListView</extends>
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header location="global">widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
    <class>boundSingleItemView</class>
    <extends>QListView</extends>
-   <header location="global">widgets/boundsingleitemview.h</header>
+   <header>widgets/boundsingleitemview.h</header>
   </customwidget>
   <customwidget>
    <class>BoundComboBox</class>

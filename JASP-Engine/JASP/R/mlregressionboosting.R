@@ -18,6 +18,8 @@
 MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", callback = function(...) list(status = "ok"), state = NULL, ...) {
 
 	## Read Dataset ## ----
+	analysisType <<- "classification"
+	predictNA <<- TRUE
 
 	predictors <- unlist(options[["predictors"]])
 	predictorsList <- options[["predictors"]]
@@ -85,6 +87,7 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 	meta <- list(
 		list(name="title", type="title"),
 		list(name="tableFE", type = "table"),
+		list(name="tablePredictionSummary", type = "table"),
 		list(name="tablePrediction", type = "table"),
 		list(name="tableRF", type="table"),
 		list(name="tableChisqTest", type="table"),
@@ -242,8 +245,14 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 	if(options[["TreeStructureBox"]] == "optimized_TS")
 		results[["tableBestTune"]] <- .tableBestTune(res, options, predictors, target, perform = perform)
 
-	if(!is.null(indicator))
+	if(predictNA || !is.null(indicator)){
 		results[["tablePrediction"]] <- .tablePrediction(res, predictors, target, perform = perform)
+		if(analysisType == "classification"){
+			results[["tablePredictionSummary"]] <- .tablePredictionSummary(res, predictors, target, perform = perform)
+		}else{
+			results[["tablePredictionSummary"]] <- NULL
+		}
+	}
 
 	# if (perform == "init"){
 
@@ -399,18 +408,38 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 	}
 
+	if(predictNA){
+		#predict NA in target, first generate indicator
+		indicator <- is.na(target)
+	}
+
+
 	if(is.null(indicator)){
 		prediction <- NULL
 	}else{
-		prediction <- gbm::predict.gbm(
-						model,
-						newdata=appData,
-						n.trees=best.iter,
-						distribution = options[["distribution"]],
-						shrinkage = options[["Shrinkage"]],
-						interaction.depth=interaction.depth,
-						n.minobsinnode = n.minobsinnode)
+		if(analysisType == "regression"){
+			prediction <- gbm::predict.gbm(
+							model,
+							newdata=appData,
+							n.trees=best.iter,
+							distribution = options[["distribution"]],
+							shrinkage = options[["Shrinkage"]],
+							interaction.depth=interaction.depth,
+							n.minobsinnode = n.minobsinnode)
+		}else{
+			prediction <- gbm::predict.gbm(
+							model,
+							newdata=appData,
+							n.trees=best.iter,
+							distribution = options[["distribution"]],
+							shrinkage = options[["Shrinkage"]],
+							interaction.depth=interaction.depth,
+							n.minobsinnode = n.minobsinnode,
+							type = "response")
+		}
 	}
+
+
 
 
 
@@ -592,16 +621,18 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 	table <- list(title="Parameter Tuning for Tree Structure")
 	colNames = c("Depth of Tree", "Minimum Terminal Node Size", "Test Root-Mean-Square Error ")
 
+	footnotes <- .newFootnotes()
+
+	.addFootnote(footnotes, symbol="<em>Note.</em>", text = "Sorted by test set error")
+
 	if(any(perform == "init", is.null(predictors), is.null(target), is.null(res),isTryError(res))){
 
 		toTable <- matrix(".", nrow = 1, ncol = 3,
 				  dimnames = list("", colNames))
 
 		if(isTryError(res)){
-			footnotes <- .newFootnotes()
 			errorMessage <- .extractErrorMessage(res)
 			.addFootnote(footnotes, symbol="<em>Error.</em>", text=errorMessage)
-			table[["footnotes"]] <- as.list(footnotes)
 		}
 
 	}else{
@@ -618,6 +649,8 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 				  list(name = colNames[3], title = colNames[3], type="number", format="dp:3"))
 	)
 
+	table[["footnotes"]] <- as.list(footnotes)
+
 	table[["data"]] <- .MLRFTables(toTable)
 	return(table)
 }
@@ -625,9 +658,14 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 .tablePrediction <- function(res, predictors, target, perform = perform){
 
-
+	# analysisType <- "classification"
 	table <- list(title="Model Prediction")
-	colNames <- c(unlist(predictors), sprintf("Predicted %s", target))
+	if(analysisType == "regression"){
+		colNames <- c(unlist(predictors), sprintf("Predicted %s", target))
+	}else{
+		colNames <- c(unlist(predictors), sprintf("Predicted %s", target), "Probability")
+	}
+
 	mFeatures <- length(predictors)
 	if(any(perform == "init", is.null(target), is.null(predictors), is.null(res),isTryError(res))){
 
@@ -642,24 +680,69 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 		}
 
 	}else{
-
 		appData <- res$appData
-		prediction <- res$prediction
-		data <- cbind(appData[["predictors"]],prediction)
-		toTable <- matrix(data, ncol = mFeatures + 1, byrow = FALSE)
+		if(analysisType == "regression") {
+			predOutput <- res$prediction
+		}else{
+			prediction <- res$prediction
+			className <- levels(res$data[,.v(target)])
+			predClassIdx <-apply(prediction,1,which.max)
+			predClassName <- className[predClassIdx]
+			predClassProb <- round(apply(prediction,1,max),3)
+			predOutput <- cbind(predClassName,predClassProb)
+		}
+
+		data <- cbind(appData[,.v(predictors)],predOutput)
+		toTable <- as.matrix(data)
 		colnames(toTable) <- colNames
 		rownames(toTable) <- as.character(1:nrow(toTable))
 	}
 
 	fields <- list(list(name="case", title="", type="string"))
-	for (i in 1:(mFeatures+1)){
-		fields[[length(fields)+1]] <- list(name = colNames[i], title = colNames[i], type="number", format="dp:3")
+	for (i in 1:(mFeatures)){
+		fields[[length(fields)+1]] <- list(name = colNames[i], title = colNames[i], type="string")#type="number", format="dp:3"
 	}
+	if(analysisType == "regression"){
+		fields[[length(fields)+1]] <- list(name = colNames[mFeatures+1], title = colNames[mFeatures+1], type="string")
+	}else{
+		fields[[length(fields)+1]] <- list(name = colNames[mFeatures+1], title = colNames[mFeatures+1], type="string")
+		fields[[length(fields)+1]] <- list(name = colNames[mFeatures+2], title = colNames[mFeatures+2], type="string")
+	}
+
 	table[["schema"]] <- list(fields=fields)
 	table[["data"]] <- .MLRFTables(toTable)
 
 	return(table)
 
+}
+
+.tablePredictionSummary <- function(res, predictors, target, perform = perform){
+
+	table <- list(title="Model Prediction Summary")
+	colNames <- c("Frequency","Percentage")
+	rowNames <- levels(res$data[,.v(target)])
+
+	if(perform == "init"){
+		toTable <- matrix(".", nrow = length(rowNames), ncol = 2,
+				  dimnames = list(rowNames, colNames))
+	}else{
+		prediction <- res$prediction
+		predClassIdx <-apply(prediction,1,which.max)
+		freq <- table(predClassIdx)
+		data <- c(freq,freq/sum(freq))
+		toTable <- matrix(data, ncol = 2, byrow = FALSE)
+		colnames(toTable) <- colNames
+		rownames(toTable) <- rowNames
+	}
+
+	table[["schema"]] <- list(
+	fields = list(list(name="case", title="", type="string"),
+				  list(name = colNames[1], title = colNames[1], type="integer", format="dp:0"),#sf:4;dp:3
+				  list(name = colNames[2], title = colNames[2], type="number", format="dp:3"))
+	)
+	table[["data"]] <- .MLRFTables(toTable)
+
+	return(table)
 }
 
 .MLRFTables <- function(x) {

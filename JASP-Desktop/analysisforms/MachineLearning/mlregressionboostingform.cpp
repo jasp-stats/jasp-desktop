@@ -86,6 +86,9 @@ void MLRegressionBoostingForm::defaultOptions()
     ui->value_seed->setSizePolicy(retain);
     ui->value_seed->hide();
 
+//    QSizePolicy retain2 = ui->value_depthOfTree->sizePolicy();
+    retain.setRetainSizeWhenHidden(false);
+
     ui->value_depthOfTree->setSizePolicy(retain);
     ui->value_depthOfTree->hide();
 
@@ -110,11 +113,14 @@ void MLRegressionBoostingForm::defaultOptions()
     ui->value_MinTermNodeSideStep->setSizePolicy(retain);
     ui->value_MinTermNodeSideStep->hide();
 
-    retain = ui->label_9->sizePolicy();
+//    retain3 = ui->label_9->sizePolicy();
     retain.setRetainSizeWhenHidden(true);
 
     ui->label_9->setSizePolicy(retain);
     ui->label_9->hide();
+
+//    retain = ui->label_16->sizePolicy();
+    retain.setRetainSizeWhenHidden(false);
 
     ui->label_16->setSizePolicy(retain);
     ui->label_16->hide();
