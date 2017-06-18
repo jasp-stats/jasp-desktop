@@ -19,6 +19,9 @@
 #include "bainregressionlinearbayesianform.h"
 #include "ui_bainregressionlinearbayesianform.h"
 
+#include "widgets/itemmodelselectvariable.h"
+
+
 BainRegressionLinearBayesianForm::BainRegressionLinearBayesianForm(QWidget *parent) :
 	AnalysisForm("BainRegressionLinearBayesianForm", parent),
 	ui(new Ui::BainRegressionLinearBayesianForm)
@@ -57,6 +60,11 @@ BainRegressionLinearBayesianForm::BainRegressionLinearBayesianForm(QWidget *pare
 	ui->advancedOptions->hide();
 
 	ui->priorCovariates->setLabel("r scale covariates");
+
+	ItemModelSelectVariable *itemSelectModel = new ItemModelSelectVariable(this);
+	itemSelectModel->setSource(&_availableVariablesModel);
+
+	ui->model_constraints->hide();
 }
 
 BainRegressionLinearBayesianForm::~BainRegressionLinearBayesianForm()

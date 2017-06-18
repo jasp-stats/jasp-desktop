@@ -19,6 +19,9 @@
 #include "bainanovabayesianform.h"
 #include "ui_bainanovabayesianform.h"
 
+#include "widgets/itemmodelselectvariable.h"
+
+
 BainAnovaBayesianForm::BainAnovaBayesianForm(QWidget *parent) :
 	AnalysisForm("BainAnovaBayesianForm", parent),
 	ui(new Ui::BainAnovaBayesianForm)
@@ -57,6 +60,11 @@ BainAnovaBayesianForm::BainAnovaBayesianForm(QWidget *parent) :
 	ui->priorFixedEffects->setLabel("r scale fixed effects");
 	ui->priorRandomEffects->setLabel("r scale random effects");
 
+	ItemModelSelectVariable *itemSelectModel = new ItemModelSelectVariable(this);
+	itemSelectModel->setSource(&_availableVariablesModel);
+
+	ui->model_constraints->hide();
+
 	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
 	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_fixedFactorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addFixedFactors(Terms)));
@@ -66,7 +74,6 @@ BainAnovaBayesianForm::BainAnovaBayesianForm(QWidget *parent) :
 	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_randomFactorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addRandomFactors(Terms)));
 	connect(_randomFactorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
-
 }
 
 BainAnovaBayesianForm::~BainAnovaBayesianForm()

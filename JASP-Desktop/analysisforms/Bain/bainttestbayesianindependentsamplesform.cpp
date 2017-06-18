@@ -19,6 +19,9 @@
 #include "bainttestbayesianindependentsamplesform.h"
 #include "ui_bainttestbayesianindependentsamplesform.h"
 
+#include "widgets/itemmodelselectvariable.h"
+
+
 BainTTestBayesianIndependentSamplesForm::BainTTestBayesianIndependentSamplesForm(QWidget *parent) :
 	AnalysisForm("BainTTestBayesianIndependentSamplesForm", parent),
 	ui(new Ui::BainTTestBayesianIndependentSamplesForm)
@@ -44,6 +47,10 @@ BainTTestBayesianIndependentSamplesForm::BainTTestBayesianIndependentSamplesForm
 	ui->buttonAssignVariables->setSourceAndTarget(ui->listAvailableFields, ui->variables);
 	ui->buttonAssignGroupingVariable->setSourceAndTarget(ui->listAvailableFields, ui->groupingVariable);
 
+	ItemModelSelectVariable *model = new ItemModelSelectVariable(this);
+	model->setSource(&_availableVariablesModel);
+
+	ui->model_constraints->hide();
 }
 
 BainTTestBayesianIndependentSamplesForm::~BainTTestBayesianIndependentSamplesForm()

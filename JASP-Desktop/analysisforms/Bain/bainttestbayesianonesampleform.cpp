@@ -19,6 +19,9 @@
 #include "bainttestbayesianonesampleform.h"
 #include "ui_bainttestbayesianonesampleform.h"
 
+#include "widgets/itemmodelselectvariable.h"
+
+
 BainTTestBayesianOneSampleForm::BainTTestBayesianOneSampleForm(QWidget *parent) :
 	AnalysisForm("BainTTestBayesianOneSampleForm", parent),
 	ui(new Ui::BainTTestBayesianOneSampleForm)
@@ -40,6 +43,10 @@ BainTTestBayesianOneSampleForm::BainTTestBayesianOneSampleForm(QWidget *parent) 
 
 	ui->buttonAssign_main_fields->setSourceAndTarget(ui->listAvailableFields, ui->variables);
 
+	ItemModelSelectVariable *model = new ItemModelSelectVariable(this);
+	model->setSource(&_availableVariablesModel);
+
+	ui->model_constraints->hide();
 }
 
 BainTTestBayesianOneSampleForm::~BainTTestBayesianOneSampleForm()

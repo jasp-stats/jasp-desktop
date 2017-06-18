@@ -19,6 +19,9 @@
 #include "baincorrelationbayesianform.h"
 #include "ui_baincorrelationbayesianform.h"
 
+#include "widgets/itemmodelselectvariable.h"
+
+
 BainCorrelationBayesianForm::BainCorrelationBayesianForm(QWidget *parent) :
 	AnalysisForm("BainCorrelationBayesianForm", parent),
 	ui(new Ui::BainCorrelationBayesianForm)
@@ -53,6 +56,11 @@ BainCorrelationBayesianForm::BainCorrelationBayesianForm(QWidget *parent) :
 #endif
 
 	ui->credibleIntervalsInterval->setLabel("Credible intervals");
+
+	ItemModelSelectVariable *itemSelectModel = new ItemModelSelectVariable(this);
+	itemSelectModel->setSource(&_availableVariablesModel);
+
+	ui->model_constraints->hide();
 }
 
 BainCorrelationBayesianForm::~BainCorrelationBayesianForm()

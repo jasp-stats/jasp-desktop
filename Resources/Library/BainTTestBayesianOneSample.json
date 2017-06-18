@@ -4,6 +4,10 @@
 	"version": "1.00",
 	"options": [
 		{
+			"name": "model",
+			"type": "String"
+		},
+		{
 			"name": "variables",
 			"type": "Variables"
 		},

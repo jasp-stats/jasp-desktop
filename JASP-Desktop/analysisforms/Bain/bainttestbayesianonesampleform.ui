@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>606</width>
-    <height>739</height>
+    <width>594</width>
+    <height>726</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,6 +23,49 @@
    <property name="verticalSpacing">
     <number>0</number>
    </property>
+   <item row="2" column="0">
+    <widget class="QWidget" name="constraintsWidget" native="true">
+     <layout class="QGridLayout" name="gridLayout_11">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>3</number>
+      </property>
+      <item row="2" column="0">
+       <widget class="QWidget" name="model_constraints" native="true">
+        <layout class="QGridLayout" name="gridLayout_14">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="1">
+          <widget class="BoundTextEdit" name="model"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="ExpanderButton" name="constraintsExpander">
+        <property name="text">
+         <string>Model Constraints</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
    <item row="0" column="0">
     <widget class="QWidget" name="topWidget" native="true">
      <property name="sizePolicy">
@@ -618,31 +661,24 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="0">
-    <spacer name="verticalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>AssignButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/assignbutton.h</header>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
-   <class>AvailableFieldsListView</class>
-   <extends>QListView</extends>
-   <header>widgets/availablefieldslistview.h</header>
+   <class>BoundGroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/boundgroupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
    <class>GroupBox</class>
@@ -656,15 +692,19 @@
    <header>widgets/boundtextbox.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundGroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/boundgroupbox.h</header>
-   <container>1</container>
+   <class>BoundTextEdit</class>
+   <extends>QPlainTextEdit</extends>
+   <header>widgets/boundtextedit.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
+   <class>AssignButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/assignbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AvailableFieldsListView</class>
+   <extends>QListView</extends>
+   <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
    <class>BoundListView</class>

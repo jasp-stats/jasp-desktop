@@ -20,6 +20,8 @@
 #include "ui_bainttestbayesianpairedsamplesform.h"
 
 #include "widgets/tablemodelvariablesassigned.h"
+#include "widgets/itemmodelselectvariable.h"
+
 
 BainTTestBayesianPairedSamplesForm::BainTTestBayesianPairedSamplesForm(QWidget *parent) :
 	AnalysisForm("BainTTestBayesianPairedSamplesForm", parent),
@@ -43,6 +45,11 @@ BainTTestBayesianPairedSamplesForm::BainTTestBayesianPairedSamplesForm(QWidget *
 	ui->pairs->setModel(model);
 
 	ui->assignButton->setSourceAndTarget(ui->availableFields, ui->pairs);
+
+	ItemModelSelectVariable *itemSelectModel = new ItemModelSelectVariable(this);
+	itemSelectModel->setSource(&_availableVariablesModel);
+
+	ui->model_constraints->hide();
 }
 
 BainTTestBayesianPairedSamplesForm::~BainTTestBayesianPairedSamplesForm()

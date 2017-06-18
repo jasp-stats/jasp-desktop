@@ -19,6 +19,9 @@
 #include "bainancovabayesianform.h"
 #include "ui_bainancovabayesianform.h"
 
+#include "widgets/itemmodelselectvariable.h"
+
+
 BainAncovaBayesianForm::BainAncovaBayesianForm(QWidget *parent) :
 	AnalysisForm("BainAncovaBayesianForm", parent),
 	ui(new Ui::BainAncovaBayesianForm)
@@ -87,6 +90,11 @@ BainAncovaBayesianForm::BainAncovaBayesianForm(QWidget *parent) :
 	ui->widgetPosteriorOptions->hide();
 	ui->posteriorEstimates->hide();
 #endif
+
+	ItemModelSelectVariable *itemSelectModel = new ItemModelSelectVariable(this);
+	itemSelectModel->setSource(&_availableVariablesModel);
+
+	ui->model_constraints->hide();
 }
 
 BainAncovaBayesianForm::~BainAncovaBayesianForm()

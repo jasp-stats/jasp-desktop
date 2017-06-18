@@ -4,6 +4,10 @@
 	"version": "1.00",
 	"options": [
 		{
+			"name": "model",
+			"type": "String"
+		},
+		{
 			"name": "variables",
 			"type": "Variables"
 		},
@@ -18,7 +22,7 @@
 		},
 		{
 			"name": "hypothesis",
-            "options": [ "groupsNotEqual", "groupOneGreater", "groupTwoGreater", "allTypes" ],
+			"options": [ "groupsNotEqual", "groupOneGreater", "groupTwoGreater", "allTypes" ],
 			"default": "groupsNotEqual",
 			"type": "List"
 		},
@@ -27,12 +31,12 @@
 			"options": [ "excludeAnalysisByAnalysis", "excludeListwise" ],
 			"default": "excludeAnalysisByAnalysis",
 			"type": "List"
-        },
+		},
 		{
 			"default": false,
 			"name": "plotPriorAndPosterior",
 			"type": "Boolean"
-        },
+		},
 		{
 			"default": false,
 			"name": "descriptivesPlots",

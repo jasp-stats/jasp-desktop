@@ -22,6 +22,7 @@
 #include "column.h"
 #include "widgets/tablemodelvariablesassigned.h"
 #include "widgets/tablemodelanovamodelnuisancefactors.h"
+#include "widgets/itemmodelselectvariable.h"
 
 BainAnovaRepeatedMeasuresBayesianForm::BainAnovaRepeatedMeasuresBayesianForm(QWidget *parent) :
 	AnalysisForm("BainAnovaRepeatedMeasuresBayesianForm", parent),
@@ -87,6 +88,11 @@ BainAnovaRepeatedMeasuresBayesianForm::BainAnovaRepeatedMeasuresBayesianForm(QWi
 	ui->priorFixedEffects->setLabel("r scale fixed effects");
 	ui->priorRandomEffects->setLabel("r scale random effects");
 	ui->priorCovariates->setLabel("r scale covariates");
+
+	ItemModelSelectVariable *itemSelectModel = new ItemModelSelectVariable(this);
+	itemSelectModel->setSource(&_availableVariablesModel);
+
+	ui->model_constraints->hide();
 }
 
 BainAnovaRepeatedMeasuresBayesianForm::~BainAnovaRepeatedMeasuresBayesianForm()
