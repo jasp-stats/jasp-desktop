@@ -1315,8 +1315,8 @@
 				rscale = "medium", lwd = 2, cexPoints = 1.5, cexAxis = 1.2, cexYlab = 1.5, cexXlab = 1.5,
 				cexTextBF = 1.4, cexCI = 1.1, cexLegend = 1.2, lwdAxis = 1.2, addInformation = TRUE,
 				dontPlotData = FALSE, options = NULL) {
-
-	# Function outputs the prior and posterior plot for t-test in the summary stats module.
+    
+    # Function outputs the prior and posterior plot for t-test in the summary stats module.
 
 	if (addInformation) {
 		par(mar= c(5.6, 5, 7, 4) + 0.1, las=1)
@@ -1374,6 +1374,8 @@
 		nullInterval <- c(-Inf, 0)
 		stretch <- 1.32
 	}
+    
+    BF <- as.numeric(BF)
   
   if (BFH1H0) {
     BF10 <- BF
@@ -1382,6 +1384,7 @@
     BF01 <- BF
     BF10 <- 1 / BF01
   }
+    
 
   if ("effectSizeStandardized" %in% names(options) && options$effectSizeStandardized == "informative") {
     # informative prior
