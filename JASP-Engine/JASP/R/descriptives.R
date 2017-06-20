@@ -17,54 +17,68 @@
 
 Descriptives <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 	
+	# Get input info variables
 	variables <- unlist(options$variables)
-	if (!options$splitby == ""){
-		if (is.null(dataset)) {
+	split <- options$splitby
+	
+	if (is.null(dataset)) {
 
-			if (perform == "run") {
-
-				dataset         <- .readDataSetToEnd(columns.as.numeric=variables,
-																						 columns.as.factor=options$splitby)
-				dataset.factors <- .readDataSetToEnd(columns=variables)
-
+		if (perform == "run") {
+			
+			if (split=="") {
+				dataset <- .readDataSetToEnd(columns.as.numeric=variables)
 			} else {
-
-				dataset         <- .readDataSetHeader(columns.as.numeric=variables,
-																							columns.as.factor=options$splitby)
-				dataset.factors <- .readDataSetHeader(columns=variables)
+				dataset <- .readDataSetToEnd(columns.as.numeric=variables,
+																		 columns.as.factor=split)
 			}
-		}
-	} else {
-		if (is.null(dataset)) {
+			
+			dataset.factors <- .readDataSetToEnd(columns=variables)
 
-			if (perform == "run") {
-
-				dataset         <- .readDataSetToEnd(columns.as.numeric=variables)
-				dataset.factors <- .readDataSetToEnd(columns=variables)
-
+		} else {
+			
+			if (split=="") {
+				dataset <- .readDataSetHeader(columns.as.numeric=variables)
 			} else {
-
-				dataset         <- .readDataSetHeader(columns.as.numeric=variables)
-				dataset.factors <- .readDataSetHeader(columns=variables)
+				dataset <- .readDataSetHeader(columns.as.numeric=variables,
+																			columns.as.factor=split)
 			}
+			
+			dataset.factors <- .readDataSetHeader(columns=variables)
+			
 		}
 	}
+		
 
 
 	state <- .retrieveState()
 	run <- perform == "run"
+	
 
 	results <- list()
 
 	#### META
 
 	meta <- list()
-
-	plotsMeta <- list(
-								list(name="distributionPlots", type="collection", meta="image"),
-								list(name="matrixPlot", type="image"),
-								list(name="splitPlots", type="collection", meta="image")
-							 )
+	
+	if (split!=""){
+		# Distribution plots becomes a collection for each variable
+		distrMeta <- lapply(variables, function(v) {
+									 return(list(name = v, type="collection", meta="image"))
+								 })
+		# matrixPlot becomes a collection.
+		plotsMeta <- list(
+									list(name="distributionPlots", type="object", meta=distrMeta),
+									list(name="matrixPlot", type="collection", meta="image"),
+									list(name="splitPlots", type="collection", meta="image")
+								 )
+	} else {
+		plotsMeta <- list(
+									list(name="distributionPlots", type="collection", meta="image"),
+									list(name="matrixPlot", type="image"),
+									list(name="splitPlots", type="collection", meta="image")
+								 )
+	}
+	
 
 	meta[[1]] <- list(name="title", type="title")
 	meta[[2]] <- list(name="stats", type="table")
@@ -77,12 +91,13 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 
 	#### STATS TABLE
-
+	
 	last.stats.table <- NULL
 	if (is.list(state))
 		last.stats.table <- state[["results"]][["stats"]]
 
-	results[["stats"]] <- .descriptivesDescriptivesTable(dataset, options, run, last.stats.table)
+	results[["stats"]] <- .descriptivesDescriptivesTable(dataset, options, run, 
+																											 last.stats.table)
 
 
 	#### FREQUENCIES TABLES
@@ -105,11 +120,21 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	####  FREQUENCY PLOTS
 
 	last.plots <- NULL
-	if (is.list(state))
-		last.plots <- state$results$plots$distributionPlots$collection
+	print("state: ")
+	print(str(state), max.level=2)
+	if (is.list(state) && split == state[["options"]][["splitby"]]) {
+		if (split==""){
+			last.plots <- state$results$plots$distributionPlots$collection
+		} else {
+			last.plots <- state$results$plots$distributionPlots
+			last.plots <- last.plots[names(last.plots)!="title"]
+		}
+		
+	}
+		
 
 
-	if (length(variables) > 1) {
+	if (length(variables) > 1 || split != "") {
 
 		distrPlotsTitle <- "Distribution Plots"
 
@@ -118,10 +143,17 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		distrPlotsTitle <- "Distribution Plot"
 	}
 	
-	freqPltColl <- .descriptivesFrequencyPlots(dataset.factors, options, run, last.plots)
-
-	distrPlots <- list(collection=freqPltColl, 
-										 title=distrPlotsTitle)
+	freqPltColl <- .descriptivesFrequencyPlots(dataset, options, run, 
+																						 last.plots)
+	
+	if (split==""){
+		distrPlots <- list(collection=freqPltColl, 
+											 title=distrPlotsTitle)
+	} else {
+		distrPlots <- freqPltColl
+		distrPlots[["title"]] <- distrPlotsTitle
+	}
+	
 
 	#### SPLIT PLOTS
 	last.splitPlots <- NULL
@@ -152,8 +184,22 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 	keep <- NULL
 	
-	for (plot in results$plots$distributionPlots$collection)
-		keep <- c(keep, plot$data)
+	if (split == "") {
+		for (plot in results$plots$distributionPlots$collection)
+			keep <- c(keep, plot$data)
+	} else {
+		
+		for (variable in results$plots$distributionPlots) {
+			if ("collection" %in% names(variable)) {
+				for (plot in variable$collection) {
+					keep <- c(keep, plot$data)
+				}
+			}
+		}
+	}
+	
+	print(keep)
+	
 	for (plot in results$plots$splitPlots$collection)
 		keep <- c(keep, plot$data)
 
@@ -716,85 +762,182 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 }
 
 .descriptivesFrequencyPlots <- function(dataset, options, run, last.plots) {
-
+		
 	frequency.plots <- NULL
 
 	if (options$plotVariables) {
+		# First, determine whether to return a single plot or a collection
+		
+	
+		
+		coll <- options$splitby != ""
+		if (coll) {
+			split <- dataset[[ .v(options$splitby) ]]
+		}
+		
+
 
 		for (variable in options$variables) {
-
-			plot <- list()
+			
+			
+			
+			
+			# Then, determine whether the plot already exists
+			print(paste0("Checking plot for ", variable))
+			plotResult <- list()
 			plotted <- FALSE
-
+			print(str(last.plots, max.level = 3))
 			for (last.plot in last.plots) {
-
-
-				if (variable == last.plot$name) {
-
-					plot <- last.plot
-					plotted <- TRUE
-					break
+				print(str(last.plot, max.level = 3))
+				if ("name" %in% names(last.plot)) {
+					print(paste0("Testing ", last.plot$name))
+					# If name is an element of this, it is a single plot
+					if (variable == last.plot$name) {
+						plotResult <- last.plot
+						plotted <- TRUE
+						break
+					}
+				} else {
+					# Otherwise, check for name in first subplot
+					print(paste0("Testing ", last.plot$collection[[1]]$name))
+					if (variable == last.plot$collection[[1]]$name) {
+						plotResult <- last.plot$collection
+						plotted <- TRUE
+						break
+					}
 				}
 			}
 
-			if (plotted && (plot$width != options$plotWidth || plot$height != options$plotHeight))
-				plotted <- FALSE
-
-			plot[["title"]] <- variable
-			plot[["name"]]  <- variable
-			plot[["width"]]  <- options$plotWidth
-			plot[["height"]] <- options$plotHeight
-			plot[["custom"]] <- list(width="plotWidth", height="plotHeight")
-
-			column <- na.omit(dataset[[ .v(variable) ]])
-
-			if (plotted) {
-
-				# already plotted, no nothing
-
-			} else if (run == FALSE) {
-
-				plotFunc <- function(){
-					.barplotJASP(variable=variable, dontPlotData=TRUE)
+			# Remake plot if size changed
+			if (plotted){
+				if ("name" %in% names(plotResult)){
+					if  (plotResult$width!=options$plotWidth || 
+							 plotResult$height!=options$plotHeight) {
+						plotted <- FALSE
+					}
+				} else {
+					if  (plotResult[[1]]$width!=options$plotWidth || 
+							 plotResult[[1]]$height!=options$plotHeight) {
+						plotted <- FALSE
+					}
 				}
-				imageObj <- .writeImage(options$plotWidth, options$plotHeight, plotFunc)
-																
-				plot[["data"]] <- imageObj[["png"]]
-				plot[["obj"]] <- imageObj[["obj"]]
-								
-			} else if (any(is.infinite(column))) {
+			}
+			
+			if (!plotted && coll) {
+				# return a collection
+				subCollection <- list()
+				
+				for (l in levels(split)){
+					plot <- list()
+					plot[["title"]] <- l
+					plot[["name"]]  <- variable
+					plot[["width"]]  <- options$plotWidth
+					plot[["height"]] <- options$plotHeight
+					plot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+					
+					select <- split==l
+					column <- na.omit(dataset[[ .v(variable) ]][select])
+					
+					if (run == FALSE) {
 
-				plotFunc <- function(){
-					.barplotJASP(variable=variable, dontPlotData=TRUE)
+						plotFunc <- function(){
+							.barplotJASP(variable=variable, dontPlotData=TRUE)
+						}
+						imageObj <- .writeImage(options$plotWidth, options$plotHeight, plotFunc)
+																		
+						plot[["data"]] <- imageObj[["png"]]
+						plot[["obj"]] <- imageObj[["obj"]]
+										
+					} else if (any(is.infinite(column))) {
+
+						plotFunc <- function(){
+							.barplotJASP(variable=variable, dontPlotData=TRUE)
+						}
+						imageObj <- .writeImage(options$plotWidth, options$plotHeight, plotFunc,
+																		obj = FALSE)
+																		
+						plot[["data"]] <- imageObj[["png"]]
+						plot[["obj"]] <- imageObj[["obj"]]
+						plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity")
+						plot[["status"]] <- "complete"
+
+					} else if (length(column) > 0 && is.factor(column) || length(column) > 0  && all(column %% 1 == 0) && length(unique(column)) <= 24) {
+
+						if ( ! is.factor(column)) {
+
+							column <- as.factor(column)
+						}
+
+						plotFunc <- function(){
+							.barplotJASP(column, variable)
+						}
+						imageObj <- .writeImage(options$plotWidth, options$plotHeight, plotFunc)
+																		
+						plot[["data"]] <- imageObj[["png"]]
+						plot[["obj"]] <- imageObj[["obj"]]
+						plot[["convertible"]] <- TRUE
+						plot[["status"]] <- "complete"
+
+					} else if (length(column) > 0 && !is.factor(column)) {
+
+						if (any(is.infinite(column))) {
+
+							plotFunc <- function(){
+								.barplotJASP(variable=variable, dontPlotData=TRUE)
+							}
+							imageObj <- .writeImage(options$plotWidth, options$plotHeight, plotFunc,
+																			obj = FALSE)
+																			
+							plot[["data"]] <- imageObj[["png"]]
+							plot[["obj"]] <- imageObj[["obj"]]
+							plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity")
+							plot[["status"]] <- "complete"
+
+						} else {
+
+							plotFunc <- function(){
+								.plotMarginal(column, variableName=variable)
+							}
+							imageObj <- .writeImage(options$plotWidth, options$plotHeight, 
+																			plotFunc)
+																			
+							plot[["data"]] <- imageObj[["png"]]
+							plot[["obj"]] <- imageObj[["obj"]]
+							plot[["convertible"]] <- TRUE
+							plot[["status"]] <- "complete"
+						}
+
+					}
+					
+					subCollection[[l]] <- plot
 				}
-				imageObj <- .writeImage(options$plotWidth, options$plotHeight, plotFunc,
-																obj = FALSE)
-																
-				plot[["data"]] <- imageObj[["png"]]
-				plot[["obj"]] <- imageObj[["obj"]]
-				plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity")
-				plot[["status"]] <- "complete"
+				
+				plotResult <- list(collection = subCollection,
+													 title = variable)
+				
+			} else if (!plotted) {
+				
+				plot <- list()
+				
+				plot[["title"]] <- variable
+				plot[["name"]]  <- variable
+				plot[["width"]]  <- options$plotWidth
+				plot[["height"]] <- options$plotHeight
+				plot[["custom"]] <- list(width="plotWidth", height="plotHeight")
 
-			} else if (length(column) > 0 && is.factor(column) || length(column) > 0  && all(column %% 1 == 0) && length(unique(column)) <= 24) {
+				column <- na.omit(dataset[[ .v(variable) ]])
 
-				if ( ! is.factor(column)) {
+				if (run == FALSE) {
 
-					column <- as.factor(column)
-				}
-
-				plotFunc <- function(){
-					.barplotJASP(column, variable)
-				}
-				imageObj <- .writeImage(options$plotWidth, options$plotHeight, plotFunc)
-																
-				plot[["data"]] <- imageObj[["png"]]
-				plot[["obj"]] <- imageObj[["obj"]]
-				plot[["convertible"]] <- TRUE
-				plot[["status"]] <- "complete"
-
-			} else if (length(column) > 0 && !is.factor(column)) {
-
-				if (any(is.infinite(column))) {
+					plotFunc <- function(){
+						.barplotJASP(variable=variable, dontPlotData=TRUE)
+					}
+					imageObj <- .writeImage(options$plotWidth, options$plotHeight, plotFunc)
+																	
+					plot[["data"]] <- imageObj[["png"]]
+					plot[["obj"]] <- imageObj[["obj"]]
+									
+				} else if (any(is.infinite(column))) {
 
 					plotFunc <- function(){
 						.barplotJASP(variable=variable, dontPlotData=TRUE)
@@ -807,23 +950,58 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity")
 					plot[["status"]] <- "complete"
 
-				} else {
+				} else if (length(column) > 0 && is.factor(column) || length(column) > 0  && all(column %% 1 == 0) && length(unique(column)) <= 24) {
+
+					if ( ! is.factor(column)) {
+
+						column <- as.factor(column)
+					}
 
 					plotFunc <- function(){
-						.plotMarginal(column, variableName=variable)
+						.barplotJASP(column, variable)
 					}
-					imageObj <- .writeImage(options$plotWidth, options$plotHeight, 
-																	plotFunc)
+					imageObj <- .writeImage(options$plotWidth, options$plotHeight, plotFunc)
 																	
 					plot[["data"]] <- imageObj[["png"]]
 					plot[["obj"]] <- imageObj[["obj"]]
 					plot[["convertible"]] <- TRUE
 					plot[["status"]] <- "complete"
+
+				} else if (length(column) > 0 && !is.factor(column)) {
+
+					if (any(is.infinite(column))) {
+
+						plotFunc <- function(){
+							.barplotJASP(variable=variable, dontPlotData=TRUE)
+						}
+						imageObj <- .writeImage(options$plotWidth, options$plotHeight, plotFunc,
+																		obj = FALSE)
+																		
+						plot[["data"]] <- imageObj[["png"]]
+						plot[["obj"]] <- imageObj[["obj"]]
+						plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity")
+						plot[["status"]] <- "complete"
+
+					} else {
+
+						plotFunc <- function(){
+							.plotMarginal(column, variableName=variable)
+						}
+						imageObj <- .writeImage(options$plotWidth, options$plotHeight, 
+																		plotFunc)
+																		
+						plot[["data"]] <- imageObj[["png"]]
+						plot[["obj"]] <- imageObj[["obj"]]
+						plot[["convertible"]] <- TRUE
+						plot[["status"]] <- "complete"
+					}
+
 				}
-
+				
+				plotResult <- plot
 			}
-
-			frequency.plots[[length(frequency.plots)+1]] <- plot
+			
+			frequency.plots[[variable]] <- plotResult
 		}
 	}
 
