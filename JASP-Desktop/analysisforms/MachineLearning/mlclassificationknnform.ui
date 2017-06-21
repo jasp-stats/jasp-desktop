@@ -353,7 +353,7 @@
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="BoundGroupBox" name="groupBox_3">
+          <widget class="BoundGroupBox" name="modelTerms">
            <property name="title">
             <string>Tables</string>
            </property>

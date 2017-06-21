@@ -1025,6 +1025,8 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
     
     predictions <- predict(knn.fit,newdata = dataset_indicator[index_1,])
     
+    if(options[["newPredictions"]]){
+    
     fields <- list()
     
     if(!is.null(res)){
@@ -1071,5 +1073,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
     return(list(title = 'Predictions for new data',
                 schema = list(fields = fields),
                 data = data))
+    
+    }
     
 }

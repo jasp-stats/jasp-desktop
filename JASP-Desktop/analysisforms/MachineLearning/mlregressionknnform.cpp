@@ -50,8 +50,7 @@ MLRegressionKNNForm::MLRegressionKNNForm(QWidget *parent) :
 
 	_anovaModel = new TableModelAnovaModel(this);
 	_anovaModel->setPiecesCanBeAssigned(false);
-	ui->modelTerms->setModel(_anovaModel);
-	ui->modelTerms->hide();
+    ui->modelTerms->hide();
 
 	connect(_targetListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
 	connect(_targetListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
