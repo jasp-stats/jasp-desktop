@@ -270,6 +270,10 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 					}
 					res
 				})
+				
+				if (class(row) == "try-error" && is.null(errorMessage)) {
+				    errorMessage <- .extractErrorMessage(row)
+				}
 
 				## if there has been an error, find out which and log as a footnote
 
@@ -401,20 +405,16 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 
 			row.footnotes <- NULL
 			error <- FALSE
-
-			if (length(data) < 3) {
-
-				err <- "Too few observations (N < 3) to compute statistic reliably."
-				foot.index <- .addFootnote(footnotes, err)
-				row.footnotes <- list(W = list(foot.index), p = list(foot.index))
-				error <- TRUE
-
-			} else if (length(data) > 5000) {
-
-				err <- "Too many observations (N > 5000) to compute statistic reliably."
-				foot.index <- .addFootnote(footnotes, err)
-				row.footnotes <- list(W = list(foot.index), p = list(foot.index))
-				error <- TRUE
+			
+			errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+			                     all.target = variable,
+			                     observations.amount = '< 2')
+			
+			if (!identical(errors, FALSE)) {
+			    errorMessage <- errors$message
+			    foot.index <- .addFootnote(footnotes, errorMessage)
+			    row.footnotes <- list(W = list(foot.index), p = list(foot.index))
+			    error <- TRUE
 			}
 
 			if (!error) {
@@ -467,6 +467,10 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 .ttestOneSamplesDescriptivesPlot <- function(dataset, options, perform) {
 
 	descriptivesPlotList <- list()
+	
+	if (perform == "run" && length(options$variables) > 0) {
+	    
+	    
 	base_breaks_y <- function(x, options) {
 
 		values <- c(options$testValue, x[, "dependent"] - x[, "ci"],
@@ -492,14 +496,12 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 			errorMessage <- errors$message
 			
 			descriptivesPlot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-		} 
+			descriptivesPlot[["data"]] <- ""
+		} else {
 		
-		####
 		descriptivesPlot[["width"]] <- options$plotWidth
 		descriptivesPlot[["height"]] <- options$plotHeight
 		descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
-
-		if (perform == "run" && var != "") {
 
 			dataSubset <- data.frame(dependent = dataset[[.v(var)]],
 						  groupingVariable = rep(var, length(dataset[[.v(var)]])))
@@ -538,15 +540,21 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 
 			descriptivesPlot[["data"]] <- imgObj[["png"]]
 			descriptivesPlot[["obj"]] <- imgObj[["obj"]]
+			
+	}
+	
 			descriptivesPlot[["convertible"]] <- TRUE
 			descriptivesPlot[["status"]] <- "complete"
 			
-		} else {
-		    
-		    descriptivesPlot[["data"]] <- ""
-		}
-		
-		descriptivesPlotList[[i]] <- descriptivesPlot
+			descriptivesPlotList[[i]] <- descriptivesPlot
+			
 	}
-	descriptivesPlotList
+	
+	return(descriptivesPlotList)
+		
+	} else {
+	    
+	    return(NULL)
+	    
+	}
 }

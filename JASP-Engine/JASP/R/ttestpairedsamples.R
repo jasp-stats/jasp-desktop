@@ -420,7 +420,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 		p1 <- pair[[1]]
 		p2 <- pair[[2]]
-
+		
 		if (perform == "run" && length(options$pairs) > 0 && p1 != p2) {
 
 			c1 <- dataset[[ .v(p1) ]]
@@ -429,20 +429,16 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 			row.footnotes <- NULL
 			error <- FALSE
-
-			if (length(data) < 3) {
-
-				err <- "Too few observations (N < 3) to compute statistic reliably."
-				foot.index <- .addFootnote(footnotes, err)
-				row.footnotes <- list(W = list(foot.index), p = list(foot.index))
-				error <- TRUE
-
-			} else if (length(data) > 5000) {
-
-				err <- "Too many observations (N > 5000) to compute statistic reliably."
-				foot.index <- .addFootnote(footnotes, err)
-				row.footnotes <- list(W = list(foot.index), p = list(foot.index))
-				error <- TRUE
+			
+			errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+			                     all.target = c(p1,p2),
+			                     observations.amount = '< 2')
+			
+			if (!identical(errors, FALSE)) {
+			    errorMessage <- errors$message
+			    foot.index <- .addFootnote(footnotes, errorMessage)
+			    row.footnotes <- list(W = list(foot.index), p = list(foot.index))
+			    error <- TRUE
 			}
 
 			if (!error) {
@@ -518,10 +514,6 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 				descriptivesPlot[["data"]] <- ""
 				descriptivesPlot[["error"]] <- list(error="badData", errorMessage=errorMessage)
 			} else {
-				errorMessage <- NULL
-			}
-			
-			if(is.null(errorMessage)){
 
 			####
 			data <- data.frame(id = rep(1:length(c1), 2), dependent = c(c1, c2),

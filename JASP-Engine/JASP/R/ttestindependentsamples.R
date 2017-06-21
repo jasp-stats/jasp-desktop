@@ -623,18 +623,16 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 
 				row.footnotes <- NULL
 				error <- FALSE
-
-				if (length(data) < 3) {
-					err <- .generateErrorMessage(type='levene', observations.amount='< 3', variables=variable, grouping=factor)
-					foot.index <- .addFootnote(footnotes, err)
-					row.footnotes <- list(W = list(foot.index), p = list(foot.index))
-					error <- TRUE
-
-				} else if (length(data) > 5000) {
-					err <- .generateErrorMessage(type='levene', observations.amount='> 5000', variables=variable, grouping=factor)
-					foot.index <- .addFootnote(footnotes, err)
-					row.footnotes <- list(W = list(foot.index), p = list(foot.index))
-					error <- TRUE
+				
+				errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+				                     all.target = variable,
+				                     observations.amount = '< 2')
+				
+				if (!identical(errors, FALSE)) {
+				    errorMessage <- errors$message
+				    foot.index <- .addFootnote(footnotes, errorMessage)
+				    row.footnotes <- list(W = list(foot.index), p = list(foot.index))
+				    error <- TRUE
 				}
 
 				## if the user did everything correctly :)
@@ -679,10 +677,10 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 
 	variables <- options$variables
 	groups <- options$groupingVariable
+	
+	descriptivesPlotList <- list()
 
 	if (perform == "run" && length(variables) > 0 && groups != "") {
-	    
-	    descriptivesPlotList <- list()
 
 		base_breaks_x <- function(x) {
 			b <- unique(as.numeric(x))
@@ -714,10 +712,6 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 		        descriptivesPlot[["data"]] <- ""
 		        descriptivesPlot[["error"]] <- list(error="badData", errorMessage=errorMessage)
 		    } else {
-		        errorMessage <- NULL
-		    }
-		    
-		    if(is.null(errorMessage)){
 		        
 		        descriptivesPlot[["width"]] <- options$plotWidth
 		        descriptivesPlot[["height"]] <- options$plotHeight
@@ -767,13 +761,9 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 			descriptivesPlotList[[var]] <- descriptivesPlot
 
 		}
+		
+		return(descriptivesPlotList)
 
-	} 
-	
-	if (perform == "run" && length(variables) > 0 && groups != "") {
-	    
-	    return(descriptivesPlotList)
-	    
 	} else {
 	    
 	    return(NULL)
