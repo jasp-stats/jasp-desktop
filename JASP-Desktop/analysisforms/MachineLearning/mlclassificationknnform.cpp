@@ -48,14 +48,12 @@ MLClassificationKNNForm::MLClassificationKNNForm(QWidget *parent) :
 	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->predictors);
 	ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->indicator);
 
-	_anovaModel = new TableModelAnovaModel(this);
-	_anovaModel->setPiecesCanBeAssigned(false);
-	ui->modelTerms->setModel(_anovaModel);
-	ui->modelTerms->hide();
+    _anovaModel = new TableModelAnovaModel(this);
+    _anovaModel->setPiecesCanBeAssigned(false);
 
 	connect(_targetListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
 	connect(_targetListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
-	connect(_targetListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addFixedFactors(Terms)));
+    connect(_targetListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addFixedFactors(Terms)));
 	connect(_targetListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
 	connect(_predictorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));

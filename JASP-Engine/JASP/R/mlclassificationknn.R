@@ -28,7 +28,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     stateKey[['Predictions']] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[['Distances']] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[["Weights"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
-    stateKey[["newData"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
+    stateKey[["New"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[["Plot"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[["optimizationPlot"]] <- c("optimizeModel", "optimizeModelMaxK", "optimizeModelMaxD")
     
@@ -96,7 +96,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
                  list(name = 'Predictions', type = 'table'),
                  list(name = 'Weights', type = 'table'),
                  list(name = 'Distances', type = 'table'),
-                 list(name = "newData", type = "table"),
+                 list(name = "New", type = "object", meta = list(list(name = "frequencies", type = "table"), list(name = "newData", type = "table"))),
                  list(name = 'Plot', type = 'image'),
                  list(name = "optimizationPlot", type = "image"))
     
@@ -230,8 +230,8 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
         
         if(options[["indicator"]] != "" && !is.null(res)){
             
-            results[["newData"]] <- .predictKNNclassification(dataset_indicator, options, predictors, formula, res, indicator, opt)
-            state[["newData"]] <- results[["newData"]]
+            results[["New"]] <- .predictKNNclassification(dataset_indicator, options, predictors, formula, res, indicator, opt)
+            state[["New"]] <- results[["New"]]
             
         }
         
@@ -1047,9 +1047,9 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
         
     }
     
-    if(options[["indicator"]] != "" && !is.null(state[["newData"]])){
+    if(options[["indicator"]] != "" && !is.null(state[["New"]])){
         
-        results[["newData"]] <- state[["newData"]]
+        results[["New"]] <- state[["New"]]
         
     }
     
@@ -1286,6 +1286,8 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
 
 .predictKNNclassification <- function(dataset_indicator, options, predictors, formula, res, indicator, opt){
     
+    results <- list(title = "Predictions for new data")
+    
     index_1 <- which(dataset_indicator[,indicator] == 1)
     index_0 <- which(dataset_indicator[,indicator] == 0)
     
@@ -1298,6 +1300,39 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
                                 scale = options[["scaleEqualSD"]])
     
     predictions <- as.vector(predict(knn.fit,newdata = dataset_indicator[index_1,]))
+    
+    if(options[["newFrequencies"]]){
+    
+    fields <- list(
+        list(name = "class", title = "Class", type = "string"),
+        list(name = "frequency", title = "Frequency", type = "integer")
+    )
+    
+    if(is.null(res)){
+        
+        data <- list(list("class" = ".", "frequency" = "."))
+        
+    } else {
+        
+        data <- list()
+        
+        levels <- unique(predictions)
+        
+        for(i in 1:length(unique(predictions))){
+            
+            data[[i]] <- list(class = levels[i], frequency = length(which(predictions == levels[i])))
+            
+        }
+        
+    }
+    
+    results[["frequencies"]] <- list(title = 'Frequencies',
+                                     schema = list(fields = fields),
+                                     data = data)
+    
+    } 
+    
+    if(options[["newPredictions"]]){
     
     fields <- list()
     
@@ -1350,8 +1385,12 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
         
     }
     
-    return(list(title = 'Predictions for new data',
-                schema = list(fields = fields),
-                data = data))
+    results[["newData"]] <- list(title = 'Predictions',
+                                 schema = list(fields = fields),
+                                 data = data)
+    
+    }
+
+return(results)
            
 }
