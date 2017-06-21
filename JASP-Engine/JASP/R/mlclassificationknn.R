@@ -127,6 +127,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
         }
         if(length(target[target!='']) > 0){
             target <- .v(target)
+            dataset[,target] <- factor(dataset[,target])
         }
         
         if(length(indicator[indicator!=""]) > 0){
