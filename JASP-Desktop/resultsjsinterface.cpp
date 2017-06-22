@@ -394,15 +394,6 @@ void ResultsJsInterface::exportSelected(const QString &filename)
 	runJavaScript("window.exportHTML('" + filename + "');");
 }
 
-void ResultsJsInterface::analysisUserDataLoadedHandler(Analysis *analysis)
-{
-	QString results = tq(analysis->userData().toStyledString());
-
-	results = escapeJavascriptString(results);
-	results = "window.loadUserData(" + QString::number(analysis->id()) + ", JSON.parse('" + results + "'));";
-	runJavaScript(results);
-}
-
 void ResultsJsInterface::analysisChanged(Analysis *analysis)
 {
 	Json::Value analysisJson = analysis->asJSON();

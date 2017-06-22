@@ -55,7 +55,6 @@ signals:
 	void analysisSaveImage(Analysis *source);
 	void analysisImageSaved(Analysis *source);
 	void analysisResultsChanged(Analysis *source);
-	void analysisUserDataLoaded(Analysis *source);
 	void analysisAdded(Analysis *source);
 
 private slots:
@@ -76,7 +75,6 @@ private:
 	void analysisSaveImageHandler(Analysis *analysis, Json::Value &options);
 	void analysisImageSavedHandler(Analysis *analysis);
 	void analysisResultsChangedHandler(Analysis *analysis);
-	void analysisUserDataLoadedHandler(Analysis *analysis);
 
 	QList<Analysis*> _analyses;
 

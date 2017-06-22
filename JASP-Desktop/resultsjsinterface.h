@@ -74,7 +74,6 @@ public slots:
 	void displayMessageFromResults(QString path);
 
 	void exportSelected(const QString &filename);
-	void analysisUserDataLoadedHandler(Analysis *analysis);
 
 private:
 	MainWindow *_mainWindow;

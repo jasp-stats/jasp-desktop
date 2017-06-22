@@ -74,11 +74,9 @@ void Analysis::setImageResults(Json::Value results)
 	imageSaved(this);
 }
 
-void Analysis::setUserData(Json::Value userData, bool silient)
+void Analysis::setUserData(Json::Value userData)
 {
 	_userData = userData;
-	if ( ! silient)
-		userDataLoaded(this);
 }
 
 const Json::Value &Analysis::results() const

@@ -176,7 +176,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(_analyses, SIGNAL(analysisResultsChanged(Analysis*)), this, SLOT(analysisResultsChangedHandler(Analysis*)));
 	connect(_analyses, SIGNAL(analysisImageSaved(Analysis*)), this, SLOT(analysisImageSavedHandler(Analysis*)));
-	connect(_analyses, SIGNAL(analysisUserDataLoaded(Analysis*)), _resultsJsInterface, SLOT(analysisUserDataLoadedHandler(Analysis*)));
 	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), ui->backStage, SLOT(analysisAdded(Analysis*)));
 
 	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
@@ -1552,7 +1551,7 @@ void MainWindow::getAnalysesUserData()
 
 		Json::Value &analysisUserData = userDataObj["userdata"];
 
-		analysis->setUserData(analysisUserData, true);
+		analysis->setUserData(analysisUserData);
 	}
 }
 
