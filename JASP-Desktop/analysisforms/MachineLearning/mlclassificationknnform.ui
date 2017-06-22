@@ -1031,7 +1031,7 @@
          <item row="1" column="0">
           <widget class="BoundGroupBox" name="noOfNearestNeighbours">
            <property name="title">
-            <string>No. nearest neighbours</string>
+            <string>No. nearest neighbors</string>
            </property>
            <property name="flat">
             <bool>false</bool>

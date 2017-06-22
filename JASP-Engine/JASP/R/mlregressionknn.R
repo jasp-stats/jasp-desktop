@@ -22,6 +22,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
     state[["options"]] <- options
     
     stateKey <- list()
+    stateKey[["res"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "scaleEqualSD", "validationLeaveOneOut", "validationKFold")
     stateKey[["Descriptions"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "scaleEqualSD", "validationLeaveOneOut", "validationKFold")
     stateKey[["optim"]] <- c("optimizeModel", "optimizeModelMaxK", "optimizeModelMaxD")
     stateKey[['Predictions']] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD","tablePredictionsConfidence")
@@ -138,14 +139,22 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	
 	if(length(predictors[predictors!='']) > 0 & length(target[target!='']) > 0){
 	    
-	    dataset <- na.omit(dataset)
-		
-		train.index <- sample(c(TRUE,FALSE),nrow(dataset),replace = TRUE,prob = c(opt[['ntrain']]*0.01,1-(opt[['ntrain']]*0.01)))
-		train <- dataset[which(train.index == TRUE), ]
-		test <- dataset[which(train.index == FALSE), ]
-		
-		res <- .DoKNNregression(dataset,options,opt,train,test,train.index,formula,target)
-		
+	    if(!is.null(state[["res"]])){
+	        
+	        res <- state[["res"]]
+	        
+	    } else {
+	        
+	        dataset <- na.omit(dataset)
+	        
+	        train.index <- sample(c(TRUE,FALSE),nrow(dataset),replace = TRUE,prob = c(opt[['ntrain']]*0.01,1-(opt[['ntrain']]*0.01)))
+	        train <- dataset[which(train.index == TRUE), ]
+	        test <- dataset[which(train.index == FALSE), ]
+	        
+	        res <- .DoKNNregression(dataset,options,opt,train,test,train.index,formula,target)
+	        
+	    } 
+	    
 	} else {
 	    
 	    res <- NULL
@@ -156,21 +165,6 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	
 	results[['Descriptions']] <- .DescriptionsTable(predictors, target, opt, options, res, dataset, formula)
 	state[["Descriptions"]] <- results[["Descriptions"]]
-	
-	# Create optimization table ##
-	
-	if(options[["optimizeModel"]]){
-	    
-	    tmp_results <- .optimizationTableRegression(formula, dataset, options, res)
-	    
-	    results[["optim"]] <- list(title = "Model optimization")
-	    results[["optim"]][["optimization"]] <- tmp_results[["optimizationTable"]]
-	    state[["optim"]] <- results[["optim"]]
-	    
-	    # save result for plot 
-	    plot_data <- tmp_results[["plot_data"]]
-	    
-	}
 	
 	if ( ! .shouldContinue(callback(results)))
 	    return()
@@ -210,6 +204,8 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	if ( ! .shouldContinue(callback(results)))
 	    return()
 	
+	# Predict new data ##
+	
 	if(options[["indicator"]] != "" && !is.null(res)){
 	    
 	    results[["newData"]] <- .predictKNNregression(dataset_indicator, options, predictors, formula, res, indicator, opt)
@@ -233,7 +229,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 		
 	}
 	
-	# Create the test set accuracy plot
+	# Create the test set accuracy plot ##
 	
 	if(options[["accuracyPlot"]] & !is.null(res)){
 	    
@@ -242,28 +238,28 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	    
 	}
 	
-	# Create the optimization plot ## 
-	
-	if(options[["optimizeModel"]] && !is.null(res)){
+	# Create the optimization ## 
+	 
+	if(options[["optimizeModel"]]){
 	    
-	    .plotFunc <- function(){
-	        .plotOptimizationRegression(plot_data)
-	    }
+	    tmp_results <- .optimizationTableRegression(formula, dataset, options, res)
 	    
-	    imgObj <- .writeImage(width = options$plotWidth, 
-	                          height = options$plotHeight, 
-	                          plot = .plotFunc)
+	    results[["optim"]] <- list(title = "Model optimization")
 	    
-	    plot <- list()
-	    
-	    plot[["title"]] <- "Optimization plot"
-	    plot[["data"]] <- imgObj[["png"]]
-	    plot[["obj"]] <- imgObj[["obj"]]
-	    plot[["convertible"]] <- TRUE
-	    plot[["status"]] <- "complete"
-	    
-	    results[["optim"]][["optimizationPlot"]] <- plot
+	    results[["optim"]][["optimization"]] <- tmp_results[["optimizationTable"]]
 	    state[["optim"]] <- results[["optim"]]
+	    
+	    # save result for plot 
+	    plot_data <- tmp_results[["plot_data"]]
+	    
+	    if(!is.null(res) & !is.null(tmp_results)){
+	        
+	        plot <- .optimizationPlotRegression(plot_data, options)
+	        
+	        results[["optim"]][["optimizationPlot"]] <- plot
+	        state[["optim"]] <- results[["optim"]]
+	        
+	    }
 	    
 	}
 	
@@ -1005,7 +1001,11 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
     
     if(!is.null(res)){
         
-        result <- .optimizerKNN(formula = formula,dataset = dataset,kmax = options[["optimizeModelMaxK"]],distance_from = 0.1,distance_to = options[["optimizeModelMaxD"]])
+        result <- .optimizerKNN(formula = formula,dataset = dataset,kmax = options[["optimizeModelMaxK"]],distance_from = 0.1,distance_to = options[["optimizeModelMaxD"]], options = options)
+        
+        if(is.null(result)){
+            return()
+        }
         
         data <- list(
             list(model = "Optimal parameters", RMSE = result[["MinStatistic"]], k = result[["OptK"]], weights = result[["OptWeights"]], distance = result[["OptDistance"]])
@@ -1102,13 +1102,13 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
     xName = "Observed"
     yName = "Predicted"
     
-    toPlot = data.frame(Observed = res[['predictions']][,2],
-                        Predicted = res[['predictions']][,3])
+    toPlot <- data.frame(x = res[['predictions']][,2],
+                        y = res[['predictions']][,3])
     
-    line <- data.frame(Observed = range(res[['predictions']][,2]),
-                       Predicted = range(res[['predictions']][,3]))
+    line <- data.frame(x = range(res[['predictions']][,2]),
+                       y = range(res[['predictions']][,3]))
     
-    g <- drawCanvas(xName = xName, yName = yName)
+    g <- drawCanvas(xName = xName, yName = yName, dat = line)
     g <- drawPoints(g, dat = toPlot, size = 4, alpha = .5)
     g <- drawLines(g, dat = line)
     g <- themeJasp(g)
@@ -1120,6 +1120,28 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
     plot <- list()
     
     plot[["title"]] <- "Test set accuracy"
+    plot[["data"]] <- imgObj[["png"]]
+    plot[["obj"]] <- imgObj[["obj"]]
+    plot[["convertible"]] <- TRUE
+    plot[["status"]] <- "complete"
+    
+    return(plot)
+    
+}
+
+.optimizationPlotRegression <- function(plot_data, options){
+    
+    .plotFunc <- function(){
+        .plotOptimizationRegression(plot_data)
+    }
+    
+    imgObj <- .writeImage(width = options$plotWidth, 
+                          height = options$plotHeight, 
+                          plot = .plotFunc)
+    
+    plot <- list()
+    
+    plot[["title"]] <- "Optimization plot"
     plot[["data"]] <- imgObj[["png"]]
     plot[["obj"]] <- imgObj[["obj"]]
     plot[["convertible"]] <- TRUE
