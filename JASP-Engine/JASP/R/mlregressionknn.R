@@ -90,13 +90,13 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	
 	meta <- list(list(name = 'KNN regression', type = 'title'),
 	             list(name = 'Descriptions', type = 'table'),
-	             list(name = "optim", type = "object", meta = list(list(name = "optimization", type = "table"), list(name = "optimizationPlot", type = "image"))),
 	             list(name = 'Predictions', type = 'table'),
 	             list(name = 'Weights', type = 'table'),
 	             list(name = 'Distances', type = 'table'),
 	             list(name = 'Plot', type = 'image'),
 	             list(name = "accuracyPlot", type = "image"),
-	             list(name = "newData", type = "table"))
+	             list(name = "newData", type = "table"),
+	             list(name = "optim", type = "object", meta = list(list(name = "optimization", type = "table"), list(name = "optimizationPlot", type = "image"))))
 	results[['.meta']] <- meta
 	
 	# init state ##
@@ -878,9 +878,9 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
     
     if(options[["optimizeModel"]]){
         
-        if(!is.null(state[["optimization"]])){
+        if(!is.null(state[["optim"]])){
             
-            results[["optimization"]] <- state[["optimization"]]
+            results[["optim"]] <- state[["optim"]]
             
         } else {
             
@@ -955,6 +955,12 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
     if(options[["indicator"]] != "" && !is.null(state[["newData"]])){
         
         results[["newData"]] <- state[["newData"]]
+        
+    }
+    
+    if(options[["accuracyPlot"]] && !is.null(state[["accuracyPlot"]])){
+        
+        results[["accuracyPlot"]] <- state[["accuracyPlot"]]
         
     }
     

@@ -90,13 +90,13 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     
     meta <- list(list(name = 'knn Classification', type = 'title'),
                  list(name = 'Descriptions', type = 'table'),
-                 list(name = "optim", type = "object", meta = list(list(name = "optimization", type = "table"), list(name = "optimizationPlot", type = "image"))),
                  list(name = "Confusion", type = "table"),
                  list(name = 'Predictions', type = 'table'),
                  list(name = 'Weights', type = 'table'),
                  list(name = 'Distances', type = 'table'),
                  list(name = 'Plot', type = 'image'),
-                 list(name = "New", type = "object", meta = list(list(name = "frequencies", type = "table"), list(name = "newData", type = "table"))))
+                 list(name = "New", type = "object", meta = list(list(name = "frequencies", type = "table"), list(name = "newData", type = "table"))),
+                 list(name = "optim", type = "object", meta = list(list(name = "optimization", type = "table"), list(name = "optimizationPlot", type = "image"))))
     
     results[['.meta']] <- meta
     
