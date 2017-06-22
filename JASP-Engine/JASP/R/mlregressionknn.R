@@ -165,7 +165,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	    
 	    results[["optim"]] <- list(title = "Model optimization")
 	    results[["optim"]][["optimization"]] <- tmp_results[["optimizationTable"]]
-	    state[["optimization"]] <- results[["optim"]]
+	    state[["optim"]] <- results[["optim"]]
 	    
 	    # save result for plot 
 	    plot_data <- tmp_results[["plot_data"]]

@@ -889,9 +889,9 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     
     if(options[["optimizeModel"]]){
         
-        if(!is.null(state[["optimization"]])){
+        if(!is.null(state[["optim"]])){
             
-            results[["optimization"]] <- state[["optimization"]]
+            results[["optim"]] <- state[["optim"]]
             
         } else {
             
