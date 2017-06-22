@@ -23,14 +23,13 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     
     stateKey <- list()
     stateKey[["Descriptions"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "scaleEqualSD", "validationLeaveOneOut", "validationKFold")
-    stateKey[["optimization"]] <- c("optimizeModel", "optimizeModelMaxK", "optimizeModelMaxD")
+    stateKey[["optim"]] <- c("optimizeModel", "optimizeModelMaxK", "optimizeModelMaxD")
     stateKey[["Confusion"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "scaleEqualSD")
     stateKey[['Predictions']] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[['Distances']] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[["Weights"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[["New"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[["Plot"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
-    stateKey[["optimizationPlot"]] <- c("optimizeModel", "optimizeModelMaxK", "optimizeModelMaxD")
     
     attr(state, "key") <- stateKey
     
@@ -73,7 +72,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
         
         errors <- .hasErrors(dataset, perform, type = c('infinity', 'observations'),
                              all.target = variables.to.read[i],
-                             observations.amount = "< 2",
+                             observations.amount = "< 5",
                              exitAnalysisIfErrors = TRUE)
         
     }
@@ -91,14 +90,13 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     
     meta <- list(list(name = 'knn Classification', type = 'title'),
                  list(name = 'Descriptions', type = 'table'),
-                 list(name = "optimization", type = "table"),
+                 list(name = "optim", type = "object", meta = list(list(name = "optimization", type = "table"), list(name = "optimizationPlot", type = "image"))),
                  list(name = "Confusion", type = "table"),
                  list(name = 'Predictions', type = 'table'),
                  list(name = 'Weights', type = 'table'),
                  list(name = 'Distances', type = 'table'),
-                 list(name = "New", type = "object", meta = list(list(name = "frequencies", type = "table"), list(name = "newData", type = "table"))),
                  list(name = 'Plot', type = 'image'),
-                 list(name = "optimizationPlot", type = "image"))
+                 list(name = "New", type = "object", meta = list(list(name = "frequencies", type = "table"), list(name = "newData", type = "table"))))
     
     results[['.meta']] <- meta
     
@@ -169,8 +167,9 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
             
             tmp_results <- .optimizationTable(formula, dataset, options, res)
             
-            results[["optimization"]] <- tmp_results[["optimizationTable"]]
-            state[["optimization"]] <- results[["optimization"]]
+            results[["optim"]] <- list(title = "Model optimization")
+            results[["optim"]][["optimization"]] <- tmp_results[["optimizationTable"]]
+            state[["optim"]] <- results[["optim"]]
             
             # save result for plot 
             plot_data <- tmp_results[["plot_data"]]
@@ -274,8 +273,8 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
             plot[["convertible"]] <- TRUE
             plot[["status"]] <- "complete"
             
-            results[["optimizationPlot"]] <- plot
-            state[["optimizationPlot"]] <- results[["optimizationPlot"]]
+            results[["optim"]][["optimizationPlot"]] <- plot
+            state[["optim"]] <- results[["optim"]]
             
         }
         
@@ -898,7 +897,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
             
             optimizationTable <- list()
             
-            optimizationTable[["title"]] <- "Model optimization"
+            optimizationTable[["title"]] <- "Optimization results"
             
             fields <- list(
                 list(name = "model", title = "", type = "string"),
@@ -1248,7 +1247,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     
     optimizationTable <- list()
     
-    optimizationTable[["title"]] <- "Model optimization"
+    optimizationTable[["title"]] <- "Optimization results"
     
     fields <- list(
         list(name = "model", title = "", type = "string"),

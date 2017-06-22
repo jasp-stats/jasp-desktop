@@ -161,6 +161,12 @@
             "name": "newPredictions",
             "type": "Boolean",
             "default": false
+        },
+        {
+            "name": "accuracyPlot",
+            "type": "Boolean",
+            "default": false
         }
+
 	]
 }

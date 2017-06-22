@@ -23,13 +23,13 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
     
     stateKey <- list()
     stateKey[["Descriptions"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "scaleEqualSD", "validationLeaveOneOut", "validationKFold")
-    stateKey[["optimization"]] <- c("optimizeModel", "optimizeModelMaxK", "optimizeModelMaxD")
+    stateKey[["optim"]] <- c("optimizeModel", "optimizeModelMaxK", "optimizeModelMaxD")
     stateKey[['Predictions']] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD","tablePredictionsConfidence")
     stateKey[['Distances']] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[["Weights"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[["newData"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[["Plot"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
-    stateKey[["optimizationPlot"]] <- c("optimizeModel", "optimizeModelMaxK", "optimizeModelMaxD")
+    stateKey[["accuracyPlot"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "scaleEqualSD")
     
     attr(state, "key") <- stateKey
     
@@ -72,7 +72,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	    
 	    errors <- .hasErrors(dataset, perform, type = c('infinity', 'observations'),
 	                         all.target = variables.to.read[i],
-	                         observations.amount = "< 2",
+	                         observations.amount = "< 5",
 	                         exitAnalysisIfErrors = TRUE)
 	    
 	}
@@ -90,13 +90,13 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	
 	meta <- list(list(name = 'KNN regression', type = 'title'),
 	             list(name = 'Descriptions', type = 'table'),
-	             list(name = "optimization", type = "table"),
+	             list(name = "optim", type = "object", meta = list(list(name = "optimization", type = "table"), list(name = "optimizationPlot", type = "image"))),
 	             list(name = 'Predictions', type = 'table'),
 	             list(name = 'Weights', type = 'table'),
 	             list(name = 'Distances', type = 'table'),
-	             list(name = "newData", type = "table"),
 	             list(name = 'Plot', type = 'image'),
-	             list(name = "optimizationPlot", type = "image"))
+	             list(name = "accuracyPlot", type = "image"),
+	             list(name = "newData", type = "table"))
 	results[['.meta']] <- meta
 	
 	# init state ##
@@ -162,8 +162,10 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	if(options[["optimizeModel"]]){
 	    
 	    tmp_results <- .optimizationTableRegression(formula, dataset, options, res)
-	    results[["optimization"]] <- tmp_results[["optimizationTable"]]
-	    state[["optimization"]] <- results[["optimization"]]
+	    
+	    results[["optim"]] <- list(title = "Model optimization")
+	    results[["optim"]][["optimization"]] <- tmp_results[["optimizationTable"]]
+	    state[["optimization"]] <- results[["optim"]]
 	    
 	    # save result for plot 
 	    plot_data <- tmp_results[["plot_data"]]
@@ -231,6 +233,15 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 		
 	}
 	
+	# Create the test set accuracy plot
+	
+	if(options[["accuracyPlot"]] & !is.null(res)){
+	    
+	    results[["accuracyPlot"]] <- .knnRegressionTestAccuracyPlot(res, target, options)
+	    state[["accuracyPlot"]] <- results[["accuracyPlot"]]
+	    
+	}
+	
 	# Create the optimization plot ## 
 	
 	if(options[["optimizeModel"]] && !is.null(res)){
@@ -251,8 +262,8 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	    plot[["convertible"]] <- TRUE
 	    plot[["status"]] <- "complete"
 	    
-	    results[["optimizationPlot"]] <- plot
-	    state[["optimizationPlot"]] <- results[["optimizationPlot"]]
+	    results[["optim"]][["optimizationPlot"]] <- plot
+	    state[["optim"]] <- results[["optim"]]
 	    
 	}
 	
@@ -875,7 +886,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
             
             optimizationTable <- list()
             
-            optimizationTable[["title"]] <- "Model optimization"
+            optimizationTable[["title"]] <- "Optimization results"
             
             fields <- list(
                 list(name = "model", title = "", type = "string"),
@@ -974,7 +985,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
     
     optimizationTable <- list()
     
-    optimizationTable[["title"]] <- "Model optimization"
+    optimizationTable[["title"]] <- "Optimization results"
     
     fields <- list(
         list(name = "model", title = "", type = "string"),
@@ -1075,5 +1086,39 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
                 data = data))
     
     }
+    
+}
+
+.knnRegressionTestAccuracyPlot <- function(res, target, options){
+    
+    library(JASPgraphs)
+    
+    xName = "Observed"
+    yName = "Predicted"
+    
+    toPlot = data.frame(Observed = res[['predictions']][,2],
+                        Predicted = res[['predictions']][,3])
+    
+    line <- data.frame(Observed = range(res[['predictions']][,2]),
+                       Predicted = range(res[['predictions']][,3]))
+    
+    g <- drawCanvas(xName = xName, yName = yName)
+    g <- drawPoints(g, dat = toPlot, size = 4, alpha = .5)
+    g <- drawLines(g, dat = line)
+    g <- themeJasp(g)
+    
+    imgObj <- .writeImage(width = options$plotWidth, 
+                          height = options$plotHeight, 
+                          plot = g)
+    
+    plot <- list()
+    
+    plot[["title"]] <- "Test set accuracy"
+    plot[["data"]] <- imgObj[["png"]]
+    plot[["obj"]] <- imgObj[["obj"]]
+    plot[["convertible"]] <- TRUE
+    plot[["status"]] <- "complete"
+    
+    return(plot)
     
 }
