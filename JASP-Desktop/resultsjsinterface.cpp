@@ -25,7 +25,6 @@
 #include <QStringBuilder>
 
 #include "qutils.h"
-#include "webresultpage.h"
 #include "appinfo.h"
 #include "tempfiles.h"
 #include "analysis.h"
@@ -37,12 +36,9 @@ ResultsJsInterface::ResultsJsInterface(QWidget *parent) : QObject(parent)
 	_webViewResults = _mainWindow->ui->webViewResults;
 	_webViewResults->setContextMenuPolicy(Qt::NoContextMenu);
 
-	WebResultPage *page = new WebResultPage(this);
-	_webViewResults->setPage(page);
-
 	_channel = new QWebChannel(this);
 	_channel->registerObject(QStringLiteral("jasp"), this);
-	page->setWebChannel(_channel);
+	_webViewResults->page()->setWebChannel(_channel);
 
 	_analysisMenu = new QMenu(_mainWindow);
 	connect(_analysisMenu, SIGNAL(aboutToHide()), this, SLOT(menuHidding()));

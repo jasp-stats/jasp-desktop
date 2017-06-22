@@ -187,7 +187,6 @@ SOURCES += $$PWD/main.cpp \
 		$$PWD/importers/importcolumn.cpp \
 		$$PWD/importers/csvimportcolumn.cpp \
         $$PWD/preferencesdialog.cpp \
-        $$PWD/webresultpage.cpp \
         $$PWD/resultsjsinterface.cpp
 
 HEADERS  += \
@@ -390,7 +389,6 @@ HEADERS  += \
 		$$PWD/importers/ods/odsxmlcontentshandler.h \
 		$$PWD/importers/ods/odsxmlhandler.h \
         $$PWD/importers/ods/odsxmlmanifesthandler.h \
-        $$PWD/webresultpage.h \
         $$PWD/resultsjsinterface.h
 
 FORMS += \
