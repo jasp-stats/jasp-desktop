@@ -616,7 +616,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 			count <- count + 1
 
 			## if everything looks fine, and we are ready to run
-			if (perform == "run" && length(variables) > 0 && !is.null(levels)) {
+			if (perform == "run" && length(variables) > 0 && !is.null(levels) && factor != "") {
 
 				## get the dependent variable at a certain factor level
 				data <- na.omit(dataset[[.v(variable)]][dataset[[.v(factor)]] == level])
@@ -626,7 +626,9 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 				
 				errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
 				                     all.target = variable,
-				                     observations.amount = '< 2')
+				                     observations.amount = c('< 3', '> 5000'),
+				                     all.grouping = factor,
+				                     all.groupingLevel = level)
 				
 				if (!identical(errors, FALSE)) {
 				    errorMessage <- errors$message
@@ -704,7 +706,8 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 		    
 		    errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
 		                         all.target = variables[var],
-		                         observations.amount = '< 2')
+		                         observations.amount = '< 2',
+		                         observations.grouping = options$groupingVariable)
 		    
 		    if (!identical(errors, FALSE)) {
 		        errorMessage <- errors$message

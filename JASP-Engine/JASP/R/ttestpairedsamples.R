@@ -432,7 +432,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 			
 			errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
 			                     all.target = c(p1,p2),
-			                     observations.amount = '< 2')
+			                     observations.amount = c('< 3', '> 5000'))
 			
 			if (!identical(errors, FALSE)) {
 			    errorMessage <- errors$message
