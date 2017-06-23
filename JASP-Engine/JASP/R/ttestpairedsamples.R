@@ -230,6 +230,8 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 					c1 <- df$c1
 					c2 <- df$c2
 					ci <- options$confidenceIntervalInterval
+					
+					if(is.null(errorMessage)){
 
 					r <- try(silent = FALSE, expr = {
 
@@ -249,11 +251,9 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 						## ... it will take ages to debug :)
 						res
 					})
-					
-					
 
 					## if testing raised an error, we extract information from it
-					if (class(r) != "try-error" && is.na(r$statistic) == FALSE) {
+					if (class(r) != "try-error") {
 
 						## same for all tests
 						p <- as.numeric(r$p.value)
@@ -287,7 +287,13 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 					## however, if there has been an error
 					## find out which and log it as a footnote
 
-					}  else if (!is.null(errorMessage)){
+					} else if (class(r) == "try-error") {
+					    errorMessage <- .extractErrorMessage(r)
+					}
+					
+					}
+					
+					if (!is.null(errorMessage)){
 
 
 						index <- .addFootnote(footnotes, errorMessage)
