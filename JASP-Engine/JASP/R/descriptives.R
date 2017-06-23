@@ -49,8 +49,10 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	}
 		
 
-
+	print("Loading state")
 	state <- .retrieveState()
+	str(state, max.level=2)
+	
 	run <- perform == "run"
 	
 
@@ -120,8 +122,6 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	####  FREQUENCY PLOTS
 
 	last.plots <- NULL
-	print("state: ")
-	print(str(state), max.level=2)
 	if (is.list(state) && split == state[["options"]][["splitby"]]) {
 		if (split==""){
 			last.plots <- state$results$plots$distributionPlots$collection
@@ -188,8 +188,8 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		for (plot in results$plots$distributionPlots$collection)
 			keep <- c(keep, plot$data)
 	} else {
-		
 		for (variable in results$plots$distributionPlots) {
+			str(variable, max.level = 3)
 			if ("collection" %in% names(variable)) {
 				for (plot in variable$collection) {
 					keep <- c(keep, plot$data)
@@ -198,11 +198,12 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		}
 	}
 	
-	print(keep)
+	
 	
 	for (plot in results$plots$splitPlots$collection)
 		keep <- c(keep, plot$data)
-
+		
+	print(keep)
 
 	if (perform == "init") {
 
@@ -783,14 +784,10 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			
 			
 			# Then, determine whether the plot already exists
-			print(paste0("Checking plot for ", variable))
 			plotResult <- list()
 			plotted <- FALSE
-			print(str(last.plots, max.level = 3))
 			for (last.plot in last.plots) {
-				print(str(last.plot, max.level = 3))
 				if ("name" %in% names(last.plot)) {
-					print(paste0("Testing ", last.plot$name))
 					# If name is an element of this, it is a single plot
 					if (variable == last.plot$name) {
 						plotResult <- last.plot
@@ -799,7 +796,6 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					}
 				} else {
 					# Otherwise, check for name in first subplot
-					print(paste0("Testing ", last.plot$collection[[1]]$name))
 					if (variable == last.plot$collection[[1]]$name) {
 						plotResult <- last.plot$collection
 						plotted <- TRUE
