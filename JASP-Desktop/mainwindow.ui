@@ -429,8 +429,8 @@ QTableView::item::last
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>240</width>
-                       <height>721</height>
+                       <width>300</width>
+                       <height>714</height>
                       </rect>
                      </property>
                      <property name="sizePolicy">
@@ -539,7 +539,7 @@ QTableView::item::last
                 <number>0</number>
                </property>
                <item row="0" column="1">
-                <widget class="QWebEngineView" name="webViewResults" native="true">
+                <widget class="WebView" name="webViewResults" native="true">
                  <property name="cursor">
                   <cursorShape>ArrowCursor</cursorShape>
                  </property>
@@ -642,6 +642,12 @@ QTableView::item::last
    <class>VariablesWidget</class>
    <extends>QWidget</extends>
    <header>variableswidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WebView</class>
+   <extends>QWidget</extends>
+   <header>widgets/webview.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
