@@ -194,7 +194,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 		p2 <- pair[[2]]
 		
 		errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
-							 all.target = c(p1,p2),
+							 all.target = c(p1, p2),
 							 observations.amount = '< 2')
 		
 		row <- list(v1 = "", sep = "", v2 = "")
@@ -233,7 +233,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 					
 					if(is.null(errorMessage)){
 
-					r <- try(silent = FALSE, expr = {
+					result <- try(silent = FALSE, expr = {
 
 						## if Wilcox box is ticked, run a paired wilcoxon signed rank test
 						if (test == 2) {
@@ -253,25 +253,25 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 					})
 
 					## if testing raised an error, we extract information from it
-					if (class(r) != "try-error") {
+					if (class(result) != "try-error") {
 
 						## same for all tests
-						p <- as.numeric(r$p.value)
-						stat <- .clean(as.numeric(r$statistic))
+						p <- as.numeric(result$p.value)
+						stat <- .clean(as.numeric(result$statistic))
 						sed <- .clean(sd(c1 - c2) / sqrt(length(c1)))
 						# num <- sqrt(sd(c1)^2 + sd(c2)^2 -  2 * cov(c1, c2))
 						# d <- .clean(mean(c1) - mean(c2) / num)
 
-						m <- as.numeric(r$estimate)
+						m <- as.numeric(result$estimate)
 						ciLow <- ifelse(direction == "less", .clean(-Inf),
-										as.numeric(r$conf.int[1]))
+										as.numeric(result$conf.int[1]))
 						ciUp <- ifelse(direction == "greater", .clean(Inf),
-									   as.numeric(r$conf.int[2]))
+									   as.numeric(result$conf.int[2]))
 
 
 						## paired t-test has it, wilcox doesn't!
-						df <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
-						d <- ifelse(is.null(r$parameter), "", .clean(mean(c1 - c2) / sd(c1 - c2)))
+						df <- ifelse(is.null(result$parameter), "", as.numeric(result$parameter))
+						d <- ifelse(is.null(result$parameter), "", .clean(mean(c1 - c2) / sd(c1 - c2)))
 						
 						# add things to the intermediate results object
 						row <- list(df = df, p = p, md = m, d = d,
@@ -287,8 +287,8 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 					## however, if there has been an error
 					## find out which and log it as a footnote
 
-					} else if (class(r) == "try-error") {
-					    errorMessage <- .extractErrorMessage(r)
+					} else if (isTryError(result)) {
+					    errorMessage <- .extractErrorMessage(result)
 					}
 					
 					}
@@ -437,7 +437,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 			error <- FALSE
 			
 			errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
-			                     all.target = c(p1,p2),
+			                     all.target = c(p1, p2),
 			                     observations.amount = c('< 3', '> 5000'))
 			
 			if (!identical(errors, FALSE)) {
@@ -511,7 +511,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 			c2 <- dataset[[ .v(pair[[2]]) ]]
 			###
 			errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
-								 all.target = c(pair[[1]],pair[[2]]),
+								 all.target = c(pair[[1]], pair[[2]]),
 								 observations.amount = '< 2')
 			
 			if (!identical(errors, FALSE)) {

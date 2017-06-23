@@ -344,7 +344,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 					 })
 					 
 					## if there has been an error in computing the test, log it as footnote
-					if (class(row) == "try-error") {
+					if (isTryError(row)) {
 						errorMessage <- .extractErrorMessage(row)
 					}
 				}
@@ -565,7 +565,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 			  row
 			})
 
-			if (class(result) == "try-error") {
+			if (isTryError(result)) {
 			  result <- list(variable = variable, F = "", df = "", p = "")
 			}
 
@@ -700,12 +700,12 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 				 ggplot2::scale_y_continuous(breaks = c(min(b), max(b))))
 		}
 		
-		for (var in .indices(variables)) {
+		for (variableIndex in .indices(variables)) {
 		    
-		    descriptivesPlot <- list("title" = variables[var])
+		    descriptivesPlot <- list("title" = variables[variableIndex])
 		    
 		    errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
-		                         all.target = variables[var],
+		                         all.target = variables[variableIndex],
 		                         observations.amount = '< 2',
 		                         observations.grouping = options$groupingVariable)
 		    
@@ -720,11 +720,11 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 		        descriptivesPlot[["height"]] <- options$plotHeight
 		        descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
 			
-			summaryStat <- .summarySE(as.data.frame(dataset), measurevar = .v(options$variables[var]),
+			summaryStat <- .summarySE(as.data.frame(dataset), measurevar = .v(options$variables[variableIndex]),
 				groupvars = .v(options$groupingVariable), conf.interval = options$descriptivesPlotsConfidenceInterval,
 				na.rm = TRUE, .drop = FALSE)
 
-			colnames(summaryStat)[which(colnames(summaryStat) == .v(variables[var]))] <- "dependent"
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(variables[variableIndex]))] <- "dependent"
 			colnames(summaryStat)[which(colnames(summaryStat) == .v(groups))] <- "groupingVariable"
 
 			pd <- ggplot2::position_dodge(0.2)
@@ -733,7 +733,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 				y = dependent, group = 1)) + ggplot2::geom_errorbar(ggplot2::aes(ymin = ciLower,
 				ymax = ciUpper), colour = "black", width = 0.2, position = pd) +
 				ggplot2::geom_line(position = pd, size = 0.7) + ggplot2::geom_point(position = pd,
-				size = 4) + ggplot2::ylab(unlist(options$variables[var])) + ggplot2::xlab(options$groupingVariable) +
+				size = 4) + ggplot2::ylab(unlist(options$variables[variableIndex])) + ggplot2::xlab(options$groupingVariable) +
 				ggplot2::theme_bw() +
 				ggplot2::theme(panel.grid.minor = ggplot2::element_blank(), plot.title = ggplot2::element_text(size = 18),
 				  panel.grid.major = ggplot2::element_blank(), axis.title.x = ggplot2::element_text(size = 18,
@@ -761,7 +761,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 			descriptivesPlot[["convertible"]] <- TRUE
 			descriptivesPlot[["status"]] <- "complete"
 			
-			descriptivesPlotList[[var]] <- descriptivesPlot
+			descriptivesPlotList[[variableIndex]] <- descriptivesPlot
 
 		}
 		

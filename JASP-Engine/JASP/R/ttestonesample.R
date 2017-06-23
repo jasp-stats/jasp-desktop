@@ -271,7 +271,7 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 					res
 				})
 				
-				if (class(row) == "try-error" && is.null(errorMessage)) {
+				if (isTryError(row) && is.null(errorMessage)) {
 				    errorMessage <- .extractErrorMessage(row)
 				}
 
