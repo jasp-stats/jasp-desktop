@@ -40,20 +40,20 @@ RibbonMachineLearning::RibbonMachineLearning(QWidget *parent) :
 
 	menu = new QMenu(this);
 	menu->addAction(QString("Boosting"), this, SLOT(itemSelected()))->setObjectName("MLRegressionBoosting");
-	menu->addAction(QString("k nearest neighbours"), this, SLOT(itemSelected()))->setObjectName("MLRegressionKNN");
+    menu->addAction(QString("k-Nearest neighbors"), this, SLOT(itemSelected()))->setObjectName("MLRegressionKNN");
 	menu->addAction(QString("Random forest"), this, SLOT(itemSelected()))->setObjectName("MLRegressionRandomForest");
 
 	ui->regressionButton->setMenu(menu);
 
 	menu = new QMenu(this);
 	menu->addAction(QString("Boosting"), this, SLOT(itemSelected()))->setObjectName("SummaryStatsCorrelationBayesianPairs");
-	menu->addAction(QString("k nearest neighbours"), this, SLOT(itemSelected()))->setObjectName("MLClassificationKNN");
+    menu->addAction(QString("k-Nearest neighbors"), this, SLOT(itemSelected()))->setObjectName("MLClassificationKNN");
 	menu->addAction(QString("Random forest"), this, SLOT(itemSelected()))->setObjectName("SummaryStatsTTestBayesianOneSample");
 
 	ui->classificationButton->setMenu(menu);
 
 	menu = new QMenu(this);
-	menu->addAction(QString("k means"), this, SLOT(itemSelected()))->setObjectName("MLClusteringKMeans");
+    menu->addAction(QString("k-Means"), this, SLOT(itemSelected()))->setObjectName("MLClusteringKMeans");
 	menu->addAction(QString("Random forest"), this, SLOT(itemSelected()))->setObjectName("SummaryStatsTTestBayesianOneSample");
 
 	ui->clusteringButton->setMenu(menu);
