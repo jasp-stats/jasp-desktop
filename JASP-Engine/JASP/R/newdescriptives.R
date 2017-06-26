@@ -40,6 +40,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
       } else {
         dataset <- .readDataSetToEnd(columns.as.numeric=variables)
       }
+      dataset.factors <- .readDataSetToEnd(columns=variables)
     } else {
       if (makeSplit) {
         dataset <- .readDataSetHeader(columns.as.numeric=variables,
@@ -47,6 +48,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
       } else {
         dataset <- .readDataSetHeader(columns.as.numeric=variables)
       }
+      dataset.factors <- .readDataSetHeader(columns=variables)
     }
   }
   
@@ -132,7 +134,9 @@ Descriptives <- function(dataset=NULL, options, perform="run",
                                    function(x) return(x$name),
                                    simplify = TRUE) == var)
           # add to results object
-          freqTabs[[var]] <- state$results$tables[[whichtab]]
+          if (length(whichtab) > 0){
+            freqTabs[[var]] <- state$results$tables[[whichtab]]
+          }
         }
       }
       
@@ -233,7 +237,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
   # Stats table
   if (is.null(mainTable)){
     last.stats.table <- NULL
-    if (is.list(state))
+    if (is.list(state) && !diff[["splitby"]])
       last.stats.table <- state[["results"]][["stats"]]
   
     results[["stats"]] <- .descriptivesDescriptivesTable(dataset, options, run, 
@@ -243,8 +247,13 @@ Descriptives <- function(dataset=NULL, options, perform="run",
   }
   
   # Frequency table
-  # results[["tables"]] <- .descriptivesFrequencyTables(dataset, options, run, 
-  #                                                     freqTabs)
+  if (options$frequencyTables){
+    results[["tables"]] <- .descriptivesFrequencyTables(dataset.factors, options, run, 
+                                                        freqTabs)
+  }
+  
+  if (length(results[["tables"]]) > 0)
+    results[["frequenciesHeading"]] <- "Frequencies"
   
   # Correlation plot
   if (options$plotCorrelationMatrix && is.null(corrPlot)){
@@ -389,8 +398,9 @@ Descriptives <- function(dataset=NULL, options, perform="run",
 
 .descriptivesDescriptivesTable <- function(dataset, options, run, 
                                            last.table=NULL) {
-  # NB: This is a legacy function from the previous version of the descriptives.
-  
+  # NB: This is for the most part a legacy function from the previous version of 
+  # the descriptives. Hence it might look different than the rest.
+  wantsSplit <- options$splitby != ""
   variables <- unlist(options$variables)
   equalGroupsNo <- options$percentileValuesEqualGroupsNo
   percentilesPercentiles  <- options$percentileValuesPercentilesPercentiles
@@ -398,11 +408,16 @@ Descriptives <- function(dataset=NULL, options, perform="run",
   stats.results <- list()
 
   stats.results[["title"]] <- "Descriptive Statistics"
-  stats.results[["casesAcrossColumns"]] <- TRUE
-
+  stats.results[["casesAcrossColumns"]] <- TRUE # flips axes!
+  
+  # <editor-fold> SCHEMA CREATION ----
   fields <- list()
-
-  fields[[length(fields) + 1]] <- list(name="Variable", title="", type="string")
+  
+  if (wantsSplit) {
+    fields[[length(fields) + 1]] <- list(name="VariableLevel", title="", type="string")
+  } else {
+    fields[[length(fields) + 1]] <- list(name="Variable", title="Variable", type="string")
+  }
   fields[[length(fields) + 1]] <- list(name="Valid", type="integer")
   fields[[length(fields) + 1]] <- list(name="Missing", type="integer")
 
@@ -463,472 +478,883 @@ Descriptives <- function(dataset=NULL, options, perform="run",
   stats.results[["schema"]] <- list(fields=fields)
 
   footnotes <- .newFootnotes()
+  
+  # </editor-fold> SCHEMA CREATION
 
   note.symbol <- "<i>Note.</i>"
   na.for.categorical <- "Not all values are available for <i>Nominal Text</i> variables"
 
-
   stats.values <- list()
-
-  for (variable in variables) {
-
-    variable.results <- list(Variable=variable)
-
-    for (col in last.table$data) {
-
-      if (col$Variable == variable) {
-
-        variable.results <- col
-        break
-      }
-    }
-
-    column <- dataset[[ .v(variable) ]]
-
-    if (perform == "run") {
-
-      rows <- nrow(dataset)
-      na.omitted <- na.omit(column)
-
-      variable.results[["Valid"]] = length(na.omitted)
-      variable.results[["Missing"]] = rows - length(na.omitted)
-    }
-    else {
-
-      na.omitted <- column
-    }
-
-
-
-    if (options$mean) {
-
-      if (base::is.factor(na.omitted) == FALSE) {
-
-        if (perform == "run")
-          variable.results[["Mean"]] <- .clean(mean(na.omitted))
-
+  
+  # Find the number of levels to loop over
+  
+  if (wantsSplit) {
+    split <- dataset[[ .v(options$splitby) ]]
+    splitLevels <- levels(split)
+    nLevels <- length(levels(split))
+    
+    # <editor-fold> COLUMN GENERATION ----
+    
+    for (variable in variables) {
+      
+      # see if we already have info
+      whichCols <- sapply(last.table$data, 
+                          function(x) x$Variable == variable,
+                          simplify = TRUE)
+      if (length(whichCols)>0){
+        variable.results <- last.table$data[whichCols]  
       } else {
-
-        variable.results[["Mean"]] <- ""
-        .addFootnote(footnotes, na.for.categorical, note.symbol)
+        variable.results <- list()
       }
-
-    } else {
-
-      variable.results[["Mean"]] <- NULL
-    }
-
-    if (options$median) {
-
-      if (base::is.factor(na.omitted) == FALSE) {
-
-        if (perform == "run")
-          variable.results[["Median"]] <- .clean(median(na.omitted))
-
-      } else {
-
-        variable.results[["Median"]] <- ""
-        .addFootnote(footnotes, na.for.categorical, note.symbol)
-      }
-    } else {
-
-      variable.results[["Median"]] <- NULL
-    }
-
-    if (options$mode) {
-
-      if (base::is.factor(na.omitted) == FALSE) {
-
-        if (perform == "run") {
-
-          mode <- as.numeric(names(table(na.omitted)[table(na.omitted)==max(table(na.omitted))]))
-
-          if (length(mode) > 1) {
-
-            index <- .addFootnote(footnotes, "More than one mode exists, only the first is reported")
-            variable.results[[".footnotes"]] <- list(Mode=list(index))
+                    
+      
+    
+      for (l in 1:nLevels) {
+        resultsCol <- list(VariableLevel = paste0(variable,": ",splitLevels[l]), 
+                           Variable = variable, 
+                           Level = splitLevels[l])
+        
+        # get col
+        for (col in variable.results) {
+          if (!is.null(col$Level) && col$Level == splitLevels[l]){
+            resultsCol <- col
+            break
           }
-
-          variable.results[["Mode"]] <- .clean(mode[1])
-
         }
-
-      } else {
-
-        variable.results[["Mode"]] <- ""
-        .addFootnote(footnotes, na.for.categorical, note.symbol)
-      }
-    } else {
-
-      variable.results[["Mode"]] <- NULL
-    }
-
-    if (options$sum) {
-
-      if (base::is.factor(na.omitted) == FALSE) {
-
-        if (perform == "run")
-          variable.results[["Sum"]] <- .clean(sum(na.omitted))
-
-      } else {
-
-        variable.results[["Sum"]] <- ""
-        .addFootnote(footnotes, na.for.categorical, note.symbol)
-      }
-
-    } else {
-
-      variable.results[["Sum"]] <- NULL
-    }
-
-    if (options$maximum) {
-
-      if (base::is.factor(na.omitted) == FALSE) {
-
-        if (perform == "run")
-          variable.results[["Maximum"]] <- .clean(max(na.omitted))
-
-      } else {
-
-        variable.results[["Maximum"]] <- ""
-        .addFootnote(footnotes, na.for.categorical, note.symbol)
-      }
-
-    } else {
-
-      variable.results[["Maximum"]] <- NULL
-    }
-
-    if (options$minimum) {
-
-      if (base::is.factor(na.omitted) == FALSE) {
-
-        if (perform == "run")
-          variable.results[["Minimum"]] <- .clean(min(na.omitted))
-
-      } else {
-
-        variable.results[["Minimum"]] <- ""
-        .addFootnote(footnotes, na.for.categorical, note.symbol)
-      }
-    } else {
-
-      variable.results[["Minimum"]] <- NULL
-    }
-
-    if (options$range) {
-
-      if (base::is.factor(na.omitted) == FALSE) {
-
-        if (perform == "run")
-          variable.results[["Range"]] <- .clean(range(na.omitted)[2]-range(na.omitted)[1])
-
-      } else {
-
-        variable.results[["Range"]] <- ""
-        .addFootnote(footnotes, na.for.categorical, note.symbol)
-      }
-
-    } else {
-
-      variable.results[["Range"]] <- NULL
-    }
-
-    if (options$standardDeviation) {
-
-      if (base::is.factor(na.omitted) == FALSE){
-
-        if (perform == "run")
-          variable.results[["Std. Deviation"]] <- .clean(sd(na.omitted))
-
-      } else {
-
-        variable.results[["Std. Deviation"]] <- ""
-        .addFootnote(footnotes, na.for.categorical, note.symbol)
-      }
-
-    } else {
-
-      variable.results[["Std. Deviation"]] <- NULL
-    }
-
-    if (options$standardErrorMean) {
-
-      if (base::is.factor(na.omitted) == FALSE) {
-
-        if (perform == "run")
-          variable.results[["Std. Error of Mean"]] <- .clean(sd(na.omitted)/sqrt(length(na.omitted)))
-
-      } else {
-
-        variable.results[["Std. Error of Mean"]] <- ""
-        .addFootnote(footnotes, na.for.categorical, note.symbol)
-      }
-
-    } else {
-
-      variable.results[["Std. Error of Mean"]] <- NULL
-    }
-
-    if (options$variance) {
-
-      if (base::is.factor(na.omitted) == FALSE) {
-
-        if (perform == "run")
-          variable.results[["Variance"]] <- .clean(var(na.omitted))
-
-      } else {
-
-        variable.results[["Variance"]] <- ""
-        .addFootnote(footnotes, na.for.categorical, note.symbol)
-      }
-
-    } else {
-
-      variable.results[["Variance"]] <- NULL
-    }
-
-    if (options$kurtosis) {
-
-      if (base::is.factor(na.omitted) == FALSE) {
-
+        
+                
+        column <- dataset[[ .v(variable) ]][split==splitLevels[l]]
+    
         if (perform == "run") {
-
-          variable.results[["Kurtosis"]] <- .clean(.descriptivesKurtosis(na.omitted))
-          variable.results[["Std. Error of Kurtosis"]] <- .clean(.descriptivesSEK(na.omitted))
+    
+          rows <- nrow(dataset)
+          na.omitted <- na.omit(column)
+    
+          resultsCol[["Valid"]] = length(na.omitted)
+          resultsCol[["Missing"]] = rows - length(na.omitted)
+        } else {  
+          na.omitted <- column
         }
-
-      } else {
-
-        variable.results[["Kurtosis"]] <- ""
-        variable.results[["Std. Error of Kurtosis"]] <- ""
-        .addFootnote(footnotes, na.for.categorical, note.symbol)
-      }
-
-    } else {
-
-      variable.results[["Kurtosis"]] <- NULL
-      variable.results[["Std. Error of Kurtosis"]] <- NULL
-    }
-
-    if (options$skewness) {
-
-      if (base::is.factor(na.omitted) == FALSE) {
-
-        if (perform == "run") {
-
-          variable.results[["Skewness"]] <- .clean(.descriptivesSkewness(na.omitted))
-          variable.results[["Std. Error of Skewness"]] <- .clean(.descriptivesSES(na.omitted))
-
+    
+        if (options$mean) {
+    
+          if (base::is.factor(na.omitted) == FALSE) {
+    
+            if (perform == "run")
+              resultsCol[["Mean"]] <- .clean(mean(na.omitted))
+    
+          } else {
+    
+            resultsCol[["Mean"]] <- ""
+            .addFootnote(footnotes, na.for.categorical, note.symbol)
+          }
+    
+        } else {
+    
+          resultsCol[["Mean"]] <- NULL
         }
-
-      } else {
-
-        variable.results[["Skewness"]] <- ""
-        variable.results[["Std. Error of Skewness"]] <- ""
-        .addFootnote(footnotes, na.for.categorical, note.symbol)
-      }
-    } else {
-
-      variable.results[["Skewness"]] <- NULL
-      variable.results[["Std. Error of Skewness"]] <- NULL
-    }
-
-    if (options$percentileValuesQuartiles) {
-
-      if (base::is.factor(na.omitted) == FALSE) {
-
-        if (perform == "run") {
-
-          variable.results[["q1"]] <- .clean(quantile(na.omitted, c(.25), type=6, names=F))
-          variable.results[["q2"]] <- .clean(quantile(na.omitted, c(.5), type=6, names=F))
-          variable.results[["q3"]] <- .clean(quantile(na.omitted, c(.75), type=6, names=F))
-
+    
+        if (options$median) {
+    
+          if (base::is.factor(na.omitted) == FALSE) {
+    
+            if (perform == "run")
+              resultsCol[["Median"]] <- .clean(median(na.omitted))
+    
+          } else {
+    
+            resultsCol[["Median"]] <- ""
+            .addFootnote(footnotes, na.for.categorical, note.symbol)
+          }
+        } else {
+    
+          resultsCol[["Median"]] <- NULL
         }
-
-      } else {
-
-        variable.results[["q1"]] <- ""
-        variable.results[["q2"]] <- ""
-        variable.results[["q3"]] <- ""
-        .addFootnote(footnotes, na.for.categorical, note.symbol)
+    
+        if (options$mode) {
+    
+          if (base::is.factor(na.omitted) == FALSE) {
+    
+            if (perform == "run") {
+    
+              mode <- as.numeric(names(table(na.omitted)[table(na.omitted)==max(table(na.omitted))]))
+    
+              if (length(mode) > 1) {
+    
+                index <- .addFootnote(footnotes, "More than one mode exists, only the first is reported")
+                resultsCol[[".footnotes"]] <- list(Mode=list(index))
+              }
+    
+              resultsCol[["Mode"]] <- .clean(mode[1])
+    
+            }
+    
+          } else {
+    
+            resultsCol[["Mode"]] <- ""
+            .addFootnote(footnotes, na.for.categorical, note.symbol)
+          }
+        } else {
+    
+          resultsCol[["Mode"]] <- NULL
+        }
+    
+        if (options$sum) {
+    
+          if (base::is.factor(na.omitted) == FALSE) {
+    
+            if (perform == "run")
+              resultsCol[["Sum"]] <- .clean(sum(na.omitted))
+    
+          } else {
+    
+            resultsCol[["Sum"]] <- ""
+            .addFootnote(footnotes, na.for.categorical, note.symbol)
+          }
+    
+        } else {
+    
+          resultsCol[["Sum"]] <- NULL
+        }
+    
+        if (options$maximum) {
+    
+          if (base::is.factor(na.omitted) == FALSE) {
+    
+            if (perform == "run")
+              resultsCol[["Maximum"]] <- .clean(max(na.omitted))
+    
+          } else {
+    
+            resultsCol[["Maximum"]] <- ""
+            .addFootnote(footnotes, na.for.categorical, note.symbol)
+          }
+    
+        } else {
+    
+          resultsCol[["Maximum"]] <- NULL
+        }
+    
+        if (options$minimum) {
+    
+          if (base::is.factor(na.omitted) == FALSE) {
+    
+            if (perform == "run")
+              resultsCol[["Minimum"]] <- .clean(min(na.omitted))
+    
+          } else {
+    
+            resultsCol[["Minimum"]] <- ""
+            .addFootnote(footnotes, na.for.categorical, note.symbol)
+          }
+        } else {
+    
+          resultsCol[["Minimum"]] <- NULL
+        }
+    
+        if (options$range) {
+    
+          if (base::is.factor(na.omitted) == FALSE) {
+    
+            if (perform == "run")
+              resultsCol[["Range"]] <- .clean(range(na.omitted)[2]-range(na.omitted)[1])
+    
+          } else {
+    
+            resultsCol[["Range"]] <- ""
+            .addFootnote(footnotes, na.for.categorical, note.symbol)
+          }
+    
+        } else {
+    
+          resultsCol[["Range"]] <- NULL
+        }
+    
+        if (options$standardDeviation) {
+    
+          if (base::is.factor(na.omitted) == FALSE){
+    
+            if (perform == "run")
+              resultsCol[["Std. Deviation"]] <- .clean(sd(na.omitted))
+    
+          } else {
+    
+            resultsCol[["Std. Deviation"]] <- ""
+            .addFootnote(footnotes, na.for.categorical, note.symbol)
+          }
+    
+        } else {
+    
+          resultsCol[["Std. Deviation"]] <- NULL
+        }
+    
+        if (options$standardErrorMean) {
+    
+          if (base::is.factor(na.omitted) == FALSE) {
+    
+            if (perform == "run")
+              resultsCol[["Std. Error of Mean"]] <- .clean(sd(na.omitted)/sqrt(length(na.omitted)))
+    
+          } else {
+    
+            resultsCol[["Std. Error of Mean"]] <- ""
+            .addFootnote(footnotes, na.for.categorical, note.symbol)
+          }
+    
+        } else {
+    
+          resultsCol[["Std. Error of Mean"]] <- NULL
+        }
+    
+        if (options$variance) {
+    
+          if (base::is.factor(na.omitted) == FALSE) {
+    
+            if (perform == "run")
+              resultsCol[["Variance"]] <- .clean(var(na.omitted))
+    
+          } else {
+    
+            resultsCol[["Variance"]] <- ""
+            .addFootnote(footnotes, na.for.categorical, note.symbol)
+          }
+    
+        } else {
+    
+          resultsCol[["Variance"]] <- NULL
+        }
+    
+        if (options$kurtosis) {
+    
+          if (base::is.factor(na.omitted) == FALSE) {
+    
+            if (perform == "run") {
+    
+              resultsCol[["Kurtosis"]] <- .clean(.descriptivesKurtosis(na.omitted))
+              resultsCol[["Std. Error of Kurtosis"]] <- .clean(.descriptivesSEK(na.omitted))
+            }
+    
+          } else {
+    
+            resultsCol[["Kurtosis"]] <- ""
+            resultsCol[["Std. Error of Kurtosis"]] <- ""
+            .addFootnote(footnotes, na.for.categorical, note.symbol)
+          }
+    
+        } else {
+    
+          resultsCol[["Kurtosis"]] <- NULL
+          resultsCol[["Std. Error of Kurtosis"]] <- NULL
+        }
+    
+        if (options$skewness) {
+    
+          if (base::is.factor(na.omitted) == FALSE) {
+    
+            if (perform == "run") {
+    
+              resultsCol[["Skewness"]] <- .clean(.descriptivesSkewness(na.omitted))
+              resultsCol[["Std. Error of Skewness"]] <- .clean(.descriptivesSES(na.omitted))
+    
+            }
+    
+          } else {
+    
+            resultsCol[["Skewness"]] <- ""
+            resultsCol[["Std. Error of Skewness"]] <- ""
+            .addFootnote(footnotes, na.for.categorical, note.symbol)
+          }
+        } else {
+    
+          resultsCol[["Skewness"]] <- NULL
+          resultsCol[["Std. Error of Skewness"]] <- NULL
+        }
+    
+        if (options$percentileValuesQuartiles) {
+    
+          if (base::is.factor(na.omitted) == FALSE) {
+    
+            if (perform == "run") {
+    
+              resultsCol[["q1"]] <- .clean(quantile(na.omitted, c(.25), type=6, names=F))
+              resultsCol[["q2"]] <- .clean(quantile(na.omitted, c(.5), type=6, names=F))
+              resultsCol[["q3"]] <- .clean(quantile(na.omitted, c(.75), type=6, names=F))
+    
+            }
+    
+          } else {
+    
+            resultsCol[["q1"]] <- ""
+            resultsCol[["q2"]] <- ""
+            resultsCol[["q3"]] <- ""
+            .addFootnote(footnotes, na.for.categorical, note.symbol)
+          }
+        } else {
+    
+          resultsCol[["q1"]] <- NULL
+          resultsCol[["q2"]] <- NULL
+          resultsCol[["q3"]] <- NULL
+        }
+    
+    
+        equalGroupNames <- NULL
+        if (options$percentileValuesEqualGroups)
+          equalGroupNames <- paste("eg", seq(equalGroupsNo - 1), sep="")
+    
+        for (row in names(resultsCol)) {
+    
+          if (substr(row, 1, 2) == "eg" && ((row %in% equalGroupNames) == FALSE))
+            resultsCol[[row]] <- NULL
+        }
+    
+        if (options$percentileValuesEqualGroups) {
+    
+          if (base::is.factor(na.omitted) == FALSE) {
+    
+            if (perform == "run") {
+    
+              for (i in seq(equalGroupsNo - 1))
+                resultsCol[[paste("eg", i, sep="")]] <- .clean(quantile(na.omitted, c(i / equalGroupsNo), type=6, names=F))
+    
+            }
+    
+          } else {
+    
+            for (i in seq(equalGroupsNo - 1))
+              resultsCol[[paste("eg", i, sep="")]] <- ""
+            .addFootnote(footnotes, na.for.categorical, note.symbol)
+          }
+        }
+    
+    
+        percentileNames <- NULL
+        if (options$percentileValuesPercentiles)
+          percentileNames <- paste("pc", percentilesPercentiles, sep="")
+    
+        for (row in names(resultsCol)) {
+    
+          if (substr(row, 1, 2) == "pc" && ((row %in% percentileNames) == FALSE))
+            resultsCol[[row]] <- NULL
+        }
+    
+        if (options$percentileValuesPercentiles) {
+    
+          if (base::is.factor(na.omitted) == FALSE) {
+    
+            if (perform == "run") {
+    
+              for (i in percentilesPercentiles)
+                resultsCol[[paste("pc", i, sep="")]] <- .clean(quantile(na.omitted, c(i / 100), type=6, names=F))
+    
+            }
+    
+          } else {
+    
+            for (i in percentilesPercentiles)
+              resultsCol[[paste("pc", i, sep="")]] <- ""
+            .addFootnote(footnotes, na.for.categorical, note.symbol)
+          }
+        }
+        
+        variable.results[[l]] <- resultsCol
+        
       }
-    } else {
+      
+      stats.values <- c(stats.values, variable.results)
 
-      variable.results[["q1"]] <- NULL
-      variable.results[["q2"]] <- NULL
-      variable.results[["q3"]] <- NULL
     }
-
-
-    equalGroupNames <- NULL
-    if (options$percentileValuesEqualGroups)
-      equalGroupNames <- paste("eg", seq(equalGroupsNo - 1), sep="")
-
-    for (row in names(variable.results)) {
-
-      if (substr(row, 1, 2) == "eg" && ((row %in% equalGroupNames) == FALSE))
-        variable.results[[row]] <- NULL
-    }
-
-    if (options$percentileValuesEqualGroups) {
-
-      if (base::is.factor(na.omitted) == FALSE) {
-
-        if (perform == "run") {
-
+    # </editor-fold> COLUMN GENERATION
+    
+  } else {
+    
+    # <editor-fold> COLUMN GENERATION ----
+    
+    for (variable in variables) {
+  
+      variable.results <- list(Variable=variable)
+  
+      for (col in last.table$data) {
+  
+        if (col$Variable == variable) {
+  
+          variable.results <- col
+          break
+        }
+      }
+      
+      
+      column <- dataset[[ .v(variable) ]]
+  
+      if (perform == "run") {
+  
+        rows <- nrow(dataset)
+        na.omitted <- na.omit(column)
+  
+        variable.results[["Valid"]] = length(na.omitted)
+        variable.results[["Missing"]] = rows - length(na.omitted)
+      }
+      else {
+  
+        na.omitted <- column
+      }
+  
+  
+  
+      if (options$mean) {
+  
+        if (base::is.factor(na.omitted) == FALSE) {
+  
+          if (perform == "run")
+            variable.results[["Mean"]] <- .clean(mean(na.omitted))
+  
+        } else {
+  
+          variable.results[["Mean"]] <- ""
+          .addFootnote(footnotes, na.for.categorical, note.symbol)
+        }
+  
+      } else {
+  
+        variable.results[["Mean"]] <- NULL
+      }
+  
+      if (options$median) {
+  
+        if (base::is.factor(na.omitted) == FALSE) {
+  
+          if (perform == "run")
+            variable.results[["Median"]] <- .clean(median(na.omitted))
+  
+        } else {
+  
+          variable.results[["Median"]] <- ""
+          .addFootnote(footnotes, na.for.categorical, note.symbol)
+        }
+      } else {
+  
+        variable.results[["Median"]] <- NULL
+      }
+  
+      if (options$mode) {
+  
+        if (base::is.factor(na.omitted) == FALSE) {
+  
+          if (perform == "run") {
+  
+            mode <- as.numeric(names(table(na.omitted)[table(na.omitted)==max(table(na.omitted))]))
+  
+            if (length(mode) > 1) {
+  
+              index <- .addFootnote(footnotes, "More than one mode exists, only the first is reported")
+              variable.results[[".footnotes"]] <- list(Mode=list(index))
+            }
+  
+            variable.results[["Mode"]] <- .clean(mode[1])
+  
+          }
+  
+        } else {
+  
+          variable.results[["Mode"]] <- ""
+          .addFootnote(footnotes, na.for.categorical, note.symbol)
+        }
+      } else {
+  
+        variable.results[["Mode"]] <- NULL
+      }
+  
+      if (options$sum) {
+  
+        if (base::is.factor(na.omitted) == FALSE) {
+  
+          if (perform == "run")
+            variable.results[["Sum"]] <- .clean(sum(na.omitted))
+  
+        } else {
+  
+          variable.results[["Sum"]] <- ""
+          .addFootnote(footnotes, na.for.categorical, note.symbol)
+        }
+  
+      } else {
+  
+        variable.results[["Sum"]] <- NULL
+      }
+  
+      if (options$maximum) {
+  
+        if (base::is.factor(na.omitted) == FALSE) {
+  
+          if (perform == "run")
+            variable.results[["Maximum"]] <- .clean(max(na.omitted))
+  
+        } else {
+  
+          variable.results[["Maximum"]] <- ""
+          .addFootnote(footnotes, na.for.categorical, note.symbol)
+        }
+  
+      } else {
+  
+        variable.results[["Maximum"]] <- NULL
+      }
+  
+      if (options$minimum) {
+  
+        if (base::is.factor(na.omitted) == FALSE) {
+  
+          if (perform == "run")
+            variable.results[["Minimum"]] <- .clean(min(na.omitted))
+  
+        } else {
+  
+          variable.results[["Minimum"]] <- ""
+          .addFootnote(footnotes, na.for.categorical, note.symbol)
+        }
+      } else {
+  
+        variable.results[["Minimum"]] <- NULL
+      }
+  
+      if (options$range) {
+  
+        if (base::is.factor(na.omitted) == FALSE) {
+  
+          if (perform == "run")
+            variable.results[["Range"]] <- .clean(range(na.omitted)[2]-range(na.omitted)[1])
+  
+        } else {
+  
+          variable.results[["Range"]] <- ""
+          .addFootnote(footnotes, na.for.categorical, note.symbol)
+        }
+  
+      } else {
+  
+        variable.results[["Range"]] <- NULL
+      }
+  
+      if (options$standardDeviation) {
+  
+        if (base::is.factor(na.omitted) == FALSE){
+  
+          if (perform == "run")
+            variable.results[["Std. Deviation"]] <- .clean(sd(na.omitted))
+  
+        } else {
+  
+          variable.results[["Std. Deviation"]] <- ""
+          .addFootnote(footnotes, na.for.categorical, note.symbol)
+        }
+  
+      } else {
+  
+        variable.results[["Std. Deviation"]] <- NULL
+      }
+  
+      if (options$standardErrorMean) {
+  
+        if (base::is.factor(na.omitted) == FALSE) {
+  
+          if (perform == "run")
+            variable.results[["Std. Error of Mean"]] <- .clean(sd(na.omitted)/sqrt(length(na.omitted)))
+  
+        } else {
+  
+          variable.results[["Std. Error of Mean"]] <- ""
+          .addFootnote(footnotes, na.for.categorical, note.symbol)
+        }
+  
+      } else {
+  
+        variable.results[["Std. Error of Mean"]] <- NULL
+      }
+  
+      if (options$variance) {
+  
+        if (base::is.factor(na.omitted) == FALSE) {
+  
+          if (perform == "run")
+            variable.results[["Variance"]] <- .clean(var(na.omitted))
+  
+        } else {
+  
+          variable.results[["Variance"]] <- ""
+          .addFootnote(footnotes, na.for.categorical, note.symbol)
+        }
+  
+      } else {
+  
+        variable.results[["Variance"]] <- NULL
+      }
+  
+      if (options$kurtosis) {
+  
+        if (base::is.factor(na.omitted) == FALSE) {
+  
+          if (perform == "run") {
+  
+            variable.results[["Kurtosis"]] <- .clean(.descriptivesKurtosis(na.omitted))
+            variable.results[["Std. Error of Kurtosis"]] <- .clean(.descriptivesSEK(na.omitted))
+          }
+  
+        } else {
+  
+          variable.results[["Kurtosis"]] <- ""
+          variable.results[["Std. Error of Kurtosis"]] <- ""
+          .addFootnote(footnotes, na.for.categorical, note.symbol)
+        }
+  
+      } else {
+  
+        variable.results[["Kurtosis"]] <- NULL
+        variable.results[["Std. Error of Kurtosis"]] <- NULL
+      }
+  
+      if (options$skewness) {
+  
+        if (base::is.factor(na.omitted) == FALSE) {
+  
+          if (perform == "run") {
+  
+            variable.results[["Skewness"]] <- .clean(.descriptivesSkewness(na.omitted))
+            variable.results[["Std. Error of Skewness"]] <- .clean(.descriptivesSES(na.omitted))
+  
+          }
+  
+        } else {
+  
+          variable.results[["Skewness"]] <- ""
+          variable.results[["Std. Error of Skewness"]] <- ""
+          .addFootnote(footnotes, na.for.categorical, note.symbol)
+        }
+      } else {
+  
+        variable.results[["Skewness"]] <- NULL
+        variable.results[["Std. Error of Skewness"]] <- NULL
+      }
+  
+      if (options$percentileValuesQuartiles) {
+  
+        if (base::is.factor(na.omitted) == FALSE) {
+  
+          if (perform == "run") {
+  
+            variable.results[["q1"]] <- .clean(quantile(na.omitted, c(.25), type=6, names=F))
+            variable.results[["q2"]] <- .clean(quantile(na.omitted, c(.5), type=6, names=F))
+            variable.results[["q3"]] <- .clean(quantile(na.omitted, c(.75), type=6, names=F))
+  
+          }
+  
+        } else {
+  
+          variable.results[["q1"]] <- ""
+          variable.results[["q2"]] <- ""
+          variable.results[["q3"]] <- ""
+          .addFootnote(footnotes, na.for.categorical, note.symbol)
+        }
+      } else {
+  
+        variable.results[["q1"]] <- NULL
+        variable.results[["q2"]] <- NULL
+        variable.results[["q3"]] <- NULL
+      }
+  
+  
+      equalGroupNames <- NULL
+      if (options$percentileValuesEqualGroups)
+        equalGroupNames <- paste("eg", seq(equalGroupsNo - 1), sep="")
+  
+      for (row in names(variable.results)) {
+  
+        if (substr(row, 1, 2) == "eg" && ((row %in% equalGroupNames) == FALSE))
+          variable.results[[row]] <- NULL
+      }
+  
+      if (options$percentileValuesEqualGroups) {
+  
+        if (base::is.factor(na.omitted) == FALSE) {
+  
+          if (perform == "run") {
+  
+            for (i in seq(equalGroupsNo - 1))
+              variable.results[[paste("eg", i, sep="")]] <- .clean(quantile(na.omitted, c(i / equalGroupsNo), type=6, names=F))
+  
+          }
+  
+        } else {
+  
           for (i in seq(equalGroupsNo - 1))
-            variable.results[[paste("eg", i, sep="")]] <- .clean(quantile(na.omitted, c(i / equalGroupsNo), type=6, names=F))
-
+            variable.results[[paste("eg", i, sep="")]] <- ""
+          .addFootnote(footnotes, na.for.categorical, note.symbol)
         }
-
-      } else {
-
-        for (i in seq(equalGroupsNo - 1))
-          variable.results[[paste("eg", i, sep="")]] <- ""
-        .addFootnote(footnotes, na.for.categorical, note.symbol)
       }
-    }
-
-
-    percentileNames <- NULL
-    if (options$percentileValuesPercentiles)
-      percentileNames <- paste("pc", percentilesPercentiles, sep="")
-
-    for (row in names(variable.results)) {
-
-      if (substr(row, 1, 2) == "pc" && ((row %in% percentileNames) == FALSE))
-        variable.results[[row]] <- NULL
-    }
-
-    if (options$percentileValuesPercentiles) {
-
-      if (base::is.factor(na.omitted) == FALSE) {
-
-        if (perform == "run") {
-
+  
+  
+      percentileNames <- NULL
+      if (options$percentileValuesPercentiles)
+        percentileNames <- paste("pc", percentilesPercentiles, sep="")
+  
+      for (row in names(variable.results)) {
+  
+        if (substr(row, 1, 2) == "pc" && ((row %in% percentileNames) == FALSE))
+          variable.results[[row]] <- NULL
+      }
+  
+      if (options$percentileValuesPercentiles) {
+  
+        if (base::is.factor(na.omitted) == FALSE) {
+  
+          if (perform == "run") {
+  
+            for (i in percentilesPercentiles)
+              variable.results[[paste("pc", i, sep="")]] <- .clean(quantile(na.omitted, c(i / 100), type=6, names=F))
+  
+          }
+  
+        } else {
+  
           for (i in percentilesPercentiles)
-            variable.results[[paste("pc", i, sep="")]] <- .clean(quantile(na.omitted, c(i / 100), type=6, names=F))
-
+            variable.results[[paste("pc", i, sep="")]] <- ""
+          .addFootnote(footnotes, na.for.categorical, note.symbol)
         }
-
-      } else {
-
-        for (i in percentilesPercentiles)
-          variable.results[[paste("pc", i, sep="")]] <- ""
-        .addFootnote(footnotes, na.for.categorical, note.symbol)
       }
+  
+      stats.values[[length(stats.values) + 1]] <- variable.results
+  
     }
-
-    stats.values[[length(stats.values) + 1]] <- variable.results
-
-
-    stats.results[["data"]] <- stats.values
-    stats.results[["footnotes"]] <- as.list(footnotes)
+    # </editor-fold> COLUMN GENERATION
+    
   }
-
+  
+  stats.results[["data"]] <- stats.values
+  stats.results[["footnotes"]] <- as.list(footnotes)
   stats.results
 }
 
-.descriptivesFrequencyTables <- function(dataset, options, run, last.tables) {
-
-  frequency.tables <- list()
+.descriptivesFrequencyTables <- function(dataset, options, run, stateTabs) {
+  splitName <- options$splitby
+  wantsSplit <- splitName!=""
+  splitFactor <- dataset[[.v(splitName)]]
+  splitLevels <- levels(splitFactor)
+  print(splitLevels)
+  
+  freqTabs <- list()
 
   for (variable in options$variables) {
-
-    column <- dataset[[ .v(variable) ]]
-
-    if (base::is.factor(column) == FALSE)
+    freqTab <- list()
+    
+    column <- dataset[[.v(variable)]]
+		if (!is.factor(column)){
       next
-
-    frequency.table <- list()
-
-    for (last in last.tables) {
-
-      if (last$name == variable) {
-
-        frequency.table <- last
-        break
-      }
     }
-
-    fields <- list(
-            list(name="Level", type="string", title=""),
-            list(name="Frequency", type="integer"),
-            list(name="Percent", type="number", format="dp:1"),
-            list(name="Valid Percent", type="number", format="dp:1"),
-            list(name="Cumulative Percent", type="number", format="dp:1"))
-
-    frequency.table[["title"]] <- paste("Frequencies for", variable)
-    frequency.table[["name"]]  <- variable
-    frequency.table[["schema"]] <- list(fields=fields)
-
-    lvls <- levels(dataset[[ .v(variable) ]])
-
+			
+    if (variable %in% names(stateTabs) && 
+        "data" %in% names(stateTabs[[variable]])) {
+      print(paste(variable, "in state"))
+      freqTabs[[variable]] <- stateTabs[[variable]]
+      next
+    }
+    
+    fields <- list()
+    if (wantsSplit) {
+      fields[[1]] <- list(name = "factor", title = splitName, type = "string", combine=TRUE)
+    }
+    fields[[length(fields) + 1]] <- list(name="Level", type="string", title=variable)
+    fields[[length(fields) + 1]] <- list(name="Frequency", type="integer")
+    fields[[length(fields) + 1]] <- list(name="Percent", type="number", format="dp:1")
+    fields[[length(fields) + 1]] <- list(name="Valid Percent", type="number", format="dp:1")
+    fields[[length(fields) + 1]] <- list(name="Cumulative Percent", type="number", format="dp:1")
+    
+    freqTab[["title"]] <- paste("Frequencies for", variable)
+    freqTab[["name"]] <- variable
+    freqTab[["schema"]] <- list(fields=fields)
+    
+    rows <- list()
     if (run) {
-
-      t <- table(column)
-      total <- sum(t)
-
-      ns <- list()
-      freqs <- list()
-      percent <- list()
-      validPercent <- list()
-      cumPercent <- list()
-
-      cumFreq <- 0
-
-      for (n in names(t)) {
-
-        ns[[length(ns)+1]] <- n
-        freq <- as.vector(t[n])
-
-        cumFreq <- cumFreq + freq
-
-        freqs[[length(freqs) + 1]] <- freq
-        percent[[length(percent) + 1]] <- freq / total * 100
-        validPercent[[length(validPercent) + 1]] <- freq / total * 100
-        cumPercent[[length(cumPercent)+1]] <- cumFreq / total * 100
-      }
-
-      ns[[length(ns)+1]] <- "Total"
-      freqs[[length(freqs)+1]] <- total
-      percent[[length(percent)+1]] <- 100
-      validPercent[[length(validPercent)+1]] <- 100
-      cumPercent[[length(cumPercent)+1]] <- ""
-
-      data <- list()
-
-      for (i in seq(freqs))
-        data[[length(data)+1]] <- list(Level=ns[[i]], "Frequency"=freqs[[i]], "Percent"=percent[[i]], "Valid Percent"=validPercent[[i]], "Cumulative Percent"=cumPercent[[i]])
-
-      frequency.table[["data"]] <- data
-
-    } else {
-
-      if (("data" %in% names(frequency.table)) == FALSE) {
-
-        data <- list()
-
-        for (level in lvls)
-          data[[length(data)+1]] <- list(level=level)
-
-        data[[length(data)+1]] <- list(level="Total", "Cumulative Percent"="")
-
-        frequency.table[["data"]] <- data
-
+      if (wantsSplit) {
+        # also loop over the levels
+        for (lev in splitLevels) {
+          t <- table(column[splitFactor==lev])
+          total <- sum(t)
+          cFreq <- 0
+          
+          for (i in seq_along(names(t))) {
+            row <- list()
+            row[["factor"]] <- lev
+            row[["Level"]] <- names(t)[i]
+            row[["Frequency"]] <- as.vector(t[i])
+            cFreq <- cFreq + row[["Frequency"]]
+            row[["Percent"]] <- row[["Frequency"]]/total*100
+            row[["Valid Percent"]] <- row[["Frequency"]]/total*100
+            row[["Cumulative Percent"]] <- cFreq/total*100
+            if (i==1) {
+              row[[".isNewGroup"]] <- TRUE
+            } else {
+              row[[".isNewGroup"]] <- FALSE
+            }
+            rows[[length(rows) + 1]] <- row
+          }
+          
+          rows[[length(rows) + 1]] <- list(
+            "factor" = "",
+            "Level" = "Total",
+            "Frequency" = total,
+            "Percent" = 100,
+            "Valid Percent" = 100,
+            "Cumulative Percent" = ""
+          )
+        }
+        print(rows)
       } else {
-
-        frequency.table[["status"]] <- "complete"
+        t <- table(column)
+        total <- sum(t)
+        cFreq <- 0
+        
+        for (lev in names(t)) {
+          row <- list()
+          row[["Level"]] <- lev
+          row[["Frequency"]] <- as.numeric(t[lev])
+          cFreq <- cFreq + row[["Frequency"]]
+          row[["Percent"]] <- row[["Frequency"]]/total*100
+          row[["Valid Percent"]] <- row[["Frequency"]]/total*100
+          row[["Cumulative Percent"]] <- cFreq/total*100
+          rows[[length(rows) + 1]] <- row
+        }
+        
+        rows[[length(rows) + 1]] <- list(
+          "Level" = "Total",
+          "Frequency" = total,
+          "Percent" = 100,
+          "Valid Percent" = 100,
+          "Cumulative Percent" = ""
+        )
       }
+      
+      freqTab[["data"]] <- rows
+      freqTab[["status"]] <- "complete"
+    } else {
+      # init
+      
+			data <- list()
+
+			for (level in levels(column))
+				data[[length(data)+1]] <- list(Level=level)
+
+			data[[length(data)+1]] <- list(Level="Total", "Cumulative Percent"="")
+
+			freqTab[["data"]] <- data
+      freqTab[["status"]] <- "inited"
+
+      
     }
-
-    frequency.tables[[length(frequency.tables)+1]] <- frequency.table
+    
+    
+    freqTabs[[length(freqTabs) + 1]] <- freqTab
   }
-
-  frequency.tables
+  freqTabs
+  
 }
-
 .descriptivesMatrixPlot <- function(dataset, options, name, run) {
 
   matrix.plot <- NULL
