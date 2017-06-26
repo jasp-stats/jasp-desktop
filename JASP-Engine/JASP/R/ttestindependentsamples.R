@@ -344,7 +344,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 					 })
 					 
 					## if there has been an error in computing the test, log it as footnote
-					if (class(row) == "try-error") {
+					if (isTryError(row)) {
 						errorMessage <- .extractErrorMessage(row)
 					}
 				}
@@ -565,7 +565,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 			  row
 			})
 
-			if (class(result) == "try-error") {
+			if (isTryError(result)) {
 			  result <- list(variable = variable, F = "", df = "", p = "")
 			}
 
@@ -616,25 +616,25 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 			count <- count + 1
 
 			## if everything looks fine, and we are ready to run
-			if (perform == "run" && length(variables) > 0 && !is.null(levels)) {
+			if (perform == "run" && length(variables) > 0 && !is.null(levels) && factor != "") {
 
 				## get the dependent variable at a certain factor level
 				data <- na.omit(dataset[[.v(variable)]][dataset[[.v(factor)]] == level])
 
 				row.footnotes <- NULL
 				error <- FALSE
-
-				if (length(data) < 3) {
-					err <- .generateErrorMessage(type='levene', observations.amount='< 3', variables=variable, grouping=factor)
-					foot.index <- .addFootnote(footnotes, err)
-					row.footnotes <- list(W = list(foot.index), p = list(foot.index))
-					error <- TRUE
-
-				} else if (length(data) > 5000) {
-					err <- .generateErrorMessage(type='levene', observations.amount='> 5000', variables=variable, grouping=factor)
-					foot.index <- .addFootnote(footnotes, err)
-					row.footnotes <- list(W = list(foot.index), p = list(foot.index))
-					error <- TRUE
+				
+				errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+				                     all.target = variable,
+				                     observations.amount = c('< 3', '> 5000'),
+				                     all.grouping = factor,
+				                     all.groupingLevel = level)
+				
+				if (!identical(errors, FALSE)) {
+				    errorMessage <- errors$message
+				    foot.index <- .addFootnote(footnotes, errorMessage)
+				    row.footnotes <- list(W = list(foot.index), p = list(foot.index))
+				    error <- TRUE
 				}
 
 				## if the user did everything correctly :)
@@ -677,10 +677,10 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 
 .independentSamplesTTestDescriptivesPlot <- function(dataset, options, perform) {
 
-	descriptivesPlotList <- list()
-
 	variables <- options$variables
 	groups <- options$groupingVariable
+	
+	descriptivesPlotList <- list()
 
 	if (perform == "run" && length(variables) > 0 && groups != "") {
 
@@ -699,18 +699,32 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 				 yend = yend), inherit.aes = FALSE, size = 1),
 				 ggplot2::scale_y_continuous(breaks = c(min(b), max(b))))
 		}
-
-		for (var in .indices(variables)) {
-			descriptivesPlot <- list("title" = variables[var])
-			descriptivesPlot[["width"]] <- options$plotWidth
-			descriptivesPlot[["height"]] <- options$plotHeight
-			descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
-
-			summaryStat <- .summarySE(as.data.frame(dataset), measurevar = .v(options$variables[var]),
+		
+		for (variableIndex in .indices(variables)) {
+		    
+		    descriptivesPlot <- list("title" = variables[variableIndex])
+		    
+		    errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+		                         all.target = variables[variableIndex],
+		                         observations.amount = '< 2',
+		                         observations.grouping = options$groupingVariable)
+		    
+		    if (!identical(errors, FALSE)) {
+		        errorMessage <- errors$message
+		        
+		        descriptivesPlot[["data"]] <- ""
+		        descriptivesPlot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+		    } else {
+		        
+		        descriptivesPlot[["width"]] <- options$plotWidth
+		        descriptivesPlot[["height"]] <- options$plotHeight
+		        descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
+			
+			summaryStat <- .summarySE(as.data.frame(dataset), measurevar = .v(options$variables[variableIndex]),
 				groupvars = .v(options$groupingVariable), conf.interval = options$descriptivesPlotsConfidenceInterval,
 				na.rm = TRUE, .drop = FALSE)
 
-			colnames(summaryStat)[which(colnames(summaryStat) == .v(variables[var]))] <- "dependent"
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(variables[variableIndex]))] <- "dependent"
 			colnames(summaryStat)[which(colnames(summaryStat) == .v(groups))] <- "groupingVariable"
 
 			pd <- ggplot2::position_dodge(0.2)
@@ -719,7 +733,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 				y = dependent, group = 1)) + ggplot2::geom_errorbar(ggplot2::aes(ymin = ciLower,
 				ymax = ciUpper), colour = "black", width = 0.2, position = pd) +
 				ggplot2::geom_line(position = pd, size = 0.7) + ggplot2::geom_point(position = pd,
-				size = 4) + ggplot2::ylab(unlist(options$variables[var])) + ggplot2::xlab(options$groupingVariable) +
+				size = 4) + ggplot2::ylab(unlist(options$variables[variableIndex])) + ggplot2::xlab(options$groupingVariable) +
 				ggplot2::theme_bw() +
 				ggplot2::theme(panel.grid.minor = ggplot2::element_blank(), plot.title = ggplot2::element_text(size = 18),
 				  panel.grid.major = ggplot2::element_blank(), axis.title.x = ggplot2::element_text(size = 18,
@@ -741,23 +755,22 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 
 			descriptivesPlot[["data"]] <- imgObj[["png"]]
 			descriptivesPlot[["obj"]] <- imgObj[["obj"]]
+			
+		    }
+		    
 			descriptivesPlot[["convertible"]] <- TRUE
 			descriptivesPlot[["status"]] <- "complete"
-			descriptivesPlotList[[var]] <- descriptivesPlot
+			
+			descriptivesPlotList[[variableIndex]] <- descriptivesPlot
 
 		}
+		
+		return(descriptivesPlotList)
 
 	} else {
-
-		for (var in .indices(variables)) {
-			descriptivesPlot <- list("title" = variables[var])
-			descriptivesPlot[["width"]] <- options$plotWidth
-			descriptivesPlot[["height"]] <- options$plotHeight
-			descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
-			descriptivesPlot[["data"]] <- ""
-			descriptivesPlotList[[var]] <- descriptivesPlot
-		}
+	    
+	    return(NULL)
+	    
 	}
-
-	descriptivesPlotList
+	
 }
