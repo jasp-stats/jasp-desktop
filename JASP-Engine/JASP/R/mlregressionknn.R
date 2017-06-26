@@ -750,7 +750,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	
 	}
 	
-    plot[["title"]] <- "RMSE vs. No. nearest neighbors"
+    plot[["title"]] <- "RMSE vs No. nearest neighbors"
     plot[["data"]] <- imgObj[["png"]]
     plot[["obj"]] <- imgObj[["obj"]]
     plot[["convertible"]] <- TRUE

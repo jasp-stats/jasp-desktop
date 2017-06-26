@@ -297,6 +297,13 @@
         </property>
        </widget>
       </item>
+      <item row="7" column="2">
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>PushButton</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -781,7 +788,7 @@
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>Max. K</string>
+               <string>Max. k</string>
               </property>
              </widget>
             </item>
@@ -823,7 +830,7 @@
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>Max. D</string>
+               <string>Max. d</string>
               </property>
              </widget>
             </item>

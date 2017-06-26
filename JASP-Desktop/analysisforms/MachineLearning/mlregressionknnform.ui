@@ -387,7 +387,7 @@
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>Max. K</string>
+               <string>Max. k</string>
               </property>
              </widget>
             </item>
@@ -443,7 +443,7 @@
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>Max. D</string>
+               <string>Max. d</string>
               </property>
              </widget>
             </item>
@@ -1220,7 +1220,7 @@
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>Error vs K</string>
+               <string>Error vs k</string>
               </property>
              </widget>
             </item>

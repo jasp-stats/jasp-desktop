@@ -787,7 +787,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
         
     }
     
-    plot[["title"]] <- "Accuracy vs. No. nearest neighbors"
+    plot[["title"]] <- "Accuracy vs No. nearest neighbors"
     plot[["data"]] <- imgObj[["png"]]
     plot[["obj"]] <- imgObj[["obj"]]
     plot[["convertible"]] <- TRUE
