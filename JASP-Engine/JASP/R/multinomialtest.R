@@ -219,7 +219,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   # include fields
   fields <- list(
     list(name="case", title="", type="string", combine=TRUE),
-    list(name="chisquare", title="\u03C7\u00B2", type = "integer", format = "sf:4;dp:3"),
+    list(name="chisquare", title="\u03C7\u00B2", type = "number", format = "sf:4;dp:3"),
     list(name="df", title="df", type="integer"),
     list(name="p", title="p", type="number", format="dp:3;p:.001")
     )
@@ -259,8 +259,8 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 
     for(r in 1:length(chisqResults)){
       table[["data"]][[r]] <- list(case = names(chisqResults)[r],
-                                   chisquare = chisqResults[[r]][["statistic"]][["X-squared"]],
-                                   df = chisqResults[[r]][["parameter"]][["df"]],
+                                   chisquare = .clean(chisqResults[[r]][["statistic"]][["X-squared"]]),
+                                   df = .clean(chisqResults[[r]][["parameter"]][["df"]]),
                                    p = chisqResults[[r]][["p.value"]])
 
       if (options$VovkSellkeMPR){
