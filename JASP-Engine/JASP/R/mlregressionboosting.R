@@ -18,8 +18,9 @@
 MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", callback = function(...) list(status = "ok"), state = NULL, ...) {
 
 	## Read Dataset ## ----
-	analysisType <<- "classification"
-	predictNA <<- TRUE
+	analysisType <<- "regression"
+
+
 
 	predictors <- unlist(options[["predictors"]])
 	predictorsList <- options[["predictors"]]
@@ -44,10 +45,15 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 		if (perform == "run"){
 
 			if(options[["distribution"]] == "gaussian" || options[["distribution"]] == "laplace" || options[["distribution"]] == "tdist" || options[["distribution"]] == "poisson"){
-				dataset <- .readDataSetToEnd(columns.as.numeric = variablesToRead, columns.as.factor = indicator, exclude.na.listwise = c(variablesToRead, indicator))
+				dataset <- .readDataSetToEnd(columns.as.numeric = variablesToRead, columns.as.factor = indicator, exclude.na.listwise = c(predictors, indicator))
 			}
-			if(options[["distribution"]] == "multinomial" || options[["distribution"]] == "bernoulli" || options[["distribution"]] == "adaboost" || options[["distribution"]] == "huberized"){
-				dataset <- .readDataSetToEnd(columns.as.numeric = predictors, columns.as.factor = c(indicator,target), exclude.na.listwise = c(predictors, indicator, target))
+			if(options[["distribution"]] == "bernoulli" || options[["distribution"]] == "adaboost" || options[["distribution"]] == "huberized"){
+				# dataset <- .readDataSetToEnd(columns.as.numeric = predictors, columns.as.factor = c(indicator,target), exclude.na.listwise = c(predictors, indicator))
+				dataset <- .readDataSetToEnd(columns.as.numeric = predictors, columns = c(indicator,target), exclude.na.listwise = c(predictors, indicator))
+			}
+
+			if(options[["distribution"]] == "multinomial"){
+				dataset <- .readDataSetToEnd(columns.as.numeric = predictors, columns = c(indicator,target), exclude.na.listwise = c(predictors, indicator))
 			}
 
 			# dataset <- .readDataSetToEnd(columns.as.numeric = variablesToRead, columns.as.factor = indicator, exclude.na.listwise = c(variablesToRead, indicator))
@@ -61,25 +67,6 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 	}
 
-
-	## retrieve state ## ----
-
-
-	# state <- .retrieveState()
-
-	# diff <- NULL
-
-	# if (!is.null(state)) {
-
-	# 	diff <- .diff(options, state$options)
-
-	# }
-
-
-
-
-
-	print("initialize result")
 	## initialize result ## ----
 
 	results <- list()
@@ -111,7 +98,22 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 				"predictors",
 				"seedBox",
 				"target",
-				"testBox")
+				"testBox",
+				"indicator",
+				"predictNA",
+				"value_seed",
+				"value_numberOfFold",
+				"value_subsample",
+				"value_percentageTraining",
+				"value_numberOfCore",
+				"value_MinTermNodeSide",
+				"value_depthOfTree",
+				"value_depthOfTreeMin",
+				"value_depthOfTreeMax",
+				"value_depthOfTreeStep",
+				"value_MinTermNodeSideMin",
+				"value_MinTermNodeSideMax",
+				"value_MinTermNodeSideStep")
 		)
 	keep <- NULL
 
@@ -122,12 +124,52 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 	if(is.null(state[["res"]])){
 
+
 		errorDataType <- NULL
 		res <- NULL
 		hasError <- FALSE
 		errorMessage <- NULL
 
+		print(is.null(dataset))
+
 		if(perform == "run" && !is.null(dataset)){
+
+
+
+			validIdx <- is.na(dataset[,.v(target)])
+			datasetNoNa <- dataset[!validIdx,]
+
+			if(!is.null(indicator)){
+				indicatorDotV <- .v(indicator)
+				if(is.factor(datasetNoNa[,indicatorDotV])){
+					print("indicator type factor")
+					appIdx <- as.logical(as.numeric(as.character(datasetNoNa[,indicatorDotV])))
+				}else if(is.character(datasetNoNa[,indicatorDotV])){
+					print("indicator type character")
+					appIdx <- as.logical(as.numeric(datasetNoNa[,indicatorDotV]))
+				}else if(is.numeric(datasetNoNa[,indicatorDotV])){
+					print("indicator type numeric")
+					appIdx <- as.logical(datasetNoNa[,indicatorDotV])
+				}else if(is.logical(datasetNoNa[,indicatorDotV])){
+					print("indicator type logical")
+					appIdx <- datasetNoNa[,indicatorDotV]
+				}
+				fitData <- datasetNoNa[!appIdx,]
+				appData <- datasetNoNa[appIdx,]
+
+			}else if (options[["predictNA"]]) {
+				fitData <- datasetNoNa
+				appData <- dataset[validIdx,]
+
+			}else{
+
+				fitData <- datasetNoNa
+				appData <- NULL
+			}
+			print("length of appData")
+			print(dim(appData))
+			print(dim(fitData))
+
 
 			customChecks <- list(
 				# check custom n.cores
@@ -184,19 +226,25 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 				# check indicator type: should be boolean
 				function(){
 					print("check indicator type")
-					if(!is.null(indicator) && !base::identical(levels(as.factor(dataset[,.v(indicator)])), c("0","1"))){
+					if(!options[["predictNA"]] && !is.null(indicator) && !base::identical(levels(as.factor(fitData[,.v(indicator)])), c("0","1"))){
 						return("Indicator should be {0,1}")
 					}
+				},
+				# deal with "Cannot compute OOB estimate or the OOB curve. No finite OOB estimates of improvement" problem
+				function(){
+
 				}
 			)
 
-			anyErrors <- .hasErrors(dataset = dataset, perform = perform, type = c("infinity", "variance"), custom = customChecks, exitAnalysisIfErrors=TRUE)
+			# hasError <- FALSE
+			# anyErrors <- .hasErrors(dataset = dataset, perform = perform, type = c("infinity", "variance"), custom = customChecks, exitAnalysisIfErrors=TRUE)
+			anyErrors <- .hasErrors(dataset = datasetNoNa, perform = perform, type = c("infinity", "variance"), custom = customChecks, exitAnalysisIfErrors=TRUE)
 			hasError <- base::identical(anyErrors, TRUE)
 
 			if(!hasError){
-
+				print("now run analysis...")
 				res <- try(silent = FALSE, expr ={
-					.BoostingAnalysis(dataset, options, predictors, target, indicator, perform = perform)
+					.BoostingAnalysis(fitData, appData, options, predictors, target, indicator, perform = perform)
 					})
 			}else{
 
@@ -208,8 +256,7 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 		if(isTryError(res)){
 			errorMessageTmp <- .extractErrorMessage(res)
-			print("errorMessage in analysis:")
-			print(errorMessageTmp)
+
 		}
 
 	}else{
@@ -245,7 +292,7 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 	if(options[["TreeStructureBox"]] == "optimized_TS")
 		results[["tableBestTune"]] <- .tableBestTune(res, options, predictors, target, perform = perform)
 
-	if(predictNA || !is.null(indicator)){
+	if(options[["predictNA"]] || !is.null(indicator)){
 		results[["tablePrediction"]] <- .tablePrediction(res, predictors, target, perform = perform)
 		if(analysisType == "classification"){
 			results[["tablePredictionSummary"]] <- .tablePredictionSummary(res, predictors, target, perform = perform)
@@ -254,17 +301,7 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 		}
 	}
 
-	# if (perform == "init"){
 
-	# 	results <- list(results=results, status="inited")
-
-	# }else{
-
-	# 	results <- list(results=results, status="complete")
-
-	# }
-
-	# return(results)
 	state <- list(
 		options = options,
 		res = res
@@ -272,7 +309,7 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 	attr(state, "key") <- stateKey
 
-	# return to jasp
+
 	if (perform == "init") {
 
 		return(list(results = results, status = "inited", state = state, keep = keep))
@@ -287,7 +324,8 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 
 
-.BoostingAnalysis <- function(data, options, predictors, target, indicator, perform = perform){
+.BoostingAnalysis <- function(data, appData, options, predictors, target, indicator, perform = perform){
+
 
 	if (options[["seedBox"]] == "auto_seed"){
 		seed <- as.integer(runif(1, -(2^31 - 1), 2^31))
@@ -299,15 +337,6 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 	shuffleIdx <- sample(1:nrow(data),nrow(data))
 	data <- data[shuffleIdx,]
 
-	if(is.null(indicator)){
-		fitData <- data
-		appData <- NULL
-	}else{
-		indicatorDotV <- .v(indicator)
-		fitData <- data[-as.logical(as.numeric(as.character(data[,indicatorDotV]))),]
-		appData <- data[as.logical(as.numeric(as.character(data[,indicatorDotV]))),]
-
-	}
 
 	# claim target, predictors and formula
 	formula = as.formula(paste(.v(target),"~",paste(.v(predictors),collapse=" + ")))
@@ -368,11 +397,11 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 		n.minobsinnode <- options[["value_MinTermNodeSide"]]
 	}
 
-
+	print("in .BoostingAnalysis...")
 
 	model <- gbm(
 			formula = formula,
-			data = fitData,
+			data = data,
 			distribution = options[["distribution"]],
 			n.trees = options[["numberOfIterations"]],
 			shrinkage = options[["Shrinkage"]],
@@ -384,6 +413,8 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 			keep.data = TRUE,
 			verbose = FALSE,
 			n.cores = n.cores)
+
+	print("done run gbm model...")
 
 	best.iter_cv = NULL
 	best.iter_test = NULL
@@ -408,15 +439,14 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 	}
 
-	if(predictNA){
-		#predict NA in target, first generate indicator
-		indicator <- is.na(target)
-	}
+	print("generate prediction...")
+	print(appData)
 
-
-	if(is.null(indicator)){
+	if(is.null(appData) || (!is.null(appData) && nrow(appData) == 0)){
+		print("appData is empty")
 		prediction <- NULL
 	}else{
+		print("appData is not empty")
 		if(analysisType == "regression"){
 			prediction <- gbm::predict.gbm(
 							model,
@@ -441,12 +471,10 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 
 
-
-
 	return(list(model=model, 
 		appData = appData, 
 		prediction = prediction, 
-		data = fitData, 
+		data = data, 
 		best.iter = best.iter, 
 		best.iter_cv = best.iter_cv, 
 		best.iter_test = best.iter_test, 
@@ -619,7 +647,8 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 .tableBestTune <- function(res, options, predictors, target, perform = perform){
 
 	table <- list(title="Parameter Tuning for Tree Structure")
-	colNames = c("Depth of Tree", "Minimum Terminal Node Size", "Test Root-Mean-Square Error ")
+	lossType <- ifelse(analysisType == "regression", "Test Root-Mean-Square Error ", "Test Error in Accuracy")
+	colNames = c("Depth of Tree", "Minimum Terminal Node Size", lossType)
 
 	footnotes <- .newFootnotes()
 
@@ -637,6 +666,9 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 	}else{
 		data <- res$optStruc
+		data <- data[order(data[,ncol(data)]),]
+		data[,ncol(data)] <- round(data[,ncol(data)],3)
+		data[,ncol(data)] <- sapply(data[,ncol(data)], function(x) x = ifelse(is.na(x), ".",x))
 		toTable <- matrix(data, ncol = 3, byrow = FALSE)
 		colnames(toTable) <- colNames
 		rownames(toTable) <- as.character(1:nrow(toTable))
@@ -644,9 +676,9 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 	table[["schema"]] <- list(
 	fields = list(list(name="case", title="", type="string"),
-				  list(name = colNames[1], title = colNames[1], type="integer", format="dp:0"),#sf:4;dp:3
-				  list(name = colNames[2], title = colNames[2], type="integer", format="dp:0"),
-				  list(name = colNames[3], title = colNames[3], type="number", format="dp:3"))
+				  list(name = colNames[1], title = colNames[1], type="string"),#sf:4;dp:3
+				  list(name = colNames[2], title = colNames[2], type="string"),
+				  list(name = colNames[3], title = colNames[3], type="string"))
 	)
 
 	table[["footnotes"]] <- as.list(footnotes)
@@ -658,7 +690,6 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 .tablePrediction <- function(res, predictors, target, perform = perform){
 
-	# analysisType <- "classification"
 	table <- list(title="Model Prediction")
 	if(analysisType == "regression"){
 		colNames <- c(unlist(predictors), sprintf("Predicted %s", target))
@@ -668,7 +699,7 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 	mFeatures <- length(predictors)
 	if(any(perform == "init", is.null(target), is.null(predictors), is.null(res),isTryError(res))){
-
+		print("table prediction debug 1")
 		toTable <- matrix(".", nrow = 1, ncol = length(colNames),
 				  dimnames = list(".", colNames))
 
@@ -679,16 +710,27 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 			table[["footnotes"]] <- as.list(footnotes)
 		}
 
+	}else if(is.null(res$prediction)){
+		print("table prediction debug 2")
+		toTable <- matrix(".", nrow = 1, ncol = length(colNames),
+				  dimnames = list(".", colNames))
+		footnotes <- .newFootnotes()
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text="No case in application set")
+		table[["footnotes"]] <- as.list(footnotes)
 	}else{
+		print("table prediction debug 3")
 		appData <- res$appData
 		if(analysisType == "regression") {
-			predOutput <- res$prediction
+			predOutput <- round(res$prediction,3)
+			predOutput <- sapply(predOutput,function(x) x = ifelse(is.na(x),".",x))
 		}else{
 			prediction <- res$prediction
 			className <- levels(res$data[,.v(target)])
 			predClassIdx <-apply(prediction,1,which.max)
 			predClassName <- className[predClassIdx]
+			predClassName <- sapply(predClassName,function(x) x = ifelse(is.na(x),".",x))
 			predClassProb <- round(apply(prediction,1,max),3)
+			predClassProb <- sapply(predClassProb,function(x) x = ifelse(is.na(x),".",x))
 			predOutput <- cbind(predClassName,predClassProb)
 		}
 
@@ -720,19 +762,23 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 	table <- list(title="Model Prediction Summary")
 	colNames <- c("Frequency","Percentage")
-	rowNames <- levels(res$data[,.v(target)])
+	# rowNames <- levels(res$data[,.v(target)])
 
-	if(perform == "init"){
-		toTable <- matrix(".", nrow = length(rowNames), ncol = 2,
-				  dimnames = list(rowNames, colNames))
+	if(any(perform == "init", is.null(target), is.null(predictors), is.null(res),isTryError(res))){
+		toTable <- matrix(".", nrow = 1, ncol = 2,
+				  dimnames = list(".", colNames))
 	}else{
+		className <- levels(res$data[,.v(target)])
 		prediction <- res$prediction
 		predClassIdx <-apply(prediction,1,which.max)
 		freq <- table(predClassIdx)
 		data <- c(freq,freq/sum(freq))
 		toTable <- matrix(data, ncol = 2, byrow = FALSE)
 		colnames(toTable) <- colNames
-		rownames(toTable) <- rowNames
+		print("debug:")
+		print(className)
+		print(toTable)
+		rownames(toTable) <- className[as.numeric(row.names(freq))]
 	}
 
 	table[["schema"]] <- list(
@@ -812,29 +858,39 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 			)
 
 			# sort variables on desending order
-			toPlot <- toPlot[order(toPlot[,2],toPlot[,1]), ]
+			# toPlot <- toPlot[order(toPlot[,2],toPlot[,1]), ]
 
-			# toPlot <- toPlot[order(toPlot[["Importance"]], decreasing = TRUE), ]
+			toPlot <- toPlot[order(toPlot[["Importance"]], decreasing = TRUE), ]
 			axisLimits <- range(pretty(toPlot[["Importance"]]))
 			axisLimits[1] <- min(c(0, axisLimits[1]))
 			axisLimits[2] <- max(c(0, axisLimits[2]))
 
-			image <- .beginSaveImage(width = plotRF[["width"]], height = plotRF[["height"]])
+			# image <- .beginSaveImage(width = plotRF[["width"]], height = plotRF[["height"]])
 			# par(mar=c(5.1, 6.1, 4.1, 2.1), mgp=c(3, 1, 0), las=0)
 			# barplot(toPlot[[2]], rep(1,len), legend.text=TRUE,beside=TRUE,
 			# 	names.arg = toPlot[[1]],
 			# 	horiz = TRUE, xlim = c(axisLimits[1],axisLimits[2]), 
 			# 	xlab = "",cex.names=1.5, las=1)
+			# content <- .endSaveImage(image)
 ########################################################
-			g <- JASPgraphs::drawCanvas(xName = "", yName = "")
-			g <- JASPgraphs::drawBars(g, dat = toPlot, size = 4, stat = "",
-				mapping = ggplot2::aes(x = x, fill = x)) + ggplot2::xlab("")
-			g <- JASPgraphs::themeJasp(g, horizontal = TRUE)
-			print(g)
+			# image <- .beginSaveImage(width = plotRF[["width"]], height = plotRF[["height"]])
+			# library(JASPgraphs)
+			g <- drawCanvas(xName = "", yName = "")
+			g <- drawBars(g, dat = toPlot, size = 4, stat = "identity",mapping = NULL)#+
+				# ggplot2::scale_x_discrete(limits = c(axisLimits[1],axisLimits[2]))
+			g <- themeJasp(g, horizontal = TRUE)
+			# print(g)
+			# content <- .endSaveImage(image)
 ########################################################
-			content <- .endSaveImage(image)
+
+			content <- .writeImage(width = width, height = height, plot = g, obj = TRUE)
 
 			plotRF[["data"]] <- content
+			plotRF[["convertible"]] <- TRUE
+			plotRF[["obj"]] <- content[["obj"]]
+			plotRF[["data"]] <- content[["png"]]
+			plotRF[["status"]] <- "complete"
+
 		})
 
 		if(isTryError(p)){
@@ -861,7 +917,7 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 	plot <- list(
 		title = "Error vs Iteration",
 		width = 600,
-		height = 400
+		height = 500
 	)
 
 	legendName <- c()
@@ -872,15 +928,21 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 
 		model <- res$model
-		# if(!is.null(model)){	
+
 		train.error <- model$train.error
 		valid.error <- model$valid.error
 		cv.error <- model$cv.error
 		n.trees <- model$n.trees
-		# }
+
+		iteration <- c(seq(1,n.trees,1),seq(1,n.trees,1))
+		error <- c(train.error,valid.error)
+		methodType <- c(rep("train",n.trees),rep("test",n.trees))
 
 		if(options[["methodCV"]]){
 			yUpper <- max(train.error,valid.error,cv.error)
+			iteration <- c(iteration,seq(1,n.trees,1))
+			error <- c(error,cv.error)
+			methodType <- c(methodType,rep("cv",n.trees))
 		}else{
 			yUpper <- max(train.error,valid.error)
 		}
@@ -888,36 +950,53 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 		p <- try(silent=FALSE, expr = {
 
-			image <- .beginSaveImage(width = plot[["width"]], height = plot[["height"]])
-			# plot(1,type="n",ylab=ylab,xlab='Iteration',ylim=c(-1,yUpper),xlim=c(0,n.trees),main="error v.s. iteration",cex = 1.5, font = 2)
-			plot(1,type="n",ylab = "", xlab = "",ylim=c(0,yUpper),xlim=c(0,n.trees),main="",cex.lab = 1.5, font.lab = 2, axes = F, cex.axis = 1.3, bty = "n", las = 1)
+			# image <- .beginSaveImage(width = plot[["width"]], height = plot[["height"]])
+			# # plot(1,type="n",ylab=ylab,xlab='Iteration',ylim=c(-1,yUpper),xlim=c(0,n.trees),main="error v.s. iteration",cex = 1.5, font = 2)
+			# plot(1,type="n",ylab = "", xlab = "",ylim=c(0,yUpper),xlim=c(0,n.trees),main="",cex.lab = 1.5, font.lab = 2, axes = F, cex.axis = 1.3, bty = "n", las = 1)
 
-			axis(1, at = seq(0,n.trees+1,50),)
-			mtext("Iteration", side = 1, line = 3, cex = 1.5, font = 2)
-			axis(2, pos = -1,)
-			# par(las = 0)
-			mtext(ylab, side = 2, line = 2, cex = 1.5, font = 2)
-			# train error
-			lines(seq(1,n.trees,1),train.error,col=1)
-			legendName <- c(legendName,sprintf("OOB"))
-			legendColor <- c(legendColor,1)
+			# axis(1, at = seq(0,n.trees+1,50),)
+			# mtext("Iteration", side = 1, line = 3, cex = 1.5, font = 2)
+			# axis(2, pos = -1,)
+			# # par(las = 0)
+			# mtext(ylab, side = 2, line = 2, cex = 1.5, font = 2)
+			# # train error
+			# lines(seq(1,n.trees,1),train.error,col=1)
+			# legendName <- c(legendName,sprintf("OOB"))
+			# legendColor <- c(legendColor,1)
 
-			# test error
-			lines(seq(1,n.trees,1),valid.error,col=2)
-			legendName <- c(legendName,sprintf("test"))
-			legendColor <- c(legendColor,2)
+			# # test error
+			# lines(seq(1,n.trees,1),valid.error,col=2)
+			# legendName <- c(legendName,sprintf("test"))
+			# legendColor <- c(legendColor,2)
 
-			# cv error
-			if (options[["methodCV"]]){
-				print("ploting cv error")
-				lines(seq(1,n.trees,1),cv.error,col=3)
-				legendName <- c(legendName,sprintf("cv"))
-				legendColor <- c(legendColor,3)
-			}
+			# # cv error
+			# if (options[["methodCV"]]){
+			# 	print("ploting cv error")
+			# 	lines(seq(1,n.trees,1),cv.error,col=3)
+			# 	legendName <- c(legendName,sprintf("cv"))
+			# 	legendColor <- c(legendColor,3)
+			# }
 
-			legend("topright",legendName, lty=c(1,1,1),col = legendColor)
+			# legend("topright",legendName, lty=c(1,1,1),col = legendColor)
 
-			plot[["data"]] <- .endSaveImage(image)
+			# plot[["data"]] <- .endSaveImage(image)
+
+###########################################################################################
+
+			toPlot <- data.frame(x=iteration, y=error, methodType = methodType)
+			g <- drawCanvas(xName = "Iteration", yName = ylab, dat = toPlot)
+			g <- drawLines(g, dat = toPlot, alpha = 0.8 ,mapping = ggplot2::aes(x = x, y = y, color = methodType))
+			g <- themeJasp(g)
+
+			content <- .writeImage(width = plot$width, height = plot$height, plot = g, obj = TRUE)
+
+			plot[["data"]] <- content
+			plot[["convertible"]] <- TRUE
+			plot[["obj"]] <- content[["obj"]]
+			plot[["data"]] <- content[["png"]]
+			plot[["status"]] <- "complete"
+
+
 
 		})
 
@@ -939,6 +1018,62 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 }
 
 
+
+# multi plots with shared legend
+# original script copy from https://github.com/tidyverse/ggplot2/wiki/Share-a-legend-between-two-ggplot2-graphs
+grid_arrange_shared_legend_mixed <- function(plots, ncol = length(plots), nrow = 1, position = c("bottom", "right")) {
+
+	gl <- list()
+	legend <- NULL
+
+	for (i in 1:length(plots)){
+		if(is.null(legend)){
+			# g <- try(ggplot2::ggplotGrob(plots[[i]] + ggplot2::theme(legend.position = position))$grobs, silent = TRUE)
+			g <- ggplot2::ggplotGrob(plots[[i]] + ggplot2::theme(legend.position = position))$grobs
+			legend <- try(g[[which(sapply(g, function(x) x$name) == "guide-box")]], silent = TRUE)
+			if(isTryError(legend)) {
+
+				legend <- NULL
+			}
+		}
+		p <- try(plots[[i]] + ggplot2::theme(legend.position="none"), silent=TRUE)
+		if(isTryError(p)) p <- plots[[i]]
+		# gl <- c(gl,p)
+		gl[[i]] <- p
+	}
+	gl <- c(gl, ncol = ncol, nrow = nrow)
+
+	if(!is.null(legend)){
+
+		lheight <- sum(legend$height)
+		lwidth <- sum(legend$width)
+		position <- match.arg(position)
+
+		combined <- switch(position,
+			"bottom" = gridExtra::arrangeGrob(do.call(gridExtra::arrangeGrob, gl),
+						legend,
+						ncol = 1,
+						heights = grid::unit.c(grid::unit(1, "npc") - lheight, lheight)),
+			"right" = gridExtra::arrangeGrob(do.call(gridExtra::arrangeGrob, gl),
+						legend,
+						ncol = 2,
+						widths = grid::unit.c(grid::unit(1, "npc") - lwidth, lwidth)))
+
+	}else{
+
+		combined <- gridExtra::arrangeGrob(do.call(gridExtra::arrangeGrob, gl))
+		# combined <- gridExtra::arrangeGrob(gl)
+	}
+
+	grid::grid.newpage()
+
+	grid::grid.draw(combined)
+	# return gtable invisibly
+	invisible(combined)
+
+}
+
+
 .plotMarginal <- function(res,options,predictors,target,perform){
 
 
@@ -951,15 +1086,15 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 		len <- length(predictors)
 		if(options[["plotMarginalPlotOneWay"]] && !options[["plotMarginalPlotTwoWay"]] && !options[["plotHStatistics"]]){
-			width <- 400
-			height <- 400*len
+			width <- 450
+			height <- 300*len
 		}else{
 			if (len < 3){
-				width <- 600
-				height <- 600
+				width <- 900
+				height <- 900
 			}else{
-				width <- 300*len
-				height <- 300*len
+				width <- 450*len
+				height <- 450*len
 			}
 		}
 
@@ -968,62 +1103,92 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 		p <- try(silent = FALSE, expr ={
 
-			image <- .beginSaveImage(width = plot[["width"]], height = plot[["height"]])
+			# image <- .beginSaveImage(width = plot[["width"]], height = plot[["height"]])
 			# 1 way partial dependent plot only
 			if(options[["plotMarginalPlotOneWay"]] && !options[["plotMarginalPlotTwoWay"]]){
 
-				par(mfrow=c(varNum,1))
+				plotLists <- list()
 				for (i in 1:varNum){
-					# if(!is.null(res)){
+
 					grid <- plot(res$model,i.var=i,n.trees=res$best.iter,return.grid=TRUE)
-					# }
-					.plotMarginalOneWay(grid,i,predictors[i],withHeader = TRUE)
+					p <- .plotMarginalOneWay(grid,i,predictors[i],withHeader = TRUE, withYLab = FALSE)
+					plotLists[[i]] <- p
 				}
+
+				content <- .writeImage(width = width, height = height,
+					plot = grid_arrange_shared_legend_mixed(plotLists, nrow = varNum, ncol = 1, position = "bottom"), obj = TRUE)
+				plot[["data"]] <- content
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
+				plot[["status"]] <- "complete"
+
 			}
 
 			if(options[["plotMarginalPlotTwoWay"]] || options[["plotHStatistics"]]){
+				image <- .beginSaveImage(width = plot[["width"]], height = plot[["height"]])
 				par(mfrow= c(varNum, varNum), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0.2, 2.2, 2, 0))
+
+				grid::grid.newpage()
+				grid::pushViewport(grid::viewport(layout = grid::grid.layout(varNum, varNum)))
+
 				for (row in 1:varNum){
+
+					withHeader <- FALSE
+
 					for (col in 1:varNum){
+
+						withYLab <- FALSE
+
 						if (row==col){
+
 							if(options[["plotMarginalPlotOneWay"]]){
-								# if (!is.null(res)){
+
 								grid <- plot(res$model,i.var=row,n.trees=res$best.iter,return.grid=TRUE)
-									# }
-								.plotMarginalOneWay(grid,row,predictors[row],withHeader = FALSE)
+								p <- .plotMarginalOneWay(grid,row,predictors[row],withHeader = withHeader, withYLab = withYLab) +
+									ggplot2::theme(legend.position="none")
+								plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+								print(p, vp=grid::viewport(layout.pos.row=row,layout.pos.col=col))
 							}else{
 								plot(1, type= "n", axes= FALSE, ylab="", xlab="")
 							}
+
 						}
 						if(col>row){
+
 							if(options[["plotMarginalPlotTwoWay"]]){
 								grid <- plot(res$model,i.var=c(row,col),return.grid = T)
-								.plotMarginalTwoWay(grid,row,col)
+								print(.plotMarginalTwoWay(grid,row,col, predictors[col], withHeader), vp=grid::viewport(layout.pos.row=row,layout.pos.col=col))
 							}else{
-								plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+								main <- ""
+								print(plot(1, type= "n", axes= FALSE, ylab="", xlab="", main = main), vp=grid::viewport(layout.pos.row=row,layout.pos.col=col))
 							}
 						}
 
 						if(col<row){
+
 							if(options[["plotHStatistics"]]){
 								HValue <- gbm::interact.gbm(res$model,
 									res$data,
 									i.var = c(row,col),
 									n.trees = res$best.iter
 								)
-								.plotHstatistics(HValue, col, row)
-
+								p <- .plotHstatistics(HValue, col, row, predictors[row], withYLab)
+								plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+								print(p, vp=grid::viewport(layout.pos.row=row,layout.pos.col=col))
 							}else{
 
+								# yName <-""
+								# p <- drawCanvas(xName = "", yName = yName) + ggplot2::geom_blank()
 								plot(1, type= "n", axes= FALSE, ylab="", xlab="")
 							}
 						}
 
+
 					}
 				}
-			}
 
-			if( options[["plotMarginalPlotTwoWay"]] || options[["plotHStatistics"]]){
+				# draw name of each variables
 				if (len > 2 || ((len == 2 && options[["plotMarginalPlotOneWay"]]) || (len == 2 && options[["plotHStatistics"]]))) {
 
 					textpos <- seq(1/(len*2), (len*2-1)/(len*2), 2/(len*2))
@@ -1050,8 +1215,15 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 						}
 					}
 				}
+				plot[["data"]] <- .endSaveImage(image)
 			}
-			plot[["data"]] <- .endSaveImage(image)
+
+			# plot[["data"]] <- content
+			# plot[["convertible"]] <- TRUE
+			# plot[["obj"]] <- content[["obj"]]
+			# plot[["data"]] <- content[["png"]]
+			# plot[["status"]] <- "complete"
+
 		})
 
 		if(isTryError(p)){
@@ -1070,83 +1242,130 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 }
 
-.plotMarginalOneWay <- function(returnGrid,varIdx,varName,withHeader){
+.plotMarginalOneWay <- function(returnGrid,varIdx,varName,withHeader,withYLab){
+
+
 	yLower = round(min(returnGrid[,2]))
-	# yUpper = round(max(returnGrid[,2]))+1
-	yUpper = round(max(returnGrid[,2]))
+	yUpper = round(max(returnGrid[,2])) + 1
 	xMin = round(min(returnGrid[,1]))
-	# xMax = round(max(returnGrid[,1]))+1
-	xMax = round(max(returnGrid[,1]))
+	xMax = round(max(returnGrid[,1])) + 1
 
-	main = ""
-	if (withHeader)
-		main = varName
+	main <- ifelse(withHeader,varName,"")
+	yName <- ifelse(withYLab,varName,"")
 
-	if (varIdx == 1){
-		# multiple class level
-		if (length(returnGrid[,2])>length(returnGrid[,1])){
-			className <- colnames(returnGrid[,2])
-			plot(1, type= "n", axes= TRUE, ylab=varName, xlab="",main=main,ylim=c(yLower,yUpper),xlim=c(xMin,xMax),cex.lab=2)
-			for (i in 1:length(className)){
-				lines(returnGrid[,1],returnGrid[,2][,i],col=i)
-			}
-		}else{
-		# regression
-			plot(returnGrid[,1],returnGrid[,2], type= "l", ylab= "", xlab="",main=main,ylim=c(yLower,yUpper),xlim=c(xMin,xMax),cex.lab=3)
+
+
+####################################### ggplot version ####################################################
+	# if (length(returnGrid[,2])>length(returnGrid[,1])){
+	if(analysisType == "classification"){
+
+		className <- colnames(returnGrid[,2])
+		x <- NULL
+		y <- NULL
+		tag <- NULL
+		# plot(1, type= "n", axes= TRUE, ylab=varName, xlab="",main=main,ylim=c(yLower,yUpper),xlim=c(xMin,xMax),cex.lab=2)
+		for (i in 1:length(className)){
+			# lines(returnGrid[,1],returnGrid[,2][,i],col=i)
+			x <- c(x,returnGrid[,1])
+			y <- c(y,returnGrid[,2][,i])
+			tag <- c(tag,rep(className[i],length(returnGrid[,1])))
 		}
+		toPlot = data.frame(x = x, y = y, tag = tag)
+		g <- drawCanvas(xName = "", yName = yName, dat = toPlot)
+		g <- drawLines(g, dat = toPlot, alpha = 1, mapping = ggplot2::aes(x = x, y = y, color = tag), , show.legend = TRUE) + 
+			ggplot2::ggtitle(main)
+		g <- themeJasp(g)
+
 	}else{
-		if (length(returnGrid[,2])>length(returnGrid[,1])){
-			className <- colnames(returnGrid[,2])
-			plot(1, type= "n", axes= TRUE, ylab="", xlab="",main=main,ylim=c(yLower,yUpper),xlim=c(xMin,xMax),cex.lab=3)
-			for (i in 1:length(className)){
-				lines(returnGrid[,1],returnGrid[,2][,i],col=i)
-			}
-		}else{
-		# regression
-			plot(returnGrid[,1],returnGrid[,2], type= "l", xlab="",ylab="",main=main,ylim=c(yLower,yUpper),xlim=c(xMin,xMax),cex.lab=3)
-		}
-
+		x <- returnGrid[,1]
+		y <- returnGrid[,2]
+		toPlot = data.frame(x = x, y = y)
+		g <- drawCanvas(xName = "", yName = yName, dat = toPlot)
+		g <- drawLines(g, dat = toPlot, alpha = .8) +
+			ggplot2::ggtitle(main)
+		g <- themeJasp(g)
 	}
+
+	return(g)
+############################################ basic version ####################################
+	# if(analysisType == "classification"){
+	# 	className <- colnames(returnGrid[,2])
+	# 	plot(1, type= "n", axes= TRUE, ylab=varName, xlab="",main=main,ylim=c(yLower,yUpper),xlim=c(xMin,xMax),cex.lab=2)
+	# 	for (i in 1:length(className)){
+	# 		lines(returnGrid[,1],returnGrid[,2][,i],col=i)
+	# 	}
+	# }else{
+	# 	plot(returnGrid[,1],returnGrid[,2], type= "l", ylab= varName, xlab="",main=main,ylim=c(yLower,yUpper),xlim=c(xMin,xMax),cex.lab=3)
+	# }
+##############################################################################################
 }
 
-.plotMarginalTwoWay <- function(partial,varIdx1,varIdx2){
-	# partial <- plot(model,i.var=c(varIdx1,varIdx2),return.grid = T)
+.plotMarginalTwoWay <- function(partial,varIdx1,varIdx2,main,withHeader){
+
+	main <- ifelse(withHeader,main,"")
+	theta <- 30
 	mat <- reshape2::acast(data = partial, 
 		formula = as.formula(paste(colnames(partial)[1],"~",colnames(partial)[2])), 
 		value.var = colnames(partial)[3])
+##################################### 3D surface plot###############################
 
-	if (varIdx1 == 1){
-		persp(x = as.numeric(colnames(mat)), 
-			y = as.numeric(rownames(mat)), 
-			z=mat,
-			zlab = "",#'Partial dependence', 
-			xlab = "",#colnames(partial)[1]
-			ylab = "",# colnames(partial)[2]
-			main = "",
-			theta = 30,
-			ticktype = "detailed")
-	}else{
-		persp(x = as.numeric(colnames(mat)), 
-			y = as.numeric(rownames(mat)), 
-			z=mat,
-			zlab = "",#'Partial dependence', 
-			xlab = "",#colnames(partial)[1]
-			ylab = "",#colnames(partial)[2]
-			theta = 30,
-			ticktype = "detailed")
-	}
+	persp(x = as.numeric(colnames(mat)), 
+		y = as.numeric(rownames(mat)), 
+		z=mat,
+		zlab = "",#'Partial dependence', 
+		xlab = "",#colnames(partial)[1]
+		ylab = "",# colnames(partial)[2]
+		main = main,
+		theta = theta,
+		ticktype = "detailed")
+
+
+################################### heat map #######################################
+	# # toPlot <- data.frame(x = as.numeric(colnames(mat)), y = as.numeric(rownames(mat)), z = mat)
+	# g <- drawCanvas(xName = "", yName = "", xLabels = NULL, yLabels = NULL)
+	# g <- drawHeatmap(graph = g, dat = mat, interpolate = TRUE, show.legend = TRUE) +
+	# 	ggplot2::ggtitle(main)
+	# g <- themeJasp(g)
+#####################################################################################
+
 }
 
-.plotHstatistics <- function(HValueAll, colVarIdx, rowVarIdx){
-	print("in .plotHstatistics ")
-	print(HValueAll)
-	if(length(HValueAll)==1){
-		barplot(HValueAll, main="", xlab="", ylab="", las = 1, col = "grey", cex.lab = 1.7, 
-			cex.main = 1.5, axes = TRUE, ylim = c(0, 0.5))
-		text(0.5,HValueAll+0.05, labels=sprintf("H = %0.2f",HValueAll),cex=2)
+.plotHstatistics <- function(HValueAll, colVarIdx, rowVarIdx, yName, withYLab){
+
+	yName <- ifelse(withYLab,yName,"")
+####################################### ggplot version #####################################
+	if(analysisType == "regression"){
+		toPlot <- data.frame(x = c(0,1,2), y = c(0,HValueAll,0))
+		g <- drawCanvas(xName = "", yName = yName, dat = toPlot, xLabels = NULL)
+		g <- drawBars(g, dat = toPlot, size = 3, stat = "identity", fill="black", alpha = 0.7) +
+			ggplot2::annotate("text", x = 1, y = HValueAll + 0.005, label= sprintf("%0.2f",HValueAll)) +
+			ggplot2::theme(axis.title.x = ggplot2::element_blank(), axis.text.x = ggplot2::element_blank(), axis.ticks.x = ggplot2::element_blank())
+		g <- themeJasp(g, horizontal = FALSE)
 	}else{
-		plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+		toPlot <- data.frame(x = names(HValueAll), y = unname(HValueAll))
+		g <- drawCanvas(xName = "", yName = yName, dat = toPlot)
+		g <- drawBars(g, dat = toPlot, mapping = ggplot2::aes(x = x, y = y, fill = x), size = 3, stat = "identity")
+		for (i in 1:length(HValueAll)){
+			g <- g + ggplot2::annotate("text", x= i , y=HValueAll[i]+0.01, label= sprintf("%0.2f",HValueAll[i]))
+		}
+
+		g <- themeJasp(g, horizontal = FALSE)
 	}
+	return(g)
+
+####################################### basic version #######################################
+	# if(analysisType == "regression"){
+	# 	# barplot(HValueAll, main="", xlab="", ylab="", las = 1, col = "grey", cex.lab = 1.7, 
+	# 	# 	cex.main = 1.5, axes = TRUE, ylim = c(0, 0.5))
+	# 	text(0.5,0.5, labels=sprintf("H = %0.2f",HValueAll),cex=2)
+	# }else{
+	# 	barplot(HValueAll, main="", xlab="", ylab=yName, las = 1, col = "grey", cex.lab = 1.7, 
+	# 			cex.main = 1.5, axes = TRUE, ylim = c(0, 0.5))
+	# 	for (i in 1:length(HValueAll)) {
+	# 		text(i-0.5,HValueAll[i]+0.05,labels=sprintf("H = %0.2f",HValueAll[i]),cex=2)
+	# 	}
+	# }
+############################################################################################
 }
 
 
@@ -1184,92 +1403,143 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 		foreach::foreach(i = 1:cv.folds) %dopar% {
 
 			#Segment data by fold using the which() function
-			res <- NULL 
+			interaction.depthInterval <- seq(interaction.depth_min,interaction.depth_max, interaction.depth_step)
+			n.minobsinnodeInterval <- seq(n.minobsinnode_min, n.minobsinnode_max,n.minobsinnode_step)
+			IDLen = length(interaction.depthInterval)
+			NMLen = length(n.minobsinnodeInterval)
+			res <- rep(NaN,IDLen*NMLen)
+			# res <- NULL
 			testIndexes <- which(folds==i,arr.ind=TRUE)
 			testData <- data[testIndexes, ]
 			testY <- data[testIndexes, target1]
 			trainData <- data[-testIndexes, ]
 
 			#Use the test and train data partitions however you desire...
-			cv.sse <- foreach::foreach(interaction.depth = seq(interaction.depth_min,interaction.depth_max, interaction.depth_step), .combine = rbind) %do% {
-					foreach::foreach(n.minobsinnode = seq(n.minobsinnode_min, n.minobsinnode_max,n.minobsinnode_step), .combine = rbind) %do% {
-						# TRAIN A PROJECTION PURSUIT REGRESSION WITH VARIOUS SETTINGS AND TRAINING DATA
-						model_gbm <- gbm::gbm(
-							formula = formula,
-							data = trainData,
-							distribution = distribution,
-							n.trees=n.trees, # number of trees
-							shrinkage=shrinkage, # shrinkage or learning rate,
-							# # 0.001 to 0.1 usually work
-							interaction.depth=interaction.depth, # 1: additive model, 2: two-way interactions, etc.
-							bag.fraction = bag.fraction, # subsampling fraction, 0.5 is probably best
-							train.fraction = train.fraction, # fraction of data for training,
-							## first train.fraction*N used for training
-							n.minobsinnode = n.minobsinnode, # minimum total weight needed in each node
-							# # class.stratify.cv = options$class.stratify.cv,
-							keep.data=FALSE, # keep a copy of the dataset with the object
-							verbose=FALSE, # don't print out progress
-							# cv.folds = 3,
-							n.cores=coreMax
-						)
-						# CALCULATE SSE WITH VALIDATION DATA
-						yHat <- gbm::predict.gbm(
-							model_gbm,
-							newdata=testData,
-							n.trees=n.trees,
-							shrinkage = shrinkage,
-							interaction.depth=interaction.depth,
-							n.minobsinnode = n.minobsinnode
-						)
+			# cv.sse <- foreach::foreach(interaction.depth = interaction.depthInterval, .combine = rbind) %do% {
+			# 	foreach::foreach(n.minobsinnode = n.minobsinnodeInterval, .combine = rbind) %do% {
+			cv.sse <- foreach::foreach(pointer1 = seq(1,IDLen,1), .combine = rbind) %do% {
+				foreach::foreach(pointer2 = seq(1,NMLen,1), .combine = rbind) %do% {
 
-						test.sse <- sqrt(mean((yHat-testY)^2))
-						output <- c(interaction.depth,n.minobsinnode,test.sse)
-						res <- rbind(res,output)
+					# # TRAIN A PROJECTION PURSUIT REGRESSION WITH VARIOUS SETTINGS AND TRAINING DATA
+					interaction.depth <- interaction.depthInterval[pointer1]
+					n.minobsinnode <- n.minobsinnodeInterval[pointer2]
+
+					if(analysisType == "regression"){
+
+						model_gbm <- try(silent = TRUE, expr = {
+							gbm::gbm(
+								formula = formula,
+								data = trainData,
+								distribution = distribution,
+								n.trees=n.trees, # number of trees
+								shrinkage=shrinkage, # shrinkage or learning rate,
+								# # 0.001 to 0.1 usually work
+								interaction.depth=interaction.depth, # 1: additive model, 2: two-way interactions, etc.
+								bag.fraction = bag.fraction, # subsampling fraction, 0.5 is probably best
+								train.fraction = train.fraction, # fraction of data for training,
+								## first train.fraction*N used for training
+								n.minobsinnode = n.minobsinnode, # minimum total weight needed in each node
+								# class.stratify.cv = TRUE,
+								keep.data=FALSE, # keep a copy of the dataset with the object
+								verbose=FALSE, # don't print out progress
+								# cv.folds = 3,
+								n.cores=coreMax
+							)})
+						if(isTryError(model_gbm)){
+
+							test.error <- NaN
+
+						}else{
+							yHat <- gbm::predict.gbm(
+								model_gbm,
+								newdata=testData,
+								n.trees=n.trees,
+								shrinkage = shrinkage,
+								interaction.depth=interaction.depth,
+								n.minobsinnode = n.minobsinnode
+							)
+
+							test.error <- sqrt(mean((yHat-testY)^2))
+						}
+
+					}else{
+
+						model_gbm <- try(silent = TRUE, expr = {
+							gbm::gbm(
+								formula = formula,
+								data = trainData,
+								distribution = distribution,
+								n.trees=n.trees, # number of trees
+								shrinkage=shrinkage, # shrinkage or learning rate,
+								# # 0.001 to 0.1 usually work
+								interaction.depth=interaction.depth, # 1: additive model, 2: two-way interactions, etc.
+								bag.fraction = bag.fraction, # subsampling fraction, 0.5 is probably best
+								train.fraction = train.fraction, # fraction of data for training,
+								## first train.fraction*N used for training
+								n.minobsinnode = n.minobsinnode, # minimum total weight needed in each node
+								class.stratify.cv = TRUE,
+								keep.data=FALSE, # keep a copy of the dataset with the object
+								verbose=FALSE, # don't print out progress
+								# cv.folds = 3,
+								n.cores=coreMax
+							)})
+						if(isTryError(model_gbm)){
+							test.error <- NaN
+						}else{
+							yHat <- gbm::predict.gbm(
+								model_gbm,
+								newdata=testData,
+								n.trees=n.trees,
+								shrinkage = shrinkage,
+								interaction.depth=interaction.depth,
+								n.minobsinnode = n.minobsinnode,
+								type = "response"
+							)
+							className <- levels(data[,target1])
+							yHatMat <- matrix(yHat,ncol = length(className), byrow = FALSE)
+							# colnames(yHatMat) <- dimnames(yHat)[[2]]
+							testClassIdx <- unlist(lapply(testY, function(x) which(className == x))) # covert class name to col number
+							prob <- diag(yHatMat[,testClassIdx]) # for each row, select specific col given index in vector testIdx
+							test.error <- 1-mean(prob)
+						}
 					}
+					# res <- c(res,test.error)
+					res[(pointer1-1)*IDLen + pointer2] <- test.error
+				}
 			}
-
-			# store result in file
+			# store result in file, since use foreach
 			cat(dput(res), file = paste0("res_", i, "_", j, ".txt"))
 
 		}
 
-
 		for (i in 1:cv.folds){
+
 			res <- NULL
 			res <- read.table(paste0("res_", i, "_", j, ".txt"))
-			res <- matrix(as.numeric(res), ncol = 3, byrow = FALSE)
-			if(is.null(resAll)){
-				resAll <- res
-			}else{
-				resAll[,3] <- resAll[,3] + res[,3]
-			}
+			resAll <- cbind(resAll,as.numeric(res))
 			file.remove(paste0("res_", i, "_", j, ".txt"))
 		}
 
-		resAll[,3] <- resAll[,3]/cv.folds
+		resAll <- apply(resAll,1,function(x) mean(x,na.rm = TRUE))
 		cat(dput(resAll), file = paste0("resAll_", j, ".txt"))
 
 	}
-
 	resAll_rp <- NULL
 	for (j in 1:repeatTime){
 		resAll<- NULL
 		resAll <- read.table(paste0("resAll_", j, ".txt"))
-		resAll <- matrix(as.numeric(resAll), ncol = 3, byrow = FALSE)
-		if(is.null(resAll_rp)){
-			resAll_rp <- resAll
-		}else{
-			resAll_rp[,3] <- resAll_rp[,3] + resAll[,3]
-		}
+		resAll_rp <- cbind(resAll_rp,as.numeric(resAll))
 		file.remove(paste0("resAll_", j, ".txt"))
 	}
 
+	# lossType <- ifelse(analysisType == "regression","root mean square error","test error percentage")
+	# print(analysisType)
+	# print(lossType)
+	resAll_rp <- apply(resAll_rp,1,function(x) mean(x,na.rm = TRUE))
+	resAll_rp <- matrix(cbind(seq(interaction.depth_min,interaction.depth_max, interaction.depth_step),
+		seq(n.minobsinnode_min, n.minobsinnode_max,n.minobsinnode_step),resAll_rp),ncol = 3,byrow = FALSE)
 
-	resAll_rp[,3] <- resAll_rp[,3]/repeatTime
-	idx <- sort(resAll_rp[,3], decreasing = FALSE, index.return = TRUE)
-	idx <- as.numeric(unlist(idx$ix))
-	resAll_rp <- resAll_rp[idx,]
-	colnames(resAll_rp) <- c("interaction.depth","n.minobsinnode","test.rmse")
+	# colnames(resAll_rp) <- c("interaction.depth","n.minobsinnode",lossType)
 
 	return(resAll_rp)
 

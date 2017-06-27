@@ -969,6 +969,13 @@
             <bool>false</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_12">
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="tableChisq">
+              <property name="text">
+               <string>Chi squared test</string>
+              </property>
+             </widget>
+            </item>
             <item row="0" column="0">
              <widget class="BoundCheckBox" name="tableRF">
               <property name="text">
@@ -976,10 +983,10 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="tableChisq">
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="predictNA">
               <property name="text">
-               <string>Chi squared test</string>
+               <string>Predict NA</string>
               </property>
              </widget>
             </item>

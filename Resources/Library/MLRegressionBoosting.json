@@ -47,6 +47,11 @@
 		},
 		{
 			"default":false,
+			"name":"predictNA",
+			"type":"Boolean"
+		},
+		{
+			"default":false,
 			"name":"modelPerformance",
 			"type":"Boolean"
 		},
