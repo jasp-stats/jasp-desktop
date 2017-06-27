@@ -66,29 +66,29 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 
     if (is.list(diff)){
 
-      if (!any(diff[["factor"]], diff[["counts"]], 
+      if (!any(diff[["factor"]], diff[["counts"]],
                diff[["confidenceIntervalInterval"]],
                diff[["hypothesis"]], diff[["exProbVar"]],
                diff[["expectedProbs"]])){
-                
+
         chisqResults <- state[["chisqResults"]]
-        
+
         # the following depend on chisqResults so in same if statement
         if (!any(diff[["confidenceInterval"]],
                  diff[["countProp"]])) {
           descriptivesTable <- state[["descriptivesTable"]]
         }
-        
-        if (!any(diff[["descriptivesPlotConfidenceInterval"]], 
+
+        if (!any(diff[["descriptivesPlotConfidenceInterval"]],
                  diff[["countProp"]], diff[["plotWidth"]],
                  diff[["plotHeight"]])) {
           descriptivesPlot <- state[["descriptivesPlot"]]
         }
-        
+
       }
 
       #... etcetera
-      # TODO 
+      # TODO
     }
 
   }
@@ -120,9 +120,9 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   } else {
 
     results[["descriptivesTable"]] <- NULL
-    
-  }  
-  
+
+  }
+
   # Multinomial Descriptives Plot
   if (options[["descriptivesPlot"]]) {
     # Generate descriptives plots
@@ -174,17 +174,17 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     f <- dataset[[.v(factor)]]
     f <- f[!is.na(f)]
     nlev <- nlevels(f)
-    
+
     if (options$counts != ""){
       # convert to "regular" factor
       c <- dataset[[.v(options$counts)]]
       f <- rep(f, c)
     }
-    
+
     # Create table in order of appearance of the dataset
     t <- table(f)
     val <- t[unique(f)]
-    
+
     hyps <- .multinomialHypotheses(dataset, options, nlev)
 
     # create a named list with as values the chi-square result objects
@@ -212,7 +212,6 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 # Transform chi-square test object into table for JASP
 # chisqResults = list(H1 = obj, H2 = obj, ....)
 .chisqTable <- function(chisqResults, options, perform){
-  # TODO
   table <- list()
   footnotes <- .newFootnotes()
   table[["title"]] <- "Multinomial Test"
@@ -220,7 +219,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   # include fields
   fields <- list(
     list(name="case", title="", type="string", combine=TRUE),
-    list(name="chisquare", title="\u03C7\u00B2", type = "integer"),
+    list(name="chisquare", title="\u03C7\u00B2", type = "integer", format = "sf:4;dp:3"),
     list(name="df", title="df", type="integer"),
     list(name="p", title="p", type="number", format="dp:3;p:.001")
     )
@@ -236,22 +235,6 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
                                         title = "VS-MPR\u002A",
                                         type = "number",
                                         format = "sf:4;dp:3")
-  }
-
-  # include confidence interval as columns
-  if (options$confidenceInterval) {
-
-    interval <- 100 * options$confidenceIntervalInterval
-    title <- paste0(interval, "% Confidence Interval")
-
-    fields[[length(fields)+1]] <- list(name = "lowerCI",
-                                       type = "number",
-                                       format = "sf:4;dp:3", title = "Lower",
-                                       overTitle = title)
-    fields[[length(fields)+1]] <- list(name = "upperCI",
-                                       type = "number",
-                                       format = "sf:4;dp:3", title = "Upper",
-                                       overTitle = title)
   }
 
   # include footnotes
@@ -308,7 +291,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 
     table[["data"]] <- data
   }
-  
+
   return(table)
 }
 
@@ -323,10 +306,10 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   # Expected vs. Observed table
   table <- list("title" = "Descriptives table")
 
-  
+
   if (is.null(factor)){
     # If we have no variable init table with generic name
-    
+
     fields <- list(
       list(name="factor", title="Factor", type = "string"),
       c(list(name="observed", title="Observed"), numberType),
@@ -347,11 +330,11 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
                                         overTitle = title)
     }
     rows <- list(list(factor = ".", observed = ".", expected = "."))
-    
-    
+
+
   } else if (perform != "run") {
     # If we have a variable then init table with factor name
-    
+
     fields <- list(
       list(name="factor", title=factor, type = "string"),
       c(list(name="observed", title="Observed"), numberType),
@@ -372,11 +355,11 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
                                         overTitle = title)
     }
     rows <- list(list(factor = ".", observed = ".", expected = "."))
-    
+
   } else {
-    
+
     # now  we want to create the full table
-    
+
     # First we create the correct columns
     fields <- list(
       list(name="factor", title=factor, type = "string"),
@@ -384,20 +367,20 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     )
 
     nms <- names(chisqResults)
-    
+
     if (length(nms) == 1) {
-      fields[[length(fields)+1]] <- c(list(name="expected", 
-                                           title = paste0("Expected: ", nms)), 
+      fields[[length(fields)+1]] <- c(list(name="expected",
+                                           title = paste0("Expected: ", nms)),
                                       numberType)
     } else {
       for (i in 1:length(nms)) {
-        fields[[length(fields)+1]] <- c(list(name=nms[i], 
+        fields[[length(fields)+1]] <- c(list(name=nms[i],
                                              title = nms[i]),
                                         numberType,
                                         overTitle = "Expected")
       }
     }
-    
+
     if (options$confidenceInterval){
       interval <- 100 * options$confidenceIntervalInterval
       title <- paste0(interval, "% Confidence Interval")
@@ -412,29 +395,29 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
                                         format = "sf:4;dp:3",
                                         overTitle = title)
     }
-    
+
     # Then we fill the columns with the information
     if (options[["countProp"]]=="descCounts"){
       div <- 1
     } else {
       div <- sum(chisqResults[[1]][["observed"]])
     }
-    
+
     tableFrame <- data.frame(factor = names(chisqResults[[1]][["observed"]]),
-                             observed = as.integer(chisqResults[[1]][["observed"]])/div, 
+                             observed = as.integer(chisqResults[[1]][["observed"]])/div,
                              stringsAsFactors = FALSE)
 
 
     for (r in chisqResults){
       tableFrame <- cbind(tableFrame, as.integer(r[["expected"]])/div)
     }
-    
+
     if (length(nms) == 1) {
       colnames(tableFrame)[-(1:2)] <- "expected"
     } else {
       colnames(tableFrame)[-(1:2)] <- nms
     }
-    
+
     # Add confidenceInterval
     if (options$confidenceInterval){
       n <- sum(chisqResults[[1]][["observed"]])
@@ -443,41 +426,41 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
         bt <- binom.test(l,n,conf.level = options$confidenceIntervalInterval)
         return(bt$conf.int * n) # on the count scale
       })
-      
+
       # add these to the tableFrame
       ciDf <- t(data.frame(ci))
       colnames(ciDf) <- c("lowerCI", "upperCI")
-      tableFrame <- cbind(tableFrame, ciDf/div) 
+      tableFrame <- cbind(tableFrame, ciDf/div)
     }
-    
+
     rows <- list()
-    
+
     for (i in 1:nrow(tableFrame)){
       rows[[i]] <- as.list(tableFrame[i,])
     }
     table[["status"]] <- "complete"
-    
+
   }
-  
+
   table[["schema"]] <- list(fields = fields)
   table[["data"]] <- rows
-  
-  return(table)  
+
+  return(table)
 }
 
 # Create multinomial descriptives plot
 .multinomialDescriptivesPlot <- function(chisqResults, options, perform) {
-  
+
   # init output object
   descriptivesPlot <- list("title" = "Descriptives plot")
   descriptivesPlot[["width"]] <- options$plotWidth
   descriptivesPlot[["height"]] <- options$plotHeight
   descriptivesPlot[["custom"]] <- list(width = "plotWidth",
                                       height = "plotHeight")
-  
+
   if (perform == "run"){
     # Generate the plot
-    
+
     # Counts or props
     if (options[["countProp"]]=="descCounts"){
       div <- 1
@@ -489,7 +472,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 
     # Observed values
     obs <- chisqResults[[1]][["observed"]]/div
-    
+
     # Calculate confidence interval
     cl <- options$descriptivesPlotConfidenceInterval
     n <- sum(chisqResults[[1]][["observed"]])
@@ -512,13 +495,13 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
            ggplot2::scale_y_continuous(breaks=b))
     }
 
-    
+
     # Create plot
-    p <- ggplot2::ggplot(mapping = ggplot2::aes(x = factor(names(obs), 
-                                                           levels = names(obs)), 
-                                                y = as.numeric(obs))) + 
+    p <- ggplot2::ggplot(mapping = ggplot2::aes(x = factor(names(obs),
+                                                           levels = names(obs)),
+                                                y = as.numeric(obs))) +
       ggplot2::geom_bar(stat = "identity", size = 0.75, colour="black", fill = "grey") +
-      ggplot2::geom_errorbar(ggplot2::aes(ymin=ciDf$lowerCI, ymax = ciDf$upperCI), 
+      ggplot2::geom_errorbar(ggplot2::aes(ymin=ciDf$lowerCI, ymax = ciDf$upperCI),
                              size = 0.75, width = 0.3) +
       base_breaks_y(ciDf$upperCI) +
       ggplot2::xlab(options$factor) +
@@ -543,22 +526,22 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
         axis.ticks.margin = grid::unit(1,"mm"),
         plot.margin = grid::unit(c(0.1, 0.1, 0.6, 0.6), "cm"),
         legend.position = "none")
-    
-    
+
+
     # create plot object
-    content <- .writeImage(width = options$plotWidth, 
-                           height = options$plotHeight, 
+    content <- .writeImage(width = options$plotWidth,
+                           height = options$plotHeight,
                            plot = p, obj = TRUE)
 
     descriptivesPlot[["convertible"]] <- TRUE
     descriptivesPlot[["obj"]] <- content[["obj"]]
     descriptivesPlot[["data"]] <- content[["png"]]
     descriptivesPlot[["status"]] <- "complete"
-    
+
   } else {
     descriptivesPlot[["data"]] <- ""
   }
-  
+
   return(descriptivesPlot)
 
 }
@@ -567,43 +550,43 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 .multinomialHypotheses <- function(dataset, options, nlevels){
   # This function transforms the input into a list of hypotheses
   hyps <- list()
-  
+
   if (options$hypothesis == "multinomialTest"){
     # Expected probabilities are simple now
     hyps[["Multinomial"]] <- rep(1/nlevels, nlevels)
-    
+
   } else {
-    
+
     # First, generate a table with expected probabilities based on input
     expectedDf <- .generateExpectedDf(dataset, options, nlevels)
-    
+
     # assign each hypothesis to the hyps object
     hyps <- as.list(expectedDf)
-    
+
   }
   return(hyps)
 }
 
 # Parse expected probabilities/counts
 .generateExpectedDf <- function(dataset, options, nlevels){
-  # This function returns a data frame with in each named column the expected 
+  # This function returns a data frame with in each named column the expected
   # probabilities. The column names are the hypothesis names.
-  
+
   if (options$exProbVar != ""){
     # use only exProbVar
     eDf <- data.frame(dataset[[.v(options$exProbVar)]])
     colnames(eDf) <- options$exProbVar
-    
+
     if (nlevels != nrow(eDf)){
       stop("Expected counts do not match number of levels of factor!")
     }
-    
+
     return(eDf)
-    
+
   } else {
-    
+
     stop("No expected counts entered!")
-    
+
   }
-  
+
 }
