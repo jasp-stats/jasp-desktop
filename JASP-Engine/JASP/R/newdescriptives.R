@@ -37,18 +37,24 @@ Descriptives <- function(dataset=NULL, options, perform="run",
       if (makeSplit) {
         dataset <- .readDataSetToEnd(columns.as.numeric=variables,
                                      columns.as.factor=splitName)
+        dataset.factors <- .readDataSetToEnd(columns=variables,
+                                             columns.as.factor=splitName)
       } else {
         dataset <- .readDataSetToEnd(columns.as.numeric=variables)
+        dataset.factors <- .readDataSetToEnd(columns=variables)
       }
-      dataset.factors <- .readDataSetToEnd(columns=variables)
+    
     } else {
       if (makeSplit) {
         dataset <- .readDataSetHeader(columns.as.numeric=variables,
                                       columns.as.factor=splitName)
+        dataset.factors <- .readDataSetHeader(columns=variables,
+                                              columns.as.factor=splitName)
       } else {
         dataset <- .readDataSetHeader(columns.as.numeric=variables)
+        dataset.factors <- .readDataSetHeader(columns=variables)
       }
-      dataset.factors <- .readDataSetHeader(columns=variables)
+      
     }
   }
   
@@ -1237,6 +1243,10 @@ Descriptives <- function(dataset=NULL, options, perform="run",
   wantsSplit <- splitName!=""
   splitFactor <- dataset[[.v(splitName)]]
   splitLevels <- levels(splitFactor)
+  print(splitName)
+  print(.v(splitName))
+  print(colnames(dataset))
+  print(splitFactor)
   print(splitLevels)
   
   freqTabs <- list()
@@ -1278,6 +1288,8 @@ Descriptives <- function(dataset=NULL, options, perform="run",
           t <- table(column[splitFactor==lev])
           total <- sum(t)
           cFreq <- 0
+          print(lev)
+          print(t)
           
           for (i in seq_along(names(t))) {
             row <- list()
@@ -1306,6 +1318,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
           )
         }
         print(rows)
+        
       } else {
         t <- table(column)
         total <- sum(t)
@@ -1355,6 +1368,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
   freqTabs
   
 }
+
 .descriptivesMatrixPlot <- function(dataset, options, name, run) {
 
   matrix.plot <- NULL
