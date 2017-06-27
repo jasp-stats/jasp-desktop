@@ -17,7 +17,7 @@
 
 MultinomialTest <- function(dataset = NULL, options, perform = "run",
                callback = function(...) 0,  ...) {
-    
+
   # First, we load the variables into the R environment
   factor <- NULL
   asnum <- NULL
@@ -31,8 +31,8 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     }
   }
 
-  
-  
+
+
   if (is.null(dataset)) {
     if (perform == "run") {
       dataset <- .readDataSetToEnd(columns.as.numeric=asnum,
@@ -46,25 +46,26 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     dataset <- .vdf(dataset, columns.as.numeric=asnum,
                     columns.as.factor=factor)
   }
-  
+
   results <- list() # Initialise results object
-  
-  
+
+
   # Then, we retrieve the state and initialise the output objects
   state <- .retrieveState()
-  
+
   chisqResults <- NULL # result of the chi-square test
   chisqTable <-
   descriptivesTable <- NULL # expected versus observed
   descriptivesPlot <- NULL # barplot of factor levels
-  
-  
-  # Then, we can fill the output objects with old info if its option did not 
+
+
+  # Then, we can fill the output objects with old info if its option did not
   # change.
   if (!is.null(state)) {
     diff <- .diff(options, state$options) # a list of TRUE/FALSE
-    
+
     if (is.list(diff)){
+
       if (!any(diff[["factor"]], diff[["counts"]], 
                diff[["confidenceIntervalInterval"]],
                diff[["hypothesis"]], diff[["exProbVar"]],
@@ -89,35 +90,35 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
       #... etcetera
       # TODO 
     }
-    
+
   }
-  
+
   # Meta information
   results[["title"]] <- "Multinomial Test"
   results[[".meta"]] <- list(list(name = "chisq", type = "table"),
                              list(name = "descriptivesTable", type = "table"),
                              list(name = "descriptivesPlot", type = "image"))
-  
+
   # chi-square Table
   # Generate results
   if (is.null(chisqResults)) {
     chisqResults <- .chisquareTest(dataset, options, factor, perform)
   }
-  
+
   results[["chisq"]] <- .chisqTable(chisqResults, options, perform)
-    
-  
+
+
   # Descriptives Table
   if (options[["descriptives"]]) {
     # Generate descriptives table
     if (is.null(descriptivesTable)) {
       descriptivesTable <- .multinomialDescriptives(chisqResults, factor, options, perform)
     }
-    
+
     results[["descriptivesTable"]] <- descriptivesTable
-    
+
   } else {
-    
+
     results[["descriptivesTable"]] <- NULL
     
   }  
@@ -128,19 +129,19 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     if (is.null(descriptivesPlot)) {
       descriptivesPlot <- .multinomialDescriptivesPlot(chisqResults, options, perform)
     }
-    
+
     plotPath <- list(descriptivesPlot$data) # for keep later
-    
+
     results[["descriptivesPlot"]] <- descriptivesPlot
-    
+
   } else {
-    
+
     results[["descriptivesPlot"]] <- NULL
     plotPath <- list()
-    
+
   }
-  
-  
+
+
   if (perform == "run") {
 
     state <- list()
@@ -159,15 +160,15 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 
   }
 
-  
-  
+
+
 }
 
 # Run chi-square test and return object
 .chisquareTest <- function(dataset, options, factor, perform){
-  
+
   chisqResults <- NULL
-  
+
   if (perform == "run" && !is.null(factor)) {
     # first determine the hypotheses
     f <- dataset[[.v(factor)]]
@@ -187,8 +188,8 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     hyps <- .multinomialHypotheses(dataset, options, nlev)
 
     # create a named list with as values the chi-square result objects
-    
-    
+
+
     chisqResults <- lapply(hyps, function(h) {
       # catch warning message and append to object if necessary
       csr <- NULL
@@ -203,26 +204,114 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
       return(csr)
     })
   }
-  
+
   # return the out object
   return(chisqResults)
 }
 
 # Transform chi-square test object into table for JASP
 # chisqResults = list(H1 = obj, H2 = obj, ....)
-.chisqTable <- function(chisqResults, options, perform) {
-  #TODO
-  
-  return(
-         list(
-              title = "Chi-square table", 
-              schema = list(fields = list(list(name="hoi", title = "hoi", type="string"),
-                                          list(name="doei", title = "doei", type="string"))),
-              data = list(list("hoi"="jaja", "doei"="neenee"), 
-                          list("hoi"="jaja", "doei"="neenee")), 
-              status = "complete"
-         )
-  )
+.chisqTable <- function(chisqResults, options, perform){
+  # TODO
+	table <- list()
+	footnotes <- .newFootnotes()
+	table[["title"]] <- "Multinomial Test"
+
+# include fields
+	fields <- list(
+		list(name="case", title="", type="string", combine=TRUE),
+		list(name="chisquare", title="\u03C7\u00B2", type = "integer"),
+		list(name="df", title="df", type="integer"),
+		list(name="p", title="p", type="number", format="dp:3;p:.001")
+		)
+
+# include Vovk-Selke p-ratio as columns
+		if (options$VovkSellkeMPR) {
+			.addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
+			<em>p</em>-Ratio: Based the <em>p</em>-value, the maximum
+			possible odds in favor of H\u2081 over H\u2080 equals
+			1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
+			(Sellke, Bayarri, & Berger, 2001).")
+			fields[[length(fields) + 1]] <- list(name = "VovkSellkeMPR",
+																					title = "VS-MPR\u002A",
+																					type = "number",
+																					format = "sf:4;dp:3")
+		}
+
+# include confidence interval as columns
+		if (options$confidenceInterval) {
+
+			interval <- 100 * options$confidenceIntervalInterval
+			title <- paste0(interval, "% Confidence Interval")
+
+			fields[[length(fields)+1]] <- list(name = "lowerCI",
+																				 type = "number",
+																				 format = "sf:4;dp:3", title = "Lower",
+																				 overTitle = title)
+			fields[[length(fields)+1]] <- list(name = "upperCI",
+																				 type = "number",
+																				 format = "sf:4;dp:3", title = "Upper",
+																				 overTitle = title)
+		}
+
+# include footnotes
+
+  table[["schema"]] <- list(fields = fields)
+
+  message <- list()
+
+	for(r in 1:length(chisqResults)){
+
+		if(!is.null(chisqResults[[r]][["warn"]])) {
+
+			message[[r]] <- chisqResults[[r]][["warn"]]
+			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+		}
+	}
+
+  table[["footnotes"]] <- as.list(footnotes)
+
+# fill in results one row at a time
+	 if (!is.null(chisqResults)){
+
+    for(r in 1:length(chisqResults)){
+
+		table[["data"]][[r]] <- list(case = names(chisqResults)[r],
+                                 chisquare = chisqResults[[r]][["statistic"]][["X-squared"]],
+                                 df = chisqResults[[r]][["parameter"]][["df"]],
+                                 p = chisqResults[[r]][["p.value"]]
+      )
+
+		if (options$VovkSellkeMPR){
+			for (row in 1:length(table[["data"]])){
+				table[["data"]][[row]][["VovkSellkeMPR"]] <- .VovkSellkeMPR(table[["data"]][[row]][["p"]])
+			}
+		}
+		table[["status"]] <- "complete"
+  }
+
+	} else {
+
+ # init state?
+		 data <- list()
+
+		if(is.null(chisqResults[[r]])){
+			htables <- ""
+		}
+		# for (h in htables){
+		# 	if (options$VovkSellkeMPR){
+		# 		data[[length(data) + 1]] <- list(case=h, chisquare=".", df=".", p=".",
+		# 																		 VovkSellkeMPR=".", lowerCI=".",
+		# 																		 upperCI=".")
+		# 	} else {
+		# 		data[[length(data) + 1]] <- list(case=h, chisquare=".", df=".", p=".",
+		# 																		 lowerCI=".", upperCI=".")
+		# 	}
+		#  }
+
+		table[["data"]] <- data
+	}
+		  return(table)
 }
 
 # Create multinomial descriptives table
