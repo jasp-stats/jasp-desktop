@@ -213,105 +213,103 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 # chisqResults = list(H1 = obj, H2 = obj, ....)
 .chisqTable <- function(chisqResults, options, perform){
   # TODO
-	table <- list()
-	footnotes <- .newFootnotes()
-	table[["title"]] <- "Multinomial Test"
+  table <- list()
+  footnotes <- .newFootnotes()
+  table[["title"]] <- "Multinomial Test"
 
-# include fields
-	fields <- list(
-		list(name="case", title="", type="string", combine=TRUE),
-		list(name="chisquare", title="\u03C7\u00B2", type = "integer"),
-		list(name="df", title="df", type="integer"),
-		list(name="p", title="p", type="number", format="dp:3;p:.001")
-		)
+  # include fields
+  fields <- list(
+    list(name="case", title="", type="string", combine=TRUE),
+    list(name="chisquare", title="\u03C7\u00B2", type = "integer"),
+    list(name="df", title="df", type="integer"),
+    list(name="p", title="p", type="number", format="dp:3;p:.001")
+    )
 
-# include Vovk-Selke p-ratio as columns
-		if (options$VovkSellkeMPR) {
-			.addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
-			<em>p</em>-Ratio: Based the <em>p</em>-value, the maximum
-			possible odds in favor of H\u2081 over H\u2080 equals
-			1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
-			(Sellke, Bayarri, & Berger, 2001).")
-			fields[[length(fields) + 1]] <- list(name = "VovkSellkeMPR",
-																					title = "VS-MPR\u002A",
-																					type = "number",
-																					format = "sf:4;dp:3")
-		}
+  # include Vovk-Selke p-ratio as columns
+  if (options$VovkSellkeMPR) {
+    .addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
+    <em>p</em>-Ratio: Based the <em>p</em>-value, the maximum
+    possible odds in favor of H\u2081 over H\u2080 equals
+    1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
+    (Sellke, Bayarri, & Berger, 2001).")
+    fields[[length(fields) + 1]] <- list(name = "VovkSellkeMPR",
+                                        title = "VS-MPR\u002A",
+                                        type = "number",
+                                        format = "sf:4;dp:3")
+  }
 
-# include confidence interval as columns
-		if (options$confidenceInterval) {
+  # include confidence interval as columns
+  if (options$confidenceInterval) {
 
-			interval <- 100 * options$confidenceIntervalInterval
-			title <- paste0(interval, "% Confidence Interval")
+    interval <- 100 * options$confidenceIntervalInterval
+    title <- paste0(interval, "% Confidence Interval")
 
-			fields[[length(fields)+1]] <- list(name = "lowerCI",
-																				 type = "number",
-																				 format = "sf:4;dp:3", title = "Lower",
-																				 overTitle = title)
-			fields[[length(fields)+1]] <- list(name = "upperCI",
-																				 type = "number",
-																				 format = "sf:4;dp:3", title = "Upper",
-																				 overTitle = title)
-		}
+    fields[[length(fields)+1]] <- list(name = "lowerCI",
+                                       type = "number",
+                                       format = "sf:4;dp:3", title = "Lower",
+                                       overTitle = title)
+    fields[[length(fields)+1]] <- list(name = "upperCI",
+                                       type = "number",
+                                       format = "sf:4;dp:3", title = "Upper",
+                                       overTitle = title)
+  }
 
-# include footnotes
+  # include footnotes
 
   table[["schema"]] <- list(fields = fields)
 
   message <- list()
 
-	for(r in 1:length(chisqResults)){
+  for(r in 1:length(chisqResults)){
 
-		if(!is.null(chisqResults[[r]][["warn"]])) {
+    if(!is.null(chisqResults[[r]][["warn"]])) {
 
-			message[[r]] <- chisqResults[[r]][["warn"]]
-			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
-		}
-	}
+      message[[r]] <- chisqResults[[r]][["warn"]]
+      .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+    }
+  }
 
   table[["footnotes"]] <- as.list(footnotes)
 
-# fill in results one row at a time
-	 if (!is.null(chisqResults)){
+  # fill in results one row at a time
+  if (!is.null(chisqResults)){
 
     for(r in 1:length(chisqResults)){
+      table[["data"]][[r]] <- list(case = names(chisqResults)[r],
+                                   chisquare = chisqResults[[r]][["statistic"]][["X-squared"]],
+                                   df = chisqResults[[r]][["parameter"]][["df"]],
+                                   p = chisqResults[[r]][["p.value"]])
 
-		table[["data"]][[r]] <- list(case = names(chisqResults)[r],
-                                 chisquare = chisqResults[[r]][["statistic"]][["X-squared"]],
-                                 df = chisqResults[[r]][["parameter"]][["df"]],
-                                 p = chisqResults[[r]][["p.value"]]
-      )
+      if (options$VovkSellkeMPR){
+        for (row in 1:length(table[["data"]])){
+          table[["data"]][[row]][["VovkSellkeMPR"]] <- .VovkSellkeMPR(table[["data"]][[row]][["p"]])
+        }
+      }
+      table[["status"]] <- "complete"
+    }
 
-		if (options$VovkSellkeMPR){
-			for (row in 1:length(table[["data"]])){
-				table[["data"]][[row]][["VovkSellkeMPR"]] <- .VovkSellkeMPR(table[["data"]][[row]][["p"]])
-			}
-		}
-		table[["status"]] <- "complete"
+  } else {
+    # init state?
+    data <- list()
+
+    if(is.null(chisqResults[[r]])){
+      htables <- ""
+    }
+    # for (h in htables){
+    #   if (options$VovkSellkeMPR){
+    #     data[[length(data) + 1]] <- list(case=h, chisquare=".", df=".", p=".",
+    #                                      VovkSellkeMPR=".", lowerCI=".",
+    #                                      upperCI=".")
+    #   } else {
+    #     data[[length(data) + 1]] <- list(case=h, chisquare=".", df=".", p=".",
+    #                                      lowerCI=".", upperCI=".")
+    #   }
+    #  }
+
+    table[["data"]] <- data
   }
-
-	} else {
-
- # init state?
-		 data <- list()
-
-		if(is.null(chisqResults[[r]])){
-			htables <- ""
-		}
-		# for (h in htables){
-		# 	if (options$VovkSellkeMPR){
-		# 		data[[length(data) + 1]] <- list(case=h, chisquare=".", df=".", p=".",
-		# 																		 VovkSellkeMPR=".", lowerCI=".",
-		# 																		 upperCI=".")
-		# 	} else {
-		# 		data[[length(data) + 1]] <- list(case=h, chisquare=".", df=".", p=".",
-		# 																		 lowerCI=".", upperCI=".")
-		# 	}
-		#  }
-
-		table[["data"]] <- data
-	}
-		  return(table)
+  
+  return(table)
 }
 
 # Create multinomial descriptives table
