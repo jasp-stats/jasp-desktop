@@ -25,7 +25,7 @@
      <item>
       <widget class="QCheckBox" name="displayExactPVals">
        <property name="text">
-        <string>Display exact p-values</string>
+        <string> Display exact p-values</string>
        </property>
       </widget>
      </item>

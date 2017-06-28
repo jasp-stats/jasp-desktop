@@ -697,6 +697,27 @@
    <header>widgets/boundpairstable.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>availableFields</tabstop>
+  <tabstop>assignButton</tabstop>
+  <tabstop>pairs</tabstop>
+  <tabstop>students</tabstop>
+  <tabstop>wilcoxonSignedRank</tabstop>
+  <tabstop>_1notEqual</tabstop>
+  <tabstop>_2groupOneGreater</tabstop>
+  <tabstop>_3groupTwoGreater</tabstop>
+  <tabstop>meanDifference</tabstop>
+  <tabstop>effectSize</tabstop>
+  <tabstop>confidenceInterval</tabstop>
+  <tabstop>confidenceIntervalInterval</tabstop>
+  <tabstop>descriptives</tabstop>
+  <tabstop>descriptivesPlots</tabstop>
+  <tabstop>descriptivesPlotsConfidenceInterval</tabstop>
+  <tabstop>VovkSellkeMPR</tabstop>
+  <tabstop>normalityTests</tabstop>
+  <tabstop>_1excludeAnalysisByAnalysis</tabstop>
+  <tabstop>_2excludeListwise</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

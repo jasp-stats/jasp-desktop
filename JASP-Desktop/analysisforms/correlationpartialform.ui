@@ -467,11 +467,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundGroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
@@ -482,7 +477,27 @@
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listAvailableFields</tabstop>
+  <tabstop>buttonAssignVariables</tabstop>
+  <tabstop>variables</tabstop>
+  <tabstop>buttonAssignControllingFor</tabstop>
+  <tabstop>controllingFor</tabstop>
+  <tabstop>_1twoTailed</tabstop>
+  <tabstop>_2oneTailed</tabstop>
+  <tabstop>flagSignificant</tabstop>
+  <tabstop>buttonOptions</tabstop>
+  <tabstop>meansAndStdDev</tabstop>
+  <tabstop>crossProducts</tabstop>
+  <tabstop>_1excludePairwise</tabstop>
+  <tabstop>_2excludeListwise</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

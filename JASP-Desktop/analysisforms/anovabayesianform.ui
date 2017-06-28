@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>615</width>
-    <height>1415</height>
+    <width>655</width>
+    <height>1424</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -985,7 +991,7 @@
        <number>0</number>
       </property>
       <property name="topMargin">
-       <number>9</number>
+       <number>12</number>
       </property>
       <property name="rightMargin">
        <number>0</number>
@@ -1010,38 +1016,107 @@
          </property>
          <item row="0" column="0">
           <widget class="GroupBox" name="groupBox_3">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="title">
             <string>Output</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_8">
-            <item row="2" column="0">
-             <spacer name="verticalSpacer_3">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>10</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="descriptives">
-              <property name="text">
-               <string>Descriptives</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
+           <layout class="QFormLayout" name="formLayout">
+            <property name="verticalSpacing">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>12</number>
+            </property>
+            <item row="0" column="0" colspan="2">
              <widget class="BoundCheckBox" name="effects">
               <property name="text">
                <string>Effects</string>
               </property>
              </widget>
             </item>
+            <item row="1" column="1">
+             <widget class="BoundGroupBox" name="effectsType">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string/>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_10">
+               <property name="leftMargin">
+                <number>12</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>12</number>
+               </property>
+               <property name="bottomMargin">
+                <number>7</number>
+               </property>
+               <property name="verticalSpacing">
+                <number>-1</number>
+               </property>
+               <item row="3" column="0">
+                <widget class="QRadioButton" name="excludeInteractions">
+                 <property name="text">
+                  <string>Across matched models</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QRadioButton" name="allModels">
+                 <property name="text">
+                  <string>Across all models</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="3" column="0" colspan="2">
+             <widget class="BoundCheckBox" name="descriptives">
+              <property name="text">
+               <string>Descriptives</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <spacer name="horizontalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>225</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
            </layout>
+           <zorder>effectsType</zorder>
+           <zorder>descriptives</zorder>
+           <zorder>effects</zorder>
+           <zorder>horizontalSpacer_4</zorder>
           </widget>
          </item>
         </layout>
@@ -1065,7 +1140,7 @@
          <item row="2" column="0">
           <widget class="BoundGroupBox" name="bayesFactorType">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -1077,6 +1152,13 @@
             <bool>false</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_13">
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="_1">
+              <property name="text">
+               <string>BF₁₀</string>
+              </property>
+             </widget>
+            </item>
             <item row="1" column="0">
              <widget class="QRadioButton" name="_2">
               <property name="text">
@@ -1091,58 +1173,32 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
-             <widget class="QRadioButton" name="_1">
-              <property name="text">
-               <string>BF₁₀</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <spacer name="horizontalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
            </layout>
           </widget>
          </item>
          <item row="3" column="0">
           <widget class="BoundGroupBox" name="bayesFactorOrder">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
            <property name="title">
             <string>Order</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_19">
-            <item row="1" column="0">
-             <widget class="QRadioButton" name="__4">
-              <property name="text">
-               <string>Compare to best model</string>
-              </property>
-             </widget>
-            </item>
+           <layout class="QGridLayout" name="gridLayout_8">
             <item row="0" column="0">
              <widget class="QRadioButton" name="__3">
               <property name="text">
                <string>Compare to null model</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="__4">
+              <property name="text">
+               <string>Compare to best model</string>
               </property>
              </widget>
             </item>
@@ -1169,11 +1225,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -1191,6 +1242,11 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
@@ -1201,9 +1257,9 @@
    <header>widgets/boundsingleitemview.h</header>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>AnovaModelWidget</class>
@@ -1212,6 +1268,39 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listAvailableFields</tabstop>
+  <tabstop>buttonAssignDependent</tabstop>
+  <tabstop>dependent</tabstop>
+  <tabstop>buttonAssignFixed</tabstop>
+  <tabstop>fixedFactors</tabstop>
+  <tabstop>buttonAssignRandom</tabstop>
+  <tabstop>randomFactors</tabstop>
+  <tabstop>_1</tabstop>
+  <tabstop>_2</tabstop>
+  <tabstop>_3</tabstop>
+  <tabstop>effects</tabstop>
+  <tabstop>descriptives</tabstop>
+  <tabstop>__3</tabstop>
+  <tabstop>__4</tabstop>
+  <tabstop>expanderModel</tabstop>
+  <tabstop>expanderDescriptivesPlot</tabstop>
+  <tabstop>plotVariables</tabstop>
+  <tabstop>buttonAssignHorizontalAxis</tabstop>
+  <tabstop>plotHorizontalAxis</tabstop>
+  <tabstop>buttonAssignSeperateLines</tabstop>
+  <tabstop>plotSeparateLines</tabstop>
+  <tabstop>buttonAssignSeperatePlots</tabstop>
+  <tabstop>plotSeparatePlots</tabstop>
+  <tabstop>plotCredibleInterval</tabstop>
+  <tabstop>plotCredibleIntervalInterval</tabstop>
+  <tabstop>expanderAdvanced</tabstop>
+  <tabstop>priorFixedEffects</tabstop>
+  <tabstop>priorRandomEffects</tabstop>
+  <tabstop>_1auto</tabstop>
+  <tabstop>_2fixed</tabstop>
+  <tabstop>fixedSamplesNumber</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
@@ -1227,6 +1316,22 @@
     <hint type="destinationlabel">
      <x>457</x>
      <y>948</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>effects</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>effectsType</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>339</x>
+     <y>490</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>339</x>
+     <y>529</y>
     </hint>
    </hints>
   </connection>
