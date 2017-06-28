@@ -190,7 +190,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Mean difference</string>
+            <string>Location parameter</string>
            </property>
           </widget>
          </item>
@@ -444,7 +444,67 @@
         </layout>
        </widget>
       </item>
-      <item row="3" column="0" colspan="2">
+      <item row="2" column="2" rowspan="2">
+       <widget class="BoundGroupBox" name="missingValues">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="title">
+         <string>Missing Values</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="1" column="0">
+          <widget class="QRadioButton" name="_2excludeListwise">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Exclude cases listwise</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QRadioButton" name="_1excludeAnalysisByAnalysis">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Exclude cases analysis by analysis</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1" rowspan="2">
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>5</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="2" column="1">
        <widget class="GroupBox" name="testType">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -488,7 +548,7 @@
         </layout>
        </widget>
       </item>
-      <item row="1" column="0" rowspan="2" colspan="2">
+      <item row="1" column="0" colspan="2">
        <widget class="BoundGroupBox" name="hypothesis">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -567,66 +627,6 @@
         </layout>
        </widget>
       </item>
-      <item row="2" column="2" rowspan="2">
-       <widget class="BoundGroupBox" name="missingValues">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="title">
-         <string>Missing Values</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_6">
-         <item row="1" column="0">
-          <widget class="QRadioButton" name="_2excludeListwise">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Exclude cases listwise</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QRadioButton" name="_1excludeAnalysisByAnalysis">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Exclude cases analysis by analysis</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1" rowspan="2">
-          <spacer name="horizontalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Expanding</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>5</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </widget>
-      </item>
       <item row="0" column="0" colspan="2">
        <widget class="GroupBox" name="tests">
         <property name="sizePolicy">
@@ -638,23 +638,7 @@
         <property name="title">
          <string>Tests</string>
         </property>
-        <layout class="QGridLayout" name="gridLayout_10">
-         <item row="0" column="1" rowspan="2">
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Expanding</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>5</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
+        <layout class="QFormLayout" name="formLayout_2">
          <item row="0" column="0">
           <widget class="BoundCheckBox" name="students">
            <property name="sizePolicy">
@@ -680,6 +664,22 @@
             <string>Wilcoxon signed-rank</string>
            </property>
           </widget>
+         </item>
+         <item row="1" column="1">
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>5</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </widget>

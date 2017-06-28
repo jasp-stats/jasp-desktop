@@ -492,7 +492,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Mean difference</string>
+            <string>Location parameter</string>
            </property>
           </widget>
          </item>
@@ -806,14 +806,14 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
-   <class>boundSingleItemView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundsingleitemview.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundListView</class>
    <extends>QListView</extends>
    <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>boundSingleItemView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundsingleitemview.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

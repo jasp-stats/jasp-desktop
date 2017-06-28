@@ -391,7 +391,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Mean difference</string>
+            <string>Location parameter</string>
            </property>
           </widget>
          </item>
