@@ -85,7 +85,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     # create results bundle ##
     
     results <- list()
-    results[['title']] <- 'k-nearest neighbors classification'
+    results[['title']] <- 'k-Nearest Neighbors Classification'
     
     # Provide the Meta to the results bundle ##
     
