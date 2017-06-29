@@ -6,6 +6,7 @@ JASPWidgets.table = Backbone.Model.extend({
 		variables: [],
 		data: [],
 		casesAcrossColumns: false,
+		overTitle: false,
 		formats: null,
 		footnotes: [],
 		citation: null,
@@ -134,12 +135,33 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 	},
 
-	_swapRowsAndColumns: function (columnHeaders, columns) {
+	_swapRowsAndColumns: function (columnHeaders, columns, optOverTitle) {
 
 		var newRowCount = columns.length - 1
 		var newColumnCount = columns[0].length + 1
-
-		var newColumnHeaders = columns[0]
+		
+		if (optOverTitle) {
+			
+			// Transform first column into overtitle, second into title
+			var newColumnHeaders = Array(newColumnCount-1);
+			for (var colNo = 0; colNo < newColumnCount - 1; colNo++) {
+				newColumnHeaders[colNo] = { content: columns[1][colNo].content,
+																		header: true,
+																		overTitle: columns[0][colNo].content,
+																		type: "string" };
+			}
+			// remove the column that became title
+			columns.shift();
+			columnHeaders.shift();
+			newRowCount--;
+			
+		} else {
+			
+			var newColumnHeaders = Array(newColumnCount);
+			var newColumnHeaders = columns[0];
+			
+		}
+		
 		var newColumns = Array(newColumnCount)
 
 		var cornerCell = columnHeaders.shift()
@@ -664,6 +686,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 		var optTitle = this.model.get("title");
 		var optSubtitle = this.model.get("subtitle");
 		var optCasesAcrossColumns = this.model.get("casesAcrossColumns");
+		var optOverTitle = this.model.get("overTitle")
 		var optFootnotes = this.model.get("footnotes");
 		var optCitation = this.model.get("citation");
 		var optStatus = this.model.get("status");
@@ -855,7 +878,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 		if (optCasesAcrossColumns) {
 
-			var swapped = this._swapRowsAndColumns(columnHeaders, cells)
+			var swapped = this._swapRowsAndColumns(columnHeaders, cells, optOverTitle)
 			cells = swapped.columns
 			columnHeaders = swapped.columnHeaders;
 			rowCount = swapped.rowCount
@@ -899,7 +922,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 		}
 
 		if (columnHeaders.length > 0) {
-
+			
 			var overTitles = false
 
 			for (var i = 0; i < columnHeaders.length; i++) {

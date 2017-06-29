@@ -414,12 +414,15 @@ Descriptives <- function(dataset=NULL, options, perform="run",
 
   stats.results[["title"]] <- "Descriptive Statistics"
   stats.results[["casesAcrossColumns"]] <- TRUE # flips axes!
+
   
   # <editor-fold> SCHEMA CREATION ----
   fields <- list()
   
   if (wantsSplit) {
-    fields[[length(fields) + 1]] <- list(name="VariableLevel", title="", type="string")
+    stats.results[["overTitle"]] <- TRUE # allows overTitle with flipped axes!
+    fields[[length(fields) + 1]] <- list(name="Variable", title="", type="string")
+    fields[[length(fields) + 1]] <- list(name="Level", title="", type="string")
   } else {
     fields[[length(fields) + 1]] <- list(name="Variable", title="", type="string")
   }
@@ -515,8 +518,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
       
     
       for (l in 1:nLevels) {
-        resultsCol <- list(VariableLevel = paste0(variable,": ",splitLevels[l]), 
-                           Variable = variable, 
+        resultsCol <- list(Variable = variable,
                            Level = splitLevels[l])
         
         # get col
@@ -532,7 +534,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
     
         if (perform == "run") {
     
-          rows <- nrow(dataset)
+          rows <- length(column)
           na.omitted <- na.omit(column)
     
           resultsCol[["Valid"]] = length(na.omitted)
