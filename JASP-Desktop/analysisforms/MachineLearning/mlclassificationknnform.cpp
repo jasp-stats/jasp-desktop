@@ -67,6 +67,14 @@ MLClassificationKNNForm::MLClassificationKNNForm(QWidget *parent) :
 	connect(_indicatorListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addCovariates(Terms)));
 	connect(_indicatorListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
+#ifdef QT_NO_DEBUG
+    ui->roughFix->hide();
+    ui->predict->hide();
+#else
+    ui->roughFix->setStyleSheet("background-color: pink ;");
+    ui->predict->setStyleSheet("background-color: pink ;");
+#endif
+
 	ui->advancedOptions->hide();
 
 	defaultOptions();

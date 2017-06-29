@@ -36,6 +36,7 @@ MLRegressionKNNForm::MLRegressionKNNForm(QWidget *parent) :
 	_predictorsListModel = new TableModelVariablesAssigned(this);
 	_predictorsListModel->setSource(&_availableVariablesModel);
     _predictorsListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
+    _predictorsListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
 	ui->predictors->setModel(_predictorsListModel);
 
 	_indicatorListModel = new TableModelVariablesAssigned(this);
@@ -66,6 +67,14 @@ MLRegressionKNNForm::MLRegressionKNNForm(QWidget *parent) :
 	connect(_indicatorListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_indicatorListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addCovariates(Terms)));
 	connect(_indicatorListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
+
+#ifdef QT_NO_DEBUG
+    ui->roughFix->hide();
+    ui->predict->hide();
+#else
+    ui->roughFix->setStyleSheet("background-color: pink ;");
+    ui->predict->setStyleSheet("background-color: pink ;");
+#endif
 
 	ui->advancedOptions->hide();
 
