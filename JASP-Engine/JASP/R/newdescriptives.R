@@ -266,7 +266,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
       # Create different plots
       corrPlot <- list()
       for (i in 1:length(splitLevels)) {
-        corrPlot[["collection"]][[i]] <- .descriptivesMatrixPlot(dataset,
+        corrPlot[["collection"]][[i]] <- .descriptivesMatrixPlot(splitDat[[i]],
                                                                  options,
                                                                  splitLevels[i],
                                                                  run)
@@ -1372,6 +1372,12 @@ Descriptives <- function(dataset=NULL, options, perform="run",
 
   if (run && length(unlist(options$variables)) > 0) {
     
+    if (nrow(dataset) < 3) {
+      matrix.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Too few rows")
+      matrix.plot[["status"]] <- "complete"
+      return(matrix.plot)
+    }
+    
     variables <- unlist(options$variables)
     l <- length(variables)
     # check variables
@@ -1540,6 +1546,19 @@ Descriptives <- function(dataset=NULL, options, perform="run",
         plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity")
         plot[["status"]] <- "complete"
 
+      } else if (length(column) < 3) {
+        
+        plotFunc <- function(){
+          .barplotJASP(variable=variable, dontPlotData=TRUE)
+        }
+        imageObj <- .writeImage(options$plotWidth, options$plotHeight, plotFunc,
+                                obj = FALSE)
+                                
+        plot[["data"]] <- imageObj[["png"]]
+        plot[["obj"]] <- imageObj[["obj"]]
+        plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Too few rows")
+        plot[["status"]] <- "complete"
+        
       } else if (length(column) > 0 && is.factor(column) || is.numeric(column) && length(column) > 0  && all(column %% 1 == 0) && length(unique(column)) <= 24) {
 
         if ( ! is.factor(column)) {
@@ -1887,7 +1906,9 @@ Descriptives <- function(dataset=NULL, options, perform="run",
 # <editor-fold> HELPER FUNCTIONS BLOCK ----
 
 .plotMarginal <- function(variable, variableName, cexYlab= 1.3, lwd= 2, rugs= FALSE){
-
+  
+  variable <- na.omit(variable)
+  
   par(mar= c(5, 4.5, 4, 2) + 0.1)
 
   density <- density(variable)
