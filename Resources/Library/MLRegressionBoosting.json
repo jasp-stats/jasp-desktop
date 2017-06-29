@@ -31,8 +31,8 @@
 		},
 		{
 			"name": "distribution",
-			"options": [ "gaussian","laplace","tdist","bernoulli","huberized","multinomial", "adaboost", "poisson"],
-			"default": "gaussian",
+			"options": [ "default","gaussian","laplace","tdist", "poisson"],
+			"default": "default",
 			"type": "List"
 		},
 		{
@@ -230,5 +230,12 @@
 			"min":1,
 			"default":1
 		}
+		// {
+		// 	"name":"thetaSlider",
+		// 	"type":"Integer",
+		// 	"min":0,
+		// 	"max":360,
+		// 	"value":30
+		// }
 	]
 }

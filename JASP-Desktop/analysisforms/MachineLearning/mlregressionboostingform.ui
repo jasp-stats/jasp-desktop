@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>718</width>
+    <width>753</width>
     <height>1577</height>
    </rect>
   </property>
@@ -56,52 +56,9 @@
       <property name="rightMargin">
        <number>0</number>
       </property>
-      <item row="0" column="0" rowspan="2" colspan="2">
-       <widget class="ExpanderButton" name="expanderAdvanced">
-        <property name="text">
-         <string>Advanced Options</string>
-        </property>
-       </widget>
-      </item>
       <item row="3" column="0" rowspan="2" colspan="2">
        <widget class="QWidget" name="advancedOptions" native="true">
         <layout class="QGridLayout" name="gridLayout_7">
-         <item row="7" column="0">
-          <widget class="QWidget" name="widget_3" native="true">
-           <widget class="QWidget" name="widget_4" native="true">
-            <property name="geometry">
-             <rect>
-              <x>80</x>
-              <y>0</y>
-              <width>10</width>
-              <height>16</height>
-             </rect>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>10</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>10</width>
-              <height>16777215</height>
-             </size>
-            </property>
-           </widget>
-           <widget class="QWidget" name="widget_5" native="true">
-            <property name="geometry">
-             <rect>
-              <x>110</x>
-              <y>50</y>
-              <width>120</width>
-              <height>80</height>
-             </rect>
-            </property>
-           </widget>
-          </widget>
-         </item>
          <item row="2" column="0">
           <widget class="GroupBox" name="bayesFactorType_4">
            <property name="title">
@@ -285,6 +242,42 @@
            </layout>
           </widget>
          </item>
+         <item row="7" column="0">
+          <widget class="QWidget" name="widget_3" native="true">
+           <widget class="QWidget" name="widget_4" native="true">
+            <property name="geometry">
+             <rect>
+              <x>80</x>
+              <y>0</y>
+              <width>10</width>
+              <height>16</height>
+             </rect>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>10</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>10</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+           <widget class="QWidget" name="widget_5" native="true">
+            <property name="geometry">
+             <rect>
+              <x>110</x>
+              <y>50</y>
+              <width>120</width>
+              <height>80</height>
+             </rect>
+            </property>
+           </widget>
+          </widget>
+         </item>
          <item row="4" column="3">
           <widget class="BoundGroupBox" name="seedBox">
            <property name="title">
@@ -342,19 +335,6 @@
             </item>
            </layout>
           </widget>
-         </item>
-         <item row="7" column="3">
-          <spacer name="verticalSpacer_6">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
          </item>
          <item row="4" column="0">
           <widget class="BoundGroupBox" name="coreBox">
@@ -414,6 +394,19 @@
            </layout>
           </widget>
          </item>
+         <item row="7" column="3">
+          <spacer name="verticalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
          <item row="2" column="3">
           <widget class="BoundGroupBox" name="TreeStructureBox">
            <property name="minimumSize">
@@ -426,8 +419,8 @@
             <string>Tree structure</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_14">
-            <item row="6" column="2">
-             <widget class="BoundTextBox" name="value_MinTermNodeSideMin">
+            <item row="5" column="4">
+             <widget class="BoundTextBox" name="value_MinTermNodeSideMax">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -445,51 +438,14 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="3">
-             <widget class="BoundTextBox" name="value_depthOfTreeMax">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>21</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>30</width>
-                <height>21</height>
-               </size>
+            <item row="6" column="1">
+             <widget class="QRadioButton" name="manual_TS">
+              <property name="text">
+               <string>Manual</string>
               </property>
              </widget>
             </item>
-            <item row="9" column="3">
-             <widget class="BoundTextBox" name="value_depthOfTree">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>60</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>60</width>
-                <height>20</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="9" column="1" colspan="2">
+            <item row="8" column="1" colspan="3">
              <widget class="QLabel" name="label_16">
               <property name="enabled">
                <bool>true</bool>
@@ -499,63 +455,7 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="1">
-             <widget class="QRadioButton" name="optimized_TS">
-              <property name="text">
-               <string>Optimized</string>
-              </property>
-             </widget>
-            </item>
-            <item row="7" column="1">
-             <widget class="QRadioButton" name="manual_TS">
-              <property name="text">
-               <string>Manual</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="0" colspan="2">
-             <widget class="QLabel" name="label_12">
-              <property name="text">
-               <string>Min leaf node size</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="3">
-             <widget class="QLabel" name="label_10">
-              <property name="text">
-               <string>max</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="4">
-             <widget class="QLabel" name="label_11">
-              <property name="text">
-               <string>step</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="2">
-             <widget class="QLabel" name="label_7">
-              <property name="text">
-               <string>min</string>
-              </property>
-             </widget>
-            </item>
-            <item row="10" column="1" colspan="2">
-             <widget class="QLabel" name="label_20">
-              <property name="text">
-               <string>Min leaf node size</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QRadioButton" name="auto_TS">
-              <property name="text">
-               <string>Auto</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="4">
+            <item row="5" column="5">
              <widget class="BoundTextBox" name="value_MinTermNodeSideStep">
               <property name="enabled">
                <bool>false</bool>
@@ -574,7 +474,26 @@
               </property>
              </widget>
             </item>
-            <item row="10" column="3">
+            <item row="4" column="5">
+             <widget class="BoundTextBox" name="value_depthOfTreeStep">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>30</width>
+                <height>21</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>30</width>
+                <height>21</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="4">
              <widget class="BoundTextBox" name="value_MinTermNodeSide">
               <property name="enabled">
                <bool>true</bool>
@@ -599,7 +518,112 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="2">
+            <item row="1" column="1">
+             <widget class="QRadioButton" name="auto_TS">
+              <property name="text">
+               <string>Auto</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QRadioButton" name="optimized_TS">
+              <property name="text">
+               <string>Optimized</string>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="1" colspan="3">
+             <widget class="QLabel" name="label_20">
+              <property name="text">
+               <string>Min leaf node size</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="3">
+             <widget class="BoundTextBox" name="value_MinTermNodeSideMin">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>30</width>
+                <height>21</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>30</width>
+                <height>21</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="3">
+             <widget class="QLabel" name="label_7">
+              <property name="text">
+               <string>min</string>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="4">
+             <widget class="BoundTextBox" name="value_depthOfTree">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>60</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>60</width>
+                <height>20</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QLabel" name="label_12">
+              <property name="minimumSize">
+               <size>
+                <width>110</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>110</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Min leaf node size</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="4">
+             <widget class="QLabel" name="label_10">
+              <property name="text">
+               <string>max</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="5">
+             <widget class="QLabel" name="label_11">
+              <property name="text">
+               <string>step</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="3">
              <widget class="BoundTextBox" name="value_depthOfTreeMin">
               <property name="enabled">
                <bool>false</bool>
@@ -618,46 +642,28 @@
               </property>
              </widget>
             </item>
-            <item row="6" column="3">
-             <widget class="BoundTextBox" name="value_MinTermNodeSideMax">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>21</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>30</width>
-                <height>21</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="16" column="0">
-             <widget class="QLabel" name="label_19">
-              <property name="minimumSize">
-               <size>
-                <width>10</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>10</width>
-                <height>16777215</height>
-               </size>
-              </property>
+            <item row="7" column="4">
+             <widget class="QLabel" name="label_13">
               <property name="text">
                <string/>
               </property>
              </widget>
             </item>
-            <item row="5" column="4">
-             <widget class="BoundTextBox" name="value_depthOfTreeStep">
+            <item row="10" column="3">
+             <spacer name="verticalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="4" column="4">
+             <widget class="BoundTextBox" name="value_depthOfTreeMax">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -675,17 +681,81 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="0" colspan="2">
+            <item row="4" column="1">
              <widget class="QLabel" name="label_8">
+              <property name="minimumSize">
+               <size>
+                <width>120</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>190</width>
+                <height>16777215</height>
+               </size>
+              </property>
               <property name="text">
-               <string>        Depth of tree</string>
+               <string>       Depth of tree</string>
               </property>
              </widget>
+            </item>
+            <item row="4" column="6">
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Ignored</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="8" column="6">
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Ignored</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="1" column="6">
+             <spacer name="horizontalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
             </item>
            </layout>
           </widget>
          </item>
         </layout>
+       </widget>
+      </item>
+      <item row="0" column="0" rowspan="2" colspan="2">
+       <widget class="ExpanderButton" name="expanderAdvanced">
+        <property name="text">
+         <string>Advanced Options</string>
+        </property>
        </widget>
       </item>
      </layout>
@@ -1006,6 +1076,11 @@
              <widget class="BoundComboBox" name="distribution">
               <item>
                <property name="text">
+                <string>Default</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
                 <string>Gaussian</string>
                </property>
               </item>
@@ -1017,26 +1092,6 @@
               <item>
                <property name="text">
                 <string>T-distribution</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Bernoulli</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Huberized</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Multinomial</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Adaboost</string>
                </property>
               </item>
               <item>
@@ -1123,53 +1178,8 @@
          <string>Plots</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_11">
-         <item row="2" column="0" colspan="3">
-          <widget class="BoundCheckBox" name="plotRF">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Variable importance</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="1">
-          <widget class="BoundCheckBox" name="plotHStatistics">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Display H statistics</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="1">
-          <widget class="BoundCheckBox" name="plotMarginalPlotOneWay">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>One way</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" colspan="3">
-          <widget class="BoundCheckBox" name="modelPerformance">
+         <item row="0" column="0" colspan="4">
+          <widget class="BoundCheckBox" name="modelPerforamceShowError">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -1178,19 +1188,6 @@
            </property>
            <property name="text">
             <string>Model performance</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0" colspan="3">
-          <widget class="BoundCheckBox" name="plotMarginalPlot">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Marginal dependency plot</string>
            </property>
           </widget>
          </item>
@@ -1213,7 +1210,65 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="2">
+         <item row="2" column="0" colspan="4">
+          <widget class="BoundCheckBox" name="plotMarginalPlot">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Marginal dependency plot</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1" colspan="2">
+          <widget class="BoundCheckBox" name="plotHStatistics">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Display H statistics</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="4">
+          <widget class="BoundCheckBox" name="plotRF">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Variable importance</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="BoundCheckBox" name="plotMarginalPlotOneWay">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>One way</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
           <widget class="BoundCheckBox" name="plotMarginalPlotTwoWay">
            <property name="enabled">
             <bool>false</bool>
@@ -1226,38 +1281,6 @@
            </property>
            <property name="text">
             <string>Two way</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2">
-          <widget class="BoundCheckBox" name="modelPerforamceShowAUC">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>AUC</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="BoundCheckBox" name="modelPerforamceShowError">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Error</string>
            </property>
           </widget>
          </item>
@@ -1328,22 +1351,6 @@
  </customwidgets>
  <resources/>
  <connections>
-  <connection>
-   <sender>modelPerformance</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>modelPerforamceShowError</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>419</x>
-     <y>372</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>416</x>
-     <y>395</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>plotMarginalPlot</sender>
    <signal>clicked(bool)</signal>

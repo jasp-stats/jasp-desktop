@@ -17,10 +17,13 @@
 
 MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", callback = function(...) list(status = "ok"), state = NULL, ...) {
 
+	return(MLBoostingMain("regression", dataset = NULL, options, perform = "run", callback = function(...) list(status = "ok"), state = NULL, ...))
+}
+
+MLBoostingMain <- function (analysisType, dataset = NULL, options, perform = "run", callback = function(...) list(status = "ok"), state = NULL, ...) {
+
 	## Read Dataset ## ----
-	analysisType <<- "regression"
-
-
+	analysisType <<- analysisType
 
 	predictors <- unlist(options[["predictors"]])
 	predictorsList <- options[["predictors"]]
@@ -44,20 +47,13 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 		if (perform == "run"){
 
-			if(options[["distribution"]] == "gaussian" || options[["distribution"]] == "laplace" || options[["distribution"]] == "tdist" || options[["distribution"]] == "poisson"){
+			if(analysisType == "regression"){
 				dataset <- .readDataSetToEnd(columns.as.numeric = variablesToRead, columns.as.factor = indicator, exclude.na.listwise = c(predictors, indicator))
 			}
-			if(options[["distribution"]] == "bernoulli" || options[["distribution"]] == "adaboost" || options[["distribution"]] == "huberized"){
+			if(analysisType == "classification"){
 				# dataset <- .readDataSetToEnd(columns.as.numeric = predictors, columns.as.factor = c(indicator,target), exclude.na.listwise = c(predictors, indicator))
 				dataset <- .readDataSetToEnd(columns.as.numeric = predictors, columns = c(indicator,target), exclude.na.listwise = c(predictors, indicator))
 			}
-
-			if(options[["distribution"]] == "multinomial"){
-				dataset <- .readDataSetToEnd(columns.as.numeric = predictors, columns = c(indicator,target), exclude.na.listwise = c(predictors, indicator))
-			}
-
-			# dataset <- .readDataSetToEnd(columns.as.numeric = variablesToRead, columns.as.factor = indicator, exclude.na.listwise = c(variablesToRead, indicator))
-			# dataset <- .readDataSetToEnd(columns = variablesToRead, columns.as.factor = indicator, exclude.na.listwise = c(variablesToRead, indicator))
 
 		} else {
 
@@ -85,7 +81,7 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 	results[[".meta"]] = meta
 
-	results[["title"]] = "Boosting Regression"
+	results[["title"]] = ifelse(analysisType == "regression","Boosting Regression","Boosting Classification")
 
 	stateKey <- list(
 		res = c("OOBBox",
@@ -142,16 +138,12 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 			if(!is.null(indicator)){
 				indicatorDotV <- .v(indicator)
 				if(is.factor(datasetNoNa[,indicatorDotV])){
-					print("indicator type factor")
 					appIdx <- as.logical(as.numeric(as.character(datasetNoNa[,indicatorDotV])))
 				}else if(is.character(datasetNoNa[,indicatorDotV])){
-					print("indicator type character")
 					appIdx <- as.logical(as.numeric(datasetNoNa[,indicatorDotV]))
 				}else if(is.numeric(datasetNoNa[,indicatorDotV])){
-					print("indicator type numeric")
 					appIdx <- as.logical(datasetNoNa[,indicatorDotV])
 				}else if(is.logical(datasetNoNa[,indicatorDotV])){
-					print("indicator type logical")
 					appIdx <- datasetNoNa[,indicatorDotV]
 				}
 				fitData <- datasetNoNa[!appIdx,]
@@ -166,10 +158,6 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 				fitData <- datasetNoNa
 				appData <- NULL
 			}
-			print("length of appData")
-			print(dim(appData))
-			print(dim(fitData))
-
 
 			customChecks <- list(
 				# check custom n.cores
@@ -182,7 +170,7 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 				# check manual percentage training
 				function(){
 					if(options[["testBox"]]=="manual_percentageTrain"){
-						if(options[["value_percentageTraining"]] < 1){
+						if(options[["value_percentageTraining"]] <= 10000*options[["value_MinTermNodeSide"]]/(options[["value_subsample"]]*nrow(fitData))){
 							return("Percentage of training too small!")
 						}
 						if(options[["value_percentageTraining"]] > 99){
@@ -193,7 +181,7 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 				# check manual subsample ratio
 				function(){
 					if(options[["OOBBox"]]=="manual_subsample" ){
-						if (options[["value_subsample"]] < 1){
+						if (options[["value_subsample"]] < 10000*options[["value_MinTermNodeSide"]]/(options[["value_percentageTraining"]]*nrow(fitData))){
 							return("Percentage of subsample too small!")
 						}
 						if (options[["value_subsample"]] > 99){
@@ -382,7 +370,7 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 		optStruc <- .findBestTreeStrucure(data, target, predictors, perform, 
 			options[["numberOfIterations"]], 
 			options[["Shrinkage"]], 
-			options[["distribution"]], 
+			# options[["distribution"]], 
 			bag.fraction, train.fraction,
 			options[["value_depthOfTreeMin"]],
 			options[["value_depthOfTreeMax"]],
@@ -397,9 +385,24 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 		n.minobsinnode <- options[["value_MinTermNodeSide"]]
 	}
 
-	print("in .BoostingAnalysis...")
+	if(options[["distribution"]] == "default"){
 
-	model <- gbm(
+		model <- gbm(
+				formula = formula,
+				data = data,
+				# distribution = options[["distribution"]],
+				n.trees = options[["numberOfIterations"]],
+				shrinkage = options[["Shrinkage"]],
+				interaction.depth = interaction.depth,
+				bag.fraction = bag.fraction,
+				train.fraction = train.fraction,
+				n.minobsinnode = n.minobsinnode,
+				cv.folds = cv.folds,
+				keep.data = TRUE,
+				verbose = FALSE,
+				n.cores = n.cores)
+	}else{
+		model <- gbm(
 			formula = formula,
 			data = data,
 			distribution = options[["distribution"]],
@@ -413,8 +416,8 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 			keep.data = TRUE,
 			verbose = FALSE,
 			n.cores = n.cores)
+	}
 
-	print("done run gbm model...")
 
 	best.iter_cv = NULL
 	best.iter_test = NULL
@@ -439,14 +442,10 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 	}
 
-	print("generate prediction...")
-	print(appData)
 
 	if(is.null(appData) || (!is.null(appData) && nrow(appData) == 0)){
-		print("appData is empty")
 		prediction <- NULL
 	}else{
-		print("appData is not empty")
 		if(analysisType == "regression"){
 			prediction <- gbm::predict.gbm(
 							model,
@@ -767,6 +766,9 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 	if(any(perform == "init", is.null(target), is.null(predictors), is.null(res),isTryError(res))){
 		toTable <- matrix(".", nrow = 1, ncol = 2,
 				  dimnames = list(".", colNames))
+	}else if(!is.null(res) && is.null(res$prediction)){
+		toTable <- matrix(".", nrow = 1, ncol = 2,
+				  dimnames = list(".", colNames))
 	}else{
 		className <- levels(res$data[,.v(target)])
 		prediction <- res$prediction
@@ -909,7 +911,7 @@ MLRegressionBoosting <- function (dataset = NULL, options, perform = "run", call
 
 .plotError <- function(res, options, predictors, target, perform){
 
-	yName = list(bernoulli="Bernoulli deviance", multinomial="Multinomial deviance", gaussian="Squared error loss", laplace="Absolute loss", tdist="t-distribution loss", huberized = "Huberized hinge loss", adaboost="AdaBoost exponential loss", 
+	yName = list(default = "Squared error loss", bernoulli="Bernoulli deviance", multinomial="Multinomial deviance", gaussian="Squared error loss", laplace="Absolute loss", tdist="t-distribution loss", huberized = "Huberized hinge loss", adaboost="AdaBoost exponential loss", 
 		poisson = "Poisson loss")
 
 	ylab = yName[[options[["distribution"]]]]
@@ -1101,6 +1103,7 @@ grid_arrange_shared_legend_mixed <- function(plots, ncol = length(plots), nrow =
 		plot[["width"]] <- width
 		plot[["height"]] <- height
 
+
 		p <- try(silent = FALSE, expr ={
 
 			# image <- .beginSaveImage(width = plot[["width"]], height = plot[["height"]])
@@ -1158,7 +1161,7 @@ grid_arrange_shared_legend_mixed <- function(plots, ncol = length(plots), nrow =
 
 							if(options[["plotMarginalPlotTwoWay"]]){
 								grid <- plot(res$model,i.var=c(row,col),return.grid = T)
-								print(.plotMarginalTwoWay(grid,row,col, predictors[col], withHeader), vp=grid::viewport(layout.pos.row=row,layout.pos.col=col))
+								print(.plotMarginalTwoWay(grid,row,col, predictors[col], withHeader, theta), vp=grid::viewport(layout.pos.row=row,layout.pos.col=col))
 							}else{
 								main <- ""
 								print(plot(1, type= "n", axes= FALSE, ylab="", xlab="", main = main), vp=grid::viewport(layout.pos.row=row,layout.pos.col=col))
@@ -1300,10 +1303,11 @@ grid_arrange_shared_legend_mixed <- function(plots, ncol = length(plots), nrow =
 ##############################################################################################
 }
 
-.plotMarginalTwoWay <- function(partial,varIdx1,varIdx2,main,withHeader){
+.plotMarginalTwoWay <- function(partial,varIdx1,varIdx2,main,withHeader, theta = NULL){
 
 	main <- ifelse(withHeader,main,"")
-	theta <- 30
+	# if(is.null(theta)) theta <- 120
+	theta <- 120
 	mat <- reshape2::acast(data = partial, 
 		formula = as.formula(paste(colnames(partial)[1],"~",colnames(partial)[2])), 
 		value.var = colnames(partial)[3])
@@ -1370,7 +1374,7 @@ grid_arrange_shared_legend_mixed <- function(plots, ncol = length(plots), nrow =
 
 
 .findBestTreeStrucure <- function(data, target, predictors, perform, 
-	n.trees, shrinkage, distribution, bag.fraction, train.fraction,
+	n.trees, shrinkage, bag.fraction, train.fraction,
 	interaction.depth_min=1, interaction.depth_max=5, interaction.depth_step=1,
 	n.minobsinnode_min=5, n.minobsinnode_max=20, n.minobsinnode_step=5){
 
@@ -1430,7 +1434,7 @@ grid_arrange_shared_legend_mixed <- function(plots, ncol = length(plots), nrow =
 							gbm::gbm(
 								formula = formula,
 								data = trainData,
-								distribution = distribution,
+								# distribution = distribution,
 								n.trees=n.trees, # number of trees
 								shrinkage=shrinkage, # shrinkage or learning rate,
 								# # 0.001 to 0.1 usually work
@@ -1590,7 +1594,7 @@ gbm <- function(formula = formula(data),
    Terms <- attr(mf, "terms")
    y <- model.response(mf)
 
-   if (missing(distribution)){ distribution <- guessDist(y) }
+   if (missing(distribution)){ distribution <- gbm::guessDist(y) }
    else if (is.character(distribution)){ distribution <- list(name=distribution) }
 
    w <- model.weights(mf)
