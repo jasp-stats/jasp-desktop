@@ -54,7 +54,6 @@ Descriptives <- function(dataset=NULL, options, perform="run",
         dataset <- .readDataSetHeader(columns.as.numeric=variables)
         dataset.factors <- .readDataSetHeader(columns=variables)
       }
-      
     }
   }
   
@@ -64,7 +63,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
     splitFactor <- dataset[[.v(splitName)]]
     splitLevels <- levels(splitFactor)
     splitDat <- lapply(splitLevels, function(l){
-      return(dataset[splitFactor == l,])
+      return(dataset.factors[splitFactor == l,])
     })
     names(splitDat) <- splitLevels
   }
@@ -140,7 +139,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
                                    function(x) return(x$name),
                                    simplify = TRUE) == var)
           # add to results object
-          if (length(whichtab) > 0){
+          if (length(whichtab) > 0) {
             freqTabs[[var]] <- state$results$tables[[whichtab]]
           }
         }
@@ -294,7 +293,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
           )          
         } else {
           distPlots[["collection"]][[var]] <- .descriptivesFrequencyPlots(
-            dataset = dataset,
+            dataset = dataset.factors,
             options = options,
             run = run,
             variable = var
@@ -422,7 +421,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
   if (wantsSplit) {
     fields[[length(fields) + 1]] <- list(name="VariableLevel", title="", type="string")
   } else {
-    fields[[length(fields) + 1]] <- list(name="Variable", title="Variable", type="string")
+    fields[[length(fields) + 1]] <- list(name="Variable", title="", type="string")
   }
   fields[[length(fields) + 1]] <- list(name="Valid", type="integer")
   fields[[length(fields) + 1]] <- list(name="Missing", type="integer")
@@ -1243,11 +1242,6 @@ Descriptives <- function(dataset=NULL, options, perform="run",
   wantsSplit <- splitName!=""
   splitFactor <- dataset[[.v(splitName)]]
   splitLevels <- levels(splitFactor)
-  print(splitName)
-  print(.v(splitName))
-  print(colnames(dataset))
-  print(splitFactor)
-  print(splitLevels)
   
   freqTabs <- list()
 
@@ -1255,16 +1249,17 @@ Descriptives <- function(dataset=NULL, options, perform="run",
     freqTab <- list()
     
     column <- dataset[[.v(variable)]]
-		if (!is.factor(column)){
+    if (!is.factor(column)){
       next
     }
-			
+    
     if (variable %in% names(stateTabs) && 
         "data" %in% names(stateTabs[[variable]])) {
       print(paste(variable, "in state"))
-      freqTabs[[variable]] <- stateTabs[[variable]]
+      freqTabs[[length(freqTabs) + 1]] <- stateTabs[[variable]]
       next
     }
+    
     
     fields <- list()
     if (wantsSplit) {
@@ -1518,7 +1513,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
       plot[["custom"]] <- list(width="plotWidth", height="plotHeight")
       
       select <- split==l
-      column <- na.omit(dataset[[l]][[.v(variable)]][select])
+      column <- dataset[[l]][[.v(variable)]]
       
       if (run == FALSE) {
 
@@ -1543,7 +1538,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
         plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity")
         plot[["status"]] <- "complete"
 
-      } else if (length(column) > 0 && is.factor(column) || length(column) > 0  && all(column %% 1 == 0) && length(unique(column)) <= 24) {
+      } else if (length(column) > 0 && is.factor(column) || is.numeric(column) && length(column) > 0  && all(column %% 1 == 0) && length(unique(column)) <= 24) {
 
         if ( ! is.factor(column)) {
 
@@ -1606,7 +1601,8 @@ Descriptives <- function(dataset=NULL, options, perform="run",
     plot[["height"]] <- options$plotHeight
     plot[["custom"]] <- list(width="plotWidth", height="plotHeight")
 
-    column <- na.omit(dataset[[ .v(variable) ]])
+    column <- dataset[[ .v(variable) ]]
+    column <- column[!is.na(column)]
 
     if (run == FALSE) {
 
@@ -1631,7 +1627,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
       plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity")
       plot[["status"]] <- "complete"
 
-    } else if (length(column) > 0 && is.factor(column) || length(column) > 0  && all(column %% 1 == 0) && length(unique(column)) <= 24) {
+    } else if (length(column) > 0 && is.factor(column) || is.numeric(column) && length(column) > 0  && all(column %% 1 == 0) && length(unique(column)) <= 24) {
 
       if ( ! is.factor(column)) {
 
