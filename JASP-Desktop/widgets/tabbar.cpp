@@ -273,6 +273,11 @@ void TabBar::setCurrentIndex(int index)
 	emit currentChanged(index);
 }
 
+void TabBar::setExactPValues(bool exactPValues)
+{
+	emit setExactPValuesHandler(exactPValues);
+}
+
 void TabBar::tabSelectedHandler()
 {
 	QObject *source = this->sender();

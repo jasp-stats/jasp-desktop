@@ -1198,9 +1198,23 @@
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>listAvailableFields</tabstop>
   <tabstop>buttonAssignSubjectId</tabstop>
   <tabstop>subjectId</tabstop>
+  <tabstop>buttonAssignGroup</tabstop>
+  <tabstop>group</tabstop>
+  <tabstop>buttonAssignTrialNumber</tabstop>
+  <tabstop>trialNumber</tabstop>
+  <tabstop>buttonAssignDeck</tabstop>
+  <tabstop>deck</tabstop>
+  <tabstop>buttonAssignReward</tabstop>
+  <tabstop>reward</tabstop>
+  <tabstop>buttonAssignLoss</tabstop>
+  <tabstop>loss</tabstop>
   <tabstop>_1pvlDelta</tabstop>
+  <tabstop>_2pvl</tabstop>
+  <tabstop>_3ev</tabstop>
+  <tabstop>_4vpp</tabstop>
   <tabstop>outputConvergenceCheck</tabstop>
   <tabstop>outputIndividualEstimates</tabstop>
   <tabstop>outputGroupEstimates</tabstop>
@@ -1230,8 +1244,10 @@
   <tabstop>_2some</tabstop>
   <tabstop>_3few</tabstop>
   <tabstop>_4custom</tabstop>
+  <tabstop>customChains</tabstop>
   <tabstop>customIterations</tabstop>
   <tabstop>customBurnin</tabstop>
+  <tabstop>customThinning</tabstop>
   <tabstop>specificSeed</tabstop>
   <tabstop>specificSeedValue</tabstop>
  </tabstops>

@@ -630,6 +630,19 @@
  </widget>
  <customwidgets>
   <customwidget>
+<<<<<<< HEAD
+=======
+   <class>AssignButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/assignbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AvailableFieldsListView</class>
+   <extends>QListView</extends>
+   <header>widgets/availablefieldslistview.h</header>
+  </customwidget>
+  <customwidget>
+>>>>>>> development
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
@@ -641,11 +654,14 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+<<<<<<< HEAD
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
+=======
+>>>>>>> development
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
@@ -670,7 +686,37 @@
    <extends>QComboBox</extends>
    <header>widgets/boundcombobox.h</header>
   </customwidget>
+  <customwidget>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listAvailableFields</tabstop>
+  <tabstop>buttonAssignVariables</tabstop>
+  <tabstop>variables</tabstop>
+  <tabstop>_3ParallelAnalysis</tabstop>
+  <tabstop>_1eigenvalues</tabstop>
+  <tabstop>eigenValuesBox</tabstop>
+  <tabstop>_2manual</tabstop>
+  <tabstop>numberOfFactors</tabstop>
+  <tabstop>_1orthogonal</tabstop>
+  <tabstop>orthogonalSelector</tabstop>
+  <tabstop>_2oblique</tabstop>
+  <tabstop>obliqueSelector</tabstop>
+  <tabstop>pushButton_2</tabstop>
+  <tabstop>highlightSlider</tabstop>
+  <tabstop>highlightText</tabstop>
+  <tabstop>incl_correlations</tabstop>
+  <tabstop>incl_pathDiagram</tabstop>
+  <tabstop>incl_screePlot</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

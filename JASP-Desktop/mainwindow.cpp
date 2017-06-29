@@ -243,6 +243,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(updateUserData(int, QString)), this, SLOT(updateUserDataHandler(int, QString)));
 	connect(this, SIGNAL(simulatedMouseClick(int, int, int)), this, SLOT(simulatedMouseClickHandler(int, int, int)));
 	connect(this, SIGNAL(resultsDocumentChanged()), this, SLOT(resultsDocumentChangedHandler()));
+	connect(ui->tabBar, SIGNAL(setExactPValuesHandler(bool)), this, SLOT(setExactPValuesHandler(bool)));
 
 #ifdef __APPLE__
 	_scrollbarWidth = 3;
@@ -608,7 +609,7 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 	parser.parse(utf8, root);
 
 	QString caption = "Save JASP Image";
-	QString filter = "Portable Network Graphics (*.png);;Encapsulated PostScript (*.eps)";
+	QString filter = "Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff)";
     QString selectedFilter;
 
     QString finalPath = QFileDialog::getSaveFileName(this, caption, QString(), filter, &selectedFilter);
@@ -619,6 +620,18 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 			root["type"] = "eps";
             root["finalPath"] = finalPath.toStdString();
             analysis->saveImage(analysis, root);
+		}
+		else if (selectedFilter == "Portable Document Format (*.pdf)")
+		{
+			root["type"] = "pdf";
+			root["finalPath"] = finalPath.toStdString();
+			analysis->saveImage(analysis, root);
+		}
+		else if (selectedFilter == "300 dpi Tagged Image File (*.tiff)")
+		{
+			root["type"] = "tiff";
+			root["finalPath"] = finalPath.toStdString();
+			analysis->saveImage(analysis, root);
 		}
 		else
 		{
@@ -1300,6 +1313,8 @@ void MainWindow::resultsPageLoaded(bool success)
 		QString version = tq(AppInfo::version.asString());
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
 
+		setExactPValuesHandler(_settings.value("exactPVals", 0).toBool());
+
 		QVariant ppiv = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getPPI()");
 
 		bool success;
@@ -1381,6 +1396,13 @@ void MainWindow::requestHelpPage(const QString &pageName)
 	QString js = "window.render(\"" + content + "\")";
 
 	ui->webViewHelp->page()->mainFrame()->evaluateJavaScript(js);
+}
+
+void MainWindow::setExactPValuesHandler(bool exactPValues)
+{
+	QString exactPValueString = (exactPValues ? "true" : "false");
+	QString js = "window.globSet.pExact = " + exactPValueString + "; window.reRenderAnalyses();";
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(js);
 }
 
 void MainWindow::itemSelected(const QString &item)

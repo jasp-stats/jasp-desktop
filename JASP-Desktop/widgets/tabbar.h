@@ -40,6 +40,7 @@ public:
 	void removeTab(QString tabName);
 	void removeTab(int index);
 	QString getCurrentActiveTab();
+	void setExactPValues(bool exactPValues);
 
 	void addOptionsTab();
 	void addHelpTab();
@@ -51,6 +52,7 @@ signals:
 	void currentChanged(int index);
 	void helpToggled(bool on);
 	void dataAutoSynchronizationChanged(bool on);
+	void setExactPValuesHandler(bool exactPValues);
 
 public slots:
 	void setCurrentIndex(int index);

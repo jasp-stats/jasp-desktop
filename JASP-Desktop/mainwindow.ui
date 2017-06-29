@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1208</width>
-    <height>673</height>
+    <width>1200</width>
+    <height>800</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -430,8 +430,8 @@ QTableView::item::last
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>300</width>
-                       <height>587</height>
+                       <width>240</width>
+                       <height>721</height>
                       </rect>
                      </property>
                      <property name="sizePolicy">
@@ -568,7 +568,7 @@ QTableView::item::last
                 <number>0</number>
                </property>
                <item row="0" column="0">
-                <widget class="QWebView" name="webViewHelp">
+                <widget class="QWebView" name="webViewHelp" native="true">
                  <property name="acceptDrops">
                   <bool>false</bool>
                  </property>

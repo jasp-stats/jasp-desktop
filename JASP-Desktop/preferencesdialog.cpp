@@ -8,10 +8,15 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 	ui->setupUi(this);
 	_tabBar = dynamic_cast<TabBar *>(parent);
 
+
+	//Exact p-value
+	int check_exact_pval = _settings.value("exactPVals", 0).toInt();
+	ui->displayExactPVals->setChecked(check_exact_pval > 0);
+
 	//Auto Sync
 	int check_data_sync = _settings.value("dataAutoSynchronization", 1).toInt();
 	ui->syncAutoCheckBox->setChecked(check_data_sync > 0);
-	
+
 	//Default Editor
 	int check_default_editor = _settings.value("useDefaultSpreadsheetEditor", 1).toInt();
 	bool defaulteditor = check_default_editor > 0;
@@ -50,10 +55,16 @@ void PreferencesDialog::savePreferences()
 	//Use Default Editor Switch
 	checked = (ui->useDefaultSpreadsheetEditor->checkState()==Qt::Checked) ? 1 : 0;
 	_settings.setValue("useDefaultSpreadsheetEditor", checked);
-	
+
 	_settings.setValue("spreadsheetEditorName", ui->spreadsheetEditorName->text());
 			
+	//Exact p values
+	checked = (ui->displayExactPVals->checkState()==Qt::Checked) ? 1 : 0;
+	_settings.setValue("exactPVals", checked);
+	_tabBar->setExactPValues(checked);
+
 	_settings.sync();
+
 	this->close();
 	
 }
