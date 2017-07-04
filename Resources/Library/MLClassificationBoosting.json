@@ -1,5 +1,5 @@
 {
-	"name":"MLRegressionBoosting",
+	"name":"MLClassificationBoosting",
 	"autorun":true,
 	"version":"1.00",
 	"options":[
@@ -31,7 +31,7 @@
 		},
 		{
 			"name": "distribution",
-			"options": [ "default","gaussian","laplace","tdist", "poisson"],
+			"options": [ "default","bernoulli","huberized","adaboost","multinomial"],
 			"default": "default",
 			"type": "List"
 		},

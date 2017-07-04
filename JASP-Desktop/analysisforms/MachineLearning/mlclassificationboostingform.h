@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef MLREGRESSIONBOOSTINGFORM_H
-#define MLREGRESSIONBOOSTINGFORM_H
+#ifndef MLCLASSIFICATIONBOOSTINGFORM_H
+#define MLCLASSIFICATIONBOOSTINGFORM_H
 
 #include <QSizePolicy>
 
@@ -27,22 +27,22 @@
 #include "widgets/tablemodelanovamodel.h"
 
 namespace Ui {
-class MLRegressionBoostingForm;
+class MLClassificationBoostingForm;
 }
 
 
-class MLRegressionBoostingForm : public AnalysisForm
+class MLClassificationBoostingForm : public AnalysisForm
 {
 	Q_OBJECT
 
 public:
-	explicit MLRegressionBoostingForm(QWidget *parent = 0);
-	~MLRegressionBoostingForm();
+	explicit MLClassificationBoostingForm(QWidget *parent = 0);
+	~MLClassificationBoostingForm();
 	void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
 	void defaultOptions();
 
 private:
-	Ui::MLRegressionBoostingForm *ui;
+	Ui::MLClassificationBoostingForm *ui;
 
 	TableModelVariablesAssigned *_targetListModel;
 	TableModelVariablesAssigned *_predictorsListModel;
@@ -67,4 +67,4 @@ private slots:
 	void on_auto_TS_clicked(bool checked);
 };
 
-#endif // MLREGRESSIONBOOSTINGFORM_H
+#endif // MLCLASSIFICATIONBOOSTINGFORM_H

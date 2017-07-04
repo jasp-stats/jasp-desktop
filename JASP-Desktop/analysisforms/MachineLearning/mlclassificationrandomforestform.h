@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef MLREGRESSIONBOOSTINGFORM_H
-#define MLREGRESSIONBOOSTINGFORM_H
+#ifndef MLCLASSIFICATIONRANDOMFORESTFORM_H
+#define MLCLASSIFICATIONRANDOMFORESTFORM_H
 
 #include <QSizePolicy>
 
@@ -27,44 +27,47 @@
 #include "widgets/tablemodelanovamodel.h"
 
 namespace Ui {
-class MLRegressionBoostingForm;
+class MLClassificationRandomForestForm;
 }
 
 
-class MLRegressionBoostingForm : public AnalysisForm
+class MLClassificationRandomForestForm : public AnalysisForm
 {
 	Q_OBJECT
 
 public:
-	explicit MLRegressionBoostingForm(QWidget *parent = 0);
-	~MLRegressionBoostingForm();
+	explicit MLClassificationRandomForestForm(QWidget *parent = 0);
+	~MLClassificationRandomForestForm();
 	void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
 	void defaultOptions();
 
 private:
-	Ui::MLRegressionBoostingForm *ui;
+	Ui::MLClassificationRandomForestForm *ui;
 
 	TableModelVariablesAssigned *_targetListModel;
 	TableModelVariablesAssigned *_predictorsListModel;
 	TableModelVariablesAssigned *_indicatorListModel;
 	TableModelVariablesAssigned *_wlsWeightsListModel;
+	TableModelAnovaModel *_anovaModel;
 	TableModelVariablesAvailable *_factorsAvailableListModel;
 
 private slots:
 	void factorsChanging();
 	void factorsChanged();
-	void on_manual_subsample_clicked(bool checked);
-	void on_auto_subsample_clicked(bool checked);
-	void on_manual_seed_clicked(bool checked);
-	void on_auto_seed_clicked(bool checked);
-	void on_manual_numberOfCore_clicked(bool checked);
-	void on_auto_numberOfCore_clicked(bool checked);
-	void on_manual_percentageTrain_clicked(bool checked);
-	void on_auto_percentageTrain_clicked(bool checked);
-	void on_methodCV_clicked(bool checked);
-	void on_manual_TS_clicked(bool checked);
-	void on_optimized_TS_clicked(bool checked);
-	void on_auto_TS_clicked(bool checked);
+	void on_manual_1_clicked(bool);
+	void on_auto_1_clicked(bool);
+	void on_manual_2_clicked(bool);
+	void on_auto_2_clicked(bool);
+	void on_manual_3_clicked(bool);
+	void on_auto_3_clicked(bool);
+	void on_manual_4_clicked(bool);
+	void on_auto_4_clicked(bool);
+	void on_manual_5_clicked(bool);
+	void on_auto_5_clicked(bool);
+	void on_manual_6_clicked(bool);
+	void on_auto_6_clicked(bool);
+	void on_manual_7_clicked(bool);
+	void on_auto_7_clicked(bool);
 };
 
-#endif // MLREGRESSIONBOOSTINGFORM_H
+#endif // MLCLASSIFICATIONRANDOMFORESTFORM_H
