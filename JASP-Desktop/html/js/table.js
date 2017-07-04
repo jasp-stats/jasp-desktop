@@ -932,13 +932,13 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 					overTitlesArray.push(columnHeaders[i].overTitle);
 				}
 			}
-			console.log(overTitlesArray);
+			
 			if (overTitlesArray.length > 0) {
 				// If we have an overTitle, we should make it
 				overTitles = true;
 			}
+			
 			var uniqueOverTitles = $.unique(overTitlesArray)
-			console.log(uniqueOverTitles);
 			if (uniqueOverTitles.length > 1) {
 				// If we have more than one unique overTitle, we should make small 
 				// breaks in the line under the overTitle to indicate end of old and 
