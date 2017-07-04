@@ -923,20 +923,38 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 		if (columnHeaders.length > 0) {
 			
-			var overTitles = false
-
+			var overTitles = false;
+			var overTitleSpace = false;
+			var overTitlesArray = [];
+			// Find the overTitles
 			for (var i = 0; i < columnHeaders.length; i++) {
-
 				if (columnHeaders[i].overTitle) {
-
-					overTitles = true
-					break;
+					overTitlesArray.push(columnHeaders[i].overTitle);
 				}
+			}
+			console.log(overTitlesArray);
+			if (overTitlesArray.length > 0) {
+				// If we have an overTitle, we should make it
+				overTitles = true;
+			}
+			var uniqueOverTitles = $.unique(overTitlesArray)
+			console.log(uniqueOverTitles);
+			if (uniqueOverTitles.length > 1) {
+				// If we have more than one unique overTitle, we should make small 
+				// breaks in the line under the overTitle to indicate end of old and 
+				// start of new overTitle. NB: with this option, the line is not copied
+				// to text processor.
+				overTitleSpace = true;
 			}
 
 			if (overTitles) {
-
-				chunks.push('<tr class="over-title">')
+				
+				if (overTitleSpace) {
+					chunks.push('<tr class="over-title-space">')
+				} else {
+					chunks.push('<tr class="over-title">')
+				}
+				
 
 				var span = 1;
 				var oldTitle = columnHeaders[0].overTitle
@@ -956,15 +974,24 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 						span++
 					}
 					else {
-
-						chunks.push('<th colspan="' + (2 * span) + '">' + oldTitle + '</th>')
+						if (overTitleSpace) {
+							chunks.push('<th colspan="' + (2 * span) + '"><div class="over-title-space">' + oldTitle + '</div></th>');
+						} else {
+							chunks.push('<th colspan="' + (2 * span) + '">' + oldTitle + '</th>');
+						}
 						oldTitle = newTitle
 						span = 1
 					}
 				}
 
-				if (newTitle == oldTitle)
-					chunks.push('<th colspan="' + (2 * span) + '">' + newTitle + '</th>')
+				if (newTitle == oldTitle) {
+					if (overTitleSpace) {
+						chunks.push('<th colspan="' + (2 * span) + '"><div class="over-title-space">' + newTitle + '</div></th>')
+					} else {
+						chunks.push('<th colspan="' + (2 * span) + '">' + newTitle + '</th>')
+					}
+				}
+					
 
 				chunks.push('</tr>')
 			}
