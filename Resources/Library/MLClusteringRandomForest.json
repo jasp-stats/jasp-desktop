@@ -1,0 +1,161 @@
+{
+	"name": "MLClusteringRandomForest",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+		{
+			"name": "target",
+			"type": "Variable"
+		},
+		{
+			"name": "predictors",
+			"type": "Variables"
+		},
+		{
+			"name": "indicator",
+			"type": "Variable"
+		},
+		{
+			"name": "modelTerms",
+			"template": [
+				{
+					"name": "components",
+					"type": "Term"
+				},
+				{
+					"name": "isNuisance",
+					"type": "Boolean"
+				}
+			],
+			"type": "Table"
+		},
+		{
+			"name": "plotVariableImportance",
+			"type": "Boolean"
+		},
+     {
+			"name": "plotTreesVsModelError",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotVariableImportanceShowValues",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotPredictivePerformance",
+			"type": "Boolean"
+		},
+		{
+			"name": "tableVariableImportance",
+			"type": "Boolean",
+                         "default" : true
+		},
+		{
+			"name": "tableSummary",
+			"type": "Boolean",
+                         "default" : true
+
+		},
+		{
+			"name": "calculateProximityMatrix",
+			"type": "Boolean"
+		},
+		{
+			"name": "noOfTrees",
+			"type": "List",
+			"options": [ "auto", "manual" ],
+			"default": "auto"
+		},
+		{
+			"name": "numberOfTrees",
+			"type": "Integer",
+			"min": 1,
+			"default": 1   
+		},
+		{
+			"name": "noOfPredictors", 
+			"type": "List",
+			"options": [ "auto", "manual" ],
+			"default": "auto"
+		},
+		{
+			"name": "numberOfPredictors",
+			"type": "Integer",
+			"min": 1,
+                        "default": 1
+		},
+		{
+			"name": "minimumTerminalNodeSize",
+			"type": "List",
+			"options": [ "auto", "manual" ],
+			"default": "auto"
+		},
+		{
+			"name": "modelMinimumTerminalNode",
+			"type": "Integer",
+			"min": 1,
+			"default": 1   
+		},			
+		{
+			"name": "dataBootstrapModel",
+			"type": "List",
+			"options": [ "auto", "manual" ],
+			"default": "auto"
+		},
+		{
+			"name": "percentageDataBootstrap",
+			"type": "Number",
+                        "min": 0,
+                        "max": 1,
+                        "value": 1.0
+		},		
+		{
+			"name": "dataTrainingModel",
+			"type": "List",
+			"options": [ "auto", "manual" ],
+			"default": "auto"
+		},
+		{
+			"name": "percentageDataTraining",
+			"type": "Number",
+                        "min": 0,
+                        "max": 1,
+                        "value": 1.0
+		},			
+		{
+			"name": "maximumTerminalNodeSize",
+			"type": "List",
+			"options": [ "auto", "manual" ],
+			"default": "auto"
+		},		
+		{
+			"name": "modelMaximumTerminalNode",
+			"type": "Integer",
+			"min": 1,
+			"default": 1   
+		},				
+		{
+			"name": "seedBox",
+			"type": "List",
+			"options": [ "auto", "manual" ],
+			"default": "auto"
+		},
+		{
+			"name": "seed",
+			"type": "Number",
+                        "min": -10000000,
+                        "max": 10000000,
+                        "value": 1.0
+		},
+    		{
+			"default": 640,
+			"name": "plotWidth",
+			"type": "Integer"
+		},
+		{
+			"default": 480,
+			"name": "plotHeight",
+			"type": "Integer"
+		}
+	]
+}

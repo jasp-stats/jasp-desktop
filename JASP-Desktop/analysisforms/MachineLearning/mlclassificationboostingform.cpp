@@ -16,12 +16,12 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "mlregressionboostingform.h"
-#include "ui_mlregressionboostingform.h"
+#include "mlclassificationboostingform.h"
+#include "ui_mlclassificationboostingform.h"
 
-MLRegressionBoostingForm::MLRegressionBoostingForm(QWidget *parent) :
-    AnalysisForm("MLRegressionBoostingForm", parent),
-    ui(new Ui::MLRegressionBoostingForm)
+MLClassificationBoostingForm::MLClassificationBoostingForm(QWidget *parent) :
+    AnalysisForm("MLClassificationBoostingForm", parent),
+    ui(new Ui::MLClassificationBoostingForm)
 {
     ui->setupUi(this);
 
@@ -61,12 +61,12 @@ MLRegressionBoostingForm::MLRegressionBoostingForm(QWidget *parent) :
     defaultOptions();
 }
 
-MLRegressionBoostingForm::~MLRegressionBoostingForm()
+MLClassificationBoostingForm::~MLClassificationBoostingForm()
 {
     delete ui;
 }
 
-void MLRegressionBoostingForm::defaultOptions()
+void MLClassificationBoostingForm::defaultOptions()
 {
     QSizePolicy retain = ui->value_subsample->sizePolicy();
     retain.setRetainSizeWhenHidden(true);
@@ -144,7 +144,7 @@ void MLRegressionBoostingForm::defaultOptions()
     ui->label_11->hide();
 }
 
-void MLRegressionBoostingForm::bindTo(Options *options, DataSet *dataSet)
+void MLClassificationBoostingForm::bindTo(Options *options, DataSet *dataSet)
 {
     AnalysisForm::bindTo(options, dataSet);
 
@@ -153,13 +153,13 @@ void MLRegressionBoostingForm::bindTo(Options *options, DataSet *dataSet)
     factorsChanged();
 }
 
-void MLRegressionBoostingForm::factorsChanging()
+void MLClassificationBoostingForm::factorsChanging()
 {
     if (_options != NULL)
         _options->blockSignals(true);
 }
 
-void MLRegressionBoostingForm::factorsChanged()
+void MLClassificationBoostingForm::factorsChanged()
 {
     if (_options != NULL)
         _options->blockSignals(false);
@@ -169,35 +169,35 @@ void MLRegressionBoostingForm::factorsChanged()
 //{
 //        ui->plotMarginalPlotOneWay->setEnabled(true);
 //}
-void MLRegressionBoostingForm::on_manual_subsample_clicked(bool checked)
+void MLClassificationBoostingForm::on_manual_subsample_clicked(bool checked)
 {
     if (checked) {
         ui->value_subsample->show();
     }
 }
 
-void MLRegressionBoostingForm::on_auto_subsample_clicked(bool checked)
+void MLClassificationBoostingForm::on_auto_subsample_clicked(bool checked)
 {
     if (checked) {
         ui->value_subsample->hide();
     }
 }
 
-void MLRegressionBoostingForm::on_manual_percentageTrain_clicked(bool checked)
+void MLClassificationBoostingForm::on_manual_percentageTrain_clicked(bool checked)
 {
     if (checked) {
         ui->value_percentageTraining->show();
     }
 }
 
-void MLRegressionBoostingForm::on_auto_percentageTrain_clicked(bool checked)
+void MLClassificationBoostingForm::on_auto_percentageTrain_clicked(bool checked)
 {
     if (checked) {
         ui->value_percentageTraining->hide();
     }
 }
 
-void MLRegressionBoostingForm::on_methodCV_clicked(bool checked)
+void MLClassificationBoostingForm::on_methodCV_clicked(bool checked)
 {
     if (checked) {
         ui->value_numberOfFold->show();
@@ -205,35 +205,35 @@ void MLRegressionBoostingForm::on_methodCV_clicked(bool checked)
     }
 }
 
-void MLRegressionBoostingForm::on_manual_numberOfCore_clicked(bool checked)
+void MLClassificationBoostingForm::on_manual_numberOfCore_clicked(bool checked)
 {
     if (checked) {
         ui->value_numberOfCore->show();
     }
 }
 
-void MLRegressionBoostingForm::on_auto_numberOfCore_clicked(bool checked)
+void MLClassificationBoostingForm::on_auto_numberOfCore_clicked(bool checked)
 {
     if (checked) {
         ui->value_numberOfCore->hide();
     }
 }
 
-void MLRegressionBoostingForm::on_manual_seed_clicked(bool checked)
+void MLClassificationBoostingForm::on_manual_seed_clicked(bool checked)
 {
     if (checked) {
         ui->value_seed->show();
     }
 }
 
-void MLRegressionBoostingForm::on_auto_seed_clicked(bool checked)
+void MLClassificationBoostingForm::on_auto_seed_clicked(bool checked)
 {
     if (checked) {
         ui->value_seed->hide();
     }
 }
 
-void MLRegressionBoostingForm::on_manual_TS_clicked(bool checked)
+void MLClassificationBoostingForm::on_manual_TS_clicked(bool checked)
 {
     if (checked) {
         ui->value_depthOfTree->show();
@@ -255,7 +255,7 @@ void MLRegressionBoostingForm::on_manual_TS_clicked(bool checked)
     }
 }
 
-void MLRegressionBoostingForm::on_optimized_TS_clicked(bool checked)
+void MLClassificationBoostingForm::on_optimized_TS_clicked(bool checked)
 {
     if (checked) {
         ui->value_depthOfTree->hide();
@@ -277,7 +277,7 @@ void MLRegressionBoostingForm::on_optimized_TS_clicked(bool checked)
     }
 }
 
-void MLRegressionBoostingForm::on_auto_TS_clicked(bool checked)
+void MLClassificationBoostingForm::on_auto_TS_clicked(bool checked)
 {
     if (checked) {
         ui->value_depthOfTree->hide();
