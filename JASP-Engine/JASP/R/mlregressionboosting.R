@@ -507,7 +507,7 @@ MLBoostingMain <- function (analysisType, dataset = NULL, options, perform = "ru
 
 	table <- list(title="Fitting error with best iteration")
 	rowNames = c("OOB", "Test", "CV")
-	colNames = c("Best Iteration", "Minimum Error")
+	colNames = c("Best Iteration", "Corresponding Error")
 
 	if(any(perform == "init", is.null(predictors), is.null(target), is.null(res), isTryError(res))){
 
