@@ -1081,22 +1081,22 @@
               </item>
               <item>
                <property name="text">
-                <string>Gaussian</string>
+                <string>Bernoulli</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>Laplace</string>
+                <string>Huberized</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>T-distribution</string>
+                <string>Adaboost</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>Poisson</string>
+                <string>Multinomial</string>
                </property>
               </item>
              </widget>
