@@ -78,9 +78,12 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
         
     }
     
-    # set the seed so that every time the same set is chosen (to prevent random results) ##
-    
-    set.seed(options[["seed"]])
+    # set the seed ##
+    if(options[["seedBox"]]){
+        set.seed(options[["seed"]])
+    } else {
+        set.seed(Sys.time())
+    }
     
     # create results bundle ##
     
@@ -1301,6 +1304,17 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     index_1 <- which(dataset_indicator[,indicator] == 1)
     index_0 <- which(dataset_indicator[,indicator] == 0)
     
+    opData <- na.omit(dataset_indicator[index_1, predictors])
+    
+    if(nrow(opData) < 1){
+        results[["newData"]] <- list(title = "Predictions for new data",
+                                     schema = list(fields = list(list(name = "dat", title = "Prediction", type = "string"))),
+                                     data = list(list(dat = "")),
+                                     error = list(errorType = "badData",
+                                                  errorMessage = "No observations to predict after removing missing values"))
+        return(results)
+    }
+    
     knn.fit <- kknn::train.kknn(formula = formula,
                                 data = dataset_indicator[index_0,],
                                 ks = res[["Optimal.K"]],
@@ -1309,7 +1323,22 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
                                 na.action = opt[['NA']],
                                 scale = options[["scaleEqualSD"]])
     
-    predictions <- as.vector(predict(knn.fit,newdata = dataset_indicator[index_1,]))
+    predictions <- as.vector(predict(knn.fit,newdata = opData))
+    
+    error <- FALSE
+    
+    if(options[["predFrom"]] > length(predictions)){
+        from <- 1
+        error <- TRUE
+    } else {
+      from <- options[["predFrom"]]  
+    }
+    if(options[["predTo"]] > length(predictions)){
+        to <- length(predictions)
+        error <- TRUE
+    } else {
+     to <- options[["predTo"]]    
+    }
     
     if(options[["newFrequencies"]]){
     
@@ -1346,6 +1375,8 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     
     fields <- list()
     
+    fields[[1]] <- list(name = "number",title = "Obs. number", type = 'Integer', format = 'dp:0')
+    
     if(!is.null(res)){
         
         for(i in 1:length(predictors)){
@@ -1373,15 +1404,17 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     
     if(is.null(res)){
         
-        data <- list(list("predictor1" = ".", "predicted" = "."))
+        data <- list(list("number"= ".", "predictor1" = ".", "predicted" = "."))
         
     } else {
         
         data <- list()
         
-        for(i in 1:length(predictions)){	
+        for(i in from:to){	
             
             data[[i]] <- list()
+            
+            data[[i]]["number"] <- index_1[i]
             
             for(k in 1:length(predictors)){
                 
@@ -1393,11 +1426,26 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
             
         }
         
+        data <- data[!sapply(data,is.null)]
+        
     }
+    
+    if(error){
+        error <- list(errorType = "badData",
+                      errorMessage = "Please specify a valid range of prediction values")
+        
+        results[["newData"]] <- list(title = 'Predictions',
+                                     schema = list(fields = fields),
+                                     data = data,
+                                     error = error)
+        
+    } else {
     
     results[["newData"]] <- list(title = 'Predictions',
                                  schema = list(fields = fields),
                                  data = data)
+    
+    }
     
     }
 

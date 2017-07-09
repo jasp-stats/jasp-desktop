@@ -71,6 +71,9 @@ void MLClusteringKMeansForm::defaultOptions()
 	ui->randomSetCount->setSizePolicy(retain);
 	ui->randomSetCount->hide();
 
+    ui->seed->setSizePolicy(retain);
+    ui->seed->hide();
+
 	retain = ui->label_to_1->sizePolicy();
 	retain.setRetainSizeWhenHidden(true);
 	ui->label_to_1->setSizePolicy(retain);
@@ -179,4 +182,13 @@ void MLClusteringKMeansForm::on_auto_3_clicked(bool checked)
 	if (checked) {
 		ui->randomSetCount->hide();
 	}
+}
+
+void MLClusteringKMeansForm::on_seedBox_clicked(bool checked)
+{
+    if (checked) {
+        ui->seed->show();
+    } else {
+        ui->seed->hide();
+    }
 }

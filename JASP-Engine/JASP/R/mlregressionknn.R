@@ -78,9 +78,13 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	    
 	}
 	
-	# set the seed so that every time the same set is chosen (to prevent random results) ##
+	# set the seed ##
 	
-	set.seed(options[["seed"]])
+	if(options[["seedBox"]]){
+	    set.seed(options[["seed"]])
+	} else {
+	    set.seed(Sys.time())
+	}
 	
 	# create results bundle ##
 	
@@ -1032,6 +1036,16 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
     index_1 <- which(dataset_indicator[,indicator] == 1)
     index_0 <- which(dataset_indicator[,indicator] == 0)
     
+    opData <- na.omit(dataset_indicator[index_1, predictors])
+    
+    if(nrow(opData) < 1){
+        return(list(title = "Predictions for new data",
+                    schema = list(fiels = list(list(name = "fields", title = "Prediction", type = "string"))),
+                    data = list(list(fields = "")),
+                    error = list(errorType = "badData",
+                                 errorMessage = "No observations to predict after removing missing values")))
+    }
+    
     knn.fit <- kknn::train.kknn(formula = formula,
                                 data = dataset_indicator[index_0,],
                                 ks = res[["Optimal.K"]],
@@ -1040,57 +1054,91 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
                                 na.action = opt[['NA']],
                                 scale = FALSE)
     
-    predictions <- predict(knn.fit,newdata = dataset_indicator[index_1,])
+    predictions <- predict(knn.fit,newdata = opData)
     
-    if(options[["newPredictions"]]){
+    error <- FALSE
     
-    fields <- list()
-    
-    if(!is.null(res)){
-        
-        for(i in 1:length(predictors)){
-            
-            fields[[length(fields)+1]] <- list(name = paste("predictor",i,sep = ""),title = .unv(predictors[i]), type = 'number', format = 'dp:2')
-            
-        }
-        
-        fields[[length(fields)+1]] <- list(name = "predicted", title = paste("Predicted",options[['target']], sep=' '), type = "number", format = "dp:2")
-        
+    if(options[["predFrom"]] > length(predictions)){
+        from <- 1
+        error <- TRUE
     } else {
-        
-        fields[[1]] <- list(name = 'predictor1', title = "Predictor", type = "number")
-        fields[[2]] <- list(name = "predicted", title = paste("Predicted",options[['target']], sep=' '), type = "number")
-        
+        from <- options[["predFrom"]]  
+    }
+    if(options[["predTo"]] > length(predictions)){
+        to <- length(predictions)
+        error <- TRUE
+    } else {
+        to <- options[["predTo"]]    
     }
     
-    if(is.null(res)){
+    if(options[["newPredictions"]]){
         
-        data <- list(list("predictor1" = ".", "predicted" = "."))
+        fields <- list()
         
-    } else {
+        fields[[1]] <- list(name = "number",title = "Obs. number", type = 'Integer', format = 'dp:0')
         
-        data <- list()
-        
-        for(i in 1:length(predictions)){	
+        if(!is.null(res)){
             
-            data[[i]] <- list()
-            
-            for(k in 1:length(predictors)){
+            for(i in 1:length(predictors)){
                 
-                data[[i]][[paste('predictor',k,sep = '')]] <- .clean(dataset_indicator[index_1[i],predictors[k]])
+                fields[[length(fields)+1]] <- list(name = paste("predictor",i,sep = ""),title = .unv(predictors[i]), type = 'number', format = 'dp:2')
                 
             }
             
-            data[[i]]["predicted"] <- .clean(predictions[i])
+            fields[[length(fields)+1]] <- list(name = "predicted", title = paste("Predicted",options[['target']], sep=' '), type = "number", format = "dp:2")
+            
+        } else {
+            
+            fields[[1]] <- list(name = 'predictor1', title = "Predictor", type = "number")
+            fields[[2]] <- list(name = "predicted", title = paste("Predicted",options[['target']], sep=' '), type = "number")
             
         }
         
-    }
-    
-    return(list(title = 'Predictions for new data',
-                schema = list(fields = fields),
-                data = data))
-    
+        if(is.null(res)){
+            
+            data <- list(list("number" = ".", "predictor1" = ".", "predicted" = "."))
+            
+        } else {
+            
+            data <- list()
+            
+            for(i in from:to){	
+                
+                data[[i]] <- list()
+                
+                data[[i]]["number"] <- index_1[i]
+                
+                for(k in 1:length(predictors)){
+                    
+                    data[[i]][[paste('predictor',k,sep = '')]] <- .clean(dataset_indicator[index_1[i],predictors[k]])
+                    
+                }
+                
+                data[[i]]["predicted"] <- .clean(predictions[i])
+                
+            }
+            
+            data <- data[!sapply(data,is.null)]
+            
+        }
+        
+        if(error){
+            error <- list(errorType = "badData",
+                          errorMessage = "Please specify a valid range of prediction values")
+            
+            return(list(title = 'Predictions',
+                        schema = list(fields = fields),
+                        data = data,
+                        error = error))
+                   
+        } else {
+            
+            return(list(title = 'Predictions for new data',
+                        schema = list(fields = fields),
+                        data = data))
+            
+        }
+        
     }
     
 }

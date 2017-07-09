@@ -106,6 +106,21 @@ void MLClassificationKNNForm::defaultOptions()
 	ui->distanceParameterManual->setSizePolicy(retain);
 	ui->distanceParameterManual->hide();
 
+    ui->predFrom->setSizePolicy(retain);
+    ui->predFrom->hide();
+
+    ui->predTo->setSizePolicy(retain);
+    ui->predTo->hide();
+
+    ui->labelPredTo->setSizePolicy(retain);
+    ui->labelPredTo->hide();
+
+    ui->labelPredFrom->setSizePolicy(retain);
+    ui->labelPredFrom->hide();
+
+    ui->seed->setSizePolicy(retain);
+    ui->seed->hide();
+
 	retain = ui->label_to->sizePolicy();
 	retain.setRetainSizeWhenHidden(true);
 	ui->label_to->setSizePolicy(retain);
@@ -198,4 +213,28 @@ void MLClassificationKNNForm::on_optimized_3_clicked(bool checked)
 	if (checked) {
 		ui->distanceParameterManual->hide();
 	}
+}
+
+void MLClassificationKNNForm::on_newPredictions_clicked(bool checked)
+{
+    if (checked) {
+        ui->predFrom->show();
+        ui->predTo->show();
+        ui->labelPredFrom->show();
+        ui->labelPredTo->show();
+    } else {
+        ui->predFrom->hide();
+        ui->predTo->hide();
+        ui->labelPredFrom->hide();
+        ui->labelPredTo->hide();
+    }
+}
+
+void MLClassificationKNNForm::on_seedBox_clicked(bool checked)
+{
+    if (checked) {
+        ui->seed->show();
+    } else {
+        ui->seed->hide();
+    }
 }

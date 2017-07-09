@@ -71,9 +71,13 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
         
     }
     
-    # set the seed so that every time the same set is chosen (to prevent random results) ##
+    # set the seed ##
     
-    set.seed(options[["seed"]])
+    if(options[["seedBox"]]){
+        set.seed(options[["seed"]])
+    } else {
+        set.seed(Sys.time())
+    }
     
     # create results bundle ##
     

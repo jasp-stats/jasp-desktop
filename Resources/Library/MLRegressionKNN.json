@@ -153,9 +153,9 @@
         {
             "name": "seed",
             "type": "Integer",
-            "default": 1,
             "min": 1,
-            "max": 999
+            "max": 999,
+            "default": 123
         },
         {
             "name": "newPredictions",
@@ -166,6 +166,24 @@
             "name": "accuracyPlot",
             "type": "Boolean",
             "default": false
+        },
+        {
+            "name": "predFrom",
+            "type": "Integer",
+            "default": 1,
+            "min": 1,
+            "max": 999
+        },
+        {
+            "name": "predTo",
+            "type": "Integer",
+            "default": 10,
+            "max": 999,
+            "min": 1
+        },
+        {
+            "name": "seedBox",
+            "type": "Boolean",
         }
 
 	]

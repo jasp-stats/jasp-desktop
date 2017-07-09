@@ -165,9 +165,13 @@
         {
             "name": "seed",
             "type": "Integer",
-            "default": 1,
             "min": 1,
-            "max": 999
+            "max": 999,
+            "default": 123
+        },
+        {
+            "name": "seedBox",
+            "type": "Boolean",
         }
 
 	]

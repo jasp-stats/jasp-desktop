@@ -57,6 +57,7 @@ private slots:
 	void on_auto_2_clicked(bool);
 	void on_manual_3_clicked(bool);
 	void on_auto_3_clicked(bool);
+    void on_seedBox_clicked(bool);
 };
 
 #endif // MLCLUSTERINGKMEANSFORM_H

@@ -103,8 +103,23 @@ void MLRegressionKNNForm::defaultOptions()
 	ui->optimizedTo->setSizePolicy(retain);
 	ui->optimizedTo->hide();
 
+    ui->predFrom->setSizePolicy(retain);
+    ui->predFrom->hide();
+
+    ui->predTo->setSizePolicy(retain);
+    ui->predTo->hide();
+
+    ui->labelpredFrom->setSizePolicy(retain);
+    ui->labelpredFrom->hide();
+
+    ui->labelpredTo->setSizePolicy(retain);
+    ui->labelpredTo->hide();
+
 	ui->distanceParameterManual->setSizePolicy(retain);
 	ui->distanceParameterManual->hide();
+
+    ui->seed->setSizePolicy(retain);
+    ui->seed->hide();
 
 	retain = ui->label_to->sizePolicy();
 	retain.setRetainSizeWhenHidden(true);
@@ -198,4 +213,28 @@ void MLRegressionKNNForm::on_optimized_3_clicked(bool checked)
 	if (checked) {
 		ui->distanceParameterManual->hide();
 	}
+}
+
+void MLRegressionKNNForm::on_newPredictions_clicked(bool checked)
+{
+    if (checked) {
+        ui->predFrom->show();
+        ui->predTo->show();
+        ui->labelpredFrom->show();
+        ui->labelpredTo->show();
+    } else {
+        ui->predFrom->hide();
+        ui->predTo->hide();
+        ui->labelpredFrom->hide();
+        ui->labelpredTo->hide();
+    }
+}
+
+void MLRegressionKNNForm::on_seedBox_clicked(bool checked)
+{
+    if (checked) {
+        ui->seed->show();
+    } else {
+        ui->seed->hide();
+    }
 }
