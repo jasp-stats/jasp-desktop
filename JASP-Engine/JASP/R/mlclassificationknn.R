@@ -31,6 +31,7 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     stateKey[["New"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[["Plot"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[["optim"]] <- c("optimizeModel", "optimizeModelMaxK", "optimizeModelMaxD")
+    stateKey[["seed"]] <- c("seed", "seedBox")
     
     attr(state, "key") <- stateKey
     
@@ -80,10 +81,13 @@ MLClassificationKNN <- function(dataset=NULL, state = NULL, options, perform="ru
     
     # set the seed ##
     if(options[["seedBox"]]){
-        set.seed(options[["seed"]])
+        seed <- options[['seed']]
+        set.seed(seed)
     } else {
-        set.seed(Sys.time())
+        seed <- Sys.time()
+        set.seed(seed)
     }
+    state[["seed"]] <- seed
     
     # create results bundle ##
     

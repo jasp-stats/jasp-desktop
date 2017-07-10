@@ -31,6 +31,7 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
     stateKey[["newData"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[["Plot"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "predictionsFrom", "predictionsTo", "scaleEqualSD")
     stateKey[["accuracyPlot"]] <- c("seed", "noOfNearestNeighbours", "nearestNeighboursCount", "percentageTrainingData", "trainingDataManual", "distanceParameter", "distanceParameterManual", "weights", "optimizedFrom", "optimizedTo", "naAction", "scaleEqualSD")
+    stateKey[["seed"]] <- c("seed", "seedBox")
     
     attr(state, "key") <- stateKey
     
@@ -81,10 +82,13 @@ MLRegressionKNN <- function(dataset=NULL, options, state = NULL, perform="run", 
 	# set the seed ##
 	
 	if(options[["seedBox"]]){
-	    set.seed(options[["seed"]])
+	    seed <- options[['seed']]
+	    set.seed(seed)
 	} else {
-	    set.seed(Sys.time())
+	    seed <- Sys.time()
+	    set.seed(seed)
 	}
+	state[["seed"]] <- seed
 	
 	# create results bundle ##
 	

@@ -29,6 +29,8 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
     stateKey[['criterionvsclusters']] <- c("seed", "predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "robustFrom", "robustTo", "criterion")
     stateKey[["pcaplot"]] <- c("seed", "tablePredictions", "predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "clusterSize", "optimizedFrom", "optimizedTo", "robustFrom", "robustTo")
     stateKey[["withinssvsclusters"]] <- c("seed", "predictors", "target", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "optimizedFrom", "optimizedTo")
+    stateKey[["seed"]] <- c("seed", "seedBox")
+    
     attr(state, "key") <- stateKey
     
     # read variables ##
@@ -74,10 +76,13 @@ MLClusteringKMeans <- function(dataset = NULL, options, state = NULL, perform = 
     # set the seed ##
     
     if(options[["seedBox"]]){
-        set.seed(options[["seed"]])
+        seed <- options[['seed']]
+        set.seed(seed)
     } else {
-        set.seed(Sys.time())
+        seed <- Sys.time()
+        set.seed(seed)
     }
+    state[["seed"]] <- seed
     
     # create results bundle ##
     
