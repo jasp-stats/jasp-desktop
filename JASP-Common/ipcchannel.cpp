@@ -30,169 +30,139 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 	_channelNumber = channelNumber;
 	_isSlave = isSlave;
 
-	_memory = new interprocess::managed_shared_memory(interprocess::open_or_create, name.c_str(), 4*1024*1024);
-
-	stringstream mutexInName;
-	stringstream mutexOutName;
-	stringstream dataInName;
-	stringstream dataOutName;
-	stringstream semaphoreInName;
-	stringstream semaphoreOutName;
-
-	if (isSlave)
+	if (!isSlave)
 	{
-		mutexInName  << name << "-sm";
-		mutexOutName << name << "-mm";
-		dataInName   << name << "-sd";
-		dataOutName  << name << "-md";
-		semaphoreInName  << name << "-ss";
-		semaphoreOutName << name << "-ms";
+		interprocess::shared_memory_object::remove(name.c_str());
+		try
+		{
+			_memory = new interprocess::managed_shared_memory(interprocess::create_only, name.c_str(), 4 * 1024 * 1024);
+			std::cout << "Master: Shared memory created with name " << name.c_str() << std::endl;
+		}
+		catch (boost::interprocess::interprocess_exception &e)
+		{
+			std::cout << "Master: Cannot create shared memory with name " << name.c_str() << ": " << e.what() << std::endl;
+		}
+		try
+		{
+			boost::interprocess::managed_shared_memory *test = new interprocess::managed_shared_memory(interprocess::open_only, name.c_str());
+			std::cout << "Master: Shared memory found with name " << name.c_str() << std::endl;
+		}
+		catch (boost::interprocess::interprocess_exception &e)
+		{
+			std::cout << "Master: Cannot find shared memory with name " << name.c_str() << ": " << e.what() << std::endl;
+		}
 	}
 	else
 	{
-		mutexInName  << name << "-mm";
-		mutexOutName << name << "-sm";
-		dataInName   << name << "-md";
-		dataOutName  << name << "-sd";
-		semaphoreInName  << name << "-ms";
-		semaphoreOutName << name << "-ss";
-	}
-
-	mutexInName << channelNumber;
-	mutexOutName << channelNumber;
-	dataInName << channelNumber;
-	dataOutName << channelNumber;
-	semaphoreInName << channelNumber;
-	semaphoreOutName << channelNumber;
-
-	_mutexIn  = _memory->find_or_construct<interprocess::interprocess_mutex>(mutexInName.str().c_str())();
-	_mutexOut = _memory->find_or_construct<interprocess::interprocess_mutex>(mutexOutName.str().c_str())();
-	_dataIn   = _memory->find_or_construct<String>(dataInName.str().c_str())(_memory->get_segment_manager());
-	_dataOut  = _memory->find_or_construct<String>(dataOutName.str().c_str())(_memory->get_segment_manager());
-
-#ifdef __APPLE__
-	_semaphoreIn  = sem_open(mutexInName.str().c_str(), O_CREAT, S_IWUSR | S_IRGRP | S_IROTH, 0);
-	_semaphoreOut = sem_open(mutexOutName.str().c_str(), O_CREAT, S_IWUSR | S_IRGRP | S_IROTH, 0);
-
-	if (isSlave == false)
-	{
-		// cleanse the semaphores; they don't seem to reliably initalise to zero.
-
-		while (sem_trywait(_semaphoreIn) == 0)
-			; // do nothing
-		while (sem_trywait(_semaphoreOut) == 0)
-			; // do nothing
+		try
+		{
+			_memory = new interprocess::managed_shared_memory(interprocess::open_only, name.c_str());
+			std::cout << "Slave: Shared memory read with name " << name.c_str() << std::endl;
+		}
+		catch (boost::interprocess::interprocess_exception &e)
+		{
+			std::cout << "Slave: Cannot find shared memory with name " << name.c_str() << " :"  << e.what() << std::endl;
+		}
 
 	}
-#elif defined __WIN32__
+	std::cout.flush();
 
-	wstring inName = nowide::widen(semaphoreInName.str());
-	wstring outName = nowide::widen(semaphoreOutName.str());
+	stringstream mutexNameMaster, mutexNameSlave;
+	stringstream dataNameMaster, dataNameSlave;
 
-	LPCWSTR inLPCWSTR = inName.c_str();
-	LPCWSTR outLPCWSTR = outName.c_str();
+	mutexNameMaster << name << "-mm-" << channelNumber;
+	mutexNameSlave << name << "-ms-" << channelNumber;
+	dataNameMaster << name << "-dm-" << channelNumber;
+	dataNameSlave << name << "-ds-" << channelNumber;
 
-	if (isSlave == false)
+	if (!isSlave)
 	{
-		_semaphoreIn = CreateSemaphore(NULL, 0, 1, inLPCWSTR);
-		_semaphoreOut = CreateSemaphore(NULL, 0, 1, outLPCWSTR);
+		_mutexMaster  = _memory->construct<interprocess::interprocess_mutex>(mutexNameMaster.str().c_str())();
+		_mutexSlave  = _memory->construct<interprocess::interprocess_mutex>(mutexNameSlave.str().c_str())();
+		_dataMaster   = _memory->construct<String>(dataNameMaster.str().c_str())(_memory->get_segment_manager());
+		_dataSlave   = _memory->construct<String>(dataNameSlave.str().c_str())(_memory->get_segment_manager());
+		_dataMaster->clear();
+		_dataSlave->clear();
 	}
 	else
 	{
-		_semaphoreIn = OpenSemaphore(SYNCHRONIZE, false, inLPCWSTR);
-		_semaphoreOut = OpenSemaphore(SYNCHRONIZE | SEMAPHORE_MODIFY_STATE, false, outLPCWSTR);
+		_mutexMaster  = _memory->find<interprocess::interprocess_mutex>(mutexNameMaster.str().c_str()).first;
+		if (!_mutexMaster)
+			std::cout << "Cannot find mutex master" << std::endl;
+		_mutexSlave  = _memory->find<interprocess::interprocess_mutex>(mutexNameSlave.str().c_str()).first;
+		if (!_mutexSlave)
+			std::cout << "Cannot find mutex slave" << std::endl;
+		_dataMaster   = _memory->find<String>(dataNameMaster.str().c_str()).first;
+		if (!_dataMaster)
+			std::cout << "Cannot find data master" << std::endl;
+		_dataSlave   = _memory->find<String>(dataNameSlave.str().c_str()).first;
+		if (!_dataSlave)
+			std::cout << "Cannot find data slave" << std::endl;
 	}
+}
 
-#else
-
-    if (_isSlave == false)
-    {
-		interprocess::named_semaphore::remove(mutexInName.str().c_str());
-		interprocess::named_semaphore::remove(mutexOutName.str().c_str());
-
-		_semaphoreIn  = new interprocess::named_semaphore(interprocess::create_only, mutexInName.str().c_str(), 0);
-		_semaphoreOut = new interprocess::named_semaphore(interprocess::create_only, mutexOutName.str().c_str(), 0);
-    }
-    else
-    {
-		_semaphoreIn  = new interprocess::named_semaphore(interprocess::open_only, mutexInName.str().c_str());
-		_semaphoreOut = new interprocess::named_semaphore(interprocess::open_only, mutexOutName.str().c_str());
-    }
-
-
-#endif
+IPCChannel::~IPCChannel()
+{
+	interprocess::shared_memory_object::remove(_name.c_str());
 }
 
 void IPCChannel::send(string &data)
 {
-	_mutexOut->lock();
-	_dataOut->assign(data.begin(), data.end());
-
-#ifdef __APPLE__
-	sem_post(_semaphoreOut);
-#elif defined __WIN32__
-	ReleaseSemaphore(_semaphoreOut, 1, NULL);
-#else
-    _semaphoreOut->post();
-#endif
-
-
-    _mutexOut->unlock();
+	if (_isSlave)
+	{
+		_mutexSlave->lock();
+		_dataSlave->assign(data.begin(), data.end());
+		_mutexSlave->unlock();
+	}
+	else
+	{
+		_mutexMaster->lock();
+		std::cout << "Master send data" << std::endl;
+		_dataMaster->assign(data.begin(), data.end());
+		string result;
+		result.assign(_dataMaster->c_str(), _dataMaster->size());
+		std::cout << "Master send data: " << result << std::endl;
+		std::cout.flush();
+		_mutexMaster->unlock();
+	}
 }
 
 bool IPCChannel::receive(string &data, int timeout)
 {
-	if (tryWait(timeout))
+	bool found = false;
+	timeout = 1;
+	ptime now(microsec_clock::universal_time());
+	ptime then = now + microseconds(1000 * timeout);
+	if (_isSlave)
 	{
-		_mutexIn->lock();
-		while (tryWait())
-			; // clear it completely
-
-		data.assign(_dataIn->c_str(), _dataIn->size());
-
-		_mutexIn->unlock();
-
-		return true;
-	}
-
-	return false;
-}
-
-
-bool IPCChannel::tryWait(int timeout)
-{
-	bool messageWaiting;
-
-#ifdef __APPLE__
-
-	messageWaiting = sem_trywait(_semaphoreIn) == 0;
-
-	while (timeout > 0 && messageWaiting == false)
-	{
-		usleep(100000);
-		timeout -= 10;
-		messageWaiting = sem_trywait(_semaphoreIn) == 0;
-	}
-
-#elif defined __WIN32__
-
-	messageWaiting = (WaitForSingleObject(_semaphoreIn, timeout) == WAIT_OBJECT_0);
-
-#else
-
-	if (timeout > 0)
-	{
-		ptime now(microsec_clock::universal_time());
-		ptime then = now + microseconds(1000 * timeout);
-
-        messageWaiting = _semaphoreIn->timed_wait(then);
+		std::cout << "Slave try to lock to read data" << std::endl;
+		if (_mutexMaster->timed_lock(then))
+		{
+			std::cout << "Slave received data size: " << _dataMaster->size() << std::endl;
+			if (_dataMaster->size())
+			{
+				data.assign(_dataMaster->c_str(), _dataMaster->size());
+				std::cout << "Slave data: " << data << std::endl;
+				_dataMaster->clear();
+				found = true;
+			}
+			_mutexMaster->unlock();
+		}
+		std::cout.flush();
 	}
 	else
 	{
-		messageWaiting = _semaphoreIn->try_wait();
+		if (_mutexSlave->timed_lock(then))
+		{
+			if (_dataSlave->size())
+			{
+				data.assign(_dataSlave->c_str(), _dataSlave->size());
+				_dataSlave->clear();
+				found = true;
+			}
+			_mutexSlave->unlock();
+		}
 	}
-#endif
 
-	return messageWaiting;
-
+	return found;
 }

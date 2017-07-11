@@ -126,6 +126,11 @@ SEXP rbridge_requestStateFileNameSEXP()
 
 string rbridge_run(const string &name, const string &options, const string &perform, int ppi, RCallback callback)
 {
+	std::cout << "ENGINE analysis: " << name << std::endl;
+	std::cout << "Options: " << options << std::endl;
+	std::cout << "Perform: " << perform << std::endl;
+	std::cout.flush();
+
 	SEXP results;
 
 	rbridge_runCallback = callback;
@@ -146,6 +151,9 @@ string rbridge_run(const string &name, const string &options, const string &perf
 
 Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnType> &columns)
 {
+	std::cout << "ENGINE readDataSet" << std::endl;
+	std::cout.flush();
+
 	if (rbridge_dataSet == NULL)
 		rbridge_dataSet = rbridge_dataSetSource();
 
@@ -161,6 +169,8 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 		(void)columns;
 
 		string columnName = columnInfo.first;
+		std::cout << "ENGINE readDataSet Column " << columnName << std::endl;
+		std::cout.flush();
 
 		string base64 = Base64::encode("X", columnName, Base64::RVarEncoding);
 		columnNames.push_back(base64);
@@ -334,6 +344,9 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 
 Rcpp::DataFrame rbridge_readDataSetHeader(const std::map<string, Column::ColumnType> &columns)
 {
+	std::cout << "ENGINE readDataSetHeader" << std::endl;
+	std::cout.flush();
+
 	if (rbridge_dataSet == NULL)
 		rbridge_dataSet = rbridge_dataSetSource();
 
@@ -349,6 +362,8 @@ Rcpp::DataFrame rbridge_readDataSetHeader(const std::map<string, Column::ColumnT
 		(void)columns;
 
 		string columnName = columnInfo.first;
+		std::cout << "ENGINE readDataSetHeader Column " << columnName << std::endl;
+		std::cout.flush();
 
 		string base64 = Base64::encode("X", columnName, Base64::RVarEncoding);
 		columnNames.push_back(base64);

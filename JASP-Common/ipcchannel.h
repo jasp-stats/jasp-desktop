@@ -22,7 +22,7 @@
  * and sometimes under windows too. hence, there are platform specific
  * implementations below */
 
-#ifdef __APPLE__
+#ifdef __AAPPLE__
 #include <semaphore.h>
 #elif defined __WIN32__
 
@@ -42,19 +42,17 @@
 
 typedef boost::interprocess::allocator<char, boost::interprocess::managed_shared_memory::segment_manager> CharAllocator;
 typedef boost::container::basic_string<char, std::char_traits<char>, CharAllocator> String;
-typedef boost::interprocess::allocator<String, boost::interprocess::managed_shared_memory::segment_manager> StringAllocator;
 
 class IPCChannel
 {
 public:
 	IPCChannel(std::string name, int channelNumber, bool isSlave = false);
+	virtual ~IPCChannel();
 
 	void send(std::string &data);
 	bool receive(std::string &data, int timeout = 0);
 
 private:
-
-	bool tryWait(int timeout = 0);
 
 	std::string _name;
 	int _channelNumber;
@@ -62,25 +60,11 @@ private:
 
 	boost::interprocess::managed_shared_memory *_memory;
 
-	boost::interprocess::interprocess_mutex *_mutexOut;
-	boost::interprocess::interprocess_mutex *_mutexIn;
+	boost::interprocess::interprocess_mutex *_mutexMaster;
+	boost::interprocess::interprocess_mutex *_mutexSlave;
 
-	String *_dataOut;
-	String *_dataIn;
-
-#ifdef __APPLE__
-	sem_t* _semaphoreOut;
-	sem_t* _semaphoreIn;
-#elif defined __WIN32__
-    HANDLE _semaphoreOut;
-    HANDLE _semaphoreIn;
-
-#else
-	boost::interprocess::named_semaphore* _semaphoreOut;
-	boost::interprocess::named_semaphore* _semaphoreIn;
-#endif
-
-
+	String *_dataMaster;
+	String *_dataSlave;
 
 };
 

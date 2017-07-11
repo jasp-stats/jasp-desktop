@@ -74,8 +74,11 @@ private:
 	std::vector<QProcess *> _slaveProcesses;
 	std::vector<IPCChannel *> _channels;
 	std::vector<Analysis *> _analysesInProgress;
+	std::vector<boost::interprocess::interprocess_mutex *> _mutexes;
 
-	IPCChannel *nextFreeProcess(Analysis *analysis);
+	bool tryUseEngine(int i, Analysis *analysis);
+	void freeEngine(int i);
+
 	void sendToProcess(int processNo, Analysis *analysis);
 
 	void startSlaveProcess(int no);
