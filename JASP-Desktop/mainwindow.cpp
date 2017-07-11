@@ -42,6 +42,7 @@
 
 #include "analysisforms/regressionlinearform.h"
 #include "analysisforms/regressionlinearbayesianform.h"
+#include "analysisforms/regressionlogisticform.h"
 #include "analysisforms/regressionloglinearform.h"
 #include "analysisforms/regressionloglinearbayesianform.h"
 #include "analysisforms/correlationform.h"
@@ -701,6 +702,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new RegressionLinearForm(contentArea);
 	else if (name == "RegressionLinearBayesian")
 		form = new RegressionLinearBayesianForm(contentArea);
+	else if (name == "RegressionLogistic")
+		form = new RegressionLogisticForm(contentArea);
 	else if (name == "RegressionLogLinear")
 		form = new RegressionLogLinearForm(contentArea);
 	else if (name == "RegressionLogLinearBayesian")
