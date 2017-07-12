@@ -24,6 +24,9 @@ SummaryStatsTTestBayesianOneSampleForm::SummaryStatsTTestBayesianOneSampleForm(Q
 	ui(new Ui::SummaryStatsTTestBayesianOneSampleForm)
 {
 	ui->setupUi(this);
+
+    // default
+    ui->subjectivePriors->hide();
 }
 
 SummaryStatsTTestBayesianOneSampleForm::~SummaryStatsTTestBayesianOneSampleForm()
