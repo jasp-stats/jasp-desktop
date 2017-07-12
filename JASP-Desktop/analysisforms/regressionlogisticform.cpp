@@ -29,8 +29,8 @@ RegressionLogisticForm::RegressionLogisticForm(QWidget *parent) :
 
 	_dependentModel = new TableModelVariablesAssigned();
 	_dependentModel->setSource(&_availableVariablesModel);
-	_dependentModel->setVariableTypesSuggested(Column::ColumnTypeScale);
-	_dependentModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	_dependentModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	_dependentModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->dependent->setModel(_dependentModel);
 
 	_covariatesModel = new TableModelVariablesAssigned();

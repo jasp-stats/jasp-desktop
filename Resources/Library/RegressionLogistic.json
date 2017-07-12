@@ -77,6 +77,11 @@
 			"default": false
 		},
 		{
+			"name": "confusionMatrixProportions",
+			"type": "Boolean",
+			"default": false
+		},
+		{
 			"name": "AUC",
 			"type": "Boolean",
 			"default": false

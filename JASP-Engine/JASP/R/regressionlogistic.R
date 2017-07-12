@@ -20,83 +20,149 @@
 # the <editor-fold> and </editor-fold> as start- and endpoints of a code fold.
 
 RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
-	
-	print(options)
-	
-	# <editor-fold> DATASET LOADING BLOCK ----
-	numericVars <- unlist(c(options$covariates, 
-													options$dependent, 
-													options$wlsWeights))
-	numericVars <- numericVars[numericVars != ""]
-	factorVars <- unlist(options$factors)
-	
-	
-	# </editor-fold> DATASET LOADING BLOCK
-	
-	# <editor-fold> STATE SYSTEM BLOCK ----
-	# load state
-	state <- .retrieveState()
-	
-	# init output variables
-	lrObj <- # glm object
-	modelSummary <- # fit/summary table
-	estimatesTable <- # parameter estimates table
-	confusionMatrix <- # confusion matrix table
-	perfMetrics <- # performance metrics of full model
-	estimatesPlots <- NULL # plots for estimates
-	
-	
-	# diff check
-	if (!is.null(state)) {
-		diff <- .diff(options, state$options)
-		with(diff, {
-			if (!any(dependent, covariates, factors, wlsWeights, modelTerms,
-				 			 includeIntercept)) {
-				# results object & model summary table can be reused
-				lrObj <- state[["lrObj"]]
-				modelSummary <- state[["modelSummary"]]
-				
-				if (!any(coeffEstimates, coeffCI, stdCoeff, oddsRatios, VovkSellkeMPR)) {
-					# estimates table can be reused
-					estimatesTable <- state[["estimatesTable"]]
-				}
-				
-				if (!any(confusionMatrixOpt, confusionMatrixProportions)) {
-					# confusionMatrix can be reused
-					confusionMatrix <- state[["perfDiagnostics"]][["confusionMatrix"]]
-				}
-				if (!any(AUC, Sens, Spec, Prec, Fmsr, BrierScr, Hmsr)) {
-					# metrics table can be reused
-					perfMetrics <- state[["perfDiagnostics"]][["perfMetrics"]]
-				}
-				
-				if (!any(estimatesPlotsOpt, estimatesPlotsCI)) {
-					# estimates plots can be reused
-					estimatesPlots <- state[["estimatesPlots"]]
-				}
-			}			
-		})
-	}
-	# </editor-fold> STATE SYSTEM BLOCK
-	
-	
+  
+  # <editor-fold> DATASET LOADING BLOCK ----
+  numericVars <- unlist(c(options[["covariates"]], 
+                          options[["dependent"]], 
+                          options[["wlsWeights"]]))
+  numericVars <- numericVars[numericVars != ""]
+  factorVars <- unlist(options[["factors"]])
+  factorVars <- factorVars[factorVars != ""]
+  if (is.null (dataset)) {
+    if (perform == "run") {
+      dataset <- .readDataSetToEnd(columns.as.numeric = numericVars, 
+                                   columns.as.factor = factorVars,
+                                   exclude.na.listwise = c(numericVars, 
+                                                           factorVars))
+    } else {
+      dataset <- .readDataSetHeader(columns.as.numeric = numericVars, 
+                                    columns.as.factor = factorVars)
+    }
+  }  
+  # </editor-fold> DATASET LOADING BLOCK
+  
+  # <editor-fold> STATE SYSTEM BLOCK ----
+  # load state
+  state <- .retrieveState()
+  
+  # init output variables
+  lrObj <- # glm object
+  modelSummary <- # fit/summary table
+  estimatesTable <- # parameter estimates table
+  confusionMatrix <- # confusion matrix table
+  perfMetrics <- # performance metrics of full model
+  estimatesPlots <- NULL # plots for estimates
+  
+  
+  # diff check
+  if (!is.null(state)) {
+    diff <- .diff(options, state[["options"]])
+    with(diff, {
+      if (!any(dependent, covariates, factors, wlsWeights, modelTerms,
+                includeIntercept)) {
+        # results object & model summary table can be reused
+        lrObj <- state[["lrObj"]]
+        modelSummary <- state[["modelSummary"]]
+        
+        if (!any(coeffEstimates, coeffCI, stdCoeff, oddsRatios, VovkSellkeMPR)) {
+          # estimates table can be reused
+          estimatesTable <- state[["estimatesTable"]]
+        }
+        
+        if (!any(confusionMatrixOpt, confusionMatrixProportions)) {
+          # confusionMatrix can be reused
+          confusionMatrix <- state[["confusionMatrix"]]
+        }
+        if (!any(AUC, Sens, Spec, Prec, Fmsr, BrierScr, Hmsr)) {
+          # metrics table can be reused
+          perfMetrics <- state[["perfMetrics"]]
+        }
+        
+        if (!any(estimatesPlotsOpt, estimatesPlotsCI)) {
+          # estimates plots can be reused
+          estimatesPlots <- state[["estimatesPlots"]]
+        }
+      }      
+    })
+  }
+  # </editor-fold> STATE SYSTEM BLOCK
+  
+  # <editor-fold> RESULTS GENERATION BLOCK ----
+  # for each non-null result, generate results
+  if (is.null(lrObj)) {
+    lrObj <- .jaspGlm(dataset, options, perform, type = "binomial")
+  }
+  
+  if (is.null(modelSummary)) {
+    modelSummary <- .glmModelSummary(lrObj, options, perform)
+  }
+  
+  if (is.null(estimatesTable) && options[["coeffEstimates"]]) {
+    estimatesTable <- .glmEstimatesTable(lrObj, options, perform)
+  }
+  
+  if (is.null(confusionMatrix) && options[["confusionMatrixOpt"]]) {
+    confusionMatrix <- .glmConfusionMatrix(lrObj, options, perform)
+  }
+  
+  wantsPerfMetrics <- with(options, any(AUC, Sens, Spec, Prec, Fmsr, BrierScr, 
+                                        Hmsr))
+  if (is.null(perfMetrics) && wantsPerfMetrics) {
+    perfMetrics <- .glmPerformanceMetrics(lrObj, options, perform)
+  }
+  
+  perfDiagnostics <- list("confusionMatrix" = confusionMatrix, 
+                          "perfMetrics" = perfMetrics)
+  
+  if (is.null(estimatesPlots) && options[["estimatesPlotsOpt"]]) {
+    estimatesPlots <- .glmEstimatesPlots(lrObj, options, perform)
+  }
+  
+  
+  results <- list()
+  results[["modelSummary"]] <- modelSummary  
+  results[["estimatesTable"]] <- estimatesTable
+  results[["perfDiagnostics"]] <- perfDiagnostics
+  results[["estimatesPlots"]] <- estimatesPlots
+  
+  
+  # </editor-fold> RESULTS GENERATION BLOCK
+  
+  # <editor-fold> RETURN RESULTS BLOCK ----
+  
+  plotPaths <- .lrGetPlotPaths(estimatesPlots)
+  
+  if (perform == "run") {
+    state <- list()
+    state[["options"]] <- options
+    state[["lrObj"]] <- lrObj
+    state[["modelSummary"]] <- modelSummary  
+    state[["estimatesTable"]] <- estimatesTable
+    state[["confusionMatrix"]] <- confusionMatrix
+    state[["perfMetrics"]] <- perfMetrics
+    state[["estimatesPlots"]] <- estimatesPlots
+    
+    return(list(results=results, status="complete", state=state,
+                keep = plotPaths))
+
+  } else {
+
+    return(list(results=results, status="inited", state=state,
+                keep = plotPaths))
+
+  }
+  # </editor-fold> RETURN RESULTS BLOCK
+  
 }
 
-.readLogRegData <- function (dataset = NULL, options = list (), perform = "init", type = "binomial") {
-	numeric.vars <- c (unlist(options$covariates), unlist(options$dependent))
-	numeric.vars <- numeric.vars [numeric.vars != ""]
-
-	factor.vars <- c (unlist (options$fixedFactors), unlist (options$randomFactors))
-	factor.vars <- factor.vars [factor.vars != ""]
-
-	if (is.null (dataset)) {
-		if (perform == "run") {
-			dataset <- .readDataSetToEnd (columns.as.numeric = numeric.vars, columns.as.factor = factor.vars,
-				exclude.na.listwise = c (numeric.vars, factor.vars))
-		} else {
-			dataset <- .readDataSetHeader (columns.as.numeric = numeric.vars, columns.as.factor = factor.vars)
-		}
-	}
-
-	return (dataset)
+.lrGetPlotPaths <- function(estPlots) {
+  if (is.null(estPlots)) {
+    return(NULL)
+  } else {
+    out <- vector(list, length(estPlots[["collection"]]))
+    for (i in seq_along(estPlots[["collection"]])) {
+      out[[i]] <- estPlots[["collection"]][[i]][["data"]]
+    }
+    return(out)
+  }
 }
