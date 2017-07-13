@@ -87,14 +87,29 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   }
   # </editor-fold> STATE SYSTEM BLOCK
   
+  # <editor-fold> META INFORMATION BLOCK ----
+  
+  .meta <-  list(
+		list(name = "title", type = "title"),
+		list(name = "modelSummary", type = "table"),
+		list(name = "estimatesTable", type = "table"),
+		list(name = "perfDiagnostics", type = "collection", meta = "table"),
+		list(name="estimatesPlots", type="image")
+	)
+  
+  # </editor-fold> META INFORMATION BLOCK
+  
   # <editor-fold> RESULTS GENERATION BLOCK ----
+  print(options$dependent)
+  print(options$covariates)
+  print(names(dataset))
   # for each non-null result, generate results
   if (is.null(lrObj)) {
     lrObj <- .jaspGlm(dataset, options, perform, type = "binomial")
   }
   
   if (is.null(modelSummary)) {
-    modelSummary <- .glmModelSummary(lrObj, options, perform)
+    modelSummary <- .glmModelSummary(lrObj, options, perform, type = "binomial")
   }
   
   if (is.null(estimatesTable) && options[["coeffEstimates"]]) {
@@ -120,7 +135,9 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   
   
   results <- list()
-  results[["modelSummary"]] <- modelSummary  
+  results[[".meta"]] <- .meta
+  results[["title"]] <- "Logistic Regression"
+  results[["modelSummary"]] <- modelSummary
   results[["estimatesTable"]] <- estimatesTable
   results[["perfDiagnostics"]] <- perfDiagnostics
   results[["estimatesPlots"]] <- estimatesPlots
@@ -142,11 +159,13 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
     state[["perfMetrics"]] <- perfMetrics
     state[["estimatesPlots"]] <- estimatesPlots
     
+    str(state)
     return(list(results=results, status="complete", state=state,
                 keep = plotPaths))
 
   } else {
-
+    
+    str(state)
     return(list(results=results, status="inited", state=state,
                 keep = plotPaths))
 
