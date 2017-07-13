@@ -807,6 +807,22 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>AssignButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/assignbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AvailableFieldsListView</class>
+   <extends>QListView</extends>
+   <header>widgets/availablefieldslistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
@@ -818,42 +834,67 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>GroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/groupbox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
-   <class>AssignButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/assignbutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>AvailableFieldsListView</class>
-   <extends>QListView</extends>
-   <header>widgets/availablefieldslistview.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
    <class>boundSingleItemView</class>
    <extends>QListView</extends>
    <header>widgets/boundsingleitemview.h</header>
   </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listAvailableFields</tabstop>
+  <tabstop>buttonAssignDependent</tabstop>
+  <tabstop>dependent</tabstop>
+  <tabstop>buttonAssignCovariates</tabstop>
+  <tabstop>covariates</tabstop>
+  <tabstop>buttonAssignWlsWeights</tabstop>
+  <tabstop>wlsWeights</tabstop>
+  <tabstop>priorprobs</tabstop>
+  <tabstop>logmarg</tabstop>
+  <tabstop>expanderModel</tabstop>
+  <tabstop>plotLogPosteriorOdds</tabstop>
+  <tabstop>plotResidualsVsFitted</tabstop>
+  <tabstop>plotModelProbabilities</tabstop>
+  <tabstop>plotModelComplexity</tabstop>
+  <tabstop>plotInclusionProbabilites</tabstop>
+  <tabstop>plotRobustnessCheck</tabstop>
+  <tabstop>plotCoefficientsPosterior</tabstop>
+  <tabstop>expanderAdvanced</tabstop>
+  <tabstop>aic</tabstop>
+  <tabstop>bic</tabstop>
+  <tabstop>eb_global</tabstop>
+  <tabstop>eb_local</tabstop>
+  <tabstop>g_prior</tabstop>
+  <tabstop>hyper_g</tabstop>
+  <tabstop>hyper_g_laplace</tabstop>
+  <tabstop>hyper_g_n</tabstop>
+  <tabstop>zs_full</tabstop>
+  <tabstop>zs_null</tabstop>
+  <tabstop>gPriorParameter</tabstop>
+  <tabstop>BAS</tabstop>
+  <tabstop>MCMC</tabstop>
+  <tabstop>iterationsMCMC</tabstop>
+  <tabstop>betaBinomial</tabstop>
+  <tabstop>betaBinomialParamA</tabstop>
+  <tabstop>betaBinomialParamB</tabstop>
+  <tabstop>Bernoulli</tabstop>
+  <tabstop>bernoulliParam</tabstop>
+  <tabstop>uniformPrior</tabstop>
+  <tabstop>numberOfModels</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

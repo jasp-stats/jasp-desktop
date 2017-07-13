@@ -31,8 +31,10 @@
 			"type": "Boolean"
 		},
 		{
-			"name": "effectsStepwise",
-			"type": "Boolean"
+			"name": "effectsType",
+			"options": [ "allModels", "matchedModels" ],
+			"default": "allModels",
+			"type": "List"
 		},
 		{
 			"name": "posteriorEstimates",

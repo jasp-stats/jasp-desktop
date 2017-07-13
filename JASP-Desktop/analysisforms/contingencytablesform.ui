@@ -982,11 +982,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -1004,6 +999,11 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
@@ -1014,11 +1014,58 @@
    <header>widgets/boundsingleitemview.h</header>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listAvailableFields</tabstop>
+  <tabstop>buttonAssignRows</tabstop>
+  <tabstop>rows</tabstop>
+  <tabstop>buttonAssignColumns</tabstop>
+  <tabstop>columns</tabstop>
+  <tabstop>buttonAssignCounts</tabstop>
+  <tabstop>counts</tabstop>
+  <tabstop>buttonAssignLayers</tabstop>
+  <tabstop>layers</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>chiSquared</tabstop>
+  <tabstop>chiSquaredContinuityCorrection</tabstop>
+  <tabstop>likelihoodRatio</tabstop>
+  <tabstop>oddsRatio</tabstop>
+  <tabstop>oddsRatioConfidenceIntervalInterval</tabstop>
+  <tabstop>VovkSellkeMPR</tabstop>
+  <tabstop>contingencyCoefficient</tabstop>
+  <tabstop>phiAndCramersV</tabstop>
+  <tabstop>lambda</tabstop>
+  <tabstop>uncertaintyCoefficient</tabstop>
+  <tabstop>gamma</tabstop>
+  <tabstop>somersD</tabstop>
+  <tabstop>kendallsTauB</tabstop>
+  <tabstop>kendallsTauC</tabstop>
+  <tabstop>byIntervalEta</tabstop>
+  <tabstop>cochransAndMantel</tabstop>
+  <tabstop>testOddsRatioEquals</tabstop>
+  <tabstop>pushButton_2</tabstop>
+  <tabstop>countsObserved</tabstop>
+  <tabstop>countsExpected</tabstop>
+  <tabstop>hideSmallCounts</tabstop>
+  <tabstop>hideSmallCountsLessThan</tabstop>
+  <tabstop>zTestCompareColumns</tabstop>
+  <tabstop>zTestAdjustPValues</tabstop>
+  <tabstop>percentagesRow</tabstop>
+  <tabstop>percentagesColumn</tabstop>
+  <tabstop>percentagesTotal</tabstop>
+  <tabstop>residualsUnstandardized</tabstop>
+  <tabstop>residualsStandardized</tabstop>
+  <tabstop>residualsAdjustedStandardized</tabstop>
+  <tabstop>pushButton_3</tabstop>
+  <tabstop>_1rowAscending</tabstop>
+  <tabstop>_2rowDescending</tabstop>
+  <tabstop>_1columnAscending</tabstop>
+  <tabstop>_2columnDescending</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

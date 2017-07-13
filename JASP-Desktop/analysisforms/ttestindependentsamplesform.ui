@@ -732,11 +732,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -763,7 +758,37 @@
    <extends>QListView</extends>
    <header>widgets/boundsingleitemview.h</header>
   </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listAvailableFields</tabstop>
+  <tabstop>buttonAssignVariables</tabstop>
+  <tabstop>variables</tabstop>
+  <tabstop>buttonAssignGroupingVariable</tabstop>
+  <tabstop>groupingVariable</tabstop>
+  <tabstop>students</tabstop>
+  <tabstop>welchs</tabstop>
+  <tabstop>mannWhitneyU</tabstop>
+  <tabstop>_1notEqual</tabstop>
+  <tabstop>_2groupOneGreater</tabstop>
+  <tabstop>_3groupTwoGreater</tabstop>
+  <tabstop>meanDifference</tabstop>
+  <tabstop>effectSize</tabstop>
+  <tabstop>confidenceInterval</tabstop>
+  <tabstop>confidenceIntervalInterval</tabstop>
+  <tabstop>descriptives</tabstop>
+  <tabstop>descriptivesPlots</tabstop>
+  <tabstop>descriptivesPlotsConfidenceInterval</tabstop>
+  <tabstop>VovkSellkeMPR</tabstop>
+  <tabstop>normalityTests</tabstop>
+  <tabstop>equalityOfVariancesTests</tabstop>
+  <tabstop>_1excludeAnalysisByAnalysis</tabstop>
+  <tabstop>_2excludeListwise</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

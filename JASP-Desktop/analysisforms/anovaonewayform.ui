@@ -589,11 +589,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
@@ -615,16 +610,48 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundTableView</class>
-   <extends>QTableView</extends>
-   <header>widgets/boundtableview.h</header>
-  </customwidget>
-  <customwidget>
    <class>boundSingleItemView</class>
    <extends>QListView</extends>
    <header>widgets/boundsingleitemview.h</header>
   </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundTableView</class>
+   <extends>QTableView</extends>
+   <header>widgets/boundtableview.h</header>
+  </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listAvailableFields</tabstop>
+  <tabstop>buttonAssignVariables</tabstop>
+  <tabstop>variables</tabstop>
+  <tabstop>buttonAssignGroupingVariable</tabstop>
+  <tabstop>groupingVariable</tabstop>
+  <tabstop>pushButton_2</tabstop>
+  <tabstop>contrasts</tabstop>
+  <tabstop>pushButton_3</tabstop>
+  <tabstop>postHocTestsHolm</tabstop>
+  <tabstop>postHocTestsBonferroni</tabstop>
+  <tabstop>postHocTestsHochberg</tabstop>
+  <tabstop>postHocTestsHommel</tabstop>
+  <tabstop>postHocTestsBenjamini</tabstop>
+  <tabstop>postHocTestsFDR</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>_1assumeEqual</tabstop>
+  <tabstop>_2assumeUnequal</tabstop>
+  <tabstop>_3both</tabstop>
+  <tabstop>meanDifference</tabstop>
+  <tabstop>confidenceInterval</tabstop>
+  <tabstop>confidenceIntervalInterval</tabstop>
+  <tabstop>descriptives</tabstop>
+  <tabstop>testUnequalVariances</tabstop>
+  <tabstop>_1excludeAnalysisByAnalysis</tabstop>
+  <tabstop>_2excludeListwise</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

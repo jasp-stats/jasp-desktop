@@ -18,6 +18,7 @@ public:
 	explicit PreferencesDialog(QWidget *parent = 0);
 	~PreferencesDialog();
 
+
 private:
 	Ui::PreferencesDialog *ui;
 	QSettings _settings;

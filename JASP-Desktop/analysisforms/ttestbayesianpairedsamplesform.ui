@@ -619,17 +619,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>BoundTextBox</class>
-   <extends>QLineEdit</extends>
-   <header>widgets/boundtextbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundGroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/boundgroupbox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>AssignButton</class>
    <extends>QPushButton</extends>
    <header>widgets/assignbutton.h</header>
@@ -646,14 +635,25 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
+   <class>BoundTextBox</class>
+   <extends>QLineEdit</extends>
+   <header>widgets/boundtextbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundGroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/boundgroupbox.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundPairsTable</class>
@@ -667,6 +667,28 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>availableFields</tabstop>
+  <tabstop>assignButton</tabstop>
+  <tabstop>pairs</tabstop>
+  <tabstop>_1twoTailed</tabstop>
+  <tabstop>_2oneTailedGreaterThan</tabstop>
+  <tabstop>_3oneTailedLessThan</tabstop>
+  <tabstop>_1</tabstop>
+  <tabstop>_2</tabstop>
+  <tabstop>_3</tabstop>
+  <tabstop>plotPriorAndPosterior</tabstop>
+  <tabstop>plotPriorAndPosteriorAdditionalInfo</tabstop>
+  <tabstop>plotBayesFactorRobustness</tabstop>
+  <tabstop>plotSequentialAnalysis</tabstop>
+  <tabstop>plotSequentialAnalysisRobustness</tabstop>
+  <tabstop>descriptivesPlots</tabstop>
+  <tabstop>descriptivesPlotsCredibleInterval</tabstop>
+  <tabstop>descriptives</tabstop>
+  <tabstop>_1excludeAnalysisByAnalysis</tabstop>
+  <tabstop>_2excludeListwise</tabstop>
+  <tabstop>expanderPrior</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

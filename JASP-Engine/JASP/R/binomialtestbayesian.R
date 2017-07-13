@@ -296,16 +296,20 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 						plot[["height"]] <- 400
 						
 						p <- try(silent=FALSE, expr= {
-									
-									image <- .beginSaveImage(530, 400)
-									.plotSequentialBF.binomTest(d, lev, options$testValue, a = a, b = b, BF10table = BF10, hypothesis = hyp, BFH1H0 = BFH1H0)
-									plot[["data"]] <- .endSaveImage(image)
-									
-								})
+									# image <- .beginSaveImage(530, 400)
+									# .plotSequentialBF.binomTest(d, lev, options$testValue, a = a, b = b, BF10table = BF10, hypothesis = hyp, BFH1H0 = BFH1H0)
+									# plot[["data"]] <- .endSaveImage(image)
+						    .plotFunc <- function() {
+						        .plotSequentialBF.binomTest(d, lev, options$testValue, a = a, b = b, BF10table = BF10, hypothesis = hyp, BFH1H0 = BFH1H0)
+						    }
+						    content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+						    plot[["convertible"]] <- TRUE
+						    plot[["obj"]] <- content[["obj"]]
+						    plot[["data"]] <- content[["png"]]
+						})
 								
-						if (class(p) == "try-error") {
-							
-							errorMessage <- .extractErrorMessage(p)
+						if (isTryError(p)) {
+						    errorMessage <- .extractErrorMessage(p)
 							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
 						}
 						
