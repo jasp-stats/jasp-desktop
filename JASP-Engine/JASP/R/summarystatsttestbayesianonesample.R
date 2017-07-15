@@ -32,7 +32,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 	#   tStatistic:       numeric, value of the t-statistic to be converted into a BF
 	#   n1Size:           integer, the sample size
 	#   hypothesis:       string, one of ["notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue"]
-	#   priorWidth1:      numeric, width of the non-informative prior 
+	#   priorWidth:       numeric, width of the prior 
 	#   bayesFactorType:  string, one of ["BF10", "BF01", "LogBF10"]
 	## plotting:
 	#   plotPriorAndPosterior:                    logical, make this plot?
@@ -43,7 +43,6 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 	#   effectSize:                     string, one of ["standardized", "dienes"]
 	#   effectSizeStandardized:         string, one of ["default", "informative"]
 	#   defaultStandardizedEffectSize:  string, can only be "cauchy" for now
-	#   priorWidth:                     numeric, width of informative prior
 	#  -
 	#   informativeStandardizedEffectSize:  string, one of ["cauchy", "normal","t"]
 	#   informativeCauchyLocation:      numeric, -3 ≤ value ≤ 3, distribution used is dcauchy((tStatistic - CauchyLocation) / CauchyScale)

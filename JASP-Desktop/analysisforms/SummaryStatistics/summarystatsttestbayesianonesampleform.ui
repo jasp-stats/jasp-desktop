@@ -230,54 +230,7 @@
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <item row="0" column="0">
-          <widget class="BoundGroupBox" name="groupBox">
-           <property name="title">
-            <string>Prior</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_11">
-            <property name="topMargin">
-             <number>6</number>
-            </property>
-            <item row="0" column="1">
-             <widget class="BoundTextBox" name="priorWidth1">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>60</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>60</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Cauchy prior width</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="4" column="0">
+         <item row="3" column="0">
           <spacer name="verticalSpacer_4">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -544,7 +497,6 @@
   <tabstop>_1</tabstop>
   <tabstop>_2</tabstop>
   <tabstop>_3</tabstop>
-  <tabstop>priorWidth1</tabstop>
  </tabstops>
  <resources/>
  <connections>

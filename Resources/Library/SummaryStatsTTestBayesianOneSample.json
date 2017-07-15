@@ -22,14 +22,6 @@
 			"type": "List"
 		},
 		{
-			"format": "",
-			"name": "priorWidth1",
-			"type": "Number",
-			"value": 0.7070,
-			"min": 0,
-			"max": 2
-		},
-		{
 			"name": "bayesFactorType",
 			"options": [ "BF10", "BF01", "LogBF10" ],
 			"default": "BF10",
