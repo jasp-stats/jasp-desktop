@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>606</width>
-    <height>453</height>
+    <height>545</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -240,7 +240,7 @@
              <number>6</number>
             </property>
             <item row="0" column="1">
-             <widget class="BoundTextBox" name="priorWidth">
+             <widget class="BoundTextBox" name="priorWidth1">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -544,7 +544,7 @@
   <tabstop>_1</tabstop>
   <tabstop>_2</tabstop>
   <tabstop>_3</tabstop>
-  <tabstop>priorWidth</tabstop>
+  <tabstop>priorWidth1</tabstop>
  </tabstops>
  <resources/>
  <connections>
