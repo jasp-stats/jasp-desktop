@@ -257,7 +257,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 
 			  ## Compute the statistics
 			  
-			  bayesFactorObject <- .generalSummaryTtestBFoneSample(options = options)
+			  bayesFactorObject <- .generalSummaryTtestBF(options = options)
 
 			  
 			  ## Format the statistics for output
@@ -325,7 +325,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 # TODO(raoul): - Change to combined one-sample/two-sample/dependent t-test function
 #              - Add uniform informed prior
 
-.generalSummaryTtestBFoneSample <- 
+.generalSummaryTtestBF <- 
   function(tValue=options$tStatistic, size=options$n1Size, options) { 
   # Converts a t-statistic and sample size into the corresponding Bayes Factor.
   #
@@ -344,7 +344,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
   
   # help vars
   n1 <- size
-  n2 <- 0
+  n2 <- if (!is.null(options$n2Size)) options$n2Size else 0
   oneSided = options$hypothesis != "notEqualToTestValue"
   
   ### Default case: a non-informative zero-centered Cauchy prior

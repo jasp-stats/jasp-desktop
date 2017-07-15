@@ -21,7 +21,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="BoundGroupBox" name="missingValues">
+    <widget class="BoundGroupBox" name="statistics">
      <property name="title">
       <string/>
      </property>
