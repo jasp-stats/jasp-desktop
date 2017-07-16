@@ -49,7 +49,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		diff <- .diff(options, state$options)  # compare old and new options
 
 		if (is.list(diff) && diff[['variables']] == FALSE && diff[['reverseScaledItems']] == FALSE
-			&& diff[['missingValues']] == FALSE) {
+			&& diff[['missingValues']] == FALSE && diff[["confAlphaLevel"]] == FALSE) {
 
 			resultsAlpha <- state$resultsAlpha
 
@@ -84,7 +84,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 	results[["reliabilityScale"]] <- .reliabalityScaleTable(resultsAlpha, dataset, options, variables, perform)
 
-	if (options$alphaItem || options$gutmannItem || options$itemRestCor || options$meanItem || options$sdItem || options[["mcDonaldItem"]]) {
+	if (options$alphaItem || options$gutmannItem || options$itemRestCor || options$meanItem || options$sdItem || options[["mcDonaldItem"]] || options[["glbScale"]]) {
 		results[["reliabilityItemsObj"]] <- list(title="Item Statistics", reliabilityItems=.reliabalityItemsTable(resultsAlpha, options, variables, perform))
 	} else {
 		results[["reliabilityItemsObj"]] <- NULL
@@ -133,6 +133,12 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 		# calculate chronbach alpha and gutmanns lambda6
 		relyFit <- psych::alpha(dataAsMatrix, key = key)
+
+		# calculate chronbach alpha and gutmanns lambda6
+		relyFit[["ciAlpha"]] <- .reliabilityAlphaCI(estAlpha = relyFit[["total"]][["raw_alpha"]],
+													nObs = nrow(dataAsMatrix), nVar = ncol(dataAsMatrix),
+													ci = options[["confAlphaLevel"]], nullAlpha = 0)
+
 
 		# calculate the greatest lower bound -- only possible for more than 2 variables.
 		if (length(variables) < 3) {
@@ -196,6 +202,11 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	if (options[["averageInterItemCor"]])
 		fields[[length(fields) + 1]] <- list(name="rho", title="Average interitem correlation", type="number", format="sf:4;dp:3")
 
+	if (options[["confAlpha"]]) {
+		overTitle <- sprintf("%.1f%% Confidence Interval", 100*options[["confAlphaLevel"]])
+		fields[[length(fields) + 1]] <- list(name="lower", title="Lower", type="number", format="sf:4;dp:3", overTitle = overTitle)
+		fields[[length(fields) + 1]] <- list(name="upper", title="Upper", type="number", format="sf:4;dp:3", overTitle = overTitle)
+	}
 
 	table[["schema"]] <- list(fields = fields)
 
@@ -249,6 +260,8 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		rho <- NULL
 		omega <- NULL
 		glb <- NULL
+		lower <- NULL
+		upper <- NULL
 
 		if (options$alphaScale)
 			alpha <- .clean(r$total$raw_alpha)
@@ -276,13 +289,18 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 			}
 		}
 
-		data[[1]] <- list(case="scale", alpha=alpha, lambda=lambda, omega = omega, glb = glb, rho=rho, mu=mu, sd=sd)
+		if (options[["confAlpha"]]) {
+			lower = .clean(r[["ciAlpha"]][1])
+			upper = .clean(r[["ciAlpha"]][2])
+		}
+
+		data[[1]] <- list(case="scale", alpha=alpha, lambda=lambda, omega = omega, glb = glb, rho=rho, mu=mu, sd=sd, lower = lower, upper = upper)
 
 		table[["status"]] <- "complete"
 
 	} else {
 
-		data[[1]] <- list(case="scale", alpha=".", lambda=".", omega = ".", glb = ".", rho =".", mean=".", sd=".")
+		data[[1]] <- list(case="scale", alpha=".", lambda=".", omega = ".", glb = ".", rho =".", mean=".", sd=".", lower = ".", upper = ".")
 
 	}
 
@@ -417,4 +435,37 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 	return(table)
 
+}
+
+.reliabilityAlphaCI <- function(estAlpha, nObs, nVar, ci = 0.95, nullAlpha = 0) {
+
+	# code taken and modified from http://www.psyctc.org/stats/R/Feldt1.html
+	# considering using the bootstrapped version inside psych as an alternative
+
+	#***********************************************************#
+	#* program using methods described in Feldt, Woodruff &    *#
+	#* Salih (1987) Applied Psychological Measurement 11(1),   *#
+	#* pp. 93-103 to carry out omnibus inferential test of     *#
+	#* similarity of alpha values from a single sample         *#
+	#***********************************************************#
+	# estAlpha is the observed alpha
+	# nObs is the sample size
+	# nVar is the number of items in the measure or scale
+	# ci is the width of the confidence interval about obs.a desired
+
+	if(estAlpha > nullAlpha) {
+		f <- (1 - estAlpha) / (1 - nullAlpha)
+	} else {
+		f <- (1 - nullAlpha) / (1 - estAlpha)
+	}
+	nDen <- (nObs - 1) * (nVar - 1)
+	nNum <- nObs - 1
+	null.p <- stats::pf(f, nNum, nDen) # set the upper and lower p values for the desired C.I.
+	p1 <- (1 - ci)/2
+	p2 <- ci + p1 # corresponding F values
+	f1 <- stats::qf(p1, nNum, nDen)
+	f2 <- stats::qf(p2, nNum, nDen) # confidence interval
+	lwr <- 1 - (1 - estAlpha) * f2
+	upr <- 1 - (1 - estAlpha) * f1
+	return(c(lwr, upr))
 }
