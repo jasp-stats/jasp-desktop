@@ -25,7 +25,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 	results <- init[["results"]]
 	dataset <- init[["dataset"]]
-
+	
 	## call the specific paired T-Test functions
 	results[["ttest"]] <- .ttestPairedSamples(dataset, options, perform)
 	descriptivesTable <- .ttestPairedSamplesDescriptives(dataset, options, perform)
@@ -192,6 +192,11 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 		p1 <- pair[[1]]
 		p2 <- pair[[2]]
+		
+		errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+							 all.target = c(p1, p2),
+							 observations.amount = '< 2')
+		
 		row <- list(v1 = "", sep = "", v2 = "")
 
 		## test is a number, indicating which tests should be run
@@ -202,6 +207,13 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 			## don't run a test the user doesn't want
 			if (!currentTest) {
 				next
+			}
+			
+			if (!identical(errors, FALSE)) {
+				errorMessage <- errors$message
+
+			} else {
+			    errorMessage <- NULL
 			}
 
 			if (perform == "run") {
@@ -218,8 +230,10 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 					c1 <- df$c1
 					c2 <- df$c2
 					ci <- options$confidenceIntervalInterval
+					
+					if(is.null(errorMessage)){
 
-					r <- try(silent = FALSE, expr = {
+					result <- try(silent = FALSE, expr = {
 
 						## if Wilcox box is ticked, run a paired wilcoxon signed rank test
 						if (test == 2) {
@@ -239,25 +253,25 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 					})
 
 					## if testing raised an error, we extract information from it
-					if (class(r) != "try-error" && is.na(r$statistic) == FALSE) {
+					if (class(result) != "try-error") {
 
 						## same for all tests
-						p <- as.numeric(r$p.value)
-						stat <- .clean(as.numeric(r$statistic))
+						p <- as.numeric(result$p.value)
+						stat <- .clean(as.numeric(result$statistic))
 						sed <- .clean(sd(c1 - c2) / sqrt(length(c1)))
 						# num <- sqrt(sd(c1)^2 + sd(c2)^2 -  2 * cov(c1, c2))
 						# d <- .clean(mean(c1) - mean(c2) / num)
 
-						m <- as.numeric(r$estimate)
+						m <- as.numeric(result$estimate)
 						ciLow <- ifelse(direction == "less", .clean(-Inf),
-										as.numeric(r$conf.int[1]))
+										as.numeric(result$conf.int[1]))
 						ciUp <- ifelse(direction == "greater", .clean(Inf),
-									   as.numeric(r$conf.int[2]))
+									   as.numeric(result$conf.int[2]))
 
 
 						## paired t-test has it, wilcox doesn't!
-						df <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
-						d <- ifelse(is.null(r$parameter), "", .clean(mean(c1 - c2) / sd(c1 - c2)))
+						df <- ifelse(is.null(result$parameter), "", as.numeric(result$parameter))
+						d <- ifelse(is.null(result$parameter), "", .clean(mean(c1 - c2) / sd(c1 - c2)))
 						
 						# add things to the intermediate results object
 						row <- list(df = df, p = p, md = m, d = d,
@@ -272,32 +286,15 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 					## however, if there has been an error
 					## find out which and log it as a footnote
-					} else {
 
-						if (class(r) != "try-error") {
-							errorMessage <- "could not be calculated"
-						} else {
-							errorMessage <- .extractErrorMessage(r)
-						}
+					} else if (isTryError(result)) {
+					    errorMessage <- .extractErrorMessage(result)
+					}
+					
+					}
+					
+					if (!is.null(errorMessage)){
 
-						if (errorMessage == "missing value where TRUE/FALSE needed") {
-
-							err <- paste0("t-statistic is undefined - one ",
-										  "or both of the variables contain infinity")
-
-						} else if (errorMessage == "data are essentially constant") {
-
-							err <- paste0("t-statistic is undefined - one or both of ",
-										  "the variables contain all the same value (zero variance)")
-
-						} else if (errorMessage == "not enough 'x' observations") {
-
-							err <- paste0("t-statistic is undefined - one or both of ",
-										  "the variables contain only one value")
-
-						} else {
-							err <- paste0("t statistic is undefined - ", errorMessage)
-						}
 
 						index <- .addFootnote(footnotes, errorMessage)
 						row.footnotes <- list(t = list(index))
@@ -429,7 +426,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 		p1 <- pair[[1]]
 		p2 <- pair[[2]]
-
+		
 		if (perform == "run" && length(options$pairs) > 0 && p1 != p2) {
 
 			c1 <- dataset[[ .v(p1) ]]
@@ -438,20 +435,16 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 			row.footnotes <- NULL
 			error <- FALSE
-
-			if (length(data) < 3) {
-
-				err <- "Too few observations (N < 3) to compute statistic reliably."
-				foot.index <- .addFootnote(footnotes, err)
-				row.footnotes <- list(W = list(foot.index), p = list(foot.index))
-				error <- TRUE
-
-			} else if (length(data) > 5000) {
-
-				err <- "Too many observations (N > 5000) to compute statistic reliably."
-				foot.index <- .addFootnote(footnotes, err)
-				row.footnotes <- list(W = list(foot.index), p = list(foot.index))
-				error <- TRUE
+			
+			errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+			                     all.target = c(p1, p2),
+			                     observations.amount = c('< 3', '> 5000'))
+			
+			if (!identical(errors, FALSE)) {
+			    errorMessage <- errors$message
+			    foot.index <- .addFootnote(footnotes, errorMessage)
+			    row.footnotes <- list(W = list(foot.index), p = list(foot.index))
+			    error <- TRUE
 			}
 
 			if (!error) {
@@ -505,7 +498,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 	}
 
 	for (i in .indices(options$pairs)) {
-
+		
 		pair <- options$pairs[[i]]
 		descriptivesPlot <- list(title = paste(pair, collapse=" - "))
 		descriptivesPlot[["width"]] <- options$plotWidth
@@ -516,7 +509,19 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 			c1 <- dataset[[ .v(pair[[1]]) ]]
 			c2 <- dataset[[ .v(pair[[2]]) ]]
+			###
+			errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+								 all.target = c(pair[[1]], pair[[2]]),
+								 observations.amount = '< 2')
+			
+			if (!identical(errors, FALSE)) {
+				errorMessage <- errors$message
+				
+				descriptivesPlot[["data"]] <- ""
+				descriptivesPlot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+			} else {
 
+			####
 			data <- data.frame(id = rep(1:length(c1), 2), dependent = c(c1, c2),
 				groupingVariable = c(rep(paste("1.", pair[[1]], sep = ""), length(c1)),
 				  rep(paste("2.", pair[[2]], sep = ""), length(c2))))
@@ -552,12 +557,12 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 			descriptivesPlot[["data"]] <- imgObj[["png"]]
 			descriptivesPlot[["obj"]] <- imgObj[["obj"]]
+			
+		}
+
 			descriptivesPlot[["convertible"]] <- TRUE
 			descriptivesPlot[["status"]] <- "complete"
 
-		} else {
-
-			descriptivesPlot[["data"]] <- ""
 
 		}
 

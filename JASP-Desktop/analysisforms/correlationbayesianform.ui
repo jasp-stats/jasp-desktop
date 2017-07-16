@@ -570,6 +570,11 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
@@ -579,12 +584,32 @@
    <extends>QListView</extends>
    <header>widgets/boundlistview.h</header>
   </customwidget>
-  <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
-  </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>availableVariables</tabstop>
+  <tabstop>assignButton</tabstop>
+  <tabstop>variables</tabstop>
+  <tabstop>pearson</tabstop>
+  <tabstop>spearman</tabstop>
+  <tabstop>kendallsTauB</tabstop>
+  <tabstop>reportBayesFactors</tabstop>
+  <tabstop>flagSupported</tabstop>
+  <tabstop>credibleInterval</tabstop>
+  <tabstop>ciValue</tabstop>
+  <tabstop>_1correlated</tabstop>
+  <tabstop>_2correlatedPositively</tabstop>
+  <tabstop>_3correlatedNegatively</tabstop>
+  <tabstop>plotCorrelationMatrix</tabstop>
+  <tabstop>plotDensitiesForVariables</tabstop>
+  <tabstop>plotPosteriors</tabstop>
+  <tabstop>radioButton_1</tabstop>
+  <tabstop>radioButton_2</tabstop>
+  <tabstop>radioButton_3</tabstop>
+  <tabstop>priorWidth</tabstop>
+  <tabstop>buttonOptions</tabstop>
+  <tabstop>_1excludePairwise</tabstop>
+  <tabstop>_2excludeListwise</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

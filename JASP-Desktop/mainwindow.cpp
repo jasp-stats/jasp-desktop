@@ -232,6 +232,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(updateUserData(int, QString)), this, SLOT(updateUserDataHandler(int, QString)));
 	connect(this, SIGNAL(simulatedMouseClick(int, int, int)), this, SLOT(simulatedMouseClickHandler(int, int, int)));
 	connect(this, SIGNAL(resultsDocumentChanged()), this, SLOT(resultsDocumentChangedHandler()));
+	connect(ui->tabBar, SIGNAL(setExactPValuesHandler(bool)), this, SLOT(setExactPValuesHandler(bool)));
 
 #ifdef __APPLE__
 	_scrollbarWidth = 3;
@@ -427,117 +428,60 @@ void MainWindow::refreshAnalysesUsingColumns(vector<string> &changedColumns
 	sort(missingColumns.begin(), missingColumns.end());
 	sort(oldColumnNames.begin(), oldColumnNames.end());
 
-	vector<Analysis *> analyses_to_refresh;
-	for (Analyses::iterator analysis_it = _analyses->begin(); analysis_it != _analyses->end(); ++analysis_it)
+	set<Analysis *> analysesToRefresh;
+	for (Analyses::iterator analysisIt = _analyses->begin(); analysisIt != _analyses->end(); ++analysisIt)
 	{
-		Analysis* analysis = *analysis_it;
+		Analysis* analysis = *analysisIt;
 		if (analysis == NULL) continue;
 
-		bool analyse_to_refresh = false;
 		Options* options = analysis->options();
 		for (size_t i = 0; i < options->size(); ++i)
 		{
 			Option *option = options->get(i);
-			vector<string> variables;
-			OptionVariables *option_variables = dynamic_cast<OptionVariables *>(option);
-			if (option_variables != NULL)
+			OptionVariableI *optionVariables = dynamic_cast<OptionVariableI *>(option);
+			if (optionVariables != NULL)
 			{
-				variables = option_variables->variables();
-			}
-
-			OptionVariablesGroups *option_variables_groups = dynamic_cast<OptionVariablesGroups *>(option);
-			if (option_variables_groups != NULL)
-			{
-				vector<vector<string> > values = option_variables_groups->value();
-				for (vector<vector<string> >::iterator it = values.begin(); it != values.end(); ++it)
+				vector<string> variables = optionVariables->variables();
+				if (!variables.empty())
 				{
-					variables.insert(variables.end(), it->begin(), it->end());
-				}
-			}
+					sort(variables.begin(), variables.end());
+					vector<string> interChangecol, interChangename, interMissingcol;
+					set_intersection(variables.begin(), variables.end(), changedColumns.begin(), changedColumns.end(), back_inserter(interChangecol));
+					set_intersection(variables.begin(), variables.end(), oldColumnNames.begin(), oldColumnNames.end(), back_inserter(interChangename));
+					set_intersection(variables.begin(), variables.end(), missingColumns.begin(), missingColumns.end(), back_inserter(interMissingcol));
 
-			if (!variables.empty())
-			{
-				vector<string> variables_sorted = variables;
-				sort(variables_sorted.begin(), variables_sorted.end());
-				vector<string> inter_changecol, inter_changename, inter_missingcol;
-				set_intersection(variables_sorted.begin(), variables_sorted.end(), changedColumns.begin(), changedColumns.end(), back_inserter(inter_changecol));
-				set_intersection(variables_sorted.begin(), variables_sorted.end(), oldColumnNames.begin(), oldColumnNames.end(), back_inserter(inter_changename));
-				set_intersection(variables_sorted.begin(), variables_sorted.end(), missingColumns.begin(), missingColumns.end(), back_inserter(inter_missingcol));
-
-				if (inter_changecol.size() > 0 && !analyse_to_refresh)
-				{
-					analyses_to_refresh.push_back(analysis);
-					analyse_to_refresh = true;
-				}
-
-				if (inter_changename.size() > 0)
-				{
-					analysis->setRefreshBlocked(true);
-					for (vector<string>::iterator varname_it = inter_changename.begin(); varname_it != inter_changename.end(); ++varname_it)
+					if (interChangecol.size() > 0)
 					{
-						string varname = *varname_it;
-						string newname = changeNameColumns[varname];
-						if (option_variables != NULL)
-						{
-							replace(variables.begin(), variables.end(), varname, newname);
-							option_variables->setValue(variables);
-						}
-						else if (option_variables_groups != NULL)
-						{
-							vector<vector<string> > all_values = option_variables_groups->value();
-							vector<vector<string> > all_values_updated;
-							for (vector<vector<string> >::iterator all_values_it = all_values.begin(); all_values_it != all_values.end(); ++all_values_it)
-							{
-								vector<string> row = *all_values_it;
-								replace(row.begin(), row.end(), varname, newname);
-								all_values_updated.push_back(row);
-							}
-							option_variables_groups->setValue(all_values_updated);
-						}
+						analysesToRefresh.insert(analysis);
 					}
 
-					if (!analyse_to_refresh)
+					if (interChangename.size() > 0)
 					{
-						analyses_to_refresh.push_back(analysis);
-						analyse_to_refresh = true;
+						analysis->setRefreshBlocked(true);
+						for (vector<string>::iterator varnameIt = interChangename.begin(); varnameIt != interChangename.end(); ++varnameIt)
+						{
+							string varname = *varnameIt;
+							string newname = changeNameColumns[varname];
+							optionVariables->replaceName(varname, newname);
+						}
+						analysesToRefresh.insert(analysis);
 					}
-				}
 
-				if (inter_missingcol.size() > 0)
-				{
-					analysis->setRefreshBlocked(true);
-					for (vector<string>::iterator varname_it = inter_missingcol.begin(); varname_it != inter_missingcol.end(); ++varname_it)
+					if (interMissingcol.size() > 0)
 					{
-						string varname = *varname_it;
-						if (option_variables != NULL)
+						analysis->setRefreshBlocked(true);
+						for (vector<string>::iterator varnameIt= interMissingcol.begin(); varnameIt!= interMissingcol.end(); ++varnameIt)
 						{
-							variables.erase(remove(variables.begin(), variables.end(), varname), variables.end());
-							option_variables->setValue(variables);
+							optionVariables->removeName(*varnameIt);
+							analysesToRefresh.insert(analysis);
 						}
-						else if (option_variables_groups != NULL)
-						{
-							vector<vector<string> > all_values = option_variables_groups->value();
-							vector<vector<string> > all_values_updated;
-							for (vector<vector<string> >::iterator all_values_it = all_values.begin(); all_values_it != all_values.end(); ++all_values_it)
-							{
-								vector<string> row = *all_values_it;
-								if (std::find(row.begin(), row.end(), varname) == row.end())
-									all_values_updated.push_back(row);
-							}
-							option_variables_groups->setValue(all_values_updated);
-						}
-					}
-					if (!analyse_to_refresh)
-					{
-						analyses_to_refresh.push_back(analysis);
-						analyse_to_refresh = true;
 					}
 				}
 			}
 		}
 	}
 
-	for (vector<Analysis *>::iterator it = analyses_to_refresh.begin(); it != analyses_to_refresh.end(); ++it)
+	for (set<Analysis *>::iterator it = analysesToRefresh.begin(); it != analysesToRefresh.end(); ++it)
 	{
 		Analysis *analysis = *it;
 		analysis->setRefreshBlocked(false);
@@ -654,7 +598,7 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 	parser.parse(utf8, root);
 
 	QString caption = "Save JASP Image";
-	QString filter = "Portable Network Graphics (*.png);;Tagged Image File Format (*.tiff);;Encapsulated PostScript (*.eps)";
+	QString filter = "Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff)";
     QString selectedFilter;
 
     QString finalPath = QFileDialog::getSaveFileName(this, caption, QString(), filter, &selectedFilter);
@@ -666,7 +610,13 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
             root["finalPath"] = finalPath.toStdString();
             analysis->saveImage(analysis, root);
 		}
-		else if (selectedFilter == "Tagged Image File Format (*.tiff)")
+		else if (selectedFilter == "Portable Document Format (*.pdf)")
+		{
+			root["type"] = "pdf";
+			root["finalPath"] = finalPath.toStdString();
+			analysis->saveImage(analysis, root);
+		}
+		else if (selectedFilter == "300 dpi Tagged Image File (*.tiff)")
 		{
 			root["type"] = "tiff";
 			root["finalPath"] = finalPath.toStdString();
@@ -686,7 +636,7 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 
 void MainWindow::analysisImageSavedHandler(Analysis *analysis)
 {
-	Json::Value results = analysis->asJSON().get("results", Json::nullValue);
+	Json::Value results = analysis->getImgResults();
 	if (results.isNull())
 		return;
 	Json::Value inputOptions = results.get("inputOptions", Json::nullValue);
@@ -1325,6 +1275,8 @@ void MainWindow::resultsPageLoaded(bool success)
 		QString version = tq(AppInfo::version.asString());
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
 
+		setExactPValuesHandler(_settings.value("exactPVals", 0).toBool());
+
 		QVariant ppiv = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getPPI()");
 
 		bool success;
@@ -1406,6 +1358,13 @@ void MainWindow::requestHelpPage(const QString &pageName)
 	QString js = "window.render(\"" + content + "\")";
 
 	ui->webViewHelp->page()->mainFrame()->evaluateJavaScript(js);
+}
+
+void MainWindow::setExactPValuesHandler(bool exactPValues)
+{
+	QString exactPValueString = (exactPValues ? "true" : "false");
+	QString js = "window.globSet.pExact = " + exactPValueString + "; window.reRenderAnalyses();";
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(js);
 }
 
 void MainWindow::itemSelected(const QString &item)

@@ -165,9 +165,9 @@ inline void NumericConverter::fixup(int32_t *value) const
 		IntBytes v;
 		v.i = value;
 		const size_t lastval = sizeof(int32_t) - 1;
-		for (register size_t j = 0; j < (sizeof(int32_t) / 2); j++)
+		for (size_t j = 0; j < (sizeof(int32_t) / 2); j++)
 		{
-			register char x = v.c[j];
+			char x = v.c[j];
 			v.c[j] = v.c[lastval - j];
 			v.c[lastval - j] = x;
 		}
@@ -182,9 +182,9 @@ inline void NumericConverter::fixup(int64_t *value) const
 		BIntBytes v;
 		v.i = value;
 		const size_t lastval = sizeof(int64_t) - 1;
-		for (register size_t j = 0; j < (sizeof(int64_t) / 2); j++)
+		for (size_t j = 0; j < (sizeof(int64_t) / 2); j++)
 		{
-			register char x = v.c[j];
+			char x = v.c[j];
 			v.c[j] = v.c[lastval - j];
 			v.c[lastval - j] = x;
 		}
@@ -201,9 +201,9 @@ inline void NumericConverter::fixup(double *value) const
 		DbleBytes v;
 		v.i = value;
 		const size_t lastval = sizeof(double) - 1;
-		for (register size_t j = 0; j < (sizeof(double) / 2); j++)
+		for (size_t j = 0; j < (sizeof(double) / 2); j++)
 		{
-			register char x = v.c[j];
+			char x = v.c[j];
 			v.c[j] = v.c[lastval - j];
 			v.c[lastval - j] = x;
 		}

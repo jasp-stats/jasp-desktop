@@ -70,7 +70,7 @@ void Analysis::setResults(Json::Value results)
 
 void Analysis::setImageResults(Json::Value results)
 {
-	_results = results;
+	_imgResults = results;
 	imageSaved(this);
 }
 
@@ -256,4 +256,9 @@ void Analysis::setSaveImgOptions(Json::Value &options)
 Json::Value Analysis::getSaveImgOptions()
 {
 	return _saveImgOptions;
+}
+
+Json::Value Analysis::getImgResults()
+{
+	return _imgResults;
 }

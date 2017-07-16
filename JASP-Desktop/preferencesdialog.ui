@@ -17,11 +17,18 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Data Synchronization Preferences</string>
+   <string>Preferences</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QCheckBox" name="displayExactPVals">
+       <property name="text">
+        <string> Display exact p-values</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QCheckBox" name="syncAutoCheckBox">
        <property name="layoutDirection">

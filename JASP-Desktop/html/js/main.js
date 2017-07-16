@@ -8,11 +8,17 @@ window.getPPI = function () {
 
 
 
+
 $(document).ready(function () {
 	var ua = navigator.userAgent.toLowerCase();
 
 	if (ua.indexOf("windows") !== -1)
 		$("body").addClass("windows")
+
+	// Global settings for analysis output. Add here if making new setting.
+	window.globSet = {
+		"pExact" : false
+	}
 
 	var selectedAnalysisId = -1;
 	var selectedAnalysis = null
@@ -26,6 +32,10 @@ $(document).ready(function () {
 	var showInstructions = false;
 	
 	var analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
+	
+	window.reRenderAnalyses = function () {
+		analyses.reRender();
+	}
 
 	window.select = function (id) {
 
@@ -402,16 +412,17 @@ $(document).ready(function () {
 
 				introHiding = true
 
-				$intro.hide("slide", { direction: "up", easing: "easeOutCubic" }, function () {
-
+				$intro.hide(10, function () {
+					
+					$("#style").attr("href","css/theme-jasp.css")
 					introHiding = false
 					introVisible = false
 
 					introHidingResultsWaiting.reverse()
-
+					
 					while (introHidingResultsWaiting.length > 0)
 						window.analysisChanged(introHidingResultsWaiting.pop())
-				})
+				});
 			}
 
 			return

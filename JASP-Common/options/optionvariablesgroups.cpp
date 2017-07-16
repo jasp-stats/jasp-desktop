@@ -72,3 +72,42 @@ Option *OptionVariablesGroups::clone() const
 	c->setValue(value());
 	return c;
 }
+
+std::vector<std::string> OptionVariablesGroups::variables() const
+{
+	std::vector<std::string> variables;
+	vector<vector<string> > values = value();
+	for (vector<vector<string> >::iterator it = values.begin(); it != values.end(); ++it)
+	{
+		variables.insert(variables.end(), it->begin(), it->end());
+	}
+
+	return variables;
+}
+
+void OptionVariablesGroups::replaceName(string oldName, string newName)
+{
+	vector<vector<string> > values = value();
+	vector<vector<string> > values_updated;
+	for (vector<vector<string> >::iterator values_it = values.begin(); values_it != values.end(); ++values_it)
+	{
+		vector<string> row = *values_it;
+		replace(row.begin(), row.end(), oldName, newName);
+		values_updated.push_back(row);
+	}
+	setValue(values_updated);
+}
+
+void OptionVariablesGroups::removeName(string name)
+{
+	vector<vector<string> > values = value();
+	vector<vector<string> > values_updated;
+	for (vector<vector<string> >::iterator values_it = values.begin(); values_it != values.end(); ++values_it)
+	{
+		vector<string> row = *values_it;
+		if (std::find(row.begin(), row.end(), name) == row.end())
+			values_updated.push_back(row);
+	}
+	setValue(values_updated);
+
+}

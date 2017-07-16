@@ -521,7 +521,7 @@ string rbridge_check()
 		return "null";
 }
 
-string rbridge_saveImage(const string &name, const string &type, const int &height, const int &width)
+string rbridge_saveImage(const string &name, const string &type, const int &height, const int &width, const int ppi)
 
 {
 	RInside &rInside = rbridge_rinside->instance();
@@ -531,6 +531,7 @@ string rbridge_saveImage(const string &name, const string &type, const int &heig
 
 	rInside["height"] = height;
 	rInside["width"] = width;
+	rInside[".ppi"] = ppi;
 
 	SEXP result = rbridge_rinside->parseEvalNT("saveImage(plotName,format,height,width)");
 

@@ -101,14 +101,6 @@ AncovaBayesianForm::AncovaBayesianForm(QWidget *parent) :
 	ui->priorFixedEffects->setLabel("r scale fixed effects");
 	ui->priorRandomEffects->setLabel("r scale random effects");
 	ui->priorCovariates->setLabel("r scale covariates");
-
-#ifdef QT_DEBUG
-	ui->widgetPosteriorOptions->setStyleSheet("QWidget { background-color: pink; }");
-	ui->posteriorEstimates->setStyleSheet("QWidget { background-color: pink; }");
-#else
-	ui->widgetPosteriorOptions->hide();
-	ui->posteriorEstimates->hide();
-#endif
 }
 
 AncovaBayesianForm::~AncovaBayesianForm()

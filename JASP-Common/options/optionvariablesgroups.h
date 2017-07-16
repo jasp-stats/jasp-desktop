@@ -19,9 +19,11 @@
 #define OPTIONVARIABLESGROUPS_H
 
 #include "optioni.h"
+#include "optionvariablei.h"
+
 #include "common.h"
 
-class OptionVariablesGroups : public OptionI<std::vector<std::vector<std::string> > >
+class OptionVariablesGroups : public OptionI<std::vector<std::vector<std::string> > >, public OptionVariableI
 {
 public:
 	OptionVariablesGroups();
@@ -29,6 +31,10 @@ public:
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual void set(const Json::Value& value) OVERRIDE;
 	virtual Option* clone() const OVERRIDE;
+
+	virtual std::vector<std::string> variables() const OVERRIDE;
+	virtual void replaceName(std::string oldName, std::string newName) OVERRIDE;
+	virtual void removeName(std::string name) OVERRIDE;
 };
 
 #endif // OPTIONVARIABLESGROUPS_H

@@ -96,7 +96,10 @@ run <- function(name, options.as.json.string, perform="run") {
 
 			state <- results$state
 			
-			state[["figures"]] <- c(state[["figures"]], .imgToState(results$results))
+			if (! is.null(names(state))) {
+				state[["figures"]] <- c(state[["figures"]], .imgToState(results$results))
+			}
+
 			location <- .requestStateFileNameNative()
 
 			relativePath <- location$relativePath
@@ -142,9 +145,14 @@ checkPackages <- function() {
 
 isTryError <- function(obj){
     if (is.list(obj)){
-        return(any(sapply(obj, function(obj){isTRUE(class(obj)=="try-error")})))
+        return(any(sapply(obj, function(obj) {
+            inherits(obj, "try-error")
+        }))
+        )
     } else {
-        return(any(sapply(list(obj), function(obj){isTRUE(class(obj)=="try-error")})))
+        return(any(sapply(list(obj), function(obj){
+            inherits(obj, "try-error")
+        })))
     }
 }
 
@@ -659,41 +667,49 @@ callback <- function(results=NULL) {
 }
 
 .clean <- function(value) {
-
+    # Clean function value so it can be reported in json/html
+    
 	if (is.list(value)) {
-	
-		if (is.null(names(value))) {
-			
-			for (i in length(value))
-				value[[i]] <- .clean(value[[i]])
-				
+	    if (is.null(names(value))) {
+	        for (i in length(value)) {
+			    value[[i]] <- .clean(value[[i]])
+			}
 		} else {
-		
-			for (name in names(value))
-				value[[name]] <- .clean(value[[name]])
+		    for (name in names(value)) {
+			    value[[name]] <- .clean(value[[name]])
+			}
 		}
-		
 		return(value)
 	}
 
-	if (is.null(value))
-		return ("")
+	if (is.null(value)) {
+	    return ("")
+	}
 
-	if (is.character(value))
-		return(value)
+	if (is.character(value)) {
+	    return(value)
+	}
 
-	if (is.finite(value))
-		return(value)
+	if (is.finite(value)) {
+	    return(value)
+	}
 
-	if (is.na(value))
-		return("NaN")
+	if (is.na(value)) {
+	    return("NaN")
+	}
+    
+    if (identical(value, numeric(0))) {
+        return("")
+    }
 
-	if (value == Inf)
-		return("\u221E")
-
-	if (value == -Inf)
-		return("-\u221E")
-
+	if (value == Inf) {
+	    return("\u221E")
+	}
+		
+	if (value == -Inf) {
+	    return("-\u221E")
+	}
+		
 	stop("could not clean value")
 }
 
@@ -940,16 +956,26 @@ saveImage <- function(plotName, format, height, width){
 	print(fullPath)
 	
 	# Open correct graphics device
-	if (format == "eps"){
+	if (format == "eps") {
 		
 		grDevices::cairo_ps(filename=fullPath, width=insize[1], 
 												height=insize[2], bg="transparent")
 		
-  } else if (format == "tiff"){
+  } else if (format == "tiff") {
 		
-		grDevices::tiff(filename=fullPath, width = width*4, height = height*4, 
-										res = (.ppi/96)*72*4, bg="transparent")
+		hiResMultip <- 300/72
+		grDevices::tiff(filename=fullPath, 
+										width = width * hiResMultip, 
+										height = height * hiResMultip, 
+										res = 300, bg="transparent",
+										compression = "lzw",
+										type = "cairo")
 		
+	} else if (format == "pdf") {
+		
+		grDevices::cairo_pdf(filename=fullPath, width=insize[1], 
+												 height=insize[2], bg="transparent")
+	
 	} else { # add optional other formats here in "else if"-statements
 		stop("Format incorrectly specified")
 	}
@@ -1004,64 +1030,40 @@ saveImage <- function(plotName, format, height, width){
 	suppressWarnings(grDevices::replayPlot(rec_plot))
 }
 
-#.imgToResults
-.imgToResults <- function(imgobj) {
+# This recursive function removes all non-jsonifyable image objects from a 
+# result list, while retaining the structure of said list.
+.imgToResults <- function(lst) {
 
-	if (!is.list(imgobj))
-		return(imgobj)
-
-	nms <- names(imgobj)
-	if (!is.null(nms))
-		imgobj <- imgobj[nms != "obj"]
-
-	return(lapply(imgobj, .imgToResults))
-}
-
-#.imgToState 
-.imgToState <- function(imgobj) {
-
-	result <- list()
-	if (!is.list(imgobj))
-		return(NULL)
-
-	if (all(c("data", "obj") %in% names(imgobj), is.character(imgobj[["data"]]))) {
-		
-		result[[imgobj[["data"]]]] <- imgobj[["obj"]]
-		return(result)
-
+	if (!is.list(lst))
+		return(lst) # we are at an end node, stop
+	
+	if (all(c("data", "obj") %in% names(lst)) && is.character(lst[["data"]])) {
+		# found a figure! remove its object!
+		lst <- lst[names(lst) != "obj"]
 	}
 
-	# unname to avoid name1.name2."data"
-	return(unlist(lapply(unname(imgobj), .imgToState), recursive = FALSE))
-
+	# recurse into next level
+	return(lapply(lst, .imgToResults))
 }
 
-# .imgToResults <- function(imgobj){
-#   # Recursive function to return result with same structure as imgobj
-#   result <- list()
-#   if (length(imgobj) != 0) {
-#   	if (is.list(imgobj[[1]])) {
-#   		result <- lapply(imgobj, .imgToResults)
-#   	} else {
-#   		result <- imgobj[names(imgobj)!="obj"]
-#   	}
-#   	return(result)
-#   } else {
-#   	return(imgobj)
-#   }
-# }
-# 
-# .imgToState <- function(imgobj){
-#   # Recursive function to save named list of image objects to state
-#   result <- list()
-#   if (length(imgobj) != 0) {
-#   	if (is.list(imgobj[[1]])){
-#   		result <- unlist(lapply(imgobj, .imgToState), recursive = FALSE)
-#   	} else {
-#   		result[[imgobj[["data"]]]] <- imgobj[["obj"]]
-#   	}
-#   	return(result)
-#   } else {
-#   	return(imgobj)
-#   }
-# }
+# This recursive function takes a results object and extracts all the figure 
+# objects from it, irrespective of their location within the nested structure. 
+# It then returns a named list of image objects.
+.imgToState <- function(lst) {
+
+	result <- list()
+	
+	if (!is.list(lst))
+		return(NULL) # we are at an end node, stop
+
+	if (all(c("data", "obj") %in% names(lst)) && is.character(lst[["data"]])) {
+		# Found a figure, add to the list!
+		result[[lst[["data"]]]] <- lst[["obj"]]
+		return(result)
+	}
+
+	# Recurse into the next level (unname to avoid concatenating list names 
+	# such as (name1.name2."data"))
+	return(unlist(lapply(unname(lst), .imgToState), recursive = FALSE))
+
+}
