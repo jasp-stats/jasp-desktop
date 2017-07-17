@@ -1,9 +1,8 @@
 
 QT -= gui
-QT -= core
 
 DESTDIR = ..
-TARGET = JASP-Common
+TARGET = JASP-Common-mingw
 TEMPLATE = lib
 CONFIG += staticlib
 

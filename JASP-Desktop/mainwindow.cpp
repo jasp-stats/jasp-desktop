@@ -1174,7 +1174,7 @@ void MainWindow::resultsPageLoaded(bool success, int ppi)
 		ui->webViewResults->setZoomFactor(zoom);
 		ui->webViewHelp->setZoomFactor(zoom);
 		ppi = verticalDpi;
-		_resultJsInterface->setZoom(zoom);
+		_resultsJsInterface->setZoom(zoom);
 
 		this->resize(this->width() + (ui->webViewResults->width() * (zoom - 1)), this->height() + (ui->webViewResults->height() * (zoom - 1)));
 #endif

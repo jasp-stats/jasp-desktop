@@ -35,7 +35,7 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 		interprocess::shared_memory_object::remove(name.c_str());
 		try
 		{
-			_memory = new interprocess::managed_shared_memory(interprocess::create_only, name.c_str(), 4 * 1024 * 1024);
+			_memory = new interprocess::managed_windows_shared_memory(interprocess::create_only, name.c_str(), 4 * 1024 * 1024);
 			std::cout << "Master: Shared memory created with name " << name.c_str() << std::endl;
 		}
 		catch (boost::interprocess::interprocess_exception &e)
@@ -44,7 +44,7 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 		}
 		try
 		{
-			boost::interprocess::managed_shared_memory *test = new interprocess::managed_shared_memory(interprocess::open_only, name.c_str());
+			boost::interprocess::managed_windows_shared_memory *test = new interprocess::managed_windows_shared_memory(interprocess::open_only, name.c_str());
 			std::cout << "Master: Shared memory found with name " << name.c_str() << std::endl;
 		}
 		catch (boost::interprocess::interprocess_exception &e)
@@ -56,7 +56,7 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 	{
 		try
 		{
-			_memory = new interprocess::managed_shared_memory(interprocess::open_only, name.c_str());
+			_memory = new interprocess::managed_windows_shared_memory(interprocess::open_only, name.c_str());
 			std::cout << "Slave: Shared memory read with name " << name.c_str() << std::endl;
 		}
 		catch (boost::interprocess::interprocess_exception &e)
@@ -77,8 +77,10 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 
 	if (!isSlave)
 	{
-		_mutexMaster  = _memory->construct<interprocess::interprocess_mutex>(mutexNameMaster.str().c_str())();
-		_mutexSlave  = _memory->construct<interprocess::interprocess_mutex>(mutexNameSlave.str().c_str())();
+		//_mutexMaster  = _memory->construct<interprocess::interprocess_mutex>(mutexNameMaster.str().c_str())();
+		//_mutexSlave  = _memory->construct<interprocess::interprocess_mutex>(mutexNameSlave.str().c_str())();
+		_mutexMaster = new interprocess::named_mutex(interprocess::create_only, mutexNameMaster.str().c_str());
+		_mutexSlave = new interprocess::named_mutex(interprocess::create_only, mutexNameSlave.str().c_str());
 		_dataMaster   = _memory->construct<String>(dataNameMaster.str().c_str())(_memory->get_segment_manager());
 		_dataSlave   = _memory->construct<String>(dataNameSlave.str().c_str())(_memory->get_segment_manager());
 		_dataMaster->clear();
@@ -86,18 +88,53 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 	}
 	else
 	{
-		_mutexMaster  = _memory->find<interprocess::interprocess_mutex>(mutexNameMaster.str().c_str()).first;
+		std::cout << "Try to find mutex" << std::endl;
+		std::cout.flush();
+		_mutexMaster = NULL;
+		try
+		{
+			_mutexMaster = new interprocess::named_mutex(interprocess::open_only, mutexNameMaster.str().c_str());
+			//_mutexMaster  = _memory->find<interprocess::interprocess_mutex>(mutexNameMaster.str().c_str()).first;
+		}
+		catch (boost::interprocess::interprocess_exception &e)
+		{
+			std::cout << "Slave: Cannot find mutex with name " << mutexNameMaster.str().c_str() << " :"  << e.what() << std::endl;
+		}
 		if (!_mutexMaster)
 			std::cout << "Cannot find mutex master" << std::endl;
-		_mutexSlave  = _memory->find<interprocess::interprocess_mutex>(mutexNameSlave.str().c_str()).first;
+		else
+			std::cout << "Found mutex" << std::endl;
+		std::cout.flush();
+
+		//_mutexSlave  = _memory->find<interprocess::interprocess_mutex>(mutexNameSlave.str().c_str()).first;
+
+		std::cout << "Create _mutexSlave" << std::endl;
+		std::cout.flush();
+		_mutexSlave = new interprocess::named_mutex(interprocess::open_only, mutexNameSlave.str().c_str());
+		std::cout << "_mutexSlave Created" << std::endl;
+		std::cout.flush();
 		if (!_mutexSlave)
 			std::cout << "Cannot find mutex slave" << std::endl;
-		_dataMaster   = _memory->find<String>(dataNameMaster.str().c_str()).first;
+		std::cout.flush();
+
+		_dataMaster = NULL;
+		try
+		{
+			std::cout << "Find string with name " << dataNameMaster.str().c_str() << std::endl;
+			_dataMaster   = _memory->find<String>(dataNameMaster.str().c_str()).first;
+			std::cout << "Slave: found string with name " << dataNameMaster.str().c_str() << std::endl;
+		}
+		catch (boost::interprocess::interprocess_exception &e)
+		{
+			std::cout << "Slave: Cannot find string with name " << dataNameMaster.str().c_str() << " :"  << e.what() << std::endl;
+		}
 		if (!_dataMaster)
 			std::cout << "Cannot find data master" << std::endl;
 		_dataSlave   = _memory->find<String>(dataNameSlave.str().c_str()).first;
 		if (!_dataSlave)
 			std::cout << "Cannot find data slave" << std::endl;
+		std::cout << "Mutex done" << std::endl;
+		std::cout.flush();
 	}
 }
 
@@ -130,7 +167,6 @@ void IPCChannel::send(string &data)
 bool IPCChannel::receive(string &data, int timeout)
 {
 	bool found = false;
-	timeout = 1;
 	ptime now(microsec_clock::universal_time());
 	ptime then = now + microseconds(1000 * timeout);
 	if (_isSlave)

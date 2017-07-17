@@ -1,5 +1,5 @@
 
-#QT -= core
+QT += core
 QT -= gui
 CURRENT_R_VERSION = 3.3
 
@@ -17,11 +17,19 @@ TEMPLATE = app
 
 DEPENDPATH = ..
 
-PRE_TARGETDEPS += ../libJASP-Common.a
+PRE_TARGETDEPS += ../libJASP-Common-mingw.a
 
-LIBS += -L.. -lJASP-Common
+LIBS += -L.. -lJASP-Common-mingw
 
-windows:LIBS += -lboost_filesystem-mgw48-mt-1_64 -lboost_system-mgw48-mt-1_64 -larchive.dll
+windows:CONFIG(ReleaseBuild) {
+windows:LIBS += -lboost_filesystem-mgw71-mt-1_64 -lboost_system-mgw71-mt-1_64 -lJASP-Sharedmem.dll -larchive.dll
+}
+
+windows:CONFIG(DebugBuild) {
+windows:LIBS += -lboost_filesystem-mgw71-mt-d-1_64 -lboost_system-mgw71-mt-d-1_64  -larchive.dll
+windows:LIBS += "C:\Jasp\Develop\build-Jasp-Debug-64\JASP-Sharedmem\debug\JASP-Sharedmem.lib"
+}
+
    macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz
   linux:LIBS += -lboost_filesystem    -lboost_system    -larchive
 

@@ -44,6 +44,8 @@ using namespace boost::posix_time;
 
 Engine::Engine()
 {
+	std::cout << "ENGINE started" << std::endl;
+	std::cout.flush();
 	_dataSet = NULL;
 	_channel = NULL;
 	_slaveNo = 0;
@@ -200,7 +202,7 @@ void Engine::run()
 	ss << "JASP-IPC-" << ProcessInfo::parentPID();
 	string memoryName = ss.str();
 
-	_channel = new IPCChannel(memoryName, _slaveNo, true);
+	_channel = CreateJASPChannel(memoryName.c_str(), _slaveNo);
 
 	std::cout << "ENGINE: Start " << _slaveNo << std::endl;
 	std::cout.flush();
@@ -209,6 +211,7 @@ void Engine::run()
 	{
 		try
 		{
+			Utils::sleep(1000);
 			if (receiveMessages())
 			{
 				if (_status == saveImg)
@@ -218,7 +221,6 @@ void Engine::run()
 			}
 			if ( ! ProcessInfo::isParentRunning())
 				break;
-			Utils::sleep(1000);
 		}
 		catch (std::exception &e)
 		{
@@ -242,9 +244,9 @@ void Engine::run()
 
 bool Engine::receiveMessages(int timeout)
 {
-	string data;
+	char *data;
 
-	if (_channel->receive(data, timeout))
+	if (_channel->receive(&data, 1000))
 	{
 		std::cout << "ENGINE: received message" << std::endl;
 		std::cout.flush();
@@ -363,7 +365,7 @@ void Engine::sendResults()
 	std::cout << message << std::endl;
 	std::cout.flush();
 
-	_channel->send(message);
+	_channel->send(message.c_str());
 }
 
 string Engine::callback(const string &results)

@@ -32,15 +32,15 @@
 #include <windows.h>
 
 #else
-#include <boost/interprocess/sync/named_semaphore.hpp>
+// #include <boost/interprocess/sync/named_semaphore.hpp>
 #endif
 
-#include <boost/interprocess/sync/interprocess_mutex.hpp>
+#include <boost/interprocess/sync/named_mutex.hpp>
 
-#include <boost/interprocess/managed_shared_memory.hpp>
+#include <boost/interprocess/managed_windows_shared_memory.hpp>
 #include <boost/container/string.hpp>
 
-typedef boost::interprocess::allocator<char, boost::interprocess::managed_shared_memory::segment_manager> CharAllocator;
+typedef boost::interprocess::allocator<char, boost::interprocess::managed_windows_shared_memory::segment_manager> CharAllocator;
 typedef boost::container::basic_string<char, std::char_traits<char>, CharAllocator> String;
 
 class IPCChannel
@@ -58,10 +58,10 @@ private:
 	int _channelNumber;
 	bool _isSlave;
 
-	boost::interprocess::managed_shared_memory *_memory;
+	boost::interprocess::managed_windows_shared_memory *_memory;
 
-	boost::interprocess::interprocess_mutex *_mutexMaster;
-	boost::interprocess::interprocess_mutex *_mutexSlave;
+	boost::interprocess::named_mutex *_mutexMaster;
+	boost::interprocess::named_mutex *_mutexSlave;
 
 	String *_dataMaster;
 	String *_dataSlave;

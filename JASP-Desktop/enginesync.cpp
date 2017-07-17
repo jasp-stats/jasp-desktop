@@ -373,7 +373,8 @@ void EngineSync::startSlaveProcess(int no)
 	QDir programDir = QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir();
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 	QString engineExe = QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir().absoluteFilePath("JASPEngine");
-
+	std::cout << "Start Engine from " << engineExe.toStdString() << std::endl;
+	std::cout.flush();
 	QStringList args;
 	args << QString::number(no);
 
@@ -410,6 +411,8 @@ void EngineSync::startSlaveProcess(int no)
 #define ARCH_SUBPATH "x64"
 #endif
 
+	std::cout << "R HOME SUBPATH: " << programDir.absoluteFilePath("R\\bin\\" ARCH_SUBPATH).toStdString() << std::endl;
+	std::cout.flush();
 	env.insert("PATH", programDir.absoluteFilePath("R\\library\\RInside\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\library\\Rcpp\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\bin\\" ARCH_SUBPATH));
 	env.insert("R_HOME", rHome.absolutePath());
 

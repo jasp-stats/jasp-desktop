@@ -19,7 +19,6 @@
 #define FILEREADER_H
 
 #include <string>
-#include <QString>
 #include <vector>
 
 #include <stdlib.h>
@@ -96,7 +95,6 @@ public:
 	 * @return
 	 */
 	char* readAllData(int blockSize, int &errorCode);
-	QString readAllData(int &errorCode);
 
 	/**
 	 * @brief close Closes archive/file.

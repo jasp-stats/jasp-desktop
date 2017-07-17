@@ -20,8 +20,9 @@
 
 #include "../JASP-Common/dataset.h"
 #include "../JASP-Common/lib_json/json.h"
-#include "../JASP-Common/ipcchannel.h"
 #include "../JASP-Common/processinfo.h"
+#include "../JASP-Sharedmem/jaspsharedmem.h"
+
 
 /* The Engine represents the background processes.
  * It's job is pretty straight forward; it reads analysis
@@ -73,7 +74,7 @@ private:
 
 	Json::Value _analysisResults;
 
-	IPCChannel *_channel;
+	JASPChannelInterface *_channel;
 	DataSet *_dataSet;
 	std::string _engineInfo;
 
