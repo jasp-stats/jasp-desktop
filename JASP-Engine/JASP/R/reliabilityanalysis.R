@@ -16,7 +16,7 @@
 #
 
 ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
-								callback = function(...) 0,  ...) {
+								callback = function(...) 0, state = NULL, ...) {
 
 	variables <- unlist(options$variables)
 
@@ -39,23 +39,14 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	}
 
 	## Retrieve State
-
-	state <- .retrieveState()
-
-	resultsAlpha <- NULL
-
-	if ( ! is.null(state)) {  # is there state?
-
-		diff <- .diff(options, state$options)  # compare old and new options
-
-		if (is.list(diff) && diff[['variables']] == FALSE && diff[['reverseScaledItems']] == FALSE
-			&& diff[['missingValues']] == FALSE && diff[["confAlphaLevel"]] == FALSE) {
-
-			resultsAlpha <- state$resultsAlpha
-
-		}
-
-	}
+	# future idea: add correlation matrix to state and make all scale statistics modular.
+	defaults = c("variables", "reverseScaledItems", "missingValues")
+	stateKey <- list(
+		resultsAlpha = defaults,
+		confAlpha = c(defaults, "confAlphaLevel")
+	)
+	resultsAlpha <- state[["resultsAlpha"]]
+	resultsAlpha[["ciAlpha"]] <- state[["confAlpha"]]
 
 	# Store results
 
@@ -69,19 +60,24 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	results[[".meta"]] <- meta
 
 	errorList <- NULL
+	
+	if (!is.null(variables) && length(variables) > 0) {
+		if (is.null(resultsAlpha)) { # was the main analysis retrieved from state?
+			
+			# check for errors
+			anyErrors <- .hasErrors(dataset = dataset, perform = perform,
+									type = c("infinity", "variance", "observations"),
+									observations.amount = " < 3",
+									exitAnalysisIfErrors = TRUE)
+			
+			resultsAlpha <- .reliabilityResults(dataset, options, variables, perform)
+			
+		} else if (is.null(state[["confAlpha"]])) { # resultsAlpha retrieved from state, only recalculate CI
 
-	if (is.null(resultsAlpha) && !is.null(variables) && length(variables) > 0) {
-
-		# check for errors
-		anyErrors <- .hasErrors(dataset = dataset, perform = perform,
-								type = c("infinity", "variance", "observations"),
-								observations.amount = " < 3",
-								exitAnalysisIfErrors = TRUE)
-
-		resultsAlpha <- .reliabilityResults(dataset, options, variables, perform)
-
-	} # otherwise results retrieved from state
-
+			resultsAlpha[["ciAlpha"]] <- .reliabilityAlphaCI(relyFit = resultsAlpha, ci = options[["confAlphaLevel"]])
+			
+		}
+	}
 	results[["reliabilityScale"]] <- .reliabalityScaleTable(resultsAlpha, dataset, options, variables, perform)
 
 	if (options$alphaItem || options$gutmannItem || options$itemRestCor || options$meanItem || options$sdItem || options[["mcDonaldItem"]] || options[["glbScale"]]) {
@@ -94,6 +90,8 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 	state[["options"]] <- options
 	state[["resultsAlpha"]] <- resultsAlpha
+	state[["confAlpha"]] <- resultsAlpha[["ciAlpha"]]
+	attr(state, "key") <- stateKey
 
 	if (perform == "init") {
 
@@ -129,11 +127,15 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		# calculate chronbach alpha, gutmanns lambda6, and average inter item corrrelation
 		relyFit <- psych::alpha(dataList[["covariance"]], key = key)
 		
+		# because we supply a correlation matrix and not raw data, we have to add these ourselves
+		relyFit[["total"]][["mean"]] <- mean(dataList[["itemMeans"]])
+		relyFit[["total"]][["sd"]] <- stats::sd(dataList[["itemMeans"]])
+		relyFit[["item.stats"]][["mean"]] <- dataList[["itemMeans"]]
+		relyFit[["item.stats"]][["sd"]] <- dataList[["itemSds"]]
+		relyFit[["nObs"]] <- nObs
+		
 		# calculate confidence interval for chronbach alpha
-		relyFit[["ciAlpha"]] <- .reliabilityAlphaCI(estAlpha = relyFit[["total"]][["raw_alpha"]],
-													nObs = nObs, nVar = nVar,
-													ci = options[["confAlphaLevel"]], nullAlpha = 0)
-
+		relyFit[["ciAlpha"]] <- .reliabilityAlphaCI(relyFit = relyFit,	ci = options[["confAlphaLevel"]])
 
 		# calculate the greatest lower bound -- only possible for more than 2 variables.
 		if (nVar < 3) {
@@ -147,15 +149,16 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		}
 
 		# calculate McDonalds omega
-		omega <- psych::omega(dataList[["correlation"]], m = 1, flip = FALSE, plot = FALSE, 
-							  n.iter = 1)[["omega.tot"]]
+		omega <- psych::omega(m = dataList[["correlation"]], nfactors = 1, flip = FALSE, plot = FALSE, 
+							  n.iter = 1, n.obs = nObs)[["omega.tot"]]
 
 		# calculate McDonalds omega if item dropped
 		omegaDropped <- NULL
 		if (nVar > 2) {
 			omegaDropped <- numeric(length = nVar)
 			for (i in 1:nVar) {
-				omegaDropped[i] <- psych::omega(dataList[["correlation"]][-i, -i], m = 1, n.iter = 1,
+				omegaDropped[i] <- psych::omega(m = dataList[["correlation"]][-i, -i], 
+												nfactors = 1, n.iter = 1, n.obs = nObs,
 												flip = FALSE, plot = FALSE)$omega.tot
 			}
 		}
@@ -433,7 +436,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 }
 
-.reliabilityAlphaCI <- function(estAlpha, nObs, nVar, ci = 0.95, nullAlpha = 0) {
+.reliabilityAlphaCI <- function(relyFit, ci, nullAlpha = 0) {
 
 	# code taken and modified from http://www.psyctc.org/stats/R/Feldt1.html
 	# considering using the bootstrapped version inside psych as an alternative
@@ -444,10 +447,13 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	#* pp. 93-103 to carry out omnibus inferential test of     *#
 	#* similarity of alpha values from a single sample         *#
 	#***********************************************************#
-	# estAlpha is the observed alpha
-	# nObs is the sample size
-	# nVar is the number of items in the measure or scale
+	
+	# relyFit is the output from psych::alpha and must contain the sample size as nObs
 	# ci is the width of the confidence interval about obs.a desired
+	
+	estAlpha = relyFit[["total"]][["raw_alpha"]]
+	nVar = relyFit[["nvar"]]
+	nObs = relyFit[["nObs"]]
 
 	if(estAlpha > nullAlpha) {
 		f <- (1 - estAlpha) / (1 - nullAlpha)
@@ -474,12 +480,15 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		
 	}
 	
-	covmat <- cov(dataset, use = "pairwise")
+	means = colSums(dataset, na.rm = TRUE)
+	covmat <- stats::cov(dataset, use = "pairwise")
 	stdev <- sqrt(diag(covmat))
-	cormat <- cor.smooth(stats::cov2cor(covmat), eig.tol = sqrt(.Machine$double.eps))
+	cormat <- psych::cor.smooth(stats::cov2cor(covmat), eig.tol = sqrt(.Machine[["double.eps"]]))
 	
 	return(list(
 		correlation = cormat,
+		itemSds = stdev,
+		itemMeans = means,
 		# direct line from: corpcor::rebuild.cov
 		covariance = sweep(sweep(cormat, 1, stdev, "*"), 2, stdev)
 	))
