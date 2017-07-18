@@ -17,9 +17,13 @@ TEMPLATE = app
 
 DEPENDPATH = ..
 
-PRE_TARGETDEPS += ../libJASP-Common-mingw.a
+windows:PRE_TARGETDEPS += ../libJASP-Common-mingw.a
+macx:PRE_TARGETDEPS += ../libJASP-Common.a
+linux:PRE_TARGETDEPS += ../libJASP-Common.a
 
-LIBS += -L.. -lJASP-Common-mingw
+macx: LIBS += -L.. -lJASP-Common
+linux: LIBS += -L.. -lJASP-Common
+windows:LIBS += -L.. -lJASP-Common-mingw
 
 windows:CONFIG(ReleaseBuild) {
 windows:LIBS += -lboost_filesystem-mgw71-mt-1_64 -lboost_system-mgw71-mt-1_64 -lJASP-Sharedmem.dll -larchive.dll

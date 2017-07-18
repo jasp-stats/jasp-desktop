@@ -202,8 +202,11 @@ void Engine::run()
 	ss << "JASP-IPC-" << ProcessInfo::parentPID();
 	string memoryName = ss.str();
 
+#ifdef __WIN32__
 	_channel = CreateJASPChannel(memoryName.c_str(), _slaveNo);
-
+#else
+	_channel = new IPCChannel(memoryName, _slaveNo, true);
+#endif
 	std::cout << "ENGINE: Start " << _slaveNo << std::endl;
 	std::cout.flush();
 
@@ -244,9 +247,13 @@ void Engine::run()
 
 bool Engine::receiveMessages(int timeout)
 {
+#ifdef __WIN32__
 	char *data;
-
 	if (_channel->receive(&data, 1000))
+#else
+	string data;
+	if (_channel->receive(data, 1000))
+#endif
 	{
 		std::cout << "ENGINE: received message" << std::endl;
 		std::cout.flush();
@@ -254,9 +261,6 @@ bool Engine::receiveMessages(int timeout)
 		Json::Value jsonRequest;
 		Json::Reader r;
 		r.parse(data, jsonRequest, false);
-
-		std::cout << "Message: " << data << std::endl;
-		std::cout.flush();
 
 		int analysisId = jsonRequest.get("id", -1).asInt();
 		string perform = jsonRequest.get("perform", "run").asString();
@@ -365,7 +369,11 @@ void Engine::sendResults()
 	std::cout << message << std::endl;
 	std::cout.flush();
 
+#ifdef __WIN32__
 	_channel->send(message.c_str());
+#else
+	_channel->send(message);
+#endif
 }
 
 string Engine::callback(const string &results)

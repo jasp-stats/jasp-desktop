@@ -35,7 +35,7 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 		interprocess::shared_memory_object::remove(name.c_str());
 		try
 		{
-			_memory = new interprocess::managed_windows_shared_memory(interprocess::create_only, name.c_str(), 4 * 1024 * 1024);
+			_memory = new interprocess::managed_shared_memory(interprocess::create_only, name.c_str(), 4 * 1024 * 1024);
 			std::cout << "Master: Shared memory created with name " << name.c_str() << std::endl;
 		}
 		catch (boost::interprocess::interprocess_exception &e)
@@ -44,7 +44,7 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 		}
 		try
 		{
-			boost::interprocess::managed_windows_shared_memory *test = new interprocess::managed_windows_shared_memory(interprocess::open_only, name.c_str());
+			boost::interprocess::managed_shared_memory *test = new interprocess::managed_shared_memory(interprocess::open_only, name.c_str());
 			std::cout << "Master: Shared memory found with name " << name.c_str() << std::endl;
 		}
 		catch (boost::interprocess::interprocess_exception &e)
@@ -56,7 +56,7 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 	{
 		try
 		{
-			_memory = new interprocess::managed_windows_shared_memory(interprocess::open_only, name.c_str());
+			_memory = new interprocess::managed_shared_memory(interprocess::open_only, name.c_str());
 			std::cout << "Slave: Shared memory read with name " << name.c_str() << std::endl;
 		}
 		catch (boost::interprocess::interprocess_exception &e)
