@@ -312,7 +312,6 @@
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
-           <zorder>box</zorder>
           </widget>
          </item>
         </layout>
@@ -423,7 +422,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Cronbach's α</string>
+                  <string>Cronbach's α analytical</string>
                  </property>
                 </widget>
                </item>

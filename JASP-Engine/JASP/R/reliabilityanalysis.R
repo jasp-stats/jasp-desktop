@@ -111,17 +111,12 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	relyFit <- NULL
 
 	if (perform == "run" && !is.null(variables) && length(variables) > 1) {
-
-		dataAsMatrix <- as.matrix(dataset)
-
-		# missing values: psych analyses by default use pairwise deletion, so we only
-		# need to do something if the user wants listwise deletion
-		if (options[["missingValues"]] == "excludeCasesListwise") {
-
-			dataAsMatrix <- dataAsMatrix[complete.cases(dataAsMatrix), ]
-
-		}
-
+		
+		# obtain smoothed correlation and covariance matrix
+		dataList <- .reliabilityConvertDataToCorrelation(dataset, options)
+		nObs <- nrow(dataset)
+		nVar <- ncol(dataset)
+		
 		# generate key for reverse scaled items
 		key <- NULL
 		if (length(options$reverseScaledItems) > 0) {
@@ -130,36 +125,38 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 			key[match(.v(unlist(options$reverseScaledItems)), colnames(dataAsMatrix))] <- -1
 
 		}
-
-		# calculate chronbach alpha and gutmanns lambda6
-		relyFit <- psych::alpha(dataAsMatrix, key = key)
-
-		# calculate chronbach alpha and gutmanns lambda6
+		
+		# calculate chronbach alpha, gutmanns lambda6, and average inter item corrrelation
+		relyFit <- psych::alpha(dataList[["covariance"]], key = key)
+		
+		# calculate confidence interval for chronbach alpha
 		relyFit[["ciAlpha"]] <- .reliabilityAlphaCI(estAlpha = relyFit[["total"]][["raw_alpha"]],
-													nObs = nrow(dataAsMatrix), nVar = ncol(dataAsMatrix),
+													nObs = nObs, nVar = nVar,
 													ci = options[["confAlphaLevel"]], nullAlpha = 0)
 
 
 		# calculate the greatest lower bound -- only possible for more than 2 variables.
-		if (length(variables) < 3) {
+		if (nVar < 3) {
 
 			relyFit[["glb"]] <- "."
 
 		} else { # try since the glb is error prone icm reverse scaled items. Requires further investigation/ this might be a bug in psych.
 
-			relyFit[["glb"]] <- try(psych::glb(r = dataAsMatrix, key = key)[["glb.max"]], silent = TRUE)
+			relyFit[["glb"]] <- try(psych::glb(r = dataList[["correlation"]], key = key)[["glb.max"]], silent = TRUE)
 
 		}
 
 		# calculate McDonalds omega
-		omega <- psych::omega(dataAsMatrix, 1, flip = FALSE, plot = FALSE)[["omega.tot"]]
+		omega <- psych::omega(dataList[["correlation"]], m = 1, flip = FALSE, plot = FALSE, 
+							  n.iter = 1)[["omega.tot"]]
 
 		# calculate McDonalds omega if item dropped
 		omegaDropped <- NULL
-		if (ncol(dataAsMatrix) > 2) {
-			omegaDropped <- numeric(length = ncol(dataAsMatrix))
-			for (i in 1:ncol(dataAsMatrix)) {
-				omegaDropped[i] <- psych::omega(dataAsMatrix[, -i], 1, flip = FALSE, plot = FALSE)$omega.tot
+		if (nVar > 2) {
+			omegaDropped <- numeric(length = nVar)
+			for (i in 1:nVar) {
+				omegaDropped[i] <- psych::omega(dataList[["correlation"]][-i, -i], m = 1, n.iter = 1,
+												flip = FALSE, plot = FALSE)$omega.tot
 			}
 		}
 
@@ -171,7 +168,6 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	return(relyFit)
 
 }
-
 
 .reliabalityScaleTable <- function (r, dataset, options, variables, perform) {
 
@@ -468,4 +464,24 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	lwr <- 1 - (1 - estAlpha) * f2
 	upr <- 1 - (1 - estAlpha) * f1
 	return(c(lwr, upr))
+}
+
+.reliabilityConvertDataToCorrelation <- function(dataset, options) {
+	
+	if (options[["missingValues"]] == "excludeCasesListwise") {
+		
+		dataset <- dataset[complete.cases(dataset), ]
+		
+	}
+	
+	covmat <- cov(dataset, use = "pairwise")
+	stdev <- sqrt(diag(covmat))
+	cormat <- cor.smooth(stats::cov2cor(covmat), eig.tol = sqrt(.Machine$double.eps))
+	
+	return(list(
+		correlation = cormat,
+		# direct line from: corpcor::rebuild.cov
+		covariance = sweep(sweep(cormat, 1, stdev, "*"), 2, stdev)
+	))
+	
 }
