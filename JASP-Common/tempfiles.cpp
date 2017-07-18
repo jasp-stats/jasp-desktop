@@ -25,6 +25,7 @@
 #include "base64.h"
 #include "dirs.h"
 #include "utils.h"
+#include <iostream>
 
 using namespace std;
 using namespace boost;
@@ -34,6 +35,7 @@ string _tempfiles_sessionDirName;
 string _tempfiles_statusFileName;
 string _tempfiles_clipboard;
 int _tempfiles_nextFileId;
+vector<string> tempfiles_shmemNames;
 
 void tempfiles_init(long sessionId)
 {
@@ -141,36 +143,71 @@ void tempfiles_deleteOrphans()
 
 			if (p.compare(sessionPath) == 0)
 				continue;
-
-			string name = Utils::osPath(p.filename());
-
-			if (std::atoi(name.c_str()) == 0)
-				continue;
-
-			if (filesystem::is_directory(p, error) == false || error)
-				continue;
-
-			filesystem::path statusFile = Utils::osPath(Utils::osPath(p) + "/status");
-
-			if (filesystem::exists(statusFile, error))
+			for (vector<string>::const_iterator it = tempfiles_shmemNames.begin(); it != tempfiles_shmemNames.end(); ++it)
 			{
-				long modTime = Utils::getFileModificationTime(Utils::osPath(statusFile));
-				long now = Utils::currentSeconds();
+				if (p.compare(*it) == 0)
+					continue;
+			}
 
-				if (now - modTime > 70)
+			string fileName = Utils::osPath(p.filename());
+
+			bool is_directory = filesystem::is_directory(p, error);
+			if (error)
+				continue;
+
+			if (!is_directory)
+			{
+				if (fileName.substr(0, 5).compare("JASP-") == 0)
+				{
+					long modTime = Utils::getFileModificationTime(Utils::osPath(p));
+					long now = Utils::currentSeconds();
+
+					std::cout.flush();
+					if (now - modTime > 70)
+					{
+						std::cout << "Try to delete: " << fileName << std::endl;
+						std::cout.flush();
+
+						filesystem::remove(p, error);
+
+						if (error)
+						{
+							std::cout << "Error when deleting File: " << error.message() << std::endl;
+							std::cout.flush();
+
+							perror(error.message().c_str());
+						}
+					}
+				}
+			}
+			else
+			{
+
+				if (std::atoi(fileName.c_str()) == 0)
+					continue;
+
+				filesystem::path statusFile = Utils::osPath(Utils::osPath(p) + "/status");
+
+				if (filesystem::exists(statusFile, error))
+				{
+					long modTime = Utils::getFileModificationTime(Utils::osPath(statusFile));
+					long now = Utils::currentSeconds();
+
+					if (now - modTime > 70)
+					{
+						filesystem::remove_all(p, error);
+
+						if (error)
+							perror(error.message().c_str());
+					}
+				}
+				else // no status file
 				{
 					filesystem::remove_all(p, error);
 
 					if (error)
 						perror(error.message().c_str());
 				}
-			}
-			else // no status file
-			{
-				filesystem::remove_all(p, error);
-
-				if (error)
-					perror(error.message().c_str());
 			}
 		}
 
@@ -188,6 +225,10 @@ void tempfiles_heartbeat()
 
 {
 	Utils::touch(_tempfiles_statusFileName);
+	for (vector<string>::const_iterator it = tempfiles_shmemNames.begin(); it != tempfiles_shmemNames.end(); ++it)
+	{
+		Utils::touch(*it);
+	}
 }
 
 void tempfiles_purgeClipboard()
@@ -374,3 +415,13 @@ void tempfiles_deleteList(const vector<string> &files)
 	}
 }
 
+
+void tempFiles_addShmemFileName(string &name)
+{
+	stringstream ss;
+	ss << Dirs::tempDir();
+	ss << "/";
+	ss << name;
+
+	tempfiles_shmemNames.push_back(ss.str());
+}

@@ -16,6 +16,7 @@
 //
 
 #include "ipcchannel.h"
+#include "tempfiles.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/nowide/convert.hpp>
@@ -31,6 +32,7 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 	_isSlave = isSlave;
 
 	_memory = new interprocess::managed_shared_memory(interprocess::open_or_create, name.c_str(), 4*1024*1024);
+	tempFiles_addShmemFileName(name);
 
 	stringstream mutexInName;
 	stringstream mutexOutName;
@@ -105,19 +107,19 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 
 #else
 
-    if (_isSlave == false)
-    {
+	if (_isSlave == false)
+	{
 		interprocess::named_semaphore::remove(mutexInName.str().c_str());
 		interprocess::named_semaphore::remove(mutexOutName.str().c_str());
 
 		_semaphoreIn  = new interprocess::named_semaphore(interprocess::create_only, mutexInName.str().c_str(), 0);
 		_semaphoreOut = new interprocess::named_semaphore(interprocess::create_only, mutexOutName.str().c_str(), 0);
-    }
-    else
-    {
+	}
+	else
+	{
 		_semaphoreIn  = new interprocess::named_semaphore(interprocess::open_only, mutexInName.str().c_str());
 		_semaphoreOut = new interprocess::named_semaphore(interprocess::open_only, mutexOutName.str().c_str());
-    }
+	}
 
 
 #endif
@@ -133,11 +135,11 @@ void IPCChannel::send(string &data)
 #elif defined __WIN32__
 	ReleaseSemaphore(_semaphoreOut, 1, NULL);
 #else
-    _semaphoreOut->post();
+	_semaphoreOut->post();
 #endif
 
 
-    _mutexOut->unlock();
+	_mutexOut->unlock();
 }
 
 bool IPCChannel::receive(string &data, int timeout)
@@ -185,7 +187,7 @@ bool IPCChannel::tryWait(int timeout)
 		ptime now(microsec_clock::universal_time());
 		ptime then = now + microseconds(1000 * timeout);
 
-        messageWaiting = _semaphoreIn->timed_wait(then);
+		messageWaiting = _semaphoreIn->timed_wait(then);
 	}
 	else
 	{
