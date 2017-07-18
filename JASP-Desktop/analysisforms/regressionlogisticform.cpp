@@ -42,12 +42,13 @@ RegressionLogisticForm::RegressionLogisticForm(QWidget *parent) :
 	_factorsModel = new TableModelVariablesAssigned();
 	_factorsModel->setSource(&_availableVariablesModel);
 	_factorsModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	_factorsModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeNominalText);
 	ui->factors->setModel(_factorsModel);
 
 	_wlsWeightsModel = new TableModelVariablesAssigned();
 	_wlsWeightsModel->setSource(&_availableVariablesModel);
 	_wlsWeightsModel->setVariableTypesSuggested(Column::ColumnTypeScale);
-	_wlsWeightsModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	_wlsWeightsModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
 	ui->wlsWeights->setModel(_wlsWeightsModel);
 
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);
