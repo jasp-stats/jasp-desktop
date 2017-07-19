@@ -153,9 +153,32 @@ thead tr th {
 }
 
 thead tr.over-title th:empty {
-
-	border-bottom: none ;
+	border-bottom: none;
 }
+
+thead tr.over-title-space th {
+	border-bottom: none;
+	padding: 0 .25em 0 .25em;
+}
+
+thead tr.over-title-space th:last-child {
+	border-bottom: none;
+	padding: 0 0 0 .25em;
+}
+
+div.over-title-space {
+	padding-top: .25em;
+	padding-bottom: .25em;
+	vertical-align: middle;
+	margin: 0 0 0 0;
+	text-align: center;
+	border-bottom: thin solid;
+}
+
+div.over-title-space:empty {
+	border-bottom: none;
+}
+
 
 tbody tr:last-child th,
 tbody tr:last-child td {
