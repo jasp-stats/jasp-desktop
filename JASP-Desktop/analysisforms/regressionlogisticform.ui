@@ -157,34 +157,6 @@
             <string>Regression Coefficients</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
-            <item row="0" column="1">
-             <widget class="BoundCheckBox" name="coeffEstimates">
-              <property name="text">
-               <string>Estimates</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1" colspan="2">
-             <widget class="BoundCheckBox" name="coeffCI">
-              <property name="text">
-               <string>Confidence intervals</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1" colspan="2">
-             <widget class="BoundCheckBox" name="stdCoeff">
-              <property name="text">
-               <string>Standardized Coefficients</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="1">
-             <widget class="BoundCheckBox" name="oddsRatios">
-              <property name="text">
-               <string>Odds Ratios</string>
-              </property>
-             </widget>
-            </item>
             <item row="2" column="1" colspan="2">
              <widget class="QWidget" name="panelConfidenceInterval" native="true">
               <property name="enabled">
@@ -230,6 +202,34 @@
               </layout>
              </widget>
             </item>
+            <item row="0" column="1">
+             <widget class="BoundCheckBox" name="coeffEstimates">
+              <property name="text">
+               <string>Estimates</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1" colspan="2">
+             <widget class="BoundCheckBox" name="stdCoeff">
+              <property name="text">
+               <string>Standardized Coefficients</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1" colspan="2">
+             <widget class="BoundCheckBox" name="coeffCI">
+              <property name="text">
+               <string>Confidence intervals</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="BoundCheckBox" name="oddsRatios">
+              <property name="text">
+               <string>Odds Ratios</string>
+              </property>
+             </widget>
+            </item>
             <item row="6" column="1">
              <widget class="BoundCheckBox" name="VovkSellkeMPR">
               <property name="sizePolicy">
@@ -256,6 +256,19 @@
               </property>
              </spacer>
             </item>
+            <item row="7" column="1">
+             <spacer name="verticalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
            </layout>
           </widget>
          </item>
@@ -265,28 +278,104 @@
             <string>Performance Diagnostics</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_7">
-            <item row="0" column="1">
+            <item row="1" column="0">
+             <widget class="QWidget" name="panelProportions" native="true">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_6">
+               <property name="leftMargin">
+                <number>20</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="BoundCheckBox" name="confusionMatrixProportions">
+                 <property name="text">
+                  <string>Proportions</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="11" column="0" colspan="2">
+             <spacer name="verticalSpacer_5">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="5" column="0">
+             <widget class="BoundCheckBox" name="Spec">
+              <property name="text">
+               <string>Specificity</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="BoundCheckBox" name="Sens">
+              <property name="text">
+               <string>Sensitivity / Recall</string>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="0">
+             <widget class="BoundCheckBox" name="BrierScr">
+              <property name="text">
+               <string>Brier Score</string>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="0">
+             <widget class="BoundCheckBox" name="Hmsr">
+              <property name="text">
+               <string>H-measure</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
              <widget class="BoundCheckBox" name="confusionMatrixOpt">
               <property name="text">
                <string>Confusion Matrix</string>
               </property>
              </widget>
             </item>
-            <item row="2" column="1">
+            <item row="6" column="0">
+             <widget class="BoundCheckBox" name="Prec">
+              <property name="text">
+               <string>Precision</string>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="0">
+             <widget class="BoundCheckBox" name="Fmsr">
+              <property name="text">
+               <string>F-measure</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
              <widget class="BoundCheckBox" name="AUC">
               <property name="text">
                <string>AUC</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="1">
-             <widget class="BoundCheckBox" name="Sens">
-              <property name="text">
-               <string>Sensitivity</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="2">
+            <item row="6" column="1">
              <spacer name="horizontalSpacer_4">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -299,34 +388,14 @@
               </property>
              </spacer>
             </item>
-            <item row="5" column="1">
-             <widget class="BoundCheckBox" name="BrierScr">
-              <property name="text">
-               <string>Brier Score</string>
+            <item row="10" column="0" colspan="2">
+             <widget class="QComboBox" name="scoreBox">
+              <property name="currentText">
+               <string/>
               </property>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <widget class="BoundCheckBox" name="Spec">
-              <property name="text">
-               <string>Specificity</string>
+              <property name="maxVisibleItems">
+               <number>10</number>
               </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QWidget" name="panelProportions" native="true">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_6">
-               <item row="0" column="0">
-                <widget class="BoundCheckBox" name="confusionMatrixProportions">
-                 <property name="text">
-                  <string>Proportions</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
              </widget>
             </item>
            </layout>
@@ -863,7 +932,7 @@
   <tabstop>AUC</tabstop>
   <tabstop>Sens</tabstop>
   <tabstop>Spec</tabstop>
-  <tabstop>BrierScr</tabstop>
+  <tabstop>Prec</tabstop>
   <tabstop>pushButton_3</tabstop>
   <tabstop>estimatesPlotsOpt</tabstop>
  </tabstops>

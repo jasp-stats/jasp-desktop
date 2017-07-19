@@ -18,6 +18,7 @@
 
 #include "regressionlogisticform.h"
 #include "ui_regressionlogisticform.h"
+#include <QStringList>
 
 RegressionLogisticForm::RegressionLogisticForm(QWidget *parent) :
 	AnalysisForm("RegressionLogisticForm", parent),
@@ -60,6 +61,12 @@ RegressionLogisticForm::RegressionLogisticForm(QWidget *parent) :
 	_modelModel->setPiecesCanBeAssigned(false);
 	ui->modelTerms->setModel(_modelModel);
 	ui->modelTerms->hide();
+
+
+	QStringList scrs;
+	scrs << "AUC" << "Sens" << "Spec" << "Prec" << "Fmsr" << "BrierScr" << "Hmsr";
+	ui->scoreBox->insertItems(10,scrs);
+
 
 	connect(_covariatesModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
 	connect(_covariatesModel, SIGNAL(assignmentsChanged()),  this, SLOT(factorsChanged()));

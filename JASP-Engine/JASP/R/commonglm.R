@@ -110,7 +110,7 @@
     
     out[["title"]] <- "Coefficients"
     
-    ciTitle <- paste0(options[["coeffCIInterval"]],"% Confidence interval")
+    ciTitle <- paste0(options[["coeffCIInterval"]], "% Confidence interval")
     # first define all the fields
     fields <- list(
       list(name="param", title = "", type="string"),
@@ -170,16 +170,26 @@
     out[["title"]] <- "Confusion matrix"
 
     if (perform == "run" && !is.null(glmObj)) {
+      if (options[["confusionMatrixProportions"]]) {
+        n <- length(glmObj[["y"]])
+        typ <- "number"
+        frm <- "sf:4;dp:3"
+      } else {
+        n <- 1
+        typ <- "integer"
+        frm <- ""
+      }
+      
       levs <- levels(glmObj[["model"]][,1])
       fields <- list(
         list(name="obs", title = "Observed", type="string"),
-        list(name="pred0", title = levs[1], type="number", format="sf:4;dp:3", overTitle = "Predicted"),
-        list(name="pred1", title = levs[2], type="number", format="dp:3", overTitle = "Predicted")
+        list(name="pred0", title = levs[1], type=typ, format=frm, overTitle = "Predicted"),
+        list(name="pred1", title = levs[2], type=typ, format=frm, overTitle = "Predicted")
       )
       m <- .confusionMatrix(glmObj, cutoff = 0.5)[["matrix"]]
       rows <- list(
-        list(obs = levs[1], pred0 = m[1,1], pred1 = m[1,2]),
-        list(obs = levs[2], pred0 = m[2,1], pred1 = m[2,2])
+        list(obs = levs[1], pred0 = m[1,1]/n, pred1 = m[1,2]/n),
+        list(obs = levs[2], pred0 = m[2,1]/n, pred1 = m[2,2]/n)
       )
     } else {
       fields <- list(
@@ -192,19 +202,72 @@
         list(obs = "1", pred0 = ".", pred1 = ".")
       )
     }
+    out[["schema"]] <- list(fields=fields)
+    out[["data"]] <- rows
   }
-  out[["schema"]] <- list(fields=fields)
-  out[["data"]] <- rows
+  
   return(out)
 }
 
 .glmPerformanceMetrics <- function(glmObj, options, perform, type) {
   out <- NULL
-  type <- glmObj[["family"]][["family"]] # will be null if glmObj == null
-  
-  if (!is.null(type) && type == "binomial") {
+  if (type == "binomial") {
+      
+    # determine which scores we need
+    scrNeed  <- with(options, c(AUC, Sens, Spec, Prec, Fmsr, BrierScr, Hmsr))
+
+    if (perform == "run" && !is.null(glmObj) && any(scrNeed)) {  
+      out[["title"]] <- "Performance metrics"
+      # make fields
+      fields <- list(
+        list(name="met", title = "", type="string"),
+        list(name="val", title = "Value", type="number", format="sf:4;dp:3")
+      )
+      
+      m <- .confusionMatrix(glmObj, cutoff = 0.5)[["metrics"]]
+      rows <- list(
+        list(met = "AUC", val = m[["AUC"]]),
+        list(met = "Sensitivity", val = m[["Sens"]]),
+        list(met = "Specificity", val = m[["Spec"]]),
+        list(met = "Precision", val = m[["Precision"]]),
+        list(met = "F-measure", val = m[["F"]]),
+        list(met = "Brier score", val = m[["Brier"]]),
+        list(met = "H-measure", val = m[["H"]])
+      )
+      
+      # delete the rows we don't need
+      rows <- rows[scrNeed]
+      
+      out[["schema"]] <- list(fields=fields)
+      out[["data"]] <- rows
+      
+    } else if (any(scrNeed)){
+      out[["title"]] <- "Performance metrics"
+      # make fields
+      fields <- list(
+        list(name="met", title = "", type="string"),
+        list(name="val", title = "Value", type="number", format="sf:4;dp:3")
+      )
+      
+      rows <- list(
+        list(met = "AUC", val = "."),
+        list(met = "Sensitivity", val = "."),
+        list(met = "Specificity", val = "."),
+        list(met = "Precision", val = "."),
+        list(met = "F-measure", val = "."),
+        list(met = "Brier score", val = "."),
+        list(met = "H-measure", val = ".")
+      )
+      
+      # delete the rows we don't need
+      rows <- rows[scrNeed]
+      
+      out[["schema"]] <- list(fields=fields)
+      out[["data"]] <- rows
+    }
     
-  } 
+    
+  }
   
   return(out)
 }
@@ -333,10 +396,17 @@
   sum((pred - obs)^2) / length(pred)
 }
 
-
 .formatTerm <- function(term, glmObj) {
   # input: string of model term & glmObj
   vars <- names(glmObj[["model"]][-1])
+  
+  if (attr(glmObj[["terms"]], "intercept")) {
+    vars <- c(vars, "(Intercept)")
+  }
+  
+  # escape special regex characters
+  vars <- gsub("(\\W)", "\\\\\\1", vars, perl=TRUE)
+  
   # regex patterns
   pat1 <- paste0("\\:","(?=(",paste(vars, collapse = ")|("),"))")
   pat2 <- paste0("(?<=(",paste(vars, collapse = ")|("),"))")

@@ -60,11 +60,10 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
     with(diff, {
       if (!any(dependent, covariates, factors, wlsWeights, modelTerms,
                 includeIntercept)) {
-        print('results object & model summary table can be reused')
         lrObj <<- state[["lrObj"]]
         modelSummary <<- state[["modelSummary"]]
         
-        if (!any(coeffEstimates, coeffCI, stdCoeff, oddsRatios, VovkSellkeMPR)) {
+        if (!any(coeffEstimates, coeffCI, coeffCIInterval, stdCoeff, oddsRatios, VovkSellkeMPR)) {
           # estimates table can be reused
           estimatesTable <<- state[["estimatesTable"]]
         }
@@ -106,18 +105,14 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   # <editor-fold> RESULTS GENERATION BLOCK ----
   # for each non-null result, generate results
   if (is.null(lrObj)) {
-    print("calculating lrObj")
     lrObj <- .jaspGlm(dataset, options, perform, type = "binomial")
   }
   
   if (is.null(modelSummary)) {
-    print("calculating model summary table")
     modelSummary <- .glmModelSummary(lrObj, options, perform, type = "binomial")
   }
   
   if (is.null(estimatesTable) && options[["coeffEstimates"]]) {
-    
-    print("calculating estimates table")
     estimatesTable <- .glmEstimatesTable(lrObj, options, perform, type = "binomial")
   }
   
@@ -147,10 +142,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   results[["estimatesTable"]] <- estimatesTable
   results[["perfDiagnostics"]] <- perfDiagnostics
   results[["estimatesPlots"]] <- estimatesPlots
-  
-  str(results)
-  
-  
+
   # </editor-fold> RESULTS GENERATION BLOCK
   
   # <editor-fold> RETURN RESULTS BLOCK ----
