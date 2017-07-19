@@ -27,32 +27,118 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 		diff <- .diff(options, state$options)
 	}
 
-	# Bayes factor type (BF10, BF01, log(BF10)) and title
-	bftype <- .getBayesfactorTitle.summarystats.ttest(
-								bayesFactorType = options$bayesFactorType,
-								hypothesis = options$hypothesis
-							)
-	bf.title <- bftype$bftitle
-	BFH1H0 <- bftype$BFH1H0
-
+	### options contains:
+	## essentials:
+	#   tStatistic:       numeric, value of the t-statistic to be converted into a BF
+	#   n1Size:           integer, the sample size
+	#   hypothesis:       string, one of ["notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue"]
+	#   priorWidth:       numeric, width of the prior 
+	#   bayesFactorType:  string, one of ["BF10", "BF01", "LogBF10"]
+	## plotting:
+	#   plotPriorAndPosterior:                    logical, make this plot?
+	#   plotPriorAndPosteriorAdditionalInfo:      logical,
+	#   plotBayesFactorRobustness:                logical,
+	#   plotBayesFactorRobustnessAdditionalInfo:  logical,
+	## advanced analysis:
+	#   effectSize:                     string, one of ["standardized", "dienes"]
+	#   effectSizeStandardized:         string, one of ["default", "informative"]
+	#   defaultStandardizedEffectSize:  string, can only be "cauchy" for now
+	#  -
+	#   informativeStandardizedEffectSize:  string, one of ["cauchy", "normal","t"]
+	#   informativeCauchyLocation:      numeric, -3 ≤ value ≤ 3, distribution used is dcauchy((tStatistic - CauchyLocation) / CauchyScale)
+	#   informativeCauchyScale:         numeric,
+	#  - 
+	#   informativeTLocation:           numeric, -3 ≤ value ≤ 3, distribution used is dt((tStatistic - Tlocation) / Tscale, TDf)
+	#   informativeTScale:              numeric, 0 ≤ value ≤ 2
+	#   informativeTDf:                 integer, 1 ≤ value ≤ 500
+	#  -
+	#   informativeNormalMean:          numeric, -3 ≤ value ≤ 3, normal used is dnorm((tStatistic - NormalMean) / NormalStd)
+	#   informativeNormalStd:           numeric, 0 ≤ value ≤ 2
+	#  -
+	#   dienesEffectSize:               string, one of ["uniform", "normal", "half_normal"]
+	#   uniformDienesLowerBound:        numeric, 0 ≤ value ≤ 2, not guarantee to be smaller than uniformDienesUpperBound (???)
+	#   uniformDienesUpperBound:        numeric, 0 ≤ value ≤ 2
+	#   normalDienesMean:               numeric, 0 ≤ value ≤ 2
+	#   normalDienesStd:                numeric, 0 ≤ value ≤ 2
+	#   halfNormalDienesStd:            numeric, 0 ≤ value ≤ 2
+	
+	
+  ### Compute results for the analysis	
+	
 	hypothesis.variables <- .hypothesisType.summarystats.ttest.one(options$hypothesis)
 	oneSided <- hypothesis.variables$oneSided
+	
+	outputTableElements <- .getOutputRow.summarystats.ttest.one(run = run, 
+	           options = options, state = state, diff = diff, 
+	           hypothesis.variables = hypothesis.variables)
+	rowsTTestBayesianOneSample <- outputTableElements$row
+	bayesFactorObject <- outputTableElements$bayesFactorObject
 
+	
+	
+	### Define the Output: meta, table(s), plot(s), and results objects
+	
+	## Output Meta Description
+	
+	meta <- list()
+	meta[[1]] <- list(name = "table", type = "table")
+	meta[[2]] <- list(name = "inferentialPlots", type = "object",
+	                  meta = list(
+	                    list(name = "PriorPosteriorPlot", type = "image"),
+	                    list(name = "BFrobustnessPlot", type = "image")
+	                  )
+	             )
+
+	
+	## Prepare Table Output
+
+	table <- list()
+	table[["title"]] <- "Bayesian One Sample T-Test"
+	
+	# BF title used in table
+	bftype <- .getBayesfactorTitle.summarystats.ttest(
+	  bayesFactorType = options$bayesFactorType, hypothesis = options$hypothesis)
+	bf.title <- bftype$bftitle
+	#BFH1H0 <- bftype$BFH1H0
+	
+	# Define table schema
+	fields <- list(
+	  list(name = "tStatistic", type = "number", format = "sf:4;dp:3", title = "t"),
+	  list(name = "n1Size", type = "number", title = "n"),
+	  list(name = "BF", type = "number", format = "sf:4;dp:3", title = bf.title),
+	  list(name = "pValue", type = "number", format = "sf:4;dp:3", title = "p")
+	)
+	if (rowsTTestBayesianOneSample$errorEstimate != "NaN") {
+	  fields[[length(fields)+1]] <- 
+	    list(name = "errorEstimate", type = "number", format = "sf:4;dp:3", title = "error %")
+	}
+	table[["schema"]] <- list(fields = fields)
+	
+	# Populate the table
+	table[["data"]] <- list(rowsTTestBayesianOneSample)
+
+	# Add footnotes to the analysis result
+	footnotes <- .newFootnotes()
+	if (options$hypothesis != "notEqualToTestValue") {
+	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = hypothesis.variables$message)
+	}
+	table[["footnotes"]] <- as.list(footnotes)
+	
+	# Add citation reference list
+	table[["citation"]] <- list(
+	  "Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
+	  "Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian 
+	  t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
+
+	
+
+	### Prepare Plot Output
+	
 	# initialize variables
 	plots.sumstats.ttest <- list()
 	plotTypes <- list()
 	priorAndPosteriorPlot <- NULL
 	bayesFactorRobustnessPlot <- NULL
-
-	outputTableElements <- .getOutputRow.summarystats.ttest.one(
-														run = run,
-														options = options,
-														state = state,
-														diff = diff,
-														hypothesis.variables = hypothesis.variables
-													)
-	rowsTTestBayesianOneSample <- outputTableElements$row
-	bayesFactorObject <- outputTableElements$bayesFactorObject
 
 	# Get prior and posterior plot
 	if (options$plotPriorAndPosterior) {
@@ -91,38 +177,9 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 		}
 	}
 
-	# Populate the output table
-	meta <- list()
-	meta[[1]] <- list(name = "table", type = "table")
-	meta[[2]] <- list(name = "inferentialPlots", type = "object",
-										meta = list(list(name = "PriorPosteriorPlot", type = "image"),
-																list(name = "BFrobustnessPlot", type = "image"))
-									)
 
-	fields <- list()
-	fields[[length(fields)+1]] <- list(name = "tStatistic", type = "number", format = "sf:4;dp:3", title = "t")
-	fields[[length(fields)+1]] <- list(name = "n1Size", type = "number", title = "n")
-	fields[[length(fields)+1]] <- list(name = "BF", type = "number", format = "sf:4;dp:3", title = bf.title)
-	if (rowsTTestBayesianOneSample$errorEstimate != "NaN") {
-		fields[[length(fields)+1]] <- list(name = "errorEstimate", type = "number", format = "sf:4;dp:3", title = "error %")
-	}
-	fields[[length(fields)+1]] <- list(name = "pValue", type = "number", format = "sf:4;dp:3", title = "p")
-
-	# add footnotes to the analysis result
-	footnotes <- .newFootnotes()
-	if (options$hypothesis != "notEqualToTestValue") {
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = hypothesis.variables$message)
-	}
-
-	table <- list()
-	table[["title"]] <- "Bayesian One Sample T-Test"
-	table[["citation"]] <- list(
-		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
-		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
-	table[["footnotes"]] <- as.list(footnotes)
-	table[["schema"]] <- list(fields = fields)
-	table[["data"]] <- list(rowsTTestBayesianOneSample)
-
+  ### Create results object to be returned
+	
 	results <- list()
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian T-Test"
@@ -139,8 +196,9 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 								)
 	}
 
+	### Finish off: collect objects to keep; update status and state
+	
 	keep <- NULL
-
 	for (plot in plots.sumstats.ttest) {
 		keep <- c(keep, plot$data)
 	}
@@ -162,7 +220,8 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 }
 
 
-.getOutputRow.summarystats.ttest.one <- function(run, options, state, diff, hypothesis.variables) {
+.getOutputRow.summarystats.ttest.one <- 
+  function(run, options, state, diff, hypothesis.variables) {
 	# Returns a row to be shown in output tables
 	#
 	# Args:
@@ -180,53 +239,45 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 	bayesFactorObject <- NULL
 	status <- NULL
 
-	# If available from previous state, fetch it
-	if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
-			(is.list(diff) && (diff$bayesFactorType == FALSE && diff$tStatistic == FALSE &&
-			diff$n1Size == FALSE && diff$priorWidth == FALSE && diff$hypothesis == FALSE))) &&
-			!is.null(state$bayesFactorObject)) {
+	## If previous table row is available and still valid, return it; otherwise compute it
+	
+	if (!is.null(state) && !is.null(diff) && !is.null(state$bayesFactorObject) && 
+	    !any(unlist(diff))) {
 
 		rowsTTestBayesianOneSample <- state$rowsTTestBayesianOneSample
 		bayesFactorObject <- state$bayesFactorObject
 
 	} else {
+	  
 		status <- .isInputValid.summarystats.ttest(options = options, independent = FALSE)
 		rowsTTestBayesianOneSample <- status$row
 
-		# if state of analysis is run
 		if (run) {
 			if (status$ready) {
-				bayesFactorObject <- .calculateBF.summarystats.ttest(
-																options = options,
-																state = state,
-																diff = diff,
-																hypothesis.variables = hypothesis.variables
-															)
 
-				if (options$bayesFactorType == "BF10") {
-					BF <- .clean(exp(bayesFactorObject$bf))
-				} else if(options$bayesFactorType == "BF01") {
-					BF <- .clean(1/exp(bayesFactorObject$bf))
-				} else {
-					BF <- .clean(bayesFactorObject$bf)
-				}
+			  ## Compute the statistics
+			  
+			  bayesFactorObject <- .generalSummaryTtestBF(options = options)
 
-				rowsTTestBayesianOneSample$BF <- BF
-				rowsTTestBayesianOneSample$errorEstimate <- .clean(bayesFactorObject$properror)
-				
+			  
+			  ## Format the statistics for output
+			  
+			  bf <- bayesFactorObject$bf
+			  BF <- switch(options$bayesFactorType, BF10=bf, BF01=1/bf, log(bf))
+
 				allPValues <- bayesFactorObject$pValue
+				pValue <- switch(as.character(hypothesis.variables$oneSided), left=allPValues$minSided,
+				                 right=allPValues$plusSided, allPValues$twoSided)
 				
-				if (hypothesis.variables$oneSided == FALSE){
-				  rowsTTestBayesianOneSample$pValue <- .clean(allPValues$twoSided)
-				} else if (hypothesis.variables$oneSided == "left") {
-				  rowsTTestBayesianOneSample$pValue <- .clean(allPValues$minSided)
-				} else if (hypothesis.variables$oneSided == "right") {
-				  rowsTTestBayesianOneSample$pValue <- .clean(allPValues$plusSided)
-				}
+				## Store statistics in table row ouput structure
+				
+				rowsTTestBayesianOneSample$BF <- .clean(BF)
+				rowsTTestBayesianOneSample$errorEstimate <- .clean(bayesFactorObject$properror)
+				rowsTTestBayesianOneSample$pValue <- .clean(pValue)
+				
 			}
 		}
 	}
-
 	return(list(row = rowsTTestBayesianOneSample, bayesFactorObject = bayesFactorObject))
 }
 
@@ -236,12 +287,14 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 	#   by the user
 	#
 	# Args:
-	#   hypothesis: the hypothesis selected by user
+	#   hypothesis: the hypothesis selected by user (one of 
+  #     "notEqualToTestValue", "greaterThanTestValue", or "lessThanTestValue")
 	#
 	# Output:
 	#   list containing:
-	#     nullInterval: vector containing lower and upper bounds of an interval hypothesis
-	#     oneSided: if the hypothesis is one sided
+	#     nullInterval: numeric vector containing lower and upper bounds of an interval hypothesis
+	#     oneSided: boolean or string, one of {TRUE, "right", "left"}
+  #     message:  string, if oneSided is a string, table footnote that specifies alternative hypothesis
 	#
 	nullInterval <- NULL
 	oneSided <- FALSE
@@ -263,4 +316,85 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 							oneSided = oneSided,
 							message = message)
 				)
+}
+
+
+
+### GENERAL One Sample T-TEST BF from Summary statistic FUNCTION 
+
+# TODO(raoul): - Change to combined one-sample/two-sample/dependent t-test function
+#              - Add uniform informed prior
+
+.generalSummaryTtestBF <- 
+  function(tValue=options$tStatistic, size=options$n1Size, options) { 
+  # Converts a t-statistic and sample size into the corresponding Bayes Factor.
+  #
+  # Args:
+  #   tValue:  the value of the t-statistic to be converted
+  #   size:    the sample size underlying the t-statistic
+  #   options: options object passed from JASP
+  #
+  # Value:
+  #   list with components:
+  #     bf:         the Bayes Factor
+  #     properror:  percentage of error in BF estimate
+  #     tValue:     the input t-statistic
+  #     n1:         the sample size
+  #     pValue:     p-value associated with tValue and n1
+  
+  # help vars
+  n1 <- size
+  n2 <- if (!is.null(options$n2Size)) options$n2Size else 0
+  oneSided = options$hypothesis != "notEqualToTestValue"
+  
+  ### Default case: a non-informative zero-centered Cauchy prior
+  if(options$effectSizeStandardized == "default") {
+    nullInterval <- 
+      switch(options$hypothesis, greaterThanTestValue = c(0, Inf), 
+             lessThanTestValue = c(-Inf,0), c(-Inf,Inf))    # default is notEqualToTestValue
+    
+    bfObject <- BayesFactor::ttest.tstat(t=tValue, n1=n1, n2=n2, rscale=options$priorWidth, 
+                                         nullInterval = nullInterval)
+    bf <- exp(bfObject$bf)
+    error <- 100*bfObject$properror
+  } 
+
+  ### Informed prior case: non-central scaled Cauchy, Student t, or Normal (uniform is lacking?)
+  if (options$effectSizeStandardized == "informative") {
+    # Note that strictly speaking, in case of the independent samples t-test,
+    # for the informed prior n1 corresponds to nx and n2 to ny and not vice-versa.
+    # However, since in the expression for the Bayes factor they only appear
+    # as an "effective" sample size and in the degrees of freedom for which it does
+    # not matter whether we swap the two, we retain this order for easier extension
+    # of the one-sample case.
+
+    side = switch(options$hypothesis, greaterThanTestValue = "right", lessThanTestValue= "left", FALSE)
+    
+    if (options[["informativeStandardizedEffectSize"]] == "cauchy") { 
+      bfObject <- .bf10_t(t = tValue, ny = n1, nx = n2, oneSided = side,
+                          independentSamples = FALSE,
+                          prior.location = options[["informativeCauchyLocation"]],
+                          prior.scale = options[["informativeCauchyScale"]],
+                          prior.df = 1)
+      bf <- bfObject$bf 
+      error <- 100*bfObject$error
+    } else if (options[["informativeStandardizedEffectSize"]] == "t") {
+      bfObject <- .bf10_t(t = tValue, ny = n1, nx = n2, oneSided = side,
+                          independentSamples = FALSE,
+                          prior.location = options[["informativeTLocation"]],
+                          prior.scale = options[["informativeTScale"]],
+                          prior.df = options[["informativeTDf"]])
+      bf <- bfObject$bf
+      error <- 100*bfObject$error
+    } else if (options[["informativeStandardizedEffectSize"]] == "normal") {
+      bf <- .bf10_normal(t = tValue, ny = n1, nx = n2, oneSided = side,
+                         independentSamples = FALSE,
+                         prior.mean = options[["informativeNormalMean"]],
+                         prior.variance = options[["informativeNormalStd"]]^2)
+      error <- NULL
+    }
+  }
+  result <- list(bf = bf, properror = error, tValue = tValue, n1 = n1, 
+                 pValue = .pValueFromT(t=tValue, n1=n1, n2=n2))
+  return(result)
 }
