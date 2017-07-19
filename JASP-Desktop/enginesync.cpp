@@ -100,15 +100,13 @@ void EngineSync::start()
 	}
 	catch (interprocess_exception e)
 	{
-		std::cout << "interprocess exception! " << e.what() << std::endl;
-		std::cout.flush();
+		qDebug() << "interprocess exception! " << e.what() << "\n";
 		throw e;
 	}
 
 	for (uint i = 0; i < _channels.size(); i++)
 	{
 		_analysesInProgress.push_back(NULL);
-		_mutexes.push_back(new boost::interprocess::interprocess_mutex());
 		startSlaveProcess(i);
 	}
 
@@ -138,30 +136,10 @@ void EngineSync::setPPI(int ppi)
 	_ppi = ppi;
 }
 
-bool EngineSync::tryUseEngine(int i, Analysis* analysis)
-{
-	bool locked = FALSE;
-	_mutexes[i]->lock();
-	if (_analysesInProgress[i] == NULL)
-	{
-		_analysesInProgress[i] = analysis;
-		locked = TRUE;
-	}
-	_mutexes[i]->unlock();
-	return locked;
-}
-
-void EngineSync::freeEngine(int i)
-{
-	_mutexes[i]->lock();
-	_analysesInProgress[i] = NULL;
-	_mutexes[i]->unlock();
-}
-
 void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 {
 #ifdef QT_DEBUG
-	std::cout << "DESKTOP: send " << analysis->id() << " to process " << processNo << "\n";
+	std::cout << "send " << analysis->id() << " to process " << processNo << "\n";
 	std::cout.flush();
 #endif
 
@@ -188,6 +166,8 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 		analysis->setStatus(Analysis::Running);
 	}
 
+	_analysesInProgress[processNo] = analysis;
+
 	Json::Value json = Json::Value(Json::objectValue);
 
 	json["id"] = analysis->id();
@@ -209,12 +189,12 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	}
 
 	string str = json.toStyledString();
+	_channels[processNo]->send(str);
 
 #ifndef QT_NO_DEBUG
-	std::cout << str << std::endl;
-	std::cout.flush();
+	cout << str << "\n";
+	cout.flush();
 #endif
-	_channels[processNo]->send(str);
 
 }
 
@@ -233,7 +213,7 @@ void EngineSync::process()
 		if (channel->receive(data))
 		{
 #ifdef QT_DEBUG
-			std::cout << "DESKTOP: message received\n";
+			std::cout << "message received\n";
 			std::cout << data << "\n";
 			std::cout.flush();
 #endif
@@ -254,7 +234,7 @@ void EngineSync::process()
 			{
 				analysis->setStatus(status == "error" ? Analysis::Error : Analysis::Exception);
 				analysis->setResults(results);
-				freeEngine(i);
+				_analysesInProgress[i] = NULL;
 				sendMessages();
 
 				if (_log != NULL)
@@ -268,14 +248,14 @@ void EngineSync::process()
 			{
 				analysis->setStatus(Analysis::Complete);
 				analysis->setImageResults(results);
-				freeEngine(i);
+				_analysesInProgress[i] = NULL;
 				sendMessages();
 			}
 			else if (status == "complete")
 			{
 				analysis->setStatus(Analysis::Complete);
 				analysis->setResults(results);
-				freeEngine(i);
+				_analysesInProgress[i] = NULL;
 				sendMessages();
 			}
 			else if (status == "inited")
@@ -286,7 +266,7 @@ void EngineSync::process()
 					analysis->setStatus(Analysis::InitedAndWaiting);
 
 				analysis->setResults(results);
-				freeEngine(i);
+				_analysesInProgress[i] = NULL;
 				sendMessages();
 			}
 			else if (status == "running" && analysis->status() == Analysis::Initing)
@@ -321,7 +301,7 @@ void EngineSync::sendMessages()
 			else if (analysis->status() == Analysis::Aborting)
 			{
 				sendToProcess(i, analysis);
-				freeEngine(i);
+				_analysesInProgress[i] = NULL;
 			}
 		}
 	}
@@ -338,7 +318,7 @@ void EngineSync::sendMessages()
 
 			for (size_t i = 0; i < _analysesInProgress.size(); i++)
 			{
-				if (tryUseEngine(i, analysis))
+				if (_analysesInProgress[i] == NULL)
 				{
 					sendToProcess(i, analysis);
 					sent = true;
@@ -357,7 +337,7 @@ void EngineSync::sendMessages()
 			for (size_t i = 0; i < _analysesInProgress.size(); i++)
 #endif
 			{
-				if (tryUseEngine(i, analysis))
+				if (_analysesInProgress[i] == NULL)
 				{
 					sendToProcess(i, analysis);
 					break;
@@ -400,8 +380,6 @@ void EngineSync::startSlaveProcess(int no)
 
 	QDir rHome(rHomePath);
 
-	std::cout << "R HOME PATH: " << rHomePath.toStdString() << std::endl;
-	std::cout.flush();
 
 #ifdef __WIN32__
 
@@ -490,15 +468,14 @@ void EngineSync::subProcessStandardError()
 
 void EngineSync::subProcessStarted()
 {
-	qDebug() << "DESKTOP: subprocess started";
+	qDebug() << "subprocess started";
 }
 
 void EngineSync::subProcessError(QProcess::ProcessError error)
 {
 	emit engineTerminated();
 
-	std::cout << "DESKTOP: subprocess error: " << error << std::endl;
-	std::cout.flush();
+	qDebug() << "subprocess error" << error;
 }
 
 void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus exitStatus)
@@ -507,6 +484,6 @@ void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus exitStatu
 
 	emit engineTerminated();
 
-	std::cout << "DESKTOP: subprocess finished" << exitCode;
-	std::cout.flush();
+	qDebug() << "subprocess finished" << exitCode;
 }
+

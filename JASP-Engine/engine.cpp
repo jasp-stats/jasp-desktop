@@ -120,22 +120,14 @@ void Engine::runAnalysis()
 	_analysisResultsString = rbridge_run(_analysisName, _analysisOptions, perform, _ppi, callback);
 
 	if (_status == initing || _status == running)  // if status hasn't changed
-	{
-		std::cout << "ENGINE: Status has not changed: " << _status << std::endl;
-		std::cout.flush();
 		receiveMessages();
-	}
 
 	if (_status == toInit || _status == aborted || _status == error || _status == exception)
 	{
-		std::cout << "ENGINE: Analysis aborted: " << _status << std::endl;
-		std::cout.flush();
 		// analysis was aborted, and we shouldn't send the results
 	}
 	else if (_status == changed && (_currentAnalysisKnowsAboutChange == false || _analysisResultsString == "null"))
 	{
-		std::cout << "ENGINE: Analysis aborted: " << _status << std::endl;
-		std::cout.flush();
 		// analysis was changed, and the analysis either did not know about
 		// the change (because it did not call a callback),
 		// or it could not incorporate the changes (returned null).
@@ -146,8 +138,6 @@ void Engine::runAnalysis()
 	}
 	else
 	{
-		std::cout << "ENGINE: Analysis done: " << _status << std::endl;
-		std::cout.flush();
 		Json::Reader parser;
 		parser.parse(_analysisResultsString, _analysisResults, false);
 
@@ -194,7 +184,7 @@ void Engine::run()
 		Json::Reader r;
 		r.parse(_engineInfo, v);
 
-		std::cout << "ENGINE: " << v.toStyledString() << std::endl;
+		std::cout << v.toStyledString() << "\n";
 		std::cout.flush();
 	}
 
@@ -207,40 +197,17 @@ void Engine::run()
 #else
 	_channel = new IPCChannel(memoryName, _slaveNo, true);
 #endif
-	std::cout << "ENGINE: Start " << _slaveNo << std::endl;
-	std::cout.flush();
-
 	do
 	{
-		try
-		{
-			Utils::sleep(1000);
-			if (receiveMessages())
-			{
-				if (_status == saveImg)
-					saveImage();
-				else
-					runAnalysis();
-			}
-			if ( ! ProcessInfo::isParentRunning())
-				break;
-		}
-		catch (std::exception &e)
-		{
-			std::cout << "ENGINE Exception: " << e.what() << std::endl;
-			std::cout.flush();
-		}
-		catch (...)
-		{
-			std::cout << "ENGINE Unknown Exception" << std::endl;
-			std::cout.flush();
-		}
-
+		receiveMessages(100);
+		if ( ! ProcessInfo::isParentRunning())
+			break;
+		if (_status == saveImg)
+			saveImage();
+		else
+			runAnalysis();
 	}
 	while(1);
-
-	std::cout << "ENGINE: Stop " << _slaveNo << std::endl;
-	std::cout.flush();
 
 	shared_memory_object::remove(memoryName.c_str());
 }
@@ -252,10 +219,10 @@ bool Engine::receiveMessages(int timeout)
 	if (_channel->receive(&data, 1000))
 #else
 	string data;
-	if (_channel->receive(data, 1000))
+	if (_channel->receive(data, timeout))
 #endif
 	{
-		std::cout << "ENGINE: received message" << std::endl;
+		std::cout << "received message" << std::endl;
 		std::cout.flush();
 
 		Json::Value jsonRequest;
@@ -365,10 +332,6 @@ void Engine::sendResults()
 
 	string message = response.toStyledString();
 
-	std::cout << "ENGINE: Send Results" << std::endl;
-	std::cout << message << std::endl;
-	std::cout.flush();
-
 #ifdef __WIN32__
 	_channel->send(message.c_str());
 #else
@@ -378,8 +341,6 @@ void Engine::sendResults()
 
 string Engine::callback(const string &results)
 {
-	std::cout << "ENGINE callback" << std::endl;
-	std::cout.flush();
 	receiveMessages();
 
 	if (_status == aborted || _status == toInit || _status == toRun)
