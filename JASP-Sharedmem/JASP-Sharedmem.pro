@@ -22,6 +22,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+PRE_TARGETDEPS += ../JASP-Common.lib
+
 INCLUDEPATH += ../../boost_1_64_0
 
 LIBS += -L.. -lJASP-Common
@@ -45,3 +47,9 @@ unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
+CopyDllTarget.commands += copy \"$$OUT_PWD/debug\JASP-Sharedmem.dll\"  \"$$OUT_PWD/debug/../..\"
+CopyLibTarget.commands += copy \"$$OUT_PWD/debug\JASP-Sharedmem.lib\"  \"$$OUT_PWD/debug/../..\"
+
+QMAKE_EXTRA_TARGETS += CopyDllTarget CopyLibTarget
+POST_TARGETDEPS      += CopyDllTarget CopyLibTarget
