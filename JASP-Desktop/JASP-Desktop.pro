@@ -25,7 +25,7 @@ INCLUDEPATH += ../JASP-Common/
    macx:INCLUDEPATH += ../../boost_1_64_0
 windows:INCLUDEPATH += ../../boost_1_64_0
 
-PRE_TARGETDEPS += ../libJASP-Common.a
+PRE_TARGETDEPS += ../JASP-Common.lib
 
 LIBS += -L.. -lJASP-Common
 

@@ -27,11 +27,11 @@ INCLUDEPATH += ../../boost_1_64_0
 LIBS += -L.. -lJASP-Common
 
 windows:CONFIG(ReleaseBuild) {
-    LIBS += -lboost_filesystem-vc141-mt-1_64 -lboost_system-vc141-mt-1_64
+    LIBS += -llibboost_filesystem-vc141-mt-1_64 -llibboost_system-vc141-mt-1_64
 }
 
 windows:CONFIG(DebugBuild) {
-    LIBS += -lboost_filesystem-vc141-mt-gd-1_64 -lboost_system-vc141-mt-gd-1_64
+    LIBS += -llibboost_filesystem-vc141-mt-gd-1_64 -llibboost_system-vc141-mt-gd-1_64
 }
 
 SOURCES += \
