@@ -22,7 +22,7 @@
 #include "../JASP-Common/lib_json/json.h"
 #include "../JASP-Common/processinfo.h"
 #ifdef __WIN32__
-#include "../JASP-Sharedmem/jaspsharedmem.h"
+#include "../JASP-Sharedmem/jaspsharedmem_interface.h"
 #else
 #include "../JASP-Common/ipcchannel.h"
 #endif
@@ -57,7 +57,6 @@ private:
 	void sendResults();
 	std::string callback(const std::string &results);
 
-	DataSet *provideDataSet();
 	void provideTempFileName(const std::string &extension, std::string &root, std::string &relativePath);
 	void provideStateFileName(std::string &root, std::string &relativePath);
 

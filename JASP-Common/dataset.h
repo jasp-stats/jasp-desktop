@@ -24,9 +24,10 @@ class DataSet
 {
 public:
 
-	DataSet(boost::interprocess::managed_shared_memory *mem);
+    DataSet(boost::interprocess::managed_shared_memory *mem, int memCounter);
 	~DataSet();
 
+    int getMemCounter() const;
 	int rowCount() const;
 	int columnCount() const;
 
@@ -39,7 +40,7 @@ public:
 	void setColumnCount(int columnCount);
 	void removeColumn(std::string name);
 
-	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
+    void setSharedMemory(boost::interprocess::managed_shared_memory *mem, int memCounter);
 
 	std::string toString();
 
@@ -47,6 +48,7 @@ private:
 
 	Columns _columns;
 
+    int _memCounter;
 	int _rowCount;
 	int _columnCount;
 

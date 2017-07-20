@@ -28,6 +28,8 @@ using namespace boost;
 interprocess::managed_shared_memory *SharedMemory::_memory = NULL;
 string SharedMemory::_memoryName;
 
+int SharedMemory::MemCounter = 0;
+
 DataSet *SharedMemory::createDataSet()
 {
 	if (_memory == NULL)
@@ -41,7 +43,7 @@ DataSet *SharedMemory::createDataSet()
 		_memory = new interprocess::managed_shared_memory(interprocess::create_only, _memoryName.c_str(), 6 * 1024 * 1024);
 	}
 
-	return _memory->construct<DataSet>(interprocess::unique_instance)(_memory);
+    return _memory->construct<DataSet>(interprocess::unique_instance)(_memory, ++MemCounter);
 }
 
 DataSet *SharedMemory::retrieveDataSet()
@@ -65,7 +67,7 @@ DataSet *SharedMemory::enlargeDataSet(DataSet *)
 	_memory = new interprocess::managed_shared_memory(interprocess::open_only, _memoryName.c_str());
 
 	DataSet *dataSet = retrieveDataSet();
-	dataSet->setSharedMemory(_memory);
+    dataSet->setSharedMemory(_memory, ++MemCounter);
 
 	return dataSet;
 }

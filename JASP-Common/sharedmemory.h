@@ -41,6 +41,7 @@ public:
 	static DataSet *createDataSet();
 	static DataSet *retrieveDataSet();
 	static DataSet *enlargeDataSet(DataSet *dataSet);
+    static int MemCounter;
 	static void deleteDataSet(DataSet *dataSet);
 
 private:
