@@ -182,11 +182,13 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 	status <- NULL
 
 	# If available from previous state, fetch it
-	if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
-			(is.list(diff) && (diff$bayesFactorType == FALSE && diff$tStatistic == FALSE &&
-			diff$n1Size == FALSE && diff$priorWidth == FALSE && diff$hypothesis == FALSE))) &&
-			!is.null(state$bayesFactorObject)) {
-
+	# if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
+	# 		(is.list(diff) && (diff$bayesFactorType == FALSE && diff$tStatistic == FALSE &&
+	# 		diff$n1Size == FALSE && diff$priorWidth == FALSE && diff$hypothesis == FALSE))) &&
+	# 		!is.null(state$bayesFactorObject)) {
+	if (!is.null(state) && !is.null(diff) && !is.null(state$bayesFactorObject) && 
+	    !any(unlist(diff))) {
+	  
 		rowsTTestBayesianPairedSamples <- state$rowsTTestBayesianPairedSamples
 		bayesFactorObject <- state$bayesFactorObject
 
@@ -197,33 +199,31 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 		# if state of analysis is run
 		if (run) {
 			if (status$ready) {
-				bayesFactorObject <- .calculateBF.summarystats.ttest(
-																options = options,
-																state = state,
-																diff = diff,
-																hypothesis.variables = hypothesis.variables
-															)
-
-				if (options$bayesFactorType == "BF10") {
-					BF <- .clean(exp(bayesFactorObject$bf))
-				} else if(options$bayesFactorType == "BF01") {
-					BF <- .clean(1/exp(bayesFactorObject$bf))
-				} else {
-					BF <- .clean(bayesFactorObject$bf)
-				}
-
-				rowsTTestBayesianPairedSamples$BF <- BF
-				rowsTTestBayesianPairedSamples$errorEstimate <- .clean(bayesFactorObject$properror)
+				# bayesFactorObject <- .calculateBF.summarystats.ttest(
+				# 												options = options,
+				# 												state = state,
+				# 												diff = diff,
+				# 												hypothesis.variables = hypothesis.variables
+				# 											)
+			  
+				## Compute the statistics
+				
+				bayesFactorObject <- .generalSummaryTtestBF(options = options)
+				
+				## Format the statistics for output
+				
+				bf <- bayesFactorObject$bf
+				BF <- switch(options$bayesFactorType, BF10=bf, BF01=1/bf, log(bf))
 				
 				allPValues <- bayesFactorObject$pValue
+				pValue <- switch(as.character(hypothesis.variables$oneSided), left=allPValues$minSided,
+				                 right=allPValues$plusSided, allPValues$twoSided)
 				
-				if (hypothesis.variables$oneSided == FALSE){
-				  rowsTTestBayesianPairedSamples$pValue <- .clean(allPValues$twoSided)
-				} else if (hypothesis.variables$oneSided == "left") {
-				  rowsTTestBayesianPairedSamples$pValue <- .clean(allPValues$minSided)
-				} else if (hypothesis.variables$oneSided == "right") {
-				  rowsTTestBayesianPairedSamples$pValue <- .clean(allPValues$plusSided)
-				}
+				## Store statistics in table row ouput structure
+				
+				rowsTTestBayesianPairedSamples$BF <- .clean(BF)
+				rowsTTestBayesianPairedSamples$errorEstimate <- .clean(bayesFactorObject$properror)
+				rowsTTestBayesianPairedSamples$pValue <- .clean(pValue)
 			}
 		}
 	}

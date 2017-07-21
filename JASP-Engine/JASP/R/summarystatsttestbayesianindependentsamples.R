@@ -27,6 +27,44 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset = NULL, options,
 		diff <- .diff(options, state$options)
 	}
 
+	### options contains:
+	## essentials:
+	#   tStatistic:       numeric, value of the t-statistic to be converted into a BF
+	#   n1Size:           integer, the size of sample 1
+	#   n1Size:           integer, the size of sample 2
+	#   hypothesis:       string, one of ["notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue"]
+	#   priorWidth:       numeric, width of the prior 
+	#   bayesFactorType:  string, one of ["BF10", "BF01", "LogBF10"]
+	## plotting:
+	#   plotPriorAndPosterior:                    logical, make this plot?
+	#   plotPriorAndPosteriorAdditionalInfo:      logical,
+	#   plotBayesFactorRobustness:                logical,
+	#   plotBayesFactorRobustnessAdditionalInfo:  logical,
+	## advanced analysis:
+	#   effectSize:                     string, one of ["standardized", "dienes"]
+	#   effectSizeStandardized:         string, one of ["default", "informative"]
+	#   defaultStandardizedEffectSize:  string, can only be "cauchy" for now
+	#  -
+	#   informativeStandardizedEffectSize:  string, one of ["cauchy", "normal","t"]
+	#   informativeCauchyLocation:      numeric, -3 ≤ value ≤ 3, distribution used is dcauchy((tStatistic - CauchyLocation) / CauchyScale)
+	#   informativeCauchyScale:         numeric,
+	#  - 
+	#   informativeTLocation:           numeric, -3 ≤ value ≤ 3, distribution used is dt((tStatistic - Tlocation) / Tscale, TDf)
+	#   informativeTScale:              numeric, 0 ≤ value ≤ 2
+	#   informativeTDf:                 integer, 1 ≤ value ≤ 500
+	#  -
+	#   informativeNormalMean:          numeric, -3 ≤ value ≤ 3, normal used is dnorm((tStatistic - NormalMean) / NormalStd)
+	#   informativeNormalStd:           numeric, 0 ≤ value ≤ 2
+	#  -
+	#   dienesEffectSize:               string, one of ["uniform", "normal", "half_normal"]
+	#   uniformDienesLowerBound:        numeric, 0 ≤ value ≤ 2, not guarantee to be smaller than uniformDienesUpperBound (???)
+	#   uniformDienesUpperBound:        numeric, 0 ≤ value ≤ 2
+	#   normalDienesMean:               numeric, 0 ≤ value ≤ 2
+	#   normalDienesStd:                numeric, 0 ≤ value ≤ 2
+	#   halfNormalDienesStd:            numeric, 0 ≤ value ≤ 2
+	
+	
+	
 	# Bayes factor type (BF10, BF01, log(BF10)) and title
 	bftype <- .getBayesfactorTitle.summarystats.ttest(
 								bayesFactorType = options$bayesFactorType,
@@ -181,12 +219,9 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset = NULL, options,
 	bayesFactorObject <- NULL
 	status <- NULL
 
-	# If available from previous state, fetch it
-	if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
-			(is.list(diff) && (diff$bayesFactorType == FALSE && diff$tStatistic == FALSE &&
-			diff$n1Size == FALSE && diff$n2Size == FALSE && diff$priorWidth == FALSE &&
-			diff$hypothesis == FALSE))) && !is.null(state$bayesFactorObject)) {
-
+	if (!is.null(state) && !is.null(diff) && !is.null(state$bayesFactorObject) && 
+	    !any(unlist(diff))) {
+	  
 		rowsTTestBayesianIndependentSamples <- state$rowsTTestBayesianIndependentSamples
 		bayesFactorObject <- state$bayesFactorObject
 
@@ -197,34 +232,27 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset = NULL, options,
 		# if state of analysis is run
 		if (run) {
 			if (status$ready) {
-				bayesFactorObject <- .calculateBF.summarystats.ttest(
-																options = options,
-																state = state,
-																diff = diff,
-																hypothesis.variables = hypothesis.variables
-															)
 
-				if (options$bayesFactorType == "BF10") {
-					BF <- .clean(exp(bayesFactorObject$bf))
-				} else if(options$bayesFactorType == "BF01") {
-					BF <- .clean(1/exp(bayesFactorObject$bf))
-				} else {
-					BF <- .clean(bayesFactorObject$bf)
-				}
-
-				rowsTTestBayesianIndependentSamples$BF <- BF
-				rowsTTestBayesianIndependentSamples$errorEstimate <- .clean(bayesFactorObject$properror)
+				## Compute the statistics
+				
+				bayesFactorObject <- .generalSummaryTtestBF(options = options)
+				
+				
+				## Format the statistics for output
+				
+				bf <- bayesFactorObject$bf
+				BF <- switch(options$bayesFactorType, BF10=bf, BF01=1/bf, log(bf))
 				
 				allPValues <- bayesFactorObject$pValue
+				pValue <- switch(as.character(hypothesis.variables$oneSided), left=allPValues$minSided,
+				                 right=allPValues$plusSided, allPValues$twoSided)
 				
-				# TODO: switch function? 
-				if (hypothesis.variables$oneSided == FALSE){
-				  rowsTTestBayesianIndependentSamples$pValue <- .clean(allPValues$twoSided)
-				} else if (hypothesis.variables$oneSided == "left") {
-				  rowsTTestBayesianIndependentSamples$pValue <- .clean(allPValues$minSided)
-				} else if (hypothesis.variables$oneSided == "right") {
-				  rowsTTestBayesianIndependentSamples$pValue <- .clean(allPValues$plusSided)
-				}
+				## Store statistics in table row ouput structure
+				
+				rowsTTestBayesianIndependentSamples$BF <- .clean(BF)
+				rowsTTestBayesianIndependentSamples$errorEstimate <- .clean(bayesFactorObject$properror)
+				rowsTTestBayesianIndependentSamples$pValue <- .clean(pValue)
+				
 			}
 		}
 	}
