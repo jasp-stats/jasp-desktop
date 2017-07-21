@@ -5,9 +5,10 @@
     if (!is.null(type) && type == "binomial") {
       f <- .createGlmFormula(options)
       names(dataset) <- .unv(names(dataset))
+      dataset[[options[["dependent"]]]]
       glmRes <- glm(f[["plaintext"]], data = dataset, family = "binomial")
     } else {
-      console.log("GLM type not supported")
+      .quitAnalysis("GLM type not supported")
     }
   }
   return(glmRes)
@@ -274,17 +275,55 @@
 
 .glmEstimatesPlots <- function(glmObj, options, perform, type) {
   out <- NULL
-  type <- glmObj[["family"]][["family"]] # will be null if glmObj == null
-  
-  if (!is.null(type) && type == "binomial") {
+  if (type == "binomial") {
+    predictors <- unlist(c(options[["covariates"]],options[["factors"]]))
+    predictors <- predictors[predictors != ""]
     
-  } 
+    if (length(predictors) > 0 && !is.null(glmObj)) {
+      plots <- vector("list", length(predictors))
+      if (perform == "run") {  
+        for (i in seq_along(predictors)) {
+          curvePlot <- list()
+          gg <- .plotLogCurve(glmObj, predictors[i])
+          plotObj <- .writeImage(width = options[["plotWidth"]],
+                                 height = options[["plotHeight"]],
+                                 plot = gg,
+                                 obj = TRUE)
+          curvePlot[["width"]] <- options[["plotWidth"]]
+          curvePlot[["height"]] <- options[["plotHeight"]]
+          curvePlot[["custom"]] <- list(width = "plotWidth",
+                                        height = "plotHeight")
+          curvePlot[["title"]] <- predictors[i]
+          curvePlot[["data"]] <- plotObj[["png"]]
+          curvePlot[["obj"]] <- plotObj[["obj"]]
+          curvePlot[["convertible"]] <- TRUE
+          curvePlot[["status"]] <- "complete"
+          plots[[i]] <- curvePlot
+        }
+      } else {
+        for (i in seq_along(predictors)) {
+          curvePlot <- list()
+          curvePlot[["width"]] <- options[["plotWidth"]]
+          curvePlot[["height"]] <- options[["plotHeight"]]
+          curvePlot[["custom"]] <- list(width = "plotWidth",
+                                        height = "plotHeight")
+          curvePlot[["title"]] <- predictors[i]
+          curvePlot[["data"]] <- ""
+          curvePlot[["convertible"]] <- FALSE
+          curvePlot[["status"]] <- "waiting"
+          plots[[i]] <- curvePlot
+        }
+      }
+      out[["collection"]] <- plots
+      out[["title"]] <- "Estimates plots"
+    }
+  }
   
   return(out)
 }
 
 
-# Pseudo-R² and the like
+# Helper functions for the above.
 .mcFadden <- function(glmObj) {
   # https://eml.berkeley.edu/reprints/mcfadden/zarembka.pdf
   if (deparse(glmObj[["formula"]][[3]]) %in% c("1", "0")) {
@@ -426,4 +465,227 @@
   col2 <- paste(unlist(col), collapse = " * ")
   
   return(col2)
+}
+
+.predLevel <- function(glmObj) {
+  predVar <- as.character(glmObj[["terms"]])[2]
+  return(levels(glmObj[["data"]][[predVar]])[2])  
+}
+
+.plotLogCurve <- function(glmObj, var, points = TRUE) {
+  # If user wants raw data points, get them from data
+  if (points) {
+    z <- model.matrix(glmObj)
+    factors <- names(glmObj[["xlevels"]])
+    if (var %in% factors) {
+      vd <- as.factor(glmObj[["data"]][[var]])
+    } else {
+      vd <- z[,var]
+    }
+    ggdat <- data.frame(x = vd, y = glmObj$y)
+  }
+  
+  # Calculate ribbon & main line
+  ribdat <- .glmLogRegRibbon(glmObj, var)
+
+  # Find predicted level
+  predVar <- as.character(glmObj[["terms"]])[2]
+  predLevel <- levels(glmObj[["data"]][[predVar]])[2]
+  
+  # this will become the y-axis title
+  ytitle <- substitute(expr = "P("*italic(x)~italic("=")~italic(y)*")",
+                       env = list(x = predVar, y = predLevel))
+
+  if (attr(ribdat, "factor")) {
+    # the variable is a factor, plot points with errorbars
+    p <- ggplot2::ggplot(ribdat, ggplot2::aes(x = x, y = y)) +
+      ggplot2::geom_point(
+        data = ribdat,
+        mapping = ggplot2::aes(x = x, y = y),
+        size = 4
+      ) +
+      ggplot2::geom_errorbar(
+        mapping = ggplot2::aes(x = x, ymin = lo, ymax = hi),
+        data = ribdat, width = 0.2
+      )
+
+    if (points) {
+      p <- p + ggplot2::geom_point(
+          data = ggdat,
+          size = 2,
+          position = ggplot2::position_jitter(height = 0.01, width = 0.04),
+          color = "dark grey"
+        )
+    }
+
+  } else {
+    # the variable is continuous, plot curve with error ribbon
+    p <- ggplot2::ggplot(ribdat, ggplot2::aes(x = x, y = y)) +
+      ggplot2::geom_ribbon(
+        data = ribdat,
+        mapping = ggplot2::aes(x = x, ymax = hi, ymin = lo),
+        fill = "light grey",
+        alpha = 0.5
+      ) +
+      ggplot2::geom_line(
+        data = ribdat,
+        mapping = ggplot2::aes(x = x, y = y),
+        size = .75, 
+        color = "black"
+      )
+    
+    if (points) {
+      p <- p + ggplot2::geom_point(
+        data = ggdat,
+        size = 2,
+        position = ggplot2::position_jitter(height = 0.03, width = 0),
+        color = "dark grey"
+      )
+    }  
+  }
+
+
+  # We've got our plot, time for some theming!
+  # First, define custom y and x-axes to draw
+  custom_y_axis <- function() {
+    d <- data.frame(x = -Inf, xend = -Inf, y = 0, yend = 1)
+    list(
+      ggplot2::geom_segment(
+        data = d, 
+        ggplot2::aes(x = x, y = y, xend = xend, yend = yend),
+        inherit.aes = FALSE, 
+        size = 1
+      ), 
+      ggplot2::scale_y_continuous(
+        breaks = c(0, 0.25, 0.5, 0.75, 1)
+      )
+    )
+  }
+
+  custom_x_axis <- function(xdat) {
+    l <- NULL
+    if (is.factor(xdat)) {
+      l <- list(ggplot2::scale_x_discrete(labels = levels(xdat)))
+    } else {
+      b <- pretty(xdat)
+      d <- data.frame(y = -Inf, yend = -Inf, x = min(b), xend = max(b))
+      l <- list(
+        ggplot2::geom_segment(
+          data = d,
+          ggplot2::aes(x = x, y = y, xend = xend, yend = yend),
+          inherit.aes = FALSE, 
+          size = 1
+        ),
+        ggplot2::scale_x_continuous(
+          breaks = b
+        )
+      )
+    }
+  }
+  
+  # then perform the theme and return the ggplot object
+  p + ggplot2::xlab(var) +
+    ggplot2::ylab(ytitle) +
+    ggplot2::theme_bw() +
+    custom_x_axis(vd) +
+    custom_y_axis() +
+    ggplot2::theme(
+      panel.grid.minor = ggplot2::element_blank(),
+      plot.title = ggplot2::element_text(size = 18),
+      panel.grid.major = ggplot2::element_blank(),
+      axis.title.x = ggplot2::element_text(size = 18, vjust = 0.1),
+      axis.title.y = ggplot2::element_text(size = 18, vjust = 0.9),
+      axis.text.x = ggplot2::element_text(
+        size = 15,
+        margin = ggplot2::margin(t = 1, unit = "mm")
+      ),
+      axis.text.y = ggplot2::element_text(
+        size = 15,
+        margin = ggplot2::margin(r = 1, unit = "mm")
+      ),
+      panel.background = ggplot2::element_rect(
+        fill = "transparent", 
+        colour = NA
+      ),
+      plot.background = ggplot2::element_rect(
+        fill = "transparent", 
+        colour = NA
+      ),
+      legend.background = ggplot2::element_rect(
+        fill = "transparent", 
+        colour = NA
+      ),
+      panel.border = ggplot2::element_blank(),
+      legend.key = ggplot2::element_blank(),
+      axis.line = ggplot2::element_blank(),
+      axis.ticks = ggplot2::element_line(size = 0.5),
+      axis.ticks.length = grid::unit(2.5, "mm"),
+      plot.margin = grid::unit(c(0.1, 0.1, 0.6, 0.6), "cm"),
+      legend.position = "none"
+    )
+}
+
+.glmLogRegRibbon <- function(logRes, var, ciInt = 0.95) {
+  # This function calculates the estimation & CI datapoints for logreg plot
+  mm <- model.matrix(logRes)
+  cm <- colMeans(mm)
+  fac <- FALSE
+  factors <- names(logRes$xlevels)
+  if (length(factors) != 0 && var %in% factors) {
+    # variable is factor with dummy coded levels
+    fac <- TRUE
+    levs <- paste0(var, logRes[["xlevels"]][[var]])
+    cmNoVar <- cm[!(names(cm) %in% levs)]
+    xs <- factor(logRes[["xlevels"]][[var]],
+                 levels = logRes[["xlevels"]][[var]])
+
+    # make a predFrame with nlevels rows
+    predFrame <- data.frame(matrix(rep(cmNoVar, length(levs)),
+                                   nrow = length(levs),
+                                   byrow = TRUE),
+                            xs,
+                            stringsAsFactors = FALSE)
+    colnames(predFrame) <- c(names(cmNoVar), var)
+
+    # Fix potential other factors in the dataset
+    if (length(factors) > 1) {
+      # set factor to first level (default)
+      for (f in factors) {
+        if (f != var) {
+          predFrame[[f]] <- factor(rep(logRes[["xlevels"]][[f]][1],
+                                       length(levs)),
+                                   levels = logRes[["xlevels"]][[f]])
+        }
+      }
+    }
+  } else {
+    vd <- pretty(mm[,var])
+    xs <- seq(min(vd), max(vd), length.out = 101) # ggplot2 default
+    cmNoVar <- cm[names(cm) != var]
+    predFrame <- data.frame(matrix(rep(cmNoVar, 101), nrow = 101, byrow = TRUE),
+                            xs, stringsAsFactors = FALSE)
+    colnames(predFrame) <- c(names(cmNoVar), var)
+    if (length(factors) != 0) {
+      # set factor to first level (default)
+      for (f in factors) {
+        predFrame[[f]] <- factor(rep(logRes[["xlevels"]][[f]][1], 101),
+                                 levels = logRes[["xlevels"]][[f]])
+      }
+    }
+  }
+
+  pred <- predict(logRes, newdata = predFrame, type = "link", se.fit = TRUE)
+  ys <- .invLogit(pred$fit)
+  critValue <- qnorm(1 - (1 - ciInt) / 2)
+  lo <- .invLogit(pred$fit - critValue * pred$se.fit)
+  hi <- .invLogit(pred$fit + critValue * pred$se.fit)
+  outFrame <- data.frame(x = xs, y = ys, lo = lo, hi = hi)
+
+  attr(outFrame, "factor") <- fac
+
+  outFrame
+}
+
+.invLogit <- function(x) {
+  1/(1 + exp(-x))
 }

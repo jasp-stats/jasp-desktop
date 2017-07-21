@@ -38,7 +38,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
       dataset <- .readDataSetHeader(columns.as.numeric = numericVars, 
                                     columns.as.factor = factorVars)
     }
-  }  
+  }
   # </editor-fold> DATASET LOADING BLOCK
   
   # <editor-fold> STATE SYSTEM BLOCK ----
@@ -77,7 +77,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
           perfMetrics <<- state[["perfMetrics"]]
         }
         
-        if (!any(estimatesPlotsOpt, estimatesPlotsCI)) {
+        if (!any(estimatesPlotsOpt, estimatesPlotsCI, plotWidth, plotHeight)) {
           # estimates plots can be reused
           estimatesPlots <<- state[["estimatesPlots"]]
         }
@@ -97,7 +97,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
 		list(name = "modelSummary", type = "table"),
 		list(name = "estimatesTable", type = "table"),
 		list(name = "perfDiagnostics", type = "object", meta = .pdMeta),
-		list(name = "estimatesPlots", type = "image")
+		list(name = "estimatesPlots", type = "collection", meta = "image")
 	)
   
   # </editor-fold> META INFORMATION BLOCK
@@ -176,7 +176,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   if (is.null(estPlots)) {
     return(NULL)
   } else {
-    out <- vector(list, length(estPlots[["collection"]]))
+    out <- vector("list", length(estPlots[["collection"]]))
     for (i in seq_along(estPlots[["collection"]])) {
       out[[i]] <- estPlots[["collection"]][[i]][["data"]]
     }
