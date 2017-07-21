@@ -80,7 +80,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	}
 	results[["reliabilityScale"]] <- .reliabalityScaleTable(resultsAlpha, dataset, options, variables, perform)
 
-	if (options$alphaItem || options$gutmannItem || options$itemRestCor || options$meanItem || options$sdItem || options[["mcDonaldItem"]] || options[["glbScale"]]) {
+	if (options$alphaItem || options$gutmannItem || options$itemRestCor || options$meanItem || options$sdItem || options[["mcDonaldItem"]]) {
 		results[["reliabilityItemsObj"]] <- list(title="Item Statistics", reliabilityItems=.reliabalityItemsTable(resultsAlpha, options, variables, perform))
 	} else {
 		results[["reliabilityItemsObj"]] <- NULL
@@ -109,7 +109,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	relyFit <- NULL
 
 	if (perform == "run" && !is.null(variables) && length(variables) > 1) {
-		
+
 		# obtain smoothed correlation and covariance matrix
 		dataList <- .reliabilityConvertDataToCorrelation(dataset, options)
 		nObs <- nrow(dataset)
@@ -117,10 +117,10 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		
 		# generate key for reverse scaled items
 		key <- NULL
-		if (length(options$reverseScaledItems) > 0) {
+		if (length(options[["reverseScaledItems"]]) > 0) {
 
 			key <- rep(1, length(variables))
-			key[match(.v(unlist(options$reverseScaledItems)), colnames(dataAsMatrix))] <- -1
+			key[match(.v(unlist(options[["reverseScaledItems"]])), colnames(dataset))] <- -1
 
 		}
 		
@@ -159,7 +159,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 			for (i in 1:nVar) {
 				omegaDropped[i] <- psych::omega(m = dataList[["correlation"]][-i, -i], 
 												nfactors = 1, n.iter = 1, n.obs = nObs,
-												flip = FALSE, plot = FALSE)$omega.tot
+												flip = FALSE, plot = FALSE)[["omega.tot"]]
 			}
 		}
 
@@ -356,20 +356,8 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 	}
 
+	# psych::alpha uses a minus to signify reverse scaled item. 
 	rowNames <- gsub("-","", rownames(r$alpha.drop))
-
-	# if all items are reverse scaled then for some reason psych::alpha()
-	# pastes the first character of variable name to the end of the string
-	if (length(options$reverseScaledItems) == length(rowNames)) {
-
-		for (i in seq_along(rowNames)) { # removes the added characters
-			rowNames[i] <- substr(rowNames[i], 1, nchar(rowNames[i]) - 1)
-		}
-
-		# regex version of the above loop -- perhaps useful in the future
-		# rowNames = gsub('.{1}$', '', rowNames)
-
-	}
 
 	if (!is.null(r)) {
 
