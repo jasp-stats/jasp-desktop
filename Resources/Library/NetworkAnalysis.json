@@ -12,6 +12,10 @@
 			"type": "Variable"
 		},
 		{
+			"name": "colorNodesBy",
+			"type": "Variable"
+		},
+		{
 			"name": "estimator",
 			"type": "List",
 			"options": [
@@ -159,7 +163,12 @@
 			"type": "Boolean"
 		},
 		{
-			"name": "edgeColors",
+			"default": false,
+			"name": "showLegend",
+			"type": "Boolean"
+		},
+		{
+			"name": "nodeColors",
 			"type": "List",
 			"options": [
    				"rainbow",
@@ -169,10 +178,10 @@
 				"R",
 				"ggplot2"
 			],
-			"default": "Default"
+			"default": "rainbow"
 		},
 		{
-			"name": "nodeColors",
+			"name": "edgeColors",
 			"type": "List",
 			"options": [
    				"classic",
@@ -184,7 +193,7 @@
 				"Reddit",
 				"Fried"
 			],
-			"default": "Default"
+			"default": "classic"
 		},
 		{
 			"name": "plotWidthNetwork",
