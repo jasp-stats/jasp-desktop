@@ -37,6 +37,9 @@ NetworkAnalysis <- function (
 		if (perform == "run") {
 
 			dataset <- .readDataSetToEnd(columns.as.numeric = variables, columns.as.factor = NULL, exclude.na.listwise = NULL)
+			
+			if (options[["colorNodesBy"]] != "") # load data from variable that indicates groups
+				options[["colorNodesByData"]] <- .readDataSetToEnd(columns = options[["colorNodesBy"]], exclude.na.listwise = options[["colorNodesBy"]])[[1]]
 
 		} else {
 
@@ -52,7 +55,7 @@ NetworkAnalysis <- function (
 
 	# ensure order of variables matches order of columns in dataset
 	variables <- variables[match(.unv(colnames(dataset)), variables, nomatch = 0L)]
-
+	
 	## Initialize Results & statekey ## ----
 	results <- list(
 		title = "Network Analysis",
@@ -79,8 +82,8 @@ NetworkAnalysis <- function (
 			"weightedNetwork", "signedNetwork", "missingValues"),
 		# depends only on plotting arguments
 		networkPLT = c("plotWidthNetwork", "plotHeightNetwork",
-					   "layout", "edgeColors", "repulsion", "edgeSize", "nodeSize",
-					   "maxEdgeStrength", "minEdgeStrength", "cut", "showDetails", "nodeColors"),
+					   "layout", "edgeColors", "repulsion", "edgeSize", "nodeSize", "colorNodesBy",
+					   "maxEdgeStrength", "minEdgeStrength", "cut", "showDetails", "nodeColors", "showLegend"),
 		# depends only on plotting arguments
 		centralityPLT = c("plotWidthCentrality", "plotHeightCentrality")
 
@@ -89,7 +92,7 @@ NetworkAnalysis <- function (
 	## Do Analysis ## ----
 	
 	# Sort out whether things are set to defaults or not.
-	if (is.null(state[["network"]])) { # old state is unusable
+	if (is.null(state[["network"]]) && length(variables) >= 2) { # old state is unusable
 
 		state <- NULL # delete state
 
@@ -310,26 +313,50 @@ NetworkAnalysis <- function (
 	# eval(quote()) construction because this function is evaluated inside .writeImage()
 	# which needs to look 2 levels up to find the objects network and options.
 	eval(quote({
+		
+		# ensure input makes sense or ignore these parameters
+		minE <- options[["maxEdgeStrength"]]
+		maxE <- options[["maxEdgeStrength"]]
+		
+		if (minE == 0 ||maxE <= minE) {
+			minE <- NULL
+			maxE <- NULL
+		}
+		
+		
+		if (!is.null(options[["colorNodesByData"]])) {
+			
+			u <- unique(options[["colorNodesByData"]])
+			groups <- lapply(u, function(x, y) which(y == x), y = options[["colorNodesByData"]])
+			names(groups) <- u
+			print('options[["colorNodesByData"]]')
+			print(options[["colorNodesByData"]])
+			print("groups")
+			print(groups)
+			
+		} else {
+			groups <- NULL
+		}
+		
+		# browser()
+		qgraph::qgraph(
+			input      = network[["graph"]],
+			layout     = options[["layout"]],
+			groups     = groups,
+			repulsion  = options[["repulsion"]],
+			cut        = options[["cut"]],
+			edge.width = options[["edgeSize"]],
+			node.width = options[["nodeSize"]],
+			maximum    = maxE, # options[["maxEdgeStrength"]],
+			minimum    = minE, # options[["minEdgeStrength"]],
+			details    = options[["showDetails"]],
+			labels     = .unv(network[["labels"]]),
+			palette    = options[["nodeColors"]],
+			theme      = options[["edgeColors"]],
+			legend     = options[["showLegend"]]
+		)}
+	), envir = parent.frame(2))
 	
-	# ensure input makes sense or ignore these parameters
-	if (options[["maxEdgeStrength"]] == 0 || options[["maxEdgeStrength"]] <= options[["minEdgeStrength"]]) {
-		options[["minEdgeStrength"]] <- NULL
-		options[["maxEdgeStrength"]] <- NULL
-	}
-	
-	qgraph::qgraph(
-		input = network[["graph"]],
-		layout = options[["layout"]],
-		repulsion = options[["repulsion"]],
-		cut = options[["cut"]],
-		edge.width = options[["edgeSize"]],
-		node.width = options[["nodeSize"]],
-		maximum = options[["maxEdgeStrength"]],
-		minimum = options[["minEdgeStrength"]],
-		details = options[["showDetails"]],
-		labels = .unv(network[["labels"]])
-	)}), envir = parent.frame(2))
-
 }
 
 # general function that makes the json framework around plot functions
@@ -379,7 +406,7 @@ NetworkAnalysis <- function (
 	}
 
 	# should go into .writeImage
-	grDevices::graphics.off()
+	# grDevices::graphics.off()
 
 	return(plot)
 
