@@ -84,7 +84,7 @@
             <string>Descriptives</string>
            </property>
            <property name="icon">
-            <iconset resource="../resources/icons.qrc">
+            <iconset>
              <normaloff>:/icons/analysis-descriptives.svg</normaloff>:/icons/analysis-descriptives.svg</iconset>
            </property>
            <property name="iconSize">
@@ -155,7 +155,7 @@
             <string>Factor</string>
            </property>
            <property name="icon">
-            <iconset resource="../resources/icons.qrc">
+            <iconset>
              <normaloff>:/icons/analysis-classical-sem.svg</normaloff>:/icons/analysis-classical-sem.svg</iconset>
            </property>
            <property name="iconSize">
@@ -184,7 +184,7 @@
             <string>BF from t</string>
            </property>
            <property name="icon">
-            <iconset resource="../resources/icons.qrc">
+            <iconset>
              <normaloff>:/icons/analysis-bayesian-ttest.svg</normaloff>:/icons/analysis-bayesian-ttest.svg</iconset>
            </property>
            <property name="iconSize">
@@ -213,8 +213,8 @@
             <string>Network</string>
            </property>
            <property name="icon">
-            <iconset resource="../resources/icons.qrc">
-             <normaloff>:/icons/analysis-bayesian-crosstabs.svg</normaloff>:/icons/analysis-bayesian-crosstabs.svg</iconset>
+            <iconset>
+             <normaloff>:/icons/analysis-network.svg</normaloff>.:/icons/analysis-network.svg</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -322,7 +322,7 @@
             <string>T-Tests</string>
            </property>
            <property name="icon">
-            <iconset resource="../resources/icons.qrc">
+            <iconset>
              <normaloff>:/icons/analysis-classical-ttest.svg</normaloff>:/icons/analysis-classical-ttest.svg</iconset>
            </property>
            <property name="iconSize">
@@ -351,7 +351,7 @@
             <string>ANOVA</string>
            </property>
            <property name="icon">
-            <iconset resource="../resources/icons.qrc">
+            <iconset>
              <normaloff>:/icons/analysis-classical-anova.svg</normaloff>:/icons/analysis-classical-anova.svg</iconset>
            </property>
            <property name="iconSize">
@@ -380,7 +380,7 @@
             <string>Regression</string>
            </property>
            <property name="icon">
-            <iconset resource="../resources/icons.qrc">
+            <iconset>
              <normaloff>:/icons/analysis-classical-regression.svg</normaloff>:/icons/analysis-classical-regression.svg</iconset>
            </property>
            <property name="iconSize">
@@ -409,7 +409,7 @@
             <string>Frequencies</string>
            </property>
            <property name="icon">
-            <iconset resource="../resources/icons.qrc">
+            <iconset>
              <normaloff>:/icons/analysis-classical-crosstabs.svg</normaloff>:/icons/analysis-classical-crosstabs.svg</iconset>
            </property>
            <property name="iconSize">
@@ -446,10 +446,7 @@
    <header>widgets/ribbonbutton.h</header>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../resources/icons.qrc"/>
-  <include location="../resources/icons.qrc"/>
- </resources>
+ <resources/>
  <connections/>
  <slots>
   <slot>itemSelected()</slot>

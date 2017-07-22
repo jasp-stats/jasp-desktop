@@ -914,7 +914,7 @@ as.list.footnotes <- function(footnotes) {
 	               height=height * pngMultip, bg="transparent", 
 	               res=72 * pngMultip, type=type)
 	
-	if (class(plot) ==  "function"){
+	if (inherits(plot, "function")){
 		if (obj) dev.control('enable') # enable plot recording
 		eval(plot())
 		if (obj) plot <- recordPlot() # save plot to R object

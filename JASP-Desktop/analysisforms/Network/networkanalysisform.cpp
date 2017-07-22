@@ -42,8 +42,15 @@ NetworkAnalysisForm::NetworkAnalysisForm(QWidget *parent) :
     ui->groupingVariable->setModel(groupingVariableModel);
     ui->groupingVariable->setDoubleClickTarget(ui->listAvailableFields);
 
+    TableModelVariablesAssigned *colorNodesByModel = new TableModelVariablesAssigned(this);
+    colorNodesByModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
+    colorNodesByModel->setSource(&_availableVariablesModel);
+    ui->colorNodesBy->setModel(colorNodesByModel);
+    ui->colorNodesBy->setDoubleClickTarget(ui->listAvailableFields);
+
     ui->buttonAssignVariables->setSourceAndTarget(ui->listAvailableFields, ui->variables);
     ui->buttonAssignGroupingVariable->setSourceAndTarget(ui->listAvailableFields, ui->groupingVariable);
+    ui->buttonAssignColorNodesBy->setSourceAndTarget(ui->listAvailableFields, ui->colorNodesBy);
 
     // Defaults
     ui->estimator->setCurrentIndex(0);
