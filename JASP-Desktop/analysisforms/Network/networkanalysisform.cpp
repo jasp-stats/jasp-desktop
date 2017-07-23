@@ -78,7 +78,7 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->crossValidation->setEnabled(false);
         ui->split->setEnabled(false);
         ui->rule->setEnabled(false);
-        ui->network->setEnabled(false);
+//        ui->network->setEnabled(false);
     } else if (choice_str.compare("pcor") == 0) {
         ui->correlationMethod->setEnabled(true);
 
@@ -89,7 +89,7 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->crossValidation->setEnabled(false);
         ui->split->setEnabled(false);
         ui->rule->setEnabled(false);
-        ui->network->setEnabled(false);
+//        ui->network->setEnabled(false);
     } else if (choice_str.compare("IsingFit") == 0) {
         ui->tuningParameterBox->setEnabled(true);
         ui->split->setEnabled(true);
@@ -100,7 +100,7 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->sampleSize->setEnabled(false);
         ui->isingEstimator->setEnabled(false);
         ui->crossValidation->setEnabled(false);
-        ui->network->setEnabled(false);
+//        ui->network->setEnabled(false);
     } else if (choice_str.compare("IsingSampler") == 0) {
         ui->isingEstimator->setEnabled(true);
         ui->split->setEnabled(true);
@@ -111,7 +111,7 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->criterion->setEnabled(false);
         ui->sampleSize->setEnabled(false);
         ui->crossValidation->setEnabled(false);
-        ui->network->setEnabled(false);
+//        ui->network->setEnabled(false);
     } else if (choice_str.compare("huge") == 0) {
         ui->tuningParameterBox->setEnabled(true);
         ui->criterion->setEnabled(true);
@@ -123,7 +123,7 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->correlationMethod->setEnabled(false);
         ui->sampleSize->setEnabled(false);
         ui->crossValidation->setEnabled(false);
-        ui->network->setEnabled(false);
+//        ui->network->setEnabled(false);
     } else if (choice_str.compare("adalasso") == 0) {
         ui->crossValidation->setEnabled(true);
 
@@ -134,7 +134,7 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->rule->setEnabled(false);
         ui->correlationMethod->setEnabled(false);
         ui->sampleSize->setEnabled(false);
-        ui->network->setEnabled(false);
+//        ui->network->setEnabled(false);
     } else if (choice_str.compare("mgm") == 0) {
         ui->tuningParameterBox->setEnabled(true);
         ui->criterion->setEnabled(true);
@@ -145,7 +145,7 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->split->setEnabled(false);
         ui->correlationMethod->setEnabled(false);
         ui->sampleSize->setEnabled(false);
-        ui->network->setEnabled(false);
+//        ui->network->setEnabled(false);
 
         if (ui->_4cv->isChecked()) {
             ui->crossValidation->setEnabled(true);
