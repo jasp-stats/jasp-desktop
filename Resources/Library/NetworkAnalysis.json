@@ -96,13 +96,23 @@
 			"type": "List"
 		},
 		{
-			"default": false,
+			"default": true,
 			"name": "weightedNetwork",
 			"type": "Boolean"
 		},
 		{
-			"default": false,
+			"default": true,
 			"name": "signedNetwork",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "relativeNetwork",
+			"type": "Boolean"
+		},
+		{
+			"default": true,
+			"name": "normalizedNetwork",
 			"type": "Boolean"
 		},
 		{

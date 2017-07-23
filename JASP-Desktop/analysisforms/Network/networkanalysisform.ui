@@ -849,13 +849,6 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="0">
-                <widget class="QCheckBox" name="weightedNetwork">
-                 <property name="text">
-                  <string>Weighted</string>
-                 </property>
-                </widget>
-               </item>
                <item row="0" column="1">
                 <spacer name="horizontalSpacer_22">
                  <property name="orientation">
@@ -868,6 +861,13 @@
                   </size>
                  </property>
                 </spacer>
+               </item>
+               <item row="0" column="0">
+                <widget class="QCheckBox" name="weightedNetwork">
+                 <property name="text">
+                  <string>Weighted</string>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -1141,6 +1141,51 @@
             </item>
             <item row="3" column="0">
              <widget class="QWidget" name="widget_3" native="true"/>
+            </item>
+            <item row="3" column="3">
+             <widget class="BoundGroupBox" name="network_2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string>Should centrality measures be</string>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_44">
+               <item row="0" column="0">
+                <widget class="QCheckBox" name="normalizedNetwork">
+                 <property name="text">
+                  <string>Normalized</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QCheckBox" name="relativeNetwork">
+                 <property name="text">
+                  <string>Relative</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <spacer name="horizontalSpacer_25">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
             </item>
            </layout>
           </widget>
