@@ -62,12 +62,6 @@ RegressionLogisticForm::RegressionLogisticForm(QWidget *parent) :
 	ui->modelTerms->setModel(_modelModel);
 	ui->modelTerms->hide();
 
-
-	QStringList scrs;
-	scrs << "AUC" << "Sens" << "Spec" << "Prec" << "Fmsr" << "BrierScr" << "Hmsr";
-	ui->scoreBox->insertItems(10,scrs);
-
-
 	connect(_covariatesModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
 	connect(_covariatesModel, SIGNAL(assignmentsChanged()),  this, SLOT(factorsChanged()));
 	connect(_covariatesModel, SIGNAL(assignedTo(Terms)), _modelModel, SLOT(addCovariates(Terms)));

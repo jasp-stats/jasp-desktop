@@ -129,11 +129,6 @@
 			"default": 95
 		},
 		{
-			"name": "swapLevels",
-			"type": "Boolean",
-			"default": false
-		},
-		{
 			"name": "plotWidth",
 			"type": "Integer",
 			"default": 480

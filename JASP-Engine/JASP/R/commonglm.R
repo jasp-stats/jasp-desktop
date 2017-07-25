@@ -5,7 +5,6 @@
     if (!is.null(type) && type == "binomial") {
       f <- .createGlmFormula(options)
       names(dataset) <- .unv(names(dataset))
-      dataset[[options[["dependent"]]]]
       glmRes <- glm(f[["plaintext"]], data = dataset, family = "binomial")
     } else {
       .quitAnalysis("GLM type not supported")
@@ -53,8 +52,6 @@
     f <- formula(paste(dependent, "~", paste(t, collapse = "+")))
     f.base64 <- formula(paste0(.v(dependent), "~", paste(t.base64, collapse = "+")))
   }
-  print(f)
-  print(f.base64)
   list(plaintext = f, base64 = f.base64)
 }
 
@@ -91,6 +88,7 @@
              nag = .clean(.nagelkerke(glmObj)),
              tju = .clean(.tjur(glmObj)))
       )
+      
     } else {
       rows <- list(
         list(mod = "0", dev = ".", fad = .clean(NULL), nag = .clean(NULL), 
@@ -127,22 +125,34 @@
     )
     
     
-    if (options$VovkSellkeMPR) {
-      footnotes <- .newFootnotes()
-      .addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
-      <em>p</em>-Ratio: Based the <em>p</em>-value, the maximum
-      possible odds in favor of H\u2081 over H\u2080 equals
-      1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
-      (Sellke, Bayarri, & Berger, 2001).")
-      out[["footnotes"]] <- as.list(footnotes)
-   	}
-    
-    
     # then determine which ones we need
     selectFields <- with(options, c(TRUE, TRUE, TRUE, stdCoeff, oddsRatios, 
                                     TRUE, TRUE, VovkSellkeMPR, coeffCI, coeffCI))
     
     out[["schema"]] <- list(fields=fields[selectFields])
+    
+    
+    footnotes <- .newFootnotes()
+    
+    if (options[["VovkSellkeMPR"]]) {
+      .addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
+      <em>p</em>-Ratio: Based the <em>p</em>-value, the maximum
+      possible odds in favor of H\u2081 over H\u2080 equals
+      1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
+      (Sellke, Bayarri, & Berger, 2001).")
+   	}
+    
+    # Add footnote of predicted level
+    if (options[["dependent"]] != "") {
+      predVar <- as.character(glmObj[["terms"]])[2]
+      predLevel <- levels(glmObj[["data"]][[predVar]])[2]
+      msg <- paste0(predVar, " level '", predLevel, "' coded as class 1.")
+      .addFootnote(footnotes, symbol="<em>Note.</em>", text = msg)
+    }
+    
+    if (length(footnotes$footnotes) > 0) {
+      out[["footnotes"]] <- as.list(footnotes)
+    }
     
     if (perform == "run" && !is.null(glmObj)) {
       rows <- list()
@@ -288,8 +298,13 @@
 .glmEstimatesPlots <- function(glmObj, options, perform, type) {
   out <- NULL
   if (type == "binomial") {
-    predictors <- unlist(c(options[["covariates"]],options[["factors"]]))
-    predictors <- predictors[predictors != ""]
+    
+    predictors <- character(0)
+    for (term in options[["modelTerms"]]) {
+      if (length(term[["components"]]) == 1) {
+        predictors <- c(predictors, term[["components"]])
+      }
+    }
     
     if (length(predictors) > 0 && !is.null(glmObj)) {
       plots <- vector("list", length(predictors))
@@ -353,7 +368,7 @@
     return(NULL)
   } else {
     l0 <- -0.5*glmObj[["null.deviance"]]
-    lm <- -0.5*glmObj[["deviance"]]
+    lm <- logLik(glmObj)
     p <- mean(glmObj[["y"]])
     n <- length(glmObj[["y"]])
     coxSnell <- 1 - (l0 / lm)^(2 / n)
@@ -409,9 +424,6 @@
   xmod <- glmObj[["model"]][!names(glmObj[["model"]]) %in% factors][,-1]
   xfac <- glmObj[["model"]][names(glmObj[["model"]]) %in% factors]
   ymod <- glmObj[["model"]][1]
-  
-  print(factors)
-  print(glmObj$formula)
   
   if (type == "X") {
     stdDat <- cbind(ymod, scale(xmod), xfac)

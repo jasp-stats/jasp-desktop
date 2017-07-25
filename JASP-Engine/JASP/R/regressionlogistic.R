@@ -41,6 +41,16 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   }
   # </editor-fold> DATASET LOADING BLOCK
   
+  # <editor-fold> ERROR HANDLING BLOCK ----
+  if (options[["dependent"]] != "") {
+    errors <- .hasErrors(dataset, perform, type = 'factorLevels',
+                         factorLevels.target = options[["dependent"]], 
+                         factorLevels.amount = '!= 2',
+                         exitAnalysisIfErrors = TRUE)
+  }
+  
+  # </editor-fold> ERROR HANDLING BLOCK
+  
   # <editor-fold> STATE SYSTEM BLOCK ----
   # load state
   state <- .retrieveState()
@@ -55,7 +65,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   
   
   # diff check
-  if (!is.null(state)) {
+  if (!is.null(state) && perform == "run") {
     diff <- .diff(options, state[["options"]])
     with(diff, {
       if (!any(dependent, covariates, factors, wlsWeights, modelTerms,
@@ -83,6 +93,13 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
         }
       }      
     })
+  } else if (!is.null(state)) {
+    lrObj <<- state[["lrObj"]]
+    modelSummary <- state[["modelSummary"]]
+    estimatesTable <- state[["estimatesTable"]]
+    confusionMatrix <- state[["confusionMatrix"]]
+    perfMetrics <- state[["perfMetrics"]]
+    estimatesPlots <- state[["estimatesPlots"]]
   }
   
   # </editor-fold> STATE SYSTEM BLOCK
