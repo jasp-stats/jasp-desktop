@@ -121,10 +121,22 @@
       list(name="or", title = "Odds Ratio", type="number", format="sf:4;dp:3"),
       list(name="zval", title = "z", type="number", format="sf:4;dp:3"),
       list(name="pval", title = "p", type="number", format="dp:3;p:.001"),
-      list(name="vsmpr", title = "VS-MPR", type="number", format="sf:4;dp:3"),
+      list(name="vsmpr", title = "VS-MPR\u002A", type="number", format="sf:4;dp:3"),
       list(name="cilo", title = "Lower bound", type="number", format="dp:3", overTitle=ciTitle),
       list(name="ciup", title = "Upper bound", type="number", format="dp:3", overTitle=ciTitle)
     )
+    
+    
+    if (options$VovkSellkeMPR) {
+      footnotes <- .newFootnotes()
+      .addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
+      <em>p</em>-Ratio: Based the <em>p</em>-value, the maximum
+      possible odds in favor of H\u2081 over H\u2080 equals
+      1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
+      (Sellke, Bayarri, & Berger, 2001).")
+      out[["footnotes"]] <- as.list(footnotes)
+   	}
+    
     
     # then determine which ones we need
     selectFields <- with(options, c(TRUE, TRUE, TRUE, stdCoeff, oddsRatios, 
