@@ -51,7 +51,7 @@ Column::Column(managed_shared_memory *mem) :
 	_blocks(std::less<ull>(), mem->get_segment_manager()),
 	_labels(mem)
 {
-	id = ++count;
+	_id = ++count;
 	_mem = mem;
 	_rowCount = 0;
 	_columnType = Column::ColumnTypeNominal;
@@ -62,7 +62,7 @@ Column::Column(const Column &col) :
 	_blocks(col._blocks),
 	_labels(col._labels)
 {
-	id = ++count;
+	_id = ++count;
 	_mem = col._mem;
 	_rowCount = col._rowCount;
 	_columnType = col._columnType;
@@ -362,6 +362,11 @@ string Column::_labelFromIndex(int value) const
 string Column::name() const
 {
 	return std::string(_name.begin(), _name.end());
+}
+
+int Column::id() const
+{
+	return _id;
 }
 
 void Column::setName(string name)

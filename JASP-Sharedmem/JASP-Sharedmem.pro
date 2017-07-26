@@ -1,12 +1,7 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2017-07-13T17:03:42
-#
-#-------------------------------------------------
-
 QT       -= gui
 
 TARGET = JASP-Sharedmem
+DESTDIR = ..
 TEMPLATE = lib
 
 DEFINES += JASPSHAREDMEM_LIBRARY
@@ -16,11 +11,6 @@ DEFINES += JASPSHAREDMEM_LIBRARY
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
-
-# You can also make your code fail to compile if you use deprecated APIs.
-# In order to do so, uncomment the following line.
-# You can also select to disable deprecated APIs only up to a certain version of Qt.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 PRE_TARGETDEPS += ../JASP-Common.lib
 
@@ -37,19 +27,14 @@ windows:CONFIG(DebugBuild) {
 }
 
 SOURCES += \
-        jaspsharedmem.cpp
+    jaspsharedmem_impl.cpp
 
 HEADERS += \
-        jaspsharedmem.h \
-        jasp-sharedmem_global.h 
+    jaspsharedmem_interface.h \
+    jaspsharedmem_global.h \
+    jaspsharedmem_impl.h
 
 unix {
-    target.path = /usr/lib
-    INSTALLS += target
+	target.path = /usr/lib
+	INSTALLS += target
 }
-
-CopyDllTarget.commands += copy \"$$OUT_PWD/debug\JASP-Sharedmem.dll\"  \"$$OUT_PWD/debug/../..\"
-CopyLibTarget.commands += copy \"$$OUT_PWD/debug\JASP-Sharedmem.lib\"  \"$$OUT_PWD/debug/../..\"
-
-QMAKE_EXTRA_TARGETS += CopyDllTarget CopyLibTarget
-POST_TARGETDEPS      += CopyDllTarget CopyLibTarget

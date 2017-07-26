@@ -21,8 +21,8 @@
  * DataSet is implemented as a set of columns
  */
 
-DataSet::DataSet(boost::interprocess::managed_shared_memory *mem) :
-	_columns(mem)
+DataSet::DataSet(boost::interprocess::managed_shared_memory *mem, int memCounter) :
+	_columns(mem), _memCounter(memCounter)
 {
 	_rowCount = 0;
 	_columnCount = 0;
@@ -30,6 +30,11 @@ DataSet::DataSet(boost::interprocess::managed_shared_memory *mem) :
 
 DataSet::~DataSet()
 {
+}
+
+int DataSet::getMemCounter() const
+{
+	return _memCounter;
 }
 
 Columns &DataSet::columns()
@@ -69,9 +74,10 @@ void DataSet::removeColumn(std::string name)
 	_columnCount--;
 }
 
-void DataSet::setSharedMemory(boost::interprocess::managed_shared_memory *mem)
+void DataSet::setSharedMemory(boost::interprocess::managed_shared_memory *mem, int memCounter)
 {
 	_columns.setSharedMemory(mem);
+	_memCounter = memCounter;
 }
 
 int DataSet::rowCount() const
