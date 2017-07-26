@@ -39,6 +39,8 @@
   "Number of observations {{observations.amount}} in {{variables}}"  
   m$error$levene <- 
   "Cannot compute statistic reliably: number of observations {{observations.amount}} in {{variables}}"
+  m$error$limits <-
+  "Values in {{variables}} outside interval [{{limits.min}}, {{limits.max}}]"
   
   ### Footnotes
   m$footnote$leveneSign <- 
@@ -48,4 +50,3 @@
   return(m[[class]][[type]])
 
 }
-

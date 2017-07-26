@@ -3,9 +3,11 @@
   glmRes <- NULL
   if (perform == "run" && options[["dependent"]] != "") {
     if (!is.null(type) && type == "binomial") {
+      # Logistic regression
       f <- .createGlmFormula(options)
       names(dataset) <- .unv(names(dataset))
-      glmRes <- glm(f[["plaintext"]], data = dataset, family = "binomial")
+      glmRes <- stats::glm(f[["plaintext"]], data = dataset, 
+                           family = "binomial")
     } else {
       .quitAnalysis("GLM type not supported")
     }
@@ -62,28 +64,40 @@
     out[["title"]] <- "Model summary"
     
     fields <- list(
-      list(name="mod", title = "Model", type="string"),
-      list(name="dev", title = "Deviance", type="number", format="sf:4;dp:3"),
-      list(name="aic", title = "AIC", type="number", format="dp:3"),
-      list(name="bic", title = "BIC", type="number", format="dp:3"),
-      list(name="fad", title = "McFadden R²", type="number", format="sf:4;dp:3"),
-      list(name="nag", title = "Nagelkerke R²", type="number", format="sf:4;dp:3"),
-      list(name="tju", title = "Tjur R²", type="number", format="sf:4;dp:3")
+      list(name="mod", title="Model", type="integer"),
+      list(name="dev", title="Deviance", type="number", format="sf:4;dp:3"),
+      list(name="aic", title="AIC", type="number", format="dp:3"),
+      list(name="bic", title="BIC", type="number", format="dp:3"),
+      list(name="dof", title="df", type="integer"),
+      list(name="chi", title="\u03A7\u00B2", type="number", format="dp:3"),
+      list(name="pvl", title="p", type="number", format="dp:3;p:.001"),
+      list(name="fad", title="McFadden R²", type="number", format="sf:4;dp:3"),
+      list(name="nag", title="Nagelkerke R²", type="number", format="sf:4;dp:3"),
+      list(name="tju", title="Tjur R²", type="number", format="sf:4;dp:3")
     )
     
     out[["schema"]] <- list(fields=fields)
     
     if (perform == "run" && !is.null(glmObj)) {
+      lr <- .lrtest(glmObj)
       rows <- list(
-        list(mod = "0", dev = .clean(glmObj[["null.deviance"]]),
+        list(mod = 0, 
+             dev = .clean(glmObj[["null.deviance"]]),
              aic = .clean(.aicNull(glmObj)),
              bic = .clean(.bicNull(glmObj)),
+             dof = .clean(glmObj[["df.null"]]),
+             chi = .clean(NULL),
+             pvl = .clean(NULL),
              fad = .clean(NULL),
              nag = .clean(NULL),
              tju = .clean(NULL)),
-        list(mod = "1", dev = .clean(glmObj[["deviance"]]),
+        list(mod = 1, 
+             dev = .clean(glmObj[["deviance"]]),
              aic = .clean(glmObj[["aic"]]),
              bic = .clean(.bic(glmObj)),
+             dof = .clean(glmObj[["df.residual"]]),
+             chi = .clean(lr[["stat"]]),
+             pvl = .clean(lr[["pval"]]),
              fad = .clean(.mcFadden(glmObj)),
              nag = .clean(.nagelkerke(glmObj)),
              tju = .clean(.tjur(glmObj)))
@@ -311,7 +325,7 @@
       if (perform == "run") {  
         for (i in seq_along(predictors)) {
           curvePlot <- list()
-          gg <- .plotLogCurve(glmObj, predictors[i])
+          gg <- .plotLogCurve(glmObj, predictors[i], options[["showPoints"]])
           plotObj <- .writeImage(width = options[["plotWidth"]],
                                  height = options[["plotHeight"]],
                                  plot = gg,
@@ -349,8 +363,106 @@
   return(out)
 }
 
+.glmPredictorResidualsPlots <- function(glmObj, options, perform, type) {
+  out <- NULL
+  if (type == "binomial") {
+
+    predictors <- character(0)
+    for (term in options[["modelTerms"]]) {
+      if (length(term[["components"]]) == 1) {
+        predictors <- c(predictors, term[["components"]])
+      }
+    }
+    
+    if (length(predictors) > 0 && !is.null(glmObj)) {
+      plots <- vector("list", length(predictors))
+      if (perform == "run") {  
+        for (i in seq_along(predictors)) {
+          resPlot <- list()
+          gg <- .plotGlmResiduals(glmObj, predictors[i], 
+                                  type = options[["residualType"]])
+          plotObj <- .writeImage(width = options[["plotWidth"]],
+                                 height = options[["plotHeight"]],
+                                 plot = gg,
+                                 obj = TRUE)
+          resPlot[["width"]] <- options[["plotWidth"]]
+          resPlot[["height"]] <- options[["plotHeight"]]
+          resPlot[["custom"]] <- list(width = "plotWidth",
+                                      height = "plotHeight")
+          resPlot[["title"]] <- predictors[i]
+          resPlot[["data"]] <- plotObj[["png"]]
+          resPlot[["obj"]] <- plotObj[["obj"]]
+          resPlot[["convertible"]] <- TRUE
+          resPlot[["status"]] <- "complete"
+          plots[[i]] <- resPlot
+        }
+      } else {
+        for (i in seq_along(predictors)) {
+          resPlot <- list()
+          resPlot[["width"]] <- options[["plotWidth"]]
+          resPlot[["height"]] <- options[["plotHeight"]]
+          resPlot[["custom"]] <- list(width = "plotWidth",
+                                        height = "plotHeight")
+          resPlot[["title"]] <- predictors[i]
+          resPlot[["data"]] <- ""
+          resPlot[["convertible"]] <- FALSE
+          resPlot[["status"]] <- "waiting"
+          plots[[i]] <- resPlot
+        }
+      }
+      out[["collection"]] <- plots
+      out[["title"]] <- "Predictor - residuals plots"
+    }
+  }
+  
+  return(out)
+}
+
+.glmPredictedResidualsPlot <- function(glmObj, options, perform, type) {
+  out <- NULL
+  if (type == "binomial") {
+    if (!is.null(glmObj)) {
+      resPlot <- list()
+      gg <- .plotGlmResiduals(glmObj, type = options[["residualType"]])
+      plotObj <- .writeImage(width = options[["plotWidth"]],
+                             height = options[["plotHeight"]],
+                             plot = gg,
+                             obj = TRUE)
+      resPlot[["width"]] <- options[["plotWidth"]]
+      resPlot[["height"]] <- options[["plotHeight"]]
+      resPlot[["custom"]] <- list(width = "plotWidth",
+                                    height = "plotHeight")
+      resPlot[["title"]] <- "Predicted - residuals plot"
+      resPlot[["data"]] <- plotObj[["png"]]
+      resPlot[["obj"]] <- plotObj[["obj"]]
+      resPlot[["convertible"]] <- TRUE
+      resPlot[["status"]] <- "complete"
+      out <- resPlot
+    } else {
+      resPlot <- list()
+      resPlot[["width"]] <- options[["plotWidth"]]
+      resPlot[["height"]] <- options[["plotHeight"]]
+      resPlot[["custom"]] <- list(width = "plotWidth",
+                                    height = "plotHeight")
+      resPlot[["title"]] <- "Predicted - residuals plot"
+      resPlot[["data"]] <- ""
+      resPlot[["convertible"]] <- FALSE
+      resPlot[["status"]] <- "waiting"
+      out <- resPlot
+    }
+  }
+  return(out)
+}
+
 
 # Helper functions for the above.
+.lrtest <- function(glmObj) {
+  chisq <- glmObj[["null.deviance"]] - glmObj[["deviance"]]
+  df <- glmObj[["df.null"]] - glmObj[["df.residual"]]
+  p <- dchisq(chisq, df)
+  return(list(stat = chisq, df = df, pval = p))
+}
+
 .mcFadden <- function(glmObj) {
   # https://eml.berkeley.edu/reprints/mcfadden/zarembka.pdf
   if (deparse(glmObj[["formula"]][[3]]) %in% c("1", "0")) {
@@ -368,11 +480,11 @@
     return(NULL)
   } else {
     l0 <- -0.5*glmObj[["null.deviance"]]
-    lm <- logLik(glmObj)
-    p <- mean(glmObj[["y"]])
+    lm <- as.numeric(logLik(glmObj))
     n <- length(glmObj[["y"]])
-    coxSnell <- 1 - (l0 / lm)^(2 / n)
-    return(max(c(0,coxSnell / (1 - (p^p * (1 - p)^(1 - p))))))
+    coxSnell <- 1 - exp(l0 - lm)^(2 / n)
+    denom <- 1 - exp(l0)^(2 / n)
+    return(max(c(0,coxSnell / denom)))
   }
 }
 
@@ -586,9 +698,10 @@
     )
   }
 
-  custom_x_axis <- function(xdat) {
+  custom_x_axis <- function(ribdat) {
     l <- NULL
-    if (is.factor(xdat)) {
+    xdat <- ribdat[["x"]]
+    if (attr(ribdat, "factor")) {
       l <- list(ggplot2::scale_x_discrete(labels = levels(xdat)))
     } else {
       b <- pretty(xdat)
@@ -611,7 +724,7 @@
   p + ggplot2::xlab(var) +
     ggplot2::ylab(ytitle) +
     ggplot2::theme_bw() +
-    custom_x_axis(vd) +
+    custom_x_axis(ribdat) +
     custom_y_axis() +
     ggplot2::theme(
       panel.grid.minor = ggplot2::element_blank(),
@@ -712,4 +825,110 @@
 
 .invLogit <- function(x) {
   1/(1 + exp(-x))
+}
+
+.plotGlmResiduals <- function(glmObj, var = NULL, type = "deviance") {
+  # plots residuals against predicted (var = NULL) or predictor (var = "name")
+  if (!is.null(var)) {
+    ggdat <- data.frame(resid = residuals(glmObj, type = type),
+                        x = glmObj[["data"]][[var]])
+  } else {
+    ggdat <- data.frame(resid = residuals(glmObj, type = type), 
+                        x = predict(glmObj))
+    var <- "Predicted log-odds"
+  }
+  
+  print(class(ggdat[["x"]]))
+  if (class(ggdat[["x"]]) == "factor") {
+    pos <- ggplot2::position_jitter(width = 0.1)
+  } else {
+    pos <- ggplot2::position_jitter(width = 0)
+  }
+  
+  custom_y_axis <- function(val) {
+    d <- data.frame(x = -Inf, xend = -Inf, 
+                    y = min(pretty(val)), yend = max(pretty(val)))
+    list(
+      ggplot2::geom_segment(
+        data = d, 
+        ggplot2::aes(x = x, y = y, xend = xend, yend = yend),
+        inherit.aes = FALSE, 
+        size = 1
+      ), 
+      ggplot2::scale_y_continuous(
+        breaks = pretty(val)
+      )
+    )
+  }
+  
+  custom_x_axis <- function(val) {
+    if (class(val) == "factor") {
+      l <- list(ggplot2::scale_x_discrete(labels = levels(val)))
+    } else {
+      d <- data.frame(y = -Inf, yend = -Inf, 
+                      x = min(pretty(val)), xend = max(pretty(val)))
+      l <- list(
+        ggplot2::geom_segment(
+          data = d, 
+          ggplot2::aes(x = x, y = y, xend = xend, yend = yend),
+          inherit.aes = FALSE, 
+          size = 1
+        ), 
+        ggplot2::scale_x_continuous(
+          breaks = pretty(val)
+        )
+      )
+    }
+    return(l)
+  }
+  
+  
+  p <- ggplot2::ggplot(data = ggdat, 
+                       mapping = ggplot2::aes(x = x, y = resid)) +
+    ggplot2::geom_point(position = pos,
+                        size = 2) 
+  
+  
+  p <- p +
+    ggplot2::xlab(var) +
+    ggplot2::ylab("Residuals") +
+    ggplot2::theme_bw() +
+    custom_y_axis(ggdat[["resid"]]) +
+    custom_x_axis(ggdat[["x"]]) +
+    ggplot2::theme(
+      panel.grid.minor = ggplot2::element_blank(),
+      plot.title = ggplot2::element_text(size = 18),
+      panel.grid.major = ggplot2::element_blank(),
+      axis.title.x = ggplot2::element_text(size = 18, vjust = 0.1),
+      axis.title.y = ggplot2::element_text(size = 18, vjust = 0.9),
+      axis.text.x = ggplot2::element_text(
+        size = 15,
+        margin = ggplot2::margin(t = 1, unit = "mm")
+      ),
+      axis.text.y = ggplot2::element_text(
+        size = 15,
+        margin = ggplot2::margin(r = 1, unit = "mm")
+      ),
+      panel.background = ggplot2::element_rect(
+        fill = "transparent", 
+        colour = NA
+      ),
+      plot.background = ggplot2::element_rect(
+        fill = "transparent", 
+        colour = NA
+      ),
+      legend.background = ggplot2::element_rect(
+        fill = "transparent", 
+        colour = NA
+      ),
+      panel.border = ggplot2::element_blank(),
+      legend.key = ggplot2::element_blank(),
+      axis.line = ggplot2::element_blank(),
+      axis.ticks = ggplot2::element_line(size = 0.5),
+      axis.ticks.length = grid::unit(2.5, "mm"),
+      plot.margin = grid::unit(c(0.1, 0.1, 0.6, 0.6), "cm"),
+      legend.position = "none"
+    )
+    
+  p
 }

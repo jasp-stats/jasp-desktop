@@ -129,6 +129,27 @@
 			"default": 95
 		},
 		{
+			"name": "showPoints",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "predictedPlotOpt",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "predictorPlotsOpt",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "residualType",
+			"options": [ "deviance", "pearson" ],
+			"default": "deviance",
+			"type": "List"
+		},
+		{
 			"name": "plotWidth",
 			"type": "Integer",
 			"default": 480

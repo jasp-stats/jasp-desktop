@@ -43,9 +43,16 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   
   # <editor-fold> ERROR HANDLING BLOCK ----
   if (options[["dependent"]] != "") {
-    errors <- .hasErrors(dataset, perform, type = 'factorLevels',
+    errors <- .hasErrors(dataset, perform, type = "factorLevels",
                          factorLevels.target = options[["dependent"]], 
                          factorLevels.amount = '!= 2',
+                         exitAnalysisIfErrors = TRUE)
+  }
+  
+  if (options[["wlsWeights"]] != "") {
+    errors <- .hasErrors(dataset, perform, type = "limits",
+                         limits.target = options[["wlsWeights"]],
+                         limits.min = 0, limits.max = Inf,
                          exitAnalysisIfErrors = TRUE)
   }
   
@@ -61,15 +68,17 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   estimatesTable <- # parameter estimates table
   confusionMatrix <- # confusion matrix table
   perfMetrics <- # performance metrics of full model
-  estimatesPlots <- NULL # plots for estimates
-  
+  estimatesPlots <- # plots for estimates
+  predictedPlot <- # predicted - residuals plot
+  predictorPlots <- # predictor - residuals plots
+  NULL
   
   # diff check
   if (!is.null(state) && perform == "run") {
     diff <- .diff(options, state[["options"]])
     with(diff, {
       if (!any(dependent, covariates, factors, wlsWeights, modelTerms,
-                includeIntercept)) {
+                includeIntercept, wlsWeights)) {
         lrObj <<- state[["lrObj"]]
         modelSummary <<- state[["modelSummary"]]
         
@@ -87,9 +96,20 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
           perfMetrics <<- state[["perfMetrics"]]
         }
         
-        if (!any(estimatesPlotsOpt, estimatesPlotsCI, plotWidth, plotHeight)) {
+        if (!any(estimatesPlotsOpt, estimatesPlotsCI, plotWidth, plotHeight,
+                 showPoints)) {
           # estimates plots can be reused
           estimatesPlots <<- state[["estimatesPlots"]]
+        }
+        
+        if (!any(predictedPlotOpt, plotWidth, plotHeight, residualType)) {
+          # predicted - residuals plot can be reused
+          predictedPlot <<- state[["predictedPlot"]]
+        }
+        
+        if (!any(predictorPlotsOpt, plotWidth, plotHeight, residualType)) {
+          # predictor - residuals plots can be reused
+          predictorPlots <<- state[["predictorPlots"]]
         }
       }      
     })
@@ -100,6 +120,8 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
     confusionMatrix <- state[["confusionMatrix"]]
     perfMetrics <- state[["perfMetrics"]]
     estimatesPlots <- state[["estimatesPlots"]]
+    predictedPlot <- state[["predictedPlot"]]
+    predictorPlots <- state[["predictorPlots"]]
   }
   
   # </editor-fold> STATE SYSTEM BLOCK
@@ -108,13 +130,17 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   
   .pdMeta <- list(list(name = "confusionMatrix", type = "table"),
                   list(name = "perfMetrics", type = "table"))
+  .rpMeta <- list(list(name = "predictedPlot", type = "image"),
+                  list(name = "predictorPlots", type = "collection", 
+                       meta = "image"))
   
   .meta <-  list(
 		list(name = "title", type = "title"),
 		list(name = "modelSummary", type = "table"),
 		list(name = "estimatesTable", type = "table"),
 		list(name = "perfDiagnostics", type = "object", meta = .pdMeta),
-		list(name = "estimatesPlots", type = "collection", meta = "image")
+		list(name = "estimatesPlots", type = "collection", meta = "image"),
+    list(name = "residualsPlots", type = "object", meta = .rpMeta)
 	)
   
   # </editor-fold> META INFORMATION BLOCK
@@ -130,17 +156,20 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   }
   
   if (is.null(estimatesTable) && options[["coeffEstimates"]]) {
-    estimatesTable <- .glmEstimatesTable(lrObj, options, perform, type = "binomial")
+    estimatesTable <- .glmEstimatesTable(lrObj, options, perform, 
+                                         type = "binomial")
   }
   
   if (is.null(confusionMatrix) && options[["confusionMatrixOpt"]]) {
-    confusionMatrix <- .glmConfusionMatrix(lrObj, options, perform, type = "binomial")
+    confusionMatrix <- .glmConfusionMatrix(lrObj, options, perform, 
+                                           type = "binomial")
   }
   
   wantsPerfMetrics <- with(options, any(AUC, Sens, Spec, Prec, Fmsr, BrierScr, 
                                         Hmsr))
   if (is.null(perfMetrics) && wantsPerfMetrics) {
-    perfMetrics <- .glmPerformanceMetrics(lrObj, options, perform, type = "binomial")
+    perfMetrics <- .glmPerformanceMetrics(lrObj, options, perform, 
+                                          type = "binomial")
   }
   
   perfDiagnostics <- list("confusionMatrix" = confusionMatrix, 
@@ -148,9 +177,23 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
                           "title" = "Performance Diagnostics")
   
   if (is.null(estimatesPlots) && options[["estimatesPlotsOpt"]]) {
-    estimatesPlots <- .glmEstimatesPlots(lrObj, options, perform, type = "binomial")
+    estimatesPlots <- .glmEstimatesPlots(lrObj, options, perform, 
+                                         type = "binomial")
   }
   
+  if (is.null(predictedPlot) && options[["predictedPlotOpt"]]) {
+    predictedPlot <- .glmPredictedResidualsPlot(lrObj, options, perform, 
+                                                type = "binomial")
+  }
+  
+  if (is.null(predictorPlots) && options[["predictorPlotsOpt"]]) {
+    predictorPlots <- .glmPredictorResidualsPlots(lrObj, options, perform, 
+                                                  type = "binomial")
+  }
+  
+  residualsPlots <- list("predictedPlot" = predictedPlot,
+                         "predictorPlots" = predictorPlots,
+                         "title" = "Residual plots")
   
   results <- list()
   results[[".meta"]] <- .meta
@@ -159,12 +202,15 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   results[["estimatesTable"]] <- estimatesTable
   results[["perfDiagnostics"]] <- perfDiagnostics
   results[["estimatesPlots"]] <- estimatesPlots
+  results[["residualsPlots"]] <- residualsPlots
 
   # </editor-fold> RESULTS GENERATION BLOCK
   
   # <editor-fold> RETURN RESULTS BLOCK ----
   
-  plotPaths <- .lrGetPlotPaths(estimatesPlots)
+  plotPaths <- c(.lrGetPlotPaths(estimatesPlots), 
+                 .lrGetPlotPaths(predictorPlots),
+                 predictedPlot[["data"]])
   
   if (perform == "run") {
     state <- list()
@@ -175,6 +221,8 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
     state[["confusionMatrix"]] <- confusionMatrix
     state[["perfMetrics"]] <- perfMetrics
     state[["estimatesPlots"]] <- estimatesPlots
+    state[["predictedPlot"]] <- predictedPlot
+    state[["predictorPlots"]] <- predictorPlots
     
     return(list(results=results, status="complete", state=state,
                 keep = plotPaths))
@@ -189,13 +237,13 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   
 }
 
-.lrGetPlotPaths <- function(estPlots) {
-  if (is.null(estPlots)) {
+.lrGetPlotPaths <- function(plotObj) {
+  if (is.null(plotObj)) {
     return(NULL)
   } else {
-    out <- vector("list", length(estPlots[["collection"]]))
-    for (i in seq_along(estPlots[["collection"]])) {
-      out[[i]] <- estPlots[["collection"]][[i]][["data"]]
+    out <- vector("list", length(plotObj[["collection"]]))
+    for (i in seq_along(plotObj[["collection"]])) {
+      out[[i]] <- plotObj[["collection"]][[i]][["data"]]
     }
     return(out)
   }

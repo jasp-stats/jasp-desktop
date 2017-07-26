@@ -76,6 +76,18 @@
          <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_8">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item row="0" column="1" rowspan="2" colspan="2">
           <widget class="BoundCheckBox" name="includeIntercept">
            <property name="enabled">
@@ -783,10 +795,30 @@
          <item row="0" column="2">
           <widget class="GroupBox" name="groupBox_5">
            <property name="title">
-            <string>Diagnostic plots</string>
+            <string>Residual plots</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_12">
-            <item row="2" column="1">
+           <layout class="QGridLayout" name="gridLayout_14">
+            <item row="5" column="1" colspan="2">
+             <spacer name="verticalSpacer_7">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="1" column="1">
+             <widget class="BoundCheckBox" name="predictedPlotOpt">
+              <property name="text">
+               <string>Predicted - residuals plot</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="2">
              <widget class="QLabel" name="label_11">
               <property name="maximumSize">
                <size>
@@ -799,28 +831,14 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="0" colspan="2">
-             <widget class="BoundCheckBox" name="estimatesPlotsOpt_4">
+            <item row="2" column="1" rowspan="2">
+             <widget class="BoundCheckBox" name="predictorPlotsOpt">
               <property name="text">
-               <string>Residual plot 3</string>
+               <string>Predictor - residuals plots</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="0" colspan="2">
-             <widget class="BoundCheckBox" name="estimatesPlotsOpt_2">
-              <property name="text">
-               <string>Residual plot 1</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0" rowspan="2" colspan="2">
-             <widget class="BoundCheckBox" name="estimatesPlotsOpt_3">
-              <property name="text">
-               <string>Residual plot 2</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2" rowspan="4">
+            <item row="1" column="3">
              <spacer name="horizontalSpacer_5">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -829,6 +847,79 @@
                <size>
                 <width>40</width>
                 <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="4" column="1">
+             <widget class="BoundGroupBox" name="residualType">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>240</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="title">
+               <string>Residual type</string>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout">
+               <item>
+                <widget class="QRadioButton" name="_1deviance">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Deviance</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="_2pearson">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Pearson</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_6">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="6" column="1">
+             <spacer name="verticalSpacer_8">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
                </size>
               </property>
              </spacer>
@@ -917,6 +1008,13 @@
                  </property>
                 </widget>
                </item>
+               <item row="1" column="0">
+                <widget class="BoundCheckBox" name="showPoints">
+                 <property name="text">
+                  <string>Show data points</string>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </widget>
             </item>
@@ -990,6 +1088,12 @@
    <class>AnovaModelWidget</class>
    <extends>QWidget</extends>
    <header>widgets/anovamodelwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BoundGroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/boundgroupbox.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
