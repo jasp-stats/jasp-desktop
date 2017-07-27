@@ -5,9 +5,23 @@
     if (!is.null(type) && type == "binomial") {
       # Logistic regression
       f <- .createGlmFormula(options)
+      n <- .createNullFormula(options)
+      print(n)
+      
       names(dataset) <- .unv(names(dataset))
-      glmRes <- stats::glm(f[["plaintext"]], data = dataset, 
-                           family = "binomial")
+      if (!is.null(n)) {
+        nullModel <- stats::glm(n[["plaintext"]], data = dataset, 
+                                family = "binomial")
+        glmRes <- stats::glm(f[["plaintext"]], data = dataset, 
+                             family = "binomial")
+        glmRes[["null.deviance"]] <- nullModel[["deviance"]]
+        glmRes[["df.null"]] <- nullModel[["df.residual"]]
+        glmRes[["nullModel"]] <- nullModel
+      } else {
+        glmRes <- stats::glm(f[["plaintext"]], data = dataset, 
+                             family = "binomial")
+      }
+      
     } else {
       .quitAnalysis("GLM type not supported")
     }
@@ -57,6 +71,54 @@
   list(plaintext = f, base64 = f.base64)
 }
 
+.createNullFormula <- function(options) {
+  # this function takes options as its inputs and outputs a formula in base64
+  f <- NULL
+  f.base64 <- NULL
+  nuisanceTerms <- NULL
+  
+  dependent <- options[["dependent"]]
+  if (dependent == "") {
+    return(NULL)
+  }
+
+  modelTerms <- options[["modelTerms"]]  
+  includeIntercept <- options[["includeIntercept"]]
+  if (length(modelTerms) == 0) {
+    return(NULL)
+  } else {
+    t <- t.base64 <- character(0)
+    for (i in seq_along(modelTerms)) {
+      nui <- modelTerms[[i]][["isNuisance"]]
+      if (!is.null(nui) && nui) {
+        term <- modelTerms[[i]][["components"]]
+        if (length(term) == 1) {
+          t <- c(t, term)
+          t.base64 <- c(t.base64, .v(term))
+        } else {
+          t <- c(t, paste(unlist(term), collapse = ":"))
+          t.base64 <- c(t.base64, paste(.v(unlist(term)), collapse = ":"))
+        }
+      }
+    }
+    
+    if (length(t) == 0) {
+      return(NULL)
+    }
+    
+    nuisanceTerms <- t
+    
+    if (!includeIntercept) {
+      t <- c(t, "0") 
+      t.base64 <- c(t.base64, "0")
+    }
+    
+    f <- formula(paste(dependent, "~", paste(t, collapse = "+")))
+    f.base64 <- formula(paste0(.v(dependent), "~", paste(t.base64, collapse = "+")))
+  }
+  list(plaintext = f, base64 = f.base64, terms = nuisanceTerms)
+}
+
 .glmModelSummary <- function(glmObj, options, perform, type) {
   out <- NULL
   if (type == "binomial") {
@@ -80,6 +142,17 @@
     
     if (perform == "run" && !is.null(glmObj)) {
       lr <- .lrtest(glmObj)
+      nuisance <- glmObj[["nullModel"]]
+      if (!is.null(nuisance)) {
+        terms <- rownames(summary(nuisance)[["coefficients"]])
+        terms <- sapply(terms[terms!="(Intercept)"], .formatTerm, glmObj=nuisance)
+        footnotes <- .newFootnotes()
+        msg <- paste0("Null model contains nuisance parameters: ", 
+                      paste(terms, collapse = ", "))
+        .addFootnote(footnotes, symbol="<em>Note.</em>", text = msg)
+        out[["footnotes"]] <- as.list(footnotes)
+      }
+      
       rows <- list(
         list(mod = 0, 
              dev = .clean(glmObj[["null.deviance"]]),
@@ -174,19 +247,43 @@
       rn <- rownames(s)      
       c <- qnorm(1 - (100 - options[["coeffCIInterval"]]) / 200)
       beta <- .stdEst(glmObj, type = "X") # stand. X continuous vars
-      
-      for (i in seq_along(rn)) {
-        rows[[i]] <- list(param = .clean(.formatTerm(rn[i], glmObj)),
-                          est = .clean(s[i,1]),
-                          se = .clean(s[i,2]),
-                          std = .clean(as.numeric(beta[i])),
-                          or = .clean(exp(s[i,1])),
-                          zval = .clean(s[i,3]),
-                          pval = .clean(s[i,4]),
-                          vsmpr = .clean(.VovkSellkeMPR(s[i,4])),
-                          cilo = .clean(s[i,1]-c*s[i,2]),
-                          ciup = .clean(s[i,1]+c*s[i,2]))
+      nuisance <- glmObj[["nullModel"]]
+      if (!is.null(nuisance)) {
+        terms <- rownames(summary(nuisance)[["coefficients"]])
+        terms <- terms[terms != "(Intercept)"]
+        sel <- !(rn %in% terms)
+        rn <- rn[sel]
+        s <- s[sel,]
+        beta <- beta[sel]
       }
+      
+      if (length(rn) == 1) {
+        s <- unname(s)
+        rows[[1]] <- list(param = .clean(.formatTerm(rn, glmObj)),
+                          est = .clean(s[1]),
+                          se = .clean(s[2]),
+                          std = .clean(as.numeric(beta)),
+                          or = .clean(exp(s[1])),
+                          zval = .clean(s[3]),
+                          pval = .clean(s[4]),
+                          vsmpr = .clean(.VovkSellkeMPR(s[4])),
+                          cilo = .clean(s[1] - c * s[2]),
+                          ciup = .clean(s[1] + c * s[2]))
+      } else {
+        for (i in seq_along(rn)) {
+          rows[[i]] <- list(param = .clean(.formatTerm(rn[i], glmObj)),
+                            est = .clean(s[i,1]),
+                            se = .clean(s[i,2]),
+                            std = .clean(as.numeric(beta[i])),
+                            or = .clean(exp(s[i,1])),
+                            zval = .clean(s[i,3]),
+                            pval = .clean(s[i,4]),
+                            vsmpr = .clean(.VovkSellkeMPR(s[i,4])),
+                            cilo = .clean(s[i,1] - c * s[i,2]),
+                            ciup = .clean(s[i,1] + c * s[i,2]))
+        }
+      }
+      
     } else {
       rows <- list(
         list(param = ".", est = ".", se = ".", std = ".", or = ".",
@@ -315,7 +412,8 @@
     
     predictors <- character(0)
     for (term in options[["modelTerms"]]) {
-      if (length(term[["components"]]) == 1) {
+      if (length(term[["components"]]) == 1 && 
+          (is.null(term[["isNuisance"]]) || !term[["isNuisance"]])) {
         predictors <- c(predictors, term[["components"]])
       }
     }
@@ -369,7 +467,8 @@
 
     predictors <- character(0)
     for (term in options[["modelTerms"]]) {
-      if (length(term[["components"]]) == 1) {
+      if (length(term[["components"]]) == 1 && 
+          (is.null(term[["isNuisance"]]) || !term[["isNuisance"]])) {
         predictors <- c(predictors, term[["components"]])
       }
     }
@@ -457,9 +556,14 @@
 
 # Helper functions for the above.
 .lrtest <- function(glmObj) {
-  chisq <- glmObj[["null.deviance"]] - glmObj[["deviance"]]
+  # likelihood ratio test for model against null model
+  chisq <- max(0,glmObj[["null.deviance"]] - glmObj[["deviance"]])
   df <- glmObj[["df.null"]] - glmObj[["df.residual"]]
-  p <- dchisq(chisq, df)
+  if (chisq == 0) {
+    p <- NULL
+  } else {
+    p <- dchisq(chisq, df)
+  }
   return(list(stat = chisq, df = df, pval = p))
 }
 
@@ -547,8 +651,8 @@
   
   names(stdDat) <- names(glmObj[["model"]])
   
-  stdMod <- glm(formula = glmObj[["formula"]], data = stdDat, 
-                family = glmObj[["family"]])
+  stdMod <- stats::glm(formula = glmObj[["formula"]], data = stdDat, 
+                       family = glmObj[["family"]])
   
   return(coef(stdMod))
 }
