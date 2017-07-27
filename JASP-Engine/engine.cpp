@@ -214,7 +214,7 @@ void Engine::run()
 bool Engine::receiveMessages(int timeout)
 {
 #ifdef __WIN32__
-	char *data;
+	const char *data;
 	if (_channel->receive(&data, 1000))
 #else
 	string data;
