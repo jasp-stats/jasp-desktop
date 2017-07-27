@@ -25,13 +25,14 @@ macx: LIBS += -L.. -lJASP-Common
 linux: LIBS += -L.. -lJASP-Common
 windows:LIBS += -L.. -lJASP-Common-mingw
 
+LIBS += -lJASP-Sharedmem
+
 windows:CONFIG(ReleaseBuild) {
 windows:LIBS += -lboost_filesystem-mgw71-mt-1_64 -lboost_system-mgw71-mt-1_64 -lJASP-Sharedmem.dll -larchive.dll
 }
 
 windows:CONFIG(DebugBuild) {
 windows:LIBS += -lboost_filesystem-mgw71-mt-d-1_64 -lboost_system-mgw71-mt-d-1_64  -larchive.dll
-windows:LIBS += -lJASP-Sharedmem
 }
 
    macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz

@@ -12,7 +12,6 @@ DEFINES += JASPSHAREDMEM_LIBRARY
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
 
-PRE_TARGETDEPS += ../JASP-Common.lib
 
 INCLUDEPATH += ../../boost_1_64_0
 
