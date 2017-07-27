@@ -31,16 +31,13 @@ void JASPChannelImpl::send(const char *data)
 	_channel->send(strData);
 }
 
-bool JASPChannelImpl::receive(char** data, int timeout)
+bool JASPChannelImpl::receive(const char** data, int timeout)
 {
-	std::string strData;
 	timeout = 1000;
-	bool result = _channel->receive(strData, timeout);
+	bool result = _channel->receive(_received, timeout);
 	if (result)
 	{
-		*data = new char[strData.size() + 1];
-		std::copy(strData.begin(), strData.end(), *data);
-		(*data)[strData.size()] = '\0';
+		*data = _received.c_str();
 	}
 
 	return result;

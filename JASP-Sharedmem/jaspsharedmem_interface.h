@@ -11,7 +11,7 @@ protected:
 public:
 	virtual void STDCALL destroy() = 0;
 	virtual void STDCALL send(const char* data) = 0;
-	virtual bool STDCALL receive(char** data, int timeout) = 0;
+	virtual bool STDCALL receive(const char** data, int timeout) = 0;
 };
 
 class LabelIteratorInterface {

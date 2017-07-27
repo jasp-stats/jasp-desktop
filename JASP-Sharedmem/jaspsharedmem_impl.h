@@ -14,10 +14,11 @@ public:
 
 	virtual void STDCALL destroy();
 	virtual void STDCALL send(const char* data);
-	virtual bool STDCALL receive(char** data, int timeout);
+	virtual bool STDCALL receive(const char** data, int timeout);
 
 private:
 	IPCChannel *_channel;
+	std::string _received;
 
 };
 
