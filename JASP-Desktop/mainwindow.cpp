@@ -310,6 +310,12 @@ void MainWindow::open(QString filepath)
 
 MainWindow::~MainWindow()
 {
+	delete _engineSync;
+	if (_package && _package->dataSet)
+	{
+		_loader.free(_package->dataSet);
+		_package->reset();
+	}
 	delete ui;
 }
 

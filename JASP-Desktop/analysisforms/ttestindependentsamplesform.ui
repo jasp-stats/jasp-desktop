@@ -287,6 +287,63 @@
         </layout>
        </widget>
       </item>
+      <item row="2" column="1">
+       <widget class="BoundGroupBox" name="missingValues">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="title">
+         <string>Missing Values</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="0">
+          <widget class="QRadioButton" name="_1excludeAnalysisByAnalysis">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Exclude cases analysis by analysis</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QRadioButton" name="_2excludeListwise">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Exclude cases listwise</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>5</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
       <item row="2" column="0">
        <widget class="GroupBox" name="groupBox">
         <property name="sizePolicy">
@@ -414,63 +471,6 @@
         </layout>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="BoundGroupBox" name="missingValues">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="title">
-         <string>Missing Values</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_6">
-         <item row="0" column="0">
-          <widget class="QRadioButton" name="_1excludeAnalysisByAnalysis">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Exclude cases analysis by analysis</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QRadioButton" name="_2excludeListwise">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Exclude cases listwise</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <spacer name="horizontalSpacer_4">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>5</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </widget>
-      </item>
       <item row="0" column="1" rowspan="2">
        <widget class="GroupBox" name="groupBox_7">
         <property name="sizePolicy">
@@ -482,8 +482,8 @@
         <property name="title">
          <string>Additional Statistics</string>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
+        <layout class="QFormLayout" name="formLayout">
+         <item row="0" column="0">
           <widget class="BoundCheckBox" name="meanDifference">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -492,38 +492,12 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Mean difference</string>
+            <string>Location parameter</string>
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="BoundCheckBox" name="effectSize">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Effect size</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="BoundCheckBox" name="confidenceInterval">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Confidence interval</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QWidget" name="widgetConfidenceIntervalInterval" native="true">
+         <item row="1" column="0">
+          <widget class="QWidget" name="widgetDescriptivesMeanDiffConfidenceInterval" native="true">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -533,7 +507,7 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <layout class="QGridLayout" name="gridLayout_2">
+           <layout class="QGridLayout" name="gridLayout_12">
             <property name="leftMargin">
              <number>40</number>
             </property>
@@ -546,34 +520,15 @@
             <property name="bottomMargin">
              <number>0</number>
             </property>
-            <item row="0" column="2">
-             <widget class="QLabel" name="label_2">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>%</string>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="0">
-             <widget class="QLabel" name="label">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
+             <widget class="BoundCheckBox" name="meanDiffConfidenceIntervalCheckbox">
               <property name="text">
-               <string>Interval</string>
+               <string>Confidence interval</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
-             <widget class="BoundTextBox" name="confidenceIntervalInterval">
+            <item row="0" column="2">
+             <widget class="BoundTextBox" name="descriptivesMeanDiffConfidenceIntervalPercent">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -588,10 +543,99 @@
               </property>
              </widget>
             </item>
+            <item row="0" column="3">
+             <widget class="QLabel" name="label_10">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>%</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
-         <item>
+         <item row="2" column="0">
+          <widget class="BoundCheckBox" name="effectSize">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Effect size</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QWidget" name="widgetDescriptivesEffectSizeConfidenceInterval" native="true">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_13">
+            <property name="leftMargin">
+             <number>40</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="effSizeConfidenceIntervalCheckbox">
+              <property name="text">
+               <string>Confidence interval</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="BoundTextBox" name="descriptivesEffectSizeConfidenceIntervalPercent">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QLabel" name="label_11">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>%</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="4" column="0">
           <widget class="BoundCheckBox" name="descriptives">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -604,7 +648,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item row="5" column="0">
           <widget class="BoundCheckBox" name="descriptivesPlots">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -617,7 +661,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item row="6" column="0">
           <widget class="QWidget" name="widgetDescriptivesPlotsConfidenceInterval" native="true">
            <property name="enabled">
             <bool>false</bool>
@@ -686,7 +730,7 @@
            </layout>
           </widget>
          </item>
-         <item>
+         <item row="7" column="0">
           <widget class="BoundCheckBox" name="VovkSellkeMPR">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -700,6 +744,14 @@
           </widget>
          </item>
         </layout>
+        <zorder>meanDifference</zorder>
+        <zorder>effectSize</zorder>
+        <zorder>descriptives</zorder>
+        <zorder>descriptivesPlots</zorder>
+        <zorder>widgetDescriptivesPlotsConfidenceInterval</zorder>
+        <zorder>VovkSellkeMPR</zorder>
+        <zorder>widgetDescriptivesMeanDiffConfidenceInterval</zorder>
+        <zorder>widgetDescriptivesEffectSizeConfidenceInterval</zorder>
        </widget>
       </item>
      </layout>
@@ -754,14 +806,14 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
-   <class>boundSingleItemView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundsingleitemview.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundListView</class>
    <extends>QListView</extends>
    <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>boundSingleItemView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundsingleitemview.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
@@ -778,8 +830,6 @@
   <tabstop>_3groupTwoGreater</tabstop>
   <tabstop>meanDifference</tabstop>
   <tabstop>effectSize</tabstop>
-  <tabstop>confidenceInterval</tabstop>
-  <tabstop>confidenceIntervalInterval</tabstop>
   <tabstop>descriptives</tabstop>
   <tabstop>descriptivesPlots</tabstop>
   <tabstop>descriptivesPlotsConfidenceInterval</tabstop>
@@ -791,22 +841,6 @@
  </tabstops>
  <resources/>
  <connections>
-  <connection>
-   <sender>confidenceInterval</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widgetConfidenceIntervalInterval</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>337</x>
-     <y>572</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>349</x>
-     <y>601</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>descriptivesPlots</sender>
    <signal>toggled(bool)</signal>
@@ -820,6 +854,38 @@
     <hint type="destinationlabel">
      <x>382</x>
      <y>687</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>meanDifference</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetDescriptivesMeanDiffConfidenceInterval</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>346</x>
+     <y>512</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>415</x>
+     <y>543</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>effectSize</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetDescriptivesEffectSizeConfidenceInterval</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>324</x>
+     <y>575</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>415</x>
+     <y>606</y>
     </hint>
    </hints>
   </connection>

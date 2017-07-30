@@ -18,6 +18,7 @@
 #include "sharedmemory.h"
 
 #include "processinfo.h"
+#include "tempfiles.h"
 
 #include <sstream>
 #include <iostream>
@@ -37,6 +38,8 @@ DataSet *SharedMemory::createDataSet()
 		ss << ProcessInfo::currentPID();
 		_memoryName = ss.str();
 
+		tempFiles_addShmemFileName(_memoryName);
+
 		interprocess::shared_memory_object::remove(_memoryName.c_str());
 		_memory = new interprocess::managed_shared_memory(interprocess::create_only, _memoryName.c_str(), 6 * 1024 * 1024);
 	}
@@ -52,6 +55,7 @@ DataSet *SharedMemory::retrieveDataSet()
 		ss << "JASP-DATA-";
 		ss << ProcessInfo::parentPID();
 		_memoryName = ss.str();
+
 
 		_memory = new interprocess::managed_shared_memory(interprocess::open_read_only, _memoryName.c_str());
 	}
