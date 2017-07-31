@@ -1,4 +1,10 @@
-jasp (0.8.1.0~dfsg.1-1) UNRELEASED; urgency=low
+jasp (0.8.1.2~dfsg.1-1) neurodebian; urgency=medium
+
+  * New upstream release
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Mon, 31 Jul 2017 00:18:10 -0400
+
+jasp (0.8.1.0~dfsg.1-1) neurodebian; urgency=low
 
   * New upstream release (skipped 0.8.0.0).
   * Added runtime-dependency to r-cran-rjson.
