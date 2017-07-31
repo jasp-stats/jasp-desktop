@@ -43,7 +43,6 @@ TTestPairedSamplesForm::TTestPairedSamplesForm(QWidget *parent) :
 
 	ui->assignButton->setSourceAndTarget(ui->availableFields, ui->pairs);
 
-	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 	ui->descriptivesPlotsConfidenceInterval->setLabel("Confidence interval");
 
 #ifdef QT_NO_DEBUG
