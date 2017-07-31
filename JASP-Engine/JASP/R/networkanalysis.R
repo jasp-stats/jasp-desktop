@@ -204,6 +204,11 @@ NetworkAnalysis <- function (
 		nms2keep <- names(formals(utils::getFromNamespace(paste0("bootnet_", options[["estimator"]]), ns = "bootnet")))
 		.dots <- .dots[names(.dots) %in% nms2keep]
 		
+		# Fake png hack -- qgraph::qgraph has an unprotected call to `par()`. `par()` always opens a new device if there is none.
+		# Perhaps ask Sacha to fix this in qgraph. Line 1119: if (DoNotPlot) par(pty = pty)
+		tempFileName <- getTempFileName()
+		grDevices::png(filename = tempFileName)
+		
 		# capture.output to get relevant messages (i.e. from qgraph::cor_auto "variables detected as...")
 		msg <- capture.output(
 			network <- bootnet::estimateNetwork(
@@ -213,6 +218,9 @@ NetworkAnalysis <- function (
 			)
 			, type = "message"
 		)
+		
+		dev.off() # close the fake png
+		unlink(tempFileName) # remove the fake png file
 		
 		network[["corMessage"]] <- msg
 		
@@ -331,10 +339,6 @@ NetworkAnalysis <- function (
 	return(table)
 
 }
-
-# perhaps move to common?
-.TBcolumns2TBrows <- function(infoByCol) do.call(mapply, c(FUN = base::list, infoByCol, SIMPLIFY = FALSE, USE.NAMES = FALSE))
-
 
 .plotFunNetwork <- function() {
 
@@ -467,3 +471,19 @@ NetworkAnalysis <- function (
 	return(plot)
 
 }
+
+# helper functions ----
+# helper function to avoid qgraph from opening windows
+getTempFileName <- function() {
+	
+	# code from writeImage()
+	location <- .requestTempFileNameNative("png")
+	relativePathpng <- location$relativePath
+	fullPathpng <- paste(location$root, relativePathpng, sep="/")
+	base::Encoding(fullPathpng) <- "UTF-8"
+	
+	return(fullPathpng)
+}
+
+# perhaps move to common?
+.TBcolumns2TBrows <- function(infoByCol) do.call(mapply, c(FUN = base::list, infoByCol, SIMPLIFY = FALSE, USE.NAMES = FALSE))
