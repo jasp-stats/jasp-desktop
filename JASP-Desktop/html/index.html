@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	
 	<title>JASP</title>
 
@@ -21,28 +22,65 @@
 	<script type="text/javascript" src="js/analysis.js"></script>
 	<script type="text/javascript" src="js/analyses.js"></script>
 
-	<link rel="stylesheet" href="css/theme-jasp.css" type="text/css" />
 	<link rel="stylesheet" href="css/etch.css" type="text/css" />
-
+	<link rel="stylesheet" href="css/theme-intro.css" type="text/css" id = "style"/>
+	 
 	<script type="text/javascript" src="js/main.js"></script>
 
 </head>
 <body>
 	<div id="templates" ></div>
 	<div id="intro">
-		<h1>Welcome to JASP!</h1>
-		<p style="text-align: right ;" class="app-version"></p>
-		<p>Hi and welcome to JASP, a fresh and new way to do statistics that we're sure you'll like.</p>
-		<p>
-			JASP aims to be a complete and full featured alternative to SPSS, and it's well on its way there!
-			In fact, it aims to be a lot more than SPSS, which is why it implements some of the latest Bayesian
-			analyses. So load up a data file, and take a look.
-		</p>
-		<p>
-			Also remember, this is an early preview release and
-			there are a number of features missing. So if it doesn't do all you need today, then check back
-			tomorrow; JASP is being developed at break-neck speed!
-		</p>
+		<!--==========================
+			Header Section
+		============================-->
+				<div id="header">
+						<div class="container">
+								<p style="text-align: right; color: white;" class="app-version"></p>
+								<div class="logo">
+									<object type="image/svg+xml" data="img/jasp-logo.svg">
+									    <!-- SVG fallback -->
+											<img width="174" height="40" class="logo__img" src="img/jasp-logo.svg" />
+									</object>
+								</div>
+								<h1>Welcome to JASP</h1>
+								<div class="header-ruler"></div>
+								<h2><span>A Fresh Way to Do Statistics:</span> <span>Free, Friendly, and Inclusive</span></h2>
+						</div>
+						<div class="header-img"></div>
+				</div><!-- #header -->
+
+		<!--==========================
+			Welcome Section
+		============================-->
+				<section id="welcome">
+						<div class="container">
+								<ul>
+										<li><span class="text blue">Free:</span> JASP is an open-source project with structural support from the University of Amsterdam.</li>
+										<li><span class="text blue">Friendly:</span> JASP has an intuitive interface that was designed with the user in mind</li>
+										<li><span class="text blue">Inclusive:</span> JASP offers standard analysis procedures in both their classical and Bayesian manifestations.</li>
+								</ul>
+						</div>
+				</section>
+
+				<!--==========================
+					Action Section
+				============================-->
+				<section id="action">
+						<div class="container">
+								<p class="cta-title">So open a data file and take JASP for a spin!</p>
+						</div>
+				</section>
+
+				<!--==========================
+					Note Section
+				============================-->
+				<section id="note">
+						<div class="container">
+								<p>Please keep in mind that this is a preview release and a number of features are still missing.</p>
+								<p>If JASP doesn’t do all you want today, then check back tomorrow: JASP is being developed at break-neck speed!</p>
+						</div>
+				</section>
 	</div>
 	<div id="instructions" style="display: none;">
 		<h1>Instructions</h1>

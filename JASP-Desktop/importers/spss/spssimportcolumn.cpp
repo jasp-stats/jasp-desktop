@@ -67,14 +67,11 @@ bool SPSSImportColumn::isValueEqual(Column &col, size_t row) const
 		case Column::ColumnTypeOrdinal:
 			if (row < numerics.size())
 			{
-				double index = numerics[row];
-				SpssDataCell cell;
-				cell.dbl = index;
-				LabelByValueDict::const_iterator it = spssLables.find(cell);
-				if (it == spssLables.end())
-					result = col.isValueEqual(row, (int)index);
-				else
-					result = col.isValueEqual(row, it->second);
+				int intValue = INT_MIN;
+				if (missingChecker().isMissingValue(_dataset->getFloatInfo(), numerics[row]) == false)
+					intValue = static_cast<int>(numerics[row]);
+				result = col.isValueEqual(row, intValue);
+				break;
 			}
 			break;
 		default:

@@ -47,6 +47,7 @@ Engine::Engine()
 	_dataSet = NULL;
 	_channel = NULL;
 	_slaveNo = 0;
+	_ppi = 96;
 
 	_status = empty;
 
@@ -61,6 +62,34 @@ Engine::Engine()
 void Engine::setSlaveNo(int no)
 {
 	_slaveNo = no;
+}
+
+void Engine::saveImage()
+{
+	if (_status != saveImg)
+		return;
+
+	vector<string> tempFilesFromLastTime = tempfiles_retrieveList(_analysisId);
+
+	RCallback callback = boost::bind(&Engine::callback, this, _1);
+
+	std::string name = _imageOptions.get("name", Json::nullValue).asString();
+	std::string type = _imageOptions.get("type", Json::nullValue).asString();
+
+	int height = _imageOptions.get("height", Json::nullValue).asInt();
+	int width = _imageOptions.get("width", Json::nullValue).asInt();
+	std::string result = rbridge_saveImage(name, type, height, width, _ppi);
+
+
+	_status = complete;
+	Json::Reader parser;
+	parser.parse(result, _analysisResults, false);
+	_analysisResults["results"]["inputOptions"] = _imageOptions;
+	sendResults();
+	_status = empty;
+
+	//tempfiles_deleteList(tempFilesFromLastTime);
+
 }
 
 void Engine::runAnalysis()
@@ -168,7 +197,10 @@ void Engine::run()
 		receiveMessages(100);
 		if ( ! ProcessInfo::isParentRunning())
 			break;
-		runAnalysis();
+		if (_status == saveImg)
+			saveImage();
+		else
+			runAnalysis();
 
 	}
 	while(1);
@@ -182,6 +214,9 @@ bool Engine::receiveMessages(int timeout)
 
 	if (_channel->receive(data, timeout))
 	{
+		std::cout << "received message" << std::endl;
+		std::cout.flush();
+
 		Json::Value jsonRequest;
 		Json::Reader r;
 		r.parse(data, jsonRequest, false);
@@ -210,15 +245,18 @@ bool Engine::receiveMessages(int timeout)
 				_status = toInit;
 			else if (perform == "run")
 				_status = toRun;
+			else if (perform == "saveImg")
+				_status = saveImg;
 			else
 				_status = error;
 		}
 
-		if (_status == toInit || _status == toRun || _status == changed)
+		if (_status == toInit || _status == toRun || _status == changed || _status == saveImg)
 		{
 			_analysisName = jsonRequest.get("name", Json::nullValue).asString();
 			_analysisOptions = jsonRequest.get("options", Json::nullValue).toStyledString();
 			_analysisRevision = jsonRequest.get("revision", -1).asInt();
+			_imageOptions = jsonRequest.get("image", Json::nullValue);
 
 			Json::Value settings = jsonRequest.get("settings", Json::nullValue);
 			if (settings.isObject())
@@ -343,4 +381,3 @@ void Engine::provideTempFileName(const string &extension, string &root, string &
 {	
 	tempfiles_create(extension, _analysisId, root, relativePath);
 }
-

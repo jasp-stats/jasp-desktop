@@ -80,7 +80,7 @@
          <item row="0" column="0">
           <widget class="RibbonButton" name="SEMSimple">
            <property name="text">
-            <string>Simple SEM</string>
+            <string>Lavaan</string>
            </property>
            <property name="icon">
             <iconset resource="../resources/icons.qrc">
@@ -160,6 +160,7 @@
   </customwidget>
  </customwidgets>
  <resources>
+  <include location="../resources/icons.qrc"/>
   <include location="../resources/icons.qrc"/>
  </resources>
  <connections>

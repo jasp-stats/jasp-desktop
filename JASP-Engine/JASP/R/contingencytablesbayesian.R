@@ -474,7 +474,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	if (populate && status$error == FALSE) {
 	
-		image <- .beginSaveImage(width, height)
+		# image <- .beginSaveImage(width, height)
 
 		p <- try(silent=TRUE, expr={
 			
@@ -500,17 +500,19 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			
 				oneSided <- FALSE
 			}
-			
-			.contTablesBayesianPlotPosterior(
-				samples = odds.ratio.result$log.odds.ratio.samples,
-				CI = c(odds.ratio.result$lower.ci, odds.ratio.result$upper.ci),
-				medianSamples = odds.ratio.result$median,
-				BF = bf.result$BF$BF10,
-				selectedCI = options$oddsRatioCredibleIntervalInterval,
-				addInformation = options$plotPosteriorOddsRatioAdditionalInfo, oneSided=oneSided, options=options)
+			.plotFunc <- function() {
+				.contTablesBayesianPlotPosterior(
+					samples = odds.ratio.result$log.odds.ratio.samples,
+					CI = c(odds.ratio.result$lower.ci, odds.ratio.result$upper.ci),
+					medianSamples = odds.ratio.result$median,
+					BF = bf.result$BF$BF10,
+					selectedCI = options$oddsRatioCredibleIntervalInterval,
+					addInformation = options$plotPosteriorOddsRatioAdditionalInfo, oneSided=oneSided, options=options)
+			}
 		})
 		
-		plot <- .endSaveImage(image)
+		plot <- .writeImage(width = width, height = height, plot = .plotFunc, obj = TRUE)
+		# plot <- .endSaveImage(image)
 
 		if (inherits(p, "try-error")) {
 			
@@ -532,24 +534,34 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 
 	if (populate && status$error == FALSE) {
 	
-		odds.ratio.plot[["data"]] <- plot
+		odds.ratio.plot[["data"]] <- plot[["png"]]
+		odds.ratio.plot[["obj"]] <- plot[["obj"]]
+		odds.ratio.plot[["convertible"]] <- TRUE
 		odds.ratio.plot[["status"]] <- "complete"
 		
-		new.plot.state <- list(keep=plot)
+		new.plot.state <- list(keep=plot[["png"]])
 		
 		complete <- TRUE
 	
 	} else {
-	
-		image <- .beginSaveImage(width, height)
-		.contTablesBayesianPlotPosterior(dontPlotData=TRUE,addInformation=options$plotPosteriorOddsRatioAdditionalInfo)
-		plot <- .endSaveImage(image)
 		
-		odds.ratio.plot[["data"]] <- plot
+		.plotFunc = function() {
+			.contTablesBayesianPlotPosterior(dontPlotData=TRUE,addInformation=options$plotPosteriorOddsRatioAdditionalInfo)
+		}
+		plot <- .writeImage(width = width, height = height, plot = .plotFunc, obj = TRUE)
+	
+		# image <- .beginSaveImage(width, height)
+		# .contTablesBayesianPlotPosterior(dontPlotData=TRUE,addInformation=options$plotPosteriorOddsRatioAdditionalInfo)
+		# plot <- .endSaveImage(image)
+		
+		# odds.ratio.plot[["data"]] <- plot
+		odds.ratio.plot[["data"]] <- plot[["png"]]
+		odds.ratio.plot[["obj"]] <- plot[["obj"]]
+		odds.ratio.plot[["convertible"]] <- TRUE
 
 		if (status$error) {
 		
-			new.plot.state <- list(keep=plot, status=status)
+			new.plot.state <- list(keep=plot[["png"]], status=status)
 
 			message <- status$errorMessage
 			odds.ratio.plot[["error"]]  <- list(error = "badData", errorMessage=paste("Plotting is not possible:", message))
@@ -563,7 +575,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		}
 	}
 	
-	list(plot=odds.ratio.plot, state=new.plot.state, keep=plot, complete=complete)
+	list(plot=odds.ratio.plot, state=new.plot.state, keep=plot[["png"]], complete=complete)
 }
 
 

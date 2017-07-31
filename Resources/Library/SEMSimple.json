@@ -8,6 +8,22 @@
 			"type": "String"
 		},
 		{
+			"name": "modelName",
+			"type": "List",
+			"options": [
+   				"Model 1",
+				"Model 2",
+				"Model 3",
+				"Model 4",
+				"Model 5",
+				"Model 6",
+				"Model 7",
+				"Model 8",
+				"Model 9",
+				"Model 10"
+			]
+		},
+		{
 			"name": "errorCalculation",
 			"type": "List",
 			"options": [
@@ -93,8 +109,8 @@
 			"name": "factorStandardisation",
 			"type": "List",
 			"options": [
+   				"factorLoadings",
 				"residualVariance",
-				"factorLoadings",
 				"none"
 			]
 		},
@@ -147,6 +163,65 @@
 				"EQS"
 			],
 			"default": "none"
+        },
+        {
+            "name": "eq_loadings",
+            "type": "Boolean",
+            "default": false
+        },
+        {
+            "name": "eq_intercepts",
+            "type": "Boolean",
+            "default": false
+        },
+        {
+            "name": "eq_means",
+            "type": "Boolean",
+            "default": false
+        },
+        {
+            "name": "eq_thresholds",
+            "type": "Boolean",
+            "default": false
+        },
+        {
+            "name": "eq_regressions",
+            "type": "Boolean",
+            "default": false
+        },
+        {
+            "name": "eq_residuals",
+            "type": "Boolean",
+            "default": false
+        },
+        {
+            "name": "eq_residualcovariances",
+            "type": "Boolean",
+            "default": false
+        },
+        {
+            "name": "eq_variances",
+            "type": "Boolean",
+            "default": false
+        },
+        {
+            "name": "eq_lvcovariances",
+            "type": "Boolean",
+            "default": false
+        },
+		{
+			"name": "Data",
+			"type": "List",
+			"options": [
+				"raw",
+				"varcov"
+			],
+			"default": "raw"
+        },
+		{
+			"name": "SampleSize",
+			"type": "Integer",
+			"default": 0
 		}
 	]
 }

@@ -61,6 +61,10 @@
 #include "analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h"
 #include "analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
 
+#ifdef QT_DEBUG
+#include "analysisforms/basregressionlinearlinkform.h"
+#endif
+
 #include "analysisforms/SEM/semsimpleform.h"
 #include "analysisforms/R11tLearn/r11tlearnform.h"
 
@@ -80,7 +84,6 @@
 #include <QStringBuilder>
 #include <QWebHistory>
 #include <QDropEvent>
-#include <QFileInfo>
 #include <QShortcut>
 #include <QDesktopWidget>
 #include <QTabBar>
@@ -104,6 +107,8 @@
 #include "preferencesdialog.h"
 #include <boost/filesystem.hpp>
 #include "dirs.h"
+
+#include "options/optionvariablesgroups.h"
 
 using namespace std;
 
@@ -189,6 +194,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(fatalError()));
 
 	connect(_analyses, SIGNAL(analysisResultsChanged(Analysis*)), this, SLOT(analysisResultsChangedHandler(Analysis*)));
+	connect(_analyses, SIGNAL(analysisImageSaved(Analysis*)), this, SLOT(analysisImageSavedHandler(Analysis*)));
 	connect(_analyses, SIGNAL(analysisUserDataLoaded(Analysis*)), this, SLOT(analysisUserDataLoadedHandler(Analysis*)));
 	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), ui->backStage, SLOT(analysisAdded(Analysis*)));
 
@@ -220,6 +226,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(pushImageToClipboard(QByteArray, QString)), this, SLOT(pushImageToClipboardHandler(QByteArray, QString)));
 	connect(this, SIGNAL(saveTextToFile(QString, QString)), this, SLOT(saveTextToFileHandler(QString, QString)));
 	connect(this, SIGNAL(analysisChangedDownstream(int, QString)), this, SLOT(analysisChangedDownstreamHandler(int, QString)));
+	connect(this, SIGNAL(analysisSaveImage(int, QString)), this, SLOT(analysisSaveImageHandler(int, QString)));
 	connect(this, SIGNAL(showAnalysesMenu(QString)), this, SLOT(showAnalysesMenuHandler(QString)));
 	connect(this, SIGNAL(removeAnalysisRequest(int)), this, SLOT(removeAnalysisRequestHandler(int)));
 	connect(this, SIGNAL(updateUserData(int, QString)), this, SLOT(updateUserDataHandler(int, QString)));
@@ -245,7 +252,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	QMenuBar *_mMenuBar = new QMenuBar(parent=0);
 	QMenu *aboutMenu = _mMenuBar->addMenu("JASP");
-	aboutMenu->addAction("About",this,SLOT(showAbout()));
+	aboutMenu->addAction("About",ui->tabBar,SLOT(showAbout()));
 	_mMenuBar->addMenu(aboutMenu);
 
 	_buttonPanelLayout->addWidget(_okButton);
@@ -420,67 +427,60 @@ void MainWindow::refreshAnalysesUsingColumns(vector<string> &changedColumns
 	sort(missingColumns.begin(), missingColumns.end());
 	sort(oldColumnNames.begin(), oldColumnNames.end());
 
-	vector<Analysis *> analyses_to_refresh;
-	for (Analyses::iterator analysis_it = _analyses->begin(); analysis_it != _analyses->end(); ++analysis_it)
+	set<Analysis *> analysesToRefresh;
+	for (Analyses::iterator analysisIt = _analyses->begin(); analysisIt != _analyses->end(); ++analysisIt)
 	{
-		Analysis* analysis = *analysis_it;
-		bool analyse_to_refresh = false;
-		const vector<OptionVariables *> &analysis_variables = analysis->getVariables();
-		for (vector<OptionVariables *>::const_iterator var_it = analysis_variables.begin();
-			 var_it != analysis_variables.end();
-			 ++var_it)
+		Analysis* analysis = *analysisIt;
+		if (analysis == NULL) continue;
+
+		Options* options = analysis->options();
+		for (size_t i = 0; i < options->size(); ++i)
 		{
-			OptionVariables *option_variables = *var_it;
-			vector<string> variables = option_variables->variables();
-			vector<string> variables_sorted = variables;
-			sort(variables_sorted.begin(), variables_sorted.end());
-			vector<string> inter_changecol, inter_changename, inter_missingcol;
-			set_intersection(variables_sorted.begin(), variables_sorted.end(), changedColumns.begin(), changedColumns.end(), back_inserter(inter_changecol));
-			set_intersection(variables_sorted.begin(), variables_sorted.end(), oldColumnNames.begin(), oldColumnNames.end(), back_inserter(inter_changename));
-			set_intersection(variables_sorted.begin(), variables_sorted.end(), missingColumns.begin(), missingColumns.end(), back_inserter(inter_missingcol));
-
-			if (inter_changecol.size() > 0 && !analyse_to_refresh)
+			Option *option = options->get(i);
+			OptionVariableI *optionVariables = dynamic_cast<OptionVariableI *>(option);
+			if (optionVariables != NULL)
 			{
-				analyses_to_refresh.push_back(analysis);
-				analyse_to_refresh = true;
-			}
+				vector<string> variables = optionVariables->variables();
+				if (!variables.empty())
+				{
+					sort(variables.begin(), variables.end());
+					vector<string> interChangecol, interChangename, interMissingcol;
+					set_intersection(variables.begin(), variables.end(), changedColumns.begin(), changedColumns.end(), back_inserter(interChangecol));
+					set_intersection(variables.begin(), variables.end(), oldColumnNames.begin(), oldColumnNames.end(), back_inserter(interChangename));
+					set_intersection(variables.begin(), variables.end(), missingColumns.begin(), missingColumns.end(), back_inserter(interMissingcol));
 
-			if (inter_changename.size() > 0)
-			{
-				for (vector<string>::iterator varname_it = inter_changename.begin(); varname_it != inter_changename.end(); ++varname_it)
-				{
-					string varname = *varname_it;
-					string newname = changeNameColumns[varname];
-					replace(variables.begin(), variables.end(), varname, newname);
-				}
-				analysis->setRefreshBlocked(true);
-				option_variables->setValue(variables);
-				if (!analyse_to_refresh)
-				{
-					analyses_to_refresh.push_back(analysis);
-					analyse_to_refresh = true;
-				}
-			}
+					if (interChangecol.size() > 0)
+					{
+						analysesToRefresh.insert(analysis);
+					}
 
-			if (inter_missingcol.size() > 0)
-			{
-				for (vector<string>::iterator varname_it = inter_missingcol.begin(); varname_it != inter_missingcol.end(); ++varname_it)
-				{
-					string varname = *varname_it;
-					variables.erase(remove(variables.begin(), variables.end(), varname), variables.end());
-				}
-				analysis->setRefreshBlocked(true);
-				option_variables->setValue(variables);
-				if (!analyse_to_refresh)
-				{
-					analyses_to_refresh.push_back(analysis);
-					analyse_to_refresh = true;
+					if (interChangename.size() > 0)
+					{
+						analysis->setRefreshBlocked(true);
+						for (vector<string>::iterator varnameIt = interChangename.begin(); varnameIt != interChangename.end(); ++varnameIt)
+						{
+							string varname = *varnameIt;
+							string newname = changeNameColumns[varname];
+							optionVariables->replaceName(varname, newname);
+						}
+						analysesToRefresh.insert(analysis);
+					}
+
+					if (interMissingcol.size() > 0)
+					{
+						analysis->setRefreshBlocked(true);
+						for (vector<string>::iterator varnameIt= interMissingcol.begin(); varnameIt!= interMissingcol.end(); ++varnameIt)
+						{
+							optionVariables->removeName(*varnameIt);
+							analysesToRefresh.insert(analysis);
+						}
+					}
 				}
 			}
 		}
 	}
 
-	for (vector<Analysis *>::iterator it = analyses_to_refresh.begin(); it != analyses_to_refresh.end(); ++it)
+	for (set<Analysis *>::iterator it = analysesToRefresh.begin(); it != analysesToRefresh.end(); ++it)
 	{
 		Analysis *analysis = *it;
 		analysis->setRefreshBlocked(false);
@@ -585,6 +585,63 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 		_package->setModified(true);
 }
 
+void MainWindow::analysisSaveImageHandler(int id, QString options)
+{
+	Analysis *analysis = _analyses->get(id);
+	if (analysis == NULL)
+		return;
+
+	string utf8 = fq(options);
+	Json::Value root;
+	Json::Reader parser;
+	parser.parse(utf8, root);
+
+	QString caption = "Save JASP Image";
+	QString filter = "Portable Network Graphics (*.png);;Encapsulated PostScript (*.eps)";
+    QString selectedFilter;
+
+    QString finalPath = QFileDialog::getSaveFileName(this, caption, QString(), filter, &selectedFilter);
+	if (!finalPath.isEmpty())
+	{
+        if (selectedFilter == "Encapsulated PostScript (*.eps)")
+		{
+			root["type"] = "eps";
+            root["finalPath"] = finalPath.toStdString();
+            analysis->saveImage(analysis, root);
+		}
+		else
+		{
+            QString imagePath = QString::fromStdString(tempfiles_sessionDirName()) + "/" + root.get("name", Json::nullValue).asCString();
+			if (QFile::exists(finalPath))
+			{
+				QFile::remove(finalPath);
+			}
+			QFile::copy(imagePath, finalPath);
+        }
+	}
+}
+
+void MainWindow::analysisImageSavedHandler(Analysis *analysis)
+{
+	Json::Value results = analysis->getImgResults();
+	if (results.isNull())
+		return;
+	Json::Value inputOptions = results.get("inputOptions", Json::nullValue);
+
+	QString imagePath = QString::fromStdString(tempfiles_sessionDirName()) + "/" + results.get("name", Json::nullValue).asCString();
+	QString finalPath = QString::fromStdString(inputOptions.get("finalPath", Json::nullValue).asCString());
+	if (!finalPath.isEmpty())
+	{
+		std::cout << "analysisImageSavedHandler, imagePath: " << imagePath.toStdString() << ", finalPath: " << finalPath.toStdString() << std::endl;
+		std::cout.flush();
+		if (QFile::exists(finalPath))
+		{
+			QFile::remove(finalPath);
+		}
+		QFile::copy(imagePath, finalPath);
+	}
+}
+
 AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 {
 	return loadForm(analysis->name());
@@ -679,6 +736,10 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new SummaryStatsRegressionLinearBayesianForm(contentArea);
 	else if (name == "SummaryStatsCorrelationBayesianPairs")
 		form = new SummaryStatsCorrelationBayesianPairsForm(contentArea);
+#ifdef QT_DEBUG
+	else if (name == "BASRegressionLinearLink")
+		form = new BASRegressionLinearLinkForm(contentArea);
+#endif
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
@@ -870,7 +931,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 
 	}
 	else if (event->operation() == FileEvent::FileSave)
-	{		
+	{
 		if (_analyses->count() > 0)
 		{
 			_package->setWaitingForReady();
@@ -960,7 +1021,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			event->setComplete();
 			dataSetIOCompleted(event);
 		}
-		
+
 		ui->variablesPage->close();
 	}
 }
@@ -1662,6 +1723,7 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 	QIcon _citeIcon = QIcon(":/icons/cite.png");
 	QIcon _collapseIcon = QIcon(":/icons/collapse.png");
 	QIcon _expandIcon = QIcon(":/icons/expand.png");
+	QIcon _saveImageIcon = QIcon(":/icons/document-save-as.png");
 
 	_analysisMenu->clear();
 
@@ -1688,6 +1750,11 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 	{
 		_analysisMenu->addSeparator();
 		_analysisMenu->addAction(_citeIcon, "Copy Citations", this, SLOT(citeSelected()));
+	}
+
+	if (menuOptions["hasSaveImg"].asBool())
+	{
+		_analysisMenu->addAction(_saveImageIcon, "Save Image As", this, SLOT(saveImage()));
 	}
 
 	if (menuOptions["hasNotes"].asBool())
@@ -1842,6 +1909,11 @@ void MainWindow::citeSelected()
 {
 	tempfiles_purgeClipboard();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.citeMenuClicked();");
+}
+
+void MainWindow::saveImage()
+{
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.saveImageClicked();");
 }
 
 void MainWindow::noteSelected()

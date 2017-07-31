@@ -94,9 +94,15 @@
 			"type": "Boolean"
 		},
 		{
-			"options": [ "BF10", "BF01", "LogBF10" ],
-			"default": "BF10",
 			"name": "bayesFactorType",
+			"type": "List",
+			"options": [ "BF10", "BF01", "LogBF10" ],
+			"default": "BF10"
+		},
+		{
+			"name": "bayesFactorOrder",
+			"options": [ "nullModelTop", "bestModelTop" ],
+			"default": "nullModelTop",
 			"type": "List"
 		},
 		{

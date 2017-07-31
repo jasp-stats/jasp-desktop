@@ -90,6 +90,13 @@ $(document).ready(function () {
 		window.menuObject = null;
 	}
 
+    window.saveImageClicked = function () {
+        if (window.menuObject.saveImageClicked | window.menuObject.saveImageClicked())
+            window.menuObject.saveImageClicked();
+
+        window.menuObject = null;
+    }
+
 	window.collapseMenuClicked = function () {
 		if (window.menuObject.collapseMenuClicked)
 			window.menuObject.collapseMenuClicked();
@@ -379,11 +386,11 @@ $(document).ready(function () {
 
 	}
 
-	var analysisChangedDownstreamHandler = function (event, data) {
+    var analysisChangedDownstreamHandler = function (event, data) {
 
-		jasp.analysisChangedDownstream(data.id, JSON.stringify(data.model))
+        jasp.analysisChangedDownstream(data.id, JSON.stringify(data.model))
 
-	}
+    }
 
 	window.analysisChanged = function (analysis) {
 
@@ -395,16 +402,17 @@ $(document).ready(function () {
 
 				introHiding = true
 
-				$intro.hide("slide", { direction: "up", easing: "easeOutCubic" }, function () {
-
+				$intro.hide(10, function () {
+					
+					$("#style").attr("href","css/theme-jasp.css")
 					introHiding = false
 					introVisible = false
 
 					introHidingResultsWaiting.reverse()
-
+					
 					while (introHidingResultsWaiting.length > 0)
 						window.analysisChanged(introHidingResultsWaiting.pop())
-				})
+				});
 			}
 
 			return
@@ -463,6 +471,12 @@ $(document).ready(function () {
 				jasp.analysisChangedDownstream(id, JSON.stringify(options))
 
 			});
+
+            jaspWidget.on("saveimage", function (id, options) {
+
+                jasp.analysisSaveImage(id, JSON.stringify(options))
+
+            });
 
 			jaspWidget.on("toolbar:showMenu", function (obj, options) {
 
