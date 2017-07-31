@@ -68,6 +68,7 @@ run <- function(name, options.as.json.string, perform="run") {
 		
 		stackTrace <- as.character(results$stackTrace)
 		stackTrace <- gsub("\"", "'", stackTrace, fixed=TRUE)
+		stackTrace <- gsub("\\\\", "", stackTrace)
 		stackTrace <- paste(stackTrace, collapse="<br><br>")
 		
 		errorMessage <- .generateErrorMessage(type='exception', error=error, stackTrace=stackTrace)
@@ -127,6 +128,14 @@ run <- function(name, options.as.json.string, perform="run") {
 checkPackages <- function() {
 
 	rjson::toJSON(.checkPackages())
+}
+
+isTryError <- function(obj){
+    if (is.list(obj)){
+        return(any(sapply(obj, function(obj){isTRUE(class(obj)=="try-error")})))
+    } else {
+        return(any(sapply(list(obj), function(obj){isTRUE(class(obj)=="try-error")})))
+    }
 }
 
 .addCitationToTable <- function(table) {

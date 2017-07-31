@@ -121,6 +121,8 @@
 	
 	}
 	
+	.initPackages(installed.package.names)
+	
 	if (length(messages) == 0) {
 	
 		list(official=TRUE)
@@ -132,4 +134,12 @@
 }
 
 
+.initPackages <- function(installed) {
+	
+	# First call to BayesFactor initializes its functions and speeds up subsequent calls.
+	if ('BayesFactor' %in% installed) {
+		try(BayesFactor::BFInfo(print=FALSE), silent=TRUE)
+	}
+	
+}
 

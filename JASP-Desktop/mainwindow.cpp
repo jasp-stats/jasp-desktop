@@ -1933,7 +1933,6 @@ void MainWindow::startDataEditorHandler()
 				path.append(".csv");
 
 			event = new FileEvent(this, FileEvent::FileExportData);
-			connect(event, SIGNAL(completed(FileEvent*)), ui->backStage, SLOT(setSyncFile(FileEvent*)));
 		}
 		else
 		{
@@ -1964,6 +1963,8 @@ void MainWindow::startDataEditorEventCompleted(FileEvent* event)
 
 	if (event->successful())
 	{
+		_package->dataFilePath = event->path().toStdString();
+		_package->dataFileReadOnly = false;
 		_package->setModified(true);
 		startDataEditor(event->path());
 	}
