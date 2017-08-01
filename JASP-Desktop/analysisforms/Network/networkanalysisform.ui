@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>672</width>
-    <height>1767</height>
+    <width>716</width>
+    <height>1810</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -238,7 +238,7 @@
             </sizepolicy>
            </property>
            <property name="title">
-            <string>Plots</string>
+            <string>Results</string>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout">
             <item>

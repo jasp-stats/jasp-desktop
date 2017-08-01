@@ -72,6 +72,7 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->criterion->setEnabled(true);
         ui->tuningParameterBox->setEnabled(true);
         ui->sampleSize->setEnabled(true);
+        ui->missingValues->setEnabled(true);
 
         ui->_4cv->setEnabled(false);
         ui->isingEstimator->setEnabled(false);
@@ -81,6 +82,7 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
 //        ui->network->setEnabled(false);
     } else if (choice_str.compare("pcor") == 0) {
         ui->correlationMethod->setEnabled(true);
+        ui->missingValues->setEnabled(true);
 
         ui->criterion->setEnabled(false);
         ui->tuningParameterBox->setEnabled(false);
@@ -100,6 +102,7 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->sampleSize->setEnabled(false);
         ui->isingEstimator->setEnabled(false);
         ui->crossValidation->setEnabled(false);
+        ui->missingValues->setEnabled(false);
 //        ui->network->setEnabled(false);
     } else if (choice_str.compare("IsingSampler") == 0) {
         ui->isingEstimator->setEnabled(true);
@@ -112,6 +115,7 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->sampleSize->setEnabled(false);
         ui->crossValidation->setEnabled(false);
 //        ui->network->setEnabled(false);
+        ui->missingValues->setEnabled(false);
     } else if (choice_str.compare("huge") == 0) {
         ui->tuningParameterBox->setEnabled(true);
         ui->criterion->setEnabled(true);
@@ -123,6 +127,7 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->correlationMethod->setEnabled(false);
         ui->sampleSize->setEnabled(false);
         ui->crossValidation->setEnabled(false);
+        ui->missingValues->setEnabled(false);
 //        ui->network->setEnabled(false);
     } else if (choice_str.compare("adalasso") == 0) {
         ui->crossValidation->setEnabled(true);
@@ -133,6 +138,7 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->split->setEnabled(false);
         ui->rule->setEnabled(false);
         ui->correlationMethod->setEnabled(false);
+        ui->missingValues->setEnabled(false);
         ui->sampleSize->setEnabled(false);
 //        ui->network->setEnabled(false);
     } else if (choice_str.compare("mgm") == 0) {
@@ -145,6 +151,7 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->split->setEnabled(false);
         ui->correlationMethod->setEnabled(false);
         ui->sampleSize->setEnabled(false);
+        ui->missingValues->setEnabled(false);
 //        ui->network->setEnabled(false);
 
         if (ui->_4cv->isChecked()) {
