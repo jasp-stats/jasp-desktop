@@ -80,7 +80,7 @@ NetworkAnalysis <- function (
 			"correlationMethod", "tuningParameter", "criterion", "isingEstimator",
 			"nFolds", "split", "rule", "sampleSize",
 			# general arguments
-			"weightedNetwork", "signedNetwork", "missingValues"),
+			"relativeNetwork", "weightedNetwork", "signedNetwork", "missingValues"),
 		# depends only on plotting arguments
 		networkPLT = c("plotWidthNetwork", "plotHeightNetwork",
 					   "layout", "edgeColors", "repulsion", "edgeSize", "nodeSize", "colorNodesBy",
@@ -175,16 +175,18 @@ NetworkAnalysis <- function (
 	network <- oldNetwork
 	if (is.null(network[["graph"]])) {
 		
-		# fix input to match bootnet preferences.
+		# fix input to match bootnet preferences
 		options[["rule"]] <- toupper(options[["rule"]])
 		if (options[["correlationMethod"]] == "auto")
 			options[["correlationMethod"]] <- "cor_auto"
 		
-		options[["missingValues"]] <- switch(options[["missingValues"]],
-											 "excludePairwise" = "pairwise",
-											 "excludeListwise" = "listwise"
+		options[["isingEstimator"]] <- switch(options[["isingEstimator"]],
+			"pseudoLikelihood" = "pl", 
+			"univariateRegressions" = "uni", 
+			"bivariateRegressions" = "bi", 
+			"logLinear" = "ll"		  
 		)
-		
+
 		.dots <- list(
 			corMethod   = options[["correlationMethod"]],
 			tuning      = options[["tuningParameter"]],
@@ -198,17 +200,42 @@ NetworkAnalysis <- function (
 			criterion   = options[["criterion"]],
 			sampleSize  = options[["sampleSize"]]
 		)
-		
-		# get available arguments for specific network estimation function.
-		# FOR FUTURE UPDATING: options[["estimator"]] MUST match name of function in bootnet literally.
-		nms2keep <- names(formals(utils::getFromNamespace(paste0("bootnet_", options[["estimator"]]), ns = "bootnet")))
+		# browser()
+		# get available arguments for specific network estimation function. Remove unused ones.
+		# FOR FUTURE UPDATING: options[["estimator"]] MUST match name of function in bootnet literally (see ?bootnet::bootnet_EBICglasso).
+		funArgs <- formals(utils::getFromNamespace(paste0("bootnet_", options[["estimator"]]), ns = "bootnet"))
+		nms2keep <- names(funArgs)
 		.dots <- .dots[names(.dots) %in% nms2keep]
 		
-		# Fake png hack -- qgraph::qgraph has an unprotected call to `par()`. `par()` always opens a new device if there is none.
+		# for safety, when estimator is changed but missing was pairwise (the default).
+		if (!isTRUE("pairwise" %in% eval(funArgs[["missing"]]))) 
+			.dots[["missing"]] <- "listwise"
+		
+		# some manual adjustments for these estimators
+		if (options[["estimator"]] == "huge") {
+			
+			if (.dots[["criterion"]] == "cv") 
+				.dots[["criterion"]] == "ebic"
+				
+		} else if (options[["estimator"]] == "mgm") {
+			
+			.dots[["criterion"]] <- toupper(.dots[["criterion"]]) # this function wants capitalized arguments
+			
+			if (!(.dots[["criterion"]] %in% eval(funArgs$criterion)))
+				.dots[["criterion"]] <- "EBIC"
+				
+		} else if (options[["estimator"]] == "adalasso") {
+			
+			if (is.na(.dots[["nFolds"]]) || .dots[["nFolds"]] < 2) # estimator crashes otherwise
+				.dots[["nFolds"]] <- 2
+			
+		}
+
+		# Fake png hack -- qgraph::qgraph() has an unprotected call to `par()`. `par()` always opens a new device if there is none.
 		# Perhaps ask Sacha to fix this in qgraph. Line 1119: if (DoNotPlot) par(pty = pty)
 		tempFileName <- getTempFileName()
 		grDevices::png(filename = tempFileName)
-		
+
 		# capture.output to get relevant messages (i.e. from qgraph::cor_auto "variables detected as...")
 		msg <- capture.output(
 			network <- bootnet::estimateNetwork(
@@ -476,12 +503,18 @@ NetworkAnalysis <- function (
 # helper function to avoid qgraph from opening windows
 getTempFileName <- function() {
 	
-	# code from writeImage()
-	location <- .requestTempFileNameNative("png")
-	relativePathpng <- location$relativePath
-	fullPathpng <- paste(location$root, relativePathpng, sep="/")
-	base::Encoding(fullPathpng) <- "UTF-8"
-	
+	if (Sys.getenv("RSTUDIO") == "1") {
+		
+		fullPathpng <- tempfile(fileext = ".png")
+			
+	} else { # code from writeImage()
+		
+		location <- .requestTempFileNameNative("png")
+		relativePathpng <- location$relativePath
+		fullPathpng <- paste(location$root, relativePathpng, sep="/")
+		base::Encoding(fullPathpng) <- "UTF-8"
+		
+	}
 	return(fullPathpng)
 }
 

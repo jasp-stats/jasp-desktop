@@ -75,7 +75,8 @@
 			"name": "nFolds",
 			"type": "Integer",
 			"min": 1,
-			"max": 10000
+			"max": 10000,
+			"default": 1
 		},
 		{
 			"options": ["mean", "median"],
@@ -90,8 +91,8 @@
 			"type": "List"
 		},
 		{
-			"options": ["excludePairwise", "excludeListwise"],
-			"default": "excludePairwise",
+			"options": ["pairwise", "listwise"],
+			"default": "pairwise",
 			"name": "missingValues",
 			"type": "List"
 		},
@@ -116,7 +117,7 @@
 			"type": "Boolean"
 		},
 		{
-			"options": ["maximum", "minimum"],
+			"options": ["maximum", "minimim"],
 			"default": "maximum",
 			"name": "sampleSize",
 			"type": "List"
