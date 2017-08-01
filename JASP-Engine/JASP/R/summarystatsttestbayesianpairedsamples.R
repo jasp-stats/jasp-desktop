@@ -208,7 +208,7 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 			  
 				## Compute the statistics
 				
-				bayesFactorObject <- .generalSummaryTtestBF(options = options)
+				bayesFactorObject <- .generalSummaryTtestBF(options = options, paired=TRUE)
 				
 				## Format the statistics for output
 				
