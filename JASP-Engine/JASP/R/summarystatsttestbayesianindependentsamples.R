@@ -235,7 +235,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset = NULL, options,
 
 				## Compute the statistics
 				
-				bayesFactorObject <- .generalSummaryTtestBF(options = options)
+				bayesFactorObject <- .generalSummaryTtestBF(options = options, paired = FALSE)
 				
 				
 				## Format the statistics for output
