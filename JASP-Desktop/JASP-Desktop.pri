@@ -191,7 +191,8 @@ SOURCES += $$PWD/main.cpp \
 		$$PWD/preferencesdialog.cpp \
     $$PWD/analysisforms/regressionlogisticform.cpp \
     $$PWD/analysisforms/multinomialtestform.cpp \
-    $$PWD/ribbons/ribbonmeta_analysis.cpp
+    $$PWD/ribbons/ribbonmeta_analysis.cpp \
+    $$PWD/analysisforms/classicalmetaanalysisform.cpp
 
 HEADERS  += \
         $$PWD/aboutdialog.h \
@@ -398,6 +399,7 @@ HEADERS  += \
     $$PWD/analysisforms/regressionlogisticform.h \
     $$PWD/analysisforms/multinomialtestform.h \
     $$PWD/ribbons/ribbonmeta_analysis.h
+    $$PWD/analysisforms/classicalmetaanalysisform.h
 
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \
@@ -428,6 +430,7 @@ FORMS += \
         $$PWD/analysisforms/ttestbayesianpairedsamplesform.ui \
         $$PWD/analysisforms/ancovabayesianform.ui \
         $$PWD/analysisforms/anovarepeatedmeasuresbayesianform.ui \
+        $$PWD/analysisforms/classicalmetaanalysisform.ui \
         $$PWD/analysisforms/correlationbayesianform.ui \
         $$PWD/analysisforms/correlationbayesianpairsform.ui \
         $$PWD/analysisforms/contingencytablesbayesianform.ui \
@@ -440,6 +443,7 @@ FORMS += \
         $$PWD/analysisforms/binomialtestbayesianform.ui \
         $$PWD/analysisforms/bffromtform.ui \
         $$PWD/ribbons/ribbonsummarystatistics.ui \
+        $$PWD/ribbons/ribbonmeta_analysis.ui \
         $$PWD/ribbons/ribbonmeta_analysis.ui \
         $$PWD/variableswidget.ui \
         $$PWD/backstage/authwidget.ui\
