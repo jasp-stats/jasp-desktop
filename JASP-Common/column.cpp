@@ -32,7 +32,7 @@ using namespace std;
 int Column::count = 0;
 
 const string Column::_emptyValue = ".";
-const string Column::_emptyValues[] = {"NaN", "nan", "", " ", "."};
+const string Column::_emptyValues[] = {"NaN", "nan", "NA", "", " ", "."};
 const int Column::_emptyValuesCount = sizeof(_emptyValues) /sizeof(_emptyValues[0]);
 
 bool Column::isEmptyValue(const string& val)
@@ -861,4 +861,3 @@ double& Column::Doubles::iterator::dereference() const
 {
 	return _blockItr->second->Data[_currentPos].d;
 }
-
