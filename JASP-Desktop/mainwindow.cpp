@@ -51,6 +51,7 @@
 #include "analysisforms/correlationpartialform.h"
 #include "analysisforms/contingencytablesform.h"
 #include "analysisforms/contingencytablesbayesianform.h"
+// #include "analysisforms/classicalmetaanalysisform.h"
 
 #include "analysisforms/binomialtestform.h"
 #include "analysisforms/multinomialtestform.h"
@@ -207,7 +208,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonR11tLearn, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonSummaryStatistics, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
-	connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
+    connect(ui->ribbonMetaAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
+    connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
 	connect(ui->variablesPage, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
 	connect(ui->variablesPage, SIGNAL(resetTableView()), this, SLOT(resetTableView()));
@@ -762,9 +764,9 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	else if (name == "ReliabilityAnalysis")
 		form = new ReliabilityAnalysisForm(contentArea);
 	else if (name == "ExploratoryFactorAnalysis")
-    form = new ExploratoryFactorAnalysisForm(contentArea);
-  else if (name == "PrincipalComponentAnalysis")
-    form = new PrincipalComponentAnalysisForm(contentArea);
+        form = new ExploratoryFactorAnalysisForm(contentArea);
+    else if (name == "PrincipalComponentAnalysis")
+        form = new PrincipalComponentAnalysisForm(contentArea);
 	else if (name == "SummaryStatsTTestBayesianOneSample")
 		form = new SummaryStatsTTestBayesianOneSampleForm(contentArea);
 	else if (name == "SummaryStatsTTestBayesianIndependentSamples")
@@ -780,8 +782,10 @@ AnalysisForm* MainWindow::loadForm(const string name)
 #ifdef QT_DEBUG
 	else if (name == "BASRegressionLinearLink")
 		form = new BASRegressionLinearLinkForm(contentArea);
+//    else if (name == "ClassicalMetaAnalysis")
+//        form = new ClassicalMetaAnalysisForm(contentArea);
 #endif
-	else
+    else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
 	if (form != NULL)
@@ -916,6 +920,10 @@ void MainWindow::tabChanged(int index)
 		{
 			ui->ribbon->setCurrentIndex(3);
 		}
+        else if(currentActiveTab == "Meta-Analysis")
+        {
+            ui->ribbon->setCurrentIndex(4);
+        }
 	}
 }
 

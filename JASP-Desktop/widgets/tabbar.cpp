@@ -131,6 +131,7 @@ void TabBar::addHelpTab()
 	QAction *sem = new QAction("SEM",optionmenu);
 	QAction *rei = new QAction("Reinforcement Learning",optionmenu);
 	QAction *summaryStats = new QAction("Summary Stats",optionmenu);
+    QAction *metaAnalysis = new QAction("Meta-Analysis",optionmenu);
 
 	//SEM
 	QVariant sem_setting = _settings.value("plugins/sem", false);
@@ -150,6 +151,13 @@ void TabBar::addHelpTab()
 	summaryStats->setObjectName("Summary Stats");
 	summaryStats->setCheckable(true);
 	summaryStats->setChecked(sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
+
+    // Meta-Analysis
+    QVariant metaAnalysis_setting = _settings.value("toolboxes/metaAnalysis", false);
+    metaAnalysis->setObjectName("Meta-Analysis");
+    metaAnalysis->setCheckable(true);
+    metaAnalysis->setChecked(metaAnalysis_setting.canConvert(QVariant::Bool) && metaAnalysis_setting.toBool());
+    optionmenu->addAction(metaAnalysis);
 
 #ifdef QT_DEBUG
 	optionmenu->addAction(rei);
@@ -172,6 +180,7 @@ void TabBar::addHelpTab()
 	connect(sem, SIGNAL(triggered()), this, SLOT(toggleSEM()));
 	connect(rei, SIGNAL(triggered()), this, SLOT(toggleReinforcement()));
 	connect(summaryStats, SIGNAL(triggered()), this, SLOT(toggleSummaryStats()));
+    connect(metaAnalysis, SIGNAL(triggered()), this, SLOT(toggleMetaAnalysis()));
 }
 
 void TabBar::showAbout()
@@ -231,6 +240,21 @@ void TabBar::toggleSummaryStats()
 	else
     {
 		this->removeTab("Summary Stats");
+    }
+}
+
+void TabBar::toggleMetaAnalysis()
+{
+    QVariant metaAnalysis_setting = _settings.value("toolboxes/metaAnalysis", false);
+    static bool on = (metaAnalysis_setting.canConvert(QVariant::Bool) && metaAnalysis_setting.toBool());
+    on = ! on;
+    if (on)
+    {
+        this->addTab("Meta-Analysis");
+    }
+    else
+    {
+        this->removeTab("Meta-Analysis");
     }
 }
 
