@@ -80,14 +80,6 @@
 			"type": "List"
 		},
 		{
-			"format": "",
-			"name": "priorWidth",
-			"type": "Number",
-			"value": 0.7070,
-			"min": 0,
-			"max": 2
-		},
-		{
 			"name": "informativeStandardizedEffectSize",
             "options": ["cauchy", "normal","t"],
 			"default": "cauchy",
