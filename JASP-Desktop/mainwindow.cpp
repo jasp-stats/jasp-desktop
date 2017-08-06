@@ -51,7 +51,7 @@
 #include "analysisforms/correlationpartialform.h"
 #include "analysisforms/contingencytablesform.h"
 #include "analysisforms/contingencytablesbayesianform.h"
-// #include "analysisforms/classicalmetaanalysisform.h"
+#include "analysisforms/classicalmetaanalysisform.h"
 
 #include "analysisforms/binomialtestform.h"
 #include "analysisforms/multinomialtestform.h"
@@ -779,11 +779,11 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new SummaryStatsRegressionLinearBayesianForm(contentArea);
 	else if (name == "SummaryStatsCorrelationBayesianPairs")
 		form = new SummaryStatsCorrelationBayesianPairsForm(contentArea);
+    else if (name == "ClassicalMetaAnalysis")
+        form = new ClassicalMetaAnalysisForm(contentArea);
 #ifdef QT_DEBUG
 	else if (name == "BASRegressionLinearLink")
 		form = new BASRegressionLinearLinkForm(contentArea);
-//    else if (name == "ClassicalMetaAnalysis")
-//        form = new ClassicalMetaAnalysisForm(contentArea);
 #endif
     else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();

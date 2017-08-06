@@ -33,10 +33,21 @@ ClassicalMetaAnalysisForm::ClassicalMetaAnalysisForm(QWidget *parent) :
 	_dependentModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->dependent->setModel(_dependentModel);
 
-	ui->method->addItem("Enter");
-	ui->method->addItem("Backward");
-	ui->method->addItem("Forward");
-	ui->method->addItem("Stepwise");
+    /*
+    ui->method->addItem("DL");
+    ui->method->addItem("FE");
+    ui->method->addItem("HE");
+    ui->method->addItem("SJ");
+    ui->method->addItem("ML");
+    ui->method->addItem("REML");
+    ui->method->addItem("EB");
+    ui->method->addItem("HS");
+    ui->method->addItem("GENQ");
+    */
+    QString methods0 = "FE,DL,HE,SJ,ML,REML,EB,HS,GENQ";
+    //QStringList methods = (QStringList << "FE" << "DL" << "HE" << "SJ" << "ML" << "REML" << "EB" << "HS" << "GENQ");
+    QStringList methods = methods0.split(",");
+    ui->method->addItems(methods);
 
 	_covariatesModel = new TableModelVariablesAssigned();
 	_covariatesModel->setSource(&_availableVariablesModel);
@@ -110,10 +121,10 @@ void ClassicalMetaAnalysisForm::factorsChanged()
 		_options->blockSignals(false);
 }
 
-ClassicalMetaAnalysisForm::~ClassicalMetaAnalysisForm()
-{
-	delete ui;
-}
+//ClassicalMetaAnalysisForm::~ClassicalMetaAnalysisForm()
+//{
+//	delete ui;
+//}
 
 void ClassicalMetaAnalysisForm:: bindTo(Options *options, DataSet *dataSet)
 {
