@@ -1067,3 +1067,4 @@ saveImage <- function(plotName, format, height, width){
 	return(unlist(lapply(unname(lst), .imgToState), recursive = FALSE))
 
 }
+

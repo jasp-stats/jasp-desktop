@@ -1,5 +1,5 @@
 {
-	"name": "MetaAnalysis",
+	"name": "ClassicalMetaAnalysis",
 	"autorun": true,
 	"version": "1.00",
 	"options": [
@@ -10,7 +10,14 @@
 		{
 			"name": "method",
 			"type": "List",
-			"options": [ "enter", "backward", "forward", "stepwise" ]
+			"options": [ "FE", "DL", "HE", "SJ", "ML", "REML", "EB", "HS", "GENQ" ],
+			"default": "REML"
+		},
+		{
+			"name": "test",
+			"type": "List",
+			"options": [ "z", "knha" ],
+			"default": "z"
 		},
 		{
 			"name": "covariates",

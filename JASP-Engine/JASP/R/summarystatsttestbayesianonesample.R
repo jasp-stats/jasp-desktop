@@ -106,13 +106,13 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 	  list(name = "tStatistic", type = "number", format = "sf:4;dp:3", title = "t"),
 	  list(name = "n1Size", type = "number", title = "n"),
 	  list(name = "BF", type = "number", format = "sf:4;dp:3", title = bf.title),
-	  list(name = "pValue", type = "number", format = "sf:4;dp:3", title = "p")
 	)
 	if (rowsTTestBayesianOneSample$errorEstimate != "NaN") {
 	  fields[[length(fields)+1]] <- 
 	    list(name = "errorEstimate", type = "number", format = "sf:4;dp:3", title = "error %")
 	}
-	table[["schema"]] <- list(fields = fields[c(1:3, 5, 4)]) # fields in proper order
+	fields[[length(fields)+1]] <- list(name = "pValue", type = "number", format = "sf:4;dp:3", title = "p")
+	table[["schema"]] <- list(fields = fields) 
 	
 	# Populate the table
 	table[["data"]] <- list(rowsTTestBayesianOneSample)
