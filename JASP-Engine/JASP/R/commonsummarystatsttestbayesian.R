@@ -283,7 +283,7 @@
 						t = options$tStatistic, n1 = options$n1Size, n2 = n2Value, paired = paired,
 						BFH1H0 = BFH1H0, dontPlotData = dontPlotData, rscale = options$priorWidth,
 						addInformation = options$plotPriorAndPosteriorAdditionalInfo,
-						BF = ifelse(BFH1H0, exp(bayesFactorObject$bf), 1/exp(bayesFactorObject$bf)),
+						BF = ifelse(BFH1H0, bayesFactorObject$bf, 1/bayesFactorObject$bf),
 						oneSided = oneSided, options = options
 				)
 			}
