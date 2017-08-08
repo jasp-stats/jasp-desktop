@@ -91,15 +91,16 @@ AncovaBayesian	 <- function(dataset = NULL, options, perform = "run", callback =
 	meta[[2]] <- list(name = "model comparison", type = "table")
 	meta[[3]] <- list(name = "effects", type = "table")
 	meta[[4]] <- list(name = "estimates", type = "table")
+	meta[[5]] <- list(name = "posthoc", type = "collection", meta = "table")
 	
 	wantsTwoPlots <- options$plotSeparatePlots
 	if (wantsTwoPlots == "") {
-		meta[[5]] <- list(
+		meta[[6]] <- list(
 			name = "descriptivesObj", type = "object", 
 			meta = list(list(name = "descriptivesTable", type = "table"), list(name = "descriptivesPlot", type = "image"))
 			)
 	} else {
-		meta[[5]] <- list(
+		meta[[6]] <- list(
 			name = "descriptivesObj", type = "object", 
 			meta = list(list(name = "descriptivesTable", type = "table"), list(name = "descriptivesPlot", type = "collection", meta = "image"))
 			)	
@@ -141,6 +142,9 @@ AncovaBayesian	 <- function(dataset = NULL, options, perform = "run", callback =
 
 ## Posterior Estimates
 	results[["estimates"]] <- .theBayesianLinearModelEstimates(model, options, perform, status)
+	
+## Post Hoc Table
+	results[["posthoc"]] <- .anovaNullControlPostHocTable(dataset, options, perform, status, analysisType = "ANCOVA")
 
 ## Descriptives Table
 	descriptivesTable <- .anovaDescriptivesTable(dataset, options, perform, status, stateDescriptivesTable = NULL)[["result"]]
@@ -159,7 +163,7 @@ AncovaBayesian	 <- function(dataset = NULL, options, perform = "run", callback =
 			)
 			
 		if (plotOptionsChanged) 
-			results[[".meta"]][[5]][["meta"]][[2]] <- list(name = "descriptivesPlot", type = "image")
+			results[[".meta"]][[6]][["meta"]][[2]] <- list(name = "descriptivesPlot", type = "image")
 			
 	} else {	
 		results[["descriptivesObj"]] <- list(
@@ -168,7 +172,7 @@ AncovaBayesian	 <- function(dataset = NULL, options, perform = "run", callback =
 			)
 			
 		if (plotOptionsChanged)
-			results[[".meta"]][[5]][["meta"]][[2]] <- list(name = "descriptivesPlot", type = "collection", meta = "image")
+			results[[".meta"]][[6]][["meta"]][[2]] <- list(name = "descriptivesPlot", type = "collection", meta = "image")
 				
 	}
 
