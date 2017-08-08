@@ -1100,7 +1100,8 @@
 						priorOdds <- (1 - pH0) / pH0
 					}
 
-					postOdds <- priorOdds * exp(logBF)
+					postOdds <- log(priorOdds) + logBF
+					postOdds <- exp(postOdds)
 					if (options$bayesFactorType != "LogBF10") {
 						logBF <- logBF / log(10)
 					}
