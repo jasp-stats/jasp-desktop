@@ -236,10 +236,12 @@
 
 	# Check if available from previous state
 	if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
-			(is.list(diff) && (diff$bayesFactorType == FALSE && diff$tStatistic == FALSE &&
-			diff$n1Size == FALSE && (is.null(diff$n2Size) || diff$n2Size == FALSE) &&
-			diff$priorWidth == FALSE && diff$hypothesis == FALSE )) &&
-			plotType %in% state$plotTypes)) {
+				(is.list(diff) && (diff$tStatistic == FALSE && diff$n1Size == FALSE && (is.null(diff$n2Size) || diff$n2Size == FALSE) 
+				&& diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$bayesFactorType == FALSE &&
+				diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && 
+				diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE && 
+				diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE &&
+				diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && plotType %in% state$plotTypes) {
 
 		index <- which(state$plotTypes == plotType)
 		returnPlot <- state$plotsTtest[[index]]
@@ -282,7 +284,7 @@
 						BFH1H0 = BFH1H0, dontPlotData = dontPlotData, rscale = options$priorWidth,
 						addInformation = options$plotPriorAndPosteriorAdditionalInfo,
 						BF = ifelse(BFH1H0, exp(bayesFactorObject$bf), 1/exp(bayesFactorObject$bf)),
-						oneSided = oneSided
+						oneSided = oneSided, options = options
 				)
 			}
 			content <- .writeImage(width = width, height = height, plot = .plotFunc, obj = TRUE)
@@ -369,8 +371,8 @@
 	if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
 			(is.list(diff) && (diff$tStatistic == FALSE && BFtypeRequiresNewPlot == FALSE &&
 			diff$n1Size == FALSE && (is.null(diff$n2Size) || diff$n2Size == FALSE) &&
-			diff$priorWidth == FALSE && diff$hypothesis == FALSE))) &&
-			plotType %in% state$plotTypes) {
+			diff$priorWidth == FALSE && diff$effectSizeStandardized == FALSE && 
+			diff$hypothesis == FALSE))) && plotType %in% state$plotTypes) {
 
 		index <- which(state$plotTypes == plotType)
 		returnPlot <- state$plotsTtest[[index]]
@@ -413,39 +415,43 @@
 			n1Value <- options$n1Size
 			n2Value <- 0
 		}
+		
+		if (options$effectSizeStandardized == "informative") {
+			plot[["error"]] <- list(error="badData", errorMessage="Bayes factor robustness check plot currently not supported for informed prior.")
+		} else {
+			# plot Bayes factor robustness
+			p <- try(silent = FALSE, expr = {
+				# image <- .beginSaveImage(width, height)
+				# .plotBFrobustness.summarystats.ttest(
+				# 			t = options$tStatistic, n1 = n1Value, n2 = n2Value,
+				# 			BFH1H0 = BFH1H0, dontPlotData = dontPlotData,
+				# 			rscale = options$priorWidth, oneSided = oneSided,
+				# 			addInformation = options$plotBayesFactorRobustnessAdditionalInfo,
+				# 			BF10post = BF10post
+				# 	)
+				
+				.plotFunc <- function() {
+					.plotBFrobustness.summarystats.ttest(
+							t = options$tStatistic, n1 = n1Value, n2 = n2Value,
+							BFH1H0 = BFH1H0, dontPlotData = dontPlotData,
+							rscale = options$priorWidth, oneSided = oneSided,
+							addInformation = options$plotBayesFactorRobustnessAdditionalInfo,
+							BF10post = BF10post
+					)
+				}
+				content <- .writeImage(width = width, height = height, plot = .plotFunc, obj = TRUE)
+				plot[["convertible"]] <- TRUE
+				plot[["obj"]] <- content[["obj"]]
+				plot[["data"]] <- content[["png"]]
 
-		# plot Bayes factor robustness
-		p <- try(silent = FALSE, expr = {
-			# image <- .beginSaveImage(width, height)
-			# .plotBFrobustness.summarystats.ttest(
-			# 			t = options$tStatistic, n1 = n1Value, n2 = n2Value,
-			# 			BFH1H0 = BFH1H0, dontPlotData = dontPlotData,
-			# 			rscale = options$priorWidth, oneSided = oneSided,
-			# 			addInformation = options$plotBayesFactorRobustnessAdditionalInfo,
-			# 			BF10post = BF10post
-			# 	)
-			
-			.plotFunc <- function() {
-				.plotBFrobustness.summarystats.ttest(
-						t = options$tStatistic, n1 = n1Value, n2 = n2Value,
-						BFH1H0 = BFH1H0, dontPlotData = dontPlotData,
-						rscale = options$priorWidth, oneSided = oneSided,
-						addInformation = options$plotBayesFactorRobustnessAdditionalInfo,
-						BF10post = BF10post
-				)
+				# plot[["data"]] <- .endSaveImage(image)
+			})
+
+			if (class(p) == "try-error") {
+				errorMessage <- .extractErrorMessage(p)
+				plot[["error"]] <- list(error="badData",
+								errorMessage = paste("Plotting is not possible: ", errorMessage))
 			}
-			content <- .writeImage(width = width, height = height, plot = .plotFunc, obj = TRUE)
-			plot[["convertible"]] <- TRUE
-			plot[["obj"]] <- content[["obj"]]
-			plot[["data"]] <- content[["png"]]
-
-			# plot[["data"]] <- .endSaveImage(image)
-		})
-
-		if (class(p) == "try-error") {
-			errorMessage <- .extractErrorMessage(p)
-			plot[["error"]] <- list(error="badData",
-							errorMessage = paste("Plotting is not possible: ", errorMessage))
 		}
 
 		if (run) {
