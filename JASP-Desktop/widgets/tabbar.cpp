@@ -123,8 +123,8 @@ void TabBar::addHelpTab()
 	act_preferences->setObjectName("Preferences");
 	helpmenu->addAction(act_preferences);
 	helpmenu->addSeparator();
-
-	//Options
+	
+	//Modules
 	QMenu *optionmenu   = new QMenu("Modules",this);
 	QAction *sem = new QAction("SEM",optionmenu);
 	QAction *rei = new QAction("Reinforcement Learning",optionmenu);
@@ -161,12 +161,12 @@ void TabBar::addHelpTab()
 	rb->setMenu(helpmenu);
 	_layout->addWidget(rb);
 
-	//Slots helpmenu
+	//Slots preferences
 	connect(act_about, SIGNAL(triggered()), this, SLOT(showAbout()));
-	connect(act_preferences, SIGNAL(triggered()), this, SLOT(showPreferences()));
+	connect(act_preferences, SIGNAL(triggered()), this, SLOT(showPreferences()));	
 	connect(act_extrahelp, SIGNAL(triggered()), this, SLOT(toggleHelp()));
-
-	// Slots options
+	
+	// Slots modules
 	connect(sem, SIGNAL(triggered()), this, SLOT(toggleSEM()));
 	connect(rei, SIGNAL(triggered()), this, SLOT(toggleReinforcement()));
 	connect(summaryStats, SIGNAL(triggered()), this, SLOT(toggleSummaryStats()));

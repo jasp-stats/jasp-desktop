@@ -47,6 +47,10 @@ class Column
 
 public:
 	static bool isEmptyValue(const std::string& val);
+	static std::vector<std::string> getEmptyValues();
+	static std::vector<std::string> getDefaultEmptyValues();
+	static void setEmptyValues(const std::vector<std::string>& emptyvalues);
+	
 
 	typedef struct IntsStruct
 	{
@@ -183,6 +187,8 @@ private:
 	static const std::string _emptyValue;
 	static const std::string _emptyValues[];
 	static const int _emptyValuesCount;
+	static std::vector<std::string> _currentEmptyValues;
+	static std::vector<std::string> _defaultEmptyValues;
 
 	void _setRowCount(int rowCount);
 	std::string _labelFromIndex(int index) const;
