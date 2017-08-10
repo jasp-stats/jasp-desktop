@@ -55,6 +55,16 @@ BASRegressionLinearLinkForm::BASRegressionLinearLinkForm(QWidget *parent) :
 	ui->plotOptions->hide();
 	ui->advancedOptions->hide();
 
+	_anovaModel = new TableModelAnovaModel(this);
+	_anovaModel->setPiecesCanBeAssigned(false);
+	ui->modelTerms->setModel(_anovaModel);
+	ui->modelTerms->hide();
+
+	connect(_covariatesListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
+	connect(_covariatesListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
+	connect(_covariatesListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addCovariates(Terms)));
+	connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
+
 	// retain widget sizes when hidden
 	QSizePolicy retain = ui->iterationsMCMC->sizePolicy();
 	retain.setRetainSizeWhenHidden(true);
@@ -111,9 +121,15 @@ void BASRegressionLinearLinkForm::defaultOptionsModelPrior()
 }
 
 
-void BASRegressionLinearLinkForm:: bindTo(Options *options, DataSet *dataSet)
+void BASRegressionLinearLinkForm::bindTo(Options *options, DataSet *dataSet)
 {
 	AnalysisForm::bindTo(options, dataSet);
+
+	factorsChanging();
+
+	_anovaModel->setVariables(Terms(), Terms(), _covariatesListModel->assigned());
+
+	factorsChanged();
 }
 
 
@@ -223,4 +239,18 @@ void BASRegressionLinearLinkForm::on_priorRegressionCoefficients_clicked()
 		ui->label_gPriorParameter->hide();
 		ui->gPriorParameter->hide();
 	}
+}
+
+
+void BASRegressionLinearLinkForm::factorsChanging()
+{
+	if (_options != NULL)
+		_options->blockSignals(true);
+}
+
+
+void BASRegressionLinearLinkForm::factorsChanged()
+{
+	if (_options != NULL)
+		_options->blockSignals(false);
 }

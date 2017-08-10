@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>700</width>
-    <height>1351</height>
+    <height>1390</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,6 +23,50 @@
    <property name="verticalSpacing">
     <number>0</number>
    </property>
+   <item row="4" column="0">
+    <widget class="QWidget" name="widget_13" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_13">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>3</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="ExpanderButton" name="expanderModel_2">
+        <property name="text">
+         <string>Model</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="AnovaModelWidget" name="modelTerms" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>200</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
    <item row="2" column="0">
     <widget class="QWidget" name="widget_11" native="true">
      <layout class="QGridLayout" name="gridLayout_6">
@@ -416,7 +460,7 @@
      </layout>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="5" column="0">
     <widget class="QWidget" name="advancedBox" native="true">
      <layout class="QGridLayout" name="gridLayout_2">
       <property name="leftMargin">
@@ -453,7 +497,7 @@
             <item row="9" column="0">
              <widget class="QRadioButton" name="zs_null">
               <property name="text">
-               <string>ZS-null</string>
+               <string>&amp;ZS-null</string>
               </property>
              </widget>
             </item>
@@ -467,7 +511,7 @@
             <item row="7" column="0">
              <widget class="QRadioButton" name="hyper_g_n">
               <property name="text">
-               <string>hyper-g-n</string>
+               <string>hyper-g-&amp;n</string>
               </property>
              </widget>
             </item>
@@ -481,7 +525,7 @@
             <item row="3" column="0">
              <widget class="QRadioButton" name="eb_local">
               <property name="text">
-               <string>EB-local</string>
+               <string>EB-&amp;local</string>
               </property>
              </widget>
             </item>
@@ -704,7 +748,7 @@
                <item row="3" column="0">
                 <widget class="QRadioButton" name="uniformPrior">
                  <property name="text">
-                  <string>uniform</string>
+                  <string>unifor&amp;m</string>
                  </property>
                 </widget>
                </item>
@@ -852,6 +896,12 @@
    <class>BoundListView</class>
    <extends>QListView</extends>
    <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AnovaModelWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/anovamodelwidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>
