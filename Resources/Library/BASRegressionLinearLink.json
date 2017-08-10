@@ -116,6 +116,21 @@
 			"name": "gPriorParameter",
 			"type": "Number",
 			"value": 3
+		},
+		{
+			"name": "modelTerms",
+			"template": [
+				{
+					"name": "components",
+					"type": "Term"
+				},
+				{
+					"default": false,
+					"name": "isNuisance",
+					"type": "Boolean"
+				}
+			],
+			"type": "Table"
 		}
 	]
 }
