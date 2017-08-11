@@ -76,27 +76,51 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	new.state <- list()
 	new.state$results <- list()
 	new.state$options <- options
-	
-	complete <- TRUE
 
-
-	next.table.index <- 1
-	next.plot.index  <- 1
 	keep <- list()
-	plotGroups <- list()
-
-	for (i in seq_along(analyses)) {
-	
-		analysis <- analyses[[i]]
+	next.plot.index  <- 1
 		
+	populate <- FALSE
+	if (perform == "run" && length(options$columns) > 0 && length(options$rows) > 0) {
+		populate <- TRUE
+	}
+
+	for (i in seq_along(analyses)) {					
+		analysis <- analyses[[i]]
+	
 		if ("results" %in% names(old.state) && i <= length(old.state$results)) {
 			last.results <- old.state$results[[i]]
 		} else {
 			last.results <- NULL
 		}
 	
-		res <- .contTablesBayesian(dataset, options, populate=FALSE, analysis, last.results)
-				
+		res <- .contTablesBayesian(dataset, options, populate=populate, analysis, last.results)
+		
+		if (!is.null(res$tables[["counts.table"]])) {
+		
+			results[[paste("Counts Table", i)]] <- res$tables[["counts.table"]]
+			meta[[length(meta)+1]] <- list(name=paste("Counts Table", i), type="table")
+
+		}
+		if (!is.null(res$tables[["tests.table"]])) {
+		
+			results[[paste("Tests Table", i)]] <- res$tables[["tests.table"]]
+			meta[[length(meta)+1]] <- list(name=paste("Tests Table", i), type="table")
+
+		}
+		if (!is.null(res$tables[["odds.ratio.table"]])) {
+		
+			results[[paste("Odds Ratio Table", i)]] <- res$tables[["odds.ratio.table"]]
+			meta[[length(meta)+1]] <- list(name=paste("Odds Ratio Table", i), type="table")
+
+		}	
+		if (!is.null(res$tables[["cramersV.table"]])) {
+		
+			results[[paste("Kramers V Table", i)]] <- res$tables[["cramersV.table"]]
+			meta[[length(meta)+1]] <- list(name=paste("Kramers V Table", i), type="table")
+
+		}
+		
 		for (plot in res$plots) {
 
 			plots[[next.plot.index]] <- plot
@@ -113,89 +137,40 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		
 			new.state$results[i] <- list(NULL)
 		}
-		
-		complete <- complete && res$complete
-	}
+	}		
 	
-	if (perform == "run" && complete == FALSE) {
-		
-		next.table.index <- 1
-		next.plot.index  <- 1
+	if (length(plots) > 1) {
 
-		for (i in seq_along(analyses))
-		{					
-			analysis <- analyses[[i]]
-		
-			if ("results" %in% names(old.state) && i <= length(old.state$results)) {
-				last.results <- old.state$results[[i]]
+		plotGroups <- list()
+		for (i in seq_along(plots)) {
+			if (length(options$layers) > 0) {
+				plotGroups[[i]] <- list()
+				plotGroups[[i]][["LogORplot"]] <- plots[[i]]
+				plotGroups[[i]][["title"]] <- plots[[i]]$upperTitle
+				plotGroups[[i]][["name"]] <- plots[[i]]$upperTitle
 			} else {
-				last.results <- NULL
+				plotGroups[[i]] <- plots[[i]]
 			}
+		}
 		
-			res <- .contTablesBayesian(dataset, options, populate=TRUE, analysis, last.results)
-			
-			for (plot in res$plots) {
-
-				plots[[next.plot.index]] <- plot
-				next.plot.index <- next.plot.index + 1
-			}
-			
-			keep <- c(keep, res$keep)
-			
-			if ("state" %in% names(res)) {
-			
-				new.state$results[[i]] <- res$state
-				
-			} else {
-			
-				new.state$results[i] <- list(NULL)
-			}
-		}		
+		if (length(options$layers) > 0) {												 
+			results[["LogORplots"]] <- list(title="Log Odds Ratio Plots", collection=plotGroups)
+			meta[[length(meta)+1]] <- list(name="LogORplots", type="collection", meta=list(name="plotGroups", type="object",
+																	 meta=list(list(name="LogORplot", type="image"))))
+		} else {
+			results[["LogORplots"]] <- list(title="Log Odds Ratio Plots", collection=plotGroups)
+			meta[[length(meta)+1]] <- list(name="LogORplots", type="collection", meta="image")
+		}
+		
+	} else if (length(plots) == 1) {
+		
+		results[["LogORplot"]] <- plots[[1]]
+		results[["LogORplot"]][["title"]] <- "Log Odds Ratio Plot"
+		meta[[length(meta)+1]] <- list(name="LogORplot", type="image")
+		
 	}
-	
-	
-	if (!is.null(res$tables[["counts.table"]])) {
-	
-		results[["Counts Table"]] <- res$tables[["counts.table"]]
-		meta[[length(meta)+1]] <- list(name="Counts Table", type="table")
-
-	}
-	if (!is.null(res$tables[["tests.table"]])) {
-	
-		results[["Tests Table"]] <- res$tables[["tests.table"]]
-		meta[[length(meta)+1]] <- list(name="Tests Table", type="table")
-
-	}
-	if (!is.null(res$tables[["odds.ratio.table"]])) {
-	
-		results[["Odds Ratio Table"]] <- res$tables[["odds.ratio.table"]]
-		meta[[length(meta)+1]] <- list(name="Odds Ratio Table", type="table")
-
-	}	
-	if (!is.null(res$tables[["cramersV.table"]])) {
-	
-		results[["Kramers V Table"]] <- res$tables[["cramersV.table"]]
-		meta[[length(meta)+1]] <- list(name="Kramers V Table", type="table")
-
-	}
-	
-	meta[[length(meta)+1]] <- list(name="plots", type="collection", meta=list(name="plotGroups", type="object",
-																 meta=list(list(name="LogORplot", type="image"))))
 	
 	results[[".meta"]] <- meta
-		
-	for (i in seq_along(plots)) {
-		
-		title <- ifelse(plots[[i]]$title == "Log odds ratio", "", plots[[i]]$title)
-		plots[[i]]$title <- "Log odds ratio"
-		plotGroups[[i]] <- list()
-		plotGroups[[i]][["LogORplot"]] <- plots[[i]]
-		plotGroups[[i]][["title"]] <- title
-		plotGroups[[i]][["name"]] <- title
-		
-	}
-	
-	results[["plots"]] <- list(title=ifelse(length(plots) > 1, "Plots", "Plot"), collection=plotGroups)
 	
 	if (perform == "run") {
 	
@@ -203,8 +178,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		
 	} else {
 	
-		status <- ifelse(complete, "complete", "inited")
-		list(results=results, status=status, state=new.state, keep=keep)
+		list(results=results, status="inited", state=new.state, keep=keep)
 	}
 }
 
@@ -383,7 +357,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		if (i <= length(bf.results))
 			bf.result <- bf.results[[i]]
 
-		res <- .contTablesBayesianCreateOddsRatioPlot(analysis$rows, counts.matrix, options, populate, group, odds.ratio.result, bf.result, plot.state, state.options, status)
+		res <- .contTablesBayesianCreateOddsRatioPlot(analysis$rows, analysis$columns, counts.matrix, options, populate, group, odds.ratio.result, bf.result, plot.state, state.options, status)
 
 		complete <- complete && res$complete
 		
@@ -399,17 +373,17 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	list(plots=plots, keep=keep, state=new.state, complete=complete)
 }
 
-.contTablesBayesianCreateOddsRatioPlot <- function(var.name, counts.matrix, options, populate, group, odds.ratio.result, bf.result, plot.state, state.options, status) {
+.contTablesBayesianCreateOddsRatioPlot <- function(row.var, col.var, counts.matrix, options, populate, group, odds.ratio.result, bf.result, plot.state, state.options, status) {
 	
 	odds.ratio.plot  <- list()
 	image <- NULL
-	
-    group[group == ""] <- "Total"
     
+	odds.ratio.plot[["title"]] <- paste(row.var, "-", col.var)
 	
+	group[group == ""] <- "Total"
 	if (length(group) == 0) {
 	
-		odds.ratio.plot[["title"]] <- "Log odds ratio"
+		odds.ratio.plot[["upperTitle"]] <- ""
 		
 	} else if (length(group) > 0) {
 		
@@ -417,7 +391,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		layer.levels <- gsub(pattern = " = Total", layer.levels, replacement = "")
 
 		plot.title <- paste(layer.levels, collapse="; ")
-		odds.ratio.plot[["title"]] <- plot.title
+		odds.ratio.plot[["upperTitle"]] <- plot.title
 	}
 	
 	

@@ -112,7 +112,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 	  fields[[length(fields)+1]] <- 
 	    list(name = "errorEstimate", type = "number", format = "sf:4;dp:3", title = "error %")
 	}
-	table[["schema"]] <- list(fields = fields)
+	table[["schema"]] <- list(fields = fields[c(1:3, 5, 4)]) # fields in proper order
 	
 	# Populate the table
 	table[["data"]] <- list(rowsTTestBayesianOneSample)
@@ -125,14 +125,14 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 	table[["footnotes"]] <- as.list(footnotes)
 	
 	# Add citation reference list
-	table[["citation"]] <- list(
-	  "Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
-	  "Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian 
-	  t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
-
-	
-
-	### Prepare Plot Output
+	if (options$effectSizeStandardized == "default") {
+	  table[["citation"]] <- list(
+	    "Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
+	    "Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
+	} else if (options$effectSizeStandardized == "informative") {
+	  table[["citation"]] <- list(
+	    "Gronau, Q. F., Ly, A., & Wagenmakers, E.-J. (2017). Informed Bayesian T-Tests. Manuscript submitted for publication and uploaded to arXiv: https://arxiv.org/abs/1704.02479")
+	}# Prepare Plot Output
 	
 	# initialize variables
 	plots.sumstats.ttest <- list()
@@ -326,7 +326,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 #              - Add uniform informed prior
 
 .generalSummaryTtestBF <- 
-  function(tValue=options$tStatistic, size=options$n1Size, options) { 
+  function(tValue=options$tStatistic, size=options$n1Size, options, paired=TRUE) { 
   # Converts a t-statistic and sample size into the corresponding Bayes Factor.
   #
   # Args:
@@ -344,14 +344,14 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
   
   # help vars
   n1 <- size
-  n2 <- if (!is.null(options$n2Size)) options$n2Size else 0
-  oneSided = options$hypothesis != "notEqualToTestValue"
+  n2 <- if (!is.null(options$n2Size)) options$n2Size else 0 # single sample case
+  oneSided = !(options$hypothesis %in% c("notEqualToTestValue","groupsNotEqual"))
   
   ### Default case: a non-informative zero-centered Cauchy prior
   if(options$effectSizeStandardized == "default") {
     nullInterval <- 
-      switch(options$hypothesis, greaterThanTestValue = c(0, Inf), 
-             lessThanTestValue = c(-Inf,0), c(-Inf,Inf))    # default is notEqualToTestValue
+      switch(options$hypothesis, greaterThanTestValue = c(0, Inf), groupOneGreater = c(0, Inf),
+             lessThanTestValue = c(-Inf,0), groupTwoGreater = c(-Inf, 0), c(-Inf,Inf))    # default is notEqualToTestValue
     
     bfObject <- BayesFactor::ttest.tstat(t=tValue, n1=n1, n2=n2, rscale=options$priorWidth, 
                                          nullInterval = nullInterval)
@@ -368,11 +368,13 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
     # not matter whether we swap the two, we retain this order for easier extension
     # of the one-sample case.
 
-    side = switch(options$hypothesis, greaterThanTestValue = "right", lessThanTestValue= "left", FALSE)
+    side = switch(options$hypothesis, greaterThanTestValue = "right", groupOneGreater = "right",
+                  lessThanTestValue= "left", groupTwoGreater = "left", FALSE)
     
+    # Note: .bf10_ functions gives weired value if paired = FALSE in single sample case
     if (options[["informativeStandardizedEffectSize"]] == "cauchy") { 
       bfObject <- .bf10_t(t = tValue, ny = n1, nx = n2, oneSided = side,
-                          independentSamples = FALSE,
+                          independentSamples = !paired,
                           prior.location = options[["informativeCauchyLocation"]],
                           prior.scale = options[["informativeCauchyScale"]],
                           prior.df = 1)
@@ -380,7 +382,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
       error <- 100*bfObject$error
     } else if (options[["informativeStandardizedEffectSize"]] == "t") {
       bfObject <- .bf10_t(t = tValue, ny = n1, nx = n2, oneSided = side,
-                          independentSamples = FALSE,
+                          independentSamples = !paired,
                           prior.location = options[["informativeTLocation"]],
                           prior.scale = options[["informativeTScale"]],
                           prior.df = options[["informativeTDf"]])
@@ -388,7 +390,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
       error <- 100*bfObject$error
     } else if (options[["informativeStandardizedEffectSize"]] == "normal") {
       bf <- .bf10_normal(t = tValue, ny = n1, nx = n2, oneSided = side,
-                         independentSamples = FALSE,
+                         independentSamples = !paired,
                          prior.mean = options[["informativeNormalMean"]],
                          prior.variance = options[["informativeNormalStd"]]^2)
       error <- NULL

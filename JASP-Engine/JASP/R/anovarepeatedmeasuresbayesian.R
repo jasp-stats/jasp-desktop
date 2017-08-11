@@ -89,15 +89,16 @@ AnovaRepeatedMeasuresBayesian <- function(dataset = NULL, options, perform = "ru
 	meta[[2]] <- list(name = "model comparison", type = "table")
 	meta[[3]] <- list(name = "effects", type = "table")
 	meta[[4]] <- list(name = "estimates", type = "table")
+	meta[[5]] <- list(name = "posthoc", type = "collection", meta = "table")
 	
 	wantsTwoPlots <- options$plotSeparatePlots
 	if (wantsTwoPlots == "") {
-		meta[[5]] <- list(
+		meta[[6]] <- list(
 			name = "descriptivesObj", type = "object", 
 			meta = list(list(name = "descriptivesTable", type = "table"), list(name = "descriptivesPlot", type = "image"))
 			)
 	} else {
-		meta[[5]] <- list(
+		meta[[6]] <- list(
 			name = "descriptivesObj", type = "object", 
 			meta = list(list(name = "descriptivesTable", type = "table"), list(name = "descriptivesPlot", type = "collection", meta = "image"))
 			)	
@@ -109,6 +110,10 @@ AnovaRepeatedMeasuresBayesian <- function(dataset = NULL, options, perform = "ru
 ## DATA
 	dataANDoptions <- .readBayesianRepeatedMeasuresDataOptions(dataset, options, perform)
 	dataset <- dataANDoptions$dataset
+	if (perform == "init") {
+		originalOptions <- options
+	}
+	perform2 <- perform
 	options <- dataANDoptions$options
 
 	state <- .retrieveState()
@@ -126,8 +131,12 @@ AnovaRepeatedMeasuresBayesian <- function(dataset = NULL, options, perform = "ru
 				change$fixedSamplesNumber)) {
 			state <- NULL
 		} else {
-			perform <- "run"
+			perform <- "run" #FIXME other tables need the init phase.
 		}
+	}
+	
+	if (perform2 != perform) { # we changed from init to run and need the full dataset
+		dataset <- .readBayesianRepeatedMeasuresDataOptions(NULL, originalOptions, "run")$dataset
 	}
 	
 if (is.null(state)) {
@@ -159,7 +168,10 @@ if (is.null(state)) {
 
 ## Posterior Estimates
 	results[["estimates"]] <- .theBayesianLinearModelEstimates(model, options, perform, status)
-
+	
+## Post Hoc Table
+	results[["posthoc"]] <- .anovaNullControlPostHocTable(dataset, options, perform, status, analysisType = "RM-ANOVA")
+		
 ## Descriptives Table
 	descriptivesDataset <- .readBayesianRepeatedMeasuresShortData(options, perform)
 	descriptivesTable <- .rmAnovaDescriptivesTable(descriptivesDataset, options, perform, status, stateDescriptivesTable = NULL)[["result"]]
@@ -178,7 +190,7 @@ if (is.null(state)) {
 			)
 			
 		if (plotOptionsChanged) 
-			results[[".meta"]][[5]][["meta"]][[2]] <- list(name = "descriptivesPlot", type = "image")
+			results[[".meta"]][[6]][["meta"]][[2]] <- list(name = "descriptivesPlot", type = "image")
 			
 	} else {	
 		results[["descriptivesObj"]] <- list(
@@ -187,7 +199,7 @@ if (is.null(state)) {
 			)
 			
 		if (plotOptionsChanged)
-			results[[".meta"]][[5]][["meta"]][[2]] <- list(name = "descriptivesPlot", type = "collection", meta = "image")
+			results[[".meta"]][[6]][["meta"]][[2]] <- list(name = "descriptivesPlot", type = "collection", meta = "image")
 			
 	}
 

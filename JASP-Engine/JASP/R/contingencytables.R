@@ -35,6 +35,8 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 		} else {
 			dataset <- .readDataSetHeader(columns.as.factor=factors, columns.as.numeric=counts.var)
 		}
+	} else {
+		dataset <- .vdf(dataset, columns.as.factor=factors, columns.as.numeric=counts.var)
 	}
 
 	results <- list()
@@ -70,44 +72,45 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 
 	analyses <- .dataFrameToRowList(analyses)
 
-	for (analysis in analyses)
+	for (i in 1:length(analyses))
 	{
+		analysis <- analyses[[i]]
 		tables <- .crosstab(dataset, options, perform, analysis)
 
 		if (!is.null(tables[["counts.table"]])) {
 
-			results[["Counts Table"]] <- tables[["counts.table"]]
-			meta[[length(meta)+1]] <- list(name="Counts Table", type="table")
+			results[[paste("Counts Table", i)]] <- tables[["counts.table"]]
+			meta[[length(meta)+1]] <- list(name=paste("Counts Table", i), type="table")
 
 		}
 		if (!is.null(tables[["tests.table"]])) {
 
-			results[["Tests Table"]] <- tables[["tests.table"]]
-			meta[[length(meta)+1]] <- list(name="Tests Table", type="table")
+			results[[paste("Tests Table", i)]] <- tables[["tests.table"]]
+			meta[[length(meta)+1]] <- list(name=paste("Tests Table", i), type="table")
 
 		}
 		if (!is.null(tables[["odds.ratio.table"]])) {
 
-			results[["Odds Ratio Table"]] <- tables[["odds.ratio.table"]]
-			meta[[length(meta)+1]] <- list(name="Odds Ratio Table", type="table")
+			results[[paste("Odds Ratio Table", i)]] <- tables[["odds.ratio.table"]]
+			meta[[length(meta)+1]] <- list(name=paste("Odds Ratio Table", i), type="table")
 
 		}
 		if (!is.null(tables[["nominal.table"]])) {
 
-			results[["Nominal Table"]] <- tables[["nominal.table"]]
-			meta[[length(meta)+1]] <- list(name="Nominal Table", type="table")
+			results[[paste("Nominal Table", i)]] <- tables[["nominal.table"]]
+			meta[[length(meta)+1]] <- list(name=paste("Nominal Table", i), type="table")
 
 		}
 		if (!is.null(tables[["ordinal.table"]])) {
 
-			results[["Ordinal Table"]] <- tables[["ordinal.table"]]
-			meta[[length(meta)+1]] <- list(name="Ordinal Table", type="table")
+			results[[paste("Ordinal Table", i)]] <- tables[["ordinal.table"]]
+			meta[[length(meta)+1]] <- list(name=paste("Ordinal Table", i), type="table")
 
 		}
 		if (!is.null(tables[["kendalls.table"]])) {
 
-			results[["Kendalls Table"]] <- tables[["kendalls.table"]]
-			meta[[length(meta)+1]] <- list(name="Kendalls Table", type="table")
+			results[[paste("Kendalls Table", i)]] <- tables[["kendalls.table"]]
+			meta[[length(meta)+1]] <- list(name=paste("Kendalls Table", i), type="table")
 
 		}
 	}
