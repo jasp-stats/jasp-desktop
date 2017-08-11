@@ -42,6 +42,15 @@
 			"type": "Boolean"
 		},
 		{
+			"name": "postHocTestsVariables",
+			"type": "Variables"
+		},
+		{
+			"name": "postHocTestsNullControl",
+			"type": "Boolean",
+			"default": true
+		},
+		{
 			"name": "descriptives",
 			"type": "Boolean"
 		},
