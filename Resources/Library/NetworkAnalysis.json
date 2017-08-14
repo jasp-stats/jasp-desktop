@@ -123,6 +123,12 @@
 			"type": "List"
 		},
 		{
+			"name": "normalizeCentrality",
+			"options": ["normalized", "relative"],
+			"default": "normalized",
+			"type": "List"
+		},
+		{
 			"options": ["spring", "circle"],
 			"default": "spring",
 			"name": "layout",
