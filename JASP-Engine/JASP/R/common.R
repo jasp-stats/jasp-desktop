@@ -713,6 +713,28 @@ callback <- function(results=NULL) {
 	stop("could not clean value")
 }
 
+.clean <- function(value) {
+  # Clean function value so it can be reported in json/html
+  .cleanValue <- function(value) { # This doesn't work for vectors like this (prev definition also not)
+    if (is.null(value)) {
+       ""
+    } else if (is.character(value)) {
+      value
+    } else if (is.finite(value)[1]) { 
+      value
+    } else if (is.na(value)[1]) {
+      "NaN"
+    } else if (identical(value, numeric(0))) {
+      ""
+    } else if (value == Inf) {
+      "\u221E" # should this not better be &inf; ? Now browser character set dependent
+    } else if (value == -Inf) {
+      "-\u221E" # should this not better be -&inf; ? Now browser character set dependent
+    }
+  }
+  rapply(value, .cleanValue, how="replace") # works for arbitrary depth (previous def worked only for 1 layer deep) and fast
+}
+
 .newFootnotes <- function() {
 	
 	footnotes <- new.env()

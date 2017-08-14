@@ -52,11 +52,13 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   #  options = list(effectsize = "yi", stderr = "sei", intercept=TRUE,
   #                 covariates = NULL, factors = NULL, studylabels = NULL, 
   #                 forrestPlot = TRUE, funnelPlot = FALSE, method="FE")
+  #  readJaspMsg <- function(connection=pipe('pbpaste')) rjson::fromJSON(paste(readLines(connection),collapse = "\n"))
+  #  readOptions <- function(connection=pipe('pbpaste')) if (is.list) connection$optiones else readJaspMsg(connection)$options
   #  dd = function(options, ...){x=list(...); options[names(x)] = x; options}
   
   # eval(parse(text = gsub("\\s+\\#","",readLines(pipe('pbpaste')))))
-  dataset = metafor::escalc(measure="RR", ai=tpos, bi=tneg, ci=cpos, di=cneg, data=metafor::dat.bcg)
-  dataset = transform(dataset, sei = vi^0.5)
+  #dataset = metafor::escalc(measure="RR", ai=tpos, bi=tneg, ci=cpos, di=cneg, data=metafor::dat.bcg)
+  #dataset = transform(dataset, sei = vi^0.5)
   #********
   
   #### Compute results of the analysis	####
@@ -95,19 +97,18 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
       exclude.na.listwise = c()	# let rma deal with NA's
     )
   }
-  
-  
+
   ## Run the analysis.
   
-  rma.fit <- list('b' = numeric(),'se' = numeric(),'ci.lb' = numeric(),'ci.ub' = numeric(), 
-                  'zval' = numeric(),'pval' = numeric())
+  rma.fit <- structure(list('b' = numeric(),'se' = numeric(),'ci.lb' = numeric(),'ci.ub' = numeric(), 
+                  'zval' = numeric(),'pval' = numeric()), class = c("dummy", "rma"))
   
   can.run = all(c(effsizeName, stderrName) != "")
   if (run && can.run) {
-    
-    formula.rhs <- as.formula(as.modelTerms(options$modelTerms))
+    .vmodelTerms = rapply(options$modelTerms,.v, classes="character", how="replace") # map true names to base64
+    formula.rhs <- as.formula(as.modelTerms(.vmodelTerms))
     if (is.null(formula.rhs)) formula.rhs = ~1
-    rma.fit <- metafor::rma(yi = get(effsizeName), sei = get(stderrName), data = dataset,
+    rma.fit <- metafor::rma(yi = get(.v(effsizeName)), sei = get(.v(stderrName)), data = dataset,
                             method=options$method, mods = formula.rhs, test = options$test)
     
   }
@@ -168,7 +169,6 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   # Add footnotes to the analysis result
   footnotes <- .newFootnotes()
   footnote.text <- switch(options$test, z = "Wald test.", "Wald test.")
-#  footnote.text <- switch(options$method, z = "Wald test.", "Wald test.")
   .addFootnote(footnotes, symbol = "<em>Note.</em>", text = footnote.text)
   table[["footnotes"]] <- as.list(footnotes)
   
@@ -198,19 +198,14 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   ### Prepare Plot Output
   
-  # initialize variables
-
   # plot 1
-  #diagnosticPlot <- rmaDiagnosticPlot(rma.fit)
+  diagnosticPlot.image <- rmaDiagnosticPlot(rma.fit, 820, 820)
+  plot1 <- list(title = "Diagnostic plots", width = 820, height = 820, data = diagnosticPlot.image)
 
   # plot 2
-  ref <- .beginSaveImage(520,520)
-  hist(rnorm(1000),30, main="Test plotje")
-  .endSaveImage(ref)
+  forestPlot.image <- rmaForestPlot(rma.fit, 520, 520)
+  plot2 <- list(title="Forest plot", width = 500, height = 500, data = forestPlot.image)
 
-  
-  #plots <- list(title = "Diagnostic plots", diagnosticPlot = diagnosticPlot)
-  
   
   
   
@@ -221,7 +216,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   results[["title"]] <- analysisTitle(rma.fit)
   results[["table"]] <- table
   results[["qtests"]] <- qtesttable
-  results[["plots"]] <- list(title = "Plot", diagnosticPlot = ref)
+  results[["plots"]] <- list(title = "Plot", diagnosticPlot = plot1, forrestPlot = plot2)
   
 
   
@@ -303,9 +298,33 @@ qTestsTable <- function(object) {
   table
 }
 
-rmaDiagnosticPlot <- function(object) {
-  image.reference <- .beginSaveImage(500, 500)
+rmaDiagnosticPlot <- function(object, width = 500, height = 500) {
+  image.reference <- .beginSaveImage(width, height)
   plot(object)
   .endSaveImage(image.reference)
-  return(image.reference)
 }
+
+rmaForestPlot <- function(object, width = 500, height = 500) {
+  image.reference <- .beginSaveImage(520,520)
+  cmaForest(object)
+  .endSaveImage(image.reference)
+}
+cmaForest <- function(x, ...) UseMethod("cmaForest")
+cmaForest.dummy <- function(x, ...) {} # do nothing
+cmaForest.rma <- function(x, ...) metafor::forest(x, ...)
+
+print.dummy <- function(...) {
+}
+
+plot.dummy <- function(object, ...) {
+  plot(1:10, type = 'b', col=1:10)
+}
+
+forest.dummy <- function(object, ...) {
+  # do nothing
+}
+  
+
+#.beginSaveImage <- function(...) {}
+#.endSaveImage <- function(...){}
+
