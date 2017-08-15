@@ -68,27 +68,30 @@ NetworkAnalysis <- function (
 		)
 	)
 
-
+	defArgs <- c(
+		# data
+		"variables", "groupingVariable",
+		# what kind of network is estimated
+		"estimator",
+		# arguments for the network
+		"correlationMethod", "tuningParameter", "criterion", "isingEstimator",
+		"nFolds", "split", "rule", "sampleSize",
+		# general arguments
+		"weightedNetwork", "signedNetwork", "missingValues"
+	)
 	stateKey <- list(
 		# depends on everything but plotting arguments
-		network = c(
-			# data
-			"variables", "groupingVariable",
-			# what kind of network is estimated
-			"estimator",
-			# arguments for the network
-			"correlationMethod", "tuningParameter", "criterion", "isingEstimator",
-			"nFolds", "split", "rule", "sampleSize",
-			# general arguments
-			"weightedNetwork", "signedNetwork", "missingValues"),
-		centrality = c("normalizeCentrality"),
+		network = defArgs,
+		centrality = c(defArgs, "normalizeCentrality"),
 		# depends only on plotting arguments
-		networkPLT = c("plotWidthNetwork", "plotHeightNetwork",
+		networkPLT = c(defArgs, 
+					   "plotWidthNetwork", "plotHeightNetwork",
 					   "layout", "edgeColors", "repulsion", "edgeSize", "nodeSize", "colorNodesBy",
 					   "maxEdgeStrength", "minEdgeStrength", "cut", "showDetails", "nodeColors", "showLegend",
-					   "normalizeCentrality", "weightedNetwork", "signedNetwork", "missingValues"),
+					   "weightedNetwork", "signedNetwork", "missingValues"),
 		# depends only on plotting arguments
-		centralityPLT = c("plotWidthCentrality", "plotHeightCentrality",
+		centralityPLT = c(defArgs, 
+						  "plotWidthCentrality", "plotHeightCentrality",
 						  "normalizeCentrality", "weightedNetwork", "signedNetwork", "missingValues")
 
 	)
@@ -97,23 +100,24 @@ NetworkAnalysis <- function (
 	## Do Analysis ## ----
 
 	# Sort out whether things are set to defaults or not.
-	if (is.null(state[["network"]]) && length(variables) > 2) { # old state is unusable
+	if (length(variables) > 2) { 
 
-		state <- NULL # delete state
+		# check for errors, but only if there was a change in the data (which implies state[["network"]] is NULL)
+		if (is.null(state[["network"]])) {
+			checks <- c("infinity", "variance", "observations")
+			anyErrors <- .hasErrors(dataset = dataset, perform = perform,
+									type = checks,
+									observations.amount = " < 3",
+									exitAnalysisIfErrors = TRUE)
+		}
+		
+		network <- .doNetworkAnalysis(dataset = dataset, options = options, variables = variables, perform = perform,
+									  oldNetwork = state)
 
-		# check for errors
-		checks <- c("infinity", "variance", "observations")
-		anyErrors <- .hasErrors(dataset = dataset, perform = perform,
-								type = checks,
-								observations.amount = " < 3",
-								exitAnalysisIfErrors = TRUE)
-
-		network <- .doNetworkAnalysis(dataset = dataset, options = options, variables = variables, perform = perform)
-
-	} else { # state is useable, skip estimation
-
+	} else {
+		
 		network <- state[["network"]]
-
+		
 	}
 
 	## Create Output ##  ----
@@ -166,8 +170,8 @@ NetworkAnalysis <- function (
 # estimator ----
 .doNetworkAnalysis <- function(dataset, options, variables, perform, oldNetwork = NULL) {
 
-	# early return if init or too little variables
-	if (perform != "run" || length(variables) < 2)
+	# early return if init
+	if (perform != "run")
 		return(NULL)
 
 	network <- oldNetwork
@@ -253,7 +257,6 @@ NetworkAnalysis <- function (
 
 	if (is.null(network[["centrality"]])) {
 		
-		
 		network[["centrality"]] <- qgraph::centrality(network[["graph"]], weighted = options[["weightedNetwork"]], signed = options[["signedNetwork"]], all.shortest.paths = FALSE)
 
 		# note: centrality table is (partially) calculated here so that centralityTable and centralityPlot don't compute the same twice.
@@ -299,9 +302,9 @@ NetworkAnalysis <- function (
 			
 			for (i in 1:ncol(TBcent)) { # code modified from base::scale.default
 				
-				valid <- !is.na(TBcent)
+				valid <- !is.na(TBcent[, i])
 				
-				if (sum(valid) < length(valid)) {
+				if (sum(valid) != 0) {
 					
 					obs <- TBcent[valid, i]
 					obs <- obs - mean(obs)
@@ -329,7 +332,8 @@ NetworkAnalysis <- function (
 		} # else raw centrality measures -> do nothing
 
 		TBcent[["node"]] <- .unv(network[["labels"]])
-		TBcent <- TBcent[c(4, 1:3)] # put columns in intended order (of schema).
+		nc <- ncol(TBcent)
+		TBcent <- TBcent[c(nc, 1:(nc-1))] # put columns in intended order (of schema).
 		network[["centralityTable"]] <- TBcent
 	}
 
@@ -381,8 +385,8 @@ NetworkAnalysis <- function (
 
 	data <- .TBcolumns2TBrows(TBcolumns)
 	table[["data"]] <- data
-	print("msg")
-	print(msg)
+	# print("msg")
+	# print(msg)
 	if (!is.null(msg)) {
 
 		msg <- paste(msg, collapse = "\n")
@@ -479,10 +483,17 @@ NetworkAnalysis <- function (
 		} else {
 			groups <- NULL
 		}
+		
+		wMat <- network[["graph"]]
+		if (!options[["weightedNetwork"]]) {
+			wMat <- sign(wMat)
+		}
+		if (!options[["signedNetwork"]]) {
+			wMat <- abs(wMat)
+		}
 
-		# browser()
 		qgraph::qgraph(
-			input      = network[["graph"]],
+			input      = wMat,
 			layout     = options[["layout"]],
 			groups     = groups,
 			repulsion  = options[["repulsion"]],
