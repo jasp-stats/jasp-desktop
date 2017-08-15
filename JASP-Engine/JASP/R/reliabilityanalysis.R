@@ -125,7 +125,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		}
 		
 		# calculate chronbach alpha, gutmanns lambda6, and average inter item corrrelation
-		relyFit <- psych::alpha(dataList[["covariance"]], key = key)
+		relyFit <- psych::alpha(dataList[["correlation"]], key = key)
 		
 		# because we supply a correlation matrix and not raw data, we have to add these ourselves
 		relyFit[["total"]][["mean"]] <- mean(dataList[["itemMeans"]])
@@ -468,7 +468,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		
 	}
 	
-	means = colSums(dataset, na.rm = TRUE)
+	means = colMeans(dataset, na.rm = TRUE)
 	covmat <- stats::cov(dataset, use = "pairwise")
 	stdev <- sqrt(diag(covmat))
 	cormat <- psych::cor.smooth(stats::cov2cor(covmat), eig.tol = sqrt(.Machine[["double.eps"]]))
