@@ -123,9 +123,9 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 			key[match(.v(unlist(options[["reverseScaledItems"]])), colnames(dataset))] <- -1
 
 		}
-		
+
 		# calculate chronbach alpha, gutmanns lambda6, and average inter item corrrelation
-		relyFit <- psych::alpha(dataList[["correlation"]], key = key)
+		relyFit <- psych::alpha(dataList[["covariance"]], key = key)
 		
 		# because we supply a correlation matrix and not raw data, we have to add these ourselves
 		relyFit[["total"]][["mean"]] <- mean(dataList[["itemMeans"]])
@@ -478,7 +478,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		itemSds = stdev,
 		itemMeans = means,
 		# direct line from: corpcor::rebuild.cov
-		covariance = sweep(sweep(cormat, 1, stdev, "*"), 2, stdev)
+		covariance = sweep(sweep(cormat, 1, stdev, "*"), 2, stdev, "*")
 	))
 	
 }
