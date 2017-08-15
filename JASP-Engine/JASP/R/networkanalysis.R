@@ -80,7 +80,8 @@ NetworkAnalysis <- function (
 			"correlationMethod", "tuningParameter", "criterion", "isingEstimator",
 			"nFolds", "split", "rule", "sampleSize",
 			# general arguments
-			"normalizeCentrality", "weightedNetwork", "signedNetwork", "missingValues"),
+			"weightedNetwork", "signedNetwork", "missingValues"),
+		centrality = c("normalizeCentrality"),
 		# depends only on plotting arguments
 		networkPLT = c("plotWidthNetwork", "plotHeightNetwork",
 					   "layout", "edgeColors", "repulsion", "edgeSize", "nodeSize", "colorNodesBy",
@@ -91,6 +92,7 @@ NetworkAnalysis <- function (
 						  "normalizeCentrality", "weightedNetwork", "signedNetwork", "missingValues")
 
 	)
+	state[["network"]][["centrality"]] <- state[["centrality"]]
 
 	## Do Analysis ## ----
 
@@ -141,6 +143,7 @@ NetworkAnalysis <- function (
 	state <- list(
 		options = options,
 		network = network,
+		centrality = network[["centrality"]],
 		networkPLT = results[["networkPLT"]],
 		centralityPLT = results[["centralityPLT"]]
 	)
@@ -249,10 +252,48 @@ NetworkAnalysis <- function (
 	}
 
 	if (is.null(network[["centrality"]])) {
+		
+		
 		network[["centrality"]] <- qgraph::centrality(network[["graph"]], weighted = options[["weightedNetwork"]], signed = options[["signedNetwork"]], all.shortest.paths = FALSE)
 
 		# note: centrality table is (partially) calculated here so that centralityTable and centralityPlot don't compute the same twice.
-		TBcent <- as.data.frame(network[["centrality"]][c("Betweenness", "Closeness", "InDegree")])
+		TBcent <- as.data.frame(network[["centrality"]][c("Betweenness", "Closeness", "InDegree", "OutDegree")])
+		
+		# adapted from qgraph::centrality_auto
+		wmat <- qgraph::getWmat(network$graph)
+		directedGraph <- ifelse(base::isSymmetric.matrix(object = wmat, tol = 1e-12), FALSE, TRUE)
+		weightedGraph <- ifelse(all(qgraph::mat2vec(wmat) %in% c(0, 1)), FALSE, TRUE)
+		
+		if (directedGraph) {
+			
+			if (weightedGraph) {
+				
+				colnames(TBcent)[3:4] <- c("InStrength", "OutDegree")
+				
+			} else { # unweighted
+				
+				colnames(TBcent)[3:4] <- c("InDegree", "OutDegree")
+				
+			}
+			
+		} else { # undirected
+			
+			# divide betweenness by 2
+			TBcent[, 1] <- TBcent[, 1] / 2 
+			TBcent <- TBcent[c(1:2, 4)]
+
+			if (weightedGraph) {
+				
+				colnames(TBcent)[3] <- "Strength"
+				
+			} else { # unweighted
+				
+				colnames(TBcent)[3] <- "Degree"
+				
+			}
+			
+		}
+
 		centVars <- apply(TBcent, 2, var)
 		if (options[["normalizeCentrality"]] == "normalized") { # normalize only if variances are nonzero
 			
@@ -285,10 +326,8 @@ NetworkAnalysis <- function (
 
 			}
 			
-		} else { # todo make raw option.
-			
-		}
-		
+		} # else raw centrality measures -> do nothing
+
 		TBcent[["node"]] <- .unv(network[["labels"]])
 		TBcent <- TBcent[c(4, 1:3)] # put columns in intended order (of schema).
 		network[["centralityTable"]] <- TBcent
@@ -565,3 +604,58 @@ getTempFileName <- function() {
 # perhaps move to common?
 .TBcolumns2TBrows <- function(infoByCol) do.call(mapply, c(FUN = base::list, infoByCol, SIMPLIFY = FALSE, USE.NAMES = FALSE))
 
+.networkAnalysisCentrality <- function (x, weighted = TRUE, signed = TRUE) {
+	
+	# modified version of centrality_auto that does not compute shortest path lengths
+	
+	x <- qgraph::getWmat(x)
+	if (is.list(x)) {
+		return(lapply(x, .networkAnalysisCentrality, 
+					  weighted = weighted, 
+					  signed = signed))
+	}
+	if (!isTRUE(weighted)) {
+		x <- sign(x)
+	}
+	if (!isTRUE(signed)) {
+		x <- abs(x)
+	}
+	if (!is.matrix(x)) 
+		stop("the input network must be an adjacency or weights matrix")
+	diag(x) <- 0
+	x <- abs(x)
+	directed.gr <- ifelse(isSymmetric.matrix(object = x, tol = 1e-12), 
+						  FALSE, TRUE)
+	weighted.gr <- ifelse(all(qgraph::mat2vec(x) %in% c(0, 1)), FALSE, 
+						  TRUE)
+	
+	# pdf trick
+	net_qg <- qgraph(x, diag = FALSE, labels = colnames(x), DoNotPlot = TRUE, minimum = 0)
+	centr <- centrality(net_qg)
+	if (directed.gr & !weighted.gr) 
+		centr1 <- data.frame(cbind(Betweenness = centr$Betweenness, 
+								   Closeness = centr$Closeness, InDegree = centr$InDegree, 
+								   OutDegree = centr$OutDegree))
+	if (directed.gr & weighted.gr) 
+		centr1 <- data.frame(cbind(Betweenness = centr$Betweenness, 
+								   Closeness = centr$Closeness, InStrength = centr$InDegree, 
+								   OutStrength = centr$OutDegree))
+	if (!directed.gr & !weighted.gr) 
+		centr1 <- data.frame(cbind(Betweenness = centr$Betweenness/2, 
+								   Closeness = centr$Closeness, Degree = centr$OutDegree))
+	if (!directed.gr & weighted.gr) 
+		centr1 <- data.frame(cbind(Betweenness = centr$Betweenness/2, 
+								   Closeness = centr$Closeness, Strength = centr$OutDegree))
+	row.names(centr1) <- colnames(x)
+	log <- capture.output({
+		largcomp <- component.largest(x, connected = "strong")
+	})
+	if (sum(largcomp) < ncol(x)) {
+		x2 <- x[largcomp, largcomp]
+		clos <- centrality(qgraph(x2, diag = FALSE, labels = colnames(x)[largcomp], 
+								  DoNotPlot = TRUE, minimum = 0))$Closeness
+		centr1$Closeness[largcomp] <- clos
+		centr1$Closeness[!largcomp] <- NA
+	}
+	return(centr1)
+}
