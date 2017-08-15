@@ -124,7 +124,7 @@
 		},
 		{
 			"name": "normalizeCentrality",
-			"options": ["normalized", "relative"],
+			"options": ["normalized", "relative", "raw"],
 			"default": "normalized",
 			"type": "List"
 		},
