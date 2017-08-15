@@ -38,7 +38,8 @@
 		{
 			"name": "percentileValuesEqualGroupsNo",
 			"type": "Integer",
-			"default": 4
+			"default": 4,
+			"min": 1
 		},
 		{
 			"name": "percentileValuesPercentilesPercentiles",
