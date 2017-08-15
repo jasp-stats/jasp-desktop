@@ -107,16 +107,6 @@
 			"type": "Boolean"
 		},
 		{
-			"default": false,
-			"name": "relativeNetwork",
-			"type": "Boolean"
-		},
-		{
-			"default": true,
-			"name": "normalizedNetwork",
-			"type": "Boolean"
-		},
-		{
 			"options": ["maximum", "minimim"],
 			"default": "maximum",
 			"name": "sampleSize",
@@ -124,7 +114,7 @@
 		},
 		{
 			"name": "normalizeCentrality",
-			"options": ["normalized", "relative", "raw"],
+			"options": ["normalized", "raw", "relative"],
 			"default": "normalized",
 			"type": "List"
 		},
