@@ -1039,8 +1039,11 @@
     
     posthoc.table <- list()
 		rows <- list()
+		
     footnotes <- .newFootnotes()
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = footnote)
+		if (options$postHocTestsNullControl) {
+			.addFootnote(footnotes, symbol = "<em>Note.</em>", text = footnote)
+		}
     
     posthoc.table[["title"]] <- paste("Post Hoc Comparisons - ", posthoc.var, sep="")
     posthoc.table[["name"]] <- paste("postHoc_", posthoc.var, sep="")
