@@ -151,6 +151,17 @@ string Dirs::tempDir()
 	return p;
 }
 
+#ifdef BOOST_INTERPROCESS_SHARED_DIR_FUNC
+namespace boost {
+namespace interprocess {
+namespace ipcdetail {
+void get_shared_dir(std::string &shared_dir)
+{
+	shared_dir = Dirs::tempDir();
+}
+}}}
+#endif
+
 string Dirs::exeDir()
 {
 	static string p = "";

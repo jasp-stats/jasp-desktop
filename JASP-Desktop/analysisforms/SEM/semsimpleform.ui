@@ -116,12 +116,12 @@
                 <widget class="BoundComboBox" name="factorStandardisation">
                  <item>
                   <property name="text">
-                   <string>Residual Variance</string>
+                   <string>Factor Loadings</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>Factor Loadings</string>
+                   <string>Residual Variance</string>
                   </property>
                  </item>
                  <item>
