@@ -1739,11 +1739,26 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			}
 
 			if (options$plotSeparateLines != "") {
+				
+				if (nlevels(dataset[[.v(options[["plotSeparateLines"]])]]) > 15) {
+					
+					content <- NULL
+					descriptivesPlot[["error"]] <- list(errorType="badData",
+														errorMessage = sprintf("Cannot plot separate lines for factors with more than 15 levels (variable: %s; levels: %d).",
+																			   options$plotSeparateLines, 
+																			   nlevels(dataset[[.v(options[["plotSeparateLines"]])]]))
+					)
+					
+					
+					
+				} else {
 
-				content <- .writeImage(width = options$plotWidthDescriptivesPlotLegend,
-									   height = options$plotHeightDescriptivesPlotLegend,
-									   plot = p, obj = TRUE)
-
+					content <- .writeImage(width = options$plotWidthDescriptivesPlotLegend,
+										   height = options$plotHeightDescriptivesPlotLegend,
+										   plot = p, obj = TRUE)
+				}
+				
+				
 			} else {
 
 				content <- .writeImage(width = options$plotWidthDescriptivesPlotNoLegend,
