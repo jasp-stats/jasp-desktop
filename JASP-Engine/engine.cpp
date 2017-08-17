@@ -50,7 +50,7 @@ Engine::Engine()
 	_ppi = 96;
 
 	_status = empty;
-
+	
 	rbridge_init();
 	tempfiles_attach(ProcessInfo::parentPID());
 
@@ -133,6 +133,9 @@ void Engine::runAnalysis()
 		// not be sent
 
 		_status = toInit;
+		if (_analysisResultsString == "null")
+			tempfiles_deleteList(tempFilesFromLastTime);
+			
 	}
 	else
 	{

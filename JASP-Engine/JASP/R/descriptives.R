@@ -408,7 +408,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
   wantsSplit <- options$splitby != ""
   variables <- unlist(options$variables)
   equalGroupsNo <- options$percentileValuesEqualGroupsNo
-  percentilesPercentiles  <- options$percentileValuesPercentilesPercentiles
+  percentilesPercentiles  <- unique(options$percentileValuesPercentilesPercentiles)
 
   stats.results <- list()
 
