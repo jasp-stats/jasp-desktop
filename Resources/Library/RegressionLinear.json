@@ -99,7 +99,8 @@
 		{
 			"default": 3,
 			"name": "residualsCasewiseDiagnosticsOutliersOutside",
-			"type": "Integer"
+			"type": "Integer",
+			"min": 0
 		},
 		{
 			"name": "steppingMethodCriteriaType",
@@ -111,25 +112,31 @@
 			"format": "",
 			"name": "steppingMethodCriteriaPEntry",
 			"type": "Number",
-			"value": 0.050
+			"value": 0.050,
+			"max": 1,
+			"min": 0
 		},
 		{
 			"format": "",
 			"name": "steppingMethodCriteriaPRemoval",
 			"type": "Number",
-			"value": 0.10
+			"value": 0.10,
+			"max": 1,
+			"min": 0
 		},
 		{
 			"format": "",
 			"name": "steppingMethodCriteriaFEntry",
 			"type": "Number",
-			"value": 3.840
+			"value": 3.840,
+			"min": 0
 		},
 		{
 			"format": "",
 			"name": "steppingMethodCriteriaFRemoval",
 			"type": "Number",
-			"value": 2.710
+			"value": 2.710,
+			"min": 0
 		},
 		{
 			"default": true,
