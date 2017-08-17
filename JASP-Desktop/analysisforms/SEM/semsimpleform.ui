@@ -116,12 +116,12 @@
                 <widget class="BoundComboBox" name="factorStandardisation">
                  <item>
                   <property name="text">
-                   <string>Residual Variance</string>
+                   <string>Factor Loadings</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>Factor Loadings</string>
+                   <string>Residual Variance</string>
                   </property>
                  </item>
                  <item>
@@ -1054,12 +1054,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>GroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/groupbox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
@@ -1084,6 +1078,12 @@
    <class>BoundComboBox</class>
    <extends>QComboBox</extends>
    <header>widgets/boundcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>BoundTextEdit</class>
@@ -1207,6 +1207,22 @@
     <hint type="destinationlabel">
      <x>478</x>
      <y>354</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_3bootstrap</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>containerBootstrapSamples</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>174</x>
+     <y>553</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>175</x>
+     <y>580</y>
     </hint>
    </hints>
   </connection>

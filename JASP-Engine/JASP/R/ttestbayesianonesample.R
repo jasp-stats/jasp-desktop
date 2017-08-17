@@ -4098,7 +4098,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
   
   # compute quantiles via Newton-Raphson method
   
-  x.cur <- Inf
   # get reasonable starting value
   delta <- seq(-2, 2, length.out = 400)
   dens <- .posterior_t(delta, t = t, ny = ny, nx = nx,
@@ -4107,9 +4106,10 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
                        prior.scale = prior.scale,
                        prior.df = prior.df)
   x.new <- delta[which.max(dens)]
+  x.cur <- x.new + 2*tol
   i <- 1
   
-  while (abs(x.cur - x.new) > tol && i < max.iter) {
+  while (is.finite(abs(x.cur - x.new)) &&  abs(x.cur - x.new) > tol && i < max.iter) {
     
     x.cur <- x.new
     x.new <- x.cur - (.cdf_t(x.cur, t = t, ny = ny, nx = nx,
@@ -4124,6 +4124,9 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
     i <- i + 1
     
   }
+  
+  if (is.infinite(abs(x.cur - x.new)))
+    stop("Infinite value encountered.")
   
   return(x.new)
   
@@ -4228,7 +4231,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
   
   # compute quantiles via Newton-Raphson method
   
-  x.cur <- Inf
   # get reasonable starting value
   delta <- seq(-2, 2, length.out = 400)
   dens <- .posterior_normal(delta, t = t, ny = ny, nx = nx,
@@ -4236,9 +4238,10 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
                             prior.mean = prior.mean,
                             prior.variance = prior.variance)
   x.new <- delta[which.max(dens)]
+  x.cur <- x.new + 2*tol
   i <- 1
   
-  while (abs(x.cur - x.new) > tol && i < max.iter) {
+  while (is.finite(abs(x.cur - x.new)) && abs(x.cur - x.new) > tol && i < max.iter) {
     
     x.cur <- x.new
     x.new <- x.cur - (.cdf_normal(x.cur, t = t, ny = ny, nx = nx,
@@ -4251,6 +4254,9 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
     i <- i + 1
     
   }
+  
+  if (is.infinite(abs(x.cur - x.new)))
+    stop("Infinite value encountered.")
   
   return(x.new)
   

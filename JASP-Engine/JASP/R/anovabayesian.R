@@ -85,15 +85,16 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
 	meta[[2]] <- list(name = "model comparison", type = "table")
 	meta[[3]] <- list(name = "effects", type = "table")
 	meta[[4]] <- list(name = "estimates", type = "table")
+	meta[[5]] <- list(name = "posthoc", type = "collection", meta = "table")
 	
 	wantsTwoPlots <- options$plotSeparatePlots
 	if (wantsTwoPlots == "") {
-		meta[[5]] <- list(
+		meta[[6]] <- list(
 			name = "descriptivesObj", type = "object", 
 			meta = list(list(name = "descriptivesTable", type = "table"), list(name = "descriptivesPlot", type = "image"))
 			)
 	} else {
-		meta[[5]] <- list(
+		meta[[6]] <- list(
 			name = "descriptivesObj", type = "object", 
 			meta = list(list(name = "descriptivesTable", type = "table"), list(name = "descriptivesPlot", type = "collection", meta = "image"))
 			)	
@@ -134,6 +135,9 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
 
 ## Posterior Estimates
 	results[["estimates"]] <- .theBayesianLinearModelEstimates(model, options, perform, status)
+
+## Post Hoc Table
+	results[["posthoc"]] <- .anovaNullControlPostHocTable(dataset, options, perform, status, analysisType = "ANOVA")
 
 ## Descriptives Table
 	descriptivesTable <- .anovaDescriptivesTable(dataset, options, perform, status, stateDescriptivesTable = NULL)[["result"]]
