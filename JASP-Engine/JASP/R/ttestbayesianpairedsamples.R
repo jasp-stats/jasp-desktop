@@ -494,8 +494,23 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					n[i] <- state$n[stateIndex]
 					
 				} else {
+				    
+				    errors <- .hasErrors(dataset, perform, message = 'short', type = c('infinity','observations','variance'),
+				                         all.target = c(pair[[1]],pair[[2]]), observations.amount = "< 2")
+				    
+				    if (!identical(errors, FALSE)) {
+				        
+				        errorMessage <- errors$message
+				    
+				    } else {
+				        
+				        errorMessage <- NULL
+				        
+				    }
+				    
+				    if(is.null(errorMessage)){
 					
-					result <- try (silent = TRUE, expr = {
+					result <- try(silent = TRUE, expr = {
 						
 						subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])) )
 						subDataSet <- na.omit(subDataSet)
@@ -507,24 +522,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						bf.raw <- r[["bf"]]
 						tValue[i] <- r[["tValue"]]
 						n[i] <- r[["n1"]]
-						
-						if (is.na(bf.raw)) {
-							
-							unplotable <- TRUE
-							unplotableMessage <- "Bayes factor could not be calculated"
-							
-						} else if (is.infinite(bf.raw)) {
-							
-							unplotable <- TRUE
-							unplotableMessage <- "Bayes factor is infinite"
-							
-						} else if (is.infinite(1 / bf.raw)) {
-							
-							unplotable <- TRUE
-							unplotableMessage <- "The Bayes factor is too small"
-						}
-						
-						
+				
 						if (bf.type == "BF01")
 							bf.raw <- 1 / bf.raw
 						
@@ -543,49 +541,36 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 					})
 					
-					errors <- .hasErrors(dataset, perform, message = 'short', type = c('infinity','observations','variance'),
-					                     all.target = c(pair[[1]],pair[[2]]), observations.amount = "< 2")
-					
-					if (!identical(errors, FALSE)) {
-					    errorMessage <- errors$message
-					
-					
-					# if (class(result) == "try-error") {
-					# 	
-					# 	errorMessage <- .extractErrorMessage(result)
-					# 	
-					# 	if (errorMessage == "x or y must not contain missing or infinite values.") {
-					# 		
-					# 		errorMessage <- paste("Bayes factor is undefined - one or both of the variables contain infinity")
-					# 		
-					# 	} else if (errorMessage == "data are essentially constant") {
-					# 		
-					# 		errorMessage <- paste("Bayes factor is undefined - the sample contains all the same value (zero variance)")
-					# 		
-					# 	} else if (errorMessage == "Insufficient sample size for t analysis." || errorMessage == "not enough observations") {
-					# 		
-					# 		errorMessage <- "Bayes factor is undefined - one or both of the variables has too few observations (possibly only after missing values are excluded)"	
-					# 	}
-						
-						pair.statuses[[i]] <- list(ready=FALSE, error=TRUE, errorMessage=errorMessage, unplotable=TRUE, unplotableMessage=errorMessage)
-						
-						index <- .addFootnote(footnotes, errorMessage)
-						
-						errorFootnotes[i] <- errorMessage
-						
-						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
-						
-					} else {
-						
-						pair.statuses[[i]] <- list(ready=TRUE, error=FALSE, unplotable=unplotable, unplotableMessage=unplotableMessage)
-						
-						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=BF, error=error)
+					if(isTryError(result)){
+					    errorMessage <- .extractErrorMessage(result)
+					    
 					}
-				}
+					
+				    }
+					
+					if(is.null(errorMessage)){
+					    
+					    pair.statuses[[i]] <- list(ready=TRUE, error=FALSE, unplotable=unplotable, unplotableMessage=unplotableMessage)
+					    
+					    result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=BF, error=error)
+					    
+					} else {
+					    
+					    pair.statuses[[i]] <- list(ready=FALSE, error=TRUE, errorMessage=errorMessage, unplotable=TRUE, unplotableMessage=errorMessage)
+					    
+					    index <- .addFootnote(footnotes, errorMessage)
+					    
+					    errorFootnotes[i] <- errorMessage
+					    
+					    result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
+					    
+					}
 			}
 		}
 		
 		ttest.rows[[length(ttest.rows)+1]] <- result
+		
+		}
 		
 	}
 	
@@ -659,7 +644,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						list(v=variable, N=n, mean=m, sd=std, se=se, lowerCI=ciLower, upperCI=ciUpper)
 				})
 				
-				if (class(result) == "try-error") {
+				if (isTryError(result)) {
 					
 					result <- list(v=variable, N="", mean="", sd="", se="", lowerCI="", upperCI="")
 				}
@@ -774,6 +759,11 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 							
 						})
 					
+					if(isTryError(p)){
+					    errorMessage <- .extractErrorMessage(p)
+					    plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+					}
+					
 				}
 					
 					plot[["status"]] <- "complete"
@@ -853,6 +843,11 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 							
 						})
 					    
+					    if(isTryError(p)){
+					        errorMessage <- .extractErrorMessage(p)
+					        plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+					    }
+					    
 					}
 					
 					plot[["status"]] <- "complete"
@@ -915,6 +910,11 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 							plot[["data"]] <- content[["png"]]
 							
 						})
+						
+						if(isTryError(p)){
+						    errorMessage <- .extractErrorMessage(p)
+						    plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+						}
 						
 						}
 					

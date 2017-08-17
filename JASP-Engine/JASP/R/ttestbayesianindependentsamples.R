@@ -386,7 +386,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			for (variable in options[["variables"]]) {
 				
 			    errors <- .hasErrors(dataset, perform, message = 'short', type = c('infinity','observations','variance'),
-			                         all.target = variable, observations.amount = "< 2")
+			                         all.target = variable, observations.amount = "< 2", all.grouping = options$groupingVariable)
 			    
 			    if (!identical(errors, FALSE)) {
 			        errorMessage <- errors$message
@@ -520,6 +520,11 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						        plot[["data"]] <- content[["png"]]
 						        
 						    })
+						    
+						    if (isTryError(p)) {
+						        errorMessage <- .extractErrorMessage(p)
+						        plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+						    }
 							
 						}
 						
@@ -1001,7 +1006,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				    
 				    errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
 				                         all.target = variable,
-				                         observations.amount = '< 2')
+				                         observations.amount = '< 2',
+				                         all.grouping = options$groupingVariable)
 				    
 				    if (!identical(errors, FALSE)) {
 				        errorMessage <- errors$message

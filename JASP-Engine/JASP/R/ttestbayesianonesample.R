@@ -605,85 +605,69 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
         plottingError[i] <- state$plottingError[index]
         
       } else {
-        
-        result <- try (silent = TRUE, expr = {
           
-          variableData <- dataset[[ .v(variable) ]]
-          variableData <- variableData[ ! is.na(variableData) ]
+          errors <- .hasErrors(dataset, perform, message = "short", type = c('observations', 'variance', 'infinity'),
+                               all.target = variable,
+                               observations.amount = '< 2')
           
-          variableData <- variableData - options$testValue
-          r <- .generalTtestBF(x = variableData, oneSided = oneSided, options = options)
-          bf.raw <- r[["bf"]]
-          tValue[i] <- r[["tValue"]]
-          n[i] <- r[["n1"]]
-          
-          if (bf.type == "BF01")
-            bf.raw <- 1 / bf.raw
-          
-          BF10post[i] <- bf.raw
-          BF <- .clean(bf.raw)
-          
-          if (options$bayesFactorType == "LogBF10") {
-            
-            BF <- log(BF10post[i])
-            BF <- .clean(BF)
+          if (!identical(errors, FALSE)) {
+              errorMessage <- errors$message
+              status[i] <- "error"
+          } else {
+              errorMessage <- NULL
           }
           
-          error <- .clean(r[["error"]])
-          
-          list(Variable=variable, BF=BF, error=error)
-        })
-        
-        errors <- .hasErrors(dataset, perform, message = "short", type = c('observations', 'variance', 'infinity'),
-                             all.target = variable,
-                             observations.amount = '< 2')
-        
-        if (!identical(errors, FALSE)) {
-            errorMessage <- errors$message
-            status[i] <- "error"
-        } else {
-            errorMessage <- NULL
-        }
-        
-        if(!is.null(errorMessage)){
- 
-          errorFootnotes[i] <- errorMessage
-          
-          index <- .addFootnote(footnotes, errorMessage)
-          
-          result <- list(Variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
-          
-          ttest.rows[[i]] <- result
-          
-        } else {
-          
-          if (is.na(bf.raw)) {
-            
-            status[i] <- "error"
-            plottingError[i] <- "Plotting is not possible: Bayes factor could not be calculated"
-          } else if(bf.raw == Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
-            
-            status[i] <- "error"
-            plottingError[i] <- "Plotting is not possible: Bayes factor is infinite"
-          } else if (is.infinite(1 / bf.raw)) {
-            
-            status[i] <- "error"
-            plottingError[i] <- "Plotting is not possible: The Bayes factor is too small"
+          if(!is.null(errorMessage)){
+              
+              errorFootnotes[i] <- errorMessage
+              
+              index <- .addFootnote(footnotes, errorMessage)
+              
+              result <- list(Variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
+              
+              ttest.rows[[i]] <- result
+              
+          } else {
+              
+              result <- try (silent = TRUE, expr = {
+                  
+                  variableData <- dataset[[ .v(variable) ]]
+                  variableData <- variableData[ ! is.na(variableData) ]
+                  
+                  variableData <- variableData - options$testValue
+                  r <- .generalTtestBF(x = variableData, oneSided = oneSided, options = options)
+                  bf.raw <- r[["bf"]]
+                  tValue[i] <- r[["tValue"]]
+                  n[i] <- r[["n1"]]
+                  
+                  if (bf.type == "BF01")
+                      bf.raw <- 1 / bf.raw
+                  
+                  BF10post[i] <- bf.raw
+                  BF <- .clean(bf.raw)
+                  
+                  if (options$bayesFactorType == "LogBF10") {
+                      
+                      BF <- log(BF10post[i])
+                      BF <- .clean(BF)
+                  }
+                  
+                  error <- .clean(r[["error"]])
+                  
+                  list(Variable=variable, BF=BF, error=error)
+              })
+              
+              if (isTryError(result)) {
+                  errorMessage <- .extractErrorMessage(result)
+                  errorFootnotes[i] <- errorMessage
+                  index <- .addFootnote(footnotes, errorMessage)
+                  result <- list(Variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
+                  ttest.rows[[i]] <- result
+              }
+              
+              ttest.rows[[i]] <- result
           }
           
-          ind <- which(variableData == variableData[1])
-          idData <- sum((ind+1)-(1:(length(ind))) == 1)
-          
-          if(idData > 1 & (options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
-            
-            #seqFootnote <- paste("Sequential Analysis not possible: The first", idData, "observations are identical")
-            #plotSequentialStatus <- "error"
-            # status[i] <- "sequentialNotPossible"
-            # plottingError[i] <- paste("Sequential Analysis not possible: The first", idData, "observations are identical")
-          }
-          
-          ttest.rows[[i]] <- result
-        }
       }
       
       i <- i + 1
@@ -741,13 +725,9 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
           
           plot <- descriptivesPlots[[descriptInd]]
           
-          if (!is.null(errorMessage)) {
+          if (is.null(errorMessage)) {
               
-              plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-              
-          } else {
-          
-          p <- try(silent= FALSE, expr= {
+              p <- try(silent= FALSE, expr= {
                   
                   obj <- .plotGroupMeanBayesOneSampleTtest(variable=variableDataDescriptivesPlot, variableName=variable, testValueOpt=options$testValue,
                                                            descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
@@ -756,14 +736,25 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
                   plot[["convertible"]] <- TRUE
                   plot[["obj"]] <- content[["obj"]]
                   plot[["data"]] <- content[["png"]]
+                  
+              })
               
-          })
-          
+              if(isTryError(p)){
+                  errorMessage <- .extractErrorMessage(p)
+              }
+              
           }
+          
+          if (!is.null(errorMessage)) {
+              
+              plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+              
+          } 
           
           plot[["status"]] <- "complete"
           
           descriptivesPlots[[descriptInd]] <- plot
+          
         }
         
         results[["descriptives"]][["descriptivesPlots"]][["collection"]] <- descriptivesPlots
@@ -820,11 +811,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
           
           plot <- plots.ttest[[z]]
               
-              if (!is.null(errorMessage)) {
-                  
-                  plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-                  
-              } else {
+              if (is.null(errorMessage)) {
                   
                   p <- try(silent= FALSE, expr= {
                       
@@ -844,7 +831,15 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
                       
                   })
                   
+                  if(isTryError(p)){
+                      errorMessage <- .extractErrorMessage(p)
+                  }
+                  
               }
+          
+          if(!is.null(errorMessage)){
+              plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+          }
           
           plot[["status"]] <- "complete"
           
@@ -976,11 +971,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
             plot[["error"]] <- list(error="badData", errorMessage="Sequential analysis robustness check plot currently not supported for informed prior.")
           }
           
-          if (!is.null(errorMessage)) {
-              
-              plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-              
-          } else {
+          if (is.null(errorMessage)) {
             
             p <- try(silent= FALSE, expr= {
 
@@ -996,6 +987,16 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
               
             })
             
+            if(isTryError(p)){
+                errorMessage <- .extractErrorMessage(p)
+            }
+            
+          }
+          
+          if(!is.null(errorMessage)){
+              
+              plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+              
           }
           
           plot[["status"]] <- "complete"
@@ -2646,7 +2647,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
   # display BF10 value
   if (idData < length(BF10)) {
     
-      BF10post <- as.numeric(BF10post)
+      BF10post <- as.numeric(BF10post) # TO FIX: This needs to be done to make sure that the BF shows up in the table.
       BF10e <- BF10post
     
   } else {

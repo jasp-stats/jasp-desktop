@@ -1375,7 +1375,7 @@
 		stretch <- 1.32
 	}
     
-    BF <- as.numeric(BF)
+    BF <- as.numeric(BF) # TO FIX: This needs to be done to make sure the BF shows up in the table during bayesian t-tests.
   
   if (BFH1H0) {
     BF10 <- BF
