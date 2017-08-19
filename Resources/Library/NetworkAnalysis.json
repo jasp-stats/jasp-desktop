@@ -165,14 +165,14 @@
 			"max": 10.0
 		},
 		{
-			"default": false,
+			"default": true,
 			"name": "showDetails",
 			"type": "Boolean"
 		},
 		{
-			"default": false,
 			"name": "showLegend",
-			"type": "Boolean"
+			"type": "Boolean",
+			"default": true
 		},
 		{
 			"name": "nodeColors",
