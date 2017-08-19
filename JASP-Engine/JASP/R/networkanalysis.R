@@ -31,25 +31,30 @@ NetworkAnalysis <- function (
 
 	## Read Dataset ## ----
 	variables <- unlist(options$variables)
+	
+	varsAsFactor <- NULL
+	if (options[["groupingVariable"]] != "")
+		varsAsFactor <- options[["groupingVariable"]]
+	
 
 	if (is.null(dataset)) {
 
 		if (perform == "run") {
-
-			dataset <- .readDataSetToEnd(columns.as.numeric = variables, columns.as.factor = NULL, exclude.na.listwise = NULL)
+			
+			dataset <- .readDataSetToEnd(columns.as.numeric = variables, columns.as.factor = varsAsFactor, exclude.na.listwise = NULL)
 
 			if (options[["colorNodesBy"]] != "") # load data from variable that indicates groups
 				options[["colorNodesByData"]] <- .readDataSetToEnd(columns = options[["colorNodesBy"]], exclude.na.listwise = options[["colorNodesBy"]])[[1]]
 
 		} else {
 
-			dataset <- .readDataSetHeader(columns.as.numeric = variables, columns.as.factor = NULL)
+			dataset <- .readDataSetHeader(columns.as.numeric = variables, columns.as.factor = varsAsFactor)
 
 		}
 
 	} else {
 
-		dataset <- .vdf(dataset, columns.as.numeric = variables, columns.as.factor = NULL)
+		dataset <- .vdf(dataset, columns.as.numeric = variables, columns.as.factor = varsAsFactor)
 
 	}
 
@@ -104,16 +109,23 @@ NetworkAnalysis <- function (
 
 		# check for errors, but only if there was a change in the data (which implies state[["network"]] is NULL)
 		if (is.null(state[["network"]])) {
+			
+			groupingVariable <- NULL
+			if (options[["groupingVariable"]] != "")
+				groupingVariable <- options[["groupingVariable"]]
+			
 			checks <- c("infinity", "variance", "observations")
 			anyErrors <- .hasErrors(dataset = dataset, perform = perform,
 									type = checks,
+									variance.grouping = groupingVariable,
 									observations.amount = " < 3",
+									observations.grouping = groupingVariable,
 									exitAnalysisIfErrors = TRUE)
 		}
 		
 		network <- .doNetworkAnalysis(dataset = dataset, options = options, variables = variables, perform = perform,
 									  oldNetwork = state)
-
+		
 	} else {
 		
 		network <- state[["network"]]
@@ -121,7 +133,7 @@ NetworkAnalysis <- function (
 	}
 
 	## Create Output ##  ----
-
+	browser()
 	keep <- NULL
 	results[["generalTB"]] <- .NWgeneralTB(network, dataset, options, perform)
 
@@ -173,184 +185,212 @@ NetworkAnalysis <- function (
 	# early return if init
 	if (perform != "run")
 		return(NULL)
-
-	network <- oldNetwork
-	if (is.null(network[["graph"]])) {
-
-		# fix input to match bootnet preferences
-		options[["rule"]] <- toupper(options[["rule"]])
-		if (options[["correlationMethod"]] == "auto")
-			options[["correlationMethod"]] <- "cor_auto"
-
-		options[["isingEstimator"]] <- switch(options[["isingEstimator"]],
-			"pseudoLikelihood" = "pl",
-			"univariateRegressions" = "uni",
-			"bivariateRegressions" = "bi",
-			"logLinear" = "ll"
-		)
-
-		.dots <- list(
-			corMethod   = options[["correlationMethod"]],
-			tuning      = options[["tuningParameter"]],
-			missing     = options[["missingValues"]],
-			method      = options[["isingEstimator"]],
-			rule        = options[["rule"]],
-			nFolds      = options[["nFolds"]],
-			weighted    = options[["weightedNetwork"]],
-			signed      = options[["signedNetwork"]],
-			split       = options[["split"]],
-			criterion   = options[["criterion"]],
-			sampleSize  = options[["sampleSize"]]
-		)
-
-		# get available arguments for specific network estimation function. Remove unused ones.
-		# FOR FUTURE UPDATING: options[["estimator"]] MUST match name of function in bootnet literally (see ?bootnet::bootnet_EBICglasso).
-		funArgs <- formals(utils::getFromNamespace(paste0("bootnet_", options[["estimator"]]), ns = "bootnet"))
-		nms2keep <- names(funArgs)
-		.dots <- .dots[names(.dots) %in% nms2keep]
-
-		# for safety, when estimator is changed but missing was pairwise (the default).
-		if (!isTRUE("pairwise" %in% eval(funArgs[["missing"]])))
-			.dots[["missing"]] <- "listwise"
-
-		# some manual adjustments for these estimators
-		if (options[["estimator"]] == "huge") {
-
-			if (.dots[["criterion"]] == "cv")
-				.dots[["criterion"]] == "ebic"
-
-		} else if (options[["estimator"]] == "mgm") {
-
-			.dots[["criterion"]] <- toupper(.dots[["criterion"]]) # this function wants capitalized arguments
-
-			if (!(.dots[["criterion"]] %in% eval(funArgs$criterion)))
-				.dots[["criterion"]] <- "EBIC"
-
-		} else if (options[["estimator"]] == "adalasso") {
-
-			if (is.na(.dots[["nFolds"]]) || .dots[["nFolds"]] < 2) # estimator crashes otherwise
-				.dots[["nFolds"]] <- 2
-
-		}
-
-		# Fake png hack -- qgraph::qgraph() has an unprotected call to `par()`. `par()` always opens a new device if there is none.
-		# Perhaps ask Sacha to fix this in qgraph. Line 1119: if (DoNotPlot) par(pty = pty)
-		tempFileName <- getTempFileName()
-		grDevices::png(filename = tempFileName)
-
-		# capture.output to get relevant messages (i.e. from qgraph::cor_auto "variables detected as...")
-		msg <- capture.output(
-			network <- bootnet::estimateNetwork(
-				data = dataset,
-				default = options[["estimator"]],
-				.dots = .dots
-			)
-			, type = "message"
-		)
-
-		dev.off() # close the fake png
-		unlink(tempFileName) # remove the fake png file
-
-		network[["corMessage"]] <- msg
-
+	browser()
+	if (options[["groupingVariable"]] == "") { # one network
+		
+		dataset <- list(dataset)
+		
+	} else { # multiple networks
+		
+		dataset <- split(dataset, dataset[[.v(options[["groupingVariable"]])]], drop = TRUE)
+		
 	}
-
-	if (is.null(network[["centrality"]])) {
+	
+	# empty list for results
+	networkList <- list()
+	
+	# for every part of the dataset, do the analysis
+	for (nw in seq_along(dataset)) {	
 		
-		network[["centrality"]] <- qgraph::centrality(network[["graph"]], weighted = options[["weightedNetwork"]], signed = options[["signedNetwork"]], all.shortest.paths = FALSE)
-
-		# note: centrality table is (partially) calculated here so that centralityTable and centralityPlot don't compute the same twice.
-		TBcent <- as.data.frame(network[["centrality"]][c("Betweenness", "Closeness", "InDegree", "OutDegree")])
+		data <- dataset[[nw]]
+		data[[.v(options[["groupingVariable"]])]] <- NULL # grouping variable is not a node in the network
+		network <- oldNetwork[[nw]] # NULL or something usuable
 		
-		# adapted from qgraph::centrality_auto
-		wmat <- qgraph::getWmat(network$graph)
-		directedGraph <- ifelse(base::isSymmetric.matrix(object = wmat, tol = 1e-12), FALSE, TRUE)
-		weightedGraph <- ifelse(all(qgraph::mat2vec(wmat) %in% c(0, 1)), FALSE, TRUE)
-		
-		if (directedGraph) {
+		if (is.null(network[["graph"]])) { # estimate network
 			
-			if (weightedGraph) {
+			# fix input to match bootnet preferences
+			options[["rule"]] <- toupper(options[["rule"]])
+			if (options[["correlationMethod"]] == "auto")
+				options[["correlationMethod"]] <- "cor_auto"
+			
+			options[["isingEstimator"]] <- switch(options[["isingEstimator"]],
+												  "pseudoLikelihood" = "pl",
+												  "univariateRegressions" = "uni",
+												  "bivariateRegressions" = "bi",
+												  "logLinear" = "ll"
+			)
+			
+			.dots <- list(
+				corMethod   = options[["correlationMethod"]],
+				tuning      = options[["tuningParameter"]],
+				missing     = options[["missingValues"]],
+				method      = options[["isingEstimator"]],
+				rule        = options[["rule"]],
+				nFolds      = options[["nFolds"]],
+				weighted    = options[["weightedNetwork"]],
+				signed      = options[["signedNetwork"]],
+				split       = options[["split"]],
+				criterion   = options[["criterion"]],
+				sampleSize  = options[["sampleSize"]]
+			)
+			
+			# get available arguments for specific network estimation function. Remove unused ones.
+			# FOR FUTURE UPDATING: options[["estimator"]] MUST match name of function in bootnet literally (see ?bootnet::bootnet_EBICglasso).
+			funArgs <- formals(utils::getFromNamespace(paste0("bootnet_", options[["estimator"]]), ns = "bootnet"))
+			nms2keep <- names(funArgs)
+			.dots <- .dots[names(.dots) %in% nms2keep]
+			
+			# for safety, when estimator is changed but missing was pairwise (the default).
+			if (!isTRUE("pairwise" %in% eval(funArgs[["missing"]])))
+				.dots[["missing"]] <- "listwise"
+			
+			# some manual adjustments for these estimators
+			if (options[["estimator"]] == "huge") {
 				
-				colnames(TBcent)[3:4] <- c("InStrength", "OutDegree")
+				if (.dots[["criterion"]] == "cv")
+					.dots[["criterion"]] == "ebic"
 				
-			} else { # unweighted
+			} else if (options[["estimator"]] == "mgm") {
 				
-				colnames(TBcent)[3:4] <- c("InDegree", "OutDegree")
+				.dots[["criterion"]] <- toupper(.dots[["criterion"]]) # this function wants capitalized arguments
+				
+				if (!(.dots[["criterion"]] %in% eval(funArgs$criterion)))
+					.dots[["criterion"]] <- "EBIC"
+				
+			} else if (options[["estimator"]] == "adalasso") {
+				
+				if (is.na(.dots[["nFolds"]]) || .dots[["nFolds"]] < 2) # estimator crashes otherwise
+					.dots[["nFolds"]] <- 2
 				
 			}
 			
-		} else { # undirected
+			# Fake png hack -- qgraph::qgraph() has an unprotected call to `par()`. `par()` always opens a new device if there is none.
+			# Perhaps ask Sacha to fix this in qgraph. Line 1119: if (DoNotPlot) par(pty = pty)
+			tempFileName <- getTempFileName()
+			grDevices::png(filename = tempFileName)
 			
-			# divide betweenness by 2
-			TBcent[, 1] <- TBcent[, 1] / 2 
-			TBcent <- TBcent[c(1:2, 4)]
-
-			if (weightedGraph) {
-				
-				colnames(TBcent)[3] <- "Strength"
-				
-			} else { # unweighted
-				
-				colnames(TBcent)[3] <- "Degree"
-				
-			}
+			# capture.output to get relevant messages (i.e. from qgraph::cor_auto "variables detected as...")
+			msg <- capture.output(
+				network <- bootnet::estimateNetwork(
+					data = data,
+					default = options[["estimator"]],
+					.dots = .dots
+				)
+				, type = "message"
+			)
+			
+			dev.off() # close the fake png
+			unlink(tempFileName) # remove the fake png file
+			
+			network[["corMessage"]] <- msg
 			
 		}
-
-		centVars <- apply(TBcent, 2, var)
-		if (options[["normalizeCentrality"]] == "normalized") { # normalize only if variances are nonzero
+		
+		if (is.null(network[["centrality"]])) { # calculate centrality measures
 			
-			for (i in 1:ncol(TBcent)) { # code modified from base::scale.default
+			network[["centrality"]] <- qgraph::centrality(network[["graph"]], weighted = options[["weightedNetwork"]], signed = options[["signedNetwork"]], all.shortest.paths = FALSE)
+			
+			# note: centrality table is (partially) calculated here so that centralityTable and centralityPlot don't compute the same twice.
+			TBcent <- as.data.frame(network[["centrality"]][c("Betweenness", "Closeness", "InDegree", "OutDegree")])
+			
+			# adapted from qgraph::centrality_auto
+			wmat <- qgraph::getWmat(network$graph)
+			directedGraph <- ifelse(base::isSymmetric.matrix(object = wmat, tol = 1e-12), FALSE, TRUE)
+			weightedGraph <- ifelse(all(qgraph::mat2vec(wmat) %in% c(0, 1)), FALSE, TRUE)
+			
+			if (directedGraph) {
 				
-				valid <- !is.na(TBcent[, i])
-				
-				if (sum(valid) != 0) {
+				if (weightedGraph) {
 					
-					obs <- TBcent[valid, i]
-					obs <- obs - mean(obs)
-					stdev <- sqrt(sum(obs^2) / max(1, length(obs) - 1))
-					if (stdev == 0) { # avoid division by zero
-						TBcent[valid, i] <- obs
-					} else {
-						TBcent[valid, i] <- obs / stdev
-					}
+					colnames(TBcent)[3:4] <- c("InStrength", "OutDegree")
+					
+				} else { # unweighted
+					
+					colnames(TBcent)[3:4] <- c("InDegree", "OutDegree")
+					
+				}
+				
+			} else { # undirected
+				
+				# divide betweenness by 2
+				TBcent[, 1] <- TBcent[, 1] / 2 
+				TBcent <- TBcent[c(1:2, 4)]
+				
+				if (weightedGraph) {
+					
+					colnames(TBcent)[3] <- "Strength"
+					
+				} else { # unweighted
+					
+					colnames(TBcent)[3] <- "Degree"
+					
 				}
 				
 			}
-
-		} else if (options[["normalizeCentrality"]] == "relative") {
 			
-			for (i in 1:ncol(TBcent)) { # code modified from qgraph::centralityTable
+			centVars <- apply(TBcent, 2, var)
+			if (options[["normalizeCentrality"]] == "normalized") { # normalize only if variances are nonzero
 				
-				mx <- max(abs(TBcent[, i]), na.rm = TRUE)
+				for (i in 1:ncol(TBcent)) { # code modified from base::scale.default
+					
+					valid <- !is.na(TBcent[, i])
+					
+					if (sum(valid) != 0) {
+						
+						obs <- TBcent[valid, i]
+						obs <- obs - mean(obs)
+						stdev <- sqrt(sum(obs^2) / max(1, length(obs) - 1))
+						if (stdev == 0) { # avoid division by zero
+							TBcent[valid, i] <- obs
+						} else {
+							TBcent[valid, i] <- obs / stdev
+						}
+					}
+					
+				}
 				
-				if (mx != 0) # avoid division by zero
-					TBcent[, i] <- TBcent[, i] / mx
-
-			}
+			} else if (options[["normalizeCentrality"]] == "relative") {
+				
+				for (i in 1:ncol(TBcent)) { # code modified from qgraph::centralityTable
+					
+					mx <- max(abs(TBcent[, i]), na.rm = TRUE)
+					
+					if (mx != 0) # avoid division by zero
+						TBcent[, i] <- TBcent[, i] / mx
+					
+				}
+				
+			} # else raw centrality measures -> do nothing
 			
-		} # else raw centrality measures -> do nothing
-
-		TBcent[["node"]] <- .unv(network[["labels"]])
-		nc <- ncol(TBcent)
-		TBcent <- TBcent[c(nc, 1:(nc-1))] # put columns in intended order (of schema).
-		network[["centralityTable"]] <- TBcent
+			TBcent[["node"]] <- .unv(network[["labels"]])
+			nc <- ncol(TBcent)
+			TBcent <- TBcent[c(nc, 1:(nc-1))] # put columns in intended order (of schema).
+			network[["centralityTable"]] <- TBcent
+		}
+		
+		networkList[[nw]] <- network
+		
 	}
-
-	return(network)
+	
+	return(networkList)
 
 }
 
 # wrappers for output ----
 .NWgeneralTB <- function(network, dataset, options, perform) {
-
+	browser()
+	nGraphs <- max(1, length(network))
 	table <- list(
 		title = "Summary of Network",
 		schema = list(fields = list(
-			list(name = "info", title = "", type = "string"),
-			list(name = "value", title = "", type = "number", format="sf:4;dp:3")
+			list(name = "info", title = "", type = "string")
+			#list(name = "value", title = "", type = "number", format="sf:4;dp:3")
 		))
 	)
+	for (i in 1:nGraphs) {
+		table[["schema"]][["fields"]][[i+1]] <- 
+			list(name = paste0("value ", i), title = paste0("network ", i), type = "number", format="sf:4;dp:3")
+	}
 
 	footnotes <- .newFootnotes()
 	msg <- NULL
@@ -359,16 +399,22 @@ NetworkAnalysis <- function (
 
 	if (perform != "run" || is.null(network)) { # fill in with .
 
-		TBcolumns[["value"]] <- rep(".", 3)
+		TBcolumns[["value"]] <- rep(".", 3*nGraphs)
 		table[["status"]] <- "inited"
 
 	} else { # fill in with info from bootnet:::print.bootnet
-
-		TBcolumns[["value"]] <- c(
-			nrow(network[["graph"]]),
-			sum(network[["graph"]][upper.tri(network[["graph"]], diag = FALSE)] == 0),
-			mean(network[["graph"]][upper.tri(network[["graph"]], diag = FALSE)] == 0)
-		)
+		
+		for (i in 1:nGraphs) {
+			
+			nw <- network[[i]]
+			
+			TBcolumns[[paste0("network", i)]] <- c(
+				nrow(nw[["graph"]]),
+				sum(nw[["graph"]][upper.tri(nw[["graph"]], diag = FALSE)] == 0),
+				mean(nw[["graph"]][upper.tri(nw[["graph"]], diag = FALSE)] == 0)
+			)
+		
+		}
 		table[["status"]] <- "complete"
 
 		# add footnotes for detected as?
@@ -461,7 +507,7 @@ NetworkAnalysis <- function (
 	eval(quote({
 
 		# ensure input makes sense or ignore these parameters
-		minE <- options[["maxEdgeStrength"]]
+		minE <- options[["minEdgeStrength"]]
 		maxE <- options[["maxEdgeStrength"]]
 
 		if (minE == 0 ||maxE <= minE) {
@@ -482,6 +528,7 @@ NetworkAnalysis <- function (
 
 		} else {
 			groups <- NULL
+			options[["showLegend"]] <- FALSE
 		}
 		
 		wMat <- network[["graph"]]
@@ -518,7 +565,7 @@ NetworkAnalysis <- function (
 	colnames(Long)[2] <- "measure"
 	Long[["type"]] <- NA
 
-	# code adapted from qgraph::centralityPlot()
+	# code modified from qgraph::centralityPlot()
 
 	Long <- Long[gtools::mixedorder(Long$node), ]
 	Long$node <- factor(as.character(Long$node), levels = unique(gtools::mixedsort(as.character(Long$node))))
