@@ -379,6 +379,15 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 				errorMessage <- paste("The covariates: <em>", paste(options$covariates[infiniteCov], collapse=", "), "</em>, contain infinite values.", sep="")
 			}
 		}
+		
+		allNames <- unlist(lapply(options$repeatedMeasuresFactors, function(x) x$name)) # Factornames 
+		for(factorName in allNames){
+		  if (any(factorName %in% options$betweenSubjectFactors )) {
+		    error <- TRUE
+		    errorMessage <- paste("Please choose a name for the RM factors that differs from those for the 
+		                          between subjects factors.", sep="")
+		  }
+		} 
 
 	}
 
@@ -588,15 +597,26 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     resultsPostHoc <- list()
   
 		variables <- unlist(c(options$betweenSubjectFactors, lapply(options$repeatedMeasuresFactors, function(x) x$name)))
-		
+
 		postHocData <- fullModel$data$wide
 		factorNamesV <- colnames(postHocData) # Names to use to refer to variables in data
     # Because there are multiple names for each variable in JASP, one of the things the following code does is make sure to get the correct naming
 		# and refer to the correct actual variable. The different names are the actual name of the variable, the name the user gives in jasp for the lvel and factor, 
 		# and also the name that JASP gives to it, which is a concatenation of "Level#_Level#', where the first refers to the factor and second to the level. 
 		
+		
+		
 		rmFactorIndex <- 1
 		allNames <- unlist(lapply(options$repeatedMeasuresFactors, function(x) x$name)) # Factornames 
+		
+		# for(factorName in allNames){
+		#   if (any(factorName %in% options$betweenSubjectFactors )) {
+		#     error <- TRUE
+		#     errorMessage <- paste("Please choose a different name for the RM factor.", sep="")
+		#     posthoc.table[["error"]] <- errorMessage
+		#   }
+		# }
+
 		for (var in variables) {
 
 		  # Results using the Tukey method
@@ -1936,7 +1956,13 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			list(name="Mean Difference", type="number", format="sf:4;dp:3"),
 			list(name="SE", type="number", format="sf:4;dp:3"),
 			list(name="t", type="number", format="sf:4;dp:3"))
-
+		
+		if (options$postHocTestEffectSize) {
+		  fields[[length(fields) + 1]] <- list(name="Cohen's d", title="Cohen's d", type="number", format="sf:4;dp:3")
+		  posthoc.table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", 
+		                                            text="Cohen's d does not correct for multiple comparisons."))
+		}
+		
 		if (options$postHocTestsTukey)
 			fields[[length(fields) + 1]] <- list(name="tukey", title="p<sub>tukey</sub>", type="number", format="dp:3;p:.001")
 
@@ -1972,7 +1998,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 				pScheffe <- ""
 				pBonf <- ""
 				pHolm <- ""
-
+				effectSize <- ""
+				
 				if (!is.null(statePostHoc)) {
 
 					if (length(class(statePostHoc[[posthoc.var]]$resultBonf)) == 1 && class(statePostHoc[[posthoc.var]]$resultBonf) == "try-error") {
@@ -2010,10 +2037,14 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 						if (reverse) {
 							t <- .clean(-as.numeric(statePostHoc[[posthoc.var]]$resultBonf$t.ratio[index]))
+
 						} else {
 							t <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$t.ratio[index]))
 						}
 
+						if (options$postHocTestEffectSize) 
+						  effectSize <- .clean(t/sqrt(nrow(dataset)))
+						
 						if (options$postHocTestsTukey){
 							pTukey <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultTukey$p.value[index]))
 							if(!is.numeric(statePostHoc[[posthoc.var]]$resultTukey$p.value[index])){
@@ -2041,6 +2072,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 					row[["Mean Difference"]] <- md
 					row[["SE"]]  <- SE
 					row[["t"]] <- t
+					row[["Cohen's d"]] <- effectSize
 					row[["tukey"]] <- pTukey
 					row[["scheffe"]] <- pScheffe
 					row[["bonferroni"]] <- pBonf
