@@ -68,7 +68,8 @@ NetworkAnalysis <- function (
 			list(name = "generalTB",   type = "table"),
 			list(name = "fitMeasuresTB",  type = "table"),
 			list(name = "centralityTB",   type = "table"),
-			list(name = "networkPLT",     type = "image"),
+			list(name = "networkPLT",     type="collection", meta="image"),
+			# list(name = "networkPLT",     type = "image"),
 			list(name = "centralityPLT",  type = "image")
 		)
 	)
@@ -144,14 +145,15 @@ NetworkAnalysis <- function (
 		results[["centralityTB"]] <- .networkAnalysisCentralityTB(network, options, perform)
 	}
 	if (options[["plotNetwork"]]) {
-		results[["networkPLT"]] <- .makeNetworkPLT(network, options, perform, oldPlot = state[["networkPLT"]], plotType = "network")
-		keep <- c(keep, results[["networkPLT"]][["data"]])
+		results[["networkPLT"]] <- .networkAnalysisNetworkPlot(network, options, perform, oldPlot = state[["networkPLT"]])
+		allNetworkPlots <- results[["networkPLT"]][["collection"]]
+		for (nw in allNetworkPlots)
+			keep <- c(keep, nw[["data"]])
 	}
 	if (options[["plotCentrality"]]) {
-		results[["centralityPLT"]] <- .makeNetworkPLT(network, options, perform, oldPlot = state[["centralityPLT"]], plotType = "centrality")
+		results[["centralityPLT"]] <- .networkAnalysisCentralityPlot(network, options, perform, oldPlot = state[["centralityPLT"]])
 		keep <- c(keep, results[["centralityPLT"]][["data"]])
 	}
-
 
 	## Exit Analysis ## ----
 
@@ -188,7 +190,7 @@ NetworkAnalysis <- function (
 
 	if (options[["groupingVariable"]] == "") { # one network
 
-		dataset <- list(dataset)
+		dataset <- list(dataset) # for compatability with the split behaviour
 
 	} else { # multiple networks
 
@@ -197,76 +199,79 @@ NetworkAnalysis <- function (
 	}
 
 	# empty list for results
-	networkList <- list(network = list(), centrality  = list())
+	networkList <- list(network = oldNetwork[["network"]], centrality = oldNetwork[["centrality"]])
 
 	# should never happen?
 	if (length(oldNetwork) != length(dataset))
 		oldNetwork <- NULL
 
-	# for every part of the dataset, do the analysis
-	for (nw in seq_along(dataset)) {
 
-		data <- dataset[[nw]]
-		data[[.v(options[["groupingVariable"]])]] <- NULL # grouping variable is not a node in the network
-		network <- oldNetwork[["network"]][[nw]] # NULL or something usuable
+	if (is.null(networkList[["network"]])) { # estimate network
 
-		if (is.null(network)) { # estimate network
+		# first setup all bootnet arguments, then loop over datasets to estimate networks
 
-			# fix input to match bootnet preferences
-			options[["rule"]] <- toupper(options[["rule"]])
-			if (options[["correlationMethod"]] == "auto")
-				options[["correlationMethod"]] <- "cor_auto"
+		# fix input to match bootnet preferences
+		options[["rule"]] <- toupper(options[["rule"]])
+		if (options[["correlationMethod"]] == "auto")
+			options[["correlationMethod"]] <- "cor_auto"
 
-			options[["isingEstimator"]] <- switch(options[["isingEstimator"]],
-												  "pseudoLikelihood" = "pl",
-												  "univariateRegressions" = "uni",
-												  "bivariateRegressions" = "bi",
-												  "logLinear" = "ll"
-			)
+		options[["isingEstimator"]] <- switch(options[["isingEstimator"]],
+											  "pseudoLikelihood" = "pl",
+											  "univariateRegressions" = "uni",
+											  "bivariateRegressions" = "bi",
+											  "logLinear" = "ll"
+		)
 
-			.dots <- list(
-				corMethod   = options[["correlationMethod"]],
-				tuning      = options[["tuningParameter"]],
-				missing     = options[["missingValues"]],
-				method      = options[["isingEstimator"]],
-				rule        = options[["rule"]],
-				nFolds      = options[["nFolds"]],
-				weighted    = options[["weightedNetwork"]],
-				signed      = options[["signedNetwork"]],
-				split       = options[["split"]],
-				criterion   = options[["criterion"]],
-				sampleSize  = options[["sampleSize"]]
-			)
+		.dots <- list(
+			corMethod   = options[["correlationMethod"]],
+			tuning      = options[["tuningParameter"]],
+			missing     = options[["missingValues"]],
+			method      = options[["isingEstimator"]],
+			rule        = options[["rule"]],
+			nFolds      = options[["nFolds"]],
+			weighted    = options[["weightedNetwork"]],
+			signed      = options[["signedNetwork"]],
+			split       = options[["split"]],
+			criterion   = options[["criterion"]],
+			sampleSize  = options[["sampleSize"]]
+		)
 
-			# get available arguments for specific network estimation function. Remove unused ones.
-			# FOR FUTURE UPDATING: options[["estimator"]] MUST match name of function in bootnet literally (see ?bootnet::bootnet_EBICglasso).
-			funArgs <- formals(utils::getFromNamespace(paste0("bootnet_", options[["estimator"]]), ns = "bootnet"))
-			nms2keep <- names(funArgs)
-			.dots <- .dots[names(.dots) %in% nms2keep]
+		# get available arguments for specific network estimation function. Remove unused ones.
+		# FOR FUTURE UPDATING: options[["estimator"]] MUST match name of function in bootnet literally (see ?bootnet::bootnet_EBICglasso).
+		funArgs <- formals(utils::getFromNamespace(paste0("bootnet_", options[["estimator"]]), ns = "bootnet"))
+		nms2keep <- names(funArgs)
+		.dots <- .dots[names(.dots) %in% nms2keep]
 
-			# for safety, when estimator is changed but missing was pairwise (the default).
-			if (!isTRUE("pairwise" %in% eval(funArgs[["missing"]])))
-				.dots[["missing"]] <- "listwise"
+		# for safety, when estimator is changed but missing was pairwise (the default).
+		if (!isTRUE("pairwise" %in% eval(funArgs[["missing"]])))
+			.dots[["missing"]] <- "listwise"
 
-			# some manual adjustments for these estimators
-			if (options[["estimator"]] == "huge") {
+		# some manual adjustments for these estimators
+		if (options[["estimator"]] == "huge") {
 
-				if (.dots[["criterion"]] == "cv")
-					.dots[["criterion"]] == "ebic"
+			if (.dots[["criterion"]] == "cv")
+				.dots[["criterion"]] == "ebic"
 
-			} else if (options[["estimator"]] == "mgm") {
+		} else if (options[["estimator"]] == "mgm") {
 
-				.dots[["criterion"]] <- toupper(.dots[["criterion"]]) # this function wants capitalized arguments
+			.dots[["criterion"]] <- toupper(.dots[["criterion"]]) # this function wants capitalized arguments
 
-				if (!(.dots[["criterion"]] %in% eval(funArgs$criterion)))
-					.dots[["criterion"]] <- "EBIC"
+			if (!(.dots[["criterion"]] %in% eval(funArgs$criterion)))
+				.dots[["criterion"]] <- "EBIC"
 
-			} else if (options[["estimator"]] == "adalasso") {
+		} else if (options[["estimator"]] == "adalasso") {
 
-				if (is.na(.dots[["nFolds"]]) || .dots[["nFolds"]] < 2) # estimator crashes otherwise
-					.dots[["nFolds"]] <- 2
+			if (is.na(.dots[["nFolds"]]) || .dots[["nFolds"]] < 2) # estimator crashes otherwise
+				.dots[["nFolds"]] <- 2
 
-			}
+		}
+
+		# for every dataset do the analysis
+		for (nw in seq_along(dataset)) {
+
+			data <- dataset[[nw]]
+			data[[.v(options[["groupingVariable"]])]] <- NULL # grouping variable is not a node in the network
+			network <- oldNetwork[["network"]][[nw]] # NULL or something usuable
 
 			# Fake png hack -- qgraph::qgraph() has an unprotected call to `par()`. `par()` always opens a new device if there is none.
 			# Perhaps ask Sacha to fix this in qgraph. Line 1119: if (DoNotPlot) par(pty = pty)
@@ -287,12 +292,16 @@ NetworkAnalysis <- function (
 			file.remove(tempFileName) # remove the fake png file
 
 			network[["corMessage"]] <- msg
+			networkList[["network"]][[nw]] <- network
 
 		}
+	}
 
-		cent <- oldNetwork[["network"]][[nw]]
-		if (is.null(cent)) { # calculate centrality measures
+	if (is.null(networkList[["centrality"]])) { # calculate centrality measures
 
+		for (nw in seq_along(dataset)) {
+
+			network <- networkList[["network"]][[nw]]
 			cent <- qgraph::centrality(network[["graph"]], weighted = options[["weightedNetwork"]], signed = options[["signedNetwork"]], all.shortest.paths = FALSE)
 
 			# note: centrality table is (partially) calculated here so that centralityTable and centralityPlot don't compute the same twice.
@@ -371,12 +380,20 @@ NetworkAnalysis <- function (
 			nc <- ncol(TBcent)
 			TBcent <- TBcent[c(nc, 1:(nc-1))] # put columns in intended order (of schema).
 			cent <- TBcent
+
+			networkList[["centrality"]][[nw]] <- cent
+
 		}
 
-		networkList[["network"]][[nw]] <- network
-		networkList[["centrality"]][[nw]] <- cent
-
 	}
+
+	if (is.null(names(dataset))) {
+		nms <- "Network"
+	} else {
+		nms <- names(dataset)
+	}
+
+	names(networkList[["network"]]) <- names(networkList[["centrality"]]) <- nms
 
 	return(networkList)
 
@@ -385,7 +402,7 @@ NetworkAnalysis <- function (
 # wrappers for output ----
 .NWgeneralTB <- function(network, dataset, options, perform) {
 
-	nGraphs <- max(1, length(network))
+	nGraphs <- max(1, length(network[["network"]]))
 	table <- list(
 		title = "Summary of Network",
 		schema = list(fields = list(
@@ -393,7 +410,7 @@ NetworkAnalysis <- function (
 			#list(name = "value", title = "", type = "number", format="sf:4;dp:3")
 		))
 	)
-	for (i in 1:nGraphs) {
+	for (i in seq_len(nGraphs)) {
 		table[["schema"]][["fields"]][[i+1]] <-
 			list(name = paste0("value", i), title = paste0("network ", i), type = "number", format="sf:4;dp:3")
 	}
@@ -409,8 +426,8 @@ NetworkAnalysis <- function (
 		table[["status"]] <- "inited"
 
 	} else { # fill in with info from bootnet:::print.bootnet
-
-		for (i in 1:nGraphs) {
+		# browser()
+		for (i in seq_len(nGraphs)) {
 
 			nw <- network[["network"]][[i]]
 
@@ -461,8 +478,8 @@ NetworkAnalysis <- function (
 }
 
 .networkAnalysisCentralityTB <- function(network, options, perform) {
-	# browser()
-	nGraphs <- max(1, length(network))
+
+	nGraphs <- max(1, length(network[["network"]]))
 
 	table <- list(
 		title = "Centrality measures per variable",
@@ -477,7 +494,7 @@ NetworkAnalysis <- function (
 		overTitles <- paste0("Network", 1:nGraphs)
 
 	# create the fields
-	for (i in seq_along(network)) {
+	for (i in seq_len(nGraphs)) {
 		# three centrality columns per network
 
 		table[["schema"]][["fields"]][[2 + 3*(i-1)]] <- list(name = paste0("Betweenness", i), title = "Betweenness", type = "number", format="sf:4;dp:3", overTitle = overTitles[i])
@@ -508,7 +525,7 @@ NetworkAnalysis <- function (
 	} else { # fill with results
 
 		TBcolumns <- NULL
-		for (i in seq_along(network)) {
+		for (i in seq_len(nGraphs)) {
 
 			toAdd <- network[["centrality"]][[i]]
 			names(toAdd) <- c("Variable", paste0(c("Betweenness", "Closeness", "Strength"), i))
@@ -531,7 +548,7 @@ NetworkAnalysis <- function (
 
 }
 
-.plotFunNetwork <- function() {
+.networkAnalysisOneNetworkPlot <- function() {
 
 	# eval(quote()) construction because this function is evaluated inside .writeImage()
 	# which needs to look 2 levels up to find the objects network and options.
@@ -552,10 +569,6 @@ NetworkAnalysis <- function (
 			u <- unique(options[["colorNodesByData"]])
 			groups <- lapply(u, function(x, y) which(y == x), y = options[["colorNodesByData"]])
 			names(groups) <- u
-			print('options[["colorNodesByData"]]')
-			print(options[["colorNodesByData"]])
-			print("groups")
-			print(groups)
 
 		} else {
 			groups <- NULL
@@ -572,7 +585,7 @@ NetworkAnalysis <- function (
 
 		qgraph::qgraph(
 			input      = wMat,
-			layout     = options[["layout"]],
+			layout     = layout, # options[["layout"]],
 			groups     = groups,
 			repulsion  = options[["repulsion"]],
 			cut        = options[["cut"]],
@@ -590,86 +603,124 @@ NetworkAnalysis <- function (
 
 }
 
-.networkAnalysiscentralityPlot <- function(wide) {
-
-	wideDf <- Reduce(rbind, wide)
-	if (length(wide) > 1) {
-		wideDf[["graph"]] <- rep(1:length(wide), each = nrow(wideDf) / length(wide))
-		Long <- reshape2::melt(wideDf, id.vars = c("node", "graph"))
-		colnames(Long)[3] <- "measure"
-	} else {
-		Long <- reshape2::melt(wideDf, id.vars = "node")
-		colnames(Long)[2] <- "measure"
-	}
-	Long[["type"]] <- NA
-
-	# code modified from qgraph::centralityPlot()
-
-	Long <- Long[gtools::mixedorder(Long$node), ]
-	Long$node <- factor(as.character(Long$node), levels = unique(gtools::mixedsort(as.character(Long$node))))
-	if (length(unique(Long$type)) > 1) {
-		g <- ggplot2::ggplot(Long, ggplot2::aes(x = value, y = node, group = type,
-							  colour = type))
-	} else {
-		g <- ggplot2::ggplot(Long, ggplot2::aes(x = value, y = node, group = type))
-	}
-	g <- g + ggplot2::geom_path() + ggplot2::xlab("") + ggplot2::ylab("") + ggplot2::geom_point()
-	if (length(unique(Long$graph)) > 1) {
-		g <- g + ggplot2::facet_grid(graph ~ measure, scales = "free")
-	} else {
-		g <- g + ggplot2::facet_grid(~measure, scales = "free")
-	}
-
-	return(g + ggplot2::theme_bw())
-
-}
-
-# general function that makes the json framework around plot functions
-.makeNetworkPLT <- function(network, options, perform, oldPlot = NULL, plotType) {
+.networkAnalysisCentralityPlot <- function(network, options, perform, oldPlot = NULL) {
 
 	if (!is.null(oldPlot) && !identical(oldPlot[["data"]], ""))
 		return(oldPlot)
 
-	if (plotType == "network") {
-
-		plot <- list(
-			title = "Network Plot",
-			width = options[["plotWidthNetwork"]],
-			height = options[["plotHeightNetwork"]],
-			custom = list(width = "plotWidthNetwork", height = "plotHeightNetwork"),
-			data = "",
-			status = "inited"
-		)
-
-	} else if (plotType == "centrality") {
-
-		plot <- list(
-			title = "Centrality Plot",
-			width = options[["plotWidthCentrality"]],
-			height = options[["plotHeightCentrality"]],
-			custom = list(width = "plotWidthCentrality", height = "plotHeightCentrality"),
-			data = "",
-			status = "inited"
-		)
-
-	}
+	plot <- list(
+		title = "Centrality Plot",
+		width = options[["plotWidthCentrality"]],
+		height = options[["plotHeightCentrality"]],
+		custom = list(width = "plotWidthCentrality", height = "plotHeightCentrality"),
+		data = "",
+		status = "inited"
+	)
 
 	if (perform == "run") {
-		# browser()
-		if (plotType == "network")
-		network <- network[["network"]][[1]]
 
-		plotObjOrFun <- switch(plotType,
-			"network" = .plotFunNetwork,
-			"centrality" = .networkAnalysiscentralityPlot(network[["centrality"]])
-		)
+		wide <- network[["centrality"]]
+		wideDf <- Reduce(rbind, wide)
+		if (length(wide) > 1) {
+			wideDf[["graph"]] <- rep(names(network[["centrality"]]), each = nrow(wideDf) / length(wide))
+			Long <- reshape2::melt(wideDf, id.vars = c("node", "graph"))
+			colnames(Long)[3] <- "measure"
+		} else {
+			Long <- reshape2::melt(wideDf, id.vars = "node")
+			colnames(Long)[2] <- "measure"
+		}
+		Long[["type"]] <- NA
 
-		content <- .writeImage(width = plot[["width"]], height = plot[["height"]], plot = plotObjOrFun)
+		# code modified from qgraph::centralityPlot()
+
+		Long <- Long[gtools::mixedorder(Long$node), ]
+		Long$node <- factor(as.character(Long$node), levels = unique(gtools::mixedsort(as.character(Long$node))))
+		if (length(unique(Long$type)) > 1) {
+			g <- ggplot2::ggplot(Long, ggplot2::aes(x = value, y = node, group = type,
+													colour = type))
+		} else {
+			g <- ggplot2::ggplot(Long, ggplot2::aes(x = value, y = node, group = type))
+		}
+		g <- g + ggplot2::geom_path() + ggplot2::xlab("") + ggplot2::ylab("") + ggplot2::geom_point()
+		if (length(unique(Long$graph)) > 1) {
+			g <- g + ggplot2::facet_grid(graph ~ measure, scales = "free")
+		} else {
+			g <- g + ggplot2::facet_grid(~measure, scales = "free")
+		}
+		g <- g + ggplot2::theme_bw()
+
+		content <- .writeImage(width = plot[["width"]], height = plot[["height"]], plot = g)
 
 		plot[["convertible"]] <- TRUE
 		plot[["data"]] <- content[["png"]]
 		plot[["obj"]] <- content[["obj"]]
 		plot[["status"]] <- "complete"
+
+	}
+
+	return(plot)
+
+}
+
+.networkAnalysisNetworkPlot <- function(network, options, perform, oldPlot = NULL) {
+
+	if (!is.null(oldPlot) && !identical(oldPlot[["collection"]][[1]][["data"]], ""))
+		return(oldPlot)
+
+	plot <- list(
+		title = "Network Plot",
+		collection = list(),
+		status = "inited"
+	)
+
+	subPlotBase <- list(
+		width = options[["plotWidthNetwork"]],
+		height = options[["plotHeightNetwork"]],
+		custom = list(width = "plotWidthNetwork", height = "plotHeightNetwork")
+	)
+
+	if (perform == "run") {
+
+		allNetworks <- network[["network"]]
+		if (options[["layout"]] == "circle") {
+			layout <- "circle"
+		} else {
+
+			# this calls qgraph::qgraph so we need the png trick again
+			tempFileName <- getTempFileName()
+			grDevices::png(filename = tempFileName)
+			layout <- qgraph::averageLayout(network[["network"]], repulsion = options[["repulsion"]])
+			dev.off() # close the fake png
+			file.remove(tempFileName) # remove the fake png file
+
+		}
+
+		for (v in names(allNetworks)) {
+
+			subPlot <- subPlotBase
+			subPlot[["title"]] <- v
+			subPlot[["name"]] <- v
+
+			network <- allNetworks[[v]]
+			content <- .writeImage(width = subPlotBase[["width"]], height = subPlotBase[["height"]], plot = .networkAnalysisOneNetworkPlot)
+
+			subPlot[["convertible"]] <- TRUE
+			subPlot[["data"]] <- content[["png"]]
+			subPlot[["obj"]] <- content[["obj"]]
+			subPlot[["status"]] <- "complete"
+			plot[["collection"]][[v]] <- subPlot
+
+		}
+
+		plot[["status"]] <- "complete"
+
+	} else {
+
+		subPlot <- subPlotBase
+		subPlot[["network 1"]] <- "network 1"
+		subPlot[["data"]] <- ""
+		subPlot[["status"]] <- "inited"
+		plot[["collection"]][["network 1"]] <- subPlot
 
 	}
 
