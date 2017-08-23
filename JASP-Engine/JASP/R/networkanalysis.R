@@ -424,7 +424,7 @@ NetworkAnalysis <- function (
 
 		TBcolumns[["value"]] <- rep(".", 3*nGraphs)
 		table[["status"]] <- "inited"
-		table[["schema"]][["fields"]][[1]][["title"]] <- "Network"
+		table[["schema"]][["fields"]][[2]][["title"]] <- "Network"
 
 	} else { # fill in with info from bootnet:::print.bootnet
 		# browser()
