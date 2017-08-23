@@ -171,8 +171,19 @@
 		},
 		{
 			"name": "showLegend",
-			"type": "Boolean",
-			"default": true
+			"type": "List",
+			"options": [
+				"No legend",
+				"All plots",
+				"In plot number: "
+			],
+			"default": "All plots"
+		},
+		{
+			"name": "legendNumber",
+			"type": "Integer",
+			"default": 1,
+			"min": 0
 		},
 		{
 			"name": "nodeColors",

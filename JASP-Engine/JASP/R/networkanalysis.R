@@ -93,7 +93,7 @@ NetworkAnalysis <- function (
 		networkPLT = c(defArgs,
 					   "plotWidthNetwork", "plotHeightNetwork",
 					   "layout", "edgeColors", "repulsion", "edgeSize", "nodeSize", "colorNodesBy",
-					   "maxEdgeStrength", "minEdgeStrength", "cut", "showDetails", "nodeColors", "showLegend",
+					   "maxEdgeStrength", "minEdgeStrength", "cut", "showDetails", "nodeColors", "showLegend", "legendNumber",
 					   "weightedNetwork", "signedNetwork", "missingValues"),
 		# depends only on plotting arguments
 		centralityPLT = c(defArgs,
@@ -136,7 +136,7 @@ NetworkAnalysis <- function (
 
 	## Create Output ##  ----
 	keep <- NULL
-	results[["generalTB"]] <- .NWgeneralTB(network, dataset, options, perform)
+	results[["generalTB"]] <- .networkAnalysisGeneralTB(network, dataset, options, perform)
 	# browser()
 	if (options[["tableFitMeasures"]]) {
 		results[["fitMeasuresTB"]] <- .fitMeasuresTB(network, options, perform)
@@ -400,7 +400,7 @@ NetworkAnalysis <- function (
 }
 
 # wrappers for output ----
-.NWgeneralTB <- function(network, dataset, options, perform) {
+.networkAnalysisGeneralTB <- function(network, dataset, options, perform) {
 
 	nGraphs <- max(1, length(network[["network"]]))
 	table <- list(
@@ -412,7 +412,7 @@ NetworkAnalysis <- function (
 	)
 	for (i in seq_len(nGraphs)) {
 		table[["schema"]][["fields"]][[i+1]] <-
-			list(name = paste0("value", i), title = paste0("network ", i), type = "number", format="sf:4;dp:3")
+			list(name = paste0("value", i), title = names(network[["network"]])[i], type = "number", format="sf:4;dp:3")
 	}
 
 	footnotes <- .newFootnotes()
@@ -424,6 +424,7 @@ NetworkAnalysis <- function (
 
 		TBcolumns[["value"]] <- rep(".", 3*nGraphs)
 		table[["status"]] <- "inited"
+		table[["schema"]][["fields"]][[1]][["title"]] <- "Network"
 
 	} else { # fill in with info from bootnet:::print.bootnet
 		# browser()
@@ -563,18 +564,6 @@ NetworkAnalysis <- function (
 			maxE <- NULL
 		}
 
-
-		if (!is.null(options[["colorNodesByData"]])) {
-
-			u <- unique(options[["colorNodesByData"]])
-			groups <- lapply(u, function(x, y) which(y == x), y = options[["colorNodesByData"]])
-			names(groups) <- u
-
-		} else {
-			groups <- NULL
-			options[["showLegend"]] <- FALSE
-		}
-
 		wMat <- network[["graph"]]
 		if (!options[["weightedNetwork"]]) {
 			wMat <- sign(wMat)
@@ -597,7 +586,7 @@ NetworkAnalysis <- function (
 			labels     = .unv(network[["labels"]]),
 			palette    = options[["nodeColors"]],
 			theme      = options[["edgeColors"]],
-			legend     = options[["showLegend"]]
+			legend     = legend # options[["showLegend"]]
 		)}
 	), envir = parent.frame(2))
 
@@ -682,6 +671,7 @@ NetworkAnalysis <- function (
 	if (perform == "run") {
 
 		allNetworks <- network[["network"]]
+		nGraphs <- length(allNetworks)
 		if (options[["layout"]] == "circle") {
 			layout <- "circle"
 		} else {
@@ -694,7 +684,41 @@ NetworkAnalysis <- function (
 			file.remove(tempFileName) # remove the fake png file
 
 		}
-
+		
+		groups <- NULL
+		allLegends <- rep(FALSE, nGraphs) # no legends
+		if (!is.null(options[["colorNodesByData"]])) {
+			
+			u <- unique(options[["colorNodesByData"]])
+			groups <- lapply(u, function(x, y) which(y == x), y = options[["colorNodesByData"]])
+			names(groups) <- u
+			
+			if (options[["showLegend"]] ==  "All plots") {
+				
+				allLegends <- rep(TRUE, nGraphs)
+				
+			} else if (options[["showLegend"]] ==  "In plot number: ") {
+				
+				if (options[["legendNumber"]] > nGraphs) {
+					
+					allLegends[nGraphs] <- TRUE
+					
+				} else if (options[["legendNumber"]] < 1) {
+					
+					allLegends[1] <- TRUE
+					
+				} else {
+					
+					allLegends[options[["legendNumber"]]] <- TRUE
+					
+				}
+				
+			}
+			
+		} 
+		
+		names(allLegends) <- names(allNetworks) # allows indexing by name
+		
 		for (v in names(allNetworks)) {
 
 			subPlot <- subPlotBase
@@ -702,6 +726,7 @@ NetworkAnalysis <- function (
 			subPlot[["name"]] <- v
 
 			network <- allNetworks[[v]]
+			legend <- allLegends[[v]]
 			content <- .writeImage(width = subPlotBase[["width"]], height = subPlotBase[["height"]], plot = .networkAnalysisOneNetworkPlot)
 
 			subPlot[["convertible"]] <- TRUE
