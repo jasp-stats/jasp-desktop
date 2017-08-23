@@ -49,7 +49,7 @@ NetworkAnalysisForm::NetworkAnalysisForm(QWidget *parent) :
     ui->colorNodesBy->setDoubleClickTarget(ui->listAvailableFields);
 
     TableModelVariablesAssigned *mgmVariableTypeModel = new TableModelVariablesAssigned(this);
-    mgmVariableTypeModel->setVariableTypesAllowed(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
+    mgmVariableTypeModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
     mgmVariableTypeModel->setSource(&_availableVariablesModel);
     ui->mgmVariableType->setModel(mgmVariableTypeModel);
     ui->mgmVariableType->setDoubleClickTarget(ui->listAvailableFields);
@@ -87,6 +87,8 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->split->setEnabled(false);
         ui->rule->setEnabled(false);
         ui->boxGroupingVariable->setEnabled(false);
+        ui->buttonAssignMgmVariableType->setEnabled(false);
+        ui->mgmVariableType->setEnabled(false);
     } else if (choice_str.compare("pcor") == 0) {
         ui->correlationMethod->setEnabled(true);
         ui->missingValues->setEnabled(true);
@@ -99,6 +101,8 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->split->setEnabled(false);
         ui->rule->setEnabled(false);
         ui->boxGroupingVariable->setEnabled(false);
+        ui->buttonAssignMgmVariableType->setEnabled(false);
+        ui->mgmVariableType->setEnabled(false);
     } else if (choice_str.compare("IsingFit") == 0) {
         ui->tuningParameterBox->setEnabled(true);
         ui->split->setEnabled(true);
@@ -111,6 +115,8 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->crossValidation->setEnabled(false);
         ui->missingValues->setEnabled(false);
         ui->boxGroupingVariable->setEnabled(false);
+        ui->buttonAssignMgmVariableType->setEnabled(false);
+        ui->mgmVariableType->setEnabled(false);
     } else if (choice_str.compare("IsingSampler") == 0) {
         ui->isingEstimator->setEnabled(true);
         ui->split->setEnabled(true);
@@ -123,6 +129,8 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->crossValidation->setEnabled(false);
         ui->boxGroupingVariable->setEnabled(false);
         ui->missingValues->setEnabled(false);
+        ui->buttonAssignMgmVariableType->setEnabled(false);
+        ui->mgmVariableType->setEnabled(false);
     } else if (choice_str.compare("huge") == 0) {
         ui->tuningParameterBox->setEnabled(true);
         ui->criterion->setEnabled(true);
@@ -136,6 +144,8 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->crossValidation->setEnabled(false);
         ui->missingValues->setEnabled(false);
         ui->boxGroupingVariable->setEnabled(false);
+        ui->buttonAssignMgmVariableType->setEnabled(false);
+        ui->mgmVariableType->setEnabled(false);
     } else if (choice_str.compare("adalasso") == 0) {
         ui->crossValidation->setEnabled(true);
 
@@ -148,12 +158,16 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->missingValues->setEnabled(false);
         ui->sampleSize->setEnabled(false);
         ui->boxGroupingVariable->setEnabled(false);
+        ui->buttonAssignMgmVariableType->setEnabled(false);
+        ui->mgmVariableType->setEnabled(false);
     } else if (choice_str.compare("mgm") == 0) {
         ui->tuningParameterBox->setEnabled(true);
         ui->criterion->setEnabled(true);
         ui->rule->setEnabled(true);
         ui->_4cv->setEnabled(true);
         ui->boxGroupingVariable->setEnabled(true);
+        ui->buttonAssignMgmVariableType->setEnabled(true);
+        ui->mgmVariableType->setEnabled(true);
 
         ui->isingEstimator->setEnabled(false);
         ui->split->setEnabled(false);

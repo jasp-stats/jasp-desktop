@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>729</width>
+    <width>785</width>
     <height>1865</height>
    </rect>
   </property>
@@ -512,6 +512,51 @@
               </layout>
              </widget>
             </item>
+            <item row="4" column="3">
+             <widget class="BoundGroupBox" name="network">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string>Network</string>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_41">
+               <item row="1" column="0">
+                <widget class="BoundCheckBox" name="signedNetwork">
+                 <property name="text">
+                  <string>Signed</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <spacer name="horizontalSpacer_22">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="0" column="0">
+                <widget class="BoundCheckBox" name="weightedNetwork">
+                 <property name="text">
+                  <string>Weighted</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
             <item row="2" column="2">
              <widget class="BoundGroupBox" name="isingEstimator">
               <property name="sizePolicy">
@@ -521,7 +566,7 @@
                </sizepolicy>
               </property>
               <property name="title">
-               <string>Ising estimator</string>
+               <string>Ising Estimator</string>
               </property>
               <property name="flat">
                <bool>false</bool>
@@ -608,51 +653,6 @@
               </layout>
              </widget>
             </item>
-            <item row="4" column="3">
-             <widget class="BoundGroupBox" name="network">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title">
-               <string>Should network be</string>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_41">
-               <item row="1" column="0">
-                <widget class="BoundCheckBox" name="signedNetwork">
-                 <property name="text">
-                  <string>Signed</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <spacer name="horizontalSpacer_22">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="0" column="0">
-                <widget class="BoundCheckBox" name="weightedNetwork">
-                 <property name="text">
-                  <string>Weighted</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
             <item row="4" column="2">
              <widget class="BoundGroupBox" name="tuningParameterBox">
               <property name="sizePolicy">
@@ -662,7 +662,7 @@
                </sizepolicy>
               </property>
               <property name="title">
-               <string>Tuning parameter</string>
+               <string>Tuning Parameter</string>
               </property>
               <property name="flat">
                <bool>false</bool>
@@ -819,6 +819,63 @@
               </layout>
              </widget>
             </item>
+            <item row="3" column="2">
+             <widget class="BoundGroupBox" name="missingValues">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string>Missing Values</string>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_40">
+               <item row="0" column="0">
+                <widget class="QRadioButton" name="_1excludePairwise">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Exclude pairwise</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QRadioButton" name="_2excludeListwise">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Exclude listwise</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <spacer name="horizontalSpacer_21">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
             <item row="3" column="1">
              <widget class="BoundGroupBox" name="rule">
               <property name="sizePolicy">
@@ -862,63 +919,6 @@
                </item>
                <item row="0" column="1">
                 <spacer name="horizontalSpacer_18">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="3" column="2">
-             <widget class="BoundGroupBox" name="missingValues">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title">
-               <string>Missing values</string>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_40">
-               <item row="0" column="0">
-                <widget class="QRadioButton" name="_1excludePairwise">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Exclude pairwise</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QRadioButton" name="_2excludeListwise">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Exclude listwise</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <spacer name="horizontalSpacer_21">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>
@@ -999,7 +999,7 @@
                </sizepolicy>
               </property>
               <property name="title">
-               <string>Sample size</string>
+               <string>Sample Size</string>
               </property>
               <property name="flat">
                <bool>false</bool>
@@ -1060,84 +1060,6 @@
               </layout>
              </widget>
             </item>
-            <item row="5" column="1">
-             <widget class="BoundGroupBox" name="boxGroupingVariable">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title">
-               <string>Variable Type</string>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_45">
-               <item row="0" column="1">
-                <widget class="AssignButton" name="buttonAssignMgmVariableType">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>50</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>50</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="3">
-                <widget class="boundSingleItemView" name="mgmVariableType">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="4">
-                <spacer name="horizontalSpacer_26">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </widget>
-            </item>
             <item row="5" column="2">
              <widget class="BoundGroupBox" name="crossValidation">
               <property name="sizePolicy">
@@ -1147,7 +1069,7 @@
                </sizepolicy>
               </property>
               <property name="title">
-               <string>Crossvalidation</string>
+               <string>Cross-validation</string>
               </property>
               <property name="flat">
                <bool>false</bool>
@@ -1217,7 +1139,7 @@
                </sizepolicy>
               </property>
               <property name="title">
-               <string>Should centrality measures be</string>
+               <string>Centrality Measures</string>
               </property>
               <property name="flat">
                <bool>false</bool>
@@ -1278,6 +1200,84 @@
               </layout>
              </widget>
             </item>
+            <item row="5" column="1">
+             <widget class="BoundGroupBox" name="boxGroupingVariable">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string>Variable Type</string>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_45">
+               <item row="0" column="3">
+                <widget class="boundSingleItemView" name="mgmVariableType">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="4">
+                <spacer name="horizontalSpacer_26">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="0" column="0">
+                <widget class="AssignButton" name="buttonAssignMgmVariableType">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>50</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>50</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
@@ -1327,9 +1327,139 @@
             <item row="1" column="1">
              <widget class="BoundGroupBox" name="sampleMode_2">
               <property name="title">
-               <string>Node colors</string>
+               <string>Node Colors</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_14_3">
+               <item row="3" column="1">
+                <widget class="BoundGroupBox" name="showLegend">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="title">
+                  <string>Legend</string>
+                 </property>
+                 <property name="flat">
+                  <bool>false</bool>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_16">
+                  <item row="2" column="0">
+                   <widget class="QRadioButton" name="legend_2">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="text">
+                     <string>All plots</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="BoundTextBox" name="legendNumber">
+                    <property name="minimumSize">
+                     <size>
+                      <width>60</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>60</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QRadioButton" name="legend_3">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="text">
+                     <string>In plot number:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QRadioButton" name="legend_1">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="text">
+                     <string>No legend</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="boundSingleItemView" name="colorNodesBy">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="baseSize">
+                  <size>
+                   <width>0</width>
+                   <height>32</height>
+                  </size>
+                 </property>
+                 <property name="selectionMode">
+                  <enum>QAbstractItemView::ExtendedSelection</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QLabel" name="splitbyLabel">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Color nodes by:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="1">
+                <spacer name="verticalSpacer_6">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
                <item row="2" column="0">
                 <widget class="AssignButton" name="buttonAssignColorNodesBy">
                  <property name="sizePolicy">
@@ -1352,19 +1482,6 @@
                  </property>
                  <property name="text">
                   <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QLabel" name="splitbyLabel">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Color nodes by:</string>
                  </property>
                 </widget>
                </item>
@@ -1411,59 +1528,18 @@
                  </item>
                 </widget>
                </item>
-               <item row="4" column="1">
-                <spacer name="verticalSpacer_6">
+               <item row="3" column="0">
+                <spacer name="horizontalSpacer">
                  <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                  <enum>Qt::Horizontal</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
-                   <width>20</width>
-                   <height>40</height>
+                   <width>40</width>
+                   <height>20</height>
                   </size>
                  </property>
                 </spacer>
-               </item>
-               <item row="2" column="1">
-                <widget class="boundSingleItemView" name="colorNodesBy">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="baseSize">
-                  <size>
-                   <width>0</width>
-                   <height>32</height>
-                  </size>
-                 </property>
-                 <property name="selectionMode">
-                  <enum>QAbstractItemView::ExtendedSelection</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="BoundCheckBox" name="showLegend">
-                 <property name="text">
-                  <string>Show legend</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
                </item>
               </layout>
              </widget>
@@ -1471,7 +1547,7 @@
             <item row="0" column="1">
              <widget class="BoundGroupBox" name="sampleMode">
               <property name="title">
-               <string>Edge colors</string>
+               <string>Edge Colors</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_14_1">
                <item row="0" column="0">
@@ -1609,66 +1685,13 @@
                </size>
               </property>
               <property name="title">
-               <string>Graphical options</string>
+               <string>Graphical Options</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_11">
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_10_1">
-                 <property name="text">
-                  <string>Edge size</string>
-                 </property>
-                </widget>
-               </item>
                <item row="7" column="0">
                 <widget class="QLabel" name="label_8_1">
                  <property name="text">
                   <string>Maximum edge strength</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="1">
-                <widget class="BoundTextBox" name="nodeSize">
-                 <property name="minimumSize">
-                  <size>
-                   <width>60</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>60</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="0">
-                <widget class="QLabel" name="label_8_2">
-                 <property name="text">
-                  <string>Minimum edge strength</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="10" column="1">
-                <widget class="BoundTextBox" name="cut">
-                 <property name="minimumSize">
-                  <size>
-                   <width>60</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>60</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_9">
-                 <property name="text">
-                  <string>Node size</string>
                  </property>
                 </widget>
                </item>
@@ -1677,29 +1700,6 @@
                  <property name="enabled">
                   <bool>true</bool>
                  </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>60</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>60</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item row="10" column="0">
-                <widget class="QLabel" name="label_8_3">
-                 <property name="text">
-                  <string>Cut</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="1">
-                <widget class="BoundTextBox" name="minEdgeStrength">
                  <property name="minimumSize">
                   <size>
                    <width>60</width>
@@ -1730,7 +1730,7 @@
                  </property>
                 </widget>
                </item>
-               <item row="11" column="0">
+               <item row="12" column="0">
                 <widget class="BoundCheckBox" name="showDetails">
                  <property name="text">
                   <string>Show details</string>
@@ -1753,14 +1753,7 @@
                  </property>
                 </widget>
                </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_8_4">
-                 <property name="text">
-                  <string>Repulsion</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="12" column="0">
+               <item row="13" column="0">
                 <spacer name="verticalSpacer_3">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
@@ -1772,6 +1765,89 @@
                   </size>
                  </property>
                 </spacer>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_9">
+                 <property name="text">
+                  <string>Node size</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_8_4">
+                 <property name="text">
+                  <string>Repulsion</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="BoundTextBox" name="nodeSize">
+                 <property name="minimumSize">
+                  <size>
+                   <width>60</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>60</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_10_1">
+                 <property name="text">
+                  <string>Edge size</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="1">
+                <widget class="BoundTextBox" name="minEdgeStrength">
+                 <property name="minimumSize">
+                  <size>
+                   <width>60</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>60</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_8_2">
+                 <property name="text">
+                  <string>Minimum edge strength</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="0">
+                <widget class="QLabel" name="label_8_3">
+                 <property name="text">
+                  <string>Cut</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="1">
+                <widget class="BoundTextBox" name="cut">
+                 <property name="minimumSize">
+                  <size>
+                   <width>60</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>60</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -1893,6 +1969,22 @@
     <hint type="destinationlabel">
      <x>275</x>
      <y>1444</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>legend_3</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>legendNumber</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>582</x>
+     <y>1749</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>691</x>
+     <y>1749</y>
     </hint>
    </hints>
   </connection>
