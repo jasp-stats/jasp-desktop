@@ -6,7 +6,7 @@
 #include <QDebug>
 #include <QColor>
 
-#include "qutils.h"
+#include "desktoputils.h"
 
 LevelsTableModel::LevelsTableModel(QObject *parent)
 	: QAbstractTableModel(parent)
@@ -61,9 +61,9 @@ QVariant LevelsTableModel::data(const QModelIndex &index, int role) const
 	int row = index.row();
 
 	if (index.column() == 0)
-		return tq(labels.getValueFromRow(row));
+		return toQStr(labels.getValueFromRow(row));
 	else
-		return tq(labels.getLabelFromRow(row));
+		return toQStr(labels.getLabelFromRow(row));
 }
 
 QVariant LevelsTableModel::headerData(int section, Qt::Orientation orientation, int role) const

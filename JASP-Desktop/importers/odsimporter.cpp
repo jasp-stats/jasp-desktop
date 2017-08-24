@@ -48,7 +48,7 @@ ODSImporter::~ODSImporter()
 
 
 // Implmemtation of Inporter base class.
-ImportDataSet* ODSImporter::loadFile(const string &locator, boost::function<void(const string &, int)> progressCallback)
+ImportDataSet* ODSImporter::loadFile(const JaspFileTypes::FilePath &locator, boost::function<void(const string &, int)> progressCallback)
 {
 	// Create new data set.
 	ODSImportDataSet * result = new ODSImportDataSet();
@@ -81,7 +81,7 @@ void ODSImporter::fillSharedMemoryColumn(ImportColumn *importColumn, Column &col
 
 }
 
-void ODSImporter::readManifest(const string &path, ODSImportDataSet *dataset)
+void ODSImporter::readManifest(const JaspFileTypes::FilePath &path, ODSImportDataSet *dataset)
 {
 
 	QXmlInputSource src;
@@ -105,7 +105,7 @@ void ODSImporter::readManifest(const string &path, ODSImportDataSet *dataset)
 	}
 }
 
-void ODSImporter::readContents(const string &path, ODSImportDataSet *dataset)
+void ODSImporter::readContents(const JaspFileTypes::FilePath &path, ODSImportDataSet *dataset)
 {
 
 	FileReader contents(path, dataset->getContentFilename());

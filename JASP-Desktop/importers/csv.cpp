@@ -28,7 +28,7 @@
 using namespace std;
 using boost::algorithm::trim;
 
-CSV::CSV(const string &path)
+CSV::CSV(const JaspFileTypes::FilePath &path)
 {
     _encoding = UTF8;
     _delim = ',';
@@ -58,7 +58,7 @@ void CSV::open()
 	_utf8BufferStartPos = 0;
 	_utf8BufferEndPos = 0;
 
-	_stream.open(_path.c_str(), ios::in);
+	_stream.open(_path, ios::in);
 
 	if ( ! _stream.is_open())
 	{

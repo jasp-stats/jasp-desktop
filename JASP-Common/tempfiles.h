@@ -18,6 +18,7 @@
 #ifndef TEMPFILES_H
 #define TEMPFILES_H
 
+#include "sysdepfiletype.h"
 #include <string>
 #include <vector>
 
@@ -44,22 +45,23 @@ void tempfiles_init(long sessionId);
 void tempfiles_attach(long sessionId);
 void tempfiles_heartbeat();
 
-std::string tempfiles_createSpecific_clipboard(const std::string &filename);
+JaspFileTypes::FilePath tempfiles_createSpecific_clipboard(const JaspFileTypes::FilePath &filename);
 void tempfiles_purgeClipboard();
 
-void tempfiles_create(const std::string &extension, int id, std::string &root, std::string &relativePath);
-void tempfiles_createSpecific(const std::string &name, int id, std::string &root, std::string &relativePath);
-std::string tempfiles_createSpecific(const std::string &dir, const std::string &filename);
+void tempfiles_create(const JaspFileTypes::FilePath &extension, int id, JaspFileTypes::FilePath &root, JaspFileTypes::FilePath &relativePath);
+void tempfiles_createSpecific(const JaspFileTypes::FilePath &name, int id, JaspFileTypes::FilePath &root, JaspFileTypes::FilePath &relativePath);
+JaspFileTypes::FilePath tempfiles_createSpecificFp(const JaspFileTypes::FilePath &dir, const JaspFileTypes::FilePath &filename);
+std::string tempfiles_createSpecificStr(const JaspFileTypes::FilePath &dir, const JaspFileTypes::FilePath &filename);
 
-std::vector<std::string> tempfiles_retrieveList(int id = -1);
-std::string tempfiles_sessionDirName();
+std::vector<JaspFileTypes::FilePath> tempfiles_retrieveListFullPaths(int id = -1);
+JaspFileTypes::FilePath tempfiles_sessionDirName();
 
-void tempfiles_deleteList(const std::vector<std::string> &files);
+void tempfiles_deleteList(const std::vector<JaspFileTypes::FilePath> &files);
 
 void tempfiles_deleteAll(int id = -1);
 void tempfiles_deleteOrphans();
 
-void tempFiles_addShmemFileName(std::string &name);
+void tempFiles_addShmemFileName(const std::string &name);
 
 
 #endif // TEMPFILES_H

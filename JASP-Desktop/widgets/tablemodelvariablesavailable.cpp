@@ -21,7 +21,6 @@
 #include "column.h"
 
 #include <QDebug>
-#include "qutils.h"
 
 using namespace std;
 

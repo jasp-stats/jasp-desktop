@@ -38,7 +38,7 @@
 
 using namespace std;
 
-void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
+void JASPImporter::loadDataSet(DataSetPackage *packageData, const FilePath &path, boost::function<void (const std::string &, int)> progressCallback)
 {	
 	packageData->isArchive = true;
 	packageData->dataSet = SharedMemory::createDataSet(); // this is required incase the loading of the data fails so that the SharedMemory::createDataSet() can be later freed.
@@ -56,7 +56,7 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, 
 }
 
 
-void JASPImporter::loadDataArchive(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
+void JASPImporter::loadDataArchive(DataSetPackage *packageData, const FilePath &path, boost::function<void (const std::string &, int)> progressCallback)
 {
 	if (packageData->dataArchiveVersion.major == 1)
 		loadDataArchive_1_00(packageData, path, progressCallback);
@@ -64,7 +64,7 @@ void JASPImporter::loadDataArchive(DataSetPackage *packageData, const string &pa
 		throw runtime_error("The file version is not supported.\nPlease update to the latest version of JASP to view this file.");
 }
 
-void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
+void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const FilePath &path, boost::function<void (const std::string &, int)> progressCallback)
 {
 	bool success = false;
 
@@ -273,7 +273,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 }
 
 
-void JASPImporter::loadJASPArchive(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
+void JASPImporter::loadJASPArchive(DataSetPackage *packageData, const FilePath &path, boost::function<void (const std::string &, int)> progressCallback)
 {
 	if (packageData->archiveVersion.major == 1 || packageData->archiveVersion.major == 2) //2.x version have a different analyses.json structure but can be loaded using the 1_00 loader.
 		loadJASPArchive_1_00(packageData, path, progressCallback);
@@ -281,7 +281,7 @@ void JASPImporter::loadJASPArchive(DataSetPackage *packageData, const string &pa
 		throw runtime_error("The file version is not supported.\nPlease update to the latest version of JASP to view this file.");
 }
 
-void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
+void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const FilePath &path, boost::function<void (const std::string &, int)> progressCallback)
 {
 	Json::Value analysesData;
 
@@ -298,9 +298,9 @@ void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const strin
 			string filename = resourceEntry.fileName();
 			string dir = resource.substr(0, resource.length() - filename.length() - 1);
 	
-			string destination = tempfiles_createSpecific(dir, resourceEntry.fileName());
+			FilePath destination = tempfiles_createSpecificFp(dir, resourceEntry.fileName());
 	
-			boost::nowide::ofstream file(destination.c_str(),  ios::out | ios::binary);
+			JaspFileTypes::OFStream file(destination, ios::out | ios::binary);
 	
 			char copyBuff[8016];
 			int bytes = 0;
@@ -322,7 +322,7 @@ void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const strin
 }
 
 
-void JASPImporter::readManifest(DataSetPackage *packageData, const string &path)
+void JASPImporter::readManifest(DataSetPackage *packageData, const FilePath &path)
 {
 	bool foundVersion = false;
 	bool foundDataVersion = false;
@@ -366,7 +366,7 @@ void JASPImporter::readManifest(DataSetPackage *packageData, const string &path)
 	manifest.close();
 }
 
-bool JASPImporter::parseJsonEntry(Json::Value &root, const string &path,  const string &entry, bool required)
+bool JASPImporter::parseJsonEntry(Json::Value &root, const FilePath &path,  const string &entry, bool required)
 {
 	FileReader* dataEntry = NULL;
 	try
@@ -378,7 +378,7 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const string &path,  const 
 		return false;
 	}
 	if (!dataEntry->archiveExists())
-		throw runtime_error("The selected JASP archive '" + path + "' could not be found.");
+		throw runtime_error("The selected JASP archive '" + path.native() + "' could not be found.");
 
 	if (!dataEntry->exists())
 	{

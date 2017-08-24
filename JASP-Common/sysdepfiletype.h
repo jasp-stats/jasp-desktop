@@ -19,8 +19,19 @@
 	Original file name was
 */
 
-#ifndef PORTERFILEPATH_H
-#define PORTERFILEPATH_H
+#ifndef SYSDEPFILETYPE_H
+#define SYSDEPFILETYPE_H 1
 
-#endif // PORTERFILEPATH_H
 
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
+
+class JaspFileTypes
+{
+public:
+	typedef boost::filesystem::path		FilePath;
+	typedef boost::filesystem::ofstream	OFStream;
+	typedef boost::filesystem::ifstream	IFStream;
+};
+
+#endif // SYSDEPFILETYPE_H

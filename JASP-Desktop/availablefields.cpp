@@ -20,7 +20,7 @@
 
 #include <boost/foreach.hpp>
 #include <boost/bind.hpp>
-#include "qutils.h"
+#include "desktoputils.h"
 
 using namespace std;
 
@@ -107,7 +107,7 @@ QVariant AvailableFields::data(const QModelIndex &index, int role) const
 	}
 	else if (role == Qt::DecorationRole)
 	{
-		string variable = fq(_availableFields.at(row));
+		string variable = toStr(_availableFields.at(row));
 		Column &column = _dataSet->columns().get(variable);
 
 		switch (column.columnType())

@@ -35,7 +35,7 @@ public:
 
 protected:
 	// Implmemtation of Inporter base class.
-	virtual ImportDataSet* loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback);
+	virtual ImportDataSet* loadFile(const JaspFileTypes::FilePath &locator, boost::function<void(const std::string &, int)> progressCallback);
 	virtual void fillSharedMemoryColumn(ImportColumn *importColumn, Column &column);
 
 private:
@@ -49,14 +49,14 @@ private:
 	 *
 	 * After JaspImporter::readManifest.
 	 */
-	void readManifest(const std::string &path, ods::ODSImportDataSet *dataset);
+	void readManifest(const JaspFileTypes::FilePath &path, ods::ODSImportDataSet *dataset);
 
 	/**
 	 * @brief readContents Reads contents to _dta;
 	 * @param path The file path to the archive file
 	 * @param dataset The data set to import into.
 	 */
-	void readContents(const std::string &path, ods::ODSImportDataSet *dataset);
+	void readContents(const JaspFileTypes::FilePath &path, ods::ODSImportDataSet *dataset);
 
 };
 

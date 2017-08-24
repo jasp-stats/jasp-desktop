@@ -17,6 +17,7 @@
 
 #include "resultexporter.h"
 #include "utils.h"
+#include "desktoputils.h"
 #include <boost/nowide/fstream.hpp>
 #include <QFile>
 #include <QTextDocument>
@@ -32,7 +33,7 @@ ResultExporter::ResultExporter()
 #endif
 }
 
-void ResultExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
+void ResultExporter::saveDataSet(const FilePath &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
 {
 
 	int maxSleepTime = 5000;
@@ -51,7 +52,7 @@ void ResultExporter::saveDataSet(const std::string &path, DataSetPackage* packag
 
 	if (_currentFileType == Utils::pdf)
 	{
-		QString htmlContent = QString::fromStdString(package->analysesHTML);
+		QString htmlContent = toQStr(package->analysesHTML);
 
 		//Next code could be a hack to show plots in pdf
 		//QUrl url = QUrl::fromLocalFile(QDir::current().absoluteFilePath("htmloutput.html"));
@@ -64,14 +65,15 @@ void ResultExporter::saveDataSet(const std::string &path, DataSetPackage* packag
 		QPrinter printer(QPrinter::PrinterResolution);
 		printer.setPaperSize(QPrinter::A4);
 		printer.setOutputFormat(QPrinter::PdfFormat);
-		printer.setOutputFileName(QString::fromStdString(path));
+		printer.setOutputFileName(toQStr(path));
 		document->print(&printer);
 		delete document;
 
 	}
 	else
 	{
-		boost::nowide::ofstream outfile(path.c_str(), std::ios::out);
+		File outfile;
+		outfile.open(path);
 
 		outfile << package->analysesHTML;
 		outfile.flush();

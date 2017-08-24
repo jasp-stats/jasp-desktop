@@ -36,18 +36,16 @@ using namespace spss;
 using namespace boost::interprocess;
 using namespace boost;
 
-string DataSetLoader::getExtension(const string &locator, const string &extension) {
-	filesystem::path path(locator);
-	string ext = path.extension().generic_string();
+//JaspFileTypes::FilePath DataSetLoader::getExtension(const JaspFileTypes::FilePath &locator, const string &extension) {
+JaspFileTypes::FilePath DataSetLoader::getExtension(const JaspFileTypes::FilePath &locator) {
 
-	if (!ext.length()) ext=extension;
-	return ext;
+	return locator.extension();
 }
 
-Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const string &locator, const string &extension)
+Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const JaspFileTypes::FilePath &locator, const string &extension)
 {
 	Importer* result = NULL;
-	string ext = getExtension(locator, extension);
+	string ext = getExtension(locator).generic_string();
 
 	if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt"))
 		result = new CSVImporter(packageData);
@@ -59,7 +57,7 @@ Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const string &
 	return result;
 }
 
-void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
+void DataSetLoader::loadPackage(DataSetPackage *packageData, const JaspFileTypes::FilePath &locator, const string &extension, boost::function<void(const string &, int)> progress)
 {
 	Importer* importer = getImporter(packageData, locator, extension);
 
@@ -72,7 +70,7 @@ void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locat
 		JASPImporter::loadDataSet(packageData, locator, progress);
 }
 
-void DataSetLoader::syncPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
+void DataSetLoader::syncPackage(DataSetPackage *packageData, const JaspFileTypes::FilePath &locator, const string &extension, boost::function<void(const string &, int)> progress)
 {
 	Importer* importer = getImporter(packageData, locator, extension);
 

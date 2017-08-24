@@ -16,6 +16,7 @@
 //
 
 #include "textfileread_test.h"
+#include "desktoputils.h"
 
 
 void TextFileReadTest::initTestCase()
@@ -67,7 +68,7 @@ void TextFileReadTest::asyncloaderTester_data()
     {
       if (!boost::filesystem::is_directory(i->path())) //we eliminate directories
       {
-        QTest::newRow("text file-read test") << QString::fromStdString(i->path().filename().string());
+		QTest::newRow("text file-read test") << toQStr(i->path().filename().string());
       }
     }
   }

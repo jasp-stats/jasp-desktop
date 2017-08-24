@@ -25,6 +25,7 @@
 #include "options/optionlist.h"
 #include "options/optionvariables.h"
 #include "column.h"
+#include "desktoputils.h"
 
 using namespace std;
 
@@ -104,12 +105,12 @@ void TableModelVariablesLevels::mimeDataMoved(const QModelIndexList &indexes)
 	if (levelRemoved)
 	{
 		OptionString *nameOption = static_cast<OptionString *>(_boundTo->rowTemplate()->get("name"));
-		QString nameTemplate = tq(nameOption->value());
+		QString nameTemplate = toQStr(nameOption->value());
 
 		for (uint i = 0; i < _levels.size(); i++)
 		{
 			nameOption = static_cast<OptionString *>(_levels.at(i)->get("name"));
-			nameOption->setValue(fq(nameTemplate.arg(i + 1)));
+			nameOption->setValue(toStr(nameTemplate.arg(i + 1)));
 		}
 	}
 
@@ -196,12 +197,12 @@ QVariant TableModelVariablesLevels::data(const QModelIndex &index, int role) con
 		else
 		{
 			OptionList *list = row.option();
-			QString selected = tq(list->value());
+			QString selected = toQStr(list->value());
 
 			if (role == Qt::DisplayRole)
 				return selected;
 
-			QStringList items = tql(list->options());
+			QStringList items = toQStringList(list->options());
 
 			QList<QVariant> value;
 			value.append(selected);
@@ -377,7 +378,7 @@ bool TableModelVariablesLevels::dropMimeData(const QMimeData *data, Qt::DropActi
 
 				Options *options = dynamic_cast<Options*>(_boundTo->rowTemplate()->clone());
 				OptionString *nameOption = dynamic_cast<OptionString *>(options->get("name"));
-				string levelName = fq(tq(nameOption->value()).arg(level + 1));
+				string levelName = toStr(toQStr(nameOption->value()).arg(level + 1));
 				nameOption->setValue(levelName);
 				_levels.push_back(options);
 			}
@@ -437,12 +438,12 @@ bool TableModelVariablesLevels::dropMimeData(const QMimeData *data, Qt::DropActi
 				// update the level names
 
 				OptionString *nameOption = static_cast<OptionString *>(_boundTo->rowTemplate()->get("name"));
-				QString nameTemplate = tq(nameOption->value());
+				QString nameTemplate = toQStr(nameOption->value());
 
 				for (uint i = 0; i < _levels.size(); i++)
 				{
 					nameOption = static_cast<OptionString *>(_levels.at(i)->get("name"));
-					nameOption->setValue(fq(nameTemplate.arg(i + 1)));
+					nameOption->setValue(toStr(nameTemplate.arg(i + 1)));
 				}
 			}
 
@@ -513,7 +514,7 @@ void TableModelVariablesLevels::refresh()
 		OptionString *nameOption = dynamic_cast<OptionString *>(level->get("name"));
 		vector<string> variables = variablesOption->variables();
 
-		_rows.append(Row(tq(nameOption->value()), true));
+		_rows.append(Row(toQStr(nameOption->value()), true));
 
 		for (uint j = 2; j < level->size(); j++)
 		{
@@ -522,13 +523,13 @@ void TableModelVariablesLevels::refresh()
 		}
 
 		foreach (const string &variable, variables)
-			_rows.append(Row(tq(variable)));
+			_rows.append(Row(toQStr(variable)));
 	}
 
 	if (_limitToOneLevel == false)
 	{
 		OptionString *nameTemplate = static_cast<OptionString *>(_boundTo->rowTemplate()->get("name"));
-		QString name = tq(nameTemplate->value()).arg(i + 1);
+		QString name = toQStr(nameTemplate->value()).arg(i + 1);
 		_rows.append(Row(name, true));
 	}
 

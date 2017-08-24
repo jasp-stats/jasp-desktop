@@ -22,8 +22,6 @@
 #include <QPaintEvent>
 #include <QPainter>
 
-#include "qutils.h"
-
 BoundTextEdit::BoundTextEdit(QWidget *parent) :
 	QTextEdit(parent)
 {

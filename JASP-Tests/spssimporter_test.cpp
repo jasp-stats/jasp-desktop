@@ -18,6 +18,7 @@
 #include "spssimporter_test.h"
 #include <boost/lexical_cast.hpp>
 #include <algorithm>
+#include "desktoputils.h"
 
 
 void SPSSImporterTest::init()
@@ -49,7 +50,7 @@ void SPSSImporterTest::spssTester_data()
 	{
 		if (!boost::filesystem::is_directory(i->path())) //we eliminate directories
 		{
-			QTest::newRow("spss file test") << QString::fromStdString(i->path().filename().string());
+			QTest::newRow("spss file test") << toQStr(i->path().filename().string());
 		}
 	}
 }
@@ -141,11 +142,11 @@ bool SPSSImporterTest::checkIfEqual(struct fileContent *fc1, struct fileContent 
 
 	for(int i=0; i<fc2->columns; ++i)
 	{
-		if(QString::fromStdString(fc1->headers[i]) != QString::fromStdString(fc2->headers[i]))
-		{
-			// qDebug() << "Warning: Header name mismatch: " << QString::fromStdString(fc1->headers[i]) << " " << QString::fromStdString(fc2->headers[i]);
+//		if(fc1->headers[i] != fc2->headers[i])
+//		{
+			// qDebug() << "Warning: Header name mismatch: " << toQStr(fc1->headers[i]) << " " << toQStr(fc2->headers[i]);
 			//return false;
-		}
+//		}
 
 		for(int j=0; j<fc2->rows; ++j)
 		{
@@ -169,9 +170,9 @@ bool SPSSImporterTest::checkIfEqual(struct fileContent *fc1, struct fileContent 
 				}
 				if (!success)
 				{
-					qDebug() << "Data mismatch at row: " << QString::number(j+1) << " and column: " << QString::fromStdString(fc1->headers[i]) << " (number " << QString::number(i) << ")";
-					qDebug() << "CSV: " << QString::fromStdString(str2);
-					qDebug() << "SPSS: " << QString::fromStdString(str1);
+					qDebug() << "Data mismatch at row: " << QString::number(j+1) << " and column: " << toQStr(fc1->headers[i]) << " (number " << QString::number(i) << ")";
+					qDebug() << "CSV: " << toQStr(str2);
+					qDebug() << "SPSS: " << toQStr(str1);
 					return false;
 				}
 			}

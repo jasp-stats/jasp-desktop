@@ -17,7 +17,7 @@
 //
 
 #include "term.h"
-#include "qutils.h"
+#include "desktoputils.h"
 
 #include <sstream>
 #include <boost/foreach.hpp>
@@ -40,19 +40,19 @@ Term::Term(const std::vector<string> components)
 #endif
 
 		_asString.append(component);
-		_components.append(tq(component));
+		_components.append(toQStr(component));
 		_scomponents.push_back(component);
 	}
 
-	_asQString = tq(_asString);
+	_asQString = toQStr(_asString);
 }
 
 Term::Term(const string component)
 {
-	_components.append(tq(component));
+	_components.append(toQStr(component));
 	_scomponents.push_back(component);
 	_asString = component;
-	_asQString = tq(component);
+	_asQString = toQStr(component);
 }
 
 Term::Term(const QStringList components)
@@ -72,18 +72,18 @@ Term::Term(const QStringList components)
 
 		_asQString += component;
 		_components.append(component);
-		_scomponents.push_back(fq(component));
+		_scomponents.push_back(component.toStdString());
 	}
 
-	_asString = fq(_asQString);
+	_asString = _asQString.toStdString();
 }
 
 Term::Term(const QString component)
 {
 	_components.append(component);
-	_scomponents.push_back(fq(component));
+	_scomponents.push_back(component.toStdString());
 	_asQString = component;
-	_asString = fq(component);
+	_asString = component.toStdString();
 }
 
 const QStringList &Term::components() const

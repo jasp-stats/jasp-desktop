@@ -47,7 +47,7 @@ const char* Utils::getFileTypeString(const Utils::FileType &fileType) {
 	}
 }
 
-Utils::FileType Utils::getTypeFromFileName(const std::string &path)
+Utils::FileType Utils::getTypeFromFileName(const JaspFileTypes::FilePath &path)
 {
 
 	Utils::FileType filetype =  Utils::unknown;
@@ -57,7 +57,7 @@ Utils::FileType Utils::getTypeFromFileName(const std::string &path)
 		Utils::FileType it = static_cast<Utils::FileType>(i);
 		std::string it_str(".");
 		it_str += Utils::getFileTypeString(it);
-		if (algorithm::iends_with(path, it_str))
+		if (path.extension() == it_str)
 		{
 			filetype = it;
 			break;
@@ -66,7 +66,7 @@ Utils::FileType Utils::getTypeFromFileName(const std::string &path)
 
 	if (filetype == Utils::unknown)
 	{
-		if (!algorithm::find_last(path, "."))
+		if (path.extension() == ".")
 			filetype =  Utils::empty;
 	}
 
@@ -90,7 +90,7 @@ long Utils::currentSeconds()
 	return now;
 }
 
-long Utils::getFileModificationTime(const std::string &filename)
+long Utils::getFileModificationTime(const JaspFileTypes::FilePath &filename)
 {
 #ifdef __WIN32__
 
@@ -133,35 +133,18 @@ long Utils::getFileModificationTime(const std::string &filename)
 #endif
 }
 
-long Utils::getFileSize(const string &filename)
+long Utils::getFileSize(const JaspFileTypes::FilePath &filename)
 {
 	system::error_code ec;
-	filesystem::path path;
-
-#ifdef __WIN32__
-
-	path = boost::nowide::widen(filename);
-
-#else
-
-	path = filename;
-
-#endif
-
-	uintmax_t fileSize = filesystem::file_size(path, ec);
-
-	if (ec == 0)
-		return fileSize;
-	else
-		return -1;
+	uintmax_t fileSize = filesystem::file_size(filename, ec);
+	return (ec == 0) ? fileSize :  -1;
 }
 
-void Utils::touch(const string &filename)
+void Utils::touch(const JaspFileTypes::FilePath &filename)
 {
 #ifdef __WIN32__
 
-	wstring wfilename = nowide::widen(filename);
-	HANDLE file = CreateFile(wfilename.c_str(), FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE file = CreateFile(filename.native().c_str(), FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if (file == INVALID_HANDLE_VALUE)
 		return;
@@ -184,42 +167,40 @@ void Utils::touch(const string &filename)
 	newTime.actime = newTimeT;
 	newTime.modtime = newTimeT;
 
-	utime(filename.c_str(), &newTime);
+	utime(filename.native().c_str(), &newTime);
 #endif
 }
 
-bool Utils::renameOverwrite(const string &oldName, const string &newName)
+bool Utils::renameOverwrite(const JaspFileTypes::FilePath &oldName, const JaspFileTypes::FilePath &newName)
 {
-	filesystem::path o = osPath(oldName);
-	filesystem::path n = osPath(newName);
 	system::error_code ec;
 
 #ifdef __WIN32__
 	system::error_code er;
-	if (filesystem::exists(n, er)) {
-		filesystem::file_status s = filesystem::status(n);
+	if (filesystem::exists(newName, er)) {
+		filesystem::file_status s = filesystem::status(newName);
 		bool readOnly = (s.permissions() & filesystem::owner_write) == 0;
 		if (readOnly)
-			filesystem::permissions(n, filesystem::owner_write);
+			filesystem::permissions(newName, filesystem::owner_write);
 	}
 #endif
 
-	boost::filesystem::rename(o, n, ec);
+	boost::filesystem::rename(oldName, newName, ec);
 
 	return ec == 0;
 }
 
-bool Utils::removeFile(const string &path)
+bool Utils::removeFile(const JaspFileTypes::FilePath &path)
 {
-	filesystem::path p = osPath(path);
 	system::error_code ec;
 
-	boost::filesystem::remove(p, ec);
+	boost::filesystem::remove(path, ec);
 
 	return ec == 0;
 }
 
-filesystem::path Utils::osPath(const string &path)
+/*
+SystemDepFileTypes::FilePath Utils::osPath(const string &path)
 {
 #ifdef __WIN32__
 	return filesystem::path(nowide::widen(path));
@@ -235,8 +216,9 @@ string Utils::osPath(const filesystem::path &path)
 #else
 	return path.generic_string();
 #endif
-}
+}  */
 
+/*
 void Utils::remove(vector<string> &target, const vector<string> &toRemove)
 {
 	BOOST_FOREACH (const string &remove, toRemove)
@@ -250,7 +232,23 @@ void Utils::remove(vector<string> &target, const vector<string> &toRemove)
 				itr++;
 		}
 	}
+} */
+
+void Utils::remove(vector<JaspFileTypes::FilePath> &target, const vector<JaspFileTypes::FilePath> &filesToRemove)
+{
+	BOOST_FOREACH (const JaspFileTypes::FilePath &remove, filesToRemove)
+	{
+		vector<JaspFileTypes::FilePath>::iterator itr = target.begin();
+		while (itr != target.end())
+		{
+			if (itr->filename() == remove.filename())
+				target.erase(itr);
+			else
+				itr++;
+		}
+	}
 }
+
 
 void Utils::sleep(int ms)
 {
@@ -261,4 +259,18 @@ void Utils::sleep(int ms)
 	struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
 	nanosleep(&ts, NULL);
 #endif
+}
+
+/**
+ * @brief deleteList Attempts to delete all the files mentioned.
+ * @param files A vector of files to delete. The file paths are assymmmed to be complete.
+ */
+void Utils::deleteListFullPaths(const vector<JaspFileTypes::FilePath> &files)
+{
+	system::error_code error;
+
+	BOOST_FOREACH (const JaspFileTypes::FilePath &file, files)
+	{
+		filesystem::remove(file, error);
+	}
 }

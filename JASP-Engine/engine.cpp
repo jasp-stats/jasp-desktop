@@ -39,6 +39,7 @@
 #endif
 
 using namespace std;
+using namespace boost::filesystem;
 using namespace boost::interprocess;
 using namespace boost::posix_time;
 
@@ -69,7 +70,7 @@ void Engine::saveImage()
 	if (_status != saveImg)
 		return;
 
-	vector<string> tempFilesFromLastTime = tempfiles_retrieveList(_analysisId);
+//	vector<string> tempFilesFromLastTime = tempfiles_retrieveList(_analysisId);
 
 	RCallback callback = boost::bind(&Engine::callback, this, _1);
 
@@ -110,7 +111,7 @@ void Engine::runAnalysis()
 		_status = running;
 	}
 
-	vector<string> tempFilesFromLastTime = tempfiles_retrieveList(_analysisId);
+	vector<JaspFileTypes::FilePath> tempFilesFromLastTime = tempfiles_retrieveListFullPaths(_analysisId);
 
 	RCallback callback = boost::bind(&Engine::callback, this, _1);
 
@@ -143,7 +144,7 @@ void Engine::runAnalysis()
 		sendResults();
 		_status = empty;
 
-		vector<string> filesToKeep;
+		vector<JaspFileTypes::FilePath> filesToKeep;
 
 		if (_analysisResults.isObject())
 		{
@@ -168,7 +169,7 @@ void Engine::runAnalysis()
 
 		Utils::remove(tempFilesFromLastTime, filesToKeep);
 
-		tempfiles_deleteList(tempFilesFromLastTime);
+		Utils::deleteListFullPaths(tempFilesFromLastTime);
 	}
 }
 
@@ -374,10 +375,18 @@ DataSet *Engine::provideDataSet()
 
 void Engine::provideStateFileName(string &root, string &relativePath)
 {
-	return tempfiles_createSpecific("state", _analysisId, root, relativePath);
+	path rt = root;
+	path rp = relativePath;
+	tempfiles_createSpecific("state", _analysisId, rt, rp);
+	root = rt.native();
+	relativePath = rp.native();
 }
 
 void Engine::provideTempFileName(const string &extension, string &root, string &relativePath)
 {	
-	tempfiles_create(extension, _analysisId, root, relativePath);
+	path rt = root;
+	path rp = relativePath;
+	tempfiles_create(extension, _analysisId, rt, rp);
+	root = rt.native();
+	relativePath = rp.native();
 }

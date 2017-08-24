@@ -18,27 +18,29 @@
 #ifndef EXPORTER_H
 #define EXPORTER_H
 
-#include <string>
 #include "datasetpackage.h"
+#include <sysdepfiletype.h>
+#include <utils.h>
+#include <string>
 #include <boost/function.hpp>
 #include <boost/assign/list_of.hpp>
 #include <vector>
 
-#include "common.h"
-#include "utils.h"
-
 class Exporter
 {
 protected:
-	Utils::FileType _defaultFileType;
-	Utils::FileTypeVector _allowedFileTypes;
-	Utils::FileType _currentFileType;
+	Utils::FileType			_defaultFileType;
+	Utils::FileTypeVector	_allowedFileTypes;
+	Utils::FileType			_currentFileType;
 	Exporter();
 
 public:
 
+	typedef JaspFileTypes::FilePath FilePath;
+	typedef JaspFileTypes::OFStream File;
+
 	virtual ~Exporter();
-	virtual void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) = 0;
+	virtual void saveDataSet(const JaspFileTypes::FilePath &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) = 0;
 
 	Utils::FileType getDefaultFileType();
 	bool isFileTypeAllowed(Utils::FileType filetype);

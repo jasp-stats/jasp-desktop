@@ -7,9 +7,7 @@ TARGET = JASP-Common
 TEMPLATE = lib
 CONFIG += staticlib
 
-windows:CONFIG += c++11
-linux:CONFIG += c++11
-macx:CONFIG += c++11
+CONFIG += c++11
 
    macx:INCLUDEPATH += ../../boost_1_64_0
 windows:INCLUDEPATH += ../../boost_1_64_0
@@ -132,5 +130,6 @@ HEADERS += \
 	tempfiles.h \
 	utils.h \
 	version.h \
-    options/optionvariablei.h
+    options/optionvariablei.h \
+    sysdepfiletype.h
 

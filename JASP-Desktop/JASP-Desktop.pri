@@ -86,7 +86,6 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/correlationbayesianpairsform.cpp \
         $$PWD/application.cpp \
         $$PWD/analysisforms/regressionlinearbayesianform.cpp \
-        $$PWD/qutils.cpp \
         $$PWD/activitylog.cpp \
         $$PWD/lrnamreply.cpp \
         $$PWD/lrnam.cpp \
@@ -188,7 +187,8 @@ SOURCES += $$PWD/main.cpp \
 		$$PWD/importers/importdataset.cpp \
 		$$PWD/importers/importcolumn.cpp \
 		$$PWD/importers/csvimportcolumn.cpp \
-		$$PWD/preferencesdialog.cpp
+		$$PWD/preferencesdialog.cpp \
+		$$PWD/desktoputils.cpp
 
 HEADERS  += \
         $$PWD/aboutdialog.h \
@@ -280,7 +280,6 @@ HEADERS  += \
         $$PWD/analysisforms/correlationbayesianpairsform.h \
         $$PWD/application.h \
         $$PWD/analysisforms/regressionlinearbayesianform.h \
-        $$PWD/qutils.h \
         $$PWD/activitylog.h \
         $$PWD/lrnamreply.h \
         $$PWD/lrnam.h \
@@ -391,7 +390,8 @@ HEADERS  += \
 		$$PWD/importers/ods/odstypes.h \
 		$$PWD/importers/ods/odsxmlcontentshandler.h \
 		$$PWD/importers/ods/odsxmlhandler.h \
-		$$PWD/importers/ods/odsxmlmanifesthandler.h
+		$$PWD/importers/ods/odsxmlmanifesthandler.h \
+		$$PWD/desktoputils.h
 
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \

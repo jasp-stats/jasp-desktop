@@ -30,7 +30,7 @@ Analysis *AnalysisLoader::load(int id, string analysisName, Json::Value *data)
 {
 	Options *options = new Options();
 
-	string path = Dirs::libraryDir() + "/" + analysisName + ".json";
+	string path = Dirs::libraryDir().native() + "/" + analysisName + ".json";
 
 	nowide::ifstream file(path.c_str(), fstream::in);
 	if (file.is_open())

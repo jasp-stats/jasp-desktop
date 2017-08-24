@@ -26,18 +26,26 @@
 #include <QSettings>
 
 #include "utils.h"
+#include "desktoputils.h"
 #include "processinfo.h"
 #include "dirs.h"
 #include "appinfo.h"
-#include "qutils.h"
+
+#include <boost/filesystem.hpp>
 
 using namespace std;
+using namespace boost::filesystem;
 
 ActivityLog::ActivityLog(QObject *parent)
-	: QObject(parent), _lockFile(tq(Dirs::appDataDir()) + "/log.csv.lock")
+	: QObject(parent)
+	,	_lockFile(toQStr(Dirs::appDataDir().append("log.csv.lock").native()))
 {
 	_reply = NULL;
-	_logFile.setFileName(tq(Dirs::appDataDir()) + "/log.csv");
+	{
+		path logfile(Dirs::appDataDir());
+		logfile /= "log.csv";
+		_logFile.setFileName(toQStr(logfile));
+	}
 
 	QSettings settings;
 	QVariant uid = settings.value("uid");
@@ -58,7 +66,7 @@ void ActivityLog::log(const QString &action, const QString &info)
 {
 	QString line("%1,%2,%3,%4,%5,%6\n");
 
-	line = line.arg(tq(AppInfo::getShortDesc()));
+	line = line.arg(toQStr(AppInfo::getShortDesc()));
 	line = line.arg(_uid);
 	line = line.arg(ProcessInfo::currentPID());
 	line = line.arg(Utils::currentMillis());

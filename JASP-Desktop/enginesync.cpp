@@ -33,7 +33,7 @@
 #include "processinfo.h"
 #include "common.h"
 #include "appinfo.h"
-#include "qutils.h"
+#include "desktoputils.h"
 #include "tempfiles.h"
 
 using namespace boost::interprocess;
@@ -239,7 +239,7 @@ void EngineSync::process()
 
 				if (_log != NULL)
 				{
-					QString errorMessage = tq(results.get("errorMessage", "").asString());
+					QString errorMessage = toQStr(results.get("errorMessage", "").asString());
 					QString info = QString("%1,%2").arg(id).arg(errorMessage);
 					_log->log("Analysis Error", info);
 				}
@@ -360,7 +360,7 @@ void EngineSync::startSlaveProcess(int no)
 #ifdef __WIN32__
 	QString rHomePath = programDir.absoluteFilePath("R");
 #elif __APPLE__
-	QString rHomePath = programDir.absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(CURRENT_R_VERSION) + "/Resources");
+	QString rHomePath = programDir.absoluteFilePath("../Frameworks/R.framework/Versions/" CURRENT_R_VERSION "/Resources");
 #else //linux
 
 #ifndef R_HOME
