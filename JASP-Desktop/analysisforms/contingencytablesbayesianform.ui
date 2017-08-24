@@ -853,11 +853,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -875,6 +870,11 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
@@ -885,11 +885,47 @@
    <header>widgets/boundsingleitemview.h</header>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listAvailableFields</tabstop>
+  <tabstop>buttonAssignRows</tabstop>
+  <tabstop>rows</tabstop>
+  <tabstop>buttonAssignColumns</tabstop>
+  <tabstop>columns</tabstop>
+  <tabstop>buttonAssignCounts</tabstop>
+  <tabstop>counts</tabstop>
+  <tabstop>buttonAssignLayers</tabstop>
+  <tabstop>layers</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>_1Poisson</tabstop>
+  <tabstop>_2Multinomial</tabstop>
+  <tabstop>_3IndependentRowsFixed</tabstop>
+  <tabstop>_4IndependentColumnsFixed</tabstop>
+  <tabstop>_5Hypergeometric</tabstop>
+  <tabstop>oddsRatio</tabstop>
+  <tabstop>oddsRatioCredibleIntervalInterval</tabstop>
+  <tabstop>effectSize</tabstop>
+  <tabstop>effectSizeCredibleIntervalInterval</tabstop>
+  <tabstop>_1twoTailed</tabstop>
+  <tabstop>_2oneTailedGreaterThan</tabstop>
+  <tabstop>_3oneTailedLessThan</tabstop>
+  <tabstop>plotPosteriorOddsRatio</tabstop>
+  <tabstop>plotPosteriorOddsRatioAdditionalInfo</tabstop>
+  <tabstop>plotPosteriorEffectSize</tabstop>
+  <tabstop>_1BF10</tabstop>
+  <tabstop>_2BF01</tabstop>
+  <tabstop>_3LBF10</tabstop>
+  <tabstop>priorConcentration</tabstop>
+  <tabstop>pushButton_3</tabstop>
+  <tabstop>_1rowsAscending</tabstop>
+  <tabstop>_2rowsDescending</tabstop>
+  <tabstop>_1columnsAscending</tabstop>
+  <tabstop>_2columnsDescending</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

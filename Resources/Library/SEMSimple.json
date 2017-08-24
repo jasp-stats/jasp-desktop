@@ -36,7 +36,8 @@
 		{
 			"name": "errorCalculationBootstrapSamples",
 			"type": "Integer",
-			"default": 1000
+			"default": 1000,
+			"min": 0
 		},
 		{
 			"name": "outputMardiasCoefficients",
@@ -221,7 +222,8 @@
 		{
 			"name": "SampleSize",
 			"type": "Integer",
-			"default": 0
+			"default": 0,
+			"min": 0
 		}
 	]
 }

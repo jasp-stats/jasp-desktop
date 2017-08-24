@@ -94,6 +94,7 @@ AncovaBayesianForm::AncovaBayesianForm(QWidget *parent) :
 	connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
 	ui->modelTerms->hide();
+	ui->containerPostHocTests->hide();
 	ui->containerDescriptivesPlot->hide();
 	ui->advancedOptions->hide();
 
@@ -101,14 +102,6 @@ AncovaBayesianForm::AncovaBayesianForm(QWidget *parent) :
 	ui->priorFixedEffects->setLabel("r scale fixed effects");
 	ui->priorRandomEffects->setLabel("r scale random effects");
 	ui->priorCovariates->setLabel("r scale covariates");
-
-#ifdef QT_DEBUG
-	ui->widgetPosteriorOptions->setStyleSheet("QWidget { background-color: pink; }");
-	ui->posteriorEstimates->setStyleSheet("QWidget { background-color: pink; }");
-#else
-	ui->widgetPosteriorOptions->hide();
-	ui->posteriorEstimates->hide();
-#endif
 }
 
 AncovaBayesianForm::~AncovaBayesianForm()
@@ -147,6 +140,8 @@ void AncovaBayesianForm::factorsChanged()
 	plotVariablesAssigned.add(_seperateLinesTableModel->assigned());
 	plotVariablesAssigned.add(_seperatePlotsTableModel->assigned());
 	_plotFactorsAvailableTableModel->notifyAlreadyAssigned(plotVariablesAssigned);
+	
+	ui->postHocTestsVariables->setVariables(factorsAvailable);
 	
 	if (_options != NULL)
 		_options->blockSignals(false);

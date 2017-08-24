@@ -1680,11 +1680,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -1702,6 +1697,11 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
@@ -1712,20 +1712,20 @@
    <header>widgets/boundsingleitemview.h</header>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>AnovaModelWidget</class>
    <extends>QWidget</extends>
    <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundComboBox</class>
-   <extends>QComboBox</extends>
-   <header>widgets/boundcombobox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundTableView</class>
@@ -1739,6 +1739,53 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listAvailableFields</tabstop>
+  <tabstop>buttonAssignDependent</tabstop>
+  <tabstop>dependent</tabstop>
+  <tabstop>buttonAssignFixed</tabstop>
+  <tabstop>fixedFactors</tabstop>
+  <tabstop>buttonAssignRandom</tabstop>
+  <tabstop>randomFactors</tabstop>
+  <tabstop>buttonAssignCovariates</tabstop>
+  <tabstop>covariates</tabstop>
+  <tabstop>buttonAssignWLSWeights</tabstop>
+  <tabstop>wlsWeights</tabstop>
+  <tabstop>expanderModel</tabstop>
+  <tabstop>sumOfSquares</tabstop>
+  <tabstop>expanderAssumptions</tabstop>
+  <tabstop>homogeneityTests</tabstop>
+  <tabstop>qqPlot</tabstop>
+  <tabstop>factorCovariateIndependence</tabstop>
+  <tabstop>expanderContrasts</tabstop>
+  <tabstop>contrasts</tabstop>
+  <tabstop>expanderPosthoc</tabstop>
+  <tabstop>postHocTestsTukey</tabstop>
+  <tabstop>postHocTestsScheffe</tabstop>
+  <tabstop>postHocTestsBonferroni</tabstop>
+  <tabstop>postHocTestsHolm</tabstop>
+  <tabstop>expanderDescriptivesPlot</tabstop>
+  <tabstop>plotVariables</tabstop>
+  <tabstop>buttonAssignHorizontalAxis</tabstop>
+  <tabstop>plotHorizontalAxis</tabstop>
+  <tabstop>buttonAssignSeperateLines</tabstop>
+  <tabstop>plotSeparateLines</tabstop>
+  <tabstop>buttonAssignSeperatePlots</tabstop>
+  <tabstop>plotSeparatePlots</tabstop>
+  <tabstop>plotErrorBars</tabstop>
+  <tabstop>_1confidenceInterval</tabstop>
+  <tabstop>confidenceIntervalInterval</tabstop>
+  <tabstop>_2standardError</tabstop>
+  <tabstop>expanderOptions</tabstop>
+  <tabstop>marginalMeansCompareMainEffects</tabstop>
+  <tabstop>marginalMeansCIAdjustment</tabstop>
+  <tabstop>descriptives</tabstop>
+  <tabstop>effectSizeEstimates</tabstop>
+  <tabstop>effectSizeEtaSquared</tabstop>
+  <tabstop>effectSizePartialEtaSquared</tabstop>
+  <tabstop>effectSizeOmegaSquared</tabstop>
+  <tabstop>VovkSellkeMPR</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

@@ -38,6 +38,15 @@
 			"type": "Boolean"
 		},
 		{
+			"name": "postHocTestsVariables",
+			"type": "Variables"
+		},
+		{
+			"name": "postHocTestsNullControl",
+			"type": "Boolean",
+			"default": true
+		},
+		{
 			"name": "descriptives",
 			"type": "Boolean"
 		},
@@ -86,8 +95,10 @@
 			"value": 0.95
 		},
 		{
-			"name": "effectsStepwise",
-			"type": "Boolean"
+			"name": "effectsType",
+			"options": [ "allModels", "matchedModels" ],
+			"default": "allModels",
+			"type": "List"
 		},
 		{
 			"name": "posteriorEstimates",
