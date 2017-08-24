@@ -16,6 +16,10 @@
 			"type": "Variable"
 		},
 		{
+			"name": "mgmVariableType",
+			"type": "Variable"
+		},
+		{
 			"name": "estimator",
 			"type": "List",
 			"options": [
@@ -170,6 +174,15 @@
 			"type": "Boolean"
 		},
 		{
+			"name": "showVariableNames",
+			"type": "List",
+			"options": [
+				"In legend",
+				"In nodes"
+			],
+			"default": "In nodes"
+		},
+		{
 			"name": "showLegend",
 			"type": "List",
 			"options": [
@@ -212,6 +225,12 @@
 				"Fried"
 			],
 			"default": "classic"
+		},
+		{
+			"name": "showMgmVariableType",
+			"type": "List",
+			"options": ["mgmNoShow", "mgmNodeColor", "mgmNodeShape"],
+			"default": "mgmNodeShape"
 		},
 		{
 			"name": "plotWidthNetwork",
