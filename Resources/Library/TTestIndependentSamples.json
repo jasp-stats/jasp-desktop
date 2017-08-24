@@ -33,7 +33,11 @@
 			"type": "Boolean"
 		},
 		{
-			"name": "confidenceInterval",
+			"name": "meanDiffConfidenceIntervalCheckbox",
+			"type": "Boolean"
+		},
+		{
+			"name": "effSizeConfidenceIntervalCheckbox",
 			"type": "Boolean"
 		},
 		{
@@ -44,7 +48,15 @@
 			"format": "%",
 			"max": 0.999,
 			"min": 0.000,
-			"name": "confidenceIntervalInterval",
+			"name": "descriptivesMeanDiffConfidenceIntervalPercent",
+			"type": "Number",
+			"value": 0.950
+		},
+		{
+			"format": "%",
+			"max": 0.999,
+			"min": 0.000,
+			"name": "descriptivesEffectSizeConfidenceIntervalPercent",
 			"type": "Number",
 			"value": 0.950
 		},

@@ -76,9 +76,11 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 	ttest <- list()
 	wantsEffect <- options$effectSize
 	wantsDifference <- options$meanDifference
-	wantsConfidence <- options$confidenceInterval
-
-	## can make any combination of the following tests:
+	wantsConfidenceMeanDiff <- (options$meanDiffConfidenceIntervalCheckbox &&  options$meanDifference)
+	wantsConfidenceEffSize <- (options$effSizeConfidenceIntervalCheckbox && options$effectSize)
+	percentConfidenceMeanDiff <- options$descriptivesMeanDiffConfidenceIntervalPercent
+	percentConfidenceEffSize <- options$descriptivesEffectSizeConfidenceIntervalPercent
+		## can make any combination of the following tests:
 	wantsWelchs <- options$welchs
 	wantsStudents <- options$students
 	wantsWilcox <- options$mannWhitneyU
@@ -143,55 +145,82 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 																				 title = "VS-MPR\u002A",
  											 							 		 type = "number",
 																				 format = "sf:4;dp:3")
- 	}
-
+	}
+	
+	if (!wantsWilcox) {
+	  nameOfLocationParameter <- "Mean Difference"
+	  nameOfEffectSize <- "Cohen's d"
+	} else if (wantsWilcox && onlyTest) {
+	  nameOfLocationParameter <- "Hodges-Lehmann Estimate"
+	  nameOfEffectSize <- "Rank-Biserial Correlation"
+	} else if (wantsWilcox && (wantsStudents || wantsWelchs)) {
+	  nameOfLocationParameter <-  "Location Parameter"
+	  nameOfEffectSize <-  "Effect Size"
+	}
 
 	## add mean difference and standard error difference
 	if (wantsDifference) {
-		fields[[length(fields) + 1]] <- list(name = "md", title = "Mean Difference",
+		fields[[length(fields) + 1]] <- list(name = "md", title = nameOfLocationParameter,
 											 type = "number", format = "sf:4;dp:3")
 		if (!(wantsWilcox && onlyTest)) { # Only add SE Difference if not only MannWhitney is requested
 		fields[[length(fields) + 1]] <- list(name = "sed", title = "SE Difference",
 											 type = "number", format = "sf:4;dp:3")
 		}
 	}
+	if (wantsDifference && wantsWilcox && wantsStudents && wantsWelchs) {
+	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test and Welch t-test, 
+	               location parameter is given by mean difference; for the Mann-Whitney test, 
+	               location parameter is given by the Hodges-Lehmann estimate.")
+	} else if (wantsDifference && wantsWilcox && wantsStudents) {
+	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test, 
+	               location parameter is given by mean difference; for the Mann-Whitney test, 
+	               location parameter is given by Hodges-Lehmann estimate.")
+	} else if (wantsDifference && wantsWilcox && wantsWelchs) {
+	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Welch t-test, 
+	               location parameter is given by mean difference; for the Mann-Whitney test, 
+	               location parameter is given by Hodges-Lehmann estimate.")
+	}
+	  
+	if (wantsConfidenceMeanDiff) {
+	  interval <- 100 * percentConfidenceMeanDiff
+	  title <- paste0(interval, "% CI for ", nameOfLocationParameter)
+	  
+	  fields[[length(fields) + 1]] <- list(name = "lowerCIlocationParameter", type = "number",
+	                                       format = "sf:4;dp:3", title = "Lower",
+	                                       overTitle = title)
+	  fields[[length(fields) + 1]] <- list(name = "upperCIlocationParameter", type = "number",
+	                                       format = "sf:4;dp:3", title = "Upper",
+	                                       overTitle = title)
+	}
 
 	## add Cohen's d
-	if (wantsEffect && !wantsWilcox) {
-		fields[[length(fields) + 1]] <- list(name = "d", title = "Cohen's d",
+	if (wantsEffect) {
+		fields[[length(fields) + 1]] <- list(name = "d", title = nameOfEffectSize,
 											 type = "number", format = "sf:4;dp:3")
-	} else if (wantsEffect && wantsWilcox && onlyTest) {
-	  fields[[length(fields) + 1]] <- list(name = "d", title = "Rank-Biserial Correlation",
-	                                       type = "number", format = "sf:4;dp:3")
-	} else if (wantsEffect && wantsWilcox && wantsStudents && wantsWelchs) {
-	  fields[[length(fields) + 1]] <- list(name = "d", title = "Effect Size",
-	                                       type = "number", format = "sf:4;dp:3") 
-	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test and Welch t-test, 
-	               effect size is given by Cohen's <em>d</em>; for the Mann-Whitney test, 
-	               effect size is given by the rank biserial correlation.")
-	} else if (wantsEffect && wantsWilcox && wantsStudents) {
-	  fields[[length(fields) + 1]] <- list(name = "d", title = "Effect Size",
-	                                       type = "number", format = "sf:4;dp:3") 
-	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test, 
-	               effect size is given by Cohen's <em>d</em>; for the Mann-Whitney test, 
-	               effect size is given by the rank biserial correlation.")
-	} else if (wantsEffect && wantsWilcox && wantsWelchs) {
-	  fields[[length(fields) + 1]] <- list(name = "d", title = "Effect Size",
-	                                       type = "number", format = "sf:4;dp:3") 
-	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Welch t-test, 
-	               effect size is given by Cohen's <em>d</em>; for the Mann-Whitney test, 
-	               effect size is given by the rank biserial correlation.")
+  	if (wantsWilcox && wantsStudents && wantsWelchs) {
+  	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test and Welch t-test, 
+  	               effect size is given by Cohen's <em>d</em>; for the Mann-Whitney test, 
+  	               effect size is given by the rank biserial correlation.")
+  	} else if (wantsWilcox && wantsStudents) {
+  	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test, 
+  	               effect size is given by Cohen's <em>d</em>; for the Mann-Whitney test, 
+  	               effect size is given by the rank biserial correlation.")
+  	} else if (wantsWilcox && wantsWelchs) {
+  	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Welch t-test, 
+  	               effect size is given by Cohen's <em>d</em>; for the Mann-Whitney test, 
+  	               effect size is given by the rank biserial correlation.")
+  	}
 	}
 
 	## I hope they know what they are doing! :)
-	if (wantsConfidence) {
-		interval <- 100 * options$confidenceIntervalInterval
-		title <- paste0(interval, "% Confidence interval")
+	if (wantsConfidenceEffSize) {
+		interval <- 100 * percentConfidenceEffSize
+		title <- paste0(interval, "% CI for ", nameOfEffectSize)
 
-		fields[[length(fields) + 1]] <- list(name = "lowerCI", type = "number",
+		fields[[length(fields) + 1]] <- list(name = "lowerCIeffectSize", type = "number",
 											 format = "sf:4;dp:3", title = "Lower",
 											 overTitle = title)
-		fields[[length(fields) + 1]] <- list(name = "upperCI", type = "number",
+		fields[[length(fields) + 1]] <- list(name = "upperCIeffectSize", type = "number",
 											 format = "sf:4;dp:3", title = "Upper",
 											 overTitle = title)
 	}
@@ -225,7 +254,6 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 			.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
 
 		} else if (options$hypothesis == "groupTwoGreater") {
-
 			direction <- "less"
 			message <- paste0("For all tests, the alternative hypothesis specifies that group  <em>", levels[1],
 							  "</em> is less than group <em>", levels[2], "</em>.")
@@ -269,7 +297,8 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 					row <- try(silent = FALSE, expr = {
 
 						
-						ci <- options$confidenceIntervalInterval # what a mouthful!
+						ciEffSize <- percentConfidenceEffSize 
+						ciMeanDiff <- percentConfidenceMeanDiff
 						f <- as.formula(paste(.v(variable), "~",
 											  .v(options$groupingVariable)))
 						
@@ -285,17 +314,27 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 							whatTest <- "Mann-Whitney"
 							r <- stats::wilcox.test(f, data = dataset,
 													alternative = direction,
-													conf.int = TRUE, conf.level = ci, paired = FALSE)
+													conf.int = TRUE, conf.level = ciMeanDiff, paired = FALSE)
 							df <- ""
 							sed <- ""
 							stat <- as.numeric(r$statistic)
 							m <- as.numeric(r$estimate)
 							d <- abs(.clean(as.numeric(1-(2*stat)/(ns[1]*ns[2])))) * sign(m)
-
+							# rankBis <- 1 - (2*stat)/(ns[1]*ns[2])
+							wSE <- sqrt((ns[1]*ns[2] * (ns[1]+ns[2] + 1))/12)
+							rankBisSE <- sqrt(4 * 1/(ns[1]*ns[2])^2 * wSE^2)
+							zRankBis <- atanh(d)
+							if(direction == "two.sided") {
+							  confIntEffSize <- sort(c(tanh(zRankBis + qnorm((1-ciEffSize)/2)*rankBisSE), tanh(zRankBis + qnorm((1+ciEffSize)/2)*rankBisSE)))
+							}else if (direction == "less") {
+							  confIntEffSize <- sort(c(-Inf, tanh(zRankBis + qnorm(ciEffSize)*rankBisSE)))
+							}else if (direction == "greater") {
+							  confIntEffSize <- sort(c(tanh(zRankBis + qnorm((1-ciEffSize))*rankBisSE), Inf))
+							}
 						} else {
 							whatTest <- ifelse(test == 2, "Welch", "Student")
 							r <- stats::t.test(f, data = dataset, alternative = direction,
-											   var.equal = test != 2, conf.level = ci, paired = FALSE)
+											   var.equal = test != 2, conf.level = ciMeanDiff, paired = FALSE)
 
 							df <- as.numeric(r$parameter)
 							m <- as.numeric(r$estimate[1]) - as.numeric(r$estimate[2])
@@ -309,6 +348,43 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 							
 							d <- .clean(as.numeric((ms[1] - ms[2]) / sdPooled)) # Cohen's d
 							sed <-  .clean((as.numeric(r$estimate[1]) - as.numeric(r$estimate[2]))/stat)
+							confIntEffSize <- c(0,0)
+							if (wantsConfidenceEffSize){
+							  signT <- sign(stat)
+							  stat <- abs(stat)
+							  if(direction == "two.sided") {
+  							  end1 = stat
+  							  while( pt(q=stat,df=df,ncp=end1) > (1-ciEffSize)/2 ){
+  							    end1 <- end1 + abs(end1)
+  							  }
+  							  ncp1 = uniroot(function(x) (1-ciEffSize)/2-pt(q=stat,df=df,ncp=x),
+  							                 c(2*stat-end1,end1))$root
+  							  end2 = stat
+  							  while( pt(q=stat,df=df,ncp=end2) < (1+ciEffSize)/2 ){
+  							    end2 <- end2 - abs(stat)
+  							  }
+  							  ncp2 = uniroot(function(x) (1+ciEffSize)/2-pt(q=stat,df=df,ncp=x),
+  							                 c(end2,2*stat-end2))$root
+  							  confIntEffSize = sort(c(signT*ncp1*sqrt(1/ns[1]+1/ns[2]),  signT*ncp2*sqrt(1/ns[1]+1/ns[2]) ))
+							  } else if (direction == "greater"){
+							    end1 = stat
+							    while( pt(q=stat,df=df,ncp=end1) > (1-ciEffSize)/2 ){
+							      end1 <- end1 + abs(end1)
+							    }
+							    ncp1 = uniroot(function(x) (1-ciEffSize)/2-pt(q=stat,df=df,ncp=x),
+							                   c(2*stat-end1,end1))$root
+							    confIntEffSize <- sort(c(ncp1/sqrt(df)* signT, Inf))
+							  }else if(direction == "less"){
+							    end2 = stat
+							    while( pt(q=stat,df=df,ncp=end2) < (1+ciEffSize)/2 ){
+							      end2 <- end2 - abs(stat)
+							    }
+							    ncp2 = uniroot(function(x) (1+ciEffSize)/2-pt(q=stat,df=df,ncp=x),
+							                   c(end2,2*stat-end2))$root
+							    confIntEffSize <- sort(c(ncp2/sqrt(df)* signT, -Inf))
+							  }
+							  stat <- stat * signT
+							}
 						}
 
 						## if the user doesn't want a Welch's t-test,
@@ -332,10 +408,13 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 
 						ciLow <- .clean(r$conf.int[1])
 						ciUp <- .clean(r$conf.int[2])
+						lowerCIeffectSize <- .clean(as.numeric(confIntEffSize[1]))
+						upperCIeffectSize <- .clean(as.numeric(confIntEffSize[2]))
 						# this will be the results object
 						res <- list(v = variable, test = whatTest, df = df, p = p,
-												md = m, d = d, lowerCI = ciLow,
-												upperCI = ciUp, sed = sed, .footnotes = row.footnotes)
+												md = m, d = d, lowerCIlocationParameter = ciLow, upperCIlocationParameter = ciUp,
+												lowerCIeffectSize = lowerCIeffectSize, upperCIeffectSize = upperCIeffectSize,
+												sed = sed, .footnotes = row.footnotes)
 						res[[testStat]] <- stat
 						if (options$VovkSellkeMPR){
 							res[["VovkSellkeMPR"]] <- .VovkSellkeMPR(p)
@@ -344,7 +423,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 					 })
 					 
 					## if there has been an error in computing the test, log it as footnote
-					if (class(row) == "try-error") {
+					if (isTryError(row)) {
 						errorMessage <- .extractErrorMessage(row)
 					}
 				}
@@ -355,11 +434,11 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 					row.footnotes <- list(t = list(index))
 
 					row <- list(v = variable, test = "", df = "", p = "",
-								md = "", lowerCI = "", upperCI = "",
+								md = "", d = "", lowerCIlocationParameter = "", upperCIlocationParameter = "",
+								lowerCIeffectSize = "", upperCIeffectSize = "",
 								sed = "", .footnotes = list(t = list(index)))
 					row[[testStat]] <- .clean(NaN)
 				}
-
 				## if the user only wants more than one test
 				## update the table so that it shows the "Test" and "statistic" column
 				if (sum(allTests) > 1) {
@@ -565,7 +644,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 			  row
 			})
 
-			if (class(result) == "try-error") {
+			if (isTryError(result)) {
 			  result <- list(variable = variable, F = "", df = "", p = "")
 			}
 
@@ -616,25 +695,25 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 			count <- count + 1
 
 			## if everything looks fine, and we are ready to run
-			if (perform == "run" && length(variables) > 0 && !is.null(levels)) {
+			if (perform == "run" && length(variables) > 0 && !is.null(levels) && factor != "") {
 
 				## get the dependent variable at a certain factor level
 				data <- na.omit(dataset[[.v(variable)]][dataset[[.v(factor)]] == level])
 
 				row.footnotes <- NULL
 				error <- FALSE
-
-				if (length(data) < 3) {
-					err <- .generateErrorMessage(type='levene', observations.amount='< 3', variables=variable, grouping=factor)
-					foot.index <- .addFootnote(footnotes, err)
-					row.footnotes <- list(W = list(foot.index), p = list(foot.index))
-					error <- TRUE
-
-				} else if (length(data) > 5000) {
-					err <- .generateErrorMessage(type='levene', observations.amount='> 5000', variables=variable, grouping=factor)
-					foot.index <- .addFootnote(footnotes, err)
-					row.footnotes <- list(W = list(foot.index), p = list(foot.index))
-					error <- TRUE
+				
+				errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+				                     all.target = variable,
+				                     observations.amount = c('< 3', '> 5000'),
+				                     all.grouping = factor,
+				                     all.groupingLevel = level)
+				
+				if (!identical(errors, FALSE)) {
+				    errorMessage <- errors$message
+				    foot.index <- .addFootnote(footnotes, errorMessage)
+				    row.footnotes <- list(W = list(foot.index), p = list(foot.index))
+				    error <- TRUE
 				}
 
 				## if the user did everything correctly :)
@@ -677,10 +756,10 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 
 .independentSamplesTTestDescriptivesPlot <- function(dataset, options, perform) {
 
-	descriptivesPlotList <- list()
-
 	variables <- options$variables
 	groups <- options$groupingVariable
+	
+	descriptivesPlotList <- list()
 
 	if (perform == "run" && length(variables) > 0 && groups != "") {
 
@@ -699,18 +778,32 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 				 yend = yend), inherit.aes = FALSE, size = 1),
 				 ggplot2::scale_y_continuous(breaks = c(min(b), max(b))))
 		}
-
-		for (var in .indices(variables)) {
-			descriptivesPlot <- list("title" = variables[var])
-			descriptivesPlot[["width"]] <- options$plotWidth
-			descriptivesPlot[["height"]] <- options$plotHeight
-			descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
-
-			summaryStat <- .summarySE(as.data.frame(dataset), measurevar = .v(options$variables[var]),
+		
+		for (variableIndex in .indices(variables)) {
+		    
+		    descriptivesPlot <- list("title" = variables[variableIndex])
+		    
+		    errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+		                         all.target = variables[variableIndex],
+		                         observations.amount = '< 2',
+		                         observations.grouping = options$groupingVariable)
+		    
+		    if (!identical(errors, FALSE)) {
+		        errorMessage <- errors$message
+		        
+		        descriptivesPlot[["data"]] <- ""
+		        descriptivesPlot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+		    } else {
+		        
+		        descriptivesPlot[["width"]] <- options$plotWidth
+		        descriptivesPlot[["height"]] <- options$plotHeight
+		        descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
+			
+			summaryStat <- .summarySE(as.data.frame(dataset), measurevar = .v(options$variables[variableIndex]),
 				groupvars = .v(options$groupingVariable), conf.interval = options$descriptivesPlotsConfidenceInterval,
 				na.rm = TRUE, .drop = FALSE)
 
-			colnames(summaryStat)[which(colnames(summaryStat) == .v(variables[var]))] <- "dependent"
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(variables[variableIndex]))] <- "dependent"
 			colnames(summaryStat)[which(colnames(summaryStat) == .v(groups))] <- "groupingVariable"
 
 			pd <- ggplot2::position_dodge(0.2)
@@ -719,7 +812,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 				y = dependent, group = 1)) + ggplot2::geom_errorbar(ggplot2::aes(ymin = ciLower,
 				ymax = ciUpper), colour = "black", width = 0.2, position = pd) +
 				ggplot2::geom_line(position = pd, size = 0.7) + ggplot2::geom_point(position = pd,
-				size = 4) + ggplot2::ylab(unlist(options$variables[var])) + ggplot2::xlab(options$groupingVariable) +
+				size = 4) + ggplot2::ylab(unlist(options$variables[variableIndex])) + ggplot2::xlab(options$groupingVariable) +
 				ggplot2::theme_bw() +
 				ggplot2::theme(panel.grid.minor = ggplot2::element_blank(), plot.title = ggplot2::element_text(size = 18),
 				  panel.grid.major = ggplot2::element_blank(), axis.title.x = ggplot2::element_text(size = 18,
@@ -741,23 +834,22 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 
 			descriptivesPlot[["data"]] <- imgObj[["png"]]
 			descriptivesPlot[["obj"]] <- imgObj[["obj"]]
+			
+		    }
+		    
 			descriptivesPlot[["convertible"]] <- TRUE
 			descriptivesPlot[["status"]] <- "complete"
-			descriptivesPlotList[[var]] <- descriptivesPlot
+			
+			descriptivesPlotList[[variableIndex]] <- descriptivesPlot
 
 		}
+		
+		return(descriptivesPlotList)
 
 	} else {
-
-		for (var in .indices(variables)) {
-			descriptivesPlot <- list("title" = variables[var])
-			descriptivesPlot[["width"]] <- options$plotWidth
-			descriptivesPlot[["height"]] <- options$plotHeight
-			descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
-			descriptivesPlot[["data"]] <- ""
-			descriptivesPlotList[[var]] <- descriptivesPlot
-		}
+	    
+	    return(NULL)
+	    
 	}
-
-	descriptivesPlotList
+	
 }

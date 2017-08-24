@@ -72,6 +72,7 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 	ui->buttonAssignSeperatePlots->setSourceAndTarget(ui->plotVariables, ui->plotSeparatePlots);
 	
 	ui->modelTerms->hide();
+	ui->containerPostHocTests->hide();
 	ui->containerDescriptivesPlot->hide();
 	ui->advancedOptions->hide();
 
@@ -127,6 +128,8 @@ void AnovaBayesianForm::factorsChanged()
 	plotVariablesAssigned.add(_seperateLinesTableModel->assigned());
 	plotVariablesAssigned.add(_seperatePlotsTableModel->assigned());
 	_plotFactorsAvailableTableModel->notifyAlreadyAssigned(plotVariablesAssigned);
+	
+	ui->postHocTestsVariables->setVariables(factorsAvailable);
 	
 	if (_options != NULL)
 		_options->blockSignals(false);

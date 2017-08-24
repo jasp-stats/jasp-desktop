@@ -25,7 +25,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 	results <- init[["results"]]
 	dataset <- init[["dataset"]]
-
+	
 	## call the specific paired T-Test functions
 	results[["ttest"]] <- .ttestPairedSamples(dataset, options, perform)
 	descriptivesTable <- .ttestPairedSamplesDescriptives(dataset, options, perform)
@@ -70,7 +70,10 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 	## what does the user want? what does s/he really want??
 	wantsEffect <- options$effectSize
 	wantsDifference <- options$meanDifference
-	wantsConfidence <- options$confidenceInterval # pah! can't get that classically :P
+	wantsConfidenceMeanDiff <- (options$meanDiffConfidenceIntervalCheckbox &&  options$meanDifference)
+	wantsConfidenceEffSize <- (options$effSizeConfidenceIntervalCheckbox && options$effectSize)
+	percentConfidenceMeanDiff <- options$meanDiffConfidenceIntervalPercent
+	percentConfidenceEffSize <- options$effSizeConfidenceIntervalPercent
 	wantsStudents <- options$students
 	wantsWilcox <- options$wilcoxonSignedRank
 
@@ -96,6 +99,8 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 		testStat <- "W"
 		## additionally, Wilcoxon's test doesn't have degrees of freedoms
 		fields <- fields[-4]
+		nameOfLocationParameter <- "Hodges-Lehmann Estimate"
+		nameOfEffectSize <- "Rank-Biserial Correlation"
 	} else if (wantsStudents && onlyTest) {
 
 		testname <- "Student's t-test"
@@ -103,8 +108,12 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
 
 		testStat <- "t"
+		nameOfLocationParameter <- "Mean Difference"
+		nameOfEffectSize <- "Cohen's d"
 	} else {
 		testStat <- "Statistic"
+		nameOfLocationParameter <-  "Location Parameter"
+		nameOfEffectSize <-  "Effect Size"
 	}
 
 	ttest[["title"]] <- title
@@ -134,26 +143,51 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
   }
 
 	if (wantsDifference) {
-		fields[[length(fields) + 1]] <- list(name = "md", title = "Mean Difference",
+		fields[[length(fields) + 1]] <- list(name = "md", title = nameOfLocationParameter,
 											 type = "number", format = "sf:4;dp:3")
-		fields[[length(fields) + 1]] <- list(name = "sed", title = "SE Difference",
+		if(wantsStudents) {
+		  fields[[length(fields) + 1]] <- list(name = "sed", title = "SE Difference",
 											 type = "number", format = "sf:4;dp:3")
+		}
+		if (wantsWilcox && wantsStudents) {
+		  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test, 
+  	               location parameter is given by mean difference <em>d</em>; for the Wilcoxon test, 
+  	               effect size is given by the Hodges-Lehmann estimate.")
+		} 
+	}
+	
+	if (wantsConfidenceMeanDiff) {
+	  interval <- 100 * percentConfidenceMeanDiff
+	  title <- paste0(interval, "% CI for ", nameOfLocationParameter)
+	  
+	  fields[[length(fields) + 1]] <- list(name = "lowerCIlocationParameter", type = "number",
+	                                       format = "sf:4;dp:3", title = "Lower",
+	                                       overTitle = title)
+	  fields[[length(fields) + 1]] <- list(name = "upperCIlocationParameter", type = "number",
+	                                       format = "sf:4;dp:3", title = "Upper",
+	                                       overTitle = title)
 	}
 
-	if (wantsEffect && wantsStudents) {
-		fields[[length(fields) + 1]] <- list(name = "d", title = "Cohen's d",
+	if (wantsEffect) {
+		fields[[length(fields) + 1]] <- list(name = "d", title = nameOfEffectSize,
 											 type = "number",  format = "sf:4;dp:3")
+		if (wantsWilcox && wantsStudents) {
+		  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test, 
+  	               effect size is given by Cohen's <em>d</em>; for the Wilcoxon test, 
+  	               effect size is given by the matched rank biserial correlation.")
+		} 
 	}
 
-	if (wantsConfidence) {
-		interval <- 100 * options$confidenceIntervalInterval
-		title <- paste0(interval, "% Confidence interval")
-		fields[[length(fields) + 1]] <- list(name = "lowerCI", type = "number",
-											 format = "sf:4;dp:3",  title = "Lower",
-											 overTitle = title)
-		fields[[length(fields) + 1]] <- list(name = "upperCI", type = "number",
-											 format = "sf:4;dp:3", title = "Upper",
-											 overTitle = title)
+	if (wantsConfidenceEffSize) {
+	  interval <- 100 * percentConfidenceEffSize
+	  title <- paste0(interval, "% CI for ", nameOfEffectSize)
+	  
+	  fields[[length(fields) + 1]] <- list(name = "lowerCIeffectSize", type = "number",
+	                                       format = "sf:4;dp:3", title = "Lower",
+	                                       overTitle = title)
+	  fields[[length(fields) + 1]] <- list(name = "upperCIeffectSize", type = "number",
+	                                       format = "sf:4;dp:3", title = "Upper",
+	                                       overTitle = title)
 	}
 
 	ttest[["schema"]] <- list(fields = fields)
@@ -161,18 +195,15 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 	#########################
 	## check the directionality
 	if (options$hypothesis == "groupOneGreater") {
-
 		direction <- "greater"
 		message <- "All tests, hypothesis is measurement one greater than measurement two."
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
 
 	} else if (options$hypothesis == "groupTwoGreater") {
-
 		direction <- "less"
 		message <- "All tests, hypothesis is measurement one less than measurement two."
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
 	} else {
-
 		direction <- "two.sided"
 	}
 
@@ -192,6 +223,11 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 		p1 <- pair[[1]]
 		p2 <- pair[[2]]
+		
+		errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+							 all.target = c(p1, p2),
+							 observations.amount = '< 2')
+		
 		row <- list(v1 = "", sep = "", v2 = "")
 
 		## test is a number, indicating which tests should be run
@@ -202,6 +238,13 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 			## don't run a test the user doesn't want
 			if (!currentTest) {
 				next
+			}
+			
+			if (!identical(errors, FALSE)) {
+				errorMessage <- errors$message
+
+			} else {
+			    errorMessage <- NULL
 			}
 
 			if (perform == "run") {
@@ -217,20 +260,75 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 					c1 <- df$c1
 					c2 <- df$c2
-					ci <- options$confidenceIntervalInterval
+					n <- length(c1)
 
-					r <- try(silent = FALSE, expr = {
+					if(is.null(errorMessage)){
+
+					result <- try(silent = FALSE, expr = {
 
 						## if Wilcox box is ticked, run a paired wilcoxon signed rank test
 						if (test == 2) {
 							res <- stats::wilcox.test(c1, c2, paired = TRUE,
-													  conf.level = ci, conf.int = TRUE,
+													  conf.level = percentConfidenceMeanDiff, conf.int = TRUE,
 													  alternative = direction)
-
+							maxw <- (n*(n+1))/2
+							d <- as.numeric((res$statistic/maxw) * 2 - 1)
+							wSE <- sqrt((n*(n+1)*(2*n+1))/6) /2
+							mrSE <- sqrt(wSE^2  * 4 * (1/maxw^2)) 
+							# zSign <- (ww$statistic - ((n*(n+1))/4))/wSE
+							zmbiss <- atanh(d)
+							d <- .clean(d)
+							if(direction == "two.sided") {
+							  confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-percentConfidenceEffSize)/2)*mrSE), tanh(zmbiss + qnorm((1+percentConfidenceEffSize)/2)*mrSE)))
+							}else if (direction == "less") {
+							  confIntEffSize <- sort(c(-Inf, tanh(zmbiss + qnorm(percentConfidenceEffSize)*mrSE)))
+							}else if (direction == "greater") {
+							  confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-percentConfidenceEffSize))*mrSE), Inf))
+							}
 						## else run a simple paired t-test
 						} else {
-							res <- stats::t.test(c1, c2, paired = TRUE, conf.level = ci,
+							res <- stats::t.test(c1, c2, paired = TRUE, conf.level = percentConfidenceMeanDiff,
 												 alternative = direction)
+							df <- ifelse(is.null(res$parameter), "", as.numeric(res$parameter))
+							d <- .clean(mean(c1 - c2) / sd(c1 - c2))
+							t <- as.numeric(res$statistic)
+							confIntEffSize <- c(0,0)
+							if (wantsConfidenceEffSize) {
+							  signT <- sign(t)
+							  t <- abs(t)
+							  if(direction == "two.sided") {
+							    end1 <- t
+							    while( pt(q=t,df=df,ncp=end1) > (1-percentConfidenceEffSize)/2 ) {
+							      end1 <- end1 + abs(end1)
+							    }
+							    ncp1 <- uniroot(function(x) (1-percentConfidenceEffSize)/2-pt(q=t,df=df,ncp=x),
+							                    c(2*t-end1,end1))$root
+							    end2 <- t
+							    while( pt(q=t,df=df,ncp=end2) < (1+percentConfidenceEffSize)/2 ) {
+							      end2 <- end2 - abs(t)
+							    }
+							    ncp2 <- uniroot(function(x) (1+percentConfidenceEffSize)/2-pt(q=t,df=df,ncp=x),
+							                    c(end2,2*t-end2))$root  
+							    confIntEffSize <- sort(c(ncp1/sqrt(df)* signT,ncp2/sqrt(df)* signT))
+							  } else if (direction == "greater") {
+							    end1 <- t
+							    while( pt(q=t,df=df,ncp=end1) > (1-percentConfidenceEffSize) ) {
+							      end1 <- end1 + abs(end1)
+							    }
+							    ncp1 <- uniroot(function(x) (1-percentConfidenceEffSize)-pt(q=t,df=df,ncp=x),
+							                    c(2*t-end1,end1))$root
+							    confIntEffSize <- sort(c(ncp1/sqrt(df)* signT, Inf))
+							  }else if(direction == "less") {
+							    end2 <- t
+							    while( pt(q=t,df=df,ncp=end2) < percentConfidenceEffSize ) {
+							      end2 <- end2 - abs(t)
+							    }
+							    ncp2 <- uniroot(function(x) percentConfidenceEffSize-pt(q=t,df=df,ncp=x),
+							                    c(end2,2*t-end2))$root  
+							    confIntEffSize <- sort(c(ncp2/sqrt(df)* signT, -Inf))
+							  }
+							  t <- t * signT
+							}
 						}
 
 						## don't use a return statement in expressions
@@ -239,29 +337,31 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 					})
 
 					## if testing raised an error, we extract information from it
-					if (class(r) != "try-error" && is.na(r$statistic) == FALSE) {
+					if (class(result) != "try-error") {
 
 						## same for all tests
-						p <- as.numeric(r$p.value)
-						stat <- .clean(as.numeric(r$statistic))
+						p <- as.numeric(result$p.value)
+						stat <- .clean(as.numeric(result$statistic))
 						sed <- .clean(sd(c1 - c2) / sqrt(length(c1)))
 						# num <- sqrt(sd(c1)^2 + sd(c2)^2 -  2 * cov(c1, c2))
 						# d <- .clean(mean(c1) - mean(c2) / num)
 
-						m <- as.numeric(r$estimate)
+						m <- as.numeric(result$estimate)
 						ciLow <- ifelse(direction == "less", .clean(-Inf),
-										as.numeric(r$conf.int[1]))
+										as.numeric(result$conf.int[1]))
 						ciUp <- ifelse(direction == "greater", .clean(Inf),
-									   as.numeric(r$conf.int[2]))
-
+									   as.numeric(result$conf.int[2]))
+						ciLowEffSize = .clean(as.numeric(confIntEffSize[1]))
+						ciUpEffSize = .clean(as.numeric(confIntEffSize[2]))
 
 						## paired t-test has it, wilcox doesn't!
-						df <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
-						d <- ifelse(is.null(r$parameter), "", .clean(mean(c1 - c2) / sd(c1 - c2)))
+						df <- ifelse(is.null(result$parameter), "", as.numeric(result$parameter))
+						sed <- ifelse(is.null(result$parameter), "", sed)
 						
 						# add things to the intermediate results object
 						row <- list(df = df, p = p, md = m, d = d,
-									lowerCI = ciLow, upperCI = ciUp,
+			            lowerCIlocationParameter = ciLow, upperCIlocationParameter = ciUp, 
+			            lowerCIeffectSize = ciLowEffSize, upperCIeffectSize = ciUpEffSize,
 									sed = sed, .footnotes = row.footnotes)
 
 						if (options$VovkSellkeMPR){
@@ -272,32 +372,15 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 					## however, if there has been an error
 					## find out which and log it as a footnote
-					} else {
 
-						if (class(r) != "try-error") {
-							errorMessage <- "could not be calculated"
-						} else {
-							errorMessage <- .extractErrorMessage(r)
-						}
+					} else if (isTryError(result)) {
+					    errorMessage <- .extractErrorMessage(result)
+					}
+					
+					}
+					
+					if (!is.null(errorMessage)){
 
-						if (errorMessage == "missing value where TRUE/FALSE needed") {
-
-							err <- paste0("t-statistic is undefined - one ",
-										  "or both of the variables contain infinity")
-
-						} else if (errorMessage == "data are essentially constant") {
-
-							err <- paste0("t-statistic is undefined - one or both of ",
-										  "the variables contain all the same value (zero variance)")
-
-						} else if (errorMessage == "not enough 'x' observations") {
-
-							err <- paste0("t-statistic is undefined - one or both of ",
-										  "the variables contain only one value")
-
-						} else {
-							err <- paste0("t statistic is undefined - ", errorMessage)
-						}
 
 						index <- .addFootnote(footnotes, errorMessage)
 						row.footnotes <- list(t = list(index))
@@ -429,7 +512,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 		p1 <- pair[[1]]
 		p2 <- pair[[2]]
-
+		
 		if (perform == "run" && length(options$pairs) > 0 && p1 != p2) {
 
 			c1 <- dataset[[ .v(p1) ]]
@@ -438,20 +521,16 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 			row.footnotes <- NULL
 			error <- FALSE
-
-			if (length(data) < 3) {
-
-				err <- "Too few observations (N < 3) to compute statistic reliably."
-				foot.index <- .addFootnote(footnotes, err)
-				row.footnotes <- list(W = list(foot.index), p = list(foot.index))
-				error <- TRUE
-
-			} else if (length(data) > 5000) {
-
-				err <- "Too many observations (N > 5000) to compute statistic reliably."
-				foot.index <- .addFootnote(footnotes, err)
-				row.footnotes <- list(W = list(foot.index), p = list(foot.index))
-				error <- TRUE
+			
+			errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+			                     all.target = c(p1, p2),
+			                     observations.amount = c('< 3', '> 5000'))
+			
+			if (!identical(errors, FALSE)) {
+			    errorMessage <- errors$message
+			    foot.index <- .addFootnote(footnotes, errorMessage)
+			    row.footnotes <- list(W = list(foot.index), p = list(foot.index))
+			    error <- TRUE
 			}
 
 			if (!error) {
@@ -505,7 +584,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 	}
 
 	for (i in .indices(options$pairs)) {
-
+		
 		pair <- options$pairs[[i]]
 		descriptivesPlot <- list(title = paste(pair, collapse=" - "))
 		descriptivesPlot[["width"]] <- options$plotWidth
@@ -516,7 +595,19 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 			c1 <- dataset[[ .v(pair[[1]]) ]]
 			c2 <- dataset[[ .v(pair[[2]]) ]]
+			###
+			errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+								 all.target = c(pair[[1]], pair[[2]]),
+								 observations.amount = '< 2')
+			
+			if (!identical(errors, FALSE)) {
+				errorMessage <- errors$message
+				
+				descriptivesPlot[["data"]] <- ""
+				descriptivesPlot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+			} else {
 
+			####
 			data <- data.frame(id = rep(1:length(c1), 2), dependent = c(c1, c2),
 				groupingVariable = c(rep(paste("1.", pair[[1]], sep = ""), length(c1)),
 				  rep(paste("2.", pair[[2]], sep = ""), length(c2))))
@@ -552,12 +643,12 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 			descriptivesPlot[["data"]] <- imgObj[["png"]]
 			descriptivesPlot[["obj"]] <- imgObj[["obj"]]
+			
+		}
+
 			descriptivesPlot[["convertible"]] <- TRUE
 			descriptivesPlot[["status"]] <- "complete"
 
-		} else {
-
-			descriptivesPlot[["data"]] <- ""
 
 		}
 

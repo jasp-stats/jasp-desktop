@@ -991,3 +991,162 @@
 	
 	return (estimatesTable)
 }
+
+
+.anovaNullControlPostHocTable <- function(dataset, options, perform, status, analysisType) {
+  
+  if (length(options$postHocTestsVariables) == 0)
+    return(NULL)
+  
+	priorWidth <- 1 / sqrt(2)
+  posthoc.variables <- unlist(options$postHocTestsVariables)
+  dep.variable <- options$dependent
+  
+	title <- "Post Hoc Tests"
+	citation <- list(
+		"Jeffreys, H. (1938). Significance tests when several degrees of freedom arise simultaneously. Proceedings of the Royal Society of London. Series A, Mathematical and Physical Sciences, 165, 161–198.",
+		"Westfall, P. H., Johnson, W. O., & Utts, J. M. (1997). A Bayesian perspective on the Bonferroni adjustment. Biometrika, 84, 419-427."
+		)
+	footnote <- "The posterior odds have been corrected for multiple testing by
+		fixing to 0.5 the prior probability that the null hypothesis holds
+		across all comparisons (Westfall, Johnson, & Utts, 1997). Individual
+		comparisons are based on the default t-test with a Cauchy (0, r =
+		1/sqrt(2)) prior."
+	
+	if (options$bayesFactorType == "BF10") {
+		bf.title <- "BF<sub>10, U</sub>"
+		format <- "sf:4;dp:3;log10"
+	} else if (options$bayesFactorType == "BF01") {
+		bf.title <- "BF<sub>01, U</sub>"
+		format <- "sf:4;dp:3;log10"
+	} else if (options$bayesFactorType == "LogBF10") {
+		bf.title <- "Log(BF<sub>10, U</sub>)"
+		format <- "sf:4;dp:3"
+	}
+	
+	fields <- list(
+		list(name="(I)", title="", type="string", combine=TRUE),
+		list(name="(J)", title="", type="string"),
+		list(name="Prior Odds", type="number", format="sf:4;dp:3"),
+		list(name="Posterior Odds", type="number", format="sf:4;dp:3"),
+		list(name="BF", type="number", format=format, title=bf.title),
+		list(name="error %", type="number", format="sf:4;dp:3")
+	)
+	
+  posthoc.tables <- list()
+  
+  for (posthoc.var in posthoc.variables) {
+    
+    posthoc.table <- list()
+		rows <- list()
+		
+    footnotes <- .newFootnotes()
+		if (options$postHocTestsNullControl) {
+			.addFootnote(footnotes, symbol = "<em>Note.</em>", text = footnote)
+		}
+    
+    posthoc.table[["title"]] <- paste("Post Hoc Comparisons - ", posthoc.var, sep="")
+    posthoc.table[["name"]] <- paste("postHoc_", posthoc.var, sep="")
+		posthoc.table[["citation"]] <- citation
+    posthoc.table[["schema"]] <- list(fields=fields)
+		
+		if (analysisType == "RM-ANOVA" && posthoc.var %in% options$fixedFactors && ! posthoc.var %in% options$betweenSubjectFactors) {
+			variable.levels <- options$repeatedMeasuresFactors[[which(lapply(options$repeatedMeasuresFactors, function(x) x$name) == posthoc.var)]]$levels
+			paired <- TRUE
+		} else if (posthoc.var %in% c(options$fixedFactors, options$betweenSubjectFactors, options$randomFactors)) {
+			variable.levels <- levels(dataset[[ .v(posthoc.var) ]])
+			paired <- FALSE
+		} else {
+			next
+		}
+		
+		if (length(variable.levels) < 2) {
+			next
+		}
+
+    pairs <- combn(variable.levels, 2)
+
+    for (i in 1:ncol(pairs)) {
+      
+      row <- list()
+      row.footnotes <- NULL
+			
+      priorOdds <- "."
+			postOdds <- "."
+      logBF <- "."
+      error <- "."
+      
+      if (options$postHocTestsNullControl == TRUE && perform == "run" && status$ready && status$error == FALSE) {	
+        
+        x <- dataset[dataset[[.v(posthoc.var)]] == pairs[1, i], .v(dep.variable)]
+        y <- dataset[dataset[[.v(posthoc.var)]] == pairs[2, i], .v(dep.variable)]
+        x <- na.omit(x)
+        y <- na.omit(y)
+
+        ttest <- try(BayesFactor::ttestBF(x=x, y=y, rscale=priorWidth, paired=paired), silent=TRUE)
+        
+        if (isTryError(ttest)) {
+					
+					priorOdds <- postOdds <- logBF <- error <- "NaN"
+          message <- .extractErrorMessage(ttest)
+          foot.index <- .addFootnote(footnotes, message)
+          row.footnotes <- list(BF = list(foot.index))
+					
+        } else {
+					
+          pH0 <- 0.5^(2 / length(variable.levels))
+					logBF <- ttest@bayesFactor$bf
+					if (options$bayesFactorType == "BF01") {
+						priorOdds <- pH0 / (1 - pH0)
+						logBF <- -logBF
+					} else {
+						priorOdds <- (1 - pH0) / pH0
+					}
+
+					postOdds <- log(priorOdds) + logBF
+					postOdds <- exp(postOdds)
+					if (options$bayesFactorType != "LogBF10") {
+						logBF <- logBF / log(10)
+					}
+
+          error <- ttest@bayesFactor$error * 100
+					
+        }
+        
+      }
+      
+      row[["(I)"]] <- pairs[1, i]
+      row[["(J)"]] <- pairs[2, i]
+      row[["Prior Odds"]] <- .clean(priorOdds)
+			row[["Posterior Odds"]] <- .clean(postOdds)
+      row[["BF"]] <- .clean(logBF)
+      row[["error %"]] <- .clean(error)
+      row[[".footnotes"]] <- row.footnotes
+
+      if (length(rows) == 0)  {
+        row[[".isNewGroup"]] <- TRUE
+      } else {
+        row[[".isNewGroup"]] <- FALSE
+      }
+      
+      rows[[length(rows) + 1]] <- row
+      
+    } # end loop over pairs of levels
+		
+		posthoc.table[["footnotes"]] <- as.list(footnotes)
+		posthoc.table[["status"]] <- "complete"
+		posthoc.table[["data"]] <- rows
+		
+		if (status$error) {
+			posthoc.table[["error"]] <- list(errorType="badData")
+		}
+    
+    posthoc.tables[[length(posthoc.tables) + 1]] <- posthoc.table
+  } # end loop over factors
+  
+	if (length(posthoc.tables) == 0) { # there were only empty (RM) factors
+		return(NULL)
+	}
+	
+	return(list(collection = posthoc.tables, title = title))
+}

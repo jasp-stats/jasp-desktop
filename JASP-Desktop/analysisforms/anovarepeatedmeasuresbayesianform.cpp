@@ -101,6 +101,7 @@ AnovaRepeatedMeasuresBayesianForm::AnovaRepeatedMeasuresBayesianForm(QWidget *pa
 	ui->buttonAssignSeperatePlots->setSourceAndTarget(ui->plotVariables, ui->plotSeparatePlots);
 	
 	ui->containerModel->hide();
+	ui->containerPostHocTests->hide();
 	ui->advancedOptions->hide();
 	ui->containerDescriptivesPlot->hide();
 	
@@ -167,6 +168,8 @@ void AnovaRepeatedMeasuresBayesianForm::factorsChanged()
 	plotVariablesAssigned.add(_seperateLinesTableModel->assigned());
 	plotVariablesAssigned.add(_seperatePlotsTableModel->assigned());
 	_plotFactorsAvailableTableModel->notifyAlreadyAssigned(plotVariablesAssigned);
+	
+	ui->postHocTestsVariables->setVariables(factorsAvailable);
 	
 	if (_options != NULL)
 		_options->blockSignals(false);

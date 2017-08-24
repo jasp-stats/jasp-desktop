@@ -94,6 +94,7 @@ AncovaBayesianForm::AncovaBayesianForm(QWidget *parent) :
 	connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
 	ui->modelTerms->hide();
+	ui->containerPostHocTests->hide();
 	ui->containerDescriptivesPlot->hide();
 	ui->advancedOptions->hide();
 
@@ -139,6 +140,8 @@ void AncovaBayesianForm::factorsChanged()
 	plotVariablesAssigned.add(_seperateLinesTableModel->assigned());
 	plotVariablesAssigned.add(_seperatePlotsTableModel->assigned());
 	_plotFactorsAvailableTableModel->notifyAlreadyAssigned(plotVariablesAssigned);
+	
+	ui->postHocTestsVariables->setVariables(factorsAvailable);
 	
 	if (_options != NULL)
 		_options->blockSignals(false);
