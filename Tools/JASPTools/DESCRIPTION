@@ -1,0 +1,13 @@
+Package: JASPTools
+Type: Package
+Title: Helps preview and debug JASP analyses
+Version: 0.1.0
+Author: Tim de Jong
+Maintainer: Tim de Jong <tim_jong@hotmail.com>
+Description: This package assists JASP developers when writing R code. It removes the necessity of building JASP every time a change is made. Rather, analyses can be called directly in R and be debugged interactively.
+License: GNU General Public License
+Encoding: UTF-8
+LazyData: true
+Imports: rjson, jsonlite
+RoxygenNote: 6.0.1
+Built: R 3.3.3; ; 2017-08-24 12:48:07 UTC; unix
