@@ -22,7 +22,6 @@
 #include <QTimer>
 
 #include "base64.h"
-#include "qutils.h"
 
 LRNAMReply::LRNAMReply(const QString &path, QObject *parent)
 	: QNetworkReply(parent)

@@ -16,26 +16,31 @@
 //
 
 #include "tempfiles.h"
+#include "sysdepfiletype.h"
 
 #include <sstream>
-#include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
-#include <boost/nowide/fstream.hpp>
+#include <iostream>
 
 #include "base64.h"
 #include "dirs.h"
 #include "utils.h"
-#include <iostream>
 
 using namespace std;
 using namespace boost;
 
+namespace bf = boost::filesystem;
 long _tempfiles_sessionId;
-string _tempfiles_sessionDirName;
-string _tempfiles_statusFileName;
-string _tempfiles_clipboard;
+JaspFileTypes::FilePath _tempfiles_sessionDirName;
+JaspFileTypes::FilePath _tempfiles_statusFileName;
+JaspFileTypes::FilePath _tempfiles_clipboard;
 int _tempfiles_nextFileId;
-vector<string> tempfiles_shmemNames;
+vector<JaspFileTypes::FilePath> tempfiles_shmemNames;
+
+// Names of dirs under TEMP.
+static const string status("status");
+static const string resources("resources");
+static const string clipboard("clipboard");
 
 void tempfiles_init(long sessionId)
 {
@@ -45,34 +50,33 @@ void tempfiles_init(long sessionId)
 	_tempfiles_nextFileId = 0;
 
 	stringstream ss;
-	ss << Dirs::tempDir();
-	ss << "/";
 	ss << sessionId;
 
-	_tempfiles_sessionDirName = ss.str();
+	_tempfiles_sessionDirName = Dirs::tempDir();
+	_tempfiles_sessionDirName  /= ss.str();
 
-	ss << "/status";
+	cout << "__tempfiles_sessionDirName, native " << _tempfiles_sessionDirName.native()
+		 << ", generic " << _tempfiles_sessionDirName.generic_string() << endl;
 
-	_tempfiles_statusFileName = ss.str();
+	_tempfiles_statusFileName = _tempfiles_sessionDirName.generic_string();
+	_tempfiles_statusFileName /= status;
 
-	stringstream ss2;
-	ss2 << Dirs::tempDir();
-	ss2 << "/";
-	ss2 << "clipboard";
+	cout << "_tempfiles_statusFileName, native " << _tempfiles_statusFileName.native()
+		 << ", generic " << _tempfiles_statusFileName.generic_string() << endl;
 
-	_tempfiles_clipboard = ss2.str();
+	_tempfiles_clipboard = Dirs::tempDir();
+	_tempfiles_clipboard /= clipboard;
 
+	cout << "_tempfiles_clipboard, native " << _tempfiles_clipboard.native()
+		 << ", generic " << _tempfiles_clipboard.generic_string() << endl;
 
-	filesystem::path sessionPath = Utils::osPath(_tempfiles_sessionDirName);
+	filesystem::remove_all(_tempfiles_sessionDirName, error);
+	filesystem::create_directories(_tempfiles_sessionDirName, error);
 
-	filesystem::remove_all(sessionPath, error);
-	filesystem::create_directories(sessionPath, error);
-
-	nowide::fstream f;
-	f.open(_tempfiles_statusFileName.c_str(), ios_base::out);
+	JaspFileTypes::OFStream f(_tempfiles_statusFileName, ios::out);
 	f.close();
 
-	filesystem::path clipboardPath = Utils::osPath(_tempfiles_clipboard);
+	//filesystem::path clipboardPath = Utils::osPath(_tempfiles_clipboard);
 
 	//if ( ! filesystem::exists(clipboardPath, error))
 	//	filesystem::create_directories(clipboardPath, error);
@@ -83,37 +87,26 @@ void tempfiles_attach(long sessionId)
 	_tempfiles_sessionId = sessionId;
 	_tempfiles_nextFileId = 0;
 
+	_tempfiles_sessionDirName = Dirs::tempDir();
 	stringstream ss;
-	ss << Dirs::tempDir();
-	ss << "/";
 	ss << sessionId;
 
-	_tempfiles_sessionDirName = ss.str();
-
-	ss << "/status";
-
-	_tempfiles_statusFileName = ss.str();
+	_tempfiles_sessionDirName /= ss.str();
+	_tempfiles_sessionDirName /= status;
 }
-
 
 void tempfiles_deleteAll(int id)
 {
 
 	system::error_code error;
-	filesystem::path dir;
+	filesystem::path dir(_tempfiles_sessionDirName);
 
 	if (id >= 0)
 	{
+		dir.append(resources);
 		stringstream ss;
-		ss << _tempfiles_sessionDirName;
-		ss << "/";
-		ss << "resources/";
 		ss << id;
-		dir = ss.str();
-	}
-	else
-	{
-		dir = Utils::osPath(_tempfiles_sessionDirName);
+		dir.append(ss.str());
 	}
 
 	filesystem::remove_all(dir, error);
@@ -126,10 +119,10 @@ void tempfiles_deleteOrphans()
 
 	try {
 
-		filesystem::path tempPath = Utils::osPath(Dirs::tempDir());
-		filesystem::path sessionPath = Utils::osPath(_tempfiles_sessionDirName);
+		//filesystem::path tempPath = Utils::osPath(Dirs::tempDir());
+		//filesystem::path sessionPath = Utils::osPath(_tempfiles_sessionDirName);
 
-		filesystem::directory_iterator itr(tempPath, error);
+		filesystem::directory_iterator itr(Dirs::tempDir(), error);
 
 		if (error)
 		{
@@ -141,15 +134,16 @@ void tempfiles_deleteOrphans()
 		{
 			filesystem::path p = itr->path();
 
-			if (p.compare(sessionPath) == 0)
+			// Dont touch the session dir root.
+			if (p.compare(_tempfiles_sessionDirName) == 0)
 				continue;
-			for (vector<string>::const_iterator it = tempfiles_shmemNames.begin(); it != tempfiles_shmemNames.end(); ++it)
+
+			// Dont touch the shared memeory.
+			for (vector<filesystem::path>::const_iterator it = tempfiles_shmemNames.begin(); it != tempfiles_shmemNames.end(); ++it)
 			{
 				if (p.compare(*it) == 0)
 					continue;
 			}
-
-			string fileName = Utils::osPath(p.filename());
 
 			bool is_directory = filesystem::is_directory(p, error);
 			if (error)
@@ -157,15 +151,15 @@ void tempfiles_deleteOrphans()
 
 			if (!is_directory)
 			{
-				if (fileName.substr(0, 5).compare("JASP-") == 0)
+				if (p.filename().string().substr(0, 5).compare("JASP-") == 0)
 				{
-					long modTime = Utils::getFileModificationTime(Utils::osPath(p));
+					long modTime = Utils::getFileModificationTime(p);
 					long now = Utils::currentSeconds();
 
 					std::cout.flush();
 					if (now - modTime > 70)
 					{
-						std::cout << "Try to delete: " << fileName << std::endl;
+						std::cout << "Try to delete: " << p.filename() << std::endl;
 						std::cout.flush();
 
 						filesystem::remove(p, error);
@@ -183,14 +177,15 @@ void tempfiles_deleteOrphans()
 			else
 			{
 
-				if (std::atoi(fileName.c_str()) == 0)
+				if (std::atoi(p.filename().c_str()) == 0)
 					continue;
 
-				filesystem::path statusFile = Utils::osPath(Utils::osPath(p) + "/status");
+				filesystem::path statusFile = p;
+				statusFile.append(status);
 
 				if (filesystem::exists(statusFile, error))
 				{
-					long modTime = Utils::getFileModificationTime(Utils::osPath(statusFile));
+					long modTime = Utils::getFileModificationTime(statusFile);
 					long now = Utils::currentSeconds();
 
 					if (now - modTime > 70)
@@ -220,208 +215,201 @@ void tempfiles_deleteOrphans()
 	}
 }
 
-
 void tempfiles_heartbeat()
 
 {
 	Utils::touch(_tempfiles_statusFileName);
-	for (vector<string>::const_iterator it = tempfiles_shmemNames.begin(); it != tempfiles_shmemNames.end(); ++it)
+	for (vector<JaspFileTypes::FilePath>::const_iterator it = tempfiles_shmemNames.begin(); it != tempfiles_shmemNames.end(); ++it)
 	{
 		Utils::touch(*it);
 	}
 }
 
+
 void tempfiles_purgeClipboard()
 {
 	system::error_code error;
 
-	filesystem::path clipboardPath = Utils::osPath(_tempfiles_clipboard);
-
-	filesystem::remove_all(clipboardPath, error);
+	filesystem::remove_all(_tempfiles_clipboard, error);
 }
 
-string tempfiles_createSpecific_clipboard(const string &filename)
+JaspFileTypes::FilePath tempfiles_createSpecific_clipboard(const JaspFileTypes::FilePath &filename)
 {
-	stringstream ss;
 	system::error_code error;
 
-	ss << _tempfiles_clipboard << "/" << filename;
-
-	string fullPath = ss.str();
-	filesystem::path path = Utils::osPath(fullPath);
-
-	filesystem::path dirPath = path.parent_path();
-
-	if (filesystem::exists(dirPath, error) == false || error)
-		filesystem::create_directories(dirPath, error);
-
+	filesystem::path fullPath = _tempfiles_clipboard;
+	fullPath.append(filename.filename().generic_string());
+	filesystem::create_directories(fullPath, error);
 	return fullPath;
 }
 
-string tempfiles_createSpecific(const string &dir, const string &filename)
+
+JaspFileTypes::FilePath tempfiles_createSpecificFp(const JaspFileTypes::FilePath &dir, const JaspFileTypes::FilePath &filename)
 {
-	stringstream ss;
 	system::error_code error;
 
-	ss << _tempfiles_sessionDirName << "/" << dir;
+	filesystem::path pa;
+	if (dir.is_relative())
+	{
+		pa = _tempfiles_sessionDirName;
+		pa /= dir;
+	}
+	else
+		pa = dir;
 
-	string fullPath = ss.str();
-	filesystem::path path = Utils::osPath(fullPath);
+	if (filesystem::exists(pa, error) == false || error)
+		filesystem::create_directories(pa, error);
 
-	if (filesystem::exists(path, error) == false || error)
-		filesystem::create_directories(path, error);
+	pa /= filename.filename();
 
-	ss << "/";
-	ss << filename;
-
-	return ss.str();
+	return pa;
 }
 
-void tempfiles_createSpecific(const string &name, int id, string &root, string &relativePath)
+
+/**
+ * @brief tempfiles_createSpecific Creates specific directory in session directory.
+ * @param name The file name to append.
+ * @param id The ID to use (-1 if none.)
+ * @param root OUT The root directory
+ * @param relativePath OUT The relative path.
+ *
+ * Does the following:
+ *  Returns the root dir of the files in "root".
+ *  Creates a sub folder "./resources[/<id>].
+ *  Creates the sub folder.
+ *  Returns the sub-folder in "relativePath"
+ */
+
+static void _createDir(int id, JaspFileTypes::FilePath &root, JaspFileTypes::FilePath &relativePath)
 {
-	stringstream ssAbsolute, ssRelative;
 	system::error_code error;
 
 	root = _tempfiles_sessionDirName;
 
-	ssAbsolute << root << "/";
+	JaspFileTypes::FilePath absPath(_tempfiles_sessionDirName);
+	relativePath.clear();
+	absPath /= resources;
+	relativePath /= resources;
 
-	ssAbsolute << "resources";
-	ssRelative << "resources";
-
-	if (id >= 0)
-	{
-		ssRelative << "/" << id;
-		ssAbsolute << "/" << id;
-	}
-
-	string dir = ssAbsolute.str();
-	filesystem::path path = Utils::osPath(dir);
-
-	if (filesystem::exists(path, error) == false || error)
-		filesystem::create_directories(path, error);
-
-	ssAbsolute << "/" << name;
-	ssRelative << "/" << name;
-
-	relativePath = ssRelative.str();
-}
-
-void tempfiles_create(const string &extension, int id, string &root, string &relativePath)
-{
-	stringstream ssRoot, ssRelative;
-	system::error_code error;
-
-	ssRoot << _tempfiles_sessionDirName;
-
-	root = ssRoot.str();
-
-	ssRoot << "/resources";
-
-	if (id >= 0)
-		ssRoot << "/" << id;
-
-	string resources = ssRoot.str();
-
-	filesystem::path path = Utils::osPath(resources);
-
-	if (filesystem::exists(resources, error) == false)
-		filesystem::create_directories(resources, error);
-
-	string suffix;
-	if (extension != "")
-		suffix = string(".") + extension;
-
-	do
-	{
-		ssRelative.str("");
-		ssRelative << "resources/";
-
-		if (id >= 0)
-			ssRelative << id << "/";
-
-		ssRelative << "_";
-		ssRelative << _tempfiles_nextFileId++;
-		ssRelative << suffix;
-
-		relativePath = ssRelative.str();
-		string fullPath = root + "/" + relativePath;
-
-		path = Utils::osPath(fullPath);
-	}
-	while (filesystem::exists(path));
-
-
-}
-
-
-vector<string> tempfiles_retrieveList(int id)
-{
-	vector<string> files;
-
-	system::error_code error;
-
-	string dir;
 	if (id >= 0)
 	{
 		stringstream ss;
-		ss << _tempfiles_sessionDirName;
-		ss << "/";
-		ss << "resources/";
 		ss << id;
-		dir = ss.str();
+		absPath /= ss.str();
+		relativePath /= ss.str();
 	}
-	else
+
+	if (filesystem::exists(absPath, error) == false || error)
+		filesystem::create_directories(absPath, error);
+}
+
+/**
+ * @brief tempfiles_createSpecific Creates specific directory in session directory.
+ * @param name The file name to append.
+ * @param id The ID to use (-1 if none.)
+ * @param root OUT The root directory
+ * @param relativePath OUT The relative path.
+ *
+ * Does the following:
+ *  Returns the root dir of the files in "root".
+ *  Creates a sub folder "./resources[/<id>].
+ *  Creates the sub folder.
+ *  Appends the name to the sub folder to create relative path.
+ *  Returns the sub-folder in "relativePath"
+ */
+void tempfiles_createSpecific(const JaspFileTypes::FilePath &name, int id, JaspFileTypes::FilePath &root, JaspFileTypes::FilePath &relativePath)
+{
+	_createDir(id, root, relativePath);
+	relativePath /= name.filename();
+}
+
+/**
+ * @brief tempfiles_create Creates a temporary file in <root>/resources[/<id>] named _NNN where NNN is next available number.
+ * @param extension File extention to use.
+ * @param id ID for directory (-1 if none).
+ * @param root OUT root directory used.
+ * @param relativePath OUT relative path of file.
+ */
+void tempfiles_create(const JaspFileTypes::FilePath &extension, int id, JaspFileTypes::FilePath &root, JaspFileTypes::FilePath &relativePath)
+{
+
+	static int _nextFileId = 1;
+
+	_createDir(id, root, relativePath);
+
+	string ext;
+	if (extension.extension() != JaspFileTypes::FilePath())
+		ext = extension.extension().generic_string();
+
+	JaspFileTypes::FilePath trialPath;
+	do
 	{
-		dir = _tempfiles_sessionDirName;
+		trialPath = root;
+		trialPath /= relativePath;
+
+		stringstream filename;
+		filename << "_" << _nextFileId++ << ext;
+
+		trialPath /= filename.str();
+	}
+	while (filesystem::exists(trialPath));
+
+}
+
+vector<JaspFileTypes::FilePath> tempfiles_retrieveListFullPaths(int id)
+{
+	vector<JaspFileTypes::FilePath> files;
+
+	system::error_code error;
+
+	JaspFileTypes::FilePath dir(_tempfiles_sessionDirName);
+
+	if (id >= 0)
+	{
+		stringstream ss;
+		ss << id;
+		dir.append("resources");
+		dir.append(ss.str());
 	}
 
-	filesystem::path path = Utils::osPath(dir);
-
-	filesystem::directory_iterator itr(path, error);
-
+	filesystem::directory_iterator itr(dir, error);
 	if (error)
 		return files;
 
 	for (; itr != filesystem::directory_iterator(); itr++)
 	{
 		if (filesystem::is_regular_file(itr->status()))
-		{
-			string absPath = itr->path().generic_string();
-			string relPath = absPath.substr(_tempfiles_sessionDirName.size()+1);
-
-			files.push_back(relPath);
-		}
+			files.push_back(itr->path());
 	}
 
 	return files;
 }
 
-string tempfiles_sessionDirName()
+
+JaspFileTypes::FilePath tempfiles_sessionDirName()
 {
 	return _tempfiles_sessionDirName;
 }
-
-void tempfiles_deleteList(const vector<string> &files)
+/*
+ Moved to Utils::deleteList(...);
+void tempfiles_deleteList(const vector<SystemDepFileTypes::FilePath> &files)
 {
 	system::error_code error;
 
-	BOOST_FOREACH (const string &file, files)
+	BOOST_FOREACH (const SystemDepFileTypes::FilePath &file, files)
 	{
-		(void)files;
+//		(void)files;
 		string absPath = _tempfiles_sessionDirName + "/" + file;
 		filesystem::path p = Utils::osPath(absPath);
 		filesystem::remove(p, error);
 	}
 }
 
-
-void tempFiles_addShmemFileName(string &name)
+*/
+void tempFiles_addShmemFileName(const string &name)
 {
-	stringstream ss;
-	ss << Dirs::tempDir();
-	ss << "/";
-	ss << name;
-
-	tempfiles_shmemNames.push_back(ss.str());
+	bf::path p(Dirs::tempDir().generic_string());
+	p /= name;
+	tempfiles_shmemNames.push_back(p);
 }
+

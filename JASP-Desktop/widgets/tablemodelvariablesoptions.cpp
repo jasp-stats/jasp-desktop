@@ -26,7 +26,7 @@
 #include "options/optionlist.h"
 #include "options/optionterms.h"
 
-#include "qutils.h"
+#include "desktoputils.h"
 
 using namespace std;
 
@@ -79,12 +79,12 @@ QVariant TableModelVariablesOptions::data(const QModelIndex &index, int role) co
 		if (list == NULL)
 			return QVariant("WTF");
 
-		QString selected = tq(list->value());
+		QString selected = toQStr(list->value());
 
 		if (role == Qt::DisplayRole)
 			return selected;
 
-		QStringList items = tql(list->options());
+		QStringList items = toQStringList(list->options());
 
 		QList<QVariant> value;
 		value.append(selected);
@@ -108,7 +108,7 @@ bool TableModelVariablesOptions::setData(const QModelIndex &index, const QVarian
 		return false;
 
 	string oldValue = list->value();
-	string newValue = fq(value.toString());
+	string newValue = toStr(value.toString());
 
 	if (oldValue != newValue)
 	{
@@ -141,7 +141,7 @@ QVariant TableModelVariablesOptions::headerData(int section, Qt::Orientation ori
 		string name;
 		Option *option;
 		_boundTo->rowTemplate()->get(section, name, option);
-		return tq(name);
+		return toQStr(name);
 	}
 
 	return QVariant();

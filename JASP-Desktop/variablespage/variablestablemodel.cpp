@@ -1,7 +1,7 @@
 
 #include "variablestablemodel.h"
 
-#include "qutils.h"
+#include "desktoputils.h"
 
 VariablesTableModel::VariablesTableModel(QObject *parent)
 	: QAbstractTableModel(parent)
@@ -29,7 +29,7 @@ QVariant VariablesTableModel::data(const QModelIndex &index, int role) const
 	if (_dataSet == NULL)
 		return QVariant();
 
-	return tq(_dataSet->columns().at(index.row()).name());
+	return toQStr(_dataSet->columns().at(index.row()).name());
 }
 
 int VariablesTableModel::rowCount(const QModelIndex &parent) const

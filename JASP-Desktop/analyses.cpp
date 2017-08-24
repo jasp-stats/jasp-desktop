@@ -26,7 +26,8 @@
 #include <QFile>
 #include <QTimer>
 
-#include "utils.h"
+#include "desktoputils.h"
+#include <utils.h>
 #include "tempfiles.h"
 
 using namespace std;
@@ -53,7 +54,7 @@ Analysis *Analyses::create(const QString &name, int id, Json::Value *options, An
 	if (id >= _nextId)
 		_nextId = id + 1;
 
-	Analysis *analysis = AnalysisLoader::load(id, name.toStdString(), options);
+	Analysis *analysis = AnalysisLoader::load(id, toStr(name), options);
 	analysis->setStatus(status);
 
 	if (options == NULL)
@@ -138,7 +139,7 @@ void Analyses::flushDefaultsToDisk()
 			file.write(json.c_str(), json.length());
 			file.close();
 
-			if (Utils::renameOverwrite(tmpFileName.toStdString(), fileName.toStdString()))
+			if (Utils::renameOverwrite(toStr(tmpFileName), toStr(fileName)))
 				defaults.needsSync = false;
 			else
 				file.remove();
@@ -148,7 +149,7 @@ void Analyses::flushDefaultsToDisk()
 
 void Analyses::assignDefaults(Analysis *analysis)
 {
-	QString name = QString::fromStdString(analysis->name());
+	QString name = toQStr(analysis->name());
 
 	if (_defaults.contains(name))
 	{
@@ -208,7 +209,7 @@ void Analyses::analysisImageSavedHandler(Analysis *analysis)
 
 void Analyses::analysisOptionsChangedHandler(Analysis *analysis)
 {
-	QString name = QString::fromStdString(analysis->name());
+	QString name = toQStr(analysis->name());
 
 	if (_defaults.contains(name))
 	{

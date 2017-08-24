@@ -31,7 +31,7 @@
 #include "options/optionlist.h"
 #include "options/optionstable.h"
 
-#include "qutils.h"
+#include "desktoputils.h"
 
 typedef QPair<QString, QStringList> Factor;
 

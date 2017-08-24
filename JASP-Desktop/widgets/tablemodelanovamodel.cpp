@@ -21,7 +21,6 @@
 #include <QMimeData>
 #include <QDebug>
 
-#include "qutils.h"
 #include <boost/foreach.hpp>
 
 #include "options/optionboolean.h"

@@ -25,8 +25,8 @@
 
 #include <boost/bind.hpp>
 
-#include "qutils.h"
-#include "utils.h"
+#include "desktoputils.h"
+#include "desktoputils.h"
 #include "onlinedatamanager.h"
 #include <QDebug>
 
@@ -127,16 +127,16 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 		Exporter *exporter = event->getExporter();
 		if (exporter)
 		{
-			exporter->saveDataSet(fq(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+			exporter->saveDataSet(toStr(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
 		} else {
 			throw runtime_error("No Exporter found!");
 		}
 
-		if ( ! Utils::renameOverwrite(fq(tempPath), fq(path)))
-			throw runtime_error("File '" + fq(path) + "' is being used by another application.");
+		if ( ! Utils::renameOverwrite(toStr(tempPath), toStr(path)))
+			throw runtime_error("File '" + toStr(path) + "' is being used by another application.");
 
 		if (event->IsOnlineNode())
-			QMetaObject::invokeMethod(_odm, "beginUploadFile", Qt::AutoConnection, Q_ARG(QString, event->path()), Q_ARG(QString, "asyncloader"), Q_ARG(QString, tq(package->id)), Q_ARG(QString, tq(package->initalMD5)));
+			QMetaObject::invokeMethod(_odm, "beginUploadFile", Qt::AutoConnection, Q_ARG(QString, event->path()), Q_ARG(QString, "asyncloader"), Q_ARG(QString, toQStr(package->id)), Q_ARG(QString, toQStr(package->initalMD5)));
 		else
 			event->setComplete();
 	}
@@ -144,14 +144,14 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 	{
 		std::cout << "Runtime Exception in saveTask: " << e.what() << std::endl;
 		std::cout.flush();
-		Utils::removeFile(fq(tempPath));
+		Utils::removeFile(toStr(tempPath));
 		event->setComplete(false, e.what());
 	}
 	catch (exception e)
 	{
 		std::cout << "Exception in saveTask: " << e.what() << std::endl;
 		std::cout.flush();
-		Utils::removeFile(fq(tempPath));
+		Utils::removeFile(toStr(tempPath));
 		event->setComplete(false, e.what());
 	}
 }
@@ -187,7 +187,7 @@ void AsyncLoader::loadPackage(QString id)
 
 		try
 		{
-			string path = fq(_currentEvent->path());
+			string path = toStr(_currentEvent->path());
 			string extension = "";
 
 			if (_currentEvent->IsOnlineNode())
@@ -200,16 +200,16 @@ void AsyncLoader::loadPackage(QString id)
 				if (dotPos != -1 && dotPos > slashPos)
 				{
 					QString ext = qpath.mid(dotPos);
-					extension=ext.toStdString();
+					extension= toStr(ext);
 				}
 
 				dataNode = _odm->getActionDataNode(id);
 
 				if (dataNode != NULL && dataNode->error())
-					throw runtime_error(fq(dataNode->errorMessage()));
+					throw runtime_error(toStr(dataNode->errorMessage()));
 
 				//Generated local path has no extension
-				path = fq(_odm->getLocalPath(_currentEvent->path()));
+				path = toStr(_odm->getLocalPath(_currentEvent->path()));
 			}
 
 			if (_currentEvent->operation() == FileEvent::FileSyncData)
@@ -222,7 +222,7 @@ void AsyncLoader::loadPackage(QString id)
 				_loader.loadPackage(_currentPackage, path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
 			}
 
-			QString calcMD5 = fileChecksum(tq(path), QCryptographicHash::Md5);
+			QString calcMD5 = fileChecksum(toQStr(path), QCryptographicHash::Md5);
 
 			if (dataNode != NULL)
 			{
@@ -230,11 +230,11 @@ void AsyncLoader::loadPackage(QString id)
 					throw runtime_error("The securtiy check of the downloaded file has failed.\n\nLoading has been cancelled due to an MD5 mismatch.");
 			}
 
-			_currentPackage->initalMD5 = fq(calcMD5);
+			_currentPackage->initalMD5 = toStr(calcMD5);
 
 			if (dataNode != NULL)
 			{
-				_currentPackage->id = fq(dataNode->nodeId());
+				_currentPackage->id = toStr(dataNode->nodeId());
 				_currentEvent->setPath(dataNode->path());
 			}
 			else
@@ -242,11 +242,11 @@ void AsyncLoader::loadPackage(QString id)
 
 			if (_currentEvent->type() != Utils::FileType::jasp)
 			{
-				_currentPackage->dataFilePath = _currentEvent->path().toStdString();
+				_currentPackage->dataFilePath = toStr(_currentEvent->path());
 				_currentPackage->dataFileReadOnly = _currentEvent->isReadOnly();
 				_currentPackage->dataFileTimestamp = _currentEvent->IsOnlineNode() ? 0 : QFileInfo(_currentEvent->path()).lastModified().toTime_t();
 			}
-			_currentEvent->setDataFilePath(QString::fromStdString(_currentPackage->dataFilePath));
+			_currentEvent->setDataFilePath(toQStr(_currentPackage->dataFilePath));
 			_currentEvent->setComplete();
 
 			if (dataNode != NULL)
@@ -293,24 +293,24 @@ void AsyncLoader::uploadFileFinished(QString id)
 
 		try
 		{
-			string path = fq(_currentEvent->path());
+			string path = toStr(_currentEvent->path());
 
 			if (_currentEvent->IsOnlineNode())
 			{
 				dataNode = _odm->getActionDataNode(id);
 
 				if (dataNode->error())
-					throw runtime_error(fq(dataNode->errorMessage()));
+					throw runtime_error(toStr(dataNode->errorMessage()));
 
-				path = fq(_odm->getLocalPath(_currentEvent->path()));
+				path = toStr(_odm->getLocalPath(_currentEvent->path()));
 
 				_currentEvent->setPath(dataNode->path());
 			}
 
-			_currentPackage->initalMD5 = fq(fileChecksum(tq(path), QCryptographicHash::Md5));
+			_currentPackage->initalMD5 = toStr(fileChecksum(toQStr(path), QCryptographicHash::Md5));
 
 			if (dataNode != NULL)
-				_currentPackage->id = fq(dataNode->nodeId());
+				_currentPackage->id = toStr(dataNode->nodeId());
 			else
 				_currentPackage->id = path;
 

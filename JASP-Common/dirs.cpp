@@ -49,104 +49,95 @@
 using namespace std;
 using namespace boost;
 
-string Dirs::appDataDir()
+
+
+JaspFileTypes::FilePath Dirs::appDataDir()
 {
-	static string p = "";
+	static filesystem::path p = "";
 
 	if (p != "")
 		return p;
 
-	string dir;
-	filesystem::path pa;
-
 #ifdef __WIN32__
-	TCHAR buffer[MAX_PATH];
-
-	HRESULT ret = SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, buffer);
-
-	if ( ! SUCCEEDED(ret))
 	{
-		stringstream ss;
-		ss << "App Data directory could not be retrieved (" << ret << ")";
-		throw Exception(ss.str());
+		PWSTR buffer;
+
+		HRESULT ret = SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_DEFAULT, NULL, CSIDL_APPDATA, NULL, &buffer);
+
+		if ( ! SUCCEEDED(ret))
+		{
+			stringstream ss;
+			ss << "App Data directory could not be retrieved (" << ret << ")";
+			throw Exception(ss.str());
+		}
+
+		p = buffer;
+		CoTaskMemFree(buffer);
 	}
-
-	dir = nowide::narrow(buffer);
-	dir += "/JASP/" + AppInfo::getShortDesc();
-
-	pa = nowide::widen(dir);
-
 #else
-
-	dir = string(getpwuid(getuid())->pw_dir);
-	dir += "/.JASP/" + AppInfo::getShortDesc();
-
-	pa = dir;
-
+	p = getpwuid(getuid())->pw_dir;
 #endif
 
-	if ( ! filesystem::exists(pa))
+	p /= AppInfo::name;
+	p /= AppInfo::getShortDesc();
+
+	if ( ! filesystem::exists(p))
 	{
 		system::error_code ec;
 
-		filesystem::create_directories(pa, ec);
+		filesystem::create_directories(p, ec);
 
 		if (ec)
 		{
 			stringstream ss;
-			ss << "App Data directory could not be created: " << dir;
+			ss << "App Data directory could not be created: " << p.native();
 			throw Exception(ss.str());
 		}
 	}
 
-	p = filesystem::path(dir).generic_string();
+	cout << "Dirs::appDataDir() - returning " << p.native() << endl;
 
 	return p;
 }
 
-string Dirs::tempDir()
+
+JaspFileTypes::FilePath Dirs::tempDir()
 {
-	static string p = "";
+	static filesystem::path p = "";
 
 	if (p != "")
 		return p;
 
-	string dir;
-	filesystem::path pa;
-
 #ifdef __WIN32__
-	TCHAR buffer[MAX_PATH];
-	if ( ! SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, buffer)))
+	TCHAR buffer[MAX_PATH + 2];
+	if ( ::GetTempPath(MAX_PATH), buffer) == 0)
 		throw Exception("App Data directory could not be retrieved");
 
-	dir = nowide::narrow(buffer);
-	dir += "/JASP/temp";
-
-	pa = nowide::widen(dir);
-
+	p = buffer;
 #else
-
-	dir = string(getpwuid(getuid())->pw_dir);
-	dir += "/.JASP/temp";
-
-	pa = dir;
+	{
+		const char * tmp = getenv("TMPDIR");
+		if (tmp == 0)
+			tmp = "/tmp";
+		p = tmp;
+	}
 
 #endif
-
-	if ( ! filesystem::exists(pa))
+	p /= AppInfo::name;
+	if ( ! filesystem::exists(p))
 	{
 		system::error_code ec;
-		filesystem::create_directories(pa, ec);
+		filesystem::create_directories(p, ec);
 
 		if (ec)
 		{
 			stringstream ss;
-			ss << "Temp Data directory could not be created (" << ec << ") : " << dir;
+			ss << "Temp Data directory could not be created (" << ec << ") : " << p.native();
 			throw Exception(ss.str());
 		}
 	}
 
-	p = filesystem::path(dir).generic_string();
+	cout << "Dirs::tempDir() - returning " << p.native() << endl;
 
 	return p;
 }
@@ -157,15 +148,16 @@ namespace interprocess {
 namespace ipcdetail {
 void get_shared_dir(std::string &shared_dir)
 {
-	shared_dir = Dirs::tempDir();
+	shared_dir = Dirs::tempDir().native();
 }
 }}}
 #endif
 
-string Dirs::exeDir()
+JaspFileTypes::FilePath Dirs::exeDir()
 {
-	static string p = "";
-	if (p != "")
+	static filesystem::path p;
+
+	if (p.has_filename())
 		return p;
 
 #ifdef __WIN32__
@@ -181,27 +173,7 @@ string Dirs::exeDir()
 		throw Exception(ss.str());
 	}
 
-	string r = nowide::narrow(path);
-
-	char pathbuf[MAX_PATH];
-	r.copy(pathbuf, MAX_PATH);
-
-	int last = 0;
-
-	for (int i = 0; i < r.length(); i++)
-	{
-		if (pathbuf[i] == '\\')
-		{
-			pathbuf[i] = '/';
-			last = i;
-		}
-	}
-
-	r = string(pathbuf, last);
-
-	p = r;
-
-	return r;
+	p = path;
 
 #elif defined(__APPLE__)
 
@@ -214,29 +186,15 @@ string Dirs::exeDir()
 	{
 		throw Exception("Executable directory could not be retrieved");
 	}
-	else
-	{
-		int last = strlen(pathbuf);
 
-		for (int i = last - 1; i > 0; i--)
-		{
-			if (pathbuf[i] == '/')
-			{
-				pathbuf[i] = '\0';
-				break;
-			}
-		}
+	p = pathbuff;
 
-		p = string(pathbuf);
-
-		return p;
-	}
 #else
 
     char buf[512];
     char linkname[512]; /* /proc/<pid>/exe */
 	pid_t pid;
-	int ret;
+	ssize_t ret;
 
 	pid = getpid();
 
@@ -251,47 +209,39 @@ string Dirs::exeDir()
 	if (ret >= sizeof(buf))
 		throw Exception("Executable directory could not be retrieved: insufficient buffer size");
 
-    for (int i = ret; i > 0; i--)
-    {
-        if (buf[i] == '/')
-        {
-            buf[i] = '\0'; // add null terminator
-            break;
-        }
-    }
-
-	return string(buf);
-
+	p = buf;
 #endif
+
+	return p.parent_path();
 
 }
 
-string Dirs::rHomeDir()
+JaspFileTypes::FilePath Dirs::rHomeDir()
 {
-	string dir = exeDir();
+	filesystem::path dir = exeDir();
 
 #ifdef __WIN32__
-	dir += "/R";
+	dir /= "R";
 #elif __APPLE__
-	dir += "/../Frameworks/R.framework/Versions/" + CURRENT_R_VERSION + "/Resources";
+	dir /= "../Frameworks/R.framework/Versions/" + CURRENT_R_VERSION + "/Resources";
 #else
-	dir += "/R";
+	dir /= "R";
 #endif
 
 	return dir;
 }
 
 
-string Dirs::libraryDir()
+JaspFileTypes::FilePath Dirs::libraryDir()
 {
-    string dir = exeDir();
+	filesystem::path dir = exeDir();
 
 #ifdef __WIN32__
-	dir += "/Resources/Library";
+	dir /= "Resources/Library";
 #elif __APPLE__
-	dir += "/../Resources/Library";
+	dir /= "../Resources/Library";
 #else
-	dir += "/Resources/Library";
+	dir /= "Resources/Library";
 #endif
 
     return dir;

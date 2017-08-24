@@ -44,7 +44,7 @@ JASPExporter::JASPExporter() {
     _allowedFileTypes.push_back(Utils::jasp);
 }
 
-void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
+void JASPExporter::saveDataSet(const FilePath &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
 {
 	struct archive *a;
 
@@ -288,16 +288,16 @@ void JASPExporter::saveJASPArchive(archive *a, DataSetPackage *package, boost::f
 		for (Json::Value::iterator iter = analysesDataList.begin(); iter != analysesDataList.end(); iter++)
 		{
 			Json::Value &analysisJson = *iter;
-			vector<string> paths = tempfiles_retrieveList(analysisJson["id"].asInt());
+			vector<FilePath> paths = tempfiles_retrieveListFullPaths(analysisJson["id"].asInt());
 			for (size_t j = 0; j < paths.size(); j++)
 			{
-				FileReader fileInfo = FileReader(tempfiles_sessionDirName() + "/" + paths[j]);
+				FileReader fileInfo = FileReader(paths[j]);
 				if (fileInfo.exists())
 				{
 					int imageSize = fileInfo.size();
 
 					entry = archive_entry_new();
-					string dd4 = paths[j];
+					string dd4 = paths[j].native();
 					archive_entry_set_pathname(entry, dd4.c_str());
 					archive_entry_set_size(entry, imageSize);
 					archive_entry_set_filetype(entry, AE_IFREG);

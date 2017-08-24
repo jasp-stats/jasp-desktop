@@ -25,9 +25,10 @@
 #include "libzip/archive_entry.h"
 
 using namespace std;
+using namespace boost::filesystem;
 
 
-FileReader::FileReader(const string &archivePath, const string &entryPath)
+FileReader::FileReader(const JaspFileTypes::FilePath &archivePath, const string &entryPath)
 {
 	_isArchive = true;
 	_entryPath = entryPath;
@@ -36,10 +37,10 @@ FileReader::FileReader(const string &archivePath, const string &entryPath)
 	openEntry(archivePath, entryPath);
 }
 
-FileReader::FileReader(const string &path)
+FileReader::FileReader(const JaspFileTypes::FilePath &path)
 {
 	_isArchive = false;
-	_entryPath = path;
+	_archivePath = path;
 
 	openFile(path);
 }
@@ -50,47 +51,34 @@ FileReader::~FileReader()
 }
 
 
-void FileReader::openFile(const string &filePath)
+void FileReader::openFile(const JaspFileTypes::FilePath &filePath)
 {
-	#ifdef __WIN32__
-	boost::filesystem::path path = boost::nowide::widen(filePath);
-	#else
-	boost::filesystem::path path = filePath;
-	#endif
-
-	_exists = boost::filesystem::exists(path);
+	_exists = boost::filesystem::exists(filePath);
 
 	if (_exists)
 	{
-		_size = boost::filesystem::file_size(path);
+		_size = file_size(filePath);
 
-		_file = new boost::nowide::ifstream(filePath.c_str(), ios::in | ios::binary);
-		if (!_file->is_open())
+		_file = new JaspFileTypes::IFStream(filePath, ios::in | ios::binary);
+		if (!(_isOpen = _file->is_open()))
 			throw runtime_error("Archive Entry access failed.");
-		else
-			_isOpen = true;
 	}
 }
 
-void FileReader::openEntry(const string &archivePath, const string &entryPath)
+void FileReader::openEntry(const JaspFileTypes::FilePath &archivePath, const string &entryPath)
 {
 	bool success = false;
-	#ifdef __WIN32__
-	boost::filesystem::path pathArchive = boost::nowide::widen(archivePath);
-	#else
-	boost::filesystem::path pathArchive = archivePath;
-	#endif
 
-	if ((_archiveExists = boost::filesystem::exists(pathArchive)))
+	if ((_archiveExists = boost::filesystem::exists(archivePath)))
 	{
 		_archive = archive_read_new();
 		archive_read_support_filter_all(_archive);
 		archive_read_support_format_all(_archive);
 
 		#ifdef __WIN32__
-		int r = archive_read_open_filename_w(_archive, pathArchive.native().c_str(), 10240);
+		int r = archive_read_open_filename_w(_archive, archivePath.native().c_str(), 10240);
 		#else
-		int r = archive_read_open_filename(_archive, pathArchive.native().c_str(), 10240);
+		int r = archive_read_open_filename(_archive, archivePath.native().c_str(), 10240);
 		#endif
 
 		_isOpen = true;
@@ -299,17 +287,11 @@ void FileReader::reset()
 }
 
 
-vector<string> FileReader::getEntryPaths(const string &archivePath, const string &entryBaseDirectory)
+vector<string> FileReader::getEntryPaths(const JaspFileTypes::FilePath &archivePath, const string &entryBaseDirectory)
 {
 	vector<string> files = vector<string>();
 
-	#ifdef __WIN32__
-	boost::filesystem::path pathArchive = boost::nowide::widen(archivePath);
-	#else
-	boost::filesystem::path pathArchive = archivePath;
-	#endif
-
-	bool archiveExists = boost::filesystem::exists(pathArchive);
+	bool archiveExists = boost::filesystem::exists(archivePath);
 
 	if (archiveExists)
 	{
@@ -318,9 +300,9 @@ vector<string> FileReader::getEntryPaths(const string &archivePath, const string
 		archive_read_support_format_all(a);
 
 		#ifdef __WIN32__
-		int r = archive_read_open_filename_w(a, pathArchive.native().c_str(), 10240);
+		int r = archive_read_open_filename_w(a, archivePath.native().c_str(), 10240);
 		#else
-		int r = archive_read_open_filename(a, pathArchive.native().c_str(), 10240);
+		int r = archive_read_open_filename(a, archivePath.native().c_str(), 10240);
 		#endif
 
 		if (r == ARCHIVE_OK)

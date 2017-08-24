@@ -32,7 +32,7 @@
 #include "options/optionstring.h"
 #include "options/optionlist.h"
 
- #include "qutils.h"
+ #include "desktoputils.h"
 
 class TableModelVariablesLevels : public TableModel, public BoundModel, public DropTarget, public VariableInfoConsumer
 {

@@ -94,7 +94,7 @@
 
 #include "analysisloader.h"
 
-#include "qutils.h"
+#include "desktoputils.h"
 #include "appdirs.h"
 #include "tempfiles.h"
 #include "processinfo.h"
@@ -111,6 +111,7 @@
 #include "options/optionvariablesgroups.h"
 
 using namespace std;
+using namespace boost;
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -123,8 +124,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	_package = new DataSetPackage();
 
-	_package->isModifiedChanged.connect(boost::bind(&MainWindow::packageChanged, this, _1));
-	_package->dataChanged.connect(boost::bind(&MainWindow::packageDataChanged, this, _1, _2, _3, _4));
+	_package->isModifiedChanged.connect(bind(&MainWindow::packageChanged, this, _1));
+	_package->dataChanged.connect(bind(&MainWindow::packageDataChanged, this, _1, _2, _3, _4));
 
 	QShortcut *saveShortcut = new QShortcut(QKeySequence("Ctrl+S"), this);
 	QObject::connect(saveShortcut, SIGNAL(activated()), this, SLOT(saveKeysSelected()));
@@ -174,7 +175,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->backStage->setOnlineDataManager(_odm);
 
 	// the LRNAM adds mime types to local resources; important for SVGs
-	ui->webViewResults->page()->setNetworkAccessManager(new LRNAM(tq(tempfiles_sessionDirName()), this));
+	ui->webViewResults->page()->setNetworkAccessManager(new LRNAM(toQStr(tempfiles_sessionDirName()), this));
 	ui->webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));
 	connect(ui->webViewResults, SIGNAL(loadFinished(bool)), this, SLOT(resultsPageLoaded(bool)));
 	connect(ui->webViewResults, SIGNAL(scrollValueChanged()), this, SLOT(scrollValueChangedHandle()));
@@ -544,7 +545,7 @@ QString MainWindow::escapeJavascriptString(const QString &str)
 
 void MainWindow::analysisUserDataLoadedHandler(Analysis *analysis)
 {
-	QString results = tq(analysis->userData().toStyledString());
+	QString results = toQStr(analysis->userData().toStyledString());
 
 	results = escapeJavascriptString(results);
 	results = "window.loadUserData(" + QString::number(analysis->id()) + ", JSON.parse('" + results + "'));";
@@ -581,7 +582,7 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 
 	Json::Value analysisJson = analysis->asJSON();
 	analysisJson["userdata"] = analysis->userData();
-	QString results = tq(analysisJson.toStyledString());
+	QString results = toQStr(analysisJson.toStyledString());
 
 	results = escapeJavascriptString(results);
 	results = "window.analysisChanged(JSON.parse('" + results + "'));";
@@ -598,7 +599,7 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 	if (analysis == NULL)
 		return;
 
-	string utf8 = fq(options);
+	string utf8 = toStr(options);
 	Json::Value root;
 	Json::Reader parser;
 	parser.parse(utf8, root);
@@ -630,7 +631,7 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 		}
 		else
 		{
-            QString imagePath = QString::fromStdString(tempfiles_sessionDirName()) + "/" + root.get("name", Json::nullValue).asCString();
+			QString imagePath = toQStr(tempfiles_sessionDirName()) + "/" + root.get("name", Json::nullValue).asCString();
 			if (QFile::exists(finalPath))
 			{
 				QFile::remove(finalPath);
@@ -647,8 +648,8 @@ void MainWindow::analysisImageSavedHandler(Analysis *analysis)
 		return;
 	Json::Value inputOptions = results.get("inputOptions", Json::nullValue);
 
-	QString imagePath = QString::fromStdString(tempfiles_sessionDirName()) + "/" + results.get("name", Json::nullValue).asCString();
-	QString finalPath = QString::fromStdString(inputOptions.get("finalPath", Json::nullValue).asCString());
+	QString imagePath = toQStr(tempfiles_sessionDirName()) + "/" + results.get("name", Json::nullValue).asCString();
+	QString finalPath = toQStr(inputOptions.get("finalPath", Json::nullValue).asString());
 	if (!finalPath.isEmpty())
 	{
 		std::cout << "analysisImageSavedHandler, imagePath: " << imagePath.toStdString() << ", finalPath: " << finalPath.toStdString() << std::endl;
@@ -817,7 +818,7 @@ void MainWindow::showForm(Analysis *analysis)
 		_buttonPanel->raise();
 		_buttonPanel->show();
 
-		QString helpPage = QString("analyses/") + tq(analysis->name()).toLower();
+		QString helpPage = QString("analyses/") + toQStr(analysis->name()).toLower();
 		requestHelpPage(helpPage);
 	}
 }
@@ -843,7 +844,7 @@ void MainWindow::analysisSelectedHandler(int id)
 		showForm(_currentAnalysis);
 
 		QString info("%1,%2");
-		info = info.arg(tq(_currentAnalysis->name()));
+		info = info.arg(toQStr(_currentAnalysis->name()));
 		info = info.arg(id);
 
 		if (_log != NULL)
@@ -860,7 +861,7 @@ void MainWindow::analysisUnselectedHandler()
 	if (_log != NULL && _currentAnalysis != NULL)
 	{
 		QString info("%1,%2");
-		info = info.arg(tq(_currentAnalysis->name()));
+		info = info.arg(toQStr(_currentAnalysis->name()));
 		info = info.arg(_currentAnalysis->id());
 
 		_log->log("Analysis Unselected", info);
@@ -1062,7 +1063,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 			if (event->type() == Utils::FileType::jasp && !_package->dataFilePath.empty() && !_package->dataFileReadOnly && strncmp("http", _package->dataFilePath.c_str(), 4) != 0)
 			{
-				QString dataFilePath = QString::fromStdString(_package->dataFilePath);
+				QString dataFilePath = toQStr(_package->dataFilePath);
 				if (QFileInfo::exists(dataFilePath))
 				{
 					uint currentDataFileTimestamp = QFileInfo(dataFilePath).lastModified().toTime_t();
@@ -1179,7 +1180,7 @@ void MainWindow::populateUIfromDataSet()
 				Json::Value meta = analysesData.get("meta", Json::nullValue);
 				if ( ! meta.isNull())
 				{
-					QString results = tq(analysesData["meta"].toStyledString());
+					QString results = toQStr(analysesData["meta"].toStyledString());
 					results = escapeJavascriptString(results);
 					results = "window.setResultsMeta(JSON.parse('" + results + "'));";
 					ui->webViewResults->page()->mainFrame()->evaluateJavaScript(results);
@@ -1193,7 +1194,7 @@ void MainWindow::populateUIfromDataSet()
 					QString name = QString();
 					Json::Value &analysisData = *iter;
 
-					name = QString::fromStdString(analysisData["name"].asString());
+					name = toQStr(analysisData["name"].asString());
 					int id = analysisData["id"].asInt();
 
 					Json::Value &optionsJson = analysisData["options"];
@@ -1213,7 +1214,7 @@ void MainWindow::populateUIfromDataSet()
 					errorFound = true;
 					corruptionStrings << "\n" << (++corruptAnalyses) << ": " << e.what();
 				}
-				catch (exception e)
+				catch (std::exception e)
 				{
 					errorFound = true;
 					corruptionStrings << "\n" << (++corruptAnalyses) << ": " << e.what();
@@ -1228,9 +1229,9 @@ void MainWindow::populateUIfromDataSet()
 	}
 
 	if (_package->warningMessage != "")
-		QMessageBox::warning(this, "", tq(_package->warningMessage));
+		QMessageBox::warning(this, "", toQStr(_package->warningMessage));
 	else if (errorFound)
-		QMessageBox::warning(this, "", tq(errorMsg.str()));
+		QMessageBox::warning(this, "", toQStr(errorMsg.str()));
 
 	_package->setLoaded();
 	updateMenuEnabledDisabledStatus();
@@ -1278,7 +1279,7 @@ void MainWindow::resultsPageLoaded(bool success)
 
 	if (success)
 	{
-		QString version = tq(AppInfo::version.asString());
+		QString version = toQStr(AppInfo::version.asString());
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
 
 		setExactPValuesHandler(_settings.value("exactPVals", 0).toBool());
@@ -1383,7 +1384,7 @@ void MainWindow::itemSelected(const QString &item)
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.select(" % QString::number(_currentAnalysis->id()) % ")");
 
 		QString info("%1,%2");
-		info = info.arg(tq(_currentAnalysis->name()));
+		info = info.arg(toQStr(_currentAnalysis->name()));
 		info = info.arg(_currentAnalysis->id());
 
 		if (_log != NULL)
@@ -1391,7 +1392,7 @@ void MainWindow::itemSelected(const QString &item)
 	}
 	catch (runtime_error& e)
 	{
-		_fatalError = tq(e.what());
+		_fatalError = toQStr(e.what());
 		fatalError();
 	}
 }
@@ -1400,7 +1401,7 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 {
 	if (filename == "%PREVIEW%" || filename == "%EXPORT%")
 	{
-		_package->analysesHTML = fq(data);
+		_package->analysesHTML = toStr(data);
 		_package->setAnalysesHTMLReady();
 	}
 	else
@@ -1565,7 +1566,7 @@ void MainWindow::analysisOKed()
 	if (_currentOptionsWidget != NULL)
 	{
 		QString info("%1,%2");
-		info = info.arg(tq(_currentAnalysis->name()));
+		info = info.arg(toQStr(_currentAnalysis->name()));
 		info = info.arg(_currentAnalysis->id());
 
 		if (_log != NULL)
@@ -1608,7 +1609,7 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 	analysis->setVisible(false);
 
 	QString info("%1,%2");
-	info = info.arg(tq(analysis->name()));
+	info = info.arg(toQStr(analysis->name()));
 	info = info.arg(analysis->id());
 
 	if (_package->isLoaded())
@@ -1724,7 +1725,7 @@ void MainWindow::saveTempImageHandler(int id, QString path, QByteArray data)
 {
 	QByteArray byteArray = QByteArray::fromBase64(data);
 
-	QString fullpath = tq(tempfiles_createSpecific_clipboard(fq(path)));
+	QString fullpath = toQStr(tempfiles_createSpecific_clipboard(toStr(path)));
 
 	QFile file(fullpath);
 	file.open(QIODevice::WriteOnly);
@@ -1745,7 +1746,7 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 	Json::Value menuOptions;
 
 	Json::Reader parser;
-	parser.parse(fq(options), menuOptions);
+	parser.parse(toStr(options), menuOptions);
 
 	QIcon _copyIcon = QIcon(":/icons/copy.png");
 	QIcon _citeIcon = QIcon(":/icons/cite.png");
@@ -1755,13 +1756,13 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 
 	_analysisMenu->clear();
 
-	QString objName = tq(menuOptions["objectName"].asString());
+	QString objName = toQStr(menuOptions["objectName"].asString());
 
 	if (menuOptions["hasCollapse"].asBool())
 	{
 		Json::Value collapseOptions = menuOptions["collapseOptions"];
 		QIcon icon = collapseOptions["collapsed"].asBool() ? _expandIcon : _collapseIcon;
-		_analysisMenu->addAction(icon, tq(collapseOptions["menuText"].asString()), this, SLOT(collapseSelected()));
+		_analysisMenu->addAction(icon, toQStr(collapseOptions["menuText"].asString()), this, SLOT(collapseSelected()));
 		_analysisMenu->addSeparator();
 	}
 
@@ -1794,12 +1795,12 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 		for (Json::ValueIterator iter = noteOptions.begin(); iter != noteOptions.end(); iter++)
 		{
 			Json::Value noteOption = *iter;
-			QAction *a1 = _analysisMenu->addAction(tq(noteOption["menuText"].asString()), this, SLOT(noteSelected()));
+			QAction *a1 = _analysisMenu->addAction(toQStr(noteOption["menuText"].asString()), this, SLOT(noteSelected()));
 
 			a1->setDisabled(noteOption["visible"].asBool());
 
 
-			QString call = QString("window.notesMenuClicked('%1', %2);").arg(tq(noteOption["key"].asString())).arg(noteOption["visible"].asBool() ? "false" : "true");
+			QString call = QString("window.notesMenuClicked('%1', %2);").arg(toQStr(noteOption["key"].asString())).arg(noteOption["visible"].asBool() ? "false" : "true");
 
 			a1->setData(call);
 		}
@@ -1842,7 +1843,7 @@ Json::Value MainWindow::getResultsMeta()
 
 	Json::Value meta;
 	Json::Reader parser;
-	parser.parse(fq(metaData.toString()), meta);
+	parser.parse(toStr(metaData.toString()), meta);
 
 	return meta;
 }
@@ -1853,7 +1854,7 @@ void MainWindow::getAnalysesUserData()
 
 	Json::Value data;
 	Json::Reader parser;
-	parser.parse(fq(userData.toString()), data);
+	parser.parse(toStr(userData.toString()), data);
 
 	for (Json::Value::iterator iter = data.begin(); iter != data.end(); iter++)
 	{
@@ -1972,13 +1973,13 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 		return;
 
 	QString info("%1,%2");
-	info = info.arg(tq(analysis->name()));
+	info = info.arg(toQStr(analysis->name()));
 	info = info.arg(id);
 
 	if (_log != NULL)
 		_log->log("Analysis Changed Downstream", info);
 
-	string utf8 = fq(options);
+	string utf8 = toStr(options);
 
 	Json::Value root;
 
@@ -1991,7 +1992,7 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 
 void MainWindow::startDataEditorHandler()
 {
-	QString path = QString::fromStdString(_package->dataFilePath);
+	QString path = toQStr(_package->dataFilePath);
 	if (path.isEmpty() || path.startsWith("http") || !QFileInfo::exists(path) || Utils::getFileSize(path.toStdString()) == 0 || _package->dataFileReadOnly)
 	{
 		QString message = "JASP was started without associated data file (csv, sav or ods file). But to edit the data, JASP starts a spreadsheet editor based on this file and synchronize the data when the file is saved. Does this data file exist already, or do you want to generate it?";

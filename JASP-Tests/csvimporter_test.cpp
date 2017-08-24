@@ -17,6 +17,7 @@
 
 #include "csvimporter_test.h"
 #include "csviterator.h"
+#include "desktoputils.h"
 
 
 void CSVImporterTest::initTestCase()
@@ -58,7 +59,7 @@ void CSVImporterTest::csvTester_data()
   {
     if (!boost::filesystem::is_directory(i->path())) //we eliminate directories
     {
-      QTest::newRow("csv file test") << QString::fromStdString(i->path().filename().string());
+	  QTest::newRow("csv file test") << toQStr(i->path().filename());
       count++;
     }
   }
@@ -134,7 +135,7 @@ bool CSVImporterTest::checkIfEqual(struct fileContent *fc)
 
       if(currentWord != dsp->dataSet->column(i)[j])
       {
-        qDebug() << "Data mismatch " << QString::fromStdString(currentWord)<< " " << QString::fromStdString(dsp->dataSet->column(i)[j]);
+		qDebug() << "Data mismatch " << toQStr(currentWord)<< " " << toQStr(dsp->dataSet->column(i)[j]);
         return false;
       }
     }

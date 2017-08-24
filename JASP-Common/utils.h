@@ -20,7 +20,7 @@
 
 #include <string>
 #include <vector>
-#include <boost/filesystem.hpp>
+#include "sysdepfiletype.h"
 
 class Utils
 {
@@ -29,21 +29,52 @@ public:
 	typedef std::vector<Utils::FileType> FileTypeVector;
 
 	static const char* getFileTypeString(const Utils::FileType &fileType);
-	static Utils::FileType getTypeFromFileName(const std::string &path);
+	static Utils::FileType getTypeFromFileName(const JaspFileTypes::FilePath &path);
 
 	static long currentMillis();
 	static long currentSeconds();
-	static long getFileModificationTime(const std::string &filename);
-	static long getFileSize(const std::string &filename);
-	static void touch(const std::string &filename);
-	static bool renameOverwrite(const std::string &oldName, const std::string &newName);
-	static bool removeFile(const std::string &path);
+	static long getFileModificationTime(const JaspFileTypes::FilePath &filename);
+	static long getFileSize(const JaspFileTypes::FilePath &filename);
+	static void touch(const JaspFileTypes::FilePath &filename);
+	static bool renameOverwrite(const JaspFileTypes::FilePath &oldName, const JaspFileTypes::FilePath &newName);
+	static bool removeFile(const JaspFileTypes::FilePath &path);
 
-	static boost::filesystem::path osPath(const std::string &path);
-	static std::string osPath(const boost::filesystem::path &path);
+/*	static SystemDepFileTypes::FilePath osPath(const std::string &path);
+	static std::string osPath(const boost::filesystem::path &path); */
 
-	static void remove(std::vector<std::string> &target, const std::vector<std::string> &toRemove);
+	/**
+	 * \brief Removes entries int toRemove from target where filenames match.
+	 * \param target The taget for removals.
+	 * \param filesToRemove File name of the items to remove.
+	 */
+	static void remove(std::vector<JaspFileTypes::FilePath> &target, const std::vector<JaspFileTypes::FilePath> &filesToRemove);
 	static void sleep(int ms);
+
+
+	/**
+	 * @brief deleteList Attempts to delete all the files mentioned.
+	 * @param files A vector of files to delete. The file paths are assymmmed to be complete.
+	 */
+	static void deleteListFullPaths(const std::vector<JaspFileTypes::FilePath> &files);
 };
+
+/*
+ * Implememetation of Utils::remove.
+template<class Item>
+void Utils::remove(std::vector<Item> &target, const std::vector<Item> &toRemove)
+{
+	for (typename std::vector<Item>::const_iterator removeIter = toRemove.begin(); removeIter != toRemove.end(); ++removeIter)
+	{
+		typename std::vector<Item>::iterator targetItr = target.begin();
+		while (targetItr  != target.end())
+		{
+			if (*targetItr == *removeIter)
+				target.erase(targetItr);
+			else
+				targetItr++;
+		}
+	}
+} */
+
 
 #endif // UTILS_H

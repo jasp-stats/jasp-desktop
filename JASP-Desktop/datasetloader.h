@@ -26,13 +26,14 @@
 class DataSetLoader
 {
 public:
-	static void loadPackage(DataSetPackage *packageData, const std::string &locator, const std::string &extension, boost::function<void (const std::string &stage, int progress)> progress = NULL);
-	static void syncPackage(DataSetPackage *packageData, const std::string &locator, const std::string &extension, boost::function<void (const std::string &, int)> progress = NULL);
+	static void loadPackage(DataSetPackage *packageData, const JaspFileTypes::FilePath &locator, const std::string &extension, boost::function<void (const std::string &stage, int progress)> progress = NULL);
+	static void syncPackage(DataSetPackage *packageData, const JaspFileTypes::FilePath &locator, const std::string &extension, boost::function<void (const std::string &, int)> progress = NULL);
 	static void freeDataSet(DataSet *dataSet);
 
 private:
-	static std::string getExtension(const std::string &locator, const std::string &extension);
-	static Importer* getImporter(DataSetPackage *packageData, const std::string &locator, const std::string &extension);
+	static JaspFileTypes::FilePath getExtension(const JaspFileTypes::FilePath &locator);
+//	static std::string getExtension(const JaspFileTypes::FilePath &locator, JaspFileTypes::FilePath &extension);
+	static Importer* getImporter(DataSetPackage *packageData, const JaspFileTypes::FilePath &locator, const std::string &extension);
 };
 
 #endif // DATASETLOADER_H

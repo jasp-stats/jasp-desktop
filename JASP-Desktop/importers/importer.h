@@ -6,16 +6,19 @@
 #include "datasetpackage.h"
 #include "importdataset.h"
 
+#include <sysdepfiletype.h>
+
 class Importer
 {
 public:
+
 	Importer(DataSetPackage *packageData);
 	virtual ~Importer();
-	void loadDataSet(const std::string &locator, boost::function<void (const std::string &, int)> progressCallback);
-	void syncDataSet(const std::string &locator, boost::function<void (const std::string &, int)> progressCallback);
+	void loadDataSet(const JaspFileTypes::FilePath &locator, boost::function<void (const std::string &, int)> progressCallback);
+	void syncDataSet(const JaspFileTypes::FilePath &locator, boost::function<void (const std::string &, int)> progressCallback);
 
 protected:
-	virtual ImportDataSet* loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback) = 0;
+	virtual ImportDataSet* loadFile(const JaspFileTypes::FilePath &locator, boost::function<void(const std::string &, int)> progressCallback) = 0;
 	virtual void fillSharedMemoryColumn(ImportColumn *importColumn, Column &column) = 0;
 
 	DataSetPackage *_packageData;

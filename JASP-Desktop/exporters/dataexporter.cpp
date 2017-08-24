@@ -34,7 +34,7 @@ DataExporter::DataExporter() {
     _allowedFileTypes.push_back(Utils::txt);
 }
 
-void DataExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
+void DataExporter::saveDataSet(const FilePath &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
 {
 
 	boost::nowide::ofstream outfile(path.c_str(), ios::out);

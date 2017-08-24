@@ -29,7 +29,7 @@ CSVImporter::CSVImporter(DataSetPackage *packageData) : Importer(packageData)
 	_packageData->isArchive = false;
 }
 
-ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void(const string &, int)> progressCallback)
+ImportDataSet* CSVImporter::loadFile(const JaspFileTypes::FilePath &locator, boost::function<void(const string &, int)> progressCallback)
 {
 	ImportDataSet* result = new ImportDataSet();
 	vector<string> colNames;
@@ -115,7 +115,6 @@ void CSVImporter::fillSharedMemoryColumn(ImportColumn *importColumn, Column &col
 {
 	// try to make the column nominal
 
-	bool success = true;
 	set<int> uniqueValues;
 	std::vector<int> intValues;
 	intValues.reserve(importColumn->size());
@@ -131,7 +130,6 @@ void CSVImporter::fillSharedMemoryColumn(ImportColumn *importColumn, Column &col
 	}
 
 	// try to make the column scale
-	success = true;
 	vector<double> doubleValues;
 	doubleValues.reserve(importColumn->size());
 

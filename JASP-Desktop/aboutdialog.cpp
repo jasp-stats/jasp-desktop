@@ -19,7 +19,7 @@
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
 
-#include "qutils.h"
+#include "desktoputils.h"
 #include <QWebFrame>
 #include <QMessageBox>
 #include <QFile>
@@ -69,8 +69,8 @@ void AboutDialog::aboutPageLoaded(bool success)
 	// Show aboutWebView with about.html and patch information
 	if (success)
 	{
-		QString version = tq(AppInfo::version.asString());
-		QString builddate = tq(AppInfo::builddate);
+		QString version = toQStr(AppInfo::version.asString());
+		QString builddate = toQStr(AppInfo::builddate);
 		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppYear()");
 		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
 		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppBuildDate('" + builddate +"')");
@@ -124,7 +124,7 @@ void AboutDialog::downloadFinished()
 		QString innerHtml = "<html><head/><body><span style='font-size:16pt; font-weight:600; color:green;'><br/>New Version Available</span><span style='font-size:14pt;'><br/>Version " + version + " " + releasedate + "<br/>Download new version: </span><a href='" + downloadfile + "'><span style='text-decoration: underline; color:#0000ff;'>here</span></a><span style='font-size:14pt;'><br/></span></body></html>";
 #endif
 		Version cv = AppInfo::version;
-		Version lv(numberversion.toStdString());
+		Version lv(toStr(numberversion));
 		long cur = cv.major*100000 + cv.minor*10000 + cv.revision*1000 + cv.build;
 		long latest = lv.major*100000 + lv.minor*10000 + lv.revision*1000 + lv.build;
 		if (latest > cur )

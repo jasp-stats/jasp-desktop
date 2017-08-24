@@ -27,7 +27,7 @@
 #include <boost/foreach.hpp>
 
 #include "bound.h"
-#include "qutils.h"
+#include "desktoputils.h"
 #include "widgets/boundlistview.h"
 #include "widgets/boundpairstable.h"
 
@@ -138,7 +138,7 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 		Labels &labels = _dataSet->column(term.asString()).labels();
 		for (Labels::const_iterator label_it = labels.begin(); label_it != labels.end(); ++label_it)
 		{
-			values.append(tq(label_it->text()));
+			values.append(toQStr(label_it->text()));
 		}
 
 		return values;

@@ -18,13 +18,12 @@
 
 #include "datasettablemodel.h"
 
+#include "desktoputils.h"
 #include <iostream>
 #include <fstream>
 
 #include <QSize>
 #include <QDebug>
-
-#include "qutils.h"
 
 using namespace std;
 
@@ -76,7 +75,7 @@ QVariant DataSetTableModel::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole)
 	{
-		QString value = tq(_dataSet->column(index.column())[index.row()]);
+		QString value = toQStr(_dataSet->column(index.column())[index.row()]);
 		return QVariant(value);
 	}
 
@@ -92,7 +91,7 @@ QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientatio
 	{
 		if (orientation == Qt::Horizontal)
 		{
-			QString value = tq(_dataSet->column(section).name()) + QString("        ");
+			QString value = toQStr(_dataSet->column(section).name()) + QString("        ");
 			return QVariant(value);
 		}
 		else

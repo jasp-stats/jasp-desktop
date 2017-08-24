@@ -31,6 +31,8 @@
 
 #include "./convertedstringcontainer.h"
 
+#include "../JASP-Common/utils.h"
+
 using namespace std;
 using namespace boost;
 using namespace spss;
@@ -44,15 +46,13 @@ SPSSImporter::~SPSSImporter()
 {
 }
 
-ImportDataSet* SPSSImporter::loadFile(const string &locator, boost::function<void(const string &, int)> progress)
+ImportDataSet* SPSSImporter::loadFile(const JaspFileTypes::FilePath &locator, boost::function<void(const string &, int)> progress)
 {
-	// Open the file.
-	SPSSStream stream(locator.c_str(), ios::in | ios::binary);
-
 	// Get it's size
-	stream.seekg(0, stream.end);
-	_fileSize = static_cast<double>(stream.tellg());
-	stream.seekg(0, stream.beg);
+	_fileSize = Utils::getFileSize(locator);
+
+	// Open the file.
+	SPSSStream stream(locator, ios::in | ios::binary);
 
 	// Data we have scraped to date.
 	SPSSImportDataSet *dataset = new SPSSImportDataSet();

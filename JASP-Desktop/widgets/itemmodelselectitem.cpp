@@ -18,7 +18,6 @@
 
 #include "itemmodelselectitem.h"
 
-#include "qutils.h"
 
 using namespace std;
 

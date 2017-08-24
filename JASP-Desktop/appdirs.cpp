@@ -24,10 +24,10 @@
 
 #ifdef __WIN32__
 #include <windows.h>
-#include "qutils.h"
 #include "utils.h"
 #endif
 
+#include "desktoputils.h"
 #include "dirs.h"
 
 using namespace std;
@@ -56,7 +56,7 @@ const QString AppDirs::help()
 
 const QString AppDirs::analysisDefaultsDir()
 {
-	QString path = QString::fromStdString(Dirs::appDataDir()) + "/AnalysisDefaults";
+	QString path = toQStr(Dirs::appDataDir().append("AnalysisDefaults"));
 	QDir dir(path);
 	dir.mkpath(".");
 

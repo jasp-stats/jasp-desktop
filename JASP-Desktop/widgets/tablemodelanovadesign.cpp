@@ -23,7 +23,7 @@
 #include <QIcon>
 #include <QBrush>
 
-#include "qutils.h"
+#include "desktoputils.h"
 #include "variableinfo.h"
 #include "column.h"
 
@@ -158,7 +158,7 @@ void TableModelAnovaDesign::refresh()
 	size_t i;
 
 	OptionString *nameTemplateOption = static_cast<OptionString *>(_boundTo->rowTemplate()->get("name"));
-	QString nameTemplate = tq(nameTemplateOption->value());
+	QString nameTemplate = toQStr(nameTemplateOption->value());
 
 	for (i = 0; i < _groups.size(); i++)
 	{
@@ -168,13 +168,13 @@ void TableModelAnovaDesign::refresh()
 
 		OptionVariables *variablesOption = static_cast<OptionVariables *>(group->get("levels"));
 
-		_rows.append(Row(tq(oldName), false, i));
+		_rows.append(Row(toQStr(oldName), false, i));
 
 		vector<string> variables = variablesOption->variables();
 
 		size_t j;
 		for (j = 0; j < variables.size(); j++)
-			_rows.append(Row(tq(variables.at(j)), false, i, j));
+			_rows.append(Row(toQStr(variables.at(j)), false, i, j));
 
 		_rows.append(Row(QString("Level %1").arg(j + 1), true, i, j));
 	}
@@ -212,7 +212,7 @@ Qt::ItemFlags TableModelAnovaDesign::flags(const QModelIndex &index) const
 
 bool TableModelAnovaDesign::setData(const QModelIndex &index, const QVariant &value, int)
 {
-	string v = fq(value.toString());
+	string v = toStr(value.toString());
 
 	if (v == "")
 		deleteRow(index.row());
@@ -244,8 +244,8 @@ QList<Factor> TableModelAnovaDesign::design()
 
 		Factor factor;
 
-		factor.first = tq(factorNameOption->value());
-		factor.second = tql(factorLevelsOption->variables());
+		factor.first = toQStr(factorNameOption->value());
+		factor.second = toQStringList(factorLevelsOption->variables());
 
 		factors.append(factor);
 	}
@@ -257,14 +257,14 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 {
 	Row &row = _rows[rowNo];
 
-	if (row.isHypothetical == false && row.text == tq(value))
+	if (row.isHypothetical == false && row.text == toQStr(value))
 		return;
 
 	emit designChanging();
 
 	if (row.isHeading())
 	{
-		QString originalName = tq(value).trimmed();
+		QString originalName = toQStr(value).trimmed();
 		QString name = originalName;
 		int n = 2;
 
@@ -299,7 +299,7 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 		{
 			Options *newRow = static_cast<Options *>(_boundTo->rowTemplate()->clone());
 			OptionString *factorName = static_cast<OptionString *>(newRow->get("name"));
-			factorName->setValue(fq(name));
+			factorName->setValue(toStr(name));
 
 			OptionVariables *option = static_cast<OptionVariables *>(newRow->get("levels"));
 			vector<string> levels = option->variables();
@@ -312,14 +312,14 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 
 			size_t i;
 			for (i = 0; i < levels.size(); i++)
-				_rows.insert(rowNo + i + 1, Row(tq(levels.at(i)), false, row.index, i));
+				_rows.insert(rowNo + i + 1, Row(toQStr(levels.at(i)), false, row.index, i));
 
 			_rows.insert(rowNo + i + 1, Row(QString("Level %1").arg(i+1), true, row.index, i));
 
 			endInsertRows();
 
 			string newName = static_cast<OptionString *>(_boundTo->rowTemplate()->get("name"))->value();
-			QString qNewName = tq(newName).arg(_groups.size() + 1);
+			QString qNewName = toQStr(newName).arg(_groups.size() + 1);
 
 			row.index = i;
 			row.text = qNewName;
@@ -341,7 +341,7 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 			Terms n3w;
 			n3w.add(Term(name));
 
-			option->setValue(fq(name));
+			option->setValue(toStr(name));
 
 			row.text = name;
 
@@ -356,7 +356,7 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 		OptionVariables *option = static_cast<OptionVariables *>(_groups.at(row.index)->get("levels"));
 		vector<string> levels = option->variables();
 
-		string originalName = fq(tq(value).trimmed());
+		string originalName = toStr(toQStr(value).trimmed());
 		string name = originalName;
 		int n = 2;
 
@@ -381,12 +381,12 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 			if (unique)
 				break;
 			else
-				name = fq(QString("%1 (%2)").arg(tq(originalName)).arg(n++));
+				name = toStr(QString("%1 (%2)").arg(toQStr(originalName)).arg(n++));
 		}
 
 		if (row.isHypothetical)
 		{
-			row.text = tq(name);
+			row.text = toQStr(name);
 			row.isHypothetical = false;
 			levels.push_back(name);
 
@@ -396,7 +396,7 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 		}
 		else
 		{
-			row.text = tq(name);
+			row.text = toQStr(name);
 			levels[row.subIndex] = name;
 		}
 
@@ -438,7 +438,7 @@ void TableModelAnovaDesign::deleteRow(int rowNo)
 		else
 		{
 			OptionString *factorNameTemplate = static_cast<OptionString *>(_boundTo->rowTemplate()->get("name"));
-			string defaultName = fq(tq(factorNameTemplate->value()).arg(rowNo + 1));
+			string defaultName = toStr(toQStr(factorNameTemplate->value()).arg(rowNo + 1));
 			OptionString *factorNameOption = static_cast<OptionString *>(_groups.at(0)->get("name"));
 
 			Terms old;
@@ -469,7 +469,7 @@ void TableModelAnovaDesign::deleteRow(int rowNo)
 		}
 		else
 		{
-			string defaultName = fq(QString("Level %1").arg(row.subIndex + 1));
+			string defaultName = toStr(QString("Level %1").arg(row.subIndex + 1));
 			levels[row.subIndex] = defaultName;
 		}
 

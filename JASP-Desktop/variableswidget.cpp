@@ -1,6 +1,7 @@
 
 #include "variableswidget.h"
 #include "ui_variableswidget.h"
+#include "desktoputils.h"
 
 #include "variablespage/variablestablemodel.h"
 
@@ -79,7 +80,7 @@ void VariablesWidget::moveUpClicked()
 	ui->labelsView->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
 	if (_currentColumn != NULL)
-		emit(columnChanged(QString::fromStdString(_currentColumn->name())));
+		emit(columnChanged(toQStr(_currentColumn->name())));
 
 }
 
@@ -111,7 +112,7 @@ void VariablesWidget::moveDownClicked()
 	ui->labelsView->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
 	if (_currentColumn != NULL)
-		emit(columnChanged(QString::fromStdString(_currentColumn->name())));
+		emit(columnChanged(toQStr(_currentColumn->name())));
 
 }
 
@@ -123,7 +124,7 @@ void VariablesWidget::reverseClicked()
 	ui->labelsView->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
 	if (_currentColumn != NULL)
-		emit(columnChanged(QString::fromStdString(_currentColumn->name())));
+		emit(columnChanged(toQStr(_currentColumn->name())));
 }
 
 void VariablesWidget::setCurrentColumn(int columnnumber)
@@ -141,6 +142,6 @@ void VariablesWidget::setCurrentColumn(int columnnumber)
 void VariablesWidget::labelDataChanged(QModelIndex m1, QModelIndex m2)
 {
 	if (_currentColumn != NULL)
-		emit(columnChanged(QString::fromStdString(_currentColumn->name())));
+		emit(columnChanged(toQStr(_currentColumn->name())));
 	emit(resetTableView());
 }

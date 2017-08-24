@@ -69,7 +69,7 @@ public:
 	bool isSpaning() const { return _isSpaning; }
 
 protected:
-	virtual ImportDataSet* loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback);
+	virtual ImportDataSet* loadFile(const JaspFileTypes::FilePath &locator, boost::function<void(const std::string &, int)> progressCallback);
 	virtual void fillSharedMemoryColumn(ImportColumn *importColumn, Column &column);
 
 private:

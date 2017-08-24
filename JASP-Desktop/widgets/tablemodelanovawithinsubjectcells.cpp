@@ -19,7 +19,7 @@
 #include "tablemodelanovawithinsubjectcells.h"
 
 #include "terms.h"
-#include "qutils.h"
+#include "desktoputils.h"
 
 #include <QSize>
 #include <QMimeData>
@@ -54,7 +54,7 @@ QVariant TableModelAnovaWithinSubjectCells::data(const QModelIndex &index, int r
 			if (value == "")
 				return QVariant();
 			else
-				return tq(value);
+				return toQStr(value);
 		}
 		else
 		{

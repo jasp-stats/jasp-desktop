@@ -22,7 +22,7 @@
 #include <QRegExp>
 #include <QDebug>
 
-#include "qutils.h"
+#include "desktoputils.h"
 
 TextModelLavaan::TextModelLavaan(QObject *parent)
 	: QTextDocument(parent)
@@ -571,7 +571,7 @@ void TextModelLavaan::apply()
 {
 	//checkEverything();
 	if (_boundTo != NULL && inError() == false)
-		_boundTo->setValue(fq(this->toPlainText()));
+		_boundTo->setValue(toStr(this->toPlainText()));
 }
 
 void TextModelLavaan::contentChangedHandler()

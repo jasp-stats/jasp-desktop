@@ -21,13 +21,16 @@
 
 #include <QCryptographicHash>
 #include "tempfiles.h"
-#include "qutils.h"
 #include "onlinedataconnection.h"
 #include "onlinedatanodeosf.h"
 #include "onlineusernodeosf.h"
 #include <QMessageBox>
 #include "simplecrypt.h"
 #include "simplecryptkey.h"
+#include "desktoputils.h"
+
+using namespace std;
+using namespace boost;
 
 OnlineDataManager::OnlineDataManager(QObject *parent):
 	QObject(parent)
@@ -348,6 +351,6 @@ OnlineDataNode *OnlineDataManager::getOnlineNodeData(QString nodePath, QString i
 QString OnlineDataManager::getLocalPath(QString nodePath) const {
 
 	QString name = QString(QCryptographicHash::hash(nodePath.toLatin1(),QCryptographicHash::Md5).toHex());
-	std::string tempFile = tempfiles_createSpecific("online", fq(name));
-	return tq(tempFile);
+	filesystem::path tempFile = tempfiles_createSpecificFp("online", name.toStdString());
+	return toQStr(tempFile);
 }

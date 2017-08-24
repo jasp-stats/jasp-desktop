@@ -24,7 +24,7 @@ class DataExporter : public Exporter
 {
 public:
 	DataExporter();
-	void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) OVERRIDE;
+	void saveDataSet(const FilePath &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) OVERRIDE;
 
 	bool escapeValue(std::string &value);
 };
