@@ -49,7 +49,7 @@ NetworkAnalysisForm::NetworkAnalysisForm(QWidget *parent) :
     ui->colorNodesBy->setDoubleClickTarget(ui->listAvailableFields);
 
     TableModelVariablesAssigned *mgmVariableTypeModel = new TableModelVariablesAssigned(this);
-    mgmVariableTypeModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
+    mgmVariableTypeModel->setVariableTypesAllowed(Column::ColumnTypeNominalText);
     mgmVariableTypeModel->setSource(&_availableVariablesModel);
     ui->mgmVariableType->setModel(mgmVariableTypeModel);
     ui->mgmVariableType->setDoubleClickTarget(ui->listAvailableFields);
@@ -86,9 +86,9 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->crossValidation->setEnabled(false);
         ui->split->setEnabled(false);
         ui->rule->setEnabled(false);
-        ui->boxGroupingVariable->setEnabled(false);
-        ui->buttonAssignMgmVariableType->setEnabled(false);
-        ui->mgmVariableType->setEnabled(false);
+        ui->boxMgmVariableType->setEnabled(false);
+        ui->showMgmVariableType->setEnabled(false);
+
     } else if (choice_str.compare("pcor") == 0) {
         ui->correlationMethod->setEnabled(true);
         ui->missingValues->setEnabled(true);
@@ -100,9 +100,9 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->crossValidation->setEnabled(false);
         ui->split->setEnabled(false);
         ui->rule->setEnabled(false);
-        ui->boxGroupingVariable->setEnabled(false);
-        ui->buttonAssignMgmVariableType->setEnabled(false);
-        ui->mgmVariableType->setEnabled(false);
+        ui->boxMgmVariableType->setEnabled(false);
+        ui->showMgmVariableType->setEnabled(false);
+
     } else if (choice_str.compare("IsingFit") == 0) {
         ui->tuningParameterBox->setEnabled(true);
         ui->split->setEnabled(true);
@@ -114,9 +114,9 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->isingEstimator->setEnabled(false);
         ui->crossValidation->setEnabled(false);
         ui->missingValues->setEnabled(false);
-        ui->boxGroupingVariable->setEnabled(false);
-        ui->buttonAssignMgmVariableType->setEnabled(false);
-        ui->mgmVariableType->setEnabled(false);
+        ui->boxMgmVariableType->setEnabled(false);
+        ui->showMgmVariableType->setEnabled(false);
+
     } else if (choice_str.compare("IsingSampler") == 0) {
         ui->isingEstimator->setEnabled(true);
         ui->split->setEnabled(true);
@@ -127,10 +127,10 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->criterion->setEnabled(false);
         ui->sampleSize->setEnabled(false);
         ui->crossValidation->setEnabled(false);
-        ui->boxGroupingVariable->setEnabled(false);
         ui->missingValues->setEnabled(false);
-        ui->buttonAssignMgmVariableType->setEnabled(false);
-        ui->mgmVariableType->setEnabled(false);
+        ui->boxMgmVariableType->setEnabled(false);
+        ui->showMgmVariableType->setEnabled(false);
+
     } else if (choice_str.compare("huge") == 0) {
         ui->tuningParameterBox->setEnabled(true);
         ui->criterion->setEnabled(true);
@@ -143,9 +143,9 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->sampleSize->setEnabled(false);
         ui->crossValidation->setEnabled(false);
         ui->missingValues->setEnabled(false);
-        ui->boxGroupingVariable->setEnabled(false);
-        ui->buttonAssignMgmVariableType->setEnabled(false);
-        ui->mgmVariableType->setEnabled(false);
+        ui->boxMgmVariableType->setEnabled(false);
+        ui->showMgmVariableType->setEnabled(false);
+
     } else if (choice_str.compare("adalasso") == 0) {
         ui->crossValidation->setEnabled(true);
 
@@ -157,17 +157,16 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->correlationMethod->setEnabled(false);
         ui->missingValues->setEnabled(false);
         ui->sampleSize->setEnabled(false);
-        ui->boxGroupingVariable->setEnabled(false);
-        ui->buttonAssignMgmVariableType->setEnabled(false);
-        ui->mgmVariableType->setEnabled(false);
+        ui->boxMgmVariableType->setEnabled(false);
+        ui->showMgmVariableType->setEnabled(false);
+
     } else if (choice_str.compare("mgm") == 0) {
         ui->tuningParameterBox->setEnabled(true);
         ui->criterion->setEnabled(true);
         ui->rule->setEnabled(true);
         ui->_4cv->setEnabled(true);
-        ui->boxGroupingVariable->setEnabled(true);
-        ui->buttonAssignMgmVariableType->setEnabled(true);
-        ui->mgmVariableType->setEnabled(true);
+        ui->boxMgmVariableType->setEnabled(true);
+        ui->showMgmVariableType->setEnabled(true);
 
         ui->isingEstimator->setEnabled(false);
         ui->split->setEnabled(false);
