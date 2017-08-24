@@ -640,6 +640,21 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
                   tValue[i] <- r[["tValue"]]
                   n[i] <- r[["n1"]]
                   
+                  if (is.na(bf.raw)) {
+                      
+                      status[i] <- "error"
+                      plottingError[i] <- "Plotting is not possible: Bayes factor could not be calculated"
+                  } else if(bf.raw == Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
+                      
+                      status[i] <- "error"
+                      plottingError[i] <- "Plotting is not possible: Bayes factor is infinite"
+                  } else if (is.infinite(1 / bf.raw)) {
+                      
+                      status[i] <- "error"
+                      plottingError[i] <- "Plotting is not possible: The Bayes factor is too small"
+                      
+                  }
+                  
                   if (bf.type == "BF01")
                       bf.raw <- 1 / bf.raw
                   
@@ -663,6 +678,18 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
                   index <- .addFootnote(footnotes, errorMessage)
                   result <- list(Variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
                   ttest.rows[[i]] <- result
+              } 
+              
+              ind <- which(variableData == variableData[1])
+              idData <- sum((ind+1)-(1:(length(ind))) == 1)
+              
+              if(idData > 1 & (options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
+                  
+                  #seqFootnote <- paste("Sequential Analysis not possible: The first", idData, "observations are identical")
+                  #plotSequentialStatus <- "error"
+                  # status[i] <- "sequentialNotPossible"
+                  # plottingError[i] <- paste("Sequential Analysis not possible: The first", idData, "observations are identical")
+                  
               }
               
               ttest.rows[[i]] <- result

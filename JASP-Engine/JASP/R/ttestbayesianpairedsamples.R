@@ -522,6 +522,22 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						bf.raw <- r[["bf"]]
 						tValue[i] <- r[["tValue"]]
 						n[i] <- r[["n1"]]
+						
+						if (is.na(bf.raw)) {
+						    
+						    unplotable <- TRUE
+						    unplotableMessage <- "Bayes factor could not be calculated"
+						    
+						} else if (is.infinite(bf.raw)) {
+						    
+						    unplotable <- TRUE
+						    unplotableMessage <- "Bayes factor is infinite"
+						    
+						} else if (is.infinite(1 / bf.raw)) {
+						    
+						    unplotable <- TRUE
+						    unplotableMessage <- "The Bayes factor is too small"
+						}
 				
 						if (bf.type == "BF01")
 							bf.raw <- 1 / bf.raw
@@ -556,7 +572,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					    
 					} else {
 					    
-					    pair.statuses[[i]] <- list(ready=FALSE, error=TRUE, errorMessage=errorMessage, unplotable=TRUE, unplotableMessage=errorMessage)
+					    pair.statuses[[i]] <- list(ready=FALSE, error=TRUE, errorMessage=errorMessage, unplotable=TRUE, unplotableMessage=unplotableMessage)
 					    
 					    index <- .addFootnote(footnotes, errorMessage)
 					    
