@@ -63,8 +63,8 @@
 
 #ifdef QT_DEBUG
 #include "analysisforms/basregressionlinearlinkform.h"
-#include "analysisforms/Network/networkanalysisform.h"
 #endif
+#include "analysisforms/Network/networkanalysisform.h"
 
 #include "analysisforms/SEM/semsimpleform.h"
 #include "analysisforms/R11tLearn/r11tlearnform.h"
