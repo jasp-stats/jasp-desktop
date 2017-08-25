@@ -157,7 +157,7 @@ NetworkAnalysis <- function (
 									  oldNetwork = state)
 
 	} else {
-		print("results retrieved from state")
+		# print("results retrieved from state")
 		network <- NULL # state # [["network"]]
 
 	}
@@ -232,11 +232,11 @@ NetworkAnalysis <- function (
 
 	# empty list for results
 	networkList <- list(network = oldNetwork[["network"]], centrality = oldNetwork[["centrality"]])
-	if (!is.null(networkList[["network"]]))
-		print("network retrieved from state")
-
-	if (!is.null(networkList[["centrality"]]))
-		print("centrality retrieved from state")
+	# if (!is.null(networkList[["network"]]))
+	# 	print("network retrieved from state")
+	#
+	# if (!is.null(networkList[["centrality"]]))
+	# 	print("centrality retrieved from state")
 
 	if (is.null(networkList[["network"]])) { # estimate network
 
@@ -902,8 +902,8 @@ NetworkAnalysis <- function (
 					edgeColor <- network[["results"]][["edgecolor"]]
 
 			}
-			print(edgeColor)
-			print(str(network))
+			# print(edgeColor)
+			# print(str(network))
 			# saveDataToDput(network, options, allLegends)
 
 			legend <- allLegends[[v]]
@@ -967,24 +967,24 @@ getTempFileName <- function() {
 
 }
 
-saveDataToDput <- function(...) {
-
-	path <- "C:/Users/donvd/_Laptop/Werk/JASP/tempDput/"
-	if (!dir.exists(path))
-		dir.create(path)
-	nms <- sapply(substitute(list(...))[-1], deparse)
-	dots <- list(...)
-
-	for (i in seq_along(dots)) {
-		j <- 1
-		fName <- paste0(path, nms[i], ".txt")
-		while (file.exists(fName[i]) && j < 1e3) {
-			fName <- paste0(path, nms[i], "_", j, ".txt")
-			j <- j + 1
-		}
-		sink(file = fName)
-		dput(dots[[i]])
-		sink(NULL)
-	}
-
-}
+# saveDataToDput <- function(...) {
+#
+# 	path <- "C:/Users/donvd/_Laptop/Werk/JASP/tempDput/"
+# 	if (!dir.exists(path))
+# 		dir.create(path)
+# 	nms <- sapply(substitute(list(...))[-1], deparse)
+# 	dots <- list(...)
+#
+# 	for (i in seq_along(dots)) {
+# 		j <- 1
+# 		fName <- paste0(path, nms[i], ".txt")
+# 		while (file.exists(fName[i]) && j < 1e3) {
+# 			fName <- paste0(path, nms[i], "_", j, ".txt")
+# 			j <- j + 1
+# 		}
+# 		sink(file = fName)
+# 		dput(dots[[i]])
+# 		sink(NULL)
+# 	}
+#
+# }
