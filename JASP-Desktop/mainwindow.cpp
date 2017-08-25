@@ -759,9 +759,9 @@ AnalysisForm* MainWindow::loadForm(const string name)
 #ifdef QT_DEBUG
 	else if (name == "BASRegressionLinearLink")
 		form = new BASRegressionLinearLinkForm(contentArea);
+#endif
 	else if (name == "NetworkAnalysis")
 		form = new NetworkAnalysisForm(contentArea);
-#endif
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
