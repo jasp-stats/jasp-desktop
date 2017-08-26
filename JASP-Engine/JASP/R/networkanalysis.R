@@ -107,14 +107,13 @@ NetworkAnalysis <- function (
 					   "plotWidthNetwork", "plotHeightNetwork",
 					   "layout", "edgeColors", "repulsion", "edgeSize", "nodeSize", "colorNodesBy",
 					   "maxEdgeStrength", "minEdgeStrength", "cut", "showDetails", "nodeColors", "showLegend", "legendNumber",
-					   "showMgmVariableType", "showVariableNames"),
+					   "showMgmVariableType", "showVariableNames", "graphSize"),
 		# depends also on plotting arguments
 		centralityPLT = c(defArgs,
 						  "plotWidthCentrality", "plotHeightCentrality", "normalizeCentrality")
-
 	)
 
-	# show info about variable types. Done here so that the table gets shown even if .hasErrors finds something bad.
+	# show info about variable types. Done here so that hopefully a table gets shown even if .hasErrors finds something bad.
 	if (options[["estimator"]] == "mgm" && !is.null(options[["mgmVariableTypeData"]])) {
 		results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = "init") # any errors will appear top of this table
 		results[["mgmTB"]] <- .networkAnalysisMgmVariableInfoTable(network, options, perform)
@@ -787,11 +786,25 @@ NetworkAnalysis <- function (
 		status = "inited"
 	)
 
-	subPlotBase <- list(
-		width = options[["plotWidthNetwork"]],
-		height = options[["plotHeightNetwork"]],
-		custom = list(width = "plotWidthNetwork", height = "plotHeightNetwork")
-	)
+	if (options[["graphSize"]] == "graphSizeFree") {
+		subPlotBase <- list(
+			width = options[["plotWidthNetwork"]],
+			height = options[["plotHeightNetwork"]],
+			custom = list(width = "plotWidthNetwork", height = "plotHeightNetwork")
+		)
+	} else if (options[["plotWidthNetwork"]] > options[["plotHeightNetwork"]]) {
+		subPlotBase <- list(
+			width = options[["plotWidthNetwork"]],
+			height = options[["plotWidthNetwork"]],
+			custom = list(width = "plotWidthNetwork", height = "plotWidthNetwork")
+		)
+	} else {
+		subPlotBase <- list(
+			width = options[["plotHeightNetwork"]],
+			height = options[["plotHeightNetwork"]],
+			custom = list(width = "plotHeightNetwork", height = "plotHeightNetwork")
+		)
+	}
 
 	if (perform == "run") {
 
@@ -903,12 +916,14 @@ NetworkAnalysis <- function (
 					edgeColor <- network[["results"]][["edgecolor"]]
 
 			}
-			# print(edgeColor)
-			# print(str(network))
 			# saveDataToDput(network, options, allLegends)
 
 			legend <- allLegends[[v]]
-			content <- .writeImage(width = subPlotBase[["width"]], height = subPlotBase[["height"]], plot = .networkAnalysisOneNetworkPlot)
+			if (legend && options[["graphSize"]] == "graphSizeFixed") {
+				subPlot[["width"]] <- 1.4 * subPlot[["height"]]
+			}
+
+			content <- .writeImage(width = subPlot[["width"]], height = subPlot[["height"]], plot = .networkAnalysisOneNetworkPlot)
 
 			subPlot[["convertible"]] <- TRUE
 			subPlot[["data"]] <- content[["png"]]
