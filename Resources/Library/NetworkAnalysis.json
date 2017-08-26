@@ -236,6 +236,12 @@
 			"default": "mgmNodeShape"
 		},
 		{
+			"name": "graphSize",
+			"type": "List",
+			"options": ["graphSizeFixed", "graphSizeFree"],
+			"default": "graphSizeFixed"
+		},
+		{
 			"name": "plotWidthNetwork",
 			"type": "Integer",
 			"default": 480
