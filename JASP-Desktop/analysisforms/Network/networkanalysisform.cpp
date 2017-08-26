@@ -76,11 +76,11 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
 
     if (choice_str.compare("EBICglasso") == 0) {
         ui->correlationMethod->setEnabled(true);
-        ui->criterion->setEnabled(true);
         ui->tuningParameterBox->setEnabled(true);
         ui->sampleSize->setEnabled(true);
         ui->missingValues->setEnabled(true);
 
+        ui->criterion->setEnabled(false);
         ui->_4cv->setEnabled(false);
         ui->isingEstimator->setEnabled(false);
         ui->crossValidation->setEnabled(false);
