@@ -153,11 +153,10 @@ NetworkAnalysis <- function (
 									exitAnalysisIfErrors = TRUE)
 		}
 
-		network <- .networkAnalysisRun(dataset = dataset, options = options, variables = variables, perform = perform,
-									  oldNetwork = state)
+		network <- .networkAnalysisRun(dataset = dataset, options = options, variables = variables, perform = perform, oldNetwork = state)
 
 	} else {
-		# print("results retrieved from state")
+
 		network <- NULL # state # [["network"]]
 
 	}
@@ -216,9 +215,15 @@ NetworkAnalysis <- function (
 # run analyses
 .networkAnalysisRun <- function(dataset, options, variables, perform, oldNetwork = NULL) {
 
-	# early return if init
-	if (perform != "run")
-		return(NULL)
+	# early return if init, return NULL or results from state
+	if (perform != "run") {
+
+		if (!is.null(oldNetwork))
+			oldNetwork[["status"]] <- .networkAnalysisNetworkHasErrors(oldNetwork)
+
+		return(oldNetwork)
+
+	}
 
 	if (options[["groupingVariable"]] == "") { # one network
 
@@ -232,12 +237,6 @@ NetworkAnalysis <- function (
 
 	# empty list for results
 	networkList <- list(network = oldNetwork[["network"]], centrality = oldNetwork[["centrality"]])
-	# if (!is.null(networkList[["network"]]))
-	# 	print("network retrieved from state")
-	#
-	# if (!is.null(networkList[["centrality"]]))
-	# 	print("centrality retrieved from state")
-
 	if (is.null(networkList[["network"]])) { # estimate network
 
 		# first setup all bootnet arguments, then loop over datasets to estimate networks
@@ -343,6 +342,8 @@ NetworkAnalysis <- function (
 			grDevices::png(filename = tempFileName)
 
 			# try since this sometimes failes for unpredictable reasons...
+			# saveDataToDput(data, options, .dots)
+
 			# anyError <- try({
 				# capture.output to get relevant messages (i.e. from qgraph::cor_auto "variables detected as...") (TODO: use this info)
 				msg <- capture.output(
