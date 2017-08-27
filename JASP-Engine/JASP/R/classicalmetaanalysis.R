@@ -94,7 +94,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
       columns.as.numeric = to.be.read.variables.numeric,
       #columns.as.factor   = factNames, 
       #columns.as.numeric  = c(effsizeName, stderrName, covarNames, weightsName),
-      exclude.na.listwise = c()	# let rma deal with NA's
+      exclude.na.listwise = c()	# let metafor::rma deal with NA's
     )
   }
 
@@ -105,12 +105,15 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   can.run = all(c(effsizeName, stderrName) != "")
   if (run && can.run) {
-    .vmodelTerms = rapply(options$modelTerms,.v, classes="character", how="replace") # map true names to base64
+    #.vmodelTerms = b64(options$modelTerms) # map true names to base64
+    .vmodelTerms = options$modelTerms
+    dataset = d64(dataset)
     formula.rhs <- as.formula(as.modelTerms(.vmodelTerms))
     if (is.null(formula.rhs)) formula.rhs = ~1
-    rma.fit <- metafor::rma(yi = get(.v(effsizeName)), sei = get(.v(stderrName)), data = dataset,
+    #rma.fit <- metafor::rma(yi = get(.v(effsizeName)), sei = get(.v(stderrName)), data = dataset,
+    rma.fit <- metafor::rma(yi = get(effsizeName), sei = get(stderrName), data = dataset,
                             method=options$method, mods = formula.rhs, test = options$test)
-    
+    rma.fit <- d64(rma.fit)
   }
   
   
@@ -129,7 +132,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
                       list(name = "forrestPlot", type = "image"),
                       list(name = "funnelplot", type = "image")
                     )
-  )
+                  )
   
   
   
@@ -274,8 +277,10 @@ analysisTitle <- function(object) {
 }
 
 qTestsTable <- function(object) {
+  # Return the ANOVA table with Q-tests for model significance and residual heterogeneity
   #print.output <- capture.output(print(object))
   table <- list()
+  
   # Define table schema
   fields <- list(
     list(name = "name", type = "string", title = " "),
@@ -283,12 +288,16 @@ qTestsTable <- function(object) {
     list(name = "df", type = "integer", format = "sf:4;dp:3", title = "Df"),
     list(name = "pval", type = "number", format = "dp:3;p:.001", title = "Pr(>|&chi;&sup2;|)")
   )
+  
+  # Empty table.
   table[["schema"]] <- list(fields = fields) 
   table[["title"]] <- "Heterogeneity analysis"
   table[["data"]] <- list(list(name="", qstat=".", df=".", pval = "."))
   
+  # Return empty table if no fit has been done
   if (is.null(object$QE)) return(table)
   
+  # Fill table
   qstat  <- unlist(object[c('QE','QM')])
   df <- c(object$k - object$p, object$m)
   pval <- unlist(object[c('QEp','QMp')])
@@ -323,8 +332,24 @@ plot.dummy <- function(object, ...) {
 forest.dummy <- function(object, ...) {
   # do nothing
 }
-  
 
-#.beginSaveImage <- function(...) {}
-#.endSaveImage <- function(...){}
+b64.rma <- function(x, ...) {
+  ## Translate names in object x to base64 
+  idx = c('b', 'beta', 'call')
+  x[idx] = b64(x[idx])
+  x
+}
+d64.rma <- function(x, ...) {
+  ## Untranslate names in object x from base64 
+  idx = c('b', 'beta', 'call')
+  x[idx] = d64(x[idx])
+  x
+}
 
+if(interactive()) {
+  # For debug purposes these are reset because the ones defined in 'common.R' only work properly 
+  # from within JASP. Make sure to source('common.R') first!
+  .beginSaveImage <- function(...) {}
+  .endSaveImage <- function(...){}
+  .requestTempFileNameNative <- function(ext) tempfile(fileext = ext)
+}
