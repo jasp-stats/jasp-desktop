@@ -357,12 +357,16 @@ isTryError <- function(obj){
 		stop("Unknown RCPP object")
 	}
 
-	location <- getAnywhere(x)
-	if (length(location[["objs"]]) == 0) {
-		stop("Could not locate object")
+	if (exists(x)) {
+		obj <- eval(parse(text = x))
+	} else {
+		location <- getAnywhere(x)
+		if (length(location[["objs"]]) == 0) {
+			stop("Could not locate object")
+		}
+		obj <- location[["objs"]][[1]]
 	}
 
-	obj <- location[["objs"]][[1]]
 	if (is.function(obj)) {
 		args <- list(...)
 		do.call(obj, args)
