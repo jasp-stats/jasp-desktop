@@ -1116,6 +1116,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 	{
 		if (event->successful())
 		{
+			_analyses->clear();
 			closeCurrentOptionsWidget();
 			hideOptionsPanel();
 			_tableModel->clearDataSet();
@@ -1129,6 +1130,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 			if (_applicationExiting)
 				QApplication::exit();
+			
+			
 		}
 		else
 		{
@@ -1147,9 +1150,6 @@ void MainWindow::populateUIfromDataSet()
 {
 	_tableModel->setDataSet(_package->dataSet);
 	ui->variablesPage->setDataSet(_package->dataSet);
-
-
-	_analyses->clear();
 
 	ui->tableView->adjustAfterDataLoad(true);
 
