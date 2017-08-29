@@ -1,0 +1,48 @@
+--- a/JASP-Common/filereader.cpp
++++ b/JASP-Common/filereader.cpp
+@@ -22,7 +22,7 @@
+ 
+ #include <sstream>
+ 
+-#include "libzip/archive_entry.h"
++#include "archive_entry.h"
+ 
+ using namespace std;
+ 
+--- a/JASP-Desktop/exporters/jaspexporter.cpp
++++ b/JASP-Desktop/exporters/jaspexporter.cpp
+@@ -24,8 +24,8 @@
+ 
+ #include "dataset.h"
+ 
+-#include "libzip/archive.h"
+-#include "libzip/archive_entry.h"
++#include "archive.h"
++#include "archive_entry.h"
+ #include "lib_json/json.h"
+ #include "filereader.h"
+ #include "version.h"
+--- a/JASP-Desktop/exporters/jaspexporter.h
++++ b/JASP-Desktop/exporters/jaspexporter.h
+@@ -20,7 +20,7 @@
+ 
+ #include "exporter.h"
+ 
+-#include "libzip/archive.h"
++#include "archive.h"
+ 
+ class JASPExporter: public Exporter
+ {
+--- a/JASP-Desktop/importers/jaspimporter.cpp
++++ b/JASP-Desktop/importers/jaspimporter.cpp
+@@ -28,8 +28,8 @@
+ #include "dataset.h"
+ 
+ //#include "libzip/config.h"
+-#include "libzip/archive.h"
+-#include "libzip/archive_entry.h"
++#include "archive.h"
++#include "archive_entry.h"
+ #include "lib_json/json.h"
+ 
+ #include "filereader.h"

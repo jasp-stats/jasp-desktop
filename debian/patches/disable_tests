@@ -1,0 +1,19 @@
+From: Michael Hanke <mih@debian.org>
+Subject: Disable test build until gh-1470 is fixed
+
+https://github.com/jasp-stats/jasp-desktop/issues/1470
+
+
+--- a/JASP.pro
++++ b/JASP.pro
+@@ -8,8 +8,8 @@
+ SUBDIRS += \
+ 	JASP-Common \
+ 	JASP-Engine \
+-	JASP-Desktop \
+-	JASP-Tests
++	JASP-Desktop
++#	JASP-Tests
+ 
+ JASP-Desktop.depends = JASP-Common
+ JASP-Engine.depends = JASP-Common

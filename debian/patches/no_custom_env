@@ -1,0 +1,25 @@
+From: Michael Hanke <mih@debian.org>
+Subject: Minmize environment customization
+
+With this patch, JASP can use packages that a user installed via R's package
+manager in the HOME directory (default location).
+
+--- a/JASP-Desktop/enginesync.cpp
++++ b/JASP-Desktop/enginesync.cpp
+@@ -407,9 +407,13 @@
+ 
+ #else  // linux
+ 
+-	env.insert("LD_LIBRARY_PATH", rHome.absoluteFilePath("lib") + ";" + rHome.absoluteFilePath("library/RInside/lib") + ";" + rHome.absoluteFilePath("library/Rcpp/lib") + ";" + rHome.absoluteFilePath("site-library/RInside/lib") + ";" + rHome.absoluteFilePath("site-library/Rcpp/lib"));
+-	env.insert("R_HOME", rHome.absolutePath());
+-	env.insert("R_LIBS", programDir.absoluteFilePath("R/library") + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
++	// make linker find RInside SO
++	if (env.contains("LD_LIBRARY_PATH"))
++		env.insert("LD_LIBRARY_PATH", env.value("LD_LIBRARY_PATH") + ":" + rHome.absoluteFilePath("site-library/RInside/lib"));
++	else
++		env.insert("LD_LIBRARY_PATH", rHome.absoluteFilePath("site-library/RInside/lib"));
++	// make embedded R look where standalone R would put user-installed packages
++	env.insert("R_LIBS_USER", env.value("HOME") + "/R/%p-library/%v");
+ 
+ #endif
+ 

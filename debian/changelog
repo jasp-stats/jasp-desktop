@@ -1,0 +1,36 @@
+jasp (0.8.1.2~dfsg.1-1) neurodebian; urgency=medium
+
+  * New upstream release
+
+ -- Yaroslav Halchenko <debian@onerussian.com>  Mon, 31 Jul 2017 00:18:10 -0400
+
+jasp (0.8.1.0~dfsg.1-1) neurodebian; urgency=low
+
+  * New upstream release (skipped 0.8.0.0).
+  * Added runtime-dependency to r-cran-rjson.
+
+ -- Michael Hanke <mih@debian.org>  Sun, 19 Mar 2017 17:56:52 +0100
+
+jasp (0.8.0.0~beta2+git154-g375aad9~dfsg.1-1) UNRELEASED; urgency=low
+
+  * New upstream code.
+  * Refurbish Debian packing based on the existing Ubuntu packaging.
+    Switch primary maintainer to team@neuro.debian.net.
+  * Switch to out-of-source-tree builds.
+  * Add 'get-orig-source' target to build a source tarball from the
+    Git repository content.
+  * Clean up dependency specification to avoid meta packages and
+    automatically discovered dependencies.
+  * Add patch to minimize customization of the runtime environment.
+  * Added minimal manpage.
+  * Removed outdated 'menu' file, 'desktop' file is sufficient.
+  * Add patch to avoid using embedded copies of libarchive headers.
+  * Use system package libjs-marked, instead of embedded copy.
+
+ -- Michael Hanke <mih@debian.org>  Thu, 22 Sep 2016 19:55:07 +0200
+
+jasp (0.7.5.261-0ubuntu0ppa1~wily) wily; urgency=low
+
+  * Initial release.
+
+ -- JASP-UvA  <b.bountin@uva.nl>  Fri, 21 Apr 2016 14:12:11 +0100
