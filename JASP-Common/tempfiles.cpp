@@ -177,7 +177,7 @@ void tempfiles_deleteOrphans()
 			else
 			{
 
-                if (std::atoi(p.filename().string().c_str()) == 0)
+			if (std::atoi(p.filename().string().c_str()) == 0)
 					continue;
 
 				filesystem::path statusFile = p;
@@ -338,8 +338,8 @@ void tempfiles_create(const JaspFileTypes::FilePath &extension, int id, JaspFile
 	_createDir(id, root, relativePath);
 
 	string ext;
-	if (extension.extension() != JaspFileTypes::FilePath())
-		ext = extension.extension().generic_string();
+	if (extension.has_extension())
+		ext = extension.extension().string();
 
 	JaspFileTypes::FilePath trialPath;
 	do

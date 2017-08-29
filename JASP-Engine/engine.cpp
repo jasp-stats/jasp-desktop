@@ -135,7 +135,7 @@ void Engine::runAnalysis()
 
 		_status = toInit;
 		if (_analysisResultsString == "null")
-			tempfiles_deleteList(tempFilesFromLastTime);
+			Utils::deleteListFullPaths(tempFilesFromLastTime);
 			
 	}
 	else

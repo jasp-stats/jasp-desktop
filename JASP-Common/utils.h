@@ -53,7 +53,7 @@ public:
 
 	/**
 	 * @brief deleteList Attempts to delete all the files mentioned.
-	 * @param files A vector of files to delete. The file paths are assymmmed to be complete.
+	 * @param files A vector of files to delete. The file paths are assumed to be complete.
 	 */
 	static void deleteListFullPaths(const std::vector<JaspFileTypes::FilePath> &files);
 };
