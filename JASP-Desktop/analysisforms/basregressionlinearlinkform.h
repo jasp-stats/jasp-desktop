@@ -56,6 +56,8 @@ private slots:
 	void on_hyper_g_laplace_clicked();
 	void on_hyper_g_n_clicked();
 	void on_priorRegressionCoefficients_clicked();
+	void factorsChanging();
+	void factorsChanged();
 
 private:
 	Ui::BASRegressionLinearLinkForm *ui;
@@ -63,6 +65,8 @@ private:
 	TableModelVariablesAssigned *_dependentListModel;
 	TableModelVariablesAssigned *_covariatesListModel;
 	TableModelVariablesAssigned *_wlsWeightsListModel;
+
+	TableModelAnovaModel *_anovaModel;
 
 	TableModelVariablesAvailable *_factorsAvailableListModel;
 };
