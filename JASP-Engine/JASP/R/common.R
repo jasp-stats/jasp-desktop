@@ -100,7 +100,7 @@ run <- function(name, options.as.json.string, perform="run") {
 				state[["figures"]] <- c(state[["figures"]], .imgToState(results$results))
 			}
 
-			location <- .requestStateFileNameNative()
+			location <- .fromRCPP(".requestStateFileNameNative")
 
 			relativePath <- location$relativePath
 			base::Encoding(relativePath) <- "UTF-8"
@@ -160,7 +160,7 @@ isTryError <- function(obj){
 
 	if ("citation" %in% names(table) ) {
 
-		cite <- c(.baseCitation, table$citation)
+		cite <- c(.fromRCPP(".baseCitation"), table$citation)
 		
 		for (i in seq_along(cite))
 			base::Encoding(cite[[i]]) <- "UTF-8"
@@ -169,7 +169,7 @@ isTryError <- function(obj){
 
 	} else {
 	
-		cite <- .baseCitation
+		cite <- .fromRCPP(".baseCitation")
 		base::Encoding(cite) <- "UTF-8"
 	
 		table$citation <- list(cite)
@@ -225,7 +225,7 @@ isTryError <- function(obj){
 	if (is.null(columns) && is.null(columns.as.numeric) && is.null(columns.as.ordinal) && is.null(columns.as.factor) && all.columns == FALSE)
 		return (data.frame())
 
-	dataset <- .readDatasetToEndNative(unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
+	dataset <- .fromRCPP(".readDatasetToEndNative", unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
 	dataset <- .excludeNaListwise(dataset, exclude.na.listwise)
 	
 	dataset
@@ -236,7 +236,7 @@ isTryError <- function(obj){
 	if (is.null(columns) && is.null(columns.as.numeric) && is.null(columns.as.ordinal) && is.null(columns.as.factor) && all.columns == FALSE)
 		return (data.frame())
 
-	dataset <- .readDataSetHeaderNative(unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
+	dataset <- .fromRCPP(".readDataSetHeaderNative", unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
 	
 	dataset
 }
@@ -338,16 +338,49 @@ isTryError <- function(obj){
 	dataset
 }
 
-.requestTempFileName <- function(extension) {
+.fromRCPP <- function(x, ...) {
 
-	.requestTimeFileNameNative(extension)
+	if (length(x) != 1 || ! is.character(x)) {
+		stop("Invalid type supplied, expected character")
+	}
+
+	collection <- c(
+		".requestTempFileNameNative",
+		".readDatasetToEndNative",
+		".readDataSetHeaderNative",
+		".callbackNative",
+		".requestStateFileNameNative",
+		".baseCitation",
+		".ppi")
+
+	if (! x %in% collection) {
+		stop("Unknown RCPP object")
+	}
+
+	if (exists(x)) {
+		obj <- eval(parse(text = x))
+	} else {
+		location <- getAnywhere(x)
+		if (length(location[["objs"]]) == 0) {
+			stop("Could not locate object")
+		}
+		obj <- location[["objs"]][[1]]
+	}
+
+	if (is.function(obj)) {
+		args <- list(...)
+		do.call(obj, args)
+	} else {
+		return(obj)
+	}
+
 }
 
 .saveState <- function(state) {
 
 	if (base::exists(".requestStateFileNameNative")) {
 
-		location <- .requestStateFileNameNative()
+		location <- .fromRCPP(".requestStateFileNameNative")
 
 		relativePath <- location$relativePath
 		base::Encoding(relativePath) <- "UTF-8"
@@ -367,7 +400,7 @@ isTryError <- function(obj){
 	
 	if (base::exists(".requestStateFileNameNative")) {
 
-		location <- .requestStateFileNameNative()
+		location <- .fromRCPP(".requestStateFileNameNative")
 
 		relativePath <- location$relativePath
 		base::Encoding(relativePath) <- "UTF-8"
@@ -564,7 +597,7 @@ callback <- function(results=NULL) {
 			json.string <- rjson::toJSON(.imgToResults(results))
 		}
 	
-		response <- .callbackNative(json.string)
+		response <- .fromRCPP(".callbackNative", json.string)
 		
 		if (is.character(response)) {
 		
@@ -635,10 +668,10 @@ callback <- function(results=NULL) {
 	if (Sys.info()["sysname"]=="Darwin")  # OS X
 		type <- "quartz"
 	
-	pngMultip <- .ppi / 96
+	pngMultip <- .fromRCPP(".ppi") / 96
 		
 	# create png file location
-	location <- .requestTempFileNameNative("png")
+	location <- .fromRCPP(".requestTempFileNameNative", "png")
 	relativePath <- location$relativePath
 	base::Encoding(relativePath) <- "UTF-8"
 	
@@ -900,10 +933,10 @@ as.list.footnotes <- function(footnotes) {
 	}
 	
 	# Calculate pixel multiplier
-	pngMultip <- .ppi / 96
+	pngMultip <- .fromRCPP(".ppi") / 96
 	
 	# Create png file location
-	location <- .requestTempFileNameNative("png")
+	location <- .fromRCPP(".requestTempFileNameNative", "png")
 	relativePathpng <- location$relativePath
 	fullPathpng <- paste(location$root, relativePathpng, sep="/")
 	base::Encoding(relativePathpng) <- "UTF-8"
@@ -939,10 +972,10 @@ saveImage <- function(plotName, format, height, width){
 	plt <- state[["figures"]][[plotName]]
 	
   # create file location string
-  location <- .requestTempFileNameNative("png") # to extract the root location
+  location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
 	
 	# Get file size in inches by creating a mock file and closing it
-	pngMultip <- .ppi / 96
+	pngMultip <- .fromRCPP(".ppi") / 96
 	png(filename=paste0(location, "/dpi.png"), width=width * pngMultip, 
 			height=height * pngMultip,res=72 * pngMultip)
 	insize <- dev.size("in")
