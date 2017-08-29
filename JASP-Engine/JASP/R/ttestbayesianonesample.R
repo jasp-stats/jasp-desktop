@@ -605,100 +605,96 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
         plottingError[i] <- state$plottingError[index]
         
       } else {
-        
-        result <- try (silent = TRUE, expr = {
           
-          variableData <- dataset[[ .v(variable) ]]
-          variableData <- variableData[ ! is.na(variableData) ]
+          errors <- .hasErrors(dataset, perform, message = "short", type = c('observations', 'variance', 'infinity'),
+                               all.target = variable,
+                               observations.amount = '< 2')
           
-          variableData <- variableData - options$testValue
-          r <- .generalTtestBF(x = variableData, oneSided = oneSided, options = options)
-          bf.raw <- r[["bf"]]
-          tValue[i] <- r[["tValue"]]
-          n[i] <- r[["n1"]]
-          
-          if (bf.type == "BF01")
-            bf.raw <- 1 / bf.raw
-          
-          BF10post[i] <- bf.raw
-          BF <- .clean(bf.raw)
-          
-          if (options$bayesFactorType == "LogBF10") {
-            
-            BF <- log(BF10post[i])
-            BF <- .clean(BF)
+          if (!identical(errors, FALSE)) {
+              errorMessage <- errors$message
+              status[i] <- "error"
+          } else {
+              errorMessage <- NULL
           }
           
-          error <- .clean(r[["error"]])
-          
-          list(Variable=variable, BF=BF, error=error)
-        })
-        
-        
-        if (class(result) == "try-error") {
-          
-          errorMessage <- .extractErrorMessage(result)
-          
-          if (errorMessage == "x or y must not contain missing or infinite values.") {
-            
-            errorMessage <- paste("Bayes factor is undefined - the sample contains infinity")
-            
-            status[i] <- "error"
-            plottingError[i] <- "Plotting is not possible: Bayes factor is undefined - the sample contains infinity"
-            
-            #} else if (errorMessage == "data are essentially constant") {
-            #
-            #	errorMessage <- paste("Bayes factor is undefined - the sample contains all the same value (zero variance)")
-            #
-          } else if (errorMessage == "Insufficient sample size for t analysis." || errorMessage == "not enough observations") {
-            
-            errorMessage <- "Bayes factor is undefined - too few observations"
-            
-            status[i] <- "error"
-            plottingError[i] <- "Plotting is not possible: Bayes factor is undefined - the sample has too few observations"
+          if(!is.null(errorMessage)){
+              
+              errorFootnotes[i] <- errorMessage
+              
+              index <- .addFootnote(footnotes, errorMessage)
+              
+              result <- list(Variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
+              
+              ttest.rows[[i]] <- result
+              
+          } else {
+              
+              result <- try (silent = TRUE, expr = {
+                  
+                  variableData <- dataset[[ .v(variable) ]]
+                  variableData <- variableData[ ! is.na(variableData) ]
+                  
+                  variableData <- variableData - options$testValue
+                  r <- .generalTtestBF(x = variableData, oneSided = oneSided, options = options)
+                  bf.raw <- r[["bf"]]
+                  tValue[i] <- r[["tValue"]]
+                  n[i] <- r[["n1"]]
+                  
+                  if (is.na(bf.raw)) {
+                      
+                      status[i] <- "error"
+                      plottingError[i] <- "Plotting is not possible: Bayes factor could not be calculated"
+                  } else if(bf.raw == Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
+                      
+                      status[i] <- "error"
+                      plottingError[i] <- "Plotting is not possible: Bayes factor is infinite"
+                  } else if (is.infinite(1 / bf.raw)) {
+                      
+                      status[i] <- "error"
+                      plottingError[i] <- "Plotting is not possible: The Bayes factor is too small"
+                      
+                  }
+                  
+                  if (bf.type == "BF01")
+                      bf.raw <- 1 / bf.raw
+                  
+                  BF10post[i] <- bf.raw
+                  BF <- .clean(bf.raw)
+                  
+                  if (options$bayesFactorType == "LogBF10") {
+                      
+                      BF <- log(BF10post[i])
+                      BF <- .clean(BF)
+                  }
+                  
+                  error <- .clean(r[["error"]])
+                  
+                  list(Variable=variable, BF=BF, error=error)
+              })
+              
+              if (isTryError(result)) {
+                  errorMessage <- .extractErrorMessage(result)
+                  errorFootnotes[i] <- errorMessage
+                  index <- .addFootnote(footnotes, errorMessage)
+                  result <- list(Variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
+                  ttest.rows[[i]] <- result
+              } 
+              
+              ind <- which(variableData == variableData[1])
+              idData <- sum((ind+1)-(1:(length(ind))) == 1)
+              
+              if(idData > 1 & (options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
+                  
+                  #seqFootnote <- paste("Sequential Analysis not possible: The first", idData, "observations are identical")
+                  #plotSequentialStatus <- "error"
+                  # status[i] <- "sequentialNotPossible"
+                  # plottingError[i] <- paste("Sequential Analysis not possible: The first", idData, "observations are identical")
+                  
+              }
+              
+              ttest.rows[[i]] <- result
           }
           
-          status[i] <- "error"
-          plottingError[i] <- paste("Plotting is not possible:", errorMessage)
-          
-          errorFootnotes[i] <- errorMessage
-          
-          index <- .addFootnote(footnotes, errorMessage)
-          
-          result <- list(Variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
-          
-          ttest.rows[[i]] <- result
-          
-        } else {
-          
-          if (is.na(bf.raw)) {
-            
-            status[i] <- "error"
-            plottingError[i] <- "Plotting is not possible: Bayes factor could not be calculated"
-          } else if(bf.raw == Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
-            
-            status[i] <- "error"
-            plottingError[i] <- "Plotting is not possible: Bayes factor is infinite"
-          } else if (is.infinite(1 / bf.raw)) {
-            
-            status[i] <- "error"
-            plottingError[i] <- "Plotting is not possible: The Bayes factor is too small"
-          }
-          
-          ind <- which(variableData == variableData[1])
-          idData <- sum((ind+1)-(1:(length(ind))) == 1)
-          
-          if(idData > 1 & (options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
-            
-            #seqFootnote <- paste("Sequential Analysis not possible: The first", idData, "observations are identical")
-            #plotSequentialStatus <- "error"
-            # status[i] <- "sequentialNotPossible"
-            # plottingError[i] <- paste("Sequential Analysis not possible: The first", idData, "observations are identical")
-          }
-          
-          
-          ttest.rows[[i]] <- result
-        }
       }
       
       i <- i + 1
@@ -718,6 +714,15 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
     
     for (variable in options[["variables"]])
     {
+        
+        errors <- .hasErrors(dataset, perform, message = 'short', type = c('infinity','observations','variance'),
+                             all.target = variable, observations.amount = "< 2")
+        
+        if (!identical(errors, FALSE)) {
+            errorMessage <- errors$message
+        } else {
+            errorMessage <- NULL
+        }
       
       variableData <- dataset[[ .v(variable) ]]
       variableData <- variableData[ ! is.na(variableData) ]
@@ -725,7 +730,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
       variableData <- variableData - options$testValue
       
       if (options$descriptivesPlots) {
-        
         
         if (!is.null(state) && variable %in% state$descriptPlotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
             (is.list(diff) && (diff$testValue == FALSE && diff$descriptivesPlotsCredibleInterval == FALSE && diff$missingValues == FALSE &&
@@ -748,28 +752,36 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
           
           plot <- descriptivesPlots[[descriptInd]]
           
-          p <- try(silent= FALSE, expr= {
-            
-            obj <- .plotGroupMeanBayesOneSampleTtest(variable=variableDataDescriptivesPlot, variableName=variable, testValueOpt=options$testValue,
-                                                     descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
-            content <- .writeImage(width = options$plotWidth, height = options$plotHeight, plot = obj, obj = TRUE)
-            
-            plot[["convertible"]] <- TRUE
-            plot[["obj"]] <- content[["obj"]]
-            plot[["data"]] <- content[["png"]]
-            
-          })
-          
-          if (class(p) == "try-error") {
-            
-            errorMessageTmp <- .extractErrorMessage(p)
-            errorMessage <- paste0("Plotting not possible: ", errorMessageTmp)
-            plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+          if (is.null(errorMessage)) {
+              
+              p <- try(silent= FALSE, expr= {
+                  
+                  obj <- .plotGroupMeanBayesOneSampleTtest(variable=variableDataDescriptivesPlot, variableName=variable, testValueOpt=options$testValue,
+                                                           descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
+                  content <- .writeImage(width = options$plotWidth, height = options$plotHeight, plot = obj, obj = TRUE)
+                  
+                  plot[["convertible"]] <- TRUE
+                  plot[["obj"]] <- content[["obj"]]
+                  plot[["data"]] <- content[["png"]]
+                  
+              })
+              
+              if(isTryError(p)){
+                  errorMessage <- .extractErrorMessage(p)
+              }
+              
           }
+          
+          if (!is.null(errorMessage)) {
+              
+              plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+              
+          } 
           
           plot[["status"]] <- "complete"
           
           descriptivesPlots[[descriptInd]] <- plot
+          
         }
         
         results[["descriptives"]][["descriptivesPlots"]][["collection"]] <- descriptivesPlots
@@ -825,43 +837,35 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
             return()
           
           plot <- plots.ttest[[z]]
+              
+              if (is.null(errorMessage)) {
+                  
+                  p <- try(silent= FALSE, expr= {
+                      
+                      .plotFunc <- function() {
+                          .plotPosterior.summarystats.ttest(t = tValue[i], n1 = n[i],
+                                                            oneSided = oneSided, BF = BF10post[i], BFH1H0 = BFH1H0,
+                                                            rscale = options$priorWidth,
+                                                            addInformation = options$plotPriorAndPosteriorAdditionalInfo,
+                                                            options = options)
+                      }
+                      
+                      content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+                      
+                      plot[["convertible"]] <- TRUE
+                      plot[["obj"]] <- content[["obj"]]
+                      plot[["data"]] <- content[["png"]]
+                      
+                  })
+                  
+                  if(isTryError(p)){
+                      errorMessage <- .extractErrorMessage(p)
+                  }
+                  
+              }
           
-          if (status[i] != "error") {
-            
-            p <- try(silent= FALSE, expr= {
-              
-              .plotFunc <- function() {
-                .plotPosterior.summarystats.ttest(t = tValue[i], n1 = n[i],
-                                                  oneSided = oneSided, BF = BF10post[i], BFH1H0 = BFH1H0,
-                                                  rscale = options$priorWidth,
-                                                  addInformation = options$plotPriorAndPosteriorAdditionalInfo,
-                                                  options = options)
-              }
-              
-              content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
-              plot[["convertible"]] <- TRUE
-              plot[["obj"]] <- content[["obj"]]
-              plot[["data"]] <- content[["png"]]
-              
-            })
-            
-            if (class(p) == "try-error") {
-              
-              errorMessage <- .extractErrorMessage(p)
-              
-              if (errorMessage == "not enough data") {
-                
-                errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-              } else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
-                
-                errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-              }
-              
+          if(!is.null(errorMessage)){
               plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-            }
-          } else {
-            
-            plot[["error"]] <- list(error="badData", errorMessage= plottingError[i])
           }
           
           plot[["status"]] <- "complete"
@@ -907,7 +911,13 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
           
           if (options$effectSizeStandardized == "informative") {
             plot[["error"]] <- list(error="badData", errorMessage="Bayes factor robustness check plot currently not supported for informed prior.")
-          } else if (status[i] != "error") {
+          } 
+          
+          if (!is.null(errorMessage)) {
+              
+              plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+              
+          } else {
             
             p <- try(silent= FALSE, expr= {
 
@@ -922,24 +932,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
               
             })
             
-            if (class(p) == "try-error") {
-              
-              errorMessage <- .extractErrorMessage(p)
-              
-              if (errorMessage == "not enough data") {
-                
-                errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-              } else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
-                
-                errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-              }
-              
-              plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-            }
-            
-          } else {
-            
-            plot[["error"]] <- list(error="badData", errorMessage= plottingError[i])
           }
           
           plot[["status"]] <- "complete"
@@ -1004,7 +996,9 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
           
           if (options$plotSequentialAnalysisRobustness && options$effectSizeStandardized == "informative") {
             plot[["error"]] <- list(error="badData", errorMessage="Sequential analysis robustness check plot currently not supported for informed prior.")
-          } else if (status[i] != "error" && status[i] != "sequentialNotPossible") {
+          }
+          
+          if (is.null(errorMessage)) {
             
             p <- try(silent= FALSE, expr= {
 
@@ -1020,24 +1014,16 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
               
             })
             
-            if (class(p) == "try-error") {
-              
-              errorMessage <- .extractErrorMessage(p)
-              
-              if (errorMessage == "not enough data") {
-                
-                errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-              } else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
-                
-                errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-              }
-              
-              plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+            if(isTryError(p)){
+                errorMessage <- .extractErrorMessage(p)
             }
             
-          } else {
-            
-            plot[["error"]] <- list(error="badData", errorMessage=plottingError[i])
+          }
+          
+          if(!is.null(errorMessage)){
+              
+              plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+              
           }
           
           plot[["status"]] <- "complete"
@@ -1634,7 +1620,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 .plotSequentialBF.ttest <- function(x= NULL, y= NULL, paired= FALSE, BF10post, callback=function(...) 0, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4,
                                     cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.6, cexTextBF= 1.4, cexText=1.2, cexLegend= 1.2, cexEvidence= 1.6,	lwdAxis= 1.2, plotDifferentPriors= FALSE,
                                     BFH1H0= TRUE, dontPlotData= FALSE, level1=NULL, level2= NULL, subDataSet=NULL, options) {
-  
+    
   #### settings ####
   
   if (!plotDifferentPriors) {
@@ -2688,7 +2674,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
   # display BF10 value
   if (idData < length(BF10)) {
     
-    BF10e <- BF10post
+      BF10post <- as.numeric(BF10post) # TO FIX: This needs to be done to make sure that the BF shows up in the table.
+      BF10e <- BF10post
     
   } else {
     
@@ -3046,6 +3033,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
   BF10ultraText <- BF10ultra
   
   # BF10 user prior
+  BF10post <- as.numeric(BF10post)
+  
   BF10user <- BF10post
   BF10userText <- BF10user
   
@@ -3883,11 +3872,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 
 .plotGroupMeanBayesOneSampleTtest <- function(variable=1:10, variableName="test1", testValueOpt=0, descriptivesPlotsCredibleInterval=.95) {
   
-  
   variable <- na.omit(variable)
-  
-  if (any(is.infinite(variable)))
-    stop("Plotting not possible: Variable contains infinity")
   
   testValue <- data.frame("testValue" = testValueOpt) # default zero
   posteriorSummary <- .posteriorSummaryGroupMean(variable=variable, descriptivesPlotsCredibleInterval=descriptivesPlotsCredibleInterval)
