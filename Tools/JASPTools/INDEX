@@ -1,0 +1,5 @@
+analysisOptions         Obtain options to run JASP analyses with.
+run                     Run a JASP analysis in R.
+setPkgOption            Change the value of an option in JASPTools.
+view                    View the tables and plots in a results object.
+viewPkgOptions          View the configuration of JASPTools.
