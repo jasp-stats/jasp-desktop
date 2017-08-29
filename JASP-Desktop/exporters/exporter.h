@@ -36,9 +36,6 @@ protected:
 
 public:
 
-	typedef JaspFileTypes::FilePath FilePath;
-	typedef JaspFileTypes::OFStream File;
-
 	virtual ~Exporter();
 	virtual void saveDataSet(const JaspFileTypes::FilePath &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) = 0;
 

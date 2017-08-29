@@ -24,6 +24,8 @@
 #include <QPrinter>
 #include <QWebView>
 
+using namespace std;
+
 ResultExporter::ResultExporter()
 {
 	_defaultFileType = Utils::html;
@@ -33,7 +35,7 @@ ResultExporter::ResultExporter()
 #endif
 }
 
-void ResultExporter::saveDataSet(const FilePath &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
+void ResultExporter::saveDataSet(const JaspFileTypes::FilePath &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
 {
 
 	int maxSleepTime = 5000;
@@ -72,11 +74,8 @@ void ResultExporter::saveDataSet(const FilePath &path, DataSetPackage* package, 
 	}
 	else
 	{
-		File outfile;
-		outfile.open(path);
-
+		JaspFileTypes::OFStream outfile(path, ios::out | ios::binary);
 		outfile << package->analysesHTML;
-		outfile.flush();
 		outfile.close();
 	}
 

@@ -62,8 +62,7 @@ JaspFileTypes::FilePath Dirs::appDataDir()
 	{
 		PWSTR buffer;
 
-		HRESULT ret = SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_DEFAULT, NULL, CSIDL_APPDATA, NULL, &buffer);
-
+        HRESULT ret = SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_DEFAULT, NULL, &buffer);
 		if ( ! SUCCEEDED(ret))
 		{
 			stringstream ss;
@@ -90,12 +89,12 @@ JaspFileTypes::FilePath Dirs::appDataDir()
 		if (ec)
 		{
 			stringstream ss;
-			ss << "App Data directory could not be created: " << p.native();
+            ss << "App Data directory could not be created: " << p.string();
 			throw Exception(ss.str());
 		}
 	}
 
-	cout << "Dirs::appDataDir() - returning " << p.native() << endl;
+    cout << "Dirs::appDataDir() - returning " << p.string() << endl;
 
 	return p;
 }
@@ -110,7 +109,7 @@ JaspFileTypes::FilePath Dirs::tempDir()
 
 #ifdef __WIN32__
 	TCHAR buffer[MAX_PATH + 2];
-	if ( ::GetTempPath(MAX_PATH), buffer) == 0)
+    if ( ::GetTempPath(MAX_PATH, buffer) == 0)
 		throw Exception("App Data directory could not be retrieved");
 
 	p = buffer;
@@ -132,12 +131,12 @@ JaspFileTypes::FilePath Dirs::tempDir()
 		if (ec)
 		{
 			stringstream ss;
-			ss << "Temp Data directory could not be created (" << ec << ") : " << p.native();
+            ss << "Temp Data directory could not be created (" << ec << ") : " << p.string();
 			throw Exception(ss.str());
 		}
 	}
 
-	cout << "Dirs::tempDir() - returning " << p.native() << endl;
+    cout << "Dirs::tempDir() - returning " << p.string() << endl;
 
 	return p;
 }
