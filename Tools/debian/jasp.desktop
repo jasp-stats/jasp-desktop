@@ -6,6 +6,6 @@ Exec=JASP %f
 Terminal=false
 Type=Application
 MimeType=application/jasp
+StartupWMClass=JASP
 StartupNotify=true
 Icon=/usr/lib/JASP/Resources/jasp.svg
-
