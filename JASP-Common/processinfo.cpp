@@ -40,7 +40,7 @@ unsigned long ProcessInfo::parentPID()
 #ifdef __WIN32__
 
 	HANDLE h = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-	PROCESSENTRY32 pe = { 0 };
+    PROCESSENTRY32 pe;
 	pe.dwSize = sizeof(PROCESSENTRY32);
 
     unsigned long pid = currentPID();
@@ -85,6 +85,8 @@ bool ProcessInfo::isParentRunning()
 
 		return ( ! success) || exitCode == STILL_ACTIVE;
 	}
+    else
+        return false;
 #else
 	return getppid() != 1;
 #endif

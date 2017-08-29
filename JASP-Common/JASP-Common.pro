@@ -6,11 +6,16 @@ DESTDIR = ..
 TARGET = JASP-Common
 TEMPLATE = lib
 CONFIG += staticlib
-
 CONFIG += c++11
 
    macx:INCLUDEPATH += ../../boost_1_64_0
 windows:INCLUDEPATH += ../../boost_1_64_0
+
+#
+# Windows Vista/Server 2008 or later
+# i.e. XP not supported!
+#
+windows:QMAKE_CXXFLAGS += -DNTDDI_VERSION=0x06000000 -DWINVER=0x0600 -D_WIN32_WINNT=0x0600
 
 
 windows:LIBS += -lole32 -loleaut32 -larchive.dll

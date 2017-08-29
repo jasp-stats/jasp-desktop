@@ -16,10 +16,9 @@
 //
 
 #include "analysisloader.h"
+#include "sysdepfiletype.h"
 
 #include <string>
-#include <boost/nowide/fstream.hpp>
-
 #include "dirs.h"
 #include "version.h"
 
@@ -30,9 +29,10 @@ Analysis *AnalysisLoader::load(int id, string analysisName, Json::Value *data)
 {
 	Options *options = new Options();
 
-	string path = Dirs::libraryDir().native() + "/" + analysisName + ".json";
+    filesystem::path pa = Dirs::libraryDir();
+    pa /= analysisName + ".json";
 
-	nowide::ifstream file(path.c_str(), fstream::in);
+    JaspFileTypes::IFStream file(pa, ios::in);
 	if (file.is_open())
 	{
 		Json::Value analysisDesc;
