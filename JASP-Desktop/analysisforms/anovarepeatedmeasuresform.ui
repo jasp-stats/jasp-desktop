@@ -773,7 +773,7 @@
            <layout class="QGridLayout" name="gridLayout_9"/>
           </widget>
          </item>
-         <item row="1" column="0">
+         <item row="2" column="0">
           <widget class="GroupBox" name="groupBox">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -814,6 +814,13 @@
              </widget>
             </item>
            </layout>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="BoundCheckBox" name="postHocTestEffectSize">
+           <property name="text">
+            <string>Effect size</string>
+           </property>
           </widget>
          </item>
         </layout>
