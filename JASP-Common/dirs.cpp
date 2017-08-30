@@ -24,6 +24,7 @@
 #include <windows.h>
 #include <shlwapi.h>
 #include <shlobj.h>
+#include <knownfolders.h>
 #elif defined(__APPLE__)
 #include <libproc.h>
 #include <unistd.h>
@@ -49,6 +50,9 @@
 using namespace std;
 using namespace boost;
 
+#ifdef __WIN32__
+const GUID FOLDERID_RoamingAppData = { 0x3eb685db, 0x65f9, 0x4cf6,{ 0xa0, 0x3a, 0xe3, 0xef, 0x65, 0x72, 0x9f, 0x3d } };
+#endif
 
 
 JaspFileTypes::FilePath Dirs::appDataDir()

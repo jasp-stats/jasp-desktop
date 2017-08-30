@@ -381,8 +381,8 @@ void Engine::provideStateFileName(string &root, string &relativePath)
 	path rt = root;
 	path rp = relativePath;
 	tempfiles_createSpecific("state", _analysisId, rt, rp);
-	root = rt.native();
-	relativePath = rp.native();
+    root = rt.string();
+    relativePath = rp.string();
 }
 
 void Engine::provideTempFileName(const string &extension, string &root, string &relativePath)
@@ -390,6 +390,6 @@ void Engine::provideTempFileName(const string &extension, string &root, string &
 	path rt = root;
 	path rp = relativePath;
 	tempfiles_create(extension, _analysisId, rt, rp);
-	root = rt.native();
-	relativePath = rp.native();
+    root = rt.string();
+    relativePath = rp.string();
 }
