@@ -107,6 +107,8 @@
 #include "preferencesdialog.h"
 #include <boost/filesystem.hpp>
 #include "dirs.h"
+#include "qutils.h"
+#include "column.h"
 
 #include "options/optionvariablesgroups.h"
 
@@ -288,6 +290,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->panel_1_Data->show();
 	ui->panel_2_Options->hide();
+	
+	//Missing Values
+	QString missingvaluestring;
+	missingvaluestring = _settings.value("MissingValueList", "").toString();	
+	if (missingvaluestring != "")
+	{
+		QString delimetor = "|";
+		std::vector<std::string> missingvalues = fromQstringToStdVector(missingvaluestring, delimetor);
+		Column::setEmptyValues(missingvalues);
+	}
+	else Column::setEmptyValues(Column::getDefaultEmptyValues());
 
 }
 

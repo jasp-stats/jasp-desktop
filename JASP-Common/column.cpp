@@ -33,27 +33,35 @@ using namespace std;
 int Column::count = 0;
 
 const string Column::_emptyValue = ".";
+std::vector<std::string> Column::_currentEmptyValues = {"NaN", "nan", "", " ", "."};
+std::vector<std::string> Column::_defaultEmptyValues = {"NaN", "nan", "", " ", "."};
 
-bool Column::isEmptyValue(const string& val, bool numericValue)
+bool Column::isEmptyValue(const string& val)
 {
-	static string emptyNumericValues[] = {"NA", "NaN", "", " ", "."};
-	static string emptyStringValues[] = {"NA", "", " ", "."};
-	string *emptyValues = numericValue ? emptyNumericValues : emptyStringValues;
-	int emptyValuesCount = numericValue ? 5 : 4;
-	for (int i = 0; i < emptyValuesCount; ++i)
-	{
-		std::cout << "isEmptyValue: " << val << ", " << emptyValues[i];
-		if (val == emptyValues[i])
-		{
-			std::cout << ": TRUE" << std::endl;
-			std::cout.flush();
-			return true;
-		}
-		std::cout << ": FALSE" << std::endl;
-		std::cout.flush();
 
+	for (unsigned int t=0; t<_currentEmptyValues.size() ; ++t)
+	{
+		if (_currentEmptyValues.at(t) == val)
+			return true;
 	}
 	return false;
+
+}
+
+std::vector<string> Column::getEmptyValues()
+{
+	return _currentEmptyValues;
+}
+
+std::vector<string> Column::getDefaultEmptyValues()
+{
+	return _defaultEmptyValues;
+
+}
+
+void Column::setEmptyValues(const std::vector<string> &emptyvalues)
+{
+	_currentEmptyValues = emptyvalues;
 }
 
 Column::Column(managed_shared_memory *mem) :
@@ -316,7 +324,7 @@ void Column::setColumnAsNominalString(const vector<string> &values, const map<st
 
 	for (vector<string>::iterator itr = cases.begin(); itr != cases.end(); itr++)
 	{
-		if (isEmptyValue(*itr, false)) // remove empty string
+		if (isEmptyValue(*itr)) // remove empty string
 		{
 			cases.erase(itr);
 			break;
@@ -330,7 +338,7 @@ void Column::setColumnAsNominalString(const vector<string> &values, const map<st
 
 	BOOST_FOREACH (const string &value, values)
 	{
-		if (isEmptyValue(value, false))
+		if (isEmptyValue(value))
 		{
 			*intInputItr = INT_MIN;
 		}
@@ -530,7 +538,7 @@ bool Column::isValueEqual(int rowIndex, const string &value)
 			int index = AsInts[rowIndex];
 			if (index == INT_MIN)
 			{
-				result = (value == "" || value == " " || value == _emptyValue);
+				result = (find(_currentEmptyValues.begin(), _currentEmptyValues.end(), value)  !=  _currentEmptyValues.end() || value == _emptyValue) ;
 			}
 			else
 			{
@@ -875,4 +883,3 @@ double& Column::Doubles::iterator::dereference() const
 {
 	return _blockItr->second->Data[_currentPos].d;
 }
-
