@@ -500,7 +500,8 @@ isTryError <- function(obj){
 			
 		} else {
 		
-			stop(paste("bad call to .unv() : v is \"", v, "\"", sep=""))
+			#stop(paste("bad call to .unv() : v is \"", v, "\"", sep=""))
+		  vs[length(vs)+1] <- v
 		}
 	}
 	
@@ -744,6 +745,28 @@ callback <- function(results=NULL) {
 	}
 		
 	stop("could not clean value")
+}
+
+.clean <- function(value) {
+  # Clean function value so it can be reported in json/html
+  .cleanValue <- function(value) { # This doesn't work for vectors like this (prev definition also not)
+    if (is.null(value)) {
+       ""
+    } else if (is.character(value)) {
+      value
+    } else if (is.finite(value)[1]) { 
+      value
+    } else if (is.na(value)[1]) {
+      "NaN"
+    } else if (identical(value, numeric(0))) {
+      ""
+    } else if (value == Inf) {
+      "\u221E" # should this not better be &inf; ? Now browser character set dependent
+    } else if (value == -Inf) {
+      "-\u221E" # should this not better be -&inf; ? Now browser character set dependent
+    }
+  }
+  rapply(value, .cleanValue, how="replace") # works for arbitrary depth (previous def worked only for 1 layer deep) and fast
 }
 
 .newFootnotes <- function() {
@@ -1099,4 +1122,65 @@ saveImage <- function(plotName, format, height, width){
 	# such as (name1.name2."data"))
 	return(unlist(lapply(unname(lst), .imgToState), recursive = FALSE))
 
+}
+
+b64 <- function(x, ...) UseMethod("b64")   ## Translate names in x to 'base64' 
+b64.default <- function(x, ...) x
+d64 <- function(x, ...) UseMethod("d64")   ## Untranslate names in x from 'base64' 
+d64.default <- function(x, ...) x
+b64.character <- function(x, ...) {
+  ## Translate the strings in x to 'base64'
+  #
+  # x is certainly primitive, but may contain term names of interactions terms contain ':' 
+  # split them and apply the transformation to individual terms
+  x <- strsplit(x, split = ":")
+  sapply(x, function(x) paste0(.v(x, ...), collapse = ":"))
+}
+d64.character <- function(x, ...) {
+  ## Untranslate the strings in x from 'base64'
+  #
+  # x is certainly primitive, but may contain term names of interactions terms contain ':' 
+  # split them and apply the transformation to individual terms
+  x <- strsplit(x, split = ":")
+  sapply(x, function(x) paste0(.unv(x, ...), collapse = ":"))
+}
+b64.matrix <- function(x, ...) {
+  dimnames(x) <- rapply(dimnames(x), b64, ..., classes = "character", how="replace")
+  x
+}
+d64.matrix <- function(x, ...) {
+  dimnames(x) <- rapply(dimnames(x), d64, ..., classes = "character", how="replace")
+  x
+}
+b64.data.frame <- function(x, ...) {
+  colnames(x) = b64(colnames(x))
+  rownames(x) = b64(rownames(x))
+  x
+}
+d64.data.frame <- function(x, ...) {
+  colnames(x) = d64(colnames(x))
+  rownames(x) = d64(rownames(x))
+  x
+}
+b64.call <- function(x, which = seq_along(x)[-1], ...) {
+  x <- as.list(x)
+  x[which] = lapply(x[which], b64, ...)
+  as.call(x)
+}
+d64.call <- function(x, which = seq_along(x)[-1], ...) {
+  x <- as.list(x) # which relies on this (and lazy evaluation): must be fist for next statement to work!
+  x[which] = lapply(x[which], d64, ...)
+  as.call(x)
+}
+b64.name <- function(x, ...) {
+  as.name(b64(as.character(x)))
+}
+d64.name <- function(x, ...) {
+  as.name(d64(as.character(x)))
+}
+b64.list <- function(x, ...) {
+  rapply(x, b64, ..., how = "replace")
+}
+d64.list <- function(x, ...) {
+  rapply(x, d64, ..., how = "replace")
 }
