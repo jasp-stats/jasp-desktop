@@ -169,7 +169,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset = NULL, options,
 
 	results <- list()
 	results[[".meta"]] <- meta
-	results[["title"]] <- "Bayesian T-Test"
+	results[["title"]] <- "Bayesian Independent Samples T-Test"
 	results[["table"]] <- table
 
 	if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness) {
