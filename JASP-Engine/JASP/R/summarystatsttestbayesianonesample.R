@@ -182,7 +182,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 	
 	results <- list()
 	results[[".meta"]] <- meta
-	results[["title"]] <- "Bayesian T-Test"
+	results[["title"]] <- "Bayesian One Sample T-Test"
 	results[["table"]] <- table
 
 	if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness) {

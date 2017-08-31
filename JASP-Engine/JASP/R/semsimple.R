@@ -428,6 +428,7 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 	meta[[11]] <- list(name="mardiasCoefficient", type="table")
 
 	results[[".meta"]] <- meta
+	results[["title"]] <- "Latent Variable Analysis"
 
 	# Error:
 	error <- !inputCorrect || (errorMessage!="" & perform == "run" & options$model != "")
