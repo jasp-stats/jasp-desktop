@@ -255,6 +255,11 @@ void TabBar::setExactPValues(bool exactPValues)
 	emit setExactPValuesHandler(exactPValues);
 }
 
+void TabBar::emptyValuesChanged()
+{
+	emit emptyValuesChangedHandler();
+}
+
 void TabBar::tabSelectedHandler()
 {
 	QObject *source = this->sender();

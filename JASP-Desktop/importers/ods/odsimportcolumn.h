@@ -23,12 +23,15 @@
 #define ODSIMPORTCOLUMN_H
 
 #include "../importcolumn.h"
+#include "odsimportdataset.h"
 #include "odssheetcell.h"
 
 #include <set>
 
+
 namespace ods
 {
+class ODSImportDataSet;
 
 class ODSImportColumn : public ImportColumn
 {
@@ -40,7 +43,7 @@ public:
 	// The constainer used to hold rows within the column.
 	typedef std::vector<ODSSheetCell>	Cases;
 
-	ODSImportColumn(int columnNumber);
+	ODSImportColumn(ODSImportDataSet* importDataSet, int columnNumber);
 	virtual ~ODSImportColumn();
 
 	/**

@@ -33,6 +33,7 @@
 
 using namespace std;
 using namespace spss;
+using namespace ods;
 using namespace boost::interprocess;
 using namespace boost;
 

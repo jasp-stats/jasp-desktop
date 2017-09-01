@@ -51,7 +51,7 @@ ODSImporter::~ODSImporter()
 ImportDataSet* ODSImporter::loadFile(const string &locator, boost::function<void(const string &, int)> progressCallback)
 {
 	// Create new data set.
-	ODSImportDataSet * result = new ODSImportDataSet();
+	ODSImportDataSet * result = new ODSImportDataSet(this);
 
 	// Check mnaifest for the contents file.
 	progressCallback("Reading ODS manifest.", 0);

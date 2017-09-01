@@ -235,6 +235,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(simulatedMouseClick(int, int, int)), this, SLOT(simulatedMouseClickHandler(int, int, int)));
 	connect(this, SIGNAL(resultsDocumentChanged()), this, SLOT(resultsDocumentChangedHandler()));
 	connect(ui->tabBar, SIGNAL(setExactPValuesHandler(bool)), this, SLOT(setExactPValuesHandler(bool)));
+	connect(ui->tabBar, SIGNAL(emptyValuesChangedHandler()), this, SLOT(emptyValuesChangedHandler()));
 
 #ifdef __APPLE__
 	_scrollbarWidth = 3;
@@ -290,18 +291,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->panel_1_Data->show();
 	ui->panel_2_Options->hide();
-	
-	//Missing Values
-	QString missingvaluestring;
-	missingvaluestring = _settings.value("MissingValueList", "").toString();	
+
+	// init Empty Values
+	QString missingvaluestring = _settings.value("MissingValueList", "").toString();
 	if (missingvaluestring != "")
 	{
 		QString delimetor = "|";
 		std::vector<std::string> missingvalues = fromQstringToStdVector(missingvaluestring, delimetor);
-		Column::setEmptyValues(missingvalues);
+		Utils::setEmptyValues(missingvalues);
 	}
-	else Column::setEmptyValues(Column::getDefaultEmptyValues());
-
 }
 
 void MainWindow::open(QString filepath)
@@ -509,9 +507,9 @@ void MainWindow::refreshAnalysesUsingColumns(vector<string> &changedColumns
 }
 
 void MainWindow::packageDataChanged(DataSetPackage *package
-									, std::vector<std::string> &changedColumns
-									, std::vector<std::string> &missingColumns
-									, std::map<std::string, std::string> &changeNameColumns)
+									, vector<string> &changedColumns
+									, vector<string> &missingColumns
+									, map<string, string> &changeNameColumns)
 {
 	_tableModel->setDataSet(_package->dataSet);
 	ui->variablesPage->setDataSet(_package->dataSet);
@@ -1384,6 +1382,19 @@ void MainWindow::setExactPValuesHandler(bool exactPValues)
 	QString exactPValueString = (exactPValues ? "true" : "false");
 	QString js = "window.globSet.pExact = " + exactPValueString + "; window.reRenderAnalyses();";
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(js);
+}
+
+void MainWindow::emptyValuesChangedHandler()
+{
+	if (_package->isLoaded())
+	{
+		vector<string> colChanged =_package->dataSet->resetEmptyValues(_package->emptyValuesMap);
+		vector<string> missingColumns;
+		map<string, string> changeNameColumns;
+
+		_package->setModified(true);
+		packageDataChanged(_package, colChanged, missingColumns, changeNameColumns);
+	}
 }
 
 void MainWindow::itemSelected(const QString &item)

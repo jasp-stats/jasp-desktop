@@ -2,7 +2,7 @@
 
 using namespace std;
 
-CSVImportColumn::CSVImportColumn(string name) : ImportColumn(name)
+CSVImportColumn::CSVImportColumn(ImportDataSet* importDataSet, string name) : ImportColumn(importDataSet, name)
 {
 }
 

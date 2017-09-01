@@ -31,7 +31,7 @@ CSVImporter::CSVImporter(DataSetPackage *packageData) : Importer(packageData)
 
 ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void(const string &, int)> progressCallback)
 {
-	ImportDataSet* result = new ImportDataSet();
+	ImportDataSet* result = new ImportDataSet(this);
 	vector<string> colNames;
 	CSV csv(locator);
 	csv.open();
@@ -66,7 +66,7 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void
 			}
 		}
 
-		importColumns.push_back(new CSVImportColumn(colName));
+		importColumns.push_back(new CSVImportColumn(result, colName));
 	}
 
 	unsigned long long progress;

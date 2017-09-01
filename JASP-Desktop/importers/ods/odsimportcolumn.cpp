@@ -33,8 +33,8 @@ using namespace std;
 using namespace ods;
 
 
-ODSImportColumn::ODSImportColumn(int columnNumber)
-	: ImportColumn(_colNumberAsExcel(columnNumber))
+ODSImportColumn::ODSImportColumn(ODSImportDataSet* importDataSet, int columnNumber)
+	: ImportColumn(importDataSet, _colNumberAsExcel(columnNumber))
 	, _columnNumber(columnNumber)
 	, _columnType(Column::ColumnTypeUnknown)
 {

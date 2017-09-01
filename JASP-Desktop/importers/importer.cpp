@@ -127,34 +127,42 @@ void Importer::syncDataSet(const string &locator, boost::function<void(const str
 void Importer::fillSharedMemoryColumnWithStrings(const std::vector<string> &values, Column &column)
 {
 	// try to make the column nominal
-	bool success = true;
+	bool success = false;
 	set<int> uniqueValues;
 	std::vector<int> intValues;
 	intValues.reserve(values.size());
+	std::map<int, string> emptyValuesMap;
 
-	if (ImportColumn::convertToInt(values, intValues, uniqueValues))
+	if (ImportColumn::convertToInt(values, intValues, uniqueValues, emptyValuesMap))
 	{
 		if (uniqueValues.size() <= 24)
 		{
 			column.setColumnAsNominalOrOrdinal(intValues, uniqueValues);
-			return;
+			success = true;
 		}
 	}
 
-	// try to make the column scale
-	success = true;
-	vector<double> doubleValues;
-	doubleValues.reserve(values.size());
-
-	if (ImportColumn::convertToDouble(values, doubleValues))
+	if (!success)
 	{
-		column.setColumnAsScale(doubleValues);
-		return;
+		// try to make the column scale
+		vector<double> doubleValues;
+		doubleValues.reserve(values.size());
+		emptyValuesMap.clear();
+
+		if (ImportColumn::convertToDouble(values, doubleValues, emptyValuesMap))
+		{
+			column.setColumnAsScale(doubleValues);
+			success = true;
+		}
 	}
 
-	// if it can't be made nominal numeric or scale, make it nominal-text
-	column.setColumnAsNominalString(values);
+	if (!success)
+	{
+		// if it can't be made nominal numeric or scale, make it nominal-text
+		emptyValuesMap = column.setColumnAsNominalString(values);
+	}
 
+	_packageData->emptyValuesMap.insert(make_pair(column.name(), emptyValuesMap));
 }
 
 DataSet* Importer::setDataSetSize(int columnCount, int rowCount)

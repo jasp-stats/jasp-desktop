@@ -168,6 +168,18 @@ map<string, int> Labels::syncStrings(const vector<string> &new_values, const map
 	return result;
 }
 
+std::set<int> Labels::getIntValues()
+{
+	std::set<int> result;
+	for (LabelVector::const_iterator it = _labels.begin(); it != _labels.end(); ++it)
+	{
+		const Label &label = *it;
+		int value = label.value();
+		result.insert(value);
+	}
+	return result;
+}
+
 map<int, string> &Labels::getOrgStringValues()
 {
 	return Labels::_orgStringValues[_id];

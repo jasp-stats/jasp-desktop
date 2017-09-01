@@ -1,10 +1,11 @@
 #include "importcolumn.h"
 #include <boost/lexical_cast.hpp>
+#include <cmath>
 
 using namespace std;
 
-ImportColumn::ImportColumn(string name)
-	: _name(name)
+ImportColumn::ImportColumn(ImportDataSet* importDataSet, string name)
+	: _importDataSet(importDataSet), _name(name)
 {
 }
 
@@ -133,10 +134,11 @@ bool ImportColumn::convertValueToDouble(const string &strValue, double &doubleVa
 	return success;
 }
 
-bool ImportColumn::convertToInt(const vector<string> &values, vector<int> &intValues, set<int> &uniqueValues)
+bool ImportColumn::convertToInt(const vector<string> &values, vector<int> &intValues, set<int> &uniqueValues, map<int, string> &emptyValuesMap)
 {
 	bool success = true;
-	for (vector<string>::const_iterator it = values.begin(); it != values.end(); ++it)
+	int row = 0;
+	for (vector<string>::const_iterator it = values.begin(); it != values.end(); ++it, ++row)
 	{
 		const string &value = *it;
 		int intValue = INT_MIN;
@@ -145,6 +147,8 @@ bool ImportColumn::convertToInt(const vector<string> &values, vector<int> &intVa
 		{
 			if (intValue != INT_MIN)
 				uniqueValues.insert(intValue);
+			else if (!value.empty())
+				emptyValuesMap.insert(make_pair(row, value));
 			intValues.push_back(intValue);
 		}
 		else
@@ -154,23 +158,25 @@ bool ImportColumn::convertToInt(const vector<string> &values, vector<int> &intVa
 	return success;
 }
 
-bool ImportColumn::convertToDouble(const vector<string> &values, vector<double> &doubleValues)
+bool ImportColumn::convertToDouble(const vector<string> &values, vector<double> &doubleValues, map<int, string> &emptyValuesMap)
 {
 	bool success = true;
-	for (vector<string>::const_iterator it = values.begin(); it != values.end(); ++it)
+	int row = 0;
+	for (vector<string>::const_iterator it = values.begin(); it != values.end(); ++it, ++row)
 	{
 		const string &value = *it;
 		double doubleValue = NAN;
 		success = convertValueToDouble(value, doubleValue);
 
 		if (success)
+		{
 			doubleValues.push_back(doubleValue);
+			if (doubleValue == NAN && !isnan(doubleValue))
+				emptyValuesMap.insert(make_pair(row, value));
+		}
 		else
 			break;
 	}
 
 	return success;
 }
-
-
-

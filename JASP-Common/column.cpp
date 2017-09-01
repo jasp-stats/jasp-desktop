@@ -16,6 +16,7 @@
 //
 
 #include "column.h"
+#include "utils.h"
 
 #include <boost/foreach.hpp>
 #include <sstream>
@@ -32,36 +33,365 @@ using namespace std;
 
 int Column::count = 0;
 
-const string Column::_emptyValue = ".";
-std::vector<std::string> Column::_currentEmptyValues = {"NaN", "nan", "", " ", "."};
-std::vector<std::string> Column::_defaultEmptyValues = {"NaN", "nan", "", " ", "."};
-
 bool Column::isEmptyValue(const string& val)
 {
+	if (val.empty()) return true;
+	const vector<string>& emptyValues = Utils::getEmptyValues();
+	return std::find(emptyValues.begin(), emptyValues.end(), val) != emptyValues.end();
+}
 
-	for (unsigned int t=0; t<_currentEmptyValues.size() ; ++t)
+bool Column::isEmptyValue(const double &val)
+{
+	if (isnan(val)) return true;
+	const vector<double>& emptyValues = Utils::getDoubleEmptyValues();
+	return std::find(emptyValues.begin(), emptyValues.end(), val) != emptyValues.end();
+}
+
+void Column::_convertVectorIntToDouble(vector<int> &intValues, vector<double> &doubleValues)
+{
+	doubleValues.clear();
+	for (vector<int>::const_iterator it = intValues.begin(); it != intValues.end(); ++it)
 	{
-		if (_currentEmptyValues.at(t) == val)
-			return true;
+		const int &intValue = *it;
+		double doubleValue = intValue;
+		if (intValue == INT_MIN)
+			doubleValue == NAN;
+		doubleValues.push_back(doubleValue);
 	}
-	return false;
 
 }
 
-std::vector<string> Column::getEmptyValues()
+bool Column::_resetEmptyValuesForNominal(std::map<int, string> &emptyValuesMap)
 {
-	return _currentEmptyValues;
+	bool hasChanged = false;
+	std::map<int, string> emptyValuesMapOrg = emptyValuesMap;
+	int row = 0;
+	bool hasEmptyValues = !emptyValuesMap.empty();
+	bool changeToNominalText = false;
+	Ints::iterator ints = AsInts.begin();
+	Ints::iterator end = AsInts.end();
+
+	set<int> uniqueValues = _labels.getIntValues();
+
+	for (; ints != end; ints++)
+	{
+		int intValue = *ints;
+		if (intValue == INT_MIN && hasEmptyValues)
+		{
+			auto search = emptyValuesMap.find(row);
+			if (search != emptyValuesMap.end())
+			{
+				string orgValue = search->second;
+				if (!isEmptyValue(orgValue))
+				{
+					// This value is not empty anymore
+					try
+					{
+						intValue = boost::lexical_cast<int>(orgValue);
+						*ints = intValue;
+						uniqueValues.insert(intValue);
+						hasChanged = true;
+						emptyValuesMap.erase(search);
+					}
+					catch (...)
+					{
+						// The original value is not an integer, this column cannot be nominal anymore
+						// Let's make it a nominal text.
+						changeToNominalText = true;
+						break;
+					}
+				}
+			}
+		}
+		else if (intValue != INT_MIN && isEmptyValue(intValue))
+		{
+			// This value is now considered as empty
+			*ints = INT_MIN;
+			uniqueValues.erase(intValue);
+			hasChanged = true;
+			std::ostringstream strs;
+			strs << intValue;
+			emptyValuesMap.insert(make_pair(row, strs.str()));
+		}
+		row++;
+	}
+
+	if (changeToNominalText)
+	{
+		setColumnType(Column::ColumnTypeNominalText);
+		emptyValuesMap.clear();
+		emptyValuesMap.insert(emptyValuesMapOrg.begin(), emptyValuesMapOrg.end());
+		hasChanged = _resetEmptyValuesForNominalText(emptyValuesMap, false);
+	}
+	else
+		_labels.syncInts(uniqueValues);
+
+	return hasChanged;
 }
 
-std::vector<string> Column::getDefaultEmptyValues()
+bool Column::_resetEmptyValuesForScale(std::map<int, string> &emptyValuesMap)
 {
-	return _defaultEmptyValues;
+	bool hasChanged = false;
+	int row = 0;
+	bool hasEmptyValues = !emptyValuesMap.empty();
+	bool changeToNominalText = false;
+	Doubles::iterator doubles = AsDoubles.begin();
+	Doubles::iterator end = AsDoubles.end();
+
+	for (; doubles != end; doubles++)
+	{
+		double doubleValue = *doubles;
+		if (doubleValue == NAN && hasEmptyValues)
+		{
+			auto search = emptyValuesMap.find(row);
+			if (search != emptyValuesMap.end())
+			{
+				string orgValue = search->second;
+				if (!isEmptyValue(orgValue))
+				{
+					// This value is not empty anymore
+					try
+					{
+						doubleValue = boost::lexical_cast<double>(orgValue);
+						*doubles = doubleValue;
+						hasChanged = true;
+					}
+					catch (...)
+					{
+						changeToNominalText = true;
+						break;
+					}
+				}
+			}
+		}
+		else if (doubleValue != NAN && isEmptyValue(doubleValue))
+		{
+			// This value is now considered as empty
+			*doubles = NAN;
+			hasChanged = true;
+			std::ostringstream strs;
+			strs << doubleValue;
+			emptyValuesMap.insert(make_pair(row, strs.str()));
+		}
+		row++;
+	}
+
+	if (changeToNominalText)
+	{
+		// Cannot use _resetEmptyValuesForNominalText since the AsInts are not set.
+		vector<string> values;
+		row = 0;
+		for (doubles = AsDoubles.begin(); doubles != end; doubles++)
+		{
+			double doubleValue = *doubles;
+			if (doubleValue == NAN)
+			{
+				auto search = emptyValuesMap.find(row);
+				if (search != emptyValuesMap.end())
+				{
+					string orgValue = search->second;
+					values.push_back(orgValue);
+				}
+				else
+				{
+					values.push_back(Utils::emptyValue);
+				}
+			}
+			else
+			{
+				std::ostringstream strValue;
+				strValue << doubleValue;
+				values.push_back(strValue.str());
+			}
+			row++;
+		}
+		map<int, string> newEmptyValues = setColumnAsNominalString(values);
+		emptyValuesMap.clear();
+		emptyValuesMap.insert(newEmptyValues.begin(), newEmptyValues.end());
+		hasChanged = true;
+	}
+
+	return hasChanged;
+}
+
+bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesMap, bool tryToConvert)
+{
+	bool hasChanged = false;
+	int row = 0;
+	bool hasEmptyValues = !emptyValuesMap.empty();
+	Ints::iterator ints = AsInts.begin();
+	Ints::iterator end = AsInts.end();
+	vector<string> values;
+	vector<int> intValues;
+	vector<double> doubleValues;
+	set<int> uniqueIntValues;
+	bool canBeConvertedToIntegers = tryToConvert, canBeConvertedToDoubles = tryToConvert;
+
+	for (; ints != end; ints++)
+	{
+		int index = *ints;
+		if (index == INT_MIN && hasEmptyValues)
+		{
+			auto search = emptyValuesMap.find(row);
+			if (search != emptyValuesMap.end())
+			{
+				string orgValue = search->second;
+				values.push_back(orgValue);
+				if (!isEmptyValue(orgValue))
+					hasChanged = true;
+				if (canBeConvertedToIntegers || canBeConvertedToDoubles)
+				{
+					if (isEmptyValue(orgValue))
+					{
+						if (canBeConvertedToIntegers)
+							intValues.push_back(INT_MIN);
+						else
+							doubleValues.push_back(NAN);
+					}
+					else
+					{
+						bool convertToDouble = false;
+						if (canBeConvertedToIntegers)
+						{
+							try
+							{
+								int intValue = boost::lexical_cast<int>(orgValue);
+								intValues.push_back(intValue);
+								uniqueIntValues.insert(intValue);
+								emptyValuesMap.erase(search);
+							}
+							catch (...)
+							{
+								canBeConvertedToIntegers = false;
+								_convertVectorIntToDouble(intValues, doubleValues);
+								convertToDouble = true;
+							}
+						}
+						else
+						{
+							convertToDouble = true;
+						}
+
+						if (convertToDouble)
+						{
+							try
+							{
+								double doubleValue = boost::lexical_cast<double>(orgValue);
+								doubleValues.push_back(doubleValue);
+								emptyValuesMap.erase(search);
+							}
+							catch (...)
+							{
+								canBeConvertedToDoubles = false;
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				values.push_back(Utils::emptyValue);
+				if (canBeConvertedToIntegers)
+					intValues.push_back(INT_MIN);
+				else if (canBeConvertedToDoubles)
+					doubleValues.push_back(NAN);
+			}
+		}
+		else if (index == INT_MIN)
+		{
+			values.push_back(Utils::emptyValue);
+			if (canBeConvertedToIntegers)
+				intValues.push_back(INT_MIN);
+			else if (canBeConvertedToDoubles)
+				doubleValues.push_back(NAN);
+		}
+		else
+		{
+			string orgValue = _labels.getValueFromIndex(index);
+			values.push_back(orgValue);
+			if (isEmptyValue(orgValue))
+			{
+				hasChanged = true;
+				if (canBeConvertedToIntegers)
+				{
+					intValues.push_back(INT_MIN);
+					emptyValuesMap.insert(make_pair(row, orgValue));
+				}
+				else if (canBeConvertedToDoubles)
+				{
+					doubleValues.push_back(NAN);
+					emptyValuesMap.insert(make_pair(row, orgValue));
+				}
+			}
+			else
+			{
+				bool convertToDouble = false;
+				if (canBeConvertedToIntegers)
+				{
+					try
+					{
+						int intValue = boost::lexical_cast<int>(orgValue);
+						intValues.push_back(intValue);
+						uniqueIntValues.insert(intValue);
+					}
+					catch (...)
+					{
+						canBeConvertedToIntegers = false;
+						_convertVectorIntToDouble(intValues, doubleValues);
+						convertToDouble = true;
+					}
+				}
+				else if (canBeConvertedToDoubles)
+				{
+					convertToDouble = true;
+				}
+
+				if (convertToDouble)
+				{
+					try
+					{
+						double doubleValue = boost::lexical_cast<double>(orgValue);
+						doubleValues.push_back(doubleValue);
+					}
+					catch (...)
+					{
+						canBeConvertedToDoubles = false;
+					}
+				}
+			}
+		}
+		row++;
+	}
+
+	if (canBeConvertedToIntegers)
+	{
+		setColumnAsNominalOrOrdinal(intValues, uniqueIntValues);
+		hasChanged = true;
+	}
+	else if (canBeConvertedToDoubles)
+	{
+		setColumnAsScale(doubleValues);
+		hasChanged = true;
+	}
+	else
+	{
+		map<int, string> newEmptyValues = setColumnAsNominalString(values);
+		emptyValuesMap.clear();
+		emptyValuesMap.insert(newEmptyValues.begin(), newEmptyValues.end());
+	}
+
+	return hasChanged;
 
 }
 
-void Column::setEmptyValues(const std::vector<string> &emptyvalues)
+bool Column::resetEmptyValues(std::map<int, string> &emptyValuesMap)
 {
-	_currentEmptyValues = emptyvalues;
+	if (_columnType == Column::ColumnTypeOrdinal || _columnType == Column::ColumnTypeNominal)
+		return _resetEmptyValuesForNominal(emptyValuesMap);
+	else if (_columnType == Column::ColumnTypeScale)
+		return _resetEmptyValuesForScale(emptyValuesMap);
+	else
+		return _resetEmptyValuesForNominalText(emptyValuesMap);
 }
 
 Column::Column(managed_shared_memory *mem) :
@@ -309,27 +639,27 @@ void Column::setColumnAsScale(const std::vector<double> &values)
 
 }
 
-void Column::setColumnAsNominalString(const vector<string> &values)
+map<int, string> Column::setColumnAsNominalString(const vector<string> &values)
 {
-	setColumnAsNominalString(values, map<string, string>());
+	return setColumnAsNominalString(values, map<string, string>());
 }
 
-void Column::setColumnAsNominalString(const vector<string> &values, const map<string, string>&labels)
+map<int, string> Column::setColumnAsNominalString(const vector<string> &values, const map<string, string>&labels)
 {
+	map<int, string> emptyValuesMap;
+
 	vector<string> sorted = values;
 	sort(sorted.begin(), sorted.end());
 	vector<string> cases;
 	unique_copy(sorted.begin(), sorted.end(), back_inserter(cases));
 	sort(cases.begin(), cases.end());
 
-	for (vector<string>::iterator itr = cases.begin(); itr != cases.end(); itr++)
-	{
-		if (isEmptyValue(*itr)) // remove empty string
-		{
-			cases.erase(itr);
-			break;
-		}
-	}
+	cases.erase(std::remove_if(
+					cases.begin(),
+					cases.end(),
+					[](string x){
+						return isEmptyValue(x);
+					}), cases.end());
 
 	std::map<string, int> map = _labels.syncStrings(cases, labels);
 
@@ -341,10 +671,11 @@ void Column::setColumnAsNominalString(const vector<string> &values, const map<st
 		if (isEmptyValue(value))
 		{
 			*intInputItr = INT_MIN;
+			if (!value.empty())
+				emptyValuesMap.insert(make_pair(nb_values, value));
 		}
 		else
 		{
-			//*intInputItr = distance(cases.begin(), find(cases.begin(), cases.end(), value));
 			*intInputItr = map[value];
 		}
 		intInputItr++;
@@ -360,6 +691,7 @@ void Column::setColumnAsNominalString(const vector<string> &values, const map<st
 
 	setColumnType(Column::ColumnTypeNominalText);
 
+	return emptyValuesMap;
 }
 
 int Column::rowCount() const
@@ -370,7 +702,7 @@ int Column::rowCount() const
 string Column::_labelFromIndex(int value) const
 {
 	if (value == INT_MIN)
-		return _emptyValue;
+		return Utils::emptyValue;
 
 	if (_labels.size() > 0)
 		return _labels.labelFor(value).text();
@@ -389,37 +721,6 @@ string Column::name() const
 void Column::setName(string name)
 {
 	_name = String(name.begin(), name.end(), _mem->get_segment_manager());
-}
-
-void Column::setValue(int rowIndex, string value)
-{
-	/*if (_dataType == Column::DataTypeDouble)
-	{
-		try
-		{
-			double d = boost::lexical_cast<double>(value);
-			setValue(rowIndex, d);
-		}
-		catch (...)
-		{
-			//qDebug() << "could not assign: " << value.c_str();
-		}
-	}
-	else
-	{
-		if (hasLabels() == false)
-		{
-			try
-			{
-				int v = boost::lexical_cast<int>(value);
-				setValue(rowIndex, v);
-			}
-			catch (...)
-			{
-				//qDebug() << "could not assign: " << value.c_str();
-			}
-		}
-	}*/
 }
 
 void Column::setValue(int rowIndex, int value)
@@ -464,8 +765,8 @@ bool Column::isValueEqual(int rowIndex, double value)
 	if (_columnType == Column::ColumnTypeScale)
 	{
 		double d = AsDoubles[rowIndex];
-		if (std::isnan(value))
-			return std::isnan(d);
+		if (isEmptyValue(value))
+			return isEmptyValue(d);
 		else
 			return d == value;
 	}
@@ -538,7 +839,7 @@ bool Column::isValueEqual(int rowIndex, const string &value)
 			int index = AsInts[rowIndex];
 			if (index == INT_MIN)
 			{
-				result = (find(_currentEmptyValues.begin(), _currentEmptyValues.end(), value)  !=  _currentEmptyValues.end() || value == _emptyValue) ;
+				result = isEmptyValue(value);
 			}
 			else
 			{
@@ -565,9 +866,9 @@ string Column::_getScaleValue(int row)
 		char ninf[] = { (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 };
 		return string(ninf);
 	}
-	else if (std::isnan(v))
+	else if (isEmptyValue(v))
 	{
-		return _emptyValue;
+		return Utils::emptyValue;
 	}
 	else
 	{
@@ -579,7 +880,7 @@ string Column::_getScaleValue(int row)
 
 string Column::getOriginalValue(int row)
 {
-	string result = _emptyValue;
+	string result = Utils::emptyValue;
 
 	if (row < _rowCount)
 	{
@@ -591,7 +892,7 @@ string Column::getOriginalValue(int row)
 		{
 			int index = AsInts[row];
 			if (index == INT_MIN)
-				result = _emptyValue;
+				result = Utils::emptyValue;
 			else
 				result = _labels.getValueFromIndex(index);
 		}
@@ -603,7 +904,7 @@ string Column::getOriginalValue(int row)
 
 string Column::operator [](int row)
 {
-	string result = _emptyValue;
+	string result = Utils::emptyValue;
 
 	if (row < _rowCount)
 	{

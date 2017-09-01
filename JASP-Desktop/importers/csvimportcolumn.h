@@ -6,7 +6,7 @@
 class CSVImportColumn : public ImportColumn
 {
 public:
-	CSVImportColumn(std::string name);
+	CSVImportColumn(ImportDataSet* importDataSet, std::string name);
 	virtual ~CSVImportColumn();
 
 	virtual size_t size() const;

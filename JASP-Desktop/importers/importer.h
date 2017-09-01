@@ -6,6 +6,9 @@
 #include "datasetpackage.h"
 #include "importdataset.h"
 
+class ImportDataSet;
+class ImportColumn;
+
 class Importer
 {
 public:
