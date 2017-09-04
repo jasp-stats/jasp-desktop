@@ -61,6 +61,9 @@ public:
   std::string roundTo6Digits(double, int);
   bool checkIfNumeric(std::string);
 
+private:
+  boost::filesystem::path   _full_path;
+
 private slots:
     void initTestCase();
     void cleanupTestCase();

@@ -19,7 +19,6 @@
 #include "csviterator.h"
 #include "desktoputils.h"
 
-
 void CSVImporterTest::initTestCase()
 {
 
@@ -52,10 +51,17 @@ void CSVImporterTest::csvTester_data()
   QTest::addColumn<QString>("filename");
   int count = 0;
 
-  boost::filesystem::path p(TESTFILE_FOLDER "csvimporter_test");
+  _full_path = boost::filesystem::current_path();
+#ifdef __WIN32__
+  _full_path = _full_path.parent_path();
+#endif
+  _full_path.append(TESTFILE_FOLDER);
+  _full_path.append("csvimporter_test");
+
+  std::cout << "CSV importer test file(s) :" << _full_path.string() << std::endl;
 
   //add files to be tested in a folder "Resources/TestFiles/csvimporter_test"
-  for (auto i = boost::filesystem::directory_iterator(p); i != boost::filesystem::directory_iterator(); i++)
+  for (auto i = boost::filesystem::directory_iterator(_full_path); i != boost::filesystem::directory_iterator(); ++i)
   {
     if (!boost::filesystem::is_directory(i->path())) //we eliminate directories
     {
@@ -72,7 +78,9 @@ void CSVImporterTest::csvTester()
 
   qDebug() << "filename: " << filename;
 
-  QString full_path = QString(TESTFILE_FOLDER "csvimporter_test/").append(filename);
+  QString full_path = QString::fromStdWString(_full_path.wstring());
+  full_path.append(boost::filesystem::path::preferred_separator);
+  full_path.append(filename);
 
   fe->setPath(full_path);
 

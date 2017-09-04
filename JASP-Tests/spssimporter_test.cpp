@@ -43,10 +43,18 @@ void SPSSImporterTest::spssTester_data()
 {
 	QTest::addColumn<QString>("filename");
 
-	boost::filesystem::path _path(TESTFILE_FOLDER "spssimporter_test/spss_files");
+    _full_path = boost::filesystem::current_path();
+  #ifdef __WIN32__
+    _full_path = _full_path.parent_path();
+  #endif
+    _full_path.append(TESTFILE_FOLDER);
+    _full_path.append("spssimporter_test");
+    _full_path.append("spss_files");
 
-	//add files to be tested in a folder "Resources/TestFiles/spssimporter_test/spss_files"
-	for (auto i = boost::filesystem::directory_iterator(_path); i != boost::filesystem::directory_iterator(); i++)
+    std::cout << "SPSS importer test file(s) :" << _full_path.string() << std::endl;
+
+    //add files to be tested in a folder "Resources/TestFiles/spssimporter_test/spss_files"
+    for (auto i = boost::filesystem::directory_iterator(_full_path); i != boost::filesystem::directory_iterator(); i++)
 	{
 		if (!boost::filesystem::is_directory(i->path())) //we eliminate directories
 		{
@@ -62,10 +70,14 @@ void SPSSImporterTest::spssTester()
 	qDebug() << "File: " << filename;
 
 	//spss file open
-	QString fullPath_spss = QString(TESTFILE_FOLDER "spssimporter_test/spss_files/").append(filename);
+    QString full_path_spss = QString::fromStdWString(_full_path.wstring());
+    full_path_spss.append(boost::filesystem::path::preferred_separator);
+    full_path_spss.append(filename);
+
+    qDebug() << "SPSS Tester: Trying for .SAV file: " << full_path_spss;
 
 	DataSetPackage *ds_spss = new DataSetPackage();
-	fe_spss->setPath(fullPath_spss);
+    fe_spss->setPath(full_path_spss);
 	asl_spss->loadTask(fe_spss, ds_spss);          //load the spss file
 	asl_spss->_thread.quit();
 
@@ -77,7 +89,12 @@ void SPSSImporterTest::spssTester()
 	//csv file open
 	QString csvFile = filename;
 	csvFile.replace(filename.size()-3, 3, "csv");
-	QString fullPath_csv = QString(TESTFILE_FOLDER "spssimporter_test/csv_files/").append(csvFile);
+    QString fullPath_csv = QString::fromStdWString(_full_path.wstring());
+    fullPath_csv.append(boost::filesystem::path::preferred_separator);
+    fullPath_csv.append(csvFile);
+
+    qDebug() << "SPSS Tester: Trying for .CSV file: " << fullPath_csv;
+
 
 	DataSetPackage *ds_csv = new DataSetPackage();
 	fe_csv->setPath(fullPath_csv);

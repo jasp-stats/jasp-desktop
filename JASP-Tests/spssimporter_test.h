@@ -53,6 +53,9 @@ public:
   bool checkIfEqual(struct fileContent*, struct fileContent*);
   void copyToStructure(DataSetPackage*, struct fileContent*);
 
+private:
+  boost::filesystem::path   _full_path;
+
 private slots:
     void init();
     void cleanup();

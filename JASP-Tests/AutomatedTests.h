@@ -19,9 +19,11 @@
 #define AUTOMATEDTESTS_H
 
 #ifdef __APPLE__
-#define TESTFILE_FOLDER "../Resources/TestFiles/"
+#define TESTFILE_FOLDER "../Resources/TestFiles"
+#elif __WIN32__
+#define TESTFILE_FOLDER "jasp-desktop\\Resources\\TestFiles"
 #else
-#define TESTFILE_FOLDER "Resources/TestFiles/"
+#define TESTFILE_FOLDER "Resources/TestFiles"
 #endif
 
 #include <QtWidgets>
