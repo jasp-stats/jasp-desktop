@@ -1,4 +1,3 @@
-
 QT += core gui webkit webkitwidgets svg network printsupport xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -17,14 +16,13 @@ TARGET = JASP-Desktop
 TEMPLATE = lib
 CONFIG += staticlib
 
-
 DEPENDPATH = ..
 
 CONFIG -= app_bundle
 
 INCLUDEPATH += ../JASP-Desktop/ \
-        ../JASP-Common/ \
-        ../JASP-Engine/
+               ../JASP-Common/ \
+               ../JASP-Engine/
 
 INCLUDEPATH += ../JASP-Common/
 INCLUDEPATH += ../icu-connector/

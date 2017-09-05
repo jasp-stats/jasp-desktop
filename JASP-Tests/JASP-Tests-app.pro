@@ -1,4 +1,3 @@
-
 QT += core gui webkit webkitwidgets svg network testlib printsupport xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -16,8 +15,8 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 INCLUDEPATH += ../JASP-Desktop/ \
-	../JASP-Common/ \
-	../JASP-Engine/
+               ../JASP-Common/ \
+               ../JASP-Engine/
 
    macx:INCLUDEPATH += ../../boost_1_64_0
 windows:INCLUDEPATH += ../../boost_1_64_0
@@ -54,21 +53,20 @@ linux {
 
 
 SOURCES += \
-    main.cpp \
-    textfileread_test.cpp \
-    osf_test.cpp \
-    spssimporter_test.cpp \
-    csvimporter_test.cpp
+    core/main.cpp \
+    core/textfileread_test.cpp \
+    core/osf_test.cpp \
+    core/spssimporter_test.cpp \
+    core/csvimporter_test.cpp
 
 HEADERS += \
-    AutomatedTests.h \
-    textfileread_test.h \
-    osf_test.h \
-    csviterator.h \
-    spssimporter_test.h \
-    csvimporter_test.h
+    core/AutomatedTests.h \
+    core/textfileread_test.h \
+    core/osf_test.h \
+    core/csviterator.h \
+    core/spssimporter_test.h \
+    core/csvimporter_test.h
 
-HELP_PATH = $${PWD}/../Docs/help
 RESOURCES_PATH = $${PWD}/../Resources
 
 win32 {

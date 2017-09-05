@@ -28,7 +28,7 @@ file.sources = list.files(
 sapply(file.sources,source, .GlobalEnv)
 
 # define the test directory and store the test results in variable
-test_results <- test_dir("analysesTests/", reporter = "summary")
+test_results <- test_dir("analyses/", reporter = "summary")
 
 # yet to implement - print test_results list to test-log file
 # lapply(test_results, write, "test.txt", append=TRUE)
