@@ -130,7 +130,7 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 
 	results <- list()
 	results[[".meta"]] <- meta
-	results[["title"]] <- "Bayesian T-Test"
+	results[["title"]] <- "Bayesian Paired Samples T-Test"
 	results[["table"]] <- table
 
 	if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness) {

@@ -92,6 +92,13 @@ and connect the above slot with the triggered() signal in the `addHelpTab()` fun
 
 	connect(newModule, SIGNAL(triggered()), this, SLOT(toggleNewModule()));
 
+Add a declaration of `toggleNewModule()` to the private slots of the TabBar class definition in `tabbar.h`
+
+	private slots:
+	...
+	void toggleSummaryStats();
+	void toggleNewModule();
+
 
 ##### Modify the tabChanged function in MainWindow.cpp
 `tabChanged()` in MainWindow.cpp contains an if-else ladder for the current Active tab. Add 'New Module' to it.
