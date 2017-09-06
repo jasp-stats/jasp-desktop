@@ -54,6 +54,11 @@
 			"type": "Boolean"
 		},
 		{
+			"name": "tableWeightsMatrix",
+			"type": "Boolean",
+			"default": false
+		},
+		{
 			"options": ["auto", "cor", "cov", "npn"],
 			"default": "auto",
 			"name": "correlationMethod",
@@ -124,6 +129,49 @@
 			"options": ["normalized", "raw", "relative"],
 			"default": "normalized",
 			"type": "List"
+		},
+		{
+			"name": "bootstrapOnOff",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "numberOfBootstraps",
+			"type": "Integer",
+			"min": 1,
+			"max": 100000,
+			"default": 10
+		},
+		{
+			"name": "parallelBootstrap",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "StatisticsEdges",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "StatisticsStrength",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "StatisticsCloseness",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "StatisticsBetweenness",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "BootstrapType",
+			"type": "List",
+			"options": ["nonparametric", "parametric", "node", "person", "jackknife"],
+			"default": "nonparametric"
 		},
 		{
 			"options": ["spring", "circle"],
