@@ -32,18 +32,35 @@ using namespace std;
 int Column::count = 0;
 
 const string Column::_emptyValue = ".";
-const string Column::_emptyValues[] = {"NaN", "nan", "", " ", "."};
-const int Column::_emptyValuesCount = sizeof(_emptyValues) /sizeof(_emptyValues[0]);
+std::vector<std::string> Column::_currentEmptyValues = {"NaN", "nan", "", " ", "."};
+std::vector<std::string> Column::_defaultEmptyValues = {"NaN", "nan", "", " ", "."};
 
 bool Column::isEmptyValue(const string& val)
 {
-
-	for (int i = 0; i < _emptyValuesCount; ++i)
+	
+	for (unsigned int t=0; t<_currentEmptyValues.size() ; ++t)
 	{
-		if (_emptyValues[i] == val)
+		if (_currentEmptyValues.at(t) == val)
 			return true;
 	}
 	return false;
+
+}
+
+std::vector<string> Column::getEmptyValues()
+{
+	return _currentEmptyValues;
+}
+
+std::vector<string> Column::getDefaultEmptyValues()
+{
+	return _defaultEmptyValues;
+	
+}
+
+void Column::setEmptyValues(const std::vector<string> &emptyvalues)
+{
+	_currentEmptyValues = emptyvalues;
 }
 
 Column::Column(managed_shared_memory *mem) :
@@ -320,7 +337,7 @@ void Column::setColumnAsNominalString(const vector<string> &values, const map<st
 
 	BOOST_FOREACH (const string &value, values)
 	{
-		if (value == "" || value == " ")
+		if (find(_currentEmptyValues.begin(), _currentEmptyValues.end(), value) != _currentEmptyValues.end())
 			*intInputItr = INT_MIN;
 		else
 			//*intInputItr = distance(cases.begin(), find(cases.begin(), cases.end(), value));
@@ -516,7 +533,7 @@ bool Column::isValueEqual(int rowIndex, const string &value)
 			int index = AsInts[rowIndex];
 			if (index == INT_MIN)
 			{
-				result = (value == "" || value == " " || value == _emptyValue);
+				result = (find(_currentEmptyValues.begin(), _currentEmptyValues.end(), value)  !=  _currentEmptyValues.end() || value == _emptyValue) ;
 			}
 			else
 			{

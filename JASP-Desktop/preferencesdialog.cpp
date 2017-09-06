@@ -1,5 +1,9 @@
 #include "preferencesdialog.h"
 #include "ui_preferencesdialog.h"
+#include <QMessageBox>
+#include <QDebug>
+
+using namespace std;
 
 PreferencesDialog::PreferencesDialog(QWidget *parent) :
 	QDialog(),
@@ -30,16 +34,164 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 
 	// Remove Question mark Help sign (Only on windows )
 	this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
+	
+	//Fill Empty Values List
+	QString missingvaluestring;
+	missingvaluestring = _settings.value("MissingValueList", "").toString();	
+	ui->missingValuesList->clear();	
+	if (missingvaluestring != "")
+		setEmptValueListFromTokenString(missingvaluestring);		
+	else
+		setEmptValueListFromStdVector(Column::getEmptyValues());
 
+	
 	connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(savePreferences()));
 	connect(ui->useDefaultSpreadsheetEditor, SIGNAL(clicked(bool)), this, SLOT(setDefaultEditorCheck(bool)));
 	connect(ui->openEditor, SIGNAL(pressed()),this, SLOT(getSpreadsheetEditor()));
+	
+	ui->tabsPreferences->setCurrentIndex(0);
+	
 
 }
 
 PreferencesDialog::~PreferencesDialog()
 {
 	delete ui;
+}
+
+std::vector<std::string> PreferencesDialog::getStdVectorFromEmptyValueList()
+{
+	std::vector<std::string> result;
+	QListWidgetItem *itm;
+	unsigned int count = ui->missingValuesList->count();
+	QString s;
+	
+	//Strip leading " and use template name for white spaces
+	for (unsigned int i=0; i<count; ++i)
+	{
+		itm = ui->missingValuesList->item(i);
+		s = itm->text();
+		s = stripFirstAndLastChar(s, "\"");
+		if (s == SPACE_VALUE) s=" ";
+		if (s == EMPTY_VALUE) s="";
+		result.push_back(s.toStdString());
+	}
+	
+	return result;
+}
+
+QString PreferencesDialog::getTokenStringFromEmptyValueList()
+{
+	QString result;
+	QListWidgetItem *itm;
+	unsigned int count = ui->missingValuesList->count();
+	
+	//No stripping is done
+	for (unsigned int i=0; i<count; ++i)
+	{
+		itm = ui->missingValuesList->item(i);
+		QString itemtoadd = itm->text();
+		result += itemtoadd;
+		if (i<count-1) result += "|";
+	}
+	
+	return result;
+	
+}
+
+void PreferencesDialog::setEmptValueListFromStdVector(const std::vector<std::string> &inv)
+{
+	std::string s;
+		
+	for (unsigned int t=0; t<inv.size() ; ++t)
+	{
+		s = inv.at(t);
+		if (s == " ") s = SPACE_VALUE;
+		if (s == "") s = EMPTY_VALUE;
+		ui->missingValuesList->addItem(s.c_str());
+	}	
+	
+}
+
+void PreferencesDialog::setEmptValueListFromTokenString(const QString &input)
+{
+	//Direct file from EmptyValuListString  into EmptyListControl	
+	QStringList list;
+	list = input.split("|");
+	foreach (QString itm, list)
+		ui->missingValuesList->addItem(itm);
+	
+}
+
+bool PreferencesDialog::addStringToEmptyValueList(const QString &in)
+{
+	bool itemexist = false;
+	
+	QString prepare = in;
+	prepare = stripFirstAndLastChar(prepare, "\"");
+	if (prepare.length() == 0) prepare = EMPTY_VALUE;
+	if (prepare.count(' ') == prepare.length()) prepare = SPACE_VALUE;
+		
+	for (unsigned int i=0; i<ui->missingValuesList->count(); ++i)
+	{
+		if (ui->missingValuesList->item(i)->text() == prepare)
+		{
+			itemexist = true;
+			break;
+		}
+	}
+
+	if (!itemexist) 
+	{
+		ui->missingValuesList->addItem(prepare);
+		ui->itemEdit->setText("");		
+	}
+	
+	return itemexist;
+}
+
+void PreferencesDialog::on_addPushButton_clicked()
+{
+
+	addStringToEmptyValueList(ui->itemEdit->text());
+	
+}
+
+void PreferencesDialog::on_deletePushButton_clicked()
+{
+	QListWidgetItem *itm = ui->missingValuesList->takeItem(ui->missingValuesList->currentRow());
+	delete itm;
+}
+
+void PreferencesDialog::on_resetPushButton_clicked()
+{
+	ui->missingValuesList->clear();	
+	setEmptValueListFromStdVector(Column::getDefaultEmptyValues());	
+}
+
+void PreferencesDialog::on_buttonBox_accepted()
+{
+	// Forgot to save something?
+	if (ui->itemEdit->text() != "")
+	{
+		QMessageBox::StandardButton reply;
+		reply = QMessageBox::question(this, "", "Still one item to add to Missing Value List. Add ?",
+									  QMessageBox::Yes|QMessageBox::No);
+		if (reply == QMessageBox::Yes) 
+			addStringToEmptyValueList(ui->itemEdit->text());
+	}
+		
+	std::vector<std::string> missingvalues;
+	QString settingmissingvalues;
+	
+	settingmissingvalues = getTokenStringFromEmptyValueList();;
+	missingvalues = getStdVectorFromEmptyValueList();
+	
+	if (settingmissingvalues!="")
+	{
+		_settings.setValue("MissingValueList", settingmissingvalues);
+		Column::setEmptyValues(missingvalues);
+	}
 }
 
 void PreferencesDialog::savePreferences()
