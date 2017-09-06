@@ -79,6 +79,8 @@ NetworkAnalysis <- function (
 		.meta = list(
 			list(name = "generalTB",      type = "table"),
 			list(name = "fitMeasuresTB",  type = "table"),
+			list(name = "bootstrapTB",    type = "table"),
+			list(name = "weightmatrixTB", type = "table"),
 			list(name = "centralityTB",   type = "table"),
 			list(name = "mgmTB",          type = "table"),
 			list(name = "networkPLT",     type="collection", meta="image"),
@@ -100,6 +102,9 @@ NetworkAnalysis <- function (
 	stateKey <- list(
 		# depends on everything but plotting arguments
 		network = defArgs,
+		# depends also on bootstrap options
+		bootstrap = c(defArgs, "numberOfBootstraps", "BootstrapType",
+					  "StatisticsEdges", "StatisticsStrength", "StatisticsCloseness", "StatisticsBetweenness", "StatisticsBetweenness"),
 		# depends also on normalization of centrality measures
 		centrality = c(defArgs, "normalizeCentrality"),
 		# depends also on plotting arguments
@@ -153,10 +158,12 @@ NetworkAnalysis <- function (
 		}
 
 		network <- .networkAnalysisRun(dataset = dataset, options = options, variables = variables, perform = perform, oldNetwork = state)
+		if (options[["bootstrapOnOff"]])
+			network <- .networkAnalysisBootstrap(network, options, variables, perform, NULL)
 
 	} else {
 
-		network <- NULL # state # [["network"]]
+		network <- NULL
 
 	}
 
@@ -170,6 +177,12 @@ NetworkAnalysis <- function (
 	} else {
 		if (FALSE && options[["tableFitMeasures"]]) {
 			results[["fitMeasuresTB"]] <- .fitMeasuresTB(network, options, perform)
+		}
+		if (options[["bootstrapOnOff"]]) {
+			results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform)
+		}
+		if (options[["tableWeightsMatrix"]]) {
+			results[["weightmatrixTB"]] <- .networkAnalysisWeightMatrixTable(network, options, variables, perform)
 		}
 		if (options[["tableCentrality"]]) {
 			results[["centralityTB"]] <- .networkAnalysisCentralityTable(network, options, perform)
@@ -185,14 +198,16 @@ NetworkAnalysis <- function (
 			keep <- c(keep, results[["centralityPLT"]][["data"]])
 		}
 	}
+	results <- .networkAnalysisAddReferencesToTables(results, options)
 	## Exit Analysis ## ----
 
 	# Save State
 	state <- list(
-		options = options,
-		network = network[["network"]],
-		centrality = network[["centrality"]],
-		networkPLT = results[["networkPLT"]],
+		options       = options,
+		network       = network[["network"]],
+		bootstrap     = network[["bootstrap"]],
+		centrality    = network[["centrality"]],
+		networkPLT    = results[["networkPLT"]],
 		centralityPLT = results[["centralityPLT"]]
 	)
 
@@ -211,7 +226,7 @@ NetworkAnalysis <- function (
 
 }
 
-# run analyses
+# functions for running analyses ----
 .networkAnalysisRun <- function(dataset, options, variables, perform, oldNetwork = NULL) {
 
 	# early return if init, return NULL or results from state
@@ -475,7 +490,38 @@ NetworkAnalysis <- function (
 
 }
 
-# wrappers for output
+.networkAnalysisBootstrap <- function(network, options, variables, perform, oldBootstrap = NULL) {
+
+	network[["bootstrap"]] <- list()
+	allNetworks <- network[["network"]]
+	nGraphs <- length(allNetworks)
+
+	if (options[["parallelBootstrap"]]) {
+		nCores <- parallel::detectCores(TRUE)
+		if (is.na(nCores)) # parallel::detectCores returns NA if unknown/ fails
+			nCores <- 1
+	} else {
+		nCores <- 1
+	}
+
+	statistics <- c("edge", "strength", "closeness", "betweenness")
+	statistics <- statistics[unlist(options[c("StatisticsEdges", "StatisticsStrength", "StatisticsCloseness", "StatisticsBetweenness")])]
+
+	for (nm in names(allNetworks)) {
+
+		network[["bootstrap"]][[nm]] <- bootnet::bootnet(data = allNetworks[[nm]],
+														 nBoots = options[["numberOfBootstraps"]],
+														 nCores = nCores,
+														 statistics = statistics
+		)
+
+	}
+
+	return(network)
+
+}
+
+# functions for tables ----
 .networkAnalysisGeneralTable <- function(network, dataset, options, perform) {
 
 	nGraphs <- max(1, length(network[["network"]]))
@@ -554,12 +600,101 @@ NetworkAnalysis <- function (
 
 }
 
+.networkAnalysisBootstrapTable <- function(network, dataset, options, perform) {
+
+	table <- list(
+		title = "Summary of Network",
+		schema = list(fields = list(
+			list(name = "type", title = "Type", type = "string"),
+			list(name = "numberOfBootstraps", title = "Number of bootstraps", type = "integer", format="sf:4;dp:3")
+		)),
+		data = list(type = options[["BootstrapType"]],
+					numberOfBootstraps = options[["numberOfBootstraps"]])
+	)
+
+
+
+	return(table)
+
+}
+
 .fitMeasuresTB <- function(network, options, perform) {
 
 	table <- list()
 	table[["title"]] <- "Fit Measures"
 	table[["schema"]] <- list(fields=list())
 	table[["data"]] <- list()
+
+	return(table)
+
+}
+
+.networkAnalysisWeightMatrixTable <- function(network, options, variables, perform) {
+	# browser()
+	nGraphs <- max(1, length(network[["network"]]))
+
+	table <- list(
+		title = "Weights matrix",
+		schema = list(fields = list(
+			list(name = "Variable", title = "Variable", type = "string")
+		))
+	)
+
+	# shared titles
+	overTitles <- names(network[["network"]])
+	if (is.null(overTitles))
+		overTitles <- "Network" # paste0("Network", 1:nGraphs)
+
+	nVar <- length(variables)
+	for (i in seq_len(nGraphs)) {
+		for (v in seq_len(nVar)) { # loop is not entered if nVar == 0
+			table[["schema"]][["fields"]][[1 + v + nVar*(i-1)]] <- list(name = paste0(variables[v], i), title = variables[v], type = "number", format="sf:4;dp:3", overTitle = overTitles[i])
+		}
+	}
+
+	if (perform != "run" || is.null(network)) { # make empty table
+
+		if (is.null(options[["variables"]]) || !length(options[["variables"]]) > 0) { # 1 by 1 table
+
+			TBcolumns <- list(Variable = ".")
+
+		} else { # table of nVariables by nVariables
+
+			# dataframe since reshape2 below returns dataframes
+			TBcolumns <- rep(list(rep(".", nVar)), nVar)
+			names(TBcolumns) <- paste0(variables, i)
+			TBcolumns[["Variable"]] <- variables
+		}
+		table[["status"]] <- "inited"
+
+	} else { # fill with results
+
+		allNetworks <- network[["network"]]
+		for (i in seq_len(nGraphs)) {
+
+			toAdd <- allNetworks[[i]][["graph"]]
+			if (!options[["weightedNetwork"]])
+				toAdd <- sign(toAdd)
+			if (!options[["signedNetwork"]])
+				toAdd <- abs(toAdd)
+
+			toAdd <- as.data.frame(toAdd)
+			names(toAdd) <- paste0(variables, i)
+
+			if (i > 1) {
+				TBcolumns <- cbind(TBcolumns, toAdd)
+			} else {
+				TBcolumns <- toAdd
+			}
+
+		}
+		TBcolumns <- cbind(data.frame(Variable = variables), TBcolumns)
+		table[["status"]] <- "complete"
+
+	}
+
+	data <- .TBcolumns2TBrows(TBcolumns)
+	table[["data"]] <- data
 
 	return(table)
 
@@ -673,6 +808,7 @@ NetworkAnalysis <- function (
 
 }
 
+# functions for plots ----
 .networkAnalysisCentralityPlot <- function(network, options, perform, oldPlot = NULL) {
 
 	if (!is.null(oldPlot) && !identical(oldPlot[["data"]], ""))
@@ -750,7 +886,7 @@ NetworkAnalysis <- function (
 		if (!options[["signedNetwork"]]) {
 			wMat <- abs(wMat)
 		}
-		# browser() # dev.new()
+
 		qgraph::qgraph(
 			input      = wMat,
 			layout     = layout, # options[["layout"]],
@@ -900,7 +1036,7 @@ NetworkAnalysis <- function (
 		}
 
 		names(allLegends) <- names(allNetworks) # allows indexing by name
-		# browser()
+
 		for (v in names(allNetworks)) {
 
 			subPlot <- subPlotBase
@@ -949,7 +1085,23 @@ NetworkAnalysis <- function (
 
 }
 
-# helper functions
+# helper functions ----
+.networkAnalysisAddReferencesToTables <- function(results, options) {
+
+	# get from every .meta element the type and check if it is "table"
+	idxOfTables <- sapply(results[[".meta"]], `[[`, "type") == "table"
+	# get the names of .meta elements that have type "table".
+	namesOfTables <- sapply(results[[".meta"]], `[[`, "name")[idxOfTables]
+	for (nm in namesOfTables) { # use names to index
+		if (!is.null(results[[nm]])) { # if table is not empty add reference
+			results[[nm]][["citation"]] <- as.list(bootnet:::getRefs(options[["estimator"]]))
+		}
+	}
+
+	return(results)
+
+}
+
 # avoids qgraph from opening windows
 getTempFileName <- function() {
 

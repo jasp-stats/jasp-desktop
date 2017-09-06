@@ -62,6 +62,7 @@ NetworkAnalysisForm::NetworkAnalysisForm(QWidget *parent) :
     // Defaults
     ui->estimator->setCurrentIndex(0);
     ui->analysisOptions->hide();
+    ui->bootstrapOptions->hide();
     ui->graphicalOptions->hide();
 }
 
