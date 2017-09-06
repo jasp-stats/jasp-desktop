@@ -32,6 +32,10 @@ Analysis *AnalysisLoader::load(int id, string analysisName, Json::Value *data)
     filesystem::path pa = Dirs::libraryDir();
     pa /= analysisName + ".json";
 
+#ifndef QT_NO_DEBUG
+	std::cout << "AnalysisLoader::load(id=" << id << ", analysisName=\"" << analysisName << "\", Json::Value *data): Trying for file " << pa.string() << std::endl;
+#endif
+
     JaspFileTypes::IFStream file(pa, ios::in);
 	if (file.is_open())
 	{

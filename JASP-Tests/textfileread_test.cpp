@@ -19,9 +19,23 @@
 #include "desktoputils.h"
 
 
+using namespace std;
+using namespace boost::filesystem;
+
+#include <boost/filesystem.hpp>
+
 void TextFileReadTest::initTestCase()
 {
-  if(boost::filesystem::exists(TESTFILE_FOLDER "textfileread_test"))
+	_directory = current_path();
+	_directory.append(TESTFILE_FOLDER);
+	_directory.append("textfileread_test");
+	_directory = canonical(_directory);
+
+#ifndef QT_NO_DEBUG
+	std::cout << "Looking for test files in :" << _directory.string() << std::endl;
+#endif
+
+  if(boost::filesystem::exists(_directory))
   {
     folderPathFound = true;
   }
@@ -61,7 +75,7 @@ void TextFileReadTest::asyncloaderTester_data()
   if(folderPathFound)
   {
     QTest::addColumn<QString>("filename");
-    boost::filesystem::path _path(TESTFILE_FOLDER "textfileread_test");
+	boost::filesystem::path _path = _directory;
 
     //add files to be tested in a folder "Resources/TestFiles/spssimporter_test/spss_files"
     for (auto i = boost::filesystem::directory_iterator(_path); i != boost::filesystem::directory_iterator(); i++)
@@ -80,12 +94,13 @@ void TextFileReadTest::asyncloaderTester()
 
   if(folderPathFound)
   {
-    QFETCH(QString, filename);
+	QFETCH(QString, filename);
     qDebug() << "File: " << filename;
 
     //text file open
-    QString folderPath = TESTFILE_FOLDER "textfileread_test/";
-    QString _path = folderPath.append(filename);
+	path filepath = _directory;
+	filepath.append(filename.toStdWString());
+	QString _path = QString::fromStdWString(filepath.wstring());
 
     struct fileContent fc;
     int error = readDataFromFile(_path.toUtf8().constData(), &fc);

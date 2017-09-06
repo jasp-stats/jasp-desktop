@@ -98,7 +98,9 @@ JaspFileTypes::FilePath Dirs::appDataDir()
 		}
 	}
 
-    cout << "Dirs::appDataDir() - returning " << p.string() << endl;
+#ifndef QT_NO_DEBUG
+	cout << "Dirs::appDataDir() - returning " << p.string() << endl;
+#endif
 
 	return p;
 }
@@ -140,7 +142,9 @@ JaspFileTypes::FilePath Dirs::tempDir()
 		}
 	}
 
+#ifndef QT_NO_DEBUG
     cout << "Dirs::tempDir() - returning " << p.string() << endl;
+#endif
 
 	return p;
 }
@@ -161,7 +165,7 @@ JaspFileTypes::FilePath Dirs::exeDir()
 	static filesystem::path p;
 
 	if (p.has_filename())
-		return p;
+		return p.parent_path();
 
 #ifdef __WIN32__
 	HMODULE hModule = GetModuleHandleW(NULL);
@@ -247,5 +251,8 @@ JaspFileTypes::FilePath Dirs::libraryDir()
 	dir /= "Resources/Library";
 #endif
 
+#ifndef QT_NO_DEBUG
+	cout << "Dirs::libraryDir() returning : " << dir.native() << endl;
+#endif
     return dir;
 }

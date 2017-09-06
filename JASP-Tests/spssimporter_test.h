@@ -54,7 +54,8 @@ public:
   void copyToStructure(DataSetPackage*, struct fileContent*);
 
 private:
-  boost::filesystem::path   _full_path;
+	boost::filesystem::path   _spss_path;
+	boost::filesystem::path   _csv_path;
 
 private slots:
     void init();

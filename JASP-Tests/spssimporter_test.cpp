@@ -21,6 +21,9 @@
 #include "desktoputils.h"
 
 
+using namespace std;
+using namespace boost::filesystem;
+
 void SPSSImporterTest::init()
 {
 	fe_spss = new FileEvent();
@@ -43,20 +46,25 @@ void SPSSImporterTest::spssTester_data()
 {
 	QTest::addColumn<QString>("filename");
 
-    _full_path = boost::filesystem::current_path();
+	_spss_path = current_path();
   #ifdef __WIN32__
-    _full_path = _full_path.parent_path();
+	_spss_path = _full_path.parent_path();
   #endif
-    _full_path.append(TESTFILE_FOLDER);
-    _full_path.append("spssimporter_test");
-    _full_path.append("spss_files");
+	_spss_path.append(TESTFILE_FOLDER);
+	_spss_path.append("spssimporter_test");
+	_csv_path = _spss_path;
+	_spss_path.append("spss_files");
+	_csv_path.append("csv_files");
 
-    std::cout << "SPSS importer test file(s) :" << _full_path.string() << std::endl;
+#ifndef QT_NO_DEBUG
+	cout << "SPSS importer SPSS test file(s) :" << _spss_path.string() << endl;
+	cout << "SPSS importer CSV test file(s) :" << _csv_path.string() << endl;
+#endif
 
     //add files to be tested in a folder "Resources/TestFiles/spssimporter_test/spss_files"
-    for (auto i = boost::filesystem::directory_iterator(_full_path); i != boost::filesystem::directory_iterator(); i++)
+	for (auto i = directory_iterator(_spss_path); i != directory_iterator(); i++)
 	{
-		if (!boost::filesystem::is_directory(i->path())) //we eliminate directories
+		if (!is_directory(i->path())) //we eliminate directories
 		{
 			QTest::newRow("spss file test") << toQStr(i->path().filename().string());
 		}
@@ -70,14 +78,15 @@ void SPSSImporterTest::spssTester()
 	qDebug() << "File: " << filename;
 
 	//spss file open
-    QString full_path_spss = QString::fromStdWString(_full_path.wstring());
-    full_path_spss.append(boost::filesystem::path::preferred_separator);
-    full_path_spss.append(filename);
+	path spss_file = _spss_path;
+	spss_file.append(filename.toStdWString());
 
-    qDebug() << "SPSS Tester: Trying for .SAV file: " << full_path_spss;
+#ifndef QT_NO_DEBUG
+	qDebug() << "SPSS Tester: Trying for .SAV file: " << spss_file.string().c_str();
+#endif
 
 	DataSetPackage *ds_spss = new DataSetPackage();
-    fe_spss->setPath(full_path_spss);
+	fe_spss->setPath(QString::fromStdWString(spss_file.wstring()));
 	asl_spss->loadTask(fe_spss, ds_spss);          //load the spss file
 	asl_spss->_thread.quit();
 
@@ -89,15 +98,15 @@ void SPSSImporterTest::spssTester()
 	//csv file open
 	QString csvFile = filename;
 	csvFile.replace(filename.size()-3, 3, "csv");
-    QString fullPath_csv = QString::fromStdWString(_full_path.wstring());
-    fullPath_csv.append(boost::filesystem::path::preferred_separator);
-    fullPath_csv.append(csvFile);
+	path csv_file = _csv_path;
+	csv_file.append(csvFile.toStdWString());
 
-    qDebug() << "SPSS Tester: Trying for .CSV file: " << fullPath_csv;
-
+#ifndef QT_NO_DEBUG
+	qDebug() << "SPSS Tester: Trying for .CSV file: " << csv_file.string().c_str();
+#endif
 
 	DataSetPackage *ds_csv = new DataSetPackage();
-	fe_csv->setPath(fullPath_csv);
+	fe_csv->setPath(QString::fromStdWString(csv_file.wstring()));
 	asl_csv->loadTask(fe_csv, ds_csv);             //load the corresponding csv file - this is the expected output
 	asl_csv->_thread.quit();
 

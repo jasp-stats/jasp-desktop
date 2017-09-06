@@ -40,33 +40,36 @@
 
 class TextFileReadTest : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 
-  struct fileContent
-  {
-    int columns;
-    int rows;
-    std::vector <std::string> headers;
-    std::vector< std::vector<std::string> > data;
-  };
+	struct fileContent
+	{
+		int columns;
+		int rows;
+		std::vector <std::string> headers;
+		std::vector< std::vector<std::string> > data;
+	};
 
-  FileEvent *fe;
-  DataSetPackage *dsp;
-  AsyncLoader *asl;
-  bool folderPathFound;
+	FileEvent *fe;
+	DataSetPackage *dsp;
+	AsyncLoader *asl;
+	bool folderPathFound;
 
-  int readDataFromFile(std::string, struct fileContent*);
-  bool checkIfEqual(struct fileContent *);
+	int readDataFromFile(std::string, struct fileContent*);
+	bool checkIfEqual(struct fileContent *);
+
+private:
+	boost::filesystem::path	_directory;
 
 private slots:
-    void initTestCase();
-    void cleanupTestCase();
-    void init();
-    void cleanup();
-    void asyncloaderTester_data();
-    void asyncloaderTester();
+	void initTestCase();
+	void cleanupTestCase();
+	void init();
+	void cleanup();
+	void asyncloaderTester_data();
+	void asyncloaderTester();
 };
 
 

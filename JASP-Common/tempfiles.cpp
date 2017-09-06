@@ -54,21 +54,26 @@ void tempfiles_init(long sessionId)
 
 	_tempfiles_sessionDirName = Dirs::tempDir();
 	_tempfiles_sessionDirName  /= ss.str();
-
+#ifndef QT_NO_DEBUG
     cout << "__tempfiles_sessionDirName, native " << _tempfiles_sessionDirName.string()
 		 << ", generic " << _tempfiles_sessionDirName.generic_string() << endl;
+#endif
 
 	_tempfiles_statusFileName = _tempfiles_sessionDirName.generic_string();
 	_tempfiles_statusFileName /= status;
 
-    cout << "_tempfiles_statusFileName, native " << _tempfiles_statusFileName.string()
+#ifndef QT_NO_DEBUG
+	cout << "_tempfiles_statusFileName, native " << _tempfiles_statusFileName.string()
 		 << ", generic " << _tempfiles_statusFileName.generic_string() << endl;
+#endif
 
 	_tempfiles_clipboard = Dirs::tempDir();
 	_tempfiles_clipboard /= clipboard;
 
-    cout << "_tempfiles_clipboard, native " << _tempfiles_clipboard.string()
+#ifndef QT_NO_DEBUG
+	cout << "_tempfiles_clipboard, native " << _tempfiles_clipboard.string()
 		 << ", generic " << _tempfiles_clipboard.generic_string() << endl;
+#endif
 
 	filesystem::remove_all(_tempfiles_sessionDirName, error);
 	filesystem::create_directories(_tempfiles_sessionDirName, error);
