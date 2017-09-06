@@ -150,6 +150,11 @@
 			"type": "List"
 		},
 		{
+			"name": "descriptivesTableOpt",
+			"type": "Boolean",
+			"default": false
+		},
+		{
 			"name": "plotWidth",
 			"type": "Integer",
 			"default": 480
@@ -158,7 +163,6 @@
 			"name": "plotHeight",
 			"type": "Integer",
 			"default": 320
-		},
-		
+		}
 	]
 }
