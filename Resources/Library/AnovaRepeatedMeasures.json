@@ -102,6 +102,10 @@
 			"default": true
 		},
 		{
+			"name": "postHocTestEffectSize",
+			"type": "Boolean"
+		},
+		{
 			"name": "postHocTestsHolm",
 			"type": "Boolean"
 		},

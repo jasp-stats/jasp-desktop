@@ -43,6 +43,13 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		}
 	}
 	
+	# error handling #####
+	if (length(options$variables) != 0 && options$groupingVariable != '') {
+	    errors <- .hasErrors(dataset, perform, type = 'factorLevels',
+	                         factorLevels.target = options$groupingVariable, factorLevels.amount = '!= 2',
+	                         exitAnalysisIfErrors = TRUE)
+	}
+	
 	results <- list()
 	
 	meta <- list()
@@ -376,9 +383,16 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			z <- 1
 			descriptInd <- 1
 			
-			
 			for (variable in options[["variables"]]) {
 				
+			    errors <- .hasErrors(dataset, perform, message = 'short', type = c('infinity','observations','variance'),
+			                         all.target = variable, observations.amount = "< 2", all.grouping = options$groupingVariable)
+			    
+			    if (!identical(errors, FALSE)) {
+			        errorMessage <- errors$message
+			    } else {
+			        errorMessage <- NULL
+			    }
 				
 				subDataSet <- subset(dataset, select=c(.v(variable), .v(options$groupingVariable)))
 				subDataSet <- na.omit(subDataSet)
@@ -412,6 +426,12 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						
 						plot <- descriptivesPlots[[descriptInd]]
 						
+						if (!is.null(errorMessage)) {
+						    
+						    plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+						    
+						} else {
+						
 						p <- try(silent= FALSE, expr= {
 								
 								p <- .plot2GroupMeansBayesIndTtest(v1 = group2, v2 = group1, nameV1 = g1, nameV2 = g2, 
@@ -423,12 +443,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 								plot[["data"]] <- content[["png"]]
 								
 							})
-							
-						if (class(p) == "try-error") {
-							
-							errorMessageTmp <- .extractErrorMessage(p)
-							errorMessage <- paste0("Plotting not possible: ", errorMessageTmp)
-							plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+						
 						}
 						
 						plot[["status"]] <- "complete"
@@ -483,43 +498,34 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						
 						plot <- plots.ttest[[z]]
 						
-						if (status[statusInd] != "error") {
-							
-							p <- try(silent= FALSE, expr= {
-							  
-							  .plotFunc <- function() {
-							    .plotPosterior.summarystats.ttest(t = tValue[i], n1 = n_group2[i], n2 = n_group1[i],
-							                                      paired = FALSE, oneSided = oneSided, BF = BF10post[i],
-							                                      BFH1H0 = BFH1H0, rscale = options$priorWidth,
-							                                      addInformation = options$plotPriorAndPosteriorAdditionalInfo,
-							                                      options = options)
-							  }
-									content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
-
-									plot[["convertible"]] <- TRUE
-									plot[["obj"]] <- content[["obj"]]
-									plot[["data"]] <- content[["png"]]
-									
-								})
-							
-							if (class(p) == "try-error") {
-								
-								errorMessage <- .extractErrorMessage(p)
-								
-								if (errorMessage == "not enough data") {
-									
-									errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-								} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
-									
-									errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-								}
-								
-								plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-							}
-							
+						if (!is.null(errorMessage)) {
+						    
+						    plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+						    
 						} else {
 							
-							plot[["error"]] <- list(error="badData", errorMessage=plottingError[statusInd])
+						    p <- try(silent= FALSE, expr= {
+						        
+						        .plotFunc <- function() {
+						            .plotPosterior.summarystats.ttest(t = tValue[i], n1 = n_group2[i], n2 = n_group1[i],
+						                                              paired = FALSE, oneSided = oneSided, BF = BF10post[i],
+						                                              BFH1H0 = BFH1H0, rscale = options$priorWidth,
+						                                              addInformation = options$plotPriorAndPosteriorAdditionalInfo,
+						                                              options = options)
+						        }
+						        content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+						        
+						        plot[["convertible"]] <- TRUE
+						        plot[["obj"]] <- content[["obj"]]
+						        plot[["data"]] <- content[["png"]]
+						        
+						    })
+						    
+						    if (isTryError(p)) {
+						        errorMessage <- .extractErrorMessage(p)
+						        plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+						    }
+							
 						}
 						
 						plot[["status"]] <- "complete"
@@ -566,7 +572,13 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						
 						if (options$effectSizeStandardized == "informative") {
 						  plot[["error"]] <- list(error="badData", errorMessage="Bayes factor robustness check plot currently not supported for informed prior.")
-						} else if (status[statusInd] != "error") {
+						} 
+						
+						if (!is.null(errorMessage)) {
+						    
+						    plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+						    
+						} else {
 							
 							p <- try(silent= FALSE, expr= {
 									
@@ -575,31 +587,13 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 										                              rscale = options$priorWidth, BFH1H0= BFH1H0)
 									}
 									content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
-
+									
 									plot[["convertible"]] <- TRUE
 									plot[["obj"]] <- content[["obj"]]
 									plot[["data"]] <- content[["png"]]
 									
 								})
 							
-							if (class(p) == "try-error") {
-								
-								errorMessage <- .extractErrorMessage(p)
-								
-								if (errorMessage == "not enough data") {
-									
-									errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-								} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
-									
-									errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-								}
-								
-								plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-							}
-							
-						} else {
-							
-							plot[["error"]] <- list(error="badData", errorMessage=plottingError[statusInd])
 						}
 						
 						plot[["status"]] <- "complete"
@@ -657,7 +651,13 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						
 						if (options$plotSequentialAnalysisRobustness && options$effectSizeStandardized == "informative") {
 						  plot[["error"]] <- list(error="badData", errorMessage="Sequential analysis robustness check plot currently not supported for informed prior.")
-						} else if (status[statusInd] != "error" && status[statusInd] != "sequentialNotPossible") {
+						} 
+						
+						if (!is.null(errorMessage)) {
+						    
+						    plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+						    
+						} else {
 							
 							p <- try(silent= FALSE, expr= {
 
@@ -673,26 +673,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 									
 								})
 							
-							if (class(p) == "try-error") {
-								
-								errorMessage <- .extractErrorMessage(p)
-								
-								if (errorMessage == "not enough data") {
-									
-									errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-								} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
-									
-									errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-								}
-								
-								plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-							}
-							
-						} else {
-							
-							plot[["error"]] <- list(error="badData", errorMessage=plottingError[statusInd])
 						}
-						
+
 						plot[["status"]] <- "complete"
 						
 						plots.ttest[[z]] <- plot
@@ -934,7 +916,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			
 			for (variable in options[["variables"]]) {
 				
-				
 				# BayesFactor package doesn't handle NAs, so it is necessary to exclude them
 				
 				subDataSet <- subset(dataset, select=c(.v(variable), .v(options$groupingVariable)))
@@ -1022,6 +1003,17 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					plottingError[rowNo] <- state$plottingError[index]
 					
 				} else {
+				    
+				    errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+				                         all.target = variable,
+				                         observations.amount = '< 2',
+				                         all.grouping = options$groupingVariable)
+				    
+				    if (!identical(errors, FALSE)) {
+				        errorMessage <- errors$message
+				    } else {
+				        errorMessage <- NULL
+				    }
 					
 					result <- try (silent=FALSE, expr= {
 						
@@ -1045,7 +1037,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						
 						# error <- .clean(as.numeric(bf@bayesFactor$error))
 						error <- .clean(r[["error"]])
-						errorMessage <- NULL
 						
 						if (is.na(bf.raw)) {
 							
@@ -1100,39 +1091,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						}
 					})
 					
-					if (class(result) == "try-error") {
-						
-						errorMessage <- .extractErrorMessage(result)
-						
-						plottingError[rowNo] <- paste("Plotting is not possible:", errorMessage, sep=" ")
-						
-						if (errorMessage == "Dependent variable must not contain missing or infinite values.") {
-							
-							errorMessage <- "Bayes factor is undefined - the dependent variable contains infinity"
-							status[rowNo] <- "error"
-							plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - the dependent variable contains infinity"
-							
-						} else if (errorMessage == "grouping factor must have exactly 2 levels") {
-							
-							# We know that the grouping factor *does* have two levels, because we've checked this earlier on
-							# This error means that all of one factor has been excluded because of missing values in the dependent
-							
-							errorMessage <- "Bayes factor is undefined - the grouping variable contains less than two levels once missing values in the dependent are excluded"
-							status[rowNo] <- "error"
-							plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - the grouping variable contains less than two levels once missing values in the dependent are excluded"
-							
-						} else if (errorMessage == "data are essentially constant") {
-							
-							errorMessage <- "Bayes factor is undefined - one or both levels of the dependent contain all the same value (zero variance)"
-							status[rowNo] <- "error"
-							plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - one or both levels of the dependent contain all the same value (zero variance)"
-							
-						} else if (errorMessage == "Insufficient sample size for t analysis." || errorMessage == "not enough observations") {
-							
-							errorMessage <- "Bayes factor is undefined - one or both levels of the dependent contain too few observations"
-							status[rowNo] <- "error"
-							plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - one or both levels of the dependent contain too few observations"
-						}
+					if(!is.null(errorMessage)){
 						
 						index <- .addFootnote(footnotes, errorMessage)
 						
@@ -1185,9 +1144,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	v1 <- na.omit(v1)
 	v2 <- na.omit(v2)
-	
-	if (any(is.infinite(v1)) || any(is.infinite(v2)))
-		stop("Plotting not possible: Variable contains infinity")
 	
 	posteriorSummary1 <- .posteriorSummaryGroupMean(variable=v1, descriptivesPlotsCredibleInterval=descriptivesPlotsCredibleInterval)
 	posteriorSummary2 <- .posteriorSummaryGroupMean(variable=v2, descriptivesPlotsCredibleInterval=descriptivesPlotsCredibleInterval)

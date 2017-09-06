@@ -24,6 +24,9 @@ SummaryStatsTTestBayesianIndependentSamplesForm::SummaryStatsTTestBayesianIndepe
 	ui(new Ui::SummaryStatsTTestBayesianIndependentSamplesForm)
 {
 	ui->setupUi(this);
+
+    // collapse more advanced options widget by default
+    ui->subjectivePriors->hide();
 }
 
 SummaryStatsTTestBayesianIndependentSamplesForm::~SummaryStatsTTestBayesianIndependentSamplesForm()

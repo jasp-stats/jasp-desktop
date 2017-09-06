@@ -59,6 +59,7 @@ void tempfiles_deleteList(const std::vector<std::string> &files);
 void tempfiles_deleteAll(int id = -1);
 void tempfiles_deleteOrphans();
 
+void tempFiles_addShmemFileName(std::string &name);
 
 
 #endif // TEMPFILES_H

@@ -494,8 +494,23 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					n[i] <- state$n[stateIndex]
 					
 				} else {
+				    
+				    errors <- .hasErrors(dataset, perform, message = 'short', type = c('infinity','observations','variance'),
+				                         all.target = c(pair[[1]],pair[[2]]), observations.amount = "< 2")
+				    
+				    if (!identical(errors, FALSE)) {
+				        
+				        errorMessage <- errors$message
+				    
+				    } else {
+				        
+				        errorMessage <- NULL
+				        
+				    }
+				    
+				    if(is.null(errorMessage)){
 					
-					result <- try (silent = TRUE, expr = {
+					result <- try(silent = TRUE, expr = {
 						
 						subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])) )
 						subDataSet <- na.omit(subDataSet)
@@ -509,22 +524,21 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						n[i] <- r[["n1"]]
 						
 						if (is.na(bf.raw)) {
-							
-							unplotable <- TRUE
-							unplotableMessage <- "Bayes factor could not be calculated"
-							
+						    
+						    unplotable <- TRUE
+						    unplotableMessage <- "Bayes factor could not be calculated"
+						    
 						} else if (is.infinite(bf.raw)) {
-							
-							unplotable <- TRUE
-							unplotableMessage <- "Bayes factor is infinite"
-							
+						    
+						    unplotable <- TRUE
+						    unplotableMessage <- "Bayes factor is infinite"
+						    
 						} else if (is.infinite(1 / bf.raw)) {
-							
-							unplotable <- TRUE
-							unplotableMessage <- "The Bayes factor is too small"
+						    
+						    unplotable <- TRUE
+						    unplotableMessage <- "The Bayes factor is too small"
 						}
-						
-						
+				
 						if (bf.type == "BF01")
 							bf.raw <- 1 / bf.raw
 						
@@ -543,43 +557,36 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 					})
 					
-					
-					if (class(result) == "try-error") {
-						
-						errorMessage <- .extractErrorMessage(result)
-						
-						if (errorMessage == "x or y must not contain missing or infinite values.") {
-							
-							errorMessage <- paste("Bayes factor is undefined - one or both of the variables contain infinity")
-							
-						} else if (errorMessage == "data are essentially constant") {
-							
-							errorMessage <- paste("Bayes factor is undefined - the sample contains all the same value (zero variance)")
-							
-						} else if (errorMessage == "Insufficient sample size for t analysis." || errorMessage == "not enough observations") {
-							
-							errorMessage <- "Bayes factor is undefined - one or both of the variables has too few observations (possibly only after missing values are excluded)"	
-						}
-						
-						pair.statuses[[i]] <- list(ready=FALSE, error=TRUE, errorMessage=errorMessage, unplotable=TRUE, unplotableMessage=errorMessage)
-						
-						index <- .addFootnote(footnotes, errorMessage)
-						
-						errorFootnotes[i] <- errorMessage
-						
-						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
-						
-					} else {
-						
-						pair.statuses[[i]] <- list(ready=TRUE, error=FALSE, unplotable=unplotable, unplotableMessage=unplotableMessage)
-						
-						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=BF, error=error)
+					if(isTryError(result)){
+					    errorMessage <- .extractErrorMessage(result)
+					    
 					}
-				}
+					
+				    }
+					
+					if(is.null(errorMessage)){
+					    
+					    pair.statuses[[i]] <- list(ready=TRUE, error=FALSE, unplotable=unplotable, unplotableMessage=unplotableMessage)
+					    
+					    result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=BF, error=error)
+					    
+					} else {
+					    
+					    pair.statuses[[i]] <- list(ready=FALSE, error=TRUE, errorMessage=errorMessage, unplotable=TRUE, unplotableMessage=unplotableMessage)
+					    
+					    index <- .addFootnote(footnotes, errorMessage)
+					    
+					    errorFootnotes[i] <- errorMessage
+					    
+					    result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
+					    
+					}
 			}
 		}
 		
 		ttest.rows[[length(ttest.rows)+1]] <- result
+		
+		}
 		
 	}
 	
@@ -653,7 +660,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						list(v=variable, N=n, mean=m, sd=std, se=se, lowerCI=ciLower, upperCI=ciUpper)
 				})
 				
-				if (class(result) == "try-error") {
+				if (isTryError(result)) {
 					
 					result <- list(v=variable, N="", mean="", sd="", se="", lowerCI="", upperCI="")
 				}
@@ -696,6 +703,15 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			
 			p1 <- ifelse(pair[[1]] != "", pair[[1]], "...") 
 			p2 <- ifelse(pair[[2]] != "", pair[[2]], "...")
+			
+			errors <- .hasErrors(dataset, perform, message = 'short', type = c('infinity','observations','variance'),
+			                     all.target = c(p1,p2), observations.amount = "< 2")
+			
+			if (!identical(errors, FALSE)) {
+			    errorMessage <- errors$message
+			} else {
+			    errorMessage <- NULL
+			}
 			
 			sequentialIsViable <- TRUE
 			
@@ -742,6 +758,12 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 					plot <- descriptivesPlots[[descriptInd]]
 					
+					if (!is.null(errorMessage)) {
+					    
+					    plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+					    
+					} else {
+					
 					p <- try(silent= FALSE, expr= {
 
 							p <- .plot2GroupMeansBayesIndTtest(v1 = c1, v2 = c2, nameV1 = pair[[1]], nameV2 = pair[[2]], descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
@@ -752,13 +774,13 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 							plot[["data"]] <- content[["png"]]
 							
 						})
-						
-					if (class(p) == "try-error") {
-						
-						errorMessageTmp <- .extractErrorMessage(p)
-						errorMessage <- paste0("Plotting not possible: ", errorMessageTmp)
-						plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+					
+					if(isTryError(p)){
+					    errorMessage <- .extractErrorMessage(p)
+					    plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
 					}
+					
+				}
 					
 					plot[["status"]] <- "complete"
 					
@@ -813,12 +835,14 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 					plot <- plots.ttest[[j]]
 					
-					
-					if (status$unplotable == FALSE) {
-						
-						
-						p <- try(silent= FALSE, expr= {
-						  
+					if (!is.null(errorMessage)) {
+					    
+					    plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+					    
+					} else {				
+					    
+					    p <- try(silent= FALSE, expr= {
+
 						  .plotFunc <- function() {
 						    .plotPosterior.summarystats.ttest(t = tValue[i], n1 = n[i], n2 = n[i], paired = TRUE,
 						                                      oneSided = oneSided, BF = BF10post[i], BFH1H0 = BFH1H0,
@@ -828,32 +852,18 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						  }
 							
 							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+							
 							plot[["convertible"]] <- TRUE
 							plot[["obj"]] <- content[["obj"]]
 							plot[["data"]] <- content[["png"]]
 							
 						})
-							
-							
-						if (class(p) == "try-error") {
-							
-							errorMessage <- .extractErrorMessage(p)
-							
-							if (errorMessage == "not enough data") {
-								
-								errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-							} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
-								
-								errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-							}
-							
-							plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-						}
-						
-					} else if (status$unplotable && "unplotableMessage" %in% names(status)) {
-						
-						message <- paste("Plotting is not possible:", status$unplotableMessage)
-						plot[["error"]] <- list(error="badData", errorMessage=message)
+					    
+					    if(isTryError(p)){
+					        errorMessage <- .extractErrorMessage(p)
+					        plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+					    }
+					    
 					}
 					
 					plot[["status"]] <- "complete"
@@ -896,7 +906,13 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 					if (options$effectSizeStandardized == "informative") {
 					  plot[["error"]] <- list(error="badData", errorMessage="Bayes factor robustness check plot currently not supported for informed prior.")
-					} else if (status$unplotable == FALSE) {
+					} 
+					
+					if (!is.null(errorMessage)){
+					    
+					    plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+					    
+					} else {
 					
 						p <- try(silent= FALSE, expr= {
 
@@ -910,28 +926,13 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 							plot[["data"]] <- content[["png"]]
 							
 						})
-							
-							
-						if (class(p) == "try-error") {
-							
-							errorMessage <- .extractErrorMessage(p)
-							
-							if (errorMessage == "not enough data") {
-								
-								errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-							} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
-								
-								errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-							}
-							
-							plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+						
+						if(isTryError(p)){
+						    errorMessage <- .extractErrorMessage(p)
+						    plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
 						}
 						
-					} else if (status$unplotable && "unplotableMessage" %in% names(status)) {
-						
-						message <- paste("Plotting is not possible:", status$unplotableMessage)
-						plot[["error"]] <- list(error="badData", errorMessage=message)
-					}
+						}
 					
 					plot[["status"]] <- "complete"
 					
@@ -986,49 +987,29 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 					if (options$plotSequentialAnalysisRobustness && options$effectSizeStandardized == "informative") {
 					  plot[["error"]] <- list(error="badData", errorMessage="Sequential analysis robustness check plot currently not supported for informed prior.")
-					} else if (status$unplotable == FALSE && sequentialIsViable) {
-						
-						p <- try(silent= FALSE, expr= {
-
-						  .plotFunc <- function() {
-								.plotSequentialBF.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BF10post=BF10post[i],
-								                        plotDifferentPriors=options$plotSequentialAnalysisRobustness, BFH1H0=BFH1H0, options = options)
-							}
-							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
-			
-							plot[["convertible"]] <- TRUE
-							plot[["obj"]] <- content[["obj"]]
-							plot[["data"]] <- content[["png"]]
-							
-						})
-							
-						if (class(p) == "try-error") {
-							
-							errorMessage <- .extractErrorMessage(p)
-							
-							if (errorMessage == "not enough data") {
-								
-								errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-							} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
-								
-								errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-							}
-							
-							plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-						}
-						
-						
-					}
+					} 
 					
-					if (sequentialIsViable == FALSE) {
+					if (!is.null(errorMessage)) {
+					    
+					    plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+					    
+					} else {
 						
-						plot[["error"]] <- list(error="badData", errorMessage="Sequential Analysis not possible: The first observations are identical")
-						
-					} else if (status$unplotable && "unplotableMessage" %in% names(status)) {
-						
-						message <- paste("Plotting is not possible:", status$unplotableMessage)
-						plot[["error"]] <- list(error="badData", errorMessage=message)	
-					}
+					p <- try(silent= FALSE, expr= {
+					    
+					    .plotFunc <- function() {
+					        .plotSequentialBF.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BF10post=BF10post[i],
+					                                plotDifferentPriors=options$plotSequentialAnalysisRobustness, BFH1H0=BFH1H0, options = options)
+					    }
+					    content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+					    
+					    plot[["convertible"]] <- TRUE
+					    plot[["obj"]] <- content[["obj"]]
+					    plot[["data"]] <- content[["png"]]
+					    
+					})
+					
+				}
 					
 					plot[["status"]] <- "complete"
 					

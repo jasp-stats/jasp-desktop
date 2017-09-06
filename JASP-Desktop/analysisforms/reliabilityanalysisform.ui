@@ -14,6 +14,164 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_6">
+   <item row="1" column="0" colspan="2">
+    <widget class="QWidget" name="gridLayout_7" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="BoundGroupBox" name="totalScaleStats">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>Scale Statistics</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="5" column="0">
+          <widget class="BoundCheckBox" name="averageInterItemCor">
+           <property name="text">
+            <string>Average interitem correlation</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="BoundCheckBox" name="alphaScale">
+           <property name="text">
+            <string>Cronbach's α</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="0">
+          <widget class="BoundCheckBox" name="sdScale">
+           <property name="text">
+            <string>Standard deviation</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0">
+          <widget class="BoundCheckBox" name="meanScale">
+           <property name="text">
+            <string>Mean</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="BoundCheckBox" name="gutmannScale">
+           <property name="text">
+            <string>Gutmann's λ6</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="BoundCheckBox" name="mcDonaldScale">
+           <property name="text">
+            <string>McDonald's ω</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="BoundCheckBox" name="glbScale">
+           <property name="text">
+            <string>Greatest lower bound</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="BoundGroupBox" name="itemStats">
+        <property name="title">
+         <string>Individual Item Statistics</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="5" column="0">
+          <widget class="BoundCheckBox" name="itemRestCor">
+           <property name="text">
+            <string>Item-rest correlation</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="BoundCheckBox" name="gutmannItem">
+           <property name="text">
+            <string>Gutmann's λ6 (if item dropped)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="BoundCheckBox" name="alphaItem">
+           <property name="text">
+            <string>Cronbach's α (if item dropped)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="BoundCheckBox" name="meanItem">
+           <property name="text">
+            <string>Mean</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="BoundCheckBox" name="mcDonaldItem">
+           <property name="text">
+            <string>McDonald's ω (if item dropped)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="BoundCheckBox" name="sdItem">
+           <property name="text">
+            <string>Standard deviation</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
    <item row="0" column="0" colspan="2">
     <widget class="QWidget" name="topWidget" native="true">
      <layout class="QGridLayout" name="gridLayout_3">
@@ -162,164 +320,6 @@
      </layout>
     </widget>
    </item>
-   <item row="1" column="0" colspan="2">
-    <widget class="QWidget" name="gridLayout_7" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="BoundGroupBox" name="totalScaleStats">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="title">
-         <string>Scale Statistics</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
-        <layout class="QGridLayout" name="gridLayout">
-         <item row="5" column="0">
-          <widget class="BoundCheckBox" name="averageInterItemCor">
-           <property name="text">
-            <string>Average interitem correlation</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="BoundCheckBox" name="alphaScale">
-           <property name="text">
-            <string>Cronbach's α</string>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="0">
-          <widget class="BoundCheckBox" name="sdScale">
-           <property name="text">
-            <string>Standard deviation</string>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="0">
-          <widget class="BoundCheckBox" name="meanScale">
-           <property name="text">
-            <string>Mean</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="BoundCheckBox" name="gutmannScale">
-           <property name="text">
-            <string>Gutmann's λ6</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="BoundCheckBox" name="mcDonaldScale">
-           <property name="text">
-            <string>McDonald's ω</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="BoundCheckBox" name="glbScale">
-           <property name="text">
-            <string>Greatest lower bound</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="BoundGroupBox" name="itemStats">
-        <property name="title">
-         <string>Individual Item Statistics</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_5">
-         <item row="5" column="0">
-          <widget class="BoundCheckBox" name="itemRestCor">
-           <property name="text">
-            <string>Item-rest correlation</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="BoundCheckBox" name="gutmannItem">
-           <property name="text">
-            <string>Gutmann's λ6 (if item dropped)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="BoundCheckBox" name="sdItem">
-           <property name="text">
-            <string>Standard deviation</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="BoundCheckBox" name="alphaItem">
-           <property name="text">
-            <string>Cronbach's α (if item dropped)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="BoundCheckBox" name="meanItem">
-           <property name="text">
-            <string>Mean</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="BoundCheckBox" name="mcDonaldItem">
-           <property name="text">
-            <string>McDonald's ω (if item dropped)</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
-   </item>
    <item row="4" column="0">
     <widget class="QWidget" name="advancedOptionsBox" native="true">
      <layout class="QGridLayout" name="gridLayout_11">
@@ -361,26 +361,151 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="BoundGroupBox" name="missingValues">
-           <property name="title">
-            <string>Missing Values</string>
+          <widget class="BoundGroupBox" name="box">
+           <property name="maximumSize">
+            <size>
+             <width>16777207</width>
+             <height>16777215</height>
+            </size>
            </property>
-           <layout class="QGridLayout" name="gridLayout_15">
-            <property name="bottomMargin">
-             <number>13</number>
-            </property>
+           <property name="title">
+            <string/>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_12">
             <item row="0" column="0">
-             <widget class="QRadioButton" name="excludeCasesListwise">
-              <property name="text">
-               <string>Exclude cases listwise</string>
+             <widget class="BoundGroupBox" name="missingValues">
+              <property name="maximumSize">
+               <size>
+                <width>16777207</width>
+                <height>16777215</height>
+               </size>
               </property>
+              <property name="title">
+               <string>Missing Values</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_21">
+               <property name="bottomMargin">
+                <number>13</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="QRadioButton" name="excludeCasesListwise_7">
+                 <property name="text">
+                  <string>Exclude cases listwise</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QRadioButton" name="excludeCasesPairwise_7">
+                 <property name="text">
+                  <string>Exclude cases pairwise</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QRadioButton" name="excludeCasesPairwise">
-              <property name="text">
-               <string>Exclude cases pairwise</string>
+            <item row="0" column="1">
+             <widget class="GroupBox" name="ciGroup">
+              <property name="title">
+               <string>Confidence Interval</string>
               </property>
+              <layout class="QGridLayout" name="gridLayout_10">
+               <item row="2" column="0" colspan="3">
+                <widget class="BoundCheckBox" name="confAlpha">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Cronbach's α analytical</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1" colspan="3">
+                <widget class="QWidget" name="confAlphaLevelBox" native="true">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <layout class="QHBoxLayout" name="horizontalLayout">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_2">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="text">
+                     <string>Confidence</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="BoundTextBox" name="confAlphaLevel">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>60</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>60</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_4">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="text">
+                     <string>%</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QWidget" name="widget_4" native="true">
+                 <property name="maximumSize">
+                  <size>
+                   <width>16</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
            </layout>
@@ -412,14 +537,14 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
    <class>BoundListView</class>
@@ -431,6 +556,17 @@
    <extends>QWidget</extends>
    <header>widgets/boundassignwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BoundTextBox</class>
+   <extends>QLineEdit</extends>
+   <header>widgets/boundtextbox.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
@@ -452,9 +588,40 @@
   <tabstop>itemRestCor</tabstop>
   <tabstop>expanderPosthoc</tabstop>
   <tabstop>expanderPosthoc_5</tabstop>
-  <tabstop>excludeCasesListwise</tabstop>
-  <tabstop>excludeCasesPairwise</tabstop>
  </tabstops>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>confAlpha</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>confAlphaLevelBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>394</x>
+     <y>967</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>472</x>
+     <y>1000</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>alphaScale</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>confAlpha</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>146</x>
+     <y>373</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>394</x>
+     <y>967</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

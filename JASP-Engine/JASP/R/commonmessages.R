@@ -41,6 +41,8 @@
   "Cannot compute statistic reliably: number of observations {{observations.amount}} in {{variables}}"
   m$error$limits <-
   "Values in {{variables}} outside interval [{{limits.min}}, {{limits.max}}]"
+  m$error$varCovMatrix <- 
+  "Dataset is not a proper variance-covariance matrix. Please load only a positive definite symmetrical matrix as your dataset."
   
   ### Footnotes
   m$footnote$leveneSign <- 
