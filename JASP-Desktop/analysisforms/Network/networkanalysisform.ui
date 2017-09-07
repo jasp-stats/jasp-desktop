@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>918</width>
-    <height>2563</height>
+    <height>2605</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -205,6 +205,27 @@
         </property>
        </widget>
       </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QWidget" name="gridWidget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
      </layout>
     </widget>
    </item>
@@ -1088,6 +1109,42 @@
                <bool>false</bool>
               </property>
               <layout class="QGridLayout" name="gridLayout_39">
+               <item row="3" column="1">
+                <widget class="QWidget" name="widget_4" native="true"/>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_8_13">
+                 <property name="text">
+                  <string>nFolds</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="2">
+                <spacer name="horizontalSpacer_20">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="3" column="0">
+                <spacer name="verticalSpacer_12">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
                <item row="2" column="1">
                 <widget class="BoundTextBox" name="nFolds">
                  <property name="minimumSize">
@@ -1103,42 +1160,6 @@
                   </size>
                  </property>
                 </widget>
-               </item>
-               <item row="3" column="0">
-                <spacer name="verticalSpacer_12">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_8_13">
-                 <property name="text">
-                  <string>nFolds</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="QWidget" name="widget_4" native="true"/>
-               </item>
-               <item row="2" column="2">
-                <spacer name="horizontalSpacer_20">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
                </item>
               </layout>
              </widget>
@@ -1322,28 +1343,6 @@
          <property name="rightMargin">
           <number>0</number>
          </property>
-         <item row="1" column="0" rowspan="2" colspan="2">
-          <widget class="ExpanderButton" name="graphicalOptionsExpander">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="acceptDrops">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Graphical Options</string>
-           </property>
-           <property name="autoDefault">
-            <bool>true</bool>
-           </property>
-           <property name="default">
-            <bool>false</bool>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
          <item row="4" column="0" rowspan="2" colspan="2">
           <widget class="QWidget" name="graphicalOptions" native="true">
            <property name="enabled">
@@ -2033,6 +2032,28 @@
            </layout>
           </widget>
          </item>
+         <item row="1" column="0" rowspan="2" colspan="2">
+          <widget class="ExpanderButton" name="graphicalOptionsExpander">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="acceptDrops">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Graphical Options</string>
+           </property>
+           <property name="autoDefault">
+            <bool>true</bool>
+           </property>
+           <property name="default">
+            <bool>false</bool>
+           </property>
+           <property name="flat">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
@@ -2146,13 +2167,6 @@
                <bool>false</bool>
               </property>
               <layout class="QGridLayout" name="gridLayout_46">
-               <item row="1" column="0">
-                <widget class="BoundCheckBox" name="StatisticsStrength">
-                 <property name="text">
-                  <string>Strength</string>
-                 </property>
-                </widget>
-               </item>
                <item row="0" column="0">
                 <widget class="BoundCheckBox" name="StatisticsEdges">
                  <property name="text">
@@ -2173,6 +2187,13 @@
                  </property>
                 </spacer>
                </item>
+               <item row="3" column="0">
+                <widget class="BoundCheckBox" name="StatisticsBetweenness">
+                 <property name="text">
+                  <string>Betweenness</string>
+                 </property>
+                </widget>
+               </item>
                <item row="2" column="0">
                 <widget class="BoundCheckBox" name="StatisticsCloseness">
                  <property name="text">
@@ -2180,10 +2201,10 @@
                  </property>
                 </widget>
                </item>
-               <item row="3" column="0">
-                <widget class="BoundCheckBox" name="StatisticsBetweenness">
+               <item row="1" column="0">
+                <widget class="BoundCheckBox" name="StatisticsStrength">
                  <property name="text">
-                  <string>Betweenness</string>
+                  <string>Strength</string>
                  </property>
                 </widget>
                </item>
@@ -2205,7 +2226,46 @@
                <bool>false</bool>
               </property>
               <layout class="QGridLayout" name="gridLayout_22">
-               <item row="4" column="0">
+               <item row="2" column="0">
+                <widget class="QRadioButton" name="nonparametric">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Nonparametric</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QRadioButton" name="parametric">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Parametric</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0">
+                <widget class="QRadioButton" name="person">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Person</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
                 <widget class="QRadioButton" name="jackknife">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2215,6 +2275,19 @@
                  </property>
                  <property name="text">
                   <string>Jackknife</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QRadioButton" name="node">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Node</string>
                  </property>
                 </widget>
                </item>
@@ -2231,58 +2304,6 @@
                  </property>
                 </spacer>
                </item>
-               <item row="0" column="0">
-                <widget class="QRadioButton" name="nonparametric">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Nonparametric</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QRadioButton" name="parametric">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Parametric</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QRadioButton" name="node">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Node</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <widget class="QRadioButton" name="person">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Person</string>
-                 </property>
-                </widget>
-               </item>
               </layout>
              </widget>
             </item>
@@ -2292,27 +2313,6 @@
         </layout>
        </widget>
       </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QWidget" name="gridWidget" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
      </layout>
     </widget>
    </item>
@@ -2419,6 +2419,22 @@
     <hint type="destinationlabel">
      <x>454</x>
      <y>1617</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>bootstrapOnOff</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>numberOfBootstraps</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>108</x>
+     <y>558</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>233</x>
+     <y>1507</y>
     </hint>
    </hints>
   </connection>

@@ -609,10 +609,13 @@ NetworkAnalysis <- function (
 			list(name = "numberOfBootstraps", title = "Number of bootstraps", type = "integer", format="sf:4;dp:3")
 		)),
 		data = list(type = options[["BootstrapType"]],
-					numberOfBootstraps = options[["numberOfBootstraps"]])
+					numberOfBootstraps = options[["numberOfBootstraps"]]),
+		status = "inited"
 	)
-
-
+	
+	if (perform == "run") {
+		table[["status"]] <- "complete"
+	}
 
 	return(table)
 
