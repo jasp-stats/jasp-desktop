@@ -603,10 +603,10 @@ NetworkAnalysis <- function (
 .networkAnalysisBootstrapTable <- function(network, dataset, options, perform) {
 
 	table <- list(
-		title = "Summary of Network",
+		title = "Bootstrap summary of Network",
 		schema = list(fields = list(
 			list(name = "type", title = "Type", type = "string"),
-			list(name = "numberOfBootstraps", title = "Number of bootstraps", type = "integer", format="sf:4;dp:3")
+			list(name = "numberOfBootstraps", title = "Number of bootstraps", type = "number", format="sf:4;dp:3")
 		)),
 		data = list(type = options[["BootstrapType"]],
 					numberOfBootstraps = options[["numberOfBootstraps"]]),
