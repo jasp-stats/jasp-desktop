@@ -77,14 +77,16 @@ NetworkAnalysis <- function (
 	results <- list(
 		title = "Network Analysis",
 		.meta = list(
-			list(name = "generalTB",      type = "table"),
-			list(name = "fitMeasuresTB",  type = "table"),
-			list(name = "bootstrapTB",    type = "table"),
-			list(name = "weightmatrixTB", type = "table"),
-			list(name = "centralityTB",   type = "table"),
-			list(name = "mgmTB",          type = "table"),
-			list(name = "networkPLT",     type="collection", meta="image"),
-			list(name = "centralityPLT",  type = "image")
+			list(name = "generalTB",                type = "table"),
+			list(name = "fitMeasuresTB",            type = "table"),
+			list(name = "bootstrapTB",              type = "table"),
+			list(name = "weightmatrixTB",           type = "table"),
+			list(name = "centralityTB",             type = "table"),
+			list(name = "mgmTB",                    type = "table"),
+			list(name = "networkPLT",               type="collection", meta="image"),
+			list(name = "centralityPLT",            type = "image"),
+			list(name = "bootstrapEdgePLT",         type="collection", meta="image"),
+			list(name = "bootstrapCentPLT",         type="collection", meta="image")
 		)
 	)
 
@@ -99,12 +101,14 @@ NetworkAnalysis <- function (
 		# general arguments
 		"weightedNetwork", "signedNetwork", "missingValues"
 	)
+	bootstrapArgs <-c(defArgs, "numberOfBootstraps", "BootstrapType",
+					  "StatisticsEdges", "StatisticsStrength", "StatisticsCloseness", "StatisticsBetweenness", "StatisticsBetweenness")
+	
 	stateKey <- list(
 		# depends on everything but plotting arguments
 		network = defArgs,
 		# depends also on bootstrap options
-		bootstrap = c(defArgs, "numberOfBootstraps", "BootstrapType",
-					  "StatisticsEdges", "StatisticsStrength", "StatisticsCloseness", "StatisticsBetweenness", "StatisticsBetweenness"),
+		bootstrap = bootstrapArgs,
 		# depends also on normalization of centrality measures
 		centrality = c(defArgs, "normalizeCentrality"),
 		# depends also on plotting arguments
@@ -115,16 +119,38 @@ NetworkAnalysis <- function (
 					   "showMgmVariableType", "showVariableNames", "graphSize"),
 		# depends also on plotting arguments
 		centralityPLT = c(defArgs,
-						  "plotWidthCentrality", "plotHeightCentrality", "normalizeCentrality")
+						  "plotWidthCentrality", "plotHeightCentrality", "normalizeCentrality"),
+		bootstrapCentPLT = bootstrapArgs,
+		bootstrapCentPLT = bootstrapArgs
 	)
 
 	# show info about variable types. Done here so that hopefully a table gets shown even if .hasErrors finds something bad.
 	if (options[["estimator"]] == "mgm" && !is.null(options[["mgmVariableTypeData"]])) {
+		
 		results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = "init") # any errors will appear top of this table
 		results[["mgmTB"]] <- .networkAnalysisMgmVariableInfoTable(network, options, perform)
+		
+		if (options[["bootstrapOnOff"]]) # add bootstrap information as well
+			results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform, when = "before")
+			
 		if ( ! .shouldContinue(callback(results)))
 			return()
-	}
+	} #else if (options[["bootstrapOnOff"]]) { 
+		# 
+		# results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = "init") # any errors will appear top of this table
+		# print("Here_0")
+		# results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform, when = "before", results = results)
+		# print("Here_2")
+		# print(str(callback(results)))
+		# for (i in 1:5) {
+		# 	print(paste0("Here_2_", i))
+		# 	results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform, when = "before", where = i)
+		# 	Sys.sleep(1)
+		# 	if ( ! .shouldContinue(callback(results)))
+		# 		return()
+		# }
+	# 	print("Here_3")
+	# }
 
 	## Do Analysis ## ----
 
@@ -158,8 +184,11 @@ NetworkAnalysis <- function (
 		}
 
 		network <- .networkAnalysisRun(dataset = dataset, options = options, variables = variables, perform = perform, oldNetwork = state)
-		if (options[["bootstrapOnOff"]])
-			network <- .networkAnalysisBootstrap(network, options, variables, perform, NULL)
+		if (options[["bootstrapOnOff"]]) {
+			# for (i in seq_len(options[["numberOfBootstraps"]])) {
+				network <- .networkAnalysisBootstrap(network, options, variables, perform)
+			# }
+		}
 
 	} else {
 
@@ -179,7 +208,22 @@ NetworkAnalysis <- function (
 			results[["fitMeasuresTB"]] <- .fitMeasuresTB(network, options, perform)
 		}
 		if (options[["bootstrapOnOff"]]) {
-			results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform)
+			results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform, when = "after")
+			
+			# if (options[["BootstrapType"]] %in% c("nonparametric", "parametric")) {
+				results[["bootstrapEdgePLT"]] <- .networkAnalysisBootstrapPlot(network, options, perform, "edge", oldPlot = state[["bootstrapEdgePLT"]])
+				results[["bootstrapCentPLT"]] <- .networkAnalysisBootstrapPlot(network, options, perform, c("strength", "betweenness", "closeness"), oldPlot = state[["bootstrapCentPLT"]])
+				
+				allBootstrapPlots <- results[["bootstrapEdgePLT"]][["collection"]]
+				for (bt in allBootstrapPlots)
+					keep <- c(keep, bt[["data"]])
+				
+				allBootstrapPlots <- results[["bootstrapCentPLT"]][["collection"]]
+				for (bt in allBootstrapPlots)
+					keep <- c(keep, bt[["data"]])
+				
+			# }
+			
 		}
 		if (options[["tableWeightsMatrix"]]) {
 			results[["weightmatrixTB"]] <- .networkAnalysisWeightMatrixTable(network, options, variables, perform)
@@ -203,12 +247,14 @@ NetworkAnalysis <- function (
 
 	# Save State
 	state <- list(
-		options       = options,
-		network       = network[["network"]],
-		bootstrap     = network[["bootstrap"]],
-		centrality    = network[["centrality"]],
-		networkPLT    = results[["networkPLT"]],
-		centralityPLT = results[["centralityPLT"]]
+		options          = options,
+		network          = network[["network"]],
+		bootstrap        = network[["bootstrap"]],
+		centrality       = network[["centrality"]],
+		networkPLT       = results[["networkPLT"]],
+		centralityPLT    = results[["centralityPLT"]],
+		bootstrapEdgePLT = results[["bootstrapEdgePLT"]],
+		bootstrapCentPLT = results[["bootstrapCentPLT"]]
 	)
 
 	attr(state, "key") <- stateKey
@@ -490,31 +536,34 @@ NetworkAnalysis <- function (
 
 }
 
-.networkAnalysisBootstrap <- function(network, options, variables, perform, oldBootstrap = NULL) {
+.networkAnalysisBootstrap <- function(network, options, variables, perform) {
 
-	network[["bootstrap"]] <- list()
-	allNetworks <- network[["network"]]
-	nGraphs <- length(allNetworks)
-
-	if (options[["parallelBootstrap"]]) {
-		nCores <- parallel::detectCores(TRUE)
-		if (is.na(nCores)) # parallel::detectCores returns NA if unknown/ fails
+	if (perform == "run") {
+		
+		network[["bootstrap"]] <- list()
+		allNetworks <- network[["network"]]
+		nGraphs <- length(allNetworks)
+		
+		if (options[["parallelBootstrap"]]) {
+			nCores <- parallel::detectCores(TRUE)
+			if (is.na(nCores)) # parallel::detectCores returns NA if unknown/ fails
+				nCores <- 1
+		} else {
 			nCores <- 1
-	} else {
-		nCores <- 1
-	}
-
-	statistics <- c("edge", "strength", "closeness", "betweenness")
-	statistics <- statistics[unlist(options[c("StatisticsEdges", "StatisticsStrength", "StatisticsCloseness", "StatisticsBetweenness")])]
-
-	for (nm in names(allNetworks)) {
-
-		network[["bootstrap"]][[nm]] <- bootnet::bootnet(data = allNetworks[[nm]],
-														 nBoots = options[["numberOfBootstraps"]],
-														 nCores = nCores,
-														 statistics = statistics
-		)
-
+		}
+		
+		statistics <- c("edge", "strength", "closeness", "betweenness")
+		statistics <- statistics[unlist(options[c("StatisticsEdges", "StatisticsStrength", "StatisticsCloseness", "StatisticsBetweenness")])]
+		
+		for (nm in names(allNetworks)) {
+			
+			network[["bootstrap"]][[nm]] <- bootnet::bootnet(data = allNetworks[[nm]],
+															 nBoots = options[["numberOfBootstraps"]],
+															 nCores = nCores,
+															 statistics = statistics
+			)
+			
+		}
 	}
 
 	return(network)
@@ -600,22 +649,58 @@ NetworkAnalysis <- function (
 
 }
 
-.networkAnalysisBootstrapTable <- function(network, dataset, options, perform) {
+.networkAnalysisBootstrapTable <- function(network, dataset, options, perform, when, where = 0, results = NULL) {
 
+	bootstrapType <- options[["BootstrapType"]]
+	substr(bootstrapType, 1, 1) <- toupper(substr(bootstrapType, 1, 1)) # capitalization
+	
 	table <- list(
 		title = "Bootstrap summary of Network",
 		schema = list(fields = list(
 			list(name = "type", title = "Type", type = "string"),
-			list(name = "numberOfBootstraps", title = "Number of bootstraps", type = "number", format="sf:4;dp:3")
+			list(name = "numberOfBootstraps", title = "Number of bootstraps", type = "number", format="sf:4;dp:3"),
+			list(name = "when", title = "Status", type = "string"),
+			list(name = "test", title = "test", type = "number", format="sf:4;dp:3")
 		)),
-		data = list(type = options[["BootstrapType"]],
-					numberOfBootstraps = options[["numberOfBootstraps"]]),
+		data = list(
+			list(type = bootstrapType,
+				 numberOfBootstraps = options[["numberOfBootstraps"]],
+				 when = "Completed",
+				 test = where
+			)
+		),
 		status = "inited"
 	)
 	
+	
+	
 	if (perform == "run") {
+		
+		if (when == "before") {
+			table[["data"]][[1]][["when"]] <- "In progress"
+			table[["status"]] <- "running"
+			
+			if (!is.null(results)) {
+				print("Here_1")
+				for (i in 1:5) {
+					print(paste0("Here_1_", i))
+					table[["data"]][[1]][["test"]] <- i
+					
+					callbackResult <- callback(results)
+					print(str(callbackResult))
+					if ( ! .shouldContinue(callbackResult))
+						return()
+					
+				}
+			}
+		}
+		
 		table[["status"]] <- "complete"
+	} else {
+		table[["status"]] <- "inited"
 	}
+	
+	
 
 	return(table)
 
@@ -1086,6 +1171,73 @@ NetworkAnalysis <- function (
 
 	return(plot)
 
+}
+
+.networkAnalysisOneBootstrapPlot <- function() {
+	
+	# eval(quote()) construction because this function is evaluated inside .writeImage()
+	# which needs to look 2 levels up to find the objects network, options, layout, groups, legend, and shape.
+	eval(quote({
+		# browser()
+		plot(bt, statistic = statistic, order = "sample")
+	}), envir = parent.frame(2))
+	
+}
+
+.networkAnalysisBootstrapPlot <- function(network, options, perform, statistic, oldPlot = NULL) {
+	
+	if (!is.null(oldPlot) && !identical(oldPlot[["collection"]][[1]][["data"]], ""))
+		return(oldPlot)
+	
+	plot <- list(
+		title = "Network Plot",
+		collection = list(),
+		status = "inited"
+	)
+	
+	subPlotBase <- list(
+		width = options[["plotWidthBootstrapPlot"]],
+		height = options[["plotHeightBootstrapPlot"]],
+		custom = list(width = "plotWidthBootstrapPlot", height = "plotHeightBootstrapPlot")
+	)
+	
+	if (perform == "run") {
+		
+		allBootstraps <- network[["bootstrap"]]
+		nGraphs <- length(allBootstraps)
+		
+		for (v in names(allBootstraps)) {
+			
+			subPlot <- subPlotBase
+			subPlot[["title"]] <- v
+			subPlot[["name"]] <- v
+			
+			bt <- allBootstraps[[v]]
+
+			content <- .writeImage(width = subPlot[["width"]], height = subPlot[["height"]], 
+								   plot = plot(bt, statistic = statistic, order = "sample") # returns a ggplot object
+			)
+			
+			subPlot[["convertible"]] <- TRUE
+			subPlot[["data"]] <- content[["png"]]
+			subPlot[["obj"]] <- content[["obj"]]
+			subPlot[["status"]] <- "complete"
+			plot[["collection"]][[v]] <- subPlot
+			
+		}
+		
+	} else {
+		
+		subPlot <- subPlotBase
+		subPlot[["network 1"]] <- "network 1"
+		subPlot[["data"]] <- ""
+		subPlot[["status"]] <- "inited"
+		plot[["collection"]][["network 1"]] <- subPlot
+		
+	}
+	
+	return(plot)
+	
 }
 
 # helper functions ----

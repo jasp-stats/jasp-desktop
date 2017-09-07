@@ -2059,6 +2059,12 @@
       </item>
       <item row="4" column="0">
        <widget class="QWidget" name="advancedBox_2" native="true">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>393</height>
+         </size>
+        </property>
         <layout class="QGridLayout" name="gridLayout_4">
          <property name="leftMargin">
           <number>0</number>
@@ -2069,28 +2075,6 @@
          <property name="rightMargin">
           <number>0</number>
          </property>
-         <item row="1" column="0">
-          <widget class="ExpanderButton" name="BootstrapOptionsExpander">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="acceptDrops">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Bootstrap Options</string>
-           </property>
-           <property name="autoDefault">
-            <bool>true</bool>
-           </property>
-           <property name="default">
-            <bool>false</bool>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
          <item row="2" column="0" rowspan="2">
           <widget class="QWidget" name="bootstrapOptions" native="true">
            <property name="enabled">
@@ -2103,6 +2087,13 @@
                <string>Settings</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_14_2">
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_8_4">
+                 <property name="text">
+                  <string>Number of bootstraps</string>
+                 </property>
+                </widget>
+               </item>
                <item row="2" column="3">
                 <spacer name="horizontalSpacer_7">
                  <property name="orientation">
@@ -2135,13 +2126,6 @@
                  </property>
                 </widget>
                </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_8_4">
-                 <property name="text">
-                  <string>Number of bootstraps</string>
-                 </property>
-                </widget>
-               </item>
                <item row="4" column="0">
                 <widget class="BoundCheckBox" name="parallelBootstrap">
                  <property name="text">
@@ -2152,66 +2136,7 @@
               </layout>
              </widget>
             </item>
-            <item row="2" column="0" rowspan="2">
-             <widget class="BoundGroupBox" name="statistics">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title">
-               <string>Statistics</string>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_46">
-               <item row="0" column="0">
-                <widget class="BoundCheckBox" name="StatisticsEdges">
-                 <property name="text">
-                  <string>Edges</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <spacer name="horizontalSpacer_27">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="3" column="0">
-                <widget class="BoundCheckBox" name="StatisticsBetweenness">
-                 <property name="text">
-                  <string>Betweenness</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="BoundCheckBox" name="StatisticsCloseness">
-                 <property name="text">
-                  <string>Closeness</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="BoundCheckBox" name="StatisticsStrength">
-                 <property name="text">
-                  <string>Strength</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="2" column="1" rowspan="2">
+            <item row="1" column="1" rowspan="3">
              <widget class="BoundGroupBox" name="BootstrapType">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -2307,7 +2232,88 @@
               </layout>
              </widget>
             </item>
+            <item row="2" column="0" rowspan="2">
+             <widget class="BoundGroupBox" name="statistics">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string>Statistics</string>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_46">
+               <item row="0" column="0">
+                <widget class="BoundCheckBox" name="StatisticsEdges">
+                 <property name="text">
+                  <string>Edges</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <spacer name="horizontalSpacer_27">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="3" column="0">
+                <widget class="BoundCheckBox" name="StatisticsBetweenness">
+                 <property name="text">
+                  <string>Betweenness</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="BoundCheckBox" name="StatisticsCloseness">
+                 <property name="text">
+                  <string>Closeness</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="BoundCheckBox" name="StatisticsStrength">
+                 <property name="text">
+                  <string>Strength</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
            </layout>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="ExpanderButton" name="BootstrapOptionsExpander">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="acceptDrops">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Bootstrap Options</string>
+           </property>
+           <property name="autoDefault">
+            <bool>true</bool>
+           </property>
+           <property name="default">
+            <bool>false</bool>
+           </property>
+           <property name="flat">
+            <bool>false</bool>
+           </property>
           </widget>
          </item>
         </layout>

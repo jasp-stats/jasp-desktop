@@ -308,6 +308,16 @@
 			"name": "plotHeightCentrality",
 			"type": "Integer",
 			"default": 320
+		},
+		{
+			"name": "plotWidthBootstrapPlot",
+			"type": "Integer",
+			"default": 480
+		},
+		{
+			"name": "plotHeightBootstrapPlot",
+			"type": "Integer",
+			"default": 320
 		}
 	]
 }
