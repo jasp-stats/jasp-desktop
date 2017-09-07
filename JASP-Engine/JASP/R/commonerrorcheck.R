@@ -165,6 +165,7 @@
   checks[['variance']] <- list(callback=.checkVariance, addGroupingMsg=TRUE)
   checks[['observations']] <- list(callback=.checkObservations, addGroupingMsg=TRUE)
   checks[['varCovMatrix']] <- list(callback=.checkVarCovMatrix, addGroupingMsg=FALSE)
+  checks[['limits']] <- list(callback=.checkLimits, addGroupingMsg=FALSE)
   
   args <- c(list(dataset=dataset), list(...))
   errors <- list(message=NULL)
@@ -526,4 +527,28 @@
   }
   
   return(list(error=FALSE, reason = ""))
+}
+
+
+.checkLimits <- function(dataset, target, min=-Inf, max=Inf) {
+  # Check if the variable is between certain limits
+  # Args:
+  #   dataset: JASP dataset.
+  #   target: String vector indicating the target variables.
+  #   min: Number indicating minimum allowed (inclusive)
+  #   max: Number indicating maximum allowed (inclusive)
+  
+  result <- list(error=FALSE, errorVars=NULL)
+
+  for (v in target) {
+    
+    rangeOfVar <- range(na.omit(dataset[[.v(v)]]))
+    
+    if (rangeOfVar[1] < min || rangeOfVar[2] > max) {
+      result$error <- TRUE
+      result$errorVars <- c(result$errorvars, v)
+    }
+    
+  }
+  return(result)
 }

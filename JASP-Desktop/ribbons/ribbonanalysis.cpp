@@ -82,6 +82,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 
 	menu->addAction(QString("Correlation Matrix"), this, SLOT(itemSelected()))->setObjectName("Correlation");
 	menu->addAction(QString("Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLinear");
+	menu->addAction(QString("Logistic Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLogistic");
 
 	menu->addSeparator();
 
