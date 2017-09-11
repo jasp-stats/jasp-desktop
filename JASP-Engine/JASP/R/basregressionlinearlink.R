@@ -459,6 +459,8 @@ BASRegressionLinearLink <- function (
 		status$error.message <- .extractErrorMessage(bas_lm)
 	} else {
 		bas_lm[["nuisanceTerms"]] <- isNuisance
+		# fix for prior probs all returning 1 with uniform and bernoulli 0.5 priors
+		bas_lm[["priorprobs"]] <- bas_lm[["priorprobs"]] / sum(bas_lm[["priorprobs"]])
 	}
 	
 	return(list(bas_obj = bas_lm, status = status))
