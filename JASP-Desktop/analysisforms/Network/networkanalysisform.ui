@@ -452,8 +452,8 @@
          <item row="2" column="0">
           <widget class="QWidget" name="analysisOptions" native="true">
            <layout class="QGridLayout" name="gridLayout_3">
-            <item row="2" column="1">
-             <widget class="BoundGroupBox" name="correlationMethod">
+            <item row="3" column="3">
+             <widget class="BoundGroupBox" name="sampleSize">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -461,17 +461,14 @@
                </sizepolicy>
               </property>
               <property name="title">
-               <string>Correlation method</string>
+               <string>Sample Size</string>
               </property>
               <property name="flat">
                <bool>false</bool>
               </property>
-              <layout class="QGridLayout" name="gridLayout_43">
-               <item row="4" column="1">
-                <widget class="QWidget" name="widget_2" native="true"/>
-               </item>
-               <item row="3" column="0">
-                <widget class="QRadioButton" name="_4npn">
+              <layout class="QGridLayout" name="gridLayout_42">
+               <item row="0" column="0">
+                <widget class="QRadioButton" name="_1maximum">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -479,25 +476,12 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Npn</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QRadioButton" name="_3cov">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Cov</string>
+                  <string>Maximum</string>
                  </property>
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QRadioButton" name="_2cor">
+                <widget class="QRadioButton" name="_2minimum">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -505,25 +489,12 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Cor</string>
+                  <string>Minimum</string>
                  </property>
                 </widget>
                </item>
-               <item row="0" column="0">
-                <widget class="QRadioButton" name="_1auto">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Auto</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <spacer name="verticalSpacer_21">
+               <item row="2" column="0">
+                <spacer name="verticalSpacer_20">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
                  </property>
@@ -536,7 +507,7 @@
                 </spacer>
                </item>
                <item row="1" column="1">
-                <spacer name="horizontalSpacer_24">
+                <spacer name="horizontalSpacer_23">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>
@@ -551,8 +522,8 @@
               </layout>
              </widget>
             </item>
-            <item row="4" column="3">
-             <widget class="BoundGroupBox" name="network">
+            <item row="4" column="2">
+             <widget class="BoundGroupBox" name="tuningParameterBox">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -560,21 +531,40 @@
                </sizepolicy>
               </property>
               <property name="title">
-               <string>Network</string>
+               <string>Tuning Parameter</string>
               </property>
               <property name="flat">
                <bool>false</bool>
               </property>
-              <layout class="QGridLayout" name="gridLayout_41">
-               <item row="1" column="0">
-                <widget class="BoundCheckBox" name="signedNetwork">
-                 <property name="text">
-                  <string>Signed</string>
+              <layout class="QGridLayout" name="gridLayout_34">
+               <item row="2" column="1">
+                <widget class="BoundTextBox" name="tuningParameter">
+                 <property name="minimumSize">
+                  <size>
+                   <width>60</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>60</width>
+                   <height>16777215</height>
+                  </size>
                  </property>
                 </widget>
                </item>
-               <item row="0" column="1">
-                <spacer name="horizontalSpacer_22">
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_8_12">
+                 <property name="text">
+                  <string>value</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="2">
+                <widget class="QWidget" name="widget" native="true"/>
+               </item>
+               <item row="2" column="2">
+                <spacer name="horizontalSpacer_15">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>
@@ -585,13 +575,6 @@
                   </size>
                  </property>
                 </spacer>
-               </item>
-               <item row="0" column="0">
-                <widget class="BoundCheckBox" name="weightedNetwork">
-                 <property name="text">
-                  <string>Weighted</string>
-                 </property>
-                </widget>
                </item>
               </layout>
              </widget>
@@ -692,8 +675,8 @@
               </layout>
              </widget>
             </item>
-            <item row="4" column="2">
-             <widget class="BoundGroupBox" name="tuningParameterBox">
+            <item row="4" column="3">
+             <widget class="BoundGroupBox" name="network">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -701,53 +684,127 @@
                </sizepolicy>
               </property>
               <property name="title">
-               <string>Tuning Parameter</string>
+               <string>Network</string>
               </property>
               <property name="flat">
                <bool>false</bool>
               </property>
-              <layout class="QGridLayout" name="gridLayout_34">
-               <item row="2" column="1">
-                <widget class="BoundTextBox" name="tuningParameter">
-                 <property name="minimumSize">
+              <layout class="QGridLayout" name="gridLayout_41">
+               <item row="1" column="0">
+                <widget class="BoundCheckBox" name="signedNetwork">
+                 <property name="text">
+                  <string>Signed</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <spacer name="horizontalSpacer_22">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
                   <size>
-                   <width>60</width>
-                   <height>0</height>
+                   <width>40</width>
+                   <height>20</height>
                   </size>
                  </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>60</width>
-                   <height>16777215</height>
-                  </size>
+                </spacer>
+               </item>
+               <item row="0" column="0">
+                <widget class="BoundCheckBox" name="weightedNetwork">
+                 <property name="text">
+                  <string>Weighted</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="BoundGroupBox" name="correlationMethod">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string>Correlation method</string>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_43">
+               <item row="4" column="1">
+                <widget class="QWidget" name="widget_2" native="true"/>
+               </item>
+               <item row="3" column="0">
+                <widget class="QRadioButton" name="_4npn">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Npn</string>
                  </property>
                 </widget>
                </item>
                <item row="2" column="0">
-                <widget class="QLabel" name="label_8_12">
+                <widget class="QRadioButton" name="_3cov">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="text">
-                  <string>value</string>
+                  <string>Cov</string>
                  </property>
                 </widget>
                </item>
-               <item row="3" column="1">
-                <spacer name="verticalSpacer_4">
+               <item row="1" column="0">
+                <widget class="QRadioButton" name="_2cor">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Cor</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QRadioButton" name="_1auto">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Auto</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <spacer name="verticalSpacer_21">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
                    <width>20</width>
-                   <height>40</height>
+                   <height>5</height>
                   </size>
                  </property>
                 </spacer>
                </item>
-               <item row="3" column="2">
-                <widget class="QWidget" name="widget" native="true"/>
-               </item>
-               <item row="2" column="2">
-                <spacer name="horizontalSpacer_15">
+               <item row="1" column="1">
+                <spacer name="horizontalSpacer_24">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>
@@ -987,18 +1044,18 @@
                <bool>false</bool>
               </property>
               <layout class="QGridLayout" name="gridLayout_36">
-               <item row="0" column="0">
-                <widget class="QRadioButton" name="split_mean">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
+               <item row="1" column="1">
+                <spacer name="horizontalSpacer_17">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
                  </property>
-                 <property name="text">
-                  <string>Mean</string>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
                  </property>
-                </widget>
+                </spacer>
                </item>
                <item row="1" column="0">
                 <widget class="QRadioButton" name="split_median">
@@ -1013,179 +1070,8 @@
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1">
-                <spacer name="horizontalSpacer_17">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="3" column="3">
-             <widget class="BoundGroupBox" name="sampleSize">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title">
-               <string>Sample Size</string>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_42">
-               <item row="0" column="0">
-                <widget class="QRadioButton" name="_1maximum">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Maximum</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QRadioButton" name="_2minimum">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Minimum</string>
-                 </property>
-                </widget>
-               </item>
                <item row="2" column="0">
-                <spacer name="verticalSpacer_20">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>5</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="1" column="1">
-                <spacer name="horizontalSpacer_23">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="5" column="2">
-             <widget class="BoundGroupBox" name="crossValidation">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title">
-               <string>Cross-validation</string>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_39">
-               <item row="3" column="1">
-                <widget class="QWidget" name="widget_4" native="true"/>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_8_13">
-                 <property name="text">
-                  <string>nFolds</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="2">
-                <spacer name="horizontalSpacer_20">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="3" column="0">
-                <spacer name="verticalSpacer_12">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="2" column="1">
-                <widget class="BoundTextBox" name="nFolds">
-                 <property name="minimumSize">
-                  <size>
-                   <width>60</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>60</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="5" column="3">
-             <widget class="BoundGroupBox" name="normalizeCentrality">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title">
-               <string>Centrality Measures</string>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_44">
-               <item row="0" column="0">
-                <widget class="QRadioButton" name="centNormNorm">
+                <widget class="QRadioButton" name="split_mean">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -1193,66 +1079,14 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Normalized</string>
+                  <string>Mean</string>
                  </property>
                 </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QRadioButton" name="centNormRelative">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Relative</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <spacer name="horizontalSpacer_25">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="2" column="0">
-                <widget class="QRadioButton" name="centNormRaw">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Raw</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <spacer name="verticalSpacer_13">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
                </item>
               </layout>
              </widget>
             </item>
-            <item row="5" column="1">
+            <item row="5" column="1" rowspan="2">
              <widget class="BoundGroupBox" name="boxMgmVariableType">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1267,6 +1101,31 @@
                <bool>false</bool>
               </property>
               <layout class="QGridLayout" name="gridLayout_45">
+               <item row="0" column="0">
+                <widget class="AssignButton" name="buttonAssignMgmVariableType">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>50</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>50</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
                <item row="0" column="3">
                 <widget class="boundSingleItemView" name="mgmVariableType">
                  <property name="sizePolicy">
@@ -1302,28 +1161,284 @@
                  </property>
                 </spacer>
                </item>
-               <item row="0" column="0">
-                <widget class="AssignButton" name="buttonAssignMgmVariableType">
+              </layout>
+             </widget>
+            </item>
+            <item row="5" column="3">
+             <widget class="BoundGroupBox" name="normalizeCentrality">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string>Centrality Measures</string>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_44">
+               <item row="1" column="0">
+                <widget class="QRadioButton" name="centNormRelative">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
+                 <property name="text">
+                  <string>Relative</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <spacer name="horizontalSpacer_25">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="3" column="0">
+                <spacer name="verticalSpacer_13">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="2" column="0">
+                <widget class="QRadioButton" name="centNormRaw">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Raw</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QRadioButton" name="centNormNorm">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Normalized</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="5" column="2">
+             <widget class="BoundGroupBox" name="crossValidation">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string>Cross-validation</string>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_39">
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_8_13">
+                 <property name="text">
+                  <string>nFolds</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="2">
+                <spacer name="horizontalSpacer_20">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="2" column="1">
+                <widget class="BoundTextBox" name="nFolds">
                  <property name="minimumSize">
                   <size>
-                   <width>50</width>
+                   <width>60</width>
                    <height>0</height>
                   </size>
                  </property>
                  <property name="maximumSize">
                   <size>
-                   <width>50</width>
+                   <width>60</width>
                    <height>16777215</height>
                   </size>
                  </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <spacer name="verticalSpacer_12">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="6" column="2">
+             <widget class="BoundGroupBox" name="thresholdBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string>Thresholds</string>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_48">
+               <item row="1" column="1">
+                <widget class="BoundComboBox" name="thresholdString">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>Significant</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Bonferroni</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>locfdr</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Holm</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Hochberg</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Hommel</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>BH</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>BY</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>fdr</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="BoundTextBox" name="thresholdValue">
+                 <property name="minimumSize">
+                  <size>
+                   <width>60</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>60</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <spacer name="horizontalSpacer_29">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="0" column="0">
+                <widget class="QRadioButton" name="thresholdOptValue">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="text">
-                  <string/>
+                  <string>Value</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QRadioButton" name="thresholdOptMethod">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Method</string>
                  </property>
                 </widget>
                </item>
@@ -2195,7 +2310,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Nonparametric</string>
+                  <string>Node</string>
                  </property>
                 </widget>
                </item>
@@ -2208,7 +2323,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Parametric</string>
+                  <string>Person</string>
                  </property>
                 </widget>
                </item>
@@ -2221,7 +2336,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Person</string>
+                  <string>Jackknife</string>
                  </property>
                 </widget>
                </item>
@@ -2234,7 +2349,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Jackknife</string>
+                  <string>Nonparametric</string>
                  </property>
                 </widget>
                </item>
@@ -2247,7 +2362,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Node</string>
+                  <string>Parametric</string>
                  </property>
                 </widget>
                </item>

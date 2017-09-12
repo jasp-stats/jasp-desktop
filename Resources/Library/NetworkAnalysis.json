@@ -120,6 +120,33 @@
 			"type": "Boolean"
 		},
 		{
+			"name": "thresholdBox",
+			"default": "value",
+			"type": "List"
+		},
+		{
+			"name": "thresholdString",
+			"type": "List",
+			"options": [
+   				"sig",
+   				"bonferroni",
+   				"locfdr",
+				"Holm",
+				"Hochberg",
+				"Hommel",
+				"BH",
+				"BY",
+				"fdr"
+			],
+			"default": "sig"
+		},
+		{
+			"name": "thresholdValue",
+			"value": 0.0,
+			"min": 0.0,
+			"max": 1e9
+		},
+		{
 			"options": ["maximum", "minimim"],
 			"default": "maximum",
 			"name": "sampleSize",

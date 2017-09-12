@@ -97,7 +97,7 @@ NetworkAnalysis <- function (
 		"estimator",
 		# arguments for the network
 		"correlationMethod", "tuningParameter", "criterion", "isingEstimator",
-		"nFolds", "split", "rule", "sampleSize",
+		"nFolds", "split", "rule", "sampleSize", "thresholdBox", "thresholdString", "thresholdValue",
 		# general arguments
 		"weightedNetwork", "signedNetwork", "missingValues"
 	)
@@ -110,13 +110,13 @@ NetworkAnalysis <- function (
 		# depends also on bootstrap options
 		bootstrap = bootstrapArgs,
 		# depends also on normalization of centrality measures
-		centrality = c(defArgs, "normalizeCentrality"),
+		centrality = c(defArgs, "normalizeCentrality", "maxEdgeStrength", "minEdgeStrength"),
 		# depends also on plotting arguments
 		networkPLT = c(defArgs,
 					   "plotWidthNetwork", "plotHeightNetwork",
 					   "layout", "edgeColors", "repulsion", "edgeSize", "nodeSize", "colorNodesBy",
 					   "maxEdgeStrength", "minEdgeStrength", "cut", "showDetails", "nodeColors", "showLegend", "legendNumber",
-					   "showMgmVariableType", "showVariableNames", "graphSize"),
+					   "showMgmVariableType", "showVariableNames", "graphSize", "scaleLabels", "labelSize"),
 		# depends also on plotting arguments
 		centralityPLT = c(defArgs,
 						  "plotWidthCentrality", "plotHeightCentrality", "normalizeCentrality"),
@@ -339,6 +339,12 @@ NetworkAnalysis <- function (
 			}
 
 		}
+		
+		if (options[["thresholdBox"]] == "value") {
+			threshold <- options[["thresholdValue"]]
+		} else { # options[["thresholdBox"]] == "method"
+			threshold <- options[["thresholdString"]]
+		}
 
 		# names of .dots must match argument names of bootnet_{estimator name}
 		.dots <- list(
@@ -354,7 +360,8 @@ NetworkAnalysis <- function (
 			criterion   = options[["criterion"]],
 			sampleSize  = options[["sampleSize"]],
 			type        = type,
-			lev         = level
+			lev         = level,
+			threshold   = threshold
 		)
 
 		# get available arguments for specific network estimation function. Removes unused ones.
@@ -556,15 +563,25 @@ NetworkAnalysis <- function (
 		statistics <- c("edge", "strength", "closeness", "betweenness")
 		statistics <- statistics[unlist(options[c("StatisticsEdges", "StatisticsStrength", "StatisticsCloseness", "StatisticsBetweenness")])]
 		
+		# Fake png hack -- qgraph::qgraph() has an unprotected call to `par()`. `par()` always opens a new device if there is none.
+		# Perhaps ask Sacha to fix this in qgraph. Line 1119: if (DoNotPlot) par(pty = pty)
+		tempFileName <- getTempFileName()
+		grDevices::png(filename = tempFileName)
+
 		for (nm in names(allNetworks)) {
 			
 			network[["bootstrap"]][[nm]] <- bootnet::bootnet(data = allNetworks[[nm]],
 															 nBoots = options[["numberOfBootstraps"]],
 															 nCores = nCores,
-															 statistics = statistics
+															 statistics = statistics,
+															 labels = variables
 			)
 			
 		}
+		
+		dev.off() # close the fake png
+		file.remove(tempFileName) # remove the fake png file
+		
 	}
 
 	return(network)
@@ -1055,11 +1072,11 @@ NetworkAnalysis <- function (
 		# ensure minimum/ maximum makes sense or ignore these parameters TODO message in general table.
 		minE <- options[["minEdgeStrength"]]
 		maxE <- options[["maxEdgeStrength"]]
-
-		if (minE == 0 ||maxE <= minE) {
+		
+		if (minE == 0)
 			minE <- NULL
+		if (maxE == 0 || maxE <= minE)
 			maxE <- NULL
-		}
 
 		groups <- NULL
 		allLegends <- rep(FALSE, nGraphs) # no legends
@@ -1181,7 +1198,6 @@ NetworkAnalysis <- function (
 	# eval(quote()) construction because this function is evaluated inside .writeImage()
 	# which needs to look 2 levels up to find the objects network, options, layout, groups, legend, and shape.
 	eval(quote({
-		# browser()
 		plot(bt, statistic = statistic, order = "sample")
 	}), envir = parent.frame(2))
 	
@@ -1208,7 +1224,7 @@ NetworkAnalysis <- function (
 		
 		allBootstraps <- network[["bootstrap"]]
 		nGraphs <- length(allBootstraps)
-		
+
 		for (v in names(allBootstraps)) {
 			
 			subPlot <- subPlotBase
