@@ -83,10 +83,10 @@ NetworkAnalysis <- function (
 			list(name = "weightmatrixTB",           type = "table"),
 			list(name = "centralityTB",             type = "table"),
 			list(name = "mgmTB",                    type = "table"),
-			list(name = "networkPLT",               type="collection", meta="image"),
+			list(name = "networkPLT",               type = "collection", meta="image"),
 			list(name = "centralityPLT",            type = "image"),
-			list(name = "bootstrapEdgePLT",         type="collection", meta="image"),
-			list(name = "bootstrapCentPLT",         type="collection", meta="image")
+			list(name = "bootstrapEdgePLT",         type = "collection", meta="image"),
+			list(name = "bootstrapCentPLT",         type = "collection", meta="image")
 		)
 	)
 
@@ -135,22 +135,13 @@ NetworkAnalysis <- function (
 			
 		if ( ! .shouldContinue(callback(results)))
 			return()
-	} #else if (options[["bootstrapOnOff"]]) { 
-		# 
-		# results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = "init") # any errors will appear top of this table
-		# print("Here_0")
-		# results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform, when = "before", results = results)
-		# print("Here_2")
-		# print(str(callback(results)))
-		# for (i in 1:5) {
-		# 	print(paste0("Here_2_", i))
-		# 	results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform, when = "before", where = i)
-		# 	Sys.sleep(1)
-		# 	if ( ! .shouldContinue(callback(results)))
-		# 		return()
-		# }
-	# 	print("Here_3")
-	# }
+	} else if (options[["bootstrapOnOff"]]) { 
+
+		results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = "init") # any errors will appear top of this table
+		# initialize progressbar
+		results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform, when = "before", results = results)
+		
+	}
 
 	## Do Analysis ## ----
 
@@ -698,19 +689,19 @@ NetworkAnalysis <- function (
 			table[["data"]][[1]][["when"]] <- "In progress"
 			table[["status"]] <- "running"
 			
-			if (!is.null(results)) {
-				print("Here_1")
-				for (i in 1:5) {
-					print(paste0("Here_1_", i))
-					table[["data"]][[1]][["test"]] <- i
-					
-					callbackResult <- callback(results)
-					print(str(callbackResult))
-					if ( ! .shouldContinue(callbackResult))
-						return()
-					
-				}
-			}
+			# if (!is.null(results)) {
+			# 	print("Here_1")
+			# 	for (i in 1:5) {
+			# 		print(paste0("Here_1_", i))
+			# 		table[["data"]][[1]][["test"]] <- i
+			# 		
+			# 		callbackResult <- callback(results)
+			# 		print(str(callbackResult))
+			# 		if ( ! .shouldContinue(callbackResult))
+			# 			return()
+			# 		
+			# 	}
+			# }
 		}
 		
 		table[["status"]] <- "complete"

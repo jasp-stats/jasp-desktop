@@ -121,6 +121,7 @@
 		},
 		{
 			"name": "thresholdBox",
+			"options": ["method", "value"],
 			"default": "value",
 			"type": "List"
 		},
@@ -142,6 +143,7 @@
 		},
 		{
 			"name": "thresholdValue",
+			"type": "Number",
 			"value": 0.0,
 			"min": 0.0,
 			"max": 1e9
