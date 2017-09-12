@@ -24,6 +24,7 @@
 			"type": "List",
 			"options": [
    				"EBICglasso",
+   				"cor",
 				"pcor",
 				"IsingFit",
 				"IsingSampler",
@@ -199,6 +200,13 @@
 			"max": 10.0
 		},
 		{
+			"name": "labelSize",
+			"type": "Number",
+			"value": 1.0,
+			"min": 0.0,
+			"max": 10.0
+		},
+		{
 			"name": "maxEdgeStrength",
 			"type": "Number",
 			"value": 0.0,
@@ -220,9 +228,15 @@
 			"max": 10.0
 		},
 		{
-			"default": true,
 			"name": "showDetails",
-			"type": "Boolean"
+			"type": "Boolean",
+			"default": true
+			
+		},
+		{
+			"name": "scaleLabels",
+			"type": "Boolean",
+			"default": true
 		},
 		{
 			"name": "showVariableNames",

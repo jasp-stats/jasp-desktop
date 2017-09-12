@@ -299,6 +299,11 @@
               </item>
               <item>
                <property name="text">
+                <string>cor</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
                 <string>pcor</string>
                </property>
               </item>
@@ -1634,8 +1639,36 @@
                <string>Graphical Options</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_11">
-               <item row="7" column="1">
-                <widget class="BoundTextBox" name="maxEdgeStrength">
+               <item row="14" column="0">
+                <widget class="BoundCheckBox" name="scaleLabels">
+                 <property name="text">
+                  <string>Scale label size</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="0">
+                <widget class="BoundCheckBox" name="showDetails">
+                 <property name="text">
+                  <string>Show details</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_8_1">
+                 <property name="text">
+                  <string>Maximum edge strength</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_9">
+                 <property name="text">
+                  <string>Node size</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="1">
+                <widget class="BoundTextBox" name="cut">
                  <property name="minimumSize">
                   <size>
                    <width>60</width>
@@ -1650,38 +1683,17 @@
                  </property>
                 </widget>
                </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_10_1">
-                 <property name="text">
-                  <string>Edge size</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="0">
-                <widget class="QLabel" name="label_8_1">
-                 <property name="text">
-                  <string>Maximum edge strength</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="10" column="0">
+               <item row="11" column="0">
                 <widget class="QLabel" name="label_8_3">
                  <property name="text">
                   <string>Cut</string>
                  </property>
                 </widget>
                </item>
-               <item row="8" column="0">
-                <widget class="QLabel" name="label_8_2">
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_10_1">
                  <property name="text">
-                  <string>Minimum edge strength</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_9">
-                 <property name="text">
-                  <string>Node size</string>
+                  <string>Edge size</string>
                  </property>
                 </widget>
                </item>
@@ -1701,8 +1713,15 @@
                  </property>
                 </widget>
                </item>
-               <item row="10" column="1">
-                <widget class="BoundTextBox" name="cut">
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_8_2">
+                 <property name="text">
+                  <string>Minimum edge strength</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="1">
+                <widget class="BoundTextBox" name="minEdgeStrength">
                  <property name="minimumSize">
                   <size>
                    <width>60</width>
@@ -1717,15 +1736,8 @@
                  </property>
                 </widget>
                </item>
-               <item row="12" column="0">
-                <widget class="BoundCheckBox" name="showDetails">
-                 <property name="text">
-                  <string>Show details</string>
-                 </property>
-                </widget>
-               </item>
                <item row="8" column="1">
-                <widget class="BoundTextBox" name="minEdgeStrength">
+                <widget class="BoundTextBox" name="maxEdgeStrength">
                  <property name="minimumSize">
                   <size>
                    <width>60</width>
@@ -1742,6 +1754,29 @@
                </item>
                <item row="3" column="1">
                 <widget class="BoundTextBox" name="edgeSize">
+                 <property name="minimumSize">
+                  <size>
+                   <width>60</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>60</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_8_6">
+                 <property name="text">
+                  <string>Label size</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1">
+                <widget class="BoundTextBox" name="labelSize">
                  <property name="minimumSize">
                   <size>
                    <width>60</width>

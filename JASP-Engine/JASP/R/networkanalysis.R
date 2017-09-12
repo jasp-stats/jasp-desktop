@@ -357,9 +357,10 @@ NetworkAnalysis <- function (
 			lev         = level
 		)
 
-		# get available arguments for specific network estimation function. Remove unused ones.
+		# get available arguments for specific network estimation function. Removes unused ones.
 		# FOR FUTURE UPDATING: options[["estimator"]] MUST match name of function in bootnet literally (see ?bootnet::bootnet_EBICglasso).
 		funArgs <- formals(utils::getFromNamespace(paste0("bootnet_", options[["estimator"]]), ns = "bootnet"))
+	
 		nms2keep <- names(funArgs)
 		.dots <- .dots[names(.dots) %in% nms2keep]
 
@@ -976,24 +977,26 @@ NetworkAnalysis <- function (
 		}
 
 		qgraph::qgraph(
-			input      = wMat,
-			layout     = layout, # options[["layout"]],
-			groups     = groups,
-			repulsion  = options[["repulsion"]],
-			cut        = options[["cut"]],
-			edge.width = options[["edgeSize"]],
-			node.width = options[["nodeSize"]],
-			maximum    = maxE, # options[["maxEdgeStrength"]],
-			minimum    = minE, # options[["minEdgeStrength"]],
-			details    = options[["showDetails"]],
-			labels     = labels, # .unv(network[["labels"]]),
-			palette    = options[["nodeColors"]],
-			theme      = options[["edgeColors"]],
-			legend     = legend, # options[["showLegend"]]
-			shape      = shape,
-			color      = nodeColor,
-			edge.color = edgeColor,
-			nodeNames  = nodeNames
+			input       = wMat,
+			layout      = layout, # options[["layout"]],
+			groups      = groups,
+			repulsion   = options[["repulsion"]],
+			cut         = options[["cut"]],
+			edge.width  = options[["edgeSize"]],
+			node.width  = options[["nodeSize"]],
+			maximum     = maxE, # options[["maxEdgeStrength"]],
+			minimum     = minE, # options[["minEdgeStrength"]],
+			details     = options[["showDetails"]],
+			labels      = labels, # .unv(network[["labels"]]),
+			palette     = options[["nodeColors"]],
+			theme       = options[["edgeColors"]],
+			legend      = legend, # options[["showLegend"]]
+			shape       = shape,
+			color       = nodeColor,
+			edge.color  = edgeColor,
+			nodeNames   = nodeNames,
+			label.scale = options[["scaleLabels"]],
+			label.cex   = options[["labelSize"]]
 		)}
 	), envir = parent.frame(2))
 
@@ -1290,6 +1293,91 @@ getTempFileName <- function() {
 
 }
 
+# TODO: periodically check if this has been implemented in bootnet (Sacha said he'd do so).
+.networkAnalysisBootnet_cor <- function (data, corMethod = c("cor_auto", "cov", "cor", "npn"), 
+										 missing = c("pairwise", "listwise", "stop"), 
+										 sampleSize = c("maximum", "minimim"), 
+										 verbose = TRUE, corArgs = list(), threshold = 0) {
+	corMethod <- match.arg(corMethod)
+	missing <- match.arg(missing)
+	sampleSize <- match.arg(sampleSize)
+	if (identical(threshold, "none")) {
+		threshold <- 0
+	}
+	if (verbose) {
+		msg <- "Estimating Network. Using package::function:"
+		msg <- paste0(msg, "\n  - qgraph::qgraph(..., graph = 'pcor') for network computation")
+		if (corMethod == "cor_auto") {
+			msg <- paste0(msg, "\n  - qgraph::cor_auto for correlation computation\n    - using lavaan::lavCor")
+		}
+		if (corMethod == "npn") {
+			msg <- paste0(msg, "\n  - huge::huge.npn for nonparanormal transformation")
+		}
+		if (threshold != "none") {
+			if (threshold != "locfdr") {
+				msg <- paste0(msg, "\n  - psych::corr.p for significance thresholding")
+			}
+			else {
+				msg <- paste0(msg, "\n  - fdrtool for false discovery rate")
+			}
+		}
+		message(msg)
+	}
+	if (!(is.data.frame(data) || is.matrix(data))) {
+		stop("'data' argument must be a data frame")
+	}
+	if (is.matrix(data)) {
+		data <- as.data.frame(data)
+	}
+	N <- ncol(data)
+	Np <- nrow(data)
+	if (missing == "stop") {
+		if (any(is.na(data))) {
+			stop("Missing data detected and missing = 'stop'")
+		}
+	}
+	if (corMethod == "npn") {
+		data <- huge::huge.npn(data)
+		corMethod <- "cor"
+	}
+	if (corMethod == "cor_auto") {
+		args <- list(data = data, missing = missing, verbose = verbose)
+		if (length(corArgs) > 0) {
+			for (i in seq_along(corArgs)) {
+				args[[names(corArgs)[[i]]]] <- corArgs[[i]]
+			}
+		}
+		corMat <- do.call(qgraph::cor_auto, args)
+	}
+	else if (corMethod %in% c("cor", "cov")) {
+		use <- switch(missing, pairwise = "pairwise.complete.obs", 
+					  listwise = "complete.obs")
+		args <- list(x = data, use = use)
+		if (length(corArgs) > 0) {
+			for (i in seq_along(corArgs)) {
+				args[[names(corArgs)[[i]]]] <- corArgs[[i]]
+			}
+		}
+		corMat <- do.call(corMethod, args)
+	}
+	else stop("Correlation method is not supported.")
+	if (missing == "listwise") {
+		sampleSize <- nrow(na.omit(data))
+	}
+	else {
+		if (sampleSize == "maximum") {
+			sampleSize <- sum(apply(data, 1, function(x) !all(is.na(x))))
+		}
+		else {
+			sampleSize <- sum(apply(data, 1, function(x) !any(is.na(x))))
+		}
+	}
+	Results <- getWmat(qgraph::qgraph(corMat, graph = "pcor", 
+									  DoNotPlot = TRUE, threshold = threshold, sampleSize = sampleSize))
+	return(list(graph = Results, results = Results))
+}
+
+
 # saveDataToDput <- function(...) {
 #
 # 	path <- "C:/Users/donvd/_Laptop/Werk/JASP/tempDput/"
@@ -1311,3 +1399,4 @@ getTempFileName <- function() {
 # 	}
 #
 # }
+

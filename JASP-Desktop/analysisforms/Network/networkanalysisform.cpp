@@ -90,6 +90,20 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->boxMgmVariableType->setEnabled(false);
         ui->showMgmVariableType->setEnabled(false);
 
+    } else if (choice_str.compare("cor") == 0) {
+        ui->correlationMethod->setEnabled(true);
+        ui->missingValues->setEnabled(true);
+
+        ui->criterion->setEnabled(false);
+        ui->tuningParameterBox->setEnabled(false);
+        ui->sampleSize->setEnabled(false);
+        ui->isingEstimator->setEnabled(false);
+        ui->crossValidation->setEnabled(false);
+        ui->split->setEnabled(false);
+        ui->rule->setEnabled(false);
+        ui->boxMgmVariableType->setEnabled(false);
+        ui->showMgmVariableType->setEnabled(false);
+
     } else if (choice_str.compare("pcor") == 0) {
         ui->correlationMethod->setEnabled(true);
         ui->missingValues->setEnabled(true);
