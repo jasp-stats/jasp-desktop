@@ -500,14 +500,14 @@
             <string>Regression Coefficients</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
-            <item row="0" column="0">
+            <item row="0" column="1">
              <widget class="BoundCheckBox" name="coeffEstimates">
               <property name="text">
                <string>Estimates</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
+            <item row="0" column="2">
              <spacer name="horizontalSpacer_3">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -520,86 +520,21 @@
               </property>
              </spacer>
             </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="coeffCI">
-              <property name="text">
-               <string>Confidence intervals</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QWidget" name="panelConfidenceInterval" native="true">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_18">
-               <property name="leftMargin">
-                <number>20</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label">
-                 <property name="text">
-                  <string>Interval</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="BoundTextBox" name="coeffCIInterval">
-                 <property name="maximumSize">
-                  <size>
-                   <width>60</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <widget class="QLabel" name="label_2">
-                 <property name="text">
-                  <string>%</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="3" column="0">
+            <item row="1" column="1">
              <widget class="BoundCheckBox" name="stdCoeff">
               <property name="text">
                <string>Standardized coefficients</string>
               </property>
              </widget>
             </item>
-            <item row="4" column="0">
-             <widget class="BoundCheckBox" name="oddsRatios">
+            <item row="3" column="1">
+             <widget class="BoundCheckBox" name="coeffCI">
               <property name="text">
-               <string>Odds ratios</string>
+               <string>Confidence intervals</string>
               </property>
              </widget>
             </item>
-            <item row="5" column="0">
-             <widget class="BoundCheckBox" name="VovkSellkeMPR">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Vovk-Sellke maximum p-ratio</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="0">
+            <item row="10" column="1">
              <spacer name="verticalSpacer_4">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -612,7 +547,7 @@
               </property>
              </spacer>
             </item>
-            <item row="7" column="0">
+            <item row="11" column="1">
              <widget class="BoundCheckBox" name="descriptivesTableOpt">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -625,7 +560,7 @@
               </property>
              </widget>
             </item>
-            <item row="8" column="0">
+            <item row="12" column="1">
              <spacer name="verticalSpacer_9">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -637,6 +572,98 @@
                </size>
               </property>
              </spacer>
+            </item>
+            <item row="2" column="1">
+             <widget class="BoundCheckBox" name="oddsRatios">
+              <property name="text">
+               <string>Odds ratios</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1">
+             <widget class="BoundCheckBox" name="VovkSellkeMPR">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Vovk-Sellke maximum p-ratio</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QWidget" name="panelConfidenceInterval" native="true">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_12">
+               <property name="leftMargin">
+                <number>20</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="1">
+                <widget class="QLabel" name="label">
+                 <property name="text">
+                  <string>Interval</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="5">
+                <widget class="QLabel" name="label_2">
+                 <property name="text">
+                  <string>%</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <widget class="BoundTextBox" name="coeffCIInterval">
+                 <property name="maximumSize">
+                  <size>
+                   <width>60</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1" colspan="5">
+                <widget class="BoundCheckBox" name="coeffCIOR">
+                 <property name="text">
+                  <string>Odds ratio scale</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="6">
+                <spacer name="horizontalSpacer_7">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="BoundCheckBox" name="robustSEOpt">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Robust standard errors</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -824,60 +851,7 @@
             <string>Residual plots</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_14">
-            <item row="5" column="1" colspan="2">
-             <spacer name="verticalSpacer_7">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="1" column="1">
-             <widget class="BoundCheckBox" name="predictedPlotOpt">
-              <property name="text">
-               <string>Predicted - residuals plot</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="2">
-             <widget class="QLabel" name="label_11">
-              <property name="maximumSize">
-               <size>
-                <width>15</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1" rowspan="2">
-             <widget class="BoundCheckBox" name="predictorPlotsOpt">
-              <property name="text">
-               <string>Predictor - residuals plots</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="3">
-             <spacer name="horizontalSpacer_5">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="4" column="1">
+            <item row="4" column="0" colspan="2">
              <widget class="BoundGroupBox" name="residualType">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -937,7 +911,60 @@
               </layout>
              </widget>
             </item>
-            <item row="6" column="1">
+            <item row="0" column="0" colspan="2">
+             <widget class="BoundCheckBox" name="predictedPlotOpt">
+              <property name="text">
+               <string>Predicted - residuals plot</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <spacer name="horizontalSpacer_5">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="1" column="0" rowspan="2" colspan="2">
+             <widget class="BoundCheckBox" name="predictorPlotsOpt">
+              <property name="text">
+               <string>Predictor - residuals plots</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2" rowspan="2">
+             <widget class="QLabel" name="label_11">
+              <property name="maximumSize">
+               <size>
+                <width>15</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0" colspan="2">
+             <spacer name="verticalSpacer_7">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="6" column="0" colspan="2">
              <spacer name="verticalSpacer_8">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -949,6 +976,13 @@
                </size>
               </property>
              </spacer>
+            </item>
+            <item row="3" column="0">
+             <widget class="BoundCheckBox" name="squaredPearsonPlotOpt">
+              <property name="text">
+               <string>Squared Pearson residuals plot</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -1138,7 +1172,6 @@
   <tabstop>coeffEstimates</tabstop>
   <tabstop>coeffCI</tabstop>
   <tabstop>coeffCIInterval</tabstop>
-  <tabstop>stdCoeff</tabstop>
   <tabstop>confusionMatrixOpt</tabstop>
   <tabstop>pushButton_3</tabstop>
   <tabstop>estimatesPlotsOpt</tabstop>

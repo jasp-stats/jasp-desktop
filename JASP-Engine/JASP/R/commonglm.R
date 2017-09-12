@@ -196,7 +196,12 @@
     
     out[["title"]] <- "Coefficients"
     
-    ciTitle <- paste0(options[["coeffCIInterval"]], "% Confidence interval")
+    if (options[["coeffCIOR"]]) {
+      ciTitle <- paste0(options[["coeffCIInterval"]], "% Confidence interval <br> (odds ratio scale)")
+    } else {
+      ciTitle <- paste0(options[["coeffCIInterval"]], "% Confidence interval")
+    }
+    
     # first define all the fields
     fields <- list(
       list(name="param", title = "", type="string"),
@@ -244,21 +249,25 @@
     if (perform == "run" && !is.null(glmObj)) {
       rows <- list()
       s <- summary(glmObj)[["coefficients"]]
-      rn <- rownames(s)      
+      rn <- rownames(s)
       c <- qnorm(1 - (100 - options[["coeffCIInterval"]]) / 200)
       beta <- .stdEst(glmObj, type = "X") # stand. X continuous vars
-      nuisance <- glmObj[["nullModel"]]
-      if (!is.null(nuisance)) {
-        terms <- rownames(summary(nuisance)[["coefficients"]])
-        terms <- terms[terms != "(Intercept)"]
-        sel <- !(rn %in% terms)
-        rn <- rn[sel]
-        s <- s[sel,]
-        beta <- beta[sel]
+      
+      # Confidence intervals on the odds ratio scale
+      if (options[["coeffCIOR"]]) {
+        expon <- function(x) exp(x)
+      } else {
+        expon <- function(x) x
       }
+      
       
       if (length(rn) == 1) {
         s <- unname(s)
+        if (options[["robustSEOpt"]]) {
+          s[2] <- unname(.glmRobustSE(glmObj)) # new se
+          s[3] <- s[1]/s[2] # new z
+          s[4] <- 2*pnorm(-abs(s[3])) # new p 
+        }
         rows[[1]] <- list(param = .clean(.formatTerm(rn, glmObj)),
                           est = .clean(s[1]),
                           se = .clean(s[2]),
@@ -267,9 +276,14 @@
                           zval = .clean(s[3]),
                           pval = .clean(s[4]),
                           vsmpr = .clean(.VovkSellkeMPR(s[4])),
-                          cilo = .clean(s[1] - c * s[2]),
-                          ciup = .clean(s[1] + c * s[2]))
+                          cilo = .clean(expon(s[1] - c * s[2])),
+                          ciup = .clean(expon(s[1] + c * s[2])))
       } else {
+        if (options[["robustSEOpt"]]) {
+          s[,2] <- unname(.glmRobustSE(glmObj)) # new se
+          s[,3] <- s[,1]/s[,2] # new z
+          s[,4] <- 2*pnorm(-abs(s[,3])) # new p 
+        }
         for (i in seq_along(rn)) {
           rows[[i]] <- list(param = .clean(.formatTerm(rn[i], glmObj)),
                             est = .clean(s[i,1]),
@@ -279,8 +293,8 @@
                             zval = .clean(s[i,3]),
                             pval = .clean(s[i,4]),
                             vsmpr = .clean(.VovkSellkeMPR(s[i,4])),
-                            cilo = .clean(s[i,1] - c * s[i,2]),
-                            ciup = .clean(s[i,1] + c * s[i,2]))
+                            cilo = .clean(expon(s[i,1] - c * s[i,2])),
+                            ciup = .clean(expon(s[i,1] + c * s[i,2])))
         }
       }
       
@@ -293,7 +307,6 @@
     
     out[["data"]] <- rows
   } 
-  
   return(out)
 }
 
@@ -549,6 +562,40 @@
       resPlot[["status"]] <- "waiting"
       out <- resPlot
     }
+  }
+  return(out)
+}
+
+.glmSquaredPearsonResidualsPlot <- function(glmObj, options, perform, type) {
+  out <- NULL
+  if (type == "binomial") {
+    resPlot <- list()
+    if (!is.null(glmObj)) {
+      gg <- .plotSquaredPearsonResiduals(glmObj)
+      plotObj <- .writeImage(width = options[["plotWidth"]],
+                             height = options[["plotHeight"]],
+                             plot = gg,
+                             obj = TRUE)
+      resPlot[["width"]] <- options[["plotWidth"]]
+      resPlot[["height"]] <- options[["plotHeight"]]
+      resPlot[["custom"]] <- list(width = "plotWidth",
+                                    height = "plotHeight")
+      resPlot[["title"]] <- "Squared Pearson residuals plot"
+      resPlot[["data"]] <- plotObj[["png"]]
+      resPlot[["obj"]] <- plotObj[["obj"]]
+      resPlot[["convertible"]] <- TRUE
+      resPlot[["status"]] <- "complete"
+    } else {
+      resPlot[["width"]] <- options[["plotWidth"]]
+      resPlot[["height"]] <- options[["plotHeight"]]
+      resPlot[["custom"]] <- list(width = "plotWidth",
+                                    height = "plotHeight")
+      resPlot[["title"]] <- "Predicted - residuals plot"
+      resPlot[["data"]] <- ""
+      resPlot[["convertible"]] <- FALSE
+      resPlot[["status"]] <- "waiting"
+    }
+    out <- resPlot
   }
   return(out)
 }
@@ -994,6 +1041,26 @@
   1/(1 + exp(-x))
 }
 
+.glmRobustSE <- function(glmObj) {
+  # Robust SE courtesy of Dan Gillen (UC Irvine)
+  if (is.matrix(glmObj[["x"]])) {
+    xmat <- glmObj[["x"]]
+  } else {
+    mf <- model.frame(glmObj)
+    xmat <- model.matrix(terms(glmObj), mf)
+  }
+  
+  umat <- residuals(glmObj, "working") * glmObj[["weights"]] * xmat
+  modelv <- summary(glmObj)[["cov.unscaled"]]
+  robustCov <- modelv%*%(t(umat)%*%umat)%*%modelv
+  dimnames(robustCov) <- dimnames(vcov(glmObj))
+  
+  ##	Format the model output with p-values and CIs
+  s <- summary(glmObj) 
+  robustSE <- sqrt(diag(robustCov)) 
+  return(robustSE)
+}
+
 .plotGlmResiduals <- function(glmObj, var = NULL, type = "deviance") {
   # plots residuals against predicted (var = NULL) or predictor (var = "name")
   if (!is.null(var)) {
@@ -1005,7 +1072,6 @@
     var <- "Predicted log-odds"
   }
   
-  print(class(ggdat[["x"]]))
   if (class(ggdat[["x"]]) == "factor") {
     pos <- ggplot2::position_jitter(width = 0.1)
   } else {
@@ -1052,8 +1118,8 @@
   
   p <- ggplot2::ggplot(data = ggdat, 
                        mapping = ggplot2::aes(x = x, y = resid)) +
-    ggplot2::geom_point(position = pos,
-                        size = 2) 
+    ggplot2::geom_point(position = pos, size = 3, colour="black", fill = "grey", 
+                        pch=21) 
   
   
   p <- p +
@@ -1098,4 +1164,65 @@
     )
     
   p
+}
+
+.plotSquaredPearsonResiduals <- function(glmObj) {
+  # Squared Pearson residuals plot courtesy of Dan Gillen (UC Irvine)
+  plotDat <- data.frame("pres" = residuals(glmObj, type = "pearson")^2,
+                        "prob" = predict(glmObj, type = "response"))
+
+  custom_y_axis <- function(ydat) {
+    b <- pretty(c(ydat,0))
+    d <- data.frame(y = 0, yend = max(b), x = -Inf, xend = -Inf)
+    l <- list(ggplot2::geom_segment(data = d,
+                                    ggplot2::aes(x = x, y = y, xend = xend,
+                                                 yend = yend),
+                                    inherit.aes = FALSE, size = 1),
+              ggplot2::scale_y_continuous(breaks = b))
+  }
+
+  custom_x_axis <- function() {
+    d <- data.frame(y = -Inf, yend = -Inf, x = 0, xend = 1)
+    list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y, xend = xend,
+                                                      yend = yend),
+                               inherit.aes = FALSE, size = 1),
+         ggplot2::scale_x_continuous(breaks = c(0, 0.25, 0.5, 0.75, 1)))
+  }
+
+
+
+
+  p <- ggplot2::ggplot(mapping = ggplot2::aes(x = prob, y = pres), data = plotDat) +
+    ggplot2::geom_segment(ggplot2::aes(x = 0, y = 1, xend = 1, yend = 1),
+                          linetype = 3, size = 1, colour = "grey") +
+    ggplot2::geom_smooth(se=FALSE, method = "loess", size = 1.2, 
+                         colour = "darkred") +
+    ggplot2::geom_point(size = 3, colour="black", fill = "grey", pch=21) +
+    custom_y_axis(plotDat[["pres"]]) +
+    custom_x_axis() +
+    ggplot2::labs(x = "Predicted probability", y = "Squared Pearson residual") +
+    ggplot2::theme(
+      panel.grid.minor = ggplot2::element_blank(),
+      plot.title = ggplot2::element_text(size = 18),
+      panel.grid.major = ggplot2::element_blank(),
+      axis.title.x = ggplot2::element_text(size = 18, vjust = 0.1),
+      axis.title.y = ggplot2::element_text(size = 18, vjust = 0.9),
+      axis.text.x = ggplot2::element_text(size = 15,
+                                          margin = ggplot2::margin(t = 1,
+                                                                   unit = "mm")),
+      axis.text.y = ggplot2::element_text(size = 15,
+                                          margin = ggplot2::margin(r = 1,
+                                                                   unit = "mm")),
+      panel.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+      plot.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+      legend.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+      panel.border = ggplot2::element_blank(),
+      legend.key = ggplot2::element_blank(),
+      axis.line = ggplot2::element_blank(),
+      axis.ticks = ggplot2::element_line(size = 0.5),
+      axis.ticks.length = grid::unit(2.5, "mm"),
+      plot.margin = grid::unit(c(0.1, 0.1, 0.6, 0.6), "cm"),
+      legend.position = "none")
+  
+  return(p)
 }

@@ -64,6 +64,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   estimatesPlots <- # plots for estimates
   predictedPlot <- # predicted - residuals plot
   predictorPlots <- # predictor - residuals plots
+  squaredPearsonPlot <- # squared pearson - predicted prob plot
   descriptivesTable <- # factor descriptives table
   NULL
   
@@ -76,7 +77,8 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
         lrObj <<- state[["lrObj"]]
         modelSummary <<- state[["modelSummary"]]
         
-        if (!any(coeffEstimates, coeffCI, coeffCIInterval, stdCoeff, oddsRatios, VovkSellkeMPR)) {
+        if (!any(coeffEstimates, coeffCI, coeffCIInterval, coeffCIOR, stdCoeff, 
+                 oddsRatios, VovkSellkeMPR, robustSEOpt)) {
           # estimates table can be reused
           estimatesTable <<- state[["estimatesTable"]]
         }
@@ -106,6 +108,11 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
           predictorPlots <<- state[["predictorPlots"]]
         }
         
+        if (!any(squaredPearsonPlotOpt, plotWidth, plotHeight)) {
+          # squared pearson plot can be reused
+          squaredPearsonPlot <<- state[["squaredPearsonPlot"]]
+        }
+        
         if (!any(descriptivesTableOpt)) {
           # descriptives table can be reused
           descriptivesTable <<- state[["descriptivesTable"]]
@@ -122,6 +129,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
     estimatesPlots <- state[["estimatesPlots"]]
     predictedPlot <- state[["predictedPlot"]]
     predictorPlots <- state[["predictorPlots"]]
+    squaredPearsonPlot <- state[["squaredPearsonPlot"]]
     descriptivesTable <- state[["descriptivesTable"]]
   }
 
@@ -131,7 +139,8 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
                   list(name = "perfMetrics", type = "table"))
   .rpMeta <- list(list(name = "predictedPlot", type = "image"),
                   list(name = "predictorPlots", type = "collection", 
-                       meta = "image"))
+                       meta = "image"),
+                  list(name = "squaredPearsonPlot", type = "image"))
   
   .meta <-  list(
 		list(name = "title", type = "title"),
@@ -189,6 +198,12 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
                                                   type = "binomial")
   }
   
+  if (is.null(squaredPearsonPlot) && options[["squaredPearsonPlotOpt"]]) {
+    squaredPearsonPlot <- .glmSquaredPearsonResidualsPlot(lrObj, options, 
+                                                          perform, 
+                                                          type = "binomial")
+  }
+  
   if(is.null(descriptivesTable) && options[["descriptivesTableOpt"]]) {
     descriptivesTable <- .glmDescriptivesTable(dataset, options, perform, 
                                                type = "binomial")
@@ -197,6 +212,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   
   residualsPlots <- list("predictedPlot" = predictedPlot,
                          "predictorPlots" = predictorPlots,
+                         "squaredPearsonPlot" = squaredPearsonPlot,
                          "title" = "Residual plots")
   
   results <- list()
@@ -227,6 +243,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
     state[["estimatesPlots"]] <- estimatesPlots
     state[["predictedPlot"]] <- predictedPlot
     state[["predictorPlots"]] <- predictorPlots
+    state[["squaredPearsonPlot"]] <- squaredPearsonPlot
     state[["descriptivesTable"]] <- descriptivesTable
     
     return(list(results=results, status="complete", state=state,

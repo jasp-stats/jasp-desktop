@@ -57,6 +57,11 @@
 			"default": 95
 		},
 		{
+			"name": "coeffCIOR",
+			"type": "Boolean",
+			"default": false
+		},
+		{
 			"name": "stdCoeff",
 			"type": "Boolean",
 			"default": false
@@ -68,6 +73,11 @@
 		},
 		{
 			"name": "VovkSellkeMPR",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "robustSEOpt",
 			"type": "Boolean",
 			"default": false
 		},
@@ -140,6 +150,11 @@
 		},
 		{
 			"name": "predictorPlotsOpt",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "squaredPearsonPlotOpt",
 			"type": "Boolean",
 			"default": false
 		},
