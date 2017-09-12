@@ -558,27 +558,16 @@
   out <- NULL
   if (type == "binomial") {
     out <- list()
-    if (options$dependent != "") {
-      out[["title"]] <- paste("Descriptives - ", options$dependent, sep = "")
-    } else {
-      out[["title"]] <- "Descriptives"
-    }
+    out[["title"]] <- "Factor Descriptives"
     
     fields <- list()
   
     for (variable in options[["factors"]]) {
-      name <- paste(".", variable, sep="")  # in case it's "Mean", "SD" or "N"
+      name <- paste(".", variable, sep = "")  # in case it's "N"
       fields[[length(fields)+1]] <- list(name = name, type = "string", 
                                          title = variable, combine = TRUE)
     }
     
-    if (options$dependent != "") {
-      fields[[length(fields)+1]] <- list(name = "Mean", type = "number", 
-                                         format = "sf:4;dp:3")
-      fields[[length(fields)+1]] <- list(name = "SD", type = "number", 
-                                         format = "sf:4;dp:3")
-    }
-
     fields[[length(fields)+1]] <- list(name = "N", type = "number", 
                                        format = "dp:0")
     
@@ -607,34 +596,12 @@
 
         sub  <- eval(parse(text=paste("dataset$", .v(namez), " == \"", row, 
                                       "\"", sep="", collapse=" & ")))
-        if (options$dependent != "") {
-          dat <- base::subset(dataset, sub, select=.v(options$dependent))[[1]]
-        } else {
-          dat <- base::subset(dataset, sub)[[1]]
-        }
-
+                                      
+        dat <- base::subset(dataset, sub)[[1]]
         N <- base::length(dat)
 
         row[["N"]] <- N
         
-        if (options$dependent != "") {
-          if (N == 0 ) {
-  
-            row[["Mean"]] <- ""
-            row[["SD"]]   <- ""
-  
-          } else if (N == 1) {
-  
-            row[["Mean"]] <- dat
-            row[["SD"]]   <- ""
-  
-          } else {
-  
-            row[["Mean"]] <- base::mean(dat)
-            row[["SD"]]   <- stats::sd(dat)
-          }
-        }
-
         if(cases[i,dim(cases)[2]] == lvls[[ dim(cases)[2] ]][1]) {
           row[[".isNewGroup"]] <- TRUE
         } else {
