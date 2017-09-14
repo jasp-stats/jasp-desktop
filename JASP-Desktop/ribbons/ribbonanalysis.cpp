@@ -120,10 +120,9 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	ui->BFFromT->hide();
 //	ui->networkButton->hide();
 #else
-    menu = new QMenu(this);
-    menu->addAction(QString("BF From t"), this, SLOT(itemSelected()))->setObjectName("BFFromT");
+	menu = new QMenu(this);
+	menu->addAction(QString("BF From t"), this, SLOT(itemSelected()))->setObjectName("BFFromT");
 
-    ui->BFFromT->setMenu(menu);
 #endif
 
     menu = new QMenu(this);
