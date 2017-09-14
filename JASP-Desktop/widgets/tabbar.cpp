@@ -18,7 +18,6 @@
 
 #include "tabbar.h"
 #include <QMessageBox>
-#include "aboutdialog.h"
 #include "preferencesdialog.h"
 #include "widgets/ribbonbutton.h"
 
@@ -42,6 +41,9 @@ TabBar::TabBar(QWidget *parent) :
 	setLayout(_backgroundLayout);
 
 	_layout->addStretch(1);
+	
+	_aboutDialog = new AboutDialog();
+	_preferencesDialog = new PreferencesDialog();
 }
 
 void TabBar::addTab(QString tabName)
@@ -174,16 +176,18 @@ void TabBar::addHelpTab()
 
 void TabBar::showAbout()
 {
-	AboutDialog aboutdialog;
-	aboutdialog.setModal(true);
-	aboutdialog.exec();
+	_aboutDialog->show();
+	_aboutDialog->raise();
+	_aboutDialog->activateWindow();
+	//The last function performs the same operation as clicking the mouse on the title bar 
+	//If you want to ensure that the window is stacked on top as well you should also call raise(). 	//Note that the window must be visible, otherwise activateWindow() has no effect.
 }
 
 void TabBar::showPreferences()
 {
-	PreferencesDialog preferencesdialog(this);
-	preferencesdialog.setModal(true);
-	preferencesdialog.exec();
+	_preferencesDialog->show();
+	_preferencesDialog->raise();
+	_preferencesDialog->activateWindow();
 }
 
 void TabBar::toggleHelp()
