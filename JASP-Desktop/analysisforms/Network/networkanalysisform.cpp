@@ -31,33 +31,53 @@ NetworkAnalysisForm::NetworkAnalysisForm(QWidget *parent) :
 
     TableModelVariablesAssigned *variablesModel = new TableModelVariablesAssigned(this);
     variablesModel->setSource(&_availableVariablesModel);
-    variablesModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+    variablesModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
     variablesModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
     ui->variables->setModel(variablesModel);
     ui->variables->setDoubleClickTarget(ui->listAvailableFields);
 
     TableModelVariablesAssigned *groupingVariableModel = new TableModelVariablesAssigned(this);
-    groupingVariableModel->setVariableTypesAllowed(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
+    groupingVariableModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal | Column::ColumnTypeNominalText);
+    groupingVariableModel->setVariableTypesAllowed(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal | Column::ColumnTypeNominalText);
     groupingVariableModel->setSource(&_availableVariablesModel);
     ui->groupingVariable->setModel(groupingVariableModel);
     ui->groupingVariable->setDoubleClickTarget(ui->listAvailableFields);
 
     TableModelVariablesAssigned *colorNodesByModel = new TableModelVariablesAssigned(this);
-    colorNodesByModel->setVariableTypesAllowed(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
+    colorNodesByModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal | Column::ColumnTypeNominalText);
+    colorNodesByModel->setVariableTypesAllowed(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal | Column::ColumnTypeNominalText);
     colorNodesByModel->setSource(&_availableVariablesModel);
     ui->colorNodesBy->setModel(colorNodesByModel);
     ui->colorNodesBy->setDoubleClickTarget(ui->listAvailableFields);
 
     TableModelVariablesAssigned *mgmVariableTypeModel = new TableModelVariablesAssigned(this);
-    mgmVariableTypeModel->setVariableTypesAllowed(Column::ColumnTypeNominalText);
+    mgmVariableTypeModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal | Column::ColumnTypeNominalText);
+    mgmVariableTypeModel->setVariableTypesAllowed(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal | Column::ColumnTypeNominalText);
     mgmVariableTypeModel->setSource(&_availableVariablesModel);
     ui->mgmVariableType->setModel(mgmVariableTypeModel);
     ui->mgmVariableType->setDoubleClickTarget(ui->listAvailableFields);
+
+    // layout
+    TableModelVariablesAssigned *layoutXModel = new TableModelVariablesAssigned(this);
+    layoutXModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+    layoutXModel->setVariableTypesAllowed(Column::ColumnTypeScale);
+    layoutXModel->setSource(&_availableVariablesModel);
+    ui->layoutX->setModel(layoutXModel);
+    ui->layoutX->setDoubleClickTarget(ui->listAvailableFields);
+
+    TableModelVariablesAssigned *layoutYModel = new TableModelVariablesAssigned(this);
+    layoutYModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+    layoutYModel->setVariableTypesAllowed(Column::ColumnTypeScale);
+    layoutYModel->setSource(&_availableVariablesModel);
+    ui->layoutY->setModel(layoutYModel);
+    ui->layoutY->setDoubleClickTarget(ui->listAvailableFields);
 
     ui->buttonAssignVariables->setSourceAndTarget(ui->listAvailableFields, ui->variables);
     ui->buttonAssignGroupingVariable->setSourceAndTarget(ui->listAvailableFields, ui->groupingVariable);
     ui->buttonAssignColorNodesBy->setSourceAndTarget(ui->listAvailableFields, ui->colorNodesBy);
     ui->buttonAssignMgmVariableType->setSourceAndTarget(ui->listAvailableFields, ui->mgmVariableType);
+    ui->buttonAssignLayoutX->setSourceAndTarget(ui->listAvailableFields, ui->layoutX);
+    ui->buttonAssignLayoutY->setSourceAndTarget(ui->listAvailableFields, ui->layoutY);
 
     // Defaults
     ui->estimator->setCurrentIndex(0);
@@ -207,7 +227,7 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
 
 void NetworkAnalysisForm::on__4cv_clicked()
 {
-    if (ui->estimator->currentIndex() == 6) {
+    if (ui->estimator->currentText() == "mgm") {
         ui->crossValidation->setEnabled(true);
     } else {
         ui->crossValidation->setEnabled(false);
@@ -216,21 +236,21 @@ void NetworkAnalysisForm::on__4cv_clicked()
 
 void NetworkAnalysisForm::on__3stars_clicked()
 {
-    if (ui->estimator->currentIndex() == 6) {
+    if (ui->estimator->currentText() == "mgm") {
         ui->crossValidation->setEnabled(false);
     }
 }
 
 void NetworkAnalysisForm::on__2ric_clicked()
 {
-    if (ui->estimator->currentIndex() == 6) {
+    if (ui->estimator->currentText() == "mgm") {
         ui->crossValidation->setEnabled(false);
     }
 }
 
 void NetworkAnalysisForm::on__1ebic_clicked()
 {
-    if (ui->estimator->currentIndex() == 6) {
+    if (ui->estimator->currentText() == "mgm") {
         ui->crossValidation->setEnabled(false);
     }
 }

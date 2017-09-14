@@ -20,6 +20,14 @@
 			"type": "Variable"
 		},
 		{
+			"name": "layoutX",
+			"type": "Variable"
+		},
+		{
+			"name": "layoutY",
+			"type": "Variable"
+		},
+		{
 			"name": "estimator",
 			"type": "List",
 			"options": [
@@ -60,6 +68,11 @@
 			"default": false
 		},
 		{
+			"name": "tableLayout",
+			"type": "Boolean",
+			"default": false
+		},
+		{
 			"options": ["auto", "cor", "cov", "npn"],
 			"default": "auto",
 			"name": "correlationMethod",
@@ -87,9 +100,9 @@
 		{
 			"name": "nFolds",
 			"type": "Integer",
-			"min": 1,
+			"min": 3,
 			"max": 10000,
-			"default": 1
+			"default": 3
 		},
 		{
 			"options": ["mean", "median"],
@@ -200,14 +213,19 @@
 		{
 			"name": "BootstrapType",
 			"type": "List",
-			"options": ["nonparametric", "parametric", "node", "person", "jackknife"],
+			"options": ["nonparametric", "parametric", "node", "person", "case", "jackknife"],
 			"default": "nonparametric"
 		},
 		{
-			"options": ["spring", "circle"],
+			"options": ["spring", "circle", "data"],
 			"default": "spring",
 			"name": "layout",
 			"type": "List"
+		},
+		{
+			"name": "keepLayoutTheSame",
+			"type": "Boolean",
+			"default": false
 		},
 		{
 			"name": "repulsion",
@@ -266,6 +284,18 @@
 			"name": "scaleLabels",
 			"type": "Boolean",
 			"default": true
+		},
+		{
+			"name": "abbreviateLabels",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "abbreviateNoChars",
+			"type": "Integer",
+			"default": 4,
+			"min": 1,
+			"max": 100000
 		},
 		{
 			"name": "showVariableNames",

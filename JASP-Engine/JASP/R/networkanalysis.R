@@ -31,6 +31,7 @@ NetworkAnalysis <- function (
 	if (options[["groupingVariable"]] != "")
 		varsAsFactor <- options[["groupingVariable"]]
 
+	options[["layoutInvalid"]] <- FALSE
 
 	if (is.null(dataset)) {
 
@@ -56,6 +57,22 @@ NetworkAnalysis <- function (
 				options[["mgmVariableTypeData"]][is.na(options[["mgmVariableTypeData"]])] <- "g" # set missing to gaussian (in case of too few types supplied)
 
 			}
+			if (options[["layoutX"]] != "") {
+				options[["layoutXData"]] <- .readDataSetToEnd(columns = options[["layoutX"]], exclude.na.listwise = options[["layoutX"]])[[1]]
+			}
+			if (options[["layoutY"]] != "") {
+				options[["layoutYData"]] <- .readDataSetToEnd(columns = options[["layoutY"]], exclude.na.listwise = options[["layoutY"]])[[1]]
+			}
+
+			# some sanity checks
+			if (anyNA(c(options[["layoutXData"]], options[["layoutYData"]])) ||
+				length(options[["layoutXData"]]) < length(variables) ||
+				length(options[["layoutYData"]]) < length(variables)) {
+
+				options[["layoutInvalid"]] <- TRUE # TODO: footnote in table if this one is true
+
+			}
+
 		} else {
 
 			dataset <- .readDataSetHeader(columns.as.numeric = variables, columns.as.factor = varsAsFactor)
@@ -81,6 +98,7 @@ NetworkAnalysis <- function (
 			list(name = "fitMeasuresTB",            type = "table"),
 			list(name = "bootstrapTB",              type = "table"),
 			list(name = "weightmatrixTB",           type = "table"),
+			list(name = "layoutTB",                 type = "table"),
 			list(name = "centralityTB",             type = "table"),
 			list(name = "mgmTB",                    type = "table"),
 			list(name = "networkPLT",               type = "collection", meta="image"),
@@ -103,7 +121,7 @@ NetworkAnalysis <- function (
 	)
 	bootstrapArgs <-c(defArgs, "numberOfBootstraps", "BootstrapType",
 					  "StatisticsEdges", "StatisticsStrength", "StatisticsCloseness", "StatisticsBetweenness", "StatisticsBetweenness")
-	
+
 	stateKey <- list(
 		# depends on everything but plotting arguments
 		network = defArgs,
@@ -113,34 +131,41 @@ NetworkAnalysis <- function (
 		centrality = c(defArgs, "normalizeCentrality", "maxEdgeStrength", "minEdgeStrength"),
 		# depends also on plotting arguments
 		networkPLT = c(defArgs,
+					   # depends also on plotting arguments
 					   "plotWidthNetwork", "plotHeightNetwork",
 					   "layout", "edgeColors", "repulsion", "edgeSize", "nodeSize", "colorNodesBy",
-					   "maxEdgeStrength", "minEdgeStrength", "cut", "showDetails", "nodeColors", "showLegend", "legendNumber",
-					   "showMgmVariableType", "showVariableNames", "graphSize", "scaleLabels", "labelSize"),
-		# depends also on plotting arguments
+					   "maxEdgeStrength", "minEdgeStrength", "cut", "showDetails", "nodeColors",
+					   "showLegend", "legendNumber", "showMgmVariableType", "showVariableNames",
+					   "graphSize", "scaleLabels", "labelSize", "abbreviateLabels", "abbreviateNoChars",
+					   "keepLayoutTheSame", "layoutX", "layoutY"),
 		centralityPLT = c(defArgs,
-						  "plotWidthCentrality", "plotHeightCentrality", "normalizeCentrality"),
+						  "plotWidthCentrality", "plotHeightCentrality", "normalizeCentrality", "abbreviateLabels", "abbreviateNoChars"),
+		layout = c(defArgs, "layout", "repulsion", "layoutX", "layoutY"),
 		bootstrapCentPLT = bootstrapArgs,
 		bootstrapCentPLT = bootstrapArgs
 	)
 
+	if (options[["keepLayoutTheSame"]]) # ensure layout remains unchanged unless the data changes
+		stateKey[["layout"]] <- "variables"
+
+
 	# show info about variable types. Done here so that hopefully a table gets shown even if .hasErrors finds something bad.
 	if (options[["estimator"]] == "mgm" && !is.null(options[["mgmVariableTypeData"]])) {
-		
+
 		results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = "init") # any errors will appear top of this table
 		results[["mgmTB"]] <- .networkAnalysisMgmVariableInfoTable(network, options, perform)
-		
+
 		if (options[["bootstrapOnOff"]]) # add bootstrap information as well
 			results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform, when = "before")
-			
+
 		if ( ! .shouldContinue(callback(results)))
 			return()
-	} else if (options[["bootstrapOnOff"]]) { 
+	} else if (options[["bootstrapOnOff"]]) {
 
 		results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = "init") # any errors will appear top of this table
 		# initialize progressbar
 		results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform, when = "before", results = results)
-		
+
 	}
 
 	## Do Analysis ## ----
@@ -200,24 +225,24 @@ NetworkAnalysis <- function (
 		}
 		if (options[["bootstrapOnOff"]]) {
 			results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform, when = "after")
-			
-			# if (options[["BootstrapType"]] %in% c("nonparametric", "parametric")) {
-				results[["bootstrapEdgePLT"]] <- .networkAnalysisBootstrapPlot(network, options, perform, "edge", oldPlot = state[["bootstrapEdgePLT"]])
-				results[["bootstrapCentPLT"]] <- .networkAnalysisBootstrapPlot(network, options, perform, c("strength", "betweenness", "closeness"), oldPlot = state[["bootstrapCentPLT"]])
-				
-				allBootstrapPlots <- results[["bootstrapEdgePLT"]][["collection"]]
-				for (bt in allBootstrapPlots)
-					keep <- c(keep, bt[["data"]])
-				
-				allBootstrapPlots <- results[["bootstrapCentPLT"]][["collection"]]
-				for (bt in allBootstrapPlots)
-					keep <- c(keep, bt[["data"]])
-				
-			# }
-			
+
+			results[["bootstrapEdgePLT"]] <- .networkAnalysisBootstrapPlot(network, options, perform, "edge", oldPlot = state[["bootstrapEdgePLT"]])
+			results[["bootstrapCentPLT"]] <- .networkAnalysisBootstrapPlot(network, options, perform, c("strength", "betweenness", "closeness"), oldPlot = state[["bootstrapCentPLT"]])
+
+			allBootstrapPlots <- results[["bootstrapEdgePLT"]][["collection"]]
+			for (bt in allBootstrapPlots)
+				keep <- c(keep, bt[["data"]])
+
+			allBootstrapPlots <- results[["bootstrapCentPLT"]][["collection"]]
+			for (bt in allBootstrapPlots)
+				keep <- c(keep, bt[["data"]])
+
 		}
 		if (options[["tableWeightsMatrix"]]) {
 			results[["weightmatrixTB"]] <- .networkAnalysisWeightMatrixTable(network, options, variables, perform)
+		}
+		if (options[["tableLayout"]]) {
+			results[["layoutTB"]] <- .networkAnalysisLayoutTable(network, options, variables, perform)
 		}
 		if (options[["tableCentrality"]]) {
 			results[["centralityTB"]] <- .networkAnalysisCentralityTable(network, options, perform)
@@ -242,6 +267,7 @@ NetworkAnalysis <- function (
 		network          = network[["network"]],
 		bootstrap        = network[["bootstrap"]],
 		centrality       = network[["centrality"]],
+		layout           = network[["layout"]],
 		networkPLT       = results[["networkPLT"]],
 		centralityPLT    = results[["centralityPLT"]],
 		bootstrapEdgePLT = results[["bootstrapEdgePLT"]],
@@ -286,8 +312,13 @@ NetworkAnalysis <- function (
 
 	}
 
-	# empty list for results
-	networkList <- list(network = oldNetwork[["network"]], centrality = oldNetwork[["centrality"]])
+	# list that contains state or is empty
+	networkList <- list(
+		network = oldNetwork[["network"]],
+		centrality = oldNetwork[["centrality"]],
+		layout = oldNetwork[["layout"]]
+	)
+
 	if (is.null(networkList[["network"]])) { # estimate network
 
 		# first setup all bootnet arguments, then loop over datasets to estimate networks
@@ -330,7 +361,7 @@ NetworkAnalysis <- function (
 			}
 
 		}
-		
+
 		if (options[["thresholdBox"]] == "value") {
 			threshold <- options[["thresholdValue"]]
 		} else { # options[["thresholdBox"]] == "method"
@@ -358,7 +389,7 @@ NetworkAnalysis <- function (
 		# get available arguments for specific network estimation function. Removes unused ones.
 		# FOR FUTURE UPDATING: options[["estimator"]] MUST match name of function in bootnet literally (see ?bootnet::bootnet_EBICglasso).
 		funArgs <- formals(utils::getFromNamespace(paste0("bootnet_", options[["estimator"]]), ns = "bootnet"))
-	
+
 		nms2keep <- names(funArgs)
 		.dots <- .dots[names(.dots) %in% nms2keep]
 
@@ -527,6 +558,35 @@ NetworkAnalysis <- function (
 		nms <- names(dataset)
 	}
 
+	if (is.null(networkList[["layout"]])) {
+
+		print(options[["layoutInvalid"]])
+		if (options[["layout"]] != "data" || options[["layoutInvalid"]]) {
+
+			if (options[["layout"]] == "data")
+				options[["layout"]] <- "circle"
+
+			# this calls qgraph::qgraph so we need the png trick again
+			tempFileName <- getTempFileName()
+			grDevices::png(filename = tempFileName)
+
+			layout <- qgraph::averageLayout(networkList[["network"]],
+											layout = options[["layout"]],
+											repulsion = options[["repulsion"]])
+
+			dev.off() # close the fake png
+			file.remove(tempFileName) # remove the fake png file
+
+		} else {
+
+			layout <- cbind(options[["layoutXData"]], options[["layoutYData"]])
+
+		}
+
+		networkList[["layout"]] <- layout
+
+	}
+
 	names(networkList[["network"]]) <- names(networkList[["centrality"]]) <- nms
 
 	networkList[["status"]] <- .networkAnalysisNetworkHasErrors(networkList)
@@ -538,11 +598,11 @@ NetworkAnalysis <- function (
 .networkAnalysisBootstrap <- function(network, options, variables, perform) {
 
 	if (perform == "run") {
-		
+
 		network[["bootstrap"]] <- list()
 		allNetworks <- network[["network"]]
 		nGraphs <- length(allNetworks)
-		
+
 		if (options[["parallelBootstrap"]]) {
 			nCores <- parallel::detectCores(TRUE)
 			if (is.na(nCores)) # parallel::detectCores returns NA if unknown/ fails
@@ -550,29 +610,30 @@ NetworkAnalysis <- function (
 		} else {
 			nCores <- 1
 		}
-		
+
 		statistics <- c("edge", "strength", "closeness", "betweenness")
 		statistics <- statistics[unlist(options[c("StatisticsEdges", "StatisticsStrength", "StatisticsCloseness", "StatisticsBetweenness")])]
-		
+
 		# Fake png hack -- qgraph::qgraph() has an unprotected call to `par()`. `par()` always opens a new device if there is none.
 		# Perhaps ask Sacha to fix this in qgraph. Line 1119: if (DoNotPlot) par(pty = pty)
 		tempFileName <- getTempFileName()
 		grDevices::png(filename = tempFileName)
 
 		for (nm in names(allNetworks)) {
-			
+
 			network[["bootstrap"]][[nm]] <- bootnet::bootnet(data = allNetworks[[nm]],
 															 nBoots = options[["numberOfBootstraps"]],
+															 type   = options[["BootstrapType"]],
 															 nCores = nCores,
 															 statistics = statistics,
 															 labels = variables
 			)
-			
+
 		}
-		
+
 		dev.off() # close the fake png
 		file.remove(tempFileName) # remove the fake png file
-		
+
 	}
 
 	return(network)
@@ -662,7 +723,7 @@ NetworkAnalysis <- function (
 
 	bootstrapType <- options[["BootstrapType"]]
 	substr(bootstrapType, 1, 1) <- toupper(substr(bootstrapType, 1, 1)) # capitalization
-	
+
 	table <- list(
 		title = "Bootstrap summary of Network",
 		schema = list(fields = list(
@@ -680,36 +741,36 @@ NetworkAnalysis <- function (
 		),
 		status = "inited"
 	)
-	
-	
-	
+
+
+
 	if (perform == "run") {
-		
+
 		if (when == "before") {
 			table[["data"]][[1]][["when"]] <- "In progress"
 			table[["status"]] <- "running"
-			
+
 			# if (!is.null(results)) {
 			# 	print("Here_1")
 			# 	for (i in 1:5) {
 			# 		print(paste0("Here_1_", i))
 			# 		table[["data"]][[1]][["test"]] <- i
-			# 		
+			#
 			# 		callbackResult <- callback(results)
 			# 		print(str(callbackResult))
 			# 		if ( ! .shouldContinue(callbackResult))
 			# 			return()
-			# 		
+			#
 			# 	}
 			# }
 		}
-		
+
 		table[["status"]] <- "complete"
 	} else {
 		table[["status"]] <- "inited"
 	}
-	
-	
+
+
 
 	return(table)
 
@@ -721,77 +782,6 @@ NetworkAnalysis <- function (
 	table[["title"]] <- "Fit Measures"
 	table[["schema"]] <- list(fields=list())
 	table[["data"]] <- list()
-
-	return(table)
-
-}
-
-.networkAnalysisWeightMatrixTable <- function(network, options, variables, perform) {
-	# browser()
-	nGraphs <- max(1, length(network[["network"]]))
-
-	table <- list(
-		title = "Weights matrix",
-		schema = list(fields = list(
-			list(name = "Variable", title = "Variable", type = "string")
-		))
-	)
-
-	# shared titles
-	overTitles <- names(network[["network"]])
-	if (is.null(overTitles))
-		overTitles <- "Network" # paste0("Network", 1:nGraphs)
-
-	nVar <- length(variables)
-	for (i in seq_len(nGraphs)) {
-		for (v in seq_len(nVar)) { # loop is not entered if nVar == 0
-			table[["schema"]][["fields"]][[1 + v + nVar*(i-1)]] <- list(name = paste0(variables[v], i), title = variables[v], type = "number", format="sf:4;dp:3", overTitle = overTitles[i])
-		}
-	}
-
-	if (perform != "run" || is.null(network)) { # make empty table
-
-		if (is.null(options[["variables"]]) || !length(options[["variables"]]) > 0) { # 1 by 1 table
-
-			TBcolumns <- list(Variable = ".")
-
-		} else { # table of nVariables by nVariables
-
-			# dataframe since reshape2 below returns dataframes
-			TBcolumns <- rep(list(rep(".", nVar)), nVar)
-			names(TBcolumns) <- paste0(variables, i)
-			TBcolumns[["Variable"]] <- variables
-		}
-		table[["status"]] <- "inited"
-
-	} else { # fill with results
-
-		allNetworks <- network[["network"]]
-		for (i in seq_len(nGraphs)) {
-
-			toAdd <- allNetworks[[i]][["graph"]]
-			if (!options[["weightedNetwork"]])
-				toAdd <- sign(toAdd)
-			if (!options[["signedNetwork"]])
-				toAdd <- abs(toAdd)
-
-			toAdd <- as.data.frame(toAdd)
-			names(toAdd) <- paste0(variables, i)
-
-			if (i > 1) {
-				TBcolumns <- cbind(TBcolumns, toAdd)
-			} else {
-				TBcolumns <- toAdd
-			}
-
-		}
-		TBcolumns <- cbind(data.frame(Variable = variables), TBcolumns)
-		table[["status"]] <- "complete"
-
-	}
-
-	data <- .TBcolumns2TBrows(TBcolumns)
-	table[["data"]] <- data
 
 	return(table)
 
@@ -905,6 +895,111 @@ NetworkAnalysis <- function (
 
 }
 
+.networkAnalysisWeightMatrixTable <- function(network, options, variables, perform) {
+	# browser()
+	nGraphs <- max(1, length(network[["network"]]))
+
+	table <- list(
+		title = "Weights matrix",
+		schema = list(fields = list(
+			list(name = "Variable", title = "Variable", type = "string")
+		))
+	)
+
+	# shared titles
+	overTitles <- names(network[["network"]])
+	if (is.null(overTitles))
+		overTitles <- "Network" # paste0("Network", 1:nGraphs)
+
+	nVar <- length(variables)
+	for (i in seq_len(nGraphs)) {
+		for (v in seq_len(nVar)) { # loop is not entered if nVar == 0
+			table[["schema"]][["fields"]][[1 + v + nVar*(i-1)]] <- list(name = paste0(variables[v], i), title = variables[v], type = "number", format="sf:4;dp:3", overTitle = overTitles[i])
+		}
+	}
+
+	if (perform != "run" || is.null(network)) { # make empty table
+
+		if (is.null(options[["variables"]]) || !length(options[["variables"]]) > 0) { # 1 by 1 table
+
+			TBcolumns <- list(Variable = ".")
+
+		} else { # table of nVariables by nVariables
+
+			# dataframe since reshape2 below returns dataframes
+			TBcolumns <- rep(list(rep(".", nVar)), nVar)
+			names(TBcolumns) <- paste0(variables, i)
+			TBcolumns[["Variable"]] <- variables
+		}
+		table[["status"]] <- "inited"
+
+	} else { # fill with results
+
+		allNetworks <- network[["network"]]
+		for (i in seq_len(nGraphs)) {
+
+			toAdd <- allNetworks[[i]][["graph"]]
+			if (!options[["weightedNetwork"]])
+				toAdd <- sign(toAdd)
+			if (!options[["signedNetwork"]])
+				toAdd <- abs(toAdd)
+
+			toAdd <- as.data.frame(toAdd)
+			names(toAdd) <- paste0(variables, i)
+
+			if (i > 1) {
+				TBcolumns <- cbind(TBcolumns, toAdd)
+			} else {
+				TBcolumns <- toAdd
+			}
+
+		}
+		TBcolumns <- cbind(data.frame(Variable = variables), TBcolumns)
+		table[["status"]] <- "complete"
+
+	}
+
+	data <- .TBcolumns2TBrows(TBcolumns)
+	table[["data"]] <- data
+
+	return(table)
+
+}
+
+.networkAnalysisLayoutTable <- function(network, options, variables, perform) {
+
+	table <- list(
+		title = "Layout",
+		schema = list(fields = list(
+			list(name = "x", title = "x", type = "number", format="sf:4;dp:3"),
+			list(name = "y", title = "y", type = "number", format="sf:4;dp:3")
+		))
+	)
+
+	nVar <- length(variables)
+	if (perform != "run" || is.null(network[["layout"]])) { # make empty table
+
+		x <- y <- rep(".", max(1, nVar))
+		TBcolumns <- list(x = x, y = y)
+		table[["status"]] <- "inited"
+
+	} else { # fill with results
+
+		TBcolumns <- list(
+			x = network[["layout"]][, 1],
+			y = network[["layout"]][, 2]
+		)
+		table[["status"]] <- "complete"
+
+	}
+
+	data <- .TBcolumns2TBrows(TBcolumns)
+	table[["data"]] <- data
+
+	return(table)
+
+}
+
 # functions for plots ----
 .networkAnalysisCentralityPlot <- function(network, options, perform, oldPlot = NULL) {
 
@@ -936,13 +1031,17 @@ NetworkAnalysis <- function (
 			Long[["graph"]] <- NA
 		}
 
+		if (options[["abbreviateLabels"]])
+			Long[["node"]] <- base::abbreviate(Long[["node"]], options[["abbreviateNoChars"]])
+
 		# code modified from qgraph::centralityPlot(). Type and graph are switched so the legend title says graph
 
 		Long <- Long[gtools::mixedorder(Long$node), ]
 		Long$node <- factor(as.character(Long$node), levels = unique(gtools::mixedsort(as.character(Long$node))))
 		if (length(unique(Long$graph)) > 1) {
 			g <- ggplot2::ggplot(Long, ggplot2::aes(x = value, y = node, group = graph,
-													colour = graph))
+													colour = graph)) +
+				ggplot2::guides(color = ggplot2::guide_legend(title = options[["groupingVariable"]])) # change the name graph into the variable name for splitting
 		} else {
 			g <- ggplot2::ggplot(Long, ggplot2::aes(x = value, y = node, group = graph))
 		}
@@ -954,8 +1053,6 @@ NetworkAnalysis <- function (
 			g <- g + ggplot2::facet_grid(~measure, scales = "free")
 		}
 		g <- g + ggplot2::theme_bw()
-
-
 
 		content <- .writeImage(width = plot[["width"]], height = plot[["height"]], plot = g)
 
@@ -1045,28 +1142,16 @@ NetworkAnalysis <- function (
 
 		allNetworks <- network[["network"]]
 		nGraphs <- length(allNetworks)
-		if (options[["layout"]] == "circle") {
-			layout <- "circle"
-		} else if (nGraphs > 1) {
 
-			# this calls qgraph::qgraph so we need the png trick again
-			tempFileName <- getTempFileName()
-			grDevices::png(filename = tempFileName)
-			layout <- qgraph::averageLayout(allNetworks, repulsion = options[["repulsion"]])
-			dev.off() # close the fake png
-			file.remove(tempFileName) # remove the fake png file
-
-		} else {
-			layout <- "spring"
-		}
+		layout <- network[["layout"]] # calculated in .networkAnalysisRun()
 
 		# ensure minimum/ maximum makes sense or ignore these parameters TODO message in general table.
 		minE <- options[["minEdgeStrength"]]
 		maxE <- options[["maxEdgeStrength"]]
-		
+
 		if (minE == 0)
 			minE <- NULL
-		if (maxE == 0 || maxE <= minE)
+		if (maxE == 0 || (!is.null(minE) && maxE <= minE))
 			maxE <- NULL
 
 		groups <- NULL
@@ -1108,6 +1193,9 @@ NetworkAnalysis <- function (
 			labels <- seq_along(nodeNames)
 
 		}
+
+		if (options[["abbreviateLabels"]])
+			labels <- base::abbreviate(labels, options[["abbreviateNoChars"]])
 
 		# do we need to draw legends?
 		if (!is.null(groups) || !is.null(nodeNames)) {
@@ -1185,69 +1273,71 @@ NetworkAnalysis <- function (
 }
 
 .networkAnalysisOneBootstrapPlot <- function() {
-	
+
 	# eval(quote()) construction because this function is evaluated inside .writeImage()
 	# which needs to look 2 levels up to find the objects network, options, layout, groups, legend, and shape.
 	eval(quote({
 		plot(bt, statistic = statistic, order = "sample")
 	}), envir = parent.frame(2))
-	
+
 }
 
 .networkAnalysisBootstrapPlot <- function(network, options, perform, statistic, oldPlot = NULL) {
-	
+
 	if (!is.null(oldPlot) && !identical(oldPlot[["collection"]][[1]][["data"]], ""))
 		return(oldPlot)
-	
+
 	plot <- list(
-		title = "Network Plot",
+		title = "Edge Stability",
 		collection = list(),
 		status = "inited"
 	)
-	
+	if (!("edge" %in% statistic))
+		plot[["title"]] <- "Centrality Stability"
+
 	subPlotBase <- list(
 		width = options[["plotWidthBootstrapPlot"]],
 		height = options[["plotHeightBootstrapPlot"]],
 		custom = list(width = "plotWidthBootstrapPlot", height = "plotHeightBootstrapPlot")
 	)
-	
+
 	if (perform == "run") {
-		
+
 		allBootstraps <- network[["bootstrap"]]
 		nGraphs <- length(allBootstraps)
 
 		for (v in names(allBootstraps)) {
-			
+
 			subPlot <- subPlotBase
 			subPlot[["title"]] <- v
 			subPlot[["name"]] <- v
-			
+
 			bt <- allBootstraps[[v]]
 
-			content <- .writeImage(width = subPlot[["width"]], height = subPlot[["height"]], 
+			content <- .writeImage(width = subPlot[["width"]], height = subPlot[["height"]],
 								   plot = plot(bt, statistic = statistic, order = "sample") # returns a ggplot object
 			)
-			
+
 			subPlot[["convertible"]] <- TRUE
 			subPlot[["data"]] <- content[["png"]]
 			subPlot[["obj"]] <- content[["obj"]]
 			subPlot[["status"]] <- "complete"
 			plot[["collection"]][[v]] <- subPlot
-			
+
 		}
-		
+
 	} else {
-		
+
 		subPlot <- subPlotBase
 		subPlot[["network 1"]] <- "network 1"
 		subPlot[["data"]] <- ""
 		subPlot[["status"]] <- "inited"
 		plot[["collection"]][["network 1"]] <- subPlot
-		
+
 	}
-	
+
 	return(plot)
-	
+
 }
 
 # helper functions ----
@@ -1299,91 +1389,6 @@ getTempFileName <- function() {
 	return("success")
 
 }
-
-# TODO: periodically check if this has been implemented in bootnet (Sacha said he'd do so).
-.networkAnalysisBootnet_cor <- function (data, corMethod = c("cor_auto", "cov", "cor", "npn"), 
-										 missing = c("pairwise", "listwise", "stop"), 
-										 sampleSize = c("maximum", "minimim"), 
-										 verbose = TRUE, corArgs = list(), threshold = 0) {
-	corMethod <- match.arg(corMethod)
-	missing <- match.arg(missing)
-	sampleSize <- match.arg(sampleSize)
-	if (identical(threshold, "none")) {
-		threshold <- 0
-	}
-	if (verbose) {
-		msg <- "Estimating Network. Using package::function:"
-		msg <- paste0(msg, "\n  - qgraph::qgraph(..., graph = 'pcor') for network computation")
-		if (corMethod == "cor_auto") {
-			msg <- paste0(msg, "\n  - qgraph::cor_auto for correlation computation\n    - using lavaan::lavCor")
-		}
-		if (corMethod == "npn") {
-			msg <- paste0(msg, "\n  - huge::huge.npn for nonparanormal transformation")
-		}
-		if (threshold != "none") {
-			if (threshold != "locfdr") {
-				msg <- paste0(msg, "\n  - psych::corr.p for significance thresholding")
-			}
-			else {
-				msg <- paste0(msg, "\n  - fdrtool for false discovery rate")
-			}
-		}
-		message(msg)
-	}
-	if (!(is.data.frame(data) || is.matrix(data))) {
-		stop("'data' argument must be a data frame")
-	}
-	if (is.matrix(data)) {
-		data <- as.data.frame(data)
-	}
-	N <- ncol(data)
-	Np <- nrow(data)
-	if (missing == "stop") {
-		if (any(is.na(data))) {
-			stop("Missing data detected and missing = 'stop'")
-		}
-	}
-	if (corMethod == "npn") {
-		data <- huge::huge.npn(data)
-		corMethod <- "cor"
-	}
-	if (corMethod == "cor_auto") {
-		args <- list(data = data, missing = missing, verbose = verbose)
-		if (length(corArgs) > 0) {
-			for (i in seq_along(corArgs)) {
-				args[[names(corArgs)[[i]]]] <- corArgs[[i]]
-			}
-		}
-		corMat <- do.call(qgraph::cor_auto, args)
-	}
-	else if (corMethod %in% c("cor", "cov")) {
-		use <- switch(missing, pairwise = "pairwise.complete.obs", 
-					  listwise = "complete.obs")
-		args <- list(x = data, use = use)
-		if (length(corArgs) > 0) {
-			for (i in seq_along(corArgs)) {
-				args[[names(corArgs)[[i]]]] <- corArgs[[i]]
-			}
-		}
-		corMat <- do.call(corMethod, args)
-	}
-	else stop("Correlation method is not supported.")
-	if (missing == "listwise") {
-		sampleSize <- nrow(na.omit(data))
-	}
-	else {
-		if (sampleSize == "maximum") {
-			sampleSize <- sum(apply(data, 1, function(x) !all(is.na(x))))
-		}
-		else {
-			sampleSize <- sum(apply(data, 1, function(x) !any(is.na(x))))
-		}
-	}
-	Results <- getWmat(qgraph::qgraph(corMat, graph = "pcor", 
-									  DoNotPlot = TRUE, threshold = threshold, sampleSize = sampleSize))
-	return(list(graph = Results, results = Results))
-}
-
 
 # saveDataToDput <- function(...) {
 #
