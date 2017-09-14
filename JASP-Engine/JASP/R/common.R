@@ -95,6 +95,7 @@ run <- function(name, options.as.json.string, perform="run") {
 		if ("state" %in% names(results)) {
 
 			state <- results$state
+			results$state <- NULL
 			
 			if (! is.null(names(state))) {
 				state[["figures"]] <- c(state[["figures"]], .imgToState(results$results))
@@ -116,7 +117,6 @@ run <- function(name, options.as.json.string, perform="run") {
 		
 			results <- .imgToResults(results)
 			results$results <- .addCitationToResults(results$results)
-			results$state   <- NULL # remove the state object
 			results$keep    <- c(results$keep, keep)  # keep the state file
 			
 		} else {
@@ -1067,8 +1067,8 @@ saveImage <- function(plotName, format, height, width){
 # result list, while retaining the structure of said list.
 .imgToResults <- function(lst) {
 
-	if (!is.list(lst))
-		return(lst) # we are at an end node, stop
+	if (! "list" %in% class(lst))
+		return(lst) # we are at an end node or have a non-list/custom object, stop
 	
 	if (all(c("data", "obj") %in% names(lst)) && is.character(lst[["data"]])) {
 		# found a figure! remove its object!
