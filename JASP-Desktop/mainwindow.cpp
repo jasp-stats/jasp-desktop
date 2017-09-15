@@ -1202,10 +1202,13 @@ void MainWindow::populateUIfromDataSet()
 					Json::Value &optionsJson = analysisData["options"];
 					Json::Value &resultsJson = analysisData["results"];
 					Json::Value &userDataJson = analysisData["userdata"];
+					Json::Value &versionJson = analysisData["version"];
+
+					Version version = versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
 
 					Analysis::Status status = Analysis::parseStatus(analysisData["status"].asString());
 
-					Analysis *analysis = _analyses->create(name, id, &optionsJson, status);
+					Analysis *analysis = _analyses->create(name, id, version, &optionsJson, status);
 
 					analysis->setUserData(userDataJson);
 					analysis->setResults(resultsJson);

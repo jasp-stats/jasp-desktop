@@ -25,7 +25,10 @@ using namespace std;
 
 Version::Version()
 {
-
+	major = 0;
+	minor = 0;
+	revision = 0;
+	build = 0;
 }
 
 Version::Version(unsigned char _major, unsigned char _minor, unsigned char _revision, unsigned short _build)
