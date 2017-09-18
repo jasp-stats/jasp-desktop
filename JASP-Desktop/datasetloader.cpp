@@ -42,10 +42,10 @@ JaspFileTypes::FilePath DataSetLoader::getExtension(const JaspFileTypes::FilePat
 	return locator.extension();
 }
 
-Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const JaspFileTypes::FilePath &locator, const string &extension)
+Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const JaspFileTypes::FilePath &locator, const JaspFileTypes::FilePath &extension)
 {
 	Importer* result = NULL;
-	string ext = getExtension(locator).generic_string();
+    string ext = getExtension(locator).string();
 
 	if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt"))
 		result = new CSVImporter(packageData);
@@ -57,7 +57,7 @@ Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const JaspFile
 	return result;
 }
 
-void DataSetLoader::loadPackage(DataSetPackage *packageData, const JaspFileTypes::FilePath &locator, const string &extension, boost::function<void(const string &, int)> progress)
+void DataSetLoader::loadPackage(DataSetPackage *packageData, const JaspFileTypes::FilePath &locator, const JaspFileTypes::FilePath &extension, boost::function<void(const string &, int)> progress)
 {
 	Importer* importer = getImporter(packageData, locator, extension);
 
@@ -70,7 +70,7 @@ void DataSetLoader::loadPackage(DataSetPackage *packageData, const JaspFileTypes
 		JASPImporter::loadDataSet(packageData, locator, progress);
 }
 
-void DataSetLoader::syncPackage(DataSetPackage *packageData, const JaspFileTypes::FilePath &locator, const string &extension, boost::function<void(const string &, int)> progress)
+void DataSetLoader::syncPackage(DataSetPackage *packageData, const JaspFileTypes::FilePath &locator, const JaspFileTypes::FilePath &extension, boost::function<void(const string &, int)> progress)
 {
 	Importer* importer = getImporter(packageData, locator, extension);
 

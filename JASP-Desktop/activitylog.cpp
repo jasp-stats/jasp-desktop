@@ -38,7 +38,8 @@ using namespace boost::filesystem;
 
 ActivityLog::ActivityLog(QObject *parent)
 	: QObject(parent)
-	,	_lockFile(toQStr(Dirs::appDataDir().append("log.csv.lock").native()))
+//	,	_lockFile(toQStr(Dirs::appDataDir().append("log.csv.lock").native()))
+	,	_lockFile(toQStr(Dirs::appDataDir().append("\log.csv.lock")))
 {
 	_reply = NULL;
 	{

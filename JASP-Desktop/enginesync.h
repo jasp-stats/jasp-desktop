@@ -36,6 +36,7 @@
 #include "analyses.h"
 #include "ipcchannel.h"
 #include "activitylog.h"
+#include "tempfiles.h"
 
 /* EngineSync is responsible for launching the background
  * processes, scheduling analyses, and for sending and
@@ -82,6 +83,8 @@ private:
 
 	std::string _memoryName;
 	std::string _engineInfo;
+
+//	JaspTempFiles _tempFiles;
 
 private slots:
 

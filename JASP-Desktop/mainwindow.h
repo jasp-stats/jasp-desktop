@@ -211,6 +211,9 @@ private slots:
 
 	void setExactPValuesHandler(bool exactPValues);
 
+private:
+//	JaspTempFiles & _tempFiles;
+
 };
 
 #endif // MAINWIDGET_H

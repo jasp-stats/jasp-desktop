@@ -22,18 +22,53 @@
 
 using namespace std;
 
+/**
+ * @brief toQStr Convert JaspFileTypes::FilePath (aka JaspFileTypes::FilePath) to QString
+ * @param path The path to convert.
+ * @return The file name in OS native format as QString
+ */
+QString toQStr(const JaspFileTypes::FilePath &pth)
+{
+#ifdef __WIN32__
+    wstring w = pth.wstring();
+    QString result = QString::fromStdWString(w);
+    return result;
+#else
+    return QString::fromStdString(pth.string());
+#endif
+}
+
+
+/**
+ * @brief toPath Converts a QString file path to a path object.
+ * @param pa The QString path to convert.
+ * @return A path object wi the same constent as the param pa.
+ */
+JaspFileTypes::FilePath toPath(const QString &pa)
+{
+#ifdef _WIN32
+    // Windows is odd QT uses \ as dir sep also on Windows.
+    QString path(pa);
+    path.replace('/', '\\');
+    return JaspFileTypes::FilePath(path.toStdWString());
+#else
+    return JaspFileTypes::FilePath(pa.toStdString());
+#endif
+}
+
+
 QStringList toQStringList(const vector<string> &from)
 {
-	(void)from;
+    (void)from;
 
-	QStringList result;
+    QStringList result;
 
-	BOOST_FOREACH(const std::string &str, from)
-	{
-		(void)from;
-		result.append(QString::fromStdString(str));
-	}
+    BOOST_FOREACH(const std::string &str, from)
+    {
+        (void)from;
+        result.append(QString::fromStdString(str));
+    }
 
-	return result;
+    return result;
 }
 

@@ -75,7 +75,7 @@ void TextFileReadTest::asyncloaderTester_data()
   if(folderPathFound)
   {
     QTest::addColumn<QString>("filename");
-	boost::filesystem::path _path = _directory;
+	JaspFileTypes::FilePath _path = _directory;
 
     //add files to be tested in a folder "Resources/TestFiles/spssimporter_test/spss_files"
     for (auto i = boost::filesystem::directory_iterator(_path); i != boost::filesystem::directory_iterator(); i++)

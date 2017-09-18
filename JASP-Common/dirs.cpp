@@ -24,7 +24,6 @@
 #include <windows.h>
 #include <shlwapi.h>
 #include <shlobj.h>
-#include <knownfolders.h>
 #elif defined(__APPLE__)
 #include <libproc.h>
 #include <unistd.h>
@@ -50,101 +49,104 @@
 using namespace std;
 using namespace boost;
 
-#ifdef __WIN32__
-const GUID FOLDERID_RoamingAppData = { 0x3eb685db, 0x65f9, 0x4cf6,{ 0xa0, 0x3a, 0xe3, 0xef, 0x65, 0x72, 0x9f, 0x3d } };
-#endif
-
-
-JaspFileTypes::FilePath Dirs::appDataDir()
+string Dirs::appDataDir()
 {
-	static filesystem::path p = "";
+	static string p = "";
 
 	if (p != "")
 		return p;
 
+	string dir;
+	filesystem::path pa;
+
 #ifdef __WIN32__
+	TCHAR buffer[MAX_PATH];
+
+	HRESULT ret = SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, buffer);
+
+	if ( ! SUCCEEDED(ret))
 	{
-		PWSTR buffer;
-
-        HRESULT ret = SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_DEFAULT, NULL, &buffer);
-		if ( ! SUCCEEDED(ret))
-		{
-			stringstream ss;
-			ss << "App Data directory could not be retrieved (" << ret << ")";
-			throw Exception(ss.str());
-		}
-
-		p = buffer;
-		CoTaskMemFree(buffer);
+		stringstream ss;
+		ss << "App Data directory could not be retrieved (" << ret << ")";
+		throw Exception(ss.str());
 	}
+
+	dir = nowide::narrow(buffer);
+	dir += "/JASP/" + AppInfo::getShortDesc();
+
+	pa = nowide::widen(dir);
+
 #else
-	p = getpwuid(getuid())->pw_dir;
+
+	dir = string(getpwuid(getuid())->pw_dir);
+	dir += "/.JASP/" + AppInfo::getShortDesc();
+
+	pa = dir;
+
 #endif
 
-	p /= AppInfo::name;
-	p /= AppInfo::getShortDesc();
-
-	if ( ! filesystem::exists(p))
+	if ( ! filesystem::exists(pa))
 	{
 		system::error_code ec;
 
-		filesystem::create_directories(p, ec);
+		filesystem::create_directories(pa, ec);
 
 		if (ec)
 		{
 			stringstream ss;
-            ss << "App Data directory could not be created: " << p.string();
+			ss << "App Data directory could not be created: " << dir;
 			throw Exception(ss.str());
 		}
 	}
 
-#ifndef QT_NO_DEBUG
-	cout << "Dirs::appDataDir() - returning " << p.string() << endl;
-#endif
+	p = filesystem::path(dir).generic_string();
 
 	return p;
 }
 
-
-JaspFileTypes::FilePath Dirs::tempDir()
+string Dirs::tempDir()
 {
-	static filesystem::path p = "";
+	static string p = "";
 
 	if (p != "")
 		return p;
 
+	string dir;
+	filesystem::path pa;
+
 #ifdef __WIN32__
-	TCHAR buffer[MAX_PATH + 2];
-    if ( ::GetTempPath(MAX_PATH, buffer) == 0)
+	TCHAR buffer[MAX_PATH];
+	if ( ! SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, buffer)))
 		throw Exception("App Data directory could not be retrieved");
 
-	p = buffer;
+	dir = nowide::narrow(buffer);
+	dir += "/JASP/temp";
+
+	pa = nowide::widen(dir);
+
 #else
-	{
-		const char * tmp = getenv("TMPDIR");
-		if (tmp == 0)
-			tmp = "/tmp";
-		p = tmp;
-	}
+
+	dir = string(getpwuid(getuid())->pw_dir);
+	dir += "/.JASP/temp";
+
+	pa = dir;
 
 #endif
-	p /= AppInfo::name;
-	if ( ! filesystem::exists(p))
+
+	if ( ! filesystem::exists(pa))
 	{
 		system::error_code ec;
-		filesystem::create_directories(p, ec);
+		filesystem::create_directories(pa, ec);
 
 		if (ec)
 		{
 			stringstream ss;
-            ss << "Temp Data directory could not be created (" << ec << ") : " << p.string();
+			ss << "Temp Data directory could not be created (" << ec << ") : " << dir;
 			throw Exception(ss.str());
 		}
 	}
 
-#ifndef QT_NO_DEBUG
-    cout << "Dirs::tempDir() - returning " << p.string() << endl;
-#endif
+	p = filesystem::path(dir).generic_string();
 
 	return p;
 }
@@ -155,17 +157,16 @@ namespace interprocess {
 namespace ipcdetail {
 void get_shared_dir(std::string &shared_dir)
 {
-	shared_dir = Dirs::tempDir().native();
+	shared_dir = Dirs::tempDir();
 }
 }}}
 #endif
 
-JaspFileTypes::FilePath Dirs::exeDir()
+string Dirs::exeDir()
 {
-	static filesystem::path p;
-
-	if (p.has_filename())
-		return p.parent_path();
+	static string p = "";
+	if (p != "")
+		return p;
 
 #ifdef __WIN32__
 	HMODULE hModule = GetModuleHandleW(NULL);
@@ -180,7 +181,27 @@ JaspFileTypes::FilePath Dirs::exeDir()
 		throw Exception(ss.str());
 	}
 
-	p = path;
+	string r = nowide::narrow(path);
+
+	char pathbuf[MAX_PATH];
+	r.copy(pathbuf, MAX_PATH);
+
+	int last = 0;
+
+	for (int i = 0; i < r.length(); i++)
+	{
+		if (pathbuf[i] == '\\')
+		{
+			pathbuf[i] = '/';
+			last = i;
+		}
+	}
+
+	r = string(pathbuf, last);
+
+	p = r;
+
+	return r;
 
 #elif defined(__APPLE__)
 
@@ -193,15 +214,29 @@ JaspFileTypes::FilePath Dirs::exeDir()
 	{
 		throw Exception("Executable directory could not be retrieved");
 	}
+	else
+	{
+		int last = strlen(pathbuf);
 
-	p = pathbuff;
+		for (int i = last - 1; i > 0; i--)
+		{
+			if (pathbuf[i] == '/')
+			{
+				pathbuf[i] = '\0';
+				break;
+			}
+		}
 
+		p = string(pathbuf);
+
+		return p;
+	}
 #else
 
     char buf[512];
     char linkname[512]; /* /proc/<pid>/exe */
 	pid_t pid;
-	ssize_t ret;
+	int ret;
 
 	pid = getpid();
 
@@ -216,43 +251,48 @@ JaspFileTypes::FilePath Dirs::exeDir()
 	if (ret >= sizeof(buf))
 		throw Exception("Executable directory could not be retrieved: insufficient buffer size");
 
-	p = buf;
-#endif
+    for (int i = ret; i > 0; i--)
+    {
+        if (buf[i] == '/')
+        {
+            buf[i] = '\0'; // add null terminator
+            break;
+        }
+    }
 
-	return p.parent_path();
+	return string(buf);
+
+#endif
 
 }
 
-JaspFileTypes::FilePath Dirs::rHomeDir()
+string Dirs::rHomeDir()
 {
-	filesystem::path dir = exeDir();
+	string dir = exeDir();
 
 #ifdef __WIN32__
-	dir /= "R";
+	dir += "/R";
 #elif __APPLE__
-	dir /= "../Frameworks/R.framework/Versions/" + CURRENT_R_VERSION + "/Resources";
+	dir += "/../Frameworks/R.framework/Versions/" + CURRENT_R_VERSION + "/Resources";
 #else
-	dir /= "R";
+	dir += "/R";
 #endif
 
 	return dir;
 }
 
 
-JaspFileTypes::FilePath Dirs::libraryDir()
+string Dirs::libraryDir()
 {
-	filesystem::path dir = exeDir();
+    string dir = exeDir();
 
 #ifdef __WIN32__
-	dir /= "Resources/Library";
+	dir += "/Resources/Library";
 #elif __APPLE__
-	dir /= "../Resources/Library";
+	dir += "/../Resources/Library";
 #else
-	dir /= "Resources/Library";
+	dir += "/Resources/Library";
 #endif
 
-#ifndef QT_NO_DEBUG
-	cout << "Dirs::libraryDir() returning : " << dir.native() << endl;
-#endif
     return dir;
 }

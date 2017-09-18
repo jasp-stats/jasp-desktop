@@ -22,6 +22,7 @@
 #include "dataset.h"
 #include "version.h"
 #include "lib_json/json.h"
+#include "../JASP-Common/sysdepfiletype.h"
 
 #include "boost/signals2.hpp"
 
@@ -38,7 +39,7 @@ public:
 	bool isArchive = false;
 	std::string warningMessage;
 
-	std::string id;
+    JaspFileTypes::FilePath id;
 	std::string initalMD5;
 
 	std::string dataFilePath;

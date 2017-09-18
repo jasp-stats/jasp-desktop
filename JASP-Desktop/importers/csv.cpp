@@ -42,7 +42,7 @@ CSV::CSV(const JaspFileTypes::FilePath &path)
 
 void CSV::open()
 {
-	_fileSize = Utils::getFileSize(_path);
+	_fileSize = Utils::getFileSize(_path.string());
 
 	if (_fileSize < 0)
 		throw runtime_error("Could not access file");

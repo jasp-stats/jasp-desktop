@@ -79,7 +79,7 @@ void CSVImporterTest::csvTester()
   qDebug() << "filename: " << filename;
 
   QString full_path = QString::fromStdWString(_full_path.wstring());
-  full_path.append(boost::filesystem::path::preferred_separator);
+  full_path.append(JaspFileTypes::FilePath::preferred_separator);
   full_path.append(filename);
 
   fe->setPath(full_path);

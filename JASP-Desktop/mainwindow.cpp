@@ -113,9 +113,10 @@
 using namespace std;
 using namespace boost;
 
-MainWindow::MainWindow(QWidget *parent) :
-	QMainWindow(parent),
-	ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent)
+	: QMainWindow(parent)
+	, ui(new Ui::MainWindow)
+//	, _tempFiles(JaspTempFiles::instance())
 {
 	_log = NULL;
 	_tableModel = NULL;
@@ -167,6 +168,7 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 
 	tempfiles_init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
+//	_tempFiles.init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
 	_odm = new OnlineDataManager(this);
 	_odm->initAuthentication(OnlineDataManager::OSF);
@@ -176,6 +178,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	// the LRNAM adds mime types to local resources; important for SVGs
 	ui->webViewResults->page()->setNetworkAccessManager(new LRNAM(toQStr(tempfiles_sessionDirName()), this));
+//	ui->webViewResults->page()->setNetworkAccessManager(new LRNAM(toQStr(_tempFiles.sessionDir()), this));
 	ui->webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));
 	connect(ui->webViewResults, SIGNAL(loadFinished(bool)), this, SLOT(resultsPageLoaded(bool)));
 	connect(ui->webViewResults, SIGNAL(scrollValueChanged()), this, SLOT(scrollValueChangedHandle()));
@@ -631,12 +634,14 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 		}
 		else
 		{
-			QString imagePath = toQStr(tempfiles_sessionDirName()) + "/" + root.get("name", Json::nullValue).asCString();
+			JaspFileTypes::FilePath imagePath = tempfiles_sessionDirName();
+//			JaspFileTypes::FilePath imagePath = _tempFiles.sessionDir();
+			imagePath /= root.get("name", Json::nullValue).asString();
 			if (QFile::exists(finalPath))
 			{
 				QFile::remove(finalPath);
 			}
-			QFile::copy(imagePath, finalPath);
+            QFile::copy(toQStr(imagePath), finalPath);
         }
 	}
 }
@@ -649,6 +654,7 @@ void MainWindow::analysisImageSavedHandler(Analysis *analysis)
 	Json::Value inputOptions = results.get("inputOptions", Json::nullValue);
 
 	QString imagePath = toQStr(tempfiles_sessionDirName()) + "/" + results.get("name", Json::nullValue).asCString();
+//	QString imagePath = toQStr(_tempFiles.sessionDir()) + "/" + results.get("name", Json::nullValue).asCString();
 	QString finalPath = toQStr(inputOptions.get("finalPath", Json::nullValue).asString());
 	if (!finalPath.isEmpty())
 	{
@@ -1726,6 +1732,7 @@ void MainWindow::saveTempImageHandler(int id, QString path, QByteArray data)
 	QByteArray byteArray = QByteArray::fromBase64(data);
 
 	QString fullpath = toQStr(tempfiles_createSpecific_clipboard(toStr(path)));
+//	QString fullpath = toQStr(_tempFiles.createSpecific_clipboard(toStr(path)));
 
 	QFile file(fullpath);
 	file.open(QIODevice::WriteOnly);
@@ -1931,12 +1938,14 @@ void MainWindow::editTitleSelected()
 void MainWindow::copySelected()
 {
 	tempfiles_purgeClipboard();
+//	_tempFiles.purgeClipboard();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.copyMenuClicked();");
 }
 
 void MainWindow::citeSelected()
 {
 	tempfiles_purgeClipboard();
+//	_tempFiles.purgeClipboard();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.citeMenuClicked();");
 }
 

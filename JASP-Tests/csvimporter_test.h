@@ -62,7 +62,7 @@ public:
   bool checkIfNumeric(std::string);
 
 private:
-  boost::filesystem::path   _full_path;
+  JaspFileTypes::FilePath   _full_path;
 
 private slots:
     void initTestCase();

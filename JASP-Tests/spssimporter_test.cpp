@@ -48,7 +48,7 @@ void SPSSImporterTest::spssTester_data()
 
 	_spss_path = current_path();
   #ifdef __WIN32__
-	_spss_path = _full_path.parent_path();
+    _spss_path = _spss_path.parent_path();
   #endif
 	_spss_path.append(TESTFILE_FOLDER);
 	_spss_path.append("spssimporter_test");

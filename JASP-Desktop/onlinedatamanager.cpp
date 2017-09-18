@@ -351,6 +351,7 @@ OnlineDataNode *OnlineDataManager::getOnlineNodeData(QString nodePath, QString i
 QString OnlineDataManager::getLocalPath(QString nodePath) const {
 
 	QString name = QString(QCryptographicHash::hash(nodePath.toLatin1(),QCryptographicHash::Md5).toHex());
-	filesystem::path tempFile = tempfiles_createSpecificFp("online", name.toStdString());
+//	JaspFileTypes::FilePath tempFile = JaspTempFiles::instance().createSpecific("online", name.toStdString());
+	string tempFile = tempfiles_createSpecific("online", name.toStdString());
 	return toQStr(tempFile);
 }

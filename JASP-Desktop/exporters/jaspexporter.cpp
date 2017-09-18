@@ -288,7 +288,8 @@ void JASPExporter::saveJASPArchive(archive *a, DataSetPackage *package, boost::f
 		for (Json::Value::iterator iter = analysesDataList.begin(); iter != analysesDataList.end(); iter++)
 		{
 			Json::Value &analysisJson = *iter;
-			vector<JaspFileTypes::FilePath> paths = tempfiles_retrieveListFullPaths(analysisJson["id"].asInt());
+			vector<string> paths = tempfiles_retrieveList(analysisJson["id"].asInt());
+//			vector<JaspFileTypes::FilePath> paths = JaspTempFiles::instance().retrieveList(analysisJson["id"].asInt());
 			for (size_t j = 0; j < paths.size(); j++)
 			{
 				FileReader fileInfo = FileReader(paths[j]);
@@ -297,7 +298,8 @@ void JASPExporter::saveJASPArchive(archive *a, DataSetPackage *package, boost::f
 					int imageSize = fileInfo.size();
 
 					entry = archive_entry_new();
-                    string dd4 = paths[j].string();
+//					string dd4 = paths[j].string();
+					string dd4 = paths[j];
 					archive_entry_set_pathname(entry, dd4.c_str());
 					archive_entry_set_size(entry, imageSize);
 					archive_entry_set_filetype(entry, AE_IFREG);

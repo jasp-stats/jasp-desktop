@@ -233,6 +233,7 @@ void Analyses::analysisOptionsChangedHandler(Analysis *analysis)
 void Analyses::analysisToRefreshHandler(Analysis *analysis)
 {
 	analysis->setStatus(Analysis::Empty);
+//	JaspTempFiles::instance().deleteAll(analysis->id());
 	tempfiles_deleteAll(analysis->id());
 	analysisToRefresh(analysis);
 }

@@ -1,4 +1,4 @@
-//
+ //
 // Copyright (C) 2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
@@ -298,8 +298,9 @@ void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const FileP
 			string filename = resourceEntry.fileName();
 			string dir = resource.substr(0, resource.length() - filename.length() - 1);
 	
-			FilePath destination = tempfiles_createSpecificFp(dir, resourceEntry.fileName());
-	
+//			FilePath destination = JaspTempFiles::instance().createSpecific(dir, resourceEntry.fileName());
+			FilePath destination = tempfiles_createSpecific(dir, resourceEntry.fileName());
+
 			JaspFileTypes::OFStream file(destination, ios::out | ios::binary);
 	
 			char copyBuff[8016];

@@ -23,16 +23,26 @@
 #include <QLayout>
 #include <QDebug>
 
+#include <boost/locale.hpp>
+
 #include "application.h"
 
 int main(int argc, char *argv[])
 {
-	QCoreApplication::setOrganizationName("JASP");
-	QCoreApplication::setOrganizationDomain("jasp-stats.org");
-	QCoreApplication::setApplicationName("JASP");
+    QCoreApplication::setOrganizationName("JASP");
+    QCoreApplication::setOrganizationDomain("jasp-stats.org");
+    QCoreApplication::setApplicationName(QCoreApplication::organizationName());
 
-	QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
+    QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
 
-	Application a(argc, argv);
-	return a.exec();
+    // Set up the boost filesystem to workj with the relevant API
+#ifdef __WIN32__
+    {
+        std::locale pathLocale = boost::locale::generator().generate("winapi");
+        boost::filesystem::path::imbue(pathLocale);
+    }
+#endif
+
+    Application a(argc, argv);
+    return a.exec();
 }

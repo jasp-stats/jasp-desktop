@@ -18,18 +18,18 @@
 #ifndef DIRS_H
 #define DIRS_H
 
-#include "sysdepfiletype.h"
+#include <string>
 #include <stdexcept>
 
 class Dirs
 {
 public:
 
-	static JaspFileTypes::FilePath appDataDir();
-	static JaspFileTypes::FilePath tempDir();
-	static JaspFileTypes::FilePath exeDir();
-	static JaspFileTypes::FilePath rHomeDir();
-	static JaspFileTypes::FilePath libraryDir();
+	static std::string appDataDir();
+	static std::string tempDir();
+	static std::string exeDir();
+	static std::string rHomeDir();
+	static std::string libraryDir();
 
 	class Exception : public std::runtime_error
 	{

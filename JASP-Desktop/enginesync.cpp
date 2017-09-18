@@ -34,13 +34,14 @@
 #include "common.h"
 #include "appinfo.h"
 #include "desktoputils.h"
-#include "tempfiles.h"
 
 using namespace boost::interprocess;
 using namespace std;
 
 EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 	: QObject(parent)
+//	, _tempFiles(JaspTempFiles::instance())
+
 {
 	_analyses = analyses;
 	_engineStarted = false;
@@ -67,6 +68,7 @@ EngineSync::~EngineSync()
 			_slaveProcesses[i]->kill();
 		}
 
+//		tempfiles_deleteAll();
 		tempfiles_deleteAll();
 	}
 
@@ -388,7 +390,7 @@ void EngineSync::startSlaveProcess(int no)
 #define ARCH_SUBPATH "x64"
 #endif
 
-	env.insert("PATH", programDir.absoluteFilePath("R\\library\\RInside\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\library\\Rcpp\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\bin\\" ARCH_SUBPATH));
+    env.insert("PATH", programDir.absoluteFilePath("R\\library\\RInside\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\library\\Rcpp\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\bin\\" ARCH_SUBPATH));
 	env.insert("R_HOME", rHome.absolutePath());
 
 	unsigned long processId = ProcessInfo::currentPID();
@@ -425,10 +427,21 @@ void EngineSync::startSlaveProcess(int no)
 
 #endif
 
+#ifndef QT_NO_DEBUG
+	qDebug() << "Env for process " << engineExe << "\n"
+			 << env.toStringList();
+#endif
+
 	QProcess *slave = new QProcess(this);
 	slave->setProcessChannelMode(QProcess::ForwardedChannels);
 	slave->setProcessEnvironment(env);
+#ifndef QT_NO_DEBUG
+	cout << "Starting engine" << endl;
+#endif
 	slave->start(engineExe, args);
+#ifndef QT_NO_DEBUG
+	cout << "Engine started" << endl;
+#endif
 
 
 	_slaveProcesses.push_back(slave);
@@ -443,11 +456,13 @@ void EngineSync::startSlaveProcess(int no)
 void EngineSync::deleteOrphanedTempFiles()
 {
 	tempfiles_deleteOrphans();
+//	_tempFiles.deleteOrphans();
 }
 
 void EngineSync::heartbeatTempFiles()
 {
 	tempfiles_heartbeat();
+//	_tempFiles.heatbeat();
 }
 
 void EngineSync::subProcessStandardOutput()
@@ -470,17 +485,17 @@ void EngineSync::subProcessStarted()
 
 void EngineSync::subProcessError(QProcess::ProcessError error)
 {
-	emit engineTerminated();
+    emit engineTerminated();
 
-	qDebug() << "subprocess error" << error;
+    qDebug() << "subprocess error" << error;
 }
 
 void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
-	(void)exitStatus;
+    (void)exitStatus;
 
-	emit engineTerminated();
+    emit engineTerminated();
 
-	qDebug() << "subprocess finished" << exitCode;
+    qDebug() << "subprocess finished" << exitCode;
 }
 

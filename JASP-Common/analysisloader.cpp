@@ -21,45 +21,60 @@
 #include <string>
 #include "dirs.h"
 #include "version.h"
+#include "sysdepfiletype.h"
 
 using namespace std;
 using namespace boost;
 
 Analysis *AnalysisLoader::load(int id, string analysisName, Json::Value *data)
 {
-	Options *options = new Options();
+    Options *options = new Options();
 
-    filesystem::path pa = Dirs::libraryDir();
+    JaspFileTypes::FilePath pa = Dirs::libraryDir();
     pa /= analysisName + ".json";
 
 #ifndef QT_NO_DEBUG
-	std::cout << "AnalysisLoader::load(id=" << id << ", analysisName=\"" << analysisName << "\", Json::Value *data): Trying for file " << pa.string() << std::endl;
+    std::cout << "AnalysisLoader::load(id=" << id << ", analysisName=\"" << analysisName << "\", Json::Value *data): Trying for file " << pa.string() << std::endl;
 #endif
 
     JaspFileTypes::IFStream file(pa, ios::in);
-	if (file.is_open())
-	{
-		Json::Value analysisDesc;
-		Json::Reader parser;
-		parser.parse(file, analysisDesc);
+    if (file.is_open())
+    {
+        Json::Value analysisDesc;
+        Json::Reader parser;
+        parser.parse(file, analysisDesc);
+//        {
+//            // Reads all the file into the file buffer.
+//            string allFile;
+//            const size_t buffSize = 1204;
+//            char *buff = new char[buffSize + 1];
+//            while (file.good() && !file.eof())
+//            {
+//                file.read(buff, buffSize);
+//                buff[file.gcount()] = '\0';
+//                allFile.append(buff);
+//            }
+//            delete [] buff;
+//            parser.parse(allFile, analysisDesc);
+//        }
 
-		Json::Value optionsJson = analysisDesc.get("options", Json::nullValue);
-		if (optionsJson != Json::nullValue)
-			options->init(optionsJson);
-		else
-			perror("malformed analysis definition");
+        Json::Value optionsJson = analysisDesc.get("options", Json::nullValue);
+        if (optionsJson != Json::nullValue)
+            options->init(optionsJson);
+        else
+            perror("malformed analysis definition");
 
-		bool autorun = analysisDesc.get("autorun", false).asBool();
-		bool usedata = analysisDesc.get("usedata", true).asBool();
-		Version version = Version(analysisDesc.get("version", "0.00").asString());
+        bool autorun = analysisDesc.get("autorun", false).asBool();
+        bool usedata = analysisDesc.get("usedata", true).asBool();
+        Version version = Version(analysisDesc.get("version", "0.00").asString());
 
-		if (data != NULL)
-			options->set(*data);
+        if (data != NULL)
+            options->set(*data);
 
-		file.close();
+        file.close();
 
-		return new Analysis(id, analysisName, options, version, autorun, usedata);
-	}
+        return new Analysis(id, analysisName, options, version, autorun, usedata);
+    }
 
-	throw runtime_error("Could not access analysis definition.");
+    throw runtime_error("Could not access analysis definition.");
 }
