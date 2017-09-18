@@ -23,11 +23,11 @@ BASRegressionLinearLink <- function (
 	state = NULL,
 	...
 ) {
-	
+
 	# Configure the state
-	modelOpts <- c("dependent", "covariates", "wlsWeights", "modelTerms", 
-						 		 "priorRegressionCoefficients", "gPriorParameter", 
-						 	 	 "modelPrior", "betaBinomialParamA", "betaBinomialParamB", "bernoulliParam", 
+	modelOpts <- c("dependent", "covariates", "wlsWeights", "modelTerms",
+						 		 "priorRegressionCoefficients", "gPriorParameter",
+						 	 	 "modelPrior", "betaBinomialParamA", "betaBinomialParamB", "bernoulliParam",
 						 	 	 "samplingMethod", "iterationsMCMC", "numberOfModels")
 	stateKey <- list(
 		bas_obj = modelOpts,
@@ -50,18 +50,18 @@ BASRegressionLinearLink <- function (
 	plotModelComplexity <- state$plotModelComplexity
 	plotInclusionProbabilities <- state$plotInclusionProbabilities
 	status <- state$status
-	
+
 	# Read the selected columns
 	if (length(options$covariates) > 0 && options$dependent != "") {
 		# FIXME: this function is inefficient. Read only the new columns.
 		dataset <- .readData.basReg(perform, options)
 	}
-	
+
 	# Set the status
 	if (is.null(bas_obj)) { # status can only change in bas_obj
 		status <- .setStatus.basReg(dataset, perform, options)
 	}
-	
+
 	# Calculate the necessary components
 	if (perform == "run" && status$ready) {
 		# get the bas lm object
@@ -71,19 +71,19 @@ BASRegressionLinearLink <- function (
 				status = status,
 				options = options
 			)
-			
+
 			status <- bas_output$status
 			bas_obj <- bas_output$bas_obj
-			
+
 			if (! status$error) {
 				# use the actual column names
 				len.bas_obj <- length(bas_obj$namesx)
 				bas_obj$namesx[2:len.bas_obj] <- .unvf(bas_obj$namesx[2:len.bas_obj]) # first is intercept
 			}
 		}
-		
+
 	}
-	
+
 	regTableData <- NULL
 	if (! is.null(bas_obj)) {
 		# Populate the output table
@@ -93,13 +93,13 @@ BASRegressionLinearLink <- function (
 				options = options
 		)
 	}
-		
+
 	if (options$descriptives && is.null(descriptives)) {
 		descriptives <- .descriptivesTable.basReg(
 			dataset, status, perform, options
 		)
 	}
-		
+
 	if (options$plotLogPosteriorOdds && is.null(plotPosteriorLogOdds)) {
 		plotPosteriorLogOdds <- .plotLogOdds.basReg(
 			bas_obj = bas_obj, status = status, perform = perform
@@ -135,24 +135,24 @@ BASRegressionLinearLink <- function (
 			bas_obj = bas_obj, status = status, perform = perform, which = 4
 		)
 	}
-	
+
 	# Assign to results
 	results <- list()
 	results[[".meta"]] <- .createMeta.basReg()
 	results[["title"]] <- "Bayesian Adaptive Sampling"
-	
-	results[["regressionTable"]] <- .fillRegTable.basReg(data = regTableData, 
+
+	results[["regressionTable"]] <- .fillRegTable.basReg(data = regTableData,
 		status = status, perform = perform, options = options)
-		
+
 	if (options$descriptives) {
 		results[["descriptivesTable"]] <- descriptives
 	}
-	
+
 	if (options$plotLogPosteriorOdds || options$plotCoefficientsPosterior ||
 		options$plotResidualsVsFitted || options$plotModelProbabilities ||
 		options$plotModelComplexity || options$plotInclusionProbabilities) {
-			
-		results[["inferentialPlots"]] <- 
+
+		results[["inferentialPlots"]] <-
 			list(
 				title = "Inferential Plots",
 				PosteriorPlotModels = plotPosteriorLogOdds,
@@ -160,15 +160,15 @@ BASRegressionLinearLink <- function (
 				ModelProbabilitiesPlot = plotModelProbabilities,
 				ModelComplexityPlot = plotModelComplexity,
 				InclusionProbabilitiesPlot = plotInclusionProbabilities,
-				coefficentsPlots = 
+				coefficentsPlots =
 					list(
 						title = "Coefficent plots",
 						collection = plotCoefficientsPosterior
 					)
 			)
-		
+
 	}
-	
+
 	# Set keep and the state
 	if (perform == "init") {
 		statusAnalysis <- "inited"
@@ -183,7 +183,7 @@ BASRegressionLinearLink <- function (
 			plotModelComplexity$data,
 			plotInclusionProbabilities$data
 		)
-		
+
 		state <- list(
 			options = options,
 			bas_obj = bas_obj,
@@ -215,7 +215,7 @@ BASRegressionLinearLink <- function (
 	#
 	# Return:
 	#   A meta object
-	
+
 	meta <- list()
 	meta[[1]] <- list(name = "regressionTable", type = "table")
 	meta[[2]] <- list(name = "descriptivesTable", type = "table")
@@ -238,7 +238,7 @@ BASRegressionLinearLink <- function (
 						list(name = "PosteriorCoefficients", type = "image"))
 		)))
 	)
-	
+
 	return (meta)
 }
 
@@ -278,7 +278,7 @@ BASRegressionLinearLink <- function (
 	#   A status object containing "ready", "error", "error.message"
 
 	status <- list(ready = TRUE, error = FALSE, error.message = NULL)
-	
+
 	if (options$dependent == "" || length(options$modelTerms) == 0) {
 		status$ready <- FALSE
 	}
@@ -290,13 +290,13 @@ BASRegressionLinearLink <- function (
 				return("All effects are specified as nuisance")
 			}
 		},
-		
+
 		function() {
 			maxModelComponents <- max(sapply(options$modelTerms, function(term) length(term$components)))
 			if (maxModelComponents < 2) {
 				return()
 			}
-			for (term in options$modelTerms) {	
+			for (term in options$modelTerms) {
 				if (length(term$components) < 2) {
 					next
 				}
@@ -312,7 +312,7 @@ BASRegressionLinearLink <- function (
 				}
 			}
 		},
-		
+
 		function() {
 			for (term in options$modelTerms) {
 				if (term$isNuisance == FALSE || length(term$components) < 2) {
@@ -328,7 +328,7 @@ BASRegressionLinearLink <- function (
 				}
 			}
 		},
-		
+
 		function() {
 			if (options$wlsWeights != "") {
 				weightsVar <- options$wlsWeights
@@ -338,8 +338,8 @@ BASRegressionLinearLink <- function (
 				}
 			}
 		})
-		
-	.hasErrors(dataset = dataset, perform = perform, 
+
+	.hasErrors(dataset = dataset, perform = perform,
 		type=c("infinity", "observations", "variance"), custom = customChecks,
 		infinity.target = c(options$covariates, options$dependent, options$wlsWeight),
 		observations.target = options$dependent, observations.amount = paste("<", length(options$modelTerms) + 1),
@@ -359,7 +359,7 @@ BASRegressionLinearLink <- function (
 	#   options: a list of user options
 	#
 	# Return:
-	#   list containing the bas_lm object (containing also a vector 
+	#   list containing the bas_lm object (containing also a vector
 	#		describing which are nuisance terms) and the status object
 
 	# generate the formula and identify nuisance terms
@@ -383,14 +383,14 @@ BASRegressionLinearLink <- function (
 	initProbs <- rep(0.5, nPreds + 1) # the + 1 is the intercept
 	index <- c(1, which(isNuisance) + 1)
 	initProbs[index] <- 1
-	
+
 	# get the weights
 	wlsWeights <- NULL
 	if (options$wlsWeights != "") {
 		weightsVar <- options$wlsWeights
 		wlsWeights <- dataset[[ .v(weightsVar) ]]
 	}
-	
+
 	# sampling method
 	if (options$samplingMethod == "MCMCBAS") {
 		samplingMethod <- "MCMC+BAS"
@@ -434,6 +434,7 @@ BASRegressionLinearLink <- function (
 		g_prior =,
 		hyper_g =,
 		hyper_g_laplace =,
+		hyper_g_n=,
 		zs_null =,
 		zs_full = options$gPriorParameter,
 		NULL
@@ -452,7 +453,7 @@ BASRegressionLinearLink <- function (
 		initprobs = initProbs,
 		weights = wlsWeights
 	))
-	
+
 	if (isTryError(bas_lm)) {
 		status$ready <- FALSE
 		status$error <- TRUE
@@ -462,7 +463,7 @@ BASRegressionLinearLink <- function (
 		# fix for prior probs all returning 1 with uniform and bernoulli 0.5 priors
 		bas_lm[["priorprobs"]] <- bas_lm[["priorprobs"]] / sum(bas_lm[["priorprobs"]])
 	}
-	
+
 	return(list(bas_obj = bas_lm, status = status))
 }
 
@@ -476,13 +477,13 @@ BASRegressionLinearLink <- function (
 	#
 	# Return:
 	#   list with table footnotes and data rows (ready to insert in 'data' of table)
-	
+
 	if (status$error == TRUE) {
 		return(NULL)
 	}
-	
+
 	nuisanceTerms <- bas_obj$nuisanceTerms # vector of TRUE / FALSE
-	
+
 	# default number of models to be shown
 	nRows <- NULL
 	if (options$shownModels == "limited") {
@@ -492,7 +493,7 @@ BASRegressionLinearLink <- function (
 	if (is.null(nRows) || nRows > length(bas_obj$which)) {
 		nRows <- length(bas_obj$which)
 	}
-	
+
 	# ordered indices based on posterior probabilities of the models
 	# TODO: determine if we like this functionality ^.^
 	models.ordered <- order(bas_obj$postprobs, decreasing = TRUE)
@@ -514,7 +515,7 @@ BASRegressionLinearLink <- function (
 	if (sum(nuisanceTerms) > 0) {
 		null.model <- paste("Null model (incl. ", paste(.unvf(names(which(nuisanceTerms))), collapse = ", "), ")", sep = "")
 	}
-	
+
 	# generate all model names
   model.names <- vector("character", length(models))
   for (i in 1:length(models)) {
@@ -550,7 +551,7 @@ BASRegressionLinearLink <- function (
 	# TODO: microbenchmark - compare for loop against using mapply
 	for (i in 1:nRows) {
 		output.rows[[i]] <- list(
-			"Models" = model.names[i], 
+			"Models" = model.names[i],
 			"BF" = models.bf[i],
 			"P(M|data)" = bas_obj$postprobs[[models.ordered[i]]],
 			"R2" = bas_obj$R2[[models.ordered[i]]],
@@ -599,7 +600,7 @@ BASRegressionLinearLink <- function (
 	#
 	# Return:
 	#   List with completed table; may be inserted in results as is
-	
+
 	if (options$bayesFactorType == "BF10") {
 		bf.title <- "BF<sub>10</sub>"
 	} else if (options$bayesFactorType == "BF01") {
@@ -627,7 +628,7 @@ BASRegressionLinearLink <- function (
 		"Clyde, M. A. (2017). BAS: Bayesian Adaptive Sampling for Bayesian Model Averaging. (Version 1.4.7)[Computer software].", #FIXME: fix version
 		"Clyde, M. A., Ghosh, J., & Littman, M. L. (2011). Bayesian adaptive sampling for variable selection and model averaging. Journal of Computational and Graphical Statistics, 20, 80-101.")
 	table[["schema"]] <- list(fields = fields)
-	
+
 	if (! is.null(data) && ! status$error) {
 		table[["data"]] <- data$rows
 		table[["footnotes"]] <- as.list(data$notes)
@@ -635,7 +636,7 @@ BASRegressionLinearLink <- function (
 		names <- sapply(fields, function(x) x$name)
 		table[["data"]][[1]] <- setNames(as.list(rep(".", length(names))), names)
 	}
-	
+
 	if (status$error) {
 		table[["error"]] <- list(errorType = "badData", errorMessage = status$error.message)
 	}
@@ -644,7 +645,7 @@ BASRegressionLinearLink <- function (
 }
 
 .descriptivesTable.basReg <- function(dataset, status, perform, options) {
-	# Generate a descriptives table (mean, N, SD) of the dependent/covariates 
+	# Generate a descriptives table (mean, N, SD) of the dependent/covariates
 	#
 	# Args:
 	#   dataset: data read by .readData.basReg()
@@ -654,12 +655,12 @@ BASRegressionLinearLink <- function (
 	#
 	# Return:
 	#   List with completed descriptives table; may be inserted in results as is
-	
+
 	descriptives <- list()
 
 	descriptives[["title"]] <- "Descriptives"
 
-	fields <- 
+	fields <-
 		list(
 			list(name="v",    title="",   type="string"),
 			list(name="N",    title="N",  type="integer"),
@@ -668,7 +669,7 @@ BASRegressionLinearLink <- function (
 	)
 
 	descriptives[["schema"]] <- list(fields=fields)
-	
+
 	if (status$ready) {
 		rows <- list()
 		variables <- c(options$dependent, unlist(options$covariates))
@@ -690,12 +691,12 @@ BASRegressionLinearLink <- function (
 				}
 			}
 			descriptives[["data"]] <- rows
-			
+
 		} else {
 			names <- sapply(fields, function(x) x$name)
 			descriptives[["data"]][[1]] <- setNames(as.list(rep(".", length(names))), names)
 		}
-	
+
 	return (descriptives)
 }
 
@@ -710,27 +711,27 @@ BASRegressionLinearLink <- function (
 	#
 	# Return:
 	#   list with plot data
-	
+
 	# if there were errors or we're in init, show just empty x and y-axes
 	emptyPlot <- .makeEmptyPlot.basReg(title = "Posterior Log Odds", status = status)
-	
+
 	if (status$ready && perform == "run") {
-		
+
 		plot <- list()
 		plot[["title"]] <- "Posterior Log Odds"
-		
+
 		p <- try(silent = FALSE, expr = {
-			
+
 			plotFunc <- function() {
 				BAS:::image.bas(bas_obj, rotate = FALSE)
 			}
 			content <- .writeImage(width = 530, height = 400, plot = plotFunc)
-			
+
 			plot[["convertible"]] <- TRUE
 			plot[["obj"]] <- content[["obj"]]
 			plot[["data"]] <- content[["png"]]
 			plot[["status"]] <- "complete"
-			
+
 		})
 
 		if (isTryError(p)) {
@@ -738,13 +739,13 @@ BASRegressionLinearLink <- function (
 			plot <- emptyPlot
 			plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
 		}
-		
+
 	} else { # init or errors
-		
+
 		plot <- emptyPlot
-		
+
 	}
-	
+
 	return(plot)
 }
 
@@ -759,27 +760,27 @@ BASRegressionLinearLink <- function (
 	#
 	# Return:
 	#   list (collection) of lists with plot data
-	
+
 	# if there were errors or we're in init, show just empty x and y-axes
 	emptyPlot <- .makeEmptyPlot.basReg(title = "Posterior distribution", status = status)
-	
+
 	if (status$ready && perform == "run") {
-		
+
 		isNuisance <- bas_obj$nuisanceTerms
 		number.parameters <- length(bas_obj$namesx)
 		plots <- list()
 
 		for (i in 1:number.parameters) {
-			
+
 			terms <- .unvf(names(isNuisance))
 			term <- bas_obj$namesx[i]
 			if (term != "Intercept" && isNuisance[which(terms == term)]) {
 				next
 			}
-			
+
 			plot <- list()
 			plot[["title"]] <- "Posterior distribution"
-			
+
 			p <- try(silent = FALSE, expr = {
 
 				plotFunc <- function() {
@@ -787,37 +788,37 @@ BASRegressionLinearLink <- function (
 															bty = "n")
 				}
 				content <- .writeImage(width = 530, height = 400, plot = plotFunc)
-				
+
 				plot[["convertible"]] <- TRUE
 				plot[["obj"]] <- content[["obj"]]
 				plot[["data"]] <- content[["png"]]
 				plot[["status"]] <- "complete"
-				
+
 			})
-			
+
 			if (isTryError(p)) {
 				errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
 				plot <- emptyPlot
 				plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
 			}
-			
+
 			plots[[length(plots) + 1]] <- list(
 				title = term,
 				name = term,
 				PosteriorCoefficients = plot
 			)
 		}
-		
+
 	} else { # init or errors
-		
+
 		plots <- list(list(
 			title = "",
 			name = "",
 			PosteriorCoefficients = emptyPlot
 		))
-		
+
 	}
-	
+
 	return(plots)
 }
 
@@ -833,47 +834,47 @@ BASRegressionLinearLink <- function (
 	#
 	# Return:
 	#   list with plot data
-	
+
 	titles <- c(
 		"Residuals vs Fitted",
 		"Model Probabilities",
 		"Model Complexity",
-		"Inclusion Probabilities"	
+		"Inclusion Probabilities"
 	)
-	
+
 	# if there were errors or we're in init, show just empty x and y-axes
 	emptyPlot <- .makeEmptyPlot.basReg(title = titles[which], status = status)
-	
+
 	if (status$ready && perform == "run") {
 
 		plot <- list()
 		plot[["title"]] <- titles[which]
-		
+
 		p <- try(silent = FALSE, expr = {
-			
+
 			plotFunc <- function() {
 				BAS:::plot.bas(bas_obj, ask = FALSE, which = c(which), caption = "",
 											 bty = "n")
 			}
 			content <- .writeImage(width = 530, height = 400, plot = plotFunc)
-			
+
 			plot[["convertible"]] <- TRUE
 			plot[["obj"]] <- content[["obj"]]
 			plot[["data"]] <- content[["png"]]
 			plot[["status"]] <- "complete"
-			
+
 		})
-		
+
 		if (isTryError(p)) {
 			errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
 			plot <- emptyPlot
 			plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
 		}
-		
+
 	} else { # init or errors
-	
+
 		plot <- emptyPlot
-	
+
 	}
 
 	return(plot)
@@ -890,34 +891,34 @@ BASRegressionLinearLink <- function (
 	#
 	# Return:
 	#   list with an empty plot (if there are errors in the analysis it is a badData plot)
-	
+
 	plot <- list()
 	plot[["title"]] <- title
-	
+
 	plotFunc <- function() {
 		plot(1, type = "n", xlim = 0:1, ylim = 0:1, bty = "n", axes = FALSE, xlab = "", ylab = "")
 
 		axis(1, at = 0:1, labels = FALSE, cex.axis = 1.6, lwd = 2, xlab = "")
 		axis(2, at = 0:1, labels = FALSE, cex.axis = 1.6, lwd = 2, ylab = "")
-		
+
 		if (is.null(ylab)) {
 			mtext(text = ylab, side = 2, las = 0, cex = 1.6, line = 3.25)
 		}
-		
+
 		if (is.null(xlab)) {
 			mtext(xlab, side = 1, cex = 1.5, line = 2.6)
 		}
 	}
-	
+
 	content <- .writeImage(width = 530, height = 400, plot = plotFunc)
-	
+
 	plot[["obj"]] <- content[["obj"]]
 	plot[["data"]] <- content[["png"]]
 	plot[["status"]] <- "complete"
-	
+
 	if (status$error) {
 		plot[["error"]] <- "badData"
 	}
-	
+
 	return(plot)
 }
