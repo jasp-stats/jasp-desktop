@@ -393,27 +393,26 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				    lowerCiList[[length(lowerCiList)+1]] <- paste("Lower ", 100 * ciValue, "% CI", sep="")
 				}
 				
-				# Reporting: For this row, create blanks for everything before the current variable i
-				#   this yields an empty lower triangle. Left down is empty
-				#
-				for (j in .seqx(1, i-1)) {
-					# Note: Fill in blanks
-					row[[length(row)+1]] <- ""
-					bayesFactorsList[[length(bayesFactorsList)+1]] <- ""
-					upperCiList[[length(upperCiList)+1]] <- ""
-					lowerCiList[[length(lowerCiList)+1]] <- ""
-				}
-				
-			    # Note: fill in em-dash when comparing variable1Name with variable1Name
-				row[[length(row)+1]] <- "\u2014" # em-dash # Note: Fill in blanks
-				bayesFactorsList[[length(bayesFactorsList)+1]] <- "\u2014"
-				upperCiList[[length(upperCiList)+1]] <- "\u2014"
-				lowerCiList[[length(lowerCiList)+1]] <- "\u2014"
-				
 				# Reporting: For each next variable find the values
 				#
-				for (j in .seqx(i+1, numberOfVariables)) {
-					# Note: fill in blanks in table upper right-hand off diaganols
+				for (j in 1:numberOfVariables) {
+					
+					if (i == j) {
+						# Note: fill in em-dash when comparing variable1Name with variable1Name
+						row[[length(row)+1]] <- "\u2014" # em-dash # Note: Fill in blanks
+						bayesFactorsList[[length(bayesFactorsList)+1]] <- "\u2014"
+						upperCiList[[length(upperCiList)+1]] <- "\u2014"
+						lowerCiList[[length(lowerCiList)+1]] <- "\u2014"
+						next
+					} else if (i < j) {
+						row[[length(row)+1]] <- ""
+						bayesFactorsList[[length(bayesFactorsList)+1]] <- ""
+						upperCiList[[length(upperCiList)+1]] <- ""
+						lowerCiList[[length(lowerCiList)+1]] <- ""
+						next
+					}
+					
+					# Note: fill in blanks in table lower left-hand off diaganols
 					variable2Name <- variables[[j]]
 					columnName <- paste(variable2Name, "[", test, "]", sep="")
 					
