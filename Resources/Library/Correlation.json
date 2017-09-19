@@ -29,6 +29,11 @@
 			"type": "List"
 		},
 		{
+			"default": false,
+			"name": "displayPairwise",
+			"type": "Boolean"
+		},
+		{
 			"default": true,
 			"name": "reportSignificance",
 			"type": "Boolean"
