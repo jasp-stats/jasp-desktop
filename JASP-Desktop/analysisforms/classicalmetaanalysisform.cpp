@@ -66,10 +66,17 @@ ClassicalMetaAnalysisForm::ClassicalMetaAnalysisForm(QWidget *parent) :
 	_wlsWeightsModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->wlsWeights->setModel(_wlsWeightsModel);
 
+    _studyLabelModel = new TableModelVariablesAssigned();
+    _studyLabelModel->setSource(&_availableVariablesModel);
+    _studyLabelModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+    ui->studyLabels->setModel(_studyLabelModel);
+
+
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);
 	ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
 	ui->buttonAssignFactors->setSourceAndTarget(ui->listAvailableFields, ui->factors);
 	ui->buttonAssignWlsWeights->setSourceAndTarget(ui->listAvailableFields, ui->wlsWeights);
+    ui->buttonAssignStudyLabels->setSourceAndTarget(ui->listAvailableFields, ui->studyLabels);
 
 	_modelModel = new TableModelAnovaModel(this);
 	_modelModel->setPiecesCanBeAssigned(false);
