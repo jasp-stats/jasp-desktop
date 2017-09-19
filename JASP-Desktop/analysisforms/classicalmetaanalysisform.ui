@@ -138,7 +138,7 @@
             <item row="0" column="0" colspan="3">
              <widget class="BoundCheckBox" name="plotResidualsDependent">
               <property name="text">
-               <string>Residuals vs. dependent</string>
+               <string>Diagnostic plots</string>
               </property>
              </widget>
             </item>
@@ -260,9 +260,9 @@
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="residualsDurbinWatson">
+             <widget class="BoundCheckBox" name="residualsParameters">
               <property name="text">
-               <string>Durbin-Watson</string>
+               <string>Residuals parameters</string>
               </property>
              </widget>
             </item>
@@ -398,31 +398,31 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="rSquaredChange">
-              <property name="text">
-               <string>R squared change</string>
-              </property>
-             </widget>
-            </item>
             <item row="2" column="0">
-             <widget class="BoundCheckBox" name="descriptives">
+             <widget class="BoundCheckBox" name="forestPlot">
               <property name="text">
-               <string>Descriptives</string>
+               <string>Forest plot</string>
               </property>
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="BoundCheckBox" name="partAndPartialCorrelations">
+             <widget class="BoundCheckBox" name="funnelPlot">
               <property name="text">
-               <string>Part and partial correlations</string>
+               <string>Funnel plot</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="BoundCheckBox" name="funnelPlotAsymmetryTest">
+              <property name="text">
+               <string>Regression Test for Funnel plot asymmetry</string>
               </property>
              </widget>
             </item>
             <item row="4" column="0">
-             <widget class="BoundCheckBox" name="collinearityDiagnostics">
+             <widget class="BoundCheckBox" name="rSquaredChange">
               <property name="text">
-               <string>Collinearity diagnostics</string>
+               <string>Rank Test for Funnel plot asymmetry</string>
               </property>
              </widget>
             </item>
@@ -796,60 +796,6 @@
       <property name="verticalSpacing">
        <number>3</number>
       </property>
-      <item row="0" column="1">
-       <widget class="QWidget" name="widget_9" native="true"/>
-      </item>
-      <item row="5" column="2">
-       <widget class="QWidget" name="widget_5" native="true">
-        <layout class="QGridLayout" name="gridLayout_22">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>3</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>3</number>
-         </property>
-         <item row="0" column="0">
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLabel" name="label_7">
-           <property name="text">
-            <string>Method</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="BoundComboBox" name="method">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="currentText">
-            <string/>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
       <item row="1" column="2" rowspan="2">
        <widget class="boundSingleItemView" name="dependent">
         <property name="sizePolicy">
@@ -875,14 +821,67 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="2">
+      <item row="0" column="1">
+       <widget class="QWidget" name="widget_9" native="true"/>
+      </item>
+      <item row="7" column="2">
+       <widget class="QWidget" name="widget_5" native="true">
+        <layout class="QGridLayout" name="gridLayout_22">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>3</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>3</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_15">
+           <property name="text">
+            <string>Study labels</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="3">
+          <widget class="boundSingleItemView" name="studyLabels">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::ExtendedSelection</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="8" column="2">
        <widget class="QLabel" name="label_4">
         <property name="text">
          <string>Covariates</string>
         </property>
        </widget>
       </item>
-      <item row="8" column="1">
+      <item row="10" column="1">
        <spacer name="verticalSpacer_3">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -895,7 +894,7 @@
         </property>
        </spacer>
       </item>
-      <item row="7" column="1">
+      <item row="9" column="1">
        <widget class="AssignButton" name="buttonAssignCovariates">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -920,7 +919,7 @@
         </property>
        </widget>
       </item>
-      <item row="10" column="1">
+      <item row="12" column="1">
        <widget class="AssignButton" name="buttonAssignFactors">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -945,7 +944,7 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="2" rowspan="2">
+      <item row="9" column="2" rowspan="2">
        <widget class="BoundListView" name="covariates">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -973,7 +972,7 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0" rowspan="14">
+      <item row="0" column="0" rowspan="16">
        <widget class="AvailableFieldsListView" name="listAvailableFields">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -1018,14 +1017,14 @@
         </property>
        </widget>
       </item>
-      <item row="9" column="2">
+      <item row="11" column="2">
        <widget class="QLabel" name="label_13">
         <property name="text">
          <string>Factors</string>
         </property>
        </widget>
       </item>
-      <item row="11" column="1">
+      <item row="13" column="1">
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -1038,7 +1037,7 @@
         </property>
        </spacer>
       </item>
-      <item row="10" column="2" rowspan="2">
+      <item row="12" column="2" rowspan="2">
        <widget class="BoundListView" name="factors">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -1100,6 +1099,51 @@
       </item>
       <item row="4" column="1">
        <widget class="AssignButton" name="buttonAssignWlsWeights">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="2">
+       <widget class="BoundComboBox" name="method">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="currentText">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="2">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Method</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="AssignButton" name="buttonAssignStudyLabels">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -1192,7 +1236,6 @@
   <tabstop>listAvailableFields</tabstop>
   <tabstop>buttonAssignDependent</tabstop>
   <tabstop>dependent</tabstop>
-  <tabstop>method</tabstop>
   <tabstop>buttonAssignCovariates</tabstop>
   <tabstop>covariates</tabstop>
   <tabstop>buttonAssignFactors</tabstop>
@@ -1204,11 +1247,10 @@
   <tabstop>regressionCoefficientsConfidenceIntervalsInterval</tabstop>
   <tabstop>regressionCoefficientsCovarianceMatrix</tabstop>
   <tabstop>modelFit</tabstop>
-  <tabstop>rSquaredChange</tabstop>
-  <tabstop>descriptives</tabstop>
-  <tabstop>partAndPartialCorrelations</tabstop>
-  <tabstop>collinearityDiagnostics</tabstop>
-  <tabstop>residualsDurbinWatson</tabstop>
+  <tabstop>forestPlot</tabstop>
+  <tabstop>funnelPlot</tabstop>
+  <tabstop>funnelPlotAsymmetryTest</tabstop>
+  <tabstop>residualsParameters</tabstop>
   <tabstop>residualsCasewiseDiagnostics</tabstop>
   <tabstop>_1outliersOutside</tabstop>
   <tabstop>residualsCasewiseDiagnosticsOutliersOutside</tabstop>

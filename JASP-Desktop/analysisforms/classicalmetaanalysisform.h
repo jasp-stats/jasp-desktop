@@ -51,6 +51,7 @@ private:
     TableModelVariablesAssigned *_covariatesModel;
     TableModelVariablesAssigned *_factorsModel;
 	TableModelVariablesAssigned *_wlsWeightsModel;
+    TableModelVariablesAssigned *_studyLabelModel;
 
 	TableModelAnovaModel *_modelModel;
 };

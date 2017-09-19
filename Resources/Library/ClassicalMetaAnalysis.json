@@ -32,6 +32,10 @@
 			"type": "Variable"
 		},
 		{
+			"name": "studyLabels",
+			"type": "Variable"
+		},
+		{
 			"name": "modelTerms",
 			"template": [
 				{
@@ -64,7 +68,7 @@
 			"type": "Boolean"
 		},
 		{
-			"default": true,
+			"default": false,
 			"name": "modelFit",
 			"type": "Boolean"
 		},
@@ -74,23 +78,23 @@
 			"type": "Boolean"
 		},
 		{
-			"default": false,
-			"name": "descriptives",
+			"default": true,
+			"name": "forestPlot",
 			"type": "Boolean"
 		},
 		{
 			"default": false,
-			"name": "partAndPartialCorrelations",
+			"name": "funnelPlot",
 			"type": "Boolean"
 		},
 		{
 			"default": false,
-			"name": "collinearityDiagnostics",
+			"name": "funnelPlotAsymmetryTest",
 			"type": "Boolean"
 		},
 		{
-			"default": false,
-			"name": "residualsDurbinWatson",
+			"default": true,
+			"name": "residualsParameters",
 			"type": "Boolean"
 		},
 		{
