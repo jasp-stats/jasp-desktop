@@ -256,7 +256,12 @@ void TabBar::setCurrentIndex(int index)
 
 void TabBar::setExactPValues(bool exactPValues)
 {
-	emit setExactPValuesHandler(exactPValues);
+    emit setExactPValuesHandler(exactPValues);
+}
+
+void TabBar::setFixDecimals(QString numDecimals)
+{
+    emit setFixDecimalsHandler(numDecimals);
 }
 
 void TabBar::emptyValuesChanged()
