@@ -124,7 +124,7 @@
     out[["title"]] <- "Model summary"
     
     fields <- list(
-      list(name="mod", title="Model", type="integer"),
+      list(name="mod", title="Model", type="string"),
       list(name="dev", title="Deviance", type="number", format="sf:4;dp:3"),
       list(name="aic", title="AIC", type="number", format="dp:3"),
       list(name="bic", title="BIC", type="number", format="dp:3"),
@@ -152,7 +152,7 @@
       }
       
       rows <- list(
-        list(mod = 0, 
+        list(mod = "H\u2080", 
              dev = .clean(glmObj[["null.deviance"]]),
              aic = .clean(.aicNull(glmObj)),
              bic = .clean(.bicNull(glmObj)),
@@ -162,7 +162,7 @@
              fad = .clean(NULL),
              nag = .clean(NULL),
              tju = .clean(NULL)),
-        list(mod = 1, 
+        list(mod = "H\u2081", 
              dev = .clean(glmObj[["deviance"]]),
              aic = .clean(glmObj[["aic"]]),
              bic = .clean(.bic(glmObj)),
@@ -200,12 +200,18 @@
       ciTitle <- paste0(options[["coeffCIInterval"]], "% Confidence interval")
     }
     
+    if (options[["robustSEOpt"]]) {
+      seTitle <- "Robust <br> Standard Error"
+    } else {
+      seTitle <- "Standard Error"
+    }
+    
     # first define all the fields
     fields <- list(
       list(name="param", title = "", type="string"),
       list(name="est", title = "Estimate", type="number", format="dp:3"),
-      list(name="se", title = "Standard Error", type="number", format="dp:3"),
-      list(name="std", title = "Standardized", type="number", format="dp:3"),
+      list(name="se", title = seTitle, type="number", format="dp:3"),
+      list(name="std", title = "Standardized\u207A", type="number", format="dp:3"),
       list(name="or", title = "Odds Ratio", type="number", format="sf:4;dp:3"),
       list(name="zval", title = "z", type="number", format="sf:4;dp:3"),
       list(name="pval", title = "p", type="number", format="dp:3;p:.001"),
@@ -213,6 +219,7 @@
       list(name="cilo", title = "Lower bound", type="number", format="dp:3", overTitle=ciTitle),
       list(name="ciup", title = "Upper bound", type="number", format="dp:3", overTitle=ciTitle)
     )
+    
     
     # then determine which ones we need
     selectFields <- with(options, c(TRUE, TRUE, TRUE, stdCoeff, oddsRatios, 
@@ -223,13 +230,19 @@
     
     footnotes <- .newFootnotes()
     
+    if (options[["stdCoeff"]]) {
+      .addFootnote(footnotes, symbol = "\u207A", text = "Standardized estimates 
+      represent estimates where the continuous predictors are standardized 
+      (X-standardization).")
+    }
+    
     if (options[["VovkSellkeMPR"]]) {
       .addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
       <em>p</em>-Ratio: Based the <em>p</em>-value, the maximum
       possible odds in favor of H\u2081 over H\u2080 equals
       1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
       (Sellke, Bayarri, & Berger, 2001).")
-     }
+    }
     
     # Add footnote of predicted level
     if (options[["dependent"]] != "") {
@@ -605,15 +618,15 @@
     out[["title"]] <- "Factor Descriptives"
     
     fields <- list()
-  
-    for (variable in options[["factors"]]) {
-      name <- paste(".", variable, sep = "")  # in case it's "N"
-      fields[[length(fields)+1]] <- list(name = name, type = "string", 
-                                         title = variable, combine = TRUE)
-    }
     
-    if (length(options[["factors"]] == 0)) {
-      fields[[1]] <- list(name = "Factor", type = "string")
+    if (length(options[["factors"]]) == 0) {
+      fields[[1]] <- list(name = "Factor", title = "Factor", type = "string")
+    } else {
+      for (variable in options[["factors"]]) {
+        name <- paste(".", variable, sep = "")  # in case it's "N"
+        fields[[length(fields)+1]] <- list(name = name, type = "string", 
+                                           title = variable, combine = TRUE)
+      }
     }
     
     fields[[length(fields)+1]] <- list(name = "N", type = "number", 
@@ -660,7 +673,7 @@
           rows[[i]] <- row
         }
       }
-    } else {
+    } else if (perform == "run") {
       rows <- list(list(Factor = ".", N = "."))
     }
     
@@ -853,7 +866,19 @@
 
   if (attr(ribdat, "factor")) {
     # the variable is a factor, plot points with errorbars
-    p <- ggplot2::ggplot(ribdat, ggplot2::aes(x = x, y = y)) +
+    p <- ggplot2::ggplot(ribdat, ggplot2::aes(x = x, y = y))
+    
+    if (points) {
+      p <- p + ggplot2::geom_point(
+          data = ggdat,
+          size = 2,
+          position = ggplot2::position_jitter(height = 0.01, width = 0.04),
+          color = "dark grey",
+          alpha = 0.3
+        )
+    }
+    
+    p <- p +
       ggplot2::geom_point(
         data = ribdat,
         mapping = ggplot2::aes(x = x, y = y),
@@ -863,15 +888,6 @@
         mapping = ggplot2::aes(x = x, ymin = lo, ymax = hi),
         data = ribdat, width = 0.2
       )
-
-    if (points) {
-      p <- p + ggplot2::geom_point(
-          data = ggdat,
-          size = 2,
-          position = ggplot2::position_jitter(height = 0.01, width = 0.04),
-          color = "dark grey"
-        )
-    }
 
   } else {
     # the variable is continuous, plot curve with error ribbon
@@ -894,7 +910,8 @@
         data = ggdat,
         size = 2,
         position = ggplot2::position_jitter(height = 0.03, width = 0),
-        color = "dark grey"
+        color = "dark grey",
+        alpha = 0.3
       )
     }  
   }

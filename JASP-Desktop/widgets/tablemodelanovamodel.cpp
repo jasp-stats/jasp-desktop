@@ -32,7 +32,7 @@ TableModelAnovaModel::TableModelAnovaModel(QObject *parent)
 	: TableModel(parent)
 {
 	_boundTo = NULL;
-	_isFrequentist = false; // default to false for existing bayesian analyses
+
 	_terms.setSortParent(_variables);
 }
 
@@ -396,12 +396,7 @@ QVariant TableModelAnovaModel::headerData(int section, Qt::Orientation orientati
 			if (section == 0)
 				return "Model terms";
 			else if (section == 1)
-			{
-				if (_isFrequentist)
-					return "Add to null model";
-				else
-					return "Is nuisance";
-			}
+				return "Add to null model";
 		}
 		else
 		{
@@ -599,10 +594,5 @@ bool TableModelAnovaModel::piecesCanBeAssigned() const
 void TableModelAnovaModel::setPiecesCanBeAssigned(bool piecesCanBeAssigned)
 {
 	_piecesCanBeAssigned = piecesCanBeAssigned;
-}
-
-void TableModelAnovaModel::setFrequentist(bool isFrequentist)
-{
-	_isFrequentist = isFrequentist;
 }
 

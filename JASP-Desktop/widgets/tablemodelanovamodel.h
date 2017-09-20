@@ -68,8 +68,6 @@ public:
 	bool piecesCanBeAssigned() const;
 	void setPiecesCanBeAssigned(bool piecesCanBeAssigned);
 
-	void setFrequentist(bool isFrequentist);
-
 public slots:
 
 	void setVariables(const Terms &fixedFactors, const Terms &randomFactors = Terms(), const Terms &covariates = Terms());
@@ -106,8 +104,6 @@ protected:
 	Terms _randomFactors;
 
 	Terms _terms;
-
-	bool _isFrequentist;
 
 };
 
