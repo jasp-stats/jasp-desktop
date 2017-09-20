@@ -1090,8 +1090,8 @@
                         x = glmObj[["data"]][[var]])
   } else {
     ggdat <- data.frame(resid = residuals(glmObj, type = type), 
-                        x = predict(glmObj))
-    var <- "Predicted log-odds"
+                        x = predict(glmObj, type = "response"))
+    var <- "Predicted Probability"
   }
   
   if (class(ggdat[["x"]]) == "factor") {
@@ -1222,7 +1222,7 @@
     ggplot2::geom_point(size = 3, colour="black", fill = "grey", pch=21) +
     custom_y_axis(plotDat[["pres"]]) +
     custom_x_axis() +
-    ggplot2::labs(x = "Predicted probability", y = "Squared Pearson residual") +
+    ggplot2::labs(x = "Predicted Probability", y = "Squared Pearson Residual") +
     ggplot2::theme(
       panel.grid.minor = ggplot2::element_blank(),
       plot.title = ggplot2::element_text(size = 18),
