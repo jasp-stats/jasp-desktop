@@ -165,7 +165,7 @@
 			"type": "List"
 		},
 		{
-			"name": "descriptivesTableOpt",
+			"name": "factorDescriptivesOpt",
 			"type": "Boolean",
 			"default": false
 		},

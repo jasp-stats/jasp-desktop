@@ -65,7 +65,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   predictedPlot <- # predicted - residuals plot
   predictorPlots <- # predictor - residuals plots
   squaredPearsonPlot <- # squared pearson - predicted prob plot
-  descriptivesTable <- # factor descriptives table
+  factorDescriptives <- # factor descriptives table
   NULL
   
   # diff check
@@ -113,9 +113,9 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
           squaredPearsonPlot <<- state[["squaredPearsonPlot"]]
         }
         
-        if (!any(descriptivesTableOpt)) {
+        if (!any(factorDescriptivesOpt)) {
           # descriptives table can be reused
-          descriptivesTable <<- state[["descriptivesTable"]]
+          factorDescriptives <<- state[["factorDescriptives"]]
         }
       }
     })
@@ -130,7 +130,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
     predictedPlot <- state[["predictedPlot"]]
     predictorPlots <- state[["predictorPlots"]]
     squaredPearsonPlot <- state[["squaredPearsonPlot"]]
-    descriptivesTable <- state[["descriptivesTable"]]
+    factorDescriptives <- state[["factorDescriptives"]]
   }
 
   
@@ -146,7 +146,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
 		list(name = "title", type = "title"),
 		list(name = "modelSummary", type = "table"),
 		list(name = "estimatesTable", type = "table"),
-    list(name = "descriptivesTable", type = "table"),
+    list(name = "factorDescriptives", type = "table"),
 		list(name = "perfDiagnostics", type = "object", meta = .pdMeta),
 		list(name = "estimatesPlots", type = "collection", meta = "image"),
     list(name = "residualsPlots", type = "object", meta = .rpMeta)
@@ -204,9 +204,9 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
                                                           type = "binomial")
   }
   
-  if(is.null(descriptivesTable) && options[["descriptivesTableOpt"]]) {
-    descriptivesTable <- .glmDescriptivesTable(dataset, options, perform, 
-                                               type = "binomial")
+  if(is.null(factorDescriptives) && options[["factorDescriptivesOpt"]]) {
+    factorDescriptives <- .glmFactorDescriptives(dataset, options, perform, 
+                                                type = "binomial")
 
   }
   
@@ -223,14 +223,14 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   results[["perfDiagnostics"]] <- perfDiagnostics
   results[["estimatesPlots"]] <- estimatesPlots
   results[["residualsPlots"]] <- residualsPlots
-  results[["descriptivesTable"]] <- descriptivesTable
+  results[["factorDescriptives"]] <- factorDescriptives
 
   
   # RETURN RESULTS
   
   plotPaths <- c(.lrGetPlotPaths(estimatesPlots), 
                  .lrGetPlotPaths(predictorPlots),
-                 predictedPlot[["data"]])
+                 predictedPlot[["data"]], squaredPearsonPlot[["data"]])
   
   if (perform == "run") {
     state <- list()
@@ -244,7 +244,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
     state[["predictedPlot"]] <- predictedPlot
     state[["predictorPlots"]] <- predictorPlots
     state[["squaredPearsonPlot"]] <- squaredPearsonPlot
-    state[["descriptivesTable"]] <- descriptivesTable
+    state[["factorDescriptives"]] <- factorDescriptives
     
     return(list(results=results, status="complete", state=state,
                 keep = plotPaths))

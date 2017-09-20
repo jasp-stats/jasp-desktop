@@ -5,9 +5,7 @@
     if (!is.null(type) && type == "binomial") {
       # Logistic regression
       f <- .createGlmFormula(options)
-      n <- .createNullFormula(options)
-      print(n)
-      
+      n <- .createNullFormula(options)  
       names(dataset) <- .unv(names(dataset))
       if (!is.null(n)) {
         nullModel <- stats::glm(n[["plaintext"]], data = dataset, 
@@ -215,7 +213,6 @@
       list(name="cilo", title = "Lower bound", type="number", format="dp:3", overTitle=ciTitle),
       list(name="ciup", title = "Upper bound", type="number", format="dp:3", overTitle=ciTitle)
     )
-    
     
     # then determine which ones we need
     selectFields <- with(options, c(TRUE, TRUE, TRUE, stdCoeff, oddsRatios, 
@@ -600,7 +597,7 @@
   return(out)
 }
 
-.glmDescriptivesTable <- function(dataset, options, perform, type) {
+.glmFactorDescriptives <- function(dataset, options, perform, type) {
   # I stole/adapted this function from .anovaDescriptivesTable()!
   out <- NULL
   if (type == "binomial") {
@@ -615,51 +612,59 @@
                                          title = variable, combine = TRUE)
     }
     
+    if (length(options[["factors"]] == 0)) {
+      fields[[1]] <- list(name = "Factor", type = "string")
+    }
+    
     fields[[length(fields)+1]] <- list(name = "N", type = "number", 
                                        format = "dp:0")
     
     out[["schema"]] <- list(fields = fields)
     
-    lvls <- list()
-    factors <- list()
+    rows <- list()
+    if (perform == "run" && length(options[["factors"]]) > 0) {
+      lvls <- list()
+      factors <- list()
 
-    for (variable in options[["factors"]]) {
-      factor <- dataset[[ .v(variable) ]]
-      factors[[length(factors)+1]] <- factor
-      lvls[[ variable ]] <- levels(factor)
-    }
-
-    cases <- rev(expand.grid(rev(lvls)))
-    namez <- unlist(options[["factors"]])
-    columnNames <- paste(".", namez, sep="")
-
-    if (length(options[["factors"]]) > 0) {
-      rows <- list()
-      for (i in 1:dim(cases)[1]) {
-        row <- list()
-        for (j in 1:dim(cases)[2]) {
-          row[[ columnNames[[j]] ]] <- as.character(cases[i, j])
-        }
-
-        sub  <- eval(parse(text=paste("dataset$", .v(namez), " == \"", row, 
-                                      "\"", sep="", collapse=" & ")))
-                                      
-        dat <- base::subset(dataset, sub)[[1]]
-        N <- base::length(dat)
-
-        row[["N"]] <- N
-        
-        if(cases[i,dim(cases)[2]] == lvls[[ dim(cases)[2] ]][1]) {
-          row[[".isNewGroup"]] <- TRUE
-        } else {
-          row[[".isNewGroup"]] <- FALSE
-        }
-
-        rows[[i]] <- row
+      for (variable in options[["factors"]]) {
+        factor <- dataset[[ .v(variable) ]]
+        factors[[length(factors)+1]] <- factor
+        lvls[[ variable ]] <- levels(factor)
       }
 
-      out[["data"]] <- rows
+      cases <- rev(expand.grid(rev(lvls)))
+      namez <- unlist(options[["factors"]])
+      columnNames <- paste(".", namez, sep="")
+
+      if (length(options[["factors"]]) > 0) {
+        for (i in 1:dim(cases)[1]) {
+          row <- list()
+          for (j in 1:dim(cases)[2]) {
+            row[[ columnNames[[j]] ]] <- as.character(cases[i, j])
+          }
+
+          sub  <- eval(parse(text=paste("dataset$", .v(namez), " == \"", row, 
+                                        "\"", sep="", collapse=" & ")))
+
+          dat <- base::subset(dataset, sub)[[1]]
+          N <- base::length(dat)
+
+          row[["N"]] <- N
+          
+          if(cases[i,dim(cases)[2]] == lvls[[ dim(cases)[2] ]][1]) {
+            row[[".isNewGroup"]] <- TRUE
+          } else {
+            row[[".isNewGroup"]] <- FALSE
+          }
+
+          rows[[i]] <- row
+        }
+      }
+    } else {
+      rows <- list(list(Factor = ".", N = "."))
     }
+    
+    out[["data"]] <- rows
   }
   return(out)
 }

@@ -59,7 +59,9 @@ RegressionLogisticForm::RegressionLogisticForm(QWidget *parent) :
 
 	_modelModel = new TableModelAnovaModel(this);
 	_modelModel->setPiecesCanBeAssigned(false);
+	_modelModel->setFrequentist(true);
 	ui->modelTerms->setModel(_modelModel);
+
 	ui->modelTerms->hide();
 
 	connect(_covariatesModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
