@@ -235,6 +235,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(simulatedMouseClick(int, int, int)), this, SLOT(simulatedMouseClickHandler(int, int, int)));
 	connect(this, SIGNAL(resultsDocumentChanged()), this, SLOT(resultsDocumentChangedHandler()));
 	connect(ui->tabBar, SIGNAL(setExactPValuesHandler(bool)), this, SLOT(setExactPValuesHandler(bool)));
+	connect(ui->tabBar, SIGNAL(setFixDecimalsHandler(QString)), this, SLOT(setFixDecimalsHandler(QString)));
 	connect(ui->tabBar, SIGNAL(emptyValuesChangedHandler()), this, SLOT(emptyValuesChangedHandler()));
 
 #ifdef __APPLE__
@@ -1292,7 +1293,8 @@ void MainWindow::resultsPageLoaded(bool success)
 		QString version = tq(AppInfo::version.asString());
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
 
-		setExactPValuesHandler(_settings.value("exactPVals", 0).toBool());
+		setExactPValuesHandler(_settings.value("displayExactPVals", 0).toBool());
+		setFixDecimalsHandler(_settings.value("numDecimals").toString());
 
 		QVariant ppiv = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getPPI()");
 
@@ -1381,6 +1383,14 @@ void MainWindow::setExactPValuesHandler(bool exactPValues)
 {
 	QString exactPValueString = (exactPValues ? "true" : "false");
 	QString js = "window.globSet.pExact = " + exactPValueString + "; window.reRenderAnalyses();";
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(js);
+}
+
+void MainWindow::setFixDecimalsHandler(QString numDecimals)
+{	
+	if (numDecimals == "")
+		numDecimals = "\"\"";
+	QString js = "window.globSet.decimals = " + numDecimals + "; window.reRenderAnalyses();";
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(js);
 }
 
