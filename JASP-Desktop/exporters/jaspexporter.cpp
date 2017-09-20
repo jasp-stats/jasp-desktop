@@ -90,8 +90,25 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 	metaData["dataFilePath"] = Json::Value(package->dataFilePath);
 	metaData["dataFileReadOnly"] = Json::Value(package->dataFileReadOnly);
 	metaData["dataFileTimestamp"] = Json::Value(package->dataFileTimestamp);
+	Json::Value emptyValuesJson = Json::arrayValue;
+	const vector<string>& emptyValuesVector = Utils::getEmptyValues();
+	for (auto it = emptyValuesVector.begin(); it != emptyValuesVector.end(); ++it)
+		emptyValuesJson.append(*it);
+	metaData["emptyValues"] = emptyValuesJson;
 	dataSet["rowCount"] = Json::Value(dataset ? dataset->rowCount() : 0);
 	dataSet["columnCount"] = Json::Value(dataset ? dataset->columnCount(): 0);
+	Json::Value emptyValuesMapJson = Json::objectValue;
+	for (auto it = package->emptyValuesMap.begin(); it != package->emptyValuesMap.end(); ++it)
+	{
+		string colName = it->first;
+		std::map<int, string> map = it->second;
+		Json::Value mapJson = Json::objectValue;
+		for (auto it2 = map.begin(); it2 != map.end(); ++it2)
+			mapJson[to_string(it2->first)] = it2->second;
+		emptyValuesMapJson[colName] = mapJson;
+	}
+	dataSet["emptyValuesMap"] = emptyValuesMapJson;
+
 	Json::Value columnsData = Json::arrayValue;
 
 	//Calculate size of data file that'll be added to the archive////////

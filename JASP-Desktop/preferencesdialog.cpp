@@ -1,5 +1,12 @@
 #include "preferencesdialog.h"
+#include "utils.h"
 #include "ui_preferencesdialog.h"
+#include <QMessageBox>
+#include <QDebug>
+
+using namespace std;
+
+int PreferencesDialog::_currentTab = 0;
 
 PreferencesDialog::PreferencesDialog(QWidget *parent) :
 	QDialog(),
@@ -30,11 +37,13 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 
 	// Remove Question mark Help sign (Only on windows )
 	this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
-
+		
 	connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(savePreferences()));
 	connect(ui->useDefaultSpreadsheetEditor, SIGNAL(clicked(bool)), this, SLOT(setDefaultEditorCheck(bool)));
 	connect(ui->openEditor, SIGNAL(pressed()),this, SLOT(getSpreadsheetEditor()));
-
+	connect(ui->tabsPreferences, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
+	
+	ui->tabsPreferences->setCurrentIndex(_currentTab);
 }
 
 PreferencesDialog::~PreferencesDialog()
@@ -42,9 +51,130 @@ PreferencesDialog::~PreferencesDialog()
 	delete ui;
 }
 
+std::vector<std::string> PreferencesDialog::getStdVectorFromEmptyValueList()
+{
+	std::vector<std::string> result;
+	QListWidgetItem *itm;
+	unsigned int count = ui->missingValuesList->count();
+	QString s;
+	
+	//Strip leading " and use template name for white spaces
+	for (unsigned int i=0; i<count; ++i)
+	{
+		itm = ui->missingValuesList->item(i);
+		s = itm->text();
+		s = stripFirstAndLastChar(s, "\"");
+		s = s.trimmed();
+		if (!s.isEmpty())
+			result.push_back(s.toStdString());
+	}
+	
+	return result;
+}
+
+QString PreferencesDialog::getTokenStringFromEmptyValueList()
+{
+	QString result;
+	QListWidgetItem *itm;
+	unsigned int count = ui->missingValuesList->count();
+	
+	//No stripping is done
+	for (unsigned int i=0; i<count; ++i)
+	{
+		itm = ui->missingValuesList->item(i);
+		QString itemtoadd = itm->text();
+		result += itemtoadd;
+		if (i<count-1) result += "|";
+	}
+	
+	return result;
+	
+}
+
+bool PreferencesDialog::addStringToEmptyValueList(const QString &in)
+{
+	bool itemexist = false;
+	
+	QString prepare = in.trimmed();
+	prepare = stripFirstAndLastChar(prepare, "\"");
+	prepare = prepare.trimmed();
+
+	if (!prepare.isEmpty())
+	{
+		for (unsigned int i=0; i<ui->missingValuesList->count(); ++i)
+		{
+			if (ui->missingValuesList->item(i)->text() == prepare)
+			{
+				itemexist = true;
+				break;
+			}
+		}
+
+		if (!itemexist)
+		{
+			ui->missingValuesList->addItem(prepare);
+			ui->itemEdit->setText("");
+		}
+	}
+	
+	return itemexist;
+}
+
+void PreferencesDialog::on_addPushButton_clicked()
+{
+
+	addStringToEmptyValueList(ui->itemEdit->text());
+	
+}
+
+void PreferencesDialog::on_deletePushButton_clicked()
+{
+	QListWidgetItem *itm = ui->missingValuesList->takeItem(ui->missingValuesList->currentRow());
+	delete itm;
+}
+
+void PreferencesDialog::on_resetPushButton_clicked()
+{
+	fillMissingValueList(Utils::getDefaultEmptyValues());
+}
+
+void PreferencesDialog::currentTabChanged(int tabNr)
+{
+	_currentTab = tabNr;
+}
+
+void PreferencesDialog::checkEmptyValueList()
+{
+	// Forgot to save something?
+	if (ui->itemEdit->text() != "")
+	{
+		QMessageBox::StandardButton reply;
+		reply = QMessageBox::question(this, "", "Still one item to add to Missing Value List. Add ?",
+									  QMessageBox::Yes|QMessageBox::No);
+		if (reply == QMessageBox::Yes) 
+			addStringToEmptyValueList(ui->itemEdit->text());
+	}
+		
+	std::vector<std::string> missingvalues;
+	QString settingmissingvalues;
+	const std::vector<std::string> &org_missingvalues = Utils::getEmptyValues();
+
+	settingmissingvalues = getTokenStringFromEmptyValueList();;
+	missingvalues = getStdVectorFromEmptyValueList();
+	
+	if (settingmissingvalues != "" && missingvalues != org_missingvalues)
+	{
+		_settings.setValue("MissingValueList", settingmissingvalues);
+		Utils::setEmptyValues(missingvalues);
+		emit _tabBar->emptyValuesChanged();
+	}
+}
+
 void PreferencesDialog::savePreferences()
 {
-		
+	// Check empty value list
+	checkEmptyValueList();
+
 	//Auto Sync Switch
 	int checked = (ui->syncAutoCheckBox->checkState()==Qt::Checked) ? 1 : 0;
 	int dataAutoSynchronization = _settings.value("dataAutoSynchronization", 1).toInt();
@@ -104,5 +234,23 @@ void PreferencesDialog::getSpreadsheetEditor()
 	if (filename != "")
 		ui->spreadsheetEditorName->setText(filename);
 	
+}
+
+void PreferencesDialog::showEvent(QShowEvent * event)
+{
+	fillMissingValueList(Utils::getEmptyValues());
+	QDialog::showEvent(event);
+}
+
+void PreferencesDialog::fillMissingValueList(const vector<string> &emptyValues)
+{
+	ui->missingValuesList->clear();
+	std::string s;
+
+	for (unsigned int t=0; t<emptyValues.size() ; ++t)
+	{
+		s = emptyValues.at(t);
+		ui->missingValuesList->addItem(s.c_str());
+	}
 }
 

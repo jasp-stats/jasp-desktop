@@ -20,7 +20,7 @@ const QDate SPSSImportColumn::_beginEpoch(1582, 10, 14);
  * @param missingChecker Check for missing value with this.
  */
 SPSSImportColumn::SPSSImportColumn(SPSSImportDataSet *spssdataset, const std::string &name, const std::string &label, long stringLen, FormatTypes formattype, const spss::MissingValueChecker &missingChecker)
-	: ImportColumn(label)
+	: ImportColumn(spssdataset, label)
 	, _spssColumnLabel(label)
 	, _spssRawColName(name)
 	, _spssStringLen(stringLen)

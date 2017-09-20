@@ -48,6 +48,7 @@ public:
 	void syncInts(const std::set<int> &values);
 	void syncInts(std::map<int, std::string> &values);
 	std::map<std::string, int> syncStrings(const std::vector<std::string> &new_values, const std::map<std::string, std::string> &new_labels);
+	std::set<int> getIntValues();
 
 	const Label &labelFor(int index) const;
 	void set(std::vector<Label> &labels);

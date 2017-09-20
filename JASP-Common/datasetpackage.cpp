@@ -25,6 +25,7 @@ DataSetPackage::DataSetPackage()
 void DataSetPackage::reset()
 {
 	dataSet = NULL;
+	emptyValuesMap.clear();
 	archiveVersion = Version();
 	dataArchiveVersion = Version();
 	analysesHTML = std::string();

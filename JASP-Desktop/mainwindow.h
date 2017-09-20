@@ -210,6 +210,7 @@ private slots:
 	void requestHelpPage(const QString &pageName);
 
 	void setExactPValuesHandler(bool exactPValues);
+	void emptyValuesChangedHandler();
 
 };
 
