@@ -30,6 +30,10 @@
 #include <QAction>
 #include <QSettings>
 
+class PreferencesDialog;
+
+#include "aboutdialog.h"
+
 class TabBar : public QWidget
 {
 	Q_OBJECT
@@ -82,6 +86,10 @@ private:
 	QMenuBar *_menuBarTab;
 	QSettings _settings;
 	QString _currentActiveTab;
+	
+	AboutDialog *_aboutDialog;
+	PreferencesDialog *_preferencesDialog;
+	
 };
 
 #endif // TABBAR_H
