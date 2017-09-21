@@ -477,13 +477,13 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	if (reportVovkSellkeMPR) {
 		if (flagSignificant){
 	    .addFootnote(footnotes, symbol = "\u207A", text = "Vovk-Sellke Maximum
-	    <em>p</em>-Ratio: Based the <em>p</em>-value, the maximum
+	    <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
 	    possible odds in favor of H\u2081 over H\u2080 equals
 	    1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
 	    (Sellke, Bayarri, & Berger, 2001).")
 		} else {
 			.addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
-	    <em>p</em>-Ratio: Based the <em>p</em>-value, the maximum
+	    <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
 	    possible odds in favor of H\u2081 over H\u2080 equals
 	    1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
 	    (Sellke, Bayarri, & Berger, 2001).")
@@ -504,7 +504,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 		for (test in tests) {
 
-			if (length(tests) > 1 || reportSignificance || (test == "pearson" && options$confidenceIntervals) || reportVovkSellkeMPR) {
+			if (length(tests) > 1 || reportSignificance || (options$confidenceIntervals) || reportVovkSellkeMPR) {
 
 				column.name <- paste(".test[", test, "]", sep="")
 				column.names[[length(column.names)+1]] <- column.name
@@ -547,7 +547,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				}
 			}
 
-			if (test == "pearson" && options$confidenceIntervals) {
+			if (options$confidenceIntervals) {
 
 				column.name <- paste(".test[", test, "-upperCI]", sep="")
 				column.names[[length(column.names)+1]] <- column.name
@@ -590,7 +590,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				upperCIs <- list()
 				lowerCIs <- list()
 
-				if (length(tests) > 1 || reportSignificance || (test == "pearson" && options$confidenceIntervals))
+				if (length(tests) > 1 || reportSignificance || (options$confidenceIntervals) || reportVovkSellkeMPR)
 					row[[length(row)+1]] <- test.names[[test]]
 
 				if (reportSignificance)
@@ -604,8 +604,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 					}
 				}
 
-				if (test == "pearson" && options$confidenceIntervals) {
-
+				if (options$confidenceIntervals) {
 					upperCIs[[length(upperCIs)+1]] <- paste("Upper ", 100 * options$confidenceIntervalsInterval, "% CI", sep="")
 					lowerCIs[[length(lowerCIs)+1]] <- paste("Lower ", 100 * options$confidenceIntervalsInterval, "% CI", sep="")
 				}
@@ -633,7 +632,12 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 					v1 <- dataset[[ .v(variable.name) ]]
 					v2 <- dataset[[ .v(variable.2.name) ]]
-
+					errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('variance', 'infinity'),
+					                     all.target = c(variable.name, variable.2.name))
+					if (!identical(errors, FALSE)) {
+					  index <- .addFootnote(footnotes, errors$message)
+					  row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
+					}
 
 					if (!is.null(state) && !is.null(diff) && test %in% state$tableTests && variable.name %in% state$tableVariables && column.name %in% names(state$tableRows[[which(state$tableVariable == variable.name)]])
 						&& ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$hypothesis == FALSE && diff$missingValues == FALSE && diff$confidenceIntervals == FALSE && diff$confidenceIntervalsInterval == FALSE)))) {
@@ -646,7 +650,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 						pValueList[[variable.name]][[column.name]] <- p.value
 						MPRList[[variable.name]][[column.name]] <- MPR
 
-						if (test == "pearson" && options$confidenceIntervals) {
+						if (options$confidenceIntervals) {
 
 							upperCI <- state$tableUpperCIs[[variable.name]][[column.name]]
 							lowerCI <- state$tableLowerCIs[[variable.name]][[column.name]]
@@ -681,20 +685,12 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 					 		p.values[[length(p.values)+1]] <- .clean(p.value)
 
 						if (reportVovkSellkeMPR)
-							MPRs[[length(MPRs)+1]] <- MPR
+							MPRs[[length(MPRs)+1]] <- .clean(MPR)
 
 
 					 } else {
 
 						if (perform == "run") {
-						  errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('variance', 'infinity'),
-
-						                       all.target = c(variable.name, variable.2.name))
-						  if (!identical(errors, FALSE)) {
-						    index <- .addFootnote(footnotes, errors$message)
-						    row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
-						  }
-						  
 
 							if (hypothesis == "correlated") {
 
@@ -720,7 +716,24 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 								upperCIList[[variable.name]][[column.name]] <- upperCI
 								lowerCIList[[variable.name]][[column.name]] <- lowerCI
+							} else if (test == "spearman" && options$confidenceIntervals) {
+							  
+							  spearCI <- .createNonparametricConfidenceIntervals(v1, v2, method = "spearman", hypothesis = hypothesis, confLevel = options$confidenceIntervalsInterval)
+							  upperCI <- as.numeric(spearCI[2])
+							  lowerCI <- as.numeric(spearCI[1])
+							  
+							  upperCIList[[variable.name]][[column.name]] <- upperCI
+							  lowerCIList[[variable.name]][[column.name]] <- lowerCI
+							} else if (test == "kendall" && options$confidenceIntervals) {
+							  
+							  kendallCI <- .createNonparametricConfidenceIntervals(v1, v2, method = "kendall", hypothesis = hypothesis, confLevel = options$confidenceIntervalsInterval)
+							  upperCI <- as.numeric(kendallCI[2])
+							  lowerCI <- as.numeric(kendallCI[1])
+							  
+							  upperCIList[[variable.name]][[column.name]] <- upperCI
+							  lowerCIList[[variable.name]][[column.name]] <- lowerCI
 							}
+							
 
 
 							pValueList[[variable.name]][[column.name]] <- p.value
@@ -748,10 +761,10 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 								p.values[[length(p.values)+1]] <- .clean(p.value)
 
 							if (reportVovkSellkeMPR)
-								MPRs[[length(MPRs)+1]] <- MPR
+								MPRs[[length(MPRs)+1]] <- .clean(MPR)
 
 
-							if (test == "pearson" && options$confidenceIntervals) {
+							if (options$confidenceIntervals) {
 
 								upperCIs[[length(upperCIs)+1]] <- .clean(upperCI)
 								lowerCIs[[length(lowerCIs)+1]] <- .clean(lowerCI)
@@ -763,7 +776,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 							p.values[[length(p.values)+1]] <- "."
 							MPRs[[length(MPRs)+1]] <- "."
 
-							if (test == "pearson" && options$confidenceIntervals) {
+							if (options$confidenceIntervals) {
 
 								upperCIs[[length(upperCIs)+1]] <- "."
 								lowerCIs[[length(lowerCIs)+1]] <- "."
@@ -785,7 +798,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				}
 
 
-				if (test == "pearson" && options$confidenceIntervals) {
+				if (options$confidenceIntervals) {
 
 					for (upperCI in upperCIs)
 						row[[length(row)+1]] <- upperCI
@@ -796,7 +809,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				}
 
 			}
-
+     
 			names(row) <- column.names
 			row[[".variable"]] <- variable.name
 
@@ -1064,3 +1077,59 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	text(0, .5, errorMessage, cex=cexText)
 
 }
+
+### Utility functions for nonparametric confidence intervals ###
+.ConcordanceFunction <- function(i, j)
+{
+  Q.ij <- 0
+  ij <- (j[2] - i[2]) * (j[1] - i[1])
+  if(ij > 0) Q.ij <- 1
+  if(ij < 0) Q.ij <- -1
+  return(Q.ij)
+}
+
+.addConcordances <- function(x, y, i)
+{
+  C.i <- 0
+  for(k in 1:length(x))
+    if(k != i) 
+      C.i <- C.i + .ConcordanceFunction(c(x[i], y[i]), c(x[k], y[k]))
+    return(C.i)
+}
+
+.createNonparametricConfidenceIntervals <- function(x, y, hypothesis = "two-sided", confLevel = 0.95, method = "kendall"){
+  alpha <- 1 - confLevel
+  n <- length(x)
+  corValue <- cor.test(x, y, method=method)$estimate
+  if(method == "kendall" && sum(is.infinite(c(x,y)))==0){
+    c.i <- numeric(0)
+    for(i in 1:n){
+      c.i <- c(c.i, .addConcordances(x, y, i))
+    }
+    sigmaHatSq <- 2 * (n - 2) * var(c.i) / n / (n-1)
+    sigmaHatSq <- sigmaHatSq + 1 - (corValue)^2
+    sigmaHatSq <- sigmaHatSq * 2 / n / (n - 1)
+    
+    if(hypothesis=="correlated") z <- qnorm(alpha / 2, lower.tail = F)
+    if(hypothesis!="correlated") z <- qnorm(alpha, lower.tail = F)
+    ciLow <- corValue - z * sqrt(sigmaHatSq)
+    ciUp <- corValue + z * sqrt(sigmaHatSq)
+    if(hypothesis=="correlatedPositively") ciUp <- 1
+    if(hypothesis=="correlatedNegatively") ciLow <- -1
+  } else if(method == "kendall"){
+    ciLow <- NaN
+    ciUp <- NaN
+  } else if (method == "spearman"){
+    stdErr = 1 / sqrt(n-3)
+    if(hypothesis=="correlated") z <- qnorm(alpha / 2, lower.tail = F)
+    if(hypothesis!="correlated") z <- qnorm(alpha, lower.tail = F)
+    ciLow = tanh(atanh(corValue) - z * stdErr)
+    ciUp = tanh(atanh(corValue) + z * stdErr)
+    if(hypothesis=="correlatedPositively") ciUp <- 1
+    if(hypothesis=="correlatedNegatively") ciLow <- -1
+  }
+  return(c(ciLow,ciUp))
+}
+
+
+
