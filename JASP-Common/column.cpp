@@ -55,7 +55,7 @@ void Column::_convertVectorIntToDouble(vector<int> &intValues, vector<double> &d
 		const int &intValue = *it;
 		double doubleValue = intValue;
 		if (intValue == INT_MIN)
-			doubleValue == NAN;
+			doubleValue = NAN;
 		doubleValues.push_back(doubleValue);
 	}
 
@@ -141,7 +141,7 @@ bool Column::_resetEmptyValuesForScale(std::map<int, string> &emptyValuesMap)
 	for (; doubles != end; doubles++)
 	{
 		double doubleValue = *doubles;
-		if (doubleValue == NAN && hasEmptyValues)
+		if (isnan(doubleValue) && hasEmptyValues)
 		{
 			auto search = emptyValuesMap.find(row);
 			if (search != emptyValuesMap.end())
@@ -164,7 +164,7 @@ bool Column::_resetEmptyValuesForScale(std::map<int, string> &emptyValuesMap)
 				}
 			}
 		}
-		else if (doubleValue != NAN && isEmptyValue(doubleValue))
+		else if (!isnan(doubleValue) && isEmptyValue(doubleValue))
 		{
 			// This value is now considered as empty
 			*doubles = NAN;
@@ -184,7 +184,7 @@ bool Column::_resetEmptyValuesForScale(std::map<int, string> &emptyValuesMap)
 		for (doubles = AsDoubles.begin(); doubles != end; doubles++)
 		{
 			double doubleValue = *doubles;
-			if (doubleValue == NAN)
+			if (isnan(doubleValue))
 			{
 				auto search = emptyValuesMap.find(row);
 				if (search != emptyValuesMap.end())
@@ -225,6 +225,7 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 	vector<int> intValues;
 	vector<double> doubleValues;
 	set<int> uniqueIntValues;
+	map<int, string> intLabels;
 	bool canBeConvertedToIntegers = tryToConvert, canBeConvertedToDoubles = tryToConvert;
 
 	for (; ints != end; ints++)
@@ -257,7 +258,11 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 							{
 								int intValue = boost::lexical_cast<int>(orgValue);
 								intValues.push_back(intValue);
-								uniqueIntValues.insert(intValue);
+								if (uniqueIntValues.find(intValue) == uniqueIntValues.end())
+								{
+									uniqueIntValues.insert(intValue);
+									intLabels.insert(make_pair(intValue, orgValue));
+								}
 								emptyValuesMap.erase(search);
 							}
 							catch (...)
@@ -332,7 +337,11 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 					{
 						int intValue = boost::lexical_cast<int>(orgValue);
 						intValues.push_back(intValue);
-						uniqueIntValues.insert(intValue);
+						if (uniqueIntValues.find(intValue) == uniqueIntValues.end())
+						{
+							uniqueIntValues.insert(intValue);
+							intLabels.insert(make_pair(intValue, _labelFromIndex(index)));
+						}
 					}
 					catch (...)
 					{
@@ -365,7 +374,8 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 
 	if (canBeConvertedToIntegers)
 	{
-		setColumnAsNominalOrOrdinal(intValues, uniqueIntValues);
+		_labels.clear();
+		setColumnAsNominalOrOrdinal(intValues, intLabels);
 		hasChanged = true;
 	}
 	else if (canBeConvertedToDoubles)
@@ -373,7 +383,7 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 		setColumnAsScale(doubleValues);
 		hasChanged = true;
 	}
-	else
+	else if (hasChanged)
 	{
 		map<int, string> newEmptyValues = setColumnAsNominalString(values);
 		emptyValuesMap.clear();
@@ -502,7 +512,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 				{
 					try
 					{
-						if (*doubles != NAN)
+						if (!isnan(*doubles))
 						{
 							int v = lexical_cast<int>(*doubles);
 							uniqueValues.insert(v);

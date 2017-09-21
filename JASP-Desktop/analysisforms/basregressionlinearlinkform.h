@@ -46,8 +46,9 @@ public:
 	virtual void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
 
 private slots:
-	void on_MCMC_clicked();
 	void on_BAS_clicked();
+	void on_MCMC_clicked();
+	void on_MCMCBAS_clicked();
 	void on_betaBinomial_clicked();
 	void on_Bernoulli_clicked();
 	void on_uniformPrior_clicked();
@@ -55,7 +56,10 @@ private slots:
 	void on_hyper_g_clicked();
 	void on_hyper_g_laplace_clicked();
 	void on_hyper_g_n_clicked();
-	void on_priorRegressionCoefficients_clicked();
+	void on_aic_clicked();
+	void on_bic_clicked();
+	void on_eb_global_clicked();
+	void on_eb_local_clicked();
 	void factorsChanging();
 	void factorsChanged();
 

@@ -42,6 +42,7 @@
 
 #include "analysisforms/regressionlinearform.h"
 #include "analysisforms/regressionlinearbayesianform.h"
+#include "analysisforms/regressionlogisticform.h"
 #include "analysisforms/regressionloglinearform.h"
 #include "analysisforms/regressionloglinearbayesianform.h"
 #include "analysisforms/correlationform.h"
@@ -109,6 +110,7 @@
 #include "dirs.h"
 #include "qutils.h"
 #include "column.h"
+#include "sharedmemory.h"
 
 #include "options/optionvariablesgroups.h"
 
@@ -719,6 +721,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new RegressionLinearForm(contentArea);
 	else if (name == "RegressionLinearBayesian")
 		form = new RegressionLinearBayesianForm(contentArea);
+	else if (name == "RegressionLogistic")
+		form = new RegressionLogisticForm(contentArea);
 	else if (name == "RegressionLogLinear")
 		form = new RegressionLogLinearForm(contentArea);
 	else if (name == "RegressionLogLinearBayesian")
@@ -1211,10 +1215,13 @@ void MainWindow::populateUIfromDataSet()
 					Json::Value &optionsJson = analysisData["options"];
 					Json::Value &resultsJson = analysisData["results"];
 					Json::Value &userDataJson = analysisData["userdata"];
+					Json::Value &versionJson = analysisData["version"];
+
+					Version version = versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
 
 					Analysis::Status status = Analysis::parseStatus(analysisData["status"].asString());
 
-					Analysis *analysis = _analyses->create(name, id, &optionsJson, status);
+					Analysis *analysis = _analyses->create(name, id, version, &optionsJson, status);
 
 					analysis->setUserData(userDataJson);
 					analysis->setResults(resultsJson);
@@ -1398,9 +1405,36 @@ void MainWindow::emptyValuesChangedHandler()
 {
 	if (_package->isLoaded())
 	{
-		vector<string> colChanged =_package->dataSet->resetEmptyValues(_package->emptyValuesMap);
+		vector<string> colChanged;
 		vector<string> missingColumns;
 		map<string, string> changeNameColumns;
+
+		try
+		{
+			colChanged =_package->dataSet->resetEmptyValues(_package->emptyValuesMap);
+		}
+		catch (boost::interprocess::bad_alloc &e)
+		{
+			try {
+
+				_package->dataSet = SharedMemory::enlargeDataSet(_package->dataSet);
+				colChanged =_package->dataSet->resetEmptyValues(_package->emptyValuesMap);
+			}
+			catch (exception &e)
+			{
+				throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
+			}
+		}
+		catch (exception e)
+		{
+			cout << "n " << e.what();
+			cout.flush();
+		}
+		catch (...)
+		{
+			cout << "something when wrong...\n ";
+			cout.flush();
+		}
 
 		_package->setModified(true);
 		packageDataChanged(_package, colChanged, missingColumns, changeNameColumns);
