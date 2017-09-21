@@ -25,7 +25,6 @@
 #include <QEventLoop>
 #include <QSignalSpy>
 #include <QMetaType>
-#include <fstream>
 #include "AutomatedTests.h"
 #include "backstage/fsbrowser.h"
 #include "backstage/fsbmosf.h"

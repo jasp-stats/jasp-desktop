@@ -44,7 +44,7 @@ public:
 	 *
 	 * NB This constructor will modify the contents of fixer!
 	 */
-	CharacterEncodingRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from);
+	CharacterEncodingRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, JaspFiles::IFStream &from);
 
 	virtual ~CharacterEncodingRecord();
 

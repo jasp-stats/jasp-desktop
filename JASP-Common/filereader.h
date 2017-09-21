@@ -23,8 +23,6 @@
 #include <vector>
 
 #include <stdlib.h>
-#include <boost/nowide/fstream.hpp>
-
 #include <sysdepfiletype.h>
 #include "libzip/archive.h"
 
@@ -44,13 +42,13 @@ public:
 	 * @param entryPath - Path to entry in archive,
 	 *
 	 */
-	FileReader(const JaspFileTypes::FilePath &archivePath, const std::string &entryPath);
+	FileReader(const JaspFiles::Path &archivePath, const std::string &entryPath);
 
 	/**
 	 * @brief FileReader - Ctor to read simple file.
 	 * @param path - Path to archive.
 	 */
-	FileReader(const JaspFileTypes::FilePath &path);
+	FileReader(const JaspFiles::Path &path);
 
 	/**
 	 * @brief Dtor()
@@ -142,12 +140,12 @@ public:
 	 */
 	std::string extension() const;
 
-	static std::vector<std::string> getEntryPaths(const JaspFileTypes::FilePath &archivePath, const std::string &entryBaseDirectory = std::string());
+	static std::vector<std::string> getEntryPaths(const JaspFiles::Path &archivePath, const std::string &entryBaseDirectory = std::string());
 
 private:
 
 	struct archive *_archive;
-	JaspFileTypes::IFStream *_file = NULL;
+	JaspFiles::IFStream *_file = NULL;
 
 	bool _isArchive = false;
 
@@ -156,11 +154,11 @@ private:
 	bool _isOpen = false;
 	bool _exists = false;
 	bool _archiveExists = false;
-	JaspFileTypes::FilePath _archivePath;
+	JaspFiles::Path _archivePath;
 	std::string				_entryPath;
 
-	void openEntry(const JaspFileTypes::FilePath &archivePath, const std::string &entryPath);
-	void openFile(const JaspFileTypes::FilePath &filePath);
+	void openEntry(const JaspFiles::Path &archivePath, const std::string &entryPath);
+	void openFile(const JaspFiles::Path &filePath);
 };
 
 #endif // FILEREADER_H

@@ -55,7 +55,7 @@ public:
 	  * @param ifstream from - file to read from
 	  *
 	  */
-	ReadableRecord(const NumericConverter &fixer, RecordTypes fileType, SPSSStream &from);
+	ReadableRecord(const NumericConverter &fixer, RecordTypes fileType, JaspFiles::IFStream &from);
 
 	virtual ~ReadableRecord() {}
 
@@ -106,7 +106,7 @@ ReadableRecord<rT>::ReadableRecord(RecordTypes fileType)
 #endif
 
 template <RecordTypes rT>
-ReadableRecord<rT>::ReadableRecord(const NumericConverter &, RecordTypes fileType, SPSSStream &from)
+ReadableRecord<rT>::ReadableRecord(const NumericConverter &, RecordTypes fileType, JaspFiles::IFStream &from)
 {
 	if (!from.good())
 	{

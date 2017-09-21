@@ -23,7 +23,6 @@
 #define private public
 
 #include <QSignalSpy>
-#include <fstream>
 #include <vector>
 #include <string>
 #include <boost/filesystem.hpp>
@@ -62,7 +61,7 @@ public:
   bool checkIfNumeric(std::string);
 
 private:
-  JaspFileTypes::FilePath   _full_path;
+  JaspFiles::Path   _full_path;
 
 private slots:
     void initTestCase();

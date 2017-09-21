@@ -20,7 +20,7 @@
 #include <sstream>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
-#include <boost/nowide/fstream.hpp>
+#include <sysdepfiletype.h>
 
 #include "base64.h"
 #include "dirs.h"
@@ -68,8 +68,8 @@ void tempfiles_init(long sessionId)
 	filesystem::remove_all(sessionPath, error);
 	filesystem::create_directories(sessionPath, error);
 
-	nowide::fstream f;
-	f.open(_tempfiles_statusFileName.c_str(), ios_base::out);
+	JaspFiles::OFStream f;
+	f.open(_tempfiles_statusFileName, ios_base::out);
 	f.close();
 
 	filesystem::path clipboardPath = Utils::osPath(_tempfiles_clipboard);

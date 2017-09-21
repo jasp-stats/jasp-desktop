@@ -39,10 +39,10 @@ public:
 	bool isArchive = false;
 	std::string warningMessage;
 
-    JaspFileTypes::FilePath id;
+	JaspFiles::Path	  id;
 	std::string initalMD5;
 
-	std::string dataFilePath;
+	JaspFiles::Path dataFilePath;
 	uint dataFileTimestamp;
 	bool dataFileReadOnly;
 

@@ -28,7 +28,7 @@ using namespace spss;
  * @param from The file to read from.
  *
  */
-DocumentRecord::DocumentRecord(const NumericConverter &fixer, RecordTypes fileType, SPSSStream &from)
+DocumentRecord::DocumentRecord(const NumericConverter &fixer, RecordTypes fileType, JaspFiles::IFStream &from)
 	: ReadableRecord(fixer, fileType, from)
 {
 	SPSSIMPORTER_READ_MEMBER(n_lines, from, fixer);

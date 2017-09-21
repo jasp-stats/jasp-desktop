@@ -33,7 +33,7 @@ class DataInfoRecord : public ReadableRecord<rectype_meta_data>
 {
 public:
 
-	DataInfoRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
+	DataInfoRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, JaspFiles::IFStream &from)
 		: ReadableRecord<rectype_meta_data>(fixer, fileType, from)
 	{
 		if (fileSubType != SUB_RECORD_TYPE)

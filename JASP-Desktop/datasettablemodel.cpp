@@ -20,7 +20,6 @@
 
 #include "desktoputils.h"
 #include <iostream>
-#include <fstream>
 
 #include <QSize>
 #include <QDebug>

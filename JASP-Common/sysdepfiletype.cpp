@@ -23,45 +23,129 @@
 
 #include "sysdepfiletype.h"
 
-#ifndef QT_NO_DEBUG
-#include <iostream>
-#endif
 
-using namespace std;
-using namespace boost::filesystem;
+using namespace JaspFiles;
+using namespace boost;
+
+/*********************************************************************
+ *
+ * Class _jaspPath
+ *
+ *********************************************************************/
 
 /**
- *  @brief  Extraction without delimiters.
- *  @param  __s  A character array.
- *  @param  __n  Maximum number of *8 bit* characters to store.
- *  @return  *this
- *
- *  If the stream state is @c good(), extracts characters and stores
- *  them into @a __s until one of the following happens:
- *  - @a __n characters are stored
- *  - the input sequence reaches end-of-file, in which case the error
- *    state is set to @c failbit|eofbit.
- *
+ * @brief operator /= Appends a directory level to the right.
+ * @param rhs The name of the directory to add.
+ * @return *this;
  */
-JASPBOOST_IFSTREAM_SUPER::__istream_type &
-JaspIfStream::read(char *__s, streamsize __n)
+_jaspPath & _jaspPath::operator /= (const std::string &rhs)
 {
-    streamsize numChars = 0;
-    if (sizeof(char_type) > sizeof(char))
-    {
-        numChars = (__n * sizeof(char)) / sizeof(char_type);
-        if ((__n % sizeof(char_type)) != 0)
-        {
-#ifndef QT_NO_DEBUG
-            cout << "JaspIfStream::read(char *, streamsize): Found " << (__n % sizeof(char_type)) << " bytes over." << endl;
-#endif
-            numChars++;
-        }
-    }
-    else
-        numChars = __n;
-
-    JASPBOOST_IFSTREAM_SUPER::read((JASPBOOST_IFSTREAM_SUPER::char_type *) __s, numChars);
-
-    return *this;
+	return *this /= rhs.c_str();
 }
+
+_jaspPath & _jaspPath::operator /= (const char *rhs)
+{
+	_s.push_back(DIR_SEP);
+	_s.append(rhs);
+
+	return *this;
+}
+
+/**
+ * @brief string Get path as UTF-16 string.
+ * @return
+ */
+std::wstring _jaspPath::wstring() const
+{
+	return nowide::widen(_s);
+}
+
+/**
+ * @brief string Get path as UTF-16 string.
+ * @return
+ */
+QString _jaspPath::qstring() const
+{
+	QString result = QString::fromUtf8(_s.data(), _s.size());
+    if (QT_DIR_SEP != DIR_SEP)
+        result.replace(QChar(DIR_SEP), QChar(QT_DIR_SEP));
+    return result;
+}
+
+/**
+ * @brief toPath Returns a path
+ * @return path.
+ */
+filesystem::path  _jaspPath::path() const
+{
+#ifdef _WIN32
+    return filesystem::path(this->wstring());
+#else
+    return filesystem::path(this->string());
+#endif
+}
+
+/**
+ * @brief filename Returns the filename portion.
+ * @return The file-name.
+ */
+std::string _jaspPath::filename() const
+{
+    // find the last dir sep.
+	std::string::size_type lastDir = _s.rfind(DIR_SEP);
+    // if found and not last in string.
+	if ((lastDir != std::string::npos) && (lastDir < (_s.size() -1)))
+		return _s.substr(lastDir + 1);
+    else
+        return string();
+}
+
+/**
+ * @brief extension Get the extension.
+ * @return The extension.
+ */
+std::string _jaspPath::extension() const
+{
+    std::string fn = filename();
+	std::string::size_type lastDot  = fn.rfind(DOT);
+	if ((lastDot != std::string::npos) && (lastDot < _s.size()))
+        return fn.substr(lastDot+1);
+    else
+        return string();
+}
+
+/**
+ * @brief has_extension Returns true if there is DOT anything in filename.
+ * @return
+ */
+bool _jaspPath::has_extension() const
+{
+    std::string fn = filename();
+	std::string::size_type lastDot  = fn.rfind(DOT);
+	return ((lastDot != std::string::npos) && (lastDot < (_s.size() - 1)));
+}
+
+/**
+ * @brief startsWith compares first chars in path
+ * @param search Comparison.
+ * @return `true` if the first chars in path match `search` exactly.
+ */
+bool _jaspPath::startsWith(const std::string &search) const
+{
+	std::string first = _s.substr(0, search.size());
+    return first.compare(search);
+}
+
+
+/**
+ * @brief toQStr Convert to QString
+ * @return The file name in OS native format as QString
+ */
+std::string _jaspPath::cvt(const QString & from)
+{
+    QString pat(from);
+    if (QT_DIR_SEP != DIR_SEP)
+        pat.replace(QChar(QT_DIR_SEP), QChar(DIR_SEP));
+    return pat.toStdString();
+}
+

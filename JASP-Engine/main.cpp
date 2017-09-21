@@ -21,11 +21,20 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+
+#ifndef QT_NO_DEBUG
+    cout << "ENGINE: starting up" << endl;
+    cout.flush();
+#endif
+
     Engine *e = new Engine();
 
 	if (argc > 1)
 	{
-		unsigned long slaveNo = 0;
+#ifndef QT_NO_DEBUG
+        cout << "ENGINE: got argv[1] :" << argv[1] << endl;
+#endif
+        unsigned long slaveNo = 0;
 		slaveNo = strtoul(argv[1], NULL, 10);
 		e->setSlaveNo(slaveNo);
 	}

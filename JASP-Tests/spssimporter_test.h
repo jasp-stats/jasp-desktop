@@ -54,8 +54,8 @@ public:
   void copyToStructure(DataSetPackage*, struct fileContent*);
 
 private:
-	JaspFileTypes::FilePath   _spss_path;
-	JaspFileTypes::FilePath   _csv_path;
+	JaspFiles::Path	_spss_path;
+	JaspFiles::Path	_csv_path;
 
 private slots:
     void init();

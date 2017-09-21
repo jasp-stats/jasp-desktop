@@ -39,7 +39,7 @@ public:
 	 * @param fileType The record type from file
 	 * @param fromStream The file to read.
 	 */
-	MiscInfoRecord(const NumericConverter &fixer, int32_t fileSubType, RecordTypes fileType, SPSSStream &fromStream);
+	MiscInfoRecord(const NumericConverter &fixer, int32_t fileSubType, RecordTypes fileType, JaspFiles::IFStream &fromStream);
 
 	SPSSIMPORTER_READ_ATTRIB(int32_t, size)
 	SPSSIMPORTER_READ_ATTRIB(int32_t, count)

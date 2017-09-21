@@ -32,7 +32,7 @@ CharacterEncodingRecord::_NameSubs CharacterEncodingRecord::_nameSubstitution;
  * @param fileType The record type value, as found in the file.
  * @param fromStream The file to read from.
  */
-CharacterEncodingRecord::CharacterEncodingRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
+CharacterEncodingRecord::CharacterEncodingRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, JaspFiles::IFStream &from)
  : DataInfoRecord(CharacterEncodingRecord::SUB_RECORD_TYPE, CharacterEncodingRecord::RECORD_TYPE)
  , _size(0)
  , _count(0)

@@ -37,10 +37,7 @@
  *
  * NB DO NOT USE to convert filenames: On Windows 8 bit filenames ARE NOT utf-8!
  */
-inline QString toQStr(const std::string &str)
-{
-    return QString::fromStdString(str);
-}
+QString toQStr(const std::string &str);
 
 /**
  * @brief toQStr Convert UTF-8 string to QString
@@ -49,18 +46,7 @@ inline QString toQStr(const std::string &str)
  *
  * NB DO NOT USE to convert filenames: On Windows 8 bit filenames ARE NOT utf-8!
  */
-inline QString toQStr(const char *str)
-{
-    return QString::fromStdString(str);
-}
-
-
-/**
- * @brief toQStr Convert JaspFileTypes::FilePath (aka JaspFileTypes::FilePath) to QString
- * @param path The path to convert.
- * @return The file name in OS native format as QString
- */
-QString toQStr(const JaspFileTypes::FilePath &pth);
+QString toQStr(const char *str);
 
 /**
  * @brief toStr Convert QString to UTF-8 string
@@ -69,17 +55,7 @@ QString toQStr(const JaspFileTypes::FilePath &pth);
  *
  * NB DO NOT USE to convert filenames: On Windows 8 bit filenames ARE NOT utf-8!
  */
-inline std::string toStr(const QString &str)
-{
-    return str.toStdString();
-}
-
-/**
- * @brief toPath Converts a QString file path to a path object.
- * @param pa The QString path to convert.
- * @return A path object wi the same constent as the param pa.
- */
-JaspFileTypes::FilePath toPath(const QString &pa);
+std::string toStr(const QString &str);
 
 QStringList toQStringList(const std::vector<std::string> &from);
 

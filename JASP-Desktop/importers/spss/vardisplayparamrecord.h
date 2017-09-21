@@ -43,7 +43,7 @@ public:
 		 * @param useWidth True if the width vlaue is read.
 		 * @param fromStream The file to read from.
 		 */
-		DisplayParams(const NumericConverter &fixer, bool readWidth, SPSSStream &from);
+		DisplayParams(const NumericConverter &fixer, bool readWidth, JaspFiles::IFStream &from);
 
 		SPSSIMPORTER_READ_ATTRIB(int32_t, measure)
 		SPSSIMPORTER_READ_ATTRIB(int32_t, width)
@@ -59,7 +59,7 @@ public:
 	 * @param fromStream The file to read from.
 	 */
 	VarDisplayParamRecord(const NumericConverter &fixer, RecordSubTypes fileSubType,
-						  RecordTypes fileType, int32_t numCoumns, SPSSStream &from);
+						  RecordTypes fileType, int32_t numCoumns, JaspFiles::IFStream &from);
 
 	std::vector<DisplayParams>  _displayParams;
 	const std::vector<DisplayParams>& displayParams()

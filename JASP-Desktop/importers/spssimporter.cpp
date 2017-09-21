@@ -46,7 +46,7 @@ SPSSImporter::~SPSSImporter()
 {
 }
 
-ImportDataSet* SPSSImporter::loadFile(const JaspFileTypes::FilePath &locator, boost::function<void(const string &, int)> progress)
+ImportDataSet* SPSSImporter::loadFile(const JaspFiles::Path &locator, boost::function<void(const string &, int)> progress)
 {
 #ifndef QT_NO_DEBUG
     cout << "SPSSImporter::loadFile(\"" << locator.wstring().c_str() << "\", progress)" << endl;
@@ -58,7 +58,7 @@ ImportDataSet* SPSSImporter::loadFile(const JaspFileTypes::FilePath &locator, bo
         throw runtime_error("Could not read file" + locator.string());
 
     // Open the file.
-    SPSSStream stream(locator, ios::in | ios::binary);
+	JaspFiles::IFStream stream(locator, ios::in | ios::binary);
 
     // Data we have scraped to date.
     SPSSImportDataSet *dataset = new SPSSImportDataSet();
@@ -368,7 +368,7 @@ void SPSSImporter::fillSharedMemoryColumn(ImportColumn *importColumn, Column &co
  * @param position Position to report.
  * @param progress report to here.
  */
-void SPSSImporter::reportFileProgress(SPSSStream::pos_type position, boost::function<void (const std::string &, int)> prgrss)
+void SPSSImporter::reportFileProgress(JaspFiles::IFStream::pos_type position, boost::function<void (const std::string &, int)> prgrss)
 {
     static int lastPC = -1.0;
     int thisPC = static_cast<int>((100.0 * static_cast<double>(position) / _fileSize) + 0.5);

@@ -19,7 +19,6 @@
 #include "asyncloader.h"
 
 #include <iostream>
-#include <fstream>
 #include <QTimer>
 #include <QFileInfo>
 
@@ -129,7 +128,7 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
         Exporter *exporter = event->getExporter();
         if (exporter)
         {
-            exporter->saveDataSet(toStr(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+            exporter->saveDataSet(JaspFiles::Path(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
         } else {
             throw runtime_error("No Exporter found!");
         }
@@ -138,7 +137,7 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
             throw runtime_error("File '" + toStr(path) + "' is being used by another application.");
 
         if (event->IsOnlineNode())
-            QMetaObject::invokeMethod(_odm, "beginUploadFile", Qt::AutoConnection, Q_ARG(QString, event->path()), Q_ARG(QString, "asyncloader"), Q_ARG(QString, toQStr(package->id)), Q_ARG(QString, toQStr(package->initalMD5)));
+			QMetaObject::invokeMethod(_odm, "beginUploadFile", Qt::AutoConnection, Q_ARG(QString, event->path()), Q_ARG(QString, "asyncloader"), Q_ARG(QString, package->id.qstring()), Q_ARG(QString, toQStr(package->initalMD5)));
         else
             event->setComplete();
     }
@@ -189,8 +188,8 @@ void AsyncLoader::loadPackage(QString id)
 
         try
         {
-			JaspFileTypes::FilePath pa = toPath(_currentEvent->path());
-			JaspFileTypes::FilePath ext;
+			JaspFiles::Path pa(_currentEvent->path());
+			JaspFiles::Path ext;
 
 
             if (_currentEvent->IsOnlineNode())
@@ -203,8 +202,8 @@ void AsyncLoader::loadPackage(QString id)
                 if (dataNode != NULL && dataNode->error())
                     throw runtime_error(toStr(dataNode->errorMessage()));
 
-                //Generated local path has no extension
-                pa = toPath(_odm->getLocalPath(_currentEvent->path()));
+				//Generated local path has no extension
+				pa = _odm->getLocalPath(_currentEvent->path());
             }
 
             if (_currentEvent->operation() == FileEvent::FileSyncData)
@@ -217,7 +216,7 @@ void AsyncLoader::loadPackage(QString id)
                 _loader.loadPackage(_currentPackage, pa, ext, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
             }
 
-            QString calcMD5 = fileChecksum(toQStr(pa), QCryptographicHash::Md5);
+			QString calcMD5 = fileChecksum(pa.qstring(), QCryptographicHash::Md5);
 
             if (dataNode != NULL)
             {
@@ -229,7 +228,7 @@ void AsyncLoader::loadPackage(QString id)
 
             if (dataNode != NULL)
             {
-                _currentPackage->id = toPath(dataNode->nodeId());
+				_currentPackage->id = dataNode->nodeId();
                 _currentEvent->setPath(dataNode->path());
             }
             else
@@ -237,11 +236,11 @@ void AsyncLoader::loadPackage(QString id)
 
             if (_currentEvent->type() != Utils::FileType::jasp)
             {
-                _currentPackage->dataFilePath = toStr(_currentEvent->path());
+				_currentPackage->dataFilePath = JaspFiles::Path(_currentEvent->path());
                 _currentPackage->dataFileReadOnly = _currentEvent->isReadOnly();
                 _currentPackage->dataFileTimestamp = _currentEvent->IsOnlineNode() ? 0 : QFileInfo(_currentEvent->path()).lastModified().toTime_t();
             }
-            _currentEvent->setDataFilePath(toQStr(_currentPackage->dataFilePath));
+			_currentEvent->setDataFilePath(_currentPackage->dataFilePath.qstring());
             _currentEvent->setComplete();
 
             if (dataNode != NULL)
@@ -305,7 +304,7 @@ void AsyncLoader::uploadFileFinished(QString id)
             _currentPackage->initalMD5 = toStr(fileChecksum(toQStr(path), QCryptographicHash::Md5));
 
             if (dataNode != NULL)
-                _currentPackage->id = toPath(dataNode->nodeId());
+				_currentPackage->id = dataNode->nodeId();
             else
                 _currentPackage->id = path;
 

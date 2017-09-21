@@ -25,6 +25,8 @@
 #include <QFile>
 #include <QLockFile>
 
+#include <sysdepfiletype.h>
+
 class ActivityLog : public QObject
 {
 	Q_OBJECT
@@ -53,6 +55,24 @@ private:
 	QNetworkAccessManager _network;
 	QNetworkReply *_reply;
 
+	/**
+	 * @brief _makeLockFilePath Build the name of the log lock file.
+	 * @return The name of the logging lock file.
+	 */
+	static JaspFiles::Path _makeLogLockFilePath();
+
+	/**
+	 * @brief _makeLogFilePath Build the name of the log lock file.
+	 * @return Name of the logging file.
+	 */
+	static JaspFiles::Path _makeLogFilePath();
+
+	/**
+	 * @brief _makePath Build the name of a logging / lock file.
+	 * @param filename The file name to append.
+	 * @return A filename in `Dirs::appDataDir()`
+	 */
+	static JaspFiles::Path _makeFilePath(const char * filename);
 };
 
 #endif // ACTIVITYLOG_H

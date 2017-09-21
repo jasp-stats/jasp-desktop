@@ -42,7 +42,7 @@ const double FileHeaderRecord::_bias_good_vals[2] = { 100.0, 0.0 };
  * same as passed - This is method used to check that the
  * file uses the same floating point format.
  */
-FileHeaderRecord::FileHeaderRecord(NumericConverter &fixer, RecordTypes fileType, SPSSStream &from, double expectedBias)
+FileHeaderRecord::FileHeaderRecord(NumericConverter &fixer, RecordTypes fileType, JaspFiles::IFStream &from, double expectedBias)
 	: ReadableRecord(fixer, fileType, from)
 	, _rawVariableCount(0)
 {

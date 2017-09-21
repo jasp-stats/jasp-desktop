@@ -70,6 +70,7 @@ macx:QMAKE_CXXFLAGS += -stdlib=libc++
 win32:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
 INCLUDEPATH += \
+	../JASP-Common \
 	$$_R_HOME/include \
 	$$_R_HOME/library/Rcpp/include
 
@@ -105,10 +106,10 @@ SOURCES += main.cpp \
 HEADERS += \
 	engine.h \
 	rbridge.h \
-        RInside/Callbacks.h \
-        RInside/MemBuf.h \
-        RInside/RInside.h \
-        RInside/RInsideAutoloads.h \
-        RInside/RInsideCommon.h \
-        RInside/RInsideConfig.h \
-        RInside/RInsideEnvVars.h
+	RInside/Callbacks.h \
+	RInside/MemBuf.h \
+	RInside/RInside.h \
+	RInside/RInsideAutoloads.h \
+	RInside/RInsideCommon.h \
+	RInside/RInsideConfig.h \
+	RInside/RInsideEnvVars.h

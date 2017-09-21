@@ -31,7 +31,7 @@ using namespace spss;
  * @param fileType The record type value, as found in the file.
  * @param from The file to read from.
  */
-ExtNumberCasesRecord::ExtNumberCasesRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
+ExtNumberCasesRecord::ExtNumberCasesRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, JaspFiles::IFStream &from)
 	: DataInfoRecord(fixer, fileSubType, fileType, from)
 {
 	// Go through the fields, just fetching as we go..

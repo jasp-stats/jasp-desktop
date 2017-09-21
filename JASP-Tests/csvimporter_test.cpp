@@ -55,17 +55,17 @@ void CSVImporterTest::csvTester_data()
 #ifdef __WIN32__
   _full_path = _full_path.parent_path();
 #endif
-  _full_path.append(TESTFILE_FOLDER);
-  _full_path.append("csvimporter_test");
+  _full_path /= TESTFILE_FOLDER;
+  _full_path /= "csvimporter_test";
 
   std::cout << "CSV importer test file(s) :" << _full_path.string() << std::endl;
 
   //add files to be tested in a folder "Resources/TestFiles/csvimporter_test"
-  for (auto i = boost::filesystem::directory_iterator(_full_path); i != boost::filesystem::directory_iterator(); ++i)
+  for (auto i = boost::filesystem::directory_iterator(_full_path.path()); i != boost::filesystem::directory_iterator(); ++i)
   {
     if (!boost::filesystem::is_directory(i->path())) //we eliminate directories
     {
-	  QTest::newRow("csv file test") << toQStr(i->path().filename());
+	  QTest::newRow("csv file test") << toQStr(i->path().filename().string());
       count++;
     }
   }
@@ -79,7 +79,7 @@ void CSVImporterTest::csvTester()
   qDebug() << "filename: " << filename;
 
   QString full_path = QString::fromStdWString(_full_path.wstring());
-  full_path.append(JaspFileTypes::FilePath::preferred_separator);
+  full_path.append('/');
   full_path.append(filename);
 
   fe->setPath(full_path);
@@ -155,9 +155,9 @@ bool CSVImporterTest::checkIfEqual(struct fileContent *fc)
 /* read data from the file specified from path and store it in the struct fileContent */
 int CSVImporterTest::readDataFromCSV(QString path, struct fileContent *fc)
 {
-  std::ifstream input(path.toStdString().c_str());
-  std::vector< std::vector<std::string> > fileRows;
-  std::string currentWord;
+	JaspFiles::IFStream input(path);
+	std::vector< std::vector<std::string> > fileRows;
+	std::string currentWord;
 
   if(input.is_open())
   {

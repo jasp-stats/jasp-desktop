@@ -33,8 +33,8 @@ class JASPImporter
 public:
 	enum Compatibility { Compatible, Limited, NotCompatible };
 
-	typedef JaspFileTypes::FilePath   FilePath;
-	typedef JaspFileTypes::IFStream   File;
+	typedef JaspFiles::Path		FilePath;
+	typedef JaspFiles::IFStream	File;
 
 	static void loadDataSet(DataSetPackage *packageData, const FilePath &path, boost::function<void (const std::string &, int)> progressCallback);
 

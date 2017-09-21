@@ -27,15 +27,15 @@ using namespace boost::filesystem;
 void TextFileReadTest::initTestCase()
 {
 	_directory = current_path();
-	_directory.append(TESTFILE_FOLDER);
-	_directory.append("textfileread_test");
-	_directory = canonical(_directory);
+	_directory /= TESTFILE_FOLDER;
+	_directory /= "textfileread_test";
+	_directory = canonical(_directory.path());
 
 #ifndef QT_NO_DEBUG
 	std::cout << "Looking for test files in :" << _directory.string() << std::endl;
 #endif
 
-  if(boost::filesystem::exists(_directory))
+  if(boost::filesystem::exists(_directory.path()))
   {
     folderPathFound = true;
   }
@@ -75,10 +75,10 @@ void TextFileReadTest::asyncloaderTester_data()
   if(folderPathFound)
   {
     QTest::addColumn<QString>("filename");
-	JaspFileTypes::FilePath _path = _directory;
+	JaspFiles::Path _path = _directory;
 
     //add files to be tested in a folder "Resources/TestFiles/spssimporter_test/spss_files"
-    for (auto i = boost::filesystem::directory_iterator(_path); i != boost::filesystem::directory_iterator(); i++)
+	for (auto i = boost::filesystem::directory_iterator(_path.path()); i != boost::filesystem::directory_iterator(); i++)
     {
       if (!boost::filesystem::is_directory(i->path())) //we eliminate directories
       {
@@ -98,7 +98,7 @@ void TextFileReadTest::asyncloaderTester()
     qDebug() << "File: " << filename;
 
     //text file open
-	path filepath = _directory;
+	path filepath = _directory.path();
 	filepath.append(filename.toStdWString());
 	QString _path = QString::fromStdWString(filepath.wstring());
 
@@ -163,7 +163,7 @@ bool TextFileReadTest::checkIfEqual(struct fileContent *fc)
 /* read data from the file specified from path and store it in the struct fileContent */
 int TextFileReadTest::readDataFromFile(std::string path, struct fileContent *fc)
 {
-  std::ifstream input(path.c_str());
+  JaspFiles::IFStream input(path);
   std::vector< std::vector<std::string> > fileRows;
   
   int numCols = 0;

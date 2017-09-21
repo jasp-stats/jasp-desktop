@@ -39,7 +39,7 @@ public:
 	 * @param fileType The record type value, as found in the file.
 	 * @param from The file to read from.
 	 */
-	ExtNumberCasesRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from);
+	ExtNumberCasesRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, JaspFiles::IFStream &from);
 
 	SPSSIMPORTER_READ_ATTRIB(int64_t, unknown);
 	SPSSIMPORTER_READ_ATTRIB(int64_t, ncases64);

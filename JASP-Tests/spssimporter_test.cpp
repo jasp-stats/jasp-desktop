@@ -50,11 +50,11 @@ void SPSSImporterTest::spssTester_data()
   #ifdef __WIN32__
     _spss_path = _spss_path.parent_path();
   #endif
-	_spss_path.append(TESTFILE_FOLDER);
-	_spss_path.append("spssimporter_test");
+	_spss_path /= TESTFILE_FOLDER;
+	_spss_path /= "spssimporter_test";
 	_csv_path = _spss_path;
-	_spss_path.append("spss_files");
-	_csv_path.append("csv_files");
+	_spss_path /= "spss_files";
+	_csv_path /= "csv_files";
 
 #ifndef QT_NO_DEBUG
 	cout << "SPSS importer SPSS test file(s) :" << _spss_path.string() << endl;
@@ -62,7 +62,7 @@ void SPSSImporterTest::spssTester_data()
 #endif
 
     //add files to be tested in a folder "Resources/TestFiles/spssimporter_test/spss_files"
-	for (auto i = directory_iterator(_spss_path); i != directory_iterator(); i++)
+	for (auto i = directory_iterator(_spss_path.path()); i != directory_iterator(); i++)
 	{
 		if (!is_directory(i->path())) //we eliminate directories
 		{
@@ -78,7 +78,7 @@ void SPSSImporterTest::spssTester()
 	qDebug() << "File: " << filename;
 
 	//spss file open
-	path spss_file = _spss_path;
+	path spss_file = _spss_path.path();
 	spss_file.append(filename.toStdWString());
 
 #ifndef QT_NO_DEBUG
@@ -98,7 +98,7 @@ void SPSSImporterTest::spssTester()
 	//csv file open
 	QString csvFile = filename;
 	csvFile.replace(filename.size()-3, 3, "csv");
-	path csv_file = _csv_path;
+	path csv_file = _csv_path.path();
 	csv_file.append(csvFile.toStdWString());
 
 #ifndef QT_NO_DEBUG

@@ -43,7 +43,7 @@ public:
 	 * same as passed - This is method used to check that the
 	 * file uses the same floating point format.
 	 */
-	FileHeaderRecord(NumericConverter &fixer, RecordTypes fileType, SPSSStream &fromStream, double expectedBias = 100.0);
+	FileHeaderRecord(NumericConverter &fixer, RecordTypes fileType, JaspFiles::IFStream &fromStream, double expectedBias = 100.0);
 
 	virtual ~FileHeaderRecord();
 

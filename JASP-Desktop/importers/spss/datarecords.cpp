@@ -34,7 +34,7 @@ using namespace spss;
  * @param fromStream The stream to read.
  */
 DataRecords::DataRecords(SPSSImporter* importer, SPSSImportDataSet *dataset, const NumericConverter &fixer, const FileHeaderRecord &fileHeader,
-						 SPSSStream &fromStream,
+						 JaspFiles::IFStream &fromStream,
 						 boost::function<void (const std::string &, int)> &progress)
  : _importer(importer)
  , _dataset(dataset)

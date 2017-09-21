@@ -19,19 +19,17 @@
 #define CSV_H
 
 
-#include "importer.h"
+#include <sysdepfiletype.h>
 
 #include <vector>
 #include <map>
 
 #include <stdint.h>
 
-#include <boost/nowide/fstream.hpp>
-
 class CSV
 {
 public:
-	CSV(const JaspFileTypes::FilePath &path);
+	CSV(const JaspFiles::Path &path);
 
 	void open();
 	bool readLine(std::vector<std::string> &items);
@@ -65,8 +63,8 @@ private:
 
 	int _rawBufferStartPos, _rawBufferEndPos;
 	int _utf8BufferStartPos, _utf8BufferEndPos;
-	JaspFileTypes::FilePath _path;
-	JaspFileTypes::IFStream _stream;
+	JaspFiles::Path		_path;
+	JaspFiles::IFStream _stream;
 	bool _eof;
 
 	char _rawBuffer[4096];

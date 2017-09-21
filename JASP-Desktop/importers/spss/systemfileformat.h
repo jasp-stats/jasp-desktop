@@ -24,7 +24,7 @@
 #include <vector>
 #include <map>
 #include <memory>
-#include "spssstream.h"
+#include <sysdepfiletype.h>
 
 #include "datasetpackage.h"
 

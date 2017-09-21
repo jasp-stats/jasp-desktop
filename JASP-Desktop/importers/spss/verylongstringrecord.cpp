@@ -31,7 +31,7 @@ using namespace spss;
  * @param fileType The record type value, as found in the file.
  * @param fromStream The file to read from.
  */
-VeryLongStringRecord::VeryLongStringRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
+VeryLongStringRecord::VeryLongStringRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, JaspFiles::IFStream &from)
 	:DataInfoRecord(fixer, fileSubType, fileType, from)
 {
 	// Read string lengths.

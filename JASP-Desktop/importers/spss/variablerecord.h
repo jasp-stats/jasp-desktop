@@ -42,7 +42,7 @@ public:
 	 * @param fromStream The file to read from.
 	 *
 	 */
-	VariableRecord(const NumericConverter &fixer, RecordTypes fileType, FileHeaderRecord * fileHeader, SPSSStream &fromStream);
+	VariableRecord(const NumericConverter &fixer, RecordTypes fileType, FileHeaderRecord * fileHeader, JaspFiles::IFStream &fromStream);
 
 	virtual ~VariableRecord();
 

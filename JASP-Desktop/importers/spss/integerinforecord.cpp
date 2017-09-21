@@ -47,7 +47,7 @@ IntegerInfoRecord::IntegerInfoRecord()
  * @param fileType The record type value, as found in the file.
  * @param from The file to read from.
  */
-IntegerInfoRecord::IntegerInfoRecord(NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
+IntegerInfoRecord::IntegerInfoRecord(NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, JaspFiles::IFStream &from)
 	: DataInfoRecord(fixer, fileSubType, fileType, from)
 {
 	SPSSIMPORTER_READ_MEMBER(version_major, from, fixer);

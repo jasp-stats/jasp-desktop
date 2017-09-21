@@ -347,7 +347,6 @@ HEADERS  += \
         $$PWD/importers/spss/missingvaluechecker.h \
         $$PWD/importers/spss/numericconverter.h \
         $$PWD/importers/spss/readablerecord.h \
-        $$PWD/importers/spss/spssstream.h \
         $$PWD/importers/spss/stringutils.h \
         $$PWD/importers/spss/systemfileformat.h \
         $$PWD/importers/spss/valuelabelvarsrecord.h \

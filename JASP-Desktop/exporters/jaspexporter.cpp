@@ -44,7 +44,7 @@ JASPExporter::JASPExporter() {
     _allowedFileTypes.push_back(Utils::jasp);
 }
 
-void JASPExporter::saveDataSet(const JaspFileTypes::FilePath &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
+void JASPExporter::saveDataSet(const JaspFiles::Path &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
 {
 	struct archive *a;
 
@@ -87,7 +87,7 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 	Json::Value metaData = Json::objectValue;
 
 	Json::Value &dataSet = metaData["dataSet"];
-	metaData["dataFilePath"] = Json::Value(package->dataFilePath);
+	metaData["dataFilePath"] = Json::Value(package->dataFilePath.string());
 	metaData["dataFileReadOnly"] = Json::Value(package->dataFileReadOnly);
 	metaData["dataFileTimestamp"] = Json::Value(package->dataFileTimestamp);
 	dataSet["rowCount"] = Json::Value(dataset ? dataset->rowCount() : 0);
@@ -289,7 +289,7 @@ void JASPExporter::saveJASPArchive(archive *a, DataSetPackage *package, boost::f
 		{
 			Json::Value &analysisJson = *iter;
 			vector<string> paths = tempfiles_retrieveList(analysisJson["id"].asInt());
-//			vector<JaspFileTypes::FilePath> paths = JaspTempFiles::instance().retrieveList(analysisJson["id"].asInt());
+//			vector<JaspFiles::Path> paths = JaspTempFiles::instance().retrieveList(analysisJson["id"].asInt());
 			for (size_t j = 0; j < paths.size(); j++)
 			{
 				FileReader fileInfo = FileReader(paths[j]);

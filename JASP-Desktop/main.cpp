@@ -36,13 +36,6 @@ int main(int argc, char *argv[])
     QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
 
     // Set up the boost filesystem to workj with the relevant API
-#ifdef __WIN32__
-    {
-        std::locale pathLocale = boost::locale::generator().generate("winapi");
-        boost::filesystem::path::imbue(pathLocale);
-    }
-#endif
-
     Application a(argc, argv);
     return a.exec();
 }

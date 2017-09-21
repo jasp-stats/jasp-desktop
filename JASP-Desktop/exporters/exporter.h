@@ -37,7 +37,7 @@ protected:
 public:
 
 	virtual ~Exporter();
-	virtual void saveDataSet(const JaspFileTypes::FilePath &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) = 0;
+	virtual void saveDataSet(const JaspFiles::Path &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) = 0;
 
 	Utils::FileType getDefaultFileType();
 	bool isFileTypeAllowed(Utils::FileType filetype);

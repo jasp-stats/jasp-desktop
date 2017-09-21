@@ -28,7 +28,7 @@
 using namespace std;
 using boost::algorithm::trim;
 
-CSV::CSV(const JaspFileTypes::FilePath &path)
+CSV::CSV(const JaspFiles::Path &path)
 {
     _encoding = UTF8;
     _delim = ',';

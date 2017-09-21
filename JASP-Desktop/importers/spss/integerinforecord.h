@@ -47,7 +47,7 @@ public:
 	 *
 	 * NB This constructor will modify the contents of fixer!
 	 */
-	IntegerInfoRecord(NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &fromStream);
+	IntegerInfoRecord(NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, JaspFiles::IFStream &fromStream);
 
 	virtual ~IntegerInfoRecord();
 

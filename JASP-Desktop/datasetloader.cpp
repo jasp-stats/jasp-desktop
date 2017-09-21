@@ -36,28 +36,27 @@ using namespace spss;
 using namespace boost::interprocess;
 using namespace boost;
 
-//JaspFileTypes::FilePath DataSetLoader::getExtension(const JaspFileTypes::FilePath &locator, const string &extension) {
-JaspFileTypes::FilePath DataSetLoader::getExtension(const JaspFileTypes::FilePath &locator) {
+JaspFiles::Path DataSetLoader::getExtension(const JaspFiles::Path &locator) {
 
 	return locator.extension();
 }
 
-Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const JaspFileTypes::FilePath &locator, const JaspFileTypes::FilePath &extension)
+Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const JaspFiles::Path &locator, const JaspFiles::Path &extension)
 {
 	Importer* result = NULL;
     string ext = getExtension(locator).string();
 
-	if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt"))
+	if (boost::iequals(ext,"csv") || boost::iequals(ext,".txt"))
 		result = new CSVImporter(packageData);
-	else if (boost::iequals(ext,".sav"))
+	else if (boost::iequals(ext,"sav"))
 		result = new SPSSImporter(packageData);
-	else if (boost::iequals(ext,".ods"))
+	else if (boost::iequals(ext,"ods"))
 		result = new ODSImporter(packageData);
 
 	return result;
 }
 
-void DataSetLoader::loadPackage(DataSetPackage *packageData, const JaspFileTypes::FilePath &locator, const JaspFileTypes::FilePath &extension, boost::function<void(const string &, int)> progress)
+void DataSetLoader::loadPackage(DataSetPackage *packageData, const JaspFiles::Path &locator, const JaspFiles::Path &extension, boost::function<void(const string &, int)> progress)
 {
 	Importer* importer = getImporter(packageData, locator, extension);
 
@@ -70,7 +69,7 @@ void DataSetLoader::loadPackage(DataSetPackage *packageData, const JaspFileTypes
 		JASPImporter::loadDataSet(packageData, locator, progress);
 }
 
-void DataSetLoader::syncPackage(DataSetPackage *packageData, const JaspFileTypes::FilePath &locator, const JaspFileTypes::FilePath &extension, boost::function<void(const string &, int)> progress)
+void DataSetLoader::syncPackage(DataSetPackage *packageData, const JaspFiles::Path &locator, const JaspFiles::Path &extension, boost::function<void(const string &, int)> progress)
 {
 	Importer* importer = getImporter(packageData, locator, extension);
 

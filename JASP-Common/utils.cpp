@@ -134,33 +134,11 @@ long Utils::getFileModificationTime(const std::string &filename)
 }
 
 
-long Utils::getFileSize(const JaspFileTypes::FilePath &filepath)
+long Utils::getFileSize(const JaspFiles::Path &filePath)
 {
     system::error_code ec;
-    uintmax_t fileSize = filesystem::file_size(filepath, ec);
 
-    if (ec == 0)
-        return fileSize;
-    else
-        return -1;
-}
-
-long Utils::getFileSize(const string &filename)
-{
-    system::error_code ec;
-    filesystem::path path;
-
-#ifdef __WIN32__
-
-    path = boost::nowide::widen(filename);
-
-#else
-
-    path = filename;
-
-#endif
-
-    uintmax_t fileSize = filesystem::file_size(path, ec);
+	uintmax_t fileSize = filesystem::file_size(filePath.path(), ec);
 
     if (ec == 0)
         return fileSize;
@@ -208,7 +186,7 @@ bool Utils::renameOverwrite(const string &oldName, const string &newName)
 
 #ifdef __WIN32__
     system::error_code er;
-    if (filesystem::exists(n, er)) {
+	if (filesystem::exists(n, er)) {
         filesystem::file_status s = filesystem::status(n);
         bool readOnly = (s.permissions() & filesystem::owner_write) == 0;
         if (readOnly)
@@ -245,7 +223,7 @@ string Utils::osPath(const filesystem::path &path)
 #ifdef __WIN32__
     return nowide::narrow(path.generic_wstring());
 #else
-    return path.generic_string();
+	return path.string();
 #endif
 }
 
@@ -274,3 +252,4 @@ void Utils::sleep(int ms)
     nanosleep(&ts, NULL);
 #endif
 }
+

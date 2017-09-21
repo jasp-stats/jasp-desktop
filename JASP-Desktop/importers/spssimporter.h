@@ -20,8 +20,6 @@
 
 #include "importer.h"
 
-//#include <boost/function.hpp>
-//#include <boost/nowide/fstream.hpp>
 #include <string>
 
 #include "spss/systemfileformat.h"
@@ -48,7 +46,7 @@ public:
 	* @param position Position to report.
 	* @param progress report to here.
 	*/
-	void reportFileProgress(SPSSStream::pos_type position, boost::function<void (const std::string &, int)> progress);
+	void reportFileProgress(JaspFiles::IFStream::pos_type position, boost::function<void (const std::string &, int)> progress);
 
 	/**
 	 * @brief resetNextCol reset the next col iterator
@@ -69,7 +67,7 @@ public:
 	bool isSpaning() const { return _isSpaning; }
 
 protected:
-	virtual ImportDataSet* loadFile(const JaspFileTypes::FilePath &locator, boost::function<void(const std::string &, int)> progressCallback);
+	virtual ImportDataSet* loadFile(const JaspFiles::Path &locator, boost::function<void(const std::string &, int)> progressCallback);
 	virtual void fillSharedMemoryColumn(ImportColumn *importColumn, Column &column);
 
 private:

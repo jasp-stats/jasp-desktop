@@ -26,7 +26,6 @@
 #if QT_VERSION > QT_VERSION_CHECK(5, 3, 0)
 #include <QSignalBlocker>
 #endif
-#include <fstream>
 #include <vector>
 #include <string>
 #include <boost/filesystem.hpp>
@@ -61,7 +60,7 @@ public:
 	bool checkIfEqual(struct fileContent *);
 
 private:
-	boost::filesystem::path	_directory;
+	JaspFiles::Path	_directory;
 
 private slots:
 	void initTestCase();

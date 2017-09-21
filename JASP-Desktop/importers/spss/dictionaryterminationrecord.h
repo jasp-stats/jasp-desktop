@@ -41,7 +41,7 @@ public:
 	 * @param fileType The record type value, as found in the file.
 	 * @param fromStream File to read from
 	 */
-	DictionaryTermination(const NumericConverter &fixer, RecordTypes fileType, SPSSStream &fromStream);
+	DictionaryTermination(const NumericConverter &fixer, RecordTypes fileType, JaspFiles::IFStream &fromStream);
 
     virtual ~DictionaryTermination();
 

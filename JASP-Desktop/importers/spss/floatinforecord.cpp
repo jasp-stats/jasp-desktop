@@ -40,7 +40,7 @@ FloatInfoRecord::FloatInfoRecord()
  * @param fileType The record type value, as found in the file.
  * @param from The file to read from.
  */
-FloatInfoRecord::FloatInfoRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
+FloatInfoRecord::FloatInfoRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, JaspFiles::IFStream &from)
 	: DataInfoRecord(fixer, fileSubType, fileType, from)
 {
 	SPSSIMPORTER_READ_MEMBER(sysmis, from, fixer);

@@ -11,7 +11,7 @@ Importer::Importer(DataSetPackage *packageData)
 
 Importer::~Importer() {}
 
-void Importer::loadDataSet(const JaspFileTypes::FilePath &locator, boost::function<void(const string &, int)> progressCallback)
+void Importer::loadDataSet(const JaspFiles::Path &locator, boost::function<void(const string &, int)> progressCallback)
 {
 	ImportDataSet *importDataSet = loadFile(locator, progressCallback);
 
@@ -34,7 +34,7 @@ void Importer::loadDataSet(const JaspFileTypes::FilePath &locator, boost::functi
 	delete importDataSet;
 }
 
-void Importer::syncDataSet(const JaspFileTypes::FilePath &locator, boost::function<void(const string &, int)> progress)
+void Importer::syncDataSet(const JaspFiles::Path &locator, boost::function<void(const string &, int)> progress)
 {
 	ImportDataSet *importDataSet = loadFile(locator, progress);
 

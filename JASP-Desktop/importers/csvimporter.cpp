@@ -29,7 +29,7 @@ CSVImporter::CSVImporter(DataSetPackage *packageData) : Importer(packageData)
 	_packageData->isArchive = false;
 }
 
-ImportDataSet* CSVImporter::loadFile(const JaspFileTypes::FilePath &locator, boost::function<void(const string &, int)> progressCallback)
+ImportDataSet* CSVImporter::loadFile(const JaspFiles::Path &locator, boost::function<void(const string &, int)> progressCallback)
 {
 	ImportDataSet* result = new ImportDataSet();
 	vector<string> colNames;

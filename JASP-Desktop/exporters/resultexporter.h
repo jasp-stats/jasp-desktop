@@ -26,7 +26,7 @@ class ResultExporter: public Exporter
 
 public:
 	ResultExporter();
-	void saveDataSet(const JaspFileTypes::FilePath &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) OVERRIDE;
+	void saveDataSet(const JaspFiles::Path &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) OVERRIDE;
 };
 
 #endif // RESULTEXPORTER_H

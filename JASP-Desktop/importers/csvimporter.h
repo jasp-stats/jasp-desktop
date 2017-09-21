@@ -27,7 +27,7 @@ public:
 	CSVImporter(DataSetPackage *packageData);
 
 protected:
-	virtual ImportDataSet* loadFile(const JaspFileTypes::FilePath &locator, boost::function<void(const std::string &, int)> progressCallback);
+	virtual ImportDataSet* loadFile(const JaspFiles::Path &locator, boost::function<void(const std::string &, int)> progressCallback);
 	virtual void fillSharedMemoryColumn(ImportColumn *importColumn, Column &column);
 
 };

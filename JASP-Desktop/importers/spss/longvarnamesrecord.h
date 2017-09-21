@@ -38,7 +38,7 @@ public:
 	 * @param fileType The record type value, as found in the file.
 	 * @param fromStream The file to read from.
 	 */
-	LongVarNamesRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from);
+	LongVarNamesRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, JaspFiles::IFStream &from);
 
 	// TODO: Break up the name / var pairs.
 	// Not currently required for JASP.

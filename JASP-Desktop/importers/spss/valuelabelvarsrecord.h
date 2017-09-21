@@ -23,7 +23,7 @@ public:
 	 * @param fromStream The file to read from.
 	 *
 	 */
-	ValueLabelVarsRecord(const NumericConverter &fixer, RecordTypes fileType, SPSSStream &fromStream);
+	ValueLabelVarsRecord(const NumericConverter &fixer, RecordTypes fileType, JaspFiles::IFStream &fromStream);
 
 	virtual ~ValueLabelVarsRecord();
 

@@ -38,15 +38,10 @@ using namespace boost::filesystem;
 
 ActivityLog::ActivityLog(QObject *parent)
 	: QObject(parent)
-//	,	_lockFile(toQStr(Dirs::appDataDir().append("log.csv.lock").native()))
-	,	_lockFile(toQStr(Dirs::appDataDir().append("\log.csv.lock")))
+	, _logFile(_makeLogFilePath().qstring())
+	, _lockFile(_makeLogLockFilePath().qstring())
 {
 	_reply = NULL;
-	{
-		path logfile(Dirs::appDataDir());
-		logfile /= "log.csv";
-		_logFile.setFileName(toQStr(logfile));
-	}
 
 	QSettings settings;
 	QVariant uid = settings.value("uid");
@@ -189,5 +184,35 @@ void ActivityLog::networkResponse()
 	_lockFile.unlock();
 	_reply->deleteLater();
 	_reply = NULL;
+}
+
+/**
+ * @brief _makeLockFilePath Build the name of the log lock file.
+ * @return The name of the logging lock file.
+ */
+JaspFiles::Path ActivityLog::_makeLogLockFilePath()
+{
+	return _makeFilePath("log.csv.lock");
+}
+
+/**
+ * @brief _makeLogFilePath Build the name of the log lock file.
+ * @return Name of the logging file.
+ */
+JaspFiles::Path ActivityLog::_makeLogFilePath()
+{
+	return _makeFilePath("log.csv");
+}
+
+/**
+ * @brief _makePath Build the name of a logging / lock file.
+ * @param filename The file name to append.
+ * @return A filename in `Dirs::appDataDir()`
+ */
+JaspFiles::Path ActivityLog::_makeFilePath(const char * filename)
+{
+	JaspFiles::Path result = Dirs::appDataDir();
+	result /= filename;
+	return result;
 }
 

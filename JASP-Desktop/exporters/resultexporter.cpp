@@ -18,7 +18,6 @@
 #include "resultexporter.h"
 #include "utils.h"
 #include "desktoputils.h"
-#include <boost/nowide/fstream.hpp>
 #include <QFile>
 #include <QTextDocument>
 #include <QPrinter>
@@ -35,7 +34,7 @@ ResultExporter::ResultExporter()
 #endif
 }
 
-void ResultExporter::saveDataSet(const JaspFileTypes::FilePath &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
+void ResultExporter::saveDataSet(const JaspFiles::Path &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
 {
 
 	int maxSleepTime = 5000;
@@ -67,14 +66,14 @@ void ResultExporter::saveDataSet(const JaspFileTypes::FilePath &path, DataSetPac
 		QPrinter printer(QPrinter::PrinterResolution);
 		printer.setPaperSize(QPrinter::A4);
 		printer.setOutputFormat(QPrinter::PdfFormat);
-		printer.setOutputFileName(toQStr(path));
+		printer.setOutputFileName(path.qstring());
 		document->print(&printer);
 		delete document;
 
 	}
 	else
 	{
-		JaspFileTypes::OFStream outfile(path, ios::out | ios::binary);
+		JaspFiles::OFStream outfile(path, ios::out | ios::binary);
 		outfile << package->analysesHTML;
 		outfile.close();
 	}

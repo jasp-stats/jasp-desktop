@@ -20,12 +20,13 @@
 #include <sstream>
 #include <cstdio>
 
-#include "../JASP-Common/lib_json/json.h"
-#include "../JASP-Common/analysisloader.h"
-#include "../JASP-Common/processinfo.h"
-#include "../JASP-Common/tempfiles.h"
-#include "../JASP-Common/utils.h"
-#include "../JASP-Common/sharedmemory.h"
+#include <lib_json/json.h>
+#include <analysisloader.h>
+#include <processinfo.h>
+#include <tempfiles.h>
+#include <utils.h>
+#include <sharedmemory.h>
+#include <sysdepfiletype.h>
 
 #include "rbridge.h"
 
@@ -39,11 +40,11 @@
 #endif
 
 using namespace std;
-using namespace boost::filesystem;
 using namespace boost::interprocess;
 using namespace boost::posix_time;
 
 Engine::Engine()
+//	: _tempFiles(JaspTempFiles::instance())
 {
 	_dataSet = NULL;
 	_channel = NULL;
@@ -53,6 +54,7 @@ Engine::Engine()
 	_status = empty;
 	
 	rbridge_init();
+//	_tempFiles.attach(ProcessInfo::parentPID());
 	tempfiles_attach(ProcessInfo::parentPID());
 
 	rbridge_setDataSetSource(boost::bind(&Engine::provideDataSet, this));
@@ -111,7 +113,8 @@ void Engine::runAnalysis()
 		_status = running;
 	}
 
-	vector<JaspFileTypes::FilePath> tempFilesFromLastTime = tempfiles_retrieveListFullPaths(_analysisId);
+//	vector<JaspFileTypes::FilePath> tempFilesFromLastTime = _tempFiles.retrieveList(_analysisId);
+	vector<string> tempFilesFromLastTime = tempfiles_retrieveList(_analysisId);
 
 	RCallback callback = boost::bind(&Engine::callback, this, _1);
 
@@ -135,7 +138,8 @@ void Engine::runAnalysis()
 
 		_status = toInit;
 		if (_analysisResultsString == "null")
-			Utils::deleteListFullPaths(tempFilesFromLastTime);
+//			_tempFiles.deleteList(tempFilesFromLastTime);
+			tempfiles_deleteList(tempFilesFromLastTime);
 			
 	}
 	else
@@ -147,7 +151,7 @@ void Engine::runAnalysis()
 		sendResults();
 		_status = empty;
 
-		vector<JaspFileTypes::FilePath> filesToKeep;
+		vector<string> filesToKeep;
 
 		if (_analysisResults.isObject())
 		{
@@ -172,7 +176,8 @@ void Engine::runAnalysis()
 
 		Utils::remove(tempFilesFromLastTime, filesToKeep);
 
-		Utils::deleteListFullPaths(tempFilesFromLastTime);
+//		_tempFiles.deleteList(tempFilesFromLastTime);
+		tempfiles_deleteList(tempFilesFromLastTime);
 	}
 }
 
@@ -378,18 +383,12 @@ DataSet *Engine::provideDataSet()
 
 void Engine::provideStateFileName(string &root, string &relativePath)
 {
-	path rt = root;
-	path rp = relativePath;
-	tempfiles_createSpecific("state", _analysisId, rt, rp);
-    root = rt.string();
-    relativePath = rp.string();
+//	_tempFiles.createSpecific("state", _analysisId, root, relativePath);
+	tempfiles_createSpecific("state", _analysisId, root, relativePath);
 }
 
 void Engine::provideTempFileName(const string &extension, string &root, string &relativePath)
 {	
-	path rt = root;
-	path rp = relativePath;
-	tempfiles_create(extension, _analysisId, rt, rp);
-    root = rt.string();
-    relativePath = rp.string();
+//	_tempFiles.create(extension, _analysisId, root, relativePath);
+	tempfiles_create(extension, _analysisId, root, relativePath);
 }

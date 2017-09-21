@@ -24,8 +24,6 @@
 
 #include "dataset.h"
 
-#include <boost/nowide/fstream.hpp>
-
 using namespace std;
 
 DataExporter::DataExporter() {
@@ -34,10 +32,10 @@ DataExporter::DataExporter() {
     _allowedFileTypes.push_back(Utils::txt);
 }
 
-void DataExporter::saveDataSet(const JaspFileTypes::FilePath &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
+void DataExporter::saveDataSet(const JaspFiles::Path &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
 {
 
-    JaspFileTypes::OFStream outfile(path, ios::out);
+	JaspFiles::OFStream outfile(path, ios::out);
 
 	DataSet *dataset = package->dataSet;
 

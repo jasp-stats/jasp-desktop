@@ -23,19 +23,45 @@
 using namespace std;
 
 /**
- * @brief toQStr Convert JaspFileTypes::FilePath (aka JaspFileTypes::FilePath) to QString
- * @param path The path to convert.
- * @return The file name in OS native format as QString
+ * @brief toQStr Convert UTF-8 string to QString
+ * @param str String to convert
+ * @return QString Converted value.
+ *
+ * NB DO NOT USE to convert filenames: On Windows 8 bit filenames ARE NOT utf-8!
  */
-QString toQStr(const JaspFileTypes::FilePath &pth)
+QString toQStr(const std::string &str)
 {
-#ifdef __WIN32__
-    wstring w = pth.wstring();
-    QString result = QString::fromStdWString(w);
-    return result;
+#ifdef QT_NO_DBEUG
+    return QString::fromStdString(str);
 #else
-    return QString::fromStdString(pth.string());
+    QString result = QString::fromStdString(str);
+    return result;
 #endif
+}
+
+/**
+ * @brief toQStr Convert UTF-8 string to QString
+ * @param str String to convert
+ * @return QString Converted value.
+ *
+ * NB DO NOT USE to convert filenames: On Windows 8 bit filenames ARE NOT utf-8!
+ */
+QString toQStr(const char *str)
+{
+    return QString::fromUtf8(str);
+}
+
+
+/**
+ * @brief toStr Convert QString to UTF-8 string
+ * @param str To convert.
+ * @return UTF-8 represenation of str.
+ *
+ * NB DO NOT USE to convert filenames: On Windows 8 bit filenames ARE NOT utf-8!
+ */
+string toStr(const QString &str)
+{
+	return str.toStdString();
 }
 
 
@@ -44,17 +70,26 @@ QString toQStr(const JaspFileTypes::FilePath &pth)
  * @param pa The QString path to convert.
  * @return A path object wi the same constent as the param pa.
  */
-JaspFileTypes::FilePath toPath(const QString &pa)
+/*
+JaspFiles::Path toPath(const QString &pa)
 {
 #ifdef _WIN32
-    // Windows is odd QT uses \ as dir sep also on Windows.
     QString path(pa);
-    path.replace('/', '\\');
-    return JaspFileTypes::FilePath(path.toStdWString());
-#else
-    return JaspFileTypes::FilePath(pa.toStdString());
+    path.replace(QChar('/'), QChar('\\'), Qt::CaseInsensitive);
+  // Spoof the pa variable.
+  #define pa path
 #endif
-}
+    // Even upder Windows we use URF-8 filenames.
+#ifdef QT_NO_DEBUG
+    return JaspFiles::Path((const char *)pa.toUtf8());
+#else
+    JaspFiles::Path pat((const char *)pa.toUtf8());
+    return pat;
+#endif
+#ifdef _WIN32
+  #undef pa
+#endif
+} */
 
 
 QStringList toQStringList(const vector<string> &from)
@@ -71,4 +106,3 @@ QStringList toQStringList(const vector<string> &from)
 
     return result;
 }
-

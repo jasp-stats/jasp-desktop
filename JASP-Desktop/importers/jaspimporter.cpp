@@ -19,7 +19,6 @@
 
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/nowide/fstream.hpp>
 
 #include <sys/stat.h>
 
@@ -301,7 +300,7 @@ void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const FileP
 //			FilePath destination = JaspTempFiles::instance().createSpecific(dir, resourceEntry.fileName());
 			FilePath destination = tempfiles_createSpecific(dir, resourceEntry.fileName());
 
-			JaspFileTypes::OFStream file(destination, ios::out | ios::binary);
+			JaspFiles::OFStream file(destination, ios::out | ios::binary);
 	
 			char copyBuff[8016];
 			int bytes = 0;

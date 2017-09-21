@@ -41,7 +41,7 @@ public:
 	 * @param fromStream The stream to read.
 	 * @param progress Report progress call back.
 	 */
-	DataRecords(SPSSImporter* importer, SPSSImportDataSet *dataset, const NumericConverter &fixer, const FileHeaderRecord &fileHeader, SPSSStream &fromStream,
+	DataRecords(SPSSImporter* importer, SPSSImportDataSet *dataset, const NumericConverter &fixer, const FileHeaderRecord &fileHeader, JaspFiles::IFStream &fromStream,
 				boost::function<void (const std::string &, int)> &progress);
 
 
@@ -60,7 +60,7 @@ protected:
 	SPSSImporter			*_importer;
 	SPSSImportDataSet 		*_dataset;
 	const FileHeaderRecord 	&_fileHeader;
-	SPSSStream 				&_from;
+	JaspFiles::IFStream		&_from;
 	boost::function<void (const std::string &, int)> &_progress;
 
 	enum e_knownCodes

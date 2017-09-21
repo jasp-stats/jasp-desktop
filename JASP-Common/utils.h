@@ -36,8 +36,7 @@ public:
     static long currentMillis();
     static long currentSeconds();
     static long getFileModificationTime(const std::string &filename);
-    static long getFileSize(const JaspFileTypes::FilePath &filename);
-    static long getFileSize(const std::string &filename);
+	static long getFileSize(const JaspFiles::Path &filePath);
     static void touch(const std::string &filename);
     static bool renameOverwrite(const std::string &oldName, const std::string &newName);
     static bool removeFile(const std::string &path);

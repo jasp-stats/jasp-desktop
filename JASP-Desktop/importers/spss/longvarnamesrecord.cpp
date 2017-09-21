@@ -28,7 +28,7 @@ using namespace spss;
  * @param fileType The record type value, as found in the file.
  * @param fromStream The file to read from.
  */
-LongVarNamesRecord::LongVarNamesRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
+LongVarNamesRecord::LongVarNamesRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, JaspFiles::IFStream &from)
 	: DataInfoRecord(fixer, fileSubType, fileType, from)
 {
 	char * buffer = new char[count() * size() + 2];

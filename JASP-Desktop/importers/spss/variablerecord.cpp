@@ -32,7 +32,7 @@ using namespace spss;
  * @param fromStream The file to read from.
  *
  */
-VariableRecord::VariableRecord(const NumericConverter &fixer, RecordTypes fileType, FileHeaderRecord * fileHeader, SPSSStream &from)
+VariableRecord::VariableRecord(const NumericConverter &fixer, RecordTypes fileType, FileHeaderRecord * fileHeader, JaspFiles::IFStream &from)
 	: ReadableRecord(fixer, fileType, from)
 {
 	/*
