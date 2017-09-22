@@ -28,9 +28,9 @@ using namespace std;
 ResultExporter::ResultExporter()
 {
 	_defaultFileType = Utils::html;
-    _allowedFileTypes.push_back(Utils::html);
+	_allowedFileTypes.push_back(Utils::html);
 #ifdef QT_DEBUG
-    _allowedFileTypes.push_back(Utils::pdf);
+	_allowedFileTypes.push_back(Utils::pdf);
 #endif
 }
 

@@ -27,12 +27,12 @@ class RibbonHome;
 
 class RibbonHome : public RibbonWidget
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+	
 public:
 	explicit RibbonHome(QWidget *parent = 0);
 	~RibbonHome();
-    
+	
 private:
 	Ui::RibbonHome *ui;
 };

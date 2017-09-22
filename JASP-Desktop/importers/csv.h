@@ -48,8 +48,8 @@ private:
 
 	enum Encoding { Unknown = -1, UTF8 = 0, UTF16BE = 1, UTF16LE = 2, UTF32LE = 3, UTF32BE = 4 };
 
-    Encoding _encoding;
-    char _delim;
+	Encoding _encoding;
+	char _delim;
 
 	bool readRaw();
 	bool readUtf8();

@@ -44,7 +44,7 @@ JaspFiles::Path DataSetLoader::getExtension(const JaspFiles::Path &locator) {
 Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const JaspFiles::Path &locator, const JaspFiles::Path &extension)
 {
 	Importer* result = NULL;
-    string ext = getExtension(locator).string();
+	string ext = getExtension(locator).string();
 
 	if (boost::iequals(ext,"csv") || boost::iequals(ext,".txt"))
 		result = new CSVImporter(packageData);

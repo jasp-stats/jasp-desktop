@@ -41,7 +41,7 @@ const Version JASPExporter::jaspArchiveVersion = Version("2.0.0");
 
 JASPExporter::JASPExporter() {
 	_defaultFileType = Utils::jasp;
-    _allowedFileTypes.push_back(Utils::jasp);
+	_allowedFileTypes.push_back(Utils::jasp);
 }
 
 void JASPExporter::saveDataSet(const JaspFiles::Path &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
@@ -52,9 +52,9 @@ void JASPExporter::saveDataSet(const JaspFiles::Path &path, DataSetPackage* pack
 	archive_write_set_format_zip(a);
 
 #ifdef __WIN32__
-    int errorCode = archive_write_open_filename_w(a, path.wstring().c_str());
+	int errorCode = archive_write_open_filename_w(a, path.wstring().c_str());
 #else
-    int errorCode = archive_write_open_filename(a, path.string().c_str());
+	int errorCode = archive_write_open_filename(a, path.string().c_str());
 #endif
 
 	if (errorCode != ARCHIVE_OK)

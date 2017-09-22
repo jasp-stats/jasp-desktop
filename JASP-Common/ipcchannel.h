@@ -72,8 +72,8 @@ private:
 	sem_t* _semaphoreOut;
 	sem_t* _semaphoreIn;
 #elif defined __WIN32__
-    HANDLE _semaphoreOut;
-    HANDLE _semaphoreIn;
+	HANDLE _semaphoreOut;
+	HANDLE _semaphoreIn;
 
 #else
 	boost::interprocess::named_semaphore* _semaphoreOut;

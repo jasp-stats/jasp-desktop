@@ -28,8 +28,8 @@ using namespace std;
 
 DataExporter::DataExporter() {
 	_defaultFileType = Utils::csv;
-    _allowedFileTypes.push_back(Utils::csv);
-    _allowedFileTypes.push_back(Utils::txt);
+	_allowedFileTypes.push_back(Utils::csv);
+	_allowedFileTypes.push_back(Utils::txt);
 }
 
 void DataExporter::saveDataSet(const JaspFiles::Path &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)

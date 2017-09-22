@@ -63,11 +63,11 @@ void CSVImporterTest::csvTester_data()
   //add files to be tested in a folder "Resources/TestFiles/csvimporter_test"
   for (auto i = boost::filesystem::directory_iterator(_full_path.path()); i != boost::filesystem::directory_iterator(); ++i)
   {
-    if (!boost::filesystem::is_directory(i->path())) //we eliminate directories
-    {
+	if (!boost::filesystem::is_directory(i->path())) //we eliminate directories
+	{
 	  QTest::newRow("csv file test") << toQStr(i->path().filename().string());
-      count++;
-    }
+	  count++;
+	}
   }
 }
 
@@ -90,7 +90,7 @@ void CSVImporterTest::csvTester()
   columnIsNumeric.resize(dsp->dataSet->columnCount()); //set default column type as numeric
   for(int i=0; i<dsp->dataSet->columnCount(); ++i)
   {
-    columnIsNumeric[i] = true;
+	columnIsNumeric[i] = true;
   }
 
   struct fileContent fc;
@@ -98,12 +98,12 @@ void CSVImporterTest::csvTester()
 
   if(error == 1) //file could not be opened
   {
-    QVERIFY(false);
+	QVERIFY(false);
   }
   else
   {
-    bool ans = checkIfEqual(&fc);
-    QVERIFY(ans);
+	bool ans = checkIfEqual(&fc);
+	QVERIFY(ans);
   }
 }
 
@@ -113,40 +113,40 @@ bool CSVImporterTest::checkIfEqual(struct fileContent *fc)
 {
   if(fc->columns != dsp->dataSet->columnCount())
   {
-    qDebug() << "Column size mismatch";
-    return false;
+	qDebug() << "Column size mismatch";
+	return false;
   }
 
   if(fc->rows != dsp->dataSet->rowCount())
   {
-    qDebug() << "Row size mismatch" << QString::number(fc->rows) << " " << QString::number(dsp->dataSet->rowCount());
-    return false;
+	qDebug() << "Row size mismatch" << QString::number(fc->rows) << " " << QString::number(dsp->dataSet->rowCount());
+	return false;
   }
 
   for(int i=0; i<fc->columns; ++i)
   {
-    if(fc->headers[i] != dsp->dataSet->column(i).name())
-    {
-      qDebug() << "Header name mismatch";
-      return false;
-    }
+	if(fc->headers[i] != dsp->dataSet->column(i).name())
+	{
+	  qDebug() << "Header name mismatch";
+	  return false;
+	}
 
-    for(int j=0; j<fc->rows; ++j)
-    {
-      std::string currentWord = fc->data[j][i];
+	for(int j=0; j<fc->rows; ++j)
+	{
+	  std::string currentWord = fc->data[j][i];
 
-      if(columnIsNumeric[i] && currentWord!= ".")
-      {
-        double temp = ::atof(currentWord.c_str());
-        currentWord = roundTo6Digits(temp, 6);
-      }
+	  if(columnIsNumeric[i] && currentWord!= ".")
+	  {
+		double temp = ::atof(currentWord.c_str());
+		currentWord = roundTo6Digits(temp, 6);
+	  }
 
-      if(currentWord != dsp->dataSet->column(i)[j])
-      {
+	  if(currentWord != dsp->dataSet->column(i)[j])
+	  {
 		qDebug() << "Data mismatch " << toQStr(currentWord)<< " " << toQStr(dsp->dataSet->column(i)[j]);
-        return false;
-      }
-    }
+		return false;
+	  }
+	}
   }
 
   return true;
@@ -161,54 +161,54 @@ int CSVImporterTest::readDataFromCSV(QString path, struct fileContent *fc)
 
   if(input.is_open())
   {
-    for(CSVIterator csvIter(input); csvIter != CSVIterator(); ++csvIter)
-    {
-      std::vector<std::string> tempRow; //has one row
+	for(CSVIterator csvIter(input); csvIter != CSVIterator(); ++csvIter)
+	{
+	  std::vector<std::string> tempRow; //has one row
 
-      if((*csvIter).size() <=0)
-      {
-        continue;
-      }
+	  if((*csvIter).size() <=0)
+	  {
+		continue;
+	  }
 	  for(size_t i=0; i<(*csvIter).size(); ++i)
-      {
-        currentWord = (*csvIter)[i];
-        if(currentWord == "")
-        {
-          currentWord = ".";
-        }
-        else
-        {
-          if(!fileRows.empty())
-          {
-            if(columnIsNumeric[i])//check if the column has strings that are non-nueric
-            {
-              if(!checkIfNumeric(currentWord)) //check if the currentWord is numeric
-              {
-                columnIsNumeric[i] = false;
-              }
-            }
-          }
-        }
+	  {
+		currentWord = (*csvIter)[i];
+		if(currentWord == "")
+		{
+		  currentWord = ".";
+		}
+		else
+		{
+		  if(!fileRows.empty())
+		  {
+			if(columnIsNumeric[i])//check if the column has strings that are non-nueric
+			{
+			  if(!checkIfNumeric(currentWord)) //check if the currentWord is numeric
+			  {
+				columnIsNumeric[i] = false;
+			  }
+			}
+		  }
+		}
 
-        tempRow.push_back(currentWord);
-      }
+		tempRow.push_back(currentWord);
+	  }
 
-      fileRows.push_back(tempRow);
-      tempRow.clear();
-    }
+	  fileRows.push_back(tempRow);
+	  tempRow.clear();
+	}
 
-    fc->rows = fileRows.size() - 1;
-    fc->columns = fileRows[0].size();
-    fc->headers = fileRows[0];
-    fileRows.erase(fileRows.begin());
-    fc->data = fileRows;
+	fc->rows = fileRows.size() - 1;
+	fc->columns = fileRows[0].size();
+	fc->headers = fileRows[0];
+	fileRows.erase(fileRows.begin());
+	fc->data = fileRows;
 
-    return 0;
+	return 0;
   }
   else
   {
-    qDebug() << "Unable to open file";
-    return 1;
+	qDebug() << "Unable to open file";
+	return 1;
   }
 }
 
@@ -222,36 +222,36 @@ std::string CSVImporterTest::roundTo6Digits(double x, int n)
 
 bool CSVImporterTest::checkIfNumeric(std::string word)
 {
-    std::string::const_iterator it = word.begin();
-    bool decimalPoint = false;
+	std::string::const_iterator it = word.begin();
+	bool decimalPoint = false;
 	size_t minimumSize = 0;
 
-    if( word.size()>0 && ( word[0] == '-' || word[0] == '+' ) )
-    {
-      it++;
-      minimumSize++;
-    }
+	if( word.size()>0 && ( word[0] == '-' || word[0] == '+' ) )
+	{
+	  it++;
+	  minimumSize++;
+	}
 
-    while(it != word.end())
-    {
-      if(*it == '.')
-      {
-        if(!decimalPoint)
-        {
-          decimalPoint = true;
-        }
-        else
-        {
-          break;
-        }
-      }
-      else if( !std::isdigit(*it) && ( (*it!='f') || it+1 != word.end() || !decimalPoint ) )
-      {
-        break;
-      }
+	while(it != word.end())
+	{
+	  if(*it == '.')
+	  {
+		if(!decimalPoint)
+		{
+		  decimalPoint = true;
+		}
+		else
+		{
+		  break;
+		}
+	  }
+	  else if( !std::isdigit(*it) && ( (*it!='f') || it+1 != word.end() || !decimalPoint ) )
+	  {
+		break;
+	  }
 
-      ++it;
-    }
+	  ++it;
+	}
 
-    return (word.size()>minimumSize && it == word.end());
+	return (word.size()>minimumSize && it == word.end());
 }

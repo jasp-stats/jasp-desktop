@@ -88,7 +88,7 @@ bool OSFTest::authenticationTest(QString username, QString password)
 
   if(_model->isAuthenticated())
   {
-    return true;
+	return true;
   }
 
   return false;
@@ -110,42 +110,42 @@ void OSFTest::fileListTest()
 
   if(bosf->_model->isAuthenticated())
   {
-    bosf->_model->refresh();
+	bosf->_model->refresh();
 
-    QButtonGroup *buttonGroup = bosf->_fsBrowser->_buttonGroup;
+	QButtonGroup *buttonGroup = bosf->_fsBrowser->_buttonGroup;
 
-    waitTillExists(buttonGroup);
+	waitTillExists(buttonGroup);
 
-    if(!(buttonGroup->button(0)))
-    {
-      QVERIFY2(false, "Button doesn't exist");
-    }
+	if(!(buttonGroup->button(0)))
+	{
+	  QVERIFY2(false, "Button doesn't exist");
+	}
 
-    // simulate (GUI) mouse double clicks
+	// simulate (GUI) mouse double clicks
 	  QTest::mouseDClick(buttonGroup->button(0), Qt::LeftButton,Qt::NoModifier, QPoint(), 50);
-    waitTillExists(buttonGroup);
-    QTest::mouseDClick(buttonGroup->button(0), Qt::LeftButton,Qt::NoModifier, QPoint(), 50);    
-    waitTillExists(buttonGroup);
+	waitTillExists(buttonGroup);
+	QTest::mouseDClick(buttonGroup->button(0), Qt::LeftButton,Qt::NoModifier, QPoint(), 50);	
+	waitTillExists(buttonGroup);
 
-    FSEntryWidget *entry = qobject_cast<FSEntryWidget*>(buttonGroup->button(0));
-    qDebug() << "File selected - " << entry->_entry.name << "\n"; //jasp_tester.jasp
-    QTest::mouseDClick(buttonGroup->button(0), Qt::LeftButton,Qt::NoModifier, QPoint(), 50);
+	FSEntryWidget *entry = qobject_cast<FSEntryWidget*>(buttonGroup->button(0));
+	qDebug() << "File selected - " << entry->_entry.name << "\n"; //jasp_tester.jasp
+	QTest::mouseDClick(buttonGroup->button(0), Qt::LeftButton,Qt::NoModifier, QPoint(), 50);
 
-    FileEvent *fevent = qvariant_cast<FileEvent *>(spy.at(0).at(0)); //filevent parameter of the dataSetIORequest event
+	FileEvent *fevent = qvariant_cast<FileEvent *>(spy.at(0).at(0)); //filevent parameter of the dataSetIORequest event
 
-    fevent->setComplete(false, "initialize the set");
-    QSignalSpy spy2(fevent, SIGNAL(completed(FileEvent *))); //completed signal is emitted when dataset load is complete
+	fevent->setComplete(false, "initialize the set");
+	QSignalSpy spy2(fevent, SIGNAL(completed(FileEvent *))); //completed signal is emitted when dataset load is complete
 
-    asf->loadTask(fevent, dsf);
+	asf->loadTask(fevent, dsf);
 
-    while(spy2.count() != 1)
-    {
-      QTest::qWait(250);
-    }
+	while(spy2.count() != 1)
+	{
+	  QTest::qWait(250);
+	}
 
-    QVERIFY(fevent->_success); //_success is true only if data is loaded
-    // destroy all the objects created and delete the dataSet from the shared memory
-    SharedMemory::deleteDataSet(dsf->dataSet);
+	QVERIFY(fevent->_success); //_success is true only if data is loaded
+	// destroy all the objects created and delete the dataSet from the shared memory
+	SharedMemory::deleteDataSet(dsf->dataSet);
   }
 }
 
@@ -157,6 +157,6 @@ void OSFTest::waitTillExists(QButtonGroup *buttonGroup)
 
   while(!(buttonGroup->button(0)))
   {
-    QTest::qWait(250);
+	QTest::qWait(250);
   }
 }

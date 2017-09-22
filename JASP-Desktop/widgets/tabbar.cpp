@@ -63,7 +63,7 @@ void TabBar::addTab(QString tabName)
 
 	_layout->insertWidget(_tabButtons.size(), button);
 	_tabButtons.append(button);
-    button->clicked();
+	button->clicked();
 }
 
 void TabBar::removeTab(int index)
@@ -75,18 +75,18 @@ void TabBar::removeTab(int index)
 
 void TabBar::removeTab(QString tabName)
 {
-    QPushButton *lastbutton;
+	QPushButton *lastbutton;
 	foreach (QPushButton *button, _tabButtons)
 	{
 		if (button->objectName() == tabName)
 		{
 			_tabButtons.removeAll(button);
 			delete button;
-            if (lastbutton) lastbutton->clicked();
+			if (lastbutton) lastbutton->clicked();
 
 			return;
 		}
-        lastbutton = button;
+		lastbutton = button;
 	}
 }
 
@@ -152,7 +152,7 @@ void TabBar::addHelpTab()
 #ifdef QT_DEBUG
 	optionmenu->addAction(rei);
 #endif
-    optionmenu->addAction(summaryStats);
+	optionmenu->addAction(summaryStats);
 
 	optionmenu->acceptDrops();
 	helpmenu->acceptDrops();
@@ -220,14 +220,14 @@ void TabBar::toggleSummaryStats()
 	QVariant sumStats_setting = _settings.value("toolboxes/summaryStatistics", false);
 	static bool on = (sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
 	on = ! on;
-    if (on)
-    {
+	if (on)
+	{
 		this->addTab("Summary Stats");
-    }
+	}
 	else
-    {
+	{
 		this->removeTab("Summary Stats");
-    }
+	}
 }
 
 
@@ -243,7 +243,7 @@ void TabBar::setCurrentIndex(int index)
 	foreach (QPushButton *button, _tabButtons)
 	{
 		button->setChecked(i == index);
-        if (i == index) _currentActiveTab = button->objectName();
+		if (i == index) _currentActiveTab = button->objectName();
 		i++;
 	}
 

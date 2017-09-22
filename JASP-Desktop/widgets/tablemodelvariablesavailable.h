@@ -35,13 +35,13 @@ public:
 	explicit TableModelVariablesAvailable(QObject *parent = 0);
 
 	void setVariables(const Terms &variables);
-    bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const OVERRIDE;
-    virtual QStringList mimeTypes() const OVERRIDE;
+	bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const OVERRIDE;
+	virtual QStringList mimeTypes() const OVERRIDE;
 
 	const Terms &allVariables() const;
 
 	void notifyAlreadyAssigned(const Terms &variables);
-    bool removeRows(int row, int count, const QModelIndex &parent) OVERRIDE;
+	bool removeRows(int row, int count, const QModelIndex &parent) OVERRIDE;
 	virtual QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const OVERRIDE;
 
 signals:

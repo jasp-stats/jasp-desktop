@@ -30,11 +30,11 @@ using boost::algorithm::trim;
 
 CSV::CSV(const JaspFiles::Path &path)
 {
-    _encoding = UTF8;
-    _delim = ',';
+	_encoding = UTF8;
+	_delim = ',';
 	_eof = false;
 
-    _path = path;
+	_path = path;
 	_fileSize = 0;
 	_filePosition = 0;
 }
@@ -372,32 +372,32 @@ bool CSV::readLine(vector<string> &items)
 		}
 		else if (ch == '\r')
 		{
-            if (items.size() > 0 || i > _utf8BufferStartPos) {
-                string token(&_utf8Buffer[_utf8BufferStartPos], i - _utf8BufferStartPos);
-                trim(token);
-                items.push_back(token);
-            }
+			if (items.size() > 0 || i > _utf8BufferStartPos) {
+				string token(&_utf8Buffer[_utf8BufferStartPos], i - _utf8BufferStartPos);
+				trim(token);
+				items.push_back(token);
+			}
 
 			if (i + 1 < _utf8BufferEndPos && _utf8Buffer[i + 1] == '\n')
 				_utf8BufferStartPos = i + 2;
 			else
 				_utf8BufferStartPos = i + 1;
 
-            if (items.size() > 0)
-                break;
+			if (items.size() > 0)
+				break;
 		}
 		else if (ch == '\n')
 		{
-            if (items.size() > 0 || i > _utf8BufferStartPos) {
-                string token(&_utf8Buffer[_utf8BufferStartPos], i - _utf8BufferStartPos);
-                trim(token);
-                items.push_back(token);
-            }
+			if (items.size() > 0 || i > _utf8BufferStartPos) {
+				string token(&_utf8Buffer[_utf8BufferStartPos], i - _utf8BufferStartPos);
+				trim(token);
+				items.push_back(token);
+			}
 
 			_utf8BufferStartPos = i + 1;
 
-            if (items.size() > 0)
-                break;
+			if (items.size() > 0)
+				break;
 		}
 
 		if (i >= _utf8BufferEndPos - 1)
@@ -410,11 +410,11 @@ bool CSV::readLine(vector<string> &items)
 			}
 			else // eof
 			{
-                if (items.size() > 0 || _utf8BufferEndPos > _utf8BufferStartPos) {
-                    string token(&_utf8Buffer[_utf8BufferStartPos], _utf8BufferEndPos - _utf8BufferStartPos);
-                    trim(token);
-                    items.push_back(token);
-                }
+				if (items.size() > 0 || _utf8BufferEndPos > _utf8BufferStartPos) {
+					string token(&_utf8Buffer[_utf8BufferStartPos], _utf8BufferEndPos - _utf8BufferStartPos);
+					trim(token);
+					items.push_back(token);
+				}
 				_eof = true;
 				break;
 			}
@@ -423,12 +423,12 @@ bool CSV::readLine(vector<string> &items)
 		i++;
 	}
 
-    for (size_t index = 0; index < items.size(); index++)
+	for (size_t index = 0; index < items.size(); index++)
 	{
-        string item = items.at(index);
+		string item = items.at(index);
 		if (item.size() >= 2 && item[0] == '"' && item[item.size()-1] == '"')
 			item = item.substr(1, item.size()-2);
-        items[index] = item;
+		items[index] = item;
 	}
 
 	return true;
@@ -485,14 +485,14 @@ bool CSV::utf16to8(char *out, char *in, int outSize, int inSize, int &written, i
 bool CSV::utf16to32(uint32_t &out, char *in, int inSize, int& bytesRead, bool bigEndian)
 {
 
-#define UNI_SUR_HIGH_START      (uint32_t)0xD800
-#define UNI_SUR_HIGH_END        (uint32_t)0xDBFF
-#define UNI_SUR_LOW_START       (uint32_t)0xDC00
-#define UNI_SUR_LOW_END         (uint32_t)0xDFFF
+#define UNI_SUR_HIGH_START	  (uint32_t)0xD800
+#define UNI_SUR_HIGH_END		(uint32_t)0xDBFF
+#define UNI_SUR_LOW_START	   (uint32_t)0xDC00
+#define UNI_SUR_LOW_END		 (uint32_t)0xDFFF
 
-#define UNI_HALF_SHIFT          (uint32_t)10
-#define UNI_HALF_BASE           (uint32_t)0x0010000UL
-#define UNI_HALF_MASK           (uint32_t)0x3FFUL
+#define UNI_HALF_SHIFT		  (uint32_t)10
+#define UNI_HALF_BASE		   (uint32_t)0x0010000UL
+#define UNI_HALF_MASK		   (uint32_t)0x3FFUL
 
 	if (inSize < 2)
 		return false;

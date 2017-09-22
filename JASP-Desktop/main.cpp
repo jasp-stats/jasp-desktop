@@ -29,13 +29,13 @@
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication::setOrganizationName("JASP");
-    QCoreApplication::setOrganizationDomain("jasp-stats.org");
-    QCoreApplication::setApplicationName(QCoreApplication::organizationName());
+	QCoreApplication::setOrganizationName("JASP");
+	QCoreApplication::setOrganizationDomain("jasp-stats.org");
+	QCoreApplication::setApplicationName(QCoreApplication::organizationName());
 
-    QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
+	QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
 
-    // Set up the boost filesystem to workj with the relevant API
-    Application a(argc, argv);
-    return a.exec();
+	// Set up the boost filesystem to workj with the relevant API
+	Application a(argc, argv);
+	return a.exec();
 }

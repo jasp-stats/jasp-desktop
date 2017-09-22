@@ -58,10 +58,10 @@ private:
 	TableModelVariablesOptions *_contrastsModel;
 	TableModelVariablesAvailable *_factorsAvailableListModel;
 
-    TableModelVariablesAvailable *_plotFactorsAvailableTableModel;
-    TableModelVariablesAssigned *_horizontalAxisTableModel;
-    TableModelVariablesAssigned *_seperateLinesTableModel;
-    TableModelVariablesAssigned *_seperatePlotsTableModel;
+	TableModelVariablesAvailable *_plotFactorsAvailableTableModel;
+	TableModelVariablesAssigned *_horizontalAxisTableModel;
+	TableModelVariablesAssigned *_seperateLinesTableModel;
+	TableModelVariablesAssigned *_seperatePlotsTableModel;
 
 };
 

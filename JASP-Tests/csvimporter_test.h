@@ -38,16 +38,16 @@
 
 class CSVImporterTest : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 
   struct fileContent
   {
-    int columns;
-    int rows;
-    std::vector <std::string> headers;
-    std::vector< std::vector<std::string> > data;
+	int columns;
+	int rows;
+	std::vector <std::string> headers;
+	std::vector< std::vector<std::string> > data;
   };
 
   FileEvent *fe;
@@ -64,12 +64,12 @@ private:
   JaspFiles::Path   _full_path;
 
 private slots:
-    void initTestCase();
-    void cleanupTestCase();
-    void init();
-    void cleanup();
-    void csvTester();
-    void csvTester_data();
+	void initTestCase();
+	void cleanupTestCase();
+	void init();
+	void cleanup();
+	void csvTester();
+	void csvTester_data();
 };
 
 

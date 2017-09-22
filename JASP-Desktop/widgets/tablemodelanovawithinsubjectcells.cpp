@@ -134,7 +134,7 @@ bool TableModelAnovaWithinSubjectCells::canDropMimeData(const QMimeData *data, Q
 	Q_UNUSED(row);
 
 	int colNo = (column == -1 ? parent.column() : column);
-	int rowNo = (row    == -1 ? parent.row()    : row);
+	int rowNo = (row	== -1 ? parent.row()	: row);
 
 	if (_boundTo == NULL)
 		return false;
@@ -193,7 +193,7 @@ bool TableModelAnovaWithinSubjectCells::dropMimeData(const QMimeData *data, Qt::
 		return false;
 
 	//int colNo = (column == -1 ? parent.column() : column);
-	int rowNo = (row    == -1 ? parent.row()    : row);
+	int rowNo = (row	== -1 ? parent.row()	: row);
 
 	QByteArray encodedData = data->data("application/vnd.list.variable");
 

@@ -618,7 +618,7 @@ void TextModelLavaan::checkEverything()
 						cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, status->pos);
 
 						cursor.insertText(" ");
-						cursor.insertText("    ", format);
+						cursor.insertText("	", format);
 						status->inserted = true;
 					}
 					else

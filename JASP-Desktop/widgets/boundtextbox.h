@@ -37,7 +37,7 @@ public:
 	virtual void bindTo(Option *option) OVERRIDE;
 
 	void setLabel(const QString &label);
-    void finalise();
+	void finalise();
 signals:
 	
 protected:

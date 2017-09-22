@@ -32,10 +32,10 @@ using namespace std;
 QString toQStr(const std::string &str)
 {
 #ifdef QT_NO_DBEUG
-    return QString::fromStdString(str);
+	return QString::fromStdString(str);
 #else
-    QString result = QString::fromStdString(str);
-    return result;
+	QString result = QString::fromStdString(str);
+	return result;
 #endif
 }
 
@@ -48,7 +48,7 @@ QString toQStr(const std::string &str)
  */
 QString toQStr(const char *str)
 {
-    return QString::fromUtf8(str);
+	return QString::fromUtf8(str);
 }
 
 
@@ -74,17 +74,17 @@ string toStr(const QString &str)
 JaspFiles::Path toPath(const QString &pa)
 {
 #ifdef _WIN32
-    QString path(pa);
-    path.replace(QChar('/'), QChar('\\'), Qt::CaseInsensitive);
+	QString path(pa);
+	path.replace(QChar('/'), QChar('\\'), Qt::CaseInsensitive);
   // Spoof the pa variable.
   #define pa path
 #endif
-    // Even upder Windows we use URF-8 filenames.
+	// Even upder Windows we use URF-8 filenames.
 #ifdef QT_NO_DEBUG
-    return JaspFiles::Path((const char *)pa.toUtf8());
+	return JaspFiles::Path((const char *)pa.toUtf8());
 #else
-    JaspFiles::Path pat((const char *)pa.toUtf8());
-    return pat;
+	JaspFiles::Path pat((const char *)pa.toUtf8());
+	return pat;
 #endif
 #ifdef _WIN32
   #undef pa
@@ -94,15 +94,15 @@ JaspFiles::Path toPath(const QString &pa)
 
 QStringList toQStringList(const vector<string> &from)
 {
-    (void)from;
+	(void)from;
 
-    QStringList result;
+	QStringList result;
 
-    BOOST_FOREACH(const std::string &str, from)
-    {
-        (void)from;
-        result.append(QString::fromStdString(str));
-    }
+	BOOST_FOREACH(const std::string &str, from)
+	{
+		(void)from;
+		result.append(QString::fromStdString(str));
+	}
 
-    return result;
+	return result;
 }

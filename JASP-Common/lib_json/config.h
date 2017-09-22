@@ -26,7 +26,7 @@
 # ifdef JSON_IN_CPPTL
 #  include <cpptl/config.h>
 #  ifndef JSON_USE_CPPTL
-#   define JSON_USE_CPPTL 1
+#	define JSON_USE_CPPTL 1
 #  endif
 # endif
 

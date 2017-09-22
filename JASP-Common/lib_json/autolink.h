@@ -11,7 +11,7 @@
 #  define CPPTL_AUTOLINK_NAME "json"
 #  undef CPPTL_AUTOLINK_DLL
 #  ifdef JSON_DLL
-#   define CPPTL_AUTOLINK_DLL
+#	define CPPTL_AUTOLINK_DLL
 #  endif
 #  include "autolink.h"
 # endif

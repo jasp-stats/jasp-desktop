@@ -65,7 +65,7 @@ bool FileEvent::setPath(const QString &path)
 	Utils::FileType filetype = Utils::getTypeFromFileName(path.toStdString());
 
 
-    if (filetype == Utils::unknown)
+	if (filetype == Utils::unknown)
 	{
 		if (_exporter != NULL) {
 			filetype = _exporter->getDefaultFileType();

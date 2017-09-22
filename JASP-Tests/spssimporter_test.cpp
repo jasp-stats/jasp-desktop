@@ -48,7 +48,7 @@ void SPSSImporterTest::spssTester_data()
 
 	_spss_path = current_path();
   #ifdef __WIN32__
-    _spss_path = _spss_path.parent_path();
+	_spss_path = _spss_path.parent_path();
   #endif
 	_spss_path /= TESTFILE_FOLDER;
 	_spss_path /= "spssimporter_test";
@@ -61,7 +61,7 @@ void SPSSImporterTest::spssTester_data()
 	cout << "SPSS importer CSV test file(s) :" << _csv_path.string() << endl;
 #endif
 
-    //add files to be tested in a folder "Resources/TestFiles/spssimporter_test/spss_files"
+	//add files to be tested in a folder "Resources/TestFiles/spssimporter_test/spss_files"
 	for (auto i = directory_iterator(_spss_path.path()); i != directory_iterator(); i++)
 	{
 		if (!is_directory(i->path())) //we eliminate directories
@@ -87,11 +87,11 @@ void SPSSImporterTest::spssTester()
 
 	DataSetPackage *ds_spss = new DataSetPackage();
 	fe_spss->setPath(QString::fromStdWString(spss_file.wstring()));
-	asl_spss->loadTask(fe_spss, ds_spss);          //load the spss file
+	asl_spss->loadTask(fe_spss, ds_spss);		  //load the spss file
 	asl_spss->_thread.quit();
 
 	struct fileContent fc_spss;
-	copyToStructure(ds_spss, &fc_spss);            //copy contents of ds_spss to file contents structure
+	copyToStructure(ds_spss, &fc_spss);			//copy contents of ds_spss to file contents structure
 	SharedMemory::deleteDataSet(ds_spss->dataSet); //clear shared memory
 	ds_spss->~DataSetPackage();
 
@@ -107,15 +107,15 @@ void SPSSImporterTest::spssTester()
 
 	DataSetPackage *ds_csv = new DataSetPackage();
 	fe_csv->setPath(QString::fromStdWString(csv_file.wstring()));
-	asl_csv->loadTask(fe_csv, ds_csv);             //load the corresponding csv file - this is the expected output
+	asl_csv->loadTask(fe_csv, ds_csv);			 //load the corresponding csv file - this is the expected output
 	asl_csv->_thread.quit();
 
 	struct fileContent fc_csv;
-	copyToStructure(ds_csv, &fc_csv);              //copy contents of ds_csv to fc_csv structure
+	copyToStructure(ds_csv, &fc_csv);			  //copy contents of ds_csv to fc_csv structure
 	SharedMemory::deleteDataSet(ds_csv->dataSet);  //clear the shared memory
 	ds_csv->~DataSetPackage();
 
-	QVERIFY(checkIfEqual(&fc_spss, &fc_csv));      // end of test
+	QVERIFY(checkIfEqual(&fc_spss, &fc_csv));	  // end of test
 }
 
 
@@ -123,7 +123,7 @@ void SPSSImporterTest::spssTester()
 void SPSSImporterTest::copyToStructure(DataSetPackage *dsPackage, struct fileContent *fc)
 {
 	fc->columns = dsPackage->dataSet->columnCount();//copy column count
-	fc->rows = dsPackage->dataSet->rowCount();      //copy row count
+	fc->rows = dsPackage->dataSet->rowCount();	  //copy row count
 
 	//copy header names
 	std::vector<std::string> headerNames;

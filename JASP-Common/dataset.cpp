@@ -110,13 +110,13 @@ std::string DataSet::toString()
 		for (LabelVector::const_iterator label_it = labels.begin(); label_it != labels.end(); ++label_it)
 		{
 			const Label& label = *label_it;
-			ss << "    "  << ", Label Text: " << label.text() << " Label Value : " << label.value() << std::endl;
+			ss << "	"  << ", Label Text: " << label.text() << " Label Value : " << label.value() << std::endl;
 		}
 		ss << "  Ints" << std::endl;
 		for (Column::Ints::iterator int_it = col.AsInts.begin(); int_it != col.AsInts.end(); ++int_it)
 		{
 			int value = *int_it;
-			ss << "    " << value << ": " << col._labelFromIndex(value) << std::endl;
+			ss << "	" << value << ": " << col._labelFromIndex(value) << std::endl;
 		}
 	}
 

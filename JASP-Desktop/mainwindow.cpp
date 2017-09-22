@@ -607,16 +607,16 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 
 	QString caption = "Save JASP Image";
 	QString filter = "Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff)";
-    QString selectedFilter;
+	QString selectedFilter;
 
-    QString finalPath = QFileDialog::getSaveFileName(this, caption, QString(), filter, &selectedFilter);
+	QString finalPath = QFileDialog::getSaveFileName(this, caption, QString(), filter, &selectedFilter);
 	if (!finalPath.isEmpty())
 	{
-        if (selectedFilter == "Encapsulated PostScript (*.eps)")
+		if (selectedFilter == "Encapsulated PostScript (*.eps)")
 		{
 			root["type"] = "eps";
-            root["finalPath"] = finalPath.toStdString();
-            analysis->saveImage(analysis, root);
+			root["finalPath"] = finalPath.toStdString();
+			analysis->saveImage(analysis, root);
 		}
 		else if (selectedFilter == "Portable Document Format (*.pdf)")
 		{
@@ -640,7 +640,7 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 				QFile::remove(finalPath);
 			}
 			QFile::copy(imagePath, finalPath);
-        }
+		}
 	}
 }
 
@@ -744,9 +744,9 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	else if (name == "ReliabilityAnalysis")
 		form = new ReliabilityAnalysisForm(contentArea);
 	else if (name == "ExploratoryFactorAnalysis")
-    form = new ExploratoryFactorAnalysisForm(contentArea);
+	form = new ExploratoryFactorAnalysisForm(contentArea);
   else if (name == "PrincipalComponentAnalysis")
-    form = new PrincipalComponentAnalysisForm(contentArea);
+	form = new PrincipalComponentAnalysisForm(contentArea);
 	else if (name == "SummaryStatsTTestBayesianOneSample")
 		form = new SummaryStatsTTestBayesianOneSampleForm(contentArea);
 	else if (name == "SummaryStatsTTestBayesianIndependentSamples")

@@ -28,7 +28,7 @@ VariablesWidget::VariablesWidget(QWidget *parent) :
 	setToolTip("Double-click on a label to change it");
 
 	connect(ui->moveUpButton, SIGNAL(clicked()), this, SLOT(moveUpClicked()));
-    connect(ui->moveDownButton, SIGNAL(clicked()), this, SLOT(moveDownClicked()));
+	connect(ui->moveDownButton, SIGNAL(clicked()), this, SLOT(moveDownClicked()));
 	connect(ui->reverseButton, SIGNAL(clicked()), this, SLOT(reverseClicked()));
 	connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(close()));
 	connect(_levelsTableModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)), this, SLOT(labelDataChanged(QModelIndex, QModelIndex)));
