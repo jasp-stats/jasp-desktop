@@ -41,6 +41,80 @@ There are five options:
 Analysis options
 -----------
 
+[//]: # (Goes from left column top to down, then middle column top to down, then right column top to down.)
+
+For each network method, options can be adjusted to influence the result. Only options available to a specific estimation method will be available at a time.
+
+####Correlation method
+- `auto`: Automatically detect variable type and uses the most suitable correlation type. This will detect continuous, binary and ordinal variables and will use Pearson, tetrachoric or polychoric correlations.
+- `Cor`: Pearson correlation.
+- `Cov`: Covariances.
+- `Nonparanormal`: This will first apply the nonparanormal transformation to make all data normally distributed and then use Pearson correlations.
+
+####Rule
+What 'rule' should be used to determine if an edge is present between two nodes?
+
+- `AND`: Both estimates, the edge from A to B and the edge from B to A, must be nonzero.
+- `OR`: Either of the estimates must be nonzero.
+
+####Split
+When estimating an Ising model (using either IsingFit or IsingSampler) non binary variables will be binarized using either:
+-`Median`: the median of the observed scores.
+-`Mean`: the mean of the observed scores. 
+
+####Variable Type
+When estimating a Mixed Graphical Model, insert a variable here to specify the variable type. Allowed inputs are:
+- `g`: for normally distributed / Gaussian variables.
+- `c`: for categorical variables. 
+- `p`: for Poisson variables.
+
+####Ising Estimator
+Many methods exist for estimating Ising models. Supported methods are:
+ 
+- `Pseudo-likelihood`: Estimate the Ising model by maximizing the pseudolikelihood (TODO: Besag, 1975).
+- `Univariate regressions`: Compute univariate logistic regressions for from all nodes to all other nodes. This gives two estimates for each edge which will then be combine using the method specified under Rule. 
+- `Bivariate regressions`: Compute bivariate logistic regressions for from all nodes to all other nodes. This gives two estimates for each edge which will then be combine using the method specified under Rule. 
+- `Loglinear`: Estimate the Ising model as if it were a loglinear model, that has at most pairwise interactions. 
+
+####Missing Values
+How should missing values be handled? Some analyses allow for pairwise exclusion, but not all. 
+
+####Tuning Parameter
+This parameter is the &gamma; hyperparameter of the EBIC estimation procedure. It controls the sparsity of the estimated network. Setting it to 0 will cause the regular BIC to be used. 
+
+####Cross-validation
+How many cross-validation samples should be made? This method is only used by Adaptive Lasso and  Mixed Graphical Models (if Criterion is set to cross-validation).
+
+####Thresholds
+Thresholds to be used in correlation or partial correlation networks. This can either be set to a number, or to a method. If set to a number, edges with an absolute strength below that value will not be shown. Alternatively it can be set to a method to control the family-wise error rate. Available methods are:
+
+- `Significant`: Show edges significant at the 0.05 level.
+- `Bonferroni`: as `Significant`, but with the Bonferroni multiplicity correction.
+- `Holm`: as `Significant`, but with the Holm multiplicity correction. 
+- `Hochberg`: as `Significant`, but with the Hochberg multiplicity correction. Assumes that  hypothesis tests are independent or non-negatively associated.
+- `Hommel`: as `Significant`, but with the Holm multiplicity correction. Assumes that  hypothesis tests are independent or non-negatively associated.
+- `BH`: as `Significant`, but controls the false discovery rate (TODO:ref).
+
+In most scenarios, the `Bonferroni` method is rather restrictive and the `Holm` method is preferred.
+
+####Criterion
+What criterion should be used to fit the network? Available options are:
+
+- `EBIC`: Extended Bayesian Information Criterion.
+- `RIC`:  Rotation Information Criterion. 
+- `STARS`: Stability Approach to Regularization Selection.
+- `CV`: Cross-validation.
+
+####Sample Size
+
+####Network
+If you untick `Weighted`, the estimated network will only consist of positive (1) negative (-1) and absent (0) edges. If you untick `Signed`, the estimated network will only consist of positive edges. Note that the absolute value is taken of negative edges, to make them positive. If you untick both `Weighted` and `Signed` the network will say if there is an edge (1) or not (0). 
+
+
+####Centrality Measures
+Centralilty measures of a network can be difficult to compare. To facilitate this, you can select `Normalized` to ensure each centrality measure has a mean of zero and a variance of one. Alternatively, you can select relative to divide each centrality measure by it's maximum observed value. 
+
+
 Bootstrap options
 -----------
 
@@ -58,27 +132,44 @@ To make Networks plots aesthetically pleasing, many options exist.
 The layout of a network determines where the nodes are placed. By default the layout is set to `spring`, which implies the layout will be generated via the force-driven Fruchterman-Reingold algorithm (TODO: ref). Alternatively all nodes can be displayed in a circle by selecting the `circle` layout. A third option is called `data`, where you can specify a column with x-coordinates and a column with y-coordinates which will be used as positions for each node. 
 
 #### Edges
-`size`: A multiplier on edge size (i.e. 2 is twice as big).
-`minimum`: The (absolute) minimum edge strength to be displayed.
-`maximum`: The (absolute) minimum edge strength to be displayed.
-`cut`: 
-`show details`: If checked, `minimum`, `maximum`, and `cut` will be displayed on the network plot (if they were modified).
-`color scheme`: What colors should be used for positive and negative edges?
+- `Edge size`: A multiplier on edge size (i.e. 2 is twice as big).
+- `minimum`: The (absolute) minimum edge strength to be displayed.
+- `maximum`: The (absolute) minimum edge strength to be displayed.
+- `cut`: 
+- `show details`: If checked, `minimum`, `maximum`, and `cut` will be displayed on the network plot (if they were modified).
+- `color scheme`: What colors should be used for positive and negative edges?
 
-#### Labels
+#### Network Size
+When exporting the network, it can be useful to enforce certain sizes on the width or height. You can always resize a network plot by clicking and dragging around in the bottom right corner of the plot. However, some constraints on the width and height might be enforced depending on the option you've selected:
 
-#### Nodes
-`size`: A multiplier on node size  (i.e. 2 is twice as big).
-`color nodes by`: A categorical variable that indicates the group to which each variable belongs.
-`color scheme`: What colors should be used for the coloring?
+- `Fixed ratio`: Fixes the width/ height ratio. Ensures that the network plot is square. If there is a legend, the width is constrained to be 1.4 times the height of the plot.
+- `Free`: Do not make any constraints on the width or height.
 
 #### Legend
 
 There are three options:
 - Don't show the legend.
 - Show the legend in all networks.
-- Show the legend in a specified plot.
+- Show the legend in a specified plot number.
 
+#### Labels
+- `Label size`: A multiplier on label size  (i.e. 2 is twice as big).
+- `Scale label size`:
+- `Abbreviate labels to ... characters`: If labels are too long, they can be automatically abbreviated. 
 
+#### Nodes
+- `Node size`: A multiplier on node size  (i.e. 2 is twice as big).
+- `color nodes by`: A categorical variable that indicates the group to which each variable belongs.
+- `color scheme`: What colors should be used for the coloring?
+
+#### Show variable names
+An alternative to abbreviating the node labels is showing them in the legend.
+
+#### Show variable type
+When estimating a Mixed Graphical Model, the assumed distribution of a variable can be displayed in multiple ways:
+
+-`Dont' show`: Do not show the assumed distribution.
+-`Using node colors`: Change the color of the nodes based on their assumed distribution (TODO: colors scheme). TODO clashes with...
+-`Using node shape`: Change the shape of the nodes based on their assumed distribution. Gaussian nodes are circles, categorical nodes are squares, and Poisson nodes are triangles. 
 
 
