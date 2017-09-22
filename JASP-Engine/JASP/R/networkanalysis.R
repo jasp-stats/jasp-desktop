@@ -89,6 +89,7 @@ NetworkAnalysis <- function (
 	newOrder <- match(.unv(colnames(dataset)), variables, nomatch = 0L)
 	variables <- variables[newOrder]
 	options[["mgmVariableTypeData"]] <- options[["mgmVariableTypeData"]][newOrder]
+	options[["colorNodesByData"]] <- options[["colorNodesByData"]][newOrder]
 
 	## Initialize Results & statekey ## ----
 	results <- list(
@@ -155,19 +156,10 @@ NetworkAnalysis <- function (
 		results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = "init") # any errors will appear top of this table
 		results[["mgmTB"]] <- .networkAnalysisMgmVariableInfoTable(network, options, perform)
 
-		# if (options[["bootstrapOnOff"]]) # add bootstrap information as well
-		# 	results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform, when = "before")
-
 		if ( ! .shouldContinue(callback(results)))
 			return()
-	} # else if (options[["bootstrapOnOff"]]) {
-	# 
-	# 	results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = "init") # any errors will appear top of this table
-	# 	# initialize progressbar
-	# 	results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform, when = "before")
-	# 
-	# }
-
+	} 
+	
 	## Do Analysis ## ----
 
 	# Sort out whether things are set to defaults or not.
@@ -180,13 +172,17 @@ NetworkAnalysis <- function (
 			if (options[["groupingVariable"]] != "")
 				groupingVariable <- options[["groupingVariable"]]
 
+			# default error checks
 			checks <- c("infinity", "variance", "observations")
+			
+			# estimator 'mgm' requires some additional checks
 			categoricalVars <- NULL
 			if (options[["estimator"]] == "mgm" && "c" %in% options[["mgmVariableTypeData"]]) {
 				categoricalVars <- variables[options[["mgmVariableTypeData"]] == "c"]
 				checks <- c(checks, "factorLevels")
 			}
 
+			# check for errors
 			anyErrors <- .hasErrors(dataset = dataset, perform = perform,
 									type = checks,
 									variance.target = variables, # otherwise the grouping variable always has variance == 0
@@ -200,6 +196,7 @@ NetworkAnalysis <- function (
 		}
 
 		network <- .networkAnalysisRun(dataset = dataset, options = options, variables = variables, perform = perform, oldNetwork = state)
+		
 		if (options[["bootstrapOnOff"]]) {
 			
 			results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = perform) # any errors will appear top of this table
