@@ -125,6 +125,30 @@ bool _jaspPath::has_extension() const
 	return ((lastDot != std::string::npos) && (lastDot < (_s.size() - 1)));
 }
 
+#ifdef _WIN32
+/**
+ * @brief parent_path Returns the enclosing directory.
+ * @return The directory "one up".
+ *
+ * Only used in Windows test builds
+ */
+_jaspPath _jaspPath::parent_path() const
+{
+    size_t posLastSep = _s.rfind( DIR_SEP );
+    // Not found? Just root? return the while thing?
+    if ((posLastSep == std::string::npos) || (posLastSep == 0))
+        return _s;
+    // last char is /? Chop it and try again.
+    else if (posLastSep == (_s.size() - 1))
+    {
+        _jaspPath result = _s.substr(0, _s.size() - 1);
+        return result.parent_path();
+    }
+    else
+        return _s.substr(0, posLastSep);
+}
+#endif
+
 /**
  * @brief startsWith compares first chars in path
  * @param search Comparison.

@@ -162,6 +162,16 @@ public:
      */
     bool has_extension() const;
 
+#ifdef _WIN32
+    /**
+     * @brief parent_path Returns the enclosing directory.
+     * @return The directory "one up".
+     *
+     * Only used in Windows test builds
+     */
+    _jaspPath parent_path() const;
+#endif
+
 protected:
     /**
      * @brief toQStr Convert to QString
