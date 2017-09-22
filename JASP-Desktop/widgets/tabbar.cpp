@@ -42,8 +42,8 @@ TabBar::TabBar(QWidget *parent) :
 
 	_layout->addStretch(1);
 	
-	_aboutDialog = new AboutDialog();
-	_preferencesDialog = new PreferencesDialog();
+	_aboutDialog = new AboutDialog(this);
+	_preferencesDialog = new PreferencesDialog(this);
 }
 
 void TabBar::addTab(QString tabName)
