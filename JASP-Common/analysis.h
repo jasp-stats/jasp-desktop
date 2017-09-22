@@ -31,7 +31,7 @@ public:
 
 	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted, Error, SaveImg, Exception };
 
-	Analysis(int id, std::string name, Options *options, Version version, bool isAutorun = true, bool usedata = true);
+	Analysis(int id, std::string name, Options *options, const Version &version, bool isAutorun = true, bool usedata = true);
 	virtual ~Analysis();
 
 	Options *options() const;

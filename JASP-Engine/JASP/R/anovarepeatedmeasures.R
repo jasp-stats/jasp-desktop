@@ -682,7 +682,6 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 .resultsContrasts <- function (dataset, options, referenceGrid) {
 
 		resultsContrasts <- list()
-
 		datasetLong <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, options$betweenSubjectFactors)
 
 		contrastTypes <- c("none", "deviation", "simple", "Helmert", "repeated", "difference", "polynomial")

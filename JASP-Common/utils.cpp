@@ -262,3 +262,26 @@ void Utils::sleep(int ms)
 	nanosleep(&ts, NULL);
 #endif
 }
+
+const string Utils::emptyValue = ".";
+const vector<string> Utils::_defaultEmptyValues = {"NaN", "nan", ".", "NA"};
+vector<double> Utils::_currentDoubleEmptyValues = {};
+vector<string> Utils::_currentEmptyValues = Utils::_defaultEmptyValues;
+
+void Utils::setEmptyValues(const vector<string> &emptyvalues)
+{
+	_currentEmptyValues = emptyvalues;
+	_currentDoubleEmptyValues.clear();
+
+	for (vector<string>::const_iterator it = _currentEmptyValues.begin(); it != _currentEmptyValues.end(); ++it)
+	{
+		try
+		{
+			double doubleValue = boost::lexical_cast<double>(*it);
+			_currentDoubleEmptyValues.push_back(doubleValue);
+		}
+		catch (...)
+		{
+		}
+	}
+}

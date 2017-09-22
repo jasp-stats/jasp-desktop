@@ -30,6 +30,10 @@
 #include <QAction>
 #include <QSettings>
 
+class PreferencesDialog;
+
+#include "aboutdialog.h"
+
 class TabBar : public QWidget
 {
 	Q_OBJECT
@@ -41,6 +45,7 @@ public:
 	void removeTab(int index);
 	QString getCurrentActiveTab();
 	void setExactPValues(bool exactPValues);
+	void emptyValuesChanged();
 
 	void addOptionsTab();
 	void addHelpTab();
@@ -53,6 +58,7 @@ signals:
 	void helpToggled(bool on);
 	void dataAutoSynchronizationChanged(bool on);
 	void setExactPValuesHandler(bool exactPValues);
+	void emptyValuesChangedHandler();
 
 public slots:
 	void setCurrentIndex(int index);
@@ -80,6 +86,10 @@ private:
 	QMenuBar *_menuBarTab;
 	QSettings _settings;
 	QString _currentActiveTab;
+	
+	AboutDialog *_aboutDialog;
+	PreferencesDialog *_preferencesDialog;
+	
 };
 
 #endif // TABBAR_H

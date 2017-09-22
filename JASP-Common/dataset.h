@@ -18,6 +18,8 @@
 #ifndef DATASET_H
 #define DATASET_H
 
+#include <map>
+
 #include "columns.h"
 
 class DataSet
@@ -42,6 +44,7 @@ public:
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
 
 	std::string toString();
+	std::vector<std::string> resetEmptyValues(std::map<std::string, std::map<int, std::string> > &emptyValuesMap);
 
 private:
 
