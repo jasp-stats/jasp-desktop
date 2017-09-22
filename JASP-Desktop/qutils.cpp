@@ -49,10 +49,10 @@ QStringList tql(const std::vector<string> &from)
 	return result;
 }
 
-std::vector<std::string> fromQstringToStdVector(const QString &input, const QString &delimetor)
+vector<string> fromQstringToStdVector(const QString &input, const QString &delimetor)
 {
 	QStringList list;
-	std:vector<std::string> result;
+	vector<string> result;
 	list = input.split(delimetor);
 	foreach (QString itm, list)
 	{
