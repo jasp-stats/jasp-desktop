@@ -40,7 +40,7 @@ CodePageConvert::CodePageConvert(const char *ianaCSNameSrc)
 	}
 
 	// Just copy if no conversion required.
-	if (strcasecmp("utf-8", ianaCSNameSrc) != 0)
+	if (strcasecmp("utf-8", ianaCSNameSrc) != 0 && strcasecmp("ascii", ianaCSNameSrc) != 0)
 	{
 		// do we know of this codec?
 		if (_knownCPs.find(ianaCSNameSrc) != _knownCPs.end())
