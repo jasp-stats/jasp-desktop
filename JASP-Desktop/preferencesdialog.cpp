@@ -15,9 +15,15 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 	ui->setupUi(this);
 	_tabBar = dynamic_cast<TabBar *>(parent);
 
-
+	//Fix decimals
+	int check_fix_decimals = _settings.value("fixDecimals", 0).toInt();
+	ui->fixDecimals->setChecked(check_fix_decimals > 0);
+	QString input_num_decimals = _settings.value("numDecimals").toString();
+	if (input_num_decimals != "")
+		ui->numDecimals->setValue(input_num_decimals.toInt());
+	
 	//Exact p-value
-	int check_exact_pval = _settings.value("exactPVals", 0).toInt();
+	int check_exact_pval = _settings.value("displayExactPVals", 0).toInt();
 	ui->displayExactPVals->setChecked(check_exact_pval > 0);
 
 	//Auto Sync
@@ -37,7 +43,14 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 
 	// Remove Question mark Help sign (Only on windows )
 	this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
-		
+
+  //this->ui->numDecimals->setValidator(new QIntValidator(1,10, this));
+  QSizePolicy retain = ui->numDecimals->sizePolicy();
+  retain.setRetainSizeWhenHidden(true);
+  ui->numDecimals->setSizePolicy(retain);
+	if (check_fix_decimals == 0)
+		this->ui->numDecimals->hide();
+
 	connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(savePreferences()));
 	connect(ui->useDefaultSpreadsheetEditor, SIGNAL(clicked(bool)), this, SLOT(setDefaultEditorCheck(bool)));
 	connect(ui->openEditor, SIGNAL(pressed()),this, SLOT(getSpreadsheetEditor()));
@@ -70,6 +83,20 @@ std::vector<std::string> PreferencesDialog::getStdVectorFromEmptyValueList()
 	}
 	
 	return result;
+}
+
+void PreferencesDialog::on_fixDecimals_clicked()
+{
+
+	if (ui->fixDecimals->checkState()==Qt::Checked)
+	{
+		this->ui->numDecimals->show();
+	} 
+	else
+	{
+		this->ui->numDecimals->hide();
+	}
+	
 }
 
 QString PreferencesDialog::getTokenStringFromEmptyValueList()
@@ -189,10 +216,23 @@ void PreferencesDialog::savePreferences()
 	_settings.setValue("spreadsheetEditorName", ui->spreadsheetEditorName->text());
 			
 	//Exact p values
-	checked = (ui->displayExactPVals->checkState()==Qt::Checked) ? 1 : 0;
-	_settings.setValue("exactPVals", checked);
-	_tabBar->setExactPValues(checked);
+  checked = (ui->displayExactPVals->checkState()==Qt::Checked) ? 1 : 0;
+  int displayExactPVals = _settings.value("displayExactPVals", 1).toInt();
+  _settings.setValue("displayExactPVals", checked);
+  if (checked != displayExactPVals)
+      _tabBar->setExactPValues(checked);
 
+	//Fix decimals
+  checked = (ui->fixDecimals->checkState()==Qt::Checked) ? 1 : 0;
+	_settings.setValue("fixDecimals", checked);
+	
+	QString numDecimals = (checked == 0) ? "" : ui->numDecimals->cleanText();
+	QString savedNumDecimals = _settings.value("numDecimals").toString();
+	_settings.setValue("numDecimals", numDecimals);
+	if (numDecimals != savedNumDecimals)
+        _tabBar->setFixDecimals(numDecimals);
+	
+	//Done
 	_settings.sync();
 
 	this->close();
