@@ -126,10 +126,10 @@ To investigate the stability of estimated networks, check `Bootstrap Network` un
 [//]: # (Goes from left column top to down, then right column top to down.)
 
 
-To make Networks plots aesthetically pleasing, many options exist. 
+All options below modify the output from Network plot. Other figures and tables are not affected. To make Networks plots aesthetically pleasing, many options exist. 
 
 ####Layout
-The layout of a network determines where the nodes are placed. By default the layout is set to `spring`, which implies the layout will be generated via the force-driven Fruchterman-Reingold algorithm (TODO: ref). Alternatively all nodes can be displayed in a circle by selecting the `circle` layout. A third option is called `data`, where you can specify a column with x-coordinates and a column with y-coordinates which will be used as positions for each node. 
+The layout of a network determines where the nodes are placed. By default the layout is set to `spring`, which implies the layout will be generated via the force-driven Fruchterman-Reingold algorithm (TODO: ref). This algorithm can be tweaked using the `repulsion` parameter; a larger repulsion increases the distance between adjacent nodes. Alternatively all nodes can be displayed in a circle by selecting the `circle` layout. A third option is called `data`, where you can specify a column with x-coordinates and a column with y-coordinates which will be used as positions for each node. 
 
 #### Edges
 - `Edge size`: A multiplier on edge size (i.e. 2 is twice as big).
@@ -146,8 +146,8 @@ When exporting the network, it can be useful to enforce certain sizes on the wid
 - `Free`: Do not make any constraints on the width or height.
 
 #### Legend
-
 There are three options:
+
 - Don't show the legend.
 - Show the legend in all networks.
 - Show the legend in a specified plot number.
@@ -163,7 +163,7 @@ There are three options:
 - `color scheme`: What colors should be used for the coloring?
 
 #### Show variable names
-An alternative to abbreviating the node labels is showing them in the legend.
+An alternative to abbreviating the node labels is showing them in the legend. This can be enabled by clicking `In legend`, or disabled by clicking `In nodes`.
 
 #### Show variable type
 When estimating a Mixed Graphical Model, the assumed distribution of a variable can be displayed in multiple ways:
