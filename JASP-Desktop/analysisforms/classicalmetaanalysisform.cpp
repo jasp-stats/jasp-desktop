@@ -33,17 +33,6 @@ ClassicalMetaAnalysisForm::ClassicalMetaAnalysisForm(QWidget *parent) :
 	_dependentModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->dependent->setModel(_dependentModel);
 
-    /*
-    ui->method->addItem("DL");
-    ui->method->addItem("FE");
-    ui->method->addItem("HE");
-    ui->method->addItem("SJ");
-    ui->method->addItem("ML");
-    ui->method->addItem("REML");
-    ui->method->addItem("EB");
-    ui->method->addItem("HS");
-    ui->method->addItem("GENQ");
-    */
     QString methods0 = "FE,DL,HE,SJ,ML,REML,EB,HS,GENQ";
     //QStringList methods = (QStringList << "FE" << "DL" << "HE" << "SJ" << "ML" << "REML" << "EB" << "HS" << "GENQ");
     QStringList methods = methods0.split(",");
@@ -103,9 +92,10 @@ ClassicalMetaAnalysisForm::ClassicalMetaAnalysisForm(QWidget *parent) :
 	ui->buttonAssignFactors->hide();
 	ui->label_13->hide();
 #else
-    ui->missingValues->setStyleSheet("background-color: pink ;");
-	ui->factors->setStyleSheet("background-color: pink ;");
-	ui->buttonAssignFactors->setStyleSheet("background-color: pink ;");
+    // ui->missingValues->hide();
+    // ui->missingValues->setStyleSheet("background-color: pink ;");
+    // ui->factors->setStyleSheet("background-color: pink ;");
+    // ui->buttonAssignFactors->setStyleSheet("background-color: pink ;");
 	ui->label_13->setStyleSheet("background-color: pink ;");
 #endif
 

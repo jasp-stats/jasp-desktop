@@ -96,6 +96,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
                   'zval' = numeric(),'pval' = numeric()), class = c("dummy", "rma"))
   
   can.run = all(c(effsizeName, stderrName) != "")
+  
   if (run && can.run) {
     #.vmodelTerms = b64(options$modelTerms) # map true names to base64
     .vmodelTerms = options$modelTerms
@@ -108,8 +109,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
       formula.rhs = update(formula.rhs, ~ . + 0)
     
     #rma.fit <- metafor::rma(yi = get(.v(effsizeName)), sei = get(.v(stderrName)), data = dataset,
-    print(colnames(dataset))
-    print(options$studyLabels)
+
     rma.fit <- metafor::rma(
       yi = get(effsizeName), sei = get(stderrName), data = dataset,
       method=options$method, mods = formula.rhs, test = options$test,
@@ -117,74 +117,23 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
       level = options$regressionCoefficientsConfidenceIntervalsInterval
     )
     rma.fit <- d64(rma.fit)
+    
+    fsn.fit <- list()
+    if (options$plotResidualsCovariates)
+      fsn.fit <- metafor::fsn(yi = get(effsizeName), sei = get(stderrName), 
+        data = dataset, digits = 12)
   }
   
   
   if (DEBUG == 1) return(rma.fit)
   
-  #### Define the Output: meta, table(s), plot(s), and results objects
+  #### Output: Initialize meta and results objects ####
   
   meta <- list()
   results <- list()
   results[["title"]] <- analysisTitle(rma.fit)
   
-  ### Define Output Meta Description ####
-  
-  
-  
-  
-  
-  
-  ### Prepare Coefficients Table Output ####
-  
-  meta[[length(meta) + 1]] <- list(name = "table", type = "table")
-  table <- list()
-  table[["title"]] <- "Coefficients"
-  
-  # Define table schema
-  fields <- list(
-    list(name = "name", type = "string", title = " "),
-    list(name = "estimate", type = "number", format = "sf:4;dp:3", title = "Estimate"),
-    list(name = "se", type = "number", format = "sf:4;dp:3", title = "Std. Error"),
-    list(name = "zval", type = "number", format = "sf:4;dp:3", title = "z value"),
-    list(name = "pval", type = "number", format = "dp:3;p:.001", title = "Pr(>|z|)"),
-    list(name = "ci.lb", type = "number", format = "sf:4;dp:3", title = "Lower Bound"),
-    list(name = "ci.ub", type = "number", format = "sf:4;dp:3", title = "Upper Bound")
-  )
-  if (!options$regressionCoefficientsConfidenceIntervals)
-    fields = fields[1:5] # remove confidence interval bounds
-  table[["schema"]] <- list(fields = fields) 
-  
-  # Populate the table
-  table[["data"]] <- list(
-    list(name = "", estimate = ".", se = ".", zval = ".", pval = ".", ci.lb = ".", ci.ub = ".")
-  )
-  if (run && can.run) {
-    coeftable <- .clean(coef(summary(rma.fit)))
-    coeftable <- cbind(name = rownames(coeftable), coeftable); 
-    if (!options$regressionCoefficientsConfidenceIntervals)
-      coeftable = coeftable[1:5] # remove confidence interval bounds
-    
-    jasp.coeftable <- lapply(1:nrow(coeftable), function(i) as.list(coeftable[i,])) # apply converts all to string
-    table[["data"]]  <- structure(jasp.coeftable, .Names=NULL)
-  }
-  if (DEBUG == 2) return(table)
-  
-  # Add footnotes to the analysis result
-  footnotes <- .newFootnotes()
-  footnote.text <- switch(options$test, z = "Wald test.", "Wald tests.")
-  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = footnote.text)
-  table[["footnotes"]] <- as.list(footnotes)
-  
-  # Add citation reference list
-  table[["citation"]] <- list(
-    "Viechtbauer, W. (2010). Conducting meta-analyses in R with the metafor package. Journal of 
-     Statistical Software, 36(3), 1-48. URL: http://www.jstatsoft.org/v36/i03/"
-    )
-  
-  results[["table"]] <- table
-  
-  
+
   
   ### Prepare Q-tests table output ####
   
@@ -202,6 +151,67 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     "Hedges, L. V., & Olkin, I. (1985). Statistical methods for meta-analysis. San Diego, CA: Academic Press."
   )
   results[["qtests"]] <- qtesttable
+  
+
+    
+  ### Prepare Coefficients Table Output ####
+  
+  if (options$regressionCoefficientsEstimates) { 
+    
+    # this is old code to be replaced with as.jaspTable
+    
+    meta[[length(meta) + 1]] <- list(name = "table", type = "table")
+    table <- list()
+    table[["title"]] <- "Coefficients"
+    
+    # Define table schema
+    
+    fields <- list(
+      list(name = "name", type = "string", title = " "),
+      list(name = "estimate", type = "number", format = "sf:4;dp:3", title = "Estimate"),
+      list(name = "se", type = "number", format = "sf:4;dp:3", title = "Std. Error"),
+      list(name = "zval", type = "number", format = "sf:4;dp:3", title = "z value"),
+      list(name = "pval", type = "number", format = "dp:3;p:.001", title = "Pr(>|z|)"),
+      list(name = "ci.lb", type = "number", format = "sf:4;dp:3", title = "Lower Bound"),
+      list(name = "ci.ub", type = "number", format = "sf:4;dp:3", title = "Upper Bound")
+    )
+    if (!options$regressionCoefficientsConfidenceIntervals)
+      fields = fields[1:5] # remove confidence interval bounds
+    table[["schema"]] <- list(fields = fields) 
+    
+    # Populate the table
+    
+    table[["data"]] <- list(
+      list(name = "", estimate = ".", se = ".", zval = ".", pval = ".", ci.lb = ".", ci.ub = ".")
+    )
+    if (run && can.run) {
+      coeftable <- .clean(coef(summary(rma.fit)))
+      coeftable <- cbind(name = rownames(coeftable), coeftable); 
+      if (!options$regressionCoefficientsConfidenceIntervals)
+        coeftable = coeftable[1:5] # remove confidence interval bounds
+      
+      jasp.coeftable <- lapply(1:nrow(coeftable), function(i) as.list(coeftable[i,])) # apply converts all to string
+      table[["data"]]  <- structure(jasp.coeftable, .Names=NULL)
+    }
+    if (DEBUG == 2) return(table)
+    
+    # Add footnotes to the analysis result
+    
+    footnotes <- .newFootnotes()
+    footnote.text <- switch(options$test, z = "Wald test.", "Wald tests.")
+    .addFootnote(footnotes, symbol = "<em>Note.</em>", text = footnote.text)
+    table[["footnotes"]] <- as.list(footnotes)
+    
+    # Add citation reference list
+    table[["citation"]] <- list(
+      "Viechtbauer, W. (2010). Conducting meta-analyses in R with the metafor package. Journal of 
+     Statistical Software, 36(3), 1-48. URL: http://www.jstatsoft.org/v36/i03/"
+    )
+    
+    results[["table"]] <- table
+  }
+  
+  
   
   ### Prepare Model fit table output ####
   
@@ -221,6 +231,8 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   if (options$residualsParameters && run && can.run) { 
     
     meta[[length(meta) + 1]] <- list(name = "residPars", type = "table")
+    
+    if(options$method == "FE") break # no confidence intervals for tau^2 
     
     residParTable = confint(rma.fit, digits = 12, level = options$regressionCoefficientsConfidenceIntervalsInterval)$random
     colnames(residParTable) = c("Estimate", "Lower Bound", "Upper Bound")
@@ -254,7 +266,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     ranktst = unlist(metafor::ranktest(rma.fit))
     rankTestTable = as.data.frame(t(ranktst[1:2]))
     rownames(rankTestTable) = "Rank test"
-    colnames(rankTestTable) = c("Kandall's &tau;", "P(>|&tau;|)")
+    colnames(rankTestTable) = c("Kandall's &tau;", "Pr(>|&tau;|)")
     
     options(jasp_number_format = "sf:5;dp:4")
     rankTestTable = as.jaspTable(rankTestTable, title = "Rank correlation test for Funnel plot asymmetry")
@@ -298,6 +310,23 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   }
   
   
+  ### Prepare Fail-safe N diagnostics table ####
+  
+  if (options$plotResidualsCovariates && run && can.run) { 
+    
+    meta[[length(meta) + 1]] <- list(name = "failsafen", type = "table")
+    
+    failsnTable = do.call(data.frame, fsn.fit[c('fsnum','alpha','pval')])
+    colnames(failsnTable) = c('Fail-safe N', '&alpha;', 'Pr(>|z|)')
+    rownames(failsnTable) = fsn.fit[['type']]
+    
+    options(jasp_number_format = "sf:5;dp:4")
+    influTable = as.jaspTable(.clean(failsnTable), title = "File Drawer Analysis")
+    results[["failsafen"]] <- influTable
+    
+  }
+  
+  
   
   ### Prepare Plot Output ####
 
@@ -306,15 +335,16 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
       list(name = "forrestPlot", type = "image"),
       list(name = "funnelPlot", type = "image"),
       list(name = "diagnosticPlot", type = "image"),
-      list(name = "qqplot", type = "image")
+      list(name = "profilePlot", type = "image"),
+      list(name = "trimfillPlot", type = "image")
     )
   )
   plots <- list(title = "Plot")
     
   # plot forest plot
-  if (options$forestPlot && run) {
+  if (options$forestPlot && run && can.run) {
     
-    forest.img <- .writeImage(width = 520, height = 520, function() cmaForest(rma.fit, las=1))
+    forest.img <- .writeImage(width = 520, height = 520, function() cmaForest(rma.fit, cex.lab=1.2, las=1))
     plot2 <- list(title="Forest plot", width = 500, height = 500, convertable = TRUE, 
                   obj = forest.img[["obj"]], data = forest.img[["png"]], 
                   status = "complete")
@@ -323,7 +353,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   }
 
   # plot funnel plot
-  if (options$funnelPlot && run) {
+  if (options$funnelPlot && run && can.run) {
     
     funnel.img <- .writeImage(width = 520, height = 520, function() metafor::funnel(rma.fit, las=1))
     plot3 <- list(title="Funnel plot", width = 500, height = 500, convertable = TRUE, 
@@ -334,7 +364,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   }
   
   # plot 1: residuals and dependent diagnostic plot
-  if (options$plotResidualsDependent) {
+  if (options$plotResidualsDependent && run && can.run) {
     
     diagnostics.img <- .writeImage(width = 820, height = 820, function() plot(rma.fit, qqplot = options$plotResidualsQQ, las=1))
     plot1 <- list(title = "Diagnostic plots", width = 820, height = 820, convertable = TRUE, 
@@ -345,7 +375,32 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   }
   
   
-
+  # profile plot: diagnostic plot for tau parameter
+  if (options$plotResidualsPredicted && run && can.run) {
+    
+    profile.img <- .writeImage(width = 520, height = 520, function() profile(rma.fit, cex.lab=1.2, las=1))
+    plot1 <- list(title = "Log-likelihood profile for &tau;&sup2;", width = 520, height = 520, convertable = TRUE, 
+                  obj = profile.img[["obj"]], data = profile.img[["png"]],
+                  status = "complete")
+    plots[["profilePlot"]]  <- plot1
+    
+  }
+  
+  
+  # profile plot: diagnostic plot for tau parameter
+  if (options$trimfillPlot && run && can.run) {
+    
+    trimfill.fit <- metafor::trimfill(update(rma.fit, mods = ~1))
+    trimfill.img <- .writeImage(width = 820, height = 820, function() plot(trimfill.fit, qqplot=T, cex.lab=1.2, las=1))
+    plot1 <- list(title = "Trim-fill Analysis", width = 820, height = 820, convertable = TRUE, 
+                  obj = trimfill.img[["obj"]], data = trimfill.img[["png"]],
+                  status = "complete")
+    plots[["trimfillPlot"]]  <- plot1
+    
+  }
+  
+  
+  
   
   
   ### Create results object to be returned ####
@@ -420,7 +475,7 @@ qTestsTable <- function(object) {
   
   # Empty table.
   table[["schema"]] <- list(fields = fields) 
-  table[["title"]] <- "Heterogeneity analysis"
+  table[["title"]] <- "Fixed and Random Effects"
   table[["data"]] <- list(list(name="", qstat=".", df=".", pval = "."))
   
   # Return empty table if no fit has been done
@@ -432,7 +487,7 @@ qTestsTable <- function(object) {
   pval <- unlist(object[c('QEp','QMp')])
   name <- c("Test of Residual Heterogeneity","Omnibus test of Model Coefficients")
   qtable <- data.frame(name, qstat, df, pval)
-  table[["data"]] <- lapply(1:2, function(i) as.list(qtable[i,]))
+  table[["data"]] <- lapply(2:1, function(i) as.list(qtable[i,]))
   table
 }
 

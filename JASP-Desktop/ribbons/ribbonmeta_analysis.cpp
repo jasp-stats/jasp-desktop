@@ -29,8 +29,12 @@ RibbonMetaAnalysis::RibbonMetaAnalysis(QWidget *parent) :
 	ui->setupUi(this);
 
     addRibbonButton(ui->classicalButton);
+#ifdef QT_DEBUG
     addRibbonButton(ui->multilevelButton);
     addRibbonButton(ui->twoxtwoTablesButton);
+#else
+    ;
+#endif
     /* a dataset is needed, but leave this here for later reference (e.g., for interfacing metafor::escalc)
      * ui->bfFromTButton->setDataSetNotNeeded();
      * ui->regressionButton->setDataSetNotNeeded();
@@ -44,7 +48,8 @@ RibbonMetaAnalysis::RibbonMetaAnalysis(QWidget *parent) :
 
     ui->classicalButton->setMenu(menu);
 
-	menu = new QMenu(this);
+#ifdef QT_DEBUG
+    menu = new QMenu(this);
     menu->addAction(QString("Multilevel meta-analysis"), this, SLOT(itemSelected()))->setObjectName("MultiLevelMetaAnalysis");
 	
     ui->multilevelButton->setMenu(menu);
@@ -53,6 +58,9 @@ RibbonMetaAnalysis::RibbonMetaAnalysis(QWidget *parent) :
     menu->addAction(QString("Meta-analysis of 2 by 2 tables"), this, SLOT(itemSelected()))->setObjectName("TwoxtwoMetaAnalysis");
 
     ui->twoxtwoTablesButton->setMenu(menu);
+#else
+    ;
+#endif
 }
 
 RibbonMetaAnalysis::~RibbonMetaAnalysis()

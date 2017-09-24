@@ -162,6 +162,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->ribbonSEM->setDataSetLoaded(false);
 	ui->ribbonR11tLearn->setDataSetLoaded(false);
 	ui->ribbonSummaryStatistics->setDataSetLoaded(false);
+    ui->ribbonMetaAnalysis->setDataSetLoaded(false);
 
 #ifdef QT_DEBUG
 	ui->webViewResults->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
@@ -1276,6 +1277,7 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 	ui->ribbonAnalysis->setDataSetLoaded(loaded);
 	ui->ribbonSEM->setDataSetLoaded(loaded);
 	ui->ribbonR11tLearn->setDataSetLoaded(loaded);
+    ui->ribbonMetaAnalysis->setDataSetLoaded(loaded);
 }
 
 void MainWindow::updateUIFromOptions()

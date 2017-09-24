@@ -120,6 +120,12 @@
 		},
 		{
 			"format": "",
+			"name": "omnibusCoefficientIndices",
+			"type": "String",
+			"default": ""
+		},
+		{
+			"format": "",
 			"name": "steppingMethodCriteriaPEntry",
 			"type": "Number",
 			"value": 0.050
@@ -155,6 +161,11 @@
 		},
 		{
 			"default": false,
+			"name": "trimfillPlot",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
 			"name": "plotResidualsDependent",
 			"type": "Boolean"
 		},
@@ -179,7 +190,7 @@
 			"type": "Boolean"
 		},
 		{
-			"default": false,
+			"default": true,
 			"name": "plotResidualsQQ",
 			"type": "Boolean"
 		},
