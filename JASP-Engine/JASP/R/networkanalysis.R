@@ -84,7 +84,7 @@ NetworkAnalysis <- function (
 		dataset <- .vdf(dataset, columns.as.numeric = variables, columns.as.factor = varsAsFactor)
 
 	}
-
+  
 	# ensure order of variables matches order of columns in dataset
 	newOrder <- match(.unv(colnames(dataset)), variables, nomatch = 0L)
 	variables <- variables[newOrder]
@@ -843,15 +843,17 @@ NetworkAnalysis <- function (
 
 	}
 
-	if (perform != "run") { # make empty table
 
+	if (perform != "run" || is.null(network)) { # make empty table
+  
+	  # same length restriction for running analyses
 		if (!is.null(options[["variables"]]) || !(length(options[["variables"]]) > 0)) {
 
 			TBcolumns <- list(".", ".", ".", ".")
 			names(TBcolumns) <- c("Variable", "Betweenness", "Closeness", "Strength")
 
 		} else {
-			# dataframe since reshape2 below returns dataframes
+			
 			TBcolumns <- data.frame(
 				.v(options[["variables"]]),
 				rep(".", length(options[["variables"]])),
@@ -911,7 +913,7 @@ NetworkAnalysis <- function (
 			table[["schema"]][["fields"]][[1 + v + nVar*(i-1)]] <- list(name = paste0(variables[v], i), title = variables[v], type = "number", format="sf:4;dp:3", overTitle = overTitles[i])
 		}
 	}
-
+  
 	if (perform != "run" || is.null(network)) { # make empty table
 
 		if (is.null(options[["variables"]]) || !length(options[["variables"]]) > 0) { # 1 by 1 table
@@ -1009,7 +1011,7 @@ NetworkAnalysis <- function (
 		status = "inited"
 	)
 
-	if (perform == "run") {
+	if (perform == "run" && !is.null(network)) {
 
 		wide <- network[["centrality"]]
 		wideDf <- Reduce(rbind, wide)
@@ -1134,7 +1136,7 @@ NetworkAnalysis <- function (
 		)
 	}
 
-	if (perform == "run") {
+	if (perform == "run" && !is.null(network)) {
 
 		allNetworks <- network[["network"]]
 		nGraphs <- length(allNetworks)
@@ -1294,7 +1296,7 @@ NetworkAnalysis <- function (
 		custom = list(width = "plotWidthBootstrapPlot", height = "plotHeightBootstrapPlot")
 	)
 
-	if (perform == "run") {
+	if (perform == "run" && !is.null(network)) {
 
 		allBootstraps <- network[["bootstrap"]]
 		nGraphs <- length(allBootstraps)
