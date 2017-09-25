@@ -84,7 +84,7 @@
             <string>Descriptives</string>
            </property>
            <property name="icon">
-             <iconset resource="../resources/icons.qrc">
+            <iconset resource="../resources/icons.qrc">
              <normaloff>:/icons/analysis-descriptives.svg</normaloff>:/icons/analysis-descriptives.svg</iconset>
            </property>
            <property name="iconSize">
@@ -409,7 +409,7 @@
             <string>Frequencies</string>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset> resource="../resources/icons.qrc">
              <normaloff>:/icons/analysis-classical-crosstabs.svg</normaloff>:/icons/analysis-classical-crosstabs.svg</iconset>
            </property>
            <property name="iconSize">
