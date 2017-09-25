@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>932</width>
-    <height>2605</height>
+    <width>1161</width>
+    <height>3098</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -614,45 +614,6 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_9">
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="tableCentrality">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Centrality table</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="BoundCheckBox" name="plotCentrality">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Centrality plot</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="0">
-             <widget class="BoundCheckBox" name="tableWeightsMatrix">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Weights matrix</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
              <widget class="BoundCheckBox" name="plotNetwork">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -665,7 +626,33 @@
               </property>
              </widget>
             </item>
-            <item row="6" column="0">
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="tableCentrality">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Centrality table</string>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="0">
+             <widget class="BoundCheckBox" name="tableWeightsMatrix">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Weights matrix</string>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="0">
              <widget class="BoundCheckBox" name="tableLayout">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -675,6 +662,19 @@
               </property>
               <property name="text">
                <string>Layout matrix</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="plotCentrality">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Centrality plot</string>
               </property>
              </widget>
             </item>

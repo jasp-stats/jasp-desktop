@@ -111,10 +111,10 @@ NetworkAnalysis <- function (
 
 	defArgs <- c(
 		# data
-		"variables", "groupingVariable",
+		"variables", "groupingVariable", "mgmVariableType",
 		# what kind of network is estimated
 		"estimator",
-		# arguments for the network
+		# arguments for the estimator
 		"correlationMethod", "tuningParameter", "criterion", "isingEstimator",
 		"nFolds", "split", "rule", "sampleSize", "thresholdBox", "thresholdString", "thresholdValue",
 		# general arguments
@@ -430,8 +430,6 @@ NetworkAnalysis <- function (
 			data[[.v(options[["groupingVariable"]])]] <- NULL # grouping variable is not a node in the network
 			network <- oldNetwork[["network"]][[nw]] # NULL or something usuable
 
-			# saveDataToDput(data, options, .dots)
-
 			# Fake png hack -- qgraph::qgraph() has an unprotected call to `par()`. `par()` always opens a new device if there is none.
 			# Perhaps ask Sacha to fix this in qgraph. Line 1119: if (DoNotPlot) par(pty = pty)
 			tempFileName <- getTempFileName()
@@ -569,7 +567,6 @@ NetworkAnalysis <- function (
 
 	if (is.null(networkList[["layout"]])) {
 
-		print(options[["layoutInvalid"]])
 		if (options[["layout"]] != "data" || options[["layoutInvalid"]]) {
 
 			if (options[["layout"]] == "data")
@@ -895,7 +892,7 @@ NetworkAnalysis <- function (
 }
 
 .networkAnalysisWeightMatrixTable <- function(network, options, variables, perform) {
-	# browser()
+	
 	nGraphs <- max(1, length(network[["network"]]))
 
 	table <- list(
@@ -1079,12 +1076,36 @@ NetworkAnalysis <- function (
 		if (!options[["signedNetwork"]]) {
 			wMat <- abs(wMat)
 		}
+		
+		saveDataToDput(
+		  input       = wMat,
+		  layout      = layout, # options[["layout"]],
+		  groups      = groups,
+		  repulsion   = options[["repulsion"]],
+		  cut         = options[["cut"]],
+		  edge.width  = options[["edgeSize"]],
+		  node.width  = options[["nodeSize"]],
+		  maximum     = maxE, # options[["maxEdgeStrength"]],
+		  minimum     = minE, # options[["minEdgeStrength"]],
+		  details     = options[["showDetails"]],
+		  labels      = labels, # .unv(network[["labels"]]),
+		  palette     = options[["nodeColors"]],
+		  theme       = options[["edgeColors"]],
+		  legend      = legend, # options[["showLegend"]]
+		  shape       = shape,
+		  color       = nodeColor,
+		  edge.color  = edgeColor,
+		  nodeNames   = nodeNames,
+		  label.scale = options[["scaleLabels"]],
+		  label.cex   = options[["labelSize"]],
+		  options     = options
+		)
 
 		qgraph::qgraph(
 			input       = wMat,
 			layout      = layout, # options[["layout"]],
 			groups      = groups,
-			repulsion   = options[["repulsion"]],
+			repulsion   = options[["repulsion"]], # redundant
 			cut         = options[["cut"]],
 			edge.width  = options[["edgeSize"]],
 			node.width  = options[["nodeSize"]],
@@ -1108,9 +1129,11 @@ NetworkAnalysis <- function (
 
 .networkAnalysisNetworkPlot <- function(network, options, perform, oldPlot = NULL) {
 
+
 	if (!is.null(oldPlot) && !identical(oldPlot[["collection"]][[1]][["data"]], ""))
 		return(oldPlot)
-
+  
+  saveDataToDput(network, options, oldPlot)
 	plot <- list(
 		title = "Network Plot",
 		collection = list(),
@@ -1144,7 +1167,8 @@ NetworkAnalysis <- function (
 
 		layout <- network[["layout"]] # calculated in .networkAnalysisRun()
 
-		# ensure minimum/ maximum makes sense or ignore these parameters TODO message in general table.
+		# ensure minimum/ maximum makes sense or ignore these parameters. 
+		# TODO: message in general table if they have been reset.
 		minE <- options[["minEdgeStrength"]]
 		maxE <- options[["maxEdgeStrength"]]
 
@@ -1231,14 +1255,10 @@ NetworkAnalysis <- function (
 
 			network <- allNetworks[[v]]
 			if (options[["estimator"]] == "mgm") {
-
-				edgeColor <- network[["results"]][["pairwise"]][["edgecolor"]]
-				# version compatability?
-				if (is.null(edgeColor) || !all(dim(edgeColor) != dim(network[["graph"]])))
-					edgeColor <- network[["results"]][["edgecolor"]]
-
+			  edgeColor <- network[["results"]][["edgecolor"]]
+			  if (is.null(edgeColor)) # compatability issues
+			    edgeColor <- network[["results"]][["pairwise"]][["edgecolor"]] 
 			}
-			# saveDataToDput(network, options, allLegends)
 
 			legend <- allLegends[[v]]
 			if (legend && options[["graphSize"]] == "graphSizeFixed") {
@@ -1403,25 +1423,46 @@ getTempFileName <- function() {
 
 }
 
-# saveDataToDput <- function(...) {
-#
-# 	path <- "C:/Users/donvd/_Laptop/Werk/JASP/tempDput/"
-# 	if (!dir.exists(path))
-# 		dir.create(path)
-# 	nms <- sapply(substitute(list(...))[-1], deparse)
-# 	dots <- list(...)
-#
-# 	for (i in seq_along(dots)) {
-# 		j <- 1
-# 		fName <- paste0(path, nms[i], ".txt")
-# 		while (file.exists(fName[i]) && j < 1e3) {
-# 			fName <- paste0(path, nms[i], "_", j, ".txt")
-# 			j <- j + 1
-# 		}
-# 		sink(file = fName)
-# 		dput(dots[[i]])
-# 		sink(NULL)
-# 	}
-#
-# }
+.quickStr <- function(...) {
+  
+  dots <- list(...)
+  nms <- names(dots)
+  for (i in seq_along(dots)) {
+    cat(sprintf("Argument %d, Object: %s\n", i, nms[i]))
+    str(dots[[i]], max.level = 3)
+  }
+  return(invisible())
+}
+
+saveDataToDput <- function(...) {
+
+	path <- "C:/Users/donvd/_Laptop/Werk/JASP/tempDput/"
+	dots <- list(...)
+	fname <- paste0(path, "tmp")
+	i <- 0
+	
+	while (file.exists(paste0(fname, "_", i, ".RData"))) {
+	  i <- i + 1
+	}
+	fname <- paste0(fname, "_", i, ".RData")
+	save(dots, file = fname)
+	
+	# if (!dir.exists(path))
+	# 	dir.create(path)
+	# nms <- sapply(substitute(list(...))[-1], deparse)
+	# dots <- list(...)
+	# 
+	# for (i in seq_along(dots)) {
+	# 	j <- 1
+	# 	fName <- paste0(path, nms[i], ".txt")
+	# 	while (file.exists(fName[i]) && j < 1e3) {
+	# 		fName <- paste0(path, nms[i], "_", j, ".txt")
+	# 		j <- j + 1
+	# 	}
+	# 	sink(file = fName)
+	# 	dput(dots[[i]])
+	# 	sink(NULL)
+	# }
+
+}
 
