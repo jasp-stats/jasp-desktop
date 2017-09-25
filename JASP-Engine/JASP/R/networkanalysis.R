@@ -435,8 +435,6 @@ NetworkAnalysis <- function (
 			tempFileName <- getTempFileName()
 			grDevices::png(filename = tempFileName)
 
-			# saveDataToDput(data, options, .dots)
-
 			t0 <- Sys.time()
 			# capture.output to get relevant messages (i.e. from qgraph::cor_auto "variables detected as...") (TODO: use this info)
 			msg <- capture.output(
@@ -1077,29 +1075,6 @@ NetworkAnalysis <- function (
 			wMat <- abs(wMat)
 		}
 		
-		saveDataToDput(
-		  input       = wMat,
-		  layout      = layout, # options[["layout"]],
-		  groups      = groups,
-		  repulsion   = options[["repulsion"]],
-		  cut         = options[["cut"]],
-		  edge.width  = options[["edgeSize"]],
-		  node.width  = options[["nodeSize"]],
-		  maximum     = maxE, # options[["maxEdgeStrength"]],
-		  minimum     = minE, # options[["minEdgeStrength"]],
-		  details     = options[["showDetails"]],
-		  labels      = labels, # .unv(network[["labels"]]),
-		  palette     = options[["nodeColors"]],
-		  theme       = options[["edgeColors"]],
-		  legend      = legend, # options[["showLegend"]]
-		  shape       = shape,
-		  color       = nodeColor,
-		  edge.color  = edgeColor,
-		  nodeNames   = nodeNames,
-		  label.scale = options[["scaleLabels"]],
-		  label.cex   = options[["labelSize"]],
-		  options     = options
-		)
 
 		qgraph::qgraph(
 			input       = wMat,
@@ -1133,7 +1108,6 @@ NetworkAnalysis <- function (
 	if (!is.null(oldPlot) && !identical(oldPlot[["collection"]][[1]][["data"]], ""))
 		return(oldPlot)
   
-  saveDataToDput(network, options, oldPlot)
 	plot <- list(
 		title = "Network Plot",
 		collection = list(),
@@ -1434,35 +1408,18 @@ getTempFileName <- function() {
   return(invisible())
 }
 
-saveDataToDput <- function(...) {
-
-	path <- "C:/Users/donvd/_Laptop/Werk/JASP/tempDput/"
-	dots <- list(...)
-	fname <- paste0(path, "tmp")
-	i <- 0
-	
-	while (file.exists(paste0(fname, "_", i, ".RData"))) {
-	  i <- i + 1
-	}
-	fname <- paste0(fname, "_", i, ".RData")
-	save(dots, file = fname)
-	
-	# if (!dir.exists(path))
-	# 	dir.create(path)
-	# nms <- sapply(substitute(list(...))[-1], deparse)
-	# dots <- list(...)
-	# 
-	# for (i in seq_along(dots)) {
-	# 	j <- 1
-	# 	fName <- paste0(path, nms[i], ".txt")
-	# 	while (file.exists(fName[i]) && j < 1e3) {
-	# 		fName <- paste0(path, nms[i], "_", j, ".txt")
-	# 		j <- j + 1
-	# 	}
-	# 	sink(file = fName)
-	# 	dput(dots[[i]])
-	# 	sink(NULL)
-	# }
-
-}
-
+# saveDataToDput <- function(...) {
+# 
+# 	path <- "C:/Users/donvd/_Laptop/Werk/JASP/tempDput/"
+# 	dots <- list(...)
+# 	fname <- paste0(path, "tmp")
+# 	i <- 0
+# 	
+# 	while (file.exists(paste0(fname, "_", i, ".RData"))) {
+# 	  i <- i + 1
+# 	}
+# 	fname <- paste0(fname, "_", i, ".RData")
+# 	save(dots, file = fname)
+# 	
+# }
+# 

@@ -20,9 +20,9 @@ An estimator can be selected by clicking on `Estimator`.
 
 Assumption vary per network analysis method. In general, relations among variables are assumed to be *linear*. 
 
-Additional assumptions are required for each network:
+Additional assumptions are required for some networks:
 
-- Correlations & Partial correlation networks: If you want to interpret edges with only significant (partial) correlation, your data must be normally distributed.
+- Correlations & Partial correlation networks: If you want to interpret edges with only significant (partial) correlations, your data must be normally distributed. This assumptions only matters for the significance test.
 - EBICglasso: your data are normally distributed.
 - Mixed Graphical Models: Your variables are either normally distributed, catgorical, or Poisson (counts). 
 
@@ -46,7 +46,7 @@ Analysis options
 For each network method, options can be adjusted to influence the result. Only options available to a specific estimation method will be available at a time.
 
 ####Correlation method
-- `auto`: Automatically detect variable type and uses the most suitable correlation type. This will detect continuous, binary and ordinal variables and will use Pearson, tetrachoric or polychoric correlations.
+- `Auto`: Automatically detect variable type and uses the most suitable correlation type. This will detect continuous, binary and ordinal variables and will use Pearson, tetrachoric or polychoric correlations.
 - `Cor`: Pearson correlation.
 - `Cov`: Covariances.
 - `Nonparanormal`: This will first apply the nonparanormal transformation to make all data normally distributed and then use Pearson correlations.
@@ -171,5 +171,13 @@ When estimating a Mixed Graphical Model, the assumed distribution of a variable 
 -`Dont' show`: Do not show the assumed distribution.
 -`Using node colors`: Change the color of the nodes based on their assumed distribution (TODO: colors scheme). TODO clashes with...
 -`Using node shape`: Change the shape of the nodes based on their assumed distribution. Gaussian nodes are circles, categorical nodes are squares, and Poisson nodes are triangles. 
+
+
+#### References
+
+Specific references for an estimator can also be obtained by clicking on a table and selecting (TODO ...). All references are:
+
+
+
 
 
