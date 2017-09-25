@@ -383,7 +383,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 					if (content < (Math.log(upperLimit) / Math.log(10)) && content > -dp) {
 
-						if (alignNumbers) {
+						if (alignNumbers || fixDecimals) {
 
 							formatted = { content: Math.pow(10, content).toFixed(-minLSD).replace(/-/g, "&minus;"), "class": "number" }
 						}
@@ -428,7 +428,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 						var sign = content >= 0 ? "+" : "-"
 
-						mantissa = fixDecimals ? mantissa.toPrecision(1 + dp) : mantissa.toPrecision(sf)
+						mantissa = fixDecimals ? mantissa.toFixed(dp) : mantissa.toPrecision(sf)
 
 						var padding
 
@@ -472,7 +472,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 				}
 				else {
 
-					if (alignNumbers) {
+					if (alignNumbers || fixDecimals) {
 
 						formatted = { content: content.toFixed(-minLSD).replace(/-/g, "&minus;"), "class": "number" }
 					}
