@@ -51,6 +51,10 @@ public:
 	static const std::vector<double>& getDoubleEmptyValues() {return _currentDoubleEmptyValues;}
 	static void setEmptyValues(const std::vector<std::string>& emptyvalues);
 
+	static bool getIntValue(const std::string& value, int& intValue);
+	static bool getIntValue(const double& value, int& intValue);
+	static bool getDoubleValue(const std::string& value, double& doubleValue);
+
 private:
 	static std::vector<std::string> _currentEmptyValues;
 	static const std::vector<std::string> _defaultEmptyValues;

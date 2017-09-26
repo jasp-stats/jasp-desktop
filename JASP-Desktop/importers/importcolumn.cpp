@@ -1,6 +1,6 @@
 #include "importcolumn.h"
-#include <boost/lexical_cast.hpp>
 #include <cmath>
+#include "utils.h"
 
 using namespace std;
 
@@ -93,14 +93,8 @@ bool ImportColumn::convertValueToInt(const string &strValue, int &intValue)
 	bool success = true;
 	if (!Column::isEmptyValue(strValue))
 	{
-		try
-		{
-			intValue = boost::lexical_cast<int>(strValue);
-		}
-		catch (...)
-		{
+		if (!Utils::getIntValue(strValue, intValue))
 			success = false;
-		}
 	}
 	else
 	{
@@ -117,14 +111,8 @@ bool ImportColumn::convertValueToDouble(const string &strValue, double &doubleVa
 
 	if (!Column::isEmptyValue(v))
 	{
-		try
-		{
-			doubleValue = boost::lexical_cast<double>(v);
-		}
-		catch (...)
-		{
+		if (!Utils::getDoubleValue(v, doubleValue))
 			success = false;
-		}
 	}
 	else
 	{
@@ -171,7 +159,7 @@ bool ImportColumn::convertToDouble(const vector<string> &values, vector<double> 
 		if (success)
 		{
 			doubleValues.push_back(doubleValue);
-			if (doubleValue == NAN && !std::isnan(doubleValue))
+			if (std::isnan(doubleValue) && value != Utils::emptyValue)
 				emptyValuesMap.insert(make_pair(row, value));
 		}
 		else

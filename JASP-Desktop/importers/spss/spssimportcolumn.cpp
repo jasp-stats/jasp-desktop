@@ -498,7 +498,7 @@ void SPSSImportColumn::setColumnConvertStringData(Column &column)
 		labels[value] = it->second;
 	}
 
-	column.setColumnAsNominalString(strings, labels);
+	column.setColumnAsNominalText(strings, labels);
 }
 
 void SPSSImportColumn::setColumnConvertDblToString(Column &column)
@@ -514,7 +514,7 @@ void SPSSImportColumn::setColumnConvertDblToString(Column &column)
 		labels[format(it->first.dbl, _dataset->getFloatInfo())] = it->second;
 	}
 
-	column.setColumnAsNominalString(strings, labels);
+	column.setColumnAsNominalText(strings, labels);
 }
 
 void SPSSImportColumn::setColumnAsNominalOrOrdinal(Column &column, Column::ColumnType columnType)

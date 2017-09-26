@@ -159,7 +159,7 @@ void Importer::fillSharedMemoryColumnWithStrings(const std::vector<string> &valu
 	if (!success)
 	{
 		// if it can't be made nominal numeric or scale, make it nominal-text
-		emptyValuesMap = column.setColumnAsNominalString(values);
+		emptyValuesMap = column.setColumnAsNominalText(values);
 	}
 
 	_packageData->emptyValuesMap.insert(make_pair(column.name(), emptyValuesMap));

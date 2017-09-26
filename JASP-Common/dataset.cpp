@@ -116,8 +116,8 @@ string DataSet::toString()
 		ss << "  Ints" << std::endl;
 		for (Column::Ints::iterator int_it = col.AsInts.begin(); int_it != col.AsInts.end(); ++int_it)
 		{
-			int value = *int_it;
-			ss << "    " << value << ": " << col._labelFromIndex(value) << std::endl;
+			int key = *int_it;
+			ss << "    " << key << ": " << col._getLabelFromKey(key) << std::endl;
 		}
 	}
 

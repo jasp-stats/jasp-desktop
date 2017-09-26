@@ -275,13 +275,53 @@ void Utils::setEmptyValues(const vector<string> &emptyvalues)
 
 	for (vector<string>::const_iterator it = _currentEmptyValues.begin(); it != _currentEmptyValues.end(); ++it)
 	{
-		try
-		{
-			double doubleValue = boost::lexical_cast<double>(*it);
+		double doubleValue;
+		if (Utils::getDoubleValue(*it, doubleValue))
 			_currentDoubleEmptyValues.push_back(doubleValue);
-		}
-		catch (...)
-		{
-		}
 	}
+}
+
+bool Utils::getIntValue(const string &value, int &intValue)
+{
+	bool success = true;
+	try
+	{
+		intValue = boost::lexical_cast<int>(value);
+	}
+	catch (...)
+	{
+		success = false;
+	}
+
+	return success;
+}
+
+bool Utils::getIntValue(const double &value, int &intValue)
+{
+	bool success = true;
+	try
+	{
+		intValue = boost::lexical_cast<int>(value);
+	}
+	catch (...)
+	{
+		success = false;
+	}
+
+	return success;
+}
+
+bool Utils::getDoubleValue(const string &value, double &doubleValue)
+{
+	bool success = true;
+	try
+	{
+		doubleValue = boost::lexical_cast<double>(value);
+	}
+	catch (...)
+	{
+		success = false;
+	}
+
+	return success;
 }
