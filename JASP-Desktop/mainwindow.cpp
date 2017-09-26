@@ -19,44 +19,41 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "analysisforms/descriptivesform.h"
+#include "analysisforms/Common/descriptivesform.h"
 
-#include "analysisforms/ttestbayesianindependentsamplesform.h"
-#include "analysisforms/ttestbayesianpairedsamplesform.h"
-#include "analysisforms/ttestbayesianonesampleform.h"
-#include "analysisforms/ttestindependentsamplesform.h"
-#include "analysisforms/ttestpairedsamplesform.h"
-#include "analysisforms/ttestonesampleform.h"
+#include "analysisforms/Common/ttestbayesianindependentsamplesform.h"
+#include "analysisforms/Common/ttestbayesianpairedsamplesform.h"
+#include "analysisforms/Common/ttestbayesianonesampleform.h"
+#include "analysisforms/Common/ttestindependentsamplesform.h"
+#include "analysisforms/Common/ttestpairedsamplesform.h"
+#include "analysisforms/Common/ttestonesampleform.h"
 
 
-#include "analysisforms/anovaonewayform.h"
-#include "analysisforms/anovaform.h"
-#include "analysisforms/anovarepeatedmeasuresform.h"
-#include "analysisforms/ancovaform.h"
-#include "analysisforms/anovamultivariateform.h"
-#include "analysisforms/ancovamultivariateform.h"
+#include "analysisforms/Common/anovaonewayform.h"
+#include "analysisforms/Common/anovaform.h"
+#include "analysisforms/Common/anovarepeatedmeasuresform.h"
+#include "analysisforms/Common/ancovaform.h"
+#include "analysisforms/Common/anovamultivariateform.h"
+#include "analysisforms/Common/ancovamultivariateform.h"
 
-#include "analysisforms/anovabayesianform.h"
-#include "analysisforms/ancovabayesianform.h"
-#include "analysisforms/anovarepeatedmeasuresbayesianform.h"
+#include "analysisforms/Common/anovabayesianform.h"
+#include "analysisforms/Common/ancovabayesianform.h"
+#include "analysisforms/Common/anovarepeatedmeasuresbayesianform.h"
 
-#include "analysisforms/regressionlinearform.h"
-#include "analysisforms/regressionlinearbayesianform.h"
-#include "analysisforms/regressionlogisticform.h"
-#include "analysisforms/regressionloglinearform.h"
-#include "analysisforms/regressionloglinearbayesianform.h"
-#include "analysisforms/correlationform.h"
-#include "analysisforms/correlationbayesianform.h"
-#include "analysisforms/correlationbayesianpairsform.h"
-#include "analysisforms/correlationpartialform.h"
-#include "analysisforms/contingencytablesform.h"
-#include "analysisforms/contingencytablesbayesianform.h"
-#include "analysisforms/classicalmetaanalysisform.h"
+#include "analysisforms/Common/regressionlinearform.h"
+#include "analysisforms/Common/regressionlinearbayesianform.h"
+#include "analysisforms/Common/regressionlogisticform.h"
+#include "analysisforms/Common/regressionloglinearform.h"
+#include "analysisforms/Common/regressionloglinearbayesianform.h"
+#include "analysisforms/Common/correlationform.h"
+#include "analysisforms/Common/correlationbayesianform.h"
+#include "analysisforms/Common/correlationbayesianpairsform.h"
+#include "analysisforms/Common/correlationpartialform.h"
+#include "analysisforms/Common/contingencytablesform.h"
+#include "analysisforms/Common/contingencytablesbayesianform.h"
 
-#include "analysisforms/binomialtestform.h"
-#include "analysisforms/multinomialtestform.h"
-#include "analysisforms/binomialtestbayesianform.h"
-#include "analysisforms/bffromtform.h"
+#include "analysisforms/Common/binomialtestform.h"
+#include "analysisforms/Common/binomialtestbayesianform.h"
 #include "analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h"
 #include "analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.h"
 #include "analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.h"
@@ -65,16 +62,17 @@
 #include "analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
 
 #ifdef QT_DEBUG
-#include "analysisforms/basregressionlinearlinkform.h"
+#include "analysisforms/Common/basregressionlinearlinkform.h"
 #endif
+
 #include "analysisforms/Network/networkanalysisform.h"
 
 #include "analysisforms/SEM/semsimpleform.h"
 #include "analysisforms/R11tLearn/r11tlearnform.h"
 
-#include "analysisforms/reliabilityanalysisform.h"
-#include "analysisforms/exploratoryfactoranalysisform.h"
-#include "analysisforms/principalcomponentanalysisform.h"
+#include "analysisforms/Common/reliabilityanalysisform.h"
+#include "analysisforms/Common/exploratoryfactoranalysisform.h"
+#include "analysisforms/Common/principalcomponentanalysisform.h"
 
 #include <QDebug>
 #include <QWebFrame>
@@ -159,7 +157,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->ribbonSEM->setDataSetLoaded(false);
 	ui->ribbonR11tLearn->setDataSetLoaded(false);
 	ui->ribbonSummaryStatistics->setDataSetLoaded(false);
-    ui->ribbonMetaAnalysis->setDataSetLoaded(false);
+	ui->ribbonMetaAnalysis->setDataSetLoaded(false);
 
 #ifdef QT_DEBUG
 	ui->webViewResults->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
@@ -188,6 +186,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->tableView->setVariablesView(ui->variablesPage);
 	ui->variablesPage->hide();
 
+	ui->tabBar->setCurrentIndex(1);
+
 	ui->tableView->setVerticalScrollMode(QTableView::ScrollPerPixel);
 	ui->tableView->setHorizontalScrollMode(QTableView::ScrollPerPixel);
 
@@ -204,9 +204,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonR11tLearn, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonSummaryStatistics, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
-    connect(ui->ribbonMetaAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
+	connect(ui->ribbonMetaAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonNetworkAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
-    connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
+	connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
 	connect(ui->variablesPage, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
 	connect(ui->variablesPage, SIGNAL(resetTableView()), this, SLOT(resetTableView()));
@@ -382,7 +382,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	{
 		event->accept();
 	}
-
+	
 	PreferencesDialog *rd = ui->tabBar->getPreferencesDialog();
 	if (rd) rd->close();
 }
@@ -761,9 +761,9 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	else if (name == "ReliabilityAnalysis")
 		form = new ReliabilityAnalysisForm(contentArea);
 	else if (name == "ExploratoryFactorAnalysis")
-        form = new ExploratoryFactorAnalysisForm(contentArea);
-    else if (name == "PrincipalComponentAnalysis")
-        form = new PrincipalComponentAnalysisForm(contentArea);
+	form = new ExploratoryFactorAnalysisForm(contentArea);
+		else if (name == "PrincipalComponentAnalysis")
+	form = new PrincipalComponentAnalysisForm(contentArea);
 	else if (name == "SummaryStatsTTestBayesianOneSample")
 		form = new SummaryStatsTTestBayesianOneSampleForm(contentArea);
 	else if (name == "SummaryStatsTTestBayesianIndependentSamples")
@@ -776,15 +776,15 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new SummaryStatsRegressionLinearBayesianForm(contentArea);
 	else if (name == "SummaryStatsCorrelationBayesianPairs")
 		form = new SummaryStatsCorrelationBayesianPairsForm(contentArea);
-    else if (name == "ClassicalMetaAnalysis")
-        form = new ClassicalMetaAnalysisForm(contentArea);
+	else if (name == "ClassicalMetaAnalysis")
+		form = new ClassicalMetaAnalysisForm(contentArea);
 #ifdef QT_DEBUG
 	else if (name == "BASRegressionLinearLink")
 		form = new BASRegressionLinearLinkForm(contentArea);
 #endif
 	else if (name == "NetworkAnalysis")
 		form = new NetworkAnalysisForm(contentArea);
-    else
+	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
 	if (form != NULL)
@@ -910,7 +910,6 @@ void MainWindow::tabChanged(int index)
 			const Module& module = Module::getModule(currentActiveTab);
 			ui->ribbon->setCurrentIndex(module.ribbonIndex());
 		}
-
 	}
 }
 
@@ -1283,7 +1282,7 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 	ui->ribbonAnalysis->setDataSetLoaded(loaded);
 	ui->ribbonSEM->setDataSetLoaded(loaded);
 	ui->ribbonR11tLearn->setDataSetLoaded(loaded);
-    ui->ribbonMetaAnalysis->setDataSetLoaded(loaded);
+	ui->ribbonMetaAnalysis->setDataSetLoaded(loaded);
 	ui->ribbonNetworkAnalysis->setDataSetLoaded(loaded);
 }
 
@@ -1697,7 +1696,6 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 
 	if (selected)
 		hideOptionsPanel();
-	checkUsedModules();
 }
 
 void MainWindow::removeAllAnalyses()
