@@ -81,7 +81,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Grouping Variable</string>
+         <string>Split By</string>
         </property>
        </widget>
       </item>
@@ -262,7 +262,7 @@
          <item row="0" column="0">
           <widget class="ExpanderButton" name="BootstrapOptionsExpander">
            <property name="text">
-            <string>Bootstrap options</string>
+            <string>Bootstrap Options</string>
            </property>
           </widget>
          </item>
@@ -702,7 +702,7 @@
          <item row="0" column="0">
           <widget class="ExpanderButton" name="analysisOptionsExpander">
            <property name="text">
-            <string>Analysis options</string>
+            <string>Analysis Options</string>
            </property>
           </widget>
          </item>

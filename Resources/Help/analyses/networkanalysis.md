@@ -20,9 +20,9 @@ An estimator can be selected by clicking on `Estimator`.
 
 Assumption vary per network analysis method. In general, relations among variables are assumed to be *linear*. 
 
-Additional assumptions are required for each network:
+Additional assumptions are required for some networks:
 
-- Correlations & Partial correlation networks: If you want to interpret edges with only significant (partial) correlation, your data must be normally distributed.
+- Correlations & Partial correlation networks: If you want to interpret edges with only significant (partial) correlations, your data must be normally distributed. This assumptions only matters for the significance test.
 - EBICglasso: your data are normally distributed.
 - Mixed Graphical Models: Your variables are either normally distributed, catgorical, or Poisson (counts). 
 
@@ -46,7 +46,7 @@ Analysis options
 For each network method, options can be adjusted to influence the result. Only options available to a specific estimation method will be available at a time.
 
 ####Correlation method
-- `auto`: Automatically detect variable type and uses the most suitable correlation type. This will detect continuous, binary and ordinal variables and will use Pearson, tetrachoric or polychoric correlations.
+- `Auto`: Automatically detect variable type and uses the most suitable correlation type. This will detect continuous, binary and ordinal variables and will use Pearson, tetrachoric or polychoric correlations.
 - `Cor`: Pearson correlation.
 - `Cov`: Covariances.
 - `Nonparanormal`: This will first apply the nonparanormal transformation to make all data normally distributed and then use Pearson correlations.
@@ -201,3 +201,7 @@ Haslbeck, J., & Waldorp, L. J. (2015). mgm: Structure Estimation for time-varyin
 Kraeamer, N., Schaeafer, J., & Boulesteix, A.-L. (2009). Regularized estimation of large-scale gene association networks using graphical gaussian models. *BMC Bioinformatics, 10*(1), 1-24.
 
 Zhao, T., Li, X., Liu, H., Roeder, K., Lafferty, J., & Wasserman, L. (2015). huge: High-dimensional undirected graph estimation. Retrieved from https://CRAN.R-project.org/package=huge
+=======
+#### References
+
+Specific references for an estimator can also be obtained by clicking on a table and selecting (TODO ...). All references are:
