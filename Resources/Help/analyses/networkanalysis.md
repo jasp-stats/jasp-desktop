@@ -8,11 +8,11 @@ This analysis allows you to estimate not one type of network, but multiple. Supp
 
 - Correlation Networks
 - Partial correlation Networks
-- EBICglasso Networks
-- Huge
-- Ising Networks
-- Adaptive Lasso
-- Mixed Graphical Models
+- EBICglasso Networks (Foygel & Drton, 2010; Friedman, Hastie, & Tibshirani, 2008; Friedman, Hastie, & Tibshirani, 2014)
+- Huge: High-dimensional undirected graph estimation (Zhao et a., 2015). 
+- Ising Networks (using IsingFit, van Borkulo et al., 2014; or IsingSampler, Epskamp, 2014; Epskamp, Borsboom & Maris, in Press).
+- Adaptive Lasso (Schaeafer & Boulesteix, 2009)
+- Mixed Graphical Models (Haslbeck & Waldorp, 2015).
 
 An estimator can be selected by clicking on `Estimator`.
 
@@ -93,7 +93,7 @@ Thresholds to be used in correlation or partial correlation networks. This can e
 - `Holm`: as `Significant`, but with the Holm multiplicity correction. 
 - `Hochberg`: as `Significant`, but with the Hochberg multiplicity correction. Assumes that  hypothesis tests are independent or non-negatively associated.
 - `Hommel`: as `Significant`, but with the Holm multiplicity correction. Assumes that  hypothesis tests are independent or non-negatively associated.
-- `BH`: as `Significant`, but controls the false discovery rate (TODO:ref).
+- `BH`: as `Significant`, but controls the false discovery rate.
 
 In most scenarios, the `Bonferroni` method is rather restrictive and the `Holm` method is preferred.
 
@@ -173,3 +173,31 @@ When estimating a Mixed Graphical Model, the assumed distribution of a variable 
 -`Using node shape`: Change the shape of the nodes based on their assumed distribution. Gaussian nodes are circles, categorical nodes are squares, and Poisson nodes are triangles. 
 
 
+##References
+
+The reference list below contains references for all networks. A subset of references relevant to a specific estimator can be obtained by right clicking the downward arrow right of any table and selecting "Copy Citations". 
+
+van Borkulo, C. D., Borsboom, D., Epskamp, S., Blanken, T. F., Boschloo, L., Schoevers, R. A., & Waldorp, L. J. (2014). A new method for constructing networks from binary data. *Scientific reports, 4*(5918), 1-10.
+
+Epskamp, S., Borsboom, D., & Fried, E. I. (2016). Estimating psychological networks and their accuracy: a tutorial paper. arXiv preprint, arXiv:1604.08462.
+
+Epskamp, S., Cramer, A. O., Waldorp, L. J., Schmittmann, V. D., & Borsboom, D. (2012). qgraph: Network visualizations of relationships in psychometric data. *Journal of Statistical Software, 48*(4), 1-18.
+Chicago	
+
+Epskamp, S., Maris, G., Waldorp, L., & Borsboom, D. (in press). Network psychometrics. In P. Irwing, D. Hughes, & T. Booth (Eds.), *Handbook of psychometrics.* New York, NY, USA: Wiley.
+
+Epskamp, S. (2014). IsingSampler: Sampling methods and distribution functions for the Ising model. Retrieved from github.com/SachaEpskamp/IsingSampler
+
+Foygel, R., & Drton, M. (2010). Extended Bayesian information criteria for Gaussian graphical models. *In Advances in neural information processing systems* (pp. 604-612).
+
+Friedman, J., Hastie, T., & Tibshirani, R. (2008). Sparse inverse covariance estimation with the graphical lasso. *Biostatistics, 9*(3), 432-441.
+
+Friedman, J. H., Hastie, T., & Tibshirani, R. (2014). glasso: Graphical lasso estimation of gaussian graphical models. Retrieved from https://CRAN.R-project.org/package=glasso
+
+Fruchterman, T. M., & Reingold, E. M. (1991). Graph drawing by force‐directed placement. Software: Practice and experience, 21(11), 1129-1164.
+
+Haslbeck, J., & Waldorp, L. J. (2015). mgm: Structure Estimation for time-varying mixed graphical models in high-dimensional data. arXiv preprint arXiv:1510.06871.
+
+Kraeamer, N., Schaeafer, J., & Boulesteix, A.-L. (2009). Regularized estimation of large-scale gene association networks using graphical gaussian models. *BMC Bioinformatics, 10*(1), 1-24.
+
+Zhao, T., Li, X., Liu, H., Roeder, K., Lafferty, J., & Wasserman, L. (2015). huge: High-dimensional undirected graph estimation. Retrieved from https://CRAN.R-project.org/package=huge
