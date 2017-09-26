@@ -201,7 +201,3 @@ Haslbeck, J., & Waldorp, L. J. (2015). mgm: Structure Estimation for time-varyin
 Kraeamer, N., Schaeafer, J., & Boulesteix, A.-L. (2009). Regularized estimation of large-scale gene association networks using graphical gaussian models. *BMC Bioinformatics, 10*(1), 1-24.
 
 Zhao, T., Li, X., Liu, H., Roeder, K., Lafferty, J., & Wasserman, L. (2015). huge: High-dimensional undirected graph estimation. Retrieved from https://CRAN.R-project.org/package=huge
-=======
-#### References
-
-Specific references for an estimator can also be obtained by clicking on a table and selecting (TODO ...). All references are:
