@@ -1001,34 +1001,38 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 .createNonparametricConfidenceIntervals <- function(x, y, hypothesis = "two-sided", confLevel = 0.95, method = "kendall"){
   alpha <- 1 - confLevel
+  missingIndices <- as.logical((is.na(x)) + (is.na(y)))
+  x <- x[!missingIndices]
+  y <- y[!missingIndices]
   n <- length(x)
-  corValue <- cor.test(x, y, method=method)$estimate
-  if(method == "kendall" && sum(is.infinite(c(x,y)))==0){
+  
+  corValue <- cor.test(x, y, method = method)$estimate
+  if ( method == "kendall" && sum(is.infinite(c(x,y))) == 0 ) {
     c.i <- numeric(0)
-    for(i in 1:n){
+    for (i in 1:n) {
       c.i <- c(c.i, .addConcordances(x, y, i))
     }
     sigmaHatSq <- 2 * (n - 2) * var(c.i) / n / (n-1)
     sigmaHatSq <- sigmaHatSq + 1 - (corValue)^2
     sigmaHatSq <- sigmaHatSq * 2 / n / (n - 1)
     
-    if(hypothesis=="correlated") z <- qnorm(alpha / 2, lower.tail = F)
-    if(hypothesis!="correlated") z <- qnorm(alpha, lower.tail = F)
+    if (hypothesis=="correlated") z <- qnorm(alpha / 2, lower.tail = F)
+    if (hypothesis!="correlated") z <- qnorm(alpha, lower.tail = F)
     ciLow <- corValue - z * sqrt(sigmaHatSq)
     ciUp <- corValue + z * sqrt(sigmaHatSq)
-    if(hypothesis=="correlatedPositively") ciUp <- 1
-    if(hypothesis=="correlatedNegatively") ciLow <- -1
+    if (hypothesis=="correlatedPositively") ciUp <- 1
+    if (hypothesis=="correlatedNegatively") ciLow <- -1
   } else if(method == "kendall"){
     ciLow <- NaN
     ciUp <- NaN
   } else if (method == "spearman"){
     stdErr = 1 / sqrt(n-3)
-    if(hypothesis=="correlated") z <- qnorm(alpha / 2, lower.tail = F)
-    if(hypothesis!="correlated") z <- qnorm(alpha, lower.tail = F)
+    if (hypothesis=="correlated") z <- qnorm(alpha / 2, lower.tail = F)
+    if (hypothesis!="correlated") z <- qnorm(alpha, lower.tail = F)
     ciLow = tanh(atanh(corValue) - z * stdErr)
     ciUp = tanh(atanh(corValue) + z * stdErr)
-    if(hypothesis=="correlatedPositively") ciUp <- 1
-    if(hypothesis=="correlatedNegatively") ciLow <- -1
+    if (hypothesis=="correlatedPositively") ciUp <- 1
+    if (hypothesis=="correlatedNegatively") ciLow <- -1
   }
   return(c(ciLow,ciUp))
 }
