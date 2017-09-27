@@ -74,7 +74,7 @@ QTabWidget#background {
       <enum>QTabWidget::Triangular</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="elideMode">
       <enum>Qt::ElideNone</enum>
@@ -267,19 +267,73 @@ QTabWidget#background {
       <attribute name="title">
        <string>Analyses</string>
       </attribute>
-      <widget class="QCheckBox" name="displayExactPVals">
+      <widget class="QWidget" name="">
        <property name="geometry">
         <rect>
          <x>10</x>
          <y>10</y>
-         <width>231</width>
-         <height>20</height>
+         <width>243</width>
+         <height>45</height>
         </rect>
        </property>
-       <property name="text">
-        <string> Display exact p-values</string>
-       </property>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0" rowspan="2">
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QCheckBox" name="displayExactPVals">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Display exact p-values</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="fixDecimals">
+            <property name="text">
+             <string>Fix the number of decimals</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="1">
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>17</width>
+            <height>13</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="1">
+         <widget class="QSpinBox" name="numDecimals">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>10</number>
+          </property>
+          <property name="value">
+           <number>3</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
+      <zorder>displayExactPVals</zorder>
+      <zorder>numDecimals</zorder>
+      <zorder>displayExactPVals</zorder>
+      <zorder>numDecimals</zorder>
+      <zorder>displayExactPVals</zorder>
      </widget>
     </widget>
    </item>

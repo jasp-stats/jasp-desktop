@@ -7,6 +7,7 @@
 #include <QDialog>
 #include <QSettings>
 #include <QFileDialog>
+#include <QSizePolicy>
 
 namespace Ui {
 class PreferencesDialog;
@@ -40,6 +41,7 @@ protected:
 	void virtual showEvent(QShowEvent * event);
 
 private slots:
+	void on_fixDecimals_clicked();
 	void on_addPushButton_clicked();
 	void on_deletePushButton_clicked();
 	void on_resetPushButton_clicked();
