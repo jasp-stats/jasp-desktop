@@ -19,14 +19,18 @@
 
 using namespace std;
 
-OptionString::OptionString(string value)
+OptionString::OptionString(string value, string regexp, int max)
 {
 	_value = value;
+	_max = max;
+	_regexp = regexp;
 }
 
 void OptionString::init(const Json::Value &data)
 {
 	_value = data.get("default", "").asString();
+	_regexp = data.get("regexp", "").asString();
+	_max = data.get("max", -1).asInt();
 }
 
 Json::Value OptionString::asJSON() const
@@ -44,4 +48,14 @@ Option *OptionString::clone() const
 	OptionString *c = new OptionString();
 	c->setValue(_value);
 	return c;
+}
+
+int OptionString::max() const
+{
+	return _max;
+}
+
+string OptionString::regexp() const
+{
+	return _regexp;
 }
