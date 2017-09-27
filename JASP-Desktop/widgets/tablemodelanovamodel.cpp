@@ -394,9 +394,9 @@ QVariant TableModelAnovaModel::headerData(int section, Qt::Orientation orientati
 		if (role == Qt::DisplayRole)
 		{
 			if (section == 0)
-				return "Model Terms";
+				return "Model terms";
 			else if (section == 1)
-				return "Is Nuisance";
+				return "Add to null model";
 		}
 		else
 		{
