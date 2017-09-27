@@ -56,12 +56,16 @@ h6, .h6-toolbar .jasp-menu {
 	background-color: rgba(224, 224, 224, 0) ;
 	border: 1px solid rgba(105, 105, 105, 0) ;
 	border-radius : 6px ;
-	margin-top: 0.6em ;
+	margin-top: 0.1em ;
 	margin-bottom: 0.6em ;
 	/*margin-left: 0.6em ;*/
 	padding-left: 0.6em ;
 	margin-right: 0.6em ;
 	padding-right: 0.6em ;
+}
+
+.jasp-display-item ~ .jasp-display-item {
+	margin-top: 0.6em;
 }
 
 .jasp-display-item-flat {
@@ -554,6 +558,10 @@ td.squash-left
 	margin-bottom: 0.6em ;
 }
 
+.jasp-firstNote-note {
+	margin-bottom: 0.5em;
+}
+
 [contenteditable]:focus 
 { 
 	outline: 0px solid transparent; 
@@ -575,6 +583,10 @@ pre {
 
 .in-toolbar, .jasp-editable {
 	min-width: 1em;
+}
+
+.jasp-progressbar-container {
+	min-height: 1.2em;
 }
 
 /*.jasp-indent {

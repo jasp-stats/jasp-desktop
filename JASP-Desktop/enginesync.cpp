@@ -224,6 +224,7 @@ void EngineSync::process()
 
 			int id = json.get("id", -1).asInt();
 			int revision = json.get("revision", -1).asInt();
+			int progress = json.get("progress", -1).asInt();
 			Json::Value results = json.get("results", Json::nullValue);
 			string status = json.get("status", "error").asString();
 
@@ -272,11 +273,11 @@ void EngineSync::process()
 			else if (status == "running" && analysis->status() == Analysis::Initing)
 			{
 				analysis->setStatus(Analysis::Running);
-				analysis->setResults(results);
+				analysis->setResults(results, progress);
 			}
 			else if (analysis->status() == Analysis::Running)
 			{
-				analysis->setResults(results);
+				analysis->setResults(results, progress);
 			}
 			else
 			{
