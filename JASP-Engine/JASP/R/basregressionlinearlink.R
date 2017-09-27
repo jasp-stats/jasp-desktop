@@ -198,7 +198,6 @@ BASRegressionLinearLink <- function (
 			keep = keep
 		)
 		attr(state, "key") <- stateKey
-		attr(state, "keep") <- c("status", "keep")
 	}
 
 	return (list(
