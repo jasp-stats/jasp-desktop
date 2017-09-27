@@ -39,8 +39,8 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
 		return(as.integer(1))
 	}
 
-	.callbackBayesianLinearModels <- function(results = NULL) {
-		response <- callback(results)
+	.callbackBayesianLinearModels <- function (results = NULL, progress = NULL) {
+		response <- callback(results, progress)
 		if (response$status == "changed") {
 		
 			change <- .diff(env$options, response$options)
