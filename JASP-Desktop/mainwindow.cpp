@@ -53,6 +53,7 @@
 #include "analysisforms/contingencytablesbayesianform.h"
 
 #include "analysisforms/binomialtestform.h"
+#include "analysisforms/multinomialtestform.h"
 #include "analysisforms/binomialtestbayesianform.h"
 #include "analysisforms/bffromtform.h"
 #include "analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h"
@@ -750,6 +751,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new R11tLearnForm(contentArea);
 	else if (name == "BinomialTest")
 		form = new BinomialTestForm(contentArea);
+	else if (name == "MultinomialTest")
+		form = new MultinomialTestForm(contentArea);
 	else if (name == "BinomialTestBayesian")
 		form = new BinomialTestBayesianForm(contentArea);
 	else if (name == "BFFromT")

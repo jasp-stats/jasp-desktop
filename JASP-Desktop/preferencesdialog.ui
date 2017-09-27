@@ -46,41 +46,107 @@ backgorund-color:transparant;
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="styleSheet">
-      <string notr="true">QWidget#background {
-	border-bottom: 1px solid #919191;
-	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.7 #F0F0F0, stop:0.701 #E3E1E2);
-}
-QTabWidget::tab-bar {
-left:0;
-background-color:transparant;
-}
-QTabWidget{
-background:transparant;
-}
-QStackedWidget#background{
-	background:transparant;
-}
-QTabWidget#background {
-	border-bottom: 1px solid #919191;
-	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.7 #F0F0F0, stop:0.701 #E3E1E2);
+      <string notr="true">QTabWidget::pane {
+    border: 1px solid lightgray;
+    background: #EDEDED;
 }
 
+QTabWidget::tab-bar:top {
+    top: 1px;
+}
+
+QTabWidget::tab-bar:bottom {
+    bottom: 1px;
+}
+
+QTabWidget::tab-bar:left {
+    right: 1px;
+}
+
+QTabWidget::tab-bar:right {
+    left: 1px;
+}
+
+QTabBar::tab {
+    border: 1px solid lightgray;
+}
+
+QTabBar::tab:selected {
+    background: white;
+}
+
+QTabBar::tab:!selected {
+    background: #EDEDED;
+}
+
+QTabBar::tab:!selected:hover {
+    background: #3CAAE7;
+}
+
+QTabBar::tab:top, QTabBar::tab:bottom {
+    min-width: 8ex;
+    margin-right: -1px;
+    padding: 5px 10px 5px 10px;
+}
+
+QTabBar::tab:top:selected {
+    border-bottom-color: none;
+}
+
+QTabBar::tab:bottom:selected {
+    border-top-color: none;
+}
+
+QTabBar::tab:top:last, QTabBar::tab:bottom:last,
+QTabBar::tab:top:only-one, QTabBar::tab:bottom:only-one {
+    margin-right: 0;
+}
+
+QTabBar::tab:left:!selected {
+    margin-right: 3px;
+}
+
+QTabBar::tab:right:!selected {
+    margin-left: 3px;
+}
+
+QTabBar::tab:left, QTabBar::tab:right {
+    min-height: 8ex;
+    margin-bottom: -1px;
+    padding: 10px 5px 10px 5px;
+}
+
+QTabBar::tab:left:selected {
+    border-left-color: none;
+}
+
+QTabBar::tab:right:selected {
+    border-right-color: none;
+}
+
+QTabBar::tab:left:last, QTabBar::tab:right:last,
+QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
+    margin-bottom: 0;
+}
+
+QTabBar::tab
+{
+border-top-left-radius:4px;
+border-top-right-radius:4px;
+}
 </string>
      </property>
      <property name="tabPosition">
       <enum>QTabWidget::North</enum>
      </property>
      <property name="tabShape">
-      <enum>QTabWidget::Triangular</enum>
+      <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <property name="elideMode">
       <enum>Qt::ElideNone</enum>
-     </property>
-     <property name="tabBarAutoHide">
-      <bool>false</bool>
      </property>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
@@ -267,7 +333,7 @@ QTabWidget#background {
       <attribute name="title">
        <string>Analyses</string>
       </attribute>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -329,11 +395,6 @@ QTabWidget#background {
         </item>
        </layout>
       </widget>
-      <zorder>displayExactPVals</zorder>
-      <zorder>numDecimals</zorder>
-      <zorder>displayExactPVals</zorder>
-      <zorder>numDecimals</zorder>
-      <zorder>displayExactPVals</zorder>
      </widget>
     </widget>
    </item>

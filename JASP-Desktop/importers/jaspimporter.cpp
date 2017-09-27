@@ -85,7 +85,16 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 	packageData->dataFileTimestamp = metaData["dataFileTimestamp"].isNull() ? 0 : metaData["dataFileTimestamp"].asInt();
 
 	Json::Value &emptyValuesJson = metaData["emptyValues"];
-	if (!emptyValuesJson.isNull())
+	if (emptyValuesJson.isNull())
+	{
+		// Old JASP files: the empty values were '.', 'NaN' & 'nan'
+		vector<string> emptyValues;
+		emptyValues.push_back("NaN");
+		emptyValues.push_back("nan");
+		emptyValues.push_back(".");
+		Utils::setEmptyValues(emptyValues);
+	}
+	else
 	{
 		vector<string> emptyValues;
 		for (Json::Value::iterator iter = emptyValuesJson.begin(); iter != emptyValuesJson.end(); ++iter)

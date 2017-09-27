@@ -57,6 +57,11 @@
 			"default": 95
 		},
 		{
+			"name": "coeffCIOR",
+			"type": "Boolean",
+			"default": false
+		},
+		{
 			"name": "stdCoeff",
 			"type": "Boolean",
 			"default": false
@@ -68,6 +73,11 @@
 		},
 		{
 			"name": "VovkSellkeMPR",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "robustSEOpt",
 			"type": "Boolean",
 			"default": false
 		},
@@ -144,10 +154,20 @@
 			"default": false
 		},
 		{
+			"name": "squaredPearsonPlotOpt",
+			"type": "Boolean",
+			"default": false
+		},
+		{
 			"name": "residualType",
 			"options": [ "deviance", "pearson" ],
 			"default": "deviance",
 			"type": "List"
+		},
+		{
+			"name": "factorDescriptivesOpt",
+			"type": "Boolean",
+			"default": false
 		},
 		{
 			"name": "plotWidth",
@@ -158,7 +178,6 @@
 			"name": "plotHeight",
 			"type": "Integer",
 			"default": 320
-		},
-		
+		}
 	]
 }

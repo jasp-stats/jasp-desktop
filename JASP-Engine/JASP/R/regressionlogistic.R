@@ -15,13 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# NB: this file has custom code folding enabled. If you're in atom, install the 
-# "custom-folds" package. In other editors you might be able to define
-# the <editor-fold> and </editor-fold> as start- and endpoints of a code fold.
-
 RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
   
-  # <editor-fold> DATASET LOADING BLOCK ----
+  # DATASET LOADING
   numericVars <- unlist(c(options[["covariates"]],
                           options[["wlsWeights"]]))
   numericVars <- numericVars[numericVars != ""]
@@ -39,9 +35,8 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
                                     columns.as.factor = factorVars)
     }
   }
-  # </editor-fold> DATASET LOADING BLOCK
-  
-  # <editor-fold> ERROR HANDLING BLOCK ----
+
+  # ERROR HANDLING
   if (options[["dependent"]] != "") {
     errors <- .hasErrors(dataset, perform, type = "factorLevels",
                          factorLevels.target = options[["dependent"]], 
@@ -55,10 +50,8 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
                          limits.min = 0, limits.max = Inf,
                          exitAnalysisIfErrors = TRUE)
   }
-  
-  # </editor-fold> ERROR HANDLING BLOCK
-  
-  # <editor-fold> STATE SYSTEM BLOCK ----
+    
+  # STATE SYSTEM
   # load state
   state <- .retrieveState()
   
@@ -71,18 +64,21 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   estimatesPlots <- # plots for estimates
   predictedPlot <- # predicted - residuals plot
   predictorPlots <- # predictor - residuals plots
+  squaredPearsonPlot <- # squared pearson - predicted prob plot
+  factorDescriptives <- # factor descriptives table
   NULL
   
   # diff check
   if (!is.null(state) && perform == "run") {
     diff <- .diff(options, state[["options"]])
-    with(diff, {
+    with(diff, { # with(diff, {}) makes us need "<<-" to assign to global env
       if (!any(dependent, covariates, factors, wlsWeights, modelTerms,
                 includeIntercept, wlsWeights)) {
         lrObj <<- state[["lrObj"]]
         modelSummary <<- state[["modelSummary"]]
         
-        if (!any(coeffEstimates, coeffCI, coeffCIInterval, stdCoeff, oddsRatios, VovkSellkeMPR)) {
+        if (!any(coeffEstimates, coeffCI, coeffCIInterval, coeffCIOR, stdCoeff, 
+                 oddsRatios, VovkSellkeMPR, robustSEOpt)) {
           # estimates table can be reused
           estimatesTable <<- state[["estimatesTable"]]
         }
@@ -111,7 +107,17 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
           # predictor - residuals plots can be reused
           predictorPlots <<- state[["predictorPlots"]]
         }
-      }      
+
+        if (!any(squaredPearsonPlotOpt, plotWidth, plotHeight)) {
+          # squared pearson plot can be reused
+          squaredPearsonPlot <<- state[["squaredPearsonPlot"]]
+        }
+        
+        if (!any(factorDescriptivesOpt)) {
+          # descriptives table can be reused
+          factorDescriptives <<- state[["factorDescriptives"]]
+        }
+      }
     })
   } else if (!is.null(state)) {
     lrObj <<- state[["lrObj"]]
@@ -122,30 +128,30 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
     estimatesPlots <- state[["estimatesPlots"]]
     predictedPlot <- state[["predictedPlot"]]
     predictorPlots <- state[["predictorPlots"]]
+    squaredPearsonPlot <- state[["squaredPearsonPlot"]]
+    factorDescriptives <- state[["factorDescriptives"]]
   }
+
   
-  # </editor-fold> STATE SYSTEM BLOCK
-  
-  # <editor-fold> META INFORMATION BLOCK ----
-  
+  # META INFORMATION
   .pdMeta <- list(list(name = "confusionMatrix", type = "table"),
                   list(name = "perfMetrics", type = "table"))
   .rpMeta <- list(list(name = "predictedPlot", type = "image"),
                   list(name = "predictorPlots", type = "collection", 
-                       meta = "image"))
+                       meta = "image"),
+                  list(name = "squaredPearsonPlot", type = "image"))
   
   .meta <-  list(
 		list(name = "title", type = "title"),
 		list(name = "modelSummary", type = "table"),
 		list(name = "estimatesTable", type = "table"),
+    list(name = "factorDescriptives", type = "table"),
 		list(name = "perfDiagnostics", type = "object", meta = .pdMeta),
 		list(name = "estimatesPlots", type = "collection", meta = "image"),
     list(name = "residualsPlots", type = "object", meta = .rpMeta)
 	)
-  
-  # </editor-fold> META INFORMATION BLOCK
-  
-  # <editor-fold> RESULTS GENERATION BLOCK ----
+
+  # RESULTS GENERATION 
   # for each non-null result, generate results
   if (is.null(lrObj)) {
     lrObj <- .jaspGlm(dataset, options, perform, type = "binomial")
@@ -191,8 +197,21 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
                                                   type = "binomial")
   }
   
+  if (is.null(squaredPearsonPlot) && options[["squaredPearsonPlotOpt"]]) {
+    squaredPearsonPlot <- .glmSquaredPearsonResidualsPlot(lrObj, options, 
+                                                          perform, 
+                                                          type = "binomial")
+  }
+  
+  if(is.null(factorDescriptives) && options[["factorDescriptivesOpt"]]) {
+    factorDescriptives <- .glmFactorDescriptives(dataset, options, perform, 
+                                                type = "binomial")
+
+  }
+  
   residualsPlots <- list("predictedPlot" = predictedPlot,
                          "predictorPlots" = predictorPlots,
+                         "squaredPearsonPlot" = squaredPearsonPlot,
                          "title" = "Residual plots")
   
   results <- list()
@@ -203,14 +222,14 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   results[["perfDiagnostics"]] <- perfDiagnostics
   results[["estimatesPlots"]] <- estimatesPlots
   results[["residualsPlots"]] <- residualsPlots
+  results[["factorDescriptives"]] <- factorDescriptives
 
-  # </editor-fold> RESULTS GENERATION BLOCK
   
-  # <editor-fold> RETURN RESULTS BLOCK ----
+  # RETURN RESULTS
   
   plotPaths <- c(.lrGetPlotPaths(estimatesPlots), 
                  .lrGetPlotPaths(predictorPlots),
-                 predictedPlot[["data"]])
+                 predictedPlot[["data"]], squaredPearsonPlot[["data"]])
   
   if (perform == "run") {
     state <- list()
@@ -223,6 +242,8 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
     state[["estimatesPlots"]] <- estimatesPlots
     state[["predictedPlot"]] <- predictedPlot
     state[["predictorPlots"]] <- predictorPlots
+    state[["squaredPearsonPlot"]] <- squaredPearsonPlot
+    state[["factorDescriptives"]] <- factorDescriptives
     
     return(list(results=results, status="complete", state=state,
                 keep = plotPaths))
@@ -231,10 +252,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
     
     return(list(results=results, status="inited", state=state,
                 keep = plotPaths))
-
-  }
-  # </editor-fold> RETURN RESULTS BLOCK
-  
+  }  
 }
 
 .lrGetPlotPaths <- function(plotObj) {

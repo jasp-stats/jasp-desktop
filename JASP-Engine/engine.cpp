@@ -71,7 +71,7 @@ void Engine::saveImage()
 
 	vector<string> tempFilesFromLastTime = tempfiles_retrieveList(_analysisId);
 
-	RCallback callback = boost::bind(&Engine::callback, this, _1);
+	RCallback callback = boost::bind(&Engine::callback, this, _1, _2);
 
 	std::string name = _imageOptions.get("name", Json::nullValue).asString();
 	std::string type = _imageOptions.get("type", Json::nullValue).asString();
@@ -85,6 +85,7 @@ void Engine::saveImage()
 	Json::Reader parser;
 	parser.parse(result, _analysisResults, false);
 	_analysisResults["results"]["inputOptions"] = _imageOptions;
+	_progress = -1;
 	sendResults();
 	_status = empty;
 
@@ -112,7 +113,7 @@ void Engine::runAnalysis()
 
 	vector<string> tempFilesFromLastTime = tempfiles_retrieveList(_analysisId);
 
-	RCallback callback = boost::bind(&Engine::callback, this, _1);
+	RCallback callback = boost::bind(&Engine::callback, this, _1, _2);
 
 	_currentAnalysisKnowsAboutChange = false;
 	_analysisResultsString = rbridge_run(_analysisName, _analysisOptions, perform, _ppi, callback);
@@ -143,6 +144,7 @@ void Engine::runAnalysis()
 		parser.parse(_analysisResultsString, _analysisResults, false);
 
 		_status = _status == initing ? inited : complete;
+		_progress = -1;
 		sendResults();
 		_status = empty;
 
@@ -286,6 +288,7 @@ void Engine::sendResults()
 	response["id"] = _analysisId;
 	response["name"] = _analysisName;
 	response["revision"] = _analysisRevision;
+	response["progress"] = _progress;
 
 	Json::Value resultsStatus = Json::nullValue;
 
@@ -330,7 +333,7 @@ void Engine::sendResults()
 	_channel->send(message);
 }
 
-string Engine::callback(const string &results)
+string Engine::callback(const string &results, int progress)
 {
 	receiveMessages();
 
@@ -350,7 +353,18 @@ string Engine::callback(const string &results)
 		Json::Reader parser;
 		parser.parse(_analysisResultsString, _analysisResults, false);
 
+		_progress = progress;
+
 		sendResults();
+	}
+	else if (progress >= 0 && _status == running)
+	{
+		_analysisResultsString = Json::nullValue;
+		_analysisResults = "";
+		_progress = progress;
+
+		sendResults();
+		
 	}
 
 	if (_status == changed)
