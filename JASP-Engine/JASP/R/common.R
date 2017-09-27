@@ -48,7 +48,7 @@ run <- function(name, options.as.json.string, perform="run") {
 	if ('state' %in% names(formals(analysis))) {
 		state <- .retrieveState()
 		if (! is.null(state) && 'key' %in% names(attributes(state))) {
-			state <- .getStateItems(state=state, options=options, key=attributes(state)$key, keep=attributes(state)$keep)
+			state <- .getStateItems(state=state, options=options, key=attributes(state)$key)
 		}
 	}
 	
@@ -894,7 +894,7 @@ as.list.footnotes <- function(footnotes) {
 }
 
 
-.getStateItems <- function(state, options, key, keep=NULL) {
+.getStateItems <- function(state, options, key) {
 	
   if (is.null(names(state)) || is.null(names(state$options)) || 
       is.null(names(options)) || is.null(names(key))) {
@@ -903,13 +903,9 @@ as.list.footnotes <- function(footnotes) {
 
   result <- list()
   for (item in names(state)) {
-    
-		if (! is.null(keep) && item %in% keep) {
-			result[[item]] <- state[[item]]
-			next
-	  } 
 		
 		if (item %in% names(key) == FALSE) {
+      result[[item]] <- state[[item]]
       next
     }
     

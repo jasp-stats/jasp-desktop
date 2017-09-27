@@ -506,10 +506,7 @@ attr(state, "key") <- stateKey
 ```
 
 Now if the analysis is called again and e.g. `sampleMode` changes, only the plot will be returned.
-If there are state items you would like to keep indefinitely -- regardless of the options a user changes -- you may also specify this in the state, e.g.:
-```
-attr(state, "keep") <- c("model", "options")
-```
+If there are state items you would like to keep indefinitely -- regardless of the options a user changes -- you must omit these in the stateKey.
 
 Error handling
 --------------
