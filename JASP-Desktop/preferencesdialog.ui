@@ -79,9 +79,6 @@ QTabWidget#background {
      <property name="elideMode">
       <enum>Qt::ElideNone</enum>
      </property>
-     <property name="tabBarAutoHide">
-      <bool>false</bool>
-     </property>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
        <string>Data Editing</string>
