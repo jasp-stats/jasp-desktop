@@ -64,9 +64,10 @@ void Analysis::scheduleRun()
 	optionsChanged(this);
 }
 
-void Analysis::setResults(Json::Value results)
+void Analysis::setResults(Json::Value results, int progress)
 {
 	_results = results;
+	_progress = progress;
 	resultsChanged(this);
 }
 
@@ -126,6 +127,7 @@ Json::Value Analysis::asJSON() const
 
 	analysisAsJson["id"] = _id;
 	analysisAsJson["name"] = _name;
+	analysisAsJson["progress"] = _progress;
 	analysisAsJson["version"] = _version.asString();
 	analysisAsJson["results"] = _results;
 
