@@ -682,7 +682,6 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 .resultsContrasts <- function (dataset, options, referenceGrid) {
 
 		resultsContrasts <- list()
-
 		datasetLong <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, options$betweenSubjectFactors)
 
 		contrastTypes <- c("none", "deviation", "simple", "Helmert", "repeated", "difference", "polynomial")
@@ -2370,7 +2369,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 				ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=ggplot2::guide_legend(nrow=10)) +
 				ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=ggplot2::guide_legend(nrow=10)) +
 				ggplot2::scale_color_manual(values = rep("black",200),guide=ggplot2::guide_legend(nrow=10)) +
-				ggplot2::ylab(options$dependent) +
+				ggplot2::ylab(NULL) +
 				ggplot2::xlab(options$plotHorizontalAxis) +
 				ggplot2::labs(shape=options$plotSeparateLines, fill=options$plotSeparateLines) +
 				ggplot2::theme_bw() +

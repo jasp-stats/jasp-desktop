@@ -919,7 +919,7 @@
                <string/>
               </property>
              </widget>
-            </item>
+             </item>
             <item row="5" column="0" colspan="2">
              <spacer name="verticalSpacer_7">
               <property name="orientation">
@@ -945,7 +945,7 @@
                </size>
               </property>
              </spacer>
-            </item>
+             </item>
            </layout>
           </widget>
          </item>

@@ -22,6 +22,7 @@
 #include "dataset.h"
 #include "version.h"
 #include "lib_json/json.h"
+#include <map>
 
 #include "boost/signals2.hpp"
 
@@ -31,6 +32,7 @@ public:
 	DataSetPackage();
 
 	DataSet *dataSet = NULL;
+	std::map<std::string, std::map<int, std::string> > emptyValuesMap;
 	std::string analysesHTML;
 	Json::Value analysesData;
 	Version archiveVersion;

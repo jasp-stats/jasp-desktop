@@ -47,6 +47,10 @@ class Column
 
 public:
 	static bool isEmptyValue(const std::string& val);
+	static bool isEmptyValue(const double& val);
+
+	bool resetEmptyValues(std::map<int, std::string>& emptyValuesMap);
+
 
 	typedef struct IntsStruct
 	{
@@ -130,7 +134,6 @@ public:
 
 	void setValue(int rowIndex, int value);
 	void setValue(int rowIndex, double value);
-	void setValue(int rowIndex, std::string value);
 
 	bool isValueEqual(int rowIndex, int value);
 	bool isValueEqual(int rowIndex, double value);
@@ -159,8 +162,8 @@ public:
 
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
 
-	void setColumnAsNominalString(const std::vector<std::string> &values);
-	void setColumnAsNominalString(const std::vector<std::string> &values, const std::map<std::string, std::string> &labels);
+	std::map<int, std::string> setColumnAsNominalString(const std::vector<std::string> &values);
+	std::map<int, std::string> setColumnAsNominalString(const std::vector<std::string> &values, const std::map<std::string, std::string> &labels);
 	void setColumnAsNominalOrOrdinal(const std::vector<int> &values, const std::set<int> &uniqueValues, bool is_ordinal = false);
 	void setColumnAsNominalOrOrdinal(const std::vector<int> &values, std::map<int, std::string> &uniqueValues, bool is_ordinal = false);
 	void setColumnAsScale(const std::vector<double> &values);
@@ -180,13 +183,14 @@ private:
 	int id;
 	static int count;
 
-	static const std::string _emptyValue;
-	static const std::string _emptyValues[];
-	static const int _emptyValuesCount;
-
 	void _setRowCount(int rowCount);
 	std::string _labelFromIndex(int index) const;
 	std::string _getScaleValue(int row);
+
+	void _convertVectorIntToDouble(std::vector<int> &intValues, std::vector<double> &doubleValues);
+	bool _resetEmptyValuesForNominal(std::map<int, std::string> &emptyValuesMap);
+	bool _resetEmptyValuesForScale(std::map<int, std::string> &emptyValuesMap);
+	bool _resetEmptyValuesForNominalText(std::map<int, std::string> &emptyValuesMap, bool tryToConvert = true);
 };
 
 namespace boost

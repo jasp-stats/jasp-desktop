@@ -153,7 +153,6 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	else if (analysis->status() == Analysis::SaveImg)
 	{
 		perform = "saveImg";
-		analysis->setStatus(Analysis::Initing);
 	}
 	else if (analysis->status() == Analysis::Aborting)
 	{

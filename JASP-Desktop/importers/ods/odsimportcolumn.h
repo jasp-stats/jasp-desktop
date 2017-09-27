@@ -23,12 +23,15 @@
 #define ODSIMPORTCOLUMN_H
 
 #include "../importcolumn.h"
+#include "odsimportdataset.h"
 #include "odssheetcell.h"
 
 #include <set>
 
+
 namespace ods
 {
+class ODSImportDataSet;
 
 class ODSImportColumn : public ImportColumn
 {
@@ -40,7 +43,7 @@ public:
 	// The constainer used to hold rows within the column.
 	typedef std::vector<ODSSheetCell>	Cases;
 
-	ODSImportColumn(int columnNumber);
+	ODSImportColumn(ODSImportDataSet* importDataSet, int columnNumber);
 	virtual ~ODSImportColumn();
 
 	/**
@@ -112,11 +115,10 @@ public:
 
 	Column::ColumnType	columnType() const { return _columnType; }
 
-	// As per Importers.
-	void fillSharedMemoryColumn(Column &column) const;
-
 	// Getters.
 	Column::ColumnType getJASPColumnType() const { return _columnType; }
+
+	std::vector<std::string> getData();
 
 private:
 
@@ -127,12 +129,6 @@ private:
 	CellIndex			_index;		///< cell indexes indexed by row.
 	int					_columnNumber; //<- We know our own column number
 	Column::ColumnType	_columnType; // Our column type.
-
-	/**
-	 * @brief _forceToType Force all cells to the type.
-	 * @param type Type to force.
-	 */
-	void _forceToType(Column::ColumnType type);
 
 	/**
 	 * @brief colNumberAsExcel Returns the column number as a string (base 26 A-Z).

@@ -19,12 +19,13 @@
 #define ANALYSISLOADER_H
 
 #include "analysis.h"
+#include "version.h"
 
 class AnalysisLoader
 {
 public:
 
-	static Analysis *load(int id, std::string analysisName, Json::Value* data = NULL);
+	static Analysis *load(int id, std::string analysisName, const Version& version, Json::Value* data = NULL);
 
 };
 

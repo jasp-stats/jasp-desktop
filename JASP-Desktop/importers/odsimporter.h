@@ -26,6 +26,10 @@
 #include <string>
 #include <vector>
 
+namespace ods
+{
+class ODSImportDataSet;
+
 class ODSImporter : public Importer
 {
 public:
@@ -49,15 +53,17 @@ private:
 	 *
 	 * After JaspImporter::readManifest.
 	 */
-	void readManifest(const std::string &path, ods::ODSImportDataSet *dataset);
+	void readManifest(const std::string &path, ODSImportDataSet *dataset);
 
 	/**
 	 * @brief readContents Reads contents to _dta;
 	 * @param path The file path to the archive file
 	 * @param dataset The data set to import into.
 	 */
-	void readContents(const std::string &path, ods::ODSImportDataSet *dataset);
+	void readContents(const std::string &path, ODSImportDataSet *dataset);
 
 };
+
+} // end namespace ods
 
 #endif // end sentinal ODSIMPORTER_H

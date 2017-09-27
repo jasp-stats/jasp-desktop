@@ -2,7 +2,7 @@
 
 using namespace std;
 
-ImportDataSet::ImportDataSet()
+ImportDataSet::ImportDataSet(Importer *importer) : _importer(importer)
 {
 }
 

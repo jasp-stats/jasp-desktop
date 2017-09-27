@@ -108,6 +108,9 @@
 #include "preferencesdialog.h"
 #include <boost/filesystem.hpp>
 #include "dirs.h"
+#include "qutils.h"
+#include "column.h"
+#include "sharedmemory.h"
 
 #include "options/optionvariablesgroups.h"
 
@@ -234,6 +237,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(simulatedMouseClick(int, int, int)), this, SLOT(simulatedMouseClickHandler(int, int, int)));
 	connect(this, SIGNAL(resultsDocumentChanged()), this, SLOT(resultsDocumentChangedHandler()));
 	connect(ui->tabBar, SIGNAL(setExactPValuesHandler(bool)), this, SLOT(setExactPValuesHandler(bool)));
+	connect(ui->tabBar, SIGNAL(setFixDecimalsHandler(QString)), this, SLOT(setFixDecimalsHandler(QString)));
+	connect(ui->tabBar, SIGNAL(emptyValuesChangedHandler()), this, SLOT(emptyValuesChangedHandler()));
 
 #ifdef __APPLE__
 	_scrollbarWidth = 3;
@@ -290,6 +295,14 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->panel_1_Data->show();
 	ui->panel_2_Options->hide();
 
+	// init Empty Values
+	QString missingvaluestring = _settings.value("MissingValueList", "").toString();
+	if (missingvaluestring != "")
+	{
+		QString delimetor = "|";
+		std::vector<std::string> missingvalues = fromQstringToStdVector(missingvaluestring, delimetor);
+		Utils::setEmptyValues(missingvalues);
+	}
 }
 
 void MainWindow::open(QString filepath)
@@ -497,9 +510,9 @@ void MainWindow::refreshAnalysesUsingColumns(vector<string> &changedColumns
 }
 
 void MainWindow::packageDataChanged(DataSetPackage *package
-									, std::vector<std::string> &changedColumns
-									, std::vector<std::string> &missingColumns
-									, std::map<std::string, std::string> &changeNameColumns)
+									, vector<string> &changedColumns
+									, vector<string> &missingColumns
+									, map<string, string> &changeNameColumns)
 {
 	_tableModel->setDataSet(_package->dataSet);
 	ui->variablesPage->setDataSet(_package->dataSet);
@@ -1202,10 +1215,13 @@ void MainWindow::populateUIfromDataSet()
 					Json::Value &optionsJson = analysisData["options"];
 					Json::Value &resultsJson = analysisData["results"];
 					Json::Value &userDataJson = analysisData["userdata"];
+					Json::Value &versionJson = analysisData["version"];
+
+					Version version = versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
 
 					Analysis::Status status = Analysis::parseStatus(analysisData["status"].asString());
 
-					Analysis *analysis = _analyses->create(name, id, &optionsJson, status);
+					Analysis *analysis = _analyses->create(name, id, version, &optionsJson, status);
 
 					analysis->setUserData(userDataJson);
 					analysis->setResults(resultsJson);
@@ -1284,7 +1300,8 @@ void MainWindow::resultsPageLoaded(bool success)
 		QString version = tq(AppInfo::version.asString());
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
 
-		setExactPValuesHandler(_settings.value("exactPVals", 0).toBool());
+		setExactPValuesHandler(_settings.value("displayExactPVals", 0).toBool());
+		setFixDecimalsHandler(_settings.value("numDecimals").toString());
 
 		QVariant ppiv = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getPPI()");
 
@@ -1374,6 +1391,54 @@ void MainWindow::setExactPValuesHandler(bool exactPValues)
 	QString exactPValueString = (exactPValues ? "true" : "false");
 	QString js = "window.globSet.pExact = " + exactPValueString + "; window.reRenderAnalyses();";
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(js);
+}
+
+void MainWindow::setFixDecimalsHandler(QString numDecimals)
+{	
+	if (numDecimals == "")
+		numDecimals = "\"\"";
+	QString js = "window.globSet.decimals = " + numDecimals + "; window.reRenderAnalyses();";
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(js);
+}
+
+void MainWindow::emptyValuesChangedHandler()
+{
+	if (_package->isLoaded())
+	{
+		vector<string> colChanged;
+		vector<string> missingColumns;
+		map<string, string> changeNameColumns;
+
+		try
+		{
+			colChanged =_package->dataSet->resetEmptyValues(_package->emptyValuesMap);
+		}
+		catch (boost::interprocess::bad_alloc &e)
+		{
+			try {
+
+				_package->dataSet = SharedMemory::enlargeDataSet(_package->dataSet);
+				colChanged =_package->dataSet->resetEmptyValues(_package->emptyValuesMap);
+			}
+			catch (exception &e)
+			{
+				throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
+			}
+		}
+		catch (exception e)
+		{
+			cout << "n " << e.what();
+			cout.flush();
+		}
+		catch (...)
+		{
+			cout << "something when wrong...\n ";
+			cout.flush();
+		}
+
+		_package->setModified(true);
+		packageDataChanged(_package, colChanged, missingColumns, changeNameColumns);
+	}
 }
 
 void MainWindow::itemSelected(const QString &item)

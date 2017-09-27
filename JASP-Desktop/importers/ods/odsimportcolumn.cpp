@@ -33,8 +33,8 @@ using namespace std;
 using namespace ods;
 
 
-ODSImportColumn::ODSImportColumn(int columnNumber)
-	: ImportColumn(_colNumberAsExcel(columnNumber))
+ODSImportColumn::ODSImportColumn(ODSImportDataSet* importDataSet, int columnNumber)
+	: ImportColumn(importDataSet, _colNumberAsExcel(columnNumber))
 	, _columnNumber(columnNumber)
 	, _columnType(Column::ColumnTypeUnknown)
 {
@@ -52,6 +52,16 @@ const
 	return _rows.size();
 }
 
+bool ODSImportColumn::isValueEqual(Column &col, size_t row) const
+{
+	if (row >= _rows.size())
+		return false;
+
+	const string &value = _rows.at(row)._string;
+
+	return isStringValueEqual(value, col, row);
+}
+
 /**
  * @brief insert Inserts string value for cell, irrespective of type.
  * @param row
@@ -59,35 +69,6 @@ const
  */
 void insert(int row, const std::string& data);
 
-
-bool ODSImportColumn::isValueEqual(Column &col, size_t row)
-const
-{
-	if (row >= size())
-		return false;
-
-	bool result = false;
-	switch (col.columnType())
-	{
-		case Column::ColumnTypeScale:
-			result = col.isValueEqual(row, _rows[row]._numData.dbl);
-		break;
-
-		case Column::ColumnTypeNominal:
-		case Column::ColumnTypeOrdinal:
-			result = col.isValueEqual(row, _rows[row]._numData.i);
-		break;
-
-		case Column::ColumnTypeNominalText:
-			result = col.isValueEqual(row, _rows[row]._string);
-		break;
-
-		case Column::ColumnTypeUnknown:
-			result = false;
-		break;
-	}
-	return result;
-}
 
 /**
  * @brief _createSpace Ensures that we have enough elements in _rows.
@@ -129,7 +110,6 @@ void ODSImportColumn::setValue(int row, XmlDatatype type, const QString &data)
 
 	// insert the data
 	_rows.at(row).setTypeAndValue(type, data);
-
 }
 
 /**
@@ -171,124 +151,17 @@ void ODSImportColumn::postLoadProcess()
 //	setLongName(_rows[0]._string);
 	setName(_rows[0]._string);
 	_rows.erase(_rows.begin());
+}
 
-	// Collect data over all the rows.
-	set<Column::ColumnType> jaspTypes;
+vector<string> ODSImportColumn::getData()
+{
+	vector<string> values;
 	for (Cases::const_iterator i = _rows.begin(); i != _rows.end(); ++i)
-		jaspTypes.insert(i->jaspType());
-
-	switch(jaspTypes.size())
 	{
-	case 1:
-		// This is easy - we are done!
-		if ((*jaspTypes.begin()) != Column::ColumnTypeUnknown)
-		{
-			_columnType = (*jaspTypes.begin());
-			break;
-		}
-		// Else fall through.
-	case 0:
-	{
-		string msg("No valid data found in column ");
-		msg.append(_name);
-		msg.append(".");
-		throw runtime_error(msg);
+		const string &value = i->valueAsString();
+		values.push_back(value);
 	}
-		break;
-
-	default:
-		/*
-		 * These rules determine the column type, where the cells are of mixed types.
-		 * We allow cells of type unkown to fall through the net, since they are
-		 * by definition empty, and thus polymorphic.
-		 */
-		// Any cell a string?
-		if (jaspTypes.find(Column::ColumnTypeNominalText) != jaspTypes.end())
-			// Then it's all strings.
-			_columnType = Column::ColumnTypeNominalText;
-
-		// Any cell a scalar? (but no strings - we've dealt with them!)
-		else if (jaspTypes.find(Column::ColumnTypeScale) != jaspTypes.end())
-			// Then it's all scalars.
-			_columnType = Column::ColumnTypeScale;
-
-		// Any cell an int? (but no scalars or strings - we;ve already dealt with them!)
-		else if (jaspTypes.find(Column::ColumnTypeNominal) != jaspTypes.end())
-			// Then it's all Nomioals.
-			_columnType = Column::ColumnTypeNominal;
-
-		else
-		{
-			// How did we get here? Something odd is going on.
-			stringstream str;
-			str << "Cannot find a suitable type for column " << _colNumberAsExcel(_columnNumber) << '.';
-			throw runtime_error(str.str());
-		}
-		break;
-	}
-
-	// Set all the cells to passed type.
-	_forceToType(_columnType);
-}
-
-// As per Importers.
-void ODSImportColumn::fillSharedMemoryColumn(Column &column)
-const
-{
-	bool isOrdinal = false;
-	switch(getJASPColumnType())
-	{
-	case Column::ColumnTypeOrdinal:
-		column.setColumnType(Column::ColumnTypeOrdinal);
-		isOrdinal = true;
-	case Column::ColumnTypeNominal:
-		column.setColumnType(Column::ColumnTypeNominal);
-	{
-		vector<int> values;
-		set <int> uValues;
-		for (Cases::const_iterator i = _rows.begin(); i != _rows.end(); ++i)
-		{
-			int val = i->valueAsInt();
-			values.push_back(val);
-			if (val != INT_MIN)
-				uValues.insert(val);
-		}
-		column.setColumnAsNominalOrOrdinal(values, uValues, isOrdinal);
-	}
-		break;
-
-	case Column::ColumnTypeNominalText:
-		column.setColumnType(Column::ColumnTypeNominalText);
-	{
-		vector<string> values;
-		for (Cases::const_iterator i = _rows.begin(); i != _rows.end(); ++i)
-			values.push_back(i->valueAsString());
-		column.setColumnAsNominalString(values);
-	}
-		break;
-
-	case Column::ColumnTypeScale:
-		   column.setColumnType(Column::ColumnTypeScale);
-	{
-		vector<double> values;
-		for (Cases::const_iterator i = _rows.begin(); i != _rows.end(); ++i)
-			values.push_back(i->valueAsDouble());
-		column.setColumnAsScale(values);
-	}
-		break;
-	case Column::ColumnTypeUnknown:
-		break;
-	}
-}
-
-/**
- * @brief _forceToType Force all cells to the type.
- * @param type Type to force.
- */
-void ODSImportColumn::_forceToType(Column::ColumnType type)
-{
-	for (Cases::iterator i = _rows.begin(); i != _rows.end(); ++i)
-		i->forceCellToType(type);
+	return values;
 }
 
 /**

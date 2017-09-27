@@ -107,7 +107,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
           # predictor - residuals plots can be reused
           predictorPlots <<- state[["predictorPlots"]]
         }
-        
+
         if (!any(squaredPearsonPlotOpt, plotWidth, plotHeight)) {
           # squared pearson plot can be reused
           squaredPearsonPlot <<- state[["squaredPearsonPlot"]]
@@ -119,7 +119,6 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
         }
       }
     })
-    
   } else if (!is.null(state)) {
     lrObj <<- state[["lrObj"]]
     modelSummary <- state[["modelSummary"]]
@@ -151,7 +150,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
 		list(name = "estimatesPlots", type = "collection", meta = "image"),
     list(name = "residualsPlots", type = "object", meta = .rpMeta)
 	)
-    
+
   # RESULTS GENERATION 
   # for each non-null result, generate results
   if (is.null(lrObj)) {
@@ -253,7 +252,6 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
     
     return(list(results=results, status="inited", state=state,
                 keep = plotPaths))
-
   }  
 }
 

@@ -5,7 +5,7 @@
     if (!is.null(type) && type == "binomial") {
       # Logistic regression
       f <- .createGlmFormula(options)
-      n <- .createNullFormula(options)  
+      n <- .createNullFormula(options)
       names(dataset) <- .unv(names(dataset))
       if (!is.null(n)) {
         nullModel <- stats::glm(n[["plaintext"]], data = dataset, 
@@ -205,7 +205,6 @@
     } else {
       seTitle <- "Standard Error"
     }
-    
     # first define all the fields
     fields <- list(
       list(name="param", title = "", type="string"),
@@ -235,7 +234,6 @@
       represent estimates where the continuous predictors are standardized 
       (X-standardization).")
     }
-    
     if (options[["VovkSellkeMPR"]]) {
       .addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
       <em>p</em>-Ratio: Based the <em>p</em>-value, the maximum
@@ -1142,7 +1140,6 @@
                        mapping = ggplot2::aes(x = x, y = resid)) +
     ggplot2::geom_point(position = pos, size = 3, colour="black", fill = "grey", 
                         pch=21) 
-  
   
   p <- p +
     ggplot2::xlab(var) +

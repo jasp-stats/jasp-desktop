@@ -18,7 +18,6 @@
 
 #include "tabbar.h"
 #include <QMessageBox>
-#include "aboutdialog.h"
 #include "preferencesdialog.h"
 #include "widgets/ribbonbutton.h"
 
@@ -42,6 +41,9 @@ TabBar::TabBar(QWidget *parent) :
 	setLayout(_backgroundLayout);
 
 	_layout->addStretch(1);
+	
+	_aboutDialog = new AboutDialog(this);
+	_preferencesDialog = new PreferencesDialog(this);
 }
 
 void TabBar::addTab(QString tabName)
@@ -123,8 +125,8 @@ void TabBar::addHelpTab()
 	act_preferences->setObjectName("Preferences");
 	helpmenu->addAction(act_preferences);
 	helpmenu->addSeparator();
-
-	//Options
+	
+	//Modules
 	QMenu *optionmenu   = new QMenu("Modules",this);
 	QAction *sem = new QAction("SEM",optionmenu);
 	QAction *rei = new QAction("Reinforcement Learning",optionmenu);
@@ -161,12 +163,12 @@ void TabBar::addHelpTab()
 	rb->setMenu(helpmenu);
 	_layout->addWidget(rb);
 
-	//Slots helpmenu
+	//Slots preferences
 	connect(act_about, SIGNAL(triggered()), this, SLOT(showAbout()));
-	connect(act_preferences, SIGNAL(triggered()), this, SLOT(showPreferences()));
+	connect(act_preferences, SIGNAL(triggered()), this, SLOT(showPreferences()));	
 	connect(act_extrahelp, SIGNAL(triggered()), this, SLOT(toggleHelp()));
-
-	// Slots options
+	
+	// Slots modules
 	connect(sem, SIGNAL(triggered()), this, SLOT(toggleSEM()));
 	connect(rei, SIGNAL(triggered()), this, SLOT(toggleReinforcement()));
 	connect(summaryStats, SIGNAL(triggered()), this, SLOT(toggleSummaryStats()));
@@ -174,16 +176,18 @@ void TabBar::addHelpTab()
 
 void TabBar::showAbout()
 {
-	AboutDialog aboutdialog;
-	aboutdialog.setModal(true);
-	aboutdialog.exec();
+	_aboutDialog->show();
+	_aboutDialog->raise();
+	_aboutDialog->activateWindow();
+	//The last function performs the same operation as clicking the mouse on the title bar 
+	//If you want to ensure that the window is stacked on top as well you should also call raise(). 	//Note that the window must be visible, otherwise activateWindow() has no effect.
 }
 
 void TabBar::showPreferences()
 {
-	PreferencesDialog preferencesdialog(this);
-	preferencesdialog.setModal(true);
-	preferencesdialog.exec();
+	_preferencesDialog->show();
+	_preferencesDialog->raise();
+	_preferencesDialog->activateWindow();
 }
 
 void TabBar::toggleHelp()
@@ -252,7 +256,17 @@ void TabBar::setCurrentIndex(int index)
 
 void TabBar::setExactPValues(bool exactPValues)
 {
-	emit setExactPValuesHandler(exactPValues);
+    emit setExactPValuesHandler(exactPValues);
+}
+
+void TabBar::setFixDecimals(QString numDecimals)
+{
+    emit setFixDecimalsHandler(numDecimals);
+}
+
+void TabBar::emptyValuesChanged()
+{
+	emit emptyValuesChangedHandler();
 }
 
 void TabBar::tabSelectedHandler()

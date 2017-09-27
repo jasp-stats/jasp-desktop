@@ -23,12 +23,17 @@
 #define ODSIMPORTDATASET_H
 
 #include "../importdataset.h"
+#include "../odsimporter.h"
 #include "odsimportcolumn.h"
 
 #include <qstring.h>
 
+
 namespace ods
 {
+
+class ODSImporter;
+class ODSImportColumn;
 
 /*
  * Functions as Sheet in the historical ODSData object.
@@ -37,7 +42,7 @@ class ODSImportDataSet : public ImportDataSet
 {
 public:
 
-	ODSImportDataSet();
+	ODSImportDataSet(ODSImporter* importer);
 	virtual ~ODSImportDataSet();
 
 	/*

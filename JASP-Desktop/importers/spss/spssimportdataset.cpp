@@ -31,7 +31,7 @@ using namespace spss;
  *
  *********************************************************************/
 
-SPSSImportDataSet::SPSSImportDataSet() : _numCases(-1L)
+SPSSImportDataSet::SPSSImportDataSet(SPSSImporter* importer) : ImportDataSet(importer), _numCases(-1L)
 {
 }
 
