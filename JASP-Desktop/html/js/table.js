@@ -935,8 +935,9 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 			var overTitlesArray = [];
 			// Find the overTitles
 			for (var i = 0; i < columnHeaders.length; i++) {
-				if (columnHeaders[i].overTitle) {
-					overTitlesArray.push(columnHeaders[i].overTitle);
+				if (typeof columnHeaders[i].overTitle != "undefined") {
+					overTitles = true
+					break;
 				}
 			}
 			
