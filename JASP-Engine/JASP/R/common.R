@@ -48,7 +48,7 @@ run <- function(name, options.as.json.string, perform="run") {
 	if ('state' %in% names(formals(analysis))) {
 		state <- .retrieveState()
 		if (! is.null(state) && 'key' %in% names(attributes(state))) {
-			state <- .getStateItems(state=state, options=options, key=attributes(state)$key, keep=attributes(state)$keep)
+			state <- .getStateItems(state=state, options=options, key=attributes(state)$key)
 		}
 	}
 	
@@ -95,6 +95,7 @@ run <- function(name, options.as.json.string, perform="run") {
 		if ("state" %in% names(results)) {
 
 			state <- results$state
+			results$state <- NULL
 			
 			if (! is.null(names(state))) {
 				state[["figures"]] <- c(state[["figures"]], .imgToState(results$results))
@@ -116,7 +117,6 @@ run <- function(name, options.as.json.string, perform="run") {
 		
 			results <- .imgToResults(results)
 			results$results <- .addCitationToResults(results$results)
-			results$state   <- NULL # remove the state object
 			results$keep    <- c(results$keep, keep)  # keep the state file
 			
 		} else {
@@ -585,7 +585,7 @@ isTryError <- function(obj){
 	base::identical(value, 0) || base::identical(value, as.integer(0)) || (is.list(value) && value$status == "ok")
 }
 
-callback <- function(results=NULL) {
+callback <- function(results=NULL, progress=NULL) {
 
 	ret <- 0
 
@@ -596,8 +596,14 @@ callback <- function(results=NULL) {
 		} else {
 			json.string <- rjson::toJSON(.imgToResults(results))
 		}
-	
-		response <- .fromRCPP(".callbackNative", json.string)
+		
+		if (is.null(progress)) {
+			progress <- -1
+		} else if (! is.numeric(progress)) {
+			stop("Provide a numeric value to the progress updater")
+		}
+		
+		response <- .fromRCPP(".callbackNative", json.string, progress)
 		
 		if (is.character(response)) {
 		
@@ -888,7 +894,7 @@ as.list.footnotes <- function(footnotes) {
 }
 
 
-.getStateItems <- function(state, options, key, keep=NULL) {
+.getStateItems <- function(state, options, key) {
 	
   if (is.null(names(state)) || is.null(names(state$options)) || 
       is.null(names(options)) || is.null(names(key))) {
@@ -897,13 +903,9 @@ as.list.footnotes <- function(footnotes) {
 
   result <- list()
   for (item in names(state)) {
-    
-		if (! is.null(keep) && item %in% keep) {
-			result[[item]] <- state[[item]]
-			next
-	  } 
 		
 		if (item %in% names(key) == FALSE) {
+      result[[item]] <- state[[item]]
       next
     }
     
@@ -1067,8 +1069,8 @@ saveImage <- function(plotName, format, height, width){
 # result list, while retaining the structure of said list.
 .imgToResults <- function(lst) {
 
-	if (!is.list(lst))
-		return(lst) # we are at an end node, stop
+	if (! "list" %in% class(lst))
+		return(lst) # we are at an end node or have a non-list/custom object, stop
 	
 	if (all(c("data", "obj") %in% names(lst)) && is.character(lst[["data"]])) {
 		# found a figure! remove its object!
@@ -1099,4 +1101,43 @@ saveImage <- function(plotName, format, height, width){
 	# such as (name1.name2."data"))
 	return(unlist(lapply(unname(lst), .imgToState), recursive = FALSE))
 
+}
+
+.newProgressbar <- function(ticks, callback, skim=5, response=FALSE) {
+	
+	ticks <- suppressWarnings(as.integer(ticks))
+	if (is.na(ticks) || ticks <= 0)
+		stop("Invalid value provided to 'ticks', expecting positive integer")
+	
+	if (! is.function(callback))
+		stop("The value provided to 'callback' does not appear to be a function")
+	
+	if (! is.numeric(skim) || skim < 0 || skim >= 100)
+		stop("Invalid value provided to 'skim', expecting numeric value in the range of 0-99")
+	
+	progress <- 0
+	tick <- (100 - skim) / ticks
+	createEmpty <- TRUE
+	
+	updater <- function(results=NULL, complete=FALSE) {
+		if (createEmpty) {
+			createEmpty <<- FALSE
+		} else if (complete) {
+			progress <<- 100
+		} else {
+			progress <<- progress + tick
+		}
+		
+		if (progress > 100)
+			progress <<- 100
+			
+		output <- callback(results=results, progress=round(progress))
+		
+		if (response)
+			return(output)
+	}
+	
+	updater() # create empty progressbar
+	
+	return(updater)
 }

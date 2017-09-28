@@ -133,32 +133,30 @@ void BASRegressionLinearLinkForm::bindTo(Options *options, DataSet *dataSet)
 }
 
 
-void BASRegressionLinearLinkForm::on_MCMC_clicked()
+void BASRegressionLinearLinkForm::on_BAS_clicked()
 {
-	if (!ui->BAS->isChecked() && !ui->MCMC->isChecked())
-	{
-		ui->MCMC->setChecked(true);
-	}
-
-	if (ui->MCMC->isChecked())
-	{
-		ui->label_iterationsMCMC->show();
-		ui->iterationsMCMC->show();
-	}
-	else
-	{
-		ui->label_iterationsMCMC->hide();
-		ui->iterationsMCMC->hide();
-	}
+	ui->label_numberOfModels->show();
+	ui->numberOfModels->show();
+	ui->label_iterationsMCMC->hide();
+	ui->iterationsMCMC->hide();
 }
 
 
-void BASRegressionLinearLinkForm::on_BAS_clicked()
+void BASRegressionLinearLinkForm::on_MCMC_clicked()
 {
-	if (!ui->BAS->isChecked() && !ui->MCMC->isChecked())
-	{
-		ui->BAS->setChecked(true);
-	}
+	ui->label_numberOfModels->hide();
+	ui->numberOfModels->hide();
+	ui->label_iterationsMCMC->show();
+	ui->iterationsMCMC->show();
+}
+
+
+void BASRegressionLinearLinkForm::on_MCMCBAS_clicked()
+{
+	ui->label_numberOfModels->show();
+	ui->numberOfModels->show();
+	ui->label_iterationsMCMC->show();
+	ui->iterationsMCMC->show();
 }
 
 
@@ -227,18 +225,31 @@ void BASRegressionLinearLinkForm::on_hyper_g_n_clicked()
 }
 
 
-void BASRegressionLinearLinkForm::on_priorRegressionCoefficients_clicked()
+void BASRegressionLinearLinkForm::on_aic_clicked()
 {
-	if (ui->g_prior->isChecked())
-	{
-		ui->label_gPriorParameter->show();
-		ui->gPriorParameter->show();
-	}
-	else
-	{
-		ui->label_gPriorParameter->hide();
-		ui->gPriorParameter->hide();
-	}
+	ui->label_gPriorParameter->hide();
+	ui->gPriorParameter->hide();
+}
+
+
+void BASRegressionLinearLinkForm::on_bic_clicked()
+{
+	ui->label_gPriorParameter->hide();
+	ui->gPriorParameter->hide();
+}
+
+
+void BASRegressionLinearLinkForm::on_eb_global_clicked()
+{
+	ui->label_gPriorParameter->hide();
+	ui->gPriorParameter->hide();
+}
+
+
+void BASRegressionLinearLinkForm::on_eb_local_clicked()
+{
+	ui->label_gPriorParameter->hide();
+	ui->gPriorParameter->hide();
 }
 
 

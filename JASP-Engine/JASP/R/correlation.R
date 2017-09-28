@@ -132,13 +132,14 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
       
       if (! is.null(stateTableData) && ! is.null(stateTableData[["result"]][[pairName]][[test]])) {
 
-        state <- stateTableData[["result"]][[pairName]][[test]]
-        estimate <- state$estimate
-        p.value <- state$p.value
-        MPR <- state$MPR
-        upperCI <- state$upperCI
-        lowerCI <- state$lowerCI
-        errorMessage <- state$errorMessage
+
+        resultsPair <- stateTableData[["result"]][[pairName]][[test]]
+        estimate <- resultsPair$estimate
+        p.value <- resultsPair$p.value
+        MPR <- resultsPair$MPR
+        upperCI <- resultsPair$upperCI
+        lowerCI <- resultsPair$lowerCI
+        errorMessage <- resultsPair$errorMessage
 
       } else if (perform == "run" && ready) {
 
@@ -179,12 +180,14 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
           } else if (test == "spearman") {
 
             spearCI <- .createNonparametricConfidenceIntervals(obs1, obs2, obsCor = estimate, method = "spearman", hypothesis = hypothesis, confLevel = CI)
+
             upperCI <- as.numeric(spearCI[2])
             lowerCI <- as.numeric(spearCI[1])
 
           } else if (test == "kendall") {
 
             kendallCI <- .createNonparametricConfidenceIntervals(obs1, obs2, obsCor = estimate, method = "kendall", hypothesis = hypothesis, confLevel = CI)
+
             upperCI <- as.numeric(kendallCI[2])
             lowerCI <- as.numeric(kendallCI[1])
 
@@ -810,7 +813,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
   # find parsimonioust, best fitting regression model
   # Bic <- vector("numeric", 4)
   # for(i in 1:4){
-  #  Bic[i] <- BIC(fit[[i]])
+
+  #	Bic[i] <- BIC(fit[[i]])
   # }
 
   bestModel <- 1 # which.min(Bic)

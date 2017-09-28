@@ -242,6 +242,8 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 		var pc = false
 		var approx = false
 		var log10 = false
+		var dp = parseInt(window.globSet.decimals); // NaN if not specified by user
+		var fixDecimals = (typeof dp === 'number') && (dp % 1 === 0);
 
 		for (var i = 0; i < formats.length; i++) {
 
@@ -256,8 +258,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 				}
 			}
 				
-
-			if (f.indexOf("dp:") != -1)
+			if (f.indexOf("dp:") != -1 && ! fixDecimals)
 				dp = f.substring(3)
 
 			if (f.indexOf("sf:") != -1)
@@ -322,13 +323,18 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 				}
 			}
 
-			if (minLSD < -dp)
+			if (fixDecimals) {
 				minLSD = -dp
-			if (minLSD > 0)
-				minLSD = 0
-			else if (minLSD < -20)
-				minLSD = -20
+			} else {
+				if (minLSD < -dp)
+					minLSD = -dp
+				if (minLSD > 0)
+					minLSD = 0
+			}
 
+			if (minLSD < -20)
+				minLSD = -20
+				
 			for (var rowNo = 0; rowNo < column.length; rowNo++) {
 
 				var cell = column[rowNo]
@@ -377,7 +383,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 					if (content < (Math.log(upperLimit) / Math.log(10)) && content > -dp) {
 
-						if (alignNumbers) {
+						if (alignNumbers || fixDecimals) {
 
 							formatted = { content: Math.pow(10, content).toFixed(-minLSD).replace(/-/g, "&minus;"), "class": "number" }
 						}
@@ -422,7 +428,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 						var sign = content >= 0 ? "+" : "-"
 
-						mantissa = mantissa.toPrecision(sf)
+						mantissa = fixDecimals ? mantissa.toFixed(dp) : mantissa.toPrecision(sf)
 
 						var padding
 
@@ -440,8 +446,9 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 				}
 				else if (Math.abs(content) >= upperLimit || Math.abs(content) <= Math.pow(10, -dp)) {
-
-					var exponentiated = content.toExponential(sf - 1).replace(/-/g, "&minus;")
+					
+					var decimalsExpon = fixDecimals ? dp : sf - 1
+					var exponentiated = content.toExponential(decimalsExpon).replace(/-/g, "&minus;")
 					var paddingNeeded = Math.max(maxFSDOE - this._fsdoe(content), 0)
 
 					var split = exponentiated.split("e")
@@ -465,7 +472,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 				}
 				else {
 
-					if (alignNumbers) {
+					if (alignNumbers || fixDecimals) {
 
 						formatted = { content: content.toFixed(-minLSD).replace(/-/g, "&minus;"), "class": "number" }
 					}
@@ -928,8 +935,9 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 			var overTitlesArray = [];
 			// Find the overTitles
 			for (var i = 0; i < columnHeaders.length; i++) {
-				if (columnHeaders[i].overTitle) {
-					overTitlesArray.push(columnHeaders[i].overTitle);
+				if (typeof columnHeaders[i].overTitle != "undefined") {
+					overTitles = true
+					break;
 				}
 			}
 			

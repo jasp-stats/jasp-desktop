@@ -31,14 +31,38 @@
 			"max": 1
 		},
 		{
-			"name": "priorprobs",
+			"name": "logmarg",
 			"type": "Boolean",
 			"default": false
 		},
 		{
-			"name": "logmarg",
+			"name": "descriptives",
 			"type": "Boolean",
 			"default": false
+		},
+		{
+			"name": "bayesFactorType",
+			"options": [ "BF10", "BF01", "LogBF10" ],
+			"default": "BF10",
+			"type": "List"
+		},
+		{
+			"name": "bayesFactorOrder",
+			"options": [ "bestModelTop", "nullModelTop" ],
+			"default": "bestModelTop",
+			"type": "List"
+		},
+		{
+			"name": "shownModels",
+			"options": [ "limited", "unlimited" ],
+			"default": "unlimited",
+			"type": "List"
+		},
+		{
+			"name": "numShownModels",
+			"type": "Integer",
+			"default": 10,
+			"min" : 1
 		},
 		{
 			"name": "covariates",
@@ -67,7 +91,7 @@
 			"type": "Boolean"
 		},
 		{
-			"name": "plotInclusionProbabilites",
+			"name": "plotInclusionProbabilities",
 			"type": "Boolean"
 		},
 		{
@@ -81,18 +105,10 @@
 			"type": "List"
 		},
 		{
-			"default": true,
-			"name": "BAS",
-			"type": "Boolean"
-		},
-		{
-			"default": false,
-			"name": "MCMC",
-			"type": "Boolean"
-		},
-		{
-			"name": "numberOfModels",
-			"type": "Number"
+			"name": "samplingMethod",
+			"options": ["BAS", "MCMC", "MCMCBAS"],
+			"default": "BAS",
+			"type": "List"
 		},
 		{
 			"name": "iterationsMCMC",
@@ -100,17 +116,14 @@
 			"default": 0
 		},
 		{
+			"name": "numberOfModels",
+			"type": "Number"
+		},
+		{
 			"options": ["Bernoulli", "beta.binomial", "uniform"],
 			"default": "beta.binomial",
 			"name": "modelPrior",
 			"type": "List"
-		},
-		{
-			"name": "priorCovariates",
-			"type": "Number",
-			"value": 0.354,
-			"min": 0,
-			"max": 2
 		},
 		{
 			"name": "gPriorParameter",

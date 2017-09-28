@@ -87,6 +87,11 @@
 			"default": 300
 		},
 		{
+			"name": "labelYAxis",
+			"type": "String",
+			"max": 30
+		},
+		{
 			"name": "plotCredibleInterval",
 			"type": "Boolean"
 		},

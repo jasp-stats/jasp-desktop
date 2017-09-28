@@ -31,7 +31,7 @@ const string ODSImportDataSet::manifestPath("META-INF/manifest.xml"); //< manfie
 const QString ODSImportDataSet::contentRegExpression(".*content.*\\.xml");
 
 
-ODSImportDataSet::ODSImportDataSet()
+ODSImportDataSet::ODSImportDataSet(ODSImporter* importer) : ImportDataSet(importer)
 {
 
 }
@@ -57,7 +57,7 @@ size_t ODSImportDataSet::createSpace(int column)
 	{
 		numAdded++;
 #endif
-		addColumn(new ODSImportColumn(columnCount()));
+		addColumn(new ODSImportColumn(this, columnCount()));
 #ifndef QT_NO_DEBUG
 	}
 

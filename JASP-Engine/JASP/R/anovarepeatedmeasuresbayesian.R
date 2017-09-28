@@ -42,9 +42,9 @@ AnovaRepeatedMeasuresBayesian <- function(dataset = NULL, options, perform = "ru
 		return(as.integer(1))
 	}
 
-	.callbackBayesianLinearModels <- function(results = NULL) {
+	.callbackBayesianLinearModels <- function(results = NULL, progress = NULL) {
 
-		response <- callback(results)
+		response <- callback(results, progress)
 		
 		if (response$status == "changed") {
 			new.options <- response$options

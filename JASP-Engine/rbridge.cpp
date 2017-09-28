@@ -37,11 +37,11 @@ boost::function<DataSet *()> rbridge_dataSetSource;
 Rcpp::DataFrame rbridge_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
 Rcpp::DataFrame rbridge_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
 std::map<std::string, Column::ColumnType> rbridge_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
-SEXP rbridge_callbackSEXP(SEXP results);
+SEXP rbridge_callbackSEXP(SEXP results, SEXP progress);
 SEXP rbridge_requestTempFileNameSEXP(SEXP extension);
 SEXP rbridge_requestStateFileNameSEXP();
 
-SEXP rbridge_callback(SEXP results);
+SEXP rbridge_callback(SEXP results, SEXP progress);
 Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnType> &columns);
 Rcpp::DataFrame rbridge_readDataSetHeader(const std::map<std::string, Column::ColumnType> &columns);
 
@@ -432,18 +432,13 @@ void rbridge_makeFactor(Rcpp::IntegerVector &v, const std::vector<string> &level
 }
 
 
-SEXP rbridge_callback(SEXP results)
+SEXP rbridge_callback(SEXP results, SEXP progress)
 {
 	if (rbridge_runCallback != NULL)
 	{
-		if (Rf_isNull(results))
-		{
-			return Rcpp::CharacterVector(rbridge_runCallback("null"));
-		}
-		else
-		{
-			return Rcpp::CharacterVector(rbridge_runCallback(Rcpp::as<string>(results)));
-		}
+		string resultsStr = Rf_isNull(results) ? "null" : Rcpp::as<string>(results);
+		int progressStr = Rf_isNull(progress) ? -1 : Rcpp::as<int>(progress);
+		return Rcpp::CharacterVector(rbridge_runCallback(resultsStr, progressStr));
 	}
 	else
 	{
@@ -495,9 +490,9 @@ std::map<string, Column::ColumnType> rbridge_marshallSEXPs(SEXP columns, SEXP co
 	return columnsRequested;
 }
 
-SEXP rbridge_callbackSEXP(SEXP results)
+SEXP rbridge_callbackSEXP(SEXP results, SEXP progress)
 {
-	return rbridge_callback(results);
+	return rbridge_callback(results, progress);
 }
 
 Rcpp::DataFrame rbridge_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)
