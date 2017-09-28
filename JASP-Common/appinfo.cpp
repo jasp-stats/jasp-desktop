@@ -17,7 +17,7 @@
 
 #include "appinfo.h"
 
-const Version AppInfo::version = Version(0, 8, 2, 255);
+const Version AppInfo::version = Version(0, 8, 3, 255);
 const std::string AppInfo::name = "JASP";
 const std::string AppInfo::builddate = __DATE__ " " __TIME__ " (Netherlands)" ;
 
