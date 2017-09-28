@@ -7,7 +7,7 @@
 
 !define VERSION "0.8.3"
 !define APP_NAME "JASP"
-!define INSTALLER_NAME "${APP_NAME}-${VERSION}.exe"
+!define INSTALLER_NAME "${APP_NAME}-${VERSION}-Setup.exe"
 !define CONTENTS_DIR "C:\Jasp\Install"
 !define APP_DISPLAY_NAME "${APP_NAME} ${VERSION}"
 !define COMP_NAME "The ${APP_NAME} Statistics Project"
