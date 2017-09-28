@@ -43,7 +43,7 @@ public:
 	
 private slots:
 	void factorsChanging();
-	void factorsChanged();
+	void factorsChanged(bool changed = true);
 	void termsChanged();
 	void withinSubjectsDesignChanged();
 
