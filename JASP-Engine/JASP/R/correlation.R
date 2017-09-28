@@ -981,7 +981,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 }
 
 ### Utility functions for nonparametric confidence intervals ###
-.ConcordanceFunction <- function(i, j) {
+.concordanceFunction <- function(i, j) {
   concordanceIndicator <- 0
   ij <- (j[2] - i[2]) * (j[1] - i[1])
   if (ij > 0) concordanceIndicator <- 1
@@ -993,7 +993,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
   concordanceIndex <- 0
   for (k in 1:length(x)) {
     if (k != i) {
-      concordanceIndex <- concordanceIndex + .ConcordanceFunction(c(x[i], y[i]), c(x[k], y[k]))
+      concordanceIndex <- concordanceIndex + .concordanceFunction(c(x[i], y[i]), c(x[k], y[k]))
     }
   }
   return(concordanceIndex)
@@ -1008,11 +1008,11 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
   n <- length(x)
   
  if (method == "kendall") {
-    concordanceSums <- numeric(n)
+   concordanceSumsVector <- numeric(n)
     for (i in 1:n) {
-      concordanceSums[i] <- .addConcordances(x, y, i)
+      concordanceSumsVector[i] <- .addConcordances(x, y, i)
     }
-    sigmaHatSq <- 2 * (n - 2) * var(concordanceSums) / n / (n-1)
+    sigmaHatSq <- 2 * (n - 2) * var(concordanceSumsVector) / n / (n-1)
     sigmaHatSq <- sigmaHatSq + 1 - (obsCor)^2
     sigmaHatSq <- sigmaHatSq * 2 / n / (n - 1)
     
