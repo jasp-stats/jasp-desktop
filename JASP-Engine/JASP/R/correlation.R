@@ -178,13 +178,13 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 					} else if (test == "spearman") {
 
-					  spearCI <- .createNonparametricConfidenceIntervals(obs1, obs2, method = "spearman", hypothesis = hypothesis, confLevel = CI)
+					  spearCI <- .createNonparametricConfidenceIntervals(obs1, obs2, obsCor = estimate, method = "spearman", hypothesis = hypothesis, confLevel = CI)
 					  upperCI <- as.numeric(spearCI[2])
 					  lowerCI <- as.numeric(spearCI[1])
 
 					} else if (test == "kendall") {
 
-					  kendallCI <- .createNonparametricConfidenceIntervals(obs1, obs2, method = "kendall", hypothesis = hypothesis, confLevel = CI)
+					  kendallCI <- .createNonparametricConfidenceIntervals(obs1, obs2, obsCor = estimate, method = "kendall", hypothesis = hypothesis, confLevel = CI)
 					  upperCI <- as.numeric(kendallCI[2])
 					  lowerCI <- as.numeric(kendallCI[1])
 
@@ -981,58 +981,69 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 }
 
 ### Utility functions for nonparametric confidence intervals ###
-.ConcordanceFunction <- function(i, j)
-{
-  Q.ij <- 0
+.ConcordanceFunction <- function(i, j) {
+  concordanceIndicator <- 0
   ij <- (j[2] - i[2]) * (j[1] - i[1])
-  if(ij > 0) Q.ij <- 1
-  if(ij < 0) Q.ij <- -1
-  return(Q.ij)
+  if (ij > 0) concordanceIndicator <- 1
+  if (ij < 0) concordanceIndicator <- -1
+  return(concordanceIndicator)
 }
 
-.addConcordances <- function(x, y, i)
-{
-  C.i <- 0
-  for(k in 1:length(x))
-    if(k != i) 
-      C.i <- C.i + .ConcordanceFunction(c(x[i], y[i]), c(x[k], y[k]))
-    return(C.i)
+.addConcordances <- function(x, y, i) {
+  concordanceIndex <- 0
+  for (k in 1:length(x)) {
+    if (k != i) {
+      concordanceIndex <- concordanceIndex + .ConcordanceFunction(c(x[i], y[i]), c(x[k], y[k]))
+    }
+  }
+  return(concordanceIndex)
 }
 
-.createNonparametricConfidenceIntervals <- function(x, y, hypothesis = "two-sided", confLevel = 0.95, method = "kendall"){
+.createNonparametricConfidenceIntervals <- function(x, y, obsCor, hypothesis = "two-sided", confLevel = 0.95, method = "kendall"){
+  # Based on sections 8.3 and 8.4 of Hollander, Wolfe & Chicken, Nonparametric Statistical Methods, 3e.
   alpha <- 1 - confLevel
-  missingIndices <- as.logical((is.na(x)) + (is.na(y)))
-  x <- x[!missingIndices]
+  missingIndices <- as.logical(is.na(x) + is.na(y)) # index those values that are missing
+  x <- x[!missingIndices] # remove those values
   y <- y[!missingIndices]
   n <- length(x)
   
-  corValue <- cor.test(x, y, method = method)$estimate
-  if ( method == "kendall" && sum(is.infinite(c(x,y))) == 0 ) {
-    c.i <- numeric(0)
+ if (method == "kendall") {
+    concordanceSums <- numeric(n)
     for (i in 1:n) {
-      c.i <- c(c.i, .addConcordances(x, y, i))
+      concordanceSums[i] <- .addConcordances(x, y, i)
     }
-    sigmaHatSq <- 2 * (n - 2) * var(c.i) / n / (n-1)
-    sigmaHatSq <- sigmaHatSq + 1 - (corValue)^2
+    sigmaHatSq <- 2 * (n - 2) * var(concordanceSums) / n / (n-1)
+    sigmaHatSq <- sigmaHatSq + 1 - (obsCor)^2
     sigmaHatSq <- sigmaHatSq * 2 / n / (n - 1)
     
-    if (hypothesis=="correlated") z <- qnorm(alpha / 2, lower.tail = F)
-    if (hypothesis!="correlated") z <- qnorm(alpha, lower.tail = F)
-    ciLow <- corValue - z * sqrt(sigmaHatSq)
-    ciUp <- corValue + z * sqrt(sigmaHatSq)
-    if (hypothesis=="correlatedPositively") ciUp <- 1
-    if (hypothesis=="correlatedNegatively") ciLow <- -1
-  } else if(method == "kendall"){
-    ciLow <- NaN
-    ciUp <- NaN
+    if (hypothesis=="correlated"){
+      z <- qnorm(alpha / 2, lower.tail = FALSE)
+    } else if (hypothesis!="correlated") {
+      z <- qnorm(alpha, lower.tail = FALSE)
+    }
+    ciLow <- obsCor - z * sqrt(sigmaHatSq)
+    ciUp <- obsCor + z * sqrt(sigmaHatSq)
+    if (hypothesis=="correlatedPositively") { 
+      ciUp <- 1
+    } else if (hypothesis=="correlatedNegatively") {
+      ciLow <- -1
+    }
+    
   } else if (method == "spearman"){
     stdErr = 1 / sqrt(n-3)
-    if (hypothesis=="correlated") z <- qnorm(alpha / 2, lower.tail = F)
-    if (hypothesis!="correlated") z <- qnorm(alpha, lower.tail = F)
-    ciLow = tanh(atanh(corValue) - z * stdErr)
-    ciUp = tanh(atanh(corValue) + z * stdErr)
-    if (hypothesis=="correlatedPositively") ciUp <- 1
-    if (hypothesis=="correlatedNegatively") ciLow <- -1
+    if (hypothesis=="correlated") { 
+      z <- qnorm(alpha / 2, lower.tail = FALSE)
+    } else if (hypothesis!="correlated") {
+      z <- qnorm(alpha, lower.tail = FALSE)
+    }
+    ciLow = tanh(atanh(obsCor) - z * stdErr)
+    ciUp = tanh(atanh(obsCor) + z * stdErr)
+    
+    if (hypothesis=="correlatedPositively") {
+      ciUp <- 1
+    } else if (hypothesis=="correlatedNegatively") {
+      ciLow <- -1
+    }
   }
   return(c(ciLow,ciUp))
 }
