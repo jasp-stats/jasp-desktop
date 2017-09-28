@@ -240,6 +240,11 @@ int TabBar::count() const
 	return _tabButtons.length();
 }
 
+PreferencesDialog *TabBar::getPreferencesDialog()
+{
+	return _preferencesDialog;
+}
+
 void TabBar::setCurrentIndex(int index)
 {
 	int i = 0;
