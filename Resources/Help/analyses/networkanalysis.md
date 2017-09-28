@@ -68,6 +68,8 @@ When estimating a Mixed Graphical Model, insert a variable here to specify the v
 - `c`: for categorical variables. 
 - `p`: for Poisson variables.
 
+The first n observations in this column correspond to the first n columns in the dataset. More values are ignored. 
+
 ####Ising Estimator
 Many methods exist for estimating Ising models. Supported methods are:
  
@@ -159,7 +161,7 @@ There are three options:
 
 #### Nodes
 - `Node size`: A multiplier on node size  (i.e. 2 is twice as big).
-- `color nodes by`: A categorical variable that indicates the group to which each variable belongs.
+- `color nodes by`: A categorical variable that indicates the group to which each variable belongs. The first n observations in this column correspond to the first n columns in the dataset. More values are ignored. 
 - `color scheme`: What colors should be used for the coloring?
 
 #### Show variable names
@@ -168,9 +170,9 @@ An alternative to abbreviating the node labels is showing them in the legend. Th
 #### Show variable type
 When estimating a Mixed Graphical Model, the assumed distribution of a variable can be displayed in multiple ways:
 
--`Dont' show`: Do not show the assumed distribution.
--`Using node colors`: Change the color of the nodes based on their assumed distribution (TODO: colors scheme). TODO clashes with...
--`Using node shape`: Change the shape of the nodes based on their assumed distribution. Gaussian nodes are circles, categorical nodes are squares, and Poisson nodes are triangles. 
+- `Dont' show`: Do not show the assumed distribution.
+- `Using node colors`: Change the color of the nodes based on their assumed distribution. Ignored if  `color nodes by` is set.
+- `Using node shape`: Change the shape of the nodes based on their assumed distribution. Gaussian nodes are circles, categorical nodes are squares, and Poisson nodes are triangles. 
 
 
 ##References
