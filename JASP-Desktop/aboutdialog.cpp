@@ -121,6 +121,7 @@ void AboutDialog::downloadFinished()
 		g.remove(rx);
 		rx.setPattern("<\/div>");
 		g.remove(rx);
+		g = g.trimmed(); 
 		QString version = g;
 	
 #ifdef __APPLE__
