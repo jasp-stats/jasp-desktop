@@ -192,6 +192,11 @@
 			"type": "Variable"
 		},
 		{
+			"name": "labelYAxis",
+			"type": "String",
+			"max": 30
+		},
+		{
 			"name": "plotErrorBars",
 			"type": "Boolean"
 		},

@@ -890,13 +890,6 @@
             <property name="spacing">
              <number>0</number>
             </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_7">
-              <property name="text">
-               <string>Factors</string>
-              </property>
-             </widget>
-            </item>
             <item row="1" column="0">
              <widget class="AvailableFieldsListView" name="plotVariables">
               <property name="sizePolicy">
@@ -910,6 +903,13 @@
                 <width>16777215</width>
                 <height>16777215</height>
                </size>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_7">
+              <property name="text">
+               <string>Factors</string>
               </property>
              </widget>
             </item>
@@ -1212,7 +1212,7 @@
            </layout>
           </widget>
          </item>
-         <item row="1" column="0" colspan="2">
+         <item row="2" column="0" colspan="2">
           <widget class="GroupBox" name="groupOptions2_2">
            <property name="title">
             <string>Display</string>
@@ -1330,6 +1330,42 @@
             </item>
            </layout>
           </widget>
+         </item>
+         <item row="1" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QLabel" name="label_labelYAxis">
+             <property name="text">
+              <string>Enter label y-axis</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="BoundTextBox" name="labelYAxis">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>230</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>
@@ -1651,11 +1687,6 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundComboBox</class>
-   <extends>QComboBox</extends>
-   <header>widgets/boundcombobox.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundListView</class>
    <extends>QListView</extends>
    <header>widgets/boundlistview.h</header>
@@ -1667,15 +1698,20 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>BoundAssignWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/boundassignwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>BoundTableView</class>
    <extends>QTableView</extends>
    <header>widgets/boundtableview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundAssignWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/boundassignwidget.h</header>
-   <container>1</container>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
@@ -1699,6 +1735,7 @@
   <tabstop>expanderContrasts</tabstop>
   <tabstop>contrasts</tabstop>
   <tabstop>expanderPosthoc</tabstop>
+  <tabstop>postHocTestEffectSize</tabstop>
   <tabstop>postHocTestsBonferroni</tabstop>
   <tabstop>postHocTestsHolm</tabstop>
   <tabstop>postHocTestsTukey</tabstop>
@@ -1711,6 +1748,7 @@
   <tabstop>plotSeparateLines</tabstop>
   <tabstop>buttonAssignSeperatePlots</tabstop>
   <tabstop>plotSeparatePlots</tabstop>
+  <tabstop>labelYAxis</tabstop>
   <tabstop>plotErrorBars</tabstop>
   <tabstop>_1confidenceInterval</tabstop>
   <tabstop>confidenceIntervalInterval</tabstop>
