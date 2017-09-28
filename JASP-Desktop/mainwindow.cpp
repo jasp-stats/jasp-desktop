@@ -383,6 +383,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	{
 		event->accept();
 	}
+	
+	PreferencesDialog *rd = ui->tabBar->getPreferencesDialog();
+	if (rd) rd->close();
 }
 
 void MainWindow::saveKeysSelected()

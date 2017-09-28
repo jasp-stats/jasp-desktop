@@ -52,6 +52,8 @@ public:
 	void addHelpTab();
 
 	int count() const;
+	PreferencesDialog *getPreferencesDialog();
+	
 
 
 signals:
