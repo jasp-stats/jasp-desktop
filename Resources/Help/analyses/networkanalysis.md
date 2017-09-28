@@ -68,8 +68,7 @@ When estimating a Mixed Graphical Model, insert a variable here to specify the v
 - `c`: for categorical variables.
 - `p`: for Poisson variables.
 
-The first n observations in this column correspond to the first n columns in the dataset. More values are ignored.
-
+The first n observations in this column correspond to the first n columns in the dataset. More values are ignored. 
 
 ####Ising Estimator
 Many methods exist for estimating Ising models. Supported methods are:
@@ -162,7 +161,7 @@ There are three options:
 
 #### Nodes
 - `Node size`: A multiplier on node size  (i.e. 2 is twice as big).
-- `color nodes by`: A categorical variable that indicates the group to which each variable belongs. The first n observations in this column correspond to the first n columns in the dataset. More values are ignored. 
+- `color nodes by`: A categorical variable that indicates the group to which each variable belongs. The first n observations in this column correspond to the first n columns in the dataset. More values are ignored.
 - `color scheme`: What colors should be used for the coloring?
 
 #### Show variable names

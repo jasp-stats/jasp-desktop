@@ -84,7 +84,7 @@ NetworkAnalysis <- function (
 		dataset <- .vdf(dataset, columns.as.numeric = variables, columns.as.factor = varsAsFactor)
 
 	}
-  
+
 	# ensure order of variables matches order of columns in dataset
 	newOrder <- match(.unv(colnames(dataset)), variables, nomatch = 0L)
 	variables <- variables[newOrder]
@@ -154,13 +154,13 @@ NetworkAnalysis <- function (
 
 	# show info about variable types. Done here so that hopefully a table gets shown even if .hasErrors finds something bad.
 	if (options[["estimator"]] == "mgm" && !is.null(options[["mgmVariableTypeData"]])) {
-	  
+
 		results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = "init") # any errors will appear top of this table
 		results[["mgmTB"]] <- .networkAnalysisMgmVariableInfoTable(network, options, perform)
 
 		if ( ! .shouldContinue(callback(results)))
 			return()
-	} 
+	}
 
 	## Do Analysis ## ----
 
@@ -176,7 +176,7 @@ NetworkAnalysis <- function (
 
 			# default error checks
 			checks <- c("infinity", "variance", "observations")
-			
+
 			# estimator 'mgm' requires some additional checks
 			categoricalVars <- NULL
 			if (options[["estimator"]] == "mgm" && "c" %in% options[["mgmVariableTypeData"]]) {
@@ -198,15 +198,17 @@ NetworkAnalysis <- function (
 		}
 
 		network <- .networkAnalysisRun(dataset = dataset, options = options, variables = variables, perform = perform, oldNetwork = state)
-		
+
 		if (options[["bootstrapOnOff"]] ) {
-		  
+
 			results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = perform) # any errors will appear top of this table
 			# initialize progress table
 			results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform, when = "before")
-			# if (!.shouldContinue(callback(results)))
-			# 	return()
-			
+			if ( ! .shouldContinue(callback(results)))
+				return()
+
+			network <- .networkAnalysisBootstrap(network, options, variables, perform, oldNetwork = state, results = results, callback = callback)
+
 			network <- .networkAnalysisBootstrap(network, options, variables, perform, oldNetwork = state, results = results, callback = callback)
 			if (is.null(network) && perform == "run") { # bootstrap was aborted
 			  return()
@@ -291,7 +293,7 @@ NetworkAnalysis <- function (
 
 	  # this can be a big object, so only save in init
 	  state[["initOutput"]] <- results
-	  
+
 		return(list(results = results, status = "inited", state = state, keep = keep))
 
 	} else {
@@ -429,7 +431,7 @@ NetworkAnalysis <- function (
 				.dots[["nFolds"]] <- 2
 
 		}
-		
+
 		# timings
 		timing <- numeric(length(dataset))
 
@@ -456,7 +458,7 @@ NetworkAnalysis <- function (
 				, type = "message"
 			)
 			t1 <- Sys.time()
-			
+
 			dev.off() # close the fake png
 			file.remove(tempFileName) # remove the fake png file
 
@@ -468,7 +470,7 @@ NetworkAnalysis <- function (
 
 		# store timings in first network (always exists)
 		networkList[["network"]][[1]][["timing"]] <- mean(timing)
-		
+
 	}
 
 	if (is.null(networkList[["centrality"]])) { # calculate centrality measures
@@ -583,7 +585,7 @@ NetworkAnalysis <- function (
 			# this calls qgraph::qgraph so we need the png trick again
 			tempFileName <- getTempFileName()
 			grDevices::png(filename = tempFileName)
-			
+
 			layout <- qgraph::averageLayout(networkList[["network"]],
 											layout = options[["layout"]],
 											repulsion = options[["repulsion"]])
@@ -604,7 +606,7 @@ NetworkAnalysis <- function (
 	names(networkList[["network"]]) <- names(networkList[["centrality"]]) <- nms
 
 	networkList[["status"]] <- .networkAnalysisNetworkHasErrors(networkList)
-	
+
 	return(networkList)
 
 }
@@ -620,39 +622,39 @@ NetworkAnalysis <- function (
 
 		nCores <- .networkAnalysisGetNumberOfCores(options)
 
-		# just calculate all statistics. 
+		# just calculate all statistics.
 		statistics <- c("edge", "strength", "closeness", "betweenness")
 		# statistics <- statistics[unlist(options[c("StatisticsEdges", "StatisticsStrength", "StatisticsCloseness", "StatisticsBetweenness")])]
-		
+
 		# callback for bootstrap
 		env <- new.env()
 		env[["options"]] <- options
 		callbackBootstrap <- function(results = NULL, progress = NULL) {
-		  
+
 		  response <- callback(results, progress)
 		  print(response[["status"]])
 		  if (response[["status"]] == "changed") {
-		    
+
 		    optsForBootstrap <- c(
 		      # a copy paste of `dput(attributes(state)$key$bootstrap)`
-		      "variables", "groupingVariable", "mgmVariableType", "estimator", 
-		      "correlationMethod", "tuningParameter", "criterion", "isingEstimator", 
-		      "nFolds", "split", "rule", "sampleSize", "thresholdBox", "thresholdString", 
-		      "thresholdValue", "weightedNetwork", "signedNetwork", "missingValues", 
-		      "numberOfBootstraps", "BootstrapType", "StatisticsEdges", "StatisticsStrength", 
+		      "variables", "groupingVariable", "mgmVariableType", "estimator",
+		      "correlationMethod", "tuningParameter", "criterion", "isingEstimator",
+		      "nFolds", "split", "rule", "sampleSize", "thresholdBox", "thresholdString",
+		      "thresholdValue", "weightedNetwork", "signedNetwork", "missingValues",
+		      "numberOfBootstraps", "BootstrapType", "StatisticsEdges", "StatisticsStrength",
 		      "StatisticsCloseness", "StatisticsBetweenness", "StatisticsBetweenness",
 		      # options that should also result in a restart
 		      "bootstrapOnOff", "numberOfBootstraps", "parallelBootstrap"
 		    )
-		    
+
 		    change <- .diff(env[["options"]], response[["options"]])
 		    env[["options"]] <- response[["options"]]
-		    
+
 		    # if not any of the relevant options changed, status is ok
 		    if (!any(unlist(change[optsForBootstrap])))
 		      response[["status"]] <- "ok"
-		    
-		    
+
+
 		  }
 		  return(response)
 
@@ -663,7 +665,7 @@ NetworkAnalysis <- function (
 		  noTicks <- network[["network"]][[1]][["nPerson"]] * nGraphs
 		else noTicks <- options[["numberOfBootstraps"]] * nGraphs
 		progressbar <- .newProgressbar(ticks = noTicks, callback = callbackBootstrap, response=TRUE)
-		
+
 		callback(results)
 
 		# Fake png hack -- qgraph::qgraph() has an unprotected call to `par()`. `par()` always opens a new device if there is none.
@@ -697,14 +699,14 @@ NetworkAnalysis <- function (
 		    # .callbackNative = .callbackNative,
 		    # .imgToResults = .imgToResults,
 		    # .fromRCPP = .fromRCPP,
-		    # .requestTempFileNameNative = .requestTempFileNameNative, 
-		    # .readDatasetToEndNative = .readDatasetToEndNative, 
-		    # .readDataSetHeaderNative = .readDataSetHeaderNative, 
-		    # .requestStateFileNameNative = .requestStateFileNameNative, 
-		    # .baseCitation = .baseCitation, 
+		    # .requestTempFileNameNative = .requestTempFileNameNative,
+		    # .readDatasetToEndNative = .readDatasetToEndNative,
+		    # .readDataSetHeaderNative = .readDataSetHeaderNative,
+		    # .requestStateFileNameNative = .requestStateFileNameNative,
+		    # .baseCitation = .baseCitation,
 		    # .ppi = .ppi
 		  )
-		  
+
 		  # if aborted
 		  if (is.null(network[["bootstrap"]][[nm]])) {
 		    return()
@@ -829,12 +831,18 @@ NetworkAnalysis <- function (
 		  # the timing variable is always in SECONDS, until converted with timeFormat.
 		  # bootnet makes nCores - 1 clusters for some reason...
 		  # also better to make conservative time estimates
-			nCores <- .networkAnalysisGetNumberOfCores(options) - 1 
+			nCores <- .networkAnalysisGetNumberOfCores(options) - 1
 			if (nCores == 0) # possible if nCores == 1, avoid div / 0.
 			  nCores = 1
 			duration <- network[["network"]][[1]][["timing"]] * nGraphs * (1 + ceiling(nBoot / nCores))
 			duration <- 60 * ceiling(duration / 60) # round up to nearest minute
-			
+			print('network[["network"]][[1]][["timing"]]')
+			print(network[["network"]][[1]][["timing"]])
+			print("Duration")
+			print(duration)
+			print(Sys.time() + duration)
+			print(format(Sys.time() + duration, format = timeFormat))
+
 			table[["data"]][[1]][["start"]] <- format(Sys.time(), format = timeFormat)
 			table[["data"]][[1]][["ETA"]] <- format(Sys.time() + duration, format = timeFormat)
 
@@ -847,15 +855,15 @@ NetworkAnalysis <- function (
 			}
 
 		} else { # when == "after"
-			
+
 			table[["data"]][[1]][["when"]] <- "Completed"
 			table[["data"]][[1]][["start"]] <- format(Sys.time(), format = timeFormat)
 			table[["data"]][[1]][["ETA"]] <- format(Sys.time(), format = timeFormat)
-			
+
 		}
 
 		table[["status"]] <- "complete"
-	} 
+	}
 
 	return(table)
 
@@ -934,7 +942,7 @@ NetworkAnalysis <- function (
 
 
 	if (perform != "run" || is.null(network)) { # make empty table
-  
+
 	  # same length restriction for running analyses
 		if (!is.null(options[["variables"]]) || !(length(options[["variables"]]) > 0)) {
 
@@ -942,7 +950,7 @@ NetworkAnalysis <- function (
 			names(TBcolumns) <- c("Variable", "Betweenness", "Closeness", "Strength")
 
 		} else {
-			
+
 			TBcolumns <- data.frame(
 				.v(options[["variables"]]),
 				rep(".", length(options[["variables"]])),
@@ -979,7 +987,7 @@ NetworkAnalysis <- function (
 }
 
 .networkAnalysisWeightMatrixTable <- function(network, options, variables, perform) {
-	
+
 	nGraphs <- max(1, length(network[["network"]]))
 
 	table <- list(
@@ -1000,7 +1008,7 @@ NetworkAnalysis <- function (
 			table[["schema"]][["fields"]][[1 + v + nVar*(i-1)]] <- list(name = paste0(variables[v], i), title = variables[v], type = "number", format="sf:4;dp:3", overTitle = overTitles[i])
 		}
 	}
-  
+
 	if (perform != "run" || is.null(network)) { # make empty table
 
 		if (is.null(options[["variables"]]) || !length(options[["variables"]]) > 0) { # 1 by 1 table
@@ -1161,7 +1169,7 @@ NetworkAnalysis <- function (
 		if (!options[["signedNetwork"]]) {
 			wMat <- abs(wMat)
 		}
-		
+
 
 		qgraph::qgraph(
 			input       = wMat,
@@ -1194,7 +1202,7 @@ NetworkAnalysis <- function (
 
 	if (!is.null(oldPlot) && !identical(oldPlot[["collection"]][[1]][["data"]], ""))
 		return(oldPlot)
-  
+
 	plot <- list(
 		title = "Network Plot",
 		collection = list(),
@@ -1228,7 +1236,7 @@ NetworkAnalysis <- function (
 
 		layout <- network[["layout"]] # calculated in .networkAnalysisRun()
 
-		# ensure minimum/ maximum makes sense or ignore these parameters. 
+		# ensure minimum/ maximum makes sense or ignore these parameters.
 		# TODO: message in general table if they have been reset.
 		minE <- options[["minEdgeStrength"]]
 		maxE <- options[["maxEdgeStrength"]]
@@ -1318,7 +1326,7 @@ NetworkAnalysis <- function (
 			if (options[["estimator"]] == "mgm") {
 			  edgeColor <- network[["results"]][["edgecolor"]]
 			  if (is.null(edgeColor)) # compatability issues
-			    edgeColor <- network[["results"]][["pairwise"]][["edgecolor"]] 
+			    edgeColor <- network[["results"]][["pairwise"]][["edgecolor"]]
 			}
 
 			legend <- allLegends[[v]]
@@ -1439,7 +1447,7 @@ NetworkAnalysis <- function (
 }
 
 .networkAnalysisGetNumberOfCores <- function(options) {
-	
+
 	if (options[["parallelBootstrap"]]) {
 		nCores <- parallel::detectCores(TRUE)
 		if (is.na(nCores)) # parallel::detectCores returns NA if unknown/ fails
@@ -1447,9 +1455,9 @@ NetworkAnalysis <- function (
 	} else {
 		nCores <- 1
 	}
-	
+
 	return(nCores)
-	
+
 }
 
 # avoids qgraph from opening windows
@@ -1487,28 +1495,28 @@ getTempFileName <- function() {
 
 
 # saveDataToDput <- function(...) {
-# 
+#
 # 	path <- "C:/Users/donvd/_Laptop/Werk/JASP/tempDput/"
 # 	dots <- list(...)
 # 	fname <- paste0(path, "tmp")
 # 	i <- 0
-# 	
+#
 # 	while (file.exists(paste0(fname, "_", i, ".RData"))) {
 # 	  i <- i + 1
 # 	}
 # 	fname <- paste0(fname, "_", i, ".RData")
 # 	save(dots, file = fname)
-# 	
+#
 # }
-# 
+#
 
 
 # exact duplicate of bootnet::bootnet but with progressbar
-bootnet2 <- function(data, nBoots = 1000, 
-                     default = c("none", "EBICglasso", "pcor", "IsingFit", "IsingSampler", "huge", "adalasso", "mgm", "relimp", "cor"), 
-                     type = c("nonparametric", "parametric", "node", "person", "jackknife", "case"), 
-                     nCores = 1, statistics = c("edge", "strength", "closeness", "betweenness"), model = c("detect", "GGM", "Ising"), 
-                     fun, prepFun, prepArgs, estFun, estArgs, graphFun, graphArgs, intFun, intArgs, verbose = TRUE, 
+bootnet2 <- function(data, nBoots = 1000,
+                     default = c("none", "EBICglasso", "pcor", "IsingFit", "IsingSampler", "huge", "adalasso", "mgm", "relimp", "cor"),
+                     type = c("nonparametric", "parametric", "node", "person", "jackknife", "case"),
+                     nCores = 1, statistics = c("edge", "strength", "closeness", "betweenness"), model = c("detect", "GGM", "Ising"),
+                     fun, prepFun, prepArgs, estFun, estArgs, graphFun, graphArgs, intFun, intArgs, verbose = TRUE,
                      construct = c("default", "function", "arguments"), labels, alpha = 1, caseMin = 0.05,
                      caseMax = 0.75, caseN = 10, subNodes = 2:(ncol(data) - 1),
                      subCases = round((1 - seq(caseMin, caseMax, length = caseN)) *
@@ -1517,8 +1525,8 @@ bootnet2 <- function(data, nBoots = 1000,
                      signed, directed, ...,
                      progressbar = NULL, resultsForProgressbar = NULL, callback = NULL#,
                      # .callbackNative = NULL, .imgToResults = NULL, .fromRCPP = NULL,
-                     # .requestTempFileNameNative = NULL, .readDatasetToEndNative = NULL, 
-                     # .readDataSetHeaderNative = NULL, 
+                     # .requestTempFileNameNative = NULL, .readDatasetToEndNative = NULL,
+                     # .readDataSetHeaderNative = NULL,
                      # .requestStateFileNameNative = NULL, .baseCitation = NULL, .ppi = NULL
 ) {
   if (default[[1]] == "glasso")
@@ -1733,14 +1741,10 @@ bootnet2 <- function(data, nBoots = 1000,
         else {
           break
         }
-        
+
       }
+      progressbar(resultsForProgressbar)
       bootResults[[b]] <- res
-      
-      response <- progressbar(resultsForProgressbar)
-      if (response[["status"]] != "ok")
-        return()
-      
       if (verbose) {
         setTxtProgressBar(pb, b)
       }
@@ -1769,10 +1773,10 @@ bootnet2 <- function(data, nBoots = 1000,
     }
     excl <- c("prepFun", "prepArgs", "estFun", "estArgs",
               "graphFun", "graphArgs", "intFun", "intArgs", "fun")
-    # objects to export 
+    # objects to export
     objToExport <- ls(all.names = TRUE)[!ls(all.names = TRUE) %in% c(excl, "cl", "...")]
     parallel::clusterExport(cl, objToExport, envir = environment())
-    
+
     bootResults <- parallel::parLapply(cl, seq_len(nBoots), function(b) {
       tryLimit <- 10
       tryCount <- 0
@@ -1875,4 +1879,3 @@ bootnet2 <- function(data, nBoots = 1000,
   class(Result) <- "bootnet"
   return(Result)
 }
-
