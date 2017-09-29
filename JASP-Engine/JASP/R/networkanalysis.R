@@ -694,7 +694,6 @@ NetworkAnalysis <- function (
 	if (perform != "run" || is.null(network)) { # fill in with .
 
 		TBcolumns[["value"]] <- rep(".", 3*nGraphs)
-		table[["status"]] <- "inited"
 		table[["schema"]][["fields"]][[2]][["title"]] <- "Network"
 
 	} else { # fill in with info from bootnet:::print.bootnet
@@ -710,7 +709,6 @@ NetworkAnalysis <- function (
 			)
 
 		}
-		table[["status"]] <- "complete"
 
 		# add footnotes for detected as?
 		if (options[["estimator"]] %in% c("IsingFit", "IsingSampler") &&
@@ -771,8 +769,7 @@ NetworkAnalysis <- function (
 				 numberOfBootstraps = nBoot,
 				 when = "In progress"
 			)
-		),
-		status = "inited"
+		)
 	)
 
 	if (perform == "run") {
@@ -787,16 +784,9 @@ NetworkAnalysis <- function (
 			  nCores = 1
 			duration <- network[["network"]][[1]][["timing"]] * nGraphs * (1 + ceiling(nBoot / nCores))
 			duration <- 60 * ceiling(duration / 60) # round up to nearest minute
-			print('network[["network"]][[1]][["timing"]]')
-			print(network[["network"]][[1]][["timing"]])
-			print("Duration")
-			print(duration)
-			print(Sys.time() + duration)
-			print(format(Sys.time() + duration, format = timeFormat))
 			
 			table[["data"]][[1]][["start"]] <- format(Sys.time(), format = timeFormat)
 			table[["data"]][[1]][["ETA"]] <- format(Sys.time() + duration, format = timeFormat)
-			table[["status"]] <- "running"
 			
 			# add footnote saying progress bar doesn's show
 			if (nCores > 1) {
@@ -814,7 +804,6 @@ NetworkAnalysis <- function (
 			
 		}
 
-		table[["status"]] <- "complete"
 	} 
 
 	return(table)
@@ -847,14 +836,12 @@ NetworkAnalysis <- function (
 
 		vars = "."
 		types = "."
-		table[["status"]] <- "inited"
 
 	} else {
 
 		vars <- options[["variables"]]
 		types <- options[["mgmVariableTypeData"]]
 		types <- c("Gaussian", "Categorical", "Poisson")[match(options[["mgmVariableTypeData"]], c("g", "c", "p"))]
-		table[["status"]] <- "complete"
 
 	}
 
@@ -913,7 +900,6 @@ NetworkAnalysis <- function (
 			)
 		}
 
-		table[["status"]] <- "inited"
 
 	} else { # fill with results
 
@@ -930,7 +916,6 @@ NetworkAnalysis <- function (
 			}
 
 		}
-		table[["status"]] <- "complete"
 
 	}
 
@@ -978,7 +963,6 @@ NetworkAnalysis <- function (
 			names(TBcolumns) <- paste0(variables, i)
 			TBcolumns[["Variable"]] <- variables
 		}
-		table[["status"]] <- "inited"
 
 	} else { # fill with results
 
@@ -1028,7 +1012,6 @@ NetworkAnalysis <- function (
 
 		x <- y <- rep(".", max(1, nVar))
 		TBcolumns <- list(x = x, y = y)
-		table[["status"]] <- "inited"
 
 	} else { # fill with results
 
@@ -1036,7 +1019,6 @@ NetworkAnalysis <- function (
 			x = network[["layout"]][, 1],
 			y = network[["layout"]][, 2]
 		)
-		table[["status"]] <- "complete"
 
 	}
 
@@ -1059,7 +1041,7 @@ NetworkAnalysis <- function (
 		height = options[["plotHeightCentrality"]],
 		custom = list(width = "plotWidthCentrality", height = "plotHeightCentrality"),
 		data = "",
-		status = "inited"
+		status = "complete"
 	)
 
 	if (perform == "run" && !is.null(network)) {
@@ -1164,7 +1146,7 @@ NetworkAnalysis <- function (
 	plot <- list(
 		title = "Network Plot",
 		collection = list(),
-		status = "inited"
+		status = "complete"
 	)
 
 	if (options[["graphSize"]] == "graphSizeFree") {
@@ -1309,7 +1291,7 @@ NetworkAnalysis <- function (
 		subPlot <- subPlotBase
 		subPlot[["network 1"]] <- "network 1"
 		subPlot[["data"]] <- ""
-		subPlot[["status"]] <- "inited"
+		subPlot[["status"]] <- "complete"
 		plot[["collection"]][["network 1"]] <- subPlot
 
 	}
@@ -1336,7 +1318,7 @@ NetworkAnalysis <- function (
 	plot <- list(
 		title = "Edge Stability",
 		collection = list(),
-		status = "inited"
+		status = "complete"
 	)
 	if (!("edge" %in% statistic))
 		plot[["title"]] <- "Centrality Stability"
@@ -1377,7 +1359,7 @@ NetworkAnalysis <- function (
 		subPlot <- subPlotBase
 		subPlot[["network 1"]] <- "network 1"
 		subPlot[["data"]] <- ""
-		subPlot[["status"]] <- "inited"
+		subPlot[["status"]] <- "complete"
 		plot[["collection"]][["network 1"]] <- subPlot
 
 	}
