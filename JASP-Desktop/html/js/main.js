@@ -521,7 +521,7 @@ $(document).ready(function () {
 
 		jaspWidget.render();
 
-		if (selectedAnalysisId === analysis.id)
+		if (selectedAnalysisId === analysis.id && (analysis.status == "inited" || analysis.status == "complete"))
 			window.scrollIntoView(jaspWidget.$el);
 	}
 	
