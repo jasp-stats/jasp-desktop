@@ -836,12 +836,6 @@ NetworkAnalysis <- function (
 			  nCores = 1
 			duration <- network[["network"]][[1]][["timing"]] * nGraphs * (1 + ceiling(nBoot / nCores))
 			duration <- 60 * ceiling(duration / 60) # round up to nearest minute
-			print('network[["network"]][[1]][["timing"]]')
-			print(network[["network"]][[1]][["timing"]])
-			print("Duration")
-			print(duration)
-			print(Sys.time() + duration)
-			print(format(Sys.time() + duration, format = timeFormat))
 
 			table[["data"]][[1]][["start"]] <- format(Sys.time(), format = timeFormat)
 			table[["data"]][[1]][["ETA"]] <- format(Sys.time() + duration, format = timeFormat)
@@ -862,7 +856,6 @@ NetworkAnalysis <- function (
 
 		}
 
-		table[["status"]] <- "complete"
 	}
 
 	return(table)
@@ -1078,7 +1071,6 @@ NetworkAnalysis <- function (
 			x = network[["layout"]][, 1],
 			y = network[["layout"]][, 2]
 		)
-
 
 	}
 
