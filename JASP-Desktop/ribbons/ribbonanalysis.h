@@ -35,6 +35,9 @@ public:
 
 private:
 	Ui::RibbonAnalysis *ui;
+
+private slots:
+	void networkItemSelected();
 };
 
 #endif // RIBBONANALYSIS_H
