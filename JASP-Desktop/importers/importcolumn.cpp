@@ -171,7 +171,7 @@ bool ImportColumn::convertToDouble(const vector<string> &values, vector<double> 
 		if (success)
 		{
 			doubleValues.push_back(doubleValue);
-			if (doubleValue == NAN && !isnan(doubleValue))
+			if (doubleValue == NAN && !std::isnan(doubleValue))
 				emptyValuesMap.insert(make_pair(row, value));
 		}
 		else

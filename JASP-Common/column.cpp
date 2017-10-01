@@ -42,7 +42,7 @@ bool Column::isEmptyValue(const string& val)
 
 bool Column::isEmptyValue(const double &val)
 {
-	if (isnan(val)) return true;
+	if (std::isnan(val)) return true;
 	const vector<double>& emptyValues = Utils::getDoubleEmptyValues();
 	return std::find(emptyValues.begin(), emptyValues.end(), val) != emptyValues.end();
 }
@@ -141,7 +141,7 @@ bool Column::_resetEmptyValuesForScale(std::map<int, string> &emptyValuesMap)
 	for (; doubles != end; doubles++)
 	{
 		double doubleValue = *doubles;
-		if (isnan(doubleValue) && hasEmptyValues)
+		if (std::isnan(doubleValue) && hasEmptyValues)
 		{
 			auto search = emptyValuesMap.find(row);
 			if (search != emptyValuesMap.end())
@@ -164,7 +164,7 @@ bool Column::_resetEmptyValuesForScale(std::map<int, string> &emptyValuesMap)
 				}
 			}
 		}
-		else if (!isnan(doubleValue) && isEmptyValue(doubleValue))
+		else if (!std::isnan(doubleValue) && isEmptyValue(doubleValue))
 		{
 			// This value is now considered as empty
 			*doubles = NAN;
@@ -184,7 +184,7 @@ bool Column::_resetEmptyValuesForScale(std::map<int, string> &emptyValuesMap)
 		for (doubles = AsDoubles.begin(); doubles != end; doubles++)
 		{
 			double doubleValue = *doubles;
-			if (isnan(doubleValue))
+			if (std::isnan(doubleValue))
 			{
 				auto search = emptyValuesMap.find(row);
 				if (search != emptyValuesMap.end())
@@ -512,7 +512,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 				{
 					try
 					{
-						if (!isnan(*doubles))
+						if (!std::isnan(*doubles))
 						{
 							int v = lexical_cast<int>(*doubles);
 							uniqueValues.insert(v);
