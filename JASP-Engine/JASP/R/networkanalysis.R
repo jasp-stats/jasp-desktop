@@ -112,7 +112,6 @@ NetworkAnalysis <- function (
 	} else {
 	  results <- state[["initOutput"]]
 	}
-
 	defArgs <- c(
 		# data
 		"variables", "groupingVariable", "mgmVariableType",
@@ -204,17 +203,15 @@ NetworkAnalysis <- function (
 			results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = perform) # any errors will appear top of this table
 			# initialize progress table
 			results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform, when = "before")
-			if ( ! .shouldContinue(callback(results)))
+			if (!.shouldContinue(callback(results)))
 				return()
 
 			network <- .networkAnalysisBootstrap(network, options, variables, perform, oldNetwork = state, results = results, callback = callback)
 
 			network <- .networkAnalysisBootstrap(network, options, variables, perform, oldNetwork = state, results = results, callback = callback)
-			if (is.null(network) && perform == "run") {
-			  results[["bootstrapTB"]][["data"]][[1]][["when"]] <- "Interrupted"
+			if (is.null(network) && perform == "run") { # bootstrap was aborted
 			  print("ABORTED 1")
 			  return()
-			  # return(results)
 			}
 		}
 
@@ -295,7 +292,7 @@ NetworkAnalysis <- function (
 
 	  # this can be a big object, so only save in init
 	  state[["initOutput"]] <- results
-
+	  
 		return(list(results = results, status = "inited", state = state, keep = keep))
 
 	} else {
@@ -637,17 +634,20 @@ NetworkAnalysis <- function (
 		  print(response[["status"]])
 		  if (response[["status"]] == "changed") {
 
-		    # a copy paste of `dput(attributes(state)$key$bootstrap)`
-		    optsForBootstrap <- c("variables", "groupingVariable", "mgmVariableType", "estimator",
-		                          "correlationMethod", "tuningParameter", "criterion", "isingEstimator",
-		                          "nFolds", "split", "rule", "sampleSize", "thresholdBox", "thresholdString",
-		                          "thresholdValue", "weightedNetwork", "signedNetwork", "missingValues",
-		                          "numberOfBootstraps", "BootstrapType", "StatisticsEdges", "StatisticsStrength",
-		                          "StatisticsCloseness", "StatisticsBetweenness", "StatisticsBetweenness"
+		    optsForBootstrap <- c(
+		      # a copy paste of `dput(attributes(state)$key$bootstrap)`
+		      "variables", "groupingVariable", "mgmVariableType", "estimator",
+		      "correlationMethod", "tuningParameter", "criterion", "isingEstimator",
+		      "nFolds", "split", "rule", "sampleSize", "thresholdBox", "thresholdString",
+		      "thresholdValue", "weightedNetwork", "signedNetwork", "missingValues",
+		      "numberOfBootstraps", "BootstrapType", "StatisticsEdges", "StatisticsStrength",
+		      "StatisticsCloseness", "StatisticsBetweenness", "StatisticsBetweenness",
+		      # options that should also result in a restart
+		      "bootstrapOnOff", "numberOfBootstraps", "parallelBootstrap"
 		    )
 
-		    change <- .diff(env$options, response$options)
-		    env$options <- response$options
+		    change <- .diff(env[["options"]], response[["options"]])
+		    env[["options"]] <- response[["options"]]
 
 		    # if not any of the relevant options changed, status is ok
 		    if (!any(unlist(change[optsForBootstrap])))
@@ -705,7 +705,7 @@ NetworkAnalysis <- function (
 		    # .baseCitation = .baseCitation,
 		    # .ppi = .ppi
 		  )
-		  
+
 		  # if aborted
 		  if (is.null(network[["bootstrap"]][[nm]])) {
 		    print("ABORTED 0")
@@ -1485,6 +1485,16 @@ getTempFileName <- function() {
 
 }
 
+# .quickStr <- function(...) {
+#
+#   dots <- list(...)
+#   nms <- names(dots)
+#   for (i in seq_along(dots)) {
+#     cat(sprintf("Argument %d, Object: %s\n", i, nms[i]))
+#     str(dots[[i]], max.level = 3)
+#   }
+#   return(invisible())
+# }
 
 # saveDataToDput <- function(...) {
 #
