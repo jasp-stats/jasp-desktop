@@ -188,7 +188,7 @@
 		{
 			"name": "parallelBootstrap",
 			"type": "Boolean",
-			"default": true
+			"default": false
 		},
 		{
 			"name": "StatisticsEdges",
