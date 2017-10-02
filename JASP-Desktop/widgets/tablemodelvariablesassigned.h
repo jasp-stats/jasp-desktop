@@ -45,7 +45,7 @@ public:
 
 signals:
 	void assignmentsChanging();
-	void assignmentsChanged();
+	void assignmentsChanged(bool changed = true);
 
 	void assignedTo(const Terms &variables);
 	void unassigned(const Terms &variables);
