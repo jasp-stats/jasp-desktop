@@ -36,12 +36,16 @@ Analysis::Analysis(int id, string name, Options *options, const Version &version
 	_autorun = autorun;
 	_usedata = usedata;
 	_version = version;
-
+	_results = Json::nullValue;
+	_imgResults = Json::nullValue;
+	_userData = Json::nullValue;
+	_saveImgOptions = Json::nullValue;
 	_revision = 0;
 
 	_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this, _1));
 
 	_status = Empty;
+	_progress = -1;
 }
 
 Analysis::~Analysis()

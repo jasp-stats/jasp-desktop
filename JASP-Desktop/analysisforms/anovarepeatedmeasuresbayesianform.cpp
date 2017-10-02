@@ -120,6 +120,8 @@ void AnovaRepeatedMeasuresBayesianForm::bindTo(Options *options, DataSet *dataSe
 {
 	AnalysisForm::bindTo(options, dataSet);
 
+	factorsChanged();
+
 	Terms factorsAvailable;
 
 	foreach (const Factor &factor, _designTableModel->design())

@@ -140,6 +140,7 @@ const Terms &TableModelAnovaModel::variables() const
 
 void TableModelAnovaModel::bindTo(Option *option)
 {
+	clear();
 	_boundTo = dynamic_cast<OptionsTable *>(option);
 
 	beginResetModel();
@@ -529,6 +530,7 @@ void TableModelAnovaModel::setTerms(const Terms &terms, bool newTermsAreNuisance
 
 void TableModelAnovaModel::clear()
 {
+	_boundTo = NULL;
 	setTerms(Terms());
 }
 
