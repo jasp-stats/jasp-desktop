@@ -210,10 +210,12 @@ NetworkAnalysis <- function (
 			network <- .networkAnalysisBootstrap(network, options, variables, perform, oldNetwork = state, results = results, callback = callback)
 
 			network <- .networkAnalysisBootstrap(network, options, variables, perform, oldNetwork = state, results = results, callback = callback)
-			if (is.null(network) && perform == "run") { # bootstrap was aborted
+			if (is.null(network) && perform == "run") {
+			  results[["bootstrapTB"]][["data"]][[1]][["when"]] <- "Interrupted"
+			  print("ABORTED 1")
 			  return()
+			  # return(results)
 			}
-
 		}
 
 	} else {
@@ -624,7 +626,7 @@ NetworkAnalysis <- function (
 
 		# just calculate all statistics.
 		statistics <- c("edge", "strength", "closeness", "betweenness")
-		# statistics <- statistics[unlist(options[c("StatisticsEdges", "StatisticsStrength", "StatisticsCloseness", "StatisticsBetweenness")])]
+		statistics <- statistics[unlist(options[c("StatisticsEdges", "StatisticsStrength", "StatisticsCloseness", "StatisticsBetweenness")])]
 
 		# callback for bootstrap
 		env <- new.env()
@@ -635,20 +637,17 @@ NetworkAnalysis <- function (
 		  print(response[["status"]])
 		  if (response[["status"]] == "changed") {
 
-		    optsForBootstrap <- c(
-		      # a copy paste of `dput(attributes(state)$key$bootstrap)`
-		      "variables", "groupingVariable", "mgmVariableType", "estimator",
-		      "correlationMethod", "tuningParameter", "criterion", "isingEstimator",
-		      "nFolds", "split", "rule", "sampleSize", "thresholdBox", "thresholdString",
-		      "thresholdValue", "weightedNetwork", "signedNetwork", "missingValues",
-		      "numberOfBootstraps", "BootstrapType", "StatisticsEdges", "StatisticsStrength",
-		      "StatisticsCloseness", "StatisticsBetweenness", "StatisticsBetweenness",
-		      # options that should also result in a restart
-		      "bootstrapOnOff", "numberOfBootstraps", "parallelBootstrap"
+		    # a copy paste of `dput(attributes(state)$key$bootstrap)`
+		    optsForBootstrap <- c("variables", "groupingVariable", "mgmVariableType", "estimator",
+		                          "correlationMethod", "tuningParameter", "criterion", "isingEstimator",
+		                          "nFolds", "split", "rule", "sampleSize", "thresholdBox", "thresholdString",
+		                          "thresholdValue", "weightedNetwork", "signedNetwork", "missingValues",
+		                          "numberOfBootstraps", "BootstrapType", "StatisticsEdges", "StatisticsStrength",
+		                          "StatisticsCloseness", "StatisticsBetweenness", "StatisticsBetweenness"
 		    )
 
-		    change <- .diff(env[["options"]], response[["options"]])
-		    env[["options"]] <- response[["options"]]
+		    change <- .diff(env$options, response$options)
+		    env$options <- response$options
 
 		    # if not any of the relevant options changed, status is ok
 		    if (!any(unlist(change[optsForBootstrap])))
@@ -706,9 +705,10 @@ NetworkAnalysis <- function (
 		    # .baseCitation = .baseCitation,
 		    # .ppi = .ppi
 		  )
-
+		  
 		  # if aborted
 		  if (is.null(network[["bootstrap"]][[nm]])) {
+		    print("ABORTED 0")
 		    return()
 		  }
 		}
@@ -1735,8 +1735,12 @@ bootnet2 <- function(data, nBoots = 1000,
         }
 
       }
-      progressbar(resultsForProgressbar)
       bootResults[[b]] <- res
+
+      response <- progressbar(resultsForProgressbar)
+      if (response[["status"]] != "ok")
+        return()
+
       if (verbose) {
         setTxtProgressBar(pb, b)
       }
