@@ -92,23 +92,26 @@ NetworkAnalysis <- function (
 	options[["colorNodesByData"]] <- options[["colorNodesByData"]][newOrder]
 
 	## Initialize Results & statekey ## ----
-	results <- list(
-		title = "Network Analysis",
-		.meta = list(
-			list(name = "generalTB",                type = "table"),
-			list(name = "fitMeasuresTB",            type = "table"),
-			list(name = "bootstrapTB",              type = "table"),
-			list(name = "weightmatrixTB",           type = "table"),
-			list(name = "layoutTB",                 type = "table"),
-			list(name = "centralityTB",             type = "table"),
-			list(name = "mgmTB",                    type = "table"),
-			list(name = "networkPLT",               type = "collection", meta="image"),
-			list(name = "centralityPLT",            type = "image"),
-			list(name = "bootstrapEdgePLT",         type = "collection", meta="image"),
-			list(name = "bootstrapCentPLT",         type = "collection", meta="image")
-		)
-	)
-
+	if (perform == "init") {
+	  results <- list(
+	    title = "Network Analysis",
+	    .meta = list(
+	      list(name = "generalTB",                type = "table"),
+	      list(name = "fitMeasuresTB",            type = "table"),
+	      list(name = "bootstrapTB",              type = "table"),
+	      list(name = "weightmatrixTB",           type = "table"),
+	      list(name = "layoutTB",                 type = "table"),
+	      list(name = "centralityTB",             type = "table"),
+	      list(name = "mgmTB",                    type = "table"),
+	      list(name = "networkPLT",               type = "collection", meta="image"),
+	      list(name = "centralityPLT",            type = "image"),
+	      list(name = "bootstrapEdgePLT",         type = "collection", meta="image"),
+	      list(name = "bootstrapCentPLT",         type = "collection", meta="image")
+	    )
+	  )
+	} else {
+	  results <- state[["initOutput"]]
+	}
 	defArgs <- c(
 		# data
 		"variables", "groupingVariable", "mgmVariableType",
@@ -142,7 +145,7 @@ NetworkAnalysis <- function (
 		centralityPLT = c(defArgs,
 						  "plotWidthCentrality", "plotHeightCentrality", "normalizeCentrality", "abbreviateLabels", "abbreviateNoChars"),
 		layout = c(defArgs, "layout", "repulsion", "layoutX", "layoutY"),
-		bootstrapCentPLT = bootstrapArgs,
+		bootstrapEdgePLT = bootstrapArgs,
 		bootstrapCentPLT = bootstrapArgs
 	)
 
@@ -151,7 +154,7 @@ NetworkAnalysis <- function (
 
 	# show info about variable types. Done here so that hopefully a table gets shown even if .hasErrors finds something bad.
 	if (options[["estimator"]] == "mgm" && !is.null(options[["mgmVariableTypeData"]])) {
-
+	  
 		results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = "init") # any errors will appear top of this table
 		results[["mgmTB"]] <- .networkAnalysisMgmVariableInfoTable(network, options, perform)
 
@@ -196,20 +199,18 @@ NetworkAnalysis <- function (
 
 		network <- .networkAnalysisRun(dataset = dataset, options = options, variables = variables, perform = perform, oldNetwork = state)
 		
-		if (options[["bootstrapOnOff"]]) {
-			
+		if (options[["bootstrapOnOff"]] ) {
+		  
 			results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = perform) # any errors will appear top of this table
 			# initialize progress table
 			results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform, when = "before")
-			if ( ! .shouldContinue(callback(results)))
+			if (!.shouldContinue(callback(results)))
 				return()
 			
 			network <- .networkAnalysisBootstrap(network, options, variables, perform, oldNetwork = state, results = results, callback = callback)
-			if (is.null(network) && perform == "run") {
-			  results[["bootstrapTB"]][["data"]][[1]][["when"]] <- "Interrupted"
+			if (is.null(network) && perform == "run") { # bootstrap was aborted
 			  print("ABORTED 1")
 			  return()
-			  # return(results)
 			}
 		}
 
@@ -286,6 +287,9 @@ NetworkAnalysis <- function (
 	# return to jasp
 	if (perform == "init") {
 
+	  # this can be a big object, so only save in init
+	  state[["initOutput"]] <- results
+	  
 		return(list(results = results, status = "inited", state = state, keep = keep))
 
 	} else {
@@ -626,17 +630,20 @@ NetworkAnalysis <- function (
 		  print(response[["status"]])
 		  if (response[["status"]] == "changed") {
 		    
-		    # a copy paste of `dput(attributes(state)$key$bootstrap)`
-		    optsForBootstrap <- c("variables", "groupingVariable", "mgmVariableType", "estimator", 
-		                          "correlationMethod", "tuningParameter", "criterion", "isingEstimator", 
-		                          "nFolds", "split", "rule", "sampleSize", "thresholdBox", "thresholdString", 
-		                          "thresholdValue", "weightedNetwork", "signedNetwork", "missingValues", 
-		                          "numberOfBootstraps", "BootstrapType", "StatisticsEdges", "StatisticsStrength", 
-		                          "StatisticsCloseness", "StatisticsBetweenness", "StatisticsBetweenness"
+		    optsForBootstrap <- c(
+		      # a copy paste of `dput(attributes(state)$key$bootstrap)`
+		      "variables", "groupingVariable", "mgmVariableType", "estimator", 
+		      "correlationMethod", "tuningParameter", "criterion", "isingEstimator", 
+		      "nFolds", "split", "rule", "sampleSize", "thresholdBox", "thresholdString", 
+		      "thresholdValue", "weightedNetwork", "signedNetwork", "missingValues", 
+		      "numberOfBootstraps", "BootstrapType", "StatisticsEdges", "StatisticsStrength", 
+		      "StatisticsCloseness", "StatisticsBetweenness", "StatisticsBetweenness",
+		      # options that should also result in a restart
+		      "bootstrapOnOff", "numberOfBootstraps", "parallelBootstrap"
 		    )
 		    
-		    change <- .diff(env$options, response$options)
-		    env$options <- response$options
+		    change <- .diff(env[["options"]], response[["options"]])
+		    env[["options"]] <- response[["options"]]
 		    
 		    # if not any of the relevant options changed, status is ok
 		    if (!any(unlist(change[optsForBootstrap])))
@@ -1473,16 +1480,16 @@ getTempFileName <- function() {
 
 }
 
-.quickStr <- function(...) {
-  
-  dots <- list(...)
-  nms <- names(dots)
-  for (i in seq_along(dots)) {
-    cat(sprintf("Argument %d, Object: %s\n", i, nms[i]))
-    str(dots[[i]], max.level = 3)
-  }
-  return(invisible())
-}
+# .quickStr <- function(...) {
+#   
+#   dots <- list(...)
+#   nms <- names(dots)
+#   for (i in seq_along(dots)) {
+#     cat(sprintf("Argument %d, Object: %s\n", i, nms[i]))
+#     str(dots[[i]], max.level = 3)
+#   }
+#   return(invisible())
+# }
 
 # saveDataToDput <- function(...) {
 # 
