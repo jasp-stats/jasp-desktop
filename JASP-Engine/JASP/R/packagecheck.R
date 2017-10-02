@@ -19,6 +19,7 @@
 
 	expected <- matrix(nrow=0, ncol=2, dimnames=list(NULL, c("Package", "Version")))
 	
+#--auto-generated
 	expected <- rbind(expected, c("BAS","1.4.6"))
 	expected <- rbind(expected, c("BDgraph","2.40"))
 	expected <- rbind(expected, c("BMS","0.3.4"))
@@ -171,6 +172,7 @@
 	expected <- rbind(expected, c("xts","0.10-0"))
 	expected <- rbind(expected, c("yaml","2.1.14"))
 	expected <- rbind(expected, c("zoo","1.8-0"))
+#--auto-generated
 
 	expected.package.names <- expected[,1]
 	dimnames(expected) <- list(expected.package.names, c("Package", "Version"))
