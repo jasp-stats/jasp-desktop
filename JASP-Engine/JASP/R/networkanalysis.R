@@ -149,7 +149,6 @@ NetworkAnalysis <- function (
 	if (options[["keepLayoutTheSame"]]) # ensure layout remains unchanged unless the data changes
 		stateKey[["layout"]] <- "variables"
 
-
 	# show info about variable types. Done here so that hopefully a table gets shown even if .hasErrors finds something bad.
 	if (options[["estimator"]] == "mgm" && !is.null(options[["mgmVariableTypeData"]])) {
 
@@ -159,7 +158,7 @@ NetworkAnalysis <- function (
 		if ( ! .shouldContinue(callback(results)))
 			return()
 	} 
-	
+
 	## Do Analysis ## ----
 
 	# Sort out whether things are set to defaults or not.
@@ -206,7 +205,12 @@ NetworkAnalysis <- function (
 				return()
 			
 			network <- .networkAnalysisBootstrap(network, options, variables, perform, oldNetwork = state, results = results, callback = callback)
-			
+			if (is.null(network) && perform == "run") {
+			  results[["bootstrapTB"]][["data"]][[1]][["when"]] <- "Interrupted"
+			  print("ABORTED 1")
+			  return()
+			  # return(results)
+			}
 		}
 
 	} else {
@@ -613,10 +617,42 @@ NetworkAnalysis <- function (
 		statistics <- c("edge", "strength", "closeness", "betweenness")
 		statistics <- statistics[unlist(options[c("StatisticsEdges", "StatisticsStrength", "StatisticsCloseness", "StatisticsBetweenness")])]
 		
+		# callback for bootstrap
+		env <- new.env()
+		env[["options"]] <- options
+		callbackBootstrap <- function(results = NULL, progress = NULL) {
+		  
+		  response <- callback(results, progress)
+		  print(response[["status"]])
+		  if (response[["status"]] == "changed") {
+		    
+		    # a copy paste of `dput(attributes(state)$key$bootstrap)`
+		    optsForBootstrap <- c("variables", "groupingVariable", "mgmVariableType", "estimator", 
+		                          "correlationMethod", "tuningParameter", "criterion", "isingEstimator", 
+		                          "nFolds", "split", "rule", "sampleSize", "thresholdBox", "thresholdString", 
+		                          "thresholdValue", "weightedNetwork", "signedNetwork", "missingValues", 
+		                          "numberOfBootstraps", "BootstrapType", "StatisticsEdges", "StatisticsStrength", 
+		                          "StatisticsCloseness", "StatisticsBetweenness", "StatisticsBetweenness"
+		    )
+		    
+		    change <- .diff(env$options, response$options)
+		    env$options <- response$options
+		    
+		    # if not any of the relevant options changed, status is ok
+		    if (!any(unlist(change[optsForBootstrap])))
+		      response[["status"]] <- "ok"
+		    
+		    
+		  }
+		  return(response)
+
+		}
 
 		#initialize progressbar
-		progressbar <- .newProgressbar(ticks = options[["numberOfBootstraps"]] * nGraphs, 
-		                               callback = callback, response=TRUE)
+		if (options[["BootstrapType"]] == "jacknife")
+		  noTicks <- network[["network"]][[1]][["nPerson"]] * nGraphs
+		else noTicks <- options[["numberOfBootstraps"]] * nGraphs
+		progressbar <- .newProgressbar(ticks = noTicks, callback = callbackBootstrap, response=TRUE)
 		
 		callback(results)
 
@@ -658,7 +694,12 @@ NetworkAnalysis <- function (
 		    # .baseCitation = .baseCitation, 
 		    # .ppi = .ppi
 		  )
-			
+		  
+		  # if aborted
+		  if (is.null(network[["bootstrap"]][[nm]])) {
+		    print("ABORTED 0")
+		    return()
+		  }
 		}
 
 		dev.off() # close the fake png
@@ -1692,8 +1733,12 @@ bootnet2 <- function(data, nBoots = 1000,
         }
         
       }
-      progressbar(resultsForProgressbar)
       bootResults[[b]] <- res
+      
+      response <- progressbar(resultsForProgressbar)
+      if (response[["status"]] != "ok")
+        return()
+      
       if (verbose) {
         setTxtProgressBar(pb, b)
       }
