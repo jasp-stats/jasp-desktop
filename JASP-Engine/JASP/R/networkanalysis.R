@@ -203,14 +203,11 @@ NetworkAnalysis <- function (
 			results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = perform) # any errors will appear top of this table
 			# initialize progress table
 			results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform, when = "before")
-			if (!.shouldContinue(callback(results)))
-				return()
-
-			network <- .networkAnalysisBootstrap(network, options, variables, perform, oldNetwork = state, results = results, callback = callback)
+			# if (!.shouldContinue(callback(results)))
+			# 	return()
 
 			network <- .networkAnalysisBootstrap(network, options, variables, perform, oldNetwork = state, results = results, callback = callback)
 			if (is.null(network) && perform == "run") { # bootstrap was aborted
-			  print("ABORTED 1")
 			  return()
 			}
 		}
@@ -292,7 +289,7 @@ NetworkAnalysis <- function (
 
 	  # this can be a big object, so only save in init
 	  state[["initOutput"]] <- results
-	  
+
 		return(list(results = results, status = "inited", state = state, keep = keep))
 
 	} else {
@@ -623,7 +620,7 @@ NetworkAnalysis <- function (
 
 		# just calculate all statistics.
 		statistics <- c("edge", "strength", "closeness", "betweenness")
-		statistics <- statistics[unlist(options[c("StatisticsEdges", "StatisticsStrength", "StatisticsCloseness", "StatisticsBetweenness")])]
+		# statistics <- statistics[unlist(options[c("StatisticsEdges", "StatisticsStrength", "StatisticsCloseness", "StatisticsBetweenness")])]
 
 		# callback for bootstrap
 		env <- new.env()
@@ -708,7 +705,6 @@ NetworkAnalysis <- function (
 
 		  # if aborted
 		  if (is.null(network[["bootstrap"]][[nm]])) {
-		    print("ABORTED 0")
 		    return()
 		  }
 		}
