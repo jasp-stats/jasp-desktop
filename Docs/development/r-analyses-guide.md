@@ -105,11 +105,38 @@ It is recommended to **only** use `.vf()` for display purposes. Using it to crea
 
 JASP accepts images as SVGs encoded as base64 data URIs. The following functions are useful for creating images in this format.
 
-`.beginSaveImage(width, height)`  
-`.endSaveImage(descriptor)`
+Recently, we moved to a new system for writing images, to support the saveImage functionality (saving JASP images to a file). Here is the quick overview:
 
-`.beginSaveImage()` starts the image capturing process, and returns a descriptor. Once the analysis has performed all the rendering it needs, it should call `.endSaveImage()`, passing in the descriptor provided by `.beginSaveImage()`. `.endSaveImage()` returns a descriptor which can be assigned to the image object described below.
-
+1. Create a `ggplot2` plot in your code. If you're working with (deprecated) base-r plots, wrap your plotting routine in a function (don't choose this option):
+  ```r
+  p <- ggplot2::ggplot(...)
+  ```
+  __OR__
+  ```r
+  .plotFunc() <- function() {
+    # add plotting routine here
+    plot(plotData, plotParameters)
+  }
+  ```
+2. Write the image to an object using the function `.writeImage()`:
+  ```r
+  imgObj <- .writeImage(width = options$plotWidth, 
+                         height = options$plotHeight, 
+                         plot = p)
+  ```
+  __OR__
+  ```r
+  imgObj <- .writeImage(width = options$plotWidth, 
+                         height = options$plotHeight, 
+                         plot = .plotFunc)
+  ```
+3. Extract the necessary information from the image object to your plot object that will go into the output:
+  ```r
+  plot[["data"]] <- imgObj[["png"]]
+  plot[["obj"]] <- imgObj[["obj"]]
+  plot[["convertible"]] <- TRUE
+  plot[["status"]] <- "complete"
+  ```
 
 ### Cleaning data
 
@@ -200,7 +227,7 @@ An example of a results bundle might be:
 - `results` : a results object, descriped below
 - `status` : the status, this can be either `"inited"` (typically to be returned when `perform == "init"`) or `"complete"` (typically returned when `perform == "run"`)
 - `state`  : arbitrary data that can be retrieved in a subsequent call of this analysis with a call to `.retrieveState()`, explained below
-- `keep` : a list of file descriptors (from `.endSaveImage()`). This instructs the temporary file system to keep these files, and not delete them.
+- `keep` : a list of file descriptors (from `.writeImage()`). This instructs the temporary file system to keep these files, and not delete them.
 
 ### Results
 
