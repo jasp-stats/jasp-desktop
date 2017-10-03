@@ -196,17 +196,7 @@
 			"default": true
 		},
 		{
-			"name": "StatisticsStrength",
-			"type": "Boolean",
-			"default": true
-		},
-		{
-			"name": "StatisticsCloseness",
-			"type": "Boolean",
-			"default": true
-		},
-		{
-			"name": "StatisticsBetweenness",
+			"name": "StatisticsCentrality",
 			"type": "Boolean",
 			"default": true
 		},

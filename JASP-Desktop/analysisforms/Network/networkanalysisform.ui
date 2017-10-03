@@ -351,7 +351,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Node</string>
+                  <string>&amp;Node</string>
                  </property>
                 </widget>
                </item>
@@ -377,7 +377,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Jackknife</string>
+                  <string>&amp;Jackknife</string>
                  </property>
                 </widget>
                </item>
@@ -471,24 +471,10 @@
                  </property>
                 </spacer>
                </item>
-               <item row="3" column="0">
-                <widget class="BoundCheckBox" name="StatisticsBetweenness">
-                 <property name="text">
-                  <string>Betweenness</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="BoundCheckBox" name="StatisticsCloseness">
-                 <property name="text">
-                  <string>Closeness</string>
-                 </property>
-                </widget>
-               </item>
                <item row="1" column="0">
-                <widget class="BoundCheckBox" name="StatisticsStrength">
+                <widget class="BoundCheckBox" name="StatisticsCentrality">
                  <property name="text">
-                  <string>Strength</string>
+                  <string>Centrality</string>
                  </property>
                 </widget>
                </item>
@@ -733,7 +719,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Maximum</string>
+                  <string>&amp;Maximum</string>
                  </property>
                 </widget>
                </item>
@@ -873,7 +859,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Pseudo-likelihood</string>
+                  <string>Pseudo-li&amp;kelihood</string>
                  </property>
                 </widget>
                </item>
@@ -899,7 +885,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Loglinear</string>
+                  <string>&amp;Loglinear</string>
                  </property>
                 </widget>
                </item>
@@ -912,7 +898,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Univariate regressions</string>
+                  <string>&amp;Univariate regressions</string>
                  </property>
                 </widget>
                </item>
@@ -1193,7 +1179,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Exclude pairwise</string>
+                  <string>E&amp;xclude pairwise</string>
                  </property>
                 </widget>
                </item>
@@ -1494,7 +1480,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Normalized</string>
+                  <string>Normali&amp;zed</string>
                  </property>
                 </widget>
                </item>
@@ -1682,7 +1668,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Value</string>
+                  <string>&amp;Value</string>
                  </property>
                 </widget>
                </item>

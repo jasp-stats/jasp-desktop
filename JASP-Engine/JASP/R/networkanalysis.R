@@ -123,8 +123,7 @@ NetworkAnalysis <- function (
 		# general arguments
 		"weightedNetwork", "signedNetwork", "missingValues"
 	)
-	bootstrapArgs <-c(defArgs, "numberOfBootstraps", "BootstrapType",
-					  "StatisticsEdges", "StatisticsStrength", "StatisticsCloseness", "StatisticsBetweenness", "StatisticsBetweenness")
+	bootstrapArgs <-c(defArgs, "numberOfBootstraps", "BootstrapType")
 
 	stateKey <- list(
 		# depends on everything but plotting arguments
@@ -204,12 +203,11 @@ NetworkAnalysis <- function (
 			results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = perform) # any errors will appear top of this table
 			# initialize progress table
 			results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform, when = "before")
-			if (!.shouldContinue(callback(results)))
-				return()
+			# if (!.shouldContinue(callback(results)))
+			# 	return()
 			
 			network <- .networkAnalysisBootstrap(network, options, variables, perform, oldNetwork = state, results = results, callback = callback)
 			if (is.null(network) && perform == "run") { # bootstrap was aborted
-			  print("ABORTED 1")
 			  return()
 			}
 		}
@@ -234,16 +232,18 @@ NetworkAnalysis <- function (
 		if (options[["bootstrapOnOff"]]) {
 			results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform, when = "after")
 
-			results[["bootstrapEdgePLT"]] <- .networkAnalysisBootstrapPlot(network, options, perform, "edge", oldPlot = state[["bootstrapEdgePLT"]])
-			results[["bootstrapCentPLT"]] <- .networkAnalysisBootstrapPlot(network, options, perform, c("strength", "betweenness", "closeness"), oldPlot = state[["bootstrapCentPLT"]])
-
-			allBootstrapPlots <- results[["bootstrapEdgePLT"]][["collection"]]
-			for (bt in allBootstrapPlots)
-				keep <- c(keep, bt[["data"]])
-
-			allBootstrapPlots <- results[["bootstrapCentPLT"]][["collection"]]
-			for (bt in allBootstrapPlots)
-				keep <- c(keep, bt[["data"]])
+			if (options[["StatisticsEdges"]]) {
+			  results[["bootstrapEdgePLT"]] <- .networkAnalysisBootstrapPlot(network, options, perform, statistic = "edge", oldPlot = state[["bootstrapEdgePLT"]])
+			  allBootstrapPlots <- results[["bootstrapEdgePLT"]][["collection"]]
+			  for (bt in allBootstrapPlots)
+			    keep <- c(keep, bt[["data"]])
+			}
+			if (options[["StatisticsCentrality"]]) {
+			  results[["bootstrapCentPLT"]] <- .networkAnalysisBootstrapPlot(network, options, perform, statistic = c("strength", "betweenness", "closeness"), oldPlot = state[["bootstrapCentPLT"]])
+			  allBootstrapPlots <- results[["bootstrapCentPLT"]][["collection"]]
+			  for (bt in allBootstrapPlots)
+			    keep <- c(keep, bt[["data"]])
+			}
 
 		}
 		if (options[["tableWeightsMatrix"]]) {
@@ -617,9 +617,10 @@ NetworkAnalysis <- function (
 		nGraphs <- length(allNetworks)
 
 		nCores <- .networkAnalysisGetNumberOfCores(options)
-
+		
+		# just calculate all statistics. 
 		statistics <- c("edge", "strength", "closeness", "betweenness")
-		statistics <- statistics[unlist(options[c("StatisticsEdges", "StatisticsStrength", "StatisticsCloseness", "StatisticsBetweenness")])]
+		# statistics <- statistics[unlist(options[c("StatisticsEdges", "StatisticsStrength", "StatisticsCloseness", "StatisticsBetweenness")])]
 		
 		# callback for bootstrap
 		env <- new.env()
@@ -704,7 +705,6 @@ NetworkAnalysis <- function (
 		  
 		  # if aborted
 		  if (is.null(network[["bootstrap"]][[nm]])) {
-		    print("ABORTED 0")
 		    return()
 		  }
 		}
