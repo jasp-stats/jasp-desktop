@@ -731,7 +731,9 @@
 }
 
 .aicNull <- function(glmObj) {
-  if (attr(glmObj[["terms"]], "intercept")) {
+  if (!is.null(glmObj[["nullModel"]])) {
+    return(2*length(coef(glmObj[["nullModel"]]))+glmObj[["null.deviance"]])
+  } else if (attr(glmObj[["terms"]], "intercept")) {
     return(2+glmObj[["null.deviance"]])
   } else {
     return(glmObj[["null.deviance"]])
@@ -743,7 +745,10 @@
 }
 
 .bicNull <- function(glmObj) {
-  if (attr(glmObj[["terms"]], "intercept")) {
+  if (!is.null(glmObj[["nullModel"]])) {
+    return(log(length(glmObj[["y"]]))*length(coef(glmObj[["nullModel"]]))+
+           glmObj[["null.deviance"]])
+  } else if (attr(glmObj[["terms"]], "intercept")) {
     return(log(length(glmObj[["y"]]))+glmObj[["null.deviance"]])
   } else {
     return(glmObj[["null.deviance"]])

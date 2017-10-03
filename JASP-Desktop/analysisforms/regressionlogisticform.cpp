@@ -77,9 +77,11 @@ RegressionLogisticForm::RegressionLogisticForm(QWidget *parent) :
 	ui->panelIncludeIntercept->hide();
 
 #ifdef QT_NO_DEBUG
+	ui->labelWLSWeights->hide();
 	ui->wlsWeights->hide();
 	ui->buttonAssignWlsWeights->hide();
 #else
+	ui->labelWLSWeights->setStyleSheet("background-color: pink ;");
 	ui->wlsWeights->setStyleSheet("background-color: pink ;");
 	ui->buttonAssignWlsWeights->setStyleSheet("background-color: pink ;");
 #endif
