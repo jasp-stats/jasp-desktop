@@ -1336,7 +1336,7 @@
            <item>
             <widget class="QLabel" name="label_labelYAxis">
              <property name="text">
-              <string>Enter label y-axis</string>
+              <string>Label y-axis</string>
              </property>
             </widget>
            </item>
@@ -1356,7 +1356,7 @@
              </property>
              <property name="maximumSize">
               <size>
-               <width>230</width>
+               <width>260</width>
                <height>16777215</height>
               </size>
              </property>
