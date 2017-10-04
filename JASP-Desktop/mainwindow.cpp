@@ -789,9 +789,6 @@ AnalysisForm* MainWindow::loadForm(const string name)
 #endif
 	else if (name == "NetworkAnalysis")
 		form = new NetworkAnalysisForm(contentArea);
-#endif
-	else if (name == "NetworkAnalysis")
-		form = new NetworkAnalysisForm(contentArea);
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 

@@ -128,14 +128,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 
 	ui->BFFromT->setMenu(menu);
 #endif
-	
-	connect(ui->networkButton, SIGNAL(clicked()), this, SLOT(networkItemSelected()));
 
-}
-
-	ui->networkButton->setMenu(menu);
-#endif
-	
 	connect(ui->networkButton, SIGNAL(clicked()), this, SLOT(networkItemSelected()));
 
 }
