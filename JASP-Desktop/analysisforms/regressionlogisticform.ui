@@ -554,7 +554,7 @@
        </widget>
       </item>
       <item row="10" column="2">
-       <widget class="QLabel" name="label_5">
+       <widget class="QLabel" name="labelWLSWeights">
         <property name="text">
          <string>WLS Weights</string>
         </property>
@@ -919,7 +919,7 @@
                <string/>
               </property>
              </widget>
-             </item>
+            </item>
             <item row="5" column="0" colspan="2">
              <spacer name="verticalSpacer_7">
               <property name="orientation">
@@ -945,7 +945,7 @@
                </size>
               </property>
              </spacer>
-             </item>
+            </item>
            </layout>
           </widget>
          </item>
