@@ -481,11 +481,13 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 	render: function () {
 
 		var results = this.model.get("results");
-		if (results == "") { // called to update progressbar
-			var $progressbar = this.progressbar.init(this.model.get("progress"), this.model.get("id"), this.model.get("status"));
-			this.$el.find(".jasp-progressbar-container").replaceWith($progressbar);
-			this.handleVisibilityProgressbar(this.progressbar.status());
-			
+		if (results == "" || results == null) {
+			var progress = this.model.get("progress");
+			if (progress > -1) {  // called to update progressbar
+				var $progressbar = this.progressbar.init(progress, this.model.get("id"), this.model.get("status"));
+				this.$el.find(".jasp-progressbar-container").replaceWith($progressbar);
+				this.handleVisibilityProgressbar(this.progressbar.status());
+			}
 			return this;
 		}
 		
