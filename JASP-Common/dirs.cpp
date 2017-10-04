@@ -233,8 +233,8 @@ string Dirs::exeDir()
 	}
 #else
 
-    char buf[512];
-    char linkname[512]; /* /proc/<pid>/exe */
+	char buf[512];
+	char linkname[512]; /* /proc/<pid>/exe */
 	pid_t pid;
 	int ret;
 
@@ -251,14 +251,14 @@ string Dirs::exeDir()
 	if (ret >= sizeof(buf))
 		throw Exception("Executable directory could not be retrieved: insufficient buffer size");
 
-    for (int i = ret; i > 0; i--)
-    {
-        if (buf[i] == '/')
-        {
-            buf[i] = '\0'; // add null terminator
-            break;
-        }
-    }
+	for (int i = ret; i > 0; i--)
+	{
+		if (buf[i] == '/')
+		{
+			buf[i] = '\0'; // add null terminator
+			break;
+		}
+	}
 
 	return string(buf);
 
@@ -284,7 +284,7 @@ string Dirs::rHomeDir()
 
 string Dirs::libraryDir()
 {
-    string dir = exeDir();
+	string dir = exeDir();
 
 #ifdef __WIN32__
 	dir += "/Resources/Library";
@@ -294,5 +294,5 @@ string Dirs::libraryDir()
 	dir += "/Resources/Library";
 #endif
 
-    return dir;
+	return dir;
 }

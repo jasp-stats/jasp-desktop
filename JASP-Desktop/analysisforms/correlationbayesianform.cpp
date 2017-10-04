@@ -26,7 +26,7 @@ CorrelationBayesianForm::CorrelationBayesianForm(QWidget *parent) :
 	ui->setupUi(this);
 
 	_availableVariablesModel.setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
-    _availableVariablesModel.setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
+	_availableVariablesModel.setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	ui->availableVariables->setModel(&_availableVariablesModel);
 	ui->availableVariables->setDoubleClickTarget(ui->variables);
 
@@ -42,17 +42,17 @@ CorrelationBayesianForm::CorrelationBayesianForm(QWidget *parent) :
 
 #ifdef QT_NO_DEBUG
 	ui->spearman->hide();
-    //ui->kendallsTauB->hide();
-    ui->ciValueContainer->hide();
-    //ui->credibleInterval->hide();
+	//ui->kendallsTauB->hide();
+	ui->ciValueContainer->hide();
+	//ui->credibleInterval->hide();
 #else
 	ui->spearman->setStyleSheet("background-color: pink ;");
-    //ui->kendallsTauB->setStyleSheet("background-color: pink ;");
-    ui->ciValueContainer->setStyleSheet("background-color: pink ;");
-    //ui->credibleInterval->setStyleSheet("background-color: pink ;");
+	//ui->kendallsTauB->setStyleSheet("background-color: pink ;");
+	ui->ciValueContainer->setStyleSheet("background-color: pink ;");
+	//ui->credibleInterval->setStyleSheet("background-color: pink ;");
 #endif
 
-    ui->ciValue->setLabel("Credible interval");
+	ui->ciValue->setLabel("Credible interval");
 }
 
 CorrelationBayesianForm::~CorrelationBayesianForm()

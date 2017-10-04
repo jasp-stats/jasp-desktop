@@ -35,9 +35,9 @@ protected:
 	virtual void nextCheckState() OVERRIDE;
 
 private:
-    bool _expanded;
-    QIcon _expandedIcon;
-    QIcon _contractedIcon;
+	bool _expanded;
+	QIcon _expandedIcon;
+	QIcon _contractedIcon;
 	
 };
 

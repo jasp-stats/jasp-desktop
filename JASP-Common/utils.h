@@ -27,25 +27,25 @@
 class Utils
 {
 public:
-    enum FileType { jasp = 0, html, csv, txt, sav, ods, pdf, empty, unknown };
-    typedef std::vector<Utils::FileType> FileTypeVector;
+	enum FileType { jasp = 0, html, csv, txt, sav, ods, pdf, empty, unknown };
+	typedef std::vector<Utils::FileType> FileTypeVector;
 
-    static const char* getFileTypeString(const Utils::FileType &fileType);
-    static Utils::FileType getTypeFromFileName(const std::string &path);
+	static const char* getFileTypeString(const Utils::FileType &fileType);
+	static Utils::FileType getTypeFromFileName(const std::string &path);
 
-    static long currentMillis();
-    static long currentSeconds();
-    static long getFileModificationTime(const std::string &filename);
+	static long currentMillis();
+	static long currentSeconds();
+	static long getFileModificationTime(const std::string &filename);
 	static long getFileSize(const JaspFiles::Path &filePath);
-    static void touch(const std::string &filename);
-    static bool renameOverwrite(const std::string &oldName, const std::string &newName);
-    static bool removeFile(const std::string &path);
+	static void touch(const std::string &filename);
+	static bool renameOverwrite(const std::string &oldName, const std::string &newName);
+	static bool removeFile(const std::string &path);
 
-    static boost::filesystem::path osPath(const std::string &path);
-    static std::string osPath(const boost::filesystem::path &path);
+	static boost::filesystem::path osPath(const std::string &path);
+	static std::string osPath(const boost::filesystem::path &path);
 
-    static void remove(std::vector<std::string> &target, const std::vector<std::string> &toRemove);
-    static void sleep(int ms);
+	static void remove(std::vector<std::string> &target, const std::vector<std::string> &toRemove);
+	static void sleep(int ms);
 };
 
 #endif // UTILS_H

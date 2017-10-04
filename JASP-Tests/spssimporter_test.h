@@ -35,16 +35,16 @@
 
 class SPSSImporterTest : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 
   struct fileContent
   {
-    int columns;
-    int rows;
-    std::vector <std::string> headers;
-    std::vector< std::vector<std::string> > data;
+	int columns;
+	int rows;
+	std::vector <std::string> headers;
+	std::vector< std::vector<std::string> > data;
   };
 
   FileEvent *fe_spss, *fe_csv;
@@ -58,10 +58,10 @@ private:
 	JaspFiles::Path	_csv_path;
 
 private slots:
-    void init();
-    void cleanup();
-    void spssTester();
-    void spssTester_data();
+	void init();
+	void cleanup();
+	void spssTester();
+	void spssTester_data();
 };
 
 

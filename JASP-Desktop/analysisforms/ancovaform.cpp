@@ -39,7 +39,7 @@ AncovaForm::AncovaForm(QWidget *parent) :
 
 	_fixedFactorsListModel = new TableModelVariablesAssigned(this);
 	_fixedFactorsListModel->setSource(&_availableVariablesModel);
-    _fixedFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	_fixedFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->fixedFactors->setModel(_fixedFactorsListModel);
 
 	_randomFactorsListModel = new TableModelVariablesAssigned(this);
@@ -85,22 +85,22 @@ AncovaForm::AncovaForm(QWidget *parent) :
 	connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
 	_contrastsModel = new TableModelVariablesOptions();
-    ui->contrasts->setModel(_contrastsModel);
+	ui->contrasts->setModel(_contrastsModel);
 
-    _plotFactorsAvailableTableModel = new TableModelVariablesAvailable();
-    _plotFactorsAvailableTableModel->setInfoProvider(this);
+	_plotFactorsAvailableTableModel = new TableModelVariablesAvailable();
+	_plotFactorsAvailableTableModel->setInfoProvider(this);
 	ui->plotVariables->setModel(_plotFactorsAvailableTableModel);
 
-    _horizontalAxisTableModel = new TableModelVariablesAssigned(this);
-    _horizontalAxisTableModel->setSource(_plotFactorsAvailableTableModel);
+	_horizontalAxisTableModel = new TableModelVariablesAssigned(this);
+	_horizontalAxisTableModel->setSource(_plotFactorsAvailableTableModel);
 	ui->plotHorizontalAxis->setModel(_horizontalAxisTableModel);
 
-    _seperateLinesTableModel = new TableModelVariablesAssigned(this);
-    _seperateLinesTableModel->setSource(_plotFactorsAvailableTableModel);
+	_seperateLinesTableModel = new TableModelVariablesAssigned(this);
+	_seperateLinesTableModel->setSource(_plotFactorsAvailableTableModel);
 	ui->plotSeparateLines->setModel(_seperateLinesTableModel);
 
-    _seperatePlotsTableModel = new TableModelVariablesAssigned(this);
-    _seperatePlotsTableModel->setSource(_plotFactorsAvailableTableModel);
+	_seperatePlotsTableModel = new TableModelVariablesAssigned(this);
+	_seperatePlotsTableModel->setSource(_plotFactorsAvailableTableModel);
 	ui->plotSeparatePlots->setModel(_seperatePlotsTableModel);
 
 	ui->buttonAssignHorizontalAxis->setSourceAndTarget(ui->plotVariables, ui->plotHorizontalAxis);
@@ -161,7 +161,7 @@ void AncovaForm::factorsChanged()
 	factorsAvailable.add(_randomFactorsListModel->assigned());
 
 	_contrastsModel->setVariables(factorsAvailable);
-    _plotFactorsAvailableTableModel->setVariables(factorsAvailable);
+	_plotFactorsAvailableTableModel->setVariables(factorsAvailable);
 
 	Terms plotVariablesAssigned;
 	plotVariablesAssigned.add(_horizontalAxisTableModel->assigned());
@@ -169,7 +169,7 @@ void AncovaForm::factorsChanged()
 	plotVariablesAssigned.add(_seperatePlotsTableModel->assigned());
 	_plotFactorsAvailableTableModel->notifyAlreadyAssigned(plotVariablesAssigned);
 
-    ui->postHocTestsVariables->setVariables(factorsAvailable);
+	ui->postHocTestsVariables->setVariables(factorsAvailable);
 
 	if (_options != NULL)
 		_options->blockSignals(false);

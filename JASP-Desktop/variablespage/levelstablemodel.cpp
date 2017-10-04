@@ -110,45 +110,45 @@ void LevelsTableModel::moveDown(QModelIndexList &selection) {
 }
 
 void LevelsTableModel::reverse() {
-    if (_column == NULL)
-        return;
+	if (_column == NULL)
+		return;
 
-    Labels &labels = _column->labels();
+	Labels &labels = _column->labels();
 	std::vector<Label> new_labels(labels.begin(), labels.end());
 
-    std::reverse(new_labels.begin(), new_labels.end());
+	std::reverse(new_labels.begin(), new_labels.end());
 
-    labels.set(new_labels);
+	labels.set(new_labels);
 
-    QModelIndex topLeft = createIndex(0,0);
-    QModelIndex bottonRight = createIndex(labels.size() - 1, 1);
-    //emit a signal to make the view reread identified data
-    emit dataChanged(topLeft, bottonRight);
+	QModelIndex topLeft = createIndex(0,0);
+	QModelIndex bottonRight = createIndex(labels.size() - 1, 1);
+	//emit a signal to make the view reread identified data
+	emit dataChanged(topLeft, bottonRight);
 }
 
 Qt::ItemFlags LevelsTableModel::flags(const QModelIndex &index) const
 {
 	if (index.column() == 1) {
-        return Qt::ItemIsEditable | QAbstractTableModel::flags(index);
-    } else {
-        return QAbstractTableModel::flags(index);
-    }
+		return Qt::ItemIsEditable | QAbstractTableModel::flags(index);
+	} else {
+		return QAbstractTableModel::flags(index);
+	}
 }
 
 bool LevelsTableModel::setData(const QModelIndex & index, const QVariant & value, int role)
 {
-    if (_column == NULL)
-        return false;
+	if (_column == NULL)
+		return false;
 
-    if (role == Qt::EditRole)
-    {
-        const std::string &new_label = value.toString().toStdString();
-        if (new_label != "") {
-            Labels &labels = _column->labels();
+	if (role == Qt::EditRole)
+	{
+		const std::string &new_label = value.toString().toStdString();
+		if (new_label != "") {
+			Labels &labels = _column->labels();
 			if (labels.setLabelFromRow(index.row(), new_label))
 				emit dataChanged(index, index);
 		}
-    }
+	}
 
-    return true;
+	return true;
 }

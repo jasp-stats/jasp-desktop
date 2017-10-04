@@ -378,7 +378,7 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const FilePath &path,  cons
 		return false;
 	}
 	if (!dataEntry->archiveExists())
-        throw runtime_error("The selected JASP archive '" + path.string() + "' could not be found.");
+		throw runtime_error("The selected JASP archive '" + path.string() + "' could not be found.");
 
 	if (!dataEntry->exists())
 	{

@@ -27,7 +27,7 @@
 
 class RibbonButton : public QToolButton
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
 	explicit RibbonButton(QWidget *parent = 0);
 	void setDataSetNotNeeded();

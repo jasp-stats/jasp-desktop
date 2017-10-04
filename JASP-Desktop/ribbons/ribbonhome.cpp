@@ -23,13 +23,13 @@ RibbonHome::RibbonHome(QWidget *parent) :
 	RibbonWidget(parent),
 	ui(new Ui::RibbonHome)
 {
-    ui->setupUi(this);
+	ui->setupUi(this);
 
 
 }
 
 RibbonHome::~RibbonHome()
 {
-    delete ui;
+	delete ui;
 }
 

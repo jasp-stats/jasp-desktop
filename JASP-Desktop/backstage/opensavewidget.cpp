@@ -276,21 +276,21 @@ void OpenSaveWidget::dataSetIOCompleted(FileEvent *event)
 
 bool OpenSaveWidget::checkSyncFileExists(const QString &path)
 {
-    bool exists = path.startsWith("http") ? true : (QFileInfo::exists(path) && Utils::getFileSize(path.toStdString()) > 0);
-    if (!exists)
+	bool exists = path.startsWith("http") ? true : (QFileInfo::exists(path) && Utils::getFileSize(path.toStdString()) > 0);
+	if (!exists)
 	{
-        int attempts = 1;
-        while (!exists && attempts < 20)
-        {
-            Utils::sleep(100);
-            attempts++;
-            exists = QFileInfo::exists(path) && Utils::getFileSize(path.toStdString()) > 0;
-        }
-    }
-    if (!exists)
-    {
-        std::cout << "Sync file does not exist: " << path.toStdString() << std::endl;
-        std::cout.flush();
+		int attempts = 1;
+		while (!exists && attempts < 20)
+		{
+			Utils::sleep(100);
+			attempts++;
+			exists = QFileInfo::exists(path) && Utils::getFileSize(path.toStdString()) > 0;
+		}
+	}
+	if (!exists)
+	{
+		std::cout << "Sync file does not exist: " << path.toStdString() << std::endl;
+		std::cout.flush();
 		clearSyncData();
 	}
 

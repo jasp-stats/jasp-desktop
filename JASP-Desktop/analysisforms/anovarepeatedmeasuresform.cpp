@@ -74,7 +74,7 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	connect(_betweenSubjectsTermsModel, SIGNAL(termsChanged()), this, SLOT(termsChanged()));
 
 	_contrastsModel = new TableModelVariablesOptions();
-    ui->contrasts->setModel(_contrastsModel);
+	ui->contrasts->setModel(_contrastsModel);
 
 	connect(_designTableModel, SIGNAL(designChanging()), this, SLOT(factorsChanging()));
 	connect(_designTableModel, SIGNAL(designChanged()), this, SLOT(withinSubjectsDesignChanged()));

@@ -35,16 +35,16 @@ ReliabilityAnalysisForm::ReliabilityAnalysisForm(QWidget *parent) :
 	_variableListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	ui->variables->setModel(_variableListModel);
 
-    ui->listAvailableVariables->setDoubleClickTarget(ui->variables);
-    ui->variables->setDoubleClickTarget(ui->listAvailableVariables);
-    ui->assignButton->setSourceAndTarget(ui->listAvailableVariables, ui->variables);
+	ui->listAvailableVariables->setDoubleClickTarget(ui->variables);
+	ui->variables->setDoubleClickTarget(ui->listAvailableVariables);
+	ui->assignButton->setSourceAndTarget(ui->listAvailableVariables, ui->variables);
 
 	connect(_variableListModel, SIGNAL(assignmentsChanging()), this, SLOT(variablesChanging()));
 	connect(_variableListModel, SIGNAL(assignmentsChanged()), this, SLOT(variablesChanged()));
 	connect(_variableListModel, SIGNAL(termsChanged()), this, SLOT(termsChanged()));
 
 	ui->containerRevScaledItems->hide();
-    ui->containerAdvOptions->hide();
+	ui->containerAdvOptions->hide();
 
 }
 

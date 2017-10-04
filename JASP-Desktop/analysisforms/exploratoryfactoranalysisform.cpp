@@ -47,7 +47,7 @@ ExploratoryFactorAnalysisForm::ExploratoryFactorAnalysisForm(QWidget *parent) :
 */
 
 	ui->buttonAssignVariables->setSourceAndTarget(ui->listAvailableFields, ui->variables);
-    ui->containerOptions->hide();
+	ui->containerOptions->hide();
 //	ui->buttonAssignGroupingVariable->setSourceAndTarget(ui->listAvailableFields, ui->groupingVariable);
 
 //	ui->confidenceIntervalInterval->setLabel("Confidence interval");
@@ -68,7 +68,7 @@ void ExploratoryFactorAnalysisForm::HandleSlider(int i)
 {
 	QString	s = QString::number(((double)i)/100.0, 'f', 2);
 	ui->highlightText->setText(s);
-    ui->highlightText->finalise();
+	ui->highlightText->finalise();
 }
 
 void ExploratoryFactorAnalysisForm::HandleLineEdit(QString s)

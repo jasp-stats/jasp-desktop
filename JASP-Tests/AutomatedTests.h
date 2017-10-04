@@ -35,64 +35,64 @@
 
 namespace AutomatedTests
 {
-    typedef QList<QObject*> TestList;
+	typedef QList<QObject*> TestList;
 
-    inline TestList& testList()
-    {
-        static TestList list;
-        return list;
-    }
+	inline TestList& testList()
+	{
+		static TestList list;
+		return list;
+	}
 
-    inline bool findObject(QObject* object)
-    {
-        TestList& list = testList();
-        if (list.contains(object))
-    {
-        return true;
-    }
-        foreach (QObject* test, list)
-        {
-            if (test->objectName() == object->objectName())
-            {
-                return true;
-            }
-        }
-        return false;
-    }
+	inline bool findObject(QObject* object)
+	{
+		TestList& list = testList();
+		if (list.contains(object))
+	{
+		return true;
+	}
+		foreach (QObject* test, list)
+		{
+			if (test->objectName() == object->objectName())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 
-    inline void addTest(QObject* object)
-    {
-        TestList& list = testList();
-        if (!findObject(object))
-        {
-            list.append(object);
-        }
-    }
+	inline void addTest(QObject* object)
+	{
+		TestList& list = testList();
+		if (!findObject(object))
+		{
+			list.append(object);
+		}
+	}
 
-    inline int run(int argc, char *argv[])
-    {
-        int ret = 0;
+	inline int run(int argc, char *argv[])
+	{
+		int ret = 0;
 
-        foreach (QObject* test, testList())
-        {
-            ret += QTest::qExec(test, argc, argv);
-        }
+		foreach (QObject* test, testList())
+		{
+			ret += QTest::qExec(test, argc, argv);
+		}
 
-        return ret;
-    }
+		return ret;
+	}
 }
 
 template <class T>
 class Test
 {
-    public:
-    QSharedPointer<T> child;
+	public:
+	QSharedPointer<T> child;
 
-    Test(const QString& name) : child(new T)
-    {
-        child->setObjectName(name);
-        AutomatedTests::addTest(child.data());
-    }
+	Test(const QString& name) : child(new T)
+	{
+		child->setObjectName(name);
+		AutomatedTests::addTest(child.data());
+	}
 };
 
 #define DECLARE_TEST(className) static Test<className> t(#className);
@@ -100,7 +100,7 @@ class Test
 #define TEST_MAIN \
 int main(int argc, char *argv[]) \
 { \
-    return AutomatedTests::run(argc, argv); \
+	return AutomatedTests::run(argc, argv); \
 }
 
 #endif // AUTOMATEDTESTS_H

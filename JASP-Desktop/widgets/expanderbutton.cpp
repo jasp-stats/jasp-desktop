@@ -26,9 +26,9 @@
 ExpanderButton::ExpanderButton(QWidget *parent) :
 	QPushButton(parent)
 {
-    _expanded = false;
-    _expandedIcon = QIcon(QString(":/images/expander-arrow-down.png"));
-    _contractedIcon = QIcon(QString(":/images/expander-arrow-up.png"));
+	_expanded = false;
+	_expandedIcon = QIcon(QString(":/images/expander-arrow-down.png"));
+	_contractedIcon = QIcon(QString(":/images/expander-arrow-up.png"));
 
 	setCheckable(true);
 	setIcon(_contractedIcon);
@@ -52,7 +52,7 @@ void ExpanderButton::nextCheckState()
 
 	for (QObjectList::Iterator itr = siblings.begin(); itr != siblings.end(); itr++) {
 		QWidget* w = dynamic_cast<QWidget*>(*itr);
-        if (w != NULL && w != this)
+		if (w != NULL && w != this)
 			w->setVisible(_expanded);
 	}
 }

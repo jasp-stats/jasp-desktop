@@ -27,7 +27,7 @@
 
 class BoundCheckBox : public QCheckBox, public Bound
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
 	explicit BoundCheckBox(QWidget *parent = 0);
 	virtual void bindTo(Option *option) OVERRIDE;
@@ -37,7 +37,7 @@ protected:
 	bool event(QEvent *e) OVERRIDE;
 
 signals:
-    
+	
 public slots:
 
 private:

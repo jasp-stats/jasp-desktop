@@ -390,11 +390,11 @@ void EngineSync::startSlaveProcess(int no)
 #define ARCH_SUBPATH "x64"
 #endif
 
-    env.insert("PATH", programDir.absoluteFilePath("R\\library\\RInside\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\library\\Rcpp\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\bin\\" ARCH_SUBPATH));
+	env.insert("PATH", programDir.absoluteFilePath("R\\library\\RInside\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\library\\Rcpp\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\bin\\" ARCH_SUBPATH));
 	env.insert("R_HOME", rHome.absolutePath());
 
 	unsigned long processId = ProcessInfo::currentPID();
-    args << QString::number(processId);
+	args << QString::number(processId);
 
 #undef ARCH_SUBPATH
 
@@ -485,17 +485,17 @@ void EngineSync::subProcessStarted()
 
 void EngineSync::subProcessError(QProcess::ProcessError error)
 {
-    emit engineTerminated();
+	emit engineTerminated();
 
-    qDebug() << "subprocess error" << error;
+	qDebug() << "subprocess error" << error;
 }
 
 void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
-    (void)exitStatus;
+	(void)exitStatus;
 
-    emit engineTerminated();
+	emit engineTerminated();
 
-    qDebug() << "subprocess finished" << exitCode;
+	qDebug() << "subprocess finished" << exitCode;
 }
 

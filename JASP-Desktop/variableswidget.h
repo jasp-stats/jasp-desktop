@@ -30,7 +30,7 @@ signals:
 private slots:
 	void moveUpClicked();
 	void moveDownClicked();
-    void reverseClicked();
+	void reverseClicked();
 	void labelDataChanged(QModelIndex m1, QModelIndex m2);
 
 private:

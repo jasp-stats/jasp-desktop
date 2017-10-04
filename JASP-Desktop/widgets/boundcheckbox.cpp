@@ -22,7 +22,7 @@
 #include <QDebug>
 
 BoundCheckBox::BoundCheckBox(QWidget *parent) :
-    QCheckBox(parent)
+	QCheckBox(parent)
 {
 	_boundTo = NULL;
 }

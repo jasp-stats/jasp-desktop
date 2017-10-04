@@ -39,10 +39,10 @@ BoundTextEdit::BoundTextEdit(QWidget *parent) :
 	this->setFont(font);
 
 	QFontMetrics metrics(font);
-	this->setTabStopWidth(metrics.width("    ") + 2);
+	this->setTabStopWidth(metrics.width("	") + 2);
 
 	_errorStylesheet = "padding : 4px 2px ; text-align : right ; background-color : pink ;";
-	_okStylesheet    = "padding : 4px 2px ; text-align : right ; ";
+	_okStylesheet	= "padding : 4px 2px ; text-align : right ; ";
 
 #ifdef __APPLE__
 	_okMessage = "\u2318 + Enter to apply";

@@ -124,9 +124,9 @@ Qt::ItemFlags TableModelVariables::flags(const QModelIndex &index) const
 	{
 		const Term &term = _variables.at(index.row());
 		if ( ! isAllowed(term))
-            return 0;
+			return 0;
 
-        return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
+		return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
 	}
 	else
 		return Qt::ItemIsEnabled | Qt::ItemIsDropEnabled;

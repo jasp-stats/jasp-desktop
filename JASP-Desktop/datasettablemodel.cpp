@@ -27,7 +27,7 @@
 using namespace std;
 
 DataSetTableModel::DataSetTableModel(QObject *parent) :
-    QAbstractTableModel(parent)
+	QAbstractTableModel(parent)
 {
 	_dataSet = NULL;
 
@@ -39,9 +39,9 @@ DataSetTableModel::DataSetTableModel(QObject *parent) :
 
 void DataSetTableModel::setDataSet(DataSet* dataSet)
 {
-    beginResetModel();
+	beginResetModel();
 	_dataSet = dataSet;
-    endResetModel();
+	endResetModel();
 }
 
 void DataSetTableModel::clearDataSet()
@@ -72,13 +72,13 @@ QVariant DataSetTableModel::data(const QModelIndex &index, int role) const
 	if (_dataSet == NULL)
 		return QVariant();
 
-    if (role == Qt::DisplayRole)
+	if (role == Qt::DisplayRole)
 	{
 		QString value = toQStr(_dataSet->column(index.column())[index.row()]);
 		return QVariant(value);
 	}
 
-    return QVariant();
+	return QVariant();
 }
 
 QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientation, int role) const
@@ -90,7 +90,7 @@ QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientatio
 	{
 		if (orientation == Qt::Horizontal)
 		{
-			QString value = toQStr(_dataSet->column(section).name()) + QString("        ");
+			QString value = toQStr(_dataSet->column(section).name()) + QString("		");
 			return QVariant(value);
 		}
 		else
