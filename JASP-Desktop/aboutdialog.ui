@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>700</width>
-    <height>370</height>
+    <width>800</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
   <property name="maximumSize">
    <size>
-    <width>900</width>
-    <height>600</height>
+    <width>1500</width>
+    <height>1000</height>
    </size>
   </property>
   <property name="palette">
@@ -68,8 +68,39 @@
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
-  <layout class="QGridLayout" name="gridLayout"/>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>4</number>
+   </property>
+   <property name="topMargin">
+    <number>4</number>
+   </property>
+   <property name="rightMargin">
+    <number>4</number>
+   </property>
+   <property name="bottomMargin">
+    <number>4</number>
+   </property>
+   <item row="0" column="0">
+    <widget class="QWebView" name="aboutView" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QWebView</class>
+   <extends>QWidget</extends>
+   <header>QtWebKitWidgets/QWebView</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

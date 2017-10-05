@@ -33,31 +33,26 @@ AboutDialog::AboutDialog(QWidget *parent) :
 	ui(new Ui::AboutDialog)
 {
 	ui->setupUi(this);
-
-	_aboutWebView = new QWebView(this);
-	_aboutWebView->setFixedWidth(900);
-	_aboutWebView->setFixedHeight(600);
-		
+	
 	m_network_manager = new QNetworkAccessManager();
 	m_pBuffer = new QByteArray();
-
-	// Disable maximize option dialog
-	setWindowFlags(Qt::Tool | Qt::WindowTitleHint | Qt::WindowCloseButtonHint /* | Qt::WindowMaximizeButtonHint */ | Qt::CustomizeWindowHint);
-
+	
+	setWindowFlags(Qt::Tool | Qt::WindowTitleHint | Qt::WindowCloseButtonHint | Qt::WindowMaximizeButtonHint | Qt::CustomizeWindowHint);
+	
 	//About core informataion with current version info
-	_aboutWebView->setUrl((QUrl(QString("qrc:///core/about.html"))));
+	ui->aboutView->setUrl((QUrl(QString("qrc:///core/about.html"))));
 
-	connect(_aboutWebView, SIGNAL(loadFinished(bool)), this, SLOT(aboutPageLoaded(bool)));
-	connect(_aboutWebView, SIGNAL( linkClicked( QUrl ) ), this, SLOT( linkClickedSlot( QUrl ) ) );
+	connect(ui->aboutView, SIGNAL(loadFinished(bool)), this, SLOT(aboutPageLoaded(bool)));
+	connect(ui->aboutView, SIGNAL( linkClicked( QUrl ) ), this, SLOT( linkClickedSlot( QUrl ) ) );
 	connect(this, SIGNAL(closeWindow()), this, SLOT(closeWindowHandler()));
 		
-	_aboutWebView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-	_aboutWebView->page()->mainFrame()->addToJavaScriptWindowObject("about", this);
+	ui->aboutView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+	ui->aboutView->page()->mainFrame()->addToJavaScriptWindowObject("about", this);
 	
 #ifdef QT_DEBUG
-	_aboutWebView->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+	ui->aboutView->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
 #else
-	_aboutWebView->setContextMenuPolicy(Qt::NoContextMenu);
+	ui->aboutView->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, false);	
 #endif
 		
  }
@@ -85,10 +80,10 @@ void AboutDialog::aboutPageLoaded(bool success)
 	{
 		QString version = tq(AppInfo::version.asString());
 		QString builddate = tq(AppInfo::builddate);
-		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppYear()");
-		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version +"')");
-		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppBuildDate('" + builddate +"')");
-		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.showDownLoadButton(false,'')");		
+		ui->aboutView->page()->mainFrame()->evaluateJavaScript("window.setAppYear()");
+		ui->aboutView->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version +"')");
+		ui->aboutView->page()->mainFrame()->evaluateJavaScript("window.setAppBuildDate('" + builddate +"')");
+		ui->aboutView->page()->mainFrame()->evaluateJavaScript("window.showDownLoadButton(false,'')");		
 		checkForJaspUpdate();
 	}
 }
@@ -112,7 +107,7 @@ void AboutDialog::downloadFinished()
 	QRegExp rx("JASPVersion:.+<\/div>");
 	rx.setCaseSensitivity(Qt::CaseInsensitive);
 		
-	_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.showDownLoadButton(false,'')");
+	ui->aboutView->page()->mainFrame()->evaluateJavaScript("window.showDownLoadButton(false,'')");
 
 	if  ((rx.indexIn(result, 0)) != -1)
 	{
@@ -139,9 +134,9 @@ void AboutDialog::downloadFinished()
 		if (latest > cur )
 		{
 			QString display = "true";
-			_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setNewVersion('" + version +"')");
+			ui->aboutView->page()->mainFrame()->evaluateJavaScript("window.setNewVersion('" + version +"')");
 #ifndef __linux__
-			_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.showDownLoadButton(true,'" + downloadfile + "')");
+			ui->aboutView->page()->mainFrame()->evaluateJavaScript("window.showDownLoadButton(true,'" + downloadfile + "')");
 #endif
 		}
 	}
