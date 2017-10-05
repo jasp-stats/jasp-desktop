@@ -491,12 +491,13 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					    # bf10: can't compute
 					    errorMessage <- errors$message
 					    unplotable <- TRUE
-					    unplotableMessage <- errors$message
+					    unplotableMessage <- errorMessage
 					    unplotableScatter <- TRUE
-					    unplotableMessageScatter <- errors$message
+					    unplotableMessageScatter <- errorMessage
 					    
 					    obsFootnote <- errors$message
 					    index <- .addFootnote(footnotes, obsFootnote)
+					    errorFootnotes[i] <- errorMessage
 						
 					    bfObject <- failedBfObject
 					} else {
