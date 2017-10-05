@@ -649,7 +649,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		list(name = "R", type = "number", format = "dp:3"),
 		list(name = "R2", title = "R\u00B2", type = "number", format = "dp:3"),
 		list(name = "aR2", title = "Adjusted R\u00B2", type = "number", format = "dp:3"),
-		list(name = "se", title = "RMSE", type = "number", format = "dp:3"))
+		list(name = "se", title = "RMSE", type = "number", format = "sf:4;dp:3"))
 
 	if (includes.nuisance) {
 	  null.model <- paste ("Null model includes ", paste (variables.in.null.model, collapse = ", "), sep = "")
@@ -671,7 +671,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	if (options$residualsDurbinWatson) {
 
-		fields[[length(fields)+1]] <- list(name = "Durbin-Watson", title = "Durbin-Watson", type = "number", format = "dp:3")
+		fields[[length(fields)+1]] <- list(name = "Durbin-Watson", title = "Durbin-Watson", type = "number", format = "sf:4;dp:3")
 		empty.line$"Durbin-Watson" <- "."
 	}
 
@@ -944,9 +944,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		fields <- list(
 			list(name = "Model", type = "integer"),
 			list(name = "Name", title = "  ", type = "string"),
-			list(name = "Coefficient", title = "Unstandardized", type = "number", format = "dp:3"),
-			list(name = "Standard Error", type="number", format = "dp:3"),
-			list(name = "Standardized Coefficient", title = "Standardized", type = "number", format = "dp:3"),
+			list(name = "Coefficient", title = "Unstandardized", type = "number", format = "sf:4;dp:3"),
+			list(name = "Standard Error", type="number", format = "sf:4;dp:3"),
+			list(name = "Standardized Coefficient", title = "Standardized", type = "number", format = "sf:4;dp:3"),
 			list(name = "t", type="number", format = "sf:4;dp:3"),
 			list(name = "p", type = "number", format = "dp:3;p:.001"))
 
@@ -992,8 +992,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 			alpha <- options$regressionCoefficientsConfidenceIntervalsInterval
 			alpha <- alpha / 100
-			fields[[ length(fields) + 1 ]] <- list(name = "Lower Bound", title = paste(round(100*(1-alpha)/2,1),"%",sep=""), type = "number", format = "dp:3")
-			fields[[ length(fields) + 1 ]] <- list(name = "Upper Bound", title = paste(round(100*(1+alpha)/2,1),"%",sep=""), type = "number", format = "dp:3")
+			fields[[ length(fields) + 1 ]] <- list(name = "Lower Bound", title = paste(round(100*(1-alpha)/2,1),"%",sep=""), type = "number", format = "sf:4;dp:3")
+			fields[[ length(fields) + 1 ]] <- list(name = "Upper Bound", title = paste(round(100*(1+alpha)/2,1),"%",sep=""), type = "number", format = "sf:4;dp:3")
 			empty.line$"Lower Bound" = ""
 			empty.line$"Upper Bound" = ""
 			dotted.line$"Lower Bound" = "."
@@ -1003,7 +1003,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		if (options$collinearityDiagnostics) {
 
 			fields[[ length(fields) + 1 ]] <- list(name = "Tolerance", title = "Tolerance", type = "number", format = "dp:3", overTitle="Collinearity Statistics")
-			fields[[ length(fields) + 1 ]] <- list(name = "VIF", title = "VIF", type = "number", format = "dp:3", overTitle="Collinearity Statistics")
+			fields[[ length(fields) + 1 ]] <- list(name = "VIF", title = "VIF", type = "number", format = "sf:4;dp:3", overTitle="Collinearity Statistics")
 			empty.line$"Tolerance" = ""
 			empty.line$"VIF" = ""
 			dotted.line$"Tolerance" = "."
@@ -1342,7 +1342,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					variable.name <- variable
 				}
 
-				fields[[length(fields)+1]] <- list(name = variable.name, title = variable.name, type = "number", format = "dp:3")
+				fields[[length(fields)+1]] <- list(name = variable.name, title = variable.name, type = "number", format = "sf:4;dp:3")
 			}
 		}
 
@@ -1555,8 +1555,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		fields <- list(
 			list(name = "Model", type = "integer"),
 			list(name = "Dimension", type = "integer"),
-			list(name = "Eigenvalue", type = "number", format = "dp:3"),
-			list(name = "Condition Index", type = "number", format = "dp:3")
+			list(name = "Eigenvalue", type = "number", format = "sf:4;dp:3"),
+			list(name = "Condition Index", type = "number", format = "sf:4;dp:3")
 			)
 
 
@@ -1763,11 +1763,11 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 		# Declare table elements
 		fields <- list(
-			list(name = "caseNumber", title = "Case Number", type="number", format = "dp:0"),
+			list(name = "caseNumber", title = "Case Number", type="integer"),
 			list(name = "stdResidual", title = "Std. Residual", type = "number", format = "dp:3"),
-			list(name = "dependentVariable", title = dependent.variable, type="number", format = "dp:3"),
-			list(name = "predictedValue", title = "Predicted Value", type="number", format = "dp:3"),
-			list(name = "residual", title = "Residual", type="number", format = "dp:3")
+			list(name = "dependentVariable", title = dependent.variable, type="number", format = "sf:4;dp:3"),
+			list(name = "predictedValue", title = "Predicted Value", type="number", format = "sf:4;dp:3"),
+			list(name = "residual", title = "Residual", type="number", format = "sf:4;dp:3")
 			)
 
 		casewiseDiagnostics[["schema"]] <- list(fields = fields)
@@ -1832,11 +1832,11 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		# Declare table elements
 		fields <- list(
 			list(name = "Type", title = "  ", type = "string"),
-			list(name = "Minimum", title = "Minimum", type = "number", format = "dp:3"),
-			list(name = "Maximum", title = "Maximum", type="number", format = "dp:3"),
-			list(name = "Mean", title = "Mean", type="number", format = "dp:3"),
-			list(name = "SD", title = "SD", type="number", format = "dp:3"),
-			list(name = "N", title = "N", type="number", format = "dp:0")
+			list(name = "Minimum", title = "Minimum", type = "number", format = "sf:4;dp:3"),
+			list(name = "Maximum", title = "Maximum", type="number", format = "sf:4;dp:3"),
+			list(name = "Mean", title = "Mean", type="number", format = "sf:4;dp:3"),
+			list(name = "SD", title = "SD", type="number", format = "sf:4;dp:3"),
+			list(name = "N", title = "N", type="integer")
 			)
 
 		residualsStatistics[["schema"]] <- list(fields = fields)
