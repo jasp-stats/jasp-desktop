@@ -22,6 +22,7 @@
 #include <QGridLayout>
 #include <QHeaderView>
 #include <QDebug>
+#include <QMessageBox>
 
 #include "datasettablemodel.h"
 
@@ -78,8 +79,15 @@ void MainTableView::badDataEnteredHandler(QModelIndex index)
 
 void MainTableView::columnTypeChanged(int columnIndex, Column::ColumnType newColumnType)
 {
-	_dataSetModel->setColumnType(columnIndex, newColumnType);	
+	bool changed = _dataSetModel->setColumnType(columnIndex, newColumnType);
 	_variablesPage->setCurrentColumn(columnIndex);
+
+	if (!changed)
+	{
+		std::string msg = "You cannot change this column to type " + Column::getColumnTypeAsString(newColumnType);
+		QMessageBox::warning(this, "Column Type Change", QString::fromStdString(msg));
+	}
+
 }
 
 void MainTableView::showInfoPopup(QModelIndex &index)

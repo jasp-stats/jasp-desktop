@@ -43,7 +43,7 @@ public:
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role) OVERRIDE;
     virtual Qt::ItemFlags flags(const QModelIndex &index) const OVERRIDE;
 
-	void setColumnType(int columnIndex, Column::ColumnType newColumnType);
+	bool setColumnType(int columnIndex, Column::ColumnType newColumnType);
 	Column::ColumnType getColumnType(int columnIndex);
     
 signals:

@@ -84,7 +84,7 @@ public:
 
 	private:
 
-		Column *getParent();
+		Column *getParent() const;
 
 	} Ints;
 
@@ -121,7 +121,7 @@ public:
 	private:
 		DoublesStruct();
 
-		Column *getParent();
+		Column *getParent() const;
 
 	} Doubles;
 
@@ -132,12 +132,12 @@ public:
 	std::string name() const;
 	void setName(std::string name);
 
-	void setValue(int rowIndex, int value);
-	void setValue(int rowIndex, double value);
+	void setValue(int row, int value);
+	void setValue(int row, double value);
 
-	bool isValueEqual(int rowIndex, int value);
-	bool isValueEqual(int rowIndex, double value);
-	bool isValueEqual(int rowIndex, const std::string &value);
+	bool isValueEqual(int row, int value);
+	bool isValueEqual(int row, double value);
+	bool isValueEqual(int row, const std::string &value);
 
 	std::string operator[](int row);
 	std::string getOriginalValue(int row);
@@ -145,14 +145,27 @@ public:
 	void append(int rows);
 	void truncate(int rows);
 
+	// If the column is a scale, it uses the AsDoubles which is a mapping between the row numbers and the double values.
+	// Scale columns do not have labels.
+	// It the column is Nominal. NominalText or Ordinal, it uses the AsInts structure
+	// For Nominal & Ordinal, the values of the column are integers, so the AsInts get directly these values:
+	// it is a mapping between the row number and the value. The Labels is then a mapping of the unique integer values
+	// and the label strings (this string represents first the integer value, but can be later on modified)
+	// For NominalText, the values are strings, so the values are stored in the labels with some keys (this time the keys have no meaning).
+	// The AsInts is then a mapping between the row numbers and these keys. In this case, if the label of one value
+	// is modified, the new value is in the label object, and the original string value is kept in another mapping
+	// structure (cf. labels.h).
+	// Both AsDoubles & AsInts get their space from the BlockMap _blocks which is a mapping of DataBlock.
 	Doubles AsDoubles;
 	Ints AsInts;
 
 	enum ColumnType { ColumnTypeUnknown = 0, ColumnTypeNominal = 1, ColumnTypeNominalText = 2, ColumnTypeOrdinal = 4, ColumnTypeScale = 8 };
+	static std::string getColumnTypeAsString(ColumnType type);
+
 	void setColumnType(ColumnType columnType);
 	ColumnType columnType() const;
 
-	void changeColumnType(ColumnType newColumnType);
+	bool changeColumnType(ColumnType newColumnType);
 
 	int rowCount() const;
 
@@ -162,8 +175,8 @@ public:
 
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
 
-	std::map<int, std::string> setColumnAsNominalString(const std::vector<std::string> &values);
-	std::map<int, std::string> setColumnAsNominalString(const std::vector<std::string> &values, const std::map<std::string, std::string> &labels);
+	std::map<int, std::string> setColumnAsNominalText(const std::vector<std::string> &values);
+	std::map<int, std::string> setColumnAsNominalText(const std::vector<std::string> &values, const std::map<std::string, std::string> &labels);
 	void setColumnAsNominalOrOrdinal(const std::vector<int> &values, const std::set<int> &uniqueValues, bool is_ordinal = false);
 	void setColumnAsNominalOrOrdinal(const std::vector<int> &values, std::map<int, std::string> &uniqueValues, bool is_ordinal = false);
 	void setColumnAsScale(const std::vector<double> &values);
@@ -184,13 +197,18 @@ private:
 	static int count;
 
 	void _setRowCount(int rowCount);
-	std::string _labelFromIndex(int index) const;
+	std::string _getLabelFromKey(int key) const;
 	std::string _getScaleValue(int row);
 
 	void _convertVectorIntToDouble(std::vector<int> &intValues, std::vector<double> &doubleValues);
+
 	bool _resetEmptyValuesForNominal(std::map<int, std::string> &emptyValuesMap);
 	bool _resetEmptyValuesForScale(std::map<int, std::string> &emptyValuesMap);
 	bool _resetEmptyValuesForNominalText(std::map<int, std::string> &emptyValuesMap, bool tryToConvert = true);
+
+	bool _changeColumnToNominalOrOrdinal(ColumnType newColumnType);
+	bool _changeColumnToScale();
+
 };
 
 namespace boost
