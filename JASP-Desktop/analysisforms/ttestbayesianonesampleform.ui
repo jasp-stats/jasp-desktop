@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>635</width>
-    <height>658</height>
+    <width>592</width>
+    <height>659</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -178,6 +178,32 @@
             <string>Plots</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_4">
+            <item row="6" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="descriptivesPlots">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Descriptives plots</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="plotSequentialAnalysis">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Sequential analysis</string>
+              </property>
+             </widget>
+            </item>
             <item row="5" column="0">
              <widget class="QWidget" name="widget_4" native="true">
               <property name="maximumSize">
@@ -201,88 +227,6 @@
               </property>
               <property name="text">
                <string>Additional info</string>
-              </property>
-             </widget>
-            </item>
-            <item row="7" column="1" colspan="4">
-             <widget class="QWidget" name="horizontalWidget" native="true">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <layout class="QHBoxLayout" name="horizontalLayout">
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item>
-                <widget class="QLabel" name="label_2">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Credible Interval</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="BoundTextBox" name="descriptivesPlotsCredibleInterval">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>60</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>60</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_4">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>%</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="4" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="plotSequentialAnalysis">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Sequential analysis</string>
               </property>
              </widget>
             </item>
@@ -328,17 +272,76 @@
               </property>
              </widget>
             </item>
-            <item row="6" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="descriptivesPlots">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
+            <item row="4" column="3">
+             <widget class="QWidget" name="widget" native="true"/>
+            </item>
+            <item row="7" column="1">
+             <widget class="QWidget" name="horizontalWidget" native="true">
+              <property name="enabled">
+               <bool>false</bool>
               </property>
-              <property name="text">
-               <string>Descriptives plots</string>
-              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_4">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="label_9">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Credible interval</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="BoundTextBox" name="descriptivesPlotsCredibleInterval">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>60</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>60</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_10">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>%</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
            </layout>
@@ -800,7 +803,6 @@
   <tabstop>plotSequentialAnalysis</tabstop>
   <tabstop>plotSequentialAnalysisRobustness</tabstop>
   <tabstop>descriptivesPlots</tabstop>
-  <tabstop>descriptivesPlotsCredibleInterval</tabstop>
   <tabstop>_1excludeAnalysisByAnalysis</tabstop>
   <tabstop>_2excludeListwise</tabstop>
   <tabstop>descriptives</tabstop>
@@ -847,12 +849,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>332</x>
-     <y>484</y>
+     <x>347</x>
+     <y>402</y>
     </hint>
     <hint type="destinationlabel">
-     <x>397</x>
-     <y>512</y>
+     <x>389</x>
+     <y>433</y>
     </hint>
    </hints>
   </connection>
