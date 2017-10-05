@@ -19,18 +19,17 @@
 #include "ribbon{2}.h"
 #include "ui_ribbon{2}.h"
 
+///// additional Headers
+
 Ribbon{1}::Ribbon{1}(QWidget *parent) :
 	RibbonWidget(parent),
 	ui(new Ui::Ribbon{1})
-{
+{{
 	ui->setupUi(this);
-
-/////addButtons
-
-/////setMenu
-}
+///// Ribbon Buttons and Menu
+}}
 
 Ribbon{1}::~Ribbon{1}()
-{
+{{
 	delete ui;
-}
+}}

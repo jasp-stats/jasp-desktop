@@ -21,12 +21,12 @@
 
 #include "ribbonwidget.h"
 
-namespace Ui {
-class Ribbon{1};
-}
+namespace Ui {{
+	class Ribbon{1};
+}}
 
 class Ribbon{1} : public RibbonWidget
-{
+{{
 	Q_OBJECT
 
 public:
@@ -35,6 +35,6 @@ public:
 
 private:
 	Ui::Ribbon{1} *ui;
-};
+}};
 
 #endif // RIBBON{0}_H

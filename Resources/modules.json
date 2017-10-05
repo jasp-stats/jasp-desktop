@@ -62,17 +62,26 @@
 	},
 	{
 		"name": "SEM",
-		"ribbon": ["Lavaan"]
+		"ribbon": [
+			{
+				"name": "Lavaan"
+			}
+		]
 	},
 	{
 		"name": "Reinforcement Learning",
-		"ribbon": ["R11t Learning"]
+		"ribbon": [
+			{
+				"name": "R11t Learning"
+			}
+		]
 	},
 	{
 		"name": "Summary Statistics",
 		"ribbon": [
 			{
 				"name": "T-Tests",
+				"dataSetRequired": false,
 				"analyses": [
 					"Bayesian Independent Samples T-Test",
 					"Bayesian Paired Samples T-Test",
@@ -81,6 +90,7 @@
 			},
 			{
 				"name": "Regression",
+				"dataSetRequired": false,
 				"analyses": [
 					"Bayesian Correlation Pairs",
 					"Bayesian Linear Regression"
@@ -88,6 +98,7 @@
 			},
 			{
 				"name": "Frequencies",
+				"dataSetRequired": false,
 				"analyses": ["Bayesian Binomial Test"]
 			}
 		]

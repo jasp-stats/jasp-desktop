@@ -2,39 +2,153 @@ import json
 import os
 
 
-# Read the modules file
-with open('../../Resources/modules.json', 'r') as f:
-    modules = json.load(f)
-
-existing_modules = []
-
-for _, dirs, _ in os.walk("../../JASP-Desktop/analysisforms", topdown=False):
-    for name in dirs:
-        existing_modules.append(name)
-
-print('existing modules = ', existing_modules)
-
-for module in modules:
-    module_name = module['name'].replace(' ', '')
-    module_dir = '../../JASP-Desktop/analysisforms/{0}'.format(module_name)
-
-    if not os.path.exists(module_dir):
-        print(module_name)
-        os.makedirs(module_dir)
-
-        # Create ribbon
-        # {0, 1, 2} -> {SUMMARYSTATISTICS, SummaryStatistics, summarystatistics}
+current_path = os.path.dirname(__file__)
+ribbon_button_replacement_text = '///// Ribbon Buttons and Menu'
+additional_headers = '///// additional Headers'
+add_buttons = '<!-- Add buttons -->'
+menu_selected_slot = '<!-- menuItemSelectedSlot -->'
 
 
-    # if module['name'].replace(' ', '') not in existing_modules:
-    #     print(module['name'].replace(' ', ''))
-        # Create
+def create_module_ribbon(module, ribbon):
+    ''' Create ribbon files for the new module- .ui, .h, .cpp '''
+    print('1. {0} Ribbon'.format(module))
+    ribbon_path = current_path + '/../../JASP-Desktop/ribbons/'
+    # Read ribbon.h template
+    with open(current_path + '/templates/ribbon.h', 'r') as f:
+        ribbon_header = f.read()
+    # {0, 1, 2} -> {SUMMARYSTATISTICS, SummaryStatistics, summarystatistics}
+    ribbon_header = ribbon_header.format(module.upper(), module, module.lower())
+
+    # Create ribbon.h
+    ribbon_filename = 'ribbon{0}'.format(module.lower())
+    with open(ribbon_path + ribbon_filename + '.h', 'w+') as f:
+        f.write(ribbon_header)
+    print('     Created Ribbon Header')
+
+    # Read ribbon.cpp template
+    with open(current_path + '/templates/ribbon.cpp', 'r') as f:
+        ribbon_source = f.read()
+    ribbon_source = ribbon_source.format(module.upper(), module, module.lower())
+
+    # Create ribbon buttons
+    ribbon_buttons = [analysis['name'] for analysis in ribbon]
+    menu_header_required = False
+
+    button_text = ''
+    for obj in ribbon:
+        button_name = obj['name']
+        # FIXME: Write more general statements, use regex
+        # FIXME: Handle duplicate ribbon and analyses names
+        button_name = button_name.replace('-', '')
+        button_name = button_name.replace(' ', '')
+        button_text += '\taddRibbonButton(ui->{0});\n'.format('button' + button_name)
+        # dataSetRequired
+        dataSetRequired = obj.get('dataSetRequired')
+        if dataSetRequired is not None and (not dataSetRequired):
+            button_text += '\tui->{0}->setDataSetNotNeeded();\n'.format('button' + button_name)
+
+        button_text += '\n'
+        # Button menu - analyses
+        analyses = obj.get('analyses')
+        if analyses is not None:
+            menu_header_required = True
+            button_text += '\tQMenu *menu{0} = new QMenu(this);\n'.format(button_name);
+            # Create Menu
+            for analysis in analyses:
+                # FIXME: Make this more general. Use regex.
+                analysis_name = analysis.replace('-', '')
+                analysis_name = analysis_name.replace(' ', '')
+                button_text += '\tmenu{0}->addAction(QString("{1}"), this, SLOT(itemSelected()))->setObjectName("{2}");\n'.format(button_name, analysis, analysis_name)
+
+            # Set Menu
+            button_text += '\tui->{0}->setMenu({1});\n\n'.format('button' + button_name, 'menu' + button_name)
+
+    button_text += (ribbon_button_replacement_text + '\n')
+    ribbon_source = ribbon_source.replace(ribbon_button_replacement_text, ('\n' + button_text))
+
+    if menu_header_required:
+        ribbon_source = ribbon_source.replace(additional_headers, '#include <QMenu>\n{0}'.format(additional_headers))
+
+    # Create ribbon.cpp
+    with open(ribbon_path + ribbon_filename + '.cpp', 'w+') as f:
+        f.write(ribbon_source)
+    print('     Created Ribbon Source')
+
+    # Read ribbon.ui template
+    with open(current_path + '/templates/ribbon.ui', 'r') as f:
+        ribbon_ui = f.read()
+    # {0, 1, 2} -> {SUMMARYSTATISTICS, SummaryStatistics, summarystatistics}
+    ribbon_ui = ribbon_ui.format(ribbon_name=module)
+
+    # Read ribbon_button.ui template
+    with open(current_path + '/templates/ribbon_button.ui', 'r') as f:
+        ribbon_button = f.read()
+
+    button_ui = ""
+    column_number = 0
+    for obj in ribbon:
+        button_name = obj['name']
+        # FIXME: Write more general statements, use regex
+        # FIXME: Handle duplicate ribbon and analyses names
+        button_name = button_name.replace('-', '')
+        button_name = button_name.replace(' ', '')
+        button_ui += ribbon_button.format(column_number=str(column_number), button_name=button_name,
+                                          button_text=obj['name'])
+        button_ui += '\n'
+        column_number += 1
+
+    ribbon_ui = ribbon_ui.replace(add_buttons, button_ui)
+
+    if menu_header_required:
+        ribbon_ui = ribbon_ui.replace(menu_selected_slot, '  <slot>menuItemSelected()</slot>')
+
+    # Create ribbon.ui
+    with open(ribbon_path + ribbon_filename + '.ui', 'w+') as f:
+        f.write(ribbon_ui)
+    print('     Created Ribbon Ui')
 
 
+def create_layout_files(module, analyses):
+    pass
 
-# print(existing_modules)
-# find new modules
-# for module in modules:
-# 	if
 
-# print(modules)
+def modify_mainwindow(module, analyses):
+    pass
+
+
+def create_resource_files(module, analyses):
+    pass
+
+
+def create_analyses_files(module, analyses):
+    pass
+
+
+def create_new_module():
+    try:
+        # Read the modules file
+        with open(current_path + '/../../Resources/modules.json', 'r') as f:
+            modules = json.load(f)
+    except Exception as e:
+        print('Exception occured - {exception}.'.format(exception=str(e)))
+        exit(1)
+
+    # TODO: Check if module name is unique
+    for module in modules:
+        module_name = module['name'].replace(' ', '')
+        module_dir = current_path + '/../../JASP-Desktop/analysisforms/{0}'.format(module_name)
+
+        # Check if module exists or not
+        # FIXME: This is only temporary.
+        #        Find a better way to check module existence
+        if not os.path.exists(module_dir):
+            os.makedirs(module_dir)
+
+            create_module_ribbon(module_name, module['ribbon'])
+            create_layout_files(module_name, module['ribbon'])
+            modify_mainwindow(module_name, module['ribbon'])
+            create_resource_files(module_name, module['ribbon'])
+            create_analyses_files(module_name, module['ribbon'])
+
+if __name__ == '__main__':
+    create_new_module()

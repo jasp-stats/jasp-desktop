@@ -1,4 +1,3 @@
-
    macx:ICON = $$PWD/icon.icns
 windows:RC_FILE = $$PWD/icon.rc
 
