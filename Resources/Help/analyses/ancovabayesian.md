@@ -4,7 +4,7 @@ Bayesian ANCOVA
 There is currently no help available for this analysis.
 
 Additional documentation will be available in future releases of JASP.
-      
+
 References
 -------
 - Rouder, J. N., Engelhardt C. R., McCabe S., & Morey R. D. (2015). Model comparison in ANOVA. *Manuscript submitted for publication*.
