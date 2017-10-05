@@ -83,20 +83,20 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	if (usePearson) {
 	    correlation[["title"]] <- "Bayesian Pearson Correlation"
 	    correlation[["citation"]] <- list(
-	        "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2014). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication."
+	        "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2016). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Journal of Mathematical Psychology, 72, 19-32."
 	    )
 	    nameForFields <- "r"
 	} else if (useKendall) {
 	    correlation[["title"]] <- "Bayesian Kendall Correlation"
 	    correlation[["citation"]] <- list(
-	        "van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2016). Bayesian Inference for Kendall’s Rank Correlation Coefficient. Manuscript submitted for publication."
+	        "van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (in press). Bayesian Inference for Kendall’s Rank Correlation Coefficient. The American Statistician."
 	    )
 	    nameForFields <- "tau"
 	} else if (usePearson && useKendall) {
 	    correlation[["title"]] <- "Bayesian Correlation Table"
 	    correlation[["citation"]] <- list(
-	        "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2014). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication.",
-	        "van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2016). Bayesian Inference for Kendall’s Rank Correlation Coefficient. Manuscript submitted for publication."
+	        "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2016). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Journal of Mathematical Psychology, 72, 19-32.",
+	        "van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (in press). Bayesian Inference for Kendall’s Rank Correlation Coefficient. The American Statistician."
 	    )
 	    nameForFields <- "Statistic"
 	}

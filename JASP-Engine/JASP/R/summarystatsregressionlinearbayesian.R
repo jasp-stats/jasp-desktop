@@ -96,7 +96,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	}
 	table[["schema"]]   <- list(fields=fields)
 	table[["citation"]] <- list("Liang, F. and Paulo, R. and Molina, G. and Clyde, M. A. and Berger, J. O. (2008). Mixtures of g-priors for Bayesian Variable Selection. Journal of the American Statistical Association, 103, pp. 410-423",
-															"Rouder, J. N. and Morey, R. D. (in press, Multivariate Behavioral Research). Bayesian testing in regression.")
+															"Rouder, J. N. and Morey, R. D. (in press). Bayesian testing in regression. Multivariate Behavioral Research.")
 
 	#add footnotes to the analysis result
 	footnotes <- .newFootnotes()

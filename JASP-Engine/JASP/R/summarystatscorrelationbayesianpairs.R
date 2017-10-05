@@ -123,10 +123,10 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 	table <- list()
 	table[["title"]] <- "Bayesian Pearson Correlation"
 	table[["schema"]] <- list(fields = fields)
-	table[["citation"]] <- list(paste("Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2014).",
+	table[["citation"]] <- list(paste("Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2016).",
 									"Harold Jeffreys's Default Bayes Factor Hypothesis Tests:",
 									"Explanation, Extension, and Application in Psychology.",
-									"Manuscript submitted for publication.",
+									"Journal of Mathematical Psychology, 72, 19-32.",
 									sep = "")
 								)
 	table[["footnotes"]] <- as.list(footnotes)

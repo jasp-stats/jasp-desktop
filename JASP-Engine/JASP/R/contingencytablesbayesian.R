@@ -188,7 +188,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 
 	list(
 		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
-		"Jamil, T., Ly, A., Morey, R. D., Love, J., Marsman, M., & Wagenmakers, E.-J. (2015). Default Gunel and Dickey Bayes factors for contingency tables. Manuscript submitted for publication.",
+		"Jamil, T., Ly, A., Morey, R. D., Love, J., Marsman, M., & Wagenmakers, E.-J. (2017). Default Gunel and Dickey Bayes factors for contingency tables. Behavior Research Methods, 49, 638-652.",
 		"Gunel, E., & Dickey, J. (1974). Bayes factors for independence in contingency tables. Biometrika, 61, 545-557.")
 }
 
