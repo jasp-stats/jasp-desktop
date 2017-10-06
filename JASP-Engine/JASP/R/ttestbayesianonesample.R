@@ -363,17 +363,32 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
                              diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&
                              diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
                              diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE &&
-                             diff$informativeNormalStd == FALSE))) && "robustnessPlot" %in% state$plotTypes) {
+                             diff$informativeNormalStd == FALSE))) && "robustnessPlotAddInfo" %in% state$plotTypes &&
+                             options$plotBayesFactorRobustnessAdditionalInfo) {
 
         # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
         # then, if the requested plot already exists, use it
+        index <- which(state$plotVariables == variable & state$plotTypes == "robustnessPlotAddInfo")
 
+        plots.ttest[[length(plots.ttest)+1]] <- state$plotsTtest[[index]]
+
+      } else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
+          (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$bayesFactorType == FALSE &&
+                             diff$testValue == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE &&
+                             diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE &&
+                             diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&
+                             diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
+                             diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE &&
+                             diff$informativeNormalStd == FALSE))) && "robustnessPlot" %in% state$plotTypes &&
+                             !options$plotBayesFactorRobustnessAdditionalInfo) {
+
+        # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+        # then, if the requested plot already exists, use it
         index <- which(state$plotVariables == variable & state$plotTypes == "robustnessPlot")
 
         plots.ttest[[length(plots.ttest)+1]] <- state$plotsTtest[[index]]
 
       } else {
-
         plot <- list()
 
         plot[["title"]] <- "Bayes Factor Robustness Check"
@@ -382,7 +397,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
         plot[["status"]] <- "waiting"
 
         .plotFunc <- function() {
-          .plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+          .plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE, additionalInformation=options$plotBayesFactorRobustnessAdditionalInfo)
         }
         content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
 
@@ -395,7 +410,12 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 
       plotGroups[[i]][["BFrobustnessPlot"]] <- plots.ttest[[length(plots.ttest)]]
 
-      plotTypes[[length(plotTypes)+1]] <- "robustnessPlot"
+      if (options$plotBayesFactorRobustnessAdditionalInfo) {
+        plotTypes[[length(plotTypes)+1]] <- "robustnessPlotAddInfo"
+      } else {
+        plotTypes[[length(plotTypes)+1]] <- "robustnessPlot"
+      }
+
       plotVariables[[length(plotVariables)+1]] <- variable
     }
 
@@ -884,14 +904,32 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 
       if (options$plotBayesFactorRobustness) {
 
-        if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
+          if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
+              (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$bayesFactorType == FALSE &&
+                                 diff$testValue == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE &&
+                                 diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE &&
+                                 diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&
+                                 diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
+                                 diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE &&
+                                 diff$informativeNormalStd == FALSE))) && "robustnessPlotAddInfo" %in% state$plotTypes &&
+                                 options$plotBayesFactorRobustnessAdditionalInfo) {
+
+            # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+            # then, if the requested plot already exists, use it
+
+            index <- which(state$plotVariables == variable & state$plotTypes == "robustnessPlotAddInfo")
+
+            plots.ttest[[z]] <- state$plotsTtest[[index]]
+
+          } else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
             (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$bayesFactorType == FALSE &&
                                diff$testValue == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE &&
                                diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE &&
                                diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&
                                diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
                                diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE &&
-                               diff$informativeNormalStd == FALSE))) && "robustnessPlot" %in% state$plotTypes) {
+                               diff$informativeNormalStd == FALSE))) && "robustnessPlot" %in% state$plotTypes &&
+                               !options$plotBayesFactorRobustnessAdditionalInfo) {
 
           # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
           # then, if the requested plot already exists, use it
@@ -922,7 +960,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
             p <- try(silent= FALSE, expr= {
 
               .plotFunc <- function() {
-                .plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, BF10post=BF10post[i], rscale = options$priorWidth, BFH1H0= BFH1H0)
+                .plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, BF10post=BF10post[i], rscale = options$priorWidth, BFH1H0= BFH1H0, additionalInformation=options$plotBayesFactorRobustnessAdditionalInfo)
               }
               content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
 
@@ -2888,7 +2926,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 
 
 .plotBF.robustnessCheck.ttest <- function(x= NULL, y= NULL, paired= FALSE, BF10post, callback=function(...) 0, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2,
-                                          cexYXlab= 1.5,  cexText=1.2, cexLegend= 1.4, lwdAxis= 1.2, cexEvidence= 1.6, BFH1H0 = TRUE, dontPlotData= FALSE) {
+                                          cexYXlab= 1.5,  cexText=1.2, cexLegend= 1.4, lwdAxis= 1.2, cexEvidence= 1.6, BFH1H0 = TRUE, dontPlotData= FALSE, additionalInformation=FALSE) {
 
 
   #### settings ####
@@ -2915,8 +2953,11 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
     nullInterval <- c(-Inf, 0)
   }
 
-
-  par(mar= c(5, 6, 6, 7) + 0.1, las=1)
+  if (additionalInformation) {
+    par(mar= c(5.6, 6.5, 7, 7) + 0.1, las=1)
+  } else {
+    par(mar= c(5.6, 6.5, 4, 7) + 0.1, las=1)
+  }
 
   if (dontPlotData) {
 
@@ -2924,7 +2965,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 
     axis(1, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, xlab="")
     axis(2, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, ylab="")
-
 
     if (oneSided == FALSE) {
 
@@ -2993,6 +3033,12 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
       return()
   }
 
+
+  # maximum BF value
+  maxBF10 <- max(BF10)
+  maxBFrVal <- rValues[which.max(BF10)]
+  BF10maxText <- .clean(maxBF10)
+
   # BF10 "medium" prior
   if (oneSided == FALSE) {
 
@@ -3043,7 +3089,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 
   ####################### scale y axis ###########################
 
-  BF <- c(BF10, BF10m, BF10w, BF10ultra, BF10user)
+  BF <- c(BF10, BF10m, BF10w, BF10ultra, BF10user, maxBF10)
 
   if (!BFH1H0) {
 
@@ -3052,6 +3098,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
     BF10m  <- 1 / BF10m
     BF10w <- 1 / BF10w
     BF10ultra <- 1 / BF10ultra
+    maxBF10 <- 1 / maxBF10
     # BF10user <- 1 / BF10user
   }
 
@@ -3435,7 +3482,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 
   plot(1,1, xlim= xlim, ylim= ylim, ylab= "", xlab="", type= "n", axes= FALSE)
 
-
   for (i in seq_along(yAt)) {
 
     lines(x= xlim, y= rep(yAt[i], 2), col='darkgrey', lwd= 1.3, lty=2)
@@ -3676,161 +3722,186 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
   # display BF10
   lines(rValues,log(BF10), col="black", lwd = 2.7)
 
-  # display "wide", user, and "ultrawide" prior BFs
-  points(r, log(BF10user), pch=21, bg="grey", cex= cexPoints, lwd = 1.3) # user prior
-  points(1, log(BF10w), pch=21, bg= "black", cex= 1.1, lwd= 1.3) # "wide" prior
-  points(sqrt(2), log(BF10ultra), pch=21, bg= "white", cex= 1.1, lwd= 1.3) # "ultrawide" prior
+  if (additionalInformation) {
+      # display "wide", user, "ultrawide" prior and max BFs
+      points(r, log(BF10user), pch=21, bg="grey", cex= cexPoints, lwd = 1.3) # user prior
+      points(1, log(BF10w), pch=21, bg= "black", cex= 1.1, lwd= 1.3) # "wide" prior
+      points(sqrt(2), log(BF10ultra), pch=21, bg= "white", cex= 1.1, lwd= 1.3) # "ultrawide" prior
+      points(maxBFrVal, log(maxBF10), pch=21, bg="red", cex=1.1, lwd=1.3)  # max BF value
 
-  #### add legend
-  # BF values
+      #### add legend
+      # BF values
 
-  # BFuser
+      # BFuser
 
-  if (BFH1H0) {
+      if (BFH1H0) {
 
-    BF01userText <- 1 / BF10userText
+        BF01userText <- 1 / BF10userText
 
-  } else {
+      } else {
 
-    BF10userText <- 1 / BF10userText
-    BF01userText <- 1 / BF10userText
+        BF10userText <- 1 / BF10userText
+        BF01userText <- 1 / BF10userText
+      }
+
+      if (BF10userText >= 1000000 | BF01userText >= 1000000) {
+
+        BF10usert <- format(BF10userText, digits= 4, scientific = TRUE)
+        BF01usert <- format(BF01userText, digits= 4, scientific = TRUE)
+      }
+      if (BF10userText < 1000000 & BF01userText < 1000000) {
+
+        BF10usert <- formatC(BF10userText, 3, format = "f")
+        BF01usert <- formatC(BF01userText, 3, format = "f")
+      }
+
+      if (oneSided == FALSE) {
+
+        if( BF10userText >= BF01userText) {
+          userBF <- bquote(BF[10]==.(BF10usert))
+        } else {
+          userBF <- bquote(BF[0][1]==.(BF01usert))
+        }
+      }
+      if (oneSided == "right") {
+
+        if (BF10userText >= BF01userText) {
+          userBF <- bquote(BF["+"][0]==.(BF10usert))
+        } else {
+          userBF <- bquote(BF[0]["+"]==.(BF01usert))
+        }
+      }
+      if (oneSided == "left") {
+
+        if (BF10userText >= BF01userText) {
+          userBF <- bquote(BF["-"][0]==.(BF10usert))
+        } else {
+          userBF <- bquote(BF[0]["-"]==.(BF01usert))
+        }
+      }
+
+      # BFwide
+      BF01wText <- 1 / BF10wText
+
+      if (BF10wText >= 1000000 | BF01wText >= 1000000) {
+        BF10wt <- format(BF10wText, digits= 4, scientific = TRUE)
+        BF01wt <- format(BF01wText, digits= 4, scientific = TRUE)
+      }
+      if (BF10wText < 1000000 & BF01wText < 1000000) {
+        BF10wt <- formatC(BF10wText, 3, format = "f")
+        BF01wt <- formatC(BF01wText, 3, format = "f")
+      }
+
+      if (oneSided == FALSE) {
+
+        if (BF10wText >= BF01wText) {
+          wBF <- bquote(BF[10]==.(BF10wt))
+        } else {
+          wBF <- bquote(BF[0][1]==.(BF01wt))
+        }
+      }
+      if (oneSided == "right") {
+
+        if (BF10wText >= BF01wText) {
+          wBF <- bquote(BF["+"][0]==.(BF10wt))
+        } else {
+          wBF <- bquote(BF[0]["+"]==.(BF01wt))
+        }
+      }
+      if (oneSided == "left") {
+
+        if (BF10wText >= BF01wText) {
+          wBF <- bquote(BF["-"][0]==.(BF10wt))
+        } else {
+          wBF <- bquote(BF[0]["-"]==.(BF01wt))
+        }
+      }
+
+      # BFultrawide
+      BF01ultraText <- 1 / BF10ultraText
+
+      if (BF10ultraText >= 1000000 | BF01ultraText >= 1000000) {
+
+        BF10ultrat <- format(BF10ultraText, digits= 4, scientific = TRUE)
+        BF01ultrat <- format(BF01ultraText, digits= 4, scientific = TRUE)
+      }
+      if (BF10ultraText < 1000000 & BF01ultraText < 1000000) {
+
+        BF10ultrat <- formatC(BF10ultraText, 3, format = "f")
+        BF01ultrat <- formatC(BF01ultraText, 3, format = "f")
+      }
+
+      if (oneSided == FALSE) {
+
+        if (BF10ultraText >= BF01ultraText) {
+          ultraBF <- bquote(BF[10]==.(BF10ultrat))
+        } else {
+          ultraBF <- bquote(BF[0][1]==.(BF01ultrat))
+        }
+      }
+
+      if (oneSided == "right") {
+
+        if (BF10ultraText >= BF01ultraText) {
+          ultraBF <- bquote(BF["+"][0]==.(BF10ultrat))
+        } else{
+          ultraBF <- bquote(BF[0]["+"]==.(BF01ultrat))
+        }
+      }
+
+      if (oneSided == "left") {
+
+        if (BF10ultraText >= BF01ultraText) {
+          ultraBF <- bquote(BF["-"][0]==.(BF10ultrat))
+        } else {
+          ultraBF <- bquote(BF[0]["-"]==.(BF01ultrat))
+        }
+      }
+
+      # maxBF
+      if (BF10maxText >= 1000000) {
+          BF10maxt <- format(BF10maxText, digits = 3, scientific = TRUE)
+      }
+
+      if (BF10maxText < 1000000) {
+          BF10maxt <- formatC(BF10maxText, digits = 3, format = "f", drop0trailing = TRUE)
+      }
+
+      maxBFrValt <- formatC(maxBFrVal, digits = 4, format = "f", drop0trailing = TRUE )
+      maxBF <- bquote(.(BF10maxt) ~ .('at r') == .(maxBFrValt))
+
+      if (oneSided == FALSE) {
+          maxBF10LegendText <- bquote(max~BF[1][0]*":")
+      } else if (oneSided == "right") {
+          maxBF10LegendText <- bquote(max~BF["+"][0]*":")
+      } else if (oneSided == "left") {
+          maxBF10LegendText <- bquote(max~BF["-"][0]*":")
+      }
+
+      xx <- grconvertX(0.2, "ndc", "user")
+      yy <- grconvertY(0.999, "ndc", "user")
+
+      BFind <- sort(c(BF10userText, BF10ultraText, BF10wText, BF10maxText), decreasing = TRUE, index.return=TRUE)$ix
+      BFsort <- sort(c(BF10userText, BF10ultraText, BF10wText, BF10maxText), decreasing = TRUE, index.return=TRUE)$x
+
+      legend <- c("user prior:", "ultrawide prior:", "wide prior:", as.expression(maxBF10LegendText))
+      pt.bg <-  c("grey", "white", "black", "red")
+      pt.cex <-  c(cexPoints, 1.1, 1.1, 1.1)
+
+      legend(xx, yy, legend = legend[BFind], pch=rep(21,4), pt.bg= pt.bg[BFind], bty= "n", cex= cexLegend, lty=rep(NULL,4), pt.lwd=rep(1.3,4), pt.cex= pt.cex[BFind])
+
+      xx <- grconvertX(0.47, "ndc", "user")
+      y1 <- grconvertY(0.946, "ndc", "user")
+      y2 <- grconvertY(0.890, "ndc", "user")
+      y3 <- grconvertY(0.843, "ndc", "user")
+      y4 <- grconvertY(0.790, "ndc", "user")
+      yy <- c(y1, y2, y3, y4)
+
+      text(xx, yy[BFsort== BF10userText], userBF, cex= 1.3,pos = 4)
+      text(xx, yy[BFsort== BF10ultraText], ultraBF, cex= 1.3, pos= 4)
+      text(xx, yy[BFsort== BF10wText], wBF, cex= 1.3, pos= 4)
+      text(xx, yy[BFsort == BF10maxText], maxBF, cex = 1.3, pos = 4)
   }
-
-  if (BF10userText >= 1000000 | BF01userText >= 1000000) {
-
-    BF10usert <- format(BF10userText, digits= 4, scientific = TRUE)
-    BF01usert <- format(BF01userText, digits= 4, scientific = TRUE)
-  }
-  if (BF10userText < 1000000 & BF01userText < 1000000) {
-
-    BF10usert <- formatC(BF10userText, 3, format = "f")
-    BF01usert <- formatC(BF01userText, 3, format = "f")
-  }
-
-  if (oneSided == FALSE) {
-
-    if( BF10userText >= BF01userText) {
-      userBF <- bquote(BF[10]==.(BF10usert))
-    } else {
-      userBF <- bquote(BF[0][1]==.(BF01usert))
-    }
-  }
-  if (oneSided == "right") {
-
-    if (BF10userText >= BF01userText) {
-      userBF <- bquote(BF["+"][0]==.(BF10usert))
-    } else {
-      userBF <- bquote(BF[0]["+"]==.(BF01usert))
-    }
-  }
-  if (oneSided == "left") {
-
-    if (BF10userText >= BF01userText) {
-      userBF <- bquote(BF["-"][0]==.(BF10usert))
-    } else {
-      userBF <- bquote(BF[0]["-"]==.(BF01usert))
-    }
-  }
-
-  # BFwide
-  BF01wText <- 1 / BF10wText
-
-  if (BF10wText >= 1000000 | BF01wText >= 1000000) {
-    BF10wt <- format(BF10wText, digits= 4, scientific = TRUE)
-    BF01wt <- format(BF01wText, digits= 4, scientific = TRUE)
-  }
-  if (BF10wText < 1000000 & BF01wText < 1000000) {
-    BF10wt <- formatC(BF10wText, 3, format = "f")
-    BF01wt <- formatC(BF01wText, 3, format = "f")
-  }
-
-  if (oneSided == FALSE) {
-
-    if (BF10wText >= BF01wText) {
-      wBF <- bquote(BF[10]==.(BF10wt))
-    } else {
-      wBF <- bquote(BF[0][1]==.(BF01wt))
-    }
-  }
-  if (oneSided == "right") {
-
-    if (BF10wText >= BF01wText) {
-      wBF <- bquote(BF["+"][0]==.(BF10wt))
-    } else {
-      wBF <- bquote(BF[0]["+"]==.(BF01wt))
-    }
-  }
-  if (oneSided == "left") {
-
-    if (BF10wText >= BF01wText) {
-      wBF <- bquote(BF["-"][0]==.(BF10wt))
-    } else {
-      wBF <- bquote(BF[0]["-"]==.(BF01wt))
-    }
-  }
-
-  # BFultrawide
-  BF01ultraText <- 1 / BF10ultraText
-
-  if (BF10ultraText >= 1000000 | BF01ultraText >= 1000000) {
-
-    BF10ultrat <- format(BF10ultraText, digits= 4, scientific = TRUE)
-    BF01ultrat <- format(BF01ultraText, digits= 4, scientific = TRUE)
-  }
-  if (BF10ultraText < 1000000 & BF01ultraText < 1000000) {
-
-    BF10ultrat <- formatC(BF10ultraText, 3, format = "f")
-    BF01ultrat <- formatC(BF01ultraText, 3, format = "f")
-  }
-
-  if (oneSided == FALSE) {
-
-    if (BF10ultraText >= BF01ultraText) {
-      ultraBF <- bquote(BF[10]==.(BF10ultrat))
-    } else {
-      ultraBF <- bquote(BF[0][1]==.(BF01ultrat))
-    }
-  }
-
-  if (oneSided == "right") {
-
-    if (BF10ultraText >= BF01ultraText) {
-      ultraBF <- bquote(BF["+"][0]==.(BF10ultrat))
-    } else{
-      ultraBF <- bquote(BF[0]["+"]==.(BF01ultrat))
-    }
-  }
-
-  if (oneSided == "left") {
-
-    if (BF10ultraText >= BF01ultraText) {
-      ultraBF <- bquote(BF["-"][0]==.(BF10ultrat))
-    } else {
-      ultraBF <- bquote(BF[0]["-"]==.(BF01ultrat))
-    }
-  }
-
-  xx <- grconvertX(0.2, "ndc", "user")
-  yy <- grconvertY(0.965, "ndc", "user")
-
-  BFind <- sort(c(BF10userText, BF10ultraText, BF10wText), decreasing = TRUE, index.return=TRUE)$ix
-  BFsort <- sort(c(BF10userText, BF10ultraText, BF10wText), decreasing = TRUE, index.return=TRUE)$x
-
-  legend <- c("user prior:", "ultrawide prior:", "wide prior:")
-  pt.bg <-  c("grey", "white", "black")
-  pt.cex <-  c(cexPoints, 1.1, 1.1)
-
-  legend(xx, yy, legend = legend[BFind], pch=rep(21,3), pt.bg= pt.bg[BFind], bty= "n", cex= cexLegend, lty=rep(NULL,3), pt.lwd=rep(1.3,3), pt.cex= pt.cex[BFind])
-
-  xx <- grconvertX(0.5, "ndc", "user")
-  y1 <- grconvertY(0.902, "ndc", "user")
-  y2 <- grconvertY(0.852, "ndc", "user")
-  y3 <- grconvertY(0.802, "ndc", "user")
-  yy <- c(y1, y2, y3)
-
-  text(xx, yy[BFsort== BF10userText], userBF, cex= 1.3,pos = 4)
-  text(xx, yy[BFsort== BF10ultraText], ultraBF, cex= 1.3, pos= 4)
-  text(xx, yy[BFsort== BF10wText], wBF, cex= 1.3, pos= 4)
 }
 
 .qt.shiftedT <- function(prob, parameters) {
@@ -3906,7 +3977,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
                     plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
     .base_breaks_y2(summaryStat, testValueOpt)
 
-  # print(p)
   return(p)
 }
 

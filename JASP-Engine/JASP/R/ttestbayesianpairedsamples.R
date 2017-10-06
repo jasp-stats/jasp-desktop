@@ -294,11 +294,24 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 
 		if (options$plotBayesFactorRobustness) {
 
-
 			if (!is.null(state) && currentPair %in% state$plotPairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
 				&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE && diff$effectSizeStandardized == FALSE &&
 				diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
-				diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && "robustnessPlot" %in% state$plotTypes) {
+				diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
+				options$plotBayesFactorRobustnessAdditionalInfo && "robustnessPlotAddInfo" %in% state$plotTypes) {
+
+				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+				# then, if the requested plot already exists, use it
+
+				stateIndex <- which(state$plotPairs == currentPair & state$plotTypes == "robustnessPlotAddInfo")
+
+				plots.ttest[[length(plots.ttest)+1]] <- state$plotsTtest[[stateIndex]]
+
+			} else if (!is.null(state) && currentPair %in% state$plotPairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
+				&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE && diff$effectSizeStandardized == FALSE &&
+				diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
+				diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
+				!options$plotBayesFactorRobustnessAdditionalInfo && "robustnessPlot" %in% state$plotTypes) {
 
 				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 				# then, if the requested plot already exists, use it
@@ -317,7 +330,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				plot[["status"]] <- "waiting"
 
 				.plotFunc <- function() {
-					.plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+					.plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE, additionalInformation=options$plotBayesFactorRobustnessAdditionalInfo)
 				}
 				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
 
@@ -329,7 +342,11 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			}
 
 			plotGroups[[i]][["BFrobustnessPlot"]] <- plots.ttest[[length(plots.ttest)]]
-			plotTypes[[length(plotTypes)+1]] <- "robustnessPlot"
+			if (options$plotBayesFactorRobustnessAdditionalInfo) {
+				plotTypes[[length(plotTypes)+1]] <- "robustnessPlotAddInfo"
+			} else {
+				plotTypes[[length(plotTypes)+1]] <- "robustnessPlot"
+			}
 			plotPairs[[length(plotPairs)+1]] <- paste(pair, collapse=" - ")
 		}
 
@@ -886,7 +903,20 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE && diff$effectSizeStandardized == FALSE &&
 					diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
 					diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-					"robustnessPlot" %in% state$plotTypes) {
+					options$plotBayesFactorRobustnessAdditionalInfo && "robustnessPlotAddInfo" %in% state$plotTypes) {
+
+					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+					# then, if the requested plot already exists, use it
+
+					stateIndex <- which(state$plotPairs == tablePairs[[i]] & state$plotTypes == "robustnessPlotAddInfo")
+
+					plots.ttest[[j]] <- state$plotsTtest[[stateIndex]]
+
+				} else if (!is.null(state) && tablePairs[[i]] %in% state$plotPairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
+					&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE && diff$effectSizeStandardized == FALSE &&
+					diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
+					diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
+					!options$plotBayesFactorRobustnessAdditionalInfo && "robustnessPlot" %in% state$plotTypes) {
 
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
@@ -917,7 +947,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						p <- try(silent= FALSE, expr= {
 
 						  .plotFunc <- function() {
-								.plotBF.robustnessCheck.ttest(x=c1, y=c2, BF10post=BF10post[i], paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BFH1H0=BFH1H0)
+								.plotBF.robustnessCheck.ttest(x=c1, y=c2, BF10post=BF10post[i], paired=TRUE, oneSided=oneSided, rscale=options$priorWidth,
+									BFH1H0=BFH1H0, additionalInformation=options$plotBayesFactorRobustnessAdditionalInfo)
 							}
 							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
 
@@ -932,7 +963,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						    plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
 						}
 
-						}
+					}
 
 					plot[["status"]] <- "complete"
 

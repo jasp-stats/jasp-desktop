@@ -256,7 +256,19 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
 					diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE &&
 					diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-					"robustnessPlot" %in% state$plotTypes) {
+					"robustnessPlotAddInfo" %in% state$plotTypes && options$plotBayesFactorRobustnessAdditionalInfo) {
+
+					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+					# then, if the requested plot already exists, use it
+					index <- which(state$plotVariables == variable & state$plotTypes == "robustnessPlotAddInfo")
+
+					plots.ttest[[length(plots.ttest)+1]] <- state$plotsTtest[[index]]
+
+				} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
+					&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
+					diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE &&
+					diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
+					"robustnessPlot" %in% state$plotTypes && !options$plotBayesFactorRobustnessAdditionalInfo) {
 
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
@@ -275,7 +287,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					plot[["status"]] <- "waiting"
 
 					.plotFunc <- function() {
-						.plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+						.plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE, additionalInformation=options$plotBayesFactorRobustnessAdditionalInfo)
 					}
 					content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
 
@@ -286,8 +298,12 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					plots.ttest[[q]] <- plot
 				}
 
+				if (options$plotBayesFactorRobustnessAdditionalInfo) {
+					plotTypes[[length(plotTypes)+1]] <- "robustnessPlotAddInfo"
+				} else {
+					plotTypes[[length(plotTypes)+1]] <- "robustnessPlot"
+				}
 
-				plotTypes[[length(plotTypes)+1]] <- "robustnessPlot"
 				plotVariables[[length(plotVariables)+1]] <- variable
 				plotGroups[[iint]][["BFrobustnessPlot"]] <- plots.ttest[[q]]
 
@@ -545,13 +561,24 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				}
 
 				if (options$plotBayesFactorRobustness) {
-
-
 					if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
 						&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
 						diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&	diff$informativeCauchyScale == FALSE &&
 						diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-						"robustnessPlot" %in% state$plotTypes) {
+						"robustnessPlotAddInfo" %in% state$plotTypes && options$plotBayesFactorRobustnessAdditionalInfo) {
+
+						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+						# then, if the requested plot already exists, use it
+
+						index <- which(state$plotVariables == variable & state$plotTypes == "robustnessPlotAddInfo")
+
+						plots.ttest[[z]] <- state$plotsTtest[[index]]
+
+					} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
+						&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
+						diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&	diff$informativeCauchyScale == FALSE &&
+						diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
+						"robustnessPlot" %in% state$plotTypes && !options$plotBayesFactorRobustnessAdditionalInfo) {
 
 						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 						# then, if the requested plot already exists, use it
@@ -559,7 +586,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						index <- which(state$plotVariables == variable & state$plotTypes == "robustnessPlot")
 
 						plots.ttest[[z]] <- state$plotsTtest[[index]]
-						results[["inferentialPlots"]][["collection"]][[i]][["BFrobustnessPlot"]][["status"]] <- "complete"
 
 					} else {
 
@@ -584,7 +610,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 									.plotFunc <- function() {
 										.plotBF.robustnessCheck.ttest(x= group2, y= group1, BF10post=ifelse((options$bayesFactorType=="LogBF10"), exp(BF10post[i]), BF10post[i]), paired= FALSE, oneSided= oneSided,
-										                              rscale = options$priorWidth, BFH1H0= BFH1H0)
+										                              rscale = options$priorWidth, BFH1H0= BFH1H0, additionalInformation=options$plotBayesFactorRobustnessAdditionalInfo)
 									}
 									content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
 
