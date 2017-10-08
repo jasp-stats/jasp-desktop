@@ -93,6 +93,36 @@ void Engine::saveImage()
 
 }
 
+void Engine::editImage()
+{
+    if (_status != editImg)
+        return;
+
+    vector<string> tempFilesFromLastTime = tempfiles_retrieveList(_analysisId);
+
+    RCallback callback = boost::bind(&Engine::callback, this, _1, _2);
+
+    std::string name = _imageOptions.get("name", Json::nullValue).asString();
+
+    int height = _imageOptions.get("height", Json::nullValue).asInt();
+    int width = _imageOptions.get("width", Json::nullValue).asInt();
+    bool resizeOnly = _imageOptions.get("resizeOnly", Json::nullValue).asBool();
+    int customWidth = _imageOptions.get("customWidth", Json::nullValue).asInt();
+    int customHeight = _imageOptions.get("customHeight", Json::nullValue).asInt();
+    std::string result = rbridge_editImage(name, height, width, _ppi, resizeOnly, customHeight, customWidth);
+
+    _status = complete;
+    Json::Reader parser;
+    parser.parse(result, _analysisResults, false);
+    _analysisResults["results"]["inputOptions"] = _imageOptions;
+    _progress = -1;
+    sendResults();
+    _status = empty;
+
+    //tempfiles_deleteList(tempFilesFromLastTime);
+
+}
+
 void Engine::runAnalysis()
 {
 	if (_status == empty || _status == aborted)
@@ -204,6 +234,8 @@ void Engine::run()
 			break;
 		if (_status == saveImg)
 			saveImage();
+        else if (_status == editImg)
+            editImage();
 		else
 			runAnalysis();
 
@@ -252,11 +284,13 @@ bool Engine::receiveMessages(int timeout)
 				_status = toRun;
 			else if (perform == "saveImg")
 				_status = saveImg;
+            else if (perform == "editImg")
+                _status = editImg;
 			else
 				_status = error;
 		}
 
-		if (_status == toInit || _status == toRun || _status == changed || _status == saveImg)
+        if (_status == toInit || _status == toRun || _status == changed || _status == saveImg || _status == editImg)
 		{
 			_analysisName = jsonRequest.get("name", Json::nullValue).asString();
 			_analysisOptions = jsonRequest.get("options", Json::nullValue).toStyledString();

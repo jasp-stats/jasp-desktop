@@ -926,7 +926,7 @@ as.list.footnotes <- function(footnotes) {
 }
 
 
-.writeImage <- function(width=320, height=320, plot, obj = TRUE){
+.writeImage <- function(width=320, height=320, plot, obj = TRUE, relativePathpng = NULL){
 	# Initialise output object
 	image <- list()
 
@@ -941,7 +941,17 @@ as.list.footnotes <- function(footnotes) {
 	
 	# Create png file location
 	location <- .fromRCPP(".requestTempFileNameNative", "png")
+<<<<<<< a898fc19ae28b69b67324807d33642fb0f8904bc
 	relativePathpng <- location$relativePath
+=======
+	if (is.null(relativePathpng)) {
+	  relativePathpng <- location$relativePath
+	  print("relativePathpng was NULL")
+	} else {
+	  print("relativePathpng was not NULL")
+	}
+	fullPathpng <- paste(location$root, relativePathpng, sep="/")
+>>>>>>> initial changes
 	base::Encoding(relativePathpng) <- "UTF-8"
 
 	root <- location$root
@@ -954,10 +964,12 @@ as.list.footnotes <- function(footnotes) {
 	               height=height * pngMultip, bg="transparent", 
 	               res=72 * pngMultip, type=type)
 	
-	if (class(plot) ==  "function"){
+	if (is.function(plot) && !inherits(plot, "recordedplot")) {
 		if (obj) dev.control('enable') # enable plot recording
 		eval(plot())
 		if (obj) plot <- recordPlot() # save plot to R object
+	} else if (inherits(plot, "recordedplot")) {
+	    .redrawPlot(plot) #(see below)
 	} else {
 		print(plot)
 	}
@@ -1199,4 +1211,127 @@ saveImage <- function(plotName, format, height, width){
 	stopCluster <- substitute(try(snow::stopCluster(cl), silent=TRUE))
 		
 	return(list(cl=cl, progress=list(progress=progress), dopar=dopar, stopCluster=stopCluster))
+}
+
+# not .editImage() because RInside (interface to CPP) cannot handle that
+editImage <- function(plotName, height, width, resizeOnly = FALSE, customHeight = NULL, customWidth = NULL) {
+  
+  print("Got to R code: editImage()")
+  str(mget(ls()))
+  print(plotName)
+  # Retrieve plot object from state
+  state <- .retrieveState()
+  plt <- state[["figures"]][[plotName]]
+
+  if (!resizeOnly && ggplot2::is.ggplot(plt)) {
+    # plt2 <- ggedit::ggedit(plt, viewer = shiny::dialogViewer(dialogName = "Plot Editing"))
+    print("Editing figure")
+    pltNew <- ggedit::ggedit(plt, viewer = shiny::browserViewer())
+    saveThePlot <- !identical(pltNew$UpdatedPlots, plt)
+    plt <- pltNew[["UpdatedPlots"]][[1]]
+  } else { # only resizing
+    saveThePlot <- TRUE
+  }
+  
+  # only resave state if something actually changed
+  if (saveThePlot) {
+    
+    print("Saving edited figure")
+    # start from previous plot -- should be done earlier cause w/ h are important
+    newPlot <- .getFigureFromState(state, plotName)
+    print("names(newPlot) 1")
+    print(names(newPlot))
+    newPlot <- newPlot[unique(names(newPlot))] # keep only one match (should be identical anyway)
+    print("names(newPlot) 2")
+    print(names(newPlot))
+    
+    # check if we want custom height/ width (means we're resizing)
+    if (!is.null(customHeight) && customHeight > 0)
+      height = customHeight
+    
+    if (!is.null(customWidth) && customWidth > 0)
+      width = customWidth
+    
+    # save modified plot
+    print(class(plt))
+    content <- .writeImage(width = width, height = height,
+                           plot = plt, obj = TRUE,
+                           relativePathpng = plotName)
+    newPlot[["data"]] <- content[["png"]]
+    newPlot[["obj"]] <- content[["obj"]]
+    newPlot[["width"]] <- width
+    newPlot[["height"]] <- height
+    state[["figures"]][[plotName]] <- plt
+    
+    state <- .modifyStateFigures(state, identifier = plotName, replacement = newPlot)
+    .saveState(state)
+    
+  }
+  
+  print("Exit plot editing")
+  
+  # print state location
+  # location <- .fromRCPP(".requestStateFileNameNative")
+  # print(sprintf("load('%s')", location))
+  
+  # Create JSON string for interpretation by JASP front-end. 
+  location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
+  format <- ""
+  relativePath <- base::gsub("(?<=\\.)(?!.*\\.).*", "png", format, perl = TRUE)
+  fullPath <- paste(location$root, relativePath, sep="/")
+  base::Encoding(relativePath) <- "UTF-8"
+  
+  result <- list(
+    status = "imageEdited",
+    results = list(
+      name = relativePath,
+      title = newPlot[["title"]]
+    )
+    
+  )
+  # reshape R list to JSON string
+  result <- rjson::toJSON(result)
+
+  str(result)
+  print("Exit")
+  # Return result
+  return(result)
+  
+}
+
+.modifyStateFigures <- function(x, identifier, replacement) {
+  
+  # recursive function that traverses the entire state object to replace old figures with new figures
+  # it searches a list where lst[["data"]] == identifier and then does lst[["obj"]] <- replacement
+  # TODO: also add specific modifications for writeImage?
+  
+  # check if list
+  if (inherits(x, "list")) { # not is.list to avoid false positive (i.e. ggplot objects are lists)
+    
+    # check if plotting list we're looking for
+    if (!is.null(x[["editable"]]) && x[["data"]] == identifier) {
+      return(replacement)
+      # x[["obj"]] <- replacement # put in the new
+      # return(x)
+    } else {
+      # check if criteria are met in any of the sublists
+      return(lapply(x, .modifyStateFigures, identifier = identifier, replacement = replacement))
+    }
+  } else {
+    # return ordinary object
+    return(x)
+  }
+}
+
+.getFigureFromState <- function(x, identifier) {
+  
+  # recursive function that traverses the entire state object to find a plot by the png filename (identifier).
+  # returns all matches found
+  if (is.list(x)) {
+    if (identical(x[["data"]], identifier)) {
+      return(x)
+    } else {
+      return(unlist(lapply(unname(x), .getFigureFromState, identifier), recursive = FALSE))
+    }
+  }
 }

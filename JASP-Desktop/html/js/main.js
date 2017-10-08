@@ -121,6 +121,13 @@ $(document).ready(function () {
         window.menuObject = null;
     }
 
+    window.editImageClicked = function () {
+        if (window.menuObject.editImageClicked | window.menuObject.editImageClicked())
+            window.menuObject.editImageClicked();
+
+        window.menuObject = null;
+    }
+
 	window.collapseMenuClicked = function () {
 		if (window.menuObject.collapseMenuClicked)
 			window.menuObject.collapseMenuClicked();
@@ -499,6 +506,12 @@ $(document).ready(function () {
             jaspWidget.on("saveimage", function (id, options) {
 
                 jasp.analysisSaveImage(id, JSON.stringify(options))
+
+            });
+
+            jaspWidget.on("editimage", function (id, options) {
+
+                jasp.analysisEditImage(id, JSON.stringify(options))
 
             });
 

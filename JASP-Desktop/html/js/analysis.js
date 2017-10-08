@@ -5,7 +5,8 @@ JASPWidgets.Analysis = Backbone.Model.extend({
 		results: {},
 		status: 'waiting',
         optionschanged: [],
-        saveimage: []
+        saveimage: [],
+        editimage: []
 	}
 });
 
@@ -99,6 +100,11 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
         this.model.on("SaveImage:clicked", function (options) {
 
             this.trigger("saveimage", this.model.get("id"), options)
+        }, this);
+
+        this.model.on("EditImage:clicked", function (options) {
+
+            this.trigger("editimage", this.model.get("id"), options)
         }, this);
 
 		this.$el.on("changed:userData", this, this.onUserDataChanged);

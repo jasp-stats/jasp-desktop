@@ -124,6 +124,7 @@ signals:
 	void analysisSelected(int id);
 	void analysisUnselected();
 	void analysisSaveImage(int id, QString options);
+    void analysisEditImage(int id, QString options);
 	void analysisChangedDownstream(int id, QString options);
 	void saveTextToFile(QString filename, QString text);
 	void pushToClipboard(QString mimeType, QString data, QString html);
@@ -140,6 +141,7 @@ signals:
 private slots:
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisImageSavedHandler(Analysis* analysis);
+    void analysisImageEditedHandler(Analysis* analysis);
 	void analysisUserDataLoadedHandler(Analysis *analysis);
 	void analysisSelectedHandler(int id);
 	void analysisUnselectedHandler();
@@ -150,7 +152,7 @@ private slots:
 	void displayMessageFromResultsHandler(QString msg);
 	void analysisChangedDownstreamHandler(int id, QString options);
 	void analysisSaveImageHandler(int id, QString options);
-
+    void analysisEditImageHandler(int id, QString options);
 
 	void resultsDocumentChangedHandler();
 	void simulatedMouseClickHandler(int x, int y, int count);
@@ -167,6 +169,7 @@ private slots:
 	void copySelected();
 	void citeSelected();
 	void saveImage();
+    void editImage();
 	void noteSelected();
 	void menuHidding();
 

@@ -50,6 +50,7 @@
 	void rbridge_setDataSetSource(boost::function<DataSet *()> source);
 	std::string rbridge_run(const std::string &name, const std::string &options, const std::string &perform = "run", int ppi = 96, RCallback callback = NULL);
 	std::string rbridge_saveImage(const std::string &name, const std::string &type, const int &height, const int &width, const int ppi = 96);
+    std::string rbridge_editImage(const std::string &name, const int &height, const int &width, const int ppi, const bool &resizeOnly, const int &customHeight, const int &customWidth);
 
 	std::string rbridge_check();
 

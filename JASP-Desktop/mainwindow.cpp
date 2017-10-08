@@ -200,6 +200,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(_analyses, SIGNAL(analysisResultsChanged(Analysis*)), this, SLOT(analysisResultsChangedHandler(Analysis*)));
 	connect(_analyses, SIGNAL(analysisImageSaved(Analysis*)), this, SLOT(analysisImageSavedHandler(Analysis*)));
+    connect(_analyses, SIGNAL(analysisImageEdited(Analysis*)), this, SLOT(analysisImageEditedHandler(Analysis*)));
 	connect(_analyses, SIGNAL(analysisUserDataLoaded(Analysis*)), this, SLOT(analysisUserDataLoadedHandler(Analysis*)));
 	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), ui->backStage, SLOT(analysisAdded(Analysis*)));
 
@@ -232,6 +233,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(saveTextToFile(QString, QString)), this, SLOT(saveTextToFileHandler(QString, QString)));
 	connect(this, SIGNAL(analysisChangedDownstream(int, QString)), this, SLOT(analysisChangedDownstreamHandler(int, QString)));
 	connect(this, SIGNAL(analysisSaveImage(int, QString)), this, SLOT(analysisSaveImageHandler(int, QString)));
+	connect(this, SIGNAL(analysisEditImage(int, QString)), this, SLOT(analysisEditImageHandler(int, QString)));
 	connect(this, SIGNAL(showAnalysesMenu(QString)), this, SLOT(showAnalysesMenuHandler(QString)));
 	connect(this, SIGNAL(removeAnalysisRequest(int)), this, SLOT(removeAnalysisRequestHandler(int)));
 	connect(this, SIGNAL(updateUserData(int, QString)), this, SLOT(updateUserDataHandler(int, QString)));
@@ -677,6 +679,39 @@ void MainWindow::analysisImageSavedHandler(Analysis *analysis)
 		}
 		QFile::copy(imagePath, finalPath);
 	}
+}
+
+void MainWindow::analysisEditImageHandler(int id, QString options)
+{
+
+    Analysis *analysis = _analyses->get(id);
+    if (analysis == NULL)
+        return;
+
+    string utf8 = fq(options);
+    Json::Value root;
+    Json::Reader parser;
+    parser.parse(utf8, root);
+
+    analysis->editImage(analysis, root);
+
+    return;
+
+}
+
+void MainWindow::analysisImageEditedHandler(Analysis *analysis)
+{
+    Json::Value results = analysis->getImgResults();
+    if (results.isNull())
+        return;
+
+    std::cout << "JSON string for use in Javascript" << std::endl;
+    std::cout << results << std::endl;
+
+    ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.reRenderAnalyses();");\
+
+    return;
+
 }
 
 AnalysisForm* MainWindow::loadForm(Analysis *analysis)
@@ -1826,6 +1861,7 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 	QIcon _collapseIcon = QIcon(":/icons/collapse.png");
 	QIcon _expandIcon = QIcon(":/icons/expand.png");
 	QIcon _saveImageIcon = QIcon(":/icons/document-save-as.png");
+    QIcon _editImageIcon = QIcon(":/icons/editImage.png");
 
 	_analysisMenu->clear();
 
@@ -1858,6 +1894,11 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 	{
 		_analysisMenu->addAction(_saveImageIcon, "Save Image As", this, SLOT(saveImage()));
 	}
+
+    if (menuOptions["hasEditImg"].asBool())
+    {
+        _analysisMenu->addAction(_editImageIcon, "Edit Image", this, SLOT(editImage()));
+    }
 
 	if (menuOptions["hasNotes"].asBool())
 	{
@@ -2016,6 +2057,11 @@ void MainWindow::citeSelected()
 void MainWindow::saveImage()
 {
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.saveImageClicked();");
+}
+
+void MainWindow::editImage()
+{
+    ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.editImageClicked();");
 }
 
 void MainWindow::noteSelected()

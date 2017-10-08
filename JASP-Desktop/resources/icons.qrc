@@ -71,5 +71,6 @@
         <file>icons/collapse.png</file>
         <file>icons/loading.gif</file>
         <file>icons/summarize.svg</file>
+        <file>icons/editImage.png</file>
     </qresource>
 </RCC>

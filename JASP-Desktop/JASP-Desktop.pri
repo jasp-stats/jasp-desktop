@@ -520,6 +520,7 @@ OTHER_FILES += \
         $$PWD/resources/icons/edit-copy.png \
         $$PWD/resources/icons/edit-delete-shred.png \
         $$PWD/resources/icons/edit-find.png \
+        $$PWD/resources/icons/editImage.png \
         $$PWD/resources/icons/edit-paste.png \
         $$PWD/resources/icons/edit-redo.png \
         $$PWD/resources/icons/edit-undo.png \

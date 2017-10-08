@@ -1029,7 +1029,8 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			hasCopy: (parent.hasCopy === undefined || parent.hasCopy()) && parent.copyMenuClicked !== undefined,
 			hasCite: (parent.hasCitation === undefined || parent.hasCitation()) && parent.citeMenuClicked !== undefined,
 			hasNotes: (parent.hasNotes === undefined || parent.hasNotes()) && parent.notesMenuClicked !== undefined,
-			hasSaveImg: (parent.isConvertible === undefined || parent.isConvertible()) && parent.saveImageClicked !== undefined,
+            hasSaveImg: (parent.isConvertible === undefined || parent.isConvertible()) && parent.saveImageClicked !== undefined,
+            hasEditImg: (parent.isEditable === undefined || parent.isEditable()) && parent.editImageClicked !== undefined,
 			hasEditTitle: (parent.hasEditTitle === undefined || parent.hasEditTitle()) && parent.editTitleClicked !== undefined,
 			hasRemove: (parent.hasRemove === undefined || parent.hasRemove()) && parent.removeMenuClicked !== undefined,
 			hasRemoveAllAnalyses: parent.menuName === 'All',
@@ -1039,7 +1040,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			objectName: parent.menuName,
 		};
 
-        this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasSaveImg || this.options.hasNotes || this.options.hasRemove || this.options.hasRemoveAll || this.options.hasEditTitle || this.options.hasCollapse;
+        this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasSaveImg || this.options.hasEditImg || this.options.hasNotes || this.options.hasRemove || this.options.hasRemoveAll || this.options.hasEditTitle || this.options.hasCollapse;
 	},
 
 	selectionElement: function() {

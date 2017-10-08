@@ -81,6 +81,13 @@ void Analysis::setImageResults(Json::Value results)
 	imageSaved(this);
 }
 
+void Analysis::setImageEdited(Json::Value results)
+{
+    _imgResults = results;
+    imageEdited(this);
+}
+
+
 void Analysis::setUserData(Json::Value userData, bool silient)
 {
 	_userData = userData;
@@ -119,6 +126,8 @@ Analysis::Status Analysis::parseStatus(string name)
 		return Analysis::Aborted;
 	else if (name == "SaveImg")
 		return Analysis::SaveImg;
+    else if (name == "EditImg")
+        return Analysis::SaveImg;
 	else if (name == "exception")
 		return Analysis::Exception;
 	else
@@ -156,6 +165,8 @@ Json::Value Analysis::asJSON() const
 		break;
 	case Analysis::SaveImg:
 		status = "SaveImg";
+    case Analysis::EditImg:
+        status = "EditImg";
 	case Analysis::Exception:
 		status = "exception";
 		break;
@@ -275,3 +286,5 @@ Json::Value Analysis::getImgResults()
 {
 	return _imgResults;
 }
+
+

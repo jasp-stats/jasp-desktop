@@ -52,6 +52,7 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 	connect(_analyses, SIGNAL(analysisOptionsChanged(Analysis*)), this, SLOT(sendMessages()));
 	connect(_analyses, SIGNAL(analysisToRefresh(Analysis*)), this, SLOT(sendMessages()));
 	connect(_analyses, SIGNAL(analysisSaveImage(Analysis*)), this, SLOT(sendMessages()));
+    connect(_analyses, SIGNAL(analysisEditImage(Analysis*)), this, SLOT(sendMessages()));
 
 	// delay start so as not to increase program start up time
 	QTimer::singleShot(100, this, SLOT(deleteOrphanedTempFiles()));
@@ -154,6 +155,10 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	{
 		perform = "saveImg";
 	}
+    else if (analysis->status() == Analysis::EditImg)
+    {
+        perform = "editImg";
+    }
 	else if (analysis->status() == Analysis::Aborting)
 	{
 		perform = "abort";
@@ -176,7 +181,7 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	if (analysis->status() != Analysis::Aborted)
 	{
 		json["name"] = analysis->name();
-		if (perform == "saveImg")
+        if (perform == "saveImg" || perform == "editImg")
 			json["image"] = analysis->getSaveImgOptions();
 		else
 			json["options"] = analysis->options()->asJSON();
@@ -247,14 +252,21 @@ void EngineSync::process()
 			else if (status == "imageSaved")
 			{
 				analysis->setStatus(Analysis::Complete);
-				analysis->setImageResults(results);
+                analysis->setImageResults(results);
 				_analysesInProgress[i] = NULL;
 				sendMessages();
 			}
+            else if (status == "imageEdited")
+            {
+                analysis->setStatus(Analysis::Complete);
+                analysis->setImageEdited(results);
+                _analysesInProgress[i] = NULL;
+                sendMessages();
+            }
 			else if (status == "complete")
 			{
-				analysis->setStatus(Analysis::Complete);
-				analysis->setResults(results);
+                analysis->setStatus(Analysis::Complete);
+                analysis->setResults(results);
 				_analysesInProgress[i] = NULL;
 				sendMessages();
 			}
@@ -312,7 +324,7 @@ void EngineSync::sendMessages()
 		if (analysis == NULL)
 			continue;
 
-		if (analysis->status() == Analysis::Empty || analysis->status() == Analysis::SaveImg)
+        if (analysis->status() == Analysis::Empty || analysis->status() == Analysis::SaveImg || analysis->status() == Analysis::EditImg)
 		{
 			bool sent = false;
 

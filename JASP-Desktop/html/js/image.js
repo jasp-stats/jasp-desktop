@@ -42,6 +42,14 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 		return this.model.get("convertible") == true;
 	},
 
+    editImageClicked: function(){
+      var options = {name: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), edit: true};
+      this.model.trigger("EditImage:clicked", options);
+    },
+    isEditable: function() {
+      return this.model.get("editable") == true;
+    },
+
 	hasNotes: function () {
 		return this.$el.hasClass('jasp-collection-item') === false;
 	},
@@ -92,16 +100,17 @@ JASPWidgets.imagePrimative= JASPWidgets.View.extend({
 	},
 
 	onResized: function (w, h) {
-		var options = {};
+        var options = {name: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), resizeOnly: 'true'};
 		var custom = this.model.get("custom");
 		if (custom !== null) {
 			if (_.has(custom, "width"))
-				options[custom.width] = w;
+                options["customWidth"] = w;
 			if (_.has(custom, "height"))
-				options[custom.height] = h;
+                options["customHeight"] = h;
 		};
 
-		this.model.trigger("CustomOptions:changed", options);
+        this.model.trigger("EditImage:clicked", options);
+//		this.model.trigger("CustomOptions:changed", options);
 	},
 
 	onResizeStart: function (w, h) {

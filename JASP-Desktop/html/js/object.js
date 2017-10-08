@@ -69,6 +69,11 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
         this.trigger("SaveImage:clicked", options)
     }, this.model);
 
+    itemModel.on("EditImage:clicked", function (options) {
+
+        this.trigger("EditImage:clicked", options)
+    }, this.model);
+
     if (ignoreEvents === false) {
 		this.listenTo(itemView, "toolbar:showMenu", function (obj, options) {
 
