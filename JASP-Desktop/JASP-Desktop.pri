@@ -398,7 +398,7 @@ HEADERS  += \
 		$$PWD/importers/ods/odsxmlmanifesthandler.h \
     $$PWD/analysisforms/regressionlogisticform.h \
     $$PWD/analysisforms/multinomialtestform.h \
-    $$PWD/ribbons/ribbonmeta_analysis.h
+    $$PWD/ribbons/ribbonmeta_analysis.h \
     $$PWD/analysisforms/classicalmetaanalysisform.h
 
 FORMS += \
@@ -430,7 +430,6 @@ FORMS += \
         $$PWD/analysisforms/ttestbayesianpairedsamplesform.ui \
         $$PWD/analysisforms/ancovabayesianform.ui \
         $$PWD/analysisforms/anovarepeatedmeasuresbayesianform.ui \
-        $$PWD/analysisforms/classicalmetaanalysisform.ui \
         $$PWD/analysisforms/correlationbayesianform.ui \
         $$PWD/analysisforms/correlationbayesianpairsform.ui \
         $$PWD/analysisforms/contingencytablesbayesianform.ui \
@@ -443,7 +442,6 @@ FORMS += \
         $$PWD/analysisforms/binomialtestbayesianform.ui \
         $$PWD/analysisforms/bffromtform.ui \
         $$PWD/ribbons/ribbonsummarystatistics.ui \
-        $$PWD/ribbons/ribbonmeta_analysis.ui \
         $$PWD/ribbons/ribbonmeta_analysis.ui \
         $$PWD/variableswidget.ui \
         $$PWD/backstage/authwidget.ui\
@@ -463,7 +461,6 @@ FORMS += \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.ui \
     $$PWD/analysisforms/regressionlogisticform.ui \
     $$PWD/analysisforms/multinomialtestform.ui \
-    $$PWD/ribbons/ribbonmeta_analysis.ui \
     $$PWD/analysisforms/classicalmetaanalysisform.ui
 
 RESOURCES += \

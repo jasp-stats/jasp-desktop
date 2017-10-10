@@ -83,7 +83,7 @@ ClassicalMetaAnalysisForm::ClassicalMetaAnalysisForm(QWidget *parent) :
 	connect(_factorsModel, SIGNAL(unassigned(Terms)), _modelModel, SLOT(removeVariables(Terms)));
 
 	ui->panelStatistics->hide();
-	ui->panelOptions->hide();
+	ui->panelIncludeConstant->hide();
     ui->panelAssumptionChecks->hide();
 
 #ifdef QT_NO_DEBUG

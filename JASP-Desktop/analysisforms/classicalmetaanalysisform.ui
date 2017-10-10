@@ -23,7 +23,7 @@
    <property name="verticalSpacing">
     <number>0</number>
    </property>
-   <item row="5" column="0">
+   <item row="4" column="0">
     <spacer name="verticalSpacer_2">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -36,14 +36,17 @@
      </property>
     </spacer>
    </item>
-   <item row="4" column="0">
-    <widget class="QWidget" name="widget_8" native="true">
-     <layout class="QGridLayout" name="gridLayout_29">
+   <item row="1" column="0">
+    <widget class="QWidget" name="modelContainer" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_51">
       <property name="leftMargin">
        <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>3</number>
       </property>
       <property name="rightMargin">
        <number>0</number>
@@ -51,8 +54,24 @@
       <property name="bottomMargin">
        <number>3</number>
       </property>
+      <item row="2" column="0">
+       <widget class="AnovaModelWidget" name="modelTerms" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>200</height>
+         </size>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0">
-       <widget class="ExpanderButton" name="pushButton_3">
+       <widget class="ExpanderButton" name="expanderModel">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -60,109 +79,50 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Diagnostics</string>
+         <string>Model</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QWidget" name="panelAssumptionChecks" native="true">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+       <widget class="QWidget" name="panelIncludeConstant" native="true">
+        <property name="enabled">
+         <bool>true</bool>
         </property>
-        <layout class="QGridLayout" name="gridLayout_27">
+        <layout class="QGridLayout" name="gridLayout_9">
          <property name="leftMargin">
           <number>0</number>
          </property>
          <property name="topMargin">
           <number>0</number>
          </property>
-         <item row="0" column="0">
-          <widget class="GroupBox" name="groupBox_3">
-           <property name="title">
-            <string>Model fit assessment</string>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="1" rowspan="2" colspan="2">
+          <widget class="BoundCheckBox" name="includeConstant">
+           <property name="enabled">
+            <bool>true</bool>
            </property>
-           <layout class="QGridLayout" name="gridLayout_28">
-            <item row="6" column="0">
-             <widget class="QLabel" name="label_8">
-              <property name="maximumSize">
-               <size>
-                <width>15</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="plotResidualsDependent">
-              <property name="text">
-               <string>Diagnostic plots</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="plotResidualsCovariates">
-              <property name="text">
-               <string>Fail-safe N</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="plotResidualsPredicted">
-              <property name="text">
-               <string>Profile plot</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="1">
-             <widget class="BoundCheckBox" name="plotResidualsQQ">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Q-Q plot standardized residuals</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="residualsCasewiseDiagnostics">
-              <property name="text">
-               <string>Casewise diagnostics</string>
-              </property>
-             </widget>
-            </item>
-            <item row="7" column="0">
-             <widget class="BoundCheckBox" name="trimfillPlot">
-              <property name="text">
-               <string>Trim-fill diagnostics</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
+           <property name="text">
+            <string>Include intercept</string>
+           </property>
           </widget>
+         </item>
+         <item row="0" column="0" rowspan="3">
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </widget>
@@ -275,7 +235,7 @@
                 </widget>
                </item>
                <item row="1" column="1">
-                <widget class="QComboBox" name="comboBox">
+                <widget class="BoundComboBox" name="test">
                  <item>
                   <property name="text">
                    <string>z</string>
@@ -325,9 +285,16 @@
          <item row="0" column="1">
           <widget class="GroupBox" name="groupBox_2">
            <property name="title">
-            <string>Model fit</string>
+            <string>Model Fit</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_6">
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="forestPlot">
+              <property name="text">
+               <string>Forest plot</string>
+              </property>
+             </widget>
+            </item>
             <item row="0" column="0">
              <widget class="BoundCheckBox" name="modelFit">
               <property name="text">
@@ -335,10 +302,10 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="BoundCheckBox" name="forestPlot">
+            <item row="6" column="0">
+             <widget class="BoundCheckBox" name="funnelPlotAsymmetryTest">
               <property name="text">
-               <string>Forest plot</string>
+               <string>Regression test for funnel plot asymmetry</string>
               </property>
              </widget>
             </item>
@@ -349,19 +316,25 @@
               </property>
              </widget>
             </item>
-            <item row="6" column="0">
-             <widget class="BoundCheckBox" name="funnelPlotAsymmetryTest">
-              <property name="text">
-               <string>Regression Test for Funnel plot asymmetry</string>
-              </property>
-             </widget>
-            </item>
             <item row="4" column="0">
              <widget class="BoundCheckBox" name="rSquaredChange">
               <property name="text">
-               <string>Rank Test for Funnel plot asymmetry</string>
+               <string>Rank test for funnel plot asymmetry</string>
               </property>
              </widget>
+            </item>
+            <item row="6" column="1">
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
             </item>
            </layout>
           </widget>
@@ -374,126 +347,6 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QWidget" name="modelContainer" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_51">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>3</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="ExpanderButton" name="expanderModel">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Model</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="AnovaModelWidget" name="modelTerms" native="true">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>200</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QWidget" name="widgetOptions" native="true">
-     <layout class="QGridLayout" name="gridLayout_17">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>3</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>3</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="ExpanderButton" name="pushButton_2">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Options</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QWidget" name="panelOptions" native="true">
-        <layout class="QGridLayout" name="gridLayout_15">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <item row="0" column="1" rowspan="3">
-          <widget class="QWidget" name="widget_18" native="true">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>1</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_3"/>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QWidget" name="widget_19" native="true">
-           <layout class="QGridLayout" name="gridLayout_14">
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="includeConstant">
-              <property name="text">
-               <string>Include intercept</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
           </widget>
          </item>
         </layout>
@@ -569,7 +422,7 @@
          <item row="0" column="0">
           <widget class="QLabel" name="label_15">
            <property name="text">
-            <string>Study labels</string>
+            <string>Study Labels</string>
            </property>
           </widget>
          </item>
@@ -795,7 +648,7 @@
       <item row="3" column="2">
        <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>Effect Size Standar Error</string>
+         <string>Effect Size Standard Error</string>
         </property>
        </widget>
       </item>
@@ -897,6 +750,140 @@
      </layout>
     </widget>
    </item>
+   <item row="3" column="0">
+    <widget class="QWidget" name="widget_8" native="true">
+     <layout class="QGridLayout" name="gridLayout_29">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>3</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>3</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="ExpanderButton" name="pushButton_3">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Diagnostics</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QWidget" name="panelAssumptionChecks" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_27">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="GroupBox" name="groupBox_3">
+           <property name="title">
+            <string>Model Fit Assessment</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_3">
+            <property name="verticalSpacing">
+             <number>-1</number>
+            </property>
+            <item row="5" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <property name="spacing">
+               <number>-1</number>
+              </property>
+              <item>
+               <widget class="QWidget" name="widget" native="true"/>
+              </item>
+              <item>
+               <widget class="BoundCheckBox" name="plotResidualsQQ">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Q-Q plot standardized residuals</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="plotResidualsCovariates">
+              <property name="text">
+               <string>Fail-safe N</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="residualsCasewiseDiagnostics">
+              <property name="text">
+               <string>Casewise diagnostics</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="BoundCheckBox" name="plotResidualsDependent">
+              <property name="text">
+               <string>Diagnostic plots</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="plotResidualsPredicted">
+              <property name="text">
+               <string>Profile plot</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="BoundCheckBox" name="trimfillPlot">
+              <property name="text">
+               <string>Trim-fill diagnostics</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -972,8 +959,6 @@
   <tabstop>funnelPlot</tabstop>
   <tabstop>funnelPlotAsymmetryTest</tabstop>
   <tabstop>residualsParameters</tabstop>
-  <tabstop>pushButton_2</tabstop>
-  <tabstop>includeConstant</tabstop>
   <tabstop>pushButton_3</tabstop>
   <tabstop>plotResidualsCovariates</tabstop>
   <tabstop>plotResidualsPredicted</tabstop>

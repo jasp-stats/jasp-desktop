@@ -103,61 +103,9 @@
 			"type": "Boolean"
 		},
 		{
-			"name": "residualsCasewiseDiagnosticsType",
-			"type": "List",
-			"options": [ "outliersOutside", "allCases" ]
-		},
-		{
-			"default": 3,
-			"name": "residualsCasewiseDiagnosticsOutliersOutside",
-			"type": "Integer"
-		},
-		{
-			"name": "steppingMethodCriteriaType",
-			"options": [ "usePValue", "useFValue" ],
-			"default": "usePValue",
-			"type": "List"
-		},
-		{
-			"format": "",
-			"name": "omnibusCoefficientIndices",
-			"type": "String",
-			"default": ""
-		},
-		{
-			"format": "",
-			"name": "steppingMethodCriteriaPEntry",
-			"type": "Number",
-			"value": 0.050
-		},
-		{
-			"format": "",
-			"name": "steppingMethodCriteriaPRemoval",
-			"type": "Number",
-			"value": 0.10
-		},
-		{
-			"format": "",
-			"name": "steppingMethodCriteriaFEntry",
-			"type": "Number",
-			"value": 3.840
-		},
-		{
-			"format": "",
-			"name": "steppingMethodCriteriaFRemoval",
-			"type": "Number",
-			"value": 2.710
-		},
-		{
 			"default": true,
 			"name": "includeConstant",
 			"type": "Boolean"
-		},
-		{
-			"name": "missingValues",
-			"options": [ "excludeCasesListwise", "excludeCasesPairwise", "replaceWithMeans" ],
-			"default": "excludeCasesListwise",
-			"type": "List"
 		},
 		{
 			"default": false,
@@ -180,24 +128,9 @@
 			"type": "Boolean"
 		},
 		{
-			"default": false,
-			"name": "plotResidualsHistogram",
-			"type": "Boolean"
-		},
-		{
-			"default": false,
-			"name": "plotResidualsHistogramStandardized",
-			"type": "Boolean"
-		},
-		{
 			"default": true,
 			"name": "plotResidualsQQ",
 			"type": "Boolean"
-		},
-		{
-		  "name": "VovkSellkeMPR",
-		  "type": "Boolean",
-		  "default": false
 		}
 	]
 }
