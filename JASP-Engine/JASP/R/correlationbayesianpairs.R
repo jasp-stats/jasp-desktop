@@ -491,12 +491,13 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					    # bf10: can't compute
 					    errorMessage <- errors$message
 					    unplotable <- TRUE
-					    unplotableMessage <- errors$message
+					    unplotableMessage <- errorMessage
 					    unplotableScatter <- TRUE
-					    unplotableMessageScatter <- errors$message
+					    unplotableMessageScatter <- errorMessage
 					    
 					    obsFootnote <- errors$message
 					    index <- .addFootnote(footnotes, obsFootnote)
+					    errorFootnotes[i] <- errorMessage
 						
 					    bfObject <- failedBfObject
 					} else {
@@ -636,6 +637,11 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				
 				v1 <- subDataSet[[ .v(pair[[1]]) ]]
 				v2 <- subDataSet[[ .v(pair[[2]]) ]]
+				
+				plotBF10post <- BF10post[i]
+				if (options$bayesFactorType == "LogBF10") {
+					plotBF10post <- exp(plotBF10post) # we don't use log(bf)'s in plots
+				}
 			
 			} else {
 			
@@ -762,7 +768,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 							# 
 							# plot[["data"]] <- .endSaveImage(image)
 							.plotFunc <- function() {
-								.plotPosterior.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0, addInformation=options$plotPriorAndPosteriorAdditionalInfo, kappa=options$priorWidth,corCoefficient=options$corcoefficient)
+								.plotPosterior.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF=plotBF10post, BFH1H0=BFH1H0, addInformation=options$plotPriorAndPosteriorAdditionalInfo, kappa=options$priorWidth,corCoefficient=options$corcoefficient)
 							}
 							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
 							plot[["convertible"]] <- TRUE
@@ -831,7 +837,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 							# plot[["data"]] <- .endSaveImage(image)
 							
 							.plotFunc <- function() {
-								.plotBF.robustnessCheck.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF10post=BF10post[i], BFH1H0=BFH1H0, kappa=options$priorWidth, corCoefficient=options$corcoefficient)
+								.plotBF.robustnessCheck.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF10post=plotBF10post, BFH1H0=BFH1H0, kappa=options$priorWidth, corCoefficient=options$corcoefficient)
 							}
 							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
 							plot[["convertible"]] <- TRUE
@@ -908,7 +914,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 							# plot[["data"]] <- .endSaveImage(image)
 							
 							.plotFunc <- function() {
-								.plotSequentialBF.correlation(x=v1, y=v2, oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0, kappa=options$priorWidth,corCoefficient=options$corcoefficient)
+								.plotSequentialBF.correlation(x=v1, y=v2, oneSided=oneSided, BF=plotBF10post, BFH1H0=BFH1H0, kappa=options$priorWidth,corCoefficient=options$corcoefficient)
 							}
 							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
 							plot[["convertible"]] <- TRUE
