@@ -55,6 +55,11 @@
 		},
 		{
 			"default": false,
+			"name": "plotBayesFactorRobustnessAdditionalInfo",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
 			"name": "plotSequentialAnalysis",
 			"type": "Boolean"
 		},

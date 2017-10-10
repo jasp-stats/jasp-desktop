@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2017 University of Amsterdam
+# Copyright (C) 2013-2017 University of Amsterdam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 							)
 	bf.title <- bftype$bftitle
 	BFH1H0 <- bftype$BFH1H0
-	
+
 	hypothesis.variables <- .hypothesisType.summarystats.ttest.paired(options$hypothesis)
 	oneSided <- hypothesis.variables$oneSided
 
@@ -191,9 +191,9 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 	# 		(is.list(diff) && (diff$bayesFactorType == FALSE && diff$tStatistic == FALSE &&
 	# 		diff$n1Size == FALSE && diff$priorWidth == FALSE && diff$hypothesis == FALSE))) &&
 	# 		!is.null(state$bayesFactorObject)) {
-	if (!is.null(state) && !is.null(diff) && !is.null(state$bayesFactorObject) && 
+	if (!is.null(state) && !is.null(diff) && !is.null(state$bayesFactorObject) &&
 	    !any(unlist(diff))) {
-	  
+
 		rowsTTestBayesianPairedSamples <- state$rowsTTestBayesianPairedSamples
 		bayesFactorObject <- state$bayesFactorObject
 
@@ -210,22 +210,22 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 				# 												diff = diff,
 				# 												hypothesis.variables = hypothesis.variables
 				# 											)
-			  
+
 				## Compute the statistics
-				
+
 				bayesFactorObject <- .generalSummaryTtestBF(options = options, paired=TRUE)
-				
+
 				## Format the statistics for output
-				
+
 				bf <- bayesFactorObject$bf
 				BF <- switch(options$bayesFactorType, BF10=bf, BF01=1/bf, log(bf))
-				
+
 				allPValues <- bayesFactorObject$pValue
 				pValue <- switch(as.character(hypothesis.variables$oneSided), left=allPValues$minSided,
 				                 right=allPValues$plusSided, allPValues$twoSided)
-				
+
 				## Store statistics in table row ouput structure
-				
+
 				rowsTTestBayesianPairedSamples$BF <- .clean(BF)
 				rowsTTestBayesianPairedSamples$errorEstimate <- .clean(bayesFactorObject$properror)
 				rowsTTestBayesianPairedSamples$pValue <- .clean(pValue)

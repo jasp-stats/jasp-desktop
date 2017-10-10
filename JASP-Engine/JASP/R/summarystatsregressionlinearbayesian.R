@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2017 University of Amsterdam
+# Copyright (C) 2013-2017 University of Amsterdam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
 
 SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform = 'run', callback = function(...) 0,  ...)
 {
@@ -95,7 +96,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	}
 	table[["schema"]]   <- list(fields=fields)
 	table[["citation"]] <- list("Liang, F. and Paulo, R. and Molina, G. and Clyde, M. A. and Berger, J. O. (2008). Mixtures of g-priors for Bayesian Variable Selection. Journal of the American Statistical Association, 103, pp. 410-423",
-															"Rouder, J. N. and Morey, R. D. (in press, Multivariate Behavioral Research). Bayesian testing in regression.")
+															"Rouder, J. N. and Morey, R. D. (in press). Bayesian testing in regression. Multivariate Behavioral Research.")
 
 	#add footnotes to the analysis result
 	footnotes <- .newFootnotes()
@@ -234,7 +235,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 										# .plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariatesNull=options$numberOfCovariatesNull, unadjustedRSquaredNull=options$unadjustedRSquaredNull, nullModelSpecified=nullModelSpecified,, numberOfCovariatesAlternative=options$numberOfCovariatesAlternative, unadjustedRSquaredAlternative=options$unadjustedRSquaredAlternative, rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"),
 										# 					BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObjectAlternative[["bf"]])/exp(bayesFactorObjectNull[["bf"]])), .clean(exp(bayesFactorObjectNull[["bf"]])/exp(bayesFactorObjectAlternative[["bf"]]))))
 										# plot[["data"]] <- .endSaveImage(image)
-										
+
 										.plotFunc <- function() {
 											.plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariatesNull=options$numberOfCovariatesNull, unadjustedRSquaredNull=options$unadjustedRSquaredNull, nullModelSpecified=nullModelSpecified,, numberOfCovariatesAlternative=options$numberOfCovariatesAlternative, unadjustedRSquaredAlternative=options$unadjustedRSquaredAlternative, rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"),
 															BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObjectAlternative[["bf"]])/exp(bayesFactorObjectNull[["bf"]])), .clean(exp(bayesFactorObjectNull[["bf"]])/exp(bayesFactorObjectAlternative[["bf"]]))))
@@ -243,7 +244,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 										plot[["convertible"]] <- TRUE
 										plot[["obj"]] <- content[["obj"]]
 										plot[["data"]] <- content[["png"]]
-										
+
 									})
 						}
 						else
@@ -253,7 +254,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 										# .plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariatesNull=options$numberOfCovariatesNull, unadjustedRSquaredNull=options$unadjustedRSquaredNull, numberOfCovariatesAlternative=options$numberOfCovariatesAlternative, unadjustedRSquaredAlternative=options$unadjustedRSquaredAlternative,
 										# 			rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), nullModelSpecified=nullModelSpecified, BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObject[["bf"]])), .clean(1/exp(bayesFactorObject[["bf"]]))))
 										# plot[["data"]] <- .endSaveImage(image)
-										
+
 										.plotFunc <- function() {
 											.plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariatesNull=options$numberOfCovariatesNull, unadjustedRSquaredNull=options$unadjustedRSquaredNull, numberOfCovariatesAlternative=options$numberOfCovariatesAlternative, unadjustedRSquaredAlternative=options$unadjustedRSquaredAlternative,
 														rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), nullModelSpecified=nullModelSpecified, BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObject[["bf"]])), .clean(1/exp(bayesFactorObject[["bf"]]))))
@@ -262,7 +263,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 										plot[["convertible"]] <- TRUE
 										plot[["obj"]] <- content[["obj"]]
 										plot[["data"]] <- content[["png"]]
-										
+
 									})
 						}
 
@@ -355,7 +356,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 							# image <- .beginSaveImage(530, 400)
 							# .plotBF.robustnessCheck.regression.summaryStatistics(BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= TRUE)
 							# plot[["data"]] <- .endSaveImage(image)
-							
+
 							.plotFunc <- function() {
 								.plotBF.robustnessCheck.regression.summaryStatistics(BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= TRUE)
 							}
@@ -363,7 +364,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 							plot[["convertible"]] <- TRUE
 							plot[["obj"]] <- content[["obj"]]
 							plot[["data"]] <- content[["png"]]
-							
+
 						})
 
 				if (class(p) == "try-error")
