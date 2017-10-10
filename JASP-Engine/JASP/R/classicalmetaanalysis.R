@@ -15,12 +15,46 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ..., DEBUG=0) {
+ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback=function(...) 0, state=NULL, ..., DEBUG=0) {
   
   # Restore previous computation state and detect option changes
   run <- perform == "run"
-  state <- .retrieveState()
-  diff <- if (!is.null(state)) .diff(options, state$options) else NULL
+  
+  fitOpts <- c("dependent", "wlsWeights", "method", "studyLabels", "covariates",
+               "factors", "modelTerms", "includeConstant", "regressionCoefficientsConfidenceIntervalsInterval")
+  stateKey <- list(
+    rma.fit = fitOpts,
+    dataset= fitOpts,
+    coefficients = c(fitOpts, "regressionCoefficientsEstimates", "regressionCoefficientsConfidenceIntervals"),
+    fitStats = c(fitOpts, "modelFit"),
+    residPars = c(fitOpts, "residualsParameters"),
+    coeffVcov = c(fitOpts, "regressionCoefficientsCovarianceMatrix"),
+    ranktst = c(fitOpts, "rSquaredChange"),
+    egger = c(fitOpts, "funnelPlotAsymmetryTest"),
+    influ = c(fitOpts, "residualsCasewiseDiagnostics"),
+    fsn.fit = c(fitOpts, "plotResidualsCovariates"),
+    forestPlot = c(fitOpts, "forestPlot"),
+    funnelPlot = c(fitOpts, "funnelPlot"),
+    diagnosticsPlot = c(fitOpts, "plotResidualsDependent"),
+    profilePlot = c(fitOpts, "plotResidualsPredicted"),
+    trimfillPlot = c(fitOpts, "trimfillPlot")
+  )
+  
+  rma.fit <- state$rma.fit
+  dataset <- state$dataset
+  coefficients <- state$coefficients
+  fitStats <- state$fitStats
+  residPars <- state$residPars
+  coeffVcov <- state$coeffVcov
+  ranktst <- state$ranktst
+  egger <- state$egger
+  influ <- state$influ
+  fsn.fit <- state$fsn.fit
+  forestPlot <- state$forestPlot
+  funnelPlot <- state$funnelPlot
+  diagnosticsPlot <- state$diagnosticsPlot
+  profilePlot <- state$profilePlot
+  trimfillPlot <- state$trimfillPlot
   
   ### This file interfaces the metafor::rma function and associated diagnostic functions
   ### (but it restricts its multipurposeness to one central purpose: fitting a 
@@ -89,39 +123,36 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
       exclude.na.listwise = c()	# let metafor::rma deal with NA's
     )
   }
-
-  ## Run the analysis. ####
-  
-  rma.fit <- structure(list('b' = numeric(),'se' = numeric(),'ci.lb' = numeric(),'ci.ub' = numeric(), 
-                  'zval' = numeric(),'pval' = numeric()), class = c("dummy", "rma"))
   
   can.run = all(c(effsizeName, stderrName) != "")
   
-  if (run && can.run) {
-    #.vmodelTerms = b64(options$modelTerms) # map true names to base64
-    .vmodelTerms = options$modelTerms
-    dataset = d64(dataset)
+  ## Run the analysis. ####
+  if (is.null(rma.fit)) {
+    rma.fit <- structure(list('b' = numeric(),'se' = numeric(),'ci.lb' = numeric(),'ci.ub' = numeric(), 
+                    'zval' = numeric(),'pval' = numeric()), class = c("dummy", "rma"))
     
-    formula.rhs <- as.formula(as.modelTerms(.vmodelTerms))
-    if (is.null(formula.rhs)) 
-      formula.rhs = ~1
-    if (!options$includeConstant) 
-      formula.rhs = update(formula.rhs, ~ . + 0)
-    
-    #rma.fit <- metafor::rma(yi = get(.v(effsizeName)), sei = get(.v(stderrName)), data = dataset,
+    if (run && can.run) {
+      #.vmodelTerms = b64(options$modelTerms) # map true names to base64
+      .vmodelTerms = options$modelTerms
+      dataset = d64(dataset)
+      
+      formula.rhs <- as.formula(as.modelTerms(.vmodelTerms))
+      if (is.null(formula.rhs)) 
+        formula.rhs = ~1
+      if (!options$includeConstant) 
+        formula.rhs = update(formula.rhs, ~ . + 0)
+      
+      #rma.fit <- metafor::rma(yi = get(.v(effsizeName)), sei = get(.v(stderrName)), data = dataset,
 
-    rma.fit <- metafor::rma(
-      yi = get(effsizeName), sei = get(stderrName), data = dataset,
-      method=options$method, mods = formula.rhs, test = options$test,
-      slab = if(options$studyLabel != "") get(options$studyLabels),
-      level = options$regressionCoefficientsConfidenceIntervalsInterval
-    )
-    rma.fit <- d64(rma.fit)
-    
-    fsn.fit <- list()
-    if (options$plotResidualsCovariates)
-      fsn.fit <- metafor::fsn(yi = get(effsizeName), sei = get(stderrName), 
-        data = dataset, digits = 12)
+      rma.fit <- metafor::rma(
+        yi = get(effsizeName), sei = get(stderrName), data = dataset,
+        method=options$method, mods = formula.rhs, test = options$test,
+        slab = if(options$studyLabel != "") get(options$studyLabels),
+        level = options$regressionCoefficientsConfidenceIntervalsInterval
+      )
+      rma.fit <- d64(rma.fit)
+      
+    }
   }
   
   
@@ -184,9 +215,13 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     table[["data"]] <- list(
       list(name = "", estimate = ".", se = ".", zval = ".", pval = ".", ci.lb = ".", ci.ub = ".")
     )
-    if (run && can.run) {
-      coeftable <- .clean(coef(summary(rma.fit)))
-      coeftable <- cbind(name = rownames(coeftable), coeftable); 
+    if (run && can.run || ! is.null(coefficients)) {
+      
+      if (is.null(coefficients)) {
+        coefficients <- .clean(coef(summary(rma.fit)))
+      }
+
+      coeftable <- cbind(name = rownames(coefficients), coefficients); 
       if (!options$regressionCoefficientsConfidenceIntervals)
         coeftable = coeftable[1:5] # remove confidence interval bounds
       
@@ -215,12 +250,14 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   ### Prepare Model fit table output ####
   
-  if (options$modelFit && run && can.run) {
+  if (options$modelFit && (! is.null(fitStats) || run && can.run)) {
     
     meta[[length(meta)+1]] <- list(name = "modelFit", type = "table")
-    df <-  try(metafor:::fitstats(rma.fit))
+    if (is.null(fitStats)) {
+      fitStats <- try(metafor:::fitstats(rma.fit))
+    }
     #if (inherits(df, "try-error"))  df = structure(list(rep(".",3)), .Names = options$method, row.names = c("logLik","AIC","BIC"), class="data.frame")
-    fittable <- as.jaspTable(df, title = "Fit measures")
+    fittable <- as.jaspTable(fitStats, title = "Fit measures")
     results[["modelFit"]] <- fittable
     
   }
@@ -228,18 +265,20 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   ### Prepare Residuals Parameters ####
   
-  if (options$residualsParameters && run && can.run) { 
+  if (options$residualsParameters && (! is.null(residPars) || run && can.run)) { 
     
     meta[[length(meta) + 1]] <- list(name = "residPars", type = "table")
     
-    if(options$method == "FE") break # no confidence intervals for tau^2 
+    if(options$method == "FE") break # no confidence intervals for tau^2 FIXME: have to do this more gracefully
     
-    residParTable = confint(rma.fit, digits = 12, level = options$regressionCoefficientsConfidenceIntervalsInterval)$random
-    colnames(residParTable) = c("Estimate", "Lower Bound", "Upper Bound")
-    rownames(residParTable) = c("<em>&tau;&sup2;</em>", "<em>&tau;</em>", "<em>I&sup2;</em> (%)", "<em>H&sup2;</em>")
+    if (is.null(residPars)) {
+      residPars = confint(rma.fit, digits = 12, level = options$regressionCoefficientsConfidenceIntervalsInterval)$random
+      colnames(residPars) = c("Estimate", "Lower Bound", "Upper Bound")
+      rownames(residPars) = c("<em>&tau;&sup2;</em>", "<em>&tau;</em>", "<em>I&sup2;</em> (%)", "<em>H&sup2;</em>")
+    }
     
     options(jasp_number_format = "sf:5;dp:4")
-    residParTable = as.jaspTable(residParTable, title = "Residual Heterogeneity Estimates")
+    residParTable = as.jaspTable(residPars, title = "Residual Heterogeneity Estimates")
     results[["residPars"]] <- residParTable
     
   }
@@ -247,11 +286,14 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   ### Prepare Coefficient Covariance Matrix ####
   
-  if (options$regressionCoefficientsCovarianceMatrix && run) { 
+  if (options$regressionCoefficientsCovarianceMatrix && (! is.null(coeffVcov) || run && can.run)) { 
     
     meta[[length(meta) + 1]] <- list(name = "vcov", type = "table")
     options(jasp_number_format = "sf:5;dp:4")
-    vcovTable = as.jaspTable(vcov(rma.fit), title = "Parameter Covariances")
+    if (is.null(coeffVcov)) {
+      coeffVcov <- vcov(rma.fit)
+    }
+    vcovTable = as.jaspTable(coeffVcov, title = "Parameter Covariances")
     results[["vcov"]] <- vcovTable
     
   }
@@ -259,14 +301,16 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   ### Prepare Rank test for Funnel plot asymmetry ####
   
-  if (options$rSquaredChange && run) { 
+  if (options$rSquaredChange && (! is.null(ranktst) || run && can.run)) { 
     
     meta[[length(meta) + 1]] <- list(name = "ranktest", type = "table")
     
-    ranktst = unlist(metafor::ranktest(rma.fit))
+    if (is.null(ranktst)) {
+      ranktst = unlist(metafor::ranktest(rma.fit))
+    }
     rankTestTable = as.data.frame(t(ranktst[1:2]))
     rownames(rankTestTable) = "Rank test"
-    colnames(rankTestTable) = c("Kandall's &tau;", "Pr(>|&tau;|)")
+    colnames(rankTestTable) = c("Kendall's &tau;", "Pr(>|&tau;|)")
     
     options(jasp_number_format = "sf:5;dp:4")
     rankTestTable = as.jaspTable(rankTestTable, title = "Rank correlation test for Funnel plot asymmetry")
@@ -277,10 +321,12 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   ### Prepare Egger's test for Funnel plot asymmetry ('test for publication bias') ####
   
-  if (options$funnelPlotAsymmetryTest && run) {
+  if (options$funnelPlotAsymmetryTest && (! is.null(egger) || run && can.run)) {
     
     meta[[length(meta) + 1]] <- list(name = "egger", type = "table")
-    egger <- metafor::regtest(rma.fit) 
+    if (is.null(egger)) {
+      egger <- metafor::regtest(rma.fit)
+    }
     
     eggerTable <- coef(summary(egger$fit))[egger$predictor, c("zval", "pval")]
     colnames(eggerTable) <- c("z value", "Pr(>|z|)")
@@ -296,11 +342,13 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   ### Prepare Casewise diagnostics table ####
   
-  if (options$residualsCasewiseDiagnostics && run && can.run) { 
+  if (options$residualsCasewiseDiagnostics && (! is.null(influ) || run && can.run)) { 
     
     meta[[length(meta) + 1]] <- list(name = "influence", type = "table")
     
-    influ = influence(rma.fit) 
+    if (is.null(influ)) {
+      influ = influence(rma.fit) 
+    }
     influTable = cbind(influ$inf, influential = ifelse(influ$is.infl,"*",""))
     
     options(jasp_number_format = "sf:5;dp:4")
@@ -312,11 +360,15 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   ### Prepare Fail-safe N diagnostics table ####
   
-  if (options$plotResidualsCovariates && run && can.run) { 
+  if (options$plotResidualsCovariates && (! is.null(fsn.fit) || run && can.run)) { 
     
     meta[[length(meta) + 1]] <- list(name = "failsafen", type = "table")
     
-    failsnTable = do.call(data.frame, fsn.fit[c('fsnum','alpha','pval')])
+    if (is.null(fsn.fit)) {
+      fsn.fit <- metafor::fsn(yi = get(effsizeName), sei = get(stderrName), 
+        data = dataset, digits = 12)
+    }
+    failsnTable <- do.call(data.frame, fsn.fit[c('fsnum','alpha','pval')])
     colnames(failsnTable) = c('Fail-safe N', '&alpha;', 'Pr(>|z|)')
     rownames(failsnTable) = fsn.fit[['type']]
     
@@ -342,60 +394,69 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   plots <- list(title = "Plot")
     
   # plot forest plot
-  if (options$forestPlot && run && can.run) {
+  if (options$forestPlot && (! is.null(forestPlot) || run && can.run)) {
     
-    forest.img <- .writeImage(width = 520, height = 520, function() cmaForest(rma.fit, cex.lab=1.2, las=1))
-    plot2 <- list(title="Forest plot", width = 500, height = 500, convertable = TRUE, 
-                  obj = forest.img[["obj"]], data = forest.img[["png"]], 
-                  status = "complete")
-    plots[["forrestPlot"]]  <- plot2
+    if (is.null(forestPlot)) {
+      forest.img <- .writeImage(width = 520, height = 520, function() cmaForest(rma.fit, cex.lab=1.2, las=1))
+      forestPlot <- list(title="Forest plot", width = 500, height = 500, convertable = TRUE, 
+                    obj = forest.img[["obj"]], data = forest.img[["png"]], 
+                    status = "complete")
+    }
+    plots[["forrestPlot"]]  <- forestPlot
     
   }
 
   # plot funnel plot
-  if (options$funnelPlot && run && can.run) {
+  if (options$funnelPlot && (! is.null(funnelPlot) || run && can.run)) {
     
-    funnel.img <- .writeImage(width = 520, height = 520, function() metafor::funnel(rma.fit, las=1))
-    plot3 <- list(title="Funnel plot", width = 500, height = 500, convertable = TRUE, 
-                  obj = funnel.img[["obj"]], data = funnel.img[["png"]], 
-                  status = "complete")
-    plots[["funnelPlot"]]  <- plot3
+    if (is.null(funnelPlot)) {
+      funnel.img <- .writeImage(width = 520, height = 520, function() metafor::funnel(rma.fit, las=1))
+      funnelPlot <- list(title="Funnel plot", width = 500, height = 500, convertable = TRUE, 
+                    obj = funnel.img[["obj"]], data = funnel.img[["png"]], 
+                    status = "complete")
+    }
+    plots[["funnelPlot"]]  <- funnelPlot
     
   }
   
   # plot 1: residuals and dependent diagnostic plot
-  if (options$plotResidualsDependent && run && can.run) {
+  if (options$plotResidualsDependent && (! is.null(diagnosticsPlot) || run && can.run)) {
     
-    diagnostics.img <- .writeImage(width = 820, height = 820, function() plot(rma.fit, qqplot = options$plotResidualsQQ, las=1))
-    plot1 <- list(title = "Diagnostic plots", width = 820, height = 820, convertable = TRUE, 
-                  obj = diagnostics.img[["obj"]], data = diagnostics.img[["png"]],
-                  status = "complete")
-    plots[["diagnosticPlot"]]  <- plot1
+    if (is.null(diagnosticsPlot)) {
+      diagnostics.img <- .writeImage(width = 820, height = 820, function() plot(rma.fit, qqplot = options$plotResidualsQQ, las=1))
+      diagnosticsPlot <- list(title = "Diagnostic plots", width = 820, height = 820, convertable = TRUE, 
+                    obj = diagnostics.img[["obj"]], data = diagnostics.img[["png"]],
+                    status = "complete")
+    }
+    plots[["diagnosticPlot"]]  <- diagnosticsPlot
+    
+  }
+  
+  # profile plot: diagnostic plot for tau parameter
+  if (options$plotResidualsPredicted && (! is.null(profilePlot) || run && can.run)) {
+    
+    if (is.null(profilePlot)) {
+      profile.img <- .writeImage(width = 520, height = 520, function() profile(rma.fit, cex.lab=1.2, las=1))
+      profilePlot <- list(title = "Log-likelihood profile for &tau;&sup2;", width = 520, height = 520, convertable = TRUE, 
+                    obj = profile.img[["obj"]], data = profile.img[["png"]],
+                    status = "complete")
+    }
+    plots[["profilePlot"]]  <- profilePlot
     
   }
   
   
   # profile plot: diagnostic plot for tau parameter
-  if (options$plotResidualsPredicted && run && can.run) {
+  if (options$trimfillPlot && (! is.null(trimfillPlot) || run && can.run)) {
     
-    profile.img <- .writeImage(width = 520, height = 520, function() profile(rma.fit, cex.lab=1.2, las=1))
-    plot1 <- list(title = "Log-likelihood profile for &tau;&sup2;", width = 520, height = 520, convertable = TRUE, 
-                  obj = profile.img[["obj"]], data = profile.img[["png"]],
-                  status = "complete")
-    plots[["profilePlot"]]  <- plot1
-    
-  }
-  
-  
-  # profile plot: diagnostic plot for tau parameter
-  if (options$trimfillPlot && run && can.run) {
-    
-    trimfill.fit <- metafor::trimfill(update(rma.fit, mods = ~1))
-    trimfill.img <- .writeImage(width = 820, height = 820, function() plot(trimfill.fit, qqplot=T, cex.lab=1.2, las=1))
-    plot1 <- list(title = "Trim-fill Analysis", width = 820, height = 820, convertable = TRUE, 
-                  obj = trimfill.img[["obj"]], data = trimfill.img[["png"]],
-                  status = "complete")
-    plots[["trimfillPlot"]]  <- plot1
+    if (is.null(trimfillPlot)) {
+      trimfill.fit <- metafor::trimfill(update(rma.fit, mods = ~1))
+      trimfill.img <- .writeImage(width = 820, height = 820, function() plot(trimfill.fit, qqplot=T, cex.lab=1.2, las=1))
+      trimfillPlot <- list(title = "Trim-fill Analysis", width = 820, height = 820, convertable = TRUE, 
+                    obj = trimfill.img[["obj"]], data = trimfill.img[["png"]],
+                    status = "complete")
+    }
+    plots[["trimfillPlot"]]  <- trimfillPlot
     
   }
   
@@ -416,13 +477,33 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   ### Finish off: collect objects to keep; update status and state ####
   
   keep <- NULL
-  for (plot in c()) {
-    keep <- c(keep, plot$data)
+  for (plot in plots) {
+    if (! is.null(names(plot)) && "data" %in% names(plot)) {
+      keep <- c(keep, plot$data)
+    }
   }
   
   if (run) {
     status <- "complete"
-    state <- list(options = options, dataset = dataset)
+    state <- list(
+      options = options,
+      rma.fit = rma.fit,
+      dataset = dataset,
+      coefficients = coefficients,
+      fitStats = fitStats,
+      residPars = residPars,
+      coeffVcov = coeffVcov,
+      ranktst = ranktst,
+      egger = egger,
+      influ = influ,
+      fsn.fit = fsn.fit,
+      forestPlot = forestPlot,
+      funnelPlot = funnelPlot,
+      diagnosticsPlot = diagnosticsPlot,
+      profilePlot = profilePlot,
+      trimfillPlot = trimfillPlot
+    )
+    attr(state, "key") <- stateKey
   } else {
     status <- "inited"
   }
@@ -456,7 +537,7 @@ formula.modelTerms <- function(modelTerms, env = parent.frame()) {
 analysisTitle <- function(object) {
   title <- capture.output(print(object, showfit = F, signif.legend = F))[2]
   title <- gsub("numeric\\(0\\)", "", title)
-  title <- gsub("tau\\^2", '&tau;<sup style="font-size:small">2</sup>', title)
+  title <- gsub("tau\\^2", '&tau;<sup style=font-size:small>2</sup>', title)
   if (is.na(title)) "Meta-analysis" else title
 }
 
@@ -581,10 +662,10 @@ vcov.dummy <- function(x, ...) {
   matrix(0,0,0)
 }
 
-if(interactive()) {
-  # For debug purposes these are reset because the ones defined in 'common.R' only work properly 
-  # from within JASP. Make sure to source('common.R') first!
-  #.beginSaveImage <- function(...) {}
-  #.endSaveImage <- function(...){}
-  .requestTempFileNameNative <- function(ext) tempfile(fileext = ext)
-}
+# if(interactive()) {
+#   # For debug purposes these are reset because the ones defined in 'common.R' only work properly 
+#   # from within JASP. Make sure to source('common.R') first!
+#   #.beginSaveImage <- function(...) {}
+#   #.endSaveImage <- function(...){}
+#   .requestTempFileNameNative <- function(ext) tempfile(fileext = ext)
+# }
