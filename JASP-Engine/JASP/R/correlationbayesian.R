@@ -629,24 +629,18 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							reportBf <- bfObject$bf10
 							reportLowerCi <- bfObject$ci$twoSided[1]
 							reportUpperCi <- bfObject$ci$twoSided[3]
-							if (bayesFactorType == "BF01") {
-								reportBf <- 1/reportBf
-							}
+
 						} else if (hypothesis == "correlatedPositively") {
 							# TODO: Still need to implement this for general rho0, rather than rho0=0
 							reportBf <- bfObject$bfPlus0
 							reportLowerCi <- bfObject$ci$plusSided[1]
 							reportUpperCi <- bfObject$ci$plusSided[3]
-							if (bayesFactorType == "BF01") {
-								reportBf <- 1/reportBf
-							}
+
 						} else if (hypothesis == "correlatedNegatively") {
 							reportBf <- bfObject$bfMin0
 							reportLowerCi <- bfObject$ci$minSided[1]
 							reportUpperCi <- bfObject$ci$minSided[3]
-							if (bayesFactorType == "BF01") {
-								reportBf <- 1/reportBf
-							}
+
 						}
 
             # MarkUp: Per row (variable): add footnote per row
