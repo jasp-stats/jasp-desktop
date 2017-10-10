@@ -17,6 +17,7 @@ New Features:
 Changes:
 
  - Remove unused R packages
+ - Additional Info for T-Test and Correlation Bayesian Pairs Robustness plots (Common module)
 
 
 Version 0.5

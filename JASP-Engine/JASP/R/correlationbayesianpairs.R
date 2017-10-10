@@ -311,9 +311,20 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 
 		}
 		if (options$plotBayesFactorRobustness) {
-		    if (!is.null(state) && currentPair %in% state$plotPairs && !is.null(diff) && (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$corcoefficient == FALSE
-				&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE)) && "robustnessPlot" %in% state$plotTypes) {
-		        #
+			if (!is.null(state) && currentPair %in% state$plotPairs && !is.null(diff) && (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$corcoefficient == FALSE
+				&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE)) && options$plotBayesFactorRobustnessAdditionalInfo &&
+				"robustnessPlotAddInfo" %in% state$plotTypes) {
+				#
+				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+				# then, if the requested plot already exists, use it
+
+				stateIndex <- which(state$plotPairs == currentPair & state$plotTypes == "robustnessPlotAddInfo")[1]
+
+				plots.correlation[[length(plots.correlation)+1]] <- state$plotsCorrelation[[stateIndex]]
+			} else if (!is.null(state) && currentPair %in% state$plotPairs && !is.null(diff) && (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$corcoefficient == FALSE
+				&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE)) && !options$plotBayesFactorRobustnessAdditionalInfo &&
+				"robustnessPlot" %in% state$plotTypes) {
+				#
 				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 				# then, if the requested plot already exists, use it
 
@@ -333,7 +344,8 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				# plot[["data"]] <- .endSaveImage(image)
 
 				.plotFunc <- function() {
-					.plotBF.robustnessCheck.correlation (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE, corCoefficient=options$corcoefficient)
+					.plotBF.robustnessCheck.correlation (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE, corCoefficient=options$corcoefficient,
+						additionalInformation=options$plotBayesFactorRobustnessAdditionalInfo)
 				}
 				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
 				plot[["convertible"]] <- TRUE
@@ -343,7 +355,12 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				plots.correlation[[length(plots.correlation)+1]] <- plot
 			}
 
-			plotTypes[[length(plotTypes)+1]] <- "robustnessPlot"
+			if (options$plotBayesFactorRobustnessAdditionalInfo) {
+				plotTypes[[length(plotTypes)+1]] <- "robustnessPlotAddInfo"
+			} else {
+				plotTypes[[length(plotTypes)+1]] <- "robustnessPlot"
+			}
+
 			plotPairs[[length(plotPairs)+1]] <- paste(pair, collapse=" - ")
 			plotGroups[[i]][["BFrobustnessPlot"]] <- plots.correlation[[length(plots.correlation)]]
 		}
@@ -800,15 +817,20 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 
 			if (options$plotBayesFactorRobustness) {
 
-
 				if (!is.null(state) && tablePairs[[i]] %in% state$plotPairs && !is.null(diff) && (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$corcoefficient == FALSE
-					&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE)) && "robustnessPlot" %in% state$plotTypes) {
-
+					&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE)) && options$plotBayesFactorRobustnessAdditionalInfo &&
+					"robustnessPlotAddInfo" %in% state$plotTypes) {
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
+					stateIndex <- which(state$plotPairs == tablePairs[[i]] & state$plotTypes == "robustnessPlotAddInfo")[1]
+					plots.correlation[[j]] <- state$plotsCorrelation[[stateIndex]]
 
+				} else if (!is.null(state) && tablePairs[[i]] %in% state$plotPairs && !is.null(diff) && (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$corcoefficient == FALSE
+					&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE)) && !options$plotBayesFactorRobustnessAdditionalInfo &&
+					"robustnessPlot" %in% state$plotTypes) {
+					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+					# then, if the requested plot already exists, use it
 					stateIndex <- which(state$plotPairs == tablePairs[[i]] & state$plotTypes == "robustnessPlot")[1]
-
 					plots.correlation[[j]] <- state$plotsCorrelation[[stateIndex]]
 
 				} else {
@@ -831,7 +853,8 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 							# plot[["data"]] <- .endSaveImage(image)
 
 							.plotFunc <- function() {
-								.plotBF.robustnessCheck.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF10post=BF10post[i], BFH1H0=BFH1H0, kappa=options$priorWidth, corCoefficient=options$corcoefficient)
+								.plotBF.robustnessCheck.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF10post=BF10post[i], BFH1H0=BFH1H0, kappa=options$priorWidth, corCoefficient=options$corcoefficient,
+									additionalInformation=options$plotBayesFactorRobustnessAdditionalInfo)
 							}
 							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
 							plot[["convertible"]] <- TRUE
@@ -1441,11 +1464,23 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 }
 
 .plotBF.robustnessCheck.correlation <- function(r=NULL, n=NULL, paired=FALSE, BF10post=NULL, kappa=1, callback=function(...) 0, oneSided=FALSE, lwd=2, cexPoints=1.4, cexAxis=1.2,
-                                                cexYXlab= 1.5, cexText=1.2, cexLegend= 1.4, lwdAxis=1.2, cexEvidence=1.6, BFH1H0 =TRUE, dontPlotData=FALSE, corCoefficient="Pearson") {
+                                                cexYXlab= 1.5, cexText=1.2, cexLegend= 1.4, lwdAxis=1.2, cexEvidence=1.6, BFH1H0 =TRUE, dontPlotData=FALSE, corCoefficient="Pearson",
+                                                additionalInformation=TRUE) {
     useKendall <- corCoefficient == "Kendall"
     usePearson <- corCoefficient == "Pearson"
 
-	par(mar=c(5, 6, 4, 7) + 0.1, las=1)
+    if (additionalInformation) {
+		par(mar = c(5, 6, 6, 7) + 0.1, las = 1)
+	} else {
+		par(mar = c(5.6, 5, 4, 7) + 0.1, las = 1)
+	}
+
+    # if (additionalInformation) {
+    #   par(mar= c(5.6, 6.5, 7, 7) + 0.1, las=1)
+    # } else {
+    #   par(mar= c(5.6, 6.5, 4, 7) + 0.1, las=1)
+    # }
+
 
 	if (dontPlotData) {
 	    plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
@@ -1529,15 +1564,23 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	BF10user <- BF10post
 	BF10userText <- BF10user
 
+    # maximum BF value
+	maxBF10 <- max(BF10)
+	maxBFkappaVal <- kappaValues[which.max(BF10)]
+	print(maxBFkappaVal)
+	print(maxBF10)
+	BF10maxText <- .clean(maxBF10)
+
 	if ( ! .shouldContinue(callback()))
 		return()
 
 	####################### scale y axis ###########################
 
-	BF <- c(BF10, BF10user)
+	BF <- c(BF10, BF10user, maxBF10)
 	if (!BFH1H0) {
 	    BF <- 1 / BF
 		BF10 <- 1 / BF10
+        maxBF10 <- 1 / maxBF10
 	}
 
 	# y-axis labels larger than 1
@@ -2089,72 +2132,100 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	# display BF10
 	lines(kappaValues, log(BF10), col="black", lwd = 2.7)
 
-	# display user prior BF
-	points(kappa, log(BF10user), pch=21, bg="grey", cex= cexPoints, lwd = 1.3)
+	if (additionalInformation) {
 
-	#### add legend
+		# display user prior BF
+		points(kappa, log(BF10user), pch=21, bg="grey", cex= cexPoints, lwd = 1.3)
+		points(maxBFkappaVal, log(maxBF10), pch = 21, bg = "red", cex = 1.3, lwd = 1.3)
 
-	# BFuser
+		#### add legend
 
-	if (BFH1H0) {
+		# BFuser
 
-		BF01userText <- 1 / BF10userText
+		if (BFH1H0) {
 
-	} else {
+			BF01userText <- 1 / BF10userText
 
-		BF10userText <- 1 / BF10userText
-		BF01userText <- 1 / BF10userText
-	}
-
-	if (BF10userText >= 1000000 | BF01userText >= 1000000) {
-
-		BF10usert <- format(BF10userText, digits= 4, scientific = TRUE)
-		BF01usert <- format(BF01userText, digits= 4, scientific = TRUE)
-	}
-	if (BF10userText < 1000000 & BF01userText < 1000000) {
-
-		BF10usert <- formatC(BF10userText, 3, format = "f")
-		BF01usert <- formatC(BF01userText, 3, format = "f")
-	}
-
-	if (oneSided == FALSE) {
-
-		if ( BF10userText >= BF01userText) {
-			userBF <- bquote(BF[10]==.(BF10usert))
 		} else {
-			userBF <- bquote(BF[0][1]==.(BF01usert))
-		}
-	}
-	if (oneSided == "right") {
 
-		if (BF10userText >= BF01userText) {
-			userBF <- bquote(BF["+"][0]==.(BF10usert))
+			BF10userText <- 1 / BF10userText
+			BF01userText <- 1 / BF10userText
+		}
+
+		if (BF10userText >= 1000000 | BF01userText >= 1000000) {
+
+			BF10usert <- format(BF10userText, digits= 4, scientific = TRUE)
+			BF01usert <- format(BF01userText, digits= 4, scientific = TRUE)
+		}
+		if (BF10userText < 1000000 & BF01userText < 1000000) {
+
+			BF10usert <- formatC(BF10userText, 3, format = "f")
+			BF01usert <- formatC(BF01userText, 3, format = "f")
+		}
+
+		if (oneSided == FALSE) {
+
+			if ( BF10userText >= BF01userText) {
+				userBF <- bquote(BF[10]==.(BF10usert))
+			} else {
+				userBF <- bquote(BF[0][1]==.(BF01usert))
+			}
+		}
+		if (oneSided == "right") {
+
+			if (BF10userText >= BF01userText) {
+				userBF <- bquote(BF["+"][0]==.(BF10usert))
+			} else {
+				userBF <- bquote(BF[0]["+"]==.(BF01usert))
+			}
+		}
+		if (oneSided == "left") {
+
+			if (BF10userText >= BF01userText) {
+				userBF <- bquote(BF["-"][0]==.(BF10usert))
+			} else {
+				userBF <- bquote(BF[0]["-"]==.(BF01usert))
+			}
+		}
+
+		# maximum value of Bayes factor
+		if (BF10maxText >= 1000000) {
+			BF10maxt <- format(BF10maxText, digits = 4, scientific = TRUE)
 		} else {
-			userBF <- bquote(BF[0]["+"]==.(BF01usert))
+			BF10maxt <- formatC(BF10maxText, 3, format = "f", drop0trailing = TRUE)
 		}
-	}
-	if (oneSided == "left") {
+		maxBFkappaValt <- formatC(maxBFkappaVal, digits = 4, format = "f", drop0trailing = TRUE )
+		maxBF <- bquote(.(BF10maxt) ~ .('at r') == .(maxBFkappaValt))
 
-		if (BF10userText >= BF01userText) {
-			userBF <- bquote(BF["-"][0]==.(BF10usert))
-		} else {
-			userBF <- bquote(BF[0]["-"]==.(BF01usert))
+		if (oneSided == FALSE) {
+			maxBF10LegendText <- bquote(max~BF[1][0]*":")
+		} else if (oneSided == "right") {
+			maxBF10LegendText <- bquote(max~BF["+"][0]*":")
+		} else if (oneSided == "left") {
+			maxBF10LegendText <- bquote(max~BF["-"][0]*":")
 		}
+
+		xx <- grconvertX(0.21, "ndc", "user")
+		yy <- grconvertY(0.952, "ndc", "user")
+
+		BFind <- sort(c(BF10userText, BF10maxText), decreasing = TRUE, index.return = TRUE)$ix
+		BFsort <- sort(c(BF10userText, BF10maxText), decreasing = TRUE, index.return = TRUE)$x
+
+		legend <- c("user prior:", as.expression(maxBF10LegendText))
+		pt.bg <- c("grey", "red")
+		pt.cex <- c(cexPoints, 1.1)
+
+		legend(xx, yy, legend = legend[BFind], pch = rep(21,3), pt.bg = pt.bg[BFind], bty = "n",
+			cex = cexLegend, lty = rep(NULL,3), pt.lwd = rep(1.3,3), pt.cex = pt.cex[BFind])
+
+		xx <- grconvertX(0.41, "ndc", "user")
+		y1 <- grconvertY(0.898, "ndc", "user")
+		y2 <- grconvertY(0.847, "ndc", "user")
+		yy <- c(y1, y2)
+
+		text(xx, yy[BFsort == BF10userText], userBF, cex = 1.3, pos = 4)
+		text(xx, yy[BFsort == BF10maxText], maxBF, cex = 1.3, pos = 4)
 	}
-
-
-	xx <- grconvertX(0.26, "ndc", "user")
-	yy <- grconvertY(0.952, "ndc", "user")
-
-	pt.bg <-  c("grey", "white", "black")
-	pt.cex <-  c(cexPoints, 1.1, 1.1)
-
-	legend(xx, yy, legend = "user prior:", pch=21, pt.bg= "grey", bty= "n", cex= cexLegend, lty=rep(NULL,3), pt.lwd=1.3, pt.cex=cexPoints)
-
-	xx <- grconvertX(0.46, "ndc", "user")
-	yy <- grconvertY(0.892, "ndc", "user")
-
-	text(xx, yy, userBF, cex= 1.3, pos = 4)
 }
 
 
