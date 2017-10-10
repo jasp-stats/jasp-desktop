@@ -22,6 +22,7 @@
 #include <QScrollArea>
 #include <QMessageBox>
 #include <QMovie>
+#include <QLabel>
 
 #include "fsentrywidget.h"
 #include <iostream>
@@ -29,23 +30,52 @@
 
 FSBrowser::FSBrowser(QWidget *parent, FSBrowser::BrowseMode mode) : QWidget(parent)
 {
+	QLabel *label = NULL;
+
 	_browseMode = mode;
 	_viewType = FSBrowser::IconView;
 
 	QGridLayout *layout = new QGridLayout(this);
-	layout->setContentsMargins(10, 10, 0, 0);
+	layout->setContentsMargins(12, 12, 0, 0);
 	setLayout(layout);
-
-	if (mode == FSBrowser::BrowseCurrent)
-	{
+	
 #ifdef __APPLE__
 		QString shortCutKey = "\u2318";
 #else
 		QString shortCutKey = "Ctrl";
-#endif
+#endif	
+	
+	switch(mode)
+		
+	{		
+	case FSBrowser::BrowseRecentFiles:
+		label = new QLabel("Recent Files");
+		break;
+		
+	case FSBrowser::BrowseExamples:
+		label = new QLabel("Examples");		
+		break;
+		
+	case FSBrowser::BrowseCurrent:
 		layout->addWidget(new QLabel(QString("Double-click on the file below to synchronize or use ") + shortCutKey + "-Y"));
+		break;
+		
+	default:
+		break;		
 	}
-
+	
+	if (label)
+	{
+		QFont f= QFont("SansSerif");
+		f.setPointSize(18);
+		label->setFont(f);
+		QSizePolicy sp = label->sizePolicy();
+		sp.setHorizontalStretch(1);
+		label->setSizePolicy(sp);
+		label->setContentsMargins(0, 0, 0, 0);
+		layout->addWidget(label);
+	}
+	
 	_scrollArea = new VerticalScrollArea(this);
 	_scrollArea->setFrameShape(QScrollArea::NoFrame);
 	layout->addWidget(_scrollArea);

@@ -241,9 +241,11 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 	if (flagSupported) {
 		if (bayesFactorType=="LogBF10") {
-			.addFootnote(footnotes, paste(bfTitle, " > log(10), ** , ", bfTitle, " > log(30), *** ", bfTitle, " > log(100)"), symbol="*")
+			.addFootnote(footnotes, paste(bfTitle, " > log(10), ** ", bfTitle, " > log(30), *** ", bfTitle, " > log(100)"), symbol="*")
+		} else if (bayesFactorType == "BF01") {
+			.addFootnote(footnotes, paste(bfTitle, " < .1, ** ", bfTitle, " < .03, *** ", bfTitle, " < .01"), symbol="*")
 		} else {
-			.addFootnote(footnotes, paste(bfTitle, " > 10, ** , ", bfTitle, " > 30, *** ", bfTitle, " > 100"), symbol="*")
+			.addFootnote(footnotes, paste(bfTitle, " > 10, ** ", bfTitle, " > 30, *** ", bfTitle, " > 100"), symbol="*")
 		}
 	}
 
@@ -627,7 +629,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							reportBf <- bfObject$bf10
 							reportLowerCi <- bfObject$ci$twoSided[1]
 							reportUpperCi <- bfObject$ci$twoSided[3]
-
 							if (bayesFactorType == "BF01") {
 								reportBf <- 1/reportBf
 							}
@@ -636,7 +637,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							reportBf <- bfObject$bfPlus0
 							reportLowerCi <- bfObject$ci$plusSided[1]
 							reportUpperCi <- bfObject$ci$plusSided[3]
-
 							if (bayesFactorType == "BF01") {
 								reportBf <- 1/reportBf
 							}
@@ -644,13 +644,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							reportBf <- bfObject$bfMin0
 							reportLowerCi <- bfObject$ci$minSided[1]
 							reportUpperCi <- bfObject$ci$minSided[3]
-
 							if (bayesFactorType == "BF01") {
 								reportBf <- 1/reportBf
 							}
 						}
 
-						# MarkUp: Per row (variable): add footnote per row
+            # MarkUp: Per row (variable): add footnote per row
 						#
 						# Note: Flagging at the data [report]
 						if (isTRUE(flagSupported) && is.na(reportBf) == FALSE) {
@@ -666,7 +665,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						# Note: Flagging and report bfs [report]
 						if (isTRUE(reportBayesFactors)) {
 							if (bayesFactorType == "LogBF10") {
-								reportBf <- base::log10(reportBf)
+								reportBf <- base::log(reportBf)
+							} else if (bayesFactorType == "BF01") {
+								reportBf <- 1/reportBf
 							}
 
 							bayesFactorsList[[length(bayesFactorsList)+1]] <- .clean(reportBf)

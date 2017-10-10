@@ -35,7 +35,7 @@ class FSBrowser : public QWidget
 {
 	Q_OBJECT
 public:
-	enum BrowseMode { BrowseOpenFile, BrowseOpenFolder, BrowseSaveFile, BrowseExportFile, BrowseCurrent};
+	enum BrowseMode { BrowseOpenFile, BrowseOpenFolder, BrowseSaveFile, BrowseExportFile, BrowseCurrent, BrowseRecentFiles, BrowseExamples};
 	enum ViewType   { IconView, ListView };
 
 	explicit FSBrowser(QWidget *parent = 0, BrowseMode mode = BrowseOpenFile);
