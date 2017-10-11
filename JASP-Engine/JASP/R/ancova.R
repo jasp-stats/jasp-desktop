@@ -1056,6 +1056,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			list(name="SE", type="number", format="sf:4;dp:3"),
 			list(name="t", type="number", format="sf:4;dp:3"))
 
+		if (options$postHocTestEffectSize) {
+		  fields[[length(fields) + 1]] <- list(name="Cohen's d", title="Cohen's d", type="number", format="sf:4;dp:3")
+		  posthoc.table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", 
+		                                            text="Cohen's d does not correct for multiple comparisons."))
+		}
+		
 		if (options$postHocTestsTukey)
 			fields[[length(fields) + 1]] <- list(name="tukey", title="p<sub>tukey</sub>", type="number", format="dp:3;p:.001")
 
@@ -1119,6 +1125,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				pScheffe <- ""
 				pBonf <- ""
 				pHolm <- ""
+				effectSize <- ""
+				
 
 				if (!is.null(statePostHoc[[posthoc.var]])) {
 
@@ -1160,6 +1168,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 						} else {
 							t <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultTukey$test$tstat[index1]))
 						}
+						
+						if (options$postHocTestEffectSize) 
+						  effectSize <- .clean(t/sqrt(nrow(dataset)))
 
 						if (options$postHocTestsTukey)
 							pTukey <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultTukey$test$pvalues[index1]))
@@ -1177,6 +1188,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					row[["Mean Difference"]] <- md
 					row[["SE"]]  <- SE
 					row[["t"]] <- t
+					row[["Cohen's d"]] <- effectSize
 					row[["tukey"]] <- pTukey
 					row[["scheffe"]] <- pScheffe
 					row[["bonferroni"]] <- pBonf
