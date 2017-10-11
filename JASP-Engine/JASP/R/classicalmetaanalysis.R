@@ -20,7 +20,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   # Restore previous computation state and detect option changes
   run <- perform == "run"
   
-  fitOpts <- c("dependent", "wlsWeights", "method", "studyLabels", "covariates",
+  fitOpts <- c("dependent", "wlsWeights", "method", "studyLabels", "covariates", "test",
                "factors", "modelTerms", "includeConstant", "regressionCoefficientsConfidenceIntervalsInterval")
   stateKey <- list(
     rma.fit = fitOpts,
@@ -122,6 +122,10 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
       columns.as.numeric = numeric.variables,
       exclude.na.listwise = c()	# let metafor::rma deal with NA's
     )
+    
+    .hasErrors(dataset, perform, type=c("infinity", "observations"),
+      all.target=numeric.variables, observations.amount="< 2",
+      exitAnalysisIfErrors=TRUE)
   }
   
   can.run = all(c(effsizeName, stderrName) != "")
@@ -189,63 +193,44 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   if (options$regressionCoefficientsEstimates) { 
     
-    # this is old code to be replaced with as.jaspTable
-    
     meta[[length(meta) + 1]] <- list(name = "table", type = "table")
-    table <- list()
-    table[["title"]] <- "Coefficients"
+    title <- "Coefficients"
+    cols <- c("Estimate", "Standard Error", "z", "p", "Lower Bound", "Upper Bound")
     
-    # Define table schema
-    
-    fields <- list(
-      list(name = "name", type = "string", title = " "),
-      list(name = "estimate", type = "number", format = "sf:4;dp:3", title = "Estimate"),
-      list(name = "se", type = "number", format = "sf:4;dp:3", title = "Standard Error"),
-      list(name = "zval", type = "number", format = "sf:4;dp:3", title = "z"),
-      list(name = "pval", type = "number", format = "dp:3;p:.001", title = "p"),
-      list(name = "ci.lb", type = "number", format = "sf:4;dp:3", title = "Lower Bound", 
-        overTitle=paste0(options$regressionCoefficientsConfidenceIntervalsInterval, "% Confidence interval")),
-      list(name = "ci.ub", type = "number", format = "sf:4;dp:3", title = "Upper Bound", 
-        overTitle=paste0(options$regressionCoefficientsConfidenceIntervalsInterval, "% Confidence interval"))
-    )
-    if (!options$regressionCoefficientsConfidenceIntervals)
-      fields = fields[1:5] # remove confidence interval bounds
-    table[["schema"]] <- list(fields = fields) 
-    
-    # Populate the table
-    
-    table[["data"]] <- list(
-      list(name = "", estimate = ".", se = ".", zval = ".", pval = ".", ci.lb = ".", ci.ub = ".")
-    )
-    if (run && can.run || ! is.null(coefficients)) {
+    if (is.null(coefficients) && run && can.run)
+      coefficients <- .clean(coef(summary(rma.fit)))
       
-      if (is.null(coefficients)) {
-        coefficients <- .clean(coef(summary(rma.fit)))
+    table <- list(title = title)
+    if (! is.null(coefficients)) {
+      table$x <- coefficients
+      colnames(table$x) <- cols
+      if (! options$regressionCoefficientsConfidenceIntervals) {
+        table$x <- table$x[1:4] # remove confidence interval bounds
+        colnames(table$x) <- cols[1:4]
       }
-
-      coeftable <- cbind(name = rownames(coefficients), coefficients); 
-      if (!options$regressionCoefficientsConfidenceIntervals)
-        coeftable = coeftable[1:5] # remove confidence interval bounds
-      
-      jasp.coeftable <- lapply(1:nrow(coeftable), function(i) as.list(coeftable[i,])) # apply converts all to string
-      table[["data"]]  <- structure(jasp.coeftable, .Names=NULL)
+    } else {
+      table$x <- cols
+      if (! options$regressionCoefficientsConfidenceIntervals)
+        table$x <- cols[1:4]
     }
+    
+    coeftable <- do.call(as.jaspTable, table) # FIXME: we want an overtitle above upper/lower
+    
     if (DEBUG == 2) return(table)
     
     # Add footnotes to the analysis result
-    
     footnotes <- .newFootnotes()
     footnote.text <- switch(options$test, z = "Wald test.", "Wald tests.")
     .addFootnote(footnotes, symbol = "<em>Note.</em>", text = footnote.text)
-    table[["footnotes"]] <- as.list(footnotes)
+    coeftable[["footnotes"]] <- as.list(footnotes)
     
     # Add citation reference list
-    table[["citation"]] <- list(
+    coeftable[["citation"]] <- list(
       "Viechtbauer, W. (2010). Conducting meta-analyses in R with the metafor package. Journal of 
      Statistical Software, 36(3), 1-48. URL: http://www.jstatsoft.org/v36/i03/"
     )
     
-    results[["table"]] <- table
+    results[["table"]] <- coeftable
   }
   
   
@@ -298,9 +283,16 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
       table$x <- residPars
       colnames(table$x) <- cols
       rownames(table$x) <- rows
+      if (! options$regressionCoefficientsConfidenceIntervals) {
+        table$x <- table$x[, 1, drop=FALSE] # remove confidence interval bounds
+        colnames(table$x) <- cols[1]
+      }
     } else {
       table$x <- cols
       table$y <- rows
+      if (! options$regressionCoefficientsConfidenceIntervals) {
+        table$x <- cols[1]
+      }
     }
     
     residParsTable = do.call(as.jaspTable, table) # FIXME: we want an overtitle above upper/lower bounds
@@ -370,14 +362,14 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     meta[[length(meta) + 1]] <- list(name = "egger", type = "table")
     options(jasp_number_format = "sf:5;dp:4")
     title <- "Regression test for Funnel plot asymmetry (\"Egger's test\")"
-    cols <- c("z", "p")
+    cols <- if (options$test == "knha") c("t", "p") else c("z", "p")
     
     if (is.null(egger) && run && can.run)
       egger <- metafor::regtest(rma.fit)
     
     table <- list(title = title)
     if (! is.null(egger)) {
-      table$x <- coef(summary(egger$fit))[egger$predictor, c("zval", "pval")]
+      table$x <- coef(summary(egger$fit))[egger$predictor, c(paste0(cols[1], "val"), "pval")]
       colnames(table$x) <- cols
     } else {
       table$x <- cols
@@ -616,7 +608,7 @@ qTestsTable <- function(object) {
   fields <- list(
     list(name = "name", type = "string", title = " "),
     list(name = "qstat", type = "number", format = "sf:4;dp:3", title = "Q"),
-    list(name = "df", type = "integer", format = "sf:4;dp:3", title = "df"),
+    list(name = "df", type = "integer", title = "df"),
     list(name = "pval", type = "number", format = "dp:3;p:.001", title = "p")
   )
   
@@ -642,15 +634,11 @@ qTestsTable <- function(object) {
 }
 
 rmaDiagnosticPlot <- function(object, width = 500, height = 500) {
-  #image.reference <- .beginSaveImage(width, height)
   plot(object)
-  #.endSaveImage(image.reference)
 }
 
 rmaForestPlot <- function(object, width = 500, height = 500) {
-  #image.reference <- .beginSaveImage(520,520)
   cmaForest(object)
-  #.endSaveImage(image.reference)
 }
 cmaForest <- function(x, ...) UseMethod("cmaForest")
 cmaForest.dummy <- function(x, ...) {} # do nothing
@@ -683,18 +671,34 @@ d64.rma <- function(x, ...) {
 
 ### to JASP table conversion
 ## default formatting options
-options(jasp_number_format = "sf:4;dp:3", jasp_string_format = NULL)
+options(jasp_number_format = "sf:4;dp:3")
 as.jaspTable <- function(x, ...) UseMethod("as_jaspTable")
 as_jaspTable.data.frame <- function(x, title = "", ...) {
   jaspTable = list(data = NULL, schema = NULL, title = title)
 
   # Extract table schema
   fields = lapply(c("name", names(x)), function(name) {
-    if(is.null(x[[name]])) 
-      return(list(name = "name", type = "string", format = NULL, title = ""))
+    if (is.null(x[[name]])) 
+      return(list(name = "name", type = "string", format = "", title = ""))
     y = x[[name]]
-    type = if (!is.numeric(y)) "string" else "number" #FIXME: integers and p values are distinct
-    list(name = name, type = type, format = options(paste0("jasp_",type,"_format"))[[1]], title = name)
+    
+    type <- "" # converts to right aligned content
+    if (is.numeric(y)) {
+      type <- "number"
+      if (all(abs(y - round(y)) < .Machine$double.eps^0.5))
+        type <- "integer"
+    } else if (any(isTRUE(as.character(y) != "."))) { # dont left-align dots
+      type <- "string"
+    }
+    
+    format <- ""
+    if (type == "number") {
+      format <- options(paste0("jasp_",type,"_format"))[[1]]
+      if (name == "p" || name == "pval")
+        format <- "dp:3;p:.001"
+    }
+    
+    list(name = name, type = type, format = format, title = name)
   })
   jaspTable[["schema"]] <- list(fields = fields) 
   
