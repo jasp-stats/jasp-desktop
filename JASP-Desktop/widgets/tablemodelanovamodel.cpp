@@ -140,6 +140,7 @@ const Terms &TableModelAnovaModel::variables() const
 
 void TableModelAnovaModel::bindTo(Option *option)
 {
+	clear();
 	_boundTo = dynamic_cast<OptionsTable *>(option);
 
 	beginResetModel();
@@ -394,9 +395,9 @@ QVariant TableModelAnovaModel::headerData(int section, Qt::Orientation orientati
 		if (role == Qt::DisplayRole)
 		{
 			if (section == 0)
-				return "Model Terms";
+				return "Model terms";
 			else if (section == 1)
-				return "Is Nuisance";
+				return "Add to null model";
 		}
 		else
 		{
@@ -529,6 +530,7 @@ void TableModelAnovaModel::setTerms(const Terms &terms, bool newTermsAreNuisance
 
 void TableModelAnovaModel::clear()
 {
+	_boundTo = NULL;
 	setTerms(Terms());
 }
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>594</width>
-    <height>855</height>
+    <height>882</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -258,7 +258,7 @@
             <string>Plots</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_4">
-            <item row="5" column="0">
+            <item row="6" column="0">
              <widget class="QWidget" name="widget_4" native="true">
               <property name="maximumSize">
                <size>
@@ -268,7 +268,7 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="1" colspan="4">
+            <item row="6" column="1" colspan="4">
              <widget class="BoundCheckBox" name="plotSequentialAnalysisRobustness">
               <property name="enabled">
                <bool>false</bool>
@@ -284,7 +284,7 @@
               </property>
              </widget>
             </item>
-            <item row="6" column="0" colspan="3">
+            <item row="7" column="0" colspan="3">
              <widget class="BoundCheckBox" name="descriptivesPlots">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -310,7 +310,7 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="0" colspan="3">
+            <item row="5" column="0" colspan="3">
              <widget class="BoundCheckBox" name="plotSequentialAnalysis">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -352,8 +352,11 @@
               </property>
              </widget>
             </item>
-            <item row="7" column="1">
+            <item row="8" column="1">
              <widget class="QWidget" name="horizontalWidget" native="true">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <layout class="QHBoxLayout" name="horizontalLayout">
                <property name="leftMargin">
                 <number>0</number>
@@ -416,6 +419,22 @@
                 </widget>
                </item>
               </layout>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="BoundCheckBox" name="plotBayesFactorRobustnessAdditionalInfo">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Additional info</string>
+              </property>
              </widget>
             </item>
            </layout>
@@ -812,6 +831,38 @@
     <hint type="destinationlabel">
      <x>337</x>
      <y>680</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>plotBayesFactorRobustness</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>plotBayesFactorRobustnessAdditionalInfo</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>375</x>
+     <y>535</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>342</x>
+     <y>563</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>descriptivesPlots</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>horizontalWidget</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>333</x>
+     <y>647</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>375</x>
+     <y>678</y>
     </hint>
    </hints>
   </connection>

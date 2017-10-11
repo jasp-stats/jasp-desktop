@@ -17,6 +17,7 @@
 
 #include "dataset.h"
 
+using namespace std;
 /*
  * DataSet is implemented as a set of columns
  */
@@ -42,7 +43,7 @@ Column &DataSet::column(int index)
 	return _columns.at(index);
 }
 
-Column &DataSet::column(std::string name)
+Column &DataSet::column(string name)
 {
 	return _columns.get(name);
 }
@@ -62,7 +63,7 @@ void DataSet::setColumnCount(int columnCount)
 	}
 }
 
-void DataSet::removeColumn(std::string name)
+void DataSet::removeColumn(string name)
 {
 	int index = getColumnIndex(name);
 	_columns.removeColumn(index);
@@ -84,7 +85,7 @@ int DataSet::columnCount() const
 	return _columnCount;
 }
 
-int DataSet::getColumnIndex(std::string name)
+int DataSet::getColumnIndex(string name)
 {
 	int i = 0;
 	for (Columns::iterator colIt = _columns.begin(); colIt != _columns.end(); ++colIt, ++i)
@@ -95,9 +96,9 @@ int DataSet::getColumnIndex(std::string name)
 	return i == _columnCount ? -1 : i;
 }
 
-std::string DataSet::toString()
+string DataSet::toString()
 {
-	std::stringstream ss;
+	stringstream ss;
 	ss << "Column count: " << _columnCount << std::endl;
 	ss << "Row count: " << _rowCount << std::endl;
 
@@ -115,10 +116,29 @@ std::string DataSet::toString()
 		ss << "  Ints" << std::endl;
 		for (Column::Ints::iterator int_it = col.AsInts.begin(); int_it != col.AsInts.end(); ++int_it)
 		{
-			int value = *int_it;
-			ss << "    " << value << ": " << col._labelFromIndex(value) << std::endl;
+			int key = *int_it;
+			ss << "    " << key << ": " << col._getLabelFromKey(key) << std::endl;
 		}
 	}
 
 	return ss.str();
+}
+
+vector<string> DataSet::resetEmptyValues(map<string, map<int, string> > &emptyValuesPerColumnMap)
+{
+	vector<string> colChanged;
+	for (Columns::iterator col_it = _columns.begin(); col_it != _columns.end(); ++col_it)
+	{
+		Column& col = *col_it;
+		map<string, map<int, string> >::iterator it = emptyValuesPerColumnMap.find(col.name());
+		map<int, string> emptyValuesMap;
+		if (it != emptyValuesPerColumnMap.end())
+			emptyValuesMap = it->second;
+
+		if (col.resetEmptyValues(emptyValuesMap))
+			colChanged.push_back(col.name());
+		emptyValuesPerColumnMap[col.name()] = emptyValuesMap;
+	}
+
+	return colChanged;
 }

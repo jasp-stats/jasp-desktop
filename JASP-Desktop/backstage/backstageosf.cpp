@@ -42,10 +42,13 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	topRow->setLayout(topRowLayout);
 
 	QLabel *label = new QLabel("Open Science Framework", topRow);
+	QFont f= QFont("SansSerif");
+	f.setPointSize(18);
+	label->setFont(f);
 	QSizePolicy sp = label->sizePolicy();
 	sp.setHorizontalStretch(1);
 	label->setSizePolicy(sp);
-	label->setContentsMargins(12, 12, 12, 1);
+	label->setContentsMargins(10, 6, 0, 0);
 	topRowLayout->addWidget(label, 0, 0);
 
 	_logoutButton = new QToolButton(topRow);

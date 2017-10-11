@@ -12,7 +12,7 @@ Assumptions
 Default Options
 -------
 ### Hypothesis:
-- Correlated: Two-sided alternative hypothesis that the population correlation does not equal 0 
+- Correlated: Two-sided alternative hypothesis that the population correlation does not equal 0
 - Correlated positively: One-sided alternative hypothesis that the population correlation is higher than 0
 - Correlated negatively: One-sided alternative hypothesis that the population correlation is lower than 0
 
@@ -29,7 +29,7 @@ Default Output
 -------
 ### Bayesian Pearson Correlations:
 - Pearson's r: Pearson product-moment correlation coefficient
-- BF10 (or BF01): Bayes factor. If one-sided test is requested: 
+- BF10 (or BF01): Bayes factor. If one-sided test is requested:
   - BF+0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that the population correlation is higher than 0
   - BF-0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that the population correlation is lower than 0
   - BF0+: Bayes factor that quantifies evidence for the null hypothesis relative to the one-sided alternative hypothesis that the population correlation is higher than 0
@@ -57,21 +57,10 @@ Additional Output
     - Densities for variables: Displays a histogram and the corresponding density plot for each variable in the diagonal entries of the matrix
     - Posteriors under H1: Displays density plot(s) of the posterior of the correlation(s) [rho] under the alternative hypothesis in the lower off-diagonal entries of the
     matrix
-      
+
 References
 -------
 - Jeffreys, H. (1961). *Theory of probability (3rd ed.)*. Oxford, UK: Oxford University Press.
-- Ly, A., Verhagen, A. J., & Wagenmakers, E.-J. (in press). Harold Jeffreys's default Bayes factor hypothesis tests: Explanation, extension, and application in psychology. *Journal of Mathematical Psychology*.
+- Ly, A., Verhagen, A. J., & Wagenmakers, E.-J. (2016). Harold Jeffreys's default Bayes factor hypothesis tests: Explanation, extension, and application in psychology. *Journal of Mathematical Psychology, 72*, 19-31.
 - Rouder, J. N., & Morey R. D. (2012). Default Bayes factors for model selection in regression. *Multivariate Behavioral Research, 47*, 877-903.
 - Wetzels, R., & Wagenmakers, E.-J. (2012). A default Bayesian hypothesis test for correlations and partial correlations. *Psychonomic Bulletin & Review, 19*, 1057-1064.
-
-
-
-
-
-
-
-
-
-
-

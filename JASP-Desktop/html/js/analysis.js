@@ -1,6 +1,7 @@
 JASPWidgets.Analysis = Backbone.Model.extend({
 	defaults: {
 		id: -1,
+		progress: -1,
 		results: {},
 		status: 'waiting',
         optionschanged: [],
@@ -75,6 +76,8 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.viewNotes = { list: [] };
 
 		this.toolbar = new JASPWidgets.Toolbar({ className: "jasp-toolbar" })
+		
+		this.progressbar = new JASPWidgets.Progressbar();
 
 		this.userdata = this.model.get('userdata');
 		if (this.userdata === undefined || this.userdata === null)
@@ -126,6 +129,13 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 	events: {
 		'mouseenter': '_hoveringStart',
 		'mouseleave': '_hoveringEnd',
+	},
+	
+	handleVisibilityProgressbar: function(statusProgress) {
+		if (statusProgress == "progress-complete") {
+			var id = this.model.get("id");
+			window.setTimeout(function() { $("#progressbar-" + id).fadeOut()}, 500);
+		}
 	},
 	
 	detachNotes: function() {
@@ -470,10 +480,22 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	render: function () {
 
+		var results = this.model.get("results");
+		if (results == "" || results == null) {
+			var progress = this.model.get("progress");
+			if (progress > -1) {  // called to update progressbar
+				var $progressbar = this.progressbar.init(progress, this.model.get("id"), this.model.get("status"));
+				this.$el.find(".jasp-progressbar-container").replaceWith($progressbar);
+				this.handleVisibilityProgressbar(this.progressbar.status());
+			}
+			return this;
+		}
+		
 		this.toolbar.$el.detach();
 		this.detachNotes();
 
 		var $innerElement = this.$el;
+		$innerElement.find(".jasp-progressbar-container").remove();
 
         var $tempClone = $innerElement.clone();
         this.$el.before($tempClone).detach();
@@ -484,7 +506,6 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
         $innerElement.empty();
 
-		var results = this.model.get("results");
         if (results.error) {
 
             var status = this.model.get("status");
@@ -497,7 +518,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
             $innerElement.find('.analysis-error').remove();
             $innerElement.addClass('error-state');
             if (status === "exception") $innerElement.addClass("exception");
-            $innerElement.find(".status").removeClass("waiting");
+            $innerElement.find(".status").removeClass("waiting running");
 
             $innerElement.append('<div class="analysis-error error-message-box ui-state-error"><span class="ui-icon ui-icon-' + (status === "exception" ? 'alert' : 'info') + '" style="float: left; margin-right: .3em;"></span>' + error + '</div>')
             if ($innerElement.find('.jasp-display-item').length > 3) {
@@ -537,6 +558,10 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		else
 			this._setTitle(results.title, 'h2');
 
+		var $progressbar = this.progressbar.init(this.model.get("progress"), this.model.get("id"), this.model.get("status"));
+		$innerElement.prepend($progressbar);
+		this.handleVisibilityProgressbar(this.progressbar.status());
+		
 		this.viewNotes.lastNoteNoteBox.render();
 		$innerElement.append(this.viewNotes.lastNoteNoteBox.$el);
 

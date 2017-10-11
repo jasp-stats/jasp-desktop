@@ -218,28 +218,7 @@
       <item row="0" column="1">
        <widget class="QWidget" name="widget_7" native="true">
         <layout class="QGridLayout" name="gridLayout_5">
-         <item row="0" column="0">
-          <widget class="BoundCheckBox" name="reportSignificance">
-           <property name="text">
-            <string>Report significance</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="BoundCheckBox" name="flagSignificant">
-           <property name="text">
-            <string>Flag significant correlations</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="BoundCheckBox" name="confidenceIntervals">
-           <property name="text">
-            <string>Confidence intervals</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
+         <item row="4" column="0">
           <widget class="QWidget" name="confidenceIntervalsIntervalContainer" native="true">
            <property name="enabled">
             <bool>false</bool>
@@ -294,7 +273,21 @@
            </layout>
           </widget>
          </item>
-         <item row="4" column="0">
+         <item row="3" column="0">
+          <widget class="BoundCheckBox" name="confidenceIntervals">
+           <property name="text">
+            <string>Confidence intervals</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="BoundCheckBox" name="flagSignificant">
+           <property name="text">
+            <string>Flag significant correlations</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
           <widget class="BoundCheckBox" name="VovkSellkeMPR">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -304,6 +297,20 @@
            </property>
            <property name="text">
             <string>Vovk-Sellke maximum p-ratio</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="BoundCheckBox" name="reportSignificance">
+           <property name="text">
+            <string>Report significance</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="BoundCheckBox" name="displayPairwise">
+           <property name="text">
+            <string>Display pairwise table</string>
            </property>
           </widget>
          </item>
@@ -544,11 +551,12 @@
  </customwidgets>
  <tabstops>
   <tabstop>availableVariables</tabstop>
-  <tabstop>assignButton</tabstop>
   <tabstop>variables</tabstop>
+  <tabstop>assignButton</tabstop>
   <tabstop>pearson</tabstop>
   <tabstop>spearman</tabstop>
   <tabstop>kendallsTauB</tabstop>
+  <tabstop>displayPairwise</tabstop>
   <tabstop>reportSignificance</tabstop>
   <tabstop>flagSignificant</tabstop>
   <tabstop>confidenceIntervals</tabstop>

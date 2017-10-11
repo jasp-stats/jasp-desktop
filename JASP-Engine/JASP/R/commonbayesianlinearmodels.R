@@ -293,15 +293,6 @@
 	}
 	model.formula <- formula (model.formula)
 
-	#Intermediate Callback
-	response <- .callbackBayesianLinearModels ()
-	if (response$status != "ok") {
-		return ()
-	} else {
-		if ( ! is.null (response$options))
-			options <- response$options
-	}
-
 	#Make a list of models to compare
 	model.list <- try (BayesFactor::enumerateGeneralModels (model.formula, 
 		whichModels = "withmain", neverExclude = paste ("^", neverExclude, "$", sep = "")), 
@@ -317,13 +308,8 @@
 		model.list <- list (model.formula)
 	}
 
-	#Intermediate Callback
-	response <- .callbackBayesianLinearModels ()
-	if (response$status != "ok") {
-		return ()
-	} else {
-		if ( ! is.null (response$options))
-			options <- response$options
+	if (perform == "run") {
+		progressbar <- .newProgressbar(ticks=length(model.list), callback=.callbackBayesianLinearModels, response=TRUE)
 	}
 
 	#Run Null model
@@ -422,9 +408,13 @@
 		#Create empty tables
 		results <- .updateResultsBayesianLinearModels (results, model.object, 
 			effects.matrix, interactions.matrix, neverExclude, null.model, options, status)
-
-		#Intermediate Callback
-		response <- .callbackBayesianLinearModels (results)
+			
+		if (perform == "run") {
+			response <- progressbar(results)
+		} else {
+			response <- .callbackBayesianLinearModels(results)
+		}
+		
 		if (response$status != "ok") {
 			return ()
 		} else {
@@ -454,19 +444,18 @@
 				if (length (neverExclude) > 0){
 					model.object [[m]]$bf <- model.object [[m]]$bf / null.model$bf
 				}
-			}
-			
-			#Create empty tables
-			results <- .updateResultsBayesianLinearModels (results, model.object, 
-				effects.matrix, interactions.matrix, neverExclude, null.model, options, status)
-
-			#Intermediate Callback
-			response <- .callbackBayesianLinearModels (results)
-			if (response$status != "ok") {
-				return ()
-			} else {
-				if ( ! is.null (response$options))
-					options <- response$options
+				
+				#Create empty tables
+				results <- .updateResultsBayesianLinearModels (results, model.object, 
+					effects.matrix, interactions.matrix, neverExclude, null.model, options, status)
+				
+				response <- progressbar(results)
+				if (response$status != "ok") {
+					return ()
+				} else {
+					if ( ! is.null (response$options))
+						options <- response$options
+				}
 			}
 		}
 

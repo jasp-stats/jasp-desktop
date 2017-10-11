@@ -188,7 +188,9 @@ SOURCES += $$PWD/main.cpp \
 		$$PWD/importers/importdataset.cpp \
 		$$PWD/importers/importcolumn.cpp \
 		$$PWD/importers/csvimportcolumn.cpp \
-		$$PWD/preferencesdialog.cpp
+		$$PWD/preferencesdialog.cpp \
+    $$PWD/analysisforms/regressionlogisticform.cpp \
+    $$PWD/analysisforms/multinomialtestform.cpp
 
 HEADERS  += \
         $$PWD/aboutdialog.h \
@@ -391,7 +393,9 @@ HEADERS  += \
 		$$PWD/importers/ods/odstypes.h \
 		$$PWD/importers/ods/odsxmlcontentshandler.h \
 		$$PWD/importers/ods/odsxmlhandler.h \
-		$$PWD/importers/ods/odsxmlmanifesthandler.h
+		$$PWD/importers/ods/odsxmlmanifesthandler.h \
+    $$PWD/analysisforms/regressionlogisticform.h \
+    $$PWD/analysisforms/multinomialtestform.h
 
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \
@@ -449,7 +453,9 @@ FORMS += \
         $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.ui \
-        $$PWD/analysisforms/R11tLearn/r11tlearnform.ui
+        $$PWD/analysisforms/R11tLearn/r11tlearnform.ui \
+    $$PWD/analysisforms/regressionlogisticform.ui \
+    $$PWD/analysisforms/multinomialtestform.ui
 
 RESOURCES += \
         $$PWD/backstage/backstage.qrc \

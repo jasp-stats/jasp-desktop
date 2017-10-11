@@ -1,11 +1,20 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	
-	<title>JASP</title>
+    <meta charset="utf-8">
+    <title>JASP About</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-	<link rel="stylesheet" href="css/jquery-ui-1.10.1.custom.min.css" type="text/css" />
+
+    <!-- Google Fonts -->
+    <link rel='stylesheet' id='jasp-google-fonts-css'  href='https://fonts.googleapis.com/css?family=Lato%3A300%2C400%2C700%7CRoboto%3A300%2C400%2C500%2C700&#038;ver=4.7.4' type='text/css' media='all' />
+
+    <!-- Bootstrap CSS File -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Main Stylesheet File -->
+    <link href="css/style.css" rel="stylesheet">
+
 	<script type="text/javascript" src="js/jquery-1.9.1.js"></script>
 	<script type="text/javascript" src="js/jquery-ui-1.10.1.custom.js"></script>
 	<script type="text/javascript" src="js/underscore-min.js"></script>
@@ -21,24 +30,33 @@
 	<script type="text/javascript" src="js/analysis.js"></script>
 	<script type="text/javascript" src="js/analyses.js"></script>
 
-	<link rel="stylesheet" href="css/theme-jasp.css" type="text/css" />
-	<link rel="stylesheet" href="css/etch.css" type="text/css" />
-
 	<script type="text/javascript" src="js/main.js"></script>
-
 </head>
-<body>
-	<div id="patchinfo" >
-		<h1>JASP <span class="app-version"></span></h1>
 
-		<br/>Copyright (C) 2013-<span class="app-year"></span> University of Amsterdam
-		<p><b>Built on: </b><span class="app-builddate"></span></p>
-		<br/><b>Download: </b><a href="https://jasp-stats.org/download/">https://jasp-stats.org/download/</a>
-		<br/><b>Citation: </b>JASP Team (<span class="app-year"></span>). JASP (<span class="app-version"></span>) [Computer software] (<a href="https://jasp-stats.org/faq/#citation">BibTeX</a>)
-		<br/>
-		<br/>This program is provided AS IS with NO WARRANTY OF ANY KIND,
-		<br/>INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND
-		<br/>FITNESS FOR A PARTICULAR PURPOSE.
-	</div>
+<body style="background-color: white">
+
+    <div id="about-box">
+
+        <div id="logo-version">
+            <div class="logo">
+                <img width="196" height="45" class="logo__img" src="img/jasp-logo-black.svg" />
+            </div>
+		    <div class="app-version"></div>
+			<b><span style='color:#8DC448'><div class="new-version"></div></span></b>
+			<div class="pt-box pt-box-none text-left text-xs-center download-newversion-button"><br> <a class="btn btn-primary btn-lg" href="https://jasp-stats.org/download/"><i class="fa fa-download"></i> Download</a></div>
+		</div>
+
+        <div id="more-info">
+            <span class="copyright">Copyright 2013-<span class="app-year"></span> University of Amsterdam</span>
+            <dl>
+                <dt>Built on: </dt><dd><span class="app-builddate"> (Netherlands)</span></dd>
+                <dt>Download: </dt><dd><a href="https://jasp-stats.org/download/" target="_blank">http://jasp-stats.org/download/</a></dd>
+                <dt>Citation: </dt><dd>JASP Team(<span class="app-year"></span>). JASP(<span class="app-version"></span>)[ Computer software] <a href="https://jasp-stats.org/faq/#citation">(BibTeX)</a></dd>
+            </dl>
+            <p class="footnote">This program is provided AS IS with NO WARANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MECHANDISING AND FITNESS FOR A PARTICULAR PURPOSE</p>
+            <a class="btn" onclick="about.closeWindow()" onmouseover="" style="cursor: pointer;">OK</a>
+        </div>
+
+    </div>
 </body>
 </html>

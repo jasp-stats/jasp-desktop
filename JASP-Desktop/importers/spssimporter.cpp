@@ -55,7 +55,7 @@ ImportDataSet* SPSSImporter::loadFile(const string &locator, boost::function<voi
 	stream.seekg(0, stream.beg);
 
 	// Data we have scraped to date.
-	SPSSImportDataSet *dataset = new SPSSImportDataSet();
+	SPSSImportDataSet *dataset = new SPSSImportDataSet(this);
 
 	// Fetch the dictionary.
 	bool processingDict = true;

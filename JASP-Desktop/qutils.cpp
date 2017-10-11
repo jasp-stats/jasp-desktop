@@ -49,3 +49,26 @@ QStringList tql(const std::vector<string> &from)
 	return result;
 }
 
+vector<string> fromQstringToStdVector(const QString &input, const QString &delimetor)
+{
+	QStringList list;
+	vector<string> result;
+	list = input.split(delimetor);
+	foreach (QString itm, list)
+	{
+		itm = stripFirstAndLastChar(itm,"\"");
+		result.push_back(itm.toStdString());
+	}
+	
+	return result;
+}
+
+QString stripFirstAndLastChar(const QString &in, const QString &strip)
+{
+	QString result = in;
+	if (result.left(1) == strip) result.remove(0,1);
+	if (result.right(1) == strip) result.remove(result.length()-1,1);
+	return result;	
+}
+
+	

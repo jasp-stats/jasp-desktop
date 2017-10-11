@@ -190,34 +190,53 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	# Fit Linear Model
 	lm.model <- list()
 	empty.model <- list(lm.fit = NULL, variables = NULL)
-
+	lm.fit.index.one.model <- 1
+	includes.nuisance <- FALSE
+	
 	if (length(options$modelTerms) > 0) {
 
 		variables.in.model <- NULL
 		variables.in.model.base64 <- NULL
-
+    variables.in.null.model <- NULL
+    variables.in.null.model.base64 <- NULL
+    
 		for (i in seq_along(options$modelTerms)) {
-
+		  
 			components <- options$modelTerms[[i]]$components
-
+			nuisance <- options$modelTerms[[i]]$isNuisance
+			
 			if (length(components) == 1) {
 
 				variables.in.model <- c(variables.in.model, components[[1]])
 				variables.in.model.base64 <- c(variables.in.model.base64, .v(components[[1]]))
 
 			} else {
-
 				components.unlisted <- unlist(components)
 				term.base64 <- paste0(.v(components.unlisted), collapse=":")
 				term <- paste0(components.unlisted, collapse=":")
 				variables.in.model <- c(variables.in.model, term)
 				variables.in.model.base64 <- c(variables.in.model.base64, term.base64)
 			}
+			
+			if (!is.null(nuisance) && nuisance) {
+			  if (length(components) == 1) {
+			    variables.in.null.model <- c(variables.in.null.model, components[[1]])
+			    variables.in.null.model.base64 <- c(variables.in.null.model.base64, .v(components[[1]]))
+			  } else {
+			    variables.in.null.model <- c(variables.in.null.model, term)
+			    variables.in.null.model.base64 <- c(variables.in.null.model.base64, term.base64)
+			  }
+			}
+			
 		}
 
 		independent.base64 <- variables.in.model.base64
+		independent.null.base64 <- variables.in.null.model.base64
 		variables.in.model <- variables.in.model[ variables.in.model != ""]
+		variables.in.null.model <- variables.in.null.model[ variables.in.null.model != ""]
 		variables.in.model.copy <- variables.in.model
+		includes.nuisance <- (length(variables.in.null.model) > 0)
+		lm.fit.index.one.model <- 1 + as.numeric(includes.nuisance && (!identical(variables.in.model,variables.in.null.model)))
 
 	}
 
@@ -295,20 +314,34 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 				if (options$method == "backward") {
 
-					lm.model <- .backwardRegression(dependent.base64, independent.base64, dataset, options, weights)
+					lm.model <- .backwardRegression(dependent.base64, independent.base64, independent.null.base64, dataset, options, weights)
 
 				} else if (options$method == "forward") {
 
-					lm.model <- .forwardRegression(dependent.base64, independent.base64, dataset, options, weights)
-
+					lm.model <- .forwardRegression(dependent.base64, independent.base64, independent.null.base64, dataset, options, weights)
+					# if (length(lm.model) == 0) lm.model [[ 1 ]] <- empty.model
 				} else if (options$method == "stepwise") {
-
-					lm.model <- .stepwiseRegression(dependent.base64, independent.base64, dataset, options, weights)
+				  
+					lm.model <- .stepwiseRegression(dependent.base64, independent.base64, independent.null.base64, dataset, options, weights)
+					
 				}
+			  if (includes.nuisance) {
+			    if (options$includeConstant == TRUE) {
+			      null.model.definition <- paste(dependent.base64, "~", paste(independent.null.base64, collapse = "+"))
+			    } else {
+			      null.model.definition <- paste(dependent.base64, "~", paste(independent.null.base64, collapse = "+"), "-1")
+			    }	
+			    null.model.formula <- as.formula(null.model.definition)
+			    lm.fit.null <- try( stats::lm( null.model.formula, data = dataset, weights = weights, x=TRUE ), silent = TRUE)
+			    if ( !identical((lm.model[[1]][[1]]$coefficients), lm.fit.null$coefficients)) {
+			      lm.model[(1:length(lm.model))+1] <- lm.model[1:length(lm.model)]
+			      lm.model[[1]] <- list(lm.fit = lm.fit.null, variables = variables.in.null.model)
+			    }
+			  }
 
 			} else {
 
-				lm.model [[ 1 ]] <- empty.model
+				lm.model [[ lm.fit.index.one.model ]] <- empty.model
 			}
 
 		} else if (length(options$modelTerms) > 0) {
@@ -318,10 +351,12 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				if (options$includeConstant == TRUE) {
 
 					model.definition <- paste(dependent.base64, "~", paste(independent.base64, collapse = "+"))
-
+          null.model.definition <- paste(dependent.base64, "~", paste(independent.null.base64, collapse = "+"))
+          
 				} else {
 
 					model.definition <- paste(dependent.base64, "~", paste(independent.base64, collapse = "+"), "-1")
+					null.model.definition <- paste(dependent.base64, "~", paste(independent.null.base64, collapse = "+"), "-1")
 				}
 
 			} else {
@@ -339,20 +374,34 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 				model.formula <- as.formula(model.definition)
 				lm.fit <- try( stats::lm( model.formula, data = dataset, weights = weights, x=TRUE ), silent = TRUE)
-
+        
+				if(includes.nuisance){
+				  null.model.formula <- as.formula(null.model.definition)
+				  lm.fit.null <- try( stats::lm( null.model.formula, data = dataset, weights = weights, x=TRUE ), silent = TRUE)
+				}
+				
 				if ( class(lm.fit) == "lm") {
 
-					lm.model[[1]] <- list(lm.fit = lm.fit, variables = variables.in.model)
-
+					lm.model[[lm.fit.index.one.model]] <- list(lm.fit = lm.fit, variables = variables.in.model)
+					if(includes.nuisance && class(lm.fit.null) == "lm" ){ 
+					  lm.model[[1]] <- list(lm.fit = lm.fit.null, variables = variables.in.null.model)
+					}
+					  
 				} else {
 
 					list.of.errors[[ length(list.of.errors) + 1 ]]  <- "An unknown error occurred, please contact the author."
-					lm.model[[1]] <- list(lm.fit = NULL, variables = variables.in.model)
+					lm.model[[lm.fit.index.one.model]] <- list(lm.fit = NULL, variables = variables.in.model)
+					if(includes.nuisance){ 
+					  lm.model[[1]] <- list(lm.fit = NULL, variables = variables.in.null.model)
+					}
 				}
 
 			} else {
 
-				lm.model[[1]] <- list(lm.fit = NULL, variables = variables.in.model)
+				lm.model[[lm.fit.index.one.model]] <- list(lm.fit = NULL, variables = variables.in.model)
+				if(includes.nuisance){ 
+				  lm.model[[1]] <- list(lm.fit = NULL, variables = variables.in.null.model)
+				}
 			}
 
 		} else {
@@ -361,29 +410,29 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			{
 				model.definition <- paste(dependent.base64, "~ 1")
 				model.formula <- as.formula(model.definition)
-
+				
 				if (perform == "run" && !is.null(model.definition) && length(list.of.errors) == 0) {
 
 					lm.fit <- try( stats::lm(model.formula, data = dataset, weight = weights, x=TRUE))
 
 					if ( class(lm.fit) == "lm") {
 
-						lm.model[[ 1 ]] <- list(lm.fit = lm.fit, variables = NULL)
+						lm.model[[ lm.fit.index.one.model ]] <- list(lm.fit = lm.fit, variables = NULL)
 
 					} else {
 
 						list.of.errors[[ length(list.of.errors) + 1 ]]  <- "An unknown error occurred, please contact the author."
-						lm.model[[ 1 ]] <- list(lm.fit = NULL, variables = variables.in.model)
+						lm.model[[ lm.fit.index.one.model ]] <- list(lm.fit = NULL, variables = variables.in.model)
 					}
 
 				} else {
 
-					lm.model[[ 1 ]] <- empty.model
+					lm.model[[ lm.fit.index.one.model ]] <- empty.model
 				}
 
 			} else {
 
-				lm.model[[ 1 ]] <- empty.model
+				lm.model[[ lm.fit.index.one.model ]] <- empty.model
 			}
 		}
 
@@ -391,11 +440,17 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 		if (length(options$modelTerms) > 0) {
 
-			lm.model[[1]] <- list(lm.fit = NULL, variables = variables.in.model)
+			lm.model[[lm.fit.index.one.model]] <- list(lm.fit = NULL, variables = variables.in.model)
+			if(includes.nuisance){ 
+			  lm.model[[1]] <- list(lm.fit = NULL, variables = variables.in.null.model)
+			}
 
 		} else {
 
-			lm.model [[ 1 ]] <- empty.model
+			lm.model [[ lm.fit.index.one.model ]] <- empty.model
+			if(includes.nuisance){ 
+			  lm.model[[1]] <- empty.model
+			}
 		}
 
 	}
@@ -516,7 +571,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 								partAndPartial <- .partAndPartialCorrelation(dependent.variable, variable, variables.model, dataset)
 								partial <- .clean(partAndPartial$partialCor)
 								part <- .clean(partAndPartial$partCor)
-								correlations.rows[[length(correlations.rows)+1]] <- list(Model=m, Name=name, Partial=partial, Part=part, .isNewGroup=TRUE)
+								correlations.rows[[length(correlations.rows)+1]] <- list(Model=as.integer(m - as.numeric(includes.nuisance)), Name=name, Partial=partial, Part=part, .isNewGroup=TRUE)
 
 							} else {
 
@@ -560,7 +615,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 							if ( which(variables.model == variable) == 1) {
 
-								correlations.rows[[length(correlations.rows)+1]] <- list(Model=m, Name=name, Partial=".", Part=".", .isNewGroup=TRUE)
+								correlations.rows[[length(correlations.rows)+1]] <- list(Model=as.integer(m - as.numeric(includes.nuisance)), Name=name, Partial=".", Part=".", .isNewGroup=TRUE)
 
 							} else {
 
@@ -587,14 +642,20 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	model.table <- list()
 	model.table[["title"]] <- "Model Summary"
+	footnotes <- .newFootnotes()
 
 	fields <- list(
 		list(name = "Model", type = "integer"),
 		list(name = "R", type = "number", format = "dp:3"),
 		list(name = "R2", title = "R\u00B2", type = "number", format = "dp:3"),
 		list(name = "aR2", title = "Adjusted R\u00B2", type = "number", format = "dp:3"),
-		list(name = "se", title = "RMSE", type = "number", format = "dp:3"))
+		list(name = "se", title = "RMSE", type = "number", format = "sf:4;dp:3"))
 
+	if (includes.nuisance) {
+	  null.model <- paste ("Null model includes ", paste (variables.in.null.model, collapse = ", "), sep = "")
+	  .addFootnote (footnotes, symbol = "<em>Note.</em>", text = null.model)
+	}
+	
 	empty.line <- list("Model" = ".", "R" = ".", "R2" = ".", "aR2" = ".", "se" = ".")
 
 
@@ -610,7 +671,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	if (options$residualsDurbinWatson) {
 
-		fields[[length(fields)+1]] <- list(name = "Durbin-Watson", title = "Durbin-Watson", type = "number", format = "dp:3")
+		fields[[length(fields)+1]] <- list(name = "Durbin-Watson", title = "Durbin-Watson", type = "number", format = "sf:4;dp:3")
 		empty.line$"Durbin-Watson" <- "."
 	}
 
@@ -625,7 +686,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				lm.summary <- summary(lm.model[[ m ]]$lm.fit)
 
 				table.rows[[ m ]] <- empty.line
-				table.rows[[ m ]]$"Model" <- as.integer(m)
+				table.rows[[ m ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
 				table.rows[[ m ]]$"R" <- as.numeric(sqrt(lm.summary$r.squared))
 				table.rows[[ m ]]$"R2" <- as.numeric(lm.summary$r.squared)
 				table.rows[[ m ]]$"aR2" <- as.numeric(lm.summary$adj.r.squared)
@@ -679,7 +740,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			} else {
 
 				table.rows[[ m ]] <- empty.line
-				table.rows[[ m ]]$"Model" <- as.integer(m)
+				table.rows[[ m ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
 			}
 		}
 
@@ -690,7 +751,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		for (m in 1:number.of.init.models) {
 
 			table.rows[[ m ]] <- empty.line
-			table.rows[[ m ]]$"Model" <- as.integer(m)
+			table.rows[[ m ]]$"Model" <-  as.integer(m - as.numeric(includes.nuisance))
 		}
 
 		if (length(list.of.errors) == 1){
@@ -703,7 +764,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			model.table[["error"]] <- list(errorType = "badData", errorMessage = paste("The following errors were encountered: <br> <br>", paste(unlist(list.of.errors),collapse="<br>"), sep=""))
 		}
 	}
+
 	model.table[["data"]] <- table.rows
+	model.table[["footnotes"]] <- as.list(footnotes)
 	results[["model summary"]] <- model.table
 
 
@@ -726,9 +789,14 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			list(name = "F", type = "number", format = "sf:4;dp:3"),
 			list(name = "p", type = "number", format = "dp:3;p:.001"))
 
+		if (includes.nuisance) {
+		  null.model <- paste ("Null model includes ", paste (variables.in.null.model, collapse = ", "), sep = "")
+		  .addFootnote (footnotes, symbol = "<em>Note.</em>", text = null.model)
+		}
+		
 		if (options$VovkSellkeMPR) {
 			.addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
-	    <em>p</em>-Ratio: Based the <em>p</em>-value, the maximum
+	    <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
 	    possible odds in favor of H\u2081 over H\u2080 equals
 	    1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
 	    (Sellke, Bayarri, & Berger, 2001).")
@@ -736,8 +804,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	                                        title = "VS-MPR\u002A",
 	                                        type = "number",
 	                                        format = "sf:4;dp:3")
-	 	}
-
+		}
+      
 		anova[["schema"]] <- list(fields = fields)
 		anova.result <- list()
 
@@ -769,7 +837,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 			len.an <- length(anova.result) + 1
 			anova.result[[ len.an ]] <- dotted.line
-			anova.result[[ len.an ]]$"Model" <- as.integer(m)
+			anova.result[[ len.an ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
 			anova.result[[ len.an ]]$"Cases" <- as.character("Regression")
 			anova.result[[ len.an ]]$".isNewGroup" <- TRUE
 
@@ -808,7 +876,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					len.an <- length(anova.result) + 1
 
 					anova.result[[ len.an ]] <- empty.line
-					anova.result[[ len.an ]]$"Model" <- as.integer(m)
+					anova.result[[ len.an ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
 					anova.result[[ len.an ]]$"Cases" <- "Regression"
 					anova.result[[ len.an ]]$"Sum of Squares" <- as.numeric(ss.model)
 					anova.result[[ len.an ]]$"df" <- as.integer(df.model)
@@ -876,15 +944,15 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		fields <- list(
 			list(name = "Model", type = "integer"),
 			list(name = "Name", title = "  ", type = "string"),
-			list(name = "Coefficient", title = "Unstandardized", type = "number", format = "dp:3"),
-			list(name = "Standard Error", type="number", format = "dp:3"),
-			list(name = "Standardized Coefficient", title = "Standardized", type = "number", format = "dp:3"),
+			list(name = "Coefficient", title = "Unstandardized", type = "number", format = "sf:4;dp:3"),
+			list(name = "Standard Error", type="number", format = "sf:4;dp:3"),
+			list(name = "Standardized Coefficient", title = "Standardized", type = "number", format = "sf:4;dp:3"),
 			list(name = "t", type="number", format = "sf:4;dp:3"),
 			list(name = "p", type = "number", format = "dp:3;p:.001"))
 
 		if (options$VovkSellkeMPR) {
 			.addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
-			<em>p</em>-Ratio: Based the <em>p</em>-value, the maximum
+			<em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
 			possible odds in favor of H\u2081 over H\u2080 equals
 			1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
 			(Sellke, Bayarri, & Berger, 2001).")
@@ -924,8 +992,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 			alpha <- options$regressionCoefficientsConfidenceIntervalsInterval
 			alpha <- alpha / 100
-			fields[[ length(fields) + 1 ]] <- list(name = "Lower Bound", title = paste(round(100*(1-alpha)/2,1),"%",sep=""), type = "number", format = "dp:3")
-			fields[[ length(fields) + 1 ]] <- list(name = "Upper Bound", title = paste(round(100*(1+alpha)/2,1),"%",sep=""), type = "number", format = "dp:3")
+			fields[[ length(fields) + 1 ]] <- list(name = "Lower Bound", title = paste(round(100*(1-alpha)/2,1),"%",sep=""), type = "number", format = "sf:4;dp:3")
+			fields[[ length(fields) + 1 ]] <- list(name = "Upper Bound", title = paste(round(100*(1+alpha)/2,1),"%",sep=""), type = "number", format = "sf:4;dp:3")
 			empty.line$"Lower Bound" = ""
 			empty.line$"Upper Bound" = ""
 			dotted.line$"Lower Bound" = "."
@@ -935,7 +1003,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		if (options$collinearityDiagnostics) {
 
 			fields[[ length(fields) + 1 ]] <- list(name = "Tolerance", title = "Tolerance", type = "number", format = "dp:3", overTitle="Collinearity Statistics")
-			fields[[ length(fields) + 1 ]] <- list(name = "VIF", title = "VIF", type = "number", format = "dp:3", overTitle="Collinearity Statistics")
+			fields[[ length(fields) + 1 ]] <- list(name = "VIF", title = "VIF", type = "number", format = "sf:4;dp:3", overTitle="Collinearity Statistics")
 			empty.line$"Tolerance" = ""
 			empty.line$"VIF" = ""
 			dotted.line$"Tolerance" = "."
@@ -979,8 +1047,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 							v <- v + 1
 
 							regression.result[[ len.reg ]] <- empty.line
-							regression.result[[ len.reg ]]$"Model" <- as.integer(m)
-							regression.result[[ len.reg ]]$"Name" <- as.character("intercept")
+							regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
+							regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
 							regression.result[[ len.reg ]]$"Coefficient" <- as.numeric(lm.estimates[v,1])
 							regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(lm.estimates[v,2])
 							regression.result[[ len.reg ]]$"t" <- as.numeric(lm.estimates[v,3])
@@ -1005,8 +1073,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 						} else {
 
 							regression.result[[ len.reg ]] <- empty.line
-							regression.result[[ len.reg ]]$"Model" <- as.integer(m)
-							regression.result[[ len.reg ]]$"Name" <- as.character("intercept")
+							regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
+							regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
 							regression.result[[ len.reg ]]$"Coefficient" <- "NA"
 							regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 						}
@@ -1032,7 +1100,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 								if (var == 1 && options$includeConstant == FALSE) {
 
-									regression.result[[ len.reg ]]$"Model" <- as.integer(m)
+									regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
 									regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 								}
 
@@ -1083,7 +1151,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 								if (var == 1 && options$includeConstant == FALSE) {
 
-									regression.result[[ len.reg ]]$"Model" <- as.integer(m)
+									regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
 									regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 								}
 
@@ -1132,7 +1200,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 					len.reg <- length(regression.result) + 1
 					regression.result[[ len.reg ]] <- dotted.line
-					regression.result[[ len.reg ]]$"Model" <- as.integer(m)
+					regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
 
 					if (length(lm.model[[ m ]]$variables) > 0) {
 
@@ -1141,7 +1209,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 						if (options$includeConstant == TRUE) {
 
-							regression.result[[ len.reg ]]$"Name" <- as.character("intercept")
+							regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
 						}
 
 						len.reg <- len.reg + 1
@@ -1180,8 +1248,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					if (options$includeConstant == TRUE) {
 
 						regression.result[[ len.reg ]] <- dotted.line
-						regression.result[[ len.reg ]]$"Model" <- as.integer(m)
-						regression.result[[ len.reg ]]$"Name" <- as.character("intercept")
+						regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
+						regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
 						regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 						len.reg <- len.reg + 1
 					}
@@ -1196,7 +1264,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 							regression.result[[ len.reg ]]$"Model" <- ""
 
 							if (var == 1 && options$includeConstant == FALSE) {
-								regression.result[[ len.reg ]]$"Model" <- as.integer(m)
+								regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
 								regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 							}
 
@@ -1222,11 +1290,11 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 				len.reg <- length(regression.result) + 1
 				regression.result[[ len.reg ]] <- dotted.line
-				regression.result[[ len.reg ]]$"Model" <- as.numeric(m)
+				regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
 
 				if (options$includeConstant == TRUE) {
 
-					regression.result[[ len.reg ]]$"Name" <- as.character("intercept")
+					regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
 					regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 				}
 			}
@@ -1274,7 +1342,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					variable.name <- variable
 				}
 
-				fields[[length(fields)+1]] <- list(name = variable.name, title = variable.name, type = "number", format = "dp:3")
+				fields[[length(fields)+1]] <- list(name = variable.name, title = variable.name, type = "number", format = "sf:4;dp:3")
 			}
 		}
 
@@ -1335,7 +1403,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 						if (row.index == 1) {
 
-							covmatrix.row <- list(Model=m, Name=row.variable.name, .isNewGroup=TRUE)
+							covmatrix.row <- list(Model=as.integer(m - as.numeric(includes.nuisance)), Name=row.variable.name, .isNewGroup=TRUE)
 
 						} else {
 
@@ -1435,7 +1503,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 						if (row.index == 1) {
 
-							covmatrix.row <- list(Model=m, Name=row.variable.name, .isNewGroup=TRUE)
+							covmatrix.row <- list(Model=as.integer(m - as.numeric(includes.nuisance)), Name=row.variable.name, .isNewGroup=TRUE)
 
 						} else {
 
@@ -1487,8 +1555,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		fields <- list(
 			list(name = "Model", type = "integer"),
 			list(name = "Dimension", type = "integer"),
-			list(name = "Eigenvalue", type = "number", format = "dp:3"),
-			list(name = "Condition Index", type = "number", format = "dp:3")
+			list(name = "Eigenvalue", type = "number", format = "sf:4;dp:3"),
+			list(name = "Condition Index", type = "number", format = "sf:4;dp:3")
 			)
 
 
@@ -1550,7 +1618,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 						if (predictor.index == 1) {
 
-							diagnostics.rows[[length(diagnostics.rows)+1]] <- list(Model=m, Dimension=predictor.index, .isNewGroup=TRUE)
+							diagnostics.rows[[length(diagnostics.rows)+1]] <- list(Model=as.integer(m - as.numeric(includes.nuisance)), Dimension=predictor.index, .isNewGroup=TRUE)
 
 						} else {
 
@@ -1641,7 +1709,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 						if (predictor.index == 1) {
 
-							diagnostics.rows[[length(diagnostics.rows)+1]] <- list(Model=m, Dimension=predictor.index, .isNewGroup=TRUE)
+							diagnostics.rows[[length(diagnostics.rows)+1]] <- list(Model=as.integer(m - as.numeric(includes.nuisance)), Dimension=predictor.index, .isNewGroup=TRUE)
 
 						} else {
 
@@ -1695,11 +1763,11 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 		# Declare table elements
 		fields <- list(
-			list(name = "caseNumber", title = "Case Number", type="number", format = "dp:0"),
+			list(name = "caseNumber", title = "Case Number", type="integer"),
 			list(name = "stdResidual", title = "Std. Residual", type = "number", format = "dp:3"),
-			list(name = "dependentVariable", title = dependent.variable, type="number", format = "dp:3"),
-			list(name = "predictedValue", title = "Predicted Value", type="number", format = "dp:3"),
-			list(name = "residual", title = "Residual", type="number", format = "dp:3")
+			list(name = "dependentVariable", title = dependent.variable, type="number", format = "sf:4;dp:3"),
+			list(name = "predictedValue", title = "Predicted Value", type="number", format = "sf:4;dp:3"),
+			list(name = "residual", title = "Residual", type="number", format = "sf:4;dp:3")
 			)
 
 		casewiseDiagnostics[["schema"]] <- list(fields = fields)
@@ -1764,11 +1832,11 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		# Declare table elements
 		fields <- list(
 			list(name = "Type", title = "  ", type = "string"),
-			list(name = "Minimum", title = "Minimum", type = "number", format = "dp:3"),
-			list(name = "Maximum", title = "Maximum", type="number", format = "dp:3"),
-			list(name = "Mean", title = "Mean", type="number", format = "dp:3"),
-			list(name = "SD", title = "SD", type="number", format = "dp:3"),
-			list(name = "N", title = "N", type="number", format = "dp:0")
+			list(name = "Minimum", title = "Minimum", type = "number", format = "sf:4;dp:3"),
+			list(name = "Maximum", title = "Maximum", type="number", format = "sf:4;dp:3"),
+			list(name = "Mean", title = "Mean", type="number", format = "sf:4;dp:3"),
+			list(name = "SD", title = "SD", type="number", format = "sf:4;dp:3"),
+			list(name = "N", title = "N", type="integer")
 			)
 
 		residualsStatistics[["schema"]] <- list(fields = fields)
@@ -2873,82 +2941,81 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 ################################
 
 .includeVariable <- function(dependent.variable, candidate.variables, data, options, weights, variables.in.model=NULL) {
+  
+  fValues <- numeric(length(candidate.variables))
+  pValues <- numeric(length(candidate.variables))
+  fits <- list()
+  
+  for (i in seq_along(candidate.variables)) {
+    
+    if (options$includeConstant) {
+      
+      formula <- as.formula(paste(dependent.variable, "~", paste(c(variables.in.model, candidate.variables[i]), collapse = "+")))
+      fits[[candidate.variables[i]]] <- try(lm(formula, data=data, weights = weights, x=TRUE), silent=TRUE)
+      fValues[i] <- summary(fits[[i]])$coefficients[ ,"t value"][length(variables.in.model) + 2]^2
+      pValues[i] <- summary(fits[[i]])$coefficients[ ,"Pr(>|t|)"][length(variables.in.model) + 2]
+    } else {
+      
+      formula <- as.formula(paste(dependent.variable, "~", paste(c(variables.in.model, candidate.variables[i]), collapse = "+"), "-1"))
+      fits[[i]] <- try(lm(formula, data=data, weights = weights, x=TRUE), silent=TRUE)
+      fValues[i] <- summary(fits[[i]])$coefficients[ ,"t value"][length(variables.in.model) + 1]^2
+      pValues[i] <- summary(fits[[i]])$coefficients[ ,"Pr(>|t|)"][length(variables.in.model) + 1]
+    }
+  }
 
-	fValues <- numeric(length(candidate.variables))
-	pValues <- numeric(length(candidate.variables))
-	fits <- list()
-
-	for (i in seq_along(candidate.variables)) {
-
-		if (options$includeConstant) {
-
-			formula <- as.formula(paste(dependent.variable, "~", paste(c(variables.in.model, candidate.variables[i]), collapse = "+")))
-			fits[[candidate.variables[i]]] <- try(lm(formula, data=data, weights = weights, x=TRUE), silent=TRUE)
-			fValues[i] <- summary(fits[[i]])$coefficients[ ,"t value"][length(variables.in.model) + 2]^2
-			pValues[i] <- summary(fits[[i]])$coefficients[ ,"Pr(>|t|)"][length(variables.in.model) + 2]
-
-		} else {
-
-			formula <- as.formula(paste(dependent.variable, "~", paste(c(variables.in.model, candidate.variables[i]), collapse = "+"), "-1"))
-			fits[[i]] <- try(lm(formula, data=data, weights = weights, x=TRUE), silent=TRUE)
-			fValues[i] <- summary(fits[[i]])$coefficients[ ,"t value"][length(variables.in.model) + 1]^2
-			pValues[i] <- summary(fits[[i]])$coefficients[ ,"Pr(>|t|)"][length(variables.in.model) + 1]
-		}
-	}
-
-	if (options$steppingMethodCriteriaType == "useFValue") {
-
-		maximumFvalue <- max(fValues)
-
-		if (maximumFvalue > options$steppingMethodCriteriaFEntry) {
-
-			maximumFvalueVariable <- candidate.variables[which.max(fValues)]
-			variables.in.model <- c(variables.in.model, maximumFvalueVariable)
-			candidate.variables <- candidate.variables[candidate.variables != maximumFvalueVariable]
-		}
-
-	} else if (options$steppingMethodCriteriaType == "usePValue") {
-
-		minimumPvalue <- min(pValues)
-
-		if (minimumPvalue < options$steppingMethodCriteriaPEntry) {
-
-			minimumPvalueVariable <- candidate.variables[which.min(pValues)]
-			variables.in.model <- c(variables.in.model, minimumPvalueVariable)
-			candidate.variables <- candidate.variables[candidate.variables != minimumPvalueVariable]
-		}
-	}
-
-	if (options$includeConstant) {
-
-		if (is.null(variables.in.model)) {
-
-			formula1 <- as.formula(paste(dependent.variable, "~", "1"))
-
-		} else {
-
-			formula1 <- as.formula(paste(dependent.variable, "~", paste(variables.in.model, collapse = "+")))
-		}
-
-	} else {
-
-		if (is.null(variables.in.model)) {
-
-			formula1 <- as.formula(paste(dependent.variable, "~", "1", "-1"))
-
-		} else {
-
-			formula1 <- as.formula(paste(dependent.variable, "~", paste(variables.in.model, collapse = "+"), "-1"))
-		}
-	}
-
-	lm.fit <- try(lm(formula1, data=data, weights = weights, x=TRUE), silent=TRUE)
-
-	return(list(lm.fit=lm.fit, variables=variables.in.model, candidate.variables=candidate.variables))
-
+  if (options$steppingMethodCriteriaType == "useFValue") {
+    
+    maximumFvalue <- max(fValues)
+    
+    if (maximumFvalue > options$steppingMethodCriteriaFEntry) {
+      
+      maximumFvalueVariable <- candidate.variables[which.max(fValues)]
+      variables.in.model <- c(variables.in.model, maximumFvalueVariable)
+      candidate.variables <- candidate.variables[candidate.variables != maximumFvalueVariable]
+    }
+    
+  } else if (options$steppingMethodCriteriaType == "usePValue") {
+    
+    minimumPvalue <- min(pValues)
+    
+    if (minimumPvalue < options$steppingMethodCriteriaPEntry) {
+      
+      minimumPvalueVariable <- candidate.variables[which.min(pValues)]
+      variables.in.model <- c(variables.in.model, minimumPvalueVariable)
+      candidate.variables <- candidate.variables[candidate.variables != minimumPvalueVariable]
+    }
+  }
+  
+  if (options$includeConstant) {
+    
+    if (is.null(variables.in.model)) {
+      
+      formula1 <- as.formula(paste(dependent.variable, "~", "1"))
+      
+    } else {
+      
+      formula1 <- as.formula(paste(dependent.variable, "~", paste(variables.in.model, collapse = "+")))
+    }
+    
+  } else {
+    
+    if (is.null(variables.in.model)) {
+      
+      formula1 <- as.formula(paste(dependent.variable, "~", "1", "-1"))
+      
+    } else {
+      
+      formula1 <- as.formula(paste(dependent.variable, "~", paste(variables.in.model, collapse = "+"), "-1"))
+    }
+  }
+  
+  lm.fit <- try(lm(formula1, data=data, weights = weights, x=TRUE), silent=TRUE)
+  
+  return(list(lm.fit=lm.fit, variables=variables.in.model, candidate.variables=candidate.variables))
+  
 }
 
-.removeVariable <- function(dependent.variable, independent.variables, data, options, weights) {
+.removeVariable <- function(dependent.variable, independent.variables, independent.null.variables, data, options, weights) {
 
 
 	if (options$includeConstant) {
@@ -2970,6 +3037,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		pValues <- pValues[-1]
 
 	}
+
+	tValues <- tValues[- (names(tValues) %in% independent.null.variables)]
+	pValues <- pValues[- (names(tValues) %in% independent.null.variables)]
 
 	fValues <- tValues^2
 
@@ -3038,7 +3108,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	return(list(lm.fit=lm.fit, variables=.unvWithInteraction(new.independent.variables)))
 }
 
-.backwardRegression <- function(dependent.variable, independent.variables, data, options, weights) {
+.backwardRegression <- function(dependent.variable, independent.variables, independent.null.variables, data, options, weights) {
 
 	if (options$includeConstant) {
 
@@ -3053,13 +3123,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	lm.model <- list(list(lm.fit=lm.fit1, variables=.unvWithInteraction(independent.variables)))
 
-	new.independent.variables <- independent.variables
+	new.independent.variables <- independent.variables[!(independent.variables %in% independent.null.variables) ]
 	old.independent.variables <- ""
 
 	while ( ! identical(old.independent.variables, new.independent.variables) && length(new.independent.variables) > 0) {
 
 		old.independent.variables <- .vWithInteraction(lm.model[[ length(lm.model) ]]$variables)
-		lm.model[[ length(lm.model) + 1 ]] <- .removeVariable(dependent.variable, old.independent.variables, data, options, weights)
+		lm.model[[ length(lm.model) + 1 ]] <- .removeVariable(dependent.variable, old.independent.variables, independent.null.variables, data, options, weights)
 		new.independent.variables <- .vWithInteraction(lm.model[[ length(lm.model) ]]$variables)
 
 	}
@@ -3070,12 +3140,12 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	return(lm.model)
 }
 
-.forwardRegression <- function(dependent.variable, independent.variables, data, options, weights) {
+.forwardRegression <- function(dependent.variable, independent.variables, independent.null.variables, data, options, weights) {
 
-	old.candidate.variables <- ""
-	candidate.variables <- independent.variables
-	variables.in.model <- NULL
-	lm.model <- list()
+  old.candidate.variables <- ""
+  candidate.variables <- independent.variables[!(independent.variables %in% independent.null.variables)]
+  variables.in.model <- independent.null.variables
+  lm.model <- list()
 
 	counter <- 0
 
@@ -3084,14 +3154,24 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		old.candidate.variables <- candidate.variables
 		out <- .includeVariable(dependent.variable, old.candidate.variables, data, options, weights, variables.in.model)
 		candidate.variables <- out$candidate.variables
-		variables.in.model <- out$variables
-		lm.model.tmp <- list(lm.fit=out$lm.fit, variables=.unvWithInteraction(out$variables))
+		variables.in.model <- unique(c(out$variables,independent.null.variables))
+		lm.model.tmp <- list(lm.fit=out$lm.fit, variables=.unvWithInteraction(unique(c(out$variables,independent.null.variables))))
 		lm.model[[ length(lm.model) + 1 ]] <- lm.model.tmp
 
 		counter <- counter + 1
 	}
 
-
+  if( (counter == 0) && (length(independent.null.variables) > 0)) {		
+    if (options$includeConstant) {
+      formulaNull <- as.formula(paste(dependent.variable, "~", paste(independent.null.variables, collapse = "+")))
+    } else {
+      formulaNull <- as.formula(paste(dependent.variable, "~", paste(independent.null.variables, collapse = "+"), "-1"))
+    }
+    lm.fit <- try(lm(formulaNull, data=data, weights = weights, x=TRUE), silent=TRUE)
+    lm.model.tmp <- list(lm.fit=lm.fit, variables=.unvWithInteraction(independent.null.variables))
+    lm.model[[ length(lm.model) + 1 ]] <- lm.model.tmp 
+  }
+	
 	if (length(candidate.variables) > 0 && counter > 1)
 		lm.model <- lm.model[-length(lm.model)] # remove last fit that did not change independent variables
 
@@ -3099,29 +3179,28 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 }
 
-.stepwiseRegression <- function(dependent.variable, independent.variables, data, options, weights) {
+.stepwiseRegression <- function(dependent.variable, independent.variables, independent.null.variables, data, options, weights) {
 
-	old.candidate.variables <- ""
-	candidate.variables <- independent.variables
+  old.candidate.variables <- ""
+	candidate.variables <-  independent.variables
 	new.variables.in.model <- NULL
 	old.variables.in.model <- "dummy"
 	lm.model <- list()
-
 	counter <- 0
 
 	while ( ! (identical(old.candidate.variables, candidate.variables) && identical(old.variables.in.model, new.variables.in.model)) && length(candidate.variables) > 0) {
 
-		old.candidate.variables <- candidate.variables
-		out <- .includeVariable(dependent.variable, old.candidate.variables, data, options, weights, new.variables.in.model)
+	  old.candidate.variables <- candidate.variables[!(candidate.variables %in% c(new.variables.in.model,independent.null.variables))]
+	  out <- .includeVariable(dependent.variable, old.candidate.variables, data, options, weights, unique(c(new.variables.in.model,independent.null.variables)))
 		candidate.variables <- out$candidate.variables
-		old.variables.in.model <- out$variables
-		lm.model.tmp <- list(lm.fit=out$lm.fit, variables=.unvWithInteraction(out$variables))
+		old.variables.in.model <- unique(c(out$variables,independent.null.variables))
+		lm.model.tmp <- list(lm.fit=out$lm.fit, variables=.unvWithInteraction(unique(c(out$variables,independent.null.variables))))
 		lm.model[[ length(lm.model) + 1 ]] <- lm.model.tmp
 
 		if (is.null(old.variables.in.model))
 			break
 
-		removeStep <- .removeVariable(dependent.variable, old.variables.in.model, data, options, weights)
+		removeStep <- .removeVariable(dependent.variable, old.variables.in.model, independent.null.variables, data, options, weights)
 		new.variables.in.model <- .vWithInteraction(removeStep$variables)
 
 		if ( ! identical(new.variables.in.model, old.variables.in.model)) {

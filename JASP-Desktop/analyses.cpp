@@ -28,6 +28,7 @@
 
 #include "utils.h"
 #include "tempfiles.h"
+#include "appinfo.h"
 
 using namespace std;
 
@@ -43,21 +44,21 @@ Analyses::Analyses()
 	//timer->start();
 }
 
-Analysis *Analyses::create(const QString &name, Json::Value *optionsData, Analysis::Status status)
+Analysis *Analyses::create(const QString &name)
 {
-	return create(name, _nextId++, optionsData, status);
+	return create(name, _nextId++, AppInfo::version, NULL, Analysis::Empty);
 }
 
-Analysis *Analyses::create(const QString &name, int id, Json::Value *options, Analysis::Status status)
+Analysis *Analyses::create(const QString &name, int id, const Version &version, Json::Value *options, Analysis::Status status)
 {
 	if (id >= _nextId)
 		_nextId = id + 1;
 
-	Analysis *analysis = AnalysisLoader::load(id, name.toStdString(), options);
+	Analysis *analysis = AnalysisLoader::load(id, name.toStdString(), version, options);
 	analysis->setStatus(status);
 
-	if (options == NULL)
-		assignDefaults(analysis);
+//	if (options == NULL)
+//		assignDefaults(analysis);
 
 	while (id >= _analyses.size())
 		_analyses.push_back(NULL);

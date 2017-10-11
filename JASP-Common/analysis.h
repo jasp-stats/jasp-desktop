@@ -31,7 +31,7 @@ public:
 
 	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted, Error, SaveImg, Exception };
 
-	Analysis(int id, std::string name, Options *options, Version version, bool isAutorun = true, bool usedata = true);
+	Analysis(int id, std::string name, Options *options, const Version &version, bool isAutorun = true, bool usedata = true);
 	virtual ~Analysis();
 
 	Options *options() const;
@@ -43,7 +43,7 @@ public:
 	boost::signals2::signal<void (Analysis *source)> resultsChanged;
 	boost::signals2::signal<void (Analysis *source)> userDataLoaded;
 
-	void setResults(Json::Value results);
+	void setResults(Json::Value results, int progress = -1);
 	void setImageResults(Json::Value results);
 	void setUserData(Json::Value userData, bool silient = false);
 	const Json::Value &results() const;
@@ -89,6 +89,7 @@ protected:
 	Json::Value _imgResults;
 	Json::Value _userData;
 	Json::Value _saveImgOptions;
+	int _progress;
 
 	int callback(Json::Value results);
 

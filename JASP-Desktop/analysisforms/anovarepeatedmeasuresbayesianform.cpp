@@ -67,12 +67,12 @@ AnovaRepeatedMeasuresBayesianForm::AnovaRepeatedMeasuresBayesianForm(QWidget *pa
 	ui->modelTerms->setModel(_anovaModel);
 
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
-	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
+	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignmentsChanged(bool)), this, SLOT(factorsChanged(bool)));
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addFixedFactors(Terms)));
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
 	connect(_covariatesListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
-	connect(_covariatesListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
+	connect(_covariatesListModel, SIGNAL(assignmentsChanged(bool)), this, SLOT(factorsChanged(bool)));
 	connect(_covariatesListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addCovariates(Terms)));
 	connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
@@ -83,7 +83,7 @@ AnovaRepeatedMeasuresBayesianForm::AnovaRepeatedMeasuresBayesianForm(QWidget *pa
 
 	_plotFactorsAvailableTableModel = new TableModelVariablesAvailable();
 	ui->plotVariables->setModel(_plotFactorsAvailableTableModel);
-	
+
 	_horizontalAxisTableModel = new TableModelVariablesAssigned(this);
 	_horizontalAxisTableModel->setSource(_plotFactorsAvailableTableModel);
 	ui->plotHorizontalAxis->setModel(_horizontalAxisTableModel);
@@ -99,12 +99,12 @@ AnovaRepeatedMeasuresBayesianForm::AnovaRepeatedMeasuresBayesianForm(QWidget *pa
 	ui->buttonAssignHorizontalAxis->setSourceAndTarget(ui->plotVariables, ui->plotHorizontalAxis);
 	ui->buttonAssignSeperateLines->setSourceAndTarget(ui->plotVariables, ui->plotSeparateLines);
 	ui->buttonAssignSeperatePlots->setSourceAndTarget(ui->plotVariables, ui->plotSeparatePlots);
-	
+
 	ui->containerModel->hide();
 	ui->containerPostHocTests->hide();
 	ui->advancedOptions->hide();
 	ui->containerDescriptivesPlot->hide();
-	
+
 	ui->plotCredibleIntervalInterval->setLabel("Credible interval");
 	ui->priorFixedEffects->setLabel("r scale fixed effects");
 	ui->priorRandomEffects->setLabel("r scale random effects");
@@ -119,6 +119,8 @@ AnovaRepeatedMeasuresBayesianForm::~AnovaRepeatedMeasuresBayesianForm()
 void AnovaRepeatedMeasuresBayesianForm::bindTo(Options *options, DataSet *dataSet)
 {
 	AnalysisForm::bindTo(options, dataSet);
+
+	factorsChanged();
 
 	Terms factorsAvailable;
 
@@ -152,25 +154,28 @@ void AnovaRepeatedMeasuresBayesianForm::factorsChanging()
 		_options->blockSignals(true);
 }
 
-void AnovaRepeatedMeasuresBayesianForm::factorsChanged()
+void AnovaRepeatedMeasuresBayesianForm::factorsChanged(bool changed)
 {
-	Terms factorsAvailable;
+	if (changed)
+	{
+		Terms factorsAvailable;
 
-	foreach (const Factor &factor, _designTableModel->design())
-		factorsAvailable.add(factor.first);
+		foreach (const Factor &factor, _designTableModel->design())
+			factorsAvailable.add(factor.first);
 
-	factorsAvailable.add(_betweenSubjectsFactorsListModel->assigned());
-	
-	_plotFactorsAvailableTableModel->setVariables(factorsAvailable);
-	
-	Terms plotVariablesAssigned;
-	plotVariablesAssigned.add(_horizontalAxisTableModel->assigned());
-	plotVariablesAssigned.add(_seperateLinesTableModel->assigned());
-	plotVariablesAssigned.add(_seperatePlotsTableModel->assigned());
-	_plotFactorsAvailableTableModel->notifyAlreadyAssigned(plotVariablesAssigned);
-	
-	ui->postHocTestsVariables->setVariables(factorsAvailable);
-	
+		factorsAvailable.add(_betweenSubjectsFactorsListModel->assigned());
+
+		_plotFactorsAvailableTableModel->setVariables(factorsAvailable);
+
+		Terms plotVariablesAssigned;
+		plotVariablesAssigned.add(_horizontalAxisTableModel->assigned());
+		plotVariablesAssigned.add(_seperateLinesTableModel->assigned());
+		plotVariablesAssigned.add(_seperatePlotsTableModel->assigned());
+		_plotFactorsAvailableTableModel->notifyAlreadyAssigned(plotVariablesAssigned);
+
+		ui->postHocTestsVariables->setVariables(factorsAvailable);
+	}
+
 	if (_options != NULL)
 		_options->blockSignals(false);
 }

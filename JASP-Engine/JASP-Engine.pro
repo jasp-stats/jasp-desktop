@@ -99,16 +99,71 @@ PRE_TARGETDEPS      += InstallJASPRPackage
 SOURCES += main.cpp \
 	engine.cpp \
 	rbridge.cpp \
-        RInside/MemBuf.cpp \
-        RInside/RInside.cpp
-  
+	RInside/MemBuf.cpp \
+	RInside/RInside.cpp
+
 HEADERS += \
 	engine.h \
 	rbridge.h \
-        RInside/Callbacks.h \
-        RInside/MemBuf.h \
-        RInside/RInside.h \
-        RInside/RInsideAutoloads.h \
-        RInside/RInsideCommon.h \
-        RInside/RInsideConfig.h \
-        RInside/RInsideEnvVars.h
+	RInside/Callbacks.h \
+	RInside/MemBuf.h \
+	RInside/RInside.h \
+	RInside/RInsideAutoloads.h \
+	RInside/RInsideCommon.h \
+	RInside/RInsideConfig.h \
+	RInside/RInsideEnvVars.h
+	
+OTHER_FILES  += \
+	JASP/R/ancova.R \
+	JASP/R/ancovabayesian.R \
+	JASP/R/ancovamultivariate.R \
+	JASP/R/anova.R \
+	JASP/R/anovabayesian.R \
+	JASP/R/anovamultivariate.R \
+	JASP/R/anovaoneway.R \
+	JASP/R/anovarepeatedmeasures.R \
+	JASP/R/anovarepeatedmeasuresbayesian.R \
+	JASP/R/base64.R \
+	JASP/R/basregressionlinearlink.R \
+	JASP/R/bffromt.R \
+	JASP/R/binomialtest.R \
+	JASP/R/binomialtestbayesian.R \
+	JASP/R/common.R \
+	JASP/R/commonbayesianlinearmodels.R \
+	JASP/R/commonerrorcheck.R \
+	JASP/R/commonglm.R \
+	JASP/R/commonmessages.R \
+	JASP/R/commonMPR.R \
+	JASP/R/commonsummarystats.R \
+	JASP/R/commonsummarystatsttestbayesian.R \
+	JASP/R/commonTTest.R \
+	JASP/R/contingencytables.R \
+	JASP/R/contingencytablesbayesian.R \
+	JASP/R/correlation.R \
+	JASP/R/correlationbayesian.R \
+	JASP/R/correlationbayesianpairs.R \
+	JASP/R/correlationpartial.R \
+	JASP/R/descriptives.R \
+	JASP/R/exploratoryfactoranalysis.R \
+	JASP/R/packagecheck.R \
+	JASP/R/principalcomponentanalysis.R \
+	JASP/R/r11tlearn.R \
+	JASP/R/regressionlinear.R \
+	JASP/R/regressionlinearbayesian.R \
+	JASP/R/regressionlogistic.R \
+	JASP/R/regressionloglinear.R \
+	JASP/R/regressionloglinearbayesian.R \
+	JASP/R/reliabilityanalysis.R \
+	JASP/R/semsimple.R \
+	JASP/R/summarystatsbinomialtestbayesian.R \
+	JASP/R/summarystatscorrelationbayesianpairs.R \
+	JASP/R/summarystatsregressionlinearbayesian.R \
+	JASP/R/summarystatsttestbayesianindependentsamples.R \
+	JASP/R/summarystatsttestbayesianonesample.R \
+	JASP/R/summarystatsttestbayesianpairedsamples.R \
+	JASP/R/ttestbayesianindependentsamples.R \
+	JASP/R/ttestbayesianonesample.R \
+	JASP/R/ttestbayesianpairedsamples.R \
+	JASP/R/ttestindependentsamples.R \
+	JASP/R/ttestonesample.R \
+	JASP/R/ttestpairedsamples.R

@@ -25,6 +25,7 @@
 #include "options/optioninteger.h"
 #include "options/optionintegerarray.h"
 #include "options/optionnumber.h"
+#include "options/optionstring.h"
 
 #include "bound.h"
 
@@ -48,6 +49,7 @@ private:
 	OptionInteger *_integer;
 	OptionIntegerArray *_integerArray;
 	OptionNumber *_number;
+	OptionString *_string;
 
 	QString _label;
 
@@ -66,7 +68,6 @@ private:
 		static QString stringify(std::vector<int> &input);
 
 	};
-	
 };
 
 #endif // BOUNDTEXTBOX_H

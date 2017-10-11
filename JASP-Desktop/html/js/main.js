@@ -17,7 +17,8 @@ $(document).ready(function () {
 
 	// Global settings for analysis output. Add here if making new setting.
 	window.globSet = {
-		"pExact" : false
+		"pExact" : false,
+		"decimals": ""
 	}
 
 	var selectedAnalysisId = -1;
@@ -62,6 +63,19 @@ $(document).ready(function () {
 		$(".app-version").text("Version " + version);
 	}
 
+	window.setNewVersion = function (version) {
+		$(".new-version").text("New version available " + version);
+	}
+	
+	window.showDownLoadButton = function (show, href) {
+		
+		$(".btn-primary").attr('href',href)
+		if (show)
+			$(".download-newversion-button").show();
+		else
+			$(".download-newversion-button").hide();
+	}
+	
     window.setAppBuildDate = function(builddate){
        $(".app-builddate").text(builddate);
     }
@@ -507,7 +521,7 @@ $(document).ready(function () {
 
 		jaspWidget.render();
 
-		if (selectedAnalysisId === analysis.id)
+		if (selectedAnalysisId === analysis.id && (analysis.status == "inited" || analysis.status == "complete"))
 			window.scrollIntoView(jaspWidget.$el);
 	}
 	

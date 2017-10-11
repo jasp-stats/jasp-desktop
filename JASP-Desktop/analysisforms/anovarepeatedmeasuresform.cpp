@@ -82,12 +82,12 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	connect(_designTableModel, SIGNAL(factorRemoved(Terms)), _withinSubjectsTermsModel, SLOT(removeVariables(Terms)));
 
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
-	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
+	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignmentsChanged(bool)), this, SLOT(factorsChanged(bool)));
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignedTo(Terms)), _betweenSubjectsTermsModel, SLOT(addFixedFactors(Terms)));
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(unassigned(Terms)), _betweenSubjectsTermsModel, SLOT(removeVariables(Terms)));
 
 	connect(_covariatesListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
-	connect(_covariatesListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
+	connect(_covariatesListModel, SIGNAL(assignmentsChanged(bool)), this, SLOT(factorsChanged(bool)));
 	connect(_covariatesListModel, SIGNAL(assignedTo(Terms)), _betweenSubjectsTermsModel, SLOT(addCovariates(Terms)));
 	connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _betweenSubjectsTermsModel, SLOT(removeVariables(Terms)));
 
@@ -161,25 +161,28 @@ void AnovaRepeatedMeasuresForm::factorsChanging()
 		_options->blockSignals(true);
 }
 
-void AnovaRepeatedMeasuresForm::factorsChanged()
+void AnovaRepeatedMeasuresForm::factorsChanged(bool changed)
 {
-	Terms factorsAvailable;
+	if (changed)
+	{
+		Terms factorsAvailable;
 
-	foreach (const Factor &factor, _designTableModel->design())
-		factorsAvailable.add(factor.first);
+		foreach (const Factor &factor, _designTableModel->design())
+			factorsAvailable.add(factor.first);
 
-	factorsAvailable.add(_betweenSubjectsFactorsListModel->assigned());
+		factorsAvailable.add(_betweenSubjectsFactorsListModel->assigned());
 
-	_contrastsModel->setVariables(factorsAvailable);
-	_plotFactorsAvailableTableModel->setVariables(factorsAvailable);
+		_contrastsModel->setVariables(factorsAvailable);
+		_plotFactorsAvailableTableModel->setVariables(factorsAvailable);
 
-	Terms plotVariablesAssigned;
-	plotVariablesAssigned.add(_horizontalAxisTableModel->assigned());
-	plotVariablesAssigned.add(_seperateLinesTableModel->assigned());
-	plotVariablesAssigned.add(_seperatePlotsTableModel->assigned());
-	_plotFactorsAvailableTableModel->notifyAlreadyAssigned(plotVariablesAssigned);
+		Terms plotVariablesAssigned;
+		plotVariablesAssigned.add(_horizontalAxisTableModel->assigned());
+		plotVariablesAssigned.add(_seperateLinesTableModel->assigned());
+		plotVariablesAssigned.add(_seperatePlotsTableModel->assigned());
+		_plotFactorsAvailableTableModel->notifyAlreadyAssigned(plotVariablesAssigned);
 
-	ui->postHocTestsVariables->setVariables(factorsAvailable);
+		ui->postHocTestsVariables->setVariables(factorsAvailable);
+	}
 
 	if (_options != NULL)
 		_options->blockSignals(false);

@@ -24,12 +24,17 @@
 			"name": "wlsWeights",
 			"type": "Variable"
 		},
-		{
+			{
 			"name": "modelTerms",
 			"template": [
 				{
 					"name": "components",
 					"type": "Term"
+				}, 
+				{
+					"default": false,
+					"name": "isNuisance",
+					"type": "Boolean"
 				}
 			],
 			"type": "Table"

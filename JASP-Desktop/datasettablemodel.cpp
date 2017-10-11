@@ -159,14 +159,15 @@ Qt::ItemFlags DataSetTableModel::flags(const QModelIndex &index) const
 	return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
 }
 
-void DataSetTableModel::setColumnType(int columnIndex, Column::ColumnType newColumnType)
+bool DataSetTableModel::setColumnType(int columnIndex, Column::ColumnType newColumnType)
 {
 	if (_dataSet == NULL)
-		return;
+		return true;
 
-	_dataSet->column(columnIndex).changeColumnType(newColumnType);
-
+	bool changed = _dataSet->column(columnIndex).changeColumnType(newColumnType);
 	emit headerDataChanged(Qt::Horizontal, columnIndex, columnIndex);
+
+	return changed;
 }
 
 Column::ColumnType DataSetTableModel::getColumnType(int columnIndex)

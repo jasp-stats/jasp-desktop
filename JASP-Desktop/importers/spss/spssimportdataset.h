@@ -18,6 +18,7 @@
 #ifndef SPSSIMPORTDATASET_H
 #define SPSSIMPORTDATASET_H
 
+#include "../spssimporter.h"
 #include "../importerutils.h"
 #include "numericconverter.h"
 #include "spssimportcolumn.h"
@@ -39,7 +40,7 @@ class SPSSImportDataSet : public ImportDataSet
 public:
 	typedef std::map<std::string, size_t> LongColsData;
 
-	SPSSImportDataSet();
+	SPSSImportDataSet(SPSSImporter* importer);
 	virtual ~SPSSImportDataSet();
 
 	void add(size_t dictIndex, SPSSImportColumn *column);

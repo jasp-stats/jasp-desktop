@@ -34,14 +34,11 @@ typedef enum e_odsDataType
 	odsType_boolean,
 	odsType_string,
 	odsType_date,
-	odsType_time,
-#ifndef QT_NO_DEBUG
-	_numOdsTypes
-#endif
+	odsType_time
 } XmlDatatype;
 
 #ifndef QT_NO_DEBUG
-extern const char * const ODSTYPE_STR[_numOdsTypes];
+extern const char * const ODSTYPE_STR[];
 #endif
 
 

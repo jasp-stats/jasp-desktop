@@ -21,12 +21,14 @@
 #include <boost/foreach.hpp>
 
 #include "options/options.h"
+#include "tempfiles.h"
+#include "appinfo.h"
 
 using namespace boost::uuids;
 using namespace boost;
 using namespace std;
 
-Analysis::Analysis(int id, string name, Options *options, Version version, bool autorun, bool usedata)
+Analysis::Analysis(int id, string name, Options *options, const Version &version, bool autorun, bool usedata)
 {
 	_id = id;
 	_name = name;
@@ -34,12 +36,16 @@ Analysis::Analysis(int id, string name, Options *options, Version version, bool 
 	_autorun = autorun;
 	_usedata = usedata;
 	_version = version;
-
+	_results = Json::nullValue;
+	_imgResults = Json::nullValue;
+	_userData = Json::nullValue;
+	_saveImgOptions = Json::nullValue;
 	_revision = 0;
 
 	_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this, _1));
 
 	_status = Empty;
+	_progress = -1;
 }
 
 Analysis::~Analysis()
@@ -62,9 +68,10 @@ void Analysis::scheduleRun()
 	optionsChanged(this);
 }
 
-void Analysis::setResults(Json::Value results)
+void Analysis::setResults(Json::Value results, int progress)
 {
 	_results = results;
+	_progress = progress;
 	resultsChanged(this);
 }
 
@@ -124,6 +131,7 @@ Json::Value Analysis::asJSON() const
 
 	analysisAsJson["id"] = _id;
 	analysisAsJson["name"] = _name;
+	analysisAsJson["progress"] = _progress;
 	analysisAsJson["version"] = _version.asString();
 	analysisAsJson["results"] = _results;
 
@@ -193,6 +201,11 @@ Analysis::Status Analysis::status() const
 
 void Analysis::setStatus(Analysis::Status status)
 {
+	if ((status == Analysis::Running || status == Analysis::Initing) && _version != AppInfo::version)
+	{
+		tempfiles_deleteList(tempfiles_retrieveList(_id));
+		_version = AppInfo::version;
+	}
 	_status = status;
 }
 
