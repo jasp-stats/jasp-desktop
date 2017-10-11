@@ -25,7 +25,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   stateKey <- list(
     rma.fit = fitOpts,
     dataset= fitOpts,
-    coefficients = c(fitOpts, "regressionCoefficientsEstimates", "regressionCoefficientsConfidenceIntervals"),
+    coefficients = c(fitOpts, "regressionCoefficientsEstimates"),
     fitStats = c(fitOpts, "modelFit"),
     residPars = c(fitOpts, "residualsParameters"),
     coeffVcov = c(fitOpts, "regressionCoefficientsCovarianceMatrix"),
@@ -35,7 +35,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     fsn.fit = c(fitOpts, "plotResidualsCovariates"),
     forestPlot = c(fitOpts, "forestPlot"),
     funnelPlot = c(fitOpts, "funnelPlot"),
-    diagnosticsPlot = c(fitOpts, "plotResidualsDependent"),
+    diagnosticsPlot = c(fitOpts, "plotResidualsDependent", "plotResidualsQQ"),
     profilePlot = c(fitOpts, "plotResidualsPredicted"),
     trimfillPlot = c(fitOpts, "trimfillPlot")
   )
@@ -200,11 +200,13 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     fields <- list(
       list(name = "name", type = "string", title = " "),
       list(name = "estimate", type = "number", format = "sf:4;dp:3", title = "Estimate"),
-      list(name = "se", type = "number", format = "sf:4;dp:3", title = "Std. Error"),
-      list(name = "zval", type = "number", format = "sf:4;dp:3", title = "z value"),
-      list(name = "pval", type = "number", format = "dp:3;p:.001", title = "Pr(>|z|)"),
-      list(name = "ci.lb", type = "number", format = "sf:4;dp:3", title = "Lower Bound"),
-      list(name = "ci.ub", type = "number", format = "sf:4;dp:3", title = "Upper Bound")
+      list(name = "se", type = "number", format = "sf:4;dp:3", title = "Standard Error"),
+      list(name = "zval", type = "number", format = "sf:4;dp:3", title = "z"),
+      list(name = "pval", type = "number", format = "dp:3;p:.001", title = "p"),
+      list(name = "ci.lb", type = "number", format = "sf:4;dp:3", title = "Lower Bound", 
+        overTitle=paste0(options$regressionCoefficientsConfidenceIntervalsInterval, "% Confidence interval")),
+      list(name = "ci.ub", type = "number", format = "sf:4;dp:3", title = "Upper Bound", 
+        overTitle=paste0(options$regressionCoefficientsConfidenceIntervalsInterval, "% Confidence interval"))
     )
     if (!options$regressionCoefficientsConfidenceIntervals)
       fields = fields[1:5] # remove confidence interval bounds
@@ -250,14 +252,27 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   ### Prepare Model fit table output ####
   
-  if (options$modelFit && (! is.null(fitStats) || run && can.run)) {
+  if (options$modelFit) {
     
     meta[[length(meta)+1]] <- list(name = "modelFit", type = "table")
-    if (is.null(fitStats)) {
+    title <- "Fit measures"
+    cols <- options$method
+    rows <- c("Log-likelihood", "Deviance", "AIC", "BIC", "AICc")
+    
+    if (is.null(fitStats) && run && can.run)
       fitStats <- try(metafor:::fitstats(rma.fit))
+    
+    table <- list(title = title)
+    if (! is.null(fitStats)) {
+      table$x <- fitStats
+      rownames(table$x) <- rows
+    } else {
+      table$x <- cols
+      table$y <- rows
     }
+    
     #if (inherits(df, "try-error"))  df = structure(list(rep(".",3)), .Names = options$method, row.names = c("logLik","AIC","BIC"), class="data.frame")
-    fittable <- as.jaspTable(fitStats, title = "Fit measures")
+    fittable <- do.call(as.jaspTable, table)
     results[["modelFit"]] <- fittable
     
   }
@@ -265,35 +280,55 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   ### Prepare Residuals Parameters ####
   
-  if (options$residualsParameters && (! is.null(residPars) || run && can.run)) { 
+  if (options$residualsParameters) { 
     
+    if (options$method == "FE") break # no confidence intervals for tau^2 FIXME: have to do this more gracefully
+        
     meta[[length(meta) + 1]] <- list(name = "residPars", type = "table")
+    options(jasp_number_format = "sf:5;dp:4")
+    title <- "Residual Heterogeneity Estimates"
+    cols <- c("Estimate", "Lower Bound", "Upper Bound")
+    rows <- c("<em>&tau;&sup2;</em>", "<em>&tau;</em>", "<em>I&sup2;</em> (%)", "<em>H&sup2;</em>")
     
-    if(options$method == "FE") break # no confidence intervals for tau^2 FIXME: have to do this more gracefully
-    
-    if (is.null(residPars)) {
+    if (is.null(residPars) && run && can.run)
       residPars = confint(rma.fit, digits = 12, level = options$regressionCoefficientsConfidenceIntervalsInterval)$random
-      colnames(residPars) = c("Estimate", "Lower Bound", "Upper Bound")
-      rownames(residPars) = c("<em>&tau;&sup2;</em>", "<em>&tau;</em>", "<em>I&sup2;</em> (%)", "<em>H&sup2;</em>")
+    
+    table <- list(title = title)
+    if (! is.null(residPars)) {
+      table$x <- residPars
+      colnames(table$x) <- cols
+      rownames(table$x) <- rows
+    } else {
+      table$x <- cols
+      table$y <- rows
     }
     
-    options(jasp_number_format = "sf:5;dp:4")
-    residParTable = as.jaspTable(residPars, title = "Residual Heterogeneity Estimates")
-    results[["residPars"]] <- residParTable
+    residParsTable = do.call(as.jaspTable, table) # FIXME: we want an overtitle above upper/lower bounds
+    results[["residPars"]] <- residParsTable
     
   }
   
   
   ### Prepare Coefficient Covariance Matrix ####
   
-  if (options$regressionCoefficientsCovarianceMatrix && (! is.null(coeffVcov) || run && can.run)) { 
+  if (options$regressionCoefficientsCovarianceMatrix) { 
     
     meta[[length(meta) + 1]] <- list(name = "vcov", type = "table")
-    options(jasp_number_format = "sf:5;dp:4")
-    if (is.null(coeffVcov)) {
+    options(jasp_number_format = "sf:5;dp:4")    
+    title <- "Parameter Covariances"
+    
+    if (is.null(coeffVcov) && run && can.run)
       coeffVcov <- vcov(rma.fit)
+    
+    table <- list(title = title)
+    if (! is.null(coeffVcov)) {
+      table$x <- coeffVcov
+    } else {
+      table$x <- "..."
+      table$y <- "..."
     }
-    vcovTable = as.jaspTable(coeffVcov, title = "Parameter Covariances")
+    
+    vcovTable = do.call(as.jaspTable, table)
     results[["vcov"]] <- vcovTable
     
   }
@@ -301,19 +336,28 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   ### Prepare Rank test for Funnel plot asymmetry ####
   
-  if (options$rSquaredChange && (! is.null(ranktst) || run && can.run)) { 
+  if (options$rSquaredChange) { 
     
     meta[[length(meta) + 1]] <- list(name = "ranktest", type = "table")
-    
-    if (is.null(ranktst)) {
-      ranktst = unlist(metafor::ranktest(rma.fit))
-    }
-    rankTestTable = as.data.frame(t(ranktst[1:2]))
-    rownames(rankTestTable) = "Rank test"
-    colnames(rankTestTable) = c("Kendall's &tau;", "Pr(>|&tau;|)")
-    
     options(jasp_number_format = "sf:5;dp:4")
-    rankTestTable = as.jaspTable(rankTestTable, title = "Rank correlation test for Funnel plot asymmetry")
+    title <- "Rank correlation test for Funnel plot asymmetry"
+    cols <- c("Kendall's &tau;", "p")
+    rows <- "Rank test"
+    
+    if (is.null(ranktst) && run && can.run)
+      ranktst <- unlist(metafor::ranktest(rma.fit))
+    
+    table <- list(title = title)
+    if (! is.null(ranktst)) {
+      table$x <- as.data.frame(t(ranktst[1:2]))
+      rownames(table$x) <- rows
+      colnames(table$x) <- cols
+    } else {
+      table$x <- cols
+      table$y <- rows
+    }
+    
+    rankTestTable <- do.call(as.jaspTable, table)
     results[["ranktest"]] <- rankTestTable
     
   }
@@ -321,20 +365,26 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   ### Prepare Egger's test for Funnel plot asymmetry ('test for publication bias') ####
   
-  if (options$funnelPlotAsymmetryTest && (! is.null(egger) || run && can.run)) {
+  if (options$funnelPlotAsymmetryTest) {
     
     meta[[length(meta) + 1]] <- list(name = "egger", type = "table")
-    if (is.null(egger)) {
+    options(jasp_number_format = "sf:5;dp:4")
+    title <- "Regression test for Funnel plot asymmetry (\"Egger's test\")"
+    cols <- c("z", "p")
+    
+    if (is.null(egger) && run && can.run)
       egger <- metafor::regtest(rma.fit)
+    
+    table <- list(title = title)
+    if (! is.null(egger)) {
+      table$x <- coef(summary(egger$fit))[egger$predictor, c("zval", "pval")]
+      colnames(table$x) <- cols
+    } else {
+      table$x <- cols
     }
     
-    eggerTable <- coef(summary(egger$fit))[egger$predictor, c("zval", "pval")]
-    colnames(eggerTable) <- c("z value", "Pr(>|z|)")
-    options(jasp_number_format = "sf:5;dp:4")
-    eggerTable <- as.jaspTable(eggerTable, title = "Regression test for Funnel plot asymmetry (\"Egger's test\")")
-
+    eggerTable <- do.call(as.jaspTable, table)
     eggerTable[["citation"]] <- list("Viechtbauer, W. (2010). Conducting meta-analyses in R with the metafor package. <em>Journal of Statistical Software</em>, <b>36</b>(3), 1–48.")
-    
     results[["egger"]] <- eggerTable
     
   }
@@ -342,17 +392,26 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   ### Prepare Casewise diagnostics table ####
   
-  if (options$residualsCasewiseDiagnostics && (! is.null(influ) || run && can.run)) { 
+  if (options$residualsCasewiseDiagnostics) { 
     
     meta[[length(meta) + 1]] <- list(name = "influence", type = "table")
-    
-    if (is.null(influ)) {
-      influ = influence(rma.fit) 
-    }
-    influTable = cbind(influ$inf, influential = ifelse(influ$is.infl,"*",""))
-    
     options(jasp_number_format = "sf:5;dp:4")
-    influTable = as.jaspTable(.clean(influTable), title = "Influence Measures")
+    title <- "Influence Measures"
+    cols <- c("Std. Residual", "DFFITS", "Cook's Distance", "Cov. Ratio", 
+              "&tau;&sup2;<sub>(-i)</sub>", "Q<sub>E(-i)</sub>", "Hat", "Weight", "Influential")
+    
+    if (is.null(influ) && run && can.run)
+      influ = influence(rma.fit) 
+    
+    table <- list(title = title)
+    if (! is.null(influ)) {
+      table$x <- cbind(influ$inf, influential = ifelse(influ$is.infl, "*", "")) #FIXME maybe add the stars to the cases?
+      colnames(table$x) <- cols
+    } else {
+      table$x <- cols
+    }
+    
+    influTable = do.call(as.jaspTable, table)
     results[["influence"]] <- influTable
     
   }
@@ -360,20 +419,27 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   ### Prepare Fail-safe N diagnostics table ####
   
-  if (options$plotResidualsCovariates && (! is.null(fsn.fit) || run && can.run)) { 
+  if (options$plotResidualsCovariates) { 
     
     meta[[length(meta) + 1]] <- list(name = "failsafen", type = "table")
+    options(jasp_number_format = "sf:5;dp:4")
+    title <- "File Drawer Analysis"
+    cols <- c("Fail-safe N", "&alpha;", "p")
     
-    if (is.null(fsn.fit)) {
+    if (is.null(fsn.fit) && run && can.run)
       fsn.fit <- metafor::fsn(yi = get(effsizeName), sei = get(stderrName), 
         data = dataset, digits = 12)
-    }
-    failsnTable <- do.call(data.frame, fsn.fit[c('fsnum','alpha','pval')])
-    colnames(failsnTable) = c('Fail-safe N', '&alpha;', 'Pr(>|z|)')
-    rownames(failsnTable) = fsn.fit[['type']]
     
-    options(jasp_number_format = "sf:5;dp:4")
-    influTable = as.jaspTable(.clean(failsnTable), title = "File Drawer Analysis")
+    table <- list(title = title)
+    if (! is.null(fsn.fit)) {
+      table$x <- do.call(data.frame, fsn.fit[c('fsnum','alpha','pval')])
+      colnames(table$x) <- cols
+      rownames(table$x) <- fsn.fit[["type"]]
+    } else {
+      table$x <- cols
+    }
+    
+    influTable = do.call(as.jaspTable, table)
     results[["failsafen"]] <- influTable
     
   }
@@ -549,15 +615,18 @@ qTestsTable <- function(object) {
   # Define table schema
   fields <- list(
     list(name = "name", type = "string", title = " "),
-    list(name = "qstat", type = "number", format = "sf:4;dp:3", title = "Q statistic"),
-    list(name = "df", type = "integer", format = "sf:4;dp:3", title = "Df"),
-    list(name = "pval", type = "number", format = "dp:3;p:.001", title = "Pr(>|&chi;&sup2;|)")
+    list(name = "qstat", type = "number", format = "sf:4;dp:3", title = "Q"),
+    list(name = "df", type = "integer", format = "sf:4;dp:3", title = "df"),
+    list(name = "pval", type = "number", format = "dp:3;p:.001", title = "p")
   )
   
   # Empty table.
   table[["schema"]] <- list(fields = fields) 
   table[["title"]] <- "Fixed and Random Effects"
-  table[["data"]] <- list(list(name="", qstat=".", df=".", pval = "."))
+  table[["data"]] <- list(
+    list(name="Omnibus test of Model Coefficients", qstat=".", df=".", pval = "."),
+    list(name="Test of Residual Heterogeneity", qstat=".", df=".", pval = ".")
+  )
   
   # Return empty table if no fit has been done
   if (is.null(object$QE)) return(table)
@@ -624,7 +693,7 @@ as_jaspTable.data.frame <- function(x, title = "", ...) {
     if(is.null(x[[name]])) 
       return(list(name = "name", type = "string", format = NULL, title = ""))
     y = x[[name]]
-    type = if (!is.numeric(y)) "string" else "number"
+    type = if (!is.numeric(y)) "string" else "number" #FIXME: integers and p values are distinct
     list(name = name, type = type, format = options(paste0("jasp_",type,"_format"))[[1]], title = name)
   })
   jaspTable[["schema"]] <- list(fields = fields) 
@@ -641,6 +710,16 @@ as_jaspTable.data.frame <- function(x, title = "", ...) {
     jaspTable[["data"]]  <- structure(jasp.table, .Names=NULL)
   }
   jaspTable
+}
+
+as_jaspTable.character <- function(x, y = NULL, ...) {
+  table <- as.data.frame(matrix(".", ncol = length(x), nrow = length(y)))
+  
+  colnames(table) <- x
+  if (! is.null(y))
+    rownames(table) <- y
+    
+  as.jaspTable(table, ...)
 }
 
 as_jaspTable.matrix <- function(x, ...) {
