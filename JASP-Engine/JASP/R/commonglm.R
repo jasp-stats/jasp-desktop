@@ -688,7 +688,7 @@
   if (chisq == 0) {
     p <- NULL
   } else {
-    p <- dchisq(chisq, df)
+    p <- 1-pchisq(chisq, df)
   }
   return(list(stat = chisq, df = df, pval = p))
 }
