@@ -100,28 +100,18 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	title <- "One Sample T-Test"
 
 	## get the right title and test statistic for the table
-
 	if (wantsWilcox && onlyTest) {
-		#title <- "Mann-Whitney U Test"
-		testname <- "Wilcoxon signed-rank test"
-		testTypeFootnote <- paste0(testname, ".")
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Wilcoxon signed-rank test.")
 		testStat <- "V"
-
-		## additionally, Wilcoxon's test doesn't have degrees of freedoms
-		fields <- fields[-2]
+		fields <- fields[-2] #Wilcoxon's test doesn't have degrees of freedoms
 		nameOfLocationParameter <- "Hodges-Lehmann Estimate"
 		nameOfEffectSize <- "Rank-Biserial Correlation"
 	} else if (wantsStudents && onlyTest) {
-		#title <- "Student's T-Test"
-		testname <- "Student's t-test"
-		testTypeFootnote <- paste0(testname, ".")
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Student's t-test.")
 		testStat <- "t"
 		nameOfLocationParameter <- "Mean Difference"
 		nameOfEffectSize <- "Cohen's d"
 	} else {
-		# title <- "One Sample T-Test"
 		testStat <- "Statistic"
 		nameOfLocationParameter <-  "Location Parameter"
 		nameOfEffectSize <-  "Effect Size"

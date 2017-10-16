@@ -99,30 +99,17 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 	footnotes <- .newFootnotes()
 
 	## get the right statistics for the table and, if only one test type, add footnote
-
 	if (wantsWilcox && onlyTest) {
-
-		testname <- "Mann-Whitney U Test"
-		testTypeFootnote <- paste0(testname, ".")
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Mann-Whitney U test.")
 		testStat <- "W"
-		## additionally, Wilcoxon's test doesn't have degrees of freedoms
-		fields <- fields[-3]
-		
+		fields <- fields[-3] # Wilcoxon's test doesn't have degrees of freedoms
 	} else if (wantsWelchs && onlyTest) {
-
-		testname <- "Welch's T-Test"
-		testTypeFootnote <- paste0(testname, ".")
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
-		testStat <- "t"
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Welch's t-test.")
+		testStat <- "t"	
 	} else if (wantsStudents && onlyTest) {
-
-		testname <- "Student's T-Test"
-		testTypeFootnote <- paste0(testname, ".")
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Student's t-test.")
 		testStat <- "t"
 	} else {
-
 		testStat <- "Statistic"
 	}
 

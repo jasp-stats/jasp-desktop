@@ -92,21 +92,13 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 
 	## get the right statistics for the table and, if only one test type, add footnote
 	if (wantsWilcox && onlyTest) {
-
-		testname <- "Wilcoxon signed-rank test"
-		testTypeFootnote <- paste0(testname, ".")
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Wilcoxon signed-rank test.")
 		testStat <- "W"
-		## additionally, Wilcoxon's test doesn't have degrees of freedoms
-		fields <- fields[-4]
+		fields <- fields[-4] #Wilcoxon's test doesn't have degrees of freedoms
 		nameOfLocationParameter <- "Hodges-Lehmann Estimate"
 		nameOfEffectSize <- "Rank-Biserial Correlation"
 	} else if (wantsStudents && onlyTest) {
-
-		testname <- "Student's t-test"
-		testTypeFootnote <- paste0(testname, ".")
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
-
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Student's t-test.")
 		testStat <- "t"
 		nameOfLocationParameter <- "Mean Difference"
 		nameOfEffectSize <- "Cohen's d"
