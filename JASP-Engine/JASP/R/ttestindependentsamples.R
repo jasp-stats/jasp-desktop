@@ -350,40 +350,26 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 							sed <-  .clean((as.numeric(r$estimate[1]) - as.numeric(r$estimate[2]))/stat)
 							confIntEffSize <- c(0,0)
 							if (wantsConfidenceEffSize){
-							  signT <- sign(stat)
-							  stat <- abs(stat)
-							  if(direction == "two.sided") {
-  							  end1 = stat
-  							  while( pt(q=stat,df=df,ncp=end1) > (1-ciEffSize)/2 ){
-  							    end1 <- end1 + abs(end1)
-  							  }
-  							  ncp1 = uniroot(function(x) (1-ciEffSize)/2-pt(q=stat,df=df,ncp=x),
-  							                 c(2*stat-end1,end1))$root
-  							  end2 = stat
-  							  while( pt(q=stat,df=df,ncp=end2) < (1+ciEffSize)/2 ){
-  							    end2 <- end2 - abs(stat)
-  							  }
-  							  ncp2 = uniroot(function(x) (1+ciEffSize)/2-pt(q=stat,df=df,ncp=x),
-  							                 c(end2,2*stat-end2))$root
-  							  confIntEffSize = sort(c(signT*ncp1*sqrt(1/ns[1]+1/ns[2]),  signT*ncp2*sqrt(1/ns[1]+1/ns[2]) ))
-							  } else if (direction == "greater"){
-							    end1 = stat
-							    while( pt(q=stat,df=df,ncp=end1) > (1-ciEffSize)/2 ){
-							      end1 <- end1 + abs(end1)
-							    }
-							    ncp1 = uniroot(function(x) (1-ciEffSize)/2-pt(q=stat,df=df,ncp=x),
-							                   c(2*stat-end1,end1))$root
-							    confIntEffSize <- sort(c(ncp1/sqrt(df)* signT, Inf))
-							  }else if(direction == "less"){
-							    end2 = stat
-							    while( pt(q=stat,df=df,ncp=end2) < (1+ciEffSize)/2 ){
-							      end2 <- end2 - abs(stat)
-							    }
-							    ncp2 = uniroot(function(x) (1+ciEffSize)/2-pt(q=stat,df=df,ncp=x),
-							                   c(end2,2*stat-end2))$root
-							    confIntEffSize <- sort(c(ncp2/sqrt(df)* signT, -Inf))
-							  }
-							  stat <- stat * signT
+							  alphaLevels <- sort( c( (1-ciEffSize), ciEffSize ) )
+							  
+							  if (direction == "two.sided") {
+							    alphaLevels[1] <- (1-ciEffSize) / 2
+							    alphaLevels[2] <- (ciEffSize + 1) / 2
+							  } 
+							  
+							  upperBound = abs(stat) * 10
+							  lowerBound = -upperBound
+							  ncp1 = uniroot(function(x) alphaLevels[1] - pt(q=stat,df=df,ncp=x),
+							                 c(lowerBound, upperBound))$root
+							  ncp2 = uniroot(function(x) alphaLevels[2] - pt(q=stat,df=df,ncp=x),
+							                 c(lowerBound, upperBound))$root
+							  confIntEffSize = sort(c(ncp1*sqrt(1/ns[1]+1/ns[2]),  ncp2*sqrt(1/ns[1]+1/ns[2]) ))[order(c(1-ciEffSize, ciEffSize ))]
+							  if (direction == "greater") {
+							    confIntEffSize[2] <- Inf
+							  } else if (direction == "less") 
+							    confIntEffSize[1] <- -Inf
+							  
+							  confIntEffSize <- sort(confIntEffSize)
 							}
 						}
 
