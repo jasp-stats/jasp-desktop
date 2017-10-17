@@ -357,12 +357,20 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 							    alphaLevels[2] <- (ciEffSize + 1) / 2
 							  } 
 							  
-							  upperBound = abs(stat) * 10
-							  lowerBound = -upperBound
-							  ncp1 = uniroot(function(x) alphaLevels[1] - pt(q=stat,df=df,ncp=x),
-							                 c(lowerBound, upperBound))$root
-							  ncp2 = uniroot(function(x) alphaLevels[2] - pt(q=stat,df=df,ncp=x),
-							                 c(lowerBound, upperBound))$root
+							  end1 <- abs(stat)
+							  while( pt(q=stat,df=df,ncp=end1) > alphaLevels[1]){
+							    end1 = end1 * 2
+							  }
+							  ncp1 <- uniroot(function(x) alphaLevels[1] - pt(q=stat, df=df, ncp=x),
+							                  c(2*stat-end1,end1))$root
+				
+							  end2 = -abs(stat)
+							  while( pt(q=stat,df=df,ncp=end2) < alphaLevels[2]){
+							    end2 = end2 * 2
+							  }
+							  ncp2 <- uniroot(function(x) alphaLevels[2] - pt(q=stat, df=df, ncp=x),
+							                  c(end2,2*stat-end2))$root
+							  
 							  confIntEffSize = sort(c(ncp1*sqrt(1/ns[1]+1/ns[2]),  ncp2*sqrt(1/ns[1]+1/ns[2]) ))[order(c(1-ciEffSize, ciEffSize ))]
 							  if (direction == "greater") {
 							    confIntEffSize[2] <- Inf

@@ -302,13 +302,20 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 							    alphaLevels[2] <- (percentConfidenceEffSize + 1) / 2
 							  } 
 							  
-							  
-							  upperBound = abs(t) * 10
-							  lowerBound = -upperBound
+							  end1 <- abs(t)
+							  while( pt(q=t,df=df,ncp=end1) > alphaLevels[1]){
+							    end1 = end1 * 2
+							  }
 							  ncp1 <- uniroot(function(x) alphaLevels[1] - pt(q=t, df=df, ncp=x),
-							                  c(lowerBound, upperBound))$root
+							                  c(2*t-end1,end1))$root
+							  
+							  end2 = -abs(t)
+							  while( pt(q=t,df=df,ncp=end2) < alphaLevels[2]){
+							    end2 = end2 * 2
+							    # end2 <- end2 - abs(t)
+							  }
 							  ncp2 <- uniroot(function(x) alphaLevels[2] - pt(q=t, df=df, ncp=x),
-							                  c(lowerBound, upperBound))$root						    
+							                  c(end2,2*t-end2))$root						    
 							  confIntEffSize <- sort(c(ncp1/sqrt(n), ncp2/sqrt(n)))[order(c(1-percentConfidenceEffSize, percentConfidenceEffSize ))]
 							  
 							  if (direction == "greater") {
