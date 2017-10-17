@@ -108,9 +108,49 @@ def create_module_ribbon(module, ribbon):
     print('     Created Ribbon Ui')
 
 
-def create_layout_files(module, analyses):
-    pass
+def create_layout_files(module, ribbon):
+    ''' Create layout files for each analysis '''
+    print('2. Layout Files')
 
+    analysis_path = current_path + '/../../JASP-Desktop/analysisforms/{0}/'.format(module)
+
+    # Read layout.h template
+    with open(current_path + '/templates/layout.h', 'r') as f:
+        layout_header = f.read()
+    # Read layout.cpp template
+    with open(current_path + '/templates/layout.cpp', 'r') as f:
+        layout_source = f.read()
+    # Read layout.ui template
+    with open(current_path + '/templates/layout.ui', 'r') as f:
+        layout_ui = f.read()
+
+    for obj in ribbon:
+        analyses = obj.get('analyses')
+        if analyses is None:
+            analyses = [obj['name']]
+
+        for analysis in analyses:
+            # FIXME: Write more general statements, use regex
+            # FIXME: Handle duplicate ribbon and analyses names
+            analysis_name = analysis.replace('-', '')
+            analysis_name = analysis_name.replace(' ', '')
+            analysis_name = module + analysis_name + 'Form'
+
+            analysis_header = layout_header.format(analysis_name.upper(), analysis_name, analysis_name.lower())
+            analysis_source = layout_source.format(analysis_name.upper(), analysis_name, analysis_name.lower())
+            analysis_ui = layout_ui.format(analysis_name.upper(), analysis_name, analysis_name.lower())
+
+            # Create ribbon.cpp
+            with open(analysis_path + analysis_name.lower() + '.h', 'w+') as f:
+                f.write(analysis_header)
+            # Create ribbon.cpp
+            with open(analysis_path + analysis_name.lower() + '.cpp', 'w+') as f:
+                f.write(analysis_source)
+            # Create ribbon.cpp
+            with open(analysis_path + analysis_name.lower() + '.ui', 'w+') as f:
+                f.write(analysis_ui)
+
+            print('     Created {0} Files'.format(analysis))
 
 def modify_mainwindow(module, analyses):
     pass
