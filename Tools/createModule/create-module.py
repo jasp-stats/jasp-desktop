@@ -183,8 +183,35 @@ def create_resource_files(module, ribbon):
             print('    Created {0} resource file'.format(analysis))
 
 
-def create_analyses_files(module, analyses):
-    pass
+def create_analyses_files(module, ribbon):
+    ''' Create Analyses files '''
+    print('- Analyses Files')
+
+    analysis_path = current_path + '/../../JASP-Engine/JASP/R/'
+
+    # Read analysis.R template
+    with open(current_path + '/templates/analysis.R', 'r') as f:
+        analysis_source = f.read()
+
+    for obj in ribbon:
+        analyses = obj.get('analyses')
+        if analyses is None:
+            analyses = [obj['name']]
+
+        for analysis in analyses:
+            # FIXME: Write more general statements, use regex
+            # FIXME: Handle duplicate ribbon and analyses names
+            analysis_name = analysis.replace('-', '')
+            analysis_name = analysis_name.replace(' ', '')
+            analysis_name = module + analysis_name
+
+            analysis_source = analysis_source.format(analysis_name, analysis)
+
+            # Create resource file
+            with open(analysis_path + analysis_name.lower() + '.R', 'w+') as f:
+                f.write(analysis_source)
+
+            print('    Created {0} analysis file'.format(analysis))
 
 
 def create_new_module():
