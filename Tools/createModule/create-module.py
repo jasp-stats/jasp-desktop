@@ -11,7 +11,7 @@ menu_selected_slot = '<!-- menuItemSelectedSlot -->'
 
 def create_module_ribbon(module, ribbon):
     ''' Create ribbon files for the new module- .ui, .h, .cpp '''
-    print('1. {0} Ribbon'.format(module))
+    print('- {0} Ribbon'.format(module))
     ribbon_path = current_path + '/../../JASP-Desktop/ribbons/'
     # Read ribbon.h template
     with open(current_path + '/templates/ribbon.h', 'r') as f:
@@ -23,7 +23,7 @@ def create_module_ribbon(module, ribbon):
     ribbon_filename = 'ribbon{0}'.format(module.lower())
     with open(ribbon_path + ribbon_filename + '.h', 'w+') as f:
         f.write(ribbon_header)
-    print('     Created Ribbon Header')
+    print('    Created Ribbon Header')
 
     # Read ribbon.cpp template
     with open(current_path + '/templates/ribbon.cpp', 'r') as f:
@@ -72,7 +72,7 @@ def create_module_ribbon(module, ribbon):
     # Create ribbon.cpp
     with open(ribbon_path + ribbon_filename + '.cpp', 'w+') as f:
         f.write(ribbon_source)
-    print('     Created Ribbon Source')
+    print('    Created Ribbon Source')
 
     # Read ribbon.ui template
     with open(current_path + '/templates/ribbon.ui', 'r') as f:
@@ -105,12 +105,12 @@ def create_module_ribbon(module, ribbon):
     # Create ribbon.ui
     with open(ribbon_path + ribbon_filename + '.ui', 'w+') as f:
         f.write(ribbon_ui)
-    print('     Created Ribbon Ui')
+    print('    Created Ribbon Ui')
 
 
 def create_layout_files(module, ribbon):
     ''' Create layout files for each analysis '''
-    print('2. Layout Files')
+    print('- Layout Files')
 
     analysis_path = current_path + '/../../JASP-Desktop/analysisforms/{0}/'.format(module)
 
@@ -150,14 +150,37 @@ def create_layout_files(module, ribbon):
             with open(analysis_path + analysis_name.lower() + '.ui', 'w+') as f:
                 f.write(analysis_ui)
 
-            print('     Created {0} Files'.format(analysis))
+            print('    Created {0} Files'.format(analysis))
 
 def modify_mainwindow(module, analyses):
     pass
 
 
-def create_resource_files(module, analyses):
-    pass
+def create_resource_files(module, ribbon):
+    ''' Create options resource files for each analysis '''
+    print('- Resrouce Files')
+
+    resource_path = current_path + '/../../Resources/Library/'
+
+    for obj in ribbon:
+        analyses = obj.get('analyses')
+        if analyses is None:
+            analyses = [obj['name']]
+
+        for analysis in analyses:
+            # FIXME: Write more general statements, use regex
+            # FIXME: Handle duplicate ribbon and analyses names
+            analysis_name = analysis.replace('-', '')
+            analysis_name = analysis_name.replace(' ', '')
+            analysis_name = module + analysis_name
+
+            content = '{{\n\t"name": "{0}",\n\t"autorun": true,\n\t"version": "1.0",\n\t"options": []\n}}'.format(analysis_name)
+
+            # Create resource file
+            with open(resource_path + analysis_name + '.json', 'w+') as f:
+                f.write(content)
+
+            print('    Created {0} resource file'.format(analysis))
 
 
 def create_analyses_files(module, analyses):
@@ -186,9 +209,9 @@ def create_new_module():
 
             create_module_ribbon(module_name, module['ribbon'])
             create_layout_files(module_name, module['ribbon'])
-            modify_mainwindow(module_name, module['ribbon'])
             create_resource_files(module_name, module['ribbon'])
             create_analyses_files(module_name, module['ribbon'])
+            modify_mainwindow(module_name, module['ribbon'])
 
 if __name__ == '__main__':
     create_new_module()
