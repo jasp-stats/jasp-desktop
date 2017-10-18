@@ -66,6 +66,8 @@
 
 #include "analysisforms/R11tLearn/r11tlearnform.h"
 
+///// 1-analyses headers
+
 #include <QDebug>
 #include <QWebFrame>
 #include <QFile>
@@ -150,6 +152,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->ribbonR11tLearn->setDataSetLoaded(false);
 	ui->ribbonSummaryStatistics->setDataSetLoaded(false);
 	ui->ribbonMetaAnalysis->setDataSetLoaded(false);
+///// 2-ribbon setDataSetLoaded
 
 #ifdef QT_DEBUG
 	ui->webViewResults->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
@@ -198,6 +201,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonSummaryStatistics, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonMetaAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonNetworkAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
+///// 3-connect ribbon itemSelected
 	connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
 	connect(ui->variablesPage, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
@@ -631,9 +635,9 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 
 	QString caption = "Save JASP Image";
 	QString filter = "Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff)";
-    QString selectedFilter;
+	QString selectedFilter;
 
-    QString finalPath = QFileDialog::getSaveFileName(this, caption, QString(), filter, &selectedFilter);
+	QString finalPath = QFileDialog::getSaveFileName(this, caption, QString(), filter, &selectedFilter);
 	if (!finalPath.isEmpty())
 	{
 		if (selectedFilter == "Encapsulated PostScript (*.eps)")
@@ -794,6 +798,7 @@ AnalysisForm* MainWindow::loadForm(const string name)
 #endif
 	else if (name == "NetworkAnalysis")
 		form = new NetworkAnalysisForm(contentArea);
+///// 4-analysis if-else ladder
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
@@ -919,6 +924,7 @@ void MainWindow::tabChanged(int index)
 			const Module& module = Module::getModule(currentActiveTab);
 			ui->ribbon->setCurrentIndex(module.ribbonIndex());
 		}
+///// 5-ribbon tab number: 4
 	}
 }
 
@@ -1183,7 +1189,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 	if (showAnalysis)
 	{
-		ui->tabBar->setCurrentModuleActive();
+		ui->tabBar->setCurrentIndex(1);
 
 	}
 }
@@ -1293,7 +1299,9 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 	ui->ribbonR11tLearn->setDataSetLoaded(loaded);
 	ui->ribbonMetaAnalysis->setDataSetLoaded(loaded);
 	ui->ribbonNetworkAnalysis->setDataSetLoaded(loaded);
+///// 6-ribbon updateMenuEnabledDisabledStatus
 }
+
 
 void MainWindow::resultsPageLoaded(bool success)
 {

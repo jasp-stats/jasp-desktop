@@ -7,6 +7,13 @@ ribbon_button_replacement_text = '///// Ribbon Buttons and Menu'
 additional_headers = '///// additional Headers'
 add_buttons = '<!-- Add buttons -->'
 menu_selected_slot = '<!-- menuItemSelectedSlot -->'
+analyses_headers_replacement = '///// 1-analyses headers'
+ribbon_datasetloaded_replacement = '///// 2-ribbon setDataSetLoaded'
+ribbon_itemselected_replacement = '///// 3-connect ribbon itemSelected'
+if_else_ladder_replacement = '///// 4-analysis if-else ladder'
+tab_changed_ribbon_number = '///// 5-ribbon tab number:'
+ribbon_update_status_replacement = '///// 6-ribbon updateMenuEnabledDisabledStatus'
+ribbon_update_ui_replacement = '///// 7-ribbon updateUIFromOptions'
 
 
 def create_module_ribbon(module, ribbon):
@@ -152,7 +159,87 @@ def create_layout_files(module, ribbon):
 
             print('    Created {0} Files'.format(analysis))
 
-def modify_mainwindow(module, analyses):
+
+def modify_mainwindow(module, ribbon):
+    ''' Add analyses to mainwindow '''
+    # 1. Analyses headers
+    # 2. constructor - ribbon datasetloaded false
+    # 3. constructor - connect ribbon to itemSelected slot
+    # 4. Add analyses to if-else ladder
+    # 5. Add ribbon number to tabChanged
+    # 6. update menu (enabled) if dataset required by module
+    # 7. update ribbon from ui options
+
+    mainwindow_path = current_path + '/../../JASP-Desktop/mainwindow.cpp'
+    module_name = module.replace(' ', '')
+    analyses_headers = ''
+    analyses_if_else = ''
+    mainwindow_source = ''
+    with open(mainwindow_path, 'r') as f:
+        mainwindow_source = f.read()
+
+    for obj in ribbon:
+        analyses = obj.get('analyses')
+        if analyses is None:
+            analyses = [obj['name']]
+
+        for analysis in analyses:
+            # FIXME: Write more general statements, use regex
+            # FIXME: Handle duplicate ribbon and analyses names
+            analysis_name = analysis.replace('-', '')
+            analysis_name = analysis_name.replace(' ', '')
+            analysis_name = module_name + analysis_name
+            analyses_if_else += ('\telse if (name == "{0}")\n\t\tform = new {1}(contentArea);\n'.format(analysis_name, (analysis_name + 'Form')))
+
+            analysis_name += 'Form'
+            analyses_headers += ('#include "analysisforms/{0}/{1}.h"\n'.format(module_name, analysis_name.lower()))
+
+    analyses_headers += ('\n' + analyses_headers_replacement)
+    analyses_if_else += if_else_ladder_replacement
+
+    ribbon_datasetloaded = '\tui->ribbon{0}->setDataSetLoaded(false);\n'.format(module_name)
+    ribbon_datasetloaded += ribbon_datasetloaded_replacement
+
+    ribbon_itemselected = '\tconnect(ui->ribbon{0}, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));\n'.format(module_name)
+    ribbon_itemselected += ribbon_itemselected_replacement
+
+    for line in mainwindow_source.splitlines():
+        if tab_changed_ribbon_number in line:
+            next_tab_number = line.split()[-1]
+            replacement_text = '\t\telse if(currentActiveTab == "{0}")\n\t\t{{\n\t\t\tui->ribbon->setCurrentIndex({1});\n\t\t}}\n'.format(module, next_tab_number)
+            replacement_text += (tab_changed_ribbon_number + ' {0}'.format(str(int(next_tab_number) + 1)))
+
+            mainwindow_source = mainwindow_source.replace(line, replacement_text)
+            break
+
+    mainwindow_source = mainwindow_source.replace(analyses_headers_replacement, analyses_headers)
+    mainwindow_source = mainwindow_source.replace(ribbon_datasetloaded_replacement, ribbon_datasetloaded)
+    mainwindow_source = mainwindow_source.replace(ribbon_itemselected_replacement, ribbon_itemselected)
+    mainwindow_source = mainwindow_source.replace(if_else_ladder_replacement, analyses_if_else)
+
+    ribbon_update_status = '\tui->ribbon{0}->setDataSetLoaded(loaded);\n'.format(module_name)
+    ribbon_update_status += ribbon_update_status_replacement
+
+    mainwindow_source = mainwindow_source.replace(ribbon_update_status_replacement, ribbon_update_status)
+
+    # ribbon_update_ui_replacement
+    ribbon_update_ui = '\n\tQVariant variant_{name} = _settings.value("toolboxes/{name}", false);\n'.format(name=module_name)
+    ribbon_update_ui += ('\tif (variant_{name}.canConvert(QVariant::Bool) && variant_{name}.toBool())\n'.format(name=module_name))
+    ribbon_update_ui += ('\t\tui->tabBar->addTab("{module}");\n'.format(module=module))
+    ribbon_update_ui += ('\telse\n\t\tui->tabBar->removeTab("{module}");\n'.format(module=module))
+    ribbon_update_ui += ribbon_update_ui_replacement
+
+    mainwindow_source = mainwindow_source.replace(ribbon_update_ui_replacement, ribbon_update_ui)
+
+    # Write to mainwindow.cpp
+    with open(mainwindow_path, 'w') as f:
+        f.write(mainwindow_source)
+
+    print('- Modified mainwindow')
+
+
+def modify_tabbar(module, ribbon):
+    ''' Add analyses to tabbar.cpp '''
     pass
 
 
@@ -281,7 +368,8 @@ def create_new_module():
             create_resource_files(module_name, module['ribbon'])
             create_analyses_files(module_name, module['ribbon'])
             create_pri_file(module_name, module['ribbon'])
-            modify_mainwindow(module_name, module['ribbon'])
+            modify_mainwindow(module['name'], module['ribbon'])
+            modify_tabbar(module_name, module['ribbon'])
 
 if __name__ == '__main__':
     create_new_module()
