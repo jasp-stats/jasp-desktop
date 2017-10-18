@@ -1233,14 +1233,6 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	},
 
 	/** 
-	* A conditional check for the disabling of the resizing functionality.
-	* @return {Bollean} Disable condition result.
-	*/
-	resizeDisabled: function () {
-		return true;
-	},
-
-	/** 
 	* Renders the mouse resize button to the targeted DOM tree element. 
 	* @return {Object} 'this' for chaining.
 	*/
@@ -1298,7 +1290,6 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	* @return {Object} The object has a minWidth, minHeight, maxWidth, maxHeight properties.
 	*/
 	_mouseResizingStart: function (e) {
-		if (this.resizeDisabled()) return;
 
 		this.iX = e.pageX;
 		this.iY = e.pageY;
@@ -1319,7 +1310,6 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	},
 
 	resizeStart: function (w, h, silent) {
-		if (this.resizeDisabled()) return;
 		this.silent = silent;
 		this.resizing = true;
 		this.onResizeStart(w, h);
@@ -1345,9 +1335,7 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	},
 
 	resizeStop: function (w, h) {
-		if (!this.resizeDisabled()) {
-			this.model.setDim(w, h);		
-		}
+		this.model.setDim(w, h);		
 		this.resizing = false;
 		this.mouseResizing = false;
 		this.silent = false;
@@ -1372,7 +1360,7 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	},
 
 	setVisibility: function (value) {
-		if (value && ! this.resizeDisabled())
+		if (value)
 			this.$el.removeClass('jasp-hide');
 		else
 			this.$el.addClass('jasp-hide');
@@ -1381,7 +1369,7 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	_mouseup: function (e) {
 		if (!e || !e.data) return;
 		var self = e.data;
-		if (!self.resizeDisabled() && self.mouseResizing) {
+		if (self.mouseResizing) {
 			var limited = self._normaliseSize(self.iW + e.pageX - self.iX, self.iH + e.pageY - self.iY);
 			self.iW = limited.width;
 			self.iH = limited.height;
@@ -1392,7 +1380,7 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	_mousemove: function (e) {
 		if (!e || !e.data) return;
 		var self = e.data;
-		if (!self.resizeDisabled() && self.mouseResizing) {
+		if (self.mouseResizing) {
 			var limited = self._normaliseSize(self.iW + e.pageX - self.iX, self.iH + e.pageY - self.iY);
 			self.iW = limited.width;
 			self.iH = limited.height;

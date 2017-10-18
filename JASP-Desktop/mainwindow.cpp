@@ -701,17 +701,13 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 
 void MainWindow::analysisImageEditedHandler(Analysis *analysis)
 {
-    Json::Value results = analysis->getImgResults();
-    if (results.isNull())
-        return;
-
-    std::cout << "JSON string for use in Javascript" << std::endl;
-    std::cout << results << std::endl;
-
-    ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.reRenderAnalyses();");\
-
-    return;
-
+	Json::Value imgJson = analysis->getImgResults();
+	QString	results = tq(imgJson.toStyledString());
+	results = escapeJavascriptString(results);
+	results = "window.modifySelectedImage(" + QString::number(analysis->id()) + ", JSON.parse('" + results + "'));";
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(results);
+	
+  return;
 }
 
 AnalysisForm* MainWindow::loadForm(Analysis *analysis)

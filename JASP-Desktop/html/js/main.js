@@ -38,6 +38,12 @@ $(document).ready(function () {
 		analyses.reRender();
 	}
 
+	window.modifySelectedImage = function(id, image) {
+		var jaspWidget = analyses.getAnalysis(id);
+		jaspWidget.imageToEdit = image;
+		jaspWidget.render();
+	}
+	
 	window.select = function (id) {
 
 		if (selectedAnalysis != null)
