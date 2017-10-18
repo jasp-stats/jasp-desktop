@@ -17,7 +17,7 @@ HEADERS += \
     $$PWD/summarystatsttestbayesianpairedsamplesform.h
 
 FORMS += \
-$$PWD/../../ribbons/ribbonsummarystatistics.ui \
+    $$PWD/../../ribbons/ribbonsummarystatistics.ui \
     $$PWD/summarystatsbinomialtestbayesianform.ui \
     $$PWD/summarystatscorrelationbayesianpairsform.ui \
     $$PWD/summarystatsregressionlinearbayesianform.ui \

@@ -158,7 +158,7 @@ def modify_mainwindow(module, analyses):
 
 def create_resource_files(module, ribbon):
     ''' Create options resource files for each analysis '''
-    print('- Resrouce Files')
+    print('- Resource Files')
 
     resource_path = current_path + '/../../Resources/Library/'
 
@@ -214,6 +214,48 @@ def create_analyses_files(module, ribbon):
             print('    Created {0} analysis file'.format(analysis))
 
 
+def create_pri_file(module, ribbon):
+    ''' Create pri file to include the layout and ribbon files '''
+    print('- pri File')
+
+    pri_file_path = current_path + '/../../JASP-Desktop/analysisforms/{0}/'.format(module)
+
+    file_types = {
+        'SOURCES': 'cpp',
+        'HEADERS': 'h',
+        'FORMS': 'ui'
+    }
+
+    content = ''
+    for t in file_types.keys():
+        content += (t + ' += \\\n')
+        # FIXME: Ribbon path is hardcoded
+        content += ('    $$PWD/../../ribbons/ribbon{0}.{1} \\\n'.format(module.lower(), file_types[t]))
+
+        for obj in ribbon:
+            analyses = obj.get('analyses')
+            if analyses is None:
+                analyses = [obj['name']]
+
+            for idx in range(0, len(analyses)):
+                # FIXME: Write more general statements, use regex
+                # FIXME: Handle duplicate ribbon and analyses names
+                analysis_name = analyses[idx].replace('-', '')
+                analysis_name = analysis_name.replace(' ', '')
+                analysis_name = module + analysis_name + 'Form'
+                content += ('    $$PWD/{0}.{1}'.format(analysis_name.lower(), file_types[t]))
+                if idx == len(analyses) - 1:
+                    content += ('\n')
+                else:
+                    content += (' \\\n')
+
+        content += '\n'
+
+    # Create module.pri
+    with open(pri_file_path + module + '.pri', 'w+') as f:
+        f.write(content)
+
+
 def create_new_module():
     try:
         # Read the modules file
@@ -238,6 +280,7 @@ def create_new_module():
             create_layout_files(module_name, module['ribbon'])
             create_resource_files(module_name, module['ribbon'])
             create_analyses_files(module_name, module['ribbon'])
+            create_pri_file(module_name, module['ribbon'])
             modify_mainwindow(module_name, module['ribbon'])
 
 if __name__ == '__main__':
