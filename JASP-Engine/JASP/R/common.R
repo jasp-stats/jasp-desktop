@@ -101,16 +101,7 @@ run <- function(name, options.as.json.string, perform="run") {
 				state[["figures"]] <- c(state[["figures"]], .imgToState(results$results))
 			}
 
-			location <- .fromRCPP(".requestStateFileNameNative")
-
-			relativePath <- location$relativePath
-			base::Encoding(relativePath) <- "UTF-8"
-
-			fullPath <- paste(location$root, location$relativePath, sep="/")
-			base::Encoding(fullPath) <- "UTF-8"
-			base::save(state, file=fullPath)
-			
-			keep <- relativePath
+			keep <- .saveState(state)$relativePath
 		}
 		
 		if ("results" %in% names(results)) {
@@ -377,21 +368,27 @@ isTryError <- function(obj){
 }
 
 .saveState <- function(state) {
-
+	result <- list()
+	relativePath <- NULL
+	fullPath <- NULL
 	if (base::exists(".requestStateFileNameNative")) {
 
 		location <- .fromRCPP(".requestStateFileNameNative")
 
 		relativePath <- location$relativePath
-		base::Encoding(relativePath) <- "UTF-8"
+		root <- location$root
 
-		fullPath <- paste(location$root, location$relativePath, sep="/")
-		base::Encoding(fullPath) <- "UTF-8"
+		base::Encoding(relativePath) <- "UTF-8"
+		base::Encoding(root) <- "UTF-8"
+
+		oldwd <- getwd()
+		setwd(root)
+		on.exit(setwd(oldwd))
 		
-		base::save(state, file=fullPath, compress=FALSE)
+		base::save(state, file=relativePath, compress=FALSE)
 	}
-	
-	NULL
+  result <- list(relativePath = relativePath, root = root)
+  return(result)
 }
 
 .retrieveState <- function() {
@@ -403,12 +400,16 @@ isTryError <- function(obj){
 		location <- .fromRCPP(".requestStateFileNameNative")
 
 		relativePath <- location$relativePath
+		root <- location$root
+
 		base::Encoding(relativePath) <- "UTF-8"
+		base::Encoding(root) <- "UTF-8"
 
-		fullPath <- paste(location$root, location$relativePath, sep="/")
-		base::Encoding(fullPath) <- "UTF-8"
-
-		base::try(base::load(fullPath), silent=TRUE)
+		oldwd <- getwd()
+		setwd(root)
+		on.exit(setwd(oldwd))
+		
+		base::try(base::load(relativePath), silent=TRUE)
 	}
 	
 	state
@@ -678,13 +679,14 @@ callback <- function(results=NULL, progress=NULL) {
 		
 	# create png file location
 	location <- .fromRCPP(".requestTempFileNameNative", "png")
+	root <- location$root
 	relativePath <- location$relativePath
 	base::Encoding(relativePath) <- "UTF-8"
-	
-	fullPathpng <- paste(location$root, location$relativePath, sep="/")
-	base::Encoding(fullPathpng) <- "UTF-8"
-	
-	grDevices::png(filename=fullPathpng, width=width * pngMultip, 
+	base::Encoding(root) <- "UTF-8"
+
+	setwd(root)
+
+	grDevices::png(filename=relativePath, width=width * pngMultip,
 								height=height * pngMultip, bg="transparent", 
 								res=72 * pngMultip, type=type)
 		
@@ -940,12 +942,15 @@ as.list.footnotes <- function(footnotes) {
 	# Create png file location
 	location <- .fromRCPP(".requestTempFileNameNative", "png")
 	relativePathpng <- location$relativePath
-	fullPathpng <- paste(location$root, relativePathpng, sep="/")
 	base::Encoding(relativePathpng) <- "UTF-8"
-	base::Encoding(fullPathpng) <- "UTF-8"
 
+	root <- location$root
+	base::Encoding(root) <- "UTF-8"
+	oldwd <- getwd()
+	setwd(root)
+	on.exit(setwd(oldwd))
 	# Open graphics device and plot
-	grDevices::png(filename=fullPathpng, width=width * pngMultip, 
+	grDevices::png(filename=relativePathpng, width=width * pngMultip,
 	               height=height * pngMultip, bg="transparent", 
 	               res=72 * pngMultip, type=type)
 	
@@ -972,49 +977,49 @@ saveImage <- function(plotName, format, height, width){
 	# Retrieve plot object from state
 	state <- .retrieveState()
 	plt <- state[["figures"]][[plotName]]
-	
-  # create file location string
-  location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
+
+	# create file location string
+	location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
+	root <- location$root
+	base::Encoding(root) <- "UTF-8"
+	oldwd <- getwd()
+	setwd(root)
+	on.exit(setwd(oldwd))
 	
 	# Get file size in inches by creating a mock file and closing it
 	pngMultip <- .fromRCPP(".ppi") / 96
-	png(filename=paste0(location, "/dpi.png"), width=width * pngMultip, 
+	png(filename="dpi.png", width=width * pngMultip,
 			height=height * pngMultip,res=72 * pngMultip)
 	insize <- dev.size("in")
 	dev.off()
-	
-	# finds the last dot and replaces everything after it with "format"
-	relativePath <- base::gsub("(?<=\\.)(?!.*\\.).*", "png", format, perl = TRUE)
-  fullPath <- paste(location$root, relativePath, sep="/")
-	base::Encoding(relativePath) <- "UTF-8"
-  base::Encoding(fullPath) <- "UTF-8"
-	print(fullPath)
-	
-	# Open correct graphics device
+
+	relativePath <- paste0("temp.", format)
+
+    # Open correct graphics device
 	if (format == "eps") {
 		
-		grDevices::cairo_ps(filename=fullPath, width=insize[1], 
+		grDevices::cairo_ps(filename=relativePath, width=insize[1],
 												height=insize[2], bg="transparent")
-		
-  } else if (format == "tiff") {
-		
+
+	} else if (format == "tiff") {
+
 		hiResMultip <- 300/72
-		grDevices::tiff(filename=fullPath, 
-										width = width * hiResMultip, 
-										height = height * hiResMultip, 
+		grDevices::tiff(filename=relativePath,
+										width = width * hiResMultip,
+										height = height * hiResMultip,
 										res = 300, bg="transparent",
 										compression = "lzw",
 										type = "cairo")
-		
+
 	} else if (format == "pdf") {
-		
-		grDevices::cairo_pdf(filename=fullPath, width=insize[1], 
-												 height=insize[2], bg="transparent")
-	
+
+		grDevices::cairo_pdf(filename=relativePath, width=insize[1],
+												height=insize[2], bg="transparent")
+
 	} else { # add optional other formats here in "else if"-statements
 		stop("Format incorrectly specified")
 	}
-	
+
 	# Plot and close graphics device
 	if (class(plt) == "recordedplot"){
 		.redrawPlot(plt) #(see below)
@@ -1022,11 +1027,10 @@ saveImage <- function(plotName, format, height, width){
 		print(plt) #ggplots
 	}
 	dev.off()
-	
-	# Create JSON string for interpretation by JASP front-end
-	result <- paste0("{ \"status\" : \"imageSaved\", \"results\" : { \"name\" : \"", 
-									relativePath , "\" } }")
 
+	# Create JSON string for interpretation by JASP front-end
+	result <- paste0("{ \"status\" : \"imageSaved\", \"results\" : { \"name\" : \"",
+										relativePath , "\" } }")
 	# Return result
 	result
 }
