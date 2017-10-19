@@ -1187,9 +1187,12 @@ Column::Doubles::DoublesStruct()
 
 Column *Column::DoublesStruct::getParent() const
 {
-	// Apparently there was a good reason to get the parent in this weird way.
-	// If I try to add a private _parent (initialized with the column),
-	// the engine crashes when it tries to get the dataset in the shared memory...
+	// This code seems quite weird... but this is a technique to get the address of the parent object from
+	// a member. We could have used offsetof function though.
+	// We cannot give in the constructor of DoublesStruct or IntsStruct the pointer to the parent object (the column):
+	// we are here in the shared memory, this means this object cannot contain pointer pointing to the process space.
+	// Even if the Column object is also in the shared memory, it is mapped in the process space so that the Column pointer
+	// still points to the process space.
 	Column *column = (Column*) NULL;
 	char* intsAddress = (char*)&column->AsDoubles;
 	char* baseAddress = (char*)column;
