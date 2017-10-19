@@ -657,10 +657,9 @@
              <height>160</height>
             </size>
            </property>
-           <layout class="QGridLayout" name="gridLayout_9"/>
           </widget>
          </item>
-         <item row="1" column="0">
+         <item row="2" column="0">
           <widget class="GroupBox" name="groupPostHocOptions">
            <property name="title">
             <string>Correction</string>
@@ -695,6 +694,13 @@
              </widget>
             </item>
            </layout>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="BoundCheckBox" name="postHocTestEffectSize">
+           <property name="text">
+            <string>Effect size</string>
+           </property>
           </widget>
          </item>
         </layout>
@@ -1139,14 +1145,14 @@
                <item row="2" column="0">
                 <widget class="QRadioButton" name="_2standardError">
                  <property name="text">
-                  <string>Standard error</string>
+                  <string>Standard &amp;error</string>
                  </property>
                 </widget>
                </item>
                <item row="0" column="0">
                 <widget class="QRadioButton" name="_1confidenceInterval">
                  <property name="text">
-                  <string>Confidence interval</string>
+                  <string>&amp;Confidence interval</string>
                  </property>
                 </widget>
                </item>
@@ -1575,16 +1581,6 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
-   <class>boundSingleItemView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundsingleitemview.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundComboBox</class>
-   <extends>QComboBox</extends>
-   <header>widgets/boundcombobox.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundListView</class>
    <extends>QListView</extends>
    <header>widgets/boundlistview.h</header>
@@ -1596,15 +1592,25 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>BoundAssignWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/boundassignwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>BoundTableView</class>
    <extends>QTableView</extends>
    <header>widgets/boundtableview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundAssignWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/boundassignwidget.h</header>
-   <container>1</container>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>boundSingleItemView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundsingleitemview.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
