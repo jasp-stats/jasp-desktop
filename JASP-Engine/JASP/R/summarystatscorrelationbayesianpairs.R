@@ -123,10 +123,10 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 	table <- list()
 	table[["title"]] <- "Bayesian Pearson Correlation"
 	table[["schema"]] <- list(fields = fields)
-	table[["citation"]] <- list(paste("Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2014).",
+	table[["citation"]] <- list(paste("Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2016).",
 									"Harold Jeffreys's Default Bayes Factor Hypothesis Tests:",
 									"Explanation, Extension, and Application in Psychology.",
-									"Manuscript submitted for publication.",
+									"Journal of Mathematical Psychology, 72, 19-32.",
 									sep = "")
 								)
 	table[["footnotes"]] <- as.list(footnotes)
@@ -230,8 +230,8 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 		p <- try(silent = FALSE, expr = {
 
 			# image <- .beginSaveImage(width, height)
-			
-			# TODO: fix .plotPosterior.correlation take in bfObject and have switch bfObject$bf 
+
+			# TODO: fix .plotPosterior.correlation take in bfObject and have switch bfObject$bf
 
 			someBf <- switch(options$hypothesis,
 			                 correlated = bfObject$bf10,
@@ -239,7 +239,7 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 			                 correlatedNegatively =bfObject$bfMin0
 			)
 
-			
+
 			.plotFunc <- function() {
 				if (!BFH1H0) {
 					someBf <- 1 / someBf
@@ -481,7 +481,7 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 	  # TODO: Johnny
 	  # Without code this will print a NULL, if we go through here
 	}
-	
+
 	bfObject$pValue <- allPValues
 	return(bfObject)
 }
@@ -654,13 +654,13 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 
 	for (i in seq_along(kappaValues)[-1]) {
 		bfObject <- list(bf10=NA, bfPlus0=NA, bfMin0=NA)
-		
+
 		if (usePearson) {
 		    bfObject <- .bfPearsonCorrelation(n=n, r=r, kappa=kappaValues[i], ciValue=NULL)
 		} else if (useKendall) {
 		    bfObject <- .bfKendallTau(n=n, tauObs=r, kappa=kappaValues[i], ciValue=NULL)
 		}
-		
+
 		if (oneSided == FALSE) {
 			if (bfObject$bf10 == 0) {
 				bfObject$bf10 <- 1
@@ -749,7 +749,7 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 		y3h <- c(y3h, newy)
 		i <- i + 1
 	}
-	
+
 	yhigh <- vector("numeric", length(y1h) + length(y3h))
 	o <- 1
 	e <- 1

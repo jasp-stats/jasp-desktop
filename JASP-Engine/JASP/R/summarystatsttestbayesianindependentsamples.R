@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2017 University of Amsterdam
+# Copyright (C) 2013-2017 University of Amsterdam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset = NULL, options,
 	#   n1Size:           integer, the size of sample 1
 	#   n1Size:           integer, the size of sample 2
 	#   hypothesis:       string, one of ["notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue"]
-	#   priorWidth:       numeric, width of the prior 
+	#   priorWidth:       numeric, width of the prior
 	#   bayesFactorType:  string, one of ["BF10", "BF01", "LogBF10"]
 	## plotting:
 	#   plotPriorAndPosterior:                    logical, make this plot?
@@ -48,7 +48,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset = NULL, options,
 	#   informativeStandardizedEffectSize:  string, one of ["cauchy", "normal","t"]
 	#   informativeCauchyLocation:      numeric, -3 ≤ value ≤ 3, distribution used is dcauchy((tStatistic - CauchyLocation) / CauchyScale)
 	#   informativeCauchyScale:         numeric,
-	#  - 
+	#  -
 	#   informativeTLocation:           numeric, -3 ≤ value ≤ 3, distribution used is dt((tStatistic - Tlocation) / Tscale, TDf)
 	#   informativeTScale:              numeric, 0 ≤ value ≤ 2
 	#   informativeTDf:                 integer, 1 ≤ value ≤ 500
@@ -62,9 +62,9 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset = NULL, options,
 	#   normalDienesMean:               numeric, 0 ≤ value ≤ 2
 	#   normalDienesStd:                numeric, 0 ≤ value ≤ 2
 	#   halfNormalDienesStd:            numeric, 0 ≤ value ≤ 2
-	
-	
-	
+
+
+
 	# Bayes factor type (BF10, BF01, log(BF10)) and title
 	bftype <- .getBayesfactorTitle.summarystats.ttest(
 								bayesFactorType = options$bayesFactorType,
@@ -224,9 +224,9 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset = NULL, options,
 	bayesFactorObject <- NULL
 	status <- NULL
 
-	if (!is.null(state) && !is.null(diff) && !is.null(state$bayesFactorObject) && 
+	if (!is.null(state) && !is.null(diff) && !is.null(state$bayesFactorObject) &&
 	    !any(unlist(diff))) {
-	  
+
 		rowsTTestBayesianIndependentSamples <- state$rowsTTestBayesianIndependentSamples
 		bayesFactorObject <- state$bayesFactorObject
 
@@ -239,25 +239,25 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset = NULL, options,
 			if (status$ready) {
 
 				## Compute the statistics
-				
+
 				bayesFactorObject <- .generalSummaryTtestBF(options = options, paired = FALSE)
-				
-				
+
+
 				## Format the statistics for output
-				
+
 				bf <- bayesFactorObject$bf
 				BF <- switch(options$bayesFactorType, BF10=bf, BF01=1/bf, log(bf))
-				
+
 				allPValues <- bayesFactorObject$pValue
 				pValue <- switch(as.character(hypothesis.variables$oneSided), left=allPValues$minSided,
 				                 right=allPValues$plusSided, allPValues$twoSided)
-				
+
 				## Store statistics in table row ouput structure
-				
+
 				rowsTTestBayesianIndependentSamples$BF <- .clean(BF)
 				rowsTTestBayesianIndependentSamples$errorEstimate <- .clean(bayesFactorObject$properror)
 				rowsTTestBayesianIndependentSamples$pValue <- .clean(pValue)
-				
+
 			}
 		}
 	}

@@ -773,7 +773,7 @@
            <layout class="QGridLayout" name="gridLayout_9"/>
           </widget>
          </item>
-         <item row="2" column="0">
+         <item row="6" column="0">
           <widget class="GroupBox" name="groupBox">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -816,12 +816,19 @@
            </layout>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="BoundCheckBox" name="postHocTestEffectSize">
-           <property name="text">
-            <string>Effect size</string>
+         <item row="3" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <property name="bottomMargin">
+            <number>12</number>
            </property>
-          </widget>
+           <item>
+            <widget class="BoundCheckBox" name="postHocTestEffectSize">
+             <property name="text">
+              <string>Effect size</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>

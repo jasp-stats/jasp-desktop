@@ -1126,6 +1126,7 @@ saveImage <- function(plotName, format, height, width){
 
 }
 
+<<<<<<< HEAD
 b64 <- function(x, ...) UseMethod("b64")   ## Translate names in x to 'base64' 
 b64.default <- function(x, ...) x
 d64 <- function(x, ...) UseMethod("d64")   ## Untranslate names in x from 'base64' 
@@ -1188,6 +1189,12 @@ d64.list <- function(x, ...) {
 }
 	
 .newProgressbar <- function(ticks, callback, skim=5, response=FALSE) {
+=======
+# This closure normally returns a progressbar function that expects to be called "ticks" times.
+# If used in a parallel environment it returns a structure to the master process which is
+# updated in the separate processes by .updateParallelProgressbar().
+.newProgressbar <- function(ticks, callback, skim=5, response=FALSE, parallel=FALSE) {
+>>>>>>> jasp-stats/development
 	
 	ticks <- suppressWarnings(as.integer(ticks))
 	if (is.na(ticks) || ticks <= 0)
@@ -1198,6 +1205,9 @@ d64.list <- function(x, ...) {
 	
 	if (! is.numeric(skim) || skim < 0 || skim >= 100)
 		stop("Invalid value provided to 'skim', expecting numeric value in the range of 0-99")
+	
+	if (parallel)
+		response <- TRUE
 	
 	progress <- 0
 	tick <- (100 - skim) / ticks
@@ -1223,5 +1233,54 @@ d64.list <- function(x, ...) {
 	
 	updater() # create empty progressbar
 	
+	if (parallel)
+		return(structure(list(updater=updater), class="JASP-progressbar"))
+	
 	return(updater)
+}
+
+# Update the progressbar in a parallel environment.
+# It requires the progressbar from .newProgressbar() (this structure itself remains in the master process); 
+# if the callback indicates a change in UI options the cluster is stopped with a warning.
+.updateParallelProgressbar <- function(progressbar, cluster, results=NULL, complete=FALSE) {
+	
+	if (! inherits(progressbar, "JASP-progressbar"))
+		stop("Object provided in 'progressbar' is not of class JASP progressbar")
+	
+	if (! inherits(cluster, "cluster"))
+		stop("Object provided in 'cluster' is not of class cluster")
+	
+	response <- progressbar$updater(results, complete)
+	
+	if (! .shouldContinue(response)) {
+		snow::stopCluster(cluster)
+		stop("Cancelled by callback")
+	}
+	
+	invisible(response)
+}
+
+# Create a cluster to perform parallel computations. 
+# You can pass it objects (and a progressbar) to be exported to the cluster.
+# To be used in combination with the foreach package.
+.makeParallelSetup <- function(pb=NULL, objs=NULL, env=NULL) {
+	
+	nCores <- parallel::detectCores(TRUE) - 1
+	if (is.na(nCores) || nCores == 0)
+		nCores <- 1
+		
+	cl <- snow::makeSOCKcluster(nCores)
+	doSNOW::registerDoSNOW(cl)
+	if (! is.null(objs) && ! is.null(env))
+		snow::clusterExport(cl, objs, envir=env)
+	
+	dopar <- foreach::`%dopar%`
+	
+	progress <- NULL
+	if (! is.null(pb))
+		progress <- function() .updateParallelProgressbar(pb, cl)
+	
+	stopCluster <- substitute(try(snow::stopCluster(cl), silent=TRUE))
+		
+	return(list(cl=cl, progress=list(progress=progress), dopar=dopar, stopCluster=stopCluster))
 }

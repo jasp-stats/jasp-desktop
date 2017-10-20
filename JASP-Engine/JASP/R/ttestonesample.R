@@ -100,28 +100,18 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	title <- "One Sample T-Test"
 
 	## get the right title and test statistic for the table
-
 	if (wantsWilcox && onlyTest) {
-		#title <- "Mann-Whitney U Test"
-		testname <- "Wilcoxon signed-rank test"
-		testTypeFootnote <- paste0(testname, ".")
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Wilcoxon signed-rank test.")
 		testStat <- "V"
-
-		## additionally, Wilcoxon's test doesn't have degrees of freedoms
-		fields <- fields[-2]
+		fields <- fields[-2] #Wilcoxon's test doesn't have degrees of freedoms
 		nameOfLocationParameter <- "Hodges-Lehmann Estimate"
 		nameOfEffectSize <- "Rank-Biserial Correlation"
 	} else if (wantsStudents && onlyTest) {
-		#title <- "Student's T-Test"
-		testname <- "Student's t-test"
-		testTypeFootnote <- paste0(testname, ".")
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Student's t-test.")
 		testStat <- "t"
 		nameOfLocationParameter <- "Mean Difference"
 		nameOfEffectSize <- "Cohen's d"
 	} else {
-		# title <- "One Sample T-Test"
 		testStat <- "Statistic"
 		nameOfLocationParameter <-  "Location Parameter"
 		nameOfEffectSize <-  "Effect Size"
@@ -294,42 +284,37 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 						t <- as.numeric(r$statistic)
 						confIntEffSize <- c(0,0)
 						if (wantsConfidenceEffSize) {
-						  signT <- sign(t)
-						  t <- abs(t)
-						  if(direction == "two.sided") {
-						    end1 <- t
-						    while( pt(q=t,df=df,ncp=end1) > (1-percentConfidenceEffSize)/2 ) {
-						      end1 <- end1 + abs(end1)
-						    }
-						    ncp1 <- uniroot(function(x) (1-percentConfidenceEffSize)/2-pt(q=t,df=df,ncp=x),
-						                    c(2*t-end1,end1))$root
-						    end2 <- t
-						    while( pt(q=t,df=df,ncp=end2) < (1+percentConfidenceEffSize)/2 ) {
-						      end2 <- end2 - abs(t)
-						    }
-						    ncp2 <- uniroot(function(x) (1+percentConfidenceEffSize)/2-pt(q=t,df=df,ncp=x),
-						                    c(end2,2*t-end2))$root  
-						    confIntEffSize <- sort(c(ncp1/sqrt(df)* signT,ncp2/sqrt(df)* signT))
-						  } else if (direction == "greater") {
-						    end1 <- t
-						    while( pt(q=t,df=df,ncp=end1) > (1-percentConfidenceEffSize) ) {
-						      end1 <- end1 + abs(end1)
-						    }
-						    ncp1 <- uniroot(function(x) (1-percentConfidenceEffSize)-pt(q=t,df=df,ncp=x),
-						                    c(2*t-end1,end1))$root
-						    confIntEffSize <- sort(c(ncp1/sqrt(df)* signT, Inf))
-						  }else if(direction == "less") {
-						    end2 <- t
-						    while( pt(q=t,df=df,ncp=end2) < percentConfidenceEffSize ) {
-						      end2 <- end2 - abs(t)
-						    }
-						    ncp2 <- uniroot(function(x) percentConfidenceEffSize-pt(q=t,df=df,ncp=x),
-						                    c(end2,2*t-end2))$root  
-						    confIntEffSize <- sort(c(ncp2/sqrt(df)* signT, -Inf))
+	
+						  alphaLevels <- sort( c( (1-percentConfidenceEffSize), percentConfidenceEffSize ) )
+						  
+						  if (direction == "two.sided") {
+						    alphaLevels[1] <- (1-percentConfidenceEffSize) / 2
+						    alphaLevels[2] <- (percentConfidenceEffSize + 1) / 2
+						  } 
+						  
+						  end1 <- abs(t)
+						  while( pt(q=t,df=df,ncp=end1) > alphaLevels[1]){
+						    end1 = end1 * 2
 						  }
-						  t <- t * signT
+						  ncp1 <- uniroot(function(x) alphaLevels[1] - pt(q=t, df=df, ncp=x),
+						                  c(2*t-end1,end1))$root
+						  
+						  end2 = -abs(t)
+						  while( pt(q=t,df=df,ncp=end2) < alphaLevels[2]){
+						    end2 = end2 * 2
+						    # end2 <- end2 - abs(t)
+						  }
+					    ncp2 <- uniroot(function(x) alphaLevels[2] - pt(q=t, df=df, ncp=x),
+					                    c(end2,2*t-end2))$root						    
+					    confIntEffSize <- sort(c(ncp1/sqrt(n), ncp2/sqrt(n)))[order(c(1-percentConfidenceEffSize, percentConfidenceEffSize ))]
+						    
+					    if (direction == "greater") {
+					      confIntEffSize[2] <- Inf
+					    } else if (direction == "less") 
+					      confIntEffSize[1] <- -Inf				
+					    
+					    confIntEffSize <- sort(confIntEffSize)
 						}
-						
 					}
 
 					## same for all tests

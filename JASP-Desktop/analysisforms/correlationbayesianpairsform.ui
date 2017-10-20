@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>606</width>
-    <height>626</height>
+    <width>644</width>
+    <height>671</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -311,6 +311,9 @@
               </property>
              </widget>
             </item>
+            <item row="1" column="1">
+             <widget class="QWidget" name="widget" native="true"/>
+            </item>
            </layout>
           </widget>
          </item>
@@ -374,7 +377,7 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="0" colspan="3">
+            <item row="5" column="0" colspan="3">
              <widget class="BoundCheckBox" name="plotSequentialAnalysis">
               <property name="text">
                <string>Sequential analysis</string>
@@ -388,7 +391,7 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="1" colspan="2">
+            <item row="6" column="1" colspan="2">
              <widget class="BoundCheckBox" name="plotSequentialAnalysisRobustness">
               <property name="enabled">
                <bool>false</bool>
@@ -408,7 +411,7 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="0">
+            <item row="6" column="0">
              <widget class="QWidget" name="widget_5" native="true">
               <property name="maximumSize">
                <size>
@@ -422,6 +425,16 @@
              <widget class="BoundCheckBox" name="plotScatter">
               <property name="text">
                <string>Scatterplot</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="BoundCheckBox" name="plotBayesFactorRobustnessAdditionalInfo">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Additional info</string>
               </property>
              </widget>
             </item>
@@ -663,6 +676,22 @@
     <hint type="destinationlabel">
      <x>426</x>
      <y>289</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>plotBayesFactorRobustness</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>plotBayesFactorRobustnessAdditionalInfo</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>480</x>
+     <y>458</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>432</x>
+     <y>488</y>
     </hint>
    </hints>
   </connection>

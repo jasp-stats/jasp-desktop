@@ -236,10 +236,10 @@
 
 	# Check if available from previous state
 	if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
-				(is.list(diff) && (diff$tStatistic == FALSE && diff$n1Size == FALSE && (is.null(diff$n2Size) || diff$n2Size == FALSE) 
+				(is.list(diff) && (diff$tStatistic == FALSE && diff$n1Size == FALSE && (is.null(diff$n2Size) || diff$n2Size == FALSE)
 				&& diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$bayesFactorType == FALSE &&
-				diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && 
-				diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE && 
+				diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE &&
+				diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE &&
 				diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE &&
 				diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && plotType %in% state$plotTypes) {
 
@@ -371,7 +371,7 @@
 	if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
 			(is.list(diff) && (diff$tStatistic == FALSE && BFtypeRequiresNewPlot == FALSE &&
 			diff$n1Size == FALSE && (is.null(diff$n2Size) || diff$n2Size == FALSE) &&
-			diff$priorWidth == FALSE && diff$effectSizeStandardized == FALSE && 
+			diff$priorWidth == FALSE && diff$effectSizeStandardized == FALSE &&
 			diff$hypothesis == FALSE))) && plotType %in% state$plotTypes) {
 
 		index <- which(state$plotTypes == plotType)
@@ -415,7 +415,7 @@
 			n1Value <- options$n1Size
 			n2Value <- 0
 		}
-		
+
 		if (options$effectSizeStandardized == "informative") {
 			plot[["error"]] <- list(error="badData", errorMessage="Bayes factor robustness check plot currently not supported for informed prior.")
 		} else {
@@ -429,7 +429,7 @@
 				# 			addInformation = options$plotBayesFactorRobustnessAdditionalInfo,
 				# 			BF10post = BF10post
 				# 	)
-				
+
 				.plotFunc <- function() {
 					.plotBFrobustness.summarystats.ttest(
 							t = options$tStatistic, n1 = n1Value, n2 = n2Value,
@@ -1321,7 +1321,7 @@
 				rscale = "medium", lwd = 2, cexPoints = 1.5, cexAxis = 1.2, cexYlab = 1.5, cexXlab = 1.5,
 				cexTextBF = 1.4, cexCI = 1.1, cexLegend = 1.2, lwdAxis = 1.2, addInformation = TRUE,
 				dontPlotData = FALSE, options = NULL) {
-    
+
     # Function outputs the prior and posterior plot for t-test in the summary stats module.
 
 	if (addInformation) {
@@ -1380,7 +1380,7 @@
 		nullInterval <- c(-Inf, 0)
 		stretch <- 1.32
 	}
-    
+
     BF <- as.numeric(BF) # TO FIX: This needs to be done to make sure the BF shows up in the table during bayesian t-tests.
 
   if (BFH1H0) {
@@ -1390,7 +1390,7 @@
     BF01 <- BF
     BF10 <- 1 / BF01
   }
-    
+
 
   if ("effectSizeStandardized" %in% names(options) && options$effectSizeStandardized == "informative") {
     # informative prior
