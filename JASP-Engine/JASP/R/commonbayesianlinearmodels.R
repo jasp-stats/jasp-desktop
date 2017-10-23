@@ -1000,7 +1000,7 @@
 		fixing to 0.5 the prior probability that the null hypothesis holds
 		across all comparisons (Westfall, Johnson, & Utts, 1997). Individual
 		comparisons are based on the default t-test with a Cauchy (0, r =
-		1/sqrt(2)) prior."
+		1/sqrt(2)) prior. The \"U\" in the Bayes factor denotes that it is uncorrected."
 	
 	if (options$bayesFactorType == "BF10") {
 		bf.title <- "BF<sub>10, U</sub>"
