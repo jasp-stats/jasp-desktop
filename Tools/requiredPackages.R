@@ -29,22 +29,21 @@ basePkgs <- installed.packages(priority="high")
 basePkgs <- basePkgs[basePkgs[, "Priority"] == "base", 1]
 
 reqPkgs <- NULL
+# Expression to match namespace in [valid namespace -> triple or double colons -> valid function name]:
 expr <- '([a-zA-Z0-9.]{2,}(?<![.]))(?:::|:::)[a-zA-Z0-9._]+'
-# matches namespace in [valid namespace -> triple or double colons -> valid function name]
 comment <- '#.*'
 files <- list.files(getwd(), pattern="\\.[Rr]$")
 for (file in files) {
   content <- suppressWarnings(readLines(file))
   content <- gsub(comment, "", content) # remove comments
-  found <- stringr::str_match(content, expr)
-  matches <- found[! is.na(found)[, 1], , drop=FALSE]
-  if (nrow(matches) == 0) {
+  matches <- stringr::str_match_all(content, expr)
+  matches <- unlist(lapply(matches, function(match) match[, 2]))
+  if (length(matches) == 0)
     next
-  }
-  reqPkgs <- c(reqPkgs, matches[, 2])
+  reqPkgs <- c(reqPkgs, matches)
 }
 
-#Temporarly add the GPArotation manually (incorrectdly marked as "Suggest' in pshych) 
+# Temporarly add the GPArotation manually (incorrectly marked as "Suggest' in psych) 
 reqPkgs <- c(reqPkgs, "GPArotation")
 reqPkgs <- sort(unique(reqPkgs))
 reqPkgs <- reqPkgs[! reqPkgs %in% basePkgs]
