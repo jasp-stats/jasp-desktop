@@ -34,6 +34,17 @@ Application::Application(int &argc, char **argv) :
 		_mainWindow->open(args.at(1));
 }
 
+Application::~Application()
+{
+	try
+	{
+		delete _mainWindow;	
+	}
+	catch(...)
+	{		
+	}
+}
+
 bool Application::notify(QObject *receiver, QEvent *event)
 {
 	try
