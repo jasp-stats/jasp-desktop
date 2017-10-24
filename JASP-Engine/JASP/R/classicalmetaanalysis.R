@@ -145,15 +145,16 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
         formula.rhs = ~1
       if (!options$includeConstant) 
         formula.rhs = update(formula.rhs, ~ . + 0)
+      if( identical(formula.rhs, . ~ 1 - 1) )
+        .quitAnalysis("The model should contain at least one predictor or an intercept.")
       
-      #rma.fit <- metafor::rma(yi = get(.v(effsizeName)), sei = get(.v(stderrName)), data = dataset,
-
-      rma.fit <- metafor::rma(
+      rma.fit <- tryCatch(metafor::rma(
         yi = get(effsizeName), sei = get(stderrName), data = dataset,
         method=options$method, mods = formula.rhs, test = options$test,
         slab = if(options$studyLabel != "") get(options$studyLabels),
         level = options$regressionCoefficientsConfidenceIntervalsInterval
-      )
+      ), error = .quitAnalysis)
+      
       rma.fit <- d64(rma.fit)
       
     }
@@ -306,20 +307,14 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   if (options$regressionCoefficientsCovarianceMatrix) { 
     
     meta[[length(meta) + 1]] <- list(name = "vcov", type = "table")
-    options(jasp_number_format = "sf:5;dp:4")    
-    title <- "Parameter Covariances"
-    
+
     if (is.null(coeffVcov) && run && can.run)
       coeffVcov <- vcov(rma.fit)
     
-    table <- list(title = title)
-    if (! is.null(coeffVcov)) {
-      table$x <- coeffVcov
-    } else {
-      table$x <- "..."
-      table$y <- "..."
-    }
-    
+    options(jasp_number_format = "sf:5;dp:4")    
+    table <- list(title = "Parameter Covariances", x = "...", y = "...")
+    if (!is.null(coeffVcov)) table$x = coeffVcov
+
     vcovTable = do.call(as.jaspTable, table)
     results[["vcov"]] <- vcovTable
     
@@ -388,24 +383,40 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     
     meta[[length(meta) + 1]] <- list(name = "influence", type = "table")
     options(jasp_number_format = "sf:5;dp:4")
-    title <- "Influence Measures"
-    cols <- c("Std. Residual", "DFFITS", "Cook's Distance", "Cov. Ratio", 
-              "&tau;&sup2;<sub>(-i)</sub>", "Q<sub>E(-i)</sub>", "Hat", "Weight", "Influential")
     
     if (is.null(influ) && run && can.run)
       influ = influence(rma.fit) 
     
-    table <- list(title = title)
+    table <- list(title = "Influence Measures")
+    cols <- c("Std. Residual", "DFFITS", "Cook's Distance", "Cov. Ratio", 
+              "&tau;&sup2;<sub>(-i)</sub>", "Q<sub>E(-i)</sub>", "Hat", "Weight")
     if (! is.null(influ)) {
-      table$x <- cbind(influ$inf, influential = ifelse(influ$is.infl, "*", "")) #FIXME maybe add the stars to the cases?
+      table$x <- influ$inf
       colnames(table$x) <- cols
     } else {
       table$x <- cols
     }
-    
+
     influTable = do.call(as.jaspTable, table)
-    results[["influence"]] <- influTable
     
+    # Markup influential cases in a footnote
+    influential = rownames(influ$inf)[which(influ$is.infl)]
+    ninfl = length(influential)
+    
+    if (ninfl > 0) {
+      if (ninfl == 1) {
+        ftnote = sprintf("Case %s is influential.", sQuote(influential)) 
+      } else {
+        ftnote = paste0(sQuote(influential[-ninfl]), collapse = ", ")
+        ftnote = sprintf("Cases %s and %s are influential.", ftnote,  sQuote(influential[ninfl]))
+      }
+      
+      infl.footn <- .newFootnotes()
+      .addFootnote(infl.footn, symbol = "<em>Note.</em>", text = ftnote)
+      influTable[["footnotes"]] <- as.list(infl.footn)
+    }
+    
+    results[["influence"]] <- influTable
   }
   
   
@@ -573,8 +584,13 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
 }
 
-
-as.modelTerms <- function(object) structure(object, class = "modelTerms")
+as.modelTerms <- function(object, ...) UseMethod("as.modelTerms")
+as.modelTerms.list <- function(object) structure(object, class = "modelTerms")
+as.modelTerms.formula = function(formula) structure(sapply(attr(terms(formula), "term.labels"), strsplit, ":"), class="modelTerms")
+b64.modelTerms = function(object) structure(b64(unclass(object)), class="modelTerms")
+d64.modelTerms = function(object) structure(d64(unclass(object)), class="modelTerms")
+b64.formula = function(formula) as.formula(b64(as.modelTerms(formula)))
+d64.formula = function(formula) as.formula(d64(as.modelTerms(formula)))
 
 formula.modelTerms <- function(modelTerms, env = parent.frame()) {
   # Converts a modelTerms list into a one-side R formula

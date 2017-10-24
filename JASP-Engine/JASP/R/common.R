@@ -1126,7 +1126,7 @@ saveImage <- function(plotName, format, height, width){
 
 }
 
-<<<<<<< HEAD
+
 b64 <- function(x, ...) UseMethod("b64")   ## Translate names in x to 'base64' 
 b64.default <- function(x, ...) x
 d64 <- function(x, ...) UseMethod("d64")   ## Untranslate names in x from 'base64' 
@@ -1189,13 +1189,11 @@ d64.list <- function(x, ...) {
 }
 	
 .newProgressbar <- function(ticks, callback, skim=5, response=FALSE) {
-=======
 # This closure normally returns a progressbar function that expects to be called "ticks" times.
 # If used in a parallel environment it returns a structure to the master process which is
 # updated in the separate processes by .updateParallelProgressbar().
 .newProgressbar <- function(ticks, callback, skim=5, response=FALSE, parallel=FALSE) {
->>>>>>> jasp-stats/development
-	
+
 	ticks <- suppressWarnings(as.integer(ticks))
 	if (is.na(ticks) || ticks <= 0)
 		stop("Invalid value provided to 'ticks', expecting positive integer")
