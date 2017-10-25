@@ -121,7 +121,13 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 	fields[[length(fields)+1]] <- list(name = "pValue", type = "number", format = "sf:4;dp:3", title = "p")
 
 	table <- list()
-	table[["title"]] <- "Bayesian Pearson Correlation"
+	
+	if (options$correlationCoefficient == "pearsonRho") {
+	    table[["title"]] <- "Bayesian Pearson Correlation"
+	} else if (options$correlationCoefficient == "kendallTau") {
+	    table[["title"]] <- "Bayesian Kendall Correlation"
+	}
+	
 	table[["schema"]] <- list(fields = fields)
 	table[["citation"]] <- list(paste("Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2016).",
 									"Harold Jeffreys's Default Bayes Factor Hypothesis Tests:",
