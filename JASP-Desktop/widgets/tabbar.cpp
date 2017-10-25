@@ -44,6 +44,7 @@ TabBar::TabBar(QWidget *parent) :
 	
 	_aboutDialog = new AboutDialog(this);
 	_preferencesDialog = new PreferencesDialog(this);
+	_modulesButton = NULL;
 }
 
 void TabBar::addTab(QString tabName)
@@ -54,7 +55,59 @@ void TabBar::addTab(QString tabName)
 			return;
 	}
 
-	QPushButton *button = new QPushButton(tabName, this);
+	QPushButton *button;
+	if (tabName == "Modules")
+	{
+		button = new QPushButton("", this);
+		button->setToolTip("Load module");
+		button->setIcon(QIcon(":/icons/addition.png"));
+		_modulesButton = button;
+		connect(_modulesButton, SIGNAL(pressed()), this, SLOT(handleModuleButton()));
+				
+		//Modules menu
+		QMenu *modulesmenu   = new QMenu(this);
+		
+		//SEM
+		QAction *sem = new QAction("SEM",modulesmenu);
+		QVariant sem_setting = _settings.value("plugins/sem", false);
+		sem->setObjectName("SEM");
+		sem->setCheckable(true);
+		sem->setChecked(sem_setting.canConvert(QVariant::Bool) && sem_setting.toBool());
+		modulesmenu->addAction(sem);
+		
+#ifdef QT_DEBUG			
+		//Reinforcement	
+		QAction *rei = new QAction("Reinforcement Learning",modulesmenu);
+		QVariant ri_setting = _settings.value("toolboxes/r11tLearn", false);
+		rei->setObjectName("Reinforcement Learning");
+		rei->setCheckable(true);
+		rei->setChecked(ri_setting.canConvert(QVariant::Bool) && ri_setting.toBool());
+		modulesmenu->addAction(rei);
+#endif
+	
+		//Summary Stats
+		QAction *summaryStats = new QAction("Summary Stats",modulesmenu);
+		QVariant sumStats_setting = _settings.value("toolboxes/summaryStatistics", false);
+		summaryStats->setObjectName("Summary Stats");
+		summaryStats->setCheckable(true);
+		summaryStats->setChecked(sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
+		modulesmenu->addAction(summaryStats);
+
+		modulesmenu->acceptDrops();
+		button->setMenu(modulesmenu);
+		_layout->addWidget(button);
+		
+		// Slots modules
+		connect(sem, SIGNAL(triggered()), this, SLOT(toggleSEM()));
+		connect(rei, SIGNAL(triggered()), this, SLOT(toggleReinforcement()));
+		connect(summaryStats, SIGNAL(triggered()), this, SLOT(toggleSummaryStats()));
+		
+	}
+	else
+	{
+		button = new QPushButton(tabName, this);
+	}
+		
 	button->setStyleSheet("border-top-left-radius:4px;border-top-right-radius:4px;");
 	button->setObjectName(tabName);
 	button->setCheckable(true);
@@ -63,10 +116,19 @@ void TabBar::addTab(QString tabName)
 	if (_tabButtons.size() == 0)
 		button->setObjectName("first"); //just to give it the proper (blue) stylesheet
 
-	_layout->insertWidget(_tabButtons.size(), button);
+	if (tabName=="SEM" || tabName=="R11t Learn" || tabName=="Summary Stats")
+		_layout->insertWidget(_tabButtons.size()-1, button);
+	else
+		_layout->insertWidget(_tabButtons.size(), button);
+	
 	_tabButtons.append(button);
     button->clicked();
+	
+	
+	//if (_moduleButton != NULL)
+	//	_moduleButton->setAttribute(Qt::WA_UnderMouse, false);
 }
+		
 
 void TabBar::removeTab(int index)
 {
@@ -77,23 +139,28 @@ void TabBar::removeTab(int index)
 
 void TabBar::removeTab(QString tabName)
 {
-    QPushButton *lastbutton;
+    QPushButton *lastbutton = NULL;
+	bool removeactive = false;
 	foreach (QPushButton *button, _tabButtons)
 	{
 		if (button->objectName() == tabName)
 		{
+			if (button->objectName() == _currentActiveTab)
+				removeactive=true;
 			_tabButtons.removeAll(button);
 			delete button;
-            if (lastbutton) lastbutton->clicked();
-
+			if (lastbutton && removeactive) lastbutton->clicked();
+			
 			return;
 		}
-        lastbutton = button;
+		if (button->objectName()!="Modules")
+			lastbutton = button;
 	}
+		
 }
 
 
-void TabBar::addHelpTab()
+void TabBar::addOptionsTab()
 {
 
 	RibbonButton *rb = new RibbonButton();
@@ -101,66 +168,35 @@ void TabBar::addHelpTab()
 	rb->setPopupMode(QToolButton::InstantPopup);
 	rb->setProperty("button-type", "summarize");
 	rb->setMinimumSize(30,0);
+	rb->setToolTip("Options");
 	_layout->setContentsMargins(0,0,2,0);
 
-	QMenu  *helpmenu   = new QMenu(this);
+	QMenu  *optionsmenu   = new QMenu(this);
 
-	QAction *act_about = new QAction("About",helpmenu);
-	QAction *act_extrahelp = new QAction("Help",helpmenu);
-	QAction *act_preferences = new QAction("Preferences",helpmenu);
+	QAction *act_about = new QAction("About",optionsmenu);
+	QAction *act_extrahelp = new QAction("Help",optionsmenu);
+	QAction *act_preferences = new QAction("Preferences",optionsmenu);
 
 	// About
 	act_about->setObjectName("About");
-	helpmenu->addAction(act_about);
-	helpmenu->addSeparator();
+	optionsmenu->addAction(act_about);
+	optionsmenu->addSeparator();
 
 	//Special Help
 	act_extrahelp->setObjectName("Special Help");
 	act_extrahelp->setCheckable(true);
 	act_extrahelp->setChecked(false);
-	helpmenu->addAction(act_extrahelp);
-	helpmenu->addSeparator();
+	optionsmenu->addAction(act_extrahelp);
+	optionsmenu->addSeparator();
 
 	// Preferences
 	act_preferences->setObjectName("Preferences");
-	helpmenu->addAction(act_preferences);
-	helpmenu->addSeparator();
-	
-	//Modules
-	QMenu *optionmenu   = new QMenu("Modules",this);
-	QAction *sem = new QAction("SEM",optionmenu);
-	QAction *rei = new QAction("Reinforcement Learning",optionmenu);
-	QAction *summaryStats = new QAction("Summary Stats",optionmenu);
+	optionsmenu->addAction(act_preferences);
+	optionsmenu->addSeparator();
 
-	//SEM
-	QVariant sem_setting = _settings.value("plugins/sem", false);
-	sem->setObjectName("SEM");
-	sem->setCheckable(true);
-	sem->setChecked(sem_setting.canConvert(QVariant::Bool) && sem_setting.toBool());
-	optionmenu->addAction(sem);
+	optionsmenu->acceptDrops();
 
-	//Reinforcement
-	QVariant ri_setting = _settings.value("toolboxes/r11tLearn", false);
-	rei->setObjectName("Reinforcement Learning");
-	rei->setCheckable(true);
-	rei->setChecked(ri_setting.canConvert(QVariant::Bool) && ri_setting.toBool());
-
-	//Summary Stats
-	QVariant sumStats_setting = _settings.value("toolboxes/summaryStatistics", false);
-	summaryStats->setObjectName("Summary Stats");
-	summaryStats->setCheckable(true);
-	summaryStats->setChecked(sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
-
-#ifdef QT_DEBUG
-	optionmenu->addAction(rei);
-#endif
-    optionmenu->addAction(summaryStats);
-
-	optionmenu->acceptDrops();
-	helpmenu->acceptDrops();
-	helpmenu->addMenu(optionmenu);
-
-	rb->setMenu(helpmenu);
+	rb->setMenu(optionsmenu);
 	_layout->addWidget(rb);
 
 	//Slots preferences
@@ -168,10 +204,6 @@ void TabBar::addHelpTab()
 	connect(act_preferences, SIGNAL(triggered()), this, SLOT(showPreferences()));	
 	connect(act_extrahelp, SIGNAL(triggered()), this, SLOT(toggleHelp()));
 	
-	// Slots modules
-	connect(sem, SIGNAL(triggered()), this, SLOT(toggleSEM()));
-	connect(rei, SIGNAL(triggered()), this, SLOT(toggleReinforcement()));
-	connect(summaryStats, SIGNAL(triggered()), this, SLOT(toggleSummaryStats()));
 }
 
 void TabBar::showAbout()
@@ -231,7 +263,13 @@ void TabBar::toggleSummaryStats()
 	else
     {
 		this->removeTab("Summary Stats");
-    }
+	}
+}
+
+void TabBar::handleModuleButton()
+{
+	if (_modulesButton != NULL)
+		_modulesButton->setAttribute(Qt::WA_UnderMouse, false);
 }
 
 

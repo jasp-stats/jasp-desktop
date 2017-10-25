@@ -151,9 +151,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->tabBar->setFocusPolicy(Qt::NoFocus);
 	ui->tabBar->addTab("File");
 	ui->tabBar->addTab("Common");
+	ui->tabBar->addTab("Modules");
 
-	ui->tabBar->addHelpTab();
-
+	ui->tabBar->addOptionsTab();
+	
 	connect(ui->tabBar, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 	connect(ui->tabBar, SIGNAL(helpToggled(bool)), this, SLOT(helpToggled(bool)));
 
@@ -915,7 +916,7 @@ void MainWindow::tabChanged(int index)
 		else if(currentActiveTab == "Summary Stats")
 		{
 			ui->ribbon->setCurrentIndex(3);
-		}
+		}	
 	}
 }
 
