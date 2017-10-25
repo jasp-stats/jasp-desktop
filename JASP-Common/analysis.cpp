@@ -28,9 +28,10 @@ using namespace boost::uuids;
 using namespace boost;
 using namespace std;
 
-Analysis::Analysis(int id, string name, Options *options, const Version &version, bool autorun, bool usedata)
+Analysis::Analysis(int id, string module, string name, Options *options, const Version &version, bool autorun, bool usedata)
 {
 	_id = id;
+	_module = module;
 	_name = name;
 	_options = options;
 	_autorun = autorun;
@@ -131,6 +132,7 @@ Json::Value Analysis::asJSON() const
 
 	analysisAsJson["id"] = _id;
 	analysisAsJson["name"] = _name;
+	analysisAsJson["module"] = _module;
 	analysisAsJson["progress"] = _progress;
 	analysisAsJson["version"] = _version.asString();
 	analysisAsJson["results"] = _results;
@@ -212,6 +214,11 @@ void Analysis::setStatus(Analysis::Status status)
 const string &Analysis::name() const
 {
 	return _name;
+}
+
+const string &Analysis::module() const
+{
+	return _module;
 }
 
 int Analysis::id() const

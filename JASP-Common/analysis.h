@@ -31,7 +31,7 @@ public:
 
 	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted, Error, SaveImg, Exception };
 
-	Analysis(int id, std::string name, Options *options, const Version &version, bool isAutorun = true, bool usedata = true);
+	Analysis(int id, std::string module, std::string name, Options *options, const Version &version, bool isAutorun = true, bool usedata = true);
 	virtual ~Analysis();
 
 	Options *options() const;
@@ -51,6 +51,7 @@ public:
 	Json::Value asJSON() const;
 
 	const std::string &name() const;
+	const std::string &module() const;
 	int id() const;
 	bool isAutorun() const;
 	bool useData() const;
@@ -96,6 +97,7 @@ protected:
 private:
 
 	std::string _name;
+	std::string _module;
 	int _id;
 	bool _autorun;
 	bool _usedata;

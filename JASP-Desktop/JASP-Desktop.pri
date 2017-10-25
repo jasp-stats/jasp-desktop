@@ -194,7 +194,8 @@ SOURCES += $$PWD/main.cpp \
     $$PWD/analysisforms/regressionlogisticform.cpp \
     $$PWD/analysisforms/multinomialtestform.cpp \
     $$PWD/ribbons/ribbonmeta_analysis.cpp \
-    $$PWD/analysisforms/classicalmetaanalysisform.cpp
+    $$PWD/analysisforms/classicalmetaanalysisform.cpp \
+    $$PWD/module.cpp
 
 HEADERS  += \
         $$PWD/aboutdialog.h \
@@ -403,7 +404,8 @@ HEADERS  += \
     $$PWD/analysisforms/regressionlogisticform.h \
     $$PWD/analysisforms/multinomialtestform.h \
     $$PWD/ribbons/ribbonmeta_analysis.h \
-    $$PWD/analysisforms/classicalmetaanalysisform.h
+    $$PWD/analysisforms/classicalmetaanalysisform.h \
+    $$PWD/module.h
 
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \

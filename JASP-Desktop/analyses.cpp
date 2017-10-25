@@ -44,17 +44,17 @@ Analyses::Analyses()
 	//timer->start();
 }
 
-Analysis *Analyses::create(const QString &name)
+Analysis *Analyses::create(const QString &module, const QString &name)
 {
-	return create(name, _nextId++, AppInfo::version, NULL, Analysis::Empty);
+	return create(module, name, _nextId++, AppInfo::version, NULL, Analysis::Empty);
 }
 
-Analysis *Analyses::create(const QString &name, int id, const Version &version, Json::Value *options, Analysis::Status status)
+Analysis *Analyses::create(const QString &module, const QString &name, int id, const Version &version, Json::Value *options, Analysis::Status status)
 {
 	if (id >= _nextId)
 		_nextId = id + 1;
 
-	Analysis *analysis = AnalysisLoader::load(id, name.toStdString(), version, options);
+	Analysis *analysis = AnalysisLoader::load(id, module.toStdString(), name.toStdString(), version, options);
 	analysis->setStatus(status);
 
 //	if (options == NULL)

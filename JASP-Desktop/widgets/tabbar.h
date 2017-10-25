@@ -29,6 +29,7 @@
 #include <QMenuBar>
 #include <QAction>
 #include <QSettings>
+#include <QSignalMapper>
 
 class PreferencesDialog;
 
@@ -37,24 +38,28 @@ class PreferencesDialog;
 class TabBar : public QWidget
 {
 	Q_OBJECT
+
 public:
 	explicit TabBar(QWidget *parent = 0);
+	void init();
 
-	void addTab(QString tabName);
+	void addTab(QString name);
+	void addModulesPlusButton();
 	void removeTab(QString tabName);
-	void removeTab(int index);
+
 	QString getCurrentActiveTab();
-    void setExactPValues(bool exactPValues);
+	void setCurrentModuleActive();
+	void setCurrentTab(QString name);
+	QStringList getCurrentModules();
+	void setModulePlusMenu(QStringList usedModules = QStringList());
+
+	void setExactPValues(bool exactPValues);
     void setFixDecimals(QString numDecimals);
     void emptyValuesChanged();
 
-	void addOptionsTab();
-	void addHelpTab();
 
 	int count() const;
 	PreferencesDialog *getPreferencesDialog();
-	
-
 
 signals:
 	void currentChanged(int index);
@@ -64,38 +69,31 @@ signals:
 	void setFixDecimalsHandler(QString numDecimals);
 	void emptyValuesChangedHandler();
 
-public slots:
-	void setCurrentIndex(int index);
-
 private slots:
 	void tabSelectedHandler();
 	void helpToggledHandler(bool on);
 	void showAbout();
 	void showPreferences();
 	void toggleHelp();
-	void toggleSEM();
-	void toggleReinforcement();
-	void toggleSummaryStats();
-    void toggleMetaAnalysis();
-	void toggleNetworkAnalysis();
+	void toggleModule(QString name);
+	void handleModuleButton();
 
 private:
-
 	QWidget *_background;
 	QList<QPushButton *> _tabButtons;
 	QGridLayout *_backgroundLayout;
 	QHBoxLayout *_layout;
 
 	QPushButton *_helpTab;
-	QComboBox *_comboTab;
-	QMenu *_menuTab;
-	QMenuBar *_menuBarTab;
 	QSettings _settings;
-	QString _currentActiveTab;
-	
+	QPushButton *_currentTab = NULL;
+	QPushButton *_currentModule = NULL;
+
 	AboutDialog *_aboutDialog;
 	PreferencesDialog *_preferencesDialog;
-	
+	QPushButton *_modulesButton;
+	QSignalMapper *_signalModulesMapper;
+
 };
 
 #endif // TABBAR_H
