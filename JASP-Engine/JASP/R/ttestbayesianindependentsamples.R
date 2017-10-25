@@ -16,6 +16,7 @@
 #
 
 TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+  # 
 
 	dependents <- unlist(options$variables)
 
@@ -55,26 +56,29 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	meta <- list()
 
 	meta[[1]] <- list(name="ttest", type="table")
-	meta[[2]] <- list(name="descriptives", type="object", meta=list(list(name="descriptivesTable", type="table"), list(name = "descriptivesPlots", type = "collection", meta="image")))
-	meta[[3]] <- list(name="inferentialPlots", type="collection", meta=list(	name="plotGroups", type="object",
-																	meta=list(
-																				list(name="PriorPosteriorPlot", type="image"),
-																				list(name="BFrobustnessPlot", type="image"),
-																				list(name="BFsequentialPlot", type="image")
-																				)))
-
+	meta[[2]] <- list(name="descriptives", type="object", 
+	                  meta=list(list(name="descriptivesTable", type="table"), 
+	                            list(name = "descriptivesPlots", type = "collection", meta="image")
+	                  )
+	)
+	
+	meta[[3]] <- list(name="inferentialPlots", type="collection", 
+	                  meta=list(name="plotGroups", type="object",
+	                            meta=list(list(name="PriorPosteriorPlot", type="image"),
+	                                      list(name="BFrobustnessPlot", type="image"),
+	                                      list(name="BFsequentialPlot", type="image")
+	                            )
+	                  )
+	)
+	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian Independent Samples T-Test"
 
-
 	state <- .retrieveState()
-
 	diff <- NULL
 
 	if (!is.null(state)) {
-
 		diff <- .diff(options, state$options)
-
 	}
 
 	ttest.results <- .ttestBayesianIndependentSamplesTTest(dataset, options, perform, state=state, diff=diff)
@@ -165,7 +169,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 
 				} else {
-
 					descriptivesPlot <- list()
 
 					descriptivesPlot[["title"]] <- variable

@@ -16,7 +16,7 @@
 #
 
 Correlation <- function(dataset=NULL, options, perform="run", callback=function(...) 0, state=NULL, ...) {
-  
+  #
   stateKey <- list(
     correlationPlot = c("plotCorrelationMatrix", "plotDensities", "plotStatistics",
                         "variables", "pearson", "kendallsTauB", "spearman",
@@ -56,9 +56,10 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
   results <- list()
 
   meta <- list(
-      list(name="title", type="title"),
+    list(name="title", type="title"),
     list(name="correlations", type="table"),
-    list(name="plot", type="image"))
+    list(name="plot", type="image")
+  )
 
   results[[".meta"]] <- meta
 
@@ -67,23 +68,18 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
   results[["correlations"]] <- correlation.table
   
   keep <- NULL
+  
   if (length(correlation.plot) > 0) {
     keep <- correlation.plot$data
   }
       
   if (perform == "init") {
-
     if (length(options$variables) < 2) {
-
       return(list(results=results, status="complete", keep=keep))
-
     } else {
-
       return(list(results=results, status="inited", state=state, keep=keep))
     }
-
   } else { # run
-    
     state <- list(options=options, correlationPlot=correlation.plot, tableData=tableData)
     attr(state, "key") <- stateKey
     
@@ -93,9 +89,10 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 .calculateCorrelations <- function(dataset, perform, options, stateTableData, variables=c(), pearson=TRUE, kendallsTauB=FALSE,
   spearman=FALSE, hypothesis="correlated", CI=0.95) {
-  
+  # 
   ready <- FALSE
   variables <- unlist(variables)
+  
   if (length(variables) == 0) {
     variables <- c(variables, "...", "... ") # we need this trailing space so 1 != 2
   } else if (length(variables) == 1) {
@@ -119,20 +116,20 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
   }
   
   pairs <- combn(variables, 2, simplify=FALSE)
+  
   for (i in seq_along(pairs)) {
-
+    # 
     var1 <- pairs[[i]][1]
     var2 <- pairs[[i]][2]
     pairName <- paste(sort(c(var1, var2)), collapse="-")
 
     for (test in tests) {
-    
       errorMessage <- NULL
       estimate <- p.value <- MPR <- upperCI <- lowerCI <- "."
       
       if (! is.null(stateTableData) && ! is.null(stateTableData[["result"]][[pairName]][[test]])) {
-
-
+        # If state exists, then fill up table
+        #
         resultsPair <- stateTableData[["result"]][[pairName]][[test]]
         estimate <- resultsPair$estimate
         p.value <- resultsPair$p.value
@@ -140,31 +137,24 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
         upperCI <- resultsPair$upperCI
         lowerCI <- resultsPair$lowerCI
         errorMessage <- resultsPair$errorMessage
-
       } else if (perform == "run" && ready) {
-
+        # here do calculations
+        #
         errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('variance', 'infinity', 'observations'),
                              all.target = c(var1, var2), observations.amount = "< 3")
+        
         if (! identical(errors, FALSE)) {
-
           estimate <- p.value <- MPR <- upperCI <- lowerCI <- "NaN"
           errorMessage <- errors$message
-
-        } else {          
-          
+        } else {
           obs1 <- dataset[[ .v(var1) ]]
           obs2 <- dataset[[ .v(var2) ]]
 
           if (hypothesis == "correlated") {
-
             result <- cor.test(obs1, obs2, method = test, alternative = "two.sided", conf.level = CI)
-          }
-          else if (hypothesis == "correlatedPositively") {
-
+          } else if (hypothesis == "correlatedPositively") {
             result <- cor.test(obs1, obs2, method = test, alternative = "greater", conf.level = CI)
-
           } else {
-
             result <- cor.test(obs1, obs2, method = test, alternative = "less", conf.level = CI)
           }
 
@@ -173,28 +163,20 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
           MPR <- .VovkSellkeMPR(p.value)
 
           if (test == "pearson") {
-
             upperCI <- as.numeric(result$conf.int[2])
             lowerCI <- as.numeric(result$conf.int[1])
-
           } else if (test == "spearman") {
-
             spearCI <- .createNonparametricConfidenceIntervals(obs1, obs2, obsCor = estimate, method = "spearman", hypothesis = hypothesis, confLevel = CI)
 
             upperCI <- as.numeric(spearCI[2])
             lowerCI <- as.numeric(spearCI[1])
-
           } else if (test == "kendall") {
-
             kendallCI <- .createNonparametricConfidenceIntervals(obs1, obs2, obsCor = estimate, method = "kendall", hypothesis = hypothesis, confLevel = CI)
 
             upperCI <- as.numeric(kendallCI[2])
             lowerCI <- as.numeric(kendallCI[1])
-
           }
-
         }
-
       }
 
       results[["result"]][[pairName]][[test]] <- list(
@@ -205,11 +187,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
           lowerCI = .clean(lowerCI),
           errorMessage = errorMessage
       )
-
     }
-
   }
-
   return(results)
 }
 
@@ -234,28 +213,23 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
   hypothesis <- tableData$hypothesis
   footnotes <- .newFootnotes()
   if (flagSignificant || reportSignificance) {
-
     if (hypothesis == "correlatedPositively") {
       .addFootnote(footnotes, "all tests one-tailed, for positive correlation", symbol="<i>Note</i>.")
     } else if (hypothesis == "correlatedNegatively") {
       .addFootnote(footnotes, "all tests one-tailed, for negative correlation", symbol="<i>Note</i>.")
     }
-    
   }
 
   if (flagSignificant) {
-
     if (hypothesis == "correlated") {
       .addFootnote(footnotes, "p < .05, ** p < .01, *** p < .001", symbol="*")
     } else {
       .addFootnote(footnotes, "p < .05, ** p < .01, *** p < .001, one-tailed", symbol="*")
     }
-    
   }
 
   if (reportVovkSellkeMPR) {
-    
-    if (flagSignificant){
+    if (flagSignificant) {
       .addFootnote(footnotes, symbol = "\u207A", text = "Vovk-Sellke Maximum
       <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
       possible odds in favor of H\u2081 over H\u2080 equals
@@ -268,7 +242,6 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
       1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
       (Sellke, Bayarri, & Berger, 2001).")
     }
-    
   }
   
   variables <- tableData$variables
@@ -278,14 +251,13 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
   overTitles <- list(pearson="Pearson", spearman="Spearman", kendall="Kendall")
   
   if (displayPairwise) {
-    
     fields[[1]] <- list(name=".variable1", title="", type="string")
     fields[[2]] <- list(name=".separator", title="", type="separator")
     fields[[3]] <- list(name=".variable2", title="", type="string")
     
     for (test in tests) {
-      
       overTitle <- NULL
+      
       if (length(tests) > 1) {
         test.names <- list(pearson="r", spearman="rho", kendall="tau B")
         overTitle <- overTitles[[test]]
@@ -312,13 +284,10 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
       }
       
     }
-    
   } else {
-    
     fields[[1]] <- list(name=".variable", title="", type="string")
     
     for (test in tests) {
-
       if (length(tests) > 1 || (length(tests) == 1 && (reportSignificance || reportCI || reportVovkSellkeMPR))) {
         fields[[length(fields)+1]] <- list(name=paste0(".test[", test, "]"), title="", type="string")
       }
@@ -352,21 +321,17 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
           fields[[length(fields)+1]] <- list(name=paste0(variable.name, "[", test, "-lowerCI]"), title=variable.name, type="number", format="dp:3")
         }
       }
-      
     }
-    
   }
 
   correlation.table[["schema"]] <- list(fields=fields)
   
   template <- list()
+  
   if (displayPairwise) {
-    
     pairs <- combn(variables, 2, simplify=FALSE)
     template <- lapply(pairs, list)
-    
   } else {
-
     for (i in seq_along(variables)) {
       row.var <- variables[i]
       template[[row.var]] <- list()
@@ -381,31 +346,26 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
         }
       }
     }
-    
   }
   
   rows <- list()
   
   for (i in seq_along(template)) { # loop over row variables
-
     row <- list()
     row.footnotes <- list()
     row.pairs <- template[[i]]
     
     for (j in seq_along(row.pairs)) { # loop over pairs containing that row var
-      
       pair <- row.pairs[[j]]
       
       for (test in tests) {
-        
         col.est <- test
         col.p <- paste0(test, "-p")
         col.mpr <- paste0(test, "-MPR")
         col.upperCI <- paste0(test, "-upperCI")
         col.lowerCI <- paste0(test, "-lowerCI")
         
-        if (! displayPairwise) {
-          
+        if ( ! displayPairwise) {
           col.var <- variables[j]
           col.est <- paste0(col.var, "[", col.est, "]") # contNormal[pearson]
           col.p <- paste0(col.var, "[", col.p, "]") # contNormal[pearson-p]
@@ -447,7 +407,6 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
         result <- tableData$result[[pairName]][[test]]
         
         if (flagSignificant && is.numeric(result$p.value)) {
-
           if (result$p.value < .001) {
             row.footnotes[[col.est]] <- list("***")
           } else if (result$p.value < .01) {
@@ -455,7 +414,6 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
           } else if (result$p.value < .05) {
             row.footnotes[[col.est]] <- list("*")
           }
-          
         }
         
         row[[col.est]] <- result$estimate
@@ -477,7 +435,6 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
         }
         
       } # end loop over columns
-
     } # end loop over tests
     
     if (displayPairwise) {
@@ -492,39 +449,29 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
       row[[".footnotes"]] <- row.footnotes
 
     rows[[i]] <- row
-    
   } # end loop over rows
 
   correlation.table[["data"]] <- rows
   correlation.table[["footnotes"]] <- as.list(footnotes)
-
   return(correlation.table)
 }
 
 .plotCorrelations <- function(dataset, perform, options) {
-
   variables <- unlist(options$variables)
   correlation.plot <- NULL
 
    if (perform == "init" && length(variables) > 1) {
-     
     l <- length(variables)
 
     if (l <= 2 && (options$plotDensities || options$plotStatistics)) {
-
       width <- 580
       height <- 580
-
     } else if (l <= 2) {
-
       width <- 400
       height <- 400
-
     } else {
-
       width <- 250 * l
       height <- 250 * l
-
     }
 
     plot <- list()
@@ -534,13 +481,10 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
     plot[["height"]] <- height
 
     correlation.plot <- plot
-    
   } else if (perform == "run" && length(variables) > 1) {
-
     variable.statuses <- vector("list", length(variables))
 
     for (i in seq_along(variables)) {
-
       variable.statuses[[i]]$unplotable <- FALSE
       variable.statuses[[i]]$plottingError <- NULL
 
@@ -550,27 +494,20 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
         variable.statuses[[i]]$unplotable <- TRUE
         variable.statuses[[i]]$plottingError <- errors$message
       }
-      
     }
     
     variables <- .v(variables)
     l <- length(variables)
 
     if (l <= 2 && (options$plotDensities || options$plotStatistics)) {
-
       width <- 580
       height <- 580
-
     } else if (l <= 2) {
-
       width <- 400
       height <- 400
-
     } else {
-
       width <- 250 * l
       height <- 250 * l
-
     }
 
     plot <- list()
@@ -584,55 +521,42 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
     .plotFunc <- function() {
       if (l == 2 && !options$plotDensities && !options$plotStatistics) {
-
         par(mfrow= c(1, 1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
 
         if ( ! variable.statuses[[1]]$unplotable && ! variable.statuses[[2]]$unplotable) {
-
           maxYlab <- .plotScatter(dataset[[variables[1]]], dataset[[variables[2]]])
           distLab <- maxYlab / 1.8
 
           mtext(text = .unv(variables)[1], side = 1, cex=1.5, line = 3)
           mtext(text = .unv(variables)[2], side = 2, cex=1.5, line = distLab + 2, las=0)
-
         } else {
-
           errorMessages <- c(variable.statuses[[1]]$plottingError, variable.statuses[[2]]$plottingError)
           errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
           .displayError(errorMessagePlot, cexText=cexText)
         }
-
       } else if (l >= 2) {
-
-      if (l == 2)
-        cexText <- 1.3
+        if (l == 2) { 
+          cexText <- 1.3
+        }
 
         par(mfrow= c(l, l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0.2, 2.2, 2, 0))
 
         for (row in seq_len(l)) {
-
           for (col in seq_len(l)) {
-
             if (row == col) {
-
               if (options$plotDensities) {
-
                 if ( ! variable.statuses[[row]]$unplotable) {
                   .plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
                 } else {
                   .displayError(variable.statuses[[row]]$plottingError, cexText=cexText)
                 }
-
               } else {
-
                 plot(1, type= "n", axes= FALSE, ylab="", xlab="")
               }
             }
 
             if (col > row) {
-
               if (options$plotCorrelationMatrix) {
-
                 if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
                   .plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
                 } else {
@@ -640,20 +564,14 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                   errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
                   .displayError(errorMessagePlot, cexText=cexText)
                 }
-
               } else {
-
                 plot(1, type= "n", axes= FALSE, ylab="", xlab="")
-
               }
             }
 
             if (col < row) {
-
               if (l < 7) {
-
                 if (options$plotStatistics) {
-
                   if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
                     .plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], hypothesis= options$hypothesis,
                     pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval) # plot r= ...
@@ -662,18 +580,13 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                     errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
                     .displayError(errorMessagePlot, cexText=cexText)
                   }
-
                 } else {
-
                   plot(1, type= "n", axes= FALSE, ylab="", xlab="")
-
                 }
               }
 
               if (l >= 7) {
-
                 if (options$plotStatistics) {
-
                   if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
                     .plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], cexCI= 1.2, hypothesis= options$hypothesis,
                     pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval)
@@ -682,11 +595,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                     errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
                     .displayError(errorMessagePlot, cexText=cexText)
                   }
-
                 } else {
-
                   plot(1, type= "n", axes= FALSE, ylab="", xlab="")
-
                 }
               }
             }
@@ -695,26 +605,18 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
       }
 
       if (l > 2 || ((l == 2 && options$plotDensities) || (l == 2 && options$plotStatistics))) {
-
         textpos <- seq(1/(l*2), (l*2-1)/(l*2), 2/(l*2))
 
         if (!options$plotDensities && !options$plotStatistics) {
-
             for (t in seq_along(textpos)) {
-
               mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.5, line= -0.8)
 
               if (t < length(textpos)) {
-
                 mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.5, line= -0.1, las= 0)
-
               }
             }
-
         } else {
-
           for (t in seq_along(textpos)) {
-
               mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.5, line= -0.8)
               mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.5, line= -0.1, las= 0)
           }
@@ -737,7 +639,6 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 #### histogram with density estimator ####
 .plotMarginalCor <- function(variable, cexYlab= 1.3, lwd= 2, rugs= FALSE) {
-
   variable <- variable[!is.na(variable)]
 
   density <- density(variable)
@@ -764,20 +665,16 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 # predictions of fitted model
 .poly.pred <- function(fit, line=FALSE, xMin, xMax, lwd) {
-
   # create function formula
   f <- vector("character", 0)
 
   for (i in seq_along(coef(fit))) {
-
     if (i == 1) {
-
       temp <- paste(coef(fit)[[i]])
       f <- paste(f, temp, sep="")
     }
 
     if (i > 1) {
-
       temp <- paste("(", coef(fit)[[i]], ")*", "x^", i-1, sep="")
       f <- paste(f, temp, sep="+")
     }
@@ -797,7 +694,6 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 
 .plotScatter <- function(xVar, yVar, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2) {
-
   d <- data.frame(xx= xVar, yy= yVar)
   d <- na.omit(d)
   xVar <- d$xx
@@ -819,7 +715,6 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
   bestModel <- 1 # which.min(Bic)
 
-
   xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
   xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
   xticks <- pretty(c(xlow, xhigh))
@@ -828,17 +723,12 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 
   yticks <- pretty(c(ylow, yhigh))
-
   yLabs <- vector("character", length(yticks))
 
   for (i in seq_along(yticks)) {
-
     if (yticks[i] < 10^6 && yticks[i] > 10^-6) {
-
       yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
-
     } else {
-
       yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
     }
   }
@@ -877,9 +767,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
   lab <- vector("list")
 
   for (i in seq_along(tests)) {
-
     if (round(cor.test(xVar, yVar, method=tests[i])$estimate, 8) == 1){
-
       CIPossible <- FALSE
 
       if(tests[i] == "pearson"){
@@ -893,9 +781,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
       if(tests[i] == "kendall"){
         lab[[i]] <- bquote(italic(tau) == "1.000")
       }
-
     } else if (round(cor.test(xVar, yVar, method=tests[i])$estimate, 8) == -1){
-
       CIPossible <- FALSE
 
       if(tests[i] == "pearson"){
@@ -909,9 +795,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
       if(tests[i] == "kendall"){
         lab[[i]] <- bquote(italic(tau) == "-1.000")
       }
-
     } else {
-
       if(tests[i] == "pearson"){
         lab[[i]] <- bquote(italic(r) == .(formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format="f", digits= 3)))
       }
@@ -941,33 +825,24 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 
   for (i in seq_along(tests)) {
-
     text(1, ypos[i], labels= lab[[i]], cex= cexText)
   }
 
 
   if (hypothesis == "correlated" & length(tests) == 1 & any(tests == "pearson")) {
-
     alternative <- "two.sided"
     ctest <- cor.test(xVar, yVar, method= tests, conf.level=confidenceInterval)
   }
 
   if (hypothesis != "correlated" & length(tests) == 1 & any(tests == "pearson")) {
-
     if (hypothesis == "correlatedPositively") {
-
       ctest <- cor.test(xVar, yVar, method=tests, alternative="greater", conf.level=confidenceInterval)
-
     } else if (hypothesis == "correlatedNegatively") {
-
       ctest <- cor.test(xVar, yVar, method=tests, alternative="less", conf.level=confidenceInterval)
     }
-
   }
 
-
   if (any(tests == "pearson")& length(tests) == 1 && CIPossible) {
-
     CIlow <- formatC(round(ctest$conf.int[1],3), format = "f", digits = 3)
     CIhigh <- formatC(round(ctest$conf.int[2],3), format = "f", digits = 3)
 
@@ -978,10 +853,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 ### empty Plot with error message ###
 .displayError <- function(errorMessage=NULL, cexText=1.6, lwdAxis= 1.2) {
-
   plot(1, type='n', xlim=c(-1,1), ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
   text(0, .5, errorMessage, cex=cexText)
-
 }
 
 ### Utility functions for nonparametric confidence intervals ###
@@ -1016,12 +889,12 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
     for (i in 1:n) {
       concordanceSumsVector[i] <- .addConcordances(x, y, i)
     }
-    sigmaHatSq <- 2 * (n - 2) * var(concordanceSumsVector) / n / (n-1)
+    sigmaHatSq <- 2 * (n-2) * var(concordanceSumsVector) / (n*(n-1))
     sigmaHatSq <- sigmaHatSq + 1 - (obsCor)^2
-    sigmaHatSq <- sigmaHatSq * 2 / n / (n - 1)
+    sigmaHatSq <- sigmaHatSq * 2 / (n*(n-1))
     
     if (hypothesis=="correlated"){
-      z <- qnorm(alpha / 2, lower.tail = FALSE)
+      z <- qnorm(alpha/2, lower.tail = FALSE)
     } else if (hypothesis!="correlated") {
       z <- qnorm(alpha, lower.tail = FALSE)
     }
@@ -1032,14 +905,14 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
     } else if (hypothesis=="correlatedNegatively") {
       ciLow <- -1
     }
-    
-  } else if (method == "spearman"){
-    stdErr = 1 / sqrt(n-3)
+  } else if (method == "spearman") {
+    stdErr = 1/sqrt(n-3)
     if (hypothesis=="correlated") { 
-      z <- qnorm(alpha / 2, lower.tail = FALSE)
+      z <- qnorm(alpha/2, lower.tail = FALSE)
     } else if (hypothesis!="correlated") {
       z <- qnorm(alpha, lower.tail = FALSE)
     }
+    
     ciLow = tanh(atanh(obsCor) - z * stdErr)
     ciUp = tanh(atanh(obsCor) + z * stdErr)
     
