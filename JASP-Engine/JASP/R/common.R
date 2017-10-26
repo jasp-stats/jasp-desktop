@@ -1200,3 +1200,18 @@ saveImage <- function(plotName, format, height, width){
 		
 	return(list(cl=cl, progress=list(progress=progress), dopar=dopar, stopCluster=stopCluster))
 }
+
+# Compatibility for linux users with R < 3.3
+if (exists("R.version") && isTRUE(R.version$minor < 3.3)) {
+
+	startsWith <- function(x, prefix) {
+		start <- substring(x, 1, nchar(prefix))
+		return(start == prefix)
+	}
+
+	endsWith <- function(x, suffix) {
+		end <- substring(x, nchar(x) - nchar(suffix) + 1)
+		return(end == suffix)
+	}
+
+}
