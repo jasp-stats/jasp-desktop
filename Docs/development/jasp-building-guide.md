@@ -60,13 +60,13 @@ The directory structure should be as follows:
 Mac OS X
 --------
 
- - [R 3.3.3](https://static.jasp-stats.org/development/R3.3%20OSX%20JASP%200.8.3.zip)
- - [boost 1.64.0](https://static.jasp-stats.org/development/boost_1_64_0.zip)
- - [boost 1.64.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Additional%20Binary%20Deps%20OSX%20for%20JASP%20(2017-06-06).zip)
+ -1. [R 3.3.3](https://static.jasp-stats.org/development/R3.3%20OSX%20JASP%200.8.3.zip)
+ -2. [boost 1.64.0](https://static.jasp-stats.org/development/boost_1_64_0.zip)
+ -3. [boost 1.64.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Additional%20Binary%20Deps%20OSX%20for%20JASP%20(2017-06-06).zip)
 
 XCode: Qt on OS X relies on XCode to function, you can install this through the App Store. It's easiest if you install this, run it, accept the license agreement, and then close it down before installing Qt.
 
-Qt: building JASP on OS X is pretty robust, and most versions work. We currently use 5.4.0, but newer versions will probably work too. You can download it from [here](https://download.qt.io/archive/qt/).
+Qt: building JASP on OS X is pretty robust, and most versions work. We currently use 5.4.0, but newer versions will probably work too. You can download it from [here](https://download.qt.io/archive/qt/). 
 
 The directory structure should be as follows:
 
@@ -79,6 +79,13 @@ The directory structure should be as follows:
 		- libboost_filesystem-clang-mt-1_64.a
 		- libarchive.a
 		- libz.a
+
+ -0. Clone the JASP repository into a folder of your choice. Our default choice is ~/desktop/JASP/, this will create the folder 
+    [+] jasp-desktop 
+ QT will make the build-JASP-.... directory in this folder for you as well.
+ -1. Create the folder "Frameworks" in the folder of your choice and unzip the [R 3.3.3] files into there
+ -2. Unzip [boost 1.64.0] files in jasp-desktop
+ -3. Unzip the [boost 1.64.0 binaries, libarchive binaries] files and put them into the build-JASP-.... directory that QT creates. 
 
 Linux
 -----
