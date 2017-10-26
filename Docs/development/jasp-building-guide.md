@@ -80,12 +80,11 @@ The directory structure should be as follows:
 		- libarchive.a
 		- libz.a
 
- -0. Clone the JASP repository into a folder of your choice. Our default choice is ~/desktop/JASP/, this will create the folder 
-    [+] jasp-desktop 
- QT will make the build-JASP-.... directory in this folder for you as well.
+ 0. Clone the JASP repository into a folder of your choice. Our default choice is ~/desktop/JASP/, this will create the folder /jasp-desktop and QT will make the build-JASP-.... directory in this folder.
  1. Create the folder "Frameworks" in the folder of your choice and unzip the [R 3.3.3] files into there
  2. Unzip [boost 1.64.0] files in jasp-desktop
  3. Unzip the [boost 1.64.0 binaries, libarchive binaries] files and put them into the build-JASP-.... directory that QT creates. 
+
 
 Linux
 -----
