@@ -33,7 +33,8 @@ ClassicalMetaAnalysisForm::ClassicalMetaAnalysisForm(QWidget *parent) :
 	_dependentModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->dependent->setModel(_dependentModel);
 
-    QString methods0 = "FE,DL,HE,SJ,ML,REML,EB,HS,GENQ";
+    // QString methods0 = "FE,DL,HE,SJ,ML,REML,EB,HS"; // full is "FE,DL,HE,SJ,ML,REML,EB,HS,GENQ", but GENQ needs weights UI element that isn't yet implemented...;
+    QString methods0 = "Fixed Effects,Maximum Likelihood,Restricted ML,DerSimonian-Laird,Hedges,Hunter-Schmidt,Sidik-Jonkman,Empirical Bayes,Paule-Mandel";
     //QStringList methods = (QStringList << "FE" << "DL" << "HE" << "SJ" << "ML" << "REML" << "EB" << "HS" << "GENQ");
     QStringList methods = methods0.split(",");
     ui->method->addItems(methods);

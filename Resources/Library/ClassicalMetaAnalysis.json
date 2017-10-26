@@ -10,8 +10,8 @@
 		{
 			"name": "method",
 			"type": "List",
-			"options": [ "FE", "DL", "HE", "SJ", "ML", "REML", "EB", "HS", "GENQ" ],
-			"default": "REML"
+			"options": [ "Fixed Effects", "Maximum Likelihood", "Restricted ML", "DerSimonian-Laird", "Hedges", "Hunter-Schmidt", "Sidik-Jonkman", "Empirical Bayes", "Paule-Mandel"],
+			"default": "Restricted ML"
 		},
 		{
 			"name": "test",

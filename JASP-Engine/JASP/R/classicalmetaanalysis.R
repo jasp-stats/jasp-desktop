@@ -128,6 +128,11 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
       exitAnalysisIfErrors=TRUE)
   }
   
+  method = switch(options$method, `Fixed Effects` = "FE", `Maximum Likelihood` = "ML",
+      `Restricted ML` = "REML", `DerSimonian-Laird` = "DL", `Hedges` = "HE",
+      `Hunter-Schmidt` = "HS", `Sidik-Jonkman` = "SJ", `Empirical Bayes` = "EB",
+      `Paule-Mandel` = "PM", "REML")
+
   can.run = all(c(effsizeName, stderrName) != "")
   
   ## Run the analysis. ####
@@ -136,26 +141,25 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
                     'zval' = numeric(),'pval' = numeric()), class = c("dummy", "rma"))
     
     if (run && can.run) {
-      #.vmodelTerms = b64(options$modelTerms) # map true names to base64
-      .vmodelTerms = options$modelTerms
-      dataset = d64(dataset)
       
+      .vmodelTerms = options$modelTerms
       formula.rhs <- as.formula(as.modelTerms(.vmodelTerms))
       if (is.null(formula.rhs)) 
         formula.rhs = ~1
       if (!options$includeConstant) 
         formula.rhs = update(formula.rhs, ~ . + 0)
-      if( identical(formula.rhs, . ~ 1 - 1) )
+      if( identical(formula.rhs, ~ 1 - 1) )
         .quitAnalysis("The model should contain at least one predictor or an intercept.")
+
+      rma.fit <- tryCatch(
+        metafor::rma(
+          yi = get(b64(effsizeName)), sei = get(b64(stderrName)), data = dataset,
+          method=method, mods = b64(formula.rhs), test = options$test,
+          slab = if(options$studyLabel != "") get(b64(options$studyLabels)),
+          level = options$regressionCoefficientsConfidenceIntervalsInterval
+        ), error = .quitAnalysis)
       
-      rma.fit <- tryCatch(metafor::rma(
-        yi = get(effsizeName), sei = get(stderrName), data = dataset,
-        method=options$method, mods = formula.rhs, test = options$test,
-        slab = if(options$studyLabel != "") get(options$studyLabels),
-        level = options$regressionCoefficientsConfidenceIntervalsInterval
-      ), error = .quitAnalysis)
-      
-      rma.fit <- d64(rma.fit)
+      rma.fit <- d64(rma.fit, values = all.vars(b64(formula.rhs)))
       
     }
   }
@@ -195,14 +199,13 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   if (options$regressionCoefficientsEstimates) { 
     
     meta[[length(meta) + 1]] <- list(name = "table", type = "table")
-    title <- "Coefficients"
     cols <- c("Estimate", "Standard Error", "z", "p", "Lower Bound", "Upper Bound")
     
     if (is.null(coefficients) && run && can.run)
       coefficients <- .clean(coef(summary(rma.fit)))
       
-    table <- list(title = title)
-    if (! is.null(coefficients)) {
+    table <- list(title = "Coefficients")
+    if (!is.null(coefficients)) {
       table$x <- coefficients
       colnames(table$x) <- cols
       if (! options$regressionCoefficientsConfidenceIntervals) {
@@ -266,10 +269,8 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   ### Prepare Residuals Parameters ####
   
-  if (options$residualsParameters) { 
+  if (options$residualsParameters && method != "FE") { 
     
-    if (options$method == "FE") break # no confidence intervals for tau^2 FIXME: have to do this more gracefully
-        
     meta[[length(meta) + 1]] <- list(name = "residPars", type = "table")
     options(jasp_number_format = "sf:5;dp:4")
     title <- "Residual Heterogeneity Estimates"
@@ -390,29 +391,26 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     table <- list(title = "Influence Measures")
     cols <- c("Std. Residual", "DFFITS", "Cook's Distance", "Cov. Ratio", 
               "&tau;&sup2;<sub>(-i)</sub>", "Q<sub>E(-i)</sub>", "Hat", "Weight")
-    if (! is.null(influ)) {
+    if (!is.null(influ)) {
       table$x <- influ$inf
       colnames(table$x) <- cols
+      influential = rownames(influ$inf)[which(influ$is.infl)]
+      postfix = ifelse(!is.na(influ$is.infl) & influ$is.infl, "*","")
+      rownames(table$x) = paste0(rownames(table$x), postfix)
     } else {
       table$x <- cols
+      influential = c()
     }
 
     influTable = do.call(as.jaspTable, table)
     
     # Markup influential cases in a footnote
-    influential = rownames(influ$inf)[which(influ$is.infl)]
     ninfl = length(influential)
     
     if (ninfl > 0) {
-      if (ninfl == 1) {
-        ftnote = sprintf("Case %s is influential.", sQuote(influential)) 
-      } else {
-        ftnote = paste0(sQuote(influential[-ninfl]), collapse = ", ")
-        ftnote = sprintf("Cases %s and %s are influential.", ftnote,  sQuote(influential[ninfl]))
-      }
-      
       infl.footn <- .newFootnotes()
-      .addFootnote(infl.footn, symbol = "<em>Note.</em>", text = ftnote)
+      .addFootnote(infl.footn, symbol = "<em>Note.</em>", 
+                   text = "Cases marked with * are influential.")
       influTable[["footnotes"]] <- as.list(infl.footn)
     }
     
@@ -422,28 +420,21 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   ### Prepare Fail-safe N diagnostics table ####
   
-  if (options$plotResidualsCovariates) { 
+  if (options$plotResidualsCovariates & run & can.run) { 
     
     meta[[length(meta) + 1]] <- list(name = "failsafen", type = "table")
+
+    fsn.fit <- 
+      metafor::fsn(yi = get(b64(effsizeName)), sei = get(b64(stderrName)), data = dataset)
+    fsn.fit = d64(fsn.fit)
+
+    failsnTable = do.call(data.frame, fsn.fit[c('fsnum','alpha','pval')])
+    colnames(failsnTable) = c('Fail-safe N', 'Target Significance', 'Observed Significance')
+    rownames(failsnTable) = fsn.fit[['type']]
+    
     options(jasp_number_format = "sf:5;dp:4")
-    title <- "File Drawer Analysis"
-    cols <- c("Fail-safe N", "&alpha;", "p")
-    
-    if (is.null(fsn.fit) && run && can.run)
-      fsn.fit <- metafor::fsn(yi = get(effsizeName), sei = get(stderrName), 
-        data = dataset, digits = 12)
-    
-    table <- list(title = title)
-    if (! is.null(fsn.fit)) {
-      table$x <- do.call(data.frame, fsn.fit[c('fsnum','alpha','pval')])
-      colnames(table$x) <- cols
-      rownames(table$x) <- fsn.fit[["type"]]
-    } else {
-      table$x <- cols
-    }
-    
-    influTable = do.call(as.jaspTable, table)
-    results[["failsafen"]] <- influTable
+    failsnTable = as.jaspTable(.clean(failsnTable), title = "File Drawer Analysis")
+    results[["failsafen"]] <- failsnTable
     
   }
   
@@ -467,7 +458,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     
     if (is.null(forestPlot)) {
       forest.img <- .writeImage(width = 520, height = 520, function() cmaForest(rma.fit, cex.lab=1.2, las=1))
-      forestPlot <- list(title="Forest plot", width = 500, height = 500, convertable = TRUE, 
+      forestPlot <- list(title="Forest plot", width = 500, height = 500, convertible = TRUE, 
                     obj = forest.img[["obj"]], data = forest.img[["png"]], 
                     status = "complete")
     }
@@ -480,7 +471,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     
     if (is.null(funnelPlot)) {
       funnel.img <- .writeImage(width = 520, height = 520, function() metafor::funnel(rma.fit, las=1))
-      funnelPlot <- list(title="Funnel plot", width = 500, height = 500, convertable = TRUE, 
+      funnelPlot <- list(title="Funnel plot", width = 500, height = 500, convertible = TRUE, 
                     obj = funnel.img[["obj"]], data = funnel.img[["png"]], 
                     status = "complete")
     }
@@ -493,7 +484,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     
     if (is.null(diagnosticsPlot)) {
       diagnostics.img <- .writeImage(width = 820, height = 820, function() plot(rma.fit, qqplot = options$plotResidualsQQ, las=1))
-      diagnosticsPlot <- list(title = "Diagnostic plots", width = 820, height = 820, convertable = TRUE, 
+      diagnosticsPlot <- list(title = "Diagnostic plots", width = 820, height = 820, convertible = TRUE, 
                     obj = diagnostics.img[["obj"]], data = diagnostics.img[["png"]],
                     status = "complete")
     }
@@ -506,7 +497,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     
     if (is.null(profilePlot)) {
       profile.img <- .writeImage(width = 520, height = 520, function() profile(rma.fit, cex.lab=1.2, las=1))
-      profilePlot <- list(title = "Log-likelihood profile for &tau;&sup2;", width = 520, height = 520, convertable = TRUE, 
+      profilePlot <- list(title = "Log-likelihood profile for &tau;&sup2;", width = 520, height = 520, convertible = TRUE, 
                     obj = profile.img[["obj"]], data = profile.img[["png"]],
                     status = "complete")
     }
@@ -521,7 +512,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     if (is.null(trimfillPlot)) {
       trimfill.fit <- metafor::trimfill(update(rma.fit, mods = ~1))
       trimfill.img <- .writeImage(width = 820, height = 820, function() plot(trimfill.fit, qqplot=T, cex.lab=1.2, las=1))
-      trimfillPlot <- list(title = "Trim-fill Analysis", width = 820, height = 820, convertable = TRUE, 
+      trimfillPlot <- list(title = "Trim-fill Analysis", width = 820, height = 820, convertible = TRUE, 
                     obj = trimfill.img[["obj"]], data = trimfill.img[["png"]],
                     status = "complete")
     }
@@ -584,29 +575,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
 }
 
-as.modelTerms <- function(object, ...) UseMethod("as.modelTerms")
-as.modelTerms.list <- function(object) structure(object, class = "modelTerms")
-as.modelTerms.formula = function(formula) structure(sapply(attr(terms(formula), "term.labels"), strsplit, ":"), class="modelTerms")
-b64.modelTerms = function(object) structure(b64(unclass(object)), class="modelTerms")
-d64.modelTerms = function(object) structure(d64(unclass(object)), class="modelTerms")
-b64.formula = function(formula) as.formula(b64(as.modelTerms(formula)))
-d64.formula = function(formula) as.formula(d64(as.modelTerms(formula)))
 
-formula.modelTerms <- function(modelTerms, env = parent.frame()) {
-  # Converts a modelTerms list into a one-side R formula
-  #
-  # Args:
-  #   modelTerms:  A list of interaction terms, each term being a list of variable names involved in the interaction
-  #   env:         An environement associated with the variables in the formula, see ?as.formula
-  #
-  # Value:
-  #   A formula. See ?formula
-  #
-  terms = sapply(modelTerms, function(x) paste0(unlist(x), collapse = ":"))
-  terms = terms[terms != ""]
-  formula.rhs = paste(terms, collapse = " + ")
-  if (formula.rhs != "") as.formula(paste(" ~ ", formula.rhs), env = env)
-}
 
 analysisTitle <- function(object) {
   title <- capture.output(print(object, showfit = F, signif.legend = F))[2]
@@ -671,17 +640,61 @@ forest.dummy <- function(object, ...) {
   # do nothing
 }
 
-b64.rma <- function(x, ...) {
+b64.rma <- function(object, ...) {
   ## Translate names in object x to base64 
-  idx = c('b', 'beta', 'call')
-  x[idx] = b64(x[idx])
-  x
+  
+  # which elements in object have a names or dimnames attribute?
+  idx = which(sapply(object, function(x) !is.null(names(x)) || !is.null(dimnames(x)))) 
+  if (is.null(list(...)$values)) {
+    
+    # infer the values to be translated from the object call
+    formula = eval(object$call$mods)
+    if (!inherits(formula, "formula"))
+      stop("Currently cannot infer 'values' when 'mods' is not a formula. Please provide 'values'.")
+    values = all.vars(formula)
+    
+    # translate object
+    object$call$mods = formula
+    object[idx] = b64(object[idx], values = values, ...)
+    
+  } 
+  else {
+    
+    # translate object
+    object[idx] = b64(object[idx], ...)
+    
+  }
+  object
 }
-d64.rma <- function(x, ...) {
+d64.rma <- function(object, ...) {
   ## Untranslate names in object x from base64 
-  idx = c('b', 'beta', 'call')
-  x[idx] = d64(x[idx])
-  x
+  
+  # which elements in object have a names or dimnames attribute?
+  idx = which(sapply(object, function(x) !is.null(names(x)) || !is.null(dimnames(x))))
+  
+  if (is.null(list(...)$values)) {
+    
+    # infer the values to be untranslated from the object call
+    formula = try(eval(object$call$mods))
+    if (!inherits(formula, "formula"))
+      stop("Currently cannot infer 'values' when 'mods' is not a formula. Please provide 'values'.")
+    values = all.vars(formula)
+    
+    # untranslate object
+    object$call$mods = formula
+    object[idx] = d64(object[idx], values = values, ...)
+    
+  }
+  else {
+    
+    # untranslate object
+    object[idx] = d64(object[idx], ...)
+    
+  }
+  object
+}
+d64.fsn <- function(object, ...) {
+  object # nothing to untranslate
 }
 
 
@@ -696,21 +709,22 @@ as_jaspTable.data.frame <- function(x, title = "", ...) {
   fields = lapply(c("name", names(x)), function(name) {
     if (is.null(x[[name]])) 
       return(list(name = "name", type = "string", format = "", title = ""))
-    y = x[[name]]
-    
-    type <- "" # converts to right aligned content
-    if (is.numeric(y)) {
-      type <- "number"
-      if (all(abs(y - round(y)) < .Machine$double.eps^0.5))
-        type <- "integer"
-    } else if (any(isTRUE(as.character(y) != "."))) { # dont left-align dots
-      type <- "string"
-    }
-    
+    y = na.omit(x[[name]])
+
+    type = ""
+    tryCatch(if (all(is.numeric(y))) {
+      if (any(abs(y - floor(y)) > 0L))
+        type = "number" 
+      else 
+        type = "integer" 
+    } else {
+      type = "string"
+    }, error = function(e) .quitAnalysis(paste(capture.output({print(x); print(name); print(y)}), collapse = "\n")))
+
     format <- ""
     if (type == "number") {
       format <- options(paste0("jasp_",type,"_format"))[[1]]
-      if (name == "p" || name == "pval")
+      if (name == "p" | name == "pval")
         format <- "dp:3;p:.001"
     }
     
@@ -746,12 +760,12 @@ as_jaspTable.matrix <- function(x, ...) {
   # use data.frame method
   jaspTable <- as.jaspTable(as.data.frame(x), ...)
   
-  # recompute the data (necessary to work properly with repeated row names) 
+  # recompute the "data" entry (necessary to work properly with repeated row names) 
   if (nrow(x) > 0) {
     Table <- .clean(as.data.frame(x))
     Table <- cbind(name = rownames(x), Table); 
     
-    jasp.table <- lapply(1:nrow(Table), function(i) as.list(Table[i,])) # apply converts all to string
+    jasp.table <- lapply(1:nrow(Table), function(i) as.list(Table[i,])) # apply() converts all to string, so use lapply() 
     jaspTable[["data"]]  <- structure(jasp.table, .Names=NULL)
   }
   jaspTable
