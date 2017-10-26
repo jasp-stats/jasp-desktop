@@ -618,86 +618,11 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 
 	results[["ttest"]] <- ttest
 
-	descriptives <- NULL
-
+	# descriptives <- list()
 	if (options$descriptives) {
-
-		descriptives <- list()
-
-		descriptives[["title"]] <- "Descriptives"
-
-		fields <- list(
-			list(name="v", type="string", title=""),
-			list(name="N",                  type="integer"),
-			list(name="mean", title="Mean", type="number", format="sf:4;dp:3"),
-			list(name="sd",   title="SD",   type="number", format="sf:4;dp:3"),
-			list(name="se",   title="SE",   type="number", format="sf:4;dp:3"))
-
-			## add credible interval values if asked for in plot
-			if (options$descriptivesPlots) {
-				interval <- 100 * options$descriptivesPlotsCredibleInterval
-				title <- paste0(interval, "% Credible Interval")
-				fields[[length(fields) + 1]] <- list(name = "lowerCI", type = "number",
-													 format = "sf:4;dp:3", title = "Lower",
-													 overTitle = title)
-				fields[[length(fields) + 1]] <- list(name = "upperCI", type = "number",
-													 format = "sf:4;dp:3", title = "Upper",
-													 overTitle = title)
-			}
-
-		descriptives[["schema"]] <- list(fields=fields)
-
-		descriptives.results <- list()
-
-		variables <- unlist(options$pairs)
-		variables <- unique(variables)
-		variables <- variables[variables != ""]
-
-		for (variable in variables) {
-
-			if (perform == "run") {
-
-				result <- try (silent = TRUE, expr = {
-
-					variableData <- dataset[[.v(variable)]]
-					variableDataOm <- na.omit(variableData)
-
-					posteriorSummary <- .posteriorSummaryGroupMean(variable=variableDataOm, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
-					ciLower <- .clean(posteriorSummary$ciLower)
-					ciUpper <- .clean(posteriorSummary$ciUpper)
-
-					n <- .clean(as.numeric(length(variableDataOm)))
-					m <- .clean(as.numeric(mean(variableDataOm)))
-					std <- .clean(as.numeric(sd(variableDataOm)))
-					if(is.numeric(std)){
-						se <- .clean(as.numeric(std/sqrt(n)))}
-					else
-						se <- .clean(NaN)
-
-						list(v=variable, N=n, mean=m, sd=std, se=se, lowerCI=ciLower, upperCI=ciUpper)
-				})
-
-				if (isTryError(result)) {
-
-					result <- list(v=variable, N="", mean="", sd="", se="", lowerCI="", upperCI="")
-				}
-
-			} else {
-
-				result <- list(v=variable, N=".", mean=".", sd=".", se=".", lowerCI=".", upperCI=".")
-			}
-
-			descriptives.results[[length(descriptives.results)+1]] <- result
-		}
-
-		descriptives[["data"]] <- descriptives.results
-		descriptives[["status"]] <- "complete"
-
-
+	  descriptives <- .makeDescriptivesTableTTestBayesianPaired(dataset, options)
+	  results[["descriptives"]][["descriptivesTable"]] <- descriptives
 	}
-
-	results[["descriptives"]][["descriptivesTable"]] <- descriptives
-
 
 	# PLOTS
 
@@ -1122,4 +1047,82 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		ggplot2::scale_x_discrete(labels=c(nameV1, nameV2))
 
 	return(p)
+}
+
+.makeDescriptivesTableTTestBayesianPaired <- function(dataset, options) {
+  # Creates a descriptives table outputs the JSON format
+  # 
+  result <- list()
+  
+  result[["title"]] <- "Descriptives"
+  
+  # MarkUp: Defines the columns
+  fields <- list(
+    list(name="v", type="string", title=""),
+    list(name="N",                  type="integer"),
+    list(name="mean", title="Mean", type="number", format="sf:4;dp:3"),
+    list(name="sd",   title="SD",   type="number", format="sf:4;dp:3"),
+    list(name="se",   title="SE",   type="number", format="sf:4;dp:3"))
+  
+  # MarkUp: Defines additional columns
+  ## add credible interval values if asked for in plot
+  if (options$descriptivesPlots) {
+    interval <- 100 * options$descriptivesPlotsCredibleInterval
+    title <- paste0(interval, "% Credible Interval")
+    fields[[length(fields) + 1]] <- list(name = "lowerCI", type = "number",
+                                         format = "sf:4;dp:3", title = "Lower",
+                                         overTitle = title)
+    fields[[length(fields) + 1]] <- list(name = "upperCI", type = "number",
+                                         format = "sf:4;dp:3", title = "Upper",
+                                         overTitle = title)
+  }
+  
+  # MarkUp: Tell result its structure
+  # 
+  result[["schema"]] <- list(fields=fields)
+  
+  tableData <- list()
+  
+  variables <- unlist(options$pairs)
+  variables <- unique(variables)
+  variables <- variables[variables != ""]
+  
+  # Add row for each 
+  for (variable in variables) {
+    if (perform == "run") {
+      singleRow <- try (silent = TRUE, expr = {
+        variableData <- dataset[[.v(variable)]]
+        variableDataOm <- na.omit(variableData)
+        
+        posteriorSummary <- .posteriorSummaryGroupMean(variable=variableDataOm, 
+                                                       descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
+        ciLower <- .clean(posteriorSummary$ciLower)
+        ciUpper <- .clean(posteriorSummary$ciUpper)
+        
+        n <- .clean(as.numeric(length(variableDataOm)))
+        m <- .clean(as.numeric(mean(variableDataOm)))
+        std <- .clean(as.numeric(sd(variableDataOm)))
+        
+        if(is.numeric(std)) {
+          se <- .clean(as.numeric(std/sqrt(n)))
+        } else {
+          se <- .clean(NaN)
+        }
+        
+        list(v=variable, N=n, mean=m, sd=std, se=se, lowerCI=ciLower, upperCI=ciUpper)
+      })
+      
+      if (isTryError(singleRow)) {
+        singleRow <- list(v=variable, N="", mean="", sd="", se="", lowerCI="", upperCI="")
+      }
+      
+    } else {
+      singleRow <- list(v=variable, N=".", mean=".", sd=".", se=".", lowerCI=".", upperCI=".")
+    }
+    tableData[[length(tableData)+1]] <- singleRow
+  }
+  
+  result[["data"]] <- tableData
+  result[["status"]] <- "complete"
+  return(result)
 }
