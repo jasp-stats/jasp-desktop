@@ -36,19 +36,23 @@ NetworkAnalysisForm::NetworkAnalysisForm(QWidget *parent) :
     ui->variables->setModel(variablesModel);
     ui->variables->setDoubleClickTarget(ui->listAvailableFields);
 
+    ui->listAvailableFields_layout->setModel(&_availableVariablesModel);
+
     TableModelVariablesAssigned *groupingVariableModel = new TableModelVariablesAssigned(this);
     groupingVariableModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal | Column::ColumnTypeNominalText);
     groupingVariableModel->setVariableTypesAllowed(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal | Column::ColumnTypeNominalText);
     groupingVariableModel->setSource(&_availableVariablesModel);
     ui->groupingVariable->setModel(groupingVariableModel);
-    ui->groupingVariable->setDoubleClickTarget(ui->listAvailableFields);
+    ui->groupingVariable->setDoubleClickTarget(ui->listAvailableFields_layout);
+
+    ui->listAvailableFields_nodes->setModel(&_availableVariablesModel);
 
     TableModelVariablesAssigned *colorNodesByModel = new TableModelVariablesAssigned(this);
     colorNodesByModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal | Column::ColumnTypeNominalText);
     colorNodesByModel->setVariableTypesAllowed(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal | Column::ColumnTypeNominalText);
     colorNodesByModel->setSource(&_availableVariablesModel);
     ui->colorNodesBy->setModel(colorNodesByModel);
-    ui->colorNodesBy->setDoubleClickTarget(ui->listAvailableFields);
+    ui->colorNodesBy->setDoubleClickTarget(ui->listAvailableFields_nodes);
 
     TableModelVariablesAssigned *mgmVariableTypeModel = new TableModelVariablesAssigned(this);
     mgmVariableTypeModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal | Column::ColumnTypeNominalText);
@@ -63,27 +67,34 @@ NetworkAnalysisForm::NetworkAnalysisForm(QWidget *parent) :
     layoutXModel->setVariableTypesAllowed(Column::ColumnTypeScale);
     layoutXModel->setSource(&_availableVariablesModel);
     ui->layoutX->setModel(layoutXModel);
-    ui->layoutX->setDoubleClickTarget(ui->listAvailableFields);
+    ui->layoutX->setDoubleClickTarget(ui->listAvailableFields_layout);
 
     TableModelVariablesAssigned *layoutYModel = new TableModelVariablesAssigned(this);
     layoutYModel->setVariableTypesSuggested(Column::ColumnTypeScale);
     layoutYModel->setVariableTypesAllowed(Column::ColumnTypeScale);
     layoutYModel->setSource(&_availableVariablesModel);
     ui->layoutY->setModel(layoutYModel);
-    ui->layoutY->setDoubleClickTarget(ui->listAvailableFields);
+    ui->layoutY->setDoubleClickTarget(ui->listAvailableFields_layout);
 
     ui->buttonAssignVariables->setSourceAndTarget(ui->listAvailableFields, ui->variables);
     ui->buttonAssignGroupingVariable->setSourceAndTarget(ui->listAvailableFields, ui->groupingVariable);
-    ui->buttonAssignColorNodesBy->setSourceAndTarget(ui->listAvailableFields, ui->colorNodesBy);
+    ui->buttonAssignColorNodesBy->setSourceAndTarget(ui->listAvailableFields_nodes, ui->colorNodesBy);
     ui->buttonAssignMgmVariableType->setSourceAndTarget(ui->listAvailableFields, ui->mgmVariableType);
-    ui->buttonAssignLayoutX->setSourceAndTarget(ui->listAvailableFields, ui->layoutX);
-    ui->buttonAssignLayoutY->setSourceAndTarget(ui->listAvailableFields, ui->layoutY);
+    ui->buttonAssignLayoutX->setSourceAndTarget(ui->listAvailableFields_layout, ui->layoutX);
+    ui->buttonAssignLayoutY->setSourceAndTarget(ui->listAvailableFields_layout, ui->layoutY);
 
     // Defaults
     ui->estimator->setCurrentIndex(0);
     ui->analysisOptions->hide();
     ui->bootstrapOptions->hide();
     ui->graphicalOptions->hide();
+    ui->layout->hide();
+    ui->layoutDataBox->hide();
+    ui->nodes->hide();
+
+    ui->_1spring->setChecked(true);
+    ui->label_repulsion->setVisible(true);
+    ui->repulsion->setVisible(true);
 }
 
 NetworkAnalysisForm::~NetworkAnalysisForm()
@@ -95,162 +106,176 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
 {
     std::string choice_str = choice.toStdString();
 
-    if (choice_str.compare("EBICglasso") == 0) {
-        ui->correlationMethod->setEnabled(true);
-        ui->tuningParameterBox->setEnabled(true);
-        ui->sampleSize->setEnabled(true);
-        ui->missingValues->setEnabled(true);
+    ui->gridLayout_3->removeWidget(ui->correlationMethod);
+    ui->gridLayout_3->removeWidget(ui->tuningParameterBox);
+    ui->gridLayout_3->removeWidget(ui->sampleSize);
+    ui->gridLayout_3->removeWidget(ui->missingValues);
+    ui->gridLayout_3->removeWidget(ui->criterion);
+    ui->gridLayout_3->removeWidget(ui->isingEstimator);
+    ui->gridLayout_3->removeWidget(ui->crossValidation);
+    ui->gridLayout_3->removeWidget(ui->split);
+    ui->gridLayout_3->removeWidget(ui->rule);
+    ui->gridLayout_3->removeWidget(ui->boxMgmVariableType);
+    ui->gridLayout_3->removeWidget(ui->thresholdBox);
+    ui->gridLayout_3->removeWidget(ui->network);
+    ui->gridLayout_3->removeWidget(ui->normalizeCentrality);
 
-        ui->criterion->setEnabled(false);
-        ui->_4cv->setEnabled(false);
-        ui->isingEstimator->setEnabled(false);
-        ui->crossValidation->setEnabled(false);
-        ui->split->setEnabled(false);
-        ui->rule->setEnabled(false);
-        ui->boxMgmVariableType->setEnabled(false);
-        ui->showMgmVariableType->setEnabled(false);
-        ui->thresholdBox->setEnabled(false);
+    ui->correlationMethod->hide();
+    ui->tuningParameterBox->hide();
+    ui->sampleSize->hide();
+    ui->missingValues->hide();
+    ui->criterion->hide();
+    ui->isingEstimator->hide();
+    ui->crossValidation->hide();
+    ui->split->hide();
+    ui->rule->hide();
+    ui->boxMgmVariableType->hide();
+    ui->thresholdBox->hide();
+    ui->network->hide();
+    ui->normalizeCentrality->hide();
+
+    if (choice_str.compare("EBICglasso") == 0) {
+        ui->correlationMethod->setVisible(true);
+        ui->tuningParameterBox->setVisible(true);
+        ui->sampleSize->setVisible(true);
+        ui->missingValues->setVisible(true);
+        ui->normalizeCentrality->setVisible(true);
+        ui->network->setVisible(true);
+
+        ui->analysisOptionsExpander->setText("Analysis Options - EBICglasso");
+        ui->gridLayout_3->addWidget(ui->correlationMethod, 0, 0);
+        ui->gridLayout_3->addWidget(ui->normalizeCentrality, 0, 1);
+        ui->gridLayout_3->addWidget(ui->network, 1, 0);
+        ui->gridLayout_3->addWidget(ui->missingValues, 1, 1);
+        ui->gridLayout_3->addWidget(ui->sampleSize, 2, 0);
+        ui->gridLayout_3->addWidget(ui->tuningParameterBox, 2, 1);
 
     } else if (choice_str.compare("cor") == 0) {
-        ui->correlationMethod->setEnabled(true);
-        ui->missingValues->setEnabled(true);
-        ui->thresholdBox->setEnabled(true);
+        ui->correlationMethod->setVisible(true);
+        ui->missingValues->setVisible(true);
+        ui->thresholdBox->setVisible(true);
 
-        ui->criterion->setEnabled(false);
-        ui->tuningParameterBox->setEnabled(false);
-        ui->sampleSize->setEnabled(false);
-        ui->isingEstimator->setEnabled(false);
-        ui->crossValidation->setEnabled(false);
-        ui->split->setEnabled(false);
-        ui->rule->setEnabled(false);
-        ui->boxMgmVariableType->setEnabled(false);
-        ui->showMgmVariableType->setEnabled(false);
+        ui->analysisOptionsExpander->setText("Analysis Options - cor");
+        ui->gridLayout_3->addWidget(ui->correlationMethod, 0, 0);
+        ui->gridLayout_3->addWidget(ui->missingValues, 0, 1);
+        ui->gridLayout_3->addWidget(ui->thresholdBox, 1, 0);
 
     } else if (choice_str.compare("pcor") == 0) {
-        ui->correlationMethod->setEnabled(true);
-        ui->missingValues->setEnabled(true);
-        ui->thresholdBox->setEnabled(true);
+        ui->correlationMethod->setVisible(true);
+        ui->missingValues->setVisible(true);
+        ui->thresholdBox->setVisible(true);
 
-        ui->criterion->setEnabled(false);
-        ui->tuningParameterBox->setEnabled(false);
-        ui->sampleSize->setEnabled(false);
-        ui->isingEstimator->setEnabled(false);
-        ui->crossValidation->setEnabled(false);
-        ui->split->setEnabled(false);
-        ui->rule->setEnabled(false);
-        ui->boxMgmVariableType->setEnabled(false);
-        ui->showMgmVariableType->setEnabled(false);
+        ui->analysisOptionsExpander->setText("Analysis Options - pcor");
+        ui->gridLayout_3->addWidget(ui->correlationMethod, 0, 0);
+        ui->gridLayout_3->addWidget(ui->missingValues, 0, 1);
+        ui->gridLayout_3->addWidget(ui->thresholdBox, 1, 0);
 
     } else if (choice_str.compare("IsingFit") == 0) {
-        ui->tuningParameterBox->setEnabled(true);
-        ui->split->setEnabled(true);
-        ui->rule->setEnabled(true);
+        ui->tuningParameterBox->setVisible(true);
+        ui->split->setVisible(true);
+        ui->rule->setVisible(true);
 
-        ui->correlationMethod->setEnabled(false);
-        ui->criterion->setEnabled(false);
-        ui->sampleSize->setEnabled(false);
-        ui->isingEstimator->setEnabled(false);
-        ui->crossValidation->setEnabled(false);
-        ui->missingValues->setEnabled(false);
-        ui->boxMgmVariableType->setEnabled(false);
-        ui->showMgmVariableType->setEnabled(false);
-        ui->thresholdBox->setEnabled(false);
+        ui->analysisOptionsExpander->setText("Analysis Options - IsingFit");
+        ui->gridLayout_3->addWidget(ui->rule, 0, 0);
+        ui->gridLayout_3->addWidget(ui->split, 0, 1);
+        ui->gridLayout_3->addWidget(ui->tuningParameterBox, 1, 0);
 
     } else if (choice_str.compare("IsingSampler") == 0) {
-        ui->isingEstimator->setEnabled(true);
-        ui->split->setEnabled(true);
+        ui->isingEstimator->setVisible(true);
+        ui->split->setVisible(true);
 
-        ui->tuningParameterBox->setEnabled(false);
-        ui->rule->setEnabled(false);
-        ui->correlationMethod->setEnabled(false);
-        ui->criterion->setEnabled(false);
-        ui->sampleSize->setEnabled(false);
-        ui->crossValidation->setEnabled(false);
-        ui->missingValues->setEnabled(false);
-        ui->boxMgmVariableType->setEnabled(false);
-        ui->showMgmVariableType->setEnabled(false);
-        ui->thresholdBox->setEnabled(false);
+        ui->analysisOptionsExpander->setText("Analysis Options - IsingSampler");
+        ui->gridLayout_3->addWidget(ui->isingEstimator, 0, 0);
+        ui->gridLayout_3->addWidget(ui->split, 0, 1);
 
     } else if (choice_str.compare("huge") == 0) {
-        ui->tuningParameterBox->setEnabled(true);
-        ui->criterion->setEnabled(true);
-
+        ui->tuningParameterBox->setVisible(true);
+        ui->criterion->setVisible(true);
         ui->_4cv->setEnabled(false);
-        ui->isingEstimator->setEnabled(false);
-        ui->split->setEnabled(false);
-        ui->rule->setEnabled(false);
-        ui->correlationMethod->setEnabled(false);
-        ui->sampleSize->setEnabled(false);
-        ui->crossValidation->setEnabled(false);
-        ui->missingValues->setEnabled(false);
-        ui->boxMgmVariableType->setEnabled(false);
-        ui->showMgmVariableType->setEnabled(false);
-        ui->thresholdBox->setEnabled(false);
+
+        ui->analysisOptionsExpander->setText("Analysis Options - huge");
+        ui->gridLayout_3->addWidget(ui->criterion, 0, 0);
+        ui->gridLayout_3->addWidget(ui->tuningParameterBox, 0, 1);
 
     } else if (choice_str.compare("adalasso") == 0) {
-        ui->crossValidation->setEnabled(true);
+        ui->crossValidation->setVisible(true);
 
-        ui->tuningParameterBox->setEnabled(false);
-        ui->criterion->setEnabled(false);
-        ui->isingEstimator->setEnabled(false);
-        ui->split->setEnabled(false);
-        ui->rule->setEnabled(false);
-        ui->correlationMethod->setEnabled(false);
-        ui->missingValues->setEnabled(false);
-        ui->sampleSize->setEnabled(false);
-        ui->boxMgmVariableType->setEnabled(false);
-        ui->showMgmVariableType->setEnabled(false);
-        ui->thresholdBox->setEnabled(false);
+        ui->analysisOptionsExpander->setText("Analysis Options - adalasso");
+        ui->gridLayout_3->addWidget(ui->crossValidation, 0, 0);
 
     } else if (choice_str.compare("mgm") == 0) {
-        ui->tuningParameterBox->setEnabled(true);
-        ui->criterion->setEnabled(true);
-        ui->rule->setEnabled(true);
+        ui->tuningParameterBox->setVisible(true);
+        ui->criterion->setVisible(true);
+        ui->rule->setVisible(true);
+        ui->boxMgmVariableType->setVisible(true);
+        ui->crossValidation->setVisible(false);
+
         ui->_4cv->setEnabled(true);
-        ui->boxMgmVariableType->setEnabled(true);
-        ui->showMgmVariableType->setEnabled(true);
 
-        ui->isingEstimator->setEnabled(false);
-        ui->split->setEnabled(false);
-        ui->correlationMethod->setEnabled(false);
-        ui->sampleSize->setEnabled(false);
-        ui->missingValues->setEnabled(false);
-        ui->thresholdBox->setEnabled(false);
-
-        if (ui->_4cv->isChecked()) {
-            ui->crossValidation->setEnabled(true);
-        } else {
-            ui->crossValidation->setEnabled(false);
-        }
+        ui->analysisOptionsExpander->setText("Analysis Options - mgm");
+        ui->gridLayout_3->addWidget(ui->tuningParameterBox, 1, 0);
+        ui->gridLayout_3->addWidget(ui->criterion, 0, 0);
+        ui->gridLayout_3->addWidget(ui->rule, 0, 1);
+        ui->gridLayout_3->addWidget(ui->boxMgmVariableType, 2, 0);
+        ui->gridLayout_3->addWidget(ui->crossValidation, 1, 1);
     }
+
+    ui->analysisOptions->setLayout(ui->gridLayout_3);
 }
 
 void NetworkAnalysisForm::on__4cv_clicked()
 {
     if (ui->estimator->currentText() == "mgm") {
-        ui->crossValidation->setEnabled(true);
+        ui->crossValidation->setVisible(true);
     } else {
-        ui->crossValidation->setEnabled(false);
+        ui->crossValidation->setVisible(false);
     }
 }
 
 void NetworkAnalysisForm::on__3stars_clicked()
 {
     if (ui->estimator->currentText() == "mgm") {
-        ui->crossValidation->setEnabled(false);
+        ui->crossValidation->setVisible(false);
     }
 }
 
 void NetworkAnalysisForm::on__2ric_clicked()
 {
     if (ui->estimator->currentText() == "mgm") {
-        ui->crossValidation->setEnabled(false);
+        ui->crossValidation->setVisible(false);
     }
 }
 
 void NetworkAnalysisForm::on__1ebic_clicked()
 {
     if (ui->estimator->currentText() == "mgm") {
-        ui->crossValidation->setEnabled(false);
+        ui->crossValidation->setVisible(false);
+    }
+}
+
+void NetworkAnalysisForm::on__1spring_clicked(bool checked)
+{
+    if (checked) {
+        ui->layoutDataBox->setVisible(false);
+        ui->label_repulsion->setVisible(true);
+        ui->repulsion->setVisible(true);
+    }
+}
+
+void NetworkAnalysisForm::on__2circle_clicked(bool checked)
+{
+    if (checked) {
+        ui->layoutDataBox->setVisible(false);
+        ui->label_repulsion->setVisible(false);
+        ui->repulsion->setVisible(false);
+    }
+}
+
+void NetworkAnalysisForm::on__3Data_clicked(bool checked)
+{
+    if (checked) {
+        ui->layoutDataBox->setVisible(true);
+        ui->label_repulsion->setVisible(false);
+        ui->repulsion->setVisible(false);
     }
 }
