@@ -39,6 +39,9 @@ private slots:
     void on__3stars_clicked();
     void on__2ric_clicked();
     void on__1ebic_clicked();
+    void on__1spring_clicked(bool checked);
+    void on__2circle_clicked(bool checked);
+    void on__3Data_clicked(bool checked);
 
 private:
     Ui::NetworkAnalysisForm *ui;
