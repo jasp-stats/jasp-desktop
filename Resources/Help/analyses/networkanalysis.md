@@ -36,7 +36,7 @@ There are five options:
 - Centrality plot: a plot of centrality measures of the estimated network.
 - Centrality table: a table containing the values of the centrality measures.
 - Weights matrix: the estimates parameters, in the form of a matrix.
-- Layout matrix: the layout for each node in the network plot.
+- Layout matrix: the layout for each node in the network plot. If shown, the options "show variable names" can also be clicked to prefix the layout with the names.
 
 Analysis options
 -----------
@@ -68,7 +68,7 @@ When estimating a Mixed Graphical Model, insert a variable here to specify the v
 - `c`: for categorical variables.
 - `p`: for Poisson variables.
 
-The first n observations in this column correspond to the first n columns in the dataset. More values are ignored. 
+The data should of the format "$variableName = $group", similarly to `data` for the layout and `color nodes by`. For example, if a variable is called "Number of cars" is assumed to be Poisson distributed this becomes: "Number of cars = p".
 
 ####Ising Estimator
 Many methods exist for estimating Ising models. Supported methods are:
@@ -131,7 +131,7 @@ To investigate the stability of estimated networks, check `Bootstrap Network` un
 All options below modify the output from Network plot. Other figures and tables are not affected. To make Networks plots aesthetically pleasing, many options exist.
 
 ####Layout
-The layout of a network determines where the nodes are placed. By default the layout is set to `spring`, which implies the layout will be generated via the force-driven Fruchterman-Reingold algorithm (TODO: ref). This algorithm can be tweaked using the `repulsion` parameter; a larger repulsion increases the distance between adjacent nodes. Alternatively all nodes can be displayed in a circle by selecting the `circle` layout. A third option is called `data`, where you can specify a column with x-coordinates and a column with y-coordinates which will be used as positions for each node.
+The layout of a network determines where the nodes are placed. By default the layout is set to `spring`, which implies the layout will be generated via the force-driven Fruchterman-Reingold algorithm (TODO: ref). This algorithm can be tweaked using the `repulsion` parameter; a larger repulsion increases the distance between adjacent nodes. Alternatively all nodes can be displayed in a circle by selecting the `circle` layout. A third option is called `data`. Here, coordinates can be supplied for the networks. The data should of the format "$variableName = $group", similarly to `Variable Type` and the `color nodes by`. For example, if a variable is called "A1" and should be plotted at x-coordinate 1 this becomes: "A1 = 1".
 
 #### Edges
 - `Edge size`: A multiplier on edge size (i.e. 2 is twice as big).
@@ -161,7 +161,7 @@ There are three options:
 
 #### Nodes
 - `Node size`: A multiplier on node size  (i.e. 2 is twice as big).
-- `color nodes by`: A categorical variable that indicates the group to which each variable belongs. The first n observations in this column correspond to the first n columns in the dataset. More values are ignored.
+- `color nodes by`: A categorical variable that indicates the group to which each variable belongs. The data should of the format "$variableName = $group", similarly to `Variable Type` and the `data` option for the layout. For example, if a variable is called "JASP" and belongs to the group "Open Source" this becomes: "JASP = Open Source".
 - `color scheme`: What colors should be used for the coloring?
 
 #### Show variable names

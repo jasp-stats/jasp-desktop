@@ -72,6 +72,11 @@
 			"type": "Boolean",
 			"default": false
 		},
+    {
+		  "name": "tableLayoutValuesOnly",
+		  "type": "Boolean",
+			"default": false
+    },
 		{
 			"options": ["auto", "cor", "cov", "npn"],
 			"default": "auto",
@@ -267,7 +272,7 @@
 		{
 			"name": "showDetails",
 			"type": "Boolean",
-			"default": true
+			"default": false
 			
 		},
 		{
