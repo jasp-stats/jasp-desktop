@@ -501,8 +501,8 @@ isTryError <- function(obj){
 			
 		} else {
 		
-			#stop(paste("bad call to .unv() : v is \"", v, "\"", sep=""))
 		  vs[length(vs)+1] <- v
+		  
 		}
 	}
 	
@@ -755,27 +755,6 @@ callback <- function(results=NULL, progress=NULL) {
 	stop("could not clean value")
 }
 
-# .clean <- function(value) {
-#   # Clean function value so it can be reported in json/html
-#   .cleanValue <- function(value) { # This doesn't work for vectors like this (prev definition also not)
-#     if (is.null(value)) {
-#        ""
-#     } else if (is.character(value)) {
-#       value
-#     } else if (is.finite(value)[1]) { 
-#       value
-#     } else if (is.na(value)[1]) {
-#       "NaN"
-#     } else if (identical(value, numeric(0))) {
-#       ""
-#     } else if (value == Inf) {
-#       "\u221E" # should this not better be &inf; ? Now browser character set dependent
-#     } else if (value == -Inf) {
-#       "-\u221E" # should this not better be -&inf; ? Now browser character set dependent
-#     }
-#   }
-#   rapply(value, .cleanValue, how="replace") # works for arbitrary depth (previous def worked only for 1 layer deep) and fast
-# }
 
 .newFootnotes <- function() {
 	
@@ -1238,13 +1217,11 @@ d64.list <- function(x, ...) {
   rapply(x, d64, ..., how = "replace")
 }
 	
-.newProgressbar <- function(ticks, callback, skim=5, response=FALSE) {
-# This closure normally returns a progressbar function that expects to be called "ticks" times.
-# If used in a parallel environment it returns a structure to the master process which is
-# updated in the separate processes by .updateParallelProgressbar().
-}
 .newProgressbar <- function(ticks, callback, skim=5, response=FALSE, parallel=FALSE) {
-
+  # This closure normally returns a progressbar function that expects to be called "ticks" times.
+  # If used in a parallel environment it returns a structure to the master process which is
+  # updated in the separate processes by .updateParallelProgressbar().
+  
 	ticks <- suppressWarnings(as.integer(ticks))
 	if (is.na(ticks) || ticks <= 0)
 		stop("Invalid value provided to 'ticks', expecting positive integer")

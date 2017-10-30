@@ -151,13 +151,12 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
       if( identical(formula.rhs, ~ 1 - 1) )
         .quitAnalysis("The model should contain at least one predictor or an intercept.")
 
-      rma.fit <- tryCatch(
-        metafor::rma(
+      rma.fit <- metafor::rma(
           yi = get(b64(effsizeName)), sei = get(b64(stderrName)), data = dataset,
           method=method, mods = b64(formula.rhs), test = options$test,
           slab = if(options$studyLabel != "") get(b64(options$studyLabels)),
           level = options$regressionCoefficientsConfidenceIntervalsInterval
-        ), error = .quitAnalysis)
+        )
       
       rma.fit <- d64(rma.fit, values = all.vars(b64(formula.rhs)))
       
