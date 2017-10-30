@@ -55,6 +55,7 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/correlationpartialform.cpp \
         $$PWD/ribbons/ribbonwidget.cpp \
         $$PWD/ribbons/ribbonsem.cpp \
+        $$PWD/ribbons/ribbonnetworkanalysis.cpp \
         $$PWD/ribbons/ribbonanalysis.cpp \
         $$PWD/ribbons/ribbonhome.cpp \
         $$PWD/widgets/boundtextedit.cpp \
@@ -253,6 +254,7 @@ HEADERS  += \
         $$PWD/analysisforms/correlationpartialform.h \
         $$PWD/ribbons/ribbonwidget.h \
         $$PWD/ribbons/ribbonsem.h \
+        $$PWD/ribbons/ribbonnetworkanalysis.h \
         $$PWD/ribbons/ribbonanalysis.h \
         $$PWD/ribbons/ribbonhome.h \
         $$PWD/widgets/boundtextedit.h \
@@ -428,6 +430,7 @@ FORMS += \
         $$PWD/ribbons/ribbonhome.ui \
         $$PWD/ribbons/ribbonsem.ui \
         $$PWD/ribbons/ribbonanalysis.ui \
+        $$PWD/ribbons/ribbonnetworkanalysis.ui \
         $$PWD/analysisforms/ttestbayesianindependentsamplesform.ui \
         $$PWD/analysisforms/ttestbayesianpairedsamplesform.ui \
         $$PWD/analysisforms/ancovabayesianform.ui \

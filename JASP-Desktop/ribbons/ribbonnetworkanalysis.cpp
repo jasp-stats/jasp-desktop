@@ -16,25 +16,19 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef RIBBONANALYSIS_H
-#define RIBBONANALYSIS_H
+#include "ribbonnetworkanalysis.h"
+#include "ui_ribbonnetworkanalysis.h"
 
-#include "ribbonwidget.h"
+RibbonNetworkAnalysis::RibbonNetworkAnalysis(QWidget *parent) :
+	RibbonWidget(parent),
+	ui(new Ui::RibbonNetworkAnalysis)
+{
+	ui->setupUi(this);
 
-namespace Ui {
-class RibbonAnalysis;
+	addRibbonButton(ui->NetworkAnalysis);
 }
 
-class RibbonAnalysis : public RibbonWidget
+RibbonNetworkAnalysis::~RibbonNetworkAnalysis()
 {
-	Q_OBJECT
-	
-public:
-	explicit RibbonAnalysis(QWidget *parent = 0);
-	~RibbonAnalysis();
-
-private:
-	Ui::RibbonAnalysis *ui;
-};
-
-#endif // RIBBONANALYSIS_H
+	delete ui;
+}
