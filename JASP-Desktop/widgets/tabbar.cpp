@@ -41,7 +41,7 @@ TabBar::TabBar(QWidget *parent) :
 	setLayout(_backgroundLayout);
 
 	_layout->addStretch(1);
-	
+
 	_aboutDialog = new AboutDialog(this);
 	_preferencesDialog = new PreferencesDialog(this);
 }
@@ -125,13 +125,14 @@ void TabBar::addHelpTab()
 	act_preferences->setObjectName("Preferences");
 	helpmenu->addAction(act_preferences);
 	helpmenu->addSeparator();
-	
+
 	//Modules
 	QMenu *optionmenu   = new QMenu("Modules",this);
 	QAction *sem = new QAction("SEM",optionmenu);
 	QAction *rei = new QAction("Reinforcement Learning",optionmenu);
 	QAction *summaryStats = new QAction("Summary Stats",optionmenu);
-    QAction *metaAnalysis = new QAction("Meta-Analysis",optionmenu);
+  QAction *metaAnalysis = new QAction("Meta-Analysis",optionmenu);
+	QAction *networkAnalysis = new QAction("Network Analysis",optionmenu);
 
 	//SEM
 	QVariant sem_setting = _settings.value("plugins/sem", false);
@@ -151,6 +152,13 @@ void TabBar::addHelpTab()
 	summaryStats->setObjectName("Summary Stats");
 	summaryStats->setCheckable(true);
 	summaryStats->setChecked(sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
+
+	//Network Analysis
+	QVariant networkAnalysis_setting = _settings.value("plugins/networkAnalysis", false);
+	networkAnalysis->setObjectName("Network Analysis");
+	networkAnalysis->setCheckable(true);
+	networkAnalysis->setChecked(networkAnalysis_setting.canConvert(QVariant::Bool) && networkAnalysis_setting.toBool());
+	optionmenu->addAction(networkAnalysis);
 
     // Meta-Analysis
     QVariant metaAnalysis_setting = _settings.value("toolboxes/metaAnalysis", false);
@@ -173,14 +181,15 @@ void TabBar::addHelpTab()
 
 	//Slots preferences
 	connect(act_about, SIGNAL(triggered()), this, SLOT(showAbout()));
-	connect(act_preferences, SIGNAL(triggered()), this, SLOT(showPreferences()));	
+	connect(act_preferences, SIGNAL(triggered()), this, SLOT(showPreferences()));
 	connect(act_extrahelp, SIGNAL(triggered()), this, SLOT(toggleHelp()));
-	
+
 	// Slots modules
 	connect(sem, SIGNAL(triggered()), this, SLOT(toggleSEM()));
 	connect(rei, SIGNAL(triggered()), this, SLOT(toggleReinforcement()));
 	connect(summaryStats, SIGNAL(triggered()), this, SLOT(toggleSummaryStats()));
-    connect(metaAnalysis, SIGNAL(triggered()), this, SLOT(toggleMetaAnalysis()));
+  connect(metaAnalysis, SIGNAL(triggered()), this, SLOT(toggleMetaAnalysis()));
+	connect(networkAnalysis, SIGNAL(triggered()), this, SLOT(toggleNetworkAnalysis()));
 }
 
 void TabBar::showAbout()
@@ -188,7 +197,7 @@ void TabBar::showAbout()
 	_aboutDialog->show();
 	_aboutDialog->raise();
 	_aboutDialog->activateWindow();
-	//The last function performs the same operation as clicking the mouse on the title bar 
+	//The last function performs the same operation as clicking the mouse on the title bar
 	//If you want to ensure that the window is stacked on top as well you should also call raise(). 	//Note that the window must be visible, otherwise activateWindow() has no effect.
 }
 
@@ -258,6 +267,20 @@ void TabBar::toggleMetaAnalysis()
     }
 }
 
+void TabBar::toggleNetworkAnalysis()
+{
+	QVariant networkAnalysis_setting = _settings.value("toolboxes/networkAnalysis", false);
+	static bool on = (networkAnalysis_setting.canConvert(QVariant::Bool) && networkAnalysis_setting.toBool());
+	on = ! on;
+    if (on)
+    {
+		this->addTab("Network Analysis");
+    }
+	else
+    {
+		this->removeTab("Network Analysis");
+    }
+}
 
 int TabBar::count() const
 {

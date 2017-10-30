@@ -53,7 +53,7 @@ public:
 
 	int count() const;
 	PreferencesDialog *getPreferencesDialog();
-	
+
 
 
 signals:
@@ -76,7 +76,8 @@ private slots:
 	void toggleSEM();
 	void toggleReinforcement();
 	void toggleSummaryStats();
-    void toggleMetaAnalysis();
+  void toggleMetaAnalysis();
+	void toggleNetworkAnalysis();
 
 private:
 
@@ -91,10 +92,10 @@ private:
 	QMenuBar *_menuBarTab;
 	QSettings _settings;
 	QString _currentActiveTab;
-	
+
 	AboutDialog *_aboutDialog;
 	PreferencesDialog *_preferencesDialog;
-	
+
 };
 
 #endif // TABBAR_H

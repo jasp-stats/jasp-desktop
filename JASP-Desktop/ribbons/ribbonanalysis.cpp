@@ -35,7 +35,6 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	addRibbonButton(ui->regressionButton);
 	addRibbonButton(ui->BFFromT);
 	addRibbonButton(ui->factoranalysisButton);
-	addRibbonButton(ui->networkButton);
 
 	ui->BFFromT->setDataSetNotNeeded();
 
@@ -128,14 +127,6 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 
 	ui->BFFromT->setMenu(menu);
 #endif
-
-	connect(ui->networkButton, SIGNAL(clicked()), this, SLOT(networkItemSelected()));
-
-}
-
-void RibbonAnalysis::networkItemSelected()
-{
-	emit itemSelected("NetworkAnalysis");
 }
 
 RibbonAnalysis::~RibbonAnalysis()
