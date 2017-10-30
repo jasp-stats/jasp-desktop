@@ -258,6 +258,13 @@ void NetworkAnalysisForm::on__1ebic_clicked()
     }
 }
 
+void NetworkAnalysisForm::on_graphicalOptionsExpander_clicked()
+{
+    if (! ui->_3Data->isChecked()) {
+        ui->layoutDataBox->setVisible(false);
+    }
+}
+
 void NetworkAnalysisForm::on__1spring_clicked(bool checked)
 {
     if (checked) {
