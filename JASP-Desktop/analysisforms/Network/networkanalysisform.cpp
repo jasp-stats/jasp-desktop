@@ -48,30 +48,30 @@ NetworkAnalysisForm::NetworkAnalysisForm(QWidget *parent) :
     ui->listAvailableFields_nodes->setModel(&_availableVariablesModel);
 
     TableModelVariablesAssigned *colorNodesByModel = new TableModelVariablesAssigned(this);
-    colorNodesByModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal | Column::ColumnTypeNominalText);
-    colorNodesByModel->setVariableTypesAllowed(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal | Column::ColumnTypeNominalText);
+    colorNodesByModel->setVariableTypesSuggested(Column::ColumnTypeNominalText);
+    colorNodesByModel->setVariableTypesAllowed(Column::ColumnTypeNominalText);
     colorNodesByModel->setSource(&_availableVariablesModel);
     ui->colorNodesBy->setModel(colorNodesByModel);
     ui->colorNodesBy->setDoubleClickTarget(ui->listAvailableFields_nodes);
 
     TableModelVariablesAssigned *mgmVariableTypeModel = new TableModelVariablesAssigned(this);
-    mgmVariableTypeModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal | Column::ColumnTypeNominalText);
-    mgmVariableTypeModel->setVariableTypesAllowed(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal | Column::ColumnTypeNominalText);
+    mgmVariableTypeModel->setVariableTypesSuggested(Column::ColumnTypeNominalText);
+    mgmVariableTypeModel->setVariableTypesAllowed(Column::ColumnTypeNominalText);
     mgmVariableTypeModel->setSource(&_availableVariablesModel);
     ui->mgmVariableType->setModel(mgmVariableTypeModel);
     ui->mgmVariableType->setDoubleClickTarget(ui->listAvailableFields);
 
     // layout
     TableModelVariablesAssigned *layoutXModel = new TableModelVariablesAssigned(this);
-    layoutXModel->setVariableTypesSuggested(Column::ColumnTypeScale);
-    layoutXModel->setVariableTypesAllowed(Column::ColumnTypeScale);
+    layoutXModel->setVariableTypesSuggested(Column::ColumnTypeNominalText);
+    layoutXModel->setVariableTypesAllowed(Column::ColumnTypeNominalText);
     layoutXModel->setSource(&_availableVariablesModel);
     ui->layoutX->setModel(layoutXModel);
     ui->layoutX->setDoubleClickTarget(ui->listAvailableFields_layout);
 
     TableModelVariablesAssigned *layoutYModel = new TableModelVariablesAssigned(this);
-    layoutYModel->setVariableTypesSuggested(Column::ColumnTypeScale);
-    layoutYModel->setVariableTypesAllowed(Column::ColumnTypeScale);
+    layoutYModel->setVariableTypesSuggested(Column::ColumnTypeNominalText);
+    layoutYModel->setVariableTypesAllowed(Column::ColumnTypeNominalText);
     layoutYModel->setSource(&_availableVariablesModel);
     ui->layoutY->setModel(layoutYModel);
     ui->layoutY->setDoubleClickTarget(ui->listAvailableFields_layout);
@@ -216,10 +216,10 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->_4cv->setEnabled(true);
 
         ui->analysisOptionsExpander->setText("Analysis Options - mgm");
-        ui->gridLayout_3->addWidget(ui->tuningParameterBox, 1, 0);
+        ui->gridLayout_3->addWidget(ui->tuningParameterBox, 1, 1);
         ui->gridLayout_3->addWidget(ui->criterion, 0, 0);
         ui->gridLayout_3->addWidget(ui->rule, 0, 1);
-        ui->gridLayout_3->addWidget(ui->boxMgmVariableType, 2, 0);
+        ui->gridLayout_3->addWidget(ui->boxMgmVariableType, 1, 0);
         ui->gridLayout_3->addWidget(ui->crossValidation, 1, 1);
         ui->gridLayout_12->addWidget(ui->showMgmVariableType, 5, 1);
     }

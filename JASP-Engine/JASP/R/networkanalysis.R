@@ -38,10 +38,14 @@ NetworkAnalysis <- function (
 		if (perform == "run") {
 
 			dataset <- .readDataSetToEnd(columns.as.numeric = variables, columns.as.factor = varsAsFactor, exclude.na.listwise = NULL)
+			newOrder <- match(.unv(colnames(dataset)), variables, nomatch = 0L)
+			variables <- variables[newOrder]
 
 			if (options[["colorNodesBy"]] != "") { # load data from variable that indicates groups
 				options[["colorNodesByData"]] <- .readDataSetToEnd(columns = options[["colorNodesBy"]], exclude.na.listwise = options[["colorNodesBy"]])[[1]]
-				options[["colorNodesByData"]] <- options[["colorNodesByData"]][seq_along(variables)]
+				colorNodes <- .networkAnalysisSanitizeColorNodesByData(variables, options)
+				options[["colorNodesByData"]] <- colorNodes[["newData"]]
+				options[["colorNodesByDataMessage"]] <- colorNodes[["message"]]
 
 			}
 			if (options[["mgmVariableType"]] != "") {# load data from variable that indicates variable type
@@ -57,14 +61,18 @@ NetworkAnalysis <- function (
 				options[["mgmVariableTypeData"]][is.na(options[["mgmVariableTypeData"]])] <- "g" # set missing to gaussian (in case of too few types supplied)
 
 			}
-			if (options[["layoutX"]] != "") {
+			if (options[["layoutX"]] != "" && options[["layoutY"]] != "") {
+
 				options[["layoutXData"]] <- .readDataSetToEnd(columns = options[["layoutX"]], exclude.na.listwise = options[["layoutX"]])[[1]]
-			}
-			if (options[["layoutY"]] != "") {
 				options[["layoutYData"]] <- .readDataSetToEnd(columns = options[["layoutY"]], exclude.na.listwise = options[["layoutY"]])[[1]]
+				xyCoords <- .networkAnalysisSanitizeLayoutData(variables, options)
+				options[["layoutXData"]] <- xyCoords[["x"]]
+				options[["layoutYData"]] <- xyCoords[["y"]]
+				options[["layoutMessage"]] <- xyCoords[["message"]]
+
 			}
 
-			# some sanity checks
+			# some sanity checks -- redundant due to
 			if (anyNA(c(options[["layoutXData"]], options[["layoutYData"]])) ||
 				length(options[["layoutXData"]]) < length(variables) ||
 				length(options[["layoutYData"]]) < length(variables)) {
@@ -86,10 +94,10 @@ NetworkAnalysis <- function (
 	}
 
 	# ensure order of variables matches order of columns in dataset
-	newOrder <- match(.unv(colnames(dataset)), variables, nomatch = 0L)
-	variables <- variables[newOrder]
-	options[["mgmVariableTypeData"]] <- options[["mgmVariableTypeData"]][newOrder]
-	options[["colorNodesByData"]] <- options[["colorNodesByData"]][newOrder]
+
+
+	# options[["mgmVariableTypeData"]] <- options[["mgmVariableTypeData"]][newOrder]
+	# options[["colorNodesByData"]] <- options[["colorNodesByData"]][newOrder]
 
 	## Initialize Results & statekey ## ----
 	results <- list(
@@ -151,8 +159,10 @@ NetworkAnalysis <- function (
 	# show info about variable types. Done here so that hopefully a table gets shown even if .hasErrors finds something bad.
 	if (perform == "run" && options[["estimator"]] == "mgm" && !is.null(options[["mgmVariableTypeData"]])) {
 
+	  options[["mgmVariableTypeData"]] <- .networkAnalysisSanitizeMgmVariableType(variables = variables, options = options)
+
 		results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = "init") # any errors will appear top of this table
-		results[["mgmTB"]] <- .networkAnalysisMgmVariableInfoTable(network, options, perform)
+		results[["mgmTB"]] <- .networkAnalysisMgmVariableInfoTable(network, variables, options, perform)
 
 	}
 
@@ -164,12 +174,24 @@ NetworkAnalysis <- function (
 		# check for errors, but only if there was a change in the data (which implies state[["network"]] is NULL)
 		if (is.null(state[["network"]])) {
 
-			groupingVariable <- NULL
-			if (options[["groupingVariable"]] != "")
-				groupingVariable <- options[["groupingVariable"]]
+		  # default error checks
+		  checks <- c("infinity", "variance", "observations")
 
-			# default error checks
-			checks <- c("infinity", "variance", "observations")
+			groupingVariable <- NULL
+			if (options[["groupingVariable"]] != "") {
+				groupingVariable <- options[["groupingVariable"]]
+				# these cannot be chained unfortunately
+        .hasErrors(dataset = dataset[.v(groupingVariable)], perform = perform,
+                   type = "factorLevels",
+                   factorLevels.target = groupingVariable,
+                   factorLevels.amount = "< 2",
+                   exitAnalysisIfErrors = TRUE)
+        .hasErrors(dataset = dataset[.v(groupingVariable)], perform = perform,
+                   type = "observations",
+                   observations.amount = "< 10",
+                   observations.grouping = groupingVariable,
+                   exitAnalysisIfErrors = TRUE)
+			}
 
 			# estimator 'mgm' requires some additional checks
 			categoricalVars <- NULL
@@ -617,7 +639,7 @@ NetworkAnalysis <- function (
 		callbackBootstrap <- function(results = NULL, progress = NULL) {
 
 		  response <- callback(results, progress)
-		  print(response[["status"]])
+		  # print(response[["status"]])
 		  if (response[["status"]] == "changed") {
 
 		    optsForBootstrap <- c(
@@ -769,10 +791,16 @@ NetworkAnalysis <- function (
 
 		msg <- paste(msg, collapse = "\n")
 		.addFootnote(footnotes = footnotes, text = msg, symbol = "<em>Note: </em>")
-		table[["footnotes"]] <- as.list(footnotes)
 
 	}
+	if (!is.null(options[["layoutMessage"]])) {
+	  .addFootnote(footnotes = footnotes, text = options[["layoutMessage"]], symbol = "<em>Warning: </em>")
+	}
+	if (!is.null(options[["colorNodesByDataMessage"]])) {
+	  .addFootnote(footnotes = footnotes, text = options[["colorNodesByDataMessage"]], symbol = "<em>Warning: </em>")
+	}
 
+	table[["footnotes"]] <- as.list(footnotes)
 	return(table)
 
 }
@@ -839,29 +867,19 @@ NetworkAnalysis <- function (
 
 }
 
-.networkAnalysisMgmVariableInfoTable <- function(network, options, perform) {
+.networkAnalysisMgmVariableInfoTable <- function(network, variables, options, perform) {
 
 	table <- list(
 		title = "Type of variables",
 		schema = list(fields = list(
 			list(name = "Variable", title = "Variable", type = "string"),
 			list(name = "Type", title = "Type", type = "string")
-			# list(name = "Type", title = "Type", type = "string")
 		))
 	)
 
-	# if (perform != "run") {
-	#
-	# 	vars = "."
-	# 	types = "."
-	#
-	# } else {
-
-		vars <- options[["variables"]]
-		types <- options[["mgmVariableTypeData"]]
-		types <- c("Gaussian", "Categorical", "Poisson")[match(options[["mgmVariableTypeData"]], c("g", "c", "p"))]
-
-	# }
+	vars <- variables
+	types <- options[["mgmVariableTypeData"]]
+	types <- c("Gaussian", "Categorical", "Poisson")[match(options[["mgmVariableTypeData"]], c("g", "c", "p"))]
 
 	table[["data"]] <- .TBcolumns2TBrows(list(Variable = vars, Type = types))
 
@@ -1033,11 +1051,22 @@ NetworkAnalysis <- function (
 
 	} else { # fill with results
 
-		TBcolumns <- list(
-			x = network[["layout"]][, 1],
-			y = network[["layout"]][, 2]
-		)
-
+	  if (options[["tableLayoutValuesOnly"]]) {
+	    # modify json accordingly
+	    table[["schema"]][["fields"]][[1]][["format"]] <- NULL
+	    table[["schema"]][["fields"]][[1]][["type"]] <- "string"
+	    table[["schema"]][["fields"]][[2]][["format"]] <- NULL
+	    table[["schema"]][["fields"]][[2]][["type"]] <- "string"
+	    TBcolumns <- list(
+	      x = paste(variables, "=", round(network[["layout"]][, 1], 4)),
+	      y = paste(variables, "=", round(network[["layout"]][, 2], 4))
+	    )
+	  } else {
+	    TBcolumns <- list(
+	      x = network[["layout"]][, 1],
+	      y = network[["layout"]][, 2]
+	    )
+	  }
 	}
 
 	data <- .TBcolumns2TBrows(TBcolumns)
@@ -1452,34 +1481,203 @@ NetworkAnalysis <- function (
 
 }
 
-# .quickStr <- function(...) {
-#
-#   dots <- list(...)
-#   nms <- names(dots)
-#   for (i in seq_along(dots)) {
-#     cat(sprintf("Argument %d, Object: %s\n", i, nms[i]))
-#     str(dots[[i]], max.level = 3)
-#   }
-#   return(invisible())
-# }
+.networkAnalysisFindDataType <- function(variables, variableMatch, asNumeric = FALSE, char = "=",
+                                         inputCheck = NULL) {
+  ## Input:
+  # variables: options[["variables"]].
+  # asNumeric: check if data can be converted to numeric.
+  # char: what to match on, `=`` by default.
+  # validInput: a function that returns TRUE if input is valid amd FALSE otherwise.
 
-# saveDataToDput <- function(...) {
-#
-# 	path <- "C:/Users/donvd/_Laptop/Werk/JASP/tempDput/"
-# 	dots <- list(...)
-# 	fname <- paste0(path, "tmp")
-# 	i <- 0
-#
-# 	while (file.exists(paste0(fname, "_", i, ".RData"))) {
-# 	  i <- i + 1
-# 	}
-# 	fname <- paste0(fname, "_", i, ".RData")
-# 	save(dots, file = fname)
-#
-# }
-#
+  ## Output:
+  # Todo:
 
+  errors <- list(fatal = FALSE)
+  pattern <- sprintf("%s\\s*(?=[^%s]+$)", char, char)
+  matches <- stringr::str_split(variableMatch, pattern)#":\\s*(?=[^:]+$)")
 
+  lens <- lengths(matches)
+  if (!all(lens == 2)) {
+    errors <- c(errors, list(list(
+      matches = unlist(matches[lens != 2]),
+      type = "missingChar",
+      message = sprintf("Some variables did not contain char (%s)", char)
+    )))
+    matches <- matches[lens == 2]
+    if (length(matches) == 0) {# too poor input to continue
+      errors[["fatal"]] <- TRUE
+      return(list(errors = errors))
+    }
+  }
+
+  # bind list to matrix
+  matches <- do.call(rbind, matches)
+  # check if matches appear in variables
+  dontMatch <- !(matches[, 1] %in% variables)
+  # check if matches appear in variables while being robust for whitespace issues
+  doMatchWs <- trimws(matches[dontMatch, 1]) %in% variables
+  matches[doMatchWs, 1] <- trimws(matches[doMatchWs, 1])
+
+  trouble <- dontMatch & !doMatchWs
+  if (any(trouble)) { # TRUE if any variable did not appear in any matches
+
+    errors <-  c(errors, list(list(
+      matches = unlist(matches[trouble, ]),
+      type = "missingMatch",
+      message = sprintf("Some variables were not matched in the column names of the dataset.")
+    )))
+
+    matches <- matches[!trouble, ]
+  }
+
+  # unmatched variables
+  unmatched <- variables[!(variables %in% matches[, 1])]
+
+  values <- matches[, 2]
+  if (asNumeric) {
+    # replace commas by points
+    values <- gsub(",", ".",  matches[, 2])
+    # convert to numeric
+    values <- suppressWarnings(as.numeric(values))
+
+    if (anyNA(values)) {
+      errors <-  c(errors, list(list(
+        matches = matches[is.na(values), ],
+        type = "missingNumeric",
+        message = sprintf("Some variables were not matched in the column names of the dataset.")
+      )))
+    }
+  }
+
+  # check if input actually is correct
+  validInput <- NULL
+  if (!is.null(inputCheck)) {
+    validInput <- inputCheck(matches[, 2])
+    errors[["fatal"]] <- !any(validInput)
+  }
+
+  return(list(matches = matches, values = values, unmatched = unmatched,
+              validInput = validInput, errors = errors))
+
+}
+
+.networkAnalysisSanitizeMgmVariableType <- function(variables, options) {
+
+  checks <- .networkAnalysisFindDataType(variables = variables, variableMatch = options[["mgmVariableTypeData"]], char = "=",
+                               inputCheck = function(x) x %in% c("g", "p", "c"))
+
+  if (checks[["errors"]][["fatal"]]) {
+    message <- sprintf("Data supplied in %s cannot be used to determine variables types.
+                 Data should:
+                 -start with the column name of the variable.
+                 -contain an '=' to distinghuish betweem column name and data type.
+                 -end with either 'g' for Gaussian, 'c' for categorical, or 'p' for Poisson.",
+                 options[["mgmVariableType"]])
+    .quitAnalysis(message)
+  }
+
+  newData <- checks[["matches"]]
+  newData[!checks[["validInput"]], 2] <- "g"
+  if (length(checks[["unmatched"]] > 0))
+    newData <- rbind(newData, cbind(checks[["unmatched"]], "g"))
+  newData <- newData[match(variables, newData[, 1]), ]
+  return(newData[, 2])
+
+}
+
+.networkAnalysisSanitizeLayoutData <- function(variables, options) {
+
+  checksX <- .networkAnalysisFindDataType(variables = variables, variableMatch = options[["layoutXData"]], char = "=",
+                                         inputCheck = Negate(is.na), asNumeric = TRUE)
+  checksY <- .networkAnalysisFindDataType(variables = variables, variableMatch = options[["layoutYData"]], char = "=",
+                                          inputCheck = Negate(is.na), asNumeric = TRUE)
+
+  message <- NULL
+  defMsg <- "Supplied data for layout was not understood and instead a circle layout was used."
+  if (checksX[["errors"]][["fatal"]] || checksX[["errors"]][["fatal"]]) {
+
+    if (checksX[["errors"]][["fatal"]] && checksX[["errors"]][["fatal"]]) {
+      firstLine <- sprintf("Data supplied in %s AND %s could not be used to determine node locations.",
+                           options[["layoutX"]], options[["layoutY"]])
+    } else if (checksX[["errors"]][["fatal"]]) {
+      firstLine <- sprintf("Data supplied in %s could not be used to determine node locations.",
+                           options[["layoutX"]])
+    } else {
+      firstLine <- sprintf("Data supplied in %s could not be used to determine node locations.",
+                           options[["layoutY"]])
+    }
+
+    message <- sprintf("%s %s
+                 Data should:
+                 -start with the column name of the variable.
+                 -contain an '=' to distinghuish betweem column name and coordinate.",
+                       defMsg, firstLine)
+  } else if (length(checksX[["unmatched"]]) > 0 || length(checksY[["unmatched"]]) > 0) {
+
+    unmatchedX <- paste(checksX[["unmatched"]], collapse = ", ")
+    unmatchedY <- paste(checksY[["unmatched"]], collapse = ", ")
+    message <- defMsg
+    if (unmatchedX != "") {
+      if (length(checksX[["unmatched"]]) > 1) {
+        message <- paste(message, sprintf("X-Coordinates for variables %s were not understood.", unmatchedX))
+      } else {
+        message <- paste(message, sprintf("X-Coordinates for variable %s was not understood.", unmatchedX))
+      }
+    }
+    if (unmatchedY != "") {
+      if (length(checksY[["unmatched"]]) > 1) {
+        message <- paste(message, sprintf("Y-Coordinates for variables %s were not understood.", unmatchedY))
+      } else {
+        message <- paste(message, sprintf("Y-Coordinates for variable %s was not understood.", unmatchedY))
+      }
+    }
+
+  }
+
+  matchX <- checksX[["matches"]]
+  matchY <- checksY[["matches"]]
+  orderX <- match(variables, matchX[, 1])
+  orderY <- match(variables, matchY[, 1])
+  out <- list(x = checksX[["values"]][orderX], y = checksY[["values"]][orderY],
+              message = message)
+
+  return(out)
+
+}
+
+.networkAnalysisSanitizeColorNodesByData <- function(variables, options) {
+
+  checks <- .networkAnalysisFindDataType(variables = variables, variableMatch = options[["colorNodesByData"]], char = "=",
+                                         inputCheck = Negate(is.na))
+  message <- NULL
+  if (checks[["errors"]][["fatal"]]) {
+    message <- sprintf("Data supplied in %s could not be used to determine variables types.
+                 Data should:
+                 -start with the column name of the variable.
+                 -contain an '=' to distinghuish betweem column name and group.",
+                 options[["colorNodesBy"]])
+    return(list(newData = NULL, message = message))
+  }
+
+  newData <- checks[["matches"]]
+  if (length(checks[["unmatched"]] > 0)) {
+    undefGroup <- undefGroup0 <- "Undefined Group"
+    add <- 1L
+    while (undefGroup %in% newData[, 2] && add < 10L) {
+      undefGroup <- paste0(undefGroup0, add)
+      add <- add + 1L
+    }
+
+    newData <- rbind(newData, cbind(checks[["unmatched"]], undefGroup))
+    message <- sprintf("Some entries of %s were not understood. These are now grouped under '%s'.",
+                       options[["colorNodesBy"]], undefGroup)
+  }
+  newData <- newData[match(variables, newData[, 1]), ]
+  return(list(newData = newData[, 2], message = message))
+
+}
+
+# functions modified from bootnet ----
 # exact duplicate of bootnet::bootnet but with progressbar
 .networkAnalysisBootnetBootnet <- function(data, nBoots = 1000,
                      default = c("none", "EBICglasso", "pcor", "IsingFit", "IsingSampler", "huge", "adalasso", "mgm", "relimp", "cor"),
@@ -1866,8 +2064,8 @@ NetworkAnalysis <- function (
   }
   else {
     # statTableBoots <- parallel::parLapply(cl, seq_len(nBoots), function(b) {
-    print(class(bootResults))
-    str(bootResults, max.level = 3)
+    # print(class(bootResults))
+    # str(bootResults, max.level = 3)
     objToExport <- c("bootResults", "alpha", "computeCentrality",
                     "statistics", "directed")
     snow::clusterExport(cl = cl, list = objToExport, envir = environment())
