@@ -527,7 +527,7 @@
   }
   
   # Positive-definite?
-  if (posdef && any(round(eigen(dataset)$values,10) < 0)){
+  if (posdef && any(round(eigen(dataset)$values,10) <= 0)){
     return(list(error=TRUE,reason="Matrix is not positive-definite"))
   }
   

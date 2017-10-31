@@ -150,9 +150,9 @@
    				"sig",
    				"bonferroni",
    				"locfdr",
-				"Holm",
-				"Hochberg",
-				"Hommel",
+				"holm",
+				"hochberg",
+				"hommel",
 				"BH",
 				"BY",
 				"fdr"
