@@ -501,7 +501,8 @@ isTryError <- function(obj){
 			
 		} else {
 		
-			stop(paste("bad call to .unv() : v is \"", v, "\"", sep=""))
+		  vs[length(vs)+1] <- v
+		  
 		}
 	}
 	
@@ -753,6 +754,7 @@ callback <- function(results=NULL, progress=NULL) {
 		
 	stop("could not clean value")
 }
+
 
 .newFootnotes <- function() {
 	
@@ -1107,11 +1109,119 @@ saveImage <- function(plotName, format, height, width){
 
 }
 
-# This closure normally returns a progressbar function that expects to be called "ticks" times.
-# If used in a parallel environment it returns a structure to the master process which is
-# updated in the separate processes by .updateParallelProgressbar().
-.newProgressbar <- function(ticks, callback, skim=5, response=FALSE, parallel=FALSE) {
+
+as.modelTerms <- function(object, ...) UseMethod("as.modelTerms")
+as.modelTerms.list <- function(object) structure(object, class = "modelTerms")
+as.modelTerms.formula = function(formula) structure(sapply(attr(terms(formula), "term.labels"), strsplit, ":"), class="modelTerms")
+formula.modelTerms <- function(modelTerms, env = parent.frame()) {
+  # Converts a modelTerms list into a one-side R formula
+  #
+  # Args:
+  #   modelTerms:  A list of interaction terms, each term being a list of variable names involved in the interaction
+  #   env:         An environement associated with the variables in the formula, see ?as.formula
+  #
+  # Value:
+  #   A formula. See ?formula
+  #
+  terms = sapply(modelTerms, function(x) paste0(unlist(x), collapse = ":"))
+  terms = terms[terms != ""]
+  formula.rhs = paste(terms, collapse = " + ")
+  if (formula.rhs != "") as.formula(paste(" ~ ", formula.rhs), env = env)
+}
+
+
+b64 <- function(x, ...) UseMethod("b64")   ## Translate names in x to 'base64' 
+d64 <- function(x, ...) UseMethod("d64")   ## Untranslate names in x from 'base64' 
+
+b64.character <- function(x, values, prefix = "X", ...) {
+  if (missing(values)) 
+    return(.v(x, prefix = prefix))
+  
+  for (value in values)
+    x = gsub(value, b64(value), x)
+  x
+}
+
+d64.character <- function(x, values, ...) {
+  if (missing(values)) 
+    return(.unv(x))
+  
+  for (value in values)
+    x = gsub(value, d64(value), x)
+  x
+}
+
+b64.default <- function(object, ...) {
+  if (!is.null(dimnames(object))) {
+    dimnames(object) = lapply(dimnames(object), b64, ...)
+  }
+  if (!is.null(names(object))) {
+    names(object) = b64(names(object), ...)
+  }
+  object
+}
+
+d64.default <- function(object, ...) {
+  if (!is.null(dimnames(object))) {
+    dimnames(object) = lapply(dimnames(object), d64, ...)
+  }
+  if (!is.null(names(object))) {
+    names(object) = d64(names(object), ...)
+  }
+  object
+}
+
+b64.modelTerms = function(object, ...) structure(b64(unclass(object), ...), class="modelTerms")
+d64.modelTerms = function(object, ...) structure(d64(unclass(object), ...), class="modelTerms")
+b64.formula = function(formula, ...) as.formula(b64(as.modelTerms(formula), ...))
+d64.formula = function(formula, ...) as.formula(d64(as.modelTerms(formula), ...))
+
+b64.matrix <- function(x, ...) {
+  dimnames(x) <- rapply(dimnames(x), b64, ..., classes = "character", how="replace")
+  x
+}
+d64.matrix <- function(x, ...) {
+  dimnames(x) <- rapply(dimnames(x), d64, ..., classes = "character", how="replace")
+  x
+}
+b64.data.frame <- function(x, ...) {
+  colnames(x) = b64(colnames(x))
+  rownames(x) = b64(rownames(x))
+  x
+}
+d64.data.frame <- function(x, ...) {
+  colnames(x) = d64(colnames(x))
+  rownames(x) = d64(rownames(x))
+  x
+}
+b64.call <- function(x, which = seq_along(x)[-1], ...) {
+  x <- as.list(x)
+  x[which] = lapply(x[which], b64, ...)
+  as.call(x)
+}
+d64.call <- function(x, which = seq_along(x)[-1], ...) {
+  x <- as.list(x) # which relies on this (and lazy evaluation): must be fist for next statement to work!
+  x[which] = lapply(x[which], d64, ...)
+  as.call(x)
+}
+b64.name <- function(x, ...) {
+  as.name(b64(as.character(x)))
+}
+d64.name <- function(x, ...) {
+  as.name(d64(as.character(x)))
+}
+b64.list <- function(x, ...) {
+  rapply(x, b64, ..., how = "replace")
+}
+d64.list <- function(x, ...) {
+  rapply(x, d64, ..., how = "replace")
+}
 	
+.newProgressbar <- function(ticks, callback, skim=5, response=FALSE, parallel=FALSE) {
+  # This closure normally returns a progressbar function that expects to be called "ticks" times.
+  # If used in a parallel environment it returns a structure to the master process which is
+  # updated in the separate processes by .updateParallelProgressbar().
+  
 	ticks <- suppressWarnings(as.integer(ticks))
 	if (is.na(ticks) || ticks <= 0)
 		stop("Invalid value provided to 'ticks', expecting positive integer")
