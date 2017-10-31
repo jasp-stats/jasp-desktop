@@ -170,6 +170,11 @@ NetworkAnalysis <- function (
 
 	# Sort out whether things are set to defaults or not.
 	if (length(variables) > 2) {
+		
+		# some analyses, such as Sacha's EBIGglasso with cor_auto, completely ignore the missing argument
+		# and always use pairwise information even though their documentation says they can do listwise
+		if (options[["missingValues"]] == "listwise")
+			dataset <- dataset[complete.cases(dataset), ]
 
 		# check for errors, but only if there was a change in the data (which implies state[["network"]] is NULL)
 		if (is.null(state[["network"]])) {
@@ -181,16 +186,16 @@ NetworkAnalysis <- function (
 			if (options[["groupingVariable"]] != "") {
 				groupingVariable <- options[["groupingVariable"]]
 				# these cannot be chained unfortunately
-        .hasErrors(dataset = dataset[.v(groupingVariable)], perform = perform,
-                   type = "factorLevels",
-                   factorLevels.target = groupingVariable,
-                   factorLevels.amount = "< 2",
-                   exitAnalysisIfErrors = TRUE)
-        .hasErrors(dataset = dataset[.v(groupingVariable)], perform = perform,
-                   type = "observations",
-                   observations.amount = "< 10",
-                   observations.grouping = groupingVariable,
-                   exitAnalysisIfErrors = TRUE)
+				.hasErrors(dataset = dataset[.v(groupingVariable)], perform = perform,
+						   type = "factorLevels",
+						   factorLevels.target = groupingVariable,
+						   factorLevels.amount = "< 2",
+						   exitAnalysisIfErrors = TRUE)
+				.hasErrors(dataset = dataset[.v(groupingVariable)], perform = perform,
+						   type = "observations",
+						   observations.amount = "< 10",
+						   observations.grouping = groupingVariable,
+						   exitAnalysisIfErrors = TRUE)
 			}
 
 			# estimator 'mgm' requires some additional checks
@@ -211,6 +216,42 @@ NetworkAnalysis <- function (
 									observations.amount = " < 3",
 									observations.grouping = groupingVariable,
 									exitAnalysisIfErrors = TRUE)
+			
+			# check for positive definite covariance matrices: TODO: CLEANUP! move to commonerror (add grouping to varCovMatrix)
+			if (options[["missingValues"]] == "pairwise" && perform == "run") {
+				fun <- cor
+				if (options[["correlationMethod"]] == "cov")
+					fun <- cov
+
+				defaultErrorMgs <- "The following problem(s) occurred while running the analysis:<ul><li>The variance-covariance matrix of the supplied data is not positive-definite. Please check if any variable(s) has missings observations.</li></ul>"
+				if (is.null(groupingVariable)) {
+					errors <- .hasErrors(fun(dataset, use = "pairwise"), perform = perform, type = "varCovMatrix", exitAnalysisIfErrors = FALSE)
+					if (!identical(errors, FALSE))
+						.quitAnalysis(defaultErrorMgs)
+					
+				} else {
+
+					errors <- list()
+					splitData <- split(dataset[!(colnames(dataset) %in% .v(groupingVariable))], dataset[[.v(groupingVariable)]])
+					for (d in seq_along(splitData)) {
+						errors[[d]] <- .hasErrors(fun(splitData[[d]], use = "pairwise"), perform = perform, type = "varCovMatrix", exitAnalysisIfErrors = FALSE)
+					}
+					if (!all(idxError <- sapply(errors, identical, FALSE))) {
+						
+						endOfMessage <- stringr::str_sub(defaultErrorMgs, -10, -1)
+						errorTemplate <- stringr::str_sub(defaultErrorMgs, 1, -11)
+						if (sum(!idxError) > 1) { # plural
+							msg2add <- "This error occured after grouping on %s. Specifically, the variance-covariance matrices corresponding to datasets of levels %s were not positive definite.%s"
+						} else {
+							msg2add <- "This error occured after grouping on %s. Specifically, the variance-covariance matrix corresponding to the dataset of level %s was not positive definite.%s"
+						}
+						errorLevels <- paste(names(splitData)[!idxError], collapse = ", ")
+						errorMessage <- paste(defaultErrorMgs, sprintf(msg2add, groupingVariable, errorLevels, endOfMessage))
+						# return error message
+						.quitAnalysis(errorMessage)
+					}
+				}
+			}
 		}
 
 		network <- .networkAnalysisRun(dataset = dataset, options = options, variables = variables, perform = perform, oldNetwork = state)
@@ -329,8 +370,10 @@ NetworkAnalysis <- function (
 		dataset <- list(dataset) # for compatability with the split behaviour
 
 	} else { # multiple networks
-
-		dataset <- split(dataset, dataset[[.v(options[["groupingVariable"]])]], drop = TRUE)
+		
+		groupingVariableData <- dataset[[.v(options[["groupingVariable"]])]]
+		dataset[[.v(options[["groupingVariable"]])]] <- NULL
+		dataset <- split(dataset, groupingVariableData, drop = TRUE)
 
 	}
 
@@ -446,8 +489,6 @@ NetworkAnalysis <- function (
 		for (nw in seq_along(dataset)) {
 
 			data <- dataset[[nw]]
-			data[[.v(options[["groupingVariable"]])]] <- NULL # grouping variable is not a node in the network
-			network <- oldNetwork[["network"]][[nw]] # NULL or something usuable
 
 			# Fake png hack -- qgraph::qgraph() has an unprotected call to `par()`. `par()` always opens a new device if there is none.
 			# Perhaps ask Sacha to fix this in qgraph. Line 1119: if (DoNotPlot) par(pty = pty)
@@ -1567,12 +1608,12 @@ NetworkAnalysis <- function (
                                inputCheck = function(x) x %in% c("g", "p", "c"))
 
   if (checks[["errors"]][["fatal"]]) {
-    message <- sprintf("Data supplied in %s cannot be used to determine variables types.
-                 Data should:
-                 -start with the column name of the variable.
-                 -contain an '=' to distinghuish betweem column name and data type.
-                 -end with either 'g' for Gaussian, 'c' for categorical, or 'p' for Poisson.",
-                 options[["mgmVariableType"]])
+    message <- paste0("Data supplied in ", options[["mgmVariableType"]], " cannot be used to determine variables types. ",
+    				  "Data should: ",
+    				  "<ul><li>start with the column name of the variable.</ul></li>",
+    				  "<ul><li>contain an '=' to distinghuish betweem column name and data type.</ul></li>",
+    				  "<ul><li>end with either 'g' for Gaussian, 'c' for categorical, or 'p' for Poisson.</ul></li>"
+                 )
     .quitAnalysis(message)
   }
 
@@ -1607,8 +1648,7 @@ NetworkAnalysis <- function (
                            options[["layoutY"]])
     }
 
-    message <- sprintf("%s %s
-                 Data should:
+    message <- sprintf("%s %sData should:
                  -start with the column name of the variable.
                  -contain an '=' to distinghuish betweem column name and coordinate.",
                        defMsg, firstLine)
@@ -1651,10 +1691,9 @@ NetworkAnalysis <- function (
                                          inputCheck = Negate(is.na))
   message <- NULL
   if (checks[["errors"]][["fatal"]]) {
-    message <- sprintf("Data supplied in %s could not be used to determine variables types.
-                 Data should:
-                 -start with the column name of the variable.
-                 -contain an '=' to distinghuish betweem column name and group.",
+    message <- sprintf("Data supplied in %s could not be used to determine variables types. Data should:
+                 Start with the column name of the variable.
+                 Contain an '=' to distinghuish betweem column name and group.",
                  options[["colorNodesBy"]])
     return(list(newData = NULL, message = message))
   }
