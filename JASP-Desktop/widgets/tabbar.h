@@ -37,6 +37,7 @@ class PreferencesDialog;
 class TabBar : public QWidget
 {
 	Q_OBJECT
+
 public:
 	explicit TabBar(QWidget *parent = 0);
 
@@ -49,13 +50,10 @@ public:
     void emptyValuesChanged();
 
 	void addOptionsTab();
-	void addHelpTab();
 
 	int count() const;
 	PreferencesDialog *getPreferencesDialog();
 	
-
-
 signals:
 	void currentChanged(int index);
 	void helpToggled(bool on);
@@ -76,9 +74,9 @@ private slots:
 	void toggleSEM();
 	void toggleReinforcement();
 	void toggleSummaryStats();
+	void handleModuleButton();
 
 private:
-
 	QWidget *_background;
 	QList<QPushButton *> _tabButtons;
 	QGridLayout *_backgroundLayout;
@@ -93,6 +91,7 @@ private:
 	
 	AboutDialog *_aboutDialog;
 	PreferencesDialog *_preferencesDialog;
+	QPushButton *_modulesButton;
 	
 };
 
