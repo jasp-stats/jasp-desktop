@@ -180,7 +180,7 @@ NetworkAnalysis <- function (
 		if (is.null(state[["network"]])) {
 
 		  # default error checks
-		  checks <- c("infinity", "variance", "observations")
+		  checks <- c("infinity", "variance", "observations", "varCovData")
 
 			groupingVariable <- NULL
 			if (options[["groupingVariable"]] != "") {
@@ -206,6 +206,9 @@ NetworkAnalysis <- function (
 			}
 
 			# check for errors
+			fun <- cor
+			if (options[["correlationMethod"]] == "cov")
+			  fun <- cov
 			anyErrors <- .hasErrors(dataset = dataset, perform = perform,
 									type = checks,
 									variance.target = variables, # otherwise the grouping variable always has variance == 0
@@ -215,43 +218,9 @@ NetworkAnalysis <- function (
 									factorLevels.grouping = groupingVariable,
 									observations.amount = " < 3",
 									observations.grouping = groupingVariable,
+									varCovData.grouping = groupingVariable,
+									varCovData.corFun = fun,
 									exitAnalysisIfErrors = TRUE)
-			
-			# check for positive definite covariance matrices: TODO: CLEANUP! move to commonerror (add grouping to varCovMatrix)
-			if (options[["missingValues"]] == "pairwise" && perform == "run") {
-				fun <- cor
-				if (options[["correlationMethod"]] == "cov")
-					fun <- cov
-
-				defaultErrorMgs <- "The following problem(s) occurred while running the analysis:<ul><li>The variance-covariance matrix of the supplied data is not positive-definite. Please check if any variable(s) has missings observations.</li></ul>"
-				if (is.null(groupingVariable)) {
-					errors <- .hasErrors(fun(dataset, use = "pairwise"), perform = perform, type = "varCovMatrix", exitAnalysisIfErrors = FALSE)
-					if (!identical(errors, FALSE))
-						.quitAnalysis(defaultErrorMgs)
-					
-				} else {
-
-					errors <- list()
-					splitData <- split(dataset[!(colnames(dataset) %in% .v(groupingVariable))], dataset[[.v(groupingVariable)]])
-					for (d in seq_along(splitData)) {
-						errors[[d]] <- .hasErrors(fun(splitData[[d]], use = "pairwise"), perform = perform, type = "varCovMatrix", exitAnalysisIfErrors = FALSE)
-					}
-					if (!all(idxError <- sapply(errors, identical, FALSE))) {
-						
-						endOfMessage <- stringr::str_sub(defaultErrorMgs, -10, -1)
-						errorTemplate <- stringr::str_sub(defaultErrorMgs, 1, -11)
-						if (sum(!idxError) > 1) { # plural
-							msg2add <- "This error occured after grouping on %s. Specifically, the variance-covariance matrices corresponding to datasets of levels %s were not positive definite.%s"
-						} else {
-							msg2add <- "This error occured after grouping on %s. Specifically, the variance-covariance matrix corresponding to the dataset of level %s was not positive definite.%s"
-						}
-						errorLevels <- paste(names(splitData)[!idxError], collapse = ", ")
-						errorMessage <- paste(defaultErrorMgs, sprintf(msg2add, groupingVariable, errorLevels, endOfMessage))
-						# return error message
-						.quitAnalysis(errorMessage)
-					}
-				}
-			}
 		}
 
 		network <- .networkAnalysisRun(dataset = dataset, options = options, variables = variables, perform = perform, oldNetwork = state)
