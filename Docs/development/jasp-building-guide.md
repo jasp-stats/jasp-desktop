@@ -33,7 +33,7 @@ Windows
 Building JASP under windows is the most temperamental, and the versions listed here are known to work; slight variations on these numbers probably won't work.
 
  - [Qt 5.2.1 win64 GCC 4.8.2](https://static.jasp-stats.org/development/x64-Qt-5.2.1+QtCreator-3.0.1-(gcc-4.8.2-seh).7z)
- - [R 3.3.3 win64](https://static.jasp-stats.org/development/R3.3%20Win%20(2017-04-06).zip)
+ - [R 3.3.3 win64](https://static.jasp-stats.org/development/R3.3%20Win%20JASP%200.8.3.zip)
  - [boost 1.64.0](https://static.jasp-stats.org/development/boost_1_64_0.zip)
  - [boost 1.64.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Additional%20Binary%20Deps%20Win64%20for%20JASP%20(2017-06-06).zip)
 
@@ -60,13 +60,13 @@ The directory structure should be as follows:
 Mac OS X
 --------
 
- - [R 3.3.3](https://static.jasp-stats.org/development/R3.3%20OSX%20(2017-04-06).zip)
- - [boost 1.64.0](https://static.jasp-stats.org/development/boost_1_64_0.zip)
- - [boost 1.64.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Additional%20Binary%20Deps%20OSX%20for%20JASP%20(2017-06-06).zip)
+ 1. [R 3.3.3](https://static.jasp-stats.org/development/R3.3%20OSX%20JASP%200.8.3.zip)
+ 2. [boost 1.64.0](https://static.jasp-stats.org/development/boost_1_64_0.zip)
+ 3. [boost 1.64.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Additional%20Binary%20Deps%20OSX%20for%20JASP%20(2017-06-06).zip)
 
 XCode: Qt on OS X relies on XCode to function, you can install this through the App Store. It's easiest if you install this, run it, accept the license agreement, and then close it down before installing Qt.
 
-Qt: building JASP on OS X is pretty robust, and most versions work. We currently use 5.4.0, but newer versions will probably work too. You can download it from [here](https://qt-project.org/downloads).
+Qt: building JASP on OS X is pretty robust, and most versions work. We currently use 5.4.0, but newer versions will probably work too. You can download it from [here](https://download.qt.io/archive/qt/). 
 
 The directory structure should be as follows:
 
@@ -79,6 +79,12 @@ The directory structure should be as follows:
 		- libboost_filesystem-clang-mt-1_64.a
 		- libarchive.a
 		- libz.a
+
+ 0. Clone the JASP repository into a folder of your choice. Our default choice is *~/desktop/JASP/*, this will create the folder */jasp-desktop* and QT will make the build-JASP-.... directory in this folder.
+ 1. Create the folder */Frameworks* in the folder of your choice and unzip the **R 3.3.3** files into there
+ 2. Unzip **boost 1.64.0** files in jasp-desktop
+ 3. Unzip the **boost 1.64.0 binaries, libarchive binaries** files and put them into the */build-JASP-....* directory that QT creates. 
+
 
 Linux
 -----
