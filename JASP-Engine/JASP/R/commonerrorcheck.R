@@ -149,7 +149,7 @@
   #
   # Returns:
   #   FALSE if no errors were found or a named list specifying for each check which variables violated it as well as a general error message.
-
+  
   if (! isTRUE(nrow(dataset) > 0) || perform != 'run' || (length(type) == 0 && length(custom) == 0)) {
     return(FALSE)
   }
@@ -586,6 +586,8 @@
     err <- .checkVarCovMatrix(cormat, nrow = FALSE, symm = FALSE)
     result$error <- err$error
     result$message <- result$reason
+    if (result$error) # stop at first error
+      break
   }
   
   return(result)

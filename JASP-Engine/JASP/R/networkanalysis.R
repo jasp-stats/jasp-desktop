@@ -180,7 +180,7 @@ NetworkAnalysis <- function (
 		if (is.null(state[["network"]])) {
 
 		  # default error checks
-		  checks <- c("infinity", "variance", "observations", "varCovData")
+		  checks <- c("infinity", "variance", "observations")
 
 			groupingVariable <- NULL
 			if (options[["groupingVariable"]] != "") {
@@ -209,7 +209,7 @@ NetworkAnalysis <- function (
 			fun <- cor
 			if (options[["correlationMethod"]] == "cov")
 			  fun <- cov
-			anyErrors <- .hasErrors(dataset = dataset, perform = perform,
+			.hasErrors(dataset = dataset, perform = perform,
 									type = checks,
 									variance.target = variables, # otherwise the grouping variable always has variance == 0
 									variance.grouping = groupingVariable,
@@ -218,9 +218,12 @@ NetworkAnalysis <- function (
 									factorLevels.grouping = groupingVariable,
 									observations.amount = " < 3",
 									observations.grouping = groupingVariable,
-									varCovData.grouping = groupingVariable,
-									varCovData.corFun = fun,
 									exitAnalysisIfErrors = TRUE)
+			.hasErrors(dataset = dataset, perform = perform, type = "varCovData",
+			           varCovData.grouping = groupingVariable,
+			           varCovData.corFun = fun,
+			           varCovData.corArgs = list(use = "pairwise"),
+			           exitAnalysisIfErrors = TRUE)
 		}
 
 		network <- .networkAnalysisRun(dataset = dataset, options = options, variables = variables, perform = perform, oldNetwork = state)
