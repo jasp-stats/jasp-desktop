@@ -314,11 +314,11 @@ def create_analyses_files(module, ribbon):
             analysis_name = analysis_name.replace(' ', '')
             analysis_name = module + analysis_name
 
-            analysis_source = analysis_source.format(analysis_name, analysis)
+            analysis_source_temp = analysis_source.format(analysis_name, analysis)
 
             # Create resource file
             with open(analysis_path + analysis_name.lower() + '.R', 'w+') as f:
-                f.write(analysis_source)
+                f.write(analysis_source_temp)
 
             print('    Created {0} analysis file'.format(analysis))
 
@@ -341,10 +341,10 @@ def create_pri_file(module, ribbon):
         # FIXME: Ribbon path is hardcoded
         content += ('    $$PWD/../../ribbons/ribbon{0}.{1} \\\n'.format(module.lower(), file_types[t]))
 
-        for obj in ribbon:
-            analyses = obj.get('analyses')
+        for j in range(len(ribbon)):
+            analyses = ribbon[j].get('analyses')
             if analyses is None:
-                analyses = [obj['name']]
+                analyses = [ribbon[j]['name']]
 
             for idx in range(0, len(analyses)):
                 # FIXME: Write more general statements, use regex
@@ -353,7 +353,7 @@ def create_pri_file(module, ribbon):
                 analysis_name = analysis_name.replace(' ', '')
                 analysis_name = module + analysis_name + 'Form'
                 content += ('    $$PWD/{0}.{1}'.format(analysis_name.lower(), file_types[t]))
-                if idx == len(analyses) - 1:
+                if idx == len(analyses) - 1 and j == len(ribbon) - 1:
                     content += ('\n')
                 else:
                     content += (' \\\n')
@@ -391,7 +391,7 @@ def create_new_module():
             create_analyses_files(module_name, module['ribbon'])
             create_pri_file(module_name, module['ribbon'])
             modify_mainwindow(module['name'], module['ribbon'])
-            modify_tabbar(module_name, module['ribbon'])
+            modify_tabbar(module['name'], module['ribbon'])
 
 if __name__ == '__main__':
     create_new_module()
