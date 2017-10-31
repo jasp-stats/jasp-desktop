@@ -256,9 +256,14 @@
     if (hasNamespace && length(funcArgs) > 0) {
       callingArgs <- args[names(funcArgs)]
       names(callingArgs) <- gsub(paste0(type[[i]], '.'), '', names(callingArgs), fixed=TRUE)
-      checkResult <- base::do.call(check[['callback']], callingArgs)
+      checkResult <- try(base::do.call(check[['callback']], callingArgs))
     } else {
-      checkResult <- check[['callback']]()
+      checkResult <- try(check[['callback']]())
+    }
+    
+    # See if the check itself terminated with an exception (oh dear).
+    if (isTryError(checkResult)) {
+      next
     }
     
     # If we don't have an error we can go to the next check.
