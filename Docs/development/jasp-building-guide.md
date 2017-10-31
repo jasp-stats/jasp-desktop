@@ -82,11 +82,13 @@ The directory structure should be as follows:
 
  0. **Clone** the JASP repository into a folder of your choice. Our default choice is *~/desktop/JASP/* and cloning results in the creating of *~/desktop/JASP/jasp-desktop*.
  1. **XCode**: Qt on OS X relies on XCode to function, you can install this through the App Store. It's easiest if you install this, run it, accept the license agreement, and then close it down before installing Qt.
- 2. **Qt**: building JASP on OS X is pretty robust, but for the moment we're restricted to version 5.4.0. We will upgrade to a newer version soon.
+ 2. **Qt**: building JASP on OS X is pretty robust, but for the moment we're restricted to QT 5.4. We will upgrade to a newer version soon. **Note**: *For xcode 8 and above, to accept the license, Qt (v5.4) tries to find xcrun instead of xcodebuild, and the following has to be done,*
+- Open the file: *Qt_install_folder/5.4/clang_64/mkspecs/features/mac/default_pre.prf*
+- Replace the line *isEmpty($$list($$system("/usr/bin/xcrun -find xcrun 2>/dev/null")))* by  *isEmpty($$list($$system("/usr/bin/xcrun -find xcodebuild 2>/dev/null")))*
  3. **R 3.3.3**: Create the folder */Frameworks* in the directory of your choice in step 0. For our default choice this results in *~/desktop/JASP/Frameworks/* first and subsequently *~/desktop/JASP/Frameworks/R.frameworks*.
  4. **boost 1.64.0**: Unzip these files in the JASP folder. In our case, this results in *~/desktop/JASP/boost_1_64_0/*
- 5. **boost 1.64.0 binaries, libarchive binaries**: We're almost there! Fire up QT and try to build JASP. QT will automatically create a */build-JASP-....* directory. In our case this leads to *~/desktop/JASP/build-JASP-Desktop_Qt_5_5_1_clang_64bit-Debug*. QT will stop building JASP as it requires additional files. Thus, unzip the **boost 1.64.0 binaries, libarchive binaries** files and put them into the */build-JASP-....* directory that QT created.
- 6. Build JASP again from QT. The first build might take a while, but after the first time it'll go very smoothly. 
+ 5. **boost 1.64.0 binaries, libarchive binaries**: We're almost there! Fire up QT and try to build JASP. QT will automatically create a */build-JASP-....* directory. In our case this leads to  *~/desktop/JASP/build-JASP-Desktop_Qt_5_5_1_clang_64bit-Debug*. QT will stop building JASP as it requires additional files. Thus, unzip the **boost 1.64.0 binaries, libarchive binaries** files and put them into the */build-JASP-....* directory that Qt created.
+ 6. Build JASP again from Qt. The first build might take a while, but after the first time it'll go very smoothly.
 
 
 Linux
