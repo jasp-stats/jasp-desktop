@@ -645,6 +645,7 @@ QTableView::item::last
    <header>ribbons/ribbonsummarystatistics.h</header>
    <container>1</container>
   </customwidget>
+<!-- Add customwidget definition -->
   <customwidget>
    <class>TabBar</class>
    <extends>QWidget</extends>

@@ -14,6 +14,8 @@ if_else_ladder_replacement = '///// 4-analysis if-else ladder'
 tab_changed_ribbon_number = '///// 5-ribbon tab number:'
 ribbon_update_status_replacement = '///// 6-ribbon updateMenuEnabledDisabledStatus'
 ribbon_update_ui_replacement = '///// 7-ribbon updateUIFromOptions'
+ribbon_widget_replacement = '<!-- Add ribbon widget page -->'
+customwidget_definition_replacement = '<!-- Add customwidget definition -->'
 
 
 def create_module_ribbon(module, ribbon):
@@ -91,7 +93,7 @@ def create_module_ribbon(module, ribbon):
     with open(current_path + '/templates/ribbon_button.ui', 'r') as f:
         ribbon_button = f.read()
 
-    button_ui = ""
+    button_ui = ''
     column_number = 0
     for obj in ribbon:
         button_name = obj['name']
@@ -170,12 +172,14 @@ def modify_mainwindow(module, ribbon):
     # 6. update menu (enabled) if dataset required by module
     # 7. update ribbon from ui options
 
-    mainwindow_path = current_path + '/../../JASP-Desktop/mainwindow.cpp'
+    # 8. Add ribbon page to mainwindow ui file
+
+    mainwindow_path = current_path + '/../../JASP-Desktop/mainwindow.'
     module_name = module.replace(' ', '')
     analyses_headers = ''
     analyses_if_else = ''
     mainwindow_source = ''
-    with open(mainwindow_path, 'r') as f:
+    with open(mainwindow_path + 'cpp', 'r') as f:
         mainwindow_source = f.read()
 
     for obj in ribbon:
@@ -232,8 +236,26 @@ def modify_mainwindow(module, ribbon):
     mainwindow_source = mainwindow_source.replace(ribbon_update_ui_replacement, ribbon_update_ui)
 
     # Write to mainwindow.cpp
-    with open(mainwindow_path, 'w') as f:
+    with open(mainwindow_path + 'cpp', 'w') as f:
         f.write(mainwindow_source)
+
+    # Modify mainwindow ui
+    mainwindow_ui = ''
+    with open(mainwindow_path + 'ui', 'r') as f:
+        mainwindow_ui = f.read()
+
+    replacement_text = '          <widget class="Ribbon{name}" name="ribbon{name}"/>\n'.format(name=module_name)
+    replacement_text += ribbon_widget_replacement
+    mainwindow_ui = mainwindow_ui.replace(ribbon_widget_replacement, replacement_text)
+
+    replacement_text = '  <customwidget>\n   <class>Ribbon{name}</class>\n   <extends>QWidget</extends>\n'.format(name=module_name)
+    replacement_text += '   <header>ribbons/ribbon{header}.h</header>\n   <container>1</container>\n  </customwidget>\n'.format(header=module_name.lower())
+    replacement_text += customwidget_definition_replacement
+    mainwindow_ui = mainwindow_ui.replace(customwidget_definition_replacement, replacement_text)
+
+    # Write to mainwindow.ui
+    with open(mainwindow_path + 'ui', 'w') as f:
+        f.write(mainwindow_ui)
 
     print('- Modified mainwindow')
 
