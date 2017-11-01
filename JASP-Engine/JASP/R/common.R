@@ -234,12 +234,11 @@ isTryError <- function(obj){
 
 
 .vdf <- function(df, columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, exclude.na.listwise=c(), ...) {
-
 	new.df <- NULL
 	namez <- NULL
-	
+
 	for (column.name in columns) {
-	
+
 		column <- df[[column.name]]
 
 		if (is.null(new.df)) {
@@ -247,14 +246,17 @@ isTryError <- function(obj){
 		} else {
 			new.df <- data.frame(new.df, column)
 		}
-		
+
 		namez <- c(namez, column.name)
 	}
-		
+
 	for (column.name in columns.as.ordinal) {
-	
+
 		column <- as.ordered(df[[column.name]])
-	
+		
+		if (length(column) == 0) {
+			.quitAnalysis("Error: no data! Check for missing values.")
+		}
 		if (is.null(new.df)) {
 			new.df <- data.frame(column)
 		} else {
@@ -263,30 +265,36 @@ isTryError <- function(obj){
 
 		namez <- c(namez, column.name)
 	}
-		
+
 	for (column.name in columns.as.factor) {
-	
-		column <- as.factor(df[[column.name]])
 
+		column <- as.factor(df[[column.name]])
+		
+		if (length(column) == 0) {
+			.quitAnalysis("Error: no data! Check for missing values.")
+		}
 		if (is.null(new.df)) {
 			new.df <- data.frame(column)
 		} else {
 			new.df <- data.frame(new.df, column)
 		}
-	
+
 		namez <- c(namez, column.name)
 	}
-		
+
 	for (column.name in columns.as.numeric) {
 
 		column <- as.numeric(as.character(df[[column.name]]))
-
+		
+		if (length(column) == 0) {
+			.quitAnalysis("Error: no data! Check for missing values.")
+		}
 		if (is.null(new.df)) {
 			new.df <- data.frame(column)
 		} else {
 			new.df <- data.frame(new.df, column)
 		}
-	
+
 		namez <- c(namez, column.name)
 	}
 
@@ -294,9 +302,9 @@ isTryError <- function(obj){
 		return (data.frame())
 
 	names(new.df) <- .v(namez)
-	
+
 	new.df <- .excludeNaListwise(new.df, exclude.na.listwise)
-	
+
 	new.df
 }
 

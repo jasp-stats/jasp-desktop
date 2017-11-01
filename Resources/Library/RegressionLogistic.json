@@ -8,6 +8,26 @@
 			"type": "Variable"
 		},
 		{
+			"name": "method",
+			"type": "List",
+			"default": "enter",
+			"options": [ "enter", "backward", "forward", "stepwise" ]
+		},
+		{
+			"name": "entryPval",
+			"type": "Number",
+			"value": 0.050,
+			"max": 1,
+			"min": 0
+		},
+		{
+			"name": "removalPval",
+			"type": "Number",
+			"value": 0.100,
+			"max": 1,
+			"min": 0
+		},
+		{
 			"name": "covariates",
 			"type": "Variables"
 		},

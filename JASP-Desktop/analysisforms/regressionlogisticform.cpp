@@ -28,6 +28,11 @@ RegressionLogisticForm::RegressionLogisticForm(QWidget *parent) :
 
 	ui->listAvailableFields->setModel(&this->_availableVariablesModel);
 
+	ui->method->addItem("Enter");
+	ui->method->addItem("Backward");
+	ui->method->addItem("Forward");
+	ui->method->addItem("Stepwise");
+
 	_dependentModel = new TableModelVariablesAssigned();
 	_dependentModel->setSource(&_availableVariablesModel);
 	_dependentModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeNominalText);
@@ -60,7 +65,6 @@ RegressionLogisticForm::RegressionLogisticForm(QWidget *parent) :
 	_modelModel = new TableModelAnovaModel(this);
 	_modelModel->setPiecesCanBeAssigned(false);
 	ui->modelTerms->setModel(_modelModel);
-	ui->modelTerms->hide();
 
 	connect(_covariatesModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
 	connect(_covariatesModel, SIGNAL(assignmentsChanged()),  this, SLOT(factorsChanged()));
@@ -74,7 +78,7 @@ RegressionLogisticForm::RegressionLogisticForm(QWidget *parent) :
 
 	ui->panelStatistics->hide();
 	ui->panelPlots->hide();
-	ui->panelIncludeIntercept->hide();
+	ui->panelModel->hide();
 
 #ifdef QT_NO_DEBUG
 	ui->labelWLSWeights->hide();
