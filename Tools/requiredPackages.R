@@ -1,11 +1,15 @@
 args <- commandArgs(trailingOnly = TRUE)
 
 if (length(args) == 0) {
-  stop("\nRequires: path to R folder")
+  stop("\nRequires (1) path to R folder and optionally (2) boolean whether to install packages")
 } else if (length(args) == 1) {
   lib <- args[1]
+  install <- FALSE
+} else if (length(args) == 2) {
+  lib <- args[1]
+  install <- ifelse(tolower(args[2]) == "true", TRUE, FALSE)
 } else {
-  stop("\nAccepts only one argument")
+  stop("\nAccepts only two arguments")
 }
 
 if (dir.exists(lib)) {
@@ -48,21 +52,30 @@ reqPkgs <- c(reqPkgs, "GPArotation")
 reqPkgs <- sort(unique(reqPkgs))
 reqPkgs <- reqPkgs[! reqPkgs %in% basePkgs]
 
-strPkgs <- paste0("'", reqPkgs, "'")
-installString <- paste0("install.packages(c(", paste(strPkgs, collapse=", "), "), repos = 'https://cloud.r-project.org', dependencies = NA)")
+if (install) {
+  cat("Installing all missing packages...")
+  for (pkg in reqPkgs) {
+    if (! pkg %in% installed.packages()) {
+      install.packages(pkg, repos = 'https://cloud.r-project.org', dependencies = NA)
+    }
+  }
+  cat("\nFinished iterating over the required packages\n")
+} else {
+  strPkgs <- paste0("'", reqPkgs, "'")
+  installString <- paste0("install.packages(c(", paste(strPkgs, collapse=", "), "), repos = 'https://cloud.r-project.org', dependencies = NA)")
 
+  deps <- tools::package_dependencies(reqPkgs, recursive=TRUE)
+  depPkgs <- unlist(deps)
+  depPkgs <- sort(unique(depPkgs))
 
-deps <- tools::package_dependencies(reqPkgs, recursive=TRUE)
-depPkgs <- unlist(deps)
-depPkgs <- sort(unique(depPkgs))
+  allPkgs <- sort(unique(c(reqPkgs, depPkgs)))
 
-allPkgs <- sort(unique(c(reqPkgs, depPkgs)))
-
-cat("\nInstall string:\n")
-cat(installString)
-cat("\n\nRequired packages:\n")
-cat(paste0(reqPkgs, collapse="\n"), "\n")
-cat("\nDependencies of required packages [Imports, Depends, LinkingTo]:\n")
-cat(paste0(depPkgs, collapse="\n"), "\n")
-cat("\nFull list of packages:\n")
-cat(paste0(allPkgs, collapse="\n"), "\n")
+  cat("\nInstall string:\n")
+  cat(installString)
+  cat("\n\nRequired packages:\n")
+  cat(paste0(reqPkgs, collapse="\n"), "\n")
+  cat("\nDependencies of required packages [Imports, Depends, LinkingTo]:\n")
+  cat(paste0(depPkgs, collapse="\n"), "\n")
+  cat("\nFull list of packages:\n")
+  cat(paste0(allPkgs, collapse="\n"), "\n")
+}
