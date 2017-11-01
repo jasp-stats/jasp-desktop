@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>602</width>
-    <height>503</height>
+    <width>562</width>
+    <height>360</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -37,7 +37,19 @@
    </property>
    <item row="0" column="0">
     <widget class="BoundGroupBox" name="effectSize">
+     <property name="styleSheet">
+      <string notr="true">QGroupBox{
+	padding-top: 0;
+	margin-top: 0;
+}</string>
+     </property>
      <layout class="QGridLayout" name="gridLayout_14">
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="verticalSpacing">
+       <number>0</number>
+      </property>
       <item row="0" column="0">
        <widget class="QRadioButton" name="_1standardizedEffectSize">
         <property name="text">
@@ -60,6 +72,12 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="styleSheet">
+         <string notr="true">QGroupBox{
+	padding-top: 1;
+	margin-top: 0;
+}</string>
+        </property>
         <property name="title">
          <string/>
         </property>
@@ -68,7 +86,7 @@
         </property>
         <layout class="QGridLayout" name="gridLayout_17">
          <property name="leftMargin">
-          <number>0</number>
+          <number>17</number>
          </property>
          <property name="topMargin">
           <number>0</number>
@@ -79,20 +97,7 @@
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <item row="2" column="6">
-          <spacer name="horizontalSpacer_9">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="2" column="1">
+         <item row="2" column="0">
           <widget class="QRadioButton" name="uniformDienes">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -105,7 +110,7 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="5">
+         <item row="1" column="4">
           <widget class="BoundTextBox" name="normalDienesStd">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -127,7 +132,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="3">
+         <item row="0" column="2">
           <widget class="BoundTextBox" name="halfNormalDienesStd">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -149,7 +154,27 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="3">
+         <item row="1" column="0">
+          <widget class="QRadioButton" name="normalDienes">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Normal</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="label_uniformDienesLowerBound">
+           <property name="text">
+            <string>lower bound:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
           <widget class="BoundTextBox" name="uniformDienesLowerBound">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -171,7 +196,7 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="5">
+         <item row="2" column="4">
           <widget class="BoundTextBox" name="uniformDienesUpperBound">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -193,28 +218,14 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="4">
+         <item row="2" column="3">
           <widget class="QLabel" name="label_uniformDienesUpperBound">
            <property name="text">
             <string>upper bound:</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="label_halfNormalDienesStd">
-           <property name="text">
-            <string>std:</string>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="2">
-          <widget class="QLabel" name="label_normalDienesMean">
-           <property name="text">
-            <string>mean:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="3">
           <widget class="BoundTextBox" name="normalDienesMean">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -236,49 +247,46 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="4">
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_halfNormalDienesStd">
+           <property name="text">
+            <string>std:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="label_normalDienesMean">
+           <property name="text">
+            <string>mean:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
           <widget class="QLabel" name="label_normalDienesStd">
            <property name="text">
             <string>std:</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
+         <item row="0" column="0">
           <widget class="QRadioButton" name="halfNormalDienes">
            <property name="text">
             <string>Half-normal</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QRadioButton" name="normalDienes">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
+         <item row="2" column="5">
+          <spacer name="horizontalSpacer_9">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
            </property>
-           <property name="text">
-            <string>Normal</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <widget class="QLabel" name="label_uniformDienesLowerBound">
-           <property name="text">
-            <string>lower bound:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QWidget" name="widget_4" native="true">
-           <property name="maximumSize">
+           <property name="sizeHint" stdset="0">
             <size>
-             <width>16</width>
-             <height>16777215</height>
+             <width>40</width>
+             <height>20</height>
             </size>
            </property>
-          </widget>
+          </spacer>
          </item>
         </layout>
        </widget>
@@ -298,6 +306,13 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="styleSheet">
+         <string notr="true">QGroupBox{
+	padding-top: 1;
+	margin-top: 0;
+}
+</string>
+        </property>
         <property name="title">
          <string/>
         </property>
@@ -306,7 +321,7 @@
         </property>
         <layout class="QGridLayout" name="gridLayout_15">
          <property name="leftMargin">
-          <number>0</number>
+          <number>17</number>
          </property>
          <property name="topMargin">
           <number>0</number>
@@ -315,6 +330,9 @@
           <number>0</number>
          </property>
          <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <property name="verticalSpacing">
           <number>0</number>
          </property>
          <item row="4" column="0">
@@ -333,7 +351,7 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_16">
             <property name="leftMargin">
-             <number>0</number>
+             <number>17</number>
             </property>
             <property name="topMargin">
              <number>0</number>
@@ -344,7 +362,7 @@
             <property name="bottomMargin">
              <number>0</number>
             </property>
-            <item row="3" column="3">
+            <item row="3" column="2">
              <widget class="BoundTextBox" name="informativeTLocation">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -366,7 +384,7 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="5">
+            <item row="1" column="4">
              <widget class="BoundTextBox" name="informativeCauchyScale">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -388,21 +406,21 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="4">
+            <item row="3" column="3">
              <widget class="QLabel" name="label_informativeTScale">
               <property name="text">
                <string>scale:</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="2">
+            <item row="3" column="1">
              <widget class="QLabel" name="label_informativeTLocation">
               <property name="text">
                <string>location:</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="7">
+            <item row="3" column="6">
              <widget class="BoundTextBox" name="informativeTDf">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -424,14 +442,7 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="6">
-             <widget class="QLabel" name="label_informativeTDf">
-              <property name="text">
-               <string>df:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="3">
+            <item row="1" column="2">
              <widget class="BoundTextBox" name="informativeCauchyLocation">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -453,14 +464,21 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="4">
+            <item row="3" column="5">
+             <widget class="QLabel" name="label_informativeTDf">
+              <property name="text">
+               <string>df:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
              <widget class="QLabel" name="label_informativeCauchyScale">
               <property name="text">
                <string>scale:</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="1">
+            <item row="3" column="0">
              <widget class="QRadioButton" name="tInformative">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -473,27 +491,7 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="1">
-             <widget class="QRadioButton" name="cauchyInformative">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Cauchy</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="2">
-             <widget class="QLabel" name="label_informativeCauchyLocation">
-              <property name="text">
-               <string>location:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="5">
+            <item row="3" column="4">
              <widget class="BoundTextBox" name="informativeTScale">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -515,27 +513,27 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="8">
-             <spacer name="horizontalSpacer_8">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="cauchyInformative">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="2" column="1">
-             <widget class="QRadioButton" name="normalInformative">
               <property name="text">
-               <string>Normal</string>
+               <string>Cauchy</string>
               </property>
              </widget>
             </item>
-            <item row="2" column="3">
+            <item row="1" column="1">
+             <widget class="QLabel" name="label_informativeCauchyLocation">
+              <property name="text">
+               <string>location:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
              <widget class="BoundTextBox" name="informativeNormalMean">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -557,21 +555,14 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="2">
-             <widget class="QLabel" name="label_informativeNormalMean">
+            <item row="2" column="0">
+             <widget class="QRadioButton" name="normalInformative">
               <property name="text">
-               <string>mean:</string>
+               <string>Normal</string>
               </property>
              </widget>
             </item>
             <item row="2" column="4">
-             <widget class="QLabel" name="label_informativeNormalStd">
-              <property name="text">
-               <string>std:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="5">
              <widget class="BoundTextBox" name="informativeNormalStd">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -593,15 +584,32 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QWidget" name="widget_5" native="true">
-              <property name="maximumSize">
-               <size>
-                <width>16</width>
-                <height>16777215</height>
-               </size>
+            <item row="2" column="1">
+             <widget class="QLabel" name="label_informativeNormalMean">
+              <property name="text">
+               <string>mean:</string>
               </property>
              </widget>
+            </item>
+            <item row="2" column="3">
+             <widget class="QLabel" name="label_informativeNormalStd">
+              <property name="text">
+               <string>std:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="7">
+             <spacer name="horizontalSpacer_8">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
             </item>
            </layout>
           </widget>
@@ -622,7 +630,7 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_18">
             <property name="leftMargin">
-             <number>0</number>
+             <number>17</number>
             </property>
             <property name="topMargin">
              <number>0</number>
@@ -633,7 +641,7 @@
             <property name="bottomMargin">
              <number>0</number>
             </property>
-            <item row="0" column="1">
+            <item row="0" column="0">
              <widget class="QRadioButton" name="cauchyDefault">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -646,14 +654,14 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="2">
+            <item row="0" column="1">
              <widget class="QLabel" name="label_7">
               <property name="text">
                <string>scale:</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="3">
+            <item row="0" column="2">
              <widget class="BoundTextBox" name="priorWidth">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -675,17 +683,7 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
-             <widget class="QWidget" name="widget_6" native="true">
-              <property name="maximumSize">
-               <size>
-                <width>16</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="4">
+            <item row="0" column="3">
              <spacer name="horizontalSpacer_10">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
