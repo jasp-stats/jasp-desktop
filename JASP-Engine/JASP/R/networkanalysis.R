@@ -179,20 +179,17 @@ NetworkAnalysis <- function (
 		# check for errors, but only if there was a change in the data (which implies state[["network"]] is NULL)
 		if (is.null(state[["network"]])) {
 
-		  # default error checks
-		  checks <- c("infinity", "variance", "observations")
+			# default error checks
+			checks <- c("infinity", "variance", "observations", "varCovData")
 
 			groupingVariable <- NULL
 			if (options[["groupingVariable"]] != "") {
 				groupingVariable <- options[["groupingVariable"]]
 				# these cannot be chained unfortunately
 				.hasErrors(dataset = dataset[.v(groupingVariable)], perform = perform,
-						   type = "factorLevels",
+						   type = c("factorLevels", "observations"),
 						   factorLevels.target = groupingVariable,
 						   factorLevels.amount = "< 2",
-						   exitAnalysisIfErrors = TRUE)
-				.hasErrors(dataset = dataset[.v(groupingVariable)], perform = perform,
-						   type = "observations",
 						   observations.amount = "< 10",
 						   observations.grouping = groupingVariable,
 						   exitAnalysisIfErrors = TRUE)
@@ -208,22 +205,20 @@ NetworkAnalysis <- function (
 			# check for errors
 			fun <- cor
 			if (options[["correlationMethod"]] == "cov")
-			  fun <- cov
+				fun <- cov
 			.hasErrors(dataset = dataset, perform = perform,
-									type = checks,
-									variance.target = variables, # otherwise the grouping variable always has variance == 0
-									variance.grouping = groupingVariable,
-									factorLevels.target = categoricalVars,
-									factorLevels.amount = "> 10", # probably a misspecification of mgmVariableType when this happens.
-									factorLevels.grouping = groupingVariable,
-									observations.amount = " < 3",
-									observations.grouping = groupingVariable,
-									exitAnalysisIfErrors = TRUE)
-			.hasErrors(dataset = dataset, perform = perform, type = "varCovData",
-			           varCovData.grouping = groupingVariable,
-			           varCovData.corFun = fun,
-			           varCovData.corArgs = list(use = "pairwise"),
-			           exitAnalysisIfErrors = TRUE)
+					   type = checks,
+					   variance.target = variables, # otherwise the grouping variable always has variance == 0
+					   variance.grouping = groupingVariable,
+					   factorLevels.target = categoricalVars,
+					   factorLevels.amount = "> 10", # probably a misspecification of mgmVariableType when this happens.
+					   factorLevels.grouping = groupingVariable,
+					   observations.amount = " < 3",
+					   observations.grouping = groupingVariable,
+					   varCovData.grouping = groupingVariable,
+					   varCovData.corFun = fun,
+					   varCovData.corArgs = list(use = "pairwise"),
+					   exitAnalysisIfErrors = TRUE)
 		}
 
 		network <- .networkAnalysisRun(dataset = dataset, options = options, variables = variables, perform = perform, oldNetwork = state)
