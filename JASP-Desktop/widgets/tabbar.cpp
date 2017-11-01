@@ -132,6 +132,7 @@ void TabBar::addHelpTab()
 	QAction *rei = new QAction("Reinforcement Learning",optionmenu);
 	QAction *summaryStats = new QAction("Summary Stats",optionmenu);
     QAction *metaAnalysis = new QAction("Meta-Analysis",optionmenu);
+	QAction *networkAnalysis = new QAction("Network Analysis",optionmenu);
 
 	//SEM
 	QVariant sem_setting = _settings.value("plugins/sem", false);
@@ -151,6 +152,13 @@ void TabBar::addHelpTab()
 	summaryStats->setObjectName("Summary Stats");
 	summaryStats->setCheckable(true);
 	summaryStats->setChecked(sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
+
+	//Network Analysis
+	QVariant networkAnalysis_setting = _settings.value("plugins/networkAnalysis", false);
+	networkAnalysis->setObjectName("Network Analysis");
+	networkAnalysis->setCheckable(true);
+	networkAnalysis->setChecked(networkAnalysis_setting.canConvert(QVariant::Bool) && networkAnalysis_setting.toBool());
+	optionmenu->addAction(networkAnalysis);
 
     // Meta-Analysis
     QVariant metaAnalysis_setting = _settings.value("toolboxes/metaAnalysis", false);
@@ -181,6 +189,7 @@ void TabBar::addHelpTab()
 	connect(rei, SIGNAL(triggered()), this, SLOT(toggleReinforcement()));
 	connect(summaryStats, SIGNAL(triggered()), this, SLOT(toggleSummaryStats()));
     connect(metaAnalysis, SIGNAL(triggered()), this, SLOT(toggleMetaAnalysis()));
+	connect(networkAnalysis, SIGNAL(triggered()), this, SLOT(toggleNetworkAnalysis()));
 }
 
 void TabBar::showAbout()
@@ -258,6 +267,20 @@ void TabBar::toggleMetaAnalysis()
     }
 }
 
+void TabBar::toggleNetworkAnalysis()
+{
+	QVariant networkAnalysis_setting = _settings.value("toolboxes/networkAnalysis", false);
+	static bool on = (networkAnalysis_setting.canConvert(QVariant::Bool) && networkAnalysis_setting.toBool());
+	on = ! on;
+    if (on)
+    {
+		this->addTab("Network Analysis");
+    }
+	else
+    {
+		this->removeTab("Network Analysis");
+    }
+}
 
 int TabBar::count() const
 {

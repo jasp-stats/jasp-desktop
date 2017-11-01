@@ -67,6 +67,7 @@
 #ifdef QT_DEBUG
 #include "analysisforms/basregressionlinearlinkform.h"
 #endif
+#include "analysisforms/Network/networkanalysisform.h"
 
 #include "analysisforms/SEM/semsimpleform.h"
 #include "analysisforms/R11tLearn/r11tlearnform.h"
@@ -210,6 +211,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonR11tLearn, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonSummaryStatistics, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
     connect(ui->ribbonMetaAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
+	connect(ui->ribbonNetworkAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
     connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
 	connect(ui->variablesPage, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
@@ -786,6 +788,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	else if (name == "BASRegressionLinearLink")
 		form = new BASRegressionLinearLinkForm(contentArea);
 #endif
+	else if (name == "NetworkAnalysis")
+		form = new NetworkAnalysisForm(contentArea);
     else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
@@ -925,6 +929,10 @@ void MainWindow::tabChanged(int index)
         {
             ui->ribbon->setCurrentIndex(4);
         }
+		else if(currentActiveTab == "Network Analysis")
+		{
+			ui->ribbon->setCurrentIndex(5);
+		}
 	}
 }
 
@@ -1278,6 +1286,7 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 	ui->ribbonSEM->setDataSetLoaded(loaded);
 	ui->ribbonR11tLearn->setDataSetLoaded(loaded);
     ui->ribbonMetaAnalysis->setDataSetLoaded(loaded);
+	ui->ribbonNetworkAnalysis->setDataSetLoaded(loaded);
 }
 
 void MainWindow::updateUIFromOptions()
@@ -1303,6 +1312,12 @@ void MainWindow::updateUIFromOptions()
 		ui->tabBar->addTab("Summary Stats");
 	else
 		ui->tabBar->removeTab("Summary Stats");
+
+	QVariant networkAnalysis = _settings.value("toolboxes/networkAnalysis", false);
+	if (networkAnalysis.canConvert(QVariant::Bool) && networkAnalysis.toBool())
+		ui->tabBar->addTab("Network Analysis");
+	else
+		ui->tabBar->removeTab("Network Analysis");
 }
 
 void MainWindow::resultsPageLoaded(bool success)

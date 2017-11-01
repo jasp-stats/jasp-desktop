@@ -77,6 +77,7 @@ private slots:
 	void toggleReinforcement();
 	void toggleSummaryStats();
     void toggleMetaAnalysis();
+	void toggleNetworkAnalysis();
 
 private:
 
