@@ -964,7 +964,7 @@ as.list.footnotes <- function(footnotes) {
 	               height=height * pngMultip, bg="transparent", 
 	               res=72 * pngMultip, type=type)
 	
-	if (class(plot) ==  "function"){
+	if (inherits(plot, "function")) {
 		if (obj) dev.control('enable') # enable plot recording
 		eval(plot())
 		if (obj) plot <- recordPlot() # save plot to R object
@@ -1120,7 +1120,7 @@ saveImage <- function(plotName, format, height, width){
 
 as.modelTerms <- function(object, ...) UseMethod("as.modelTerms")
 as.modelTerms.list <- function(object) structure(object, class = "modelTerms")
-as.modelTerms.formula = function(formula) structure(sapply(attr(terms(formula), "term.labels"), strsplit, ":"), class="modelTerms")
+as.modelTerms.formula <- function(formula) structure(sapply(attr(terms(formula), "term.labels"), strsplit, ":"), class="modelTerms")
 formula.modelTerms <- function(modelTerms, env = parent.frame()) {
   # Converts a modelTerms list into a one-side R formula
   #
