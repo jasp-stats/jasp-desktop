@@ -87,19 +87,6 @@ ClassicalMetaAnalysisForm::ClassicalMetaAnalysisForm(QWidget *parent) :
 	ui->panelIncludeConstant->hide();
     ui->panelAssumptionChecks->hide();
 
-#ifdef QT_NO_DEBUG
-    ui->missingValues->hide();
-	ui->factors->hide();
-	ui->buttonAssignFactors->hide();
-	ui->label_factors->hide();
-#else
-    // ui->missingValues->hide();
-    // ui->missingValues->setStyleSheet("background-color: pink ;");
-    // ui->factors->setStyleSheet("background-color: pink ;");
-    // ui->buttonAssignFactors->setStyleSheet("background-color: pink ;");
-	ui->label_factors->setStyleSheet("background-color: pink ;");
-#endif
-
 }
 
 ClassicalMetaAnalysisForm::~ClassicalMetaAnalysisForm()

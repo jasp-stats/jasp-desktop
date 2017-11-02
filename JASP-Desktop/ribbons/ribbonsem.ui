@@ -121,19 +121,6 @@
       <property name="bottomMargin">
        <number>12</number>
       </property>
-      <item row="0" column="0">
-       <widget class="Line" name="line_7">
-        <property name="styleSheet">
-         <string notr="true">QWidget {	color : #929292 ; }</string>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Plain</enum>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
@@ -160,7 +147,6 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../resources/icons.qrc"/>
   <include location="../resources/icons.qrc"/>
  </resources>
  <connections>

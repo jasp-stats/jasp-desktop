@@ -46,7 +46,7 @@ RibbonMetaAnalysis::RibbonMetaAnalysis(QWidget *parent) :
 	menu = new QMenu(this);
     menu->addAction(QString("Classical meta-analysis"), this, SLOT(itemSelected()))->setObjectName("ClassicalMetaAnalysis");
 
-    ui->classicalButton->setMenu(menu);
+    //ui->classicalButton->setMenu(menu);
 
 #ifdef QT_DEBUG
     menu = new QMenu(this);
@@ -58,8 +58,10 @@ RibbonMetaAnalysis::RibbonMetaAnalysis(QWidget *parent) :
     menu->addAction(QString("Meta-analysis of 2 by 2 tables"), this, SLOT(itemSelected()))->setObjectName("TwoxtwoMetaAnalysis");
 
     ui->twoxtwoTablesButton->setMenu(menu);
+	
 #else
-    ;
+    ui->twoxtwoTablesButton->hide();
+	ui->multilevelButton->hide();
 #endif
 }
 
