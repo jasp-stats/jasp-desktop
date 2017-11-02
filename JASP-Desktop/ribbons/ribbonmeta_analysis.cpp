@@ -29,9 +29,13 @@ RibbonMetaAnalysis::RibbonMetaAnalysis(QWidget *parent) :
 	ui->setupUi(this);
 
     addRibbonButton(ui->classicalButton);
+	ui->classicalButton->setObjectName("ClassicalMetaAnalysis");
+	
 #ifdef QT_DEBUG
     addRibbonButton(ui->multilevelButton);
     addRibbonButton(ui->twoxtwoTablesButton);
+	ui->multilevelButton->setObjectName("MultiLevelMetaAnalysis");
+	ui->twoxtwoTablesButton->setObjectName("TwoxtwoMetaAnalysis");
 #else
     ;
 #endif
@@ -41,26 +45,13 @@ RibbonMetaAnalysis::RibbonMetaAnalysis(QWidget *parent) :
      * ui->frequenciesButton->setDataSetNotNeeded();
      */
 
-	QMenu *menu;
-
-	menu = new QMenu(this);
-    menu->addAction(QString("Classical meta-analysis"), this, SLOT(itemSelected()))->setObjectName("ClassicalMetaAnalysis");
-
-    //ui->classicalButton->setMenu(menu);
-
+	connect(ui->classicalButton, SIGNAL(clicked()), this, SLOT(itemSelected()));
+	
 #ifdef QT_DEBUG
-    menu = new QMenu(this);
-    menu->addAction(QString("Multilevel meta-analysis"), this, SLOT(itemSelected()))->setObjectName("MultiLevelMetaAnalysis");
-	
-    ui->multilevelButton->setMenu(menu);
-
-	menu = new QMenu(this);
-    menu->addAction(QString("Meta-analysis of 2 by 2 tables"), this, SLOT(itemSelected()))->setObjectName("TwoxtwoMetaAnalysis");
-
-    ui->twoxtwoTablesButton->setMenu(menu);
-	
+	connect(ui->twoxtwoTablesButton, SIGNAL(clicked()), this, SLOT(itemSelected()));
+	connect(ui->multilevelButton, SIGNAL(clicked()), this, SLOT(itemSelected()));	
 #else
-    ui->twoxtwoTablesButton->hide();
+	ui->twoxtwoTablesButton->hide();
 	ui->multilevelButton->hide();
 #endif
 }
