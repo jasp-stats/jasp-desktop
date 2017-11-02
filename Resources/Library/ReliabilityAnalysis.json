@@ -3,97 +3,97 @@
 	"autorun": true,
 	"version": "1.00",
 	"options": [
-        {
-            "name": "variables",
-            "type": "Variables"
-        },
-        {
-        	"name": "alphaScale",
-        	"type": "Boolean",
+    {
+      "name": "variables",
+      "type": "Variables"
+    },
+    {
+    	"name": "alphaScale",
+    	"type": "Boolean",
 			"default" : true
-        },
-        {
-        	"name": "gutmannScale",
-        	"type": "Boolean",
+    },
+    {
+    	"name": "gutmannScale",
+    	"type": "Boolean",
 			"default" : false
-        },
-        {
-        	"name": "averageInterItemCor",
-        	"type": "Boolean",
+    },
+    {
+    	"name": "averageInterItemCor",
+    	"type": "Boolean",
 			"default" : false
-        },
-        {
-        	"name": "mcDonaldScale",
-        	"type": "Boolean",
+    },
+    {
+    	"name": "mcDonaldScale",
+    	"type": "Boolean",
 			"default" : false
-        },
-        {
-        	"name": "glbScale",
-        	"type": "Boolean",
+    },
+    {
+    	"name": "glbScale",
+    	"type": "Boolean",
 			"default" : false
-        },
-        {
-        	"name": "meanScale",
-        	"type": "Boolean",
+    },
+    {
+    	"name": "meanScale",
+    	"type": "Boolean",
 			"default" : false
-        },
-        {
-        	"name": "sdScale",
-        	"type": "Boolean",
+    },
+    {
+    	"name": "sdScale",
+    	"type": "Boolean",
 			"default" : false
-        },
-        {
-        	"name": "alphaItem",
-        	"type": "Boolean",
+    },
+    {
+    	"name": "alphaItem",
+    	"type": "Boolean",
 			"default" : false
-        },
-        {
-        	"name": "gutmannItem",
-        	"type": "Boolean",
+    },
+    {
+    	"name": "gutmannItem",
+    	"type": "Boolean",
 			"default" : false
-        },
-        {
-        	"name": "mcDonaldItem",
-        	"type": "Boolean",
+    },
+    {
+    	"name": "mcDonaldItem",
+    	"type": "Boolean",
 			"default" : false
-        },
-        {
-        	"name": "itemRestCor",
-        	"type": "Boolean",
+    },
+    {
+    	"name": "itemRestCor",
+    	"type": "Boolean",
 			"default" : false
-        },
-        {
-        	"name": "meanItem",
-        	"type": "Boolean",
+    },
+    {
+    	"name": "meanItem",
+    	"type": "Boolean",
 			"default" : false
-        },
-        {
-        	"name": "sdItem",
-        	"type": "Boolean",
+    },
+    {
+    	"name": "sdItem",
+    	"type": "Boolean",
 			"default" : false
-        },
-        {
-            "name": "reverseScaledItems",
-            "type": "Variables"
-        },
-        {
-          "name": "missingValues",
-          "options": ["excludeCasesListwise", "excludeCasesPairwise"],
-          "default": "excludeCasesListwise",
-          "type": "List"
-        },
+    },
+    {
+      "name": "reverseScaledItems",
+      "type": "Variables"
+    },
+    {
+      "name": "missingValues",
+      "options": ["excludeCasesListwise", "excludeCasesPairwise"],
+      "default": "excludeCasesListwise",
+      "type": "List"
+    },
 		{
-        	"name": "confAlpha",
-        	"type": "Boolean",
+    	"name": "confAlpha",
+    	"type": "Boolean",
 			"default" : false
-        },
+    },
 		{
-        	"name": "confAlphaLevel",
+    	"name": "confAlphaLevel",
 			"type": "Number",
-        	"format": "%",
+    	"format": "%",
 			"max": 0.999,
 			"min": 0.000,
 			"value": 0.950
-        },
+    }
 	]
 }

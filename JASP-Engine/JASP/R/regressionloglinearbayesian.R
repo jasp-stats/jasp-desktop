@@ -763,8 +763,6 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 							BayesianSublogregression.result[[ len.Blogreg ]]$"upper_lim" <- as.numeric(logBlm.subestimates$upper[var])
 						}
 					
-						BayesianSublogregression.result[[ len.Blogreg ]]$ "footnotes" <- as.list (footnotes)
-					
 						len.Blogreg <- len.Blogreg + 1
 					}		
 				}			

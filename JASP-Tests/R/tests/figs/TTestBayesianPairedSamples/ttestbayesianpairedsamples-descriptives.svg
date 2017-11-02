@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 720.00 576.00'>
+<defs>
+  <style type='text/css'><![CDATA[
+    line, polyline, path, rect, circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+  ]]></style>
+</defs>
+<rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'/>
+<rect x='0.00' y='0.00' width='720.00' height='576.00' style='stroke-width: 1.07; stroke: none;' />
+<defs>
+  <clipPath id='cpNTAuNzE2MXw3MjB8NTQwLjgxMXwzNS42MjI2'>
+    <rect x='50.72' y='35.62' width='669.28' height='505.19' />
+  </clipPath>
+</defs>
+<rect x='50.72' y='35.62' width='669.28' height='505.19' style='stroke-width: 1.07; stroke: none;' clip-path='url(#cpNTAuNzE2MXw3MjB8NTQwLjgxMXwzNS42MjI2)' />
+<polyline points='202.83,91.13 263.67,91.13 ' style='stroke-width: 1.07; stroke-linecap: butt;' clip-path='url(#cpNTAuNzE2MXw3MjB8NTQwLjgxMXwzNS42MjI2)' />
+<polyline points='233.25,91.13 233.25,169.04 ' style='stroke-width: 1.07; stroke-linecap: butt;' clip-path='url(#cpNTAuNzE2MXw3MjB8NTQwLjgxMXwzNS42MjI2)' />
+<polyline points='202.83,169.04 263.67,169.04 ' style='stroke-width: 1.07; stroke-linecap: butt;' clip-path='url(#cpNTAuNzE2MXw3MjB8NTQwLjgxMXwzNS42MjI2)' />
+<polyline points='507.05,443.30 567.89,443.30 ' style='stroke-width: 1.07; stroke-linecap: butt;' clip-path='url(#cpNTAuNzE2MXw3MjB8NTQwLjgxMXwzNS42MjI2)' />
+<polyline points='537.47,443.30 537.47,497.10 ' style='stroke-width: 1.07; stroke-linecap: butt;' clip-path='url(#cpNTAuNzE2MXw3MjB8NTQwLjgxMXwzNS42MjI2)' />
+<polyline points='507.05,497.10 567.89,497.10 ' style='stroke-width: 1.07; stroke-linecap: butt;' clip-path='url(#cpNTAuNzE2MXw3MjB8NTQwLjgxMXwzNS42MjI2)' />
+<polyline points='233.25,130.08 537.47,470.20 ' style='stroke-width: 1.49; stroke-linecap: butt;' clip-path='url(#cpNTAuNzE2MXw3MjB8NTQwLjgxMXwzNS42MjI2)' />
+<circle cx='233.25' cy='130.08' r='4.62pt' style='stroke-width: 0.71; fill: #000000;' clip-path='url(#cpNTAuNzE2MXw3MjB8NTQwLjgxMXwzNS42MjI2)' />
+<circle cx='537.47' cy='470.20' r='4.62pt' style='stroke-width: 0.71; fill: #000000;' clip-path='url(#cpNTAuNzE2MXw3MjB8NTQwLjgxMXwzNS42MjI2)' />
+<line x1='50.72' y1='517.85' x2='50.72' y2='58.59' style='stroke-width: 2.13; stroke-linecap: butt;' clip-path='url(#cpNTAuNzE2MXw3MjB8NTQwLjgxMXwzNS42MjI2)' />
+<line x1='233.25' y1='540.81' x2='537.47' y2='540.81' style='stroke-width: 2.13; stroke-linecap: butt;' clip-path='url(#cpNTAuNzE2MXw3MjB8NTQwLjgxMXwzNS42MjI2)' />
+<defs>
+  <clipPath id='cpMHw3MjB8NTc2fDA='>
+    <rect x='0.00' y='0.00' width='720.00' height='576.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMHw3MjB8NTc2fDA=)'><text x='14.17' y='523.01' style='font-size: 15.00px; fill: #4D4D4D; font-family: Liberation Sans;' textLength='25.85px' lengthAdjust='spacingAndGlyphs'>-0.5</text></g>
+<g clip-path='url(#cpMHw3MjB8NTc2fDA=)'><text x='19.17' y='63.75' style='font-size: 15.00px; fill: #4D4D4D; font-family: Liberation Sans;' textLength='20.85px' lengthAdjust='spacingAndGlyphs'>2.5</text></g>
+<polyline points='42.21,517.85 50.72,517.85 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' clip-path='url(#cpMHw3MjB8NTc2fDA=)' />
+<polyline points='42.21,58.59 50.72,58.59 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' clip-path='url(#cpMHw3MjB8NTc2fDA=)' />
+<polyline points='233.25,549.32 233.25,540.81 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' clip-path='url(#cpMHw3MjB8NTc2fDA=)' />
+<polyline points='537.47,549.32 537.47,540.81 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' clip-path='url(#cpMHw3MjB8NTc2fDA=)' />
+<g clip-path='url(#cpMHw3MjB8NTc2fDA=)'><text x='192.40' y='561.83' style='font-size: 15.00px; fill: #4D4D4D; font-family: Liberation Sans;' textLength='81.69px' lengthAdjust='spacingAndGlyphs'>contGamma</text></g>
+<g clip-path='url(#cpMHw3MjB8NTc2fDA=)'><text x='499.12' y='561.83' style='font-size: 15.00px; fill: #4D4D4D; font-family: Liberation Sans;' textLength='76.69px' lengthAdjust='spacingAndGlyphs'>contNormal</text></g>
+<g clip-path='url(#cpMHw3MjB8NTc2fDA=)'><text x='50.72' y='26.56' style='font-size: 18.00px; font-family: Liberation Sans;' textLength='343.14px' lengthAdjust='spacingAndGlyphs'>TTestBayesianPairedSamples-descriptives</text></g>
+</svg>
