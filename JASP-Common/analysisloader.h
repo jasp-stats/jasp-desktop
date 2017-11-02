@@ -25,7 +25,7 @@ class AnalysisLoader
 {
 public:
 
-	static Analysis *load(int id, std::string analysisName, const Version& version, Json::Value* data = NULL);
+	static Analysis *load(int id, std::string moduleName, std::string analysisName, const Version& version, Json::Value* data = NULL);
 
 };
 

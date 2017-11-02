@@ -114,6 +114,7 @@
 #include "qutils.h"
 #include "column.h"
 #include "sharedmemory.h"
+#include "module.h"
 
 #include "options/optionvariablesgroups.h"
 
@@ -150,14 +151,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	sizes.append(initalTableWidth);
 	ui->splitter->setSizes(sizes);
 
-	ui->tabBar->setFocusPolicy(Qt::NoFocus);
-	ui->tabBar->addTab("File");
-	ui->tabBar->addTab("Common");
-
-	ui->tabBar->addHelpTab();
-
 	connect(ui->tabBar, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 	connect(ui->tabBar, SIGNAL(helpToggled(bool)), this, SLOT(helpToggled(bool)));
+	ui->tabBar->init();
 
 	ui->ribbonAnalysis->setDataSetLoaded(false);
 	ui->ribbonSEM->setDataSetLoaded(false);
@@ -191,8 +187,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->tableView->setModel(_tableModel);
 	ui->tableView->setVariablesView(ui->variablesPage);
 	ui->variablesPage->hide();
-
-	ui->tabBar->setCurrentIndex(1);
 
 	ui->tableView->setVerticalScrollMode(QTableView::ScrollPerPixel);
 	ui->tableView->setHorizontalScrollMode(QTableView::ScrollPerPixel);
@@ -282,8 +276,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	_analysisMenu = new QMenu(this);
 	connect(_analysisMenu, SIGNAL(aboutToHide()), this, SLOT(menuHidding()));
-
-	updateUIFromOptions();
 
 	_tableViewWidthBeforeOptionsMadeVisible = -1;
 
@@ -388,7 +380,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	{
 		event->accept();
 	}
-	
+
 	PreferencesDialog *rd = ui->tabBar->getPreferencesDialog();
 	if (rd) rd->close();
 }
@@ -871,6 +863,8 @@ void MainWindow::analysisSelectedHandler(int id)
 
 	if (_currentAnalysis != NULL)
 	{
+		QString currentModuleName = QString::fromStdString(_currentAnalysis->module());
+		ui->tabBar->setCurrentTab(currentModuleName);
 		showForm(_currentAnalysis);
 
 		QString info("%1,%2");
@@ -909,30 +903,12 @@ void MainWindow::tabChanged(int index)
 		ui->topLevelWidgets->setCurrentIndex(1); //Should be a reference to the mainPage
 
 		QString currentActiveTab = ui->tabBar->getCurrentActiveTab();
-		if(currentActiveTab == "Common")
+		if (Module::isModuleName(currentActiveTab))
 		{
-			ui->ribbon->setCurrentIndex(0);
+			const Module& module = Module::getModule(currentActiveTab);
+			ui->ribbon->setCurrentIndex(module.ribbonIndex());
 		}
-		else if(currentActiveTab == "SEM")
-		{
-			ui->ribbon->setCurrentIndex(1);
-		}
-		else if(currentActiveTab == "R11t Learn")
-		{
-			ui->ribbon->setCurrentIndex(2);
-		}
-		else if(currentActiveTab == "Summary Stats")
-		{
-			ui->ribbon->setCurrentIndex(3);
-		}
-        else if(currentActiveTab == "Meta-Analysis")
-        {
-            ui->ribbon->setCurrentIndex(4);
-        }
-		else if(currentActiveTab == "Network Analysis")
-		{
-			ui->ribbon->setCurrentIndex(5);
-		}
+
 	}
 }
 
@@ -965,6 +941,23 @@ void MainWindow::helpToggled(bool on)
 	}
 }
 
+void MainWindow::checkUsedModules()
+{
+	QStringList usedModules;
+	for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
+	{
+		Analysis *analysis = *itr;
+		if (analysis != NULL && analysis->isVisible())
+		{
+			QString moduleName = QString::fromStdString(analysis->module());
+			if (!usedModules.contains(moduleName))
+				usedModules.append(moduleName);
+		}
+	}
+
+	ui->tabBar->setModulePlusMenu(usedModules);
+}
+
 void MainWindow::dataSetIORequest(FileEvent *event)
 {
 	if (event->operation() == FileEvent::FileOpen)
@@ -985,7 +978,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			_progressIndicator->show();
 		}
 
-		ui->tabBar->setCurrentIndex(1);
+		ui->tabBar->setCurrentModuleActive();
 
 	}
 	else if (event->operation() == FileEvent::FileSave)
@@ -1169,8 +1162,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 			if (_applicationExiting)
 				QApplication::exit();
-			
-			
+
+
 		}
 		else
 		{
@@ -1180,7 +1173,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 	if (showAnalysis)
 	{
-		ui->tabBar->setCurrentIndex(1);
+		ui->tabBar->setCurrentModuleActive();
 
 	}
 }
@@ -1229,10 +1222,12 @@ void MainWindow::populateUIfromDataSet()
 			{
 				try
 				{
-					QString name = QString();
 					Json::Value &analysisData = *iter;
 
-					name = QString::fromStdString(analysisData["name"].asString());
+					QString name = QString::fromStdString(analysisData["name"].asString());
+					QString module = QString::fromStdString(analysisData["module"].asString());
+					if (module.isEmpty())
+						module = "Common";
 					int id = analysisData["id"].asInt();
 
 					Json::Value &optionsJson = analysisData["options"];
@@ -1244,7 +1239,7 @@ void MainWindow::populateUIfromDataSet()
 
 					Analysis::Status status = Analysis::parseStatus(analysisData["status"].asString());
 
-					Analysis *analysis = _analyses->create(name, id, version, &optionsJson, status);
+					Analysis *analysis = _analyses->create(module, name, id, version, &optionsJson, status);
 
 					analysis->setUserData(userDataJson);
 					analysis->setResults(resultsJson);
@@ -1276,6 +1271,7 @@ void MainWindow::populateUIfromDataSet()
 
 	_package->setLoaded();
 	updateMenuEnabledDisabledStatus();
+	checkUsedModules();
 }
 
 void MainWindow::updateMenuEnabledDisabledStatus()
@@ -1287,37 +1283,6 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 	ui->ribbonR11tLearn->setDataSetLoaded(loaded);
     ui->ribbonMetaAnalysis->setDataSetLoaded(loaded);
 	ui->ribbonNetworkAnalysis->setDataSetLoaded(loaded);
-}
-
-void MainWindow::updateUIFromOptions()
-{
-#ifdef __linux__
-	ui->tabBar->removeTab("SEM");
-#else
-	QVariant sem = _settings.value("plugins/sem", false);
-	if (sem.canConvert(QVariant::Bool) && sem.toBool())
-		ui->tabBar->addTab("SEM");
-	else
-		ui->tabBar->removeTab("SEM");
-#endif
-
-	QVariant rl = _settings.value("toolboxes/r11tLearn", false);
-	if (rl.canConvert(QVariant::Bool) && rl.toBool())
-		ui->tabBar->addTab("R11t Learn");
-	else
-		ui->tabBar->removeTab("R11t Learn");
-
-	QVariant sumStats = _settings.value("toolboxes/summaryStatistics", false);
-	if (sumStats.canConvert(QVariant::Bool) && sumStats.toBool())
-		ui->tabBar->addTab("Summary Stats");
-	else
-		ui->tabBar->removeTab("Summary Stats");
-
-	QVariant networkAnalysis = _settings.value("toolboxes/networkAnalysis", false);
-	if (networkAnalysis.canConvert(QVariant::Bool) && networkAnalysis.toBool())
-		ui->tabBar->addTab("Network Analysis");
-	else
-		ui->tabBar->removeTab("Network Analysis");
 }
 
 void MainWindow::resultsPageLoaded(bool success)
@@ -1425,7 +1390,7 @@ void MainWindow::setExactPValuesHandler(bool exactPValues)
 }
 
 void MainWindow::setFixDecimalsHandler(QString numDecimals)
-{	
+{
 	if (numDecimals == "")
 		numDecimals = "\"\"";
 	QString js = "window.globSet.decimals = " + numDecimals + "; window.reRenderAnalyses();";
@@ -1476,7 +1441,10 @@ void MainWindow::itemSelected(const QString &item)
 {
 	try
 	{
-		_currentAnalysis = _analyses->create(item);
+		QString currentActiveTab = ui->tabBar->getCurrentActiveTab();
+		const Module& module = Module::getModule(currentActiveTab);
+
+		_currentAnalysis = _analyses->create(module.name(), item);
 
 		showForm(_currentAnalysis);
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.select(" % QString::number(_currentAnalysis->id()) % ")");
@@ -1484,6 +1452,8 @@ void MainWindow::itemSelected(const QString &item)
 		QString info("%1,%2");
 		info = info.arg(tq(_currentAnalysis->name()));
 		info = info.arg(_currentAnalysis->id());
+
+		checkUsedModules();
 
 		if (_log != NULL)
 			_log->log("Analysis Created", info);
@@ -1720,6 +1690,7 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 
 	if (selected)
 		hideOptionsPanel();
+	checkUsedModules();
 }
 
 void MainWindow::removeAllAnalyses()
