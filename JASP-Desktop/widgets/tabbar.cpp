@@ -123,6 +123,7 @@ void TabBar::addTab(QString name)
 	{
 		button->setText(Module::getModule(name).displayName());
 		_layout->insertWidget(_tabButtons.size()-1, button);
+		_currentModule = button;
 	}
 	else
 		_layout->insertWidget(_tabButtons.size(), button);
@@ -143,42 +144,43 @@ void TabBar::addTab(QString name)
 
 void TabBar::removeTab(QString tabName)
 {
-	QPushButton *lastbutton = NULL;
-	bool removeactive = false;
-	QString currentTabName = (_currentTab ? _currentTab->objectName() : QString());
+	QPushButton *lastButton = NULL;
+	// Init lastButton in case with first button.
+	foreach (QPushButton *button, _tabButtons)
+		if (button->objectName() == "first")
+			lastButton = button;
+
 	foreach (QPushButton *button, _tabButtons)
 	{
 		QString buttonName = button->objectName();
 		if (buttonName == tabName)
 		{
-			if (buttonName == currentTabName)
-				removeactive = true;
-			_tabButtons.removeAll(button);
-			delete button;
-			if (lastbutton && removeactive)
+			if (lastButton->objectName() == "first")
 			{
-				if (lastbutton->objectName() == "first")
-				{
-					// Check whether another available module exists
-					foreach (QPushButton *button2, _tabButtons)
-					{
-						if (Module::isModuleName(button2->objectName()))
-						{
-							lastbutton = button2;
-							break;
-						}
-					}
-				}
-				_currentTab = lastbutton;
-				if (Module::isModuleName(_currentTab->objectName()))
-					_currentModule = _currentTab;
+				// Check whether another available module exists
+				foreach (QPushButton *button2, _tabButtons)
+					if (button2 != button && Module::isModuleName(button2->objectName()))
+						lastButton = button2;
+			}
+			if (button == _currentTab)
+			{
+				_currentTab = lastButton;
 				_currentTab->clicked();
 			}
+			if (button == _currentModule)
+			{
+				if (Module::isModuleName(lastButton->objectName()))
+					_currentModule = lastButton;
+				else
+					_currentModule = NULL;
+			}
+			_tabButtons.removeAll(button);
+			delete button;
 
 			return;
 		}
 		if (buttonName != "Modules")
-			lastbutton = button;
+			lastButton = button;
 	}
 }
 
@@ -311,7 +313,7 @@ PreferencesDialog *TabBar::getPreferencesDialog()
 
 void TabBar::setCurrentModuleActive()
 {
-	if (!_currentModule)
+	if (_currentModule)
 		setCurrentTab(_currentModule->objectName());
 }
 
@@ -362,7 +364,7 @@ void TabBar::tabSelectedHandler()
 
 QString TabBar::getCurrentActiveTab()
 {
-	return _currentTab->objectName();
+	return _currentTab ? _currentTab->objectName() : QString();
 }
 
 void TabBar::helpToggledHandler(bool on)
