@@ -56,15 +56,15 @@ if (install) {
   cat("Installing all missing packages...")
   for (pkg in reqPkgs) {
     if (! pkg %in% installed.packages()) {
-      install.packages(pkg, repos = 'https://cloud.r-project.org', dependencies = NA)
+      install.packages(pkg, repos = 'https://cloud.r-project.org', dependencies = c("Depends", "Imports"))
     }
   }
   cat("\nFinished iterating over the required packages\n")
 } else {
   strPkgs <- paste0("'", reqPkgs, "'")
-  installString <- paste0("install.packages(c(", paste(strPkgs, collapse=", "), "), repos = 'https://cloud.r-project.org', dependencies = NA)")
+  installString <- paste0("install.packages(c(", paste(strPkgs, collapse=", "), "), repos = 'https://cloud.r-project.org', dependencies = c('Depends', 'Imports'))")
 
-  deps <- tools::package_dependencies(reqPkgs, recursive=TRUE)
+  deps <- tools::package_dependencies(reqPkgs, recursive=TRUE, which=c('Depends', 'Imports'))
   depPkgs <- unlist(deps)
   depPkgs <- sort(unique(depPkgs))
 
@@ -74,7 +74,7 @@ if (install) {
   cat(installString)
   cat("\n\nRequired packages:\n")
   cat(paste0(reqPkgs, collapse="\n"), "\n")
-  cat("\nDependencies of required packages [Imports, Depends, LinkingTo]:\n")
+  cat("\nDependencies of required packages [Imports, Depends]:\n")
   cat(paste0(depPkgs, collapse="\n"), "\n")
   cat("\nFull list of packages:\n")
   cat(paste0(allPkgs, collapse="\n"), "\n")
