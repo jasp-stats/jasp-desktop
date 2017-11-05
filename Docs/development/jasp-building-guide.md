@@ -24,7 +24,7 @@ JASP depends on:
  - [boost](http://boost.org)
  - [libarchive](http://libarchive.org/)
  - [zlib](http://zlib.net/)
- 
+
 Links to specific versions for each platform are provided below.
 
 Windows
@@ -56,17 +56,17 @@ The directory structure should be as follows:
 		- libarchive.dll.a
 		- libarchive.dll
 
- 
+
 Mac OS X
 --------
+To build JASP on mac you need to clone the JASP repository and download the following five packages:
 
- 1. [R 3.3.3](https://static.jasp-stats.org/development/R3.3%20OSX%20JASP%200.8.4.zip)
- 2. [boost 1.64.0](https://static.jasp-stats.org/development/boost_1_64_0.zip)
- 3. [boost 1.64.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Additional%20Binary%20Deps%20OSX%20for%20JASP%20(2017-06-06).zip)
-
-XCode: Qt on OS X relies on XCode to function, you can install this through the App Store. It's easiest if you install this, run it, accept the license agreement, and then close it down before installing Qt.
-
-Qt: building JASP on OS X is pretty robust, and most versions work. We currently use 5.4.0, but newer versions will probably work too. You can download it from [here](https://download.qt.io/archive/qt/). 
+ 0. Clone the JASP repository
+ 1. [XCode](https://developer.apple.com/xcode/) Easiest would be via the App Store.
+ 2. [Qt 5.4.0](https://download.qt.io/archive/qt/) Newer version not supported yet.
+ 3. [R 3.3.3](https://static.jasp-stats.org/development/R3.3%20OSX%20JASP%200.8.3.zip) This contains R and the packages
+ 4. [boost 1.64.0](https://static.jasp-stats.org/development/boost_1_64_0.zip)
+ 5. [boost 1.64.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Additional%20Binary%20Deps%20OSX%20for%20JASP%20(2017-06-06).zip)
 
 The directory structure should be as follows:
 
@@ -80,10 +80,15 @@ The directory structure should be as follows:
 		- libarchive.a
 		- libz.a
 
- 0. Clone the JASP repository into a folder of your choice. Our default choice is *~/desktop/JASP/*, this will create the folder */jasp-desktop* and QT will make the build-JASP-.... directory in this folder.
- 1. Create the folder */Frameworks* in the folder of your choice and unzip the **R 3.3.3** files into there
- 2. Unzip **boost 1.64.0** files in jasp-desktop
- 3. Unzip the **boost 1.64.0 binaries, libarchive binaries** files and put them into the */build-JASP-....* directory that QT creates. 
+ 0. **Clone** the JASP repository into a folder of your choice. Our default choice is *~/desktop/JASP/* and cloning results in the creating of *~/desktop/JASP/jasp-desktop*.
+ 1. **XCode**: Qt on OS X relies on XCode to function, you can install this through the App Store. It's easiest if you install this, run it, accept the license agreement, and then close it down before installing Qt.
+ 2. **Qt**: building JASP on OS X is pretty robust, but for the moment we're restricted to QT 5.4. We will upgrade to a newer version soon. **Note**: *For xcode 8 and above, to accept the license, Qt (v5.4) tries to find xcrun instead of xcodebuild, and the following has to be done,*
+- Open the file: *Qt_install_folder/5.4/clang_64/mkspecs/features/mac/default_pre.prf*
+- Replace the line *isEmpty($$list($$system("/usr/bin/xcrun -find xcrun 2>/dev/null")))* by  *isEmpty($$list($$system("/usr/bin/xcrun -find xcodebuild 2>/dev/null")))*
+ 3. **R 3.3.3**: Create the folder */Frameworks* in the directory of your choice in step 0. For our default choice this results in *~/desktop/JASP/Frameworks/* first and subsequently *~/desktop/JASP/Frameworks/R.frameworks*.
+ 4. **boost 1.64.0**: Unzip these files in the JASP folder. In our case, this results in *~/desktop/JASP/boost_1_64_0/*
+ 5. **boost 1.64.0 binaries, libarchive binaries**: We're almost there! Fire up QT and try to build JASP. QT will automatically create a */build-JASP-....* directory. In our case this leads to  *~/desktop/JASP/build-JASP-Desktop_Qt_5_5_1_clang_64bit-Debug*. QT will stop building JASP as it requires additional files. Thus, unzip the **boost 1.64.0 binaries, libarchive binaries** files and put them into the */build-JASP-....* directory that Qt created.
+ 6. Build JASP again from Qt. The first build might take a while, but after the first time it'll go very smoothly.
 
 
 Linux
@@ -116,13 +121,13 @@ Under Fedora, you need these packages:
  - qt5-qtwebkit-devel
  - boost-devel
  - libarchive-devel
- 
+
 And (under fedora only), in R (started as root so packages are installed systemwide), you need to install:
 
 ```
 install.packages(c("Rcpp","RInside"))
 ```
- 
+
 Finally, under Fedora only, you need to create a symlink so that R is found:
 
 ```
@@ -141,7 +146,7 @@ In order to run, you will need (Ubuntu and alike):
  - r-cran-logspline *
  - r-cran-hypergeo *
  - r-cran-rjson
- 
+
 Those marked with asterisks are available from Jonathon's PPA.
 
 ### Fedora
@@ -150,5 +155,3 @@ It works under Fedora, if you install these R packages manually in R:
 ```
 install.packages(c("BayesFactor","lme4","afex","car","effects","logspline","hypergeo","rjson"))
 ```
-
-
