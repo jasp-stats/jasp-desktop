@@ -41,7 +41,7 @@
       <property name="styleSheet">
        <string notr="true">QWidget#background {
 	border-bottom: 1px solid #919191;
-	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.7 #F0F0F0, stop:0.701 #E3E1E2);
+	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.75 #F0F0F0, stop:0.751 #E3E1E2);
 }
 
 QPushButton {
@@ -81,7 +81,7 @@ QPushButton#first {
 	border-bottom: 1px solid #919191;
 	border-left: none ;
 	border-right: none ;
-	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.7 #3CAAE7, stop:0.701 #349FE3);
+	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.7 #3CAAE7, stop:0.701 #3CAAE7);
 }
 
 QPushButton#first:checked {
@@ -91,6 +91,23 @@ QPushButton#first:checked {
 	border-left: 1px solid #6B767E;
 	background-color: #3CAAE7;
 }
+
+QPushButton#Modules{
+	color:blue;
+	font-size: x-large;
+	padding: 0px 0px;
+	margin: 0px 0px 0px 0px;
+	border-bottom: 1px;
+}
+
+
+QPushButton#Modules:hover:!pressed {
+	image:url(:/icons/addition-sign.svg);
+}
+
+QPushButton::menu-indicator {
+	image: none ;
+ }
 
 </string>
       </property>
@@ -153,7 +170,7 @@ QPushButton#first:checked {
 }</string>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>4</number>
           </property>
           <widget class="RibbonAnalysis" name="ribbonAnalysis">
            <property name="sizePolicy">
@@ -166,6 +183,8 @@ QPushButton#first:checked {
           <widget class="RibbonSEM" name="ribbonSEM"/>
           <widget class="RibbonR11tLearn" name="ribbonR11tLearn"/>
           <widget class="RibbonSummaryStatistics" name="ribbonSummaryStatistics"/>
+          <widget class="RibbonMetaAnalysis" name="ribbonMetaAnalysis"/>
+          <widget class="RibbonNetworkAnalysis" name="ribbonNetworkAnalysis"/>
          </widget>
         </item>
         <item>
@@ -233,16 +252,16 @@ QPushButton#first:checked {
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QSplitter#data_splitter::handle
-{	border-right: 0px; 
-	border-left: 0px; 
+{	border-right: 0px;
+	border-left: 0px;
 	border-top: 1px solid #929292;
 	border-bottom: 1px solid #929292;
 }
 QSplitter#data_splitter
-{	border-right: 0px; 
-	border-left: 0px; 
+{	border-right: 0px;
+	border-left: 0px;
 	border-top: 1px solid #929292;
-	border-bottom: 1px solid #929292; 
+	border-bottom: 1px solid #929292;
 }</string>
                  </property>
                  <property name="orientation">
@@ -429,8 +448,8 @@ QTableView::item::last
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>240</width>
-                       <height>721</height>
+                       <width>300</width>
+                       <height>714</height>
                       </rect>
                      </property>
                      <property name="sizePolicy">
@@ -567,7 +586,7 @@ QTableView::item::last
                 <number>0</number>
                </property>
                <item row="0" column="0">
-                <widget class="QWebView" name="webViewHelp" native="true">
+                <widget class="QWebView" name="webViewHelp">
                  <property name="acceptDrops">
                   <bool>false</bool>
                  </property>
@@ -648,6 +667,17 @@ QTableView::item::last
    <class>VariablesWidget</class>
    <extends>QWidget</extends>
    <header>variableswidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RibbonMetaAnalysis</class>
+   <extends>QWidget</extends>
+   <header>ribbons/ribbonmeta_analysis.h</header>
+   </customwidget>
+   <customwidget>
+   <class>RibbonNetworkAnalysis</class>
+   <extends>QWidget</extends>
+   <header>ribbons/ribbonnetworkanalysis.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

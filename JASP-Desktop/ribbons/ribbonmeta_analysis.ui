@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>RibbonSummaryStatistics</class>
- <widget class="QWidget" name="RibbonSummaryStatistics">
+ <class>RibbonMetaAnalysis</class>
+ <widget class="QWidget" name="RibbonMetaAnalysis">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -118,7 +118,7 @@
           <number>5</number>
          </property>
          <item row="0" column="0">
-          <widget class="RibbonButton" name="bfFromTButton">
+          <widget class="RibbonButton" name="classicalButton">
            <property name="minimumSize">
             <size>
              <width>76</width>
@@ -126,7 +126,7 @@
             </size>
            </property>
            <property name="text">
-            <string>T-Tests</string>
+            <string>Classical</string>
            </property>
            <property name="icon">
             <iconset resource="../resources/icons.qrc">
@@ -147,7 +147,7 @@
           </widget>
          </item>
          <item row="0" column="2">
-          <widget class="RibbonButton" name="frequenciesButton">
+          <widget class="RibbonButton" name="twoxtwoTablesButton">
            <property name="minimumSize">
             <size>
              <width>76</width>
@@ -155,7 +155,7 @@
             </size>
            </property>
            <property name="text">
-            <string>Frequencies</string>
+            <string>2 x 2</string>
            </property>
            <property name="icon">
             <iconset resource="../resources/icons.qrc">
@@ -176,7 +176,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="RibbonButton" name="regressionButton">
+          <widget class="RibbonButton" name="multilevelButton">
            <property name="minimumSize">
             <size>
              <width>76</width>
@@ -184,7 +184,7 @@
             </size>
            </property>
            <property name="text">
-            <string>Regression</string>
+            <string>Multilevel</string>
            </property>
            <property name="icon">
             <iconset resource="../resources/icons.qrc">

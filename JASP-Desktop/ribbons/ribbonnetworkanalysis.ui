@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>RibbonSEM</class>
- <widget class="QWidget" name="RibbonSEM">
+ <class>RibbonNetworkAnalysis</class>
+ <widget class="QWidget" name="RibbonNetworkAnalysis">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -78,13 +78,13 @@
           <number>3</number>
          </property>
          <item row="0" column="0">
-          <widget class="RibbonButton" name="SEMSimple">
+          <widget class="RibbonButton" name="NetworkAnalysis">
            <property name="text">
-            <string>Lavaan</string>
+            <string>Network</string>
            </property>
            <property name="icon">
             <iconset resource="../resources/icons.qrc">
-             <normaloff>:/icons/analysis-classical-sem.svg</normaloff>:/icons/analysis-classical-sem.svg</iconset>
+             <normaloff>:/icons/analysis-network.svg</normaloff>:/icons/analysis-network.svg</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -151,9 +151,9 @@
  </resources>
  <connections>
   <connection>
-   <sender>SEMSimple</sender>
+   <sender>NetworkAnalysis</sender>
    <signal>clicked()</signal>
-   <receiver>RibbonSEM</receiver>
+   <receiver>RibbonNetworkAnalysis</receiver>
    <slot>itemSelected()</slot>
    <hints>
     <hint type="sourcelabel">

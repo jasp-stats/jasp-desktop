@@ -16,28 +16,28 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "regressionlogisticform.h"
-#include "ui_regressionlogisticform.h"
-#include <QStringList>
+#include "classicalmetaanalysisform.h"
+#include "ui_classicalmetaanalysisform.h"
 
-RegressionLogisticForm::RegressionLogisticForm(QWidget *parent) :
-	AnalysisForm("RegressionLogisticForm", parent),
-	ui(new Ui::RegressionLogisticForm)
+ClassicalMetaAnalysisForm::ClassicalMetaAnalysisForm(QWidget *parent) :
+        AnalysisForm("ClassicalMetaAnalysisForm", parent),
+        ui(new Ui::ClassicalMetaAnalysisForm)
 {
 	ui->setupUi(this);
 
 	ui->listAvailableFields->setModel(&this->_availableVariablesModel);
 
-	ui->method->addItem("Enter");
-	ui->method->addItem("Backward");
-	ui->method->addItem("Forward");
-	ui->method->addItem("Stepwise");
-
 	_dependentModel = new TableModelVariablesAssigned();
 	_dependentModel->setSource(&_availableVariablesModel);
-	_dependentModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeNominalText);
-	_dependentModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeNominalText);
+	_dependentModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+	_dependentModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->dependent->setModel(_dependentModel);
+
+    // QString methods0 = "FE,DL,HE,SJ,ML,REML,EB,HS"; // full is "FE,DL,HE,SJ,ML,REML,EB,HS,GENQ", but GENQ needs weights UI element that isn't yet implemented...;
+    QString methods0 = "Fixed Effects,Maximum Likelihood,Restricted ML,DerSimonian-Laird,Hedges,Hunter-Schmidt,Sidik-Jonkman,Empirical Bayes,Paule-Mandel";
+    //QStringList methods = (QStringList << "FE" << "DL" << "HE" << "SJ" << "ML" << "REML" << "EB" << "HS" << "GENQ");
+    QStringList methods = methods0.split(",");
+    ui->method->addItems(methods);
 
 	_covariatesModel = new TableModelVariablesAssigned();
 	_covariatesModel->setSource(&_availableVariablesModel);
@@ -48,23 +48,30 @@ RegressionLogisticForm::RegressionLogisticForm(QWidget *parent) :
 	_factorsModel = new TableModelVariablesAssigned();
 	_factorsModel->setSource(&_availableVariablesModel);
 	_factorsModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	_factorsModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeNominalText);
 	ui->factors->setModel(_factorsModel);
 
 	_wlsWeightsModel = new TableModelVariablesAssigned();
 	_wlsWeightsModel->setSource(&_availableVariablesModel);
 	_wlsWeightsModel->setVariableTypesSuggested(Column::ColumnTypeScale);
-	_wlsWeightsModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
+	_wlsWeightsModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->wlsWeights->setModel(_wlsWeightsModel);
+
+    _studyLabelModel = new TableModelVariablesAssigned();
+    _studyLabelModel->setSource(&_availableVariablesModel);
+    _studyLabelModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+    ui->studyLabels->setModel(_studyLabelModel);
+
 
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);
 	ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
 	ui->buttonAssignFactors->setSourceAndTarget(ui->listAvailableFields, ui->factors);
 	ui->buttonAssignWlsWeights->setSourceAndTarget(ui->listAvailableFields, ui->wlsWeights);
+    ui->buttonAssignStudyLabels->setSourceAndTarget(ui->listAvailableFields, ui->studyLabels);
 
 	_modelModel = new TableModelAnovaModel(this);
 	_modelModel->setPiecesCanBeAssigned(false);
 	ui->modelTerms->setModel(_modelModel);
+	ui->modelTerms->hide();
 
 	connect(_covariatesModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
 	connect(_covariatesModel, SIGNAL(assignmentsChanged()),  this, SLOT(factorsChanged()));
@@ -77,39 +84,34 @@ RegressionLogisticForm::RegressionLogisticForm(QWidget *parent) :
 	connect(_factorsModel, SIGNAL(unassigned(Terms)), _modelModel, SLOT(removeVariables(Terms)));
 
 	ui->panelStatistics->hide();
-	ui->panelPlots->hide();
-	ui->panelModel->hide();
-
-#ifdef QT_NO_DEBUG
-	ui->labelWLSWeights->hide();
-	ui->wlsWeights->hide();
-	ui->buttonAssignWlsWeights->hide();
-#else
-	ui->labelWLSWeights->setStyleSheet("background-color: pink ;");
-	ui->wlsWeights->setStyleSheet("background-color: pink ;");
-	ui->buttonAssignWlsWeights->setStyleSheet("background-color: pink ;");
-#endif
+	ui->panelIncludeConstant->hide();
+    ui->panelAssumptionChecks->hide();
 
 }
 
-void RegressionLogisticForm::factorsChanging()
+ClassicalMetaAnalysisForm::~ClassicalMetaAnalysisForm()
+{
+    delete ui;
+}
+
+void ClassicalMetaAnalysisForm::factorsChanging()
 {
 	if (_options != NULL)
 		_options->blockSignals(true);
 }
 
-void RegressionLogisticForm::factorsChanged()
+void ClassicalMetaAnalysisForm::factorsChanged()
 {
 	if (_options != NULL)
 		_options->blockSignals(false);
 }
 
-RegressionLogisticForm::~RegressionLogisticForm()
-{
-	delete ui;
-}
+//ClassicalMetaAnalysisForm::~ClassicalMetaAnalysisForm()
+//{
+//	delete ui;
+//}
 
-void RegressionLogisticForm:: bindTo(Options *options, DataSet *dataSet)
+void ClassicalMetaAnalysisForm:: bindTo(Options *options, DataSet *dataSet)
 {
 	AnalysisForm::bindTo(options, dataSet);
 	_modelModel->setVariables(Terms(), Terms(), _covariatesModel->assigned());

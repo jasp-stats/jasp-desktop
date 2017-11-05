@@ -20,6 +20,9 @@
 #include <QMessageBox>
 #include "preferencesdialog.h"
 #include "widgets/ribbonbutton.h"
+#include "module.h"
+
+using namespace std;
 
 TabBar::TabBar(QWidget *parent) :
 	QWidget(parent)
@@ -41,137 +44,196 @@ TabBar::TabBar(QWidget *parent) :
 	setLayout(_backgroundLayout);
 
 	_layout->addStretch(1);
-	
+
 	_aboutDialog = new AboutDialog(this);
 	_preferencesDialog = new PreferencesDialog(this);
+	_modulesButton = NULL;
 }
 
-void TabBar::addTab(QString tabName)
+QStringList TabBar::getCurrentModules()
 {
+	QStringList result;
 	foreach (QPushButton *button, _tabButtons)
 	{
-		if (button->objectName() == tabName)
-			return;
+		QString name = button->objectName();
+		if (Module::isModuleName(name))
+			result.append(name);
 	}
 
-	QPushButton *button = new QPushButton(tabName, this);
+	return result;
+}
+
+void TabBar::addModulesPlusButton()
+{
+	QPushButton *button = new QPushButton("", this);
+	button->setToolTip("Load module");
+	button->setIcon(QIcon(":/icons/addition.png"));
+	_modulesButton = button;
+	_signalModulesMapper = new QSignalMapper(this);
+	connect(_modulesButton, SIGNAL(pressed()), this, SLOT(handleModuleButton()));
+
+	QStringList currentModules = getCurrentModules();
+
+	//Modules menu
+	QMenu *modulesmenu   = new QMenu(this);
+
+	for (auto it = Module::AllModules.begin(); it != Module::AllModules.end(); ++it)
+	{
+		const Module& module = it->second;
+#ifndef QT_DEBUG
+		if (module.released())
+		{
+#endif
+			QAction *action = new QAction(module.displayName(),modulesmenu);
+			QString name = module.name();
+			action->setObjectName(name);
+			action->setCheckable(true);
+			action->setChecked(currentModules.indexOf(name) >= 0);
+			modulesmenu->addAction(action);
+			_signalModulesMapper->setMapping(action, name);
+			connect(action, SIGNAL(triggered()), _signalModulesMapper, SLOT(map()));
+#ifndef QT_DEBUG
+		}
+#endif
+	}
+	connect(_signalModulesMapper, SIGNAL(mapped(QString)), this, SLOT(toggleModule(QString)));
+	modulesmenu->acceptDrops();
+	button->setMenu(modulesmenu);
+	_layout->insertWidget(_tabButtons.size(), button);
+
 	button->setStyleSheet("border-top-left-radius:4px;border-top-right-radius:4px;");
-	button->setObjectName(tabName);
+	button->setObjectName("Modules");
 	button->setCheckable(true);
 	connect(button, SIGNAL(clicked()), this, SLOT(tabSelectedHandler()));
 
-	if (_tabButtons.size() == 0)
-		button->setObjectName("first"); //just to give it the proper (blue) stylesheet
-
-	_layout->insertWidget(_tabButtons.size(), button);
 	_tabButtons.append(button);
-    button->clicked();
 }
 
-void TabBar::removeTab(int index)
+void TabBar::addTab(QString name)
 {
-	QPushButton *button = _tabButtons.at(index);
-	_tabButtons.removeAt(index);
-	delete button;
+	foreach (QPushButton *button, _tabButtons)
+	{
+		if (button->objectName() == name)
+			return;
+	}
+
+	QPushButton *button = new QPushButton(name, this);
+
+	if (Module::isModuleName(name))
+	{
+		button->setText(Module::getModule(name).displayName());
+		_layout->insertWidget(_tabButtons.size()-1, button);
+		_currentModule = button;
+	}
+	else
+		_layout->insertWidget(_tabButtons.size(), button);
+
+	button->setStyleSheet("border-top-left-radius:4px;border-top-right-radius:4px;");
+	if (_tabButtons.size() == 0)
+		button->setObjectName("first"); //just to give it the proper (blue) stylesheet
+	else
+		button->setObjectName(name);
+
+	button->setCheckable(true);
+	connect(button, SIGNAL(clicked()), this, SLOT(tabSelectedHandler()));
+
+	_tabButtons.append(button);
+	button->clicked();
+
 }
 
 void TabBar::removeTab(QString tabName)
 {
-    QPushButton *lastbutton;
+	QPushButton *lastButton = NULL;
+	// Init lastButton in case with first button.
+	foreach (QPushButton *button, _tabButtons)
+		if (button->objectName() == "first")
+			lastButton = button;
+
 	foreach (QPushButton *button, _tabButtons)
 	{
-		if (button->objectName() == tabName)
+		QString buttonName = button->objectName();
+		if (buttonName == tabName)
 		{
+			if (lastButton->objectName() == "first")
+			{
+				// Check whether another available module exists
+				foreach (QPushButton *button2, _tabButtons)
+					if (button2 != button && Module::isModuleName(button2->objectName()))
+						lastButton = button2;
+			}
+			if (button == _currentTab)
+			{
+				_currentTab = lastButton;
+				_currentTab->clicked();
+			}
+			if (button == _currentModule)
+			{
+				if (Module::isModuleName(lastButton->objectName()))
+					_currentModule = lastButton;
+				else
+					_currentModule = NULL;
+			}
 			_tabButtons.removeAll(button);
 			delete button;
-            if (lastbutton) lastbutton->clicked();
 
 			return;
 		}
-        lastbutton = button;
+		if (buttonName != "Modules")
+			lastButton = button;
 	}
 }
 
 
-void TabBar::addHelpTab()
+void TabBar::init()
 {
+	setFocusPolicy(Qt::NoFocus);
+	addTab("File");
+	addModulesPlusButton();
+	addTab("Common"); // Common module must be added after the Plus Button,in order to set it at the right place
+	setModulePlusMenu(); // A a check to Common in the menu
 
 	RibbonButton *rb = new RibbonButton();
 	rb->setIcon(QIcon(":/icons/summarize.svg"));
 	rb->setPopupMode(QToolButton::InstantPopup);
 	rb->setProperty("button-type", "summarize");
 	rb->setMinimumSize(30,0);
+	rb->setToolTip("Options");
 	_layout->setContentsMargins(0,0,2,0);
 
-	QMenu  *helpmenu   = new QMenu(this);
+	QMenu  *optionsmenu   = new QMenu(this);
 
-	QAction *act_about = new QAction("About",helpmenu);
-	QAction *act_extrahelp = new QAction("Help",helpmenu);
-	QAction *act_preferences = new QAction("Preferences",helpmenu);
+	QAction *act_about = new QAction("About",optionsmenu);
+	QAction *act_extrahelp = new QAction("Help",optionsmenu);
+	QAction *act_preferences = new QAction("Preferences",optionsmenu);
 
 	// About
 	act_about->setObjectName("About");
-	helpmenu->addAction(act_about);
-	helpmenu->addSeparator();
+	optionsmenu->addAction(act_about);
+	optionsmenu->addSeparator();
 
 	//Special Help
 	act_extrahelp->setObjectName("Special Help");
 	act_extrahelp->setCheckable(true);
 	act_extrahelp->setChecked(false);
-	helpmenu->addAction(act_extrahelp);
-	helpmenu->addSeparator();
+	optionsmenu->addAction(act_extrahelp);
+	optionsmenu->addSeparator();
 
 	// Preferences
 	act_preferences->setObjectName("Preferences");
-	helpmenu->addAction(act_preferences);
-	helpmenu->addSeparator();
-	
-	//Modules
-	QMenu *optionmenu   = new QMenu("Modules",this);
-	QAction *sem = new QAction("SEM",optionmenu);
-	QAction *rei = new QAction("Reinforcement Learning",optionmenu);
-	QAction *summaryStats = new QAction("Summary Stats",optionmenu);
+	optionsmenu->addAction(act_preferences);
+	optionsmenu->addSeparator();
 
-	//SEM
-	QVariant sem_setting = _settings.value("plugins/sem", false);
-	sem->setObjectName("SEM");
-	sem->setCheckable(true);
-	sem->setChecked(sem_setting.canConvert(QVariant::Bool) && sem_setting.toBool());
-	optionmenu->addAction(sem);
+	optionsmenu->acceptDrops();
 
-	//Reinforcement
-	QVariant ri_setting = _settings.value("toolboxes/r11tLearn", false);
-	rei->setObjectName("Reinforcement Learning");
-	rei->setCheckable(true);
-	rei->setChecked(ri_setting.canConvert(QVariant::Bool) && ri_setting.toBool());
-
-	//Summary Stats
-	QVariant sumStats_setting = _settings.value("toolboxes/summaryStatistics", false);
-	summaryStats->setObjectName("Summary Stats");
-	summaryStats->setCheckable(true);
-	summaryStats->setChecked(sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
-
-#ifdef QT_DEBUG
-	optionmenu->addAction(rei);
-#endif
-    optionmenu->addAction(summaryStats);
-
-	optionmenu->acceptDrops();
-	helpmenu->acceptDrops();
-	helpmenu->addMenu(optionmenu);
-
-	rb->setMenu(helpmenu);
+	rb->setMenu(optionsmenu);
 	_layout->addWidget(rb);
 
 	//Slots preferences
 	connect(act_about, SIGNAL(triggered()), this, SLOT(showAbout()));
-	connect(act_preferences, SIGNAL(triggered()), this, SLOT(showPreferences()));	
+	connect(act_preferences, SIGNAL(triggered()), this, SLOT(showPreferences()));
 	connect(act_extrahelp, SIGNAL(triggered()), this, SLOT(toggleHelp()));
-	
-	// Slots modules
-	connect(sem, SIGNAL(triggered()), this, SLOT(toggleSEM()));
-	connect(rei, SIGNAL(triggered()), this, SLOT(toggleReinforcement()));
-	connect(summaryStats, SIGNAL(triggered()), this, SLOT(toggleSummaryStats()));
+
 }
 
 void TabBar::showAbout()
@@ -179,7 +241,7 @@ void TabBar::showAbout()
 	_aboutDialog->show();
 	_aboutDialog->raise();
 	_aboutDialog->activateWindow();
-	//The last function performs the same operation as clicking the mouse on the title bar 
+	//The last function performs the same operation as clicking the mouse on the title bar
 	//If you want to ensure that the window is stacked on top as well you should also call raise(). 	//Note that the window must be visible, otherwise activateWindow() has no effect.
 }
 
@@ -197,43 +259,47 @@ void TabBar::toggleHelp()
 	helpToggledHandler(on);
 }
 
-void TabBar::toggleSEM()
+void TabBar::setModulePlusMenu(QStringList usedModules)
 {
-	QVariant sem_setting = _settings.value("plugins/sem", false);
-	static bool on = (sem_setting.canConvert(QVariant::Bool) && sem_setting.toBool());
-	on = ! on;
+	QStringList currentModules = getCurrentModules();
+	foreach (QAction *action, _modulesButton->menu()->actions())
+	{
+		QString moduleName = action->objectName();
+		if (usedModules.contains(moduleName))
+		{
+			if (!action->isChecked())
+				action->setChecked(true);
+			if (!currentModules.contains(moduleName))
+				addTab(moduleName);
+			action->setEnabled(false);
+		}
+		else
+		{
+			action->setEnabled(true);
+			action->setChecked(currentModules.contains(moduleName));
+		}
+	}
+}
+
+void TabBar::toggleModule(QString name)
+{
+	bool on = true;
+	foreach (QAction *action, _modulesButton->menu()->actions())
+	{
+		if (action->objectName() == name)
+			on = action->isChecked();
+	}
 	if (on)
-		this->addTab("SEM");
+		addTab(name);
 	else
-		this->removeTab("SEM");
+		removeTab(name);
 }
 
-void TabBar::toggleReinforcement()
+void TabBar::handleModuleButton()
 {
-	QVariant ri_setting = _settings.value("toolboxes/r11tLearn", false);
-	static bool on = (ri_setting.canConvert(QVariant::Bool) && ri_setting.toBool());
-	on = ! on;
-	if (on)
-		this->addTab("R11t Learn");
-	else
-		this->removeTab("R11t Learn");
+	if (_modulesButton != NULL)
+		_modulesButton->setAttribute(Qt::WA_UnderMouse, false);
 }
-
-void TabBar::toggleSummaryStats()
-{
-	QVariant sumStats_setting = _settings.value("toolboxes/summaryStatistics", false);
-	static bool on = (sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
-	on = ! on;
-    if (on)
-    {
-		this->addTab("Summary Stats");
-    }
-	else
-    {
-		this->removeTab("Summary Stats");
-    }
-}
-
 
 int TabBar::count() const
 {
@@ -245,28 +311,20 @@ PreferencesDialog *TabBar::getPreferencesDialog()
 	return _preferencesDialog;
 }
 
-void TabBar::setCurrentIndex(int index)
+void TabBar::setCurrentModuleActive()
 {
-	int i = 0;
-
-	foreach (QPushButton *button, _tabButtons)
-	{
-		button->setChecked(i == index);
-        if (i == index) _currentActiveTab = button->objectName();
-		i++;
-	}
-
-	emit currentChanged(index);
+	if (_currentModule)
+		setCurrentTab(_currentModule->objectName());
 }
 
 void TabBar::setExactPValues(bool exactPValues)
 {
-    emit setExactPValuesHandler(exactPValues);
+	emit setExactPValuesHandler(exactPValues);
 }
 
 void TabBar::setFixDecimals(QString numDecimals)
 {
-    emit setFixDecimalsHandler(numDecimals);
+	emit setFixDecimalsHandler(numDecimals);
 }
 
 void TabBar::emptyValuesChanged()
@@ -274,26 +332,39 @@ void TabBar::emptyValuesChanged()
 	emit emptyValuesChangedHandler();
 }
 
-void TabBar::tabSelectedHandler()
+void TabBar::setCurrentTab(QString name)
 {
-	QObject *source = this->sender();
-	int i = 0;
+	int i = 0, index = -1;
 
 	foreach (QPushButton *button, _tabButtons)
 	{
-		if (source == button)
+		if (button->objectName() == name)
 		{
-			_currentActiveTab = button->objectName();
-			setCurrentIndex(i);
-			return;
+			button->setChecked(true);
+			index = i;
+			_currentTab = button;
+			if (Module::isModuleName(name))
+				_currentModule = button;
 		}
+		else
+			button->setChecked(false);
+
 		i++;
 	}
+
+	if (index >= 0)
+		emit currentChanged(index);
+}
+
+void TabBar::tabSelectedHandler()
+{
+	QObject *source = this->sender();
+	setCurrentTab(source->objectName());
 }
 
 QString TabBar::getCurrentActiveTab()
 {
-	return _currentActiveTab;
+	return _currentTab ? _currentTab->objectName() : QString();
 }
 
 void TabBar::helpToggledHandler(bool on)

@@ -81,15 +81,15 @@ SubjectivePriorsWidget::SubjectivePriorsWidget(QWidget *parent) :
 	ui->uniformDienesUpperBound->hide();
 
 #ifdef QT_NO_DEBUG
-    ui->_2dienesRawEffectSize->hide();
-    ui->line_2->hide();
-    ui->dienesEffectSize->hide();
-    ui->_1standardizedEffectSize->hide();
+	ui->_2dienesRawEffectSize->hide();
+	ui->line_2->hide();
+	ui->dienesEffectSize->hide();
+	ui->_1standardizedEffectSize->hide();
 #else
-    ui->_1standardizedEffectSize->setStyleSheet("background-color: pink;");
-    ui->line_2->setStyleSheet("background-color: pink;");
-    ui->dienesEffectSize->setStyleSheet("background-color: pink;");
-    ui->_2dienesRawEffectSize->setStyleSheet("background-color: pink;");
+	ui->_1standardizedEffectSize->setStyleSheet("background-color: pink;");
+	ui->line_2->setStyleSheet("background-color: pink;");
+	ui->dienesEffectSize->setStyleSheet("background-color: pink;");
+	ui->_2dienesRawEffectSize->setStyleSheet("background-color: pink;");
 
 #endif
 
