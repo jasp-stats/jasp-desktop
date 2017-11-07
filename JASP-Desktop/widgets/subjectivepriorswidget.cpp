@@ -18,6 +18,7 @@
 
 #include "subjectivepriorswidget.h"
 #include "ui_subjectivepriorswidget.h"
+#include <QGridLayout>
 
 
 SubjectivePriorsWidget::SubjectivePriorsWidget(QWidget *parent) :
@@ -81,6 +82,10 @@ SubjectivePriorsWidget::SubjectivePriorsWidget(QWidget *parent) :
 	ui->uniformDienesUpperBound->hide();
 
 #ifdef QT_NO_DEBUG
+	QGridLayout *gridLayout = (QGridLayout *)ui->effectSize->layout();
+	gridLayout->setMargin(0);
+	gridLayout = (QGridLayout *)ui->effectSizeStandardized->layout();
+	gridLayout->setContentsMargins(7, 0, 0, 0);
 	ui->_2dienesRawEffectSize->hide();
 	ui->line_2->hide();
 	ui->dienesEffectSize->hide();
