@@ -105,19 +105,23 @@ SubjectivePriorsWidget::~SubjectivePriorsWidget()
 	delete ui;
 }
 
-void SubjectivePriorsWidget::on__1standardizedEffectSize_clicked(bool checked)
+void SubjectivePriorsWidget::on__1standardizedEffectSize_toggled(bool checked)
 {
-	ui->effectSizeStandardized->setEnabled(true);
-	ui->dienesEffectSize->setEnabled(false);
+	if (checked) {
+		ui->effectSizeStandardized->setEnabled(true);
+		ui->dienesEffectSize->setEnabled(false);
+	}
 }
 
-void SubjectivePriorsWidget::on__2dienesRawEffectSize_clicked(bool checked)
+void SubjectivePriorsWidget::on__2dienesRawEffectSize_toggled(bool checked)
 {
-	ui->dienesEffectSize->setEnabled(true);
-	ui->effectSizeStandardized->setEnabled(false);
+	if (checked) {
+		ui->dienesEffectSize->setEnabled(true);
+		ui->effectSizeStandardized->setEnabled(false);
+	}
 }
 
-void SubjectivePriorsWidget::on_defaultStandardEffectSize_clicked(bool checked)
+void SubjectivePriorsWidget::on_defaultStandardEffectSize_toggled(bool checked)
 {
 	if (checked && ui->_1standardizedEffectSize->isChecked())
 	{
@@ -126,7 +130,7 @@ void SubjectivePriorsWidget::on_defaultStandardEffectSize_clicked(bool checked)
 	}
 }
 
-void SubjectivePriorsWidget::on_informativeStandardEffectSize_clicked(bool checked)
+void SubjectivePriorsWidget::on_informativeStandardEffectSize_toggled(bool checked)
 {
 	if (checked && ui->_1standardizedEffectSize->isChecked())
 	{
@@ -135,110 +139,122 @@ void SubjectivePriorsWidget::on_informativeStandardEffectSize_clicked(bool check
 	}
 }
 
-void SubjectivePriorsWidget::on_cauchyInformative_clicked()
+void SubjectivePriorsWidget::on_cauchyInformative_toggled(bool checked)
 {
-	ui->label_informativeCauchyLocation->show();
-	ui->label_informativeCauchyScale->show();
-	ui->informativeCauchyLocation->show();
-	ui->informativeCauchyScale->show();
+	if (checked) {
+		ui->label_informativeCauchyLocation->show();
+		ui->label_informativeCauchyScale->show();
+		ui->informativeCauchyLocation->show();
+		ui->informativeCauchyScale->show();
 
-	ui->label_informativeNormalMean->hide();
-	ui->label_informativeNormalStd->hide();
-	ui->informativeNormalMean->hide();
-	ui->informativeNormalStd->hide();
+		ui->label_informativeNormalMean->hide();
+		ui->label_informativeNormalStd->hide();
+		ui->informativeNormalMean->hide();
+		ui->informativeNormalStd->hide();
 
-	ui->label_informativeTLocation->hide();
-	ui->label_informativeTScale->hide();
-	ui->label_informativeTDf->hide();
-	ui->informativeTLocation->hide();
-	ui->informativeTScale->hide();
-	ui->informativeTDf->hide();
+		ui->label_informativeTLocation->hide();
+		ui->label_informativeTScale->hide();
+		ui->label_informativeTDf->hide();
+		ui->informativeTLocation->hide();
+		ui->informativeTScale->hide();
+		ui->informativeTDf->hide();
+	}
 }
 
-void SubjectivePriorsWidget::on_normalInformative_clicked()
+void SubjectivePriorsWidget::on_normalInformative_toggled(bool checked)
 {
-	ui->label_informativeCauchyLocation->hide();
-	ui->label_informativeCauchyScale->hide();
-	ui->informativeCauchyLocation->hide();
-	ui->informativeCauchyScale->hide();
+	if (checked) {
+		ui->label_informativeCauchyLocation->hide();
+		ui->label_informativeCauchyScale->hide();
+		ui->informativeCauchyLocation->hide();
+		ui->informativeCauchyScale->hide();
 
-	ui->label_informativeNormalMean->show();
-	ui->label_informativeNormalStd->show();
-	ui->informativeNormalMean->show();
-	ui->informativeNormalStd->show();
+		ui->label_informativeNormalMean->show();
+		ui->label_informativeNormalStd->show();
+		ui->informativeNormalMean->show();
+		ui->informativeNormalStd->show();
 
-	ui->label_informativeTLocation->hide();
-	ui->label_informativeTScale->hide();
-	ui->label_informativeTDf->hide();
-	ui->informativeTLocation->hide();
-	ui->informativeTScale->hide();
-	ui->informativeTDf->hide();
+		ui->label_informativeTLocation->hide();
+		ui->label_informativeTScale->hide();
+		ui->label_informativeTDf->hide();
+		ui->informativeTLocation->hide();
+		ui->informativeTScale->hide();
+		ui->informativeTDf->hide();
+	}
 }
 
-void SubjectivePriorsWidget::on_tInformative_clicked()
+void SubjectivePriorsWidget::on_tInformative_toggled(bool checked)
 {
-	ui->label_informativeCauchyLocation->hide();
-	ui->label_informativeCauchyScale->hide();
-	ui->informativeCauchyLocation->hide();
-	ui->informativeCauchyScale->hide();
+	if (checked) {
+		ui->label_informativeCauchyLocation->hide();
+		ui->label_informativeCauchyScale->hide();
+		ui->informativeCauchyLocation->hide();
+		ui->informativeCauchyScale->hide();
 
-	ui->label_informativeNormalMean->hide();
-	ui->label_informativeNormalStd->hide();
-	ui->informativeNormalMean->hide();
-	ui->informativeNormalStd->hide();
+		ui->label_informativeNormalMean->hide();
+		ui->label_informativeNormalStd->hide();
+		ui->informativeNormalMean->hide();
+		ui->informativeNormalStd->hide();
 
-	ui->label_informativeTLocation->show();
-	ui->label_informativeTScale->show();
-	ui->label_informativeTDf->show();
-	ui->informativeTLocation->show();
-	ui->informativeTScale->show();
-	ui->informativeTDf->show();
+		ui->label_informativeTLocation->show();
+		ui->label_informativeTScale->show();
+		ui->label_informativeTDf->show();
+		ui->informativeTLocation->show();
+		ui->informativeTScale->show();
+		ui->informativeTDf->show();
+	}
 }
 
-void SubjectivePriorsWidget::on_halfNormalDienes_clicked()
+void SubjectivePriorsWidget::on_halfNormalDienes_toggled(bool checked)
 {
-	ui->label_halfNormalDienesStd->show();
-	ui->halfNormalDienesStd->show();
+	if (checked) {
+		ui->label_halfNormalDienesStd->show();
+		ui->halfNormalDienesStd->show();
 
-	ui->label_normalDienesMean->hide();
-	ui->normalDienesMean->hide();
-	ui->label_normalDienesStd->hide();
-	ui->normalDienesStd->hide();
+		ui->label_normalDienesMean->hide();
+		ui->normalDienesMean->hide();
+		ui->label_normalDienesStd->hide();
+		ui->normalDienesStd->hide();
 
-	ui->label_uniformDienesLowerBound->hide();
-	ui->uniformDienesLowerBound->hide();
-	ui->label_uniformDienesUpperBound->hide();
-	ui->uniformDienesUpperBound->hide();
+		ui->label_uniformDienesLowerBound->hide();
+		ui->uniformDienesLowerBound->hide();
+		ui->label_uniformDienesUpperBound->hide();
+		ui->uniformDienesUpperBound->hide();
+	}
 }
 
-void SubjectivePriorsWidget::on_normalDienes_clicked()
+void SubjectivePriorsWidget::on_normalDienes_toggled(bool checked)
 {
-	ui->label_halfNormalDienesStd->hide();
-	ui->halfNormalDienesStd->hide();
+	if (checked) {
+		ui->label_halfNormalDienesStd->hide();
+		ui->halfNormalDienesStd->hide();
 
-	ui->label_normalDienesMean->show();
-	ui->normalDienesMean->show();
-	ui->label_normalDienesStd->show();
-	ui->normalDienesStd->show();
+		ui->label_normalDienesMean->show();
+		ui->normalDienesMean->show();
+		ui->label_normalDienesStd->show();
+		ui->normalDienesStd->show();
 
-	ui->label_uniformDienesLowerBound->hide();
-	ui->uniformDienesLowerBound->hide();
-	ui->label_uniformDienesUpperBound->hide();
-	ui->uniformDienesUpperBound->hide();
+		ui->label_uniformDienesLowerBound->hide();
+		ui->uniformDienesLowerBound->hide();
+		ui->label_uniformDienesUpperBound->hide();
+		ui->uniformDienesUpperBound->hide();
+	}
 }
 
-void SubjectivePriorsWidget::on_uniformDienes_clicked()
+void SubjectivePriorsWidget::on_uniformDienes_toggled(bool checked)
 {
-	ui->label_halfNormalDienesStd->hide();
-	ui->halfNormalDienesStd->hide();
+	if (checked) {
+		ui->label_halfNormalDienesStd->hide();
+		ui->halfNormalDienesStd->hide();
 
-	ui->label_normalDienesMean->hide();
-	ui->normalDienesMean->hide();
-	ui->label_normalDienesStd->hide();
-	ui->normalDienesStd->hide();
+		ui->label_normalDienesMean->hide();
+		ui->normalDienesMean->hide();
+		ui->label_normalDienesStd->hide();
+		ui->normalDienesStd->hide();
 
-	ui->label_uniformDienesLowerBound->show();
-	ui->uniformDienesLowerBound->show();
-	ui->label_uniformDienesUpperBound->show();
-	ui->uniformDienesUpperBound->show();
+		ui->label_uniformDienesLowerBound->show();
+		ui->uniformDienesLowerBound->show();
+		ui->label_uniformDienesUpperBound->show();
+		ui->uniformDienesUpperBound->show();
+	}
 }
