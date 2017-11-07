@@ -81,6 +81,7 @@ SubjectivePriorsWidget::SubjectivePriorsWidget(QWidget *parent) :
 	ui->uniformDienesUpperBound->hide();
 
 #ifdef QT_NO_DEBUG
+	ui->_2dienesRawEffectSize->layout();
 	ui->_2dienesRawEffectSize->hide();
 	ui->line_2->hide();
 	ui->dienesEffectSize->hide();

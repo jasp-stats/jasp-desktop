@@ -31,7 +31,7 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 	_channelNumber = channelNumber;
 	_isSlave = isSlave;
 
-	_memory = new interprocess::managed_shared_memory(interprocess::open_or_create, name.c_str(), 4*1024*1024);
+	_memory = new interprocess::managed_shared_memory(interprocess::open_or_create, name.c_str(), 8*1024*1024);
 	tempFiles_addShmemFileName(name);
 
 	stringstream mutexInName;
