@@ -442,7 +442,7 @@
     }
 
     # Add footnote of predicted level
-    if (options[["dependent"]] != "") {
+    if (perform == "run" && options[["dependent"]] != "") {
       predVar <- as.character(glmObj[[1]][["terms"]])[2]
       predLevel <- levels(glmObj[[1]][["data"]][[predVar]])[2]
       msg <- paste0(.unv(predVar), " level '", predLevel, "' coded as class 1.")
