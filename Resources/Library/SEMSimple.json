@@ -37,7 +37,7 @@
 			"name": "errorCalculationBootstrapSamples",
 			"type": "Integer",
 			"default": 1000,
-			"min": 0
+			"min": 1
 		},
 		{
 			"name": "outputMardiasCoefficients",
