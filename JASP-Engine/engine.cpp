@@ -142,6 +142,7 @@ void Engine::runAnalysis()
 	{
 		Json::Reader parser;
 		parser.parse(_analysisResultsString, _analysisResults, false);
+		string test = _analysisResults.toStyledString();
 
 		_status = _status == initing ? inited : complete;
 		_progress = -1;

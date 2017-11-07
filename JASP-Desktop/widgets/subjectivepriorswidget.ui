@@ -39,11 +39,15 @@
     <widget class="BoundGroupBox" name="effectSize">
      <property name="styleSheet">
       <string notr="true">QGroupBox{
+	border:0;
 	padding-top: 0;
 	margin-top: 0;
 }</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_14">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
       <property name="topMargin">
        <number>0</number>
       </property>
@@ -321,7 +325,7 @@
         </property>
         <layout class="QGridLayout" name="gridLayout_15">
          <property name="leftMargin">
-          <number>17</number>
+          <number>5</number>
          </property>
          <property name="topMargin">
           <number>0</number>
@@ -345,6 +349,9 @@
            </property>
            <property name="title">
             <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
            </property>
            <property name="flat">
             <bool>false</bool>
