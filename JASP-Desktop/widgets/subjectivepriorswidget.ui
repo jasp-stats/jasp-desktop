@@ -39,6 +39,7 @@
     <widget class="BoundGroupBox" name="effectSize">
      <property name="styleSheet">
       <string notr="true">QGroupBox{
+	border:0;
 	padding-top: 0;
 	margin-top: 0;
 }</string>
@@ -333,7 +334,7 @@
           <number>0</number>
          </property>
          <property name="verticalSpacing">
-          <number>0</number>
+          <number>10</number>
          </property>
          <item row="4" column="0">
           <widget class="BoundGroupBox" name="informativeStandardizedEffectSize">
@@ -361,6 +362,9 @@
             </property>
             <property name="bottomMargin">
              <number>0</number>
+            </property>
+            <property name="verticalSpacing">
+             <number>5</number>
             </property>
             <item row="3" column="2">
              <widget class="BoundTextBox" name="informativeTLocation">
