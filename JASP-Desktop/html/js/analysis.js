@@ -508,6 +508,8 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 			var status = this.model.get("status");
 			var error = results.errorMessage
+			if (error == null) // parser.parse() in the engine was unable to parse the R error message
+				error = "An unknown error occurred."
 
 			error = error.replace(/\n/g, '<br>')
 			error = error.replace(/  /g, '&nbsp;&nbsp;')

@@ -499,7 +499,7 @@ isTryError <- function(obj){
 	for (v in variable.names) {
 	
 		if (nchar(v) == 0)
-			stop(paste("bad call to .unv() : v is \"\""))
+			stop(paste("bad call to .unv() : v is empty"))
 	
 		firstChar <- charToRaw(substr(v, 1, 1))
 	
