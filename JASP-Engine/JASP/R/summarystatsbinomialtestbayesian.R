@@ -266,8 +266,9 @@ SummaryStatsBinomialTestBayesian <- function(dataset = NULL, options, perform = 
 				}
 
 				rowsBinomialTest$BF <- .clean(BF)
-				rowsBinomialTest$pValue <- .clean(stats::binom.test(x=c(options$successes, options$failures),
-				                                                    p=options$testValue, alternative=hyp)$p.value)
+				pValue <- stats::binom.test(x=c(options$successes, options$failures), p=options$testValue, alternative=hyp)$p.value
+				# For successes > 1, failures > 1, test_value = 1 or 0, pValue retured is FALSE
+				rowsBinomialTest$pValue <- .clean(switch(as.character(pValue), "TRUE"=1, "FALSE"=0, pValue))
 			}
 		}
 	}
