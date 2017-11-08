@@ -97,13 +97,13 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		BFH1H0 <- TRUE
 
 		if (options$hypothesis == "groupsNotEqual") {
-			bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
+			bf.title <- "Log(\u0042\u0046\u2081\u2080)"
 		}
 		if (options$hypothesis == "groupOneGreater") {
-			bf.title <- "Log(\u2009\u0042\u0046\u208A\u2080\u2009)"
+			bf.title <- "Log(\u0042\u0046\u208A\u2080)"
 		}
 		if (options$hypothesis == "groupTwoGreater") {
-			bf.title <- "Log(\u2009\u0042\u0046\u208B\u2080\u2009)"
+			bf.title <- "Log(\u0042\u0046\u208B\u2080)"
 		}
 
 	} else if (bf.type == "BF01") {

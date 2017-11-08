@@ -120,13 +120,13 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	} else if (bfType == "LogBF10") {
 		BFH1H0 <- TRUE
 		if (options$hypothesis == "correlated") {
-			bfTitle <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
+			bfTitle <- "Log(\u0042\u0046\u2081\u2080)"
 			oneSided <- FALSE
 		} else if (options$hypothesis == "correlatedPositively") {
-			bfTitle <- "Log(\u2009\u0042\u0046\u208A\u2080\u2009)"
+			bfTitle <- "Log(\u0042\u0046\u208A\u2080)"
 			oneSided <- "right"
 		} else if (options$hypothesis == "correlatedNegatively") {
-			bfTitle <- "Log(\u2009\u0042\u0046\u208B\u2080\u2009)"
+			bfTitle <- "Log(\u0042\u0046\u208B\u2080)"
 			oneSided <- "left"
 		}
 	} else if (bfType == "BF01") {
