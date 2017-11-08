@@ -33,7 +33,7 @@
 			"type": "Boolean"
 		},
 		{
-			"default": false,
+			"default": true,
 			"name": "plotPriorAndPosteriorAdditionalInfo",
 			"type": "Boolean"
 		},
@@ -43,7 +43,7 @@
 			"type": "Boolean"
 		},
 		{
-			"default": false,
+			"default": true,
 			"name": "plotBayesFactorRobustnessAdditionalInfo",
 			"type": "Boolean"
 		},
