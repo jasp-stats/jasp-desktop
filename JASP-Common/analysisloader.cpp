@@ -57,5 +57,5 @@ Analysis *AnalysisLoader::load(int id, string moduleName, string analysisName, c
 		return new Analysis(id, moduleName, analysisName, options, version, autorun, usedata);
 	}
 
-	throw runtime_error("Could not access analysis definition.");
+	throw runtime_error(analysisName + " does not exist in your JASP version.");
 }
