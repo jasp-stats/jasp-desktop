@@ -95,6 +95,9 @@ NetworkAnalysisForm::NetworkAnalysisForm(QWidget *parent) :
     ui->_1spring->setChecked(true);
     ui->label_repulsion->setVisible(true);
     ui->repulsion->setVisible(true);
+    ui->_4parametric->hide();
+    ui->_5person->hide();
+    ui->_6jackknife->hide();
 }
 
 NetworkAnalysisForm::~NetworkAnalysisForm()

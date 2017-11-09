@@ -109,9 +109,11 @@ NetworkAnalysis <- function (
 	    list(name = "weightmatrixTB",           type = "table"),
 	    list(name = "layoutTB",                 type = "table"),
 	    list(name = "centralityTB",             type = "table"),
+	    list(name = "clusteringTB",             type = "table"),
 	    list(name = "mgmTB",                    type = "table"),
 	    list(name = "networkPLT",               type = "collection", meta="image"),
 	    list(name = "centralityPLT",            type = "image"),
+	    list(name = "clusteringPLT",            type = "image"),
 	    list(name = "bootstrapEdgePLT",         type = "collection", meta="image"),
 	    list(name = "bootstrapCentPLT",         type = "collection", meta="image")
 	  )
@@ -137,6 +139,8 @@ NetworkAnalysis <- function (
 		bootstrap = bootstrapArgs,
 		# depends also on normalization of centrality measures
 		centrality = c(defArgs, "normalizeCentrality", "maxEdgeStrength", "minEdgeStrength"),
+		# depends on everything but plotting arguments
+		clustering = defArgs,
 		# depends also on plotting arguments
 		networkPLT = c(defArgs,
 					   # depends also on plotting arguments
@@ -303,6 +307,9 @@ NetworkAnalysis <- function (
 		if (options[["tableCentrality"]]) {
 			results[["centralityTB"]] <- .networkAnalysisCentralityTable(network, options, perform)
 		}
+		if (options[["tableClustering"]]) {
+			results[["clusteringTB"]] <- .networkAnalysisClusteringTable(network, options, perform)
+		}
 		if (options[["plotNetwork"]]) {
 			results[["networkPLT"]] <- .networkAnalysisNetworkPlot(network, options, perform, oldPlot = state[["networkPLT"]])
 			allNetworkPlots <- results[["networkPLT"]][["collection"]]
@@ -312,6 +319,10 @@ NetworkAnalysis <- function (
 		if (options[["plotCentrality"]]) {
 			results[["centralityPLT"]] <- .networkAnalysisCentralityPlot(network, options, perform, oldPlot = state[["centralityPLT"]])
 			keep <- c(keep, results[["centralityPLT"]][["data"]])
+		}
+		if (options[["plotClustering"]]) {
+			results[["clusteringPLT"]] <- .networkAnalysisClusteringPlot(network, options, perform, oldPlot = state[["clusteringPLT"]])
+			keep <- c(keep, results[["clusteringPLT"]][["data"]])
 		}
 	}
 	results <- .networkAnalysisAddReferencesToTables(results, options)
@@ -330,6 +341,7 @@ NetworkAnalysis <- function (
 	    network          = network[["network"]],
 	    bootstrap        = network[["bootstrap"]],
 	    centrality       = network[["centrality"]],
+	    clustering       = network[["clustering"]],
 	    layout           = network[["layout"]],
 	    networkPLT       = results[["networkPLT"]],
 	    centralityPLT    = results[["centralityPLT"]],
@@ -373,6 +385,7 @@ NetworkAnalysis <- function (
 	networkList <- list(
 		network = oldNetwork[["network"]],
 		centrality = oldNetwork[["centrality"]],
+		clustering = oldNetwork[["clustering"]],
 		layout = oldNetwork[["layout"]]
 	)
 
@@ -608,6 +621,23 @@ NetworkAnalysis <- function (
 		}
 
 	}
+	
+	if (is.null(networkList[["clustering"]])) {
+
+	  for (nw in seq_along(dataset)) {
+
+	    network <- networkList[["network"]][[nw]]
+	    clust <- qgraph::clusteringTable(network, labels = .unv(network$labels))
+	    clust <- reshape2::dcast(clust, graph + node + type ~ measure, value.var = "value")
+	    TBclust <- as.data.frame(clust[-c(1, 3)])
+	    TBclust <- TBclust[c(1, order(colnames(TBclust)[-1])+1)] # alphabetical order
+	    
+	    networkList[["clustering"]][[nw]] <- TBclust
+	    
+	  }
+	  
+	}
+	
 
 	if (is.null(names(dataset))) {
 		nms <- "Network"
@@ -643,7 +673,7 @@ NetworkAnalysis <- function (
 
 	}
 
-	names(networkList[["network"]]) <- names(networkList[["centrality"]]) <- nms
+	names(networkList[["network"]]) <- names(networkList[["centrality"]]) <- names(networkList[["clustering"]]) <- nms
 
 	networkList[["status"]] <- .networkAnalysisNetworkHasErrors(networkList)
 
@@ -832,7 +862,7 @@ NetworkAnalysis <- function (
 	if (!is.null(options[["colorNodesByDataMessage"]])) {
 	  .addFootnote(footnotes = footnotes, text = options[["colorNodesByDataMessage"]], symbol = "<em>Warning: </em>")
 	}
-	if (!is.null(options[["minEdgeStrength"]])) {
+	if (options[["minEdgeStrength"]] != 0) {
 
 	  ignored <- logical(nGraphs)
 	  for (i in seq_along(network[["network"]])) {
@@ -1019,6 +1049,86 @@ NetworkAnalysis <- function (
 
 }
 
+.networkAnalysisClusteringTable <- function(network, options, perform) {
+
+  if (is.null(network[["clustering"]])) {
+    measureNms <- c("Barrat", "Onnela", "WS", "Zhang")
+  } else {
+    measureNms <- colnames(network[["clustering"]][[1]])[-1]
+  }
+  
+	nGraphs <- max(1, length(network[["network"]]))
+	nMeasures <- length(measureNms)
+
+	table <- list(
+		title = "Clustering measures per variable",
+		schema = list(fields = list(
+			list(name = "Variable", title = "Variable", type = "string")
+		))
+	)
+
+	# shared titles
+	overTitles <- names(network[["network"]])
+	if (is.null(overTitles))
+		overTitles <- "Network" # paste0("Network", 1:nGraphs)
+
+	# create the fields
+	for (i in seq_len(nGraphs)) {
+	  for (j in seq_len(nMeasures)) { # four clustering columns per network
+  		table[["schema"]][["fields"]][[j+1 + nMeasures*(i-1)]] <- list(
+  		  name = paste0(measureNms[j], i), 
+  		  title = measureNms[j], 
+  		  type = "number", 
+  		  format="sf:4;dp:3", 
+  		  overTitle = overTitles[i])
+	  }
+	}
+
+
+	if (is.null(network[["clustering"]])) { # make empty table
+
+	  # same length restriction for running analyses
+		if (!is.null(options[["variables"]]) || !(length(options[["variables"]]) > 0)) {
+
+			TBcolumns <- rep(list("."), nMeasures + 1)
+			names(TBcolumns) <- c("Variable", measureNms)
+
+		} else {
+
+			TBcolumns <- data.frame(
+				.v(options[["variables"]]),
+				rep(
+				  list(rep(".", length(options[["variables"]]))),
+				  nMeasures)
+			)
+		}
+    names(TBcolumns) <- c("Variable", measureNms)
+
+	} else { # fill with results
+
+		TBcolumns <- NULL
+		for (i in seq_len(nGraphs)) {
+
+			toAdd <- network[["clustering"]][[i]]
+			names(toAdd) <- c("Variable", paste0(measureNms, i))
+			if (i == 1) {# if more than 1 network drop additional variable column
+				TBcolumns <- toAdd
+			} else {
+				toAdd <- toAdd[, -1]
+				TBcolumns <- cbind(TBcolumns, toAdd)
+			}
+
+		}
+
+	}
+
+	data <- .TBcolumns2TBrows(TBcolumns)
+	table[["data"]] <- data
+
+	return(table)
+
+}
+
 .networkAnalysisWeightMatrixTable <- function(network, options, variables, perform) {
 
 	nGraphs <- max(1, length(network[["network"]]))
@@ -1153,6 +1263,71 @@ NetworkAnalysis <- function (
 		wideDf <- Reduce(rbind, wide)
 		if (length(wide) > 1) {
 			wideDf[["type"]] <- rep(names(network[["centrality"]]), each = nrow(wideDf) / length(wide))
+			Long <- reshape2::melt(wideDf, id.vars = c("node", "type"))
+			colnames(Long)[3] <- "measure"
+			Long[["graph"]] <- Long[["type"]]
+			Long[["type"]] <- TRUE # options[["separateCentrality"]]
+		} else {
+			Long <- reshape2::melt(wideDf, id.vars = "node")
+			colnames(Long)[2] <- "measure"
+			Long[["graph"]] <- NA
+		}
+
+		if (options[["abbreviateLabels"]])
+			Long[["node"]] <- base::abbreviate(Long[["node"]], options[["abbreviateNoChars"]])
+
+		# code modified from qgraph::centralityPlot(). Type and graph are switched so the legend title says graph
+
+		Long <- Long[gtools::mixedorder(Long$node), ]
+		Long$node <- factor(as.character(Long$node), levels = unique(gtools::mixedsort(as.character(Long$node))))
+		if (length(unique(Long$graph)) > 1) {
+			g <- ggplot2::ggplot(Long, ggplot2::aes(x = value, y = node, group = graph,
+													colour = graph)) +
+				ggplot2::guides(color = ggplot2::guide_legend(title = options[["groupingVariable"]])) # change the name graph into the variable name for splitting
+		} else {
+			g <- ggplot2::ggplot(Long, ggplot2::aes(x = value, y = node, group = graph))
+		}
+		g <- g + ggplot2::geom_path() + ggplot2::xlab("") + ggplot2::ylab("") + ggplot2::geom_point()
+		if (length(unique(Long$type)) > 1) {
+			g <- g + ggplot2::facet_grid(type ~ measure, scales = "free")
+
+		} else {
+			g <- g + ggplot2::facet_grid(~measure, scales = "free")
+		}
+		g <- g + ggplot2::theme_bw()
+
+		content <- .writeImage(width = plot[["width"]], height = plot[["height"]], plot = g)
+
+		plot[["convertible"]] <- TRUE
+		plot[["data"]] <- content[["png"]]
+		plot[["obj"]] <- content[["obj"]]
+		plot[["status"]] <- "complete"
+
+	}
+
+	return(plot)
+
+}
+
+.networkAnalysisClusteringPlot <- function(network, options, perform, oldPlot = NULL) {
+
+	if (!is.null(oldPlot) && !identical(oldPlot[["data"]], ""))
+		return(oldPlot)
+
+	plot <- list(
+		title = "Clustering Plot",
+		width = options[["plotWidthClustering"]],
+		height = options[["plotHeightClustering"]],
+		custom = list(width = "plotWidthClustering", height = "plotHeightClustering"),
+		data = "",
+		status = "complete"
+	)
+
+	if (perform == "run" && !is.null(network)) {
+		wide <- network[["clustering"]]
+		wideDf <- Reduce(rbind, wide)
+		if (length(wide) > 1) {
+			wideDf[["type"]] <- rep(names(network[["clustering"]]), each = nrow(wideDf) / length(wide))
 			Long <- reshape2::melt(wideDf, id.vars = c("node", "type"))
 			colnames(Long)[3] <- "measure"
 			Long[["graph"]] <- Long[["type"]]
