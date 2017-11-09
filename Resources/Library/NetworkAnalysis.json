@@ -186,9 +186,9 @@
 		{
 			"name": "numberOfBootstraps",
 			"type": "Integer",
-			"min": 1,
+			"min": 0,
 			"max": 100000,
-			"default": 3
+			"default": 0
 		},
 		{
 			"name": "parallelBootstrap",

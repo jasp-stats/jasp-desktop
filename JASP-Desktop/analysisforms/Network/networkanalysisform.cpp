@@ -216,10 +216,10 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->_4cv->setEnabled(true);
 
         ui->analysisOptionsExpander->setText("Analysis Options - mgm");
-        ui->gridLayout_3->addWidget(ui->tuningParameterBox, 1, 1);
+        ui->gridLayout_3->addWidget(ui->tuningParameterBox, 1, 0);
         ui->gridLayout_3->addWidget(ui->criterion, 0, 0);
         ui->gridLayout_3->addWidget(ui->rule, 0, 1);
-        ui->gridLayout_3->addWidget(ui->boxMgmVariableType, 1, 0);
+        ui->gridLayout_3->addWidget(ui->boxMgmVariableType, 2, 0);
         ui->gridLayout_3->addWidget(ui->crossValidation, 1, 1);
         ui->gridLayout_12->addWidget(ui->showMgmVariableType, 5, 1);
     }

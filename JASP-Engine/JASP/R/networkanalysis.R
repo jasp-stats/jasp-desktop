@@ -168,6 +168,8 @@ NetworkAnalysis <- function (
 
 	## Do Analysis ## ----
 
+	doBootstrap <- options[["bootstrapOnOff"]] && options[["numberOfBootstraps"]] > 0
+	
 	# Sort out whether things are set to defaults or not.
 	if (length(variables) > 2) {
 		
@@ -179,6 +181,32 @@ NetworkAnalysis <- function (
 		# check for errors, but only if there was a change in the data (which implies state[["network"]] is NULL)
 		if (is.null(state[["network"]])) {
 
+		  customChecks <- NULL
+		  
+		  # check if data must be binarized
+		  if (options[["estimator"]] %in% c("IsingFit", "IsingSampler")) {
+		    idx <- colnames(dataset) != .v(options[["groupingVariable"]])
+		    dataset[idx] <- bootnet::binarize(dataset[idx], split = options[["split"]], verbose = FALSE)
+		    
+		    if (options[["estimator"]] == "IsingFit") {
+		      # required check since IsingFit removes these variables from the analyses
+		      customChecks <- c(customChecks,
+            function() {
+              tbs <- apply(dataset, 2, table)
+              if (any(tbs <= 1)) {
+                idx <- which(tbs <= 1, arr.ind = TRUE)
+                return(sprintf(
+                  "After binarizing the data too little variance remained in variable(s): %s.",
+                  paste0(.unv(colnames(tbs[, idx[, 2], drop = FALSE])), collapse = ", ")
+                ))
+              }
+              return(NULL)
+            }
+		      )
+		    }
+		  }
+		  
+      
 			# default error checks
 			checks <- c("infinity", "variance", "observations", "varCovData")
 
@@ -218,16 +246,13 @@ NetworkAnalysis <- function (
 					   varCovData.grouping = groupingVariable,
 					   varCovData.corFun = fun,
 					   varCovData.corArgs = list(use = "pairwise"),
+					   custom = customChecks,
 					   exitAnalysisIfErrors = TRUE)
 		}
 
 		network <- .networkAnalysisRun(dataset = dataset, options = options, variables = variables, perform = perform, oldNetwork = state)
 
-		if (options[["bootstrapOnOff"]] ) {
-
-			# results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = perform) # any errors will appear top of this table
-			# # initialize progress table
-			# results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform)
+		if (doBootstrap) {
 
 			network <- .networkAnalysisBootstrap(network, options, variables, perform, oldNetwork = state, results = results, callback = callback)
 			if (is.null(network) && perform == "run") { # bootstrap was aborted
@@ -252,7 +277,7 @@ NetworkAnalysis <- function (
 		if (FALSE && options[["tableFitMeasures"]]) {
 			results[["fitMeasuresTB"]] <- .fitMeasuresTB(network, options, perform)
 		}
-		if (options[["bootstrapOnOff"]]) {
+		if (doBootstrap) {
 			results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform)
 
 			if (options[["StatisticsEdges"]]) {
@@ -764,7 +789,7 @@ NetworkAnalysis <- function (
 
 			TBcolumns[[paste0("value", i)]] <- c(
 				nrow(nw[["graph"]]),
-				sum(nw[["graph"]][upper.tri(nw[["graph"]], diag = FALSE)] == 0),
+				sum(nw[["graph"]][upper.tri(nw[["graph"]], diag = FALSE)] != 0),
 				mean(nw[["graph"]][upper.tri(nw[["graph"]], diag = FALSE)] == 0)
 			)
 
@@ -807,6 +832,29 @@ NetworkAnalysis <- function (
 	if (!is.null(options[["colorNodesByDataMessage"]])) {
 	  .addFootnote(footnotes = footnotes, text = options[["colorNodesByDataMessage"]], symbol = "<em>Warning: </em>")
 	}
+	if (!is.null(options[["minEdgeStrength"]])) {
+
+	  ignored <- logical(nGraphs)
+	  for (i in seq_along(network[["network"]])) {
+	    ignored[i] <- all(abs(qgraph::getWmat(network[["network"]][[i]])) <= options[["minEdgeStrength"]])
+	  }
+	  
+	  if (any(ignored)) {
+	    if (nGraphs == 1) {
+	      text <- "Minimum edge strength ignored in the network plot because it was larger than the absolute value of the strongest edge."
+	    } else {
+	      text <- sprintf("Minimum edge strength ignored in the network plot of group%s %s because it was larger than the absolute value of the strongest edge.",
+	                      ifelse(sum(ignored) == 2, "s", ""),
+	                      paste0(names(network[["network"]])[ignored], collapse = ", ")
+	      )
+	    }
+	    .addFootnote(footnotes = footnotes, symbol = "<em>Warning: </em>", text = text)
+	  }
+	}
+	if (xor(options[["bootstrapOnOff"]], options[["numberOfBootstraps"]] > 0)) {
+	  text <- "Bootstrapping is only done when 'Bootstrap network' is ticked and 'Number of Bootstraps' is larger than 0."
+	   .addFootnote(footnotes = footnotes, symbol = "<em>Warning: </em>", text = text)
+	} 
 
 	table[["footnotes"]] <- as.list(footnotes)
 	return(table)
@@ -1164,7 +1212,8 @@ NetworkAnalysis <- function (
 		if (!options[["signedNetwork"]]) {
 			wMat <- abs(wMat)
 		}
-
+		if (all(abs(wMat) <= minE))
+		  minE <- NULL
 
 		qgraph::qgraph(
 			input       = wMat,
