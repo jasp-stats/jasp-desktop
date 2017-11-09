@@ -57,7 +57,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 		if(options$bayesFactorType == "LogBF10")
 		{
-			bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
+			bf.title <- "Log(\u0042\u0046\u2081\u2080)"
 		}
 	}
 	else
@@ -73,7 +73,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		}
 		else if (options$bayesFactorType == "LogBF10")
 		{
-			bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
+			bf.title <- "Log(\u0042\u0046\u2081\u2080)"
 		}
 
 		fields[[length(fields)+1]] <- list(name="sampleSize", type="integer", title="n")
