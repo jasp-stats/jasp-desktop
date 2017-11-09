@@ -53,7 +53,7 @@
 	expected <- rbind(expected, c('bindr', '0.1'))
 	expected <- rbind(expected, c('bindrcpp', '0.2'))
 	expected <- rbind(expected, c('boot', '1.3-18'))
-	expected <- rbind(expected, c('bootnet', '1.0.1'))
+	expected <- rbind(expected, c('bootnet', '1.0.2'))
 	expected <- rbind(expected, c('ca', '0.70'))
 	expected <- rbind(expected, c('car', '2.1-5'))
 	expected <- rbind(expected, c('checkmate', '1.8.5'))
@@ -227,7 +227,7 @@
 	
 	if (length(messages) == 0) {
 	
-		list(official=TRUE)
+		list("All R-packages are up-to-date!")
 	
 	} else {
 	
