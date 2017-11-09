@@ -124,6 +124,8 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     )
     
     .hasErrors(dataset, perform, type=c("infinity", "observations"),
+               custom = error_if(any(dataset[[b64(stderrName)]] <= 0), "Non-positive standard errors encountered in variable '", stderrName, 
+                                 "'. Standard errors should be positive. Please check your input."),
                all.target=numeric.variables, observations.amount="< 2",
                exitAnalysisIfErrors=TRUE)
   }
@@ -154,10 +156,6 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
       if (identical(formula.rhs, ~ 1 - 1))
         .quitAnalysis("The model should contain at least one predictor or an intercept.")
       
-      # check input data
-      if (any(dataset[[b64(stderrName)]] <= 0))
-        .quitAnalysis(paste0("Non-positive standard errors encountered in variable '", stderrName, "'. Standard errors should be positive. Please check your input."))
-      
       # analysis
       rma.fit <- tryCatch( # rma generates informative error messages; use them!
         metafor::rma(
@@ -166,7 +164,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
           slab = if(options$studyLabel != "") paste0(get(b64(options$studyLabels))),
           level = options$regressionCoefficientsConfidenceIntervalsInterval + 1e-9, # add tiny amount because 1 is treated by rma() as 100% whereas values > 1 as percentages
           control = list(maxiter = 500)
-        ), error = .quitAnalysis)
+        ), error = function(e) .quitAnalysis(e$message))
       
       rma.fit <- d64(rma.fit, values = all.vars(b64(formula.rhs)))
       
@@ -784,6 +782,12 @@ as_jaspTable.matrix <- function(x, ...) {
 
 vcov.dummy <- function(x, ...) {
   matrix(0,0,0)
+}
+
+error_if <- function(conditions, ...) {
+  function() {
+    paste(ifelse(conditions, do.call(paste0, list(...)), ""), collapse = "\n\n")
+  }
 }
 
 # if(interactive()) {
