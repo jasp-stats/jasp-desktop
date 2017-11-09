@@ -34,7 +34,6 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	setLayout(layout);
 
 	_tabWidget = new VerticalTabWidget(this);
-	_tabWidget->setMaximumWidth(800);
 
 	QWidget *webWidget = new QWidget(this);
 

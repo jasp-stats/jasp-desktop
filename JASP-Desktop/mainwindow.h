@@ -212,6 +212,7 @@ private slots:
     void setExactPValuesHandler(bool exactPValues);
     void setFixDecimalsHandler(QString numDecimals);
     void emptyValuesChangedHandler();
+	void linkClickedSlot(QUrl url);
 
 };
 
