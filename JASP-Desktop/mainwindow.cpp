@@ -282,6 +282,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	QUrl userGuide = QUrl::fromLocalFile(AppDirs::help() + "/index.html");
 	ui->webViewHelp->setUrl(userGuide);
 	connect(ui->webViewHelp, SIGNAL(loadFinished(bool)), this, SLOT(helpFirstLoaded(bool)));
+	ui->webViewHelp->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+	connect(ui->webViewHelp, SIGNAL( linkClicked( QUrl ) ), this, SLOT( linkClickedSlot( QUrl ) ) );
 	ui->panel_4_Help->hide();
 
 	setAcceptDrops(true);
@@ -1435,6 +1437,11 @@ void MainWindow::emptyValuesChangedHandler()
 		_package->setModified(true);
 		packageDataChanged(_package, colChanged, missingColumns, changeNameColumns);
 	}
+}
+
+void MainWindow::linkClickedSlot(QUrl url)
+{
+	QDesktopServices::openUrl ( url );
 }
 
 void MainWindow::itemSelected(const QString &item)
