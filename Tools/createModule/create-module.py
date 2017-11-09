@@ -11,9 +11,8 @@ analyses_headers_replacement = '///// 1-analyses headers'
 ribbon_datasetloaded_replacement = '///// 2-ribbon setDataSetLoaded'
 ribbon_itemselected_replacement = '///// 3-connect ribbon itemSelected'
 if_else_ladder_replacement = '///// 4-analysis if-else ladder'
-tab_changed_ribbon_number = '///// 5-ribbon tab number:'
+tab_changed_ribbon_number = '///// ribbon tab number:'
 ribbon_update_status_replacement = '///// 5-ribbon updateMenuEnabledDisabledStatus'
-ribbon_update_ui_replacement = '///// 7-ribbon updateUIFromOptions'
 ribbon_widget_replacement = '<!-- Add ribbon widget page -->'
 customwidget_definition_replacement = '<!-- Add customwidget definition -->'
 
@@ -67,10 +66,13 @@ def create_module_ribbon(module, ribbon):
                 # FIXME: Make this more general. Use regex.
                 analysis_name = analysis.replace('-', '')
                 analysis_name = analysis_name.replace(' ', '')
-                button_text += '\tmenu{0}->addAction(QString("{1}"), this, SLOT(itemSelected()))->setObjectName("{2}");\n'.format(button_name, analysis, analysis_name)
+                button_text += '\tmenu{0}->addAction(QString("{1}"), this, SLOT(itemSelected()))->setObjectName("{2}{3}");\n'.format(button_name, analysis, module, analysis_name)
 
             # Set Menu
             button_text += '\tui->{0}->setMenu({1});\n\n'.format('button' + button_name, 'menu' + button_name)
+        else:
+            button_text += '\tui->button{button_name}->setObjectName("{module}{button_name}");\n'.format(button_name=button_name, module=module)
+            button_text += '\tconnect(ui->button{0}, SIGNAL(clicked()), this, SLOT(itemSelected()));\n'.format(button_name)
 
     button_text += (ribbon_button_replacement_text + '\n')
     ribbon_source = ribbon_source.replace(ribbon_button_replacement_text, ('\n' + button_text))
@@ -207,15 +209,6 @@ def modify_mainwindow(module, ribbon):
     ribbon_itemselected = '\tconnect(ui->ribbon{0}, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));\n'.format(module_name)
     ribbon_itemselected += ribbon_itemselected_replacement
 
-    # for line in mainwindow_source.splitlines():
-    #     if tab_changed_ribbon_number in line:
-    #         next_tab_number = line.split()[-1]
-    #         replacement_text = '\t\telse if(currentActiveTab == "{0}")\n\t\t{{\n\t\t\tui->ribbon->setCurrentIndex({1});\n\t\t}}\n'.format(module, next_tab_number)
-    #         replacement_text += (tab_changed_ribbon_number + ' {0}'.format(str(int(next_tab_number) + 1)))
-    # 
-    #         mainwindow_source = mainwindow_source.replace(line, replacement_text)
-    #         break
-
     mainwindow_source = mainwindow_source.replace(analyses_headers_replacement, analyses_headers)
     mainwindow_source = mainwindow_source.replace(ribbon_datasetloaded_replacement, ribbon_datasetloaded)
     mainwindow_source = mainwindow_source.replace(ribbon_itemselected_replacement, ribbon_itemselected)
@@ -225,15 +218,6 @@ def modify_mainwindow(module, ribbon):
     ribbon_update_status += ribbon_update_status_replacement
 
     mainwindow_source = mainwindow_source.replace(ribbon_update_status_replacement, ribbon_update_status)
-
-    # ribbon_update_ui_replacement
-    ribbon_update_ui = '\n\tQVariant variant_{name} = _settings.value("toolboxes/{name}", false);\n'.format(name=module_name)
-    ribbon_update_ui += ('\tif (variant_{name}.canConvert(QVariant::Bool) && variant_{name}.toBool())\n'.format(name=module_name))
-    ribbon_update_ui += ('\t\tui->tabBar->addTab("{module}");\n'.format(module=module))
-    ribbon_update_ui += ('\telse\n\t\tui->tabBar->removeTab("{module}");\n'.format(module=module))
-    ribbon_update_ui += ribbon_update_ui_replacement
-
-    mainwindow_source = mainwindow_source.replace(ribbon_update_ui_replacement, ribbon_update_ui)
 
     # Write to mainwindow.cpp
     with open(mainwindow_path + 'cpp', 'w') as f:
@@ -260,9 +244,29 @@ def modify_mainwindow(module, ribbon):
     print('- Modified mainwindow')
 
 
-def modify_tabbar(module, ribbon):
-    ''' Add analyses to tabbar.cpp '''
-    pass
+def modify_module_file(module, ribbon):
+    ''' Add ribbon to module.cpp '''
+    module_path = current_path + '/../../JASP-Desktop/module.cpp'
+    module_name = module.replace(' ', '')
+    module_source = ''
+
+    with open(module_path, 'r') as f:
+        module_source = f.read()
+
+    for line in module_source.splitlines():
+        if tab_changed_ribbon_number in line:
+            next_tab = line.split()[-1]
+            replacement_text = '{{ "{module_name}", Module("{module_name}", "{module}", {next_tab}) }},\n'.format(module_name=module_name, module=module, next_tab=next_tab)
+            replacement_text += (tab_changed_ribbon_number + ' {0}'.format(str(int(next_tab) + 1)))
+
+            module_source = module_source.replace(line, replacement_text)
+            break
+
+    # Write to mainwindow.ui
+    with open(module_path, 'w') as f:
+        f.write(module_source)
+
+    print('- Modified module file')
 
 
 def create_resource_files(module, ribbon):
@@ -391,7 +395,7 @@ def create_new_module():
             create_analyses_files(module_name, module['ribbon'])
             create_pri_file(module_name, module['ribbon'])
             modify_mainwindow(module['name'], module['ribbon'])
-            modify_tabbar(module['name'], module['ribbon'])
+            modify_module_file(module['name'], module['ribbon'])
 
 if __name__ == '__main__':
     create_new_module()

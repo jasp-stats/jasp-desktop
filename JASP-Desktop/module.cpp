@@ -12,7 +12,8 @@ map<QString, Module> Module::AllModules = {
 	{"R11tLearn", Module("R11tLearn", "Reinforcement Learning", 2, false)},
 	{"SummaryStats", Module("SummaryStats", "Summary Stats", 3)},
 	{"MetaAnalysis", Module("MetaAnalysis", "Meta Analysis", 4)},
-	{"Network", Module("Network", 5)}
+	{"Network", Module("Network", 5)},
+///// ribbon tab number: 6
 };
 
 

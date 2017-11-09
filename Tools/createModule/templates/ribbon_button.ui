@@ -1,5 +1,5 @@
          <item row="0" column="{column_number}">
-          <widget class="RibbonButton" name="{button_name}">
+          <widget class="RibbonButton" name="button{button_name}">
            <property name="minimumSize">
             <size>
              <width>76</width>
