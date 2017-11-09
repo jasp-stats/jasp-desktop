@@ -66,6 +66,11 @@
 
 #include "analysisforms/R11tLearn/r11tlearnform.h"
 
+#include "analysisforms/Network/networkanalysisform.h"
+
+#include "analysisforms/MetaAnalysis/classicalmetaanalysisform.h"
+#include "analysisforms/MetaAnalysis/multinomialtestform.h"
+
 ///// 1-analyses headers
 
 #include <QDebug>
@@ -152,6 +157,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->ribbonR11tLearn->setDataSetLoaded(false);
 	ui->ribbonSummaryStatistics->setDataSetLoaded(false);
 	ui->ribbonMetaAnalysis->setDataSetLoaded(false);
+	ui->ribbonNetworkAnalysis->setDataSetLoaded(false);
 ///// 2-ribbon setDataSetLoaded
 
 #ifdef QT_DEBUG
@@ -180,8 +186,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->tableView->setModel(_tableModel);
 	ui->tableView->setVariablesView(ui->variablesPage);
 	ui->variablesPage->hide();
-
-	ui->tabBar->setCurrentIndex(1);
 
 	ui->tableView->setVerticalScrollMode(QTableView::ScrollPerPixel);
 	ui->tableView->setHorizontalScrollMode(QTableView::ScrollPerPixel);
@@ -924,7 +928,6 @@ void MainWindow::tabChanged(int index)
 			const Module& module = Module::getModule(currentActiveTab);
 			ui->ribbon->setCurrentIndex(module.ribbonIndex());
 		}
-///// 5-ribbon tab number: 4
 	}
 }
 
@@ -1189,8 +1192,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 	if (showAnalysis)
 	{
-		ui->tabBar->setCurrentIndex(1);
-
+		ui->tabBar->setCurrentModuleActive();
 	}
 }
 
@@ -1299,7 +1301,7 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 	ui->ribbonR11tLearn->setDataSetLoaded(loaded);
 	ui->ribbonMetaAnalysis->setDataSetLoaded(loaded);
 	ui->ribbonNetworkAnalysis->setDataSetLoaded(loaded);
-///// 6-ribbon updateMenuEnabledDisabledStatus
+///// 5-ribbon updateMenuEnabledDisabledStatus
 }
 
 
@@ -1458,6 +1460,12 @@ void MainWindow::emptyValuesChangedHandler()
 		_package->setModified(true);
 		packageDataChanged(_package, colChanged, missingColumns, changeNameColumns);
 	}
+}
+
+
+void MainWindow::linkClickedSlot(QUrl url)
+{
+	QDesktopServices::openUrl ( url );
 }
 
 

@@ -102,5 +102,27 @@
 				"analyses": ["Bayesian Binomial Test"]
 			}
 		]
+	},
+	{
+		"name": "Meta Analysis",
+		"ribbon": [
+			{
+				"name": "Classical"
+			},
+			{
+				"name": "Multilevel"
+			},
+			{
+				"name": "2 x 2"
+			}
+		]
+	},
+	{
+		"name": "Network",
+		"ribbon": [
+			{
+				"name": "Network"
+			}
+		]
 	}
 ]

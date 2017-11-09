@@ -209,9 +209,9 @@ private slots:
 	void helpFirstLoaded(bool ok);
 	void requestHelpPage(const QString &pageName);
 
-    void setExactPValuesHandler(bool exactPValues);
-    void setFixDecimalsHandler(QString numDecimals);
-    void emptyValuesChangedHandler();
+	void setExactPValuesHandler(bool exactPValues);
+	void setFixDecimalsHandler(QString numDecimals);
+	void emptyValuesChangedHandler();
 	void linkClickedSlot(QUrl url);
 
 };

@@ -19,12 +19,10 @@
 #ifndef CLASSICALMETAANALYSISFORM_H
 #define CLASSICALMETAANALYSISFORM_H
 
-#include "analysisform.h"
+#include "../analysisform.h"
 #include "widgets/tablemodelvariablesassigned.h"
 #include "widgets/tablemodelvariableslevels.h"
 #include "widgets/tablemodelanovamodel.h"
-
-#include "common.h"
 
 namespace Ui {
 class ClassicalMetaAnalysisForm;

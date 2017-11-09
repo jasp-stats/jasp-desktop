@@ -19,7 +19,7 @@
 #ifndef MULTINOMIALTESTFORM_H
 #define MULTINOMIALTESTFORM_H
 
-#include "analysisform.h"
+#include "../analysisform.h"
 
 namespace Ui {
 class MultinomialTestForm;

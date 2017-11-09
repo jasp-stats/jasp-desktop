@@ -1195,34 +1195,6 @@
   <tabstop>MCMCBAS</tabstop>
   <tabstop>numberOfModels</tabstop>
   <tabstop>iterationsMCMC</tabstop>
-  <tabstop>g_prior_2</tabstop>
-  <tabstop>zs_null_2</tabstop>
-  <tabstop>hyper_g_laplace_2</tabstop>
-  <tabstop>hyper_g_n_2</tabstop>
-  <tabstop>eb_global_2</tabstop>
-  <tabstop>eb_local_2</tabstop>
-  <tabstop>bic_2</tabstop>
-  <tabstop>aic_2</tabstop>
-  <tabstop>hyper_g_2</tabstop>
-  <tabstop>zs_full_2</tabstop>
-  <tabstop>gPriorParameter_2</tabstop>
-  <tabstop>g_prior_3</tabstop>
-  <tabstop>zs_null_3</tabstop>
-  <tabstop>hyper_g_laplace_3</tabstop>
-  <tabstop>hyper_g_n_3</tabstop>
-  <tabstop>eb_global_3</tabstop>
-  <tabstop>eb_local_3</tabstop>
-  <tabstop>bic_3</tabstop>
-  <tabstop>aic_3</tabstop>
-  <tabstop>hyper_g_3</tabstop>
-  <tabstop>zs_full_3</tabstop>
-  <tabstop>gPriorParameter_3</tabstop>
-  <tabstop>plotInclusionProbabilities_2</tabstop>
-  <tabstop>plotCoefficientsPosterior_2</tabstop>
-  <tabstop>plotLogPosteriorOdds_2</tabstop>
-  <tabstop>plotModelComplexity_2</tabstop>
-  <tabstop>plotModelProbabilities_2</tabstop>
-  <tabstop>plotResidualsVsFitted_2</tabstop>
  </tabstops>
  <resources/>
  <connections>

@@ -12,7 +12,7 @@ ribbon_datasetloaded_replacement = '///// 2-ribbon setDataSetLoaded'
 ribbon_itemselected_replacement = '///// 3-connect ribbon itemSelected'
 if_else_ladder_replacement = '///// 4-analysis if-else ladder'
 tab_changed_ribbon_number = '///// 5-ribbon tab number:'
-ribbon_update_status_replacement = '///// 6-ribbon updateMenuEnabledDisabledStatus'
+ribbon_update_status_replacement = '///// 5-ribbon updateMenuEnabledDisabledStatus'
 ribbon_update_ui_replacement = '///// 7-ribbon updateUIFromOptions'
 ribbon_widget_replacement = '<!-- Add ribbon widget page -->'
 customwidget_definition_replacement = '<!-- Add customwidget definition -->'
@@ -207,14 +207,14 @@ def modify_mainwindow(module, ribbon):
     ribbon_itemselected = '\tconnect(ui->ribbon{0}, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));\n'.format(module_name)
     ribbon_itemselected += ribbon_itemselected_replacement
 
-    for line in mainwindow_source.splitlines():
-        if tab_changed_ribbon_number in line:
-            next_tab_number = line.split()[-1]
-            replacement_text = '\t\telse if(currentActiveTab == "{0}")\n\t\t{{\n\t\t\tui->ribbon->setCurrentIndex({1});\n\t\t}}\n'.format(module, next_tab_number)
-            replacement_text += (tab_changed_ribbon_number + ' {0}'.format(str(int(next_tab_number) + 1)))
-
-            mainwindow_source = mainwindow_source.replace(line, replacement_text)
-            break
+    # for line in mainwindow_source.splitlines():
+    #     if tab_changed_ribbon_number in line:
+    #         next_tab_number = line.split()[-1]
+    #         replacement_text = '\t\telse if(currentActiveTab == "{0}")\n\t\t{{\n\t\t\tui->ribbon->setCurrentIndex({1});\n\t\t}}\n'.format(module, next_tab_number)
+    #         replacement_text += (tab_changed_ribbon_number + ' {0}'.format(str(int(next_tab_number) + 1)))
+    # 
+    #         mainwindow_source = mainwindow_source.replace(line, replacement_text)
+    #         break
 
     mainwindow_source = mainwindow_source.replace(analyses_headers_replacement, analyses_headers)
     mainwindow_source = mainwindow_source.replace(ribbon_datasetloaded_replacement, ribbon_datasetloaded)
