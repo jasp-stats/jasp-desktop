@@ -74,7 +74,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   #   forrestPlot:    logical, make this plot?
   #   funnelPlot:     logical,
   ## advanced analysis:
-  #   method:         string, one of ["DL", "HE", "SJ", "ML", "REML", "EB", "HS", "GENQ"] (see ?rma)
+  #   method:         string, one of [`Fixed Effects`, `Maximum Likelihood`, `Restricted ML`, `DerSimonian-Laird`, `Hedges`, `Hunter-Schmidt`, `Sidik-Jonkman`, `Empirical Bayes`, `Paule-Mandel`] (see ?rma)
   #  -
   #   test:           string, one of ["z", "knha"]
   #   btt:            numeric, vector of indices specifying which coefficients to include in the omnibus test of moderators
@@ -109,7 +109,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   covarNames <- if (length(options$covariates) > 0) unlist(options$covariates)
   factNames  <- if (length(options$factors) > 0) unlist(options$factors)
-
+  
   list.variables    <- Filter(function(s) s != "", c(effsizeName, covarNames))
   numeric.variables <- Filter(function(s) s != "", c(effsizeName, covarNames, stderrName))
   factor.variables  <- Filter(function(s) s != "", c(factNames, studyLabelName))
@@ -124,39 +124,47 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     )
     
     .hasErrors(dataset, perform, type=c("infinity", "observations"),
-      all.target=numeric.variables, observations.amount="< 2",
-      exitAnalysisIfErrors=TRUE)
+               custom = error_if(any(dataset[[b64(stderrName)]] <= 0), "Non-positive standard errors encountered in variable '", stderrName, 
+                                 "'. Standard errors should be positive. Please check your input."),
+               all.target=numeric.variables, observations.amount="< 2",
+               exitAnalysisIfErrors=TRUE)
   }
   
   method = switch(options$method, `Fixed Effects` = "FE", `Maximum Likelihood` = "ML",
-      `Restricted ML` = "REML", `DerSimonian-Laird` = "DL", `Hedges` = "HE",
-      `Hunter-Schmidt` = "HS", `Sidik-Jonkman` = "SJ", `Empirical Bayes` = "EB",
-      `Paule-Mandel` = "PM", "REML")
-
+                  `Restricted ML` = "REML", `DerSimonian-Laird` = "DL", `Hedges` = "HE",
+                  `Hunter-Schmidt` = "HS", `Sidik-Jonkman` = "SJ", `Empirical Bayes` = "EB",
+                  `Paule-Mandel` = "PM", "REML")
+  
   can.run = all(c(effsizeName, stderrName) != "")
   
   ## Run the analysis. ####
   if (is.null(rma.fit)) {
-    rma.fit <- structure(list('b' = numeric(),'se' = numeric(),'ci.lb' = numeric(),'ci.ub' = numeric(), 
+    rma.fit <- structure(list('b' = numeric(),'se' = numeric(),'ci.lb' = numeric(), 'ci.ub' = numeric(), 
                     'zval' = numeric(),'pval' = numeric()), class = c("dummy", "rma"))
     
     if (run && can.run) {
       
+      # infer model formula
       .vmodelTerms = options$modelTerms
       formula.rhs <- as.formula(as.modelTerms(.vmodelTerms))
       if (is.null(formula.rhs)) 
         formula.rhs = ~1
+      
       if (!options$includeConstant) 
         formula.rhs = update(formula.rhs, ~ . + 0)
-      if( identical(formula.rhs, ~ 1 - 1) )
+      
+      if (identical(formula.rhs, ~ 1 - 1))
         .quitAnalysis("The model should contain at least one predictor or an intercept.")
-
-      rma.fit <- metafor::rma(
+      
+      # analysis
+      rma.fit <- tryCatch( # rma generates informative error messages; use them!
+        metafor::rma(
           yi = get(b64(effsizeName)), sei = get(b64(stderrName)), data = dataset,
           method=method, mods = b64(formula.rhs), test = options$test,
-          slab = if(options$studyLabel != "") get(b64(options$studyLabels)),
-          level = options$regressionCoefficientsConfidenceIntervalsInterval
-        )
+          slab = if(options$studyLabel != "") paste0(get(b64(options$studyLabels))),
+          level = options$regressionCoefficientsConfidenceIntervalsInterval + 1e-9, # add tiny amount because 1 is treated by rma() as 100% whereas values > 1 as percentages
+          control = list(maxiter = 500)
+        ), error = function(e) .quitAnalysis(e$message))
       
       rma.fit <- d64(rma.fit, values = all.vars(b64(formula.rhs)))
       
@@ -172,7 +180,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   results <- list()
   results[["title"]] <- analysisTitle(rma.fit)
   
-
+  
   
   ### Prepare Q-tests table output ####
   
@@ -191,8 +199,8 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   )
   results[["qtests"]] <- qtesttable
   
-
-    
+  
+  
   ### Prepare Coefficients Table Output ####
   
   if (options$regressionCoefficientsEstimates) { 
@@ -202,7 +210,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     
     if (is.null(coefficients) && run && can.run)
       coefficients <- .clean(coef(summary(rma.fit)))
-      
+    
     table <- list(title = "Coefficients")
     if (!is.null(coefficients)) {
       table$x <- coefficients
@@ -230,7 +238,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     # Add citation reference list
     coeftable[["citation"]] <- list(
       "Viechtbauer, W. (2010). Conducting meta-analyses in R with the metafor package. Journal of 
-     Statistical Software, 36(3), 1-48. URL: http://www.jstatsoft.org/v36/i03/"
+      Statistical Software, 36(3), 1-48. URL: http://www.jstatsoft.org/v36/i03/"
     )
     
     results[["table"]] <- coeftable
@@ -307,14 +315,14 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   if (options$regressionCoefficientsCovarianceMatrix) { 
     
     meta[[length(meta) + 1]] <- list(name = "vcov", type = "table")
-
+    
     if (is.null(coeffVcov) && run && can.run)
       coeffVcov <- vcov(rma.fit)
     
     options(jasp_number_format = "sf:5;dp:4")    
     table <- list(title = "Parameter Covariances", x = "...", y = "...")
     if (!is.null(coeffVcov)) table$x = coeffVcov
-
+    
     vcovTable = do.call(as.jaspTable, table)
     results[["vcov"]] <- vcovTable
     
@@ -400,7 +408,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
       table$x <- cols
       influential = c()
     }
-
+    
     influTable = do.call(as.jaspTable, table)
     
     # Markup influential cases in a footnote
@@ -422,11 +430,11 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   if (options$plotResidualsCovariates & run & can.run) { 
     
     meta[[length(meta) + 1]] <- list(name = "failsafen", type = "table")
-
+    
     fsn.fit <- 
       metafor::fsn(yi = get(b64(effsizeName)), sei = get(b64(stderrName)), data = dataset)
     fsn.fit = d64(fsn.fit)
-
+    
     failsnTable = do.call(data.frame, fsn.fit[c('fsnum','alpha','pval')])
     colnames(failsnTable) = c('Fail-safe N', 'Target Significance', 'Observed Significance')
     rownames(failsnTable) = fsn.fit[['type']]
@@ -440,39 +448,41 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   
   
   ### Prepare Plot Output ####
-
-  meta[[length(meta) + 1]] <- list(name = "plots", type = "object",
-    meta = list(
-      list(name = "forrestPlot", type = "image"),
-      list(name = "funnelPlot", type = "image"),
-      list(name = "diagnosticPlot", type = "image"),
-      list(name = "profilePlot", type = "image"),
-      list(name = "trimfillPlot", type = "image")
+  
+  meta[[length(meta) + 1]] <- 
+    list(name = "plots", type = "object",
+         meta = list(
+            list(name = "forrestPlot", type = "image"),
+            list(name = "funnelPlot", type = "image"),
+            list(name = "diagnosticPlot", type = "image"),
+            list(name = "profilePlot", type = "image"),
+            list(name = "trimfillPlot", type = "image")
+        )
     )
-  )
   plots <- list(title = "Plot")
-    
+  
   # plot forest plot
   if (options$forestPlot && (! is.null(forestPlot) || run && can.run)) {
     
     if (is.null(forestPlot)) {
-      forest.img <- .writeImage(width = 520, height = 520, function() cmaForest(rma.fit, cex.lab=1.2, las=1))
-      forestPlot <- list(title="Forest plot", width = 500, height = 500, convertible = TRUE, 
-                    obj = forest.img[["obj"]], data = forest.img[["png"]], 
-                    status = "complete")
+      img.height = max(520, nobs(rma.fit) * 20) # very heuristic! needs improvement...
+      forest.img <- .writeImage(width = 520, height = img.height, function() cmaForest(rma.fit, cex.lab=1.2, las=1, efac=15 / nobs(rma.fit)))
+      forestPlot <- list(title="Forest plot", width = 500, height = img.height, convertible = TRUE, 
+                         obj = forest.img[["obj"]], data = forest.img[["png"]], 
+                         status = "complete")
     }
     plots[["forrestPlot"]]  <- forestPlot
     
   }
-
+  
   # plot funnel plot
   if (options$funnelPlot && (! is.null(funnelPlot) || run && can.run)) {
     
     if (is.null(funnelPlot)) {
       funnel.img <- .writeImage(width = 520, height = 520, function() metafor::funnel(rma.fit, las=1))
       funnelPlot <- list(title="Funnel plot", width = 500, height = 500, convertible = TRUE, 
-                    obj = funnel.img[["obj"]], data = funnel.img[["png"]], 
-                    status = "complete")
+                         obj = funnel.img[["obj"]], data = funnel.img[["png"]], 
+                         status = "complete")
     }
     plots[["funnelPlot"]]  <- funnelPlot
     
@@ -484,8 +494,8 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     if (is.null(diagnosticsPlot)) {
       diagnostics.img <- .writeImage(width = 820, height = 820, function() plot(rma.fit, qqplot = options$plotResidualsQQ, las=1))
       diagnosticsPlot <- list(title = "Diagnostic plots", width = 820, height = 820, convertible = TRUE, 
-                    obj = diagnostics.img[["obj"]], data = diagnostics.img[["png"]],
-                    status = "complete")
+                              obj = diagnostics.img[["obj"]], data = diagnostics.img[["png"]],
+                              status = "complete")
     }
     plots[["diagnosticPlot"]]  <- diagnosticsPlot
     
@@ -497,8 +507,8 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     if (is.null(profilePlot)) {
       profile.img <- .writeImage(width = 520, height = 520, function() profile(rma.fit, cex.lab=1.2, las=1))
       profilePlot <- list(title = "Log-likelihood profile for &tau;&sup2;", width = 520, height = 520, convertible = TRUE, 
-                    obj = profile.img[["obj"]], data = profile.img[["png"]],
-                    status = "complete")
+                          obj = profile.img[["obj"]], data = profile.img[["png"]],
+                          status = "complete")
     }
     plots[["profilePlot"]]  <- profilePlot
     
@@ -512,8 +522,8 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
       trimfill.fit <- metafor::trimfill(update(rma.fit, mods = ~1))
       trimfill.img <- .writeImage(width = 820, height = 820, function() plot(trimfill.fit, qqplot=T, cex.lab=1.2, las=1))
       trimfillPlot <- list(title = "Trim-fill Analysis", width = 820, height = 820, convertible = TRUE, 
-                    obj = trimfill.img[["obj"]], data = trimfill.img[["png"]],
-                    status = "complete")
+                           obj = trimfill.img[["obj"]], data = trimfill.img[["png"]],
+                           status = "complete")
     }
     plots[["trimfillPlot"]]  <- trimfillPlot
     
@@ -527,7 +537,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   results[[".meta"]] <- meta
   results[["plots"]] <- plots
   
-
+  
   
   
   
@@ -703,13 +713,13 @@ options(jasp_number_format = "sf:4;dp:3")
 as.jaspTable <- function(x, ...) UseMethod("as_jaspTable")
 as_jaspTable.data.frame <- function(x, title = "", ...) {
   jaspTable = list(data = NULL, schema = NULL, title = title)
-
+  
   # Extract table schema
   fields = lapply(c("name", names(x)), function(name) {
     if (is.null(x[[name]])) 
       return(list(name = "name", type = "string", format = "", title = ""))
     y = na.omit(x[[name]])
-
+    
     type = ""
     tryCatch(if (all(is.numeric(y))) {
       if (any(abs(y - floor(y)) > 0L))
@@ -719,7 +729,7 @@ as_jaspTable.data.frame <- function(x, title = "", ...) {
     } else {
       type = "string"
     }, error = function(e) .quitAnalysis(paste(capture.output({print(x); print(name); print(y)}), collapse = "\n")))
-
+    
     format <- ""
     if (type == "number") {
       format <- options(paste0("jasp_",type,"_format"))[[1]]
@@ -738,7 +748,7 @@ as_jaspTable.data.frame <- function(x, title = "", ...) {
   if (nrow(x) > 0) {
     Table <- .clean(x)
     Table <- cbind(name = rownames(Table), Table); 
-
+    
     jasp.table <- lapply(1:nrow(Table), function(i) as.list(Table[i,])) # apply converts all to string
     jaspTable[["data"]]  <- structure(jasp.table, .Names=NULL)
   }
@@ -751,7 +761,7 @@ as_jaspTable.character <- function(x, y = NULL, ...) {
   colnames(table) <- x
   if (! is.null(y))
     rownames(table) <- y
-    
+  
   as.jaspTable(table, ...)
 }
 
@@ -772,6 +782,12 @@ as_jaspTable.matrix <- function(x, ...) {
 
 vcov.dummy <- function(x, ...) {
   matrix(0,0,0)
+}
+
+error_if <- function(conditions, ...) {
+  function() {
+    paste(ifelse(conditions, do.call(paste0, list(...)), ""), collapse = "\n\n")
+  }
 }
 
 # if(interactive()) {
