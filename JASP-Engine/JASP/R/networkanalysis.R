@@ -173,7 +173,7 @@ NetworkAnalysis <- function (
 	## Do Analysis ## ----
 
 	doBootstrap <- options[["bootstrapOnOff"]] && options[["numberOfBootstraps"]] > 0
-	
+
 	# Sort out whether things are set to defaults or not.
 	if (length(variables) > 2) {
 		
@@ -190,7 +190,7 @@ NetworkAnalysis <- function (
 		  # check if data must be binarized
 		  if (options[["estimator"]] %in% c("IsingFit", "IsingSampler")) {
 		    idx <- colnames(dataset) != .v(options[["groupingVariable"]])
-		    dataset[idx] <- bootnet::binarize(dataset[idx], split = options[["split"]], verbose = FALSE)
+		    dataset[idx] <- bootnet::binarize(dataset[idx], split = options[["split"]], verbose = FALSE, removeNArows = FALSE)
 		    
 		    if (options[["estimator"]] == "IsingFit") {
 		      # required check since IsingFit removes these variables from the analyses
@@ -1051,14 +1051,18 @@ NetworkAnalysis <- function (
 
 .networkAnalysisClusteringTable <- function(network, options, perform) {
 
+	nGraphs <- max(1, length(network[["network"]]))
   if (is.null(network[["clustering"]])) {
-    measureNms <- c("Barrat", "Onnela", "WS", "Zhang")
+    measureNms <- list(c("Barrat", "Onnela", "WS", "Zhang"))
   } else {
-    measureNms <- colnames(network[["clustering"]][[1]])[-1]
+    measureNms <- NULL 
+    for (i in seq_len(nGraphs))
+      measureNms[[i]] <- colnames(network[["clustering"]][[i]])[-1]
+    
   }
   
-	nGraphs <- max(1, length(network[["network"]]))
-	nMeasures <- length(measureNms)
+
+	nMeasures <- lengths(measureNms)
 
 	table <- list(
 		title = "Clustering measures per variable",
@@ -1073,14 +1077,16 @@ NetworkAnalysis <- function (
 		overTitles <- "Network" # paste0("Network", 1:nGraphs)
 
 	# create the fields
+	idx <- 2
 	for (i in seq_len(nGraphs)) {
-	  for (j in seq_len(nMeasures)) { # four clustering columns per network
-  		table[["schema"]][["fields"]][[j+1 + nMeasures*(i-1)]] <- list(
-  		  name = paste0(measureNms[j], i), 
-  		  title = measureNms[j], 
+	  for (j in seq_len(nMeasures[i])) { # four clustering columns per network
+  		table[["schema"]][["fields"]][[idx]] <- list(
+  		  name = paste0(measureNms[[i]][j], i), 
+  		  title = measureNms[[i]][j], 
   		  type = "number", 
   		  format="sf:4;dp:3", 
   		  overTitle = overTitles[i])
+  		idx <- idx + 1
 	  }
 	}
 
@@ -1110,7 +1116,7 @@ NetworkAnalysis <- function (
 		for (i in seq_len(nGraphs)) {
 
 			toAdd <- network[["clustering"]][[i]]
-			names(toAdd) <- c("Variable", paste0(measureNms, i))
+			names(toAdd) <- c("Variable", paste0(measureNms[[i]], i))
 			if (i == 1) {# if more than 1 network drop additional variable column
 				TBcolumns <- toAdd
 			} else {
@@ -1124,7 +1130,22 @@ NetworkAnalysis <- function (
 
 	data <- .TBcolumns2TBrows(TBcolumns)
 	table[["data"]] <- data
+	
+	footnotes <- .newFootnotes()
+	if (!all(nMeasures == 4)) {
+	  nms <- names(network[["network"]])[nMeasures != 4]
+	  if (length(nms) == 1) 
+	    s <- "" 
+	  else s <- "s"
+	  text <- sprintf("Clustering measures could not be computed for network%s: %s",
+	                  s,
+	                  paste0(nms, collapse = ", ")
+	  )
+    .addFootnote(footnotes = footnotes, text = text, symbol = "<em>Warning: </em>") 
+	}
 
+	table[["footnotes"]] <- as.list(footnotes)
+	
 	return(table)
 
 }
@@ -1325,6 +1346,22 @@ NetworkAnalysis <- function (
 
 	if (perform == "run" && !is.null(network)) {
 		wide <- network[["clustering"]]
+
+		len <- lengths(wide)
+		idx <- which.max(len)
+    if (!all(len == len[idx])) {
+      
+      cnms <- colnames(wide[[idx]])[-1]
+      for (i in which(len != len[idx])) {
+        
+        cnmsToAdd <- cnms[!(cnms %in% colnames(wide[[i]]))]
+        for (nms in cnmsToAdd)
+          wide[[i]][[nms]] <- NA
+        wide[[i]] <- wide[[i]][colnames(wide[[idx]])]
+        
+      }
+    }
+		
 		wideDf <- Reduce(rbind, wide)
 		if (length(wide) > 1) {
 			wideDf[["type"]] <- rep(names(network[["clustering"]]), each = nrow(wideDf) / length(wide))

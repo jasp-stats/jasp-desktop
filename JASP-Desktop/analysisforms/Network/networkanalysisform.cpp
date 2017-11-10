@@ -98,6 +98,13 @@ NetworkAnalysisForm::NetworkAnalysisForm(QWidget *parent) :
     ui->_4parametric->hide();
     ui->_5person->hide();
     ui->_6jackknife->hide();
+    ui->showMgmVariableType->setVisible(false);
+    // for the next release
+//#ifdef QT_NO_DEBUG
+//    ui->plotClustering->setVisible(false);
+//    ui->tableClustering->setVisible(false);
+//#endif
+    
 }
 
 NetworkAnalysisForm::~NetworkAnalysisForm()
@@ -122,7 +129,7 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
     ui->gridLayout_3->removeWidget(ui->thresholdBox);
     ui->gridLayout_3->removeWidget(ui->network);
     ui->gridLayout_3->removeWidget(ui->normalizeCentrality);
-    ui->gridLayout_12->removeWidget(ui->showMgmVariableType);
+//    ui->gridLayout_12->removeWidget(ui->showMgmVariableType);
 
     ui->correlationMethod->hide();
     ui->tuningParameterBox->hide();
@@ -137,7 +144,8 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
     ui->thresholdBox->hide();
     ui->network->hide();
     ui->normalizeCentrality->hide();
-    ui->showMgmVariableType->hide();
+//    ui->showMgmVariableType->hide();
+    ui->showMgmVariableType->setVisible(false);
 
     if (choice_str.compare("EBICglasso") == 0) {
         ui->correlationMethod->setVisible(true);
@@ -224,11 +232,12 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->gridLayout_3->addWidget(ui->rule, 0, 1);
         ui->gridLayout_3->addWidget(ui->boxMgmVariableType, 2, 0);
         ui->gridLayout_3->addWidget(ui->crossValidation, 1, 1);
-        ui->gridLayout_12->addWidget(ui->showMgmVariableType, 5, 1);
+        ui->showMgmVariableType->setVisible(true);
+//        ui->gridLayout_12->addWidget(ui->showMgmVariableType, 5, 1);
     }
 
     ui->analysisOptions->setLayout(ui->gridLayout_3);
-    ui->analysisOptions->setLayout(ui->gridLayout_12);
+//    ui->analysisOptions->setLayout(ui->gridLayout_12);
 }
 
 void NetworkAnalysisForm::on__4cv_clicked()
