@@ -2909,11 +2909,6 @@
                 <string>adalasso</string>
                </property>
               </item>
-              <item>
-               <property name="text">
-                <string>mgm</string>
-               </property>
-              </item>
              </widget>
             </item>
             <item row="3" column="0">
