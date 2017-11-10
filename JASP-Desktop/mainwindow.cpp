@@ -64,7 +64,7 @@
 
 #include "analysisforms/SEM/semsimpleform.h"
 
-#include "analysisforms/R11tLearn/r11tlearnform.h"
+#include "analysisforms/ReinforcementLearning/reinforcementlearningr11tlearningform.h"
 
 #include "analysisforms/Network/networkanalysisform.h"
 
@@ -154,7 +154,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->ribbonAnalysis->setDataSetLoaded(false);
 	ui->ribbonSEM->setDataSetLoaded(false);
-	ui->ribbonR11tLearn->setDataSetLoaded(false);
+	ui->ribbonReinforcementLearning->setDataSetLoaded(false);
 	ui->ribbonSummaryStatistics->setDataSetLoaded(false);
 	ui->ribbonMetaAnalysis->setDataSetLoaded(false);
 	ui->ribbonNetworkAnalysis->setDataSetLoaded(false);
@@ -201,7 +201,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
-	connect(ui->ribbonR11tLearn, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
+	connect(ui->ribbonReinforcementLearning, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonSummaryStatistics, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonMetaAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonNetworkAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
@@ -768,8 +768,6 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new AncovaBayesianForm(contentArea);
 	else if (name == "AnovaRepeatedMeasuresBayesian")
 		form = new AnovaRepeatedMeasuresBayesianForm(contentArea);
-	else if (name == "R11tLearn")
-		form = new R11tLearnForm(contentArea);
 	else if (name == "BinomialTest")
 		form = new BinomialTestForm(contentArea);
 	else if (name == "MultinomialTest")
@@ -802,6 +800,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
 #endif
 	else if (name == "NetworkAnalysis")
 		form = new NetworkAnalysisForm(contentArea);
+	else if (name == "ReinforcementLearningR11tLearning")
+		form = new ReinforcementLearningR11tLearningForm(contentArea);
 ///// 4-analysis if-else ladder
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
@@ -1298,7 +1298,7 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 
 	ui->ribbonAnalysis->setDataSetLoaded(loaded);
 	ui->ribbonSEM->setDataSetLoaded(loaded);
-	ui->ribbonR11tLearn->setDataSetLoaded(loaded);
+	ui->ribbonReinforcementLearning->setDataSetLoaded(loaded);
 	ui->ribbonMetaAnalysis->setDataSetLoaded(loaded);
 	ui->ribbonNetworkAnalysis->setDataSetLoaded(loaded);
 ///// 5-ribbon updateMenuEnabledDisabledStatus

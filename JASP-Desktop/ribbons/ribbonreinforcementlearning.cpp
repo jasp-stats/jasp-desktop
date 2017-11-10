@@ -16,25 +16,26 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef RIBBONR11TLEARN_H
-#define RIBBONR11TLEARN_H
+#include "ribbonreinforcementlearning.h"
+#include "ui_ribbonreinforcementlearning.h"
 
-#include "ribbonwidget.h"
+///// additional Headers
 
-namespace Ui {
-class RibbonR11tLearn;
+RibbonReinforcementLearning::RibbonReinforcementLearning(QWidget *parent) :
+	RibbonWidget(parent),
+	ui(new Ui::RibbonReinforcementLearning)
+{
+	ui->setupUi(this);
+
+	addRibbonButton(ui->buttonR11tLearning);
+
+	ui->buttonR11tLearning->setObjectName("ReinforcementLearningR11tLearning");
+	connect(ui->buttonR11tLearning, SIGNAL(clicked()), this, SLOT(itemSelected()));
+///// Ribbon Buttons and Menu
+
 }
 
-class RibbonR11tLearn : public RibbonWidget
+RibbonReinforcementLearning::~RibbonReinforcementLearning()
 {
-	Q_OBJECT
-
-public:
-	explicit RibbonR11tLearn(QWidget *parent = 0);
-	~RibbonR11tLearn();
-
-private:
-	Ui::RibbonR11tLearn *ui;
-};
-
-#endif // RIBBONR11TLEARN_H
+	delete ui;
+}

@@ -16,16 +16,17 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "r11tlearnform.h"
-#include "ui_r11tlearnform.h"
+
+#include "reinforcementlearningr11tlearningform.h"
+#include "ui_reinforcementlearningr11tlearningform.h"
 
 #include "column.h"
 #include "widgets/tablemodelvariablesassigned.h"
 #include "widgets/tablemodelanovamodelnuisancefactors.h"
 
-R11tLearnForm::R11tLearnForm(QWidget *parent) :
-	AnalysisForm("R11tLearnForm", parent),
-	ui(new Ui::R11tLearnForm)
+ReinforcementLearningR11tLearningForm::ReinforcementLearningR11tLearningForm(QWidget *parent) :
+	AnalysisForm("ReinforcementLearningR11tLearningForm", parent),
+	ui(new Ui::ReinforcementLearningR11tLearningForm)
 {
 	ui->setupUi(this);
 
@@ -75,7 +76,7 @@ R11tLearnForm::R11tLearnForm(QWidget *parent) :
 	ui->containerSampling->hide();
 }
 
-R11tLearnForm::~R11tLearnForm()
+ReinforcementLearningR11tLearningForm::~ReinforcementLearningR11tLearningForm()
 {
 	delete ui;
 }
