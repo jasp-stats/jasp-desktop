@@ -99,11 +99,12 @@ NetworkAnalysisForm::NetworkAnalysisForm(QWidget *parent) :
     ui->_5person->hide();
     ui->_6jackknife->hide();
     ui->showMgmVariableType->setVisible(false);
+    
     // for the next release
-//#ifdef QT_NO_DEBUG
-//    ui->plotClustering->setVisible(false);
-//    ui->tableClustering->setVisible(false);
-//#endif
+#ifdef QT_NO_DEBUG
+    ui->plotClustering->setVisible(false);
+    ui->tableClustering->setVisible(false);
+#endif
     
 }
 
@@ -129,7 +130,6 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
     ui->gridLayout_3->removeWidget(ui->thresholdBox);
     ui->gridLayout_3->removeWidget(ui->network);
     ui->gridLayout_3->removeWidget(ui->normalizeCentrality);
-//    ui->gridLayout_12->removeWidget(ui->showMgmVariableType);
 
     ui->correlationMethod->hide();
     ui->tuningParameterBox->hide();
@@ -144,7 +144,6 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
     ui->thresholdBox->hide();
     ui->network->hide();
     ui->normalizeCentrality->hide();
-//    ui->showMgmVariableType->hide();
     ui->showMgmVariableType->setVisible(false);
 
     if (choice_str.compare("EBICglasso") == 0) {
@@ -223,8 +222,8 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->boxMgmVariableType->setVisible(true);
         ui->crossValidation->setVisible(false);
         ui->showMgmVariableType->setVisible(true);
-
-        ui->_4cv->setEnabled(true);
+        
+//        ui->_4cv->setEnabled(true);
 
         ui->analysisOptionsExpander->setText("Analysis Options - mgm");
         ui->gridLayout_3->addWidget(ui->tuningParameterBox, 1, 0);
@@ -233,11 +232,14 @@ void NetworkAnalysisForm::on_estimator_currentIndexChanged(const QString &choice
         ui->gridLayout_3->addWidget(ui->boxMgmVariableType, 2, 0);
         ui->gridLayout_3->addWidget(ui->crossValidation, 1, 1);
         ui->showMgmVariableType->setVisible(true);
-//        ui->gridLayout_12->addWidget(ui->showMgmVariableType, 5, 1);
+        
+        if(ui->_4cv->isChecked()) {
+            ui->crossValidation->setVisible(true);        
+        }
     }
 
     ui->analysisOptions->setLayout(ui->gridLayout_3);
-//    ui->analysisOptions->setLayout(ui->gridLayout_12);
+
 }
 
 void NetworkAnalysisForm::on__4cv_clicked()
