@@ -256,7 +256,7 @@ def modify_module_file(module, ribbon):
     for line in module_source.splitlines():
         if tab_changed_ribbon_number in line:
             next_tab = line.split()[-1]
-            replacement_text = '{{ "{module_name}", Module("{module_name}", "{module}", {next_tab}) }},\n'.format(module_name=module_name, module=module, next_tab=next_tab)
+            replacement_text = '\t{{"{module_name}", Module("{module_name}", "{module}", {next_tab})}},\n'.format(module_name=module_name, module=module, next_tab=next_tab)
             replacement_text += (tab_changed_ribbon_number + ' {0}'.format(str(int(next_tab) + 1)))
 
             module_source = module_source.replace(line, replacement_text)
