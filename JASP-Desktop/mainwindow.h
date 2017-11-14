@@ -119,6 +119,7 @@ private:
 	Json::Value getResultsMeta();
 
 	void startDataEditor(QString path);
+	void checkUsedModules();
 
 signals:
 	void analysisSelected(int id);
@@ -151,7 +152,6 @@ private slots:
 	void analysisChangedDownstreamHandler(int id, QString options);
 	void analysisSaveImageHandler(int id, QString options);
 
-
 	void resultsDocumentChangedHandler();
 	void simulatedMouseClickHandler(int x, int y, int count);
 	void updateUserDataHandler(int id, QString key);
@@ -172,6 +172,7 @@ private slots:
 
 	void tabChanged(int index);
 	void helpToggled(bool on);
+
 	void dataSetIORequest(FileEvent *event);
 	void dataSetIOCompleted(FileEvent *event);
 	void populateUIfromDataSet();
@@ -193,7 +194,6 @@ private slots:
 	void analysisRunned();
 
 	void updateMenuEnabledDisabledStatus();
-	void updateUIFromOptions();
 
 	void resultsPageLoaded(bool success);
 	void scrollValueChangedHandle();
@@ -212,6 +212,7 @@ private slots:
     void setExactPValuesHandler(bool exactPValues);
     void setFixDecimalsHandler(QString numDecimals);
     void emptyValuesChangedHandler();
+	void linkClickedSlot(QUrl url);
 
 };
 

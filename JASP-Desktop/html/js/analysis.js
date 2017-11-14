@@ -4,8 +4,8 @@ JASPWidgets.Analysis = Backbone.Model.extend({
 		progress: -1,
 		results: {},
 		status: 'waiting',
-        optionschanged: [],
-        saveimage: []
+		optionschanged: [],
+		saveimage: []
 	}
 });
 
@@ -92,14 +92,12 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.toolbar.setParent(this);	
 
 		this.model.on("CustomOptions:changed", function (options) {
-
 			this.trigger("optionschanged", this.model.get("id"), options)
 		}, this);
 
-        this.model.on("SaveImage:clicked", function (options) {
-
-            this.trigger("saveimage", this.model.get("id"), options)
-        }, this);
+		this.model.on("SaveImage:clicked", function (options) {
+			this.trigger("saveimage", this.model.get("id"), options)
+		}, this);
 
 		this.$el.on("changed:userData", this, this.onUserDataChanged);
 	},
@@ -497,59 +495,61 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		var $innerElement = this.$el;
 		$innerElement.find(".jasp-progressbar-container").remove();
 
-        var $tempClone = $innerElement.clone();
-        this.$el.before($tempClone).detach();
+		var $tempClone = $innerElement.clone();
+		this.$el.before($tempClone).detach();
 
 		this.destroyViews();
 
 		this.views.push(this.viewNotes.firstNoteNoteBox);
 
-        $innerElement.empty();
+		$innerElement.empty();
 
-        if (results.error) {
+		if (results.error) {
 
-            var status = this.model.get("status");
+			var status = this.model.get("status");
 			var error = results.errorMessage
+			if (error == null) // parser.parse() in the engine was unable to parse the R error message
+				error = "An unknown error occurred."
 
 			error = error.replace(/\n/g, '<br>')
 			error = error.replace(/  /g, '&nbsp;&nbsp;')
 
-            $innerElement.append($tempClone.clone());
-            $innerElement.find('.analysis-error').remove();
-            $innerElement.addClass('error-state');
-            if (status === "exception") $innerElement.addClass("exception");
-            $innerElement.find(".status").removeClass("waiting running");
+			$innerElement.append($tempClone.clone());
+			$innerElement.find('.analysis-error').remove();
+			$innerElement.addClass('error-state');
+			if (status === "exception") $innerElement.addClass("exception");
+			$innerElement.find(".status").removeClass("waiting running");
 
-            $innerElement.append('<div class="analysis-error error-message-box ui-state-error"><span class="ui-icon ui-icon-' + (status === "exception" ? 'alert' : 'info') + '" style="float: left; margin-right: .3em;"></span>' + error + '</div>')
-            if ($innerElement.find('.jasp-display-item').length > 3) {
-                $innerElement.find('.analysis-error').addClass('analysis-error-top-max');
-            }
+			$innerElement.append('<div class="analysis-error error-message-box ui-state-error"><span class="ui-icon ui-icon-' + (status === "exception" ? 'alert' : 'info') + '" style="float: left; margin-right: .3em;"></span>' + error + '</div>')
+			if ($innerElement.find('.jasp-display-item').length > 3) {
+				$innerElement.find('.analysis-error').addClass('analysis-error-top-max');
+			}
 
 		}
-        else
-        {
-            $innerElement.removeClass("error-state");
-            if (results[".meta"]) {
+		else
+		{
+			$innerElement.removeClass("error-state");
+			if (results[".meta"]) {
 
-                var meta = results[".meta"]
+				var meta = results[".meta"]
 
-                for (var i = 0; i < meta.length; i++) {
+				for (var i = 0; i < meta.length; i++) {
 
-                    var name = meta[i].name;
-                    if (_.has(results, name)) {
-                        var itemView = this.createChild(results[name], this.model.get("status"), meta[i])
-                        if (itemView !== null) {
-                            this.passUserDataToView([name], itemView);
+					var name = meta[i].name;
+					if (_.has(results, name)) {
+						var itemView = this.createChild(results[name], this.model.get("status"), meta[i])
+						if (itemView !== null) {
+							this.passUserDataToView([name], itemView);
 
-                            this.views.push(itemView);
-                            this.volatileViews.push(itemView);
+							this.views.push(itemView);
+							this.volatileViews.push(itemView);
 
-                            itemView.render();
-                            $innerElement.append(itemView.$el);
-                        }
-                    }
-                }
-            }
+							itemView.render();
+							$innerElement.append(itemView.$el);
+						}
+					}
+				}
+			}
 
 		}
 

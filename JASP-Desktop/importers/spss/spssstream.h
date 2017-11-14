@@ -18,14 +18,12 @@
 #ifndef SPSSSTREAM_H
 #define SPSSSTREAM_H
 
-//#include <boost/nowide/fstream.hpp>
-#include <fstream>
+#include <boost/nowide/fstream.hpp>
 
 /*
  * The Stream used by the PSPP importer.
  */
 
-//typedef boost::nowide::ifstream SPSSStream;
-typedef std::ifstream SPSSStream;
+typedef boost::nowide::ifstream SPSSStream;
 
 #endif // PSPPSTREAM_H

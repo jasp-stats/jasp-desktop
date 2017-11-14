@@ -101,16 +101,7 @@ run <- function(name, options.as.json.string, perform="run") {
 				state[["figures"]] <- c(state[["figures"]], .imgToState(results$results))
 			}
 
-			location <- .fromRCPP(".requestStateFileNameNative")
-
-			relativePath <- location$relativePath
-			base::Encoding(relativePath) <- "UTF-8"
-
-			fullPath <- paste(location$root, location$relativePath, sep="/")
-			base::Encoding(fullPath) <- "UTF-8"
-			base::save(state, file=fullPath)
-			
-			keep <- relativePath
+			keep <- .saveState(state)$relativePath
 		}
 		
 		if ("results" %in% names(results)) {
@@ -243,12 +234,11 @@ isTryError <- function(obj){
 
 
 .vdf <- function(df, columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, exclude.na.listwise=c(), ...) {
-
 	new.df <- NULL
 	namez <- NULL
-	
+
 	for (column.name in columns) {
-	
+
 		column <- df[[column.name]]
 
 		if (is.null(new.df)) {
@@ -256,14 +246,17 @@ isTryError <- function(obj){
 		} else {
 			new.df <- data.frame(new.df, column)
 		}
-		
+
 		namez <- c(namez, column.name)
 	}
-		
+
 	for (column.name in columns.as.ordinal) {
-	
+
 		column <- as.ordered(df[[column.name]])
-	
+		
+		if (length(column) == 0) {
+			.quitAnalysis("Error: no data! Check for missing values.")
+		}
 		if (is.null(new.df)) {
 			new.df <- data.frame(column)
 		} else {
@@ -272,30 +265,36 @@ isTryError <- function(obj){
 
 		namez <- c(namez, column.name)
 	}
-		
+
 	for (column.name in columns.as.factor) {
-	
-		column <- as.factor(df[[column.name]])
 
+		column <- as.factor(df[[column.name]])
+		
+		if (length(column) == 0) {
+			.quitAnalysis("Error: no data! Check for missing values.")
+		}
 		if (is.null(new.df)) {
 			new.df <- data.frame(column)
 		} else {
 			new.df <- data.frame(new.df, column)
 		}
-	
+
 		namez <- c(namez, column.name)
 	}
-		
+
 	for (column.name in columns.as.numeric) {
 
 		column <- as.numeric(as.character(df[[column.name]]))
-
+		
+		if (length(column) == 0) {
+			.quitAnalysis("Error: no data! Check for missing values.")
+		}
 		if (is.null(new.df)) {
 			new.df <- data.frame(column)
 		} else {
 			new.df <- data.frame(new.df, column)
 		}
-	
+
 		namez <- c(namez, column.name)
 	}
 
@@ -303,9 +302,9 @@ isTryError <- function(obj){
 		return (data.frame())
 
 	names(new.df) <- .v(namez)
-	
+
 	new.df <- .excludeNaListwise(new.df, exclude.na.listwise)
-	
+
 	new.df
 }
 
@@ -377,21 +376,27 @@ isTryError <- function(obj){
 }
 
 .saveState <- function(state) {
-
+	result <- list()
+	relativePath <- NULL
+	fullPath <- NULL
 	if (base::exists(".requestStateFileNameNative")) {
 
 		location <- .fromRCPP(".requestStateFileNameNative")
 
 		relativePath <- location$relativePath
-		base::Encoding(relativePath) <- "UTF-8"
+		root <- location$root
 
-		fullPath <- paste(location$root, location$relativePath, sep="/")
-		base::Encoding(fullPath) <- "UTF-8"
+		base::Encoding(relativePath) <- "UTF-8"
+		base::Encoding(root) <- "UTF-8"
+
+		oldwd <- getwd()
+		setwd(root)
+		on.exit(setwd(oldwd))
 		
-		base::save(state, file=fullPath, compress=FALSE)
+		base::save(state, file=relativePath, compress=FALSE)
 	}
-	
-	NULL
+  result <- list(relativePath = relativePath, root = root)
+  return(result)
 }
 
 .retrieveState <- function() {
@@ -403,12 +408,16 @@ isTryError <- function(obj){
 		location <- .fromRCPP(".requestStateFileNameNative")
 
 		relativePath <- location$relativePath
+		root <- location$root
+
 		base::Encoding(relativePath) <- "UTF-8"
+		base::Encoding(root) <- "UTF-8"
 
-		fullPath <- paste(location$root, location$relativePath, sep="/")
-		base::Encoding(fullPath) <- "UTF-8"
-
-		base::try(base::load(fullPath), silent=TRUE)
+		oldwd <- getwd()
+		setwd(root)
+		on.exit(setwd(oldwd))
+		
+		base::try(base::load(relativePath), silent=TRUE)
 	}
 	
 	state
@@ -490,7 +499,7 @@ isTryError <- function(obj){
 	for (v in variable.names) {
 	
 		if (nchar(v) == 0)
-			stop(paste("bad call to .unv() : v is \"\""))
+			stop(paste("bad call to .unv() : v is empty"))
 	
 		firstChar <- charToRaw(substr(v, 1, 1))
 	
@@ -500,7 +509,8 @@ isTryError <- function(obj){
 			
 		} else {
 		
-			stop(paste("bad call to .unv() : v is \"", v, "\"", sep=""))
+		  vs[length(vs)+1] <- v
+		  
 		}
 	}
 	
@@ -678,13 +688,14 @@ callback <- function(results=NULL, progress=NULL) {
 		
 	# create png file location
 	location <- .fromRCPP(".requestTempFileNameNative", "png")
+	root <- location$root
 	relativePath <- location$relativePath
 	base::Encoding(relativePath) <- "UTF-8"
-	
-	fullPathpng <- paste(location$root, location$relativePath, sep="/")
-	base::Encoding(fullPathpng) <- "UTF-8"
-	
-	grDevices::png(filename=fullPathpng, width=width * pngMultip, 
+	base::Encoding(root) <- "UTF-8"
+
+	setwd(root)
+
+	grDevices::png(filename=relativePath, width=width * pngMultip,
 								height=height * pngMultip, bg="transparent", 
 								res=72 * pngMultip, type=type)
 		
@@ -751,6 +762,7 @@ callback <- function(results=NULL, progress=NULL) {
 		
 	stop("could not clean value")
 }
+
 
 .newFootnotes <- function() {
 	
@@ -940,16 +952,19 @@ as.list.footnotes <- function(footnotes) {
 	# Create png file location
 	location <- .fromRCPP(".requestTempFileNameNative", "png")
 	relativePathpng <- location$relativePath
-	fullPathpng <- paste(location$root, relativePathpng, sep="/")
 	base::Encoding(relativePathpng) <- "UTF-8"
-	base::Encoding(fullPathpng) <- "UTF-8"
 
+	root <- location$root
+	base::Encoding(root) <- "UTF-8"
+	oldwd <- getwd()
+	setwd(root)
+	on.exit(setwd(oldwd))
 	# Open graphics device and plot
-	grDevices::png(filename=fullPathpng, width=width * pngMultip, 
+	grDevices::png(filename=relativePathpng, width=width * pngMultip,
 	               height=height * pngMultip, bg="transparent", 
 	               res=72 * pngMultip, type=type)
 	
-	if (class(plot) ==  "function"){
+	if (inherits(plot, "function")) {
 		if (obj) dev.control('enable') # enable plot recording
 		eval(plot())
 		if (obj) plot <- recordPlot() # save plot to R object
@@ -972,49 +987,49 @@ saveImage <- function(plotName, format, height, width){
 	# Retrieve plot object from state
 	state <- .retrieveState()
 	plt <- state[["figures"]][[plotName]]
-	
-  # create file location string
-  location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
+
+	# create file location string
+	location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
+	root <- location$root
+	base::Encoding(root) <- "UTF-8"
+	oldwd <- getwd()
+	setwd(root)
+	on.exit(setwd(oldwd))
 	
 	# Get file size in inches by creating a mock file and closing it
 	pngMultip <- .fromRCPP(".ppi") / 96
-	png(filename=paste0(location, "/dpi.png"), width=width * pngMultip, 
+	png(filename="dpi.png", width=width * pngMultip,
 			height=height * pngMultip,res=72 * pngMultip)
 	insize <- dev.size("in")
 	dev.off()
-	
-	# finds the last dot and replaces everything after it with "format"
-	relativePath <- base::gsub("(?<=\\.)(?!.*\\.).*", "png", format, perl = TRUE)
-  fullPath <- paste(location$root, relativePath, sep="/")
-	base::Encoding(relativePath) <- "UTF-8"
-  base::Encoding(fullPath) <- "UTF-8"
-	print(fullPath)
-	
-	# Open correct graphics device
+
+	relativePath <- paste0("temp.", format)
+
+    # Open correct graphics device
 	if (format == "eps") {
 		
-		grDevices::cairo_ps(filename=fullPath, width=insize[1], 
+		grDevices::cairo_ps(filename=relativePath, width=insize[1],
 												height=insize[2], bg="transparent")
-		
-  } else if (format == "tiff") {
-		
+
+	} else if (format == "tiff") {
+
 		hiResMultip <- 300/72
-		grDevices::tiff(filename=fullPath, 
-										width = width * hiResMultip, 
-										height = height * hiResMultip, 
+		grDevices::tiff(filename=relativePath,
+										width = width * hiResMultip,
+										height = height * hiResMultip,
 										res = 300, bg="transparent",
 										compression = "lzw",
 										type = "cairo")
-		
+
 	} else if (format == "pdf") {
-		
-		grDevices::cairo_pdf(filename=fullPath, width=insize[1], 
-												 height=insize[2], bg="transparent")
-	
+
+		grDevices::cairo_pdf(filename=relativePath, width=insize[1],
+												height=insize[2], bg="transparent")
+
 	} else { # add optional other formats here in "else if"-statements
 		stop("Format incorrectly specified")
 	}
-	
+
 	# Plot and close graphics device
 	if (class(plt) == "recordedplot"){
 		.redrawPlot(plt) #(see below)
@@ -1022,11 +1037,10 @@ saveImage <- function(plotName, format, height, width){
 		print(plt) #ggplots
 	}
 	dev.off()
-	
-	# Create JSON string for interpretation by JASP front-end
-	result <- paste0("{ \"status\" : \"imageSaved\", \"results\" : { \"name\" : \"", 
-									relativePath , "\" } }")
 
+	# Create JSON string for interpretation by JASP front-end
+	result <- paste0("{ \"status\" : \"imageSaved\", \"results\" : { \"name\" : \"",
+										relativePath , "\" } }")
 	# Return result
 	result
 }
@@ -1103,8 +1117,119 @@ saveImage <- function(plotName, format, height, width){
 
 }
 
-.newProgressbar <- function(ticks, callback, skim=5, response=FALSE) {
+
+as.modelTerms <- function(object, ...) UseMethod("as.modelTerms")
+as.modelTerms.list <- function(object) structure(object, class = "modelTerms")
+as.modelTerms.formula <- function(formula) structure(sapply(attr(terms(formula), "term.labels"), strsplit, ":"), class="modelTerms")
+formula.modelTerms <- function(modelTerms, env = parent.frame()) {
+  # Converts a modelTerms list into a one-side R formula
+  #
+  # Args:
+  #   modelTerms:  A list of interaction terms, each term being a list of variable names involved in the interaction
+  #   env:         An environement associated with the variables in the formula, see ?as.formula
+  #
+  # Value:
+  #   A formula. See ?formula
+  #
+  terms = sapply(modelTerms, function(x) paste0(unlist(x), collapse = ":"))
+  terms = terms[terms != ""]
+  formula.rhs = paste(terms, collapse = " + ")
+  if (formula.rhs != "") as.formula(paste(" ~ ", formula.rhs), env = env)
+}
+
+
+b64 <- function(x, ...) UseMethod("b64")   ## Translate names in x to 'base64' 
+d64 <- function(x, ...) UseMethod("d64")   ## Untranslate names in x from 'base64' 
+
+b64.character <- function(x, values, prefix = "X", ...) {
+  if (missing(values)) 
+    return(.v(x, prefix = prefix))
+  
+  for (value in values)
+    x = gsub(value, b64(value), x)
+  x
+}
+
+d64.character <- function(x, values, ...) {
+  if (missing(values)) 
+    return(.unv(x))
+  
+  for (value in values)
+    x = gsub(value, d64(value), x)
+  x
+}
+
+b64.default <- function(object, ...) {
+  if (!is.null(dimnames(object))) {
+    dimnames(object) = lapply(dimnames(object), b64, ...)
+  }
+  if (!is.null(names(object))) {
+    names(object) = b64(names(object), ...)
+  }
+  object
+}
+
+d64.default <- function(object, ...) {
+  if (!is.null(dimnames(object))) {
+    dimnames(object) = lapply(dimnames(object), d64, ...)
+  }
+  if (!is.null(names(object))) {
+    names(object) = d64(names(object), ...)
+  }
+  object
+}
+
+b64.modelTerms = function(object, ...) structure(b64(unclass(object), ...), class="modelTerms")
+d64.modelTerms = function(object, ...) structure(d64(unclass(object), ...), class="modelTerms")
+b64.formula = function(formula, ...) as.formula(b64(as.modelTerms(formula), ...))
+d64.formula = function(formula, ...) as.formula(d64(as.modelTerms(formula), ...))
+
+b64.matrix <- function(x, ...) {
+  dimnames(x) <- rapply(dimnames(x), b64, ..., classes = "character", how="replace")
+  x
+}
+d64.matrix <- function(x, ...) {
+  dimnames(x) <- rapply(dimnames(x), d64, ..., classes = "character", how="replace")
+  x
+}
+b64.data.frame <- function(x, ...) {
+  colnames(x) = b64(colnames(x))
+  rownames(x) = b64(rownames(x))
+  x
+}
+d64.data.frame <- function(x, ...) {
+  colnames(x) = d64(colnames(x))
+  rownames(x) = d64(rownames(x))
+  x
+}
+b64.call <- function(x, which = seq_along(x)[-1], ...) {
+  x <- as.list(x)
+  x[which] = lapply(x[which], b64, ...)
+  as.call(x)
+}
+d64.call <- function(x, which = seq_along(x)[-1], ...) {
+  x <- as.list(x) # which relies on this (and lazy evaluation): must be fist for next statement to work!
+  x[which] = lapply(x[which], d64, ...)
+  as.call(x)
+}
+b64.name <- function(x, ...) {
+  as.name(b64(as.character(x)))
+}
+d64.name <- function(x, ...) {
+  as.name(d64(as.character(x)))
+}
+b64.list <- function(x, ...) {
+  rapply(x, b64, ..., how = "replace")
+}
+d64.list <- function(x, ...) {
+  rapply(x, d64, ..., how = "replace")
+}
 	
+.newProgressbar <- function(ticks, callback, skim=5, response=FALSE, parallel=FALSE) {
+  # This closure normally returns a progressbar function that expects to be called "ticks" times.
+  # If used in a parallel environment it returns a structure to the master process which is
+  # updated in the separate processes by .updateParallelProgressbar().
+  
 	ticks <- suppressWarnings(as.integer(ticks))
 	if (is.na(ticks) || ticks <= 0)
 		stop("Invalid value provided to 'ticks', expecting positive integer")
@@ -1114,6 +1239,9 @@ saveImage <- function(plotName, format, height, width){
 	
 	if (! is.numeric(skim) || skim < 0 || skim >= 100)
 		stop("Invalid value provided to 'skim', expecting numeric value in the range of 0-99")
+	
+	if (parallel)
+		response <- TRUE
 	
 	progress <- 0
 	tick <- (100 - skim) / ticks
@@ -1139,5 +1267,69 @@ saveImage <- function(plotName, format, height, width){
 	
 	updater() # create empty progressbar
 	
+	if (parallel)
+		return(structure(list(updater=updater), class="JASP-progressbar"))
+	
 	return(updater)
+}
+
+# Update the progressbar in a parallel environment.
+# It requires the progressbar from .newProgressbar() (this structure itself remains in the master process); 
+# if the callback indicates a change in UI options the cluster is stopped with a warning.
+.updateParallelProgressbar <- function(progressbar, cluster, results=NULL, complete=FALSE) {
+	
+	if (! inherits(progressbar, "JASP-progressbar"))
+		stop("Object provided in 'progressbar' is not of class JASP progressbar")
+	
+	if (! inherits(cluster, "cluster"))
+		stop("Object provided in 'cluster' is not of class cluster")
+	
+	response <- progressbar$updater(results, complete)
+	
+	if (! .shouldContinue(response)) {
+		snow::stopCluster(cluster)
+		stop("Cancelled by callback")
+	}
+	
+	invisible(response)
+}
+
+# Create a cluster to perform parallel computations. 
+# You can pass it objects (and a progressbar) to be exported to the cluster.
+# To be used in combination with the foreach package.
+.makeParallelSetup <- function(pb=NULL, objs=NULL, env=NULL) {
+	
+	nCores <- parallel::detectCores(TRUE) - 1
+	if (is.na(nCores) || nCores == 0)
+		nCores <- 1
+		
+	cl <- snow::makeSOCKcluster(nCores)
+	doSNOW::registerDoSNOW(cl)
+	if (! is.null(objs) && ! is.null(env))
+		snow::clusterExport(cl, objs, envir=env)
+	
+	dopar <- foreach::`%dopar%`
+	
+	progress <- NULL
+	if (! is.null(pb))
+		progress <- function() .updateParallelProgressbar(pb, cl)
+	
+	stopCluster <- substitute(try(snow::stopCluster(cl), silent=TRUE))
+		
+	return(list(cl=cl, progress=list(progress=progress), dopar=dopar, stopCluster=stopCluster))
+}
+
+# Compatibility for linux users with R < 3.3
+if (exists("R.version") && isTRUE(R.version$minor < 3.3)) {
+
+	startsWith <- function(x, prefix) {
+		start <- substring(x, 1, nchar(prefix))
+		return(start == prefix)
+	}
+
+	endsWith <- function(x, suffix) {
+		end <- substring(x, nchar(x) - nchar(suffix) + 1)
+		return(end == suffix)
+	}
+
 }

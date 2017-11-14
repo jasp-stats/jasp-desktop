@@ -16,6 +16,7 @@
 #
 
 TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+  # 
 
 	dependents <- unlist(options$variables)
 
@@ -55,26 +56,29 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	meta <- list()
 
 	meta[[1]] <- list(name="ttest", type="table")
-	meta[[2]] <- list(name="descriptives", type="object", meta=list(list(name="descriptivesTable", type="table"), list(name = "descriptivesPlots", type = "collection", meta="image")))
-	meta[[3]] <- list(name="inferentialPlots", type="collection", meta=list(	name="plotGroups", type="object",
-																	meta=list(
-																				list(name="PriorPosteriorPlot", type="image"),
-																				list(name="BFrobustnessPlot", type="image"),
-																				list(name="BFsequentialPlot", type="image")
-																				)))
-
+	meta[[2]] <- list(name="descriptives", type="object", 
+	                  meta=list(list(name="descriptivesTable", type="table"), 
+	                            list(name = "descriptivesPlots", type = "collection", meta="image")
+	                  )
+	)
+	
+	meta[[3]] <- list(name="inferentialPlots", type="collection", 
+	                  meta=list(name="plotGroups", type="object",
+	                            meta=list(list(name="PriorPosteriorPlot", type="image"),
+	                                      list(name="BFrobustnessPlot", type="image"),
+	                                      list(name="BFsequentialPlot", type="image")
+	                            )
+	                  )
+	)
+	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian Independent Samples T-Test"
 
-
 	state <- .retrieveState()
-
 	diff <- NULL
 
 	if (!is.null(state)) {
-
 		diff <- .diff(options, state$options)
-
 	}
 
 	ttest.results <- .ttestBayesianIndependentSamplesTTest(dataset, options, perform, state=state, diff=diff)
@@ -165,7 +169,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 
 				} else {
-
 					descriptivesPlot <- list()
 
 					descriptivesPlot[["title"]] <- variable
@@ -804,13 +807,13 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		BFH1H0 <- TRUE
 
 		if (options$hypothesis == "groupsNotEqual"){
-			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="Log(\u2009\u0042\u0046\u2081\u2080\u2009)")
+			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="Log(\u0042\u0046\u2081\u2080)")
 		}
 		if (options$hypothesis == "groupOneGreater"){
-			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="Log(\u2009\u0042\u0046\u208A\u2080\u2009)")
+			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="Log(\u0042\u0046\u208A\u2080)")
 		}
 		if (options$hypothesis == "groupTwoGreater"){
-			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="Log(\u2009\u0042\u0046\u208B\u2080\u2009)")
+			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="Log(\u0042\u0046\u208B\u2080)")
 		}
 	}
 

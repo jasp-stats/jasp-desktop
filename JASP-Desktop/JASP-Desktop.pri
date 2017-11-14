@@ -55,6 +55,7 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/correlationpartialform.cpp \
         $$PWD/ribbons/ribbonwidget.cpp \
         $$PWD/ribbons/ribbonsem.cpp \
+        $$PWD/ribbons/ribbonnetworkanalysis.cpp \
         $$PWD/ribbons/ribbonanalysis.cpp \
         $$PWD/ribbons/ribbonhome.cpp \
         $$PWD/widgets/boundtextedit.cpp \
@@ -181,6 +182,7 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.cpp \
+        $$PWD/analysisforms/Network/networkanalysisform.cpp \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.cpp \
 		$$PWD/simplecrypt.cpp \
 		$$PWD/importers/convertedstringcontainer.cpp \
@@ -190,7 +192,10 @@ SOURCES += $$PWD/main.cpp \
 		$$PWD/importers/csvimportcolumn.cpp \
 		$$PWD/preferencesdialog.cpp \
     $$PWD/analysisforms/regressionlogisticform.cpp \
-    $$PWD/analysisforms/multinomialtestform.cpp
+    $$PWD/analysisforms/multinomialtestform.cpp \
+    $$PWD/ribbons/ribbonmeta_analysis.cpp \
+    $$PWD/analysisforms/classicalmetaanalysisform.cpp \
+    $$PWD/module.cpp
 
 HEADERS  += \
         $$PWD/aboutdialog.h \
@@ -250,6 +255,7 @@ HEADERS  += \
         $$PWD/analysisforms/correlationpartialform.h \
         $$PWD/ribbons/ribbonwidget.h \
         $$PWD/ribbons/ribbonsem.h \
+        $$PWD/ribbons/ribbonnetworkanalysis.h \
         $$PWD/ribbons/ribbonanalysis.h \
         $$PWD/ribbons/ribbonhome.h \
         $$PWD/widgets/boundtextedit.h \
@@ -375,6 +381,7 @@ HEADERS  += \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.h \
+        $$PWD/analysisforms/Network/networkanalysisform.h \
 		$$PWD/simplecrypt.h \
 		$$PWD/simplecryptkey.h \
 		$$PWD/importers/convertedstringcontainer.h \
@@ -395,7 +402,10 @@ HEADERS  += \
 		$$PWD/importers/ods/odsxmlhandler.h \
 		$$PWD/importers/ods/odsxmlmanifesthandler.h \
     $$PWD/analysisforms/regressionlogisticform.h \
-    $$PWD/analysisforms/multinomialtestform.h
+    $$PWD/analysisforms/multinomialtestform.h \
+    $$PWD/ribbons/ribbonmeta_analysis.h \
+    $$PWD/analysisforms/classicalmetaanalysisform.h \
+    $$PWD/module.h
 
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \
@@ -422,6 +432,7 @@ FORMS += \
         $$PWD/ribbons/ribbonhome.ui \
         $$PWD/ribbons/ribbonsem.ui \
         $$PWD/ribbons/ribbonanalysis.ui \
+        $$PWD/ribbons/ribbonnetworkanalysis.ui \
         $$PWD/analysisforms/ttestbayesianindependentsamplesform.ui \
         $$PWD/analysisforms/ttestbayesianpairedsamplesform.ui \
         $$PWD/analysisforms/ancovabayesianform.ui \
@@ -438,6 +449,7 @@ FORMS += \
         $$PWD/analysisforms/binomialtestbayesianform.ui \
         $$PWD/analysisforms/bffromtform.ui \
         $$PWD/ribbons/ribbonsummarystatistics.ui \
+        $$PWD/ribbons/ribbonmeta_analysis.ui \
         $$PWD/variableswidget.ui \
         $$PWD/backstage/authwidget.ui\
         $$PWD/aboutdialog.ui \
@@ -454,8 +466,10 @@ FORMS += \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.ui \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.ui \
+	$$PWD/analysisforms/Network/networkanalysisform.ui \
     $$PWD/analysisforms/regressionlogisticform.ui \
-    $$PWD/analysisforms/multinomialtestform.ui
+    $$PWD/analysisforms/multinomialtestform.ui \
+    $$PWD/analysisforms/classicalmetaanalysisform.ui
 
 RESOURCES += \
         $$PWD/backstage/backstage.qrc \
