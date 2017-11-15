@@ -22,7 +22,7 @@
         {
             "name": "numberOfFactors",
             "type": "Integer",
-            "default": 1,
+						"default": 1,
 						"min": 1
         },
         {

@@ -920,14 +920,15 @@ as.list.footnotes <- function(footnotes) {
       result[[item]] <- state[[item]]
       next
     }
-    
+
     change <- .optionsChanged(state$options, options, key[[item]])
+
     if (change == FALSE) {
       result[[item]] <- state[[item]]
 		}
     
   }
-	
+
 	if (length(names(result)) > 0) {
 		return(result)
 	}
