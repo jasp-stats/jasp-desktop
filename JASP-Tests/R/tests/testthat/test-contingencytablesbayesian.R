@@ -88,17 +88,17 @@ test_that("Log Odds Ratio table results match", {
   )
 })
 
-test_that("Log Odds Ratio Plot matches", {
-  set.seed(0)
-  options <- JASPTools::analysisOptions("ContingencyTablesBayesian")
-  options$rows <- "facExperim"
-  options$columns <- "contBinom"
-  options$plotPosteriorOddsRatio <- TRUE
-  options$plotPosteriorOddsRatioAdditionalInfo <- TRUE
-  results <- JASPTools::run("ContingencyTablesBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "log-odds-ratio", dir="ContingencyTablesBayesian")
-})
+# test_that("Log Odds Ratio Plot matches", {
+#   set.seed(0)
+#   options <- JASPTools::analysisOptions("ContingencyTablesBayesian")
+#   options$rows <- "facExperim"
+#   options$columns <- "contBinom"
+#   options$plotPosteriorOddsRatio <- TRUE
+#   options$plotPosteriorOddsRatioAdditionalInfo <- TRUE
+#   results <- JASPTools::run("ContingencyTablesBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "log-odds-ratio", dir="ContingencyTablesBayesian")
+# })
 
 test_that("Analysis handles errors", {
   options <- JASPTools::analysisOptions("ContingencyTablesBayesian")
