@@ -657,10 +657,9 @@
              <height>160</height>
             </size>
            </property>
-           <layout class="QGridLayout" name="gridLayout_9"/>
           </widget>
          </item>
-         <item row="1" column="0">
+         <item row="2" column="0">
           <widget class="GroupBox" name="groupPostHocOptions">
            <property name="title">
             <string>Correction</string>
@@ -695,6 +694,13 @@
              </widget>
             </item>
            </layout>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="BoundCheckBox" name="postHocTestEffectSize">
+           <property name="text">
+            <string>Effect size</string>
+           </property>
           </widget>
          </item>
         </layout>
@@ -1139,14 +1145,14 @@
                <item row="2" column="0">
                 <widget class="QRadioButton" name="_2standardError">
                  <property name="text">
-                  <string>Standard error</string>
+                  <string>Standard &amp;error</string>
                  </property>
                 </widget>
                </item>
                <item row="0" column="0">
                 <widget class="QRadioButton" name="_1confidenceInterval">
                  <property name="text">
-                  <string>Confidence interval</string>
+                  <string>&amp;Confidence interval</string>
                  </property>
                 </widget>
                </item>
@@ -1548,11 +1554,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -1570,19 +1571,19 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
-   <class>boundSingleItemView</class>
+   <class>BoundListView</class>
    <extends>QListView</extends>
-   <header>widgets/boundsingleitemview.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>AnovaModelWidget</class>
@@ -1591,9 +1592,10 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>BoundComboBox</class>
-   <extends>QComboBox</extends>
-   <header>widgets/boundcombobox.h</header>
+   <class>BoundAssignWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/boundassignwidget.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>BoundTableView</class>
@@ -1601,12 +1603,60 @@
    <header>widgets/boundtableview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundAssignWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/boundassignwidget.h</header>
-   <container>1</container>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>boundSingleItemView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundsingleitemview.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>listAvailableFields</tabstop>
+  <tabstop>buttonAssignDependent</tabstop>
+  <tabstop>dependent</tabstop>
+  <tabstop>buttonAssignFixed</tabstop>
+  <tabstop>fixedFactors</tabstop>
+  <tabstop>buttonAssignRandom</tabstop>
+  <tabstop>randomFactors</tabstop>
+  <tabstop>buttonAssignWLSWeights</tabstop>
+  <tabstop>wlsWeights</tabstop>
+  <tabstop>expanderModel</tabstop>
+  <tabstop>sumOfSquares</tabstop>
+  <tabstop>expanderAssumptions</tabstop>
+  <tabstop>homogeneityTests</tabstop>
+  <tabstop>qqPlot</tabstop>
+  <tabstop>expanderContrasts</tabstop>
+  <tabstop>contrasts</tabstop>
+  <tabstop>expanderPosthoc</tabstop>
+  <tabstop>postHocTestsTukey</tabstop>
+  <tabstop>postHocTestsScheffe</tabstop>
+  <tabstop>postHocTestsBonferroni</tabstop>
+  <tabstop>postHocTestsHolm</tabstop>
+  <tabstop>expanderDescriptivesPlot</tabstop>
+  <tabstop>plotVariables</tabstop>
+  <tabstop>buttonAssignHorizontalAxis</tabstop>
+  <tabstop>plotHorizontalAxis</tabstop>
+  <tabstop>buttonAssignSeperateLines</tabstop>
+  <tabstop>plotSeparateLines</tabstop>
+  <tabstop>buttonAssignSeperatePlots</tabstop>
+  <tabstop>plotSeparatePlots</tabstop>
+  <tabstop>plotErrorBars</tabstop>
+  <tabstop>_1confidenceInterval</tabstop>
+  <tabstop>confidenceIntervalInterval</tabstop>
+  <tabstop>_2standardError</tabstop>
+  <tabstop>expanderOptions</tabstop>
+  <tabstop>marginalMeansCompareMainEffects</tabstop>
+  <tabstop>marginalMeansCIAdjustment</tabstop>
+  <tabstop>descriptives</tabstop>
+  <tabstop>effectSizeEstimates</tabstop>
+  <tabstop>effectSizeEtaSquared</tabstop>
+  <tabstop>effectSizePartialEtaSquared</tabstop>
+  <tabstop>effectSizeOmegaSquared</tabstop>
+  <tabstop>VovkSellkeMPR</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

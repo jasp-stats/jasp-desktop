@@ -30,7 +30,7 @@
 			"type": "Boolean"
 		},
 		{
-			"default": false,
+			"default": true,
 			"name": "plotPriorAndPosteriorAdditionalInfo",
 			"type": "Boolean"
 		},

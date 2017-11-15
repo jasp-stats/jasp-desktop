@@ -44,6 +44,21 @@ public:
 
 	static void remove(std::vector<std::string> &target, const std::vector<std::string> &toRemove);
 	static void sleep(int ms);
+
+	static const std::string emptyValue;
+	static const std::vector<std::string>& getEmptyValues() {return _currentEmptyValues;}
+	static const std::vector<std::string>& getDefaultEmptyValues() {return _defaultEmptyValues;}
+	static const std::vector<double>& getDoubleEmptyValues() {return _currentDoubleEmptyValues;}
+	static void setEmptyValues(const std::vector<std::string>& emptyvalues);
+
+	static bool getIntValue(const std::string& value, int& intValue);
+	static bool getIntValue(const double& value, int& intValue);
+	static bool getDoubleValue(const std::string& value, double& doubleValue);
+
+private:
+	static std::vector<std::string> _currentEmptyValues;
+	static const std::vector<std::string> _defaultEmptyValues;
+	static std::vector<double> _currentDoubleEmptyValues;
 };
 
 #endif // UTILS_H

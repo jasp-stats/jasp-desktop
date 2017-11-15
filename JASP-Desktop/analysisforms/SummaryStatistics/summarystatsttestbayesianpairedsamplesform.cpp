@@ -24,6 +24,9 @@ SummaryStatsTTestBayesianPairedSamplesForm::SummaryStatsTTestBayesianPairedSampl
 	ui(new Ui::SummaryStatsTTestBayesianPairedSamplesForm)
 {
 	ui->setupUi(this);
+
+    // collapse more advanced options widget by default
+    ui->subjectivePriors->hide();
 }
 
 SummaryStatsTTestBayesianPairedSamplesForm::~SummaryStatsTTestBayesianPairedSamplesForm()

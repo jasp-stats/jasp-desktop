@@ -165,6 +165,8 @@
   checks[['variance']] <- list(callback=.checkVariance, addGroupingMsg=TRUE)
   checks[['observations']] <- list(callback=.checkObservations, addGroupingMsg=TRUE)
   checks[['varCovMatrix']] <- list(callback=.checkVarCovMatrix, addGroupingMsg=FALSE)
+  checks[['limits']] <- list(callback=.checkLimits, addGroupingMsg=FALSE)
+  checks[['varCovData']] <- list(callback=.checkVarCovData, addGroupingMsg=TRUE)
   
   args <- c(list(dataset=dataset), list(...))
   errors <- list(message=NULL)
@@ -255,9 +257,14 @@
     if (hasNamespace && length(funcArgs) > 0) {
       callingArgs <- args[names(funcArgs)]
       names(callingArgs) <- gsub(paste0(type[[i]], '.'), '', names(callingArgs), fixed=TRUE)
-      checkResult <- base::do.call(check[['callback']], callingArgs)
+      checkResult <- try(base::do.call(check[['callback']], callingArgs))
     } else {
-      checkResult <- check[['callback']]()
+      checkResult <- try(check[['callback']]())
+    }
+    
+    # See if the check itself terminated with an exception (oh dear).
+    if (isTryError(checkResult)) {
+      next
     }
     
     # If we don't have an error we can go to the next check.
@@ -521,9 +528,69 @@
   }
   
   # Positive-definite?
-  if (posdef && any(round(eigen(dataset)$values,10) < 0)){
+  if (posdef && any(round(eigen(dataset)$values,10) <= 0)){
     return(list(error=TRUE,reason="Matrix is not positive-definite"))
   }
   
   return(list(error=FALSE, reason = ""))
 }
+
+
+.checkLimits <- function(dataset, target, min=-Inf, max=Inf) {
+  # Check if the variable is between certain limits
+  # Args:
+  #   dataset: JASP dataset.
+  #   target: String vector indicating the target variables.
+  #   min: Number indicating minimum allowed (inclusive)
+  #   max: Number indicating maximum allowed (inclusive)
+  
+  result <- list(error=FALSE, errorVars=NULL)
+
+  for (v in target) {
+    
+    rangeOfVar <- range(na.omit(dataset[[.v(v)]]))
+    
+    if (rangeOfVar[1] < min || rangeOfVar[2] > max) {
+      result$error <- TRUE
+      result$errorVars <- c(result$errorvars, v)
+    }
+    
+  }
+  return(result)
+}
+
+.checkVarCovData <- function(dataset, target, corFun = NULL, grouping=NULL, corArgs = NULL, ...) {
+  # Check if the matrix returned by corFun is positive definite. 
+  # internally uses .checkVarCovMatrix
+  # Args:
+  #   dataset: JASP dataset.
+  #   target: String vector indicating the target variables.
+  #   corFun: a function that calculates a correlation matrix or covariance matrix (e.g. cor or cov are recommended)
+  #   corArgs: more arguments to corFun, i.e. use = "pairwise".
+  #   grouping: String vector indicating the grouping variables.
+  
+  result <- list(error=FALSE, errorVars=NULL)
+  
+  if (is.null(corFun))
+    corFun <- stats::cor
+
+  if (is.null(grouping)) {
+    dataset <- list(dataset)
+  } else {
+    groupingData <- dataset[[.v(grouping)]]
+    dataset[[.v(grouping)]] <- NULL
+    dataset <- split(dataset, groupingData)
+  }
+  for (d in seq_along(dataset)) {
+    cormat <- do.call(corFun, c(list(dataset[[d]]), corArgs))
+    err <- .checkVarCovMatrix(cormat, nrow = FALSE, symm = FALSE)
+    result$error <- err$error
+    result$message <- result$reason
+    if (result$error) # stop at first error
+      break
+  }
+  
+  return(result)
+}
+
+

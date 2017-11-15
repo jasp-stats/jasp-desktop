@@ -24,6 +24,7 @@ QMAKE_CXXFLAGS += -Wno-deprecated-declarations
 macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 macx:QMAKE_CXXFLAGS += -stdlib=libc++
+macx:QMAKE_CXXFLAGS += -DBOOST_INTERPROCESS_SHARED_DIR_FUNC
 
 windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 

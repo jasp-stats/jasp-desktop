@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2017 University of Amsterdam
+# Copyright (C) 2013-2017 University of Amsterdam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 							)
 	bf.title <- bftype$bftitle
 	BFH1H0 <- bftype$BFH1H0
-	
+
 	hypothesis.variables <- .hypothesisType.summarystats.ttest.paired(options$hypothesis)
 	oneSided <- hypothesis.variables$oneSided
 
@@ -116,16 +116,21 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 
 	table <- list()
 	table[["title"]] <- "Bayesian Paired Samples T-Test"
-	table[["citation"]] <- list(
-		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
-		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
+	if (options$effectSizeStandardized == "default") {
+	  table[["citation"]] <- list(
+	    "Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
+	    "Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
+	} else if (options$effectSizeStandardized == "informative") {
+	  table[["citation"]] <- list(
+	    "Gronau, Q. F., Ly, A., & Wagenmakers, E.-J. (2017). Informed Bayesian T-Tests. Manuscript submitted for publication and uploaded to arXiv: https://arxiv.org/abs/1704.02479")
+	}
 	table[["footnotes"]] <- as.list(footnotes)
 	table[["schema"]] <- list(fields = fields)
 	table[["data"]] <- list(rowsTTestBayesianPairedSamples)
 
 	results <- list()
 	results[[".meta"]] <- meta
-	results[["title"]] <- "Bayesian T-Test"
+	results[["title"]] <- "Bayesian Paired Samples T-Test"
 	results[["table"]] <- table
 
 	if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness) {
@@ -182,10 +187,12 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 	status <- NULL
 
 	# If available from previous state, fetch it
-	if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
-			(is.list(diff) && (diff$bayesFactorType == FALSE && diff$tStatistic == FALSE &&
-			diff$n1Size == FALSE && diff$priorWidth == FALSE && diff$hypothesis == FALSE))) &&
-			!is.null(state$bayesFactorObject)) {
+	# if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
+	# 		(is.list(diff) && (diff$bayesFactorType == FALSE && diff$tStatistic == FALSE &&
+	# 		diff$n1Size == FALSE && diff$priorWidth == FALSE && diff$hypothesis == FALSE))) &&
+	# 		!is.null(state$bayesFactorObject)) {
+	if (!is.null(state) && !is.null(diff) && !is.null(state$bayesFactorObject) &&
+	    !any(unlist(diff))) {
 
 		rowsTTestBayesianPairedSamples <- state$rowsTTestBayesianPairedSamples
 		bayesFactorObject <- state$bayesFactorObject
@@ -197,33 +204,31 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 		# if state of analysis is run
 		if (run) {
 			if (status$ready) {
-				bayesFactorObject <- .calculateBF.summarystats.ttest(
-																options = options,
-																state = state,
-																diff = diff,
-																hypothesis.variables = hypothesis.variables
-															)
+				# bayesFactorObject <- .calculateBF.summarystats.ttest(
+				# 												options = options,
+				# 												state = state,
+				# 												diff = diff,
+				# 												hypothesis.variables = hypothesis.variables
+				# 											)
 
-				if (options$bayesFactorType == "BF10") {
-					BF <- .clean(exp(bayesFactorObject$bf))
-				} else if(options$bayesFactorType == "BF01") {
-					BF <- .clean(1/exp(bayesFactorObject$bf))
-				} else {
-					BF <- .clean(bayesFactorObject$bf)
-				}
+				## Compute the statistics
 
-				rowsTTestBayesianPairedSamples$BF <- BF
-				rowsTTestBayesianPairedSamples$errorEstimate <- .clean(bayesFactorObject$properror)
-				
+				bayesFactorObject <- .generalSummaryTtestBF(options = options, paired=TRUE)
+
+				## Format the statistics for output
+
+				bf <- bayesFactorObject$bf
+				BF <- switch(options$bayesFactorType, BF10=bf, BF01=1/bf, log(bf))
+
 				allPValues <- bayesFactorObject$pValue
-				
-				if (hypothesis.variables$oneSided == FALSE){
-				  rowsTTestBayesianPairedSamples$pValue <- .clean(allPValues$twoSided)
-				} else if (hypothesis.variables$oneSided == "left") {
-				  rowsTTestBayesianPairedSamples$pValue <- .clean(allPValues$minSided)
-				} else if (hypothesis.variables$oneSided == "right") {
-				  rowsTTestBayesianPairedSamples$pValue <- .clean(allPValues$plusSided)
-				}
+				pValue <- switch(as.character(hypothesis.variables$oneSided), left=allPValues$minSided,
+				                 right=allPValues$plusSided, allPValues$twoSided)
+
+				## Store statistics in table row ouput structure
+
+				rowsTTestBayesianPairedSamples$BF <- .clean(BF)
+				rowsTTestBayesianPairedSamples$errorEstimate <- .clean(bayesFactorObject$properror)
+				rowsTTestBayesianPairedSamples$pValue <- .clean(pValue)
 			}
 		}
 	}

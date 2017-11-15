@@ -1076,6 +1076,84 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 	}
 })
 
+JASPWidgets.Progressbar = function() {
+	
+	var containerProgressbar = $("<div class='jasp-progressbar-container'></div>");
+	
+	this._get = function(attr) {
+		var $bar = containerProgressbar.find(".jasp-progressbar");
+		if (typeof attr !== "undefined") {
+			return $bar.attr(attr);
+		}
+		return $bar;
+	}
+	
+	this._update = function(attr, value) {
+		var $bar = this._get();
+		if ($bar.length > 0) {
+			if (attr == "value" && value > 100) {
+				containerProgressbar.find(".jasp-progressbar").attr("value", 100);
+			} else {
+				containerProgressbar.find(".jasp-progressbar").attr(attr, value);
+			}
+		}
+	}
+	
+	this._create = function(value, id) {
+		var $bar = this._get();
+		if ($bar.length == 0) {
+			$bar = $("<progress class=''></progress>");
+			$bar.attr({
+				class: "jasp-progressbar",
+				id: "progressbar-" + id,
+				value: value,
+				max: 100
+			})
+			containerProgressbar.append($bar);
+		}
+	}
+	
+	this._reset = function() {
+		var $bar = this._get();
+		if ($bar.length > 0)
+		containerProgressbar = $("<div class='jasp-progressbar-container'></div>");
+		//containerProgressbar.find(".jasp-progressbar").remove();
+	}
+	
+	this.init = function(value, id, status) {
+		var haveProgressbar = this._get().length > 0;
+		if (this.status() == "progress-complete" || (status != "running" && status != "complete")) {
+			this._reset();
+		} else if (status == "running") {
+			if (! haveProgressbar && value >= 0) {
+				this._create(value, id);
+			} else if (value >= 0) {
+				this._update("value", value);
+			} else {
+				return(containerProgressbar)
+			}
+		} else if (status == "complete" && haveProgressbar) {
+			this._update("value", 100);
+		} else {
+			this._reset();
+		}
+		return(containerProgressbar)
+	}
+	
+	this.status = function() {
+		var status = "progress-init";
+		if (this._get().length > 0) {
+			if (this._get("value") >= 100) {
+				status = "progress-complete";
+			} else {
+				status = "progress-running";
+			}
+		}
+		return status;
+	}
+	
+}
+
 JASPWidgets.ActionView = JASPWidgets.View.extend({
 	initialize: function () {
 		this.$el.addClass('jasp-hide');

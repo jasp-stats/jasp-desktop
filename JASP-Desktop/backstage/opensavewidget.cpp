@@ -34,7 +34,6 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	setLayout(layout);
 
 	_tabWidget = new VerticalTabWidget(this);
-	_tabWidget->setMaximumWidth(800);
 
 	QWidget *webWidget = new QWidget(this);
 
@@ -45,19 +44,22 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	_fsmCurrent  = new FSBMCurrent(this);
 	_fsmExamples = new FSBMExamples(this);
 
-	_bsRecent = new FSBrowser(_tabWidget);
+	// Recent Files 
+	_bsRecent = new FSBrowser(_tabWidget, FSBrowser::BrowseRecentFiles);
 	_bsRecent->setFSModel(_fsmRecent);
 
+	// Recent Folders 
 	_bsCurrent = new FSBrowser(_tabWidget, FSBrowser::BrowseCurrent);
 	_bsCurrent->setFSModel(_fsmCurrent);
-
 	_bsComputer = new BackstageComputer(_tabWidget);
 
+	// OSF
 	_bsOSF = new BackstageOSF(_tabWidget);
 
-	_bsExamples = new FSBrowser(_tabWidget);
+	// Examples
+	_bsExamples = new FSBrowser(_tabWidget,FSBrowser::BrowseExamples);
 	_bsExamples->setFSModel(_fsmExamples);
-
+	
 	_tabWidget->addTab(_bsRecent, "Recent");
 	_tabWidget->addTab(_bsCurrent, "Current");
 	_tabWidget->addTab(_bsComputer, "Computer");

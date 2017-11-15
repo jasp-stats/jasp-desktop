@@ -19,10 +19,8 @@
 #include "csvimportcolumn.h"
 #include "csv.h"
 #include <boost/foreach.hpp>
-#include <boost/lexical_cast.hpp>
 
 using namespace std;
-using boost::lexical_cast;
 
 CSVImporter::CSVImporter(DataSetPackage *packageData) : Importer(packageData)
 {
@@ -31,7 +29,7 @@ CSVImporter::CSVImporter(DataSetPackage *packageData) : Importer(packageData)
 
 ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void(const string &, int)> progressCallback)
 {
-	ImportDataSet* result = new ImportDataSet();
+	ImportDataSet* result = new ImportDataSet(this);
 	vector<string> colNames;
 	CSV csv(locator);
 	csv.open();
@@ -66,7 +64,7 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void
 			}
 		}
 
-		importColumns.push_back(new CSVImportColumn(colName));
+		importColumns.push_back(new CSVImportColumn(result, colName));
 	}
 
 	unsigned long long progress;
@@ -113,35 +111,9 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void
 
 void CSVImporter::fillSharedMemoryColumn(ImportColumn *importColumn, Column &column)
 {
-	// try to make the column nominal
-
-	bool success = true;
-	set<int> uniqueValues;
-	std::vector<int> intValues;
-	intValues.reserve(importColumn->size());
 	CSVImportColumn *csvColumn = dynamic_cast<CSVImportColumn *>(importColumn);
+	const vector<string> &values = csvColumn->getValues();
 
-	if (csvColumn->convertToInt(intValues, uniqueValues))
-	{
-		if (uniqueValues.size() <= 24)
-		{
-			column.setColumnAsNominalOrOrdinal(intValues, uniqueValues);
-			return;
-		}
-	}
-
-	// try to make the column scale
-	success = true;
-	vector<double> doubleValues;
-	doubleValues.reserve(importColumn->size());
-
-	if (csvColumn->convertToDouble(doubleValues))
-	{
-		column.setColumnAsScale(doubleValues);
-		return;
-	}
-
-	// if it can't be made nominal numeric or scale, make it nominal-text
-	column.setColumnAsNominalString(csvColumn->getValues());
+	fillSharedMemoryColumnWithStrings(values, column);
 }
 

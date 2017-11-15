@@ -39,6 +39,12 @@
   "Number of observations {{observations.amount}} in {{variables}}"  
   m$error$levene <- 
   "Cannot compute statistic reliably: number of observations {{observations.amount}} in {{variables}}"
+  m$error$limits <-
+  "Values in {{variables}} outside interval [{{limits.min}}, {{limits.max}}]"
+  m$error$varCovMatrix <- 
+  "Dataset is not a proper variance-covariance matrix. Please load only a positive definite symmetrical matrix as your dataset."
+  m$error$varCovData <- 
+  "The variance-covariance matrix of the supplied data is not positive-definite. Please check if variables have many missings observations or are collinear"
   
   ### Footnotes
   m$footnote$leveneSign <- 
@@ -48,4 +54,3 @@
   return(m[[class]][[type]])
 
 }
-

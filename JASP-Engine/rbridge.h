@@ -42,7 +42,7 @@
  * application, and the R analyses
  */
 
-	typedef boost::function<std::string (const std::string &)> RCallback;
+	typedef boost::function<std::string (const std::string &, int progress)> RCallback;
 
 	void rbridge_init();
 	void rbridge_setFileNameSource(boost::function<void(const std::string &, std::string &, std::string &)> source);

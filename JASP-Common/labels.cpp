@@ -53,12 +53,12 @@ int Labels::add(const std::string &display)
 	return add(_labels.size(), display);
 }
 
-int Labels::add(int index, const std::string &display)
+int Labels::add(int key, const std::string &display)
 {
-	Label label(display, index);
+	Label label(display, key);
 	_labels.push_back(label);
 
-	return index;
+	return key;
 }
 
 void Labels::syncInts(map<int, string> &values)
@@ -118,12 +118,12 @@ map<string, int> Labels::syncStrings(const vector<string> &new_values, const map
 	map<string, int> result;
 
 
-	int maxLabelIndex = 0;
+	int maxLabelKey = 0;
 	for (Labels::const_iterator it = begin(); it != end(); /*++it*/)
 	{
 		const Label &label = *it;
-		if (label.value() > maxLabelIndex)
-			maxLabelIndex = label.value();
+		if (label.value() > maxLabelKey)
+			maxLabelKey = label.value();
 
 		string value = label.text();
 
@@ -147,9 +147,9 @@ map<string, int> Labels::syncStrings(const vector<string> &new_values, const map
 	for (vector<string>::iterator it = valuesToAdd.begin(); it != valuesToAdd.end(); ++it)
 	{
 		string value = *it;
-		maxLabelIndex++;
-		add(maxLabelIndex,value);
-		result[value] = maxLabelIndex;
+		maxLabelKey++;
+		add(maxLabelKey,value);
+		result[value] = maxLabelKey;
 	}
 
 	for (LabelVector::iterator it = _labels.begin(); it != _labels.end(); ++it)
@@ -168,7 +168,19 @@ map<string, int> Labels::syncStrings(const vector<string> &new_values, const map
 	return result;
 }
 
-map<int, string> &Labels::getOrgStringValues()
+std::set<int> Labels::getIntValues()
+{
+	std::set<int> result;
+	for (LabelVector::const_iterator it = _labels.begin(); it != _labels.end(); ++it)
+	{
+		const Label &label = *it;
+		int value = label.value();
+		result.insert(value);
+	}
+	return result;
+}
+
+map<int, string> &Labels::getOrgStringValues() const
 {
 	return Labels::_orgStringValues[_id];
 }
@@ -179,7 +191,7 @@ void Labels::setOrgStringValues(int key, std::string value)
 	orgStringValues[key] = value;
 }
 
-const Label &Labels::labelFor(int index) const
+const Label &Labels::getLabelObjectFromKey(int index) const
 
 {
 	BOOST_FOREACH(const Label &label, _labels)
@@ -223,7 +235,7 @@ void Labels::_setNewStringForLabel(Label &label, const string &display)
 	label.setLabel(display);
 }
 
-string Labels::_getValueFromLabel(const Label &label)
+string Labels::_getValueFromLabel(const Label &label) const
 {
 	if (label.hasIntValue())
 	{
@@ -242,9 +254,9 @@ string Labels::_getValueFromLabel(const Label &label)
 	}
 }
 
-string Labels::getValueFromIndex(int index)
+string Labels::getValueFromKey(int key) const
 {
-	const Label &label = labelFor(index);
+	const Label &label = getLabelObjectFromKey(key);
 	return _getValueFromLabel(label);
 }
 

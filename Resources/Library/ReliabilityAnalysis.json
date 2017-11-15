@@ -82,5 +82,18 @@
           "default": "excludeCasesListwise",
           "type": "List"
         },
+		{
+        	"name": "confAlpha",
+        	"type": "Boolean",
+			"default" : false
+        },
+		{
+        	"name": "confAlphaLevel",
+			"type": "Number",
+        	"format": "%",
+			"max": 0.999,
+			"min": 0.000,
+			"value": 0.950
+        },
 	]
 }

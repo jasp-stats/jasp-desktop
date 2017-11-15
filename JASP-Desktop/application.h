@@ -29,6 +29,7 @@ class Application : public QApplication
 	Q_OBJECT
 public:
 	explicit Application(int &argc, char **argv);
+	~Application();
 
 	virtual bool notify(QObject *receiver, QEvent *event) OVERRIDE;
 	virtual bool event(QEvent *event) OVERRIDE;

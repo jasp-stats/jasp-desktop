@@ -24,6 +24,8 @@
 #include <QMessageBox>
 #include <QFile>
 #include <QTextStream>
+#include <QDesktopServices>
+#include <QDebug>
 #include "appinfo.h"
 
 AboutDialog::AboutDialog(QWidget *parent) :
@@ -31,31 +33,38 @@ AboutDialog::AboutDialog(QWidget *parent) :
 	ui(new Ui::AboutDialog)
 {
 	ui->setupUi(this);
-
-	_aboutWebView = new QWebView(this);
-	_aboutWebView->hide();
+	
 	m_network_manager = new QNetworkAccessManager();
 	m_pBuffer = new QByteArray();
-
-	// Disable maximize option dialog
-	setWindowFlags(Qt::Tool | Qt::WindowTitleHint | Qt::WindowCloseButtonHint /* | Qt::WindowMaximizeButtonHint */ | Qt::CustomizeWindowHint);
-
+	
+	setWindowFlags(Qt::Tool | Qt::WindowTitleHint | Qt::WindowCloseButtonHint | Qt::WindowMaximizeButtonHint | Qt::CustomizeWindowHint);
+	
 	//About core informataion with current version info
-	_aboutWebView->setUrl((QUrl(QString("qrc:///core/about.html"))));
+	ui->aboutView->setUrl((QUrl(QString("qrc:///core/about.html"))));
 
-	//Check for new update information
-	QUrl url("https://jasp-stats.org/download/");
-	QNetworkRequest request(url);
-	m_network_reply = m_network_manager->get(request);
-
-	connect(_aboutWebView, SIGNAL(loadFinished(bool)), this, SLOT(aboutPageLoaded(bool)));
-	connect(m_network_reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
-
+	connect(ui->aboutView, SIGNAL(loadFinished(bool)), this, SLOT(aboutPageLoaded(bool)));
+	connect(ui->aboutView, SIGNAL( linkClicked( QUrl ) ), this, SLOT( linkClickedSlot( QUrl ) ) );
+	connect(this, SIGNAL(closeWindow()), this, SLOT(closeWindowHandler()));
+		
+	ui->aboutView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+	ui->aboutView->page()->mainFrame()->addToJavaScriptWindowObject("about", this);
+	
+#ifdef QT_DEBUG
+	ui->aboutView->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+#else
+	ui->aboutView->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, false);	
+#endif
+		
  }
 
 AboutDialog::~AboutDialog()
 {
 	delete ui;
+}
+
+void AboutDialog::linkClickedSlot( QUrl url )
+{
+	QDesktopServices::openUrl ( url );
 }
 
 void AboutDialog::on_buttonBox_clicked(QAbstractButton *button)
@@ -71,21 +80,21 @@ void AboutDialog::aboutPageLoaded(bool success)
 	{
 		QString version = tq(AppInfo::version.asString());
 		QString builddate = tq(AppInfo::builddate);
-		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppYear()");
-		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
-		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppBuildDate('" + builddate +"')");
-		QString html = _aboutWebView->page()->mainFrame()->toHtml();
-		ui->label_2_About->setText(html);
-		ui->label_2_About->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse);
+		ui->aboutView->page()->mainFrame()->evaluateJavaScript("window.setAppYear()");
+		ui->aboutView->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version +"')");
+		ui->aboutView->page()->mainFrame()->evaluateJavaScript("window.setAppBuildDate('" + builddate +"')");
+		ui->aboutView->page()->mainFrame()->evaluateJavaScript("window.showDownLoadButton(false,'')");		
+		checkForJaspUpdate();
 	}
 }
 
 void AboutDialog::checkForJaspUpdate()
 {
 
-	QUrl url("https://jasp-stats.org/download/");
+	QUrl url("https://jasp-stats.org/jasp-version/");
 	QNetworkRequest request(url);
-	m_network_reply = m_network_manager->get(request);
+	m_network_reply = m_network_manager->get(request);	
+	connect(m_network_reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
 
 }
 
@@ -95,39 +104,46 @@ void AboutDialog::downloadFinished()
 	*m_pBuffer = m_network_reply->readAll();
 	QString result(*m_pBuffer);
 	QString downloadfile("");
-	QRegExp rx("Download.{1,30}JASP.{1,30}Release.{1,30}2...");
+	QRegExp rx("JASPVersion:.+<\/div>");
 	rx.setCaseSensitivity(Qt::CaseInsensitive);
+		
+	ui->aboutView->page()->mainFrame()->evaluateJavaScript("window.showDownLoadButton(false,'')");
 
 	if  ((rx.indexIn(result, 0)) != -1)
 	{
 		QString g = rx.cap(0);
-		rx.setPattern("<[^>]*>|\n|Download");
+		rx.setPattern("JASPVersion:");
 		g.remove(rx);
-		int p = g.indexOf("Rel");
-		QString version  = g.mid(0,p);
-		QString releasedate = g.mid(p,g.length());
-		QString numberversion = version;
-		rx.setPattern("JASP|[ ]*");
-		numberversion.remove(rx);
-
+		rx.setPattern("<\/div>");
+		g.remove(rx);
+		g = g.trimmed(); 
+		QString version = g;
+	
 #ifdef __APPLE__
-		downloadfile = "https://static.jasp-stats.org/JASP-" + numberversion + ".dmg";
+		downloadfile = "https://static.jasp-stats.org/JASP-" + version + ".dmg";
 #endif
 
 #ifdef __WIN32__
-		downloadfile = "https://static.jasp-stats.org/JASP-" + numberversion + "-Setup.exe";
+		downloadfile = "https://static.jasp-stats.org/JASP-" + version + "-Setup.exe";
 #endif
 
-#ifdef __linux__ //No installer download
-		QString innerHtml = "<html><head/><body><span style='font-size:16pt; font-weight:600; color:green;'><br/>New Version Available</span><span style='font-size:14pt;'><br/>Version " + version + " " + releasedate + "</body></html>";
-#else
-		QString innerHtml = "<html><head/><body><span style='font-size:16pt; font-weight:600; color:green;'><br/>New Version Available</span><span style='font-size:14pt;'><br/>Version " + version + " " + releasedate + "<br/>Download new version: </span><a href='" + downloadfile + "'><span style='text-decoration: underline; color:#0000ff;'>here</span></a><span style='font-size:14pt;'><br/></span></body></html>";
-#endif
 		Version cv = AppInfo::version;
-		Version lv(numberversion.toStdString());
+		Version lv(version.toStdString());
 		long cur = cv.major*100000 + cv.minor*10000 + cv.revision*1000 + cv.build;
 		long latest = lv.major*100000 + lv.minor*10000 + lv.revision*1000 + lv.build;
 		if (latest > cur )
-			ui->label_3_Update->setText(innerHtml);
+		{
+			QString display = "true";
+			ui->aboutView->page()->mainFrame()->evaluateJavaScript("window.setNewVersion('" + version +"')");
+#ifndef __linux__
+			ui->aboutView->page()->mainFrame()->evaluateJavaScript("window.showDownLoadButton(true,'" + downloadfile + "')");
+#endif
+		}
 	}
+	
+}
+
+void AboutDialog::closeWindowHandler()
+{
+	this->close();
 }

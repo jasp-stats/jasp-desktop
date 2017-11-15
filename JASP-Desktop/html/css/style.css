@@ -1,0 +1,96 @@
+/*--------------------------------------------------------------
+# General
+--------------------------------------------------------------*/
+html {
+    font-size: 16px; /*set rem size*/
+}
+
+body {
+  font-weight: 300;
+  font-family: Lato,sans-serif;
+  background-color: #8dc448;
+}
+
+a {
+  color: #03C4EB;
+  transition: 0.5s;
+}
+
+a:hover, a:active, a:focus {
+  color: #03c5ec;
+  outline: none;
+  text-decoration: none;
+}
+
+
+p {
+  margin: 0 0 0.65em; 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+}
+
+
+/*--------------------------------------------------------------
+# Box
+--------------------------------------------------------------*/
+
+#about-box {
+    width: 100%;
+    height:100%;
+    background-color: white;
+    padding: 134px 24px 24px 24px;
+    background-image: url('../img/jasp-wave-down-blue-120-squat.svg');
+    background-repeat: repeat-x;
+    background-position: top center;
+    background-position: calc(50% + 10px) top;
+}
+
+/*--------------------------------------------------------------
+# Logo version
+--------------------------------------------------------------*/
+#logo-version{
+    width: 220px;
+    float: left;
+}
+.logo{
+    margin-bottom: 0.3em;
+}
+.jasp-version {
+    display: block;
+    margin-left: 64px;
+}
+
+/*--------------------------------------------------------------
+# More info
+--------------------------------------------------------------*/
+
+#more-info{
+    width: 430px;
+    float: left;
+}
+.copyright{
+    font-size: 1rem;
+    margin-bottom: 0.5em;
+    display: inline-block;
+}
+dt{
+    display: block;
+    float: left;
+    clear: both;
+    margin-right: 0.5em;
+    color: #f99800;
+}
+.footnote {
+    font-size: 0.8rem;
+    color: #909092;
+}
+.btn {
+    color: white;
+    display: inline-block;
+    background-color: #22a1df;
+    border-radius: 4px;
+    padding: 0.2em 1.2em;
+    font-size: 1rem;
+}

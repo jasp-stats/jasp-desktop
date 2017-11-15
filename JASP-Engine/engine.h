@@ -51,7 +51,7 @@ private:
 	void runAnalysis();
 	void saveImage();
 	void sendResults();
-	std::string callback(const std::string &results);
+	std::string callback(const std::string &results, int progress);
 
 	DataSet *provideDataSet();
 	void provideTempFileName(const std::string &extension, std::string &root, std::string &relativePath);
@@ -63,6 +63,7 @@ private:
 
 	int _analysisId;
 	int _analysisRevision;
+	int _progress;
 	std::string _analysisName;
 	std::string _analysisOptions;
 	std::string _analysisResultsString;

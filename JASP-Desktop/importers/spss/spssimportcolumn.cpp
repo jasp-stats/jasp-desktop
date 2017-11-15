@@ -20,7 +20,7 @@ const QDate SPSSImportColumn::_beginEpoch(1582, 10, 14);
  * @param missingChecker Check for missing value with this.
  */
 SPSSImportColumn::SPSSImportColumn(SPSSImportDataSet *spssdataset, const std::string &name, const std::string &label, long stringLen, FormatTypes formattype, const spss::MissingValueChecker &missingChecker)
-	: ImportColumn(label)
+	: ImportColumn(spssdataset, label)
 	, _spssColumnLabel(label)
 	, _spssRawColName(name)
 	, _spssStringLen(stringLen)
@@ -498,7 +498,7 @@ void SPSSImportColumn::setColumnConvertStringData(Column &column)
 		labels[value] = it->second;
 	}
 
-	column.setColumnAsNominalString(strings, labels);
+	column.setColumnAsNominalText(strings, labels);
 }
 
 void SPSSImportColumn::setColumnConvertDblToString(Column &column)
@@ -514,7 +514,7 @@ void SPSSImportColumn::setColumnConvertDblToString(Column &column)
 		labels[format(it->first.dbl, _dataset->getFloatInfo())] = it->second;
 	}
 
-	column.setColumnAsNominalString(strings, labels);
+	column.setColumnAsNominalText(strings, labels);
 }
 
 void SPSSImportColumn::setColumnAsNominalOrOrdinal(Column &column, Column::ColumnType columnType)

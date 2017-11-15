@@ -27,7 +27,6 @@
 #include <column.h>
 
 #include <QString>
-#include <QRegExp>
 
 namespace ods
 {
@@ -37,62 +36,22 @@ class ODSSheetCell
 	friend class ODSImportColumn;
 
 public:
-
-	const static int EmptyInt;
-	const static double EmptyDouble;
-
 	ODSSheetCell();
 	~ODSSheetCell() {}
 
 	// Getters and setters.
 	const XmlDatatype& xmlType() const { return _xmlType; }
 
-	const Column::ColumnType& jaspType() const { return _jaspType; }
-	bool isEmpty() const;
-
 	void setTypeAndValue(XmlDatatype type, const QString &data);
-	void setValue(double value);
-	void setValue(int value);
-	void setValue(const QString &value);
-	int valueAsInt() const;
-	double valueAsDouble() const;
-	const std::string valueAsString() const;
-
-	/**
-	 *
-	 * @brief forceCellToType Force Cell contents to type.
-	 * @param requiredType Type to force.
-	 * @param column int Colum number (for error reporting)
-	 *
-	 * Throws an exception on fail.
-	 */
-	void forceCellToType(Column::ColumnType requiredType);
+	const std::string &valueAsString() const;
 
 
 private:
 	// The data types
 	XmlDatatype				_xmlType;
-	Column::ColumnType		_jaspType;
 	std::string				_string;
-	NumericValue			_numData;
-	bool					_numericSet;
 
-	static const QRegExp	_isEmptyRegExp;
-
-
-	/**
-	 * @brief _isIntValue returns true if value ia an integer value.
-	 * @param value  Value to test.
-	 * @return true if value is an integer.
-	 */
-	static bool _isIntValue(double value);
-
-	/**
-	 * @brief _toInt REturns the integer portion of the value.
-	 * @param value Value to convert.
-	 * @return Integer portion of value.
-	 */
-	static int _toInt(double value);
+	void setValue(const QString &value);
 };
 
 } // end namespace ods

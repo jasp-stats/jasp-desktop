@@ -6,6 +6,7 @@ JASPWidgets.table = Backbone.Model.extend({
 		variables: [],
 		data: [],
 		casesAcrossColumns: false,
+		overTitle: false,
 		formats: null,
 		footnotes: [],
 		citation: null,
@@ -134,12 +135,33 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 	},
 
-	_swapRowsAndColumns: function (columnHeaders, columns) {
+	_swapRowsAndColumns: function (columnHeaders, columns, optOverTitle) {
 
 		var newRowCount = columns.length - 1
 		var newColumnCount = columns[0].length + 1
-
-		var newColumnHeaders = columns[0]
+		
+		if (optOverTitle) {
+			
+			// Transform first column into overtitle, second into title
+			var newColumnHeaders = Array(newColumnCount-1);
+			for (var colNo = 0; colNo < newColumnCount - 1; colNo++) {
+				newColumnHeaders[colNo] = { content: columns[1][colNo].content,
+																		header: true,
+																		overTitle: columns[0][colNo].content,
+																		type: "string" };
+			}
+			// remove the column that became title
+			columns.shift();
+			columnHeaders.shift();
+			newRowCount--;
+			
+		} else {
+			
+			var newColumnHeaders = Array(newColumnCount);
+			var newColumnHeaders = columns[0];
+			
+		}
+		
 		var newColumns = Array(newColumnCount)
 
 		var cornerCell = columnHeaders.shift()
@@ -220,6 +242,8 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 		var pc = false
 		var approx = false
 		var log10 = false
+		var dp = parseInt(window.globSet.decimals); // NaN if not specified by user
+		var fixDecimals = (typeof dp === 'number') && (dp % 1 === 0);
 
 		for (var i = 0; i < formats.length; i++) {
 
@@ -234,8 +258,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 				}
 			}
 				
-
-			if (f.indexOf("dp:") != -1)
+			if (f.indexOf("dp:") != -1 && ! fixDecimals)
 				dp = f.substring(3)
 
 			if (f.indexOf("sf:") != -1)
@@ -300,13 +323,18 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 				}
 			}
 
-			if (minLSD < -dp)
+			if (fixDecimals) {
 				minLSD = -dp
-			if (minLSD > 0)
-				minLSD = 0
-			else if (minLSD < -20)
-				minLSD = -20
+			} else {
+				if (minLSD < -dp)
+					minLSD = -dp
+				if (minLSD > 0)
+					minLSD = 0
+			}
 
+			if (minLSD < -20)
+				minLSD = -20
+				
 			for (var rowNo = 0; rowNo < column.length; rowNo++) {
 
 				var cell = column[rowNo]
@@ -355,7 +383,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 					if (content < (Math.log(upperLimit) / Math.log(10)) && content > -dp) {
 
-						if (alignNumbers) {
+						if (alignNumbers || fixDecimals) {
 
 							formatted = { content: Math.pow(10, content).toFixed(-minLSD).replace(/-/g, "&minus;"), "class": "number" }
 						}
@@ -400,7 +428,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 						var sign = content >= 0 ? "+" : "-"
 
-						mantissa = mantissa.toPrecision(sf)
+						mantissa = fixDecimals ? mantissa.toFixed(dp) : mantissa.toPrecision(sf)
 
 						var padding
 
@@ -418,8 +446,9 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 				}
 				else if (Math.abs(content) >= upperLimit || Math.abs(content) <= Math.pow(10, -dp)) {
-
-					var exponentiated = content.toExponential(sf - 1).replace(/-/g, "&minus;")
+					
+					var decimalsExpon = fixDecimals ? dp : sf - 1
+					var exponentiated = content.toExponential(decimalsExpon).replace(/-/g, "&minus;")
 					var paddingNeeded = Math.max(maxFSDOE - this._fsdoe(content), 0)
 
 					var split = exponentiated.split("e")
@@ -443,7 +472,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 				}
 				else {
 
-					if (alignNumbers) {
+					if (alignNumbers || fixDecimals) {
 
 						formatted = { content: content.toFixed(-minLSD).replace(/-/g, "&minus;"), "class": "number" }
 					}
@@ -664,6 +693,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 		var optTitle = this.model.get("title");
 		var optSubtitle = this.model.get("subtitle");
 		var optCasesAcrossColumns = this.model.get("casesAcrossColumns");
+		var optOverTitle = this.model.get("overTitle")
 		var optFootnotes = this.model.get("footnotes");
 		var optCitation = this.model.get("citation");
 		var optStatus = this.model.get("status");
@@ -855,7 +885,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 		if (optCasesAcrossColumns) {
 
-			var swapped = this._swapRowsAndColumns(columnHeaders, cells)
+			var swapped = this._swapRowsAndColumns(columnHeaders, cells, optOverTitle)
 			cells = swapped.columns
 			columnHeaders = swapped.columnHeaders;
 			rowCount = swapped.rowCount
@@ -899,21 +929,40 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 		}
 
 		if (columnHeaders.length > 0) {
-
-			var overTitles = false
-
+			
+			var overTitles = false;
+			var overTitleSpace = false;
+			var overTitlesArray = [];
+			// Find the overTitles
 			for (var i = 0; i < columnHeaders.length; i++) {
-
-				if (columnHeaders[i].overTitle) {
-
+				if (typeof columnHeaders[i].overTitle != "undefined") {
 					overTitles = true
 					break;
 				}
 			}
+			
+			if (overTitlesArray.length > 0) {
+				// If we have an overTitle, we should make it
+				overTitles = true;
+			}
+			
+			var uniqueOverTitles = $.unique(overTitlesArray)
+			if (uniqueOverTitles.length > 1) {
+				// If we have more than one unique overTitle, we should make small 
+				// breaks in the line under the overTitle to indicate end of old and 
+				// start of new overTitle. NB: with this option, the line is not copied
+				// to text processor.
+				overTitleSpace = true;
+			}
 
 			if (overTitles) {
-
-				chunks.push('<tr class="over-title">')
+				
+				if (overTitleSpace) {
+					chunks.push('<tr class="over-title-space">')
+				} else {
+					chunks.push('<tr class="over-title">')
+				}
+				
 
 				var span = 1;
 				var oldTitle = columnHeaders[0].overTitle
@@ -933,15 +982,24 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 						span++
 					}
 					else {
-
-						chunks.push('<th colspan="' + (2 * span) + '">' + oldTitle + '</th>')
+						if (overTitleSpace) {
+							chunks.push('<th colspan="' + (2 * span) + '"><div class="over-title-space">' + oldTitle + '</div></th>');
+						} else {
+							chunks.push('<th colspan="' + (2 * span) + '">' + oldTitle + '</th>');
+						}
 						oldTitle = newTitle
 						span = 1
 					}
 				}
 
-				if (newTitle == oldTitle)
-					chunks.push('<th colspan="' + (2 * span) + '">' + newTitle + '</th>')
+				if (newTitle == oldTitle) {
+					if (overTitleSpace) {
+						chunks.push('<th colspan="' + (2 * span) + '"><div class="over-title-space">' + newTitle + '</div></th>')
+					} else {
+						chunks.push('<th colspan="' + (2 * span) + '">' + newTitle + '</th>')
+					}
+				}
+					
 
 				chunks.push('</tr>')
 			}

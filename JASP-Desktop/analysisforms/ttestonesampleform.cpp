@@ -42,7 +42,6 @@ TTestOneSampleForm::TTestOneSampleForm(QWidget *parent) :
 
 	ui->buttonAssign_main_fields->setSourceAndTarget(ui->listAvailableFields, ui->variables);
 
-	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 	ui->descriptivesPlotsConfidenceInterval->setLabel("Confidence interval");
 
 #ifdef QT_NO_DEBUG

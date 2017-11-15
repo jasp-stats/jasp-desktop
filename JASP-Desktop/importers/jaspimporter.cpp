@@ -83,6 +83,50 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 	packageData->dataFilePath = metaData["dataFilePath"].isNull() ? std::string() : metaData["dataFilePath"].asString();
 	packageData->dataFileReadOnly = metaData["dataFileReadOnly"].isNull() ? false : metaData["dataFileReadOnly"].asBool();
 	packageData->dataFileTimestamp = metaData["dataFileTimestamp"].isNull() ? 0 : metaData["dataFileTimestamp"].asInt();
+
+	Json::Value &emptyValuesJson = metaData["emptyValues"];
+	if (emptyValuesJson.isNull())
+	{
+		// Old JASP files: the empty values were '.', 'NaN' & 'nan'
+		vector<string> emptyValues;
+		emptyValues.push_back("NaN");
+		emptyValues.push_back("nan");
+		emptyValues.push_back(".");
+		Utils::setEmptyValues(emptyValues);
+	}
+	else
+	{
+		vector<string> emptyValues;
+		for (Json::Value::iterator iter = emptyValuesJson.begin(); iter != emptyValuesJson.end(); ++iter)
+		{
+			Json::Value emptyValueJson = *iter;
+			string emptyValue = emptyValueJson.asString();
+			emptyValues.push_back(emptyValue);
+		}
+		Utils::setEmptyValues(emptyValues);
+	}
+
+	Json::Value &emptyValuesMapJson = dataSetDesc["emptyValuesMap"];
+	packageData->emptyValuesMap.clear();
+	if (!emptyValuesMapJson.isNull())
+	{
+		for (Json::Value::iterator iter = emptyValuesMapJson.begin(); iter != emptyValuesMapJson.end(); ++iter)
+		{
+			string colName = iter.key().asString();
+			Json::Value mapJson = *iter;
+			string test = mapJson.toStyledString();
+			map<int, string> map;
+			for (Json::Value::iterator iter2 = mapJson.begin(); iter2 != mapJson.end(); ++iter2)
+			{
+				int row = stoi(iter2.key().asString());
+				Json::Value valueJson = *iter2;
+				string value = valueJson.asString();
+				map[row] = value;
+			}
+			packageData->emptyValuesMap[colName] = map;
+		}
+	}
+
 	columnCount = dataSetDesc["columnCount"].asInt();
 	rowCount = dataSetDesc["rowCount"].asInt();
 	if (rowCount < 0 || columnCount < 0)

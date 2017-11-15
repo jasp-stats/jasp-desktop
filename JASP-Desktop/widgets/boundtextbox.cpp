@@ -22,7 +22,11 @@
 
 #include <QIntValidator>
 #include <QDoubleValidator>
+#include <QRegExpValidator>
 #include <QKeyEvent>
+#include <sstream>
+#include <iostream>
+
 
 BoundTextBox::BoundTextBox(QWidget *parent) :
 	QLineEdit(parent)
@@ -30,6 +34,7 @@ BoundTextBox::BoundTextBox(QWidget *parent) :
 	_integer = NULL;
 	_integerArray = NULL;
 	_number = NULL;
+	_string = NULL;
 
 	//connect(this, SIGNAL(textEdited(QString)), this, SLOT(textEditedHandler(QString)));
 }
@@ -37,6 +42,24 @@ BoundTextBox::BoundTextBox(QWidget *parent) :
 void BoundTextBox::bindTo(Option *option)
 {
 	setLegal();
+
+	_string = dynamic_cast<OptionString *>(option);
+	if (_string != NULL)
+	{
+		int max = _string->max();
+		std::string regExpStr = _string->regexp();
+		if (max > 0 && regExpStr.empty())
+		{
+			std::ostringstream strs;
+			strs << "^.{0," << max << "}$";
+			regExpStr = strs.str();
+		}
+		if (!regExpStr.empty())
+			this->setValidator(new QRegExpValidator(QRegExp(QString::fromStdString(regExpStr)), this));
+
+		this->setText(QString::fromStdString(_string->value()));
+		return;
+	}
 
 	_integer = dynamic_cast<OptionInteger *>(option);
 
@@ -101,6 +124,13 @@ void BoundTextBox::focusOutEvent(QFocusEvent *event)
 void BoundTextBox::finalise()
 {
 	QString value = text();
+
+	if (_string != NULL)
+	{
+		_string->setValue(value.toStdString());
+		setLegal();
+		return;
+	}
 
 	while (value.endsWith(","))
 		value = value.left(value.length() - 1);
@@ -258,4 +288,3 @@ QString BoundTextBox::QIntArrayValidator::stringify(std::vector<int> &input)
 
 	return result;
 }
-

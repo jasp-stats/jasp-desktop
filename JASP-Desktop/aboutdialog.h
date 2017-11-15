@@ -38,16 +38,20 @@ class AboutDialog : public QDialog
 public:
 	explicit AboutDialog(QWidget *parent = 0);
 	~AboutDialog();
+	
+signals:
+	void closeWindow();
 
 private slots:
 	void on_buttonBox_clicked(QAbstractButton *button);
 	void aboutPageLoaded(bool success);
 	void downloadFinished();
+	void linkClickedSlot(QUrl url);
+	void closeWindowHandler();
 
 private:
 	void checkForJaspUpdate();
 	Ui::AboutDialog *ui;
-	QWebView *_aboutWebView;
 	QNetworkAccessManager *m_network_manager;	// make the HTTP GET request
 	QNetworkReply *m_network_reply;
 	QByteArray *m_pBuffer;

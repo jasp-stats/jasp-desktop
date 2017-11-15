@@ -22,11 +22,12 @@
 
 #include "dirs.h"
 #include "version.h"
+#include "appinfo.h"
 
 using namespace std;
 using namespace boost;
 
-Analysis *AnalysisLoader::load(int id, string analysisName, Json::Value *data)
+Analysis *AnalysisLoader::load(int id, string moduleName, string analysisName, const Version &version, Json::Value *data)
 {
 	Options *options = new Options();
 
@@ -47,15 +48,14 @@ Analysis *AnalysisLoader::load(int id, string analysisName, Json::Value *data)
 
 		bool autorun = analysisDesc.get("autorun", false).asBool();
 		bool usedata = analysisDesc.get("usedata", true).asBool();
-		Version version = Version(analysisDesc.get("version", "0.00").asString());
 
 		if (data != NULL)
 			options->set(*data);
 
 		file.close();
 
-		return new Analysis(id, analysisName, options, version, autorun, usedata);
+		return new Analysis(id, moduleName, analysisName, options, version, autorun, usedata);
 	}
 
-	throw runtime_error("Could not access analysis definition.");
+	throw runtime_error(analysisName + " does not exist in your JASP version.");
 }

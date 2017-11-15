@@ -1,0 +1,136 @@
+{
+	"name": "ClassicalMetaAnalysis",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+		{
+			"name": "dependent",
+			"type": "Variable"
+		},
+		{
+			"name": "method",
+			"type": "List",
+			"options": [ "Fixed Effects", "Maximum Likelihood", "Restricted ML", "DerSimonian-Laird", "Hedges", "Hunter-Schmidt", "Sidik-Jonkman", "Empirical Bayes", "Paule-Mandel"],
+			"default": "Restricted ML"
+		},
+		{
+			"name": "test",
+			"type": "List",
+			"options": [ "z", "knha" ],
+			"default": "z"
+		},
+		{
+			"name": "covariates",
+			"type": "Variables"
+		},
+		{
+			"name": "factors",
+			"type": "Variables"
+		},
+		{
+			"name": "wlsWeights",
+			"type": "Variable"
+		},
+		{
+			"name": "studyLabels",
+			"type": "Variable"
+		},
+		{
+			"name": "modelTerms",
+			"template": [
+				{
+					"name": "components",
+					"type": "Term"
+				}
+			],
+			"type": "Table"
+		},
+		{
+			"default": true,
+			"name": "regressionCoefficientsEstimates",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "regressionCoefficientsConfidenceIntervals",
+			"type": "Boolean"
+		},
+		{
+			"default": 95,
+			"name": "regressionCoefficientsConfidenceIntervalsInterval",
+			"type": "Integer",
+			"min": 1,
+			"max": 99
+		},
+		{
+			"default": false,
+			"name": "regressionCoefficientsCovarianceMatrix",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "modelFit",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "rSquaredChange",
+			"type": "Boolean"
+		},
+		{
+			"default": true,
+			"name": "forestPlot",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "funnelPlot",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "funnelPlotAsymmetryTest",
+			"type": "Boolean"
+		},
+		{
+			"default": true,
+			"name": "residualsParameters",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "residualsCasewiseDiagnostics",
+			"type": "Boolean"
+		},
+		{
+			"default": true,
+			"name": "includeConstant",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "trimfillPlot",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotResidualsDependent",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotResidualsCovariates",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotResidualsPredicted",
+			"type": "Boolean"
+		},
+		{
+			"default": true,
+			"name": "plotResidualsQQ",
+			"type": "Boolean"
+		}
+	]
+}

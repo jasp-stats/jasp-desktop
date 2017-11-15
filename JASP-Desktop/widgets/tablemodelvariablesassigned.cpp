@@ -45,6 +45,7 @@ void TableModelVariablesAssigned::bindTo(Option *option)
 			const vector<vector<string> > assigned = _boundTo->value();
 
 			beginResetModel();
+			Terms test = _variables;
 			_variables.set(assigned);
 			endResetModel();
 
@@ -174,7 +175,7 @@ void TableModelVariablesAssigned::sourceVariablesChanged()
 	if (variableRemoved)
 		setAssigned(variablesToKeep);
 
-	emit assignmentsChanged();
+	emit assignmentsChanged(variableRemoved);
 }
 
 void TableModelVariablesAssigned::assign(const Terms &variables)

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2017 University of Amsterdam
+# Copyright (C) 2013-2017 University of Amsterdam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
 
 SummaryStatsBinomialTestBayesian <- function(dataset = NULL, options, perform = 'run', callback = function(...) 0,  ...) {
 
@@ -178,7 +179,7 @@ SummaryStatsBinomialTestBayesian <- function(dataset = NULL, options, perform = 
 			# 		dontPlotData = dontPlotData
 			# 	)
 			# plot[["data"]] <- .endSaveImage(image)
-			
+
 			.plotFunc <- function() {
 				.plotPosterior.binomTest(
 					counts = options$successes, n = (options$failures + options$successes),
@@ -192,7 +193,7 @@ SummaryStatsBinomialTestBayesian <- function(dataset = NULL, options, perform = 
 			plot[["convertible"]] <- TRUE
 			plot[["obj"]] <- content[["obj"]]
 			plot[["data"]] <- content[["png"]]
-			
+
 		})
 
 		if (class(p) == "try-error") {
@@ -265,8 +266,9 @@ SummaryStatsBinomialTestBayesian <- function(dataset = NULL, options, perform = 
 				}
 
 				rowsBinomialTest$BF <- .clean(BF)
-				rowsBinomialTest$pValue <- .clean(stats::binom.test(x=c(options$successes, options$failures), 
-				                                                    p=options$testValue, alternative=hyp)$p.value)
+				pValue <- stats::binom.test(x=c(options$successes, options$failures), p=options$testValue, alternative=hyp)$p.value
+				# For successes > 1, failures > 1, test_value = 1 or 0, pValue retured is FALSE
+				rowsBinomialTest$pValue <- .clean(switch(as.character(pValue), "TRUE"=1, "FALSE"=0, pValue))
 			}
 		}
 	}

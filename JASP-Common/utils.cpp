@@ -262,3 +262,66 @@ void Utils::sleep(int ms)
 	nanosleep(&ts, NULL);
 #endif
 }
+
+const string Utils::emptyValue = ".";
+const vector<string> Utils::_defaultEmptyValues = {"NaN", "nan", ".", "NA"};
+vector<double> Utils::_currentDoubleEmptyValues = {};
+vector<string> Utils::_currentEmptyValues = Utils::_defaultEmptyValues;
+
+void Utils::setEmptyValues(const vector<string> &emptyvalues)
+{
+	_currentEmptyValues = emptyvalues;
+	_currentDoubleEmptyValues.clear();
+
+	for (vector<string>::const_iterator it = _currentEmptyValues.begin(); it != _currentEmptyValues.end(); ++it)
+	{
+		double doubleValue;
+		if (Utils::getDoubleValue(*it, doubleValue))
+			_currentDoubleEmptyValues.push_back(doubleValue);
+	}
+}
+
+bool Utils::getIntValue(const string &value, int &intValue)
+{
+	bool success = true;
+	try
+	{
+		intValue = boost::lexical_cast<int>(value);
+	}
+	catch (...)
+	{
+		success = false;
+	}
+
+	return success;
+}
+
+bool Utils::getIntValue(const double &value, int &intValue)
+{
+	bool success = true;
+	try
+	{
+		intValue = boost::lexical_cast<int>(value);
+	}
+	catch (...)
+	{
+		success = false;
+	}
+
+	return success;
+}
+
+bool Utils::getDoubleValue(const string &value, double &doubleValue)
+{
+	bool success = true;
+	try
+	{
+		doubleValue = boost::lexical_cast<double>(value);
+	}
+	catch (...)
+	{
+		success = false;
+	}
+
+	return success;
+}

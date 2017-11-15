@@ -105,11 +105,38 @@ It is recommended to **only** use `.vf()` for display purposes. Using it to crea
 
 JASP accepts images as SVGs encoded as base64 data URIs. The following functions are useful for creating images in this format.
 
-`.beginSaveImage(width, height)`  
-`.endSaveImage(descriptor)`
+Recently, we moved to a new system for writing images, to support the saveImage functionality (saving JASP images to a file). Here is the quick overview:
 
-`.beginSaveImage()` starts the image capturing process, and returns a descriptor. Once the analysis has performed all the rendering it needs, it should call `.endSaveImage()`, passing in the descriptor provided by `.beginSaveImage()`. `.endSaveImage()` returns a descriptor which can be assigned to the image object described below.
-
+1. Create a `ggplot2` plot in your code. If you're working with (deprecated) base-r plots, wrap your plotting routine in a function (don't choose this option):
+  ```r
+  p <- ggplot2::ggplot(...)
+  ```
+  __OR__
+  ```r
+  .plotFunc() <- function() {
+    # add plotting routine here
+    plot(plotData, plotParameters)
+  }
+  ```
+2. Write the image to an object using the function `.writeImage()`:
+  ```r
+  imgObj <- .writeImage(width = options$plotWidth, 
+                         height = options$plotHeight, 
+                         plot = p)
+  ```
+  __OR__
+  ```r
+  imgObj <- .writeImage(width = options$plotWidth, 
+                         height = options$plotHeight, 
+                         plot = .plotFunc)
+  ```
+3. Extract the necessary information from the image object to your plot object that will go into the output:
+  ```r
+  plot[["data"]] <- imgObj[["png"]]
+  plot[["obj"]] <- imgObj[["obj"]]
+  plot[["convertible"]] <- TRUE
+  plot[["status"]] <- "complete"
+  ```
 
 ### Cleaning data
 
@@ -200,7 +227,7 @@ An example of a results bundle might be:
 - `results` : a results object, descriped below
 - `status` : the status, this can be either `"inited"` (typically to be returned when `perform == "init"`) or `"complete"` (typically returned when `perform == "run"`)
 - `state`  : arbitrary data that can be retrieved in a subsequent call of this analysis with a call to `.retrieveState()`, explained below
-- `keep` : a list of file descriptors (from `.endSaveImage()`). This instructs the temporary file system to keep these files, and not delete them.
+- `keep` : a list of file descriptors (from `.writeImage()`). This instructs the temporary file system to keep these files, and not delete them.
 
 ### Results
 
@@ -449,7 +476,40 @@ It will return a named list with TRUE/FALSE values indicating which options have
     
     # otherwise continue
 
-### State
+Progress bar
+------------
+
+If an analysis is going to run for a long time it's nice to give the user some reassurance that something is actually happening. Of course we have the spinner, but this provides no actual progress indication. To this purpose the `.newProgressbar` function can be used. The function takes the following arguments:
+
+- `ticks`: integer specifying the number of times the progress bar needs to be updated to reach completion.
+- `callback`: callback function which is supplied to each analysis and described above.
+- `skim`: integer specifying the percentage that should be "skimmed" from the total 100%. The progress bar generally captures only some portion of an analysis. If the remainder might also take some time we can reserve a portion of the progress bar. Default percentage is `5`.
+- `response`: boolean, should the progressbar return the response of the callback? Default is `FALSE`.
+
+Note that `.newProgressbar` itself returns a function. This function takes the optional arguments:
+
+- `results`: results list. See above to read more about the results list structure.
+- `complete`: boolean specifying if the progress bar should be forced to immediate (premature) completion.
+
+### Example:
+
+A typical analysis that takes a while is the Bayesian ANOVA.
+Now, there are parts of this analysis that go quite quick; calculating descriptives or effects takes no time.
+The model calculation is slow, however, in this part of the code a progress indicator makes a lot sense.
+Say we have the number of models we will calculate stored in `nModels`. Before the first model is calculated we then run
+```
+progressbar <- .newProgressbar(ticks=nModels, callback=callback)
+```
+Now after each calculated model we simply call
+```
+progressbar()
+```
+to update the progress.
+
+If we want to make the analysis responsive to user changes we can set `response` to `TRUE` and check the callback output as described above.
+
+State
+-----
 
 The state is a storage system. This storage can be used to transfer useful data between different calls to an analysis.
 The main goal of the state is to prevent recalculating things that were already calculated once (and thus make analyses quicker). Let's use the Bayesian ANOVA as an example of its practical relevance. This analysis may take up to several minutes to fully calculate its result -- which is not that unusual for a Bayesian analysis. Now if a user decides he would also like to see descriptive statistics the analysis will be run again. If we had no storage system in place it would take several minutes to give an additional table with descriptive statistics because the ANOVA has to be calculated all over again -- eventhough we already did this. With the state system it becomes possible to store the outcome of the ANOVA and then re-use it. Asking for additional output such as a descriptives table will now result in a very short calculation because the ANOVA calculation can be avoided. It may be clear that it is not always possible to re-use output from an earlier call to the analysis. For example, if the dependent variable of the ANOVA is swapped for a different one, the old results become unusable.
@@ -473,12 +533,10 @@ attr(state, "key") <- stateKey
 ```
 
 Now if the analysis is called again and e.g. `sampleMode` changes, only the plot will be returned.
-If there are state items you would like to keep indefinitely -- regardless of the options a user changes -- you may also specify this in the state, e.g.:
-```
-attr(state, "keep") <- c("model", "options")
-```
+If there are state items you would like to keep indefinitely -- regardless of the options a user changes -- you must omit these in the stateKey.
 
-### Error handling
+Error handling
+--------------
 
 #### Checking for errors
 

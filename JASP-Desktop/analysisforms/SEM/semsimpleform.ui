@@ -116,12 +116,12 @@
                 <widget class="BoundComboBox" name="factorStandardisation">
                  <item>
                   <property name="text">
-                   <string>Residual Variance</string>
+                   <string>Factor Loadings</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>Factor Loadings</string>
+                   <string>Residual Variance</string>
                   </property>
                  </item>
                  <item>
@@ -897,157 +897,163 @@
    </item>
    <item row="1" column="0">
     <widget class="QWidget" name="DataContainer" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="minimumSize">
       <size>
        <width>0</width>
        <height>100</height>
       </size>
      </property>
-     <widget class="BoundGroupBox" name="Data">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>0</y>
-        <width>411</width>
-        <height>41</height>
-       </rect>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="leftMargin">
+       <number>0</number>
       </property>
-      <property name="title">
-       <string>Data</string>
+      <property name="topMargin">
+       <number>0</number>
       </property>
-      <widget class="QRadioButton" name="Raw">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>20</y>
-         <width>100</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Raw</string>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="VarCov">
-       <property name="geometry">
-        <rect>
-         <x>60</x>
-         <y>20</y>
-         <width>201</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Variance-covariance matrix</string>
-       </property>
-      </widget>
-      <widget class="BoundTextBox" name="SampleSize">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>340</x>
-         <y>20</y>
-         <width>60</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>60</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>0</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="SampleText">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>260</x>
-         <y>20</y>
-         <width>113</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Sample Size</string>
-       </property>
-      </widget>
-     </widget>
-     <widget class="BoundGroupBox" name="groupBox_9">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>50</y>
-        <width>351</width>
-        <height>51</height>
-       </rect>
+      <property name="rightMargin">
+       <number>0</number>
       </property>
-      <property name="title">
-       <string>Model Name</string>
+      <property name="bottomMargin">
+       <number>0</number>
       </property>
-      <widget class="BoundComboBox" name="modelName">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>20</y>
-         <width>165</width>
-         <height>26</height>
-        </rect>
-       </property>
-       <item>
-        <property name="text">
-         <string>Model 1</string>
+      <item>
+       <widget class="BoundGroupBox" name="Data">
+        <property name="title">
+         <string>Data</string>
         </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Model 2</string>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QRadioButton" name="Raw">
+           <property name="text">
+            <string>Raw</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="VarCov">
+           <property name="text">
+            <string>Variance-covariance matrix</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="SampleText">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Sample Size</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="BoundTextBox" name="SampleSize">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="BoundGroupBox" name="groupBox_9">
+        <property name="title">
+         <string>Model Name</string>
         </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Model 3</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Model 4</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Model 5</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Model 6</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Model 7</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Model 8</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Model 9</string>
-        </property>
-       </item>
-      </widget>
-     </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="BoundComboBox" name="modelName">
+           <item>
+            <property name="text">
+             <string>Model 1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Model 2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Model 3</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Model 4</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Model 5</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Model 6</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Model 7</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Model 8</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Model 9</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>
@@ -1091,6 +1097,59 @@
    <header>widgets/boundtextedit.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>model</tabstop>
+  <tabstop>Raw</tabstop>
+  <tabstop>VarCov</tabstop>
+  <tabstop>SampleSize</tabstop>
+  <tabstop>modelName</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>_1standard</tabstop>
+  <tabstop>_2robust</tabstop>
+  <tabstop>_3bootstrap</tabstop>
+  <tabstop>errorCalculationBootstrapSamples</tabstop>
+  <tabstop>outputAdditionalFitMeasures</tabstop>
+  <tabstop>outputFittedCovarianceCorrelations</tabstop>
+  <tabstop>outputObservedCovarianceCorrelations</tabstop>
+  <tabstop>outputResidualCovarianceCorrelations</tabstop>
+  <tabstop>outputMardiasCoefficients</tabstop>
+  <tabstop>outputModificationIndices</tabstop>
+  <tabstop>outputModificationIndicesHideLowIndices</tabstop>
+  <tabstop>outputModificationIndicesHideLowIndicesThreshold</tabstop>
+  <tabstop>pushButton_2</tabstop>
+  <tabstop>groupingVariable</tabstop>
+  <tabstop>eq_loadings</tabstop>
+  <tabstop>eq_intercepts</tabstop>
+  <tabstop>eq_residuals</tabstop>
+  <tabstop>eq_residualcovariances</tabstop>
+  <tabstop>eq_means</tabstop>
+  <tabstop>eq_thresholds</tabstop>
+  <tabstop>eq_regressions</tabstop>
+  <tabstop>eq_variances</tabstop>
+  <tabstop>eq_lvcovariances</tabstop>
+  <tabstop>_1automatic</tabstop>
+  <tabstop>_2ML</tabstop>
+  <tabstop>_3GLS</tabstop>
+  <tabstop>_4WLS</tabstop>
+  <tabstop>_5ULS</tabstop>
+  <tabstop>_6DWLS</tabstop>
+  <tabstop>includeMeanStructure</tabstop>
+  <tabstop>assumeFactorsUncorrelated</tabstop>
+  <tabstop>fixExogenousCovariates</tabstop>
+  <tabstop>factorStandardisation</tabstop>
+  <tabstop>pushButton_3</tabstop>
+  <tabstop>fixManifestInterceptsToZero</tabstop>
+  <tabstop>fixLatentInterceptsToZero</tabstop>
+  <tabstop>omitResidualSingleIndicator</tabstop>
+  <tabstop>residualVariances</tabstop>
+  <tabstop>correlateExogenousLatents</tabstop>
+  <tabstop>addThresholds</tabstop>
+  <tabstop>addScalingParameters</tabstop>
+  <tabstop>correlateDependentVariables</tabstop>
+  <tabstop>_1none</tabstop>
+  <tabstop>_2Mplus</tabstop>
+  <tabstop>_3EQS</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
@@ -1154,6 +1213,22 @@
     <hint type="destinationlabel">
      <x>478</x>
      <y>354</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>_3bootstrap</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>containerBootstrapSamples</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>174</x>
+     <y>553</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>175</x>
+     <y>580</y>
     </hint>
    </hints>
   </connection>
