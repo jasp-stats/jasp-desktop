@@ -211,9 +211,7 @@ mainFunctionPCAEFA <- function(type, dataset = NULL, options, perform = "run",
 		if (options$factorMethod == "parallelAnalysis") {
 
 			parallelAnalysis <- try(silent = FALSE, expr = {
-				image <- .beginSaveImage()
-				pa <- psych::fa.parallel(dataset)	 
-				.endSaveImage(image)
+				pa <- .suppressPlotFA(dataset)
 			})
 
 		if (isTryError(parallelAnalysis)) {
@@ -231,9 +229,7 @@ mainFunctionPCAEFA <- function(type, dataset = NULL, options, perform = "run",
 		} else if (options$factorMethod == "eigenValues") {
 			# Compute ev:
 			eigenValues <- try(silent = FALSE, expr = {
-				image <- .beginSaveImage()
-				pa <- psych::fa.parallel(dataset)
-				.endSaveImage(image)
+				pa <- .suppressPlotFA(dataset)
 			})
 			if (isTryError(eigenValues)) {
 				nFactor <- 1
@@ -774,9 +770,7 @@ mainFunctionPCAEFA <- function(type, dataset = NULL, options, perform = "run",
 	if (!is.null(dataset) && nrow(dataset)> 1 && length(options$variables) > 1) { 
 
 		# Compute ev:
-		image <- .beginSaveImage()
-		pa <- psych::fa.parallel(dataset)	 
-		.endSaveImage(image)
+		pa <- .suppressPlotFA(dataset)
 
 		if (plotType == "pca") {
 			ev_ev <- pa$pc.values
@@ -840,4 +834,13 @@ mainFunctionPCAEFA <- function(type, dataset = NULL, options, perform = "run",
 	}
 
 	return(screePlot)
+}
+
+.suppressPlotFA <- function(...) {
+	tempfile <- tempfile()
+	png(filename=tempfile)
+	result <- psych::fa.parallel(...)
+	dev.off()
+	unlink(tempfile)
+	return(result)
 }

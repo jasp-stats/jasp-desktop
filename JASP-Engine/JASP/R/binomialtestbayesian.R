@@ -422,9 +422,14 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 						plot[["width"]]  <- 530
 						plot[["height"]] <- 400
 						
-						image <- .beginSaveImage(530, 400)
-						.plotSequentialBF.binomTest(dontPlotData = TRUE, hypothesis = hyp, BFH1H0 = BFH1H0)
-						plot[["data"]] <- .endSaveImage(image)
+						.plotFunc <- function() {
+								.plotSequentialBF.binomTest(dontPlotData = TRUE, hypothesis = hyp, BFH1H0 = BFH1H0)
+						}
+						content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+						
+						plot[["convertible"]] <- TRUE
+						plot[["obj"]] <- content[["obj"]]
+						plot[["data"]] <- content[["png"]]
 						
 					}
 					
