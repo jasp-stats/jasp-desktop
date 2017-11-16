@@ -1256,8 +1256,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
     }
     
     if (variable %in% names(stateTabs) && 
-        "data" %in% names(stateTabs[[variable]])) {
-      print(paste(variable, "in state"))
+      "data" %in% names(stateTabs[[variable]])) {
       freqTabs[[length(freqTabs) + 1]] <- stateTabs[[variable]]
       next
     }
@@ -1285,8 +1284,6 @@ Descriptives <- function(dataset=NULL, options, perform="run",
           t <- table(column[splitFactor==lev])
           total <- sum(t)
           cFreq <- 0
-          print(lev)
-          print(t)
           
           for (i in seq_along(names(t))) {
             row <- list()
@@ -1314,7 +1311,6 @@ Descriptives <- function(dataset=NULL, options, perform="run",
             "Cumulative Percent" = ""
           )
         }
-        print(rows)
         
       } else {
         t <- table(column)
