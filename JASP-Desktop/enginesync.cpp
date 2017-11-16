@@ -460,7 +460,17 @@ void EngineSync::subProcessStandardOutput()
 void EngineSync::subProcessStandardError()
 {
 	QProcess *process = qobject_cast<QProcess *>(this->sender());
-	qDebug() << process->readAllStandardError();
+	// qDebug() << process->readAllStandardError();
+
+	QByteArray standardErrorMessage = process->readAllStandardError();
+	std::string errorMessage(standardErrorMessage.constData(), standardErrorMessage.length());
+
+	qDebug() << standardErrorMessage;
+
+	if (errorMessage.find("Error") != std::string::npos) {
+		emit errorReceived(errorMessage);
+	}
+
 }
 
 void EngineSync::subProcessStarted()
@@ -483,4 +493,3 @@ void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus exitStatu
 
 	qDebug() << "subprocess finished" << exitCode;
 }
-

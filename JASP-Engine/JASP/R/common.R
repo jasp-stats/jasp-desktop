@@ -131,7 +131,13 @@ run <- function(name, options.as.json.string, perform="run") {
 
 checkPackages <- function() {
 
-	rjson::toJSON(.checkPackages())
+	p <- try(silent = FALSE, expr = {
+		return(rjson::toJSON(.checkPackages()))
+	})
+
+	if (class(p) == "try-error") {
+		return (.extractErrorMessage(p))
+	}
 }
 
 isTryError <- function(obj){
