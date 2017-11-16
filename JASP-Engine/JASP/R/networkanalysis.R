@@ -792,36 +792,41 @@ NetworkAnalysis <- function (
 	table <- list(
 		title = "Summary of Network",
 		schema = list(fields = list(
-			list(name = "info", title = "", type = "string")
-			#list(name = "value", title = "", type = "number", format="sf:4;dp:3")
+			list(name = "info", title = "Network", type = "string"),
+			list(name = "nodes", title = "Number of nodes", type = "integer"),
+			list(name = "nonZero", title = "Number of non-zero edges", type = "string"),
+			list(name = "Sparsity", title = "Sparsity", type = "number", format="sf:4;dp:3")
 		))
 	)
-	for (i in seq_len(nGraphs)) {
-		table[["schema"]][["fields"]][[i+1]] <-
-			list(name = paste0("value", i), title = names(network[["network"]])[i], type = "number", format="sf:4;dp:3")
-	}
+	
+	# we only want to show this if there are more than 2 networks (but as the first column not the last)
+	if (nGraphs == 1)
+	  table[["schema"]][["fields"]][[1]] <- NULL
 
 	footnotes <- .newFootnotes()
 	msg <- NULL
-
-	TBcolumns <- list(info = c("Number of nodes", "Number of non-zero edges", "Sparsity"))
-
+  # browser()
 	if (is.null(network[["network"]])) { # fill in with .
 
-		TBcolumns[["value"]] <- rep(".", 3*nGraphs)
-		table[["schema"]][["fields"]][[2]][["title"]] <- "Network"
+	  TBcolumns <- list(
+	    info = paste("Network", 1:nGraphs),
+	    nodes = rep(".", nGraphs),
+	    nonZero = rep(".", nGraphs),
+	    Sparsity = rep(".", nGraphs)
+	  )
 
 	} else { # fill in with info from bootnet:::print.bootnet
+	  
+	  TBcolumns <- list(info = names(network[["network"]]),
+	                    nodes = NULL, nonZero = NULL, Sparsity = NULL)
 
+	  nVar <- ncol(network[["network"]][[1]][["graph"]])
 		for (i in seq_len(nGraphs)) {
 
 			nw <- network[["network"]][[i]]
-
-			TBcolumns[[paste0("value", i)]] <- c(
-				nrow(nw[["graph"]]),
-				sum(nw[["graph"]][upper.tri(nw[["graph"]], diag = FALSE)] != 0),
-				mean(nw[["graph"]][upper.tri(nw[["graph"]], diag = FALSE)] == 0)
-			)
+ 			TBcolumns[["nodes"]][i] <- nrow(nw[["graph"]])
+ 			TBcolumns[["nonZero"]][i] <- paste(sum(nw[["graph"]][upper.tri(nw[["graph"]], diag = FALSE)] != 0), "/", nVar * (nVar-1) / 2)
+ 		  TBcolumns[["Sparsity"]][i] <- mean(nw[["graph"]][upper.tri(nw[["graph"]], diag = FALSE)] == 0)
 
 		}
 
