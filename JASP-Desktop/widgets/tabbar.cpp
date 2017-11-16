@@ -24,10 +24,10 @@
 
 using namespace std;
 
+
 TabBar::TabBar(QWidget *parent) :
 	QWidget(parent)
 {
-
 	_helpTab = NULL;
 
 	_background = new QWidget(this);
@@ -236,14 +236,16 @@ void TabBar::init()
 
 }
 
+
 void TabBar::showAbout()
 {
 	_aboutDialog->show();
 	_aboutDialog->raise();
 	_aboutDialog->activateWindow();
-	//The last function performs the same operation as clicking the mouse on the title bar
-	//If you want to ensure that the window is stacked on top as well you should also call raise(). 	//Note that the window must be visible, otherwise activateWindow() has no effect.
+	// The last function performs the same operation as clicking the mouse on the title bar
+	// If you want to ensure that the window is stacked on top as well you should also call raise(). 	//Note that the window must be visible, otherwise activateWindow() has no effect.
 }
+
 
 void TabBar::showPreferences()
 {
@@ -251,6 +253,7 @@ void TabBar::showPreferences()
 	_preferencesDialog->raise();
 	_preferencesDialog->activateWindow();
 }
+
 
 void TabBar::toggleHelp()
 {
@@ -301,10 +304,12 @@ void TabBar::handleModuleButton()
 		_modulesButton->setAttribute(Qt::WA_UnderMouse, false);
 }
 
+
 int TabBar::count() const
 {
 	return _tabButtons.length();
 }
+
 
 PreferencesDialog *TabBar::getPreferencesDialog()
 {
@@ -317,20 +322,24 @@ void TabBar::setCurrentModuleActive()
 		setCurrentTab(_currentModule->objectName());
 }
 
+
 void TabBar::setExactPValues(bool exactPValues)
 {
 	emit setExactPValuesHandler(exactPValues);
 }
+
 
 void TabBar::setFixDecimals(QString numDecimals)
 {
 	emit setFixDecimalsHandler(numDecimals);
 }
 
+
 void TabBar::emptyValuesChanged()
 {
 	emit emptyValuesChangedHandler();
 }
+
 
 void TabBar::setCurrentTab(QString name)
 {
@@ -366,6 +375,7 @@ QString TabBar::getCurrentActiveTab()
 {
 	return _currentTab ? _currentTab->objectName() : QString();
 }
+
 
 void TabBar::helpToggledHandler(bool on)
 {

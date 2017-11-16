@@ -1,6 +1,4 @@
-
-JASP
-====
+![JASP](Resources/jasp-banner.jpg)
 
 JASP aims to be a complete statistical package for both Bayesian and Frequentist statistical methods, that is easy to use and familiar to users of SPSS
 
@@ -33,3 +31,5 @@ Development
 [Guide to Rebasing Your Repo](Docs/development/git-guide.md)
 
 [The JASP R Package List](Docs/development/jasp-r-packages-list.md)
+
+![](Resources/jasp-banner-bottom.jpg)
