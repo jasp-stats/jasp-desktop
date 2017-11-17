@@ -102,8 +102,9 @@ NetworkAnalysisForm::NetworkAnalysisForm(QWidget *parent) :
     
     // for the next release
 #ifdef QT_NO_DEBUG
-    ui->plotClustering->setVisible(false);
-    ui->tableClustering->setVisible(false);
+//    ui->plotClustering->setVisible(false);
+//    ui->tableClustering->setVisible(false);
+    ui->parallelBootstrap->setVisible(false);
 #endif
     
 }

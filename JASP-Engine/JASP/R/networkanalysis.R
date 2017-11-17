@@ -794,7 +794,7 @@ NetworkAnalysis <- function (
 		schema = list(fields = list(
 			list(name = "info", title = "Network", type = "string"),
 			list(name = "nodes", title = "Number of nodes", type = "integer"),
-			list(name = "nonZero", title = "Number of non-zero edges", type = "string"),
+			list(name = "nonZero", title = "Number of non-zero edges"),
 			list(name = "Sparsity", title = "Sparsity", type = "number", format="sf:4;dp:3")
 		))
 	)
