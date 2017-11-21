@@ -10,34 +10,39 @@ test_that("All tables results match", {
   options$tableClustering <- TRUE
   options$tableWeightsMatrix <- TRUE
   options$tableLayout <- TRUE
-  results <- JASPTools::run("NetworkAnalysis", "debug.csv", options, view=FALSE, quiet=TRUE, , sideEffects = "pkgLoading")
+  results <- JASPTools::run("NetworkAnalysis", "debug.csv", options, view=FALSE, quiet=TRUE, sideEffects = "pkgLoading")
 
   table <- results[["results"]][["generalTB"]][["data"]]
   expect_equal_tables(table,
-    list("Network", 3, "2 / 3", 0.333333333333333)
+    list("Network", 3, "2 / 3", 0.333333333333333),
+    label="generalTB"
   )
 
   table <- results[["results"]][["centralityTB"]][["data"]]
   expect_equal_tables(table,
     list("contNormal", -0.577350269189626, -1.12003079401266, -1.14291478283658,
       "contcor1", 1.15470053837925, 0.803219560925303, 0.713968266021615,
-      "contcor2", -0.577350269189626, 0.316811233087358, 0.428946516814968)
+      "contcor2", -0.577350269189626, 0.316811233087358, 0.428946516814968),
+      label="centralityTB"
   )
 
   table <- results[["results"]][["clusteringTB"]][["data"]]
   expect_equal_tables(table,
     list("contcor1", 0, 0, 0, 0, "contcor2", 0, 0, 0, 0, "contNormal",
-      0, 0, 0, 0)
+      0, 0, 0, 0),
+      label="clusteringTB"
   )
 
   table <- results[["results"]][["weightmatrixTB"]][["data"]]
   expect_equal_tables(table,
     list(3, 0, 0.0939476582188346, 0, 1, 0.0939476582188346, 0, 0.612057902640958,
-      2, 0, 0.612057902640958, 0)
+      2, 0, 0.612057902640958, 0),
+      label="weightmatrixTB"
   )
 
   table <- results[["results"]][["layoutTB"]][["data"]]
   expect_equal_tables(table,
-    list(1, 1, -1, 0.0611664081106051, -0.270697752594105, -1)
+    list(1, 1, -1, 0.0611664081106051, -0.270697752594105, -1),
+    label="layoutTB"
   )
 })
