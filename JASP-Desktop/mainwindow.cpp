@@ -1314,6 +1314,9 @@ void MainWindow::resultsPageLoaded(bool success)
 	if (success)
 	{
 		QString version = tq(AppInfo::version.asString());
+#ifdef QT_DEBUG
+		version+="-Debug";
+#endif
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
 
 		setExactPValuesHandler(_settings.value("displayExactPVals", 0).toBool());
