@@ -1,7 +1,6 @@
-
 <h2 align="center">
   <img src="Resources/logo.jpg" height=200/>
-  <br>
+  <br><br>
   A Fresh Way to do Statistics
 </h2>
 
