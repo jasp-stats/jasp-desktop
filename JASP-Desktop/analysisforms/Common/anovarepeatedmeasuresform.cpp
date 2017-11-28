@@ -47,7 +47,7 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	_withinSubjectCellsListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->repeatedMeasuresCells->setModel(_withinSubjectCellsListModel);
 	ui->repeatedMeasuresCells->viewport()->setAttribute(Qt::WA_Hover);
-	ui->repeatedMeasuresCells->setItemDelegate(new AnovaHoverDelegate(ui->repeatedMeasuresCells));
+	ui->repeatedMeasuresCells->setItemDelegate(new CustomHoverDelegate(ui->repeatedMeasuresCells));
 
 
 	_betweenSubjectsFactorsListModel = new TableModelVariablesAssigned(this);

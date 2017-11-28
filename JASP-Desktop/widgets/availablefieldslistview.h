@@ -25,6 +25,8 @@
 
 #include "assignbutton.h"
 #include "listview.h"
+#include "customhoverdelegate.h"
+
 
 class AvailableFieldsListView : public ListView
 {
