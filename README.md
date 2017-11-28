@@ -22,7 +22,7 @@
 </p>
 
 
-### User Guide
+### User guide
 
   - [JASP User Guide](Docs/user-guide/index.md)
 
