@@ -3,6 +3,27 @@
 	"autorun": true,
 	"version": "1.00",
 	"options": [
+		{
+			"name": "tableWidget",
+			"type": "Table",
+			"template": [
+				{
+					"name": "name",
+					"type": "String"
+				},
+				{
+					"name": "levels",
+					"type": "Variables",
+					"default": []
+				},
+				{
+					"name": "values",
+					"type": "DoubleArray",
+					"default": []
+				}
+			],
+			"default": []
+		},
     {
       "name": "factor",
       "type": "Variable"
@@ -27,25 +48,6 @@
       "default": "descCounts",
       "type": "List"
     },
-		{
-			"name": "exPropTable",
-			"type": "Table",
-			"template": [
-				{
-					"name": "name",
-					"type": "String"
-				},
-				{
-					"name": "levels",
-					"type": "Variables"
-				},
-				{
-					"name": "values",
-					"type": "DoubleArray"
-				}
-			],
-			"default": [{}]
-		},
 		{
 			"name": "descriptives",
 			"type": "Boolean",

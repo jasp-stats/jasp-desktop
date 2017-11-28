@@ -32,6 +32,33 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   }
 
 
+	tableWidget = options$tableWidget
+	allNames <- unlist(lapply(options$tableWidget, function(x) x$name))
+	allValues <- unlist(lapply(options$tableWidget, function(x) x$values))
+	allFactors <- unlist(lapply(options$tableWidget, function(x) x$levels))
+
+	print("##############################")
+
+	for (obj in tableWidget) {
+		print(obj$name)
+		print(obj$values)
+	}
+
+
+
+	# print(allNames)
+	# print("FACTORS")
+	# if(!is.null(allFactors)) {
+	# 	print(allFactors)
+	# }
+	#
+	# for (i in 1:length(allNames)) {
+	# 	print(allNames[[i]])
+	# 	print(allValues)
+	# }
+
+	print("##############################")
+
   if (is.null(dataset)) {
     if (perform == "run") {
       dataset <- .readDataSetToEnd(columns.as.numeric=asnum,
@@ -66,7 +93,8 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
       if (!any(diff[["factor"]], diff[["counts"]],
                diff[["confidenceIntervalInterval"]],
                diff[["hypothesis"]], diff[["exProbVar"]],
-               diff[["expectedProbs"]], diff[["simulatepval"]])){
+               diff[["expectedProbs"]], diff[["simulatepval"]],
+               diff[["tableWidget"]])) {
 
         chisqResults <- state[["chisqResults"]]
 
@@ -574,11 +602,11 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     return(eProps)
 
 
-  } else if (length(options$exPropTable) > 0) {
+  } else if (length(options$tableWidget) > 0) {
 
-    eProps <- sapply(options$exPropTable, function(x) x$values)
-    colnames(eProps) <- sapply(options$exPropTable, function(x) x$name)
-    rownames(eProps) <- options$exPropTable[[1]]$levels
+    eProps <- sapply(options$tableWidget, function(x) x$values)
+    colnames(eProps) <- sapply(options$tableWidget, function(x) x$name)
+    rownames(eProps) <- options$tableWidget[[1]]$levels
     return(data.frame(eProps))
 
   } else {
