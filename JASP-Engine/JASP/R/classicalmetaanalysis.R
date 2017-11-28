@@ -372,7 +372,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     
     table <- list(title = title)
     if (! is.null(egger)) {
-      table$x <- coef(summary(egger$fit))[egger$predictor, c(paste0(cols[1], "val"), "pval")]
+      table$x <- metafor::coef.summary.rma(summary(egger$fit))[egger$predictor, c(paste0(cols[1], "val"), "pval")]
       colnames(table$x) <- cols
     } else {
       table$x <- cols
