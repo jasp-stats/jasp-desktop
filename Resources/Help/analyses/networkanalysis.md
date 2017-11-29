@@ -196,7 +196,7 @@ Friedman, J., Hastie, T., & Tibshirani, R. (2008). Sparse inverse covariance est
 
 Friedman, J. H., Hastie, T., & Tibshirani, R. (2014). glasso: Graphical lasso estimation of gaussian graphical models. Retrieved from https://CRAN.R-project.org/package=glasso
 
-Fruchterman, T. M., & Reingold, E. M. (1991). Graph drawing by force‐directed placement. Software: Practice and experience, 21(11), 1129-1164.
+Fruchterman, T. M., & Reingold, E. M. (1991). Graph drawing by force-directed placement. Software: Practice and experience, 21(11), 1129-1164.
 
 Haslbeck, J., & Waldorp, L. J. (2015). mgm: Structure Estimation for time-varying mixed graphical models in high-dimensional data. arXiv preprint arXiv:1510.06871.
 
