@@ -23,6 +23,7 @@
 #include <QItemDelegate>
 #include <QPainter>
 #include <QToolTip>
+#include <QColor>
 
 class CustomHoverDelegate : public QItemDelegate
 {
@@ -32,7 +33,7 @@ public:
 	{
 		if(option.state & QStyle::State_MouseOver)
 		{
-			painter->fillRect(option.rect, Qt::lightGray);
+			painter->fillRect(option.rect, QColor(220, 241, 251));
 			QString str = index.data().toString();
 			QToolTip::showText(QCursor::pos(), str);
 		}
