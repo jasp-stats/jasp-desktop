@@ -79,6 +79,9 @@ void AboutDialog::aboutPageLoaded(bool success)
 	if (success)
 	{
 		QString version = tq(AppInfo::version.asString());
+#ifdef QT_DEBUG
+		version+="-Debug";
+#endif
 		QString builddate = tq(AppInfo::builddate);
 		ui->aboutView->page()->mainFrame()->evaluateJavaScript("window.setAppYear()");
 		ui->aboutView->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version +"')");
