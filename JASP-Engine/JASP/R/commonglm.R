@@ -10,17 +10,9 @@
       # calculate null and full models
       nullMod <- glm(nf, family = "binomial", data = dataset)
       fullMod <- glm(ff, family = "binomial", data = dataset)
-      
-      # Maximum number of steps is 2 times the number of terms in the full model
-      maxStep <- length(attr(fullMod[["terms"]], "term.labels")) * 2
-      
-      
+
       glmRes <- .glmStep(nullMod, fullMod, dataset,
-                         method = options[["method"]],
-                         test = "LR", 
-                         pentry = options[["entryPval"]],
-                         premove = options[["removalPval"]],
-                         maxk = maxStep)
+                         method = options[["method"]])
 
     } else {
       .quitAnalysis("GLM type not supported")
@@ -102,8 +94,7 @@
   return(formula(paste(.v(dependent), "~", paste(t, collapse = "+"))))
 }
 
-.glmStep <- function(nullModel, fullModel, dataset, method = "enter",
-                    test = "LR", pentry = 0.05, premove = 0.10, maxk = 1000) {
+.glmStep <- function(nullModel, fullModel, dataset, method = "enter") {
   # .glmStep function
   # -----------------
   # INPUT: calculated glm objects: nullModel, fullModel, and a dataset
@@ -113,147 +104,39 @@
   # (method = enter, forward, stepwise) or the fullModel (method = backward)
   # The last model is the final model that was converged on.
 
-
-  # first, create temporary environment with dataset for update() calls
+  # first, create temporary environment with dataset for stepAIC() calls
   tempenv <- new.env()
   datname <- as.character(as.list(getCall(fullModel))$data)
   assign(datname, dataset, envir = tempenv)
 
   null <- nullModel$formula
   full <- fullModel$formula
-  dropscope <- as.formula(paste0("~. -", null[3]))
 
-  converged <- FALSE
-  modlist <- vector("list", maxk)
+  assign("nf", null, envir = tempenv)
+  assign("ff", full, envir = tempenv)
 
-
-  currentk <- 1
   if (method == "enter") {
+    modlist <- vector("list", 2)
     modlist[[1]] <- nullModel
     modlist[[2]] <- fullModel
-    currentk <- 2
-  } else if (method == "forward") {
-    currentModel <- nullModel
-    modlist[[currentk]] <- currentModel
-    while (!converged) {
-      if (currentk > maxk) {
-        # nonconvergence
-        break
-      }
-      # check addition
-      a <- try(add1(currentModel, full, test = test, 
-                    x = model.matrix(fullModel)), 
-               silent = TRUE)
-      if (inherits(a, "try-error")) {
-        # currentmodel == fullmodel
-        converged <- TRUE
-        next
-      }
-      if (any(na.omit(a[["Pr(>Chi)"]]) < pentry)) {
-        # add 1!
-        addition <- as.formula(paste("~ . +",rownames(a)[which.max(a$LRT)]))
-        newF <- update.formula(currentModel$formula, addition)
-        # run the update in the temporary environment
-        currentModel <- evalq(update(currentModel, newF), tempenv)
-        currentk <- currentk + 1
-      } else {
-        converged <- TRUE
-        next
-      }
-
-      modlist[[currentk]] <- currentModel
-    }
   } else if (method == "backward") {
-    currentModel <- fullModel
-    modlist[[currentk]] <- currentModel
-    while (!converged) {
-      if (currentk > maxk) {
-        # nonconvergence
-        break
-      }
-      # check addition
-      a <- try(drop1(currentModel, dropscope, test = test), silent = TRUE)
-      if (inherits(a, "try-error")) {
-        # currentmodel == nullmodel
-        converged <- TRUE
-        next
-      }
-      if (any(na.omit(a[["Pr(>Chi)"]]) > premove)) {
-        # drop 1!
-        removal <- as.formula(paste("~ . -",rownames(a)[which.min(a$LRT)]))
-        newF <- update.formula(currentModel$formula, removal)
-        # run the update in the temporary environment
-        currentModel <- evalq(update(currentModel, newF), tempenv)
-        currentk <- currentk + 1
-      } else {
-        converged <- TRUE
-        next
-      }
-
-      modlist[[currentk]] <- currentModel
-    }
-  } else if (method == "stepwise") {
-    currentModel <- nullModel
-    modlist[[currentk]] <- currentModel
-    while (!converged) {
-      if (currentk > maxk) {
-        # nonconvergence
-        break
-      }
-      # check addition
-      a <- try(add1(currentModel, full, test = test, 
-                    x = model.matrix(fullModel)), 
-               silent = TRUE)
-      # check removal
-      b <- try(drop1(currentModel, dropscope, test = test), silent = TRUE)
-
-      if (inherits(a, "try-error")) (
-        addany <- FALSE
-      ) else {
-        addany <- any(na.omit(a[["Pr(>Chi)"]]) < pentry)
-      }
-      if (inherits(b, "try-error")) (
-        dropany <- FALSE
-      ) else {
-        dropany <- any(na.omit(b[["Pr(>Chi)"]]) > premove)
-      }
-
-
-      if (addany & dropany) {
-        maxa <- max(na.omit(a$LRT))
-        maxb <- max(na.omit(b$LRT))
-
-        if (maxa > maxb) {
-          dropany <- FALSE
-        } else {
-          addany <- FALSE
-        }
-      }
-
-      if (addany) {
-        # add 1!
-        addition <- as.formula(paste("~ . +",rownames(a)[which.max(a$LRT)]))
-        newF <- update.formula(currentModel$formula, addition)
-        # run the update in the temporary environment
-        currentModel <- evalq(update(currentModel, newF), tempenv)
-        currentk <- currentk + 1
-      } else if (dropany) {
-        # drop 1!
-        removal <- as.formula(paste("~ . -",rownames(b)[which.min(b$LRT)]))
-        newF <- update.formula(currentModel$formula, removal)
-        # run the update in the temporary environment
-        currentModel <- evalq(update(currentModel, newF), tempenv)
-        currentk <- currentk + 1
-      } else {
-        converged <- TRUE
-        next
-      }
-
-      modlist[[currentk]] <- currentModel
-    }
+    stepOut <- MASS::stepAIC(fullModel,
+                                   scope = list(upper=full, lower = null),
+                                   trace = 0,
+                                   direction = "backward",
+                                   keep = function(m, b) list(m))
+    modlist <- as.list(stepOut$keep[,1:ncol(stepOut$keep)])
+  } else {
+    # translate method to stepAIC direction
+    direct <- ifelse(method == "forward", method, "both")
+    #browser()
+    stepOut <- JASPstepAIC(nullModel, full, trace = 0,
+                                   direction = direct,
+                                   keep = function(m, b) list(m))
+    modlist <- as.list(stepOut$keep[,1:ncol(stepOut$keep)])
   }
 
-  return(modlist[1:currentk])
+  return(modlist)
 }
 
 .glmModelSummary <- function(glmObj, options, perform, type) {
@@ -275,26 +158,29 @@
       list(name="tju", title="Tjur R²", type="number", format="sf:4;dp:3")
     )
 
+    if (options[["method"]] != "enter") {
+      fields[[6]][["title"]] <- "\u0394\u03A7\u00B2"
+    }
+
     out[["schema"]] <- list(fields=fields)
 
     if (perform == "run" && !is.null(glmObj)) {
 
       hasNuisance <- .hasNuisance(options)
+      if (hasNuisance) {
+        terms <- rownames(summary(glmObj[[1]])[["coefficients"]])
+        terms <- sapply(terms[terms!="(Intercept)"], .formatTerm,
+                        glmModel=glmObj[[1]])
+        footnotes <- .newFootnotes()
+        msg <- paste0("Null model contains nuisance parameters: ",
+                      paste(terms, collapse = ", "))
+        .addFootnote(footnotes, symbol="<em>Note.</em>", text = msg)
+        out[["footnotes"]] <- as.list(footnotes)
+      }
 
       if (options[["method"]] == "enter") {
         # Two rows: h0 and h1
         lr <- .lrtest(glmObj[[1]], glmObj[[2]])
-
-        if (hasNuisance) {
-          terms <- rownames(summary(glmObj[[1]])[["coefficients"]])
-          terms <- sapply(terms[terms!="(Intercept)"], .formatTerm,
-                          glmModel=glmObj[[1]])
-          footnotes <- .newFootnotes()
-          msg <- paste0("Null model contains nuisance parameters: ",
-                        paste(terms, collapse = ", "))
-          .addFootnote(footnotes, symbol="<em>Note.</em>", text = msg)
-          out[["footnotes"]] <- as.list(footnotes)
-        }
 
         rows <- list(
           list(mod = "H\u2080",
@@ -322,11 +208,11 @@
       } else {
         # multiple rows: m1 - mk
         rows <- vector("list", length(glmObj))
-        
+
         for (midx in 1:length(glmObj)) {
           mObj <- glmObj[[midx]]
           if (midx > 1) {
-            if (options[["method"]] == "forward" || 
+            if (options[["method"]] == "forward" ||
                 options[["method"]] == "stepwise") {
               fadden <- .mcFadden(mObj, glmObj[[1]])
               nagel <- .nagelkerke(mObj, glmObj[[1]])
@@ -334,7 +220,7 @@
               fadden <- -1*.mcFadden(glmObj[[1]], mObj)
               nagel <- -1*.nagelkerke(glmObj[[1]], mObj)
             }
-            
+
             lr <- .lrtest(glmObj[[midx]], glmObj[[midx-1]])
             rows[[midx]] <- list(
               mod = as.character(midx),
@@ -435,7 +321,7 @@
     }
     if (options[["VovkSellkeMPR"]]) {
       .addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
-      <em>p</em>-Ratio: Based the <em>p</em>-value, the maximum
+      <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
       possible odds in favor of H\u2081 over H\u2080 equals
       1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
       (Sellke, Bayarri, & Berger, 2001).")
@@ -784,7 +670,7 @@
         predictors <- predictors[.v(predictors) %in% attr(mObj[["terms"]],
                                                           "term.labels")]
         plots <- vector("list", length(predictors))
-        
+
         for (i in seq_along(predictors)) {
           resPlot <- list()
           gg <- .plotGlmResiduals(mObj, predictors[i],
@@ -831,7 +717,7 @@
   if (type == "binomial") {
     if (!is.null(glmObj)) {
       resPlot <- list()
-      gg <- .plotGlmResiduals(glmObj[[length(glmObj)]], 
+      gg <- .plotGlmResiduals(glmObj[[length(glmObj)]],
                               type = options[["residualType"]])
       plotObj <- .writeImage(width = options[["plotWidth"]],
                              height = options[["plotHeight"]],
@@ -982,7 +868,7 @@
 
   chisq <- max(0, subModel[["deviance"]] - superModel[["deviance"]])
   df <- subModel[["df.residual"]] - superModel[["df.residual"]]
-  
+
   if (chisq == 0 || df == 0) {
     p <- NULL
   } else {
@@ -1027,7 +913,7 @@
   ps <- predict(glmModel, type = "response")
   ys <- glmModel[["y"]]
   return(max(c(0,mean(ps[ys])-mean(ps[-ys]))))
-  
+
 }
 
 .bic <- function(glmModel) {
