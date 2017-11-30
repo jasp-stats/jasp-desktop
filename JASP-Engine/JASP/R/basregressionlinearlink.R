@@ -724,6 +724,7 @@ BASRegressionLinearLink <- function (
 			plotFunc <- function() {
 				BAS:::image.bas(bas_obj, rotate = FALSE)
 			}
+		    # plotObj <- .plotImage.basReg(bas_obj) # to be implemented later
 			content <- .writeImage(width = 530, height = 400, plot = plotFunc)
 
 			plot[["convertible"]] <- TRUE
@@ -782,11 +783,8 @@ BASRegressionLinearLink <- function (
 
 			p <- try(silent = FALSE, expr = {
 
-				plotFunc <- function() {
-					BAS:::plot.coef.bas(BAS:::coef.bas(bas_obj), subset = list(i), ask = FALSE,
-															bty = "n")
-				}
-				content <- .writeImage(width = 530, height = 400, plot = plotFunc)
+				plotObj <- .plotCoef.basReg(BAS:::coef.bas(bas_obj), subset = list(i))
+				content <- .writeImage(width = 530, height = 400, plot = plotObj)
 
 				plot[["convertible"]] <- TRUE
 				plot[["obj"]] <- content[["obj"]]
@@ -851,11 +849,8 @@ BASRegressionLinearLink <- function (
 
 		p <- try(silent = FALSE, expr = {
 
-			plotFunc <- function() {
-				BAS:::plot.bas(bas_obj, ask = FALSE, which = c(which), caption = "",
-											 bty = "n")
-			}
-			content <- .writeImage(width = 530, height = 400, plot = plotFunc)
+			plotObj <- .plotBas.basReg(bas_obj, which = c(which))
+			content <- .writeImage(width = 530, height = 400, plot = plotObj)
 
 			plot[["convertible"]] <- TRUE
 			plot[["obj"]] <- content[["obj"]]
@@ -921,3 +916,299 @@ BASRegressionLinearLink <- function (
 
 	return(plot)
 }
+
+.plotCoef.basReg <- function (x, e = 1e-04, subset = 1:x$n.vars, ...) {
+
+	# based on BAS:::plot.coef.bas.
+
+	# start of copied code
+	df = x$df
+	i <- subset[[1]]
+
+	sel = x$conditionalmeans[, i] != 0
+	prob0 = 1 - x$probne0[i]
+	mixprobs = x$postprobs[sel]/(1 - prob0)
+	means = x$conditionalmeans[sel, i, drop = TRUE]
+	sds = x$conditionalsd[sel, i, drop = TRUE]
+	name = x$namesx[i]
+	df.sel = df[sel]
+
+	df <- df.sel # modified from original
+
+	nsteps = 500
+	if (prob0 == 1 | length(means) == 0) {
+		xlower = -0
+		xupper = 0
+		xmax = 1
+	} else {
+		qmin = min(qnorm(e/2, means, sds))
+		qmax = max(qnorm(1 - e/2, means, sds))
+		xlower = min(qmin, 0)
+		xupper = max(0, qmax)
+	}
+
+	xx = seq(xlower, xupper, length.out = nsteps)
+	yy = rep(0, times = length(xx))
+	maxyy = 1
+	if (prob0 < 1 & length(sds) > 0) {
+		yy = mixprobs %*% apply(matrix(xx, ncol = 1), 1,
+								FUN = function(x, d, m, s) {
+									dt(x = (x - m)/s, df = d)/s
+								}, d = df, m = means, s = sds)
+		maxyy = max(yy)
+	}
+	ymax = max(prob0, 1 - prob0)
+	# end of copied code
+
+	dfLines <- data.frame(
+		x = c(0, 0, xx),
+		y = c(0, prob0, (1 - prob0) * yy/maxyy),
+		g = factor(rep(1:2, c(2, length(xx))))
+	)
+	xBreaks <- pretty(range(xx), 3)
+
+	g <- JASPgraphs::drawLines(dat = dfLines,
+							   mapping = ggplot2::aes(x = x, y = y, group = g, color = g),
+							   show.legend = FALSE) +
+	    ggplot2::ylab("log(Marginal)") +
+	    ggplot2::scale_x_continuous(name = name, breaks = xBreaks, limits = range(xBreaks))
+	g <- g + ggplot2::scale_color_manual(values = c("gray", "black"))
+	g <- JASPgraphs::themeJasp(g)
+
+	return(g)
+}
+
+.plotBas.basReg <- function(x, which = c(which), id.n = 3,
+							labels.id = NULL, sub.caption = NULL, ...) {
+	# based on BAS::plot.bas
+
+	# browser()
+	show <- rep(FALSE, 4)
+	show[which] <- TRUE
+	iid <- 1:id.n
+	if (show[1]) {
+		yhat = fitted(x, estimator = "BMA")
+		r = x$Y - yhat
+		n <- length(r)
+		if (id.n > 0) {
+			if (is.null(labels.id))
+				labels.id <- paste(1:n)
+			show.r <- sort.list(abs(r), decreasing = TRUE)[iid]
+		}
+	}
+	# text.id <- function(x, y, ind, adj.x = TRUE) {
+	#     labpos <- if (adj.x)
+	#         label.pos[1 + as.numeric(x > mean(range(x)))]
+	#     else 3
+	#     text(x, y, labels.id[ind], cex = cex.id, xpd = TRUE,
+	#          pos = labpos, offset = 0.25)
+	# }
+	# if (any(show[2:3])) {
+	#     show.m = sort.list(x$logmarg, decreasing = TRUE)[iid]
+	#     label.m = paste(1:x$n.models)
+	# }
+	if (is.null(sub.caption)) {
+		cal <- x$call
+		if (!is.na(m.f <- match("formula", names(cal)))) {
+			cal <- cal[c(1, m.f)]
+			names(cal)[2] <- ""
+		}
+		cc <- deparse(cal, 80)
+		nc <- nchar(cc[1])
+		abbr <- length(cc) > 1 || nc > 75
+		if (abbr) {
+			sub.caption <- paste(substr(cc[1], 1, min(75, nc)), "...")
+		} else {
+			sub.caption <- cc[1]
+		}
+	}
+	# one.fig <- prod(par("mfcol")) == 1
+
+	if (show[1]) {
+		# browser()
+		dfPoints <- data.frame(
+			x = yhat,
+			y = r
+		)
+
+		xBreaks <- pretty(range(dfPoints$x), 3)
+		g <- JASPgraphs::drawAxis()
+		g <- g + ggplot2::geom_hline(yintercept = 0, linetype = 2, col = "gray")
+		g <- JASPgraphs::drawSmooth(g, dat = dfPoints, color = "red", alpha = .7)
+		g <- JASPgraphs::drawPoints(g, dat = dfPoints, size = 2, alpha = .85) +
+			ggplot2::ylab("Residuals") +
+			ggplot2::scale_x_continuous(name = "Predictions under BMA", breaks = xBreaks, limits = range(xBreaks))
+		g <- JASPgraphs::themeJasp(g)
+
+		return(g)
+
+	}
+	if (show[2]) {
+		# browser()
+		cum.prob = cumsum(x$postprobs)
+		m.index = 1:x$n.models
+
+		dfPoints <- data.frame(
+			x = m.index,
+			y = cum.prob
+		)
+
+		g <- JASPgraphs::drawSmooth(dat = dfPoints, color = "red", alpha = .7)
+		g <- JASPgraphs::drawPoints(g, dat = dfPoints, size = 4) +
+			ggplot2::ylab("Cumulative Probability") +
+			ggplot2::xlab("Model Search Order")
+		g <- JASPgraphs::themeJasp(g)
+		return(g)
+	}
+	if (show[3]) {
+		# browser()
+		logmarg = x$logmarg
+		dim = x$size
+
+		dfPoints <- data.frame(
+			x = dim,
+			y = logmarg
+		)
+
+		# gonna assume here that dim (the number of parameters) is always an integer
+		xBreaks <- unique(round(pretty(dim)))
+		g <- JASPgraphs::drawPoints(dat = dfPoints, size = 4) +
+			ggplot2::ylab("log(Marginal)") +
+			ggplot2::xlab("Model Dimension") +
+			ggplot2::scale_x_continuous(breaks = xBreaks)
+		g <- JASPgraphs::themeJasp(g)
+		return(g)
+
+	}
+	if (show[4]) {
+		# browser()
+		probne0 = x$probne0
+		variables = x$namesx # 1:x$n.vars
+		priorProb <- x$priorprobs[1:x$n.vars]
+
+		# reorder from high to low
+		o <- order(probne0, decreasing = FALSE)
+		probne0 <- probne0[o]
+		variables <- variables[o]
+		priorProb <- priorProb[o]
+
+		width <- .8 # width of the bars
+		dfBar <- data.frame(
+			x = factor(variables, levels = variables),
+			y = probne0
+		)
+		dfLine <- data.frame(
+			x = rep(1:x$n.vars, each = 2) + c(-width/2, width/2),
+			y = rep(priorProb, each = 2),
+			g = rep(factor(variables), each = 2)
+		)
+
+		g <- JASPgraphs::drawBars(dat = dfBar, width = width)
+		g <- JASPgraphs::drawLines(g, dat = dfLine,
+								   mapping = ggplot2::aes(x = x, y = y, group = g), linetype = 2) +
+			ggplot2::ylab("Marginal Inclusion Probability") +
+			ggplot2::xlab("")
+		# ggplot2::xlab(paste0("Model Dimension\n", sub.caption))
+		g <- JASPgraphs::themeJasp(g, horizontal = TRUE)
+		return(g)
+
+	}
+}
+
+.plotImage.basReg <- function(x, top.models = 20, intensity = TRUE, prob = TRUE,
+							  log = TRUE, rotate = TRUE, color = "rainbow", subset = NULL,
+							  offset = 0.75, digits = 3, vlas = 2, plas = 0, rlas = 0,
+							  ...) {
+	# code from BAS:::image.bas
+	postprob = x$postprobs
+	top.models = min(top.models, x$n.models)
+	best = order(-x$postprobs)[1:top.models]
+	postprob = postprob[best]/sum(postprob[best])
+	which.mat <- BAS:::list2matrix.which(x, best)
+	nvar <- ncol(which.mat)
+	if (is.null(subset))
+		subset = 1:nvar
+	which.mat = which.mat[, subset, drop = FALSE]
+	nvar = ncol(which.mat)
+	namesx = x$namesx[subset]
+	scale = postprob
+	prob.lab = "Posterior Probability"
+	if (log) {
+		scale = log(postprob) - min(log(postprob))
+		prob.lab = "Log Posterior Odds"
+	}
+	if (intensity)
+		which.mat = sweep(which.mat, 1, scale + offset, "*")
+	if (rotate)
+		scale = rev(scale)
+	if (prob)
+		m.scale = cumsum(c(0, scale))
+	else m.scale = seq(0, top.models)
+	mat = (m.scale[-1] + m.scale[-(top.models + 1)])/2
+	colors = switch(color,
+					rainbow = c("black", rainbow(top.models +1, start = 0.75, end = 0.05)),
+					blackandwhite = gray(seq(0, 1, length = top.models)))
+
+	# end of code from BAS:::image.bas
+
+	w <- diff(mat)
+	w <- c(w[1], w)
+
+	dfHeat <- data.frame(
+		x = rep(rev(mat), ncol(which.mat)),
+		y = rep(1:nvar, each = nrow(which.mat)),
+		z = c(which.mat[, nvar:1]),
+		zCat = 1* (abs(c(which.mat[, nvar:1])) > .Machine$double.eps),
+		w = rev(w)
+	)
+	dfHeat$x <- dfHeat$x - dfHeat$w / 2
+	# above line is required since width expands half of widht left and half of width right
+	# check code below to verify
+	# cbind(dfHeat$x - dfHeat$w / 2, dfHeat$x + dfHeat$w / 2)
+	nr <- nrow(dfHeat)
+	dfLines <- data.frame(
+		x = rep(c(mat - w, mat[length(mat)]), each = 2),
+		y = rep(c(.5, nvar+.5), length(mat)+1),
+		g = factor(rep(1:(length(mat)+1), each = 2))
+	)
+
+	# browser()
+	discrete <- TRUE
+	if (discrete) {
+		show.legend <- FALSE
+		colors[colors != "black"] <- "green"
+		colors[colors == "black"] <- "white"
+		mapping = ggplot2::aes(x = x, y = y, fill = zCat, width = w)
+	} else {
+		show.legend <- TRUE
+		mapping = ggplot2::aes(x = x, y = y, fill = z, width = w)
+	}
+
+	g <- JASPgraphs::drawHeatmap(dat = dfHeat, show.legend = show.legend, fillColor = colors,
+								 mapping = mapping,
+								 geom = "tile")
+	g
+	xBreaks <- mat - w/2
+	g <- JASPgraphs::drawAxis(graph = g, xName = prob.lab, xBreaks = xBreaks, xLabels = round(scale, digits = digits),
+				  yName = "", yBreaks = 1:nvar, yLabels = namesx, xLimits = NULL, yLimits = NULL,
+				  secondaryXaxis = list(~.,name = "Model Rank", breaks = xBreaks, labels = top.models:1),
+				  xTrans = scales::reverse_trans())
+	g <- JASPgraphs::drawLines(g, dat = dfLines, mapping = ggplot2::aes(x = x, y = y, group = g),
+				   color = "gray50", alpha = .7, size = 2)
+	g <- JASPgraphs::themeJasp(graph = g, legend.position = "right", axisTickLength = 0,
+							   bty = "o")
+
+	# this plot needs some additional treatment
+	unit <- JASPgraphs::graphOptions("axisTickLengthUnit")
+	fillLg <- ggplot2::guide_colorbar(title = "", default.unit = unit,
+									  barheight = 5, barwidth = 1)
+	# browser()
+	g <- g + ggplot2::theme(
+		axis.text.x.bottom = ggplot2::element_text(margin = ggplot2::margin(0, 0, .5, 0, unit)),
+		axis.text.x.top = ggplot2::element_text(margin = ggplot2::margin(.5, 0, 0, 0, unit))
+	) + ggplot2::guides(fill = fillLg)
+
+	return(g)
+
+}
+
