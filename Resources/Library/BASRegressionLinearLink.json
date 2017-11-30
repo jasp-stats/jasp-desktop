@@ -31,9 +31,20 @@
 			"max": 1
 		},
 		{
-			"name": "logmarg",
+			"name": "postSummary",
 			"type": "Boolean",
 			"default": false
+		},
+		{
+			"name": "summaryType",
+			"type": "List",
+			"options": [
+				"best",
+				"complex",
+				"median",
+				"averaged"
+			],
+			"default": "best"
 		},
 		{
 			"name": "descriptives",
@@ -99,14 +110,14 @@
 			"type": "Boolean"
 		},
 		{
-			"options": ["AIC", "BIC", "EB-global", "EB-local", "g-prior", "hyper-g", "hyper-g-laplace", "hyper-g-n", "ZS-full", "ZS-null"],
-			"default": "ZS-null",
+			"options": ["AIC", "BIC", "EB-global", "EB-local", "g-prior", "hyper-g", "hyper-g-laplace", "hyper-g-n", "JZS"],
+			"default": "JZS",
 			"name": "priorRegressionCoefficients",
 			"type": "List"
 		},
 		{
 			"name": "samplingMethod",
-			"options": ["BAS", "MCMC", "MCMCBAS"],
+			"options": ["BAS", "MCMC"],
 			"default": "BAS",
 			"type": "List"
 		},
@@ -121,14 +132,19 @@
 		},
 		{
 			"options": ["Bernoulli", "beta.binomial", "uniform"],
-			"default": "beta.binomial",
+			"default": "uniform",
 			"name": "modelPrior",
 			"type": "List"
 		},
 		{
-			"name": "gPriorParameter",
+			"name": "alpha",
 			"type": "Number",
 			"value": 3
+		},
+		{
+			"name": "rScale",
+			"type": "Number",
+			"value": 0.354
 		},
 		{
 			"name": "modelTerms",

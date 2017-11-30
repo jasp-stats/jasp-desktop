@@ -82,9 +82,13 @@ BASRegressionLinearLinkForm::BASRegressionLinearLinkForm(QWidget *parent) :
 	retain.setRetainSizeWhenHidden(true);
 	ui->bernoulliParam->setSizePolicy(retain);
 
-	retain = ui->gPriorParameter->sizePolicy();
+	retain = ui->alpha->sizePolicy();
 	retain.setRetainSizeWhenHidden(true);
-	ui->gPriorParameter->setSizePolicy(retain);
+	ui->alpha->setSizePolicy(retain);
+
+	retain = ui->rScale->sizePolicy();
+	retain.setRetainSizeWhenHidden(true);
+	ui->rScale->setSizePolicy(retain);
 
 	defaultOptions();
 }
@@ -101,9 +105,9 @@ void BASRegressionLinearLinkForm::defaultOptions()
 	// default behaviour: hide the number of iterations for MCMC
 	ui->label_iterationsMCMC->hide();
 	ui->iterationsMCMC->hide();
-	// hide the g prior parameter, alpha
-	ui->label_gPriorParameter->hide();
-	ui->gPriorParameter->hide();
+	// hide the alpha parameter
+	ui->label_alpha->hide();
+	ui->alpha->hide();
 
 	// default behaviour: show beta binomial parameters, hide bernoulli params
 	defaultOptionsModelPrior();
@@ -112,10 +116,10 @@ void BASRegressionLinearLinkForm::defaultOptions()
 
 void BASRegressionLinearLinkForm::defaultOptionsModelPrior()
 {
-	ui->label_betaBinomialParamA->show();
-	ui->label_betaBinomialParamB->show();
-	ui->betaBinomialParamA->show();
-	ui->betaBinomialParamB->show();
+	ui->label_betaBinomialParamA->hide();
+	ui->label_betaBinomialParamB->hide();
+	ui->betaBinomialParamA->hide();
+	ui->betaBinomialParamB->hide();
 	ui->label_bernoulliParam->hide();
 	ui->bernoulliParam->hide();
 }
@@ -146,15 +150,6 @@ void BASRegressionLinearLinkForm::on_MCMC_clicked()
 {
 	ui->label_numberOfModels->hide();
 	ui->numberOfModels->hide();
-	ui->label_iterationsMCMC->show();
-	ui->iterationsMCMC->show();
-}
-
-
-void BASRegressionLinearLinkForm::on_MCMCBAS_clicked()
-{
-	ui->label_numberOfModels->show();
-	ui->numberOfModels->show();
 	ui->label_iterationsMCMC->show();
 	ui->iterationsMCMC->show();
 }
@@ -196,60 +191,75 @@ void BASRegressionLinearLinkForm::on_uniformPrior_clicked()
 	}
 }
 
+void BASRegressionLinearLinkForm::defaultPriorOpts() {
+	ui->label_alpha->hide();
+	ui->alpha->hide();
+	ui->label_rScale->hide();
+	ui->rScale->hide();
+}
 
 void BASRegressionLinearLinkForm::on_g_prior_clicked()
 {
-	ui->label_gPriorParameter->show();
-	ui->gPriorParameter->show();
+	defaultPriorOpts();
+}
+
+void BASRegressionLinearLinkForm::on_jzs_clicked()
+{
+	ui->label_alpha->hide();
+	ui->alpha->hide();
+	ui->label_rScale->show();
+	ui->rScale->show();
 }
 
 
 void BASRegressionLinearLinkForm::on_hyper_g_clicked()
 {
-	ui->label_gPriorParameter->show();
-	ui->gPriorParameter->show();
+	ui->label_alpha->show();
+	ui->alpha->show();
+	ui->label_rScale->hide();
+	ui->rScale->hide();
 }
 
 
 void BASRegressionLinearLinkForm::on_hyper_g_laplace_clicked()
 {
-	ui->label_gPriorParameter->show();
-	ui->gPriorParameter->show();
+	ui->label_alpha->show();
+	ui->alpha->show();
+	ui->label_rScale->hide();
+	ui->rScale->hide();
 }
 
 
 void BASRegressionLinearLinkForm::on_hyper_g_n_clicked()
 {
-	ui->label_gPriorParameter->show();
-	ui->gPriorParameter->show();
+	ui->label_alpha->show();
+	ui->alpha->show();
+	ui->label_rScale->hide();
+	ui->rScale->hide();
 }
 
 
 void BASRegressionLinearLinkForm::on_aic_clicked()
 {
-	ui->label_gPriorParameter->hide();
-	ui->gPriorParameter->hide();
+	defaultPriorOpts();
 }
 
 
 void BASRegressionLinearLinkForm::on_bic_clicked()
 {
-	ui->label_gPriorParameter->hide();
-	ui->gPriorParameter->hide();
+	defaultPriorOpts();
 }
 
 
 void BASRegressionLinearLinkForm::on_eb_global_clicked()
 {
-	ui->label_gPriorParameter->hide();
-	ui->gPriorParameter->hide();
+	defaultPriorOpts();
 }
 
 
 void BASRegressionLinearLinkForm::on_eb_local_clicked()
 {
-	ui->label_gPriorParameter->hide();
-	ui->gPriorParameter->hide();
+	defaultPriorOpts();
 }
 
 

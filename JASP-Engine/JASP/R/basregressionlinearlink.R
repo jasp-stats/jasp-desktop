@@ -26,11 +26,12 @@ BASRegressionLinearLink <- function (
 
 	# Configure the state
 	modelOpts <- c("dependent", "covariates", "wlsWeights", "modelTerms",
-						 		 "priorRegressionCoefficients", "gPriorParameter",
+						 		 "priorRegressionCoefficients", "alpha", "rScale",
 						 	 	 "modelPrior", "betaBinomialParamA", "betaBinomialParamB", "bernoulliParam",
 						 	 	 "samplingMethod", "iterationsMCMC", "numberOfModels")
 	stateKey <- list(
 		bas_obj = modelOpts,
+		postSummary = c(modelOpts, "postSummary", "summaryType"),
 		descriptives = c("dependent", "covariates"),
 		plotPosteriorLogOdds = c(modelOpts, "plotLogPosteriorOdds"),
 		plotCoefficientsPosterior = c(modelOpts, "plotCoefficientsPosterior"),
@@ -42,6 +43,7 @@ BASRegressionLinearLink <- function (
 
 	# Initialize the variables
 	bas_obj <- state$bas_obj
+	postSummary <- state$postSummary
 	descriptives <- state$descriptives
 	plotPosteriorLogOdds <- state$plotPosteriorLogOdds
 	plotCoefficientsPosterior <- state$plotCoefficientsPosterior
@@ -91,6 +93,12 @@ BASRegressionLinearLink <- function (
 				bas_obj = bas_obj,
 				status = status,
 				options = options
+		)
+	}
+	
+	if (options$postSummary && is.null(postSummary)) {
+		postSummary <- .posteriorSummaryTable.basReg(
+			bas_obj, status, perform, options
 		)
 	}
 
@@ -144,6 +152,10 @@ BASRegressionLinearLink <- function (
 	results[["regressionTable"]] <- .fillRegTable.basReg(data = regTableData,
 		status = status, perform = perform, options = options)
 
+	if (options$postSummary) {
+		results[["posteriorSummaryTable"]] <- postSummary
+	}
+
 	if (options$descriptives) {
 		results[["descriptivesTable"]] <- descriptives
 	}
@@ -187,6 +199,7 @@ BASRegressionLinearLink <- function (
 		state <- list(
 			options = options,
 			bas_obj = bas_obj,
+			postSummary = postSummary,
 			descriptives = descriptives,
 			plotPosteriorLogOdds = plotPosteriorLogOdds,
 			plotCoefficientsPosterior = plotCoefficientsPosterior,
@@ -200,7 +213,7 @@ BASRegressionLinearLink <- function (
 		attr(state, "key") <- stateKey
 	}
 
-	return (list(
+	return(list(
 		keep = keep,
 		results = results,
 		status = statusAnalysis,
@@ -217,8 +230,9 @@ BASRegressionLinearLink <- function (
 
 	meta <- list()
 	meta[[1]] <- list(name = "regressionTable", type = "table")
-	meta[[2]] <- list(name = "descriptivesTable", type = "table")
-	meta[[3]] <- list(
+	meta[[2]] <- list(name = "posteriorSummaryTable", type = "table")
+	meta[[3]] <- list(name = "descriptivesTable", type = "table")
+	meta[[4]] <- list(
 		name="inferentialPlots",
 		type="object",
 		meta=list(
@@ -238,7 +252,7 @@ BASRegressionLinearLink <- function (
 		)))
 	)
 
-	return (meta)
+	return(meta)
 }
 
 .readData.basReg <- function(perform, options) {
@@ -262,7 +276,7 @@ BASRegressionLinearLink <- function (
 		dataset <- .readDataSetHeader(columns.as.numeric = vars)
 	}
 
-	return (dataset)
+	return(dataset)
 }
 
 .setStatus.basReg <- function(dataset, perform, options) {
@@ -390,52 +404,34 @@ BASRegressionLinearLink <- function (
 		wlsWeights <- dataset[[ .v(weightsVar) ]]
 	}
 
-	# sampling method
-	if (options$samplingMethod == "MCMCBAS") {
-		samplingMethod <- "MCMC+BAS"
-	} else {
-		samplingMethod <- options$samplingMethod
-	}
-
 	# select the type of model prior
 	if (options$modelPrior == "beta.binomial") {
-		modelPrior = BAS::beta.binomial(options$betaBinomialParamA, options$betaBinomialParamB)
+		modelPrior <- BAS::beta.binomial(options$betaBinomialParamA, options$betaBinomialParamB)
 	} else if (options$modelPrior == "uniform") {
-		modelPrior = BAS::uniform()
+		modelPrior <- BAS::uniform()
 	} else if (options$modelPrior == "Bernoulli") {
-		modelPrior = BAS::Bernoulli(options$bernoulliParam)
+		modelPrior <- BAS::Bernoulli(options$bernoulliParam)
 	}
 
 	# number of models
-	n.models <- options$numberOfModels
-	if (n.models == 0) {
-		n.models <- NULL
+	n.models <- NULL
+	if (options$samplingMethod == "BAS" && options$numberOfModels > 0) {
+		n.models <- options$numberOfModels
 	}
 
 	# iterations for MCMC
-	MCMC.iterations <- options$iterationsMCMC
-	if (grepl("MCMC", samplingMethod, fixed = TRUE)) {
-		# if iterations is not set by user
-		if (MCMC.iterations == 0) {
-			MCMC.iterations <- NULL
-		}
-
-		if (is.null(n.models)) {
-			MCMC.iterations <- NULL
-		} else {
-			MCMC.iterations <- options$numberOfModels * 10 #FIXME: should we allow models to influence MCMC samples?
-		}
+	MCMC.iterations <- NULL
+	if (options$samplingMethod == "MCMC" && options$iterationsMCMC > 0) {
+		MCMC.iterations <- options$numberOfModels
 	}
 
-	# hyper parameter for g-prior
+	# parameter for hyper-g's or jzs (all use same alpha param in bas.lm)
 	alpha <- switch(
 		options$priorRegressionCoefficients,
-		g_prior =,
-		hyper_g =,
-		hyper_g_laplace =,
-		hyper_g_n=,
-		zs_null =,
-		zs_full = options$gPriorParameter,
+		hyper_g = options$alpha,
+		hyper_g_laplace = options$alpha,
+		hyper_g_n = options$alpha,
+		JZS = options$rScale^2,
 		NULL
 	)
 
@@ -447,10 +443,11 @@ BASRegressionLinearLink <- function (
 		alpha = alpha,
 		modelprior = modelPrior,
 		n.models = n.models,
-		method = samplingMethod,
+		method = options$samplingMethod,
 		MCMC.iterations = MCMC.iterations,
 		initprobs = initProbs,
-		weights = wlsWeights
+		weights = wlsWeights,
+		renormalize = TRUE
 	))
 
 	if (isTryError(bas_lm)) {
@@ -494,7 +491,6 @@ BASRegressionLinearLink <- function (
 	}
 
 	# ordered indices based on posterior probabilities of the models
-	# TODO: determine if we like this functionality ^.^
 	models.ordered <- order(bas_obj$postprobs, decreasing = TRUE)
 	if (options$bayesFactorOrder == "nullModelTop") {
 		bestModelIndices <- models.ordered[1:nRows]
@@ -502,7 +498,8 @@ BASRegressionLinearLink <- function (
 			index <- which(bestModelIndices == 1)
 			models.ordered <- c(1, bestModelIndices[-index]) # change position of null model
 		} else {
-			models.ordered <- c(1, bestModelIndices[-nRows]) # remove last model
+			nRows <- nRows + 1 # show null model + best n
+			models.ordered <- c(1, bestModelIndices)
 		}
 	} else { # best model top
 		models.ordered <- models.ordered[1:nRows]
@@ -545,45 +542,40 @@ BASRegressionLinearLink <- function (
 							bas_obj$logmarg[models.ordered][1]
 	}
 
+	# calculate the BFM for the models
+	nModels <- length(bas_obj$postprobs)
+	postProbs <- bas_obj$postprobs
+	priorProbs <- bas_obj$priorprobs
+	index <- which(is.finite(postProbs))
+	BFM <- sapply(1:nModels, function(m) {
+		if (m %in% index) {
+			i <- which(index == m)
+			(postProbs[m] / (1 - postProbs[m])) / (priorProbs[m] / (1 - priorProbs[m]))
+		} else {
+			NA
+		}
+	})
+	BFM <- BFM[models.ordered]
+	
+	# populate the row list
 	output.rows <- vector("list", nRows)
-
-	# TODO: microbenchmark - compare for loop against using mapply
 	for (i in 1:nRows) {
 		output.rows[[i]] <- list(
-			"Models" = model.names[i],
-			"BF" = models.bf[i],
-			"P(M|data)" = bas_obj$postprobs[[models.ordered[i]]],
-			"R2" = bas_obj$R2[[models.ordered[i]]],
-			"P(M)" = bas_obj$priorprobs[[models.ordered[i]]],
-			"logmarg" = bas_obj$logmarg[[models.ordered[i]]]
+			"Models" = .clean(model.names[i]),
+			"BF" = .clean(models.bf[i]),
+			"BFM" = .clean(BFM[i]),
+			"P(M|data)" = .clean(bas_obj$postprobs[[models.ordered[i]]]),
+			"R2" = .clean(bas_obj$R2[[models.ordered[i]]]),
+			"P(M)" = .clean(bas_obj$priorprobs[[models.ordered[i]]])
 		)
 	}
 
 	# notes
-	footnotes <- NULL
+	footnotes <- .newFootnotes()
 	if (sum(nuisanceTerms) > 0) {
-		footnotes <- .newFootnotes()
 		footnote <- paste("All models include ", paste(.unvf(names(which(nuisanceTerms))), collapse = ", "), ".", sep = "")
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = footnote)
 	}
-
-	# output.list <- as.list(data.frame(mapply(c, models.names, models.bf)))
-	#
-	# # Generate the output row
-	# output.rows <- vector("list", length(output.list))
-	# row.number <- 1
-	#
-	# for (row in output.list) {
-	# 	output.rows
-	# }
-	#
-	# output.row <- base::lapply(
-	# 	output.list,
-	# 	function(x) {
-	# 		names(x) <- c("model", "bf")
-	# 		return (as.list(x))
-	# 	}
-	# )
 
 	return(list(rows=output.rows, notes=footnotes))
 }
@@ -613,13 +605,10 @@ BASRegressionLinearLink <- function (
 			list(name = "Models", type = "string"),
 			list(name = "P(M)", type = "number", format = "sf:4;dp:3"),
 			list(name = "P(M|data)", type = "number", format = "sf:4;dp:3"),
+			list(name = "BFM", type = "number", format = "sf:4;dp:3", title = "BF<sub>M</sub>"),
 			list(name = "BF", type = "number", format = "sf:4;dp:3", title = paste(bf.title, sep = "")),
 			list(name = "R2", type = "number", format = "dp:3", title = "R\u00B2")
 		)
-
-	if (options$logmarg) {
-		fields[[length(fields)+1]] <- list(name = "logmarg", type = "number", format = "sf:4;dp:3", title = "Log likelihood")
-	}
 
 	table <- list()
 	table[["title"]] <- "Model Comparison"
@@ -640,7 +629,72 @@ BASRegressionLinearLink <- function (
 		table[["error"]] <- list(errorType = "badData", errorMessage = status$error.message)
 	}
 
-	return (table)
+	return(table)
+}
+
+.posteriorSummaryTable.basReg <- function(bas_obj, status, perform, options) {
+	# Generate a posterior summary table of the coefficients
+	#
+	# Args:
+	#   bas_obj: data read by .readData.basReg()
+	#   status: current status of the analysis
+	#   perform: 'run' or 'init'
+	#   options: a list of user options
+	#
+	# Return:
+	#   List with completed posterior table; may be inserted in results as is
+
+	posterior <- list()
+
+	posterior[["title"]] <- "Marginal Posterior Summaries of Coefficients"
+
+	fields <-
+		list(
+			list(name="coefficient", title="Coefficient", type="string"),
+			list(name="mean", title="Mean", type="number", format="sf:4;dp:3"),
+			list(name="sd", title="SD", type="number", format="sf:4;dp:3"),
+			list(name="pIncl", title ="P(incl|data)", type="number", format="sf:4;dp:3")
+	)
+
+	posterior[["schema"]] <- list(fields=fields)
+
+	if (status$ready && perform == "run") {
+		rows <- list()
+		
+		estimator <- switch(
+			options$summaryType,
+			best="HPM",
+			median="MPM",
+			"BMA"
+		)
+
+		coef <- BAS:::coef.bas(bas_obj, estimator=estimator)
+		coefficients <- coef$namesx
+		nModels <- coef$n.models
+		
+			for (i in 1:length(coefficients)) {
+			
+				coefficient <- .clean(coefficients[i])
+				pIncl <- .clean(coef$probne0[i])
+				if (options$summaryType == "complex") {
+					mean <- .clean(unname(coef$conditionalmeans[nModels, i])) # most complex model is in the final row
+					sd <- .clean(unname(coef$conditionalsd[nModels, i]))
+				} else {
+					mean <- .clean(coef$postmean[i])
+					sd <- .clean(coef$postsd[i])
+				}
+				
+				rows[[length(rows) + 1]] <- list(coefficient = coefficient, mean = mean, sd = sd, pIncl = pIncl)
+
+			}
+			posterior[["data"]] <- rows
+
+		} else {
+			names <- sapply(fields, function(x) x$name)
+			posterior[["data"]][[1]] <- setNames(as.list(rep(".", length(names))), names)
+		}
+
+	return(posterior)
 }
 
 .descriptivesTable.basReg <- function(dataset, status, perform, options) {
@@ -696,7 +750,7 @@ BASRegressionLinearLink <- function (
 			descriptives[["data"]][[1]] <- setNames(as.list(rep(".", length(names))), names)
 		}
 
-	return (descriptives)
+	return(descriptives)
 }
 
 
@@ -835,7 +889,7 @@ BASRegressionLinearLink <- function (
 	titles <- c(
 		"Residuals vs Fitted",
 		"Model Probabilities",
-		"Model Complexity",
+		"Log(P(data|M)) vs. model size",
 		"Inclusion Probabilities"
 	)
 
