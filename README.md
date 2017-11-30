@@ -1,5 +1,5 @@
 <h2 align="center">
-  <img src="Resources/logo.jpg" height=200/>
+  <img src="JASP-Desktop/html/img/jasp-logo-black.svg" height=80/>
   <br><br>
   A Fresh Way to do Statistics
 </h2>
@@ -44,13 +44,13 @@
 
 ### Development
 
+  - [Licensing](Docs/development/jasp-licensing.md)
+  - [Rebasing your Repository](Docs/development/git-guide.md)
   - [Guide to Building JASP](Docs/development/jasp-building-guide.md)
-  - [The JASP Guide for Implementing Analyses in R](Docs/development/r-analyses-guide.md)
-  - [Guide to Adding Analyses](Docs/development/jasp-adding-analyses.md)
-  - [Guide to creating a Module](Docs/development/jasp-adding-module.md)
-  - [JASP Licensing](Docs/development/jasp-licensing.md)
-  - [The JASP Error List](Docs/development/jasp-error-list.md)
-  - [The JASP Guide to Writing Analyses for Humans](Docs/development/jasp-human-guide.md)
+  - [Implementing Analyses in R](Docs/development/r-analyses-guide.md)
   - [The JASP R style guide](Docs/development/r-style-guide.md)
-  - [Guide to Rebasing Your Repo](Docs/development/git-guide.md)
-  - [The JASP R Package List](Docs/development/jasp-r-packages-list.md)
+  - [The JASP Guide to Writing Analyses for Humans](Docs/development/jasp-human-guide.md)
+  - [The Error list](Docs/development/jasp-error-list.md)
+  - [Adding new Analyses](Docs/development/jasp-adding-analyses.md)
+  - [Creating a Module](Docs/development/jasp-adding-module.md)
+  - [The JASP R package list](Docs/development/jasp-r-packages-list.md)
