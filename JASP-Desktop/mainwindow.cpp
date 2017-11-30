@@ -51,9 +51,6 @@
 #include "analysisforms/Common/ttestindependentsamplesform.h"
 #include "analysisforms/Common/ttestonesampleform.h"
 #include "analysisforms/Common/ttestpairedsamplesform.h"
-#ifdef QT_DEBUG
-#include "analysisforms/Common/basregressionlinearlinkform.h"
-#endif
 
 #include "analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.h"
 #include "analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
@@ -794,10 +791,6 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new SummaryStatsCorrelationBayesianPairsForm(contentArea);
 	else if (name == "ClassicalMetaAnalysis")
 		form = new ClassicalMetaAnalysisForm(contentArea);
-#ifdef QT_DEBUG
-	else if (name == "BASRegressionLinearLink")
-		form = new BASRegressionLinearLinkForm(contentArea);
-#endif
 	else if (name == "NetworkAnalysis")
 		form = new NetworkAnalysisForm(contentArea);
 	else if (name == "ReinforcementLearningR11tLearning")
