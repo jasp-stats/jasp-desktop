@@ -25,6 +25,7 @@
 #include "assignbutton.h"
 #include "tablemodelpairsassigned.h"
 #include "tableview.h"
+#include "customhoverdelegate.h"
 
 class BoundPairsTable : public TableView, public Bound
 {
