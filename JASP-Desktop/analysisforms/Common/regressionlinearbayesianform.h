@@ -42,6 +42,7 @@ public:
 
 	void defaultOptions();
 	void defaultOptionsModelPrior();
+	void defaultOptionsPriorParams();
 
 	virtual void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
 
@@ -62,7 +63,6 @@ private slots:
 	void on_eb_local_clicked();
 	void factorsChanging();
 	void factorsChanged();
-	void defaultPriorOpts();
 
 private:
 	Ui::RegressionLinearBayesianForm *ui;

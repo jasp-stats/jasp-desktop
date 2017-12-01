@@ -296,7 +296,7 @@ RegressionLinearBayesian <- function (
 		status$ready <- FALSE
 	}
 
-	customChecks <- list(
+	customChecks <- list( #TODO: add these to hasErrors officially
 		function() {
 			nuisanceTerms <- sapply(options$modelTerms, function(term) term$isNuisance)
 			if (sum(nuisanceTerms) == length(options$modelTerms)) {

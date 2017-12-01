@@ -358,7 +358,7 @@
             <item row="1" column="0">
              <widget class="BoundCheckBox" name="plotCoefficientsPosterior">
               <property name="text">
-               <string>Posterior distributions</string>
+               <string>Averaged posterior distributions</string>
               </property>
              </widget>
             </item>

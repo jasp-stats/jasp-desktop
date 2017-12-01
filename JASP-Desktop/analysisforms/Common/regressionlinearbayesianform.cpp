@@ -159,7 +159,12 @@ void RegressionLinearBayesianForm::on_betaBinomial_clicked()
 {
 	if (ui->betaBinomial->isChecked())
 	{
-		defaultOptionsModelPrior();
+		ui->label_betaBinomialParamA->show();
+		ui->label_betaBinomialParamB->show();
+		ui->betaBinomialParamA->show();
+		ui->betaBinomialParamB->show();
+		ui->label_bernoulliParam->hide();
+		ui->bernoulliParam->hide();
 	}
 }
 
@@ -191,7 +196,7 @@ void RegressionLinearBayesianForm::on_uniformPrior_clicked()
 	}
 }
 
-void RegressionLinearBayesianForm::defaultPriorOpts() {
+void RegressionLinearBayesianForm::defaultOptionsPriorParams() {
 	ui->label_alpha->hide();
 	ui->alpha->hide();
 	ui->label_rScale->hide();
@@ -200,7 +205,7 @@ void RegressionLinearBayesianForm::defaultPriorOpts() {
 
 void RegressionLinearBayesianForm::on_g_prior_clicked()
 {
-	defaultPriorOpts();
+	defaultOptionsPriorParams();
 }
 
 void RegressionLinearBayesianForm::on_jzs_clicked()
@@ -241,25 +246,25 @@ void RegressionLinearBayesianForm::on_hyper_g_n_clicked()
 
 void RegressionLinearBayesianForm::on_aic_clicked()
 {
-	defaultPriorOpts();
+	defaultOptionsPriorParams();
 }
 
 
 void RegressionLinearBayesianForm::on_bic_clicked()
 {
-	defaultPriorOpts();
+	defaultOptionsPriorParams();
 }
 
 
 void RegressionLinearBayesianForm::on_eb_global_clicked()
 {
-	defaultPriorOpts();
+	defaultOptionsPriorParams();
 }
 
 
 void RegressionLinearBayesianForm::on_eb_local_clicked()
 {
-	defaultPriorOpts();
+	defaultOptionsPriorParams();
 }
 
 
