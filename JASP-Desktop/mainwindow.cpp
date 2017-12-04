@@ -385,7 +385,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	{
 		event->accept();
 	}
-	
+
 	PreferencesDialog *rd = ui->tabBar->getPreferencesDialog();
 	if (rd) rd->close();
 }
@@ -1730,6 +1730,7 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 
 	if (selected)
 		hideOptionsPanel();
+	checkUsedModules();
 }
 
 
