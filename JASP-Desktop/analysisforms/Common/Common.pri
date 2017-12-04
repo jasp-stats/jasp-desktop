@@ -9,7 +9,6 @@ SOURCES += \
     $$PWD/anovaonewayform.cpp \
     $$PWD/anovarepeatedmeasuresbayesianform.cpp \
     $$PWD/anovarepeatedmeasuresform.cpp \
-    $$PWD/basregressionlinearlinkform.cpp \
     $$PWD/binomialtestbayesianform.cpp \
     $$PWD/binomialtestform.cpp \
     $$PWD/contingencytablesbayesianform.cpp \
@@ -45,7 +44,6 @@ HEADERS += \
     $$PWD/anovaonewayform.h \
     $$PWD/anovarepeatedmeasuresbayesianform.h \
     $$PWD/anovarepeatedmeasuresform.h \
-    $$PWD/basregressionlinearlinkform.h \
     $$PWD/binomialtestbayesianform.h \
     $$PWD/binomialtestform.h \
     $$PWD/contingencytablesbayesianform.h \
@@ -81,7 +79,6 @@ FORMS += \
     $$PWD/anovaonewayform.ui \
     $$PWD/anovarepeatedmeasuresbayesianform.ui \
     $$PWD/anovarepeatedmeasuresform.ui \
-    $$PWD/basregressionlinearlinkform.ui \
     $$PWD/binomialtestbayesianform.ui \
     $$PWD/binomialtestform.ui \
     $$PWD/contingencytablesbayesianform.ui \
