@@ -6,7 +6,7 @@ context("Bayesian Repeated Measures ANOVA")
 # - bftype (01, 10)
 
 initOpts <- function() {
-  options <- JASPTools::analysisOptions("AnovaRepeatedMeasuresBayesian")
+  options <- jasptools::analysisOptions("AnovaRepeatedMeasuresBayesian")
   options$sampleMode <- "manual"
   options$fixedSamplesNumber <- 50
   return(options)
@@ -68,7 +68,7 @@ test_that("Main table results match", {
 
   for (order in c("nullModelTop", "bestModelTop")) {
     options$bayesFactorOrder <- order
-    results <- JASPTools::run("AnovaRepeatedMeasuresBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
+    results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
     table <- results[["results"]][["model comparison"]][["data"]]
     expect_equal_tables(table, refTables[[order]], label=paste("Table with order", order))
   }
@@ -101,14 +101,14 @@ test_that("Effects table results match", {
   for (effectsType in effectsTypes) {
     options$effectsType <- effectsType
     set.seed(5) # setting seed at start gives aberrant behaviour
-    results <- JASPTools::run("AnovaRepeatedMeasuresBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
+    results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
     table <- results[["results"]][["effects"]][["data"]]
     expect_equal_tables(table, refTables[[effectsType]], label=paste("Table with effects type", effectsType))
   }
 })
 
 test_that("Post-hoc Comparisons table results match", {
-  options <- JASPTools::analysisOptions("AnovaRepeatedMeasuresBayesian")
+  options <- jasptools::analysisOptions("AnovaRepeatedMeasuresBayesian")
   options$repeatedMeasuresCells <- c("contNormal", "contGamma", "contcor1")
   options$repeatedMeasuresFactors <- list(
     list(levels=c("Level 1", "Level 2", "Level 3"), name="RM Factor 1")
@@ -118,7 +118,7 @@ test_that("Post-hoc Comparisons table results match", {
   )
   options$postHocTestsNullControl <- TRUE
   options$postHocTestsVariables <- "RM Factor 1"
-  results <- JASPTools::run("AnovaRepeatedMeasuresBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["posthoc"]][["collection"]][[1]][["data"]]
   expect_equal_tables(table,
     list("Level 1", "Level 2", 0.587401051968199, 83932041568197648, 17.1549930670883,
@@ -137,7 +137,7 @@ test_that("Analysis handles errors", {
 
   options$repeatedMeasuresCells <- c("contNormal", "debInf")
   options$modelTerms <- list(list(components="RM Factor 1", isNuisance=FALSE))
-  results <- JASPTools::run("AnovaRepeatedMeasuresBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
   expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
                    label="Inf RM factor check")
 
@@ -147,7 +147,7 @@ test_that("Analysis handles errors", {
     list(components="RM Factor 1", isNuisance=FALSE),
     list(components="debInf", isNuisance=FALSE)
   )
-  results <- JASPTools::run("AnovaRepeatedMeasuresBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
   expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
                   label="Inf covariate check")
 
@@ -158,26 +158,26 @@ test_that("Analysis handles errors", {
     list(components="RM Factor 1", isNuisance=FALSE),
     list(components="debSame", isNuisance=FALSE)
   )
-  results <- JASPTools::run("AnovaRepeatedMeasuresBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
   expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
                    label="1-level factor check")
 
   options$repeatedMeasuresCells <- c("contNormal", "contGamma")
   options$betweenSubjectFactors <- list()
   options$modelTerms <- list(list(components="RM Factor 1", isNuisance=TRUE))
-  results <- JASPTools::run("AnovaRepeatedMeasuresBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
   expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
                    label="All nuisance check")
 
   # options$repeatedMeasuresCells <- c("contNormal", "debSame")
   # options$modelTerms <- list(list(components="RM Factor 1", isNuisance=FALSE))
-  # results <- JASPTools::run("AnovaRepeatedMeasuresBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
+  # results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
   # expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
   #                  label="No variance check")
 
   options$repeatedMeasuresCells <- c("contNormal", "debMiss99")
   options$modelTerms <- list(list(components="RM Factor 1", isNuisance=FALSE))
-  results <- JASPTools::run("AnovaRepeatedMeasuresBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
   expect_identical(results[["results"]][["model comparison"]][["error"]][["errorType"]], "badData",
                   label="Too few obs check")
 })

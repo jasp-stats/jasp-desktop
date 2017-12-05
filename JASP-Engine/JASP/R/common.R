@@ -73,9 +73,11 @@ run <- function(name, options.as.json.string, perform="run") {
 	} else if (inherits(results, "error")) {
 		
 		error <- gsub("\"", "'", as.character(results), fixed=TRUE)
+		error <- gsub("\\n", " ", error)
 		
 		stackTrace <- as.character(results$stackTrace)
 		stackTrace <- gsub("\"", "'", stackTrace, fixed=TRUE)
+		stackTrace <- gsub("\\n", " ", stackTrace)
 		stackTrace <- gsub("\\\\", "", stackTrace)
 		stackTrace <- paste(stackTrace, collapse="<br><br>")
 		
@@ -385,6 +387,13 @@ isTryError <- function(obj){
 
 		relativePath <- location$relativePath
 		root <- location$root
+		
+		# when run in jasptools do not save the state, but store it internally
+		searchPath <- search()
+		if ("package:jasptools" %in% searchPath) {
+			jasptools:::.setInternal("state", state)
+			return(list(relativePath = relativePath, root = root))
+		}
 
 		base::Encoding(relativePath) <- "UTF-8"
 		base::Encoding(root) <- "UTF-8"
@@ -393,7 +402,7 @@ isTryError <- function(obj){
 		setwd(root)
 		on.exit(setwd(oldwd))
 		
-		base::save(state, file=relativePath, compress=FALSE)
+		suppressWarnings(base::save(state, file=relativePath, compress=FALSE))
 	}
   result <- list(relativePath = relativePath, root = root)
   return(result)
@@ -417,7 +426,11 @@ isTryError <- function(obj){
 		setwd(root)
 		on.exit(setwd(oldwd))
 		
-		base::try(base::load(relativePath), silent=TRUE)
+		base::tryCatch(
+		  base::load(relativePath),
+		  error=function(e) e,
+		  warning=function(w) w
+		)
 	}
 	
 	state

@@ -4,7 +4,7 @@ context("Reliability Analysis")
 # - missing values exclusion
 
 test_that("Main table results match", {
-  options <- JASPTools::analysisOptions("ReliabilityAnalysis")
+  options <- jasptools::analysisOptions("ReliabilityAnalysis")
   options$variables <- c("contcor1", "contcor2", "contNormal")
   options$reverseScaledItems <- "contcor2"
   options$alphaScale <- TRUE
@@ -15,7 +15,7 @@ test_that("Main table results match", {
   options$mcDonaldScale <- TRUE
   options$meanScale <- TRUE
   options$sdScale <- TRUE
-  results <- JASPTools::run("ReliabilityAnalysis", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("ReliabilityAnalysis", "debug.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["reliabilityScale"]][["data"]]
   expect_equal_tables(table,
     list("scale", -0.757822989578577, -0.0677657928415725, 0.667932535083157,
@@ -25,7 +25,7 @@ test_that("Main table results match", {
 })
 
 test_that("Item Statistics table matches", {
-  options <- JASPTools::analysisOptions("ReliabilityAnalysis")
+  options <- jasptools::analysisOptions("ReliabilityAnalysis")
   options$variables <- c("contcor1", "contcor2", "contNormal")
   options$alphaItem <- TRUE
   options$confAlpha <- TRUE
@@ -34,7 +34,7 @@ test_that("Item Statistics table matches", {
   options$mcDonaldItem <- TRUE
   options$meanItem <- TRUE
   options$sdItem <- TRUE
-  results <- JASPTools::run("ReliabilityAnalysis", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("ReliabilityAnalysis", "debug.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["reliabilityItemsObj"]][["reliabilityItems"]][["data"]]
   expect_equal_tables(table,
     list("contcor1", 0.0618194975467092, 0.0319398198963565, 0.061902485553013,

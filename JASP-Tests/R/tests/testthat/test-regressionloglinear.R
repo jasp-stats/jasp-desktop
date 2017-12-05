@@ -4,7 +4,7 @@ context("Log-Linear Regression")
 # - error handling
 
 test_that("Main table results match", {
-  options <- JASPTools::analysisOptions("RegressionLogLinear")
+  options <- jasptools::analysisOptions("RegressionLogLinear")
   options$counts <- "facFifty"
   options$factors <- c("contBinom", "facGender")
   options$modelTerms <- list(
@@ -12,7 +12,7 @@ test_that("Main table results match", {
     list(components="facGender"),
     list(components=c("contBinom", "facGender"))
   )
-  results <- JASPTools::run("RegressionLogLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLogLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["logregressionanova"]][["data"]]
   expect_equal_tables(table,
     list("NULL", "", " ", 99, 936.356249443911, " ", " ", "contBinom",
@@ -24,7 +24,7 @@ test_that("Main table results match", {
 })
 
 test_that("Coefficients table matches", {
-  options <- JASPTools::analysisOptions("RegressionLogLinear")
+  options <- jasptools::analysisOptions("RegressionLogLinear")
   options$counts <- "facFifty"
   options$factors <- c("contBinom", "facFive")
   options$modelTerms <- list(
@@ -35,7 +35,7 @@ test_that("Coefficients table matches", {
   options$regressionCoefficientsEstimates <- TRUE
   options$regressionCoefficientsConfidenceIntervals <- TRUE
   options$regressionCoefficientsConfidenceIntervalsInterval <- 0.95
-  results <- JASPTools::run("RegressionLogLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLogLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["logregression"]][["data"]]
   expect_equal_tables(table,
     list("(Intercept)", 3.36441813015886, 0.0536828127084252, 3.25920175066154,
