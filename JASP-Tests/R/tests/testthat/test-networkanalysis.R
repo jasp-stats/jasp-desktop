@@ -5,13 +5,13 @@ context("Network Analysis")
 # - bootstrapping
 # - plots or graphical options
 
-options <- JASPTools::analysisOptions("NetworkAnalysis")
+options <- jasptools::analysisOptions("NetworkAnalysis")
 options$variables <- c("contNormal", "contcor1", "contcor2")
 options$tableCentrality <- TRUE
 options$tableClustering <- TRUE
 options$tableWeightsMatrix <- TRUE
 options$tableLayout <- TRUE
-results <- JASPTools::run("NetworkAnalysis", "debug.csv", options, view=FALSE, quiet=TRUE, sideEffects = "pkgLoading")
+results <- jasptools::run("NetworkAnalysis", "debug.csv", options, view=FALSE, quiet=TRUE, sideEffects = "pkgLoading")
 
 test_that("generalTB table results match", {
   table <- results[["results"]][["generalTB"]][["data"]]

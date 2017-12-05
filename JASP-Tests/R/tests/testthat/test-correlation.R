@@ -4,7 +4,7 @@ context("Correlation")
 # - hypothesis
 
 test_that("Correlation table results match", {
-  options <- JASPTools::analysisOptions("Correlation")
+  options <- jasptools::analysisOptions("Correlation")
   options$variables <- list("contGamma", "contNormal")
   options$kendallsTauB <- TRUE
   options$spearman <- TRUE
@@ -12,7 +12,7 @@ test_that("Correlation table results match", {
   options$confidenceIntervalsInterval <- 0.99
   options$VovkSellkeMPR <- TRUE
   options$reportSignificance <- TRUE
-  results <- JASPTools::run("Correlation", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Correlation", "debug.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["correlations"]][["data"]]
   expect_equal_tables(table,
     list("Pearson's r", "p-value", "VS-MPR*", "Upper 99% CI", "Lower 99% CI",
@@ -37,30 +37,30 @@ test_that("Correlation table results match", {
 })
 
 test_that("Correlation matrix plot matches", {
-  options <- JASPTools::analysisOptions("Correlation")
+  options <- jasptools::analysisOptions("Correlation")
   options$variables <- list("contGamma", "contNormal")
   options$plotCorrelationMatrix <- TRUE
   options$plotDensities <- TRUE
   options$plotStatistics <- TRUE
-  results <- JASPTools::run("Correlation", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Correlation", "debug.csv", options, view=FALSE, quiet=TRUE)
   testPlot <- results[["state"]][["figures"]][[1]]
   expect_equal_plots(testPlot, "correlation-matrix", dir="Correlation")
 })
 
 test_that("Analysis handles errors", {
-  options <- JASPTools::analysisOptions("Correlation")
+  options <- jasptools::analysisOptions("Correlation")
   options$variables <- list("contGamma", "debInf")
-  results <- JASPTools::run("Correlation", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Correlation", "debug.csv", options, view=FALSE, quiet=TRUE)
   notes <- unlist(results[["results"]][["correlations"]][["footnotes"]])
   expect_true(any(grepl("infinity", notes, ignore.case=TRUE)), label = "Inf check")
 
   options$variables <- list("contGamma", "debSame")
-  results <- JASPTools::run("Correlation", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Correlation", "debug.csv", options, view=FALSE, quiet=TRUE)
   notes <- unlist(results[["results"]][["correlations"]][["footnotes"]])
   expect_true(any(grepl("variance", notes, ignore.case=TRUE)), label = "No variance check")
 
   options$variables <- list("contGamma", "debMiss99")
-  results <- JASPTools::run("Correlation", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Correlation", "debug.csv", options, view=FALSE, quiet=TRUE)
   notes <- unlist(results[["results"]][["correlations"]][["footnotes"]])
   expect_true(any(grepl("observations", notes, ignore.case=TRUE)), label = "Too few obs check")
 })

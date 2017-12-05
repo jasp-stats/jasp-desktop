@@ -45,12 +45,12 @@ Running the tests
 -----------------
 
 Currently, the analysis unit tests are not integrated into the JASP-Tests app.  
-To run the tests, the R package [JASPTools](https://github.com/TimKDJ/JASPTools) is required.  
+To run the tests, the R package [jasptools](https://github.com/TimKDJ/jasptools) is required.  
 This package is installed automatically when you clone the jasp-desktop environment.  
 
 To check all tests simply type
 ```
-JASPTools::testAll()
+jasptools::testAll()
 ```
 
 Any test that fails is shown in the console.  
@@ -58,7 +58,7 @@ Warnings may be ignored, but should be minimized.
 
 It is also possible to test a specific analysis, as running all unit tests may take some time
 ```
-JASPTools::testAnalysis("Anova")
+jasptools::testAnalysis("Anova")
 ```
 
 Fixing the tests
@@ -68,7 +68,7 @@ If you made a legitimate change that the test does not cover, then the unit test
 Simply locate it under JASP-Tests/R/tests/testthat and change the offending test.  
 Note that if the failed test was related to plotting, then you may use
 ```
-JASPTools::inspectTestPlots("Anova")
+jasptools::inspectTestPlots("Anova")
 ```
 to inspect differences between the saved reference plot and the failing plot.  
 If you validate the failing plot (because it was a legitimate change), it will replace the reference plot in the figs folder.
@@ -91,13 +91,13 @@ expect_equal_tables(test, ref, ...)
 expect_equal_plots(test, name, dir)
 ```
 `expect_equal_tables` takes the data of a JASP table list and compares it to a reference list.  
-This reference list can be created by supplying a table to JASPTools.
+This reference list can be created by supplying a table to jasptools.
 ```
-options <- JASPTools::analysisOptions("BinomialTest")
+options <- jasptools::analysisOptions("BinomialTest")
 options[["variables"]] <- "contBinom"
-results <- JASPTools::run("BinomialTest", "debug.csv", options, view=FALSE)
+results <- jasptools::run("BinomialTest", "debug.csv", options, view=FALSE)
 table <- results[["results"]][["binomial"]][["data"]]
-JASPTools::makeTestTable(table)
+jasptools::makeTestTable(table)
 ```
 The above returns the output
 
@@ -108,9 +108,9 @@ The above returns the output
 We can now write the expectation
 ```
 test_that("Binomial table results match", {
-  options <- JASPTools::analysisOptions("BinomialTest")
+  options <- jasptools::analysisOptions("BinomialTest")
   options[["variables"]] <- "contBinom"
-  results <- JASPTools::run("BinomialTest", "debug.csv", options, view=FALSE)
+  results <- jasptools::run("BinomialTest", "debug.csv", options, view=FALSE)
   table <- results[["results"]][["binomial"]][["data"]]
   expect_equal_tables(table, 
    list("contBinom", 0, 58, 100, 0.58, 0.133210619207213, 0.477119195723914,
@@ -126,18 +126,18 @@ It takes a plot object or recorded plot and compares it to a stored .svg file.
 This results in an expectation like
 ```
 test_that("Descriptives plot matches", {
-  options <- JASPTools::analysisOptions("TTestIndependentSamples")
+  options <- jasptools::analysisOptions("TTestIndependentSamples")
   options$variables <- "contNormal"
   options$groupingVariable <- "contBinom"
   options$descriptivesPlots <- TRUE
-  results <- JASPTools::run("TTestIndependentSamples", "debug.csv", options, view=FALSE)
+  results <- jasptools::run("TTestIndependentSamples", "debug.csv", options, view=FALSE)
   testPlot <- results[["state"]][["figures"]][[1]]
   expect_equal_plots(testPlot, "descriptives", dir="TTestIndependentSamples")
 })
 ```
 To validate a plot for a newly created test, run
 ```
-JASPTools::inspectTestPlots("TTestIndependentSamples")
+jasptools::inspectTestPlots("TTestIndependentSamples")
 ```
 This function starts a Shiny application that allows you to view and then validate your new plot.  
 Validating a plot places it in figs/analysisName.

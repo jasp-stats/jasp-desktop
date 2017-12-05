@@ -388,10 +388,10 @@ isTryError <- function(obj){
 		relativePath <- location$relativePath
 		root <- location$root
 		
-		# when run in JASPTools do not save the state, but store it internally
+		# when run in jasptools do not save the state, but store it internally
 		searchPath <- search()
-		if ("package:JASPTools" %in% searchPath) {
-			JASPTools:::.setInternal("state", state)
+		if ("package:jasptools" %in% searchPath) {
+			jasptools:::.setInternal("state", state)
 			return(list(relativePath = relativePath, root = root))
 		}
 

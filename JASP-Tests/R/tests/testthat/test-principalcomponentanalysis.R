@@ -8,13 +8,13 @@ context("Principal Component Analysis")
 # - slider
 
 test_that("Main tables' results match", {
-  options <- JASPTools::analysisOptions("PrincipalComponentAnalysis")
+  options <- jasptools::analysisOptions("PrincipalComponentAnalysis")
   options$variables <- list("contNormal", "contGamma", "debCollin1", "contcor1", "facFifty")
   options$factorMethod <- "eigenValues"
   options$eigenValuesBox <- 0.95
   options$rotationMethod <- "orthogonal"
   options$orthogonalSelector <- "varimax"
-  results <- JASPTools::run("PrincipalComponentAnalysis", "debug.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
+  results <- jasptools::run("PrincipalComponentAnalysis", "debug.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
 
   table <- results[["results"]][["factorLoadings"]][["data"]]
   expect_equal_tables(table,
@@ -33,27 +33,27 @@ test_that("Main tables' results match", {
 })
 
 test_that("Path diagram matches", {
-  options <- JASPTools::analysisOptions("PrincipalComponentAnalysis")
+  options <- jasptools::analysisOptions("PrincipalComponentAnalysis")
   options$variables <- list("contNormal", "contGamma")
   options$incl_pathDiagram <- TRUE
-  results <- JASPTools::run("PrincipalComponentAnalysis", "debug.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
+  results <- jasptools::run("PrincipalComponentAnalysis", "debug.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
   testPlot <- results[["state"]][["figures"]][[1]]
   expect_equal_plots(testPlot, "path-diagram", dir="PrincipalComponentAnalysis")
 })
 
 test_that("Scree plot option creates .png", {
-  options <- JASPTools::analysisOptions("PrincipalComponentAnalysis")
+  options <- jasptools::analysisOptions("PrincipalComponentAnalysis")
   options$variables <- list("contNormal", "contGamma")
   options$incl_screePlot <- TRUE
-  results <- JASPTools::run("PrincipalComponentAnalysis", "debug.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
+  results <- jasptools::run("PrincipalComponentAnalysis", "debug.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
   expect_match(results[["results"]][["screePlot"]][["data"]], ".*\\.png")
 })
 
 test_that("Factor correlation table matches", {
-  options <- JASPTools::analysisOptions("PrincipalComponentAnalysis")
+  options <- jasptools::analysisOptions("PrincipalComponentAnalysis")
   options$variables <- list("contNormal", "contGamma", "contcor1", "debCollin1")
   options$incl_correlations <- TRUE
-  results <- JASPTools::run("PrincipalComponentAnalysis", "debug.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
+  results <- jasptools::run("PrincipalComponentAnalysis", "debug.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
   table <- results[["results"]][["factorCorrelations"]][["data"]]
   expect_equal_tables(table, list("RC 1", 1, "RC 2", 0.143153250525087, 1))
 })
