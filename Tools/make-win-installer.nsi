@@ -16,7 +16,7 @@
 !define DESCRIPTION "${APP_NAME} - A Fresh Way to Do Statistics"
 !define LICENSE_TXT "${CONTENTS_DIR}\AGPL.txt"
 !define MAIN_APP_EXE "${APP_NAME}.exe"
-!define MAIN_APP_ICO "${APP_NAME}.ico"
+!define MAIN_APP_ICO "icon.ico"
 !define INSTALL_TYPE "SetShellVarContext all"
 !define REG_ROOT "HKLM"
 !define VERSION_TRACKING "SOFTWARE\${APP_NAME}\Versions"
