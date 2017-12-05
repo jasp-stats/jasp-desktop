@@ -4517,9 +4517,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
                             oneSided = FALSE, options) {
 
   tValue <- unname(t.test(x, y, paired = paired, var.equal = TRUE)$statistic)
-
-  n1 <- length(x)
-  n2 <- ifelse(paired, 0, length(y))
+  n1 <- as.numeric(length(x))
+  n2 <- ifelse(paired, 0, as.numeric(length(y)))
 
   if(options[["effectSizeStandardized"]] == "default") {
 
