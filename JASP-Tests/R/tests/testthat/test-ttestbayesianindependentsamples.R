@@ -103,5 +103,6 @@ test_that("Analysis handles errors", {
   options$dependent <- "contNormal"
   options$groupingVariable <- "debSame"
   results <- JASPTools::run("TTestBayesianIndependentSamples", "debug.csv", options, view=FALSE, quiet=TRUE)
-  expect_is(results, "expectedError", label="1-level factor check")
+  msg <- results[["results"]][["errorMessage"]]
+  expect_true(any(grepl("levels", msg, ignore.case=TRUE)), label = "1-level factor check")
 })
