@@ -149,7 +149,8 @@ The JASP style guide is based on the [google style guide](https://google.github.
         y <- 4
         ```
 8. Indentations:
-  - Use four spaces (Insert spaces for tab [tab width=4])
+  - Use two spaces (Insert spaces for tab [tab width=2])
+  
 9. Spacing
   - Spaces: Between binary operators (e.g., `+`, `*`, `||`, `<-`, commas.
     * BAD:
