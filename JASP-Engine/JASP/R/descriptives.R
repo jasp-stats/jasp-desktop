@@ -1283,6 +1283,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
         for (lev in splitLevels) {
           t <- table(column[splitFactor==lev])
           total <- sum(t)
+          alltotal <- length(column[splitFactor==lev])
           cFreq <- 0
           
           for (i in seq_along(names(t))) {
@@ -1291,7 +1292,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
             row[["Level"]] <- names(t)[i]
             row[["Frequency"]] <- as.vector(t[i])
             cFreq <- cFreq + row[["Frequency"]]
-            row[["Percent"]] <- row[["Frequency"]]/total*100
+            row[["Percent"]] <- row[["Frequency"]]/alltotal*100
             row[["Valid Percent"]] <- row[["Frequency"]]/total*100
             row[["Cumulative Percent"]] <- cFreq/total*100
             if (i==1) {
@@ -1304,10 +1305,19 @@ Descriptives <- function(dataset=NULL, options, perform="run",
           
           rows[[length(rows) + 1]] <- list(
             "factor" = "",
+            "Level" = "Missing",
+            "Frequency" = alltotal - total,
+            "Percent" = (alltotal - total)/alltotal*100,
+            "Valid Percent" = "",
+            "Cumulative Percent" = ""
+          )
+          
+          rows[[length(rows) + 1]] <- list(
+            "factor" = "",
             "Level" = "Total",
-            "Frequency" = total,
+            "Frequency" = alltotal,
             "Percent" = 100,
-            "Valid Percent" = 100,
+            "Valid Percent" = "",
             "Cumulative Percent" = ""
           )
         }
@@ -1316,23 +1326,32 @@ Descriptives <- function(dataset=NULL, options, perform="run",
         t <- table(column)
         total <- sum(t)
         cFreq <- 0
+        alltotal <- length(column)
         
         for (lev in names(t)) {
           row <- list()
           row[["Level"]] <- lev
           row[["Frequency"]] <- as.numeric(t[lev])
           cFreq <- cFreq + row[["Frequency"]]
-          row[["Percent"]] <- row[["Frequency"]]/total*100
+          row[["Percent"]] <- row[["Frequency"]]/alltotal*100
           row[["Valid Percent"]] <- row[["Frequency"]]/total*100
           row[["Cumulative Percent"]] <- cFreq/total*100
           rows[[length(rows) + 1]] <- row
         }
         
         rows[[length(rows) + 1]] <- list(
+          "Level" = "Missing",
+          "Frequency" = alltotal - total,
+          "Percent" = (alltotal - total)/alltotal*100,
+          "Valid Percent" = "",
+          "Cumulative Percent" = ""
+        )
+		
+        rows[[length(rows) + 1]] <- list(
           "Level" = "Total",
-          "Frequency" = total,
+          "Frequency" = alltotal,
           "Percent" = 100,
-          "Valid Percent" = 100,
+          "Valid Percent" = "",
           "Cumulative Percent" = ""
         )
       }

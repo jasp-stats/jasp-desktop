@@ -47,11 +47,33 @@ test_that("Frequencies table matches", {
   results <- jasptools::run("Descriptives", "debug.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["tables"]][[1]][["data"]]
   expect_equal_tables(table,
-    list(0, "f", 26, 44.8275862068966, 44.8275862068966, 44.8275862068966,
-         "TRUE", 0, "m", 32, 55.1724137931034, 55.1724137931034, 100,
-         "FALSE", "", "Total", 58, 100, 100, "", 1, "f", 24, 57.1428571428571,
-         57.1428571428571, 57.1428571428571, "TRUE", 1, "m", 18, 42.8571428571429,
-         42.8571428571429, 100, "FALSE", "", "Total", 42, 100, 100, "")
+  list(0, "f", 26, 44.8275862068966, 44.8275862068966, 44.8275862068966,
+   "TRUE", 0, "m", 32, 55.1724137931034, 55.1724137931034, 100,
+   "FALSE", "", "Missing", 0, 0, "", "", "", "Total", 58, 100,
+   "", "", 1, "f", 24, 57.1428571428571, 57.1428571428571, 57.1428571428571,
+   "TRUE", 1, "m", 18, 42.8571428571429, 42.8571428571429, 100,
+   "FALSE", "", "Missing", 0, 0, "", "", "", "Total", 42, 100,
+   "", "")
+  )
+})
+
+test_that("Frequencies table matches with missing values", {
+  options <- jasptools::analysisOptions("Descriptives")
+  x <- c(rep(NA, 10), rep(1:2, times=10))
+  split <- rep(1:2, each=15)
+  data <- data.frame(x=as.factor(x), split=as.factor(split))
+  options$variables <- "x"
+  options$splitby <- "split"
+  options$frequencyTables <- TRUE
+  results <- jasptools::run("Descriptives", data, options, view=FALSE, quiet=TRUE)
+  table <- results[["results"]][["tables"]][[1]][["data"]]
+  expect_equal_tables(table,
+  list(1, 1, 3, 20, 60, 60, "TRUE", 1, 2, 2, 13.3333333333333, 40, 100,
+   "FALSE", "", "Missing", 10, 66.6666666666667, "", "", "", "Total",
+   15, 100, "", "", 2, 1, 7, 46.6666666666667, 46.6666666666667,
+   46.6666666666667, "TRUE", 2, 2, 8, 53.3333333333333, 53.3333333333333,
+   100, "FALSE", "", "Missing", 0, 0, "", "", "", "Total", 15,
+   100, "", "")
   )
 })
 
