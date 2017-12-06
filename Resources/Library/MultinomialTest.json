@@ -62,6 +62,11 @@
 		  "default": false
 		},
 		{
+		  "name": "simulatepval",
+		  "type": "Boolean",
+		  "default": false
+		},
+		{
 			"name": "plotWidth",
 			"type": "Integer",
 			"default": 450

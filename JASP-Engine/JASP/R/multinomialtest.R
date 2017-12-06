@@ -32,7 +32,6 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   }
 
 
-
   if (is.null(dataset)) {
     if (perform == "run") {
       dataset <- .readDataSetToEnd(columns.as.numeric=asnum,
@@ -49,12 +48,10 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 
   results <- list() # Initialise results object
 
-
   # Then, we retrieve the state and initialise the output objects
   state <- .retrieveState()
 
   chisqResults <- NULL # result of the chi-square test
-  chisqTable <-
   descriptivesTable <- NULL # expected versus observed
   descriptivesPlot <- NULL # barplot of factor levels
 
@@ -69,14 +66,14 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
       if (!any(diff[["factor"]], diff[["counts"]],
                diff[["confidenceIntervalInterval"]],
                diff[["hypothesis"]], diff[["exProbVar"]],
-               diff[["expectedProbs"]])){
+               diff[["expectedProbs"]], diff[["simulatepval"]])){
 
         chisqResults <- state[["chisqResults"]]
 
-        # the following depend on chisqResults so in same if statement
+        # the following depend on chisqResults so in same if-statement
         if (!any(diff[["confidenceInterval"]],
                  diff[["countProp"]])) {
-          descriptivesTable <- state[["descriptivesTable"]]
+          descriptivesTable1k <- state[["descriptivesTable"]]
         }
 
         if (!any(diff[["descriptivesPlotConfidenceInterval"]],
@@ -165,7 +162,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 }
 
 # Run chi-square test and return object
-.chisquareTest <- function(dataset, options, factor, perform){
+.chisquareTest <- function(dataset, options, factor, perform) {
 
   chisqResults <- NULL
 
@@ -173,30 +170,29 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     # first determine the hypotheses
     f <- dataset[[.v(factor)]]
     f <- f[!is.na(f)]
-    nlev <- nlevels(f)
 
     if (options$counts != ""){
       # convert to "regular" factor
       c <- dataset[[.v(options$counts)]]
-      f <- rep(f, c)
+      f <- factor(rep(f, c), levels = f)
     }
 
     # Create table in order of appearance of the dataset
     t <- table(f)
-    val <- t[unique(f)]
+    nlev <- nlevels(f)
 
     hyps <- .multinomialHypotheses(dataset, options, nlev)
 
     # create a named list with as values the chi-square result objects
-
-
     chisqResults <- lapply(hyps, function(h) {
       # catch warning message and append to object if necessary
       csr <- NULL
       warn <- NULL
+      if (options$simulatepval) print("Monte carlo approximation")
       csr <- withCallingHandlers(
-        chisq.test(x = val, p = h, rescale.p = TRUE),
-        warning = function(w){
+        chisq.test(x = t, p = h, rescale.p = TRUE,
+                   simulate.p.value = options$simulatepval),
+        warning = function(w) {
          warn <<- w$message
         }
       )
@@ -211,7 +207,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 
 # Transform chi-square test object into table for JASP
 # chisqResults = list(H1 = obj, H2 = obj, ....)
-.chisqTable <- function(chisqResults, options, perform){
+.chisqTable <- function(chisqResults, options, perform) {
   table <- list()
   footnotes <- .newFootnotes()
   table[["title"]] <- "Multinomial Test"
@@ -258,9 +254,11 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   if (!is.null(chisqResults)){
 
     for(r in 1:length(chisqResults)){
+      df <- chisqResults[[r]][["parameter"]][["df"]]
+      if (is.na(df)) df <- "-" # This happens when the monte carlo option is checked
       table[["data"]][[r]] <- list(case = names(chisqResults)[r],
                                    chisquare = .clean(chisqResults[[r]][["statistic"]][["X-squared"]]),
-                                   df = .clean(chisqResults[[r]][["parameter"]][["df"]]),
+                                   df = .clean(df),
                                    p = chisqResults[[r]][["p.value"]])
 
       if (options$VovkSellkeMPR){
@@ -506,6 +504,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
       base_breaks_y(ciDf$upperCI) +
       ggplot2::xlab(options$factor) +
       ggplot2::ylab(yname) +
+      ggplot2::coord_flip() +
       ggplot2::theme_bw() +
       ggplot2::theme(
         panel.grid.minor = ggplot2::element_blank(),
@@ -547,7 +546,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 }
 
 # Transform input into a list of hypotheses
-.multinomialHypotheses <- function(dataset, options, nlevels){
+.multinomialHypotheses <- function(dataset, options, nlevels) {
   # This function transforms the input into a list of hypotheses
   hyps <- list()
 
@@ -558,7 +557,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   } else {
 
     # First, generate a table with expected probabilities based on input
-    expectedDf <- .generateExpectedDf(dataset, options, nlevels)
+    expectedDf <- .generateExpectedProps(dataset, options, nlevels)
 
     # assign each hypothesis to the hyps object
     hyps <- as.list(expectedDf)
@@ -568,21 +567,26 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 }
 
 # Parse expected probabilities/counts
-.generateExpectedDf <- function(dataset, options, nlevels){
+.generateExpectedProps <- function(dataset, options, nlevels){
   # This function returns a data frame with in each named column the expected
   # probabilities. The column names are the hypothesis names.
 
-  if (options$exProbVar != ""){
+  if (options$exProbVar != "") {
     # use only exProbVar
-    eDf <- data.frame(dataset[[.v(options$exProbVar)]])
-    colnames(eDf) <- options$exProbVar
+    eProps <- data.frame(dataset[[.v(options$exProbVar)]])
+    colnames(eProps) <- options$exProbVar
 
-    if (nlevels != nrow(eDf)){
+    if (nlevels != nrow(eProps)){
       stop("Expected counts do not match number of levels of factor!")
     }
 
-    return(eDf)
+    return(eProps)
 
+  # TODO: exPropTable functionality
+  #} else if (options$exPropTable != "") {
+  #  eProps <- data.frame(options$exPropTable) # load df
+  #  colnames(eProps) <- eProps$level # name columns
+  #  eProps[-1,] # remove name row
   } else {
 
     stop("No expected counts entered!")
