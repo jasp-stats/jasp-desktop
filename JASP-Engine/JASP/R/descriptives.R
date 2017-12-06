@@ -1283,7 +1283,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
         for (lev in splitLevels) {
           t <- table(column[splitFactor==lev])
           total <- sum(t)
-		  alltotal <- length(column[splitFactor==lev])
+          alltotal <- length(column[splitFactor==lev])
           cFreq <- 0
           
           for (i in seq_along(names(t))) {
@@ -1303,14 +1303,15 @@ Descriptives <- function(dataset=NULL, options, perform="run",
             rows[[length(rows) + 1]] <- row
           }
           
-		  rows[[length(rows) + 1]] <- list(
-			  "factor" = "",
-			  "Level" = "Missing",
-			  "Frequency" = alltotal - total,
-			  "Percent" = (alltotal - total)/alltotal*100,
-			  "Valid Percent" = "",
-			  "Cumulative Percent" = ""
-		  )
+          rows[[length(rows) + 1]] <- list(
+            "factor" = "",
+            "Level" = "Missing",
+            "Frequency" = alltotal - total,
+            "Percent" = (alltotal - total)/alltotal*100,
+            "Valid Percent" = "",
+            "Cumulative Percent" = ""
+          )
+          
           rows[[length(rows) + 1]] <- list(
             "factor" = "",
             "Level" = "Total",
@@ -1325,7 +1326,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
         t <- table(column)
         total <- sum(t)
         cFreq <- 0
-		alltotal <- length(column)
+        alltotal <- length(column)
         
         for (lev in names(t)) {
           row <- list()
@@ -1338,13 +1339,13 @@ Descriptives <- function(dataset=NULL, options, perform="run",
           rows[[length(rows) + 1]] <- row
         }
         
-		rows[[length(rows) + 1]] <- list(
-		  "Level" = "Missing",
-		  "Frequency" = alltotal - total,
-		  "Percent" = (alltotal - total)/alltotal*100,
-		  "Valid Percent" = "",
-		  "Cumulative Percent" = ""
-		)
+        rows[[length(rows) + 1]] <- list(
+          "Level" = "Missing",
+          "Frequency" = alltotal - total,
+          "Percent" = (alltotal - total)/alltotal*100,
+          "Valid Percent" = "",
+          "Cumulative Percent" = ""
+        )
 		
         rows[[length(rows) + 1]] <- list(
           "Level" = "Total",
