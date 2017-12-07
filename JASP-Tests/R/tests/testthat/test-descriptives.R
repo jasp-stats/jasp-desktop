@@ -21,7 +21,7 @@ test_that("Main table results match", {
   options$percentileValuesPercentiles <- TRUE
   options$percentileValuesPercentilesPercentiles <- c(2, 5, 8)
   options$percentileValuesQuartiles <- TRUE
-  results <- jasptools::run("Descriptives", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Descriptives", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["stats"]][["data"]]
   expect_equal_tables(table,
     list("contNormal", 0, 58, 0, -0.120135614827586, -0.2223981035, 0,
@@ -44,7 +44,7 @@ test_that("Frequencies table matches", {
   options$variables <- "facGender"
   options$splitby <- "contBinom"
   options$frequencyTables <- TRUE
-  results <- jasptools::run("Descriptives", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Descriptives", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["tables"]][[1]][["data"]]
   expect_equal_tables(table,
   list(0, "f", 26, 44.8275862068966, 44.8275862068966, 44.8275862068966,
@@ -81,7 +81,7 @@ test_that("Distribution plot matches", {
   options <- jasptools::analysisOptions("Descriptives")
   options$variables <- "contNormal"
   options$plotVariables <- TRUE
-  results <- jasptools::run("Descriptives", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Descriptives", "test.csv", options, view=FALSE, quiet=TRUE)
   testPlot <- results[["state"]][["figures"]][[1]]
   expect_equal_plots(testPlot, "distribution", dir="Descriptives")
 })
@@ -90,7 +90,7 @@ test_that("Correlation plot matches", {
   options <- jasptools::analysisOptions("Descriptives")
   options$variables <- c("contNormal", "contGamma")
   options$plotCorrelationMatrix <- TRUE
-  results <- jasptools::run("Descriptives", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Descriptives", "test.csv", options, view=FALSE, quiet=TRUE)
   testPlot <- results[["state"]][["figures"]][[1]]
   expect_equal_plots(testPlot, "correlation", dir="Descriptives")
 })
@@ -106,7 +106,7 @@ test_that("Boxplot matches", {
   options$splitPlotOutlierLabel <- TRUE
   options$splitPlotViolin <- TRUE
   options$splitPlots <- TRUE
-  results <- jasptools::run("Descriptives", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("Descriptives", "test.csv", options, view=FALSE, quiet=TRUE)
   testPlot <- results[["state"]][["figures"]][[1]]
   expect_equal_plots(testPlot, "boxplot", dir="Descriptives")
 })

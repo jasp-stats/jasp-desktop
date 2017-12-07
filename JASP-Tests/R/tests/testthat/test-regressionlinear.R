@@ -14,7 +14,7 @@ test_that("Main table results match", {
   )
   options$rSquaredChange <- TRUE
   options$residualsDurbinWatson <- TRUE
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["model summary"]][["data"]]
   expect_equal_tables(table,
     list(1, 0.00124876050417603, 1.55940279678998e-06, -0.0102025063175828,
@@ -35,7 +35,7 @@ test_that("Coefficients table results match", {
   options$regressionCoefficientsConfidenceIntervalsInterval <- 0.9
   options$collinearityDiagnostics <- TRUE
   options$VovkSellkeMPR <- TRUE
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["regression"]][["data"]]
   expect_equal_tables(table,
     list(1, "(Intercept)", -0.105623204281424, 0.176988347288719, "", -0.596780555892316,
@@ -55,7 +55,7 @@ test_that("ANOVA table results match", {
   )
   options$modelFit <- TRUE
   options$VovkSellkeMPR <- TRUE
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["anova"]][["data"]]
   expect_equal_tables(table,
     list(1, "Regression", 0.666902167813857, 1, 0.666902167813857, 3.08946572909727e+30,
@@ -74,7 +74,7 @@ test_that("Coefficients Covariance table results match", {
     list(components="contcor1", isNuisance=FALSE)
   )
   options$regressionCoefficientsCovarianceMatrix <- TRUE
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["coefficient covariances"]][["data"]]
   expect_equal_tables(table,
     list(1, "contGamma", "TRUE", 0.00490486111017858, 0.00116294327838645,
@@ -90,7 +90,7 @@ test_that("Descriptive table results match", {
     list(components="contGamma", isNuisance=FALSE)
   )
   options$descriptives <- TRUE
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["descriptives"]][["data"]]
   expect_equal_tables(table,
     list("contNormal", 100, -0.18874858754, 1.05841360919316, 0.105841360919316,
@@ -108,7 +108,7 @@ test_that("Part and Partial Correlations table results match", {
     list(components="contGamma", isNuisance=FALSE)
   )
   options$partAndPartialCorrelations <- TRUE
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["correlations"]][["data"]]
   expect_equal_tables(table,
     list(1, "debCollin2", -0.0322303841661185, -0.0321675047221584, "TRUE",
@@ -125,7 +125,7 @@ test_that("Collinearity Diagonistic table results match", {
     list(components="contcor1", isNuisance=FALSE)
   )
   options$collinearityDiagnostics <- TRUE
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["collinearity diagnostics"]][["data"]]
   expect_equal_tables(table,
     list(1, 1, "TRUE", 1.05212452477783, 1, 0.473937737611082, 0.473937737611089,
@@ -142,7 +142,7 @@ test_that("Residuals Statistics table results match", {
     list(components="contcor1", isNuisance=FALSE)
   )
   options$residualsDurbinWatson <- TRUE
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["residuals statistics"]][["data"]]
   expect_equal_tables(table,
     list("Predicted Value", -0.559288923489434, 0.200246244240391, -0.18874858754,
@@ -164,7 +164,7 @@ test_that("Casewise Diagnostics table results match", {
   options$residualsCasewiseDiagnostics <- TRUE
   options$residualsCasewiseDiagnosticsType <- "outliersOutside"
   options$residualsCasewiseDiagnosticsOutliersOutside <- 3
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["residuals statistics"]][["data"]]
   expect_equal_tables(table,
     list("Predicted Value", -0.275779454672472, -0.143545494526366, -0.18874858754,
@@ -184,7 +184,7 @@ test_that("Residuals vs. Dependent plot matches", {
     list(components="contGamma", isNuisance=FALSE)
   )
   options$plotResidualsDependent <- TRUE
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   testPlot <- results[["state"]][["figures"]][[1]]
   expect_equal_plots(testPlot, "residuals-dependent", dir="RegressionLinear")
 })
@@ -197,7 +197,7 @@ test_that("Residuals vs. Covariates plot matches", {
     list(components="contGamma", isNuisance=FALSE)
   )
   options$plotResidualsCovariates <- TRUE
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   testPlot <- results[["state"]][["figures"]][[1]]
   expect_equal_plots(testPlot, "residuals-covariates", dir="RegressionLinear")
 })
@@ -210,7 +210,7 @@ test_that("Residuals vs. Predicted plot matches", {
     list(components="contGamma", isNuisance=FALSE)
   )
   options$plotResidualsPredicted <- TRUE
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   testPlot <- results[["state"]][["figures"]][[1]]
   expect_equal_plots(testPlot, "residuals-predicted", dir="RegressionLinear")
 })
@@ -224,7 +224,7 @@ test_that("Standardized Residuals Histogram matches", {
   )
   options$plotResidualsHistogram <- TRUE
   options$plotResidualsHistogramStandardized <- TRUE
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   testPlot <- results[["state"]][["figures"]][[1]]
   expect_equal_plots(testPlot, "residuals-histogram", dir="RegressionLinear")
 })
@@ -237,7 +237,7 @@ test_that("Q-Q Plot Standardized Residuals matches", {
     list(components="contGamma", isNuisance=FALSE)
   )
   options$plotResidualsQQ <- TRUE
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   testPlot <- results[["state"]][["figures"]][[1]]
   expect_equal_plots(testPlot, "residuals-q-q", dir="RegressionLinear")
 })
@@ -248,21 +248,21 @@ test_that("Analysis handles errors", {
   options$dependent <- "debInf"
   options$covariates <- "contGamma"
   options$modelTerms <- list(list(components="contGamma", isNuisance=FALSE))
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   expect_identical(results[["results"]][["model summary"]][["error"]][["errorType"]], "badData",
                    label="Inf dependent check")
 
   options$dependent <- "contNormal"
   options$covariates <- "debInf"
   options$modelTerms <- list(list(components="debInf", isNuisance=FALSE))
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   expect_identical(results[["results"]][["model summary"]][["error"]][["errorType"]], "badData",
                   label="Inf covariate check")
 
   options$covariates <- "contGamma"
   options$wlsWeights <- "debInf"
   options$modelTerms <- list(list(components="contGamma", isNuisance=FALSE))
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   expect_identical(results[["results"]][["model summary"]][["error"]][["errorType"]], "badData",
                   label="Inf wlsWeights check")
 
@@ -270,14 +270,14 @@ test_that("Analysis handles errors", {
   options$covariates <- "contGamma"
   options$wlsWeights <- ""
   options$modelTerms <- list(list(components="contGamma", isNuisance=FALSE))
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   expect_identical(results[["results"]][["model summary"]][["error"]][["errorType"]], "badData",
                   label="No variance dependent check")
 
   options$dependent <- "contNormal"
   options$covariates <- "debSame"
   options$modelTerms <- list(list(components="debSame", isNuisance=FALSE))
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   expect_identical(results[["results"]][["model summary"]][["error"]][["errorType"]], "badData",
                   label="No variance covariate check")
 
@@ -285,7 +285,7 @@ test_that("Analysis handles errors", {
   options$covariates <- "contcor1"
   options$wlsWeights <- "contNormal"
   options$modelTerms <- list(list(components="contcor1", isNuisance=FALSE))
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   expect_identical(results[["results"]][["model summary"]][["error"]][["errorType"]], "badData",
                   label="Negative wlsWeights check")
 
@@ -293,14 +293,14 @@ test_that("Analysis handles errors", {
   options$covariates <- "contcor1"
   options$wlsWeights <- ""
   options$modelTerms <- list(list(components="contcor1", isNuisance=FALSE))
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   expect_identical(results[["results"]][["model summary"]][["error"]][["errorType"]], "badData",
                   label="Too few obs dependent check")
 
   options$dependent <- "contGamma"
   options$covariates <- "debNaN"
   options$modelTerms <- list(list(components="debNaN", isNuisance=FALSE))
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   expect_identical(results[["results"]][["model summary"]][["error"]][["errorType"]], "badData",
                   label="Too few obs covariate check")
 
@@ -308,7 +308,7 @@ test_that("Analysis handles errors", {
   options$covariates <- "contNormal"
   options$wlsWeights <- "debNaN"
   options$modelTerms <- list(list(components="contNormal", isNuisance=FALSE))
-  results <- jasptools::run("RegressionLinear", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   expect_identical(results[["results"]][["model summary"]][["error"]][["errorType"]], "badData",
                   label="Too few obs wlsWeights check")
 })

@@ -14,7 +14,7 @@ test_that("Main table results match", {
   options$effectSizeStandardized <- "informative"
   options$informativeCauchyLocation <- 1
   options$informativeCauchyScale <- 0.5
-  results <- jasptools::run("TTestBayesianIndependentSamples", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["ttest"]][["data"]]
   expect_equal_tables(table, list("contNormal", 0.123677493243643, 0.0895633315624481))
 })
@@ -26,7 +26,7 @@ test_that("Prior posterior plot matches", {
   options$groupingVariable <- "contBinom"
   options$plotPriorAndPosterior <- TRUE
   options$plotPriorAndPosteriorAdditionalInfo <- TRUE
-  results <- jasptools::run("TTestBayesianIndependentSamples", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
   testPlot <- results[["state"]][["figures"]][[1]]
   expect_equal_plots(testPlot, "prior-posterior", dir="TTestBayesianIndependentSamples")
 })
@@ -37,7 +37,7 @@ test_that("BF robustness check plot matches", {
   options$groupingVariable <- "contBinom"
   options$plotBayesFactorRobustness <- TRUE
   options$plotBayesFactorRobustnessAdditionalInfo <- FALSE
-  results <- jasptools::run("TTestBayesianIndependentSamples", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
   testPlot <- results[["state"]][["figures"]][[1]]
   expect_equal_plots(testPlot, "robustness-check", dir="TTestBayesianIndependentSamples")
 })
@@ -48,7 +48,7 @@ test_that("Sequential analysis plot matches", {
   options$groupingVariable <- "contBinom"
   options$plotSequentialAnalysis <- TRUE
   options$plotSequentialAnalysisRobustness <- TRUE
-  results <- jasptools::run("TTestBayesianIndependentSamples", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
   testPlot <- results[["state"]][["figures"]][[1]]
   expect_equal_plots(testPlot, "sequential-analysis", dir="TTestBayesianIndependentSamples")
 })
@@ -59,7 +59,7 @@ test_that("Descriptives plot matches", {
   options$groupingVariable <- "contBinom"
   options$descriptivesPlots <- TRUE
   options$descriptivesPlotsCredibleInterval <- 0.90
-  results <- jasptools::run("TTestBayesianIndependentSamples", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
   testPlot <- results[["state"]][["figures"]][[1]]
   expect_equal_plots(testPlot, "descriptives", dir="TTestBayesianIndependentSamples")
 })
@@ -69,7 +69,7 @@ test_that("Descriptives table matches", {
   options$variables <- "contNormal"
   options$groupingVariable <- "contBinom"
   options$descriptives <- TRUE
-  results <- jasptools::run("TTestBayesianIndependentSamples", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["descriptives"]][["descriptivesTable"]][["data"]]
   expect_equal_tables(table,
     list("contNormal", 0, 58, -0.120135614827586, 1.10575982846952, 0.145193378675912,
@@ -84,25 +84,25 @@ test_that("Analysis handles errors", {
 
   options$variables <- "debInf"
   options$groupingVariable <- "contBinom"
-  results <- jasptools::run("TTestBayesianIndependentSamples", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
   notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
   expect_true(any(grepl("infinity", notes, ignore.case=TRUE)), label = "Inf check")
 
   options$variables <- "debSame"
   options$groupingVariable <- "contBinom"
-  results <- jasptools::run("TTestBayesianIndependentSamples", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
   notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
   expect_true(any(grepl("variance", notes, ignore.case=TRUE)), label = "No variance check")
 
   options$variables <- "debMiss99"
   options$groupingVariable <- "contBinom"
-  results <- jasptools::run("TTestBayesianIndependentSamples", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
   notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
   expect_true(any(grepl("observations", notes, ignore.case=TRUE)), label = "Too few obs check")
 
   options$dependent <- "contNormal"
   options$groupingVariable <- "debSame"
-  results <- jasptools::run("TTestBayesianIndependentSamples", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
   msg <- results[["results"]][["errorMessage"]]
   expect_true(any(grepl("levels", msg, ignore.case=TRUE)), label = "1-level factor check")
 })
