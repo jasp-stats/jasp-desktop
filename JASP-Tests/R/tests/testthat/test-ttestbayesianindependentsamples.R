@@ -106,3 +106,17 @@ test_that("Analysis handles errors", {
   msg <- results[["results"]][["errorMessage"]]
   expect_true(any(grepl("levels", msg, ignore.case=TRUE)), label = "1-level factor check")
 })
+
+test_that("Analysis handles integer overflow", {
+  set.seed(4491)
+  dat <- data.frame(dependent_var = rnorm(2e5),
+                    grouping      = rep(c(1, 2), each = 1e5))
+  
+  options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
+  options$variables <- 'dependent_var'
+  options$groupingVariable <- 'grouping'
+  results <- jasptools::run("TTestBayesianIndependentSamples", dat, options, view=FALSE, quiet=TRUE)
+  
+  table <- results[["results"]][["ttest"]][["data"]]
+  expect_equal_tables(table, list("dependent_var", 0.00511047418810093, 0.311955453811728))
+})
