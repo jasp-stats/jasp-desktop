@@ -48,6 +48,7 @@
   - [Rebasing your Repository](Docs/development/git-guide.md)
   - [Guide to Building JASP](Docs/development/jasp-building-guide.md)
   - [Implementing Analyses in R](Docs/development/r-analyses-guide.md)
+  - [Writing Unit Tests for Analyses](JASP-Tests/README.md)
   - [The JASP R style guide](Docs/development/r-style-guide.md)
   - [The JASP Guide to Writing Analyses for Humans](Docs/development/jasp-human-guide.md)
   - [The Error list](Docs/development/jasp-error-list.md)
