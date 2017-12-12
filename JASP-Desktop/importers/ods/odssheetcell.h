@@ -52,6 +52,7 @@ private:
 	std::string				_string;
 
 	void setValue(const QString &value);
+	void setValue(const std::string &value);
 };
 
 } // end namespace ods
