@@ -990,7 +990,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 			}
 
-			indexResidual <- 2
+			indexResidual <- 1
 
 			SS <- result[indexResidual,"Error SS"]
 			df <- result[indexResidual,"den Df"]
