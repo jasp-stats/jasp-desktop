@@ -7,7 +7,7 @@ test_that("Main table results match", {
   options$hypothesis <- "greaterThanTestValue"
   options$confidenceInterval <- TRUE
   options$VovkSellkeMPR <- TRUE
-  results <- jasptools::run("BinomialTest", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("BinomialTest", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["binomial"]][["data"]]
   expect_equal_tables(table,
     list("contBinom", 0, 58, 100, 0.58, 0.696739870156555, 0.492841460660175,
@@ -21,7 +21,7 @@ test_that("Descriptives plots match", {
   options$variables <- "contBinom"
   options$descriptivesPlots <- TRUE
   options$descriptivesPlotsConfidenceInterval <- 0.90
-  results <- jasptools::run("BinomialTest", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("BinomialTest", "test.csv", options, view=FALSE, quiet=TRUE)
 
   testPlot <- results[["state"]][["figures"]][[1]]
   expect_equal_plots(testPlot, "descriptives-1", dir="BinomialTest")

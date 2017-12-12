@@ -8,7 +8,7 @@ test_that("Main table results match", {
   options$priorA <- 4
   options$priorB <- 2
   options$testValue <- 0.2
-  results <- jasptools::run("BinomialTestBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("BinomialTestBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["binomial"]][["data"]]
   expect_equal_tables(table,
     list("contBinom", 0, 58, 100, 0.58, 4.32337507642424e-15, "TRUE", "contBinom",
@@ -21,7 +21,7 @@ test_that("Prior posterior plots match", {
   options$variables <- "contBinom"
   options$plotPriorAndPosterior <- TRUE
   options$plotPriorAndPosteriorAdditionalInfo <- TRUE
-  results <- jasptools::run("BinomialTestBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("BinomialTestBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
 
   testPlot <- results[["state"]][["figures"]][[1]]
   expect_equal_plots(testPlot, "prior-posterior-1", dir="BinomialTestBayesian")
@@ -34,7 +34,7 @@ test_that("Sequential analysis plots match", {
   options <- jasptools::analysisOptions("BinomialTestBayesian")
   options$variables <- "contBinom"
   options$plotSequentialAnalysis <- TRUE
-  results <- jasptools::run("BinomialTestBayesian", "debug.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("BinomialTestBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
 
   testPlot <- results[["state"]][["figures"]][[1]]
   expect_equal_plots(testPlot, "sequential-analysis-1", dir="BinomialTestBayesian")
