@@ -65,7 +65,12 @@ private:
 	int _analysisRevision;
 	int _progress;
 	std::string _analysisName;
+	std::string _analysisTitle;
+	bool _analysisRequiresInit;
+	std::string _analysisDataKey;
 	std::string _analysisOptions;
+	std::string _analysisResultsMeta;
+	std::string _analysisStateKey;
 	std::string _analysisResultsString;
 	Json::Value _imageOptions;
 	int _ppi;

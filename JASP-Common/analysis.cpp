@@ -28,12 +28,17 @@ using namespace boost::uuids;
 using namespace boost;
 using namespace std;
 
-Analysis::Analysis(int id, string module, string name, Options *options, const Version &version, bool autorun, bool usedata)
+Analysis::Analysis(int id, string module, string name, string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Options *options, const Version &version, bool autorun, bool usedata)
 {
 	_id = id;
 	_module = module;
 	_name = name;
+	_title = title;
+	_requiresInit = requiresInit;
 	_options = options;
+	_dataKey = dataKey;
+	_stateKey = stateKey;
+	_resultsMeta = resultsMeta;
 	_autorun = autorun;
 	_usedata = usedata;
 	_version = version;
@@ -132,6 +137,11 @@ Json::Value Analysis::asJSON() const
 
 	analysisAsJson["id"] = _id;
 	analysisAsJson["name"] = _name;
+	analysisAsJson["title"] = _title;
+	analysisAsJson["requiresInit"] = _requiresInit;
+	analysisAsJson["dataKey"] = _dataKey;
+	analysisAsJson["stateKey"] = _stateKey;
+	analysisAsJson["resultsMeta"] = _resultsMeta;
 	analysisAsJson["module"] = _module;
 	analysisAsJson["progress"] = _progress;
 	analysisAsJson["version"] = _version.asString();
@@ -214,6 +224,31 @@ void Analysis::setStatus(Analysis::Status status)
 const string &Analysis::name() const
 {
 	return _name;
+}
+
+const string &Analysis::title() const
+{
+	return _title;
+}
+
+const Json::Value &Analysis::requiresInit() const
+{
+	return _requiresInit;
+}
+
+const Json::Value &Analysis::dataKey() const
+{
+	return _dataKey;
+}
+
+const Json::Value &Analysis::stateKey() const
+{
+	return _stateKey;
+}
+
+const Json::Value &Analysis::resultsMeta() const
+{
+	return _resultsMeta;
 }
 
 const string &Analysis::module() const

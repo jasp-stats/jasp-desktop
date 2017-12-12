@@ -31,7 +31,7 @@ public:
 
 	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted, Error, SaveImg, Exception };
 
-	Analysis(int id, std::string module, std::string name, Options *options, const Version &version, bool isAutorun = true, bool usedata = true);
+	Analysis(int id, std::string module, std::string name, std::string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Options *options, const Version &version, bool isAutorun = true, bool usedata = true);
 	virtual ~Analysis();
 
 	Options *options() const;
@@ -49,8 +49,12 @@ public:
 	const Json::Value &results() const;
 	const Json::Value &userData() const;
 	Json::Value asJSON() const;
-
+	const Json::Value &requiresInit() const;
+	const Json::Value &dataKey() const;
+	const Json::Value &stateKey() const;
+	const Json::Value &resultsMeta() const;
 	const std::string &name() const;
+	const std::string &title() const;
 	const std::string &module() const;
 	int id() const;
 	bool isAutorun() const;
@@ -85,7 +89,6 @@ protected:
 	bool _refreshBlocked = false;
 
 	Options* _options;
-
 	Json::Value _results;
 	Json::Value _imgResults;
 	Json::Value _userData;
@@ -97,7 +100,12 @@ protected:
 private:
 
 	std::string _name;
+	std::string _title;
+	Json::Value _requiresInit;
 	std::string _module;
+	Json::Value _dataKey;
+	Json::Value _stateKey;
+	Json::Value _resultsMeta;
 	int _id;
 	bool _autorun;
 	bool _usedata;

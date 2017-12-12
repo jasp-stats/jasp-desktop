@@ -116,7 +116,7 @@ void Engine::runAnalysis()
 	RCallback callback = boost::bind(&Engine::callback, this, _1, _2);
 
 	_currentAnalysisKnowsAboutChange = false;
-	_analysisResultsString = rbridge_run(_analysisName, _analysisOptions, perform, _ppi, callback);
+	_analysisResultsString = rbridge_run(_analysisName, _analysisTitle, _analysisRequiresInit, _analysisDataKey, _analysisOptions, _analysisResultsMeta, _analysisStateKey, perform, _ppi, callback);
 
 	if (_status == initing || _status == running)  // if status hasn't changed
 		receiveMessages();
@@ -259,9 +259,19 @@ bool Engine::receiveMessages(int timeout)
 		if (_status == toInit || _status == toRun || _status == changed || _status == saveImg)
 		{
 			_analysisName = jsonRequest.get("name", Json::nullValue).asString();
+			_analysisTitle = jsonRequest.get("title", Json::nullValue).asString();
+			_analysisDataKey = jsonRequest.get("dataKey", Json::nullValue).toStyledString();
 			_analysisOptions = jsonRequest.get("options", Json::nullValue).toStyledString();
+			_analysisResultsMeta = jsonRequest.get("resultsMeta", Json::nullValue).toStyledString();
+			_analysisStateKey = jsonRequest.get("stateKey", Json::nullValue).toStyledString();
 			_analysisRevision = jsonRequest.get("revision", -1).asInt();
 			_imageOptions = jsonRequest.get("image", Json::nullValue);
+
+			Json::Value analysisRequiresInit = jsonRequest.get("requiresInit", Json::nullValue);
+			if (analysisRequiresInit.isNull()) // not defined in the analysis json
+				_analysisRequiresInit = true;
+			else
+				_analysisRequiresInit = analysisRequiresInit.asBool();
 
 			Json::Value settings = jsonRequest.get("settings", Json::nullValue);
 			if (settings.isObject())

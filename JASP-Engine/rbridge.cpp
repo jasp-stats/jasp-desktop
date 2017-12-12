@@ -124,7 +124,7 @@ SEXP rbridge_requestStateFileNameSEXP()
 	return paths;
 }
 
-string rbridge_run(const string &name, const string &options, const string &perform, int ppi, RCallback callback)
+string rbridge_run(const string &name, const string &title, bool &requiresInit, const string &dataKey, const string &options, const string &resultsMeta, const string &stateKey, const string &perform, int ppi, RCallback callback)
 {
 	SEXP results;
 
@@ -133,11 +133,16 @@ string rbridge_run(const string &name, const string &options, const string &perf
 	RInside &rInside = rbridge_rinside->instance();
 
 	rInside["name"] = name;
-	rInside["options.as.json.string"] = options;
+	rInside["title"] = title;
+	rInside["requiresInit"] = requiresInit;
+	rInside["dataKey"] = dataKey;
+	rInside["options"] = options;
+	rInside["resultsMeta"] = resultsMeta;
+	rInside["stateKey"] = stateKey;
 	rInside["perform"] = perform;
 	rInside[".ppi"] = ppi;
 
-	rInside.parseEval("run(name=name, options.as.json.string=options.as.json.string, perform)", results);
+	rInside.parseEval("run(name=name, title=title, requiresInit=requiresInit, dataKey=dataKey, options=options, resultsMeta=resultsMeta, stateKey=stateKey, perform=perform)", results);
 
 	rbridge_runCallback = NULL;
 

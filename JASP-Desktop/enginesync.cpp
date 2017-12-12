@@ -171,16 +171,24 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 
 	json["id"] = analysis->id();
 	json["perform"] = perform;
+	json["requiresInit"] = analysis->requiresInit();
 	json["revision"] = analysis->revision();
 
 	if (analysis->status() != Analysis::Aborted)
 	{
 		json["name"] = analysis->name();
+		json["title"] = analysis->title();
 		if (perform == "saveImg")
+		{
 			json["image"] = analysis->getSaveImgOptions();
+		}
 		else
+		{
+			json["dataKey"] = analysis->dataKey();
+			json["stateKey"] = analysis->stateKey();
+			json["resultsMeta"] = analysis->resultsMeta();
 			json["options"] = analysis->options()->asJSON();
-
+		}
 		Json::Value settings;
 		settings["ppi"] = _ppi;
 
