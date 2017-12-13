@@ -96,7 +96,7 @@ HEADERS += \
 	filereader.h \
 	ipcchannel.h \
 	label.h \
-        labels.h  \
+	labels.h \
 	libzip/archive.h \
 	libzip/archive_entry.h \
 	options/option.h \
