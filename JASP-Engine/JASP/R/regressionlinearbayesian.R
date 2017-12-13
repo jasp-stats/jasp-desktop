@@ -196,6 +196,13 @@ RegressionLinearBayesian <- function (
 			plotInclusionProbabilities$data
 		)
 
+		# avoid some weird behaviour from bas_obj that chrashes base::save. If more error occur try:
+		# attr(attr(bas_obj[["model"]], "terms"), ".Environment") <- NULL
+		# attr(bas_obj$terms, ".Environment") <- NULL
+		# Perhaps some improper objects in the output of the BAS C code? 
+		# reparsing the object seems to avoid errors with base::save.
+		bas_obj[["mle.se"]] <- eval(parse(text = capture.output(dput(bas_obj[["mle.se"]]))))
+
 		state <- list(
 			options = options,
 			bas_obj = bas_obj,
@@ -837,6 +844,7 @@ RegressionLinearBayesian <- function (
 
 			p <- try(silent = FALSE, expr = {
 
+			    # the function BAS:::coef.bas calls list2matrix.bas which appears pretty broken
 				plotObj <- .plotCoef.basReg(BAS:::coef.bas(bas_obj), subset = list(i))
 				content <- .writeImage(width = 530, height = 400, plot = plotObj)
 
