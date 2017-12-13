@@ -126,7 +126,7 @@
 		}
 	},
 	"state": {
-		"binomResults": ["mainVariables", "confidenceIntervalInterval", "hypothesis", "testValue"],
-		"descriptPlots": ["mainVariables", "descriptivesPlots", "descriptivesPlotsConfidenceInterval", "plotWidth", "plotHeight"]
+		"binomResults": ["variables", "confidenceIntervalInterval", "hypothesis", "testValue"],
+		"descriptPlots": ["variables", "descriptivesPlots", "descriptivesPlotsConfidenceInterval", "plotWidth", "plotHeight"]
 	}
 }
