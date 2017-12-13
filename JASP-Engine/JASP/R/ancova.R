@@ -21,7 +21,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	numeric.variables <- numeric.variables[numeric.variables != ""]
 	factor.variables <- c(unlist(options$fixedFactors),unlist(options$randomFactors),unlist(options$repeatedMeasures))
 	factor.variables <- factor.variables[factor.variables != ""]
-
+  
 	if (is.null(dataset)) {
 
 		if (perform == "run") {
@@ -53,6 +53,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	stateContrasts <- NULL
 	stateLevene <- NULL
 	stateMarginalMeans <- NULL
+	stateSimpleEffects <- NULL
 	stateDescriptivesTable <- NULL
 
 	if ( ! is.null(state)) {  # is there state?
@@ -116,6 +117,15 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			# old marginal means tables can be used
 
 			stateMarginalMeans <- state$stateMarginalMeans
+
+		}
+		
+		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE &&
+		    diff[['simpleFactor']] == FALSE && diff[['moderatorFactorOne']] == FALSE && diff[['moderatorFactorTwo']] == FALSE) {
+		  
+		  # old simple effects tables can be used
+		  
+		  stateSimpleEffects <- state$stateSimpleEffects
 
 		}
 	}
@@ -245,7 +255,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	## Create Marginal Means Table
 
 	if (is.null(stateMarginalMeans)) {
-
 		result <- .anovaMarginalMeans(dataset, options, perform, model, status, singular, stateMarginalMeans)
 		results[["marginalMeans"]] <- list(collection=result$result, title = "Marginal Means")
 		status <- result$status
@@ -257,6 +266,20 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	}
 
+	## Create Simple Effects Table
+	
+	if (is.null(stateSimpleEffects)) {
+
+	  result <- .anovaSimpleEffects(dataset, options, perform, results[["anova"]], status, singular, stateSimpleEffects)
+	  results[["simpleEffects"]] <- result$result
+	  status <- result$status
+	  stateSimpleEffects <- result$stateSimpleEffects
+	 
+	} else {
+
+	  results[["simpleEffects"]] <- stateSimpleEffects
+
+	}
 
 
 	## Create Descriptives Table
@@ -304,13 +327,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 
 	# META definitions
-
 	.meta <- list(
 		list(name="anova", type="table"),
 		list(name="assumptionsObj", type="object", meta=list(list(name="levene", type="table"), list(name="qqPlot", type="image"))),
 		list(name="contrasts", type="collection", meta="table"),
 		list(name="posthoc", type="collection", meta="table"),
-		list(name="marginalMeans", type="collection", meta="table")
+		list(name="marginalMeans", type="collection", meta="table"),
+		list(name="simpleEffects", type="table")
 	)
 
 	if (length(descriptivesPlot) == 1) {
@@ -325,9 +348,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	results[[".meta"]] <- .meta
 
-
 	keepDescriptivesPlot <- lapply(stateDescriptivesPlot, function(x) x$data)
-
 	state[["model"]] <- anovaModel
 	state[["options"]] <- options
 	state[["statePostHoc"]] <- statePostHoc
@@ -337,14 +358,14 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	state[["stateLevene"]] <- stateLevene
 	state[["stateDescriptivesTable"]] <- stateDescriptivesTable
 	state[["stateMarginalMeans"]] <- stateMarginalMeans
-	
+	state[["stateSimpleEffects"]] <- stateSimpleEffects
 
 	if (perform == "init" && status$ready && status$error == FALSE) {
-
+	  
 		return(list(results=results, status="inited", state=state, keep=c(stateqqPlot$data, keepDescriptivesPlot)))
 
 	} else {
-
+	  
 		return(list(results=results, status="complete", state=state, keep=c(stateqqPlot$data, keepDescriptivesPlot)))
 	}
 }
@@ -419,13 +440,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		for (i in 1:n.levels-1) {
 			contr[c(1,i+1),i]<- c(1,-1)
 		}
+		
+		contr <- contr * -1
 
 	} else if (contrast.type == "simple") {
 
-		treatment <- contr.treatment(levels)
-
-		coding <- matrix(rep(1 / n.levels, prod(dim(treatment))), ncol=n.levels - 1)
-		contr <- (treatment-coding)*n.levels
+		contr <- contr.treatment(levels) - 1/n.levels
 
 	} else if (contrast.type == "Helmert") {
 
@@ -439,16 +459,17 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	} else if (contrast.type == "repeated") {
 
-		contr <- matrix(0,nrow = n.levels, ncol = n.levels - 1)
-
-		for (i in 1:n.levels-1) {
-			contr[i,i] <- 1
-			contr[i+1,i] <- -1
-		}
+	  contr <- MASS::contr.sdif(levels) * -1
 
 	} else if (contrast.type == "difference") {
 
-		contr <- contr.helmert(levels)
+		contr <- matrix(0,nrow = n.levels, ncol = n.levels - 1)
+		
+		for (i in 1:(n.levels - 1)) {
+		  
+		  k <- 1 / (i +1)
+		  contr[1:(i+1),i] <- c( rep(-k, i), k * i)
+		}
 
 	} else if (contrast.type == "polynomial") {
 
@@ -896,7 +917,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	if (perform == "run" && status$ready && status$error == FALSE)
 		contrast.summary <- summary.lm(model)[["coefficients"]]
-
 
 	for (contrast in options$contrasts) {
 
@@ -1606,6 +1626,146 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	list(result=marginalMeans, status=status, stateMarginalMeans=stateMarginalMeans)
 }
 
+.anovaSimpleEffects <- function(dataset, options, perform, fullAnovaTable, status, singular, stateMarginalMeans) {
+  
+  if (identical(options$simpleFactor, "") | identical(options$moderatorFactorOne, ""))
+    return (list(result=NULL, status=status))
+  
+  
+  terms <- c(options$moderatorFactorOne,options$moderatorFactorTwo)
+  terms.base64 <- c()
+  terms.normal <- c()
+  simpleFactor.base64 <- .v(options$simpleFactor)
+  
+  for (term in terms) {
+    
+    components <- unlist(term)
+    term.base64 <- paste(.v(components), collapse=":", sep="")
+    term.normal <- paste(components, collapse=" \u273B ", sep="")
+    
+    terms.base64 <- c(terms.base64, term.base64)
+    terms.normal <- c(terms.normal, term.normal)
+  }
+  simpleEffectsTable <- list()
+  simpleEffectsTable[["title"]] <- paste("Simple Main Effects - ", options$simpleFactor, sep = "")
+
+  fields <- list(
+    list(name="ModOne", type="string", combine = TRUE, title = paste0("Level of ", terms.normal[1])),
+    list(name="ModTwo", type="string", combine = TRUE, title = paste0("Level of ", terms.normal[2])),
+    list(name="SumSquares", type="number", format="sf:4;dp:3", title = "Sum of Squares"),
+    list(name="df", type="integer", title = "df"),
+    list(name="MeanSquare", type="number", format="sf:4;dp:3", title = "Mean Square"),
+    list(name="F", type="number", format="sf:4;dp:3", title = "F"),
+    list(name="p", type="number", format="dp:3;p:.001", title = "p"))
+  
+  if (identical(options$moderatorFactorTwo, ""))
+    fields <- fields[-2]
+  
+  footnotes <- .newFootnotes()
+  
+  simpleEffectsTable[["schema"]] <- list(fields=fields)
+
+  
+  tableCounter <- 1
+  fullAnovaMS <- fullAnovaTable$data[[length(fullAnovaTable$data)]]$`Mean Square` 
+  fullAnovaDf <- fullAnovaTable$data[[length(fullAnovaTable$data)]]$df
+  simpleEffectRows <- list()
+  rows <- list()
+
+  termsBothModerators <- as.vector(c(options$moderatorFactorOne, options$moderatorFactorTwo))
+  lvls <- list()
+  factors <- list()
+
+  for (variable in termsBothModerators) {
+
+    factor <- dataset[[ .v(variable) ]]
+    factors[[length(factors)+1]] <- factor
+    lvls[[variable]] <- levels(factor)
+  }
+  if (perform == "run" && status$ready && status$error == FALSE)  {
+  
+    for (level in lvls[[1]]) {
+      # For each level of the first moderator factor, take a subset of the dataset, and adjust the options object
+      # Suboptions is the same as options, except that the first moderator factor has been removed as a predictor 
+      # (because each subset only has one level of that factor). The same procedure is applied to the second moderator, if specified.
+      subDataset <- subset(dataset, dataset[terms.base64[1]] == level)
+      subOptions <- options
+      subOptions$fixedFactors <- options$fixedFactors[options$fixedFactors != options$moderatorFactorOne]
+      subOptions$modelTerms <- options$modelTerms[ !grepl(options$moderatorFactorOne, unlist(options$modelTerms, recursive = FALSE)) ]
+      model <- NULL
+      singular <- FALSE
+      if (identical(options$moderatorFactorTwo, "")) {
+        newGroup <- ifelse( level == lvls[[1]][1], TRUE, FALSE )
+        if (nrow(subDataset) < 2 || nrow(unique(subDataset[simpleFactor.base64])) <  nrow(unique(dataset[simpleFactor.base64]))) {
+          row <- list("ModOne"=level, "SumSquares"=".", "df"=".", "MeanSquare"=".", "F"=".", "p"=".", ".isNewGroup" = newGroup)
+          .addFootnote(footnotes, text = "Not enough observations in cell", symbol = "<em>Note.</em>")
+        } else {
+            anovaModel <- .anovaModel(subDataset, subOptions)
+            model <- anovaModel$model
+            singular <- anovaModel$singular
+            modelSummary <- summary(model)[[1]]
+            modOneIndex <- which(subOptions$fixedFactors == options$simpleFactor)
+            df <- modelSummary$Df[modOneIndex]
+            MS <- modelSummary$`Mean Sq`[modOneIndex]
+            SS <- modelSummary$`Sum Sq`[modOneIndex]
+            F <- MS / fullAnovaMS
+            p <- pf(F, df, fullAnovaDf, lower.tail = FALSE)
+            row <- list("ModOne"=level, "SumSquares"=SS, "df"=df, "MeanSquare"=MS, "F"=F, "p"=p, ".isNewGroup" = newGroup)
+            
+        }
+        simpleEffectRows[[length(simpleEffectRows) + 1]] <- row
+      } else {
+          for (levelTwo in lvls[[2]]) {
+            newGroup <- ifelse( levelTwo == lvls[[2]][1], TRUE, FALSE )
+            subSubDataset <- subset(subDataset, subDataset[terms.base64[2]] == levelTwo)
+            subSubOptions <- subOptions
+            subSubOptions$fixedFactors <- subOptions$fixedFactors[subOptions$fixedFactors != subOptions$moderatorFactorTwo]
+            subSubOptions$modelTerms <- subOptions$modelTerms[ !grepl(subOptions$moderatorFactorTwo, unlist(subOptions$modelTerms, recursive = FALSE)) ]
+            if (nrow(subSubDataset) < 2 || nrow(unique(subSubDataset[simpleFactor.base64])) <  nrow(unique(dataset[simpleFactor.base64]))) {
+              row <- list("ModOne"=level, "ModTwo" = levelTwo, "SumSquares"=".", "df"=".", "MeanSquare"=".", "F"=".", "p"=".", ".isNewGroup" = newGroup)
+              .addFootnote(footnotes, text = "Not enough observations in cell", symbol = "<em>Note.</em>")
+            } else {
+                anovaModel <- .anovaModel(subSubDataset, subSubOptions)
+                model <- anovaModel$model
+                singular <- anovaModel$singular
+                modTwoIndex <- which(subSubOptions$fixedFactors == options$simpleFactor)
+                modelSummary <- summary(model)[[1]]
+                df <- modelSummary$Df[modTwoIndex]
+                MS <- modelSummary$`Mean Sq`[modTwoIndex]
+                SS <- modelSummary$`Sum Sq`[modTwoIndex]
+                F <- MS / fullAnovaMS
+                p <- pf(F, df, fullAnovaDf, lower.tail = FALSE)
+                row <- list("ModOne"=level, "ModTwo" = levelTwo, "SumSquares"=SS, "df"=df, "MeanSquare"=MS, "F"=F, "p"=p, ".isNewGroup" = newGroup)
+            }
+            simpleEffectRows[[length(simpleEffectRows) + 1]] <- row
+          }
+      }
+   
+      
+    }
+    
+    simpleEffectsTable[["data"]] <- simpleEffectRows
+    
+  } else {
+
+    simpleEffectsTable[["data"]]  <- list(list("ModOne"=terms.normal, "SumSquares"=".", "df"=".", "MeanSquare"=".", "F"=".", "p"=".", ".isNewGroup" = TRUE))
+  }
+  
+  simpleEffectsTable[["footnotes"]] <- as.list(footnotes)
+  simpleEffectsTable[["status"]] <- "complete"
+    
+  if (perform == "run" && status$ready && status$error == FALSE)  {
+    
+    stateSimpleEffects <- simpleEffectsTable
+    
+  } else {
+    
+    stateSimpleEffects <- NULL
+    
+  }
+  
+  list(result=simpleEffectsTable, status=status, stateSimpleEffects=stateSimpleEffects)
+}
 
 .anovaDescriptivesPlot <- function(dataset, options, perform, status, stateDescriptivesPlot) {
 

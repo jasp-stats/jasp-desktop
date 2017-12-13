@@ -773,6 +773,27 @@
            <layout class="QGridLayout" name="gridLayout_9"/>
           </widget>
          </item>
+         <item row="3" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <property name="bottomMargin">
+            <number>12</number>
+           </property>
+           <item>
+            <widget class="BoundCheckBox" name="postHocTestEffectSize">
+             <property name="text">
+              <string>Effect size</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="BoundCheckBox" name="postHocTestPooledError">
+             <property name="text">
+              <string>Pool error term for RM factors</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
          <item row="6" column="0">
           <widget class="GroupBox" name="groupBox">
            <property name="sizePolicy">
@@ -815,20 +836,6 @@
             </item>
            </layout>
           </widget>
-         </item>
-         <item row="3" column="0">
-          <layout class="QHBoxLayout" name="horizontalLayout_3">
-           <property name="bottomMargin">
-            <number>12</number>
-           </property>
-           <item>
-            <widget class="BoundCheckBox" name="postHocTestEffectSize">
-             <property name="text">
-              <string>Effect size</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
          </item>
         </layout>
        </widget>
@@ -1243,14 +1250,14 @@
                <item row="2" column="0">
                 <widget class="QRadioButton" name="_2standardError">
                  <property name="text">
-                  <string>Standard error</string>
+                  <string>Standard &amp;error</string>
                  </property>
                 </widget>
                </item>
                <item row="0" column="0">
                 <widget class="QRadioButton" name="_1confidenceInterval">
                  <property name="text">
-                  <string>Confidence interval</string>
+                  <string>Confidence &amp;interval</string>
                  </property>
                 </widget>
                </item>
@@ -1742,7 +1749,6 @@
   <tabstop>expanderContrasts</tabstop>
   <tabstop>contrasts</tabstop>
   <tabstop>expanderPosthoc</tabstop>
-  <tabstop>postHocTestEffectSize</tabstop>
   <tabstop>postHocTestsBonferroni</tabstop>
   <tabstop>postHocTestsHolm</tabstop>
   <tabstop>postHocTestsTukey</tabstop>

@@ -75,6 +75,7 @@ INCLUDEPATH += \
 
 linux:INCLUDEPATH += \
 	/usr/share/R/include \
+        /usr/lib/R/library/include \
 	$$_R_HOME/site-library/Rcpp/include
 
 macx:LIBS += \

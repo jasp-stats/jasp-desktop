@@ -95,12 +95,35 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	ui->buttonAssignSeperateLines->setSourceAndTarget(ui->plotVariables, ui->plotSeparateLines);
 	ui->buttonAssignSeperatePlots->setSourceAndTarget(ui->plotVariables, ui->plotSeparatePlots);
 
+
+    _simpleEffectsAvailableTableModel = new TableModelVariablesAvailable();
+    _simpleEffectsAvailableTableModel->setInfoProvider(this);
+	ui->simpleEffectsVariables->setModel(_simpleEffectsAvailableTableModel);
+
+    _simpleFactorTableModel = new TableModelVariablesAssigned(this);
+    _simpleFactorTableModel->setSource(_simpleEffectsAvailableTableModel);
+	ui->simpleFactor->setModel(_simpleFactorTableModel);
+
+    _moderatorOneTableModel = new TableModelVariablesAssigned(this);
+    _moderatorOneTableModel->setSource(_simpleEffectsAvailableTableModel);
+	ui->moderatorFactorOne->setModel(_moderatorOneTableModel);
+
+    _moderatorTwoTableModel = new TableModelVariablesAssigned(this);
+    _moderatorTwoTableModel->setSource(_simpleEffectsAvailableTableModel);
+	ui->moderatorFactorTwo->setModel(_moderatorTwoTableModel);
+
+	ui->buttonAssignSimpleFactor->setSourceAndTarget(ui->simpleEffectsVariables, ui->simpleFactor);
+	ui->buttonAssignModeratorOne->setSourceAndTarget(ui->simpleEffectsVariables, ui->moderatorFactorOne);
+	ui->buttonAssignModeratorTwo->setSourceAndTarget(ui->simpleEffectsVariables, ui->moderatorFactorTwo);
+
 	ui->containerModel->hide();
 	ui->containerFactors->hide();
 	ui->containerOptions->hide();
 	ui->containerPostHocTests->hide();
 	ui->containerDescriptivesPlot->hide();
 	ui->containerAssumptions->hide();
+	ui->containerSimpleEffect->hide();
+		
 
 	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 
@@ -148,6 +171,7 @@ void AnovaForm::factorsChanged()
 
 	_contrastsModel->setVariables(factorsAvailable);
 	_plotFactorsAvailableTableModel->setVariables(factorsAvailable);
+	_simpleEffectsAvailableTableModel->setVariables(factorsAvailable);
 
 	Terms plotVariablesAssigned;
 	plotVariablesAssigned.add(_horizontalAxisTableModel->assigned());
@@ -155,7 +179,14 @@ void AnovaForm::factorsChanged()
 	plotVariablesAssigned.add(_seperatePlotsTableModel->assigned());
 	_plotFactorsAvailableTableModel->notifyAlreadyAssigned(plotVariablesAssigned);
 
-    ui->postHocTestsVariables->setVariables(factorsAvailable);
+	Terms simpleEffectsVariablesAssigned;
+	simpleEffectsVariablesAssigned.add(_simpleFactorTableModel->assigned());
+	simpleEffectsVariablesAssigned.add(_moderatorOneTableModel->assigned());
+	simpleEffectsVariablesAssigned.add(_moderatorTwoTableModel->assigned());
+	_simpleEffectsAvailableTableModel->notifyAlreadyAssigned(simpleEffectsVariablesAssigned);
+
+    	ui->postHocTestsVariables->setVariables(factorsAvailable);
+
 
 	if (_options != NULL)
 		_options->blockSignals(false);

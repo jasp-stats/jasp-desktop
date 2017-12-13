@@ -106,6 +106,10 @@
 			"type": "Boolean"
 		},
 		{
+			"name": "postHocTestPooledError",
+			"type": "Boolean"
+		},
+		{
 			"name": "postHocTestsHolm",
 			"type": "Boolean"
 		},
