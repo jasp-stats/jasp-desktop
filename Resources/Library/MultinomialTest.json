@@ -28,6 +28,25 @@
       "type": "List"
     },
 		{
+			"name": "exPropTable",
+			"type": "Table",
+			"template": [
+				{
+					"name": "name",
+					"type": "String"
+				},
+				{
+					"name": "levels",
+					"type": "Variables"
+				},
+				{
+					"name": "values",
+					"type": "DoubleArray"
+				}
+			],
+			"default": [{}]
+		},
+		{
 			"name": "descriptives",
 			"type": "Boolean",
 			"default": false

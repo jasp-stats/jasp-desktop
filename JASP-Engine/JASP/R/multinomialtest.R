@@ -73,7 +73,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
         # the following depend on chisqResults so in same if-statement
         if (!any(diff[["confidenceInterval"]],
                  diff[["countProp"]])) {
-          descriptivesTable1k <- state[["descriptivesTable"]]
+          descriptivesTable <- state[["descriptivesTable"]]
         }
 
         if (!any(diff[["descriptivesPlotConfidenceInterval"]],
@@ -188,7 +188,6 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
       # catch warning message and append to object if necessary
       csr <- NULL
       warn <- NULL
-      if (options$simulatepval) print("Monte carlo approximation")
       csr <- withCallingHandlers(
         chisq.test(x = t, p = h, rescale.p = TRUE,
                    simulate.p.value = options$simulatepval),
@@ -253,7 +252,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   # fill in results one row at a time
   if (!is.null(chisqResults)){
 
-    for(r in 1:length(chisqResults)){
+    for(r in 1:length(chisqResults)) {
       df <- chisqResults[[r]][["parameter"]][["df"]]
       if (is.na(df)) df <- "-" # This happens when the monte carlo option is checked
       table[["data"]][[r]] <- list(case = names(chisqResults)[r],
@@ -271,21 +270,13 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 
   } else {
     # init state?
-    data <- list()
-
-    if(is.null(chisqResults[[r]])){
-      htables <- ""
+    if (options$VovkSellkeMPR){
+      data <- list(list(case = ".", chisquare = ".", df = ".", p = ".",
+                        VovkSellkeMPR = ".", lowerCI = ".", upperCI = "."))
+    } else {
+      data <- list(list(case = ".", chisquare = ".", df = ".", p = ".",
+                        lowerCI = ".", upperCI = "."))
     }
-    # for (h in htables){
-    #   if (options$VovkSellkeMPR){
-    #     data[[length(data) + 1]] <- list(case=h, chisquare=".", df=".", p=".",
-    #                                      VovkSellkeMPR=".", lowerCI=".",
-    #                                      upperCI=".")
-    #   } else {
-    #     data[[length(data) + 1]] <- list(case=h, chisquare=".", df=".", p=".",
-    #                                      lowerCI=".", upperCI=".")
-    #   }
-    #  }
 
     table[["data"]] <- data
   }
@@ -456,11 +447,11 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   descriptivesPlot[["custom"]] <- list(width = "plotWidth",
                                       height = "plotHeight")
 
-  if (perform == "run"){
+  if (perform == "run" && options$factor != "") {
     # Generate the plot
 
     # Counts or props
-    if (options[["countProp"]]=="descCounts"){
+    if (options[["countProp"]]=="descCounts") {
       div <- 1
       yname <- "Observed counts"
     } else {
@@ -582,11 +573,14 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 
     return(eProps)
 
-  # TODO: exPropTable functionality
-  #} else if (options$exPropTable != "") {
-  #  eProps <- data.frame(options$exPropTable) # load df
-  #  colnames(eProps) <- eProps$level # name columns
-  #  eProps[-1,] # remove name row
+
+  } else if (length(options$exPropTable) > 0) {
+
+    eProps <- sapply(options$exPropTable, function(x) x$values)
+    colnames(eProps) <- sapply(options$exPropTable, function(x) x$name)
+    rownames(eProps) <- options$exPropTable[[1]]$levels
+    return(data.frame(eProps))
+
   } else {
 
     stop("No expected counts entered!")
