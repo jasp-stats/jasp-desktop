@@ -27,7 +27,6 @@
 #include "options/optionterms.h"
 
 #include "qutils.h"
-#include <QDebug>
 
 using namespace std;
 

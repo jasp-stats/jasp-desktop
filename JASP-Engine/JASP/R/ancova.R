@@ -478,7 +478,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	if ( ! is.null(contr))
 		dimnames(contr) <- list(NULL, 1:dim(contr)[2])
-  # browser()
+
 	contr
 }
 
@@ -1685,6 +1685,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   if (perform == "run" && status$ready && status$error == FALSE)  {
   
     for (level in lvls[[1]]) {
+      # For each level of the first moderator factor, take a subset of the dataset, and adjust the options object
+      # Suboptions is the same as options, except that the first moderator factor has been removed as a predictor 
+      # (because each subset only has one level of that factor). The same procedure is applied to the second moderator, if specified.
       subDataset <- subset(dataset, dataset[terms.base64[1]] == level)
       subOptions <- options
       subOptions$fixedFactors <- options$fixedFactors[options$fixedFactors != options$moderatorFactorOne]
