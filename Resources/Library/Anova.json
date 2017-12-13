@@ -123,6 +123,18 @@
 			"type": "Variable"
 		},
 		{
+			"name": "simpleFactor",
+			"type": "Variable"
+		},
+		{
+			"name": "moderatorFactorOne",
+			"type": "Variable"
+		},
+		{
+			"name": "moderatorFactorTwo",
+			"type": "Variable"
+		},
+		{
 			"name": "plotErrorBars",
 			"type": "Boolean"
 		},

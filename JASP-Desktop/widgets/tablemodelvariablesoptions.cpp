@@ -27,6 +27,7 @@
 #include "options/optionterms.h"
 
 #include "qutils.h"
+#include <QDebug>
 
 using namespace std;
 
@@ -159,13 +160,29 @@ void TableModelVariablesOptions::setVariables(const Terms &variables)
 
 	beginResetModel();
 
-	_rows.clear();
+    std::vector<Options*> oldRows = _rows;
+    _rows.clear();
 
+
+    //
 	BOOST_FOREACH(const Term &term, variables)
 	{
 		Options *row = static_cast<Options *>(_boundTo->rowTemplate()->clone());
-		OptionTerms *termCell = static_cast<OptionTerms *>(row->get(0));
-		termCell->setValue(term.scomponents());
+        OptionTerms *termCell = static_cast<OptionTerms *>(row->get(0));
+        bool found = false;
+        BOOST_FOREACH(Options* option, oldRows)
+        {
+            Json::Value json = option->asJSON();
+            string var = json["variable"].asString();
+            if (term.asString() == var)
+            {
+               row = option;
+               found = true;
+               break;
+            }
+        }
+        if (!found)
+            termCell->setValue(term.scomponents());
 
 		_rows.push_back(row);
 	}

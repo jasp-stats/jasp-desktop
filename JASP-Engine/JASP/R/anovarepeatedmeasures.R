@@ -56,7 +56,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 		diff <- .diff(options, state$options)  # compare old and new options
 
-		if (is.list(diff) && diff[['withinModelTerms']] == FALSE && diff[['betweenModelTerms']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE &&
+		if (is.list(diff) && diff[['withinModelTerms']] == FALSE && diff[['betweenModelTerms']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE && diff[['postHocTestPooledError']] &&
 			diff[['repeatedMeasuresFactors']] == FALSE && diff[['sumOfSquares']] == FALSE && diff[['covariates']] == FALSE && diff[['betweenSubjectFactors']] == FALSE) {
 
 			# old model can be used
@@ -162,10 +162,10 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 	## Create Between Subjects Effects Table
   # if(length(unique(unlist(options$betweenSubjectFactors))) > 0 ){
-	result <- .rmAnovaBetweenSubjectsTable(dataset, options, perform, model, status)
-
-	results[["betweenSubjectsEffects"]] <- result$result
-	status <- result$status
+  	result <- .rmAnovaBetweenSubjectsTable(dataset, options, perform, model, status)
+  
+  	results[["betweenSubjectsEffects"]] <- result$result
+  	status <- result$status
   # }
 
 
@@ -635,38 +635,40 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		  orderOfTerms <- unlist(options$withinModelTerms[[length(options$withinModelTerms)]]$components)
 		  indexofOrderFactors <- match(allNames,orderOfTerms)
 		  
-		  if(any(var == allNames)){     ## If the variable is a repeated measures factor
+		  if (any(var == allNames)) {     ## If the variable is a repeated measures factor
 		    
-		    levelsOfThisFactor <- unlist(lapply(options$repeatedMeasuresFactors[rmFactorIndex], function(x) x$levels)) # Levels within Factor
-		    numberOfLevels <- length(unique(levelsOfThisFactor))
-		    splitNames <- unlist(lapply(strsplit(factorNamesV,  split = "_"), function(x) x[indexofOrderFactors[rmFactorIndex]]))
-		    
-		    listVarNamesToLevel <- list()  # create a list of vectors of variable names, used to group the dataset for the post-hoc t-tests
-		    for(i in 1:numberOfLevels){
-		      listVarNamesToLevel[[i]] <- factorNamesV[grep(splitNames, pattern = .v(levelsOfThisFactor[i]))]  
-		    }
-		    
-  		  countr <- 1
-  		  allEstimates <- allTees <- allSE <- allPees <- numeric() 
-  		  for (k in 1:numberOfLevels) {  ### Loop over all the levels within factor and do pairwise t.tests on them
-  		    for (i in .seqx(k+1, numberOfLevels)) {
-  		      tResult <- t.test(unlist(postHocData[listVarNamesToLevel[[k]]]),unlist(postHocData[listVarNamesToLevel[[i]]]), paired= T, var.equal = F)
-  		      allEstimates[countr] <- tResult$estimate
-  		      allTees[countr] <- tResult$statistic
-  		      allSE[countr] <- tResult$estimate / tResult$statistic
-  		      allPees[countr] <- tResult$p.value
-  		      countr <- countr + 1
+		    if (!options$postHocTestPooledError) {
+		      
+		      levelsOfThisFactor <- unlist(lapply(options$repeatedMeasuresFactors[rmFactorIndex], function(x) x$levels)) # Levels within Factor
+		      numberOfLevels <- length(unique(levelsOfThisFactor))
+  		    splitNames <- unlist(lapply(strsplit(factorNamesV,  split = "_"), function(x) x[indexofOrderFactors[rmFactorIndex]]))
+  		    listVarNamesToLevel <- list()  # create a list of vectors of variable names, used to group the dataset for the post-hoc t-tests
+  		    for(i in 1:numberOfLevels){
+  		      listVarNamesToLevel[[i]] <- factorNamesV[grep(splitNames, pattern = .v(levelsOfThisFactor[i]))]  
   		    }
-  		  }
-  		  bonferPvals <- p.adjust(allPees, method = "bonferroni")  # correct all pvalues according to bonf
-  		  resultGeneral <- list(estimate = allEstimates, t.ratio = allTees, SE = allSE, p.value = bonferPvals )
-  		  resultBonf['t.ratio'] <- allTees
-  		  resultBonf['p.value'] <- bonferPvals
-  		  resultBonf['SE'] <- allSE
-  		  resultBonf['estimate'] <- allEstimates 
-  		  resultHolm['p.value'] <- p.adjust(allPees, method = "holm")  # correct all pvalues according to holm
-  		  resultScheffe['p.value'] <- rep("-", length(allPees))
-  		  resultTukey['p.value'] <- rep("-", length(allPees))
+  		    
+    		  countr <- 1
+    		  allEstimates <- allTees <- allSE <- allPees <- numeric() 
+    		  for (k in 1:numberOfLevels) {  ### Loop over all the levels within factor and do pairwise t.tests on them
+    		    for (i in .seqx(k+1, numberOfLevels)) {
+    		      tResult <- t.test(unlist(postHocData[listVarNamesToLevel[[k]]]),unlist(postHocData[listVarNamesToLevel[[i]]]), paired= T, var.equal = F)
+    		      allEstimates[countr] <- tResult$estimate
+    		      allTees[countr] <- tResult$statistic
+    		      allSE[countr] <- tResult$estimate / tResult$statistic
+    		      allPees[countr] <- tResult$p.value
+    		      countr <- countr + 1
+    		    }
+    		  }
+    		  bonferPvals <- p.adjust(allPees, method = "bonferroni")  # correct all pvalues according to bonf
+    		  resultGeneral <- list(estimate = allEstimates, t.ratio = allTees, SE = allSE, p.value = bonferPvals )
+    		  resultBonf['t.ratio'] <- allTees
+    		  resultBonf['p.value'] <- bonferPvals
+    		  resultBonf['SE'] <- allSE
+    		  resultBonf['estimate'] <- allEstimates 
+    		  resultHolm['p.value'] <- p.adjust(allPees, method = "holm")  # correct all pvalues according to holm
+		    }
+  		  resultScheffe['p.value'] <- rep("-", length(resultScheffe['p.value']))
+  		  resultTukey['p.value'] <-  rep("-", length(resultTukey['p.value']))
   		  rmFactorIndex <- rmFactorIndex + 1
   		  }
 
@@ -990,7 +992,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 			}
 
-			indexResidual <- 2
+			indexResidual <- 1
 
 			SS <- result[indexResidual,"Error SS"]
 			df <- result[indexResidual,"den Df"]
@@ -1941,7 +1943,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	posthoc.variables <- unlist(options$postHocTestsVariables)
  
 	posthoc.tables <- list()
-
+	
 	for (posthoc.var in posthoc.variables) {
 
 		posthoc.table <- list()

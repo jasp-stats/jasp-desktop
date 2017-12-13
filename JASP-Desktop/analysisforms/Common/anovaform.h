@@ -62,6 +62,11 @@ private:
     TableModelVariablesAssigned *_seperateLinesTableModel;
     TableModelVariablesAssigned *_seperatePlotsTableModel;
 
+    TableModelVariablesAvailable *_simpleEffectsAvailableTableModel;
+    TableModelVariablesAssigned *_simpleFactorTableModel;
+    TableModelVariablesAssigned *_moderatorOneTableModel;
+    TableModelVariablesAssigned *_moderatorTwoTableModel;
+
 };
 
 #endif // ANOVAFORM_H
