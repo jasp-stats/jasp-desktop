@@ -1566,9 +1566,10 @@ isTryError <- function(obj){
 	stateKey[["baseSets"]] <- NULL
 	key <- lapply(stateKey, function(x) {
 		if (any(names(baseSets) %in% x)) {
-			baseSets <- baseSets[[which(names(baseSets) %in% x)]]
+			sets <- baseSets[which(names(baseSets) %in% x)]
+			set <- unlist(sets, use.names=FALSE)
 			x <- x[which(! x %in% names(baseSets))]
-			return(c(x, baseSets))
+			return(c(x, set))
 		}
 		return(x)
 	})
