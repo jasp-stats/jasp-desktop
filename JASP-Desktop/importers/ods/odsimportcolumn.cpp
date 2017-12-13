@@ -33,8 +33,8 @@ using namespace std;
 using namespace ods;
 
 
-ODSImportColumn::ODSImportColumn(ODSImportDataSet* importDataSet, int columnNumber)
-	: ImportColumn(importDataSet, _colNumberAsExcel(columnNumber))
+ODSImportColumn::ODSImportColumn(ODSImportDataSet* importDataSet, int columnNumber, string name)
+	: ImportColumn(importDataSet, name)
 	, _columnNumber(columnNumber)
 	, _columnType(Column::ColumnTypeUnknown)
 {
@@ -95,37 +95,15 @@ void ODSImportColumn::createSpace(size_t row)
 #endif
 }
 
-/**
- * @brief setValue Inserts one cell value.
- * @param row Row to insert
- * @param type ODS data type.
- * @param data ODS cell value.
- */
-void ODSImportColumn::setValue(int row, XmlDatatype type, const QString &data)
+void ODSImportColumn::setValue(int row, const string &data)
 {
-	DEBUG_COUT9("Inserting ", data.toStdString(), " as ", ODSTYPE_STR[type], ", row ", row, ", column ", _columnNumber, ".");
-
-	// Big enough?
-	createSpace(row);
-
-	// insert the data
-	_rows.at(row).setTypeAndValue(type, data);
-}
-
-/**
- * @brief insert Inserts string value for cell, irrespective of type.
- * @param row
- * @param data
- */
-void ODSImportColumn::setValue(int row, const QString& data)
-{
-	DEBUG_COUT7("Inserting ", data.toStdString(), ", row ", row, ", column ", _columnNumber, ".");
+	DEBUG_COUT7("Inserting ", data, ", row ", row, ", column ", _columnNumber, ".");
 
 	// Big enough?
 	createSpace(row);
 
 	ODSSheetCell & cell = _rows.at(row);
-	cell.setValue(data);
+	cell.setValue(data);	
 }
 
 /**
@@ -138,19 +116,6 @@ void ODSImportColumn::setValue(int row, const QString& data)
  */
 void ODSImportColumn::postLoadProcess()
 {
-	// Sanity check: Do we have a heading?
-	if ((_rows.size() == 0) || (_rows[0].xmlType() != odsType_string))
-	{
-		string msg("No column header found in sheet row 1, column ");
-		msg.append(_colNumberAsExcel(_columnNumber));
-		msg.append(".");
-		throw runtime_error(msg);
-	}
-
-	// Get the long name, rename this column, and erase the first cell.
-//	setLongName(_rows[0]._string);
-	setName(_rows[0]._string);
-	_rows.erase(_rows.begin());
 }
 
 vector<string> ODSImportColumn::getData()
