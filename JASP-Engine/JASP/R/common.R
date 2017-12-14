@@ -1486,7 +1486,7 @@ isTryError <- function(obj){
 		setwd(root)
 		on.exit(setwd(oldwd))
 		
-		suppressWarnings(base::save(state, file=relativePath, compress=FALSE))
+		try(suppressWarnings(base::save(state, file=relativePath, compress=FALSE)), silent = FALSE)
 	}
   result <- list(relativePath = relativePath, root = root)
   return(result)
