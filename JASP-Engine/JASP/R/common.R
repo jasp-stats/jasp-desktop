@@ -417,8 +417,9 @@ checkPackages <- function() {
 	#   'image' or 'table'
 	#
 	types <- NULL
+	acceptedClasses <- c("recordedplot", "ggplot", "function", "list", "matrix", "data.frame")
 	for (item in result) { # look through the contents of the current level in results
-		if (! is.list(item)) # probably a title
+		if (! any(acceptedClasses %in% class(item))) # unknown type (a title?)
 			next
 		type <- NULL
 		if ("collection" %in% names(item))
@@ -431,6 +432,7 @@ checkPackages <- function() {
 		else
 			types <- c(types, "object")
 	}
+
 	type <- unique(types)
 	if (length(type) != 1) # multiple different types, not sure which to pick
 		return(NULL)
