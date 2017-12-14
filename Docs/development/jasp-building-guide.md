@@ -33,7 +33,7 @@ Windows
 Building JASP under windows is the most temperamental, and the versions listed here are known to work; slight variations on these numbers probably won't work.
 
  - [Qt 5.2.1 win64 GCC 4.8.2](https://static.jasp-stats.org/development/x64-Qt-5.2.1+QtCreator-3.0.1-(gcc-4.8.2-seh).7z)
- - [R 3.3.3 win64](https://static.jasp-stats.org/development/R3.3%20Win%20JASP%200.8.4.zip)
+ - [R 3.3.3 win64](https://static.jasp-stats.org/development/R3.3%20Win%20JASP%200.8.5.zip)
  - [boost 1.64.0](https://static.jasp-stats.org/development/boost_1_64_0.zip)
  - [boost 1.64.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Additional%20Binary%20Deps%20Win64%20for%20JASP%20(2017-06-06).zip)
 
@@ -64,7 +64,7 @@ To build JASP on mac you need to clone the JASP repository and download the foll
  0. Clone the JASP repository
  1. [XCode](https://developer.apple.com/xcode/) Easiest would be via the App Store.
  2. [Qt 5.4.0](https://download.qt.io/archive/qt/) Newer version not supported yet.
- 3. [R 3.3.3](https://static.jasp-stats.org/development/R3.3%20OSX%20JASP%200.8.3.zip) This contains R and the packages
+ 3. [R 3.3.3](https://static.jasp-stats.org/development/R3.3%20OSX%20JASP%200.8.5.zip) This contains R and the packages
  4. [boost 1.64.0](https://static.jasp-stats.org/development/boost_1_64_0.zip)
  5. [boost 1.64.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Additional%20Binary%20Deps%20OSX%20for%20JASP%20(2017-06-06).zip)
 
