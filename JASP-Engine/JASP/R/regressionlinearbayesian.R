@@ -196,12 +196,11 @@ RegressionLinearBayesian <- function (
 			plotInclusionProbabilities$data
 		)
 
-		# Perhaps some improper objects in the output of the BAS C code? 
 		# code below tries to avoid weird behaviour from bas_obj that chrashes base::save. 
 		attr(attr(bas_obj[["model"]], "terms"), ".Environment") <- NULL
 		attr(bas_obj$terms, ".Environment") <- NULL
 		# reparsing the object seems to avoid errors with base::save.
-		bas_obj[["mle.se"]] <- eval(parse(text = capture.output(dput(bas_obj[["mle.se"]]))))
+		try(bas_obj[["mle.se"]] <- eval(parse(text = capture.output(dput(bas_obj[["mle.se"]])))))
 
 		state <- list(
 			options = options,
