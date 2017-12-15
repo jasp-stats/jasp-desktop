@@ -196,6 +196,12 @@ RegressionLinearBayesian <- function (
 			plotInclusionProbabilities$data
 		)
 
+		# code below tries to avoid weird behaviour from bas_obj that chrashes base::save. 
+		attr(attr(bas_obj[["model"]], "terms"), ".Environment") <- NULL
+		attr(bas_obj$terms, ".Environment") <- NULL
+		# reparsing the object seems to avoid errors with base::save.
+		try(bas_obj[["mle.se"]] <- eval(parse(text = capture.output(dput(bas_obj[["mle.se"]])))))
+
 		state <- list(
 			options = options,
 			bas_obj = bas_obj,
@@ -837,6 +843,7 @@ RegressionLinearBayesian <- function (
 
 			p <- try(silent = FALSE, expr = {
 
+			    # the function BAS:::coef.bas calls list2matrix.bas which appears pretty broken
 				plotObj <- .plotCoef.basReg(BAS:::coef.bas(bas_obj), subset = list(i))
 				content <- .writeImage(width = 530, height = 400, plot = plotObj)
 
@@ -1085,7 +1092,7 @@ RegressionLinearBayesian <- function (
 			y = r
 		)
 
-		xBreaks <- pretty(range(dfPoints$x), 3)
+		xBreaks <- JASPgraphs::getPrettyAxisBreaks(dfPoints[["x"]], 3)
 		g <- JASPgraphs::drawAxis()
 		g <- g + ggplot2::geom_hline(yintercept = 0, linetype = 2, col = "gray")
 		g <- JASPgraphs::drawSmooth(g, dat = dfPoints, color = "red", alpha = .7)
@@ -1107,10 +1114,11 @@ RegressionLinearBayesian <- function (
 			y = cum.prob
 		)
 
+		xBreaks <- round(seq(1, x$n.models, length.out = min(5, x$n.models)))
 		g <- JASPgraphs::drawSmooth(dat = dfPoints, color = "red", alpha = .7)
 		g <- JASPgraphs::drawPoints(g, dat = dfPoints, size = 4) +
 			ggplot2::ylab("Cumulative Probability") +
-			ggplot2::xlab("Model Search Order")
+			ggplot2::scale_x_continuous(name = "Model Search Order", breaks = xBreaks)
 		g <- JASPgraphs::themeJasp(g)
 		return(g)
 	}
