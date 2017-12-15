@@ -125,7 +125,6 @@ OTHER_FILES  += \
 	JASP/R/anovarepeatedmeasures.R \
 	JASP/R/anovarepeatedmeasuresbayesian.R \
 	JASP/R/base64.R \
-	JASP/R/bffromt.R \
 	JASP/R/binomialtest.R \
 	JASP/R/binomialtestbayesian.R \
 	JASP/R/common.R \
