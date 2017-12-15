@@ -58,7 +58,8 @@ SOURCES += \
     textfileread_test.cpp \
     osf_test.cpp \
     spssimporter_test.cpp \
-    csvimporter_test.cpp
+    csvimporter_test.cpp \
+    odsimporter_test.cpp
 
 HEADERS += \
     AutomatedTests.h \
@@ -66,7 +67,8 @@ HEADERS += \
     osf_test.h \
     csviterator.h \
     spssimporter_test.h \
-    csvimporter_test.h
+    csvimporter_test.h \
+    odsimporter_test.h
 
 HELP_PATH = $${PWD}/../Docs/help
 RESOURCES_PATH = $${PWD}/../Resources
