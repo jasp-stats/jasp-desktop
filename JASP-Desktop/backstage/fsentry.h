@@ -20,6 +20,7 @@
 #define FSENTRY_H
 
 #include <QString>
+#include "utils.h"
 
 class FSEntry
 {
@@ -32,6 +33,36 @@ public:
 	QString path;
 	QString description;
 	EntryType entryType;
+	
+	static inline EntryType getEntryTypeFromPath(const QString &path)
+	{
+		Utils::FileType basefiletype = Utils::getTypeFromFileName(path.toStdString());
+		EntryType entrytype;
+		switch (basefiletype)
+		{
+		 case Utils::FileType::csv:
+			entrytype = FSEntry::CSV;
+			break;
+			
+		case Utils::FileType::jasp:
+			entrytype = FSEntry::JASP;
+			break;
+			
+		case Utils::FileType::sav:
+			entrytype = FSEntry::SPSS;
+			break;
+			
+		case Utils::FileType::unknown:
+			entrytype = FSEntry::NoOfTypes;
+			break;
+			
+		default:
+			entrytype = FSEntry::Other;
+			break;
+			
+		}
+		return entrytype;
+	}
 
 };
 

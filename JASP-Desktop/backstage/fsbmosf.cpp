@@ -187,6 +187,9 @@ void FSBMOSF::gotProjects()
 	{
 		QByteArray data = reply->readAll();
 		QString dataString = (QString) data;
+		qDebug() << "------------ OFS got Projects ---------------";
+		qDebug() << dataString;
+		qDebug() << "---------------------------------------------";
 
 		QJsonParseError error;
 		QJsonDocument doc = QJsonDocument::fromJson(dataString.toUtf8(), &error);

@@ -33,6 +33,7 @@
 
 #include "backstagecomputer.h"
 #include "backstageosf.h"
+#include "backstageexamples.h"
 
 #include "fileevent.h"
 
@@ -94,14 +95,14 @@ private:
 
 	FSBMRecent   *_fsmRecent;
 	FSBMCurrent   *_fsmCurrent;
-	FSBMExamples *_fsmExamples;
 
 	FSBrowser *_bsRecent;
 	FSBrowser *_bsCurrent;
+	
 	BackstageComputer *_bsComputer;
 	BackstageOSF *_bsOSF;
-	FSBrowser *_bsExamples;
-
+	BackstageExamples *_bsExamples;
+	
 	QFileSystemWatcher _watcher;
 	QSettings _settings;
 };

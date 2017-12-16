@@ -1,27 +1,333 @@
-[
+{
+"name" : "Categories",
+"path" : "Examples",
+"description" : "General examples",
+"kind" : "folder",
+"children":
+	[
 	{
-		"name" : "Political Democracy (Bollen, 1989)",
-		"path" : "Political Democracy (Bollen, 1989).csv",
-		"description" : "A SEM data set"
+	"name" : "Data Library",
+	"path" : "Data Library",
+	"description"  : "Example Data Files",
+	"kind" : "folder",
+	"children":
+		[
+		{
+		"name" : "Discovering Statistics",
+		"path" : "Discovering Statistics",
+		"description" : "Explore the examples given by the one and only Andy Field!",
+		"kind" : "folder",
+		"children" :
+			[
+			{
+			"name" : "7 - Correlation",
+			"path" : "7 - Correlation",
+			"description" : "7 - Correlation",
+			"kind" : "folder",
+			"children":
+				[
+				{
+				"name" : "Correlation_ExampleFile.jasp",
+				"path" : "Correlation_ExampleFile.jasp",
+				"description" : "Correlation_ExampleFile.jasp",
+				"kind" : "file"
+				},
+				{
+				"name" : "Exam Anxiety.csv",
+				"path" : "Exam Anxiety.csv",
+				"description" : "Exam Anxiety.csv",
+				"kind" : "file"
+				}
+				]
+			},
+			{
+			"name" : "8 - Regression",
+			"path" : "8 - Regression",
+			"description" : "8 - Regression",
+			"kind" : "folder",
+			"children":
+				[
+				{
+				"name" : "Album Sales 2_ExampleFile.jasp",
+				"path" : "Album Sales 2_ExampleFile.jasp",
+				"description" : "Album Sales 2_ExampleFile.jasp",
+				"kind" : "file"
+				},
+				{
+				"name" : "Album Sales 2.csv",
+				"path" : "Album Sales 2.csv",
+				"description" : "Album Sales 2.csv",
+				"kind" : "file"
+				}
+				]
+			},
+			{
+			"name" : "9 - Comparing two means",
+			"path" : "9 - Comparing two means",
+			"description" : "9 - Comparing two means",
+			"kind" : "folder",
+			"children":
+				[
+				{
+				"name" : "Independent_T_Test_Invisibility_ExampleFile.jasp",
+				"path" : "Independent_T_Test_Invisibility_ExampleFile.jasp",
+				"description" : "Independent_T_Test_Invisibility_ExampleFile.jasp",
+				"kind" : "file"
+				},
+				{
+				"name" : "Invisibility.csv",
+				"path" : "Invisibility.csv",
+				"description" : "Invisibility.csv",
+				"kind" : "file"
+				}
+				]
+			}
+			]
+		},
+		{
+		"name" : "Introduction to the Practice of STATISTICS",
+		"path" : "Introduction to the Practice of STATISTICS",
+		"description" : "For those who practise with Moore, McCabe & Craig (7. int. ed.)",
+		"kind" : "folder",
+		"children" :
+			[
+			{
+			"name" : "Chapter 2 - Looking at Data - Relationships",
+			"path" : "Chapter 2 - Looking at Data - Relationships",
+			"description" : "Chapter 2 - Looking at Data - Relationships",
+			"kind" : "folder",
+			"children":
+				[
+				{
+				"name" : "Fidgeting and Fat Gain.jasp",
+				"path" : "Fidgeting and Fat Gain.jasp",
+				"description" : "Fidgeting and Fat Gain.jasp",
+				"kind" : "file"
+				},
+				{
+				"name" : "Fidgeting and Fat Gain.txt",
+				"path" : "Fidgeting and Fat Gain.txt",
+				"description" : "Fidgeting and Fat Gain.txt",
+				"kind" : "file"
+				}
+				]
+			},
+			{
+			"name" : "Chapter 7 - Inference for Distributions",
+			"path" : "Chapter 7 - Inference for Distributions",
+			"description" : "Chapter 7 - Inference for Distributions",
+			"kind" : "folder",
+			"children":
+				[
+				{
+				"name" : "Directed Reading Activities.jasp",
+				"path" : "Directed Reading Activities.jasp",
+				"description" : "Directed Reading Activities.jasp",
+				"kind" : "file"
+				},
+				{
+				"name" : "Directed Reading Activities.txt",
+				"path" : "Directed Reading Activities.txt",
+				"description" : "Directed Reading Activities.txt",
+				"kind" : "file"
+				},
+				{
+				"name" : "Moon and Aggression.jasp",
+				"path" : "Moon and Aggression.jasp",
+				"description" : "Moon and Aggression.jasp",
+				"kind" : "file"
+				},
+				{
+				"name" : "Moon and Aggression.txt",
+				"path" : "Moon and Aggression.txt",
+				"description" : "Moon and Aggression.txt",
+				"kind" : "file"
+				},
+				{
+				"name" : "Weight Gain.jasp",
+				"path" : "Weight Gain.jasp",
+				"description" : "Weight Gain.jasp",
+				"kind" : "file"
+				},
+				{
+				"name" : "Weight Gain.txt",
+				"path" : "Weight Gain.txt",
+				"description" : "Weight Gain.txt",
+				"kind" : "file"
+				}
+				]
+			},
+			{
+			"name" : "Chapter 8 - Inference for Proportions",
+			"path" : "Chapter 8 - Inference for Proportions",
+			"description" : "Chapter 8 - Inference for Proportions",
+			"kind" : "folder",
+			"children":
+				[
+				{
+				"name" : "Sun Block Lotions.csv",
+				"path" : "Sun Block Lotions.csv",
+				"description" : "Sun Block Lotions.csv",
+				"kind" : "file"
+				},
+				{
+				"name" : "Sun Block Lotions.jasp",
+				"path" : "Sun Block Lotions.jasp",
+				"description" : "Sun Block Lotions.jasp",
+				"kind" : "file"
+				}
+				]
+			},
+			{
+			"name" : "Chapter 9 - Analysis of Two-Way Tables",
+			"path" : "Chapter 9 - Analysis of Two-Way Tables",
+			"description" : "Chapter 9 - Analysis of Two-Way Tables",
+			"kind" : "folder",
+			"children":
+				[
+				{
+				"name" : "Health Habits.csv",
+				"path" : "Health Habits.csv",
+				"description" : "Health Habits.csv",
+				"kind" : "file"
+				},
+				{
+				"name" : "Health Habits.jasp",
+				"path" : "Health Habits.jasp",
+				"description" : "Health Habits.jasp",
+				"kind" : "file"
+				}
+				]
+			},
+			{
+			"name" : "Chapter 10 - Inference for Regression",
+			"path" : "Chapter 10 - Inference for Regression",
+			"description" : "Chapter 10 - Inference for Regression",
+			"kind" : "folder",
+			"children":
+				[
+				{
+				"name" : "Physical Activity and BMI.jasp",
+				"path" : "Physical Activity and BMI.jasp",
+				"description" : "Physical Activity and BMI.jasp",
+				"kind" : "file"
+				},
+				{
+				"name" : "Physical Activity and BMI.txt",
+				"path" : "Physical Activity and BMI.txt",
+				"description" : "Physical Activity and BMI.txt",
+				"kind" : "file"
+				}
+				]
+			},
+			{
+			"name" : "Chapter 11 - Multiple Regression",
+			"path" : "Chapter 11 - Multiple Regression",
+			"description" : "Chapter 11 - Multiple Regression",
+			"kind" : "folder",
+			"children":
+				[
+				{
+				"name" : "College Success.jasp",
+				"path" : "College Success.jasp",
+				"description" : "Can we predict who's goona be good at college given high-school grades?",
+				"kind" : "file"
+				},
+				{
+				"name" : "College Success.txt",
+				"path" : "College Success.txt",
+				"description" : "Raw Data for the College Succes Example",
+				"kind" : "file"
+				}
+				]
+			},
+			{
+			"name" : "Chapter 12 - One-Way Analysis of Variance",
+			"path" : "Chapter 12 - One-Way Analysis of Variance",
+			"description" : "Chapter 12 - One-Way Analysis of Variance",
+			"kind" : "folder",
+			"children":
+				[
+				{
+				"name" : "Facebook Friends.jasp",
+				"path" : "Facebook Friends.jasp",
+				"description" : "Facebook Friends.jasp",
+				"kind" : "file"
+				},
+				{
+				"name" : "Facebook Friends.txt",
+				"path" : "Facebook Friends.txt",
+				"description" : "Facebook Friends.txt",
+				"kind" : "file"
+				},
+				{
+				"name" : "Response to Eye Color.jasp",
+				"path" : "Response to Eye Color.jasp",
+				"description" : "Response to Eye Color.jasp",
+				"kind" : "file"
+				},
+				{
+				"name" : "Response to Eye Color.txt",
+				"path" : "Response to Eye Color.txt",
+				"description" : "Response to Eye Color.txt",
+				"kind" : "file"
+				}
+				]
+			},
+			{
+			"name" : "Chapter 13 - Two-Way Analysis of Variance",
+			"path" : "Chapter 13 - Two-Way Analysis of Variance",
+			"description" : "Chapter 13 - Two-Way Analysis of Variance",
+			"kind" : "folder",
+			"children":
+				[
+				{
+				"name" : "Heart Rate.jasp",
+				"path" : "Heart Rate.jasp",
+				"description" : "Heart Rate.jasp",
+				"kind" : "file"
+				},
+				{
+				"name" : "Heart Rate.txt",
+				"path" : "Heart Rate.txt",
+				"description" : "Heart Rate.txt",
+				"kind" : "file"
+				}
+				]
+			}
+			]
+		}
+		]
 	},
 	{
-		"name" : "Bugs (Ryan, Wilde & Crist, 2013)",
-		"path" : "Bugs (Ryan, Wilde & Crist, 2013).csv",
-		"description" : "A repeated measures ANOVA data set"
+	"name" : "Political Democracy (Bollen, 1989)",
+	"path" : "Political Democracy (Bollen, 1989).csv",
+	"description" : "A SEM data set",
+	"kind" : "file"
 	},
 	{
-		"name" : "Tooth Growth",
-		"path" : "Tooth Growth.csv",
-		"description" : "An uninspiring ANOVA data set"
+	"name" : "Bugs (Ryan, Wilde & Crist, 2013)",
+	"path" : "Bugs (Ryan, Wilde & Crist, 2013).csv",
+	"description" : "A repeated measures ANOVA data set",
+	"kind" : "file"
 	},
 	{
-		"name" : "Kitchen Rolls",
-		"path" : "Kitchen Rolls.csv",
-		"description" : "A nice t-test data set"
+	"name" : "Tooth Growth",
+	"path" : "Tooth Growth.csv",
+	"description" : "An uninspiring ANOVA data set",
+	"kind" : "file"
 	},
 	{
-		"name" : "Big 5 (Dolan, Oort, Stoel & Wicherts, 2009)",
-		"path" : "Big 5 (Dolan, Oort, Stoel & Wicherts, 2009).csv",
-		"description" : "A nice correlation data set"
+	"name" : "Kitchen Rolls",
+	"path" : "Kitchen Rolls.csv",
+	"description" : "A nice t-test data set",
+	"kind" : "file"
+	},
+	{
+	"name" : "Big 5 (Dolan, Oort, Stoel & Wicherts, 2009)",
+	"path" : "Big 5 (Dolan, Oort, Stoel & Wicherts, 2009).csv",
+	"description" : "A nice correlation data set",
+	"kind" : "file"
 	}
-]
+	]
+}
