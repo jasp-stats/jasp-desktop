@@ -3,20 +3,17 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.2
 
 ListView
-{ 
+{
 	anchors.left:parent.left
 	anchors.right:parent.right
 	anchors.leftMargin: 15
-	anchors.topMargin: 15
-	
+
 	model: dataLibraryBreadCrumbsModel
-	
+
 	orientation: ListView.Horizontal
-	
-	spacing:10
-	
+
 	delegate: RowLayout
-	{  		
+	{
 		Rectangle
 		{
 			id:rect
@@ -26,7 +23,6 @@ ListView
 			radius: 15
 			border.color: "white"
 			border.width: 2
-			anchors.margins: 5
 			Button
 			{
 				id:crumbbutton
@@ -40,18 +36,15 @@ ListView
 					dataLibraryListModel.changePath(model.name);
 				}
 			}
-			Text {
-				id: name
-				visible: index
-				height: 10
-				width: 20
-				anchors.leftMargin: 0
-				anchors.rightMargin: 5				
-				anchors.verticalCenter: crumbbutton.verticalCenter
-				anchors.right: crumbbutton.left
-				text: model.index > 0 ? " -->" : "";
-			}
+		}
+
+		Text {
+			id: arrow
+			height: 10
+			width: 20
+			anchors.verticalCenter: rect.verticalCenter
+			anchors.right: rect.left
+			text: model.index > 0 ? "-->" : "";
 		}
 	}
-}	
-
+}
