@@ -48,35 +48,35 @@
             {
               "name": "Eye Movements",
               "path": "Eye Movements.jasp",
-              "description": "Eye Movements.jasp",
+              "description": "Eye Movements",
               "kind": "file",
               "associated_datafile": "Eye Movements.csv"
             },
             {
-              "name": "Invisibility",
+              "name": "Invisibility.jasp",
               "path": "Invisibility.jasp",
-              "description": "Invisibility.jasp",
+              "description": "Invisibility",
               "kind": "file",
               "associated_datafile": "Invisibility.csv"
             },
             {
-              "name": "Kitchen Rolls",
+              "name": "Kitchen Rolls.jasp",
               "path": "Kitchen Rolls.jasp",
-              "description": "Kitchen Rolls.jasp",
+              "description": "Kitchen Rolls",
               "kind": "file",
               "associated_datafile": "Kitchen Rolls.csv"
             },
             {
               "name": "Moon and Aggression",
               "path": "Moon and Aggression.jasp",
-              "description": "Moon and Aggression.jasp",
+              "description": "Moon and Aggression",
               "kind": "file",
               "associated_datafile": "Moon and Aggression.csv"
             },
             {
               "name": "Weight Gain",
               "path": "Weight Gain.jasp",
-              "description": "Weight Gain.jasp",
+              "description": "Weight Gain",
               "kind": "file",
               "associated_datafile": "Weight Gain.csv"
             }
