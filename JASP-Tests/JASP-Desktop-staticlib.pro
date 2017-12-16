@@ -3,8 +3,8 @@ QT += core gui  webenginewidgets svg network printsupport xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-windows:CONFIG += c++11
-linux:CONFIG += c++11
+CONFIG += c++11
+
 linux:CONFIG += -pipe
 
 DESTDIR = ..
@@ -57,5 +57,6 @@ linux {
 	QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
 }
 
+macx | windows { DEFINES += JASP_NOT_LINUX }
 
 include(../JASP-Desktop/JASP-Desktop.pri)

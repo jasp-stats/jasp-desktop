@@ -1,0 +1,17 @@
+title: Moon and Aggression
+description: "The effect of the moon on aggressive behavior: A paired t-test."
+source: "Moore, McCabe, Craig (2012). Introduction to the Practice of Statistics (7th ed.). New York, NY: W.H. Freeman and Company, Chapter 7, p. 410; data collected as part of a large-scale study by Nancy Edwards (School of Nursing, Purdue University) and Alan Beck (School of Veterinary Medicine, Purdue University)"
+hypothesis of interest: The average difference between the number of disruptive behaviors on full moon days and not full moon days 
+differs from 0 in dementia patients.
+
+tags:
+  - PairedTtest
+
+variables:
+  - name: Moon 
+    type: Continuous
+    description: Average number of disruptive behaviors in three-day period centered at the day of the full moon measured during a 12-week period
+    
+  - name: Other
+    type: Continuous
+    description: Average number of disruptive behaviors NOT in three-day period centered at the day of the full moon measured during a 12-week period

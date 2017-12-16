@@ -91,7 +91,7 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 
 	_saveButton = new QPushButton(_fileNameContainer);
 	_saveButton->setText("Save");
-	_saveButton->setEnabled(false);
+	_saveButton->setEnabled(true);
 	saveLayout->addWidget(_saveButton, 0, Qt::AlignRight);
 
 	QWidget *line;
@@ -114,6 +114,7 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 
 	_breadCrumbs->setModel(_model);
 	_breadCrumbs->setEnabled(false);
+	_breadCrumbs->setSeperator(QChar('/'));
 
 	connect(_fsBrowser, SIGNAL(entryOpened(QString)), this, SLOT(notifyDataSetOpened(QString)));
 	connect(_fsBrowser, SIGNAL(entrySelected(QString)), this, SLOT(notifyDataSetSelected(QString)));

@@ -28,7 +28,22 @@ class FSBMExamples : public FSBModel
 
 public:
 	FSBMExamples(QObject *parent = NULL);
+	~FSBMExamples();
 	void refresh() OVERRIDE;
+	
+	typedef struct {
+		QString name;
+		QString path;
+		QString description;
+		QString kind;
+	} ExampleNodeData;
+
+private:
+	void loadCategories();
+	void loadFilesAndFolders(const QString &path);
+	QJsonDocument *getJsonDocument();
+	QJsonDocument *_doc;
+	bool isFolder(const QString &kind);
 };
 
 #endif // FSBMEXAMPLES_H
