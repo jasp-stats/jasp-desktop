@@ -1,0 +1,165 @@
+{
+	"name": "RegressionLinearBayesian",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+		{
+			"name": "dependent",
+			"type": "Variable"
+		},
+		{
+			"name": "wlsWeights",
+			"type": "Variable"
+		},
+		{
+			"name": "betaBinomialParamA",
+			"type": "Number",
+			"value": 1.000,
+			"min": 0
+		},
+		{
+			"name": "betaBinomialParamB",
+			"type": "Number",
+			"value": 1.000,
+			"min": 0
+		},
+		{
+			"name": "bernoulliParam",
+			"type": "Number",
+			"value": 0.5,
+			"min": 0,
+			"max": 1
+		},
+		{
+			"name": "postSummary",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "summaryType",
+			"type": "List",
+			"options": [
+				"best",
+				"complex",
+				"median",
+				"averaged"
+			],
+			"default": "best"
+		},
+		{
+			"name": "descriptives",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "bayesFactorType",
+			"options": [ "BF10", "BF01", "LogBF10" ],
+			"default": "BF10",
+			"type": "List"
+		},
+		{
+			"name": "bayesFactorOrder",
+			"options": [ "bestModelTop", "nullModelTop" ],
+			"default": "bestModelTop",
+			"type": "List"
+		},
+		{
+			"name": "shownModels",
+			"options": [ "limited", "unlimited" ],
+			"default": "unlimited",
+			"type": "List"
+		},
+		{
+			"name": "numShownModels",
+			"type": "Integer",
+			"default": 10,
+			"min" : 1
+		},
+		{
+			"name": "covariates",
+			"type": "Variables"
+		},
+		{
+			"default": false,
+			"name": "plotLogPosteriorOdds",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotCoefficientsPosterior",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotResidualsVsFitted",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotModelProbabilities",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotModelComplexity",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotInclusionProbabilities",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotRobustnessCheck",
+			"type": "Boolean"
+		},
+		{
+			"options": ["AIC", "BIC", "EB-global", "EB-local", "g-prior", "hyper-g", "hyper-g-laplace", "hyper-g-n", "JZS"],
+			"default": "JZS",
+			"name": "priorRegressionCoefficients",
+			"type": "List"
+		},
+		{
+			"name": "samplingMethod",
+			"options": ["BAS", "MCMC"],
+			"default": "BAS",
+			"type": "List"
+		},
+		{
+			"name": "iterationsMCMC",
+			"type": "Integer",
+			"default": 0
+		},
+		{
+			"name": "numberOfModels",
+			"type": "Number"
+		},
+		{
+			"options": ["Bernoulli", "beta.binomial", "uniform"],
+			"default": "uniform",
+			"name": "modelPrior",
+			"type": "List"
+		},
+		{
+			"name": "alpha",
+			"type": "Number",
+			"value": 3
+		},
+		{
+			"name": "rScale",
+			"type": "Number",
+			"value": 0.354
+		},
+		{
+			"name": "modelTerms",
+			"template": [
+				{
+					"name": "components",
+					"type": "Term"
+				},
+				{
+					"default": false,
+					"name": "isNuisance",
+					"type": "Boolean"
+				}
+			],
+			"type": "Table"
+		}
+	]
+}

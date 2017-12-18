@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -18,7 +18,6 @@
 
 #include "regressionlinearbayesianform.h"
 #include "ui_regressionlinearbayesianform.h"
-
 
 RegressionLinearBayesianForm::RegressionLinearBayesianForm(QWidget *parent) :
 	AnalysisForm("RegressionLinearBayesianForm", parent),
@@ -42,18 +41,8 @@ RegressionLinearBayesianForm::RegressionLinearBayesianForm(QWidget *parent) :
 	_covariatesListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->covariates->setModel(_covariatesListModel);
 
-	_wlsWeightsListModel = new TableModelVariablesAssigned();
-	_wlsWeightsListModel->setSource(&_availableVariablesModel);
-	_wlsWeightsListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
-	_wlsWeightsListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->wlsWeights->setModel(_wlsWeightsListModel);
-
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);
 	ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
-	ui->buttonAssignWlsWeights->setSourceAndTarget(ui->listAvailableFields, ui->wlsWeights);
-
-	ui->plotOptions->hide();
-	ui->advancedOptions->hide();
 
 	_anovaModel = new TableModelAnovaModel(this);
 	_anovaModel->setPiecesCanBeAssigned(false);
@@ -65,67 +54,17 @@ RegressionLinearBayesianForm::RegressionLinearBayesianForm(QWidget *parent) :
 	connect(_covariatesListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addCovariates(Terms)));
 	connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
-	// retain widget sizes when hidden
-	QSizePolicy retain = ui->iterationsMCMC->sizePolicy();
-	retain.setRetainSizeWhenHidden(true);
-	ui->iterationsMCMC->setSizePolicy(retain);
+	ui->advancedOptions->hide();
 
-	retain = ui->betaBinomialParamA->sizePolicy();
-	retain.setRetainSizeWhenHidden(true);
-	ui->betaBinomialParamA->setSizePolicy(retain);
-
-	retain = ui->betaBinomialParamB->sizePolicy();
-	retain.setRetainSizeWhenHidden(true);
-	ui->betaBinomialParamB->setSizePolicy(retain);
-
-	retain = ui->bernoulliParam->sizePolicy();
-	retain.setRetainSizeWhenHidden(true);
-	ui->bernoulliParam->setSizePolicy(retain);
-
-	retain = ui->alpha->sizePolicy();
-	retain.setRetainSizeWhenHidden(true);
-	ui->alpha->setSizePolicy(retain);
-
-	retain = ui->rScale->sizePolicy();
-	retain.setRetainSizeWhenHidden(true);
-	ui->rScale->setSizePolicy(retain);
-
-	defaultOptions();
+	ui->priorCovariates->setLabel("r scale covariates");
 }
-
 
 RegressionLinearBayesianForm::~RegressionLinearBayesianForm()
 {
 	delete ui;
 }
 
-
-void RegressionLinearBayesianForm::defaultOptions()
-{
-	// default behaviour: hide the number of iterations for MCMC
-	ui->label_iterationsMCMC->hide();
-	ui->iterationsMCMC->hide();
-	// hide the alpha parameter
-	ui->label_alpha->hide();
-	ui->alpha->hide();
-
-	// default behaviour: show beta binomial parameters, hide bernoulli params
-	defaultOptionsModelPrior();
-}
-
-
-void RegressionLinearBayesianForm::defaultOptionsModelPrior()
-{
-	ui->label_betaBinomialParamA->hide();
-	ui->label_betaBinomialParamB->hide();
-	ui->betaBinomialParamA->hide();
-	ui->betaBinomialParamB->hide();
-	ui->label_bernoulliParam->hide();
-	ui->bernoulliParam->hide();
-}
-
-
-void RegressionLinearBayesianForm::bindTo(Options *options, DataSet *dataSet)
+void RegressionLinearBayesianForm:: bindTo(Options *options, DataSet *dataSet)
 {
 	AnalysisForm::bindTo(options, dataSet);
 
@@ -136,144 +75,11 @@ void RegressionLinearBayesianForm::bindTo(Options *options, DataSet *dataSet)
 	factorsChanged();
 }
 
-
-void RegressionLinearBayesianForm::on_BAS_clicked()
-{
-	ui->label_numberOfModels->show();
-	ui->numberOfModels->show();
-	ui->label_iterationsMCMC->hide();
-	ui->iterationsMCMC->hide();
-}
-
-
-void RegressionLinearBayesianForm::on_MCMC_clicked()
-{
-	ui->label_numberOfModels->hide();
-	ui->numberOfModels->hide();
-	ui->label_iterationsMCMC->show();
-	ui->iterationsMCMC->show();
-}
-
-
-void RegressionLinearBayesianForm::on_betaBinomial_clicked()
-{
-	if (ui->betaBinomial->isChecked())
-	{
-		ui->label_betaBinomialParamA->show();
-		ui->label_betaBinomialParamB->show();
-		ui->betaBinomialParamA->show();
-		ui->betaBinomialParamB->show();
-		ui->label_bernoulliParam->hide();
-		ui->bernoulliParam->hide();
-	}
-}
-
-
-void RegressionLinearBayesianForm::on_Bernoulli_clicked()
-{
-	if (ui->Bernoulli->isChecked())
-	{
-		ui->label_betaBinomialParamA->hide();
-		ui->label_betaBinomialParamB->hide();
-		ui->betaBinomialParamA->hide();
-		ui->betaBinomialParamB->hide();
-		ui->label_bernoulliParam->show();
-		ui->bernoulliParam->show();
-	}
-}
-
-
-void RegressionLinearBayesianForm::on_uniformPrior_clicked()
-{
-	if (ui->uniformPrior->isChecked())
-	{
-		ui->label_betaBinomialParamA->hide();
-		ui->label_betaBinomialParamB->hide();
-		ui->betaBinomialParamA->hide();
-		ui->betaBinomialParamB->hide();
-		ui->label_bernoulliParam->hide();
-		ui->bernoulliParam->hide();
-	}
-}
-
-void RegressionLinearBayesianForm::defaultOptionsPriorParams() {
-	ui->label_alpha->hide();
-	ui->alpha->hide();
-	ui->label_rScale->hide();
-	ui->rScale->hide();
-}
-
-void RegressionLinearBayesianForm::on_g_prior_clicked()
-{
-	defaultOptionsPriorParams();
-}
-
-void RegressionLinearBayesianForm::on_jzs_clicked()
-{
-	ui->label_alpha->hide();
-	ui->alpha->hide();
-	ui->label_rScale->show();
-	ui->rScale->show();
-}
-
-
-void RegressionLinearBayesianForm::on_hyper_g_clicked()
-{
-	ui->label_alpha->show();
-	ui->alpha->show();
-	ui->label_rScale->hide();
-	ui->rScale->hide();
-}
-
-
-void RegressionLinearBayesianForm::on_hyper_g_laplace_clicked()
-{
-	ui->label_alpha->show();
-	ui->alpha->show();
-	ui->label_rScale->hide();
-	ui->rScale->hide();
-}
-
-
-void RegressionLinearBayesianForm::on_hyper_g_n_clicked()
-{
-	ui->label_alpha->show();
-	ui->alpha->show();
-	ui->label_rScale->hide();
-	ui->rScale->hide();
-}
-
-
-void RegressionLinearBayesianForm::on_aic_clicked()
-{
-	defaultOptionsPriorParams();
-}
-
-
-void RegressionLinearBayesianForm::on_bic_clicked()
-{
-	defaultOptionsPriorParams();
-}
-
-
-void RegressionLinearBayesianForm::on_eb_global_clicked()
-{
-	defaultOptionsPriorParams();
-}
-
-
-void RegressionLinearBayesianForm::on_eb_local_clicked()
-{
-	defaultOptionsPriorParams();
-}
-
-
 void RegressionLinearBayesianForm::factorsChanging()
 {
 	if (_options != NULL)
 		_options->blockSignals(true);
 }
-
 
 void RegressionLinearBayesianForm::factorsChanged()
 {
