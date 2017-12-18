@@ -215,7 +215,7 @@ bool XmlContentsHandler::endElement(const QString &namespaceURI, const QString &
 						for (int i = 0; i < _colRepeat; i++)
 							_dataSet->getOrCreate(_column + i).setValue(_row - 1, _currentCell.toStdString());
 					}
-					_lastNotEmptyColumn = _column;
+					_lastNotEmptyColumn = _column + _colRepeat - 1;
 				}
 				
 				_docDepth = table_row;
