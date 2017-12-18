@@ -8,143 +8,8 @@
 			"type": "Variable"
 		},
 		{
-			"name": "wlsWeights",
-			"type": "Variable"
-		},
-		{
-			"name": "betaBinomialParamA",
-			"type": "Number",
-			"value": 1.000,
-			"min": 0
-		},
-		{
-			"name": "betaBinomialParamB",
-			"type": "Number",
-			"value": 1.000,
-			"min": 0
-		},
-		{
-			"name": "bernoulliParam",
-			"type": "Number",
-			"value": 0.5,
-			"min": 0,
-			"max": 1
-		},
-		{
-			"name": "postSummary",
-			"type": "Boolean",
-			"default": false
-		},
-		{
-			"name": "summaryType",
-			"type": "List",
-			"options": [
-				"best",
-				"complex",
-				"median",
-				"averaged"
-			],
-			"default": "best"
-		},
-		{
-			"name": "descriptives",
-			"type": "Boolean",
-			"default": false
-		},
-		{
-			"name": "bayesFactorType",
-			"options": [ "BF10", "BF01", "LogBF10" ],
-			"default": "BF10",
-			"type": "List"
-		},
-		{
-			"name": "bayesFactorOrder",
-			"options": [ "bestModelTop", "nullModelTop" ],
-			"default": "bestModelTop",
-			"type": "List"
-		},
-		{
-			"name": "shownModels",
-			"options": [ "limited", "unlimited" ],
-			"default": "unlimited",
-			"type": "List"
-		},
-		{
-			"name": "numShownModels",
-			"type": "Integer",
-			"default": 10,
-			"min" : 1
-		},
-		{
 			"name": "covariates",
 			"type": "Variables"
-		},
-		{
-			"default": false,
-			"name": "plotLogPosteriorOdds",
-			"type": "Boolean"
-		},
-		{
-			"default": false,
-			"name": "plotCoefficientsPosterior",
-			"type": "Boolean"
-		},
-		{
-			"name": "plotResidualsVsFitted",
-			"type": "Boolean"
-		},
-		{
-			"name": "plotModelProbabilities",
-			"type": "Boolean"
-		},
-		{
-			"name": "plotModelComplexity",
-			"type": "Boolean"
-		},
-		{
-			"name": "plotInclusionProbabilities",
-			"type": "Boolean"
-		},
-		{
-			"name": "plotRobustnessCheck",
-			"type": "Boolean"
-		},
-		{
-			"options": ["AIC", "BIC", "EB-global", "EB-local", "g-prior", "hyper-g", "hyper-g-laplace", "hyper-g-n", "JZS"],
-			"default": "JZS",
-			"name": "priorRegressionCoefficients",
-			"type": "List"
-		},
-		{
-			"name": "samplingMethod",
-			"options": ["BAS", "MCMC"],
-			"default": "BAS",
-			"type": "List"
-		},
-		{
-			"name": "iterationsMCMC",
-			"type": "Integer",
-			"default": 0
-		},
-		{
-			"name": "numberOfModels",
-			"type": "Number"
-		},
-		{
-			"options": ["Bernoulli", "beta.binomial", "uniform"],
-			"default": "uniform",
-			"name": "modelPrior",
-			"type": "List"
-		},
-		{
-			"name": "alpha",
-			"type": "Number",
-			"value": 3
-		},
-		{
-			"name": "rScale",
-			"type": "Number",
-			"value": 0.354
 		},
 		{
 			"name": "modelTerms",
@@ -160,6 +25,62 @@
 				}
 			],
 			"type": "Table"
+		},
+		{
+			"name": "effects",
+			"type": "Boolean"
+		},
+		{
+			"name": "effectsType",
+			"options": [ "allModels", "matchedModels" ],
+			"default": "allModels",
+			"type": "List"
+		},
+		{
+			"name": "posteriorEstimates",
+			"type": "Boolean"
+		},
+		{
+			"name": "posteriorDistributions",
+			"type": "Boolean"
+		},
+		{
+			"options": [ "BF10", "BF01", "LogBF10" ],
+			"default": "BF10",
+			"name": "bayesFactorType",
+			"type": "List"
+		},
+		{
+			"name": "bayesFactorOrder",
+			"options": [ "nullModelTop", "bestModelTop" ],
+			"default": "nullModelTop",
+			"type": "List"
+		},
+		{
+			"name": "posteriorEstimates",
+			"type": "Boolean"
+		},
+		{
+			"name": "posteriorEstimatesCredibleIntervalInterval",
+			"type": "Number",
+			"format": "%",
+			"value": 0.95,
+			"min": 0.5,
+			"max": 0.999
+		},
+		{
+			"name": "posteriorEstimatesMCMCIterations",
+			"type": "Number",
+			"value": 10000,
+			"min": 1,
+			"max": 1000000
+		},
+		{
+			"name": "priorCovariates",
+			"type": "Number",
+			"value": 0.354,
+			"min": 0,
+			"max": 2
 		}
 	]
 }
