@@ -8,7 +8,7 @@ Subject,Gender,Region,Education,"Lo D, Lo F","Lo D, Hi F","Hi D, Lo F","Hi D, Hi
 7,Female,North,some,10,10,10,10
 8,Female,North,high,10,10,9,10
 9,Female,North,high,9.5,9.5,6,10
-10,Female,Other,high,8.5,10,7, 
+10,Female,Other,high,8.5,10,7,NA
 11,Male,North,some,0,2.5,0,0
 12,Male,North,some,9.5,7.5,8.5,10
 13,Female,North,less,7,8.5,6.5,8.5
@@ -36,7 +36,7 @@ Subject,Gender,Region,Education,"Lo D, Lo F","Lo D, Hi F","Hi D, Lo F","Hi D, Hi
 37,Female,North,some,4,10,7,10
 38,Female,North,some,4.5,7,10,10
 39,Male,North,some,7,7,10,9
-40, ,,,8,8.5,8,9.5
+40,NA,NA,NA,8,8.5,8,9.5
 41,Female,North,some,5,7.5,7.5,7.5
 42,Female,North,high,5,8.5, ,9.5
 43,Female,North,some,2,2,0,5.5
@@ -57,7 +57,7 @@ Subject,Gender,Region,Education,"Lo D, Lo F","Lo D, Hi F","Hi D, Lo F","Hi D, Hi
 60,Male,North,less,3.5,7.5,8,8
 61,Female,North,college,2.5,7.5,5,7.5
 62,Male,North,less,3.5,9.5,3.5,8
-64,Female,Europe,some,8.5,6, ,5
+64,Female,Europe,some,8.5,6,NA,5
 65,Female,North,less,3,8.5,10,2.5
 66,Male,North,less,6,10,3,8.5
 67,Male,North,high,5.5,8,4.5,9.5
@@ -72,7 +72,7 @@ Subject,Gender,Region,Education,"Lo D, Lo F","Lo D, Hi F","Hi D, Lo F","Hi D, Hi
 77,Female,North,some,6,6,7.5,6
 78,Female,North,less,5,6.5,0.5,5.5
 79,Male,North,less,6,8,9,7
-80,Female,North,less,1.5, ,9,9.5
+80,Female,North,less,1.5,NA,9,9.5
 81,Male,North,high,5.5,4,10,5.5
 82,Female,North,high,9.5,9.5,9.5,8.5
 83,Female,North,high,8,8,8.5,10
@@ -88,7 +88,7 @@ Subject,Gender,Region,Education,"Lo D, Lo F","Lo D, Hi F","Hi D, Lo F","Hi D, Hi
 93,Female,North,less,6.5,10,10,10
 95,Female,North,less,3,4,2,2
 96,Male,North,high,10,10,10,10
-97,Female,North,,8.5,10,8.5,10
+97,Female,North,NA,8.5,10,8.5,10
 98,Female,North,some,1.5,10,8.5,10
 99,Female,North,some,9,10,10,10
 100,Female,Europe,some,5.5,5.5,2,3
