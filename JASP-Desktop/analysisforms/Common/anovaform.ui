@@ -2051,5 +2051,37 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>marginalMeansCompareMainEffects</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetCIAdjustmentTypes</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>185</x>
+     <y>2346</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>182</x>
+     <y>2377</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>effectSizeEstimates</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetEffectSizeTypes</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>139</x>
+     <y>2472</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>142</x>
+     <y>2500</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
 </ui>
