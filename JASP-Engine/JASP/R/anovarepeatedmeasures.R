@@ -644,8 +644,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   		    splitNames <- unlist(lapply(strsplit(factorNamesV,  split = "_"), function(x) x[indexofOrderFactors[rmFactorIndex]]))
   		    listVarNamesToLevel <- list()  # create a list of vectors of variable names, used to group the dataset for the post-hoc t-tests
   		    for(i in 1:numberOfLevels){
-  		      listVarNamesToLevel[[i]] <- factorNamesV[grep(splitNames, pattern = .v(levelsOfThisFactor[i]))]  
+  		      listVarNamesToLevel[[i]] <- factorNamesV[(splitNames %in% .v(levelsOfThisFactor[i]))]  
   		    }
+  		    # browser()
   		    
     		  countr <- 1
     		  allEstimates <- allTees <- allSE <- allPees <- numeric() 
