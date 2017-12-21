@@ -133,7 +133,6 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 				stateSphericity <- NULL
 
 			} else {
-
 				referenceGrid <- .referenceGrid(options, fullModel)
 				statePostHoc <- .resultsPostHoc(referenceGrid, options, dataset, fullModel)
 				stateContrasts <- .resultsContrasts(dataset, options, referenceGrid)
@@ -485,7 +484,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	model <- NULL
 	epsilon <- NULL
 	mauchly <- NULL
-
+  
 	if (length(class(result)) == 1 && class(result) == "try-error") {
 
 		fullModel <- result
@@ -538,11 +537,10 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 
 	rownames(epsilonTable) <- termsRM.base64
-
 	if (is.null(rownames(mauchly))) {
 		modelTermsResults <- list()
 	} else {
-		modelTermsResults <- strsplit(rownames(epsilon), ":")
+		modelTermsResults <- strsplit(rownames(mauchly), ":")
 	}
 
 	for (i in .indices(termsRM.base64)) {
@@ -551,7 +549,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		index <- unlist(lapply(modelTermsResults, function(x) .identicalTerms(x,modelTermsCase)))
 		epsilonTable[i,"termsNormal"] <- termsRM.normal[[i]]
 
-		if (sum(index) == 0) {
+		if (sum(index) == 0 ) {
 
 			epsilonTable[i,"W"] <- 1
 			epsilonTable[i,"p"] <- NaN
@@ -559,6 +557,14 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			epsilonTable[i,"HF"] <- 1
 			epsilonTable[i,"twoLevels"] <- TRUE
 
+		} else if (is.na(epsilon[1])) {
+		  
+		  epsilonTable[i,"W"] <- NaN
+		  epsilonTable[i,"p"] <- NaN
+		  epsilonTable[i,"GG"] <- NaN
+		  epsilonTable[i,"HF"] <- NaN
+		  epsilonTable[i,"twoLevels"] <- FALSE
+		  
 		} else {
 
 			HF <- epsilon[index, "HF eps"]
@@ -646,8 +652,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   		    for(i in 1:numberOfLevels){
   		      listVarNamesToLevel[[i]] <- factorNamesV[(splitNames %in% .v(levelsOfThisFactor[i]))]  
   		    }
-  		    # browser()
-  		    
+
     		  countr <- 1
     		  allEstimates <- allTees <- allSE <- allPees <- numeric() 
     		  for (k in 1:numberOfLevels) {  ### Loop over all the levels within factor and do pairwise t.tests on them
