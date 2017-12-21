@@ -130,6 +130,7 @@ public:
 	~Column();
 
 	std::string name() const;
+	int id() const;
 	void setName(std::string name);
 
 	void setValue(int row, int value);
@@ -193,7 +194,7 @@ private:
 	BlockMap _blocks;
 	Labels _labels;
 
-	int id;
+	int _id;
 	static int count;
 
 	void _setRowCount(int rowCount);

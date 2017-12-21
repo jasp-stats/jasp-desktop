@@ -375,7 +375,7 @@ void JASPImporter::readManifest(DataSetPackage *packageData, const string &path)
 	int size = manifest.bytesAvailable();
 	if (size > 0)
 	{
-		char data[size];
+		char* data = new char[size];
 		int startOffset = manifest.pos();
 		int errorCode = 0;
 		while (manifest.readData(&data[manifest.pos() - startOffset], 8016, errorCode) > 0 && errorCode == 0) ;
@@ -384,6 +384,7 @@ void JASPImporter::readManifest(DataSetPackage *packageData, const string &path)
 			throw runtime_error("Error reading Entry 'manifest.mf' in JASP archive.");
 
 		string doc(data, size);
+		delete[] data;
 
 		stringstream st(doc);
 		string line;

@@ -20,7 +20,6 @@
 #define ASYNCLOADER_H
 
 #include <QObject>
-#include <QThread>
 #include <QMutex>
 #include <QTimer>
 
@@ -60,7 +59,6 @@ private:
 	QString fileChecksum(const QString &fileName, QCryptographicHash::Algorithm hashAlgorithm);
 
 	void progressHandler(std::string status, int progress);
-	QThread _thread;
 	DataSetLoader _loader;
 
 	FileEvent *_currentEvent;
