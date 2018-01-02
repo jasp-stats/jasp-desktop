@@ -16,7 +16,7 @@ windows:INCLUDEPATH += ../../boost_1_64_0
 
 
 windows:LIBS += -lole32 -loleaut32 -larchive.dll
-
+linux: LIBS += -ljsoncpp
 
 QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
@@ -45,12 +45,6 @@ SOURCES += \
 	ipcchannel.cpp \
 	label.cpp \
 	labels.cpp \
-	lib_json/json_internalarray.inl \
-	lib_json/json_internalmap.inl \
-	lib_json/json_reader.cpp \
-	lib_json/json_value.cpp \
-	lib_json/json_valueiterator.inl \
-	lib_json/json_writer.cpp \
 	options/option.cpp \
 	options/optionboolean.cpp \
 	options/optioninteger.cpp \
@@ -100,16 +94,7 @@ HEADERS += \
 	filereader.h \
 	ipcchannel.h \
 	label.h \
-	labels.h \
-	lib_json/autolink.h \
-	lib_json/config.h \
-	lib_json/features.h \
-	lib_json/forwards.h \
-	lib_json/json_batchallocator.h \
-	lib_json/json.h \
-	lib_json/reader.h \
-	lib_json/value.h \
-	lib_json/writer.h \
+        labels.h  \
 	libzip/archive.h \
 	libzip/archive_entry.h \
 	options/option.h \
@@ -133,4 +118,25 @@ HEADERS += \
 	utils.h \
 	version.h \
     options/optionvariablei.h
+
+macx | windows {
+    SOURCES += \
+            lib_json/json_internalarray.inl \
+            lib_json/json_internalmap.inl \
+            lib_json/json_reader.cpp \
+            lib_json/json_value.cpp \
+            lib_json/json_valueiterator.inl \
+            lib_json/json_writer.cpp
+
+    HEADERS += \
+            lib_json/autolink.h \
+            lib_json/config.h \
+            lib_json/features.h \
+            lib_json/forwards.h \
+            lib_json/json_batchallocator.h \
+            lib_json/json.h \
+            lib_json/reader.h \
+            lib_json/value.h \
+            lib_json/writer.h
+}
 

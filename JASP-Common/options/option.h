@@ -23,7 +23,7 @@
 #include <boost/signals2.hpp>
 #include <boost/bind.hpp>
 
-#include "../lib_json/json.h"
+#include <jsoncpp/json/json.h>
 
 class Options;
 

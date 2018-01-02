@@ -20,7 +20,7 @@
 
 #include <string>
 
-#include "lib_json/json.h"
+#include <jsoncpp/json/json.h>
 
 #include "optionvariables.h"
 #include "common.h"

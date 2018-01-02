@@ -24,7 +24,8 @@
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/range.hpp>
 
-#include "../lib_json/json.h"
+#include <jsoncpp/json/json.h>
+#include <iostream>
 
 typedef std::pair<std::string, Option*> OptionNamed;
 

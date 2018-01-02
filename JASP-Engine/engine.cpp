@@ -20,9 +20,7 @@
 #include <sstream>
 #include <cstdio>
 
-#include "../JASP-Common/lib_json/json.h"
 #include "../JASP-Common/analysisloader.h"
-#include "../JASP-Common/processinfo.h"
 #include "../JASP-Common/tempfiles.h"
 #include "../JASP-Common/utils.h"
 #include "../JASP-Common/sharedmemory.h"

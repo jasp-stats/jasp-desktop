@@ -32,7 +32,7 @@ LIBS += -L.. -lJASP-Common
 
 windows:LIBS += -lboost_filesystem-mgw48-mt-1_64 -lboost_system-mgw48-mt-1_64 -larchive.dll
    macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz
-  linux:LIBS += -lboost_filesystem    -lboost_system    -larchive -lrt
+  linux:LIBS += -lboost_filesystem    -lboost_system    -larchive -lrt -ljsoncpp
 
 
 windows:LIBS += -lole32 -loleaut32

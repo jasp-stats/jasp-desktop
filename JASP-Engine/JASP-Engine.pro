@@ -38,7 +38,7 @@ macx {
 }
 
 linux {
-
+        LIBS += -ljsoncpp
 	isEmpty(_R_HOME):_R_HOME = /usr/lib/R
 	R_EXE  = $$_R_HOME/bin/R
 }

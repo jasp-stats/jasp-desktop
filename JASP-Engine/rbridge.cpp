@@ -20,7 +20,7 @@
 #include <boost/foreach.hpp>
 
 #include "../JASP-Common/base64.h"
-#include "../JASP-Common/lib_json/json.h"
+#include <jsoncpp/json/json.h>
 #include "../JASP-Common/sharedmemory.h"
 #include "../JASP-Common/appinfo.h"
 

@@ -21,9 +21,8 @@
 #include "common.h"
 #include "dataset.h"
 #include "version.h"
-#include "lib_json/json.h"
 #include <map>
-
+#include <jsoncpp/json/json.h>
 #include "boost/signals2.hpp"
 
 class DataSetPackage

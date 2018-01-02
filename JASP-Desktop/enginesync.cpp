@@ -28,7 +28,7 @@
 #include <boost/interprocess/mapped_region.hpp>
 #include <boost/foreach.hpp>
 
-#include "lib_json/json.h"
+#include <jsoncpp/json/json.h>
 
 #include "processinfo.h"
 #include "common.h"
