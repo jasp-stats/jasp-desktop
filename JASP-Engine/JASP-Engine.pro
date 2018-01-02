@@ -75,6 +75,7 @@ INCLUDEPATH += \
 
 linux:INCLUDEPATH += \
 	/usr/share/R/include \
+        /usr/lib/R/library/include \
 	$$_R_HOME/site-library/Rcpp/include
 
 macx:LIBS += \
@@ -124,8 +125,6 @@ OTHER_FILES  += \
 	JASP/R/anovarepeatedmeasures.R \
 	JASP/R/anovarepeatedmeasuresbayesian.R \
 	JASP/R/base64.R \
-	JASP/R/basregressionlinearlink.R \
-	JASP/R/bffromt.R \
 	JASP/R/binomialtest.R \
 	JASP/R/binomialtestbayesian.R \
 	JASP/R/common.R \

@@ -33,6 +33,7 @@ using namespace spss;
 
 SPSSImportDataSet::SPSSImportDataSet(SPSSImporter* importer) : ImportDataSet(importer), _numCases(-1L)
 {
+	setStrCnvrtr( new CodePageConvert(CodePageConvert::findIANANameFromSPSS(2))); //Set UTF-8 per default
 }
 
 SPSSImportDataSet::~SPSSImportDataSet()

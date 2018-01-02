@@ -5,7 +5,7 @@
 !include "nsProcess.nsh"
 !include "x64.nsh"
 
-!define VERSION "0.8.4.0"
+!define VERSION "0.8.5.0"
 !define APP_NAME "JASP"
 !define INSTALLER_NAME "${APP_NAME}-${VERSION}-Setup.exe"
 !define CONTENTS_DIR "C:\Jasp\Install"
@@ -16,7 +16,7 @@
 !define DESCRIPTION "${APP_NAME} - A Fresh Way to Do Statistics"
 !define LICENSE_TXT "${CONTENTS_DIR}\AGPL.txt"
 !define MAIN_APP_EXE "${APP_NAME}.exe"
-!define MAIN_APP_ICO "${APP_NAME}.ico"
+!define MAIN_APP_ICO "icon.ico"
 !define INSTALL_TYPE "SetShellVarContext all"
 !define REG_ROOT "HKLM"
 !define VERSION_TRACKING "SOFTWARE\${APP_NAME}\Versions"
@@ -53,7 +53,7 @@ InstallDir "$PROGRAMFILES64\${APP_DISPLAY_NAME}"
 
 !include "MUI.nsh"
 
-!define MUI_ICON "${CONTENTS_DIR}\icon.ico"
+!define MUI_ICON "${CONTENTS_DIR}\${MAIN_APP_ICO}"
 #!define MUI_HEADERIMAGE
 #!define MUI_HEADERIMAGE_BITMAP "${CONTENTS_DIR}\JASP.bmp"
 #!define MUI_HEADERIMAGE_RIGHT

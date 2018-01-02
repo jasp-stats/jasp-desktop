@@ -33,11 +33,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	addRibbonButton(ui->anovaButton);
 	addRibbonButton(ui->frequenciesButton);
 	addRibbonButton(ui->regressionButton);
-	addRibbonButton(ui->BFFromT);
 	addRibbonButton(ui->factoranalysisButton);
-
-	ui->BFFromT->setDataSetNotNeeded();
-
 
 //	connect(ui->Descriptives, SIGNAL(clicked()), this, SLOT(itemSelected()));
 
@@ -90,10 +86,6 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu->addAction(QString("Bayesian Correlation Pairs"), this, SLOT(itemSelected()))->setObjectName("CorrelationBayesianPairs");
 	menu->addAction(QString("Bayesian Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLinearBayesian");
 
-#ifdef QT_DEBUG
-	menu->addSeparator();
-	menu->addAction(QString("BAS Regression Linear link"), this, SLOT(itemSelected()))->setObjectName("BASRegressionLinearLink");
-#endif
 	ui->regressionButton->setMenu(menu);
 
 
@@ -118,15 +110,6 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu->addAction(QString("Exploratory Factor Analysis"), this, SLOT(itemSelected()))->setObjectName("ExploratoryFactorAnalysis");
 
 	ui->factoranalysisButton->setMenu(menu);
-
-#ifndef QT_DEBUG
-	ui->BFFromT->hide();
-#else
-	menu = new QMenu(this);
-	menu->addAction(QString("BF From t"), this, SLOT(itemSelected()))->setObjectName("BFFromT");
-
-	ui->BFFromT->setMenu(menu);
-#endif
 }
 
 RibbonAnalysis::~RibbonAnalysis()

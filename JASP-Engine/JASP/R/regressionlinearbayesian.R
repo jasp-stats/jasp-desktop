@@ -29,7 +29,7 @@ RegressionLinearBayesian <- function (dataset = NULL, options, perform = "run", 
 		base::options (BFprogress = interactive())
 	if (is.null (base::options ()$BFfactorsMax))
 		base::options (BFfactorsMax = 5)
-
+    print("here0")
 	.callbackBFpackage <- function(...) {
 		response <- .callbackBayesianLinearModels ()
 		if(response$status == "ok")
@@ -48,7 +48,7 @@ RegressionLinearBayesian <- function (dataset = NULL, options, perform = "run", 
 		}
 		return (response)
 	}
-
+    print("here1")
 	state <- .retrieveState ()
 	if ( ! is.null (state)) {
 		change <- .diff (options, state$options)
@@ -68,7 +68,7 @@ RegressionLinearBayesian <- function (dataset = NULL, options, perform = "run", 
 	meta [[4]] <- list (name = "estimates", type = "table")
 	results [[".meta"]] <- meta
 	results [["title"]] <- "Bayesian Linear Regression"
-
+    print("here2")
 ## DATA
 	if (is.null(state)) {
 		dataset <- .readBayesianLinearModelData (dataset, options, perform)

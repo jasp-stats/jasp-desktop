@@ -15,9 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-.messages <- function(class, type) {
-  
-
+.messages <- function(class, type, ...) {  
   m <- list()
   
   ### Error general
@@ -49,8 +47,22 @@
   ### Footnotes
   m$footnote$leveneSign <- 
   "Levene's test is significant (p < .05), suggesting a violation of the equal variance assumption"
+  m$footnote$VovkSellkeMPR <-
+  "Vovk-Sellke Maximum <em>p</em>-Ratio: Based the <em>p</em>-value, the maximum possible odds in favor of H\u2081 over H\u2080 equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37 (Sellke, Bayarri, & Berger, 2001)."
+  m$footnote$binomNeq <- 
+  "Proportions tested against value: {{value}}."
+  m$footnote$binomLess <- 
+  "For all tests, the alternative hypothesis specifies that the proportion is less than {{value}}."
+  m$footnote$binomGreater <- 
+  "For all tests, the alternative hypothesis specifies that the proportion is greater than {{value}}."
   
+  message <- m[[class]][[type]]
+  if (is.null(message))
+    stop(paste("Could not find message for class", class, "and type", type))
   
-  return(m[[class]][[type]])
-
+  args <- list(...)
+  if (length(args) > 0)
+    message <- .parseMessage(message, class, ...)
+  
+  return(message)
 }

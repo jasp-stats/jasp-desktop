@@ -68,5 +68,6 @@
         <file>css/style.css</file>
         <file>css/bootstrap.min.css</file>
         <file>img/jasp-logo-black.svg</file>
+        <file>img/snow.gif</file>
     </qresource>
 </RCC>

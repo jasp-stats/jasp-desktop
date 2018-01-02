@@ -109,9 +109,11 @@ NetworkAnalysis <- function (
 	    list(name = "weightmatrixTB",           type = "table"),
 	    list(name = "layoutTB",                 type = "table"),
 	    list(name = "centralityTB",             type = "table"),
+	    list(name = "clusteringTB",             type = "table"),
 	    list(name = "mgmTB",                    type = "table"),
 	    list(name = "networkPLT",               type = "collection", meta="image"),
 	    list(name = "centralityPLT",            type = "image"),
+	    list(name = "clusteringPLT",            type = "image"),
 	    list(name = "bootstrapEdgePLT",         type = "collection", meta="image"),
 	    list(name = "bootstrapCentPLT",         type = "collection", meta="image")
 	  )
@@ -137,6 +139,8 @@ NetworkAnalysis <- function (
 		bootstrap = bootstrapArgs,
 		# depends also on normalization of centrality measures
 		centrality = c(defArgs, "normalizeCentrality", "maxEdgeStrength", "minEdgeStrength"),
+		# depends on everything but plotting arguments
+		clustering = defArgs,
 		# depends also on plotting arguments
 		networkPLT = c(defArgs,
 					   # depends also on plotting arguments
@@ -168,6 +172,8 @@ NetworkAnalysis <- function (
 
 	## Do Analysis ## ----
 
+	doBootstrap <- options[["bootstrapOnOff"]] && options[["numberOfBootstraps"]] > 0
+
 	# Sort out whether things are set to defaults or not.
 	if (length(variables) > 2) {
 		
@@ -179,6 +185,32 @@ NetworkAnalysis <- function (
 		# check for errors, but only if there was a change in the data (which implies state[["network"]] is NULL)
 		if (is.null(state[["network"]])) {
 
+		  customChecks <- NULL
+		  
+		  # check if data must be binarized
+		  if (options[["estimator"]] %in% c("IsingFit", "IsingSampler")) {
+		    idx <- colnames(dataset) != .v(options[["groupingVariable"]])
+		    dataset[idx] <- bootnet::binarize(dataset[idx], split = options[["split"]], verbose = FALSE, removeNArows = FALSE)
+		    
+		    if (options[["estimator"]] == "IsingFit") {
+		      # required check since IsingFit removes these variables from the analyses
+		      customChecks <- c(customChecks,
+            function() {
+              tbs <- apply(dataset, 2, table)
+              if (any(tbs <= 1)) {
+                idx <- which(tbs <= 1, arr.ind = TRUE)
+                return(sprintf(
+                  "After binarizing the data too little variance remained in variable(s): %s.",
+                  paste0(.unv(colnames(tbs[, idx[, 2], drop = FALSE])), collapse = ", ")
+                ))
+              }
+              return(NULL)
+            }
+		      )
+		    }
+		  }
+		  
+      
 			# default error checks
 			checks <- c("infinity", "variance", "observations", "varCovData")
 
@@ -218,16 +250,13 @@ NetworkAnalysis <- function (
 					   varCovData.grouping = groupingVariable,
 					   varCovData.corFun = fun,
 					   varCovData.corArgs = list(use = "pairwise"),
+					   custom = customChecks,
 					   exitAnalysisIfErrors = TRUE)
 		}
 
 		network <- .networkAnalysisRun(dataset = dataset, options = options, variables = variables, perform = perform, oldNetwork = state)
 
-		if (options[["bootstrapOnOff"]] ) {
-
-			# results[["generalTB"]] <- .networkAnalysisGeneralTable(NULL, dataset, options, perform = perform) # any errors will appear top of this table
-			# # initialize progress table
-			# results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform)
+		if (doBootstrap) {
 
 			network <- .networkAnalysisBootstrap(network, options, variables, perform, oldNetwork = state, results = results, callback = callback)
 			if (is.null(network) && perform == "run") { # bootstrap was aborted
@@ -252,7 +281,7 @@ NetworkAnalysis <- function (
 		if (FALSE && options[["tableFitMeasures"]]) {
 			results[["fitMeasuresTB"]] <- .fitMeasuresTB(network, options, perform)
 		}
-		if (options[["bootstrapOnOff"]]) {
+		if (doBootstrap) {
 			results[["bootstrapTB"]] <- .networkAnalysisBootstrapTable(network, dataset, options, perform)
 
 			if (options[["StatisticsEdges"]]) {
@@ -278,6 +307,9 @@ NetworkAnalysis <- function (
 		if (options[["tableCentrality"]]) {
 			results[["centralityTB"]] <- .networkAnalysisCentralityTable(network, options, perform)
 		}
+		if (options[["tableClustering"]]) {
+			results[["clusteringTB"]] <- .networkAnalysisClusteringTable(network, options, perform)
+		}
 		if (options[["plotNetwork"]]) {
 			results[["networkPLT"]] <- .networkAnalysisNetworkPlot(network, options, perform, oldPlot = state[["networkPLT"]])
 			allNetworkPlots <- results[["networkPLT"]][["collection"]]
@@ -287,6 +319,10 @@ NetworkAnalysis <- function (
 		if (options[["plotCentrality"]]) {
 			results[["centralityPLT"]] <- .networkAnalysisCentralityPlot(network, options, perform, oldPlot = state[["centralityPLT"]])
 			keep <- c(keep, results[["centralityPLT"]][["data"]])
+		}
+		if (options[["plotClustering"]]) {
+			results[["clusteringPLT"]] <- .networkAnalysisClusteringPlot(network, options, perform, oldPlot = state[["clusteringPLT"]])
+			keep <- c(keep, results[["clusteringPLT"]][["data"]])
 		}
 	}
 	results <- .networkAnalysisAddReferencesToTables(results, options)
@@ -305,6 +341,7 @@ NetworkAnalysis <- function (
 	    network          = network[["network"]],
 	    bootstrap        = network[["bootstrap"]],
 	    centrality       = network[["centrality"]],
+	    clustering       = network[["clustering"]],
 	    layout           = network[["layout"]],
 	    networkPLT       = results[["networkPLT"]],
 	    centralityPLT    = results[["centralityPLT"]],
@@ -348,6 +385,7 @@ NetworkAnalysis <- function (
 	networkList <- list(
 		network = oldNetwork[["network"]],
 		centrality = oldNetwork[["centrality"]],
+		clustering = oldNetwork[["clustering"]],
 		layout = oldNetwork[["layout"]]
 	)
 
@@ -583,6 +621,23 @@ NetworkAnalysis <- function (
 		}
 
 	}
+	
+	if (is.null(networkList[["clustering"]])) {
+
+	  for (nw in seq_along(dataset)) {
+
+	    network <- networkList[["network"]][[nw]]
+	    clust <- qgraph::clusteringTable(network, labels = .unv(network$labels))
+	    clust <- reshape2::dcast(clust, graph + node + type ~ measure, value.var = "value")
+	    TBclust <- as.data.frame(clust[-c(1, 3)])
+	    TBclust <- TBclust[c(1, order(colnames(TBclust)[-1])+1)] # alphabetical order
+	    
+	    networkList[["clustering"]][[nw]] <- TBclust
+	    
+	  }
+	  
+	}
+	
 
 	if (is.null(names(dataset))) {
 		nms <- "Network"
@@ -618,7 +673,7 @@ NetworkAnalysis <- function (
 
 	}
 
-	names(networkList[["network"]]) <- names(networkList[["centrality"]]) <- nms
+	names(networkList[["network"]]) <- names(networkList[["centrality"]]) <- names(networkList[["clustering"]]) <- nms
 
 	networkList[["status"]] <- .networkAnalysisNetworkHasErrors(networkList)
 
@@ -737,36 +792,41 @@ NetworkAnalysis <- function (
 	table <- list(
 		title = "Summary of Network",
 		schema = list(fields = list(
-			list(name = "info", title = "", type = "string")
-			#list(name = "value", title = "", type = "number", format="sf:4;dp:3")
+			list(name = "info", title = "Network", type = "string"),
+			list(name = "nodes", title = "Number of nodes", type = "integer"),
+			list(name = "nonZero", title = "Number of non-zero edges"),
+			list(name = "Sparsity", title = "Sparsity", type = "number", format="sf:4;dp:3")
 		))
 	)
-	for (i in seq_len(nGraphs)) {
-		table[["schema"]][["fields"]][[i+1]] <-
-			list(name = paste0("value", i), title = names(network[["network"]])[i], type = "number", format="sf:4;dp:3")
-	}
+	
+	# we only want to show this if there are more than 2 networks (but as the first column not the last)
+	if (nGraphs == 1)
+	  table[["schema"]][["fields"]][[1]] <- NULL
 
 	footnotes <- .newFootnotes()
 	msg <- NULL
-
-	TBcolumns <- list(info = c("Number of nodes", "Number of non-zero edges", "Sparsity"))
-
+  # browser()
 	if (is.null(network[["network"]])) { # fill in with .
 
-		TBcolumns[["value"]] <- rep(".", 3*nGraphs)
-		table[["schema"]][["fields"]][[2]][["title"]] <- "Network"
+	  TBcolumns <- list(
+	    info = paste("Network", 1:nGraphs),
+	    nodes = rep(".", nGraphs),
+	    nonZero = rep(".", nGraphs),
+	    Sparsity = rep(".", nGraphs)
+	  )
 
 	} else { # fill in with info from bootnet:::print.bootnet
+	  
+	  TBcolumns <- list(info = names(network[["network"]]),
+	                    nodes = NULL, nonZero = NULL, Sparsity = NULL)
 
+	  nVar <- ncol(network[["network"]][[1]][["graph"]])
 		for (i in seq_len(nGraphs)) {
 
 			nw <- network[["network"]][[i]]
-
-			TBcolumns[[paste0("value", i)]] <- c(
-				nrow(nw[["graph"]]),
-				sum(nw[["graph"]][upper.tri(nw[["graph"]], diag = FALSE)] == 0),
-				mean(nw[["graph"]][upper.tri(nw[["graph"]], diag = FALSE)] == 0)
-			)
+ 			TBcolumns[["nodes"]][i] <- nrow(nw[["graph"]])
+ 			TBcolumns[["nonZero"]][i] <- paste(sum(nw[["graph"]][upper.tri(nw[["graph"]], diag = FALSE)] != 0), "/", nVar * (nVar-1) / 2)
+ 		  TBcolumns[["Sparsity"]][i] <- mean(nw[["graph"]][upper.tri(nw[["graph"]], diag = FALSE)] == 0)
 
 		}
 
@@ -807,6 +867,29 @@ NetworkAnalysis <- function (
 	if (!is.null(options[["colorNodesByDataMessage"]])) {
 	  .addFootnote(footnotes = footnotes, text = options[["colorNodesByDataMessage"]], symbol = "<em>Warning: </em>")
 	}
+	if (options[["minEdgeStrength"]] != 0) {
+
+	  ignored <- logical(nGraphs)
+	  for (i in seq_along(network[["network"]])) {
+	    ignored[i] <- all(abs(qgraph::getWmat(network[["network"]][[i]])) <= options[["minEdgeStrength"]])
+	  }
+	  
+	  if (any(ignored)) {
+	    if (nGraphs == 1) {
+	      text <- "Minimum edge strength ignored in the network plot because it was larger than the absolute value of the strongest edge."
+	    } else {
+	      text <- sprintf("Minimum edge strength ignored in the network plot of group%s %s because it was larger than the absolute value of the strongest edge.",
+	                      ifelse(sum(ignored) == 2, "s", ""),
+	                      paste0(names(network[["network"]])[ignored], collapse = ", ")
+	      )
+	    }
+	    .addFootnote(footnotes = footnotes, symbol = "<em>Warning: </em>", text = text)
+	  }
+	}
+	if (xor(options[["bootstrapOnOff"]], options[["numberOfBootstraps"]] > 0)) {
+	  text <- "Bootstrapping is only done when 'Bootstrap network' is ticked and 'Number of Bootstraps' is larger than 0."
+	   .addFootnote(footnotes = footnotes, symbol = "<em>Warning: </em>", text = text)
+	} 
 
 	table[["footnotes"]] <- as.list(footnotes)
 	return(table)
@@ -967,6 +1050,107 @@ NetworkAnalysis <- function (
 	data <- .TBcolumns2TBrows(TBcolumns)
 	table[["data"]] <- data
 
+	return(table)
+
+}
+
+.networkAnalysisClusteringTable <- function(network, options, perform) {
+
+	nGraphs <- max(1, length(network[["network"]]))
+  if (is.null(network[["clustering"]])) {
+    measureNms <- list(c("Barrat", "Onnela", "WS", "Zhang"))
+  } else {
+    measureNms <- NULL 
+    for (i in seq_len(nGraphs))
+      measureNms[[i]] <- colnames(network[["clustering"]][[i]])[-1]
+    
+  }
+  
+
+	nMeasures <- lengths(measureNms)
+
+	table <- list(
+		title = "Clustering measures per variable",
+		schema = list(fields = list(
+			list(name = "Variable", title = "Variable", type = "string")
+		))
+	)
+
+	# shared titles
+	overTitles <- names(network[["network"]])
+	if (is.null(overTitles))
+		overTitles <- "Network" # paste0("Network", 1:nGraphs)
+
+	# create the fields
+	idx <- 2
+	for (i in seq_len(nGraphs)) {
+	  for (j in seq_len(nMeasures[i])) { # four clustering columns per network
+  		table[["schema"]][["fields"]][[idx]] <- list(
+  		  name = paste0(measureNms[[i]][j], i), 
+  		  title = measureNms[[i]][j], 
+  		  type = "number", 
+  		  format="sf:4;dp:3", 
+  		  overTitle = overTitles[i])
+  		idx <- idx + 1
+	  }
+	}
+
+
+	if (is.null(network[["clustering"]])) { # make empty table
+
+	  # same length restriction for running analyses
+		if (!is.null(options[["variables"]]) || !(length(options[["variables"]]) > 0)) {
+
+			TBcolumns <- rep(list("."), nMeasures + 1)
+			names(TBcolumns) <- c("Variable", measureNms)
+
+		} else {
+
+			TBcolumns <- data.frame(
+				.v(options[["variables"]]),
+				rep(
+				  list(rep(".", length(options[["variables"]]))),
+				  nMeasures)
+			)
+		}
+    names(TBcolumns) <- c("Variable", measureNms)
+
+	} else { # fill with results
+
+		TBcolumns <- NULL
+		for (i in seq_len(nGraphs)) {
+
+			toAdd <- network[["clustering"]][[i]]
+			names(toAdd) <- c("Variable", paste0(measureNms[[i]], i))
+			if (i == 1) {# if more than 1 network drop additional variable column
+				TBcolumns <- toAdd
+			} else {
+				toAdd <- toAdd[, -1]
+				TBcolumns <- cbind(TBcolumns, toAdd)
+			}
+
+		}
+
+	}
+
+	data <- .TBcolumns2TBrows(TBcolumns)
+	table[["data"]] <- data
+	
+	footnotes <- .newFootnotes()
+	if (!all(nMeasures == 4)) {
+	  nms <- names(network[["network"]])[nMeasures != 4]
+	  if (length(nms) == 1) 
+	    s <- "" 
+	  else s <- "s"
+	  text <- sprintf("Clustering measures could not be computed for network%s: %s",
+	                  s,
+	                  paste0(nms, collapse = ", ")
+	  )
+    .addFootnote(footnotes = footnotes, text = text, symbol = "<em>Warning: </em>") 
+	}
+
+	table[["footnotes"]] <- as.list(footnotes)
+	
 	return(table)
 
 }
@@ -1151,6 +1335,87 @@ NetworkAnalysis <- function (
 
 }
 
+.networkAnalysisClusteringPlot <- function(network, options, perform, oldPlot = NULL) {
+
+	if (!is.null(oldPlot) && !identical(oldPlot[["data"]], ""))
+		return(oldPlot)
+
+	plot <- list(
+		title = "Clustering Plot",
+		width = options[["plotWidthClustering"]],
+		height = options[["plotHeightClustering"]],
+		custom = list(width = "plotWidthClustering", height = "plotHeightClustering"),
+		data = "",
+		status = "complete"
+	)
+
+	if (perform == "run" && !is.null(network)) {
+		wide <- network[["clustering"]]
+
+		len <- lengths(wide)
+		idx <- which.max(len)
+    if (!all(len == len[idx])) {
+      
+      cnms <- colnames(wide[[idx]])[-1]
+      for (i in which(len != len[idx])) {
+        
+        cnmsToAdd <- cnms[!(cnms %in% colnames(wide[[i]]))]
+        for (nms in cnmsToAdd)
+          wide[[i]][[nms]] <- NA
+        wide[[i]] <- wide[[i]][colnames(wide[[idx]])]
+        
+      }
+    }
+		
+		wideDf <- Reduce(rbind, wide)
+		if (length(wide) > 1) {
+			wideDf[["type"]] <- rep(names(network[["clustering"]]), each = nrow(wideDf) / length(wide))
+			Long <- reshape2::melt(wideDf, id.vars = c("node", "type"))
+			colnames(Long)[3] <- "measure"
+			Long[["graph"]] <- Long[["type"]]
+			Long[["type"]] <- TRUE # options[["separateCentrality"]]
+		} else {
+			Long <- reshape2::melt(wideDf, id.vars = "node")
+			colnames(Long)[2] <- "measure"
+			Long[["graph"]] <- NA
+		}
+
+		if (options[["abbreviateLabels"]])
+			Long[["node"]] <- base::abbreviate(Long[["node"]], options[["abbreviateNoChars"]])
+
+		# code modified from qgraph::centralityPlot(). Type and graph are switched so the legend title says graph
+
+		Long <- Long[gtools::mixedorder(Long$node), ]
+		Long$node <- factor(as.character(Long$node), levels = unique(gtools::mixedsort(as.character(Long$node))))
+		if (length(unique(Long$graph)) > 1) {
+			g <- ggplot2::ggplot(Long, ggplot2::aes(x = value, y = node, group = graph,
+													colour = graph)) +
+				ggplot2::guides(color = ggplot2::guide_legend(title = options[["groupingVariable"]])) # change the name graph into the variable name for splitting
+		} else {
+			g <- ggplot2::ggplot(Long, ggplot2::aes(x = value, y = node, group = graph))
+		}
+		g <- g + ggplot2::geom_path() + ggplot2::xlab("") + ggplot2::ylab("") + ggplot2::geom_point()
+		if (length(unique(Long$type)) > 1) {
+			g <- g + ggplot2::facet_grid(type ~ measure, scales = "free")
+
+		} else {
+			g <- g + ggplot2::facet_grid(~measure, scales = "free")
+		}
+		g <- g + ggplot2::theme_bw()
+
+		content <- .writeImage(width = plot[["width"]], height = plot[["height"]], plot = g)
+
+		plot[["convertible"]] <- TRUE
+		plot[["data"]] <- content[["png"]]
+		plot[["obj"]] <- content[["obj"]]
+		plot[["status"]] <- "complete"
+
+	}
+
+	return(plot)
+
+}
+
 .networkAnalysisOneNetworkPlot <- function() {
 
 	# eval(quote()) construction because this function is evaluated inside .writeImage()
@@ -1164,7 +1429,8 @@ NetworkAnalysis <- function (
 		if (!options[["signedNetwork"]]) {
 			wMat <- abs(wMat)
 		}
-
+		if (all(abs(wMat) <= minE))
+		  minE <- NULL
 
 		qgraph::qgraph(
 			input       = wMat,

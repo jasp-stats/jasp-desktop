@@ -94,6 +94,14 @@ void ODSSheetCell::setValue(const QString &value)
 		_xmlType = odsType_string;
 }
 
+void ODSSheetCell::setValue(const string &value)
+{
+	_string = value;
+	// if no type set to date, then it becomes a string.
+	if (xmlType() == odsType_unknown)
+		_xmlType = odsType_string;
+}
+
 const string &ODSSheetCell::valueAsString()
 const
 {

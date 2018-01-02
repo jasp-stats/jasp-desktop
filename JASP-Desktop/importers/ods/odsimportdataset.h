@@ -60,24 +60,7 @@ public:
 	 */
 	const std::string &getContentFilename() const { return _contentFilename; }
 
-	/**
-	 * @brief minRow Gets the lowest numbered row in the sheet.
-	 * @return The lowest numbered row in the sheet.
-	 */
-	int minRow() const;
-
-	/**
-	 * @brief maxRow  Gets the highest numbered row in the sheet.
-	 * @return  The highest numbered row in the sheet.
-	 */
-	int maxRow() const;
-
-	/**
-	 * @brief createSpace Ensure that we have enough columns for the passed value.
-	 * @param column The column number to check for.
-	 * @return The number of columns available. - Maybe greater than column.
-	 */
-	size_t createSpace(int column);
+	ODSImportColumn & createColumn(std::string name);
 
 	/**
 	 * @brief operator [] Exposes the underlying vector of the ImportDataSet.
@@ -85,6 +68,7 @@ public:
 	 * @return A reference to the indexed value.
 	 */
 	ODSImportColumn & operator [] (const int index);
+	ODSImportColumn & getOrCreate (const int index);
 
 	/**
 	 * @brief postLoadProcess Performs post load processing.

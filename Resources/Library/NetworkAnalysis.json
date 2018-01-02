@@ -53,6 +53,11 @@
 			"type": "Boolean"
 		},
 		{
+			"name": "tableClustering",
+			"type": "Boolean",
+			"default": false
+		},
+		{
 			"default": false,
 			"name": "plotNetwork",
 			"type": "Boolean"
@@ -60,6 +65,11 @@
 		{
 			"default": false,
 			"name": "plotCentrality",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotClustering",
 			"type": "Boolean"
 		},
 		{
@@ -186,9 +196,9 @@
 		{
 			"name": "numberOfBootstraps",
 			"type": "Integer",
-			"min": 1,
+			"min": 0,
 			"max": 100000,
-			"default": 3
+			"default": 0
 		},
 		{
 			"name": "parallelBootstrap",
@@ -208,7 +218,7 @@
 		{
 			"name": "BootstrapType",
 			"type": "List",
-			"options": ["nonparametric", "parametric", "node", "person", "case", "jackknife"],
+			"options": ["nonparametric", "case", "node", "parametric", "person", "jackknife"],
 			"default": "nonparametric"
 		},
 		{
@@ -374,6 +384,16 @@
 		},
 		{
 			"name": "plotHeightCentrality",
+			"type": "Integer",
+			"default": 320
+		},
+		{
+			"name": "plotWidthClustering",
+			"type": "Integer",
+			"default": 480
+		},
+		{
+			"name": "plotHeightClustering",
 			"type": "Integer",
 			"default": 320
 		},

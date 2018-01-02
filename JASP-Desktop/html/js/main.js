@@ -10,6 +10,12 @@ window.getPPI = function () {
 
 
 $(document).ready(function () {
+	var d = new Date();
+	var month = d.getMonth();
+	var day = d.getDate();
+	if ((month == 11 && day >= 19) || (month == 0 && day <= 5))
+		$("#note").css("background-image", "url('img/snow.gif')");
+	
 	var ua = navigator.userAgent.toLowerCase();
 
 	if (ua.indexOf("windows") !== -1)

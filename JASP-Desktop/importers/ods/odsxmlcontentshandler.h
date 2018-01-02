@@ -69,10 +69,12 @@ private:
 	DocDepth 		_docDepth;			///< Current depth of document.
 	int				_row;				///< Current row in document/table.
 	int				_column;			///< Current column in document/table.
+	int				_lastNotEmptyColumn;
 	bool			_tableRead;			///< True if first table read.
 	XmlDatatype		_lastType;		///< The last type we found in a opening tag.
-	int				_colSpan;			///< Number cells this XML element spans.
-
+	int				_colRepeat;			///< Number cells this XML element spans.
+	int				_rowRepeat;
+	QString			_currentCell;
 
 	// Names we search for.
 	static const QString _nameDocContent;
@@ -90,6 +92,7 @@ private:
 	static const QString _attTimeValue;
 	static const QString _attBoolValue;
 	static const QString _attCellRepeatCount;
+	static const QString _attRowRepeatCount;
 
 	// Values of the attribute attValueType.
 	static const QString _typeFloat;
@@ -110,12 +113,13 @@ private:
 	XmlDatatype _setLastTypeGetValue(QString &value, const QXmlAttributes &atts);
 
 	/**
-	 * @brief _findColspan Finds the column span from attributes.
+	 * @brief _findColRepeat/_findRowRepeat Finds the column/row repeat from attributes.
 	 * @param atts The attribuyes to search.
 	 * @param defaultValue The value to return if not found.
 	 * @return The found value or default.
 	 */
-	static int _findColspan(const QXmlAttributes &atts, int defaultValue = 1);
+	static int _findColRepeat(const QXmlAttributes &atts, int defaultValue = 1);
+	static int _findRowRepeat(const QXmlAttributes &atts, int defaultValue = 1);
 
 };
 

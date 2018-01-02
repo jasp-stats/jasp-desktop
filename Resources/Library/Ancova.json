@@ -103,6 +103,18 @@
 			"type": "List"
 		},
 		{
+			"name": "simpleFactor",
+			"type": "Variable"
+		},
+		{
+			"name": "moderatorFactorOne",
+			"type": "Variable"
+		},
+		{
+			"name": "moderatorFactorTwo",
+			"type": "Variable"
+		},
+		{
 			"name": "descriptives",
 			"type": "Boolean"
 		},

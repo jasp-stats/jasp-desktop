@@ -1,4 +1,5 @@
 #include "odsxmlcontentshandler.h"
+#include "../importerutils.h"
 
 using namespace std;
 using namespace ods;
@@ -17,6 +18,7 @@ const QString XmlContentsHandler::_attDateValue("office:date-value");
 const QString XmlContentsHandler::_attTimeValue("office:time-value");
 const QString XmlContentsHandler::_attBoolValue("office:boolean-value");
 const QString XmlContentsHandler::_attCellRepeatCount("table:number-columns-repeated");
+const QString XmlContentsHandler::_attRowRepeatCount("table:number-rows-repeated");
 
 const QString XmlContentsHandler::_typeFloat("float");
 const QString XmlContentsHandler::_typeCurrency("currency");
@@ -32,9 +34,11 @@ XmlContentsHandler::XmlContentsHandler(ODSImportDataSet *dta)
  , _docDepth(not_in_doc)
  , _row(0)
  , _column(0)
+ , _lastNotEmptyColumn(-1)
  , _tableRead(false)
  , _lastType(odsType_unknown)
- , _colSpan(0)
+ , _colRepeat(1)
+ , _rowRepeat(1)
 
 {
 
@@ -55,6 +59,8 @@ bool XmlContentsHandler::startElement(const QString &namespaceURI, const QString
 {
 	if (_tableRead == false)
 	{
+		DEBUG_COUT6("XmlContentsHandler::startElement. docDepth: ", _docDepth, ", localName: ", localName.toStdString(), ", qName: ", qName.toStdString());
+		
 		// Where were we?
 		switch(_docDepth)
 		{
@@ -76,7 +82,10 @@ bool XmlContentsHandler::startElement(const QString &namespaceURI, const QString
 			break;
 		case table:
 			if (localName == _nameTableRow)
+			{
 				_docDepth = table_row;
+				_rowRepeat = _findRowRepeat(atts);
+			}
 			break;
 		case table_row:
 			if (localName == _nameTableCell)
@@ -85,38 +94,10 @@ bool XmlContentsHandler::startElement(const QString &namespaceURI, const QString
 				// Arrived at a cell.
 
 				// Get it's type and value.
-				QString value;
-				_setLastTypeGetValue(value, atts);
-
-				// Deal with headers / create the column.
-				if ((_row == 0) && (_lastType != odsType_unknown))
-					_dataSet->createSpace(_column);
-
+				_setLastTypeGetValue(_currentCell, atts);
+				
 				// Find column span for this cell.
-				_colSpan = _findColspan(atts);
-
-				//  Blank row? - Skip it.
-				if ((_row != 0) && (_colSpan > _dataSet->columnCount()) && (_column == 0))
-						break;
-
-				// Is the end column off the end of the active area?
-				int effectiveColSpan = _colSpan;
-				if ((_column + _colSpan) >= _dataSet->columnCount())
-					effectiveColSpan = _dataSet->columnCount() - _column;
-				// Give up
-				if (effectiveColSpan == 0)
-					break;
-
-				// Create a blank cells, one for each spanned column.
-				if (effectiveColSpan > 0)
-				{
-					for (int column = _column; column < (effectiveColSpan + _column); ++column)
-						(*_dataSet)[column].createSpace(_row);
-				}
-
-				// Data cells (i.e. not first row), and we actually have a value to insert?
-				if ((_row > 0) && (value.isEmpty() == false))
-					(*_dataSet)[_column].setValue(_row, _lastType, value);
+				_colRepeat = _findColRepeat(atts);
 			}
 			break;
 
@@ -148,6 +129,8 @@ bool XmlContentsHandler::endElement(const QString &namespaceURI, const QString &
 {
 	if (_tableRead == false)
 	{
+		DEBUG_COUT6("XmlContentsHandler::endElement. docDepth: ", _docDepth, ", localName: ", localName.toStdString(), ", qName: ", qName.toStdString());
+		
 		switch(_docDepth)
 		{
 		case not_in_doc:
@@ -175,17 +158,70 @@ bool XmlContentsHandler::endElement(const QString &namespaceURI, const QString &
 			if (localName == _nameTableRow)
 			{
 				_docDepth = table;
+				if (_row > 0 && _lastNotEmptyColumn > -1)
+				{
+					// Repeat the last row
+					for (int i = 1; i < _rowRepeat; i++)
+					{
+						for (int j = 0; j < _dataSet->columnCount(); j++)
+						{
+							(*_dataSet)[j].setValue(_row, (*_dataSet)[j].getCell(_row - 1).valueAsString());
+						}
+						_row++;
+					}
+				}
 				_row++;
 				// Starting next column.
 				_column = 0;
-				_colSpan = 0;
+				_lastNotEmptyColumn = -1;
+				_currentCell.clear();
+				_colRepeat = 1;
+				_rowRepeat = 1;
 			}
 			break;
 		case table_cell:
 			if (localName == _nameTableCell)
 			{
+				if (!_currentCell.isEmpty())
+				{
+					if (_row == 0)
+					{
+						// Deals with header
+						// First add columns that had no name
+						for (int i = _lastNotEmptyColumn + 1; i < _column; i++)
+						{
+							// Set some names for columns that have no header.
+							stringstream ss;
+							ss << "_col" << (i + 1);
+							_dataSet->createColumn(ss.str());
+						}
+						// Create the column with the current cell name
+						_dataSet->createColumn(_currentCell.toStdString());
+						// Repeat create column if necessary
+						for (int i = 1; i < _colRepeat; i++)
+						{
+							stringstream ss;
+							ss << "_col" << (_column + i + 1);
+							_dataSet->createColumn(ss.str());
+						}
+					}
+					else
+					{
+						for (int i = _lastNotEmptyColumn + 1; i < _column; i++)
+						{
+							// Set empty values
+							_dataSet->getOrCreate(i).setValue(_row - 1, string());
+						}
+						for (int i = 0; i < _colRepeat; i++)
+							_dataSet->getOrCreate(_column + i).setValue(_row - 1, _currentCell.toStdString());
+					}
+					_lastNotEmptyColumn = _column + _colRepeat - 1;
+				}
+				
 				_docDepth = table_row;
-				_column += _colSpan;
+				_column += _colRepeat;
+				_colRepeat = 1;
+				_currentCell.clear();
 			}
 			break;
 
@@ -210,16 +246,10 @@ bool XmlContentsHandler::characters(const QString &ch)
 
 	if (_tableRead == false)
 	{
-		// Always save the string.
-		if ((_docDepth == text) && (ch.isEmpty() == false))
+		if ((_docDepth == text) && (ch.isEmpty() == false) && _currentCell.isEmpty())
 		{
-			for (int column = _column; column < (_colSpan + _column); ++column)
-			{
-				if ((*_dataSet)[column].getCell(_row).xmlType() == odsType_unknown)
-					(*_dataSet)[column].setValue(_row, odsType_string, ch);
-				else
-					(*_dataSet)[column].setValue(_row, ch);
-			}
+			DEBUG_COUT2("Characters: ", ch.toStdString());
+			_currentCell = ch;
 		}
 	}
 	return true;
@@ -234,6 +264,12 @@ void XmlContentsHandler::resetDocument()
 	_docDepth = not_in_doc;
 	_row = 0;
 	_column = 0;
+	_lastNotEmptyColumn = -1;
+	_tableRead = false;
+	_lastType = odsType_unknown;
+	_colRepeat = 1;
+	_rowRepeat = 1;
+	
 	_dataSet->clear();
 }
 
@@ -293,10 +329,18 @@ XmlDatatype XmlContentsHandler::_setLastTypeGetValue(QString &value, const QXmlA
  * @param defaultValue The value to return if not found.
  * @return The found value or default.
  */
-int XmlContentsHandler::_findColspan(const QXmlAttributes &atts, int defaultValue)
+int XmlContentsHandler::_findColRepeat(const QXmlAttributes &atts, int defaultValue)
 {
 	int result = 0;
 	bool okay = false;
 	result = atts.value(_attCellRepeatCount).toInt(&okay);
+	return (okay) ? result : defaultValue;
+}
+
+int XmlContentsHandler::_findRowRepeat(const QXmlAttributes &atts, int defaultValue)
+{
+	int result = 0;
+	bool okay = false;
+	result = atts.value(_attRowRepeatCount).toInt(&okay);
 	return (okay) ? result : defaultValue;
 }

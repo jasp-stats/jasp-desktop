@@ -15,7 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+RegressionLogistic <- function(dataset=NULL, options, perform="run",
+                               callback=function(...) 0, ...) {
 
   # DATASET LOADING
   numericVars <- unlist(c(options[["covariates"]],
@@ -85,7 +86,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
     diff <- .diff(options, state[["options"]])
     with(diff, { # with(diff, {}) makes us need "<<-" to assign to global env
       if (!any(dependent, covariates, factors, wlsWeights, modelTerms,
-                includeIntercept, wlsWeights, method, entryPval, removalPval)) {
+                includeIntercept, wlsWeights, method)) {
         lrObj <<- state[["lrObj"]]
         modelSummary <<- state[["modelSummary"]]
 
@@ -132,7 +133,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
       }
     })
   } else if (!is.null(state)) {
-    lrObj <<- state[["lrObj"]]
+    lrObj <- state[["lrObj"]]
     modelSummary <- state[["modelSummary"]]
     estimatesTable <- state[["estimatesTable"]]
     confusionMatrix <- state[["confusionMatrix"]]
@@ -173,7 +174,7 @@ RegressionLogistic <- function(dataset=NULL, options, perform="run", callback=fu
   if (is.null(modelSummary)) {
     modelSummary <- .glmModelSummary(lrObj, options, perform, type = "binomial")
   }
-  
+
   if (is.null(estimatesTable) && options[["coeffEstimates"]]) {
     estimatesTable <- .glmEstimatesTable(lrObj, options, perform,
                                          type = "binomial")

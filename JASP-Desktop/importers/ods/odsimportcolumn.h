@@ -43,7 +43,7 @@ public:
 	// The constainer used to hold rows within the column.
 	typedef std::vector<ODSSheetCell>	Cases;
 
-	ODSImportColumn(ODSImportDataSet* importDataSet, int columnNumber);
+	ODSImportColumn(ODSImportDataSet* importDataSet, int columnNumber, std::string name);
 	virtual ~ODSImportColumn();
 
 	/**
@@ -85,21 +85,12 @@ public:
 	 */
 	void createSpace(size_t row);
 
-
-	/**
-	 * @brief setValue Inserts one cell value.
-	 * @param row Row to insert
-	 * @param type ODS data type.
-	 * @param data ODS cell value.
-	 */
-	void setValue(int row, XmlDatatype type, const QString& data);
-
 	/**
 	 * @brief setValue Inserts string value for cell, irrespective of type.
 	 * @param row
 	 * @param data
 	 */
-	void setValue(int row, const QString& data);
+	void setValue(int row, const std::string& data);
 
 	const ODSSheetCell &getCell(int row) const { return _rows.at(row); }
 

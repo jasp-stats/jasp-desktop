@@ -42,30 +42,12 @@ ODSImportDataSet::~ODSImportDataSet()
 }
 
 
-/**
- * @brief createSpace Ensure that we have enough columns for the passed value.
- * @param column The column number to check for.
- * @return The number of columns available. - Maybe greater than column.
- */
-size_t ODSImportDataSet::createSpace(int column)
+ODSImportColumn & ODSImportDataSet::createColumn(string name)
 {
-#ifndef QT_NO_DEBUG
-	size_t numAdded = 0;
-#endif
-	while(column >= columnCount())
-#ifndef QT_NO_DEBUG
-	{
-		numAdded++;
-#endif
-		addColumn(new ODSImportColumn(this, columnCount()));
-#ifndef QT_NO_DEBUG
-	}
-
-	if (numAdded != 0)
-		DEBUG_COUT7("ODSImportDataSet::createSpace(", column, ") - added ", numAdded, " column",
-				((numAdded != 1) ? "s" : ""), ".");
-#endif
-	return columnCount();
+	DEBUG_COUT2("ODSImportDataSet::createColumn: ", name);
+	ODSImportColumn* column = new ODSImportColumn(this, columnCount(), name);
+	addColumn(column);
+	return *column;
 }
 
 
@@ -77,6 +59,23 @@ size_t ODSImportDataSet::createSpace(int column)
 ODSImportColumn & ODSImportDataSet::operator [] (const int index)
 {
 	return static_cast<ODSImportColumn &>(*(_columns[index]));
+}
+
+/**
+ * @brief get or Create the underlying vector of the ImportDataSet.
+ * @param index The bracketed value.
+ * @return A reference to the indexed value.
+ */
+ODSImportColumn & ODSImportDataSet::getOrCreate (const int index)
+{
+	if (index < columnCount())
+		return static_cast<ODSImportColumn &>(*(_columns[index]));
+	else
+	{
+		stringstream ss;
+		ss << "_col" << columnCount() + 1;
+		return createColumn(ss.str());
+	}
 }
 
 
