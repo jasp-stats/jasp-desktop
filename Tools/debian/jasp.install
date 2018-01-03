@@ -1,4 +1,4 @@
-JASP                usr/lib/JASP
+jasp                usr/lib/JASP
 JASPEngine          usr/lib/JASP
 R/*                 usr/lib/JASP/R
 Resources/*         usr/lib/JASP/Resources
