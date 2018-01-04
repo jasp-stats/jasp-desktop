@@ -22,8 +22,7 @@
 
 #include <boost/signals2.hpp>
 #include <boost/bind.hpp>
-
-#include <jsoncpp/json/json.h>
+#include "jsonredirect.h"
 
 class Options;
 

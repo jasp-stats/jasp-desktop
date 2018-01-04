@@ -19,11 +19,9 @@
 #define OPTIONVARIABLE_H
 
 #include <string>
-
-#include <jsoncpp/json/json.h>
-
 #include "optionvariables.h"
 #include "common.h"
+#include "jsonredirect.h"
 
 class OptionVariable : public OptionVariables
 {

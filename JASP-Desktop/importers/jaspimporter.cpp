@@ -30,8 +30,7 @@
 //#include "libzip/config.h"
 #include "libzip/archive.h"
 #include "libzip/archive_entry.h"
-#include <jsoncpp/json/json.h>
-
+#include "jsonredirect.h"
 #include "filereader.h"
 #include "tempfiles.h"
 #include "exporters/jaspexporter.h"

@@ -28,6 +28,8 @@ macx:QMAKE_CXXFLAGS += -DBOOST_INTERPROCESS_SHARED_DIR_FUNC
 
 windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
+INCLUDEPATH += $$PWD/
+
 SOURCES += \
 	analysis.cpp \
 	analysisloader.cpp \
@@ -117,9 +119,12 @@ HEADERS += \
 	tempfiles.h \
 	utils.h \
 	version.h \
-    options/optionvariablei.h
+    options/optionvariablei.h \
+    jsonredirect.h
 
 macx | windows {
+    DEFINES += JASP_NOT_LINUX
+
     SOURCES += \
             lib_json/json_internalarray.inl \
             lib_json/json_internalmap.inl \

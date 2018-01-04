@@ -46,6 +46,10 @@ linux {
     QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
 }
 
+macx | windows { DEFINES += JASP_NOT_LINUX }
+
+INCLUDEPATH += $$PWD/../JASP-Common/
+
 include(JASP-Desktop.pri)
 
 # List all pri files in the analysis
