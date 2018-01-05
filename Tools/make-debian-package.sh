@@ -3,10 +3,10 @@
 MajorVersion=`grep -oP		'VersionMajor\(\K[0123456789]+(?=\))' ../JASP-Common/appinfo.cpp`
 MinorVersion=`grep -oP		'VersionMinor\(\K[0123456789]+(?=\))' ../JASP-Common/appinfo.cpp` 
 RevisionVersion=`grep -oP	'VersionRevision\(\K[0123456789]+(?=\))' ../JASP-Common/appinfo.cpp`
-BuildVersion=`grep -oP		'VersionBuildNumber\(\K[0123456789]+(?=\))' ../JASP-Common/appinfo.cpp`
+#BuildVersion=`grep -oP		'VersionBuildNumber\(\K[0123456789]+(?=\))' ../JASP-Common/appinfo.cpp`
 
-JASPFolder=jasp-$MajorVersion.$MinorVersion.$RevisionVersion.0
-JASPTar=jasp_$MajorVersion.$MinorVersion.$RevisionVersion.0.orig.tar.gz
+JASPFolder=jasp-$MajorVersion.$MinorVersion.$RevisionVersion
+JASPTar=jasp_$MajorVersion.$MinorVersion.$RevisionVersion.orig.tar.gz
 
 echo Making debian package $JASPFolder
 
