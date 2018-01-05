@@ -355,14 +355,12 @@ OTHER_FILES += \
     $$PWD/html/css/theme-spss.css \
     $$PWD/html/index.html \
     $$PWD/html/js/analysis.js \
-    $$PWD/html/js/backbone-min-1.1.2.js \
     $$PWD/html/js/displaydefs.js \
     $$PWD/html/js/image.js \
     $$PWD/html/js/images.js \
     $$PWD/html/js/jaspwidget.js \
     $$PWD/html/js/jquery-1.9.1.js \
     $$PWD/html/js/jquery-ui-1.10.1.custom.js \
-    $$PWD/html/js/jquery-ui-1.10.1.custom.min.js \
     $$PWD/html/js/main.js \
     $$PWD/html/js/table.js \
     $$PWD/html/js/tables.js \

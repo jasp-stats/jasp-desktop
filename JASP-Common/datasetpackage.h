@@ -21,10 +21,10 @@
 #include "common.h"
 #include "dataset.h"
 #include "version.h"
-#include "lib_json/json.h"
 #include <map>
-
 #include "boost/signals2.hpp"
+#include "jsonredirect.h"
+
 
 class DataSetPackage
 {

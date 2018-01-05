@@ -38,7 +38,7 @@ macx {
 }
 
 linux {
-
+        LIBS += -ljsoncpp
 	isEmpty(_R_HOME):_R_HOME = /usr/lib/R
 	R_EXE  = $$_R_HOME/bin/R
 }
@@ -60,6 +60,9 @@ windows {
 	isEmpty(_R_HOME):_R_HOME = $$OUT_PWD/../R
 	R_EXE  = $$_R_HOME/bin/$$ARCH/R
 }
+
+macx | windows { DEFINES += JASP_NOT_LINUX }
+INCLUDEPATH += $$PWD/../JASP-Common/
 
 QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
@@ -96,6 +99,8 @@ InstallJASPRPackage.commands += \"$$R_EXE\" CMD INSTALL --library=$$OUT_PWD/../R
 
 QMAKE_EXTRA_TARGETS += InstallJASPRPackage
 PRE_TARGETDEPS      += InstallJASPRPackage
+
+QMAKE_CLEAN += $$OUT_PWD/../R/library/*
 
 SOURCES += main.cpp \
 	engine.cpp \

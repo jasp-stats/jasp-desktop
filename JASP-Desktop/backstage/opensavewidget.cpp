@@ -23,6 +23,7 @@
 #include <QFileInfo>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <iostream>
 
 OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 {

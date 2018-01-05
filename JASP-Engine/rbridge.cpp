@@ -19,10 +19,10 @@
 
 #include <boost/foreach.hpp>
 
-#include "../JASP-Common/base64.h"
-#include "../JASP-Common/lib_json/json.h"
-#include "../JASP-Common/sharedmemory.h"
-#include "../JASP-Common/appinfo.h"
+#include "base64.h"
+#include "jsonredirect.h"
+#include "sharedmemory.h"
+#include "appinfo.h"
 
 RInside *rbridge_rinside;
 DataSet *rbridge_dataSet;
