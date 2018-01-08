@@ -1306,6 +1306,18 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		}
 
 		regression[["data"]] <- regression.result
+		
+		# Check whether variables in the regression model are redundant
+		for(i in 1:length(regression$data)) {
+		  if (regression$data[[i]]$Coefficient=="NA") {
+		    # Add footnote
+		    footnotes <- .newFootnotes()
+		    .addFootnote(footnotes, "The regression coefficient for one or more of the variables specified in the regression model could not be estimated (that is, the coefficient is not available (NA)). The most likely reasons for this to occur are multicollinearity or a large number of missing values.", symbol = "\u207A")
+		    # Add footnote symbol to name of the redundant variable
+		    regression$data[[i]]$Name <- paste0(regression$data[[i]]$Name, "\u207A")
+		  }
+		}
+		
 		regression[["footnotes"]] <- as.list(footnotes)
 		results[["regression"]] <- regression
 
@@ -1380,11 +1392,32 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					}
 
 					rownames.covmatrix <- variables.model
-					rownames(model.covmatrix) <- rownames.covmatrix
 					colnames.covmatrix <- variables.model
+					
+					# Check whether variables in the regression model are redundant
+					for(i in 1:length(lm.model[[1]]$lm.fit$coefficients)) {
+					  if (is.na(lm.model[[1]]$lm.fit$coefficients[i])) {
+					    # If so, model.covmatrix does not include this variable -> Add row and column with NA as "values"
+					    model.covmatrix<-cbind(model.covmatrix, NA)
+					    model.covmatrix<-rbind(model.covmatrix, NA)
+					    # Add footnote for this case
+					    footnotes <- .newFootnotes()
+					    .addFootnote(footnotes = footnotes, text = "One or more of the variables specified in the regression model are redundant. Therefore, they are dropped from the model covariance matrix.", symbol = "\u207A")
+					    covmatrix[["footnotes"]] <- as.list(footnotes)
+					    # Add footnote symbol to name of the redundant variable (if-statement needed as intercept is part of the coefficients but not of cov.matrix)
+					    if (options$includeConstant) {
+					      rownames.covmatrix[i-1] <- paste0(rownames.covmatrix[i-1], "\u207A")
+					    }
+					    else {
+					      rownames.covmatrix[i] <- paste0(rownames.covmatrix[i], "\u207A")
+					    }
+					  }
+					}
+					
+					rownames(model.covmatrix) <- rownames.covmatrix
 					colnames(model.covmatrix) <- colnames.covmatrix
-
-
+					
+					
 					for (row.variable in rownames.covmatrix) {
 
 						if (grepl(":", row.variable)) {
@@ -1431,7 +1464,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 								covmatrix.row[[col.variable.name]] <- ""
 
 							} else {
-								covmatrix.row[[col.variable.name]] <- .clean(model.covmatrix[row.index, col.index])
+
+							  # For consistent representation of NA with the coefficients table
+							  if (is.na(model.covmatrix[row.index, col.index])) {
+							    covmatrix.row[[col.variable.name]] <- 'NA'
+							  } else {
+							    covmatrix.row[[col.variable.name]] <- .clean(model.covmatrix[row.index, col.index])
+							  }
 							}
 
 						}
