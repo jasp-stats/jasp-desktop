@@ -503,6 +503,8 @@ void MainWindow::packageDataChanged(DataSetPackage *package,
 									map<string, string> &changeNameColumns)
 {
 	_tableModel->setDataSet(_package->dataSet);
+	triggerQmlColumnReload();
+	_tableModel->setDataSet(_package->dataSet);
 	//TMP ui->variablesPage->setDataSet(_package->dataSet);
 
 	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns);
@@ -1127,6 +1129,7 @@ void MainWindow::populateUIfromDataSet()
 {
 	_tableModel->setDataSet(_package->dataSet);
 	triggerQmlColumnReload();
+	_tableModel->setDataSet(_package->dataSet);
 	//TMP ui->variablesPage->setDataSet(_package->dataSet);
 
 	//TMP ui->tableView->adjustAfterDataLoad(true);

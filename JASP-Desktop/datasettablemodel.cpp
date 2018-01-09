@@ -71,9 +71,16 @@ QVariant DataSetTableModel::data(const QModelIndex &index, int role) const
 	if (_dataSet == NULL)
 		return QVariant();
 
-    if (role == Qt::DisplayRole)
+	int column = -1;
+
+	if (role == Qt::DisplayRole)
+		column = index.column();
+	else if(role >= Qt::UserRole)
+		column = role - Qt::UserRole;
+
+	if(column > -1)
 	{
-		QString value = tq(_dataSet->column(index.column())[index.row()]);
+		QString value = tq(_dataSet->column(column)[index.row()]);
 		return QVariant(value);
 	}
 
@@ -147,6 +154,15 @@ QStringList DataSetTableModel::userRoleNames() const
 			res[i.key()] = i.value();
 	}
 	return res.values();
+}
+
+QList<int> DataSetTableModel::userRoles() const
+{
+	QList<int> UserRoles;
+	for(int i=0; i<columnCount(); i++)
+		UserRoles << (Qt::UserRole + i);
+
+	return UserRoles;
 }
 
 bool DataSetTableModel::setData(const QModelIndex &index, const QVariant &value, int role)

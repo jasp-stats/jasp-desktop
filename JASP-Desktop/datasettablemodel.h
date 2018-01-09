@@ -49,6 +49,7 @@ public:
 
 	virtual QHash<int, QByteArray> roleNames() const OVERRIDE;
 	Q_INVOKABLE QStringList userRoleNames() const;
+	Q_INVOKABLE QList<int> userRoles() const;
     
 signals:
 
