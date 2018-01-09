@@ -38,8 +38,6 @@ DataSetTableModel::DataSetTableModel(QObject *parent) :
 	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
 	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
 	_scaleIcon = QIcon(":/icons/variable-scale.svg");
-
-	//qmlRegisterType<DataSetTableModel>("JASP.DataSetTableModel", 1, 0, "DataSetTableModel");
 }
 
 void DataSetTableModel::setDataSet(DataSet* dataSet)
@@ -85,6 +83,41 @@ QVariant DataSetTableModel::data(const QModelIndex &index, int role) const
 	}
 
     return QVariant();
+}
+
+QVariant DataSetTableModel::columnTitle(int column) const
+{
+	if(column >= 0)
+	{
+		QString value = tq(_dataSet->column(column).name());
+		return QVariant(value);
+	}
+	else
+		return QVariant();
+}
+
+QVariant DataSetTableModel::columnIcon(int column) const
+{
+	if(column >= 0)
+	{
+		Column &columnref = _dataSet->column(column);
+
+		switch (columnref.columnType())
+		{
+		case Column::ColumnTypeNominalText:
+			return QVariant(QString("../icons/variable-nominal-text.svg"));
+		case Column::ColumnTypeNominal:
+			return QVariant(QString("../icons/variable-nominal.svg"));
+		case Column::ColumnTypeOrdinal:
+			return QVariant(QString("../icons/variable-ordinal.svg"));
+		case Column::ColumnTypeScale:
+			return QVariant(QString("../icons/variable-scale.svg"));
+		default:
+			return QVariant();
+		}
+	}
+	else
+		return QVariant();
 }
 
 QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientation, int role) const
@@ -154,15 +187,6 @@ QStringList DataSetTableModel::userRoleNames() const
 			res[i.key()] = i.value();
 	}
 	return res.values();
-}
-
-QList<int> DataSetTableModel::userRoles() const
-{
-	QList<int> UserRoles;
-	for(int i=0; i<columnCount(); i++)
-		UserRoles << (Qt::UserRole + i);
-
-	return UserRoles;
 }
 
 bool DataSetTableModel::setData(const QModelIndex &index, const QVariant &value, int role)

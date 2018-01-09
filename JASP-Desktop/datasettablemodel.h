@@ -38,8 +38,8 @@ public:
 
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
-    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
-    virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const OVERRIDE;
+	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
+	virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const OVERRIDE;
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role) OVERRIDE;
     virtual Qt::ItemFlags flags(const QModelIndex &index) const OVERRIDE;
 
@@ -49,7 +49,8 @@ public:
 
 	virtual QHash<int, QByteArray> roleNames() const OVERRIDE;
 	Q_INVOKABLE QStringList userRoleNames() const;
-	Q_INVOKABLE QList<int> userRoles() const;
+	Q_INVOKABLE QVariant columnTitle(int column) const;
+	Q_INVOKABLE QVariant columnIcon(int column) const;
     
 signals:
 

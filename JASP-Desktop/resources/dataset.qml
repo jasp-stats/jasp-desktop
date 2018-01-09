@@ -1,5 +1,6 @@
 import QtQuick.Controls 1.4
-import QtQuick 2.0
+import QtQuick.Controls.Styles 1.4
+import QtQuick 2.7
 
 Rectangle {
     id: rootRectangle
@@ -15,20 +16,47 @@ Rectangle {
 
     TableView {
 
-      /*  TableViewColumn
+        headerDelegate: Rectangle
         {
-            width: 220
-            role: "column_0"
-            title: "column_0"
+            Gradient {
+                id: headerGradient
+                GradientStop { position: 0.6; color: "#F0F0F0" }
+                GradientStop { position: 0.7; color: "#E0E0E0" }
+            }
+
+            id: colHeader
+            height: headerText.implicitHeight * 1.1
+            width: headerText.implicitWidth * 1
+            gradient: headerGradient
+
+            Button
+            {
+                id: colIcon
+
+                anchors.top: colHeader.top
+                anchors.bottom: colHeader.bottom
+                anchors.left: colHeader.left
+
+                iconSource: dataSetModel.columnIcon(styleData.column)
+                width: height
+                style: ButtonStyle
+                {
+                    background: Rectangle { anchors.fill: parent; gradient: headerGradient}
+                }
+            }
+
+            Text
+            {
+                id: headerText
+                anchors.top: colHeader.top
+                anchors.bottom: colHeader.bottom
+                anchors.left: colIcon.right
+                anchors.right: colHeader.right
+                text: dataSetModel.columnTitle(styleData.column);
+                leftPadding: 10
+            }
         }
 
-        TableViewColumn
-        {
-            width: 220
-            role: "column_1"
-            title: "column_1"
-        }
-*/
         id: dataSetTableView
         objectName: "dataSetTableView"
         anchors.top: blauwRectangle.bottom
@@ -51,7 +79,6 @@ Rectangle {
             for(var i=0; i<roleList.length; i++)
             {
                 dataSetTableView.addColumn(columnComponent.createObject(dataSetTableView, { "role": roleList[i], "title": roleList[i]}))
-                console.log("Column rol " + i+ " name: " + roleList[i] + " added!")
             }
 
             return temp
