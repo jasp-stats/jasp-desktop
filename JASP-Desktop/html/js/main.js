@@ -7,7 +7,7 @@ window.getPPI = function () {
 }
 
 
-
+var jasp;
 
 $(document).ready(function () {
 	var d = new Date();
@@ -16,7 +16,11 @@ $(document).ready(function () {
 	if ((month == 11 && day >= 19) || (month == 0 && day <= 5))
 		$("#note").css("background-image", "url('img/snow.gif')");
 	
-	var ua = navigator.userAgent.toLowerCase();
+    var ch = new QWebChannel(qt.webChannelTransport, function (channel) {
+                // now you retrieve your object
+                jasp = channel.objects.jasp;
+            });
+    var ua = navigator.userAgent.toLowerCase();
 
 	if (ua.indexOf("windows") !== -1)
 		$("body").addClass("windows")
@@ -24,7 +28,8 @@ $(document).ready(function () {
 	// Global settings for analysis output. Add here if making new setting.
 	window.globSet = {
 		"pExact" : false,
-		"decimals": ""
+        "decimals": "",
+        "tempFolder": ""
 	}
 
 	var selectedAnalysisId = -1;
@@ -39,7 +44,8 @@ $(document).ready(function () {
 	var showInstructions = false;
 	
 	var analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
-	
+
+
 	window.reRenderAnalyses = function () {
 		analyses.reRender();
 	}
@@ -59,32 +65,9 @@ $(document).ready(function () {
 		}
 	}
 
-	window.setAppYear = function () {
-		var d = new Date();
-		var year = d.getFullYear();
-		$(".app-year").text(year);
-	}
-
 	window.setAppVersion = function (version) {
 		$(".app-version").text("Version " + version);
 	}
-
-	window.setNewVersion = function (version) {
-		$(".new-version").text("New version available " + version);
-	}
-	
-	window.showDownLoadButton = function (show, href) {
-		
-		$(".btn-primary").attr('href',href)
-		if (show)
-			$(".download-newversion-button").show();
-		else
-			$(".download-newversion-button").hide();
-	}
-	
-    window.setAppBuildDate = function(builddate){
-       $(".app-builddate").text(builddate);
-    }
 
     window.noInstructions = function () {
         $('#instructions').text("");
@@ -545,8 +528,6 @@ $(document).ready(function () {
 	});
 
 	$("body").click(window.unselectByClickingBody)
-
-
 })
 
 var wrapHTML = function (html, exportParams) {

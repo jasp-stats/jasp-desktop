@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -31,11 +31,8 @@
 
 #include <windows.h>
 
-#else
-#include <boost/interprocess/sync/named_semaphore.hpp>
 #endif
 
-#include <boost/interprocess/sync/interprocess_mutex.hpp>
 
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/container/string.hpp>

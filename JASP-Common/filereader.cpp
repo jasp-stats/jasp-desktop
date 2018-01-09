@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -236,27 +236,6 @@ char* FileReader::readAllData(int blockSize, int &errorCode)
 	return data;
 }
 
-QString FileReader::readAllData(int &errorCode)
-{
-	int size = bytesAvailable();
-	if (size == 0)
-		return NULL;
-
-	const size_t blockSize = 4096;
-
-	char *data = new char[ blockSize  + 1];
-
-	errorCode = 0;
-	int count = 0;
-	QString result;
-	while (((count = readData(data, blockSize, errorCode)) > 0) && (errorCode == 0))
-	{
-		data[count] = '\0';
-		result.append(data);
-	}
-
-	return result;
-}
 
 
 void FileReader::close()

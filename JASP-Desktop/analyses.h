@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -55,7 +55,6 @@ signals:
 	void analysisSaveImage(Analysis *source);
 	void analysisImageSaved(Analysis *source);
 	void analysisResultsChanged(Analysis *source);
-	void analysisUserDataLoaded(Analysis *source);
 	void analysisAdded(Analysis *source);
 
 private slots:
@@ -76,7 +75,6 @@ private:
 	void analysisSaveImageHandler(Analysis *analysis, Json::Value &options);
 	void analysisImageSavedHandler(Analysis *analysis);
 	void analysisResultsChangedHandler(Analysis *analysis);
-	void analysisUserDataLoadedHandler(Analysis *analysis);
 
 	QList<Analysis*> _analyses;
 

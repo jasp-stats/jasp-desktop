@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -241,14 +241,7 @@ void Utils::remove(vector<string> &target, const vector<string> &toRemove)
 {
 	BOOST_FOREACH (const string &remove, toRemove)
 	{
-		vector<string>::iterator itr = target.begin();
-		while (itr != target.end())
-		{
-			if (*itr == remove)
-				target.erase(itr);
-			else
-				itr++;
-		}
+		target.erase(std::remove_if(target.begin(), target.end(), [&remove](const string& str){return (str == remove);}), target.end());
 	}
 }
 

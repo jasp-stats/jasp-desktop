@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -49,12 +49,12 @@ Option *OptionInteger::clone() const
 	return new OptionInteger(value());
 }
 
-int OptionInteger::min() const
+int OptionInteger::minimum() const
 {
   return _min;
 }
 
-int OptionInteger::max() const
+int OptionInteger::maximum() const
 {
   return _max;
 }

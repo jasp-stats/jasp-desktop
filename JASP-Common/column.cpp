@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ Column::Column(managed_shared_memory *mem) :
 	_blocks(std::less<ull>(), mem->get_segment_manager()),
 	_labels(mem)
 {
-	id = ++count;
+	_id = ++count;
 	_mem = mem;
 	_rowCount = 0;
 	_columnType = Column::ColumnTypeNominal;
@@ -49,7 +49,7 @@ Column::Column(const Column &col) :
 	_blocks(col._blocks),
 	_labels(col._labels)
 {
-	id = ++count;
+	_id = ++count;
 	_mem = col._mem;
 	_rowCount = col._rowCount;
 	_columnType = col._columnType;
@@ -747,6 +747,11 @@ string Column::name() const
 	return std::string(_name.begin(), _name.end());
 }
 
+int Column::id() const
+{
+	return _id;
+}
+
 void Column::setName(string name)
 {
 	_name = String(name.begin(), name.end(), _mem->get_segment_manager());
@@ -993,7 +998,7 @@ void Column::append(int rows)
 
 		DataBlock *newBlock = _mem->construct<DataBlock>(anonymous_instance)();
 
-		int toInsert = std::min(rowsLeft, DataBlock::capacity());
+		int toInsert = min(rowsLeft, DataBlock::capacity());
 		newBlock->insert(toInsert);
 		rowsLeft -= toInsert;
 
@@ -1087,7 +1092,7 @@ void Column::_setRowCount(int rowCount)
 		truncate(this->rowCount() - rowCount);
 }
 
-Column::Ints::IntsStruct()
+Column::Ints::IntsStruct::IntsStruct()
 {
 }
 
@@ -1161,6 +1166,10 @@ int& Column::Ints::iterator::dereference() const
 	return _blockItr->second->Data[_currentPos].i;
 }
 
+Column::Doubles::DoublesStruct::DoublesStruct()
+{
+}
+
 Column::Doubles::iterator Column::Doubles::begin()
 {
 	Column *parent = getParent();
@@ -1181,9 +1190,6 @@ Column::Doubles::iterator::iterator(BlockMap::iterator blockItr, int pos)
 	_currentPos = pos;
 }
 
-Column::Doubles::DoublesStruct()
-{
-}
 
 Column *Column::DoublesStruct::getParent() const
 {

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -39,7 +39,7 @@ DataSetTableModel::DataSetTableModel(QObject *parent) :
 	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
 	_scaleIcon = QIcon(":/icons/variable-scale.svg");
 
-	qmlRegisterType<DataSetTableModel>("JASP.DataSetTableModel", 1, 0, "DataSetTableModel");
+	//qmlRegisterType<DataSetTableModel>("JASP.DataSetTableModel", 1, 0, "DataSetTableModel");
 }
 
 void DataSetTableModel::setDataSet(DataSet* dataSet)
@@ -49,12 +49,6 @@ void DataSetTableModel::setDataSet(DataSet* dataSet)
     endResetModel();
 }
 
-void DataSetTableModel::clearDataSet()
-{
-	beginResetModel();
-	_dataSet = NULL;
-	endResetModel();
-}
 
 int DataSetTableModel::rowCount(const QModelIndex &parent) const
 {

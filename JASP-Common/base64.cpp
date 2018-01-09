@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -34,7 +34,9 @@ string Base64::encode(const string &prefix, const string &in, const char *encodi
 	if (in.length() % 3)
 		triplets++;
 
-	char buffer[prefix.size() + 4 * triplets];
+	const int p = prefix.size() + 4 * triplets;
+
+	char* buffer = new char[p];
 
 	size_t count;
 	for (count = 0; count < prefix.length(); count++)
@@ -43,7 +45,9 @@ string Base64::encode(const string &prefix, const string &in, const char *encodi
 	count += base64_encode_block(in.c_str(), in.length(), &buffer[count], &state);
 	count += base64_encode_blockend(&buffer[count], &state);
 
-	return string(buffer, count);
+	string result(buffer, count);
+	delete[] buffer;
+	return result;
 }
 
 string Base64::decode(const string &prefix, const string &in, const char *encoding)
@@ -56,10 +60,13 @@ string Base64::decode(const string &prefix, const string &in, const char *encodi
 	if (length % 4)
 		quads++;
 
-	char outBuf[3 * quads];
+	char* outBuf = new char[3 * quads];
 	const char *inBuf = &in.c_str()[prefix.size()];
 
 	int count = base64_decode_block(inBuf, length, outBuf, &state);
 
-	return string(outBuf, count);
+	string result(outBuf, count);
+	delete[] outBuf;
+
+	return result;
 }

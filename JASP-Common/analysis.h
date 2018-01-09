@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -41,11 +41,10 @@ public:
 	boost::signals2::signal<void (Analysis *source, Json::Value &options)> saveImage;
 	boost::signals2::signal<void (Analysis *source)> imageSaved;
 	boost::signals2::signal<void (Analysis *source)> resultsChanged;
-	boost::signals2::signal<void (Analysis *source)> userDataLoaded;
 
 	void setResults(Json::Value results, int progress = -1);
 	void setImageResults(Json::Value results);
-	void setUserData(Json::Value userData, bool silient = false);
+	void setUserData(Json::Value userData);
 	const Json::Value &results() const;
 	const Json::Value &userData() const;
 	Json::Value asJSON() const;

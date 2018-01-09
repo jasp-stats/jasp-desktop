@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -33,6 +33,13 @@ int main(int argc, char *argv[])
 
 	QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
 
-	Application a(argc, argv);
-	return a.exec();
+	try
+	{
+		Application a(argc, argv);
+		return a.exec();
+	}
+	catch(...)
+	{
+	}
+	return -1;
 }

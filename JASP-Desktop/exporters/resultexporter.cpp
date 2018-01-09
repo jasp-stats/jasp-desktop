@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 University of Amsterdam
+// Copyright (C) 2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 #include <QFile>
 #include <QTextDocument>
 #include <QPrinter>
-#include <QWebView>
+#include <QWebEngineView>
 
 ResultExporter::ResultExporter()
 {
@@ -56,7 +56,7 @@ void ResultExporter::saveDataSet(const std::string &path, DataSetPackage* packag
 		//Next code could be a hack to show plots in pdf
 		//QUrl url = QUrl::fromLocalFile(QDir::current().absoluteFilePath("htmloutput.html"));
 		//QUrl url = QUrl::fromLocalFile(_transferFile);
-		//QWebView wdocument;
+		//QWebEngineView wdocument;
 		//wdocument.setHtml(htmlContent, url); // str1 is the html file stored as QString.
 
 		QTextDocument *document = new QTextDocument();

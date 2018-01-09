@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ class OptionNumber : public OptionI<double>
 {
 public:
 	OptionNumber();
-	OptionNumber(double value, double min = -999999, double max = 999999, std::string format = "");
+	OptionNumber(double value, double minimum = -999999, double maximum = 999999, std::string format = "");
 
 	virtual void init(const Json::Value &data) OVERRIDE;
 
@@ -36,8 +36,8 @@ public:
 	virtual void set(const Json::Value& value) OVERRIDE;
 	virtual Option* clone() const OVERRIDE;
 
-	double min() const;
-	double max() const;
+	double minimum() const;
+	double maximum() const;
 
 	std::string format() const;
 

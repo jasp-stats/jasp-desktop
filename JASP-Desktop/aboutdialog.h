@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -21,11 +21,15 @@
 
 #include <QDialog>
 #include <QAbstractButton>
-#include <QWebView>
+#include <QWebEngineView>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QUrl>
+
+#include "aboutdialogjsinterface.h"
+
+class AboutDialogJsInterface;
 
 namespace Ui {
 class AboutDialog;
@@ -34,20 +38,14 @@ class AboutDialog;
 class AboutDialog : public QDialog
 {
 	Q_OBJECT
-
+	friend class AboutDialogJsInterface;
 public:
 	explicit AboutDialog(QWidget *parent = 0);
-	~AboutDialog();
+	~AboutDialog();	
 	
-signals:
-	void closeWindow();
-
 private slots:
-	void on_buttonBox_clicked(QAbstractButton *button);
 	void aboutPageLoaded(bool success);
 	void downloadFinished();
-	void linkClickedSlot(QUrl url);
-	void closeWindowHandler();
 
 private:
 	void checkForJaspUpdate();
@@ -55,6 +53,9 @@ private:
 	QNetworkAccessManager *m_network_manager;	// make the HTTP GET request
 	QNetworkReply *m_network_reply;
 	QByteArray *m_pBuffer;
+	
+	AboutDialogJsInterface *m_aboutDialogJsInterface;
+	
 };
 
 #endif // ABOUTDIALOG_H

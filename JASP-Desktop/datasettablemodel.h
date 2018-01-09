@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -29,13 +29,12 @@
 class DataSetTableModel : public QAbstractTableModel
 {
     Q_OBJECT
-	Q_PROPERTY(QStringList userRoleNames READ userRoleNames)
 
 public:
     explicit DataSetTableModel(QObject *parent = 0);
 
     void setDataSet(DataSet *dataSet);
-	void clearDataSet();
+	void clearDataSet() { setDataSet(NULL); }
 
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
@@ -49,7 +48,7 @@ public:
 
 
 	virtual QHash<int, QByteArray> roleNames() const OVERRIDE;
-	QStringList userRoleNames() const;
+	Q_INVOKABLE QStringList userRoleNames() const;
     
 signals:
 

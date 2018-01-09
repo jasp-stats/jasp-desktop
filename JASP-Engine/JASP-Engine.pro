@@ -1,5 +1,5 @@
 
-#QT -= core
+QT += core
 QT -= gui
 CURRENT_R_VERSION = 3.3
 
@@ -17,13 +17,22 @@ TEMPLATE = app
 
 DEPENDPATH = ..
 
-PRE_TARGETDEPS += ../libJASP-Common.a
+PRE_TARGETDEPS += ../JASP-Common
 
 LIBS += -L.. -lJASP-Common
 
-windows:LIBS += -lboost_filesystem-mgw48-mt-1_64 -lboost_system-mgw48-mt-1_64 -larchive.dll
-   macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz
-  linux:LIBS += -lboost_filesystem    -lboost_system    -larchive
+LIBS += -lJASP-R-Interface
+
+windows:CONFIG(ReleaseBuild) {
+windows:LIBS += -llibboost_filesystem-vc141-mt-1_64 -libboost_system-vc141-mt-1_64 -larchive.dll
+}
+
+windows:CONFIG(DebugBuild) {
+windows:LIBS += -llibboost_filesystem-vc141-mt-gd-1_64 -llibboost_system-vc141-mt-gd-1_64 -larchive.dll
+}
+
+macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz
+linux:LIBS += -lboost_filesystem    -lboost_system    -larchive
 
 _R_HOME = $$(R_HOME)
 
@@ -44,15 +53,10 @@ linux {
 }
 
 windows {
-
-	COMPILER_DUMP = $$system(g++ -dumpmachine)
-	contains(COMPILER_DUMP, x86_64-w64-mingw32) {
-
-		ARCH = x64
-
-	} else {
-
+	contains(QT_ARCH, i386) {
 		ARCH = i386
+	} else {
+		ARCH = x64
 	}
 
 	INCLUDEPATH += ../../boost_1_64_0
@@ -70,7 +74,7 @@ macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 macx:QMAKE_CXXFLAGS += -stdlib=libc++
 
-win32:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
+win32:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__
 
 INCLUDEPATH += \
 	$$_R_HOME/include \
@@ -104,21 +108,12 @@ QMAKE_CLEAN += $$OUT_PWD/../R/library/*
 
 SOURCES += main.cpp \
 	engine.cpp \
-	rbridge.cpp \
-	RInside/MemBuf.cpp \
-	RInside/RInside.cpp
+    rbridge.cpp
 
 HEADERS += \
 	engine.h \
-	rbridge.h \
-	RInside/Callbacks.h \
-	RInside/MemBuf.h \
-	RInside/RInside.h \
-	RInside/RInsideAutoloads.h \
-	RInside/RInsideCommon.h \
-	RInside/RInsideConfig.h \
-	RInside/RInsideEnvVars.h
-	
+    rbridge.h
+
 OTHER_FILES  += \
 	JASP/R/ancova.R \
 	JASP/R/ancovabayesian.R \
