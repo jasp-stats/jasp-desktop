@@ -1727,17 +1727,15 @@ NetworkAnalysis <- function (
 
 	if (Sys.getenv("RSTUDIO") == "1") {
 
-		fullPathpng <- tempfile(fileext = ".png")
+		pathpng <- tempfile(fileext = ".png")
 
 	} else { # code from writeImage()
 
 		location <- .requestTempFileNameNative("png")
-		relativePathpng <- location$relativePath
-		fullPathpng <- paste(location$root, relativePathpng, sep="/")
-		base::Encoding(fullPathpng) <- "UTF-8"
-
+		pathpng <- location$relativePath
+		base::Encoding(pathpng) <- "UTF-8"
 	}
-	return(fullPathpng)
+	return(pathpng)
 }
 
 # perhaps move to common?

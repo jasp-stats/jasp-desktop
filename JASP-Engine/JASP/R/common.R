@@ -22,6 +22,13 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 	resultsMeta <- rjson::fromJSON(resultsMeta)
 	stateKey <- rjson::fromJSON(stateKey)
 
+	if (base::exists(".requestStateFileNameNative")) {
+		location <- .fromRCPP(".requestStateFileNameNative")
+		root <- location$root
+		base::Encoding(root) <- "UTF-8"
+		setwd(root)
+	}
+
 	analysis <- eval(parse(text=name))
 	
 	env <- new.env()
@@ -1470,25 +1477,19 @@ isTryError <- function(obj){
 		location <- .fromRCPP(".requestStateFileNameNative")
 
 		relativePath <- location$relativePath
-		root <- location$root
 		
 		# when run in jasptools do not save the state, but store it internally
 		searchPath <- search()
 		if ("package:jasptools" %in% searchPath) {
 			jasptools:::.setInternal("state", state)
-			return(list(relativePath = relativePath, root = root))
+			return(list(relativePath = relativePath))
 		}
 
 		base::Encoding(relativePath) <- "UTF-8"
-		base::Encoding(root) <- "UTF-8"
-
-		oldwd <- getwd()
-		setwd(root)
-		on.exit(setwd(oldwd))
 		
 		try(suppressWarnings(base::save(state, file=relativePath, compress=FALSE)), silent = FALSE)
 	}
-  result <- list(relativePath = relativePath, root = root)
+  result <- list(relativePath = relativePath)
   return(result)
 }
 
@@ -1501,15 +1502,9 @@ isTryError <- function(obj){
 		location <- .fromRCPP(".requestStateFileNameNative")
 
 		relativePath <- location$relativePath
-		root <- location$root
 
 		base::Encoding(relativePath) <- "UTF-8"
-		base::Encoding(root) <- "UTF-8"
 
-		oldwd <- getwd()
-		setwd(root)
-		on.exit(setwd(oldwd))
-		
 		base::tryCatch(
 		  base::load(relativePath),
 		  error=function(e) e,
@@ -1843,12 +1838,8 @@ callback <- function(results=NULL, progress=NULL) {
 		
 	# create png file location
 	location <- .fromRCPP(".requestTempFileNameNative", "png")
-	root <- location$root
 	relativePath <- location$relativePath
 	base::Encoding(relativePath) <- "UTF-8"
-	base::Encoding(root) <- "UTF-8"
-
-	setwd(root)
 
 	grDevices::png(filename=relativePath, width=width * pngMultip,
 								height=height * pngMultip, bg="transparent", 
@@ -2158,12 +2149,12 @@ as.list.footnotes <- function(footnotes) {
 	location <- .fromRCPP(".requestTempFileNameNative", "png")
 	relativePathpng <- location$relativePath
 	base::Encoding(relativePathpng) <- "UTF-8"
-
 	root <- location$root
 	base::Encoding(root) <- "UTF-8"
 	oldwd <- getwd()
 	setwd(root)
 	on.exit(setwd(oldwd))
+
 	# Open graphics device and plot
 	grDevices::png(filename=relativePathpng, width=width * pngMultip,
 	               height=height * pngMultip, bg="transparent", 
@@ -2195,11 +2186,6 @@ saveImage <- function(plotName, format, height, width){
 
 	# create file location string
 	location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
-	root <- location$root
-	base::Encoding(root) <- "UTF-8"
-	oldwd <- getwd()
-	setwd(root)
-	on.exit(setwd(oldwd))
 	
 	# Get file size in inches by creating a mock file and closing it
 	pngMultip <- .fromRCPP(".ppi") / 96
