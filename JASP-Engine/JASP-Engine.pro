@@ -170,4 +170,5 @@ OTHER_FILES  += \
 	JASP/R/ttestbayesianpairedsamples.R \
 	JASP/R/ttestindependentsamples.R \
 	JASP/R/ttestonesample.R \
-	JASP/R/ttestpairedsamples.R
+	JASP/R/ttestpairedsamples.R \
+	JASP/R/networkanalysis.R
