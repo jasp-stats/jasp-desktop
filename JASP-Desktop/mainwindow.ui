@@ -460,7 +460,7 @@ QPushButton::menu-indicator {
                 <number>0</number>
                </property>
                <item row="0" column="1">
-                <widget class="WebView" name="webViewResults" native="true">
+                <widget class="CustomWebEngineView" name="webViewResults" native="true">
                  <property name="cursor">
                   <cursorShape>ArrowCursor</cursorShape>
                  </property>
@@ -488,7 +488,7 @@ QPushButton::menu-indicator {
                 <number>0</number>
                </property>
                <item row="0" column="0">
-                <widget class="QWebView" name="webViewHelp" native="true">
+                <widget class="CustomWebEngineView" name="webViewHelp" native="true">
                  <property name="acceptDrops">
                   <bool>false</bool>
                  </property>
@@ -513,12 +513,6 @@ QPushButton::menu-indicator {
    <class>QQuickWidget</class>
    <extends>QWidget</extends>
    <header>QtQuickWidgets/QQuickWidget</header>
-  </customwidget>
-  <customwidget>
-   <class>QWebView</class>
-   <extends>QWidget</extends>
-   <header>QtWebKitWidgets/QWebView</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>RibbonAnalysis</class>
@@ -554,9 +548,9 @@ QPushButton::menu-indicator {
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>WebView</class>
+   <class>CustomWebEngineView</class>
    <extends>QWidget</extends>
-   <header>widgets/webview.h</header>
+   <header>widgets/customwebengineview.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -569,6 +563,7 @@ QPushButton::menu-indicator {
    <class>RibbonMetaAnalysis</class>
    <extends>QWidget</extends>
    <header>ribbons/ribbonmeta_analysis.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>RibbonNetworkAnalysis</class>
