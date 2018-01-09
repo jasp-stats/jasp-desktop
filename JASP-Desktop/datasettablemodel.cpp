@@ -23,6 +23,7 @@
 
 #include <QSize>
 #include <QDebug>
+#include <QQmlEngine>
 
 #include "qutils.h"
 
@@ -37,6 +38,8 @@ DataSetTableModel::DataSetTableModel(QObject *parent) :
 	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
 	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
 	_scaleIcon = QIcon(":/icons/variable-scale.svg");
+
+	qmlRegisterType<DataSetTableModel>("JASP.DataSetTableModel", 1, 0, "DataSetTableModel");
 }
 
 void DataSetTableModel::setDataSet(DataSet* dataSet)
@@ -128,6 +131,28 @@ QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientatio
 	}
 
 	return QVariant();
+}
+
+QHash<int, QByteArray> DataSetTableModel::roleNames() const
+{
+	QHash<int, QByteArray> roles = QAbstractTableModel::roleNames ();
+
+	for(int i=0; i<columnCount(); i++)
+		roles[Qt::UserRole + i] = (QString("column_")+QString::number(i)).toUtf8();
+
+	return roles;
+}
+
+QStringList DataSetTableModel::userRoleNames() const
+{
+	QMap<int, QString> res;
+	QHashIterator<int, QByteArray> i(roleNames());
+	while (i.hasNext()) {
+		i.next();
+		if(i.key() > Qt::UserRole)
+			res[i.key()] = i.value();
+	}
+	return res.values();
 }
 
 bool DataSetTableModel::setData(const QModelIndex &index, const QVariant &value, int role)

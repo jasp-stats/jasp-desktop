@@ -29,6 +29,7 @@
 class DataSetTableModel : public QAbstractTableModel
 {
     Q_OBJECT
+	Q_PROPERTY(QStringList userRoleNames READ userRoleNames)
 
 public:
     explicit DataSetTableModel(QObject *parent = 0);
@@ -45,6 +46,10 @@ public:
 
 	bool setColumnType(int columnIndex, Column::ColumnType newColumnType);
 	Column::ColumnType getColumnType(int columnIndex);
+
+
+	virtual QHash<int, QByteArray> roleNames() const OVERRIDE;
+	QStringList userRoleNames() const;
     
 signals:
 

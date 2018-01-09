@@ -1,4 +1,4 @@
-QT += core gui webkit webkitwidgets svg network printsupport xml
+QT += core gui webkit webkitwidgets svg network printsupport xml qml quick quickwidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

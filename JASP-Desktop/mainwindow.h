@@ -86,7 +86,7 @@ private:
 	bool closeRequestCheck(bool &isSaving);
 
 	AsyncLoader _loader;
-	ProgressWidget *_progressIndicator;
+	//TMP ProgressWidget *_progressIndicator;
 
 	bool _inited;
 	bool _applicationExiting = false;

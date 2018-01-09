@@ -14,5 +14,7 @@
         <file>arrow-up-down.png</file>
         <file>cross.png</file>
     </qresource>
-    <qresource prefix="/"/>
+    <qresource prefix="/qml">
+        <file>dataset.qml</file>
+    </qresource>
 </RCC>

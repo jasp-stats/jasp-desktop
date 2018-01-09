@@ -89,6 +89,7 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QDesktopServices>
+#include <QQmlContext>
 
 #include "analysisloader.h"
 
@@ -180,12 +181,18 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->webViewResults, SIGNAL(scrollValueChanged()), this, SLOT(scrollValueChangedHandle()));
 
 	_tableModel = new DataSetTableModel();
-	ui->tableView->setModel(_tableModel);
-	ui->tableView->setVariablesView(ui->variablesPage);
-	ui->variablesPage->hide();
+	//TMP ui->tableView->setModel(_tableModel);
+	//TMP ui->tableView->setVariablesView(ui->variablesPage);
+	//TMP ui->variablesPage->hide();
 
-	ui->tableView->setVerticalScrollMode(QTableView::ScrollPerPixel);
-	ui->tableView->setHorizontalScrollMode(QTableView::ScrollPerPixel);
+	ui->quickWidget_Data->rootContext()->setContextProperty("myDataset", _tableModel);
+	ui->quickWidget_Data->rootContext()->setContextProperty("userRoleNames", _tableModel->userRoleNames());
+	ui->quickWidget_Data->setSource(QUrl(QString("qrc:///qml/dataset.qml")));
+
+	//ui->quickWidget_Data->
+
+	//TMP ui->tableView->setVerticalScrollMode(QTableView::ScrollPerPixel);
+	//TMP ui->tableView->setHorizontalScrollMode(QTableView::ScrollPerPixel);
 
 	_analyses = new Analyses();
 	_engineSync = new EngineSync(_analyses, this);
@@ -205,19 +212,20 @@ MainWindow::MainWindow(QWidget *parent) :
 ///// 3-connect ribbon itemSelected
 	connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
-	connect(ui->variablesPage, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
-	connect(ui->variablesPage, SIGNAL(resetTableView()), this, SLOT(resetTableView()));
-	connect(ui->tableView, SIGNAL(dataTableColumnSelected()), this, SLOT(showVariablesPage()));
-	connect(ui->tableView, SIGNAL(dataTableDoubleClicked()), this, SLOT(startDataEditorHandler()));
+
+	//TMP connect(ui->variablesPage, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
+	//TMP connect(ui->variablesPage, SIGNAL(resetTableView()), this, SLOT(resetTableView()));
+	//TMP connect(ui->tableView, SIGNAL(dataTableColumnSelected()), this, SLOT(showVariablesPage()));
+	//TMP connect(ui->tableView, SIGNAL(dataTableDoubleClicked()), this, SLOT(startDataEditorHandler()));
 	connect(ui->tabBar, SIGNAL(dataAutoSynchronizationChanged(bool)), ui->backStage, SLOT(dataAutoSynchronizationChanged(bool)));
 
-	_progressIndicator = new ProgressWidget(ui->tableView);
-	_progressIndicator->setAutoFillBackground(true);
-	_progressIndicator->resize(400, 100);
-	_progressIndicator->move(100, 80);
-	_progressIndicator->hide();
+	//TMP _progressIndicator = new ProgressWidget(ui->tableView);
+	//TMP _progressIndicator->setAutoFillBackground(true);
+	//TMP _progressIndicator->resize(400, 100);
+	//TMP _progressIndicator->move(100, 80);
+	//TMP _progressIndicator->hide();
 
-	connect(&_loader, SIGNAL(progress(QString,int)), _progressIndicator, SLOT(setStatus(QString,int)));
+	//TMP connect(&_loader, SIGNAL(progress(QString,int)), _progressIndicator, SLOT(setStatus(QString,int)));
 
 	connect(this, SIGNAL(analysisSelected(int)), this, SLOT(analysisSelectedHandler(int)));
 	connect(this, SIGNAL(analysisUnselected()), this, SLOT(analysisUnselectedHandler()));
@@ -529,7 +537,7 @@ void MainWindow::packageDataChanged(DataSetPackage *package,
 									map<string, string> &changeNameColumns)
 {
 	_tableModel->setDataSet(_package->dataSet);
-	ui->variablesPage->setDataSet(_package->dataSet);
+	//TMP ui->variablesPage->setDataSet(_package->dataSet);
 
 	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns);
 }
@@ -990,7 +998,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 
 			_loader.io(event, _package);
-			_progressIndicator->show();
+			//TMP _progressIndicator->show();
 		}
 
 		ui->tabBar->setCurrentModuleActive();
@@ -1029,7 +1037,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 
 		_loader.io(event, _package);
-		_progressIndicator->show();
+//TMP 		_progressIndicator->show();
 	}
 	else if (event->operation() == FileEvent::FileExportResults)
 	{
@@ -1038,13 +1046,13 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('%EXPORT%');");
 
 		_loader.io(event, _package);
-		_progressIndicator->show();
+		//TMP _progressIndicator->show();
 	}
 	else if (event->operation() == FileEvent::FileExportData)
 	{
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 		_loader.io(event, _package);
-		_progressIndicator->show();
+		//TMP _progressIndicator->show();
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
 	{
@@ -1053,7 +1061,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 		_loader.io(event, _package);
-		_progressIndicator->show();
+		//TMP _progressIndicator->show();
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
@@ -1086,7 +1094,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			dataSetIOCompleted(event);
 		}
 
-		ui->variablesPage->close();
+		//TMP ui->variablesPage->close();
 	}
 }
 
@@ -1095,7 +1103,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 {
 	this->analysisOKed();
 	bool showAnalysis = false;
-	_progressIndicator->hide();
+//TMP 	_progressIndicator->hide();
 
 	if (event->operation() == FileEvent::FileOpen)
 	{
@@ -1166,13 +1174,13 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			closeCurrentOptionsWidget();
 			hideOptionsPanel();
 			_tableModel->clearDataSet();
-			ui->variablesPage->clearDataSet();
+			//TMP ui->variablesPage->clearDataSet();
 			_loader.free(_package->dataSet);
 			_package->reset();
 			updateMenuEnabledDisabledStatus();
 			ui->webViewResults->reload();
 			setWindowTitle("JASP");
-			ui->tableView->adjustAfterDataLoad(false);
+			//TMP ui->tableView->adjustAfterDataLoad(false);
 
 			if (_applicationExiting)
 				QApplication::exit();
@@ -1193,11 +1201,11 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 void MainWindow::populateUIfromDataSet()
 {
 	_tableModel->setDataSet(_package->dataSet);
-	ui->variablesPage->setDataSet(_package->dataSet);
+	//TMP ui->variablesPage->setDataSet(_package->dataSet);
 
-	ui->tableView->adjustAfterDataLoad(true);
+	//TMP ui->tableView->adjustAfterDataLoad(true);
 
-	_progressIndicator->hide();
+//TMP 	_progressIndicator->hide();
 
 	bool errorFound = false;
 	stringstream errorMsg;
@@ -1654,16 +1662,16 @@ void MainWindow::hideDataPanel()
 
 void MainWindow::showVariablesPage()
 {
-	QList<int> datacurrentSizes = ui->data_splitter->sizes();
+	//TMP QList<int> datacurrentSizes = ui->data_splitter->sizes();
 
-	ui->variablesPage->show();
-
+	//TMP ui->variablesPage->show();
+/*
 	if (datacurrentSizes[0] < 1)
 	{
 		datacurrentSizes[0]+=250;
 		datacurrentSizes[1]-=250;
 		ui->data_splitter->setSizes(datacurrentSizes);
-	}
+	}*/
 }
 
 
@@ -1775,7 +1783,7 @@ void MainWindow::refreshAnalysesUsingColumn(QString col)
 
 void MainWindow::resetTableView()
 {
-	ui->tableView->reset();
+//TMP 	ui->tableView->reset();
 }
 
 
@@ -2182,7 +2190,7 @@ void MainWindow::startDataEditorHandler()
 		connect(event, SIGNAL(completed(FileEvent*)), ui->backStage, SLOT(setSyncFile(FileEvent*)));
 		event->setPath(path);
 		_loader.io(event, _package);
-		_progressIndicator->show();
+//TMP 		_progressIndicator->show();
 	}
 	else
 		startDataEditor(path);
@@ -2191,7 +2199,7 @@ void MainWindow::startDataEditorHandler()
 
 void MainWindow::startDataEditorEventCompleted(FileEvent* event)
 {
-	_progressIndicator->hide();
+//TMP 	_progressIndicator->hide();
 
 	if (event->successful())
 	{
