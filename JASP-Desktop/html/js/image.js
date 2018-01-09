@@ -141,7 +141,7 @@ JASPWidgets.imagePrimative= JASPWidgets.View.extend({
 		html += '<div class="jasp-image-image" style="'
 
 		if (data) {
-			html += 'background-image : url(\'' + data + '?x=' + Math.random() + '\'); '
+            html += 'background-image : url(\'' + window.globSet.tempFolder + data + '?x=' + Math.random() + '\'); '
 
 			html += 'background-size : 100% 100%; '
 		}

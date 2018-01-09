@@ -77,8 +77,6 @@ SOURCES += \
     $$PWD/importers/spss/variablerecord.cpp \
     $$PWD/importers/spss/verylongstringrecord.cpp \
     $$PWD/importers/spssimporter.cpp \
-    $$PWD/lrnam.cpp \
-    $$PWD/lrnamreply.cpp \
     $$PWD/main.cpp \
     $$PWD/maintablehorizontalheader.cpp \
     $$PWD/maintableview.cpp \
@@ -144,7 +142,12 @@ SOURCES += \
     $$PWD/widgets/tableviewmenueditordelegate.cpp \
     $$PWD/widgets/textmodellavaan.cpp \
     $$PWD/widgets/toolbutton.cpp \
-    $$PWD/widgets/webview.cpp
+    $$PWD/widgets/customwebengineview.cpp \
+    $$PWD/resultsjsinterface.cpp \
+    $$PWD/customwebenginepage.cpp \
+    $$PWD/asyncloaderthread.cpp \
+    $$PWD/aboutdialogjsinterface.cpp
+
 
 HEADERS  += \
     $$PWD/aboutdialog.h \
@@ -230,8 +233,6 @@ HEADERS  += \
     $$PWD/importers/spss/variablerecord.h \
     $$PWD/importers/spss/verylongstringrecord.h \
     $$PWD/importers/spssimporter.h \
-    $$PWD/lrnam.h \
-    $$PWD/lrnamreply.h \
     $$PWD/maintablehorizontalheader.h \
     $$PWD/maintableview.h \
     $$PWD/mainwindow.h \
@@ -303,7 +304,11 @@ HEADERS  += \
     $$PWD/widgets/tableviewmenueditordelegate.h \
     $$PWD/widgets/textmodellavaan.h \
     $$PWD/widgets/toolbutton.h \
-    $$PWD/widgets/webview.h
+    $$PWD/widgets/customwebengineview.h \
+    $$PWD/resultsjsinterface.h \
+    $$PWD/customwebenginepage.h \
+    $$PWD/asyncloaderthread.h \
+    $$PWD/aboutdialogjsinterface.h
 
 FORMS += \
     $$PWD/aboutdialog.ui \

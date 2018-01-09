@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2018 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,17 +15,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef RESULTEXPORTER_H
-#define RESULTEXPORTER_H
+#ifndef ASYNCLOADERTHREAD_H
+#define ASYNCLOADERTHREAD_H
 
-#include "exporter.h"
+#include <QThread>
 
-class ResultExporter: public Exporter
+class AsyncLoaderThread : public QThread
 {
-
 public:
-	ResultExporter();
-	void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) OVERRIDE;
+	AsyncLoaderThread();
+	~AsyncLoaderThread();
 };
 
-#endif // RESULTEXPORTER_H
+#endif // ASYNCLOADERTHREAD_H

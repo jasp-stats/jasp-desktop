@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2018 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,17 +15,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef RESULTEXPORTER_H
-#define RESULTEXPORTER_H
+#ifndef CUSTOMWEBENGINEPAGE_H
+#define CUSTOMWEBENGINEPAGE_H
 
-#include "exporter.h"
+#include <QWebEnginePage>
+#include <QDesktopServices>
 
-class ResultExporter: public Exporter
+class CustomWebEnginePage : public QWebEnginePage
 {
-
+	Q_OBJECT
 public:
-	ResultExporter();
-	void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) OVERRIDE;
+	explicit CustomWebEnginePage(QWidget* parent = 0);
+
+protected:
+	virtual bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame);
 };
 
-#endif // RESULTEXPORTER_H
+#endif // CUSTOMWEBENGINEPAGE_H
