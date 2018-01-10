@@ -1,49 +1,65 @@
-import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Controls 1.4
 import QtQuick 2.7
 
+
+
 Rectangle {
-    id: rootRectangle
+    id: rootDataset
     color: "red"
 
     Rectangle {
-        id: blauwRectangle
+        id: variablesWindow
         color: "blue"
-        height: 100
-        anchors.left: rootRectangle.left
-        anchors.right: rootRectangle.right
+        height: 0
+        anchors.left: rootDataset.left
+        anchors.right: rootDataset.right
+
+        property bool opened: false
+
+        states: [
+            State {
+                name: "closed"
+                PropertyChanges { target: variablesWindow; height: 0 }
+                when: !variablesWindow.opened
+            },
+            State {
+                name: "opened"
+                PropertyChanges { target: variablesWindow; height: 200 }
+                when: variablesWindow.opened
+            }
+        ]
+
+        transitions: Transition { NumberAnimation { properties: "height"; easing.type: Easing.InOutQuad } }
     }
 
-    TableView {
-
-        headerDelegate: Rectangle
+    TableViewJasp {
+        headerDelegate: Item
         {
-            Gradient {
-                id: headerGradient
-                GradientStop { position: 0.6; color: "#F0F0F0" }
-                GradientStop { position: 0.7; color: "#E0E0E0" }
-            }
-
             id: colHeader
+
             height: headerText.implicitHeight * 1.1
             width: headerText.implicitWidth * 1
-            gradient: headerGradient
 
-            Button
+
+
+            Image
             {
                 id: colIcon
-
                 anchors.top: colHeader.top
                 anchors.bottom: colHeader.bottom
                 anchors.left: colHeader.left
-
-                iconSource: dataSetModel.columnIcon(styleData.column)
+                source: dataSetModel.columnIcon(styleData.column)
                 width: height
-                style: ButtonStyle
+
+
+                MouseArea
                 {
-                    background: Rectangle { anchors.fill: parent; gradient: headerGradient}
+                    anchors.fill: parent
+                    onClicked: { console.log("HeaderIcon pressed!") }
                 }
             }
+
 
             Text
             {
@@ -54,15 +70,27 @@ Rectangle {
                 anchors.right: colHeader.right
                 text: dataSetModel.columnTitle(styleData.column);
                 leftPadding: 10
+
+                MouseArea
+                {
+                    anchors.fill: parent
+                    onClicked:
+                    {
+                        console.log("HeaderText pressed!")
+                        variablesWindow.opened = !variablesWindow.opened
+                    }
+                }
             }
+
         }
+
 
         id: dataSetTableView
         objectName: "dataSetTableView"
-        anchors.top: blauwRectangle.bottom
-        anchors.left: rootRectangle.left
-        anchors.right: rootRectangle.right
-        anchors.bottom: rootRectangle.bottom
+        anchors.top: variablesWindow.bottom
+        anchors.left: rootDataset.left
+        anchors.right: rootDataset.right
+        anchors.bottom: rootDataset.bottom
         //anchors.fill: parent
 
 
@@ -92,8 +120,10 @@ Rectangle {
             TableViewColumn
             {
                 width: 220
+                movable: false
+
+
             }
         }
-
     }
 }

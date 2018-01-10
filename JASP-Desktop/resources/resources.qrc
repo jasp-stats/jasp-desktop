@@ -16,5 +16,8 @@
     </qresource>
     <qresource prefix="/qml">
         <file>dataset.qml</file>
+        <file>BasicTableViewJasp.qml</file>
+        <file>TableViewJasp.qml</file>
+        <file>TableViewStyleJasp.qml</file>
     </qresource>
 </RCC>
