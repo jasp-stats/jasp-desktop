@@ -1,7 +1,7 @@
+import QtQuick.Controls 2.1
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Controls 1.4
 import QtQuick 2.7
-
 
 
 Rectangle {
@@ -56,7 +56,23 @@ Rectangle {
                 MouseArea
                 {
                     anchors.fill: parent
-                    onClicked: { console.log("HeaderIcon pressed!") }
+
+                    onPressed:
+                    {
+                        popup.open()
+                    }
+                }
+
+
+                Popup {
+                    id: popup
+                    x: parent.x
+                    y: parent.y + parent.height
+                    width: 100
+                    height: 100
+                    modal: true
+                    focus: true
+                    closePolicy: Popup.CloseOnReleaseOutside | Popup.CloseOnPressOutside
                 }
             }
 
