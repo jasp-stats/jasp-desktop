@@ -9,6 +9,8 @@ linux:CONFIG += c++11
 TARGET = JASP-R-Interface
 DESTDIR = ..
 TEMPLATE = lib
+linux:CONFIG += staticlib
+
 
 _R_HOME = $$(R_HOME)
 

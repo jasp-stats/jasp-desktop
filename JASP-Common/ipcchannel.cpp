@@ -20,6 +20,7 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/nowide/convert.hpp>
+#include <boost/interprocess/sync/named_semaphore.hpp>
 
 using namespace std;
 using namespace boost;
