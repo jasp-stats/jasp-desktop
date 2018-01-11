@@ -214,12 +214,12 @@ ScrollView {
     property int selectionMode: SelectionMode.SingleSelection
 
     /*!
-        \qmlmethod TableViewColumn BasicTableViewJasp::addColumn(object column)
+        \qmlmethod TableViewColumnJasp BasicTableViewJasp::addColumn(object column)
 
         Adds a \a column and returns the added column.
 
-        The \a column argument can be an instance of TableViewColumn,
-        or a Component. The component has to contain a TableViewColumn.
+        The \a column argument can be an instance of TableViewColumnJasp,
+        or a Component. The component has to contain a TableViewColumnJasp.
         Otherwise  \c null is returned.
     */
     function addColumn(column) {
@@ -227,12 +227,12 @@ ScrollView {
     }
 
     /*!
-        \qmlmethod TableViewColumn BasicTableViewJasp::insertColumn(int index, object column)
+        \qmlmethod TableViewColumnJasp BasicTableViewJasp::insertColumn(int index, object column)
 
         Inserts a \a column at the given \a index and returns the inserted column.
 
-        The \a column argument can be an instance of TableViewColumn,
-        or a Component. The component has to contain a TableViewColumn.
+        The \a column argument can be an instance of TableViewColumnJasp,
+        or a Component. The component has to contain a TableViewColumnJasp.
         Otherwise  \c null is returned.
     */
     function insertColumn(index, column) {
@@ -298,7 +298,7 @@ ScrollView {
     }
 
     /*!
-        \qmlmethod TableViewColumn BasicTableViewJasp::getColumn(int index)
+        \qmlmethod TableViewColumnJasp BasicTableViewJasp::getColumn(int index)
 
         Returns the column at the given \a index
         or \c null if the \a index is invalid.
@@ -606,8 +606,11 @@ ScrollView {
             width: Math.max(headerRow.width + listView.vScrollbarPadding, root.viewport.width)
             height: visible ? headerRow.height : 0
 
+
+
             property alias headerRow: row
             property alias headerRepeater: repeater
+
             Row {
                 id: row
 
@@ -634,6 +637,7 @@ ScrollView {
                             id: headerStyle
                             sourceComponent: root.headerDelegate
                             width: parent.width
+
                             property QtObject styleData: QtObject {
                                 readonly property string value: modelData.title
                                 readonly property bool pressed: headerClickArea.pressed

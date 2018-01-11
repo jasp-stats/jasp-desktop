@@ -183,7 +183,7 @@ QStringList DataSetTableModel::userRoleNames() const
 	QHashIterator<int, QByteArray> i(roleNames());
 	while (i.hasNext()) {
 		i.next();
-		if(i.key() > Qt::UserRole)
+		if(i.key() >= Qt::UserRole)
 			res[i.key()] = i.value();
 	}
 	return res.values();

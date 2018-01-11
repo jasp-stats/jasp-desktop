@@ -51,6 +51,7 @@ public:
 	Q_INVOKABLE QStringList userRoleNames() const;
 	Q_INVOKABLE QVariant columnTitle(int column) const;
 	Q_INVOKABLE QVariant columnIcon(int column) const;
+	Q_INVOKABLE QVariant getCellValue(int column, int row) const { return data(index(row, column), Qt::DisplayRole); }
     
 signals:
 

@@ -19,5 +19,7 @@
         <file>BasicTableViewJasp.qml</file>
         <file>TableViewJasp.qml</file>
         <file>TableViewStyleJasp.qml</file>
+        <file>TableViewColumnJasp.qml</file>
+        <file>TableViewItemDelegateLoaderJasp.qml</file>
     </qresource>
 </RCC>

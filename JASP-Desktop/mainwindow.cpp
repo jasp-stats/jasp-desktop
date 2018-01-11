@@ -1019,10 +1019,10 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 void MainWindow::triggerQmlColumnReload()
 {
 	QObject * DataView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataSetTableView");
-	QVariant DummyReturn, DummyArg;
 
 	if(DataView != NULL)
-		QMetaObject::invokeMethod(DataView, "reloadColumns", Q_RETURN_ARG(QVariant, DummyReturn));
+		QMetaObject::invokeMethod(DataView, "reloadColumns");
+
 }
 
 void MainWindow::dataSetIOCompleted(FileEvent *event)
