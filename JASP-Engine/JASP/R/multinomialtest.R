@@ -19,10 +19,10 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
                callback = function(...) 0,  ...) {
 
   # First, we load the variables into the R environment
-  factor <- NULL
+  fact <- NULL
   asnum <- NULL
   if (options$factor != "") {
-    factor <- options$factor
+    fact <- options$factor
     if (options$counts != "") {
       asnum <- options$counts
       if (options$exProbVar != "") {
@@ -62,15 +62,15 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   if (is.null(dataset)) {
     if (perform == "run") {
       dataset <- .readDataSetToEnd(columns.as.numeric=asnum,
-                                   columns.as.factor=factor,
+                                   columns.as.factor=fact,
                                    exclude.na.listwise=NULL)
     } else {
       dataset <- .readDataSetHeader(columns.as.numeric=asnum,
-                                    columns.as.factor=factor)
+                                    columns.as.factor=fact)
     }
   } else {
     dataset <- .vdf(dataset, columns.as.numeric=asnum,
-                    columns.as.factor=factor)
+                    columns.as.factor=fact)
   }
 
   results <- list() # Initialise results object
@@ -94,7 +94,9 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
                diff[["confidenceIntervalInterval"]],
                diff[["hypothesis"]], diff[["exProbVar"]],
                diff[["expectedProbs"]], diff[["simulatepval"]],
-               diff[["tableWidget"]])) {
+               (options[["hypothesis"]] == "expectedProbs" &&
+               diff[["tableWidget"]])
+              )) {
 
         chisqResults <- state[["chisqResults"]]
 
@@ -127,7 +129,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   # chi-square Table
   # Generate results
   if (is.null(chisqResults)) {
-    chisqResults <- .chisquareTest(dataset, options, factor, perform)
+    chisqResults <- .chisquareTest(dataset, options, fact, perform)
   }
 
   results[["chisq"]] <- .chisqTable(chisqResults, options, perform)
@@ -137,7 +139,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   if (options[["descriptives"]]) {
     # Generate descriptives table
     if (is.null(descriptivesTable)) {
-      descriptivesTable <- .multinomialDescriptives(chisqResults, factor, options, perform)
+      descriptivesTable <- .multinomialDescriptives(chisqResults, fact, options, perform)
     }
 
     results[["descriptivesTable"]] <- descriptivesTable
@@ -190,22 +192,21 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 }
 
 # Run chi-square test and return object
-.chisquareTest <- function(dataset, options, factor, perform) {
+.chisquareTest <- function(dataset, options, fact, perform) {
 
   chisqResults <- NULL
 
-  if (perform == "run" && !is.null(factor)) {
+  if (perform == "run" && !is.null(fact)) {
     # first determine the hypotheses
-    f <- dataset[[.v(factor)]]
+    f <- dataset[[.v(fact)]]
     f <- f[!is.na(f)]
 
     if (options$counts != ""){
-      # convert to "regular" factor
+      # convert to "regular" fact
       c <- dataset[[.v(options$counts)]]
-      f <- factor(rep(f, c), levels = f)
+      f <- factor(rep(f, c), levels = levels(f))
     }
 
-    # Create table in order of appearance of the dataset
     t <- table(f)
     nlev <- nlevels(f)
 
@@ -313,7 +314,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 }
 
 # Create multinomial descriptives table
-.multinomialDescriptives <- function(chisqResults, factor, options, perform) {
+.multinomialDescriptives <- function(chisqResults, fact, options, perform) {
   if (options[["countProp"]]=="descCounts"){
     numberType = list(type="integer")
   } else {
@@ -324,7 +325,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
   table <- list("title" = "Descriptives table")
 
 
-  if (is.null(factor)){
+  if (is.null(fact)){
     # If we have no variable init table with generic name
 
     fields <- list(
@@ -353,7 +354,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     # If we have a variable then init table with factor name
 
     fields <- list(
-      list(name="factor", title=factor, type = "string"),
+      list(name="factor", title=fact, type = "string"),
       c(list(name="observed", title="Observed"), numberType),
       c(list(name="expected", title="Expected"), numberType)
     )
@@ -379,7 +380,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 
     # First we create the correct columns
     fields <- list(
-      list(name="factor", title=factor, type = "string"),
+      list(name="factor", title=fact, type = "string"),
       c(list(name="observed", title="Observed"), numberType)
     )
 
@@ -420,9 +421,11 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
       div <- sum(chisqResults[[1]][["observed"]])
     }
 
-    tableFrame <- data.frame(factor = names(chisqResults[[1]][["observed"]]),
-                             observed = as.integer(chisqResults[[1]][["observed"]])/div,
-                             stringsAsFactors = FALSE)
+    tableFrame <- data.frame(
+      factor = names(chisqResults[[1]][["observed"]]),
+      observed = as.integer(chisqResults[[1]][["observed"]])/div,
+      stringsAsFactors = FALSE
+    )
 
 
     for (r in chisqResults){
@@ -467,7 +470,6 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 
 # Create multinomial descriptives plot
 .multinomialDescriptivesPlot <- function(chisqResults, options, perform) {
-
   # init output object
   descriptivesPlot <- list("title" = "Descriptives plot")
   descriptivesPlot[["width"]] <- options$plotWidth
@@ -479,7 +481,7 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
     # Generate the plot
 
     # Counts or props
-    if (options[["countProp"]]=="descCounts") {
+    if (options[["countProp"]] == "descCounts") {
       div <- 1
       yname <- "Observed counts"
     } else {
@@ -487,14 +489,18 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
       yname <- "Observed proportions"
     }
 
-    # Observed values
-    obs <- chisqResults[[1]][["observed"]]/div
+    # we need to reverse the factor's levels because of the coord_flip later
+    f <- names(chisqResults[[1]][["observed"]])
+    plotFrame <- data.frame(
+      factor = factor(f, levels = rev(f)),
+      obs = as.numeric(chisqResults[[1]][["observed"]])/div
+    )
 
     # Calculate confidence interval
     cl <- options$descriptivesPlotConfidenceInterval
     n <- sum(chisqResults[[1]][["observed"]])
     ci <- lapply(chisqResults[[1]][["observed"]], function(l) {
-      bt <- binom.test(l,n,conf.level = cl)
+      bt <- binom.test(l, n, conf.level = cl)
       return(bt$conf.int * n) # on the count scale
     })
     ciDf <- data.frame(t(data.frame(ci)))/div
@@ -514,11 +520,12 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 
 
     # Create plot
-    p <- ggplot2::ggplot(mapping = ggplot2::aes(x = factor(names(obs),
-                                                           levels = names(obs)),
-                                                y = as.numeric(obs))) +
-      ggplot2::geom_bar(stat = "identity", size = 0.75, colour="black", fill = "grey") +
-      ggplot2::geom_errorbar(ggplot2::aes(ymin=ciDf$lowerCI, ymax = ciDf$upperCI),
+    p <- ggplot2::ggplot(data = plotFrame,
+                         mapping = ggplot2::aes(x = factor, y = obs)) +
+      ggplot2::geom_bar(stat = "identity", size = 0.75, colour="black",
+                        fill = "grey") +
+      ggplot2::geom_errorbar(ggplot2::aes(ymin = ciDf$lowerCI,
+                                          ymax = ciDf$upperCI),
                              size = 0.75, width = 0.3) +
       base_breaks_y(ciDf$upperCI) +
       ggplot2::xlab(options$factor) +
@@ -568,19 +575,14 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 .multinomialHypotheses <- function(dataset, options, nlevels) {
   # This function transforms the input into a list of hypotheses
   hyps <- list()
-
-  if (options$hypothesis == "multinomialTest"){
+  if (options$exProbVar == "" && options$hypothesis == "multinomialTest") {
     # Expected probabilities are simple now
     hyps[["Multinomial"]] <- rep(1/nlevels, nlevels)
-
   } else {
-
     # First, generate a table with expected probabilities based on input
     expectedDf <- .generateExpectedProps(dataset, options, nlevels)
-
     # assign each hypothesis to the hyps object
     hyps <- as.list(expectedDf)
-
   }
   return(hyps)
 }
@@ -592,10 +594,16 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 
   if (options$exProbVar != "") {
     # use only exProbVar
+    fact <- dataset[[.v(options$factor)]]
     eProps <- data.frame(dataset[[.v(options$exProbVar)]])
-    colnames(eProps) <- options$exProbVar
+    rownames(eProps) <- fact
 
-    if (nlevels != nrow(eProps)){
+    # Reorder to match factor levels
+    eProps <- data.frame(eProps[levels(fact),])
+    colnames(eProps) <- options$exProbVar
+    rownames(eProps) <- levels(fact)
+
+    if (nlevels != nrow(eProps)) {
       stop("Expected counts do not match number of levels of factor!")
     }
 
@@ -604,7 +612,14 @@ MultinomialTest <- function(dataset = NULL, options, perform = "run",
 
   } else if (length(options$tableWidget) > 0) {
 
-    eProps <- sapply(options$tableWidget, function(x) x$values)
+    eProps <- sapply(options$tableWidget, function(x) {
+      vals <- x$values
+      if (sum(vals) == 0) {
+        vals <- rep(1, length(vals))
+      } else {
+        vals
+      }
+    })
     colnames(eProps) <- sapply(options$tableWidget, function(x) x$name)
     rownames(eProps) <- options$tableWidget[[1]]$levels
     return(data.frame(eProps))
