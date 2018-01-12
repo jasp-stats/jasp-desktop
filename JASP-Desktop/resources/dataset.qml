@@ -42,7 +42,9 @@ Rectangle {
         anchors.left: rootDataset.left
         anchors.right: rootDataset.right
         anchors.bottom: rootDataset.bottom
-        alternatingRowColors: false
+
+        alternatingRowColors: true
+        property bool drawCellBorders: true
 
         model: dataSetModel
 
@@ -80,7 +82,7 @@ Rectangle {
             }
         }
 
-        Component { id: columnComponent; TableViewColumnJasp { movable: false } }
+        Component { id: columnComponent; TableViewColumn { movable: false } }
         Component { id: columnHeaderSizeCalcComponent; TextMetrics { } }
 
         headerDelegate: Rectangle
@@ -91,10 +93,11 @@ Rectangle {
             border.width: 0
             radius: 0
 
-
             property real iconDim: headerText.implicitHeight
             property real iconTextPadding: 10
-            height: iconDim + 2
+            height: iconDim * 1.2
+
+            z: styleData.column
 
             //implicitWidth: headerText.contentWidth + iconDim + 5 + iconTextPadding
 
@@ -109,7 +112,7 @@ Rectangle {
                 x: headerBorderRectangle.x
                 y: headerBorderRectangle.y + 1
 
-                height: iconDim
+                height: headerBorderRectangle.height - 2
                 width: headerBorderRectangle.width - 1
 
                 Image
@@ -119,6 +122,8 @@ Rectangle {
                     anchors.bottom: colHeader.bottom
                     anchors.left: colHeader.left
                     source: dataSetModel.columnIcon(styleData.column)
+
+                    anchors.leftMargin: 4
 
                     width: headerBorderRectangle.iconDim
                     height: headerBorderRectangle.iconDim
@@ -171,33 +176,31 @@ Rectangle {
             }
         }
 
-        itemDelegate: Rectangle
+        itemDelegate: Item
+        {
+            Rectangle
             {
                 //Two rectangles to show a border of exactly 1px around cells
                 id: borderRectangle
-                color: systemPalette.mid
-                border.width: 0
+                color: "transparent"
+                border.width: dataSetTableView.drawCellBorders ? 1 : 0
+                border.color: systemPalette.mid
                 radius: 0
+                width: parent.width + 1
+                height: parent.height + 1
+                x: parent.x - 1
+                y: parent.y - 1
 
-                Rectangle
-                {
-                    color: systemPalette.base
-                    border.width: 0
-                    radius: 0
-
-                    x: borderRectangle.x
-                    y: borderRectangle.y
-                    width: borderRectangle.width - 1
-                    height: borderRectangle.height - 1
-
-                    Text {
-                        id: itemText
-                        text: styleData.value
-                        color: systemPalette.text
-                        elide: styleData.elideMode
-                        horizontalAlignment: styleData.textAlignment
-                    }
+                Text {
+                    id: itemText
+                    text: styleData.value
+                    color: systemPalette.text
+                    elide: styleData.elideMode
+                    horizontalAlignment: styleData.textAlignment
+                    leftPadding: 4
                 }
             }
+
+        }
     }
 }

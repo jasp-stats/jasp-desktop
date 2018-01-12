@@ -79,7 +79,7 @@ BasicTableViewJasp {
     __viewTypeName: "TableViewJasp"
     __model: model
 
-    __itemDelegateLoader: TableViewItemDelegateLoaderJasp {
+    __itemDelegateLoader: TableViewItemDelegateLoader {
         __style: root.__style
         __itemDelegate: root.itemDelegate
         __mouseArea: mousearea

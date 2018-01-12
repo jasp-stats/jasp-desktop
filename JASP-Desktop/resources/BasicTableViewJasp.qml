@@ -730,10 +730,10 @@ ScrollView {
                         MouseArea {
                             id: headerResizeHandle
                             property int offset: 0
-                            readonly property int minimumSize: 20
+                            readonly property int minimumSize: 10
                             preventStealing: true
                             anchors.rightMargin: -width/2
-                            width: Settings.hasTouchScreen ? Screen.pixelDensity * 3.5 : 16
+                            width: Settings.hasTouchScreen ? Screen.pixelDensity * 1.5 : 4
                             height: parent.height
                             anchors.right: parent.right
                             enabled: modelData.resizable && columnCount > 0
