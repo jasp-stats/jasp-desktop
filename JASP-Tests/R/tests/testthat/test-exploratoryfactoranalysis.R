@@ -55,3 +55,19 @@ test_that("Factor correlation table matches", {
   table <- results[["results"]][["factorCorrelations"]][["data"]]
   expect_equal_tables(table, list("RC 1", 1, "RC 2", 0.0433504307183835, 1))
 })
+
+test_that("Missing values works", {
+	options <- jasptools::analysisOptions("ExploratoryFactorAnalysis")
+	options$variables <- list("contWide", "contcor1", "facFifty", "debMiss30")
+	options$incl_correlations <- TRUE
+	
+	options$missingValues <- "pairwise"
+	results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
+	table <- results[["results"]][["goodnessOfFit"]][["data"]][[1]]
+	expect_equal_tables(table, list(model = "Model", chisq = ".", df = ".", p = "."), label = "pairwise")
+	
+	options$missingValues <- "listwise"
+	results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
+	table <- results[["results"]][["goodnessOfFit"]][["data"]][[1]]
+	expect_equal_tables(table, list("RC 1", 1, "RC 2", 0.0433504307183835, 1), label = "listwise")
+})
