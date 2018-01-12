@@ -5,8 +5,8 @@ MinorVersion=`grep -oP		'VersionMinor\(\K[0123456789]+(?=\))' ../JASP-Common/app
 RevisionVersion=`grep -oP	'VersionRevision\(\K[0123456789]+(?=\))' ../JASP-Common/appinfo.cpp`
 BuildVersion=`grep -oP		'VersionBuildNumber\(\K[0123456789]+(?=\))' ../JASP-Common/appinfo.cpp`
 
-JASPFolder=jasp-$MajorVersion.$MinorVersion.$RevisionVersion.0
-JASPTar=jasp_$MajorVersion.$MinorVersion.$RevisionVersion.0.orig.tar.gz
+JASPFolder=jasp-$MajorVersion.$MinorVersion.$RevisionVersion.2
+JASPTar=jasp_$MajorVersion.$MinorVersion.$RevisionVersion.2.orig.tar.gz
 
 echo Making ubuntu package $JASPFolder
 
@@ -18,7 +18,7 @@ mkdir ../../$JASPFolder/$JASPFolder
 cp -R ../* ../../$JASPFolder/$JASPFolder
 
 #now we need to set up a folderstructure that the ubuntu debialbuild likes
-UbuntuVersionThing=jasp_`grep -oP 'jasp \(\K[^)]+(?=\) xenial; urgency=low)' ubuntu/changelog`
+UbuntuVersionThing=jasp_`grep -oP 'jasp \(\K[^)]+(?=\) xenial; urgency=medium)' ubuntu/changelog`
 UbuntuDebianFolderHolder=$UbuntuVersionThing.debian
 
 echo $UbuntuDebianFolderHolder
@@ -38,5 +38,5 @@ tar --create --verbose --gzip --file $JASPTar $JASPFolder
 cd $UbuntuDebianFolderHolder
 debuild -S -sa -k3D646D04
 
-echo Done building sourcepackage, to push to PPA: \''cd ../../'$JASPFolder'/ && dput "ppa:jasp-uva/jasp" '$UbuntuVersionThing'_source.changes'\'
+echo Done building sourcepackage, to push to PPA: \''cd ../../'$JASPFolder'/ && dput \"ppa:jasp-uva/jasp\" '$UbuntuVersionThing'_source.changes'\'
 
