@@ -211,7 +211,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Oblique</string>
+            <string>Obli&amp;que</string>
            </property>
           </widget>
          </item>
@@ -303,7 +303,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Eigenvalues</string>
+            <string>Eigen&amp;values</string>
            </property>
           </widget>
          </item>
@@ -378,7 +378,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Manual</string>
+            <string>&amp;Manual</string>
            </property>
           </widget>
          </item>
@@ -502,6 +502,61 @@
       <item row="1" column="0">
        <widget class="QWidget" name="containerOptions" native="true">
         <layout class="QGridLayout" name="gridLayout_4">
+         <item row="1" column="0">
+          <widget class="BoundGroupBox" name="missingValues">
+           <property name="maximumSize">
+            <size>
+             <width>180000</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="title">
+            <string>Missing values</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_8">
+            <item row="2" column="1">
+             <widget class="QRadioButton" name="_2excludeListwise">
+              <property name="text">
+               <string>Exclude cases listwise</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <spacer name="horizontalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="1" column="1">
+             <widget class="QRadioButton" name="_1excludePairwise">
+              <property name="text">
+               <string>E&amp;xclude cases pairwise</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <spacer name="verticalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </item>
          <item row="0" column="0">
           <widget class="BoundGroupBox" name="highlight">
            <property name="maximumSize">
@@ -573,7 +628,7 @@
            <zorder>highlightSlider</zorder>
           </widget>
          </item>
-         <item row="0" column="1">
+         <item row="0" column="2">
           <widget class="BoundGroupBox" name="includeTables">
            <property name="title">
             <string>Include tables</string>
@@ -623,39 +678,7 @@
            </layout>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="BoundGroupBox" name="missingValues">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="title">
-            <string>Missing Values</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_9">
-            <item row="0" column="0">
-             <widget class="QRadioButton" name="_1excludePairwise">
-              <property name="text">
-               <string>Exclude cases pairwise</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QRadioButton" name="_2excludeListwise">
-              <property name="text">
-               <string>Exclude cases listwise</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="1" column="1">
+         <item row="1" column="2">
           <spacer name="horizontalSpacer_2">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
