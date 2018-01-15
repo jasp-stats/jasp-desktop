@@ -2593,25 +2593,10 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 				ggplot2::ylab(options$labelYAxis) +
 				ggplot2::xlab(options$plotHorizontalAxis) +
 				ggplot2::labs(shape=options$plotSeparateLines, fill=options$plotSeparateLines) +
-				ggplot2::theme_bw() +
-				ggplot2::theme(#legend.justification=c(0,1), legend.position=c(0,1),
-					panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
-					panel.grid.major=ggplot2::element_blank(),
-					axis.title.x = ggplot2::element_text(size=18,vjust=-.2), axis.title.y = ggplot2::element_text(size=18,vjust=-1),
-					axis.text.x = ggplot2::element_text(size=15), axis.text.y = ggplot2::element_text(size=15),
-					panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-					plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-					legend.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-					panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(),
-					legend.key = ggplot2::element_blank(), #legend.key.width = grid::unit(10,"mm"),
-					legend.title = ggplot2::element_text(size=12),
-					legend.text = ggplot2::element_text(size = 12),
-					axis.ticks = ggplot2::element_line(size = 0.5),
-					axis.ticks.margin = grid::unit(1,"mm"),
-					axis.ticks.length = grid::unit(3, "mm"),
-					plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
 				base_breaks_y(summaryStat, options$plotErrorBars) +
 				base_breaks_x(summaryStatSubset[,"plotHorizontalAxis"])
+				
+			p <- JASPgraphs::themeJasp(p, legend.position="right")
 
 			if (nPlots > 1) {
 				descriptivesPlot[["title"]] <- paste(options$plotSeparatePlots,": ",subsetPlots[i], sep = "")

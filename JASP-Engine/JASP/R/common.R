@@ -2266,6 +2266,8 @@ as.list.footnotes <- function(footnotes) {
 		if (obj) plot <- recordPlot() # save plot to R object
 	} else if (isRecordedPlot) { # function was called from editImage to resize the plot
 	    .redrawPlot(plot) #(see below)
+	} else if (inherits(plot, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
+	    gridExtra::grid.arrange(plot)
 	} else {
 		print(plot)
 	}
@@ -2635,7 +2637,8 @@ editImage <- function(plotName, type, height, width) {
 
 			# copy plot and check if we edit it
 			plot <- oldPlot
-			if (FALSE && type == "interactive" && isGgplot) {
+			if (type == "interactive" && isGgplot) {
+			#if (FALSE && type == "interactive" && isGgplot) {
 			  editedPlot <- ggedit::ggedit(oldPlot, viewer = shiny::browserViewer())
 				plot <- editedPlot[["UpdatedPlots"]][[1]]
 			}

@@ -213,12 +213,12 @@
 		{
 			"name": "plotWidthQQPlot",
 			"type": "Integer",
-			"default": 300
+			"default": 530
 		},
 		{
 			"name": "plotHeightQQPlot",
 			"type": "Integer",
-			"default": 300
+			"default": 400
 		}
 	]
 }

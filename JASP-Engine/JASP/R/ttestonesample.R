@@ -659,19 +659,9 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 				ggplot2::geom_line(position = pd, size = 0.7) + ggplot2::geom_point(position = pd,
 				size = 4) + ggplot2::geom_hline(data = testValue, ggplot2::aes(yintercept = testValue),
 				linetype = "dashed") + ggplot2::ylab(NULL) + ggplot2::xlab(NULL) +
-				ggplot2::theme_bw() + ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
-				plot.title = ggplot2::element_text(size = 18), panel.grid.major = ggplot2::element_blank(),
-				axis.title.x = ggplot2::element_blank(), axis.title.y = ggplot2::element_text(size = 18,
-				  vjust = -1), axis.text.x = ggplot2::element_blank(), axis.text.y = ggplot2::element_text(size = 15),
-				panel.background = ggplot2::element_rect(fill = "transparent", colour = NA),
-				plot.background = ggplot2::element_rect(fill = "transparent", colour = NA),
-				legend.background = ggplot2::element_rect(fill = "transparent", colour = NA),
-				panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(),
-				legend.key = ggplot2::element_blank(), legend.title = ggplot2::element_text(size = 12),
-				legend.text = ggplot2::element_text(size = 12), axis.ticks = ggplot2::element_line(size = 0.5),
-				axis.ticks.margin = grid::unit(1, "mm"), axis.ticks.length = grid::unit(3,
-				"mm"), axis.ticks.x = ggplot2::element_blank(), plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) +
-				base_breaks_y(summaryStat, options)
+				base_breaks_y(summaryStat, options) 
+			
+			p <- JASPgraphs::themeJasp(p) + ggplot2::theme(axis.text.x = ggplot2::element_blank(), axis.ticks.x = ggplot2::element_blank())
 
 			imgObj <- .writeImage(width = options$plotWidth, 
 														height = options$plotHeight, 

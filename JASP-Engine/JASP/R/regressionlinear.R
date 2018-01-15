@@ -192,19 +192,19 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	empty.model <- list(lm.fit = NULL, variables = NULL)
 	lm.fit.index.one.model <- 1
 	includes.nuisance <- FALSE
-	
+
 	if (length(options$modelTerms) > 0) {
 
 		variables.in.model <- NULL
 		variables.in.model.base64 <- NULL
     variables.in.null.model <- NULL
     variables.in.null.model.base64 <- NULL
-    
+
 		for (i in seq_along(options$modelTerms)) {
-		  
+
 			components <- options$modelTerms[[i]]$components
 			nuisance <- options$modelTerms[[i]]$isNuisance
-			
+
 			if (length(components) == 1) {
 
 				variables.in.model <- c(variables.in.model, components[[1]])
@@ -217,7 +217,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				variables.in.model <- c(variables.in.model, term)
 				variables.in.model.base64 <- c(variables.in.model.base64, term.base64)
 			}
-			
+
 			if (!is.null(nuisance) && nuisance) {
 			  if (length(components) == 1) {
 			    variables.in.null.model <- c(variables.in.null.model, components[[1]])
@@ -227,7 +227,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			    variables.in.null.model.base64 <- c(variables.in.null.model.base64, term.base64)
 			  }
 			}
-			
+
 		}
 
 		independent.base64 <- variables.in.model.base64
@@ -321,16 +321,16 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					lm.model <- .forwardRegression(dependent.base64, independent.base64, independent.null.base64, dataset, options, weights)
 					# if (length(lm.model) == 0) lm.model [[ 1 ]] <- empty.model
 				} else if (options$method == "stepwise") {
-				  
+
 					lm.model <- .stepwiseRegression(dependent.base64, independent.base64, independent.null.base64, dataset, options, weights)
-					
+
 				}
 			  if (includes.nuisance) {
 			    if (options$includeConstant == TRUE) {
 			      null.model.definition <- paste(dependent.base64, "~", paste(independent.null.base64, collapse = "+"))
 			    } else {
 			      null.model.definition <- paste(dependent.base64, "~", paste(independent.null.base64, collapse = "+"), "-1")
-			    }	
+			    }
 			    null.model.formula <- as.formula(null.model.definition)
 			    lm.fit.null <- try( stats::lm( null.model.formula, data = dataset, weights = weights, x=TRUE ), silent = TRUE)
 			    if ( !identical((lm.model[[1]][[1]]$coefficients), lm.fit.null$coefficients)) {
@@ -352,7 +352,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 					model.definition <- paste(dependent.base64, "~", paste(independent.base64, collapse = "+"))
           null.model.definition <- paste(dependent.base64, "~", paste(independent.null.base64, collapse = "+"))
-          
+
 				} else {
 
 					model.definition <- paste(dependent.base64, "~", paste(independent.base64, collapse = "+"), "-1")
@@ -374,24 +374,24 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 				model.formula <- as.formula(model.definition)
 				lm.fit <- try( stats::lm( model.formula, data = dataset, weights = weights, x=TRUE ), silent = TRUE)
-        
+
 				if(includes.nuisance){
 				  null.model.formula <- as.formula(null.model.definition)
 				  lm.fit.null <- try( stats::lm( null.model.formula, data = dataset, weights = weights, x=TRUE ), silent = TRUE)
 				}
-				
+
 				if ( class(lm.fit) == "lm") {
 
 					lm.model[[lm.fit.index.one.model]] <- list(lm.fit = lm.fit, variables = variables.in.model)
-					if(includes.nuisance && class(lm.fit.null) == "lm" ){ 
+					if(includes.nuisance && class(lm.fit.null) == "lm" ){
 					  lm.model[[1]] <- list(lm.fit = lm.fit.null, variables = variables.in.null.model)
 					}
-					  
+
 				} else {
 
 					list.of.errors[[ length(list.of.errors) + 1 ]]  <- "An unknown error occurred, please contact the author."
 					lm.model[[lm.fit.index.one.model]] <- list(lm.fit = NULL, variables = variables.in.model)
-					if(includes.nuisance){ 
+					if(includes.nuisance){
 					  lm.model[[1]] <- list(lm.fit = NULL, variables = variables.in.null.model)
 					}
 				}
@@ -399,7 +399,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			} else {
 
 				lm.model[[lm.fit.index.one.model]] <- list(lm.fit = NULL, variables = variables.in.model)
-				if(includes.nuisance){ 
+				if(includes.nuisance){
 				  lm.model[[1]] <- list(lm.fit = NULL, variables = variables.in.null.model)
 				}
 			}
@@ -410,7 +410,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			{
 				model.definition <- paste(dependent.base64, "~ 1")
 				model.formula <- as.formula(model.definition)
-				
+
 				if (perform == "run" && !is.null(model.definition) && length(list.of.errors) == 0) {
 
 					lm.fit <- try( stats::lm(model.formula, data = dataset, weight = weights, x=TRUE))
@@ -441,14 +441,14 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		if (length(options$modelTerms) > 0) {
 
 			lm.model[[lm.fit.index.one.model]] <- list(lm.fit = NULL, variables = variables.in.model)
-			if(includes.nuisance){ 
+			if(includes.nuisance){
 			  lm.model[[1]] <- list(lm.fit = NULL, variables = variables.in.null.model)
 			}
 
 		} else {
 
 			lm.model [[ lm.fit.index.one.model ]] <- empty.model
-			if(includes.nuisance){ 
+			if(includes.nuisance){
 			  lm.model[[1]] <- empty.model
 			}
 		}
@@ -669,7 +669,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	  null.model <- paste ("Null model includes ", paste (variables.in.null.model, collapse = ", "), sep = "")
 	  .addFootnote (footnotes, symbol = "<em>Note.</em>", text = null.model)
 	}
-	
+
 	empty.line <- list("Model" = ".", "R" = ".", "R2" = ".", "aR2" = ".", "se" = ".")
 
 
@@ -807,7 +807,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		  null.model <- paste ("Null model includes ", paste (variables.in.null.model, collapse = ", "), sep = "")
 		  .addFootnote (footnotes, symbol = "<em>Note.</em>", text = null.model)
 		}
-		
+
 		if (options$VovkSellkeMPR) {
 			.addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
 	    <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
@@ -819,7 +819,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	                                        type = "number",
 	                                        format = "sf:4;dp:3")
 		}
-      
+
 		anova[["schema"]] <- list(fields = fields)
 		anova.result <- list()
 
@@ -1320,7 +1320,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		}
 
 		regression[["data"]] <- regression.result
-		
+
 		# Check whether variables in the regression model are redundant
 		for(i in 1:length(regression$data)) {
 		  if (regression$data[[i]]$Coefficient=="NA") {
@@ -1331,7 +1331,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		    regression$data[[i]]$Name <- paste0(regression$data[[i]]$Name, "\u207A")
 		  }
 		}
-		
+
 		regression[["footnotes"]] <- as.list(footnotes)
 		results[["regression"]] <- regression
 
@@ -1407,7 +1407,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 					rownames.covmatrix <- variables.model
 					colnames.covmatrix <- variables.model
-					
+
 					# Check whether variables in the regression model are redundant
 					for(i in 1:length(lm.model[[1]]$lm.fit$coefficients)) {
 					  if (is.na(lm.model[[1]]$lm.fit$coefficients[i])) {
@@ -1427,11 +1427,11 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					    }
 					  }
 					}
-					
+
 					rownames(model.covmatrix) <- rownames.covmatrix
 					colnames(model.covmatrix) <- colnames.covmatrix
-					
-					
+
+
 					for (row.variable in rownames.covmatrix) {
 
 						if (grepl(":", row.variable)) {
@@ -1971,19 +1971,17 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 			# image <- .beginSaveImage(530, 400)
 
-			.plotFunc <- function() {
 			if (length(options$modelTerms) > 0 && dependent.variable != "") {
-				.plotResiduals(xlab=dependent.variable, ylab="Residuals", dontPlotData=TRUE)
+				p <- .plotResiduals(xlab=dependent.variable, ylab="Residuals", dontPlotData=TRUE)
 			} else {
-				.plotResiduals(xlab="", ylab="Residuals", dontPlotData=TRUE)
-			}
+				p <- .plotResiduals(xlab="", ylab="Residuals", dontPlotData=TRUE)
 			}
 
-			content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+			content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
 			plot[["convertible"]] <- TRUE
 			plot[["obj"]] <- content[["obj"]]
 			plot[["data"]] <- content[["png"]]
-			
+
 			# plot[["data"]] <- .endSaveImage(image)
 
 			plots.regression[[length(plots.regression)+1]] <- plot
@@ -2046,11 +2044,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				# image <- .beginSaveImage(530, 400)
 				# .plotResiduals(xlab=name, ylab="Residuals", dontPlotData=TRUE)
 				# plot[["data"]] <- .endSaveImage(image)
-				
-				.plotFunc <- function() {
-					.plotResiduals(xlab=name, ylab="Residuals", dontPlotData=TRUE)
-				}
-				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+				p <- .plotResiduals(xlab=name, ylab="Residuals", dontPlotData=TRUE)
+
+				content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
 				plot[["convertible"]] <- TRUE
 				plot[["obj"]] <- content[["obj"]]
 				plot[["data"]] <- content[["png"]]
@@ -2096,11 +2093,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			# image <- .beginSaveImage(530, 400)
 			# .plotResiduals(xlab="Predicted Values", ylab="Residuals", dontPlotData=TRUE)
 			# plot[["data"]] <- .endSaveImage(image)
-			
-			.plotFunc <- function() {
-					.plotResiduals(xlab="Predicted Values", ylab="Residuals", dontPlotData=TRUE)
-			}
-			content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+			p <- .plotResiduals(xlab="Predicted Values", ylab="Residuals", dontPlotData=TRUE)
+
+			content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
 			plot[["convertible"]] <- TRUE
 			plot[["obj"]] <- content[["obj"]]
 			plot[["data"]] <- content[["png"]]
@@ -2154,11 +2150,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			# image <- .beginSaveImage(530, 400)
 			# .plotResidualsHistogram(resName=resName, dontPlotData=TRUE)
 			# plot[["data"]] <- .endSaveImage(image)
-			
-			.plotFunc <- function() {
-				.plotResidualsHistogram(resName=resName, dontPlotData=TRUE)
-			}
-			content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+			p <- .plotResidualsHistogram(resName=resName, dontPlotData=TRUE)
+
+			content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
 			plot[["convertible"]] <- TRUE
 			plot[["obj"]] <- content[["obj"]]
 			plot[["data"]] <- content[["png"]]
@@ -2194,21 +2189,21 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			plot <- list()
 
 			plot[["title"]] <- "Q-Q Plot Standardized Residuals"
-			plot[["width"]]  <- 530
+			plot[["width"]]  <- 400
 			plot[["height"]] <- 400
 			plot[["status"]] <- "waiting"
 
 			# image <- .beginSaveImage(530, 400)
 			# .plotQQresidualsRegression(dontPlotData=TRUE)
 			# plot[["data"]] <- .endSaveImage(image)
-			
-			.plotFunc <- function() {
-				.plotQQresidualsRegression(dontPlotData=TRUE)
-			}
-			content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+			p <- .plotQQresidualsRegression(dontPlotData=TRUE)
+			content <- .writeImage(width = 400, height = 400, plot = p, obj = TRUE)
+
 			plot[["convertible"]] <- TRUE
 			plot[["obj"]] <- content[["obj"]]
 			plot[["data"]] <- content[["png"]]
+			plot[["editable"]] <- FALSE
 
 			plots.regression[[length(plots.regression)+1]] <- plot
 
@@ -2269,15 +2264,14 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 							# image <- .beginSaveImage(530, 400)
 							# .plotResiduals(xVar=dependent, res=res, xlab=dependent.variable, ylab="Residuals")
 							# plot[["data"]] <- .endSaveImage(image)
-							
-							.plotFunc <- function() {
-								.plotResiduals(xVar=dependent, res=res, xlab=dependent.variable, ylab="Residuals")
-							}
-							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+							p <- .plotResiduals(xVar=dependent, res=res, xlab=dependent.variable, ylab="Residuals")
+
+							content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
 							plot[["convertible"]] <- TRUE
 							plot[["obj"]] <- content[["obj"]]
 							plot[["data"]] <- content[["png"]]
-							
+
 						})
 
 						if (class(p) == "try-error") {
@@ -2290,15 +2284,14 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 						# image <- .beginSaveImage(530, 400)
 						# .plotResiduals(dontPlotData=TRUE, xlab="", ylab="Residuals")
 						# plot[["data"]] <- .endSaveImage(image)
-						
-						.plotFunc <- function() {
-							.plotResiduals(dontPlotData=TRUE, xlab="", ylab="Residuals")
-						}
-						content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+						p <- .plotResiduals(dontPlotData=TRUE, xlab="", ylab="Residuals")
+
+						content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
 						plot[["convertible"]] <- TRUE
 						plot[["obj"]] <- content[["obj"]]
 						plot[["data"]] <- content[["png"]]
-						
+
 					}
 				}
 
@@ -2380,15 +2373,14 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 							# image <- .beginSaveImage(530, 400)
 							# .plotResiduals(xVar=xVar, res=res, xlab=name, ylab="Residuals")
 							# plot[["data"]] <- .endSaveImage(image)
-							
-							.plotFunc <- function() {
-								.plotResiduals(xVar=xVar, res=res, xlab=name, ylab="Residuals")
-							}
-							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+							p <- .plotResiduals(xVar=xVar, res=res, xlab=name, ylab="Residuals")
+
+							content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
 							plot[["convertible"]] <- TRUE
 							plot[["obj"]] <- content[["obj"]]
 							plot[["data"]] <- content[["png"]]
-							
+
 						})
 
 						if (class(p) == "try-error") {
@@ -2456,15 +2448,14 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 							# image <- .beginSaveImage(530, 400)
 							# .plotResiduals(xVar=pred, res=res, xlab="Predicted Values", ylab="Residuals")
 							# plot[["data"]] <- .endSaveImage(image)
-							
-							.plotFunc <- function() {
-								.plotResiduals(xVar=pred, res=res, xlab="Predicted Values", ylab="Residuals")
-							}
-							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+							p <- .plotResiduals(xVar=pred, res=res, xlab="Predicted Values", ylab="Residuals")
+
+							content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
 							plot[["convertible"]] <- TRUE
 							plot[["obj"]] <- content[["obj"]]
 							plot[["data"]] <- content[["png"]]
-							
+
 						})
 
 						if (class(p) == "try-error") {
@@ -2478,15 +2469,14 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 						# image <- .beginSaveImage(530, 400)
 						# .plotResiduals(dontPlotData=TRUE, xlab="Predicted Values", ylab="Residuals")
 						# plot[["data"]] <- .endSaveImage(image)
-						
-						.plotFunc <- function() {
-							.plotResiduals(dontPlotData=TRUE, xlab="Predicted Values", ylab="Residuals")
-						}
-						content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+						p <- .plotResiduals(dontPlotData=TRUE, xlab="Predicted Values", ylab="Residuals")
+
+						content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
 						plot[["convertible"]] <- TRUE
 						plot[["obj"]] <- content[["obj"]]
 						plot[["data"]] <- content[["png"]]
-						
+
 					}
 
 				}
@@ -2552,15 +2542,14 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 							# image <- .beginSaveImage(530, 400)
 							# .plotResidualsHistogram(res=res, resName=resName)
 							# plot[["data"]] <- .endSaveImage(image)
-							
-							.plotFunc <- function() {
-								.plotResidualsHistogram(res=res, resName=resName)
-							}
-							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+							p <- .plotResidualsHistogram(res=res, resName=resName)
+
+							content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
 							plot[["convertible"]] <- TRUE
 							plot[["obj"]] <- content[["obj"]]
 							plot[["data"]] <- content[["png"]]
-							
+
 						})
 
 						if (class(p) == "try-error") {
@@ -2574,15 +2563,14 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 						# image <- .beginSaveImage(530, 400)
 						# .plotResidualsHistogram(dontPlotData=TRUE, resName=resName)
 						# plot[["data"]] <- .endSaveImage(image)
-						
-						.plotFunc <- function() {
-							.plotResidualsHistogram(dontPlotData=TRUE, resName=resName)
-						}
-						content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+						p <- .plotResidualsHistogram(dontPlotData=TRUE, resName=resName)
+
+						content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
 						plot[["convertible"]] <- TRUE
 						plot[["obj"]] <- content[["obj"]]
 						plot[["data"]] <- content[["png"]]
-						
+
 					}
 				}
 
@@ -2640,15 +2628,14 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 							# image <- .beginSaveImage(530, 400)
 							# .plotQQresidualsRegression(res=resSt)
 							# plot[["data"]] <- .endSaveImage(image)
-							
-							.plotFunc <- function() {
-								.plotQQresidualsRegression(res=resSt)
-							}
-							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+							p <- .plotQQresidualsRegression(res=resSt)
+							content <- .writeImage(width = 400, height = 400, plot = p, obj = TRUE)
+
 							plot[["convertible"]] <- TRUE
 							plot[["obj"]] <- content[["obj"]]
 							plot[["data"]] <- content[["png"]]
-							
+
 						})
 
 						if (class(p) == "try-error") {
@@ -2662,11 +2649,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 						# image <- .beginSaveImage(530, 400)
 						# .plotQQresidualsRegression(dontPlotData=TRUE)
 						# plot[["data"]] <- .endSaveImage(image)
-						
-						.plotFunc <- function() {
-							.plotQQresidualsRegression(dontPlotData=TRUE)
-						}
-						content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+
+						p <- .plotQQresidualsRegression(dontPlotData=TRUE)
+						content <- .writeImage(width = 400, height = 400, plot = p, obj = TRUE)
+
 						plot[["convertible"]] <- TRUE
 						plot[["obj"]] <- content[["obj"]]
 						plot[["data"]] <- content[["png"]]
@@ -2999,21 +2985,21 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 ################################
 
 .includeVariable <- function(dependent.variable, candidate.variables, data, options, weights, variables.in.model=NULL) {
-  
+
   fValues <- numeric(length(candidate.variables))
   pValues <- numeric(length(candidate.variables))
   fits <- list()
-  
+
   for (i in seq_along(candidate.variables)) {
-    
+
     if (options$includeConstant) {
-      
+
       formula <- as.formula(paste(dependent.variable, "~", paste(c(variables.in.model, candidate.variables[i]), collapse = "+")))
       fits[[candidate.variables[i]]] <- try(lm(formula, data=data, weights = weights, x=TRUE), silent=TRUE)
       fValues[i] <- summary(fits[[i]])$coefficients[ ,"t value"][length(variables.in.model) + 2]^2
       pValues[i] <- summary(fits[[i]])$coefficients[ ,"Pr(>|t|)"][length(variables.in.model) + 2]
     } else {
-      
+
       formula <- as.formula(paste(dependent.variable, "~", paste(c(variables.in.model, candidate.variables[i]), collapse = "+"), "-1"))
       fits[[i]] <- try(lm(formula, data=data, weights = weights, x=TRUE), silent=TRUE)
       fValues[i] <- summary(fits[[i]])$coefficients[ ,"t value"][length(variables.in.model) + 1]^2
@@ -3022,7 +3008,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
   }
 
   if (options$steppingMethodCriteriaType == "useFValue") {
-    
+
     maximumFvalue <- max(fValues)
     
     if (! is.na(maximumFvalue) && maximumFvalue > options$steppingMethodCriteriaFEntry) {
@@ -3031,9 +3017,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
       variables.in.model <- c(variables.in.model, maximumFvalueVariable)
       candidate.variables <- candidate.variables[candidate.variables != maximumFvalueVariable]
     }
-    
+
   } else if (options$steppingMethodCriteriaType == "usePValue") {
-    
+
     minimumPvalue <- min(pValues)
     
     if (! is.na(minimumPvalue) && minimumPvalue < options$steppingMethodCriteriaPEntry) {
@@ -3043,34 +3029,34 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
       candidate.variables <- candidate.variables[candidate.variables != minimumPvalueVariable]
     }
   }
-  
+
   if (options$includeConstant) {
-    
+
     if (is.null(variables.in.model)) {
-      
+
       formula1 <- as.formula(paste(dependent.variable, "~", "1"))
-      
+
     } else {
-      
+
       formula1 <- as.formula(paste(dependent.variable, "~", paste(variables.in.model, collapse = "+")))
     }
-    
+
   } else {
-    
+
     if (is.null(variables.in.model)) {
-      
+
       formula1 <- as.formula(paste(dependent.variable, "~", "1", "-1"))
-      
+
     } else {
-      
+
       formula1 <- as.formula(paste(dependent.variable, "~", paste(variables.in.model, collapse = "+"), "-1"))
     }
   }
-  
+
   lm.fit <- try(lm(formula1, data=data, weights = weights, x=TRUE), silent=TRUE)
-  
+
   return(list(lm.fit=lm.fit, variables=variables.in.model, candidate.variables=candidate.variables))
-  
+
 }
 
 .removeVariable <- function(dependent.variable, independent.variables, independent.null.variables, data, options, weights) {
@@ -3218,7 +3204,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		counter <- counter + 1
 	}
 
-  if( (counter == 0) && (length(independent.null.variables) > 0)) {		
+  if( (counter == 0) && (length(independent.null.variables) > 0)) {
     if (options$includeConstant) {
       formulaNull <- as.formula(paste(dependent.variable, "~", paste(independent.null.variables, collapse = "+")))
     } else {
@@ -3226,9 +3212,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
     }
     lm.fit <- try(lm(formulaNull, data=data, weights = weights, x=TRUE), silent=TRUE)
     lm.model.tmp <- list(lm.fit=lm.fit, variables=.unvWithInteraction(independent.null.variables))
-    lm.model[[ length(lm.model) + 1 ]] <- lm.model.tmp 
+    lm.model[[ length(lm.model) + 1 ]] <- lm.model.tmp
   }
-	
+
 	if (length(candidate.variables) > 0 && counter > 1)
 		lm.model <- lm.model[-length(lm.model)] # remove last fit that did not change independent variables
 
@@ -3325,170 +3311,163 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 .plotResiduals <- function(xVar=NULL, res=NULL, xlab, ylab="Residuals", dontPlotData=FALSE, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2) {
 
-	op <- par(mar= c(5.6, 7, 4, 7) + 0.1, las=1, xpd=TRUE)
+    if (dontPlotData) {
 
-	if (dontPlotData) {
+        dfYr <- data.frame(x = Inf, xend = Inf, y = -2,
+                          yend = 2)
 
-		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
+		p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, force = TRUE, yBreaks = -2:2, xBreaks = 1:5, yLabels = -2:2, xLabels = 1:5,
+			secondaryYaxis = ggplot2::sec_axis(~.+0,breaks = -2:2, name = "Standardize Residuals"))
+		
+		p <- p + ggplot2::geom_segment(data = dfYr,
+							  mapping = ggplot2::aes(x = x, y = y, xend = xend,yend = yend),
+							  lwd = .3, position = ggplot2::PositionIdentity,
+							  stat = ggplot2::StatIdentity, inherit.aes = FALSE, colour = "black")
+		
+		p <- JASPgraphs::themeJasp(p)
 
-		axis(1, at=0:1, labels=FALSE, cex.axis=cexXAxis, lwd=lwdAxis)
-		axis(2, at=0:1, labels=FALSE, cex.axis=cexYAxis, lwd=lwdAxis)
-		axis(4, at=0:1, labels=FALSE, cex.axis=cexYAxis, lwd=lwdAxis)
-		mtext(text = xlab, side = 1, cex=1.5, line = 2.9)
-		mtext(text = ylab, side = 2, cex=1.5, line = 3.25, las=0)
-		xx <- grconvertX(0.92, "ndc", "user")
-		text(xx, .5, "Standardized Residuals", srt= -90, cex= 1.6)
+        return(p)
+    }
 
-		return()
+    d <- data.frame(xx= xVar, yy= res)
+    d <- na.omit(d)
+    xVar <- d$xx
+    res <- d$yy
 
-	}
+    xlow <- min(pretty(xVar))
+    xhigh <- max(pretty(xVar))
+    xticks <- pretty(c(xlow, xhigh))
+    ylow <- min(pretty(res))
+    yhigh <- max(pretty(res))
 
-	d <- data.frame(xx= xVar, yy= res)
-	d <- na.omit(d)
-	xVar <- d$xx
-	res <- d$yy
-
-	xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
-	xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
-	xticks <- pretty(c(xlow, xhigh))
-	ylow <- min((min(res) - 0.1* min(res)), min(pretty(res)))
-	yhigh <- max((max(res) + 0.1* max(res)), max(pretty(res)))
-
-	yticks <- pretty(c(ylow, yhigh, 0))
-
-	yLabs <- vector("character", length(yticks))
-
-	for (i in seq_along(yticks)) {
-
-		if (yticks[i] < 10^6) {
-
-			yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
-
+    yticks <- pretty(c(ylow, yhigh, 0))
+	
+	xLabs <- vector("character", length(xticks))
+	for (i in seq_along(xticks)) {
+		if (xticks[i] < 10^6) {
+			xLabs[i] <- format(xticks[i], digits= 3, scientific = FALSE)
 		} else {
-
-			yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+			xLabs[i] <- format(xticks[i], digits= 3, scientific = TRUE)
 		}
 	}
 
-	plot(1, type="n", ylab="", xlab="", axes=FALSE, ylim= range(yticks), xlim= range(xticks), cex= cexPoints)
-	lines(range(xticks), rep(0, 2), lwd=lwd, col="darkred")
-
-	points(xVar, res, col="black", pch=21, bg = "grey", cex= cexPoints)
-
-	axis(1, line= 0.4, labels= xticks, at= xticks, cex.axis= cexXAxis, lwd=lwdAxis)
-	axis(2, line= 0.2, labels= yLabs, at= yticks, cex.axis= cexYAxis, lwd=lwdAxis)
-
-	maxYlab <- max(nchar(yLabs))
-	distLab <- maxYlab / 1.8
-	mtext(text = xlab, side = 1, cex=1.5, line = 2.9)
-	mtext(text = ylab, side = 2, cex=1.5, line = distLab + 2.1, las=0)
+    yLabs <- vector("character", length(yticks))
+    for (i in seq_along(yticks)) {
+        if (yticks[i] < 10^6) {
+            yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
+        } else {
+            yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+        }
+    }
 
 	stAxisTmp <- pretty( yticks / sd(res) )
 	stAxisOriginalScaleTmp <- stAxisTmp * sd(res)
 	stAxisOriginalScale <- stAxisOriginalScaleTmp[stAxisOriginalScaleTmp < max(yticks) & stAxisOriginalScaleTmp > min(yticks)]
 	stAxis <- stAxisOriginalScale / sd(res)
 
-	axis(side = 4, at= stAxisOriginalScale, labels=stAxis, cex.axis= cexYAxis, lwd=lwdAxis)
-	xx <- grconvertX(0.92, "ndc", "user")
-	text(xx, mean(range(yticks)), "Standardized Residuals", srt= -90, cex= 1.6)
-
-	par(op)
+    dfYr <- data.frame(x = Inf, xend = Inf, y = stAxisOriginalScale[1],
+                       yend = stAxisOriginalScale[length(stAxisOriginalScale)])
+					   
+	p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE,
+		secondaryYaxis = ggplot2::sec_axis(~.+0, breaks = stAxisOriginalScale, name = "Standardized Residuals\n",labels = stAxis))
+    p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(0, 0)), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = .5)
+	p <- JASPgraphs::drawPoints(p, dat = data.frame(x = xVar, y = res), size = 3)
+	
+	p <- p + ggplot2::geom_segment(data = dfYr,
+						  mapping = ggplot2::aes(x = x, y = y, xend = xend,yend = yend),
+						  lwd = .3, position = ggplot2::PositionIdentity,
+						  stat = ggplot2::StatIdentity, inherit.aes = FALSE, colour = "black")
+	
+	# JASP theme
+    p <- JASPgraphs::themeJasp(p)
+	
+    return(p)
 
 }
 
 .plotResidualsHistogram <- function(res=NULL, resName="Residuals", dontPlotData=FALSE, cexYlab= 1.3, lwd= 2, rugs= FALSE) {
 
-	op <- par(mar= c(5.6, 7, 4, 4) + 0.1)
+    library(JASPgraphs)
+    
+    if (dontPlotData) {
+        
+        p <- ggplot2::ggplot(data = data.frame(), mapping = ggplot2::aes())
+        p <- JASPgraphs::themeJasp(p,xName = xlab, yName = ylab)
+        
+        return(p)
+    }
 
-	if (dontPlotData) {
+    density <- density(res)
 
-		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
-		ax1 <- axis(1, line = 0.3, at=0:1, labels=FALSE, cex.axis = 1.2)
-		axis(2, at = c(0, .5, 1) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), cex.axis= 1.5, mgp= c(3, 0.7, 0), las=0)
-		mtext(text = resName, side = 1, cex=1.5, line = 3)
+    h <- hist(res, plot = FALSE)
+    dens <- h$density
+    yhigh <- 1.2*max(h$density)
+    ylow <- 0
+    xticks <- base::pretty(c(res, h$breaks), min.n= 3)
 
-		return()
-	}
+	p <- JASPgraphs::drawAxis(xName = resName, yName = "Density", xBreaks = xticks, yBreaks = c(0,max(density$y)+.1), force = TRUE, yLabels = NULL, xLabels = xticks)
+    p <- p + ggplot2::geom_histogram(data = data.frame(res), mapping = ggplot2::aes(x = res, y = ..density..),
+                                binwidth = (h$breaks[2] - h$breaks[1]),
+                                fill = "grey",
+                                col = "black",
+                                size = .3,
+                                center = ((h$breaks[2] - h$breaks[1])/2))
+	p <- p + ggplot2::geom_line(data = data.frame(x = density$x, y = density$y), mapping = ggplot2::aes(x = x, y = y), lwd = .7, col = "black")
+	p <- p + ggplot2::theme(axis.ticks.y = ggplot2::element_blank())
+	
+    p <- JASPgraphs::themeJasp(p)
 
-	density <- density(res)
-
-	h <- hist(res, plot = FALSE)
-	jitVar <- jitter(res)
-	yhigh <- max(max(h$density), max(density$y))
-	ylow <- 0
-	xticks <- pretty(c(res, h$breaks), min.n= 3)
-
-	plot(1, xlim= range(xticks), ylim= c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
-	h <- hist(res, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE, nbreaks= round(length(res)/5))
-	ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks, cex.axis = 1.2)
-	mtext(text = resName, side = 1, cex=1.5, line = 3)
-	ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), cex.axis= 1.5, mgp= c(3, 0.7, 0), las=0)
-
-	if(rugs)
-		rug(jitVar)
-
-	lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
-
-	par(op)
+    return(p)
 
 }
 
 
 .plotQQresidualsRegression <- function(res=NULL, xlab="Theoretical Quantiles", ylab= "Standardized Residuals", dontPlotData=FALSE, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2) {
+	
+    if (dontPlotData) {
+		
+		p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab)
+		
+        p <- JASPgraphs::themeJasp(p)
+        
+        return(p)
+        
+    }
 
-	op <- par(mar= c(5.6, 7, 4, 4) + 0.1, las=1, xpd=FALSE)
+    d <- data.frame(qqnorm(res, plot.it=FALSE))
+    d <- na.omit(d)
+    xVar <- d$x
+    yVar <- d$y
 
-	if (dontPlotData) {
+    xlow <- min(pretty(xVar))
+    xhigh <- max(pretty(xVar))
+    xticks <- pretty(c(xlow, xhigh))
+	
+    ylow <- min(pretty(yVar))
+    yhigh <- max(pretty(yVar))
+    yticks <- pretty(c(ylow, yhigh))
 
-		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
+    yLabs <- vector("character", length(yticks))
 
-		axis(1, at=0:1, labels=FALSE, cex.axis=cexXAxis, lwd=lwdAxis, xlab="")
-		axis(2, at=0:1, labels=FALSE, cex.axis=cexYAxis, lwd=lwdAxis, ylab="")
-		mtext(text = xlab, side = 1, cex=1.5, line = 2.9)
-		mtext(text = ylab, side = 2, cex=1.5, line = 3.25, las=0)
+    for (i in seq_along(yticks)) {
 
-		return()
-	}
+        if (yticks[i] < 10^6) {
 
-	d <- data.frame(qqnorm(res, plot.it=FALSE))
-	d <- na.omit(d)
-	xVar <- d$x
-	yVar <- d$y
+            yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
 
-	xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
-	xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
-	xticks <- pretty(c(xlow, xhigh))
-	ylow <- min((min(yVar) - 0.1* min(yVar)), min(pretty(yVar)))
-	yhigh <- max((max(yVar) + 0.1* max(yVar)), max(pretty(yVar)))
+        } else {
 
-	yticks <- pretty(c(ylow, yhigh))
+            yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+        }
+    }
 
-	yLabs <- vector("character", length(yticks))
+	p <- JASPgraphs::drawAxis(xName = "Theoretical Quantiles", yName = "Standardized Residuals", xBreaks = xticks, yBreaks = xticks, force = TRUE)
+	p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(min(xticks), max(xticks))), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = 1)
+	p <- JASPgraphs::drawPoints(p, dat = data.frame(xVar, yVar), size = 3)
+	
+	# JASP theme
+    p <- JASPgraphs::themeJasp(p)
 
-	for (i in seq_along(yticks)) {
-
-		if (yticks[i] < 10^6) {
-
-			yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
-
-		} else {
-
-			yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
-		}
-	}
-
-	plot(1, type="n", ylab="", xlab="", axes=FALSE, ylim= range(yticks), xlim= range(xticks))
-	plotrix::ablineclip(a=0, b=1, x1=min(xticks), x2=max(xticks), y1=min(yticks), y2=max(yticks), lwd=lwd, col="darkred")
-	points(xVar, yVar, pch=21, bg = "grey", cex= cexPoints)
-
-	axis(1, line= 0.4, labels= xticks, at= xticks, cex.axis= cexXAxis, lwd=lwdAxis)
-	axis(2, line= 0.2, labels= yLabs, at= yticks, cex.axis= cexYAxis, lwd=lwdAxis, las=1)
-
-	maxYlab <- max(nchar(yLabs))
-	distLab <- maxYlab / 1.8
-	mtext(text = xlab, side = 1, cex=1.5, line = 2.9)
-	mtext(text = ylab, side = 2, cex=1.5, line = distLab + 2.1, las=0)
-
-	par(op)
+    return(p)
 
 }
