@@ -1,0 +1,69 @@
+{
+	"name": "BainRegressionLinearBayesian",
+	"autorun": true,
+	"version": "1.00",
+	"jaspResults": true,
+	"options": [
+		{
+			"name": "dependent",
+			"type": "Variable"
+		},
+		{
+			"name": "covariates",
+			"type": "Variables"
+		},
+		{
+			"name": "standardized",
+			"type": "Boolean"
+		},
+		{
+			"name": "BFplot",
+			"type": "Boolean"
+		},
+		{
+			"name": "descriptives",
+			"type": "Boolean"
+		},
+		{
+			"name": "BFmatrix",
+			"type": "Boolean"
+		},
+		{
+			"options": [ "BF01", "BF10" ],
+			"default": "BF10",
+			"name": "bayesFactorType",
+			"type": "List"
+		},
+		{
+			"options": [ "BF", "logBF" ],
+			"default": "BF",
+			"name": "logScale",
+			"type": "List"
+		},
+		{
+			"name": "CredibleInterval",
+			"type": "Number",
+			"value": 95,
+			"min": 1,
+			"max": 99
+		},
+		{
+			"name": "model",
+			"type": "String"
+		},
+		{
+			"name": "plotWidth",
+			"type": "Integer",
+			"default": 480
+		},
+		{
+			"name": "plotHeight",
+			"type": "Integer",
+			"default": 320
+		},
+		{
+			"name": "coefficients",
+			"type": "Boolean"
+		}
+	]
+}

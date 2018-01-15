@@ -1,0 +1,94 @@
+{
+	"name": "BainCorrelationBayesian",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+		{
+			"name": "model",
+			"type": "String"
+		},
+		{
+			"name": "variables",
+			"type": "Variables"
+		},
+		{
+			"default": true,
+			"name": "pearson",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "kendallsTauB",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "spearman",
+			"type": "Boolean"
+		},
+		{
+			"name": "hypothesis",
+			"options": [ "correlated", "correlatedPositively", "correlatedNegatively" ],
+			"default": "correlated",
+			"type": "List"
+		},
+		{
+			"default": true,
+			"name": "reportBayesFactors",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "flagSupported",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "credibleIntervals",
+			"type": "Boolean"
+		},
+		{
+			"format": "%",
+			"max": 0.999,
+			"min": 0.0,
+			"name": "credibleIntervalsInterval",
+			"type": "Number",
+			"value": 0.950
+		},
+		{
+			"format": "",
+			"min": 0.0,
+			"max": 2.0,
+			"name": "priorWidth",
+			"type": "Number",
+			"value": 1.0
+		},
+		{
+			"name": "missingValues",
+			"options": [ "excludePairwise", "excludeListwise" ],
+			"default": "excludePairwise",
+			"type": "List"
+		},
+		{
+			"name": "bayesFactorType",
+			"options": [ "BF10", "BF01", "LogBF10" ],
+			"default": "BF10",
+			"type": "List"
+		},
+		{
+			"default": false,
+			"name": "plotCorrelationMatrix",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotDensitiesForVariables",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotPosteriors",
+			"type": "Boolean"
+		}
+	]
+}

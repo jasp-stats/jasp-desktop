@@ -1,0 +1,71 @@
+{
+	"name": "BainAncovaBayesian",
+	"autorun": true,
+	"version": "1.00",
+	"jaspResults": true,
+	"options": [
+		{
+			"name": "model",
+			"type": "String"
+		},
+		{
+			"name": "dependent",
+			"type": "Variable"
+		},
+		{
+			"name": "fixedFactors",
+			"type": "Variable"
+        },
+		{
+			"name": "covariates",
+			"type": "Variables"
+        },
+		{
+			"name": "bayesFactorType",
+			"type": "List",
+            "options": [ "BF01", "BF10" ],
+            "default": "BF10"
+        },
+        {
+            "name": "logScale",
+            "type": "List",
+            "options": [ "BF", "logBF" ],
+            "default": "BF"
+        },
+        {
+            "name": "CredibleInterval",
+            "type": "Integer",
+            "default": 95
+        },
+        {
+            "name": "BFplot",
+            "type": "Boolean"
+        },
+		{
+			"name": "BFmatrix",
+			"type": "Boolean"
+		},
+        {
+            "name": "descriptives",
+            "type": "Boolean"
+        },
+		{
+			"name": "plotWidth",
+			"type": "Integer",
+			"default": 480
+		},
+		{
+			"name": "plotHeight",
+			"type": "Integer",
+			"default": 320
+		},
+		{
+			"name": "plotDescriptives",
+			"type": "Boolean"
+		},
+		{
+			"name": "coefficients",
+			"type": "Boolean"
+		}
+	]
+}

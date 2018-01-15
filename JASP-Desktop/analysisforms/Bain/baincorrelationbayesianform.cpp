@@ -1,0 +1,69 @@
+//
+// Copyright (C) 2013-2017 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public
+// License along with this program.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
+
+#include "baincorrelationbayesianform.h"
+#include "ui_baincorrelationbayesianform.h"
+
+#include "widgets/itemmodelselectvariable.h"
+
+
+BainCorrelationBayesianForm::BainCorrelationBayesianForm(QWidget *parent) :
+	AnalysisForm("BainCorrelationBayesianForm", parent),
+	ui(new Ui::BainCorrelationBayesianForm)
+{
+	ui->setupUi(this);
+
+	_availableVariablesModel.setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
+	_availableVariablesModel.setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
+	ui->availableVariables->setModel(&_availableVariablesModel);
+	ui->availableVariables->setDoubleClickTarget(ui->variables);
+
+	_modelVariables = new TableModelVariablesAssigned();
+	_modelVariables->setSource(&_availableVariablesModel);
+	_modelVariables->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
+	_modelVariables->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
+	ui->variables->setModel(_modelVariables);
+
+	ui->assignButton->setSourceAndTarget(ui->availableVariables, ui->variables);
+
+	ui->missingValues->hide();
+
+#ifdef QT_NO_DEBUG
+	ui->spearman->hide();
+    //ui->kendallsTauB->hide();
+    ui->credibleIntervalsIntervalContainer->hide();
+    ui->credibleIntervals->hide();
+#else
+	ui->spearman->setStyleSheet("background-color: pink ;");
+    //ui->kendallsTauB->setStyleSheet("background-color: pink ;");
+	ui->credibleIntervalsIntervalContainer->setStyleSheet("background-color: pink ;");
+	ui->credibleIntervals->setStyleSheet("background-color: pink ;");
+#endif
+
+	ui->credibleIntervalsInterval->setLabel("Credible intervals");
+
+	ItemModelSelectVariable *itemSelectModel = new ItemModelSelectVariable(this);
+	itemSelectModel->setSource(&_availableVariablesModel);
+
+	ui->model_constraints->hide();
+}
+
+BainCorrelationBayesianForm::~BainCorrelationBayesianForm()
+{
+	delete ui;
+}
