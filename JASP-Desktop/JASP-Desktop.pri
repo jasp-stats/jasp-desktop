@@ -159,8 +159,9 @@ SOURCES += \
     $$PWD/backstage/computerlistmodel.cpp \
     $$PWD/backstage/backstageosf.cpp \
     $$PWD/backstage/osflistmodel.cpp \
-    $$PWD/backstage/osfbreadcrumbslistmodel.cpp
-
+    $$PWD/backstage/osfbreadcrumbslistmodel.cpp \
+    $$PWD/widgets/baintextedit.cpp \
+    $$PWD/widgets/textmodelbain.cpp
 
 
 HEADERS  += \
@@ -337,7 +338,9 @@ HEADERS  += \
     $$PWD/backstage/computerlistmodel.h \
     $$PWD/backstage/backstageosf.h \
     $$PWD/backstage/osflistmodel.h \
-    $$PWD/backstage/osfbreadcrumbslistmodel.h
+    $$PWD/backstage/osfbreadcrumbslistmodel.h \
+    $$PWD/widgets/baintextedit.h \
+    $$PWD/widgets/textmodelbain.h
 
 FORMS += \
     $$PWD/aboutdialog.ui \

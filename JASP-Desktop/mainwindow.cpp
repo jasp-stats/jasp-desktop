@@ -69,6 +69,17 @@
 #include "analysisforms/MetaAnalysis/classicalmetaanalysisform.h"
 
 
+#ifdef QT_DEBUG
+#include "analysisforms/Bain/bainanovarepeatedmeasuresbayesianform.h"
+#include "analysisforms/Bain/baincorrelationbayesianform.h"
+#endif
+#include "analysisforms/Bain/bainregressionlinearbayesianform.h"
+#include "analysisforms/Bain/bainancovabayesianform.h"
+#include "analysisforms/Bain/bainanovabayesianform.h"
+#include "analysisforms/Bain/bainttestbayesianindependentsamplesform.h"
+#include "analysisforms/Bain/bainttestbayesianonesampleform.h"
+#include "analysisforms/Bain/bainttestbayesianpairedsamplesform.h"
+
 ///// 1-analyses headers
 
 #include <QDebug>
@@ -258,6 +269,8 @@ void MainWindow::makeConnections()
 	connectRibbonButton(ui->ribbonSummaryStatistics);
 	connectRibbonButton(ui->ribbonMetaAnalysis);
 	connectRibbonButton(ui->ribbonNetworkAnalysis);
+	connectRibbonButton(ui->ribbonBain);
+	
 }
 
 void MainWindow::initQWidgetGUIParts()
@@ -797,49 +810,110 @@ AnalysisForm* MainWindow::loadForm(const string name)
 
 	QWidget *contentArea = ui->optionsContentArea;
 
-	if		(name == "Ancova")										form = new AncovaForm(contentArea);
-	else if (name == "AnovaOneWay")									form = new AnovaOneWayForm(contentArea);
-	else if (name == "Correlation")									form = new CorrelationForm(contentArea);
-	else if (name == "Descriptives")								form = new DescriptivesForm(contentArea);
-	else if (name == "NetworkAnalysis")								form = new NetworkAnalysisForm(contentArea);
-	else if (name == "MultinomialTest")								form = new MultinomialTestForm(contentArea);
-	else if (name == "RegressionLinear")							form = new RegressionLinearForm(contentArea);
-	else if (name == "AnovaMultivariate")							form = new AnovaMultivariateForm(contentArea);
-	else if (name == "AncovaMultivariate")							form = new AncovaMultivariateForm(contentArea);
-	else if (name == "CorrelationPartial")							form = new CorrelationPartialForm(contentArea);
-	else if (name == "RegressionLogistic")							form = new RegressionLogisticForm(contentArea);
-	else if (name == "RegressionLogLinear")							form = new RegressionLogLinearForm(contentArea);
-	else if (name == "AnovaRepeatedMeasures")						form = new AnovaRepeatedMeasuresForm(contentArea);
-	else if (name == "TTestBayesianOneSample")						form = new TTestBayesianOneSampleForm(contentArea);
-	else if (name == "CorrelationBayesianPairs")					form = new CorrelationBayesianPairsForm(contentArea);
-	else if (name == "ExploratoryFactorAnalysis")					form = new ExploratoryFactorAnalysisForm(contentArea);
-	else if (name == "PrincipalComponentAnalysis")					form = new PrincipalComponentAnalysisForm(contentArea);
-	else if (name == "RegressionLogLinearBayesian")					form = new RegressionLogLinearBayesianForm(contentArea);
-	else if (name == "TTestBayesianIndependentSamples")				form = new TTestBayesianIndependentSamplesForm(contentArea);
-	else if (name == "SummaryStatsRegressionLinearBayesian")		form = new SummaryStatsRegressionLinearBayesianForm(contentArea);
-	else if (name == "SummaryStatsTTestBayesianIndependentSamples")	form = new SummaryStatsTTestBayesianIndependentSamplesForm(contentArea);
-	else if (name == "SummaryStatsTTestBayesianPairedSamples")		form = new SummaryStatsTTestBayesianPairedSamplesForm(contentArea);
-	else if (name == "SummaryStatsCorrelationBayesianPairs")		form = new SummaryStatsCorrelationBayesianPairsForm(contentArea);
-	else if (name == "SummaryStatsTTestBayesianOneSample")			form = new SummaryStatsTTestBayesianOneSampleForm(contentArea);
-	else if (name == "ReinforcementLearningR11tLearning")			form = new ReinforcementLearningR11tLearningForm(contentArea);
-	else if (name == "SummaryStatsBinomialTestBayesian")			form = new SummaryStatsBinomialTestBayesianForm(contentArea);
-	else if (name == "AnovaRepeatedMeasuresBayesian")				form = new AnovaRepeatedMeasuresBayesianForm(contentArea);
-	else if (name == "TTestBayesianPairedSamples")					form = new TTestBayesianPairedSamplesForm(contentArea);
-	else if (name == "ContingencyTablesBayesian")					form = new ContingencyTablesBayesianForm(contentArea);
-	else if (name == "RegressionLinearBayesian")					form = new RegressionLinearBayesianForm(contentArea);
-	else if (name == "TTestIndependentSamples")						form = new TTestIndependentSamplesForm(contentArea);
-	else if (name == "ClassicalMetaAnalysis")						form = new ClassicalMetaAnalysisForm(contentArea);
-	else if (name == "BinomialTestBayesian")						form = new BinomialTestBayesianForm(contentArea);
-	else if (name == "CorrelationBayesian")							form = new CorrelationBayesianForm(contentArea);
-	else if (name == "ReliabilityAnalysis")							form = new ReliabilityAnalysisForm(contentArea);
-	else if (name == "TTestPairedSamples")							form = new TTestPairedSamplesForm(contentArea);
-	else if (name == "ContingencyTables")							form = new ContingencyTablesForm(contentArea);
-	else if (name == "TTestOneSample")								form = new TTestOneSampleForm(contentArea);
-	else if (name == "AncovaBayesian")								form = new AncovaBayesianForm(contentArea);
-	else if (name == "AnovaBayesian")								form = new AnovaBayesianForm(contentArea);
-	else if (name == "BinomialTest")								form = new BinomialTestForm(contentArea);
-	else if (name == "SEMSimple")									form = new SEMSimpleForm(contentArea);
-	else if (name == "Anova")										form = new AnovaForm(contentArea);
+	if (name == "Descriptives")
+		form = new DescriptivesForm(contentArea);
+	else if (name == "TTestBayesianOneSample")
+		form = new TTestBayesianOneSampleForm(contentArea);
+	else if (name == "TTestBayesianIndependentSamples")
+		form = new TTestBayesianIndependentSamplesForm(contentArea);
+	else if (name == "TTestBayesianPairedSamples")
+		form = new TTestBayesianPairedSamplesForm(contentArea);
+	else if (name == "TTestIndependentSamples")
+		form = new TTestIndependentSamplesForm(contentArea);
+	else if (name == "TTestPairedSamples")
+		form = new TTestPairedSamplesForm(contentArea);
+	else if (name == "TTestOneSample")
+		form = new TTestOneSampleForm(contentArea);
+	else if (name == "AnovaBayesian")
+		form = new AnovaBayesianForm(contentArea);
+	else if (name == "AnovaOneWay")
+		form = new AnovaOneWayForm(contentArea);
+	else if (name == "Anova")
+		form = new AnovaForm(contentArea);
+	else if (name == "AnovaRepeatedMeasures")
+		form = new AnovaRepeatedMeasuresForm(contentArea);
+	else if (name == "Ancova")
+		form = new AncovaForm(contentArea);
+	else if (name == "AnovaMultivariate")
+		form = new AnovaMultivariateForm(contentArea);
+	else if (name == "AncovaMultivariate")
+		form = new AncovaMultivariateForm(contentArea);
+	else if (name == "RegressionLinear")
+		form = new RegressionLinearForm(contentArea);
+	else if (name == "RegressionLinearBayesian")
+		form = new RegressionLinearBayesianForm(contentArea);
+	else if (name == "RegressionLogistic")
+		form = new RegressionLogisticForm(contentArea);
+	else if (name == "RegressionLogLinear")
+		form = new RegressionLogLinearForm(contentArea);
+	else if (name == "RegressionLogLinearBayesian")
+		form = new RegressionLogLinearBayesianForm(contentArea);
+	else if (name == "Correlation")
+		form = new CorrelationForm(contentArea);
+	else if (name == "CorrelationBayesian")
+		form = new CorrelationBayesianForm(contentArea);
+	else if (name == "CorrelationBayesianPairs")
+		form = new CorrelationBayesianPairsForm(contentArea);
+	else if (name == "CorrelationPartial")
+		form = new CorrelationPartialForm(contentArea);
+	else if (name == "ContingencyTables")
+		form = new ContingencyTablesForm(contentArea);
+	else if (name == "ContingencyTablesBayesian")
+		form = new ContingencyTablesBayesianForm(contentArea);
+	else if (name == "SEMSimple")
+		form = new SEMSimpleForm(contentArea);
+	else if (name == "AncovaBayesian")
+		form = new AncovaBayesianForm(contentArea);
+	else if (name == "AnovaRepeatedMeasuresBayesian")
+		form = new AnovaRepeatedMeasuresBayesianForm(contentArea);
+	else if (name == "BinomialTest")
+		form = new BinomialTestForm(contentArea);
+	else if (name == "MultinomialTest")
+		form = new MultinomialTestForm(contentArea);
+	else if (name == "BinomialTestBayesian")
+		form = new BinomialTestBayesianForm(contentArea);
+	else if (name == "ReliabilityAnalysis")
+		form = new ReliabilityAnalysisForm(contentArea);
+	else if (name == "ExploratoryFactorAnalysis")
+		form = new ExploratoryFactorAnalysisForm(contentArea);
+	else if (name == "PrincipalComponentAnalysis")
+		form = new PrincipalComponentAnalysisForm(contentArea);
+	else if (name == "SummaryStatsTTestBayesianOneSample")
+		form = new SummaryStatsTTestBayesianOneSampleForm(contentArea);
+	else if (name == "SummaryStatsTTestBayesianIndependentSamples")
+		form = new SummaryStatsTTestBayesianIndependentSamplesForm(contentArea);
+	else if (name == "SummaryStatsTTestBayesianPairedSamples")
+		form = new SummaryStatsTTestBayesianPairedSamplesForm(contentArea);
+	else if (name == "SummaryStatsBinomialTestBayesian")
+		form = new SummaryStatsBinomialTestBayesianForm(contentArea);
+	else if (name == "SummaryStatsRegressionLinearBayesian")
+		form = new SummaryStatsRegressionLinearBayesianForm(contentArea);
+	else if (name == "SummaryStatsCorrelationBayesianPairs")
+		form = new SummaryStatsCorrelationBayesianPairsForm(contentArea);
+	else if (name == "ClassicalMetaAnalysis")
+		form = new ClassicalMetaAnalysisForm(contentArea);
+	else if (name == "BainTTestBayesianOneSample")
+		form = new BainTTestBayesianOneSampleForm(contentArea);
+	else if (name == "BainTTestBayesianIndependentSamples")
+		form = new BainTTestBayesianIndependentSamplesForm(contentArea);
+	else if (name == "BainTTestBayesianPairedSamples")
+		form = new BainTTestBayesianPairedSamplesForm(contentArea);
+	else if (name == "BainAncovaBayesian")
+		form = new BainAncovaBayesianForm(contentArea);
+	else if (name == "BainAnovaBayesian")
+		form = new BainAnovaBayesianForm(contentArea);
+	else if (name == "BainRegressionLinearBayesian")
+		form = new BainRegressionLinearBayesianForm(contentArea);
+#ifdef QT_DEBUG
+    else if (name == "BainCorrelationBayesian")
+        form = new BainCorrelationBayesianForm(contentArea);
+    else if (name == "BainAnovaRepeatedMeasuresBayesian")
+        form = new BainAnovaRepeatedMeasuresBayesianForm(contentArea);
+#endif
+	else if (name == "NetworkAnalysis")
+		form = new NetworkAnalysisForm(contentArea);
+	else if (name == "ReinforcementLearningR11tLearning")
+		form = new ReinforcementLearningR11tLearningForm(contentArea);
 ///// 4-analysis if-else ladder
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
@@ -907,6 +981,8 @@ void MainWindow::analysisSelectedHandler(int id)
 
 	if (_currentAnalysis != NULL)
 	{
+		QString currentModuleName = QString::fromStdString(_currentAnalysis->module());
+		ui->tabBar->setCurrentTab(currentModuleName);
 		showForm(_currentAnalysis);
 		ui->tabBar->setCurrentTab(QString::fromStdString(_currentAnalysis->module()));
 	}
@@ -1340,6 +1416,7 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 	ui->ribbonReinforcementLearning->setDataSetLoaded(loaded);
 	ui->ribbonMetaAnalysis->setDataSetLoaded(loaded);
 	ui->ribbonNetworkAnalysis->setDataSetLoaded(loaded);
+	ui->ribbonBain->setDataSetLoaded(loaded);
 ///// 5-ribbon updateMenuEnabledDisabledStatus
 }
 

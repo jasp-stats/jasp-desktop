@@ -1,0 +1,73 @@
+{
+	"name": "BainTTestBayesianIndependentSamples",
+	"autorun": true,
+	"version": "1.00",
+	"jaspResults": true,
+	"options": [
+		{
+			"name": "variables",
+			"type": "Variables"
+		},
+		{
+			"name": "groupingVariable",
+			"type": "Variable"
+		},
+		{
+			"default": false,
+			"name": "descriptives",
+			"type": "Boolean"
+		},
+		{
+			"name": "hypothesis",
+            "options": [ "groupsNotEqual", "groupOneGreater", "groupTwoGreater", "_4type", "allTypes" ],
+			"default": "groupsNotEqual",
+			"type": "List"
+		},
+		{
+			"name": "missingValues",
+			"options": [ "excludeAnalysisByAnalysis", "excludeListwise" ],
+			"default": "excludeAnalysisByAnalysis",
+			"type": "List"
+		},
+		{
+			"default": false,
+			"name": "plotPriorAndPosterior",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "descriptivesPlots",
+			"type": "Boolean"
+		},
+		{
+			"format": "%",
+			"max": 0.999,
+			"min": 0.000,
+			"name": "descriptivesPlotsCredibleInterval",
+			"type": "Number",
+			"value": 0.950
+		},
+		{
+			"default": 420,
+			"name": "plotWidth",
+			"type": "Integer"
+		},
+		{
+			"default": 340,
+			"name": "plotHeight",
+			"type": "Integer"
+		},
+		{
+			"name": "bayesFactorType",
+            "options": [ "BF10", "BF01" ],
+            "default": "BF01",
+			"type": "List"
+        },
+        {
+            "name": "logscale",
+            "options": [ "BF", "logBF" ],
+            "default": "BF",
+            "type": "List"
+        }
+	]
+}

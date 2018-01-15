@@ -191,6 +191,8 @@ QPushButton::menu-indicator {
           <widget class="RibbonSummaryStatistics" name="ribbonSummaryStatistics"/>
           <widget class="RibbonMetaAnalysis" name="ribbonMetaAnalysis"/>
           <widget class="RibbonNetworkAnalysis" name="ribbonNetworkAnalysis"/>
+          <widget class="RibbonBain" name="ribbonBain"/>
+<!-- Add ribbon widget page -->
          </widget>
         </item>
         <item>
@@ -572,6 +574,11 @@ QPushButton::menu-indicator {
    <class>RibbonMetaAnalysis</class>
    <extends>QWidget</extends>
    <header>ribbons/ribbonmeta_analysis.h</header>
+  </customwidget>
+  <customwidget>
+   <class>RibbonBain</class>
+   <extends>QWidget</extends>
+   <header location="global">ribbons/ribbonbain.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
