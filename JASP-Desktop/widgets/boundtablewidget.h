@@ -20,6 +20,7 @@
 #define BOUNDTABLEWIDGET_H
 
 #include <QTableWidget>
+#include <QStringList>
 
 #include "bound.h"
 
@@ -39,11 +40,13 @@ public:
 
 	virtual void bindTo(Option *option) OVERRIDE;
 
+	void populateTableFromOption();
 	void updateTableValues();
 
 private:
 	OptionsTable *_boundTo;
 	std::vector<Options *> _groups;
+	QStringList _verticalLabels;
 };
 
 #endif // BOUNDTABLEWIDGET_H

@@ -23,6 +23,7 @@
 #include <QStringList>
 
 #include "../analysisform.h"
+#include "options/optionvariable.h"
 
 namespace Ui {
 class MultinomialTestForm;
@@ -36,13 +37,16 @@ public:
 	explicit MultinomialTestForm(QWidget *parent = 0);
 	~MultinomialTestForm();
 	void addColumnToTable();
-	void deleteColumnFromTable();
+	bool deleteColumnFromTable();
+	void resetTable();
+	void setTableVerticalHeaders();
 
 	void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
 
 private slots:
 	void on_addColumn_clicked(bool checked);
 	void on_deleteColumn_clicked(bool checked);
+	void on_resetColumns_clicked(bool checked);
 	void addFixedFactors();
 	void cellChangedHandler();
 
@@ -51,7 +55,7 @@ private:
 	QStringList verticalLabels;
 	QStringList horizontalLabels;
 	TableModelVariablesAssigned *factorModel;
-	DataSet *_dataSet;
+	std::string _previous;
 };
 
 #endif // MULTINOMIALTESTFORM_H
