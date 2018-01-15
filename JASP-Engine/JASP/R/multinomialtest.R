@@ -518,28 +518,11 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
                              size = 0.75, width = 0.3) +
       base_breaks_y(ciDf$upperCI) +
       ggplot2::xlab(options$factor) +
-      ggplot2::ylab(yname) +
-      ggplot2::coord_flip() +
-      ggplot2::theme_bw() +
-      ggplot2::theme(
-        panel.grid.minor = ggplot2::element_blank(),
-        plot.title = ggplot2::element_text(size = 18),
-        panel.grid.major = ggplot2::element_blank(),
-        axis.title.x = ggplot2::element_text(size = 18, vjust=0.1),
-        axis.title.y = ggplot2::element_text(size = 18, vjust=0.9),
-        axis.text.x = ggplot2::element_text(size = 15),
-        axis.text.y = ggplot2::element_text(size = 15),
-        panel.background = ggplot2::element_rect(fill = "transparent", colour = NA),
-        plot.background = ggplot2::element_rect(fill = "transparent", colour = NA),
-        legend.background = ggplot2::element_rect(fill = "transparent", colour = NA),
-        panel.border = ggplot2::element_blank(),
-        axis.line =  ggplot2::element_blank(),
-        legend.key = ggplot2::element_blank(),
-        axis.ticks = ggplot2::element_line(size = 0.5),
-        axis.ticks.length = grid::unit(3, "mm"),
-        axis.ticks.margin = grid::unit(1,"mm"),
-        plot.margin = grid::unit(c(0.1, 0.1, 0.6, 0.6), "cm"),
-        legend.position = "none")
+      ggplot2::ylab(yname)
+      
+    p <- JASPgraphs::themeJasp(p, horizontal = TRUE, xAxis = FALSE)
+    
+    
 
     # create plot object
     content <- .writeImage(width = options$plotWidth,

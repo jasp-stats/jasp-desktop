@@ -1126,45 +1126,13 @@
   }
 
   # then perform the theme and return the ggplot object
+  p <- JASPgraphs::themeJasp(p, legend.position = "none")
+  
   p + ggplot2::xlab(var) +
     ggplot2::ylab(ytitle) +
-    ggplot2::theme_bw() +
     custom_x_axis(ribdat) +
-    custom_y_axis() +
-    ggplot2::theme(
-      panel.grid.minor = ggplot2::element_blank(),
-      plot.title = ggplot2::element_text(size = 18),
-      panel.grid.major = ggplot2::element_blank(),
-      axis.title.x = ggplot2::element_text(size = 18, vjust = 0.1),
-      axis.title.y = ggplot2::element_text(size = 18, vjust = 0.9),
-      axis.text.x = ggplot2::element_text(
-        size = 15,
-        margin = ggplot2::margin(t = 1, unit = "mm")
-      ),
-      axis.text.y = ggplot2::element_text(
-        size = 15,
-        margin = ggplot2::margin(r = 1, unit = "mm")
-      ),
-      panel.background = ggplot2::element_rect(
-        fill = "transparent",
-        colour = NA
-      ),
-      plot.background = ggplot2::element_rect(
-        fill = "transparent",
-        colour = NA
-      ),
-      legend.background = ggplot2::element_rect(
-        fill = "transparent",
-        colour = NA
-      ),
-      panel.border = ggplot2::element_blank(),
-      legend.key = ggplot2::element_blank(),
-      axis.line = ggplot2::element_blank(),
-      axis.ticks = ggplot2::element_line(size = 0.5),
-      axis.ticks.length = grid::unit(2.5, "mm"),
-      plot.margin = grid::unit(c(0.1, 0.1, 0.6, 0.6), "cm"),
-      legend.position = "none"
-    )
+    custom_y_axis() 
+
 }
 
 .glmLogRegRibbon <- function(logRes, var, ciInt = 0.95) {
@@ -1325,41 +1293,9 @@
     ggplot2::ylab("Residuals") +
     ggplot2::theme_bw() +
     custom_y_axis(ggdat[["resid"]]) +
-    custom_x_axis(ggdat[["x"]]) +
-    ggplot2::theme(
-      panel.grid.minor = ggplot2::element_blank(),
-      plot.title = ggplot2::element_text(size = 18),
-      panel.grid.major = ggplot2::element_blank(),
-      axis.title.x = ggplot2::element_text(size = 18, vjust = 0.1),
-      axis.title.y = ggplot2::element_text(size = 18, vjust = 0.9),
-      axis.text.x = ggplot2::element_text(
-        size = 15,
-        margin = ggplot2::margin(t = 1, unit = "mm")
-      ),
-      axis.text.y = ggplot2::element_text(
-        size = 15,
-        margin = ggplot2::margin(r = 1, unit = "mm")
-      ),
-      panel.background = ggplot2::element_rect(
-        fill = "transparent",
-        colour = NA
-      ),
-      plot.background = ggplot2::element_rect(
-        fill = "transparent",
-        colour = NA
-      ),
-      legend.background = ggplot2::element_rect(
-        fill = "transparent",
-        colour = NA
-      ),
-      panel.border = ggplot2::element_blank(),
-      legend.key = ggplot2::element_blank(),
-      axis.line = ggplot2::element_blank(),
-      axis.ticks = ggplot2::element_line(size = 0.5),
-      axis.ticks.length = grid::unit(2.5, "mm"),
-      plot.margin = grid::unit(c(0.1, 0.1, 0.6, 0.6), "cm"),
-      legend.position = "none"
-    )
+    custom_x_axis(ggdat[["x"]]) 
+
+    p <- JASPgraphs::themeJasp(p, legend.position = "none")
 
   p
 }
@@ -1398,29 +1334,9 @@
     ggplot2::geom_point(size = 3, colour="black", fill = "grey", pch=21) +
     custom_y_axis(plotDat[["pres"]]) +
     custom_x_axis() +
-    ggplot2::labs(x = "Predicted Probability", y = "Squared Pearson Residual") +
-    ggplot2::theme(
-      panel.grid.minor = ggplot2::element_blank(),
-      plot.title = ggplot2::element_text(size = 18),
-      panel.grid.major = ggplot2::element_blank(),
-      axis.title.x = ggplot2::element_text(size = 18, vjust = 0.1),
-      axis.title.y = ggplot2::element_text(size = 18, vjust = 0.9),
-      axis.text.x = ggplot2::element_text(size = 15,
-                                          margin = ggplot2::margin(t = 1,
-                                                                   unit = "mm")),
-      axis.text.y = ggplot2::element_text(size = 15,
-                                          margin = ggplot2::margin(r = 1,
-                                                                   unit = "mm")),
-      panel.background = ggplot2::element_rect(fill = "transparent", colour = NA),
-      plot.background = ggplot2::element_rect(fill = "transparent", colour = NA),
-      legend.background = ggplot2::element_rect(fill = "transparent", colour = NA),
-      panel.border = ggplot2::element_blank(),
-      legend.key = ggplot2::element_blank(),
-      axis.line = ggplot2::element_blank(),
-      axis.ticks = ggplot2::element_line(size = 0.5),
-      axis.ticks.length = grid::unit(2.5, "mm"),
-      plot.margin = grid::unit(c(0.1, 0.1, 0.6, 0.6), "cm"),
-      legend.position = "none")
+    ggplot2::labs(x = "Predicted Probability", y = "Squared Pearson Residual") 
+
+    p <- JASPgraphs::themeJasp(p, legend.position = "none")
 
   return(p)
 }

@@ -2471,34 +2471,20 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				pd <- ggplot2::position_dodge(0)
 
 			}
-
+			
+			guideLegend <- ggplot2::guide_legend(nrow = min(10, nlevels(summaryStatSubset$plotSeparateLines)), title = options$plotSeparateLines, keywidth = 0.1, keyheight = 0.3, default.unit = "inch")
+			
 			p <- p + ggplot2::geom_line(position=pd, size = .7) +
 				ggplot2::geom_point(position=pd, size=4) +
-				ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=ggplot2::guide_legend(nrow=10)) +
-				ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=ggplot2::guide_legend(nrow=10)) +
-				ggplot2::scale_color_manual(values = rep("black",200),guide=ggplot2::guide_legend(nrow=10)) +
+				ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=guideLegend) +
+				ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=guideLegend) +
+				ggplot2::scale_color_manual(values = rep("black",200),guide=guideLegend) +
 				ggplot2::ylab(options$dependent) +
 				ggplot2::xlab(options$plotHorizontalAxis) +
-				ggplot2::labs(shape=options$plotSeparateLines, fill=options$plotSeparateLines) +
-				ggplot2::theme_bw() +
-				ggplot2::theme(#legend.justification=c(0,1), legend.position=c(0,1),
-					panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
-					panel.grid.major=ggplot2::element_blank(),
-					axis.title.x = ggplot2::element_text(size=18,vjust=-.2), axis.title.y = ggplot2::element_text(size=18,vjust=-1),
-					axis.text.x = ggplot2::element_text(size=15), axis.text.y = ggplot2::element_text(size=15),
-					panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-					plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-					legend.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-					panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(),
-					legend.key = ggplot2::element_blank(), #legend.key.width = grid::unit(10,"mm"),
-					legend.title = ggplot2::element_text(size=12),
-					legend.text = ggplot2::element_text(size = 12),
-					axis.ticks = ggplot2::element_line(size = 0.5),
-					axis.ticks.margin = grid::unit(1,"mm"),
-					axis.ticks.length = grid::unit(3, "mm"),
-					plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
 				base_breaks_y(summaryStat, options$plotErrorBars) +
 				base_breaks_x(summaryStatSubset[,"plotHorizontalAxis"])
+				
+			p <- JASPgraphs::themeJasp(p, legend.position = "right")
 
 			if (nPlots > 1) {
 				descriptivesPlot[["title"]] <- paste(options$plotSeparatePlots,": ",subsetPlots[i], sep = "")
@@ -2585,7 +2571,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 }
 
 .qqPlot <- function(model, options, perform, status, stateqqPlot) {
-
+    
 	if (!options$qqPlot)
 		return(list(result=NULL, status=status))
 
@@ -2594,27 +2580,58 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	if (perform == "run" && status$ready && !status$error && !is.null(model)) {
 
 		qqPlot$title <- "Q-Q Plot"
+		
+		# Hardcode plot dimensions
+		options$plotWidthQQPlot <- 400
+		options$plotHeightQQPlot <- 400
+		
 		qqPlot$width <- options$plotWidthQQPlot
 		qqPlot$height <- options$plotHeightQQPlot
-		qqPlot$custom <- list(width="plotWidthQQPlot", height="plotHeightQQPlot")
+		#qqPlot$custom <- list(width="plotWidthQQPlot", height="plotHeightQQPlot")
 
 		standResid <- as.data.frame(stats::qqnorm(rstandard(model), plot.it=FALSE))
 
-		p <- ggplot2::ggplot(standResid, ggplot2::aes(x=x,y=y)) + ggplot2::geom_point(na.rm = TRUE) +
-			 ggplot2::geom_abline(slope = 1) + ggplot2::xlab("Theoretical Quantiles") + ggplot2::ylab("Standardized Residuals") +
-			 ggplot2::ggtitle("") + ggplot2::theme_bw() +
-				ggplot2::theme(panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
-					panel.grid.major=ggplot2::element_blank(), axis.line = ggplot2::element_line(colour = "black", size=1.2),
-					axis.title.x = ggplot2::element_text(size=18,vjust=-.2), axis.title.y = ggplot2::element_text(size=18,vjust=1.2),
-					axis.text.x = ggplot2::element_text(size=15), axis.text.y = ggplot2::element_text(size=15),
-					panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-					plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-					panel.border = ggplot2::element_blank(),
-					axis.ticks = ggplot2::element_line(size = 0.5),
-					axis.ticks.margin = grid::unit(1,"mm"),
-					axis.ticks.length = grid::unit(3, "mm"),
-					plot.margin = grid::unit(c(0,0,.5,.5), "cm"))
+		standResid <- na.omit(standResid)
+		xVar <- standResid$x
+		yVar <- standResid$y
 
+		# Format x ticks
+		xlow <- min(pretty(xVar))
+		xhigh <- max(pretty(xVar))
+		xticks <- pretty(c(xlow, xhigh))
+		
+		# format x labels
+		xLabs <- vector("character", length(xticks))
+		for (i in seq_along(xticks)) {
+			if (xticks[i] < 10^6) {
+				xLabs[i] <- format(xticks[i], digits= 3, scientific = FALSE)
+			} else {
+				xLabs[i] <- format(xticks[i], digits= 3, scientific = TRUE)
+			}
+		}
+
+		# Format y ticks
+		ylow <- min(pretty(yVar))
+		yhigh <- max(pretty(yVar))        
+		yticks <- pretty(c(ylow, yhigh))
+		
+		# format y labels
+		yLabs <- vector("character", length(yticks))
+		for (i in seq_along(yticks)) {
+		    if (yticks[i] < 10^6) {
+		        yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
+		    } else {
+		        yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+		    }
+		}
+		
+		p <- JASPgraphs::drawAxis(xName = "Theoretical Quantiles", yName = "Standardized Residuals", xBreaks = xticks, yBreaks = xticks, yLabels = xLabs, xLabels = xLabs, force = TRUE)
+	    p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(min(xticks), max(xticks))), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = 1)
+		p <- JASPgraphs::drawPoints(p, dat = data.frame(xVar, yVar), size = 3)
+		
+		# JASP theme
+	    p <- JASPgraphs::themeJasp(p)
+		
 		content <- .writeImage(width = options$plotWidthQQPlot,
 									   height = options$plotHeightQQPlot,
 									   plot = p, obj = TRUE)
@@ -2629,9 +2646,14 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	} else {
 
 		qqPlot$title <- "Q-Q Plot"
+		
+		# Hardcode plot dimensions
+		options$plotWidthQQPlot <- 400
+		options$plotHeightQQPlot <- 400
+		
 		qqPlot$width <- options$plotWidthQQPlot
 		qqPlot$height <- options$plotHeightQQPlot
-		qqPlot$custom <- list(width="plotWidthQQPlot", height="plotHeightQQPlot")
+		#qqPlot$custom <- list(width="plotWidthQQPlot", height="plotHeightQQPlot")
 		qqPlot$data <- NULL
 
 		stateqqPlot <- NULL

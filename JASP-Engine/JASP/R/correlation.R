@@ -35,20 +35,20 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
       dataset <- .readDataSetHeader(columns.as.numeric=options$variables)
     }
   }
-  
+
   correlation.plot <- state$correlationPlot
   stateTableData <- state$tableData
 
   if (options$plotCorrelationMatrix && is.null(correlation.plot)) {
     correlation.plot <- .plotCorrelations(dataset, perform, options)
   }
-  
-  tableData <- .calculateCorrelations(dataset, perform, options, stateTableData, 
+
+  tableData <- .calculateCorrelations(dataset, perform, options, stateTableData,
                                       variables=options$variables, pearson=options$pearson,
-                                      kendallsTauB=options$kendallsTauB, spearman=options$spearman, 
+                                      kendallsTauB=options$kendallsTauB, spearman=options$spearman,
                                       hypothesis=options$hypothesis, CI=options$confidenceIntervalsInterval)
 
-  correlation.table <- .fillCorrelationTable(tableData, displayPairwise=options$displayPairwise, 
+  correlation.table <- .fillCorrelationTable(tableData, displayPairwise=options$displayPairwise,
                                              reportSignificance=options$reportSignificance,
                                              reportCI=options$confidenceIntervals,
                                              flagSignificant=options$flagSignificant, reportVovkSellkeMPR=options$VovkSellkeMPR)
@@ -66,13 +66,13 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
   results[["title"]] <- "Correlation Matrix"
   results[["plot"]] <- correlation.plot
   results[["correlations"]] <- correlation.table
-  
+
   keep <- NULL
-  
+
   if (length(correlation.plot) > 0) {
     keep <- correlation.plot$data
   }
-      
+
   if (perform == "init") {
     if (length(options$variables) < 2) {
       return(list(results=results, status="complete", keep=keep))
@@ -82,17 +82,17 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
   } else { # run
     state <- list(options=options, correlationPlot=correlation.plot, tableData=tableData)
     attr(state, "key") <- stateKey
-    
+
     return(list(results=results, status="complete", state=state, keep=keep))
   }
 }
 
 .calculateCorrelations <- function(dataset, perform, options, stateTableData, variables=c(), pearson=TRUE, kendallsTauB=FALSE,
   spearman=FALSE, hypothesis="correlated", CI=0.95) {
-  # 
+  #
   ready <- FALSE
   variables <- unlist(variables)
-  
+
   if (length(variables) == 0) {
     variables <- c(variables, "...", "... ") # we need this trailing space so 1 != 2
   } else if (length(variables) == 1) {
@@ -100,7 +100,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
   } else {
     ready <- TRUE
   }
-  
+
   tests <- c()
   if (pearson)
     tests <- c(tests, "pearson")
@@ -110,15 +110,15 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
     tests <- c(tests, "kendall")
 
   results <- list(tests=tests, variables=variables, hypothesis=hypothesis, CI=CI)
-  
+
   if (length(tests) == 0) {
     return(results)
   }
-  
+
   pairs <- combn(variables, 2, simplify=FALSE)
-  
+
   for (i in seq_along(pairs)) {
-    # 
+    #
     var1 <- pairs[[i]][1]
     var2 <- pairs[[i]][2]
     pairName <- paste(sort(c(var1, var2)), collapse="-")
@@ -126,7 +126,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
     for (test in tests) {
       errorMessage <- NULL
       estimate <- p.value <- MPR <- upperCI <- lowerCI <- "."
-      
+
       if (! is.null(stateTableData) && ! is.null(stateTableData[["result"]][[pairName]][[test]])) {
         # If state exists, then fill up table
         #
@@ -142,7 +142,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
         #
         errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('variance', 'infinity', 'observations'),
                              all.target = c(var1, var2), observations.amount = "< 3")
-        
+
         if (! identical(errors, FALSE)) {
           estimate <- p.value <- MPR <- upperCI <- lowerCI <- "NaN"
           errorMessage <- errors$message
@@ -192,11 +192,11 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
   return(results)
 }
 
-.fillCorrelationTable <- function(tableData, displayPairwise=FALSE, reportSignificance=FALSE, 
+.fillCorrelationTable <- function(tableData, displayPairwise=FALSE, reportSignificance=FALSE,
   reportCI=FALSE, reportVovkSellkeMPR=FALSE, flagSignificant=FALSE) {
 
   correlation.table <- list()
-  
+
   tests <- tableData$tests
   if (length(tests) != 1) {
     correlation.table[["title"]] <- "Correlation Table"
@@ -209,7 +209,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
   } else {
     correlation.table[["title"]] <- "Correlation Table"
   }
-  
+
   hypothesis <- tableData$hypothesis
   footnotes <- .newFootnotes()
   if (flagSignificant || reportSignificance) {
@@ -243,28 +243,28 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
       (Sellke, Bayarri, & Berger, 2001).")
     }
   }
-  
+
   variables <- tableData$variables
   CI <- tableData$CI
   fields <- list()
   test.names <- list(pearson="Pearson's r", spearman="Spearman's rho", kendall="Kendall's tau B")
   overTitles <- list(pearson="Pearson", spearman="Spearman", kendall="Kendall")
-  
+
   if (displayPairwise) {
     fields[[1]] <- list(name=".variable1", title="", type="string")
     fields[[2]] <- list(name=".separator", title="", type="separator")
     fields[[3]] <- list(name=".variable2", title="", type="string")
-    
+
     for (test in tests) {
       overTitle <- NULL
-      
+
       if (length(tests) > 1) {
         test.names <- list(pearson="r", spearman="rho", kendall="tau B")
         overTitle <- overTitles[[test]]
       }
-      
+
       fields[[length(fields)+1]] <- list(name=test, title=test.names[[test]], overTitle=overTitle, type="number", format="sf:4;dp:3")
-      
+
       if (reportSignificance) {
         fields[[length(fields)+1]] <- list(name=paste0(test, "-p"), title="p", overTitle=overTitle, type="number", format="dp:3;p:.001")
       }
@@ -279,14 +279,14 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
       }
 
       if (reportCI) {
-        fields[[length(fields)+1]] <- list(name=paste0(test, "-lowerCI"), title=paste0("Lower ", 100 * CI, "% CI"), overTitle=overTitle, type="number", format="sf:4;dp:3")          
+        fields[[length(fields)+1]] <- list(name=paste0(test, "-lowerCI"), title=paste0("Lower ", 100 * CI, "% CI"), overTitle=overTitle, type="number", format="sf:4;dp:3")
         fields[[length(fields)+1]] <- list(name=paste0(test, "-upperCI"), title=paste0("Upper ", 100 * CI, "% CI"), overTitle=overTitle, type="number", format="sf:4;dp:3")
       }
-      
+
     }
   } else {
     fields[[1]] <- list(name=".variable", title="", type="string")
-    
+
     for (test in tests) {
       if (length(tests) > 1 || (length(tests) == 1 && (reportSignificance || reportCI || reportVovkSellkeMPR))) {
         fields[[length(fields)+1]] <- list(name=paste0(".test[", test, "]"), title="", type="string")
@@ -315,7 +315,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
       if (reportCI) {
         fields[[length(fields)+1]] <- list(name=paste0(".test[", test, "-upperCI]"), title="", type="string")
         fields[[length(fields)+1]] <- list(name=paste0(".test[", test, "-lowerCI]"), title="", type="string")
-        
+
         for (variable.name in variables) {
           fields[[length(fields)+1]] <- list(name=paste0(variable.name, "[", test, "-upperCI]"), title=variable.name, type="number", format="dp:3")
           fields[[length(fields)+1]] <- list(name=paste0(variable.name, "[", test, "-lowerCI]"), title=variable.name, type="number", format="dp:3")
@@ -325,9 +325,9 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
   }
 
   correlation.table[["schema"]] <- list(fields=fields)
-  
+
   template <- list()
-  
+
   if (displayPairwise) {
     pairs <- combn(variables, 2, simplify=FALSE)
     template <- lapply(pairs, list)
@@ -347,24 +347,24 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
       }
     }
   }
-  
+
   rows <- list()
-  
+
   for (i in seq_along(template)) { # loop over row variables
     row <- list()
     row.footnotes <- list()
     row.pairs <- template[[i]]
-    
+
     for (j in seq_along(row.pairs)) { # loop over pairs containing that row var
       pair <- row.pairs[[j]]
-      
+
       for (test in tests) {
         col.est <- test
         col.p <- paste0(test, "-p")
         col.mpr <- paste0(test, "-MPR")
         col.upperCI <- paste0(test, "-upperCI")
         col.lowerCI <- paste0(test, "-lowerCI")
-        
+
         if ( ! displayPairwise) {
           col.var <- variables[j]
           col.est <- paste0(col.var, "[", col.est, "]") # contNormal[pearson]
@@ -372,7 +372,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
           col.mpr <- paste0(col.var, "[", col.mpr, "]") # contNormal[pearson-MPR]
           col.upperCI <- paste0(col.var, "[", col.upperCI, "]") # contNormal[pearson-upperCI]
           col.lowerCI <- paste0(col.var, "[", col.lowerCI, "]") # contNormal[pearson-lowerCI]
-          
+
           if (length(tests) > 1 || (length(tests) == 1 && (reportSignificance || reportCI || reportVovkSellkeMPR))) {
             row[[paste0(".test[", test, "]")]] <- test.names[[test]]
           }
@@ -392,7 +392,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
             row[[paste0(".test", "[", test, "-upperCI]")]] <- paste("Upper ", 100 * CI, "% CI", sep="")
             row[[paste0(".test", "[", test, "-lowerCI]")]] <- paste("Lower ", 100 * CI, "% CI", sep="")
           }
-          
+
           if (identical(pair, "-")) { # auto correlation
             row[[col.est]] <- row[[col.p]] <- row[[col.mpr]] <- row[[col.upperCI]] <- row[[col.lowerCI]] <- "\u2014" # em-dash
             next
@@ -400,12 +400,12 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
             row[[col.est]] <- row[[col.p]] <- row[[col.mpr]] <- row[[col.upperCI]] <- row[[col.lowerCI]] <- ""
             next
           }
-          
+
         }
-        
+
         pairName <- paste(sort(pair), collapse="-")
         result <- tableData$result[[pairName]][[test]]
-        
+
         if (flagSignificant && is.numeric(result$p.value)) {
           if (result$p.value < .001) {
             row.footnotes[[col.est]] <- list("***")
@@ -415,9 +415,9 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
             row.footnotes[[col.est]] <- list("*")
           }
         }
-        
+
         row[[col.est]] <- result$estimate
-        
+
         if (reportSignificance)
           row[[col.p]] <- result$p.value
 
@@ -428,15 +428,15 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
           row[[col.upperCI]] <- result$upperCI
           row[[col.lowerCI]] <- result$lowerCI
         }
-        
+
         if (! is.null(result$errorMessage)) {
           index <- .addFootnote(footnotes, result$errorMessage)
           row.footnotes[[col.est]] <- c(row.footnotes[[col.est]], list(index))
         }
-        
+
       } # end loop over columns
     } # end loop over tests
-    
+
     if (displayPairwise) {
       row[[".variable1"]] <- pair[1]
       row[[".separator"]] <- "-"
@@ -470,8 +470,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
       width <- 400
       height <- 400
     } else {
-      width <- 250 * l
-      height <- 250 * l
+      width <- 250 * l + 20
+      height <- 250 * l + 20
     }
 
     plot <- list()
@@ -495,7 +495,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
         variable.statuses[[i]]$plottingError <- errors$message
       }
     }
-    
+
     variables <- .v(variables)
     l <- length(variables)
 
@@ -520,111 +520,107 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
     cexText <- 1.6
 
     .plotFunc <- function() {
-      if (l == 2 && !options$plotDensities && !options$plotStatistics) {
-        par(mfrow= c(1, 1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
 
-        if ( ! variable.statuses[[1]]$unplotable && ! variable.statuses[[2]]$unplotable) {
-          maxYlab <- .plotScatter(dataset[[variables[1]]], dataset[[variables[2]]])
-          distLab <- maxYlab / 1.8
+        plotList <- list()
 
-          mtext(text = .unv(variables)[1], side = 1, cex=1.5, line = 3)
-          mtext(text = .unv(variables)[2], side = 2, cex=1.5, line = distLab + 2, las=0)
-        } else {
-          errorMessages <- c(variable.statuses[[1]]$plottingError, variable.statuses[[2]]$plottingError)
-          errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
-          .displayError(errorMessagePlot, cexText=cexText)
-        }
-      } else if (l >= 2) {
-        if (l == 2) { 
-          cexText <- 1.3
-        }
+            for (row in seq_len(l)) {
+                for (col in seq_len(l)) {
+                    if (row == col) {
+                        if (options$plotDensities) {
+                            if ( ! variable.statuses[[row]]$unplotable) {
+                                plotList[[length(plotList)+1]] <- .plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
+                            } else {
+                                plotList[[length(plotList)+1]] <- .displayError(variable.statuses[[row]]$plottingError, cexText=cexText)
+                            }
+                        } else {
+                            
+                            p <- JASPgraphs::drawAxis(xName = "", yName = "", force = TRUE)
+                            p <- p + ggplot2::xlab("")
+                            p <- p + ggplot2::ylab("")
+                            p <- JASPgraphs::themeJasp(p)
 
-        par(mfrow= c(l, l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0.2, 2.2, 2, 0))
+                            plotList[[length(plotList)+1]] <- p
+                        }
+                    }
 
-        for (row in seq_len(l)) {
-          for (col in seq_len(l)) {
-            if (row == col) {
-              if (options$plotDensities) {
-                if ( ! variable.statuses[[row]]$unplotable) {
-                  .plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
-                } else {
-                  .displayError(variable.statuses[[row]]$plottingError, cexText=cexText)
+                    if (col > row) {
+                        if (options$plotCorrelationMatrix) {
+                            if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
+                                plotList[[length(plotList)+1]] <- .plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
+                            } else {
+                                errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
+                                errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
+                                plotList[[length(plotList)+1]] <- .displayError(errorMessagePlot, cexText=cexText)
+                            }
+                        } else {
+                            
+                            p <- JASPgraphs::drawAxis(xName = "", yName = "", force = TRUE)
+                            p <- p + ggplot2::xlab("")
+                            p <- p + ggplot2::ylab("")
+                            p <- JASPgraphs::themeJasp(p)
+                            
+                            plotList[[length(plotList)+1]] <- p
+                        }
+                    }
+
+                    if (col < row) {
+                        if (l < 7) {
+                            if (options$plotStatistics) {
+                                if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
+                                    plotList[[length(plotList)+1]] <- .plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], hypothesis= options$hypothesis,
+                                                  pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval) # plot r= ...
+                                } else {
+                                    errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
+                                    errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
+                                    plotList[[length(plotList)+1]] <- .displayError(errorMessagePlot, cexText=cexText)
+                                }
+                            } else {
+                                
+                                p <- JASPgraphs::drawAxis(xName = "", yName = "", force = TRUE)
+                                p <- p + ggplot2::xlab("")
+                                p <- p + ggplot2::ylab("")
+                                p <- JASPgraphs::themeJasp(p)
+                                
+                                plotList[[length(plotList)+1]] <- p
+                            }
+                        }
+
+                        if (l >= 7) {
+                            if (options$plotStatistics) {
+                                if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
+                                    plotList[[length(plotList)+1]] <- .plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], cexCI= 1.2, hypothesis= options$hypothesis,
+                                                  pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval)
+                                                  # if(col == 1){
+                                                  #     plotList[[length(plotList)]] <- plotList[[length(plotList)]] + ggplot2::annotate("text", x = 0, y = 1.5, label = .unv(variables)[row], angle = 90, size = 6, fontface = 2)
+                                                  # }
+                                } else {
+                                    errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
+                                    errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
+                                    plotList[[length(plotList)+1]] <- .displayError(errorMessagePlot, cexText=cexText)
+                                }
+                            } else {
+                                p <- JASPgraphs::drawAxis(xName = "", yName = "", force = TRUE)
+                                p <- p + ggplot2::xlab("")
+                                p <- p + ggplot2::ylab("")
+                                p <- JASPgraphs::themeJasp(p)
+
+                                plotList[[length(plotList)+1]] <- p
+                            }
+                        }
+                    }
                 }
-              } else {
-                plot(1, type= "n", axes= FALSE, ylab="", xlab="")
-              }
             }
+        
+        plotMat <- matrix(plotList, ncol = length(variables), nrow = length(variables))
 
-            if (col > row) {
-              if (options$plotCorrelationMatrix) {
-                if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
-                  .plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
-                } else {
-                  errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
-                  errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
-                  .displayError(errorMessagePlot, cexText=cexText)
-                }
-              } else {
-                plot(1, type= "n", axes= FALSE, ylab="", xlab="")
-              }
-            }
+        p <- JASPgraphs::ggMatrixPlot(plotList = plotMat, leftLabels = .unv(variables), topLabels = .unv(variables))
 
-            if (col < row) {
-              if (l < 7) {
-                if (options$plotStatistics) {
-                  if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
-                    .plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], hypothesis= options$hypothesis,
-                    pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval) # plot r= ...
-                  } else {
-                    errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
-                    errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
-                    .displayError(errorMessagePlot, cexText=cexText)
-                  }
-                } else {
-                  plot(1, type= "n", axes= FALSE, ylab="", xlab="")
-                }
-              }
-
-              if (l >= 7) {
-                if (options$plotStatistics) {
-                  if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
-                    .plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], cexCI= 1.2, hypothesis= options$hypothesis,
-                    pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval)
-                  } else {
-                    errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
-                    errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
-                    .displayError(errorMessagePlot, cexText=cexText)
-                  }
-                } else {
-                  plot(1, type= "n", axes= FALSE, ylab="", xlab="")
-                }
-              }
-            }
-          }
-        }
-      }
-
-      if (l > 2 || ((l == 2 && options$plotDensities) || (l == 2 && options$plotStatistics))) {
-        textpos <- seq(1/(l*2), (l*2-1)/(l*2), 2/(l*2))
-
-        if (!options$plotDensities && !options$plotStatistics) {
-            for (t in seq_along(textpos)) {
-              mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.5, line= -0.8)
-
-              if (t < length(textpos)) {
-                mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.5, line= -0.1, las= 0)
-              }
-            }
-        } else {
-          for (t in seq_along(textpos)) {
-              mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.5, line= -0.8)
-              mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.5, line= -0.1, las= 0)
-          }
-        }
-      }
+        return(p)
     }
 
-    content <- .writeImage(width = width, height = height, plot = .plotFunc, obj = TRUE)
+    obj <- .plotFunc()
+
+    content <- .writeImage(width = width, height = height, plot = obj, obj = TRUE)
 
     plot <- correlation.plot
     plot[["convertible"]] <- TRUE
@@ -633,228 +629,273 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
     correlation.plot <- plot
   }
-  
+
   return(correlation.plot)
 }
 
 #### histogram with density estimator ####
 .plotMarginalCor <- function(variable, cexYlab= 1.3, lwd= 2, rugs= FALSE) {
-  variable <- variable[!is.na(variable)]
+    
+    variable <- na.omit(as.numeric(variable))
+    
+    density <- density(variable)
+    
+    h <- hist(variable, plot = FALSE)
 
-  density <- density(variable)
-  h <- hist(variable, plot = FALSE)
-  jitVar <- jitter(variable)
-  yhigh <- max(max(h$density), max(density$y))
-  ylow <- 0
-  xticks <- pretty(c(variable, h$breaks), min.n= 3)
-  plot(range(xticks), c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
-  h <- hist(variable, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE, nbreaks= round(length(variable)/5))
-  ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks)
-  par(las=0)
-  ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.08*diff(range(ax1)), cex.axis= 1.7, mgp= c(3, 0.7, 0))
+    dens <- h$density
+    yhigh <- 1.2*max(h$density)
+    ylow <- 0
+    xticks <- base::pretty(c(variable, h$breaks), min.n= 3)
 
-  if (rugs) {
-    rug(jitVar)
-  }
-
-  lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
+    p <- JASPgraphs::drawAxis(xName = "", yName = "Density", xBreaks = xticks, yBreaks = c(0,max(density$y)+.1), force = TRUE, yLabels = NULL, xLabels = xticks)
+    p <- p + ggplot2::geom_histogram(data = data.frame(variable), mapping = ggplot2::aes(x = variable, y = ..density..),
+            binwidth = (h$breaks[2] - h$breaks[1]),
+            fill = "grey",
+            col = "black",
+            size = .3,
+            center = ((h$breaks[2] - h$breaks[1])/2))
+    p <- p + ggplot2::geom_line(data = data.frame(x = density$x, y = density$y), mapping = ggplot2::aes(x = x, y = y), lwd = .7, col = "black")
+    
+    p <- p + ggplot2::theme(axis.ticks.y = ggplot2::element_blank())
+    p <- p + ggplot2::xlab("")
+    
+    # JASP theme
+    p <- JASPgraphs::themeJasp(p)
+    
+    return(p)
+    
 }
 
 
 #### scatterplots ####
 
 # predictions of fitted model
-.poly.pred <- function(fit, line=FALSE, xMin, xMax, lwd) {
-  # create function formula
-  f <- vector("character", 0)
+.poly.pred <- function(fit, plot = NULL, line=FALSE, xMin, xMax, lwd) {
+    # create function formula
+    f <- vector("character", 0)
 
-  for (i in seq_along(coef(fit))) {
-    if (i == 1) {
-      temp <- paste(coef(fit)[[i]])
-      f <- paste(f, temp, sep="")
+    for (i in seq_along(coef(fit))) {
+        if (i == 1) {
+            temp <- paste(coef(fit)[[i]])
+            f <- paste(f, temp, sep="")
+        }
+
+        if (i > 1) {
+            temp <- paste("(", coef(fit)[[i]], ")*", "x^", i-1, sep="")
+            f <- paste(f, temp, sep="+")
+        }
     }
 
-    if (i > 1) {
-      temp <- paste("(", coef(fit)[[i]], ")*", "x^", i-1, sep="")
-      f <- paste(f, temp, sep="+")
+    x <- seq(xMin, xMax, length.out = 100)
+    predY <- eval(parse(text=f))
+
+    if (line == FALSE) {
+        return(predY)
     }
-  }
 
-  x <- seq(xMin, xMax, length.out = 100)
-  predY <- eval(parse(text=f))
-
-  if (line == FALSE) {
-    return(predY)
-  }
-
-  if (line) {
-    lines(x, predY, lwd=lwd)
-  }
+    if (line) {
+        plot <- plot + ggplot2::geom_line(data = data.frame(x, predY),mapping = ggplot2::aes(x = x, y = predY), size=lwd)
+        return(plot)
+    }
 }
 
 
 .plotScatter <- function(xVar, yVar, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2) {
-  d <- data.frame(xx= xVar, yy= yVar)
-  d <- na.omit(d)
-  xVar <- d$xx
-  yVar <- d$yy
+        
+    d <- data.frame(xx= xVar, yy= yVar)
+    d <- na.omit(d)
+    xVar <- d$xx
+    yVar <- d$yy
 
-  # fit different types of regression
-  fit <- vector("list", 1)# vector("list", 4)
-  fit[[1]] <- lm(yy ~ poly(xx, 1, raw= TRUE), d)
-  # fit[[2]] <- lm(yy ~ poly(xx, 2, raw= TRUE), d)
-  # fit[[3]] <- lm(yy ~ poly(xx, 3, raw= TRUE), d)
-  # fit[[4]] <- lm(yy ~ poly(xx, 4, raw= TRUE), d)
+    # fit different types of regression
+    fit <- vector("list", 1)# vector("list", 4)
+    fit[[1]] <- lm(yy ~ poly(xx, 1, raw= TRUE), d)
+    # fit[[2]] <- lm(yy ~ poly(xx, 2, raw= TRUE), d)
+    # fit[[3]] <- lm(yy ~ poly(xx, 3, raw= TRUE), d)
+    # fit[[4]] <- lm(yy ~ poly(xx, 4, raw= TRUE), d)
 
-  # find parsimonioust, best fitting regression model
-  # Bic <- vector("numeric", 4)
-  # for(i in 1:4){
+    # find parsimonioust, best fitting regression model
+    # Bic <- vector("numeric", 4)
+    # for(i in 1:4){
 
-  #	Bic[i] <- BIC(fit[[i]])
-  # }
+    #	Bic[i] <- BIC(fit[[i]])
+    # }
 
-  bestModel <- 1 # which.min(Bic)
+    bestModel <- 1 # which.min(Bic)
 
-  xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
-  xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
-  xticks <- pretty(c(xlow, xhigh))
-  ylow <- min((min(yVar) - 0.1* min(yVar)), min(pretty(yVar)), min(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
-  yhigh <- max((max(yVar) + 0.1* max(yVar)), max(pretty(yVar)), max(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
+    xlow <- min(pretty(xVar))
+    xhigh <- max(pretty(xVar))
+    xticks <- pretty(c(xlow, xhigh))
+    ylow <- min(min(pretty(yVar)), min(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
+    yhigh <- max(max(pretty(yVar)), max(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
 
 
-  yticks <- pretty(c(ylow, yhigh))
-  yLabs <- vector("character", length(yticks))
+    yticks <- pretty(c(ylow, yhigh))
+    yLabs <- vector("character", length(yticks))
+    
 
-  for (i in seq_along(yticks)) {
-    if (yticks[i] < 10^6 && yticks[i] > 10^-6) {
-      yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
-    } else {
-      yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+    for (i in seq_along(yticks)) {
+        if (yticks[i] < 10^6 && yticks[i] > 10^-6) {
+            yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
+        } else {
+            yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+        }
     }
-  }
+    
+    xLabs <- vector("character", length(xticks))
+    
+    for (i in seq_along(xticks)) {
+        if (xticks[i] < 10^6 && xticks[i] > 10^-6) {
+            xLabs[i] <- format(xticks[i], digits= 3, scientific = FALSE)
+        } else {
+            xLabs[i] <- format(xticks[i], digits= 3, scientific = TRUE)
+        }
+    }
+    
+    p <- JASPgraphs::drawAxis(xName = "", yName = "", xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE)
+    p <- JASPgraphs::drawPoints(p, dat = d, size = 3)
+    p <- .poly.pred(fit[[bestModel]], plot = p, line= TRUE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd = 1)    
 
-  plot(xVar, yVar, col="black", pch=21, bg = "grey", ylab="", xlab="", axes=F, ylim= range(yticks), xlim= range(xticks), cex= cexPoints)
-  .poly.pred(fit[[bestModel]], line= TRUE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)
+    # JASP theme
+    p <- JASPgraphs::themeJasp(p)
 
-  par(las=1)
-
-  axis(1, line= 0.4, labels= xticks, at= xticks, cex.axis= cexXAxis)
-  axis(2, line= 0.2, labels= yLabs, at= yticks, cex.axis= cexYAxis)
-
-  invisible(max(nchar(yLabs)))
+    return(p)
 }
 
 #### display correlation value ####
 .plotCorValue <- function(xVar, yVar, cexText= 2.5, cexCI= 1.7, hypothesis = "correlated", pearson=options$pearson,
-  kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=0.95) {
+                          kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=0.95) {
 
-  CIPossible <- TRUE
+    CIPossible <- TRUE
 
-  tests <- c()
+    tests <- c()
 
-  if (pearson)
-    tests <- c(tests, "pearson")
+    if (pearson)
+        tests <- c(tests, "pearson")
 
-  if (spearman)
-    tests <- c(tests, "spearman")
+    if (spearman)
+        tests <- c(tests, "spearman")
 
-  if (kendallsTauB)
-    tests <- c(tests, "kendall")
+    if (kendallsTauB)
+        tests <- c(tests, "kendall")
 
 
-  plot(1, 1, type="n", axes=FALSE, ylab="", xlab="")
+    p <- ggplot2::ggplot(data = data.frame(), ggplot2::aes(x = seq_along(data.frame()),y = summary(data.frame()))) +
+        ggplot2::theme_void() +
+        ggplot2::theme(
+            plot.margin = grid::unit(c(1,1,1,1), "cm")
+            ) + ggplot2::xlim(0,2) + ggplot2::ylim(0,2)
 
-  lab <- vector("list")
-
-  for (i in seq_along(tests)) {
-    if (round(cor.test(xVar, yVar, method=tests[i])$estimate, 8) == 1){
-      CIPossible <- FALSE
-
-      if(tests[i] == "pearson"){
-        lab[[i]] <- bquote(italic(r) == "1.000")
-      }
-
-      if(tests[i] == "spearman"){
-        lab[[i]] <- bquote(italic(rho) == "1.000")
-      }
-
-      if(tests[i] == "kendall"){
-        lab[[i]] <- bquote(italic(tau) == "1.000")
-      }
-    } else if (round(cor.test(xVar, yVar, method=tests[i])$estimate, 8) == -1){
-      CIPossible <- FALSE
-
-      if(tests[i] == "pearson"){
-        lab[[i]] <- bquote(italic(r) == "-1.000")
-      }
-
-      if(tests[i] == "spearman"){
-        lab[[i]] <- bquote(italic(rho) == "-1.000")
-      }
-
-      if(tests[i] == "kendall"){
-        lab[[i]] <- bquote(italic(tau) == "-1.000")
-      }
-    } else {
-      if(tests[i] == "pearson"){
-        lab[[i]] <- bquote(italic(r) == .(formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format="f", digits= 3)))
-      }
-
-      if(tests[i] == "spearman"){
-        lab[[i]] <- bquote(rho == .(formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format="f", digits= 3)))
-      }
-
-      if(tests[i] == "kendall"){
-        lab[[i]] <- bquote(tau == .(formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format="f", digits= 3)))
-      }
+    lab <- vector("list")
+    
+    if (length(tests) == 1) {
+        ypos <- 1.5
     }
-  }
 
-
-  if (length(tests) == 1) {
-    ypos <- 1
-  }
-
-  if (length(tests) == 2) {
-    ypos <- c(1.1, 0.9)
-  }
-
-  if (length(tests) == 3) {
-    ypos <- c(1.2, 1, 0.8)
-  }
-
-
-  for (i in seq_along(tests)) {
-    text(1, ypos[i], labels= lab[[i]], cex= cexText)
-  }
-
-
-  if (hypothesis == "correlated" & length(tests) == 1 & any(tests == "pearson")) {
-    alternative <- "two.sided"
-    ctest <- cor.test(xVar, yVar, method= tests, conf.level=confidenceInterval)
-  }
-
-  if (hypothesis != "correlated" & length(tests) == 1 & any(tests == "pearson")) {
-    if (hypothesis == "correlatedPositively") {
-      ctest <- cor.test(xVar, yVar, method=tests, alternative="greater", conf.level=confidenceInterval)
-    } else if (hypothesis == "correlatedNegatively") {
-      ctest <- cor.test(xVar, yVar, method=tests, alternative="less", conf.level=confidenceInterval)
+    if (length(tests) == 2) {
+        ypos <- c(1.6, 1.2)
     }
-  }
 
-  if (any(tests == "pearson")& length(tests) == 1 && CIPossible) {
-    CIlow <- formatC(round(ctest$conf.int[1],3), format = "f", digits = 3)
-    CIhigh <- formatC(round(ctest$conf.int[2],3), format = "f", digits = 3)
+    if (length(tests) == 3) {
+        ypos <- c(1.7, 1.2, .7)
+    }
 
-    text(1,0.8, labels= paste(100 * confidenceInterval, "% CI: [", CIlow, ", ", CIhigh, "]", sep=""), cex= cexCI)
-  }
+    for (i in seq_along(tests)) {
+        if (round(cor.test(xVar, yVar, method=tests[i])$estimate, 8) == 1){
+            CIPossible <- FALSE
+    
+            if(tests[i] == "pearson"){
+                lab[[i]] <- paste("italic(r) == '1.000'")
+            }
+    
+            if(tests[i] == "spearman"){
+                lab[[i]] <- paste("italic(rho) == '1.000'")
+            }
+    
+            if(tests[i] == "kendall"){
+                lab[[i]] <- paste("italic(tau) == '1.000'")
+            }
+        } else if (round(cor.test(xVar, yVar, method=tests[i])$estimate, 8) == -1){
+            CIPossible <- FALSE
+    
+            if(tests[i] == "pearson"){
+                lab[[i]] <- paste("italic(r) == '-1.000'")
+            }
+    
+            if(tests[i] == "spearman"){
+                lab[[i]] <- paste("italic(rho) == '-1.000'")
+            }
+    
+            if(tests[i] == "kendall"){
+                lab[[i]] <- paste("italic(tau) == '-1.000'")
+            }
+        } else {
+            if(tests[i] == "pearson"){
+                #lab[[i]] <- paste0("italic(r) == ",as.character(formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format="f", digits= 3))[1])
+                lab[[i]] <- .corValueString(cor.test(xVar, yVar, method=tests[i])$estimate, "pearson", 3) # fix for rounding off decimals
+            }
+    
+            if(tests[i] == "spearman"){
+                #lab[[i]] <- paste0("italic(rho) == ",as.character(formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format="f", digits= 3)))
+                lab[[i]] <- .corValueString(cor.test(xVar, yVar, method=tests[i])$estimate, "spearman", 3) # fix for rounding off decimals
+            }
+    
+            if(tests[i] == "kendall"){
+                #lab[[i]] <- paste0("italic(tau) == ",as.character(formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format="f", digits= 3)))
+                lab[[i]] <- .corValueString(cor.test(xVar, yVar, method=tests[i])$estimate, "kendall", 3) # fix for rounding off decimals
+            }
+        }
+    }
+        
+    for(i in seq_along(tests)){
+        p <- p + ggplot2::geom_text(data = data.frame(x = rep(1, length(ypos)), y = ypos), mapping = ggplot2::aes(x = x, y = y, label = unlist(lab)), size = 7, parse = TRUE)
+    }
+
+
+    if (hypothesis == "correlated" & length(tests) == 1 & any(tests == "pearson")) {
+        alternative <- "two.sided"
+        ctest <- cor.test(xVar, yVar, method= tests, conf.level=confidenceInterval)
+    }
+
+    if (hypothesis != "correlated" & length(tests) == 1 & any(tests == "pearson")) {
+        if (hypothesis == "correlatedPositively") {
+            ctest <- cor.test(xVar, yVar, method=tests, alternative="greater", conf.level=confidenceInterval)
+        } else if (hypothesis == "correlatedNegatively") {
+            ctest <- cor.test(xVar, yVar, method=tests, alternative="less", conf.level=confidenceInterval)
+        }
+    }
+
+    if (any(tests == "pearson")& length(tests) == 1 && CIPossible) {
+        CIlow <- formatC(round(ctest$conf.int[1],3), format = "f", digits = 3)
+        CIhigh <- formatC(round(ctest$conf.int[2],3), format = "f", digits = 3)
+
+        if(length(p)>0){
+            p <- p + ggplot2::geom_text(data = data.frame(x = 1, y = 1.2), mapping = ggplot2::aes(x = x, y = y, label = paste(100 * confidenceInterval, "% CI: [", CIlow, ", ", CIhigh, "]", sep="")), size = 5)
+        }
+
+    }
+
+    return(p)
 
 }
 
 ### empty Plot with error message ###
 .displayError <- function(errorMessage=NULL, cexText=1.6, lwdAxis= 1.2) {
-  plot(1, type='n', xlim=c(-1,1), ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
-  text(0, .5, errorMessage, cex=cexText)
+    p <- ggplot2::ggplot(data = data.frame(), ggplot2::aes(x = seq_along(data.frame()),y = summary(data.frame()))) +
+        ggplot2::theme(
+            panel.border = ggplot2::element_blank(),
+            panel.grid.major = ggplot2::element_blank(),
+            panel.grid.minor = ggplot2::element_blank(),
+            panel.background = ggplot2::element_blank(),
+            axis.line = ggplot2::element_blank(),
+            axis.ticks.y = ggplot2::element_blank(),
+            axis.ticks.x = ggplot2::element_blank(),
+            axis.text.y = ggplot2::element_blank(),
+            plot.margin = grid::unit(c(2,1,1,2), "cm"),
+            axis.text.x =ggplot2::element_blank(),
+            axis.title = ggplot2::element_blank()) +
+        ggplot2::annotate("text", x = 4, y = 25, label = errorMessage, size = 9)
+    return(p)
 }
 
 ### Utility functions for nonparametric confidence intervals ###
@@ -883,7 +924,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
   x <- x[!missingIndices] # remove those values
   y <- y[!missingIndices]
   n <- length(x)
-  
+
  if (method == "kendall") {
    concordanceSumsVector <- numeric(n)
     for (i in 1:n) {
@@ -892,7 +933,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
     sigmaHatSq <- 2 * (n-2) * var(concordanceSumsVector) / (n*(n-1))
     sigmaHatSq <- sigmaHatSq + 1 - (obsCor)^2
     sigmaHatSq <- sigmaHatSq * 2 / (n*(n-1))
-    
+
     if (hypothesis=="correlated"){
       z <- qnorm(alpha/2, lower.tail = FALSE)
     } else if (hypothesis!="correlated") {
@@ -900,22 +941,22 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
     }
     ciLow <- obsCor - z * sqrt(sigmaHatSq)
     ciUp <- obsCor + z * sqrt(sigmaHatSq)
-    if (hypothesis=="correlatedPositively") { 
+    if (hypothesis=="correlatedPositively") {
       ciUp <- 1
     } else if (hypothesis=="correlatedNegatively") {
       ciLow <- -1
     }
   } else if (method == "spearman") {
     stdErr = 1/sqrt(n-3)
-    if (hypothesis=="correlated") { 
+    if (hypothesis=="correlated") {
       z <- qnorm(alpha/2, lower.tail = FALSE)
     } else if (hypothesis!="correlated") {
       z <- qnorm(alpha, lower.tail = FALSE)
     }
-    
+
     ciLow = tanh(atanh(obsCor) - z * stdErr)
     ciUp = tanh(atanh(obsCor) + z * stdErr)
-    
+
     if (hypothesis=="correlatedPositively") {
       ciUp <- 1
     } else if (hypothesis=="correlatedNegatively") {
@@ -923,4 +964,18 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
     }
   }
   return(c(ciLow,ciUp))
+}
+
+.corValueString <- function(corValue = NULL, testType = NULL, decimals = 3){
+    
+    if (testType == "pearson"){
+        string <- as.character(as.expression(substitute(italic(r)~"="~r2, list(r2 = formatC(round(corValue,decimals), format = "f", digits = decimals)))))
+    } else if (testType == "spearman"){
+        string <- as.character(as.expression(substitute(italic(rho)~"="~r2, list(r2 = formatC(round(corValue,decimals), format = "f", digits = decimals)))))
+    } else if (testType == "kendall"){
+        string <- as.character(as.expression(substitute(italic(tau)~"="~r2, list(r2 = formatC(round(corValue,decimals), format = "f", digits = decimals)))))
+    }
+    
+    return(string)
+    
 }
