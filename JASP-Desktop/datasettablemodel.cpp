@@ -40,6 +40,19 @@ DataSetTableModel::DataSetTableModel(QObject *parent) :
 	_scaleIcon = QIcon(":/icons/variable-scale.svg");
 }
 
+QVariant DataSetTableModel::getColumnTypesWithCorrespondingIcon(bool BothNominalVersions)
+{
+	QVariantList ColumnTypeAndIcons;
+
+	ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-scale.svg")));
+	ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-ordinal.svg")));
+	ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-nominal.svg")));
+	if(BothNominalVersions)
+		ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-nominal-text.svg")));
+
+	return QVariant(ColumnTypeAndIcons);
+}
+
 void DataSetTableModel::setDataSet(DataSet* dataSet)
 {
     beginResetModel();
@@ -101,20 +114,7 @@ QVariant DataSetTableModel::columnIcon(int column) const
 	if(column >= 0)
 	{
 		Column &columnref = _dataSet->column(column);
-
-		switch (columnref.columnType())
-		{
-		case Column::ColumnTypeNominalText:
-			return QVariant(QString("../icons/variable-nominal-text.svg"));
-		case Column::ColumnTypeNominal:
-			return QVariant(QString("../icons/variable-nominal.svg"));
-		case Column::ColumnTypeOrdinal:
-			return QVariant(QString("../icons/variable-ordinal.svg"));
-		case Column::ColumnTypeScale:
-			return QVariant(QString("../icons/variable-scale.svg"));
-		default:
-			return QVariant();
-		}
+		return QVariant(columnref.columnType());
 	}
 	else
 		return QVariant();

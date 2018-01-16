@@ -3,11 +3,20 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Controls 1.4
 import QtQuick 2.7
 
-
 Rectangle {
     SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
     id: rootDataset
     color: systemPalette.window
+
+    Item
+    {
+        id: columnTypes
+        //Copied from column.h, should actually be exported or something like that
+        readonly property int columnTypeScale: 0
+        readonly property int columnTypeOrdinal: 1
+        readonly property int columnTypeNominal: 2
+        readonly property int columnTypeNominalText: 3
+    }
 
 
     Rectangle {
@@ -46,7 +55,11 @@ Rectangle {
         alternatingRowColors: true
         property bool drawCellBorders: true
 
+
         model: dataSetModel
+
+        readonly property var columnTypeAndIconPath: dataSetModel.getColumnTypesWithCorrespondingIcon(true)
+        readonly property var columnTypeChangeIconPaths:dataSetModel.getColumnTypesWithCorrespondingIcon(false)
 
         function reloadColumns()
         {
@@ -92,14 +105,10 @@ Rectangle {
             color: systemPalette.mid
             border.width: 0
             radius: 0
+            height: headerBorderRectangle.iconDim * 1.2
 
             property real iconDim: headerText.implicitHeight
             property real iconTextPadding: 10
-            height: iconDim * 1.2
-
-            z: styleData.column
-
-            //implicitWidth: headerText.contentWidth + iconDim + 5 + iconTextPadding
 
             Rectangle
             {
@@ -111,7 +120,6 @@ Rectangle {
 
                 x: headerBorderRectangle.x
                 y: headerBorderRectangle.y + 1
-
                 height: headerBorderRectangle.height - 2
                 width: headerBorderRectangle.width - 1
 
@@ -121,34 +129,64 @@ Rectangle {
                     anchors.top: colHeader.top
                     anchors.bottom: colHeader.bottom
                     anchors.left: colHeader.left
-                    source: dataSetModel.columnIcon(styleData.column)
-
                     anchors.leftMargin: 4
 
+                    property int myColumnType: dataSetModel.columnIcon(styleData.column)
+                    source: dataSetTableView.columnTypeAndIconPath[myColumnType]
                     width: headerBorderRectangle.iconDim
-                    height: headerBorderRectangle.iconDim
+                    height: styleData.column >= 0 && styleData.column < dataSetTableView.columnCount ? headerBorderRectangle.iconDim : 0
 
+
+                    function setColumnType(columnType)
+                    {
+                        colIcon.myColumnType = dataSetModel.setColumnTypeFromQML(styleData.column, columnType)
+                    }
 
                     MouseArea
                     {
                         anchors.fill: parent
-
-                        onPressed:
-                        {
-                            popup.open()
-                        }
+                        onPressed: popupIcons.open()
                     }
 
 
                     Popup {
-                        id: popup
-                        x: parent.x
-                        y: parent.y + parent.height
-                        width: 100
-                        height: 100
-                        modal: true
-                        focus: true
+                        id: popupIcons; modal: true; focus: true; padding: 5
+                        y: colIcon.y + colIcon.height
+                        x: colIcon.x - (headerBorderRectangle.iconDim * 0.5)
+
                         closePolicy: Popup.CloseOnReleaseOutside | Popup.CloseOnPressOutside | Popup.CloseOnEscape
+
+                        Column
+                        {
+                            width: parent.width
+                            spacing: popupIcons.padding
+
+                            Repeater{
+                                id: iconRepeater
+                                model: dataSetModel.getColumnTypesWithCorrespondingIcon(false)
+
+                                Button
+                                {
+                                    id: columnTypeChangeIcon
+                                    iconSource: iconRepeater.model[index]
+                                    width: headerBorderRectangle.iconDim * 1.5
+                                    readonly property bool showThisTypeIcon:  !((index == colIcon.myColumnType) || (index == columnTypes.columnTypeNominal && colIcon.myColumnType == columnTypes.columnTypeNominalText))
+                                    height: showThisTypeIcon ? headerBorderRectangle.iconDim * 1.5 : 0
+
+
+                                    onClicked: columnTypeChosen()
+
+                                    function columnTypeChosen()
+                                    {
+                                        var columnType = index
+                                        popupIcons.close()
+                                        colIcon.setColumnType(columnType)
+
+                                    }
+
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -161,20 +199,21 @@ Rectangle {
                     anchors.left: colIcon.right
                     anchors.right: colHeader.right
                     text: styleData.value //dataSetModel.columnTitle(styleData.column);
-                    leftPadding: iconTextPadding
+                    leftPadding: headerBorderRectangle.iconTextPadding
 
                     MouseArea
                     {
                         anchors.fill: parent
                         onClicked:
                         {
-                            console.log("HeaderText pressed!")
-                            variablesWindow.opened = !variablesWindow.opened
+                            if(dataSetModel.columnIcon(styleData.column) != columnTypes.columnTypeScale)
+                                variablesWindow.opened = !variablesWindow.opened
                         }
                     }
                 }
             }
         }
+
 
         itemDelegate: Item
         {

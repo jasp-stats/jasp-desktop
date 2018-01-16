@@ -26,6 +26,7 @@
 #include "common.h"
 #include "dataset.h"
 
+
 class DataSetTableModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -43,6 +44,7 @@ public:
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role) OVERRIDE;
     virtual Qt::ItemFlags flags(const QModelIndex &index) const OVERRIDE;
 
+	Q_INVOKABLE int setColumnTypeFromQML(int columnIndex, int newColumnType) { setColumnType(columnIndex, (Column::ColumnType)newColumnType); return getColumnType(columnIndex); }
 	bool setColumnType(int columnIndex, Column::ColumnType newColumnType);
 	Column::ColumnType getColumnType(int columnIndex);
 
@@ -52,6 +54,7 @@ public:
 	Q_INVOKABLE QVariant columnTitle(int column) const;
 	Q_INVOKABLE QVariant columnIcon(int column) const;
 	Q_INVOKABLE QVariant getCellValue(int column, int row) const { return data(index(row, column), Qt::DisplayRole); }
+	Q_INVOKABLE QVariant getColumnTypesWithCorrespondingIcon(bool BothNominalVersions = true);
     
 signals:
 
