@@ -167,11 +167,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->backStage->setOnlineDataManager(_odm);
 
 	_tableModel = new DataSetTableModel();
+	_levelsTableModel = new LevelsTableModel(this);
 	//TMP ui->tableView->setModel(_tableModel);
 	//TMP ui->tableView->setVariablesView(ui->variablesPage);
 	//TMP ui->variablesPage->hide();
 
 	ui->quickWidget_Data->rootContext()->setContextProperty("dataSetModel", _tableModel);
+	ui->quickWidget_Data->rootContext()->setContextProperty("levelsTableModel", _levelsTableModel);
 	ui->quickWidget_Data->setSource(QUrl(QString("qrc:///qml/dataset.qml")));
 
 
@@ -500,8 +502,9 @@ void MainWindow::packageDataChanged(DataSetPackage *package,
 									map<string, string> &changeNameColumns)
 {
 	_tableModel->setDataSet(_package->dataSet);
+	_levelsTableModel->setDataSet(_package->dataSet);
 	triggerQmlColumnReload();
-	_tableModel->setDataSet(_package->dataSet);
+	//_tableModel->setDataSet(_package->dataSet);
 	//TMP ui->variablesPage->setDataSet(_package->dataSet);
 
 	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns);
@@ -1097,6 +1100,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			closeCurrentOptionsWidget();
 			hideOptionsPanel();
 			_tableModel->clearDataSet();
+			_levelsTableModel->setDataSet(NULL);
 			//TMP ui->variablesPage->clearDataSet();
 			_loader.free(_package->dataSet);
 			_package->reset();
@@ -1125,8 +1129,9 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 void MainWindow::populateUIfromDataSet()
 {
 	_tableModel->setDataSet(_package->dataSet);
+	_levelsTableModel->setDataSet(_package->dataSet);
 	triggerQmlColumnReload();
-	_tableModel->setDataSet(_package->dataSet);
+
 	//TMP ui->variablesPage->setDataSet(_package->dataSet);
 
 	//TMP ui->tableView->adjustAfterDataLoad(true);

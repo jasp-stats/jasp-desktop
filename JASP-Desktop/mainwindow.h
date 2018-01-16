@@ -24,6 +24,7 @@
 #include "dataset.h"
 
 #include "datasettablemodel.h"
+#include "variablespage/levelstablemodel.h"
 #include "enginesync.h"
 #include "analyses.h"
 #include "widgets/progresswidget.h"
@@ -66,6 +67,7 @@ private:
 	AnalysisForm *_currentOptionsWidget;
 	DataSetPackage *_package;
 	DataSetTableModel *_tableModel;
+	LevelsTableModel *_levelsTableModel;
 	Analysis *_currentAnalysis;
 
 	int _scrollbarWidth = 0;

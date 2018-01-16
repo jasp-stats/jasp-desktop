@@ -13,6 +13,7 @@
         <file>arrow-down.png</file>
         <file>arrow-up-down.png</file>
         <file>cross.png</file>
+        <file>arrow-reverse.png</file>
     </qresource>
     <qresource prefix="/qml">
         <file>dataset.qml</file>
