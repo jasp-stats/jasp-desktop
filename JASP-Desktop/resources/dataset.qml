@@ -98,6 +98,16 @@ Rectangle {
         Component { id: columnComponent; TableViewColumn { movable: false } }
         Component { id: columnHeaderSizeCalcComponent; TextMetrics { } }
 
+        signal dataTableDoubleClicked()
+
+        MouseArea
+        {
+            anchors.fill: parent
+            propagateComposedEvents: true
+            onClicked: mouse.accepted = false
+            onDoubleClicked: dataSetTableView.dataTableDoubleClicked()
+        }
+
         headerDelegate: Rectangle
         {
             //Two rectangles to show a border of exactly 1px around cells
@@ -145,7 +155,7 @@ Rectangle {
                     MouseArea
                     {
                         anchors.fill: parent
-                        onPressed: popupIcons.open()
+                        onClicked: popupIcons.open()
                     }
 
 
@@ -154,7 +164,7 @@ Rectangle {
                         y: colIcon.y + colIcon.height
                         x: colIcon.x - (headerBorderRectangle.iconDim * 0.5)
 
-                        closePolicy: Popup.CloseOnReleaseOutside | Popup.CloseOnPressOutside | Popup.CloseOnEscape
+                        closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
 
                         Column
                         {

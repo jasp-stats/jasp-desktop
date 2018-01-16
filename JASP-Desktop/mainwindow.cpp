@@ -172,13 +172,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	//TMP ui->variablesPage->hide();
 
 	ui->quickWidget_Data->rootContext()->setContextProperty("dataSetModel", _tableModel);
-	//ui->quickWidget_Data->rootContext()->setContextProperty("userRoleNames", _tableModel->userRoleNames());
 	ui->quickWidget_Data->setSource(QUrl(QString("qrc:///qml/dataset.qml")));
 
-	//ui->quickWidget_Data->
-
-	//TMP ui->tableView->setVerticalScrollMode(QTableView::ScrollPerPixel);
-	//TMP ui->tableView->setHorizontalScrollMode(QTableView::ScrollPerPixel);
 
 	_analyses = new Analyses();
 	_engineSync = new EngineSync(_analyses, this);
@@ -200,7 +195,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	//TMP connect(ui->variablesPage, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
 	//TMP connect(ui->variablesPage, SIGNAL(resetTableView()), this, SLOT(resetTableView()));
 	//TMP connect(ui->tableView, SIGNAL(dataTableColumnSelected()), this, SLOT(showVariablesPage()));
-	//TMP connect(ui->tableView, SIGNAL(dataTableDoubleClicked()), this, SLOT(startDataEditorHandler()));
+
+	QObject * DataView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataSetTableView");
+	connect(DataView, SIGNAL(dataTableDoubleClicked()), this, SLOT(startDataEditorHandler()));
 
 	connect(ui->tabBar, SIGNAL(dataAutoSynchronizationChanged(bool)), ui->backStage, SLOT(dataAutoSynchronizationChanged(bool)));
 
