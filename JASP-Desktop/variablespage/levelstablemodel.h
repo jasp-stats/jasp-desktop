@@ -38,11 +38,17 @@ public:
 	Q_INVOKABLE QStringList userRoleNames() const;
 
 	void setDataSet(DataSet * thisDataSet) { _dataSet = thisDataSet; refresh(); }
+
+signals:
+	void refreshConnectedModels();
+	void resizeValueColumn();
+
 private:
 	Column *_column;
 	DataSet * _dataSet = NULL;
 
 	void _moveRows(QModelIndexList &selection, bool up = true);
+
 };
 
 #endif // LEVELSTABLEMODEL_H

@@ -25,10 +25,76 @@ Rectangle {
         GradientStop { position: 0.7; color: systemPalette.midlight }
     }
 
+    Rectangle
+    {
+        id: progressBarHolder
+        objectName: "progressBarHolder"
+        color: systemPalette.midlight
+        visible: false
+        anchors.left: rootDataset.left
+        anchors.right: rootDataset.right
+        anchors.top: rootDataset.top
+
+        Text
+        {
+            id: loadingText
+            horizontalAlignment: Text.AlignHCenter
+            text: "Say something about progress here ;)"
+
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+        }
+
+
+        ProgressBar
+        {
+            id: loadingBar
+            minimumValue: 0
+            maximumValue: 100
+            value: 0
+
+
+            anchors.left: progressBarHolder.left
+            anchors.right: progressBarHolder.right
+            anchors.top: loadingText.top
+            anchors.topMargin: 24
+        }
+
+        function show()
+        {
+            setStatus("", 0)
+            visible = true
+            splitViewData.visible = false
+        }
+
+        function hide()
+        {
+            visible = false
+            splitViewData.visible = true
+        }
+
+        function setStatus(statusString, progress)
+        {
+            loadingText.text = statusString
+            loadingBar.value = progress
+
+        }
+
+    }
+
     SplitView
     {
-        anchors.fill: parent
+        id: splitViewData
+        //anchors.fill: parent
+        anchors.top: progressBarHolder.bottom
+        anchors.left: rootDataset.left
+        anchors.right: rootDataset.right
+        anchors.bottom: rootDataset.bottom
+
         orientation: Qt.Vertical
+        visible: false
+
 
         Rectangle {
             id: variablesWindow
@@ -97,6 +163,8 @@ Rectangle {
                         anchors.right: buttonColumnVariablesWindow.left
                         anchors.bottom: parent.bottom
 
+                        signal columnChanged(string columnName)
+
                         model: levelsTableModel
 
                         selectionMode: SelectionMode.ExtendedSelection
@@ -118,12 +186,85 @@ Rectangle {
                                 copiedSelection.push(nonreversedSelectionCopy[i])
                         }
 
+                        function sendCurrentColumnChanged()
+                        {
+                            if(variablesWindow.chosenColumn > -1)
+                                columnChanged(dataSetModel.columnTitle(variablesWindow.chosenColumn))
+                        }
+
+                        function resizeValueColumn()
+                        {
+                            var title = "Values!"
+                            var minimumWidth = calculateMinimumRequiredColumnWidthTitle(0, title, 0)
+                            levelsTableViewValueColumn.width = minimumWidth + 10
+
+                        }
+
+                        function moveUp()
+                        {
+                            copySelection()
+                            if(copiedSelection.length > 0 && copiedSelection[0] != 0)
+                            {
+                                levelsTableModel.moveUpFromQML(copiedSelection)
+
+                                selection.clear()
+
+                                for(var i=0; i<copiedSelection.length; i++)
+                                {
+                                    var selectThis = copiedSelection[i]
+                                    if(selectThis > 0)
+                                        selection.select(selectThis - 1, selectThis - 1)
+                                }
+                            }
+
+                            sendCurrentColumnChanged()
+                        }
+
+                        function moveDown()
+                        {
+                            copySelectionReversed()
+                            if(copiedSelection.length > 0 && (copiedSelection[0] != (levelsTableModel.rowCount() - 1)))
+                            {
+                                levelsTableModel.moveDownFromQML(copiedSelection)
+
+                                selection.clear()
+
+                                for(var i=0; i<copiedSelection.length; i++)
+                                {
+                                    var selectThis = copiedSelection[i]
+
+                                    if(selectThis < levelsTableModel.rowCount() - 1)
+                                        selection.select(selectThis + 1, selectThis + 1)
+                                }
+                            }
+
+                            sendCurrentColumnChanged()
+                        }
+
+                        function reverse()
+                        {
+                            copySelection()
+                            levelsTableModel.reverse()
+                            selection.clear()
+                            var maxSelect = levelsTableModel.rowCount() - 1
+
+                            for(var i=0; i<copiedSelection.length; i++)
+                            {
+                                var selectThis = maxSelect - copiedSelection[i]
+                                selection.select(selectThis, selectThis)
+                            }
+
+                        }
+
+                        function closeYourself() { variablesWindow.chooseColumn(-1) }
+
+
+
                         TableViewColumn
                         {
                             id: levelsTableViewValueColumn
                             title: "Value"
                             role: "column_0"
-                            width: 150
                         }
 
                         TableViewColumn
@@ -131,7 +272,7 @@ Rectangle {
                             id: levelsTableViewLabelColumn
                             title: "Label"
                             role: "column_1"
-                            width: levelsTableView.width - levelsTableViewValueColumn.width - 10
+                            width: levelsTableView.width - levelsTableViewValueColumn.width - 20
                         }
 
                         headerDelegate: Rectangle
@@ -162,6 +303,40 @@ Rectangle {
                             }
                         }
 
+                        itemDelegate: Loader
+                        {
+                            property string textItem: styleData.value
+                            property color colorItem: styleData.textColor
+                            property int rowItem: styleData.row
+                            property int colItem: styleData.column
+
+                            sourceComponent: styleData.column == 1 ? textInputVariablesWindowTemplate : textDisplayVariablesWindowTemplate
+                        }
+
+
+                        Component {
+                            id: textInputVariablesWindowTemplate
+                            TextInput {
+                                color: colorItem
+                                text: textItem
+
+                                anchors.fill: parent
+                                function acceptChanges() { levelsTableModel.setData(levelsTableModel.index(rowItem, colItem), text) }
+                                onEditingFinished: acceptChanges()
+                            }
+                        }
+
+                        Component {
+                            id: textDisplayVariablesWindowTemplate
+                            Text {
+                                color: colorItem
+                                text: textItem
+
+                                anchors.fill: parent
+
+                            }
+                        }
+
                     }
 
                     ColumnLayout
@@ -177,23 +352,7 @@ Rectangle {
                             //text: "UP"
                             iconSource: "../images/arrow-up.png"
 
-                            onClicked:
-                            {
-                                levelsTableView.copySelection()
-                                if(levelsTableView.copiedSelection.length > 0 && levelsTableView.copiedSelection[0] != 0)
-                                {
-                                    levelsTableModel.moveUpFromQML(levelsTableView.copiedSelection)
-
-                                    levelsTableView.selection.clear()
-
-                                    for(var i=0; i<levelsTableView.copiedSelection.length; i++)
-                                    {
-                                        var selectThis = levelsTableView.copiedSelection[i]
-                                        if(selectThis > 0)
-                                            levelsTableView.selection.select(selectThis - 1, selectThis - 1)
-                                    }
-                                }
-                            }
+                            onClicked: levelsTableView.moveUp()
                         }
 
                         Button
@@ -201,44 +360,15 @@ Rectangle {
                             //text: "DOWN"
                             iconSource: "../images/arrow-down.png"
 
-                            onClicked:
-                            {
-                                levelsTableView.copySelectionReversed()
-                                if(levelsTableView.copiedSelection.length > 0 && (levelsTableView.copiedSelection[0] != (levelsTableModel.rowCount() - 1)))
-                                {
-                                    levelsTableModel.moveDownFromQML(levelsTableView.copiedSelection)
-
-                                    levelsTableView.selection.clear()
-
-                                    for(var i=0; i<levelsTableView.copiedSelection.length; i++)
-                                    {
-                                        var selectThis = levelsTableView.copiedSelection[i]
-
-                                        if(selectThis < levelsTableModel.rowCount() - 1)
-                                            levelsTableView.selection.select(selectThis + 1, selectThis + 1)
-                                    }
-                                }
-                            }
+                            onClicked: levelsTableView.moveDown()
                         }
 
                         Button
                         {
                             //text: "REVERSE"
                             iconSource: "../images/arrow-reverse.png"
-                            onClicked:
-                            {
-                                levelsTableView.copySelection()
-                                levelsTableModel.reverse()
-                                levelsTableView.selection.clear()
-                                var maxSelect = levelsTableModel.rowCount() - 1
+                            onClicked: levelsTableView.reverse()
 
-                                for(var i=0; i<levelsTableView.copiedSelection.length; i++)
-                                {
-                                    var selectThis = maxSelect - levelsTableView.copiedSelection[i]
-                                    levelsTableView.selection.select(selectThis, selectThis)
-                                }
-
-                            }
                         }
 
                         Item //Spacer
@@ -258,11 +388,11 @@ Rectangle {
         }
 
         TableViewJasp {
+
             id: dataSetTableView
             objectName: "dataSetTableView"
 
             Layout.fillWidth: true
-
             /*anchors.top: variablesWindow.bottom
             anchors.left: rootDataset.left
             anchors.right: rootDataset.right
@@ -288,41 +418,25 @@ Rectangle {
                 resizeColumnsWithHeader()
             }
 
+            Component { id: columnComponent; TableViewColumn { movable: false } }
+
 
             function resizeColumnsWithHeader()
             {
-                var extraPaddingRight = 15
+                var extraPadding = 15
                 for(var col=0; col<columnCount; col++)
                 {
-                    var column = getColumn(col)
                     var title = dataSetModel.columnTitle(col)
-                    var tempCalc = columnHeaderSizeCalcComponent.createObject(dataSetTableView, { "text": title})
-                    var minimumWidth = tempCalc.width + 10 + tempCalc.height + extraPaddingRight
-
-                    for(var row=0; row<rowCount; row++)
-                    {
-                        var rowVal = dataSetModel.getCellValue(col, row)
-                        tempCalc.text = rowVal
-                        minimumWidth = Math.max(minimumWidth, tempCalc.width + extraPaddingRight)
-                    }
-
-                    //Lets resize content while keeping it larger than the headerText + some iconSize
+                    var minimumWidth = calculateMinimumRequiredColumnWidthTitle(col, title, 20 + extraPadding, 1000)
+                    var column = getColumn(col)
                     column.width = minimumWidth
                 }
             }
 
-            Component { id: columnComponent; TableViewColumn { movable: false } }
-            Component { id: columnHeaderSizeCalcComponent; TextMetrics { } }
-
             signal dataTableDoubleClicked()
 
-            MouseArea
-            {
-                anchors.fill: parent
-                propagateComposedEvents: true
-                onClicked: mouse.accepted = false
-                onDoubleClicked: dataSetTableView.dataTableDoubleClicked()
-            }
+            onDoubleClicked:  dataSetTableView.dataTableDoubleClicked()
+
 
             headerDelegate: Rectangle
             {
@@ -462,12 +576,19 @@ Rectangle {
                     Text {
                         id: itemText
                         text: styleData.value
-                        color: systemPalette.text
+                        color: styleData.textColor
                         elide: styleData.elideMode
                         horizontalAlignment: styleData.textAlignment
                         leftPadding: 4
                     }
                 }
+            }
+
+            rowDelegate: Rectangle {
+                //visible: styleData.selected || styleData.alternate
+                color: styleData.selected ? systemPalette.dark : (styleData.alternate ? systemPalette.midlight : systemPalette.light)
+                //height: Math.max(16,  StyleItem.implicitHeight)
+                //border.left: 4 ; border.right: 4
             }
         }
     }

@@ -168,14 +168,23 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	_tableModel = new DataSetTableModel();
 	_levelsTableModel = new LevelsTableModel(this);
-	//TMP ui->tableView->setModel(_tableModel);
-	//TMP ui->tableView->setVariablesView(ui->variablesPage);
-	//TMP ui->variablesPage->hide();
+
+	connect(_levelsTableModel, SIGNAL(refreshConnectedModels()), _tableModel, SLOT(refresh()));
+	connect(_levelsTableModel, SIGNAL(resizeValueColumn()), this, SLOT(resizeVariablesWindowValueColumn()));
+
 
 	ui->quickWidget_Data->rootContext()->setContextProperty("dataSetModel", _tableModel);
 	ui->quickWidget_Data->rootContext()->setContextProperty("levelsTableModel", _levelsTableModel);
 	ui->quickWidget_Data->setSource(QUrl(QString("qrc:///qml/dataset.qml")));
 
+
+	QObject * DataView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataSetTableView");
+	connect(DataView, SIGNAL(dataTableDoubleClicked()), this, SLOT(startDataEditorHandler()));
+
+	QObject * levelsTableView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("levelsTableView");
+	connect(levelsTableView, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
+
+	qmlProgressBar = ui->quickWidget_Data->rootObject()->findChild<QObject*>("progressBarHolder");
 
 	_analyses = new Analyses();
 	_engineSync = new EngineSync(_analyses, this);
@@ -194,22 +203,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
 
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), _resultsJsInterface, SLOT(exportSelected(QString)));
-	//TMP connect(ui->variablesPage, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
-	//TMP connect(ui->variablesPage, SIGNAL(resetTableView()), this, SLOT(resetTableView()));
-	//TMP connect(ui->tableView, SIGNAL(dataTableColumnSelected()), this, SLOT(showVariablesPage()));
 
-	QObject * DataView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataSetTableView");
-	connect(DataView, SIGNAL(dataTableDoubleClicked()), this, SLOT(startDataEditorHandler()));
 
 	connect(ui->tabBar, SIGNAL(dataAutoSynchronizationChanged(bool)), ui->backStage, SLOT(dataAutoSynchronizationChanged(bool)));
 
-	//TMP _progressIndicator = new ProgressWidget(ui->tableView);
-	//TMP _progressIndicator->setAutoFillBackground(true);
-	//TMP _progressIndicator->resize(400, 100);
-	//TMP _progressIndicator->move(100, 80);
-	//TMP _progressIndicator->hide();
-
-	//TMP connect(&_loader, SIGNAL(progress(QString,int)), _progressIndicator, SLOT(setStatus(QString,int)));
+	connect(&_loader, SIGNAL(progress(QString,int)), this, SLOT(setProgressStatus(QString,int)));
 
 	connect(ui->tabBar, SIGNAL(setExactPValuesHandler(bool)), _resultsJsInterface, SLOT(setExactPValuesHandler(bool)));
 	connect(ui->tabBar, SIGNAL(setFixDecimalsHandler(QString)), _resultsJsInterface, SLOT(setFixDecimalsHandler(QString)));
@@ -504,8 +502,6 @@ void MainWindow::packageDataChanged(DataSetPackage *package,
 	_tableModel->setDataSet(_package->dataSet);
 	_levelsTableModel->setDataSet(_package->dataSet);
 	triggerQmlColumnReload();
-	//_tableModel->setDataSet(_package->dataSet);
-	//TMP ui->variablesPage->setDataSet(_package->dataSet);
 
 	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns);
 }
@@ -916,7 +912,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 
 			_loader.io(event, _package);
-			//TMP _progressIndicator->show();
+			showProgress();
 		}
 
 		ui->tabBar->setCurrentModuleActive();
@@ -955,7 +951,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 
 		_loader.io(event, _package);
-//TMP 		_progressIndicator->show();
+		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileExportResults)
 	{
@@ -964,13 +960,13 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 		_resultsJsInterface->exportHTML();
 
 		_loader.io(event, _package);
-		//TMP _progressIndicator->show();
+		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileExportData)
 	{
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 		_loader.io(event, _package);
-		//TMP _progressIndicator->show();
+		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
 	{
@@ -979,7 +975,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 		_loader.io(event, _package);
-		//TMP _progressIndicator->show();
+		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
@@ -1012,9 +1008,22 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			dataSetIOCompleted(event);
 		}
 
-		//TMP ui->variablesPage->close();
+		closeVariablesPage();
 	}
 }
+
+void MainWindow::resizeVariablesWindowValueColumn()
+{
+	QObject * levelsTableView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("levelsTableView");
+	QMetaObject::invokeMethod(levelsTableView, "resizeValueColumn");
+}
+
+void MainWindow::closeVariablesPage()
+{
+	QObject * levelsTableView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("levelsTableView");
+	QMetaObject::invokeMethod(levelsTableView, "closeYourself");
+}
+
 
 void MainWindow::triggerQmlColumnReload()
 {
@@ -1029,7 +1038,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 {
 	this->analysisOKed();
 	bool showAnalysis = false;
-//TMP 	_progressIndicator->hide();
+	hideProgress();
 
 	if (event->operation() == FileEvent::FileOpen)
 	{
@@ -1101,13 +1110,11 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			hideOptionsPanel();
 			_tableModel->clearDataSet();
 			_levelsTableModel->setDataSet(NULL);
-			//TMP ui->variablesPage->clearDataSet();
 			_loader.free(_package->dataSet);
 			_package->reset();
 			updateMenuEnabledDisabledStatus();
 			ui->webViewResults->reload();
 			setWindowTitle("JASP");
-			//TMP ui->tableView->adjustAfterDataLoad(false);
 			triggerQmlColumnReload();
 
 			if (_applicationExiting)
@@ -1132,11 +1139,8 @@ void MainWindow::populateUIfromDataSet()
 	_levelsTableModel->setDataSet(_package->dataSet);
 	triggerQmlColumnReload();
 
-	//TMP ui->variablesPage->setDataSet(_package->dataSet);
 
-	//TMP ui->tableView->adjustAfterDataLoad(true);
-
-//TMP 	_progressIndicator->hide();
+	hideProgress();
 
 	bool errorFound = false;
 	stringstream errorMsg;
@@ -1536,21 +1540,6 @@ void MainWindow::hideDataPanel()
 }
 
 
-void MainWindow::showVariablesPage()
-{
-	//TMP QList<int> datacurrentSizes = ui->data_splitter->sizes();
-
-	//TMP ui->variablesPage->show();
-/*
-	if (datacurrentSizes[0] < 1)
-	{
-		datacurrentSizes[0]+=250;
-		datacurrentSizes[1]-=250;
-		ui->data_splitter->setSizes(datacurrentSizes);
-	}*/
-}
-
-
 void MainWindow::analysisOKed()
 {
 	if (_currentOptionsWidget != NULL)
@@ -1654,12 +1643,6 @@ void MainWindow::refreshAnalysesUsingColumn(QString col)
 	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns);
 
 	_package->setModified(false);
-}
-
-
-void MainWindow::resetTableView()
-{
-//TMP 	ui->tableView->reset();
 }
 
 void MainWindow::removeAnalysisRequestHandler(int id)
@@ -1779,7 +1762,7 @@ void MainWindow::startDataEditorHandler()
 		connect(event, SIGNAL(completed(FileEvent*)), ui->backStage, SLOT(setSyncFile(FileEvent*)));
 		event->setPath(path);
 		_loader.io(event, _package);
-//TMP 		_progressIndicator->show();
+		showProgress();
 	}
 	else
 		startDataEditor(path);
@@ -1788,7 +1771,7 @@ void MainWindow::startDataEditorHandler()
 
 void MainWindow::startDataEditorEventCompleted(FileEvent* event)
 {
-//TMP 	_progressIndicator->hide();
+	hideProgress();
 
 	if (event->successful())
 	{
@@ -1834,4 +1817,19 @@ void MainWindow::startDataEditor(QString path)
 			QMessageBox::warning(this, QString("Start Spreadsheet Editor"), QString("No default spreadsheet editor for file ") + fileInfo.completeBaseName() + QString(". Use Preferences to set the right editor."), QMessageBox::Cancel);
 		}
 	}
+}
+
+void MainWindow::showProgress()
+{
+	QMetaObject::invokeMethod(qmlProgressBar, "show");
+}
+
+void MainWindow::hideProgress()
+{
+	QMetaObject::invokeMethod(qmlProgressBar, "hide");
+}
+
+void MainWindow::setProgressStatus(QString status, int progress)
+{
+	QMetaObject::invokeMethod(qmlProgressBar, "setStatus", Q_ARG(QVariant, QVariant(status)), Q_ARG(QVariant, QVariant(progress)));
 }

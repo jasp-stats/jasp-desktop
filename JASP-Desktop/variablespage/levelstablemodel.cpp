@@ -19,12 +19,14 @@ void LevelsTableModel::setColumn(Column *column)
 	beginResetModel();
 	_column = column;
 	endResetModel();
+	emit resizeValueColumn();
 }
 
 void LevelsTableModel::refresh()
 {
 	beginResetModel();
 	endResetModel();
+	emit resizeValueColumn();
 }
 
 void LevelsTableModel::clearColumn()
@@ -157,6 +159,8 @@ bool LevelsTableModel::setData(const QModelIndex & index, const QVariant & value
             Labels &labels = _column->labels();
 			if (labels.setLabelFromRow(index.row(), new_label))
 				emit dataChanged(index, index);
+
+			emit refreshConnectedModels();
 		}
     }
 

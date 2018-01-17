@@ -59,6 +59,9 @@ public:
 signals:
 
 	void badDataEntered(const QModelIndex index);
+
+public slots:
+	void refresh() { beginResetModel(); endResetModel(); }
     
 private:
 	DataSet *_dataSet;

@@ -43,6 +43,7 @@ import QtQuick.Controls 1.3
 import QtQuick.Controls.Private 1.0
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Window 2.1
+import QtQuick 2.7
 
 BasicTableViewJasp {
     id: root
@@ -65,6 +66,27 @@ BasicTableViewJasp {
         var obj = root.mapToItem(__listView.contentItem, x, y)
         return __listView.indexAt(obj.x, obj.y)
     }
+
+    function calculateMinimumRequiredColumnWidth(columnIndex) { return calculateMinimumRequiredColumnWidthTitle(columnIndex, "", 0, 0)}
+
+    function calculateMinimumRequiredColumnWidthTitle(columnIndex, columnTitle, columnTitleExtraPadding, maxRowCount)
+    {
+
+        var column = getColumn(columnIndex)
+        var tempCalc = columnHeaderSizeCalcComponent.createObject(root, { "text": columnTitle})
+        var minimumWidth = tempCalc.width + columnTitleExtraPadding
+
+        for(var row=0; row<rowCount && ( maxRowCount == 0 || row<maxRowCount); row++)
+        {
+            var rowVal = __model.data(__model.index(row, columnIndex))
+            tempCalc.text = rowVal
+            minimumWidth = Math.max(minimumWidth, tempCalc.width)
+        }
+
+        return minimumWidth
+    }
+
+    Component { id: columnHeaderSizeCalcComponent; TextMetrics { } }
 
     readonly property alias selection: selectionObject
 

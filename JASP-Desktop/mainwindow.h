@@ -27,7 +27,6 @@
 #include "variablespage/levelstablemodel.h"
 #include "enginesync.h"
 #include "analyses.h"
-#include "widgets/progresswidget.h"
 
 #include "analysisforms/analysisform.h"
 #include "asyncloader.h"
@@ -96,7 +95,7 @@ private:
 
 	AsyncLoader _loader;
 	AsyncLoaderThread _loaderThread;
-	//TMP ProgressWidget *_progressIndicator;
+	QObject * qmlProgressBar = NULL;
 
 	bool _inited;
 	bool _applicationExiting = false;
@@ -151,7 +150,6 @@ private slots:
 	void removeAllAnalyses();
 	void refreshAllAnalyses();
 	void refreshAnalysesUsingColumn(QString col);
-	void resetTableView();
 
 	void tabChanged(int index);
 	void helpToggled(bool on);
@@ -168,7 +166,6 @@ private slots:
 	void showOptionsPanel();
 	void showDataPanel();
 	void hideDataPanel();
-	void showVariablesPage();
 	void startDataEditorHandler();
 	void startDataEditorEventCompleted(FileEvent *event);
 
@@ -189,6 +186,14 @@ private slots:
 	void requestHelpPage(const QString &pageName);
 
     void emptyValuesChangedHandler();
+
+	void resizeVariablesWindowValueColumn();
+	void closeVariablesPage();
+
+	void showProgress();
+	void hideProgress();
+	void setProgressStatus(QString status, int progress);
+
 };
 
 #endif // MAINWIDGET_H
