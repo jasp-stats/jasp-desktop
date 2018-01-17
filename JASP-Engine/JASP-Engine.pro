@@ -47,7 +47,9 @@ macx {
 }
 
 linux {
-	LIBS += -ljsoncpp
+        LIBS += -ljsoncpp\
+            -L$$_R_HOME/lib -lR \
+            -lrt
 	isEmpty(_R_HOME):_R_HOME = /usr/lib/R
 	R_EXE  = $$_R_HOME/bin/R
 }

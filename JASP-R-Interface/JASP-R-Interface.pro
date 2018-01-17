@@ -77,10 +77,6 @@ linux:INCLUDEPATH += \
 macx:LIBS += \
     -L$$_R_HOME/lib -lR
 
-linux:LIBS += \
-    -L$$_R_HOME/lib -lR \
-    -lrt
-
 win32:LIBS += \
     -L$$_R_HOME/bin/$$ARCH -lR
 

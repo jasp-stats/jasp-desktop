@@ -8,7 +8,7 @@ SUBDIRS += \
 	JASP-Common \
         JASP-Engine \
         JASP-Desktop
-#        JASP-R-Interface
+linux: SUBDIRS += JASP-R-Interface
 #	JASP-Tests
 
 JASP-Desktop.depends = JASP-Common
