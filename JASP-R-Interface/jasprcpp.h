@@ -31,7 +31,7 @@ SEXP jaspRCPP_requestStateFileNameSEXP();
 
 
 // This is a copy of column.h!!!!
-enum ColumnType { ColumnTypeUnknown = 0, ColumnTypeNominal = 1, ColumnTypeNominalText = 2, ColumnTypeOrdinal = 4, ColumnTypeScale = 8 };
+enum ColumnType { ColumnTypeUnknown = -1, ColumnTypeScale = 0, ColumnTypeOrdinal, ColumnTypeNominal, ColumnTypeNominalText};
 
 RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns, int* colMax);
 void jaspRCPP_makeFactor(Rcpp::IntegerVector &v, char** levels, int nbLevels, bool ordinal = false);
