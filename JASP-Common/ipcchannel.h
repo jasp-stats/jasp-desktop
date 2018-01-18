@@ -30,6 +30,8 @@
 #undef Free
 
 #include <windows.h>
+#else
+#include <boost/interprocess/sync/named_semaphore.hpp>
 
 #endif
 
