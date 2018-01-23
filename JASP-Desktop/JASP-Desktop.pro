@@ -30,7 +30,7 @@ windows:LIBS += -lboost_filesystem-mgw48-mt-1_64 -lboost_system-mgw48-mt-1_64 -l
   linux:LIBS += -lboost_filesystem    -lboost_system    -larchive
 
 windows:LIBS += -lole32 -loleaut32
-  linux:LIBS += -lrt
+  linux:LIBS += -lrt  -ljsoncpp
 
 QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
@@ -45,6 +45,10 @@ linux {
     isEmpty(_R_HOME):_R_HOME = /usr/lib/R
     QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
 }
+
+macx | windows { DEFINES += JASP_NOT_LINUX }
+
+INCLUDEPATH += $$PWD/../JASP-Common/
 
 include(JASP-Desktop.pri)
 

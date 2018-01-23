@@ -26,7 +26,7 @@
 
 #include "libzip/archive.h"
 #include "libzip/archive_entry.h"
-#include "lib_json/json.h"
+#include "jsonredirect.h"
 #include "filereader.h"
 #include "version.h"
 #include "tempfiles.h"

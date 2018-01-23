@@ -37,7 +37,7 @@ void OptionList::init(const Json::Value &data)
 	_options = std::vector<std::string>();
 
 	const Json::Value &array = data["options"];
-	for (Json::ValueIterator itr = array.begin(); itr != array.end(); itr++)
+    for (auto itr = array.begin(); itr != array.end(); itr++)
 		_options.push_back((*itr).asString());
 
 	if (data.isMember("default"))

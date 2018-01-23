@@ -52,7 +52,7 @@ Json::Value Options::asJSON() const
 
 void Options::init(const Json::Value &array)
 {
-	for (Json::ValueIterator itr = array.begin(); itr != array.end(); itr++)
+    for (auto itr = array.begin(); itr != array.end(); itr++)
 	{
 		Json::Value value = (*itr);
 
@@ -69,8 +69,8 @@ void Options::init(const Json::Value &array)
 		}
 		else
 		{
-			cout << "Unknown data type: " << typeString << "\n";
-			cout.flush();
+            cout << "Unknown data type: " << typeString << "\n";
+            cout.flush();
 		}
 	}
 }

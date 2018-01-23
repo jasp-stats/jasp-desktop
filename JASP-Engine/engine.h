@@ -18,10 +18,10 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include "../JASP-Common/dataset.h"
-#include "../JASP-Common/lib_json/json.h"
-#include "../JASP-Common/ipcchannel.h"
-#include "../JASP-Common/processinfo.h"
+#include "dataset.h"
+#include "ipcchannel.h"
+#include "processinfo.h"
+#include "jsonredirect.h"
 
 /* The Engine represents the background processes.
  * It's job is pretty straight forward; it reads analysis
