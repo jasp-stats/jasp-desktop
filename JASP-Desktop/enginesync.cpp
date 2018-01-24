@@ -134,6 +134,16 @@ void EngineSync::setPPI(int ppi)
 	_ppi = ppi;
 }
 
+void EngineSync::sendFilter(std::string filter)
+{
+	Json::Value json = Json::Value(Json::objectValue);
+
+	json["filter"] = filter == "" ? "*" : filter;
+
+	string str = json.toStyledString();
+	_channels[0]->send(str);
+}
+
 void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 {
 #ifdef QT_DEBUG

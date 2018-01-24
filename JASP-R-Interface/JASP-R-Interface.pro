@@ -11,6 +11,10 @@ DESTDIR = ..
 TEMPLATE = lib
 linux:CONFIG += staticlib
 
+DEPENDPATH = ..
+PRE_TARGETDEPS += ../JASP-Common
+LIBS += -L.. -lJASP-Common
+
 _R_HOME = $$(R_HOME)
 
  ! isEmpty(_R_HOME) : message(using R_HOME of $$_R_HOME)

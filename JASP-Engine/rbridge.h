@@ -28,6 +28,7 @@
 
 #include <string>
 #include <map>
+#include <unordered_set>
 #include <boost/function.hpp>
 
 #include "../JASP-Common/dataset.h"
@@ -41,13 +42,15 @@
  * application, and the R analyses
  */
 extern "C" {
-	RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* columns, int colMax);
-	char** STDCALL rbridge_readDataColumnNames(int *colMax);
-	RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBridgeColumnType* columns, int colMax);
-	bool STDCALL rbridge_test(char** root);
-	bool STDCALL rbridge_requestStateFileSource(const char **root, const char **relativePath);
-	bool STDCALL rbridge_requestTempFileName(const char* extensionAsString, const char **root, const char **relativePath);
-	bool STDCALL rbridge_runCallback(const char* in, int progress, const char** out);
+	RBridgeColumn*				STDCALL rbridge_readDataSet(RBridgeColumnType* columns, int colMax);
+	RBridgeColumn*				STDCALL rbridge_readFullDataSet(int * colMax);
+	char**						STDCALL rbridge_readDataColumnNames(int *colMax);
+	RBridgeColumnDescription*	STDCALL rbridge_readDataSetDescription(RBridgeColumnType* columns, int colMax);
+	bool						STDCALL rbridge_test(char** root);
+	bool						STDCALL rbridge_requestStateFileSource(const char **root, const char **relativePath);
+	bool						STDCALL rbridge_requestTempFileName(const char* extensionAsString, const char **root, const char **relativePath);
+	bool						STDCALL rbridge_runCallback(const char* in, int progress, const char** out);
+
 }
 
 	typedef boost::function<std::string (const std::string &, int progress)> RCallback;
@@ -56,9 +59,14 @@ extern "C" {
 	void rbridge_setFileNameSource(boost::function<void(const std::string &, std::string &, std::string &)> source);
 	void rbridge_setStateFileSource(boost::function<void(std::string &, std::string &)> source);
 	void rbridge_setDataSetSource(boost::function<DataSet *()> source);
+
 	std::string rbridge_run(const std::string &name, const std::string &title, bool &requiresInit, const std::string &dataKey, const std::string &options, const std::string &resultsMeta, const std::string &stateKey, const std::string &perform = "run", int ppi = 96, RCallback callback = NULL);
 	std::string rbridge_saveImage(const std::string &name, const std::string &type, const int &height, const int &width, const int ppi = 96);
-	std::string rbridge_check();
+	std::string	rbridge_check();
+
+	std::vector<bool>	rbridge_applyFilter(std::string & filterCode);
+	std::string			rbridge_encodeColumnNamesToBase64(std::string & filterCode);
+	bool				rbridge_columnUsedInFilter(const char * columnName);
 
 	void freeRBridgeColumns(RBridgeColumn *columns, int colMax);
 	void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, int colMax);

@@ -37,56 +37,58 @@
 extern "C" {
 
 struct RBridgeColumn {
-	char* name;
-	bool isScale;
-	bool hasLabels;
-	bool isOrdinal;
-	double* doubles;
-	int* ints;
-	char** labels;
-	int nbRows;
-	int nbLabels;
+	char*	name;
+	bool	isScale;
+	bool	hasLabels;
+	bool	isOrdinal;
+	double*	doubles;
+	int*	ints;
+	char**	labels;
+	int		nbRows;
+	int		nbLabels;
 } ;
 
 struct RBridgeColumnDescription {
-	int type;
-	char* name;
-	bool isScale;
-	bool hasLabels;
-	bool isOrdinal;
-	char** labels;
-	int nbLabels;
+	int		type;
+	char*	name;
+	bool	isScale;
+	bool	hasLabels;
+	bool	isOrdinal;
+	char**	labels;
+	int		nbLabels;
 } ;
 
 struct RBridgeColumnType {
-	char* name;
-	int type;
+	char*	name;
+	int		type;
 };
 
 // Callbacks from jaspRCPP to rbridge
-typedef RBridgeColumn* (STDCALL *ReadDataSetCB)(RBridgeColumnType* columns, int colMax);
-typedef char** (STDCALL *ReadDataColumnNamesCB)(int *maxCol);
-typedef RBridgeColumnDescription* (STDCALL *ReadDataSetDescriptionCB)(RBridgeColumnType* columns, int colMax);
-typedef bool (STDCALL *RequestStateFileSourceCB)(const char **root, const char **relativePath);
-typedef bool (STDCALL *RequestTempFileNameCB)(const char* extensionAsString, const char **root, const char **relativePath);
-typedef bool (STDCALL *RunCallbackCB)(const char* in, int progress, const char** out);
+typedef RBridgeColumn*				(STDCALL *ReadDataSetCB)			(RBridgeColumnType* columns, int colMax);
+typedef RBridgeColumn*				(STDCALL *ReadFullDataSetCB)		(int * colMax);
+typedef char**						(STDCALL *ReadDataColumnNamesCB)	(int *maxCol);
+typedef RBridgeColumnDescription*	(STDCALL *ReadDataSetDescriptionCB)	(RBridgeColumnType* columns, int colMax);
+typedef bool						(STDCALL *RequestStateFileSourceCB)	(const char **root, const char **relativePath);
+typedef bool						(STDCALL *RequestTempFileNameCB)	(const char* extensionAsString, const char **root, const char **relativePath);
+typedef bool						(STDCALL *RunCallbackCB)			(const char* in, int progress, const char** out);
 
 struct RBridgeCallBacks {
-	ReadDataSetCB readDataSetCB;
-	ReadDataColumnNamesCB readDataColumnNamesCB;
-	ReadDataSetDescriptionCB readDataSetDescriptionCB;
-	RequestStateFileSourceCB requestStateFileSourceCB;
-	RequestTempFileNameCB requestTempFileNameCB;
-	RunCallbackCB runCallbackCB;
+	ReadDataSetCB				readDataSetCB;
+	ReadDataColumnNamesCB		readDataColumnNamesCB;
+	ReadDataSetDescriptionCB	readDataSetDescriptionCB;
+	RequestStateFileSourceCB	requestStateFileSourceCB;
+	RequestTempFileNameCB		requestTempFileNameCB;
+	RunCallbackCB				runCallbackCB;
+	ReadFullDataSetCB			readFullDataSetCB;
 };
 
 
 // Calls from rbridge to jaspRCPP
-RBRIDGE_TO_JASP_INTERFACE void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks *calbacks);
-RBRIDGE_TO_JASP_INTERFACE const char* STDCALL jaspRCPP_run(const char* name, const char* title, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi);
-RBRIDGE_TO_JASP_INTERFACE const char* STDCALL jaspRCPP_check();
-RBRIDGE_TO_JASP_INTERFACE const char* STDCALL jaspRCPP_saveImage(const char *name, const char *type, const int height, const int width, const int ppi);
-
+RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks *calbacks);
+RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_run(const char* name, const char* title, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi);
+RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_check();
+RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_saveImage(const char *name, const char *type, const int height, const int width, const int ppi);
+RBRIDGE_TO_JASP_INTERFACE int			STDCALL jaspRCPP_runFilter(const char * filtercode, bool ** arraypointer); //arraypointer points to a pointer that will contain the resulting list of filter-booleans if jaspRCPP_runFilter returns > 0
 
 } // extern "C"
 

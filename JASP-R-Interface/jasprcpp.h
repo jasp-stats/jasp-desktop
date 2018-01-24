@@ -21,19 +21,25 @@
 #include <RInside/RInside.h>
 #include <Rcpp.h>
 #include "jasprcpp_interface.h"
+#include "../JASP-Common/base64.h"
 
 // Calls From R
+Rcpp::DataFrame jaspRCPP_readFullDataSet();
 Rcpp::DataFrame jaspRCPP_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
 Rcpp::DataFrame jaspRCPP_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
+Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(RBridgeColumn* colResults, int colMax);
+
 SEXP jaspRCPP_callbackSEXP(SEXP results, SEXP progress);
 SEXP jaspRCPP_requestTempFileNameSEXP(SEXP extension);
 SEXP jaspRCPP_requestStateFileNameSEXP();
 
+void jaspRCPP_returnDataFrame(Rcpp::DataFrame frame);
 
 // This is a copy of column.h!!!!
 enum ColumnType { ColumnTypeUnknown = 0, ColumnTypeNominal = 1, ColumnTypeNominalText = 2, ColumnTypeOrdinal = 4, ColumnTypeScale = 8 };
 
 RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns, int* colMax);
+
 void jaspRCPP_makeFactor(Rcpp::IntegerVector &v, char** levels, int nbLevels, bool ordinal = false);
 void freeRBridgeColumnType(RBridgeColumnType* columnsRequested, int colMax);
 

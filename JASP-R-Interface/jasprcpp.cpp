@@ -21,11 +21,13 @@ using namespace std;
 
 RInside *rinside;
 ReadDataSetCB readDataSetCB;
+RunCallbackCB runCallbackCB;
+ReadFullDataSetCB readFullDataSetCB;
 ReadDataColumnNamesCB readDataColumnNamesCB;
+RequestTempFileNameCB requestTempFileNameCB;
 ReadDataSetDescriptionCB readDataSetDescriptionCB;
 RequestStateFileSourceCB requestStateFileSourceCB;
-RequestTempFileNameCB requestTempFileNameCB;
-RunCallbackCB runCallbackCB;
+
 
 static const string NullString = "null";
 
@@ -37,11 +39,14 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	RInside &rInside = rinside->instance();
 
-	rInside[".readDatasetToEndNative"] = Rcpp::InternalFunction(&jaspRCPP_readDataSetSEXP);
-	rInside[".readDataSetHeaderNative"] = Rcpp::InternalFunction(&jaspRCPP_readDataSetHeaderSEXP);
-	rInside[".callbackNative"] = Rcpp::InternalFunction(&jaspRCPP_callbackSEXP);
-	rInside[".requestTempFileNameNative"] = Rcpp::InternalFunction(&jaspRCPP_requestTempFileNameSEXP);
-	rInside[".requestStateFileNameNative"] = Rcpp::InternalFunction(&jaspRCPP_requestStateFileNameSEXP);
+	rInside[".callbackNative"]				= Rcpp::InternalFunction(&jaspRCPP_callbackSEXP);
+	rInside[".readDatasetToEndNative"]		= Rcpp::InternalFunction(&jaspRCPP_readDataSetSEXP);
+	rInside[".readDataSetHeaderNative"]		= Rcpp::InternalFunction(&jaspRCPP_readDataSetHeaderSEXP);
+	rInside[".requestTempFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestTempFileNameSEXP);
+	rInside[".requestStateFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestStateFileNameSEXP);
+	rInside[".readFullDatasetToEndNative"]	= Rcpp::InternalFunction(&jaspRCPP_readFullDataSet);
+	rInside[".returnDataFrame"]				= Rcpp::InternalFunction(&jaspRCPP_returnDataFrame);
+
 	static const char *baseCitationFormat = "JASP Team (%s). JASP (Version %s) [Computer software].";
 	char baseCitation[200];
 	sprintf(baseCitation, baseCitationFormat, buildYear, version);
@@ -51,12 +56,13 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
 
-	readDataSetCB = callbacks->readDataSetCB;
-	readDataColumnNamesCB = callbacks->readDataColumnNamesCB;
-	readDataSetDescriptionCB = callbacks->readDataSetDescriptionCB;
-	requestStateFileSourceCB = callbacks->requestStateFileSourceCB;
-	requestTempFileNameCB = callbacks->requestTempFileNameCB;
-	runCallbackCB = callbacks->runCallbackCB;
+	readDataSetCB				= callbacks->readDataSetCB;
+	readFullDataSetCB			= callbacks->readFullDataSetCB;
+	readDataColumnNamesCB		= callbacks->readDataColumnNamesCB;
+	readDataSetDescriptionCB	= callbacks->readDataSetDescriptionCB;
+	requestStateFileSourceCB	= callbacks->requestStateFileSourceCB;
+	requestTempFileNameCB		= callbacks->requestTempFileNameCB;
+	runCallbackCB				= callbacks->runCallbackCB;
 }
 
 
@@ -92,6 +98,25 @@ const char* STDCALL jaspRCPP_check()
 	staticResult = Rf_isString(result) ? Rcpp::as<string>(result) : NullString;
 
 	return staticResult.c_str();
+}
+
+int STDCALL jaspRCPP_runFilter(const char * filterCode, bool ** arrayPointer)
+{
+	SEXP result = rinside->parseEval(filterCode);
+
+	if(Rf_isVector(result))
+	{
+		Rcpp::NumericVector vec(result);
+
+		(*arrayPointer) = (bool*)malloc(vec.size() * sizeof(bool));
+
+		for(int i=0; i<vec.size(); i++)
+			(*arrayPointer)[i] = vec[i] == 1;
+
+		return vec.size();
+	}
+
+	return 0;
 }
 
 const char* STDCALL jaspRCPP_saveImage(const char *name, const char *type, const int height, const int width, const int ppi)
@@ -161,6 +186,26 @@ SEXP jaspRCPP_callbackSEXP(SEXP in, SEXP progress)
 	}
 }
 
+void jaspRCPP_returnDataFrame(Rcpp::DataFrame frame)
+{
+	int colcount = frame.size();
+
+	std::cout << "got a dataframe!\n" << colcount << "X" << (colcount > 0 ? ((Rcpp::NumericVector)frame[0]).size() : -1) << "\n" << std::flush;
+
+	if(colcount > 0)
+	{
+		int rowcount = ((Rcpp::NumericVector)frame[0]).size();
+
+		for(int row=0; row<rowcount; row++)
+		{
+			for(int col=0; col<colcount; col++)
+				std::cout << Base64::decode("X", std::string(((Rcpp::StringVector)frame[col])[row]), Base64::RVarEncoding) << " ";
+			std::cout << "\n";
+		}
+		std::cout << std::flush;
+	}
+}
+
 RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns, int *colMax)
 {
 	map<string, ColumnType> columnsRequested;
@@ -224,12 +269,32 @@ void freeRBridgeColumnType(RBridgeColumnType *columns, int colMax)
 	free(columns);
 }
 
+Rcpp::DataFrame jaspRCPP_readFullDataSet()
+{
+	std::cout<<"hallo!  jaspRCPP_readFullDataSet\n" << std::flush;
+
+	int colMax = 0;
+
+	std::cout<< "before readFullDataSetCB(&colMax);\n" << std::flush;
+
+	RBridgeColumn* colResults = readFullDataSetCB(&colMax);
+
+	std::cout<< "before jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);\n" << std::flush;
+	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
+}
+
 Rcpp::DataFrame jaspRCPP_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)
 {
 	int colMax = 0;
 	RBridgeColumnType* columnsRequested = jaspRCPP_marshallSEXPs(columns, columnsAsNumeric, columnsAsOrdinal, columnsAsNominal, allColumns, &colMax);
 	RBridgeColumn* colResults = readDataSetCB(columnsRequested, colMax);
 	freeRBridgeColumnType(columnsRequested, colMax);
+
+	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
+}
+
+Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(RBridgeColumn* colResults, int colMax)
+{
 
 	Rcpp::DataFrame dataFrame = Rcpp::DataFrame();
 

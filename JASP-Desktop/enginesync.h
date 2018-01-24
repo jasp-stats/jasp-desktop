@@ -59,6 +59,8 @@ public:
 
 	void setPPI(int ppi);
 
+	void sendFilter(std::string filter);
+
 signals:
 
 	void engineTerminated();

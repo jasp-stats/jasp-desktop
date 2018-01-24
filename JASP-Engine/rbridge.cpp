@@ -31,6 +31,8 @@ RCallback rbridge_callback;
 boost::function<void(const std::string &, std::string &, std::string &)> rbridge_fileNameSource;
 boost::function<void(std::string &, std::string &)> rbridge_stateFileSource;
 boost::function<DataSet *()> rbridge_dataSetSource;
+std::unordered_set<std::string> filterColumnsUsed, columnNamesInDataSet;
+
 
 char** rbridge_getLabels(const Labels &levels, int &nbLevels);
 char** rbridge_getLabels(const vector<string> &levels, int &nbLevels);
@@ -48,7 +50,8 @@ void rbridge_init()
 		rbridge_readDataSetDescription,
 		rbridge_requestStateFileSource,
 		rbridge_requestTempFileName,
-		rbridge_runCallback
+		rbridge_runCallback,
+		rbridge_readFullDataSet
 	};
 
 	jaspRCPP_init(AppInfo::getBuildYear().c_str(), AppInfo::version.asString().c_str(), &callbacks);
@@ -118,6 +121,35 @@ string rbridge_run(const string &name, const string &title, bool &requiresInit, 
 	string str = results;
 
 	return str;
+}
+
+extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSet(int * colMax)
+{
+	if (rbridge_dataSet == NULL)
+		rbridge_dataSet = rbridge_dataSetSource();
+
+	if(rbridge_dataSet == NULL)
+		return NULL;
+
+	Columns &columns = rbridge_dataSet->columns();
+
+	(*colMax) = columns.size();
+	RBridgeColumnType* colHeaders = (RBridgeColumnType*)calloc((*colMax), sizeof(RBridgeColumnType));
+
+	for(int i=0; i<(*colMax); i++)
+	{
+		colHeaders[i].name = strdup(columns[i].name().c_str());
+		colHeaders[i].type = (int)columns[i].columnType();
+	}
+
+	RBridgeColumn * returnThis = rbridge_readDataSet(colHeaders, (*colMax));
+
+	for(int i=0; i<(*colMax); i++)
+		free(colHeaders[i].name);
+
+	free(colHeaders);
+
+	return returnThis;
 }
 
 extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHeaders, int colMax)
@@ -484,6 +516,58 @@ char** rbridge_getLabels(const vector<string> &levels, int &nbLevels)
 string rbridge_check()
 {
 	return jaspRCPP_check();
+}
+
+
+
+bool rbridge_columnUsedInFilter(const char * columnName)
+{
+	return filterColumnsUsed.count(std::string(columnName)) > 0;
+}
+
+
+std::string	rbridge_encodeColumnNamesToBase64(std::string & filterCode)
+{
+	filterColumnsUsed.clear();
+
+
+}
+
+std::vector<bool> rbridge_applyFilter(std::string & filterCode)
+{
+	std::string filterWithBoilerPlate("dataset <- .readFullDatasetToEndNative()\n\n");
+	filterWithBoilerPlate += filterCode;
+
+	try
+	{
+		bool * arrayPointer = NULL;
+
+		int arrayLength = jaspRCPP_runFilter(filterWithBoilerPlate.c_str(), &arrayPointer);
+
+		std::vector<bool> returnThis;
+
+		if(arrayLength > 0)
+		{
+			std::cout << "filter gave me: " << arrayLength << " rows\n";
+
+			for(int i=0; i<arrayLength; i++)
+			{
+				returnThis.push_back(arrayPointer[i]);
+				std::cout << "row[" << i << "] == " << (arrayPointer[i] ? "TRUE" : "FALSE") << "\n";
+			}
+
+			std::cout << std::flush;
+
+
+			free(arrayPointer);
+		}
+
+		return returnThis;
+	}
+	catch(std::exception & e)
+	{
+		std::cout << "Something went wrong with rbridge_applyFilter, namely: " << e.what() << "\n" << std::flush;
+	}
 }
 
 string rbridge_saveImage(const string &name, const string &type, const int &height, const int &width, const int ppi)

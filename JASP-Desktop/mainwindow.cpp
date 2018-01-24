@@ -1113,6 +1113,9 @@ void MainWindow::populateUIfromDataSet()
 
 	_progressIndicator->hide();
 
+	//// TEMPORARY ONLY FOR TESTING!!
+	_engineSync->sendFilter("hahahaha");
+
 	bool errorFound = false;
 	stringstream errorMsg;
 

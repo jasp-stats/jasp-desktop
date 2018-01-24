@@ -42,12 +42,7 @@ using namespace boost::posix_time;
 
 Engine::Engine()
 {
-	_dataSet = NULL;
-	_channel = NULL;
-	_slaveNo = 0;
-	_ppi = 96;
 
-	_status = empty;
 	
 	rbridge_init();
 	tempfiles_attach(ProcessInfo::parentPID());
@@ -201,6 +196,9 @@ void Engine::run()
 		else
 			runAnalysis();
 
+		if(_slaveNo == 0 && filterChanged)
+			applyFilter();
+
 	}
 	while(1);
 
@@ -219,6 +217,14 @@ bool Engine::receiveMessages(int timeout)
 		Json::Value jsonRequest;
 		Json::Reader r;
 		r.parse(data, jsonRequest, false);
+
+		if(jsonRequest.get("filter", "").asString() != "")
+		{
+			filterChanged = true;
+			//next step would be: filter = jsonRequest.get("filter", "").asString();
+
+			return false; //This is not an analysis-run-request or anything like that, so quit.
+		}
 
 		int analysisId = jsonRequest.get("id", -1).asInt();
 		string perform = jsonRequest.get("perform", "run").asString();
@@ -388,9 +394,17 @@ string Engine::callback(const string &results, int progress)
 	return "{ \"status\" : \"ok\" }";
 }
 
-DataSet *Engine::provideDataSet()
+DataSet * Engine::provideDataSet()
 {
-	return SharedMemory::retrieveDataSet();
+	std::cout<< "entered Engine::provideDataSet!\n" << std::flush;
+	try{
+		return SharedMemory::retrieveDataSet();
+	}
+	catch(...)
+	{
+		std::cout<< "provideDataSet had a problem\n" << std::flush;
+		return NULL;
+	}
 }
 
 void Engine::provideStateFileName(string &root, string &relativePath)
@@ -401,4 +415,18 @@ void Engine::provideStateFileName(string &root, string &relativePath)
 void Engine::provideTempFileName(const string &extension, string &root, string &relativePath)
 {	
 	tempfiles_create(extension, _analysisId, root, relativePath);
+}
+
+void Engine::applyFilter()
+{
+	filterChanged = false;
+	std::vector<bool> filterResult = rbridge_applyFilter(filter);
+
+	std::cout << "filter: " << filter << "\nResulted in:\n";
+
+	for(bool f : filterResult)
+		std::cout << (f? "TRUE" : "FALSE") << "\n";
+
+	std::cout << std::flush;
+
 }
