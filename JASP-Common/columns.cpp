@@ -32,11 +32,10 @@ Columns::Columns(boost::interprocess::managed_shared_memory *mem) :
 
 Column &Columns::get(string name)
 {	
-	BOOST_FOREACH(Column &column, *this)
-	{
+	for(Column &column : *this)
 		if (column.name() == name)
 			return column;
-	}
+
 
 	string message = "Cannot find column ";
 	message += name;
@@ -45,7 +44,7 @@ Column &Columns::get(string name)
 
 void Columns::setRowCount(int rowCount)
 {
-	BOOST_FOREACH(Column &column, *this)
+	for(Column &column : *this)
 		column._setRowCount(rowCount);
 }
 
@@ -65,13 +64,11 @@ void Columns::removeColumn(int index)
 {
 	int i = 0;
 	for (ColumnVector::iterator it = _columnStore.begin(); it != _columnStore.end(); ++it, ++i)
-	{
 		if (i == index)
 		{
 			_columnStore.erase(it);
 			break;
 		}
-	}
 }
 
 Columns::iterator Columns::begin()
@@ -88,7 +85,7 @@ void Columns::setSharedMemory(boost::interprocess::managed_shared_memory *mem)
 {
 	_mem = mem;
 
-	BOOST_FOREACH(Column &column, *this)
+	for(Column &column : *this)
 		column.setSharedMemory(mem);
 }
 

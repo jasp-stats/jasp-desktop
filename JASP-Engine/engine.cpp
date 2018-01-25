@@ -196,7 +196,7 @@ void Engine::run()
 		else
 			runAnalysis();
 
-		if(_slaveNo == 0 && filterChanged)
+		if(filterChanged)
 			applyFilter();
 
 	}
@@ -212,6 +212,7 @@ bool Engine::receiveMessages(int timeout)
 	if (_channel->receive(data, timeout))
 	{
 		std::cout << "received message" << std::endl;
+		std::cout << data << std::endl;
 		std::cout.flush();
 
 		Json::Value jsonRequest;
@@ -221,9 +222,9 @@ bool Engine::receiveMessages(int timeout)
 		if(jsonRequest.get("filter", "").asString() != "")
 		{
 			filterChanged = true;
-			//next step would be: filter = jsonRequest.get("filter", "").asString();
+			filter = jsonRequest.get("filter", "").asString();
 
-			return false; //This is not an analysis-run-request or anything like that, so quit.
+			return false; //This is not an analysis-run-request or anything like that, so quit like a not-message.
 		}
 
 		int analysisId = jsonRequest.get("id", -1).asInt();
@@ -343,6 +344,21 @@ void Engine::sendResults()
 	_channel->send(message);
 }
 
+void Engine::sendFilterResult(std::vector<bool> filterResult)
+{
+	std::cout << "sendFilterResult!\n" << std::flush;
+
+	Json::Value filterResponse = Json::Value(Json::objectValue);
+	Json::Value filterResultList = Json::Value(Json::arrayValue);
+	for(bool f : filterResult)
+		filterResultList.append(f);
+
+	filterResponse["filterResult"] = filterResultList;
+
+	std::string msg = filterResponse.toStyledString();
+	_channel->send(msg);
+}
+
 string Engine::callback(const string &results, int progress)
 {
 	receiveMessages();
@@ -397,14 +413,8 @@ string Engine::callback(const string &results, int progress)
 DataSet * Engine::provideDataSet()
 {
 	std::cout<< "entered Engine::provideDataSet!\n" << std::flush;
-	try{
-		return SharedMemory::retrieveDataSet();
-	}
-	catch(...)
-	{
-		std::cout<< "provideDataSet had a problem\n" << std::flush;
-		return NULL;
-	}
+
+	return SharedMemory::retrieveDataSet();
 }
 
 void Engine::provideStateFileName(string &root, string &relativePath)
@@ -422,11 +432,5 @@ void Engine::applyFilter()
 	filterChanged = false;
 	std::vector<bool> filterResult = rbridge_applyFilter(filter);
 
-	std::cout << "filter: " << filter << "\nResulted in:\n";
-
-	for(bool f : filterResult)
-		std::cout << (f? "TRUE" : "FALSE") << "\n";
-
-	std::cout << std::flush;
-
+	sendFilterResult(filterResult);
 }

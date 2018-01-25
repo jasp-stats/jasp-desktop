@@ -37,14 +37,11 @@
 using namespace boost::interprocess;
 using namespace std;
 
-EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
+EngineSync::EngineSync(Analyses *analyses, DataSetPackage *package, QObject *parent = 0)
 	: QObject(parent)
 {
 	_analyses = analyses;
-	_engineStarted = false;
-
-	_log = NULL;
-	_ppi = 96;
+	_package = package;
 
 	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), this, SLOT(sendMessages()));
 	connect(_analyses, SIGNAL(analysisOptionsChanged(Analysis*)), this, SLOT(sendMessages()));
@@ -105,6 +102,7 @@ void EngineSync::start()
 	for (uint i = 0; i < _channels.size(); i++)
 	{
 		_analysesInProgress.push_back(NULL);
+		_filterSent.push_back(false);
 		startSlaveProcess(i);
 	}
 
@@ -134,16 +132,6 @@ void EngineSync::setPPI(int ppi)
 	_ppi = ppi;
 }
 
-void EngineSync::sendFilter(std::string filter)
-{
-	Json::Value json = Json::Value(Json::objectValue);
-
-	json["filter"] = filter == "" ? "*" : filter;
-
-	string str = json.toStyledString();
-	_channels[0]->send(str);
-}
-
 void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 {
 #ifdef QT_DEBUG
@@ -155,6 +143,7 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 
 	if (analysis->status() == Analysis::Empty)
 	{
+		std::cout <<"analysis->status() == Analysis::Empty\n" << std::flush;
 		perform = "init";
 		analysis->setStatus(Analysis::Initing);
 	}
@@ -164,11 +153,13 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	}
 	else if (analysis->status() == Analysis::Aborting)
 	{
+		std::cout <<"analysis->status() == Analysis::Aborting\n" << std::flush;
 		perform = "abort";
 		analysis->setStatus(Analysis::Aborted);
 	}
 	else
 	{
+		std::cout <<"analysis->status() something else\n" << std::flush;
 		perform = "run";
 		analysis->setStatus(Analysis::Running);
 	}
@@ -219,7 +210,7 @@ void EngineSync::process()
 	{
 		Analysis *analysis = _analysesInProgress[i];
 
-		if (analysis == NULL)
+		if (analysis == NULL && !_filterSent[i])
 			continue;
 
 		IPCChannel *channel = _channels[i];
@@ -237,14 +228,37 @@ void EngineSync::process()
 			Json::Value json;
 			reader.parse(data, json);
 
-			int id = json.get("id", -1).asInt();
-			int revision = json.get("revision", -1).asInt();
-			int progress = json.get("progress", -1).asInt();
+
+			if(_filterSent[i])
+			{
+				if(json.get("filterResult", Json::Value(Json::intValue)).isArray()) //If the result is an array then it came from the engine.
+				{
+					std::vector<bool> filterResult;
+					for(Json::Value & jsonResult : json.get("filterResult", Json::Value(Json::arrayValue)))
+						filterResult.push_back(jsonResult.asBool());
+
+					processNewFilterResult(filterResult);
+
+					_filterSent[i] = false;
+					continue;
+				}
+
+				if(analysis == NULL) //we only came here because we are expecting a filterresult and didnt get it, there is also no analysis so:
+					continue;
+			}
+
+			int id				= json.get("id", -1).asInt();
+			int revision		= json.get("revision", -1).asInt();
+			int progress		= json.get("progress", -1).asInt();
 			Json::Value results = json.get("results", Json::nullValue);
-			string status = json.get("status", "error").asString();
+			string status		= json.get("status", "error").asString();
+
 
 			if (analysis->id() != id || analysis->revision() != revision)
 				continue;
+
+			std::cout << status << "\n" << std::flush;
+
 
 			if (status == "error" || status == "exception")
 			{
@@ -301,6 +315,30 @@ void EngineSync::process()
 		}
 
 	}
+}
+
+void EngineSync::processNewFilterResult(std::vector<bool> filterResult)
+{
+	std::cout << "Some filter resulted in:\n";
+
+	for(bool f : filterResult)
+		std::cout << (f? "TRUE" : "FALSE") << "\n";
+
+	std::cout << std::flush;
+
+	_package->dataSet->setFilterVector(filterResult);
+}
+
+
+void EngineSync::sendFilter(std::string filter)
+{
+	Json::Value json = Json::Value(Json::objectValue);
+
+	json["filter"] = filter == "" ? "*" : filter;
+
+	string str = json.toStyledString();
+	_channels[0]->send(str);
+	_filterSent[0] = true;
 }
 
 void EngineSync::sendMessages()

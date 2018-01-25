@@ -42,8 +42,9 @@
  * application, and the R analyses
  */
 extern "C" {
-	RBridgeColumn*				STDCALL rbridge_readDataSet(RBridgeColumnType* columns, int colMax);
+	RBridgeColumn*				STDCALL rbridge_readDataSet(RBridgeColumnType* columns, int colMax, bool obeyFilter);
 	RBridgeColumn*				STDCALL rbridge_readFullDataSet(int * colMax);
+	RBridgeColumn*				STDCALL rbridge_readFilterDataSet(int * colMax);
 	char**						STDCALL rbridge_readDataColumnNames(int *colMax);
 	RBridgeColumnDescription*	STDCALL rbridge_readDataSetDescription(RBridgeColumnType* columns, int colMax);
 	bool						STDCALL rbridge_test(char** root);
@@ -64,12 +65,13 @@ extern "C" {
 	std::string rbridge_saveImage(const std::string &name, const std::string &type, const int &height, const int &width, const int ppi = 96);
 	std::string	rbridge_check();
 
-	std::vector<bool>	rbridge_applyFilter(std::string & filterCode);
-	std::string			rbridge_encodeColumnNamesToBase64(std::string & filterCode);
-	bool				rbridge_columnUsedInFilter(const char * columnName);
-
 	void freeRBridgeColumns(RBridgeColumn *columns, int colMax);
 	void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, int colMax);
 	void freeLabels(char** labels, int nbLabels);
+
+	std::vector<bool>	rbridge_applyFilter(std::string & filterCode);
+	std::string			rbridge_encodeColumnNamesToBase64(std::string & filterCode);
+	bool				rbridge_columnUsedInFilter(const char * columnName);
+	void				rbridge_findColumnsUsedInDataSet();
 
 #endif // RBRIDGE_H

@@ -64,8 +64,8 @@ struct RBridgeColumnType {
 };
 
 // Callbacks from jaspRCPP to rbridge
-typedef RBridgeColumn*				(STDCALL *ReadDataSetCB)			(RBridgeColumnType* columns, int colMax);
-typedef RBridgeColumn*				(STDCALL *ReadFullDataSetCB)		(int * colMax);
+typedef RBridgeColumn*				(STDCALL *ReadDataSetCB)			(RBridgeColumnType* columns, int colMax, bool obeyFilter);
+typedef RBridgeColumn*				(STDCALL *ReadADataSetCB)			(int * colMax);
 typedef char**						(STDCALL *ReadDataColumnNamesCB)	(int *maxCol);
 typedef RBridgeColumnDescription*	(STDCALL *ReadDataSetDescriptionCB)	(RBridgeColumnType* columns, int colMax);
 typedef bool						(STDCALL *RequestStateFileSourceCB)	(const char **root, const char **relativePath);
@@ -79,7 +79,8 @@ struct RBridgeCallBacks {
 	RequestStateFileSourceCB	requestStateFileSourceCB;
 	RequestTempFileNameCB		requestTempFileNameCB;
 	RunCallbackCB				runCallbackCB;
-	ReadFullDataSetCB			readFullDataSetCB;
+	ReadADataSetCB				readFullDataSetCB;
+	ReadADataSetCB				readFilterDataSetCB;
 };
 
 
@@ -91,5 +92,13 @@ RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_saveImage(const char *nam
 RBRIDGE_TO_JASP_INTERFACE int			STDCALL jaspRCPP_runFilter(const char * filtercode, bool ** arraypointer); //arraypointer points to a pointer that will contain the resulting list of filter-booleans if jaspRCPP_runFilter returns > 0
 
 } // extern "C"
+
+///New exception to give feedback about possibly failing filters and such
+class filterException : public std::logic_error
+{
+public:
+	filterException(const std::string & what_arg)	: std::logic_error(what_arg) {}
+	filterException(const char * what_arg)			: std::logic_error(what_arg) {}
+};
 
 #endif // JASPRCPP_INTERFACE_H

@@ -33,6 +33,8 @@
  * options).
  * If the analysisId's don't match, then the old analysis is
  * aborted, and the new one is set running.
+ *
+ * Additionally: an engine can run a filter and return the result of that to the dataset.
  */
 
 class Engine
@@ -52,6 +54,7 @@ private:
 	void runAnalysis();
 	void saveImage();
 	void sendResults();
+	void sendFilterResult(std::vector<bool> filterResult);
 	std::string callback(const std::string &results, int progress);
 
 	DataSet *provideDataSet();
@@ -87,7 +90,7 @@ private:
 	int _slaveNo = 0;
 
 	bool filterChanged = false;
-	std::string filter = ".returnDataFrame(names(dataset))\n dataset$Major.Occupation == 'Psychologie'";//data.frame(c(1,2,3), c(\"A\", \"B\", \"C\")))";// ".readFullDatasetToEndNative()";
+	std::string filter = "*";//data.frame(c(1,2,3), c(\"A\", \"B\", \"C\")))";// ".readFullDatasetToEndNative()";
 };
 
 #endif // ENGINE_H
