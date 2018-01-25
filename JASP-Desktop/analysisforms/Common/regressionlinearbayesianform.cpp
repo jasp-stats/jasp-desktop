@@ -91,13 +91,7 @@ RegressionLinearBayesianForm::RegressionLinearBayesianForm(QWidget *parent) :
 	ui->rScale->setSizePolicy(retain);
 
 	defaultOptions();
-   
-    // some things in the BAS package are broken on some platforms so we hide the options for now 
-#ifndef QT_DEBUG
-    ui->samplingMethod->hide();
-    
-#endif
-    
+
 }
 
 

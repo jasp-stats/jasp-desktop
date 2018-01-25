@@ -196,12 +196,6 @@ RegressionLinearBayesian <- function (
 			plotInclusionProbabilities$data
 		)
 
-		# code below tries to avoid weird behaviour from bas_obj that chrashes base::save.
-		attr(attr(bas_obj[["model"]], "terms"), ".Environment") <- NULL
-		attr(bas_obj$terms, ".Environment") <- NULL
-		# reparsing the object seems to avoid errors with base::save.
-		try(bas_obj[["mle.se"]] <- eval(parse(text = capture.output(dput(bas_obj[["mle.se"]])))))
-
 		state <- list(
 			options = options,
 			bas_obj = bas_obj,
@@ -441,14 +435,6 @@ RegressionLinearBayesian <- function (
 		NULL
 	)
 
-	# the if statement is linked to the #IFNDEF QT_DEBUG in the c++
-	# if this one becomes obsolete due to fixes in the package, that one becomes obsolete too.
-	if (options$priorRegressionCoefficients == "JZS") {
-		method = "deterministic"
-	} else {
-		method = "BAS"
-	}
-
 	# Bayesian Adaptive Sampling
 	bas_lm <- try(BAS::bas.lm(
 		formula = formula,
@@ -457,7 +443,7 @@ RegressionLinearBayesian <- function (
 		alpha = alpha,
 		modelprior = modelPrior,
 		n.models = n.models,
-		method = method, # options$samplingMethod,
+		method = options$samplingMethod,
 		MCMC.iterations = MCMC.iterations,
 		initprobs = initProbs,
 		weights = wlsWeights,
@@ -641,10 +627,7 @@ RegressionLinearBayesian <- function (
 		table[["footnotes"]] <- as.list(data$notes)
 	} else {
 		names <- sapply(fields, function(x) x$name)
-		str(names)
-		empty <- as.list(rep(".", length(names)))
-		names(empty) <- names
-		table[["data"]][[1]] <- empty# setNames(as.list(rep(".", length(names))), names)
+		table[["data"]][[1]] <- setNames(as.list(rep(".", length(names))), names)
 	}
 
 	if (status$error) {
@@ -1289,3 +1272,4 @@ RegressionLinearBayesian <- function (
 	return(g)
 
 }
+
