@@ -195,7 +195,7 @@ Rectangle {
                         function resizeValueColumn()
                         {
                             var title = "Values!"
-                            var minimumWidth = calculateMinimumRequiredColumnWidthTitle(0, title, 0)
+                            var minimumWidth = calculateMinimumRequiredColumnWidthTitle(0, title, 0, 0)
                             levelsTableViewValueColumn.width = minimumWidth + 10
 
                         }
@@ -431,7 +431,16 @@ Rectangle {
                     var column = getColumn(col)
                     column.width = minimumWidth
                 }
+
+                //Try to find a reasonable size for our ugly rownumberthing:
+                var modelCount = dataSetModel.rowCount()
+                var tempCalc = rowNumberSizeCalcComponent.createObject(dataSetTableView, { "text": modelCount})
+                var extraSpaceShouldBe = tempCalc.width + 4
+                tempCalc.destroy()
+                extraSpaceLeft = extraSpaceShouldBe
             }
+
+            Component { id: rowNumberSizeCalcComponent; TextMetrics { } }
 
             signal dataTableDoubleClicked()
 
@@ -447,6 +456,8 @@ Rectangle {
                 radius: 0
                 height: headerBorderRectangle.iconDim * 1.2
 
+
+
                 property real iconDim: headerText.implicitHeight
                 property real iconTextPadding: 10
 
@@ -455,10 +466,16 @@ Rectangle {
                     id: colHeader
                     gradient: headersGradient
 
+                    /*readonly property bool isFirst: styleData.column == 0
+                    x: isFirst ? headerBorderRectangle.x - dataSetTableView.extraSpaceLeft : headerBorderRectangle.x
+                    width: isFirst ? headerBorderRectangle.width - 1 + dataSetTableView.extraSpaceLeft : headerBorderRectangle.width - 1*/
+
                     x: headerBorderRectangle.x
+                    width: headerBorderRectangle.width - 1
+
                     y: headerBorderRectangle.y
                     height: headerBorderRectangle.height - 1
-                    width: headerBorderRectangle.width - 1
+
 
                     Image
                     {
@@ -584,11 +601,26 @@ Rectangle {
                 }
             }
 
+            extraSpaceLeft: 10
+
             rowDelegate: Rectangle {
-                //visible: styleData.selected || styleData.alternate
                 color: styleData.selected ? systemPalette.dark : (styleData.alternate ? systemPalette.midlight : systemPalette.light)
-                //height: Math.max(16,  StyleItem.implicitHeight)
-                //border.left: 4 ; border.right: 4
+
+                Rectangle
+                {
+                    color: styleData.selected ? systemPalette.light : (styleData.alternate ? systemPalette.dark : systemPalette.mid)
+                    width: dataSetTableView.extraSpaceLeft
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+
+                    Text
+                    {
+                        z: parent.z + 1
+                        text: styleData.row + 1
+                        color: styleData.selected ? systemPalette.dark : systemPalette.light
+                    }
+                }
             }
         }
     }

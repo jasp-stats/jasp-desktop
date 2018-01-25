@@ -56,10 +56,16 @@ ScrollView {
 
     /*! \qmlproperty bool BasicTableViewJasp::alternatingRowColors
 
-        This property is set to \c true if the view alternates the row color.
+        If this property is set to \c true the view alternates the row color.
         The default value is \c true.
     */
     property bool alternatingRowColors: true
+
+    /*! \qmlproperty bool BasicTableViewJasp::extraSpaceLeft
+
+        This property creates extra space left of the rows and headers, this may (for example) be used to draw rownumbers or something..
+    */
+    property real extraSpaceLeft: 0
 
     /*! \qmlproperty bool BasicTableViewJasp::headerVisible
 
@@ -342,8 +348,7 @@ ScrollView {
     implicitHeight: 150
 
     frameVisible: true
-    __scrollBarTopMargin: headerVisible && (listView.transientScrollBars || Qt.platform.os === "osx")
-                          ? listView.headerItem.height : 0
+    __scrollBarTopMargin: headerVisible && (listView.transientScrollBars || Qt.platform.os === "osx") ? listView.headerItem.height : 0
 
     /*! \internal
         Use this to display user-friendly messages in TableView and TreeView common functions.
@@ -388,11 +393,19 @@ ScrollView {
         focus: true
         activeFocusOnTab: false
         Keys.forwardTo: [__mouseArea]
-        anchors.fill: parent
+
         contentWidth: headerItem.headerRow.width + listView.vScrollbarPadding
         // ### FIXME Late configuration of the header item requires
         // this binding to get the header visible after creation
         contentY: -headerItem.height
+        //contentX: -root.extraSpaceLeft
+        //anchors.fill: parent
+        //x: parent.x + root.extraSpaceLeft
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.leftMargin: root.extraSpaceLeft
 
         currentIndex: -1
         visible: columnCount > 0
@@ -407,7 +420,7 @@ ScrollView {
         Binding {
             // On Mac, we reserve the vSB space in the contentItem because the vSB should
             // appear under the header. Unfortunately, the ListView header won't expand
-            // beyond the ListView's boundaries, that's why we need to ressort to this.
+            // beyond the ListView's boundaries, that's why we need to resort to this.
             target: root.__scroller
             when: Qt.platform.os === "osx"
             property: "verticalScrollbarOffset"
@@ -462,6 +475,7 @@ ScrollView {
                     property bool selected: false
                     property bool hasActiveFocus: false
                     property bool pressed: false
+                    readonly property int row: -1
                 }
             }
             property int rowHeight: Math.floor(rowSizeItem.implicitHeight)
@@ -482,6 +496,7 @@ ScrollView {
                         readonly property bool selected: false
                         readonly property bool hasActiveFocus: false
                         readonly property bool pressed: false
+                        readonly property int row: index
                     }
                     readonly property var model: null
                     readonly property var modelData: null
@@ -566,7 +581,7 @@ ScrollView {
                     // But scrollbar should not adjust to it
                     height: item ? item.height : 16
                     width: parent.width + __horizontalScrollBar.width
-                    x: listView.contentX
+                    x: listView.contentX - root.extraSpaceLeft
 
                     // these properties are exposed to the row delegate
                     // Note: these properties should be mirrored in the row filler as well
@@ -583,6 +598,8 @@ ScrollView {
                 Row {
                     id: itemrow
                     height: parent.height
+                    x: parent.x //+ root.extraSpaceLeft
+
                     Repeater {
                         model: columnModel
 
@@ -605,8 +622,6 @@ ScrollView {
             visible: headerVisible
             width: Math.max(headerRow.width + listView.vScrollbarPadding, root.viewport.width)
             height: visible ? headerRow.height : 0
-
-
 
             property alias headerRow: row
             property alias headerRepeater: repeater
@@ -768,7 +783,27 @@ ScrollView {
                 width: __remainingWidth
                 z:-1
             }
+
+            Loader {
+                property QtObject styleData: QtObject{
+                    readonly property string value: ""
+                    readonly property bool pressed: false
+                    readonly property bool containsMouse: false
+                    readonly property int column: -1
+                    readonly property int textAlignment: Text.AlignLeft
+                }
+
+                anchors.top: headerRow.top
+                anchors.right: headerRow.left
+                anchors.bottom: headerRow.bottom
+                sourceComponent: root.headerDelegate
+                readonly property real __remainingWidth: root.extraSpaceLeft
+                visible: __remainingWidth > 0
+                width: __remainingWidth
+                z:-1
+            }
         }
+
 
         function columnAt(offset) {
             var item = listView.headerItem.headerRow.childAt(offset, 0)

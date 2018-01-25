@@ -83,6 +83,8 @@ BasicTableViewJasp {
             minimumWidth = Math.max(minimumWidth, tempCalc.width)
         }
 
+        tempCalc.destroy()
+
         return minimumWidth
     }
 
