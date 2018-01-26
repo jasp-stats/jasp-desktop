@@ -19,8 +19,6 @@
 #define JASPRCPP_INTERFACE_H
 
 #include <QtCore/qglobal.h>
-#include <boost/function.hpp>
-
 
 #if defined(JASP_R_INTERFACE_LIBRARY)
 #  define RBRIDGE_TO_JASP_INTERFACE Q_DECL_EXPORT
