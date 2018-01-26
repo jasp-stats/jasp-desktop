@@ -312,16 +312,21 @@ void CSV::determineDelimiters()
 		}
 	}
 
-	if (commas > 0)
-		_delim = ',';
-	else if (semicolons > 0)
+	_delim = ',';
+	int countDelim = commas; 
+	
+	if (semicolons > countDelim)
+	{
 		_delim = ';';
-	else if (tabs > 0)
+		countDelim = semicolons;
+	}
+	if (tabs > countDelim)
+	{
 		_delim = '\t';
-	else if (spaces > 0)
+		countDelim = tabs;
+	}
+	if (countDelim == 0 && spaces > 0) // uses spaces only if there is nothing else.
 		_delim = ' ';
-	else
-		_delim = ',';
 }
 
 bool CSV::readLine(vector<string> &items)
