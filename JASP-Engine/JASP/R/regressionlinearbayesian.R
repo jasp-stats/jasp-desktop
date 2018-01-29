@@ -110,7 +110,7 @@ RegressionLinearBayesian <- function (
 
 	if (options$plotLogPosteriorOdds && is.null(plotPosteriorLogOdds)) {
 		plotPosteriorLogOdds <- .plotLogOdds.basReg(
-			bas_obj = bas_obj, status = status, perform = perform
+			bas_obj = bas_obj, status = status, perform = perform, samplingMethod = options[["samplingMethod"]]
 		)
 	}
 
@@ -759,7 +759,7 @@ RegressionLinearBayesian <- function (
 }
 
 
-.plotLogOdds.basReg <- function(bas_obj, status, perform) {
+.plotLogOdds.basReg <- function(bas_obj, status, perform, samplingMethod) {
 	# Plot the posterior log odds for different models
 	#
 	# Args:
@@ -794,8 +794,9 @@ RegressionLinearBayesian <- function (
 		})
 
 		if (isTryError(p)) {
-			errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
-			plot <- emptyPlot
+		    errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
+		    if (samplingMethod == "MCMC")
+		        errorMessage <- "Cannot display Posterior Log Odds when method = MCMC."
 			plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
 		}
 

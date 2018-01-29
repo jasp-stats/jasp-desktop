@@ -128,7 +128,8 @@
 		},
 		{
 			"name": "numberOfModels",
-			"type": "Number"
+			"type": "Number",
+			"default": 0
 		},
 		{
 			"options": ["Bernoulli", "beta.binomial", "uniform"],
