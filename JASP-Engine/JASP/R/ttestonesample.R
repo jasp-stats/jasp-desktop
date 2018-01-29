@@ -17,7 +17,6 @@
 
 TTestOneSample <- function(dataset = NULL, options, perform = "run",
 						   callback = function(...) 0,  ...) {
-
  	state <- .retrieveState()
 
 	variables <- unlist(options$variables)
@@ -88,8 +87,9 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	percentConfidenceEffSize <- options$effSizeConfidenceIntervalPercent
 	wantsStudents <- options$students
 	wantsWilcox <- options$mannWhitneyU
+	wantsZtest <- options$zTest
 
-	allTests <- c(wantsStudents, wantsWilcox)
+	allTests <- c(wantsStudents, wantsWilcox, wantsZtest)
 	onlyTest <- sum(allTests) == 1
 
 	fields <- list(list(name = "v", type = "string", title = ""),
@@ -111,6 +111,12 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 		testStat <- "t"
 		nameOfLocationParameter <- "Mean Difference"
 		nameOfEffectSize <- "Cohen's d"
+	} else if(wantsZtest && onlyTest){
+	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Z test.")
+	  testStat <- "Z"
+	  fields <- fields[-2] #Z test doesn't have degrees of freedoms
+	  nameOfLocationParameter <- "Mean Difference"
+	  nameOfEffectSize <- "Cohen's d"
 	} else {
 		testStat <- "Statistic"
 		nameOfLocationParameter <-  "Location Parameter"
@@ -121,12 +127,13 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 
 	## if only conducting Student's, the table should have "t" as column name
 	## for the test statistic when doing only Wilcoxon's, the name should be
-	## "V"; when doing both, it should be "statistic"
+	## "V", when doing only Z-test, it should be "Z"; 
+	## when doing at least two of them, it should be "statistic"
 	fields <- append(fields, list(list(name = testStat,
 								  type = "number", format = "sf:4;dp:3")), 1)
 
-	## if the user wants all tests, add a column called "Test"
-	if (sum(allTests) == 2) {
+	## if the user wants at least two tests, add a column called "Test"
+	if (sum(allTests) > 1) {
 		fields <- append(fields, list(list(name = "test",
 									  type = "string", title = "Test")), 1)
 	}
@@ -146,11 +153,43 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	if (wantsDifference) {
 		fields[[length(fields) + 1]] <- list(name = "m", title = nameOfLocationParameter,
 											 type = "number", format = "sf:4;dp:3")
-		if (wantsWilcox && wantsStudents) {
-		  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test, 
-  	               location parameter is given by mean difference <em>d</em>; for the Wilcoxon test, 
-  	               effect size is given by the Hodges-Lehmann estimate.")
-		} 
+		# preparing footnote - if one of the method is selected; or general if more selected
+		if(wantsWilcox && onlyTest){
+		  textDifference <- "For the Wilcoxon test, effect size is given by the Hodges-Lehmann estimate."
+		} else if(wantsStudents && onlyTest){
+		  textDifference <- "For the Student t-test, location parameter 
+		  is given by mean difference <em>d</em>."
+		} else if(wantsZtest && onlyTest){
+		  textDifference <- "For the Z-test, location parameter 
+		  is given by mean difference <em>d</em>."
+		} else {
+		  textDifference <- "For the Student t-test and Z-test, location parameter 
+is given by mean difference <em>d</em>; for the Wilcoxon test, effect size is given by the Hodges-Lehmann estimate."
+		}
+		
+		# adding a footnote (do not view methods which are not selected)
+		if (!wantsWilcox && !wantsStudents && !wantsZtest) {
+	  } else if(wantsWilcox && wantsStudents && !wantsZtest){
+		  .addFootnote(footnotes, symbol = "<em>Note.</em>",
+		               text = gsub(pattern = " and Z-test",
+		                           replacement = "",
+		                           textDifference)
+		  )
+		} else if(wantsWilcox && !wantsStudents && wantsZtest){
+		  .addFootnote(footnotes, symbol = "<em>Note.</em>",
+		               text = gsub(pattern = "Student t-test and ",
+		                           replacement = "",
+		                           textDifference)
+		  )
+		} else if(!wantsWilcox && wantsStudents && wantsZtest){
+		  .addFootnote(footnotes, symbol = "<em>Note.</em>",
+		               text = gsub(pattern = "; for the Wilcoxon test, effect size is given by the Hodges-Lehmann estimate",
+		                           replacement = "",
+		                           textDifference)
+		  )
+		} else{
+		  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = textDifference)
+		}
 	}
 	
 	if (wantsConfidenceMeanDiff) {
@@ -168,11 +207,45 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	if (wantsEffect) {
 		fields[[length(fields) + 1]] <- list(name = "d", title = nameOfEffectSize,
 											 type = "number",  format = "sf:4;dp:3")
-		if (wantsWilcox && wantsStudents) {
-		  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test, 
-  	               effect size is given by Cohen's <em>d</em>; for the Wilcoxon test, 
-  	               effect size is given by the matched rank biserial correlation.")
-		} 
+		
+		# preparing footnote - if one of the method is selected; or general if more selected
+		if(wantsWilcox && onlyTest){
+		  textEffect <- "For the Wilcoxon test, effect size is given by the matched rank biserial correlation"
+		} else if(wantsStudents && onlyTest){
+		  textEffect <- "For the Student t-test, effect size is given by Cohen's <em>d</em>."
+		} else if(wantsZtest && onlyTest){
+		  textEffect <- "For the Z test, effect size is given by Cohen's <em>d</em> (based on population deviation)."
+		} else {
+		  textEffect <- "For the Student t-test, effect size is given by Cohen's <em>d</em>; 
+		  for the Wilcoxon test, effect size is given by the matched rank biserial correlation; 
+		  for the Z test, effect size is given by Cohen's <em>d</em> (based on population deviation)."
+		}
+		
+		# adding a footnote (do not view methods which are not selected)
+		if (!wantsWilcox && !wantsStudents && !wantsZtest) {
+		} else if(wantsWilcox && wantsStudents && !wantsZtest){
+		  .addFootnote(footnotes, symbol = "<em>Note.</em>",
+		               text = gsub(pattern = "; 
+		  for the Z test, effect size is given by Cohen's <em>d</em> \\(based on population deviation\\)",
+		                           replacement = "",
+		                           textEffect)
+		  )
+		} else if(wantsWilcox && !wantsStudents && wantsZtest){
+		  .addFootnote(footnotes, symbol = "<em>Note.</em>",
+		               text = gsub(pattern = "For the Student t-test, effect size is given by Cohen's <em>d</em>; 
+		  f",
+		                           replacement = "F",
+		                           textEffect)
+		  )
+		} else if(!wantsWilcox && wantsStudents && wantsZtest){
+		  .addFootnote(footnotes, symbol = "<em>Note.</em>",
+		               text = gsub(pattern = "for the Wilcoxon test, effect size is given by the matched rank biserial correlation; ",
+		                           replacement = "",
+		                           textEffect)
+		  )
+		} else{
+		  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = textEffect)
+		}
 	}
 
 	if (wantsConfidenceEffSize) {
@@ -223,7 +296,7 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 
 	rowNo <- 1
 	ttest.rows <- list() # for each variable and each test, save stuff in there
-	whichTests <- list("1" = wantsStudents, "2" = wantsWilcox)
+	whichTests <- list("1" = wantsStudents, "2" = wantsWilcox, "3" = wantsZtest)
 
 	## add a row for each variable, even before we are conducting tests
 	for (variable in variables) {
@@ -276,6 +349,24 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 						}else if (direction == "greater") {
 						  confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-percentConfidenceEffSize))*mrSE), Inf))
 						}
+					} else if(test == 3){
+					  r <- BSDA::z.test(dat, alternative = direction,
+					                    mu = options$testValue, sigma.x = options$stddev,
+					                    conf.level = percentConfidenceMeanDiff)
+					  df <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
+					  d <- .clean((mean(dat) - options$testValue) / options$stddev)
+					  
+					  if(direction == "less"){
+					    r$conf.int[1] <- -Inf
+					  } else if(direction == "greater"){
+					    r$conf.int[2] <- Inf
+					  }
+					  Z <- as.numeric(r$statistic)
+					  confIntEffSize <- c(0,0)
+					  if(wantsConfidenceEffSize){
+					    
+				      confIntEffSize <- r$conf.int/options$stddev
+					  }
 					} else {
 						r <- stats::t.test(dat, alternative = direction,
 										   mu = options$testValue, conf.level = percentConfidenceMeanDiff)
@@ -363,15 +454,18 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 				row[[testStat]] <- "."
 			}
 
-			## if we have both tests, we do not want to have two variables
-			## and we want another column with the test type
-			hasBoth <- rowNo %% 2 == 0 && sum(allTests) == 2
-			if (hasBoth) {
-				row[["v"]] <- ""
-				row[["test"]] <- "Wilcoxon"
-				ttest.rows[[rowNo - 1]][["test"]] <- "Student"
+      # if we have multiple tests, we want only variable name at the first row;
+			# and having additional column indicating the name of the tests
+			allTestNames <- c("Student", "Wilcoxon", "Z")
+			testName <- allTestNames[test]
+      row[["test"]] <- testName
+			
+      firstSelectedTest <- allTestNames[unlist(whichTests)][1]
+			#if(rowNo %% 2 == 0 || rowNo %% 3 == 0){
+      if(testName != firstSelectedTest){
+        row[["v"]] <- ""
 			}
-
+			
 			ttest.rows[[rowNo]] <- row
 			rowNo <- rowNo + 1
 			}
