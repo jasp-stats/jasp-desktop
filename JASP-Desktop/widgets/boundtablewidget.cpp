@@ -18,8 +18,6 @@
 
 #include "boundtablewidget.h"
 
-#include <QDebug>
-
 BoundTableWidget::BoundTableWidget(QWidget *parent)
 	: QTableWidget(parent)
 {
@@ -29,8 +27,6 @@ BoundTableWidget::BoundTableWidget(QWidget *parent)
 void BoundTableWidget::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionsTable *>(option);
-
-	qDebug() << "BoundTableWidget::bindTo()";
 
 	if (_boundTo != NULL) {
 		_groups = _boundTo->value();
@@ -42,8 +38,6 @@ void BoundTableWidget::bindTo(Option *option)
 
 void BoundTableWidget::populateTableFromOption()
 {
-	qDebug() << "BoundTableWidget::populateTableFromOption";
-
 	// For each QTableWidgetItem updation, a 'cellChanged' signal is triggered.
 	// Block all such signals until Table updation
 	this->blockSignals(true);
@@ -106,8 +100,6 @@ void BoundTableWidget::updateTableValues()
 	if (_boundTo == NULL) {
 		return;
 	}
-
-    qDebug() << "BoundTableWidget::updateTableValues()";
 
 	int columnCount = this->columnCount();
 	int rowCount = this->rowCount();

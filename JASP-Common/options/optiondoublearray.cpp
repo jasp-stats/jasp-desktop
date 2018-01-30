@@ -42,15 +42,13 @@ Json::Value OptionDoubleArray::asJSON() const
 }
 
 void OptionDoubleArray::set(const Json::Value &value)
-{	
+{
 	vector<double> dbls;
-	
-	
-	for (Json::ValueIterator itr = value.begin(); itr != value.end(); itr++)
-		dbls.push_back((*itr).asDouble());
-	
-	_value = dbls;
 
+	for (auto itr = value.begin(); itr != value.end(); itr++)
+		dbls.push_back((*itr).asDouble());
+
+	_value = dbls;
 }
 
 Option *OptionDoubleArray::clone() const

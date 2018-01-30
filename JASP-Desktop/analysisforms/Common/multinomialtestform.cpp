@@ -19,8 +19,6 @@
 #include "multinomialtestform.h"
 #include "ui_multinomialtestform.h"
 
-#include <QDebug>
-
 MultinomialTestForm::MultinomialTestForm(QWidget *parent) :
 	AnalysisForm("MultinomialTestForm", parent),
 	ui(new Ui::MultinomialTestForm)
@@ -70,8 +68,6 @@ MultinomialTestForm::~MultinomialTestForm()
 
 void MultinomialTestForm::bindTo(Options *options, DataSet *dataSet)
 {
-	qDebug() << "MultinomialTestForm::bindTo";
-
 	AnalysisForm::bindTo(options, dataSet);
 
 	if (options != NULL && options->get("factor") != NULL) {
@@ -104,7 +100,6 @@ void MultinomialTestForm::bindTo(Options *options, DataSet *dataSet)
 
 void MultinomialTestForm::setTableVerticalHeaders()
 {
-	qDebug() << "MultinomialTestForm::setTableVerticalHeaders";
 	ui->tableWidget->blockSignals(true);
 
 	int row = 0;
@@ -132,8 +127,6 @@ void MultinomialTestForm::cellChangedHandler()
 }
 
 void MultinomialTestForm::addFixedFactors() {
-
-	qDebug() << "MultinomialTestForm::addFixedFactors";
 
 	if (factorModel->assigned().asString() == _previous) {
 		return;

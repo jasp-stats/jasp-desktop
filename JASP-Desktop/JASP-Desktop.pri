@@ -141,7 +141,6 @@ SOURCES += \
     $$PWD/widgets/tableview.cpp \
     $$PWD/widgets/tableviewmenueditor.cpp \
     $$PWD/widgets/tableviewmenueditordelegate.cpp \
-    $$PWD/widgets/tablewidget.cpp \
     $$PWD/widgets/textmodellavaan.cpp \
     $$PWD/widgets/toolbutton.cpp \
     $$PWD/widgets/customwebengineview.cpp \
@@ -305,7 +304,6 @@ HEADERS  += \
     $$PWD/widgets/tableview.h \
     $$PWD/widgets/tableviewmenueditor.h \
     $$PWD/widgets/tableviewmenueditordelegate.h \
-    $$PWD/widgets/tablewidget.h \
     $$PWD/widgets/textmodellavaan.h \
     $$PWD/widgets/toolbutton.h \
     $$PWD/widgets/customwebengineview.h \
@@ -325,8 +323,7 @@ FORMS += \
     $$PWD/widgets/anovamodelwidget.ui \
     $$PWD/widgets/boundassignwidget.ui \
     $$PWD/widgets/progresswidget.ui \
-    $$PWD/widgets/subjectivepriorswidget.ui \
-    $$PWD/widgets/tablewidget.ui
+    $$PWD/widgets/subjectivepriorswidget.ui
 
 RESOURCES += \
     $$PWD/backstage/backstage.qrc \

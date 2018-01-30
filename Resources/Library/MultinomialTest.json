@@ -24,36 +24,36 @@
 			],
 			"default": []
 		},
-    {
-      "name": "factor",
-      "type": "Variable"
-    },
-    {
-      "name": "counts",
-      "type": "Variable"
-    },
-    {
-      "name": "exProbVar",
-      "type": "Variable"
-    },
-    {
-      "name": "hypothesis",
-      "options": [ "multinomialTest", "expectedProbs" ],
-      "default": "multinomialTest",
-      "type": "List"
-    },
-    {
-      "name": "countProp",
-      "options": [ "descCounts", "descProps" ],
-      "default": "descCounts",
-      "type": "List"
-    },
+		{
+			"name": "factor",
+			"type": "Variable"
+		},
+		{
+			"name": "counts",
+			"type": "Variable"
+		},
+		{
+			"name": "exProbVar",
+			"type": "Variable"
+		},
+		{
+			"name": "hypothesis",
+			"options": [ "multinomialTest", "expectedProbs" ],
+			"default": "multinomialTest",
+			"type": "List"
+		},
+		{
+			"name": "countProp",
+			"options": [ "descCounts", "descProps" ],
+			"default": "descCounts",
+			"type": "List"
+		},
 		{
 			"name": "descriptives",
 			"type": "Boolean",
 			"default": false
 		},
-    {
+		{
 			"name": "confidenceInterval",
 			"type": "Boolean"
 		},

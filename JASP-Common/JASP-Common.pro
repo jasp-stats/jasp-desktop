@@ -49,6 +49,7 @@ SOURCES += \
 	labels.cpp \
 	options/option.cpp \
 	options/optionboolean.cpp \
+	options/optiondoublearray.cpp \
 	options/optioninteger.cpp \
 	options/optionintegerarray.cpp \
 	options/optionlist.cpp \
@@ -101,6 +102,7 @@ HEADERS += \
 	libzip/archive_entry.h \
 	options/option.h \
 	options/optionboolean.h \
+	options/optiondoublearray.h \
 	options/optioni.h \
 	options/optioninteger.h \
 	options/optionintegerarray.h \
