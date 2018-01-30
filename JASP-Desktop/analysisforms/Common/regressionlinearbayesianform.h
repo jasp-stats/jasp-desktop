@@ -25,7 +25,6 @@
 #include "widgets/tablemodelanovamodel.h"
 
 #include <QSizePolicy>
-#include <QDebug>
 
 
 namespace Ui {
