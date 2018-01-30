@@ -3,6 +3,7 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Controls 1.4
 import QtQuick 2.7
 import QtQuick.Layouts 1.0
+import QtGraphicalEffects 1.0
 
 Rectangle {
     SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
@@ -21,9 +22,12 @@ Rectangle {
 
     Gradient{
         id: headersGradient
-        GradientStop { position: 0.6; color: systemPalette.light }
+        GradientStop { position: 0.5; color: systemPalette.light }
         GradientStop { position: 0.7; color: systemPalette.midlight }
+        GradientStop { position: 1.0; color: systemPalette.mid }
+
     }
+
 
     Rectangle
     {
@@ -299,6 +303,7 @@ Rectangle {
                                 {
                                     id: headerTextVars
                                     text: styleData.value
+                                    color: systemPalette.text
                                 }
                             }
                         }
@@ -306,7 +311,7 @@ Rectangle {
                         itemDelegate: Loader
                         {
                             property string textItem: styleData.value
-                            property color colorItem: styleData.textColor
+                            property color colorItem: systemPalette.text
                             property int rowItem: styleData.row
                             property int colItem: styleData.column
 
@@ -413,7 +418,7 @@ Rectangle {
 
                 //data.clear()
                 for(var i=0; i<roleList.length; i++)
-                    data.push(dataSetTableView.addColumn(columnComponent.createObject(dataSetTableView, { "role": roleList[i], "title": dataSetModel.columnTitle(i)})))
+                    data.push(dataSetTableView.addColumn(columnComponent.createObject(dataSetTableView, { "role": roleList[i], "title": dataSetModel.columnTitle(i)}))) //should use headerData instead of columnTitle.
 
                 resizeColumnsWithHeader()
             }
@@ -579,7 +584,6 @@ Rectangle {
             {
                 Rectangle
                 {
-                    //Two rectangles to show a border of exactly 1px around cells
                     id: borderRectangle
                     color: "transparent"
                     border.width: dataSetTableView.drawCellBorders ? 1 : 0
@@ -593,7 +597,7 @@ Rectangle {
                     Text {
                         id: itemText
                         text: styleData.value
-                        color: styleData.textColor
+                        color: systemPalette.text
                         elide: styleData.elideMode
                         horizontalAlignment: styleData.textAlignment
                         leftPadding: 4
@@ -605,22 +609,39 @@ Rectangle {
 
             rowDelegate: Rectangle {
                 color: styleData.selected ? systemPalette.dark : (styleData.alternate ? systemPalette.midlight : systemPalette.light)
+            }
 
+            rowNumberDelegate:
                 Rectangle
                 {
-                    color: styleData.selected ? systemPalette.light : (styleData.alternate ? systemPalette.dark : systemPalette.mid)
-                    width: dataSetTableView.extraSpaceLeft
+                    id: rowNumberBorder
+                    //width: dataSetTableView.extraSpaceLeft
                     anchors.left: parent.left
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
+                    color: systemPalette.mid
 
-                    Text
+                    Rectangle
                     {
-                        z: parent.z + 1
-                        text: styleData.row + 1
-                        color: styleData.selected ? systemPalette.dark : systemPalette.light
+                        width: rowNumberBorder.width - 1
+                        height: rowNumberBorder.height - 1
+
+                        LinearGradient
+                        {
+                            cached: true
+                            anchors.fill: parent
+                            start: Qt.point(0, rowNumberBorder.height * 0.5)
+                            end: Qt.point(rowNumberBorder.width, rowNumberBorder.height * 0.5)
+                            gradient: headersGradient
+                        }
+
+                        Text
+                        {
+                            text: styleData.row + 1
+                            color: systemPalette.text
+                        }
                     }
-                }
+
             }
         }
     }

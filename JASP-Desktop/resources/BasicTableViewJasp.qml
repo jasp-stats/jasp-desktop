@@ -115,6 +115,12 @@ ScrollView {
     */
     property Component rowDelegate: __style ? __style.rowDelegate : null
 
+    /*! \qmlproperty Component BasicTableViewJasp::rowNumberDelegate
+        \keyword BasicTableViewJasp-rowNumberDelegate
+        */
+    property Component rowNumberDelegate: __style ? __style.rowNumberDelegate : null
+
+
     /*! \qmlproperty Component BasicTableViewJasp::headerDelegate
         \keyword BasicTableViewJasp-headerdelegate
 
@@ -411,6 +417,7 @@ ScrollView {
         visible: columnCount > 0
         interactive: Settings.hasTouchScreen
         property var rowItemStack: [] // Used as a cache for rowDelegates
+        property var rowNumberItemStack: [] // Used as a cache for rowNumberDelegates
 
         readonly property bool transientScrollbars: __style && !!__style.transientScrollBars
         readonly property real vScrollbarPadding: __scroller.verticalScrollBar.visible
@@ -518,6 +525,8 @@ ScrollView {
             z: rowItem.activeFocus ? 0.7 : rowItem.itemSelected ? 0.5 : 0
 
             property Item rowItem
+            property Item rowNumberItem
+
             // We recycle instantiated row items to speed up list scrolling
 
             Component.onDestruction: {
@@ -527,6 +536,13 @@ ScrollView {
                     rowItem.parent = null;
                     rowItem.rowIndex = -1;
                     listView.rowItemStack.push(rowItem); // return rowItem to cache
+                }
+
+                if (rowNumberItem) {
+                    rowNumberItem.visible = false;
+                    rowNumberItem.parent = null;
+                    rowNumberItem.rowIndex = -1;
+                    listView.rowNumberItemStack.push(rowItem); // return rowItem to cache
                 }
             }
 
@@ -541,12 +557,25 @@ ScrollView {
                 rowItemContainer.width = Qt.binding( function() { return rowItem.width });
                 rowItemContainer.height = Qt.binding( function() { return rowItem.height });
 
+
                 // Reassign row-specific bindings
                 rowItem.rowIndex = Qt.binding( function() { return model.index });
                 rowItem.itemModelData = Qt.binding( function() { return typeof modelData === "undefined" ? null : modelData });
                 rowItem.itemModel = Qt.binding( function() { return model });
                 rowItem.parent = rowItemContainer;
                 rowItem.visible = true;
+
+                if (listView.rowItemStack.length > 0)
+                    rowNumberItem = listView.rowItemStack.pop();
+                else
+                    rowNumberItem = rowComponent.createObject(listView);
+
+                // Reassign rownumber-specific bindings
+                rowNumberItem.rowIndex = Qt.binding( function() { return model.index });
+                rowNumberItem.itemModelData = Qt.binding( function() { return typeof modelData === "undefined" ? null : modelData });
+                rowNumberItem.itemModel = Qt.binding( function() { return model });
+                rowNumberItem.parent = rowItem;
+                rowNumberItem.visible = true;
             }
         }
 
@@ -583,6 +612,7 @@ ScrollView {
                     width: parent.width + __horizontalScrollBar.width
                     x: listView.contentX - root.extraSpaceLeft
 
+
                     // these properties are exposed to the row delegate
                     // Note: these properties should be mirrored in the row filler as well
                     property QtObject styleData: QtObject {
@@ -595,10 +625,36 @@ ScrollView {
                     readonly property var model: rowitem.itemModel
                     readonly property var modelData: rowitem.itemModelData
                 }
+
+                Loader {
+                    id: rowNumberstyle
+                    // row delegate
+                    sourceComponent: rowitem.itemModel !== undefined ? root.rowNumberDelegate : null
+                    // Row fills the view width regardless of item size
+                    // But scrollbar should not adjust to it
+                    height: item ? item.height : 16
+                    width: root.extraSpaceLeft
+                    x: listView.contentX - root.extraSpaceLeft
+                    z: 3 // should be on top!
+
+                    // these properties are exposed to the row delegate
+                    // Note: these properties should be mirrored in the row filler as well
+                    property QtObject styleData: QtObject {
+                        readonly property int row: rowitem.rowIndex
+                        readonly property bool alternate: rowitem.alternate
+                        readonly property bool selected: rowitem.itemSelected
+                        readonly property bool hasActiveFocus: rowitem.activeFocus
+                        readonly property bool pressed: rowitem.rowIndex === __mouseArea.pressedRow
+                    }
+                    readonly property var model: rowitem.itemModel
+                    readonly property var modelData: rowitem.itemModelData
+                }
+
                 Row {
                     id: itemrow
                     height: parent.height
                     x: parent.x //+ root.extraSpaceLeft
+                    //z: 0
 
                     Repeater {
                         model: columnModel
@@ -609,6 +665,74 @@ ScrollView {
                             var columnItem = columnModel.get(index).columnItem
                             item.__index = index
                             item.__rowItem = rowitem
+                            item.__column = columnItem
+                        }
+                    }
+                }
+            }
+        }
+
+        Component {
+            id: rowNumberComponent
+
+            FocusScope {
+                id: rowNumberitem
+                visible: false
+
+                property int rowIndex
+                property var itemModelData
+                property var itemModel
+                property bool itemSelected: __mouseArea.selected(rowIndex)
+                property bool alternate: alternatingRowColors && rowIndex % 2 === 1
+                readonly property color itemTextColor: itemSelected ? __style.highlightedTextColor : __style.textColor
+                property Item branchDecoration: null
+
+                width: itemrowNumber.width
+                height: rowNumberstyle.height
+
+                onActiveFocusChanged: {
+                    if (activeFocus)
+                        listView.currentIndex = rowIndex
+                }
+
+                Loader {
+                    id: rowNumberstyle
+                    // row delegate
+                    sourceComponent: rowNumberitem.itemModel !== undefined ? root.rowNumberDelegate : null
+                    // Row fills the view width regardless of item size
+                    // But scrollbar should not adjust to it
+                    height: item ? item.height : 16
+                    width: parent.width + __horizontalScrollBar.width
+                    x: listView.contentX - root.extraSpaceLeft
+
+
+                    // these properties are exposed to the row delegate
+                    // Note: these properties should be mirrored in the row filler as well
+                    property QtObject styleData: QtObject {
+                        readonly property int row: rowNumberitem.rowIndex
+                        readonly property bool alternate: rowNumberitem.alternate
+                        readonly property bool selected: rowNumberitem.itemSelected
+                        readonly property bool hasActiveFocus: rowNumberitem.activeFocus
+                        readonly property bool pressed: rowNumberitem.rowIndex === __mouseArea.pressedRow
+                    }
+                    readonly property var model: rowNumberitem.itemModel
+                    readonly property var modelData: rowNumberitem.itemModelData
+                }
+                Row {
+                    id: itemNumberrow
+                    height: parent.height
+                    x: parent.x //+ root.extraSpaceLeft
+                    z: 2
+
+                    Repeater {
+                        model: columnModel
+
+                        delegate: __itemDelegateLoader
+
+                        onItemAdded: {
+                            var columnItem = columnModel.get(index).columnItem
+                            item.__index = index
+                            item.__rowItem = rowNumberitem
                             item.__column = columnItem
                         }
                     }
