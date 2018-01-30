@@ -33,6 +33,13 @@ int main(int argc, char *argv[])
 
 	QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
 
-	Application a(argc, argv);
-	return a.exec();
+	try
+	{
+		Application a(argc, argv);
+		return a.exec();
+	}
+	catch(...)
+	{
+	}
+	return -1;
 }

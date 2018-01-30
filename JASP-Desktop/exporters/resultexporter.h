@@ -19,7 +19,6 @@
 #define RESULTEXPORTER_H
 
 #include "exporter.h"
-#include <QWebFrame>
 
 class ResultExporter: public Exporter
 {

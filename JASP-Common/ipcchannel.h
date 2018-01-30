@@ -30,12 +30,11 @@
 #undef Free
 
 #include <windows.h>
-
 #else
 #include <boost/interprocess/sync/named_semaphore.hpp>
+
 #endif
 
-#include <boost/interprocess/sync/interprocess_mutex.hpp>
 
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/container/string.hpp>

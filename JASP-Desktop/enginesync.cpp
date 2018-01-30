@@ -434,8 +434,28 @@ void EngineSync::startSlaveProcess(int no)
 	QProcess *slave = new QProcess(this);
 	slave->setProcessChannelMode(QProcess::ForwardedChannels);
 	slave->setProcessEnvironment(env);
-	slave->start(engineExe, args);
 
+#ifdef __WIN32__
+	/*
+	On Windows, QProcess uses the Win32 API function CreateProcess to
+	start child processes.In some casedesirable to fine-tune
+	the parameters that are passed to CreateProcess.
+	This is done by defining a CreateProcessArgumentModifier function and passing it
+	to setCreateProcessArgumentsModifier
+
+	bInheritHandles [in]
+	If this parameter is TRUE, each inheritable handle in the calling process
+	is inherited by the new process. If the parameter is FALSE, the handles
+	are not inherited.
+	*/
+
+	slave->setCreateProcessArgumentsModifier([] (QProcess::CreateProcessArguments *args)
+	{
+		args->inheritHandles = false;
+	});
+#endif
+
+	slave->start(engineExe, args);
 
 	_slaveProcesses.push_back(slave);
 
