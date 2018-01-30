@@ -344,7 +344,6 @@ OTHER_FILES += \
     $$PWD/html/css/images/waiting.gif \
     $$PWD/html/css/images/waiting.svg \
     $$PWD/html/css/jquery-ui-1.10.1.custom.css \
-    $$PWD/html/css/jquery-ui-1.10.1.custom.min.css \
     $$PWD/html/css/theme-jasp.css \
     $$PWD/html/css/theme-spss.css \
     $$PWD/html/index.html \

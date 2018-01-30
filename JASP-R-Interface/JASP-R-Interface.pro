@@ -2,14 +2,16 @@ QT -= gui
 
 CURRENT_R_VERSION = 3.3
 
-windows:CONFIG += c++11
-macx:CONFIG += c++11
-linux:CONFIG += c++11
+CONFIG += c++11
 
 TARGET = JASP-R-Interface
 DESTDIR = ..
 TEMPLATE = lib
 linux:CONFIG += staticlib
+
+DEPENDPATH = ..
+PRE_TARGETDEPS += ../JASP-Common
+LIBS += -L.. -lJASP-Common
 
 
 _R_HOME = $$(R_HOME)

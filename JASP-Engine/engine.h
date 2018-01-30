@@ -33,6 +33,8 @@
  * options).
  * If the analysisId's don't match, then the old analysis is
  * aborted, and the new one is set running.
+ *
+ * Additionally: an engine can run a filter and return the result of that to the dataset.
  */
 
 class Engine
@@ -44,6 +46,7 @@ public:
 
 	void run();
 	void setSlaveNo(int no);
+	void applyFilter();
 	
 private:
 
@@ -51,6 +54,7 @@ private:
 	void runAnalysis();
 	void saveImage();
 	void sendResults();
+	void sendFilterResult(std::vector<bool> filterResult);
 	std::string callback(const std::string &results, int progress);
 
 	DataSet *provideDataSet();
@@ -59,7 +63,7 @@ private:
 
 	typedef enum { empty, toInit, initing, inited, toRun, running, changed, complete, error, exception, aborted, stopped, saveImg } Status;
 
-	Status _status;
+	Status _status = empty;
 
 	int _analysisId;
 	int _analysisRevision;
@@ -73,17 +77,20 @@ private:
 	std::string _analysisStateKey;
 	std::string _analysisResultsString;
 	Json::Value _imageOptions;
-	int _ppi;
+	int _ppi = 96;
 
 	bool _currentAnalysisKnowsAboutChange;
 
 	Json::Value _analysisResults;
 
-	IPCChannel *_channel;
-	DataSet *_dataSet;
+	IPCChannel *_channel = NULL;
+	DataSet *_dataSet = NULL;
 	std::string _engineInfo;
 
-	int _slaveNo;
+	int _slaveNo = 0;
+
+	bool filterChanged = false;
+	std::string filter = "*";//data.frame(c(1,2,3), c(\"A\", \"B\", \"C\")))";// ".readFullDatasetToEndNative()";
 };
 
 #endif // ENGINE_H

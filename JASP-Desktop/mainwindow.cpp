@@ -187,7 +187,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	qmlProgressBar = ui->quickWidget_Data->rootObject()->findChild<QObject*>("progressBarHolder");
 
 	_analyses = new Analyses();
-	_engineSync = new EngineSync(_analyses, this);
+	_engineSync = new EngineSync(_analyses, _package, this);
 	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(fatalError()));
 
 	connect(_analyses, SIGNAL(analysisResultsChanged(Analysis*)), this, SLOT(analysisResultsChangedHandler(Analysis*)));
@@ -1141,6 +1141,9 @@ void MainWindow::populateUIfromDataSet()
 
 
 	hideProgress();
+
+	//// TEMPORARY ONLY FOR TESTING!!
+	_engineSync->sendFilter("dataset$Major.Occupation == 'Psychologie' & dataset$Age == 19");
 
 	bool errorFound = false;
 	stringstream errorMsg;

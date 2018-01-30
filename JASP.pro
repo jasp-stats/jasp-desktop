@@ -12,4 +12,6 @@ SUBDIRS += \
 #	JASP-Tests
 
 JASP-Desktop.depends = JASP-Common
+JASP-R-Interface.depends = JASP-Common
 JASP-Engine.depends = JASP-Common JASP-R-Interface
+
