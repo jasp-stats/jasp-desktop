@@ -62,12 +62,12 @@ protected:
 private:
 	Ui::MainWindow *ui;
 
-	ResultsJsInterface *_resultsJsInterface;
-	AnalysisForm *_currentOptionsWidget;
-	DataSetPackage *_package;
-	DataSetTableModel *_tableModel;
-	LevelsTableModel *_levelsTableModel;
-	Analysis *_currentAnalysis;
+	ResultsJsInterface	*_resultsJsInterface;
+	AnalysisForm		*_currentOptionsWidget;
+	DataSetPackage		*_package;
+	DataSetTableModel	*_tableModel;
+	LevelsTableModel	*_levelsTableModel;
+	Analysis			*_currentAnalysis;
 
 	int _scrollbarWidth = 0;
 

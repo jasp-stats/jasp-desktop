@@ -89,7 +89,11 @@ ScrollViewStyle {
         border.left: 4 ; border.right: 4
     }
 
-    property Component rowNumberDelegate: Item {}
+    property Component rowNumberDelegate: Text
+    {
+        text: styleData.row
+        color: styleData.textColor
+    }
 
     property Component itemDelegate: Item {
         height: Math.max(16, label.implicitHeight)

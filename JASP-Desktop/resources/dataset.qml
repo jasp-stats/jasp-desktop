@@ -9,6 +9,8 @@ Rectangle {
     SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
     id: rootDataset
     color: systemPalette.window
+    readonly property int iconDim: 16
+    readonly property int headerHeight: 20
 
     Item
     {
@@ -20,11 +22,12 @@ Rectangle {
         readonly property int columnTypeNominalText: 3
     }
 
+    //Fancy pants curvy gradient for the columnheaders and rownumbers.
     Gradient{
         id: headersGradient
-        GradientStop { position: 0.5; color: systemPalette.light }
-        GradientStop { position: 0.7; color: systemPalette.midlight }
-        GradientStop { position: 1.0; color: systemPalette.mid }
+        GradientStop { position: 0.4; color: systemPalette.light }
+        GradientStop { position: 0.6; color: systemPalette.midlight }
+        GradientStop { position: 0.9; color: systemPalette.mid }
 
     }
 
@@ -392,230 +395,335 @@ Rectangle {
             }
         }
 
-        TableViewJasp {
 
-            id: dataSetTableView
-            objectName: "dataSetTableView"
+        Rectangle {
+            id: filterWindow
+            color: systemPalette.base
+            height: 100
+            visible: false
+            border.width: 1
+            border.color: systemPalette.mid
 
-            Layout.fillWidth: true
-            /*anchors.top: variablesWindow.bottom
-            anchors.left: rootDataset.left
-            anchors.right: rootDataset.right
-            anchors.bottom: rootDataset.bottom*/
+            property bool opened: false
 
-            alternatingRowColors: true
-            property bool drawCellBorders: true
-
-
-            model: dataSetModel
-
-            readonly property var columnTypeAndIconPath: dataSetModel.getColumnTypesWithCorrespondingIcon(true)
-            readonly property var columnTypeChangeIconPaths:dataSetModel.getColumnTypesWithCorrespondingIcon(false)
-
-            function reloadColumns()
+            function toggle()
             {
-                var roleList = dataSetModel.userRoleNames();
-
-                //data.clear()
-                for(var i=0; i<roleList.length; i++)
-                    data.push(dataSetTableView.addColumn(columnComponent.createObject(dataSetTableView, { "role": roleList[i], "title": dataSetModel.columnTitle(i)}))) //should use headerData instead of columnTitle.
-
-                resizeColumnsWithHeader()
+                opened = !opened
+                state = opened ? "opened" : "closed"
+                filterEdit.text = engineSync.getFilter()
             }
 
-            Component { id: columnComponent; TableViewColumn { movable: false } }
-
-
-            function resizeColumnsWithHeader()
+            function sendFilter()
             {
-                var extraPadding = 15
-                for(var col=0; col<columnCount; col++)
-                {
-                    var title = dataSetModel.columnTitle(col)
-                    var minimumWidth = calculateMinimumRequiredColumnWidthTitle(col, title, 20 + extraPadding, 1000)
-                    var column = getColumn(col)
-                    column.width = minimumWidth
+                engineSync.sendFilter(filterEdit.text)
+            }
+
+            states: [
+                State {
+                    name: "closed"
+                    PropertyChanges { target: filterWindow; visible: false}
+                    when: !opened
+                },
+                State {
+                    name: "opened"
+                    PropertyChanges { target: filterWindow; visible: true}
+                    when: opened
                 }
+            ]
 
-                //Try to find a reasonable size for our ugly rownumberthing:
-                var modelCount = dataSetModel.rowCount()
-                var tempCalc = rowNumberSizeCalcComponent.createObject(dataSetTableView, { "text": modelCount})
-                var extraSpaceShouldBe = tempCalc.width + 4
-                tempCalc.destroy()
-                extraSpaceLeft = extraSpaceShouldBe
+            TextArea
+            {
+                id: filterEdit
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: applyFilter.top
+                anchors.bottomMargin: 4
             }
 
-            Component { id: rowNumberSizeCalcComponent; TextMetrics { } }
-
-            signal dataTableDoubleClicked()
-
-            onDoubleClicked:  dataSetTableView.dataTableDoubleClicked()
-
-
-            headerDelegate: Rectangle
+            Button
             {
-                //Two rectangles to show a border of exactly 1px around cells
-                id: headerBorderRectangle
-                color: systemPalette.mid
-                border.width: 0
-                radius: 0
-                height: headerBorderRectangle.iconDim * 1.2
+                id: applyFilter
+                text: "Apply Filter"
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+
+                onClicked: filterWindow.sendFilter()
+
+            }
+
+        }
+
+        Rectangle
+        {
+            Layout.fillWidth: true
+
+
+            Rectangle
+            {
+                width: dataSetTableView.extraSpaceLeft + 1
+                height: rootDataset.headerHeight + 1
+                anchors.left: parent.left
+                anchors.top: parent.top
+                z: 5
 
 
 
-                property real iconDim: headerText.implicitHeight
-                property real iconTextPadding: 10
+                LinearGradient
+                {
+
+                    cached: true
+                    anchors.fill: parent
+                    start: Qt.point(parent.width * 0.5, parent.height * 0.5)
+                    end: Qt.point(parent.width, parent.height)
+                    gradient: headersGradient
+                }
 
                 Rectangle
                 {
-                    id: colHeader
-                    gradient: headersGradient
+                    anchors.fill: parent
+                    border.width: 1
+                    border.color: systemPalette.mid
+                    color: "transparent"
+                    z: 6
+                }
 
-                    /*readonly property bool isFirst: styleData.column == 0
-                    x: isFirst ? headerBorderRectangle.x - dataSetTableView.extraSpaceLeft : headerBorderRectangle.x
-                    width: isFirst ? headerBorderRectangle.width - 1 + dataSetTableView.extraSpaceLeft : headerBorderRectangle.width - 1*/
+                Image
+                {
+                    source: "../images/filter.png"
+                    width: rootDataset.iconDim
+                    height: rootDataset.iconDim
+                    x: parent.x + (parent.width / 2) - (width / 2)
+                    y: parent.y + (parent.height / 2) - (height / 2)
+                }
 
-                    x: headerBorderRectangle.x
-                    width: headerBorderRectangle.width - 1
+                MouseArea
+                {
+                    anchors.fill: parent
 
-                    y: headerBorderRectangle.y
-                    height: headerBorderRectangle.height - 1
+                    onClicked: filterWindow.toggle()
+                }
+            }
+
+            TableViewJasp {
+
+                id: dataSetTableView
+                objectName: "dataSetTableView"
+
+                anchors.fill: parent
+
+                alternatingRowColors: true
+                property bool drawCellBorders: true
 
 
-                    Image
+                model: dataSetModel
+
+                readonly property var columnTypeAndIconPath: dataSetModel.getColumnTypesWithCorrespondingIcon(true)
+                readonly property var columnTypeChangeIconPaths:dataSetModel.getColumnTypesWithCorrespondingIcon(false)
+
+                function reloadColumns()
+                {
+                    var roleList = dataSetModel.userRoleNames();
+
+                    //data.clear()
+                    for(var i=0; i<roleList.length; i++)
+                        data.push(dataSetTableView.addColumn(columnComponent.createObject(dataSetTableView, { "role": roleList[i], "title": dataSetModel.columnTitle(i)}))) //should use headerData instead of columnTitle.
+
+                    resizeColumnsWithHeader()
+                }
+
+                Component { id: columnComponent; TableViewColumn { movable: false } }
+
+
+                function resizeColumnsWithHeader()
+                {
+                    var extraPadding = 15
+                    for(var col=0; col<columnCount; col++)
                     {
-                        id: colIcon
-                        anchors.top: colHeader.top
-                        anchors.bottom: colHeader.bottom
-                        anchors.left: colHeader.left
-                        anchors.leftMargin: 4
+                        var title = dataSetModel.columnTitle(col)
+                        var minimumWidth = calculateMinimumRequiredColumnWidthTitle(col, title, 20 + extraPadding, 1000)
+                        var column = getColumn(col)
+                        column.width = minimumWidth
+                    }
 
-                        property int myColumnType: dataSetModel.columnIcon(styleData.column)
-                        source: dataSetTableView.columnTypeAndIconPath[myColumnType]
-                        width: styleData.column > -1 ? headerBorderRectangle.iconDim : 0
-                        height:  headerBorderRectangle.iconDim
+                    //Try to find a reasonable size for our ugly rownumberthing:
+                    var modelCount = dataSetModel.rowCount()
+                    var tempCalc = rowNumberSizeCalcComponent.createObject(dataSetTableView, { "text": modelCount})
+                    var extraSpaceShouldBe = tempCalc.width + 4
+                    tempCalc.destroy()
+                    extraSpaceLeft = extraSpaceShouldBe
+                }
+
+                Component { id: rowNumberSizeCalcComponent; TextMetrics { } }
+
+                signal dataTableDoubleClicked()
+
+                onDoubleClicked:  dataSetTableView.dataTableDoubleClicked()
 
 
-                        function setColumnType(columnType)
+                headerDelegate: Rectangle
+                {
+                    //Two rectangles to show a border of exactly 1px around cells
+                    id: headerBorderRectangle
+                    color: systemPalette.mid
+                    border.width: 0
+                    radius: 0
+                    height: rootDataset.headerHeight
+
+                    property real iconTextPadding: 10
+
+                    Rectangle
+                    {
+                        id: colHeader
+                        gradient: headersGradient
+
+                        /*readonly property bool isFirst: styleData.column == 0
+                        x: isFirst ? headerBorderRectangle.x - dataSetTableView.extraSpaceLeft : headerBorderRectangle.x
+                        width: isFirst ? headerBorderRectangle.width - 1 + dataSetTableView.extraSpaceLeft : headerBorderRectangle.width - 1*/
+
+                        x: headerBorderRectangle.x
+                        width: headerBorderRectangle.width - 1
+
+                        y: headerBorderRectangle.y
+                        height: headerBorderRectangle.height - 1
+
+
+                        Image
                         {
-                            colIcon.myColumnType = dataSetModel.setColumnTypeFromQML(styleData.column, columnType)
+                            id: colIcon
+                            anchors.top: colHeader.top
+                            anchors.bottom: colHeader.bottom
+                            anchors.left: colHeader.left
+                            anchors.leftMargin: 4
 
-                            if(variablesWindow.chosenColumn == styleData.column && colIcon.myColumnType == columnTypes.columnTypeScale)
-                                variablesWindow.chooseColumn(-1)
-
-
-                        }
-
-                        MouseArea
-                        {
-                            anchors.fill: parent
-                            onClicked: if(styleData.column > -1) popupIcons.open()
-                        }
+                            property int myColumnType: dataSetModel.columnIcon(styleData.column)
+                            source: dataSetTableView.columnTypeAndIconPath[myColumnType]
+                            width: styleData.column > -1 ? rootDataset.iconDim : 0
+                            height:  rootDataset.iconDim
 
 
-                        Popup {
-                            id: popupIcons; modal: true; focus: true; padding: 5
-                            y: colIcon.y + colIcon.height
-                            x: colIcon.x - (headerBorderRectangle.iconDim * 0.5)
-
-                            closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
-
-                            Column
+                            function setColumnType(columnType)
                             {
-                                width: parent.width
-                                spacing: popupIcons.padding
+                                colIcon.myColumnType = dataSetModel.setColumnTypeFromQML(styleData.column, columnType)
 
-                                Repeater{
-                                    id: iconRepeater
-                                    model: dataSetModel.getColumnTypesWithCorrespondingIcon(false)
-
-                                    Button
-                                    {
-                                        id: columnTypeChangeIcon
-                                        iconSource: iconRepeater.model[index]
-                                        width: headerBorderRectangle.iconDim * 1.5
-                                        readonly property bool showThisTypeIcon:  !((index == colIcon.myColumnType) || (index == columnTypes.columnTypeNominal && colIcon.myColumnType == columnTypes.columnTypeNominalText))
-                                        height: showThisTypeIcon ? headerBorderRectangle.iconDim * 1.5 : 0
+                                if(variablesWindow.chosenColumn == styleData.column && colIcon.myColumnType == columnTypes.columnTypeScale)
+                                    variablesWindow.chooseColumn(-1)
 
 
-                                        onClicked: columnTypeChosen()
+                            }
 
-                                        function columnTypeChosen()
+                            MouseArea
+                            {
+                                anchors.fill: parent
+                                onClicked: if(styleData.column > -1) popupIcons.open()
+                            }
+
+
+                            Popup {
+                                id: popupIcons; modal: true; focus: true; padding: 5
+                                y: colIcon.y + colIcon.height
+                                x: colIcon.x - (rootDataset.iconDim * 0.5)
+
+                                closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
+
+                                Column
+                                {
+                                    width: parent.width
+                                    spacing: popupIcons.padding
+
+                                    Repeater{
+                                        id: iconRepeater
+                                        model: dataSetModel.getColumnTypesWithCorrespondingIcon(false)
+
+                                        Button
                                         {
-                                            var columnType = index
-                                            popupIcons.close()
-                                            colIcon.setColumnType(columnType)
+                                            id: columnTypeChangeIcon
+                                            iconSource: iconRepeater.model[index]
+                                            width: rootDataset.iconDim * 1.5
+                                            readonly property bool showThisTypeIcon:  !((index == colIcon.myColumnType) || (index == columnTypes.columnTypeNominal && colIcon.myColumnType == columnTypes.columnTypeNominalText))
+                                            height: showThisTypeIcon ? rootDataset.iconDim * 1.5 : 0
+
+
+                                            onClicked: columnTypeChosen()
+
+                                            function columnTypeChosen()
+                                            {
+                                                var columnType = index
+                                                popupIcons.close()
+                                                colIcon.setColumnType(columnType)
+                                                filterWindow.sendFilter()
+
+                                            }
 
                                         }
-
                                     }
                                 }
                             }
                         }
-                    }
 
 
-                    Text
-                    {
-                        id: headerText
-                        anchors.top: colHeader.top
-                        anchors.bottom: colHeader.bottom
-                        anchors.left: colIcon.right
-                        anchors.right: colHeader.right
-                        text: styleData.value //dataSetModel.columnTitle(styleData.column);
-                        leftPadding: headerBorderRectangle.iconTextPadding
-
-                        MouseArea
+                        Text
                         {
-                            anchors.fill: parent
-                            onClicked:
-                            {
-                                var chooseThisColumn = (styleData.column > -1 && dataSetModel.columnIcon(styleData.column)  != columnTypes.columnTypeScale) ? styleData.column : -1
-                                variablesWindow.chooseColumn(chooseThisColumn)
+                            id: headerText
+                            anchors.top: colHeader.top
+                            anchors.bottom: colHeader.bottom
+                            anchors.left: colIcon.right
+                            anchors.right: colHeader.right
+                            text: styleData.value //dataSetModel.columnTitle(styleData.column);
+                            leftPadding: headerBorderRectangle.iconTextPadding
 
+                            MouseArea
+                            {
+                                anchors.fill: parent
+                                onClicked:
+                                {
+                                    var chooseThisColumn = (styleData.column > -1 && dataSetModel.columnIcon(styleData.column)  != columnTypes.columnTypeScale) ? styleData.column : -1
+                                    variablesWindow.chooseColumn(chooseThisColumn)
+
+                                }
                             }
                         }
                     }
                 }
-            }
 
 
-            itemDelegate: Item
-            {
-                Rectangle
+                itemDelegate: Item
                 {
-                    id: borderRectangle
-                    color: "transparent"
-                    border.width: dataSetTableView.drawCellBorders ? 1 : 0
-                    border.color: systemPalette.mid
-                    radius: 0
-                    width: parent.width + 1
-                    height: parent.height + 1
-                    x: parent.x - 1
-                    y: parent.y - 1
+                    id: itemItem
 
-                    Text {
-                        id: itemText
-                        text: styleData.value
-                        color: systemPalette.text
-                        elide: styleData.elideMode
-                        horizontalAlignment: styleData.textAlignment
-                        leftPadding: 4
+                    readonly property bool rowIsUsed: dataSetModel.getRowFilter(styleData.row)
+                    //z: (rowIsUsed ? 1 : 0)
+
+                    Rectangle
+                    {
+                        id: borderRectangle
+                        color: "transparent"
+                        border.width:  (itemItem.rowIsUsed & dataSetTableView.drawCellBorders) ? 1 : 0
+                        border.color:  systemPalette.mid
+                        radius: 0
+                        width: parent.width + 1
+                        height: parent.height + 1
+                        x: parent.x - 1
+                        y: parent.y - 1
+
+
+                        Text {
+                            id: itemText
+                            text: styleData.value
+                            color: itemItem.rowIsUsed ? systemPalette.text : systemPalette.mid
+                            elide: styleData.elideMode
+                            horizontalAlignment: styleData.textAlignment
+                            leftPadding: 4
+
+                        }
                     }
                 }
-            }
 
-            extraSpaceLeft: 10
+                rowDelegate: Rectangle { color: styleData.selected ? systemPalette.dark :  (styleData.alternate && dataSetModel.getRowFilter(styleData.row) ? systemPalette.midlight : systemPalette.light)  }
 
-            rowDelegate: Rectangle {
-                color: styleData.selected ? systemPalette.dark : (styleData.alternate ? systemPalette.midlight : systemPalette.light)
-            }
-
-            rowNumberDelegate:
-                Rectangle
+                rowNumberDelegate: Rectangle
                 {
                     id: rowNumberBorder
-                    //width: dataSetTableView.extraSpaceLeft
                     anchors.left: parent.left
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
@@ -641,7 +749,7 @@ Rectangle {
                             color: systemPalette.text
                         }
                     }
-
+                }
             }
         }
     }

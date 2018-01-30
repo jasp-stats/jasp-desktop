@@ -629,7 +629,7 @@ ScrollView {
                 Loader {
                     id: rowNumberstyle
                     // row delegate
-                    sourceComponent: rowitem.itemModel !== undefined ? root.rowNumberDelegate : null
+                    sourceComponent: rowitem.itemModel !== undefined ? (root.extraSpaceLeft > 0 ? root.rowNumberDelegate : null ) : null
                     // Row fills the view width regardless of item size
                     // But scrollbar should not adjust to it
                     height: item ? item.height : 16

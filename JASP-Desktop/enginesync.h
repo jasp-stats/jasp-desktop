@@ -60,11 +60,12 @@ public:
 
 	void setPPI(int ppi);
 
-	void sendFilter(std::string filter);
+	Q_INVOKABLE void sendFilter(QString filter);
+	Q_INVOKABLE QString getFilter() { return dataFilter; }
 
 signals:
-
 	void engineTerminated();
+	void filterUpdated();
 
 private:
 
@@ -86,7 +87,8 @@ private:
 	void startSlaveProcess(int no);
 
 	std::string _memoryName;
-	std::string _engineInfo;
+	std::string _engineInfo;	
+	QString dataFilter = "";
 
 	void processNewFilterResult(std::vector<bool> filterResult);
 

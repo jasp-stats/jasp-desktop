@@ -202,7 +202,7 @@ void Engine::run()
 	}
 	while(1);
 
-	shared_memory_object::remove(memoryName.c_str());
+	shared_memory_object::remove(memoryName.c_str()); //How would we get here?
 }
 
 bool Engine::receiveMessages(int timeout)

@@ -589,11 +589,10 @@ std::vector<bool> rbridge_applyFilter(std::string & filterCode)
 	if (rbridge_dataSet == NULL)
 		rbridge_dataSet = rbridge_dataSetSource();
 
+	size_t rowCount = rbridge_dataSet->rowCount();
+
 	if(filterCode == "*") //if * then there is no filter so everything is true :)
-	{
-		size_t rowCount = rbridge_dataSet->rowCount();
 		return std::vector<bool>(rowCount, true);
-	}
 
 	std::string filterWithBoilerPlate("dataset <- .readFilterDatasetToEnd()\n.returnDataFrame(colnames(dataset))\n.returnDataFrame(dataset)\n");
 	filterWithBoilerPlate += rbridge_encodeColumnNamesToBase64(filterCode);
@@ -605,16 +604,21 @@ std::vector<bool> rbridge_applyFilter(std::string & filterCode)
 
 		int arrayLength		= jaspRCPP_runFilter(filterWithBoilerPlate.c_str(), &arrayPointer);
 
-		std::cout << "That didnt crash apparently and the result is: " << arrayLength << "\n" << std::flush;
+		//std::cout << "That didnt crash apparently and the result is: " << arrayLength << "\n" << std::flush;
 		std::vector<bool> returnThis;
 
-		if(arrayLength > 0)
-		{
+		if(arrayLength == 0)
+			return std::vector<bool>(rowCount, true);
+
+
+		if(arrayLength == rowCount)
 			for(int i=0; i<arrayLength; i++)
 				returnThis.push_back(arrayPointer[i]);
 
 			free(arrayPointer);
-		}
+
+		if(arrayLength != rowCount)
+			return std::vector<bool>(rowCount, true);
 
 		return returnThis;
 	}

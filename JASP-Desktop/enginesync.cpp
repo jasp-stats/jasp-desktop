@@ -319,22 +319,17 @@ void EngineSync::process()
 
 void EngineSync::processNewFilterResult(std::vector<bool> filterResult)
 {
-	std::cout << "Some filter resulted in:\n";
-
-	for(bool f : filterResult)
-		std::cout << (f? "TRUE" : "FALSE") << "\n";
-
-	std::cout << std::flush;
-
 	_package->dataSet->setFilterVector(filterResult);
+	emit filterUpdated();
 }
 
 
-void EngineSync::sendFilter(std::string filter)
+void EngineSync::sendFilter(QString filter)
 {
 	Json::Value json = Json::Value(Json::objectValue);
 
-	json["filter"] = filter == "" ? "*" : filter;
+	dataFilter = filter == "" ? "*" : filter;
+	json["filter"] = dataFilter.toStdString();
 
 	string str = json.toStyledString();
 	_channels[0]->send(str);
