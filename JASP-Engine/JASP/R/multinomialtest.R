@@ -242,9 +242,7 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
   for(r in 1:length(chisqResults)){
 
     if(!is.null(chisqResults[[r]][["warn"]])) {
-
-      message[[r]] <- chisqResults[[r]][["warn"]]
-      .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+      .addFootnote(footnotes, symbol = "<em>Note.</em>", text = chisqResults[[r]][["warn"]])
     }
   }
 
@@ -593,6 +591,9 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
   #   expected Probabilities
 
   if (options$exProbVar != "") {
+    if (options$counts == "") {
+      .quitAnalysis("Expected counts not supported without observed counts!")
+    }
     # use only exProbVar
     fact <- dataset[[.v(options$factor)]]
     eProps <- data.frame(dataset[[.v(options$exProbVar)]])

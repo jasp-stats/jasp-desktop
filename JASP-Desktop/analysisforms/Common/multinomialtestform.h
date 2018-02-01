@@ -48,6 +48,8 @@ private slots:
 	void on_deleteColumn_clicked(bool checked);
 	void on_resetColumns_clicked(bool checked);
 	void addFixedFactors();
+	void expectedCountsHandler();
+	void countModelHandler();
 	void cellChangedHandler();
 
 private:
@@ -56,6 +58,7 @@ private:
 	QStringList horizontalLabels;
 	TableModelVariablesAssigned *factorModel;
 	std::string _previous;
+	Options *_options;
 };
 
 #endif // MULTINOMIALTESTFORM_H

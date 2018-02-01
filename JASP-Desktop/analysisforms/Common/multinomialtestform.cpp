@@ -25,6 +25,8 @@ MultinomialTestForm::MultinomialTestForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	_options = NULL;
+
 	ui->listAvailableVariables->setModel(&_availableVariablesModel);
 	ui->listAvailableVariables->setDoubleClickTarget(ui->factor);
 
@@ -58,6 +60,11 @@ MultinomialTestForm::MultinomialTestForm(QWidget *parent) :
 	ui->widget_expectedProbsTable->hide();
 
 	connect(factorModel, SIGNAL(assignmentsChanged()), this, SLOT(addFixedFactors()));
+
+	// TODO: Remove exProbVar if counts is empty
+	// connect(countModel, SIGNAL(assignmentsChanged()), this, SLOT(countModelHandler()));
+
+	connect(probVarModel, SIGNAL(assignmentsChanged()), this, SLOT(expectedCountsHandler()));
 	connect(ui->tableWidget, SIGNAL(cellChanged(int, int)), this, SLOT(cellChangedHandler()));
 }
 
@@ -69,6 +76,8 @@ MultinomialTestForm::~MultinomialTestForm()
 void MultinomialTestForm::bindTo(Options *options, DataSet *dataSet)
 {
 	AnalysisForm::bindTo(options, dataSet);
+
+	_options = options;
 
 	if (options != NULL && options->get("factor") != NULL) {
 		_previous = dynamic_cast<OptionVariable *>(_options->get("factor"))->variable();
@@ -95,6 +104,37 @@ void MultinomialTestForm::bindTo(Options *options, DataSet *dataSet)
 		ui->addColumn->setEnabled(false);
 	} else if (columns <= 0) {
 		ui->deleteColumn->setEnabled(false);
+	}
+
+	// TODO: Remove exProbVar if counts is empty
+	// countModelHandler();
+
+	expectedCountsHandler();
+}
+
+void MultinomialTestForm::expectedCountsHandler()
+{
+	if (_options != NULL && _options->get("exProbVar") != NULL) {
+		std::string column = dynamic_cast<OptionVariable *>(_options->get("exProbVar"))->variable();
+
+		if (column == "") {
+			ui->hypothesis->setEnabled(true);
+		} else {
+			ui->hypothesis->setEnabled(false);
+		}
+	}
+}
+
+void MultinomialTestForm::countModelHandler()
+{
+	if (_options != NULL && _options->get("counts") != NULL) {
+		std::string column = dynamic_cast<OptionVariable *>(_options->get("counts"))->variable();
+
+		if (column == "") {
+			ui->exProbVar->setEnabled(false);
+		} else {
+			ui->exProbVar->setEnabled(true);
+		}
 	}
 }
 

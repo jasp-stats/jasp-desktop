@@ -18,7 +18,6 @@
 #include "optiondoublearray.h"
 
 #include <boost/foreach.hpp>
-#include <QDebug>
 
 using namespace std;
 
