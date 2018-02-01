@@ -69,44 +69,60 @@ To build JASP on mac you need to clone the JASP repository and download the foll
 
  0. Clone the JASP repository
  1. [XCode](https://developer.apple.com/xcode/) Easiest would be via the App Store.
- 2. [Qt 5.10 + QtWebEngine](https://download.qt.io/archive/qt/).
+ 2. [Qt 5.10 + QtWebEngine](https://download.qt.io/archive/qt/). Tick: MacOS and Qt WebEngine
  3. [R 3.3.3](https://static.jasp-stats.org/development/R3.3%20OSX%20JASP%200.8.5.zip) This contains R and the packages. Unzip this file and set it as a framework in the build folder as shown below.
- 4. [boost 1.64.0](https://static.jasp-stats.org/development/boost_1_64_0.zip). Unzip this file in the build folder.
+ 4. [boost 1.64.0](https://static.jasp-stats.org/development/boost_1_64_0.zip). Unzip this file in the JASP folder.
  5. [boost 1.64.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Build-Binaries-OSX-64-qt510.zip). Unzip this file in both release and debug build folders.
 
 The directory structure should be as follows:
 
     [+] JASP
-    	[-] souce	
-    		[+] jasp-desktop  < from github >
-    	[-] build
-    		[-] debug < Build debug directory for QtCreator >
-    			- libboost_system-clang-mt-1_64.a
-    			- libboost_filesystem-clang-mt-1_64.a
-    			- libarchive.a
-     			- libz.a
-			- libJASP-R-Interface.1.0.0.dylib
-			- libJASP-R-Interface.dylib
-    		[-] release < Build release directory for QtCreator  >
-    			- libboost_system-clang-mt-1_64.a
-    			- libboost_filesystem-clang-mt-1_64.a
-    			- libarchive.a
-    			- libz.a
-			- libJASP-R-Interface.1.0.0.dylib
-			- libJASP-R-Interface.dylib
-    		[+] boost_1_64_0
-    		[-] Frameworks
-      			[-] R.framework
-    				[-] Versions
-     					[+] 3.3
-
+    	[-] jasp-desktop  < from github >	
+    	[-] buildDebug510 < Build debug directory for QtCreator >
+    		- libboost_system-clang-mt-1_64.a
+		- libboost_filesystem-clang-mt-1_64.a
+		- libarchive.a
+		- libz.a
+		- libJASP-R-Interface.1.0.0.dylib
+		- libJASP-R-Interface.dylib
+	[-] buildRelease510 < Build release directory for QtCreator  >
+		- libboost_system-clang-mt-1_64.a
+		- libboost_filesystem-clang-mt-1_64.a
+		- libarchive.a
+		- libz.a
+		- libJASP-R-Interface.1.0.0.dylib
+		- libJASP-R-Interface.dylib
+    	[-] boost_1_64_0
+	[-] Frameworks
+		[-] R.framework
+			[-] Versions
+				[+] 3.3
 
  0. **Clone** the JASP repository into a folder of your choice. Our default choice is *~/desktop/JASP/* and cloning results in the creating of *~/desktop/JASP/jasp-desktop*.
  1. **XCode**: Qt on OS X relies on XCode to function, you can install this through the App Store. It's easiest if you install this, run it, accept the license agreement, and then close it down before installing Qt.
- 2. **Qt**: For xcode 8 and above, to accept the license, Qt tries to find xcrun instead of xcodebuild, and the following has to be done,
-- Open the file: *Qt_install_folder/5.10/clang_64/mkspecs/features/mac/default_pre.prf*
-- Replace the line *isEmpty($$list($$system("/usr/bin/xcrun -find xcrun 2>/dev/null")))* by  *isEmpty($$list($$system("/usr/bin/xcrun -find xcodebuild 2>/dev/null")))*
+ 2. **Qt**: Install Qt5.10 with MacOS and Qt WebEngine.
 
+![Image of Qt Installer](http://www.alexander-ly.com/wp-content/uploads/2018/02/jasp2.InstallQt.png)
+ 
+ 2.a. **Configure Qt5.10**: Left top menu: Qt Creator - Preference. Left menu: "Build & Run", tab: "Kits". Auto-detect should give "Desktop Qt 5.10.0 clang 64bit". Click on this. Choose the compiler **Clang (x86 64bit in /usr/bin)** for both C and C++.
+
+![Image of Qt Configuration](http://www.alexander-ly.com/wp-content/uploads/2018/02/jasp2a.ConfigureQt.png)
+
+ 2.b. **Configure project**: Click "Projects" in the left ribbon and provide the "debug build" and "release build" folders with the correct compilers. This should look like:
+ 
+ ![Image of Project debug](http://www.alexander-ly.com/wp-content/uploads/2018/02/jasp2b.1.ConfigureProjectDebug.png)
+ 
+ and like:
+ 
+ ![Image of Project release](http://www.alexander-ly.com/wp-content/uploads/2018/02/jasp2b.2.ConfigureProjectRelease.png)
+
+In both case, I've added the flag "-j4" to make use of all my four cores on my mac. 
+
+5. In the end, your folder should be structured as follows: 
+
+ ![Image of folder structure](http://www.alexander-ly.com/wp-content/uploads/2018/02/jasp5.FolderStructure.png)
+
+where the blue files are the binaries that are added manually. 
 
 Linux
 -----
