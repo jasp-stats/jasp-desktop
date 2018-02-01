@@ -242,6 +242,11 @@ void EngineSync::process()
 					_filterSent[i] = false;
 					continue;
 				}
+				else if(!json.get("filterError", Json::Value(Json::arrayValue)).isArray())
+				{
+					emit filterErrorTextChanged(QString::fromStdString(json.get("filterError", "").asString()));
+				}
+
 
 				if(analysis == NULL) //we only came here because we are expecting a filterresult and didnt get it, there is also no analysis so:
 					continue;
@@ -321,6 +326,7 @@ void EngineSync::processNewFilterResult(std::vector<bool> filterResult)
 {
 	_package->dataSet->setFilterVector(filterResult);
 	emit filterUpdated();
+	emit filterErrorTextChanged("");
 }
 
 

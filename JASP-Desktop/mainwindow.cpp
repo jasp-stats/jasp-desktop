@@ -176,10 +176,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	_engineSync = new EngineSync(_analyses, _package, this);
 	connect(_engineSync, SIGNAL(filterUpdated()), this, SLOT(refreshAllAnalyses()));
 	connect(_engineSync, SIGNAL(filterUpdated()), _tableModel, SLOT(refresh()));
+	connect(_engineSync, SIGNAL(filterErrorTextChanged(QString)), this, SLOT(setFilterErrorText(QString)));
 
 	ui->quickWidget_Data->rootContext()->setContextProperty("dataSetModel", _tableModel);
 	ui->quickWidget_Data->rootContext()->setContextProperty("levelsTableModel", _levelsTableModel);
 	ui->quickWidget_Data->rootContext()->setContextProperty("engineSync", _engineSync);
+	ui->quickWidget_Data->rootContext()->setContextProperty("filterErrorText", QString(""));
+
 	ui->quickWidget_Data->setSource(QUrl(QString("qrc:///qml/dataset.qml")));
 
 
@@ -1837,3 +1840,5 @@ void MainWindow::setProgressStatus(QString status, int progress)
 {
 	QMetaObject::invokeMethod(qmlProgressBar, "setStatus", Q_ARG(QVariant, QVariant(status)), Q_ARG(QVariant, QVariant(progress)));
 }
+
+void MainWindow::setFilterErrorText(QString error) { ui->quickWidget_Data->rootContext()->setContextProperty("filterErrorText", error); }

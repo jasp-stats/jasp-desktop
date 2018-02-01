@@ -194,6 +194,8 @@ private slots:
 	void hideProgress();
 	void setProgressStatus(QString status, int progress);
 
+	void setFilterErrorText(QString error);
+
 };
 
 #endif // MAINWIDGET_H

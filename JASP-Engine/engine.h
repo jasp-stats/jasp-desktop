@@ -55,6 +55,7 @@ private:
 	void saveImage();
 	void sendResults();
 	void sendFilterResult(std::vector<bool> filterResult);
+	void sendFilterError(std::string errorMessage);
 	std::string callback(const std::string &results, int progress);
 
 	DataSet *provideDataSet();

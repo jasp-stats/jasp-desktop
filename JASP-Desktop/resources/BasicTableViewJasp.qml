@@ -553,17 +553,19 @@ ScrollView {
                 else
                     rowItem = rowComponent.createObject(listView);
 
+
+
                 // Bind container to item size
                 rowItemContainer.width = Qt.binding( function() { return rowItem.width });
                 rowItemContainer.height = Qt.binding( function() { return rowItem.height });
 
 
                 // Reassign row-specific bindings
-                rowItem.rowIndex = Qt.binding( function() { return model.index });
-                rowItem.itemModelData = Qt.binding( function() { return typeof modelData === "undefined" ? null : modelData });
-                rowItem.itemModel = Qt.binding( function() { return model });
-                rowItem.parent = rowItemContainer;
-                rowItem.visible = true;
+                rowItem.rowIndex        = Qt.binding( function() { return model.index });
+                rowItem.itemModelData   = Qt.binding( function() { return typeof modelData === "undefined" ? null : modelData });
+                rowItem.itemModel       = Qt.binding( function() { return model });
+                rowItem.parent          = rowItemContainer;
+                rowItem.visible         = true;
 
                 if (listView.rowItemStack.length > 0)
                     rowNumberItem = listView.rowItemStack.pop();
@@ -571,11 +573,11 @@ ScrollView {
                     rowNumberItem = rowComponent.createObject(listView);
 
                 // Reassign rownumber-specific bindings
-                rowNumberItem.rowIndex = Qt.binding( function() { return model.index });
+                rowNumberItem.rowIndex      = Qt.binding( function() { return model.index });
                 rowNumberItem.itemModelData = Qt.binding( function() { return typeof modelData === "undefined" ? null : modelData });
-                rowNumberItem.itemModel = Qt.binding( function() { return model });
-                rowNumberItem.parent = rowItem;
-                rowNumberItem.visible = true;
+                rowNumberItem.itemModel     = Qt.binding( function() { return model });
+                rowNumberItem.parent        = rowItem;
+                rowNumberItem.visible       = true;
             }
         }
 
@@ -611,7 +613,6 @@ ScrollView {
                     height: item ? item.height : 16
                     width: parent.width + __horizontalScrollBar.width
                     x: listView.contentX - root.extraSpaceLeft
-
 
                     // these properties are exposed to the row delegate
                     // Note: these properties should be mirrored in the row filler as well
@@ -654,7 +655,6 @@ ScrollView {
                     id: itemrow
                     height: parent.height
                     x: parent.x //+ root.extraSpaceLeft
-                    //z: 0
 
                     Repeater {
                         model: columnModel

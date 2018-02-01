@@ -39,6 +39,8 @@ char** rbridge_getLabels(const vector<string> &levels, int &nbLevels);
 
 void rbridge_init()
 {
+	std::cout << R_FunctionWhiteList::returnOrderedWhiteList() << std::flush;
+
 	rbridge_dataSet = NULL;
 	rbridge_callback = NULL;
 	rbridge_fileNameSource = NULL;
@@ -535,40 +537,45 @@ std::string	rbridge_encodeColumnNamesToBase64(std::string & filterCode)
 {
 	std::string filterBase64 = filterCode;
 
-	std::cout << "Scanning filter for columnNames: " << filterCode << "\n" << std::flush;
-
 	rbridge_findColumnsUsedInDataSet();
 	filterColumnsUsed.clear();
 
-	//for now we only look for dataset$ 'cause its easy.
-	std::string searchThis("dataset$");
-	size_t startPos = 0, foundPos = 0;
-	while((foundPos = filterBase64.find(searchThis, startPos)) != std::string::npos)
+	//for now we simply replace any found columnname by its Base64 variant if found
+	size_t foundPos = 0;
+	for(std::string col : columnNamesInDataSet)
 	{
-		size_t colNameStart	= foundPos + searchThis.length();
-		size_t colNameEnd	= filterBase64.find_first_of(" \t\n\r", colNameStart);
-		size_t colNameLen	= (colNameEnd == std::string::npos ? filterBase64.length() : colNameEnd) - colNameStart;
+		std::string columnName64 = Base64::encode("X", col, Base64::RVarEncoding);
 
-		std::string foundColumnName(filterBase64.substr(colNameStart, colNameLen));
+		while((foundPos = filterBase64.find(col, 0)) != std::string::npos)
+		{
+			filterBase64.replace(foundPos, col.length(), columnName64);
 
-		if(columnNamesInDataSet.count(foundColumnName) == 0)
-			throw filterException(std::string("filter contains unknown columnName: ") + foundColumnName);
-
-		if(filterColumnsUsed.count(foundColumnName) == 0)
-			filterColumnsUsed.insert(foundColumnName);
-
-		//Now we replace the foundColumnName by something Base64.
-		std::string columnName64 = Base64::encode("X", foundColumnName, Base64::RVarEncoding);
-		filterBase64.replace(colNameStart, colNameLen, columnName64);
-		startPos = colNameStart + columnName64.length();
-
-		std::cout << "found " << foundColumnName << " and replaced it by " << columnName64 << "\n" << std::flush;
+			if(filterColumnsUsed.count(col) == 0)
+				filterColumnsUsed.insert(col);
+		}
 	}
 
-	std::cout << "Resulting filter is: " << filterBase64 << "\n" << std::flush;
-
 	return filterBase64;
+}
 
+std::string	rbridge_decodeColumnNamesFromBase64(std::string & messageBase64)
+{
+	std::string messageNormal = messageBase64;
+
+	rbridge_findColumnsUsedInDataSet();
+
+	//for now we simply replace any found columnname in its Base64 variant by its normal version
+	size_t foundPos = 0;
+	for(std::string columnName : columnNamesInDataSet)
+	{
+		std::string col64 = Base64::encode("X", columnName, Base64::RVarEncoding);
+
+		while((foundPos = messageNormal.find(col64, 0)) != std::string::npos)
+			messageNormal.replace(foundPos, col64.length(), columnName);
+
+	}
+
+	return messageNormal;
 }
 
 void rbridge_findColumnsUsedInDataSet()
@@ -591,42 +598,75 @@ std::vector<bool> rbridge_applyFilter(std::string & filterCode)
 
 	size_t rowCount = rbridge_dataSet->rowCount();
 
-	if(filterCode == "*") //if * then there is no filter so everything is true :)
+	if(filterCode == "*") //if * then there is no filter so everything is fine :)
 		return std::vector<bool>(rowCount, true);
 
-	std::string filterWithBoilerPlate("dataset <- .readFilterDatasetToEnd()\n.returnDataFrame(colnames(dataset))\n.returnDataFrame(dataset)\n");
-	filterWithBoilerPlate += rbridge_encodeColumnNamesToBase64(filterCode);
+	static std::string errorMsg;
+
+	std::set<string> blackListedFunctions = R_FunctionWhiteList::scriptIsSafe(filterCode);
+
+	if(blackListedFunctions.size() > 0)
+	{
+		bool moreThanOne = blackListedFunctions.size() > 1;
+		std::stringstream ssm;
+		ssm << "Illegal function" << (moreThanOne ? "s" : "") << " used:" << (moreThanOne ? "\n" : " ");
+		for(auto & black : blackListedFunctions)
+			ssm << black << "\n";
+		errorMsg = ssm.str();
+
+		throw filterException(errorMsg);
+	}
+
+	std::string filter64(rbridge_encodeColumnNamesToBase64(filterCode));
+
 
 	try
 	{
 		bool * arrayPointer = NULL;
-		std::cout << "Gonna try filter \"" << filterWithBoilerPlate <<"\"!\n" << std::flush;
 
-		int arrayLength		= jaspRCPP_runFilter(filterWithBoilerPlate.c_str(), &arrayPointer);
+		jaspRCPP_runScript("data <- .readFilterDatasetToEnd();\nattach(data);\noptions(warn=1, showWarnCalls=TRUE, showErrorCalls=true, show.error.messages=TRUE)"); //first we load the data to be filtered
+		int arrayLength	= jaspRCPP_runFilter(filter64.c_str(), &arrayPointer);
+		jaspRCPP_runScript("detach(data)");	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 
-		//std::cout << "That didnt crash apparently and the result is: " << arrayLength << "\n" << std::flush;
+		if(arrayLength < 0)
+		{
+			errorMsg = "Filter did not return a logical vector";
+			throw filterException(errorMsg);
+		}
+
 		std::vector<bool> returnThis;
 
-		if(arrayLength == 0)
-			return std::vector<bool>(rowCount, true);
-
-
-		if(arrayLength == rowCount)
+		bool atLeastOneRow = false;
+		if(arrayLength == rowCount) //Only build boolvector if it matches the desired length.
 			for(int i=0; i<arrayLength; i++)
+			{
 				returnThis.push_back(arrayPointer[i]);
+				if(arrayPointer[i])
+					atLeastOneRow = true;
+			}
 
-			free(arrayPointer);
+		free(arrayPointer);
+
+		if(!atLeastOneRow)
+			throw filterException("Filtered out all data..");
 
 		if(arrayLength != rowCount)
-			return std::vector<bool>(rowCount, true);
+		{
+			std::stringstream msg;
+			msg << "Filter did not return a logical vector of length " << rowCount << " as expected, instead it returned a logical vector of length " << arrayLength << std::endl << std::flush;
+			errorMsg = msg.str();
+			throw filterException(errorMsg);
+		}
 
 		return returnThis;
 	}
 	catch(std::exception & e)
 	{
-		std::cout << "Something went wrong with rbridge_applyFilter, namely: " << e.what() << "\n" << std::flush;
-		throw e;
+		errorMsg = std::string(e.what()) + "\n" + jaspRCPP_getRConsoleOutput();
+		errorMsg = rbridge_decodeColumnNamesFromBase64(errorMsg);
+		throw filterException(errorMsg);
 	}
+
 }
 
 string rbridge_saveImage(const string &name, const string &type, const int &height, const int &width, const int ppi)

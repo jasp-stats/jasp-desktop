@@ -359,6 +359,18 @@ void Engine::sendFilterResult(std::vector<bool> filterResult)
 	_channel->send(msg);
 }
 
+void Engine::sendFilterError(std::string errorMessage)
+{
+	std::cout << "sendFilterError!\n" << std::flush;
+
+	Json::Value filterResponse = Json::Value(Json::objectValue);
+
+	filterResponse["filterError"] = errorMessage;
+
+	std::string msg = filterResponse.toStyledString();
+	_channel->send(msg);
+}
+
 string Engine::callback(const string &results, int progress)
 {
 	receiveMessages();
@@ -430,7 +442,23 @@ void Engine::provideTempFileName(const string &extension, string &root, string &
 void Engine::applyFilter()
 {
 	filterChanged = false;
-	std::vector<bool> filterResult = rbridge_applyFilter(filter);
 
-	sendFilterResult(filterResult);
+	try
+	{
+		std::vector<bool> filterResult = rbridge_applyFilter(filter);
+
+		sendFilterResult(filterResult);
+
+		std::string RConsoleOutput(jaspRCPP_getRConsoleOutput());
+		if(RConsoleOutput.length() > 0)
+			sendFilterError(RConsoleOutput);
+	}
+	catch(filterException & e)
+	{
+		std::cout << "filtererror caught: " << e.what() << std::endl << std::flush;
+		if(std::string(e.what()).length() > 0)
+			sendFilterError(e.what());
+		else
+			sendFilterError("Something went wrong with the filter but it is unclear what.");
+	}
 }

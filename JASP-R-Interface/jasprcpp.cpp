@@ -16,10 +16,12 @@
 //
 
 #include "jasprcpp.h"
+#include "rinside_consolelogging.h"
 
 using namespace std;
 
 RInside *rinside;
+RInside_ConsoleLogging *rinside_consoleLog;
 ReadDataSetCB readDataSetCB;
 RunCallbackCB runCallbackCB;
 ReadADataSetCB readFullDataSetCB;
@@ -37,6 +39,8 @@ extern "C" {
 void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks* callbacks)
 {
 	rinside = new RInside();
+	rinside_consoleLog = new RInside_ConsoleLogging();
+	rinside->set_callbacks(rinside_consoleLog);
 
 	RInside &rInside = rinside->instance();
 
@@ -53,6 +57,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".readDatasetToEndNative"]		= Rcpp::InternalFunction(&jaspRCPP_readDataSetSEXP);
 	rInside[".readFullDatasetToEnd"]		= Rcpp::InternalFunction(&jaspRCPP_readFullDataSet);
 	rInside[".returnDataFrame"]				= Rcpp::InternalFunction(&jaspRCPP_returnDataFrame);
+	rInside[".returnString"]				= Rcpp::InternalFunction(&jaspRCPP_returnString);
 	rInside[".readFilterDatasetToEnd"]		= Rcpp::InternalFunction(&jaspRCPP_readFilterDataSet);
 	rInside[".readDataSetHeaderNative"]		= Rcpp::InternalFunction(&jaspRCPP_readDataSetHeaderSEXP);
 	rInside[".requestTempFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestTempFileNameSEXP);
@@ -104,13 +109,25 @@ const char* STDCALL jaspRCPP_check()
 	return staticResult.c_str();
 }
 
+void STDCALL jaspRCPP_runScript(const char * scriptCode)
+{
+	SEXP result = rinside->parseEvalNT(scriptCode);
+
+	return;
+}
+
 int STDCALL jaspRCPP_runFilter(const char * filterCode, bool ** arrayPointer)
 {
+	rinside_consoleLog->clearConsoleBuffer();
+
 	SEXP result = rinside->parseEval(filterCode);
 
 	if(Rf_isVector(result))
 	{
 		Rcpp::NumericVector vec(result);
+
+		if(vec.size() == 0)
+			return 0;
 
 		(*arrayPointer) = (bool*)malloc(vec.size() * sizeof(bool));
 
@@ -120,7 +137,7 @@ int STDCALL jaspRCPP_runFilter(const char * filterCode, bool ** arrayPointer)
 		return vec.size();
 	}
 
-	return 0;
+	return -1;
 }
 
 const char* STDCALL jaspRCPP_saveImage(const char *name, const char *type, const int height, const int width, const int ppi)
@@ -141,6 +158,13 @@ const char* STDCALL jaspRCPP_saveImage(const char *name, const char *type, const
 }
 
 } // extern "C"
+
+const char* STDCALL jaspRCPP_getRConsoleOutput()
+{
+	static std::string output;
+	output = rinside_consoleLog->getConsoleOutput();
+	return output.c_str();
+}
 
 SEXP jaspRCPP_requestTempFileNameSEXP(SEXP extension)
 {
@@ -209,6 +233,11 @@ void jaspRCPP_returnDataFrame(Rcpp::DataFrame frame)
 		}
 		std::cout << std::flush;
 	}
+}
+
+void jaspRCPP_returnString(SEXP Message)
+{
+	std::cout << "A message from R: " << (std::string)((Rcpp::String)Message) << "\n" << std::flush;
 }
 
 RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns, int *colMax)

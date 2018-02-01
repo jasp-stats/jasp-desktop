@@ -23,6 +23,7 @@
 #include "jasprcpp_interface.h"
 #include "../JASP-Common/base64.h"
 
+
 // Calls From R
 Rcpp::DataFrame jaspRCPP_readFullDataSet();
 Rcpp::DataFrame jaspRCPP_readFilterDataSet();
@@ -35,6 +36,7 @@ SEXP jaspRCPP_requestTempFileNameSEXP(SEXP extension);
 SEXP jaspRCPP_requestStateFileNameSEXP();
 
 void jaspRCPP_returnDataFrame(Rcpp::DataFrame frame);
+void jaspRCPP_returnString(SEXP Message);
 
 // This is a copy of column.h!!!!
 enum ColumnType { ColumnTypeUnknown = -1, ColumnTypeScale = 0, ColumnTypeOrdinal, ColumnTypeNominal, ColumnTypeNominalText};
@@ -43,5 +45,7 @@ RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, S
 
 void jaspRCPP_makeFactor(Rcpp::IntegerVector &v, char** levels, int nbLevels, bool ordinal = false);
 void freeRBridgeColumnType(RBridgeColumnType* columnsRequested, int colMax);
+
+
 
 #endif // JASPRCPP_H

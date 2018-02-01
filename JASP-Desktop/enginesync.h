@@ -66,6 +66,7 @@ public:
 signals:
 	void engineTerminated();
 	void filterUpdated();
+	void filterErrorTextChanged(QString error);
 
 private:
 

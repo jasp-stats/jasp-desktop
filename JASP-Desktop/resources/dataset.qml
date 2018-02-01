@@ -25,9 +25,10 @@ Rectangle {
     //Fancy pants curvy gradient for the columnheaders and rownumbers.
     Gradient{
         id: headersGradient
-        GradientStop { position: 0.4; color: systemPalette.light }
-        GradientStop { position: 0.6; color: systemPalette.midlight }
-        GradientStop { position: 0.9; color: systemPalette.mid }
+        GradientStop { position: 0.2; color: systemPalette.midlight }
+        GradientStop { position: 0.5; color: systemPalette.light }
+        GradientStop { position: 0.9; color: systemPalette.midlight }
+        GradientStop { position: 1.0; color: systemPalette.mid }
 
     }
 
@@ -102,12 +103,13 @@ Rectangle {
         orientation: Qt.Vertical
         visible: false
 
-
         Rectangle {
             id: variablesWindow
             color: systemPalette.window
             height: 200
             visible: false
+
+            Layout.minimumHeight: 100
 
             property int chosenColumn: -1
             readonly property bool opened: chosenColumn != -1
@@ -328,6 +330,7 @@ Rectangle {
                                 color: colorItem
                                 text: textItem
 
+
                                 anchors.fill: parent
                                 function acceptChanges() { levelsTableModel.setData(levelsTableModel.index(rowItem, colItem), text) }
                                 onEditingFinished: acceptChanges()
@@ -339,7 +342,7 @@ Rectangle {
                             Text {
                                 color: colorItem
                                 text: textItem
-
+                                elide: Text.ElideMiddle
                                 anchors.fill: parent
 
                             }
@@ -395,14 +398,18 @@ Rectangle {
             }
         }
 
-
-        Rectangle {
+        SplitView
+        {
             id: filterWindow
-            color: systemPalette.base
-            height: 100
+
+            property int minimumHeightTextBoxes: 50
+            property string lastAppliedFilter: ""
+            height: filterWindow.minimumHeightTextBoxes * 3
+            Layout.minimumHeight: filterWindow.minimumHeightTextBoxes + applyFilter.implicitHeight + (filterError.visible ? filterWindow.minimumHeightTextBoxes : 0 )
+            orientation: Qt.Vertical
             visible: false
-            border.width: 1
-            border.color: systemPalette.mid
+
+
 
             property bool opened: false
 
@@ -415,7 +422,13 @@ Rectangle {
 
             function sendFilter()
             {
-                engineSync.sendFilter(filterEdit.text)
+                engineSync.sendFilter(lastAppliedFilter)
+            }
+
+            function applyAndSendFilter(newFilter)
+            {
+                lastAppliedFilter = newFilter
+                sendFilter()
             }
 
             states: [
@@ -431,33 +444,75 @@ Rectangle {
                 }
             ]
 
+            Rectangle {
+                id: filterEditPlusButton
+                color: systemPalette.base
+
+                border.width: 1
+                border.color: systemPalette.mid
+                Layout.fillHeight: true
+                Layout.minimumHeight: applyFilter.height + filterWindow.minimumHeightTextBoxes
+
+                TextArea
+                {
+
+                    id: filterEdit
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: applyFilter.top
+                }
+
+                Button
+                {
+                    id: applyFilter
+                    text: "Apply Filter"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.bottom: parent.bottom
+                    onClicked: filterWindow.applyAndSendFilter(filterEdit.text)
+
+                }
+
+                Button
+                {
+                    id: closeFilterButton
+                    iconSource: "../images/cross.png"
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    onClicked: filterWindow.toggle()
+
+                }
+            }
+
             TextArea
             {
-                id: filterEdit
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: applyFilter.top
-                anchors.bottomMargin: 4
+                id: filterError
+                textColor: "red"
+                readOnly: true
+                text: filterErrorText
+                Layout.minimumHeight: Math.min(filterError.contentHeight, filterWindow.minimumHeightTextBoxes)
+
+                states: [
+                    State {
+                        name: "closed"
+                        PropertyChanges { target: filterError; visible: false; height: 0 }
+                        when: filterError.text.length == 0
+                    },
+                    State {
+                        name: "opened"
+                        PropertyChanges { target: filterError; visible: true; height: Math.min(filterError.contentHeight, filterWindow.minimumHeightTextBoxes)}
+
+                        when: filterError.text.length > 0
+                    }
+                ]
             }
 
-            Button
-            {
-                id: applyFilter
-                text: "Apply Filter"
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.bottom: parent.bottom
-
-                onClicked: filterWindow.sendFilter()
-
-            }
 
         }
 
         Rectangle
         {
-            Layout.fillWidth: true
-
+            Layout.fillHeight: true
 
             Rectangle
             {
@@ -512,7 +567,7 @@ Rectangle {
 
                 anchors.fill: parent
 
-                alternatingRowColors: true
+                alternatingRowColors: false
                 property bool drawCellBorders: true
 
 
@@ -575,7 +630,15 @@ Rectangle {
                     Rectangle
                     {
                         id: colHeader
-                        gradient: headersGradient
+                        //gradient: headersGradient
+                        LinearGradient
+                        {
+                            cached: true
+                            anchors.fill: parent
+                            start: Qt.point(colHeader.width * 0.5, 0)
+                            end: Qt.point(colHeader.width * 0.5, colHeader.height)
+                            gradient: headersGradient
+                        }
 
                         /*readonly property bool isFirst: styleData.column == 0
                         x: isFirst ? headerBorderRectangle.x - dataSetTableView.extraSpaceLeft : headerBorderRectangle.x
@@ -620,16 +683,19 @@ Rectangle {
 
 
                             Popup {
-                                id: popupIcons; modal: true; focus: true; padding: 5
+                                id: popupIcons; modal: true; focus: true;
+                                padding: 2 * 1
                                 y: colIcon.y + colIcon.height
                                 x: colIcon.x - (rootDataset.iconDim * 0.5)
 
                                 closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
 
+                                TextMetrics { id: nominalTextMeasure; text: "Nominal"}
+
                                 Column
                                 {
                                     width: parent.width
-                                    spacing: popupIcons.padding
+                                    spacing: popupIcons.padding / 2
 
                                     Repeater{
                                         id: iconRepeater
@@ -639,9 +705,14 @@ Rectangle {
                                         {
                                             id: columnTypeChangeIcon
                                             iconSource: iconRepeater.model[index]
-                                            width: rootDataset.iconDim * 1.5
-                                            readonly property bool showThisTypeIcon:  !((index == colIcon.myColumnType) || (index == columnTypes.columnTypeNominal && colIcon.myColumnType == columnTypes.columnTypeNominalText))
+                                            width: rootDataset.iconDim * 2.5 + nominalTextMeasure.width
+                                            //anchors.left: parent.left
+                                            //anchors.right: parent.right
+
+                                            readonly property bool showThisTypeIcon: true // !((index == colIcon.myColumnType) || (index == columnTypes.columnTypeNominal && colIcon.myColumnType == columnTypes.columnTypeNominalText))
                                             height: showThisTypeIcon ? rootDataset.iconDim * 1.5 : 0
+
+                                            text: index == columnTypes.columnTypeScale ? "Scale" : ( index == columnTypes.columnTypeOrdinal ? "Ordinal" : "Nominal")
 
 
                                             onClicked: columnTypeChosen()
@@ -693,33 +764,42 @@ Rectangle {
 
                     readonly property bool rowIsUsed: dataSetModel.getRowFilter(styleData.row)
                     //z: (rowIsUsed ? 1 : 0)
+                    z: 10
 
                     Rectangle
                     {
                         id: borderRectangle
                         color: "transparent"
-                        border.width:  (itemItem.rowIsUsed & dataSetTableView.drawCellBorders) ? 1 : 0
+                        border.width:   dataSetTableView.drawCellBorders ? 1 : 0
                         border.color:  systemPalette.mid
                         radius: 0
                         width: parent.width + 1
                         height: parent.height + 1
                         x: parent.x - 1
                         y: parent.y - 1
+                        visible: itemItem.rowIsUsed
 
+                    }
 
-                        Text {
-                            id: itemText
-                            text: styleData.value
-                            color: itemItem.rowIsUsed ? systemPalette.text : systemPalette.mid
-                            elide: styleData.elideMode
-                            horizontalAlignment: styleData.textAlignment
-                            leftPadding: 4
+                    Text {
+                        id: itemText
+                        text: styleData.value
+                        color: itemItem.rowIsUsed ? systemPalette.text : systemPalette.mid
+                        elide: styleData.elideMode
+                        horizontalAlignment: styleData.textAlignment
+                        leftPadding: 4
 
-                        }
                     }
                 }
 
-                rowDelegate: Rectangle { color: styleData.selected ? systemPalette.dark :  (styleData.alternate && dataSetModel.getRowFilter(styleData.row) ? systemPalette.midlight : systemPalette.light)  }
+                rowDelegate: Item
+                {
+                    Rectangle
+                    {
+                        color: styleData.selected ? systemPalette.dark :  (styleData.alternate && dataSetModel.getRowFilter(styleData.row) ? systemPalette.midlight : systemPalette.light)
+                        height: parent.height - 1
+                    }
+                }
 
                 rowNumberDelegate: Rectangle
                 {

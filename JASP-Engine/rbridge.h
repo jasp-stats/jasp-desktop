@@ -30,9 +30,9 @@
 #include <map>
 #include <unordered_set>
 #include <boost/function.hpp>
-
 #include "../JASP-Common/dataset.h"
 #include "../JASP-R-Interface/jasprcpp_interface.h"
+#include "r_functionwhitelist.h"
 
 /* The R Bridge provides functions to the R analyses;
  * i.e. functions to read the data set from shared memory
@@ -71,6 +71,7 @@ extern "C" {
 
 	std::vector<bool>	rbridge_applyFilter(std::string & filterCode);
 	std::string			rbridge_encodeColumnNamesToBase64(std::string & filterCode);
+	std::string			rbridge_decodeColumnNamesFromBase64(std::string & messageBase64);
 	bool				rbridge_columnUsedInFilter(const char * columnName);
 	void				rbridge_findColumnsUsedInDataSet();
 
