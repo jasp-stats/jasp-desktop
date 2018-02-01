@@ -1,4 +1,4 @@
-import QtQuick.Controls 2.1
+import QtQuick.Controls 2.3
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Controls 1.4
 import QtQuick 2.7
@@ -401,6 +401,7 @@ Rectangle {
         SplitView
         {
             id: filterWindow
+            objectName: "filterWindow"
 
             property int minimumHeightTextBoxes: 50
             property string lastAppliedFilter: ""
@@ -467,8 +468,10 @@ Rectangle {
                 {
                     id: applyFilter
                     text: "Apply Filter"
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.left: parent.left
+                    anchors.right: closeFilterButton.left
                     anchors.bottom: parent.bottom
+
                     onClicked: filterWindow.applyAndSendFilter(filterEdit.text)
 
                 }
@@ -479,8 +482,8 @@ Rectangle {
                     iconSource: "../images/cross.png"
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
-                    onClicked: filterWindow.toggle()
 
+                    onClicked: filterWindow.toggle()
                 }
             }
 
@@ -516,13 +519,13 @@ Rectangle {
 
             Rectangle
             {
+                id: filterToggleButton
+
                 width: dataSetTableView.extraSpaceLeft + 1
                 height: rootDataset.headerHeight + 1
                 anchors.left: parent.left
                 anchors.top: parent.top
                 z: 5
-
-
 
                 LinearGradient
                 {
@@ -554,10 +557,22 @@ Rectangle {
 
                 MouseArea
                 {
+                    id: filterToggleButtonMouseArea
                     anchors.fill: parent
-
                     onClicked: filterWindow.toggle()
+                    hoverEnabled: true
+                    onEntered: filterToggleButtonToolTip.visible = true
+                    onExited: filterToggleButtonToolTip.visible = false
                 }
+
+                ToolTip
+                {
+                     id: filterToggleButtonToolTip
+                     text: "Toggle visibilty of advanced data-filtering-functionality"
+                    // target: filterToggleButton
+                     visible: false
+                 }
+
             }
 
             TableViewJasp {

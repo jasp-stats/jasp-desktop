@@ -39,8 +39,6 @@ char** rbridge_getLabels(const vector<string> &levels, int &nbLevels);
 
 void rbridge_init()
 {
-	std::cout << R_FunctionWhiteList::returnOrderedWhiteList() << std::flush;
-
 	rbridge_dataSet = NULL;
 	rbridge_callback = NULL;
 	rbridge_fileNameSource = NULL;

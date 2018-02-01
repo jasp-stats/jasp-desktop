@@ -95,7 +95,7 @@ private:
 
 	AsyncLoader _loader;
 	AsyncLoaderThread _loaderThread;
-	QObject * qmlProgressBar = NULL;
+	QObject *qmlProgressBar = NULL, *qmlFilterWindow = NULL;
 
 	bool _inited;
 	bool _applicationExiting = false;
@@ -195,6 +195,7 @@ private slots:
 	void setProgressStatus(QString status, int progress);
 
 	void setFilterErrorText(QString error);
+	void applyAndSendFilter(QString filter);
 
 };
 

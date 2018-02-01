@@ -193,7 +193,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(levelsTableView, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
 
 	qmlProgressBar = ui->quickWidget_Data->rootObject()->findChild<QObject*>("progressBarHolder");
-
+	qmlFilterWindow = ui->quickWidget_Data->rootObject()->findChild<QObject*>("filterWindow");
 
 	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(fatalError()));
 
@@ -1145,7 +1145,7 @@ void MainWindow::populateUIfromDataSet()
 	_tableModel->setDataSet(_package->dataSet);
 	_levelsTableModel->setDataSet(_package->dataSet);
 	triggerQmlColumnReload();
-
+	applyAndSendFilter(QString::fromStdString(_package->dataFilter));
 
 	hideProgress();
 
@@ -1841,4 +1841,13 @@ void MainWindow::setProgressStatus(QString status, int progress)
 	QMetaObject::invokeMethod(qmlProgressBar, "setStatus", Q_ARG(QVariant, QVariant(status)), Q_ARG(QVariant, QVariant(progress)));
 }
 
-void MainWindow::setFilterErrorText(QString error) { ui->quickWidget_Data->rootContext()->setContextProperty("filterErrorText", error); }
+void MainWindow::setFilterErrorText(QString error)
+{
+	ui->quickWidget_Data->rootContext()->setContextProperty("filterErrorText", error);
+}
+
+void MainWindow::applyAndSendFilter(QString filter)
+{
+	QMetaObject::invokeMethod(qmlFilterWindow, "applyAndSendFilter", Q_ARG(QVariant, QVariant(filter)));
+
+}

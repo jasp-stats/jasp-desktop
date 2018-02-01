@@ -346,13 +346,11 @@ void Engine::sendResults()
 
 void Engine::sendFilterResult(std::vector<bool> filterResult)
 {
-	std::cout << "sendFilterResult!\n" << std::flush;
-
 	Json::Value filterResponse = Json::Value(Json::objectValue);
+
 	Json::Value filterResultList = Json::Value(Json::arrayValue);
 	for(bool f : filterResult)
 		filterResultList.append(f);
-
 	filterResponse["filterResult"] = filterResultList;
 
 	std::string msg = filterResponse.toStyledString();
@@ -424,8 +422,6 @@ string Engine::callback(const string &results, int progress)
 
 DataSet * Engine::provideDataSet()
 {
-	std::cout<< "entered Engine::provideDataSet!\n" << std::flush;
-
 	return SharedMemory::retrieveDataSet();
 }
 

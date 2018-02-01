@@ -324,10 +324,13 @@ void EngineSync::process()
 
 void EngineSync::processNewFilterResult(std::vector<bool> filterResult)
 {
+	_package->dataFilter = dataFilter.toStdString(); //remember the filter that was last used and actually gave results.
 	_package->dataSet->setFilterVector(filterResult);
+
 	emit filterUpdated();
 	emit filterErrorTextChanged("");
 }
+
 
 
 void EngineSync::sendFilter(QString filter)

@@ -89,7 +89,7 @@ private:
 
 	std::string _memoryName;
 	std::string _engineInfo;	
-	QString dataFilter = "";
+	QString dataFilter;
 
 	void processNewFilterResult(std::vector<bool> filterResult);
 
