@@ -51,6 +51,7 @@
 #include "analysisforms/Common/ttestindependentsamplesform.h"
 #include "analysisforms/Common/ttestonesampleform.h"
 #include "analysisforms/Common/ttestpairedsamplesform.h"
+#include "analysisforms/Common/multinomialtestform.h"
 
 #include "analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.h"
 #include "analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
@@ -66,7 +67,7 @@
 #include "analysisforms/Network/networkanalysisform.h"
 
 #include "analysisforms/MetaAnalysis/classicalmetaanalysisform.h"
-#include "analysisforms/MetaAnalysis/multinomialtestform.h"
+
 
 ///// 1-analyses headers
 

@@ -33,9 +33,9 @@ AnovaRepeatedMeasuresBayesian <- function(dataset = NULL, options, perform = "ru
 	env <- environment()
 
 	.callbackBFpackage <- function(...) {
-	
+
 		response <- .callbackBayesianLinearModels()
-		
+
 		if(response$status == "ok")
 			return(as.integer(0))
 
@@ -45,28 +45,28 @@ AnovaRepeatedMeasuresBayesian <- function(dataset = NULL, options, perform = "ru
 	.callbackBayesianLinearModels <- function(results = NULL, progress = NULL) {
 
 		response <- callback(results, progress)
-		
+
 		if (response$status == "changed") {
 			new.options <- response$options
-		
+
 			bs.factors <- new.options$betweenSubjectFactors
 			rm.factors <- new.options$repeatedMeasuresFactors
 			new.options$fixedFactors <- c(rm.factors, bs.factors)
 
-			new.options$modelTerms[[length (new.options$modelTerms) + 1]] <- 
+			new.options$modelTerms[[length (new.options$modelTerms) + 1]] <-
 				list(components = "subject", isNuisance = TRUE)
 			new.options$dependent <- "dependent"
 			new.options$randomFactors <- "subject"
 
 			response$options <- new.options
-			
+
 			change <- .diff(env$options, response$options)
 
 			env$options <- new.options
 
-			if (change$modelTerms || 
-				change$betweenSubjectFactors || 
-				change$covariates || 
+			if (change$modelTerms ||
+				change$betweenSubjectFactors ||
+				change$covariates ||
 				change$repeatedMeasuresFactors ||
 				change$repeatedMeasuresCells ||
 				change$priorFixedEffects ||
@@ -75,10 +75,10 @@ AnovaRepeatedMeasuresBayesian <- function(dataset = NULL, options, perform = "ru
 				change$sampleMode ||
 				change$fixedSamplesNumber)
 				return(response)
-				
+
 			response$status <- "ok"
 		}
-		
+
 		return(response)
 	}
 
@@ -90,20 +90,20 @@ AnovaRepeatedMeasuresBayesian <- function(dataset = NULL, options, perform = "ru
 	meta[[3]] <- list(name = "effects", type = "table")
 	meta[[4]] <- list(name = "estimates", type = "table")
 	meta[[5]] <- list(name = "posthoc", type = "collection", meta = "table")
-	
+
 	wantsTwoPlots <- options$plotSeparatePlots
 	if (wantsTwoPlots == "") {
 		meta[[6]] <- list(
-			name = "descriptivesObj", type = "object", 
+			name = "descriptivesObj", type = "object",
 			meta = list(list(name = "descriptivesTable", type = "table"), list(name = "descriptivesPlot", type = "image"))
 			)
 	} else {
 		meta[[6]] <- list(
-			name = "descriptivesObj", type = "object", 
+			name = "descriptivesObj", type = "object",
 			meta = list(list(name = "descriptivesTable", type = "table"), list(name = "descriptivesPlot", type = "collection", meta = "image"))
-			)	
+			)
 	}
-	
+
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian Repeated Measures ANOVA"
 
@@ -119,9 +119,9 @@ AnovaRepeatedMeasuresBayesian <- function(dataset = NULL, options, perform = "ru
 	state <- .retrieveState()
 	if (! is.null(state)) {
 		change <- .diff(options, state$options)
-		if (! base::identical(change, FALSE) && (change$modelTerms || 
-				change$betweenSubjectFactors || 
-				change$covariates || 
+		if (! base::identical(change, FALSE) && (change$modelTerms ||
+				change$betweenSubjectFactors ||
+				change$covariates ||
 				change$repeatedMeasuresFactors ||
 				change$repeatedMeasuresCells ||
 				change$priorFixedEffects ||
@@ -134,11 +134,11 @@ AnovaRepeatedMeasuresBayesian <- function(dataset = NULL, options, perform = "ru
 			perform <- "run" #FIXME other tables need the init phase.
 		}
 	}
-	
+
 	if (perform2 != perform) { # we changed from init to run and need the full dataset
 		dataset <- .readBayesianRepeatedMeasuresDataOptions(NULL, originalOptions, "run")$dataset
 	}
-	
+
 if (is.null(state)) {
 ##STATUS (INITIAL)
 	status <- .setBayesianLinearModelStatus(dataset, options, perform)
@@ -146,10 +146,10 @@ if (is.null(state)) {
 
 ## MODEL
 	model.object <- .theBayesianLinearModels(dataset, options, perform, status, .callbackBayesianLinearModels, .callbackBFpackage, results, analysisType = "RM-ANOVA")
-	
+
 	if (is.null(model.object)) # analysis cancelled by the callback
 		return()
-	
+
 	model <- model.object$model
 	status <- model.object$status
 } else {
@@ -168,10 +168,10 @@ if (is.null(state)) {
 
 ## Posterior Estimates
 	results[["estimates"]] <- .theBayesianLinearModelEstimates(model, options, perform, status)
-	
+
 ## Post Hoc Table
 	results[["posthoc"]] <- .anovaNullControlPostHocTable(dataset, options, perform, status, analysisType = "RM-ANOVA")
-		
+
 ## Descriptives Table
 	descriptivesDataset <- .readBayesianRepeatedMeasuresShortData(options, perform)
 	descriptivesTable <- .rmAnovaDescriptivesTable(descriptivesDataset, options, perform, status, stateDescriptivesTable = NULL)[["result"]]
@@ -182,31 +182,31 @@ if (is.null(state)) {
 	options$confidenceIntervalInterval <- options$plotCredibleIntervalInterval
 	plotOptionsChanged <- isTRUE( identical(wantsTwoPlots, options$plotSeparatePlots) == FALSE )
 	descriptivesPlot <- .rmAnovaDescriptivesPlot(descriptivesDataset, options, perform, status, stateDescriptivesPlot = NULL)[["result"]]
-	
+
 	if (length(descriptivesPlot) == 1) {
 		results[["descriptivesObj"]] <- list(
-			title = "Descriptives", descriptivesTable = descriptivesTable, 
+			title = "Descriptives", descriptivesTable = descriptivesTable,
 			descriptivesPlot = descriptivesPlot[[1]]
 			)
-			
-		if (plotOptionsChanged) 
+
+		if (plotOptionsChanged)
 			results[[".meta"]][[6]][["meta"]][[2]] <- list(name = "descriptivesPlot", type = "image")
-			
-	} else {	
+
+	} else {
 		results[["descriptivesObj"]] <- list(
-			title = "Descriptives", descriptivesTable = descriptivesTable, 
+			title = "Descriptives", descriptivesTable = descriptivesTable,
 			descriptivesPlot = list(collection = descriptivesPlot, title = "Descriptives Plots")
 			)
-			
+
 		if (plotOptionsChanged)
 			results[[".meta"]][[6]][["meta"]][[2]] <- list(name = "descriptivesPlot", type = "collection", meta = "image")
-			
+
 	}
 
 	keepDescriptivesPlot <- lapply(descriptivesPlot, function(x) x$data)
-	
+
 	new.state <- list(options = options, model = model, status = status, keep = keepDescriptivesPlot)
-	
+
 	if (perform == "run" || ! status$ready || ! is.null(state)) {
 		return(list(results = results, status = "complete", state = new.state))
 	} else {
