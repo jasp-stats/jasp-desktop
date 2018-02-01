@@ -165,9 +165,12 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
     f <- dataset[[.v(fact)]]
     f <- f[!is.na(f)]
 
-    if (options$counts != ""){
+    if (options$counts != "") {
       # convert to "regular" fact
       c <- dataset[[.v(options$counts)]]
+      if (length(c) != length(levels(f))) {
+        .quitAnalysis("Invalid counts: the number of counts does not equal the number of categories. Check your count dataset!")
+      }
       f <- factor(rep(f, c), levels = levels(f))
     }
 
