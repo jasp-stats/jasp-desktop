@@ -58,6 +58,8 @@ extern "C" {
 	void rbridge_setDataSetSource(boost::function<DataSet *()> source);
 	std::string rbridge_run(const std::string &name, const std::string &title, bool &requiresInit, const std::string &dataKey, const std::string &options, const std::string &resultsMeta, const std::string &stateKey, const std::string &perform = "run", int ppi = 96, RCallback callback = NULL);
 	std::string rbridge_saveImage(const std::string &name, const std::string &type, const int &height, const int &width, const int ppi = 96);
+	std::string rbridge_editImage(const std::string &name, const std::string &type, const int &height, const int &width, const int ppi = 96);
+
 	std::string rbridge_check();
 
 	void freeRBridgeColumns(RBridgeColumn *columns, int colMax);

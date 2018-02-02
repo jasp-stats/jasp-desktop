@@ -87,6 +87,32 @@ void Engine::saveImage()
 
 }
 
+void Engine::editImage()
+{
+    if (_status != editImg)
+        return;
+
+    vector<string> tempFilesFromLastTime = tempfiles_retrieveList(_analysisId);
+
+    RCallback callback = boost::bind(&Engine::callback, this, _1, _2);
+
+    std::string name = _imageOptions.get("name", Json::nullValue).asString();
+		std::string type = _imageOptions.get("type", Json::nullValue).asString();
+    int height = _imageOptions.get("height", Json::nullValue).asInt();
+    int width = _imageOptions.get("width", Json::nullValue).asInt();
+    std::string result = rbridge_editImage(name, type, height, width, _ppi);
+
+    _status = complete;
+    Json::Reader parser;
+    parser.parse(result, _analysisResults, false);
+    _progress = -1;
+    sendResults();
+    _status = empty;
+
+    //tempfiles_deleteList(tempFilesFromLastTime);
+
+}
+
 void Engine::runAnalysis()
 {
 	if (_status == empty || _status == aborted)
@@ -198,6 +224,8 @@ void Engine::run()
 			break;
 		if (_status == saveImg)
 			saveImage();
+        else if (_status == editImg)
+            editImage();
 		else
 			runAnalysis();
 
@@ -246,11 +274,13 @@ bool Engine::receiveMessages(int timeout)
 				_status = toRun;
 			else if (perform == "saveImg")
 				_status = saveImg;
+            else if (perform == "editImg")
+                _status = editImg;
 			else
 				_status = error;
 		}
 
-		if (_status == toInit || _status == toRun || _status == changed || _status == saveImg)
+		if (_status == toInit || _status == toRun || _status == changed || _status == saveImg || _status == editImg)
 		{
 			_analysisName = jsonRequest.get("name", Json::nullValue).asString();
 			_analysisTitle = jsonRequest.get("title", Json::nullValue).asString();

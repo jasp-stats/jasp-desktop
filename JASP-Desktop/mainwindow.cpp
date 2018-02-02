@@ -179,6 +179,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(_analyses, SIGNAL(analysisResultsChanged(Analysis*)), this, SLOT(analysisResultsChangedHandler(Analysis*)));
 	connect(_analyses, SIGNAL(analysisImageSaved(Analysis*)), this, SLOT(analysisImageSavedHandler(Analysis*)));
+    connect(_analyses, SIGNAL(analysisImageEdited(Analysis*)), _resultsJsInterface, SLOT(analysisImageEditedHandler(Analysis*)));
 	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), ui->backStage, SLOT(analysisAdded(Analysis*)));
 
 	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
@@ -295,7 +296,6 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 	QMainWindow::resizeEvent(event);
 	adjustOptionsPanelWidth();
 }
-
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
@@ -608,6 +608,23 @@ void MainWindow::analysisImageSavedHandler(Analysis *analysis)
 	}
 }
 
+void MainWindow::analysisEditImageHandler(int id, QString options)
+{
+
+    Analysis *analysis = _analyses->get(id);
+    if (analysis == NULL)
+        return;
+
+    string utf8 = fq(options);
+    Json::Value root;
+    Json::Reader parser;
+    parser.parse(utf8, root);
+
+    analysis->editImage(analysis, root);
+
+    return;
+
+}
 
 AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 {

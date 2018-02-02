@@ -94,6 +94,7 @@ void ResultsJsInterface::showAnalysesMenu(QString options)
 	QIcon _collapseIcon = QIcon(":/icons/collapse.png");
 	QIcon _expandIcon = QIcon(":/icons/expand.png");
 	QIcon _saveImageIcon = QIcon(":/icons/document-save-as.png");
+	QIcon _editImageIcon = QIcon(":/icons/editImage.png");
 
 	_analysisMenu->clear();
 
@@ -126,6 +127,12 @@ void ResultsJsInterface::showAnalysesMenu(QString options)
 	{
 		_analysisMenu->addAction(_saveImageIcon, "Save Image As", this, SLOT(saveImage()));
 	}
+#ifdef QT_DEBUG
+    if (menuOptions["hasEditImg"].asBool())
+    {
+        _analysisMenu->addAction(_editImageIcon, "Edit Image", this, SLOT(editImage()));
+    }
+#endif
 
 	if (menuOptions["hasNotes"].asBool())
 	{
@@ -203,6 +210,11 @@ void ResultsJsInterface::citeSelected()
 void ResultsJsInterface::saveImage()
 {
 	runJavaScript("window.saveImageClicked();");
+}
+
+void ResultsJsInterface::editImage()
+{
+    runJavaScript("window.editImageClicked();");
 }
 
 void ResultsJsInterface::noteSelected()
@@ -304,6 +316,16 @@ void ResultsJsInterface::saveTempImage(int id, QString path, QByteArray data)
 	runJavaScript(eval);
 }
 
+void ResultsJsInterface::analysisImageEditedHandler(Analysis *analysis)
+{
+	Json::Value imgJson = analysis->getImgResults();
+	QString	results = tq(imgJson.toStyledString());   
+	results = escapeJavascriptString(results);
+	results = "window.modifySelectedImage(" + QString::number(analysis->id()) + ", JSON.parse('" + results + "'));";
+	runJavaScript(results);
+	
+    return;
+}
 
 void ResultsJsInterface::menuHidding()
 {
@@ -338,6 +360,11 @@ void ResultsJsInterface::analysisSelected(int id)
 void ResultsJsInterface::analysisSaveImage(int id, QString options)
 {
 	_mainWindow->analysisSaveImageHandler(id, options);
+}
+
+void ResultsJsInterface::analysisEditImage(int id, QString options)
+{
+	_mainWindow->analysisEditImageHandler(id, options);
 }
 
 void ResultsJsInterface::removeAnalysisRequest(int id)

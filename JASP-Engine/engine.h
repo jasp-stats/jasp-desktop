@@ -50,6 +50,7 @@ private:
 	bool receiveMessages(int timeout = 0);
 	void runAnalysis();
 	void saveImage();
+    void editImage();
 	void sendResults();
 	std::string callback(const std::string &results, int progress);
 
@@ -57,7 +58,7 @@ private:
 	void provideTempFileName(const std::string &extension, std::string &root, std::string &relativePath);
 	void provideStateFileName(std::string &root, std::string &relativePath);
 
-	typedef enum { empty, toInit, initing, inited, toRun, running, changed, complete, error, exception, aborted, stopped, saveImg } Status;
+	typedef enum { empty, toInit, initing, inited, toRun, running, changed, complete, error, exception, aborted, stopped, saveImg, editImg} Status;
 
 	Status _status;
 
