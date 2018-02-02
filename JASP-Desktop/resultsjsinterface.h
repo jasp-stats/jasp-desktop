@@ -59,6 +59,7 @@ signals:
 public slots:
 	void setExactPValuesHandler(bool exact);
 	void setFixDecimalsHandler(QString numDecimals);
+	void analysisImageEditedHandler(Analysis *analysis);
 	void showAnalysesMenu(QString options);
 	void simulatedMouseClick(int x, int y, int count);
 	void analysisUnselected();
@@ -69,6 +70,7 @@ public slots:
 	void updateUserData(int id, QString key);
 	void saveTextToFile(const QString &filename, const QString &data);
 	void analysisSaveImage(int id, QString options);
+	void analysisEditImage(int id, QString options);
 	void removeAnalysisRequest(int id);
 	void pushImageToClipboard(const QByteArray &base64, const QString &html);
 	void pushToClipboard(const QString &mimeType, const QString &data, const QString &html);
@@ -106,6 +108,7 @@ private slots:
 	void copySelected();
 	void citeSelected();
 	void saveImage();
+	void editImage();
 	void noteSelected();
 };
 

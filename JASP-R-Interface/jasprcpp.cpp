@@ -112,6 +112,24 @@ const char* STDCALL jaspRCPP_saveImage(const char *name, const char *type, const
 	return staticResult.c_str();
 }
 
+const char* STDCALL jaspRCPP_editImage(const char *name, const char *type, const int height, const int width, const int ppi) {
+	
+	RInside &rInside = rinside->instance();
+
+	rInside["plotName"] = name;
+	rInside["type"] = type;
+	rInside["height"] = height;
+	rInside["width"] = width;
+	rInside[".ppi"] = ppi;
+
+	SEXP result = rinside->parseEvalNT("editImage(plotName,type,height,width)");
+	static string staticResult;
+	staticResult = Rf_isString(result) ? Rcpp::as<string>(result) : NullString;
+
+	return staticResult.c_str();
+
+}
+
 } // extern "C"
 
 SEXP jaspRCPP_requestTempFileNameSEXP(SEXP extension)
