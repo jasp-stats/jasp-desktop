@@ -91,7 +91,7 @@ private:
 	int _slaveNo = 0;
 
 	bool filterChanged = false;
-	std::string filter = "*";//data.frame(c(1,2,3), c(\"A\", \"B\", \"C\")))";// ".readFullDatasetToEndNative()";
+	std::string filter = "genFilter", generatedFilter = "";
 };
 
 #endif // ENGINE_H

@@ -60,7 +60,7 @@ public:
 
 	void setPPI(int ppi);
 
-	Q_INVOKABLE void sendFilter(QString filter);
+	Q_INVOKABLE void sendFilter(QString generatedFilter, QString filter);
 	Q_INVOKABLE QString getFilter() { return dataFilter; }
 
 signals:

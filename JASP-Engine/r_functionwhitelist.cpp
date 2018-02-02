@@ -128,6 +128,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"rbinom",
 	"rcauchy",
 	"rchisq",
+	"rep",
 	"reshape",
 	"residuals",
 	"return",

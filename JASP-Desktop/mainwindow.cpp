@@ -168,20 +168,26 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	_tableModel = new DataSetTableModel();
 	_levelsTableModel = new LevelsTableModel(this);
+	_labelFilterGenerator = new labelFilterGenerator(_package, this);
 
-	connect(_levelsTableModel, SIGNAL(refreshConnectedModels()), _tableModel, SLOT(refresh()));
-	connect(_levelsTableModel, SIGNAL(resizeValueColumn()), this, SLOT(resizeVariablesWindowValueColumn()));
+	connect(_levelsTableModel,		SIGNAL(refreshConnectedModels()),	_tableModel,			SLOT(refresh()));
+	connect(_levelsTableModel,		SIGNAL(resizeValueColumn()),		this,					SLOT(resizeVariablesWindowValueColumn()));
+	connect(_levelsTableModel,		SIGNAL(labelFilterChanged()),		_labelFilterGenerator,	SLOT(labelFilterChanged()));
+	connect(_labelFilterGenerator,	SIGNAL(setGeneratedFilter(QString)),this,					SLOT(setGeneratedFilter(QString)));
 
 	_analyses = new Analyses();
 	_engineSync = new EngineSync(_analyses, _package, this);
-	connect(_engineSync, SIGNAL(filterUpdated()), this, SLOT(refreshAllAnalyses()));
-	connect(_engineSync, SIGNAL(filterUpdated()), _tableModel, SLOT(refresh()));
-	connect(_engineSync, SIGNAL(filterErrorTextChanged(QString)), this, SLOT(setFilterErrorText(QString)));
+
+	connect(_engineSync, SIGNAL(filterUpdated()),					this,			SLOT(refreshAllAnalyses()));
+	connect(_engineSync, SIGNAL(filterUpdated()),					_tableModel,	SLOT(refresh()));
+	connect(_engineSync, SIGNAL(filterErrorTextChanged(QString)),	this,			SLOT(setFilterErrorText(QString)));
+	connect(_engineSync, SIGNAL(filterUpdated()),					this,			SLOT(onFilterUpdated()));
 
 	ui->quickWidget_Data->rootContext()->setContextProperty("dataSetModel", _tableModel);
 	ui->quickWidget_Data->rootContext()->setContextProperty("levelsTableModel", _levelsTableModel);
 	ui->quickWidget_Data->rootContext()->setContextProperty("engineSync", _engineSync);
 	ui->quickWidget_Data->rootContext()->setContextProperty("filterErrorText", QString(""));
+	ui->quickWidget_Data->rootContext()->setContextProperty("generatedFilter", QString(""));
 
 	ui->quickWidget_Data->setSource(QUrl(QString("qrc:///qml/dataset.qml")));
 
@@ -192,8 +198,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject * levelsTableView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("levelsTableView");
 	connect(levelsTableView, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
 
-	qmlProgressBar = ui->quickWidget_Data->rootObject()->findChild<QObject*>("progressBarHolder");
+	qmlProgressBar	= ui->quickWidget_Data->rootObject()->findChild<QObject*>("progressBarHolder");
 	qmlFilterWindow = ui->quickWidget_Data->rootObject()->findChild<QObject*>("filterWindow");
+	qmlStatusBar	= ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataStatusBar");
+
+
 
 	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(fatalError()));
 
@@ -1849,5 +1858,34 @@ void MainWindow::setFilterErrorText(QString error)
 void MainWindow::applyAndSendFilter(QString filter)
 {
 	QMetaObject::invokeMethod(qmlFilterWindow, "applyAndSendFilter", Q_ARG(QVariant, QVariant(filter)));
+	if(filter.length() > 0 && filter != "*" && filter != "genFilter")
+		QMetaObject::invokeMethod(qmlFilterWindow, "open");
 
+}
+
+void MainWindow::setStatusBarText(QString text)
+{
+	QMetaObject::invokeMethod(qmlStatusBar, "setText", Q_ARG(QVariant, QVariant(text)));
+}
+
+void MainWindow::onFilterUpdated()
+{
+	int TotalCount = _package->dataSet->rowCount(), TotalThroughFilter = _package->dataSet->filteredRowCount();
+	double PercentageThrough = 100.0 * ((double)TotalThroughFilter) / ((double)TotalCount);
+
+	std::stringstream ss;
+	if(TotalCount > TotalThroughFilter)
+		ss << "Data has " << TotalCount << " rows, " << TotalThroughFilter << " (~" << (int)round(PercentageThrough) << "%)  passed through filter to be used  in analyses";
+	else if(_package->dataFilter != "" && _package->dataFilter != "*")
+		ss.str("Filter passes everything");
+	else
+		ss.str("");
+
+	setStatusBarText(QString::fromStdString(ss.str()));
+}
+
+void MainWindow::setGeneratedFilter(QString genFilter)
+{
+	ui->quickWidget_Data->rootContext()->setContextProperty("generatedFilter", genFilter);
+	QMetaObject::invokeMethod(qmlFilterWindow, "sendFilter");
 }

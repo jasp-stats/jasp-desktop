@@ -69,7 +69,7 @@ extern "C" {
 	void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, int colMax);
 	void freeLabels(char** labels, int nbLabels);
 
-	std::vector<bool>	rbridge_applyFilter(std::string & filterCode);
+	std::vector<bool>	rbridge_applyFilter(std::string & filterCode, std::string & generatedFilterCode);
 	std::string			rbridge_encodeColumnNamesToBase64(std::string & filterCode);
 	std::string			rbridge_decodeColumnNamesFromBase64(std::string & messageBase64);
 	bool				rbridge_columnUsedInFilter(const char * columnName);

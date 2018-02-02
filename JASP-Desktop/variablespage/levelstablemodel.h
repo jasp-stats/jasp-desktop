@@ -36,12 +36,16 @@ public:
 
 	virtual QHash<int, QByteArray> roleNames() const OVERRIDE;
 	Q_INVOKABLE QStringList userRoleNames() const;
+	Q_INVOKABLE void setAllowFilterOnLabel(int row, bool newAllowValue);
+	Q_INVOKABLE bool allowFilter(int row);
 
 	void setDataSet(DataSet * thisDataSet) { _dataSet = thisDataSet; refresh(); }
+
 
 signals:
 	void refreshConnectedModels();
 	void resizeValueColumn();
+	void labelFilterChanged();
 
 private:
 	Column *_column;

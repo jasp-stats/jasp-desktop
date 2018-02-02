@@ -141,7 +141,8 @@ SOURCES += \
     $$PWD/resultsjsinterface.cpp \
     $$PWD/customwebenginepage.cpp \
     $$PWD/asyncloaderthread.cpp \
-    $$PWD/aboutdialogjsinterface.cpp
+    $$PWD/aboutdialogjsinterface.cpp \
+    $$PWD/variablespage/labelfiltergenerator.cpp
 
 
 HEADERS  += \
@@ -298,7 +299,8 @@ HEADERS  += \
     $$PWD/resultsjsinterface.h \
     $$PWD/customwebenginepage.h \
     $$PWD/asyncloaderthread.h \
-    $$PWD/aboutdialogjsinterface.h
+    $$PWD/aboutdialogjsinterface.h \
+    $$PWD/variablespage/labelfiltergenerator.h
 
 FORMS += \
     $$PWD/aboutdialog.ui \

@@ -223,6 +223,7 @@ bool Engine::receiveMessages(int timeout)
 		{
 			filterChanged = true;
 			filter = jsonRequest.get("filter", "").asString();
+			generatedFilter = jsonRequest.get("generatedFilter", "").asString();
 
 			return false; //This is not an analysis-run-request or anything like that, so quit like a not-message.
 		}
@@ -359,8 +360,6 @@ void Engine::sendFilterResult(std::vector<bool> filterResult)
 
 void Engine::sendFilterError(std::string errorMessage)
 {
-	std::cout << "sendFilterError!\n" << std::flush;
-
 	Json::Value filterResponse = Json::Value(Json::objectValue);
 
 	filterResponse["filterError"] = errorMessage;
@@ -441,7 +440,7 @@ void Engine::applyFilter()
 
 	try
 	{
-		std::vector<bool> filterResult = rbridge_applyFilter(filter);
+		std::vector<bool> filterResult = rbridge_applyFilter(filter, generatedFilter);
 
 		sendFilterResult(filterResult);
 
@@ -451,7 +450,7 @@ void Engine::applyFilter()
 	}
 	catch(filterException & e)
 	{
-		std::cout << "filtererror caught: " << e.what() << std::endl << std::flush;
+		//std::cout << "filtererror caught: " << e.what() << std::endl << std::flush;
 		if(std::string(e.what()).length() > 0)
 			sendFilterError(e.what());
 		else

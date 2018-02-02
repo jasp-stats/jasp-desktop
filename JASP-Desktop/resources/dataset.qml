@@ -11,6 +11,7 @@ Rectangle {
     color: systemPalette.window
     readonly property int iconDim: 16
     readonly property int headerHeight: 20
+    readonly property string defaultFilter: "genFilter"
 
     Item
     {
@@ -47,7 +48,7 @@ Rectangle {
         {
             id: loadingText
             horizontalAlignment: Text.AlignHCenter
-            text: "Say something about progress here ;)"
+            text: "Load some data or a .jasp file"
 
             anchors.left: parent.left
             anchors.right: parent.right
@@ -267,6 +268,13 @@ Rectangle {
 
                         function closeYourself() { variablesWindow.chooseColumn(-1) }
 
+                        TableViewColumn
+                        {
+                            id: levelsTableViewFilterColumn
+                            title: "Filter"
+                            width: 36
+                            role: "column_2"
+                        }
 
 
                         TableViewColumn
@@ -281,7 +289,7 @@ Rectangle {
                             id: levelsTableViewLabelColumn
                             title: "Label"
                             role: "column_1"
-                            width: levelsTableView.width - levelsTableViewValueColumn.width - 20
+                            width: levelsTableView.width - levelsTableViewValueColumn.width - 20 - levelsTableViewFilterColumn
                         }
 
                         headerDelegate: Rectangle
@@ -319,8 +327,9 @@ Rectangle {
                             property color colorItem: systemPalette.text
                             property int rowItem: styleData.row
                             property int colItem: styleData.column
+                            property var valueItem: styleData.value
 
-                            sourceComponent: styleData.column == 1 ? textInputVariablesWindowTemplate : textDisplayVariablesWindowTemplate
+                            sourceComponent: styleData.column == 0 ? filterCheckBoxVariablesWindowTemplate : (styleData.column == 2 ? textInputVariablesWindowTemplate : textDisplayVariablesWindowTemplate)
                         }
 
 
@@ -346,6 +355,26 @@ Rectangle {
                                 anchors.fill: parent
 
                             }
+                        }
+
+                        Component {
+                            id: filterCheckBoxVariablesWindowTemplate
+                            CheckBox {
+                                //anchors.horizontalCenter: parent
+                                //text: ""
+                                checked: valueItem
+                                //anchors.fill: parent
+                                onClicked:
+                                {
+                                    if(checked != valueItem)
+                                         levelsTableModel.setAllowFilterOnLabel(rowItem, checked);
+                                    checked = levelsTableModel.allowFilter(rowItem);
+                                }
+                                width: height
+                                x: (levelsTableViewFilterColumn.width / 2) - (width / 2)
+
+                            }
+                            //Text{text: textItem}
                         }
 
                     }
@@ -404,9 +433,9 @@ Rectangle {
             objectName: "filterWindow"
 
             property int minimumHeightTextBoxes: 50
-            property string lastAppliedFilter: ""
+            property string lastAppliedFilter: rootDataset.defaultFilter
             height: filterWindow.minimumHeightTextBoxes * 3
-            Layout.minimumHeight: filterWindow.minimumHeightTextBoxes + applyFilter.implicitHeight + (filterError.visible ? filterWindow.minimumHeightTextBoxes : 0 )
+            Layout.minimumHeight: filterWindow.minimumHeightTextBoxes + applyFilter.implicitHeight + (filterError.visible ? filterWindow.minimumHeightTextBoxes : 0 ) + filterGeneratedBox.height
             orientation: Qt.Vertical
             visible: false
 
@@ -421,9 +450,15 @@ Rectangle {
                 filterEdit.text = engineSync.getFilter()
             }
 
+            function open()
+            {
+                if(!opened)
+                    toggle();
+            }
+
             function sendFilter()
             {
-                engineSync.sendFilter(lastAppliedFilter)
+                engineSync.sendFilter(generatedFilter, lastAppliedFilter)
             }
 
             function applyAndSendFilter(newFilter)
@@ -452,13 +487,26 @@ Rectangle {
                 border.width: 1
                 border.color: systemPalette.mid
                 Layout.fillHeight: true
-                Layout.minimumHeight: applyFilter.height + filterWindow.minimumHeightTextBoxes
+                Layout.minimumHeight: applyFilter.height + filterWindow.minimumHeightTextBoxes + filterGeneratedBox.contentHeight
+
+                TextArea
+                {
+                    id: filterGeneratedBox
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    //anchors.bottom: filterEdit.top
+                    text: generatedFilter
+                    height: contentHeight
+                    readOnly: true
+                    textColor: "gray"
+                }
 
                 TextArea
                 {
 
                     id: filterEdit
-                    anchors.top: parent.top
+                    anchors.top: filterGeneratedBox.bottom
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.bottom: applyFilter.top
@@ -568,7 +616,7 @@ Rectangle {
                 ToolTip
                 {
                      id: filterToggleButtonToolTip
-                     text: "Toggle visibilty of advanced data-filtering-functionality"
+                     text: "Toggle visibilty of filtering functionality"
                     // target: filterToggleButton
                      visible: false
                  }
@@ -576,11 +624,13 @@ Rectangle {
             }
 
             TableViewJasp {
-
                 id: dataSetTableView
                 objectName: "dataSetTableView"
 
-                anchors.fill: parent
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: dataStatusBar.top
 
                 alternatingRowColors: false
                 property bool drawCellBorders: true
@@ -844,6 +894,30 @@ Rectangle {
                             color: systemPalette.text
                         }
                     }
+                }
+            }
+
+            Rectangle
+            {
+                id: dataStatusBar
+                objectName: "dataStatusBar"
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                color: systemPalette.window
+
+                height: datafiltertatusText.text.length > 0 ? datafiltertatusText.contentHeight : 0
+
+                function setText(newText) { datafiltertatusText.text = newText }
+
+                Text
+                {
+                    id: datafiltertatusText
+                    text: ""
+                    anchors.fill: parent
+
+
+
                 }
             }
         }

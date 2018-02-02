@@ -272,6 +272,11 @@ string Labels::getValueFromRow(int row)
 	return _getValueFromLabel(label);
 }
 
+Label& Labels::operator[](size_t index)
+{
+	return _labels.at(index);
+}
+
 std::string Labels::getLabelFromRow(int row)
 {
 	if (row >= (int)_labels.size())

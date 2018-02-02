@@ -589,14 +589,14 @@ void rbridge_findColumnsUsedInDataSet()
 		columnNamesInDataSet.insert(col.name());
 }
 
-std::vector<bool> rbridge_applyFilter(std::string & filterCode)
+std::vector<bool> rbridge_applyFilter(std::string & filterCode, std::string & generatedFilterCode)
 {
 	if (rbridge_dataSet == NULL)
 		rbridge_dataSet = rbridge_dataSetSource();
 
 	size_t rowCount = rbridge_dataSet->rowCount();
 
-	if(filterCode == "*") //if * then there is no filter so everything is fine :)
+	if(filterCode == "*" || filterCode == "") //if * then there is no filter so everything is fine :)
 		return std::vector<bool>(rowCount, true);
 
 	static std::string errorMsg;
@@ -615,8 +615,7 @@ std::vector<bool> rbridge_applyFilter(std::string & filterCode)
 		throw filterException(errorMsg);
 	}
 
-	std::string filter64(rbridge_encodeColumnNamesToBase64(filterCode));
-
+	std::string concatenated = generatedFilterCode + "\n" + filterCode, filter64(rbridge_encodeColumnNamesToBase64(concatenated));
 
 	try
 	{

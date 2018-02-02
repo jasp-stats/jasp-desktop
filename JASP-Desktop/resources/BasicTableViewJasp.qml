@@ -612,7 +612,8 @@ ScrollView {
                     // But scrollbar should not adjust to it
                     height: item ? item.height : 16
                     width: parent.width + __horizontalScrollBar.width
-                    x: listView.contentX - root.extraSpaceLeft
+                    x: listView.contentX //- root.extraSpaceLeft
+                    z: -3
 
                     // these properties are exposed to the row delegate
                     // Note: these properties should be mirrored in the row filler as well
@@ -655,6 +656,7 @@ ScrollView {
                     id: itemrow
                     height: parent.height
                     x: parent.x //+ root.extraSpaceLeft
+                    z: 2
 
                     Repeater {
                         model: columnModel
@@ -671,7 +673,7 @@ ScrollView {
                 }
             }
         }
-
+/*
         Component {
             id: rowNumberComponent
 
@@ -687,7 +689,7 @@ ScrollView {
                 readonly property color itemTextColor: itemSelected ? __style.highlightedTextColor : __style.textColor
                 property Item branchDecoration: null
 
-                width: itemrowNumber.width
+                width: root.extraSpaceLeft// itemrowNumber.width
                 height: rowNumberstyle.height
 
                 onActiveFocusChanged: {
@@ -702,7 +704,7 @@ ScrollView {
                     // Row fills the view width regardless of item size
                     // But scrollbar should not adjust to it
                     height: item ? item.height : 16
-                    width: parent.width + __horizontalScrollBar.width
+                    width: root.extraSpaceLeft //parent.width + __horizontalScrollBar.width
                     x: listView.contentX - root.extraSpaceLeft
 
 
@@ -718,9 +720,10 @@ ScrollView {
                     readonly property var model: rowNumberitem.itemModel
                     readonly property var modelData: rowNumberitem.itemModelData
                 }
-                Row {
+               /* Row {
                     id: itemNumberrow
                     height: parent.height
+
                     x: parent.x //+ root.extraSpaceLeft
                     z: 2
 
@@ -738,7 +741,7 @@ ScrollView {
                     }
                 }
             }
-        }
+        }*/
 
         headerPositioning: ListView.OverlayHeader
         header: Item {

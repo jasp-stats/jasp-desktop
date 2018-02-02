@@ -27,6 +27,7 @@ void LevelsTableModel::refresh()
 	beginResetModel();
 	endResetModel();
 	emit resizeValueColumn();
+	emit labelFilterChanged();
 }
 
 void LevelsTableModel::clearColumn()
@@ -48,7 +49,7 @@ int LevelsTableModel::columnCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent);
 
-	return 2;
+	return 3;
 }
 
 QVariant LevelsTableModel::data(const QModelIndex &index, int role) const
@@ -74,6 +75,8 @@ QVariant LevelsTableModel::data(const QModelIndex &index, int role) const
 		return tq(labels.getValueFromRow(row));
 	else if(column == 1)
 		return tq(labels.getLabelFromRow(row));
+	else if(column == 2)
+		return QVariant(labels[row].filterAllows());
 	else
 		return QVariant();
 }
@@ -204,4 +207,31 @@ QModelIndexList LevelsTableModel::convertQVariantList_to_QModelIndexList(QVarian
 
 	return List;
 
+}
+
+void LevelsTableModel::setAllowFilterOnLabel(int row, bool newAllowValue)
+{
+	bool atLeastOneRemains = newAllowValue;
+
+	if(!atLeastOneRemains) //Do not let the user uncheck every single one because that is useless, the user wants to uncheck row so lets see if there is another one left after that.
+		for(int i=0; i< _column->labels().size(); i++)
+			if(i != row && _column->labels()[i].filterAllows())
+			{
+				atLeastOneRemains = true;
+				break;
+			}
+
+	if(atLeastOneRemains)
+	{
+		_column->labels()[row].setFilterAllows(newAllowValue);
+		emit labelFilterChanged();
+		emit dataChanged(index(row, 2), index(row, 2)); //to make sure the checkbox is set to the right value
+	}
+
+
+}
+
+bool LevelsTableModel::allowFilter(int row)
+{
+	return _column->labels()[row].filterAllows();
 }

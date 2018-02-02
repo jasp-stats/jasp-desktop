@@ -25,6 +25,7 @@
 
 #include "datasettablemodel.h"
 #include "variablespage/levelstablemodel.h"
+#include "variablespage/labelfiltergenerator.h"
 #include "enginesync.h"
 #include "analyses.h"
 
@@ -62,12 +63,13 @@ protected:
 private:
 	Ui::MainWindow *ui;
 
-	ResultsJsInterface	*_resultsJsInterface;
-	AnalysisForm		*_currentOptionsWidget;
-	DataSetPackage		*_package;
-	DataSetTableModel	*_tableModel;
-	LevelsTableModel	*_levelsTableModel;
-	Analysis			*_currentAnalysis;
+	ResultsJsInterface		*_resultsJsInterface;
+	AnalysisForm			*_currentOptionsWidget;
+	DataSetPackage			*_package;
+	DataSetTableModel		*_tableModel;
+	LevelsTableModel		*_levelsTableModel;
+	Analysis				*_currentAnalysis;
+	labelFilterGenerator	*_labelFilterGenerator;
 
 	int _scrollbarWidth = 0;
 
@@ -95,7 +97,7 @@ private:
 
 	AsyncLoader _loader;
 	AsyncLoaderThread _loaderThread;
-	QObject *qmlProgressBar = NULL, *qmlFilterWindow = NULL;
+	QObject *qmlProgressBar = NULL, *qmlFilterWindow = NULL, *qmlStatusBar = NULL;
 
 	bool _inited;
 	bool _applicationExiting = false;
@@ -194,9 +196,11 @@ private slots:
 	void hideProgress();
 	void setProgressStatus(QString status, int progress);
 
+	void setGeneratedFilter(QString genFilter);
 	void setFilterErrorText(QString error);
 	void applyAndSendFilter(QString filter);
-
+	void setStatusBarText(QString text);
+	void onFilterUpdated();
 };
 
 #endif // MAINWIDGET_H

@@ -333,9 +333,11 @@ void EngineSync::processNewFilterResult(std::vector<bool> filterResult)
 
 
 
-void EngineSync::sendFilter(QString filter)
+void EngineSync::sendFilter(QString generatedFilter, QString filter)
 {
 	Json::Value json = Json::Value(Json::objectValue);
+
+	json["generatedFilter"] = generatedFilter.toStdString();
 
 	dataFilter = filter == "" ? "*" : filter;
 	json["filter"] = dataFilter.toStdString();
