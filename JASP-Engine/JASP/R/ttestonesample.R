@@ -103,6 +103,7 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	if (wantsWilcox && onlyTest) {
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Wilcoxon signed-rank test.")
 		testStat <- "V"
+		# potentially dangerous next line - removing df. Not posssible to remove by name
 		fields <- fields[-2] #Wilcoxon's test doesn't have degrees of freedoms
 		nameOfLocationParameter <- "Hodges-Lehmann Estimate"
 		nameOfEffectSize <- "Rank-Biserial Correlation"
@@ -114,6 +115,7 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	} else if(wantsZtest && onlyTest){
 	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Z test.")
 	  testStat <- "Z"
+	  # potentially dangerous next line - removing df. Not posssible to remove by name
 	  fields <- fields[-2] #Z test doesn't have degrees of freedoms
 	  nameOfLocationParameter <- "Mean Difference"
 	  nameOfEffectSize <- "Cohen's d"
@@ -132,7 +134,7 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	fields <- append(fields, list(list(name = testStat,
 								  type = "number", format = "sf:4;dp:3")), 1)
 
-	## if the user wants at least two tests, add a column called "Test"
+	## if the user wants more than one tests, add a column called "Test"
 	if (sum(allTests) > 1) {
 		fields <- append(fields, list(list(name = "test",
 									  type = "string", title = "Test")), 1)
@@ -153,43 +155,30 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	if (wantsDifference) {
 		fields[[length(fields) + 1]] <- list(name = "m", title = nameOfLocationParameter,
 											 type = "number", format = "sf:4;dp:3")
-		# preparing footnote - if one of the method is selected; or general if more selected
-		if(wantsWilcox && onlyTest){
-		  textDifference <- "For the Wilcoxon test, effect size is given by the Hodges-Lehmann estimate."
-		} else if(wantsStudents && onlyTest){
-		  textDifference <- "For the Student t-test, location parameter 
-		  is given by mean difference <em>d</em>."
-		} else if(wantsZtest && onlyTest){
-		  textDifference <- "For the Z-test, location parameter 
-		  is given by mean difference <em>d</em>."
-		} else {
-		  textDifference <- "For the Student t-test and Z-test, location parameter 
-is given by mean difference <em>d</em>; for the Wilcoxon test, effect size is given by the Hodges-Lehmann estimate."
-		}
 		
-		# adding a footnote (do not view methods which are not selected)
-		if (!wantsWilcox && !wantsStudents && !wantsZtest) {
-	  } else if(wantsWilcox && wantsStudents && !wantsZtest){
-		  .addFootnote(footnotes, symbol = "<em>Note.</em>",
-		               text = gsub(pattern = " and Z-test",
-		                           replacement = "",
-		                           textDifference)
-		  )
-		} else if(wantsWilcox && !wantsStudents && wantsZtest){
-		  .addFootnote(footnotes, symbol = "<em>Note.</em>",
-		               text = gsub(pattern = "Student t-test and ",
-		                           replacement = "",
-		                           textDifference)
-		  )
-		} else if(!wantsWilcox && wantsStudents && wantsZtest){
-		  .addFootnote(footnotes, symbol = "<em>Note.</em>",
-		               text = gsub(pattern = "; for the Wilcoxon test, effect size is given by the Hodges-Lehmann estimate",
-		                           replacement = "",
-		                           textDifference)
-		  )
-		} else{
-		  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = textDifference)
+		# preparing footnote - paste if selected
+		textDifference <- ""
+		if(wantsStudents){
+		  textDifference <- "For the Student t-test, location parameter is given by mean difference <em>d</em>"
 		}
+		if(wantsWilcox){
+		  if(wantsStudents){
+		    textDifference <- paste0(textDifference, 
+		                             "; for the Wilcoxon test, location parameter is given by the Hodges-Lehmann estimate")
+		  } else{
+		    textDifference <- "For the Wilcoxon test, location parameter is given by the Hodges-Lehmann estimate"
+		  }
+		}
+		if(wantsZtest){
+		  if(onlyTest){
+		    textDifference <- "For the Z-test, location parameter is given by mean difference <em>d</em>"
+		  } else{
+		    textDifference <- paste0(textDifference, 
+		                          "; for the Z-test, location parameter is given by mean difference <em>d</em>")
+		  }
+		}
+		textDifference <- paste0(textDifference, ".")
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = textDifference)
 	}
 	
 	if (wantsConfidenceMeanDiff) {
@@ -208,44 +197,32 @@ is given by mean difference <em>d</em>; for the Wilcoxon test, effect size is gi
 		fields[[length(fields) + 1]] <- list(name = "d", title = nameOfEffectSize,
 											 type = "number",  format = "sf:4;dp:3")
 		
-		# preparing footnote - if one of the method is selected; or general if more selected
-		if(wantsWilcox && onlyTest){
-		  textEffect <- "For the Wilcoxon test, effect size is given by the matched rank biserial correlation"
-		} else if(wantsStudents && onlyTest){
-		  textEffect <- "For the Student t-test, effect size is given by Cohen's <em>d</em>."
-		} else if(wantsZtest && onlyTest){
-		  textEffect <- "For the Z test, effect size is given by Cohen's <em>d</em> (based on population deviation)."
-		} else {
-		  textEffect <- "For the Student t-test, effect size is given by Cohen's <em>d</em>; 
-		  for the Wilcoxon test, effect size is given by the matched rank biserial correlation; 
-		  for the Z test, effect size is given by Cohen's <em>d</em> (based on population deviation)."
+		# preparing footnote - paste if selected
+		textEffect <- ""
+		if(wantsStudents){
+		  textEffect <- "For the Student t-test, effect size is given by Cohen's <em>d</em>"
 		}
 		
-		# adding a footnote (do not view methods which are not selected)
-		if (!wantsWilcox && !wantsStudents && !wantsZtest) {
-		} else if(wantsWilcox && wantsStudents && !wantsZtest){
-		  .addFootnote(footnotes, symbol = "<em>Note.</em>",
-		               text = gsub(pattern = "; 
-		  for the Z test, effect size is given by Cohen's <em>d</em> \\(based on population deviation\\)",
-		                           replacement = "",
-		                           textEffect)
-		  )
-		} else if(wantsWilcox && !wantsStudents && wantsZtest){
-		  .addFootnote(footnotes, symbol = "<em>Note.</em>",
-		               text = gsub(pattern = "For the Student t-test, effect size is given by Cohen's <em>d</em>; 
-		  f",
-		                           replacement = "F",
-		                           textEffect)
-		  )
-		} else if(!wantsWilcox && wantsStudents && wantsZtest){
-		  .addFootnote(footnotes, symbol = "<em>Note.</em>",
-		               text = gsub(pattern = "for the Wilcoxon test, effect size is given by the matched rank biserial correlation; ",
-		                           replacement = "",
-		                           textEffect)
-		  )
-		} else{
-		  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = textEffect)
+		if(wantsWilcox){
+		  if(wantsStudents){
+		    textEffect <- paste0(textEffect,
+		                         "; for the Wilcoxon test, effect size is given by the matched rank biserial correlation")
+		  } else{
+		    textEffect <- "For the Wilcoxon test, effect size is given by the matched rank biserial correlation"
+		  }
 		}
+		
+		if(wantsZtest){
+		  if(onlyTest){
+		    textEffect <- "For the Z test, effect size is given by Cohen's <em>d</em> (based on the provided population standard deviation)"
+		  } else{
+		    textEffect <- paste0(textEffect,
+		                         "; for the Z test, effect size is given by Cohen's <em>d</em> (based on the provided population standard deviation)")
+		  }
+		}
+		
+		textEffect <- paste0(textEffect, ".")
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = textEffect)
 	}
 
 	if (wantsConfidenceEffSize) {
@@ -416,7 +393,7 @@ is given by mean difference <em>d</em>; for the Wilcoxon test, effect size is gi
 					ciUp <- .clean(as.numeric(r$conf.int[2]))
           ciLowEffSize = .clean(as.numeric(confIntEffSize[1]))
           ciUpEffSize = .clean(as.numeric(confIntEffSize[2]))
-					if (is.na(t)) {
+					if (suppressWarnings(is.na(t))) { # do not throw warning when test stat is not 't' 
 						stop("data are essentially constant")
 					}
 
