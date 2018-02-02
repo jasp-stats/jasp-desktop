@@ -112,6 +112,7 @@ SOURCES += \
     $$PWD/widgets/boundpairstable.cpp \
     $$PWD/widgets/boundsingleitemview.cpp \
     $$PWD/widgets/boundtableview.cpp \
+    $$PWD/widgets/boundtablewidget.cpp \
     $$PWD/widgets/boundtextbox.cpp \
     $$PWD/widgets/boundtextedit.cpp \
     $$PWD/widgets/button.cpp \
@@ -270,6 +271,7 @@ HEADERS  += \
     $$PWD/widgets/boundpairstable.h \
     $$PWD/widgets/boundsingleitemview.h \
     $$PWD/widgets/boundtableview.h \
+    $$PWD/widgets/boundtablewidget.h \
     $$PWD/widgets/boundtextbox.h \
     $$PWD/widgets/boundtextedit.h \
     $$PWD/widgets/button.h \

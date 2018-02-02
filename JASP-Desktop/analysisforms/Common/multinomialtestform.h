@@ -19,7 +19,11 @@
 #ifndef MULTINOMIALTESTFORM_H
 #define MULTINOMIALTESTFORM_H
 
+#include <QTableWidgetItem>
+#include <QStringList>
+
 #include "../analysisform.h"
+#include "options/optionvariable.h"
 
 namespace Ui {
 class MultinomialTestForm;
@@ -32,9 +36,29 @@ class MultinomialTestForm : public AnalysisForm
 public:
 	explicit MultinomialTestForm(QWidget *parent = 0);
 	~MultinomialTestForm();
+	void addColumnToTable();
+	bool deleteColumnFromTable();
+	void resetTable();
+	void setTableVerticalHeaders();
+
+	void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
+
+private slots:
+	void on_addColumn_clicked(bool checked);
+	void on_deleteColumn_clicked(bool checked);
+	void on_resetColumns_clicked(bool checked);
+	void addFixedFactors();
+	void expectedCountsHandler();
+	void countModelHandler();
+	void cellChangedHandler();
 
 private:
 	Ui::MultinomialTestForm *ui;
+	QStringList verticalLabels;
+	QStringList horizontalLabels;
+	TableModelVariablesAssigned *factorModel;
+	std::string _previous;
+	Options *_options;
 };
 
 #endif // MULTINOMIALTESTFORM_H
