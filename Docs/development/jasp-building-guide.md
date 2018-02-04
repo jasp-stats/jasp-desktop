@@ -102,25 +102,25 @@ The directory structure should be as follows:
  1. **XCode**: Qt on OS X relies on XCode to function, you can install this through the App Store. It's easiest if you install this, run it, accept the license agreement, and then close it down before installing Qt.
  2. **Qt**: Install Qt5.10 with MacOS and Qt WebEngine.
 
-![Image of Qt Installer](http://www.alexander-ly.com/wp-content/uploads/2018/02/jasp2.InstallQt.png)
+![Image of Qt Installer](https://static.jasp-stats.org/images/jasp2.InstallQt.png)
  
  2.a. **Configure Qt5.10**: Left top menu: Qt Creator - Preference. Left menu: "Build & Run", tab: "Kits". Auto-detect should give "Desktop Qt 5.10.0 clang 64bit". Click on this. Choose the compiler **Clang (x86 64bit in /usr/bin)** for both C and C++.
 
-![Image of Qt Configuration](http://www.alexander-ly.com/wp-content/uploads/2018/02/jasp2a.ConfigureQt.png)
+![Image of Qt Configuration](https://static.jasp-stats.org/images/jasp2a.ConfigureQt.png)
 
  2.b. **Configure project**: Click "Projects" in the left ribbon and provide the "debug build" and "release build" folders with the correct compilers. This should look like:
  
- ![Image of Project debug](http://www.alexander-ly.com/wp-content/uploads/2018/02/jasp2b.1.ConfigureProjectDebug.png)
+ ![Image of Project debug](https://static.jasp-stats.org/images/jasp2b.1.ConfigureProjectDebug.png)
  
  and like:
  
- ![Image of Project release](http://www.alexander-ly.com/wp-content/uploads/2018/02/jasp2b.2.ConfigureProjectRelease.png)
+ ![Image of Project release](https://static.jasp-stats.org/images/jasp2b.2.ConfigureProjectRelease.png)
 
 In both case, I've added the flag "-j4" to make use of all my four cores on my mac. 
 
 5. In the end, your folder should be structured as follows: 
 
- ![Image of folder structure](http://www.alexander-ly.com/wp-content/uploads/2018/02/jasp5.FolderStructure.png)
+ ![Image of folder structure](https://static.jasp-stats.org/images/jasp5.FolderStructure.png)
 
 where the blue files are the binaries that are added manually. 
 
