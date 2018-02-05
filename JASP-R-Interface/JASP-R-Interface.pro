@@ -93,4 +93,12 @@ windows{
     QMAKE_EXTRA_TARGETS += first copyfile
  }
 
+macx{
+	setpath.commands += install_name_tool -id @rpath/libJASP-R-Interface.1.0.0.dylib $$OUT_PWD/$$DESTDIR/libJASP-R-Interface.1.0.0.dylib
+    first.depends = $(first) setpath
+    export(first.depends)
+    export(setpath.commands)
+    QMAKE_EXTRA_TARGETS += first setpath
+}
+
 
