@@ -1912,10 +1912,40 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 			if (options$plotSeparateLines != "") {
 
-				content <- .writeImage(width = options$plotWidthDescriptivesPlotLegend,
-									   height = options$plotHeightDescriptivesPlotLegend,
-									   plot = p, obj = TRUE)
+				# a new window is required for the code below. We make a fake one with
+				# sizes identical to the plot made later.
+				tempFileName <- getTempFileName()
+				grDevices::png(filename = tempFileName,
+							   width = options$plotWidthDescriptivesPlotLegend,
+							   height = options$plotHeightDescriptivesPlotLegend) # create fake png
 
+				grob <- ggplot2::ggplotGrob(p)
+				legendSize <- as.numeric(grid::convertWidth(grid::grobWidth(grob$grobs[[15]]), unitTo = "inches"))
+				plotSize <- as.numeric(grid::convertWidth(grid::grobWidth(grob$grobs[[7]]), unitTo = "inches"))
+
+				dev.off() # close the fake png
+				file.remove(tempFileName) # remove the fake png file
+
+				if (legendSize / plotSize > .90) { # if legend takes up more than 90% of the plot
+
+					content <- NULL
+					descriptivesPlot[["error"]] <- list(errorType="badData",
+														errorMessage = sprintf("Cannot plot separate lines for %s, legend takes up too much space. Possible solutions are: 1) Use %s as horizontal axis. 2) Abbreviate the names of %s (if possible). 3) Resize the plot by dragging the bottom right corner.",
+																			   options$plotSeparateLines,
+																			   options$plotSeparateLines,
+																			   options$plotSeparateLines)
+					)
+					
+					
+					
+				} else {
+
+					content <- .writeImage(width = options$plotWidthDescriptivesPlotLegend,
+										   height = options$plotHeightDescriptivesPlotLegend,
+										   plot = p, obj = TRUE)
+				}
+				
+				
 			} else {
 
 				content <- .writeImage(width = options$plotWidthDescriptivesPlotNoLegend,
@@ -2046,4 +2076,16 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	}
 
 	list(result=qqPlot, status=status, stateqqPlot=stateqqPlot)
+}
+
+# helper function to avoid opening windows. perhaps move to common?
+getTempFileName <- function() {
+
+	# code from writeImage()
+	location <- .requestTempFileNameNative("png")
+	relativePathpng <- location$relativePath
+	fullPathpng <- paste(location$root, relativePathpng, sep="/")
+	base::Encoding(fullPathpng) <- "UTF-8"
+
+	return(fullPathpng)
 }
