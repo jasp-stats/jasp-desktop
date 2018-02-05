@@ -1,6 +1,21 @@
-
 JASP Release Notes
 ==================
+
+Version 0.8.5
+-------------
+
+Improvements:
+ - Network module: new clustering table/plot
+ - ANOVA : simple effects
+ - ANOVA : fix for repeated contrast
+ - Logistic regression: changes to stepwise regression.
+ - Logistic regression : AIC fior variable selection & removal p-values
+
+Bugfixes:
+ - Independent sample Bayesian t-test #2196
+ - Wrong valid percent in frequency table #2202
+ - Improve ODS Importer #2167
+
 
 Version 0.8.4
 -------------
