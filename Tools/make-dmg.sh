@@ -20,6 +20,7 @@ rm -f JASP*.dmg
 mkdir app/
 mkdir app/JASP.app/
 mkdir app/JASP.app/Contents/
+mkdir app/JASP.app/Contents/Libraries/
 mkdir app/JASP.app/Contents/MacOS/
 mkdir app/JASPEngine.app/
 mkdir app/JASPEngine.app/Contents/
@@ -33,7 +34,8 @@ cd ..
 
 
 # Copy the two executables into place
-
+install_name_tool -add_rpath @loader_path/../Libraries JASP
+install_name_tool -add_rpath @loader_path/../Libraries JASPEngine
 cp JASP       app/JASP.app/Contents/MacOS/
 cp JASPEngine app/JASPEngine.app/Contents/MacOS/
 
@@ -58,8 +60,9 @@ rm app/JASP.app/Contents/Resources/TestFiles.zip
 cp -r R           app/JASP.app/Contents/MacOS
 
 #Copy the Openssl from Qt to our Framework because OSF no longer supports tlsv1 traffic
-cp libcrypto.1.0.0.dylib app/JASP.app/Contents/Frameworks
-cp libssl.1.0.0.dylib app/JASP.app/Contents/Frameworks
+cp libcrypto.1.0.0.dylib app/JASP.app/Contents/Libraries/
+cp libssl.1.0.0.dylib app/JASP.app/Contents/Libraries/
+cp libJASP-R-Interface.1.0.0.dylib app/JASP.app/Contents/Libraries/
 
 cp $JASP_DESKTOP/Tools/icon.icns app/JASP.app/Contents/Resources
 cp $JASP_DESKTOP/Tools/Info.plist.template app/JASP.app/Contents/Info.plist
