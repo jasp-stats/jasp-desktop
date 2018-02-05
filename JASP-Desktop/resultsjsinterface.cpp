@@ -91,6 +91,7 @@ void ResultsJsInterface::showAnalysesMenu(QString options)
 
 	QIcon _copyIcon = QIcon(":/icons/copy.png");
 	QIcon _citeIcon = QIcon(":/icons/cite.png");
+	QIcon _codeIcon = QIcon(":/icons/code-icon.png");
 	QIcon _collapseIcon = QIcon(":/icons/collapse.png");
 	QIcon _expandIcon = QIcon(":/icons/expand.png");
 	QIcon _saveImageIcon = QIcon(":/icons/document-save-as.png");
@@ -116,6 +117,11 @@ void ResultsJsInterface::showAnalysesMenu(QString options)
 
 	if (menuOptions["hasCopy"].asBool())
 		_analysisMenu->addAction(_copyIcon, "Copy", this, SLOT(copySelected()));
+
+	if (menuOptions["hasLatexCode"].asBool())
+	{
+		_analysisMenu->addAction(_codeIcon, "Copy latex code", this, SLOT(latexCodeSelected()));
+	}
 
 	if (menuOptions["hasCite"].asBool())
 	{
@@ -205,6 +211,12 @@ void ResultsJsInterface::citeSelected()
 {
 	tempfiles_purgeClipboard();
 	runJavaScript("window.citeMenuClicked();");
+}
+
+void ResultsJsInterface::latexCodeSelected()
+{
+	tempfiles_purgeClipboard();
+	runJavaScript("window.latexCodeMenuClicked();");
 }
 
 void ResultsJsInterface::saveImage()

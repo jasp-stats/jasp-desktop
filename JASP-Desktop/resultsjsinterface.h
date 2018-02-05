@@ -109,6 +109,7 @@ private slots:
 	void editTitleSelected();
 	void copySelected();
 	void citeSelected();
+	void latexCodeSelected();
 	void saveImage();
 	void editImage();
 	void noteSelected();

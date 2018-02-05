@@ -10,7 +10,8 @@ JASPWidgets.table = Backbone.Model.extend({
 		formats: null,
 		footnotes: [],
 		citation: null,
-		error: null
+		error: null,
+		latexCode: ""
 	}
 });
 
@@ -37,7 +38,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		exportParams.includeNotes = false;
 
 		this.exportBegin(exportParams);
-
+		console.log(exportParams);
 		return true;
 	},
 
@@ -60,6 +61,69 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		var exportContent = new JASPWidgets.Exporter.data(optCitation.join("\n\n"), htmlCite);
 
 		pushTextToClipboard(exportContent, exportParams);
+		return true;
+	},
+
+	hasLatexCode: function () {
+		var optLatexCode = this.model.get("latexCode");
+		return optLatexCode !== null
+	},
+
+	latexCodeMenuClicked: function () {
+		var exportParams = new JASPWidgets.Exporter.params();
+		exportParams.format = JASPWidgets.ExportProperties.format.html;
+		exportParams.process = JASPWidgets.ExportProperties.process.copy;
+		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
+		exportParams.includeNotes = false;
+
+		var optSchema = this.model.get("schema");
+		var optData = this.model.get("data");
+		var optTitle = this.model.get("title");
+		var optSubtitle = this.model.get("subtitle");
+		var optVariables = this.model.get("variables");
+		var optOverTitle = this.model.get("overTitle")
+		var optFootnotes = this.model.get("footnotes");
+
+		// TODO: 1. create a function
+		//       2. handle all cases for tables
+		//       3. caption and footnotes formatting
+		let latexCode = "";
+		// title
+		latexCode += "\\begin{table}[h]\n\t\\caption{" + optTitle + "}\n";
+		latexCode += "\t\\begin{tabular}{l" + new Array(optData.length + 1).join('r') + "}\n\t\t\\hline\n\t\t";
+
+		let columns = optData.length;
+
+		for (let i = 0; i < columns; ++i) {
+			latexCode += " & " + optData[i].Variable;
+		}
+		latexCode += ' \\\\\n\t\t\\hline\n\t\t';
+
+		for (let i = 0; i < optSchema.fields.length; ++i) {
+			if (optSchema.fields[i].name === "Variable") {
+				continue;
+			}
+
+			let row = optSchema.fields[i].name;
+			for (let j = 0; j < columns; ++j) {
+				row += ' & ' + Number(Number.parseFloat(optData[j][optSchema.fields[i].name]).toPrecision(4)).toString();
+			}
+			row += ' \\\\\n\t\t';
+
+			latexCode += row;
+		}
+		latexCode += "\\hline\n\t\\end{tabular} \\\\\n";
+
+		if (optFootnotes !== "" && optFootnotes !== null && optFootnotes.length !== 0) {
+			latexCode += "\t{\\footnotesize \\textit{Note.} " + optFootnotes.join() + '\n';
+		}
+
+		latexCode += "\\end{table}"
+
+		var htmlCite = '<p>' + latexCode + '</p>';
+		var exportContent = new JASPWidgets.Exporter.data(latexCode, htmlCite);
+		pushTextToClipboard(exportContent, exportParams);
+
 		return true;
 	},
 
@@ -139,9 +203,9 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 		var newRowCount = columns.length - 1
 		var newColumnCount = columns[0].length + 1
-		
+
 		if (optOverTitle) {
-			
+
 			// Transform first column into overtitle, second into title
 			var newColumnHeaders = Array(newColumnCount-1);
 			for (var colNo = 0; colNo < newColumnCount - 1; colNo++) {
@@ -154,14 +218,14 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 			columns.shift();
 			columnHeaders.shift();
 			newRowCount--;
-			
+
 		} else {
-			
+
 			var newColumnHeaders = Array(newColumnCount);
 			var newColumnHeaders = columns[0];
-			
+
 		}
-		
+
 		var newColumns = Array(newColumnCount)
 
 		var cornerCell = columnHeaders.shift()
@@ -257,7 +321,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 					p = f.substring(2);
 				}
 			}
-				
+
 			if (f.indexOf("dp:") != -1 && ! fixDecimals)
 				dp = f.substring(3)
 
@@ -334,7 +398,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 			if (minLSD < -20)
 				minLSD = -20
-				
+
 			for (var rowNo = 0; rowNo < column.length; rowNo++) {
 
 				var cell = column[rowNo]
@@ -446,7 +510,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 				}
 				else if (Math.abs(content) >= upperLimit || Math.abs(content) <= Math.pow(10, -dp)) {
-					
+
 					var decimalsExpon = fixDecimals ? dp : sf - 1
 					var exponentiated = content.toExponential(decimalsExpon).replace(/-/g, "&minus;")
 					var paddingNeeded = Math.max(maxFSDOE - this._fsdoe(content), 0)
@@ -929,7 +993,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 		}
 
 		if (columnHeaders.length > 0) {
-			
+
 			var overTitles = false;
 			var overTitleSpace = false;
 			var overTitlesArray = [];
@@ -940,29 +1004,29 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 					break;
 				}
 			}
-			
+
 			if (overTitlesArray.length > 0) {
 				// If we have an overTitle, we should make it
 				overTitles = true;
 			}
-			
+
 			var uniqueOverTitles = $.unique(overTitlesArray)
 			if (uniqueOverTitles.length > 1) {
-				// If we have more than one unique overTitle, we should make small 
-				// breaks in the line under the overTitle to indicate end of old and 
+				// If we have more than one unique overTitle, we should make small
+				// breaks in the line under the overTitle to indicate end of old and
 				// start of new overTitle. NB: with this option, the line is not copied
 				// to text processor.
 				overTitleSpace = true;
 			}
 
 			if (overTitles) {
-				
+
 				if (overTitleSpace) {
 					chunks.push('<tr class="over-title-space">')
 				} else {
 					chunks.push('<tr class="over-title">')
 				}
-				
+
 
 				var span = 1;
 				var oldTitle = columnHeaders[0].overTitle
@@ -999,7 +1063,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 						chunks.push('<th colspan="' + (2 * span) + '">' + newTitle + '</th>')
 					}
 				}
-					
+
 
 				chunks.push('</tr>')
 			}
