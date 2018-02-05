@@ -34,16 +34,16 @@ Plots
 -----
 
 #### Coefficients:
-- *Inclusion probabilities*:
-- *Averaged posterior distributions*:
+- *Inclusion probabilities*: Shows a histogram of the posterior inclusion probabilities. The dotted line displays the prior inclusion probabilities.
+- *Averaged posterior distributions*: Shows t-approximations of the posterior distributions averaged over all models.
 
 #### Models:
-- *Posterior log odds*:
-- *Log(P(data | M)) vs. model size*
-- *Model probabilities*:
+- *Posterior log odds*: Shows a heatmap of the log posterior odds against the model rank.
+- *Log(P(data | M)) vs. model size*: Shows the relation between model fit and complexity.
+- *Model probabilities*: Displays the cumulative distribution function of the model search.
 
 #### Residuals
-- *Residuals vs. fitted*:
+- *Residuals vs. fitted*: Plots the residuals of the model averaged predictions (BMA) against the residuals.
 
 Advanced Options
 ----------------
@@ -51,10 +51,10 @@ Advanced Options
 #### Prior:
 Prior distribution for regression coefficients. Choices include
 
-- *AIC*
-- *BIC*
-- *EB-global*: Global Empirical Bayes estimates of g in Zellner’s g-prior and model probabilities. Uses an EM algorithm to find a common or global estimate of g, averaged over all models. When it is not possible to enumerate all models, the EM algorithm uses only the models sampled under EB-local.
-- *EB-local*: Uses the MLE of g from the marginal likelhood within each model.
+- *AIC*: Compare models using the Akaike Information Criterion.
+- *BIC*: Compare models using the Bayesian Information Criterion.
+- *EB-global*: Global Empirical Bayes estimates of g in Zellner-Siow g-prior and model probabilities. Uses an EM algorithm to find a common or global estimate of g, averaged over all models. When it is not possible to enumerate all models, the EM algorithm uses only the models sampled under EB-local.
+- *EB-local*: Uses the MLE of g from the marginal likelihood within each model.
 - *g-prior*: Zellner's g-prior
 - *Hyper-g*: A mixture of g-priors where the prior on g/(1+g) is a Beta(1, alpha/2) as in Liang et al (2008). This uses the Cephes library for evaluation of the marginal likelihoods and may be numerically unstable for large n or R2 close to 1. Default choice of alpha is 3
 - *Hyper-g-Laplace*:  Same as *Hyper-g* but uses a Laplace approximation to integrate over the prior on g.
@@ -77,19 +77,19 @@ Output Tables
 -------
 
 #### Model Comparison:
-- *Models*
-- *P(M)*: Prior model probabilities
-- *P(M | data)*: Posterior probabilites of the models considered
-- *BFM*
+- *Models*: Predictors contained in the model.
+- *P(M)*: Prior model probabilities.
+- *P(M | data)*: Posterior probabilites of the models considered.
+- *BFM*: Posterior model odds.
 - *BF10* (or *BF01*): Bayes factor.
-- *R^2^*:
+- *R2*: Explained variance.
 
 #### Marginal Posterior Summaries
 Marginal Posterior summaries of Coefficients.
-- *Coefficient*
-- *Mean*
-- *SD*: Standard Deviation
-- *P(incl | data)*
+- *Coefficient*: Name of the predictors.
+- *Mean*: Mean of the model averaged posterior.
+- *SD*: Standard Deviation of the model averaged posterior.
+- *P(incl | data)*: Posterior inclusion probability.
 
 
 References
