@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2018 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -16,27 +16,19 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TABLEVIEWCOMBOBOXDELEGATE_H
-#define TABLEVIEWCOMBOBOXDELEGATE_H
+#ifndef CUSTOMHOVERDELEGATE_H
+#define CUSTOMHOVERDELEGATE_H
 
-#include <QStyledItemDelegate>
-
-#include "common.h"
-#include <QMenu>
-#include <QLabel>
+#include <QStringListModel>
+#include <QItemDelegate>
 #include <QPainter>
 #include <QToolTip>
 #include <QColor>
-#include "tableviewmenueditor.h"
 
-class TableViewMenuEditorDelegate : public QStyledItemDelegate
+class CustomHoverDelegate : public QItemDelegate
 {
-	Q_OBJECT
 public:
-	explicit TableViewMenuEditorDelegate(QObject *parent = 0);
-
-	virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const OVERRIDE;
-	virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const OVERRIDE;
+	CustomHoverDelegate(QObject *parent = 0) : QItemDelegate(parent) {}
 	void paint (QPainter *painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
 	{
 		if(option.state & QStyle::State_MouseOver)
@@ -45,12 +37,8 @@ public:
 			QString str = index.data().toString();
 			QToolTip::showText(QCursor::pos(), str);
 		}
-		QStyledItemDelegate::paint(painter, option, index);
+		QItemDelegate::paint(painter, option, index);
 	}
-
-private slots:
-	void editingFinished();
-
 };
 
-#endif // TABLEVIEWCOMBOBOXDELEGATE_H
+#endif // CUSTOMHOVERDELEGATE_H

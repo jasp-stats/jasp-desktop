@@ -32,6 +32,7 @@
 #include "dataset.h"
 #include "tablemodelvariablesassigned.h"
 #include "listview.h"
+#include "customhoverdelegate.h"
 
 class BoundListView : public ListView, public Bound
 {

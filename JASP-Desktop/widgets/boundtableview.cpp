@@ -27,6 +27,8 @@ BoundTableView::BoundTableView(QWidget *parent)
 	this->viewport()->setAcceptDrops(true);
 	this->setDropIndicatorShown(true);
 	this->setDragDropMode(QAbstractItemView::DragDrop);
+	this->viewport()->setAttribute(Qt::WA_Hover);
+	this->setItemDelegate(new CustomHoverDelegate(this));
 }
 
 void BoundTableView::bindTo(Option *option)

@@ -181,6 +181,7 @@ HEADERS  += \
     $$PWD/backstage/verticaltabwidget.h \
     $$PWD/backstagewidget.h \
     $$PWD/bound.h \
+    $$PWD/customhoverdelegate.h \
     $$PWD/datasetloader.h \
     $$PWD/datasettablemodel.h \
     $$PWD/enginesync.h \
