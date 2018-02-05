@@ -32,12 +32,12 @@ Windows
 
 Building JASP under windows is the most temperamental, and the versions listed here are known to work; slight variations on these numbers probably won't work.
 
-  - [R 3.3.3 win64](https://static.jasp-stats.org/development/R3.3%20Win%20JASP%200.8.5.zip)
+ - [R 3.3.3 win64](https://static.jasp-stats.org/development/R3.3%20Win%20JASP%200.8.5.zip)
  - [boost 1.64.0](https://static.jasp-stats.org/development/boost_1_64_0.zip)
  - [boost 1.64.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Build-Binaries-Windows-64-qt510.zip)
  - [Visual Studio 2017] (https://www.visualstudio.com/downloads/) Download community version
 
-Qt: JASP for windows is built as 64-bit and is built with Visual Studio 2017. 
+Qt: JASP for windows is built as 64-bit and is built with Visual Studio 2017.
 
 The directory structure should be as follows:
 
@@ -77,7 +77,7 @@ To build JASP on mac you need to clone the JASP repository and download the foll
 The directory structure should be as follows:
 
     [+] JASP
-    	[-] jasp-desktop  < from github >	
+    	[-] jasp-desktop  < from github >
     	[-] buildDebug510 < Build debug directory for QtCreator >
     		- libboost_system-clang-mt-1_64.a
 		- libboost_filesystem-clang-mt-1_64.a
@@ -103,26 +103,26 @@ The directory structure should be as follows:
  2. **Qt**: Install Qt5.10 with MacOS and Qt WebEngine.
 
 ![Image of Qt Installer](https://static.jasp-stats.org/images/jasp2.InstallQt.png)
- 
+
  2.a. **Configure Qt5.10**: Left top menu: Qt Creator - Preference. Left menu: "Build & Run", tab: "Kits". Auto-detect should give "Desktop Qt 5.10.0 clang 64bit". Click on this. Choose the compiler **Clang (x86 64bit in /usr/bin)** for both C and C++.
 
 ![Image of Qt Configuration](https://static.jasp-stats.org/images/jasp2a.ConfigureQt.png)
 
  2.b. **Configure project**: Click "Projects" in the left ribbon and provide the "debug build" and "release build" folders with the correct compilers. This should look like:
- 
+
  ![Image of Project debug](https://static.jasp-stats.org/images/jasp2b.1.ConfigureProjectDebug.png)
- 
+
  and like:
- 
+
  ![Image of Project release](https://static.jasp-stats.org/images/jasp2b.2.ConfigureProjectRelease.png)
 
-In both case, I've added the flag "-j4" to make use of all my four cores on my mac. 
+In both case, I've added the flag "-j4" to make use of all my four cores on my mac.
 
-5. In the end, your folder should be structured as follows: 
+5. In the end, your folder should be structured as follows:
 
  ![Image of folder structure](https://static.jasp-stats.org/images/jasp5.FolderStructure.png)
 
-where the blue files are the binaries that are added manually. 
+where the blue files are the binaries that are added manually.
 
 Linux
 -----
@@ -131,7 +131,9 @@ Linux
 
 #### Ubuntu (and alike)
 To build JASP under Ubuntu (17.10+), debian, and derivatives, you will need:
+```
 sudo apt-get install libboost-dev r-base-core r-cran-rcpp r-cran-rinside libqt5widgets5 qtwebengine5-dev libqt5webchannel5-dev libqt5svg5-dev qt5-qmake libarchive-dev libboost-filesystem-dev libboost-system-dev libjsoncpp-dev qt5-default qtcreator
+```
 
 Then you start qtcreator and open JASP.pro, run qmake and build all. After that you should be able to run JASP.
 
@@ -158,7 +160,9 @@ sudo ln -s /usr/lib64/R/ /usr/lib/R
 ### Runtime
 #### Ubuntu (and alike)
 In order to run, you will need (Ubuntu and alike):
+```
 sudo apt-get install libjsoncpp1 r-base-core r-cran-rcpp r-cran-rinside r-cran-bayesfactor r-cran-lme4 r-cran-afex r-cran-car r-cran-effects r-cran-logspline r-cran-lsmeans r-cran-plotrix r-cran-rjson r-cran-vcd r-cran-vcdextra r-cran-ggplot2 r-cran-hypergeo libqt5webenginewidgets5 libqt5webengine5 libqt5webenginecore5 libqt5svg5 openssl
+```
 
 ### Fedora
 It works under Fedora, if you install these R packages manually in R:
