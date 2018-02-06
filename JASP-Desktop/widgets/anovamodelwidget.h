@@ -21,7 +21,6 @@
 
 #include <QWidget>
 #include <QStringListModel>
-#include <QItemDelegate>
 #include <QPainter>
 #include <QToolTip>
 

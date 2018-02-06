@@ -19,16 +19,15 @@
 #ifndef CUSTOMHOVERDELEGATE_H
 #define CUSTOMHOVERDELEGATE_H
 
-#include <QStringListModel>
-#include <QItemDelegate>
+#include <QStyledItemDelegate>
 #include <QPainter>
 #include <QToolTip>
 #include <QColor>
 
-class CustomHoverDelegate : public QItemDelegate
+class CustomHoverDelegate : public QStyledItemDelegate
 {
 public:
-	CustomHoverDelegate(QObject *parent = 0) : QItemDelegate(parent) {}
+	CustomHoverDelegate(QObject *parent = 0) : QStyledItemDelegate(parent) {}
 	void paint (QPainter *painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
 	{
 		if(option.state & QStyle::State_MouseOver)
@@ -37,7 +36,7 @@ public:
 			QString str = index.data().toString();
 			QToolTip::showText(QCursor::pos(), str);
 		}
-		QItemDelegate::paint(painter, option, index);
+		QStyledItemDelegate::paint(painter, option, index);
 	}
 };
 
