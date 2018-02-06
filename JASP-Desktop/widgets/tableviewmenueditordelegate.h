@@ -19,17 +19,11 @@
 #ifndef TABLEVIEWCOMBOBOXDELEGATE_H
 #define TABLEVIEWCOMBOBOXDELEGATE_H
 
-#include <QStyledItemDelegate>
-
 #include "common.h"
-#include <QMenu>
-#include <QLabel>
-#include <QPainter>
-#include <QToolTip>
-#include <QColor>
 #include "tableviewmenueditor.h"
+#include "customhoverdelegate.h"
 
-class TableViewMenuEditorDelegate : public QStyledItemDelegate
+class TableViewMenuEditorDelegate : public CustomHoverDelegate
 {
 	Q_OBJECT
 public:
@@ -37,20 +31,9 @@ public:
 
 	virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const OVERRIDE;
 	virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const OVERRIDE;
-	void paint (QPainter *painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
-	{
-		if(option.state & QStyle::State_MouseOver)
-		{
-			painter->fillRect(option.rect, QColor(220, 241, 251));
-			QString str = index.data().toString();
-			QToolTip::showText(QCursor::pos(), str);
-		}
-		QStyledItemDelegate::paint(painter, option, index);
-	}
 
 private slots:
 	void editingFinished();
-
 };
 
 #endif // TABLEVIEWCOMBOBOXDELEGATE_H
