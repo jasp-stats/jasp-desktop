@@ -45,7 +45,7 @@ The directory structure should be as follows:
 	[+] boost_1_64_0
     [-] build-JASP- ... < build directory, created by QtCreator >
        [+] R
-       	- JASP-R-Interface.dll
+	- JASP-R-Interface.dll
 	- JASP-R-Interface.lib
 	- archive.dll.lib
 	- libarchive.dll
