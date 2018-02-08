@@ -1662,6 +1662,19 @@
       <property name="bottomMargin">
        <number>3</number>
       </property>
+      <item row="1" column="0">
+       <widget class="ExpanderButton" name="expanderOptionsSimpleEffects">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Simple Main Effects</string>
+        </property>
+       </widget>
+      </item>
       <item row="4" column="0">
        <widget class="QWidget" name="containerSimpleEffect" native="true">
         <layout class="QGridLayout" name="gridLayout_4">
@@ -1699,7 +1712,7 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
+            <item row="2" column="0">
              <widget class="AvailableFieldsListView" name="simpleEffectsVariables">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -1712,6 +1725,13 @@
                 <width>16777215</width>
                 <height>16777215</height>
                </size>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="BoundCheckBox" name="poolErrorTermSimpleEffects">
+              <property name="text">
+               <string>Pool error terms</string>
               </property>
              </widget>
             </item>
@@ -2012,19 +2032,6 @@
           </widget>
          </item>
         </layout>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="ExpanderButton" name="expanderOptionsSimpleEffects">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Simple Main Effects</string>
-        </property>
        </widget>
       </item>
      </layout>

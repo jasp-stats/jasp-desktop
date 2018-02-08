@@ -147,6 +147,11 @@
 			"name": "moderatorFactorTwo",
 			"type": "Variable"
 		},
+				{
+			"name": "poolErrorTermSimpleEffects",
+			"type": "Boolean",
+			"default": false
+		},
 		{
 			"name": "descriptives",
 			"type": "Boolean"
