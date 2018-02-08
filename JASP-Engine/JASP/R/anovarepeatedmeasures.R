@@ -2562,6 +2562,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     list(name="F", type="number", format="sf:4;dp:3", title = "F"),
     list(name="p", type="number", format="dp:3;p:.001", title = "p"))
   
+  # If there is no second moderator, so remove from table:
   if (identical(options$moderatorFactorTwo, ""))
     fields <- fields[-2]
   
@@ -2583,7 +2584,6 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     dfBetween <- fullAnovaTableBetween$data[[errorIndexBetween]]$df
     fullAnovaTable <- fullAnovaTableWithin
     tableCounter <- 1
-
     if(isMixedAnova & isSimpleFactorWithin){
       fullAnovaMS <- ssWithin / dfWithin
       fullAnovaDf <- dfWithin
