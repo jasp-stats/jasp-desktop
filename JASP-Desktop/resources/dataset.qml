@@ -828,8 +828,6 @@ Rectangle {
                     id: itemItem
 
                     readonly property bool rowIsUsed: dataSetModel.getRowFilter(styleData.row)
-                    //z: (rowIsUsed ? 1 : 0)
-                    z: 10
 
                     Rectangle
                     {
@@ -863,6 +861,8 @@ Rectangle {
                     {
                         color: styleData.selected ? systemPalette.dark :  (styleData.alternate && dataSetModel.getRowFilter(styleData.row) ? systemPalette.midlight : systemPalette.light)
                         height: parent.height - 1
+                        anchors.left: parent.left
+                        anchors.right: parent.right
                     }
                 }
 
