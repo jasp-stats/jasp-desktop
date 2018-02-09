@@ -626,7 +626,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 }
 
 .anovaModel <- function(dataset, options) {
-
+  
 	reorderModelTerms <-  .reorderModelTerms(options)
 	modelTerms <- reorderModelTerms$modelTerms
 
@@ -1626,7 +1626,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	list(result=marginalMeans, status=status, stateMarginalMeans=stateMarginalMeans)
 }
 
-.anovaSimpleEffects <- function(dataset, options, perform, fullAnovaTable, status, singular, stateMarginalMeans) {
+.anovaSimpleEffects <- function(dataset, options, perform, fullAnovaTable, status, singular, stateSimpleEffects) {
   
   if (identical(options$simpleFactor, "") | identical(options$moderatorFactorOne, ""))
     return (list(result=NULL, status=status))
