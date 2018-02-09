@@ -251,6 +251,9 @@ FocusScope {
                                     levelsTableView.selection.clear()
                                     levelsTableView.selection.select(rowItem, rowItem)
                                 }
+                                else if(focus)
+                                    focus = false
+
 
 
                             MouseArea
