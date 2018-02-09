@@ -21,5 +21,9 @@
         <file>BasicTableViewJasp.qml</file>
         <file>TableViewJasp.qml</file>
         <file>TableViewStyleJasp.qml</file>
+        <file>FilterWindow.qml</file>
+        <file>VariablesWindow.qml</file>
+        <file>ProgressBarHolder.qml</file>
+        <file>DataTableView.qml</file>
     </qresource>
 </RCC>

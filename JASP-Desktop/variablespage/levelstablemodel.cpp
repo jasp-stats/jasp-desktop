@@ -64,25 +64,29 @@ QVariant LevelsTableModel::data(const QModelIndex &index, int role) const
 	int row = index.row();
 
 
-	int column = -1;
+	if(role == (int)Roles::ValueRole) return tq(labels.getValueFromRow(row));
+	if(role == (int)Roles::LabelRole) return tq(labels.getLabelFromRow(row));
+	if(role == (int)Roles::FilterRole) return QVariant(labels[row].filterAllows());
 
-	if (role == Qt::DisplayRole)
-		column = index.column();
-	else if(role >= Qt::UserRole)
-		column = role - Qt::UserRole;
+	if(role == Qt::DisplayRole)
+	{
+		if (index.column() == 0)
+			return tq(labels.getValueFromRow(row));
+		else if(index.column() == 1)
+			return tq(labels.getLabelFromRow(row));
+		else if(index.column() == 2)
+			return QVariant(labels[row].filterAllows());
+	}
 
-	if (column == 0)
-		return tq(labels.getValueFromRow(row));
-	else if(column == 1)
-		return tq(labels.getLabelFromRow(row));
-	else if(column == 2)
-		return QVariant(labels[row].filterAllows());
-	else
-		return QVariant();
+	return QVariant();
 }
 
 QVariant LevelsTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
+	if(role == (int)Roles::ValueRole) return "Value";
+	if(role == (int)Roles::LabelRole) return "Label";
+	if(role == (int)Roles::FilterRole) return "Filter";
+
 	if (role != Qt::DisplayRole)
 		return QVariant();
 
@@ -147,7 +151,7 @@ Qt::ItemFlags LevelsTableModel::flags(const QModelIndex &index) const
         return Qt::ItemIsEditable | QAbstractTableModel::flags(index);
     } else {
         return QAbstractTableModel::flags(index);
-    }
+	}
 }
 
 bool LevelsTableModel::setData(const QModelIndex & index, const QVariant & value, int role)
@@ -163,7 +167,7 @@ bool LevelsTableModel::setData(const QModelIndex & index, const QVariant & value
 			if (labels.setLabelFromRow(index.row(), new_label))
 				emit dataChanged(index, index);
 
-			emit refreshConnectedModels();
+			emit refreshConnectedModels(_column);
 		}
     }
 
@@ -173,25 +177,10 @@ bool LevelsTableModel::setData(const QModelIndex & index, const QVariant & value
 
 QHash<int, QByteArray> LevelsTableModel::roleNames() const
 {
-	QHash<int, QByteArray> roles = QAbstractTableModel::roleNames ();
-
-	for(int i=0; i<columnCount(); i++)
-		roles[Qt::UserRole + i] = (QString("column_")+QString::number(i)).toUtf8();
-
+	static const QHash<int, QByteArray> roles = QHash<int, QByteArray> { {(int)Roles::ValueRole, "value"}, {(int)Roles::LabelRole, "label"}, {(int)Roles::FilterRole, "filter"} };
 	return roles;
 }
 
-QStringList LevelsTableModel::userRoleNames() const
-{
-	QMap<int, QString> res;
-	QHashIterator<int, QByteArray> i(roleNames());
-	while (i.hasNext()) {
-		i.next();
-		if(i.key() >= Qt::UserRole)
-			res[i.key()] = i.value();
-	}
-	return res.values();
-}
 
 QModelIndexList LevelsTableModel::convertQVariantList_to_QModelIndexList(QVariantList selection)
 {

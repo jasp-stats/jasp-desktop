@@ -340,6 +340,8 @@ ScrollView {
         }
     }
 
+    property alias currentIndex: listView.currentIndex
+
     // Internal stuff. Do not look
 
     Component.onCompleted: {
@@ -393,6 +395,7 @@ ScrollView {
 
     /*! \internal */
     property Item __mouseArea
+
 
     ListView {
         id: listView
@@ -673,75 +676,6 @@ ScrollView {
                 }
             }
         }
-/*
-        Component {
-            id: rowNumberComponent
-
-            FocusScope {
-                id: rowNumberitem
-                visible: false
-
-                property int rowIndex
-                property var itemModelData
-                property var itemModel
-                property bool itemSelected: __mouseArea.selected(rowIndex)
-                property bool alternate: alternatingRowColors && rowIndex % 2 === 1
-                readonly property color itemTextColor: itemSelected ? __style.highlightedTextColor : __style.textColor
-                property Item branchDecoration: null
-
-                width: root.extraSpaceLeft// itemrowNumber.width
-                height: rowNumberstyle.height
-
-                onActiveFocusChanged: {
-                    if (activeFocus)
-                        listView.currentIndex = rowIndex
-                }
-
-                Loader {
-                    id: rowNumberstyle
-                    // row delegate
-                    sourceComponent: rowNumberitem.itemModel !== undefined ? root.rowNumberDelegate : null
-                    // Row fills the view width regardless of item size
-                    // But scrollbar should not adjust to it
-                    height: item ? item.height : 16
-                    width: root.extraSpaceLeft //parent.width + __horizontalScrollBar.width
-                    x: listView.contentX - root.extraSpaceLeft
-
-
-                    // these properties are exposed to the row delegate
-                    // Note: these properties should be mirrored in the row filler as well
-                    property QtObject styleData: QtObject {
-                        readonly property int row: rowNumberitem.rowIndex
-                        readonly property bool alternate: rowNumberitem.alternate
-                        readonly property bool selected: rowNumberitem.itemSelected
-                        readonly property bool hasActiveFocus: rowNumberitem.activeFocus
-                        readonly property bool pressed: rowNumberitem.rowIndex === __mouseArea.pressedRow
-                    }
-                    readonly property var model: rowNumberitem.itemModel
-                    readonly property var modelData: rowNumberitem.itemModelData
-                }
-               /* Row {
-                    id: itemNumberrow
-                    height: parent.height
-
-                    x: parent.x //+ root.extraSpaceLeft
-                    z: 2
-
-                    Repeater {
-                        model: columnModel
-
-                        delegate: __itemDelegateLoader
-
-                        onItemAdded: {
-                            var columnItem = columnModel.get(index).columnItem
-                            item.__index = index
-                            item.__rowItem = rowNumberitem
-                            item.__column = columnItem
-                        }
-                    }
-                }
-            }
-        }*/
 
         headerPositioning: ListView.OverlayHeader
         header: Item {

@@ -63,6 +63,7 @@ signals:
 
 public slots:
 	void refresh() { beginResetModel(); endResetModel(); }
+	void refreshColumn(Column * column);
     
 private:
 	DataSet *_dataSet;

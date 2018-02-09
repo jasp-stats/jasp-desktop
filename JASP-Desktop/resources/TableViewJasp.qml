@@ -52,6 +52,7 @@ BasicTableViewJasp {
 
     readonly property int rowCount: __listView.count
     property alias currentRow: root.__currentRow
+    //property alias currentIndex: __listView.currentIndex
 
     signal activated(int row)
     signal clicked(int row)

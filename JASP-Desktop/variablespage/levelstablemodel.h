@@ -14,6 +14,13 @@ class LevelsTableModel : public QAbstractTableModel
 public:
 	LevelsTableModel(QObject *parent = 0);
 
+	enum class Roles {
+		ValueRole = Qt::UserRole + 1,
+		LabelRole,
+		FilterRole
+	};
+	Q_ENUM(Roles)
+
 	void setColumn(Column *column);
 	void refresh();
 	void clearColumn();
@@ -35,7 +42,7 @@ public:
 	QModelIndexList convertQVariantList_to_QModelIndexList(QVariantList selection);
 
 	virtual QHash<int, QByteArray> roleNames() const OVERRIDE;
-	Q_INVOKABLE QStringList userRoleNames() const;
+
 	Q_INVOKABLE void setAllowFilterOnLabel(int row, bool newAllowValue);
 	Q_INVOKABLE bool allowFilter(int row);
 
@@ -43,7 +50,7 @@ public:
 
 
 signals:
-	void refreshConnectedModels();
+	void refreshConnectedModels(Column * column);
 	void resizeValueColumn();
 	void labelFilterChanged();
 

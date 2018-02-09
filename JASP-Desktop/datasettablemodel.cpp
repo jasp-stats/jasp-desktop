@@ -233,3 +233,10 @@ Column::ColumnType DataSetTableModel::getColumnType(int columnIndex)
 {
 	return _dataSet->column(columnIndex).columnType();
 }
+
+void DataSetTableModel::refreshColumn(Column * column)
+{
+	for(int col=0; col<_dataSet->columns().size(); col++)
+		if(&(_dataSet->columns()[col]) == column)
+			emit dataChanged(index(0, col), index(rowCount()-1, col));
+}

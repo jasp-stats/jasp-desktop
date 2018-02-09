@@ -170,18 +170,18 @@ MainWindow::MainWindow(QWidget *parent) :
 	_levelsTableModel = new LevelsTableModel(this);
 	_labelFilterGenerator = new labelFilterGenerator(_package, this);
 
-	connect(_levelsTableModel,		SIGNAL(refreshConnectedModels()),	_tableModel,			SLOT(refresh()));
-	connect(_levelsTableModel,		SIGNAL(resizeValueColumn()),		this,					SLOT(resizeVariablesWindowValueColumn()));
-	connect(_levelsTableModel,		SIGNAL(labelFilterChanged()),		_labelFilterGenerator,	SLOT(labelFilterChanged()));
-	connect(_labelFilterGenerator,	SIGNAL(setGeneratedFilter(QString)),this,					SLOT(setGeneratedFilter(QString)));
+	connect(_levelsTableModel,		&LevelsTableModel::refreshConnectedModels,	_tableModel,			&DataSetTableModel::refreshColumn);
+	connect(_levelsTableModel,		&LevelsTableModel::resizeValueColumn,		this,					&MainWindow::resizeVariablesWindowValueColumn);
+	connect(_levelsTableModel,		&LevelsTableModel::labelFilterChanged,		_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged);
+	connect(_labelFilterGenerator,	&labelFilterGenerator::setGeneratedFilter,	this,					&MainWindow::setGeneratedFilter);
 
 	_analyses = new Analyses();
 	_engineSync = new EngineSync(_analyses, _package, this);
 
-	connect(_engineSync, SIGNAL(filterUpdated()),					this,			SLOT(refreshAllAnalyses()));
-	connect(_engineSync, SIGNAL(filterUpdated()),					_tableModel,	SLOT(refresh()));
-	connect(_engineSync, SIGNAL(filterErrorTextChanged(QString)),	this,			SLOT(setFilterErrorText(QString)));
-	connect(_engineSync, SIGNAL(filterUpdated()),					this,			SLOT(onFilterUpdated()));
+	connect(_engineSync, &EngineSync::filterUpdated,			this,			&MainWindow::refreshAllAnalyses);
+	connect(_engineSync, &EngineSync::filterUpdated,			_tableModel,	&DataSetTableModel::refresh);
+	connect(_engineSync, &EngineSync::filterErrorTextChanged,	this,			&MainWindow::setFilterErrorText);
+	connect(_engineSync, &EngineSync::filterUpdated,			this,			&MainWindow::onFilterUpdated);
 
 	ui->quickWidget_Data->rootContext()->setContextProperty("dataSetModel", _tableModel);
 	ui->quickWidget_Data->rootContext()->setContextProperty("levelsTableModel", _levelsTableModel);
@@ -202,32 +202,31 @@ MainWindow::MainWindow(QWidget *parent) :
 	qmlFilterWindow = ui->quickWidget_Data->rootObject()->findChild<QObject*>("filterWindow");
 	qmlStatusBar	= ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataStatusBar");
 
+	connect(_engineSync, &EngineSync::engineTerminated,		this,			&MainWindow::fatalError);
+
+	connect(_analyses, &Analyses::analysisResultsChanged,	this,			&MainWindow::analysisResultsChangedHandler);
+	connect(_analyses, &Analyses::analysisImageSaved,		this,			&MainWindow::analysisImageSavedHandler);
+	connect(_analyses, &Analyses::analysisAdded,			ui->backStage,	&BackStageWidget::analysisAdded);
+
+	//connect some ribbonbuttons?
+	connect(ui->ribbonAnalysis,					QOverload<QString>::of(&RibbonAnalysis::itemSelected),				this, &MainWindow::itemSelected);
+	connect(ui->ribbonSEM,						QOverload<QString>::of(&RibbonSEM::itemSelected),					this, &MainWindow::itemSelected);
+	connect(ui->ribbonReinforcementLearning,	QOverload<QString>::of(&RibbonReinforcementLearning::itemSelected),	this, &MainWindow::itemSelected);
+	connect(ui->ribbonSummaryStatistics,		QOverload<QString>::of(&RibbonSummaryStatistics::itemSelected),		this, &MainWindow::itemSelected);
+	connect(ui->ribbonMetaAnalysis,				QOverload<QString>::of(&RibbonMetaAnalysis::itemSelected),			this, &MainWindow::itemSelected);
+	connect(ui->ribbonNetworkAnalysis,			QOverload<QString>::of(&RibbonNetworkAnalysis::itemSelected),		this, &MainWindow::itemSelected);
+
+	connect(ui->backStage,						&BackStageWidget::dataSetIORequest,			this, &MainWindow::dataSetIORequest);
+	connect(ui->backStage,						&BackStageWidget::exportSelected, _resultsJsInterface, &ResultsJsInterface::exportSelected);
 
 
-	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(fatalError()));
+	connect(ui->tabBar, &TabBar::dataAutoSynchronizationChanged, ui->backStage,			&BackStageWidget::dataAutoSynchronizationChanged);
+	connect(ui->tabBar, &TabBar::setExactPValuesHandler,		_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler);
+	connect(ui->tabBar, &TabBar::setFixDecimalsHandler,			_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler);
+	connect(ui->tabBar, &TabBar::emptyValuesChangedHandler,		this,					&MainWindow::emptyValuesChangedHandler);
 
-	connect(_analyses, SIGNAL(analysisResultsChanged(Analysis*)), this, SLOT(analysisResultsChangedHandler(Analysis*)));
-	connect(_analyses, SIGNAL(analysisImageSaved(Analysis*)), this, SLOT(analysisImageSavedHandler(Analysis*)));
-	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), ui->backStage, SLOT(analysisAdded(Analysis*)));
+	connect(&_loader,	&AsyncLoader::progress,					this,					&MainWindow::setProgressStatus);
 
-	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
-	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
-	connect(ui->ribbonReinforcementLearning, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
-	connect(ui->ribbonSummaryStatistics, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
-	connect(ui->ribbonMetaAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
-	connect(ui->ribbonNetworkAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
-	connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
-
-	connect(ui->backStage, SIGNAL(exportSelected(QString)), _resultsJsInterface, SLOT(exportSelected(QString)));
-
-
-	connect(ui->tabBar, SIGNAL(dataAutoSynchronizationChanged(bool)), ui->backStage, SLOT(dataAutoSynchronizationChanged(bool)));
-
-	connect(&_loader, SIGNAL(progress(QString,int)), this, SLOT(setProgressStatus(QString,int)));
-
-	connect(ui->tabBar, SIGNAL(setExactPValuesHandler(bool)), _resultsJsInterface, SLOT(setExactPValuesHandler(bool)));
-	connect(ui->tabBar, SIGNAL(setFixDecimalsHandler(QString)), _resultsJsInterface, SLOT(setFixDecimalsHandler(QString)));
-	connect(ui->tabBar, SIGNAL(emptyValuesChangedHandler()), this, SLOT(emptyValuesChangedHandler()));
 
 #ifdef __APPLE__
 	_scrollbarWidth = 3;
@@ -258,16 +257,15 @@ MainWindow::MainWindow(QWidget *parent) :
 	_buttonPanel->resize(_buttonPanel->sizeHint());
 	_buttonPanel->move(ui->panel_2_Options->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 
-	connect(_okButton, SIGNAL(clicked()), this, SLOT(analysisOKed()));
-	connect(_runButton, SIGNAL(clicked()), this, SLOT(analysisRunned()));
-
-	connect(ui->splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(splitterMovedHandler(int,int)));
+	connect(_okButton,		&QPushButton::clicked,		this, &MainWindow::analysisOKed);
+	connect(_runButton,		&QPushButton::clicked,		this, &MainWindow::analysisRunned);
+	connect(ui->splitter,	&QSplitter::splitterMoved,	this, &MainWindow::splitterMovedHandler);
 
 	_tableViewWidthBeforeOptionsMadeVisible = -1;
 
 	QUrl userGuide = QUrl::fromLocalFile(AppDirs::help() + "/index.html");
 	ui->webViewHelp->setUrl(userGuide);
-	connect(ui->webViewHelp, SIGNAL(loadFinished(bool)), this, SLOT(helpFirstLoaded(bool)));
+	connect(ui->webViewHelp, &CustomWebEngineView::loadFinished, this, &MainWindow::helpFirstLoaded);
 	ui->panel_4_Help->hide();
 
 	setAcceptDrops(true);
