@@ -43,6 +43,9 @@ public:
     void setLabel(const std::string &label);
 	Label& operator=(const Label &label);
 
+	bool filterAllows() const { return _filterAllow; }
+	void setFilterAllows(bool allowFilter) { _filterAllow = allowFilter; }
+
 private:
 
 	bool _hasIntValue;
@@ -51,6 +54,8 @@ private:
 	int  _stringLength;
 
     void _setLabel(const std::string &label);
+
+	bool _filterAllow = true;
 };
 
 #endif // LABEL_H

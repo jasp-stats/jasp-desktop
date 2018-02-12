@@ -108,11 +108,13 @@ QMAKE_CLEAN += $$OUT_PWD/../R/library/*
 
 SOURCES += main.cpp \
 	engine.cpp \
-    rbridge.cpp
+    rbridge.cpp \
+    r_functionwhitelist.cpp
 
 HEADERS += \
 	engine.h \
-    rbridge.h
+    rbridge.h \
+    r_functionwhitelist.h
 
 OTHER_FILES  += \
 	JASP/R/ancova.R \

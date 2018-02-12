@@ -160,7 +160,9 @@ public:
 	Doubles AsDoubles;
 	Ints AsInts;
 
-	enum ColumnType { ColumnTypeUnknown = 0, ColumnTypeNominal = 1, ColumnTypeNominalText = 2, ColumnTypeOrdinal = 4, ColumnTypeScale = 8 };
+	///ColumnType is strictly 0...N so that we may use it directly as index in (for instance) dataset.qml and datasettablemodel
+	enum ColumnType { ColumnTypeUnknown = -1, ColumnTypeScale = 0, ColumnTypeOrdinal, ColumnTypeNominal, ColumnTypeNominalText  };
+
 	static std::string getColumnTypeAsString(ColumnType type);
 
 	void setColumnType(ColumnType columnType);

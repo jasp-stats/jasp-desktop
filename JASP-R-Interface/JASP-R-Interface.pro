@@ -2,14 +2,17 @@ QT -= gui
 
 CURRENT_R_VERSION = 3.3
 
-windows:CONFIG += c++11
-macx:CONFIG += c++11
-linux:CONFIG += c++11
+CONFIG += c++11
 
 TARGET = JASP-R-Interface
 DESTDIR = ..
 TEMPLATE = lib
 linux:CONFIG += staticlib
+
+DEPENDPATH = ..
+PRE_TARGETDEPS += ../JASP-Common
+LIBS += -L.. -lJASP-Common
+
 
 _R_HOME = $$(R_HOME)
 
@@ -47,7 +50,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     jasprcpp.cpp \
     RInside/MemBuf.cpp \
-    RInside/RInside.cpp
+    RInside/RInside.cpp \
+    rinside_consolelogging.cpp
 
 HEADERS += \
     jasprcpp_interface.h \
@@ -58,7 +62,8 @@ HEADERS += \
     RInside/RInsideAutoloads.h \
     RInside/RInsideCommon.h \
     RInside/RInsideConfig.h \
-    RInside/RInsideEnvVars.h
+    RInside/RInsideEnvVars.h \
+    rinside_consolelogging.h
 
 unix {
 	target.path = /usr/lib
