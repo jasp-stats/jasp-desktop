@@ -684,7 +684,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     		  allEstimates <- allTees <- allSE <- allPees <- numeric() 
     		  for (k in 1:numberOfLevels) {  ### Loop over all the levels within factor and do pairwise t.tests on them
     		    for (i in .seqx(k+1, numberOfLevels)) {
-    		      tResult <- t.test(unlist(postHocData[listVarNamesToLevel[[k]]]),unlist(postHocData[listVarNamesToLevel[[i]]]), paired= T, var.equal = F)
+    		      tResult <- t.test(rowMeans(postHocData[listVarNamesToLevel[[k]]]),rowMeans(postHocData[listVarNamesToLevel[[i]]]), paired= T, var.equal = F)
     		      allEstimates[countr] <- tResult$estimate
     		      allTees[countr] <- tResult$statistic
     		      allSE[countr] <- tResult$estimate / tResult$statistic
