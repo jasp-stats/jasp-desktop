@@ -1,12 +1,12 @@
 import QtQuick 2.7
-import QtQuick.Controls 2.2 as New
+import QtQuick.Controls 2.3 as New
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.3
 
 FocusScope
 {
     height: filterWindow.minimumHeightTextBoxes * 3
-    Layout.minimumHeight: filterWindow.minimumHeightTextBoxes + applyFilter.implicitHeight + (filterError.visible ? filterWindow.minimumHeightTextBoxes : 0 ) + filterGeneratedBox.height
+    Layout.minimumHeight: filterWindow.minimumHeightTextBoxes + applyFilter.implicitHeight + (filterError.visible ? filterError.contentHeight : 0 ) + filterGeneratedBox.height
 
     visible: opened
 
@@ -106,7 +106,7 @@ FocusScope
             textColor: "red"
             readOnly: true
             text: filterErrorText
-            Layout.minimumHeight: Math.min(filterError.contentHeight, filterWindow.minimumHeightTextBoxes)
+            Layout.minimumHeight: filterWindow.minimumHeightTextBoxes//filterError.contentHeight//Math.min(filterError.contentHeight, filterWindow.minimumHeightTextBoxes)
 
             states: [
                 State {
@@ -116,7 +116,7 @@ FocusScope
                 },
                 State {
                     name: "opened"
-                    PropertyChanges { target: filterError; visible: true; height: Math.min(filterError.contentHeight, filterWindow.minimumHeightTextBoxes)}
+                    PropertyChanges { target: filterError; visible: true; height: filterError.contentHeight} //Math.min( , filterWindow.minimumHeightTextBoxes)
 
                     when: filterError.text.length > 0
                 }

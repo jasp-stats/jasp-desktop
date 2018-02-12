@@ -278,48 +278,18 @@ FocusScope {
 
                     Component {
                         id: filterCheckBoxVariablesWindowTemplate
-                        New.Button {
-                            id: filterCheckButton
-                            checkable: true
+                        PlusMinusCheckButton
+                        {
+                            color: colorItem
                             checked: valueItem
 
+                            id: filterCheckButton
                             onClicked:
                             {
                                 if(checked != valueItem)
                                      levelsTableModel.setAllowFilterOnLabel(rowItem, checked);
                                 checked = levelsTableModel.allowFilter(rowItem);
                             }
-
-                            background: Item {
-                                //I dont like the standard checkboxes so here we go. Maybe we can make a nice JASP checkbox?
-
-                                    Rectangle
-                                    {
-                                        anchors.top: parent.top
-                                        anchors.bottom: parent.bottom
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        anchors.margins: 1
-
-                                        width: height
-                                        radius: width
-
-                                        color: "transparent"
-                                        border.color: colorItem
-                                        border.width: 2
-
-                                        Rectangle
-                                        {
-                                            radius: parent.radius
-                                            anchors.fill: parent
-                                            anchors.margins: parent.border.width
-
-                                            color: filterCheckButton.checked ? colorItem : "transparent"
-                                            border.width: 0
-
-                                        }
-                                    }
-                            }
-
 
                         }
                     }

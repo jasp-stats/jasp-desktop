@@ -25,5 +25,6 @@
         <file>VariablesWindow.qml</file>
         <file>ProgressBarHolder.qml</file>
         <file>DataTableView.qml</file>
+        <file>PlusMinusCheckButton.qml</file>
     </qresource>
 </RCC>

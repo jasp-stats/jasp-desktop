@@ -31,7 +31,7 @@ void labelFilterGenerator::labelFilterChanged()
 		for(Column & col : _package->dataSet->columns())
 			if(labelNeedsFilter(col))
 			{
-				newGeneratedFilter << (first ? "" : " & \n") << generateLabelFilter(col);
+				newGeneratedFilter << (first ? "" : " & ") << generateLabelFilter(col);
 				first = false;
 			}
 

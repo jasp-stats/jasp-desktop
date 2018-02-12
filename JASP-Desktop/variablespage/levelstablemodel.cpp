@@ -168,6 +168,7 @@ bool LevelsTableModel::setData(const QModelIndex & index, const QVariant & value
 				emit dataChanged(index, index);
 
 			emit refreshConnectedModels(_column);
+			emit labelFilterChanged();
 		}
     }
 
