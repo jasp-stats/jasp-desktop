@@ -75,16 +75,35 @@ INCLUDEPATH += \
     $$_R_HOME/include
 
 linux:INCLUDEPATH += \
-    $$_R_HOME/site-library/Rcpp/include \
-    /usr/share/R/include
+    /usr/share/R/include \
+    /usr/lib/R/library/include \
+    $$_R_HOME/site-library/Rcpp/include
 
 macx:LIBS += \
     -L$$_R_HOME/lib -lR
 
-linux:LIBS += \
-    -L$$_R_HOME/lib -lR \
-    -lrt
-
 win32:LIBS += \
     -L$$_R_HOME/bin/$$ARCH -lR
+
+windows{
+    SOURCE_LIBFILE = $$OUT_PWD/$$DESTDIR/'lib'$$TARGET'.a'
+    SOURCE_LIBFILE ~= s,/,\\,g
+    DEST_LIBFILE = $$OUT_PWD/$$DESTDIR/$$TARGET'.lib'
+    DEST_LIBFILE ~= s,/,\\,g
+    copyfile.commands += $$quote(cmd /c copy /Y $$SOURCE_LIBFILE $$DEST_LIBFILE)
+
+    first.depends = $(first) copyfile
+    export(first.depends)
+    export(copyfile.commands)
+    QMAKE_EXTRA_TARGETS += first copyfile
+ }
+
+macx{
+	setpath.commands += install_name_tool -id @rpath/libJASP-R-Interface.1.0.0.dylib $$OUT_PWD/$$DESTDIR/libJASP-R-Interface.1.0.0.dylib
+    first.depends = $(first) setpath
+    export(first.depends)
+    export(setpath.commands)
+    QMAKE_EXTRA_TARGETS += first setpath
+}
+
 

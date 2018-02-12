@@ -33,6 +33,7 @@ public:
 	explicit BoundTextEdit(QWidget *parent = 0);
 
 	virtual void bindTo(Option *option) OVERRIDE;
+	void populateFromOption(Option *option);
 
 signals:
 

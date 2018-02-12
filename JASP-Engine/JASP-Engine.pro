@@ -24,7 +24,7 @@ LIBS += -L.. -lJASP-Common
 LIBS += -lJASP-R-Interface
 
 windows:CONFIG(ReleaseBuild) {
-windows:LIBS += -llibboost_filesystem-vc141-mt-1_64 -libboost_system-vc141-mt-1_64 -larchive.dll
+windows:LIBS += -llibboost_filesystem-vc141-mt-1_64 -llibboost_system-vc141-mt-1_64 -larchive.dll
 }
 
 windows:CONFIG(DebugBuild) {
@@ -47,7 +47,9 @@ macx {
 }
 
 linux {
-        LIBS += -ljsoncpp
+        LIBS += -ljsoncpp\
+            -L$$_R_HOME/lib -lR \
+            -lrt
 	isEmpty(_R_HOME):_R_HOME = /usr/lib/R
 	R_EXE  = $$_R_HOME/bin/R
 }
@@ -68,32 +70,13 @@ windows {
 macx | windows { DEFINES += JASP_NOT_LINUX }
 INCLUDEPATH += $$PWD/../JASP-Common/
 
-QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
+macx:QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
 macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 macx:QMAKE_CXXFLAGS += -stdlib=libc++
 
-win32:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__
-
-INCLUDEPATH += \
-	$$_R_HOME/include \
-	$$_R_HOME/library/Rcpp/include
-
-linux:INCLUDEPATH += \
-	/usr/share/R/include \
-        /usr/lib/R/library/include \
-	$$_R_HOME/site-library/Rcpp/include
-
-macx:LIBS += \
-	-L$$_R_HOME/lib -lR
-
-linux:LIBS += \
-	-L$$_R_HOME/lib -lR \
-	-lrt
-
-win32:LIBS += \
-	-L$$_R_HOME/bin/$$ARCH -lR
+win32:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__ -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
 
 win32:LIBS += -lole32 -loleaut32
 
@@ -115,6 +98,7 @@ HEADERS += \
 	engine.h \
     rbridge.h \
     r_functionwhitelist.h
+
 
 OTHER_FILES  += \
 	JASP/R/ancova.R \
@@ -167,4 +151,5 @@ OTHER_FILES  += \
 	JASP/R/ttestbayesianpairedsamples.R \
 	JASP/R/ttestindependentsamples.R \
 	JASP/R/ttestonesample.R \
-	JASP/R/ttestpairedsamples.R
+	JASP/R/ttestpairedsamples.R \
+	JASP/R/networkanalysis.R

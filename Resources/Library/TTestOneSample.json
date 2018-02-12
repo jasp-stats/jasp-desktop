@@ -14,12 +14,23 @@
 			"value": 0.0
 		},
 		{
+			"format": "",
+			"name": "stddev",
+			"type": "Number",
+			"value": 1.0,
+			"min": 0.000
+		},
+		{
 			"name": "students",
 			"type": "Boolean",
 			"default" : true
 		},
 		{
 			"name": "mannWhitneyU",
+			"type": "Boolean"
+		},
+		{
+			"name": "zTest",
 			"type": "Boolean"
 		},
 		{

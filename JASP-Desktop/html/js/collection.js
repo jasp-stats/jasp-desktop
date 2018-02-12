@@ -187,7 +187,9 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 					this.listenTo(itemView.resizer, "ResizeableView:viewResized", this.onViewResized);
 				}
 				else
-					itemView.resizer.resizeStart(w, h, true);
+                {
+					//itemView.resizer.resizeStart(w, h, true);
+                }
 			}
 		}
 	},
@@ -196,8 +198,9 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 		for (var i = 0; i < this.localViews.length; i++) {
 			var itemView = this.localViews[i];
 			if (itemView.resizer) {
-				if (!itemView.resizer.isMouseResizing())
-					itemView.resizer.resizeView(w, h);
+                if (!itemView.resizer.isMouseResizing()) {
+					//itemView.resizer.resizeView(w, h);
+                }
 			}
 		}
 	},
@@ -211,7 +214,9 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 					this.stopListening(itemView.resizer, "ResizeableView:viewResized", this.onViewResized);
 				}
 				else
-					itemView.resizer.resizeStop(w, h);
+                {
+					//itemView.resizer.resizeStop(w, h);
+                }
 			}
 		}
 	},

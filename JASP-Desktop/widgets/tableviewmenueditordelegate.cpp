@@ -18,10 +18,8 @@
 
 #include "tableviewmenueditordelegate.h"
 
-#include <QDebug>
-
 TableViewMenuEditorDelegate::TableViewMenuEditorDelegate(QObject *parent) :
-	QStyledItemDelegate(parent)
+	CustomHoverDelegate(parent)
 {
 }
 

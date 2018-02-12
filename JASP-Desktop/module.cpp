@@ -23,9 +23,7 @@ using namespace std;
 
 map<QString, Module> Module::AllModules = {
 	{"Common", Module("Common")},
-#ifndef __linux__
 	{"SEM", Module("SEM", 1)},
-#endif
 	{ "ReinforcementLearning", Module("ReinforcementLearning", "Reinforcement Learning", 2, false)},
 	{"SummaryStats", Module("SummaryStats", "Summary Stats", 3)},
 	{"MetaAnalysis", Module("MetaAnalysis", "Meta Analysis", 4)},

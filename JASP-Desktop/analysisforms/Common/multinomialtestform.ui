@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>635</width>
-    <height>1065</height>
+    <width>535</width>
+    <height>1159</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -183,7 +183,7 @@
      <zorder>assignCounts</zorder>
     </widget>
    </item>
-   <item row="3" column="1">
+   <item row="4" column="1">
     <widget class="BoundGroupBox" name="plots">
      <property name="title">
       <string>Plots</string>
@@ -292,7 +292,7 @@
      <zorder>horizontalSpacer</zorder>
     </widget>
    </item>
-   <item row="2" column="1">
+   <item row="3" column="1">
     <widget class="BoundGroupBox" name="countProp">
      <property name="enabled">
       <bool>true</bool>
@@ -336,7 +336,20 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="0" rowspan="2">
+   <item row="5" column="0" colspan="2">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="3" column="0" rowspan="2">
     <widget class="BoundGroupBox" name="additional">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -529,7 +542,7 @@
         </property>
        </spacer>
       </item>
-      <item row="1" column="0">
+      <item row="2" column="0">
        <widget class="QRadioButton" name="_2expectedProbs">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -542,24 +555,55 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0" colspan="2">
-       <widget class="QTableView" name="tableView"/>
+      <item row="4" column="0" colspan="2">
+       <widget class="QWidget" name="widget_expectedProbsTable" native="true">
+        <layout class="QGridLayout" name="layout_expectedProbsTable">
+         <item row="0" column="0">
+          <widget class="BoundTableWidget" name="tableWidget"/>
+         </item>
+         <item row="0" column="1">
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QPushButton" name="addColumn">
+             <property name="text">
+              <string>Add column</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="deleteColumn">
+             <property name="text">
+              <string>Delete column</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="resetColumns">
+             <property name="text">
+              <string>Reset</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
       </item>
      </layout>
     </widget>
-   </item>
-   <item row="4" column="0" colspan="2">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>
@@ -594,6 +638,11 @@
    <class>boundSingleItemView</class>
    <extends>QListView</extends>
    <header>widgets/boundsingleitemview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header>widgets/boundtablewidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -633,16 +682,16 @@
   <connection>
    <sender>_2expectedProbs</sender>
    <signal>toggled(bool)</signal>
-   <receiver>tableView</receiver>
+   <receiver>widget_expectedProbsTable</receiver>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>85</x>
-     <y>540</y>
+     <x>117</x>
+     <y>753</y>
     </hint>
     <hint type="destinationlabel">
-     <x>317</x>
-     <y>590</y>
+     <x>271</x>
+     <y>845</y>
     </hint>
    </hints>
   </connection>

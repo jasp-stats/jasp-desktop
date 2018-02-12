@@ -31,4 +31,6 @@ AvailableFieldsListView::AvailableFieldsListView(QWidget *parent) :
 	this->setDragEnabled(true);
 	this->viewport()->setAcceptDrops(true);
 	this->setDragDropMode(QAbstractItemView::DragDrop);
+	this->viewport()->setAttribute(Qt::WA_Hover);
+	this->setItemDelegate(new CustomHoverDelegate(this));
 }

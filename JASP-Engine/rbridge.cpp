@@ -23,6 +23,7 @@
 #include "jsonredirect.h"
 #include "sharedmemory.h"
 #include "appinfo.h"
+#include <iostream>
 
 using namespace std;
 
@@ -669,4 +670,9 @@ std::vector<bool> rbridge_applyFilter(std::string & filterCode, std::string & ge
 string rbridge_saveImage(const string &name, const string &type, const int &height, const int &width, const int ppi)
 {
 	return jaspRCPP_saveImage(name.c_str(), type.c_str(), height, width, ppi);
+}
+
+string rbridge_editImage(const string &name, const string &type, const int &height, const int &width, const int ppi)
+{
+	return jaspRCPP_editImage(name.c_str(), type.c_str(), height, width, ppi);
 }

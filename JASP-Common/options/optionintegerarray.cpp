@@ -25,6 +25,11 @@ OptionIntegerArray::OptionIntegerArray()
 {
 }
 
+void OptionIntegerArray::init(const Json::Value &data)
+{
+	this->set(data.get("default", Json::nullValue));
+}
+
 Json::Value OptionIntegerArray::asJSON() const
 {
 	Json::Value array = Json::arrayValue;

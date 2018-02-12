@@ -108,6 +108,7 @@ SOURCES += \
     $$PWD/widgets/boundpairstable.cpp \
     $$PWD/widgets/boundsingleitemview.cpp \
     $$PWD/widgets/boundtableview.cpp \
+    $$PWD/widgets/boundtablewidget.cpp \
     $$PWD/widgets/boundtextbox.cpp \
     $$PWD/widgets/boundtextedit.cpp \
     $$PWD/widgets/button.cpp \
@@ -176,6 +177,7 @@ HEADERS  += \
     $$PWD/backstage/verticaltabwidget.h \
     $$PWD/backstagewidget.h \
     $$PWD/bound.h \
+    $$PWD/customhoverdelegate.h \
     $$PWD/datasetloader.h \
     $$PWD/datasettablemodel.h \
     $$PWD/enginesync.h \
@@ -262,6 +264,7 @@ HEADERS  += \
     $$PWD/widgets/boundpairstable.h \
     $$PWD/widgets/boundsingleitemview.h \
     $$PWD/widgets/boundtableview.h \
+    $$PWD/widgets/boundtablewidget.h \
     $$PWD/widgets/boundtextbox.h \
     $$PWD/widgets/boundtextedit.h \
     $$PWD/widgets/button.h \
@@ -413,6 +416,7 @@ OTHER_FILES += \
     $$PWD/resources/icons/edit-copy.png \
     $$PWD/resources/icons/edit-delete-shred.png \
     $$PWD/resources/icons/edit-find.png \
+    $$PWD/resources/icons/editImage.png \
     $$PWD/resources/icons/edit-paste.png \
     $$PWD/resources/icons/edit-redo.png \
     $$PWD/resources/icons/edit-undo.png \

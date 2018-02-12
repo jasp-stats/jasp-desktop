@@ -19,14 +19,11 @@
 #ifndef TABLEVIEWCOMBOBOXDELEGATE_H
 #define TABLEVIEWCOMBOBOXDELEGATE_H
 
-#include <QStyledItemDelegate>
-
 #include "common.h"
-#include <QMenu>
-#include <QLabel>
 #include "tableviewmenueditor.h"
+#include "customhoverdelegate.h"
 
-class TableViewMenuEditorDelegate : public QStyledItemDelegate
+class TableViewMenuEditorDelegate : public CustomHoverDelegate
 {
 	Q_OBJECT
 public:
@@ -37,7 +34,6 @@ public:
 
 private slots:
 	void editingFinished();
-
 };
 
 #endif // TABLEVIEWCOMBOBOXDELEGATE_H

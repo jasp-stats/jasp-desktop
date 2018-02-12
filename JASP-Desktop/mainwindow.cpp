@@ -51,6 +51,7 @@
 #include "analysisforms/Common/ttestindependentsamplesform.h"
 #include "analysisforms/Common/ttestonesampleform.h"
 #include "analysisforms/Common/ttestpairedsamplesform.h"
+#include "analysisforms/Common/multinomialtestform.h"
 
 #include "analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.h"
 #include "analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
@@ -66,7 +67,7 @@
 #include "analysisforms/Network/networkanalysisform.h"
 
 #include "analysisforms/MetaAnalysis/classicalmetaanalysisform.h"
-#include "analysisforms/MetaAnalysis/multinomialtestform.h"
+
 
 ///// 1-analyses headers
 
@@ -202,11 +203,12 @@ MainWindow::MainWindow(QWidget *parent) :
 	qmlFilterWindow = ui->quickWidget_Data->rootObject()->findChild<QObject*>("filterWindow");
 	qmlStatusBar	= ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataStatusBar");
 
-	connect(_engineSync, &EngineSync::engineTerminated,		this,			&MainWindow::fatalError);
+	connect(_engineSync, &EngineSync::engineTerminated,		this,					&MainWindow::fatalError);
 
-	connect(_analyses, &Analyses::analysisResultsChanged,	this,			&MainWindow::analysisResultsChangedHandler);
-	connect(_analyses, &Analyses::analysisImageSaved,		this,			&MainWindow::analysisImageSavedHandler);
-	connect(_analyses, &Analyses::analysisAdded,			ui->backStage,	&BackStageWidget::analysisAdded);
+	connect(_analyses, &Analyses::analysisResultsChanged,	this,					&MainWindow::analysisResultsChangedHandler);
+	connect(_analyses, &Analyses::analysisImageSaved,		this,					&MainWindow::analysisImageSavedHandler);
+	connect(_analyses, &Analyses::analysisAdded,			ui->backStage,			&BackStageWidget::analysisAdded);
+	connect(_analyses, &Analyses::analysisImageEdited,		_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler);
 
 	//connect some ribbonbuttons?
 	connect(ui->ribbonAnalysis,					QOverload<QString>::of(&RibbonAnalysis::itemSelected),				this, &MainWindow::itemSelected);
@@ -315,7 +317,6 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 	QMainWindow::resizeEvent(event);
 	adjustOptionsPanelWidth();
 }
-
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
@@ -629,6 +630,23 @@ void MainWindow::analysisImageSavedHandler(Analysis *analysis)
 	}
 }
 
+void MainWindow::analysisEditImageHandler(int id, QString options)
+{
+
+    Analysis *analysis = _analyses->get(id);
+    if (analysis == NULL)
+        return;
+
+    string utf8 = fq(options);
+    Json::Value root;
+    Json::Reader parser;
+    parser.parse(utf8, root);
+
+    analysis->editImage(analysis, root);
+
+    return;
+
+}
 
 AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 {

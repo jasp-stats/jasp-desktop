@@ -140,6 +140,7 @@ private:
 	void saveTextToFileHandler(const QString &filename, const QString &data);
 	void analysisChangedDownstreamHandler(int id, QString options);
 	void analysisSaveImageHandler(int id, QString options);
+    void analysisEditImageHandler(int id, QString options);
 	void removeAnalysisRequestHandler(int id);
 
 signals:
