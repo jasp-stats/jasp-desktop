@@ -26,7 +26,7 @@ macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 macx:QMAKE_CXXFLAGS += -stdlib=libc++
 macx:QMAKE_CXXFLAGS += -DBOOST_INTERPROCESS_SHARED_DIR_FUNC
 
-windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__
+windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__ -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
 
 INCLUDEPATH += $$PWD/
 
@@ -49,6 +49,7 @@ SOURCES += \
 	labels.cpp \
 	options/option.cpp \
 	options/optionboolean.cpp \
+	options/optiondoublearray.cpp \
 	options/optioninteger.cpp \
 	options/optionintegerarray.cpp \
 	options/optionlist.cpp \
@@ -96,11 +97,12 @@ HEADERS += \
 	filereader.h \
 	ipcchannel.h \
 	label.h \
-        labels.h  \
+	labels.h \
 	libzip/archive.h \
 	libzip/archive_entry.h \
 	options/option.h \
 	options/optionboolean.h \
+	options/optiondoublearray.h \
 	options/optioni.h \
 	options/optioninteger.h \
 	options/optionintegerarray.h \

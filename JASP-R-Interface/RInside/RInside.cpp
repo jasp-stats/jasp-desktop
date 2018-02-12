@@ -376,7 +376,7 @@ void RInside::parseEvalQ(const std::string & line) {
     SEXP ans;
     int rc = parseEval(line, ans);
     if (rc != 0) {
-        throw std::runtime_error(std::string("Error evaluating: ") + line);
+		throw std::runtime_error(std::string("Error evaluating: \"") + line + "\"");
     }
 }
 
@@ -389,7 +389,7 @@ RInside::Proxy RInside::parseEval(const std::string & line) {
     SEXP ans;
     int rc = parseEval(line, ans);
     if (rc != 0) {
-        throw std::runtime_error(std::string("Error evaluating: ") + line);
+		throw std::runtime_error(std::string("Error evaluating: \"") + line + "\"");
     }
     return Proxy( ans );
 }

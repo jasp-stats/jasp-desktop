@@ -37,19 +37,17 @@
 using namespace boost::interprocess;
 using namespace std;
 
-EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
+EngineSync::EngineSync(Analyses *analyses, DataSetPackage *package, QObject *parent = 0)
 	: QObject(parent)
 {
 	_analyses = analyses;
-	_engineStarted = false;
-
-	_log = NULL;
-	_ppi = 96;
+	_package = package;
 
 	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), this, SLOT(sendMessages()));
 	connect(_analyses, SIGNAL(analysisOptionsChanged(Analysis*)), this, SLOT(sendMessages()));
 	connect(_analyses, SIGNAL(analysisToRefresh(Analysis*)), this, SLOT(sendMessages()));
 	connect(_analyses, SIGNAL(analysisSaveImage(Analysis*)), this, SLOT(sendMessages()));
+    connect(_analyses, SIGNAL(analysisEditImage(Analysis*)), this, SLOT(sendMessages()));
 
 	// delay start so as not to increase program start up time
 	QTimer::singleShot(100, this, SLOT(deleteOrphanedTempFiles()));
@@ -105,6 +103,7 @@ void EngineSync::start()
 	for (uint i = 0; i < _channels.size(); i++)
 	{
 		_analysesInProgress.push_back(NULL);
+		_filterSent.push_back(false);
 		startSlaveProcess(i);
 	}
 
@@ -145,6 +144,7 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 
 	if (analysis->status() == Analysis::Empty)
 	{
+		std::cout <<"analysis->status() == Analysis::Empty\n" << std::flush;
 		perform = "init";
 		analysis->setStatus(Analysis::Initing);
 	}
@@ -152,13 +152,19 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	{
 		perform = "saveImg";
 	}
+    else if (analysis->status() == Analysis::EditImg)
+    {
+        perform = "editImg";
+    }
 	else if (analysis->status() == Analysis::Aborting)
 	{
+		std::cout <<"analysis->status() == Analysis::Aborting\n" << std::flush;
 		perform = "abort";
 		analysis->setStatus(Analysis::Aborted);
 	}
 	else
 	{
+		std::cout <<"analysis->status() something else\n" << std::flush;
 		perform = "run";
 		analysis->setStatus(Analysis::Running);
 	}
@@ -176,8 +182,7 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	{
 		json["name"] = analysis->name();
 		json["title"] = analysis->title();
-		if (perform == "saveImg")
-		{
+        if (perform == "saveImg" || perform == "editImg") {
 			json["image"] = analysis->getSaveImgOptions();
 		}
 		else
@@ -209,7 +214,7 @@ void EngineSync::process()
 	{
 		Analysis *analysis = _analysesInProgress[i];
 
-		if (analysis == NULL)
+		if (analysis == NULL && !_filterSent[i])
 			continue;
 
 		IPCChannel *channel = _channels[i];
@@ -227,14 +232,42 @@ void EngineSync::process()
 			Json::Value json;
 			reader.parse(data, json);
 
-			int id = json.get("id", -1).asInt();
-			int revision = json.get("revision", -1).asInt();
-			int progress = json.get("progress", -1).asInt();
+
+			if(_filterSent[i])
+			{
+				if(json.get("filterResult", Json::Value(Json::intValue)).isArray()) //If the result is an array then it came from the engine.
+				{
+					std::vector<bool> filterResult;
+					for(Json::Value & jsonResult : json.get("filterResult", Json::Value(Json::arrayValue)))
+						filterResult.push_back(jsonResult.asBool());
+
+					processNewFilterResult(filterResult);
+
+					_filterSent[i] = false;
+					continue;
+				}
+				else if(!json.get("filterError", Json::Value(Json::arrayValue)).isArray())
+				{
+					emit filterErrorTextChanged(QString::fromStdString(json.get("filterError", "").asString()));
+				}
+
+
+				if(analysis == NULL) //we only came here because we are expecting a filterresult and didnt get it, there is also no analysis so:
+					continue;
+			}
+
+			int id				= json.get("id", -1).asInt();
+			int revision		= json.get("revision", -1).asInt();
+			int progress		= json.get("progress", -1).asInt();
 			Json::Value results = json.get("results", Json::nullValue);
-			string status = json.get("status", "error").asString();
+			string status		= json.get("status", "error").asString();
+
 
 			if (analysis->id() != id || analysis->revision() != revision)
 				continue;
+
+			std::cout << status << "\n" << std::flush;
+
 
 			if (status == "error" || status == "exception")
 			{
@@ -257,6 +290,13 @@ void EngineSync::process()
 				_analysesInProgress[i] = NULL;
 				sendMessages();
 			}
+            else if (status == "imageEdited")
+            {
+                analysis->setStatus(Analysis::Complete);
+                analysis->setImageEdited(results);
+                _analysesInProgress[i] = NULL;
+                sendMessages();
+            }
 			else if (status == "complete")
 			{
 				analysis->setStatus(Analysis::Complete);
@@ -293,6 +333,31 @@ void EngineSync::process()
 	}
 }
 
+void EngineSync::processNewFilterResult(std::vector<bool> filterResult)
+{
+	_package->dataFilter = dataFilter.toStdString(); //remember the filter that was last used and actually gave results.
+	_package->dataSet->setFilterVector(filterResult);
+
+	emit filterUpdated();
+	emit filterErrorTextChanged("");
+}
+
+
+
+void EngineSync::sendFilter(QString generatedFilter, QString filter)
+{
+	Json::Value json = Json::Value(Json::objectValue);
+
+	json["generatedFilter"] = generatedFilter.toStdString();
+
+	dataFilter = filter == "" ? "*" : filter;
+	json["filter"] = dataFilter.toStdString();
+
+	string str = json.toStyledString();
+	_channels[0]->send(str);
+	_filterSent[0] = true;
+}
+
 void EngineSync::sendMessages()
 {
 	for (size_t i = 0; i < _analysesInProgress.size(); i++) // this loop handles changes in running analyses
@@ -318,7 +383,7 @@ void EngineSync::sendMessages()
 		if (analysis == NULL)
 			continue;
 
-		if (analysis->status() == Analysis::Empty || analysis->status() == Analysis::SaveImg)
+		if (analysis->status() == Analysis::Empty || analysis->status() == Analysis::SaveImg || analysis->status() == Analysis::EditImg)
 		{
 			bool sent = false;
 
@@ -509,4 +574,3 @@ void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus exitStatu
 
 	qDebug() << "subprocess finished" << exitCode;
 }
-

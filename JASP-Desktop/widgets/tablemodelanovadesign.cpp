@@ -481,4 +481,3 @@ void TableModelAnovaDesign::deleteRow(int rowNo)
 
 	emit designChanged();
 }
-

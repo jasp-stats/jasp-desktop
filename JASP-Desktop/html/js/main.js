@@ -50,6 +50,12 @@ $(document).ready(function () {
 		analyses.reRender();
 	}
 
+	window.modifySelectedImage = function(id, image) {
+		var jaspWidget = analyses.getAnalysis(id);
+		jaspWidget.imageToEdit = image;
+		jaspWidget.render();
+	}
+	
 	window.select = function (id) {
 
 		if (selectedAnalysis != null)
@@ -106,6 +112,13 @@ $(document).ready(function () {
     window.saveImageClicked = function () {
         if (window.menuObject.saveImageClicked | window.menuObject.saveImageClicked())
             window.menuObject.saveImageClicked();
+
+        window.menuObject = null;
+    }
+
+    window.editImageClicked = function () {
+        if (window.menuObject.editImageClicked | window.menuObject.editImageClicked())
+            window.menuObject.editImageClicked();
 
         window.menuObject = null;
     }
@@ -488,6 +501,12 @@ $(document).ready(function () {
             jaspWidget.on("saveimage", function (id, options) {
 
                 jasp.analysisSaveImage(id, JSON.stringify(options))
+
+            });
+
+            jaspWidget.on("editimage", function (id, options) {
+
+                jasp.analysisEditImage(id, JSON.stringify(options))
 
             });
 

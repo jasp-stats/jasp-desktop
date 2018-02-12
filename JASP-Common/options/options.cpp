@@ -22,6 +22,7 @@
 #include "options/optionboolean.h"
 #include "options/optioninteger.h"
 #include "options/optionintegerarray.h"
+#include "options/optiondoublearray.h"
 #include "options/optionlist.h"
 #include "options/optionnumber.h"
 #include "options/optionstable.h"
@@ -83,6 +84,8 @@ Option* Options::createOption(string typeString)
 		return new OptionInteger();
 	else if (typeString == "IntegerArray")
 		return new OptionIntegerArray();
+	else if (typeString == "DoubleArray")
+		return new OptionDoubleArray();
 	else if (typeString == "List")
 		return new OptionList();
 	else if (typeString == "Number")

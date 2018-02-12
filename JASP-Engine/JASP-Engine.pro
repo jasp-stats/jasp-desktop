@@ -47,7 +47,9 @@ macx {
 }
 
 linux {
-	LIBS += -ljsoncpp
+        LIBS += -ljsoncpp\
+            -L$$_R_HOME/lib -lR \
+            -lrt
 	isEmpty(_R_HOME):_R_HOME = /usr/lib/R
 	R_EXE  = $$_R_HOME/bin/R
 }
@@ -74,7 +76,7 @@ macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 macx:QMAKE_CXXFLAGS += -stdlib=libc++
 
-win32:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__
+win32:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__ -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
 
 win32:LIBS += -lole32 -loleaut32
 
@@ -89,11 +91,14 @@ QMAKE_CLEAN += $$OUT_PWD/../R/library/*
 
 SOURCES += main.cpp \
 	engine.cpp \
-	rbridge.cpp
+    rbridge.cpp \
+    r_functionwhitelist.cpp
 
 HEADERS += \
 	engine.h \
-	rbridge.h
+    rbridge.h \
+    r_functionwhitelist.h
+
 
 OTHER_FILES  += \
 	JASP/R/ancova.R \
@@ -146,4 +151,5 @@ OTHER_FILES  += \
 	JASP/R/ttestbayesianpairedsamples.R \
 	JASP/R/ttestindependentsamples.R \
 	JASP/R/ttestonesample.R \
-	JASP/R/ttestpairedsamples.R
+	JASP/R/ttestpairedsamples.R \
+	JASP/R/networkanalysis.R

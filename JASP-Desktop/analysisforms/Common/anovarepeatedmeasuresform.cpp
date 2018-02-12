@@ -47,7 +47,7 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	_withinSubjectCellsListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->repeatedMeasuresCells->setModel(_withinSubjectCellsListModel);
 	ui->repeatedMeasuresCells->viewport()->setAttribute(Qt::WA_Hover);
-	ui->repeatedMeasuresCells->setItemDelegate(new AnovaHoverDelegate(ui->repeatedMeasuresCells));
+	ui->repeatedMeasuresCells->setItemDelegate(new CustomHoverDelegate(ui->repeatedMeasuresCells));
 
 
 	_betweenSubjectsFactorsListModel = new TableModelVariablesAssigned(this);
@@ -110,9 +110,29 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	ui->buttonAssignSeperateLines->setSourceAndTarget(ui->plotVariables, ui->plotSeparateLines);
 	ui->buttonAssignSeperatePlots->setSourceAndTarget(ui->plotVariables, ui->plotSeparatePlots);
 
+    _simpleEffectsAvailableTableModel = new TableModelVariablesAvailable();
+	ui->simpleEffectsVariables->setModel(_simpleEffectsAvailableTableModel);
+
+    _simpleFactorTableModel = new TableModelVariablesAssigned(this);
+    _simpleFactorTableModel->setSource(_simpleEffectsAvailableTableModel);
+	ui->simpleFactor->setModel(_simpleFactorTableModel);
+
+    _moderatorOneTableModel = new TableModelVariablesAssigned(this);
+    _moderatorOneTableModel->setSource(_simpleEffectsAvailableTableModel);
+	ui->moderatorFactorOne->setModel(_moderatorOneTableModel);
+
+    _moderatorTwoTableModel = new TableModelVariablesAssigned(this);
+    _moderatorTwoTableModel->setSource(_simpleEffectsAvailableTableModel);
+	ui->moderatorFactorTwo->setModel(_moderatorTwoTableModel);
+
+	ui->buttonAssignSimpleFactor->setSourceAndTarget(ui->simpleEffectsVariables, ui->simpleFactor);
+	ui->buttonAssignModeratorOne->setSourceAndTarget(ui->simpleEffectsVariables, ui->moderatorFactorOne);
+	ui->buttonAssignModeratorTwo->setSourceAndTarget(ui->simpleEffectsVariables, ui->moderatorFactorTwo);
+
 	ui->containerModel->hide();
 	ui->containerFactors->hide();
 	ui->containerOptions->hide();
+	ui->containerSimpleEffect->hide();
 	ui->containerPostHocTests->hide();
 	ui->containerDescriptivesPlot->hide();
 	ui->containerAssumptions->hide();
@@ -174,12 +194,19 @@ void AnovaRepeatedMeasuresForm::factorsChanged(bool changed)
 
 		_contrastsModel->setVariables(factorsAvailable);
 		_plotFactorsAvailableTableModel->setVariables(factorsAvailable);
+		_simpleEffectsAvailableTableModel->setVariables(factorsAvailable);
 
 		Terms plotVariablesAssigned;
 		plotVariablesAssigned.add(_horizontalAxisTableModel->assigned());
 		plotVariablesAssigned.add(_seperateLinesTableModel->assigned());
 		plotVariablesAssigned.add(_seperatePlotsTableModel->assigned());
 		_plotFactorsAvailableTableModel->notifyAlreadyAssigned(plotVariablesAssigned);
+
+		Terms simpleEffectsVariablesAssigned;
+		simpleEffectsVariablesAssigned.add(_simpleFactorTableModel->assigned());
+		simpleEffectsVariablesAssigned.add(_moderatorOneTableModel->assigned());
+		simpleEffectsVariablesAssigned.add(_moderatorTwoTableModel->assigned());
+		_simpleEffectsAvailableTableModel->notifyAlreadyAssigned(simpleEffectsVariablesAssigned);
 
 		ui->postHocTestsVariables->setVariables(factorsAvailable);
 	}

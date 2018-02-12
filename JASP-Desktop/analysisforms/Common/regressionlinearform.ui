@@ -571,7 +571,7 @@
       <item row="10" column="2">
        <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>WLS Weights</string>
+         <string>WLS Weights (optional)</string>
         </property>
        </widget>
       </item>
@@ -644,7 +644,7 @@
       <item row="0" column="2">
        <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Dependent</string>
+         <string>Dependent Variable</string>
         </property>
        </widget>
       </item>

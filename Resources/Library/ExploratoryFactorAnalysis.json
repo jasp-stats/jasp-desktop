@@ -76,6 +76,12 @@
 			"default": false
 		},
 		{
+            "name": "missingValues",
+            "options": [ "pairwise", "listwise" ],
+            "default": "pairwise",
+            "type": "List"
+        },
+		{
 			"name": "incl_pathDiagram",
 			"type": "Boolean",
 			"default": false

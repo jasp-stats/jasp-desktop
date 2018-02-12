@@ -78,8 +78,6 @@ SOURCES += \
     $$PWD/importers/spss/verylongstringrecord.cpp \
     $$PWD/importers/spssimporter.cpp \
     $$PWD/main.cpp \
-    $$PWD/maintablehorizontalheader.cpp \
-    $$PWD/maintableview.cpp \
     $$PWD/mainwindow.cpp \
     $$PWD/module.cpp \
     $$PWD/onlinedataconnection.cpp \
@@ -98,8 +96,6 @@ SOURCES += \
     $$PWD/term.cpp \
     $$PWD/terms.cpp \
     $$PWD/variablespage/levelstablemodel.cpp \
-    $$PWD/variablespage/variablestablemodel.cpp \
-    $$PWD/variableswidget.cpp \
     $$PWD/widgets/anovamodelwidget.cpp \
     $$PWD/widgets/assignbutton.cpp \
     $$PWD/widgets/assignbuttonmenu.cpp \
@@ -112,6 +108,7 @@ SOURCES += \
     $$PWD/widgets/boundpairstable.cpp \
     $$PWD/widgets/boundsingleitemview.cpp \
     $$PWD/widgets/boundtableview.cpp \
+    $$PWD/widgets/boundtablewidget.cpp \
     $$PWD/widgets/boundtextbox.cpp \
     $$PWD/widgets/boundtextedit.cpp \
     $$PWD/widgets/button.cpp \
@@ -121,7 +118,6 @@ SOURCES += \
     $$PWD/widgets/itemmodelselectitem.cpp \
     $$PWD/widgets/itemmodelselectvariable.cpp \
     $$PWD/widgets/listview.cpp \
-    $$PWD/widgets/progresswidget.cpp \
     $$PWD/widgets/ribbonbutton.cpp \
     $$PWD/widgets/stealthbutton.cpp \
     $$PWD/widgets/subjectivepriorswidget.cpp \
@@ -146,7 +142,8 @@ SOURCES += \
     $$PWD/resultsjsinterface.cpp \
     $$PWD/customwebenginepage.cpp \
     $$PWD/asyncloaderthread.cpp \
-    $$PWD/aboutdialogjsinterface.cpp
+    $$PWD/aboutdialogjsinterface.cpp \
+    $$PWD/variablespage/labelfiltergenerator.cpp
 
 
 HEADERS  += \
@@ -180,6 +177,7 @@ HEADERS  += \
     $$PWD/backstage/verticaltabwidget.h \
     $$PWD/backstagewidget.h \
     $$PWD/bound.h \
+    $$PWD/customhoverdelegate.h \
     $$PWD/datasetloader.h \
     $$PWD/datasettablemodel.h \
     $$PWD/enginesync.h \
@@ -233,8 +231,6 @@ HEADERS  += \
     $$PWD/importers/spss/variablerecord.h \
     $$PWD/importers/spss/verylongstringrecord.h \
     $$PWD/importers/spssimporter.h \
-    $$PWD/maintablehorizontalheader.h \
-    $$PWD/maintableview.h \
     $$PWD/mainwindow.h \
     $$PWD/module.h \
     $$PWD/onlinedataconnection.h \
@@ -255,8 +251,6 @@ HEADERS  += \
     $$PWD/terms.h \
     $$PWD/variableinfo.h \
     $$PWD/variablespage/levelstablemodel.h \
-    $$PWD/variablespage/variablestablemodel.h \
-    $$PWD/variableswidget.h \
     $$PWD/widgets/anovamodelwidget.h \
     $$PWD/widgets/assignbutton.h \
     $$PWD/widgets/assignbuttonmenu.h \
@@ -270,6 +264,7 @@ HEADERS  += \
     $$PWD/widgets/boundpairstable.h \
     $$PWD/widgets/boundsingleitemview.h \
     $$PWD/widgets/boundtableview.h \
+    $$PWD/widgets/boundtablewidget.h \
     $$PWD/widgets/boundtextbox.h \
     $$PWD/widgets/boundtextedit.h \
     $$PWD/widgets/button.h \
@@ -282,7 +277,6 @@ HEADERS  += \
     $$PWD/widgets/itemmodelselectitem.h \
     $$PWD/widgets/itemmodelselectvariable.h \
     $$PWD/widgets/listview.h \
-    $$PWD/widgets/progresswidget.h \
     $$PWD/widgets/ribbonbutton.h \
     $$PWD/widgets/stealthbutton.h \
     $$PWD/widgets/subjectivepriorswidget.h \
@@ -308,7 +302,8 @@ HEADERS  += \
     $$PWD/resultsjsinterface.h \
     $$PWD/customwebenginepage.h \
     $$PWD/asyncloaderthread.h \
-    $$PWD/aboutdialogjsinterface.h
+    $$PWD/aboutdialogjsinterface.h \
+    $$PWD/variablespage/labelfiltergenerator.h
 
 FORMS += \
     $$PWD/aboutdialog.ui \
@@ -320,7 +315,6 @@ FORMS += \
     $$PWD/variableswidget.ui \
     $$PWD/widgets/anovamodelwidget.ui \
     $$PWD/widgets/boundassignwidget.ui \
-    $$PWD/widgets/progresswidget.ui \
     $$PWD/widgets/subjectivepriorswidget.ui
 
 RESOURCES += \
@@ -422,6 +416,7 @@ OTHER_FILES += \
     $$PWD/resources/icons/edit-copy.png \
     $$PWD/resources/icons/edit-delete-shred.png \
     $$PWD/resources/icons/edit-find.png \
+    $$PWD/resources/icons/editImage.png \
     $$PWD/resources/icons/edit-paste.png \
     $$PWD/resources/icons/edit-redo.png \
     $$PWD/resources/icons/edit-undo.png \
