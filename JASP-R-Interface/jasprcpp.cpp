@@ -244,7 +244,6 @@ void jaspRCPP_returnDataFrame(Rcpp::DataFrame frame)
 		for(int row=0; row<rowcount; row++)
 		{
 			for(int col=0; col<colcount; col++)
-				//std::cout << Base64::decode("X", std::string(((Rcpp::StringVector)frame[col])[row]), Base64::RVarEncoding) << " ";
 				std::cout << "'" << ((Rcpp::StringVector)frame[col])[row] << " or " <<  ((Rcpp::NumericVector)frame[col])[row]  << "'\t" << std::flush;
 
 			std::cout << "\n";

@@ -21,7 +21,7 @@
 #include <RInside/RInside.h>
 #include <Rcpp.h>
 #include "jasprcpp_interface.h"
-#include "../JASP-Common/base64.h"
+
 
 
 // Calls From R

@@ -7,7 +7,7 @@ FocusScope {
     height: 200
     visible: opened
 
-    Layout.minimumHeight: 100
+    Layout.minimumHeight: buttonColumnVariablesWindow.minimumHeight
 
 
     property var headersGradient: Gradient{
@@ -303,6 +303,7 @@ FocusScope {
                     anchors.top: parent.top
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
+                    property real minimumHeight: (variablesWindowCloseButton.height + spacing) * 4 + ( 3 * spacing)
 
                     Button
                     {
