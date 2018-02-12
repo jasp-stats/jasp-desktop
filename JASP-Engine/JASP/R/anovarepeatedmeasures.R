@@ -665,7 +665,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		  # Results using the Holm method
 		  resultHolm <- summary(pairs(referenceGrid[[var]], adjust="holm"))
 	
-		  orderOfTerms <- unlist(options$withinModelTerms[[length(options$withinModelTerms)]]$components)
+		  orderOfTerms <- unlist(lapply(options$withinModelTerms, function(x) x$components))
+		  # unlist(options$withinModelTerms[[length(options$withinModelTerms)]]$components)
 		  indexofOrderFactors <- match(allNames,orderOfTerms)
 		  
 		  if (any(var == allNames)) {     ## If the variable is a repeated measures factor
@@ -918,7 +919,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 						row[["eta"]] <- SS / SSt
 						row[["partialEta"]] <- SS / (SS + SSr)
-						omega <- (SS - (df * MSr)) / (SSt + MSr)
+						omega <- (SS - (df * MSr)) / (SSt + MSr) #p480 Field
 
 						if (omega < 0) {
 							row[["omega"]] <- 0
