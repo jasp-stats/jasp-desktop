@@ -1392,7 +1392,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 								row[["eta"]] <- SS / SSt
 								row[["partialEta"]] <- SS / (SS + SSr)
 								n <- resultTable["Residuals","Df"]  + 1
-								MSm <- row[['MS']]
+								MSm <- resultTable[.v(row$case), "Mean Sq"]
 								MSb <- result["Error: subject"][[1]][[1]]$`Mean Sq`
 								MSb <- MSb[length(MSb)]
 								omega <- (df / (n * (df + 1)) * (MSm - MSr)) / 
@@ -1594,11 +1594,10 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 								SSr <- result[index,"Error SS"]
 								SSt <- sum(result[indices,"SS"]) + SSr
 								MSr <- SSr/result[index,"den Df"]
-
 								row[["eta"]] <- SS / SSt
 								row[["partialEta"]] <- SS / (SS + SSr)
 								n <- result[1, 'den Df'] + 1
-								MSm <- row[['MS']]
+								MSm <- result[.v(row$case), "SS"] / result[.v(row$case), "num Df"] 
 								MSb <- result[1, 'Error SS'] / (n - 1)
 								omega <- (df / (n * (df + 1)) * (MSm - MSr)) / 
 								         (MSr + ((MSb - MSr) / (df + 1)) +
