@@ -665,8 +665,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		  # Results using the Holm method
 		  resultHolm <- summary(pairs(referenceGrid[[var]], adjust="holm"))
 	
-		  orderOfTerms <- unlist(lapply(options$withinModelTerms, function(x) x$components))
-		  # unlist(options$withinModelTerms[[length(options$withinModelTerms)]]$components)
+		  orderOfTerms <- unlist(lapply(options$repeatedMeasuresFactors, function(x) x$name))
 		  indexofOrderFactors <- match(allNames,orderOfTerms)
 		  
 		  if (any(var == allNames)) {     ## If the variable is a repeated measures factor
@@ -919,7 +918,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 						row[["eta"]] <- SS / SSt
 						row[["partialEta"]] <- SS / (SS + SSr)
-						omega <- (SS - (df * MSr)) / (SSt + MSr) #p480 Field
+						omega <- (SS - (df * MSr)) / (SSt + MSr) 
 
 						if (omega < 0) {
 							row[["omega"]] <- 0
@@ -1393,7 +1392,12 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 								row[["eta"]] <- SS / SSt
 								row[["partialEta"]] <- SS / (SS + SSr)
-								omega <- (SS - (df * MSr)) / (SSt + MSr)
+								n <- result["Error: subject"][[1]][[1]]$Df  + 1
+								MSm <- row[['MS']]
+								MSb <- result["Error: subject"][[1]][[1]]$`Sum Sq` / (n - 1)
+								omega <- (df / (n * (df + 1)) * (MSm - MSr)) / 
+      								   (MSr + ((MSb - MSr) / (df + 1)) +
+      								   (df / (n * (df + 1))) * (MSm - MSr))
 
 								if (omega < 0) {
 									row[["omega"]] <- 0
@@ -1593,7 +1597,13 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 								row[["eta"]] <- SS / SSt
 								row[["partialEta"]] <- SS / (SS + SSr)
-								omega <- (SS - (df * MSr)) / (SSt + MSr)
+								n <- result[1, 'den Df'] + 1
+								MSm <- row[['MS']]
+								MSb <- result[1, 'Error SS'] / (n - 1)
+								omega <- (df / (n * (df + 1)) * (MSm - MSr)) / 
+								         (MSr + ((MSb - MSr) / (df + 1)) +
+						             (df / (n * (df + 1))) * (MSm - MSr))
+
 
 								if (omega < 0) {
 									row[["omega"]] <- 0
@@ -2642,7 +2652,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     fullOrder <- betweenOrder
     
     dataset <- dataset[fullOrder]
-    orderOfTerms <- unlist(options[['withinModelTerms']][[length(options[['withinModelTerms']])]]$components)
+    # orderOfTerms <- unlist(options[['withinModelTerms']][[length(options[['withinModelTerms']])]]$components)
+    orderOfTerms <- unlist(lapply(options$repeatedMeasuresFactors, function(x) x$name))
+    
     indexofOrderFactors <- match(allNames,orderOfTerms)
 
     for (level in lvls[[1]]) {
