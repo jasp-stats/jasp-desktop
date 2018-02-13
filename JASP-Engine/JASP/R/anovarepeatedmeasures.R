@@ -915,7 +915,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 						SSt <- sum(resultTable[,"Sum Sq"])
 						SSr <- resultTable["Residuals","Sum Sq"]
 						MSr <- SSr/resultTable["Residuals","Df"]
-
+  
 						row[["eta"]] <- SS / SSt
 						row[["partialEta"]] <- SS / (SS + SSr)
 						omega <- (SS - (df * MSr)) / (SSt + MSr) 
@@ -1389,12 +1389,12 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 								SSt <- sum(resultTable[,"Sum Sq"])
 								SSr <- resultTable["Residuals","Sum Sq"]
 								MSr <- SSr/resultTable["Residuals","Df"]
-
 								row[["eta"]] <- SS / SSt
 								row[["partialEta"]] <- SS / (SS + SSr)
-								n <- result["Error: subject"][[1]][[1]]$Df  + 1
+								n <- resultTable["Residuals","Df"]  + 1
 								MSm <- row[['MS']]
-								MSb <- result["Error: subject"][[1]][[1]]$`Sum Sq` / (n - 1)
+								MSb <- result["Error: subject"][[1]][[1]]$`Mean Sq`
+								MSb <- MSb[length(MSb)]
 								omega <- (df / (n * (df + 1)) * (MSm - MSr)) / 
       								   (MSr + ((MSb - MSr) / (df + 1)) +
       								   (df / (n * (df + 1))) * (MSm - MSr))
