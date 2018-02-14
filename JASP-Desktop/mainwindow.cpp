@@ -192,7 +192,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->quickWidget_Data->setSource(QUrl(QString("qrc:///qml/dataset.qml")));
 
-
 	QObject * DataView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataSetTableView");
 	connect(DataView, SIGNAL(dataTableDoubleClicked()), this, SLOT(startDataEditorHandler()));
 
@@ -276,7 +275,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	QApplication::setFont(ui->tableView->font());
 #endif
 
-	ui->panel_1_Data->show();
+	ui->panel_1_Data->hide();
 	ui->panel_2_Options->hide();
 
 	// init Empty Values
@@ -1169,6 +1168,7 @@ void MainWindow::populateUIfromDataSet()
 {
 	_tableModel->setDataSet(_package->dataSet);
 	_levelsTableModel->setDataSet(_package->dataSet);
+
 	triggerQmlColumnReload();
 	applyAndSendFilter(QString::fromStdString(_package->dataFilter));
 
@@ -1853,6 +1853,7 @@ void MainWindow::startDataEditor(QString path)
 
 void MainWindow::showProgress()
 {
+	ui->panel_1_Data->show();
 	QMetaObject::invokeMethod(qmlProgressBar, "show");
 }
 
