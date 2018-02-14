@@ -637,7 +637,7 @@ ScrollView {
                     sourceComponent: rowitem.itemModel !== undefined ? (root.extraSpaceLeft > 0 ? root.rowNumberDelegate : null ) : null
                     // Row fills the view width regardless of item size
                     // But scrollbar should not adjust to it
-                    height: item ? item.height : 16
+                    height: rowitem.height
                     width: root.extraSpaceLeft
                     x: listView.contentX - root.extraSpaceLeft
                     z: 3 // should be on top!

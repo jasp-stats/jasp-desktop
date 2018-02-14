@@ -311,12 +311,14 @@ FocusScope
                 elide: styleData.elideMode
                 horizontalAlignment: styleData.textAlignment
                 leftPadding: 4
+                anchors.verticalCenter: parent.verticalCenter
 
             }
         }
 
         rowDelegate: Item
         {
+            height: 30
             Rectangle
             {
                 color: styleData.selected ? systemPalette.dark :  (styleData.alternate && dataSetModel.getRowFilter(styleData.row) ? systemPalette.midlight : systemPalette.light)
@@ -331,7 +333,7 @@ FocusScope
             id: rowNumberBorder
             anchors.left: parent.left
             anchors.top: parent.top
-            anchors.bottom: parent.bottom
+            //anchors.bottom: parent.bottom
             color: systemPalette.mid
 
             Rectangle
@@ -350,6 +352,7 @@ FocusScope
 
                 Text
                 {
+                    anchors.verticalCenter: parent.verticalCenter
                     text: styleData.row + 1
                     color: systemPalette.text
                 }
