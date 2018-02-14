@@ -359,7 +359,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	state[["stateDescriptivesTable"]] <- stateDescriptivesTable
 	state[["stateMarginalMeans"]] <- stateMarginalMeans
 	state[["stateSimpleEffects"]] <- stateSimpleEffects
-
 	if (perform == "init" && status$ready && status$error == FALSE) {
 	  
 		return(list(results=results, status="inited", state=state, keep=c(stateqqPlot$data, keepDescriptivesPlot)))
@@ -1123,7 +1122,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			contrastMatrix <- list(.postHocContrasts(variable.levels, dataset, options))
 			names(contrastMatrix) <- .v(posthoc.var)
 			r <- multcomp::glht(model,do.call(multcomp::mcp, contrastMatrix))
-
 			statePostHoc[[posthoc.var]]$resultBonf <- summary(r,test=multcomp::adjusted("bonferroni"))
 
 			# Results using the Holm method
@@ -1189,8 +1187,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 							t <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultTukey$test$tstat[index1]))
 						}
 						
-						if (options$postHocTestEffectSize) 
-						  effectSize <- .clean(t/sqrt(nrow(dataset)))
+						if (options$postHocTestEffectSize & nrow(dataset) > 0) {
+						  n1 <- sum(dataset[.v(posthoc.var)] == variable.levels[[i]])
+						  n2 <- sum(dataset[.v(posthoc.var)] == variable.levels[[j]])
+						  den <- sqrt(((n1 + n2) / (n1 * n2)) * ((n1 + n2) / (n1 + n2 - 2)))
+						  effectSize <- .clean(t * den)
+						}
 
 						if (options$postHocTestsTukey)
 							pTukey <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultTukey$test$pvalues[index1]))
