@@ -30,6 +30,7 @@ TextModelLavaan::TextModelLavaan(QObject *parent)
 	_boundTo = NULL;
 	_currentBlock = 0;
 	_changed = false;
+	_inError = false;
 	this->setDocumentMargin(12);
 
 	connect(this, SIGNAL(contentsChanged()), this, SLOT(contentChangedHandler()));
