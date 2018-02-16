@@ -1231,16 +1231,16 @@ void MainWindow::resultsPageLoaded(bool success, int ppi)
 {
 	if (success)
 	{
-#ifdef __WIN32__
-		const int verticalDpi = QApplication::desktop()->screen()->logicalDpiY();
-		qreal zoom = ((qreal)(verticalDpi) / (qreal)ppi);
-		ui->webViewResults->setZoomFactor(zoom);
-		ui->webViewHelp->setZoomFactor(zoom);
-		ppi = verticalDpi;
-		_resultsJsInterface->setZoom(zoom);
-
-		this->resize(this->width() + (ui->webViewResults->width() * (zoom - 1)), this->height() + (ui->webViewResults->height() * (zoom - 1)));
-#endif
+// #ifdef __WIN32__
+// 		const int verticalDpi = QApplication::desktop()->screen()->logicalDpiY();
+// 		qreal zoom = ((qreal)(verticalDpi) / (qreal)ppi);
+// 		ui->webViewResults->setZoomFactor(zoom);
+// 		ui->webViewHelp->setZoomFactor(zoom);
+// 		ppi = verticalDpi;
+// 		_resultsJsInterface->setZoom(zoom);
+//
+// 		this->resize(this->width() + (ui->webViewResults->width() * (zoom - 1)), this->height() + (ui->webViewResults->height() * (zoom - 1)));
+// #endif
 		_engineSync->setPPI(ppi);
 
 		if (_openOnLoadFilename != "")
