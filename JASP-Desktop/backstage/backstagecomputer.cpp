@@ -92,7 +92,7 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 	if (mode==FileEvent::FileExportResults)
 	{
 		caption = "Export Result as HTML";
-#ifdef QT_DEBUG
+#ifdef JASP_DEBUG
 		// In debug mode enable pdf export
 		filter = "HTML Files (*.html *.pdf)";
 #else

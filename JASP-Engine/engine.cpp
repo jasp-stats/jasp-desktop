@@ -241,9 +241,10 @@ bool Engine::receiveMessages(int timeout)
 
 	if (_channel->receive(data, timeout))
 	{
+#ifdef JASP_DEBUG
 		std::cout << "received message" << std::endl;
 		std::cout.flush();
-
+#endif
 		Json::Value jsonRequest;
 		Json::Reader r;
 		r.parse(data, jsonRequest, false);
@@ -282,31 +283,24 @@ bool Engine::receiveMessages(int timeout)
 
 		if (_status == toInit || _status == toRun || _status == changed || _status == saveImg || _status == editImg)
 		{
-			_analysisName = jsonRequest.get("name", Json::nullValue).asString();
-			_analysisTitle = jsonRequest.get("title", Json::nullValue).asString();
-			_analysisDataKey = jsonRequest.get("dataKey", Json::nullValue).toStyledString();
-			_analysisOptions = jsonRequest.get("options", Json::nullValue).toStyledString();
-			_analysisResultsMeta = jsonRequest.get("resultsMeta", Json::nullValue).toStyledString();
-			_analysisStateKey = jsonRequest.get("stateKey", Json::nullValue).toStyledString();
-			_analysisRevision = jsonRequest.get("revision", -1).asInt();
-			_imageOptions = jsonRequest.get("image", Json::nullValue);
+			_analysisName			= jsonRequest.get("name",			Json::nullValue).asString();
+			_analysisTitle			= jsonRequest.get("title",			Json::nullValue).asString();
+			_analysisDataKey		= jsonRequest.get("dataKey",		Json::nullValue).toStyledString();
+			_analysisOptions		= jsonRequest.get("options",		Json::nullValue).toStyledString();
+			_analysisResultsMeta	= jsonRequest.get("resultsMeta",	Json::nullValue).toStyledString();
+			_analysisStateKey		= jsonRequest.get("stateKey",		Json::nullValue).toStyledString();
+			_analysisRevision		= jsonRequest.get("revision",		-1).asInt();
+			_imageOptions			= jsonRequest.get("image",			Json::nullValue);
 
 			Json::Value analysisRequiresInit = jsonRequest.get("requiresInit", Json::nullValue);
-			if (analysisRequiresInit.isNull()) // not defined in the analysis json
-				_analysisRequiresInit = true;
-			else
-				_analysisRequiresInit = analysisRequiresInit.asBool();
+			_analysisRequiresInit = analysisRequiresInit.isNull() ? true : analysisRequiresInit.asBool();
 
-			Json::Value settings = jsonRequest.get("settings", Json::nullValue);
-			if (settings.isObject())
-			{
-				Json::Value ppi = settings.get("ppi", Json::nullValue);
-				_ppi = ppi.isInt() ? ppi.asInt() : 96;
-			}
+
+			Json::Value ppi, settings = jsonRequest.get("settings", Json::nullValue);
+			if (settings.isObject() && (ppi = settings.get("ppi", Json::nullValue)).isInt())
+				_ppi = ppi.asInt();
 			else
-			{
 				_ppi = 96;
-			}
 		}
 
 		return true;

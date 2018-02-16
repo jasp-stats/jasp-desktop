@@ -10,9 +10,13 @@ SUBDIRS += \
         JASP-Desktop
 #	JASP-Tests
 
-linux: SUBDIRS += JASP-R-Interface
+unix: SUBDIRS += JASP-R-Interface
 
 JASP-Desktop.depends = JASP-Common
 JASP-Engine.depends = JASP-Common 
 
-linux: JASP-Engine.depends += JASP-R-Interface
+unix: JASP-Engine.depends += JASP-R-Interface
+
+exists(/app/lib/*)	{ } else {
+	debug: DEFINES += JASP_DEBUG
+}

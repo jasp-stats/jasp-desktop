@@ -6,17 +6,13 @@ DESTDIR = ..
 TARGET = JASP-Common
 TEMPLATE = lib
 CONFIG += staticlib
-
-windows:CONFIG += c++11
-linux:CONFIG += c++11
-macx:CONFIG += c++11
+CONFIG += c++11
 
    macx:INCLUDEPATH += ../../boost_1_64_0
 windows:INCLUDEPATH += ../../boost_1_64_0
 
 
 windows:LIBS += -lole32 -loleaut32 -larchive.dll
-linux: LIBS += -ljsoncpp
 
 macx:QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
@@ -124,8 +120,9 @@ HEADERS += \
     options/optionvariablei.h \
     jsonredirect.h
 
-macx | windows {
-    DEFINES += JASP_NOT_LINUX
+#exists(/app/lib/*) should only be true when building flatpak
+macx | windows | exists(/app/lib/*) {
+	DEFINES += JASP_LIBJSON_STATIC
 
     SOURCES += \
             lib_json/json_internalarray.inl \
@@ -145,4 +142,8 @@ macx | windows {
             lib_json/reader.h \
             lib_json/value.h \
             lib_json/writer.h
+} else {
+	linux: LIBS += -ljsoncpp
 }
+
+

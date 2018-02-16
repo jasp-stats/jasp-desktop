@@ -31,7 +31,7 @@ RibbonMetaAnalysis::RibbonMetaAnalysis(QWidget *parent) :
     addRibbonButton(ui->classicalButton);
 	ui->classicalButton->setObjectName("ClassicalMetaAnalysis");
 	
-#ifdef QT_DEBUG
+#ifdef JASP_DEBUG
     addRibbonButton(ui->multilevelButton);
     addRibbonButton(ui->twoxtwoTablesButton);
 	ui->multilevelButton->setObjectName("MultiLevelMetaAnalysis");
@@ -47,7 +47,7 @@ RibbonMetaAnalysis::RibbonMetaAnalysis(QWidget *parent) :
 
 	connect(ui->classicalButton, SIGNAL(clicked()), this, SLOT(itemSelected()));
 	
-#ifdef QT_DEBUG
+#ifdef JASP_DEBUG
 	connect(ui->twoxtwoTablesButton, SIGNAL(clicked()), this, SLOT(itemSelected()));
 	connect(ui->multilevelButton, SIGNAL(clicked()), this, SLOT(itemSelected()));	
 #else

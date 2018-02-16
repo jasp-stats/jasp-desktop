@@ -43,10 +43,10 @@ Application::~Application()
 {
 	try
 	{
-		delete _mainWindow;	
+		delete _mainWindow;
 	}
 	catch(...)
-	{		
+	{
 	}
 }
 

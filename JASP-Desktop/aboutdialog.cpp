@@ -53,7 +53,7 @@ void AboutDialog::aboutPageLoaded(bool success)
 	if (success)
 	{
 		QString version = tq(AppInfo::version.asString());
-#ifdef QT_DEBUG
+#ifdef JASP_DEBUG
 		version+="-Debug";
 #endif
 		QString builddate = tq(AppInfo::builddate);
