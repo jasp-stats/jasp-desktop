@@ -1077,19 +1077,85 @@ RegressionLinearBayesian <- function (
 	ymax = max(prob0, 1 - prob0)
 	# end of copied code
 
+	dens <- (1 - prob0) * yy/maxyy
 	dfLines <- data.frame(
 		x = c(0, 0, xx),
-		y = c(0, prob0, (1 - prob0) * yy/maxyy),
+		y = c(0, prob0, dens),
 		g = factor(rep(1:2, c(2, length(xx))))
 	)
-	xBreaks <- pretty(range(xx), 3)
+	
+	xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(xlower, xupper))
+	yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, 1.15*max(dfLines$y)))
+
+	# figure out whether to draw text left or right of 0
+	step <- (xupper + abs(xlower)) / (nsteps - 1)  # stepsize of grid
+	idx0 <- round(abs(xlower / step))              # idx of x closest to 0
+	idxMax <- which.max(dens)                      # idx of maximum of density
+	maxX <- xx[idxMax]                             # x value at maximum of density
+	maxHeight <- dens[idxMax]                        # y value at maximum of density
+	if (prob0 > maxHeight) { # if text drawn above posterior no action is required
+	    
+	    xText <- 0.05 * xBreaks[length(xBreaks)]
+	    hjust = "left"
+	    # text below maxheight
+	    
+	} else {
+
+	    # text is drawn right if:
+	    # - density is below textheight
+	    # - peak of density is left of textheight
+	    
+	    # text drawn at similar height as posterior
+	    if (maxX < 0 && dens[idx0] < prob0) {
+	        # peak is left of text; density is below text height
+	        xText <- 0.05 * xBreaks[length(xBreaks)]
+	        hjust = "left"
+	        
+	    } else {
+	        
+	        xText <- -abs(0.05 * xBreaks[1])
+	        hjust = "right"
+	        
+	    }
+	    
+	}
+	dfText <- data.frame(
+	    x = xText,
+	    y = prob0,
+	    label = format(prob0, digits = 3, scientific = -2)
+	)
+
+    # obtain credible interval
+    d0 <- dens
+    d0[idx0] <- d0[idx0] + prob0
+    cdf <- cumsum(d0)
+    cdf <- cdf / cdf[length(cdf)]
+    idxCri <- c(
+        which.min(abs(cdf - 0.025)),
+        which.min(abs(cdf - 0.975))
+    )
+    dfCri <- data.frame(
+        xmin = xx[idxCri][1],
+        xmax = xx[idxCri][2],
+        y = 0.9 * yBreaks[length(yBreaks)]
+    )
+    hBarHeight <- 0.05 * yBreaks[length(yBreaks)]
+    dfCriText <- data.frame(
+        x = xx[idxCri],
+        y = 0.975 * yBreaks[length(yBreaks)],
+        label = format(xx[idxCri], digits = 3, scientific = -2)
+    )
 
 	g <- JASPgraphs::drawLines(dat = dfLines,
 							   mapping = ggplot2::aes(x = x, y = y, group = g, color = g),
 							   show.legend = FALSE) +
-	    ggplot2::ylab("Log(Marginal)") +
+	    ggplot2::scale_y_continuous(name = "Log(Marginal)", breaks = yBreaks, limits = range(yBreaks)) + 
 	    ggplot2::scale_x_continuous(name = name, breaks = xBreaks, limits = range(xBreaks))
 	g <- g + ggplot2::scale_color_manual(values = c("gray", "black"))
+	if (prob0 > 0.05)
+	    g <- g + ggplot2::geom_text(data = dfText, mapping = ggplot2::aes(x = x, y = y, label = label), size = 6, hjust = hjust)
+	g <- g + ggplot2::geom_errorbarh(data = dfCri, mapping = ggplot2::aes(xmin = xmin, xmax = xmax, y = y), height = hBarHeight)
+	g <- g + ggplot2::geom_text(data = dfCriText, mapping = ggplot2::aes(x = x, y = y, label = label), size = 6, hjust = "center")
 	g <- JASPgraphs::themeJasp(g)
 
 	return(g)
