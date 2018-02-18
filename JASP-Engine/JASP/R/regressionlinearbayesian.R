@@ -98,7 +98,7 @@ RegressionLinearBayesian <- function (
 
 	if (options$postSummary && is.null(postSummary)) {
 		postSummary <- .posteriorSummaryTable.basReg(
-			bas_obj, status, perform, options
+			bas_obj, dataset, status, perform, options
 		)
 	}
 
@@ -210,8 +210,10 @@ RegressionLinearBayesian <- function (
 			status = status,
 			keep = keep
 		)
-		attr(state, "key") <- stateKey
 	}
+
+	if (!is.null(state))
+		attr(state, "key") <- stateKey
 
 	return(list(
 		keep = keep,
@@ -458,6 +460,9 @@ RegressionLinearBayesian <- function (
 		bas_lm[["nuisanceTerms"]] <- isNuisance
 		# fix for prior probs all returning 1 with uniform and bernoulli 0.5 priors
 		bas_lm[["priorprobs"]] <- bas_lm[["priorprobs"]] / sum(bas_lm[["priorprobs"]])
+		bas_lm[["priorprobsPredictor"]] <- .calcPriorMarginalInclusionProbs(bas_lm)
+		bas_lm[["formula"]] <- formula
+		bas_lm[["weights"]] <- wlsWeights
 	}
 
 	return(list(bas_obj = bas_lm, status = status))
@@ -585,6 +590,39 @@ RegressionLinearBayesian <- function (
 	return(list(rows=output.rows, notes=footnotes))
 }
 
+.calcPriorMarginalInclusionProbs <- function(bas_obj) {
+	# Calculate the prior inclusions probabilities for each predictor
+	#
+	# Args:
+	#   bas_obj: bas object (including nuisanceTerms entry)
+	#
+	# Return:
+	#   vector of inclusion probabilities (including intercept)
+
+	allModels <- bas_obj$which
+	modelProbs <- bas_obj$priorprobs
+	nPreds <- length(bas_obj$probne0)
+	if (all(diff(modelProbs) < sqrt(.Machine$double.eps))) {
+
+		# all prior model probabilities are equal, shortcut for calculation
+		priorProbs <- c(1, rep(0.5, nPreds - 1L))
+
+	} else {
+
+		# model prior has been modified, recalculate the prior inclusion probs
+		nModels <- length(allModels)
+		priorProbs <- numeric(nPreds)
+
+		for (i in 1:nModels) {
+
+			idx <- allModels[[i]] + 1 # +1 to change 0 for intercept into a 1 so it can be used as an index
+			priorProbs[idx] = priorProbs[idx] + modelProbs[i]
+
+		}
+	}
+	return(priorProbs)
+}
+
 .fillRegTable.basReg <- function(data = NULL, status, perform, options) {
 	# Fills and returns the complete main table
 	#
@@ -637,11 +675,12 @@ RegressionLinearBayesian <- function (
 	return(table)
 }
 
-.posteriorSummaryTable.basReg <- function(bas_obj, status, perform, options) {
+.posteriorSummaryTable.basReg <- function(bas_obj, dataset, status, perform, options) {
 	# Generate a posterior summary table of the coefficients
 	#
 	# Args:
 	#   bas_obj: data read by .readData.basReg()
+	#   dataset: the dataset
 	#   status: current status of the analysis
 	#   perform: 'run' or 'init'
 	#   options: a list of user options
@@ -673,22 +712,31 @@ RegressionLinearBayesian <- function (
 			"BMA"
 		)
 
-		coef <- BAS:::coef.bas(bas_obj, estimator=estimator)
+		coef <- .coefBas(bas_obj, estimator = estimator, dataset = dataset, weights = bas_obj[["weights"]])
 		coefficients <- coef$namesx
+		if (estimator == "MPM")
+			coefficients[-1] <- d64(coefficients[-1])
+			
 		nModels <- coef$n.models
+		topm <- order(-bas_obj$postprobs)[1:nModels]
+		mostComplex <- which.max(lengths(bas_obj$which)[topm])
 
 			for (i in 1:length(coefficients)) {
 
 				coefficient <- .clean(coefficients[i])
 				pIncl <- .clean(coef$probne0[i])
 				if (options$summaryType == "complex") {
-					mean <- .clean(unname(coef$conditionalmeans[nModels, i])) # most complex model is in the final row
-					sd <- .clean(unname(coef$conditionalsd[nModels, i]))
+					mean <- .clean(unname(coef$conditionalmeans[mostComplex, i]))
+					sd <- .clean(unname(coef$conditionalsd[mostComplex, i]))
 				} else {
 					mean <- .clean(coef$postmean[i])
 					sd <- .clean(coef$postsd[i])
 				}
 
+				# skip if not in model
+				if ((estimator == "HPM" || estimator == "MPM") && abs(mean) < sqrt(.Machine$double.eps))
+					next
+				
 				rows[[length(rows) + 1]] <- list(coefficient = coefficient, mean = mean, sd = sd, pIncl = pIncl)
 
 			}
@@ -789,6 +837,8 @@ RegressionLinearBayesian <- function (
 			plot[["convertible"]] <- TRUE
 			plot[["obj"]] <- content[["obj"]]
 			plot[["data"]] <- content[["png"]]
+			plot[["width"]] <- 530
+			plot[["height"]] <- 400
 			plot[["status"]] <- "complete"
 
 		})
@@ -850,6 +900,8 @@ RegressionLinearBayesian <- function (
 				plot[["convertible"]] <- TRUE
 				plot[["obj"]] <- content[["obj"]]
 				plot[["data"]] <- content[["png"]]
+				plot[["width"]] <- 530
+				plot[["height"]] <- 400
 				plot[["status"]] <- "complete"
 
 			})
@@ -916,6 +968,8 @@ RegressionLinearBayesian <- function (
 			plot[["convertible"]] <- TRUE
 			plot[["obj"]] <- content[["obj"]]
 			plot[["data"]] <- content[["png"]]
+			plot[["width"]] <- 530
+			plot[["height"]] <- 400
 			plot[["status"]] <- "complete"
 
 		})
@@ -969,6 +1023,8 @@ RegressionLinearBayesian <- function (
 
 	plot[["obj"]] <- content[["obj"]]
 	plot[["data"]] <- content[["png"]]
+	plot[["width"]] <- 530
+	plot[["height"]] <- 400
 	plot[["status"]] <- "complete"
 
 	if (status$error) {
@@ -1031,7 +1087,7 @@ RegressionLinearBayesian <- function (
 	g <- JASPgraphs::drawLines(dat = dfLines,
 							   mapping = ggplot2::aes(x = x, y = y, group = g, color = g),
 							   show.legend = FALSE) +
-	    ggplot2::ylab("log(Marginal)") +
+	    ggplot2::ylab("Log(Marginal)") +
 	    ggplot2::scale_x_continuous(name = name, breaks = xBreaks, limits = range(xBreaks))
 	g <- g + ggplot2::scale_color_manual(values = c("gray", "black"))
 	g <- JASPgraphs::themeJasp(g)
@@ -1043,7 +1099,6 @@ RegressionLinearBayesian <- function (
 							labels.id = NULL, sub.caption = NULL, ...) {
 	# based on BAS::plot.bas
 
-	# browser()
 	show <- rep(FALSE, 4)
 	show[which] <- TRUE
 	iid <- 1:id.n
@@ -1095,8 +1150,8 @@ RegressionLinearBayesian <- function (
 		xBreaks <- JASPgraphs::getPrettyAxisBreaks(dfPoints[["x"]], 3)
 		g <- JASPgraphs::drawAxis()
 		g <- g + ggplot2::geom_hline(yintercept = 0, linetype = 2, col = "gray")
-		g <- JASPgraphs::drawSmooth(g, dat = dfPoints, color = "red", alpha = .7)
-		g <- JASPgraphs::drawPoints(g, dat = dfPoints, size = 2, alpha = .85) +
+		g <- JASPgraphs::drawPoints(g, dat = dfPoints, size = 2, alpha = .85)
+		g <- JASPgraphs::drawSmooth(g, dat = dfPoints, color = "red", alpha = .7) +
 			ggplot2::ylab("Residuals") +
 			ggplot2::scale_x_continuous(name = "Predictions under BMA", breaks = xBreaks, limits = range(xBreaks))
 		g <- JASPgraphs::themeJasp(g)
@@ -1135,7 +1190,7 @@ RegressionLinearBayesian <- function (
 		# gonna assume here that dim (the number of parameters) is always an integer
 		xBreaks <- unique(round(pretty(dim)))
 		g <- JASPgraphs::drawPoints(dat = dfPoints, size = 4) +
-			ggplot2::ylab("log(Marginal)") +
+			ggplot2::ylab("Log(Marginal)") +
 			ggplot2::xlab("Model Dimension") +
 			ggplot2::scale_x_continuous(breaks = xBreaks)
 		g <- JASPgraphs::themeJasp(g)
@@ -1146,7 +1201,7 @@ RegressionLinearBayesian <- function (
 		# browser()
 		probne0 = x$probne0
 		variables = x$namesx # 1:x$n.vars
-		priorProb <- x$priorprobs[1:x$n.vars]
+		priorProb <- x$priorprobsPredictor[1:x$n.vars]
 
 		# reorder from high to low
 		o <- order(probne0, decreasing = FALSE)
@@ -1162,16 +1217,20 @@ RegressionLinearBayesian <- function (
 		dfLine <- data.frame(
 			x = rep(1:x$n.vars, each = 2) + c(-width/2, width/2),
 			y = rep(priorProb, each = 2),
-			g = rep(factor(variables), each = 2)
+			g = rep(factor(variables), each = 2),
+			g0 = factor(1)
 		)
 
 		g <- JASPgraphs::drawBars(dat = dfBar, width = width)
 		g <- JASPgraphs::drawLines(g, dat = dfLine,
-								   mapping = ggplot2::aes(x = x, y = y, group = g), linetype = 2) +
+								   mapping = ggplot2::aes(x = x, y = y, group = g, linetype = g0), show.legend = TRUE) +
 			ggplot2::ylab("Marginal Inclusion Probability") +
-			ggplot2::xlab("")
-		# ggplot2::xlab(paste0("Model Dimension\n", sub.caption))
+			ggplot2::xlab("") +
+			ggplot2::scale_linetype_manual(name = "", values = 2, labels = "Prior\nInclusion\nProbabilities") 
+
 		g <- JASPgraphs::themeJasp(g, horizontal = TRUE)
+		g <- g + ggplot2::theme(legend.position = c(.85, .25))
+
 		return(g)
 
 	}
@@ -1264,7 +1323,6 @@ RegressionLinearBayesian <- function (
 	unit <- JASPgraphs::graphOptions("axisTickLengthUnit")
 	fillLg <- ggplot2::guide_colorbar(title = "", default.unit = unit,
 									  barheight = 5, barwidth = 1)
-	# browser()
 	g <- g + ggplot2::theme(
 		axis.text.x.bottom = ggplot2::element_text(margin = ggplot2::margin(0, 0, .5, 0, unit)),
 		axis.text.x.top = ggplot2::element_text(margin = ggplot2::margin(.5, 0, 0, 0, unit))
@@ -1274,3 +1332,105 @@ RegressionLinearBayesian <- function (
 
 }
 
+
+.coefBas <- function (object, n.models, estimator = "BMA",
+					  dataset, weights = NULL, ...) {
+
+	# this function is an adaptation of BAS:::coef.bas
+	# additional arguments:
+	#
+	# dataset
+	# weights
+	#
+	# in addition, the formula object should be stored in the bas object.
+	#
+	# the original function evaluates things via eval(calls) constructions
+	# JASP does not guarantree that this lookup structure works
+	# so we need to modify this function.
+	# this is only the case for the median model!
+	
+	# if there are future updates to the BAS package, this function can probably be removed
+	# the code below is a small test for when an error happens.
+	
+	# data(UScrime, package = "MASS")
+	# UScrime <- UScrime[, 1:5]
+	# form <- M ~ So + Ed + Po1 + Po2
+	# crime.bic =  BAS::bas.lm(
+	#   formula = M ~ So + Ed + Po1 + Po2, # <-- toggle this one (works)
+	# 	# formula = form,                  # <-- and this one    (errors)
+	# 	data = UScrime, 
+	# 	prior = "JZS",
+	# 	initprobs = c(1, 0.5, 0.5, 0.5, 0.5),
+	# 	renormalize = TRUE)
+	# BAS:::coef.bas(crime.bic, estimator = "MPM") # <-- this function call will error
+	
+	# additionaly, the code previously failed (in JASP) for the correlation dataset (Big 5)
+	# and selecting estimator = "MPM" (median model)
+	# if neither of these errors occur in a future version then the original function can
+	# probably be used again
+
+	if (estimator == "MPM") {
+		nvar = object$n.vars - 1
+		bestmodel <- (0:nvar)[object$probne0 > 0.5]
+		best = 1
+		models <- rep(0, nvar + 1)
+		models[bestmodel + 1] <- 1
+		if (sum(models) > 1) {
+			# this if statement is ugly but crucial
+			if (is.null(weights)) {
+				object <- BAS::bas.lm(formula = object$formula, data = dataset, 
+									  weights = NULL,
+									  n.models = 1, 
+									  alpha = object$g, initprobs = object$probne0, 
+									  prior = object$prior, modelprior = object$modelprior, 
+									  update = NULL, bestmodel = models, prob.local = 0)
+		
+			} else {
+				object <- BAS::bas.lm(formula = object$formula, data = dataset, 
+									  weights = weights,
+									  n.models = 1, 
+									  alpha = object$g, initprobs = object$probne0, 
+									  prior = object$prior, modelprior = object$modelprior, 
+									  update = NULL, bestmodel = models, prob.local = 0)
+			}
+		}
+	}
+	postprobs = object$postprobs
+	if (estimator == "MPM" | estimator == "HPM") 
+		n.models = 1
+	if (missing(n.models)) 
+		n.models = length(postprobs)
+	topm = order(-postprobs)[1:n.models]
+	postprobs = postprobs[topm]/sum(postprobs[topm])
+	shrinkage = object$shrinkage[topm]
+	conditionalmeans = BAS:::list2matrix.bas(object, "mle")[topm, 
+													  , drop = F]
+	conditionalmeans[, -1] = sweep(conditionalmeans[, -1, drop = F], 
+								   1, shrinkage, FUN = "*")
+	postmean = as.vector(postprobs %*% conditionalmeans)
+	conditionalsd = BAS:::list2matrix.bas(object, "mle.se")[topm, 
+													  , drop = F]
+	if (!(object$prior == "AIC" || object$prior == "BIC")) {
+		conditionalsd[, -1] = sweep(conditionalsd[, -1, drop = F], 
+									1, sqrt(shrinkage), FUN = "*")
+	}
+	postsd = sqrt(postprobs %*% conditionalsd^2 + postprobs %*% 
+				  	((sweep(conditionalmeans, 2, postmean, FUN = "-"))^2))
+	postsd = as.vector(postsd)
+	if (is.null(object$df[topm])) {
+		df = rep(object$n, length(postprobs))
+		if (object$prior == "BIC" | object$prior == "AIC") {
+			df = df - object$size
+		}
+		else {
+			df = df - 1
+		}
+	}
+	else df = object$df[topm]
+	out = list(postmean = postmean, postsd = postsd, probne0 = object$probne0, 
+			   conditionalmeans = conditionalmeans, conditionalsd = conditionalsd, 
+			   namesx = object$namesx, postprobs = postprobs, n.vars = object$n.vars, 
+			   n.models = n.models, df = df, estimator = estimator)
+	class(out) = "coef.bas"
+	return(out)
+}

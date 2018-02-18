@@ -2606,7 +2606,10 @@ editImage <- function(plotName, type, height, width) {
 	} else {
 		# adjust the state of the analysis and save it
 		state[["figures"]][[plotName]] <- results[["obj"]]
+		# store the stateKey (which gets removed by .modifyStateFigures)
+		key <- attr(x = state, which = "key")
 		state <- .modifyStateFigures(state, identifier=plotName, replacement=results, completeObject = FALSE)
+		attr(state, "key") <- key
 		.saveState(state)
 	}
 
