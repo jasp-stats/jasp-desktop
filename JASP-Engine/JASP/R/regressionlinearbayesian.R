@@ -716,13 +716,13 @@ RegressionLinearBayesian <- function (
 		coefficients <- coef$namesx
 		probne0 <- coef[["probne0"]]
 		if (estimator == "HPM") {
-		    loopIdx <- which(abs(coef$postmean) > sqrt(.Machine$double.eps))
+			loopIdx <- which(abs(coef$postmean) > sqrt(.Machine$double.eps))
 		} else if (estimator == "MPM") {
-		    loopIdx <- which(abs(coef$postmean) > sqrt(.Machine$double.eps))
+			loopIdx <- which(abs(coef$postmean) > sqrt(.Machine$double.eps))
 			coefficients[-1] <- d64(coefficients[-1])
 			probne0 <- bas_obj[["probne0"]]
 		} else {
-		    loopIdx <- seq_along(coefficients)
+			loopIdx <- seq_along(coefficients)
 		}
 
 		nModels <- coef$n.models
@@ -741,10 +741,6 @@ RegressionLinearBayesian <- function (
 					sd <- .clean(coef$postsd[i])
 				}
 
-				# skip if not in model
-				if ((estimator == "HPM" || estimator == "MPM") && abs(mean) < sqrt(.Machine$double.eps))
-					next
-				
 				rows[[length(rows) + 1]] <- list(coefficient = coefficient, mean = mean, sd = sd, pIncl = pIncl)
 
 			}
@@ -969,14 +965,14 @@ RegressionLinearBayesian <- function (
 		plot[["title"]] <- titles[which]
 
 		p <- try(silent = FALSE, expr = {
-		    
-		    if (c(which) != 4) {
-    		    w <- 530
-    		    h <- 400
-		    } else {
-		        w <- 700
-		        h <- 400
-		    }
+
+			if (c(which) != 4) {
+				w <- 530
+				h <- 400
+			} else {
+				w <- 700
+				h <- 400
+			}
 
 			plotObj <- .plotBas.basReg(bas_obj, which = c(which))
 			content <- .writeImage(width = w, height = h, plot = plotObj)
@@ -1076,8 +1072,13 @@ RegressionLinearBayesian <- function (
 	} else {
 		qmin = min(qnorm(e/2, means, sds))
 		qmax = max(qnorm(1 - e/2, means, sds))
-		xlower = min(qmin, 0)
-		xupper = max(0, qmax)
+		if (i > 1) {
+			xlower = min(qmin, 0)
+			xupper = max(0, qmax)
+		} else {
+			xlower <- qmin
+			xupper <- qmax
+		}
 	}
 
 	xx = seq(xlower, xupper, length.out = nsteps)
