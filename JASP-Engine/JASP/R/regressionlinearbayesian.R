@@ -714,17 +714,25 @@ RegressionLinearBayesian <- function (
 
 		coef <- .coefBas(bas_obj, estimator = estimator, dataset = dataset, weights = bas_obj[["weights"]])
 		coefficients <- coef$namesx
-		if (estimator == "MPM")
+		probne0 <- coef[["probne0"]]
+		if (estimator == "HPM") {
+		    loopIdx <- which(abs(coef$postmean) > sqrt(.Machine$double.eps))
+		} else if (estimator == "MPM") {
+		    loopIdx <- which(abs(coef$postmean) > sqrt(.Machine$double.eps))
 			coefficients[-1] <- d64(coefficients[-1])
-			
+			probne0 <- bas_obj[["probne0"]]
+		} else {
+		    loopIdx <- seq_along(coefficients)
+		}
+
 		nModels <- coef$n.models
 		topm <- order(-bas_obj$postprobs)[1:nModels]
 		mostComplex <- which.max(lengths(bas_obj$which)[topm])
 
-			for (i in 1:length(coefficients)) {
+			for (i in loopIdx) {
 
 				coefficient <- .clean(coefficients[i])
-				pIncl <- .clean(coef$probne0[i])
+				pIncl <- .clean(probne0[i])
 				if (options$summaryType == "complex") {
 					mean <- .clean(unname(coef$conditionalmeans[mostComplex, i]))
 					sd <- .clean(unname(coef$conditionalsd[mostComplex, i]))
@@ -961,15 +969,23 @@ RegressionLinearBayesian <- function (
 		plot[["title"]] <- titles[which]
 
 		p <- try(silent = FALSE, expr = {
+		    
+		    if (c(which) != 4) {
+    		    w <- 530
+    		    h <- 400
+		    } else {
+		        w <- 700
+		        h <- 400
+		    }
 
 			plotObj <- .plotBas.basReg(bas_obj, which = c(which))
-			content <- .writeImage(width = 530, height = 400, plot = plotObj)
+			content <- .writeImage(width = w, height = h, plot = plotObj)
 
 			plot[["convertible"]] <- TRUE
 			plot[["obj"]] <- content[["obj"]]
 			plot[["data"]] <- content[["png"]]
-			plot[["width"]] <- 530
-			plot[["height"]] <- 400
+			plot[["width"]] <- w
+			plot[["height"]] <- h
 			plot[["status"]] <- "complete"
 
 		})
@@ -1125,9 +1141,8 @@ RegressionLinearBayesian <- function (
 	    label = format(prob0, digits = 3, scientific = -2)
 	)
 
-    # obtain credible interval
+    # obtain credible interval given that predictor is in model
     d0 <- dens
-    d0[idx0] <- d0[idx0] + prob0
     cdf <- cumsum(d0)
     cdf <- cdf / cdf[length(cdf)]
     idxCri <- c(
@@ -1294,8 +1309,7 @@ RegressionLinearBayesian <- function (
 			ggplot2::xlab("") +
 			ggplot2::scale_linetype_manual(name = "", values = 2, labels = "Prior\nInclusion\nProbabilities") 
 
-		g <- JASPgraphs::themeJasp(g, horizontal = TRUE)
-		g <- g + ggplot2::theme(legend.position = c(.85, .25))
+		g <- JASPgraphs::themeJasp(g, horizontal = TRUE, legend.position = "right")
 
 		return(g)
 
