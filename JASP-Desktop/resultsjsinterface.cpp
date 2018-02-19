@@ -118,9 +118,10 @@ void ResultsJsInterface::showAnalysesMenu(QString options)
 	if (menuOptions["hasCopy"].asBool())
 		_analysisMenu->addAction(_copyIcon, "Copy", this, SLOT(copySelected()));
 
-	if (menuOptions["hasLatexCode"].asBool())
+	if (menuOptions["hasLatexCode"].asBool())  // TODO: || menuOptions["hasPlainText"].asBool())
 	{
-		_analysisMenu->addAction(_codeIcon, "Copy latex code", this, SLOT(latexCodeSelected()));
+		_copySpecialMenu = _analysisMenu->addMenu(tr("&Copy special"));
+		_copySpecialMenu->addAction(_codeIcon, "Latex code", this, SLOT(latexCodeSelected()));
 	}
 
 	if (menuOptions["hasCite"].asBool())

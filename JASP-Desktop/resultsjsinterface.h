@@ -86,6 +86,7 @@ private:
 	QWebChannel *_channel;
 
 	QMenu *_analysisMenu;
+	QMenu *_copySpecialMenu;
 	double _webViewZoom;
 
 	Json::Value _resultsMeta;
