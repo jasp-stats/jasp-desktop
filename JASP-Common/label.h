@@ -33,6 +33,7 @@
 class Label
 {
 public:
+	static const int MAX_LABEL_LENGTH = 128;
 	Label(const std::string &label, int value);
 	Label(int value);
 	Label();
@@ -47,7 +48,7 @@ private:
 
 	bool _hasIntValue;
 	int _intValue;
-	char _stringValue[128];
+	char _stringValue[MAX_LABEL_LENGTH];
 	int  _stringLength;
 
     void _setLabel(const std::string &label);

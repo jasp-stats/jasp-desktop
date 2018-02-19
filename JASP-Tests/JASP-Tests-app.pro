@@ -46,6 +46,8 @@ macx:QMAKE_CXXFLAGS += -stdlib=libc++
 
 QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
+macx | windows { DEFINES += JASP_NOT_LINUX }
+
 linux {
     _R_HOME = $$(R_HOME)
     isEmpty(_R_HOME):_R_HOME = /usr/lib/R

@@ -100,7 +100,7 @@ void TextFileReadTest::asyncloaderTester()
 
       wasBlocked = asl->blockSignals(true);     //block all signals emitted by the Asyncloader object
       asl->loadTask(fe, dsp);
-      asl->_thread.quit();
+      //asl->_thread.quit();
 
       QVERIFY(checkIfEqual(&fc));               //test the opening and reading of text files
     }

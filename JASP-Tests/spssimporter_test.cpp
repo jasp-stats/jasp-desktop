@@ -66,7 +66,7 @@ void SPSSImporterTest::spssTester()
 	DataSetPackage *ds_spss = new DataSetPackage();
 	fe_spss->setPath(fullPath_spss);
 	asl_spss->loadTask(fe_spss, ds_spss);          //load the spss file
-	asl_spss->_thread.quit();
+	//asl_spss->_thread.quit();
 
 	struct fileContent fc_spss;
 	copyToStructure(ds_spss, &fc_spss);            //copy contents of ds_spss to file contents structure
@@ -81,7 +81,7 @@ void SPSSImporterTest::spssTester()
 	DataSetPackage *ds_csv = new DataSetPackage();
 	fe_csv->setPath(fullPath_csv);
 	asl_csv->loadTask(fe_csv, ds_csv);             //load the corresponding csv file - this is the expected output
-	asl_csv->_thread.quit();
+	//asl_csv->_thread.quit();
 
 	struct fileContent fc_csv;
 	copyToStructure(ds_csv, &fc_csv);              //copy contents of ds_csv to fc_csv structure
