@@ -122,7 +122,13 @@ void Labels::syncInts(const std::set<int> &values)
 
 map<string, int> Labels::syncStrings(const vector<string> &new_values, const map<string, string> &new_labels)
 {
-	vector<string> valuesToAdd = new_values;
+	map<string,string> valuesToAdd;
+	for (const string& newValue : new_values)
+	{
+		string shortValue = (newValue.length() > Label::MAX_LABEL_LENGTH ? newValue.substr(0, Label::MAX_LABEL_LENGTH) : newValue);
+		valuesToAdd[shortValue] = newValue;
+	}
+	
 	std::set<int> valuesToRemove;
 	map<string, int> result;
 
@@ -136,36 +142,34 @@ map<string, int> Labels::syncStrings(const vector<string> &new_values, const map
 		if (labelValue > maxLabelKey)
 			maxLabelKey = labelValue;
 
-		if (std::find(new_values.begin(), new_values.end(), labelText) != new_values.end())
+		map<string, string>::const_iterator elt = valuesToAdd.find(labelText);
+		if (elt != valuesToAdd.end())
 		{
-			vector<string>::iterator value_it = std::find(valuesToAdd.begin(), valuesToAdd.end(), labelText);
-			if (value_it != valuesToAdd.end())
-				valuesToAdd.erase(value_it);
+			result[elt->second] = labelValue;
+			valuesToAdd.erase(elt);
 		}
 		else
-		{
 			valuesToRemove.insert(labelValue);
-		}
 	}
 
 	removeValues(valuesToRemove);
 	
-	for (const string& value : valuesToAdd)
+	for (auto elt : valuesToAdd)
 	{
 		maxLabelKey++;
-		add(maxLabelKey,value);
+		add(maxLabelKey, elt.first);
+		result[elt.second] = maxLabelKey;
 	}
 
 	for (Label& label : _labels)
 	{
 		string labelText = _getOrgValueFromLabel(label);
-		result[labelText] = label.value();
-		map<string, string>::const_iterator new_labels_it = new_labels.find(labelText);
-		if (new_labels_it != new_labels.end())
+		map<string, string>::const_iterator newLabelIt = new_labels.find(labelText);
+		if (newLabelIt != new_labels.end())
 		{
-			string new_string_label = new_labels_it->second;
-			if (labelText != new_string_label)
-				_setNewStringForLabel(label, new_string_label);
+			string newStringLabel = newLabelIt->second;
+			if (labelText != newStringLabel)
+				_setNewStringForLabel(label, newStringLabel);
 		}
 	}
 	return result;
