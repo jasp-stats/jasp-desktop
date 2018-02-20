@@ -3168,7 +3168,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	while ( ! identical(old.independent.variables, new.independent.variables) && length(new.independent.variables) > 0) {
 
-	  old.independent.variables <- .vWithInteraction(lm.model[[ length(lm.model) ]]$variables)
+    old.independent.variables <- .vWithInteraction(lm.model[[ length(lm.model) ]]$variables)
 		lm.model[[ length(lm.model) + 1 ]] <- .removeVariable(dependent.variable, old.independent.variables, independent.null.variables, data, options, weights)
 		new.independent.variables <- .vWithInteraction(lm.model[[ length(lm.model) ]]$variables) 
 
