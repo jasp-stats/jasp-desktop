@@ -405,7 +405,7 @@
             <item row="0" column="0">
              <widget class="BoundCheckBox" name="plotLogPosteriorOdds">
               <property name="text">
-               <string>Posterior log odds</string>
+               <string>Log posterior odds</string>
               </property>
              </widget>
             </item>
