@@ -1123,16 +1123,16 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			names(contrastMatrix) <- .v(posthoc.var)
 			r <- multcomp::glht(model,do.call(multcomp::mcp, contrastMatrix))
 			statePostHoc[[posthoc.var]]$resultBonf <- summary(r,test=multcomp::adjusted("bonferroni"))
-
+      
 			# Results using the Holm method
 
 			statePostHoc[[posthoc.var]]$resultHolm <- summary(r,test=multcomp::adjusted("holm"))
 
 			statePostHoc[[posthoc.var]]$comparisonsTukSchef <- strsplit(names(statePostHoc[[posthoc.var]]$resultTukey$test$coefficients)," - ")
 			statePostHoc[[posthoc.var]]$comparisonsBonfHolm <- strsplit(names(statePostHoc[[posthoc.var]]$resultBonf$test$coefficients)," - ")
-
+			
 		}
-
+		
 		for (i in 1:length(variable.levels)) {
 
 			for (j in .seqx(i+1, length(variable.levels))) {
@@ -1188,10 +1188,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 						}
 						
 						if (options$postHocTestEffectSize & nrow(dataset) > 0) {
-						  n1 <- sum(dataset[.v(posthoc.var)] == variable.levels[[i]])
-						  n2 <- sum(dataset[.v(posthoc.var)] == variable.levels[[j]])
-						  den <- sqrt(((n1 + n2) / (n1 * n2)) * ((n1 + n2) / (n1 + n2 - 2)))
-						  effectSize <- .clean(t * den)
+						  x <- dataset[(dataset[.v(posthoc.var)] == variable.levels[[i]]), .v(options$dependent)]
+						  y <- dataset[(dataset[.v(posthoc.var)] == variable.levels[[j]]), .v(options$dependent)]
+						  n1 <- length(x)
+						  n2 <- length(y)
+						  den <- sqrt(((n1 - 1) * var(x) + (n2 - 1) * var(y)) / (n1 + n2 - 2))
+						  effectSize <- .clean(md / den)
 						}
 
 						if (options$postHocTestsTukey)
