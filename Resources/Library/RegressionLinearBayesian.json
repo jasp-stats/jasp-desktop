@@ -124,12 +124,16 @@
 		{
 			"name": "iterationsMCMC",
 			"type": "Integer",
-			"default": 0
+			"default": 0,
+			"min": 0,
+			"max": 100000000
 		},
 		{
 			"name": "numberOfModels",
 			"type": "Number",
-			"default": 0
+			"default": 0,
+			"min": 0,
+			"max": 100000000
 		},
 		{
 			"options": ["Bernoulli", "beta.binomial", "uniform"],
@@ -145,7 +149,9 @@
 		{
 			"name": "rScale",
 			"type": "Number",
-			"value": 0.354
+			"value": 0.354,
+			"min": 0,
+			"max": 100000
 		},
 		{
 			"name": "modelTerms",
