@@ -51,7 +51,7 @@ RegressionLogLinearForm::RegressionLogLinearForm(QWidget *parent) :
 
 	ui->panelStatistics->hide();
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 
 #else
 

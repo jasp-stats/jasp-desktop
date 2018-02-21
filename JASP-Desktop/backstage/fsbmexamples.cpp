@@ -38,7 +38,7 @@ FSBMExamples::FSBMExamples(QObject *parent)
 
 void FSBMExamples::refresh()
 {
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 	QFile index(AppDirs::examples() + QDir::separator() + "index.json");
 #else
 	// when debug is built we want the debug dataset to be available!

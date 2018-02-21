@@ -144,7 +144,7 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 
 	connect(_designTableModel, SIGNAL(designChanged()), this, SLOT(withinSubjectsDesignChanged()));
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 	ui->groupCompareMainEffects->hide();
 
 #else

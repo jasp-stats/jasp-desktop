@@ -43,7 +43,7 @@ TTestOneSampleForm::TTestOneSampleForm(QWidget *parent) :
 
 	ui->descriptivesPlotsConfidenceInterval->setLabel("Confidence interval");
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 	// temporarily hides until the appropriate R code is implemented
 
 

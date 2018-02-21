@@ -144,6 +144,7 @@ macx | windows | exists(/app/lib/*) {
             lib_json/writer.h
 } else {
 	linux: LIBS += -ljsoncpp
+	debug: DEFINES += JASP_DEBUG
 }
 
 

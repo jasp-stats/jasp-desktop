@@ -23,7 +23,7 @@
 
 using namespace ods;
 
-#ifndef QT_NO_DEBUG
+#ifdef JASP_DEBUG
 const char * const ods::ODSTYPE_STR[] =
 {
 	"odsType_unknown",

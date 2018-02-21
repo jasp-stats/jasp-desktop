@@ -101,7 +101,7 @@ NetworkAnalysisForm::NetworkAnalysisForm(QWidget *parent) :
     ui->showMgmVariableType->setVisible(false);
     
     // for the next release
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 //    ui->plotClustering->setVisible(false);
 //    ui->tableClustering->setVisible(false);
     ui->parallelBootstrap->setVisible(false);

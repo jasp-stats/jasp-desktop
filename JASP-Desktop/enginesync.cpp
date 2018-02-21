@@ -90,7 +90,7 @@ void EngineSync::start()
 
 		_channels.push_back(new IPCChannel(_memoryName, 0));
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 		_channels.push_back(new IPCChannel(_memoryName, 1));
 		_channels.push_back(new IPCChannel(_memoryName, 2));
 		_channels.push_back(new IPCChannel(_memoryName, 3));
@@ -200,7 +200,7 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	string str = json.toStyledString();
 	_channels[processNo]->send(str);
 
-#ifndef QT_NO_DEBUG
+#ifdef JASP_DEBUG
 	cout << str << "\n";
 	cout.flush();
 #endif

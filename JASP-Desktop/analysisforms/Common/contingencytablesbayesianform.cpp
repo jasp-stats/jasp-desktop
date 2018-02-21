@@ -60,7 +60,7 @@ ContingencyTablesBayesianForm::ContingencyTablesBayesianForm(QWidget *parent) :
 	ui->effectSizeCredibleIntervalInterval->setLabel("Credible interval");
 	ui->priorConcentration->setLabel("Prior concentration");
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 	ui->effectSize->hide();
 	ui->effectSizeCredibleIntervalContainer->hide();
 	ui->plotPosteriorEffectSize->hide();

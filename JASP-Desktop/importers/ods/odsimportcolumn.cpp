@@ -76,17 +76,17 @@ void insert(int row, const std::string& data);
  */
 void ODSImportColumn::createSpace(size_t row)
 {
-#ifndef QT_NO_DEBUG
+#ifdef JASP_DEBUG
 	size_t numAdded = 0;
 #endif
 
 	while (_rows.size() <= row)
-#ifndef QT_NO_DEBUG
+#ifdef JASP_DEBUG
 	{
 		numAdded++;
 #endif
 		_rows.push_back(ODSSheetCell());
-#ifndef QT_NO_DEBUG
+#ifdef JASP_DEBUG
 	}
 
 	if (numAdded != 0)

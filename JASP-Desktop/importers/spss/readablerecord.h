@@ -95,7 +95,7 @@ ReadableRecord<rT>::ReadableRecord(RecordTypes fileType)
 }
 
 
-#ifndef QT_NO_DEBUG
+#ifdef JASP_DEBUG
 // see https://scaryreasoner.wordpress.com/2009/02/28/checking-sizeof-at-compile-time
 // The basic idea is that we attempt to take the sizeof an array with -ve size
 // if (condtion) == false.

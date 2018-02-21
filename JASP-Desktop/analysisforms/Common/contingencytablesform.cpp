@@ -57,7 +57,7 @@ ContingencyTablesForm::ContingencyTablesForm(QWidget *parent) :
 	ui->panelCells->hide();
 	ui->panelOptions->hide();
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 	ui->lambda->hide();
 	ui->uncertaintyCoefficient->hide();
 

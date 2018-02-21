@@ -62,7 +62,7 @@ void VeryLongStringRecord::process(SPSSImporter* importer, SPSSImportDataSet *da
 	}
 	dataset->veryLongColsDat(strLengths);
 
-#ifndef QT_NO_DEBUG
+#ifdef JASP_DEBUG
 //	DEBUG_COUT3("Found ", strLengths.size(), " tuples:");
 //	for (map<string, size_t>::const_iterator i = strLengths.begin(); i != strLengths.end(); i++)
 //	{

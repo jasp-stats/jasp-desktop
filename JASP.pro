@@ -16,7 +16,3 @@ JASP-Desktop.depends = JASP-Common
 JASP-Engine.depends = JASP-Common 
 
 unix: JASP-Engine.depends += JASP-R-Interface
-
-exists(/app/lib/*)	{ } else {
-	debug: DEFINES += JASP_DEBUG
-}

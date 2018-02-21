@@ -40,7 +40,7 @@ CorrelationForm::CorrelationForm(QWidget *parent) :
 
 	ui->panelOptions->hide();
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 	ui->optionsWidget->hide();
 
 #else
