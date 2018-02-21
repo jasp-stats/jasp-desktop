@@ -201,7 +201,9 @@ void Engine::run()
 {
 	if (_slaveNo == 0)
 	{
+#if defined(QT_DEBUG) || defined(__linux__)
 		_engineInfo = rbridge_check();
+#endif
 
 		Json::Value v;
 		Json::Reader r;

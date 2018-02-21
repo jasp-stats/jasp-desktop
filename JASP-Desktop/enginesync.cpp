@@ -462,7 +462,9 @@ void EngineSync::startSlaveProcess(int no)
 
 	slave->setCreateProcessArgumentsModifier([] (QProcess::CreateProcessArguments *args)
 	{
+#ifndef QT_DEBUG
 		args->inheritHandles = false;
+#endif
 	});
 #endif
 
