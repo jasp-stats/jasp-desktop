@@ -108,11 +108,6 @@ QMAKE_EXTRA_TARGETS += InstallJASPgraphsRPackage
 PRE_TARGETDEPS      += InstallJASPgraphsRPackage
 
 
-InstallJASPgraphsRPackage.commands = \"$$R_EXE\" CMD INSTALL --library=$$OUT_PWD/../R/library $$PWD/JASPgraphs
-QMAKE_EXTRA_TARGETS += InstallJASPgraphsRPackage
-PRE_TARGETDEPS      += InstallJASPgraphsRPackage
-
-
 QMAKE_CLEAN += $$OUT_PWD/../R/library/*
 
 SOURCES += main.cpp \
