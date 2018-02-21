@@ -27,7 +27,7 @@ ResultExporter::ResultExporter()
 {
 	_defaultFileType = Utils::html;
     _allowedFileTypes.push_back(Utils::html);
-#ifdef QT_DEBUG
+#ifdef JASP_DEBUG
     _allowedFileTypes.push_back(Utils::pdf);
 #endif
 }

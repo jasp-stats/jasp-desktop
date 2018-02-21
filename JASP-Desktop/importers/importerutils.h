@@ -48,7 +48,7 @@ public:								\
  * These compile to nothing in release builds.
  * usage: e.g. DEBUG_COUT1("Got here!");
  */
-#ifndef QT_NO_DEBUG
+#ifdef JASP_DEBUG
 
 #include <iostream>
 

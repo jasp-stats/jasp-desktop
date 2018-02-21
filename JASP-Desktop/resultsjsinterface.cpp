@@ -67,7 +67,7 @@ void ResultsJsInterface::resultsPageLoaded(bool success)
 	{
 		QString version = tq(AppInfo::version.asString());
 		runJavaScript("window.setAppVersion('" + version + "')");
-#ifdef QT_DEBUG
+#ifdef JASP_DEBUG
 		version+="-Debug";
 #endif		
 
@@ -127,7 +127,7 @@ void ResultsJsInterface::showAnalysesMenu(QString options)
 	{
 		_analysisMenu->addAction(_saveImageIcon, "Save Image As", this, SLOT(saveImage()));
 	}
-#ifdef QT_DEBUG
+#ifdef JASP_DEBUG
     if (menuOptions["hasEditImg"].asBool())
     {
         _analysisMenu->addAction(_editImageIcon, "Edit Image", this, SLOT(editImage()));

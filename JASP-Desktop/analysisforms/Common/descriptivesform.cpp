@@ -56,7 +56,7 @@ DescriptivesForm::DescriptivesForm(QWidget *parent) :
 	ui->pageFormat->hide();
 	ui->pagePlots->hide();
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 	// temporarily hides until the appropriate R code is implemented
 	//ui->buttonAssignSplitby->hide();
 	//ui->splitPlotColour->hide();

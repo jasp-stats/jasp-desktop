@@ -38,7 +38,7 @@ BinomialTestForm::BinomialTestForm(QWidget *parent) :
 
 	ui->testValue->setLabel("Test value");
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 
 #else
 

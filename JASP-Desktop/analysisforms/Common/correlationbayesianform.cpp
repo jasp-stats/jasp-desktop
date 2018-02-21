@@ -40,7 +40,7 @@ CorrelationBayesianForm::CorrelationBayesianForm(QWidget *parent) :
 
 	ui->missingValues->hide();
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 	ui->spearman->hide();
     //ui->kendallsTauB->hide();
     ui->ciValueContainer->hide();

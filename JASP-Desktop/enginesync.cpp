@@ -90,7 +90,7 @@ void EngineSync::start()
 
 		_channels.push_back(new IPCChannel(_memoryName, 0));
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 		_channels.push_back(new IPCChannel(_memoryName, 1));
 		_channels.push_back(new IPCChannel(_memoryName, 2));
 		_channels.push_back(new IPCChannel(_memoryName, 3));
@@ -137,7 +137,7 @@ void EngineSync::setPPI(int ppi)
 
 void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 {
-#ifdef QT_DEBUG
+#ifdef JASP_DEBUG
 	std::cout << "send " << analysis->id() << " to process " << processNo << "\n";
 	std::cout.flush();
 #endif
@@ -200,7 +200,7 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	string str = json.toStyledString();
 	_channels[processNo]->send(str);
 
-#ifndef QT_NO_DEBUG
+#ifdef JASP_DEBUG
 	cout << str << "\n";
 	cout.flush();
 #endif
@@ -221,7 +221,7 @@ void EngineSync::process()
 
 		if (channel->receive(data))
 		{
-#ifdef QT_DEBUG
+#ifdef JASP_DEBUG
 			std::cout << "message received\n";
 			std::cout << data << "\n";
 			std::cout.flush();
@@ -348,7 +348,7 @@ void EngineSync::sendMessages()
 		}
 		else if (analysis->status() == Analysis::Inited)
 		{
-#ifndef QT_DEBUG
+#ifndef JASP_DEBUG
 			for (size_t i = 1; i < _analysesInProgress.size(); i++) // don't perform 'runs' on process 0, only inits.
 #else
 			for (size_t i = 0; i < _analysesInProgress.size(); i++)
@@ -436,9 +436,9 @@ void EngineSync::startSlaveProcess(int no)
 
 #else  // linux
 
-	env.insert("LD_LIBRARY_PATH", rHome.absoluteFilePath("lib") + ";" + rHome.absoluteFilePath("library/RInside/lib") + ";" + rHome.absoluteFilePath("library/Rcpp/lib") + ";" + rHome.absoluteFilePath("site-library/RInside/lib") + ";" + rHome.absoluteFilePath("site-library/Rcpp/lib"));
-	env.insert("R_HOME", rHome.absolutePath());
-	env.insert("R_LIBS", programDir.absoluteFilePath("R/library") + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
+	env.insert("LD_LIBRARY_PATH",	rHome.absoluteFilePath("lib") + ":" + rHome.absoluteFilePath("library/RInside/lib") + ":" + rHome.absoluteFilePath("library/Rcpp/lib") + ":" + rHome.absoluteFilePath("site-library/RInside/lib") + ":" + rHome.absoluteFilePath("site-library/Rcpp/lib") + ":/app/lib/:/app/lib64/");
+	env.insert("R_HOME",			rHome.absolutePath());
+	env.insert("R_LIBS",			programDir.absoluteFilePath("R/library") + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
 
 #endif
 

@@ -2,14 +2,13 @@ QT -= gui
 
 CURRENT_R_VERSION = 3.3
 
-windows:CONFIG += c++11
-macx:CONFIG += c++11
-linux:CONFIG += c++11
-
+CONFIG += c++11
 TARGET = JASP-R-Interface
 DESTDIR = ..
 TEMPLATE = lib
 linux:CONFIG += staticlib
+
+
 
 _R_HOME = $$(R_HOME)
 
@@ -60,11 +59,6 @@ HEADERS += \
     RInside/RInsideConfig.h \
     RInside/RInsideEnvVars.h
 
-unix {
-	target.path = /usr/lib
-	INSTALLS += target
-}
-
 INCLUDEPATH += \
     $$_R_HOME/library/Rcpp/include \
     $$_R_HOME/include
@@ -95,10 +89,10 @@ windows{
 
 macx{
 	setpath.commands += install_name_tool -id @rpath/libJASP-R-Interface.1.0.0.dylib $$OUT_PWD/$$DESTDIR/libJASP-R-Interface.1.0.0.dylib
-    first.depends = $(first) setpath
-    export(first.depends)
-    export(setpath.commands)
-    QMAKE_EXTRA_TARGETS += first setpath
+	first.depends = $(first) setpath
+	export(first.depends)
+	export(setpath.commands)
+	QMAKE_EXTRA_TARGETS += first setpath
 }
 
 

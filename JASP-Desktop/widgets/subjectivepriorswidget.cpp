@@ -81,7 +81,7 @@ SubjectivePriorsWidget::SubjectivePriorsWidget(QWidget *parent) :
 	ui->label_uniformDienesUpperBound->hide();
 	ui->uniformDienesUpperBound->hide();
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 	QGridLayout *gridLayout = (QGridLayout *)ui->effectSize->layout();
 	gridLayout->setMargin(0);
 	gridLayout = (QGridLayout *)ui->effectSizeStandardized->layout();

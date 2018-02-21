@@ -270,9 +270,7 @@ string Dirs::rHomeDir()
 {
 	string dir = exeDir();
 
-#ifdef __WIN32__
-	dir += "/R";
-#elif __APPLE__
+#ifdef __APPLE__
 	dir += "/../Frameworks/R.framework/Versions/" + CURRENT_R_VERSION + "/Resources";
 #else
 	dir += "/R";
@@ -286,9 +284,7 @@ string Dirs::libraryDir()
 {
     string dir = exeDir();
 
-#ifdef __WIN32__
-	dir += "/Resources/Library";
-#elif __APPLE__
+#ifdef __APPLE__
 	dir += "/../Resources/Library";
 #else
 	dir += "/Resources/Library";

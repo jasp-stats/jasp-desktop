@@ -79,7 +79,7 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 	ui->panelOptions->hide();
     ui->panelAssumptionChecks->hide();
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
     ui->missingValues->hide();
 	ui->factors->hide();
 	ui->buttonAssignFactors->hide();

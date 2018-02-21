@@ -37,7 +37,7 @@ typedef enum e_odsDataType
 	odsType_time
 } XmlDatatype;
 
-#ifndef QT_NO_DEBUG
+#ifdef JASP_DEBUG
 extern const char * const ODSTYPE_STR[];
 #endif
 

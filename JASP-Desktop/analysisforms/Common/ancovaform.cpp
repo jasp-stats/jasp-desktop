@@ -137,7 +137,7 @@ AncovaForm::AncovaForm(QWidget *parent) :
 
 	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 	ui->factorCovariateIndependence->hide();
 	ui->randomFactors->hide();
 	ui->buttonAssignRandom->hide();

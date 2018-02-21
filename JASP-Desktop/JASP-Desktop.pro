@@ -18,10 +18,16 @@ CONFIG -= app_bundle
 
 INCLUDEPATH += ../JASP-Common/
 
+#exists(/app/lib/*) should only be true when building flatpak
+exists(/app/lib/*)	{ target.path += /app/bin }
+else			{
+	target.path += /usr/bin
+}
+
+INSTALLS += target
+
    macx:INCLUDEPATH += ../../boost_1_64_0
 windows:INCLUDEPATH += ../../boost_1_64_0
-
-#PRE_TARGETDEPS += ../JASP-Common.lib
 
 LIBS += -L.. -lJASP-Common
 
@@ -34,10 +40,12 @@ windows:CONFIG(DebugBuild) {
 }
 
    macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz
-  linux:LIBS += -lboost_filesystem    -lboost_system    -larchive
-
 windows:LIBS += -lole32 -loleaut32
-  linux:LIBS += -lrt  -ljsoncpp
+
+linux {
+	exists(/app/lib/*)	{ LIBS += -larchive -lrt -L/app/lib -lboost_filesystem -lboost_system
+	} else				{ LIBS += -larchive -lrt -ljsoncpp -lboost_filesystem -lboost_system }
+}
 
 macx:QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
@@ -53,7 +61,8 @@ linux {
     QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
 }
 
-macx | windows { DEFINES += JASP_NOT_LINUX }
+macx | windows | exists(/app/lib/*) { DEFINES += JASP_LIBJSON_STATIC
+} else	{ linux:LIBS += -ljsoncpp }
 
 INCLUDEPATH += $$PWD/../JASP-Common/
 
@@ -81,4 +90,17 @@ MODULES_DIR = $$list_pri_files($$ANALYSIS_DIR)
 # Include all the module pri files
 for(file, $$list($$MODULES_DIR)) {
     include($$file)
+}
+
+
+exists(/app/lib/*) {
+	flatpak_desktop.files = ../Tools/flatpak/jasp.desktop
+	flatpak_desktop.path = /app/share/applications/
+	INSTALLS += flatpak_desktop
+
+	flatpak_icon.files = ../Tools/flatpak/jasp.svg
+	flatpak_icon.path = /app/share/icons/hicolor/scalable/apps
+	INSTALLS += flatpak_icon
+} else {
+	debug: DEFINES += JASP_DEBUG
 }

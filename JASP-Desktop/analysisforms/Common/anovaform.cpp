@@ -127,7 +127,7 @@ AnovaForm::AnovaForm(QWidget *parent) :
 
 	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 	ui->randomFactors->hide();
 	ui->label_3->hide();
 	ui->buttonAssignRandom->hide();

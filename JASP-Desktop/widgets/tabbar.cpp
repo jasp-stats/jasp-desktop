@@ -80,7 +80,7 @@ void TabBar::addModulesPlusButton()
 	for (auto it = Module::AllModules.begin(); it != Module::AllModules.end(); ++it)
 	{
 		const Module& module = it->second;
-#ifndef QT_DEBUG
+#ifndef JASP_DEBUG
 		if (module.released())
 		{
 #endif
@@ -92,7 +92,7 @@ void TabBar::addModulesPlusButton()
 			modulesmenu->addAction(action);
 			_signalModulesMapper->setMapping(action, name);
 			connect(action, SIGNAL(triggered()), _signalModulesMapper, SLOT(map()));
-#ifndef QT_DEBUG
+#ifndef JASP_DEBUG
 		}
 #endif
 	}

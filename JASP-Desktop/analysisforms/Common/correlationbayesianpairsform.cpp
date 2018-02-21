@@ -44,7 +44,7 @@ CorrelationBayesianPairsForm::CorrelationBayesianPairsForm(QWidget *parent) :
 
 	ui->assignButton->setSourceAndTarget(ui->availableFields, ui->pairs);
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 	ui->plotSequentialAnalysisRobustness->hide();
     ui->ciValueContainer->hide();
 #else
