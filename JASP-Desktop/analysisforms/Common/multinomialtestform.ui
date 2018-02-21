@@ -551,7 +551,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Expected probabilities</string>
+         <string>χ² test</string>
         </property>
        </widget>
       </item>

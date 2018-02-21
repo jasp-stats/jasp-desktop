@@ -211,7 +211,6 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
   #
   # Return:
   #   Chi square table
-
   table <- list()
   footnotes <- .newFootnotes()
   table[["title"]] <- "Multinomial Test"
@@ -242,9 +241,9 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
 
   message <- list()
 
-  for(r in 1:length(chisqResults)){
+  for (r in 1:length(chisqResults)) {
 
-    if(!is.null(chisqResults[[r]][["warn"]])) {
+    if (!is.null(chisqResults[[r]][["warn"]])) {
       .addFootnote(footnotes, symbol = "<em>Note.</em>", text = chisqResults[[r]][["warn"]])
     }
   }
@@ -252,9 +251,9 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
   table[["footnotes"]] <- as.list(footnotes)
 
   # fill in results one row at a time
-  if (!is.null(chisqResults)){
+  if (!is.null(chisqResults)) {
 
-    for(r in 1:length(chisqResults)) {
+    for (r in 1:length(chisqResults)) {
       df <- chisqResults[[r]][["parameter"]][["df"]]
       if (is.na(df)) df <- "-" # This happens when the monte carlo option is checked
       table[["data"]][[r]] <- list(case = names(chisqResults)[r],
@@ -297,6 +296,7 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
   #
   # Return:
   #   Descriptives table
+  footnotes <- .newFootnotes()
 
   if (options[["countProp"]]=="descCounts"){
     numberType = list(type="integer")
@@ -305,9 +305,9 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
   }
 
   # Expected vs. Observed table
-  table <- list("title" = "Descriptives table")
+  table <- list("title" = "Descriptives")
 
-  if (is.null(fact)){
+  if (is.null(fact)) {
     # If we have no variable init table with generic name
     fields <- list(
       list(name="factor", title="Factor", type = "string"),
@@ -327,6 +327,7 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
                                         type = "number",
                                         format = "sf:4;dp:3",
                                         overTitle = title)
+      .addFootnote(footnotes, symbol = "<em>Note.</em>", "Confidence intervals are based on independent binomial distributions.")
     }
 
     rows <- list(list(factor = ".", observed = ".", expected = "."))
@@ -351,6 +352,7 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
                                         type = "number",
                                         format = "sf:4;dp:3",
                                         overTitle = title)
+      .addFootnote(footnotes, symbol = "<em>Note.</em>", "Confidence intervals are based on independent binomial distributions.")
     }
     rows <- list(list(factor = ".", observed = ".", expected = "."))
 
@@ -361,6 +363,7 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
       list(name="factor", title=fact, type = "string"),
       c(list(name="observed", title="Observed"), numberType)
     )
+    footnotes <- .newFootnotes()
 
     nms <- names(chisqResults)
 
@@ -390,6 +393,7 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
                                         type = "number",
                                         format = "sf:4;dp:3",
                                         overTitle = title)
+      .addFootnote(footnotes, symbol = "<em>Note.</em>", "Confidence intervals are based on independent binomial distributions.")
     }
 
     # Then we fill the columns with the information
@@ -440,6 +444,7 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
 
   table[["schema"]] <- list(fields = fields)
   table[["data"]] <- rows
+  table[["footnotes"]] <- as.list(footnotes)
 
   return(table)
 }
@@ -626,7 +631,7 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
     colnames(eProps) <- sapply(options$tableWidget, function(x) x$name)
     rownames(eProps) <- options$tableWidget[[1]]$levels
 
-    return(data.frame(eProps))
+    return(as.data.frame(eProps))
   } else {
 
     stop("No expected counts entered!")
