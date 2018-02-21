@@ -601,7 +601,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						plot <- plots.ttest[[z]]
 
 						if (options$effectSizeStandardized == "informative") {
-						  plot[["error"]] <- list(error="badData", errorMessage="Bayes factor robustness check plot currently not supported for informed prior.")
+						  errorMessage="Bayes factor robustness check plot currently not supported for informed prior."
+						  plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
 						}
 
 						if (!is.null(errorMessage)) {
