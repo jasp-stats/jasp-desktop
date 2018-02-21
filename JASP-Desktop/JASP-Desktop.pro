@@ -8,7 +8,7 @@ DESTDIR = ..
 
 windows:TARGET = JASP
    macx:TARGET = JASP
-  linux:TARGET = jasp
+  linux: exists(/app/lib/*)	{ TARGET = org.jasp.JASP } else { TARGET = jasp }
 
 TEMPLATE = app
 
@@ -61,8 +61,7 @@ linux {
     QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
 }
 
-macx | windows | exists(/app/lib/*) { DEFINES += JASP_LIBJSON_STATIC
-} else	{ linux:LIBS += -ljsoncpp }
+macx | windows | exists(/app/lib/*) { DEFINES += JASP_LIBJSON_STATIC } else	{ linux:LIBS += -ljsoncpp }
 
 INCLUDEPATH += $$PWD/../JASP-Common/
 
@@ -94,13 +93,34 @@ for(file, $$list($$MODULES_DIR)) {
 
 
 exists(/app/lib/*) {
-	flatpak_desktop.files = ../Tools/flatpak/jasp.desktop
-	flatpak_desktop.path = /app/share/applications/
+	flatpak_desktop.files = ../Tools/flatpak/org.jasp.JASP.desktop
+	flatpak_desktop.path = /app/share/applications
 	INSTALLS += flatpak_desktop
 
-	flatpak_icon.files = ../Tools/flatpak/jasp.svg
+	flatpak_icon.files = ../Tools/flatpak/org.jasp.JASP.svg
 	flatpak_icon.path = /app/share/icons/hicolor/scalable/apps
 	INSTALLS += flatpak_icon
+
+	flatpak_appinfo.commands = "cd $$PWD/../Tools/flatpak && mkdir -p /app/share/app-info/xmls && gzip -c > /app/share/app-info/xmls/org.jasp.JASP.xml.gz < org.jasp.JASP.appdata.xml"
+	QMAKE_EXTRA_TARGETS += flatpak_appinfo
+	PRE_TARGETDEPS      += flatpak_appinfo
+
+	#flatpak_appinfo_xml.files = ../Tools/flatpak.org.jasp.JASP.appdata.xml
+	#flatpak_appinfo_xml.path = /app/share/appdata
+	#INSTALLS += flatpak_appinfo_xml
+
+
+	flatpak_appinfo_icon.files = ../Tools/flatpak/org.jasp.JASP.svg
+	flatpak_appinfo_icon.path = /app/share/app-info/icons/flatpak/scalable
+	INSTALLS += flatpak_appinfo_icon
+
+	flatpak_appinfo_icon64.files = ../Tools/flatpak/64/org.jasp.JASP.png
+	flatpak_appinfo_icon64.path = /app/share/app-info/icons/flatpak/64x64
+	INSTALLS += flatpak_appinfo_icon64
+
+	flatpak_appinfo_icon128.files = ../Tools/flatpak/128/org.jasp.JASP.png
+	flatpak_appinfo_icon128.path = /app/share/app-info/icons/flatpak/128x128
+	INSTALLS += flatpak_appinfo_icon128
 } else {
 	debug: DEFINES += JASP_DEBUG
 }
