@@ -1360,7 +1360,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Error bars displaying</string>
+               <string>Display error bars</string>
               </property>
              </widget>
             </item>
@@ -1545,7 +1545,7 @@
             <item row="1" column="0" colspan="2">
              <widget class="BoundCheckBox" name="marginalMeansCompareMainEffects">
               <property name="text">
-               <string>Compare main effects</string>
+               <string>Compare marginal means to 0</string>
               </property>
              </widget>
             </item>

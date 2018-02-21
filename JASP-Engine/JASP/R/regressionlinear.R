@@ -1927,8 +1927,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	plots.regression <- list()
 	plotTypes <- list()
 	plotsResVsCov <- list()
-
-	lm.model <- lm.model[[length(lm.model)]]
+	
+	if (perform == "run" && length(list.of.errors) == 0 && dependent.variable != "") {
+	  lm.model <- lm.model[[length(lm.model)]]
+	}
 
 	if (options$plotResidualsDependent) {
 
@@ -3077,9 +3079,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	}
 
-	tValues <- tValues[- (names(tValues) %in% independent.null.variables)]
-	pValues <- pValues[- (names(tValues) %in% independent.null.variables)]
-
+	tValues <- tValues[! (names(tValues) %in% independent.null.variables)]
+	pValues <- pValues[! (names(pValues) %in% independent.null.variables)]
+  
 	fValues <- tValues^2
 
 	if (options$steppingMethodCriteriaType == "useFValue") {
@@ -3102,7 +3104,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		maximumPvalue <- max(pValues)
 
 		if (maximumPvalue > options$steppingMethodCriteriaPRemoval) {
-
 			maximumPvalueVariable <- names(which.max(pValues))
 			new.independent.variables <- independent.variables[independent.variables != maximumPvalueVariable]
 
@@ -3167,9 +3168,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	while ( ! identical(old.independent.variables, new.independent.variables) && length(new.independent.variables) > 0) {
 
-		old.independent.variables <- .vWithInteraction(lm.model[[ length(lm.model) ]]$variables)
+    old.independent.variables <- .vWithInteraction(lm.model[[ length(lm.model) ]]$variables)
 		lm.model[[ length(lm.model) + 1 ]] <- .removeVariable(dependent.variable, old.independent.variables, independent.null.variables, data, options, weights)
-		new.independent.variables <- .vWithInteraction(lm.model[[ length(lm.model) ]]$variables)
+		new.independent.variables <- .vWithInteraction(lm.model[[ length(lm.model) ]]$variables) 
 
 	}
 
