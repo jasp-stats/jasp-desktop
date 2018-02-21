@@ -16,7 +16,8 @@ $(document).ready(function () {
 	if ((month == 11 && day >= 19) || (month == 0 && day <= 5))
 		$("#note").css("background-image", "url('img/snow.gif')");
 	
-    var ch = new QWebChannel(qt.webChannelTransport, function (channel) {
+    if (typeof qt !== "undefined")
+        var ch = new QWebChannel(qt.webChannelTransport, function (channel) {
                 // now you retrieve your object
                 jasp = channel.objects.jasp;
             });
