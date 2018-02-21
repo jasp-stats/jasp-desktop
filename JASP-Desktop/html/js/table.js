@@ -38,7 +38,6 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		exportParams.includeNotes = false;
 
 		this.exportBegin(exportParams);
-		console.log(exportParams);
 		return true;
 	},
 
@@ -69,50 +68,153 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		return optLatexCode !== null
 	},
 
-	latexCodeMenuClicked: function () {
-		var exportParams = new JASPWidgets.Exporter.params();
-		exportParams.format = JASPWidgets.ExportProperties.format.html;
-		exportParams.process = JASPWidgets.ExportProperties.process.copy;
-		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
-		exportParams.includeNotes = false;
+	_generateLatexCode: function(asdf) {
+		/**
+		 * Generates the latex code for tables
+		 */
+		let optSchema = this.model.get("schema");
+		let optData = this.model.get("data");
+		let optTitle = this.model.get("title");
+		let optCasesAcrossColumns = this.model.get("casesAcrossColumns");
+		let optSubtitle = this.model.get("subtitle");
+		let optVariables = this.model.get("variables");
+		let optOverTitle = this.model.get("overTitle")
+		let optFootnotes = this.model.get("footnotes");
 
-		var optSchema = this.model.get("schema");
-		var optData = this.model.get("data");
-		var optTitle = this.model.get("title");
-		var optSubtitle = this.model.get("subtitle");
-		var optVariables = this.model.get("variables");
-		var optOverTitle = this.model.get("overTitle")
-		var optFootnotes = this.model.get("footnotes");
+		let columnsDict = this._createColumns(optSchema.fields, optData);
+		let columnHeaders = columnsDict['columnHeaders'];
+		let columns = columnsDict['columns'];
 
-		// TODO: 1. create a function
+		let cells = Array(columnCount);
+
+		for (let colNo = 0; colNo < columnCount; colNo++) {
+
+			let column = columns[colNo];
+			let name = columnDefs[colNo].name;
+			let type = columnDefs[colNo].type;
+			let format = columnDefs[colNo].format;
+			let alignNumbers = !optCasesAcrossColumns;  // numbers can't be aligned across rows
+			let combine = columnDefs[colNo].combine;
+
+			cells[colNo] = this._formatColumn(column, type, format, alignNumbers, combine, false);
+		}
+
+		console.log("----------------");
+		console.log(cells);
+		console.log("****************");
+
+
+	},
+
+	_getLatexCode: function() {
+		/**
+		 * Generates the latex code for the table
+		 */
+
+
+		this._generateLatexCode();
+		let optSchema = this.model.get("schema");
+		let optData = this.model.get("data");
+		let optTitle = this.model.get("title");
+		let optSubtitle = this.model.get("subtitle");
+		let optVariables = this.model.get("variables");
+		let optOverTitle = this.model.get("overTitle")
+		let optFootnotes = this.model.get("footnotes");
+
+		console.log(optTitle);
+		console.log(optSchema);
+		console.log(optData);
+		console.log(optFootnotes);
+
+		// TODO:
 		//       2. handle all cases for tables
 		//       3. caption and footnotes formatting
+
+		let variable = "";  // required to find out the first column
+
+		for (let i = 0; i < optSchema.fields.length; ++i) {
+			if (optSchema.fields[i].title === "") {
+				variable = optSchema.fields[i].name;
+				break;
+			}
+		}
+
+		console.log(variable);
+
 		let latexCode = "";
 		// title
 		latexCode += "\\begin{table}[h]\n\t\\caption{" + optTitle + "}\n";
-		latexCode += "\t\\begin{tabular}{l" + new Array(optData.length + 1).join('r') + "}\n\t\t\\hline\n\t\t";
 
-		let columns = optData.length;
+		// alignments - {lrrr}
+		let columns = optSchema.fields.length;
+		let alignments = '';
+
+		for (let col = 0 ; col < columns; ++col) {
+			if (optSchema.fields[col].title.trim() === "") {
+				alignments += 'l';
+			} else {
+				alignments += 'r';
+			}
+		}
+
+		latexCode += "\t\\begin{tabular}{" + alignments + "}\n\t\t\\hline\n\t\t";
 
 		for (let i = 0; i < columns; ++i) {
-			latexCode += " & " + optData[i].Variable;
-		}
-		latexCode += ' \\\\\n\t\t\\hline\n\t\t';
 
-		for (let i = 0; i < optSchema.fields.length; ++i) {
-			if (optSchema.fields[i].name === "Variable") {
-				continue;
+			let title = optSchema.fields[i].title;
+			if (title === undefined) {
+				title = optSchema.fields[i].name;
 			}
 
-			let row = optSchema.fields[i].name;
-			for (let j = 0; j < columns; ++j) {
-				row += ' & ' + Number(Number.parseFloat(optData[j][optSchema.fields[i].name]).toPrecision(4)).toString();
+			latexCode += title;
+			if (i !== columns - 1) {
+				latexCode += " & ";
 			}
-			row += ' \\\\\n\t\t';
-
-			latexCode += row;
 		}
-		latexCode += "\\hline\n\t\\end{tabular} \\\\\n";
+		latexCode += ' \\\\\n\t\t\\hline\n';
+
+		for (let row = 0; row < optData.length; ++row) {
+			latexCode += '\t\t';
+
+			let columns = optSchema.fields.length;
+
+			for (let col = 0; col < columns; ++col) {
+
+				// TODO: output should be formatted based on the value of "format" key
+				// TODO: subscripts and superscripts
+				// TODO: special characters - $, /, \, etc.
+				// TODO: Correlation matrix tables are a special case
+				// FIXME: convert NaN to ""
+
+				let formattedText = optData[row][optSchema.fields[col].name];
+				if (optSchema.fields[col].type === "number") {
+					formattedText = Number(Number(formattedText).toPrecision(4)).toString();
+					// formattedText = Number(Number.parseFloat(Number(formattedText)).toPrecision(4)).toString();
+				}
+				latexCode += formattedText;
+
+				if (col !== columns - 1) {
+					latexCode += " & ";
+				}
+			}
+			latexCode += ' \\\\\n';
+		}
+		latexCode += '\t\t\\hline\n\t\\end{tabular} \n';
+
+		// for (let i = 0; i < optSchema.fields.length; ++i) {
+		// 	if (optSchema.fields[i].name === variable) {
+		// 		continue;
+		// 	}
+		//
+		// 	let row = optSchema.fields[i].name;
+		// 	for (let j = 0; j < columns; ++j) {
+		// 		row += ' & ' + Number(Number.parseFloat(optData[j][optSchema.fields[i].name]).toPrecision(4)).toString();
+		// 	}
+		// 	row += ' \\\\\n\t\t';
+		//
+		// 	latexCode += row;
+		// }
+		// latexCode += "\\hline\n\t\\end{tabular} \\\\\n";
 
 		if (optFootnotes !== "" && optFootnotes !== null && optFootnotes.length !== 0) {
 			latexCode += "\t{\\footnotesize \\textit{Note.} " + optFootnotes.join() + '\n';
@@ -120,8 +222,20 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 
 		latexCode += "\\end{table}"
 
-		var htmlCite = '<p>' + latexCode + '</p>';
-		var exportContent = new JASPWidgets.Exporter.data(latexCode, htmlCite);
+		return latexCode;
+	},
+
+	latexCodeMenuClicked: function () {
+		let exportParams = new JASPWidgets.Exporter.params();
+		exportParams.format = JASPWidgets.ExportProperties.format.html;
+		exportParams.process = JASPWidgets.ExportProperties.process.copy;
+		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
+		exportParams.includeNotes = false;
+
+		let latexCode = this._getLatexCode();
+
+		let htmlCite = '<p>' + latexCode + '</p>';
+		let exportContent = new JASPWidgets.Exporter.data(latexCode, htmlCite);
 		pushTextToClipboard(exportContent, exportParams);
 
 		return true;
@@ -247,7 +361,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 	},
 
-	_formatColumn: function (column, type, format, alignNumbers, combine) {
+	_formatColumn: function (column, type, format, alignNumbers, combine, html = true) {
 
 		var columnCells = Array(column.length)
 
@@ -268,13 +382,23 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 				}
 				else if (combine && rowNo > 0 && column[rowNo - 1].content == content) {
                     clazz += " combined";
-					formatted = { content: "&nbsp;", class: clazz }
+
+					let content = "&nbsp;";
+
+					if (!html) {
+						content = " ";
+					}
+
+					formatted = { content: content, class: clazz }
 					combined = true
 				}
 				else {
 
-					if (typeof content === "string")
-						content = content.replace(/\u273B/g, "<small>\u273B</small>")
+					if (typeof content === "string") {
+						if (html) {
+							content = content.replace(/\u273B/g, "<small>\u273B</small>")
+						}
+					}
 
 					formatted = { content: content, "class": clazz }
 				}
@@ -290,8 +414,6 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
-
-
 
 				columnCells[rowNo] = formatted
 			}
@@ -411,22 +533,19 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 					formatted = { content: "." }
 				}
 				else if (typeof content === "") {
-
-					formatted = { content: "&nbsp;", "class": "number" }
+					let content = (html) ? "&nbsp;" : " ";
+					formatted = { content: content, "class": "number" }
 				}
 				else if (combine && rowNo > 0 && column[rowNo - 1].content == content) {
-
-					formatted = { content: "&nbsp;", "class": "number" }
+					let content = (html) ? "&nbsp;" : " ";
+					formatted = { content: content, "class": "number" }
 				}
 				else if (isNaN(parseFloat(content))) {  // isn't a number
-
 					formatted = { content: content, "class": "number" }
-
 				}
 				else if (content < p) {
-
-					formatted = { content: "<&nbsp" + p, "class": "p-value" }
-
+					let content = (html) ? "<&nbsp;" : "< ";
+					formatted = { content: content + p, "class": "p-value" }
 				}
 				else if (content == 0) {
 
@@ -441,19 +560,18 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 						formatted = { content: number.toPrecision(sf), "class": "number" }
 
 					isNumber = true
-
 				}
 				else if (log10) {
 
 					if (content < (Math.log(upperLimit) / Math.log(10)) && content > -dp) {
 
 						if (alignNumbers || fixDecimals) {
-
-							formatted = { content: Math.pow(10, content).toFixed(-minLSD).replace(/-/g, "&minus;"), "class": "number" }
+							let _sign = (html) ? "&minus;" : "-";
+							formatted = { content: Math.pow(10, content).toFixed(-minLSD).replace(/-/g, _sign), "class": "number" }
 						}
 						else {
-
-							formatted = { content: Math.pow(10, content).toPrecision(sf).replace(/-/g, "&minus;"), "class": "number" }
+							let _sign = (html) ? "&minus;" : "-";
+							formatted = { content: Math.pow(10, content).toPrecision(sf).replace(/-/g, _sign), "class": "number" }
 						}
 
 						isNumber = true
@@ -501,18 +619,24 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 						else
 							padding = ''
 
-						var reassembled = mantissa + "e&thinsp;" + padding + sign + exponent
+						let reassembled;
+
+						if (html) {
+							reassembled = mantissa + "e&thinsp;" + padding + sign + exponent;
+						} else {
+							reassembled = mantissa + "e" + sign + exponent;
+						}
 
 						formatted = { content: reassembled, "class": "number" }
 
 						isNumber = true
 					}
-
 				}
 				else if (Math.abs(content) >= upperLimit || Math.abs(content) <= Math.pow(10, -dp)) {
 
-					var decimalsExpon = fixDecimals ? dp : sf - 1
-					var exponentiated = content.toExponential(decimalsExpon).replace(/-/g, "&minus;")
+					var decimalsExpon = fixDecimals ? dp : sf - 1;
+					let _sign = (html) ? "&minus;" : "-";
+					var exponentiated = content.toExponential(decimalsExpon).replace(/-/g, _sign)
 					var paddingNeeded = Math.max(maxFSDOE - this._fsdoe(content), 0)
 
 					var split = exponentiated.split("e")
@@ -528,7 +652,13 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 					else
 						padding = ''
 
-					var reassembled = mantissa + "e&thinsp;" + padding + exponentSign + exponentNum
+
+					let reassembled;
+					if (html) {
+						reassembled = mantissa + "e&thinsp;" + padding + exponentSign + exponentNum;
+					} else {
+						reassembled = mantissa + "e" + exponentSign + exponentNum;
+					}
 
 					formatted = { content: reassembled, "class": "number" }
 
@@ -537,12 +667,12 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 				else {
 
 					if (alignNumbers || fixDecimals) {
-
-						formatted = { content: content.toFixed(-minLSD).replace(/-/g, "&minus;"), "class": "number" }
+						let _sign = (html) ? "&minus;" : "-";
+						formatted = { content: content.toFixed(-minLSD).replace(/-/g, _sign), "class": "number" }
 					}
 					else {
-
-						formatted = { content: content.toPrecision(sf).replace(/-/g, "&minus;"), "class": "number" }
+						let _sign = (html) ? "&minus;" : "-";
+						formatted = { content: content.toPrecision(sf).replace(/-/g, _sign), "class": "number" }
 					}
 
 					isNumber = true
@@ -560,8 +690,10 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 				if (cell.isEndOfGroup)
 					formatted["class"] += " last-group-row"
 
-				if (isNumber && approx)
-					formatted.content = "~&thinsp;" + formatted.content
+				if (isNumber && approx) {
+					let _content = (html) ? "~&thinsp;" : "~";
+					formatted.content = _content + formatted.content
+				}
 
 				columnCells[rowNo] = formatted
 			}
@@ -581,30 +713,28 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 					formatted = { content: "." }
 				}
 				else if (content === "") {
-
-					formatted = { content: "&nbsp;" }
+					let _content = (html) ? "&nbsp;" : " ";
+					formatted = { content: _content }
 				}
 				else if (combine && rowNo > 0 && column[rowNo - 1].content == content) {
-
-					formatted = { content: "&nbsp;", "class": "number" }
+					let _content = (html) ? "&nbsp;" : " ";
+					formatted = { content: _content, "class": "number" }
 				}
 				else if (isNaN(parseFloat(content))) {  // isn't a number
-
 					formatted = { content: content, "class": "number" }
 				}
 				else if (content < p) {
-
-					formatted = { content: "<&nbsp" + p, "class": "p-value" }
-
+					let _content = (html) ? "<&nbsp;" : "< ";
+					formatted = { content: _content + p, "class": "p-value" }
 				}
 				else if (pc) {
-
-					formatted = { content: "" + (100 * content).toFixed(dp) + "&thinsp;%", "class": "percentage" }
+					let _content = (html) ? "&thinsp;%" : "%";
+					formatted = { content: "" + (100 * content).toFixed(dp) + _content, "class": "percentage" }
 					isNumber = true
 				}
 				else {
-
-					formatted = { content: content.toFixed(dp).replace(/-/g, "&minus;"), "class": "number" }
+					let _content = (html) ? "&minus;" : "-";
+					formatted = { content: content.toFixed(dp).replace(/-/g, _content), "class": "number" }
 					isNumber = true
 				}
 
@@ -620,8 +750,10 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 				if (cell.isEndOfGroup)
 					formatted["class"] += " last-group-row"
 
-				if (isNumber && approx)
-					formatted.content = "~&thinsp;" + formatted.content
+				if (isNumber && approx) {
+					let _content = (html) ? "~&thinsp;" : "~";
+					formatted.content = _content + formatted.content
+				}
 
 				columnCells[rowNo] = formatted
 			}
@@ -641,16 +773,15 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 					formatted = { content: "." }
 				}
 				else if (content === "") {
-
-					formatted = { content: "&nbsp;" }
+					let _content = (html) ? "&nbsp" : " ";
+					formatted = { content: _content }
 				}
 				else if (isNaN(parseFloat(content))) {  // isn't a number
-
 					formatted = { content: content, "class": "percentage" }
 				}
 				else {
-
-					formatted = { content: "" + (100 * content.toFixed(0)) + "&thinsp;%", "class": "percentage" }
+					let _content = (html) ? "&thinsp;%" : "%";
+					formatted = { content: "" + (100 * content.toFixed(0)) + _content, "class": "percentage" }
 					isNumber = true
 				}
 
@@ -666,8 +797,10 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 				if (cell.isEndOfGroup)
 					formatted["class"] += " last-group-row"
 
-				if (isNumber && approx)
-					formatted.content = "~&thinsp;" + formatted.content
+				if (isNumber && approx) {
+					let _content = (html) ? "~&thinsp;" : "~";
+					formatted.content = _content + formatted.content
+				}
 
 				columnCells[rowNo] = formatted
 			}
@@ -685,15 +818,14 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 					formatted = { content: "." }
 				}
 				else if (content === "") {
-
-					formatted = { content: "&nbsp;" }
+					let _content = (html) ? "&nbsp;" : " ";
+					formatted = { content: _content }
 				}
 				else if (combine && rowNo > 0 && column[rowNo - 1].content == content) {
-
-					formatted = { content: "&nbsp;" }
+					let _content = (html) ? "&nbsp;" : " ";
+					formatted = { content: _content }
 				}
 				else {
-
 					formatted = { content: content }
 				}
 
@@ -751,6 +883,95 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 	},
 
+	_createColumns: function(columnDefs, rowData) {
+		/**
+		 * Returns 'columns' data array
+		 * @param columnDefs Schema (fields)
+		 * @param rowData    Table data
+		 */
+
+		let columnCount = columnDefs.length;
+		let columns = Array(columnCount);
+		let columnHeaders = Array(columnCount);
+		let rowCount = rowData ? rowData.length : 0;
+
+		for (let colNo = 0; colNo < columnCount; colNo++) {
+
+			// populate column headers
+			let columnDef = columnDefs[colNo];
+			let columnName = columnDef.name;
+
+			let title = columnDef.title;
+			let overTitle = columnDef.overTitle;
+
+			if (typeof title == "undefined") {
+				title = columnName;
+			}
+
+			if (title == "") {
+				title = "&nbsp;";
+			}
+
+			let columnType = columnDef.type;
+			let columnHeader = {content: title, header: true, type: columnType};
+
+			if (overTitle) {
+				columnHeader.overTitle = overTitle;
+			}
+
+			if (typeof columnDef[".footnotes"] != "undefined") {
+				columnHeader.footnotes = this._getFootnotes(columnDef[".footnotes"]);
+			}
+
+			columnHeaders[colNo] = columnHeader;
+
+			// populate cells column-wise
+			let column = Array(rowCount);
+			let isGrouped = false;
+
+			for (let rowNo = 0; rowNo < rowCount; rowNo++) {
+
+				let row = rowData[rowNo];
+				let content = row[columnName];
+				let cell = { content: content };
+
+				if (row['.footnotes'] && row['.footnotes'][columnName])
+					cell.footnotes = row['.footnotes'][columnName];
+
+				if (colNo == 0 && columnDef.type == "string" && row[".rowLevel"])
+					cell.content = Array(row[".rowLevel"] + 1).join("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;") + cell.content;
+
+				if (row[".isNewGroup"]) {
+					cell.isStartOfGroup = true;
+					isGrouped = true;
+				}
+
+				if (row[".isNewSubGroup"]) {
+					cell.isStartOfSubGroup = true;
+					isGrouped = true;
+				}
+
+				if (isGrouped) {
+					if (rowNo + 1 < rowCount) {
+						if (rowData[rowNo + 1][".isNewGroup"])
+							cell.isEndOfGroup = true;
+					}
+					else {
+						cell.isEndOfGroup = true;
+					}
+				}
+				column[rowNo] = cell;
+			}
+
+			columns[colNo] = column;
+		}
+
+		return {
+			'columns': columns,
+			'columnHeaders': columnHeaders
+		};
+	},
+
 	render: function () {
 		var optSchema = this.model.get("schema");
 		var optData = this.model.get("data");
@@ -766,90 +987,14 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 		var columnDefs = optSchema.fields
 		var columnCount = columnDefs.length
 
-		var rowData = optData;
-		var rowCount = rowData ? rowData.length : 0
+		let rowData = optData;
+		let rowCount = rowData ? rowData.length : 0
 
-		var columnHeaders = Array(columnCount)
-		var columns = Array(columnCount)
+		let columnsDict = this._createColumns(columnDefs, rowData);
+		let columnHeaders = columnsDict['columnHeaders'];
+		let columns = columnsDict['columns'];
 
-
-		for (var colNo = 0; colNo < columnCount; colNo++) {
-
-			// populate column headers
-
-			var columnDef = columnDefs[colNo]
-			var columnName = columnDef.name
-
-			var title = columnDef.title
-			var overTitle = columnDef.overTitle
-
-			if (typeof title == "undefined")
-				title = columnName
-
-			if (title == "")
-				title = "&nbsp;"
-
-			var columnType = columnDef.type
-
-			var columnHeader = { content: title, header: true, type: columnType }
-
-			if (overTitle)
-				columnHeader.overTitle = overTitle
-
-			if (typeof columnDef[".footnotes"] != "undefined")
-				columnHeader.footnotes = this._getFootnotes(columnDef[".footnotes"])
-
-			columnHeaders[colNo] = columnHeader
-
-			// populate cells column-wise
-
-			var column = Array(rowCount)
-			var isGrouped = false
-
-			for (var rowNo = 0; rowNo < rowCount; rowNo++) {
-
-				var row = rowData[rowNo]
-				var content = row[columnName]
-				var cell = { content: content }
-
-				if (row['.footnotes'] && row['.footnotes'][columnName])
-					cell.footnotes = row['.footnotes'][columnName]
-
-				if (colNo == 0 && columnDef.type == "string" && row[".rowLevel"])
-					cell.content = Array(row[".rowLevel"] + 1).join("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;") + cell.content
-
-				if (row[".isNewGroup"]) {
-
-					cell.isStartOfGroup = true
-					isGrouped = true
-				}
-
-				if (row[".isNewSubGroup"]) {
-
-					cell.isStartOfSubGroup = true
-					isGrouped = true
-				}
-
-				if (isGrouped) {
-
-					if (rowNo + 1 < rowCount) {
-
-						if (rowData[rowNo + 1][".isNewGroup"])
-							cell.isEndOfGroup = true
-					}
-					else {
-
-						cell.isEndOfGroup = true
-					}
-				}
-
-				column[rowNo] = cell
-			}
-
-			columns[colNo] = column
-		}
-
-		var cells = Array(columnCount)
+		var cells = Array(columnCount);
 
 		for (var colNo = 0; colNo < columnCount; colNo++) {
 
@@ -862,6 +1007,10 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 			cells[colNo] = this._formatColumn(column, type, format, alignNumbers, combine)
 		}
+
+		// console.log("----------------");
+		// console.log(cells);
+		// console.log("****************");
 
 		var columnsInColumn = {}  // dictionary of counts
 		var columnsInsertedInColumn = {}
