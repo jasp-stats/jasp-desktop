@@ -27,6 +27,12 @@
 
 int main(int argc, char *argv[])
 {
+#ifdef __WIN32__
+	// Temporary fix for #2322 by disabling opengl drawing on windows
+	// Follow status of https://bugreports.qt.io/browse/QTBUG-61430 for 
+	// future permanent fix.
+	qputenv("QT_QUICK_BACKEND", "software");
+#endif
 	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 	QCoreApplication::setOrganizationName("JASP");
 	QCoreApplication::setOrganizationDomain("jasp-stats.org");
