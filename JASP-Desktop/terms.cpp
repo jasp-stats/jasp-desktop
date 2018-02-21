@@ -356,7 +356,7 @@ Terms Terms::ffCombinations(const Terms &terms)
 string Terms::asString() const
 {
 	if (_terms.size() == 0)
-		return "<0 terms>";
+		return "";
 
 	stringstream ss;
 

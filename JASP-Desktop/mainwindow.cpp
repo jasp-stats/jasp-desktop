@@ -634,9 +634,6 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 
 AnalysisForm* MainWindow::loadForm(const string name)
 {
-	if (_analysisForms.find(name) != _analysisForms.end())
-		return _analysisForms[name];
-
 	AnalysisForm *form = NULL;
 
 	QWidget *contentArea = ui->optionsContentArea;
@@ -731,8 +728,6 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
-	if (form != NULL)
-		_analysisForms[name] = form;
 
 	return form;
 }

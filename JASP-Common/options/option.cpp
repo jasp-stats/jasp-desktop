@@ -55,6 +55,11 @@ bool Option::isTransient() const
 	return _isTransient;
 }
 
+void Option::doesNotSignalOnceUnblocked()
+{
+	_shouldSignalOnceUnblocked = false;
+}
+
 void Option::notifyChanged()
 {
 	if (_signalsBlocked)

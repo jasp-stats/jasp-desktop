@@ -33,6 +33,7 @@ void BoundTableWidget::bindTo(Option *option)
 
 		// Populate table from Options
 		populateTableFromOption();
+		
 	}
 }
 
@@ -41,6 +42,7 @@ void BoundTableWidget::populateTableFromOption()
 	// For each QTableWidgetItem updation, a 'cellChanged' signal is triggered.
 	// Block all such signals until Table updation
 	this->blockSignals(true);
+	_boundTo->blockSignals(true);
 
 	// Initialize
 	this->clearContents();
@@ -90,12 +92,15 @@ void BoundTableWidget::populateTableFromOption()
 
 	this->setHorizontalHeaderLabels(horizontalLabels);
 	this->setVerticalHeaderLabels(verticalLabels);
-	this->blockSignals(false);
 
 	updateTableValues();
+	
+	_boundTo->doesNotSignalOnceUnblocked();
+	_boundTo->blockSignals(false);
+	this->blockSignals(false);
 }
 
-void BoundTableWidget::updateTableValues()
+void BoundTableWidget::updateTableValues(bool noSignal)
 {
 	if (_boundTo == NULL) {
 		return;
@@ -151,5 +156,12 @@ void BoundTableWidget::updateTableValues()
 		_groups.push_back(newRow);
 	}
 
+	if (noSignal)
+		_boundTo->blockSignals(true);
 	_boundTo->setValue(_groups);
+	if (noSignal)
+	{
+		_boundTo->doesNotSignalOnceUnblocked();
+		_boundTo->blockSignals(false);
+	}
 }
