@@ -22,7 +22,6 @@
 #include "tableview.h"
 #include "bound.h"
 #include "boundmodel.h"
-#include "customhoverdelegate.h"
 
 class BoundTableView : public TableView, public Bound
 {

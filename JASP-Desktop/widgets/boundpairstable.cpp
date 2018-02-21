@@ -42,7 +42,6 @@ BoundPairsTable::BoundPairsTable(QWidget *parent) :
 	this->setDropIndicatorShown(true);
 	this->setDragDropMode(QAbstractItemView::DragDrop);
 	this->viewport()->setAttribute(Qt::WA_Hover);
-	this->setItemDelegate(new CustomHoverDelegate(this));
 
 	horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
 	horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
