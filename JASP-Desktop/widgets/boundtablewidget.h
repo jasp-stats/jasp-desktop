@@ -41,7 +41,7 @@ public:
 	virtual void bindTo(Option *option) OVERRIDE;
 
 	void populateTableFromOption();
-	void updateTableValues();
+	void updateTableValues(bool noSignal = false);
 
 private:
 	OptionsTable *_boundTo;

@@ -108,8 +108,6 @@ private:
 	QPushButton *_okButton;
 	QPushButton *_runButton;
 
-	std::map<std::string, AnalysisForm *> _analysisForms;
-
 	int _tableViewWidthBeforeOptionsMadeVisible;
 
 	bool _resultsViewLoaded = false;

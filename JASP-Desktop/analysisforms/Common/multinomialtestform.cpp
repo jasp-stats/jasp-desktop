@@ -92,7 +92,7 @@ void MultinomialTestForm::bindTo(Options *options, DataSet *dataSet)
 			}
 
 			setTableVerticalHeaders();
-			ui->tableWidget->updateTableValues();
+			ui->tableWidget->updateTableValues(true);
 		}
 	}
 

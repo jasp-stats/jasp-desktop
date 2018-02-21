@@ -42,6 +42,8 @@ public:
 	void blockSignals(bool block);
 
 	bool isTransient() const;
+	
+	void doesNotSignalOnceUnblocked();
 
 protected:
 	void notifyChanged();
