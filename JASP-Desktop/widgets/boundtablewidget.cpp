@@ -95,8 +95,7 @@ void BoundTableWidget::populateTableFromOption()
 
 	updateTableValues();
 	
-	_boundTo->doesNotSignalOnceUnblocked();
-	_boundTo->blockSignals(false);
+	_boundTo->blockSignals(false, false);
 	this->blockSignals(false);
 }
 
@@ -160,8 +159,5 @@ void BoundTableWidget::updateTableValues(bool noSignal)
 		_boundTo->blockSignals(true);
 	_boundTo->setValue(_groups);
 	if (noSignal)
-	{
-		_boundTo->doesNotSignalOnceUnblocked();
-		_boundTo->blockSignals(false);
-	}
+		_boundTo->blockSignals(false, false);
 }

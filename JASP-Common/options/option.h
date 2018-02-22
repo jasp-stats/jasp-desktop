@@ -39,12 +39,10 @@ public:
 
 	boost::signals2::signal<void (Option *)> changed;
 
-	void blockSignals(bool block);
+	void blockSignals(bool block, bool notifyOnceUnblocked = true);
 
 	bool isTransient() const;
 	
-	void doesNotSignalOnceUnblocked();
-
 protected:
 	void notifyChanged();
 	bool _isTransient;
