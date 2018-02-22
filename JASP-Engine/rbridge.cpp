@@ -16,9 +16,6 @@
 //
 
 #include "rbridge.h"
-
-#include <boost/foreach.hpp>
-
 #include "base64.h"
 #include "jsonredirect.h"
 #include "sharedmemory.h"
@@ -164,9 +161,8 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 				resultCol.hasLabels = false;
 				resultCol.doubles = (double*)calloc(rowCount, sizeof(double));
 
-				BOOST_FOREACH(double value, column.AsDoubles)
+				for (double value: column.AsDoubles)
 				{
-					(void)column;
 					resultCol.doubles[rowNo++] = value;
 				}
 
@@ -177,9 +173,8 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 				resultCol.hasLabels = false;
 				resultCol.ints = (int*)calloc(rowCount, sizeof(int));
 
-				BOOST_FOREACH(int value, column.AsInts)
+				for (int value: column.AsInts)
 				{
-					(void)column;
 					resultCol.ints[rowNo++] = value;
 				}
 			}
@@ -190,9 +185,8 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 				resultCol.isOrdinal = false;
 				resultCol.ints = (int*)calloc(rowCount, sizeof(int));
 
-				BOOST_FOREACH(int value, column.AsInts)
+				for (int value: column.AsInts)
 				{
-					(void)column;
 					if (value == INT_MIN)
 						resultCol.ints[rowNo++] = INT_MIN;
 					else
@@ -216,14 +210,13 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 
 				const Labels &labels = column.labels();
 
-				BOOST_FOREACH(const Label &label, labels)
+				for (const Label &label: labels)
 				{
 					indices[label.value()] = i++;
 				}
 
-				BOOST_FOREACH(int value, column.AsInts)
+				for (int value: column.AsInts)
 				{
-					(void)column;
 					if (value == INT_MIN)
 						resultCol.ints[rowNo++] = INT_MIN;
 					else
@@ -239,14 +232,11 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 				resultCol.hasLabels = true;
 				resultCol.isOrdinal = false;
 				resultCol.ints = (int*)calloc(rowCount, sizeof(int));
-
-
+				
 				set<int> uniqueValues;
 
-				BOOST_FOREACH(double value, column.AsDoubles)
+				for (double value: column.AsDoubles)
 				{
-					(void)column;
-
 					if (std::isnan(value))
 						continue;
 
@@ -266,11 +256,8 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 				map<int, int> valueToIndex;
 				vector<string> labels;
 
-				BOOST_FOREACH(int value, uniqueValues)
+				for (int value: uniqueValues)
 				{
-					(void)value;
-					(void)uniqueValues;
-
 					valueToIndex[value] = index;
 
 					if (value == INT_MAX)
@@ -291,10 +278,8 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 					index++;
 				}
 
-				BOOST_FOREACH(double value, column.AsDoubles)
+				for (double value: column.AsDoubles)
 				{
-					(void)column;
-
 					if (std::isnan(value))
 						resultCol.ints[rowNo] = INT_MIN;
 					else if (isfinite(value))
@@ -332,7 +317,7 @@ extern "C" char** STDCALL rbridge_readDataColumnNames(int *colMax)
 	staticResult = (char**)calloc(staticColMax, sizeof(char*));
 
 	int colNo = 0;
-	BOOST_FOREACH(const Column &column, columns)
+	for (const Column &column: columns)
 		staticResult[colNo++] = strdup(column.name().c_str());
 
 	*colMax = staticColMax;
@@ -367,6 +352,7 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 		Column::ColumnType columnType = column.columnType();
 
 		Column::ColumnType requestedType = (Column::ColumnType)columnInfo.type;
+		
 		if (requestedType == Column::ColumnTypeUnknown)
 			requestedType = columnType;
 
@@ -392,12 +378,59 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 		}
 		else
 		{
-			bool ordinal = (requestedType == Column::ColumnTypeOrdinal);
-
 			resultCol.isScale = false;
 			resultCol.hasLabels = true;
-			resultCol.isOrdinal = ordinal;
-			resultCol.labels = rbridge_getLabels(column.labels(), resultCol.nbLabels);
+			resultCol.isOrdinal = (requestedType == Column::ColumnTypeOrdinal);
+			if (columnType != Column::ColumnTypeScale)
+			{
+				resultCol.labels = rbridge_getLabels(column.labels(), resultCol.nbLabels);
+			}
+			else
+			{
+				// scale to nominal or ordinal (doesn't really make sense, but we have to do something)
+				set<int> uniqueValues;
+
+				for (double value: column.AsDoubles)
+				{
+					if (std::isnan(value))
+						continue;
+
+					int intValue;
+
+					if (isfinite(value))
+						intValue = (int)(value * 1000);
+					else if (value < 0)
+						intValue = INT_MIN;
+					else
+						intValue = INT_MAX;
+
+					uniqueValues.insert(intValue);
+				}
+
+				vector<string> labels;
+
+				for (int value: uniqueValues)
+				{
+					if (value == INT_MAX)
+					{
+						labels.push_back("Inf");
+					}
+					else if (value == INT_MIN)
+					{
+						labels.push_back("-Inf");
+					}
+					else
+					{
+						stringstream ss;
+						ss << ((double)value / 1000);
+						labels.push_back(ss.str());
+					}
+				}
+
+				resultCol.labels = rbridge_getLabels(labels, resultCol.nbLabels);
+					
+			}
+		
 		}
 	}
 
@@ -452,7 +485,7 @@ char** rbridge_getLabels(const Labels &levels, int &nbLevels)
 	{
 		results = (char**)calloc(levels.size(), sizeof(char*));
 		int i = 0;
-		BOOST_FOREACH(const Label &level, levels)
+		for (const Label &level: levels)
 			results[i++] = strdup(level.text().c_str());
 		nbLevels = i;
 	}
@@ -473,7 +506,7 @@ char** rbridge_getLabels(const vector<string> &levels, int &nbLevels)
 	{
 		results = (char**)calloc(levels.size(), sizeof(char*));
 		int i = 0;
-		BOOST_FOREACH(const string &level, levels)
+		for (const string &level: levels)
 			results[i++] = strdup(level.c_str());
 		nbLevels = i;
 	}
