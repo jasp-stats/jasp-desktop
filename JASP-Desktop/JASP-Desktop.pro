@@ -102,5 +102,6 @@ exists(/app/lib/*) {
 	flatpak_icon.path = /app/share/icons/hicolor/scalable/apps
 	INSTALLS += flatpak_icon
 } else {
-	debug: DEFINES += JASP_DEBUG
+	CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG }
 }
+
