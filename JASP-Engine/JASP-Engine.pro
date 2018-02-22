@@ -99,7 +99,7 @@ exists(/app/lib/*) {
 } else {
 	InstallJASPRPackage.commands		= \"$$R_EXE\" CMD INSTALL --library=$$OUT_PWD/../R/library $$PWD/JASP
 	InstallJASPgraphsRPackage.commands	= \"$$R_EXE\" CMD INSTALL --library=$$OUT_PWD/../R/library $$PWD/JASPgraphs
-	debug: DEFINES += JASP_DEBUG
+	CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG }
 }
 
 QMAKE_EXTRA_TARGETS += InstallJASPRPackage
