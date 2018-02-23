@@ -6,9 +6,7 @@
 	"sdk-extensions": [
 		"org.freedesktop.Sdk.Extension.gfortran-62"
 	],
-	"command": "jasp",
-	"rename-desktop-file": "jasp.desktop",
-	"rename-icon": "jasp",
+	"command": "org.jasp.JASP",
 	"finish-args":[
 		"--socket=x11",
 		"--socket=wayland",
@@ -206,16 +204,15 @@
 				"env": {
 					"GIT_DISCOVERY_ACROSS_FILESYSTEM": "true",
 					"R_HOME": "/app/lib64/R/",
-					"PREFIX": "/app", 
-					"FLATPAK_ID": "/apperdepap"
+					"PREFIX": "/app"
 				},
 				"build-args": ["--share=network"]
 			},
 			"sources":[
 				{
 					"type":"git",
-					"branch": "flatpak",
-					"url": "https://github.com/JorisGoosen/jasp-desktop"
+					"branch": "development",
+					"url": "https://github.com/jasp-stats/jasp-desktop"
 				},
 				{
 					"type": "shell",
