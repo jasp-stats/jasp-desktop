@@ -1151,6 +1151,7 @@ RegressionLinearBayesian <- function (
         which.min(abs(cdf - 0.975))
     )
     dfCri <- data.frame(
+        x    = mean(xx[idxCri]), # not required in newer ggplot2 versions
         xmin = xx[idxCri][1],
         xmax = xx[idxCri][2],
         y = 0.9 * yBreaks[length(yBreaks)]
@@ -1165,12 +1166,12 @@ RegressionLinearBayesian <- function (
 	g <- JASPgraphs::drawLines(dat = dfLines,
 							   mapping = ggplot2::aes(x = x, y = y, group = g, color = g),
 							   show.legend = FALSE) +
-	    ggplot2::scale_y_continuous(name = "Log(Marginal)", breaks = yBreaks, limits = range(yBreaks)) + 
+	    ggplot2::scale_y_continuous(name = "Density", breaks = yBreaks, limits = range(yBreaks)) + 
 	    ggplot2::scale_x_continuous(name = name, breaks = xBreaks, limits = range(xBreaks))
 	g <- g + ggplot2::scale_color_manual(values = c("gray", "black"))
-	if (prob0 > 0.05)
+	if (prob0 > 0.01)
 	    g <- g + ggplot2::geom_text(data = dfText, mapping = ggplot2::aes(x = x, y = y, label = label), size = 6, hjust = hjust)
-	g <- g + ggplot2::geom_errorbarh(data = dfCri, mapping = ggplot2::aes(xmin = xmin, xmax = xmax, y = y), height = hBarHeight)
+	g <- g + ggplot2::geom_errorbarh(data = dfCri, mapping = ggplot2::aes(x = x, xmin = xmin, xmax = xmax, y = y), height = hBarHeight)
 	g <- g + ggplot2::geom_text(data = dfCriText, mapping = ggplot2::aes(x = x, y = y, label = label), size = 6, hjust = "center")
 	g <- JASPgraphs::themeJasp(g)
 
@@ -1254,7 +1255,7 @@ RegressionLinearBayesian <- function (
 		xBreaks <- round(seq(1, x$n.models, length.out = min(5, x$n.models)))
 		g <- JASPgraphs::drawSmooth(dat = dfPoints, color = "red", alpha = .7)
 		g <- JASPgraphs::drawPoints(g, dat = dfPoints, size = 4) +
-			ggplot2::ylab("Cumulative Probability") +
+		    ggplot2::scale_y_continuous(name = "Cumulative Probability", limits = 0:1) +
 			ggplot2::scale_x_continuous(name = "Model Search Order", breaks = xBreaks)
 		g <- JASPgraphs::themeJasp(g)
 		return(g)
@@ -1271,21 +1272,21 @@ RegressionLinearBayesian <- function (
 
 		# gonna assume here that dim (the number of parameters) is always an integer
 		xBreaks <- unique(round(pretty(dim)))
+		yBreaks <- JASPgraphs::getPrettyAxisBreaks(range(logmarg), eps.correct = 2)
 		g <- JASPgraphs::drawPoints(dat = dfPoints, size = 4) +
-			ggplot2::ylab("Log(Marginal)") +
-			ggplot2::xlab("Model Dimension") +
-			ggplot2::scale_x_continuous(breaks = xBreaks)
+			ggplot2::scale_y_continuous(name = "Log(P(data|M))", breaks = yBreaks, limits = range(yBreaks)) +
+			ggplot2::scale_x_continuous(name = "Model Dimension", breaks = xBreaks)
 		g <- JASPgraphs::themeJasp(g)
 		return(g)
 
 	}
 	if (show[4]) {
 		# browser()
-		probne0 = x$probne0
-		variables = x$namesx # 1:x$n.vars
-		priorProb <- x$priorprobsPredictor[1:x$n.vars]
+		probne0 = x$probne0[-1]
+		variables = x$namesx[-1] # 1:x$n.vars
+		priorProb <- x$priorprobsPredictor[1:x$n.vars][-1]
 
-		# reorder from high to low
+		# reorder from low to high
 		o <- order(probne0, decreasing = FALSE)
 		probne0 <- probne0[o]
 		variables <- variables[o]
@@ -1297,7 +1298,7 @@ RegressionLinearBayesian <- function (
 			y = probne0
 		)
 		dfLine <- data.frame(
-			x = rep(1:x$n.vars, each = 2) + c(-width/2, width/2),
+			x = rep(1:(x$n.vars-1), each = 2) + c(-width/2, width/2),
 			y = rep(priorProb, each = 2),
 			g = rep(factor(variables), each = 2),
 			g0 = factor(1)
