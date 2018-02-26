@@ -50,6 +50,89 @@
       <property name="verticalSpacing">
        <number>6</number>
       </property>
+      <item row="1" column="0">
+       <widget class="BoundGroupBox" name="bayesFactorType">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="title">
+         <string>Bayes Factor</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_37">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QRadioButton" name="_1">
+           <property name="text">
+            <string>BF₁₀</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QRadioButton" name="_3">
+           <property name="text">
+            <string>Log(BF₁₀)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QRadioButton" name="_2">
+           <property name="text">
+            <string>BF₀₁</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <spacer name="horizontalSpacer_13">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="BoundGroupBox" name="plot_descriptives">
+        <property name="title">
+         <string>Data</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_20">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>9</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="BoundCheckBox" name="descriptives">
+           <property name="text">
+            <string>Descriptives</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
       <item row="2" column="0">
        <widget class="BoundGroupBox" name="bayesFactorOrder">
         <property name="sizePolicy">
@@ -104,7 +187,7 @@
         </layout>
        </widget>
       </item>
-      <item row="1" column="1">
+      <item row="2" column="1">
        <widget class="BoundGroupBox" name="shownModels">
         <property name="title">
          <string>Limit no. models shown</string>
@@ -177,65 +260,20 @@
         </layout>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="BoundGroupBox" name="bayesFactorType">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+      <item row="5" column="1">
+       <spacer name="verticalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
         </property>
-        <property name="title">
-         <string>Bayes Factor</string>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
         </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_37">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="QRadioButton" name="_1">
-           <property name="text">
-            <string>BF₁₀</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QRadioButton" name="_3">
-           <property name="text">
-            <string>Log(BF₁₀)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QRadioButton" name="_2">
-           <property name="text">
-            <string>BF₀₁</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <spacer name="horizontalSpacer_13">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </widget>
+       </spacer>
       </item>
-      <item row="2" column="1">
+      <item row="1" column="1">
        <widget class="GroupBox" name="groupBox_9">
         <property name="enabled">
          <bool>true</bool>
@@ -256,12 +294,18 @@
          <property name="rightMargin">
           <number>0</number>
          </property>
-         <item row="1" column="0">
-          <widget class="BoundCheckBox" name="postSummaryPlot">
-           <property name="text">
-            <string>Plot of coefficients</string>
+         <item row="2" column="3">
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
            </property>
-          </widget>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
          <item row="0" column="1">
           <widget class="BoundComboBox" name="summaryType">
@@ -300,20 +344,24 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="3">
-          <spacer name="horizontalSpacer_4">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+         <item row="2" column="0">
+          <widget class="BoundCheckBox" name="postSummaryPlot">
+           <property name="text">
+            <string>Plot of coefficients</string>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
+          </widget>
          </item>
-         <item row="1" column="1">
+         <item row="2" column="1">
+          <widget class="BoundCheckBox" name="omitIntercept">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Omit intercept</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
           <widget class="QWidget" name="posteriorSummaryPlotCredibleIntervalBox" native="true">
            <property name="enabled">
             <bool>false</bool>
@@ -385,44 +433,6 @@
         </layout>
        </widget>
       </item>
-      <item row="4" column="0">
-       <widget class="BoundGroupBox" name="plot_descriptives">
-        <property name="title">
-         <string>Data</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_20">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>9</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="BoundCheckBox" name="descriptives">
-           <property name="text">
-            <string>Descriptives</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <spacer name="verticalSpacer_3">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
      </layout>
     </widget>
    </item>
@@ -478,7 +488,7 @@
             <item row="1" column="0">
              <widget class="BoundCheckBox" name="plotCoefficientsPosterior">
               <property name="text">
-               <string>Averaged posterior distributions</string>
+               <string>Marginal posterior distributions</string>
               </property>
              </widget>
             </item>
@@ -1348,8 +1358,6 @@
   <tabstop>numShownModels</tabstop>
   <tabstop>__1</tabstop>
   <tabstop>__2</tabstop>
-  <tabstop>postSummary</tabstop>
-  <tabstop>postSummaryPlot</tabstop>
   <tabstop>expanderModel_2</tabstop>
   <tabstop>expanderModel</tabstop>
   <tabstop>plotInclusionProbabilities</tabstop>
@@ -1398,16 +1406,16 @@
   <connection>
    <sender>postSummaryPlot</sender>
    <signal>toggled(bool)</signal>
-   <receiver>posteriorSummaryPlotCredibleIntervalBox</receiver>
+   <receiver>omitIntercept</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>375</x>
-     <y>846</y>
+     <x>394</x>
+     <y>676</y>
     </hint>
     <hint type="destinationlabel">
-     <x>546</x>
-     <y>846</y>
+     <x>394</x>
+     <y>699</y>
     </hint>
    </hints>
   </connection>

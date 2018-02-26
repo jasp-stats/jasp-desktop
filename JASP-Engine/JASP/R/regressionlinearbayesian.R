@@ -31,8 +31,8 @@ RegressionLinearBayesian <- function (
 						 	 	 "samplingMethod", "iterationsMCMC", "numberOfModels")
 	stateKey <- list(
 		bas_obj = modelOpts,
-		postSummary = c(modelOpts, "postSummary", "summaryType"),
-		postSummaryPlot = c(modelOpts, "postSummaryPlot", "summaryType", "posteriorSummaryPlotCredibleIntervalValue"),
+		postSummary = c(modelOpts, "postSummary", "summaryType", "posteriorSummaryPlotCredibleIntervalValue"),
+		postSummaryPlot = c(modelOpts, "postSummaryPlot", "summaryType", "posteriorSummaryPlotCredibleIntervalValue", "omitIntercept"),
 		descriptives = c("dependent", "covariates"),
 		plotPosteriorLogOdds = c(modelOpts, "plotLogPosteriorOdds"),
 		plotCoefficientsPosterior = c(modelOpts, "plotCoefficientsPosterior"),
@@ -100,13 +100,13 @@ RegressionLinearBayesian <- function (
 
 	if (options$postSummary && is.null(postSummary)) {
 		postSummary <- .posteriorSummaryTable.basReg(
-			bas_obj, dataset, status, perform, options
+			bas_obj, status, perform, options
 		)
 	}
 	
 	if (options$postSummaryPlot && is.null(postSummaryPlot)) {
 	    postSummaryPlot <- .plotPosteriorSummary(
-			bas_obj, dataset, status, perform, options
+			bas_obj, status, perform, options
 		)
 	}
 
@@ -482,6 +482,7 @@ RegressionLinearBayesian <- function (
 		bas_lm[["priorprobsPredictor"]] <- .calcPriorMarginalInclusionProbs(bas_lm)
 		bas_lm[["formula"]] <- formula
 		bas_lm[["weights"]] <- wlsWeights
+		bas_lm[["posteriorSummary"]] <- .calculatePosteriorSummary(bas_lm, dataset, options)
 	}
 
 	return(list(bas_obj = bas_lm, status = status))
@@ -694,7 +695,7 @@ RegressionLinearBayesian <- function (
 	return(table)
 }
 
-.posteriorSummaryTable.basReg <- function(bas_obj, dataset, status, perform, options) {
+.posteriorSummaryTable.basReg <- function(bas_obj, status, perform, options) {
 	# Generate a posterior summary table of the coefficients
 	#
 	# Args:
@@ -711,12 +712,15 @@ RegressionLinearBayesian <- function (
 
 	posterior[["title"]] <- "Posterior Summaries of Coefficients"
 
+	overTitle <- sprintf("%s%% Credible Interval", format(100*options[["posteriorSummaryPlotCredibleIntervalValue"]], digits = 3))
 	fields <-
 		list(
 			list(name="coefficient", title="Coefficient", type="string"),
 			list(name="mean", title="Mean", type="number", format="sf:4;dp:3"),
 			list(name="sd", title="SD", type="number", format="sf:4;dp:3"),
-			list(name="pIncl", title ="P(incl|data)", type="number", format="sf:4;dp:3")
+			list(name="pIncl", title ="P(incl|data)", type="number", format="sf:4;dp:3"),
+			list(name="lowerCri", title = "Lower", type="number", format="sf:4;dp:3", overTitle = overTitle),
+			list(name="upperCri", title = "Upper", type="number", format="sf:4;dp:3", overTitle = overTitle)
 	)
 
 	posterior[["schema"]] <- list(fields=fields)
@@ -724,25 +728,11 @@ RegressionLinearBayesian <- function (
 	if (status$ready && perform == "run") {
 		rows <- list()
 
-		estimator <- switch(
-			options$summaryType,
-			best="HPM",
-			median="MPM",
-			"BMA"
-		)
-
-		coef <- .coefBas(bas_obj, estimator = estimator, dataset = dataset, weights = bas_obj[["weights"]])
-		coefficients <- coef$namesx
-		probne0 <- coef[["probne0"]]
-		if (estimator == "HPM") {
-			loopIdx <- which(abs(coef$postmean) > sqrt(.Machine$double.eps))
-		} else if (estimator == "MPM") {
-			loopIdx <- which(abs(coef$postmean) > sqrt(.Machine$double.eps))
-			coefficients[-1] <- d64(coefficients[-1])
-			probne0 <- bas_obj[["probne0"]]
-		} else {
-			loopIdx <- seq_along(coefficients)
-		}
+		coef <- bas_obj[["posteriorSummary"]][["coef"]]
+		coefficients <- bas_obj[["posteriorSummary"]][["coefficients"]]
+		probne0 <- bas_obj[["posteriorSummary"]][["probne0"]]
+		loopIdx <- bas_obj[["posteriorSummary"]][["loopIdx"]]
+		confInt <- confint(coef, level = options[["posteriorSummaryPlotCredibleIntervalValue"]])
 
 		nModels <- coef$n.models
 		topm <- order(-bas_obj$postprobs)[1:nModels]
@@ -759,8 +749,11 @@ RegressionLinearBayesian <- function (
 					mean <- .clean(coef$postmean[i])
 					sd <- .clean(coef$postsd[i])
 				}
+				lowerCri <- .clean(confInt[i, 1])
+				upperCri <- .clean(confInt[i, 2])
 
-				rows[[length(rows) + 1]] <- list(coefficient = coefficient, mean = mean, sd = sd, pIncl = pIncl)
+				rows[[length(rows) + 1]] <- list(coefficient = coefficient, mean = mean, sd = sd, pIncl = pIncl,
+												 lowerCri = lowerCri, upperCri = upperCri)
 
 			}
 			posterior[["data"]] <- rows
@@ -1433,44 +1426,34 @@ RegressionLinearBayesian <- function (
 
 }
 
-.plotPosteriorSummary <- function(bas_obj, dataset, status, perform, options) {
+.plotPosteriorSummary <- function(bas_obj, status, perform, options) {
     
     # start markup
     title <- sprintf("Posterior Coefficients with %s%% Credible Interval", 
                      format(100*options$posteriorSummaryPlotCredibleIntervalValue, digits = 3))
     # do calculations
     if (status$ready && perform == "run") {
-        estimator <- switch(
-            options$summaryType,
-            best="HPM",
-            median="MPM",
-            "BMA"
-        )
-        coef <- .coefBas(bas_obj, estimator = estimator, dataset = dataset, weights = bas_obj[["weights"]])
-        coefficients <- coef$namesx
-        
-        if (estimator == "HPM") {
-            loopIdx <- which(abs(coef$postmean) > sqrt(.Machine$double.eps))
-        } else if (estimator == "MPM") {
-            loopIdx <- which(abs(coef$postmean) > sqrt(.Machine$double.eps))
-            coefficients[-1] <- d64(coefficients[-1])
-            probne0 <- bas_obj[["probne0"]]
-        } else {
-            loopIdx <- seq_along(coefficients)
-        }
 
-        mat <- confint(coef, level = options$posteriorSummaryPlotCredibleIntervalValue)
-        mat <- mat[loopIdx, , drop = FALSE] # only plot parameters present in table
+    	coef <- bas_obj[["posteriorSummary"]][["coef"]]
+    	confInt <- confint(coef, level = options[["posteriorSummaryPlotCredibleIntervalValue"]])
+        loopIdx <- bas_obj[["posteriorSummary"]][["loopIdx"]]
+        coefficients <- bas_obj[["posteriorSummary"]][["coefficients"]]
+        
+        # exlude intercept if it's not the only predictor?
+        if (options[["omitIntercept"]] && length(loopIdx) > 1)
+        	loopIdx <- loopIdx[-1, drop = FALSE]
+        
+        confInt <- confInt[loopIdx, , drop = FALSE] # only plot parameters present in table
         df <- data.frame(
             x = factor(coefficients[loopIdx], levels = coefficients[loopIdx]),
-            y = mat[, 3],
-            lower = mat[, 1],
-            upper = mat[, 2]
+            y = confInt[, 3],
+            lower = confInt[, 1],
+            upper = confInt[, 2]
         )
 
-        yBreaks <- JASPgraphs::getPrettyAxisBreaks(range(c(mat)), eps.correct = 2)
+        yBreaks <- JASPgraphs::getPrettyAxisBreaks(range(c(confInt)), eps.correct = 2)
         g <- ggplot2::ggplot(data = df, mapping = ggplot2::aes(x = x, y = y, ymin = lower, ymax = upper)) + 
-            ggplot2::geom_point() + 
+            ggplot2::geom_point(size = 4) + 
             ggplot2::geom_errorbar(, width = 0.2) + 
             ggplot2::scale_x_discrete(name = "") + 
             ggplot2::scale_y_continuous(name = expression(beta), breaks = yBreaks, limits = range(yBreaks))
@@ -1498,6 +1481,33 @@ RegressionLinearBayesian <- function (
     
     return (plot)
     
+}
+
+.calculatePosteriorSummary <- function(bas_obj, dataset, options) {
+	
+	estimator <- switch(
+		options$summaryType,
+		best="HPM",
+		median="MPM",
+		"BMA"
+	)
+
+	coef <- .coefBas(bas_obj, estimator = estimator, dataset = dataset, weights = bas_obj[["weights"]])
+	probne0 <- coef[["probne0"]]
+	coefficients <- coef[["namesx"]]
+	coefficients[-1] <- d64(coefficients[-1])
+	
+	if (estimator == "HPM") {
+		loopIdx <- which(abs(coef$postmean) > sqrt(.Machine$double.eps))
+	} else if (estimator == "MPM") {
+		loopIdx <- which(abs(coef$postmean) > sqrt(.Machine$double.eps))
+		probne0 <- bas_obj[["probne0"]]
+	} else {
+		loopIdx <- seq_along(coefficients)
+	}
+	
+	return(list(coef = coef, loopIdx = loopIdx, coefficients = coefficients, probne0 = probne0))
+	
 }
 
 .coefBas <- function (object, n.models, estimator = "BMA",
