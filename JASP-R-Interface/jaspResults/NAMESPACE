@@ -1,0 +1,3 @@
+useDynLib(jaspResults, .registration=TRUE)
+exportPattern("^[[:alpha:]]+")
+import(Rcpp)

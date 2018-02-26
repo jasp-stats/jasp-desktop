@@ -19,7 +19,7 @@
 #include "tempfiles.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/nowide/convert.hpp>
+#include "boost/nowide/convert.hpp"
 
 using namespace std;
 using namespace boost;
@@ -176,16 +176,17 @@ void IPCChannel::doubleMemoryOut()
 #endif
 }
 
-void IPCChannel::send(string &data)
+void IPCChannel::send(string &data, bool alreadyLockedMutex)
 {
-	_mutexOut->lock();
+	if(!alreadyLockedMutex)
+		_mutexOut->lock();
 
 	try
 	{
 		_dataOut->assign(data.begin(), data.end());
 	}
-	catch (boost::interprocess::bad_alloc &e) { goto retryAfterDoublingMemory; }
-	catch (std::length_error &e) {				goto retryAfterDoublingMemory; }
+	catch (boost::interprocess::bad_alloc &e)	{ goto retryAfterDoublingMemory; }
+	catch (std::length_error &e)				{ goto retryAfterDoublingMemory; }
 	catch(std::exception & e)
 	{
 #ifdef JASP_DEBUG
@@ -211,9 +212,8 @@ retryAfterDoublingMemory:
 		std::cout << "IPCChannel::send out buffer is too small!\n" << std::flush;
 #endif
 		doubleMemoryOut();
-		_mutexOut->unlock();
 
-		send(data); //try again!
+		send(data, true); //try again!
 }
 
 bool IPCChannel::receive(string &data, int timeout)

@@ -64,8 +64,8 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 	},
 
 	hasLaTeXCode: function () {
-		var optLaTeXCode = this.model.get("latexCode");
-		return optLaTeXCode !== null
+	  var optLaTeXCode = this.model.get("latexCode");
+	  return optLaTeXCode !== null
 	},
 
 	_generateLaTeXCode: function() {
@@ -251,7 +251,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 							count++;
 							latexCode += ('\\multicolumn{' + count + '}{c}{'+ formatCellforLaTeX(prev) + '} ');
 							cline_text += '\\cline{' + (i - count + 2) + '-' + (i + 1) + '}';
-						} else {
+						  } else {
 							latexCode += ('\\multicolumn{' + count + '}{c}{'+ formatCellforLaTeX(prev) + '} & ');
 							cline_text += '\\cline{' + (i - count + 2) + '-' + (i + 1) + '}';
 							latexCode += ('\\multicolumn{1}{c}{'+ current + '} ');
@@ -311,34 +311,34 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		let previousContent = '-x-';
 		for (let r = 0; r < maxRows; ++r) {
 
-			latexCode += '\t\t';
-			if (maxRows === data.cells[0].length) {
-				content = formatCellforLaTeX(data.cells[0][r].content);
-				if (previousContent !== content) {
-					latexCode += content;
-					previousContent = content;
-				}
-			} else if (incrementFirstCol) {
-				latexCode += (formatCellforLaTeX(data.cells[0][firstColRow].content));
+		  latexCode += '\t\t';
+		  if (maxRows === data.cells[0].length) {
+			content = formatCellforLaTeX(data.cells[0][r].content);
+			if (previousContent !== content) {
+			  latexCode += content;
+			  previousContent = content;
 			}
-			latexCode += (' & ');
+		  } else if (incrementFirstCol) {
+			latexCode += (formatCellforLaTeX(data.cells[0][firstColRow].content));
+		  }
+		  latexCode += (' & ');
 
-			let isStartOfGroup = data.cells[0][firstColRow]['isStartOfGroup'];
-			// incrementFirstCol = !isStartOfGroup;
+		  let isStartOfGroup = data.cells[0][firstColRow]['isStartOfGroup'];
+		  // incrementFirstCol = !isStartOfGroup;
 
-			if (isStartOfGroup === undefined || isStartOfGroup === false) {
-				incrementFirstCol = true;
-			} else {
-				incrementFirstCol = false;
-			}
+		  if (isStartOfGroup === undefined || isStartOfGroup === false) {
+			incrementFirstCol = true;
+		  } else {
+			incrementFirstCol = false;
+		  }
 
-			for (let c = 1; c < columns; ++c) {
-				latexCode += (formatCellforLaTeX(data.cells[c][r].content) + ' ');
-				if (c != columns - 1) {
-					latexCode += ('& ');
-				} else {
-					latexCode += ' \\\\\n';
-				}
+		  for (let c = 1; c < columns; ++c) {
+			latexCode += (formatCellforLaTeX(data.cells[c][r].content) + ' ');
+			  if (c != columns - 1) {
+				  latexCode += ('& ');
+			  } else {
+				  latexCode += ' \\\\\n';
+			  }
 			}
 
 			if (!incrementFirstCol) {
@@ -364,7 +364,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 
 		// Add a comment
 		if (overTitleExists) {
-			latexCode = "%----- Requires booktabs package -----%\n\\usepackage{booktabs}\n\n" + latexCode;
+		  latexCode = "%----- Requires booktabs package -----%\n\\usepackage{booktabs}\n\n" + latexCode;
 		}
 
 		return latexCode;
@@ -722,7 +722,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 					cellClass += (cell.isStartOfGroup ? " new-group-row" : "")
 					cellClass += (cell.isStartOfSubGroup ? " new-sub-group-row" : "")
 					cellClass += (cell.isEndOfGroup ? " last-group-row" : "")
-                    cellClass += (cell.span > 1 ? " row-span" : "")
+					cellClass += (cell.span > 1 ? " row-span" : "")
 
 					cellHtml += (cell.header ? '<th' : '<td')
 					cellHtml += ' class="value ' + cellClass + '"'
@@ -777,17 +777,15 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 				var footnote = optFootnotes[i]
 
 				if (_.isString(footnote)) {
-
-					chunks.push(symbol(i) + '&nbsp;')
-					chunks.push(footnote)
+				  chunks.push(symbol(i) + '&nbsp;')
+				  chunks.push(footnote)
 				}
 
 				if (_.has(footnote, "symbol")) {
-
-					if (_.isNumber(footnote.symbol))
-						chunks.push(symbol(footnote.symbol) + '&nbsp;')
-					else
-						chunks.push(footnote.symbol + '&nbsp;')
+				  if (_.isNumber(footnote.symbol))
+					chunks.push(symbol(footnote.symbol) + '&nbsp;')
+				  else
+					chunks.push(footnote.symbol + '&nbsp;')
 
 					chunks.push(footnote.text)
 				}

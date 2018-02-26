@@ -28,14 +28,15 @@ using namespace std;
 DataSet *rbridge_dataSet = NULL;
 RCallback rbridge_callback = NULL;
 boost::function<void(const std::string &, std::string &, std::string &)> rbridge_fileNameSource = NULL;
-boost::function<void(std::string &, std::string &)> rbridge_stateFileSource = NULL;
+boost::function<void(std::string &, std::string &)> rbridge_stateFileSource = NULL, rbridge_jaspResultsFileSource = NULL;
 boost::function<DataSet *()> rbridge_dataSetSource = NULL;
 std::unordered_set<std::string> filterColumnsUsed, columnNamesInDataSet;
 
 char** rbridge_getLabels(const Labels &levels, int &nbLevels);
 char** rbridge_getLabels(const vector<string> &levels, int &nbLevels);
 
-void rbridge_init()
+
+void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction)
 {
 	RBridgeCallBacks callbacks = {
 		rbridge_readDataSet,
@@ -46,10 +47,11 @@ void rbridge_init()
 		rbridge_requestTempRootName,
 		rbridge_runCallback,
 		rbridge_readFullDataSet,
-		rbridge_readDataSetForFiltering
+		rbridge_readDataSetForFiltering,
+		rbridge_requestJaspResultsFileSource
 	};
 
-	jaspRCPP_init(AppInfo::getBuildYear().c_str(), AppInfo::version.asString().c_str(), &callbacks);
+	jaspRCPP_init(AppInfo::getBuildYear().c_str(), AppInfo::version.asString().c_str(), &callbacks, sendToDesktopFunction, pollMessagesFunction);
 }
 
 void rbridge_setDataSetSource(boost::function<DataSet* ()> source)
@@ -66,6 +68,27 @@ void rbridge_setStateFileSource(boost::function<void (string &, string &)> sourc
 {
 	rbridge_stateFileSource = source;
 }
+
+void rbridge_setJaspResultsFileSource(boost::function<void (string &, string &)> source)
+{
+	rbridge_jaspResultsFileSource = source;
+}
+
+extern "C" bool STDCALL rbridge_requestJaspResultsFileSource(const char** root, const char **relativePath)
+{
+	if (!rbridge_stateFileSource)
+		return false;
+
+	static string _root;
+	static string _relativePath;
+
+	rbridge_jaspResultsFileSource(_root, _relativePath);
+
+	*root = _root.c_str();
+	*relativePath = _relativePath.c_str();
+	return true;
+}
+
 
 extern "C" bool STDCALL rbridge_requestStateFileSource(const char** root, const char **relativePath)
 {
@@ -115,7 +138,7 @@ extern "C" bool STDCALL rbridge_runCallback(const char* in, int progress, const 
 	return true;
 }
 
-string rbridge_run(const string &name, const string &title, bool &requiresInit, const string &dataKey, const string &options, const string &resultsMeta, const string &stateKey, const string &perform, int ppi, RCallback callback)
+string rbridge_run(const string &name, const string &title, bool &requiresInit, const string &dataKey, const string &options, const string &resultsMeta, const string &stateKey, int analysisID, int analysisRevision, const string &perform, int ppi, RCallback callback, bool useJaspResults)
 {
 	rbridge_callback = callback;
 	if (rbridge_dataSet != NULL) {
@@ -123,7 +146,7 @@ string rbridge_run(const string &name, const string &title, bool &requiresInit, 
 	}
 
 
-	const char* results = jaspRCPP_run(name.c_str(), title.c_str(), requiresInit, dataKey.c_str(), options.c_str(), resultsMeta.c_str(), stateKey.c_str(), perform.c_str(), ppi);
+	const char* results = jaspRCPP_run(name.c_str(), title.c_str(), requiresInit, dataKey.c_str(), options.c_str(), resultsMeta.c_str(), stateKey.c_str(), perform.c_str(), ppi, analysisID, analysisRevision, useJaspResults);
 	rbridge_callback = NULL;
 	string str = results;
 

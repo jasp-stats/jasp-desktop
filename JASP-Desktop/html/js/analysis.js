@@ -248,7 +248,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		var widget = this.viewNotes[key + 'NoteBox'];
 		if (widget === undefined || widget === null) {
-			widget = new JASPWidgets.NoteBox({ className: "jasp-display-primative jasp-notes jasp-" + key + "-note", model: noteData });
+			widget = new JASPWidgets.NoteBox({ className: "jasp-display-primitive jasp-notes jasp-" + key + "-note", model: noteData });
 			this.viewNotes[key + 'NoteBox'] = widget;
 			this.viewNotes.list.push({ noteDetails: noteDetails, widget: widget, note: noteData });
 
@@ -574,12 +574,16 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 				var meta = results[".meta"]
 
-				for (var i = 0; i < meta.length; i++) {
-
+				for (var i = 0; i < meta.length; i++)
+				{
 					var name = meta[i].name;
-					if (_.has(results, name)) {
+
+					if (_.has(results, name))
+					{
 						var itemView = this.createChild(results[name], this.model.get("status"), meta[i])
-						if (itemView !== null) {
+
+						if (itemView !== null)
+						{
 							this.passUserDataToView([name], itemView);
 
 							this.views.push(itemView);

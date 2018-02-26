@@ -28,26 +28,9 @@ using namespace boost::uuids;
 using namespace boost;
 using namespace std;
 
-Analysis::Analysis(int id, string module, string name, string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Options *options, const Version &version, bool autorun, bool usedata)
+Analysis::Analysis(int id, string module, string name, string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Options *options, const Version &version, bool autorun, bool usedata, bool useJaspResults)
+	: _options(options), _id(id), _module(module), _name(name), _title(title), _requiresInit(requiresInit), _dataKey(dataKey), _stateKey(stateKey), _resultsMeta(resultsMeta), _autorun(autorun), _usedata(usedata), _jaspResultsAnalysis(useJaspResults), _version(version)
 {
-	_id = id;
-	_module = module;
-	_name = name;
-	_title = title;
-	_requiresInit = requiresInit;
-	_options = options;
-	_dataKey = dataKey;
-	_stateKey = stateKey;
-	_resultsMeta = resultsMeta;
-	_autorun = autorun;
-	_usedata = usedata;
-	_version = version;
-	_results = Json::nullValue;
-	_imgResults = Json::nullValue;
-	_userData = Json::nullValue;
-	_saveImgOptions = Json::nullValue;
-	_revision = 0;
-
 	_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this, _1));
 
 	_status = Empty;

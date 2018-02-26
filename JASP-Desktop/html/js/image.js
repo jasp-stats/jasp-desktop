@@ -22,11 +22,11 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 	},
 
 	copyMenuClicked: function () {
-		var exportParams = new JASPWidgets.Exporter.params();
-		exportParams.format = JASPWidgets.ExportProperties.format.raw;
-		exportParams.process = JASPWidgets.ExportProperties.process.copy;
-		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
-		exportParams.includeNotes = false;
+		var exportParams				= new JASPWidgets.Exporter.params();
+		exportParams.format				= JASPWidgets.ExportProperties.format.raw;
+		exportParams.process			= JASPWidgets.ExportProperties.process.copy;
+		exportParams.htmlImageFormat	= JASPWidgets.ExportProperties.htmlImageFormat.temporary;
+		exportParams.includeNotes		= false;
 
 		this.exportBegin(exportParams);
 
@@ -72,14 +72,14 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 			return self.$el.find('.jasp-image-holder');
 		};
 
-		var imagePrimative = new JASPWidgets.imagePrimative({ model: this.model, className: "jasp-image-holder  jasp-display-primative" });
-		this.resizer = imagePrimative.resizer;
-		this.localViews.push(imagePrimative);
-		this.views.push(imagePrimative);
+		var imagePrimitive = new JASPWidgets.imagePrimitive({ model: this.model, className: "jasp-image-holder  jasp-display-primitive" });
+		this.resizer = imagePrimitive.resizer;
+		this.localViews.push(imagePrimitive);
+		this.views.push(imagePrimitive);
 	},
 });
 
-JASPWidgets.imagePrimative= JASPWidgets.View.extend({
+JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 
 	initialize: function () {
 
@@ -141,14 +141,14 @@ JASPWidgets.imagePrimative= JASPWidgets.View.extend({
 	},
 
 	render: function () {
-		var html = ''
-		var status = this.model.get("status");
-		var error = this.model.get("error");
-		var data = this.model.get("data");
-		var custom = this.model.get("custom");
+		var html	= ''
+		var status	= this.model.get("status");
+		var error	= this.model.get("error");
+		var data	= this.model.get("data");
+		var custom	= this.model.get("custom");
 
-		var width = this.model.get("width");
-		var height = this.model.get("height");
+		var width	= this.model.get("width");
+		var height	= this.model.get("height");
 
 		if (error)
 			this.$el.addClass("error-state");

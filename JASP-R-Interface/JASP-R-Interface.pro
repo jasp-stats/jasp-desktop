@@ -10,13 +10,16 @@ unix:CONFIG += staticlib
 
 QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.a'
 
+#comment this out if you do not want helpertraces for development of jaspResults and such
+#CONFIG(debug, debug|release) {  DEFINES+=JASP_RESULTS_DEBUG_TRACES }
+
 windows:QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_TARGET'*.lib' $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_TARGET'*.dll'
 
 macx: QMAKE_CLEAN +=$$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.dylib'
 
 include(../R_HOME.pri)
-
 INCLUDEPATH += ../../boost_1_64_0
+INCLUDEPATH += ../JASP-Common
 
 DEFINES += JASP_R_INTERFACE_LIBRARY
 
@@ -30,7 +33,15 @@ SOURCES += \
     jasprcpp.cpp \
     RInside/MemBuf.cpp \
     RInside/RInside.cpp \
-    rinside_consolelogging.cpp
+    rinside_consolelogging.cpp \
+    jaspResults/src/jaspHtml.cpp \
+    jaspResults/src/jaspObject.cpp \
+    jaspResults/src/jaspJson.cpp \
+    jaspResults/src/jaspContainer.cpp \
+    jaspResults/src/jaspPlot.cpp \
+    jaspResults/src/jaspResults.cpp \
+    jaspResults/src/jaspTable.cpp \
+    jaspResults/src/jaspState.cpp
 
 HEADERS += \
     jasprcpp_interface.h \
@@ -42,29 +53,28 @@ HEADERS += \
     RInside/RInsideCommon.h \
     RInside/RInsideConfig.h \
     RInside/RInsideEnvVars.h \
-    rinside_consolelogging.h
+    rinside_consolelogging.h \
+    jaspResults/src/jaspHtml.h \
+    jaspResults/src/jaspObject.h \
+    jaspResults/src/jaspJson.h \
+    jaspResults/src/jaspList.h \
+    jaspResults/src/jaspContainer.h \
+    jaspResults/src/jaspPlot.h \
+    jaspResults/src/jaspResults.h \
+    jaspResults/src/jaspTable.h \
+    jaspResults/src/jaspModuleRegistration.h \
+    jaspResults/src/jaspState.h
 
-INCLUDEPATH += \
-    $$_R_HOME/library/Rcpp/include \
-    $$_R_HOME/include
 
 windows{
-	SOURCE_LIBFILE = $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_NAME'.a'
-    SOURCE_LIBFILE ~= s,/,\\,g
+  SOURCE_LIBFILE = $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_NAME'.a'
+   SOURCE_LIBFILE ~= s,/,\\,g
 	DEST_LIBFILE = $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_NAME'.lib'
-    DEST_LIBFILE ~= s,/,\\,g
-    copyfile.commands += $$quote(cmd /c copy /Y $$SOURCE_LIBFILE $$DEST_LIBFILE)
+  DEST_LIBFILE ~= s,/,\\,g
+  copyfile.commands += $$quote(cmd /c copy /Y $$SOURCE_LIBFILE $$DEST_LIBFILE)
 
-    first.depends = $(first) copyfile
-    export(first.depends)
-    export(copyfile.commands)
-    QMAKE_EXTRA_TARGETS += first copyfile
- }
-
-#macx{
-#	setpath.commands += install_name_tool -id @rpath/lib$$JASP_R_INTERFACE_NAME'.1.0.0.dylib' $$OUT_PWD/$$DESTDIR/lib$$JASP_R_INTERFACE_NAME'.1.0.0.dylib'
-#	first.depends = $(first) setpath
-#	export(first.depends)
-#	export(setpath.commands)
-#	QMAKE_EXTRA_TARGETS += first setpath
-#}
+  first.depends = $(first) copyfile
+  export(first.depends)
+  export(copyfile.commands)
+  QMAKE_EXTRA_TARGETS += first copyfile
+}

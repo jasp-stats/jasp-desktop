@@ -27,7 +27,13 @@
 
 #include "rbridge.h"
 
-
+void SendFunctionForJaspresults(const char * msg) { Engine::theEngine()->sendString(msg); }
+bool PollMessagesFunctionForJaspResults()
+{
+	if(Engine::theEngine()->receiveMessages())
+		return Engine::theEngine()->getStatus() == Engine::changed;
+	return false;
+}
 
 #ifdef __WIN32__
 
@@ -51,16 +57,14 @@ Engine::Engine(int slaveNo, unsigned long parentPID)
 	_parentPID = parentPID;
 	tempfiles_attach(parentPID);
 
-	rbridge_setDataSetSource(boost::bind(&Engine::provideDataSet, this));
-	rbridge_setFileNameSource(boost::bind(&Engine::provideTempFileName, this, _1, _2, _3));
-	rbridge_setStateFileSource(boost::bind(&Engine::provideStateFileName, this, _1, _2));
-	
-	rbridge_init();
-}
+	rbridge_setDataSetSource(			boost::bind(&Engine::provideDataSet,				this));
+	rbridge_setFileNameSource(			boost::bind(&Engine::provideTempFileName,			this, _1, _2, _3));
+	rbridge_setStateFileSource(			boost::bind(&Engine::provideStateFileName,			this, _1, _2));
+	rbridge_setJaspResultsFileSource(	boost::bind(&Engine::provideJaspResultsFileName,	this, _1, _2));
 
-void Engine::setSlaveNo(int no)
-{
-	_slaveNo = no;
+	//usleep(10000000);
+
+	rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults);
 }
 
 void Engine::saveImage()
@@ -121,7 +125,7 @@ void Engine::runAnalysis()
 
 	string perform;
 
-	if (_status == toInit)
+	if (_status == toInit && !_analysisJaspResults)
 	{
 		perform = "init";
 		_status = initing;
@@ -134,10 +138,12 @@ void Engine::runAnalysis()
 
 	vector<string> tempFilesFromLastTime = tempfiles_retrieveList(_analysisId);
 
-	RCallback callback = boost::bind(&Engine::callback, this, _1, _2);
+	RCallback callback					= boost::bind(&Engine::callback, this, _1, _2);
 
-	_currentAnalysisKnowsAboutChange = false;
-	_analysisResultsString = rbridge_run(_analysisName, _analysisTitle, _analysisRequiresInit, _analysisDataKey, _analysisOptions, _analysisResultsMeta, _analysisStateKey, perform, _ppi, callback);
+	_currentAnalysisKnowsAboutChange	= false;
+
+	//RUN!
+	_analysisResultsString				= rbridge_run(_analysisName, _analysisTitle, _analysisRequiresInit, _analysisDataKey, _analysisOptions, _analysisResultsMeta, _analysisStateKey, _analysisId, _analysisRevision, perform, _ppi, callback, _analysisJaspResults);
 
 	if (_status == initing || _status == running)  // if status hasn't changed
 		receiveMessages();
@@ -291,13 +297,23 @@ bool Engine::receiveMessages(int timeout)
 		if (analysisId == _analysisId && _status == running)
 		{
 			// if the current running analysis has changed
+			printf("the current running analysis has changed\n");
 
-			if (perform == "init")
+			if (perform == "init" || (_analysisJaspResults && perform == "run"))
+			{
 				_status = changed;
+				printf("_status = changed\n");
+			}
 			else if (perform == "stop")
+			{
 				_status = stopped;
+				printf("_status = stopped\n");
+			}
 			else
+			{
 				_status = aborted;
+				printf("_status = aborted\n");
+			}
 		}
 		else
 		{
@@ -327,9 +343,10 @@ bool Engine::receiveMessages(int timeout)
 			_analysisStateKey		= jsonRequest.get("stateKey",		Json::nullValue).toStyledString();
 			_analysisRevision		= jsonRequest.get("revision",		-1).asInt();
 			_imageOptions			= jsonRequest.get("image",			Json::nullValue);
+			_analysisJaspResults	= jsonRequest.get("jaspResults",	false).asBool();
 
 			Json::Value analysisRequiresInit = jsonRequest.get("requiresInit", Json::nullValue);
-			_analysisRequiresInit = analysisRequiresInit.isNull() ? true : analysisRequiresInit.asBool();
+			_analysisRequiresInit = _analysisJaspResults ? false : analysisRequiresInit.isNull() ? true : analysisRequiresInit.asBool();
 
 
 			Json::Value ppi, settings = jsonRequest.get("settings", Json::nullValue);
@@ -347,6 +364,7 @@ bool Engine::receiveMessages(int timeout)
 
 void Engine::sendResults()
 {
+	if(_analysisJaspResults) return; //jaspResults will make sure the results are sent to the other side
 	Json::Value response = Json::Value(Json::objectValue);
 
 	response["id"] = _analysisId;
@@ -393,8 +411,8 @@ void Engine::sendResults()
 	}
 
 	string message = response.toStyledString();
+	sendString(message);
 
-	_channel->send(message);
 }
 
 void Engine::sendFilterResult(std::vector<bool> filterResult, std::string warning)
@@ -410,7 +428,7 @@ void Engine::sendFilterResult(std::vector<bool> filterResult, std::string warnin
 		filterResponse["filterError"] = warning;
 
 	std::string msg = filterResponse.toStyledString();
-	_channel->send(msg);
+	sendString(msg);
 }
 
 void Engine::sendFilterError(std::string errorMessage)
@@ -420,7 +438,7 @@ void Engine::sendFilterError(std::string errorMessage)
 	filterResponse["filterError"] = errorMessage;
 
 	std::string msg = filterResponse.toStyledString();
-	_channel->send(msg);
+	sendString(msg);
 }
 
 string Engine::callback(const string &results, int progress)
@@ -479,12 +497,17 @@ DataSet * Engine::provideDataSet()
 	return SharedMemory::retrieveDataSet(_parentPID);
 }
 
-void Engine::provideStateFileName(string &root, string &relativePath)
+void Engine::provideStateFileName(std::string &root, std::string &relativePath)
 {
 	return tempfiles_createSpecific("state", _analysisId, root, relativePath);
 }
 
-void Engine::provideTempFileName(const string &extension, string &root, string &relativePath)
+void Engine::provideJaspResultsFileName(std::string &root, std::string &relativePath)
+{
+	return tempfiles_createSpecific("jaspResults.json", _analysisId, root, relativePath);
+}
+
+void Engine::provideTempFileName(const std::string &extension, std::string &root, std::string &relativePath)
 {	
 	tempfiles_create(extension, _analysisId, root, relativePath);
 }

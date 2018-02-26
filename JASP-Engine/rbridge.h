@@ -51,6 +51,7 @@ extern "C" {
 	RBridgeColumnDescription*	STDCALL rbridge_readDataSetDescription(RBridgeColumnType* columns, int colMax);
 	bool						STDCALL rbridge_test(char** root);
 	bool						STDCALL rbridge_requestStateFileSource(const char **root, const char **relativePath);
+	bool						STDCALL rbridge_requestJaspResultsFileSource(const char **root, const char **relativePath);
 	bool						STDCALL rbridge_requestTempFileName(const char* extensionAsString, const char **root, const char **relativePath);
 	const char*			STDCALL rbridge_requestTempRootName();
 	bool						STDCALL rbridge_runCallback(const char* in, int progress, const char** out);
@@ -58,12 +59,13 @@ extern "C" {
 
 	typedef boost::function<std::string (const std::string &, int progress)> RCallback;
 
-	void rbridge_init();
+	void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction);
 	void rbridge_setFileNameSource(boost::function<void(const std::string &, std::string &, std::string &)> source);
 	void rbridge_setStateFileSource(boost::function<void(std::string &, std::string &)> source);
+	void rbridge_setJaspResultsFileSource(boost::function<void(std::string &, std::string &)> source);
 	void rbridge_setDataSetSource(boost::function<DataSet *()> source);
 
-	std::string rbridge_run(const std::string &name, const std::string &title, bool &requiresInit, const std::string &dataKey, const std::string &options, const std::string &resultsMeta, const std::string &stateKey, const std::string &perform = "run", int ppi = 96, RCallback callback = NULL);
+	std::string rbridge_run(const std::string &name, const std::string &title, bool &requiresInit, const std::string &dataKey, const std::string &options, const std::string &resultsMeta, const std::string &stateKey, int analysisID, int analysisRevision, const std::string &perform = "run", int ppi = 96, RCallback callback = NULL, bool useJaspResults = false);
 	std::string rbridge_saveImage(const std::string &name, const std::string &type, const int &height, const int &width, const int ppi = 96);
 	std::string rbridge_editImage(const std::string &name, const std::string &type, const int &height, const int &width, const int ppi = 96);
 	std::string rbridge_evalRCode(const std::string &rCode);

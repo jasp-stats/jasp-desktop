@@ -104,10 +104,10 @@ private:
 
 	int _ppi = 96;
 
-	std::vector<QProcess *> _slaveProcesses;
-	std::vector<IPCChannel *> _channels;
-	std::vector<Analysis *> _analysesInProgress;
-	std::vector<engineState> _engineStates;
+	std::vector<QProcess *>		_slaveProcesses;
+	std::vector<IPCChannel *>	_channels;
+	std::vector<Analysis *>		_analysesInProgress;
+	std::vector<engineState>	_engineStates;
 
 	IPCChannel *nextFreeProcess(Analysis *analysis);
 	void sendToProcess(int processNo, Analysis *analysis);

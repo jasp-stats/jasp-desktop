@@ -17,8 +17,8 @@
 fromJSON  <- function(x) jsonlite::fromJSON(x, TRUE, FALSE, FALSE)
 toJSON    <- function(x) jsonlite::toJSON(x, auto_unbox = TRUE, digits = NA, null="null")
 
-run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresInit=TRUE, perform="run") {
-
+run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresInit=TRUE, perform="run")
+{
 	if (identical(.Platform$OS.type, "windows"))
 		compiler::enableJIT(0)
 	dataKey <- fromJSON(dataKey)
@@ -26,153 +26,239 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 	resultsMeta <- fromJSON(resultsMeta)
 	stateKey <- fromJSON(stateKey)
 
-	if (base::exists(".requestStateFileNameNative")) {
-		location <- .fromRCPP(".requestStateFileNameNative")
-		root <- location$root
-		base::Encoding(root) <- "UTF-8"
-		setwd(root)
-	}
 
-	analysis <- eval(parse(text=name))
+  if (base::exists(".requestStateFileNameNative")) {
+    location <- .fromRCPP(".requestStateFileNameNative")
+    root <- location$root
+    base::Encoding(root) <- "UTF-8"
+    setwd(root)
+  }
 
-	env <- new.env()
-	env$callback <- callback
-	env$time <- Sys.time()
-	env$i <- 1
+  analysis <- eval(parse(text=name))
 
-	if (perform == "init") {
+  env <- new.env()
+  env$callback <- callback
+  env$time <- Sys.time()
+  env$i <- 1
 
-		the.callback <- function(...) list(status="ok")
+  if (perform == "init") {
 
-	} else {
+    the.callback <- function(...) list(status="ok")
 
-		the.callback <- function(...) {
+  } else {
 
-			t <- Sys.time()
+    the.callback <- function(...) {
 
-			cat(paste("Callback", env$i, ":", t - env$time, "\n"))
+      t <- Sys.time()
 
-			env$time <- t
-			env$i <- env$i + 1
+      cat(paste("Callback", env$i, ":", t - env$time, "\n"))
 
-			return(env$callback(...))
-		}
-	}
+      env$time <- t
+      env$i <- env$i + 1
 
-	dataset <- NULL
-	if (! is.null(dataKey)) {
-		cols <- .getDataSetCols(dataKey, options)
-		if (perform == "run")
-			dataset <- do.call(.readDataSetToEnd, cols)
-		else
-			dataset <- do.call(.readDataSetHeader, cols)
-	}
+      return(env$callback(...))
+    }
+  }
 
-	oldState <- NULL
-	if ('state' %in% names(formals(analysis))) {
-		oldState <- .getStateFromKey(stateKey, options)
-	}
+  dataset <- NULL
+  if (! is.null(dataKey)) {
+    cols <- .getDataSetCols(dataKey, options)
+    if (perform == "run")
+      dataset <- do.call(.readDataSetToEnd, cols)
+    else
+      dataset <- do.call(.readDataSetHeader, cols)
+  }
 
-	if (perform == "init" && ! requiresInit) {
+  oldState <- NULL
+  if ('state' %in% names(formals(analysis))) {
+    oldState <- .getStateFromKey(stateKey, options)
+  }
 
-		emptyResults <- try(.createEmptyResults(resultsMeta), silent=TRUE)
-		if (inherits(emptyResults, "try-error")) {
-			msg <- .sanitizeForJson(emptyResults)
-			return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", msg, "\" } }", sep=""))
-		}
+  if (perform == "init" && ! requiresInit) {
 
-		results <- list()
-		results[["results"]] <- emptyResults
-		results[["results"]][["title"]] <- title
-		results[["status"]] <- "inited"
+    emptyResults <- try(.createEmptyResults(resultsMeta), silent=TRUE)
+    if (inherits(emptyResults, "try-error")) {
+      msg <- .sanitizeForJson(emptyResults)
+      return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", msg, "\" } }", sep=""))
+    }
 
+    results <- list()
+    results[["results"]] <- emptyResults
+    results[["results"]][["title"]] <- title
+    results[["status"]] <- "inited"
+
+    json <- try({ toJSON(results) })
+
+    if (inherits(results, "try-error"))
+      return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
+
+    return(json)
+
+  }
+
+  results <- tryCatch(expr={
+
+        withCallingHandlers(expr={
+
+          analysis(dataset=dataset, options=options, perform=perform, callback=the.callback, state=oldState)
+
+        },
+        error=.addStackTrace)
+
+  },
+  error=function(e) e)
+
+  if (inherits(results, "expectedError")) {
+
+    errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", results$message, "\" } }", sep="")
+
+    errorResponse
+
+  } else if (inherits(results, "error")) {
+
+    error <- .sanitizeForJson(results)
+
+    stackTrace <- .sanitizeForJson(results$stackTrace)
+    stackTrace <- paste(stackTrace, collapse="<br><br>")
+
+    errorMessage <- .generateErrorMessage(type='exception', error=error, stackTrace=stackTrace)
+    errorResponse <- paste("{ \"status\" : \"exception\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
+
+    errorResponse
+
+  } else if (is.null(results)) {
+
+    "null"
+
+  } else {
+
+    keep <- newState <- NULL
+
+    if ("state" %in% names(results)) {
+
+      newState <- results$state
+      results$state <- NULL
+
+    }
+
+    if ("results" %in% names(results)) {
+
+      results <- try(.parseResults(results, title, resultsMeta, oldState), silent=TRUE)
+      if (inherits(results, "try-error")) {
+        msg <- .sanitizeForJson(results)
+        return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", msg, "\" } }", sep=""))
+      }
+
+      if (! is.null(names(newState)))
+        newState[["figures"]] <- .imgToState(results$results)
+
+      results <- .imgToResults(results)
+      results$results <- .addCitationToResults(results$results)
+
+      keep <- .saveState(newState)$relativePath
+      results$keep <- c(results$keep, keep)  # keep the state file
+
+    } else {
+
+      results <- .addCitationToResults(results)
+    }
 
 		json <- try({ toJSON(results) })
+    if (class(json) == "try-error")
+      return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
+    else
+      return(json)
 
-		if (inherits(results, "try-error"))
-			return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
+  }
+}
 
-		return(json)
 
-	}
+runJaspResults <- function(name, title, dataKey, options, stateKey)
+{
+	if (identical(.Platform$OS.type, "windows"))
+		compiler::enableJIT(0)
+		
+  jaspResults <- jaspResultsModule$create_cpp_jaspResults(name)
+  jaspResults$setOptions(options)
 
-	results <- tryCatch(expr={
+  dataKey     <- rjson::fromJSON(dataKey)
+  options     <- rjson::fromJSON(options)
+  resultsMeta <- rjson::fromJSON(resultsMeta)
+  stateKey    <- rjson::fromJSON(stateKey)
 
-				withCallingHandlers(expr={
+  if (base::exists(".requestStateFileNameNative")) {
+    location <- .fromRCPP(".requestStateFileNameNative")
+    root <- location$root
+    base::Encoding(root) <- "UTF-8"
+    setwd(root)
+  }
 
-					analysis(dataset=dataset, options=options, perform=perform, callback=the.callback, state=oldState)
+  analysis    <- eval(parse(text=name))
 
-				},
-				error=.addStackTrace)
+  dataset <- NULL
+  if (! is.null(dataKey)) {
+    cols <- .getDataSetCols(dataKey, options)
+    dataset <- do.call(.readDataSetToEnd, cols)
+  }
 
-	},
-	error=function(e) e)
+  oldState <- NULL
+  if ('state' %in% names(formals(analysis))) {
+    oldState <- .getStateFromKey(stateKey, options)
+  }
 
-	if (inherits(results, "expectedError")) {
+  newState <-
+    tryCatch(
+      expr=withCallingHandlers(expr=analysis(jaspResults=jaspResults, dataset=dataset, options=options, state=oldState), error=.addStackTrace),
+      error=function(e) e
+    )
 
-		errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", results$message, "\" } }", sep="")
+  if (inherits(newState, "expectedError")) {
 
-		errorResponse
+    errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", newState$message, "\" } }", sep="")
 
-	} else if (inherits(results, "error")) {
+    jaspResults$setErrorMessage(newState$message)
+    jaspResults$send()
 
-		error <- .sanitizeForJson(results)
+    return(errorResponse)
 
-		stackTrace <- .sanitizeForJson(results$stackTrace)
-		stackTrace <- paste(stackTrace, collapse="<br><br>")
+  }
+  else if (inherits(newState, "error"))
+  {
 
-		errorMessage <- .generateErrorMessage(type='exception', error=error, stackTrace=stackTrace)
-		errorResponse <- paste("{ \"status\" : \"exception\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
+    error <- .sanitizeForJson(newState)
 
-		errorResponse
+    stackTrace <- .sanitizeForJson(newState$stackTrace)
+    stackTrace <- paste(stackTrace, collapse="<br><br>")
 
-	} else if (is.null(results)) {
+    errorMessage <- .generateErrorMessage(type='exception', error=error, stackTrace=stackTrace)
+    errorResponse <- paste("{ \"status\" : \"exception\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
 
-		"null"
+    jaspResults$setErrorMessage(errorMessage)
+    jaspResults$send()
 
-	} else {
+    return(errorResponse)
 
-		keep <- newState <- NULL
+  }
+  else
+  {
+    if (is.null(newState))
+      newState <- list()
 
-		if ("state" %in% names(results)) {
+    newState[["figures"]]         <- jaspResults$getPlotObjectsForState()
 
-			newState <- results$state
-			results$state <- NULL
+    jaspResults$relativePathKeep  <- .saveState(newState)$relativePath
 
-		}
+    returnThis <- list(keep=jaspResults$getKeepList()) #To keep the old keep-code functional we return it like this
 
-		if ("results" %in% names(results)) {
+    jaspResults$complete() #sends last results to desktop, changes status to complete and saves results to json in tempfiles
 
-			results <- try(.parseResults(results, title, resultsMeta, oldState), silent=TRUE)
-			if (inherits(results, "try-error")) {
-				msg <- .sanitizeForJson(results)
-				return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", msg, "\" } }", sep=""))
-			}
 
-			if (! is.null(names(newState)))
-				newState[["figures"]] <- .imgToState(results$results)
-
-			results <- .imgToResults(results)
-			results$results <- .addCitationToResults(results$results)
-
-			keep <- .saveState(newState)$relativePath
-			results$keep <- c(results$keep, keep)  # keep the state file
-
-		} else {
-
-			results <- .addCitationToResults(results)
-		}
-		json <- try({ toJSON(results) })
-		if (class(json) == "try-error") {
-
-			return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
-
-		} else {
-
-			return(json)
-		}
-	}
-
+  json <- try({ toJSON(returnThis) })
+  if (class(json) == "try-error")
+    return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
+  else
+    return(json)
+  }
 }
 
 initEnvironment <- function() {
@@ -2139,8 +2225,7 @@ as.list.footnotes <- function(footnotes) {
   return(NULL)
 }
 
-
-.writeImage <- function(width=320, height=320, plot, obj = TRUE, relativePathpng = NULL){
+.writeImage <- function(width=320, height=320, plot, obj = TRUE, relativePathpng = NULL) {
 	# Initialise output object
 	image <- list()
 
@@ -2552,7 +2637,7 @@ editImage <- function(plotName, type, height, width) {
 	state <- .retrieveState()
 	oldPlot <- state[["figures"]][[plotName]]
 
-	isGgplot <- ggplot2::is.ggplot(oldPlot) # FALSE implies oldPlot is a recordedPlot
+  isGgplot <- ggplot2::is.ggplot(oldPlot) # FALSE implies oldPlot is a  recordedPlot
 	requireResize <- type == "resize"
 
 	if (!is.null(oldPlot)) {
@@ -2671,6 +2756,7 @@ editImage <- function(plotName, type, height, width) {
   }
 }
 
+
 .quietDuringUnitTest <- function(expr) {
 	# check from testthat::skip_on_travis
 	if (identical(Sys.getenv("TRAVIS"), "true")) {
@@ -2698,4 +2784,103 @@ editImage <- function(plotName, type, height, width) {
   }
 
   return(v)
+}
+
+###########################
+## JASP Results Wrappers ##
+###########################
+# should define the same functions as those in zzzWrappers.R in jaspResults package.
+# with the difference that here they should directly point to jaspResultsModule
+
+# if title is left unset (aka "") then, when added to a container/results, it will take the fieldname as title.
+# width and height should be set to some global default setting and only in exceptional cases manually. Maybe we could take it from JASPplot?
+# aspectRatio of > 0 sets height to width * aspectRatio.
+createJaspPlot <- function(plot=NULL, title="", width=320, height=320, aspectRatio=0, error=NULL, errorMessage="", dependencies=NULL)
+{
+  jaspPlotObj  <- jaspResultsModule$create_cpp_jaspPlot(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspPlot, title)
+
+  if(aspectRatio > 0 && !is.null(width) && width != 0)  height = aspectRatio * width
+  else if(aspectRatio > 0)                              width = height / aspectRatio;
+
+  jaspPlotObj$width  <- width
+  jaspPlotObj$height <- height
+  jaspPlotObj$aspectRatio <- aspectRatio
+
+  if(!is.null(error) || errorMessage != "")
+  {
+    if(is.null(error))  jaspPlotObj$error <- "errorMsgSet"
+    else                jaspPlotObj$error <- error
+    jaspPlotObj$errorMessage  <- errorMessage
+  }
+
+  if(!is.null(plot))
+	{
+		writtenImage <- tryCatch(
+			.writeImage(width=width, height=height, plot),
+			error	= function(e) { jaspPlotObj$errorMessage <- e$message; return(NULL) }
+		)
+
+		if(!is.null(writtenImage))
+		{
+			jaspPlotObj$filePathPng <- writtenImage[["png"]]
+      jaspPlotObj$plotObject <- plot
+		}
+	}
+
+  if(!is.null(dependencies))
+    jaspPlotObj$dependOnOptions(dependencies)
+
+  return(jaspPlotObj)
+}
+
+createJaspContainer <- function(title="")
+{
+  return(jaspResultsModule$create_cpp_jaspContainer(title)) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspContainer, title))
+}
+
+createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL)
+{
+  jaspObj <- jaspResultsModule$create_cpp_jaspTable(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspTable, title)
+
+  if(!is.null(data))
+    jaspObj$setData(data)
+
+  if(!is.null(colNames))
+    jaspObj$setColNames(colNames)
+
+  if(!is.null(colTitles))
+    jaspObj$setColTitles(colTitles)
+
+  if(!is.null(colFormats))
+    jaspObj$setColFormats(colFormats)
+
+  if(!is.null(rowNames))
+    jaspObj$setRowNames(rowNames)
+
+  if(!is.null(rowTitles))
+    jaspObj$setRowTitles(rowTitles)
+
+  return(jaspObj)
+}
+
+createJaspHtml <- function(text="", elementType="p")
+{
+  #return(new(jaspResultsModule$jaspHtml, text, elementType))
+  htmlObj <- jaspResultsModule$create_cpp_jaspHtml(text) # If we use R's constructor it will garbage collect our objects prematurely.. #
+  htmlObj$elementType <- elementType
+
+  return(htmlObj)
+}
+
+createJaspState <- function(object=NULL, title="", dependencies=NULL)
+{
+  stateObj <- jaspResultsModule$create_cpp_jaspState(title) # If we use R's constructor it will garbage collect our objects prematurely.. #
+
+  if(!is.null(object))
+    stateObj$object <- object
+
+  if(!is.null(dependencies))
+      stateObj$dependOnTheseOptions(dependencies)
+
+  return(stateObj)
 }

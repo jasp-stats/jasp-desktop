@@ -34,10 +34,16 @@ SEXP jaspRCPP_requestTempFileNameSEXP(SEXP extension);
 SEXP jaspRCPP_requestTempRootNameSEXP();
 SEXP jaspRCPP_requestStateFileNameSEXP();
 
+const char * jaspRCPP_requestJaspResultsRelativeFilePath();
+
 void jaspRCPP_returnDataFrame(Rcpp::DataFrame frame);
 void jaspRCPP_returnString(SEXP Message);
 void jaspRCPP_setFilterWarning(SEXP Message);
 void jaspRCPP_setFilterError(SEXP Message);
+
+//Calls from JASPresult (from R)
+typedef void (*sendFuncDef)(const char *);
+extern "C" void jaspRCPP_send(const char * msg);
 
 // This is a copy of column.h!!!!
 enum ColumnType { ColumnTypeUnknown = 0, ColumnTypeNominal = 1, ColumnTypeNominalText = 2, ColumnTypeOrdinal = 4, ColumnTypeScale = 8 };
