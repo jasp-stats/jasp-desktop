@@ -74,7 +74,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			!(diff[['confidenceIntervalInterval']] == TRUE && options$errorBarType == "confidenceInterval" && options$plotErrorBars == TRUE) &&
 			diff[['plotWidthDescriptivesPlotLegend']] == FALSE && diff[['plotHeightDescriptivesPlotLegend']] == FALSE &&
 			diff[['plotWidthDescriptivesPlotNoLegend']] == FALSE && diff[['plotHeightDescriptivesPlotNoLegend']] == FALSE &&
-			diff[['repeatedMeasuresFactors']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE) {
+			diff[['repeatedMeasuresFactors']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE && diff[['usePooledStandErrorCI']] == FALSE) {
 
 			# old descriptives plots can be used
 
@@ -706,8 +706,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   		  }
 
 
-			resultsPostHoc[[var]] <- list(resultBonf = resultBonf, resultHolm = resultHolm, resultTukey = resultTukey, resultScheffe = resultScheffe,
-										  comparisons = comparisons)
+			resultsPostHoc[[var]] <- list(resultBonf = resultBonf, resultHolm = resultHolm, 
+			                              resultTukey = resultTukey, resultScheffe = resultScheffe,
+										                comparisons = comparisons)
 			
 		}
 
@@ -1597,7 +1598,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 								row[["eta"]] <- SS / SSt
 								row[["partialEta"]] <- SS / (SS + SSr)
 								n <- result[1, 'den Df'] + 1
-								MSm <- result[.v(row$case), "SS"] / result[.v(row$case), "num Df"] 
+								MSm <- result[index, "SS"] / result[index, "num Df"] 
 								MSb <- result[1, 'Error SS'] / (n - 1)
 								omega <- (df / (n * (df + 1)) * (MSm - MSr)) / 
 								         (MSr + ((MSb - MSr) / (df + 1)) +
@@ -2307,12 +2308,14 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		if (length(repeatedMeasuresFactors) == 0) {
 
 			summaryStat <- .summarySE(as.data.frame(dataset), measurevar = "dependent", groupvars = .v(betweenSubjectFactors),
-							conf.interval = options$confidenceIntervalInterval, na.rm = TRUE, .drop = FALSE, errorBarType = options$errorBarType)
+							conf.interval = options$confidenceIntervalInterval, na.rm = TRUE, .drop = FALSE, errorBarType = options$errorBarType, 
+							usePooledSE=options$usePooledStandErrorCI)
 
 		} else {
 
 			summaryStat <- .summarySEwithin(as.data.frame(dataset), measurevar="dependent", betweenvars=.v(betweenSubjectFactors), withinvars=.v(repeatedMeasuresFactors),
-							idvar="subject", conf.interval=options$confidenceIntervalInterval, na.rm=TRUE, .drop=FALSE, errorBarType=options$errorBarType)
+							idvar="subject", conf.interval=options$confidenceIntervalInterval, na.rm=TRUE, .drop=FALSE, errorBarType=options$errorBarType, 
+							usePooledSE=options$usePooledStandErrorCI)
 
 		}
 
@@ -2537,7 +2540,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	list(result=descriptivesPlotList, status=status, stateDescriptivesPlot=stateDescriptivesPlot)
 }
 
-.rmAnovaSimpleEffects <- function(dataset, options, perform, fullModel, fullAnovaTableWithin, fullAnovaTableBetween, status, singular, stateSimpleEffects) {
+.rmAnovaSimpleEffects <- function(dataset, options, perform, fullModel, fullAnovaTableWithin, 
+                                  fullAnovaTableBetween, status, singular, stateSimpleEffects) {
   
   if (identical(options$simpleFactor, "") | identical(options$moderatorFactorOne, ""))
     return (list(result=NULL, status=status))
@@ -2848,7 +2852,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   list(result=simpleEffectsTable, status=status, stateSimpleEffects=stateSimpleEffects)
 }
 
-.summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE, errorBarType="confidenceInterval") {
+.summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE, 
+                       errorBarType="confidenceInterval", usePooledSE=FALSE) {
 
 	# New version of length which can handle NA's: if na.rm==T, don't count them
 	length2 <- function (x, na.rm=FALSE) {
@@ -2861,6 +2866,12 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 	# This does the summary. For each group's data frame, return a vector with
 	# N, mean, and sd
+	# First aggregate over RM factors, if desired:
+	if (usePooledSE) {
+	  data <- plyr::ddply(data, c("subject", groupvars), plyr::summarise, dependent = mean(dependent))
+	  names(data)[which(names(data) == "dependent")] <- measurevar
+	}
+	
 	datac <- plyr::ddply(data, groupvars, .drop=.drop,
 						 .fun = function(xx, col) {
 						 	c(N    = length2(xx[[col]], na.rm=na.rm),
@@ -2924,11 +2935,12 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	return(data)
 }
 
-.summarySEwithin <- function(data=NULL, measurevar, betweenvars=NULL, withinvars=NULL, idvar=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE, errorBarType="confidenceInterval") {
+.summarySEwithin <- function(data=NULL, measurevar, betweenvars=NULL, withinvars=NULL, idvar=NULL, na.rm=FALSE, 
+                             conf.interval=.95, .drop=TRUE, errorBarType="confidenceInterval", usePooledSE=FALSE) {
 
 	# Get the means from the un-normed data
-	datac <- .summarySE(data, measurevar, groupvars=c(betweenvars, withinvars), na.rm=na.rm, conf.interval=conf.interval, .drop=.drop, errorBarType=errorBarType)
-
+	datac <- .summarySE(data, measurevar, groupvars=c(betweenvars, withinvars), na.rm=na.rm, 
+	                    conf.interval=conf.interval, .drop=.drop, errorBarType=errorBarType, usePooledSE=usePooledSE)
 	# Drop all the unused columns (these will be calculated with normed data)
 	datac$sd <- NULL
 	datac$se <- NULL
@@ -2943,7 +2955,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	measurevar_n <- paste(measurevar, "_norm", sep="")
 
 	# Collapse the normed data - now we can treat between and within vars the same
-	ndatac <- .summarySE(ndata, measurevar_n, groupvars=c(betweenvars, withinvars), na.rm=na.rm, conf.interval=conf.interval, .drop=.drop, errorBarType=errorBarType)
+	ndatac <- .summarySE(ndata, measurevar_n, groupvars=c(betweenvars, withinvars), na.rm=na.rm, conf.interval=conf.interval, .drop=.drop, errorBarType=errorBarType,
+	                     usePooledSE=usePooledSE)
 
 	# Apply correction from Morey (2008) to the standard error and confidence interval
 	# Get the product of the number of conditions of within-S variables
