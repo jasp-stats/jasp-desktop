@@ -158,20 +158,50 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 	constructChildren: function (constructor, data) {
 
 		this.collection = this.model.get('collection');
+		var metaData = data.meta //remember for later
 
-		_.each(this.collection, function (itemResults) {
-			var itemView = constructor.call(this, itemResults, data, true);
-			if (itemView !== null) {
-				itemView.inCollection = true;
+		if(Array.isArray(metaData))  //from jaspResults
+		{
+			_.each(
+				metaData,
+				function (meta)
+				{
+					var itemResults = this.collection[meta.name]
+					data.meta = meta
 
-				if (itemView.resizer)
-					this.listenTo(itemView.resizer, "ResizeableView:resizeStart", this.onResizingStart);
+					var itemView = constructor.call(this, itemResults, data, true);
+					if (itemView !== null) {
+						itemView.inCollection = true;
 
-				this.listenTo(itemView, "all", this.eventEcho)
-				this.views.push(itemView);
-				this.localViews.push(itemView);
-			}
-		}, this);
+						if (itemView.resizer)
+							this.listenTo(itemView.resizer, "ResizeableView:resizeStart", this.onResizingStart);
+
+						this.listenTo(itemView, "all", this.eventEcho)
+						this.views.push(itemView);
+						this.localViews.push(itemView);
+					}
+				},
+				this);
+
+			data.meta = metaData //and put it back again..
+		}
+		else
+		{
+
+			_.each(this.collection, function (itemResults) {
+				var itemView = constructor.call(this, itemResults, data, true);
+				if (itemView !== null) {
+					itemView.inCollection = true;
+
+					if (itemView.resizer)
+						this.listenTo(itemView.resizer, "ResizeableView:resizeStart", this.onResizingStart);
+
+					this.listenTo(itemView, "all", this.eventEcho)
+					this.views.push(itemView);
+					this.localViews.push(itemView);
+				}
+			}, this);
+		}
 	},
 
 	hasViews: function () {

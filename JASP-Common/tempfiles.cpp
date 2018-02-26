@@ -20,7 +20,7 @@
 #include <sstream>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
-#include <boost/nowide/fstream.hpp>
+#include "boost/nowide/fstream.hpp"
 
 #include "base64.h"
 #include "dirs.h"
@@ -279,32 +279,15 @@ string tempfiles_createSpecific(const string &dir, const string &filename)
 
 void tempfiles_createSpecific(const string &name, int id, string &root, string &relativePath)
 {
-	stringstream ssAbsolute, ssRelative;
+	root					= _tempfiles_sessionDirName;
+	relativePath			= "resources" + (id >= 0 ? "/" + std::to_string(id) : "");
+	filesystem::path path	= Utils::osPath(root + "/" + relativePath);
+
 	system::error_code error;
-
-	root = _tempfiles_sessionDirName;
-
-	ssAbsolute << root << "/";
-
-	ssAbsolute << "resources";
-	ssRelative << "resources";
-
-	if (id >= 0)
-	{
-		ssRelative << "/" << id;
-		ssAbsolute << "/" << id;
-	}
-
-	string dir = ssAbsolute.str();
-	filesystem::path path = Utils::osPath(dir);
-
 	if (filesystem::exists(path, error) == false || error)
 		filesystem::create_directories(path, error);
 
-	ssAbsolute << "/" << name;
-	ssRelative << "/" << name;
-
-	relativePath = ssRelative.str();
+	relativePath += "/" + name;
 }
 
 void tempfiles_create(const string &extension, int id, string &root, string &relativePath)

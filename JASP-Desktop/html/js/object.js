@@ -6,14 +6,15 @@ JASPWidgets.object = Backbone.Model.extend({
 });
 
 JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
-	var metaData = params.meta;
-	var status = params.status;
-	var name = metaData.name;
-	var childOfCollection = params.childOfCollection;
-	var indent = params.indent;
-	var embeddedLevel = params.embeddedLevel;
-	var namespace = params.namespace;
-	var type = metaData;
+	var metaData			= params.meta;
+	var status				= params.status;
+	var name				= metaData.name;
+	var childOfCollection	= params.childOfCollection;
+	var indent				= params.indent;
+	var embeddedLevel		= params.embeddedLevel;
+	var namespace			= params.namespace;
+	var type				= metaData;
+
 	if (metaData.type)
 		type = metaData.type;
 

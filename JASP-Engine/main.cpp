@@ -26,9 +26,9 @@ int main(int argc, char *argv[])
 		unsigned long slaveNo	= strtoul(argv[1], NULL, 10);
 		unsigned long parentPID = strtoul(argv[2], NULL, 10);
 
+		//sleep(10000000);
+
 		Engine *e = new Engine(slaveNo, parentPID);
 		e->run();
 	}
-
-
 }

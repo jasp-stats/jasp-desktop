@@ -32,9 +32,7 @@
 #include <windows.h>
 #else
 #include <boost/interprocess/sync/named_semaphore.hpp>
-
 #endif
-
 
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/container/string.hpp>
@@ -48,7 +46,7 @@ class IPCChannel
 public:
 	IPCChannel(std::string name, int channelNumber, bool isSlave = false);
 
-	void send(std::string &data);
+	void send(std::string &data, bool alreadyLockedMutex = false);
 	bool receive(std::string &data, int timeout = 0);
 
 private:

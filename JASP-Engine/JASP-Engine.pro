@@ -72,23 +72,22 @@ win32:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__ -DBOOST_INT
 win32:LIBS += -lole32 -loleaut32
 macx:LIBS += -L$$_R_HOME/lib -lR
 
-
 mkpath($$OUT_PWD/../R/library)
 
 exists(/app/lib/*) {
 	#for flatpak we can just use R's own library as it is contained anyway
-	InstallJASPRPackage.commands		= \"$$R_EXE\" CMD INSTALL $$PWD/JASP
+  InstallJASPRPackage.commands        = \"$$R_EXE\" CMD INSTALL $$PWD/JASP
 	InstallJASPgraphsRPackage.commands	= \"$$R_EXE\" CMD INSTALL $$PWD/JASPgraphs
 } else {
-	InstallJASPRPackage.commands		= \"$$R_EXE\" CMD INSTALL --library=$$OUT_PWD/../R/library $$PWD/JASP
-	InstallJASPgraphsRPackage.commands	= \"$$R_EXE\" CMD INSTALL --library=$$OUT_PWD/../R/library $$PWD/JASPgraphs
+  InstallJASPRPackage.commands        = \"$$R_EXE\" CMD INSTALL --library=$$OUT_PWD/../R/library $$PWD/JASP
+  InstallJASPgraphsRPackage.commands  = \"$$R_EXE\" CMD INSTALL --library=$$OUT_PWD/../R/library $$PWD/JASPgraphs
 }
 
-QMAKE_EXTRA_TARGETS += InstallJASPRPackage
-PRE_TARGETDEPS      += InstallJASPRPackage
 QMAKE_EXTRA_TARGETS += InstallJASPgraphsRPackage
-PRE_TARGETDEPS      += InstallJASPgraphsRPackage
+POST_TARGETDEPS     += InstallJASPgraphsRPackage
 
+QMAKE_EXTRA_TARGETS += InstallJASPRPackage
+POST_TARGETDEPS     += InstallJASPRPackage
 
 QMAKE_CLEAN += $$OUT_PWD/../R/library/*
 

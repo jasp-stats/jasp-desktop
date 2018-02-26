@@ -40,12 +40,13 @@ Analysis *AnalysisLoader::load(int id, string moduleName, string analysisName, c
 		Json::Reader parser;
 		parser.parse(file, analysisDesc);
 		
-		string analysisTitle = analysisDesc.get("title", Json::nullValue).asString();
-		Json::Value requiresInit = analysisDesc.get("init", Json::nullValue);
-		Json::Value dataKey = analysisDesc.get("dataset", Json::nullValue);
-		Json::Value stateKey = analysisDesc.get("state", Json::nullValue);
-		Json::Value resultsMeta = analysisDesc.get("results", Json::nullValue);
-		Json::Value optionsJson = analysisDesc.get("options", Json::nullValue);
+		string analysisTitle		= analysisDesc.get("title",			Json::nullValue).asString();
+		Json::Value requiresInit	= analysisDesc.get("init",			Json::nullValue);
+		Json::Value dataKey			= analysisDesc.get("dataset",		Json::nullValue);
+		Json::Value stateKey		= analysisDesc.get("state",			Json::nullValue);
+		Json::Value resultsMeta		= analysisDesc.get("results",		Json::nullValue);
+		Json::Value optionsJson		= analysisDesc.get("options",		Json::nullValue);
+		bool usesJaspResults		= analysisDesc.get("jaspResults",	false).asBool();
 
 		if (optionsJson != Json::nullValue)
 			options->init(optionsJson);
@@ -60,7 +61,7 @@ Analysis *AnalysisLoader::load(int id, string moduleName, string analysisName, c
 
 		file.close();
 
-		return new Analysis(id, moduleName, analysisName, analysisTitle, requiresInit, dataKey, stateKey, resultsMeta, options, version, autorun, usedata);
+		return new Analysis(id, moduleName, analysisName, analysisTitle, requiresInit, dataKey, stateKey, resultsMeta, options, version, autorun, usedata, usesJaspResults);
 	}
 
 	throw runtime_error(analysisName + " does not exist in your JASP version.");

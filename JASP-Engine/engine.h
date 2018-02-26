@@ -43,15 +43,20 @@ public:
 	explicit Engine(int slaveNo, unsigned long parentPID);
 	static Engine * theEngine() { return _EngineInstance; } //There is only ever one engine in a process so we might as well have a static pointer to it.
 
+
 	void run();
 	void setSlaveNo(int no);
 	void applyFilter();
+	void sendString(std::string message) { _channel->send(message); }
 
-private:
 
+	typedef enum { empty, toInit, initing, inited, toRun, running, changed, complete, error, exception, aborted, stopped, saveImg, editImg} Status;
+	Status getStatus() { return _status; }
 	bool receiveMessages(int timeout = 0);
+	
 private:
 	static Engine * _EngineInstance;
+
 
 	void runAnalysis();
 	void saveImage();
@@ -66,23 +71,23 @@ private:
 
 	DataSet *provideDataSet();
 	void provideTempFileName(const std::string &extension, std::string &root, std::string &relativePath);
-	void provideStateFileName(std::string &root, std::string &relativePath);
-
-	typedef enum { empty, toInit, initing, inited, toRun, running, changed, complete, error, exception, aborted, stopped, saveImg, editImg} Status;
+	void provideStateFileName(std::string &root,		std::string &relativePath);
+	void provideJaspResultsFileName(std::string &root,	std::string &relativePath);
 
 	Status _status = empty;
 
-	int _analysisId;
-	int _analysisRevision;
-	int _progress;
-	std::string _analysisName;
-	std::string _analysisTitle;
-	bool _analysisRequiresInit;
-	std::string _analysisDataKey;
-	std::string _analysisOptions;
-	std::string _analysisResultsMeta;
-	std::string _analysisStateKey;
-	std::string _analysisResultsString;
+	int		_analysisId,
+				_analysisRevision,
+				_progress;
+	std::string _analysisName,
+				_analysisTitle;
+	bool		_analysisRequiresInit,
+				_analysisJaspResults;
+	std::string _analysisDataKey,
+				_analysisOptions,
+				_analysisResultsMeta,
+				_analysisStateKey,
+				_analysisResultsString;
 	Json::Value _imageOptions;
 	int _ppi = 96;
 

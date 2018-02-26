@@ -77,6 +77,8 @@ protected:
 	void illegalValueHandler(Bound *source);
 	bool _hasIllegalValue;
 	QString _illegalMessage;
+
+
 	
 	static int _scriptRequestCounter;
 	std::map<int, QVariant> _scriptRequestIdToKey;

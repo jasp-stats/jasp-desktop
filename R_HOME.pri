@@ -17,15 +17,12 @@ linux {
 	}
 
     QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
-    INCLUDEPATH += /usr/include/R/
+    INCLUDEPATH += /usr/include/R/\
+        /usr/share/R/include \
+        $$_R_HOME/site-library/Rcpp/include
 
 
     R_EXE  = $$_R_HOME/bin/R
-
-
-    INCLUDEPATH += \
-        /usr/share/R/include \
-        $$_R_HOME/site-library/Rcpp/include
 }
 
 macx {
@@ -42,11 +39,12 @@ $$BUILDING_JASP_ENGINE {
 	linux: LIBS += -L$$_R_HOME/lib -lR -lrt # because linux JASP-R-Interface is staticlib
 	macx:  LIBS += -L$$_R_HOME/lib -lR
 } else {
-	
-	win32: LIBS += -L$$_R_HOME/bin/$$ARCH -lR
+  win32: LIBS += -L$$_R_HOME/bin/$$ARCH -lR
 }
 
-
+INCLUDEPATH += \
+    $$_R_HOME/library/Rcpp/include \
+    $$_R_HOME/include
 
 
 message(using R_HOME of $$_R_HOME)

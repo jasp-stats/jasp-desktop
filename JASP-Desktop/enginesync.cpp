@@ -144,8 +144,10 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 
 	if (analysis->status() == Analysis::Empty)
 	{
-		perform = "init";
-		analysis->setStatus(Analysis::Initing);
+		std::cout <<"analysis->status() == Analysis::Empty\n" << std::flush;
+
+		perform =			analysis->usesJaspResults() ? "run"				: "init";
+		analysis->setStatus(analysis->usesJaspResults() ? Analysis::Running : Analysis::Initing);
 	}
 	else if (analysis->status() == Analysis::SaveImg)
 	{
@@ -171,29 +173,28 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 
 	Json::Value json = Json::Value(Json::objectValue);
 
-	json["id"] = analysis->id();
-	json["perform"] = perform;
-	json["requiresInit"] = analysis->requiresInit();
-	json["revision"] = analysis->revision();
+	json["id"]				= analysis->id();
+	json["perform"]			= perform;
+	json["requiresInit"]	= analysis->requiresInit();
+	json["revision"]		= analysis->revision();
+	json["jaspResults"]		= analysis->usesJaspResults();
 
 	if (analysis->status() != Analysis::Aborted)
 	{
-		json["name"] = analysis->name();
-		json["title"] = analysis->title();
+		json["name"]	= analysis->name();
+		json["title"]	= analysis->title();
+
         if (perform == "saveImg" || perform == "editImg") {
 			json["image"] = analysis->getSaveImgOptions();
 		}
 		else
 		{
-			json["dataKey"] = analysis->dataKey();
-			json["stateKey"] = analysis->stateKey();
+			json["dataKey"]		= analysis->dataKey();
+			json["stateKey"]	= analysis->stateKey();
 			json["resultsMeta"] = analysis->resultsMeta();
-			json["options"] = analysis->options()->asJSON();
+			json["options"]		= analysis->options()->asJSON();
 		}
-		Json::Value settings;
-		settings["ppi"] = _ppi;
-
-		json["settings"] = settings;
+		json["settings"] = Json::Value()["ppi"] = _ppi;
 	}
 
 	string str = json.toStyledString();
@@ -219,8 +220,7 @@ void EngineSync::process()
 		if (channel->receive(data))
 		{
 #ifdef JASP_DEBUG
-			std::cout << "message received\n";
-			std::cout.flush();
+			std::cout << "message received: ";
 #endif
 
 			Json::Reader reader;
@@ -232,7 +232,7 @@ void EngineSync::process()
 			case engineState::filter:
 			{
 #ifdef JASP_DEBUG
-			std::cout << "msg is filter reply" << std::endl << std::flush;
+			std::cout << "filter reply" << std::endl;
 #endif
 
 				if(json.get("filterResult", Json::Value(Json::intValue)).isArray()) //If the result is an array then it came from the engine.
@@ -258,7 +258,7 @@ void EngineSync::process()
 			case engineState::rcode:
 			{
 #ifdef JASP_DEBUG
-			std::cout << "msg is rCode reply" << std::endl << std::flush;
+			std::cout << "rCode reply" << std::endl;
 #endif
 				//Do some RCode magic				
 				_engineStates[i] = engineState::idle;
@@ -284,9 +284,9 @@ void EngineSync::process()
 			case engineState::analysis:
 			{
 #ifdef JASP_DEBUG
-				//std::cout << data << std::endl;
-				std::cout << "its a bunch of data\n";
-				std::cout.flush();
+
+				std::cout << "bunch of data" << std::endl;
+				//std::cout << data << std::endl << std::flush;
 #endif
 
 				Analysis *analysis	= _analysesInProgress[i];
@@ -301,7 +301,7 @@ void EngineSync::process()
 				if (analysis->id() != id || analysis->revision() != revision)
 					continue;
 	
-				std::cout << status << "\n" << std::flush;
+				std::cout << status << std::endl << std::flush;
 	
 	
 				if (status == "error" || status == "exception")
@@ -508,7 +508,7 @@ void EngineSync::startSlaveProcess(int no)
 	QStringList args;
 	args << QString::number(no);
 	args << QString::number(ProcessInfo::currentPID());
-	
+
 #ifdef __WIN32__
 	QString rHomePath = programDir.absoluteFilePath("R");
 #elif __APPLE__

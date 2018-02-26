@@ -477,6 +477,7 @@ FocusScope
 				toolTip: "Open Documentation"
 			}
 
+
 			FilterButton
 			{
 				id: closeFilterButton
