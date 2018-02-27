@@ -2543,8 +2543,10 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 .rmAnovaSimpleEffects <- function(dataset, options, perform, fullModel, fullAnovaTableWithin, 
                                   fullAnovaTableBetween, status, singular, stateSimpleEffects) {
   
-  if (identical(options$simpleFactor, "") | identical(options$moderatorFactorOne, ""))
+  if (identical(options$simpleFactor, "") | identical(options$moderatorFactorOne, "")) {
     return (list(result=NULL, status=status))
+  }
+  
   
   terms <- c(options$moderatorFactorOne,options$moderatorFactorTwo)
   terms.base64 <- c()
@@ -2584,7 +2586,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   
   simpleEffectsTable[["schema"]] <- list(fields=fields)
   
-  if (perform == "run" && status$ready && status$error == FALSE)  {
+  if (perform == "run" && status$ready && status$error == FALSE && class(fullModel) != "try-error")  {
   
     isMixedAnova <-   length(options[['betweenSubjectFactors']]) > 0
     isSimpleFactorWithin <- !simpleFactor %in% unlist(options[['betweenModelTerms']] )
@@ -2634,7 +2636,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     }
     #
     allNames <- unlist(lapply(options[['repeatedMeasuresFactors']], function(x) x$name)) # Factornames 
-    
+
     # make separate covariate dataframe to avoid mismatching dataframe names
     covDataset <- dataset[.v(options[['covariates']])]
     wideDataset <- fullModel$data$wide[,(-1)]
@@ -2711,13 +2713,25 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
             # There are still multiple levels of RM factors, so proceed with conditional RM ANOVA
             anovaModel <- .rmAnovaModel(cbind(subDataset, subCovDataset), subOptions, status = status)
             modelSummary <- anovaModel$model
-            modOneIndex <- which(row.names(modelSummary) == .v(simpleFactor))
-            df <- modelSummary[modOneIndex,'num Df']
-            SS <- modelSummary[modOneIndex,'SS']
-            if (!options$poolErrorTermSimpleEffects) {
-              fullAnovaMS <- modelSummary[modOneIndex,'Error SS'] / modelSummary[modOneIndex,'den Df']
-              fullAnovaDf <- modelSummary[modOneIndex,'den Df']
+            if (subOptions$sumOfSquares != "type1") {
+              modOneIndex <- which(row.names(modelSummary) == .v(simpleFactor))
+              df <- modelSummary[modOneIndex,'num Df']
+              SS <- modelSummary[modOneIndex,'SS']   
+              if (!options$poolErrorTermSimpleEffects) {
+                fullAnovaMS <- modelSummary[modOneIndex,'Error SS'] / modelSummary[modOneIndex,'den Df']
+                fullAnovaDf <- modelSummary[modOneIndex,'den Df']
+              }
+            } else {
+              modelSummary <- modelSummary[[-1]][[1]]
+              modOneIndex <- which(row.names(modelSummary) == .v(simpleFactor))
+              df <- modelSummary[modOneIndex,'Df']
+              SS <- modelSummary[modOneIndex,'Sum Sq']   
+              if (!options$poolErrorTermSimpleEffects) {
+                fullAnovaMS <- modelSummary['Residuals','Mean Sq']
+                fullAnovaDf <- modelSummary['Residuals','Df']
+              }
             }
+           
           } else {
             # There is only one level of RM factor left, so proceed with conditional simple ANOVA
             subOptionsSimpleAnova <- subOptions
@@ -2790,13 +2804,25 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
                 # There are still multiple levels of RM factors, so proceed with conditional RM ANOVA
                 anovaModel <- .rmAnovaModel(cbind(subSubDataset, subSubCovDataset), subSubOptions, status = status)
                 modelSummary <- anovaModel$model
-                modTwoIndex <- which(row.names(modelSummary) == .v(simpleFactor))
-                df <- modelSummary[modTwoIndex,'num Df']
-                SS <- modelSummary[modTwoIndex,'SS']
-                if (!options$poolErrorTermSimpleEffects) {
-                  fullAnovaMS <- modelSummary[modTwoIndex,'Error SS'] / modelSummary[modTwoIndex,'den Df']
-                  fullAnovaDf <- modelSummary[modTwoIndex,'den Df']
+                if (subSubOptions$sumOfSquares != "type1") {
+                  modTwoIndex <- which(row.names(modelSummary) == .v(simpleFactor))
+                  df <- modelSummary[modTwoIndex,'num Df']
+                  SS <- modelSummary[modTwoIndex,'SS']   
+                  if (!options$poolErrorTermSimpleEffects) {
+                    fullAnovaMS <- modelSummary[modTwoIndex,'Error SS'] / modelSummary[modOneIndex,'den Df']
+                    fullAnovaDf <- modelSummary[modTwoIndex,'den Df']
+                  }
+                } else {
+                  modelSummary <- modelSummary[[-1]][[1]]
+                  modTwoIndex <- which(row.names(modelSummary) == .v(simpleFactor))
+                  df <- modelSummary[modTwoIndex,'Df']
+                  SS <- modelSummary[modTwoIndex,'Sum Sq']   
+                  if (!options$poolErrorTermSimpleEffects) {
+                    fullAnovaMS <- modelSummary['Residuals','Mean Sq']
+                    fullAnovaDf <- modelSummary['Residuals','Df']
+                  }
                 }
+                
               } else {
                 # There is only one level of RM factor left, so proceed with conditional simple ANOVA
                 subSubOptionsSimpleAnova <- subSubOptions
