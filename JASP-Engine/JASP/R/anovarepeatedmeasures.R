@@ -1386,14 +1386,15 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 						if (options$effectSizeEstimates) {
 
 							if (sum(gsub(" ", "", row.names(resultTable), fixed = TRUE) == "Residuals") > 0) {
-
+							  index <- unlist(lapply(modelTermsResults, function(x) .identicalTerms(x,modelTermsCase)))
+							  
 								SSt <- sum(resultTable[,"Sum Sq"])
 								SSr <- resultTable["Residuals","Sum Sq"]
 								MSr <- SSr/resultTable["Residuals","Df"]
 								row[["eta"]] <- SS / SSt
 								row[["partialEta"]] <- SS / (SS + SSr)
 								n <- resultTable["Residuals","Df"]  + 1
-								MSm <- resultTable[.v(row$case), "Mean Sq"]
+								MSm <- resultTable[index, "Mean Sq"]
 								MSb <- result["Error: subject"][[1]][[1]]$`Mean Sq`
 								MSb <- MSb[length(MSb)]
 								omega <- (df / (n * (df + 1)) * (MSm - MSr)) / 
@@ -1603,7 +1604,6 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 								omega <- (df / (n * (df + 1)) * (MSm - MSr)) / 
 								         (MSr + ((MSb - MSr) / (df + 1)) +
 						             (df / (n * (df + 1))) * (MSm - MSr))
-
 
 								if (omega < 0) {
 									row[["omega"]] <- 0
