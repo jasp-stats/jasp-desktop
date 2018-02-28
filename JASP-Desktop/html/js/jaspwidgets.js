@@ -53,34 +53,7 @@ JASPWidgets.Encodings = {
 		return base64
 	},
 
-	base64Request: function (path, callback, context) {
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', path + '?x=' + Math.random(), true); //eg '/my/image/name.png'
-		xhr.responseType = 'arraybuffer';
 
-		var self = context || this;
-		xhr.onload = function (e) {
-			callback.call(self, JASPWidgets.Encodings.getBase64(this.response));
-		};
-		xhr.onerror = function (e) {
-			alert(xhr.statusText);
-		};
-
-		xhr.send();
-	},
-
-	byteRequest: function (path, callback, context) {
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', path + '?x=' + Math.random(), true); //eg '/my/image/name.png'
-		xhr.responseType = 'arraybuffer';
-
-		var self = context || this;
-		xhr.onload = function (e) {
-			callback.call(self, this.response);
-		};
-
-		xhr.send();
-	}
 }
 
 JASPWidgets.ExportProperties = {

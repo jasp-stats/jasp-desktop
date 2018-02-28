@@ -372,6 +372,19 @@ void ResultsJsInterface::removeAnalysisRequest(int id)
 	_mainWindow->removeAnalysisRequestHandler(id);
 }
 
+void ResultsJsInterface::getImageInBase64(int id, const QString &path)
+{
+	QString fullPath = tq(tempfiles_sessionDirName()) + "/" + path;
+	QFile *file = new QFile(fullPath);
+	file->open(QIODevice::ReadOnly);
+	QByteArray image = file->readAll();
+	QString result = QString(image.toBase64());
+	
+	QString eval = QString("window.convertToBase64Done({ id: %1, result: '%2'});").arg(id).arg(result);
+	runJavaScript(eval);
+	
+}
+
 void ResultsJsInterface::pushToClipboard(const QString &mimeType, const QString &data, const QString &html)
 {
 	QMimeData *mimeData = new QMimeData();

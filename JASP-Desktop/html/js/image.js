@@ -215,8 +215,8 @@ JASPWidgets.imagePrimative= JASPWidgets.View.extend({
 			callback.call(this, exportParams, new JASPWidgets.Exporter.data(null, this._getHTMLImage(htmlImageFormatData, width, height, exportParams)));
 		else {
 			var data = this.model.get("data");
-			JASPWidgets.Encodings.base64Request(data, function (base64) {
-				htmlImageFormatData.embedded = base64;
+			convertToBase64Begin(data, function (base64) {
+ 				htmlImageFormatData.embedded = base64;
 				if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.temporary) {
 					saveImageBegin(data, base64, function (fullpath) {
 						htmlImageFormatData.temporary = fullpath;

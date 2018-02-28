@@ -504,7 +504,7 @@ $(document).ready(function () {
                 jasp.analysisSaveImage(id, JSON.stringify(options))
 
             });
-
+            
             jaspWidget.on("editimage", function (id, options) {
 
                 jasp.analysisEditImage(id, JSON.stringify(options))
@@ -608,8 +608,28 @@ var saveImageBegin = function (path, base64, callback, context) {
 window.imageSaved = function (args) {
 	var callbackData = savingImages[args.id];
 	callbackData.callback.call(callbackData.context, args.fullPath);
-	delete savingImages.savingId;
+	delete savingImages[args.id];
 }
+
+var convertToBase64Id = 0;
+var convertToBase64Images = {};
+
+var convertToBase64Begin = function (path, callback, context) {
+	var index = convertToBase64Id;
+	convertToBase64Id += 1;
+	convertToBase64Images[index] = {
+		callback: callback,
+		context: context
+	}
+	jasp.getImageInBase64(index, path);
+}
+
+window.convertToBase64Done = function (args) {
+	var callbackData = convertToBase64Images[args.id];
+	callbackData.callback.call(callbackData.context, args.result);
+    delete convertToBase64Images[args.id];
+}
+
 
 window.resultsDocumentChanged = function () {
 	jasp.resultsDocumentChanged();

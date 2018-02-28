@@ -77,6 +77,8 @@ public slots:
 	void displayMessageFromResults(QString path);
 
 	void exportSelected(const QString &filename);
+	void getImageInBase64(int id, const QString &path);
+	
 
 private:
 	MainWindow *_mainWindow;
