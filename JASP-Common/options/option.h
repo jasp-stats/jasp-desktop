@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,8 +22,7 @@
 
 #include <boost/signals2.hpp>
 #include <boost/bind.hpp>
-
-#include "../lib_json/json.h"
+#include "jsonredirect.h"
 
 class Options;
 
@@ -43,6 +42,8 @@ public:
 	void blockSignals(bool block);
 
 	bool isTransient() const;
+	
+	void doesNotSignalOnceUnblocked();
 
 protected:
 	void notifyChanged();

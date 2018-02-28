@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2013-2015 University of Amsterdam
+# Copyright (C) 2013-2018 University of Amsterdam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -371,8 +371,12 @@ mainFunctionPCAEFA <- function(type, dataset = NULL, options, perform = "run",
 	if (is.null(dataset)) {
 	## if we are ready to run, read in the dataset
 		if (perform == "run" && length(options$variables) > 1) {
+			
+			exclude <- c()
+			if (options[["missingValues"]] == "listwise")
+				exclude <- c(depvars, groups)
 
-			dataset <- .readDataSetToEnd(columns.as.numeric = depvars, columns.as.factor = groups, exclude.na.listwise = c(depvars, groups))
+			dataset <- .readDataSetToEnd(columns.as.numeric = depvars, columns.as.factor = groups, exclude.na.listwise = exclude)
 		} else {
 			dataset <- .readDataSetHeader(columns.as.numeric = depvars, columns.as.factor = groups)
 		}

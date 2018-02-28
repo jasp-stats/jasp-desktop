@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -27,6 +27,7 @@ BoundTableView::BoundTableView(QWidget *parent)
 	this->viewport()->setAcceptDrops(true);
 	this->setDropIndicatorShown(true);
 	this->setDragDropMode(QAbstractItemView::DragDrop);
+	this->viewport()->setAttribute(Qt::WA_Hover);
 }
 
 void BoundTableView::bindTo(Option *option)

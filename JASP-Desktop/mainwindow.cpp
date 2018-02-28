@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -51,6 +51,7 @@
 #include "analysisforms/Common/ttestindependentsamplesform.h"
 #include "analysisforms/Common/ttestonesampleform.h"
 #include "analysisforms/Common/ttestpairedsamplesform.h"
+#include "analysisforms/Common/multinomialtestform.h"
 
 #include "analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.h"
 #include "analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
@@ -66,21 +67,16 @@
 #include "analysisforms/Network/networkanalysisform.h"
 
 #include "analysisforms/MetaAnalysis/classicalmetaanalysisform.h"
-#include "analysisforms/MetaAnalysis/multinomialtestform.h"
+
 
 ///// 1-analyses headers
 
 #include <QDebug>
-#include <QWebFrame>
 #include <QFile>
 #include <QFileInfo>
 #include <QToolTip>
-#include <QClipboard>
-#include <QWebElement>
 #include <QMessageBox>
-#include <QTimer>
 #include <QStringBuilder>
-#include <QWebHistory>
 #include <QDropEvent>
 #include <QShortcut>
 #include <QDesktopWidget>
@@ -98,7 +94,6 @@
 #include "processinfo.h"
 #include "appinfo.h"
 
-#include "lrnam.h"
 #include "activitylog.h"
 #include "aboutdialog.h"
 #include "preferencesdialog.h"
@@ -118,10 +113,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow)
 {
+	ui->setupUi(this);
 	_log = NULL;
 	_tableModel = NULL;
 	_currentOptionsWidget = NULL;
 	_currentAnalysis = NULL;
+
+	_resultsJsInterface = new ResultsJsInterface(this);
 
 	_package = new DataSetPackage();
 
@@ -137,7 +135,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	QShortcut *refreshShortcut = new QShortcut(QKeySequence("Ctrl+R"), this);
 	QObject::connect(refreshShortcut, SIGNAL(activated()), this, SLOT(refreshKeysSelected()));
 
-	ui->setupUi(this);
 
 	int initalTableWidth = 575;
 
@@ -157,27 +154,16 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->ribbonNetworkAnalysis->setDataSetLoaded(false);
 ///// 2-ribbon setDataSetLoaded
 
-#ifdef QT_DEBUG
-	ui->webViewResults->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
-	ui->webViewHelp->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
-#else
-	ui->webViewResults->setContextMenuPolicy(Qt::NoContextMenu);
-	ui->webViewHelp->setContextMenuPolicy(Qt::NoContextMenu);
-#endif
-
 	tempfiles_init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
 	_odm = new OnlineDataManager(this);
 	_odm->initAuthentication(OnlineDataManager::OSF);
 
+	_loader.moveToThread(&_loaderThread);
+	_loaderThread.start();
 	_loader.setOnlineDataManager(_odm);
-	ui->backStage->setOnlineDataManager(_odm);
 
-	// the LRNAM adds mime types to local resources; important for SVGs
-	ui->webViewResults->page()->setNetworkAccessManager(new LRNAM(tq(tempfiles_sessionDirName()), this));
-	ui->webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));
-	connect(ui->webViewResults, SIGNAL(loadFinished(bool)), this, SLOT(resultsPageLoaded(bool)));
-	connect(ui->webViewResults, SIGNAL(scrollValueChanged()), this, SLOT(scrollValueChangedHandle()));
+	ui->backStage->setOnlineDataManager(_odm);
 
 	_tableModel = new DataSetTableModel();
 	ui->tableView->setModel(_tableModel);
@@ -193,7 +179,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(_analyses, SIGNAL(analysisResultsChanged(Analysis*)), this, SLOT(analysisResultsChangedHandler(Analysis*)));
 	connect(_analyses, SIGNAL(analysisImageSaved(Analysis*)), this, SLOT(analysisImageSavedHandler(Analysis*)));
-	connect(_analyses, SIGNAL(analysisUserDataLoaded(Analysis*)), this, SLOT(analysisUserDataLoadedHandler(Analysis*)));
+    connect(_analyses, SIGNAL(analysisImageEdited(Analysis*)), _resultsJsInterface, SLOT(analysisImageEditedHandler(Analysis*)));
 	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), ui->backStage, SLOT(analysisAdded(Analysis*)));
 
 	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
@@ -202,9 +188,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonSummaryStatistics, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonMetaAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonNetworkAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
-///// 3-connect ribbon itemSelected
 	connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
-	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
+	connect(ui->backStage, SIGNAL(exportSelected(QString)), _resultsJsInterface, SLOT(exportSelected(QString)));
 	connect(ui->variablesPage, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
 	connect(ui->variablesPage, SIGNAL(resetTableView()), this, SLOT(resetTableView()));
 	connect(ui->tableView, SIGNAL(dataTableColumnSelected()), this, SLOT(showVariablesPage()));
@@ -219,22 +204,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(&_loader, SIGNAL(progress(QString,int)), _progressIndicator, SLOT(setStatus(QString,int)));
 
-	connect(this, SIGNAL(analysisSelected(int)), this, SLOT(analysisSelectedHandler(int)));
-	connect(this, SIGNAL(analysisUnselected()), this, SLOT(analysisUnselectedHandler()));
-	connect(this, SIGNAL(saveTempImage(int, QString, QByteArray)), this, SLOT(saveTempImageHandler(int, QString, QByteArray)));
-	connect(this, SIGNAL(displayMessageFromResults(QString)),  this, SLOT(displayMessageFromResultsHandler(QString)));
-	connect(this, SIGNAL(pushToClipboard(QString, QString, QString)), this, SLOT(pushToClipboardHandler(QString, QString, QString)));
-	connect(this, SIGNAL(pushImageToClipboard(QByteArray, QString)), this, SLOT(pushImageToClipboardHandler(QByteArray, QString)));
-	connect(this, SIGNAL(saveTextToFile(QString, QString)), this, SLOT(saveTextToFileHandler(QString, QString)));
-	connect(this, SIGNAL(analysisChangedDownstream(int, QString)), this, SLOT(analysisChangedDownstreamHandler(int, QString)));
-	connect(this, SIGNAL(analysisSaveImage(int, QString)), this, SLOT(analysisSaveImageHandler(int, QString)));
-	connect(this, SIGNAL(showAnalysesMenu(QString)), this, SLOT(showAnalysesMenuHandler(QString)));
-	connect(this, SIGNAL(removeAnalysisRequest(int)), this, SLOT(removeAnalysisRequestHandler(int)));
-	connect(this, SIGNAL(updateUserData(int, QString)), this, SLOT(updateUserDataHandler(int, QString)));
-	connect(this, SIGNAL(simulatedMouseClick(int, int, int)), this, SLOT(simulatedMouseClickHandler(int, int, int)));
-	connect(this, SIGNAL(resultsDocumentChanged()), this, SLOT(resultsDocumentChangedHandler()));
-	connect(ui->tabBar, SIGNAL(setExactPValuesHandler(bool)), this, SLOT(setExactPValuesHandler(bool)));
-	connect(ui->tabBar, SIGNAL(setFixDecimalsHandler(QString)), this, SLOT(setFixDecimalsHandler(QString)));
+	connect(ui->tabBar, SIGNAL(setExactPValuesHandler(bool)), _resultsJsInterface, SLOT(setExactPValuesHandler(bool)));
+	connect(ui->tabBar, SIGNAL(setFixDecimalsHandler(QString)), _resultsJsInterface, SLOT(setFixDecimalsHandler(QString)));
 	connect(ui->tabBar, SIGNAL(emptyValuesChangedHandler()), this, SLOT(emptyValuesChangedHandler()));
 
 #ifdef __APPLE__
@@ -271,16 +242,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(ui->splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(splitterMovedHandler(int,int)));
 
-	_analysisMenu = new QMenu(this);
-	connect(_analysisMenu, SIGNAL(aboutToHide()), this, SLOT(menuHidding()));
-
 	_tableViewWidthBeforeOptionsMadeVisible = -1;
 
 	QUrl userGuide = QUrl::fromLocalFile(AppDirs::help() + "/index.html");
 	ui->webViewHelp->setUrl(userGuide);
 	connect(ui->webViewHelp, SIGNAL(loadFinished(bool)), this, SLOT(helpFirstLoaded(bool)));
-	ui->webViewHelp->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-	connect(ui->webViewHelp, SIGNAL( linkClicked( QUrl ) ), this, SLOT( linkClickedSlot( QUrl ) ) );
 	ui->panel_4_Help->hide();
 
 	setAcceptDrops(true);
@@ -330,7 +296,6 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 	QMainWindow::resizeEvent(event);
 	adjustOptionsPanelWidth();
 }
-
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
@@ -535,49 +500,6 @@ void MainWindow::packageDataChanged(DataSetPackage *package,
 }
 
 
-QString MainWindow::escapeJavascriptString(const QString &str)
-{
-	QString out;
-	QRegExp rx("(\\r|\\n|\\\\|\"|\')");
-	int pos = 0, lastPos = 0;
-
-	while ((pos = rx.indexIn(str, pos)) != -1)
-	{
-		out += str.mid(lastPos, pos - lastPos);
-
-		switch (rx.cap(1).at(0).unicode())
-		{
-		case '\r':
-			out += "\\r";
-			break;
-		case '\n':
-			out += "\\n";
-			break;
-		case '"':
-			out += "\\\"";
-			break;
-		case '\'':
-			out += "\\'";
-			break;
-		case '\\':
-			out += "\\\\";
-			break;
-		}
-		pos++;
-		lastPos = pos;
-	}
-	out += str.mid(lastPos);
-	return out;
-}
-
-
-void MainWindow::analysisUserDataLoadedHandler(Analysis *analysis)
-{
-	QString results = tq(analysis->userData().toStyledString());
-
-	results = escapeJavascriptString(results);
-	results = "window.loadUserData(" + QString::number(analysis->id()) + ", JSON.parse('" + results + "'));";
-}
 
 
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
@@ -589,7 +511,7 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 		if (_settings.value("instructionsShown", false).toBool() == false)
 		{
 			_settings.setValue("instructionsShown", true);
-			ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.showInstructions()");
+			_resultsJsInterface->showInstruction();
 		}
 
 		showInstructions = false;
@@ -609,14 +531,7 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 			_runButton->setEnabled(false);
 	}
 
-	Json::Value analysisJson = analysis->asJSON();
-	analysisJson["userdata"] = analysis->userData();
-	QString results = tq(analysisJson.toStyledString());
-
-	results = escapeJavascriptString(results);
-	results = "window.analysisChanged(JSON.parse('" + results + "'));";
-
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(results);
+	_resultsJsInterface->analysisChanged(analysis);
 
 	if (_package->isLoaded())
 		_package->setModified(true);
@@ -693,6 +608,23 @@ void MainWindow::analysisImageSavedHandler(Analysis *analysis)
 	}
 }
 
+void MainWindow::analysisEditImageHandler(int id, QString options)
+{
+
+    Analysis *analysis = _analyses->get(id);
+    if (analysis == NULL)
+        return;
+
+    string utf8 = fq(options);
+    Json::Value root;
+    Json::Reader parser;
+    parser.parse(utf8, root);
+
+    analysis->editImage(analysis, root);
+
+    return;
+
+}
 
 AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 {
@@ -702,9 +634,6 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 
 AnalysisForm* MainWindow::loadForm(const string name)
 {
-	if (_analysisForms.find(name) != _analysisForms.end())
-		return _analysisForms[name];
-
 	AnalysisForm *form = NULL;
 
 	QWidget *contentArea = ui->optionsContentArea;
@@ -799,8 +728,6 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
-	if (form != NULL)
-		_analysisForms[name] = form;
 
 	return form;
 }
@@ -1002,7 +929,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			_package->setWaitingForReady();
 
 			getAnalysesUserData();
-			ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('%PREVIEW%');");
+			_resultsJsInterface->exportPreviewHTML();
 
 			Json::Value analysesDataList = Json::arrayValue;
 			for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
@@ -1020,7 +947,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			Json::Value analysesData = Json::objectValue;
 			analysesData["analyses"] = analysesDataList;
 
-			analysesData["meta"] = getResultsMeta();
+			analysesData["meta"] = _resultsJsInterface->getResultsMeta();
 
 			_package->analysesData = analysesData;
 			_package->hasAnalyses = true;
@@ -1035,7 +962,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	{
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 
-		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('%EXPORT%');");
+		_resultsJsInterface->exportHTML();
 
 		_loader.io(event, _package);
 		_progressIndicator->show();
@@ -1223,9 +1150,7 @@ void MainWindow::populateUIfromDataSet()
 				if ( ! meta.isNull())
 				{
 					QString results = tq(analysesData["meta"].toStyledString());
-					results = escapeJavascriptString(results);
-					results = "window.setResultsMeta(JSON.parse('" + results + "'));";
-					ui->webViewResults->page()->mainFrame()->evaluateJavaScript(results);
+					_resultsJsInterface->setResultsMeta(results);
 				}
 			}
 
@@ -1297,42 +1222,20 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 ///// 5-ribbon updateMenuEnabledDisabledStatus
 }
 
-
-void MainWindow::resultsPageLoaded(bool success)
+void MainWindow::resultsPageLoaded(bool success, int ppi)
 {
-	// clear history, to prevent backspace from going 'back'
-	ui->webViewResults->history()->clear();
-	ui->webViewResults->page()->mainFrame()->addToJavaScriptWindowObject("jasp", this);
-
 	if (success)
 	{
-		QString version = tq(AppInfo::version.asString());
-#ifdef QT_DEBUG
-		version+="-Debug";
-#endif
-		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
-
-		setExactPValuesHandler(_settings.value("displayExactPVals", 0).toBool());
-		setFixDecimalsHandler(_settings.value("numDecimals").toString());
-
-		QVariant ppiv = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getPPI()");
-
-		bool success;
-		int ppi = ppiv.toInt(&success);
-		if (success == false)
-			ppi = 96;
-
-		_webViewZoom = 1;
-#ifdef __WIN32__
-		const int verticalDpi = QApplication::desktop()->screen()->logicalDpiY();
-		qreal zoom = ((qreal)(verticalDpi) / (qreal)ppi);
-		ui->webViewResults->setZoomFactor(zoom);
-		ui->webViewHelp->setZoomFactor(zoom);
-		ppi = verticalDpi;
-		_webViewZoom = zoom;
-
-		this->resize(this->width() + (ui->webViewResults->width() * (zoom - 1)), this->height() + (ui->webViewResults->height() * (zoom - 1)));
-#endif
+// #ifdef __WIN32__
+// 		const int verticalDpi = QApplication::desktop()->screen()->logicalDpiY();
+// 		qreal zoom = ((qreal)(verticalDpi) / (qreal)ppi);
+// 		ui->webViewResults->setZoomFactor(zoom);
+// 		ui->webViewHelp->setZoomFactor(zoom);
+// 		ppi = verticalDpi;
+// 		_resultsJsInterface->setZoom(zoom);
+//
+// 		this->resize(this->width() + (ui->webViewResults->width() * (zoom - 1)), this->height() + (ui->webViewResults->height() * (zoom - 1)));
+// #endif
 		_engineSync->setPPI(ppi);
 
 		if (_openOnLoadFilename != "")
@@ -1397,24 +1300,7 @@ void MainWindow::requestHelpPage(const QString &pageName)
 
 	QString js = "window.render(\"" + content + "\")";
 
-	ui->webViewHelp->page()->mainFrame()->evaluateJavaScript(js);
-}
-
-
-void MainWindow::setExactPValuesHandler(bool exactPValues)
-{
-	QString exactPValueString = (exactPValues ? "true" : "false");
-	QString js = "window.globSet.pExact = " + exactPValueString + "; window.reRenderAnalyses();";
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(js);
-}
-
-
-void MainWindow::setFixDecimalsHandler(QString numDecimals)
-{
-	if (numDecimals == "")
-		numDecimals = "\"\"";
-	QString js = "window.globSet.decimals = " + numDecimals + "; window.reRenderAnalyses();";
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(js);
+	ui->webViewHelp->page()->runJavaScript(js);
 }
 
 
@@ -1458,13 +1344,6 @@ void MainWindow::emptyValuesChangedHandler()
 	}
 }
 
-
-void MainWindow::linkClickedSlot(QUrl url)
-{
-	QDesktopServices::openUrl ( url );
-}
-
-
 void MainWindow::itemSelected(const QString &item)
 {
 	try
@@ -1475,7 +1354,7 @@ void MainWindow::itemSelected(const QString &item)
 		_currentAnalysis = _analyses->create(module.name(), item);
 
 		showForm(_currentAnalysis);
-		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.select(" % QString::number(_currentAnalysis->id()) % ")");
+		_resultsJsInterface->showAnalysis(_currentAnalysis->id());
 
 		QString info("%1,%2");
 		info = info.arg(tq(_currentAnalysis->name()));
@@ -1513,13 +1392,6 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 		file.close();
 	}
 }
-
-
-void MainWindow::exportSelected(const QString &filename)
-{
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('" + filename + "');");
-}
-
 
 void MainWindow::adjustOptionsPanelWidth()
 {
@@ -1683,7 +1555,7 @@ void MainWindow::analysisOKed()
 		_currentOptionsWidget = NULL;
 	}
 
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.unselect()");
+	_resultsJsInterface->unselect();
 
 	hideOptionsPanel();
 }
@@ -1726,7 +1598,7 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 	if (_log != NULL)
 		_log->log("Analysis Removed", info);
 
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.remove(" % QString::number(analysis->id()) % ")");
+	_resultsJsInterface->removeAnalysis(analysis);
 
 	if (selected)
 		hideOptionsPanel();
@@ -1778,198 +1650,15 @@ void MainWindow::resetTableView()
 	ui->tableView->reset();
 }
 
-
-void MainWindow::pushToClipboardHandler(const QString &mimeType, const QString &data, const QString &html)
-{
-	if (_log != NULL)
-		_log->log("Copy");
-
-	QMimeData *mimeData = new QMimeData();
-
-	if (mimeType == "text/plain")
-		mimeData->setText(data);
-
-	if ( ! html.isEmpty())
-		mimeData->setHtml(html);
-
-	QClipboard *clipboard = QApplication::clipboard();
-	clipboard->setMimeData(mimeData, QClipboard::Clipboard);
-
-	//qDebug() << clipboard->mimeData(QClipboard::Clipboard)->data("text/html");
-}
-
-
-void MainWindow::pushImageToClipboardHandler(const QByteArray &base64, const QString &html)
-{
-	if (_log != NULL)
-		_log->log("Copy");
-
-	QMimeData *mimeData = new QMimeData();
-
-	QByteArray byteArray = QByteArray::fromBase64(base64);
-
-	QImage pm;
-	if(pm.loadFromData(byteArray))
-	{
-#ifdef __WIN32__ //needed because jpegs/clipboard doesn't support transparency in windows
-		QImage image2(pm.size(), QImage::Format_ARGB32);
-		image2.fill(Qt::white);
-		QPainter painter(&image2);
-		painter.drawImage(0, 0, pm);
-
-		mimeData->setImageData(image2);
-#else
-		mimeData->setImageData(pm);
-#endif
-	}
-
-	if ( ! html.isEmpty())
-		mimeData->setHtml(html);
-
-	if (mimeData->hasImage() || mimeData->hasHtml())
-	{
-		QClipboard *clipboard = QApplication::clipboard();
-		clipboard->setMimeData(mimeData, QClipboard::Clipboard);
-	}
-
-	//qDebug() << clipboard->mimeData(QClipboard::Clipboard)->data("text/html");
-}
-
-
-void MainWindow::saveTempImageHandler(int id, QString path, QByteArray data)
-{
-	QByteArray byteArray = QByteArray::fromBase64(data);
-
-	QString fullpath = tq(tempfiles_createSpecific_clipboard(fq(path)));
-
-	QFile file(fullpath);
-	file.open(QIODevice::WriteOnly);
-	file.write(byteArray);
-	file.close();
-
-	QString eval = QString("window.imageSaved({ id: %1, fullPath: '%2'});").arg(id).arg(fullpath);
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(eval);
-}
-
-
-void MainWindow::displayMessageFromResultsHandler(QString msg)
-{
-	QMessageBox::warning(this, "Results Warning", msg);
-}
-
-
-void MainWindow::showAnalysesMenuHandler(QString options)
-{
-	Json::Value menuOptions;
-
-	Json::Reader parser;
-	parser.parse(fq(options), menuOptions);
-
-	QIcon _copyIcon = QIcon(":/icons/copy.png");
-	QIcon _citeIcon = QIcon(":/icons/cite.png");
-	QIcon _collapseIcon = QIcon(":/icons/collapse.png");
-	QIcon _expandIcon = QIcon(":/icons/expand.png");
-	QIcon _saveImageIcon = QIcon(":/icons/document-save-as.png");
-
-	_analysisMenu->clear();
-
-	QString objName = tq(menuOptions["objectName"].asString());
-
-	if (menuOptions["hasCollapse"].asBool())
-	{
-		Json::Value collapseOptions = menuOptions["collapseOptions"];
-		QIcon icon = collapseOptions["collapsed"].asBool() ? _expandIcon : _collapseIcon;
-		_analysisMenu->addAction(icon, tq(collapseOptions["menuText"].asString()), this, SLOT(collapseSelected()));
-		_analysisMenu->addSeparator();
-	}
-
-	if (menuOptions["hasEditTitle"].asBool())
-	{
-		_analysisMenu->addAction("Edit Title", this, SLOT(editTitleSelected()));
-		_analysisMenu->addSeparator();
-	}
-
-	if (menuOptions["hasCopy"].asBool())
-		_analysisMenu->addAction(_copyIcon, "Copy", this, SLOT(copySelected()));
-
-	if (menuOptions["hasCite"].asBool())
-	{
-		_analysisMenu->addSeparator();
-		_analysisMenu->addAction(_citeIcon, "Copy Citations", this, SLOT(citeSelected()));
-	}
-
-	if (menuOptions["hasSaveImg"].asBool())
-	{
-		_analysisMenu->addAction(_saveImageIcon, "Save Image As", this, SLOT(saveImage()));
-	}
-
-	if (menuOptions["hasNotes"].asBool())
-	{
-		_analysisMenu->addSeparator();
-
-		Json::Value noteOptions = menuOptions["noteOptions"];
-
-		for (Json::ValueIterator iter = noteOptions.begin(); iter != noteOptions.end(); iter++)
-		{
-			Json::Value noteOption = *iter;
-			QAction *a1 = _analysisMenu->addAction(tq(noteOption["menuText"].asString()), this, SLOT(noteSelected()));
-
-			a1->setDisabled(noteOption["visible"].asBool());
-
-
-			QString call = QString("window.notesMenuClicked('%1', %2);").arg(tq(noteOption["key"].asString())).arg(noteOption["visible"].asBool() ? "false" : "true");
-
-			a1->setData(call);
-		}
-	}
-
-	if (menuOptions["hasRemove"].asBool())
-	{
-		_analysisMenu->addSeparator();
-		_analysisMenu->addAction("Remove " + objName, this, SLOT(removeSelected()));
-	}
-
-	if (menuOptions["hasRemoveAllAnalyses"].asBool())
-	{
-		_analysisMenu->addSeparator();
-		_analysisMenu->addAction("Remove All ", this, SLOT(removeAllAnalyses()));
-	}
-
-	if (menuOptions["hasRefreshAllAnalyses"].asBool())
-	{
-		_analysisMenu->addSeparator();
-		_analysisMenu->addAction("Refresh All ", this, SLOT(refreshAllAnalyses()));
-	}
-
-	QPoint point = ui->webViewResults->mapToGlobal(QPoint(round(menuOptions["rX"].asInt() * _webViewZoom), round(menuOptions["rY"].asInt() * _webViewZoom)));
-
-	_analysisMenu->move(point);
-	_analysisMenu->show();
-}
-
-
 void MainWindow::removeAnalysisRequestHandler(int id)
 {
 	Analysis *analysis = _analyses->get(id);
 	removeAnalysis(analysis);
 }
 
-
-Json::Value MainWindow::getResultsMeta()
-{
-	QVariant metaData = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getResultsMeta();");
-
-	Json::Value meta;
-	Json::Reader parser;
-	parser.parse(fq(metaData.toString()), meta);
-
-	return meta;
-}
-
-
 void MainWindow::getAnalysesUserData()
 {
-	QVariant userData = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getAllUserData();");
+	QVariant userData = _resultsJsInterface->getAllUserData();
 
 	Json::Value data;
 	Json::Reader parser;
@@ -1983,118 +1672,15 @@ void MainWindow::getAnalysesUserData()
 
 		Json::Value &analysisUserData = userDataObj["userdata"];
 
-		analysis->setUserData(analysisUserData, true);
+		analysis->setUserData(analysisUserData);
 	}
 }
 
-
-void MainWindow::resultsDocumentChangedHandler()
+void MainWindow::setPackageModified()
 {
 	_package->setModified(true);
 }
 
-
-void MainWindow::simulatedMouseClickHandler(int x, int y, int count) {
-
-	int diff = count;
-	while (diff >= 2)
-	{
-		QMouseEvent * clickEvent = new QMouseEvent ((QEvent::MouseButtonDblClick), QPoint(x * _webViewZoom, y * _webViewZoom),
-			Qt::LeftButton,
-			Qt::LeftButton,
-			Qt::NoModifier);
-
-		qApp->postEvent((QObject*)ui->webViewResults,(QEvent *)clickEvent);
-
-		diff -= 2;
-	}
-
-	if (diff != 0)
-	{
-		QMouseEvent * clickEvent1 = new QMouseEvent ((QEvent::MouseButtonPress), QPoint(x * _webViewZoom, y * _webViewZoom),
-			Qt::LeftButton,
-			Qt::LeftButton,
-			Qt::NoModifier);
-
-		qApp->postEvent((QObject*)ui->webViewResults,(QEvent *)clickEvent1);
-
-		QMouseEvent * clickEvent2 = new QMouseEvent ((QEvent::MouseButtonRelease), QPoint(x * _webViewZoom, y * _webViewZoom),
-			Qt::LeftButton,
-			Qt::LeftButton,
-			Qt::NoModifier);
-
-		qApp->postEvent((QObject*)ui->webViewResults,(QEvent *)clickEvent2);
-	}
-}
-
-
-void MainWindow::updateUserDataHandler(int id, QString key)
-{
-	_package->setModified(true);
-}
-
-
-void MainWindow::collapseSelected()
-{
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.collapseMenuClicked();");
-}
-
-
-void MainWindow::removeSelected()
-{
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.removeMenuClicked();");
-}
-
-
-void MainWindow::editTitleSelected()
-{
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.editTitleMenuClicked();");
-	_package->setModified(true);
-}
-
-
-void MainWindow::copySelected()
-{
-	tempfiles_purgeClipboard();
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.copyMenuClicked();");
-}
-
-
-void MainWindow::citeSelected()
-{
-	tempfiles_purgeClipboard();
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.citeMenuClicked();");
-}
-
-
-void MainWindow::saveImage()
-{
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.saveImageClicked();");
-}
-
-
-void MainWindow::noteSelected()
-{
-	QAction *action = (QAction *)this->sender();
-	QString call = action->data().toString();
-
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(call);
-
-	_package->setModified(true);
-}
-
-
-void MainWindow::menuHidding()
-{
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.analysisMenuHidden();");
-}
-
-
-void MainWindow::scrollValueChangedHandle()
-{
-	if ( ! _analysisMenu->isHidden())
-		_analysisMenu->hide();
-}
 
 
 void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
@@ -2119,7 +1705,6 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 
 	analysis->options()->set(root);
 }
-
 
 void MainWindow::startDataEditorHandler()
 {

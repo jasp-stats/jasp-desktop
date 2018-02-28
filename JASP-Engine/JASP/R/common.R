@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2013-2015 University of Amsterdam
+# Copyright (C) 2013-2018 University of Amsterdam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,6 +21,13 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 	options <- rjson::fromJSON(options)
 	resultsMeta <- rjson::fromJSON(resultsMeta)
 	stateKey <- rjson::fromJSON(stateKey)
+
+	if (base::exists(".requestStateFileNameNative")) {
+		location <- .fromRCPP(".requestStateFileNameNative")
+		root <- location$root
+		base::Encoding(root) <- "UTF-8"
+		setwd(root)
+	}
 
 	analysis <- eval(parse(text=name))
 	
@@ -1470,25 +1477,19 @@ isTryError <- function(obj){
 		location <- .fromRCPP(".requestStateFileNameNative")
 
 		relativePath <- location$relativePath
-		root <- location$root
 		
 		# when run in jasptools do not save the state, but store it internally
 		searchPath <- search()
 		if ("package:jasptools" %in% searchPath) {
 			jasptools:::.setInternal("state", state)
-			return(list(relativePath = relativePath, root = root))
+			return(list(relativePath = relativePath))
 		}
 
 		base::Encoding(relativePath) <- "UTF-8"
-		base::Encoding(root) <- "UTF-8"
-
-		oldwd <- getwd()
-		setwd(root)
-		on.exit(setwd(oldwd))
 		
 		try(suppressWarnings(base::save(state, file=relativePath, compress=FALSE)), silent = FALSE)
 	}
-  result <- list(relativePath = relativePath, root = root)
+  result <- list(relativePath = relativePath)
   return(result)
 }
 
@@ -1501,15 +1502,9 @@ isTryError <- function(obj){
 		location <- .fromRCPP(".requestStateFileNameNative")
 
 		relativePath <- location$relativePath
-		root <- location$root
 
 		base::Encoding(relativePath) <- "UTF-8"
-		base::Encoding(root) <- "UTF-8"
 
-		oldwd <- getwd()
-		setwd(root)
-		on.exit(setwd(oldwd))
-		
 		base::tryCatch(
 		  base::load(relativePath),
 		  error=function(e) e,
@@ -1843,12 +1838,8 @@ callback <- function(results=NULL, progress=NULL) {
 		
 	# create png file location
 	location <- .fromRCPP(".requestTempFileNameNative", "png")
-	root <- location$root
 	relativePath <- location$relativePath
 	base::Encoding(relativePath) <- "UTF-8"
-	base::Encoding(root) <- "UTF-8"
-
-	setwd(root)
 
 	grDevices::png(filename=relativePath, width=width * pngMultip,
 								height=height * pngMultip, bg="transparent", 
@@ -2141,7 +2132,7 @@ as.list.footnotes <- function(footnotes) {
 }
 
 
-.writeImage <- function(width=320, height=320, plot, obj = TRUE){
+.writeImage <- function(width=320, height=320, plot, obj = TRUE, relativePathpng = NULL){
 	# Initialise output object
 	image <- list()
 
@@ -2156,7 +2147,13 @@ as.list.footnotes <- function(footnotes) {
 	
 	# Create png file location
 	location <- .fromRCPP(".requestTempFileNameNative", "png")
-	relativePathpng <- location$relativePath
+	
+	# TRUE if called from analysis, FALSE if called from editImage
+	if (is.null(relativePathpng))
+	  relativePathpng <- location$relativePath
+
+	fullPathpng <- paste(location$root, relativePathpng, sep="/")
+
 	base::Encoding(relativePathpng) <- "UTF-8"
 
 	root <- location$root
@@ -2164,15 +2161,19 @@ as.list.footnotes <- function(footnotes) {
 	oldwd <- getwd()
 	setwd(root)
 	on.exit(setwd(oldwd))
+	isRecordedPlot <- inherits(plot, "recordedplot")
+
 	# Open graphics device and plot
 	grDevices::png(filename=relativePathpng, width=width * pngMultip,
 	               height=height * pngMultip, bg="transparent", 
 	               res=72 * pngMultip, type=type)
 	
-	if (inherits(plot, "function")) {
+	if (is.function(plot) && !isRecordedPlot) {
 		if (obj) dev.control('enable') # enable plot recording
 		eval(plot())
 		if (obj) plot <- recordPlot() # save plot to R object
+	} else if (isRecordedPlot) { # function was called from editImage to resize the plot
+	    .redrawPlot(plot) #(see below)
 	} else {
 		print(plot)
 	}
@@ -2195,11 +2196,6 @@ saveImage <- function(plotName, format, height, width){
 
 	# create file location string
 	location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
-	root <- location$root
-	base::Encoding(root) <- "UTF-8"
-	oldwd <- getwd()
-	setwd(root)
-	on.exit(setwd(oldwd))
 	
 	# Get file size in inches by creating a mock file and closing it
 	pngMultip <- .fromRCPP(".ppi") / 96
@@ -2537,4 +2533,132 @@ if (exists("R.version") && isTRUE(R.version$minor < 3.3)) {
 		return(end == suffix)
 	}
 
+}
+
+# not .editImage() because RInside (interface to CPP) cannot handle that
+editImage <- function(plotName, type, height, width) {
+
+	# assumption: state[["figures"]][[plotName]] is either of class "ggplot2" or "recordedPlot"
+
+	results <- NULL
+	state <- .retrieveState()
+	oldPlot <- state[["figures"]][[plotName]]
+
+	isGgplot <- ggplot2::is.ggplot(oldPlot) # FALSE implies oldPlot is a recordedPlot
+	requireResize <- type == "resize"
+
+	if (!is.null(oldPlot)) {
+
+		# this try is required because resizing and editing may fail for various reasons.
+		# An example is the "figure margins too large" error when the plot area is too small.
+		# if something fails, the default behaviour is to use the old plot and do nothing.
+		results <- try({
+
+			# copy plot and check if we edit it
+			plot <- oldPlot
+			if (FALSE && type == "interactive" && isGgplot) {
+			  editedPlot <- ggedit::ggedit(oldPlot, viewer = shiny::browserViewer())
+				plot <- editedPlot[["UpdatedPlots"]][[1]]
+			}
+
+			# nothing was modified in ggedit, or editing was cancelled
+			if (identical(plot, oldPlot) && !requireResize)
+				return(oldPlot)
+
+			# plot is modified or needs to be resized, let's save the new plot
+			newPlot <- list()
+			content <- .writeImage(width = width, height = height,
+			                       plot = plot, obj = TRUE,
+			                       relativePathpng = plotName)
+
+			newPlot[["data"]] <- content[["png"]]
+			newPlot[["width"]] <- width
+			newPlot[["height"]] <- height
+
+			# no new recorded plot is created in .writeImage so we recycle the old one
+			# we can only resize recordedPlots anyway
+			if (isGgplot)
+						newPlot[["obj"]] <- content[["obj"]]
+			else newPlot[["obj"]] <- plot
+
+			newPlot # results == newPlot
+		})
+	}
+	
+	# plotName <- base::normalizePath(plotName)
+	# plotName <- stringr::str_split(plotName, "JASP")[[1]][[2]]
+
+	# create json list for QT
+	response <- list(
+		status = "imageEdited",
+		results = list(
+			name = plotName,
+			resized = requireResize,
+			height = height,
+			width = width,
+			error = FALSE
+		)
+	)
+
+	# error checks
+	if (isTryError(results) || is.null(results)) {
+		response[["results"]][["error"]] <- TRUE
+	} else {
+		# adjust the state of the analysis and save it
+		state[["figures"]][[plotName]] <- results[["obj"]]
+		# store the stateKey (which gets removed by .modifyStateFigures)
+		key <- attr(x = state, which = "key")
+		state <- .modifyStateFigures(state, identifier=plotName, replacement=results, completeObject = FALSE)
+		attr(state, "key") <- key
+		.saveState(state)
+	}
+
+	rjson::toJSON(response)
+}
+
+.modifyStateFigures <- function(x, identifier, replacement, completeObject = TRUE) {
+
+  # recursive function that traverses the entire state object to replace old figures with new figures
+  # it searches a list where lst[["data"]] == identifier and then does lst[["obj"]] <- replacement
+  # TODO: also add specific modifications for writeImage?
+
+	# completeObject: boolean. If TRUE, then the complete sublist identified by the identifier will
+	#                 be replaced by replacement. If FALSE, replacement should be a list where the
+	#                 elements will be looked up
+
+  # check if list
+  if (inherits(x, "list")) { # not is.list to avoid false positive (i.e. ggplot objects are lists)
+
+    # check if plotting list we're looking for
+    # if (!is.null(x[["editable"]]) && x[["data"]] == identifier) {
+		if (!is.null(x[["data"]]) && x[["data"]] == identifier) {
+
+			if (!completeObject) {
+				x[names(replacement)] <- replacement
+				return(x)
+			} else {
+				return(replacement)
+			}
+
+    } else {
+      # check if criteria are met in any of the sublists
+      return(lapply(x, .modifyStateFigures, identifier = identifier, replacement = replacement, completeObject = completeObject))
+    }
+  } else {
+    # return ordinary object
+    return(x)
+  }
+}
+
+.getFigureFromState <- function(x, identifier) {
+
+  # recursive function that traverses the entire state object to find a plot by the png filename (identifier).
+  # returns all matches found
+  if (is.list(x)) {
+    if (identical(x[["data"]], identifier)) {
+      return(x)
+    } else {
+      return(unlist(lapply(unname(x), .getFigureFromState, identifier), recursive = FALSE))
+    }
+  }
 }

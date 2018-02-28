@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 University of Amsterdam
+// Copyright (C) 2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@ void CSVImporterTest::csvTester()
   fe->setPath(full_path);
 
   asl->loadTask(fe, dsp);
-  asl->_thread.quit();
+  //asl->_thread.quit();
 
   columnIsNumeric.resize(dsp->dataSet->columnCount()); //set default column type as numeric
   for(int i=0; i<dsp->dataSet->columnCount(); ++i)

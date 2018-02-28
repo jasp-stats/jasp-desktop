@@ -53,34 +53,7 @@ JASPWidgets.Encodings = {
 		return base64
 	},
 
-	base64Request: function (path, callback, context) {
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', path + '?x=' + Math.random(), true); //eg '/my/image/name.png'
-		xhr.responseType = 'arraybuffer';
 
-		var self = context || this;
-		xhr.onload = function (e) {
-			callback.call(self, JASPWidgets.Encodings.getBase64(this.response));
-		};
-		xhr.onerror = function (e) {
-			alert(xhr.statusText);
-		};
-
-		xhr.send();
-	},
-
-	byteRequest: function (path, callback, context) {
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', path + '?x=' + Math.random(), true); //eg '/my/image/name.png'
-		xhr.responseType = 'arraybuffer';
-
-		var self = context || this;
-		xhr.onload = function (e) {
-			callback.call(self, this.response);
-		};
-
-		xhr.send();
-	}
 }
 
 JASPWidgets.ExportProperties = {
@@ -1029,7 +1002,8 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			hasCopy: (parent.hasCopy === undefined || parent.hasCopy()) && parent.copyMenuClicked !== undefined,
 			hasCite: (parent.hasCitation === undefined || parent.hasCitation()) && parent.citeMenuClicked !== undefined,
 			hasNotes: (parent.hasNotes === undefined || parent.hasNotes()) && parent.notesMenuClicked !== undefined,
-			hasSaveImg: (parent.isConvertible === undefined || parent.isConvertible()) && parent.saveImageClicked !== undefined,
+            hasSaveImg: (parent.isConvertible === undefined || parent.isConvertible()) && parent.saveImageClicked !== undefined,
+            hasEditImg: (parent.isEditable === undefined || parent.isEditable()) && parent.editImageClicked !== undefined,
 			hasEditTitle: (parent.hasEditTitle === undefined || parent.hasEditTitle()) && parent.editTitleClicked !== undefined,
 			hasRemove: (parent.hasRemove === undefined || parent.hasRemove()) && parent.removeMenuClicked !== undefined,
 			hasRemoveAllAnalyses: parent.menuName === 'All',
@@ -1039,7 +1013,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			objectName: parent.menuName,
 		};
 
-        this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasSaveImg || this.options.hasNotes || this.options.hasRemove || this.options.hasRemoveAll || this.options.hasEditTitle || this.options.hasCollapse;
+        this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasSaveImg || this.options.hasEditImg || this.options.hasNotes || this.options.hasRemove || this.options.hasRemoveAll || this.options.hasEditTitle || this.options.hasCollapse;
 	},
 
 	selectionElement: function() {
@@ -1232,14 +1206,6 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	},
 
 	/** 
-	* A conditional check for the disabling of the resizing functionality.
-	* @return {Bollean} Disable condition result.
-	*/
-	resizeDisabled: function () {
-		return true;
-	},
-
-	/** 
 	* Renders the mouse resize button to the targeted DOM tree element. 
 	* @return {Object} 'this' for chaining.
 	*/
@@ -1297,7 +1263,6 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	* @return {Object} The object has a minWidth, minHeight, maxWidth, maxHeight properties.
 	*/
 	_mouseResizingStart: function (e) {
-		if (this.resizeDisabled()) return;
 
 		this.iX = e.pageX;
 		this.iY = e.pageY;
@@ -1318,7 +1283,6 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	},
 
 	resizeStart: function (w, h, silent) {
-		if (this.resizeDisabled()) return;
 		this.silent = silent;
 		this.resizing = true;
 		this.onResizeStart(w, h);
@@ -1344,9 +1308,7 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	},
 
 	resizeStop: function (w, h) {
-		if (!this.resizeDisabled()) {
-			this.model.setDim(w, h);		
-		}
+		this.model.setDim(w, h);		
 		this.resizing = false;
 		this.mouseResizing = false;
 		this.silent = false;
@@ -1371,7 +1333,7 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	},
 
 	setVisibility: function (value) {
-		if (value && ! this.resizeDisabled())
+		if (value)
 			this.$el.removeClass('jasp-hide');
 		else
 			this.$el.addClass('jasp-hide');
@@ -1380,7 +1342,7 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	_mouseup: function (e) {
 		if (!e || !e.data) return;
 		var self = e.data;
-		if (!self.resizeDisabled() && self.mouseResizing) {
+		if (self.mouseResizing) {
 			var limited = self._normaliseSize(self.iW + e.pageX - self.iX, self.iH + e.pageY - self.iY);
 			self.iW = limited.width;
 			self.iH = limited.height;
@@ -1391,7 +1353,7 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	_mousemove: function (e) {
 		if (!e || !e.data) return;
 		var self = e.data;
-		if (!self.resizeDisabled() && self.mouseResizing) {
+		if (self.mouseResizing) {
 			var limited = self._normaliseSize(self.iW + e.pageX - self.iX, self.iH + e.pageY - self.iY);
 			self.iW = limited.width;
 			self.iH = limited.height;

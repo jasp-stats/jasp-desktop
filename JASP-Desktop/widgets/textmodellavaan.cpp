@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -30,6 +30,7 @@ TextModelLavaan::TextModelLavaan(QObject *parent)
 	_boundTo = NULL;
 	_currentBlock = 0;
 	_changed = false;
+	_inError = false;
 	this->setDocumentMargin(12);
 
 	connect(this, SIGNAL(contentsChanged()), this, SLOT(contentChangedHandler()));

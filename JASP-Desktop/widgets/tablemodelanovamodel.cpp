@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -433,46 +433,36 @@ void TableModelAnovaModel::setTerms(const Terms &terms, bool newTermsAreNuisance
 
 	beginResetModel();
 
-	Terms::const_iterator itr;
-	vector<Options *>::iterator otr;
-
-	otr = _rows.begin();
-
-	while (otr != _rows.end())
-	{
-		Options *row = *otr;
-		OptionTerm *termCell = termOptionFromRow(row);
-		Term existingTerm = Term(termCell->term());
-
-		bool shouldRemove = true;
-
-		itr = terms.begin();
-
-		while (itr != terms.end())
-		{
-			const Term &term = *itr;
-
-			if (term == existingTerm)
+	_rows.erase(
+		std::remove_if(
+			_rows.begin(),
+			_rows.end(),
+			[&](Options *row)
 			{
-				shouldRemove = false;
-				break;
+				OptionTerm *termCell = termOptionFromRow(row);
+				Term existingTerm = Term(termCell->term());
+		
+				bool shouldRemove = true;
+		
+				for (const Term &term : terms)
+				{
+					if (term == existingTerm)
+					{
+						shouldRemove = false;
+						break;
+					}		
+				}
+		
+				if (shouldRemove)
+					delete row;
+					
+				return shouldRemove;
 			}
+		),
+		_rows.end()
+	);
 
-			itr++;
-		}
-
-		if (shouldRemove)
-		{
-			_rows.erase(otr);
-			delete row;
-		}
-		else
-		{
-			otr++;
-		}
-	}
-
-	itr = terms.begin();
+	Terms::const_iterator itr = terms.begin();
 
 	for (size_t i = 0; i < terms.size(); i++)
 	{
@@ -480,7 +470,7 @@ void TableModelAnovaModel::setTerms(const Terms &terms, bool newTermsAreNuisance
 
 		if (i < _rows.size())
 		{
-			otr = _rows.begin();
+			vector<Options *>::iterator otr = _rows.begin();
 			otr += i;
 			Options *row = *otr;
 			OptionTerm *termCell = termOptionFromRow(row);

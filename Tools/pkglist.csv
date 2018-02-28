@@ -1,177 +1,601 @@
-"Package","Version","Depends"
-"BAS","1.4.7","R (>= 3.0),"
-"BDgraph","2.41","R (>= 3.0.0), Matrix, igraph"
-"BMS","0.3.4","R (>= 2.5)"
-"BayesFactor","0.9.12-2","R (>= 3.0.2), coda, Matrix (>= 1.1-1)"
-"Epi","2.10","R (>= 3.0.0), utils"
-"Formula","1.2-2","R (>= 2.0.0), stats"
-"GPArotation","2014.11-1","R (>= 2.0.0)"
-"GeneNet","1.2.13","R (>= 3.0.2), corpcor (>= 1.6.8), longitudinal (>= 1.1.12),fdrtool (>= 1.2.15)"
-"Hmisc","4.0-3","lattice, survival (>= 2.40-1), Formula, ggplot2 (>= 2.2)"
-"IsingFit","0.3.1","R (>= 3.0.0)"
-"IsingSampler","0.2","Rcpp (>= 0.10.4), R (>= 3.0.0)"
-"KernSmooth","2.23-15","R (>= 2.5.0), stats"
-"MASS","7.3-45","R (>= 3.1.0), grDevices, graphics, stats, utils"
-"Matrix","1.2-8","R (>= 3.0.1)"
-"MatrixModels","0.4-1","R (>= 3.0.1)"
-"R6","2.2.2","R (>= 3.0)"
-"RColorBrewer","1.1-2","R (>= 2.0.0)"
-"Rcpp","0.12.13","R (>= 3.0.0)"
-"SparseM","1.77","R (>= 2.15), methods"
-"SuppDists","1.1-9.4","R (>= 3.3.0)"
-"TH.data","1.0-8","R (>= 2.10.0), survival, MASS"
-"TTR","0.23-2",NA
-"abind","1.4-5","R (>= 1.5.0)"
-"acepack","1.4.1",NA
-"afex","0.18-0","R (>= 3.1.0), lme4 (>= 1.1-8), lsmeans (>= 2.17)"
-"arm","1.9-3","R (>= 3.1.0), MASS, Matrix (>= 1.0), stats, lme4 (>= 1.0)"
-"assertthat","0.2.0",NA
-"backports","1.1.1","R (>= 3.0.0)"
-"base","3.3.3",NA
-"base64enc","0.1-3","R (>= 2.9.0)"
-"bindr","0.1",NA
-"bindrcpp","0.2",NA
-"boot","1.3-18","R (>= 3.0.0), graphics, stats"
-"bootnet","1.0.2","ggplot2, R (>= 3.0.0)"
-"ca","0.70","R (>= 3.0.0)"
-"car","2.1-5","R (>= 3.2.0)"
-"checkmate","1.8.5","R (>= 3.0.0)"
-"class","7.3-14","R (>= 3.0.0), stats, utils"
-"cluster","2.0.5","R (>= 3.0.1)"
-"cmprsk","2.2-7","R (>= 2.15.0), survival"
-"coda","0.19-1","R (>= 2.14.0)"
-"codetools","0.2-15","R (>= 2.1)"
-"coin","1.2-1","R (>= 2.14.0), methods, survival"
-"colorspace","1.3-2","R (>= 2.13.0), methods"
-"compiler","3.3.3",NA
-"contfrac","1.1-11",NA
-"conting","1.6","R (>= 2.15.0)"
-"corpcor","1.6.9","R (>= 3.0.2)"
-"curl","3.0","R (>= 3.0.0)"
-"d3Network","0.5.2.1","R (>= 3.0.0)"
-"data.table","1.10.4-3","R (>= 3.0.0)"
-"datasets","3.3.3",NA
-"deSolve","1.20","R (>= 2.15.0)"
-"dichromat","2.0-0","R (>= 2.10), stats"
-"digest","0.6.12","R (>= 2.4.1)"
-"doSNOW","1.0.15","R (>= 2.5.0), foreach(>= 1.2.0), iterators(>= 1.0.0), snow(>=0.3.0), utils"
-"dplyr","0.7.4","R (>= 3.1.2)"
-"ellipse","0.3-8","R (>= 2.0.0),graphics,stats"
-"elliptic","1.3-7","R (>= 2.5.0)"
-"estimability","1.2","stats"
-"etm","0.6-2","R (>= 2.14), survival"
-"evaluate","0.10.1","R (>= 3.0.2)"
-"fdrtool","1.2.15","R (>= 3.0.2)"
-"foreach","1.4.3","R (>= 2.5.0)"
-"foreign","0.8-67","R (>= 3.0.0)"
-"ggm","2.3","igraph"
-"ggplot2","2.2.1","R (>= 3.1)"
-"glasso","1.8",NA
-"glmnet","2.0-13","Matrix (>= 1.0-6), utils, foreach"
-"glue","1.2.0","R (>= 3.1)"
-"gnm","1.0-8","R (>= 2.3.0)"
-"grDevices","3.3.3",NA
-"graphics","3.3.3",NA
-"grid","3.3.3",NA
-"gridExtra","2.3",NA
-"gtable","0.2.0","R (>= 2.14)"
-"gtools","3.5.0","R (>= 2.10)"
-"highr","0.6","R (>= 3.0.2)"
-"hmeasure","1.0","R (>= 2.10)"
-"htmlTable","1.9",NA
-"htmltools","0.3.6","R (>= 2.14.1)"
-"htmlwidgets","0.9",NA
-"huge","1.2.7","R (>= 3.0.0), Matrix, lattice, igraph, MASS"
-"hypergeo","1.2-13","R (>= 3.1.0),"
-"igraph","1.1.2","methods"
-"irlba","2.3.1","Matrix"
-"iterators","1.0.8","R (>= 2.5.0), utils"
-"jpeg","0.1-8","R (>= 2.9.0)"
-"jsonlite","1.5","methods"
-"knitr","1.17","R (>= 3.1.0)"
-"labeling","0.3",NA
-"lattice","0.20-34","R (>= 3.0.0)"
-"latticeExtra","0.6-28","R (>= 2.10.0), lattice, RColorBrewer"
-"lavaan","0.5-23.1097","R(>= 3.1.0)"
-"lazyeval","0.2.1","R (>= 3.1.0)"
-"lme4","1.1-14","R (>= 3.0.2), Matrix (>= 1.1.1), methods, stats"
-"lmerTest","2.0-33","R (>= 3.0.0), Matrix, stats, methods, lme4 (>= 1.0)"
-"lmtest","0.9-35","R (>= 2.10.0), stats, zoo"
-"logspline","2.1.9",NA
-"longitudinal","1.1.12","R (>= 3.0.2), corpcor (>= 1.6.8)"
-"lsmeans","2.27-2","estimability, methods, R (>= 3.2)"
-"magrittr","1.5",NA
-"markdown","0.8","R (>= 2.11.1)"
-"matrixcalc","1.0-3","R (>= 2.0.1)"
-"metafor","2.0-0","R (>= 3.2.0), methods, Matrix"
-"methods","3.3.3",NA
-"mgcv","1.8-17","R (>= 2.14.0), nlme (>= 3.1-64)"
-"mgm","1.2-1",NA
-"mi","1.0","R (>= 3.0.0), methods, Matrix, stats4"
-"mime","0.5",NA
-"minqa","1.2.4",NA
-"mitools","2.3","R (>= 2.10)"
-"mnormt","1.5-5","R (>= 2.2.0)"
-"modeltools","0.2-21","stats, stats4"
-"multcomp","1.4-7","stats, graphics, mvtnorm (>= 1.0-3), survival (>= 2.39-4),TH.data (>= 1.0-2)"
-"munsell","0.4.3",NA
-"mvtnorm","1.0-6","R(>= 1.9.0)"
-"network","1.13.0","R (>= 2.10), utils"
-"nlme","3.1-131","R (>= 3.0.2)"
-"nloptr","1.0.4",NA
-"nnet","7.3-12","R (>= 2.14.0), stats, utils"
-"numDeriv","2016.8-1","R (>= 2.11.1)"
-"parallel","3.3.3",NA
-"parcor","0.2-6","MASS, glmnet, ppls, Epi, GeneNet"
-"pbapply","1.3-3","R (>= 3.2.0)"
-"pbivnorm","0.6.0",NA
-"pbkrtest","0.4-7","R (>= 3.2.3), lme4 (>= 1.1.10)"
-"pkgconfig","2.0.1",NA
-"plotrix","3.6-6",NA
-"plyr","1.8.4","R (>= 3.1.0)"
-"png","0.1-7","R (>= 2.9.0)"
-"ppls","1.6-1","splines, MASS"
-"psych","1.7.8","R (>= 2.10)"
-"purrr","0.2.4","R (>= 3.1)"
-"qgraph","1.4.4","R (>= 3.0.0)"
-"quadprog","1.5-5","R (>= 2.15.0)"
-"quantmod","0.4-11","R (>= 3.2.0), xts(>= 0.9-0), zoo, TTR(>= 0.2), methods"
-"quantreg","5.34","R (>= 2.6), stats, SparseM"
-"qvcalc","0.9-1",NA
-"relaimpo","2.2-2","R(>= 2.2.1), MASS, boot, survey, mitools, graphics"
-"relimp","1.0-5","R (>= 2.0.0)"
-"reshape2","1.4.2",NA
-"rjson","0.2.15","R (>= 3.1.0)"
-"rlang","0.1.2","R (>= 3.1.0)"
-"rpart","4.1-10","R (>= 2.15.0), graphics, stats, grDevices"
-"sandwich","2.4-0","R (>= 2.10.0)"
-"scales","0.5.0","R (>= 2.13)"
-"sem","3.1-9","R (>= 2.14.0), stats"
-"semTools","0.4-14","R(>= 3.0), methods, lavaan(>= 0.5-22), utils, stats, graphics"
-"sna","2.4","R (>= 2.0.0), utils, statnet.common, network"
-"snow","0.4-2","R (>= 2.13.1), utils"
-"spatial","7.3-11","R (>= 3.0.0), graphics, stats, utils"
-"splines","3.3.3",NA
-"statnet.common","4.0.0",NA
-"stats","3.3.3",NA
-"stats4","3.3.3",NA
-"stringi","1.1.5","R (>= 2.14)"
-"stringr","1.2.0","R (>= 2.14)"
-"survey","3.32-1","R (>= 2.16.0), grid, methods, Matrix, survival"
-"survival","2.40-1","R (>= 2.13.0)"
-"tcltk","3.3.3",NA
-"tibble","1.3.4","R (>= 3.1.0)"
-"tidyr","0.7.2","R (>= 3.1.0)"
-"tidyselect","0.2.2","R (>= 3.1.0)"
-"tools","3.3.3",NA
-"tseries","0.10-42","R (>= 2.10.0)"
-"utils","3.3.3",NA
-"vcd","1.4-3","R (>= 2.4.0), grid"
-"vcdExtra","0.7-1","R (>= 2.10), vcd, gnm (>= 1.0.3), grid"
-"viridis","0.4.0","R (>= 2.10), viridisLite (>= 0.2.0)"
-"viridisLite","0.2.0","R (>= 2.10)"
-"whisker","0.3-2",NA
-"xtable","1.8-2","R (>= 2.10.0)"
-"xts","0.10-0","zoo (>= 1.7-12)"
-"yaml","2.1.14",NA
-"zoo","1.8-0","R (>= 2.10.0), stats"
+"Package","Version","Author"
+"BAS","1.4.8","Merlise Clyde [aut, cre, cph],
+  Michael Littman [ctb],
+  Quanli Wang [ctb],
+  Joyee Ghosh [ctb],
+  Yingbo Li [ctb]"
+"BDgraph","2.43","Abdolreza Mohammadi and Ernst Wit"
+"BMS","0.3.4","Martin Feldkircher and Stefan Zeugner"
+"BSDA","1.2.0","Alan T. Arnholt [aut, cre],
+  Ben Evans [aut]"
+"BayesFactor","0.9.12-2","Richard D. Morey [aut, cre],
+  Jeffrey N. Rouder [aut],
+  Tahira Jamil [ctb]"
+"Epi","2.10","Bendix Carstensen [aut, cre],
+  Martyn Plummer [aut],
+  Esa Laara [ctb],
+  Michael Hills [ctb]"
+"Formula","1.2-2","Achim Zeileis [aut, cre],
+  Yves Croissant [aut]"
+"GPArotation","2014.11-1","Coen Bernaards and Robert Jennrich"
+"GeneNet","1.2.13","Juliane Schaefer, Rainer Opgen-Rhein, and
+        Korbinian Strimmer."
+"Hmisc","4.0-3","Frank E Harrell Jr <f.harrell@vanderbilt.edu>, with
+  contributions from Charles Dupont and many others."
+"IsingFit","0.3.1","Claudia van Borkulo, Sacha Epskamp, with contributions from Alexander Robitzsch"
+"IsingSampler","0.2","Sacha Epskamp"
+"JASPgraphs","0.1.0","Who wrote it"
+"KernSmooth","2.23-15","Matt Wand [aut],
+  Brian Ripley [trl, cre, ctb] (R port and updates)"
+"MASS","7.3-47","Brian Ripley [aut, cre, cph],
+  Bill Venables [ctb],
+  Douglas M. Bates [ctb],
+  Kurt Hornik [trl] (partial port ca 1998),
+  Albrecht Gebhardt [trl] (partial port ca 1998),
+  David Firth [ctb]"
+"Matrix","1.2-8","Douglas Bates <bates@stat.wisc.edu> and Martin Maechler"
+"MatrixModels","0.4-1","Douglas Bates <bates@stat.wisc.edu> and Martin Maechler <maechler@stat.math.ethz.ch>"
+"R6","2.2.2","Winston Chang [aut, cre]"
+"RColorBrewer","1.1-2","Erich Neuwirth [aut, cre]"
+"Rcpp","0.12.14","Dirk Eddelbuettel, Romain Francois, JJ Allaire, Kevin Ushey, Qiang Kou,
+ Nathan Russell, Douglas Bates and John Chambers"
+"SparseM","1.77","Roger Koenker <rkoenker@uiuc.edu> and Pin Ng <Pin.Ng@NAU.EDU>"
+"SuppDists","1.1-9.4","Bob Wheeler <bwheelerg@gmail.com>"
+"TH.data","1.0-8","Torsten Hothorn [aut, cre]"
+"TTR","0.23-2","Joshua Ulrich"
+"abind","1.4-5","Tony Plate <tplate@acm.org> and Richard Heiberger"
+"acepack","1.4.1","Phil Spector, Jerome Friedman, Robert Tibshirani, Thomas Lumley, Shawn Garbett, Jonathan Baron"
+"afex","0.18-0","Henrik Singmann [aut, cre],
+  Ben Bolker [aut],
+  Jake Westfall [aut],
+  Frederik Aust [aut],
+  Søren Højsgaard [ctb],
+  John Fox [ctb],
+  Michael A. Lawrence [ctb],
+  Ulf Mertens [ctb],
+  Jonathan Love [ctb]"
+"arm","1.9-3","Andrew Gelman [aut],
+  Yu-Sung Su [aut, cre],
+  Masanao Yajima [ctb],
+  Jennifer Hill [ctb],
+  Maria Grazia Pittau [ctb],
+  Jouni Kerman [ctb],
+  Tian Zheng [ctb],
+  Vincent Dorie [ctb]"
+"assertthat","0.2.0","Hadley Wickham [aut, cre]"
+"backports","1.1.1","Michel Lang <michellang@gmail.com>"
+"base","3.3.3","R Core Team and contributors worldwide"
+"base64enc","0.1-3","Simon Urbanek <Simon.Urbanek@r-project.org>"
+"bindr","0.1","Kirill Müller [aut, cre],
+  RStudio [cph]"
+"bindrcpp","0.2","Kirill Müller [aut, cre],
+  RStudio [cph]"
+"boot","1.3-18","Angelo Canty [aut],
+  Brian Ripley [aut, trl, cre] (author of parallel support)"
+"bootnet","1.0.2","Sacha Epskamp and Eiko I. Fried"
+"ca","0.70","Michael Greenacre [aut], Oleg Nenadic [aut, cre], Michael Friendly [ctb]"
+"car","2.1-6","John Fox [aut, cre],
+  Sanford Weisberg [aut],
+  Daniel Adler [ctb],
+  Douglas Bates [ctb],
+  Gabriel Baud-Bovy [ctb],
+  Steve Ellison [ctb],
+  David Firth [ctb],
+  Michael Friendly [ctb],
+  Gregor Gorjanc [ctb],
+  Spencer Graves [ctb],
+  Richard Heiberger [ctb],
+  Rafael Laboissiere [ctb],
+  Georges Monette [ctb],
+  Duncan Murdoch [ctb],
+  Henric Nilsson [ctb],
+  Derek Ogle [ctb],
+  Brian Ripley [ctb],
+  William Venables [ctb],
+  David Winsemius [ctb],
+  Achim Zeileis [ctb],
+  R-Core [ctb]"
+"checkmate","1.8.5","Michel Lang [cre, aut],
+  Bernd Bischl [ctb]"
+"class","7.3-14","Brian Ripley [aut, cre, cph],
+  William Venables [cph]"
+"cluster","2.0.5","Martin Maechler [aut, cre],
+  Peter Rousseeuw [aut] (Fortran original),
+  Anja Struyf [aut] (S original),
+  Mia Hubert [aut] (S original),
+  Kurt Hornik [trl, ctb] (port to R; maintenance(1999-2000)),
+  Matthias Studer [ctb],
+  Pierre Roudier [ctb],
+  Juan Gonzalez [ctb]"
+"cmprsk","2.2-7","Bob Gray <gray@jimmy.harvard.edu>"
+"coda","0.19-1","Martyn Plummer [aut, cre, trl],
+  Nicky Best [aut],
+  Kate Cowles [aut],
+  Karen Vines [aut],
+  Deepayan Sarkar [aut],
+  Douglas Bates [aut],
+  Russell Almond [aut],
+  Arni Magnusson [aut]"
+"codetools","0.2-15","Luke Tierney <luke-tierney@uiowa.edu>"
+"coin","1.2-2","Torsten Hothorn [aut, cre],
+  Kurt Hornik [aut],
+  Mark A. van de Wiel [aut],
+  Henric Winell [aut],
+  Achim Zeileis [aut] (0000-0003-0918-3766)"
+"colorspace","1.3-2","Ross Ihaka [aut],
+  Paul Murrell [aut],
+  Kurt Hornik [aut],
+  Jason C. Fisher [aut],
+  Reto Stauffer [aut],
+  Achim Zeileis [aut, cre]"
+"compiler","3.3.3","Luke Tierney <luke-tierney@uiowa.edu>"
+"contfrac","1.1-11","Robin K. S. Hankin"
+"conting","1.6","Antony M. Overstall"
+"corpcor","1.6.9","Juliane Schafer, Rainer Opgen-Rhein, Verena Zuber, Miika Ahdesmaki, 
+ A. Pedro Duarte Silva, and Korbinian Strimmer."
+"curl","3.0","Jeroen Ooms [cre, aut],
+  Hadley Wickham [ctb],
+  RStudio [cph]"
+"d3Network","0.5.2.1","Christopher Gandrud"
+"data.table","1.10.4-3","Matt Dowle [aut, cre],
+  Arun Srinivasan [aut],
+  Jan Gorecki [ctb],
+  Tom Short [ctb],
+  Steve Lianoglou [ctb],
+  Eduard Antonyan [ctb]"
+"datasets","3.3.3","R Core Team and contributors worldwide"
+"deSolve","1.20","Karline Soetaert [aut],  
+        Thomas Petzoldt [aut, cre],  
+        R. Woodrow Setzer [aut], 
+        odepack authors [cph]"
+"dichromat","2.0-0","Thomas Lumley [aut, cre], Ken Knoblauch [ctb], Scott Waichler
+        [ctb], Achim Zeileis [ctb]"
+"digest","0.6.12","Dirk Eddelbuettel <edd@debian.org> with contributions 
+ by Antoine Lucas, Jarek Tuszynski, Henrik Bengtsson, Simon Urbanek,
+ Mario Frasca, Bryan Lewis, Murray Stokely, Hannes Muehleisen,
+ Duncan Murdoch, Jim Hester, Wush Wu, Qiang Kou, Thierry Onkelinx, 
+ Michel Lang and Viliam Simko."
+"doSNOW","1.0.15","Rich Calaway [cre],
+  Microsoft Corporation [aut, cph],
+  Stephen Weston [aut]"
+"dplyr","0.7.4","Hadley Wickham [aut, cre],
+  Romain Francois [aut],
+  Lionel Henry [aut],
+  Kirill Müller [aut],
+  RStudio [cph, fnd]"
+"e1071","1.6-8","David Meyer [aut, cre],
+  Evgenia Dimitriadou [aut, cph],
+  Kurt Hornik [aut],
+  Andreas Weingessel [aut],
+  Friedrich Leisch [aut],
+  Chih-Chung Chang [ctb, cph] (libsvm C++-code),
+  Chih-Chen Lin [ctb, cph] (libsvm C++-code)"
+"ellipse","0.3-8","Duncan Murdoch <murdoch@stats.uwo.ca> and E. D. Chow (porting
+        to R by Jesus M. Frias Celayeta <iosu@bureau.ucc.ie>)"
+"elliptic","1.3-7","Robin K. S. Hankin"
+"estimability","1.2","Russell Lenth [aut, cre, cph]"
+"etm","0.6-2","Arthur Allignol"
+"evaluate","0.10.1","Hadley Wickham [aut],
+  Yihui Xie [cre, ctb],
+  Michael Lawrence [ctb],
+  Thomas Kluyver [ctb],
+  Barret Schloerke [ctb],
+  Adam Ryczkowski [ctb]"
+"fdrtool","1.2.15","Bernd Klaus and Korbinian Strimmer."
+"foreach","1.4.3","Rich Calaway [cre],
+  Revolution Analytics [aut, cph],
+  Steve Weston [aut]"
+"foreign","0.8-67","R Core Team [aut, cph, cre],
+  Roger Bivand [ctb, cph],
+  Vincent J. Carey [ctb, cph],
+  Saikat DebRoy [ctb, cph],
+  Stephen Eglen [ctb, cph],
+  Rajarshi Guha [ctb, cph],
+  Nicholas Lewin-Koh [ctb, cph],
+  Mark Myatt [ctb, cph],
+  Ben Pfaff [ctb],
+  Brian Quistorff [ctb],
+  Frank Warmerdam [ctb, cph],
+  Stephen Weigand [ctb, cph],
+  Free Software Foundation, Inc. [cph]"
+"ggm","2.3","Giovanni M. Marchetti, Mathias Drton, Kayvan Sadeghi"
+"ggplot2","2.2.1","Hadley Wickham [aut, cre],
+  Winston Chang [aut],
+  RStudio [cph]"
+"glasso","1.8","Jerome Friedman, Trevor Hastie and Rob Tibshirani"
+"glmnet","2.0-13","Jerome Friedman [aut, cre],
+	Trevor Hastie [aut, cre],
+	Noah Simon [aut, ctb],
+	Junyang Qian [ctb],
+	Rob Tibshirani [aut, cre]"
+"glue","1.2.0","Jim Hester [aut, cre]"
+"gnm","1.0-8","Heather Turner [aut, cre],
+  David Firth [aut],
+  Brian Ripley [ctb],
+  Bill Venables [ctb],
+  Douglas M. Bates [ctb],
+  Martin Maechler [ctb]"
+"grDevices","3.3.3","R Core Team and contributors worldwide"
+"graphics","3.3.3","R Core Team and contributors worldwide"
+"grid","3.3.3","Paul Murrell <paul@stat.auckland.ac.nz>"
+"gridExtra","2.3","Baptiste Auguie [aut, cre],
+  Anton Antonov [ctb]"
+"gtable","0.2.0","Hadley Wickham [aut, cre]"
+"gtools","3.5.0","Gregory R. Warnes, Ben Bolker, and Thomas Lumley"
+"highr","0.6","Christopher Gandrud [ctb],
+  Qiang Li [ctb],
+  Yixuan Qiu [aut],
+  Yihui Xie [aut, cre]"
+"hmeasure","1.0","Christoforos Anagnostopoulos
+        <christoforos.anagnostopoulos06@imperial.ac.uk> and David J.
+        Hand <d.j.hand@imperial.ac.uk>"
+"htmlTable","1.11.0","Max Gordon [aut, cre],
+  Stephen Gragg [aut],
+  Peter Konings [aut]"
+"htmltools","0.3.6","RStudio, Inc."
+"htmlwidgets","0.9","Ramnath Vaidyanathan [aut, cph],
+  Yihui Xie [aut],
+  JJ Allaire [aut, cre],
+  Joe Cheng [aut],
+  Kenton Russell [aut, cph],
+  RStudio [cph]"
+"huge","1.2.7","Tuo Zhao, Xingguo Li, Han Liu, Kathryn Roeder, John Lafferty, Larry
+        Wasserman"
+"hypergeo","1.2-13","Robin K. S. Hankin"
+"igraph","1.1.2","See AUTHORS file."
+"irlba","2.3.1","Jim Baglama [aut, cph],
+  Lothar Reichel [aut, cph],
+  B. W. Lewis [aut, cre, cph]"
+"iterators","1.0.8","Rich Calaway [cre],
+  Revolution Analytics [aut, cph],
+  Steve Weston [aut]"
+"jpeg","0.1-8","Simon Urbanek <Simon.Urbanek@r-project.org>"
+"jsonlite","1.5","Jeroen Ooms, Duncan Temple Lang, Lloyd Hilaiel"
+"knitr","1.17","Yihui Xie [aut, cre],
+  Adam Vogt [ctb],
+  Alastair Andrew [ctb],
+  Alex Zvoleff [ctb],
+  Andre Simon [ctb] (the CSS files under inst/themes/ were derived from
+    the Highlight package http://www.andre-simon.de),
+  Aron Atkins [ctb],
+  Aaron Wolen [ctb],
+  Ashley Manton [ctb],
+  Ben Baumer [ctb],
+  Brian Diggs [ctb],
+  Cassio Pereira [ctb],
+  David Robinson [ctb],
+  Donald Arseneau [ctb, cph] (the framed package at inst/misc/framed.sty),
+  Doug Hemken [ctb],
+  Duncan Murdoch [ctb],
+  Fabian Hirschmann [ctb],
+  Fitch Simeon [ctb],
+  Forest Fang [ctb],
+  Frank E Harrell Jr [ctb] (the Sweavel package at inst/misc/Sweavel.sty),
+  Garrick Aden-Buie [ctb],
+  Gregoire Detrez [ctb],
+  Hadley Wickham [ctb],
+  Heewon Jeon [ctb],
+  Henrik Bengtsson [ctb],
+  Hiroaki Yutani [ctb],
+  Ian Lyttle [ctb],
+  Hodges Daniel [ctb],
+  Jake Burkhead [ctb],
+  James Manton [ctb],
+  Jared Lander [ctb],
+  Jason Punyon [ctb],
+  Javier Luraschi [ctb],
+  Jeff Arnold [ctb],
+  Jeremy Ashkenas [ctb, cph] (the CSS file at
+    inst/misc/docco-classic.css),
+  Jeremy Stephens [ctb],
+  Jim Hester [ctb],
+  Joe Cheng [ctb],
+  Johannes Ranke [ctb],
+  John Honaker [ctb],
+  John Muschelli [ctb],
+  Jonathan Keane [ctb],
+  JJ Allaire [ctb],
+  Johan Toloe [ctb],
+  Joseph Larmarange [ctb],
+  Julien Barnier [ctb],
+  Kaiyin Zhong [ctb],
+  Kamil Slowikowski [ctb],
+  Karl Forner [ctb],
+  Kevin K. Smith [ctb],
+  Kirill Mueller [ctb],
+  Kohske Takahashi [ctb],
+  Michael Friendly [ctb],
+  Michal Bojanowski [ctb],
+  Michel Kuhlmann [ctb],
+  Nacho Caballero [ctb],
+  Nick Salkowski [ctb],
+  Noam Ross [ctb],
+  Qiang Li [ctb],
+  Ramnath Vaidyanathan [ctb],
+  Richard Cotton [ctb],
+  Robert Krzyzanowski [ctb],
+  Romain Francois [ctb],
+  Scott Kostyshak [ctb],
+  Sebastian Meyer [ctb],
+  Sietse Brouwer [ctb],
+  Simon de Bernard [ctb],
+  Sylvain Rousseau [ctb],
+  Taiyun Wei [ctb],
+  Thibaut Assus [ctb],
+  Thibaut Lamadon [ctb],
+  Thomas Leeper [ctb],
+  Tom Torsney-Weir [ctb],
+  Trevor Davis [ctb],
+  Viktoras Veitas [ctb],
+  Weicheng Zhu [ctb],
+  Wush Wu [ctb],
+  Zachary Foster [ctb]"
+"labeling","0.3","Justin Talbot"
+"lattice","0.20-34","Deepayan Sarkar <deepayan.sarkar@r-project.org>"
+"latticeExtra","0.6-28","Deepayan Sarkar <deepayan.sarkar@r-project.org>, Felix Andrews <felix@nfrac.org>"
+"lavaan","0.5-23.1097","Yves Rosseel [aut, cre],
+  Daniel Oberski [ctb],
+  Jarrett Byrnes [ctb],
+  Leonard Vanbrabant [ctb],
+  Victoria Savalei [ctb],
+  Ed Merkle [ctb],
+  Michael Hallquist [ctb],
+  Mijke Rhemtulla [ctb],
+  Myrsini Katsikatsou [ctb],
+  Mariska Barendse [ctb],
+  Michael Chow [ctb],
+  Terrence Jorgensen [ctb]"
+"lazyeval","0.2.1","Hadley Wickham [aut, cre],
+  RStudio [cph]"
+"lme4","1.1-14","Douglas Bates [aut],
+  Martin Maechler [aut],
+  Ben Bolker [aut, cre],
+  Steven Walker [aut],
+  Rune Haubo Bojesen Christensen [ctb],
+  Henrik Singmann [ctb],
+  Bin Dai [ctb],
+  Gabor Grothendieck [ctb],
+  Peter Green [ctb]"
+"lmerTest","2.0-36","Alexandra Kuznetsova [aut],
+  Per Bruun Brockhoff [aut, ths, cre],
+  Rune Haubo Bojesen Christensen [aut]"
+"lmtest","0.9-35","Torsten Hothorn [aut],
+  Achim Zeileis [aut, cre],
+  Richard W. Farebrother [aut] (pan.f),
+  Clint Cummins [aut] (pan.f),
+  Giovanni Millo [ctb],
+  David Mitchell [ctb]"
+"logspline","2.1.9","Charles Kooperberg <clk@fredhutch.org>"
+"longitudinal","1.1.12","Rainer Opgen-Rhein and Korbinian Strimmer."
+"lsmeans","2.27-61","Russell Lenth [aut, cre, cph],
+  Jonathon Love [ctb]"
+"magrittr","1.5","Stefan Milton Bache <stefan@stefanbache.dk> and
+    Hadley Wickham <h.wickham@gmail.com>"
+"markdown","0.8","JJ Allaire [aut],
+  Jeffrey Horner [aut],
+  Henrik Bengtsson [ctb],
+  Jim Hester [ctb],
+  Yixuan Qiu [ctb],
+  Kohske Takahashi [ctb],
+  Adam November [ctb],
+  Nacho Caballero [ctb],
+  Jeroen Ooms [ctb],
+  Thomas Leeper [ctb],
+  Joe Cheng [ctb],
+  Andrzej Oles [ctb],
+  Vicent Marti [aut, cph] (The Sundown library),
+  Natacha Porte [aut, cph] (The Sundown library),
+  RStudio [cph],
+  Yihui Xie [cre, ctb]"
+"matrixcalc","1.0-3","Frederick Novomestky <fnovomes@poly.edu>"
+"metafor","2.0-0","Wolfgang Viechtbauer [aut, cre]"
+"methods","3.3.3","R Core Team"
+"mgcv","1.8-17","Simon Wood <simon.wood@r-project.org>"
+"mgm","1.2-2","Jonas Haslbeck"
+"mi","1.0","Andrew Gelman [ctb],
+  Jennifer Hill [ctb],
+  Yu-Sung Su [aut],
+  Masanao Yajima [ctb],
+  Maria Pittau [ctb],
+  Ben Goodrich [cre, aut],
+  Yajuan Si [ctb],
+  Jon Kropko [aut]"
+"mime","0.5","Jeffrey Horner [ctb],
+  Yihui Xie [aut, cre]"
+"minqa","1.2.4","Douglas Bates, Katharine M. Mullen, John C. Nash, Ravi Varadhan"
+"mitools","2.3","Thomas Lumley"
+"mnormt","1.5-5","Fortran code by Alan Genz, R code by Adelchi Azzalini "
+"modeltools","0.2-21","Torsten Hothorn, Friedrich Leisch, Achim Zeileis "
+"multcomp","1.4-8","Torsten Hothorn [aut, cre],
+  Frank Bretz [aut],
+  Peter Westfall [aut],
+  Richard M. Heiberger [ctb],
+  Andre Schuetzenmeister [ctb],
+  Susan Scheibe [ctb]"
+"munsell","0.4.3","Charlotte Wickham <cwickham@gmail.com>"
+"mvtnorm","1.0-6","Alan Genz [aut],
+  Frank Bretz [aut],
+  Tetsuhisa Miwa [aut],
+  Xuefei Mi [aut],
+  Friedrich Leisch [ctb],
+  Fabian Scheipl [ctb],
+  Bjoern Bornkamp [ctb],
+  Martin Maechler [ctb],
+  Torsten Hothorn [aut, cre]"
+"network","1.13.0","Carter T. Butts [aut, cre],
+  David Hunter [ctb],
+  Mark Handcock [ctb],
+  Skye Bender-deMoll [ctb],
+  Jeffrey Horner [ctb]"
+"nlme","3.1-131","José Pinheiro [aut] (S version),
+  Douglas Bates [aut] (up to 2007),
+  Saikat DebRoy [ctb] (up to 2002),
+  Deepayan Sarkar [ctb] (up to 2005),
+  EISPACK authors [ctb] (src/rs.f),
+  Siem Heisterkamp [ctb] (Author fixed sigma),
+  Bert Van Willigen [ctb] (Programmer fixed sigma),
+  R-core [aut, cre]"
+"nloptr","1.0.4","Jelmer Ypma <uctpjyy@ucl.ac.uk>, with contributions by
+        Hans W. Borchers <hwborchers@googlemail.com> and 
+        Dirk Eddelbuettel <edd@debian.org>"
+"nnet","7.3-12","Brian Ripley [aut, cre, cph],
+  William Venables [cph]"
+"numDeriv","2016.8-1","Paul Gilbert and Ravi Varadhan"
+"parallel","3.3.3","R Core Team"
+"parcor","0.2-6","Nicole Kraemer, Juliane Schaefer"
+"pbapply","1.3-3","Peter Solymos [aut, cre], Zygmunt Zawadzki [aut]"
+"pbivnorm","0.6.0","Fortran code by Alan Genz.  R code by Brenton Kenkel,
+    based on Adelchi Azzalini's 'mnormt' package."
+"pbkrtest","0.4-7","Ulrich Halekoh <uhalekoh@health.sdu.dk> Søren Højsgaard
+    <sorenh@math.aau.dk>"
+"pkgconfig","2.0.1","Gábor Csárdi"
+"plotrix","3.7","Jim Lemon, Ben Bolker, Sander Oom,
+	Eduardo Klein, Barry Rowlingson,
+	Hadley Wickham, Anupam Tyagi,
+	Olivier Eterradossi, Gabor Grothendieck,
+	Michael Toews, John Kane, Rolf Turner,
+	Carl Witthoft, Julian Stander, Thomas Petzoldt,
+	Remko Duursma, Elisa Biancotto, Ofir Levy,
+	Christophe Dutang, Peter Solymos, Robby Engelmann, 
+	Michael Hecker, Felix Steinbeck, Hans Borchers,
+	Henrik Singmann, Ted Toal, Derek Ogle, Darshan Baral,
+	Ulrike Groemping"
+"plyr","1.8.4","Hadley Wickham [aut, cre]"
+"png","0.1-7","Simon Urbanek <Simon.Urbanek@r-project.org>"
+"ppls","1.6-1","Nicole Kraemer <kraemer_r_packages@yahoo.de> Anne-Laure Boulesteix
+        <boulesteix@ibe.med.uni-muenchen.de>"
+"psych","1.7.8","William Revelle <revelle@northwestern.edu>"
+"purrr","0.2.4","Lionel Henry [aut, cre],
+  Hadley Wickham [aut],
+  RStudio [cph, fnd]"
+"qgraph","1.4.4","Sacha Epskamp, Giulio Costantini, Jonas Haslbeck, Angelique O. J. Cramer, Lourens J. Waldorp, Verena D. Schmittmann and Denny Borsboom"
+"quadprog","1.5-5","S original by Berwin A. Turlach <Berwin.Turlach@gmail.com> R
+        port by Andreas Weingessel <Andreas.Weingessel@ci.tuwien.ac.at>"
+"quantmod","0.4-12","Jeffrey A. Ryan [aut, cph],
+  Joshua M. Ulrich [cre, aut],
+  Wouter Thielen [ctb],
+  Paul Teetor [ctb]"
+"quantreg","5.34","Roger Koenker [cre, aut],
+  Stephen Portnoy [ctb] (Contributions to Censored QR code),
+  Pin Tian Ng [ctb] (Contributions to Sparse QR code),
+  Achim Zeileis [ctb] (Contributions to dynrq code essentially
+    identical to his dynlm code),
+  Philip Grosjean [ctb] (Contributions to nlrq code),
+  Brian D Ripley [trl, ctb] (Initial (2001) R port from S (to my
+    everlasting shame -- how could I have been so slow to adopt
+    R!) and for numerous other suggestions and useful advice)"
+"qvcalc","0.9-1","David Firth"
+"relaimpo","2.2-2","Ulrike Groemping [aut, cre],
+  Lehrkamp Matthias [ctb]"
+"relimp","1.0-5","David Firth with contributions from Heather Turner and John Fox"
+"reshape2","1.4.2","Hadley Wickham <h.wickham@gmail.com>"
+"rjson","0.2.15","Alex Couture-Beil <rjson_pkg@mofo.ca>"
+"rlang","0.1.4","Lionel Henry [aut, cre],
+  Hadley Wickham [aut],
+  RStudio [cph]"
+"rpart","4.1-10","Terry Therneau [aut],
+  Beth Atkinson [aut],
+  Brian Ripley [aut, trl, cre] (author of initial R port)"
+"rstudioapi","0.7","JJ Allaire [aut, cre],
+  Hadley Wickham [aut],
+  Kevin Ushey [aut],
+  Gary Ritchie [aut],
+  RStudio [cph]"
+"sandwich","2.4-0","Achim Zeileis [aut, cre],
+  Thomas Lumley [aut],
+  Susanne Berger [ctb],
+  Nathaniel Graham [ctb]"
+"scales","0.5.0","Hadley Wickham [aut, cre],
+  RStudio [cph]"
+"sem","3.1-9","John Fox [aut, cre],
+  Zhenghua Nie [aut],
+  Jarrett Byrnes [aut],
+  Michael Culbertson [ctb],
+  Saikat DebRoy [ctb],
+  Michael Friendly [ctb],
+  Benjamin Goodrich [ctb],
+  Richard H. Jones [ctb],
+  Adam Kramer [ctb],
+  Georges Monette [ctb],
+  R-Core [ctb]"
+"semTools","0.4-14","Terrence D. Jorgensen [aut, cre],
+  Sunthud Pornprasertmanit [aut],
+  Patrick Miller [aut],
+  Alexander Schoemann [aut],
+  Yves Rosseel [aut],
+  Corbin Quick [ctb],
+  Mauricio Garnier-Villarreal [ctb],
+  James Selig [ctb],
+  Aaron Boulton [ctb],
+  Kristopher Preacher [ctb],
+  Donna Coffman [ctb],
+  Mijke Rhemtulla [ctb],
+  Alexander Robitzsch [ctb],
+  Craig Enders [ctb],
+  Ruber Arslan [ctb],
+  Bell Clinton [ctb],
+  Pavel Panko [ctb],
+  Edgar Merkle [ctb],
+  Steven Chesnut [ctb],
+  Jarrett Byrnes [ctb], 
+  Jason Rights [ctb],
+  Ylenio Longo [ctb]"
+"sna","2.4","Carter T. Butts [aut, cre, cph]"
+"snow","0.4-2","Luke Tierney, A. J. Rossini, Na Li, H. Sevcikova"
+"spatial","7.3-11","Brian Ripley [aut, cre, cph],
+  Roger Bivand [ctb],
+  William Venables [cph]"
+"splines","3.3.3","Douglas M. Bates <bates@stat.wisc.edu> and
+ William N. Venables <Bill.Venables@csiro.au>"
+"statnet.common","4.0.0","Pavel N. Krivitsky [aut, cre],
+  Skye Bender-deMoll [ctb]"
+"stats","3.3.3","R Core Team and contributors worldwide"
+"stats4","3.3.3","R Core Team and contributors worldwide"
+"stringi","1.1.6","Marek Gagolewski [aut, cre], Bartek Tartanus [ctb],
+    and other contributors (stringi source code);
+    IBM and other contributors (ICU4C 55.1 source code);
+    Unicode, Inc. (Unicode Character Database)"
+"stringr","1.2.0","Hadley Wickham [aut, cre, cph],
+  RStudio [cph]"
+"survey","3.32-1","Thomas Lumley"
+"survival","2.40-1","Terry M Therneau [aut, cre],
+  Thomas Lumley [ctb, trl] (original S->R port and maintainer until 2009)"
+"tcltk","3.3.3","R Core Team"
+"tibble","1.3.4","Kirill Müller [aut, cre],
+  Hadley Wickham [aut],
+  Romain Francois [ctb],
+  RStudio [cph]"
+"tidyr","0.7.2","Hadley Wickham [aut, cre],
+  Lionel Henry [aut],
+  RStudio [cph]"
+"tidyselect","0.2.3","Lionel Henry [aut, cre],
+  Hadley Wickham [aut],
+  RStudio [cph]"
+"tools","3.3.3","R Core Team"
+"tseries","0.10-42","Adrian Trapletti [aut],
+  Kurt Hornik [aut, cre],
+  Blake LeBaron [ctb] (BDS test code)"
+"utils","3.3.3","R Core Team and contributors worldwide"
+"vcd","1.4-4","David Meyer [aut, cre],
+  Achim Zeileis [aut] (<https://orcid.org/0000-0003-0918-3766>),
+  Kurt Hornik [aut],
+  Florian Gerber [ctb],
+  Michael Friendly [ctb]"
+"vcdExtra","0.7-1","Michael Friendly [aut, cre], Heather Turner [ctb], Achim Zeileis [ctb], Duncan Murdoch [ctb], David Firth [ctb]"
+"viridis","0.4.0","Simon Garnier [aut, cre],
+  Noam Ross [ctb, cph],
+  Bob Rudis [ctb, cph]"
+"viridisLite","0.2.0","Simon Garnier [aut, cre],
+  Noam Ross [ctb, cph],
+  Bob Rudis [ctb, cph]"
+"whisker","0.3-2","Edwin de Jonge"
+"xtable","1.8-2","David B. Dahl <dahl@stat.byu.edu>"
+"xts","0.10-0","Jeffrey A. Ryan [aut, cph],
+  Joshua M. Ulrich [cre, aut],
+  Ross Bennett [ctb]"
+"yaml","2.1.15","Jeremy Stephens <jeremy.stephens@vanderbilt.edu>"
+"zoo","1.8-0","Achim Zeileis [aut, cre],
+  Gabor Grothendieck [aut],
+  Jeffrey A. Ryan [aut],
+  Joshua M. Ulrich [ctb],
+  Felix Andrews [ctb]"

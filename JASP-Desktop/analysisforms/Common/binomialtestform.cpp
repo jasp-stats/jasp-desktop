@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 University of Amsterdam
+// Copyright (C) 2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -38,7 +38,7 @@ BinomialTestForm::BinomialTestForm(QWidget *parent) :
 
 	ui->testValue->setLabel("Test value");
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 
 #else
 

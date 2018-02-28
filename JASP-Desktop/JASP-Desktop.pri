@@ -77,8 +77,6 @@ SOURCES += \
     $$PWD/importers/spss/variablerecord.cpp \
     $$PWD/importers/spss/verylongstringrecord.cpp \
     $$PWD/importers/spssimporter.cpp \
-    $$PWD/lrnam.cpp \
-    $$PWD/lrnamreply.cpp \
     $$PWD/main.cpp \
     $$PWD/maintablehorizontalheader.cpp \
     $$PWD/maintableview.cpp \
@@ -114,6 +112,7 @@ SOURCES += \
     $$PWD/widgets/boundpairstable.cpp \
     $$PWD/widgets/boundsingleitemview.cpp \
     $$PWD/widgets/boundtableview.cpp \
+    $$PWD/widgets/boundtablewidget.cpp \
     $$PWD/widgets/boundtextbox.cpp \
     $$PWD/widgets/boundtextedit.cpp \
     $$PWD/widgets/button.cpp \
@@ -144,7 +143,12 @@ SOURCES += \
     $$PWD/widgets/tableviewmenueditordelegate.cpp \
     $$PWD/widgets/textmodellavaan.cpp \
     $$PWD/widgets/toolbutton.cpp \
-    $$PWD/widgets/webview.cpp
+    $$PWD/widgets/customwebengineview.cpp \
+    $$PWD/resultsjsinterface.cpp \
+    $$PWD/customwebenginepage.cpp \
+    $$PWD/asyncloaderthread.cpp \
+    $$PWD/aboutdialogjsinterface.cpp
+
 
 HEADERS  += \
     $$PWD/aboutdialog.h \
@@ -177,6 +181,7 @@ HEADERS  += \
     $$PWD/backstage/verticaltabwidget.h \
     $$PWD/backstagewidget.h \
     $$PWD/bound.h \
+    $$PWD/customhoverdelegate.h \
     $$PWD/datasetloader.h \
     $$PWD/datasettablemodel.h \
     $$PWD/enginesync.h \
@@ -230,8 +235,6 @@ HEADERS  += \
     $$PWD/importers/spss/variablerecord.h \
     $$PWD/importers/spss/verylongstringrecord.h \
     $$PWD/importers/spssimporter.h \
-    $$PWD/lrnam.h \
-    $$PWD/lrnamreply.h \
     $$PWD/maintablehorizontalheader.h \
     $$PWD/maintableview.h \
     $$PWD/mainwindow.h \
@@ -269,6 +272,7 @@ HEADERS  += \
     $$PWD/widgets/boundpairstable.h \
     $$PWD/widgets/boundsingleitemview.h \
     $$PWD/widgets/boundtableview.h \
+    $$PWD/widgets/boundtablewidget.h \
     $$PWD/widgets/boundtextbox.h \
     $$PWD/widgets/boundtextedit.h \
     $$PWD/widgets/button.h \
@@ -303,7 +307,11 @@ HEADERS  += \
     $$PWD/widgets/tableviewmenueditordelegate.h \
     $$PWD/widgets/textmodellavaan.h \
     $$PWD/widgets/toolbutton.h \
-    $$PWD/widgets/webview.h
+    $$PWD/widgets/customwebengineview.h \
+    $$PWD/resultsjsinterface.h \
+    $$PWD/customwebenginepage.h \
+    $$PWD/asyncloaderthread.h \
+    $$PWD/aboutdialogjsinterface.h
 
 FORMS += \
     $$PWD/aboutdialog.ui \
@@ -350,19 +358,16 @@ OTHER_FILES += \
     $$PWD/html/css/images/waiting.gif \
     $$PWD/html/css/images/waiting.svg \
     $$PWD/html/css/jquery-ui-1.10.1.custom.css \
-    $$PWD/html/css/jquery-ui-1.10.1.custom.min.css \
     $$PWD/html/css/theme-jasp.css \
     $$PWD/html/css/theme-spss.css \
     $$PWD/html/index.html \
     $$PWD/html/js/analysis.js \
-    $$PWD/html/js/backbone-min-1.1.2.js \
     $$PWD/html/js/displaydefs.js \
     $$PWD/html/js/image.js \
     $$PWD/html/js/images.js \
     $$PWD/html/js/jaspwidget.js \
     $$PWD/html/js/jquery-1.9.1.js \
     $$PWD/html/js/jquery-ui-1.10.1.custom.js \
-    $$PWD/html/js/jquery-ui-1.10.1.custom.min.js \
     $$PWD/html/js/main.js \
     $$PWD/html/js/table.js \
     $$PWD/html/js/tables.js \
@@ -420,6 +425,7 @@ OTHER_FILES += \
     $$PWD/resources/icons/edit-copy.png \
     $$PWD/resources/icons/edit-delete-shred.png \
     $$PWD/resources/icons/edit-find.png \
+    $$PWD/resources/icons/editImage.png \
     $$PWD/resources/icons/edit-paste.png \
     $$PWD/resources/icons/edit-redo.png \
     $$PWD/resources/icons/edit-undo.png \

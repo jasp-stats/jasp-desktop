@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,9 +18,6 @@
 #ifndef RBRIDGE_H
 #define RBRIDGE_H
 
-#include <RInside/RInside.h>
-#include <Rcpp.h>
-
 #ifdef __WIN32__
 
 #undef Realloc
@@ -28,11 +25,13 @@
 
 #endif
 
+
 #include <string>
 #include <map>
 #include <boost/function.hpp>
 
 #include "../JASP-Common/dataset.h"
+#include "../JASP-R-Interface/jasprcpp_interface.h"
 
 /* The R Bridge provides functions to the R analyses;
  * i.e. functions to read the data set from shared memory
@@ -41,6 +40,15 @@
  * In this way, it functions as the bridge between the C++
  * application, and the R analyses
  */
+extern "C" {
+	RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* columns, int colMax);
+	char** STDCALL rbridge_readDataColumnNames(int *colMax);
+	RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBridgeColumnType* columns, int colMax);
+	bool STDCALL rbridge_test(char** root);
+	bool STDCALL rbridge_requestStateFileSource(const char **root, const char **relativePath);
+	bool STDCALL rbridge_requestTempFileName(const char* extensionAsString, const char **root, const char **relativePath);
+	bool STDCALL rbridge_runCallback(const char* in, int progress, const char** out);
+}
 
 	typedef boost::function<std::string (const std::string &, int progress)> RCallback;
 
@@ -50,8 +58,12 @@
 	void rbridge_setDataSetSource(boost::function<DataSet *()> source);
 	std::string rbridge_run(const std::string &name, const std::string &title, bool &requiresInit, const std::string &dataKey, const std::string &options, const std::string &resultsMeta, const std::string &stateKey, const std::string &perform = "run", int ppi = 96, RCallback callback = NULL);
 	std::string rbridge_saveImage(const std::string &name, const std::string &type, const int &height, const int &width, const int ppi = 96);
+	std::string rbridge_editImage(const std::string &name, const std::string &type, const int &height, const int &width, const int ppi = 96);
 
 	std::string rbridge_check();
 
+	void freeRBridgeColumns(RBridgeColumn *columns, int colMax);
+	void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, int colMax);
+	void freeLabels(char** labels, int nbLabels);
 
 #endif // RBRIDGE_H

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 University of Amsterdam
+// Copyright (C) 2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +17,10 @@
 
 #include "appinfo.h"
 
-const Version AppInfo::version = Version(0, 8, 5, 256);
+//Put separately for use in JASP/Tools/make-debian-package.sh.
+const int VersionMajor(0), VersionMinor(8), VersionRevision(6), VersionBuildNumber(255);
+
+const Version AppInfo::version = Version(VersionMajor, VersionMinor, VersionRevision, VersionBuildNumber);
 const std::string AppInfo::name = "JASP";
 const std::string AppInfo::builddate = __DATE__ " " __TIME__ " (Netherlands)" ;
 

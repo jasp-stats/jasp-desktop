@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2013-2015 University of Amsterdam
+# Copyright (C) 2013-2018 University of Amsterdam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,9 +20,10 @@
 	expected <- matrix(nrow=0, ncol=2, dimnames=list(NULL, c("Package", "Version")))
 	
 #--auto-generated
-	expected <- rbind(expected, c('BAS', '1.4.7'))
+	expected <- rbind(expected, c('BAS', '1.4.8'))
 	expected <- rbind(expected, c('BDgraph', '2.43'))
 	expected <- rbind(expected, c('BMS', '0.3.4'))
+	expected <- rbind(expected, c('BSDA', '1.2.0'))
 	expected <- rbind(expected, c('BayesFactor', '0.9.12-2'))
 	expected <- rbind(expected, c('Epi', '2.10'))
 	expected <- rbind(expected, c('Formula', '1.2-2'))
@@ -78,6 +79,7 @@
 	expected <- rbind(expected, c('digest', '0.6.12'))
 	expected <- rbind(expected, c('doSNOW', '1.0.15'))
 	expected <- rbind(expected, c('dplyr', '0.7.4'))
+	expected <- rbind(expected, c('e1071', '1.6-8'))
 	expected <- rbind(expected, c('ellipse', '0.3-8'))
 	expected <- rbind(expected, c('elliptic', '1.3-7'))
 	expected <- rbind(expected, c('estimability', '1.2'))

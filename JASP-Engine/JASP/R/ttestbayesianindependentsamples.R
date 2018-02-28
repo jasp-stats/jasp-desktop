@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2013-2017 University of Amsterdam
+# Copyright (C) 2013-2018 University of Amsterdam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -174,7 +174,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					descriptivesPlot[["title"]] <- variable
 					descriptivesPlot[["width"]] <- options$plotWidth
 					descriptivesPlot[["height"]] <- options$plotHeight
-					descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+					#descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
 					descriptivesPlot[["status"]] <- "waiting"
 					descriptivesPlot[["data"]] <- ""
 
@@ -458,6 +458,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 								content <- .writeImage(width = options$plotWidth, height = options$plotHeight, plot = p, obj = TRUE)
 
 								plot[["convertible"]] <- TRUE
+								# plot[["editable"]] <- TRUE
 								plot[["obj"]] <- content[["obj"]]
 								plot[["data"]] <- content[["png"]]
 
@@ -600,7 +601,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						plot <- plots.ttest[[z]]
 
 						if (options$effectSizeStandardized == "informative") {
-						  plot[["error"]] <- list(error="badData", errorMessage="Bayes factor robustness check plot currently not supported for informed prior.")
+						  errorMessage="Bayes factor robustness check plot currently not supported for informed prior."
+						  plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
 						}
 
 						if (!is.null(errorMessage)) {
@@ -1178,11 +1180,12 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	posteriorSummary2 <- .posteriorSummaryGroupMean(variable=v2, descriptivesPlotsCredibleInterval=descriptivesPlotsCredibleInterval)
 	summaryStat <- data.frame(	groupingVariable=c(nameV1, nameV2), dependent=c(posteriorSummary1$median, posteriorSummary2$median),
 								ciLower=c(posteriorSummary1$ciLower, posteriorSummary2$ciLower), ciUpper=c(posteriorSummary1$ciUpper,
-								posteriorSummary2$ciUpper))
+								posteriorSummary2$ciUpper),
+								group = 1)
 
 	pd <- ggplot2::position_dodge(.2)
 
-	p <-	ggplot2::ggplot(summaryStat, ggplot2::aes(x=groupingVariable, y=dependent, group=1)) +
+	p <-	ggplot2::ggplot(summaryStat, ggplot2::aes(x=groupingVariable, y=dependent, group=group)) +
 			ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower, ymax=ciUpper), colour="black", width=.2, position=pd) +
 			ggplot2::geom_line(position=pd, size = .7) +
 			ggplot2::geom_point(position=pd, size=4) +

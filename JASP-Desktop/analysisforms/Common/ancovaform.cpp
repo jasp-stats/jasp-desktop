@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -137,7 +137,7 @@ AncovaForm::AncovaForm(QWidget *parent) :
 
 	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 	ui->factorCovariateIndependence->hide();
 	ui->randomFactors->hide();
 	ui->buttonAssignRandom->hide();

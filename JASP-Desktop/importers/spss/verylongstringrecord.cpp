@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2017 University of Amsterdam
+// Copyright (C) 2015-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ void VeryLongStringRecord::process(SPSSImporter* importer, SPSSImportDataSet *da
 	}
 	dataset->veryLongColsDat(strLengths);
 
-#ifndef QT_NO_DEBUG
+#ifdef JASP_DEBUG
 //	DEBUG_COUT3("Found ", strLengths.size(), " tuples:");
 //	for (map<string, size_t>::const_iterator i = strLengths.begin(); i != strLengths.end(); i++)
 //	{

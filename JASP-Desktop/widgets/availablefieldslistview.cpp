@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -31,4 +31,6 @@ AvailableFieldsListView::AvailableFieldsListView(QWidget *parent) :
 	this->setDragEnabled(true);
 	this->viewport()->setAcceptDrops(true);
 	this->setDragDropMode(QAbstractItemView::DragDrop);
+	this->viewport()->setAttribute(Qt::WA_Hover);
+	this->setItemDelegate(new CustomHoverDelegate(this));
 }

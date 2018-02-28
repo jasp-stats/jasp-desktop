@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 University of Amsterdam
+// Copyright (C) 2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -41,9 +41,10 @@ CharacterEncodingRecord::CharacterEncodingRecord(const NumericConverter &fixer, 
 	SPSSIMPORTER_READ_MEMBER(count, from, fixer);
 	{
 		size_t numBytes = count() * size();
-		char buffer[numBytes+1];
+		char* buffer = new char[numBytes+1];
 		from.read(buffer, numBytes);
 		_encoding = string(buffer, numBytes);
+		delete[] buffer;
 	}
 
 	if (_nameSubstitution.size() == 0)

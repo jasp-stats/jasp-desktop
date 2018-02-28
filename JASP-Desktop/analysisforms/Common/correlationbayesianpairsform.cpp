@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -44,7 +44,7 @@ CorrelationBayesianPairsForm::CorrelationBayesianPairsForm(QWidget *parent) :
 
 	ui->assignButton->setSourceAndTarget(ui->availableFields, ui->pairs);
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 	ui->plotSequentialAnalysisRobustness->hide();
     ui->ciValueContainer->hide();
 #else

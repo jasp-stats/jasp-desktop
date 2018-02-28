@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -356,7 +356,7 @@ Terms Terms::ffCombinations(const Terms &terms)
 string Terms::asString() const
 {
 	if (_terms.size() == 0)
-		return "<0 terms>";
+		return "";
 
 	stringstream ss;
 
@@ -482,78 +482,61 @@ bool Terms::discardWhatDoesntContainTheseComponents(const Terms &terms)
 {
 	bool changed = false;
 
-	vector<Term>::iterator titr = _terms.begin();
-
-	while (titr != _terms.end())
-	{
-		bool shouldRemove = false;
-		vector<string>::const_iterator citr = titr->scomponents().begin();
-
-		while (citr != titr->scomponents().end())
-		{
-			if ( ! terms.contains(*citr))
+	_terms.erase(
+		std::remove_if(
+			_terms.begin(),
+			_terms.end(),
+			[&](Term& existingTerm)
 			{
-				shouldRemove = true;
-				break;
+				bool shouldRemove = false;
+				for (const string &str : existingTerm.scomponents())
+				{
+					if (! terms.contains(str))
+					{
+						shouldRemove = true;
+						changed = true;
+						break;
+					}
+				}
+				return shouldRemove;
 			}
-
-			citr++;
-		}
-
-		if (shouldRemove)
-		{
-			_terms.erase(titr);
-			changed = true;
-		}
-		else
-		{
-			titr++;
-		}
-	}
+		),
+		_terms.end()
+	);
+	
+	vector<Term>::iterator titr = _terms.begin();
 
 	return changed;
 }
 
 bool Terms::discardWhatDoesContainTheseComponents(const Terms &terms)
 {
-	(void)terms;
-
 	bool changed = false;
 
-	vector<Term>::iterator titr = _terms.begin();
-
-	while (titr != _terms.end())
-	{
-		Term &existingTerm = *titr;
-		bool shouldRemove = false;
-
-		foreach(const Term &term, terms)
-		{
-			(void)term;
-			(void)terms;
-
-			foreach(const string &component, term.scomponents())
+	_terms.erase(
+		std::remove_if(
+			_terms.begin(),
+			_terms.end(),
+			[&](Term& existingTerm)
 			{
-				(void)term;
-
-				if (existingTerm.contains(component))
+				bool shouldRemove = false;
+	
+				for (const Term &term : terms)
 				{
-					shouldRemove = true;
-					break;
+					for (const string &component : term.scomponents())
+					{
+						if (existingTerm.contains(component))
+						{
+							shouldRemove = true;
+							changed = true;
+							break;
+						}
+					}
 				}
-			}
-		}
-
-		if (shouldRemove)
-		{
-			_terms.erase(titr);
-			changed = true;
-		}
-		else
-		{
-			titr++;
-		}
-	}
+				return shouldRemove;
+			}),
+		_terms.end()
+	);
 
 	return changed;
 }
@@ -562,22 +545,24 @@ bool Terms::discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded)
 {
 	bool changed = false;
 
-	vector<Term>::iterator titr = _terms.begin();
-
-	while (titr != _terms.end())
-	{
-		if ( ! terms.contains(*titr))
-		{
-			if (discarded != NULL)
-				discarded->add(*titr);
-			_terms.erase(titr);
-			changed = true;
-		}
-		else
-		{
-			titr++;
-		}
-	}
+	_terms.erase(
+		std::remove_if(
+			_terms.begin(),
+			_terms.end(),
+			[&](Term& term)
+			{
+				bool shouldRemove = false;
+				if ( ! terms.contains(term))
+				{
+					if (discarded != NULL)
+						discarded->add(term);
+					shouldRemove = true;
+					changed = true;
+				}
+				return shouldRemove;
+			}),
+		_terms.end()
+	);
 
 	return changed;
 }

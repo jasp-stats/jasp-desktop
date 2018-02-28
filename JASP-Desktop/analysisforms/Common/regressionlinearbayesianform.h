@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -24,6 +24,9 @@
 #include "widgets/tablemodelvariablesassigned.h"
 #include "widgets/tablemodelanovamodel.h"
 
+#include <QSizePolicy>
+
+
 namespace Ui {
 class RegressionLinearBayesianForm;
 }
@@ -36,11 +39,31 @@ public:
 	explicit RegressionLinearBayesianForm(QWidget *parent = 0);
 	~RegressionLinearBayesianForm();
 
+	void defaultOptions();
+	void defaultOptionsModelPrior();
+	void defaultOptionsPriorParams();
+
 	virtual void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
 
 private slots:
+	void on_BAS_clicked();
+	void on_MCMC_clicked();
+	void on_betaBinomial_clicked();
+	void on_Bernoulli_clicked();
+	void on_uniformPrior_clicked();
+	void on_g_prior_clicked();
+	void on_hyper_g_clicked();
+	void on_hyper_g_laplace_clicked();
+	void on_hyper_g_n_clicked();
+	void on_jzs_clicked();
+	void on_aic_clicked();
+	void on_bic_clicked();
+	void on_eb_global_clicked();
+	void on_eb_local_clicked();
 	void factorsChanging();
 	void factorsChanged();
+	void on_postSummary_toggled(bool checked);
+	void on_postSummaryPlot_toggled(bool checked);
 
 private:
 	Ui::RegressionLinearBayesianForm *ui;

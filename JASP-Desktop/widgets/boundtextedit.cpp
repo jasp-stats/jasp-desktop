@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -61,9 +61,17 @@ BoundTextEdit::BoundTextEdit(QWidget *parent) :
 
 void BoundTextEdit::bindTo(Option *option)
 {
-	if (_model != NULL)
+	if (_model != NULL) {
 		_model->bindTo(option);
 
+		populateFromOption(option);
+	}
+}
+
+void BoundTextEdit::populateFromOption(Option *option)
+{
+	OptionString *text = dynamic_cast<OptionString *>(option);
+	this->setPlainText(QString::fromStdString(text->value()));
 }
 
 void BoundTextEdit::cursorPositionChangedHandler()

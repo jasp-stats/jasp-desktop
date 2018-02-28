@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -60,7 +60,7 @@ ContingencyTablesBayesianForm::ContingencyTablesBayesianForm(QWidget *parent) :
 	ui->effectSizeCredibleIntervalInterval->setLabel("Credible interval");
 	ui->priorConcentration->setLabel("Prior concentration");
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 	ui->effectSize->hide();
 	ui->effectSizeCredibleIntervalContainer->hide();
 	ui->plotPosteriorEffectSize->hide();

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,10 +18,10 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include "../JASP-Common/dataset.h"
-#include "../JASP-Common/lib_json/json.h"
-#include "../JASP-Common/ipcchannel.h"
-#include "../JASP-Common/processinfo.h"
+#include "dataset.h"
+#include "ipcchannel.h"
+#include "processinfo.h"
+#include "jsonredirect.h"
 
 /* The Engine represents the background processes.
  * It's job is pretty straight forward; it reads analysis
@@ -50,6 +50,7 @@ private:
 	bool receiveMessages(int timeout = 0);
 	void runAnalysis();
 	void saveImage();
+    void editImage();
 	void sendResults();
 	std::string callback(const std::string &results, int progress);
 
@@ -57,7 +58,7 @@ private:
 	void provideTempFileName(const std::string &extension, std::string &root, std::string &relativePath);
 	void provideStateFileName(std::string &root, std::string &relativePath);
 
-	typedef enum { empty, toInit, initing, inited, toRun, running, changed, complete, error, exception, aborted, stopped, saveImg } Status;
+	typedef enum { empty, toInit, initing, inited, toRun, running, changed, complete, error, exception, aborted, stopped, saveImg, editImg} Status;
 
 	Status _status;
 

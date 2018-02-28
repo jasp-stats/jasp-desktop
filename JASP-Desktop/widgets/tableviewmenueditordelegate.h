@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -19,14 +19,11 @@
 #ifndef TABLEVIEWCOMBOBOXDELEGATE_H
 #define TABLEVIEWCOMBOBOXDELEGATE_H
 
-#include <QStyledItemDelegate>
-
 #include "common.h"
-#include <QMenu>
-#include <QLabel>
 #include "tableviewmenueditor.h"
+#include "customhoverdelegate.h"
 
-class TableViewMenuEditorDelegate : public QStyledItemDelegate
+class TableViewMenuEditorDelegate : public CustomHoverDelegate
 {
 	Q_OBJECT
 public:
@@ -37,7 +34,6 @@ public:
 
 private slots:
 	void editingFinished();
-
 };
 
 #endif // TABLEVIEWCOMBOBOXDELEGATE_H

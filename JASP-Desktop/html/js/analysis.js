@@ -5,7 +5,8 @@ JASPWidgets.Analysis = Backbone.Model.extend({
 		results: {},
 		status: 'waiting',
 		optionschanged: [],
-		saveimage: []
+		saveimage: [],
+		editimage: []
 	}
 });
 
@@ -79,6 +80,12 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		
 		this.progressbar = new JASPWidgets.Progressbar();
 
+		this.imageToEdit = null;
+		this.ctxImage = null;
+		this.model.on("analysis:resizeStarted", function (image) {
+			this.ctxImage = image
+		}, this);
+
 		this.userdata = this.model.get('userdata');
 		if (this.userdata === undefined || this.userdata === null)
 			this.userdata = {};
@@ -98,6 +105,11 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.model.on("SaveImage:clicked", function (options) {
 			this.trigger("saveimage", this.model.get("id"), options)
 		}, this);
+
+        this.model.on("EditImage:clicked", function (options) {
+
+            this.trigger("editimage", this.model.get("id"), options)
+        }, this);
 
 		this.$el.on("changed:userData", this, this.onUserDataChanged);
 	},
@@ -136,6 +148,28 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		}
 	},
 	
+	modifyImage: function(image, ctx) {
+		var id = '#' + image.name.replace(/[^A-Za-z0-9]/g, '-');
+		if (image.error && image.resized) {
+			ctx.restoreSize(); // sets the properties of the model
+			this.resizeImageContainer(id, ctx.model.get("oldHeight"), ctx.model.get("oldWidth"));
+		} else if (image.resized) {
+			this.resizeImageContainer(id, image.height, image.width)
+			this.insertNewImage(id, image.name);
+		} else {
+			this.insertNewImage(id, image.name);
+		}
+	},
+
+	resizeImageContainer: function(id, height, width) {
+		this.$el.find(id).parent().height(height + 'px');
+		this.$el.find(id).parent().width(width + 'px');
+	},
+
+	insertNewImage: function(id, name) {
+		this.$el.find(id).css('background-image', 'url(\'' + window.globSet.tempFolder + name + '?x=' + Math.random() + '\')');
+	},
+
 	detachNotes: function() {
 		for (var i = 0; i < this.viewNotes.list.length; i++)
 			this.viewNotes.list[i].widget.detach();
@@ -477,6 +511,13 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 	},
 
 	render: function () {
+
+		if (this.imageToEdit != null) { // we only want to re-render adjusted images
+			this.modifyImage(this.imageToEdit, this.ctxImage);
+			this.imageToEdit = null;
+			this.ctxImage = null;
+			return this;
+		}
 
 		var results = this.model.get("results");
 		if (results == "" || results == null) {

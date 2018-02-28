@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -65,8 +65,8 @@ void BoundTextBox::bindTo(Option *option)
 
 	if (_integer != NULL)
 	{
-		int min = _integer->min();
-		int max = _integer->max();
+		int min = _integer->minimum();
+		int max = _integer->maximum();
 
 		this->setValidator(new QIntValidator(min, max, this));
 		this->setText(QString::number(_integer->value()));
@@ -86,8 +86,8 @@ void BoundTextBox::bindTo(Option *option)
 	if (_number != NULL)
 	{
 		double v = _number->value();
-		double min = _number->min();
-		double max = _number->max();
+		double min = _number->minimum();
+		double max = _number->maximum();
 
 		if (_number->format() == "%")
 		{
@@ -144,8 +144,8 @@ void BoundTextBox::finalise()
 		//_integer->setValue(value.toInt());
 
 		double v = value.toInt();
-		double min = _integer->min();
-		double max = _integer->max();
+		double min = _integer->minimum();
+		double max = _integer->maximum();
 
 		bool pc = _integer->format() == "%";
 
@@ -156,7 +156,7 @@ void BoundTextBox::finalise()
 			max *= 100;
 		}
 
-		if (v > _integer->max() || v < _integer->min())
+		if (v > _integer->maximum() || v < _integer->minimum())
 		{
 			if (pc)
 			{
@@ -176,8 +176,8 @@ void BoundTextBox::finalise()
 	else if (_number != NULL)
 	{
 		double v = value.toDouble();
-		double min = _number->min();
-		double max = _number->max();
+		double min = _number->minimum();
+		double max = _number->maximum();
 
 		bool pc = _number->format() == "%";
 
@@ -188,7 +188,7 @@ void BoundTextBox::finalise()
 			max *= 100;
 		}
 
-		if (v > _number->max() || v < _number->min())
+		if (v > _number->maximum() || v < _number->minimum())
 		{
 			if (pc)
 			{

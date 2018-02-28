@@ -1,5 +1,5 @@
 /*
-	Copyright (C) Copyright (C) 2013-2017 University of Amsterdam
+	Copyright (C) Copyright (C) 2013-2018 University of Amsterdam
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -76,17 +76,17 @@ void insert(int row, const std::string& data);
  */
 void ODSImportColumn::createSpace(size_t row)
 {
-#ifndef QT_NO_DEBUG
+#ifdef JASP_DEBUG
 	size_t numAdded = 0;
 #endif
 
 	while (_rows.size() <= row)
-#ifndef QT_NO_DEBUG
+#ifdef JASP_DEBUG
 	{
 		numAdded++;
 #endif
 		_rows.push_back(ODSSheetCell());
-#ifndef QT_NO_DEBUG
+#ifdef JASP_DEBUG
 	}
 
 	if (numAdded != 0)

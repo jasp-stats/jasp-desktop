@@ -559,7 +559,7 @@ QTableView::item::last
                 <number>0</number>
                </property>
                <item row="0" column="1">
-                <widget class="WebView" name="webViewResults" native="true">
+                <widget class="CustomWebEngineView" name="webViewResults" native="true">
                  <property name="cursor">
                   <cursorShape>ArrowCursor</cursorShape>
                  </property>
@@ -587,7 +587,7 @@ QTableView::item::last
                 <number>0</number>
                </property>
                <item row="0" column="0">
-                <widget class="QWebView" name="webViewHelp">
+                <widget class="CustomWebEngineView" name="webViewHelp" native="true">
                  <property name="acceptDrops">
                   <bool>false</bool>
                  </property>
@@ -608,12 +608,6 @@ QTableView::item::last
   </widget>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>QWebView</class>
-   <extends>QWidget</extends>
-   <header>QtWebKitWidgets/QWebView</header>
-   <container>1</container>
-  </customwidget>
   <customwidget>
    <class>MainTableView</class>
    <extends>QTableView</extends>
@@ -654,9 +648,9 @@ QTableView::item::last
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>WebView</class>
+   <class>CustomWebEngineView</class>
    <extends>QWidget</extends>
-   <header>widgets/webview.h</header>
+   <header>widgets/customwebengineview.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -675,8 +669,9 @@ QTableView::item::last
    <class>RibbonMetaAnalysis</class>
    <extends>QWidget</extends>
    <header>ribbons/ribbonmeta_analysis.h</header>
-   </customwidget>
-   <customwidget>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>RibbonNetworkAnalysis</class>
    <extends>QWidget</extends>
    <header>ribbons/ribbonnetworkanalysis.h</header>

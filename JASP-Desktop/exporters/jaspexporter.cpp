@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 University of Amsterdam
+// Copyright (C) 2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 
 #include "libzip/archive.h"
 #include "libzip/archive_entry.h"
-#include "lib_json/json.h"
+#include "jsonredirect.h"
 #include "filereader.h"
 #include "version.h"
 #include "tempfiles.h"

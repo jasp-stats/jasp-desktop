@@ -64,12 +64,22 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 		this.trigger("CustomOptions:changed", options)
 	}, this.model);
 
-    itemModel.on("SaveImage:clicked", function (options) {
+	itemModel.on("SaveImage:clicked", function (options) {
 
-        this.trigger("SaveImage:clicked", options)
-    }, this.model);
+		this.trigger("SaveImage:clicked", options)
+	}, this.model);
 
-    if (ignoreEvents === false) {
+	itemModel.on("EditImage:clicked", function (options) {
+
+		this.trigger("EditImage:clicked", options)
+	}, this.model);
+		
+	itemModel.on("analysis:resizeStarted", function (image) {
+		
+		this.trigger("analysis:resizeStarted", image)
+	}, this.model);
+	
+	if (ignoreEvents === false) {
 		this.listenTo(itemView, "toolbar:showMenu", function (obj, options) {
 
 			this.trigger("toolbar:showMenu", obj, options);

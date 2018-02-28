@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 University of Amsterdam
+// Copyright (C) 2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -100,7 +100,7 @@ void TextFileReadTest::asyncloaderTester()
 
       wasBlocked = asl->blockSignals(true);     //block all signals emitted by the Asyncloader object
       asl->loadTask(fe, dsp);
-      asl->_thread.quit();
+      //asl->_thread.quit();
 
       QVERIFY(checkIfEqual(&fc));               //test the opening and reading of text files
     }

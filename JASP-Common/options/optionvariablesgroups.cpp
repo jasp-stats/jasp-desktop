@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -47,15 +47,15 @@ void OptionVariablesGroups::set(const Json::Value &value)
 {
 	vector<vector<string> > groups;
 
-	for (Json::ValueIterator itr = value.begin(); itr != value.end(); itr++)
+    for (auto itr = value.begin(); itr != value.end(); itr++)
 	{
 		vector<string> group;
 
-		Json::Value &g = *itr;
+        auto &g = *itr;
 
-		for (Json::ValueIterator gtr = g.begin(); gtr != g.end(); gtr++)
+        for (auto gtr = g.begin(); gtr != g.end(); gtr++)
 		{
-			Json::Value &v = *gtr;
+            auto &v = *gtr;
 			string variable = v.asString();
 			group.push_back(variable);
 		}

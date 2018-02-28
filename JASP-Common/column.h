@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -130,6 +130,7 @@ public:
 	~Column();
 
 	std::string name() const;
+	int id() const;
 	void setName(std::string name);
 
 	void setValue(int row, int value);
@@ -193,7 +194,7 @@ private:
 	BlockMap _blocks;
 	Labels _labels;
 
-	int id;
+	int _id;
 	static int count;
 
 	void _setRowCount(int rowCount);

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 University of Amsterdam
+// Copyright (C) 2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,6 +17,11 @@
 
 #ifndef _CODEPAGE_CONVERT_H_
 #define _CODEPAGE_CONVERT_H_
+
+#ifdef __WIN32__ //TODO: what is the define for VS compiler
+#define strcasecmp(a,b) stricmp(a,b)
+#endif
+
 
 #include <QTextCodec>
 #include <QSet>

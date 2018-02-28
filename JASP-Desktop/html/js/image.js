@@ -30,16 +30,25 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 
 		this.exportBegin(exportParams);
 
-		return true;
+		return true; 
 	},
 
 	saveImageClicked: function(){
-	    var options = {name: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height")};
-	    this.model.trigger("SaveImage:clicked", options);
+	    var args = {name: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height")};
+	    this.model.trigger("SaveImage:clicked", args);
 	},
 
 	isConvertible: function() {
 		return this.model.get("convertible") == true;
+	},
+
+	editImageClicked: function(){
+		var args = {name: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), type: "interactive"};
+		this.model.trigger("EditImage:clicked", args);
+	},
+
+	isEditable: function() {
+		return this.model.get("editable") == true;
 	},
 
 	hasNotes: function () {
@@ -92,24 +101,30 @@ JASPWidgets.imagePrimative= JASPWidgets.View.extend({
 	},
 
 	onResized: function (w, h) {
-		var options = {};
-		var custom = this.model.get("custom");
-		if (custom !== null) {
-			if (_.has(custom, "width"))
-				options[custom.width] = w;
-			if (_.has(custom, "height"))
-				options[custom.height] = h;
-		};
-
-		this.model.trigger("CustomOptions:changed", options);
+		if (this.resizer.isResizing()) {
+			var args = { name: this.model.get("data"), width: w, height: h, type: "resize" };
+			this.model.trigger("EditImage:clicked", args);
+		}
 	},
 
 	onResizeStart: function (w, h) {
+		this.setBackupValues(w, h);
+		this.model.trigger("analysis:resizeStarted", this);
 		this.$el.addClass("jasp-image-resizable");
 	},
 
 	onResizeStop: function (w, h) {
 		this.$el.removeClass("jasp-image-resizable");
+	},
+
+	setBackupValues: function(w, h) {
+		this.model.set({ oldWith: w, oldHeight: h });
+	},
+
+	restoreSize: function() {
+		var width = this.model.get("oldWith");
+		var height = this.model.get("oldHeight");
+		this.model.set({ width: width, height: height });
 	},
 
 	events: {
@@ -138,10 +153,13 @@ JASPWidgets.imagePrimative= JASPWidgets.View.extend({
 		if (error)
 			this.$el.addClass("error-state");
 
-		html += '<div class="jasp-image-image" style="'
+		html += '<div class="jasp-image-image"';
 
 		if (data) {
-			html += 'background-image : url(\'' + data + '?x=' + Math.random() + '\'); '
+
+			var id = data.replace(/[^A-Za-z0-9]/g, '-');
+			html += ' id="' + id + '" style="';
+            html += 'background-image : url(\'' + window.globSet.tempFolder + data + '?x=' + Math.random() + '\'); '
 
 			html += 'background-size : 100% 100%; '
 		}
@@ -197,8 +215,8 @@ JASPWidgets.imagePrimative= JASPWidgets.View.extend({
 			callback.call(this, exportParams, new JASPWidgets.Exporter.data(null, this._getHTMLImage(htmlImageFormatData, width, height, exportParams)));
 		else {
 			var data = this.model.get("data");
-			JASPWidgets.Encodings.base64Request(data, function (base64) {
-				htmlImageFormatData.embedded = base64;
+			convertToBase64Begin(data, function (base64) {
+ 				htmlImageFormatData.embedded = base64;
 				if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.temporary) {
 					saveImageBegin(data, base64, function (fullpath) {
 						htmlImageFormatData.temporary = fullpath;

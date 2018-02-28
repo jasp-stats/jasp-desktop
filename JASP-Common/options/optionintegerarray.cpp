@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,6 +25,11 @@ OptionIntegerArray::OptionIntegerArray()
 {
 }
 
+void OptionIntegerArray::init(const Json::Value &data)
+{
+	this->set(data.get("default", Json::nullValue));
+}
+
 Json::Value OptionIntegerArray::asJSON() const
 {
 	Json::Value array = Json::arrayValue;
@@ -39,7 +44,7 @@ void OptionIntegerArray::set(const Json::Value &value)
 {	
 	vector<int> ints;
 
-	for (Json::ValueIterator itr = value.begin(); itr != value.end(); itr++)
+    for (auto itr = value.begin(); itr != value.end(); itr++)
 		ints.push_back((*itr).asInt());
 
 	_value = ints;

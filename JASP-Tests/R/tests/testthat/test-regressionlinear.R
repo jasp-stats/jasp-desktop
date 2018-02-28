@@ -82,6 +82,48 @@ test_that("Coefficients Covariance table results match", {
   )
 })
 
+test_that("Coefficients table and Coefficients Covariance table results match if one predictor is redundant", {
+  options <- jasptools::analysisOptions("RegressionLinear")
+  options$dependent <- "contNormal"
+  options$covariates <- c("contcor1", "contcor2", "contWide", "contNarrow")
+  options$modelTerms <- list(
+    list(components="contcor1", isNuisance=FALSE),
+    list(components="contcor2", isNuisance=FALSE),
+    list(components="contWide", isNuisance=FALSE),
+    list(components="contNarrow", isNuisance=FALSE)
+  )
+  options$wlsWeights <- "contExpon"
+  options$regressionCoefficientsCovarianceMatrix <- TRUE
+  options$regressionCoefficientsEstimates <- TRUE
+  options$regressionCoefficientsConfidenceIntervals <- TRUE
+  options$regressionCoefficientsConfidenceIntervalsInterval <- 0.9
+  options$collinearityDiagnostics <- TRUE
+  options$VovkSellkeMPR <- TRUE
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
+  table <- results[["results"]][["regression"]][["data"]]
+  expect_equal_tables(table,
+                      list(1, "(Intercept)", 1.33434073707233, 2.81095978222863e-05, "",
+                           47469.221918729, 0, "<unicode>", 1.3343404191673, 1.33434105497735,
+                           "", "", "TRUE", "", "contcor1", 1.72516580772465, 6.41591142499465e-05,
+                           1.64925074298834, 26888.8657191224, 0, "<unicode>", 1.72516508211823,
+                           1.72516653333107, 0.558299066469893, 1.791154705529, "", "contcor2",
+                           -1.40594968039645, 5.05144613813557e-05, -1.333867430074, -27832.6174713084,
+                           0, "<unicode>", -1.4059502516889, -1.405949109104, 0.54548459286082,
+                           1.83323234622531, "", "contWide", -1.76878392620031e-100, 5.27590104039445e-105,
+                           -0.858338348234611, -33525.7221971713, 0, "<unicode>", -1.76878452287745e-100,
+                           -1.76878332952317e-100, 0.977238268419677, 1.02329189545261,
+                           "", "contNarrow<unicode>", "NA", "", "", "", "", "", "", "",
+                           0.963466425286736, 1.03791888721228), label = 'Coefficients table'
+  )
+  table <- results[["results"]][["coefficient covariances"]][["data"]]
+  expect_equal_tables(table,
+                      list(1, "contcor1", "TRUE", 4.11639194133768e-09, -3.2249207411404e-09,
+                           -2.54665403177778e-109, "NA", "", "contcor2", "", 2.55171080864847e-09,
+                           2.11792385766019e-109, "NA", "", "contWide", "", "", 2.78351317880352e-209,
+                           "NA", "", "contNarrow<unicode>", "", "", "", "NA"), label = "Coefficients Covariance table"
+  )
+})
+
 test_that("Descriptive table results match", {
   options <- jasptools::analysisOptions("RegressionLinear")
   options$dependent <- "contNormal"

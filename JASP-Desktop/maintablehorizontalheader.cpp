@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,9 +34,10 @@ MainTableHorizontalHeader::MainTableHorizontalHeader(QWidget *parent) :
 
 	this->setToolTip("Click on column name to change labels.");
 
-	_convertToScale = _menu->addAction(_scaleIcon, "", this, SLOT(scaleSelected()));
-	_convertToOrdinal = _menu->addAction(_ordinalIcon, "", this, SLOT(ordinalSelected()));
-	_convertToNominal = _menu->addAction(_nominalIcon, "", this, SLOT(nominalSelected()));
+	_convertToScale = _menu->addAction(_scaleIcon, " Continuous", this, SLOT(scaleSelected()));
+	_convertToOrdinal = _menu->addAction(_ordinalIcon, " Ordinal", this, SLOT(ordinalSelected()));
+	_convertToNominal = _menu->addAction(_nominalIcon, " Categorical", this, SLOT(nominalSelected()));
+
 }
 
 void MainTableHorizontalHeader::setModel(QAbstractItemModel *model)

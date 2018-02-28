@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2013-2015 University of Amsterdam
+# Copyright (C) 2013-2018 University of Amsterdam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1306,6 +1306,18 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		}
 
 		regression[["data"]] <- regression.result
+		
+		# Check whether variables in the regression model are redundant
+		for(i in 1:length(regression$data)) {
+		  if (regression$data[[i]]$Coefficient=="NA") {
+		    # Add footnote
+		    footnotes <- .newFootnotes()
+		    .addFootnote(footnotes, "The regression coefficient for one or more of the variables specified in the regression model could not be estimated (that is, the coefficient is not available (NA)). The most likely reasons for this to occur are multicollinearity or a large number of missing values.", symbol = "\u207A")
+		    # Add footnote symbol to name of the redundant variable
+		    regression$data[[i]]$Name <- paste0(regression$data[[i]]$Name, "\u207A")
+		  }
+		}
+		
 		regression[["footnotes"]] <- as.list(footnotes)
 		results[["regression"]] <- regression
 
@@ -1380,11 +1392,32 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					}
 
 					rownames.covmatrix <- variables.model
-					rownames(model.covmatrix) <- rownames.covmatrix
 					colnames.covmatrix <- variables.model
+					
+					# Check whether variables in the regression model are redundant
+					for(i in 1:length(lm.model[[1]]$lm.fit$coefficients)) {
+					  if (is.na(lm.model[[1]]$lm.fit$coefficients[i])) {
+					    # If so, model.covmatrix does not include this variable -> Add row and column with NA as "values"
+					    model.covmatrix<-cbind(model.covmatrix, NA)
+					    model.covmatrix<-rbind(model.covmatrix, NA)
+					    # Add footnote for this case
+					    footnotes <- .newFootnotes()
+					    .addFootnote(footnotes = footnotes, text = "One or more of the variables specified in the regression model are redundant. Therefore, they are dropped from the model covariance matrix.", symbol = "\u207A")
+					    covmatrix[["footnotes"]] <- as.list(footnotes)
+					    # Add footnote symbol to name of the redundant variable (if-statement needed as intercept is part of the coefficients but not of cov.matrix)
+					    if (options$includeConstant) {
+					      rownames.covmatrix[i-1] <- paste0(rownames.covmatrix[i-1], "\u207A")
+					    }
+					    else {
+					      rownames.covmatrix[i] <- paste0(rownames.covmatrix[i], "\u207A")
+					    }
+					  }
+					}
+					
+					rownames(model.covmatrix) <- rownames.covmatrix
 					colnames(model.covmatrix) <- colnames.covmatrix
-
-
+					
+					
 					for (row.variable in rownames.covmatrix) {
 
 						if (grepl(":", row.variable)) {
@@ -1431,7 +1464,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 								covmatrix.row[[col.variable.name]] <- ""
 
 							} else {
-								covmatrix.row[[col.variable.name]] <- .clean(model.covmatrix[row.index, col.index])
+
+							  # For consistent representation of NA with the coefficients table
+							  if (is.na(model.covmatrix[row.index, col.index])) {
+							    covmatrix.row[[col.variable.name]] <- 'NA'
+							  } else {
+							    covmatrix.row[[col.variable.name]] <- .clean(model.covmatrix[row.index, col.index])
+							  }
 							}
 
 						}
@@ -1888,8 +1927,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	plots.regression <- list()
 	plotTypes <- list()
 	plotsResVsCov <- list()
-
-	lm.model <- lm.model[[length(lm.model)]]
+	
+	if (perform == "run" && length(list.of.errors) == 0 && dependent.variable != "") {
+	  lm.model <- lm.model[[length(lm.model)]]
+	}
 
 	if (options$plotResidualsDependent) {
 
@@ -3038,9 +3079,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	}
 
-	tValues <- tValues[- (names(tValues) %in% independent.null.variables)]
-	pValues <- pValues[- (names(tValues) %in% independent.null.variables)]
-
+	tValues <- tValues[! (names(tValues) %in% independent.null.variables)]
+	pValues <- pValues[! (names(pValues) %in% independent.null.variables)]
+  
 	fValues <- tValues^2
 
 	if (options$steppingMethodCriteriaType == "useFValue") {
@@ -3063,7 +3104,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		maximumPvalue <- max(pValues)
 
 		if (maximumPvalue > options$steppingMethodCriteriaPRemoval) {
-
 			maximumPvalueVariable <- names(which.max(pValues))
 			new.independent.variables <- independent.variables[independent.variables != maximumPvalueVariable]
 
@@ -3128,9 +3168,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	while ( ! identical(old.independent.variables, new.independent.variables) && length(new.independent.variables) > 0) {
 
-		old.independent.variables <- .vWithInteraction(lm.model[[ length(lm.model) ]]$variables)
+    old.independent.variables <- .vWithInteraction(lm.model[[ length(lm.model) ]]$variables)
 		lm.model[[ length(lm.model) + 1 ]] <- .removeVariable(dependent.variable, old.independent.variables, independent.null.variables, data, options, weights)
-		new.independent.variables <- .vWithInteraction(lm.model[[ length(lm.model) ]]$variables)
+		new.independent.variables <- .vWithInteraction(lm.model[[ length(lm.model) ]]$variables) 
 
 	}
 

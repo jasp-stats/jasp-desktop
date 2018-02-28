@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -92,9 +92,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu = new QMenu(this);
 
 	menu->addAction(QString("Binomial Test"), this, SLOT(itemSelected()))->setObjectName("BinomialTest");
-#ifdef QT_DEBUG
 	menu->addAction(QString("Multinomial Test"), this, SLOT(itemSelected()))->setObjectName("MultinomialTest");
-#endif
 	menu->addAction(QString("Contingency Tables"), this, SLOT(itemSelected()))->setObjectName("ContingencyTables");
     menu->addAction(QString("Log-Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLogLinear");
 

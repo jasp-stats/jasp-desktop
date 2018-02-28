@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2013-2015 University of Amsterdam
+# Copyright (C) 2013-2018 University of Amsterdam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -359,7 +359,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	state[["stateDescriptivesTable"]] <- stateDescriptivesTable
 	state[["stateMarginalMeans"]] <- stateMarginalMeans
 	state[["stateSimpleEffects"]] <- stateSimpleEffects
-
 	if (perform == "init" && status$ready && status$error == FALSE) {
 	  
 		return(list(results=results, status="inited", state=state, keep=c(stateqqPlot$data, keepDescriptivesPlot)))
@@ -626,7 +625,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 }
 
 .anovaModel <- function(dataset, options) {
-
+  
 	reorderModelTerms <-  .reorderModelTerms(options)
 	modelTerms <- reorderModelTerms$modelTerms
 
@@ -1123,18 +1122,17 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			contrastMatrix <- list(.postHocContrasts(variable.levels, dataset, options))
 			names(contrastMatrix) <- .v(posthoc.var)
 			r <- multcomp::glht(model,do.call(multcomp::mcp, contrastMatrix))
-
 			statePostHoc[[posthoc.var]]$resultBonf <- summary(r,test=multcomp::adjusted("bonferroni"))
-
+      
 			# Results using the Holm method
 
 			statePostHoc[[posthoc.var]]$resultHolm <- summary(r,test=multcomp::adjusted("holm"))
 
 			statePostHoc[[posthoc.var]]$comparisonsTukSchef <- strsplit(names(statePostHoc[[posthoc.var]]$resultTukey$test$coefficients)," - ")
 			statePostHoc[[posthoc.var]]$comparisonsBonfHolm <- strsplit(names(statePostHoc[[posthoc.var]]$resultBonf$test$coefficients)," - ")
-
+			
 		}
-
+		
 		for (i in 1:length(variable.levels)) {
 
 			for (j in .seqx(i+1, length(variable.levels))) {
@@ -1189,8 +1187,14 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 							t <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultTukey$test$tstat[index1]))
 						}
 						
-						if (options$postHocTestEffectSize) 
-						  effectSize <- .clean(t/sqrt(nrow(dataset)))
+						if (options$postHocTestEffectSize & nrow(dataset) > 0) {
+						  x <- dataset[(dataset[.v(posthoc.var)] == variable.levels[[i]]), .v(options$dependent)]
+						  y <- dataset[(dataset[.v(posthoc.var)] == variable.levels[[j]]), .v(options$dependent)]
+						  n1 <- length(x)
+						  n2 <- length(y)
+						  den <- sqrt(((n1 - 1) * var(x) + (n2 - 1) * var(y)) / (n1 + n2 - 2))
+						  effectSize <- .clean(md / den)
+						}
 
 						if (options$postHocTestsTukey)
 							pTukey <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultTukey$test$pvalues[index1]))
@@ -1626,7 +1630,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	list(result=marginalMeans, status=status, stateMarginalMeans=stateMarginalMeans)
 }
 
-.anovaSimpleEffects <- function(dataset, options, perform, fullAnovaTable, status, singular, stateMarginalMeans) {
+.anovaSimpleEffects <- function(dataset, options, perform, fullAnovaTable, status, singular, stateSimpleEffects) {
   
   if (identical(options$simpleFactor, "") | identical(options$moderatorFactorOne, ""))
     return (list(result=NULL, status=status))

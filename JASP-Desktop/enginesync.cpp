@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -27,9 +27,7 @@
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 #include <boost/foreach.hpp>
-
-#include "lib_json/json.h"
-
+#include "jsonredirect.h"
 #include "processinfo.h"
 #include "common.h"
 #include "appinfo.h"
@@ -52,6 +50,7 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 	connect(_analyses, SIGNAL(analysisOptionsChanged(Analysis*)), this, SLOT(sendMessages()));
 	connect(_analyses, SIGNAL(analysisToRefresh(Analysis*)), this, SLOT(sendMessages()));
 	connect(_analyses, SIGNAL(analysisSaveImage(Analysis*)), this, SLOT(sendMessages()));
+    connect(_analyses, SIGNAL(analysisEditImage(Analysis*)), this, SLOT(sendMessages()));
 
 	// delay start so as not to increase program start up time
 	QTimer::singleShot(100, this, SLOT(deleteOrphanedTempFiles()));
@@ -91,7 +90,7 @@ void EngineSync::start()
 
 		_channels.push_back(new IPCChannel(_memoryName, 0));
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 		_channels.push_back(new IPCChannel(_memoryName, 1));
 		_channels.push_back(new IPCChannel(_memoryName, 2));
 		_channels.push_back(new IPCChannel(_memoryName, 3));
@@ -138,7 +137,7 @@ void EngineSync::setPPI(int ppi)
 
 void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 {
-#ifdef QT_DEBUG
+#ifdef JASP_DEBUG
 	std::cout << "send " << analysis->id() << " to process " << processNo << "\n";
 	std::cout.flush();
 #endif
@@ -154,6 +153,10 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	{
 		perform = "saveImg";
 	}
+    else if (analysis->status() == Analysis::EditImg)
+    {
+        perform = "editImg";
+    }
 	else if (analysis->status() == Analysis::Aborting)
 	{
 		perform = "abort";
@@ -178,8 +181,7 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	{
 		json["name"] = analysis->name();
 		json["title"] = analysis->title();
-		if (perform == "saveImg")
-		{
+        if (perform == "saveImg" || perform == "editImg") {
 			json["image"] = analysis->getSaveImgOptions();
 		}
 		else
@@ -198,7 +200,7 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	string str = json.toStyledString();
 	_channels[processNo]->send(str);
 
-#ifndef QT_NO_DEBUG
+#ifdef JASP_DEBUG
 	cout << str << "\n";
 	cout.flush();
 #endif
@@ -219,7 +221,7 @@ void EngineSync::process()
 
 		if (channel->receive(data))
 		{
-#ifdef QT_DEBUG
+#ifdef JASP_DEBUG
 			std::cout << "message received\n";
 			std::cout << data << "\n";
 			std::cout.flush();
@@ -259,6 +261,13 @@ void EngineSync::process()
 				_analysesInProgress[i] = NULL;
 				sendMessages();
 			}
+            else if (status == "imageEdited")
+            {
+                analysis->setStatus(Analysis::Complete);
+                analysis->setImageEdited(results);
+                _analysesInProgress[i] = NULL;
+                sendMessages();
+            }
 			else if (status == "complete")
 			{
 				analysis->setStatus(Analysis::Complete);
@@ -320,7 +329,7 @@ void EngineSync::sendMessages()
 		if (analysis == NULL)
 			continue;
 
-		if (analysis->status() == Analysis::Empty || analysis->status() == Analysis::SaveImg)
+		if (analysis->status() == Analysis::Empty || analysis->status() == Analysis::SaveImg || analysis->status() == Analysis::EditImg)
 		{
 			bool sent = false;
 
@@ -339,7 +348,7 @@ void EngineSync::sendMessages()
 		}
 		else if (analysis->status() == Analysis::Inited)
 		{
-#ifndef QT_DEBUG
+#ifndef JASP_DEBUG
 			for (size_t i = 1; i < _analysesInProgress.size(); i++) // don't perform 'runs' on process 0, only inits.
 #else
 			for (size_t i = 0; i < _analysesInProgress.size(); i++)
@@ -427,17 +436,39 @@ void EngineSync::startSlaveProcess(int no)
 
 #else  // linux
 
-	env.insert("LD_LIBRARY_PATH", rHome.absoluteFilePath("lib") + ";" + rHome.absoluteFilePath("library/RInside/lib") + ";" + rHome.absoluteFilePath("library/Rcpp/lib") + ";" + rHome.absoluteFilePath("site-library/RInside/lib") + ";" + rHome.absoluteFilePath("site-library/Rcpp/lib"));
-	env.insert("R_HOME", rHome.absolutePath());
-	env.insert("R_LIBS", programDir.absoluteFilePath("R/library") + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
+	env.insert("LD_LIBRARY_PATH",	rHome.absoluteFilePath("lib") + ":" + rHome.absoluteFilePath("library/RInside/lib") + ":" + rHome.absoluteFilePath("library/Rcpp/lib") + ":" + rHome.absoluteFilePath("site-library/RInside/lib") + ":" + rHome.absoluteFilePath("site-library/Rcpp/lib") + ":/app/lib/:/app/lib64/");
+	env.insert("R_HOME",			rHome.absolutePath());
+	env.insert("R_LIBS",			programDir.absoluteFilePath("R/library") + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
 
 #endif
 
 	QProcess *slave = new QProcess(this);
 	slave->setProcessChannelMode(QProcess::ForwardedChannels);
 	slave->setProcessEnvironment(env);
-	slave->start(engineExe, args);
 
+#ifdef __WIN32__
+	/*
+	On Windows, QProcess uses the Win32 API function CreateProcess to
+	start child processes.In some casedesirable to fine-tune
+	the parameters that are passed to CreateProcess.
+	This is done by defining a CreateProcessArgumentModifier function and passing it
+	to setCreateProcessArgumentsModifier
+
+	bInheritHandles [in]
+	If this parameter is TRUE, each inheritable handle in the calling process
+	is inherited by the new process. If the parameter is FALSE, the handles
+	are not inherited.
+	*/
+
+	slave->setCreateProcessArgumentsModifier([] (QProcess::CreateProcessArguments *args)
+	{
+#ifndef QT_DEBUG
+		args->inheritHandles = false;
+#endif
+	});
+#endif
+
+	slave->start(engineExe, args);
 
 	_slaveProcesses.push_back(slave);
 
@@ -491,4 +522,3 @@ void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus exitStatu
 
 	qDebug() << "subprocess finished" << exitCode;
 }
-

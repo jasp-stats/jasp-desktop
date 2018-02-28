@@ -1,5 +1,5 @@
 ﻿//
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -87,11 +87,15 @@ void Analysis::setImageResults(Json::Value results)
 	imageSaved(this);
 }
 
-void Analysis::setUserData(Json::Value userData, bool silient)
+void Analysis::setImageEdited(Json::Value results)
+{
+    _imgResults = results;
+    imageEdited(this);
+}
+
+void Analysis::setUserData(Json::Value userData)
 {
 	_userData = userData;
-	if ( ! silient)
-		userDataLoaded(this);
 }
 
 const Json::Value &Analysis::results() const
@@ -125,6 +129,8 @@ Analysis::Status Analysis::parseStatus(string name)
 		return Analysis::Aborted;
 	else if (name == "SaveImg")
 		return Analysis::SaveImg;
+    else if (name == "EditImg")
+        return Analysis::SaveImg;
 	else if (name == "exception")
 		return Analysis::Exception;
 	else
@@ -168,6 +174,8 @@ Json::Value Analysis::asJSON() const
 		break;
 	case Analysis::SaveImg:
 		status = "SaveImg";
+    case Analysis::EditImg:
+        status = "EditImg";
 	case Analysis::Exception:
 		status = "exception";
 		break;

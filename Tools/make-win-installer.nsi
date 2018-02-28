@@ -5,7 +5,7 @@
 !include "nsProcess.nsh"
 !include "x64.nsh"
 
-!define VERSION "0.8.5.0"
+!define VERSION "0.8.6.0"
 !define APP_NAME "JASP"
 !define INSTALLER_NAME "${APP_NAME}-${VERSION}-Setup.exe"
 !define CONTENTS_DIR "C:\Jasp\Install"

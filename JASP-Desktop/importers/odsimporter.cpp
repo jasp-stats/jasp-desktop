@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -88,11 +88,11 @@ void ODSImporter::readManifest(const string &path, ODSImportDataSet *dataset)
 	{
 		// Get the data file proper from the ODS manifest file.
 		FileReader manifest(path, ODSImportDataSet::manifestPath);
-		QString tmp;
+		string tmp;
 		int errorCode = 0;
-		if (((tmp = manifest.readAllData(errorCode)).size() == 0) || (errorCode < 0))
+		if (((tmp = manifest.readAllData(4096, errorCode)).size() == 0) || (errorCode < 0))
 			throw runtime_error("Error reading manifest in ODS.");
-		src.setData(tmp);
+		src.setData(QString::fromStdString(tmp));
 		manifest.close();
 	}
 
@@ -112,11 +112,11 @@ void ODSImporter::readContents(const string &path, ODSImportDataSet *dataset)
 
 	QXmlInputSource src;
 	{
-		QString tmp;
+		string tmp;
 		int errorCode = 0;
-		if (((tmp = contents.readAllData(errorCode)).size() == 0) || (errorCode < 0))
+		if (((tmp = contents.readAllData(4096, errorCode)).size() == 0) || (errorCode < 0))
 			throw runtime_error("Error reading contents in ODS.");
-		src.setData(tmp);
+		src.setData(QString::fromStdString(tmp));
 	}
 
 	{

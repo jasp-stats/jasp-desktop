@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -81,7 +81,7 @@ SubjectivePriorsWidget::SubjectivePriorsWidget(QWidget *parent) :
 	ui->label_uniformDienesUpperBound->hide();
 	ui->uniformDienesUpperBound->hide();
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 	QGridLayout *gridLayout = (QGridLayout *)ui->effectSize->layout();
 	gridLayout->setMargin(0);
 	gridLayout = (QGridLayout *)ui->effectSizeStandardized->layout();

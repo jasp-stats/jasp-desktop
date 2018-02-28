@@ -1,5 +1,5 @@
 /*
-	Copyright (C) Copyright (C) 2013-2017 University of Amsterdam
+	Copyright (C) Copyright (C) 2013-2018 University of Amsterdam
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 
 using namespace ods;
 
-#ifndef QT_NO_DEBUG
+#ifdef JASP_DEBUG
 const char * const ods::ODSTYPE_STR[] =
 {
 	"odsType_unknown",

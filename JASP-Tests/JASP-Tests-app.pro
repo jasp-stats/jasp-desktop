@@ -1,5 +1,5 @@
 
-QT += core gui webkit webkitwidgets svg network testlib printsupport xml
+QT += core gui webenginewidgets svg network testlib printsupport xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -32,7 +32,7 @@ LIBS += -L.. -lJASP-Common
 
 windows:LIBS += -lboost_filesystem-mgw48-mt-1_64 -lboost_system-mgw48-mt-1_64 -larchive.dll
    macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz
-  linux:LIBS += -lboost_filesystem    -lboost_system    -larchive -lrt
+  linux:LIBS += -lboost_filesystem    -lboost_system    -larchive -lrt -ljsoncpp
 
 
 windows:LIBS += -lole32 -loleaut32
@@ -45,6 +45,8 @@ macx:QMAKE_CXXFLAGS += -stdlib=libc++
 
 
 QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
+
+macx | windows { DEFINES += JASP_NOT_LINUX }
 
 linux {
     _R_HOME = $$(R_HOME)

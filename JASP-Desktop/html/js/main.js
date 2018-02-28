@@ -7,7 +7,7 @@ window.getPPI = function () {
 }
 
 
-
+var jasp;
 
 $(document).ready(function () {
 	var d = new Date();
@@ -16,7 +16,12 @@ $(document).ready(function () {
 	if ((month == 11 && day >= 19) || (month == 0 && day <= 5))
 		$("#note").css("background-image", "url('img/snow.gif')");
 	
-	var ua = navigator.userAgent.toLowerCase();
+    if (typeof qt !== "undefined")
+        var ch = new QWebChannel(qt.webChannelTransport, function (channel) {
+                // now you retrieve your object
+                jasp = channel.objects.jasp;
+            });
+    var ua = navigator.userAgent.toLowerCase();
 
 	if (ua.indexOf("windows") !== -1)
 		$("body").addClass("windows")
@@ -24,7 +29,8 @@ $(document).ready(function () {
 	// Global settings for analysis output. Add here if making new setting.
 	window.globSet = {
 		"pExact" : false,
-		"decimals": ""
+        "decimals": "",
+        "tempFolder": ""
 	}
 
 	var selectedAnalysisId = -1;
@@ -39,11 +45,18 @@ $(document).ready(function () {
 	var showInstructions = false;
 	
 	var analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
-	
+
+
 	window.reRenderAnalyses = function () {
 		analyses.reRender();
 	}
 
+	window.modifySelectedImage = function(id, image) {
+		var jaspWidget = analyses.getAnalysis(id);
+		jaspWidget.imageToEdit = image;
+		jaspWidget.render();
+	}
+	
 	window.select = function (id) {
 
 		if (selectedAnalysis != null)
@@ -59,32 +72,9 @@ $(document).ready(function () {
 		}
 	}
 
-	window.setAppYear = function () {
-		var d = new Date();
-		var year = d.getFullYear();
-		$(".app-year").text(year);
-	}
-
 	window.setAppVersion = function (version) {
 		$(".app-version").text("Version " + version);
 	}
-
-	window.setNewVersion = function (version) {
-		$(".new-version").text("New version available " + version);
-	}
-	
-	window.showDownLoadButton = function (show, href) {
-		
-		$(".btn-primary").attr('href',href)
-		if (show)
-			$(".download-newversion-button").show();
-		else
-			$(".download-newversion-button").hide();
-	}
-	
-    window.setAppBuildDate = function(builddate){
-       $(".app-builddate").text(builddate);
-    }
 
     window.noInstructions = function () {
         $('#instructions').text("");
@@ -123,6 +113,13 @@ $(document).ready(function () {
     window.saveImageClicked = function () {
         if (window.menuObject.saveImageClicked | window.menuObject.saveImageClicked())
             window.menuObject.saveImageClicked();
+
+        window.menuObject = null;
+    }
+
+    window.editImageClicked = function () {
+        if (window.menuObject.editImageClicked | window.menuObject.editImageClicked())
+            window.menuObject.editImageClicked();
 
         window.menuObject = null;
     }
@@ -507,6 +504,12 @@ $(document).ready(function () {
                 jasp.analysisSaveImage(id, JSON.stringify(options))
 
             });
+            
+            jaspWidget.on("editimage", function (id, options) {
+
+                jasp.analysisEditImage(id, JSON.stringify(options))
+
+            });
 
 			jaspWidget.on("toolbar:showMenu", function (obj, options) {
 
@@ -545,8 +548,6 @@ $(document).ready(function () {
 	});
 
 	$("body").click(window.unselectByClickingBody)
-
-
 })
 
 var wrapHTML = function (html, exportParams) {
@@ -607,8 +608,28 @@ var saveImageBegin = function (path, base64, callback, context) {
 window.imageSaved = function (args) {
 	var callbackData = savingImages[args.id];
 	callbackData.callback.call(callbackData.context, args.fullPath);
-	delete savingImages.savingId;
+	delete savingImages[args.id];
 }
+
+var convertToBase64Id = 0;
+var convertToBase64Images = {};
+
+var convertToBase64Begin = function (path, callback, context) {
+	var index = convertToBase64Id;
+	convertToBase64Id += 1;
+	convertToBase64Images[index] = {
+		callback: callback,
+		context: context
+	}
+	jasp.getImageInBase64(index, path);
+}
+
+window.convertToBase64Done = function (args) {
+	var callbackData = convertToBase64Images[args.id];
+	callbackData.callback.call(callbackData.context, args.result);
+    delete convertToBase64Images[args.id];
+}
+
 
 window.resultsDocumentChanged = function () {
 	jasp.resultsDocumentChanged();

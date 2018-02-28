@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -20,7 +20,6 @@
 #define ASYNCLOADER_H
 
 #include <QObject>
-#include <QThread>
 #include <QMutex>
 #include <QTimer>
 
@@ -60,7 +59,6 @@ private:
 	QString fileChecksum(const QString &fileName, QCryptographicHash::Algorithm hashAlgorithm);
 
 	void progressHandler(std::string status, int progress);
-	QThread _thread;
 	DataSetLoader _loader;
 
 	FileEvent *_currentEvent;

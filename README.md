@@ -31,10 +31,10 @@
   One of the best ways that you can support the JASP project is by citing it (given below in BiBTeX format)
 </p>
 
-    @MISC{JASP2017,
+    @MISC{JASP2018,
       AUTHOR = {{JASP Team}},
-      TITLE  = {{JASP (Version 0.8.4)[Computer software]}},
-      YEAR   = {2017},
+      TITLE  = {{JASP (Version 0.8.5.1)[Computer software]}},
+      YEAR   = {2018},
       URL    = {https://jasp-stats.org/}
     }
 

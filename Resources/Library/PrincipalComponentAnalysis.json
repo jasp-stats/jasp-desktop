@@ -81,6 +81,12 @@
 			"default": false
 		},
 		{
+            "name": "missingValues",
+            "options": [ "pairwise", "listwise" ],
+            "default": "pairwise",
+            "type": "List"
+        },
+		{
 			"name": "plotWidthPathDiagram",
 			"type": "Integer",
 			"default": 480

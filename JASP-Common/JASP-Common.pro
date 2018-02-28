@@ -1,15 +1,12 @@
 
 QT -= gui
-QT += webkitwidgets
+QT -= core
 
 DESTDIR = ..
 TARGET = JASP-Common
 TEMPLATE = lib
 CONFIG += staticlib
-
-windows:CONFIG += c++11
-linux:CONFIG += c++11
-macx:CONFIG += c++11
+CONFIG += c++11
 
    macx:INCLUDEPATH += ../../boost_1_64_0
 windows:INCLUDEPATH += ../../boost_1_64_0
@@ -17,16 +14,17 @@ windows:INCLUDEPATH += ../../boost_1_64_0
 
 windows:LIBS += -lole32 -loleaut32 -larchive.dll
 
-
-QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
+macx:QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
-QMAKE_CXXFLAGS += -Wno-deprecated-declarations
+macx:QMAKE_CXXFLAGS += -Wno-deprecated-declarations
 macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 macx:QMAKE_CXXFLAGS += -stdlib=libc++
 macx:QMAKE_CXXFLAGS += -DBOOST_INTERPROCESS_SHARED_DIR_FUNC
 
-windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
+windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__ -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
+
+INCLUDEPATH += $$PWD/
 
 SOURCES += \
 	analysis.cpp \
@@ -45,14 +43,9 @@ SOURCES += \
 	ipcchannel.cpp \
 	label.cpp \
 	labels.cpp \
-	lib_json/json_internalarray.inl \
-	lib_json/json_internalmap.inl \
-	lib_json/json_reader.cpp \
-	lib_json/json_value.cpp \
-	lib_json/json_valueiterator.inl \
-	lib_json/json_writer.cpp \
 	options/option.cpp \
 	options/optionboolean.cpp \
+	options/optiondoublearray.cpp \
 	options/optioninteger.cpp \
 	options/optionintegerarray.cpp \
 	options/optionlist.cpp \
@@ -101,19 +94,11 @@ HEADERS += \
 	ipcchannel.h \
 	label.h \
 	labels.h \
-	lib_json/autolink.h \
-	lib_json/config.h \
-	lib_json/features.h \
-	lib_json/forwards.h \
-	lib_json/json_batchallocator.h \
-	lib_json/json.h \
-	lib_json/reader.h \
-	lib_json/value.h \
-	lib_json/writer.h \
 	libzip/archive.h \
 	libzip/archive_entry.h \
 	options/option.h \
 	options/optionboolean.h \
+	options/optiondoublearray.h \
 	options/optioni.h \
 	options/optioninteger.h \
 	options/optionintegerarray.h \
@@ -132,5 +117,34 @@ HEADERS += \
 	tempfiles.h \
 	utils.h \
 	version.h \
-    options/optionvariablei.h
+    options/optionvariablei.h \
+    jsonredirect.h
+
+#exists(/app/lib/*) should only be true when building flatpak
+macx | windows | exists(/app/lib/*) {
+	DEFINES += JASP_LIBJSON_STATIC
+
+    SOURCES += \
+            lib_json/json_internalarray.inl \
+            lib_json/json_internalmap.inl \
+            lib_json/json_reader.cpp \
+            lib_json/json_value.cpp \
+            lib_json/json_valueiterator.inl \
+            lib_json/json_writer.cpp
+
+    HEADERS += \
+            lib_json/autolink.h \
+            lib_json/config.h \
+            lib_json/features.h \
+            lib_json/forwards.h \
+            lib_json/json_batchallocator.h \
+            lib_json/json.h \
+            lib_json/reader.h \
+            lib_json/value.h \
+            lib_json/writer.h
+} else {
+	linux: LIBS += -ljsoncpp
+	CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG }
+}
+
 

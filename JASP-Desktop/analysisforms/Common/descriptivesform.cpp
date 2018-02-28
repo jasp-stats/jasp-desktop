@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -56,7 +56,7 @@ DescriptivesForm::DescriptivesForm(QWidget *parent) :
 	ui->pageFormat->hide();
 	ui->pagePlots->hide();
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 	// temporarily hides until the appropriate R code is implemented
 	//ui->buttonAssignSplitby->hide();
 	//ui->splitPlotColour->hide();

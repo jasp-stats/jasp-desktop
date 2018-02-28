@@ -444,7 +444,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Display distribution plots</string>
+            <string>Distribution plots</string>
            </property>
           </widget>
          </item>
@@ -470,7 +470,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Display boxplots</string>
+            <string>Boxplots</string>
            </property>
           </widget>
          </item>
@@ -483,7 +483,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Display correlation plot</string>
+            <string>Correlation plot</string>
            </property>
           </widget>
          </item>
@@ -502,7 +502,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Display frequency tables (nominal and ordinal variables)</string>
+      <string>Frequency tables (nominal and ordinal variables)</string>
      </property>
     </widget>
    </item>

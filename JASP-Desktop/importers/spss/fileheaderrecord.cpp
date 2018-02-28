@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2017 University of Amsterdam
+// Copyright (C) 2015-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include "spssimportdataset.h"
 
 #include <assert.h>
+#include <iostream>
 
 using namespace std;
 using namespace boost;
@@ -80,9 +81,9 @@ void FileHeaderRecord::process(SPSSImporter* importer, SPSSImportDataSet *datase
 {
 	if (dataset->columnCount() != 0)
 	{
-		cout << "This file appears to have more than one file header record.\n"
+        std::cout << "This file appears to have more than one file header record.\n"
 				"  Only the last one found will be used." << endl;
-		cout.flush();
+        std::cout.flush();
 		dataset->clear();
 	}
 

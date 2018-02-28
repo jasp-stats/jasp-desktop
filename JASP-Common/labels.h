@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ public:
 	int add(int display);
 	int add(const std::string &display);
 	int add(int key, const std::string &display);
+	void removeValues(std::set<int> valuesToRemove);
 	void syncInts(const std::set<int> &values);
 	void syncInts(std::map<int, std::string> &values);
 	std::map<std::string, int> syncStrings(const std::vector<std::string> &new_values, const std::map<std::string, std::string> &new_labels);
@@ -80,6 +81,7 @@ public:
 private:
 	void _setNewStringForLabel(Label &label, const std::string &display);
 	std::string _getValueFromLabel(const Label &label) const;
+	std::string _getOrgValueFromLabel(const Label &label) const;
 
 	boost::interprocess::managed_shared_memory *_mem;
 	LabelVector _labels;

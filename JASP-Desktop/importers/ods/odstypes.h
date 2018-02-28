@@ -1,5 +1,5 @@
 /*
-	Copyright (C) Copyright (C) 2013-2017 University of Amsterdam
+	Copyright (C) Copyright (C) 2013-2018 University of Amsterdam
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ typedef enum e_odsDataType
 	odsType_time
 } XmlDatatype;
 
-#ifndef QT_NO_DEBUG
+#ifdef JASP_DEBUG
 extern const char * const ODSTYPE_STR[];
 #endif
 

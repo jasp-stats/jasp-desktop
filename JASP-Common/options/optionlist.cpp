@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ void OptionList::init(const Json::Value &data)
 	_options = std::vector<std::string>();
 
 	const Json::Value &array = data["options"];
-	for (Json::ValueIterator itr = array.begin(); itr != array.end(); itr++)
+    for (auto itr = array.begin(); itr != array.end(); itr++)
 		_options.push_back((*itr).asString());
 
 	if (data.isMember("default"))

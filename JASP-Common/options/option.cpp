@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -53,6 +53,11 @@ void Option::blockSignals(bool block)
 bool Option::isTransient() const
 {
 	return _isTransient;
+}
+
+void Option::doesNotSignalOnceUnblocked()
+{
+	_shouldSignalOnceUnblocked = false;
 }
 
 void Option::notifyChanged()

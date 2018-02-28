@@ -136,6 +136,23 @@
 			"default": "None"
 		},
 		{
+			"name": "simpleFactor",
+			"type": "Variable"
+		},
+		{
+			"name": "moderatorFactorOne",
+			"type": "Variable"
+		},
+		{
+			"name": "moderatorFactorTwo",
+			"type": "Variable"
+		},
+				{
+			"name": "poolErrorTermSimpleEffects",
+			"type": "Boolean",
+			"default": false
+		},
+		{
 			"name": "descriptives",
 			"type": "Boolean"
 		},
@@ -240,6 +257,11 @@
 		},
 		{
   		"name": "VovkSellkeMPR",
+  		"type": "Boolean",
+  		"default": false
+		},
+		{
+  		"name": "usePooledStandErrorCI",
   		"type": "Boolean",
   		"default": false
 		}

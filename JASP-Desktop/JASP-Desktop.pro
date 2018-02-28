@@ -1,4 +1,4 @@
-QT += core gui webkit webkitwidgets svg network printsupport xml
+QT += core gui webenginewidgets webchannel svg network printsupport xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -8,7 +8,7 @@ DESTDIR = ..
 
 windows:TARGET = JASP
    macx:TARGET = JASP
-  linux:TARGET = jasp
+  linux: exists(/app/lib/*)	{ TARGET = org.jasp.JASP } else { TARGET = jasp }
 
 TEMPLATE = app
 
@@ -18,33 +18,52 @@ CONFIG -= app_bundle
 
 INCLUDEPATH += ../JASP-Common/
 
+#exists(/app/lib/*) should only be true when building flatpak
+exists(/app/lib/*)	{ target.path += /app/bin }
+else			{
+	target.path += /usr/bin
+}
+
+INSTALLS += target
+
    macx:INCLUDEPATH += ../../boost_1_64_0
 windows:INCLUDEPATH += ../../boost_1_64_0
 
-PRE_TARGETDEPS += ../libJASP-Common.a
-
 LIBS += -L.. -lJASP-Common
 
-windows:LIBS += -lboost_filesystem-mgw48-mt-1_64 -lboost_system-mgw48-mt-1_64 -larchive.dll
+windows:CONFIG(ReleaseBuild) {
+    LIBS += -llibboost_filesystem-vc141-mt-1_64 -llibboost_system-vc141-mt-1_64 -larchive.dll
+}
+
+windows:CONFIG(DebugBuild) {
+    LIBS += -llibboost_filesystem-vc141-mt-gd-1_64 -llibboost_system-vc141-mt-gd-1_64 -larchive.dll
+}
+
    macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz
-  linux:LIBS += -lboost_filesystem    -lboost_system    -larchive
-
 windows:LIBS += -lole32 -loleaut32
-  linux:LIBS += -lrt
 
-QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
+linux {
+	exists(/app/lib/*)	{ LIBS += -larchive -lrt -L/app/lib -lboost_filesystem -lboost_system
+	} else				{ LIBS += -larchive -lrt -ljsoncpp -lboost_filesystem -lboost_system }
+}
+
+macx:QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
 macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 macx:QMAKE_CXXFLAGS += -stdlib=libc++
 
-windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
+windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__ -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
 
 linux {
     _R_HOME = $$(R_HOME)
     isEmpty(_R_HOME):_R_HOME = /usr/lib/R
     QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
 }
+
+macx | windows | exists(/app/lib/*) { DEFINES += JASP_LIBJSON_STATIC } else	{ linux:LIBS += -ljsoncpp }
+
+INCLUDEPATH += $$PWD/../JASP-Common/
 
 include(JASP-Desktop.pri)
 
@@ -71,3 +90,38 @@ MODULES_DIR = $$list_pri_files($$ANALYSIS_DIR)
 for(file, $$list($$MODULES_DIR)) {
     include($$file)
 }
+
+
+exists(/app/lib/*) {
+	flatpak_desktop.files = ../Tools/flatpak/org.jasp.JASP.desktop
+	flatpak_desktop.path = /app/share/applications
+	INSTALLS += flatpak_desktop
+
+	flatpak_icon.files = ../Tools/flatpak/org.jasp.JASP.svg
+	flatpak_icon.path = /app/share/icons/hicolor/scalable/apps
+	INSTALLS += flatpak_icon
+
+	flatpak_appinfo.commands = "cd $$PWD/../Tools/flatpak && mkdir -p /app/share/app-info/xmls && gzip -c > /app/share/app-info/xmls/org.jasp.JASP.xml.gz < org.jasp.JASP.appdata.xml"
+	QMAKE_EXTRA_TARGETS += flatpak_appinfo
+	PRE_TARGETDEPS      += flatpak_appinfo
+
+	#flatpak_appinfo_xml.files = ../Tools/flatpak.org.jasp.JASP.appdata.xml
+	#flatpak_appinfo_xml.path = /app/share/appdata
+	#INSTALLS += flatpak_appinfo_xml
+
+
+	flatpak_appinfo_icon.files = ../Tools/flatpak/org.jasp.JASP.svg
+	flatpak_appinfo_icon.path = /app/share/app-info/icons/flatpak/scalable
+	INSTALLS += flatpak_appinfo_icon
+
+	flatpak_appinfo_icon64.files = ../Tools/flatpak/64/org.jasp.JASP.png
+	flatpak_appinfo_icon64.path = /app/share/app-info/icons/flatpak/64x64
+	INSTALLS += flatpak_appinfo_icon64
+
+	flatpak_appinfo_icon128.files = ../Tools/flatpak/128/org.jasp.JASP.png
+	flatpak_appinfo_icon128.path = /app/share/app-info/icons/flatpak/128x128
+	INSTALLS += flatpak_appinfo_icon128
+} else {
+	CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG }
+}
+

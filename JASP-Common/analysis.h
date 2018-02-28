@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ class Analysis
 {
 public:
 
-	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted, Error, SaveImg, Exception };
+	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted, Error, SaveImg, EditImg, Exception };
 
 	Analysis(int id, std::string module, std::string name, std::string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Options *options, const Version &version, bool isAutorun = true, bool usedata = true);
 	virtual ~Analysis();
@@ -40,12 +40,14 @@ public:
 	boost::signals2::signal<void (Analysis *source)> toRefresh;
 	boost::signals2::signal<void (Analysis *source, Json::Value &options)> saveImage;
 	boost::signals2::signal<void (Analysis *source)> imageSaved;
+    boost::signals2::signal<void (Analysis *source, Json::Value &options)> editImage;
+    boost::signals2::signal<void (Analysis *source)> imageEdited;
 	boost::signals2::signal<void (Analysis *source)> resultsChanged;
-	boost::signals2::signal<void (Analysis *source)> userDataLoaded;
 
 	void setResults(Json::Value results, int progress = -1);
 	void setImageResults(Json::Value results);
-	void setUserData(Json::Value userData, bool silient = false);
+  void setImageEdited(Json::Value results);
+	void setUserData(Json::Value userData);
 	const Json::Value &results() const;
 	const Json::Value &userData() const;
 	Json::Value asJSON() const;

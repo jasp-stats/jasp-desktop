@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 University of Amsterdam
+// Copyright (C) 2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 #define RESULTEXPORTER_H
 
 #include "exporter.h"
-#include <QWebFrame>
 
 class ResultExporter: public Exporter
 {

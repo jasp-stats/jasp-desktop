@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #include "options/optionboolean.h"
 #include "options/optioninteger.h"
 #include "options/optionintegerarray.h"
+#include "options/optiondoublearray.h"
 #include "options/optionlist.h"
 #include "options/optionnumber.h"
 #include "options/optionstable.h"
@@ -52,7 +53,7 @@ Json::Value Options::asJSON() const
 
 void Options::init(const Json::Value &array)
 {
-	for (Json::ValueIterator itr = array.begin(); itr != array.end(); itr++)
+    for (auto itr = array.begin(); itr != array.end(); itr++)
 	{
 		Json::Value value = (*itr);
 
@@ -69,8 +70,8 @@ void Options::init(const Json::Value &array)
 		}
 		else
 		{
-			cout << "Unknown data type: " << typeString << "\n";
-			cout.flush();
+            cout << "Unknown data type: " << typeString << "\n";
+            cout.flush();
 		}
 	}
 }
@@ -83,6 +84,8 @@ Option* Options::createOption(string typeString)
 		return new OptionInteger();
 	else if (typeString == "IntegerArray")
 		return new OptionIntegerArray();
+	else if (typeString == "DoubleArray")
+		return new OptionDoubleArray();
 	else if (typeString == "List")
 		return new OptionList();
 	else if (typeString == "Number")

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 University of Amsterdam
+// Copyright (C) 2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -92,7 +92,7 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 	if (mode==FileEvent::FileExportResults)
 	{
 		caption = "Export Result as HTML";
-#ifdef QT_DEBUG
+#ifdef JASP_DEBUG
 		// In debug mode enable pdf export
 		filter = "HTML Files (*.html *.pdf)";
 #else

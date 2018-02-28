@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -101,7 +101,7 @@ NetworkAnalysisForm::NetworkAnalysisForm(QWidget *parent) :
     ui->showMgmVariableType->setVisible(false);
     
     // for the next release
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 //    ui->plotClustering->setVisible(false);
 //    ui->tableClustering->setVisible(false);
     ui->parallelBootstrap->setVisible(false);

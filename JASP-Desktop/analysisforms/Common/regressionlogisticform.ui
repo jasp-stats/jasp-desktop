@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>636</width>
+    <width>676</width>
     <height>1671</height>
    </rect>
   </property>
@@ -268,7 +268,7 @@
       <item row="0" column="2">
        <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Dependent</string>
+         <string>Dependent Variable</string>
         </property>
        </widget>
       </item>

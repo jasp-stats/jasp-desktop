@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -21,7 +21,6 @@
 
 #include <QWidget>
 #include <QStringListModel>
-#include <QItemDelegate>
 #include <QPainter>
 #include <QToolTip>
 
@@ -32,23 +31,7 @@
 
 #include "tablemodelvariablesavailable.h"
 #include "tablemodelanovamodel.h"
-
-
-class AnovaHoverDelegate : public QItemDelegate
-{
-public:
-	AnovaHoverDelegate(QObject *parent=0) : QItemDelegate(parent){}
-	void paint ( QPainter *painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
-	{
-		if(option.state & QStyle::State_MouseOver)
-		{
-			painter->fillRect(option.rect, Qt::lightGray);
-			QString str = index.data().toString();
-			QToolTip::showText(QCursor::pos(), str);
-		}
-		QItemDelegate::paint(painter, option, index);
-	}
-};
+#include "customhoverdelegate.h"
 
 namespace Ui {
 class AnovaModelWidget;
@@ -57,7 +40,7 @@ class AnovaModelWidget;
 class AnovaModelWidget : public QWidget, public Bound
 {
 	Q_OBJECT
-	
+
 public:
 	explicit AnovaModelWidget(QWidget *parent = 0);
 	~AnovaModelWidget();
@@ -66,7 +49,7 @@ public:
 	virtual void setModel(TableModelAnovaModel *model);
 
 	void setFactorsLabel(const QString &label);
-	
+
 private slots:
 
 	void variablesAvailableChanged();

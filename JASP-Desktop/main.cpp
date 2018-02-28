@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -27,12 +27,26 @@
 
 int main(int argc, char *argv[])
 {
+#ifdef __WIN32__
+	// Temporary fix for #2322 by disabling opengl drawing on windows
+	// Follow status of https://bugreports.qt.io/browse/QTBUG-61430 for 
+	// future permanent fix.
+	qputenv("QT_QUICK_BACKEND", "software");
+#endif
+	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 	QCoreApplication::setOrganizationName("JASP");
 	QCoreApplication::setOrganizationDomain("jasp-stats.org");
 	QCoreApplication::setApplicationName("JASP");
 
 	QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
 
-	Application a(argc, argv);
-	return a.exec();
+	try
+	{
+		Application a(argc, argv);
+		return a.exec();
+	}
+	catch(...)
+	{
+	}
+	return -1;
 }

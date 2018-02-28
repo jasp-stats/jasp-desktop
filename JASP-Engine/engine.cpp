@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,9 +20,7 @@
 #include <sstream>
 #include <cstdio>
 
-#include "../JASP-Common/lib_json/json.h"
 #include "../JASP-Common/analysisloader.h"
-#include "../JASP-Common/processinfo.h"
 #include "../JASP-Common/tempfiles.h"
 #include "../JASP-Common/utils.h"
 #include "../JASP-Common/sharedmemory.h"
@@ -71,8 +69,6 @@ void Engine::saveImage()
 
 	vector<string> tempFilesFromLastTime = tempfiles_retrieveList(_analysisId);
 
-	RCallback callback = boost::bind(&Engine::callback, this, _1, _2);
-
 	std::string name = _imageOptions.get("name", Json::nullValue).asString();
 	std::string type = _imageOptions.get("type", Json::nullValue).asString();
 
@@ -89,7 +85,31 @@ void Engine::saveImage()
 	sendResults();
 	_status = empty;
 
-	//tempfiles_deleteList(tempFilesFromLastTime);
+}
+
+void Engine::editImage()
+{
+    if (_status != editImg)
+        return;
+
+    vector<string> tempFilesFromLastTime = tempfiles_retrieveList(_analysisId);
+
+    RCallback callback = boost::bind(&Engine::callback, this, _1, _2);
+
+    std::string name = _imageOptions.get("name", Json::nullValue).asString();
+		std::string type = _imageOptions.get("type", Json::nullValue).asString();
+    int height = _imageOptions.get("height", Json::nullValue).asInt();
+    int width = _imageOptions.get("width", Json::nullValue).asInt();
+    std::string result = rbridge_editImage(name, type, height, width, _ppi);
+
+    _status = complete;
+    Json::Reader parser;
+    parser.parse(result, _analysisResults, false);
+    _progress = -1;
+    sendResults();
+    _status = empty;
+
+    //tempfiles_deleteList(tempFilesFromLastTime);
 
 }
 
@@ -181,7 +201,9 @@ void Engine::run()
 {
 	if (_slaveNo == 0)
 	{
+#if defined(QT_DEBUG) || defined(__linux__)
 		_engineInfo = rbridge_check();
+#endif
 
 		Json::Value v;
 		Json::Reader r;
@@ -204,6 +226,8 @@ void Engine::run()
 			break;
 		if (_status == saveImg)
 			saveImage();
+        else if (_status == editImg)
+            editImage();
 		else
 			runAnalysis();
 
@@ -219,9 +243,10 @@ bool Engine::receiveMessages(int timeout)
 
 	if (_channel->receive(data, timeout))
 	{
+#ifdef JASP_DEBUG
 		std::cout << "received message" << std::endl;
 		std::cout.flush();
-
+#endif
 		Json::Value jsonRequest;
 		Json::Reader r;
 		r.parse(data, jsonRequest, false);
@@ -252,37 +277,32 @@ bool Engine::receiveMessages(int timeout)
 				_status = toRun;
 			else if (perform == "saveImg")
 				_status = saveImg;
+            else if (perform == "editImg")
+                _status = editImg;
 			else
 				_status = error;
 		}
 
-		if (_status == toInit || _status == toRun || _status == changed || _status == saveImg)
+		if (_status == toInit || _status == toRun || _status == changed || _status == saveImg || _status == editImg)
 		{
-			_analysisName = jsonRequest.get("name", Json::nullValue).asString();
-			_analysisTitle = jsonRequest.get("title", Json::nullValue).asString();
-			_analysisDataKey = jsonRequest.get("dataKey", Json::nullValue).toStyledString();
-			_analysisOptions = jsonRequest.get("options", Json::nullValue).toStyledString();
-			_analysisResultsMeta = jsonRequest.get("resultsMeta", Json::nullValue).toStyledString();
-			_analysisStateKey = jsonRequest.get("stateKey", Json::nullValue).toStyledString();
-			_analysisRevision = jsonRequest.get("revision", -1).asInt();
-			_imageOptions = jsonRequest.get("image", Json::nullValue);
+			_analysisName			= jsonRequest.get("name",			Json::nullValue).asString();
+			_analysisTitle			= jsonRequest.get("title",			Json::nullValue).asString();
+			_analysisDataKey		= jsonRequest.get("dataKey",		Json::nullValue).toStyledString();
+			_analysisOptions		= jsonRequest.get("options",		Json::nullValue).toStyledString();
+			_analysisResultsMeta	= jsonRequest.get("resultsMeta",	Json::nullValue).toStyledString();
+			_analysisStateKey		= jsonRequest.get("stateKey",		Json::nullValue).toStyledString();
+			_analysisRevision		= jsonRequest.get("revision",		-1).asInt();
+			_imageOptions			= jsonRequest.get("image",			Json::nullValue);
 
 			Json::Value analysisRequiresInit = jsonRequest.get("requiresInit", Json::nullValue);
-			if (analysisRequiresInit.isNull()) // not defined in the analysis json
-				_analysisRequiresInit = true;
-			else
-				_analysisRequiresInit = analysisRequiresInit.asBool();
+			_analysisRequiresInit = analysisRequiresInit.isNull() ? true : analysisRequiresInit.asBool();
 
-			Json::Value settings = jsonRequest.get("settings", Json::nullValue);
-			if (settings.isObject())
-			{
-				Json::Value ppi = settings.get("ppi", Json::nullValue);
-				_ppi = ppi.isInt() ? ppi.asInt() : 96;
-			}
+
+			Json::Value ppi, settings = jsonRequest.get("settings", Json::nullValue);
+			if (settings.isObject() && (ppi = settings.get("ppi", Json::nullValue)).isInt())
+				_ppi = ppi.asInt();
 			else
-			{
 				_ppi = 96;
-			}
 		}
 
 		return true;

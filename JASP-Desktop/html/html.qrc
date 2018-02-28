@@ -2,7 +2,6 @@
     <qresource prefix="/core">
         <file>index.html</file>
         <file>css/jquery-ui-1.10.1.custom.css</file>
-        <file>css/jquery-ui-1.10.1.custom.min.css</file>
         <file>css/images/animated-overlay.gif</file>
         <file>css/images/ui-bg_flat_0_aaaaaa_40x100.png</file>
         <file>css/images/ui-bg_flat_75_ffffff_40x100.png</file>
@@ -35,7 +34,6 @@
         <file>css/images/cite.svg</file>
         <file>css/images/running-large.gif</file>
         <file>css/images/waiting-large.png</file>
-        <file>js/backbone-min-1.1.2.js</file>
         <file>js/jaspwidgets.js</file>
         <file>css/images/arrowsmalldownbtn.png</file>
         <file>css/images/resizer.png</file>
@@ -69,5 +67,7 @@
         <file>css/bootstrap.min.css</file>
         <file>img/jasp-logo-black.svg</file>
         <file>img/snow.gif</file>
+        <file>js/backbone-1.1.2.js</file>
+        <file>js/qwebchannel.js</file>
     </qresource>
 </RCC>

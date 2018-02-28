@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 University of Amsterdam
+// Copyright (C) 2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,11 +30,11 @@
 //#include "libzip/config.h"
 #include "libzip/archive.h"
 #include "libzip/archive_entry.h"
-#include "lib_json/json.h"
-
+#include "jsonredirect.h"
 #include "filereader.h"
 #include "tempfiles.h"
 #include "exporters/jaspexporter.h"
+#include <iostream>
 
 using namespace std;
 
@@ -375,7 +375,7 @@ void JASPImporter::readManifest(DataSetPackage *packageData, const string &path)
 	int size = manifest.bytesAvailable();
 	if (size > 0)
 	{
-		char data[size];
+		char* data = new char[size];
 		int startOffset = manifest.pos();
 		int errorCode = 0;
 		while (manifest.readData(&data[manifest.pos() - startOffset], 8016, errorCode) > 0 && errorCode == 0) ;
@@ -384,6 +384,7 @@ void JASPImporter::readManifest(DataSetPackage *packageData, const string &path)
 			throw runtime_error("Error reading Entry 'manifest.mf' in JASP archive.");
 
 		string doc(data, size);
+		delete[] data;
 
 		stringstream st(doc);
 		string line;

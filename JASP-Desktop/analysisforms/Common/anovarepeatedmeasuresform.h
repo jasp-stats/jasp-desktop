@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -68,6 +68,11 @@ private:
 	TableModelVariablesAssigned *_horizontalAxisTableModel;
 	TableModelVariablesAssigned *_seperateLinesTableModel;
 	TableModelVariablesAssigned *_seperatePlotsTableModel;
+
+    	TableModelVariablesAvailable *_simpleEffectsAvailableTableModel;
+    	TableModelVariablesAssigned *_simpleFactorTableModel;
+    	TableModelVariablesAssigned *_moderatorOneTableModel;
+    	TableModelVariablesAssigned *_moderatorTwoTableModel;
 
 };
 

@@ -3,36 +3,57 @@
 	"autorun": true,
 	"version": "1.00",
 	"options": [
-    {
-      "name": "factor",
-      "type": "Variable"
-    },
-    {
-      "name": "counts",
-      "type": "Variable"
-    },
-    {
-      "name": "exProbVar",
-      "type": "Variable"
-    },
-    {
-      "name": "hypothesis",
-      "options": [ "multinomialTest", "expectedProbs" ],
-      "default": "multinomialTest",
-      "type": "List"
-    },
-    {
-      "name": "countProp",
-      "options": [ "descCounts", "descProps" ],
-      "default": "descCounts",
-      "type": "List"
-    },
+		{
+			"name": "tableWidget",
+			"type": "Table",
+			"template": [
+				{
+					"name": "name",
+					"type": "String"
+				},
+				{
+					"name": "levels",
+					"type": "Variables",
+					"default": []
+				},
+				{
+					"name": "values",
+					"type": "DoubleArray",
+					"default": []
+				}
+			],
+			"default": []
+		},
+		{
+			"name": "factor",
+			"type": "Variable"
+		},
+		{
+			"name": "counts",
+			"type": "Variable"
+		},
+		{
+			"name": "exProbVar",
+			"type": "Variable"
+		},
+		{
+			"name": "hypothesis",
+			"options": [ "multinomialTest", "expectedProbs" ],
+			"default": "multinomialTest",
+			"type": "List"
+		},
+		{
+			"name": "countProp",
+			"options": [ "descCounts", "descProps" ],
+			"default": "descCounts",
+			"type": "List"
+		},
 		{
 			"name": "descriptives",
 			"type": "Boolean",
 			"default": false
 		},
-    {
+		{
 			"name": "confidenceInterval",
 			"type": "Boolean"
 		},
@@ -58,6 +79,11 @@
 		},
 		{
 		  "name": "VovkSellkeMPR",
+		  "type": "Boolean",
+		  "default": false
+		},
+		{
+		  "name": "simulatepval",
 		  "type": "Boolean",
 		  "default": false
 		},

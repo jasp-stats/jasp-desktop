@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
+	<mime-type type="application/jasp">
+		<comment>JASP File</comment>
+		<icon name="jasp.svg"/>
+		<glob-deleteall/>
+		<glob pattern="*.jasp"/>
+	</mime-type>
+</mime-info>

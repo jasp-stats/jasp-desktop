@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 University of Amsterdam
+// Copyright (C) 2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ void ODSImporterTest::odsTester()
 	DataSetPackage *ds_ods = new DataSetPackage();
 	fe_ods->setPath(fullPath_ods);
 	asl_ods->loadTask(fe_ods, ds_ods);          //load the ods file
-	asl_ods->_thread.quit();
+	//asl_ods->_thread.quit();
 
 	struct fileContent fc_ods;
 	copyToStructure(ds_ods, &fc_ods);            //copy contents of ds_ods to file contents structure
@@ -81,7 +81,7 @@ void ODSImporterTest::odsTester()
 	DataSetPackage *ds_csv = new DataSetPackage();
 	fe_csv->setPath(fullPath_csv);
 	asl_csv->loadTask(fe_csv, ds_csv);             //load the corresponding csv file - this is the expected output
-	asl_csv->_thread.quit();
+	//asl_csv->_thread.quit();
 
 	struct fileContent fc_csv;
 	copyToStructure(ds_csv, &fc_csv);              //copy contents of ds_csv to fc_csv structure

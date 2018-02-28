@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -270,9 +270,7 @@ string Dirs::rHomeDir()
 {
 	string dir = exeDir();
 
-#ifdef __WIN32__
-	dir += "/R";
-#elif __APPLE__
+#ifdef __APPLE__
 	dir += "/../Frameworks/R.framework/Versions/" + CURRENT_R_VERSION + "/Resources";
 #else
 	dir += "/R";
@@ -286,9 +284,7 @@ string Dirs::libraryDir()
 {
     string dir = exeDir();
 
-#ifdef __WIN32__
-	dir += "/Resources/Library";
-#elif __APPLE__
+#ifdef __APPLE__
 	dir += "/../Resources/Library";
 #else
 	dir += "/Resources/Library";

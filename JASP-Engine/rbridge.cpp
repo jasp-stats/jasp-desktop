@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,60 +16,40 @@
 //
 
 #include "rbridge.h"
-
-#include <boost/foreach.hpp>
-
-#include "../JASP-Common/base64.h"
-#include "../JASP-Common/lib_json/json.h"
-#include "../JASP-Common/sharedmemory.h"
-#include "../JASP-Common/appinfo.h"
-
-RInside *rbridge_rinside;
-DataSet *rbridge_dataSet;
+#include "base64.h"
+#include "jsonredirect.h"
+#include "sharedmemory.h"
+#include "appinfo.h"
+#include <iostream>
 
 using namespace std;
 
-RCallback rbridge_runCallback;
+DataSet *rbridge_dataSet;
+RCallback rbridge_callback;
 boost::function<void(const std::string &, std::string &, std::string &)> rbridge_fileNameSource;
 boost::function<void(std::string &, std::string &)> rbridge_stateFileSource;
 boost::function<DataSet *()> rbridge_dataSetSource;
 
-Rcpp::DataFrame rbridge_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
-Rcpp::DataFrame rbridge_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
-std::map<std::string, Column::ColumnType> rbridge_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
-SEXP rbridge_callbackSEXP(SEXP results, SEXP progress);
-SEXP rbridge_requestTempFileNameSEXP(SEXP extension);
-SEXP rbridge_requestStateFileNameSEXP();
-
-SEXP rbridge_callback(SEXP results, SEXP progress);
-Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnType> &columns);
-Rcpp::DataFrame rbridge_readDataSetHeader(const std::map<std::string, Column::ColumnType> &columns);
-
-void rbridge_makeFactor(Rcpp::IntegerVector &v, const std::vector<std::string> &levels, bool ordinal = false);
-void rbridge_makeFactor(Rcpp::IntegerVector &v, const Labels &levels, bool ordinal = false);
-
+char** rbridge_getLabels(const Labels &levels, int &nbLevels);
+char** rbridge_getLabels(const vector<string> &levels, int &nbLevels);
 
 void rbridge_init()
 {
 	rbridge_dataSet = NULL;
-	rbridge_runCallback = NULL;
+	rbridge_callback = NULL;
 	rbridge_fileNameSource = NULL;
 	rbridge_stateFileSource = NULL;
 
-	rbridge_rinside = new RInside();
+	RBridgeCallBacks callbacks = {
+		rbridge_readDataSet,
+		rbridge_readDataColumnNames,
+		rbridge_readDataSetDescription,
+		rbridge_requestStateFileSource,
+		rbridge_requestTempFileName,
+		rbridge_runCallback
+	};
 
-	RInside &rInside = rbridge_rinside->instance();
-
-	rInside[".readDatasetToEndNative"] = Rcpp::InternalFunction(&rbridge_readDataSetSEXP);
-	rInside[".readDataSetHeaderNative"] = Rcpp::InternalFunction(&rbridge_readDataSetHeaderSEXP);
-	rInside[".callbackNative"] = Rcpp::InternalFunction(&rbridge_callbackSEXP);
-	rInside[".requestTempFileNameNative"] = Rcpp::InternalFunction(&rbridge_requestTempFileNameSEXP);
-	rInside[".requestStateFileNameNative"] = Rcpp::InternalFunction(&rbridge_requestStateFileNameSEXP);
-	rInside[".baseCitation"] = "JASP Team (" + AppInfo::getBuildYear() + "). JASP (Version " + AppInfo::version.asString() + ") [Computer software].";
-
-	rInside["jasp.analyses"] = Rcpp::List();
-	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");
-	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
+	jaspRCPP_init(AppInfo::getBuildYear().c_str(), AppInfo::version.asString().c_str(), &callbacks);
 }
 
 void rbridge_setDataSetSource(boost::function<DataSet* ()> source)
@@ -87,148 +67,141 @@ void rbridge_setStateFileSource(boost::function<void (string &, string &)> sourc
 	rbridge_stateFileSource = source;
 }
 
-SEXP rbridge_requestTempFileNameSEXP(SEXP extension)
+extern "C" bool STDCALL rbridge_requestStateFileSource(const char** root, const char **relativePath)
 {
-	if (rbridge_fileNameSource == NULL)
-		return R_NilValue;
+	if (!rbridge_stateFileSource)
+		return false;
 
-	string extensionAsString = Rcpp::as<string>(extension);
-	string root;
-	string relativePath;
+	static string _root;
+	static string _relativePath;
 
-	rbridge_fileNameSource(extensionAsString, root, relativePath);
+	rbridge_stateFileSource(_root, _relativePath);
 
-	Rcpp::List paths;
-
-	paths["root"] = root;
-	paths["relativePath"] = relativePath;
-
-	return paths;
+	*root = _root.c_str();
+	*relativePath = _relativePath.c_str();
+	return true;
 }
 
-SEXP rbridge_requestStateFileNameSEXP()
+extern "C" bool STDCALL rbridge_requestTempFileName(const char* extensionAsString, const char** root, const char** relativePath)
 {
-	if (rbridge_stateFileSource == NULL)
-		return R_NilValue;
+	if (!rbridge_stateFileSource)
+		return false;
 
-	string root;
-	string relativePath;
+	static string _root, _relativePath;
 
-	rbridge_stateFileSource(root, relativePath);
+	rbridge_fileNameSource(extensionAsString, _root, _relativePath);
+	*root = _root.c_str();
+	*relativePath = _relativePath.c_str();
+	return true;
+}
 
-	Rcpp::List paths;
+extern "C" bool STDCALL rbridge_runCallback(const char* in, int progress, const char** out)
+{
+	if (!rbridge_callback)
+		return false;
 
-	paths["root"] = root;
-	paths["relativePath"] = relativePath;
+	static string staticOut;
+	staticOut = rbridge_callback(in, progress);
+	*out = staticOut.c_str();
 
-	return paths;
+	return true;
 }
 
 string rbridge_run(const string &name, const string &title, bool &requiresInit, const string &dataKey, const string &options, const string &resultsMeta, const string &stateKey, const string &perform, int ppi, RCallback callback)
 {
-	SEXP results;
+	rbridge_callback = callback;
 
-	rbridge_runCallback = callback;
+	const char* results = jaspRCPP_run(name.c_str(), title.c_str(), requiresInit, dataKey.c_str(), options.c_str(), resultsMeta.c_str(), stateKey.c_str(), perform.c_str(), ppi);
+	rbridge_callback = NULL;
+	string str = results;
 
-	RInside &rInside = rbridge_rinside->instance();
-
-	rInside["name"] = name;
-	rInside["title"] = title;
-	rInside["requiresInit"] = requiresInit;
-	rInside["dataKey"] = dataKey;
-	rInside["options"] = options;
-	rInside["resultsMeta"] = resultsMeta;
-	rInside["stateKey"] = stateKey;
-	rInside["perform"] = perform;
-	rInside[".ppi"] = ppi;
-
-	rInside.parseEval("run(name=name, title=title, requiresInit=requiresInit, dataKey=dataKey, options=options, resultsMeta=resultsMeta, stateKey=stateKey, perform=perform)", results);
-
-	rbridge_runCallback = NULL;
-
-	return Rcpp::as<string>(results);
+	return str;
 }
 
-Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnType> &columns)
+extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHeaders, int colMax)
 {
+	if (colHeaders == NULL)
+		return NULL;
+
 	if (rbridge_dataSet == NULL)
 		rbridge_dataSet = rbridge_dataSetSource();
+	Columns &columns = rbridge_dataSet->columns();
 
-	Rcpp::List list(columns.size());
-	Rcpp::CharacterVector columnNames;
+	static RBridgeColumn* resultCols = NULL;
+	static int lastColMax = 0;
+	if (resultCols)
+		freeRBridgeColumns(resultCols, lastColMax);
+	lastColMax = colMax;
+	resultCols = (RBridgeColumn*)calloc(colMax, sizeof(RBridgeColumn));
 
-	int colNo = 0;
-
-	typedef pair<const string, Column::ColumnType> ColumnInfo;
-
-	BOOST_FOREACH(const ColumnInfo &columnInfo, columns)
+	for (int colNo = 0; colNo < colMax; colNo++)
 	{
-		(void)columns;
+		RBridgeColumnType& columnInfo = colHeaders[colNo];
+		RBridgeColumn& resultCol = resultCols[colNo];
 
-		string columnName = columnInfo.first;
+		string columnName = columnInfo.name;
+		resultCol.name = strdup(Base64::encode("X", columnName, Base64::RVarEncoding).c_str());
 
-		string base64 = Base64::encode("X", columnName, Base64::RVarEncoding);
-		columnNames.push_back(base64);
-
-		Column &column = rbridge_dataSet->columns().get(columnName);
+		Column &column = columns.get(columnName);
 		Column::ColumnType columnType = column.columnType();
 
-		Column::ColumnType requestedType = columnInfo.second;
+		Column::ColumnType requestedType = (Column::ColumnType)columnInfo.type;
 		if (requestedType == Column::ColumnTypeUnknown)
 			requestedType = columnType;
 
 		int rowCount = column.rowCount();
+		resultCol.nbRows = rowCount;
 		int rowNo = 0;
 
 		if (requestedType == Column::ColumnTypeScale)
 		{
 			if (columnType == Column::ColumnTypeScale)
 			{
-				Rcpp::NumericVector v(rowCount);
+				resultCol.isScale = true;
+				resultCol.hasLabels = false;
+				resultCol.doubles = (double*)calloc(rowCount, sizeof(double));
 
-				BOOST_FOREACH(double value, column.AsDoubles)
+				for (double value: column.AsDoubles)
 				{
-					(void)column;
-					v[rowNo++] = value;
+					resultCol.doubles[rowNo++] = value;
 				}
 
-				list[colNo++] = v;
 			}
 			else if (columnType == Column::ColumnTypeOrdinal || columnType == Column::ColumnTypeNominal)
 			{
-				Rcpp::IntegerVector v(rowCount);
+				resultCol.isScale = false;
+				resultCol.hasLabels = false;
+				resultCol.ints = (int*)calloc(rowCount, sizeof(int));
 
-				BOOST_FOREACH(int value, column.AsInts)
+				for (int value: column.AsInts)
 				{
-					(void)column;
-					v[rowNo++] = value;
+					resultCol.ints[rowNo++] = value;
 				}
-
-				list[colNo++] = v;
 			}
 			else // columnType == Column::ColumnTypeNominalText
 			{
-				Rcpp::IntegerVector v(rowCount);
+				resultCol.isScale = false;
+				resultCol.hasLabels = true;
+				resultCol.isOrdinal = false;
+				resultCol.ints = (int*)calloc(rowCount, sizeof(int));
 
-				BOOST_FOREACH(int value, column.AsInts)
+				for (int value: column.AsInts)
 				{
-					(void)column;
 					if (value == INT_MIN)
-						v[rowNo++] = INT_MIN;
+						resultCol.ints[rowNo++] = INT_MIN;
 					else
-						v[rowNo++] = value + 1;
+						resultCol.ints[rowNo++] = value + 1;
 				}
 
-				rbridge_makeFactor(v, column.labels());
-
-				list[colNo++] = v;
+				resultCol.labels = rbridge_getLabels(column.labels(), resultCol.nbLabels);
 			}
 		}
 		else // if (requestedType != Column::ColumnTypeScale)
 		{
-			bool ordinal = (requestedType == Column::ColumnTypeOrdinal);
-
-			Rcpp::IntegerVector v(rowCount);
+			resultCol.isScale = false;
+			resultCol.hasLabels = true;
+			resultCol.ints = (int*)calloc(rowCount, sizeof(int));
+			resultCol.isOrdinal = (requestedType == Column::ColumnTypeOrdinal);
 
 			if (columnType != Column::ColumnTypeScale)
 			{
@@ -237,32 +210,33 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 
 				const Labels &labels = column.labels();
 
-				BOOST_FOREACH(const Label &label, labels)
+				for (const Label &label: labels)
 				{
 					indices[label.value()] = i++;
 				}
 
-				BOOST_FOREACH(int value, column.AsInts)
+				for (int value: column.AsInts)
 				{
-					(void)column;
 					if (value == INT_MIN)
-						v[rowNo++] = INT_MIN;
+						resultCol.ints[rowNo++] = INT_MIN;
 					else
-						v[rowNo++] = indices.at(value);
+						resultCol.ints[rowNo++] = indices.at(value);
 				}
 
-				rbridge_makeFactor(v, column.labels(), ordinal);
+				resultCol.labels = rbridge_getLabels(labels, resultCol.nbLabels);
 			}
 			else
 			{
 				// scale to nominal or ordinal (doesn't really make sense, but we have to do something)
-
+				resultCol.isScale = false;
+				resultCol.hasLabels = true;
+				resultCol.isOrdinal = false;
+				resultCol.ints = (int*)calloc(rowCount, sizeof(int));
+				
 				set<int> uniqueValues;
 
-				BOOST_FOREACH(double value, column.AsDoubles)
+				for (double value: column.AsDoubles)
 				{
-					(void)column;
-
 					if (std::isnan(value))
 						continue;
 
@@ -282,11 +256,8 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 				map<int, int> valueToIndex;
 				vector<string> labels;
 
-				BOOST_FOREACH(int value, uniqueValues)
+				for (int value: uniqueValues)
 				{
-					(void)value;
-					(void)uniqueValues;
-
 					valueToIndex[value] = index;
 
 					if (value == INT_MAX)
@@ -307,62 +278,81 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 					index++;
 				}
 
-				BOOST_FOREACH(double value, column.AsDoubles)
+				for (double value: column.AsDoubles)
 				{
-					(void)column;
-
 					if (std::isnan(value))
-						v[rowNo] = INT_MIN;
+						resultCol.ints[rowNo] = INT_MIN;
 					else if (isfinite(value))
-						v[rowNo] = valueToIndex[(int)(value * 1000)] + 1;
+						resultCol.ints[rowNo] = valueToIndex[(int)(value * 1000)] + 1;
 					else if (value > 0)
-						v[rowNo] = valueToIndex[INT_MAX] + 1;
+						resultCol.ints[rowNo] = valueToIndex[INT_MAX] + 1;
 					else
-						v[rowNo] = valueToIndex[INT_MIN] + 1;
+						resultCol.ints[rowNo] = valueToIndex[INT_MIN] + 1;
 
 					rowNo++;
 				}
 
-				rbridge_makeFactor(v, labels, ordinal);
+				resultCol.labels = rbridge_getLabels(labels, resultCol.nbLabels);
 			}
-
-			list[colNo++] = v;
 		}
 	}
 
-	list.attr("names") = columnNames;
-
-	Rcpp::DataFrame dataFrame = Rcpp::DataFrame(list);
-
-	return dataFrame;
+	return resultCols;
 }
 
-Rcpp::DataFrame rbridge_readDataSetHeader(const std::map<string, Column::ColumnType> &columns)
+extern "C" char** STDCALL rbridge_readDataColumnNames(int *colMax)
 {
 	if (rbridge_dataSet == NULL)
 		rbridge_dataSet = rbridge_dataSetSource();
-
-	Rcpp::List list(columns.size());
-	Rcpp::CharacterVector columnNames;
+	Columns &columns = rbridge_dataSet->columns();
+	static int staticColMax = 0;
+	static char** staticResult = NULL;
+	if (staticResult)
+	{
+		for (int i = 0; i < staticColMax; i++)
+			free(staticResult[i]);
+		free(staticResult);
+	}
+	staticColMax = rbridge_dataSet->columnCount();
+	staticResult = (char**)calloc(staticColMax, sizeof(char*));
 
 	int colNo = 0;
+	for (const Column &column: columns)
+		staticResult[colNo++] = strdup(column.name().c_str());
 
-	typedef pair<const string, Column::ColumnType> ColumnInfo;
+	*colMax = staticColMax;
+	return staticResult;
+}
 
-	BOOST_FOREACH(const ColumnInfo &columnInfo, columns)
+extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBridgeColumnType* columnsType, int colMax)
+{
+	if (!columnsType)
+		return NULL;
+
+	static int lastColMax = 0;
+	static RBridgeColumnDescription* resultCols = NULL;
+	if (resultCols)
+		freeRBridgeColumnDescription(resultCols, lastColMax);
+	lastColMax = colMax;
+	resultCols = (RBridgeColumnDescription*)calloc(colMax, sizeof(RBridgeColumnDescription));
+
+	if (rbridge_dataSet == NULL)
+		rbridge_dataSet = rbridge_dataSetSource();
+	Columns &columns = rbridge_dataSet->columns();
+
+	for (int colNo = 0; colNo < colMax; colNo++)
 	{
-		(void)columns;
+		RBridgeColumnType& columnInfo = columnsType[colNo];
+		RBridgeColumnDescription& resultCol = resultCols[colNo];
 
-		string columnName = columnInfo.first;
+		string columnName = columnInfo.name;
+		resultCol.name = strdup(Base64::encode("X", columnName, Base64::RVarEncoding).c_str());
 
-		string base64 = Base64::encode("X", columnName, Base64::RVarEncoding);
-		columnNames.push_back(base64);
-
-		Columns &columns = rbridge_dataSet->columns();
 		Column &column = columns.get(columnName);
 		Column::ColumnType columnType = column.columnType();
 
-		Column::ColumnType requestedType = columnInfo.second;
+		Column::ColumnType requestedType = (Column::ColumnType)columnInfo.type;
+		
 		if (requestedType == Column::ColumnTypeUnknown)
 			requestedType = columnType;
 
@@ -370,173 +360,172 @@ Rcpp::DataFrame rbridge_readDataSetHeader(const std::map<string, Column::ColumnT
 		{
 			if (columnType == Column::ColumnTypeScale)
 			{
-				list[colNo++] = Rcpp::NumericVector(0);
+				resultCol.isScale = true;
+				resultCol.hasLabels = false;
 			}
 			else if (columnType == Column::ColumnTypeOrdinal || columnType == Column::ColumnTypeNominal)
 			{
-				list[colNo++] = Rcpp::IntegerVector(0);
+				resultCol.isScale = false;
+				resultCol.hasLabels = false;
 			}
 			else
 			{
-				Rcpp::IntegerVector v(0);
-				rbridge_makeFactor(v, column.labels());
-				list[colNo++] = v;
+				resultCol.isScale = false;
+				resultCol.hasLabels = true;
+				resultCol.isOrdinal = false;
+				resultCol.labels = rbridge_getLabels(column.labels(), resultCol.nbLabels);
 			}
 		}
 		else
 		{
-			bool ordinal = (requestedType == Column::ColumnTypeOrdinal);
+			resultCol.isScale = false;
+			resultCol.hasLabels = true;
+			resultCol.isOrdinal = (requestedType == Column::ColumnTypeOrdinal);
+			if (columnType != Column::ColumnTypeScale)
+			{
+				resultCol.labels = rbridge_getLabels(column.labels(), resultCol.nbLabels);
+			}
+			else
+			{
+				// scale to nominal or ordinal (doesn't really make sense, but we have to do something)
+				set<int> uniqueValues;
 
-			Rcpp::IntegerVector v(0);
-			rbridge_makeFactor(v, column.labels(), ordinal);
+				for (double value: column.AsDoubles)
+				{
+					if (std::isnan(value))
+						continue;
 
-			list[colNo++] = v;
+					int intValue;
+
+					if (isfinite(value))
+						intValue = (int)(value * 1000);
+					else if (value < 0)
+						intValue = INT_MIN;
+					else
+						intValue = INT_MAX;
+
+					uniqueValues.insert(intValue);
+				}
+
+				vector<string> labels;
+
+				for (int value: uniqueValues)
+				{
+					if (value == INT_MAX)
+					{
+						labels.push_back("Inf");
+					}
+					else if (value == INT_MIN)
+					{
+						labels.push_back("-Inf");
+					}
+					else
+					{
+						stringstream ss;
+						ss << ((double)value / 1000);
+						labels.push_back(ss.str());
+					}
+				}
+
+				resultCol.labels = rbridge_getLabels(labels, resultCol.nbLabels);
+					
+			}
+		
 		}
 	}
 
-	list.attr("names") = columnNames;
-
-	Rcpp::DataFrame dataFrame = Rcpp::DataFrame(list);
-
-	return dataFrame;
+	return resultCols;
 }
 
-void rbridge_makeFactor(Rcpp::IntegerVector &v, const Labels &levels, bool ordinal)
+void freeRBridgeColumns(RBridgeColumn *columns, int colMax)
 {
-	Rcpp::CharacterVector labels;
+	for (int i = 0; i < colMax; i++)
+	{
+		RBridgeColumn& column = columns[i];
+		free(column.name);
+		if (column.isScale)
+			free(column.doubles);
+		else
+			free(column.ints);
+		if (column.hasLabels)
+			freeLabels(column.labels, column.nbLabels);
+	}
+	free(columns);
+}
 
+void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, int colMax)
+{
+	for (int i = 0; i < colMax; i++)
+	{
+		RBridgeColumnDescription& column = columns[i];
+		free(column.name);
+		if (column.hasLabels)
+			freeLabels(column.labels, column.nbLabels);
+	}
+	free(columns);
+}
+
+void freeLabels(char** labels, int nbLabels)
+{
+	for (int i = 0; i < nbLabels; i++)
+		free(labels[i]);
+	free(labels);
+}
+
+char** rbridge_getLabels(const Labels &levels, int &nbLevels)
+{
+	char** results = NULL;
+	nbLevels = 0;
 	if (levels.size() == 0)
 	{
-		labels.push_back(".");
+		results = (char**)calloc(1, sizeof(char*));
+		results[0] = strdup(".");
 	}
 	else
 	{
-		BOOST_FOREACH(const Label &level, levels)
-			labels.push_back(level.text());
+		results = (char**)calloc(levels.size(), sizeof(char*));
+		int i = 0;
+		for (const Label &level: levels)
+			results[i++] = strdup(level.text().c_str());
+		nbLevels = i;
 	}
 
-	v.attr("levels") = labels;
-
-	vector<string> cla55;
-	if (ordinal)
-		cla55.push_back("ordered");
-	cla55.push_back("factor");
-
-	v.attr("class") = cla55;
+	return results;
 }
 
-void rbridge_makeFactor(Rcpp::IntegerVector &v, const std::vector<string> &levels, bool ordinal)
+char** rbridge_getLabels(const vector<string> &levels, int &nbLevels)
 {
-	v.attr("levels") = levels;
-	vector<string> cla55;
-	if (ordinal)
-		cla55.push_back("ordered");
-	cla55.push_back("factor");
-
-	v.attr("class") = cla55;
-}
-
-
-SEXP rbridge_callback(SEXP results, SEXP progress)
-{
-	if (rbridge_runCallback != NULL)
+	char** results = NULL;
+	nbLevels = 0;
+	if (levels.size() == 0)
 	{
-		string resultsStr = Rf_isNull(results) ? "null" : Rcpp::as<string>(results);
-		int progressStr = Rf_isNull(progress) ? -1 : Rcpp::as<int>(progress);
-		return Rcpp::CharacterVector(rbridge_runCallback(resultsStr, progressStr));
+		results = (char**)calloc(1, sizeof(char*));
+		results[0] = strdup(".");
 	}
 	else
 	{
-		return 0;
+		results = (char**)calloc(levels.size(), sizeof(char*));
+		int i = 0;
+		for (const string &level: levels)
+			results[i++] = strdup(level.c_str());
+		nbLevels = i;
 	}
+
+	return results;
 }
 
-std::map<string, Column::ColumnType> rbridge_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)
-{
-	map<string, Column::ColumnType> columnsRequested;
-
-	if (Rf_isLogical(allColumns) && Rcpp::as<bool>(allColumns))
-	{
-		if (rbridge_dataSet == NULL)
-			rbridge_dataSet = rbridge_dataSetSource();
-
-		BOOST_FOREACH(const Column &column, rbridge_dataSet->columns())
-			columnsRequested[column.name()] = Column::ColumnTypeUnknown;
-	}
-
-	if (Rf_isString(columns))
-	{
-		vector<string> temp = Rcpp::as<vector<string> >(columns);
-		for (size_t i = 0; i < temp.size(); i++)
-			columnsRequested[temp.at(i)] = Column::ColumnTypeUnknown;
-	}
-
-	if (Rf_isString(columnsAsNumeric))
-	{
-		vector<string> temp = Rcpp::as<vector<string> >(columnsAsNumeric);
-		for (size_t i = 0; i < temp.size(); i++)
-			columnsRequested[temp.at(i)] = Column::ColumnTypeScale;
-	}
-
-	if (Rf_isString(columnsAsOrdinal))
-	{
-		vector<string> temp = Rcpp::as<vector<string> >(columnsAsOrdinal);
-		for (size_t i = 0; i < temp.size(); i++)
-			columnsRequested[temp.at(i)] = Column::ColumnTypeOrdinal;
-	}
-
-	if (Rf_isString(columnsAsNominal))
-	{
-		vector<string> temp = Rcpp::as<vector<string> >(columnsAsNominal);
-		for (size_t i = 0; i < temp.size(); i++)
-			columnsRequested[temp.at(i)] = Column::ColumnTypeNominal;
-	}
-
-	return columnsRequested;
-}
-
-SEXP rbridge_callbackSEXP(SEXP results, SEXP progress)
-{
-	return rbridge_callback(results, progress);
-}
-
-Rcpp::DataFrame rbridge_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)
-{
-	map<string, Column::ColumnType> columnsRequested = rbridge_marshallSEXPs(columns, columnsAsNumeric, columnsAsOrdinal, columnsAsNominal, allColumns);
-	return rbridge_readDataSet(columnsRequested);
-}
-
-Rcpp::DataFrame rbridge_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)
-{
-	map<string, Column::ColumnType> columnsRequested = rbridge_marshallSEXPs(columns, columnsAsNumeric, columnsAsOrdinal, columnsAsNominal, allColumns);
-	return rbridge_readDataSetHeader(columnsRequested);
-}
 
 string rbridge_check()
 {
-	SEXP result = rbridge_rinside->parseEvalNT("checkPackages()");
-	if (Rf_isString(result))
-		return Rcpp::as<string>(result);
-	else
-		return "null";
+	return jaspRCPP_check();
 }
 
 string rbridge_saveImage(const string &name, const string &type, const int &height, const int &width, const int ppi)
-
 {
-	RInside &rInside = rbridge_rinside->instance();
+	return jaspRCPP_saveImage(name.c_str(), type.c_str(), height, width, ppi);
+}
 
-	rInside["plotName"] = name;
-	rInside["format"] = type;
-
-	rInside["height"] = height;
-	rInside["width"] = width;
-	rInside[".ppi"] = ppi;
-
-	SEXP result = rbridge_rinside->parseEvalNT("saveImage(plotName,format,height,width)");
-
-	if (Rf_isString(result))
-		return Rcpp::as<string>(result);
-	else
-		return "null";
+string rbridge_editImage(const string &name, const string &type, const int &height, const int &width, const int ppi)
+{
+	return jaspRCPP_editImage(name.c_str(), type.c_str(), height, width, ppi);
 }

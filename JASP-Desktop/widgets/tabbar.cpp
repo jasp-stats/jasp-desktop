@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -80,7 +80,7 @@ void TabBar::addModulesPlusButton()
 	for (auto it = Module::AllModules.begin(); it != Module::AllModules.end(); ++it)
 	{
 		const Module& module = it->second;
-#ifndef QT_DEBUG
+#ifndef JASP_DEBUG
 		if (module.released())
 		{
 #endif
@@ -92,7 +92,7 @@ void TabBar::addModulesPlusButton()
 			modulesmenu->addAction(action);
 			_signalModulesMapper->setMapping(action, name);
 			connect(action, SIGNAL(triggered()), _signalModulesMapper, SLOT(map()));
-#ifndef QT_DEBUG
+#ifndef JASP_DEBUG
 		}
 #endif
 	}

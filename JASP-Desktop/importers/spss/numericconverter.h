@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2017 University of Amsterdam
+// Copyright (C) 2015-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -149,6 +149,8 @@ private:
 	const Endians _endThisMachine = mach_littleEndian;
 #elif defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
 	const Endians _endThisMachine = mach_bigEndian;
+#elif defined(__WIN32__) //TODO What is the right defined for VS
+	const Endians _endThisMachine = mach_littleEndian;
 #else
   #error "Could not determine target system endian byte order."
 #endif

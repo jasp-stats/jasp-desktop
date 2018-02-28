@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,15 +27,15 @@
 class OptionInteger : public OptionI<int>
 {
 public:
-	OptionInteger(int value = 0, int min = -999999, int max = 999999, std::string format = "");
+	OptionInteger(int value = 0, int minimum = -999999, int maximum = 999999, std::string format = "");
 
 	virtual void init(const Json::Value &data) OVERRIDE;
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual void set(const Json::Value& value) OVERRIDE;
 	virtual Option* clone() const OVERRIDE;
 
-  int min() const;
-  int max() const;
+  int minimum() const;
+  int maximum() const;
 
   std::string format() const;
 

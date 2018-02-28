@@ -74,5 +74,6 @@
         <file>icons/summarize.svg</file>
         <file>icons/addition-sign.svg</file>
         <file>icons/addition.png</file>
+        <file>icons/editImage.png</file>
     </qresource>
 </RCC>

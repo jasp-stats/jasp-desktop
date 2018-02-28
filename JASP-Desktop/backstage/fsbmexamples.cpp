@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 University of Amsterdam
+// Copyright (C) 2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -38,7 +38,7 @@ FSBMExamples::FSBMExamples(QObject *parent)
 
 void FSBMExamples::refresh()
 {
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 	QFile index(AppDirs::examples() + QDir::separator() + "index.json");
 #else
 	// when debug is built we want the debug dataset to be available!

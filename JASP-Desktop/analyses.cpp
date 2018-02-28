@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -69,8 +69,9 @@ Analysis *Analyses::create(const QString &module, const QString &name, int id, c
 	analysis->toRefresh.connect(boost::bind(&Analyses::analysisToRefreshHandler, this, _1));
 	analysis->saveImage.connect(boost::bind(&Analyses::analysisSaveImageHandler, this, _1, _2));
 	analysis->imageSaved.connect(boost::bind(&Analyses::analysisImageSavedHandler, this, _1));
+    analysis->editImage.connect(boost::bind(&Analyses::analysisEditImageHandler, this, _1, _2));
+    analysis->imageEdited.connect(boost::bind(&Analyses::analysisImageEditedHandler, this, _1));
 	analysis->resultsChanged.connect(boost::bind(&Analyses::analysisResultsChangedHandler, this, _1));
-	analysis->userDataLoaded.connect(boost::bind(&Analyses::analysisUserDataLoadedHandler, this, _1));
 
 	analysisAdded(analysis);
 
@@ -191,12 +192,6 @@ void Analyses::assignDefaults(Analysis *analysis)
 
 	}*/
 }
-
-void Analyses::analysisUserDataLoadedHandler(Analysis *analysis)
-{
-	analysisUserDataLoaded(analysis);
-}
-
 void Analyses::analysisResultsChangedHandler(Analysis *analysis)
 {
 	analysisResultsChanged(analysis);
@@ -205,6 +200,11 @@ void Analyses::analysisResultsChangedHandler(Analysis *analysis)
 void Analyses::analysisImageSavedHandler(Analysis *analysis)
 {
 	analysisImageSaved(analysis);
+}
+
+void Analyses::analysisImageEditedHandler(Analysis *analysis)
+{
+    analysisImageEdited(analysis);
 }
 
 void Analyses::analysisOptionsChangedHandler(Analysis *analysis)
@@ -243,4 +243,10 @@ void Analyses::analysisSaveImageHandler(Analysis *analysis, Json::Value &options
 	analysisSaveImage(analysis);
 }
 
+void Analyses::analysisEditImageHandler(Analysis *analysis, Json::Value &options)
+{
+    analysis->setStatus(Analysis::EditImg);
+    analysis->setSaveImgOptions(options); // options from saveImage are fine
+    analysisEditImage(analysis);
+}
 

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -127,7 +127,7 @@ AnovaForm::AnovaForm(QWidget *parent) :
 
 	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 
-#ifdef QT_NO_DEBUG
+#ifndef JASP_DEBUG
 	ui->randomFactors->hide();
 	ui->label_3->hide();
 	ui->buttonAssignRandom->hide();

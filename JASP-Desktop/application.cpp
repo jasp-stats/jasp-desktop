@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -19,6 +19,7 @@
 #include "application.h"
 
 #include <QFileOpenEvent>
+#include <QString>
 
 #include <iostream>
 
@@ -31,17 +32,21 @@ Application::Application(int &argc, char **argv) :
 	QStringList args = QApplication::arguments();
 
 	if (args.length() > 1)
-		_mainWindow->open(args.at(1));
+	{
+		QString arg = args.at(1);
+		if (!arg.startsWith("--"))
+			_mainWindow->open(args.at(1));
+	}
 }
 
 Application::~Application()
 {
 	try
 	{
-		delete _mainWindow;	
+		delete _mainWindow;
 	}
 	catch(...)
-	{		
+	{
 	}
 }
 
@@ -53,7 +58,7 @@ bool Application::notify(QObject *receiver, QEvent *event)
 	}
 	catch (std::exception &e)
 	{
-		std::cout << e.what() << "\n";
+		std::cout << "Error in objet: " << receiver->objectName().toStdString() << ", with event: " << event->type() << ": " << e.what() << "\n";
 		std::cout.flush();
 
 		throw e;
