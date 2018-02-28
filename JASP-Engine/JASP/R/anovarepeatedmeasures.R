@@ -99,8 +99,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		}
 		
 		if (is.list(diff) && diff[['withinModelTerms']] == FALSE && diff[['betweenModelTerms']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE &&
-		    diff[['repeatedMeasuresFactors']] == FALSE && diff[['simpleFactor']] == FALSE && diff[['moderatorFactorOne']] == FALSE &&
-		    diff[['moderatorFactorTwo']] == FALSE && diff[['poolErrorTermSimpleEffects']] == FALSE ) {
+		    diff[['repeatedMeasuresFactors']] == FALSE && diff[['sumOfSquares']] == FALSE && diff[['simpleFactor']] == FALSE && 
+		    diff[['moderatorFactorOne']] == FALSE && diff[['moderatorFactorTwo']] == FALSE && diff[['poolErrorTermSimpleEffects']] == FALSE ) {
 		  
 		  # old simple effects tables can be used
 		  
@@ -2586,7 +2586,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   
   simpleEffectsTable[["schema"]] <- list(fields=fields)
   
-  if (perform == "run" && status$ready && status$error == FALSE && class(fullModel) != "try-error")  {
+  if (perform == "run" && status$ready && status$error == FALSE && !isTryError(fullModel))  {
   
     isMixedAnova <-   length(options[['betweenSubjectFactors']]) > 0
     isSimpleFactorWithin <- !simpleFactor %in% unlist(options[['betweenModelTerms']] )
@@ -2852,11 +2852,13 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
       
       
     }
-    
+   
     simpleEffectsTable[["data"]] <- simpleEffectRows
     
   } else {
-    
+    if(options$sumOfSquares == "type1" ) {
+      .addFootnote(footnotes, text = "Simple effects not yet available for type 1 SS.", 
+                   symbol = "<em>Note.</em>")  }
     simpleEffectsTable[["data"]]  <- list(list("ModOne"=terms.normal, "SumSquares"=".", "df"=".", "MeanSquare"=".", "F"=".", "p"=".", ".isNewGroup" = TRUE))
   }
   
@@ -2875,6 +2877,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   simpleEffectsTable[["citation"]] <- list(
     "Howell, D. C. (2002). Statistical Methods for Psychology (8th. ed.). Pacific Grove, CA: Duxberry. "
   )
+  
   list(result=simpleEffectsTable, status=status, stateSimpleEffects=stateSimpleEffects)
 }
 
