@@ -31,9 +31,27 @@
 			"max": 1
 		},
 		{
+			"name": "omitIntercept",
+			"type": "Boolean",
+			"default": false
+		},
+		{
 			"name": "postSummary",
 			"type": "Boolean",
 			"default": false
+		},
+		{
+			"name": "postSummaryPlot",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "posteriorSummaryPlotCredibleIntervalValue",
+			"format": "%",
+			"max": 0.999,
+			"min": 0.000,
+			"type": "Number",
+			"value": 0.950
 		},
 		{
 			"name": "summaryType",

@@ -281,3 +281,17 @@ void RegressionLinearBayesianForm::factorsChanged()
 	if (_options != NULL)
 		_options->blockSignals(false);
 }
+
+// two functions below enable posteriorSummaryPlotCredibleIntervalBox
+// when either postSummary or postSummaryPlot are checked.
+void RegressionLinearBayesianForm::on_postSummary_toggled(bool checked)
+{
+    bool turnOn = checked || ui->postSummaryPlot->isChecked();
+    ui->posteriorSummaryPlotCredibleIntervalBox->setEnabled(turnOn);
+}
+
+void RegressionLinearBayesianForm::on_postSummaryPlot_toggled(bool checked)
+{
+    bool turnOn = checked || ui->postSummary->isChecked();
+    ui->posteriorSummaryPlotCredibleIntervalBox->setEnabled(turnOn);
+}
