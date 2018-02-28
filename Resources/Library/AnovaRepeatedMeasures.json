@@ -259,6 +259,11 @@
   		"name": "VovkSellkeMPR",
   		"type": "Boolean",
   		"default": false
+		},
+		{
+  		"name": "usePooledStandErrorCI",
+  		"type": "Boolean",
+  		"default": false
 		}
 	]
 }

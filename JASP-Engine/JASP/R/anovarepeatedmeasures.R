@@ -74,7 +74,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			!(diff[['confidenceIntervalInterval']] == TRUE && options$errorBarType == "confidenceInterval" && options$plotErrorBars == TRUE) &&
 			diff[['plotWidthDescriptivesPlotLegend']] == FALSE && diff[['plotHeightDescriptivesPlotLegend']] == FALSE &&
 			diff[['plotWidthDescriptivesPlotNoLegend']] == FALSE && diff[['plotHeightDescriptivesPlotNoLegend']] == FALSE &&
-			diff[['repeatedMeasuresFactors']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE) {
+			diff[['repeatedMeasuresFactors']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE && diff[['usePooledStandErrorCI']] == FALSE) {
 
 			# old descriptives plots can be used
 
@@ -99,8 +99,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		}
 		
 		if (is.list(diff) && diff[['withinModelTerms']] == FALSE && diff[['betweenModelTerms']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE &&
-		    diff[['repeatedMeasuresFactors']] == FALSE && diff[['simpleFactor']] == FALSE && diff[['moderatorFactorOne']] == FALSE &&
-		    diff[['moderatorFactorTwo']] == FALSE && diff[['poolErrorTermSimpleEffects']] == FALSE ) {
+		    diff[['repeatedMeasuresFactors']] == FALSE && diff[['sumOfSquares']] == FALSE && diff[['simpleFactor']] == FALSE && 
+		    diff[['moderatorFactorOne']] == FALSE && diff[['moderatorFactorTwo']] == FALSE && diff[['poolErrorTermSimpleEffects']] == FALSE ) {
 		  
 		  # old simple effects tables can be used
 		  
@@ -706,8 +706,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   		  }
 
 
-			resultsPostHoc[[var]] <- list(resultBonf = resultBonf, resultHolm = resultHolm, resultTukey = resultTukey, resultScheffe = resultScheffe,
-										  comparisons = comparisons)
+			resultsPostHoc[[var]] <- list(resultBonf = resultBonf, resultHolm = resultHolm, 
+			                              resultTukey = resultTukey, resultScheffe = resultScheffe,
+										                comparisons = comparisons)
 			
 		}
 
@@ -1385,14 +1386,15 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 						if (options$effectSizeEstimates) {
 
 							if (sum(gsub(" ", "", row.names(resultTable), fixed = TRUE) == "Residuals") > 0) {
-
+							  index <- unlist(lapply(modelTermsResults, function(x) .identicalTerms(x,modelTermsCase)))
+							  
 								SSt <- sum(resultTable[,"Sum Sq"])
 								SSr <- resultTable["Residuals","Sum Sq"]
 								MSr <- SSr/resultTable["Residuals","Df"]
 								row[["eta"]] <- SS / SSt
 								row[["partialEta"]] <- SS / (SS + SSr)
 								n <- resultTable["Residuals","Df"]  + 1
-								MSm <- resultTable[.v(row$case), "Mean Sq"]
+								MSm <- resultTable[index, "Mean Sq"]
 								MSb <- result["Error: subject"][[1]][[1]]$`Mean Sq`
 								MSb <- MSb[length(MSb)]
 								omega <- (df / (n * (df + 1)) * (MSm - MSr)) / 
@@ -1597,12 +1599,11 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 								row[["eta"]] <- SS / SSt
 								row[["partialEta"]] <- SS / (SS + SSr)
 								n <- result[1, 'den Df'] + 1
-								MSm <- result[.v(row$case), "SS"] / result[.v(row$case), "num Df"] 
+								MSm <- result[index, "SS"] / result[index, "num Df"] 
 								MSb <- result[1, 'Error SS'] / (n - 1)
 								omega <- (df / (n * (df + 1)) * (MSm - MSr)) / 
 								         (MSr + ((MSb - MSr) / (df + 1)) +
 						             (df / (n * (df + 1))) * (MSm - MSr))
-
 
 								if (omega < 0) {
 									row[["omega"]] <- 0
@@ -2307,12 +2308,14 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		if (length(repeatedMeasuresFactors) == 0) {
 
 			summaryStat <- .summarySE(as.data.frame(dataset), measurevar = "dependent", groupvars = .v(betweenSubjectFactors),
-							conf.interval = options$confidenceIntervalInterval, na.rm = TRUE, .drop = FALSE, errorBarType = options$errorBarType)
+							conf.interval = options$confidenceIntervalInterval, na.rm = TRUE, .drop = FALSE, errorBarType = options$errorBarType, 
+							usePooledSE=options$usePooledStandErrorCI)
 
 		} else {
 
 			summaryStat <- .summarySEwithin(as.data.frame(dataset), measurevar="dependent", betweenvars=.v(betweenSubjectFactors), withinvars=.v(repeatedMeasuresFactors),
-							idvar="subject", conf.interval=options$confidenceIntervalInterval, na.rm=TRUE, .drop=FALSE, errorBarType=options$errorBarType)
+							idvar="subject", conf.interval=options$confidenceIntervalInterval, na.rm=TRUE, .drop=FALSE, errorBarType=options$errorBarType, 
+							usePooledSE=options$usePooledStandErrorCI)
 
 		}
 
@@ -2537,10 +2540,13 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	list(result=descriptivesPlotList, status=status, stateDescriptivesPlot=stateDescriptivesPlot)
 }
 
-.rmAnovaSimpleEffects <- function(dataset, options, perform, fullModel, fullAnovaTableWithin, fullAnovaTableBetween, status, singular, stateSimpleEffects) {
+.rmAnovaSimpleEffects <- function(dataset, options, perform, fullModel, fullAnovaTableWithin, 
+                                  fullAnovaTableBetween, status, singular, stateSimpleEffects) {
   
-  if (identical(options$simpleFactor, "") | identical(options$moderatorFactorOne, ""))
+  if (identical(options$simpleFactor, "") | identical(options$moderatorFactorOne, "")) {
     return (list(result=NULL, status=status))
+  }
+  
   
   terms <- c(options$moderatorFactorOne,options$moderatorFactorTwo)
   terms.base64 <- c()
@@ -2580,7 +2586,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   
   simpleEffectsTable[["schema"]] <- list(fields=fields)
   
-  if (perform == "run" && status$ready && status$error == FALSE)  {
+  if (perform == "run" && status$ready && status$error == FALSE && !isTryError(fullModel))  {
   
     isMixedAnova <-   length(options[['betweenSubjectFactors']]) > 0
     isSimpleFactorWithin <- !simpleFactor %in% unlist(options[['betweenModelTerms']] )
@@ -2630,7 +2636,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     }
     #
     allNames <- unlist(lapply(options[['repeatedMeasuresFactors']], function(x) x$name)) # Factornames 
-    
+
     # make separate covariate dataframe to avoid mismatching dataframe names
     covDataset <- dataset[.v(options[['covariates']])]
     wideDataset <- fullModel$data$wide[,(-1)]
@@ -2707,13 +2713,25 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
             # There are still multiple levels of RM factors, so proceed with conditional RM ANOVA
             anovaModel <- .rmAnovaModel(cbind(subDataset, subCovDataset), subOptions, status = status)
             modelSummary <- anovaModel$model
-            modOneIndex <- which(row.names(modelSummary) == .v(simpleFactor))
-            df <- modelSummary[modOneIndex,'num Df']
-            SS <- modelSummary[modOneIndex,'SS']
-            if (!options$poolErrorTermSimpleEffects) {
-              fullAnovaMS <- modelSummary[modOneIndex,'Error SS'] / modelSummary[modOneIndex,'den Df']
-              fullAnovaDf <- modelSummary[modOneIndex,'den Df']
+            if (subOptions$sumOfSquares != "type1") {
+              modOneIndex <- which(row.names(modelSummary) == .v(simpleFactor))
+              df <- modelSummary[modOneIndex,'num Df']
+              SS <- modelSummary[modOneIndex,'SS']   
+              if (!options$poolErrorTermSimpleEffects) {
+                fullAnovaMS <- modelSummary[modOneIndex,'Error SS'] / modelSummary[modOneIndex,'den Df']
+                fullAnovaDf <- modelSummary[modOneIndex,'den Df']
+              }
+            } else {
+              modelSummary <- modelSummary[[-1]][[1]]
+              modOneIndex <- which(row.names(modelSummary) == .v(simpleFactor))
+              df <- modelSummary[modOneIndex,'Df']
+              SS <- modelSummary[modOneIndex,'Sum Sq']   
+              if (!options$poolErrorTermSimpleEffects) {
+                fullAnovaMS <- modelSummary['Residuals','Mean Sq']
+                fullAnovaDf <- modelSummary['Residuals','Df']
+              }
             }
+           
           } else {
             # There is only one level of RM factor left, so proceed with conditional simple ANOVA
             subOptionsSimpleAnova <- subOptions
@@ -2786,13 +2804,25 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
                 # There are still multiple levels of RM factors, so proceed with conditional RM ANOVA
                 anovaModel <- .rmAnovaModel(cbind(subSubDataset, subSubCovDataset), subSubOptions, status = status)
                 modelSummary <- anovaModel$model
-                modTwoIndex <- which(row.names(modelSummary) == .v(simpleFactor))
-                df <- modelSummary[modTwoIndex,'num Df']
-                SS <- modelSummary[modTwoIndex,'SS']
-                if (!options$poolErrorTermSimpleEffects) {
-                  fullAnovaMS <- modelSummary[modTwoIndex,'Error SS'] / modelSummary[modTwoIndex,'den Df']
-                  fullAnovaDf <- modelSummary[modTwoIndex,'den Df']
+                if (subSubOptions$sumOfSquares != "type1") {
+                  modTwoIndex <- which(row.names(modelSummary) == .v(simpleFactor))
+                  df <- modelSummary[modTwoIndex,'num Df']
+                  SS <- modelSummary[modTwoIndex,'SS']   
+                  if (!options$poolErrorTermSimpleEffects) {
+                    fullAnovaMS <- modelSummary[modTwoIndex,'Error SS'] / modelSummary[modOneIndex,'den Df']
+                    fullAnovaDf <- modelSummary[modTwoIndex,'den Df']
+                  }
+                } else {
+                  modelSummary <- modelSummary[[-1]][[1]]
+                  modTwoIndex <- which(row.names(modelSummary) == .v(simpleFactor))
+                  df <- modelSummary[modTwoIndex,'Df']
+                  SS <- modelSummary[modTwoIndex,'Sum Sq']   
+                  if (!options$poolErrorTermSimpleEffects) {
+                    fullAnovaMS <- modelSummary['Residuals','Mean Sq']
+                    fullAnovaDf <- modelSummary['Residuals','Df']
+                  }
                 }
+                
               } else {
                 # There is only one level of RM factor left, so proceed with conditional simple ANOVA
                 subSubOptionsSimpleAnova <- subSubOptions
@@ -2822,11 +2852,13 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
       
       
     }
-    
+   
     simpleEffectsTable[["data"]] <- simpleEffectRows
     
   } else {
-    
+    if(options$sumOfSquares == "type1" ) {
+      .addFootnote(footnotes, text = "Simple effects not yet available for type 1 SS.", 
+                   symbol = "<em>Note.</em>")  }
     simpleEffectsTable[["data"]]  <- list(list("ModOne"=terms.normal, "SumSquares"=".", "df"=".", "MeanSquare"=".", "F"=".", "p"=".", ".isNewGroup" = TRUE))
   }
   
@@ -2845,10 +2877,12 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   simpleEffectsTable[["citation"]] <- list(
     "Howell, D. C. (2002). Statistical Methods for Psychology (8th. ed.). Pacific Grove, CA: Duxberry. "
   )
+  
   list(result=simpleEffectsTable, status=status, stateSimpleEffects=stateSimpleEffects)
 }
 
-.summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE, errorBarType="confidenceInterval") {
+.summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE, 
+                       errorBarType="confidenceInterval", usePooledSE=FALSE) {
 
 	# New version of length which can handle NA's: if na.rm==T, don't count them
 	length2 <- function (x, na.rm=FALSE) {
@@ -2861,6 +2895,12 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 	# This does the summary. For each group's data frame, return a vector with
 	# N, mean, and sd
+	# First aggregate over RM factors, if desired:
+	if (usePooledSE) {
+	  data <- plyr::ddply(data, c("subject", groupvars), plyr::summarise, dependent = mean(dependent))
+	  names(data)[which(names(data) == "dependent")] <- measurevar
+	}
+	
 	datac <- plyr::ddply(data, groupvars, .drop=.drop,
 						 .fun = function(xx, col) {
 						 	c(N    = length2(xx[[col]], na.rm=na.rm),
@@ -2924,11 +2964,12 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	return(data)
 }
 
-.summarySEwithin <- function(data=NULL, measurevar, betweenvars=NULL, withinvars=NULL, idvar=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE, errorBarType="confidenceInterval") {
+.summarySEwithin <- function(data=NULL, measurevar, betweenvars=NULL, withinvars=NULL, idvar=NULL, na.rm=FALSE, 
+                             conf.interval=.95, .drop=TRUE, errorBarType="confidenceInterval", usePooledSE=FALSE) {
 
 	# Get the means from the un-normed data
-	datac <- .summarySE(data, measurevar, groupvars=c(betweenvars, withinvars), na.rm=na.rm, conf.interval=conf.interval, .drop=.drop, errorBarType=errorBarType)
-
+	datac <- .summarySE(data, measurevar, groupvars=c(betweenvars, withinvars), na.rm=na.rm, 
+	                    conf.interval=conf.interval, .drop=.drop, errorBarType=errorBarType, usePooledSE=usePooledSE)
 	# Drop all the unused columns (these will be calculated with normed data)
 	datac$sd <- NULL
 	datac$se <- NULL
@@ -2943,7 +2984,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	measurevar_n <- paste(measurevar, "_norm", sep="")
 
 	# Collapse the normed data - now we can treat between and within vars the same
-	ndatac <- .summarySE(ndata, measurevar_n, groupvars=c(betweenvars, withinvars), na.rm=na.rm, conf.interval=conf.interval, .drop=.drop, errorBarType=errorBarType)
+	ndatac <- .summarySE(ndata, measurevar_n, groupvars=c(betweenvars, withinvars), na.rm=na.rm, conf.interval=conf.interval, .drop=.drop, errorBarType=errorBarType,
+	                     usePooledSE=usePooledSE)
 
 	# Apply correction from Morey (2008) to the standard error and confidence interval
 	# Get the product of the number of conditions of within-S variables
