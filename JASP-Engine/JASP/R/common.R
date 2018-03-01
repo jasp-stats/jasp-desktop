@@ -172,6 +172,27 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 
 }
 
+initEnvironment <- function() {
+	
+	packages <- c("BayesFactor", "bootnet") # Add any package that needs pre-loading
+	
+	for (package in packages) {
+		if (base::isNamespaceLoaded(package) == FALSE) {
+			try(base::loadNamespace(package), silent=TRUE)
+		}
+	}
+	
+	if (base::exists(".requestTempRootNameNative")) {
+		paths <- .fromRCPP(".requestTempRootNameNative")
+		root = paths$root
+		base::Encoding(root) <- "UTF-8"
+		setwd(root)
+	} else {
+		print("Could not set the working directory!")
+	}
+}
+
+
 checkPackages <- function() {
 	rjson::toJSON(.checkPackages())
 }
@@ -1438,6 +1459,7 @@ isTryError <- function(obj){
 
 	collection <- c(
 		".requestTempFileNameNative",
+		".requestTempRootNameNative",
 		".readDatasetToEndNative",
 		".readDataSetHeaderNative",
 		".callbackNative",
@@ -1825,34 +1847,6 @@ callback <- function(results=NULL, progress=NULL) {
 		seq <- from:to
 		
 	seq
-}
-
-.beginSaveImage <- function(width=320, height=320) {
-
-	type <- "cairo"
-	
-	if (Sys.info()["sysname"]=="Darwin")  # OS X
-		type <- "quartz"
-	
-	pngMultip <- .fromRCPP(".ppi") / 96
-		
-	# create png file location
-	location <- .fromRCPP(".requestTempFileNameNative", "png")
-	relativePath <- location$relativePath
-	base::Encoding(relativePath) <- "UTF-8"
-
-	grDevices::png(filename=relativePath, width=width * pngMultip,
-								height=height * pngMultip, bg="transparent", 
-								res=72 * pngMultip, type=type)
-		
-	relativePath
-}
-
-.endSaveImage <- function(filename) {
-
-	grDevices::dev.off()
-	
-	filename
 }
 
 .extractErrorMessage <- function(error) {

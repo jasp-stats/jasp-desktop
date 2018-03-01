@@ -49,12 +49,13 @@ Engine::Engine()
 
 	_status = empty;
 	
-	rbridge_init();
 	tempfiles_attach(ProcessInfo::parentPID());
 
 	rbridge_setDataSetSource(boost::bind(&Engine::provideDataSet, this));
 	rbridge_setFileNameSource(boost::bind(&Engine::provideTempFileName, this, _1, _2, _3));
 	rbridge_setStateFileSource(boost::bind(&Engine::provideStateFileName, this, _1, _2));
+	
+	rbridge_init();
 }
 
 void Engine::setSlaveNo(int no)
@@ -199,19 +200,19 @@ void Engine::runAnalysis()
 
 void Engine::run()
 {
+#if defined(QT_DEBUG) || defined(__linux__)
 	if (_slaveNo == 0)
 	{
-#if defined(QT_DEBUG) || defined(__linux__)
-		_engineInfo = rbridge_check();
-#endif
+		string engineInfo = rbridge_check();
 
 		Json::Value v;
 		Json::Reader r;
-		r.parse(_engineInfo, v);
+		r.parse(engineInfo, v);
 
 		std::cout << v.toStyledString() << "\n";
 		std::cout.flush();
 	}
+#endif
 
 	stringstream ss;
 	ss << "JASP-IPC-" << ProcessInfo::parentPID();

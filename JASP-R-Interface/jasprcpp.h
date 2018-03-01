@@ -27,6 +27,7 @@ Rcpp::DataFrame jaspRCPP_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SE
 Rcpp::DataFrame jaspRCPP_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
 SEXP jaspRCPP_callbackSEXP(SEXP results, SEXP progress);
 SEXP jaspRCPP_requestTempFileNameSEXP(SEXP extension);
+SEXP jaspRCPP_requestTempRootNameSEXP();
 SEXP jaspRCPP_requestStateFileNameSEXP();
 
 

@@ -67,6 +67,7 @@ typedef char** (STDCALL *ReadDataColumnNamesCB)(int *maxCol);
 typedef RBridgeColumnDescription* (STDCALL *ReadDataSetDescriptionCB)(RBridgeColumnType* columns, int colMax);
 typedef bool (STDCALL *RequestStateFileSourceCB)(const char **root, const char **relativePath);
 typedef bool (STDCALL *RequestTempFileNameCB)(const char* extensionAsString, const char **root, const char **relativePath);
+typedef const char* (STDCALL *RequestTempRootNameCB)();
 typedef bool (STDCALL *RunCallbackCB)(const char* in, int progress, const char** out);
 
 struct RBridgeCallBacks {
@@ -75,6 +76,7 @@ struct RBridgeCallBacks {
 	ReadDataSetDescriptionCB readDataSetDescriptionCB;
 	RequestStateFileSourceCB requestStateFileSourceCB;
 	RequestTempFileNameCB requestTempFileNameCB;
+	RequestTempRootNameCB requestTempRootNameCB;
 	RunCallbackCB runCallbackCB;
 };
 

@@ -47,6 +47,7 @@ extern "C" {
 	bool STDCALL rbridge_test(char** root);
 	bool STDCALL rbridge_requestStateFileSource(const char **root, const char **relativePath);
 	bool STDCALL rbridge_requestTempFileName(const char* extensionAsString, const char **root, const char **relativePath);
+	const char* STDCALL rbridge_requestTempRootName();
 	bool STDCALL rbridge_runCallback(const char* in, int progress, const char** out);
 }
 

@@ -25,6 +25,7 @@ ReadDataColumnNamesCB readDataColumnNamesCB;
 ReadDataSetDescriptionCB readDataSetDescriptionCB;
 RequestStateFileSourceCB requestStateFileSourceCB;
 RequestTempFileNameCB requestTempFileNameCB;
+RequestTempRootNameCB requestTempRootNameCB;
 RunCallbackCB runCallbackCB;
 
 static const string NullString = "null";
@@ -41,6 +42,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".readDataSetHeaderNative"] = Rcpp::InternalFunction(&jaspRCPP_readDataSetHeaderSEXP);
 	rInside[".callbackNative"] = Rcpp::InternalFunction(&jaspRCPP_callbackSEXP);
 	rInside[".requestTempFileNameNative"] = Rcpp::InternalFunction(&jaspRCPP_requestTempFileNameSEXP);
+	rInside[".requestTempRootNameNative"] = Rcpp::InternalFunction(&jaspRCPP_requestTempRootNameSEXP);
 	rInside[".requestStateFileNameNative"] = Rcpp::InternalFunction(&jaspRCPP_requestStateFileNameSEXP);
 	static const char *baseCitationFormat = "JASP Team (%s). JASP (Version %s) [Computer software].";
 	char baseCitation[200];
@@ -56,7 +58,10 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	readDataSetDescriptionCB = callbacks->readDataSetDescriptionCB;
 	requestStateFileSourceCB = callbacks->requestStateFileSourceCB;
 	requestTempFileNameCB = callbacks->requestTempFileNameCB;
+	requestTempRootNameCB = callbacks->requestTempRootNameCB;
 	runCallbackCB = callbacks->runCallbackCB;
+	
+	rinside->parseEvalNT("initEnvironment()");
 }
 
 
@@ -146,6 +151,16 @@ SEXP jaspRCPP_requestTempFileNameSEXP(SEXP extension)
 
 	return paths;
 }
+
+SEXP jaspRCPP_requestTempRootNameSEXP()
+{
+	const char* root = requestTempRootNameCB();
+
+	Rcpp::List paths;
+	paths["root"] = root;
+	return paths;
+}
+
 
 SEXP jaspRCPP_requestStateFileNameSEXP()
 {
