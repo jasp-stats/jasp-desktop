@@ -117,7 +117,7 @@ QVariant DataSetTableModel::columnIcon(int column) const
 		return QVariant(columnref.columnType());
 	}
 	else
-		return QVariant();
+		return QVariant(-1);
 }
 
 QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientation, int role) const
