@@ -1632,41 +1632,6 @@ isTryError <- function(obj){
 	df
 }
 
-.v <- function(variable.names, prefix="X") {
-
-	vs <- c()
-
-	for (v in variable.names)
-		vs[length(vs)+1] <- paste(prefix, .toBase64(v), sep="")
-
-	vs
-}
-
-.unv <- function(variable.names) {
-
-	vs <- c()
-	
-	for (v in variable.names) {
-	
-		if (nchar(v) == 0)
-			stop(paste("bad call to .unv() : v is empty"))
-	
-		firstChar <- charToRaw(substr(v, 1, 1))
-	
-		if (firstChar >= 0x41 && firstChar <= 0x5A) {  # A to Z
-		
-			vs[length(vs)+1] <- .fromBase64(substr(v, 2, nchar(v)))
-			
-		} else {
-		
-		  vs[length(vs)+1] <- v
-		  
-		}
-	}
-	
-	vs
-}
-
 .vf <- function(formula) {
 	
 	in.pieces <- .decompose(formula)

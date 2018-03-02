@@ -84,6 +84,8 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 	packageData->dataFileReadOnly = metaData["dataFileReadOnly"].isNull() ? false : metaData["dataFileReadOnly"].asBool();
 	packageData->dataFileTimestamp = metaData["dataFileTimestamp"].isNull() ? 0 : metaData["dataFileTimestamp"].asInt();
 
+	packageData->dataFilter = metaData.get("filterData", "").asString();
+
 	Json::Value &emptyValuesJson = metaData["emptyValues"];
 	if (emptyValuesJson.isNull())
 	{

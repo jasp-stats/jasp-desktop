@@ -55,6 +55,7 @@ public:
 	size_t size() const;
 
 	Labels& operator=(const Labels& labels);
+	Label& operator[](size_t index);
 
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
 	typedef LabelVector::const_iterator const_iterator;
