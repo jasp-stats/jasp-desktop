@@ -28,9 +28,9 @@ ReadADataSetCB readFullDataSetCB;
 ReadADataSetCB readFilterDataSetCB;
 ReadDataColumnNamesCB readDataColumnNamesCB;
 RequestTempFileNameCB requestTempFileNameCB;
+RequestTempRootNameCB requestTempRootNameCB;
 ReadDataSetDescriptionCB readDataSetDescriptionCB;
 RequestStateFileSourceCB requestStateFileSourceCB;
-
 
 static const string NullString = "null";
 
@@ -50,6 +50,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	readFilterDataSetCB						= callbacks->readFilterDataSetCB;
 	readDataColumnNamesCB					= callbacks->readDataColumnNamesCB;
 	requestTempFileNameCB					= callbacks->requestTempFileNameCB;
+	requestTempRootNameCB					= callbacks->requestTempRootNameCB;
 	readDataSetDescriptionCB				= callbacks->readDataSetDescriptionCB;
 	requestStateFileSourceCB				= callbacks->requestStateFileSourceCB;
 
@@ -61,8 +62,8 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".readFilterDatasetToEnd"]		= Rcpp::InternalFunction(&jaspRCPP_readFilterDataSet);
 	rInside[".readDataSetHeaderNative"]		= Rcpp::InternalFunction(&jaspRCPP_readDataSetHeaderSEXP);
 	rInside[".requestTempFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestTempFileNameSEXP);
+	rInside[".requestTempRootNameNative"] = Rcpp::InternalFunction(&jaspRCPP_requestTempRootNameSEXP);
 	rInside[".requestStateFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestStateFileNameSEXP);
-
 
 	static const char *baseCitationFormat = "JASP Team (%s). JASP (Version %s) [Computer software].";
 	char baseCitation[200];
@@ -72,6 +73,8 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside["jasp.analyses"] = Rcpp::List();
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
+	
+	rinside->parseEvalNT("initEnvironment()");
 }
 
 
@@ -198,6 +201,16 @@ SEXP jaspRCPP_requestTempFileNameSEXP(SEXP extension)
 
 	return paths;
 }
+
+SEXP jaspRCPP_requestTempRootNameSEXP()
+{
+	const char* root = requestTempRootNameCB();
+
+	Rcpp::List paths;
+	paths["root"] = root;
+	return paths;
+}
+
 
 SEXP jaspRCPP_requestStateFileNameSEXP()
 {

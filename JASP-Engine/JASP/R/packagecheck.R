@@ -227,8 +227,6 @@
 	
 	}
 	
-	.initPackages(installed.package.names)
-	
 	if (length(messages) == 0) {
 	
 		list("All R-packages are up-to-date!")
@@ -237,18 +235,5 @@
 	
 		list(official=FALSE, messages=messages)
 	}
-}
-
-
-.initPackages <- function(installedPackages) {
-	
-	packages <- c("BayesFactor", "bootnet") # Add any package that needs pre-loading
-	
-	for (package in packages) {
-		if (package %in% installedPackages && base::isNamespaceLoaded(package) == FALSE) {
-			try(base::loadNamespace(package), silent=TRUE)
-		}
-	}
-	
 }
 

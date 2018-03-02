@@ -33,6 +33,7 @@ Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(RBridgeColumn* colRe
 
 SEXP jaspRCPP_callbackSEXP(SEXP results, SEXP progress);
 SEXP jaspRCPP_requestTempFileNameSEXP(SEXP extension);
+SEXP jaspRCPP_requestTempRootNameSEXP();
 SEXP jaspRCPP_requestStateFileNameSEXP();
 
 void jaspRCPP_returnDataFrame(Rcpp::DataFrame frame);

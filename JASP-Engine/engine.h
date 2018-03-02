@@ -87,7 +87,6 @@ private:
 
 	IPCChannel *_channel = NULL;
 	DataSet *_dataSet = NULL;
-	std::string _engineInfo;
 
 	int _slaveNo = 0;
 

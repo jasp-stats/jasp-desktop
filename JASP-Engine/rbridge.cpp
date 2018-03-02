@@ -20,34 +20,30 @@
 #include "jsonredirect.h"
 #include "sharedmemory.h"
 #include "appinfo.h"
+#include "tempfiles.h"
 #include <iostream>
 
 using namespace std;
 
-DataSet *rbridge_dataSet;
-RCallback rbridge_callback;
-boost::function<void(const std::string &, std::string &, std::string &)> rbridge_fileNameSource;
-boost::function<void(std::string &, std::string &)> rbridge_stateFileSource;
-boost::function<DataSet *()> rbridge_dataSetSource;
+DataSet *rbridge_dataSet = NULL;
+RCallback rbridge_callback = NULL;
+boost::function<void(const std::string &, std::string &, std::string &)> rbridge_fileNameSource = NULL;
+boost::function<void(std::string &, std::string &)> rbridge_stateFileSource = NULL;
+boost::function<DataSet *()> rbridge_dataSetSource = NULL;
 std::unordered_set<std::string> filterColumnsUsed, columnNamesInDataSet;
-
 
 char** rbridge_getLabels(const Labels &levels, int &nbLevels);
 char** rbridge_getLabels(const vector<string> &levels, int &nbLevels);
 
 void rbridge_init()
 {
-	rbridge_dataSet = NULL;
-	rbridge_callback = NULL;
-	rbridge_fileNameSource = NULL;
-	rbridge_stateFileSource = NULL;
-
 	RBridgeCallBacks callbacks = {
 		rbridge_readDataSet,
 		rbridge_readDataColumnNames,
 		rbridge_readDataSetDescription,
 		rbridge_requestStateFileSource,
 		rbridge_requestTempFileName,
+		rbridge_requestTempRootName,
 		rbridge_runCallback,
 		rbridge_readFullDataSet,
 		rbridge_readFilterDataSet
@@ -88,7 +84,7 @@ extern "C" bool STDCALL rbridge_requestStateFileSource(const char** root, const 
 
 extern "C" bool STDCALL rbridge_requestTempFileName(const char* extensionAsString, const char** root, const char** relativePath)
 {
-	if (!rbridge_stateFileSource)
+	if (!rbridge_fileNameSource)
 		return false;
 
 	static string _root, _relativePath;
@@ -97,6 +93,14 @@ extern "C" bool STDCALL rbridge_requestTempFileName(const char* extensionAsStrin
 	*root = _root.c_str();
 	*relativePath = _relativePath.c_str();
 	return true;
+}
+
+extern "C" const char* STDCALL rbridge_requestTempRootName()
+{
+	static string _root;
+	_root = tempfiles_sessionDirName();
+
+	return _root.c_str();
 }
 
 extern "C" bool STDCALL rbridge_runCallback(const char* in, int progress, const char** out)
