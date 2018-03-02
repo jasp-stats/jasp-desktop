@@ -13,6 +13,18 @@
         <file>arrow-down.png</file>
         <file>arrow-up-down.png</file>
         <file>cross.png</file>
+        <file>arrow-reverse.png</file>
+        <file>filter.png</file>
     </qresource>
-    <qresource prefix="/"/>
+    <qresource prefix="/qml">
+        <file>dataset.qml</file>
+        <file>BasicTableViewJasp.qml</file>
+        <file>TableViewJasp.qml</file>
+        <file>TableViewStyleJasp.qml</file>
+        <file>FilterWindow.qml</file>
+        <file>VariablesWindow.qml</file>
+        <file>ProgressBarHolder.qml</file>
+        <file>DataTableView.qml</file>
+        <file>PlusMinusCheckButton.qml</file>
+    </qresource>
 </RCC>

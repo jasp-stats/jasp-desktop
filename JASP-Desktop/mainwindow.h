@@ -24,9 +24,10 @@
 #include "dataset.h"
 
 #include "datasettablemodel.h"
+#include "variablespage/levelstablemodel.h"
+#include "variablespage/labelfiltergenerator.h"
 #include "enginesync.h"
 #include "analyses.h"
-#include "widgets/progresswidget.h"
 
 #include "analysisforms/analysisform.h"
 #include "asyncloader.h"
@@ -62,11 +63,13 @@ protected:
 private:
 	Ui::MainWindow *ui;
 
-	ResultsJsInterface *_resultsJsInterface;
-	AnalysisForm *_currentOptionsWidget;
-	DataSetPackage *_package;
-	DataSetTableModel *_tableModel;
-	Analysis *_currentAnalysis;
+	ResultsJsInterface		*_resultsJsInterface;
+	AnalysisForm			*_currentOptionsWidget;
+	DataSetPackage			*_package;
+	DataSetTableModel		*_tableModel;
+	LevelsTableModel		*_levelsTableModel;
+	Analysis				*_currentAnalysis;
+	labelFilterGenerator	*_labelFilterGenerator;
 
 	int _scrollbarWidth = 0;
 
@@ -74,6 +77,8 @@ private:
 
 	Analyses *_analyses;
 	EngineSync* _engineSync;
+
+	void triggerQmlColumnReload();
 
 	void refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns
 									, std::vector<std::string> &missingColumns
@@ -92,7 +97,7 @@ private:
 
 	AsyncLoader _loader;
 	AsyncLoaderThread _loaderThread;
-	ProgressWidget *_progressIndicator;
+	QObject *qmlProgressBar = NULL, *qmlFilterWindow = NULL, *qmlStatusBar = NULL;
 
 	bool _inited;
 	bool _applicationExiting = false;
@@ -146,7 +151,6 @@ private slots:
 	void removeAllAnalyses();
 	void refreshAllAnalyses();
 	void refreshAnalysesUsingColumn(QString col);
-	void resetTableView();
 
 	void tabChanged(int index);
 	void helpToggled(bool on);
@@ -163,7 +167,6 @@ private slots:
 	void showOptionsPanel();
 	void showDataPanel();
 	void hideDataPanel();
-	void showVariablesPage();
 	void startDataEditorHandler();
 	void startDataEditorEventCompleted(FileEvent *event);
 
@@ -184,6 +187,19 @@ private slots:
 	void requestHelpPage(const QString &pageName);
 
     void emptyValuesChangedHandler();
+
+	void resizeVariablesWindowValueColumn();
+	void closeVariablesPage();
+
+	void showProgress();
+	void hideProgress();
+	void setProgressStatus(QString status, int progress);
+
+	void setGeneratedFilter(QString genFilter);
+	void setFilterErrorText(QString error);
+	void applyAndSendFilter(QString filter);
+	void setStatusBarText(QString text);
+	void onFilterUpdated();
 };
 
 #endif // MAINWIDGET_H

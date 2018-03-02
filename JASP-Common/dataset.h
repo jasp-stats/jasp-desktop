@@ -19,8 +19,11 @@
 #define DATASET_H
 
 #include <map>
-
+#include <iostream>
 #include "columns.h"
+
+typedef boost::interprocess::allocator<bool, boost::interprocess::managed_shared_memory::segment_manager> BoolAllocator;
+typedef boost::container::vector<bool, BoolAllocator> BoolVector;
 
 class DataSet
 {
@@ -46,13 +49,18 @@ public:
 	std::string toString();
 	std::vector<std::string> resetEmptyValues(std::map<std::string, std::map<int, std::string> > &emptyValuesMap);
 
+	void setFilterVector(std::vector<bool> filterResult);
+	const BoolVector& filterVector() const { return _filterVector; }
+	int filteredRowCount() const { return _filteredRowCount; }
+
 private:
+	Columns		_columns;
+	int			_rowCount,
+				_columnCount,
+				_filteredRowCount;
+	BoolVector	_filterVector;
 
-	Columns _columns;
-
-	int _rowCount;
-	int _columnCount;
-
+	boost::interprocess::managed_shared_memory *_mem;
 };
 
 #endif // DATASET_H

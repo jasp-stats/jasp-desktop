@@ -46,7 +46,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     jasprcpp.cpp \
     RInside/MemBuf.cpp \
-    RInside/RInside.cpp
+    RInside/RInside.cpp \
+    rinside_consolelogging.cpp
 
 HEADERS += \
     jasprcpp_interface.h \
@@ -57,7 +58,8 @@ HEADERS += \
     RInside/RInsideAutoloads.h \
     RInside/RInsideCommon.h \
     RInside/RInsideConfig.h \
-    RInside/RInsideEnvVars.h
+    RInside/RInsideEnvVars.h \
+    rinside_consolelogging.h
 
 INCLUDEPATH += \
     $$_R_HOME/library/Rcpp/include \

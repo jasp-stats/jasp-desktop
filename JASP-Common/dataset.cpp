@@ -23,10 +23,12 @@ using namespace std;
  */
 
 DataSet::DataSet(boost::interprocess::managed_shared_memory *mem) :
-	_columns(mem)
+	_columns(mem),
+	_filterVector(mem->get_segment_manager())
 {
 	_rowCount = 0;
 	_columnCount = 0;
+	_mem = mem;
 }
 
 DataSet::~DataSet()
@@ -52,6 +54,10 @@ void DataSet::setRowCount(int rowCount)
 {
 	_columns.setRowCount(rowCount);
 	_rowCount = rowCount;
+
+	_filterVector.clear();
+	for(int i=0; i<rowCount; i++)
+		_filterVector.push_back(true);
 }
 
 void DataSet::setColumnCount(int columnCount)
@@ -72,7 +78,15 @@ void DataSet::removeColumn(string name)
 
 void DataSet::setSharedMemory(boost::interprocess::managed_shared_memory *mem)
 {
+	_mem = mem;
 	_columns.setSharedMemory(mem);
+
+	std::cout << "DataSet::setSharedMemory!\n" << std::flush;
+
+	_filterVector = BoolVector(mem->get_segment_manager());
+	for(int i=0; i<_rowCount; i++)
+		_filterVector.push_back(true);
+	//_filterVector.allocator_type->segment_manager = mem->get_segment_manager();
 }
 
 int DataSet::rowCount() const
@@ -141,4 +155,12 @@ vector<string> DataSet::resetEmptyValues(map<string, map<int, string> > &emptyVa
 	}
 
 	return colChanged;
+}
+
+void DataSet::setFilterVector(std::vector<bool> filterResult)
+{
+	_filteredRowCount = 0;
+	for(int i=0; i<filterResult.size(); i++)
+		if((_filterVector[i] = filterResult[i])) //economy
+			_filteredRowCount++;
 }

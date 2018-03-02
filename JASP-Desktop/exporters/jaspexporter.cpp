@@ -95,8 +95,11 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 	for (auto it = emptyValuesVector.begin(); it != emptyValuesVector.end(); ++it)
 		emptyValuesJson.append(*it);
 	metaData["emptyValues"] = emptyValuesJson;
+	metaData["filterData"] = Json::Value(package->dataFilter);
+
 	dataSet["rowCount"] = Json::Value(dataset ? dataset->rowCount() : 0);
 	dataSet["columnCount"] = Json::Value(dataset ? dataset->columnCount(): 0);
+
 	Json::Value emptyValuesMapJson = Json::objectValue;
 	for (auto it = package->emptyValuesMap.begin(); it != package->emptyValuesMap.end(); ++it)
 	{

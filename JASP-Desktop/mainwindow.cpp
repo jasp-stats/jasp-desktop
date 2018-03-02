@@ -85,6 +85,8 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QDesktopServices>
+#include <QQmlContext>
+#include <QQuickItem>
 
 #include "analysisloader.h"
 
@@ -166,47 +168,66 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->backStage->setOnlineDataManager(_odm);
 
 	_tableModel = new DataSetTableModel();
-	ui->tableView->setModel(_tableModel);
-	ui->tableView->setVariablesView(ui->variablesPage);
-	ui->variablesPage->hide();
+	_levelsTableModel = new LevelsTableModel(this);
+	_labelFilterGenerator = new labelFilterGenerator(_package, this);
 
-	ui->tableView->setVerticalScrollMode(QTableView::ScrollPerPixel);
-	ui->tableView->setHorizontalScrollMode(QTableView::ScrollPerPixel);
+	connect(_levelsTableModel,		&LevelsTableModel::refreshConnectedModels,	_tableModel,			&DataSetTableModel::refreshColumn);
+	connect(_levelsTableModel,		&LevelsTableModel::resizeValueColumn,		this,					&MainWindow::resizeVariablesWindowValueColumn);
+	connect(_levelsTableModel,		&LevelsTableModel::labelFilterChanged,		_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged);
+	connect(_labelFilterGenerator,	&labelFilterGenerator::setGeneratedFilter,	this,					&MainWindow::setGeneratedFilter);
 
 	_analyses = new Analyses();
-	_engineSync = new EngineSync(_analyses, this);
-	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(fatalError()));
+	_engineSync = new EngineSync(_analyses, _package, this);
 
-	connect(_analyses, SIGNAL(analysisResultsChanged(Analysis*)), this, SLOT(analysisResultsChangedHandler(Analysis*)));
-	connect(_analyses, SIGNAL(analysisImageSaved(Analysis*)), this, SLOT(analysisImageSavedHandler(Analysis*)));
-    connect(_analyses, SIGNAL(analysisImageEdited(Analysis*)), _resultsJsInterface, SLOT(analysisImageEditedHandler(Analysis*)));
-	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), ui->backStage, SLOT(analysisAdded(Analysis*)));
+	connect(_engineSync, &EngineSync::filterUpdated,			this,			&MainWindow::refreshAllAnalyses);
+	connect(_engineSync, &EngineSync::filterUpdated,			_tableModel,	&DataSetTableModel::refresh);
+	connect(_engineSync, &EngineSync::filterErrorTextChanged,	this,			&MainWindow::setFilterErrorText);
+	connect(_engineSync, &EngineSync::filterUpdated,			this,			&MainWindow::onFilterUpdated);
 
-	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
-	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
-	connect(ui->ribbonReinforcementLearning, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
-	connect(ui->ribbonSummaryStatistics, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
-	connect(ui->ribbonMetaAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
-	connect(ui->ribbonNetworkAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
-	connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
-	connect(ui->backStage, SIGNAL(exportSelected(QString)), _resultsJsInterface, SLOT(exportSelected(QString)));
-	connect(ui->variablesPage, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
-	connect(ui->variablesPage, SIGNAL(resetTableView()), this, SLOT(resetTableView()));
-	connect(ui->tableView, SIGNAL(dataTableColumnSelected()), this, SLOT(showVariablesPage()));
-	connect(ui->tableView, SIGNAL(dataTableDoubleClicked()), this, SLOT(startDataEditorHandler()));
-	connect(ui->tabBar, SIGNAL(dataAutoSynchronizationChanged(bool)), ui->backStage, SLOT(dataAutoSynchronizationChanged(bool)));
+	ui->quickWidget_Data->rootContext()->setContextProperty("dataSetModel", _tableModel);
+	ui->quickWidget_Data->rootContext()->setContextProperty("levelsTableModel", _levelsTableModel);
+	ui->quickWidget_Data->rootContext()->setContextProperty("engineSync", _engineSync);
+	ui->quickWidget_Data->rootContext()->setContextProperty("filterErrorText", QString(""));
+	ui->quickWidget_Data->rootContext()->setContextProperty("generatedFilter", QString(""));
 
-	_progressIndicator = new ProgressWidget(ui->tableView);
-	_progressIndicator->setAutoFillBackground(true);
-	_progressIndicator->resize(400, 100);
-	_progressIndicator->move(100, 80);
-	_progressIndicator->hide();
+	ui->quickWidget_Data->setSource(QUrl(QString("qrc:///qml/dataset.qml")));
 
-	connect(&_loader, SIGNAL(progress(QString,int)), _progressIndicator, SLOT(setStatus(QString,int)));
+	QObject * DataView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataSetTableView");
+	connect(DataView, SIGNAL(dataTableDoubleClicked()), this, SLOT(startDataEditorHandler()));
 
-	connect(ui->tabBar, SIGNAL(setExactPValuesHandler(bool)), _resultsJsInterface, SLOT(setExactPValuesHandler(bool)));
-	connect(ui->tabBar, SIGNAL(setFixDecimalsHandler(QString)), _resultsJsInterface, SLOT(setFixDecimalsHandler(QString)));
-	connect(ui->tabBar, SIGNAL(emptyValuesChangedHandler()), this, SLOT(emptyValuesChangedHandler()));
+	QObject * levelsTableView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("levelsTableView");
+	connect(levelsTableView, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
+
+	qmlProgressBar	= ui->quickWidget_Data->rootObject()->findChild<QObject*>("progressBarHolder");
+	qmlFilterWindow = ui->quickWidget_Data->rootObject()->findChild<QObject*>("filterWindow");
+	qmlStatusBar	= ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataStatusBar");
+
+	connect(_engineSync, &EngineSync::engineTerminated,		this,					&MainWindow::fatalError);
+
+	connect(_analyses, &Analyses::analysisResultsChanged,	this,					&MainWindow::analysisResultsChangedHandler);
+	connect(_analyses, &Analyses::analysisImageSaved,		this,					&MainWindow::analysisImageSavedHandler);
+	connect(_analyses, &Analyses::analysisAdded,			ui->backStage,			&BackStageWidget::analysisAdded);
+	connect(_analyses, &Analyses::analysisImageEdited,		_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler);
+
+	//connect some ribbonbuttons?
+	connect(ui->ribbonAnalysis,					QOverload<QString>::of(&RibbonAnalysis::itemSelected),				this, &MainWindow::itemSelected);
+	connect(ui->ribbonSEM,						QOverload<QString>::of(&RibbonSEM::itemSelected),					this, &MainWindow::itemSelected);
+	connect(ui->ribbonReinforcementLearning,	QOverload<QString>::of(&RibbonReinforcementLearning::itemSelected),	this, &MainWindow::itemSelected);
+	connect(ui->ribbonSummaryStatistics,		QOverload<QString>::of(&RibbonSummaryStatistics::itemSelected),		this, &MainWindow::itemSelected);
+	connect(ui->ribbonMetaAnalysis,				QOverload<QString>::of(&RibbonMetaAnalysis::itemSelected),			this, &MainWindow::itemSelected);
+	connect(ui->ribbonNetworkAnalysis,			QOverload<QString>::of(&RibbonNetworkAnalysis::itemSelected),		this, &MainWindow::itemSelected);
+
+	connect(ui->backStage,						&BackStageWidget::dataSetIORequest,			this, &MainWindow::dataSetIORequest);
+	connect(ui->backStage,						&BackStageWidget::exportSelected, _resultsJsInterface, &ResultsJsInterface::exportSelected);
+
+
+	connect(ui->tabBar, &TabBar::dataAutoSynchronizationChanged, ui->backStage,			&BackStageWidget::dataAutoSynchronizationChanged);
+	connect(ui->tabBar, &TabBar::setExactPValuesHandler,		_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler);
+	connect(ui->tabBar, &TabBar::setFixDecimalsHandler,			_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler);
+	connect(ui->tabBar, &TabBar::emptyValuesChangedHandler,		this,					&MainWindow::emptyValuesChangedHandler);
+
+	connect(&_loader,	&AsyncLoader::progress,					this,					&MainWindow::setProgressStatus);
+
 
 #ifdef __APPLE__
 	_scrollbarWidth = 3;
@@ -237,16 +258,15 @@ MainWindow::MainWindow(QWidget *parent) :
 	_buttonPanel->resize(_buttonPanel->sizeHint());
 	_buttonPanel->move(ui->panel_2_Options->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 
-	connect(_okButton, SIGNAL(clicked()), this, SLOT(analysisOKed()));
-	connect(_runButton, SIGNAL(clicked()), this, SLOT(analysisRunned()));
-
-	connect(ui->splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(splitterMovedHandler(int,int)));
+	connect(_okButton,		&QPushButton::clicked,		this, &MainWindow::analysisOKed);
+	connect(_runButton,		&QPushButton::clicked,		this, &MainWindow::analysisRunned);
+	connect(ui->splitter,	&QSplitter::splitterMoved,	this, &MainWindow::splitterMovedHandler);
 
 	_tableViewWidthBeforeOptionsMadeVisible = -1;
 
 	QUrl userGuide = QUrl::fromLocalFile(AppDirs::help() + "/index.html");
 	ui->webViewHelp->setUrl(userGuide);
-	connect(ui->webViewHelp, SIGNAL(loadFinished(bool)), this, SLOT(helpFirstLoaded(bool)));
+	connect(ui->webViewHelp, &CustomWebEngineView::loadFinished, this, &MainWindow::helpFirstLoaded);
 	ui->panel_4_Help->hide();
 
 	setAcceptDrops(true);
@@ -255,7 +275,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	QApplication::setFont(ui->tableView->font());
 #endif
 
-	ui->panel_1_Data->show();
+	ui->panel_1_Data->hide();
 	ui->panel_2_Options->hide();
 
 	// init Empty Values
@@ -494,7 +514,8 @@ void MainWindow::packageDataChanged(DataSetPackage *package,
 									map<string, string> &changeNameColumns)
 {
 	_tableModel->setDataSet(_package->dataSet);
-	ui->variablesPage->setDataSet(_package->dataSet);
+	_levelsTableModel->setDataSet(_package->dataSet);
+	triggerQmlColumnReload();
 
 	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns);
 }
@@ -917,7 +938,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 
 			_loader.io(event, _package);
-			_progressIndicator->show();
+			showProgress();
 		}
 
 		ui->tabBar->setCurrentModuleActive();
@@ -956,7 +977,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 
 		_loader.io(event, _package);
-		_progressIndicator->show();
+		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileExportResults)
 	{
@@ -965,13 +986,13 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 		_resultsJsInterface->exportHTML();
 
 		_loader.io(event, _package);
-		_progressIndicator->show();
+		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileExportData)
 	{
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 		_loader.io(event, _package);
-		_progressIndicator->show();
+		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
 	{
@@ -980,7 +1001,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 		_loader.io(event, _package);
-		_progressIndicator->show();
+		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
@@ -1013,16 +1034,37 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			dataSetIOCompleted(event);
 		}
 
-		ui->variablesPage->close();
+		closeVariablesPage();
 	}
 }
 
+void MainWindow::resizeVariablesWindowValueColumn()
+{
+	QObject * levelsTableView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("levelsTableView");
+	QMetaObject::invokeMethod(levelsTableView, "resizeValueColumn");
+}
+
+void MainWindow::closeVariablesPage()
+{
+	QObject * levelsTableView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("levelsTableView");
+	QMetaObject::invokeMethod(levelsTableView, "closeYourself");
+}
+
+
+void MainWindow::triggerQmlColumnReload()
+{
+	QObject * DataView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataSetTableView");
+
+	if(DataView != NULL)
+		QMetaObject::invokeMethod(DataView, "reloadColumns");
+
+}
 
 void MainWindow::dataSetIOCompleted(FileEvent *event)
 {
 	this->analysisOKed();
 	bool showAnalysis = false;
-	_progressIndicator->hide();
+	hideProgress();
 
 	if (event->operation() == FileEvent::FileOpen)
 	{
@@ -1093,13 +1135,13 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			closeCurrentOptionsWidget();
 			hideOptionsPanel();
 			_tableModel->clearDataSet();
-			ui->variablesPage->clearDataSet();
+			_levelsTableModel->setDataSet(NULL);
 			_loader.free(_package->dataSet);
 			_package->reset();
 			updateMenuEnabledDisabledStatus();
 			ui->webViewResults->reload();
 			setWindowTitle("JASP");
-			ui->tableView->adjustAfterDataLoad(false);
+			triggerQmlColumnReload();
 
 			if (_applicationExiting)
 				QApplication::exit();
@@ -1120,11 +1162,12 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 void MainWindow::populateUIfromDataSet()
 {
 	_tableModel->setDataSet(_package->dataSet);
-	ui->variablesPage->setDataSet(_package->dataSet);
+	_levelsTableModel->setDataSet(_package->dataSet);
 
-	ui->tableView->adjustAfterDataLoad(true);
+	triggerQmlColumnReload();
+	applyAndSendFilter(QString::fromStdString(_package->dataFilter));
 
-	_progressIndicator->hide();
+	hideProgress();
 
 	bool errorFound = false;
 	stringstream errorMsg;
@@ -1524,21 +1567,6 @@ void MainWindow::hideDataPanel()
 }
 
 
-void MainWindow::showVariablesPage()
-{
-	QList<int> datacurrentSizes = ui->data_splitter->sizes();
-
-	ui->variablesPage->show();
-
-	if (datacurrentSizes[0] < 1)
-	{
-		datacurrentSizes[0]+=250;
-		datacurrentSizes[1]-=250;
-		ui->data_splitter->setSizes(datacurrentSizes);
-	}
-}
-
-
 void MainWindow::analysisOKed()
 {
 	if (_currentOptionsWidget != NULL)
@@ -1642,12 +1670,6 @@ void MainWindow::refreshAnalysesUsingColumn(QString col)
 	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns);
 
 	_package->setModified(false);
-}
-
-
-void MainWindow::resetTableView()
-{
-	ui->tableView->reset();
 }
 
 void MainWindow::removeAnalysisRequestHandler(int id)
@@ -1767,7 +1789,7 @@ void MainWindow::startDataEditorHandler()
 		connect(event, SIGNAL(completed(FileEvent*)), ui->backStage, SLOT(setSyncFile(FileEvent*)));
 		event->setPath(path);
 		_loader.io(event, _package);
-		_progressIndicator->show();
+		showProgress();
 	}
 	else
 		startDataEditor(path);
@@ -1776,7 +1798,7 @@ void MainWindow::startDataEditorHandler()
 
 void MainWindow::startDataEditorEventCompleted(FileEvent* event)
 {
-	_progressIndicator->hide();
+	hideProgress();
 
 	if (event->successful())
 	{
@@ -1822,4 +1844,60 @@ void MainWindow::startDataEditor(QString path)
 			QMessageBox::warning(this, QString("Start Spreadsheet Editor"), QString("No default spreadsheet editor for file ") + fileInfo.completeBaseName() + QString(". Use Preferences to set the right editor."), QMessageBox::Cancel);
 		}
 	}
+}
+
+void MainWindow::showProgress()
+{
+	ui->panel_1_Data->show();
+	QMetaObject::invokeMethod(qmlProgressBar, "show");
+}
+
+void MainWindow::hideProgress()
+{
+	QMetaObject::invokeMethod(qmlProgressBar, "hide");
+}
+
+void MainWindow::setProgressStatus(QString status, int progress)
+{
+	QMetaObject::invokeMethod(qmlProgressBar, "setStatus", Q_ARG(QVariant, QVariant(status)), Q_ARG(QVariant, QVariant(progress)));
+}
+
+void MainWindow::setFilterErrorText(QString error)
+{
+	ui->quickWidget_Data->rootContext()->setContextProperty("filterErrorText", error);
+}
+
+void MainWindow::applyAndSendFilter(QString filter)
+{
+	QMetaObject::invokeMethod(qmlFilterWindow, "applyAndSendFilter", Q_ARG(QVariant, QVariant(filter)));
+	if(filter.length() > 0 && filter != "*" && filter != "genFilter")
+		QMetaObject::invokeMethod(qmlFilterWindow, "open");
+
+}
+
+void MainWindow::setStatusBarText(QString text)
+{
+	QMetaObject::invokeMethod(qmlStatusBar, "setText", Q_ARG(QVariant, QVariant(text)));
+}
+
+void MainWindow::onFilterUpdated()
+{
+	int TotalCount = _package->dataSet->rowCount(), TotalThroughFilter = _package->dataSet->filteredRowCount();
+	double PercentageThrough = 100.0 * ((double)TotalThroughFilter) / ((double)TotalCount);
+
+	std::stringstream ss;
+	if(TotalCount > TotalThroughFilter)
+		ss << "Data has " << TotalCount << " rows, " << TotalThroughFilter << " (~" << (int)round(PercentageThrough) << "%)  passed through filter to be used  in analyses";
+	else if(_package->dataFilter != "" && _package->dataFilter != "*")
+		ss.str("Filter passes everything");
+	else
+		ss.str("");
+
+	setStatusBarText(QString::fromStdString(ss.str()));
+}
+
+void MainWindow::setGeneratedFilter(QString genFilter)
+{
+	ui->quickWidget_Data->rootContext()->setContextProperty("generatedFilter", genFilter);
+	QMetaObject::invokeMethod(qmlFilterWindow, "sendFilter");
 }
