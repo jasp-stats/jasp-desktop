@@ -79,6 +79,7 @@ private:
 	EngineSync* _engineSync;
 
 	void triggerQmlColumnReload();
+	void triggerQmlColumnClear();
 
 	void refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns
 									, std::vector<std::string> &missingColumns
@@ -196,6 +197,7 @@ private slots:
 	void setProgressStatus(QString status, int progress);
 
 	void setGeneratedFilter(QString genFilter);
+	void setGeneratedFilterAndSend(QString genFilter);
 	void setFilterErrorText(QString error);
 	void applyAndSendFilter(QString filter);
 	void setStatusBarText(QString text);

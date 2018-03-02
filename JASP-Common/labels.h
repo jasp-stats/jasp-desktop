@@ -44,7 +44,7 @@ public:
 	void clear();
 	int add(int display);
 	int add(const std::string &display);
-	int add(int key, const std::string &display);
+	int add(int key, const std::string &display, bool filterAllows);
 	void removeValues(std::set<int> valuesToRemove);
 	void syncInts(const std::set<int> &values);
 	void syncInts(std::map<int, std::string> &values);

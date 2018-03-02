@@ -164,3 +164,11 @@ void DataSet::setFilterVector(std::vector<bool> filterResult)
 		if((_filterVector[i] = filterResult[i])) //economy
 			_filteredRowCount++;
 }
+
+bool DataSet::allColumnsPassFilter()
+{
+	for(const Column & col : _columns)
+		if(!col.allLabelsPassFilter())
+			return false;
+	return true;
+}

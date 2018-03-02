@@ -335,6 +335,9 @@ void EngineSync::process()
 
 void EngineSync::processNewFilterResult(std::vector<bool> filterResult)
 {
+	if(_package == NULL || _package->dataSet == NULL)
+		return;
+	
 	_package->dataFilter = dataFilter.toStdString(); //remember the filter that was last used and actually gave results.
 	_package->dataSet->setFilterVector(filterResult);
 

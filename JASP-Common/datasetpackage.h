@@ -58,6 +58,7 @@ public:
 	void setWaitingForReady();
 	void setAnalysesHTMLReady();
 	std::string dataFilter = "genFilter";
+	bool refreshAnalysesAfterFilter = true;
 
 	boost::signals2::signal<void (DataSetPackage *source)> isModifiedChanged;
 	boost::signals2::signal<void (DataSetPackage *source

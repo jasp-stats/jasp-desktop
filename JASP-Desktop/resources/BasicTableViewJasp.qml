@@ -289,6 +289,16 @@ ScrollView {
         columnModel.remove(index, 1)
         column.destroy()
     }
+    
+    /*!
+        \qmlmethod void BasicTableViewJasp::removeAllColumns()
+
+        Removes and destroys all columns.
+    */
+    function removeAllColumns() {
+        for(var col=columnCount - 1; col >= 0; col--)
+            removeColumn(col)        
+    }
 
     /*!
         \qmlmethod void BasicTableViewJasp::moveColumn(int from, int to)

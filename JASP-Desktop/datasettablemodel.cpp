@@ -100,7 +100,7 @@ QVariant DataSetTableModel::data(const QModelIndex &index, int role) const
 
 QVariant DataSetTableModel::columnTitle(int column) const
 {
-	if(column >= 0)
+	if(column >= 0 && column < _dataSet->columnCount())
 	{
 		QString value = tq(_dataSet->column(column).name());
 		return QVariant(value);
@@ -111,7 +111,7 @@ QVariant DataSetTableModel::columnTitle(int column) const
 
 QVariant DataSetTableModel::columnIcon(int column) const
 {
-	if(column >= 0)
+	if(column >= 0 && column < _dataSet->columnCount())
 	{
 		Column &columnref = _dataSet->column(column);
 		return QVariant(columnref.columnType());

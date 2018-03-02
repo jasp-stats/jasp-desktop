@@ -101,6 +101,11 @@ FocusScope
         readonly property var columnTypeAndIconPath: dataSetModel.getColumnTypesWithCorrespondingIcon(true)
         readonly property var columnTypeChangeIconPaths:dataSetModel.getColumnTypesWithCorrespondingIcon(false)
 
+        function clearColumns()
+        {
+            dataSetTableView.removeAllColumns()
+        }
+        
         function reloadColumns()
         {
             var roleList = dataSetModel.userRoleNames();
@@ -185,7 +190,7 @@ FocusScope
                     anchors.leftMargin: 4
 
                     property int myColumnType: dataSetModel.columnIcon(styleData.column)
-                    source: dataSetTableView.columnTypeAndIconPath[myColumnType]
+                    source: myColumnType >= 0 ? dataSetTableView.columnTypeAndIconPath[myColumnType] : ""
                     width: styleData.column > -1 ? __myRoot.__iconDim : 0
                     height:  __myRoot.__iconDim
 

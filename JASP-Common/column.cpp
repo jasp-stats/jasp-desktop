@@ -1244,3 +1244,11 @@ double& Column::Doubles::iterator::dereference() const
 {
 	return _blockItr->second->Data[_currentPos].d;
 }
+
+bool Column::allLabelsPassFilter() const
+{
+	for(const Label & label : _labels)
+		if(!label.filterAllows())
+			return false;
+	return true;
+}
