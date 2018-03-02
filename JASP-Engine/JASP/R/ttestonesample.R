@@ -389,8 +389,8 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 					p <- as.numeric(r$p.value)
 					stat <- as.numeric(r$statistic)
 					m <- as.numeric(r$estimate - r$null.value)
-					ciLow <- .clean(as.numeric(r$conf.int[1]))
-					ciUp <- .clean(as.numeric(r$conf.int[2]))
+					ciLow <- .clean(as.numeric(r$conf.int[1] - r$null.value))
+					ciUp <- .clean(as.numeric(r$conf.int[2] - r$null.value))
           ciLowEffSize = .clean(as.numeric(confIntEffSize[1]))
           ciUpEffSize = .clean(as.numeric(confIntEffSize[2]))
 					if (suppressWarnings(is.na(t))) { # do not throw warning when test stat is not 't' 
