@@ -34,10 +34,25 @@ From then on, you will be able to start JASP in the usual way.
 
 #### Linux
 
+#### 1. Flatpak
+JASP is now available for virtually all Linux distributions through the widely available flatpak. This is most likely already installed on your distribution and otherwise can be  easily acquired through your package manager. After you have installed flatpak enter the following command into a terminal:
+```
+flatpak install http://static.jasp-stats.org/flatpak/JASP.flatpakref
+```
+It might not be automatically added to the application menu in some cases (ubuntu for instance) and there you can start JASP by running:
+```
+flatpak run org.jasp.JASP
+```
+After you have installed JASP from flatpak any new releases/updates can be installed by running:
+```
+flatpak update
+```
+
+#### 2. PPA
 JASP is available for the following Linux versions:
 
+ - Ubuntu Artful (17.10)
  - Ubuntu Xenial (16.04 LTS)
- - Ubuntu Wily (15.10)
  - Arch Linux
 
 For other verions, JASP can be built from the source. The debian folder is located in the github repository –  https://github.com/jasp-stats/jasp-desktop/tree/development/Tools/debian
