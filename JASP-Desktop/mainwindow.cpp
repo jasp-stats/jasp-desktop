@@ -179,7 +179,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	_analyses = new Analyses();
 	_engineSync = new EngineSync(_analyses, _package, this);
 
-	connect(_engineSync, &EngineSync::filterUpdated,			this,			&MainWindow::refreshAllAnalyses);
 	connect(_engineSync, &EngineSync::filterUpdated,			_tableModel,	&DataSetTableModel::refresh);
 	connect(_engineSync, &EngineSync::filterErrorTextChanged,	this,			&MainWindow::setFilterErrorText);
 	connect(_engineSync, &EngineSync::filterUpdated,			this,			&MainWindow::onFilterUpdated);
@@ -1005,6 +1004,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
+		
 		if (_package->isModified())
 		{
 			QString title = windowTitle();
@@ -1016,6 +1016,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 				FileEvent *saveEvent = ui->backStage->save();
 				event->chain(saveEvent);
 				connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+				ui->panel_1_Data->hide();
 			}
 			else if (reply == QMessageBox::Cancel)
 			{
@@ -1026,6 +1027,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			{
 				event->setComplete(true);
 				dataSetIOCompleted(event);
+				ui->panel_1_Data->hide();
 			}
 		}
 		else
@@ -1057,6 +1059,15 @@ void MainWindow::triggerQmlColumnReload()
 
 	if(DataView != NULL)
 		QMetaObject::invokeMethod(DataView, "reloadColumns");
+
+}
+
+void MainWindow::triggerQmlColumnClear()
+{
+	QObject * DataView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataSetTableView");
+
+	if(DataView != NULL)
+		QMetaObject::invokeMethod(DataView, "clearColumns");
 
 }
 
@@ -1141,7 +1152,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			updateMenuEnabledDisabledStatus();
 			ui->webViewResults->reload();
 			setWindowTitle("JASP");
-			triggerQmlColumnReload();
+			triggerQmlColumnClear();
 
 			if (_applicationExiting)
 				QApplication::exit();
@@ -1164,9 +1175,14 @@ void MainWindow::populateUIfromDataSet()
 	_tableModel->setDataSet(_package->dataSet);
 	_levelsTableModel->setDataSet(_package->dataSet);
 
-	triggerQmlColumnReload();
-	applyAndSendFilter(QString::fromStdString(_package->dataFilter));
-
+	if(_package->dataSet->rowCount() == 0)
+		ui->panel_1_Data->hide(); //for summary stats etc we dont want to see an empty data panel
+	else
+	{
+		triggerQmlColumnReload();
+		applyAndSendFilter(QString::fromStdString(_package->dataFilter));
+	}
+	
 	hideProgress();
 
 	bool errorFound = false;
@@ -1482,7 +1498,10 @@ void MainWindow::hideOptionsPanel()
 	sizes[1] = 0;
 
 	ui->panel_2_Options->hide();
-	ui->panel_1_Data->show();
+	if(_package != NULL && _package->dataSet != NULL && _package->dataSet->rowCount() > 0)
+		ui->panel_1_Data->show();
+	else
+		ui->panel_1_Data->hide();
 	ui->splitter->setSizes(sizes);
 }
 
@@ -1894,6 +1913,10 @@ void MainWindow::onFilterUpdated()
 		ss.str("");
 
 	setStatusBarText(QString::fromStdString(ss.str()));
+	
+	if(_package->refreshAnalysesAfterFilter) //After loading a JASP package we do not want to rerun all analyses because it might take very long
+		refreshAllAnalyses(); 
+	_package->refreshAnalysesAfterFilter = true;
 }
 
 void MainWindow::setGeneratedFilter(QString genFilter)

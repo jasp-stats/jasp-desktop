@@ -101,6 +101,11 @@ FocusScope
         readonly property var columnTypeAndIconPath: dataSetModel.getColumnTypesWithCorrespondingIcon(true)
         readonly property var columnTypeChangeIconPaths:dataSetModel.getColumnTypesWithCorrespondingIcon(false)
 
+        function clearColumns()
+        {
+            dataSetTableView.removeAllColumns()
+        }
+        
         function reloadColumns()
         {
             var roleList = dataSetModel.userRoleNames();

@@ -79,6 +79,7 @@ private:
 	EngineSync* _engineSync;
 
 	void triggerQmlColumnReload();
+	void triggerQmlColumnClear();
 
 	void refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns
 									, std::vector<std::string> &missingColumns
