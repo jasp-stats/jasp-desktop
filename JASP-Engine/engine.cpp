@@ -42,12 +42,7 @@ using namespace boost::posix_time;
 
 Engine::Engine()
 {
-	_dataSet = NULL;
-	_channel = NULL;
-	_slaveNo = 0;
-	_ppi = 96;
 
-	_status = empty;
 	
 	tempfiles_attach(ProcessInfo::parentPID());
 
@@ -232,10 +227,13 @@ void Engine::run()
 		else
 			runAnalysis();
 
+		if(filterChanged)
+			applyFilter();
+
 	}
 	while(1);
 
-	shared_memory_object::remove(memoryName.c_str());
+	shared_memory_object::remove(memoryName.c_str()); //How would we get here?
 }
 
 bool Engine::receiveMessages(int timeout)
@@ -246,11 +244,21 @@ bool Engine::receiveMessages(int timeout)
 	{
 #ifdef JASP_DEBUG
 		std::cout << "received message" << std::endl;
+		std::cout << data << std::endl;
 		std::cout.flush();
 #endif
 		Json::Value jsonRequest;
 		Json::Reader r;
 		r.parse(data, jsonRequest, false);
+
+		if(jsonRequest.get("filter", "").asString() != "")
+		{
+			filterChanged = true;
+			filter = jsonRequest.get("filter", "").asString();
+			generatedFilter = jsonRequest.get("generatedFilter", "").asString();
+
+			return false; //This is not an analysis-run-request or anything like that, so quit like a not-message.
+		}
 
 		int analysisId = jsonRequest.get("id", -1).asInt();
 		string perform = jsonRequest.get("perform", "run").asString();
@@ -364,6 +372,29 @@ void Engine::sendResults()
 	_channel->send(message);
 }
 
+void Engine::sendFilterResult(std::vector<bool> filterResult)
+{
+	Json::Value filterResponse = Json::Value(Json::objectValue);
+
+	Json::Value filterResultList = Json::Value(Json::arrayValue);
+	for(bool f : filterResult)
+		filterResultList.append(f);
+	filterResponse["filterResult"] = filterResultList;
+
+	std::string msg = filterResponse.toStyledString();
+	_channel->send(msg);
+}
+
+void Engine::sendFilterError(std::string errorMessage)
+{
+	Json::Value filterResponse = Json::Value(Json::objectValue);
+
+	filterResponse["filterError"] = errorMessage;
+
+	std::string msg = filterResponse.toStyledString();
+	_channel->send(msg);
+}
+
 string Engine::callback(const string &results, int progress)
 {
 	receiveMessages();
@@ -415,7 +446,7 @@ string Engine::callback(const string &results, int progress)
 	return "{ \"status\" : \"ok\" }";
 }
 
-DataSet *Engine::provideDataSet()
+DataSet * Engine::provideDataSet()
 {
 	return SharedMemory::retrieveDataSet();
 }
@@ -428,4 +459,28 @@ void Engine::provideStateFileName(string &root, string &relativePath)
 void Engine::provideTempFileName(const string &extension, string &root, string &relativePath)
 {	
 	tempfiles_create(extension, _analysisId, root, relativePath);
+}
+
+void Engine::applyFilter()
+{
+	filterChanged = false;
+
+	try
+	{
+		std::vector<bool> filterResult = rbridge_applyFilter(filter, generatedFilter);
+
+		sendFilterResult(filterResult);
+
+		std::string RConsoleOutput(jaspRCPP_getRConsoleOutput());
+		if(RConsoleOutput.length() > 0)
+			sendFilterError(RConsoleOutput);
+	}
+	catch(filterException & e)
+	{
+		//std::cout << "filtererror caught: " << e.what() << std::endl << std::flush;
+		if(std::string(e.what()).length() > 0)
+			sendFilterError(e.what());
+		else
+			sendFilterError("Something went wrong with the filter but it is unclear what.");
+	}
 }

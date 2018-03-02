@@ -49,6 +49,11 @@ public:
 	iterator begin();
 	iterator end();
 
+	size_t size() {	return _columnStore.size();	}
+
+			Column & operator[](size_t i) {			return _columnStore[i]; }
+	const	Column & operator[](size_t i) const {	return _columnStore[i]; }
+
 private:
 
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);

@@ -36,6 +36,7 @@
 #include "analyses.h"
 #include "ipcchannel.h"
 #include "activitylog.h"
+#include "datasetpackage.h"
 
 /* EngineSync is responsible for launching the background
  * processes, scheduling analyses, and for sending and
@@ -49,7 +50,7 @@ class EngineSync : public QObject
 	Q_OBJECT
 
 public:
-	EngineSync(Analyses *analyses, QObject *parent);
+	EngineSync(Analyses *analyses, DataSetPackage *package, QObject *parent);
 	~EngineSync();
 
 	void start();
@@ -59,21 +60,27 @@ public:
 
 	void setPPI(int ppi);
 
-signals:
+	Q_INVOKABLE void sendFilter(QString generatedFilter, QString filter);
+	Q_INVOKABLE QString getFilter() { return dataFilter; }
 
+signals:
 	void engineTerminated();
+	void filterUpdated();
+	void filterErrorTextChanged(QString error);
 
 private:
 
 	Analyses *_analyses;
-	bool _engineStarted;
-	ActivityLog *_log;
+	bool _engineStarted = false;
+	ActivityLog *_log = NULL;
+	DataSetPackage *_package;
 
-	int _ppi;
+	int _ppi = 96;
 
 	std::vector<QProcess *> _slaveProcesses;
 	std::vector<IPCChannel *> _channels;
 	std::vector<Analysis *> _analysesInProgress;
+	std::vector<bool> _filterSent;
 
 	IPCChannel *nextFreeProcess(Analysis *analysis);
 	void sendToProcess(int processNo, Analysis *analysis);
@@ -81,7 +88,10 @@ private:
 	void startSlaveProcess(int no);
 
 	std::string _memoryName;
-	std::string _engineInfo;
+	std::string _engineInfo;	
+	QString dataFilter;
+
+	void processNewFilterResult(std::vector<bool> filterResult);
 
 private slots:
 

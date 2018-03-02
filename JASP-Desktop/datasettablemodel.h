@@ -26,6 +26,7 @@
 #include "common.h"
 #include "dataset.h"
 
+
 class DataSetTableModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -34,21 +35,35 @@ public:
     explicit DataSetTableModel(QObject *parent = 0);
 
     void setDataSet(DataSet *dataSet);
-	void clearDataSet();
+	void clearDataSet() { setDataSet(NULL); }
 
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
-    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
-    virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const OVERRIDE;
+	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
+	virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const OVERRIDE;
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role) OVERRIDE;
     virtual Qt::ItemFlags flags(const QModelIndex &index) const OVERRIDE;
 
+	Q_INVOKABLE int setColumnTypeFromQML(int columnIndex, int newColumnType) { setColumnType(columnIndex, (Column::ColumnType)newColumnType); return getColumnType(columnIndex); }
 	bool setColumnType(int columnIndex, Column::ColumnType newColumnType);
 	Column::ColumnType getColumnType(int columnIndex);
+
+
+	virtual QHash<int, QByteArray> roleNames() const OVERRIDE;
+	Q_INVOKABLE QStringList userRoleNames() const;
+	Q_INVOKABLE QVariant columnTitle(int column) const;
+	Q_INVOKABLE QVariant columnIcon(int column) const;
+	Q_INVOKABLE QVariant getCellValue(int column, int row) const { return data(index(row, column), Qt::DisplayRole); }
+	Q_INVOKABLE QVariant getColumnTypesWithCorrespondingIcon(bool BothNominalVersions = true);
+	Q_INVOKABLE QVariant getRowFilter(int row) { return (row >=0 && row < rowCount()) ? _dataSet->filterVector()[row] : true; }
     
 signals:
 
 	void badDataEntered(const QModelIndex index);
+
+public slots:
+	void refresh() { beginResetModel(); endResetModel(); }
+	void refreshColumn(Column * column);
     
 private:
 	DataSet *_dataSet;

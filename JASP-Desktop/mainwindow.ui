@@ -170,7 +170,7 @@ QPushButton::menu-indicator {
 }</string>
           </property>
           <property name="currentIndex">
-           <number>4</number>
+           <number>0</number>
           </property>
           <widget class="RibbonAnalysis" name="ribbonAnalysis">
            <property name="sizePolicy">
@@ -185,7 +185,6 @@ QPushButton::menu-indicator {
           <widget class="RibbonSummaryStatistics" name="ribbonSummaryStatistics"/>
           <widget class="RibbonMetaAnalysis" name="ribbonMetaAnalysis"/>
           <widget class="RibbonNetworkAnalysis" name="ribbonNetworkAnalysis"/>
-<!-- Add ribbon widget page -->
          </widget>
         </item>
         <item>
@@ -247,108 +246,10 @@ QPushButton::menu-indicator {
                 <number>0</number>
                </property>
                <item>
-                <widget class="QSplitter" name="data_splitter">
-                 <property name="cursor">
-                  <cursorShape>ArrowCursor</cursorShape>
+                <widget class="QQuickWidget" name="quickWidget_Data">
+                 <property name="resizeMode">
+                  <enum>QQuickWidget::SizeRootObjectToView</enum>
                  </property>
-                 <property name="styleSheet">
-                  <string notr="true">QSplitter#data_splitter::handle
-{	border-right: 0px;
-	border-left: 0px;
-	border-top: 1px solid #929292;
-	border-bottom: 1px solid #929292;
-}
-QSplitter#data_splitter
-{	border-right: 0px;
-	border-left: 0px;
-	border-top: 1px solid #929292;
-	border-bottom: 1px solid #929292;
-}</string>
-                 </property>
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="opaqueResize">
-                  <bool>true</bool>
-                 </property>
-                 <property name="handleWidth">
-                  <number>14</number>
-                 </property>
-                 <property name="childrenCollapsible">
-                  <bool>true</bool>
-                 </property>
-                 <widget class="VariablesWidget" name="variablesPage" native="true">
-                  <property name="styleSheet">
-                   <string notr="true"/>
-                  </property>
-                 </widget>
-                 <widget class="MainTableView" name="tableView">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>70</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">QTableCornerButton::section, QHeaderView::section {
-	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.7 rgb(240, 240, 240), stop:0.701 rgb(227, 225, 226));
-	padding-top: 0.1em ;
-	padding-bottom: 0.1em ;
-	padding-left: 0.3em ;
-	padding-right: 0.3em ;
-	border-right: 1px solid #929292 ;
-	border-bottom: 1px solid #929292 ;
-	border-left: none ;
-	border-top: none ;
-}
-
-QHeaderView::section::last {
-	/*border-right: none ;*/
-}
-
-QTableView {
-	border-top: 0px solid #929292 ;
-	border-bottom: 1px solid #929292 ;
-	border-right: 1px solid #929292 ;
-	border-left: 1px solid #929292 ;
-	selection-background-color: rgb(60, 170, 231) ;
-	/*border-top: 1px solid #929292 ; */
-	/*border-right: 1px solid #929292 ;*/
-	/*selection-color: black ;*/
-}
-
-QTableView::item
-{
-	border-right: 1px solid #bcb3b6 ;
-	border-bottom: 1px solid #bcb3b6 ;
-	border-left: none ;
-	border-top: none ;
-}
-
-QTableView::item::last
-{
-	border-right: none ;
-}</string>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::NoFrame</enum>
-                  </property>
-                  <property name="selectionMode">
-                   <enum>QAbstractItemView::NoSelection</enum>
-                  </property>
-                  <property name="showGrid">
-                   <bool>false</bool>
-                  </property>
-                  <property name="cornerButtonEnabled">
-                   <bool>false</bool>
-                  </property>
-                 </widget>
                 </widget>
                </item>
               </layout>
@@ -449,8 +350,8 @@ QTableView::item::last
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>300</width>
-                       <height>714</height>
+                       <width>301</width>
+                       <height>718</height>
                       </rect>
                      </property>
                      <property name="sizePolicy">
@@ -609,9 +510,9 @@ QTableView::item::last
  </widget>
  <customwidgets>
   <customwidget>
-   <class>MainTableView</class>
-   <extends>QTableView</extends>
-   <header>maintableview.h</header>
+   <class>QQuickWidget</class>
+   <extends>QWidget</extends>
+   <header>QtQuickWidgets/QQuickWidget</header>
   </customwidget>
   <customwidget>
    <class>RibbonAnalysis</class>
@@ -640,7 +541,6 @@ QTableView::item::last
    <header>ribbons/ribbonreinforcementlearning.h</header>
    <container>1</container>
   </customwidget>
-<!-- Add customwidget definition -->
   <customwidget>
    <class>TabBar</class>
    <extends>QWidget</extends>
@@ -657,12 +557,6 @@ QTableView::item::last
    <class>BackStageWidget</class>
    <extends>QWidget</extends>
    <header>backstagewidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>VariablesWidget</class>
-   <extends>QWidget</extends>
-   <header>variableswidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
