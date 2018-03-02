@@ -36,6 +36,7 @@
 #include "exporters/jaspexporter.h"
 #include <iostream>
 
+
 using namespace std;
 
 void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
@@ -206,10 +207,13 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 				int k = 0;
 				for (Json::Value::iterator iter = labelsDesc.begin(); iter != labelsDesc.end(); iter++)
 				{
-					Json::Value keyValuePair = *iter;
-					int zero = 0;
-					int key = keyValuePair.get(zero, Json::nullValue).asInt();
-					labels.add(key, keyValuePair.get(1, Json::nullValue).asString());
+					Json::Value keyValueFilterPair = *iter;
+					int zero = 0; // ???
+					int key			= keyValueFilterPair.get(zero, Json::nullValue).asInt();
+					std::string val = keyValueFilterPair.get(1, Json::nullValue).asString();
+					bool fil		= keyValueFilterPair.get(2, true).asBool();
+
+					labels.add(key, val, fil);
 
 					k++;
 				}
@@ -299,6 +303,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 	dataEntry.close();
 
 
+
 	//Take out for the time being
 	/*string entryName3 = "results.html";
 	FileReader dataEntry3 = FileReader(path, entryName3);
@@ -318,7 +323,6 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 		dataEntry3.close();
 	}*/
 }
-
 
 void JASPImporter::loadJASPArchive(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
 {

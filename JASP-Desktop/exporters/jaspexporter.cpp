@@ -72,6 +72,7 @@ void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 	progressCallback("Saving Data Set", 100);
 }
 
+
 void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::function<void (const std::string &, int)> progressCallback)
 {
 	createJARContents(a);
@@ -95,6 +96,7 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 	for (auto it = emptyValuesVector.begin(); it != emptyValuesVector.end(); ++it)
 		emptyValuesJson.append(*it);
 	metaData["emptyValues"] = emptyValuesJson;
+
 	metaData["filterData"] = Json::Value(package->dataFilter);
 
 	dataSet["rowCount"] = Json::Value(dataset ? dataset->rowCount() : 0);
@@ -148,10 +150,11 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 				for (Labels::const_iterator iter = labels.begin(); iter != labels.end(); iter++)
 				{
 					const Label &label = *iter;
-					Json::Value keyValuePair = Json::arrayValue;
-					keyValuePair.append(label.value());
-					keyValuePair.append(label.text());
-					labelsMetaData.append(keyValuePair);
+					Json::Value keyValueFilterPair = Json::arrayValue;
+					keyValueFilterPair.append(label.value());
+					keyValueFilterPair.append(label.text());
+					keyValueFilterPair.append(label.filterAllows());
+					labelsMetaData.append(keyValueFilterPair);
 					labelIndex += 1;
 				}
 

@@ -53,6 +53,8 @@ public:
 	const BoolVector& filterVector() const { return _filterVector; }
 	int filteredRowCount() const { return _filteredRowCount; }
 
+	bool allColumnsPassFilter();
+
 private:
 	Columns		_columns;
 	int			_rowCount,

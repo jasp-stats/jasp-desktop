@@ -28,11 +28,12 @@ void Label::_setLabel(const std::string &label) {
     std::memcpy(_stringValue, label.c_str(), _stringLength);
 }
 
-Label::Label(const std::string &label, int value)
+Label::Label(const std::string &label, int value, bool filterAllows)
 {
     _setLabel(label);
 	_hasIntValue = false;
 	_intValue = value;
+	_filterAllow = filterAllows;
 }
 
 Label::Label(int value)

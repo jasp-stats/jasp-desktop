@@ -197,6 +197,7 @@ private slots:
 	void setProgressStatus(QString status, int progress);
 
 	void setGeneratedFilter(QString genFilter);
+	void setGeneratedFilterAndSend(QString genFilter);
 	void setFilterErrorText(QString error);
 	void applyAndSendFilter(QString filter);
 	void setStatusBarText(QString text);

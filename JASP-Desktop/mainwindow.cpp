@@ -174,7 +174,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(_levelsTableModel,		&LevelsTableModel::refreshConnectedModels,	_tableModel,			&DataSetTableModel::refreshColumn);
 	connect(_levelsTableModel,		&LevelsTableModel::resizeValueColumn,		this,					&MainWindow::resizeVariablesWindowValueColumn);
 	connect(_levelsTableModel,		&LevelsTableModel::labelFilterChanged,		_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged);
-	connect(_labelFilterGenerator,	&labelFilterGenerator::setGeneratedFilter,	this,					&MainWindow::setGeneratedFilter);
+	connect(_labelFilterGenerator,	&labelFilterGenerator::setGeneratedFilter,	this,					&MainWindow::setGeneratedFilterAndSend);
 
 	_analyses = new Analyses();
 	_engineSync = new EngineSync(_analyses, _package, this);
@@ -1156,6 +1156,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 			if (_applicationExiting)
 				QApplication::exit();
+			else
+				ui->panel_1_Data->hide();
 		}
 		else
 		{
@@ -1180,8 +1182,11 @@ void MainWindow::populateUIfromDataSet()
 	else
 	{
 		triggerQmlColumnReload();
+		setGeneratedFilter(QString::fromStdString(labelFilterGenerator(_package).generateFilter()));
 		applyAndSendFilter(QString::fromStdString(_package->dataFilter));
 	}
+
+
 	
 	hideProgress();
 
@@ -1922,5 +1927,10 @@ void MainWindow::onFilterUpdated()
 void MainWindow::setGeneratedFilter(QString genFilter)
 {
 	ui->quickWidget_Data->rootContext()->setContextProperty("generatedFilter", genFilter);
+}
+
+void MainWindow::setGeneratedFilterAndSend(QString genFilter)
+{
+	setGeneratedFilter(genFilter);
 	QMetaObject::invokeMethod(qmlFilterWindow, "sendFilter");
 }

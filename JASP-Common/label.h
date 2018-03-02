@@ -34,7 +34,7 @@ class Label
 {
 public:
 	static const int MAX_LABEL_LENGTH = 128;
-	Label(const std::string &label, int value);
+	Label(const std::string &label, int value, bool filterAllows);
 	Label(int value);
 	Label();
 

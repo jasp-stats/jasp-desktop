@@ -5,9 +5,8 @@ labelFilterGenerator::labelFilterGenerator(DataSetPackage *package, QObject *par
 	_package = package;
 }
 
-void labelFilterGenerator::labelFilterChanged()
+std::string labelFilterGenerator::generateFilter()
 {
-
 	int neededFilters = 0;
 
 	for(Column & col : _package->dataSet->columns())
@@ -39,17 +38,12 @@ void labelFilterGenerator::labelFilterChanged()
 			newGeneratedFilter << ")";
 	}
 
-
-	emit setGeneratedFilter(QString::fromStdString(newGeneratedFilter.str()));
+	return newGeneratedFilter.str();
 }
 
-bool labelFilterGenerator::labelNeedsFilter(Column & column)
+void labelFilterGenerator::labelFilterChanged()
 {
-	for(const Label & label : column.labels())
-		if(!label.filterAllows())
-			return true;
-
-	return false;
+	emit setGeneratedFilter(QString::fromStdString(generateFilter()));
 }
 
 std::string	labelFilterGenerator::generateLabelFilter(Column & column)

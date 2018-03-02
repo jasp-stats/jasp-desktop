@@ -50,12 +50,12 @@ int Labels::add(int display)
 
 int Labels::add(const std::string &display)
 {
-	return add(_labels.size(), display);
+	return add(_labels.size(), display, true);
 }
 
-int Labels::add(int key, const std::string &display)
+int Labels::add(int key, const std::string &display, bool filterAllows)
 {
-	Label label(display, key);
+	Label label(display, key, filterAllows);
 	_labels.push_back(label);
 
 	return key;
@@ -132,7 +132,6 @@ map<string, int> Labels::syncStrings(const vector<string> &new_values, const map
 	std::set<int> valuesToRemove;
 	map<string, int> result;
 
-
 	int maxLabelKey = 0;
 	for (const Label &label : _labels)
 	{
@@ -157,7 +156,7 @@ map<string, int> Labels::syncStrings(const vector<string> &new_values, const map
 	for (auto elt : valuesToAdd)
 	{
 		maxLabelKey++;
-		add(maxLabelKey, elt.first);
+		add(maxLabelKey, elt.first, true);
 		result[elt.second] = maxLabelKey;
 	}
 
