@@ -549,6 +549,7 @@ RegressionLinearBayesian <- function (
 	# generate all model names
   allModelsVisited <- any(lengths(models) == 0) # analysis will chrash if TRUE
   model.names <- vector("character", length(models))
+  names(nuisanceTerms) <- .unvf(names(nuisanceTerms))
   for (i in 1:length(models)) {
     model <- models[[i]]
     if (length(model) == 1) { # only has intercept
@@ -561,7 +562,7 @@ RegressionLinearBayesian <- function (
       model.names[i] <- null.model
     } else {
       nonNuisance <- which(!nuisanceTerms[model])
-      model.names[i] <- paste(.unvf(names(nonNuisance)), collapse = " + ")
+      model.names[i] <- paste(names(nonNuisance), collapse = " + ")
     }
   }
 
@@ -581,15 +582,10 @@ RegressionLinearBayesian <- function (
 	nModels <- length(bas_obj$postprobs)
 	postProbs <- bas_obj$postprobs
 	priorProbs <- bas_obj$priorprobs
-	index <- which(is.finite(postProbs))
-	BFM <- sapply(1:nModels, function(m) {
-		if (m %in% index) {
-			i <- which(index == m)
-			(postProbs[m] / (1 - postProbs[m])) / (priorProbs[m] / (1 - priorProbs[m]))
-		} else {
-			NA
-		}
-	})
+	index <- is.finite(postProbs)
+	BFM <- numeric(length(postProbs))
+	BFM[index] <- (postProbs[index] / (1 - postProbs[index])) / (priorProbs[index] / (1 - priorProbs[index]))
+	BFM[!index] <- NA
 	BFM <- BFM[models.ordered]
 
 	# populate the row list
@@ -1563,13 +1559,12 @@ RegressionLinearBayesian <- function (
 	}
 
 	probne0 <- coef[["probne0"]]
-	coefficients <- coef[["namesx"]]
+	coefficients <- bas_obj[["namesx"]]
 	if (estimator == "HPM") {
 		loopIdx <- which(abs(coef$postmean) > sqrt(.Machine$double.eps))
 	} else if (estimator == "MPM") {
 		loopIdx <- which(abs(coef$postmean) > sqrt(.Machine$double.eps))
 		probne0 <- bas_obj[["probne0"]]
-		coefficients[-1] <- d64(coefficients[-1]) # required since median model was re-estimated
 	} else {
 		loopIdx <- seq_along(coefficients)
 	}
