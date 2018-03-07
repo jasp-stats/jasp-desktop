@@ -81,8 +81,7 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 {
 	QString caption = "Save";
 	QString filter = "JASP Files (*.jasp)";
-	QString previousDefaultSuffix = QFileDialog::defaultSuffix();
-	QFileDialog::setDefaultSuffix("jasp");
+	QString suffix = "jasp";
 
 	QString browsePath = path;
 	if (path == "")
@@ -97,7 +96,7 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 #ifdef JASP_DEBUG
 		// In debug mode enable pdf export
 		filter = "HTML Files (*.html *.pdf)";
-		QFileDialog::setDefaultSuffix("html");
+		suffix = "html";
 #else
 		// For future use of pdf export switch to line above
 		filter = "HTML Files (*.html)";
@@ -107,27 +106,29 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 	{
 		caption = "Export Data as CSV";
 		filter = "CSV Files (*.csv *.txt)";
-		QFileDialog::setDefaultSuffix("csv");
+		suffix = "csv";
 	}
 	else if (mode==FileEvent::FileSyncData)
 	{
 		caption = "Sync Data";
 		filter = "Data Files (*.csv *.txt *.sav *.ods)";
-		QFileDialog::setDefaultSuffix(previousDefaultSuffix);
+		suffix = "csv";
 	}
 
-	QString finalPath = QFileDialog::getSaveFileName(this, caption, browsePath, filter);
-	QFileDialog::setDefaultSuffix(previousDefaultSuffix); //reset it to whatever it was
+	QFileDialog saveDialog(NULL, caption, browsePath, filter);
+	saveDialog.setAcceptMode(QFileDialog::AcceptSave);
+	saveDialog.setDefaultSuffix(suffix);
 
 	FileEvent *event = new FileEvent(this, mode);
 
-	if (finalPath != "")
+	if (saveDialog.exec() == QDialog::Accepted)
 	{
 		// force the filename end with .jasp - workaround for linux saving issue
-		// Dont do this because it (a) hacky, (b) can be circumvented by using Qts defaultSuffix and (c) doesn't play well with flatpak // if (mode == FileEvent::FileSave && !finalPath.endsWith(".jasp", Qt::CaseInsensitive))
+		// Dont do this because it (a) hacky, (b) can be circumvented by using Qts defaultSuffix and (c) doesn't play well with flatpak
+		// if (mode == FileEvent::FileSave && !finalPath.endsWith(".jasp", Qt::CaseInsensitive))
 		//	finalPath.append(QString(".jasp"));
 
-		event->setPath(finalPath);
+		event->setPath(saveDialog.selectedFiles().first());
 
 		emit dataSetIORequest(event);
 	}
@@ -135,6 +136,7 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 		event->setComplete(false);
 
 	return event;
+
 
 }
 
