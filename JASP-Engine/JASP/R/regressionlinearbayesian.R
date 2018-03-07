@@ -604,7 +604,7 @@ RegressionLinearBayesian <- function (
 	# notes
 	footnotes <- .newFootnotes()
 	if (sum(nuisanceTerms) > 0) {
-		footnote <- paste("All models include ", paste(.unvf(names(which(nuisanceTerms))), collapse = ", "), ".", sep = "")
+		footnote <- paste("All models include ", paste(names(which(nuisanceTerms)), collapse = ", "), ".", sep = "")
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = footnote)
 	}
 	# if (!allModelsVisited) {
@@ -627,24 +627,18 @@ RegressionLinearBayesian <- function (
 	allModels <- bas_obj$which
 	modelProbs <- bas_obj$priorprobs
 	nPreds <- length(bas_obj$probne0)
-	if (all(diff(modelProbs) < sqrt(.Machine$double.eps))) {
 
-		# all prior model probabilities are equal, shortcut for calculation
-		priorProbs <- c(1, rep(0.5, nPreds - 1L))
+	# model prior has been modified, recalculate the prior inclusion probs
+	nModels <- length(allModels)
+	priorProbs <- numeric(nPreds)
 
-	} else {
+	for (i in 1:nModels) {
 
-		# model prior has been modified, recalculate the prior inclusion probs
-		nModels <- length(allModels)
-		priorProbs <- numeric(nPreds)
+		idx <- allModels[[i]] + 1 # +1 to change 0 for intercept into a 1 so it can be used as an index
+		priorProbs[idx] = priorProbs[idx] + modelProbs[i]
 
-		for (i in 1:nModels) {
-
-			idx <- allModels[[i]] + 1 # +1 to change 0 for intercept into a 1 so it can be used as an index
-			priorProbs[idx] = priorProbs[idx] + modelProbs[i]
-
-		}
 	}
+
 	return(priorProbs)
 }
 
@@ -675,7 +669,10 @@ RegressionLinearBayesian <- function (
 	priOdds <- priorOdds[1, ] / priorOdds[2, ]
 	posOdds <- posteriorOdds[1, ] / posteriorOdds[2, ]
 	BFinclusion <- posOdds / priOdds
-	BFinclusion[1] <- 1 # intercept is always included
+
+	# nuisance terms and intercept are always included
+	BFinclusion[-1][bas_obj[["nuisanceTerms"]]] <- 1 # nuisance terms
+	BFinclusion[1] <- 1 # intercept
 	return(BFinclusion)
 	
 }

@@ -11,7 +11,7 @@ test_that("Main tables results match", {
     options$modelTerms <- list(
         list(components="contGamma", isNuisance=FALSE)
     )
-    options$postSummary <- TRUE
+    options$postSummaryTable <- TRUE
     options$descriptives <- TRUE
     
     results <- jasptools::run("RegressionLinearBayesian", "test.csv", options, view=FALSE)#, quiet=TRUE)
@@ -27,9 +27,10 @@ test_that("Main tables results match", {
     table <- results[["results"]][["posteriorSummary"]][["posteriorSummaryTable"]][["data"]]
     expect_equal_tables(
         table,
-        list("Intercept", -0.255843391953333, 0.0993902662352492, 1, -0.453055243040002,
-             -0.0586315408666647, "contGamma", -0.000690480780951939, 0.0586422991479854,
-             0.772565707223374, -0.117049524830386, 0.115668563268482), 
+        list("Intercept", -0.255843391953333, 0.0993902662352492, 1, 1, 1,
+             -0.453055243040002, -0.0586315408666647, "contGamma", -0.000690480780951939,
+             0.0586422991479854, 0.772565707223374, 0.5, 3.39687431385796,
+             -0.117049524830386, 0.115668563268482), 
         label = "posteriorSummaryTable"
     )
     
