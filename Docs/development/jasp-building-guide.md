@@ -34,7 +34,7 @@ Building JASP under windows is the most temperamental, and the versions listed h
 
  - [R 3.3.3 win64](https://static.jasp-stats.org/development/R3.3%20Win%20JASP%200.8.6.zip)
  - [boost 1.64.0](https://static.jasp-stats.org/development/boost_1_64_0.zip)
- - [boost 1.64.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Build-Binaries-Windows-64-qt510.zip) Update 07-03-2018 (v0.0).
+ - [boost 1.64.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Build-Binaries-Windows-64-qt510.zip) Update 07-03-2018 (incl. JASP-R-Interface 0.0).
  - [Visual Studio 2017] (https://www.visualstudio.com/downloads/) Download community version
 
 Qt: JASP for windows is built as 64-bit and is built with Visual Studio 2017.
