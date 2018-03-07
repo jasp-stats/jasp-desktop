@@ -211,7 +211,7 @@
 			"sources":[
 				{
 					"type":"git",
-					"branch": "development",
+					"branch": "version_0_8_6_fixes",
 					"url": "https://github.com/jasp-stats/jasp-desktop"
 				},
 				{
