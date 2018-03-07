@@ -81,6 +81,8 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 {
 	QString caption = "Save";
 	QString filter = "JASP Files (*.jasp)";
+	QString previousDefaultSuffix = QFileDialog::defaultSuffix();
+	QFileDialog::setDefaultSuffix("jasp");
 
 	QString browsePath = path;
 	if (path == "")
@@ -95,6 +97,7 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 #ifdef JASP_DEBUG
 		// In debug mode enable pdf export
 		filter = "HTML Files (*.html *.pdf)";
+		QFileDialog::setDefaultSuffix("html");
 #else
 		// For future use of pdf export switch to line above
 		filter = "HTML Files (*.html)";
@@ -104,22 +107,25 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 	{
 		caption = "Export Data as CSV";
 		filter = "CSV Files (*.csv *.txt)";
+		QFileDialog::setDefaultSuffix("csv");
 	}
 	else if (mode==FileEvent::FileSyncData)
 	{
 		caption = "Sync Data";
 		filter = "Data Files (*.csv *.txt *.sav *.ods)";
+		QFileDialog::setDefaultSuffix(previousDefaultSuffix);
 	}
 
 	QString finalPath = QFileDialog::getSaveFileName(this, caption, browsePath, filter);
+	QFileDialog::setDefaultSuffix(previousDefaultSuffix); //reset it to whatever it was
 
 	FileEvent *event = new FileEvent(this, mode);
 
 	if (finalPath != "")
 	{
 		// force the filename end with .jasp - workaround for linux saving issue
-		if (mode == FileEvent::FileSave && !finalPath.endsWith(".jasp", Qt::CaseInsensitive))
-			finalPath.append(QString(".jasp"));
+		// Dont do this because it (a) hacky, (b) can be circumvented by using Qts defaultSuffix and (c) doesn't play well with flatpak // if (mode == FileEvent::FileSave && !finalPath.endsWith(".jasp", Qt::CaseInsensitive))
+		//	finalPath.append(QString(".jasp"));
 
 		event->setPath(finalPath);
 
