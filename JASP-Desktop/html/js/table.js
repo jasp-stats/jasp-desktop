@@ -426,7 +426,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 							exponent--
 						}
 
-						var sign = content >= 0 ? "+" : "-"
+						var sign = content >= 0 ? "+" : "&minus"
 
 						mantissa = fixDecimals ? mantissa.toFixed(dp) : mantissa.toPrecision(sf)
 
@@ -437,7 +437,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 						else
 							padding = ''
 
-						var reassembled = mantissa + "e&thinsp;" + padding + sign + exponent
+						var reassembled = mantissa + "e" + padding + sign + exponent
 
 						formatted = { content: reassembled, "class": "number" }
 
@@ -464,7 +464,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 					else
 						padding = ''
 
-					var reassembled = mantissa + "e&thinsp;" + padding + exponentSign + exponentNum
+					var reassembled = mantissa + "e" + padding + exponentSign + exponentNum
 
 					formatted = { content: reassembled, "class": "number" }
 
