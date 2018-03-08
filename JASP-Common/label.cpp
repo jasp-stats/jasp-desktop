@@ -77,8 +77,9 @@ void Label::setLabel(const std::string &label) {
 
 Label &Label::operator=(const Label &label)
 {
-	this->_hasIntValue = label._hasIntValue;
-	this->_intValue = label._intValue;
+	this->_hasIntValue	= label._hasIntValue;
+	this->_intValue		= label._intValue;
+	this->_filterAllow	= label._filterAllow;
 
 	std::memcpy(_stringValue, label._stringValue, label._stringLength);
 	_stringLength = label._stringLength;
