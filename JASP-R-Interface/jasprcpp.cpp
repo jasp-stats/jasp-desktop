@@ -33,11 +33,17 @@ ReadDataSetDescriptionCB readDataSetDescriptionCB;
 RequestStateFileSourceCB requestStateFileSourceCB;
 
 static const string NullString = "null";
-
+const int VersionMajor(1); // Interface changes
+const int VersionMinor(0); // Code changes
 
 extern "C" {
 void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks* callbacks)
 {
+
+#ifdef QT_DEBUG		
+	std::cout << "JASP-R-Interface Version : " << std::to_string(VersionMajor) << "." << std::to_string(VersionMinor) << "\n" << std::flush;
+#endif
+	
 	rinside = new RInside();
 	rinside_consoleLog = new RInside_ConsoleLogging();
 	rinside->set_callbacks(rinside_consoleLog);
