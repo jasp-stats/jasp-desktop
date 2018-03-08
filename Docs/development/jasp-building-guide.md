@@ -76,27 +76,27 @@ To build JASP on mac you need to clone the JASP repository and download the foll
 
 The directory structure should be as follows:
 
-    [+] JASP
-    	[-] jasp-desktop  < from github >
-    	[-] buildDebug510 < Build debug directory for QtCreator >
-    		- libboost_system-clang-mt-1_64.a
-		- libboost_filesystem-clang-mt-1_64.a
-		- libarchive.a
-		- libz.a
-		- libJASP-R-Interface.1.0.0.dylib
-		- libJASP-R-Interface.dylib
-	[-] buildRelease510 < Build release directory for QtCreator  >
-		- libboost_system-clang-mt-1_64.a
-		- libboost_filesystem-clang-mt-1_64.a
-		- libarchive.a
-		- libz.a
-		- libJASP-R-Interface.1.0.0.dylib
-		- libJASP-R-Interface.dylib
-    	[-] boost_1_64_0
-	[-] Frameworks
-		[-] R.framework
-			[-] Versions
-				[+] 3.3
+	[+] JASP
+		[-] jasp-desktop  < from github >
+		[-] buildDebug510 < Build debug directory for QtCreator >
+			- libboost_system-clang-mt-1_64.a
+			- libboost_filesystem-clang-mt-1_64.a
+			- libarchive.a
+			- libz.a
+			- libJASP-R-Interface.1.0.0.dylib
+			- libJASP-R-Interface.dylib
+		[-] buildRelease510 < Build release directory for QtCreator  >
+			- libboost_system-clang-mt-1_64.a
+			- libboost_filesystem-clang-mt-1_64.a
+			- libarchive.a
+			- libz.a
+			- libJASP-R-Interface.1.0.0.dylib
+			- libJASP-R-Interface.dylib
+		[-] boost_1_64_0
+		[-] Frameworks
+			[-] R.framework
+				[-] Versions
+					[+] 3.3
 
  0. **Clone** the JASP repository into a folder of your choice. Our default choice is *~/desktop/JASP/* and cloning results in the creating of *~/desktop/JASP/jasp-desktop*.
  1. **XCode**: Qt on OS X relies on XCode to function, you can install this through the App Store. It's easiest if you install this, run it, accept the license agreement, and then close it down before installing Qt.
