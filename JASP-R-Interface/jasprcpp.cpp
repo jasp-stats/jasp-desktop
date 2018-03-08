@@ -143,6 +143,11 @@ int STDCALL jaspRCPP_runFilter(const char * filterCode, bool ** arrayPointer)
 	return -1;
 }
 
+void STDCALL jaspRCPP_freeArrayPointer(bool ** arrayPointer)
+{
+    free(*arrayPointer);
+}
+
 const char* STDCALL jaspRCPP_saveImage(const char *name, const char *type, const int height, const int width, const int ppi)
 {
 	RInside &rInside = rinside->instance();

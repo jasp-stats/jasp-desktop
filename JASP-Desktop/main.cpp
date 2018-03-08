@@ -31,6 +31,7 @@ int main(int argc, char *argv[])
 	// Temporary fix for #2322 by disabling opengl drawing on windows
 	// Follow status of https://bugreports.qt.io/browse/QTBUG-61430 for 
 	// future permanent fix.
+	// This does slow down QML quite a bit and disables gradients
 	qputenv("QT_QUICK_BACKEND", "software");
 #endif
 	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);

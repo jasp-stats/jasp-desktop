@@ -670,7 +670,7 @@ std::vector<bool> rbridge_applyFilter(std::string & filterCode, std::string & ge
 	{
 		bool * arrayPointer = NULL;
 
-		jaspRCPP_runScript("data <- .readFilterDatasetToEnd();\nattach(data);\noptions(warn=1, showWarnCalls=TRUE, showErrorCalls=true, show.error.messages=TRUE)"); //first we load the data to be filtered
+		jaspRCPP_runScript("data <- .readFilterDatasetToEnd();\nattach(data);\noptions(warn=1, showWarnCalls=TRUE, showErrorCalls=TRUE, show.error.messages=TRUE)"); //first we load the data to be filtered
 		int arrayLength	= jaspRCPP_runFilter(filter64.c_str(), &arrayPointer);
 		jaspRCPP_runScript("detach(data)");	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 
@@ -691,7 +691,7 @@ std::vector<bool> rbridge_applyFilter(std::string & filterCode, std::string & ge
 					atLeastOneRow = true;
 			}
 
-		free(arrayPointer);
+		jaspRCPP_freeArrayPointer(&arrayPointer);
 
 		if(!atLeastOneRow)
 			throw filterException("Filtered out all data..");

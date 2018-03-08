@@ -29,6 +29,7 @@
 #include <string>
 #include <map>
 #include <unordered_set>
+#include <set>
 #include <boost/function.hpp>
 #include "../JASP-Common/dataset.h"
 #include "../JASP-R-Interface/jasprcpp_interface.h"
