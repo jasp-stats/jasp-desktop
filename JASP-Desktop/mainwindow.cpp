@@ -270,10 +270,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	setAcceptDrops(true);
 
-#ifdef __WIN32__
-	QApplication::setFont(ui->tableView->font());
-#endif
-
 	ui->panel_1_Data->hide();
 	ui->panel_2_Options->hide();
 
