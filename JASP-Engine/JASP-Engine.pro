@@ -1,7 +1,8 @@
 
 QT += core
 QT -= gui
-CURRENT_R_VERSION = 3.3
+
+include(../JASP.pri)
 
 CONFIG += c++11
 linux:CONFIG += -pipe
@@ -26,7 +27,7 @@ INSTALLS += analysis_jsons
 
 DEPENDPATH = ..
 PRE_TARGETDEPS += ../JASP-Common
-LIBS +=  -lJASP-R-Interface -L.. -lJASP-Common
+LIBS +=  -l$$JASP_R_INTERFACE_NAME -L.. -lJASP-Common
 
 windows:CONFIG(ReleaseBuild) {
 	LIBS += -llibboost_filesystem-vc141-mt-1_64 -llibboost_system-vc141-mt-1_64 -larchive.dll
