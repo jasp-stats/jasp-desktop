@@ -724,3 +724,8 @@ string rbridge_editImage(const string &name, const string &type, const int &heig
 {
 	return jaspRCPP_editImage(name.c_str(), type.c_str(), height, width, ppi);
 }
+
+string rbridge_evalRCode(const string &rCode)
+{
+	return jaspRCPP_evalRCode(rCode.c_str());
+}

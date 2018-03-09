@@ -57,6 +57,9 @@ private:
 	void sendResults();
 	void sendFilterResult(std::vector<bool> filterResult);
 	void sendFilterError(std::string errorMessage);
+	void evalRCode(const std::string &rCode);
+	void sendRCodeResult(std::string rCodeResult);
+	void sendRCodeError();
 	std::string callback(const std::string &results, int progress);
 
 	DataSet *provideDataSet();

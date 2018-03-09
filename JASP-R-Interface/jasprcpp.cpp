@@ -183,6 +183,15 @@ const char* STDCALL jaspRCPP_editImage(const char *name, const char *type, const
 
 }
 
+const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
+	// Function to evaluate arbitrary R code from C++
+	// Returns string if R result is a string, else returns "null"
+	SEXP result = rinside->parseEvalNT(rCode);
+	static string staticResult;
+	staticResult = Rf_isString(result) ? Rcpp::as<string>(result) : NullString;
+	return staticResult.c_str();
+}
+
 } // extern "C"
 
 const char* STDCALL jaspRCPP_getRConsoleOutput()
