@@ -37,6 +37,32 @@
 #include "ipcchannel.h"
 #include "activitylog.h"
 #include "datasetpackage.h"
+#include <queue>
+
+enum class engineState { idle, analysis, filter, rcode };
+
+struct RScriptStore
+{
+	RScriptStore(QString newscript, engineState newtypeScript = engineState::rcode)
+	{
+		script = newscript;
+		typeScript = newtypeScript;
+	}
+	
+	engineState typeScript; //should be filter/rcode/etc
+	QString		script;
+	
+};
+
+struct RFilterStore : public RScriptStore
+{
+	RFilterStore(QString newgeneratedfilter, QString newfilter) : RScriptStore(newfilter, engineState::filter)
+	{
+		generatedfilter = newgeneratedfilter;
+	}
+	
+	QString generatedfilter; 
+};
 
 /* EngineSync is responsible for launching the background
  * processes, scheduling analyses, and for sending and
@@ -44,7 +70,6 @@
  * It keeps track of which analyses are executing on
  * which background process.
  */
-
 class EngineSync : public QObject
 {
 	Q_OBJECT
@@ -62,11 +87,15 @@ public:
 
 	Q_INVOKABLE void sendFilter(QString generatedFilter, QString filter);
 	Q_INVOKABLE QString getFilter() { return dataFilter; }
-
+	
+	Q_INVOKABLE void sendRCode(QString rCode);
+	
+	
 signals:
 	void engineTerminated();
 	void filterUpdated();
 	void filterErrorTextChanged(QString error);
+	void rCodeReturned(QString result);
 
 private:
 
@@ -74,13 +103,14 @@ private:
 	bool _engineStarted = false;
 	ActivityLog *_log = NULL;
 	DataSetPackage *_package;
+	std::queue<RScriptStore*> waitingScripts;
 
 	int _ppi = 96;
 
 	std::vector<QProcess *> _slaveProcesses;
 	std::vector<IPCChannel *> _channels;
 	std::vector<Analysis *> _analysesInProgress;
-	std::vector<bool> _filterSent;
+	std::vector<engineState> _engineStates;
 
 	IPCChannel *nextFreeProcess(Analysis *analysis);
 	void sendToProcess(int processNo, Analysis *analysis);
@@ -92,6 +122,15 @@ private:
 	QString dataFilter;
 
 	void processNewFilterResult(std::vector<bool> filterResult);
+	void processScriptQueue();
+	void runScriptOnProcess(RFilterStore * filterStore, int processNo);
+	void runScriptOnProcess(RScriptStore * scriptStore, int processNo);
+	
+	void clearAnalysesInProgress(int i)
+	{
+		_analysesInProgress[i] = NULL;
+		_engineStates[i] = engineState::idle;
+	}
 
 private slots:
 

@@ -215,11 +215,9 @@ void Engine::run()
 
 	_channel = new IPCChannel(memoryName, _slaveNo, true);
 
-	do
+	while (ProcessInfo::isParentRunning())
 	{
 		receiveMessages(100);
-		if ( ! ProcessInfo::isParentRunning())
-			break;
 		if (_status == saveImg)
 			saveImage();
         else if (_status == editImg)
@@ -229,11 +227,9 @@ void Engine::run()
 
 		if(filterChanged)
 			applyFilter();
-
 	}
-	while(1);
 
-	shared_memory_object::remove(memoryName.c_str()); //How would we get here?
+	shared_memory_object::remove(memoryName.c_str());
 }
 
 bool Engine::receiveMessages(int timeout)
@@ -387,6 +383,8 @@ void Engine::sendFilterResult(std::vector<bool> filterResult)
 
 void Engine::sendFilterError(std::string errorMessage)
 {
+	std::cout << "Gonna send sendFilterError "<< errorMessage <<"\n"<< std::flush;
+	
 	Json::Value filterResponse = Json::Value(Json::objectValue);
 
 	filterResponse["filterError"] = errorMessage;
@@ -472,15 +470,55 @@ void Engine::applyFilter()
 		sendFilterResult(filterResult);
 
 		std::string RConsoleOutput(jaspRCPP_getRConsoleOutput());
+		
 		if(RConsoleOutput.length() > 0)
 			sendFilterError(RConsoleOutput);
 	}
 	catch(filterException & e)
 	{
-		//std::cout << "filtererror caught: " << e.what() << std::endl << std::flush;
+		std::cout << "filtererror caught: " << e.what() << std::endl << std::flush;
 		if(std::string(e.what()).length() > 0)
 			sendFilterError(e.what());
 		else
 			sendFilterError("Something went wrong with the filter but it is unclear what.");
 	}
+}
+
+
+// Evaluating arbitrary R code (as string) which returns a string
+void Engine::evalRCode(const string &rCode)
+{
+	std::string rCodeResult = rbridge_evalRCode(rCode);
+	
+	if (rCodeResult == "null") 
+	{
+		// this means an error was generated;
+		std::cout << "R Code yielded error" << std::endl << std::flush;
+		sendRCodeError();	
+	} 
+	else
+	{
+		std::cout << "R Code yielded result: " << rCodeResult << std::endl << std::flush;
+		sendRCodeResult(rCodeResult);
+	}	
+}
+
+void Engine::sendRCodeResult(std::string rCodeResult)
+{
+	Json::Value rCodeResponse = Json::Value(Json::objectValue);
+
+	rCodeResponse["rCodeResult"] = rCodeResult;
+
+	std::string msg = rCodeResponse.toStyledString();
+	_channel->send(msg);
+}
+
+void Engine::sendRCodeError()
+{
+	Json::Value rCodeResponse = Json::Value(Json::objectValue);
+
+	rCodeResponse["rCodeError"] = "R Code failed for unknown reason. Check that R function returns a string.";
+
+	std::string msg = rCodeResponse.toStyledString();
+	_channel->send(msg);
 }

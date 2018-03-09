@@ -103,7 +103,7 @@ void EngineSync::start()
 	for (uint i = 0; i < _channels.size(); i++)
 	{
 		_analysesInProgress.push_back(NULL);
-		_filterSent.push_back(false);
+		_engineStates.push_back(engineState::idle);
 		startSlaveProcess(i);
 	}
 
@@ -169,7 +169,8 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 		analysis->setStatus(Analysis::Running);
 	}
 
-	_analysesInProgress[processNo] = analysis;
+	_analysesInProgress[processNo]	= analysis;
+	_engineStates[processNo]		= engineState::analysis;
 
 	Json::Value json = Json::Value(Json::objectValue);
 
@@ -212,9 +213,7 @@ void EngineSync::process()
 {
 	for (size_t i = 0; i < _channels.size(); i++)
 	{
-		Analysis *analysis = _analysesInProgress[i];
-
-		if (analysis == NULL && !_filterSent[i])
+		if (_engineStates[i] == engineState::idle)
 			continue;
 
 		IPCChannel *channel = _channels[i];
@@ -232,8 +231,9 @@ void EngineSync::process()
 			Json::Value json;
 			reader.parse(data, json);
 
-
-			if(_filterSent[i])
+			switch(_engineStates[i])
+			{
+			case engineState::filter:
 			{
 				if(json.get("filterResult", Json::Value(Json::intValue)).isArray()) //If the result is an array then it came from the engine.
 				{
@@ -242,95 +242,107 @@ void EngineSync::process()
 						filterResult.push_back(jsonResult.asBool());
 
 					processNewFilterResult(filterResult);
-
-					_filterSent[i] = false;
-					continue;
 				}
-				else if(!json.get("filterError", Json::Value(Json::arrayValue)).isArray())
-				{
-					emit filterErrorTextChanged(QString::fromStdString(json.get("filterError", "").asString()));
-				}
-
-
-				if(analysis == NULL) //we only came here because we are expecting a filterresult and didnt get it, there is also no analysis so:
-					continue;
-			}
-
-			int id				= json.get("id", -1).asInt();
-			int revision		= json.get("revision", -1).asInt();
-			int progress		= json.get("progress", -1).asInt();
-			Json::Value results = json.get("results", Json::nullValue);
-			string status		= json.get("status", "error").asString();
-
-
-			if (analysis->id() != id || analysis->revision() != revision)
-				continue;
-
-			std::cout << status << "\n" << std::flush;
-
-
-			if (status == "error" || status == "exception")
-			{
-				analysis->setStatus(status == "error" ? Analysis::Error : Analysis::Exception);
-				analysis->setResults(results);
-				_analysesInProgress[i] = NULL;
-				sendMessages();
-
-				if (_log != NULL)
-				{
-					QString errorMessage = tq(results.get("errorMessage", "").asString());
-					QString info = QString("%1,%2").arg(id).arg(errorMessage);
-					_log->log("Analysis Error", info);
-				}
-			}
-			else if (status == "imageSaved")
-			{
-				analysis->setStatus(Analysis::Complete);
-				analysis->setImageResults(results);
-				_analysesInProgress[i] = NULL;
-				sendMessages();
-			}
-            else if (status == "imageEdited")
-            {
-                analysis->setStatus(Analysis::Complete);
-                analysis->setImageEdited(results);
-                _analysesInProgress[i] = NULL;
-                sendMessages();
-            }
-			else if (status == "complete")
-			{
-				analysis->setStatus(Analysis::Complete);
-				analysis->setResults(results);
-				_analysesInProgress[i] = NULL;
-				sendMessages();
-			}
-			else if (status == "inited")
-			{
-				if (analysis->isAutorun())
-					analysis->setStatus(Analysis::Inited);
 				else
-					analysis->setStatus(Analysis::InitedAndWaiting);
-
-				analysis->setResults(results);
-				_analysesInProgress[i] = NULL;
-				sendMessages();
+					emit filterErrorTextChanged(QString::fromStdString(json.get("filterError", "something went wrong").asString()));
+				
+				
+				_engineStates[i] = engineState::idle;
+				
+				break;
 			}
-			else if (status == "running" && analysis->status() == Analysis::Initing)
+				
+			case engineState::rcode:
 			{
-				analysis->setStatus(Analysis::Running);
-				analysis->setResults(results, progress);
+				//Do some RCode magic
+				break;
 			}
-			else if (analysis->status() == Analysis::Running)
+				
+			case engineState::analysis:
 			{
-				analysis->setResults(results, progress);
+				Analysis *analysis	= _analysesInProgress[i];
+				
+				int id				= json.get("id", -1).asInt();
+				int revision		= json.get("revision", -1).asInt();
+				int progress		= json.get("progress", -1).asInt();
+				Json::Value results = json.get("results", Json::nullValue);
+				string status		= json.get("status", "error").asString();
+	
+	
+				if (analysis->id() != id || analysis->revision() != revision)
+					continue;
+	
+				std::cout << status << "\n" << std::flush;
+	
+	
+				if (status == "error" || status == "exception")
+				{
+					analysis->setStatus(status == "error" ? Analysis::Error : Analysis::Exception);
+					analysis->setResults(results);
+					clearAnalysesInProgress(i);
+					
+					sendMessages();
+	
+					if (_log != NULL)
+					{
+						QString errorMessage = tq(results.get("errorMessage", "").asString());
+						QString info = QString("%1,%2").arg(id).arg(errorMessage);
+						_log->log("Analysis Error", info);
+					}
+				}
+				else if (status == "imageSaved")
+				{
+					analysis->setStatus(Analysis::Complete);
+					analysis->setImageResults(results);
+					clearAnalysesInProgress(i);
+					sendMessages();
+				}
+				else if (status == "imageEdited")
+				{
+					analysis->setStatus(Analysis::Complete);
+					analysis->setImageEdited(results);
+					clearAnalysesInProgress(i);
+					sendMessages();
+				}
+				else if (status == "complete")
+				{
+					analysis->setStatus(Analysis::Complete);
+					analysis->setResults(results);
+					clearAnalysesInProgress(i);
+					sendMessages();
+				}
+				else if (status == "inited")
+				{
+					if (analysis->isAutorun())
+						analysis->setStatus(Analysis::Inited);
+					else
+						analysis->setStatus(Analysis::InitedAndWaiting);
+	
+					analysis->setResults(results);
+					clearAnalysesInProgress(i);
+					sendMessages();
+				}
+				else if (status == "running" && analysis->status() == Analysis::Initing)
+				{
+					analysis->setStatus(Analysis::Running);
+					analysis->setResults(results, progress);
+				}
+				else if (analysis->status() == Analysis::Running)
+				{
+					analysis->setResults(results, progress);
+				}
+				else
+				{
+					sendMessages();
+				}
+				
+				break;
 			}
-			else
-			{
-				sendMessages();
 			}
 		}
-
 	}
+	
+	processScriptQueue();
 }
 
 void EngineSync::processNewFilterResult(std::vector<bool> filterResult)
@@ -345,37 +357,79 @@ void EngineSync::processNewFilterResult(std::vector<bool> filterResult)
 	emit filterErrorTextChanged("");
 }
 
-
-
 void EngineSync::sendFilter(QString generatedFilter, QString filter)
+{
+	waitingScripts.push(new RFilterStore(generatedFilter, filter));
+}
+
+void EngineSync::sendRCode(QString rCode)
+{
+	waitingScripts.push(new RScriptStore(rCode));
+}
+
+void EngineSync::processScriptQueue()
+{
+	if(waitingScripts.size() == 0)
+		return;
+	
+	for(int i=0; i<_engineStates.size(); i++)
+		if(_engineStates[i] == engineState::idle)
+		{
+			RScriptStore * waiting = waitingScripts.front();
+			waitingScripts.pop();
+			
+			if(waiting->typeScript == engineState::rcode)
+				runScriptOnProcess(waiting, i);
+			else if(waiting->typeScript == engineState::filter)
+				runScriptOnProcess((RFilterStore*)waiting, i);
+			
+			delete waiting; //clean up
+		}
+}
+
+void EngineSync::runScriptOnProcess(RFilterStore * filterStore, int processNo)
 {
 	Json::Value json = Json::Value(Json::objectValue);
 
-	json["generatedFilter"] = generatedFilter.toStdString();
+	json["generatedFilter"] = filterStore->generatedfilter.toStdString();
 
-	dataFilter = filter == "" ? "*" : filter;
+	dataFilter = filterStore->script == "" ? "*" : filterStore->script;
 	json["filter"] = dataFilter.toStdString();
+	
 
 	string str = json.toStyledString();
-	_channels[0]->send(str);
-	_filterSent[0] = true;
+	_channels[processNo]->send(str);
+	_engineStates[processNo] = engineState::filter;
+}
+
+void EngineSync::runScriptOnProcess(RScriptStore * scriptStore, int processNo)
+{
+
+	Json::Value json = Json::Value(Json::objectValue);
+
+	json["rCode"] = scriptStore->script.toStdString();
+	
+	string str = json.toStyledString();
+	_channels[processNo]->send(str);
+	
+	_engineStates[processNo] = engineState::rcode;
 }
 
 void EngineSync::sendMessages()
-{
+{	
 	for (size_t i = 0; i < _analysesInProgress.size(); i++) // this loop handles changes in running analyses
 	{
 		Analysis *analysis = _analysesInProgress[i];
 		if (analysis != NULL)
 		{
 			if (analysis->status() == Analysis::Empty)
-			{
+			{ 
 				sendToProcess(i, analysis);
 			}
 			else if (analysis->status() == Analysis::Aborting)
 			{
 				sendToProcess(i, analysis);
-				_analysesInProgress[i] = NULL;
+				clearAnalysesInProgress(i);
 			}
 		}
 	}
@@ -392,7 +446,7 @@ void EngineSync::sendMessages()
 
 			for (size_t i = 0; i < _analysesInProgress.size(); i++)
 			{
-				if (_analysesInProgress[i] == NULL)
+				if (_analysesInProgress[i] == NULL && _engineStates[i] == engineState::idle) //must be idle (no filter/rcode being run)
 				{
 					sendToProcess(i, analysis);
 					sent = true;
