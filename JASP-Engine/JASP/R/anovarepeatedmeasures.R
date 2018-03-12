@@ -52,7 +52,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	stateContrasts <- NULL
 	stateSimpleEffects <- NULL
 	stateSphericity <- NULL
-
+	stateFriedman <- NULL
+	
 	if ( ! is.null(state)) {  # is there state?
 
 		diff <- .diff(options, state$options)  # compare old and new options
@@ -105,6 +106,16 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		  # old simple effects tables can be used
 		  
 		  stateSimpleEffects <- state$stateSimpleEffects
+		  
+		}
+		
+		if (is.list(diff) && diff[['withinModelTerms']] == FALSE && diff[['betweenModelTerms']] == FALSE && 
+		    diff[['repeatedMeasuresCells']] == FALSE && diff[['friedmanWithinFactor']] == FALSE && 
+		    diff[['friedmanBetweenFactor']] == FALSE && diff[['contrasts']] == FALSE) {
+		  
+		  # old Friedman table can be used
+		  
+		  stateFriedman <- state$stateFriedman
 		  
 		}
 	}
@@ -225,6 +236,19 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   	  results[["simpleEffects"]] <- stateSimpleEffects
   	  
   	}
+  	
+  	if (is.null(stateFriedman)) {
+  	  
+  	  result <- .rmAnovaFriedman(dataset, fullModel, options, perform, status, singular, stateFriedman)
+  	  results[["friedman"]] <- result$result
+  	  status <- result$status
+  	  stateFriedman <- result$stateFriedman
+  	  
+  	} else {
+  	  
+  	  results[["friedman"]] <- stateFriedman
+  	  
+  	}
 
 	## Create Assumption Check Object
 
@@ -301,7 +325,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		list(name="assumptionsObj", type="object", meta=list(list(name="sphericity", type="table"), list(name="levene", type="table"))),
 		list(name="contrasts", type="collection", meta="table"),
 		list(name="posthoc", type="collection", meta="table"),
-		list(name="simpleEffects", type="table")
+		list(name="simpleEffects", type="table"),
+		list(name="friedman", type="table")
 	)
 
 	if (length(descriptivesPlot) == 1) {
@@ -330,6 +355,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	state[["stateContrasts"]] <- stateContrasts
 	state[["stateSphericity"]] <- stateSphericity
 	state[["stateSimpleEffects"]] <- stateSimpleEffects
+	state[["stateFriedman"]] <- stateFriedman
 
 	keepDescriptivesPlot <- lapply(stateDescriptivesPlot, function(x)x$data)
 
@@ -2879,6 +2905,147 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   )
   
   list(result=simpleEffectsTable, status=status, stateSimpleEffects=stateSimpleEffects)
+}
+
+.rmAnovaFriedman <- function(dataset, fullModel, options, perform, status, singular, stateFriedman) {
+  
+  if (identical(options$friedmanWithinFactor, ""))
+    return (list(result=NULL, status=status))
+
+  withinTerm <- options$friedmanWithinFactor
+  betweenTerm <- options$friedmanBetweenFactor
+  
+  withinTerms.base64 <- .v(withinTerm)
+  betweenTerms.base64 <- .v(betweenTerm)
+  
+  result <- list()
+  
+  if( !(withinTerm %in% unlist(options$withinModelTerms)) | 
+      (betweenTerm %in% unlist(options$withinModelTerms)) ) {
+    status$error <- TRUE
+    status$errorMessage <- "Please specify appropriate terms for the Friedman/Durbin test."
+    result[["error"]] <- list(errorType="badData", errorMessage=status$errorMessage)
+  }
+  
+  result[["title"]] <- paste("Friedman Test")
+  result[["name"]] <- paste("friedmanTable")
+  
+  fields <- list()
+  fields[[length(fields) + 1]] <- list(name="Chi-Squared", type="number", format="sf:4;dp:3")
+  fields[[length(fields) + 1]] <- list(name="df", type="integer")
+  fields[[length(fields) + 1]] <- list(name="p", type="number", format="dp:3;p:.001")
+  
+  footnotes <- .newFootnotes()
+  
+  rows <- list()
+  
+  i <- 1
+  
+  if (perform == "run" && status$ready && status$error == FALSE)  {
+    
+      longData <- fullModel$data$long
+      
+      if (identical(betweenTerm, "")) {
+        betweenTerms.base64 <- 'subject'
+      }
+
+      groups <- as.factor(longData[, withinTerms.base64])
+      blocks <- as.factor(longData[, betweenTerms.base64])
+      y <- longData[, 'dependent']
+      
+      useDurbin <- any(table(groups, blocks) != 1)
+      
+      t <- nlevels(groups)
+      b <- nlevels(blocks)
+      r <- unique(table(groups))
+      k <- unique(table(blocks))
+      
+      
+      if (length(r) == 1 & length(k) == 1) {
+        rankIJ <- unlist(tapply(y, blocks, rank))
+        rankJ <- tapply(rankIJ, groups, sum)    
+        
+        sumRanks <- sum(rankIJ^2)
+        cVal <- (b * k * (k + 1)^2) / 4
+        dVal <- sum(rankJ^2) - r * cVal
+        testStatOne <- (t - 1) / (sumRanks - cVal) * dVal
+        testStatTwo <- (testStatOne / (t - 1)) / ((b * k - b - testStatOne) / (b * k - b - t + 1))
+        
+        dfChi <- t - 1
+        dfOneF <- k - 1
+        dfTwoF <- b * k - b - t + 1 
+        pValOne <- pchisq(testStatOne, dfChi, lower.tail = FALSE)
+        pValTwo <- pf(testStatTwo, dfOneF, dfTwoF, lower.tail = FALSE)
+        
+        row <- list()
+        
+        if (useDurbin) {
+          result[["title"]] <- paste("Durbin Test")
+          row[["Chi-Squared"]] <- .clean(testStatOne)
+          row[["df"]] <- .clean(dfChi)
+          row[["p"]] <-.clean(pValOne)
+          
+          row[["F"]] <- .clean(testStatTwo)
+          row[["df num"]] <- .clean(dfOneF)
+          row[["df den"]] <- .clean(dfTwoF)
+          row[["p[F]"]] <-.clean(pValTwo)
+          
+          fields[[length(fields) + 1]] <- list(name="F", type="number", format="sf:4;dp:3")
+          fields[[length(fields) + 1]] <- list(name="df num", type="integer")
+          fields[[length(fields) + 1]] <- list(name="df den", type="integer")
+          fields[[length(fields) + 1]] <- list(name="p[F]", type="number", format="dp:3;p:.001")
+          
+        } else {
+
+          row[["Chi-Squared"]] <- .clean(testStatOne)
+          row[["df"]] <- .clean(dfChi)
+          row[["p"]] <-.clean(pValOne)
+        }
+        
+        rows[[i]] <- row
+        
+      } else {
+        status$error <- TRUE
+        status$errorMessage <- "Specified ANOVA design is not balanced."
+        result[["error"]] <- list(errorType="badData", errorMessage=status$errorMessage)
+        
+        row <- list()
+        row[["Statistic"]] <- "."
+        row[["df"]] <- "."
+        row[["p"]] <- "."
+        
+        rows[[i]] <- row
+      }
+      
+    } else {
+      
+      row <- list()
+      row[["Statistic"]] <- "."
+      row[["df"]] <- "."
+      row[["p"]] <- "."
+      
+      rows[[i]] <- row
+  }
+  
+  result[["data"]] <- rows
+  result[["status"]] <- "complete"
+  
+  result[["schema"]] <- list(fields=fields)
+  result[["footnotes"]] <- as.list(footnotes)
+  
+  
+  
+  if (perform == "run" && status$ready && status$error == FALSE)  {
+    
+    stateFriedman <- result
+    
+  } else {
+    
+    stateFriedman <- NULL
+    
+  }
+  
+  list(result=result, status=status, stateFriedman=stateFriedman)
 }
 
 .summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE, 

@@ -153,6 +153,14 @@
 			"default": false
 		},
 		{
+			"name": "friedmanWithinFactor",
+			"type": "Variable"
+		},
+		{
+			"name": "friedmanBetweenFactor",
+			"type": "Variable"
+		},
+		{
 			"name": "descriptives",
 			"type": "Boolean"
 		},

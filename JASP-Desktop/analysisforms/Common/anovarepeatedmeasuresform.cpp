@@ -129,6 +129,20 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	ui->buttonAssignModeratorOne->setSourceAndTarget(ui->simpleEffectsVariables, ui->moderatorFactorOne);
 	ui->buttonAssignModeratorTwo->setSourceAndTarget(ui->simpleEffectsVariables, ui->moderatorFactorTwo);
 
+		_friedmanAvailableTableModel = new TableModelVariablesAvailable();
+	ui->friedmanVariables->setModel(_friedmanAvailableTableModel);
+
+		_friedmanWithinTableModel = new TableModelVariablesAssigned(this);
+		_friedmanWithinTableModel->setSource(_friedmanAvailableTableModel);
+	ui->friedmanWithinFactor->setModel(_friedmanWithinTableModel);
+	
+		_friedmanBetweenTableModel = new TableModelVariablesAssigned(this);
+		_friedmanBetweenTableModel->setSource(_friedmanAvailableTableModel);
+	ui->friedmanBetweenFactor->setModel(_friedmanBetweenTableModel);
+
+	ui->buttonAssignFriedmanWithin->setSourceAndTarget(ui->friedmanVariables, ui->friedmanWithinFactor);
+	ui->buttonAssignFriedmanBetween->setSourceAndTarget(ui->friedmanVariables, ui->friedmanBetweenFactor);
+
 	ui->containerModel->hide();
 	ui->containerFactors->hide();
 	ui->containerOptions->hide();
@@ -136,6 +150,8 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	ui->containerPostHocTests->hide();
 	ui->containerDescriptivesPlot->hide();
 	ui->containerAssumptions->hide();
+	ui->containerFriedman->hide();
+
 
 	ui->withinModelTerms->setFactorsLabel("Repeated Measures Components");
 	ui->betweenModelTerms->setFactorsLabel("Between Subjects Components");
@@ -195,6 +211,7 @@ void AnovaRepeatedMeasuresForm::factorsChanged(bool changed)
 		_contrastsModel->setVariables(factorsAvailable);
 		_plotFactorsAvailableTableModel->setVariables(factorsAvailable);
 		_simpleEffectsAvailableTableModel->setVariables(factorsAvailable);
+		_friedmanAvailableTableModel->setVariables(factorsAvailable);
 
 		Terms plotVariablesAssigned;
 		plotVariablesAssigned.add(_horizontalAxisTableModel->assigned());
@@ -207,6 +224,11 @@ void AnovaRepeatedMeasuresForm::factorsChanged(bool changed)
 		simpleEffectsVariablesAssigned.add(_moderatorOneTableModel->assigned());
 		simpleEffectsVariablesAssigned.add(_moderatorTwoTableModel->assigned());
 		_simpleEffectsAvailableTableModel->notifyAlreadyAssigned(simpleEffectsVariablesAssigned);
+
+		Terms friedmanVariablesAssigned;
+		friedmanVariablesAssigned.add(_friedmanWithinTableModel->assigned());
+		friedmanVariablesAssigned.add(_friedmanBetweenTableModel->assigned());
+		_friedmanAvailableTableModel->notifyAlreadyAssigned(friedmanVariablesAssigned);
 
 		ui->postHocTestsVariables->setVariables(factorsAvailable);
 	}

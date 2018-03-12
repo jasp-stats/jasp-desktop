@@ -67,7 +67,9 @@ private:
     TableModelVariablesAssigned *_simpleFactorTableModel;
     TableModelVariablesAssigned *_moderatorOneTableModel;
     TableModelVariablesAssigned *_moderatorTwoTableModel;
-
+		
+    TableModelVariablesAvailable *_kruskalAvailableTableModel;
+    TableModelVariablesAssigned *_kruskalTableModel;
 };
 
 #endif // ANCOVAFORM_H

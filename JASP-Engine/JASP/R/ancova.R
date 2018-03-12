@@ -55,6 +55,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	stateMarginalMeans <- NULL
 	stateSimpleEffects <- NULL
 	stateDescriptivesTable <- NULL
+	stateKruskal <- NULL
 
 	if ( ! is.null(state)) {  # is there state?
 
@@ -128,6 +129,15 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		  stateSimpleEffects <- state$stateSimpleEffects
 
 		}
+		
+		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && 
+		    diff[['kruskalVariablesAssigned']] == FALSE && diff[['contrasts']] == FALSE) {
+		  
+		  # old Kruskal table can be used
+		  
+		  stateKruskal <- state$stateKruskal
+		  
+		}
 	}
 
 
@@ -180,10 +190,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	## Create ANOVA Table
 
 	result <- .anovaTable(options, model, status, singular)
-
 	results[["anova"]] <- result$result
 	status <- result$status
-
+  
 
 
 	## Create Levene's Table
@@ -281,6 +290,18 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	}
 
+	if (is.null(stateKruskal)) {
+	  
+	  result <- .anovaKruskal(dataset, options, perform, status, singular, stateKruskal)
+	  results[["kruskal"]] <- result$result
+	  status <- result$status
+	  stateSimpleEffects <- result$stateKruskal
+	  
+	} else {
+	  
+	  results[["kruskal"]] <- stateKruskal
+	  
+	}
 
 	## Create Descriptives Table
 
@@ -333,7 +354,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		list(name="contrasts", type="collection", meta="table"),
 		list(name="posthoc", type="collection", meta="table"),
 		list(name="marginalMeans", type="collection", meta="table"),
-		list(name="simpleEffects", type="table")
+		list(name="simpleEffects", type="table"),
+		list(name="kruskal", type="table")
 	)
 
 	if (length(descriptivesPlot) == 1) {
@@ -359,6 +381,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	state[["stateDescriptivesTable"]] <- stateDescriptivesTable
 	state[["stateMarginalMeans"]] <- stateMarginalMeans
 	state[["stateSimpleEffects"]] <- stateSimpleEffects
+	state[["stateKruskal"]] <- stateKruskal
+	
 	if (perform == "init" && status$ready && status$error == FALSE) {
 	  
 		return(list(results=results, status="inited", state=state, keep=c(stateqqPlot$data, keepDescriptivesPlot)))
@@ -1770,6 +1794,96 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   
   list(result=simpleEffectsTable, status=status, stateSimpleEffects=stateSimpleEffects)
 }
+
+.anovaKruskal <- function(dataset, options, perform, status, singular, stateKruskal) {
+  
+  if (is.null(options$kruskalVariablesAssigned))
+    return (list(result=NULL, status=status))
+  
+  terms <- options$kruskalVariablesAssigned
+  
+  terms.base64 <- c()
+  terms.normal <- c()
+  
+  for (term in terms) {
+    
+    components <- unlist(term)
+    term.base64 <- paste(.v(components), collapse=":", sep="")
+    term.normal <- paste(components, collapse=" \u273B ", sep="")
+    
+    terms.base64 <- c(terms.base64, term.base64)
+    terms.normal <- c(terms.normal, term.normal)
+  }
+
+  nRows <- length(terms.base64)
+  
+  result <- list()
+  
+  result[["title"]] <- paste("Kruskal-Wallis Test")
+  result[["name"]] <- paste("kruskalTable")
+  
+  fields <- list()
+  fields[[length(fields) + 1]] <- list(name="Factor", type="string")
+  fields[[length(fields) + 1]] <- list(name="Statistic", type="number", format="sf:4;dp:3")
+  fields[[length(fields) + 1]] <- list(name="df", type="integer")
+  fields[[length(fields) + 1]] <- list(name="p", type="number", format="dp:3;p:.001")
+  
+  footnotes <- .newFootnotes()
+  result[["schema"]] <- list(fields=fields)
+  
+  rows <- list()
+  
+  for (i in .indices(terms.base64)) {
+
+    if (perform == "run" && status$ready && status$error == FALSE)  {
+        
+        row <- list()
+        
+        reorderModelTerms <-  .reorderModelTerms(options)
+        modelTerms <- reorderModelTerms$modelTerms
+        model.formula <- as.formula(paste(.v(options$dependent), terms.base64[i], sep= "~"))
+        r <- kruskal.test(model.formula, data = dataset)
+        
+        row[["Factor"]] <- terms.normal[i]
+        row[["Statistic"]] <- .clean(r$statistic[[1]])
+        row[["df"]] <- .clean(r$parameter[[1]])
+        row[["p"]] <-.clean(r$p.value[[1]])
+        
+        rows[[i]] <- row
+        
+    } else {
+      
+        row <- list()
+        row[["Factor"]] <- terms.normal[i]
+        row[["Statistic"]] <- "."
+        row[["df"]] <- "."
+        row[["p"]] <- "."
+        
+        rows[[i]] <- row
+          
+    }
+  }
+  
+  result[["data"]] <- rows
+  result[["status"]] <- "complete"
+    
+  result[["footnotes"]] <- as.list(footnotes)
+    
+
+  
+  if (perform == "run" && status$ready && status$error == FALSE)  {
+    
+    stateKruskal <- result
+    
+  } else {
+    
+    stateKruskal <- NULL
+    
+  }
+  
+  list(result=result, status=status, stateKruskal=stateKruskal)
+}
+
 
 .anovaDescriptivesPlot <- function(dataset, options, perform, status, stateDescriptivesPlot) {
 
