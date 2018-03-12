@@ -666,53 +666,43 @@ std::vector<bool> rbridge_applyFilter(std::string & filterCode, std::string & ge
 
 	std::string concatenated = generatedFilterCode + "\n" + filterCode, filter64(rbridge_encodeColumnNamesToBase64(concatenated));
 
-	try
+	bool * arrayPointer = NULL;
+
+	jaspRCPP_runScript("data <- .readFilterDatasetToEnd();\nattach(data);\noptions(warn=1, showWarnCalls=TRUE, showErrorCalls=TRUE, show.error.messages=TRUE)"); //first we load the data to be filtered
+	int arrayLength	= jaspRCPP_runFilter(filter64.c_str(), &arrayPointer);
+	jaspRCPP_runScript("detach(data)");	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
+
+	if(arrayLength < 0)
 	{
-		bool * arrayPointer = NULL;
-
-		jaspRCPP_runScript("data <- .readFilterDatasetToEnd();\nattach(data);\noptions(warn=1, showWarnCalls=TRUE, showErrorCalls=TRUE, show.error.messages=TRUE)"); //first we load the data to be filtered
-		int arrayLength	= jaspRCPP_runFilter(filter64.c_str(), &arrayPointer);
-		jaspRCPP_runScript("detach(data)");	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
-
-		if(arrayLength < 0)
-		{
-			errorMsg = "Filter did not return a logical vector";
-			throw filterException(errorMsg);
-		}
-
-		std::vector<bool> returnThis;
-
-		bool atLeastOneRow = false;
-		if(arrayLength == rowCount) //Only build boolvector if it matches the desired length.
-			for(int i=0; i<arrayLength; i++)
-			{
-				returnThis.push_back(arrayPointer[i]);
-				if(arrayPointer[i])
-					atLeastOneRow = true;
-			}
-
-		jaspRCPP_freeArrayPointer(&arrayPointer);
-
-		if(!atLeastOneRow)
-			throw filterException("Filtered out all data..");
-
-		if(arrayLength != rowCount)
-		{
-			std::stringstream msg;
-			msg << "Filter did not return a logical vector of length " << rowCount << " as expected, instead it returned a logical vector of length " << arrayLength << std::endl << std::flush;
-			errorMsg = msg.str();
-			throw filterException(errorMsg);
-		}
-
-		return returnThis;
+		errorMsg = jaspRCPP_getLastFilterErrorMsg();
+		throw filterException(errorMsg.c_str());
 	}
-	catch(std::exception & e)
+
+	std::vector<bool> returnThis;
+
+	bool atLeastOneRow = false;
+	if(arrayLength == rowCount) //Only build boolvector if it matches the desired length.
+		for(int i=0; i<arrayLength; i++)
+		{
+			returnThis.push_back(arrayPointer[i]);
+			if(arrayPointer[i])
+				atLeastOneRow = true;
+		}
+
+	jaspRCPP_freeArrayPointer(&arrayPointer);
+
+	if(!atLeastOneRow)
+		throw filterException("Filtered out all data..");
+
+	if(arrayLength != rowCount)
 	{
-		errorMsg = std::string(e.what()) + "\n" + jaspRCPP_getRConsoleOutput();
-		errorMsg = rbridge_decodeColumnNamesFromBase64(errorMsg);
+		std::stringstream msg;
+		msg << "Filter did not return a logical vector of length " << rowCount << " as expected, instead it returned a logical vector of length " << arrayLength << std::endl << std::flush;
+		errorMsg = msg.str();
 		throw filterException(errorMsg);
 	}
 
+	return returnThis;
 }
 
 string rbridge_saveImage(const string &name, const string &type, const int &height, const int &width, const int ppi)

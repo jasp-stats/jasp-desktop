@@ -2,6 +2,7 @@
 #define RINSIDE_CONSOLELOGGING_H
 #include "RInside/RInside.h"
 
+//This doesnt work on Windows because there is no RInterface.h there..
 class RInside_ConsoleLogging : public Callbacks
 {
 public:
