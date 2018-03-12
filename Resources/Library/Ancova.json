@@ -115,6 +115,10 @@
 			"type": "Variable"
 		},
 		{
+			"name": "kruskalVariablesAssigned",
+			"type": "Terms"
+		},
+		{
 			"name": "descriptives",
 			"type": "Boolean"
 		},

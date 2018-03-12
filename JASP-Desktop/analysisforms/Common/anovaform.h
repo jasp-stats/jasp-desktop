@@ -67,6 +67,11 @@ private:
     TableModelVariablesAssigned *_moderatorOneTableModel;
     TableModelVariablesAssigned *_moderatorTwoTableModel;
 
+
+    TableModelVariablesAvailable *_kruskalAvailableTableModel;
+    TableModelVariablesAssigned *_kruskalTableModel;
+
+
 };
 
 #endif // ANOVAFORM_H

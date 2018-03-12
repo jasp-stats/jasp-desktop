@@ -99,6 +99,10 @@
 			"type": "List"
 		},
 		{
+			"name": "kruskalVariablesAssigned",
+			"type": "Terms"
+		},
+		{
 			"name": "descriptives",
 			"type": "Boolean"
 		},
