@@ -33,6 +33,7 @@ ReadDataSetDescriptionCB readDataSetDescriptionCB;
 RequestStateFileSourceCB requestStateFileSourceCB;
 
 static const string NullString = "null";
+static std::string lastFilterErrorMsg = "";
 
 
 extern "C" {
@@ -119,28 +120,52 @@ void STDCALL jaspRCPP_runScript(const char * scriptCode)
 	return;
 }
 
+
+
 int STDCALL jaspRCPP_runFilter(const char * filterCode, bool ** arrayPointer)
 {
 	rinside_consoleLog->clearConsoleBuffer();
 
-	SEXP result = rinside->parseEval(filterCode);
-
-	if(Rf_isVector(result))
+	try
 	{
-		Rcpp::NumericVector vec(result);
+		SEXP result = rinside->parseEval(filterCode);
 
-		if(vec.size() == 0)
-			return 0;
+		if(Rf_isVector(result))
+		{
+			Rcpp::NumericVector vec(result);
 
-		(*arrayPointer) = (bool*)malloc(vec.size() * sizeof(bool));
+			if(vec.size() == 0)
+				return 0;
 
-		for(int i=0; i<vec.size(); i++)
-			(*arrayPointer)[i] = vec[i] == 1;
+			(*arrayPointer) = (bool*)malloc(vec.size() * sizeof(bool));
 
-		return vec.size();
+			for(int i=0; i<vec.size(); i++)
+				(*arrayPointer)[i] = vec[i] == 1;
+
+			return vec.size();
+		}
+
+		lastFilterErrorMsg =  "Filter did not return a logical vector";
+		return -1;
+	}
+	catch(std::exception e)
+	{
+#ifdef __WIN32__
+		lastFilterErrorMsg = "Your filter has a problem, it might be a misspelled column-name or a syntax-error, but sadly enough JASP cannot capture R's output on Windows to give a clearer message..";
+#else
+		lastFilterErrorMsg =  std::string(e.what()) + "\n" + rinside_consoleLog->getConsoleOutput();
+#endif
+		return -1;
 	}
 
+	lastFilterErrorMsg = "something went wrong with the filter but it is unclear what";
+
 	return -1;
+}
+
+const char*	STDCALL jaspRCPP_getLastFilterErrorMsg()
+{
+	return lastFilterErrorMsg.c_str();
 }
 
 void STDCALL jaspRCPP_freeArrayPointer(bool ** arrayPointer)
