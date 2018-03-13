@@ -164,7 +164,7 @@ QByteArray CodePageConvert::findIANANameFromSPSS(int32_t character_code)
 		break;
 
 	default:
-		throw runtime_error(string("Cannot find charactor set for \"Code Page\" ") + QByteArray::number(character_code).data() + ".");
+		result = "UTF-8";
 	}
 
 	return result;
