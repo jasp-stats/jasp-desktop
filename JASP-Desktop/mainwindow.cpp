@@ -370,9 +370,28 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	if (rd) rd->close();
 }
 
+bool MainWindow::filterShortCut()
+{
+	bool exclude = false;
+
+#ifdef __APPLE__
+	// This is a workaround for Qt Bug https://bugreports.qt.io/browse/QTBUG-67016
+	// When we move to a Qt version (probably 5.11) where this bug is solved, we have to remove this workaround!
+	static int counter = 0;
+	counter++;
+	
+	if (counter % 3 != 1)
+		exclude = true;
+#endif
+	
+	return exclude;
+}
 
 void MainWindow::saveKeysSelected()
 {
+	if (filterShortCut())
+		return;
+	
 	if (_package->isModified())
 	{
 		ui->backStage->save();
@@ -382,18 +401,25 @@ void MainWindow::saveKeysSelected()
 
 void MainWindow::openKeysSelected()
 {
-
+	if (filterShortCut())
+		return;
 }
 
 
 void MainWindow::refreshKeysSelected()
 {
+	if (filterShortCut())
+		return;
+	
 	refreshAllAnalyses();
 }
 
 
 void MainWindow::syncKeysSelected()
 {
+	if (filterShortCut())
+		return;
+
 	ui->backStage->sync();
 }
 
