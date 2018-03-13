@@ -141,6 +141,8 @@ private:
 	void analysisSaveImageHandler(int id, QString options);
     void analysisEditImageHandler(int id, QString options);
 	void removeAnalysisRequestHandler(int id);
+	
+	bool filterShortCut();
 
 signals:
 	void updateAnalysesUserData(QString userData);
