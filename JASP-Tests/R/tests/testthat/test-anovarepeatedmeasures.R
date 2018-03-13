@@ -7,7 +7,7 @@ context("Repeated Measures ANOVA")
 #    - Contrasts apart from 'repeated'
 
 initOpts <- function(){
-  options <- jasptools::analysisOptions("anovarepeatedmeasures")
+  options <- jasptools::analysisOptions("AnovaRepeatedMeasures")
   
   options$repeatedMeasuresFactors <- list(
     list(name = "Drink", levels = c("Beer", "Wine", "Water")),
@@ -156,7 +156,7 @@ test_that("Descriptives Match", {
 
 # Mixed Effects
 initOpts <- function(){
-  options <- jasptools::analysisOptions("anovarepeatedmeasures")
+  options <- jasptools::analysisOptions("AnovaRepeatedMeasures")
   
   options$repeatedMeasuresFactors <- list(
     list(name = "Looks", levels = c("Attractive", "Average", "Ugly")),
@@ -240,7 +240,7 @@ test_that("(Repeated) Contrast table match", {
 
 
 test_that("Effect Size Calculation correct", {
-  options <- jasptools::analysisOptions("anovarepeatedmeasures")
+  options <- jasptools::analysisOptions("AnovaRepeatedMeasures")
   
   options$repeatedMeasuresFactors <- list(
     list(name = "Animal", levels = c("Stick", "Kangaroo", "Fish", "Grub"))
