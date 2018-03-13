@@ -421,6 +421,7 @@ RegressionLinearBayesian <- function (
 	}
 	names(isNuisance) <- .vf(names(isNuisance))
 	formula <- as.formula(.vf(paste(formula, collapse="")))
+	hasInteraction <- any(attr(stats::terms.formula(formula), "order") > 1)
 
 	# set initprobs (BAS' method for nuisance terms)
 	initProbs <- rep(0.5, nPreds + 1) # the + 1 is the intercept
@@ -435,12 +436,20 @@ RegressionLinearBayesian <- function (
 	}
 
 	# select the type of model prior
+	footnoteInteraction <- NULL
+	pInteraction <- 0.5 # probability of model inclusion conditional on inclusion parents
 	if (options$modelPrior == "beta.binomial") {
 		modelPrior <- BAS::beta.binomial(options$betaBinomialParamA, options$betaBinomialParamB)
+		if (hasInteraction) {
+			footnoteInteraction <- paste("Prior model probabilities for models with interaction effects",
+																	 "are obtained from a Bernoulli (p = 0.5) prior.",
+																	 "We advice using a different model prior, or excluding interaction effects.")
+		}
 	} else if (options$modelPrior == "uniform") {
 		modelPrior <- BAS::uniform()
 	} else if (options$modelPrior == "Bernoulli") {
 		modelPrior <- BAS::Bernoulli(options$bernoulliParam)
+		pInteraction <- options$bernoulliParam
 	}
 
 	# number of models
@@ -479,6 +488,15 @@ RegressionLinearBayesian <- function (
 		weights = wlsWeights,
 		renormalize = TRUE
 	))
+	
+	if (hasInteraction) {
+		bas_lm <- BAS:::force.heredity.bas(object = bas_lm, prior.prob = pInteraction)
+	}
+	bas_lm[["interaction"]] <- list(
+		hasInteraction = hasInteraction,
+		footnote = footnoteInteraction,
+		pInteraction = pInteraction
+	)
 
 	if (isTryError(bas_lm)) {
 		status$ready <- FALSE
@@ -603,6 +621,10 @@ RegressionLinearBayesian <- function (
 
 	# notes
 	footnotes <- .newFootnotes()
+	if (!is.null(bas_obj[["interaction"]][["footnote"]])) {
+		footnote <- bas_obj[["interaction"]][["footnote"]]
+		.addFootnote(footnotes, symbol = "<em>Warning.</em>", text = footnote)
+	}
 	if (sum(nuisanceTerms) > 0) {
 		footnote <- paste("All models include ", paste(names(which(nuisanceTerms)), collapse = ", "), ".", sep = "")
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = footnote)
@@ -1277,7 +1299,6 @@ RegressionLinearBayesian <- function (
 	# one.fig <- prod(par("mfcol")) == 1
 
 	if (show[1]) {
-		# browser()
 		dfPoints <- data.frame(
 			x = yhat,
 			y = r
@@ -1296,7 +1317,6 @@ RegressionLinearBayesian <- function (
 
 	}
 	if (show[2]) {
-		# browser()
 		cum.prob = cumsum(x$postprobs)
 		m.index = 1:x$n.models
 
@@ -1314,7 +1334,6 @@ RegressionLinearBayesian <- function (
 		return(g)
 	}
 	if (show[3]) {
-		# browser()
 		logmarg = x$logmarg
 		dim = x$size
 
@@ -1334,7 +1353,6 @@ RegressionLinearBayesian <- function (
 
 	}
 	if (show[4]) {
-		# browser()
 		probne0 = x$probne0[-1]
 		variables = x$namesx[-1] # 1:x$n.vars
 		priorProb <- x$priorprobsPredictor[1:x$n.vars][-1]
@@ -1428,7 +1446,6 @@ RegressionLinearBayesian <- function (
 		g = factor(rep(1:(length(mat)+1), each = 2))
 	)
 
-	# browser()
 	discrete <- TRUE
 	if (discrete) {
 		show.legend <- FALSE
