@@ -220,7 +220,7 @@ checkLavaanModel <- function(model, availableVars) {
   }
 
   # if checks pass, return empty string
-  return(0)
+  return("")
 }
 .sanitizeForJson <- function(obj) {
 	# Removes elements that are not translatable to json

@@ -255,6 +255,16 @@ void EngineSync::process()
 			case engineState::rcode:
 			{
 				//Do some RCode magic
+				if (json.get("rCodeResult", Json::Value(Json::intValue)).isString()) {
+					std::cout << "R Code returned: " << json.get("rCodeResult", "") << std::flush;
+				} 
+				
+				if (json.get("rCodeError", Json::Value(Json::intValue)).isString()) {
+					std::cout << "R Error returned: " << json.get("rCodeError", "") << std::flush;
+				}
+				
+				_engineStates[i] = engineState::idle;
+				
 				break;
 			}
 				

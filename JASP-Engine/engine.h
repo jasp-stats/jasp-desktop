@@ -57,7 +57,7 @@ private:
 	void sendResults();
 	void sendFilterResult(std::vector<bool> filterResult);
 	void sendFilterError(std::string errorMessage);
-	void evalRCode(const std::string &rCode);
+	void evalRCode();
 	void sendRCodeResult(std::string rCodeResult);
 	void sendRCodeError();
 	std::string callback(const std::string &results, int progress);
@@ -93,8 +93,11 @@ private:
 
 	int _slaveNo = 0;
 
-	bool filterChanged = false;
-	std::string filter = "genFilter", generatedFilter = "";
+	bool _filterChanged = false;
+	std::string _filter = "genFilter", _generatedFilter = "";
+	
+	bool _rCodeEntered = false;
+	std::string _rCode = "";
 };
 
 #endif // ENGINE_H
