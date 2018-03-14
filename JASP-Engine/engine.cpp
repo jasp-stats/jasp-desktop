@@ -225,8 +225,11 @@ void Engine::run()
 		else
 			runAnalysis();
 
-		if(filterChanged)
+		if(_filterChanged)
 			applyFilter();
+		
+		if(_rCodeEntered)
+			evalRCode();
 	}
 
 	shared_memory_object::remove(memoryName.c_str());
@@ -249,10 +252,18 @@ bool Engine::receiveMessages(int timeout)
 
 		if(jsonRequest.get("filter", "").asString() != "")
 		{
-			filterChanged = true;
-			filter = jsonRequest.get("filter", "").asString();
-			generatedFilter = jsonRequest.get("generatedFilter", "").asString();
+			_filterChanged = true;
+			_filter = jsonRequest.get("filter", "").asString();
+			_generatedFilter = jsonRequest.get("generatedFilter", "").asString();
 
+			return false; //This is not an analysis-run-request or anything like that, so quit like a not-message.
+		}
+		
+		if (jsonRequest.get("rCode", "").asString() != "")
+		{
+			_rCodeEntered = true;
+			_rCode = jsonRequest.get("rCode", "").asString();
+			
 			return false; //This is not an analysis-run-request or anything like that, so quit like a not-message.
 		}
 
@@ -459,11 +470,11 @@ void Engine::provideTempFileName(const string &extension, string &root, string &
 
 void Engine::applyFilter()
 {
-	filterChanged = false;
+	_filterChanged = false;
 
 	try
 	{
-		std::vector<bool> filterResult = rbridge_applyFilter(filter, generatedFilter);
+		std::vector<bool> filterResult = rbridge_applyFilter(_filter, _generatedFilter);
 
 		sendFilterResult(filterResult);
 
@@ -483,9 +494,11 @@ void Engine::applyFilter()
 
 
 // Evaluating arbitrary R code (as string) which returns a string
-void Engine::evalRCode(const string &rCode)
+void Engine::evalRCode()
 {
-	std::string rCodeResult = rbridge_evalRCode(rCode);
+	_rCodeEntered = false;
+	
+	std::string rCodeResult = rbridge_evalRCode(_rCode);
 	
 	if (rCodeResult == "null") 
 	{
@@ -495,7 +508,7 @@ void Engine::evalRCode(const string &rCode)
 	} 
 	else
 	{
-		std::cout << "R Code yielded result: " << rCodeResult << std::endl << std::flush;
+		std::cout << "R Code yielded result:\n " << rCodeResult << std::endl << std::flush;
 		sendRCodeResult(rCodeResult);
 	}	
 }

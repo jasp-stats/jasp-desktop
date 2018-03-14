@@ -88,7 +88,7 @@ public:
 	Q_INVOKABLE void sendFilter(QString generatedFilter, QString filter);
 	Q_INVOKABLE QString getFilter() { return dataFilter; }
 	
-	Q_INVOKABLE void sendRCode(QString rCode);
+	void sendRCode(QString rCode);
 	
 	
 signals:
