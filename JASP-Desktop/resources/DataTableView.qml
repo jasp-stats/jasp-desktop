@@ -108,6 +108,8 @@ FocusScope
         
         function reloadColumns()
         {
+            clearColumns();
+
             var roleList = dataSetModel.userRoleNames();
 
             //data.clear()

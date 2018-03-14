@@ -30,6 +30,7 @@
 #include <map>
 #include <unordered_set>
 #include <set>
+#include <regex>
 #include <boost/function.hpp>
 #include "../JASP-Common/dataset.h"
 #include "../JASP-R-Interface/jasprcpp_interface.h"
@@ -74,7 +75,7 @@ extern "C" {
 
 	std::vector<bool>	rbridge_applyFilter(std::string & filterCode, std::string & generatedFilterCode);
 	std::string			rbridge_encodeColumnNamesToBase64(std::string & filterCode);
-	std::string			rbridge_decodeColumnNamesFromBase64(std::string & messageBase64);
+	std::string			rbridge_decodeColumnNamesFromBase64(std::string messageBase64);
 	bool				rbridge_columnUsedInFilter(const char * columnName);
 	void				rbridge_findColumnsUsedInDataSet();
 
