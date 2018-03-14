@@ -67,7 +67,7 @@ test_that("Within subjects table results match", {
 
   results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = AnovaRepeatedMeasures,
                             options = options, view = FALSE, quiet = TRUE)
-  table <- list("Drink", "None", 2092.34444444444, 2, 1046.17222222222, 5.10598105687077,
+  refTable <- list("Drink", "None", 2092.34444444444, 2, 1046.17222222222, 5.10598105687077,
                 0.0108629307294978, "TRUE", "FALSE", 1, 1, 1, 1, 1, "Drink",
                 "Greenhouse-Geisser", 2092.34444444444, 1.15422864073086, 1812.76427443316,
                 5.10598105687077, 0.0297686804863521, "FALSE", "FALSE", 1, 1,
@@ -101,7 +101,8 @@ test_that("Within subjects table results match", {
                 "Residual", "Huynh-Feldt", 2906.68888888889, 74.3726753595615,
                 39.0827528367944, "", "", "", "", "", "FALSE")
   
-  expect_equal_tables(results[["results"]][["withinSubjectsEffects"]][["data"]], table)
+  table <- results[["results"]][["withinSubjectsEffects"]][["data"]]
+  expect_equal_tables(table, refTable)
 })
 
 test_that("Sphericity Assumptions table match", {
@@ -112,17 +113,14 @@ test_that("Sphericity Assumptions table match", {
   results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = AnovaRepeatedMeasures,
                             options = options, view = FALSE, quiet = TRUE)
   
-  table <- list("Assumption Checks", "Test of Sphericity", "case", "string", "",
-                "W", "number", "sf:4;dp:3", "Mauchly's W", "p", "number", "dp:3;p:.001",
-                "GG", "number", "sf:4;dp:3", "Greenhouse-Geisser <unicode>",
-                "HF", "number", "sf:4;dp:3", "Huynh-Feldt <unicode>", "Drink",
-                0.267241056560857, 6.95230186958065e-06, 0.577114320365429,
-                0.590744227025686, "TRUE", "Imagery", 0.662101262364057, 0.0244523015633462,
-                0.747440723179836, 0.796842044848417, "FALSE", "Drink <unicode> Imagery",
-                0.595043993796251, 0.435658665786593, 0.798397939908785, 0.97858783367844,
-                "FALSE", "complete")
+  refTable <- list("Drink", 0.267241056560857, 6.95230186958065e-06, 0.577114320365429,
+                    0.590744227025686, "TRUE", "Imagery", 0.662101262364057, 0.0244523015633462,
+                    0.747440723179836, 0.796842044848417, "FALSE", "Drink <unicode> Imagery",
+                    0.595043993796251, 0.435658665786593, 0.798397939908785, 0.97858783367844,
+                    "FALSE")
   
-  expect_equal_tables(results[["results"]][["assumptionsObj"]], table)
+  table <- results[["results"]][["assumptionsObj"]][["sphericity"]][["data"]]
+  expect_equal_tables(table, refTable)
   
 })
 
@@ -137,32 +135,15 @@ test_that("Post-hoc tests match", {
   results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = AnovaRepeatedMeasures,
                             options = options, view = FALSE, quiet = TRUE)
   
-  table <- list("Post Hoc Comparisons - Drink", "postHoc_Drink", "<i>Note.</i>",
-                "Cohen's d does not correct for multiple comparisons.", "(I)",
-                "", "string", "TRUE", "(J)", "", "string", "Mean Difference",
-                "number", "sf:4;dp:3", "SE", "number", "sf:4;dp:3", "t", "number",
-                "sf:4;dp:3", "Cohen's d", "Cohen's d", "number", "sf:4;dp:3",
-                "bonferroni", "p<sub>bonf</sub>", "number", "dp:3;p:.001", "complete",
-                "Beer", "Wine", 3.5, 2.84948954082566, 1.22829017262715, 0.274654032208925,
-                "", "", 0.703009687611414, "", "TRUE", "Beer", "Water", 8.31666666666667,
-                3.3351289023547, 2.49365674016224, 0.557598598355329, "", "",
-                0.0660988675936689, "", "FALSE", "Wine", "Water", 4.81666666666667,
-                1.1164571680934, 4.31424223366509, 0.964693890587566, "", "",
-                0.00112213065327869, "", "FALSE", "Post Hoc Comparisons - Imagery",
-                "postHoc_Imagery", "<i>Note.</i>", "Cohen's d does not correct for multiple comparisons.",
-                "(I)", "", "string", "TRUE", "(J)", "", "string", "Mean Difference",
-                "number", "sf:4;dp:3", "SE", "number", "sf:4;dp:3", "t", "number",
-                "sf:4;dp:3", "Cohen's d", "Cohen's d", "number", "sf:4;dp:3",
-                "bonferroni", "p<sub>bonf</sub>", "number", "dp:3;p:.001", "complete",
-                "Positive", "Neutral", 13.2666666666667, 1.11255461788524, 11.9245082024684,
-                2.66640109389732, "", "", 8.64627761186188e-10, "", "TRUE",
-                "Positive", "Negative", 26.85, 1.91462133431161, 14.0236607201777,
-                3.13578586637111, "", "", 5.36180351283324e-11, "", "FALSE",
-                "Neutral", "Negative", 13.5833333333333, 1.97985098972637, 6.86078568731614,
-                1.53411831758965, "", "", 4.54655986206157e-06, "", "FALSE",
-                "Post Hoc Tests")
+  refTable <- list("Beer", "Wine", 3.5, 2.84948954082566, 1.22829017262715, 0.274654032208925,
+                   "", "", 0.703009687611414, "", "TRUE", "Beer", "Water", 8.31666666666667,
+                   3.3351289023547, 2.49365674016224, 0.557598598355329, "", "",
+                   0.0660988675936689, "", "FALSE", "Wine", "Water", 4.81666666666667,
+                   1.1164571680934, 4.31424223366509, 0.964693890587566, "", "",
+                   0.00112213065327869, "", "FALSE")
   
-  expect_equal_tables(results[["results"]][["posthoc"]], table)
+  table <- results[["results"]][["posthoc"]][["collection"]][[1]][["data"]]
+  expect_equal_tables(table, refTable)
 })
 
 test_that("Descriptives Match", {
@@ -173,19 +154,17 @@ test_that("Descriptives Match", {
   results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = AnovaRepeatedMeasures,
                             options = options, view = FALSE, quiet = TRUE)
   
-  table <- list("Descriptives", ".Drink", "string", "Drink", "TRUE", ".Imagery",
-                "string", "Imagery", "TRUE", "Mean", "number", "sf:4;dp:3",
-                "SD", "number", "sf:4;dp:3", "N", "number", "dp:0", "Beer",
-                "Positive", 20, 21.05, 13.0079934938807, "TRUE", "Beer", "Neutral",
-                20, 10, 10.295630140987, "FALSE", "Beer", "Negative", 20, 4.45,
-                17.3037111930543, "FALSE", "Wine", "Positive", 20, 25.35, 6.73775692801786,
-                "TRUE", "Wine", "Neutral", 20, 11.65, 6.24310145596511, "FALSE",
-                "Wine", "Negative", 20, -12, 6.18146635643918, "FALSE", "Water",
-                "Positive", 20, 17.4, 7.07404447704126, "TRUE", "Water", "Neutral",
-                20, 2.35, 6.83855170878193, "FALSE", "Water", "Negative", 20,
-                -9.2, 6.8024763292882, "FALSE", "complete")
+  refTable <- list("Beer", "Positive", 20, 21.05, 13.0079934938807, "TRUE", "Beer",
+                   "Neutral", 20, 10, 10.295630140987, "FALSE", "Beer", "Negative",
+                   20, 4.45, 17.3037111930543, "FALSE", "Wine", "Positive", 20,
+                   25.35, 6.73775692801786, "TRUE", "Wine", "Neutral", 20, 11.65,
+                   6.24310145596511, "FALSE", "Wine", "Negative", 20, -12, 6.18146635643918,
+                   "FALSE", "Water", "Positive", 20, 17.4, 7.07404447704126, "TRUE",
+                   "Water", "Neutral", 20, 2.35, 6.83855170878193, "FALSE", "Water",
+                   "Negative", 20, -9.2, 6.8024763292882, "FALSE")
   
-  expect_equal_tables(results[["results"]][["descriptivesObj"]][["descriptivesTable"]], table)
+  table <- results[["results"]][["descriptivesObj"]][["descriptivesTable"]][["data"]]
+  expect_equal_tables(table, refTable)
 })
 
 
@@ -221,12 +200,12 @@ test_that("Between Subjects table match", {
                             dataset = AnovaMixedEffects, options = options,
                             view = FALSE, quiet = TRUE)
   
-  table <- list("gender", 0.200000000000001, 1, 0.200000000000001, 0.00473545746857648,
+  refTable <- list("gender", 0.200000000000001, 1, 0.200000000000001, 0.00473545746857648,
                 0.945895847556855, "TRUE", "Residual", 760.222222222222, 18,
                 42.2345679012346, "", "", "", "", "", "TRUE")
   
-  expect_equal_tables(results[["results"]][["betweenSubjectsEffects"]][["data"]],
-                      table)
+  table <- results[["results"]][["betweenSubjectsEffects"]][["data"]]
+  expect_equal_tables(table, refTable)
 })
 
 test_that("Homogeneity tests correct", {
@@ -238,7 +217,7 @@ test_that("Homogeneity tests correct", {
                             dataset = AnovaMixedEffects, options = options,
                             view = FALSE, quiet = TRUE)
   
-  table <- list("att_high", 1.13105200239091, 1, 18, 0.301611198987337, "TRUE",
+  refTable <- list("att_high", 1.13105200239091, 1, 18, 0.301611198987337, "TRUE",
                 "att_some", 0.598562976996908, 1, 18, 0.449169168742317, "FALSE",
                 "att_none", 1.94893878806521, 1, 18, 0.179682774529315, "FALSE",
                 "av_high", 0.101977401129945, 1, 18, 0.753145830077659, "FALSE",
@@ -248,8 +227,8 @@ test_that("Homogeneity tests correct", {
                 "ug_some", 0.123626373626372, 1, 18, 0.729216564281406, "FALSE",
                 "ug_none", 0.0819838056680181, 1, 18, 0.777896246470082, "FALSE")
   
-  expect_equal_tables(results[["results"]][["assumptionsObj"]][["levene"]][["data"]],
-                      table)
+  table <- results[["results"]][["assumptionsObj"]][["levene"]][["data"]]
+  expect_equal_tables(table, refTable)
 })
 
 test_that("(Repeated) Contrast table match", {
@@ -261,16 +240,12 @@ test_that("(Repeated) Contrast table match", {
                             dataset = AnovaMixedEffects, options = options,
                             view = FALSE, quiet = TRUE)
   
-  table <- list("Repeated Contrast - Looks", "RepeatedContrast_Looks", "Comparison",
-                "string", "Estimate", "number", "sf:4;dp:3", "SE", "number",
-                "sf:4;dp:3", "t", "number", "sf:4;dp:3", "p", "number", "dp:3;p:.001",
-                "Attractive - Average", 13.5333333333333, 0.521959482105862,
-                25.9279384651327, 6.94207506292919e-25, "TRUE", "Average - Ugly",
-                12.75, 0.521959482105862, 24.4271834061903, 5.30699268885104e-24,
-                "FALSE", "complete")
+  refTable <- list("Attractive - Average", 13.5333333333333, 0.521959482105862, 25.9279384651327,
+                   6.94207506292919e-25, "TRUE", "Average - Ugly", 12.75, 0.521959482105862,
+                   24.4271834061903, 5.30699268885104e-24, "FALSE")
   
-  expect_equal_tables(results[["results"]][["contrasts"]][["collection"]],
-                      table)
+  table <- results[["results"]][["contrasts"]][["collection"]][[1]][["data"]]
+  expect_equal_tables(table, refTable)
 })
 
 
@@ -296,13 +271,13 @@ test_that("Effect Size Calculation correct", {
                             options = options,
                             view = FALSE, quiet = TRUE)
   
-  table <- list("Animal", 83.1249999999999, 3, 27.7083333333333, 3.79380603096984,
+  refTable <- list("Animal", 83.1249999999999, 3, 27.7083333333333, 3.79380603096984,
                 0.0255702968630395, "TRUE", 1, 1, 1, 1, 1, 0.351479915433403,
                 0.351479915433403, 0.238785176929506, "Residual", 153.375, 21,
                 7.30357142857143, "", "", "", "", "", "TRUE")
-  
-  expect_equal_tables(results[["results"]][["withinSubjectsEffects"]][["data"]], 
-                      table)
+
+  table <- results[["results"]][["withinSubjectsEffects"]][["data"]]
+  expect_equal_tables(table, refTable)
 })
 
 
