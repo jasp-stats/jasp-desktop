@@ -91,12 +91,25 @@
       message <- paste0(openingMsg, '<ul>', message)
     }
   }
+
+  # See if we should add the variables causing the error (so far only for perfect correlations).
+  if (type == "varCovData" && ! is.null(args$variables) && length(args$variables) > 0) {
+    message <- paste0(message, "<ul><li> Note: The following pairs of variables: ")
+    for (i in 1:length(args$variables)) {
+      message <- paste0(message, args$variables[[i]][[1]], " and ", args$variables[[i]][[2]])
+      if (i < length(args$variables)) {
+        message <- paste0(message, "; ")
+      } else if (i == length(args$variables)) {
+        message <- paste0(message, " are perfectly correlated. Note that if you have specified a weights variable, the correlations are computed for the weighted variables.</li></ul>")
+      }
+    }
+  }
   
   return(message)
 }
 
 
-.hasErrors <- function(dataset, perform, type=NULL, custom=NULL, message='default', exitAnalysisIfErrors=FALSE, ...) {
+.hasErrors <- function(dataset, perform, type=NULL, custom=NULL, message='default', exitAnalysisIfErrors=FALSE, options=NULL, ...) {
   # Generic error checking function.
   # Args:
   #   dataset: Normal JASP dataset.
@@ -189,6 +202,11 @@
         if (paste0(type[[i]], '.target') %in% names(funcArgs) && ! paste0(type[[i]], '.target') %in% names(args)) {
           args[[ paste0(type[[i]], '.target') ]] <- .unv(names(dataset))
         } 
+        
+        # See if this check expects options and if they were provided
+        if (paste0(type[[i]], '.options') %in% names(funcArgs) && ! paste0(type[[i]], '.options') %in% names(args)) {
+          args[[ paste0(type[[i]], '.options') ]] <- options
+        }
         
         # Obtain an overview of required and optional check arguments.
         optArgs <- list()
@@ -489,12 +507,29 @@
   
   # Positive-definite?
   if (posdef && any(round(eigen(dataset)$values,10) <= 0)){
-    return(list(error=TRUE,reason="Matrix is not positive-definite"))
+    vars <- .checkForPerfectCorrelations(dataset)
+    return(list(error=TRUE,reason="Matrix is not positive-definite", vars=vars))
   }
   
   return(list(error=FALSE, reason = ""))
 }
 
+.checkForPerfectCorrelations <- function(dataset) {
+
+  vars <- list()
+  i <- 1
+  for (row in 1:nrow(dataset)) {
+    for (col in 1:ncol(dataset)) {
+      if (row >= col) { next }
+      if (dataset[row, col] == 1) {
+        pair <- list(.unvf(rownames(dataset)[row]), .unvf(colnames(dataset)[col]))
+        vars[i] <- list(pair)
+        i <- i + 1
+      }
+    }
+  }
+  return(vars)
+}
 
 .checkLimits <- function(dataset, target, min=-Inf, max=Inf) {
   # Check if the variable is between certain limits
@@ -519,7 +554,7 @@
   return(result)
 }
 
-.checkVarCovData <- function(dataset, target, corFun = NULL, grouping=NULL, corArgs = NULL, ...) {
+.checkVarCovData <- function(dataset, target, corFun = NULL, grouping=NULL, corArgs = NULL, options = NULL, ...) {
   # Check if the matrix returned by corFun is positive definite. 
   # internally uses .checkVarCovMatrix
   # Args:
@@ -542,10 +577,24 @@
     dataset <- split(dataset, groupingData)
   }
   for (d in seq_along(dataset)) {
-    cormat <- do.call(corFun, c(list(dataset[[d]]), corArgs))
+    
+    if (is.null(options$wlsWeights)) {
+      options$wlsWeights <- ""
+    }
+    
+    if (! options$wlsWeights == "") {
+        cormat <- dataset[[d]]
+        weights <- cormat[, which(colnames(cormat) %in% c(.v(options$wlsWeights)))]
+        cormat <- cormat[, -which(colnames(cormat) %in% c(.v(options$wlsWeights)))]
+        cormat <- stats::cov.wt(cormat, wt = weights, cor = TRUE)
+        cormat <- cormat$cov
+      } else {
+      cormat <- do.call(corFun, c(list(dataset[[d]]), corArgs))
+    }
     err <- .checkVarCovMatrix(cormat, nrow = FALSE, symm = FALSE)
     result$error <- err$error
-    result$message <- result$reason
+    result$message <- err$reason
+    result$errorVars <- err$vars
     if (result$error) # stop at first error
       break
   }

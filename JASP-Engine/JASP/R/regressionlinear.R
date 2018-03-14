@@ -455,6 +455,11 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	}
 
+	### check for errors
+	if (! is.null(independent.variables) && ! is.null(dependent.variable)) {
+	  errors <- .hasErrors(dataset, options = options, perform = perform, message = 'short', type = c('varCovData'), exitAnalysisIfErrors = TRUE, )
+	}
+	
 	################################################################################
 	#							 DESCRIPTIVES TABLE								   #
 	################################################################################
