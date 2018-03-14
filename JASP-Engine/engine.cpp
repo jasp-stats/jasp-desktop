@@ -383,8 +383,6 @@ void Engine::sendFilterResult(std::vector<bool> filterResult)
 
 void Engine::sendFilterError(std::string errorMessage)
 {
-	std::cout << "Gonna send sendFilterError "<< errorMessage <<"\n"<< std::flush;
-	
 	Json::Value filterResponse = Json::Value(Json::objectValue);
 
 	filterResponse["filterError"] = errorMessage;
@@ -476,7 +474,6 @@ void Engine::applyFilter()
 	}
 	catch(filterException & e)
 	{
-		std::cout << "filtererror caught: " << e.what() << std::endl << std::flush;
 		if(std::string(e.what()).length() > 0)
 			sendFilterError(e.what());
 		else
