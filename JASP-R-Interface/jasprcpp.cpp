@@ -151,7 +151,7 @@ int STDCALL jaspRCPP_runFilter(const char * filterCode, bool ** arrayPointer)
 	catch(std::exception e)
 	{
 #ifdef __WIN32__
-		lastFilterErrorMsg = "Your filter has a problem, it might be a misspelled column-name or a syntax-error, but sadly enough JASP cannot capture R's output on Windows to give a clearer message..";
+		lastFilterErrorMsg = "Your filter has a problem, it might be a misspelled columnname or a syntax-error of some kind.";
 #else
 		lastFilterErrorMsg =  std::string(e.what()) + "\n" + rinside_consoleLog->getConsoleOutput();
 #endif
