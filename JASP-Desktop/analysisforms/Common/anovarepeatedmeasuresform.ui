@@ -2064,14 +2064,27 @@
       </property>
       <item row="4" column="0">
        <widget class="QWidget" name="containerFriedman" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>0</width>
           <height>200</height>
          </size>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
-         <item>
+        <layout class="QGridLayout" name="gridLayout_26">
+         <item row="1" column="0">
+          <widget class="BoundCheckBox" name="connoverTest">
+           <property name="text">
+            <string>Connover's post hoc tests</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
           <widget class="QWidget" name="widget_25" native="true">
            <layout class="QGridLayout" name="gridLayout_35">
             <property name="leftMargin">
@@ -2116,7 +2129,7 @@
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>150</height>
+                <height>100</height>
                </size>
               </property>
               <property name="maximumSize">
@@ -2130,9 +2143,27 @@
            </layout>
           </widget>
          </item>
-         <item>
+         <item row="0" column="1">
           <widget class="QWidget" name="widget_27" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>200</height>
+            </size>
+           </property>
            <layout class="QVBoxLayout" name="verticalLayout">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>2</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>51</number>
+            </property>
             <item>
              <widget class="QWidget" name="widget_28" native="true">
               <property name="sizePolicy">
@@ -2140,6 +2171,12 @@
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
               </property>
               <layout class="QGridLayout" name="gridLayout_37">
                <property name="leftMargin">
@@ -2152,11 +2189,24 @@
                 <number>0</number>
                </property>
                <property name="bottomMargin">
-                <number>0</number>
+                <number>35</number>
                </property>
                <property name="verticalSpacing">
                 <number>0</number>
                </property>
+               <item row="0" column="1">
+                <widget class="QLabel" name="label_14">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>RM Factor</string>
+                 </property>
+                </widget>
+               </item>
                <item row="2" column="0">
                 <widget class="AssignButton" name="buttonAssignFriedmanWithin">
                  <property name="sizePolicy">
@@ -2182,19 +2232,6 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="1">
-                <widget class="QLabel" name="label_14">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>RM Factor</string>
-                 </property>
-                </widget>
-               </item>
                <item row="2" column="1">
                 <widget class="BoundListView" name="friedmanWithinFactor">
                  <property name="sizePolicy">
@@ -2202,6 +2239,12 @@
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>70</height>
+                  </size>
                  </property>
                  <property name="maximumSize">
                   <size>
@@ -2238,6 +2281,19 @@
                <property name="verticalSpacing">
                 <number>0</number>
                </property>
+               <item row="0" column="1">
+                <widget class="QLabel" name="label_19">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Optional grouping factor</string>
+                 </property>
+                </widget>
+               </item>
                <item row="1" column="1">
                 <widget class="BoundListView" name="friedmanBetweenFactor">
                  <property name="sizePolicy">
@@ -2279,19 +2335,6 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="1">
-                <widget class="QLabel" name="label_19">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Between Factor</string>
-                 </property>
-                </widget>
-               </item>
               </layout>
              </widget>
             </item>
@@ -2310,7 +2353,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Friedman/Durbin Test</string>
+         <string>Nonparametrics</string>
         </property>
        </widget>
       </item>

@@ -56,6 +56,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	stateSimpleEffects <- NULL
 	stateDescriptivesTable <- NULL
 	stateKruskal <- NULL
+	stateDunn <- NULL
 
 	if ( ! is.null(state)) {  # is there state?
 
@@ -131,11 +132,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		}
 		
 		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && 
-		    diff[['kruskalVariablesAssigned']] == FALSE && diff[['contrasts']] == FALSE) {
+		    diff[['kruskalVariablesAssigned']] == FALSE && diff[['contrasts']] == FALSE && diff[['dunnTest']]) {
 		  
-		  # old Kruskal table can be used
+		  # old Kruskal/Dunn table can be used
 		  
 		  stateKruskal <- state$stateKruskal
+		  stateDunn <- state$stateDunn
 		  
 		}
 	}
@@ -295,11 +297,24 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	  result <- .anovaKruskal(dataset, options, perform, status, singular, stateKruskal)
 	  results[["kruskal"]] <- result$result
 	  status <- result$status
-	  stateSimpleEffects <- result$stateKruskal
+	  stateKruskal <- result$stateKruskal
 	  
 	} else {
 	  
 	  results[["kruskal"]] <- stateKruskal
+	  
+	}
+	
+	if (is.null(stateDunn)) {
+	  
+	  result <- .anovaDunnTable(dataset, options, perform, model, status, stateDunn, singular)
+	  results[["dunn"]] <- list(collection=result$result, title = "Dunn's Post Hoc Tests")
+	  status <- result$status
+	  stateDunn <- result$stateDunn
+
+	} else {
+	  
+	  results[["dunn"]] <- stateDunn
 	  
 	}
 
@@ -355,7 +370,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		list(name="posthoc", type="collection", meta="table"),
 		list(name="marginalMeans", type="collection", meta="table"),
 		list(name="simpleEffects", type="table"),
-		list(name="kruskal", type="table")
+		list(name="kruskal", type="table"),
+		list(name="dunn", type="collection", meta="table")
 	)
 
 	if (length(descriptivesPlot) == 1) {
@@ -382,6 +398,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	state[["stateMarginalMeans"]] <- stateMarginalMeans
 	state[["stateSimpleEffects"]] <- stateSimpleEffects
 	state[["stateKruskal"]] <- stateKruskal
+	state[["stateDunn"]] <- stateDunn
 	
 	if (perform == "init" && status$ready && status$error == FALSE) {
 	  
@@ -1884,6 +1901,113 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   list(result=result, status=status, stateKruskal=stateKruskal)
 }
 
+.anovaDunnTable <- function(dataset, options, perform, model, status, stateDunn, singular) {
+  
+  if (options$dunnTest == FALSE)
+    return (list(result=NULL, status=status, stateDunn=NULL))
+  
+  dunnVariables <- unlist(options$kruskalVariablesAssigned)
+  dependentVar <- options$dependent
+  
+  dunnTables <- list()
+  stateDunn <- list()
+  
+  for (dunnVar in dunnVariables) {
+    
+    dunnTable <- list()
+    
+    dunnTable[["title"]] <- paste("Dunn's Post Hoc Comparisons - ", dunnVar, sep="")
+    dunnTable[["name"]] <- paste("dunnTest_", dunnVar, sep="")
+    
+    fields <- list(
+      list(name="(I)",title="", type="string", combine=TRUE),
+      list(name="(J)",title="", type="string"),
+      list(name="z", type="number", format="sf:4;dp:3"),
+      list(name="wA", title="W<sub>i</sub>", type="number", format="sf:4;dp:3"),
+      list(name="wB", title="W<sub>j</sub>", type="number", format="sf:4;dp:3"),
+      list(name="pval", title="p", type="number", format="dp:3;p:.001"),
+      list(name="bonferroni", title="p<sub>bonf</sub>", type="number", format="dp:3;p:.001"),
+      list(name="holm",title="p<sub>holm</sub>", type="number", format="dp:3;p:.001")
+    )
+    
+    dunnTable[["schema"]] <- list(fields=fields)
+    
+    rows <- list()
+    
+    if (perform == "run" && status$ready && status$error == FALSE)  {
+      
+      variableLevels <- levels(dataset[[ .v(dunnVar) ]])
+      nLevels <- length(variableLevels)
+      nPerGroup <- unname(unlist(table(dataset[[ .v(dunnVar) ]])))
+      bigN <- sum(nPerGroup)
+      
+      fullRanks <- rank(dataset[[ .v(dependentVar) ]])
+      ranksPerGroup <- by(fullRanks, dataset[[ .v(dunnVar) ]], list)
+      sumPerGroup <- unlist(lapply(ranksPerGroup, FUN = sum))
+      meanPerGroup <- unname(sumPerGroup/nPerGroup)
+      
+      tab <- table(unlist(ranksPerGroup))
+      nTies <- tab[tab > 1] 
+      nTies <- sum(nTies^3 - nTies)
+      
+      for (i in 1:nLevels) {
+        
+        for (j in .seqx(i+1, nLevels)) {
+          
+          row <- list("(I)"=variableLevels[[i]], "(J)"=variableLevels[[j]])
+
+          sigmaAB <- sqrt( ( (bigN * (bigN + 1))/12 - nTies/(12 * (bigN - 1)) ) * (1/nPerGroup[i] + 1/nPerGroup[j] )  )
+          zAB <- (meanPerGroup[i] - meanPerGroup[j]) / sigmaAB 
+          pValAB <- pnorm(abs(zAB), lower.tail = FALSE)
+          
+          row[["z"]] <- .clean(zAB)
+          row[["wA"]]  <- .clean(meanPerGroup[i])
+          row[["wB"]] <- .clean(meanPerGroup[j])
+          row[["pval"]] <- .clean(pValAB)
+          row[["bonferroni"]] <- .clean(pValAB)
+          row[["holm"]] <- .clean(pValAB)
+            
+          dunnTable[["status"]] <- "complete"
+          rows[[length(rows)+1]] <- row
+
+        }
+          
+        if (length(rows) == 0)  {
+          row[[".isNewGroup"]] <- TRUE
+        } else {
+          row[[".isNewGroup"]] <- FALSE
+        }
+      }
+  
+      allP <- unlist(lapply(rows, function(x) x$p))
+      allBonf <- p.adjust(allP, method = "bonferroni")
+      allHolm <- p.adjust(allP, method = "holm")
+      
+      for (k in 1:length(rows)) {
+        rows[[k]][['bonferroni']] <- .clean(allBonf[k])
+        rows[[k]][['holm']] <- .clean(allHolm[k])
+      }
+      
+    } else {
+      row <- list("(I)"= ".", "(J)"= ".")
+      row[["z"]] <- "."
+      row[["wA"]]  <- "."
+      row[["wB"]] <- "."
+      row[["pval"]] <- "."
+      row[["bonferroni"]] <- "."
+      row[["holm"]] <- "."
+      
+      rows[[length(rows)+1]] <- row
+    }
+
+    dunnTable[["data"]] <- rows
+    
+    dunnTables[[length(dunnTables)+1]] <- dunnTable
+    stateDunn <- dunnTables
+  }
+
+  list(result=dunnTables, status=status, stateDunn=stateDunn)
+}
 
 .anovaDescriptivesPlot <- function(dataset, options, perform, status, stateDescriptivesPlot) {
 

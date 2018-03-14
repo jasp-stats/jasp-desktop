@@ -53,6 +53,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	stateSimpleEffects <- NULL
 	stateSphericity <- NULL
 	stateFriedman <- NULL
+	stateConnover <- NULL
 	
 	if ( ! is.null(state)) {  # is there state?
 
@@ -111,12 +112,12 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		
 		if (is.list(diff) && diff[['withinModelTerms']] == FALSE && diff[['betweenModelTerms']] == FALSE && 
 		    diff[['repeatedMeasuresCells']] == FALSE && diff[['friedmanWithinFactor']] == FALSE && 
-		    diff[['friedmanBetweenFactor']] == FALSE && diff[['contrasts']] == FALSE) {
+		    diff[['friedmanBetweenFactor']] == FALSE && diff[['contrasts']] == FALSE && diff[['connoverTest']]) {
 		  
 		  # old Friedman table can be used
 		  
 		  stateFriedman <- state$stateFriedman
-		  
+		  stateConnover <- state$stateConnover
 		}
 	}
 
@@ -249,6 +250,19 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   	  results[["friedman"]] <- stateFriedman
   	  
   	}
+  	
+  	if (is.null(stateConnover)) {
+  	  
+  	  result <- .rmAnovaConnoverTable(dataset, options, perform, fullModel, status, stateConnover, singular)
+  	  results[["connover"]] <- list(collection=result$result, title = "Connover's Post Hoc Tests")
+  	  status <- result$status
+  	  stateConnover <- result$stateConnover
+  	  
+  	} else {
+  	  
+  	  results[["connover"]] <- stateConnover
+  	  
+  	}
 
 	## Create Assumption Check Object
 
@@ -326,7 +340,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		list(name="contrasts", type="collection", meta="table"),
 		list(name="posthoc", type="collection", meta="table"),
 		list(name="simpleEffects", type="table"),
-		list(name="friedman", type="table")
+		list(name="friedman", type="table"),
+		list(name="connover", type="collection", meta="table")
 	)
 
 	if (length(descriptivesPlot) == 1) {
@@ -356,7 +371,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	state[["stateSphericity"]] <- stateSphericity
 	state[["stateSimpleEffects"]] <- stateSimpleEffects
 	state[["stateFriedman"]] <- stateFriedman
-
+	state[["stateConnover"]] <- stateConnover
+	
 	keepDescriptivesPlot <- lapply(stateDescriptivesPlot, function(x)x$data)
 
 
@@ -2909,18 +2925,18 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 .rmAnovaFriedman <- function(dataset, fullModel, options, perform, status, singular, stateFriedman) {
   
-  if (identical(options$friedmanWithinFactor, ""))
+  if (length(options$friedmanWithinFactor) == 0)
     return (list(result=NULL, status=status))
 
-  withinTerm <- options$friedmanWithinFactor
+  withinTerms <- options$friedmanWithinFactor
   betweenTerm <- options$friedmanBetweenFactor
   
-  withinTerms.base64 <- .v(withinTerm)
+  withinTerms.base64 <- .v(withinTerms)
   betweenTerms.base64 <- .v(betweenTerm)
   
   result <- list()
   
-  if( !(withinTerm %in% unlist(options$withinModelTerms)) | 
+  if( any(!(withinTerms %in% unlist(options$withinModelTerms))) | 
       (betweenTerm %in% unlist(options$withinModelTerms)) ) {
     status$error <- TRUE
     status$errorMessage <- "Please specify appropriate terms for the Friedman/Durbin test."
@@ -2931,25 +2947,28 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   result[["name"]] <- paste("friedmanTable")
   
   fields <- list()
+  fields[[length(fields) + 1]] <- list(name="Factor", type="string")
   fields[[length(fields) + 1]] <- list(name="Chi-Squared", type="number", format="sf:4;dp:3")
   fields[[length(fields) + 1]] <- list(name="df", type="integer")
   fields[[length(fields) + 1]] <- list(name="p", type="number", format="dp:3;p:.001")
+  fields[[length(fields) + 1]] <- list(name="Kendall's W", type="number", format="sf:4;dp:3")
+  # fields[[length(fields) + 1]] <- list(name="Kendall's W corr.", type="number", format="sf:4;dp:3")
   
   footnotes <- .newFootnotes()
-  
+
   rows <- list()
-  
-  i <- 1
   
   if (perform == "run" && status$ready && status$error == FALSE)  {
     
-      longData <- fullModel$data$long
-      
-      if (identical(betweenTerm, "")) {
-        betweenTerms.base64 <- 'subject'
-      }
+    longData <- fullModel$data$long
+    
+    if (identical(betweenTerm, "")) {
+      betweenTerms.base64 <- 'subject'
+    }
 
-      groups <- as.factor(longData[, withinTerms.base64])
+    for (i in 1:length(withinTerms)) {
+      
+      groups <- as.factor(longData[, withinTerms.base64[i]])
       blocks <- as.factor(longData[, betweenTerms.base64])
       y <- longData[, 'dependent']
       
@@ -2962,45 +2981,60 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
       
       
       if (length(r) == 1 & length(k) == 1) {
-        rankIJ <- unlist(tapply(y, blocks, rank))
-        rankJ <- tapply(rankIJ, groups, sum)    
+        rankPerBlock <- unlist(tapply(y, blocks, rank))
+        rankPerGroup <- unlist(tapply(y, groups, rank))    
+
+        rankJ <- tapply(rankPerBlock, groups, sum)    
         
-        sumRanks <- sum(rankIJ^2)
+        sumRanks <- sum(rankPerBlock^2)
         cVal <- (b * k * (k + 1)^2) / 4
         dVal <- sum(rankJ^2) - r * cVal
         testStatOne <- (t - 1) / (sumRanks - cVal) * dVal
         testStatTwo <- (testStatOne / (t - 1)) / ((b * k - b - testStatOne) / (b * k - b - t + 1))
         
+        ## Code from PMCMRplus
         dfChi <- t - 1
         dfOneF <- k - 1
         dfTwoF <- b * k - b - t + 1 
         pValOne <- pchisq(testStatOne, dfChi, lower.tail = FALSE)
         pValTwo <- pf(testStatTwo, dfOneF, dfTwoF, lower.tail = FALSE)
         
+        # Kendall W
+        rankMatrixRM <- matrix(rankPerGroup, ncol = t)
+        rowSumsMatrix <- rowSums(rankMatrixRM)
+        nTies <- unlist(apply(rankMatrixRM, 2, function(x) {
+          tab <- table(x)
+          tab[tab > 1] }))
+        nTies <- sum(nTies^3 - nTies)
+        kendallW <- (sum(rowSumsMatrix^2) - sum(rowSumsMatrix)^2 / b) / (t^2 * (b^3 - b) / 12)
+        kendallWcor <-(sum(rowSumsMatrix^2) - sum(rowSumsMatrix)^2 / b) / ((t^2 * (b^3 - b) - t * nTies) / 12)
+        
         row <- list()
         
+        row[["Factor"]] <- withinTerms[i]
+        row[["Chi-Squared"]] <- .clean(testStatOne)
+        row[["df"]] <- .clean(dfChi)
+        row[["p"]] <- .clean(pValOne)
+        row[["Kendall's W"]] <- .clean(kendallWcor)
+        # row[["Kendall's W corr."]] <- .clean(kendallWcor)
+        
+                
         if (useDurbin) {
-          result[["title"]] <- paste("Durbin Test")
-          row[["Chi-Squared"]] <- .clean(testStatOne)
-          row[["df"]] <- .clean(dfChi)
-          row[["p"]] <-.clean(pValOne)
-          
+          result[["title"]] <- "Durbin Test"
+
           row[["F"]] <- .clean(testStatTwo)
           row[["df num"]] <- .clean(dfOneF)
           row[["df den"]] <- .clean(dfTwoF)
-          row[["p[F]"]] <-.clean(pValTwo)
+          row[["pF"]] <-.clean(pValTwo)
           
-          fields[[length(fields) + 1]] <- list(name="F", type="number", format="sf:4;dp:3")
-          fields[[length(fields) + 1]] <- list(name="df num", type="integer")
-          fields[[length(fields) + 1]] <- list(name="df den", type="integer")
-          fields[[length(fields) + 1]] <- list(name="p[F]", type="number", format="dp:3;p:.001")
+          if (i == 1) {
+            fields[[length(fields) + 1]] <- list(name="F", type="number", format="sf:4;dp:3")
+            fields[[length(fields) + 1]] <- list(name="df num", type="integer")
+            fields[[length(fields) + 1]] <- list(name="df den", type="integer")
+            fields[[length(fields) + 1]] <- list(name="pF", title="p<sub>F</sub>",type="number", format="dp:3;p:.001")
+          }
           
-        } else {
-
-          row[["Chi-Squared"]] <- .clean(testStatOne)
-          row[["df"]] <- .clean(dfChi)
-          row[["p"]] <-.clean(pValOne)
-        }
+        } 
         
         rows[[i]] <- row
         
@@ -3010,22 +3044,25 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
         result[["error"]] <- list(errorType="badData", errorMessage=status$errorMessage)
         
         row <- list()
+        row[["Factor"]] <- "."
         row[["Statistic"]] <- "."
         row[["df"]] <- "."
         row[["p"]] <- "."
         
         rows[[i]] <- row
       }
-      
-    } else {
-      
-      row <- list()
-      row[["Statistic"]] <- "."
-      row[["df"]] <- "."
-      row[["p"]] <- "."
-      
-      rows[[i]] <- row
+    }
+  } else {
+    
+    row <- list()
+    row[["Factor"]] <- "."
+    row[["Statistic"]] <- "."
+    row[["df"]] <- "."
+    row[["p"]] <- "."
+    
+    rows[[1]] <- row
   }
+
   
   result[["data"]] <- rows
   result[["status"]] <- "complete"
@@ -3046,6 +3083,126 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
   }
   
   list(result=result, status=status, stateFriedman=stateFriedman)
+}
+
+.rmAnovaConnoverTable <- function(dataset, options, perform, fullModel, status, stateConnover, singular) {
+  
+  if (options$connoverTest == FALSE | identical(options$friedmanWithinFactor, ""))
+    return (list(result=NULL, status=status, stateConnover=NULL))
+  
+  groupingVariables <- unlist(options$friedmanWithinFactor)
+  blockingVar <- ifelse( identical(options$friedmanBetweenFactor, ""), "subject", .v(options$friedmanBetweenFactor))
+  
+  connoverTables <- list()
+  stateConnover <- list()
+  
+  for (groupingVar in groupingVariables) {
+    
+    connoverTable <- list()
+    
+    connoverTable[["title"]] <- paste("Connover's Post Hoc Comparisons - ", groupingVar, sep="")
+    connoverTable[["name"]] <- paste("connoverTest_", groupingVar, sep="")
+    
+    fields <- list(
+      list(name="(I)",title="", type="string", combine=TRUE),
+      list(name="(J)",title="", type="string"),
+      list(name="t",  title="T-Stat", type="number", format="sf:4;dp:3"),
+      list(name="df", type="integer"),
+      list(name="wA", title="W<sub>i</sub>", type="number", format="sf:4;dp:3"),
+      list(name="wB", title="W<sub>j</sub>", type="number", format="sf:4;dp:3"),
+      list(name="pval", title="p", type="number", format="dp:3;p:.001"),
+      list(name="bonferroni", title="p<sub>bonf</sub>", type="number", format="dp:3;p:.001"),
+      list(name="holm",title="p<sub>holm</sub>", type="number", format="dp:3;p:.001")
+    )
+    
+    connoverTable[["schema"]] <- list(fields=fields)
+    
+    rows <- list()
+    
+    if (perform == "run" && status$ready && status$error == FALSE)  {
+
+      longData <- fullModel$data$long
+
+      groups <- as.factor(longData[, .v(groupingVar)])
+      blocks <- as.factor(longData[, blockingVar])
+      y <- longData[, 'dependent']
+
+      groupNames <- .unv(levels(groups))
+      ## Code from PMCMRplus
+      t <- nlevels(groups)
+      b <- nlevels(blocks)
+      r <- unique(table(groups))
+      k <- unique(table(blocks)) 
+      rij <- unlist(tapply(y, blocks, rank))
+      Rj <- unname(tapply(rij, groups, sum))
+      A <- sum(rij^2)
+      C <- (b * k * (k + 1)^2) / 4
+      D <- sum(Rj^2) - r * C
+      T1 <- (t - 1) / (A - C) * D
+      
+      denom <- sqrt(((A - C) * 2 * r) / (b * k - b - t + 1) *
+                      (1 - T1 / (b * (k -1))))
+      df <- b * k - b - t + 1
+
+      for (i in 1:t) {
+        
+        for (j in .seqx(i+1, t)) {
+          
+          row <- list("(I)"=groupNames[[i]], "(J)"=groupNames[[j]])
+         
+          diff <-  abs(Rj[i] - Rj[j]) 
+          tval <- diff / denom
+          pval <- 2 * pt(q = abs(tval), df = df, lower.tail=FALSE)
+          
+          row[["t"]] <- .clean(tval)
+          row[["wA"]]  <- .clean(Rj[i])
+          row[["wB"]] <- .clean(Rj[j])
+          row[["pval"]] <- .clean(pval)
+          row[["bonferroni"]] <- .clean(pval)
+          row[["holm"]] <- .clean(pval)
+          row[["df"]] <- .clean(df)
+
+          connoverTable[["status"]] <- "complete"
+          rows[[length(rows)+1]] <- row
+          
+        }
+        
+        if (length(rows) == 0)  {
+          row[[".isNewGroup"]] <- TRUE
+        } else {
+          row[[".isNewGroup"]] <- FALSE
+        }
+      }
+      
+      allP <- unlist(lapply(rows, function(x) x$p))
+      allBonf <- p.adjust(allP, method = "bonferroni")
+      allHolm <- p.adjust(allP, method = "holm")
+      
+      for (p in 1:length(rows)) {
+        rows[[p]][['bonferroni']] <- .clean(allBonf[p])
+        rows[[p]][['holm']] <- .clean(allHolm[p])
+      }
+      
+    } else {
+      row <- list("(I)"= ".", "(J)"= ".")
+      row[["t"]] <- "."
+      row[["wA"]]  <- "."
+      row[["wB"]] <- "."
+      row[["pval"]] <- "."
+      row[["bonferroni"]] <- "."
+      row[["holm"]] <- "."
+      row[["df"]] <- "."
+      
+      rows[[length(rows)+1]] <- row
+    }
+    
+    connoverTable[["data"]] <- rows
+    
+    connoverTables[[length(connoverTables)+1]] <- connoverTable
+    stateConnover <- connoverTables
+  }
+  
+  list(result=connoverTables, status=status, stateConnover=stateConnover)
 }
 
 .summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE, 
