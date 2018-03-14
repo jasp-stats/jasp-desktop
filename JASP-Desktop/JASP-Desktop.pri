@@ -361,6 +361,7 @@ OTHER_FILES += \
     $$PWD/html/js/jquery-ui-1.10.1.custom.js \
     $$PWD/html/js/main.js \
     $$PWD/html/js/table.js \
+    $$PWD/html/js/utils.js \
     $$PWD/html/js/tables.js \
     $$PWD/html/js/underscore-min.js \
     $$PWD/html/js/underscore.js \

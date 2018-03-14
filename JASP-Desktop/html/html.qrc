@@ -23,6 +23,7 @@
         <file>js/jquery-ui-1.10.1.custom.js</file>
         <file>js/jquery-ui-1.10.1.custom.min.js</file>
         <file>js/table.js</file>
+        <file>js/utils.js</file>
         <file>css/theme-spss.css</file>
         <file>css/theme-jasp.css</file>
         <file>css/images/copy.png</file>

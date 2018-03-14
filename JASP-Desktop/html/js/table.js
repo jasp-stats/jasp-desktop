@@ -68,7 +68,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		return optLatexCode !== null
 	},
 
-	_generateLatexCode: function(asdf) {
+	_generateLatexCode: function() {
 		/**
 		 * Generates the latex code for tables
 		 */
@@ -81,9 +81,15 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		let optOverTitle = this.model.get("overTitle")
 		let optFootnotes = this.model.get("footnotes");
 
-		let columnsDict = this._createColumns(optSchema.fields, optData);
+		let columnsDict = createColumns(optSchema.fields, optData);
 		let columnHeaders = columnsDict['columnHeaders'];
 		let columns = columnsDict['columns'];
+
+		let columnDefs = optSchema.fields;
+		let columnCount = columnDefs.length;
+
+		let rowData = optData;
+		let rowCount = rowData ? rowData.length : 0;
 
 		let cells = Array(columnCount);
 
@@ -96,14 +102,108 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 			let alignNumbers = !optCasesAcrossColumns;  // numbers can't be aligned across rows
 			let combine = columnDefs[colNo].combine;
 
-			cells[colNo] = this._formatColumn(column, type, format, alignNumbers, combine, false);
+			cells[colNo] = formatColumn(column, type, format, alignNumbers, combine, false);
+		}
+
+		var columnsInColumn = {}  // dictionary of counts
+		var columnsInsertedInColumn = {}
+		var maxColumnsInColumn = 0
+		var columnNames = []
+
+		for (var colNo = 0; colNo < columnCount; colNo++) {
+
+			var columnName = optSchema.fields[colNo].name
+			var subRowPos = columnName.indexOf("[")
+
+			if (subRowPos != -1)
+				columnName = columnName.substr(0, subRowPos)
+
+			columnNames[colNo] = columnName
+
+			var cic = columnsInColumn[columnName]
+
+			if (typeof cic == "undefined")
+				cic = 1
+			else
+				cic++
+
+			if (maxColumnsInColumn < cic)
+				maxColumnsInColumn = cic
+
+			columnsInColumn[columnName] = cic
+		}
+
+		if (maxColumnsInColumn > 1) {  // do columns need to be folded
+
+			var foldedColumnNames = _.uniq(columnNames)
+			var foldedCells = Array(foldedColumnNames.length)
+			var foldedColumnHeaders = Array(foldedColumnNames.length)
+
+			// fold the headers
+
+			for (var colNo = 0; colNo < foldedColumnNames.length; colNo++) {
+
+				var headerIndex = columnNames.indexOf(foldedColumnNames[colNo])
+				foldedColumnHeaders[colNo] = columnHeaders[headerIndex]
+			}
+
+			// fold the columns
+
+			for (var colNo = 0; colNo < columnNames.length; colNo++) {
+
+				var columnCells = cells[colNo]
+				var columnName = columnNames[colNo]
+				var targetIndex = foldedColumnNames.indexOf(columnName)
+				var column = foldedCells[targetIndex]
+				var cic = columnsInColumn[columnName]
+
+				if (typeof column == "undefined")
+					column = Array(columnCells.length * cic)
+
+				var offset = columnsInsertedInColumn[columnName]
+				if (typeof offset == "undefined")
+					offset = 0
+
+				for (var rowNo = 0; rowNo < columnCells.length; rowNo++) {
+
+					var cell = columnCells[rowNo]
+
+					if (offset == 0)
+						cell.isStartOfGroup = true
+					if (offset == cic - 1)
+						cell.isEndOfGroup = true
+
+					cell.span = maxColumnsInColumn / cic
+					column[rowNo * cic + offset] = cell
+
+				}
+
+				columnsInsertedInColumn[columnName] = offset + 1
+				foldedCells[targetIndex] = column
+			}
+
+			cells = foldedCells
+
+			columnHeaders = foldedColumnHeaders
+			columnCount = foldedColumnHeaders.length
+			rowCount *= maxColumnsInColumn
+		}
+
+		if (optCasesAcrossColumns) {
+
+			var swapped = swapRowsAndColumns(columnHeaders, cells, optOverTitle)
+			cells = swapped.columns
+			columnHeaders = swapped.columnHeaders;
+			rowCount = swapped.rowCount
+			columnCount = swapped.columnCount
 		}
 
 		console.log("----------------");
 		console.log(cells);
+		console.log(columnHeaders);
 		console.log("****************");
 
-
+		return {'headers': columnHeaders, 'cells': cells}
 	},
 
 	_getLatexCode: function() {
@@ -111,8 +211,6 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		 * Generates the latex code for the table
 		 */
 
-
-		this._generateLatexCode();
 		let optSchema = this.model.get("schema");
 		let optData = this.model.get("data");
 		let optTitle = this.model.get("title");
@@ -121,10 +219,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		let optOverTitle = this.model.get("overTitle")
 		let optFootnotes = this.model.get("footnotes");
 
-		console.log(optTitle);
-		console.log(optSchema);
-		console.log(optData);
-		console.log(optFootnotes);
+		let data = this._generateLatexCode();
 
 		// TODO:
 		//       2. handle all cases for tables
@@ -139,18 +234,20 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 			}
 		}
 
-		console.log(variable);
+		// console.log(variable);
 
 		let latexCode = "";
 		// title
 		latexCode += "\\begin{table}[h]\n\t\\caption{" + optTitle + "}\n";
 
 		// alignments - {lrrr}
-		let columns = optSchema.fields.length;
+		let columns = data.headers.length;
 		let alignments = '';
 
 		for (let col = 0 ; col < columns; ++col) {
-			if (optSchema.fields[col].title.trim() === "") {
+
+			// FIXME: 1. does not handle over title
+			if (col == 0 || data.headers[col].content === undefined || data.headers[col].content === '') {
 				alignments += 'l';
 			} else {
 				alignments += 'r';
@@ -160,64 +257,92 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		latexCode += "\t\\begin{tabular}{" + alignments + "}\n\t\t\\hline\n\t\t";
 
 		for (let i = 0; i < columns; ++i) {
-
-			let title = optSchema.fields[i].title;
-			if (title === undefined) {
-				title = optSchema.fields[i].name;
-			}
-
-			latexCode += title;
+			latexCode += (formatCellforLatex(data.headers[i].content) + ' ');
 			if (i !== columns - 1) {
-				latexCode += " & ";
+				latexCode += '& ';
 			}
 		}
 		latexCode += ' \\\\\n\t\t\\hline\n';
 
-		for (let row = 0; row < optData.length; ++row) {
+		// Find number of rows
+		let maxRows = 0;
+		for (let i = 0; i < columns ; ++i) {
+			let rows = data.cells[i].length;
+			if (rows > maxRows) {
+				maxRows = rows;
+			}
+		}
+
+		let firstColRow = 0;
+		let incrementFirstCol = true;
+		for (let r = 0; r < maxRows; ++r) {
+
 			latexCode += '\t\t';
+			if (incrementFirstCol) {
+				latexCode += (formatCellforLatex(data.cells[0][firstColRow].content));
+			}
+			latexCode += (' & ');
 
-			let columns = optSchema.fields.length;
+			let isStartOfGroup = data.cells[0][firstColRow]['isStartOfGroup'];
+			incrementFirstCol = !isStartOfGroup;
 
-			for (let col = 0; col < columns; ++col) {
+			if (isStartOfGroup === undefined || isStartOfGroup === false) {
+				incrementFirstCol = true;
+			} else {
+				incrementFirstCol = false;
+			}
 
-				// TODO: output should be formatted based on the value of "format" key
-				// TODO: subscripts and superscripts
-				// TODO: special characters - $, /, \, etc.
-				// TODO: Correlation matrix tables are a special case
-				// FIXME: convert NaN to ""
-
-				let formattedText = optData[row][optSchema.fields[col].name];
-				if (optSchema.fields[col].type === "number") {
-					formattedText = Number(Number(formattedText).toPrecision(4)).toString();
-					// formattedText = Number(Number.parseFloat(Number(formattedText)).toPrecision(4)).toString();
-				}
-				latexCode += formattedText;
-
-				if (col !== columns - 1) {
-					latexCode += " & ";
+			for (let c = 1; c < columns; ++c) {
+				latexCode += (formatCellforLatex(data.cells[c][r].content) + ' ');
+				if (c != columns - 1) {
+					latexCode += ('& ');
+				} else {
+					latexCode += ' \\\\\n';
 				}
 			}
-			latexCode += ' \\\\\n';
+
+			if (!incrementFirstCol) {
+				let isEndOfGroup = data.cells[columns - 1][r]['isEndOfGroup'];
+				if (isEndOfGroup) {
+					incrementFirstCol = true;
+				}
+			}
+
+			if (incrementFirstCol) {
+				firstColRow += 1;
+			}
 		}
+
+		// for (let row = 0; row < optData.length; ++row) {
+		// 	latexCode += '\t\t';
+		//
+		// 	let columns = optSchema.fields.length;
+		//
+		// 	for (let col = 0; col < columns; ++col) {
+		//
+		// 		// TODO: output should be formatted based on the value of "format" key
+		// 		// TODO: subscripts and superscripts
+		// 		// TODO: special characters - $, /, \, etc.
+		// 		// TODO: Correlation matrix tables are a special case
+		// 		// FIXME: convert NaN to ""
+		//
+		// 		let formattedText = optData[row][optSchema.fields[col].name];
+		// 		if (optSchema.fields[col].type === "number") {
+		// 			formattedText = Number(Number(formattedText).toPrecision(4)).toString();
+		// 			// formattedText = Number(Number.parseFloat(Number(formattedText)).toPrecision(4)).toString();
+		// 		}
+		// 		latexCode += formattedText;
+		//
+		// 		if (col !== columns - 1) {
+		// 			latexCode += " & ";
+		// 		}
+		// 	}
+		// 	latexCode += ' \\\\\n';
+		// }
 		latexCode += '\t\t\\hline\n\t\\end{tabular} \n';
 
-		// for (let i = 0; i < optSchema.fields.length; ++i) {
-		// 	if (optSchema.fields[i].name === variable) {
-		// 		continue;
-		// 	}
-		//
-		// 	let row = optSchema.fields[i].name;
-		// 	for (let j = 0; j < columns; ++j) {
-		// 		row += ' & ' + Number(Number.parseFloat(optData[j][optSchema.fields[i].name]).toPrecision(4)).toString();
-		// 	}
-		// 	row += ' \\\\\n\t\t';
-		//
-		// 	latexCode += row;
-		// }
-		// latexCode += "\\hline\n\t\\end{tabular} \\\\\n";
-
 		if (optFootnotes !== "" && optFootnotes !== null && optFootnotes.length !== 0) {
-			latexCode += "\t{\\footnotesize \\textit{Note.} " + optFootnotes.join() + '\n';
+			// latexCode += "\t{\\footnotesize \\textit{Note.} " + optFootnotes.join() + '\n';
 		}
 
 		latexCode += "\\end{table}"
@@ -1008,10 +1133,6 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 			cells[colNo] = this._formatColumn(column, type, format, alignNumbers, combine)
 		}
 
-		// console.log("----------------");
-		// console.log(cells);
-		// console.log("****************");
-
 		var columnsInColumn = {}  // dictionary of counts
 		var columnsInsertedInColumn = {}
 		var maxColumnsInColumn = 0
@@ -1091,6 +1212,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 			}
 
 			cells = foldedCells
+
 			columnHeaders = foldedColumnHeaders
 			columnCount = foldedColumnHeaders.length
 			rowCount *= maxColumnsInColumn
@@ -1115,7 +1237,6 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 			chunks.push('<table class="jasp-no-select">')
 		}
-
 
 
 		chunks.push('<thead>')
