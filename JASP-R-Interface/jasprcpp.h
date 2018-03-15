@@ -22,8 +22,6 @@
 #include <Rcpp.h>
 #include "jasprcpp_interface.h"
 
-
-
 // Calls From R
 Rcpp::DataFrame jaspRCPP_readFullDataSet();
 Rcpp::DataFrame jaspRCPP_readFilterDataSet();
@@ -38,6 +36,8 @@ SEXP jaspRCPP_requestStateFileNameSEXP();
 
 void jaspRCPP_returnDataFrame(Rcpp::DataFrame frame);
 void jaspRCPP_returnString(SEXP Message);
+void jaspRCPP_setFilterWarning(SEXP Message);
+void jaspRCPP_setFilterError(SEXP Message);
 
 // This is a copy of column.h!!!!
 enum ColumnType { ColumnTypeUnknown = -1, ColumnTypeScale = 0, ColumnTypeOrdinal, ColumnTypeNominal, ColumnTypeNominalText};
