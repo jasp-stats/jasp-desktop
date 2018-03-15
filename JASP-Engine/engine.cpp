@@ -467,10 +467,10 @@ void Engine::applyFilter()
 
 		sendFilterResult(filterResult);
 
-		std::string RConsoleOutput(jaspRCPP_getRConsoleOutput());
-		
-		if(RConsoleOutput.length() > 0)
-			sendFilterError(RConsoleOutput);
+		std::string RPossibleWarning = jaspRCPP_getLastFilterErrorMsg();
+
+		if(RPossibleWarning.length() > 0)
+			sendFilterError(RPossibleWarning);
 	}
 	catch(filterException & e)
 	{
