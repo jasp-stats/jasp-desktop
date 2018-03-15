@@ -20,8 +20,11 @@
 
 using namespace std;
 
-RInside *rinside;
+#ifndef __WIN32__
 RInside_ConsoleLogging *rinside_consoleLog;
+#endif
+
+RInside *rinside;
 ReadDataSetCB readDataSetCB;
 RunCallbackCB runCallbackCB;
 ReadADataSetCB readFullDataSetCB;
@@ -40,8 +43,10 @@ extern "C" {
 void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks* callbacks)
 {
 	rinside = new RInside();
+#ifndef __WIN32__
 	rinside_consoleLog = new RInside_ConsoleLogging();
 	rinside->set_callbacks(rinside_consoleLog);
+#endif
 
 	RInside &rInside = rinside->instance();
 
@@ -55,15 +60,17 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	readDataSetDescriptionCB				= callbacks->readDataSetDescriptionCB;
 	requestStateFileSourceCB				= callbacks->requestStateFileSourceCB;
 
-	rInside[".callbackNative"]				= Rcpp::InternalFunction(&jaspRCPP_callbackSEXP);
-	rInside[".readDatasetToEndNative"]		= Rcpp::InternalFunction(&jaspRCPP_readDataSetSEXP);
-	rInside[".readFullDatasetToEnd"]		= Rcpp::InternalFunction(&jaspRCPP_readFullDataSet);
-	rInside[".returnDataFrame"]				= Rcpp::InternalFunction(&jaspRCPP_returnDataFrame);
 	rInside[".returnString"]				= Rcpp::InternalFunction(&jaspRCPP_returnString);
+	rInside[".callbackNative"]				= Rcpp::InternalFunction(&jaspRCPP_callbackSEXP);
+	rInside[".setFilterError"]				= Rcpp::InternalFunction(&jaspRCPP_setFilterError);
+	rInside[".returnDataFrame"]				= Rcpp::InternalFunction(&jaspRCPP_returnDataFrame);
+	rInside[".setFilterWarning"]			= Rcpp::InternalFunction(&jaspRCPP_setFilterWarning);
+	rInside[".readFullDatasetToEnd"]		= Rcpp::InternalFunction(&jaspRCPP_readFullDataSet);
+	rInside[".readDatasetToEndNative"]		= Rcpp::InternalFunction(&jaspRCPP_readDataSetSEXP);
 	rInside[".readFilterDatasetToEnd"]		= Rcpp::InternalFunction(&jaspRCPP_readFilterDataSet);
 	rInside[".readDataSetHeaderNative"]		= Rcpp::InternalFunction(&jaspRCPP_readDataSetHeaderSEXP);
 	rInside[".requestTempFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestTempFileNameSEXP);
-	rInside[".requestTempRootNameNative"] = Rcpp::InternalFunction(&jaspRCPP_requestTempRootNameSEXP);
+	rInside[".requestTempRootNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestTempRootNameSEXP);
 	rInside[".requestStateFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestStateFileNameSEXP);
 
 	static const char *baseCitationFormat = "JASP Team (%s). JASP (Version %s) [Computer software].";
@@ -124,41 +131,33 @@ void STDCALL jaspRCPP_runScript(const char * scriptCode)
 
 int STDCALL jaspRCPP_runFilter(const char * filterCode, bool ** arrayPointer)
 {
-	rinside_consoleLog->clearConsoleBuffer();
+	lastFilterErrorMsg = "";
+	rinside->instance()[".filterCode"] = filterCode;
+	const std::string filterTryCatch("\
+		returnVal = 'null'; \
+		tryCatch(\
+			{ returnVal <- eval(parse(text=.filterCode)) }, \
+			warning	= function(w) { .setFilterWarning(toString(w$message))	}, \
+			error	= function(e) { .setFilterError(toString(e$message))	}\
+		); \
+		returnVal");
+	SEXP result = rinside->parseEval(filterTryCatch);
 
-	try
+
+	if(Rcpp::is<Rcpp::NumericVector>(result) || Rcpp::is<Rcpp::LogicalVector>(result))
 	{
-		SEXP result = rinside->parseEval(filterCode);
+		Rcpp::NumericVector vec(result);
 
-		if(Rf_isVector(result))
-		{
-			Rcpp::NumericVector vec(result);
+		if(vec.size() == 0)
+			return 0;
 
-			if(vec.size() == 0)
-				return 0;
+		(*arrayPointer) = (bool*)malloc(vec.size() * sizeof(bool));
 
-			(*arrayPointer) = (bool*)malloc(vec.size() * sizeof(bool));
+		for(int i=0; i<vec.size(); i++)
+			(*arrayPointer)[i] = vec[i] == 1;
 
-			for(int i=0; i<vec.size(); i++)
-				(*arrayPointer)[i] = vec[i] == 1;
-
-			return vec.size();
-		}
-
-		lastFilterErrorMsg =  "Filter did not return a logical vector";
-		return -1;
+		return vec.size();
 	}
-	catch(std::exception e)
-	{
-#ifdef __WIN32__
-		lastFilterErrorMsg = "Your filter has a problem, it might be a misspelled column-name or a syntax-error, but sadly enough JASP cannot capture R's output on Windows to give a clearer message..";
-#else
-		lastFilterErrorMsg =  std::string(e.what()) + "\n" + rinside_consoleLog->getConsoleOutput();
-#endif
-		return -1;
-	}
-
-	lastFilterErrorMsg = "something went wrong with the filter but it is unclear what";
 
 	return -1;
 }
@@ -219,12 +218,14 @@ const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
 
 } // extern "C"
 
+#ifndef __WIN32__
 const char* STDCALL jaspRCPP_getRConsoleOutput()
 {
 	static std::string output;
 	output = rinside_consoleLog->getConsoleOutput();
 	return output.c_str();
 }
+#endif
 
 SEXP jaspRCPP_requestTempFileNameSEXP(SEXP extension)
 {
@@ -307,6 +308,16 @@ void jaspRCPP_returnDataFrame(Rcpp::DataFrame frame)
 void jaspRCPP_returnString(SEXP Message)
 {
 	std::cout << "A message from R: " << (std::string)((Rcpp::String)Message) << "\n" << std::flush;
+}
+
+void jaspRCPP_setFilterWarning(SEXP Message)
+{
+	lastFilterErrorMsg = "Warning: " + Rcpp::as<std::string>(Message);
+}
+
+void jaspRCPP_setFilterError(SEXP Message)
+{
+	lastFilterErrorMsg = "Error: " + Rcpp::as<std::string>(Message);
 }
 
 RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns, int *colMax)
