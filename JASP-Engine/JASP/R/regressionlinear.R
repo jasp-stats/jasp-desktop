@@ -457,7 +457,16 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	### check for errors
 	if (! is.null(independent.variables) && ! is.null(dependent.variable)) {
-	  errors <- .hasErrors(dataset, options = options, perform = perform, message = 'short', type = c('varCovData'), exitAnalysisIfErrors = TRUE, )
+	  if (! options$wlsWeights == "") {
+	    covwt <- function(...) return(stats::cov.wt(..., wt=dataset[[.v(options[["wlsWeights"]])]])$cov)
+	    errors <- .hasErrors(dataset[, -which(colnames(dataset) %in% c(.v(options$wlsWeights)))], perform = perform, message = 'short', type = c('varCovData'), exitAnalysisIfErrors = TRUE, 
+	                         varCovData.corFun = covwt)
+	  }
+	  else {
+	    covnwt <- stats::cov
+	    errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('varCovData'), exitAnalysisIfErrors = TRUE,
+	                         varCovData.corFun = covnwt)
+	  }
 	}
 	
 	################################################################################

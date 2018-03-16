@@ -318,7 +318,8 @@ test_that("Analysis handles errors", {
     list(components="debCollin3", isNuisance=FALSE)
   )
   results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
-  expect_equal(results[["results"]], list(title = "error", error = 1, errorMessage = "The following problem(s) occurred while running the analysis:<ul><li>The variance-covariance matrix of the supplied data is not positive-definite. Please check if variables have many missings observations or are collinear</li></ul><ul><li> Note: The following pairs of variables: debCollin2 and debCollin3 are perfectly correlated. Note that if you have specified a weights variable, the correlations are computed for the weighted variables.</li></ul>"))
+  results$results$errorMessage
+  expect_equal(results[["results"]], list(title = "error", error = 1, errorMessage = "The following problem(s) occurred while running the analysis:<ul><li>The variance-covariance matrix of the supplied data is not positive-definite. Please check if variables have many missings observations or are collinear</li></ul><ul><li> Note: The following pair(s) of variables is/are perfectly correlated: debCollin2 and debCollin3. Note that if you have specified a weights variable, the correlations are computed for the weighted variables.</li></ul>"))
   
   options <- jasptools::analysisOptions("RegressionLinear")
   options$dependent <- "contNormal"

@@ -93,14 +93,22 @@
   }
 
   # See if we should add the variables causing the error (so far only for perfect correlations).
-  if (type == "varCovData" && ! is.null(args$variables) && length(args$variables) > 0) {
-    message <- paste0(message, "<ul><li> Note: The following pairs of variables: ")
-    for (i in 1:length(args$variables)) {
-      message <- paste0(message, args$variables[[i]][[1]], " and ", args$variables[[i]][[2]])
-      if (i < length(args$variables)) {
-        message <- paste0(message, "; ")
-      } else if (i == length(args$variables)) {
-        message <- paste0(message, " are perfectly correlated. Note that if you have specified a weights variable, the correlations are computed for the weighted variables.</li></ul>")
+  if (type == "varCovData" && ! is.null(args$variables)) {
+    nPairs <- length(args$variables$var1) # Could take either var1 or var2 as length is identical
+    if (nPairs > 0) {
+      if (nPairs > 10) {
+        msg<- sprintf("<ul><li> Note: There are %d pairs of variables perfectly correlated. The first 10 are: ", nPairs)
+      } else {
+        msg<- "<ul><li> Note: The following pair(s) of variables is/are perfectly correlated: "
+      }
+      message <- paste0(message, msg)
+      for (i in seq_len(nPairs)) {
+        message <- paste0(message, args$variables$var1[[i]], " and ", args$variables$var2[[i]])
+        if (i < length(args$variables$var1)) {
+          message <- paste0(message, "; ")
+        } else if (i == length(args$variables$var1)) {
+          message <- paste0(message, ". Note that if you have specified a weights variable, the correlations are computed for the weighted variables.</li></ul>")
+        }
       }
     }
   }
@@ -109,7 +117,7 @@
 }
 
 
-.hasErrors <- function(dataset, perform, type=NULL, custom=NULL, message='default', exitAnalysisIfErrors=FALSE, options=NULL, ...) {
+.hasErrors <- function(dataset, perform, type=NULL, custom=NULL, message='default', exitAnalysisIfErrors=FALSE, ...) {
   # Generic error checking function.
   # Args:
   #   dataset: Normal JASP dataset.
@@ -515,19 +523,16 @@
 }
 
 .checkForPerfectCorrelations <- function(dataset) {
-
-  vars <- list()
-  i <- 1
-  for (row in 1:nrow(dataset)) {
-    for (col in 1:ncol(dataset)) {
-      if (row >= col) { next }
-      if (dataset[row, col] == 1) {
-        pair <- list(.unvf(rownames(dataset)[row]), .unvf(colnames(dataset)[col]))
-        vars[i] <- list(pair)
-        i <- i + 1
-      }
-    }
+  
+  # if not already a correlation matrix
+  if (! any(diag(dataset) == 1)) {
+    dataset <- cov2cor(dataset)
   }
+  idx <- which(lower.tri(dataset, diag = FALSE), arr.ind = TRUE) # index for the lower triangle of the matrix
+  bad <- (1 - abs(dataset[idx])) <= sqrt(.Machine$double.eps)    # check if correlations are awfully close to -1 or 1
+  pairsIdxCol <- idx[bad, , drop = FALSE][, "col"] # index for colnames of pairs of highly correlated variables
+  pairsIdxRow <- idx[bad, , drop = FALSE][, "row"] # index for rownames of pairs of highly correlated variables
+  vars <- list("var1" = .unvf(colnames(dataset)[pairsIdxCol]), "var2" = .unvf(rownames(dataset)[pairsIdxRow]))
   return(vars)
 }
 
@@ -554,7 +559,7 @@
   return(result)
 }
 
-.checkVarCovData <- function(dataset, target, corFun = NULL, grouping=NULL, corArgs = NULL, options = NULL, ...) {
+.checkVarCovData <- function(dataset, target, corFun = NULL, grouping=NULL, corArgs = NULL, ...) {
   # Check if the matrix returned by corFun is positive definite. 
   # internally uses .checkVarCovMatrix
   # Args:
@@ -578,19 +583,7 @@
   }
   for (d in seq_along(dataset)) {
     
-    if (is.null(options$wlsWeights)) {
-      options$wlsWeights <- ""
-    }
-    
-    if (! options$wlsWeights == "") {
-        cormat <- dataset[[d]]
-        weights <- cormat[, which(colnames(cormat) %in% c(.v(options$wlsWeights)))]
-        cormat <- cormat[, -which(colnames(cormat) %in% c(.v(options$wlsWeights)))]
-        cormat <- stats::cov.wt(cormat, wt = weights, cor = TRUE)
-        cormat <- cormat$cov
-      } else {
-      cormat <- do.call(corFun, c(list(dataset[[d]]), corArgs))
-    }
+    cormat <- do.call(corFun, c(list(dataset[[d]]), corArgs))
     err <- .checkVarCovMatrix(cormat, nrow = FALSE, symm = FALSE)
     result$error <- err$error
     result$message <- err$reason
