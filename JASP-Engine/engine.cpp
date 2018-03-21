@@ -508,7 +508,7 @@ void Engine::evalRCode()
 	} 
 	else
 	{
-		std::cout << "R Code yielded result:\n " << rCodeResult << std::endl << std::flush;
+		// std::cout << "R Code yielded result:\n " << rCodeResult << std::endl << std::flush;
 		sendRCodeResult(rCodeResult);
 	}	
 }

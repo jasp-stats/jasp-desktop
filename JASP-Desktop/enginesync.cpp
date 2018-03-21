@@ -257,6 +257,7 @@ void EngineSync::process()
 				//Do some RCode magic
 				if (json.get("rCodeResult", Json::Value(Json::intValue)).isString()) {
 					std::cout << "R Code returned: " << json.get("rCodeResult", "") << std::flush;
+					emit rCodeReturned(QString::fromStdString(json.get("rCodeResult", "").asString()));
 				} 
 				
 				if (json.get("rCodeError", Json::Value(Json::intValue)).isString()) {
