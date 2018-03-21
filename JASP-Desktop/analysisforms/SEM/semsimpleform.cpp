@@ -18,15 +18,15 @@
 
 #include "semsimpleform.h"
 #include "ui_semsimpleform.h"
-
 #include "widgets/itemmodelselectvariable.h"
 
-SEMSimpleForm::SEMSimpleForm(QWidget *parent) :
+SEMSimpleForm::SEMSimpleForm(MainWindow *parent) :
 	AnalysisForm("SEMSimpleForm", parent),
-	ui(new Ui::SEMSimpleForm)
+	ui(new Ui::SEMSimpleForm),
+	_mainWindow(parent)
 {
 	ui->setupUi(this);
-
+	
 	ItemModelSelectVariable *model = new ItemModelSelectVariable(this);
 	model->setSource(&_availableVariablesModel);
 
@@ -35,9 +35,45 @@ SEMSimpleForm::SEMSimpleForm(QWidget *parent) :
 	ui->containerStatistics->hide();
 	ui->containerOptions->hide();
 	ui->containerAdvanced->hide();
+	
+	
+	
+	connect(ui->model, &BoundTextEdit::applyRequest, this, &SEMSimpleForm::checkSyntax);
+	connect(_mainWindow->_engineSync, &EngineSync::rCodeReturned, ui->model, &BoundTextEdit::applyModel);
+	
 }
 
 SEMSimpleForm::~SEMSimpleForm()
 {
 	delete ui;
+}
+
+void SEMSimpleForm::checkSyntax()
+{
+	// create an R vector of available column names
+	QString colNames = "c(";
+	bool firstCol = true;
+	QList<QString> vars = _availableVariablesModel.allVariables().asQList();
+	for (QString &var : vars)
+	{
+		if (!firstCol)
+			colNames.append(',');
+		colNames.append('\'').append(var.replace("'", "\\u0027")).append('\'');
+		firstCol = false;
+	}
+	colNames.append(')');
+	
+	// Get lavaan model code
+	QString lavaanCode = ui->model->toPlainText();
+	lavaanCode.replace("'", "\\u0027"); // replace ' with its unicode counterpart
+	
+	// Create R code string	
+	QString checkCode = "checkLavaanModel('";
+	checkCode
+		.append(lavaanCode)
+		.append("', ")
+		.append(colNames)
+		.append(")");
+	
+	_mainWindow->_engineSync->sendRCode(checkCode);
 }

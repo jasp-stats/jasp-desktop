@@ -30,11 +30,12 @@ BoundTextEdit::BoundTextEdit(QWidget *parent) :
 	_model = new TextModelLavaan(this);
 	setDocument(_model);
 
-	connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(cursorPositionChangedHandler()));
-	connect(_model, SIGNAL(errorStateChanged()), this, SLOT(errorStateChangedHandler()));
-	connect(_model, SIGNAL(contentsChanged()), this, SLOT(contentsChangedHandler()));
+	connect(this,	&BoundTextEdit::cursorPositionChanged,	this, &BoundTextEdit::cursorPositionChangedHandler);
+	connect(_model, &TextModelLavaan::errorStateChanged,	this, &BoundTextEdit::errorStateChangedHandler);
+	connect(_model, &TextModelLavaan::contentsChanged,		this, &BoundTextEdit::contentsChangedHandler);
 
 	this->setLineWrapMode(QTextEdit::NoWrap);
+	this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 	QFont font("Monospace");
 	font.setStyleHint(QFont::Monospace);
@@ -74,6 +75,20 @@ void BoundTextEdit::populateFromOption(Option *option)
 	this->setPlainText(QString::fromStdString(text->value()));
 }
 
+void BoundTextEdit::applyModel(QString result)
+{
+	std::cout << "result of length " << result.length() << ": " << result.toStdString() << std::flush;
+	if (result.length() == 0) {
+		_status->setStyleSheet(_okStylesheet);
+		_status->setText(_okMessage);
+		_model->apply();
+		_applied = true;
+	} else {
+		_status->setStyleSheet(_errorStylesheet);
+		_status->setText(result);
+	}
+}
+
 void BoundTextEdit::cursorPositionChangedHandler()
 {
 	QTextCursor cursor = textCursor();
@@ -110,9 +125,7 @@ void BoundTextEdit::keyPressEvent(QKeyEvent *event)
 		int modifiers = Qt::ControlModifier | Qt::MetaModifier;
 		if ((event->modifiers() & modifiers) && event->key() == Qt::Key_Return)
 		{
-			_applied = true;
-			_status->setText(_okMessage);
-			_model->apply();
+			emit applyRequest();
 		}
 		else
 		{
@@ -168,6 +181,6 @@ void BoundTextEdit::insertFromMimeData(const QMimeData *source)
 {
 	QTextEdit::insertFromMimeData(source);
 
-	if (_model != NULL)
-		_model->checkEverything();
+//	if (_model != NULL)
+//		_model->checkEverything();
 }

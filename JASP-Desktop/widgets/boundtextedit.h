@@ -36,8 +36,10 @@ public:
 	void populateFromOption(Option *option);
 
 signals:
-
+	void applyRequest();
+	
 public slots:
+	void applyModel(QString result);
 
 private slots:
 	void cursorPositionChangedHandler();
