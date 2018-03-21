@@ -69,10 +69,15 @@ private:
 	TableModelVariablesAssigned *_seperateLinesTableModel;
 	TableModelVariablesAssigned *_seperatePlotsTableModel;
 
-    	TableModelVariablesAvailable *_simpleEffectsAvailableTableModel;
-    	TableModelVariablesAssigned *_simpleFactorTableModel;
-    	TableModelVariablesAssigned *_moderatorOneTableModel;
-    	TableModelVariablesAssigned *_moderatorTwoTableModel;
+	TableModelVariablesAvailable *_simpleEffectsAvailableTableModel;
+	TableModelVariablesAssigned *_simpleFactorTableModel;
+	TableModelVariablesAssigned *_moderatorOneTableModel;
+	TableModelVariablesAssigned *_moderatorTwoTableModel;
+	
+	TableModelVariablesAvailable *_friedmanAvailableTableModel;
+	TableModelVariablesAssigned *_friedmanWithinTableModel;
+	TableModelVariablesAssigned *_friedmanBetweenTableModel;
+
 
 };
 

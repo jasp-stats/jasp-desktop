@@ -99,6 +99,14 @@
 			"type": "List"
 		},
 		{
+			"name": "kruskalVariablesAssigned",
+			"type": "Terms"
+		},
+		{
+			"name": "dunnTest",
+			"type": "Boolean"
+		},
+		{
 			"name": "descriptives",
 			"type": "Boolean"
 		},

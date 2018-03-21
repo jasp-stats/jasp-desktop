@@ -153,6 +153,18 @@
 			"default": false
 		},
 		{
+			"name": "friedmanWithinFactor",
+			"type": "Variables"
+		},
+		{
+			"name": "friedmanBetweenFactor",
+			"type": "Variable"
+		},
+		{
+			"name": "connoverTest",
+			"type": "Boolean"
+		},
+		{
 			"name": "descriptives",
 			"type": "Boolean"
 		},
