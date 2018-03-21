@@ -6,41 +6,6 @@ context("Repeated Measures ANOVA")
 #    - Plots
 #    - Contrasts apart from 'repeated'
 
-# Create data:
-AnovaRepeatedMeasures <- data.frame(
-  beerpos = c(1, 43, 15, 40, 8, 17, 30, 34, 34, 26, 1, 7, 22, 30, 40, 15, 20, 9, 14, 15),
-  beerneg = c(6, 30, 15, 30, 12, 17, 21, 23, 20, 27, -19, -18, -8, -6, -6, -9, -17, -12, -11, -6),
-  beerneut = c(5, 8, 12, 19, 8, 15, 21, 28, 26, 27, -10, 6, 4, 3, 0, 4, 9, -5, 7, 13),
-  winepos = c(38, 20, 20, 28, 11, 17, 15, 27, 24, 23, 28, 26, 34, 32, 24, 29, 30, 24, 34, 23),
-  wineneg = c(-5, -12, -15, -4, -2, -6, -2, -7, -10, -15, -13, -16, -23, -22, -9, -18, -17, -15, -14, -15),
-  wineneut = c(4, 4, 6, 0, 6, 6, 16, 7, 12, 14, 13, 19, 14, 21, 19, 7, 12, 18, 20, 15),
-  waterpos = c(10, 9, 6, 20, 27, 9, 19, 12, 12, 21, 33, 23, 21, 17, 15, 13, 16, 17, 19, 29),
-  waterneg = c(-14, -10, -16, -10, 5, -6, -20, -12, -9, -6, -2, -17, -19, -11, -10, -17, -4, -4, -1, -1),
-  waterneu = c(-2, -13, 1, 2, -5, -13, 3, 2, 4, 0, 9, 5, 0, 4, 2, 8, 10, 8, 12, 10),
-  participant = c(1, 12, 14, 15, 16, 17, 18, 19, 20, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13))
-
-
-AnovaMixedEffects <- data.frame(
-  participant = 1:20,
-  gender = c("Female", "Female", "Female", "Female", "Female", "Female", "Female", "Female", "Female", "Female", "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male"),
-  att_high = c(86, 91, 89, 89, 80, 80, 89, 100, 90, 89, 89, 84, 99, 86, 89, 80, 82, 97, 95, 95),
-  av_high = c(84, 83, 88, 69, 81, 84, 85, 94, 74, 86, 91, 90, 100, 89, 87, 81, 92, 69, 92, 93),
-  ug_high = c(67, 53, 48, 58, 57, 51, 61, 56, 54, 63, 93, 85, 89, 83, 80, 79, 85, 87, 90, 96),
-  att_some = c(88, 83, 99, 86, 88, 96, 87, 86, 92, 80, 88, 95, 80, 86, 83, 86, 81, 95, 98, 79),
-  av_some = c(69, 74, 70, 77, 71, 63, 79, 71, 71, 73, 65, 70, 79, 74, 74, 59, 66, 72, 64, 66),
-  ug_some = c(50, 48, 48, 40, 50, 42, 44, 54, 58, 49, 54, 60, 53, 58, 43, 47, 47, 51, 53, 46),
-  att_none = c(97, 86, 90, 87, 82, 92, 86, 84, 78, 91, 55, 50, 51, 52, 58, 51, 50, 45, 54, 52),
-  av_none = c(48, 50, 45, 47, 50, 48, 50, 54, 38, 48, 48, 44, 48, 48, 50, 47, 45, 48, 53, 39),
-  ug_none = c(47, 46, 48, 53, 45, 43, 45, 47, 45, 39, 52, 45, 44, 47, 48, 40, 47, 46, 45, 47))
-
-
-AnovaRepeatedMeasuresOneWay <- data.frame(
-  Celebrity = 1:8, Stick.Insect = c(8, 9, 6, 5, 8, 7, 10, 12),
-  Kangaroo.Testicle = c(7, 5, 2, 3, 4, 5, 2, 6),
-  Fish.Eye = c(1, 2, 3, 1, 5, 6, 7, 8),
-  Witchetty.Grub = c(6, 5, 8, 9, 8, 7, 2, 1)
-)
-
 initOpts <- function(){
   options <- jasptools::analysisOptions("AnovaRepeatedMeasures")
   
@@ -65,7 +30,7 @@ test_that("Within subjects table results match", {
   options <- initOpts()
   options$sphericityCorrections <- TRUE
 
-  results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = AnovaRepeatedMeasures,
+  results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
                             options = options, view = FALSE, quiet = TRUE)
   refTable <- list("Drink", "None", 2092.34444444444, 2, 1046.17222222222, 5.10598105687077,
                 0.0108629307294978, "TRUE", "FALSE", 1, 1, 1, 1, 1, "Drink",
@@ -110,7 +75,7 @@ test_that("Sphericity Assumptions table match", {
   
   options$sphericityTests <- TRUE
   
-  results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = AnovaRepeatedMeasures,
+  results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
                             options = options, view = FALSE, quiet = TRUE)
   
   refTable <- list("Drink", 0.267241056560857, 6.95230186958065e-06, 0.577114320365429,
@@ -132,7 +97,7 @@ test_that("Post-hoc tests match", {
   options$postHocTestsBonferroni <- TRUE
   options$postHocTestPooledError <- FALSE
   
-  results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = AnovaRepeatedMeasures,
+  results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
                             options = options, view = FALSE, quiet = TRUE)
   
   refTable <- list("Beer", "Wine", 3.5, 2.84948954082566, 1.22829017262715, 0.274654032208925,
@@ -151,7 +116,7 @@ test_that("Descriptives Match", {
   
   options$descriptives <- TRUE
   
-  results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = AnovaRepeatedMeasures,
+  results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
                             options = options, view = FALSE, quiet = TRUE)
   
   refTable <- list("Beer", "Positive", 20, 21.05, 13.0079934938807, "TRUE", "Beer",
@@ -197,7 +162,7 @@ test_that("Between Subjects table match", {
   options <- initOpts()
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures",
-                            dataset = AnovaMixedEffects, options = options,
+                            dataset = "AnovaMixedEffects.csv", options = options,
                             view = FALSE, quiet = TRUE)
   
   refTable <- list("gender", 0.200000000000001, 1, 0.200000000000001, 0.00473545746857648,
@@ -214,7 +179,7 @@ test_that("Homogeneity tests correct", {
   options$homogeneityTests <- TRUE
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures",
-                            dataset = AnovaMixedEffects, options = options,
+                            dataset = "AnovaMixedEffects.csv", options = options,
                             view = FALSE, quiet = TRUE)
   
   refTable <- list("att_high", 1.13105200239091, 1, 18, 0.301611198987337, "TRUE",
@@ -237,7 +202,7 @@ test_that("(Repeated) Contrast table match", {
   options$contrasts <- list(list(contrast = "repeated", variable = "Looks"))
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures",
-                            dataset = AnovaMixedEffects, options = options,
+                            dataset = "AnovaMixedEffects.csv", options = options,
                             view = FALSE, quiet = TRUE)
   
   refTable <- list("Attractive - Average", 13.5333333333333, 0.521959482105862, 25.9279384651327,
@@ -255,8 +220,8 @@ test_that("Effect Size Calculation correct", {
   options$repeatedMeasuresFactors <- list(
     list(name = "Animal", levels = c("Stick", "Kangaroo", "Fish", "Grub"))
     )
-  options$repeatedMeasuresCells <- c("Stick.Insect", "Kangaroo.Testicle",
-                                     "Fish.Eye", "Witchetty.Grub")
+  options$repeatedMeasuresCells <- c("Stick Insect", "Kangaroo Testicle",
+                                     "Fish Eye", "Witchetty Grub")
   
   options$withinModelTerms <- list(
     list(components = "Animal")
@@ -267,7 +232,7 @@ test_that("Effect Size Calculation correct", {
   options$effectSizeOmegaSquared <- TRUE
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures",
-                            dataset = AnovaRepeatedMeasuresOneWay,
+                            dataset = "AnovaRepeatedMeasuresOneWay.csv",
                             options = options,
                             view = FALSE, quiet = TRUE)
   
