@@ -659,7 +659,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		for (var in variables) {
 
 			formula <- as.formula(paste("~", .v(var)))
-			referenceGrid <- lsmeans::lsmeans(fullModel, formula)
+			referenceGrid <- emmeans::lsmeans(fullModel, formula)
 
 			referenceGridList[[var]] <- referenceGrid
 
@@ -779,7 +779,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 				if (contrastType == "none") {
 					r <- NULL
 				} else {
-					r <- lsmeans::contrast(referenceGrid[[contrast$variable]], c)
+					r <- emmeans::contrast(referenceGrid[[contrast$variable]], c)
 				}
 
 				resultsContrasts[[contrast$variable]][[contrastType]] <- summary(r)

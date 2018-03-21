@@ -1575,7 +1575,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				adjMethod <- "none"
 			}
 
-			r <- summary(lsmeans::lsmeans(model, formula), adjust = adjMethod, infer = c(TRUE,TRUE))
+			r <- summary(emmeans::lsmeans(model, formula), adjust = adjMethod, infer = c(TRUE,TRUE))
 
 			rows <- list()
 
