@@ -732,7 +732,7 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	else if (name == "ContingencyTablesBayesian")
 		form = new ContingencyTablesBayesianForm(contentArea);
 	else if (name == "SEMSimple")
-		form = new SEMSimpleForm(contentArea);
+		form = new SEMSimpleForm(this);
 	else if (name == "AncovaBayesian")
 		form = new AncovaBayesianForm(contentArea);
 	else if (name == "AnovaRepeatedMeasuresBayesian")

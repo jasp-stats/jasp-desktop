@@ -199,11 +199,27 @@ checkPackages <- function() {
 
 
 checkLavaanModel <- function(model, availableVars) {
-  # function returns informative printable string if there is an error, else 0
+  # function returns informative printable string if there is an error, else ""
+  if (model == "") return("")
+
+  # translate to and from base64 with stringr::str_replace_all
+  vars <- availableVars[order(vapply(availableVars, stringr::str_length, 1),
+                              decreasing = TRUE)]
+  vvars <- .v(vars)
+  names(vvars) <- vars
+  unvvars <- vars
+  names(unvvars) <- vvars
+
+  vmodel <- stringr::str_replace_all(model, vvars)
+
   # Check model syntax
-  parsed <- try(lavaan::lavParseModelString(model, TRUE), silent = TRUE)
+  parsed <- try(lavaan::lavParseModelString(vmodel, TRUE), silent = TRUE)
   if (inherits(parsed, "try-error")) {
-    return(attr(parsed, "condition")$message)
+    msg <- attr(parsed, "condition")$message
+    if (msg == "NA/NaN argument") {
+      return("")
+    }
+    return(stringr::str_replace_all(msg, unvvars))
   }
 
   # Check variable names
@@ -211,17 +227,18 @@ checkLavaanModel <- function(model, availableVars) {
     latents <- unique(parsed[parsed$op == "=~",]$lhs)
     modelVars <- setdiff(unique(c(parsed$lhs, parsed$rhs)), latents)
 
-    modelVarsInAvailableVars <- (modelVars %in% availableVars)
+    modelVarsInAvailableVars <- (modelVars %in% vvars)
     if (!all(modelVarsInAvailableVars)) {
+      notRecognized <- modelVars[!modelVarsInAvailableVars]
       return(paste("Variable(s) in model syntax not recognized:",
-                   paste(modelVars[!modelVarsInAvailableVars],
-                         collapse = ", ")))
+                   paste(.unv(notRecognized), collapse = ", ")))
     }
   }
 
   # if checks pass, return empty string
   return("")
 }
+
 .sanitizeForJson <- function(obj) {
 	# Removes elements that are not translatable to json
 	#

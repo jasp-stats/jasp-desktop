@@ -571,8 +571,12 @@ void TextModelLavaan::cursorPositionChangedHandler(QTextCursor cursor)
 void TextModelLavaan::apply()
 {
 	//checkEverything();
-	if (_boundTo != NULL && inError() == false)
-		_boundTo->setValue(fq(this->toPlainText()));
+	std::cout << "let's apply the following model:\n" << this->toPlainText().toStdString() << std::flush;
+	if (_boundTo != NULL && !_inError) 
+	{
+		std::cout << "Setting boundTo value to model..." << std::flush;
+		_boundTo->setValue(this->toPlainText().toStdString());
+	}
 }
 
 void TextModelLavaan::contentChangedHandler()
@@ -581,7 +585,7 @@ void TextModelLavaan::contentChangedHandler()
 	_content = toPlainText();
 
 	QTextBlock current = findBlockByNumber(_currentBlock);
-	checkBlock(current);
+	//checkBlock(current);
 }
 
 void TextModelLavaan::checkEverything()

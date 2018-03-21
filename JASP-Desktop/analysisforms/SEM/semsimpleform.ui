@@ -29,6 +29,657 @@
    <property name="verticalSpacing">
     <number>0</number>
    </property>
+   <item row="1" column="0">
+    <widget class="QWidget" name="DataContainer" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>100</height>
+      </size>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="BoundGroupBox" name="Data">
+        <property name="title">
+         <string>Data</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QRadioButton" name="Raw">
+           <property name="text">
+            <string>Raw</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="VarCov">
+           <property name="text">
+            <string>Variance-covariance matrix</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="SampleText">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Sample Size</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="BoundTextBox" name="SampleSize">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="BoundGroupBox" name="groupBox_9">
+        <property name="title">
+         <string>Model Name</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="BoundComboBox" name="modelName">
+           <item>
+            <property name="text">
+             <string>Model 1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Model 2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Model 3</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Model 4</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Model 5</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Model 6</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Model 7</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Model 8</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Model 9</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QWidget" name="widget_3" native="true">
+     <layout class="QGridLayout" name="gridLayout_22">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>3</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>3</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="ExpanderButton" name="pushButton_3">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Advanced</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QWidget" name="containerAdvanced" native="true">
+        <layout class="QGridLayout" name="gridLayout_21">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="GroupBox" name="groupBox_16">
+           <property name="title">
+            <string>Options</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_19">
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="fixManifestInterceptsToZero">
+              <property name="text">
+               <string>Fix manifest intercepts to zero</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="BoundCheckBox" name="correlateExogenousLatents">
+              <property name="text">
+               <string>Correlate exogenous latents</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="fixLatentInterceptsToZero">
+              <property name="text">
+               <string>Fix latent intercepts to zero</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="BoundCheckBox" name="addThresholds">
+              <property name="text">
+               <string>Add thresholds</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="omitResidualSingleIndicator">
+              <property name="text">
+               <string>Omit residual single indicator</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="BoundCheckBox" name="addScalingParameters">
+              <property name="text">
+               <string>Add scaling parameters</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="BoundCheckBox" name="residualVariances">
+              <property name="text">
+               <string>Residual variances</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="BoundCheckBox" name="correlateDependentVariables">
+              <property name="text">
+               <string>Correlate dependent variables</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="GroupBox" name="groupBox_4">
+           <property name="title">
+            <string>Emulation</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_13">
+            <item row="0" column="0">
+             <widget class="BoundGroupBox" name="emulation">
+              <layout class="QGridLayout" name="gridLayout_14">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="QRadioButton" name="_1none">
+                 <property name="text">
+                  <string>None</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QRadioButton" name="_3EQS">
+                 <property name="text">
+                  <string>EQS</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QRadioButton" name="_2Mplus">
+                 <property name="text">
+                  <string>Mplus</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QWidget" name="topWidget" native="true">
+     <layout class="QGridLayout" name="gridLayout_20">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="BoundTextEdit" name="model">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>300</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QWidget" name="widget_2" native="true">
+     <layout class="QGridLayout" name="gridLayout_9">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>3</number>
+      </property>
+      <item row="1" column="0">
+       <widget class="QWidget" name="containerStatistics" native="true">
+        <layout class="QGridLayout" name="gridLayout_8">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="1" rowspan="2">
+          <widget class="GroupBox" name="groupBox_2">
+           <property name="title">
+            <string>Additional Output</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_7">
+            <property name="bottomMargin">
+             <number>13</number>
+            </property>
+            <item row="8" column="0">
+             <widget class="QWidget" name="widget_6" native="true">
+              <layout class="QGridLayout" name="gridLayout_6">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="1" column="0">
+                <widget class="QWidget" name="containerHideLowIndices" native="true">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_5">
+                  <property name="leftMargin">
+                   <number>24</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item row="0" column="0">
+                   <widget class="BoundCheckBox" name="outputModificationIndicesHideLowIndices">
+                    <property name="text">
+                     <string>Hide low indices</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QWidget" name="containerThreshold" native="true">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_4">
+                     <property name="leftMargin">
+                      <number>24</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <item row="0" column="1">
+                      <widget class="BoundTextBox" name="outputModificationIndicesHideLowIndicesThreshold">
+                       <property name="maximumSize">
+                        <size>
+                         <width>60</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="label_2">
+                       <property name="text">
+                        <string>Threshold</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="2">
+                      <spacer name="horizontalSpacer_2">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="BoundCheckBox" name="outputResidualCovarianceCorrelations">
+              <property name="text">
+               <string>Residual covariances / correlations</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="outputAdditionalFitMeasures">
+              <property name="text">
+               <string>Additional fit measures</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="BoundCheckBox" name="outputObservedCovarianceCorrelations">
+              <property name="text">
+               <string>Observed covariances / correlations</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="BoundCheckBox" name="outputModificationIndices">
+              <property name="text">
+               <string>Modification indices</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="BoundCheckBox" name="outputMardiasCoefficients">
+              <property name="text">
+               <string>Mardia's coefficients</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="outputFittedCovarianceCorrelations">
+              <property name="text">
+               <string>Fitted covariances / correlations</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="0" column="0" rowspan="2">
+          <widget class="GroupBox" name="groupBox">
+           <property name="title">
+            <string>Error Calculation</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="0" column="0">
+             <widget class="BoundGroupBox" name="errorCalculation">
+              <layout class="QGridLayout" name="gridLayout_2">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="QRadioButton" name="_1standard">
+                 <property name="text">
+                  <string>Standard</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QRadioButton" name="_2robust">
+                 <property name="text">
+                  <string>Robust</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QRadioButton" name="_3bootstrap">
+                 <property name="text">
+                  <string>Bootstrap</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QWidget" name="containerBootstrapSamples" native="true">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_3">
+                  <property name="leftMargin">
+                   <number>24</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label">
+                    <property name="text">
+                     <string>Bootstrap samples</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="BoundTextBox" name="errorCalculationBootstrapSamples">
+                    <property name="maximumSize">
+                     <size>
+                      <width>60</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>1000</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="2">
+                   <spacer name="horizontalSpacer">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>0</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="ExpanderButton" name="pushButton">
+        <property name="text">
+         <string>Statistics</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
    <item row="3" column="0">
     <widget class="QWidget" name="widget_9" native="true">
      <property name="sizePolicy">
@@ -404,657 +1055,6 @@
       </size>
      </property>
     </spacer>
-   </item>
-   <item row="2" column="0">
-    <widget class="QWidget" name="widget_2" native="true">
-     <layout class="QGridLayout" name="gridLayout_9">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>3</number>
-      </property>
-      <item row="1" column="0">
-       <widget class="QWidget" name="containerStatistics" native="true">
-        <layout class="QGridLayout" name="gridLayout_8">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item row="0" column="1" rowspan="2">
-          <widget class="GroupBox" name="groupBox_2">
-           <property name="title">
-            <string>Additional Output</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_7">
-            <property name="bottomMargin">
-             <number>13</number>
-            </property>
-            <item row="8" column="0">
-             <widget class="QWidget" name="widget_6" native="true">
-              <layout class="QGridLayout" name="gridLayout_6">
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item row="1" column="0">
-                <widget class="QWidget" name="containerHideLowIndices" native="true">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_5">
-                  <property name="leftMargin">
-                   <number>24</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>0</number>
-                  </property>
-                  <item row="0" column="0">
-                   <widget class="BoundCheckBox" name="outputModificationIndicesHideLowIndices">
-                    <property name="text">
-                     <string>Hide low indices</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QWidget" name="containerThreshold" native="true">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <layout class="QGridLayout" name="gridLayout_4">
-                     <property name="leftMargin">
-                      <number>24</number>
-                     </property>
-                     <property name="topMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="rightMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>0</number>
-                     </property>
-                     <item row="0" column="1">
-                      <widget class="BoundTextBox" name="outputModificationIndicesHideLowIndicesThreshold">
-                       <property name="maximumSize">
-                        <size>
-                         <width>60</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="0">
-                      <widget class="QLabel" name="label_2">
-                       <property name="text">
-                        <string>Threshold</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="2">
-                      <spacer name="horizontalSpacer_2">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>0</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="BoundCheckBox" name="outputResidualCovarianceCorrelations">
-              <property name="text">
-               <string>Residual covariances / correlations</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="outputAdditionalFitMeasures">
-              <property name="text">
-               <string>Additional fit measures</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="BoundCheckBox" name="outputObservedCovarianceCorrelations">
-              <property name="text">
-               <string>Observed covariances / correlations</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="0">
-             <widget class="BoundCheckBox" name="outputModificationIndices">
-              <property name="text">
-               <string>Modification indices</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="0">
-             <widget class="BoundCheckBox" name="outputMardiasCoefficients">
-              <property name="text">
-               <string>Mardia's coefficients</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="BoundCheckBox" name="outputFittedCovarianceCorrelations">
-              <property name="text">
-               <string>Fitted covariances / correlations</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="0" column="0" rowspan="2">
-          <widget class="GroupBox" name="groupBox">
-           <property name="title">
-            <string>Error Calculation</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout">
-            <item row="0" column="0">
-             <widget class="BoundGroupBox" name="errorCalculation">
-              <layout class="QGridLayout" name="gridLayout_2">
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item row="0" column="0">
-                <widget class="QRadioButton" name="_1standard">
-                 <property name="text">
-                  <string>Standard</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QRadioButton" name="_2robust">
-                 <property name="text">
-                  <string>Robust</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QRadioButton" name="_3bootstrap">
-                 <property name="text">
-                  <string>Bootstrap</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <widget class="QWidget" name="containerBootstrapSamples" native="true">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_3">
-                  <property name="leftMargin">
-                   <number>24</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>0</number>
-                  </property>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label">
-                    <property name="text">
-                     <string>Bootstrap samples</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="BoundTextBox" name="errorCalculationBootstrapSamples">
-                    <property name="maximumSize">
-                     <size>
-                      <width>60</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>1000</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="2">
-                   <spacer name="horizontalSpacer">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>0</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <spacer name="verticalSpacer">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="ExpanderButton" name="pushButton">
-        <property name="text">
-         <string>Statistics</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QWidget" name="topWidget" native="true">
-     <layout class="QGridLayout" name="gridLayout_20">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="BoundTextEdit" name="model">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>300</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <widget class="QWidget" name="widget_3" native="true">
-     <layout class="QGridLayout" name="gridLayout_22">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>3</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>3</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="ExpanderButton" name="pushButton_3">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Advanced</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QWidget" name="containerAdvanced" native="true">
-        <layout class="QGridLayout" name="gridLayout_21">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="GroupBox" name="groupBox_16">
-           <property name="title">
-            <string>Options</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_19">
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="fixManifestInterceptsToZero">
-              <property name="text">
-               <string>Fix manifest intercepts to zero</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="BoundCheckBox" name="correlateExogenousLatents">
-              <property name="text">
-               <string>Correlate exogenous latents</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="fixLatentInterceptsToZero">
-              <property name="text">
-               <string>Fix latent intercepts to zero</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="BoundCheckBox" name="addThresholds">
-              <property name="text">
-               <string>Add thresholds</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="BoundCheckBox" name="omitResidualSingleIndicator">
-              <property name="text">
-               <string>Omit residual single indicator</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="BoundCheckBox" name="addScalingParameters">
-              <property name="text">
-               <string>Add scaling parameters</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="BoundCheckBox" name="residualVariances">
-              <property name="text">
-               <string>Residual variances</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="BoundCheckBox" name="correlateDependentVariables">
-              <property name="text">
-               <string>Correlate dependent variables</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="GroupBox" name="groupBox_4">
-           <property name="title">
-            <string>Emulation</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_13">
-            <item row="0" column="0">
-             <widget class="BoundGroupBox" name="emulation">
-              <layout class="QGridLayout" name="gridLayout_14">
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item row="0" column="0">
-                <widget class="QRadioButton" name="_1none">
-                 <property name="text">
-                  <string>None</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QRadioButton" name="_3EQS">
-                 <property name="text">
-                  <string>EQS</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QRadioButton" name="_2Mplus">
-                 <property name="text">
-                  <string>Mplus</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QWidget" name="DataContainer" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>100</height>
-      </size>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="BoundGroupBox" name="Data">
-        <property name="title">
-         <string>Data</string>
-        </property>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QRadioButton" name="Raw">
-           <property name="text">
-            <string>Raw</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="VarCov">
-           <property name="text">
-            <string>Variance-covariance matrix</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="SampleText">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Sample Size</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="BoundTextBox" name="SampleSize">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>60</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>0</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="BoundGroupBox" name="groupBox_9">
-        <property name="title">
-         <string>Model Name</string>
-        </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="BoundComboBox" name="modelName">
-           <item>
-            <property name="text">
-             <string>Model 1</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Model 2</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Model 3</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Model 4</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Model 5</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Model 6</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Model 7</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Model 8</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Model 9</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-     </layout>
-    </widget>
    </item>
   </layout>
  </widget>

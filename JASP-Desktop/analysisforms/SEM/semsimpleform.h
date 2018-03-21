@@ -20,6 +20,7 @@
 #define SEMSIMPLEFORM_H
 
 #include "../analysisform.h"
+#include "mainwindow.h"
 
 namespace Ui {
 class SEMSimpleForm;
@@ -30,11 +31,15 @@ class SEMSimpleForm : public AnalysisForm
 	Q_OBJECT
 
 public:
-	explicit SEMSimpleForm(QWidget *parent = 0);
+	explicit SEMSimpleForm(MainWindow *parent = 0);
 	~SEMSimpleForm();
 
 private:
 	Ui::SEMSimpleForm *ui;
+	MainWindow* _mainWindow;
+	
+private slots:
+	void checkSyntax();
 };
 
 #endif // SEMSIMPLEFORM_H

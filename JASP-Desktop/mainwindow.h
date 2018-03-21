@@ -53,6 +53,7 @@ public:
 	void open(QString filepath);
 	virtual ~MainWindow();
 
+	EngineSync* _engineSync;
 
 protected:
 	virtual void resizeEvent(QResizeEvent *event) OVERRIDE;
@@ -76,7 +77,6 @@ private:
 	OnlineDataManager *_odm;
 
 	Analyses *_analyses;
-	EngineSync* _engineSync;
 
 	void triggerQmlColumnReload();
 	void triggerQmlColumnClear();
