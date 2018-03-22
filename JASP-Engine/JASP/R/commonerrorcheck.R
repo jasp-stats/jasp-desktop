@@ -91,6 +91,25 @@
       message <- paste0(openingMsg, '<ul>', message)
     }
   }
+
+  # See if we should add the variables causing the error (so far only for perfect correlations).
+  if (type == "varCovData" && ! is.null(args$variables)) {
+    nPairs <- length(args$variables$var1) # Could take either var1 or var2 as length is identical
+    if (nPairs > 10) {
+      msg<- sprintf("<ul><li> Note: There are %d pairs of variables perfectly correlated. The first 10 are: ", nPairs)
+    } else {
+      msg<- "<ul><li> Note: The following pair(s) of variables is/are perfectly correlated: "
+    }
+    message <- paste0(message, msg)
+    for (i in seq_len(nPairs)) {
+      message <- paste0(message, args$variables$var1[[i]], " and ", args$variables$var2[[i]])
+      if (i < length(args$variables$var1)) {
+        message <- paste0(message, "; ")
+      } else if (i == length(args$variables$var1)) {
+        message <- paste0(message, ". Note that if you have specified a weights variable, the correlations are computed for the weighted variables.</li></ul>")
+      }
+    }
+  }
   
   return(message)
 }
@@ -189,6 +208,11 @@
         if (paste0(type[[i]], '.target') %in% names(funcArgs) && ! paste0(type[[i]], '.target') %in% names(args)) {
           args[[ paste0(type[[i]], '.target') ]] <- .unv(names(dataset))
         } 
+        
+        # See if this check expects options and if they were provided
+        if (paste0(type[[i]], '.options') %in% names(funcArgs) && ! paste0(type[[i]], '.options') %in% names(args)) {
+          args[[ paste0(type[[i]], '.options') ]] <- options
+        }
         
         # Obtain an overview of required and optional check arguments.
         optArgs <- list()
@@ -489,12 +513,29 @@
   
   # Positive-definite?
   if (posdef && any(round(eigen(dataset)$values,10) <= 0)){
-    return(list(error=TRUE,reason="Matrix is not positive-definite"))
+    vars <- .checkForPerfectCorrelations(dataset)
+    return(list(error=TRUE,reason="Matrix is not positive-definite", vars=vars))
   }
   
   return(list(error=FALSE, reason = ""))
 }
 
+.checkForPerfectCorrelations <- function(dataset) {
+  
+  vars <- NULL
+  # if not already a correlation matrix
+  if (! all(diag(dataset) == 1)) {
+    dataset <- cov2cor(dataset)
+  }
+  idx <- which(lower.tri(dataset, diag = FALSE), arr.ind = TRUE) # index for the lower triangle of the matrix
+  bad <- (1 - abs(dataset[idx])) <= sqrt(.Machine$double.eps)    # check if correlations are awfully close to -1 or 1
+  if (any(bad) == TRUE) {
+    pairsIdxCol <- idx[bad, , drop = FALSE][, "col"] # index for colnames of pairs of highly correlated variables
+    pairsIdxRow <- idx[bad, , drop = FALSE][, "row"] # index for rownames of pairs of highly correlated variables
+    vars <- list("var1" = .unvf(colnames(dataset)[pairsIdxCol]), "var2" = .unvf(rownames(dataset)[pairsIdxRow]))
+  }
+  return(vars)
+}
 
 .checkLimits <- function(dataset, target, min=-Inf, max=Inf) {
   # Check if the variable is between certain limits
@@ -542,10 +583,12 @@
     dataset <- split(dataset, groupingData)
   }
   for (d in seq_along(dataset)) {
+    
     cormat <- do.call(corFun, c(list(dataset[[d]]), corArgs))
     err <- .checkVarCovMatrix(cormat, nrow = FALSE, symm = FALSE)
     result$error <- err$error
-    result$message <- result$reason
+    result$message <- err$reason
+    result$errorVars <- err$vars
     if (result$error) # stop at first error
       break
   }

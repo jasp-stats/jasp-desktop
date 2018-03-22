@@ -49,18 +49,18 @@ test_that("Coefficients table results match", {
 test_that("ANOVA table results match", {
   options <- jasptools::analysisOptions("RegressionLinear")
   options$dependent <- "debCollin1"
-  options$covariates <- "debCollin2"
+  options$covariates <- "contGamma"
   options$modelTerms <- list(
-    list(components="debCollin2", isNuisance=FALSE)
+    list(components="contGamma", isNuisance=FALSE)
   )
   options$modelFit <- TRUE
   options$VovkSellkeMPR <- TRUE
   results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["anova"]][["data"]]
   expect_equal_tables(table,
-    list(1, "Regression", 0.666902167813857, 1, 0.666902167813857, 3.08946572909727e+30,
-         0, "<unicode>", "TRUE", "", "Residual", 2.11546002372568e-29,
-         98, 2.15863267727111e-31, "", "", "", "", "Total", 0.666902167813857,
+    list(1, "Regression", 0.01937103, 1, 0.01937103, 2.931691,
+         0.09001915, 1.697314, "TRUE", "", "Residual", 0.6475311,
+         98, 0.006607461, "", "", "", "", "Total", 0.6669022,
          99, "", "", "", "")
   )
 })
@@ -79,48 +79,6 @@ test_that("Coefficients Covariance table results match", {
   expect_equal_tables(table,
     list(1, "contGamma", "TRUE", 0.00490486111017858, 0.00116294327838645,
          "", "contcor1", "", 0.0112500585702943)
-  )
-})
-
-test_that("Coefficients table and Coefficients Covariance table results match if one predictor is redundant", {
-  options <- jasptools::analysisOptions("RegressionLinear")
-  options$dependent <- "contNormal"
-  options$covariates <- c("contcor1", "contcor2", "contWide", "contNarrow")
-  options$modelTerms <- list(
-    list(components="contcor1", isNuisance=FALSE),
-    list(components="contcor2", isNuisance=FALSE),
-    list(components="contWide", isNuisance=FALSE),
-    list(components="contNarrow", isNuisance=FALSE)
-  )
-  options$wlsWeights <- "contExpon"
-  options$regressionCoefficientsCovarianceMatrix <- TRUE
-  options$regressionCoefficientsEstimates <- TRUE
-  options$regressionCoefficientsConfidenceIntervals <- TRUE
-  options$regressionCoefficientsConfidenceIntervalsInterval <- 0.9
-  options$collinearityDiagnostics <- TRUE
-  options$VovkSellkeMPR <- TRUE
-  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
-  table <- results[["results"]][["regression"]][["data"]]
-  expect_equal_tables(table,
-                      list(1, "(Intercept)", 1.33434073707233, 2.81095978222863e-05, "",
-                           47469.221918729, 0, "<unicode>", 1.3343404191673, 1.33434105497735,
-                           "", "", "TRUE", "", "contcor1", 1.72516580772465, 6.41591142499465e-05,
-                           1.64925074298834, 26888.8657191224, 0, "<unicode>", 1.72516508211823,
-                           1.72516653333107, 0.558299066469893, 1.791154705529, "", "contcor2",
-                           -1.40594968039645, 5.05144613813557e-05, -1.333867430074, -27832.6174713084,
-                           0, "<unicode>", -1.4059502516889, -1.405949109104, 0.54548459286082,
-                           1.83323234622531, "", "contWide", -1.76878392620031e-100, 5.27590104039445e-105,
-                           -0.858338348234611, -33525.7221971713, 0, "<unicode>", -1.76878452287745e-100,
-                           -1.76878332952317e-100, 0.977238268419677, 1.02329189545261,
-                           "", "contNarrow<unicode>", "NA", "", "", "", "", "", "", "",
-                           0.963466425286736, 1.03791888721228), label = 'Coefficients table'
-  )
-  table <- results[["results"]][["coefficient covariances"]][["data"]]
-  expect_equal_tables(table,
-                      list(1, "contcor1", "TRUE", 4.11639194133768e-09, -3.2249207411404e-09,
-                           -2.54665403177778e-109, "NA", "", "contcor2", "", 2.55171080864847e-09,
-                           2.11792385766019e-109, "NA", "", "contWide", "", "", 2.78351317880352e-209,
-                           "NA", "", "contNarrow<unicode>", "", "", "", "NA"), label = "Coefficients Covariance table"
   )
 })
 
@@ -143,19 +101,17 @@ test_that("Descriptive table results match", {
 test_that("Part and Partial Correlations table results match", {
   options <- jasptools::analysisOptions("RegressionLinear")
   options$dependent <- "contNormal"
-  options$covariates <- c("debCollin2", "debCollin3", "contGamma")
+  options$covariates <- c("debCollin2", "contGamma")
   options$modelTerms <- list(
     list(components="debCollin2", isNuisance=FALSE),
-    list(components="debCollin3", isNuisance=FALSE),
     list(components="contGamma", isNuisance=FALSE)
   )
   options$partAndPartialCorrelations <- TRUE
   results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["correlations"]][["data"]]
   expect_equal_tables(table,
-    list(1, "debCollin2", -0.0322303841661185, -0.0321675047221584, "TRUE",
-         "", "debCollin3", 0.0322303963842314, 0.0321675169163488, "",
-         "contGamma", -0.0617173111983368, -0.0617145529439823)
+    list(1, "debCollin2", -0.0198687, -0.01983386, "TRUE",
+         "", "contGamma", -0.06171731, -0.06171455)
   )
 })
 
@@ -353,4 +309,28 @@ test_that("Analysis handles errors", {
   results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
   expect_identical(results[["results"]][["model summary"]][["error"]][["errorType"]], "badData",
                   label="Too few obs wlsWeights check")
+  
+  options <- jasptools::analysisOptions("RegressionLinear")
+  options$dependent <- "contNormal"
+  options$covariates <- c("debCollin2", "debCollin3")
+  options$modelTerms <- list(
+    list(components="debCollin2", isNuisance=FALSE),
+    list(components="debCollin3", isNuisance=FALSE)
+  )
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
+  results$results$errorMessage
+  expect_equal(results[["results"]], list(title = "error", error = 1, errorMessage = "The following problem(s) occurred while running the analysis:<ul><li>The variance-covariance matrix of the supplied data is not positive-definite. Please check if variables have many missings observations or are collinear</li></ul><ul><li> Note: The following pair(s) of variables is/are perfectly correlated: debCollin2 and debCollin3. Note that if you have specified a weights variable, the correlations are computed for the weighted variables.</li></ul>"))
+  
+  options <- jasptools::analysisOptions("RegressionLinear")
+  options$dependent <- "contNormal"
+  options$covariates <- c("contcor1", "contcor2", "contWide", "contNarrow")
+  options$modelTerms <- list(
+    list(components="contcor1", isNuisance=FALSE),
+    list(components="contcor2", isNuisance=FALSE),
+    list(components="contWide", isNuisance=FALSE),
+    list(components="contNarrow", isNuisance=FALSE)
+  )
+  options$wlsWeights <- "contExpon"
+  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
+  expect_equal(results[["results"]], list(title = "error", error = 1, errorMessage = "The following problem(s) occurred while running the analysis:<ul><li>The variance-covariance matrix of the supplied data is not positive-definite. Please check if variables have many missings observations or are collinear</li></ul>"))
 })
