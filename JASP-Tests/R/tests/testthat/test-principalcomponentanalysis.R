@@ -32,14 +32,14 @@ test_that("Main tables' results match", {
   )
 })
 
-test_that("Path diagram matches", {
-  options <- jasptools::analysisOptions("PrincipalComponentAnalysis")
-  options$variables <- list("contNormal", "contGamma")
-  options$incl_pathDiagram <- TRUE
-  results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "path-diagram", dir="PrincipalComponentAnalysis")
-})
+# test_that("Path diagram matches", {
+#   options <- jasptools::analysisOptions("PrincipalComponentAnalysis")
+#   options$variables <- list("contNormal", "contGamma")
+#   options$incl_pathDiagram <- TRUE
+#   results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "path-diagram", dir="PrincipalComponentAnalysis")
+# })
 
 test_that("Scree plot option creates .png", {
   options <- jasptools::analysisOptions("PrincipalComponentAnalysis")
@@ -66,10 +66,9 @@ test_that("Missing values works", {
 	results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
 	table <- results[["results"]][["goodnessOfFit"]][["data"]][[1]]
 	expect_equal_tables(table, list("Model", 20.7622398603288, 2, 3.10125086457269e-05), label = "pairwise")
-	
+
 	options$missingValues <- "listwise"
 	results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
 	table <- results[["results"]][["goodnessOfFit"]][["data"]][[1]]
 	expect_equal_tables(table, list("Model", 13.8130059031587, 2, 0.00100125311189221), label = "listwise")
 })
-

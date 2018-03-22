@@ -27,10 +27,10 @@ test_that("Main table results match for Wilcoxon signed rank", {
   options$effSizeConfidenceIntervalCheckbox <- TRUE
   options$students <- FALSE
   options$mannWhitneyU <- TRUE
-  
+
   results <- jasptools::run("TTestOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["ttest"]][["data"]]
-  
+
   expect_equal_tables(table,
                       list("contGamma", "", 3.955912e-18, 1.813483, 1,
                            1.553513, 2.158945, 1, 1, 5050, "Wilcoxon"))
@@ -74,14 +74,14 @@ test_that("Descriptives table matches", {
   )
 })
 
-test_that("Descriptives plot matches", {
-  options <- jasptools::analysisOptions("TTestOneSample")
-  options$variables <- "contGamma"
-  options$descriptivesPlots <- TRUE
-  results <- jasptools::run("TTestOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "descriptives", dir="TTestOneSample")
-})
+# test_that("Descriptives plot matches", {
+#   options <- jasptools::analysisOptions("TTestOneSample")
+#   options$variables <- "contGamma"
+#   options$descriptivesPlots <- TRUE
+#   results <- jasptools::run("TTestOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "descriptives", dir="TTestOneSample")
+# })
 
 test_that("Analysis handles errors", {
   options <- jasptools::analysisOptions("TTestOneSample")

@@ -77,36 +77,36 @@ test_that("Frequencies table matches with missing values", {
   )
 })
 
-test_that("Distribution plot matches", {
-  options <- jasptools::analysisOptions("Descriptives")
-  options$variables <- "contNormal"
-  options$plotVariables <- TRUE
-  results <- jasptools::run("Descriptives", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "distribution", dir="Descriptives")
-})
-
-test_that("Correlation plot matches", {
-  options <- jasptools::analysisOptions("Descriptives")
-  options$variables <- c("contNormal", "contGamma")
-  options$plotCorrelationMatrix <- TRUE
-  results <- jasptools::run("Descriptives", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "correlation", dir="Descriptives")
-})
-
-test_that("Boxplot matches", {
-  set.seed(0)
-  options <- jasptools::analysisOptions("Descriptives")
-  options$variables <- "contNormal"
-  options$splitby <- "contBinom"
-  options$splitPlotBoxplot <- TRUE
-  options$splitPlotColour <- TRUE
-  options$splitPlotJitter <- TRUE
-  options$splitPlotOutlierLabel <- TRUE
-  options$splitPlotViolin <- TRUE
-  options$splitPlots <- TRUE
-  results <- jasptools::run("Descriptives", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "boxplot", dir="Descriptives")
-})
+# test_that("Distribution plot matches", {
+#   options <- jasptools::analysisOptions("Descriptives")
+#   options$variables <- "contNormal"
+#   options$plotVariables <- TRUE
+#   results <- jasptools::run("Descriptives", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "distribution", dir="Descriptives")
+# })
+#
+# test_that("Correlation plot matches", {
+#   options <- jasptools::analysisOptions("Descriptives")
+#   options$variables <- c("contNormal", "contGamma")
+#   options$plotCorrelationMatrix <- TRUE
+#   results <- jasptools::run("Descriptives", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "correlation", dir="Descriptives")
+# })
+#
+# test_that("Boxplot matches", {
+#   set.seed(0)
+#   options <- jasptools::analysisOptions("Descriptives")
+#   options$variables <- "contNormal"
+#   options$splitby <- "contBinom"
+#   options$splitPlotBoxplot <- TRUE
+#   options$splitPlotColour <- TRUE
+#   options$splitPlotJitter <- TRUE
+#   options$splitPlotOutlierLabel <- TRUE
+#   options$splitPlotViolin <- TRUE
+#   options$splitPlots <- TRUE
+#   results <- jasptools::run("Descriptives", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "boxplot", dir="Descriptives")
+# })

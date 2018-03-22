@@ -174,71 +174,71 @@ test_that("Casewise Diagnostics table results match", {
   )
 })
 
-test_that("Residuals vs. Dependent plot matches", {
-  options <- jasptools::analysisOptions("RegressionLinear")
-  options$dependent <- "contNormal"
-  options$covariates <- "contGamma"
-  options$modelTerms <- list(
-    list(components="contGamma", isNuisance=FALSE)
-  )
-  options$plotResidualsDependent <- TRUE
-  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "residuals-dependent", dir="RegressionLinear")
-})
-
-test_that("Residuals vs. Covariates plot matches", {
-  options <- jasptools::analysisOptions("RegressionLinear")
-  options$dependent <- "contNormal"
-  options$covariates <- "contGamma"
-  options$modelTerms <- list(
-    list(components="contGamma", isNuisance=FALSE)
-  )
-  options$plotResidualsCovariates <- TRUE
-  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "residuals-covariates", dir="RegressionLinear")
-})
-
-test_that("Residuals vs. Predicted plot matches", {
-  options <- jasptools::analysisOptions("RegressionLinear")
-  options$dependent <- "contNormal"
-  options$covariates <- "contGamma"
-  options$modelTerms <- list(
-    list(components="contGamma", isNuisance=FALSE)
-  )
-  options$plotResidualsPredicted <- TRUE
-  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "residuals-predicted", dir="RegressionLinear")
-})
-
-test_that("Standardized Residuals Histogram matches", {
-  options <- jasptools::analysisOptions("RegressionLinear")
-  options$dependent <- "contNormal"
-  options$covariates <- "contGamma"
-  options$modelTerms <- list(
-    list(components="contGamma", isNuisance=FALSE)
-  )
-  options$plotResidualsHistogram <- TRUE
-  options$plotResidualsHistogramStandardized <- TRUE
-  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "residuals-histogram", dir="RegressionLinear")
-})
-
-test_that("Q-Q Plot Standardized Residuals matches", {
-  options <- jasptools::analysisOptions("RegressionLinear")
-  options$dependent <- "contNormal"
-  options$covariates <- "contGamma"
-  options$modelTerms <- list(
-    list(components="contGamma", isNuisance=FALSE)
-  )
-  options$plotResidualsQQ <- TRUE
-  results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "residuals-q-q", dir="RegressionLinear")
-})
+# test_that("Residuals vs. Dependent plot matches", {
+#   options <- jasptools::analysisOptions("RegressionLinear")
+#   options$dependent <- "contNormal"
+#   options$covariates <- "contGamma"
+#   options$modelTerms <- list(
+#     list(components="contGamma", isNuisance=FALSE)
+#   )
+#   options$plotResidualsDependent <- TRUE
+#   results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "residuals-dependent", dir="RegressionLinear")
+# })
+#
+# test_that("Residuals vs. Covariates plot matches", {
+#   options <- jasptools::analysisOptions("RegressionLinear")
+#   options$dependent <- "contNormal"
+#   options$covariates <- "contGamma"
+#   options$modelTerms <- list(
+#     list(components="contGamma", isNuisance=FALSE)
+#   )
+#   options$plotResidualsCovariates <- TRUE
+#   results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "residuals-covariates", dir="RegressionLinear")
+# })
+#
+# test_that("Residuals vs. Predicted plot matches", {
+#   options <- jasptools::analysisOptions("RegressionLinear")
+#   options$dependent <- "contNormal"
+#   options$covariates <- "contGamma"
+#   options$modelTerms <- list(
+#     list(components="contGamma", isNuisance=FALSE)
+#   )
+#   options$plotResidualsPredicted <- TRUE
+#   results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "residuals-predicted", dir="RegressionLinear")
+# })
+#
+# test_that("Standardized Residuals Histogram matches", {
+#   options <- jasptools::analysisOptions("RegressionLinear")
+#   options$dependent <- "contNormal"
+#   options$covariates <- "contGamma"
+#   options$modelTerms <- list(
+#     list(components="contGamma", isNuisance=FALSE)
+#   )
+#   options$plotResidualsHistogram <- TRUE
+#   options$plotResidualsHistogramStandardized <- TRUE
+#   results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "residuals-histogram", dir="RegressionLinear")
+# })
+#
+# test_that("Q-Q Plot Standardized Residuals matches", {
+#   options <- jasptools::analysisOptions("RegressionLinear")
+#   options$dependent <- "contNormal"
+#   options$covariates <- "contGamma"
+#   options$modelTerms <- list(
+#     list(components="contGamma", isNuisance=FALSE)
+#   )
+#   options$plotResidualsQQ <- TRUE
+#   results <- jasptools::run("RegressionLinear", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "residuals-q-q", dir="RegressionLinear")
+# })
 
 test_that("Analysis handles errors", {
   options <- jasptools::analysisOptions("RegressionLinear")

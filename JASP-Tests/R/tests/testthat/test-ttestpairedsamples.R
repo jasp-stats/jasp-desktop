@@ -47,14 +47,14 @@ test_that("Descriptives table matches", {
   )
 })
 
-test_that("Descriptives plot matches", {
-  options <- jasptools::analysisOptions("TTestPairedSamples")
-  options$pairs <- list(c("contNormal", "contGamma"))
-  options$descriptivesPlots <- TRUE
-  results <- jasptools::run("TTestPairedSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "descriptives", dir="TTestPairedSamples")
-})
+# test_that("Descriptives plot matches", {
+#   options <- jasptools::analysisOptions("TTestPairedSamples")
+#   options$pairs <- list(c("contNormal", "contGamma"))
+#   options$descriptivesPlots <- TRUE
+#   results <- jasptools::run("TTestPairedSamples", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "descriptives", dir="TTestPairedSamples")
+# })
 
 test_that("Analysis handles errors", {
   options <- jasptools::analysisOptions("TTestPairedSamples")

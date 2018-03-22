@@ -30,14 +30,14 @@ test_that("Main tables' results match", {
   )
 })
 
-test_that("Path diagram matches", {
-  options <- jasptools::analysisOptions("ExploratoryFactorAnalysis")
-  options$variables <- list("contWide", "contcor1", "facFifty", "contExpon")
-  options$incl_pathDiagram <- TRUE
-  results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "path-diagram", dir="ExploratoryFactorAnalysis")
-})
+# test_that("Path diagram matches", {
+#   options <- jasptools::analysisOptions("ExploratoryFactorAnalysis")
+#   options$variables <- list("contWide", "contcor1", "facFifty", "contExpon")
+#   options$incl_pathDiagram <- TRUE
+#   results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "path-diagram", dir="ExploratoryFactorAnalysis")
+# })
 
 test_that("Scree plot option creates .png", {
   options <- jasptools::analysisOptions("ExploratoryFactorAnalysis")
@@ -60,12 +60,12 @@ test_that("Missing values works", {
 	options <- jasptools::analysisOptions("ExploratoryFactorAnalysis")
 	options$variables <- list("contNormal", "contGamma", "contcor1", "debMiss30")
 	options$incl_correlations <- TRUE
-	
+
 	options$missingValues <- "pairwise"
 	results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
 	table <- results[["results"]][["goodnessOfFit"]][["data"]][[1]]
 	expect_equal_tables(table, list("Model", 1.42781053334818, 2L, 0.489727939944839), label = "pairwise")
-	
+
 	options$missingValues <- "listwise"
 	results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
 	table <- results[["results"]][["goodnessOfFit"]][["data"]][[1]]

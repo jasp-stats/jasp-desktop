@@ -28,13 +28,13 @@ test_that("Main table results match", {
                            "totallyridiculoussuperlongfactorme", 0.01, 0.03))
 })
 
-test_that("Descriptives plot matches", {
-  options <- jasptools::analysisOptions("MultinomialTest")
-  options$factor <- "facFive"
-  options$descriptivesPlot <- TRUE
-  results <- jasptools::run("MultinomialTest", "test.csv", options,
-                            view=FALSE, quiet=TRUE)
-
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "descriptives-1", dir="MultinomialTest")
-})
+# test_that("Descriptives plot matches", {
+#   options <- jasptools::analysisOptions("MultinomialTest")
+#   options$factor <- "facFive"
+#   options$descriptivesPlot <- TRUE
+#   results <- jasptools::run("MultinomialTest", "test.csv", options,
+#                             view=FALSE, quiet=TRUE)
+#
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "descriptives-1", dir="MultinomialTest")
+# })

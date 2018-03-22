@@ -64,16 +64,16 @@ test_that("Descriptives table matches", {
          0.15347202634745)
   )
 })
-
-test_that("Descriptives plot matches", {
-  options <- jasptools::analysisOptions("TTestIndependentSamples")
-  options$variables <- "contNormal"
-  options$groupingVariable <- "contBinom"
-  options$descriptivesPlots <- TRUE
-  results <- jasptools::run("TTestIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "descriptives", dir="TTestIndependentSamples")
-})
+#
+# test_that("Descriptives plot matches", {
+#   options <- jasptools::analysisOptions("TTestIndependentSamples")
+#   options$variables <- "contNormal"
+#   options$groupingVariable <- "contBinom"
+#   options$descriptivesPlots <- TRUE
+#   results <- jasptools::run("TTestIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "descriptives", dir="TTestIndependentSamples")
+# })
 
 test_that("Analysis handles errors", {
   options <- jasptools::analysisOptions("TTestIndependentSamples")

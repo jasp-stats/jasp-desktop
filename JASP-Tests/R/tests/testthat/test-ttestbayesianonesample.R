@@ -17,46 +17,46 @@ test_that("Main table results match", {
   expect_equal_tables(table, list("contNormal", 0.508160332089536, 2.80907441042415e-05))
 })
 
-test_that("Prior posterior plot matches", {
-  set.seed(0)
-  options <- jasptools::analysisOptions("TTestBayesianOneSample")
-  options$variables <- "contNormal"
-  options$plotPriorAndPosterior <- TRUE
-  options$plotPriorAndPosteriorAdditionalInfo <- TRUE
-  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "prior-posterior", dir="TTestBayesianOneSample")
-})
-
-test_that("BF robustness check plot matches", {
-  options <- jasptools::analysisOptions("TTestBayesianOneSample")
-  options$variables <- "contNormal"
-  options$plotBayesFactorRobustness <- TRUE
-  options$plotBayesFactorRobustnessAdditionalInfo <- FALSE
-  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "robustness-check", dir="TTestBayesianOneSample")
-})
-
-test_that("Sequential analysis plot matches", {
-  options <- jasptools::analysisOptions("TTestBayesianOneSample")
-  options$variables <- "contNormal"
-  options$plotSequentialAnalysis <- TRUE
-  options$plotSequentialAnalysisRobustness <- TRUE
-  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "sequential-analysis", dir="TTestBayesianOneSample")
-})
-
-test_that("Descriptives plot matches", {
-  options <- jasptools::analysisOptions("TTestBayesianOneSample")
-  options$variables <- "contNormal"
-  options$descriptivesPlots <- TRUE
-  options$descriptivesPlotsCredibleInterval <- 0.90
-  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "descriptives", dir="TTestBayesianOneSample")
-})
+# test_that("Prior posterior plot matches", {
+#   set.seed(0)
+#   options <- jasptools::analysisOptions("TTestBayesianOneSample")
+#   options$variables <- "contNormal"
+#   options$plotPriorAndPosterior <- TRUE
+#   options$plotPriorAndPosteriorAdditionalInfo <- TRUE
+#   results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "prior-posterior", dir="TTestBayesianOneSample")
+# })
+#
+# test_that("BF robustness check plot matches", {
+#   options <- jasptools::analysisOptions("TTestBayesianOneSample")
+#   options$variables <- "contNormal"
+#   options$plotBayesFactorRobustness <- TRUE
+#   options$plotBayesFactorRobustnessAdditionalInfo <- FALSE
+#   results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "robustness-check", dir="TTestBayesianOneSample")
+# })
+#
+# test_that("Sequential analysis plot matches", {
+#   options <- jasptools::analysisOptions("TTestBayesianOneSample")
+#   options$variables <- "contNormal"
+#   options$plotSequentialAnalysis <- TRUE
+#   options$plotSequentialAnalysisRobustness <- TRUE
+#   results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "sequential-analysis", dir="TTestBayesianOneSample")
+# })
+#
+# test_that("Descriptives plot matches", {
+#   options <- jasptools::analysisOptions("TTestBayesianOneSample")
+#   options$variables <- "contNormal"
+#   options$descriptivesPlots <- TRUE
+#   options$descriptivesPlotsCredibleInterval <- 0.90
+#   results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "descriptives", dir="TTestBayesianOneSample")
+# })
 
 test_that("Descriptives table matches", {
   options <- jasptools::analysisOptions("TTestBayesianOneSample")
