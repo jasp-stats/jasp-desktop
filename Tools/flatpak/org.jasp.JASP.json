@@ -169,6 +169,42 @@
 			]
 		},
 		{
+			"name": "lsmeans",
+			"buildsystem": "simple",
+			"build-options": {
+				"build-args": ["--share=network"]
+			},
+			"build-commands":[
+				"Rscript -e \"install.packages(c('estimability', 'coda', 'multcomp', 'plyr', 'mvtnorm', 'xtable'), repos='https://cloud.r-project.org', Ncpus=4)\"",
+				"R CMD INSTALL ."
+			],
+			"sources": [
+				{
+					"type": "archive",
+					"url": "https://cran.r-project.org/src/contrib/lsmeans_2.27-61.tar.gz",
+					"sha256": "152a4b612756703633295e3f22b6c8861dbcb12ddeb7cdbd298d5aafdea48463"
+				}
+			]
+		},
+		{
+			"name": "afex",
+			"buildsystem": "simple",
+			"build-options": {
+				"build-args": ["--share=network"]
+			},
+			"build-commands":[
+				"Rscript -e \"install.packages(c('lme4', 'stringr', 'coin', 'pbkrtest', 'lmerTest', 'car', 'reshape2'), repos='https://cloud.r-project.org', Ncpus=4)\"",
+				"R CMD INSTALL ."
+			],
+			"sources": [
+				{
+					"type": "archive",
+					"url": "https://cran.r-project.org/src/contrib/Archive/afex/afex_0.18-0.tar.gz",
+					"sha256": "65bf137d1cffa97ac0bd79923612d29738d8dea3d1efa572875c0b570eab4453"
+				}
+			]
+		},
+		{
 			"name": "requiredRpackages",
 			"buildsystem": "simple",
 			"build-options": {
@@ -184,7 +220,7 @@
 			},
 			"build-commands":[
 				"cd png && unzip master.zip && R CMD INSTALL png-master && cd ..",
-				"Rscript -e \"install.packages(c('Rcpp', 'rjson','BMS','BayesFactor', 'BSDA', 'Epi','Formula','GPArotation','GeneNet','Hmisc','IsingFit','IsingSampler','MatrixModels','R6','RColorBrewer','SparseM','SuppDists','TH.data','TTR','abind','acepack','afex','arm','assertthat','backports','base64enc','bindr','bindrcpp','bootnet','ca','car','checkmate','cmprsk','coda','coin','colorspace','contfrac','conting','corpcor','curl','d3Network','data.table','deSolve','dichromat','digest','doSNOW','dplyr', 'ellipse','elliptic','estimability','etm','evaluate','fdrtool','foreach','ggm','ggplot2','glasso','glmnet','glue','gnm','gridExtra','gtable','gtools','highr','hmeasure','htmlTable','htmltools','htmlwidgets','huge','hypergeo','irlba','iterators','jpeg','jsonlite','knitr','labeling','latticeExtra','lavaan','lazyeval','lme4','lmerTest','lmtest','logspline','longitudinal','lsmeans','magrittr','markdown','matrixcalc','metafor','mgm','mi','mime','minqa','mitools','mnormt','modeltools','multcomp','munsell','mvtnorm','network','numDeriv','parcor','pbapply','pbivnorm','pbkrtest','pkgconfig','plotrix','plyr','ppls','psych','purrr','qgraph','quadprog','quantmod','quantreg','qvcalc','relaimpo','relimp','reshape2','rlang','rstudioapi','sandwich','scales','sem','semTools','sna','snow','statnet.common','stringi','stringr','survey','tibble','tidyr','tidyselect','tseries','vcd','vcdExtra','viridis','viridisLite','whisker','xtable','xts','yaml','zoo'), repos='https://cloud.r-project.org', Ncpus=4)\""
+				"Rscript -e \"install.packages(c('Rcpp', 'rjson','BMS','BayesFactor', 'BSDA', 'Epi','Formula','GPArotation','GeneNet','Hmisc','IsingFit','IsingSampler','MatrixModels','R6','RColorBrewer','SparseM','SuppDists','TH.data','TTR','abind','acepack','arm','assertthat','backports','base64enc','bindr','bindrcpp','bootnet','ca','car','checkmate','cmprsk','coda','coin','colorspace','contfrac','conting','corpcor','curl','d3Network','data.table','deSolve','dichromat','digest','doSNOW','dplyr', 'ellipse','elliptic','estimability','etm','evaluate','fdrtool','foreach','ggm','ggplot2','glasso','glmnet','glue','gnm','gridExtra','gtable','gtools','highr','hmeasure','htmlTable','htmltools','htmlwidgets','huge','hypergeo','irlba','iterators','jpeg','jsonlite','knitr','labeling','latticeExtra','lavaan','lazyeval','lme4','lmerTest','lmtest','logspline','longitudinal','magrittr','markdown','matrixcalc','metafor','mgm','mi','mime','minqa','mitools','mnormt','modeltools','multcomp','munsell','mvtnorm','network','numDeriv','parcor','pbapply','pbivnorm','pbkrtest','pkgconfig','plotrix','plyr','ppls','psych','purrr','qgraph','quadprog','quantmod','quantreg','qvcalc','relaimpo','relimp','reshape2','rlang','rstudioapi','sandwich','scales','sem','semTools','sna','snow','statnet.common','stringi','stringr','survey','tibble','tidyr','tidyselect','tseries','vcd','vcdExtra','viridis','viridisLite','whisker','xtable','xts','yaml','zoo'), repos='https://cloud.r-project.org', Ncpus=4)\""
 			],
 			"sources":[
 				{
