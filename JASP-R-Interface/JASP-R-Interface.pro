@@ -1,14 +1,18 @@
 QT -= gui
 
-CURRENT_R_VERSION = 3.3
+include(../JASP.pri) 
 
 CONFIG += c++11
-TARGET = JASP-R-Interface
+TARGET = $$JASP_R_INTERFACE_NAME
 DESTDIR = ..
 TEMPLATE = lib
 linux:CONFIG += staticlib
 
+QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.a'
 
+windows:QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_TARGET'*.lib' $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_TARGET'*.dll'
+
+macx: QMAKE_CLEAN +=$$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.dylib'
 
 _R_HOME = $$(R_HOME)
 
@@ -77,9 +81,9 @@ win32:LIBS += \
     -L$$_R_HOME/bin/$$ARCH -lR
 
 windows{
-    SOURCE_LIBFILE = $$OUT_PWD/$$DESTDIR/'lib'$$TARGET'.a'
+	SOURCE_LIBFILE = $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_NAME'.a'
     SOURCE_LIBFILE ~= s,/,\\,g
-    DEST_LIBFILE = $$OUT_PWD/$$DESTDIR/$$TARGET'.lib'
+	DEST_LIBFILE = $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_NAME'.lib'
     DEST_LIBFILE ~= s,/,\\,g
     copyfile.commands += $$quote(cmd /c copy /Y $$SOURCE_LIBFILE $$DEST_LIBFILE)
 
@@ -90,7 +94,7 @@ windows{
  }
 
 macx{
-	setpath.commands += install_name_tool -id @rpath/libJASP-R-Interface.1.0.0.dylib $$OUT_PWD/$$DESTDIR/libJASP-R-Interface.1.0.0.dylib
+	setpath.commands += install_name_tool -id @rpath/lib$$JASP_R_INTERFACE_NAME'.1.0.0.dylib' $$OUT_PWD/$$DESTDIR/lib$$JASP_R_INTERFACE_NAME'.1.0.0.dylib'
 	first.depends = $(first) setpath
 	export(first.depends)
 	export(setpath.commands)
