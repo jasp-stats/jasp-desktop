@@ -1732,7 +1732,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 					diagnostics.rows[[length(diagnostics.rows)+1]] <- list(Model=".", Dimension=".", Eigenvalue=".", "Condition Index"=".")
 
-					if (options$includeIntercept)
+					if (options$includeConstant)
 						diagnostics.rows[[length(diagnostics.rows)]]$"intercept" <- "."
 				}
 			}
@@ -2356,7 +2356,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					}
 
 					plots.regression[[j]]$status <- "running"
-					plotsResVsCov[[j]] <- plots.regression[[j]]
+					plotsResVsCov[[j-1]] <- plots.regression[[j]]
 
 					results[["plotsResVsCov"]]$collection <- plotsResVsCov
 
@@ -2398,7 +2398,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 					plot[["status"]] <- "complete"
 					plots.regression[[j]] <- plot
-					plotsResVsCov[[j]] <- plot
+					plotsResVsCov[[j-1]] <- plot
 					results[["plotsResVsCov"]]$collection <- plotsResVsCov
 
 					if ( ! .shouldContinue(callback(results)))
