@@ -2,5 +2,8 @@
     <qresource prefix="/backstage">
         <file>secondtabsstylesheet.qss</file>
         <file>firsttabsstylesheet.qss</file>
+        <file>BackstageDataLibrary.qml</file>
+        <file>DataLibraryList.qml</file>
+        <file>DataLibraryBreadCrumbs.qml</file>
     </qresource>
 </RCC>

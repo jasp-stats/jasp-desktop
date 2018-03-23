@@ -34,6 +34,7 @@
 #include "backstagecomputer.h"
 #include "backstageosf.h"
 #include "backstageexamples.h"
+#include "backstagedatalibrary.h"
 
 #include "fileevent.h"
 
@@ -102,6 +103,7 @@ private:
 	BackstageComputer *_bsComputer;
 	BackstageOSF *_bsOSF;
 	BackstageExamples *_bsExamples;
+	BackstageDataLibrary *_bsDataLibrary;
 	
 	QFileSystemWatcher _watcher;
 	QSettings _settings;
