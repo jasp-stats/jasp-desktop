@@ -50,19 +50,21 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	_fsmCurrent  = new FSBMCurrent(this);	
 	_bsCurrent = new FSBrowser(_tabWidget, FSBrowser::BrowseCurrent);
 	_bsCurrent->setFSModel(_fsmCurrent);
+	
+	//Computer
 	_bsComputer = new BackstageComputer(_tabWidget);
 
 	// OSF
 	_bsOSF = new BackstageOSF(_tabWidget);
 
-	// Examples
-	_bsExamples = new BackstageExamples(_tabWidget);
+	// DataLibrary
+	_bsDataLibrary = new BackstageDataLibrary(_tabWidget);
 	
 	_tabWidget->addTab(_bsRecent, "Recent");
 	_tabWidget->addTab(_bsCurrent, "Current");
 	_tabWidget->addTab(_bsComputer, "Computer");
 	_tabWidget->addTab(_bsOSF, "OSF");
-	_tabWidget->addTab(_bsExamples, "Data Library");
+	_tabWidget->addTab(_bsDataLibrary, "Data Library");
 
 	_tabWidget->hideTab(_bsCurrent);
 
@@ -71,7 +73,8 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	connect(&_watcher, SIGNAL(fileChanged(const QString&)), this, SLOT(dataFileModifiedHandler(const QString&)));
 	connect(_bsComputer, SIGNAL(dataSetIORequest(FileEvent *)), this, SLOT(dataSetIORequestHandler(FileEvent *)));
 	connect(_bsOSF, SIGNAL(dataSetIORequest(FileEvent *)), this, SLOT(dataSetIORequestHandler(FileEvent *)));
-	connect(_bsExamples, SIGNAL(dataSetIORequest(FileEvent *)), this, SLOT(dataSetIORequestHandler(FileEvent *)));
+	connect(_bsDataLibrary, SIGNAL(dataSetIORequest(FileEvent *)), this, SLOT(dataSetIORequestHandler(FileEvent *)));
+	
 	
 	VerticalTabWidget *osvw = tabWidget();
 	VerticalTabBar *vtb = osvw->tabBar();

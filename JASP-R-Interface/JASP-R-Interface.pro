@@ -1,6 +1,6 @@
 QT -= gui
 
-include(../JASP.pri) 
+include(../JASP.pri)
 
 CONFIG += c++11
 TARGET = $$JASP_R_INTERFACE_NAME
@@ -68,5 +68,3 @@ windows{
 #	export(setpath.commands)
 #	QMAKE_EXTRA_TARGETS += first setpath
 #}
-
-

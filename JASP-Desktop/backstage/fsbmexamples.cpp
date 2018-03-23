@@ -31,10 +31,12 @@
 #include "appdirs.h"
 #include "utils.h"
 
-FSBMExamples::FSBMExamples(QObject *parent)
+const QString FSBMExamples::rootelementname = "Categories";
+
+FSBMExamples::FSBMExamples(QObject *parent, QString root)
 	: FSBModel(parent)
 {
-	_rootPath = _path = "Categories";
+	_rootPath = _path = root;
 	_doc = NULL;
 
 }
@@ -55,14 +57,14 @@ void FSBMExamples::refresh()
 
 	_entries.clear();
 
-	if (_path == "Categories")
-		loadCategories();
+	if (_path == FSBMExamples::rootelementname)
+		loadRootElements();
 	else
 		loadFilesAndFolders(_path);
 
 }
 
-void FSBMExamples::loadCategories()
+void FSBMExamples::loadRootElements()
 {
 
 	if (_doc == NULL)
@@ -80,21 +82,20 @@ void FSBMExamples::loadCategories()
 
 		QString path = file_or_folder["path"].toString();
 		QString name = file_or_folder["name"].toString();
-		QString kind = file_or_folder["kind"].toString();
 		QString description = file_or_folder["description"].toString();
-
-		if (isFolder(kind))
+		QString type = file_or_folder["kind"].toString();
+		QString associated_datafile = file_or_folder["associated_datafile"].toString();
+		if (isFolder(type))
 		{
 			path = _path + QDir::separator()  + path;
-			_entries.append(createEntry(path, name, description, FSEntry::Folder));
+			_entries.append(createEntry(path, name, description, FSEntry::Folder, associated_datafile));
 		}
 		else
 		{
-			path = AppDirs::examples() + QDir::separator() + path;
-			_entries.append(createEntry(path, name, description,FSEntry::getEntryTypeFromPath(path)));
-
+			path = AppDirs::examples() +  QDir::separator()  + path;
+			if (associated_datafile != "") associated_datafile = AppDirs::examples() +  QDir::separator()  + associated_datafile;
+			_entries.append(createEntry(path, name, description, FSEntry::getEntryTypeFromPath(path), associated_datafile));
 		}
-
 	}
 
 	emit entriesChanged();
@@ -149,25 +150,24 @@ void FSBMExamples::loadFilesAndFolders(const QString &docpath)
 
 			QString path = file_or_folder["path"].toString();
 			QString name = file_or_folder["name"].toString();
-			QString kind = file_or_folder["kind"].toString();
 			QString description = file_or_folder["description"].toString();
-
-			if (isFolder(kind))
+			QString type = file_or_folder["kind"].toString();
+			QString associated_datafile = file_or_folder["associated_datafile"].toString();
+			if (isFolder(type))
 			{
 				path = _path + QDir::separator()  + path;
-				_entries.append(createEntry(path, name, description, FSEntry::Folder));
+				_entries.append(createEntry(path, name, description, FSEntry::Folder, ""));
 			}
 			else
 			{
 				path = AppDirs::examples() +  QDir::separator() + relpath +  QDir::separator() + path;
-				_entries.append(createEntry(path, name, description, FSEntry::getEntryTypeFromPath(path)));
+				if (associated_datafile != "") associated_datafile = AppDirs::examples() +  QDir::separator() + relpath  + associated_datafile;
+				_entries.append(createEntry(path, name, description, FSEntry::getEntryTypeFromPath(path), associated_datafile));
 			}
-
 		}
-
-		emit entriesChanged();
-
 	}
+
+	emit entriesChanged();
 
 }
 
@@ -215,4 +215,22 @@ QJsonDocument *FSBMExamples::getJsonDocument()
 bool FSBMExamples::isFolder(const QString &kind)
 {
 	return (kind.toLower() == "folder" ? true : false);
+}
+
+ExtendedFSEntry FSBMExamples::createEntry(const QString &path, const QString &name, const QString &description, FSEntry::EntryType type, const QString &associated_datafile)
+{
+	ExtendedFSEntry entry;
+
+	entry.name = name;
+	entry.path = path;
+	entry.description = description;
+	entry.entryType = type;
+	entry.associated_datafile = associated_datafile;
+
+	return entry;
+}
+
+const FSBMExamples::FileSystemExtendedEntryList &FSBMExamples::entries() const
+{
+	return _entries;
 }
