@@ -417,11 +417,11 @@ void EngineSync::runScriptOnProcess(RScriptStore * scriptStore, int processNo)
 
 void EngineSync::sendMessages()
 {	
-	for (size_t i = 0; i < _analysesInProgress.size(); i++) // this loop handles changes in running analyses
-	{
-		Analysis *analysis = _analysesInProgress[i];
-		if (analysis != NULL)
+	for (size_t i = 0; i < _engineStates.size(); i++) // this loop handles changes in running analyses
+		if (_engineStates[i] == engineState::analysis)
 		{
+			Analysis *analysis = _analysesInProgress[i];
+
 			if (analysis->status() == Analysis::Empty)
 			{ 
 				sendToProcess(i, analysis);
@@ -432,7 +432,6 @@ void EngineSync::sendMessages()
 				clearAnalysesInProgress(i);
 			}
 		}
-	}
 
 	for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
 	{
@@ -444,9 +443,9 @@ void EngineSync::sendMessages()
 		{
 			bool sent = false;
 
-			for (size_t i = 0; i < _analysesInProgress.size(); i++)
+			for (size_t i = 0; i < _engineStates.size(); i++)
 			{
-				if (_analysesInProgress[i] == NULL && _engineStates[i] == engineState::idle) //must be idle (no filter/rcode being run)
+				if (_engineStates[i] == engineState::idle) //must be idle (no filter/rcode being run)
 				{
 					sendToProcess(i, analysis);
 					sent = true;
@@ -460,12 +459,12 @@ void EngineSync::sendMessages()
 		else if (analysis->status() == Analysis::Inited)
 		{
 #ifndef JASP_DEBUG
-			for (size_t i = 1; i < _analysesInProgress.size(); i++) // don't perform 'runs' on process 0, only inits.
+			for (size_t i = 1; i < _engineStates.size(); i++) // don't perform 'runs' on process 0, only inits.
 #else
-			for (size_t i = 0; i < _analysesInProgress.size(); i++)
+			for (size_t i = 0; i < _engineStates.size(); i++)
 #endif
 			{
-				if (_analysesInProgress[i] == NULL)
+				if (_engineStates[i] == engineState::idle)
 				{
 					sendToProcess(i, analysis);
 					break;
