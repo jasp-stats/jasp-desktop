@@ -2346,18 +2346,20 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 		betweenSubjectFactors <- groupVars[groupVars %in% options$betweenSubjectFactors]
 		repeatedMeasuresFactors <- groupVars[groupVars %in% sapply(options$repeatedMeasuresFactors,function(x)x$name)]
-
+    
+		usePooledSE <- ifelse(is.null(options$usePooledStandErrorCI), FALSE, options$usePooledStandErrorCI)
+		
 		if (length(repeatedMeasuresFactors) == 0) {
 
 			summaryStat <- .summarySE(as.data.frame(dataset), measurevar = "dependent", groupvars = .v(betweenSubjectFactors),
 							conf.interval = options$confidenceIntervalInterval, na.rm = TRUE, .drop = FALSE, errorBarType = options$errorBarType, 
-							usePooledSE=options$usePooledStandErrorCI)
+							usePooledSE=usePooledSE)
 
 		} else {
 
 			summaryStat <- .summarySEwithin(as.data.frame(dataset), measurevar="dependent", betweenvars=.v(betweenSubjectFactors), withinvars=.v(repeatedMeasuresFactors),
 							idvar="subject", conf.interval=options$confidenceIntervalInterval, na.rm=TRUE, .drop=FALSE, errorBarType=options$errorBarType, 
-							usePooledSE=options$usePooledStandErrorCI)
+							usePooledSE=usePooledSE)
 
 		}
 
