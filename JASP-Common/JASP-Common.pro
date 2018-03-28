@@ -7,6 +7,9 @@ TARGET = JASP-Common
 TEMPLATE = lib
 CONFIG += staticlib
 CONFIG += c++11
+ 
+include(../JASP.pri)
+
 
    macx:INCLUDEPATH += ../../boost_1_64_0
 windows:INCLUDEPATH += ../../boost_1_64_0
