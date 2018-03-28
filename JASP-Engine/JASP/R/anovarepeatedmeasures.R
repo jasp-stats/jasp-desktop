@@ -2347,7 +2347,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		betweenSubjectFactors <- groupVars[groupVars %in% options$betweenSubjectFactors]
 		repeatedMeasuresFactors <- groupVars[groupVars %in% sapply(options$repeatedMeasuresFactors,function(x)x$name)]
     
-		usePooledSE <- ifelse(identical(options$usePooledStandErrorCI,""), options$usePooledStandErrorCI, FALSE)
+		usePooledSE <- ifelse(is.null(options$usePooledStandErrorCI), FALSE, options$usePooledStandErrorCI)
 		
 		if (length(repeatedMeasuresFactors) == 0) {
 
