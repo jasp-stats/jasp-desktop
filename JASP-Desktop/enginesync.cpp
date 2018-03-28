@@ -369,12 +369,12 @@ void EngineSync::sendRCode(QString rCode)
 
 void EngineSync::processScriptQueue()
 {
-	if(waitingScripts.size() == 0)
-		return;
-	
 	for(int i=0; i<_engineStates.size(); i++)
 		if(_engineStates[i] == engineState::idle)
 		{
+			if(waitingScripts.size() == 0)
+				return;
+
 			RScriptStore * waiting = waitingScripts.front();
 			waitingScripts.pop();
 			
