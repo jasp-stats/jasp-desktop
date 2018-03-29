@@ -51,6 +51,7 @@ SEMSimpleForm::~SEMSimpleForm()
 void SEMSimpleForm::checkSyntax()
 {
 	// create an R vector of available column names
+	// TODO: Proper handling of end-of-string characters and funny colnames
 	QString colNames = "c(";
 	bool firstCol = true;
 	QList<QString> vars = _availableVariablesModel.allVariables().asQList();
@@ -58,14 +59,17 @@ void SEMSimpleForm::checkSyntax()
 	{
 		if (!firstCol)
 			colNames.append(',');
-		colNames.append('\'').append(var.replace("'", "\\u0027")).append('\'');
+		colNames.append('\'')
+				.append(var.replace("\'", "\\u0027").replace("\"", "\\u0022"))
+				.append('\'');
 		firstCol = false;
 	}
 	colNames.append(')');
 	
 	// Get lavaan model code
 	QString lavaanCode = ui->model->toPlainText();
-	lavaanCode.replace("'", "\\u0027"); // replace ' with its unicode counterpart
+	// replace ' and " with their unicode counterparts
+	lavaanCode.replace("\'", "\\u0027").replace("\"", "\\u0022");
 	
 	// Create R code string	
 	QString checkCode = "checkLavaanModel('";

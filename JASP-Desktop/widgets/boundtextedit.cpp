@@ -80,7 +80,7 @@ void BoundTextEdit::applyModel(QString result)
 	std::cout << "result of length " << result.length() << ": " << result.toStdString() << std::flush;
 	if (result.length() == 0) {
 		_status->setStyleSheet(_okStylesheet);
-		_status->setText(_okMessage);
+		_status->setText("Model applied");
 		_model->apply();
 		_applied = true;
 	} else {
@@ -105,7 +105,7 @@ void BoundTextEdit::errorStateChangedHandler()
 	else
 	{
 		_status->setStyleSheet(_okStylesheet);
-		_status->setText(_okMessage + " *");
+		_status->setText(_okMessage);
 	}
 }
 
@@ -114,7 +114,7 @@ void BoundTextEdit::contentsChangedHandler()
 	if (_applied)
 	{
 		_applied = false;
-		_status->setText(_okMessage + " *");
+		_status->setText(_okMessage);
 	}
 }
 
@@ -144,43 +144,8 @@ void BoundTextEdit::resizeEvent(QResizeEvent *e)
 	_status->resize(this->width() - 2, _status->sizeHint().height());
 }
 
-void BoundTextEdit::paintEvent(QPaintEvent *event)
-{
-	QTextEdit::paintEvent(event);
-
-	if (_model->inError() && textCursor().blockNumber() != _model->errorBlock())
-	{
-		QTextBlock block = _model->findBlockByNumber(_model->errorBlock());
-
-		QTextCursor cursor(block);
-		cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor, _model->errorTokenPos());
-
-		QRect startPos = cursorRect(cursor);
-		QRect bounds;
-
-		if (_model->errorTokenLength() > 0)
-		{
-			cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, _model->errorTokenLength());
-			bounds = cursorRect(cursor).united(startPos);
-		}
-		else
-		{
-			bounds = cursorRect(cursor);
-			bounds.setWidth(30);
-			bounds.setLeft(bounds.left() + 4);
-		}
-
-		QPainter painter(this->viewport());
-		painter.setPen(QPen(QBrush(Qt::red), 2));
-		painter.drawLine(bounds.bottomLeft(), bounds.bottomRight());
-
-	}
-}
 
 void BoundTextEdit::insertFromMimeData(const QMimeData *source)
 {
 	QTextEdit::insertFromMimeData(source);
-
-//	if (_model != NULL)
-//		_model->checkEverything();
 }

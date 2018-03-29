@@ -46,7 +46,7 @@ public:
 
 	void setResults(Json::Value results, int progress = -1);
 	void setImageResults(Json::Value results);
-  void setImageEdited(Json::Value results);
+	void setImageEdited(Json::Value results);
 	void setUserData(Json::Value userData);
 	const Json::Value &results() const;
 	const Json::Value &userData() const;

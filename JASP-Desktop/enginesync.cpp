@@ -254,7 +254,9 @@ void EngineSync::process()
 				
 			case engineState::rcode:
 			{
-				//Do some RCode magic
+				//Do some RCode magic				
+				_engineStates[i] = engineState::idle;
+				
 				if (json.get("rCodeResult", Json::Value(Json::intValue)).isString()) {
 					std::cout << "R Code returned: " << json.get("rCodeResult", "") << std::flush;
 					emit rCodeReturned(QString::fromStdString(json.get("rCodeResult", "").asString()));
@@ -264,7 +266,6 @@ void EngineSync::process()
 					std::cout << "R Error returned: " << json.get("rCodeError", "") << std::flush;
 				}
 				
-				_engineStates[i] = engineState::idle;
 				
 				break;
 			}
@@ -428,6 +429,8 @@ void EngineSync::runScriptOnProcess(RScriptStore * scriptStore, int processNo)
 
 void EngineSync::sendMessages()
 {	
+	std::cout << "void EngineSync::sendMessages()\n" << std::flush;
+	
 	for (size_t i = 0; i < _engineStates.size(); i++) // this loop handles changes in running analyses
 		if (_engineStates[i] == engineState::analysis)
 		{
@@ -449,7 +452,7 @@ void EngineSync::sendMessages()
 		Analysis *analysis = *itr;
 		if (analysis == NULL)
 			continue;
-
+		
 		if (analysis->status() == Analysis::Empty || analysis->status() == Analysis::SaveImg || analysis->status() == Analysis::EditImg)
 		{
 			bool sent = false;
