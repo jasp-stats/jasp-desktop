@@ -601,7 +601,7 @@ function fSDOE(value) {
 
     var exponent = Math.floor(Math.log(Math.abs(value)) / Math.log(10))
 
-    return fsd(exponent)
+    return fSD(exponent)
 
 }
 
@@ -706,16 +706,16 @@ function formatCellforLatex (toFormat) {
      * @param toFormat - string
      */
 
+    // Rules to convert into latex
     if (toFormat === '&nbsp;') {
         return '';
     }
     let text = toFormat.toString();
-    let special_match = [  '_',   '%',/*   '$',*/   '&tau;', '&sup2;',   '&',  '\u03C7',  '\u03A7',  '\u03B7', '\u2080', '\u2081', '\u2082', '\u00B2',    '\u03B1']
-    let special_repla = ['\\_', '\\%',/* '\\$',*/ '$\\tau$', '$^{2}$', '\\&', '$\\chi$', '$\\Chi$', '$\\eta$', '$_{0}$', '$_{1}$', '$_{2}$', '$^{2}$', '$\\alpha$',]
+    let special_match = [  '_',   '%',/*   '$',*/   '&tau;', '&sup2;',   '&', '\u208A', '\u208B',  '\u223C',  '\u03C7',  '\u03A7',  '\u03B7', '\u2080', '\u2081', '\u2082', '\u00B2',    '\u03B1',     '\u03BB']
+    let special_repla = ['\\_', '\\%',/* '\\$',*/ '$\\tau$', '$^{2}$', '\\&', '$_{+}$', '$_{-}$', '$\\sim$', '$\\chi$', '$\\Chi$', '$\\eta$', '$_{0}$', '$_{1}$', '$_{2}$', '$^{2}$', '$\\alpha$', '$\\lambda$']
 
     // Handle special characters
     for (i = 0; i < special_match.length; ++i) {
-        console.log(text);
         text = (text.replace(special_match[i], special_repla[i])).toString();
     }
 
@@ -735,6 +735,13 @@ function formatCellforLatex (toFormat) {
     matched = text.match('<em>(.*)</em>');
     if (matched !== null) {
         text = text.replace(matched[0], matched[1]);
+    }
+
+    let special_match_after = ['<'];
+    let special_repla_after = ['$<$'];
+
+    for (i = 0; i < special_match_after.length; ++i) {
+        text = (text.replace(special_match_after[i], special_repla_after[i])).toString();
     }
 
     return text
