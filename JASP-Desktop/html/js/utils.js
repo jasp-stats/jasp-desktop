@@ -1,4 +1,4 @@
-function formatColumn(column, type, format, alignNumbers, combine, html = true) {
+function formatColumn(column, type, format, alignNumbers, combine, modelFootnotes, html = true) {
 
     var columnCells = Array(column.length)
 
@@ -50,7 +50,7 @@ function formatColumn(column, type, format, alignNumbers, combine, html = true) 
                 formatted.isEndOfGroup = true
 
             if (typeof cell.footnotes != "undefined")
-                formatted.footnotes = getFootnotes(cell.footnotes)
+                formatted.footnotes = getFootnotes(modelFootnotes, cell.footnotes)
 
             columnCells[rowNo] = formatted
         }
@@ -316,7 +316,7 @@ function formatColumn(column, type, format, alignNumbers, combine, html = true) 
             }
 
             if (typeof cell.footnotes != "undefined")
-                formatted.footnotes = getFootnotes(cell.footnotes)
+                formatted.footnotes = getFootnotes(modelFootnotes, cell.footnotes)
 
             if (cell.isStartOfGroup)
                 formatted["class"] += " new-group-row"
@@ -376,7 +376,7 @@ function formatColumn(column, type, format, alignNumbers, combine, html = true) 
             }
 
             if (typeof cell.footnotes != "undefined")
-                formatted.footnotes = getFootnotes(cell.footnotes)
+                formatted.footnotes = getFootnotes(modelFootnotes, cell.footnotes)
 
             if (cell.isStartOfGroup)
                 formatted["class"] += " new-group-row"
@@ -423,7 +423,7 @@ function formatColumn(column, type, format, alignNumbers, combine, html = true) 
             }
 
             if (typeof cell.footnotes != "undefined")
-                formatted.footnotes = getFootnotes(cell.footnotes)
+                formatted.footnotes = getFootnotes(modelFootnotes, cell.footnotes)
 
             if (cell.isStartOfGroup)
                 formatted["class"] += " new-group-row"
@@ -467,7 +467,7 @@ function formatColumn(column, type, format, alignNumbers, combine, html = true) 
             }
 
             if (typeof cell.footnotes != "undefined")
-                formatted.footnotes = getFootnotes(cell.footnotes)
+                formatted.footnotes = getFootnotes(modelFootnotes, cell.footnotes)
 
             if (cell.isStartOfGroup)
                 formatted["class"] += " new-group-row"
@@ -486,7 +486,7 @@ function formatColumn(column, type, format, alignNumbers, combine, html = true) 
 
 }
 
-function createColumns(columnDefs, rowData) {
+function createColumns(columnDefs, rowData, modelFootnotes) {
     /**
      * Returns 'columns' data array
      * @param columnDefs Schema (fields)
@@ -523,7 +523,7 @@ function createColumns(columnDefs, rowData) {
         }
 
         if (typeof columnDef[".footnotes"] != "undefined") {
-            columnHeader.footnotes = getFootnotes(columnDef[".footnotes"]);
+            columnHeader.footnotes = getFootnotes(modelFootnotes, columnDef[".footnotes"]);
         }
 
         columnHeaders[colNo] = columnHeader;
@@ -605,39 +605,38 @@ function fSDOE(value) {
 
 }
 
-function getFootnotes(indices) {
+function getFootnotes(optFootnotes, indices) {
     /**
      * Get footnotes for table
      * @param indices
      */
 
     var footnotes = Array(indices.length)
-    // var optFootnotes = this.model.get("footnotes");
-    //
-    // for (var i = 0; i < indices.length; i++) {
-    //
-    //     var index = indices[i]
-    //
-    //     if (_.isString(index)) {
-    //
-    //         footnotes[i] = index
-    //
-    //     } else if (index < optFootnotes.length) {
-    //
-    //         var footnote = optFootnotes[index]
-    //         if (typeof footnote.symbol == "undefined")
-    //             footnotes[i] = symbol(index)
-    //         else if (_.isNumber(footnote.symbol))
-    //             footnotes[i] = symbol(footnote.symbol)
-    //         else
-    //             footnotes[i] = footnote.symbol
-    //     }
-    //     else {
-    //
-    //         footnotes[i] = symbol(index)
-    //     }
-    //
-    // }
+
+    for (var i = 0; i < indices.length; i++) {
+
+        var index = indices[i]
+
+        if (_.isString(index)) {
+
+            footnotes[i] = index
+
+        } else if (index < optFootnotes.length) {
+
+            var footnote = optFootnotes[index]
+            if (typeof footnote.symbol == "undefined")
+                footnotes[i] = symbol(index)
+            else if (_.isNumber(footnote.symbol))
+                footnotes[i] = symbol(footnote.symbol)
+            else
+                footnotes[i] = footnote.symbol
+        }
+        else {
+
+            footnotes[i] = symbol(index)
+        }
+
+    }
 
     return footnotes
 }
@@ -711,8 +710,8 @@ function formatCellforLatex (toFormat) {
         return '';
     }
     let text = toFormat.toString();
-    let special_match = [  '_',   '%',/*   '$',*/   '&tau;', '&sup2;',   '&', '\u208A', '\u208B',  '\u223C',  '\u03C7',  '\u03A7',  '\u03B7', '\u2080', '\u2081', '\u2082', '\u00B2',    '\u03B1',     '\u03BB']
-    let special_repla = ['\\_', '\\%',/* '\\$',*/ '$\\tau$', '$^{2}$', '\\&', '$_{+}$', '$_{-}$', '$\\sim$', '$\\chi$', '$\\Chi$', '$\\eta$', '$_{0}$', '$_{1}$', '$_{2}$', '$^{2}$', '$\\alpha$', '$\\lambda$']
+    let special_match = [  '_',   '%',/*   '$',*/   '&tau;', '&sup2;',   '&', '\u208A', '\u208B',  '\u223C',  '\u03C7', '\u03A7',  '\u03B7',    '\u03C9', '\u2080', '\u2081', '\u2082', '\u00B2',    '\u03B1',     '\u03BB']
+    let special_repla = ['\\_', '\\%',/* '\\$',*/ '$\\tau$', '$^{2}$', '\\&', '$_{+}$', '$_{-}$', '$\\sim$', '$\\chi$',      'X', '$\\eta$', '$\\omega$', '$_{0}$', '$_{1}$', '$_{2}$', '$^{2}$', '$\\alpha$', '$\\lambda$']
 
     // Handle special characters
     for (i = 0; i < special_match.length; ++i) {

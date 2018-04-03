@@ -81,7 +81,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		let optOverTitle = this.model.get("overTitle")
 		let optFootnotes = this.model.get("footnotes");
 
-		let columnsDict = createColumns(optSchema.fields, optData);
+		let columnsDict = createColumns(optSchema.fields, optData, optFootnotes);
 		let columnHeaders = columnsDict['columnHeaders'];
 		let columns = columnsDict['columns'];
 
@@ -102,7 +102,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 			let alignNumbers = !optCasesAcrossColumns;  // numbers can't be aligned across rows
 			let combine = columnDefs[colNo].combine;
 
-			cells[colNo] = formatColumn(column, type, format, alignNumbers, combine, false);
+			cells[colNo] = formatColumn(column, type, format, alignNumbers, combine, optFootnotes, false);
 		}
 
 		var columnsInColumn = {}  // dictionary of counts
@@ -198,11 +198,6 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 			columnCount = swapped.columnCount
 		}
 
-		console.log("----------------");
-		console.log(cells);
-		console.log(columnHeaders);
-		console.log("****************");
-
 		return {'headers': columnHeaders, 'cells': cells}
 	},
 
@@ -234,8 +229,6 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 			}
 		}
 
-		// console.log(variable);
-
 		let latexCode = "";
 		// title
 		latexCode += "\\begin{table}[h]\n\t\\caption{" + optTitle + "}\n";
@@ -245,8 +238,6 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		let alignments = '';
 
 		for (let col = 0 ; col < columns; ++col) {
-
-			// FIXME: 1. does not handle over title
 			if (col == 0 || data.headers[col].content === undefined || data.headers[col].content === '') {
 				alignments += 'l';
 			} else {
@@ -255,6 +246,65 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		}
 
 		latexCode += "\t\\begin{tabular}{" + alignments + "}\n\t\t\\hline\n\t\t";
+		// Check if there is overTitle
+		let overTitleExists = false;
+		for (let i = 0; i < columns; ++i) {
+			if (data.headers[i]['overTitle'] !== undefined) {
+				overTitleExists = true;
+				break;
+			}
+		}
+		let cline_text = '';
+		if (overTitleExists) {
+			let count = 0;
+			let prev = undefined;
+
+			for (let i = 0; i < columns; ++i) {
+				let current = data.headers[i]['overTitle'];
+
+				if (i === columns - 1) {
+					if (current !== undefined) {
+						if (prev === current) {
+							count++;
+							latexCode += ('\\multicolumn{' + count + '}{c}{'+ formatCellforLatex(prev) + '} ');
+							cline_text += '\\cline{' + (i - count + 2) + '-' + (i + 1) + '}';
+						} else {
+							latexCode += ('\\multicolumn{' + count + '}{c}{'+ formatCellforLatex(prev) + '} & ');
+							cline_text += '\\cline{' + (i - count + 2) + '-' + (i + 1) + '}';
+							latexCode += ('\\multicolumn{1}{c}{'+ current + '} ');
+						}
+						continue;
+					}
+				}
+
+				if (current === undefined) {
+					if (prev !== undefined) {
+						latexCode += ('\\multicolumn{' + count + '}{c}{'+ formatCellforLatex(prev) + '} & ');
+						cline_text += '\\cline{' + (i - count + 1) + '-' + i + '}';
+					}
+
+					count = 0;
+					latexCode += ('\\multicolumn{1}{c}{} ');
+
+					if (i < columns - 1) {
+						latexCode += '& ';
+					}
+				} else {
+					if (current !== prev && prev !== undefined) {
+						latexCode += ('\\multicolumn{' + count + '}{c}{'+ formatCellforLatex(prev) + '} & ');
+						cline_text += '\\cline{' + (i - count + 1) + '-' + i + '}';
+						count = 1;
+					} else {
+						count++;
+					}
+				}
+
+				prev = current;
+			}
+
+			latexCode += '\\\\\n\t\t';
+			latexCode += cline_text + '\n\t\t';
+		}
 
 		for (let i = 0; i < columns; ++i) {
 			latexCode += (formatCellforLatex(data.headers[i].content) + ' ');
@@ -313,32 +363,6 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 			}
 		}
 
-		// for (let row = 0; row < optData.length; ++row) {
-		// 	latexCode += '\t\t';
-		//
-		// 	let columns = optSchema.fields.length;
-		//
-		// 	for (let col = 0; col < columns; ++col) {
-		//
-		// 		// TODO: output should be formatted based on the value of "format" key
-		// 		// TODO: subscripts and superscripts
-		// 		// TODO: special characters - $, /, \, etc.
-		// 		// TODO: Correlation matrix tables are a special case
-		// 		// FIXME: convert NaN to ""
-		//
-		// 		let formattedText = optData[row][optSchema.fields[col].name];
-		// 		if (optSchema.fields[col].type === "number") {
-		// 			formattedText = Number(Number(formattedText).toPrecision(4)).toString();
-		// 			// formattedText = Number(Number.parseFloat(Number(formattedText)).toPrecision(4)).toString();
-		// 		}
-		// 		latexCode += formattedText;
-		//
-		// 		if (col !== columns - 1) {
-		// 			latexCode += " & ";
-		// 		}
-		// 	}
-		// 	latexCode += ' \\\\\n';
-		// }
 		latexCode += '\t\t\\hline\n\t\\end{tabular} \n';
 
 		if (optFootnotes !== "" && optFootnotes !== null && optFootnotes.length !== 0) {
@@ -346,6 +370,12 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		}
 
 		latexCode += "\\end{table}"
+		latexCode += "\n%%%%%%%%%% Created by JASP %%%%%%%%%%\n";
+
+		// Add a comment
+		if (overTitleExists) {
+			latexCode = "%%%%% Requires booktabs package %%%%%\n\\usepackage{booktabs}\n\n" + latexCode;
+		}
 
 		return latexCode;
 	},
