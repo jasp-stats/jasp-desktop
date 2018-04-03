@@ -83,7 +83,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title=bf.title)
 
-	fields[[length(fields)+1]] <- list(name="properror", type="number", format="sf:4;dp:3", title="% error")
+	fields[[length(fields)+1]] <- list(name="properror", type="number", format="sf:4;dp:3", title="error %")
 
 	table <- list()
 	if(nullModelSpecified)
