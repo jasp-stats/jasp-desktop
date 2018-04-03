@@ -71,14 +71,43 @@
                <string>Plots</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_8">
-               <item row="0" column="0" colspan="2">
+               <item row="0" column="0" colspan="3">
                 <widget class="BoundCheckBox" name="plotBayesFactorRobustness">
                  <property name="text">
                   <string>Bayes factor robustness check</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1">
+               <item row="2" column="0">
+                <widget class="QWidget" name="widget_5" native="true">
+                 <property name="maximumSize">
+                  <size>
+                   <width>16</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="BoundCheckBox" name="plotBayesFactorRobustnessAdditionalInfo">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Additional info</string>
+                 </property>
+                 <property name="tristate">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
                 <spacer name="verticalSpacer_4">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
@@ -529,5 +558,22 @@
   <tabstop>priorWidth</tabstop>
  </tabstops>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>plotBayesFactorRobustness</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>plotBayesFactorRobustnessAdditionalInfo</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>265</x>
+     <y>427</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>239</x>
+     <y>456</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
