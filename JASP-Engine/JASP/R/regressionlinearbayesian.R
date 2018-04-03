@@ -83,17 +83,24 @@ RegressionLinearBayesian <- function (
 
 			if (! status$error) {
 				# use the actual column names
-				len.bas_obj <- length(bas_obj$namesx)
-				bas_obj$namesx[2:len.bas_obj] <- .unvf(bas_obj$namesx[2:len.bas_obj]) # first is intercept
+				nms <- bas_obj$namesx[-1]
+				
+				lookup <- .unv(colnames(dataset))
+				names(lookup) <- colnames(dataset)
+				nms <- stringr::str_replace_all(nms, lookup)
+
+				bas_obj$namesx[-1] <- nms
+				
 			}
 		}
 
 		# calculate summary information
 		if (is.null(postSummary) && !status$error) {
 			postSummary <- .calculatePosteriorSummary(bas_obj, dataset, options)
+			
+			# keep all relevant information in one object
+			bas_obj[["posteriorSummary"]] <- postSummary
 		}
-		# keep all relevant information in one object
-		bas_obj[["posteriorSummary"]] <- postSummary
 	}
 
 	regTableData <- NULL
@@ -488,21 +495,22 @@ RegressionLinearBayesian <- function (
 		weights = wlsWeights,
 		renormalize = TRUE
 	))
-	
-	if (hasInteraction) {
-		bas_lm <- BAS:::force.heredity.bas(object = bas_lm, prior.prob = pInteraction)
-	}
-	bas_lm[["interaction"]] <- list(
-		hasInteraction = hasInteraction,
-		footnote = footnoteInteraction,
-		pInteraction = pInteraction
-	)
 
 	if (isTryError(bas_lm)) {
 		status$ready <- FALSE
 		status$error <- TRUE
 		status$error.message <- .extractErrorMessage(bas_lm)
 	} else {
+		if (hasInteraction) {
+			bas_lm <- BAS:::force.heredity.bas(object = bas_lm, prior.prob = pInteraction)
+		}
+		
+		bas_lm[["interaction"]] <- list(
+			hasInteraction = hasInteraction,
+			footnote = footnoteInteraction,
+			pInteraction = pInteraction
+		)
+		
 		bas_lm[["nuisanceTerms"]] <- isNuisance
 		# fix for prior probs all returning 1 with uniform and bernoulli 0.5 priors
 		bas_lm[["priorprobs"]] <- bas_lm[["priorprobs"]] / sum(bas_lm[["priorprobs"]])
