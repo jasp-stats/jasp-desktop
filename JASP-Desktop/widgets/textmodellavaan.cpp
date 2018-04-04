@@ -32,6 +32,7 @@ TextModelLavaan::TextModelLavaan(QObject *parent)
 	_changed = false;
 	_inError = false;
 	this->setDocumentMargin(12);
+	_highlighter = new TextModelLavaan::SyntaxHighlighter(this);
 
 	connect(this, &TextModelLavaan::contentsChanged, this, &TextModelLavaan::contentChangedHandler);
 
@@ -92,28 +93,39 @@ void TextModelLavaan::contentChangedHandler()
 TextModelLavaan::SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent)
 	: QSyntaxHighlighter(parent)
 {
+	std::cout << "Syntax highlighter set" << std::flush;
+	
+	HighlightingRule rule;
+	
+	// operators
+	operatorFormat.setForeground(Qt::darkGreen);
+	operatorFormat.setFontWeight(QFont::ExtraBold);
+	QStringList operatorPatterns;
+	operatorPatterns << "\\=" << "\\~" << "\\<"
+					 << "\\*" << "\\>" << "\\:"
+					 << "\\%" << "\\|" << "\\+";
+	foreach (const QString &pattern, operatorPatterns) {
+		rule.pattern = QRegularExpression(pattern);
+		rule.format = operatorFormat;
+		highlightingRules.append(rule);
+	}
+	
+	// variables
+	variableFormat.setForeground(Qt::blue);
+	variableFormat.setFontItalic(true);
+	
+	rule.pattern = QRegularExpression("\\b\\w*\\b");
+	rule.format = variableFormat;
+	highlightingRules.append(rule);
 }
 
 void TextModelLavaan::SyntaxHighlighter::highlightBlock(const QString &text)
 {
-	// TODO: expand this. Operators: [\=\~\<\*\>\:\%]
-	int i = 0;
-
-	int variableStart = -1;
-
-	for (; i < text.length(); i++)
-	{
-		if (text.at(i).isSpace() && variableStart != -1)
-			break;
-		if (text.at(i).isLetterOrNumber() && variableStart == -1)
-			variableStart = i;
+	foreach (const HighlightingRule &rule, highlightingRules) {
+		QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
+		while (matchIterator.hasNext()) {
+			QRegularExpressionMatch match = matchIterator.next();
+			setFormat(match.capturedStart(), match.capturedLength(), rule.format);
+		}
 	}
-
-	QTextCharFormat format;
-	format.setUnderlineStyle(QTextCharFormat::SingleUnderline);
-	format.setUnderlineColor(Qt::red);
-
-	int count = i - variableStart;
-	if (count > 0)
-		setFormat(variableStart, count, format);
 }

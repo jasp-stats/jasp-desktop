@@ -26,6 +26,7 @@
 #include <QStringList>
 #include <QSyntaxHighlighter>
 #include <QTextCursor>
+#include <QRegularExpression>
 
 enum TokenType { UnknownToken, Variable, Comment, Operator, Plus, Times, Number, FunctionOpen, FunctionClose, Comma };
 
@@ -68,6 +69,15 @@ private:
 	public:
 		SyntaxHighlighter(QTextDocument *parent);
 		virtual void highlightBlock(const QString &text) OVERRIDE;
+	private:
+		struct HighlightingRule
+		{
+			QRegularExpression pattern;
+			QTextCharFormat format;
+		};
+		QVector<HighlightingRule> highlightingRules;
+		QTextCharFormat operatorFormat;
+		QTextCharFormat variableFormat;
 	};
 
 };

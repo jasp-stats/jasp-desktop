@@ -37,7 +37,7 @@ BoundTextEdit::BoundTextEdit(QWidget *parent) :
 	this->setLineWrapMode(QTextEdit::NoWrap);
 	this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-	QFont font("Monospace");
+	QFont font("Fira Code Retina");
 	font.setStyleHint(QFont::Monospace);
 	this->setFont(font);
 
@@ -123,7 +123,7 @@ void BoundTextEdit::keyPressEvent(QKeyEvent *event)
 	if (_model != NULL)
 	{
 		int modifiers = Qt::ControlModifier | Qt::MetaModifier;
-		if ((event->modifiers() & modifiers) && event->key() == Qt::Key_Return)
+		if ((event->modifiers() & modifiers) && (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter))
 		{
 			emit applyRequest();
 		}

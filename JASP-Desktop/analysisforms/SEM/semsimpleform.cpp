@@ -36,8 +36,6 @@ SEMSimpleForm::SEMSimpleForm(MainWindow *parent) :
 	ui->containerOptions->hide();
 	ui->containerAdvanced->hide();
 	
-	
-	
 	connect(ui->model, &BoundTextEdit::applyRequest, this, &SEMSimpleForm::checkSyntax);
 	connect(_mainWindow->_engineSync, &EngineSync::rCodeReturned, ui->model, &BoundTextEdit::applyModel);
 	

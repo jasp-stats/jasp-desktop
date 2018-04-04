@@ -200,24 +200,22 @@ checkPackages <- function() {
 
 checkLavaanModel <- function(model, availableVars) {
   # function returns informative printable string if there is an error, else ""
-  if (model == "") return("")
+  if (model == "") return("Enter a model")
 
-  # translate to and from base64 with stringr::str_replace_all
-  vars <- availableVars[order(vapply(availableVars, stringr::str_length, 1),
-                              decreasing = TRUE)]
-  vvars <- .v(vars)
-  names(vvars) <- vars
-  unvvars <- vars
-  names(unvvars) <- vvars
+  # translate to base64 - function from semsimple.R
+  vmodel <- .translateModel(model, availableVars);
 
-  vmodel <- stringr::str_replace_all(model, vvars)
+  unvvars <- availableVars
+  names(unvvars) <- vvars <- .v(availableVars)
+
+
 
   # Check model syntax
   parsed <- try(lavaan::lavParseModelString(vmodel, TRUE), silent = TRUE)
   if (inherits(parsed, "try-error")) {
     msg <- attr(parsed, "condition")$message
     if (msg == "NA/NaN argument") {
-      return("")
+      return("Enter a model")
     }
     return(stringr::str_replace_all(msg, unvvars))
   }
@@ -238,6 +236,7 @@ checkLavaanModel <- function(model, availableVars) {
   # if checks pass, return empty string
   return("")
 }
+
 
 .sanitizeForJson <- function(obj) {
 	# Removes elements that are not translatable to json
