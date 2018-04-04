@@ -41,13 +41,13 @@ class Engine
 {
 public:
 	explicit Engine();
-	
+
 public:
 
 	void run();
 	void setSlaveNo(int no);
 	void applyFilter();
-	
+
 private:
 
 	bool receiveMessages(int timeout = 0);
@@ -94,8 +94,8 @@ private:
 	int _slaveNo = 0;
 
 	bool _filterChanged = false;
-	std::string _filter = "genFilter", _generatedFilter = "";
-	
+	std::string _filter = "return(genFilter)", _generatedFilter = "";
+
 	bool _rCodeEntered = false;
 	std::string _rCode = "";
 };
