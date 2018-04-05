@@ -143,7 +143,8 @@ SOURCES += \
     $$PWD/customwebenginepage.cpp \
     $$PWD/asyncloaderthread.cpp \
     $$PWD/aboutdialogjsinterface.cpp \
-    $$PWD/variablespage/labelfiltergenerator.cpp
+    $$PWD/variablespage/labelfiltergenerator.cpp \
+    $$PWD/columnsmodel.cpp
 
 
 HEADERS  += \
@@ -303,7 +304,8 @@ HEADERS  += \
     $$PWD/customwebenginepage.h \
     $$PWD/asyncloaderthread.h \
     $$PWD/aboutdialogjsinterface.h \
-    $$PWD/variablespage/labelfiltergenerator.h
+    $$PWD/variablespage/labelfiltergenerator.h \
+    $$PWD/columnsmodel.h
 
 FORMS += \
     $$PWD/aboutdialog.ui \

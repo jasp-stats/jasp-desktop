@@ -185,6 +185,10 @@ public:
 	void setColumnAsScale(const std::vector<double> &values);
 	bool allLabelsPassFilter() const;
 
+	bool hasFilter() const;
+
+	void resetFilter();
+
 private:
 	void _setColumnAsNominalOrOrdinal(const std::vector<int> &values, bool is_ordinal = false);
 

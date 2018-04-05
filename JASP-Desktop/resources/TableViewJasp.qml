@@ -131,6 +131,9 @@ BasicTableViewJasp {
 
         TableViewSelection {
             id: selectionObject
+			property int timesUpdated: 0
+
+			onSelectionChanged: timesUpdated++
         }
 
         function selected(rowIndex) {

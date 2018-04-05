@@ -11,6 +11,7 @@
 class LevelsTableModel : public QAbstractTableModel
 {
 	Q_OBJECT
+	Q_PROPERTY(int filteredOut READ filteredOut NOTIFY filteredOutChanged)
 public:
 	LevelsTableModel(QObject *parent = 0);
 
@@ -22,7 +23,6 @@ public:
 	Q_ENUM(Roles)
 
 	void setColumn(Column *column);
-	void refresh();
 	void clearColumn();
 
 	int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
@@ -45,14 +45,21 @@ public:
 
 	Q_INVOKABLE void setAllowFilterOnLabel(int row, bool newAllowValue);
 	Q_INVOKABLE bool allowFilter(int row);
+	Q_INVOKABLE void resetFilterAllows();
 
 	void setDataSet(DataSet * thisDataSet) { _dataSet = thisDataSet; refresh(); }
+	int filteredOut();
+
+public slots:
+	void refresh();
 
 
 signals:
 	void refreshConnectedModels(Column * column);
 	void resizeValueColumn();
 	void labelFilterChanged();
+	void notifyColumnHasFilterChanged(); //should be on column but column is not a Qt object.
+	void filteredOutChanged();
 
 private:
 	Column *_column;
