@@ -14,16 +14,9 @@ windows:QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_TARGET'*.lib' $$OU
 
 macx: QMAKE_CLEAN +=$$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.dylib'
 
-_R_HOME = $$(R_HOME)
-
- ! isEmpty(_R_HOME) : message(using R_HOME of $$_R_HOME)
 
 macx {
     isEmpty(_R_HOME):_R_HOME = $$OUT_PWD/../../Frameworks/R.framework/Versions/$$CURRENT_R_VERSION/Resources
-}
-
-linux {
-    isEmpty(_R_HOME):_R_HOME = /usr/lib/R
 }
 
 windows {
@@ -35,7 +28,6 @@ windows {
 		ARCH = x64
 	}
 }
-message(using R_HOME of $$_R_HOME)
 
 INCLUDEPATH += ../../boost_1_64_0
 
@@ -69,10 +61,6 @@ INCLUDEPATH += \
     $$_R_HOME/library/Rcpp/include \
     $$_R_HOME/include
 
-linux:INCLUDEPATH += \
-    /usr/share/R/include \
-    /usr/lib/R/library/include \
-    $$_R_HOME/site-library/Rcpp/include
 
 macx:LIBS += \
     -L$$_R_HOME/lib -lR
