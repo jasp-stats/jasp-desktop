@@ -83,14 +83,7 @@ RegressionLinearBayesian <- function (
 
 			if (! status$error) {
 				# use the actual column names
-				nms <- bas_obj$namesx[-1]
-				
-				lookup <- .unv(colnames(dataset))
-				names(lookup) <- colnames(dataset)
-				nms <- stringr::str_replace_all(nms, lookup)
-
-				bas_obj$namesx[-1] <- nms
-				
+				bas_obj$namesx[-1] <- .unvf(bas_obj$namesx[-1])
 			}
 		}
 
@@ -844,6 +837,14 @@ RegressionLinearBayesian <- function (
 
 			}
 			posterior[["data"]] <- rows
+			
+			footnotes <- .newFootnotes()
+        	if (!is.null(bas_obj[["posteriorSummary"]][["footnotes"]])) {
+        		footnote <- bas_obj[["posteriorSummary"]][["footnotes"]]
+        		.addFootnote(footnotes, symbol = "<em>Warning.</em>", text = footnote)
+        	}
+			
+			posterior[["footnotes"]] <- as.list(footnotes)
 
 		} else {
 			names <- sapply(fields, function(x) x$name)
@@ -1577,13 +1578,22 @@ RegressionLinearBayesian <- function (
 	# required for the marginal posterior plots
 	# done here such that the information in the plots and tables always matches
 	# if a user selects the same options. (The method uses approximations and otherwise decimals are off)
+	footnote <- NULL
 	if (!is.null(bas_obj[["posteriorSummary"]])) {
 		coefBMA <- bas_obj[["posteriorSummary"]][["coefBMA"]]
 		conf95BMA <- bas_obj[["posteriorSummary"]][["conf95BMA"]]
 	} else {
 		# only need to recalculate this if bas_obj was remade (which implies bas_obj[["posteriorSummary"]] is NULL)
 		coefBMA <- .coefBas(bas_obj, estimator = "BMA", dataset = dataset, weights = bas_obj[["weights"]])
-		conf95BMA <- stats::confint(coefBMA,  level = 0.95)
+		
+		conf95BMA <- try(stats::confint(coefBMA,  level = 0.95))
+		if (isTryError(conf95BMA)) {
+		    conf95BMA <- cbind(NA, NA, coefBMA$postmean)
+		    rownames(conf95BMA) <- coefBMA$namesx
+		    colnames(conf95BMA) <- c("2.5%", "97.5%", "beta")
+		    conf95BMA[is.nan(conf95BMA)] <- NA
+		    footnote <- "Parameters estimates and/ or credible intervals could not be calculated."
+		}
 	}
 
 	# check if results of table and plots should match
@@ -1608,7 +1618,7 @@ RegressionLinearBayesian <- function (
 	}
 
 	return(list(coef = coef, loopIdx = loopIdx, coefficients = coefficients, probne0 = probne0,
-				conf95 = conf95, coefBMA = coefBMA, conf95BMA = conf95BMA))
+				conf95 = conf95, coefBMA = coefBMA, conf95BMA = conf95BMA, footnote = footnote))
 }
 
 .coefBas <- function (object, n.models, estimator = "BMA",
