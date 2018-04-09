@@ -539,6 +539,22 @@ RegressionLinearBayesian <- function (
 	}
 
 	nuisanceTerms <- bas_obj$nuisanceTerms # vector of TRUE / FALSE
+	if (length(nuisanceTerms) != length(bas_obj$namesx) - 1) {
+	# if there are categorical predictors
+
+		nuisanceTerms2 <- logical(length(bas_obj$namesx) - 1)
+		names(nuisanceTerms2) <- bas_obj$namesx[-1]
+		for (i in which(nuisanceTerms[nuisanceTerms])) {
+
+			idx <- grep(pattern = names(nuisanceTerms[i],
+				x = names(nuisanceTerms2)[i]), fixed = TRUE)
+			nuisanceTerms2[idx] <- TRUE
+		}
+		nuisanceTerms <- nuisanceTerms2
+
+	} else {
+		names(nuisanceTerms) <- .unvf(names(nuisanceTerms))
+	}
 
 	# default number of models to be shown
 	nRows <- NULL
@@ -575,7 +591,7 @@ RegressionLinearBayesian <- function (
 	# generate all model names
   allModelsVisited <- any(lengths(models) == 0) # analysis will chrash if TRUE
   model.names <- vector("character", length(models))
-  names(nuisanceTerms) <- .unvf(names(nuisanceTerms))
+
   for (i in 1:length(models)) {
     model <- models[[i]]
     if (length(model) == 1) { # only has intercept
@@ -673,7 +689,7 @@ RegressionLinearBayesian <- function (
 }
 
 .calcInlusionBF <- function(bas_obj) {
-	
+
 	nModels <- bas_obj[["n.models"]]
 	nPred <- length(bas_obj[["probne0"]])
 	
