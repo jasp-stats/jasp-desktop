@@ -4,6 +4,9 @@ include(../JASP.pri)
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+
+include(../JASP.pri)
+
 CONFIG += c++11
 
 DESTDIR = ..
@@ -57,11 +60,7 @@ macx:QMAKE_CXXFLAGS += -stdlib=libc++
 
 windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__ -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
 
-linux {
-    _R_HOME = $$(R_HOME)
-    isEmpty(_R_HOME):_R_HOME = /usr/lib/R
-    QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
-}
+
 
 macx | windows | exists(/app/lib/*) { DEFINES += JASP_LIBJSON_STATIC } else	{ linux:LIBS += -ljsoncpp }
 
