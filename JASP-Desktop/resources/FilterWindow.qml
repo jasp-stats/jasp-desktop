@@ -13,7 +13,7 @@ FocusScope
     property bool opened: false
     property int minimumHeightTextBoxes: 50
     property string lastAppliedFilter: defaultFilter
-    readonly property string defaultFilter: "genFilter"
+    readonly property string defaultFilter: "return(genFilter)"
 
 
     function toggle()

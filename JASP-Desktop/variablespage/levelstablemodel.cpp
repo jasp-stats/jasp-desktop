@@ -115,7 +115,7 @@ void LevelsTableModel::_moveRows(QModelIndexList &selection, bool up) {
 	labels.set(new_labels);
 
 	QModelIndex topLeft = createIndex(0,0);
-	QModelIndex bottonRight = createIndex(labels.size() - 1, 1);
+	QModelIndex bottonRight = createIndex(labels.size(), columnCount());
 	//emit a signal to make the view reread identified data
 	emit dataChanged(topLeft, bottonRight);
 }

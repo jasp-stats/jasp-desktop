@@ -369,12 +369,12 @@ void EngineSync::sendRCode(QString rCode)
 
 void EngineSync::processScriptQueue()
 {
-	if(waitingScripts.size() == 0)
-		return;
-	
 	for(int i=0; i<_engineStates.size(); i++)
 		if(_engineStates[i] == engineState::idle)
 		{
+			if(waitingScripts.size() == 0)
+				return;
+
 			RScriptStore * waiting = waitingScripts.front();
 			waitingScripts.pop();
 			
@@ -483,11 +483,11 @@ void EngineSync::startSlaveProcess(int no)
 
 	QStringList args;
 	args << QString::number(no);
-
+	
 #ifdef __WIN32__
 	QString rHomePath = programDir.absoluteFilePath("R");
 #elif __APPLE__
-	QString rHomePath = programDir.absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(CURRENT_R_VERSION) + "/Resources");
+	QString rHomePath = programDir.absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(AppInfo::getRVersion()) + "/Resources");
 #else //linux
 
 #ifndef R_HOME

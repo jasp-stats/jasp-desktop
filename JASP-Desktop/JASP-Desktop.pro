@@ -1,5 +1,7 @@
 QT += core gui webenginewidgets webchannel svg network printsupport xml qml quick quickwidgets
 
+include(../JASP.pri)
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 

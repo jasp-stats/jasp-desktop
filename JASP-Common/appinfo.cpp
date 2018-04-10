@@ -16,6 +16,7 @@
 //
 
 #include "appinfo.h"
+#include <sstream> 
 
 //Put separately for use in JASP/Tools/make-debian-package.sh.
 const int VersionMajor(0), VersionMinor(8), VersionRevision(6), VersionBuildNumber(255);
@@ -33,5 +34,14 @@ std::string AppInfo::getBuildYear()
 {
 	std::string datum = __DATE__;
 	return datum.substr(datum.length() - 4);
+}
+
+std::string AppInfo::getRVersion()
+{	
+	std::stringstream ss;
+	ss << CURRENT_R_VERSION;
+	std::string str;
+	ss >> str;
+	return str;
 }
 
