@@ -29,6 +29,9 @@ DEPENDPATH = ..
 PRE_TARGETDEPS += ../JASP-Common
 LIBS +=  -l$$JASP_R_INTERFACE_NAME -L.. -lJASP-Common
 
+SHOULD_LINK_TO_R=true
+include(../R_HOME.pri)
+
 windows:CONFIG(ReleaseBuild) {
 	LIBS += -llibboost_filesystem-vc141-mt-1_64 -llibboost_system-vc141-mt-1_64 -larchive.dll
 }
@@ -48,9 +51,6 @@ linux {
 
 macx {
 	INCLUDEPATH += ../../boost_1_64_0
-
-	isEmpty(_R_HOME):_R_HOME = $$OUT_PWD/../../Frameworks/R.framework/Versions/$$CURRENT_R_VERSION/Resources
-	R_EXE  = $$_R_HOME/bin/R
 }
 
 
@@ -63,8 +63,6 @@ windows {
 
 	INCLUDEPATH += ../../boost_1_64_0
 
-	isEmpty(_R_HOME):_R_HOME = $$OUT_PWD/../R
-	R_EXE  = $$_R_HOME/bin/$$ARCH/R
 }
 
 macx | windows | exists(/app/lib/*) { DEFINES += JASP_LIBJSON_STATIC
