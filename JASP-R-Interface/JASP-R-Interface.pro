@@ -61,12 +61,9 @@ INCLUDEPATH += \
     $$_R_HOME/library/Rcpp/include \
     $$_R_HOME/include
 
+include(../R_HOME.pri)
 
-macx:LIBS += \
-    -L$$_R_HOME/lib -lR
 
-win32:LIBS += \
-    -L$$_R_HOME/bin/$$ARCH -lR
 
 windows{
 	SOURCE_LIBFILE = $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_NAME'.a'
