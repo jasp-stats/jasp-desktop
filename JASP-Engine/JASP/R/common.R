@@ -203,7 +203,8 @@ checkLavaanModel <- function(model, availableVars) {
   if (model == "") return("Enter a model")
 
   # translate to base64 - function from semsimple.R
-  vmodel <- .translateModel(model, availableVars);
+  usedvars <- .getUsedVars(model, availableVars);
+  vmodel <- .translateModel(model, usedvars);
 
   unvvars <- availableVars
   names(unvvars) <- vvars <- .v(availableVars)
@@ -229,7 +230,8 @@ checkLavaanModel <- function(model, availableVars) {
     if (!all(modelVarsInAvailableVars)) {
       notRecognized <- modelVars[!modelVarsInAvailableVars]
       return(paste("Variable(s) in model syntax not recognized:",
-                   paste(.unv(notRecognized), collapse = ", ")))
+                   paste(stringr::str_replace_all(notRecognized, unvvars),
+                         collapse = ", ")))
     }
   }
 

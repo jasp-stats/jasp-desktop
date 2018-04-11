@@ -52,8 +52,8 @@ BoundTextEdit::BoundTextEdit(QWidget *parent) :
 	QFontMetrics metrics(font);
 	this->setTabStopWidth(metrics.width("  ") + 2);
 
-	_errorStylesheet = "padding: 4px; padding-right: 1.5em; background-color: rgba(255,0,0,128); margin-left: 100%; margin-bottom: 0.5em;";
-	_okStylesheet    = "padding: 4px; padding-right: 1.5em; margin-left: 100%; margin-bottom: 0.5em;";
+	_errorStylesheet = "padding: 4px; padding-right: 1.5em; background-color: rgba(255,0,0,128); margin-left: 100%;";
+	_okStylesheet    = "padding: 4px; padding-right: 1.5em; margin-left: 100%;";
 
 #ifdef __APPLE__
 	_okMessage = "\u2318 + Enter to apply";
