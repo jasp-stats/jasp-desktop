@@ -67,6 +67,7 @@ void SEMSimpleForm::checkSyntax()
 	// Get lavaan model code
 	QString lavaanCode = ui->model->toPlainText();
 	// replace ' and " with their unicode counterparts
+	// This protects against arbitrary code being run through string escaping.
 	lavaanCode.replace("\'", "\\u0027").replace("\"", "\\u0022");
 	
 	// Create R code string	

@@ -99,7 +99,6 @@ TextModelLavaan::SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent)
 	
 	// operators
 	operatorFormat.setForeground(Qt::darkGreen);
-	operatorFormat.setFontWeight(QFont::ExtraBold);
 	QStringList operatorPatterns;
 	operatorPatterns << "\\=" << "\\~" << "\\<"
 					 << "\\*" << "\\>" << "\\:"
@@ -111,11 +110,16 @@ TextModelLavaan::SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent)
 	}
 	
 	// variables
-	variableFormat.setForeground(Qt::blue);
-	variableFormat.setFontItalic(true);
-	
+	variableFormat.setToolTip("variable");
 	rule.pattern = QRegularExpression("\\b\\w*\\b");
 	rule.format = variableFormat;
+	highlightingRules.append(rule);
+	
+	// comments
+	commentFormat.setForeground(Qt::darkGray);
+	commentFormat.setFontItalic(true);
+	rule.pattern = QRegularExpression("#[^\n]*");
+	rule.format = commentFormat;
 	highlightingRules.append(rule);
 }
 

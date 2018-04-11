@@ -21,6 +21,7 @@
 #include <QKeyEvent>
 #include <QPaintEvent>
 #include <QPainter>
+#include <QFontDatabase>
 
 #include "qutils.h"
 
@@ -36,16 +37,23 @@ BoundTextEdit::BoundTextEdit(QWidget *parent) :
 
 	this->setLineWrapMode(QTextEdit::NoWrap);
 	this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-	QFont font("Fira Code Retina");
+	this->setAcceptRichText(false);
+	
+	
+	
+	int id = QFontDatabase::addApplicationFont(":/fonts/FiraCode-Retina.ttf");
+	QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+	
+	QFont font(family);
 	font.setStyleHint(QFont::Monospace);
+	font.setPointSize(10);
 	this->setFont(font);
 
 	QFontMetrics metrics(font);
-	this->setTabStopWidth(metrics.width("    ") + 2);
+	this->setTabStopWidth(metrics.width("  ") + 2);
 
-	_errorStylesheet = "padding : 4px 2px ; text-align : right ; background-color : pink ;";
-	_okStylesheet    = "padding : 4px 2px ; text-align : right ; ";
+	_errorStylesheet = "padding: 4px; padding-right: 1.5em; background-color: rgba(255,0,0,128); margin-left: 100%; margin-bottom: 0.5em;";
+	_okStylesheet    = "padding: 4px; padding-right: 1.5em; margin-left: 100%; margin-bottom: 0.5em;";
 
 #ifdef __APPLE__
 	_okMessage = "\u2318 + Enter to apply";
@@ -54,9 +62,13 @@ BoundTextEdit::BoundTextEdit(QWidget *parent) :
 #endif
 
 	_status = new QLabel(this);
+	_status->setWordWrap(true);
+	_status->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+	_status->setAlignment(Qt::AlignBottom | Qt::AlignRight);
 	_status->setStyleSheet(_okStylesheet);
 	_status->setText(_okMessage);
-
+	_status->setAttribute(Qt::WA_TransparentForMouseEvents);
+	
 	_applied = true;
 }
 
@@ -80,11 +92,13 @@ void BoundTextEdit::applyModel(QString result)
 	std::cout << "result of length " << result.length() << ": " << result.toStdString() << std::flush;
 	if (result.length() == 0) {
 		_status->setStyleSheet(_okStylesheet);
+		_status->setAlignment(Qt::AlignRight);
 		_status->setText("Model applied");
 		_model->apply();
 		_applied = true;
 	} else {
 		_status->setStyleSheet(_errorStylesheet);
+		_status->setAlignment(Qt::AlignLeft);
 		_status->setText(result);
 	}
 }
@@ -100,11 +114,13 @@ void BoundTextEdit::errorStateChangedHandler()
 	if (_model->inError())
 	{
 		_status->setStyleSheet(_errorStylesheet);
+		_status->setAlignment(Qt::AlignLeft);
 		_status->setText(_model->errorMessage());
 	}
 	else
 	{
 		_status->setStyleSheet(_okStylesheet);
+		_status->setAlignment(Qt::AlignRight);
 		_status->setText(_okMessage);
 	}
 }

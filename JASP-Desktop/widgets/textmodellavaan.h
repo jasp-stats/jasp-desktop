@@ -78,6 +78,7 @@ private:
 		QVector<HighlightingRule> highlightingRules;
 		QTextCharFormat operatorFormat;
 		QTextCharFormat variableFormat;
+		QTextCharFormat commentFormat;
 	};
 
 };

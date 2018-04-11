@@ -27,4 +27,8 @@
         <file>DataTableView.qml</file>
         <file>PlusMinusCheckButton.qml</file>
     </qresource>
+    <qresource prefix="/">
+        <file>fonts/FiraCode-Retina.ttf</file>
+    </qresource>
+    <qresource prefix="/fonts"/>
 </RCC>
