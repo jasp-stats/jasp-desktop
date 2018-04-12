@@ -80,7 +80,7 @@ windows{
 
 macx{
 	setpath.commands += install_name_tool -id @rpath/lib$$JASP_R_INTERFACE_NAME'.1.0.0.dylib' $$OUT_PWD/$$DESTDIR/lib$$JASP_R_INTERFACE_NAME'.1.0.0.dylib'
-	first.depends = $(first) setpath
+	#first.depends = $(first) setpath
 	export(first.depends)
 	export(setpath.commands)
 	QMAKE_EXTRA_TARGETS += first setpath

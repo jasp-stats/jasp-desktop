@@ -15,7 +15,7 @@ linux {
     QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
     INCLUDEPATH += /usr/include/R/
 
-    LIBS += -L$$_R_HOME/lib -lR -lrt
+
     R_EXE  = $$_R_HOME/bin/R
 
 
@@ -35,9 +35,11 @@ windows {
         R_EXE  = $$_R_HOME/bin/$$ARCH/R
 }
 
-$SHOULD_LINK_TO_R {
-    macx:LIBS += -L$$_R_HOME/lib -lR
-    win32:LIBS += -L$$_R_HOME/bin/$$ARCH -lR
+$$BUILDING_JASP_ENGINE {
+	linux: LIBS += -L$$_R_HOME/lib -lR -lrt # because linux JASP-R-Interface is staticlib
+} else {
+	macx:  LIBS += -L$$_R_HOME/lib -lR
+	win32: LIBS += -L$$_R_HOME/bin/$$ARCH -lR
 }
 
 
