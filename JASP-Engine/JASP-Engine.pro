@@ -3,6 +3,7 @@ QT += core
 QT -= gui
 
 include(../JASP.pri)
+BUILDING_JASP_ENGINE=true
 
 CONFIG += c++11
 linux:CONFIG += -pipe
@@ -29,8 +30,7 @@ DEPENDPATH = ..
 PRE_TARGETDEPS += ../JASP-Common
 LIBS +=  -l$$JASP_R_INTERFACE_NAME -L.. -lJASP-Common
 
-SHOULD_LINK_TO_R=true
-include(../R_HOME.pri)
+include(../R_HOME.pri) #needed to build r-packages
 
 windows:CONFIG(ReleaseBuild) {
 	LIBS += -llibboost_filesystem-vc141-mt-1_64 -llibboost_system-vc141-mt-1_64 -larchive.dll
