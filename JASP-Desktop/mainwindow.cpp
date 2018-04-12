@@ -52,6 +52,7 @@
 #include "analysisforms/Common/ttestonesampleform.h"
 #include "analysisforms/Common/ttestpairedsamplesform.h"
 #include "analysisforms/Common/multinomialtestform.h"
+#include "analysisforms/Common/multinomialtestbayesianform.h"
 
 #include "analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.h"
 #include "analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
@@ -792,6 +793,7 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	else if (name == "RegressionLogLinear")							form = new RegressionLogLinearForm(contentArea);
 	else if (name == "AnovaRepeatedMeasures")						form = new AnovaRepeatedMeasuresForm(contentArea);
 	else if (name == "TTestBayesianOneSample")						form = new TTestBayesianOneSampleForm(contentArea);
+	else if (name == "MultinomialTestBayesian")                                             form = new MultinomialTestBayesianForm(contentArea);
 	else if (name == "CorrelationBayesianPairs")					form = new CorrelationBayesianPairsForm(contentArea);
 	else if (name == "ExploratoryFactorAnalysis")					form = new ExploratoryFactorAnalysisForm(contentArea);
 	else if (name == "PrincipalComponentAnalysis")					form = new PrincipalComponentAnalysisForm(contentArea);
@@ -843,7 +845,6 @@ void MainWindow::showForm(Analysis *analysis)
 
 	if (_currentOptionsWidget != NULL)
 	{
-
 		int requiredSize		= _currentOptionsWidget->sizeHint().width();
 		int currentOptionSpace	= ui->panel_2_Options->minimumWidth() - _scrollbarWidth;
 

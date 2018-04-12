@@ -32,7 +32,8 @@ SOURCES += \
     $$PWD/ttestindependentsamplesform.cpp \
     $$PWD/ttestonesampleform.cpp \
     $$PWD/ttestpairedsamplesform.cpp \
-    $$PWD/multinomialtestform.cpp
+    $$PWD/multinomialtestform.cpp \
+    $$PWD/multinomialtestbayesianform.cpp \
 
 HEADERS += \
     $$PWD/../../ribbons/ribbonanalysis.h \
@@ -68,7 +69,8 @@ HEADERS += \
     $$PWD/ttestindependentsamplesform.h \
     $$PWD/ttestonesampleform.h \
     $$PWD/ttestpairedsamplesform.h \
-    $$PWD/multinomialtestform.h
+    $$PWD/multinomialtestform.h \
+    $$PWD/multinomialtestbayesianform.h \
 
 FORMS += \
     $$PWD/../../ribbons/ribbonanalysis.ui \
@@ -104,4 +106,5 @@ FORMS += \
     $$PWD/ttestindependentsamplesform.ui \
     $$PWD/ttestonesampleform.ui \
     $$PWD/ttestpairedsamplesform.ui \
-    $$PWD/multinomialtestform.ui
+    $$PWD/multinomialtestform.ui \
+    $$PWD/multinomialtestbayesianform.ui \
