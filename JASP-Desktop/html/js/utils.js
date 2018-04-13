@@ -1,100 +1,101 @@
 function formatColumn(column, type, format, alignNumbers, combine, modelFootnotes, html = true) {
+    /**
+     * Prepares the columns of a table to the required format
+     * @param column
+     * @param type           column type - string, number, ...
+     * @param format         decimal format, p-value format
+     * @param alignNumbers
+     * @param combine
+     * @param modelFootnotes
+     * @param html           html render or latex code. Default is true
+     */
 
-    var columnCells = Array(column.length)
+    let columnCells = Array(column.length);
 
-    if (type == "string" || typeof format == "undefined") {
+    if (type === "string" || typeof format == "undefined") {
 
-        for (var rowNo = 0; rowNo < column.length; rowNo++) {
+        for (let rowNo = 0; rowNo < column.length; rowNo++) {
 
-            var clazz = (type == "string") ? "text" : "number"
-
-            var cell = column[rowNo]
-            var content = cell.content
-            var formatted
-            var combined = false
+            let clazz = (type == "string") ? "text" : "number";
+            let cell = column[rowNo];
+            let content = cell.content;
+            let formatted;
+            let combined = false;
 
             if (typeof content == "undefined") {
-
                 formatted = { content: "." }
-            }
-            else if (combine && rowNo > 0 && column[rowNo - 1].content == content) {
+
+            } else if (combine && rowNo > 0 && column[rowNo - 1].content == content) {
                 clazz += " combined";
-
                 let content = "&nbsp;";
-
                 if (!html) {
                     content = " ";
                 }
+                formatted = { content: content, class: clazz };
+                combined = true;
 
-                formatted = { content: content, class: clazz }
-                combined = true
-            }
-            else {
-
+            } else {
                 if (typeof content === "string") {
                     if (html) {
-                        content = content.replace(/\u273B/g, "<small>\u273B</small>")
+                        content = content.replace(/\u273B/g, "<small>\u273B</small>");
                     }
                 }
-
-                formatted = { content: content, "class": clazz }
+                formatted = { content: content, "class": clazz };
             }
 
             if (combined == false && cell.isStartOfGroup)
-                formatted.isStartOfGroup = true
+                formatted.isStartOfGroup = true;
 
             if (cell.isStartOfSubGroup)
-                formatted.isStartOfSubGroup = true
+                formatted.isStartOfSubGroup = true;
 
             if (cell.isEndOfGroup)
-                formatted.isEndOfGroup = true
+                formatted.isEndOfGroup = true;
 
             if (typeof cell.footnotes != "undefined")
-                formatted.footnotes = getFootnotes(modelFootnotes, cell.footnotes)
+                formatted.footnotes = getFootnotes(modelFootnotes, cell.footnotes);
 
-            columnCells[rowNo] = formatted
+            columnCells[rowNo] = formatted;
         }
-
         return columnCells
     }
 
-    var formats = format.split(";");
-    var p = NaN
-    var dp = NaN
-    var sf = NaN
-    var pc = false
-    var approx = false
-    var log10 = false
-    var dp = parseInt(window.globSet.decimals); // NaN if not specified by user
-    var fixDecimals = (typeof dp === 'number') && (dp % 1 === 0);
+    let formats = format.split(";");
+    let p = NaN;
+    let dp = NaN;
+    let sf = NaN;
+    let pc = false;
+    let approx = false;
+    let log10 = false;
+    dp = parseInt(window.globSet.decimals);  // NaN if not specified by user
+    let fixDecimals = (typeof dp === 'number') && (dp % 1 === 0);
 
-    for (var i = 0; i < formats.length; i++) {
+    for (let i = 0; i < formats.length; i++) {
 
-        var f = formats[i]
-
+        let f = formats[i];
         if (f.indexOf("p:") != -1) {
             // override APA style if exact p-values wanted
-            if (window.globSet.pExact){
+            if (window.globSet.pExact) {
                 sf = 4;
             } else {
                 p = f.substring(2);
             }
         }
 
-        if (f.indexOf("dp:") != -1 && ! fixDecimals)
-            dp = f.substring(3)
+        if (f.indexOf("dp:") != -1 && !fixDecimals)
+            dp = f.substring(3);
 
         if (f.indexOf("sf:") != -1)
-            sf = f.substring(3)
+            sf = f.substring(3);
 
         if (f.indexOf("pc") != -1)
-            pc = true
+            pc = true;
 
         if (f.indexOf("~") != -1)
             approx = true;
 
         if (f.indexOf("log10") != -1)
-            log10 = true
+            log10 = true;
     }
 
     if (isFinite(sf)) {
@@ -489,8 +490,9 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 function createColumns(columnDefs, rowData, modelFootnotes) {
     /**
      * Returns 'columns' data array
-     * @param columnDefs Schema (fields)
-     * @param rowData    Table data
+     * @param columnDefs     Schema (fields)
+     * @param rowData        Table data
+     * @param modelFootnotes
      */
 
     let columnCount = columnDefs.length;
@@ -608,34 +610,29 @@ function fSDOE(value) {
 function getFootnotes(optFootnotes, indices) {
     /**
      * Get footnotes for table
+     * @param optFootnotes footnotes for the current table
      * @param indices
      */
 
-    var footnotes = Array(indices.length)
+    let footnotes = Array(indices.length);
 
-    for (var i = 0; i < indices.length; i++) {
-
-        var index = indices[i]
+    for (let i = 0; i < indices.length; i++) {
+        let index = indices[i];
 
         if (_.isString(index)) {
-
-            footnotes[i] = index
-
+            footnotes[i] = index;
         } else if (index < optFootnotes.length) {
 
-            var footnote = optFootnotes[index]
+            let footnote = optFootnotes[index];
             if (typeof footnote.symbol == "undefined")
-                footnotes[i] = symbol(index)
+                footnotes[i] = symbol(index);
             else if (_.isNumber(footnote.symbol))
-                footnotes[i] = symbol(footnote.symbol)
+                footnotes[i] = symbol(footnote.symbol);
             else
-                footnotes[i] = footnote.symbol
+                footnotes[i] = footnote.symbol;
+        } else {
+            footnotes[i] = symbol(index);
         }
-        else {
-
-            footnotes[i] = symbol(index)
-        }
-
     }
 
     return footnotes
@@ -652,51 +649,56 @@ function symbol(index) {
 }
 
 function swapRowsAndColumns (columnHeaders, columns, optOverTitle) {
+    /**
+     * Swap columns and rows (descriptive tables - input data is reversed.)
+     * @param columnHeaders
+     * @param columns
+     * @param optOverTitle
+     */
 
-    var newRowCount = columns.length - 1
-    var newColumnCount = columns[0].length + 1
+    let newRowCount = columns.length - 1;
+    let newColumnCount = columns[0].length + 1;
 
     if (optOverTitle) {
-
         // Transform first column into overtitle, second into title
         var newColumnHeaders = Array(newColumnCount-1);
-        for (var colNo = 0; colNo < newColumnCount - 1; colNo++) {
-            newColumnHeaders[colNo] = { content: columns[1][colNo].content,
-                                                                    header: true,
-                                                                    overTitle: columns[0][colNo].content,
-                                                                    type: "string" };
+
+        for (let colNo = 0; colNo < newColumnCount - 1; colNo++) {
+            newColumnHeaders[colNo] = {
+                content: columns[1][colNo].content,
+                header: true,
+                overTitle: columns[0][colNo].content,
+                type: "string"
+            };
         }
         // remove the column that became title
         columns.shift();
         columnHeaders.shift();
         newRowCount--;
-
     } else {
-
-        var newColumnHeaders = Array(newColumnCount);
+        // var newColumnHeaders = Array(newColumnCount);
         var newColumnHeaders = columns[0];
-
     }
 
-    var newColumns = Array(newColumnCount)
+    let newColumns = Array(newColumnCount);
+    let cornerCell = columnHeaders.shift();
+    newColumnHeaders.unshift(cornerCell);
+    newColumns[0] = columnHeaders;
 
-    var cornerCell = columnHeaders.shift()
-    newColumnHeaders.unshift(cornerCell)
-    newColumns[0] = columnHeaders
+    for (let colNo = 1; colNo < newColumnCount; colNo++) {
+        newColumns[colNo] = Array(newRowCount);
 
-    for (var colNo = 1; colNo < newColumnCount; colNo++) {
-
-        newColumns[colNo] = Array(newRowCount)
-
-        for (var rowNo = 0; rowNo < newRowCount; rowNo++) {
-
-            newColumns[colNo][rowNo] = columns[rowNo + 1][colNo - 1]
+        for (let rowNo = 0; rowNo < newRowCount; rowNo++) {
+            newColumns[colNo][rowNo] = columns[rowNo + 1][colNo - 1];
         }
-
     }
 
-    return { columnHeaders: newColumnHeaders, columns: newColumns, rowCount: newRowCount, columnCount: newColumnCount }
-
+    return {
+        columnHeaders: newColumnHeaders,
+        columns: newColumns,
+        rowCount: newRowCount,
+        columnCount: newColumnCount
+    }
 }
 
 function formatCellforLatex (toFormat) {
@@ -710,12 +712,12 @@ function formatCellforLatex (toFormat) {
         return '';
     }
     let text = toFormat.toString();
-    let special_match = [  '_',   '%',/*   '$',*/   '&tau;', '&sup2;',   '&', '\u208A', '\u208B',  '\u223C',  '\u03C7', '\u03A7',  '\u03B7',    '\u03C9', '\u2080', '\u2081', '\u2082', '\u00B2',    '\u03B1',     '\u03BB']
-    let special_repla = ['\\_', '\\%',/* '\\$',*/ '$\\tau$', '$^{2}$', '\\&', '$_{+}$', '$_{-}$', '$\\sim$', '$\\chi$',      'X', '$\\eta$', '$\\omega$', '$_{0}$', '$_{1}$', '$_{2}$', '$^{2}$', '$\\alpha$', '$\\lambda$']
+    let special_match = [  '_',   '%',/*   '$',*/   '&tau;', '&sup2;',   '&', '\u208A', '\u208B',  '\u223C',  '\u03C7', '\u03A7',  '\u03B7',    '\u03C9', '\u2080', '\u2081', '\u2082', '\u00B2',    '\u03B1',     '\u03BB', '\u273B', '\u2009']
+    let special_repla = ['\\_', '\\%',/* '\\$',*/ '$\\tau$', '$^{2}$', '\\&', '$_{+}$', '$_{-}$', '$\\sim$', '$\\chi$',      'X', '$\\eta$', '$\\omega$', '$_{0}$', '$_{1}$', '$_{2}$', '$^{2}$', '$\\alpha$', '$\\lambda$',      '*',      ' ']
 
     // Handle special characters
-    for (i = 0; i < special_match.length; ++i) {
-        text = (text.replace(special_match[i], special_repla[i])).toString();
+    for (let i = 0; i < special_match.length; ++i) {
+        text = (text.split(special_match[i]).join(special_repla[i])).toString();
     }
 
     // match superscripts and subscripts, TODO: handle multiple occurences
@@ -739,7 +741,7 @@ function formatCellforLatex (toFormat) {
     let special_match_after = ['<'];
     let special_repla_after = ['$<$'];
 
-    for (i = 0; i < special_match_after.length; ++i) {
+    for (let i = 0; i < special_match_after.length; ++i) {
         text = (text.replace(special_match_after[i], special_repla_after[i])).toString();
     }
 
