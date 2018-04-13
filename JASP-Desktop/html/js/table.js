@@ -105,93 +105,76 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 			cells[colNo] = formatColumn(column, type, format, alignNumbers, combine, optFootnotes, false);
 		}
 
-		var columnsInColumn = {}  // dictionary of counts
-		var columnsInsertedInColumn = {}
-		var maxColumnsInColumn = 0
-		var columnNames = []
+		let columnsInColumn = {}  // dictionary of counts
+		let columnsInsertedInColumn = {}
+		let maxColumnsInColumn = 0
+		let columnNames = []
 
-		for (var colNo = 0; colNo < columnCount; colNo++) {
-
-			var columnName = optSchema.fields[colNo].name
-			var subRowPos = columnName.indexOf("[")
+		for (let colNo = 0; colNo < columnCount; colNo++) {
+			let columnName = optSchema.fields[colNo].name
+			let subRowPos = columnName.indexOf("[")
 
 			if (subRowPos != -1)
 				columnName = columnName.substr(0, subRowPos)
-
 			columnNames[colNo] = columnName
 
-			var cic = columnsInColumn[columnName]
-
+			let cic = columnsInColumn[columnName]
 			if (typeof cic == "undefined")
 				cic = 1
 			else
 				cic++
-
 			if (maxColumnsInColumn < cic)
 				maxColumnsInColumn = cic
 
 			columnsInColumn[columnName] = cic
 		}
 
-		if (maxColumnsInColumn > 1) {  // do columns need to be folded
-
-			var foldedColumnNames = _.uniq(columnNames)
-			var foldedCells = Array(foldedColumnNames.length)
-			var foldedColumnHeaders = Array(foldedColumnNames.length)
-
+		if (maxColumnsInColumn > 1) {
+			let foldedColumnNames = _.uniq(columnNames)
+			let foldedCells = Array(foldedColumnNames.length)
+			let foldedColumnHeaders = Array(foldedColumnNames.length)
 			// fold the headers
-
-			for (var colNo = 0; colNo < foldedColumnNames.length; colNo++) {
-
-				var headerIndex = columnNames.indexOf(foldedColumnNames[colNo])
+			for (let colNo = 0; colNo < foldedColumnNames.length; colNo++) {
+				let headerIndex = columnNames.indexOf(foldedColumnNames[colNo])
 				foldedColumnHeaders[colNo] = columnHeaders[headerIndex]
 			}
-
 			// fold the columns
+			for (let colNo = 0; colNo < columnNames.length; colNo++) {
 
-			for (var colNo = 0; colNo < columnNames.length; colNo++) {
-
-				var columnCells = cells[colNo]
-				var columnName = columnNames[colNo]
-				var targetIndex = foldedColumnNames.indexOf(columnName)
-				var column = foldedCells[targetIndex]
-				var cic = columnsInColumn[columnName]
+				let columnCells = cells[colNo]
+				let columnName = columnNames[colNo]
+				let targetIndex = foldedColumnNames.indexOf(columnName)
+				let column = foldedCells[targetIndex]
+				let cic = columnsInColumn[columnName]
 
 				if (typeof column == "undefined")
 					column = Array(columnCells.length * cic)
 
-				var offset = columnsInsertedInColumn[columnName]
+				let offset = columnsInsertedInColumn[columnName]
 				if (typeof offset == "undefined")
 					offset = 0
 
-				for (var rowNo = 0; rowNo < columnCells.length; rowNo++) {
-
-					var cell = columnCells[rowNo]
-
+				for (let rowNo = 0; rowNo < columnCells.length; rowNo++) {
+					let cell = columnCells[rowNo]
 					if (offset == 0)
 						cell.isStartOfGroup = true
 					if (offset == cic - 1)
 						cell.isEndOfGroup = true
-
 					cell.span = maxColumnsInColumn / cic
 					column[rowNo * cic + offset] = cell
-
 				}
-
 				columnsInsertedInColumn[columnName] = offset + 1
 				foldedCells[targetIndex] = column
 			}
 
 			cells = foldedCells
-
 			columnHeaders = foldedColumnHeaders
 			columnCount = foldedColumnHeaders.length
 			rowCount *= maxColumnsInColumn
 		}
 
 		if (optCasesAcrossColumns) {
-
-			var swapped = swapRowsAndColumns(columnHeaders, cells, optOverTitle)
+			let swapped = swapRowsAndColumns(columnHeaders, cells, optOverTitle)
 			cells = swapped.columns
 			columnHeaders = swapped.columnHeaders;
 			rowCount = swapped.rowCount
@@ -218,10 +201,9 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 
 		// TODO:
 		//       2. handle all cases for tables
-		//       3. caption and footnotes formatting
+		//       3. footnotes formatting
 
 		let variable = "";  // required to find out the first column
-
 		for (let i = 0; i < optSchema.fields.length; ++i) {
 			if (optSchema.fields[i].title === "") {
 				variable = optSchema.fields[i].name;
