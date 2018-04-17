@@ -1551,10 +1551,10 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 					modelTermsCase <- strsplit(terms.base64[[i]],":")[[j]]
 					index <- unlist(lapply(modelTermsResults, function(x) .identicalTerms(x,modelTermsCase)))
 
-					SS <- result[index,"SS"]
+					SS <- result[index,"Sum Sq"]
 					df <- result[index,"num Df"]
 					MS <- SS / df
-					F <- .clean(result[index,"F"])
+					F <- .clean(result[index,"F value"])
 					p <- .clean(result[index,"Pr(>F)"])
 					dfR <- result[index,"den Df"]
 
