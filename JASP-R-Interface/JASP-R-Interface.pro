@@ -14,13 +14,9 @@ windows:QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_TARGET'*.lib' $$OU
 
 macx: QMAKE_CLEAN +=$$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.dylib'
 
-
-macx {
-    isEmpty(_R_HOME):_R_HOME = $$OUT_PWD/../../Frameworks/R.framework/Versions/$$CURRENT_R_VERSION/Resources
-}
+include(../R_HOME.pri)
 
 windows {
-    isEmpty(_R_HOME):_R_HOME = $$OUT_PWD/../R
 	message(QT_ARCH $$QT_ARCH)
 	contains(QT_ARCH, i386) {
 		ARCH = i386
@@ -60,10 +56,6 @@ HEADERS += \
 INCLUDEPATH += \
     $$_R_HOME/library/Rcpp/include \
     $$_R_HOME/include
-
-include(../R_HOME.pri)
-
-
 
 windows{
 	SOURCE_LIBFILE = $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_NAME'.a'

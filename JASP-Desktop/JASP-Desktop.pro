@@ -60,10 +60,6 @@ macx:QMAKE_CXXFLAGS += -stdlib=libc++
 
 windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__ -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
 
-
-
-macx | windows | exists(/app/lib/*) { DEFINES += JASP_LIBJSON_STATIC } else	{ linux:LIBS += -ljsoncpp }
-
 INCLUDEPATH += $$PWD/../JASP-Common/
 
 include(JASP-Desktop.pri)
@@ -122,7 +118,5 @@ exists(/app/lib/*) {
 	flatpak_appinfo_icon128.files = ../Tools/flatpak/128/org.jasp.JASP.png
 	flatpak_appinfo_icon128.path = /app/share/app-info/icons/flatpak/128x128
 	INSTALLS += flatpak_appinfo_icon128
-} else {
-	CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG }
 }
 

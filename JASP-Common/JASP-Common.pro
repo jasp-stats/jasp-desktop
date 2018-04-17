@@ -127,7 +127,6 @@ HEADERS += \
 
 #exists(/app/lib/*) should only be true when building flatpak
 macx | windows | exists(/app/lib/*) {
-	DEFINES += JASP_LIBJSON_STATIC
 
     SOURCES += \
             lib_json/json_internalarray.inl \
@@ -147,9 +146,5 @@ macx | windows | exists(/app/lib/*) {
             lib_json/reader.h \
             lib_json/value.h \
             lib_json/writer.h
-} else {
-	linux: LIBS += -ljsoncpp
-	CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG }
 }
-
 

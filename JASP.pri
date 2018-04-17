@@ -10,3 +10,18 @@ JASP_R_INTERFACE_NAME = $$JASP_R_INTERFACE_TARGET$$JASP_R_INTERFACE_MAJOR_VERSIO
 CURRENT_R_VERSION = 3.4
 DEFINES += "CURRENT_R_VERSION=\"$$CURRENT_R_VERSION\""
 BUILDING_JASP_ENGINE=false
+
+
+macx | windows | exists(/app/lib/*) { DEFINES += JASP_LIBJSON_STATIC } else
+{
+    linux {
+        CONFIG += link_pkgconfig
+        PKGCONFIG += jsoncpp
+        LIBS += -ljsoncpp
+    }
+}
+
+exists(/app/lib/*)  {} else {
+    linux:	CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG }
+}
+macx | windows { CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG } }
