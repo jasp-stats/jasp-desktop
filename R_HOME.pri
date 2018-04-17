@@ -1,4 +1,4 @@
-LINUX_SPECIAL_CASE = false
+LINUX_SPECIAL_CASE = true
 
 _R_HOME = $$(R_HOME)
 
@@ -6,7 +6,6 @@ linux {
     $$LINUX_SPECIAL_CASE {
         _R_HOME = /usr/lib64/R
         INCLUDEPATH += /usr/lib64/R/library/include
-        DEFINES += LIBJSON_DIR_UP
     } else {
         _R_HOME = /usr/lib/R
         INCLUDEPATH += /usr/lib/R/library/include

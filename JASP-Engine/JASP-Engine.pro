@@ -65,9 +65,6 @@ windows {
 
 }
 
-macx | windows | exists(/app/lib/*) { DEFINES += JASP_LIBJSON_STATIC
-} else { linux { LIBS += -ljsoncpp} }
-
 INCLUDEPATH += $$PWD/../JASP-Common/
 
 macx:QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
@@ -89,7 +86,6 @@ exists(/app/lib/*) {
 } else {
 	InstallJASPRPackage.commands		= \"$$R_EXE\" CMD INSTALL --library=$$OUT_PWD/../R/library $$PWD/JASP
 	InstallJASPgraphsRPackage.commands	= \"$$R_EXE\" CMD INSTALL --library=$$OUT_PWD/../R/library $$PWD/JASPgraphs
-	CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG }
 }
 
 QMAKE_EXTRA_TARGETS += InstallJASPRPackage
