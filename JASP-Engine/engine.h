@@ -94,7 +94,7 @@ private:
 	int _slaveNo = 0;
 
 	bool filterChanged = false;
-	std::string filter = "return(genFilter)", generatedFilter = "";
+	std::string filter = "", generatedFilter = "";
 };
 
 #endif // ENGINE_H

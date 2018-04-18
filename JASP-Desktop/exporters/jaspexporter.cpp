@@ -99,6 +99,16 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 
 	metaData["filterData"] = Json::Value(package->dataFilter);
 
+	Json::Value jsonfilterConstructorJSON(Json::nullValue);
+
+	if(package->filterConstructorJSON != "")
+	{
+		Json::Reader readerfilterConstructorJSON;
+		readerfilterConstructorJSON.parse(package->filterConstructorJSON, jsonfilterConstructorJSON);
+	}
+
+	metaData["filterConstructorJSON"] = jsonfilterConstructorJSON;
+
 	dataSet["rowCount"] = Json::Value(dataset ? dataset->rowCount() : 0);
 	dataSet["columnCount"] = Json::Value(dataset ? dataset->columnCount(): 0);
 

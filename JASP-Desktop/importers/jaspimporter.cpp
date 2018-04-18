@@ -79,13 +79,15 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 
 	parseJsonEntry(xData, path, "xdata.json", false);
 
-	Json::Value &dataSetDesc = metaData["dataSet"];
+	Json::Value &dataSetDesc			= metaData["dataSet"];
 
-	packageData->dataFilePath = metaData["dataFilePath"].isNull() ? std::string() : metaData["dataFilePath"].asString();
-	packageData->dataFileReadOnly = metaData["dataFileReadOnly"].isNull() ? false : metaData["dataFileReadOnly"].asBool();
-	packageData->dataFileTimestamp = metaData["dataFileTimestamp"].isNull() ? 0 : metaData["dataFileTimestamp"].asInt();
+	packageData->dataFilePath			= metaData["dataFilePath"].isNull() ? std::string() : metaData["dataFilePath"].asString();
+	packageData->dataFileReadOnly		= metaData["dataFileReadOnly"].isNull() ? false : metaData["dataFileReadOnly"].asBool();
+	packageData->dataFileTimestamp		= metaData["dataFileTimestamp"].isNull() ? 0 : metaData["dataFileTimestamp"].asInt();
 
-	packageData->dataFilter = metaData.get("filterData", "return(genFilter)").asString();
+	packageData->dataFilter				= metaData.get("filterData", DEFAULT_FILTER).asString();
+	packageData->filterConstructorJSON	= metaData.get("filterConstructorJSON", "").toStyledString();
+
 	packageData->refreshAnalysesAfterFilter = false;
 	
 	Json::Value &emptyValuesJson = metaData["emptyValues"];

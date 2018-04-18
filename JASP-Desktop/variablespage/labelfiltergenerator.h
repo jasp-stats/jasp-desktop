@@ -16,6 +16,7 @@ public:
 
 public slots:
 	void labelFilterChanged();
+	void easyFilterConstructorRCodeChanged(QString newRScript);
 
 private:
 	///Is at least one label no longer allowed?
@@ -24,11 +25,15 @@ private:
 	///Generates sub-filter for specified column
 	std::string	generateLabelFilter(Column & column);
 
+	std::string easyFilterConstructorRScript = "";
+
 
 	DataSetPackage * _package = NULL;
 
 signals:
-	void setGeneratedFilter(QString genFilter);
+	void setGeneratedFilter(QString generatedFilter);
+
+
 };
 
 #endif // LABELFILTERGENERATOR_H

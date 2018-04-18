@@ -25,6 +25,7 @@ Rectangle {
         objectName: "progressBarHolder"
     }
 
+
     SplitView
     {
         id: splitViewData
@@ -56,5 +57,8 @@ Rectangle {
             headersGradient: myHeadersGradient
         }
 
-    }
+	}
+
+
+
 }

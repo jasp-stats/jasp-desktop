@@ -58,6 +58,7 @@ void DataSetTableModel::setDataSet(DataSet* dataSet)
     beginResetModel();
 	_dataSet = dataSet;
     endResetModel();
+	notifyColumnFilterStatusChanged();
 }
 
 
@@ -118,6 +119,40 @@ QVariant DataSetTableModel::columnIcon(int column) const
 	}
 	else
 		return QVariant(-1);
+}
+
+QVariant DataSetTableModel::columnHasFilter(int column) const
+{
+	if(column >= 0 && column < _dataSet->columnCount())
+	{
+		QString value = tq(_dataSet->column(column).name());
+		return QVariant(_dataSet->column(column).hasFilter());
+	}
+	else
+		return QVariant();
+}
+
+int DataSetTableModel::columnsFilteredCount()
+{
+	if(_dataSet == NULL) return 0;
+
+	int colsFiltered = 0;
+
+	for(int column=0; column<_dataSet->columnCount(); column++)
+		if(_dataSet->column(column).hasFilter())
+			colsFiltered++;
+
+	return colsFiltered;
+}
+
+void DataSetTableModel::resetAllFilters()
+{
+	for(int col=0; col<_dataSet->columnCount(); col++)
+		_dataSet->column(col).resetFilter();
+
+	emit allFiltersReset();
+	notifyColumnFilterStatusChanged();
+
 }
 
 QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientation, int role) const

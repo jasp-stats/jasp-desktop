@@ -217,6 +217,8 @@ FocusScope {
                         }
                     }
 
+					rowDelegate: null
+
                     itemDelegate: Loader
                     {
                         property string textItem: styleData.value
@@ -224,74 +226,100 @@ FocusScope {
                         property int rowItem: styleData.row
                         property int colItem: styleData.column
                         property var valueItem: styleData.value
+						property bool alternate: rowItem % 2 == 1
+						property bool selected: levelsTableView.selection.timesUpdated, levelsTableView.selection.contains(rowItem); //Comma is a hack to get this to update: http://blog.mardy.it/2016/11/qml-trick-force-re-evaluation-of.html
+						property color colorBackground: selected ? systemPalette.dark : (alternate ? systemPalette.midlight : systemPalette.light)
+
 
                         sourceComponent: styleData.column == 0 ? filterCheckBoxVariablesWindowTemplate : (styleData.column == 2 ? textInputVariablesWindowTemplate : textDisplayVariablesWindowTemplate)
 
                         //anchors.fill: parent
                     }
 
-
                     Component {
                         id: textInputVariablesWindowTemplate
-                        TextInput {
-                            color: colorItem
+						Rectangle
+						{
+							anchors.fill: parent
+							color: colorBackground
 
-                            text: textItem
-                            clip: true
-                            selectByMouse: true
-                            autoScroll: true
+							TextInput {
+								color: colorItem
 
-                            anchors.fill: parent
-                            function acceptChanges() { levelsTableModel.setData(levelsTableModel.index(rowItem, colItem), text) }
-                            onEditingFinished: acceptChanges()
+								text: textItem
+								clip: true
+								selectByMouse: true
+								autoScroll: true
 
-                            onActiveFocusChanged:
-                                if(activeFocus)
-                                {
-                                    levelsTableView.selection.clear()
-                                    levelsTableView.selection.select(rowItem, rowItem)
-                                }
-                                else if(focus)
-                                    focus = false
+								anchors.fill: parent
+								function acceptChanges() { levelsTableModel.setData(levelsTableModel.index(rowItem, colItem), text) }
+								onEditingFinished: acceptChanges()
+
+								onActiveFocusChanged:
+									if(activeFocus)
+									{
+										levelsTableView.selection.clear()
+										levelsTableView.selection.select(rowItem, rowItem)
+									}
+									else if(focus)
+										focus = false
 
 
 
-                            MouseArea
-                            {
-                                anchors.fill: parent
-                                acceptedButtons: Qt.NoButton
-                                cursorShape: Qt.IBeamCursor
-                            }
-                        }
+
+								MouseArea
+								{
+									anchors.fill: parent
+									acceptedButtons: Qt.NoButton
+									cursorShape: Qt.IBeamCursor
+								}
+							}
+						}
                     }
 
                     Component {
                         id: textDisplayVariablesWindowTemplate
-                        Text {
-                            color: colorItem
-                            text: textItem
-                            elide: Text.ElideMiddle
-                            anchors.fill: parent
+						Rectangle
+						{
+							anchors.fill: parent
+							color: colorBackground
+							Text {
+								color: colorItem
+								text: textItem
+								elide: Text.ElideMiddle
+								anchors.fill: parent
 
-                        }
+							}
+						}
                     }
 
                     Component {
                         id: filterCheckBoxVariablesWindowTemplate
-                        PlusMinusCheckButton
-                        {
-                            color: colorItem
-                            checked: valueItem
+						Rectangle
+						{
+							id: plusMinusRect
+							anchors.fill: parent
+							color: colorBackground
 
-                            id: filterCheckButton
-                            onClicked:
-                            {
-                                if(checked != valueItem)
-                                     levelsTableModel.setAllowFilterOnLabel(rowItem, checked);
-                                checked = levelsTableModel.allowFilter(rowItem);
-                            }
+							PlusMinusCheckButton
+							{
+								anchors.top: plusMinusRect.top
+								anchors.bottom: plusMinusRect.bottom
+								anchors.horizontalCenter: plusMinusRect.horizontalCenter
 
-                        }
+								width: height
+								color: colorItem
+								checked: valueItem
+
+								id: filterCheckButton
+								onClicked:
+								{
+									if(checked != valueItem)
+										 levelsTableModel.setAllowFilterOnLabel(rowItem, checked);
+									checked = levelsTableModel.allowFilter(rowItem);
+								}
+							}
+						}
                     }
 
                 }
@@ -303,7 +331,8 @@ FocusScope {
                     anchors.top: parent.top
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
-                    property real minimumHeight: (variablesWindowCloseButton.height + spacing) * 4 + ( 3 * spacing)
+					spacing: 2
+					property real minimumHeight: (variablesWindowCloseButton.height + spacing) * 5 + ( 3 * spacing)
 
                     Button
                     {
@@ -321,13 +350,30 @@ FocusScope {
                         onClicked: levelsTableView.moveDown()
                     }
 
-                    Button
-                    {
-                        //text: "REVERSE"
-                        iconSource: "../images/arrow-reverse.png"
-                        onClicked: levelsTableView.reverse()
+					Button
+					{
+						//text: "REVERSE"
+						iconSource: "../images/arrow-reverse.png"
+						onClicked: levelsTableView.reverse()
 
-                    }
+					}
+
+					Button
+					{
+						//text: "ERASER"
+						iconSource: "../images/eraser.png"
+						onClicked: levelsTableModel.resetFilterAllows()
+						visible: levelsTableModel.filteredOut > 0
+
+					}
+
+					Button
+					{
+						//text: "ERASER ALL"
+						iconSource: "../images/eraser_all.png"
+						onClicked: dataSetModel.resetAllFilters()
+						visible: dataSetModel.columnsFilteredCount > (levelsTableModel.filteredOut > 0 ? 1 : 0)
+					}
 
                     Item //Spacer
                     {

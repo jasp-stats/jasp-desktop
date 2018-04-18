@@ -1,0 +1,360 @@
+import QtQuick 2.0
+
+
+Item
+{
+	id: funcRoot
+	objectName: "Function"
+
+	property int initialWidth: filterConstructor.blockDim * 3
+	property string functionName: "sum"
+	property bool acceptsDrops: true
+
+	property var parameterNames: []
+	property var parameterDropKeys: [[]]
+
+	property variant functionNameToImageSource: { "sum": "qrc:/icons/sum.png", "sd": "qrc:/icons/sigma.png", "var": "qrc:/icons/variance.png", "!": "qrc:/icons/negative.png", "sqrt":"qrc:/icons/rootHead.png"}
+	property string functionImageSource: functionNameToImageSource[functionName] !== undefined ? functionNameToImageSource[functionName] : ""
+	property bool isNested: false
+	property var booleanReturningFunctions: ["!"]
+
+	property var dragKeys: booleanReturningFunctions.indexOf(functionName) >= 0 ? ["boolean"] : [ "number" ]
+
+	height: meanBar.height + Math.max(dropRow.height, filterConstructor.blockDim)
+	width: functionDef.width + haakjesLinks.width + dropRow.width + haakjesRechts.width + extraMeanWidth
+	property real extraMeanWidth: (functionName === "mean" ? 10 : 0)
+
+	readonly property bool showParentheses: functionName !== "mean" && (parameterNames.length > 1 || functionName === "abs" || functionImageSource === "")
+    readonly property bool isRoot: functionName === "sqrt"
+    readonly property bool isMean: functionName === "mean"
+    readonly property bool isAbs:  functionName === "abs"
+
+	function shouldDrag(mouseX, mouseY)
+	{
+		if(!acceptsDrops)
+			return true
+
+		return mouseX <= functionDef.x + functionDef.width || ( showParentheses && ( mouseX <= haakjesLinks.width + haakjesLinks.x || mouseX > haakjesRechts.x)) || (meanBar.visible  && mouseY < meanBar.height + 6);
+	}
+
+	function returnR()
+	{
+		var compounded = functionName + "("
+
+		for(var i=0; i<funcRoot.parameterNames.length; i++)
+				compounded += (i > 0 ? ", " : "") + (dropRepeat.itemAt(i) === null ? "null" : dropRepeat.itemAt(i).returnR())
+
+		compounded += ")"
+
+		return compounded
+	}
+
+	function returnEmptyRightMostDropSpot()		{ return dropRepeat.rightMostEmptyDropSpot() }
+	function returnFilledRightMostDropSpot()	{ return dropRepeat.leftMostFilledDropSpot() }
+	function checkCompletenessFormulas()		{ return dropRepeat.checkCompletenessFormulas() }
+	function convertToJSON()					{ return dropRepeat.convertToJSON()	}
+
+	function getParameterDropSpot(param)		{ return dropRepeat.getParameterDropSpot(param) }
+
+	Item
+	{
+		id: meanBar
+        visible: funcRoot.isMean || funcRoot.isRoot
+        height: visible ? 6 : 0
+
+        anchors.left: funcRoot.isRoot ? functionDef.right : parent.left
+		anchors.right: parent.right
+		anchors.top: parent.top
+
+		Rectangle
+		{
+
+			color: "black"
+
+			anchors.left: parent.left
+			anchors.right: parent.right
+			anchors.top: parent.top
+            anchors.topMargin: funcRoot.isRoot ? 0 : 3
+
+            height: 3
+		}
+	}
+
+	Item
+	{
+		id: functionDef
+        anchors.top: funcRoot.isRoot ? parent.top : meanBar.bottom
+		anchors.bottom: parent.bottom
+
+		x: extraMeanWidth / 2
+        width: functionImgRoot.visible ? functionImgRoot.width : functionText.visible ? functionText.width : functionImg.width
+
+		Text
+		{
+			id: functionText
+
+			anchors.top: parent.top
+			anchors.bottom: parent.bottom
+
+			verticalAlignment: Text.AlignVCenter
+			horizontalAlignment: Text.AlignHCenter
+
+            text: funcRoot.isMean || funcRoot.isAbs || funcRoot.isRoot ? "" : functionName
+			font.pixelSize: filterConstructor.fontPixelSize
+
+			visible: !functionImg.visible
+		}
+
+
+        Image
+        {
+            id: functionImg
+
+            visible: (!funcRoot.isRoot || !funcRoot.acceptsDrops) && functionImageSource !== ""
+
+            source: functionImageSource
+
+            height: filterConstructor.blockDim
+            width: height
+
+            anchors.verticalCenter: parent.verticalCenter
+        }
+
+        Image
+        {
+            id: functionImgRoot
+
+            visible: funcRoot.isRoot &&  funcRoot.acceptsDrops
+
+            source: functionImageSource
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            width: filterConstructor.blockDim
+        }
+	}
+
+	Text
+	{
+		id: haakjesLinks
+		anchors.top: meanBar.top
+		anchors.bottom: parent.bottom
+
+		x: functionDef.width + functionDef.x
+
+		verticalAlignment: Text.AlignVCenter
+		horizontalAlignment: Text.AlignHCenter
+
+		width: showParentheses ? filterConstructor.blockDim / 3 : 0
+        text: ! showParentheses || funcRoot.isAbs || funcRoot.isRoot ? "" : "("
+		font.pixelSize: filterConstructor.fontPixelSize
+
+		Rectangle
+		{
+			anchors.top: parent.top
+			anchors.bottom: parent.bottom
+			anchors.margins: 2
+			anchors.horizontalCenter: parent.horizontalCenter
+
+			color: "black"
+			width: 2
+
+            visible: funcRoot.isAbs
+		}
+
+	}
+
+
+	Row
+	{
+		id: dropRow
+		anchors.top: meanBar.bottom
+		//anchors.bottom: parent.bottom
+
+		x: haakjesLinks.width + haakjesLinks.x
+
+		width:	dropRepeat.rowWidthCalc()
+		height: dropRepeat.rowHeightCalc()
+
+		property real implicitWidthDrops: parent.acceptsDrops ? funcRoot.initialWidth / 4 : 0
+
+
+
+		Repeater
+		{
+			id: dropRepeat
+			model: funcRoot.parameterNames
+			//anchors.fill: parent
+
+			property var rowWidthCalc: function()
+			{
+				var widthOut = 0
+				for(var i=0; i<funcRoot.parameterNames.length; i++)
+					widthOut += dropRepeat.itemAt(i).width
+				return widthOut
+			}
+
+			property var rowHeightCalc: function()
+			{
+				var heightOut = filterConstructor.blockDim
+				for(var i=0; i<funcRoot.parameterNames.length; i++)
+					heightOut = Math.max(dropRepeat.itemAt(i).height, heightOut)
+
+				return heightOut
+			}
+
+			///This also goes down the tree
+			property var rightMostEmptyDropSpot: function()
+			{
+				var dropSpot = null
+
+				for(var i=funcRoot.parameterNames.length-1; i>=0; i--)
+				{
+					var prevDropSpot = dropSpot
+					dropSpot = dropRepeat.itemAt(i).getDropSpot()
+
+					if(dropSpot.containsItem !== null)
+					{
+						var subResult = dropSpot.containsItem.returnEmptyRightMostDropSpot()
+						if(subResult === null) // cant put anything there but maybe we can return the previous (and thus empty dropspot?)
+							return prevDropSpot //its ok if it is null. we just cant find anything here
+						else
+							return subResult
+					}
+					//else dropSpot now contains a DropSpot with space, but lets loop back to the beginning to see if we can go further left
+				}
+				return dropSpot
+			}
+
+			//this does not go down the tree
+			property var leftMostFilledDropSpot: function()
+			{
+				var dropSpot = null
+
+				for(var i=0; i<funcRoot.parameterNames.length; i++)
+				{
+					var prevDropSpot = dropSpot
+					dropSpot = dropRepeat.itemAt(i).getDropSpot()
+
+					if(dropSpot.containsItem === null)
+						return prevDropSpot //its ok if it is null. we just cant find anything here
+				}
+				return dropSpot.containsItem !== null ? dropSpot : null
+			}
+
+			function checkCompletenessFormulas()
+			{
+				var allComplete = true
+				for(var i=0; i<funcRoot.parameterNames.length; i++)
+					if(!dropRepeat.itemAt(i).getDropSpot().checkCompletenessFormulas())
+						allComplete = false
+				return allComplete
+			}
+
+			function convertToJSON()
+			{
+				var jsonObj = { "nodeType":"Function", "functionName": functionName, "arguments":[] }
+
+				for(var i=0; i<funcRoot.parameterNames.length; i++)
+				{
+					var dropSpot = dropRepeat.itemAt(i).getDropSpot()
+					var argJson = dropSpot.containsItem === null ? null : dropSpot.containsItem.convertToJSON()
+					jsonObj.arguments.push({ "name": funcRoot.parameterNames[i], "dropKeys": funcRoot.parameterDropKeys[i], "argument": argJson})
+				}
+				return jsonObj
+			}
+
+			function getParameterDropSpot(param)
+			{
+				for(var i=0; i<funcRoot.parameterNames.length; i++)
+					if(funcRoot.parameterNames[i] === param)
+						return dropRepeat.itemAt(i).getDropSpot()
+
+				return null
+
+			}
+
+			function rebindSize()
+			{
+				dropRow.width	= Qt.binding(rowWidthCalc)
+				dropRow.height	= Qt.binding(rowHeightCalc)
+			}
+
+			onItemAdded:	rebindSize()
+			onItemRemoved:	rebindSize()
+
+			Item
+			{
+				width: spot.width + comma.width
+				height: spot.height
+
+				function returnR()
+				{
+					if(spot.containsItem != null)
+						return spot.containsItem.returnR();
+					else
+						return "null"
+				}
+
+				function getDropSpot() { return spot }
+
+
+
+				DropSpot {
+					id: spot
+
+					height: implicitHeight
+					implicitWidth: originalWidth
+					implicitHeight: filterConstructor.blockDim
+
+					acceptsDrops: funcRoot.acceptsDrops
+
+					defaultText: funcRoot.parameterNames[index]
+					dropKeys: funcRoot.parameterDropKeys[index]
+
+					droppedShouldBeNested: funcRoot.parameterNames.length === 1 && functionName !== "abs" && functionName !== "mean"
+					shouldShowX: funcRoot.parameterNames <= 1
+				}
+
+				Text
+				{
+					id: comma
+					text: index < funcRoot.parameterNames.length - 1 ? "," : ""
+
+					font.pixelSize: filterConstructor.fontPixelSize
+					anchors.top: parent.top
+					anchors.bottom: parent.bottom
+
+					anchors.left: spot.right
+				}
+			}
+		}
+	}
+
+	Text
+	{
+		id: haakjesRechts
+		anchors.top: meanBar.top
+		anchors.bottom: parent.bottom
+		x: dropRow.x + dropRow.width
+
+		verticalAlignment: Text.AlignVCenter
+		horizontalAlignment: Text.AlignHCenter
+
+		width: showParentheses ? filterConstructor.blockDim / 3 : 0
+        text: !showParentheses || funcRoot.isAbs || funcRoot.isRoot ? "" : ")"
+		font.pixelSize: filterConstructor.fontPixelSize
+
+		Rectangle
+		{
+			anchors.top: parent.top
+			anchors.bottom: parent.bottom
+			anchors.margins: 2
+			anchors.horizontalCenter: parent.horizontalCenter
+
+			color: "black"
+			width: 2
+
+            visible: funcRoot.isAbs
+		}
+	}
+}

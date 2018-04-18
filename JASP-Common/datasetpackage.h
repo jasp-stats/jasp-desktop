@@ -25,6 +25,7 @@
 #include "boost/signals2.hpp"
 #include "jsonredirect.h"
 
+#define DEFAULT_FILTER "return(generatedFilter)"
 
 class DataSetPackage
 {
@@ -57,7 +58,8 @@ public:
 	bool isReady() const;
 	void setWaitingForReady();
 	void setAnalysesHTMLReady();
-	std::string dataFilter = "return(genFilter)";
+	std::string dataFilter = DEFAULT_FILTER, filterConstructorJSON = "";
+
 	bool refreshAnalysesAfterFilter = true;
 
 	boost::signals2::signal<void (DataSetPackage *source)> isModifiedChanged;
