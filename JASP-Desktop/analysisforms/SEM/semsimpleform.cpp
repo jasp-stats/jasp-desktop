@@ -58,7 +58,9 @@ void SEMSimpleForm::checkSyntax()
 		if (!firstCol)
 			colNames.append(',');
 		colNames.append('\'')
-				.append(var.replace("\'", "\\u0027").replace("\"", "\\u0022"))
+				.append(var.replace("\'", "\\u0027")
+						   .replace("\"", "\\u0022")
+						   .replace("\\", "\\\\"))
 				.append('\'');
 		firstCol = false;
 	}
@@ -69,6 +71,8 @@ void SEMSimpleForm::checkSyntax()
 	// replace ' and " with their unicode counterparts
 	// This protects against arbitrary code being run through string escaping.
 	lavaanCode.replace("\'", "\\u0027").replace("\"", "\\u0022");
+	// This protects against crashes due to backslashes
+	lavaanCode.replace("\\", "\\\\");
 	
 	// Create R code string	
 	QString checkCode = "checkLavaanModel('";

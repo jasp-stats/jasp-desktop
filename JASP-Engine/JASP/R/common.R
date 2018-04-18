@@ -203,11 +203,12 @@ checkLavaanModel <- function(model, availableVars) {
   if (model == "") return("Enter a model")
 
   # translate to base64 - function from semsimple.R
-  usedvars <- .getUsedVars(model, availableVars);
+  vvars <- .v(availableVars)
+  usedvars <- .getUsedVars(model, vvars);
   vmodel <- .translateModel(model, usedvars);
 
   unvvars <- availableVars
-  names(unvvars) <- vvars <- .v(availableVars)
+  names(unvvars) <- vvars
 
 
 
@@ -238,6 +239,7 @@ checkLavaanModel <- function(model, availableVars) {
   # if checks pass, return empty string
   return("")
 }
+
 
 
 .sanitizeForJson <- function(obj) {
