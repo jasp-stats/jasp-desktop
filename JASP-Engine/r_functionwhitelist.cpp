@@ -203,10 +203,8 @@ const std::string	R_FunctionWhiteList::functionNameStart("(?:\\.?[[:alpha:]])");
 const std::string	R_FunctionWhiteList::functionNameBody("(?:\\w|\\.|::)+");
 const std::regex	R_FunctionWhiteList::functionNameMatcher(functionStartDelimit + "(" + functionNameStart + functionNameBody + ")(?=\\s*\\()");
 
-std::set<std::string> R_FunctionWhiteList::scriptIsSafe(std::string const & script)
+std::set<std::string> R_FunctionWhiteList::findIllegalFunctions(std::string const & script)
 {
-	//std::cout << "entered scriptIsSafe with " << script << std::endl << std::flush;
-
 	std::set<std::string> blackListedFunctionsFound;
 
 	auto foundFunctionsBegin	= std::sregex_iterator(script.begin(), script.end(), functionNameMatcher);
@@ -216,12 +214,84 @@ std::set<std::string> R_FunctionWhiteList::scriptIsSafe(std::string const & scri
 	{
 		std::string foundFunction((*foundFunctionIter)[1].str());
 		bool whiteListed = functionWhiteList.count(foundFunction) > 0;
-		//std::cout << "I found " << (whiteListed ? "white" : "black") << "-listed function: " << foundFunction << std::endl;
 
 		if(!whiteListed && blackListedFunctionsFound.count(foundFunction) == 0)
 			blackListedFunctionsFound.insert(foundFunction);
 	}
-	std::cout << std::flush;
+
 
 	return blackListedFunctionsFound;
+}
+
+const std::string	R_FunctionWhiteList::operatorsR("`(?:\\+|-|\\*|/|%(?:/|\\*|in)?%|\\^|<=?|>=?|==?|!=?|<?<-|->>?|\\|\\|?|&&?|:|\\$)`");
+
+const std::regex	R_FunctionWhiteList::assignmentWhiteListedRightMatcher(	"(" +				functionNameStart + functionNameBody +	")\\s*(?:<?<-|=)");
+const std::regex	R_FunctionWhiteList::assignmentWhiteListedLeftMatcher(	"(?:->>?)\\s*(" +	functionNameStart + functionNameBody +	")");
+const std::regex	R_FunctionWhiteList::assignmentOperatorRightMatcher(	"(" +				operatorsR +							")\\s*(?:<?<-|=)");
+const std::regex	R_FunctionWhiteList::assignmentOperatorLeftMatcher(		"(?:->>?)\\s*(" +	operatorsR +							")");
+
+std::set<std::string> R_FunctionWhiteList::findIllegalFunctionsAliases(std::string const & script)
+{
+	//std::cout << "findIllegalFunctionsAliases with " << script << std::endl << std::flush;
+
+	std::set<std::string> illegalAliasesFound;
+
+	auto aliasSearcher = [&illegalAliasesFound, &script](std::regex aliasAssignmentMatcher, bool (*lambdaMatchChecker)(std::string) )
+	{
+		auto foundAliasesBegin	= std::sregex_iterator(script.begin(), script.end(), aliasAssignmentMatcher);
+		auto foundAliasesEnd	= std::sregex_iterator();
+
+		for(auto foundAliasesIter = foundAliasesBegin; foundAliasesIter != foundAliasesEnd; foundAliasesIter++ )
+		{
+			std::string foundAlias((*foundAliasesIter)[1].str());
+			bool allowed = (*lambdaMatchChecker)(foundAlias);
+
+			//std::cout << "I found alias assignment: " << foundAlias << " which is " << (allowed ? "allowed" : "not allowed") << ".." << std::endl;
+
+			if(!allowed)
+				illegalAliasesFound.insert(foundAlias);
+		}
+	};
+
+	aliasSearcher(assignmentOperatorLeftMatcher,		[](std::string alias) { return false; }); //operators are never allowed
+	aliasSearcher(assignmentOperatorRightMatcher,		[](std::string alias) { return false; });
+	aliasSearcher(assignmentWhiteListedLeftMatcher,		[](std::string alias) { return functionWhiteList.count(alias) == 0; }); //only allowed when the token being assigned to is not in whitelist
+	aliasSearcher(assignmentWhiteListedRightMatcher,	[](std::string alias) { return functionWhiteList.count(alias) == 0; });
+
+	//std::cout << std::flush;
+
+	return illegalAliasesFound;
+}
+
+void R_FunctionWhiteList::scriptIsSafe(const std::string &script)
+{
+	static std::string errorMsg;
+
+	std::set<std::string> blackListedFunctions = findIllegalFunctions(script);
+
+	if(blackListedFunctions.size() > 0)
+	{
+		bool moreThanOne = blackListedFunctions.size() > 1;
+		std::stringstream ssm;
+		ssm << "Illegal function" << (moreThanOne ? "s" : "") << " used:" << (moreThanOne ? "\n" : " ");
+		for(auto & black : blackListedFunctions)
+			ssm << black << "\n";
+		errorMsg = ssm.str();
+
+		throw filterException(errorMsg);
+	}
+
+	std::set<std::string> illegalAliasesFound = findIllegalFunctionsAliases(script);
+
+	if(illegalAliasesFound.size() > 0)
+	{
+		bool moreThanOne = illegalAliasesFound.size() > 1;
+		std::stringstream ssm;
+		ssm << "Illegal assignment to " << (moreThanOne ? "operators or whitelisted functions" : "an operator or whitelisted function") << " used:" << (moreThanOne ? "\n" : " ");
+		for(auto & alias : illegalAliasesFound)
+			ssm << alias << "\n";
+		errorMsg = ssm.str();
+
+		throw filterException(errorMsg);
+	}
 }

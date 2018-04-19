@@ -664,19 +664,7 @@ std::vector<bool> rbridge_applyFilter(std::string & filterCode, std::string & ge
 
 	static std::string errorMsg;
 
-	std::set<string> blackListedFunctions = R_FunctionWhiteList::scriptIsSafe(filterCode);
-
-	if(blackListedFunctions.size() > 0)
-	{
-		bool moreThanOne = blackListedFunctions.size() > 1;
-		std::stringstream ssm;
-		ssm << "Illegal function" << (moreThanOne ? "s" : "") << " used:" << (moreThanOne ? "\n" : " ");
-		for(auto & black : blackListedFunctions)
-			ssm << black << "\n";
-		errorMsg = ssm.str();
-
-		throw filterException(errorMsg);
-	}
+	R_FunctionWhiteList::scriptIsSafe(filterCode); //can throw filterExceptions
 
 	std::string concatenated = generatedFilterCode + "\n" + filterCode, filter64(rbridge_encodeColumnNamesToBase64(concatenated));
 
