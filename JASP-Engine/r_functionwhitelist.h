@@ -5,18 +5,25 @@
 #include <regex>
 #include <sstream>
 #include <iostream>
+#include "../JASP-R-Interface/jasprcpp_interface.h"
 
 class R_FunctionWhiteList
 {
 private:
-	///The following functions (and keywords that can be followed by a '(') will be allowed in user-entered R-code, such as filters or computed columns. This is for security because otherwise JASP-files could become a vector of attack and that doesn't refer to an R-datatype.
+	///The following functions (and keywords that can be followed by a '(') will be allowed in user-entered R-code, such as filters or computed columns. This is for security because otherwise JASP-files could become a attack-vector (which doesn't refer to an R-datatype).
 	static const std::set<std::string> functionWhiteList;
-	static const std::string functionPrecedingCharacter, functionStartDelimit, functionNameStart, functionNameBody;
-	static const std::regex functionNameMatcher, functionNamePrecederMatcher;
+	static const std::string functionPrecedingCharacter, functionStartDelimit, functionNameStart, functionNameBody, operatorsR;
+	static const std::regex functionNameMatcher, functionNamePrecederMatcher, assignmentWhiteListedRightMatcher, assignmentWhiteListedLeftMatcher, assignmentOperatorRightMatcher, assignmentOperatorLeftMatcher;
 
 public:
+	///throws a filterexception if the script is not legal for some reason
+	static void scriptIsSafe(std::string const & script);
+
 	///Checks script for unsafe function-calls (all functions that aren't in R_FunctionWhiteList) and returns the set of unsafe calls. If it is empty then the script is deemed safe.
-	static std::set<std::string> scriptIsSafe(std::string const & script);
+	static std::set<std::string> findIllegalFunctions(std::string const & script);
+
+	///Checks if someone is trying to overwrite whitelisted functions by other functions (like: "mean <- system")
+	static std::set<std::string> findIllegalFunctionsAliases(std::string const & script);
 
 	///returns the whitelisted functions in a string, each function on its own line.
 	static std::string returnOrderedWhiteList();
