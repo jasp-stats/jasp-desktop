@@ -123,13 +123,13 @@ QVariant DataSetTableModel::columnIcon(int column) const
 
 QVariant DataSetTableModel::columnHasFilter(int column) const
 {
-	if(column >= 0 && column < _dataSet->columnCount())
+	if(_dataSet != NULL && column >= 0 && column < _dataSet->columnCount())
 	{
 		QString value = tq(_dataSet->column(column).name());
 		return QVariant(_dataSet->column(column).hasFilter());
 	}
 	else
-		return QVariant();
+		return QVariant(false);
 }
 
 int DataSetTableModel::columnsFilteredCount()
