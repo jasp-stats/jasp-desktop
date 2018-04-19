@@ -10,7 +10,8 @@ JASPWidgets.table = Backbone.Model.extend({
 		formats: null,
 		footnotes: [],
 		citation: null,
-		error: null
+		error: null,
+		latexCode: ""
 	}
 });
 
@@ -37,7 +38,6 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		exportParams.includeNotes = false;
 
 		this.exportBegin(exportParams);
-
 		return true;
 	},
 
@@ -60,6 +60,324 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		var exportContent = new JASPWidgets.Exporter.data(optCitation.join("\n\n"), htmlCite);
 
 		pushTextToClipboard(exportContent, exportParams);
+		return true;
+	},
+
+	hasLatexCode: function () {
+		var optLatexCode = this.model.get("latexCode");
+		return optLatexCode !== null
+	},
+
+	_generateLatexCode: function() {
+		/**
+		 * Generates the latex code for tables
+		 */
+		let optSchema = this.model.get("schema");
+		let optData = this.model.get("data");
+		let optCasesAcrossColumns = this.model.get("casesAcrossColumns");
+		let optOverTitle = this.model.get("overTitle")
+		let optFootnotes = this.model.get("footnotes");
+
+		let columnsDict = createColumns(optSchema.fields, optData, optFootnotes);
+		let columnHeaders = columnsDict['columnHeaders'];
+		let columns = columnsDict['columns'];
+
+		let columnDefs = optSchema.fields;
+		let columnCount = columnDefs.length;
+
+		let rowCount = optData ? optData.length : 0;
+		let cells = Array(columnCount);
+
+		for (let colNo = 0; colNo < columnCount; colNo++) {
+			cells[colNo] = formatColumn(
+				columns[colNo],
+				columnDefs[colNo].type,
+				columnDefs[colNo].format,
+				!optCasesAcrossColumns,
+				columnDefs[colNo].combine,
+				optFootnotes,
+				false
+			);
+		}
+
+		let columnsInColumn = {};  // dictionary of counts
+		let columnsInsertedInColumn = {};
+		let maxColumnsInColumn = 0;
+		let columnNames = [];
+
+		for (let colNo = 0; colNo < columnCount; colNo++) {
+			let columnName = optSchema.fields[colNo].name;
+			let subRowPos = columnName.indexOf("[");
+
+			if (subRowPos !== -1) {
+				columnName = columnName.substr(0, subRowPos);
+			}
+			columnNames[colNo] = columnName;
+
+			let cic = columnsInColumn[columnName];
+			if (typeof cic == "undefined") {
+				cic = 1;
+			} else {
+				cic++;
+			}
+			if (maxColumnsInColumn < cic) {
+				maxColumnsInColumn = cic;
+			}
+
+			columnsInColumn[columnName] = cic;
+		}
+
+		if (maxColumnsInColumn > 1) {
+			let foldedColumnNames = _.uniq(columnNames);
+			let foldedCells = Array(foldedColumnNames.length);
+			let foldedColumnHeaders = Array(foldedColumnNames.length);
+
+			// fold the headers
+			for (let colNo = 0; colNo < foldedColumnNames.length; colNo++) {
+				let headerIndex = columnNames.indexOf(foldedColumnNames[colNo]);
+				foldedColumnHeaders[colNo] = columnHeaders[headerIndex];
+			}
+
+			// fold the columns
+			for (let colNo = 0; colNo < columnNames.length; colNo++) {
+
+				let columnCells = cells[colNo];
+				let columnName = columnNames[colNo];
+				let targetIndex = foldedColumnNames.indexOf(columnName);
+				let column = foldedCells[targetIndex];
+				let cic = columnsInColumn[columnName];
+
+				if (typeof column == "undefined") {
+					column = Array(columnCells.length * cic);
+				}
+
+				let offset = columnsInsertedInColumn[columnName];
+				if (typeof offset == "undefined") {
+					offset = 0;
+				}
+
+				for (let rowNo = 0; rowNo < columnCells.length; rowNo++) {
+					let cell = columnCells[rowNo];
+					if (offset === 0) {
+						cell.isStartOfGroup = true;
+					}
+					if (offset === cic - 1) {
+						cell.isEndOfGroup = true;
+					}
+					cell.span = maxColumnsInColumn / cic;
+					column[rowNo * cic + offset] = cell;
+				}
+				columnsInsertedInColumn[columnName] = offset + 1;
+				foldedCells[targetIndex] = column;
+			}
+
+			cells = foldedCells;
+			columnHeaders = foldedColumnHeaders;
+			columnCount = foldedColumnHeaders.length;
+			rowCount *= maxColumnsInColumn;
+		}
+
+		if (optCasesAcrossColumns) {
+			let swapped = swapRowsAndColumns(columnHeaders, cells, optOverTitle);
+			cells = swapped.columns;
+			columnHeaders = swapped.columnHeaders;
+			rowCount = swapped.rowCount;
+			columnCount = swapped.columnCount;
+		}
+
+		return {'headers': columnHeaders, 'cells': cells}
+	},
+
+	_getLatexCode: function() {
+		/**
+		 * Generates the latex code for the table
+		 */
+
+		let optSchema = this.model.get('schema');
+		let optData = this.model.get('data');
+		let optTitle = this.model.get('title');
+		let optVariables = this.model.get('variables');
+		let optOverTitle = this.model.get('overTitle')
+		let optFootnotes = this.model.get('footnotes');
+
+		let data = this._generateLatexCode();
+
+		// TODO:
+		//       2. handle all cases for tables
+		//       3. footnotes formatting
+
+		let variable = "";  // required to find out the first column
+		for (let i = 0; i < optSchema.fields.length; ++i) {
+			if (optSchema.fields[i].title === '') {
+				variable = optSchema.fields[i].name;
+				break;
+			}
+		}
+
+		let latexCode = "";
+		// title
+		latexCode += "\\begin{table}[h]\n\t\\centering\n\t\\caption{" + optTitle + "}\n";
+
+		// alignments - {lrrr}
+		let columns = data.headers.length;
+		let alignments = '';
+
+		for (let col = 0 ; col < columns; ++col) {
+			if (col == 0 || data.headers[col].content === undefined || data.headers[col].content === '') {
+				alignments += 'l';
+			} else {
+				alignments += 'r';
+			}
+		}
+
+		latexCode += "\t\\begin{tabular}{" + alignments + "}\n\t\t\\hline\n\t\t";
+		// Check if there is overTitle
+		let overTitleExists = false;
+		for (let i = 0; i < columns; ++i) {
+			if (data.headers[i]['overTitle'] !== undefined) {
+				overTitleExists = true;
+				break;
+			}
+		}
+		let cline_text = '';
+		if (overTitleExists) {
+			let count = 0;
+			let prev = undefined;
+
+			for (let i = 0; i < columns; ++i) {
+				let current = data.headers[i]['overTitle'];
+
+				if (i === columns - 1) {
+					if (current !== undefined) {
+						if (prev === current) {
+							count++;
+							latexCode += ('\\multicolumn{' + count + '}{c}{'+ formatCellforLatex(prev) + '} ');
+							cline_text += '\\cline{' + (i - count + 2) + '-' + (i + 1) + '}';
+						} else {
+							latexCode += ('\\multicolumn{' + count + '}{c}{'+ formatCellforLatex(prev) + '} & ');
+							cline_text += '\\cline{' + (i - count + 2) + '-' + (i + 1) + '}';
+							latexCode += ('\\multicolumn{1}{c}{'+ current + '} ');
+						}
+						continue;
+					}
+				}
+
+				if (current === undefined) {
+					if (prev !== undefined) {
+						latexCode += ('\\multicolumn{' + count + '}{c}{'+ formatCellforLatex(prev) + '} & ');
+						cline_text += '\\cline{' + (i - count + 1) + '-' + i + '}';
+					}
+
+					count = 0;
+					latexCode += ('\\multicolumn{1}{c}{} ');
+
+					if (i < columns - 1) {
+						latexCode += '& ';
+					}
+				} else {
+					if (current !== prev && prev !== undefined) {
+						latexCode += ('\\multicolumn{' + count + '}{c}{'+ formatCellforLatex(prev) + '} & ');
+						cline_text += '\\cline{' + (i - count + 1) + '-' + i + '}';
+						count = 1;
+					} else {
+						count++;
+					}
+				}
+
+				prev = current;
+			}
+
+			latexCode += '\\\\\n\t\t';
+			latexCode += cline_text + '\n\t\t';
+		}
+
+		for (let i = 0; i < columns; ++i) {
+			latexCode += (formatCellforLatex(data.headers[i].content) + ' ');
+			if (i !== columns - 1) {
+				latexCode += '& ';
+			}
+		}
+		latexCode += ' \\\\\n\t\t\\hline\n';
+
+		// Find number of rows
+		let maxRows = 0;
+		for (let i = 0; i < columns ; ++i) {
+			let rows = data.cells[i].length;
+			if (rows > maxRows) {
+				maxRows = rows;
+			}
+		}
+
+		let firstColRow = 0;
+		let incrementFirstCol = true;
+		for (let r = 0; r < maxRows; ++r) {
+
+			latexCode += '\t\t';
+			if (incrementFirstCol) {
+				latexCode += (formatCellforLatex(data.cells[0][firstColRow].content));
+			}
+			latexCode += (' & ');
+
+			let isStartOfGroup = data.cells[0][firstColRow]['isStartOfGroup'];
+			incrementFirstCol = !isStartOfGroup;
+
+			if (isStartOfGroup === undefined || isStartOfGroup === false) {
+				incrementFirstCol = true;
+			} else {
+				incrementFirstCol = false;
+			}
+
+			for (let c = 1; c < columns; ++c) {
+				latexCode += (formatCellforLatex(data.cells[c][r].content) + ' ');
+				if (c != columns - 1) {
+					latexCode += ('& ');
+				} else {
+					latexCode += ' \\\\\n';
+				}
+			}
+
+			if (!incrementFirstCol) {
+				let isEndOfGroup = data.cells[columns - 1][r]['isEndOfGroup'];
+				if (isEndOfGroup) {
+					incrementFirstCol = true;
+				}
+			}
+
+			if (incrementFirstCol) {
+				firstColRow += 1;
+			}
+		}
+
+		latexCode += '\t\t\\hline\n\t\\end{tabular} \n';
+
+		if (optFootnotes !== "" && optFootnotes !== null && optFootnotes.length !== 0) {
+			// latexCode += "\t{\\footnotesize \\textit{Note.} " + optFootnotes.join() + '\n';
+		}
+
+		latexCode += "\\end{table}"
+		latexCode += "\n%%%%%%%%%% Created by JASP %%%%%%%%%%\n";
+
+		// Add a comment
+		if (overTitleExists) {
+			latexCode = "%%%%% Requires booktabs package %%%%%\n\\usepackage{booktabs}\n\n" + latexCode;
+		}
+
+		return latexCode;
+	},
+
+	latexCodeMenuClicked: function () {
+		let exportParams = new JASPWidgets.Exporter.params();
+		exportParams.format = JASPWidgets.ExportProperties.format.html;
+		exportParams.process = JASPWidgets.ExportProperties.process.copy;
+		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
+		exportParams.includeNotes = false;
+
+		let latexCode = this._getLatexCode();
+
+		let htmlCite = '<p>' + latexCode + '</p>';
+		let exportContent = new JASPWidgets.Exporter.data(latexCode, htmlCite);
+		pushTextToClipboard(exportContent, exportParams);
+
 		return true;
 	},
 
@@ -105,588 +423,6 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 
 JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
-	_fsd: function (value) { // first significant digit position
-
-		if (value > 0)
-			return Math.floor(Math.log(+value) / Math.log(10)) + 1
-		else if (value < 0)
-			return Math.floor(Math.log(-value) / Math.log(10)) + 1
-		else
-			return 1
-
-	},
-
-	_fsdoe: function (value) { // first significant digit position in the exponent in scientific notation
-
-		if (value == 0)
-			return 1
-
-		var exponent = Math.floor(Math.log(Math.abs(value)) / Math.log(10))
-
-		return this._fsd(exponent)
-
-	},
-
-	_symbol: function (index) {
-
-		// no c in webkit?!
-
-		return ("\u1D43\u1D47" /* \u1D9C */ + "\u1D48\u1D49\u1DA0\u1D4D\u02B0\u2071\u02B2\u1D4F\u02E1\u1D50\u207F\u1D52\u1D56\u02B3\u02E2\u1D57\u1D58\u1D5B\u02B7\u02E3\u02B8\u1DBB").charAt(index)
-
-	},
-
-	_swapRowsAndColumns: function (columnHeaders, columns, optOverTitle) {
-
-		var newRowCount = columns.length - 1
-		var newColumnCount = columns[0].length + 1
-		
-		if (optOverTitle) {
-			
-			// Transform first column into overtitle, second into title
-			var newColumnHeaders = Array(newColumnCount-1);
-			for (var colNo = 0; colNo < newColumnCount - 1; colNo++) {
-				newColumnHeaders[colNo] = { content: columns[1][colNo].content,
-																		header: true,
-																		overTitle: columns[0][colNo].content,
-																		type: "string" };
-			}
-			// remove the column that became title
-			columns.shift();
-			columnHeaders.shift();
-			newRowCount--;
-			
-		} else {
-			
-			var newColumnHeaders = Array(newColumnCount);
-			var newColumnHeaders = columns[0];
-			
-		}
-		
-		var newColumns = Array(newColumnCount)
-
-		var cornerCell = columnHeaders.shift()
-		newColumnHeaders.unshift(cornerCell)
-		newColumns[0] = columnHeaders
-
-		for (var colNo = 1; colNo < newColumnCount; colNo++) {
-
-			newColumns[colNo] = Array(newRowCount)
-
-			for (var rowNo = 0; rowNo < newRowCount; rowNo++) {
-
-				newColumns[colNo][rowNo] = columns[rowNo + 1][colNo - 1]
-			}
-
-		}
-
-		return { columnHeaders: newColumnHeaders, columns: newColumns, rowCount: newRowCount, columnCount: newColumnCount }
-
-	},
-
-	_formatColumn: function (column, type, format, alignNumbers, combine) {
-
-		var columnCells = Array(column.length)
-
-		if (type == "string" || typeof format == "undefined") {
-
-			for (var rowNo = 0; rowNo < column.length; rowNo++) {
-
-				var clazz = (type == "string") ? "text" : "number"
-
-				var cell = column[rowNo]
-				var content = cell.content
-				var formatted
-				var combined = false
-
-				if (typeof content == "undefined") {
-
-					formatted = { content: "." }
-				}
-				else if (combine && rowNo > 0 && column[rowNo - 1].content == content) {
-                    clazz += " combined";
-					formatted = { content: "&nbsp;", class: clazz }
-					combined = true
-				}
-				else {
-
-					if (typeof content === "string")
-						content = content.replace(/\u273B/g, "<small>\u273B</small>")
-
-					formatted = { content: content, "class": clazz }
-				}
-
-				if (combined == false && cell.isStartOfGroup)
-					formatted.isStartOfGroup = true
-
-				if (cell.isStartOfSubGroup)
-					formatted.isStartOfSubGroup = true
-
-				if (cell.isEndOfGroup)
-					formatted.isEndOfGroup = true
-
-				if (typeof cell.footnotes != "undefined")
-					formatted.footnotes = this._getFootnotes(cell.footnotes)
-
-
-
-				columnCells[rowNo] = formatted
-			}
-
-			return columnCells
-		}
-
-		var formats = format.split(";");
-		var p = NaN
-		var dp = NaN
-		var sf = NaN
-		var pc = false
-		var approx = false
-		var log10 = false
-		var dp = parseInt(window.globSet.decimals); // NaN if not specified by user
-		var fixDecimals = (typeof dp === 'number') && (dp % 1 === 0);
-
-		for (var i = 0; i < formats.length; i++) {
-
-			var f = formats[i]
-
-			if (f.indexOf("p:") != -1) {
-				// override APA style if exact p-values wanted
-				if (window.globSet.pExact){
-					sf = 4;
-				} else {
-					p = f.substring(2);
-				}
-			}
-				
-			if (f.indexOf("dp:") != -1 && ! fixDecimals)
-				dp = f.substring(3)
-
-			if (f.indexOf("sf:") != -1)
-				sf = f.substring(3)
-
-			if (f.indexOf("pc") != -1)
-				pc = true
-
-			if (f.indexOf("~") != -1)
-				approx = true;
-
-			if (f.indexOf("log10") != -1)
-				log10 = true
-		}
-
-		if (isFinite(sf)) {
-
-			var upperLimit = 1e6
-			var minLSD = Infinity	// right most position of the least significant digit
-			var maxFSDOE = -Infinity  // left most position of the least significant digit of the exponent in scientific notation
-
-			for (var rowNo = 0; rowNo < column.length; rowNo++) {
-
-				var cell = column[rowNo]
-				var content = cell.content
-
-				if (isNaN(parseFloat(content)))  // isn't a number
-					continue
-
-				var fsd  // position of first significant digit
-
-				if (log10)
-					fsd = content
-				else
-					fsd = this._fsd(content)
-
-				var lsd = fsd - sf
-
-				if (log10) {
-
-					if (content >= 6 || content <= -dp) {
-
-						fsdoe = this._fsd(content)
-
-						if (fsdoe > maxFSDOE)
-							maxFSDOE = fsdoe
-					}
-
-				} else if (Math.abs(content) >= upperLimit || Math.abs(content) <= Math.pow(10, -dp)) {
-
-					var fsdoe   // first significant digit of exponent
-
-					fsdoe = this._fsdoe(content)
-
-					if (fsdoe > maxFSDOE)
-						maxFSDOE = fsdoe
-				}
-
-				if (lsd < minLSD) {
-
-					minLSD = lsd
-				}
-			}
-
-			if (fixDecimals) {
-				minLSD = -dp
-			} else {
-				if (minLSD < -dp)
-					minLSD = -dp
-				if (minLSD > 0)
-					minLSD = 0
-			}
-
-			if (minLSD < -20)
-				minLSD = -20
-				
-			for (var rowNo = 0; rowNo < column.length; rowNo++) {
-
-				var cell = column[rowNo]
-				var content = cell.content
-				var formatted
-				var isNumber = false
-
-				if (typeof content == "undefined") {
-
-					formatted = { content: "." }
-				}
-				else if (typeof content === "") {
-
-					formatted = { content: "&nbsp;", "class": "number" }
-				}
-				else if (combine && rowNo > 0 && column[rowNo - 1].content == content) {
-
-					formatted = { content: "&nbsp;", "class": "number" }
-				}
-				else if (isNaN(parseFloat(content))) {  // isn't a number
-
-					formatted = { content: content, "class": "number" }
-
-				}
-				else if (content < p) {
-
-					formatted = { content: "<&nbsp" + p, "class": "p-value" }
-
-				}
-				else if (content == 0) {
-
-					var number = 0
-
-					if (log10)
-						number = 1
-
-					if (isFinite(dp))
-						formatted = { content: number.toFixed(dp), "class": "number" }
-					else
-						formatted = { content: number.toPrecision(sf), "class": "number" }
-
-					isNumber = true
-
-				}
-				else if (log10) {
-
-					if (content < (Math.log(upperLimit) / Math.log(10)) && content > -dp) {
-
-						if (alignNumbers || fixDecimals) {
-
-							formatted = { content: Math.pow(10, content).toFixed(-minLSD).replace(/-/g, "&minus;"), "class": "number" }
-						}
-						else {
-
-							formatted = { content: Math.pow(10, content).toPrecision(sf).replace(/-/g, "&minus;"), "class": "number" }
-						}
-
-						isNumber = true
-					}
-					else {
-
-						var paddingNeeded = Math.max(maxFSDOE - this._fsd(content), 0)
-
-						var exponent = Math.abs(Math.floor(content))
-
-						var exp = ""
-
-						while (exponent > 0) {
-
-							var digit = exponent % 10
-							exponent = Math.floor(exponent / 10)
-							exp = "" + digit + exp
-						}
-
-						if (exp.length === 0)
-							exp = "1"
-
-						exponent = exp
-
-						var mantissa
-						if (content > 0)
-							mantissa = Math.pow(10, content % 1)
-						else
-							mantissa = Math.pow(10, 1 + (content % 1))
-
-						if (mantissa > 9.99999999) {
-
-							mantissa = 1
-							exponent--
-						}
-
-						var sign = content >= 0 ? "+" : "-"
-
-						mantissa = fixDecimals ? mantissa.toFixed(dp) : mantissa.toPrecision(sf)
-
-						var padding
-
-						if (paddingNeeded)
-							padding = '<span class="do-not-copy" style="visibility: hidden;">' + Array(paddingNeeded + 1).join("0") + '</span>'
-						else
-							padding = ''
-
-						var reassembled = mantissa + "e&thinsp;" + padding + sign + exponent
-
-						formatted = { content: reassembled, "class": "number" }
-
-						isNumber = true
-					}
-
-				}
-				else if (Math.abs(content) >= upperLimit || Math.abs(content) <= Math.pow(10, -dp)) {
-					
-					var decimalsExpon = fixDecimals ? dp : sf - 1
-					var exponentiated = content.toExponential(decimalsExpon).replace(/-/g, "&minus;")
-					var paddingNeeded = Math.max(maxFSDOE - this._fsdoe(content), 0)
-
-					var split = exponentiated.split("e")
-					var mantissa = split[0]
-					var exponent = split[1]
-					var exponentSign = exponent.substr(0, 1)
-					var exponentNum = exponent.substr(1)
-
-					var padding
-
-					if (paddingNeeded)
-						padding = '<span class="do-not-copy" style="visibility: hidden;">' + Array(paddingNeeded + 1).join("0") + '</span>'
-					else
-						padding = ''
-
-					var reassembled = mantissa + "e&thinsp;" + padding + exponentSign + exponentNum
-
-					formatted = { content: reassembled, "class": "number" }
-
-					isNumber = true
-				}
-				else {
-
-					if (alignNumbers || fixDecimals) {
-
-						formatted = { content: content.toFixed(-minLSD).replace(/-/g, "&minus;"), "class": "number" }
-					}
-					else {
-
-						formatted = { content: content.toPrecision(sf).replace(/-/g, "&minus;"), "class": "number" }
-					}
-
-					isNumber = true
-				}
-
-				if (typeof cell.footnotes != "undefined")
-					formatted.footnotes = this._getFootnotes(cell.footnotes)
-
-				if (cell.isStartOfGroup)
-					formatted["class"] += " new-group-row"
-
-				if (cell.isStartOfSubGroup)
-					formatted["class"] += " new-sub-group-row"
-
-				if (cell.isEndOfGroup)
-					formatted["class"] += " last-group-row"
-
-				if (isNumber && approx)
-					formatted.content = "~&thinsp;" + formatted.content
-
-				columnCells[rowNo] = formatted
-			}
-		}
-		else if (isFinite(dp)) {
-
-			for (var rowNo = 0; rowNo < column.length; rowNo++) {
-
-				var cell = column[rowNo]
-				var content = cell.content
-				var formatted
-
-				var isNumber = false
-
-				if (typeof content == "undefined") {
-
-					formatted = { content: "." }
-				}
-				else if (content === "") {
-
-					formatted = { content: "&nbsp;" }
-				}
-				else if (combine && rowNo > 0 && column[rowNo - 1].content == content) {
-
-					formatted = { content: "&nbsp;", "class": "number" }
-				}
-				else if (isNaN(parseFloat(content))) {  // isn't a number
-
-					formatted = { content: content, "class": "number" }
-				}
-				else if (content < p) {
-
-					formatted = { content: "<&nbsp" + p, "class": "p-value" }
-
-				}
-				else if (pc) {
-
-					formatted = { content: "" + (100 * content).toFixed(dp) + "&thinsp;%", "class": "percentage" }
-					isNumber = true
-				}
-				else {
-
-					formatted = { content: content.toFixed(dp).replace(/-/g, "&minus;"), "class": "number" }
-					isNumber = true
-				}
-
-				if (typeof cell.footnotes != "undefined")
-					formatted.footnotes = this._getFootnotes(cell.footnotes)
-
-				if (cell.isStartOfGroup)
-					formatted["class"] += " new-group-row"
-
-				if (cell.isStartOfSubGroup)
-					formatted["class"] += " new-sub-group-row"
-
-				if (cell.isEndOfGroup)
-					formatted["class"] += " last-group-row"
-
-				if (isNumber && approx)
-					formatted.content = "~&thinsp;" + formatted.content
-
-				columnCells[rowNo] = formatted
-			}
-		}
-		else if (pc) {
-
-			for (var rowNo = 0; rowNo < column.length; rowNo++) {
-
-				var cell = column[rowNo]
-				var content = cell.content
-				var formatted
-
-				var isNumber = false
-
-				if (typeof content == "undefined") {
-
-					formatted = { content: "." }
-				}
-				else if (content === "") {
-
-					formatted = { content: "&nbsp;" }
-				}
-				else if (isNaN(parseFloat(content))) {  // isn't a number
-
-					formatted = { content: content, "class": "percentage" }
-				}
-				else {
-
-					formatted = { content: "" + (100 * content.toFixed(0)) + "&thinsp;%", "class": "percentage" }
-					isNumber = true
-				}
-
-				if (typeof cell.footnotes != "undefined")
-					formatted.footnotes = this._getFootnotes(cell.footnotes)
-
-				if (cell.isStartOfGroup)
-					formatted["class"] += " new-group-row"
-
-				if (cell.isStartOfSubGroup)
-					formatted["class"] += " new-sub-group-row"
-
-				if (cell.isEndOfGroup)
-					formatted["class"] += " last-group-row"
-
-				if (isNumber && approx)
-					formatted.content = "~&thinsp;" + formatted.content
-
-				columnCells[rowNo] = formatted
-			}
-		}
-		else {
-
-			for (var rowNo = 0; rowNo < column.length; rowNo++) {
-
-				var cell = column[rowNo]
-				var content = cell.content
-				var formatted
-
-				if (typeof content == "undefined") {
-
-					formatted = { content: "." }
-				}
-				else if (content === "") {
-
-					formatted = { content: "&nbsp;" }
-				}
-				else if (combine && rowNo > 0 && column[rowNo - 1].content == content) {
-
-					formatted = { content: "&nbsp;" }
-				}
-				else {
-
-					formatted = { content: content }
-				}
-
-				if (typeof cell.footnotes != "undefined")
-					formatted.footnotes = this._getFootnotes(cell.footnotes)
-
-				if (cell.isStartOfGroup)
-					formatted["class"] += " new-group-row"
-
-				if (cell.isStartOfSubGroup)
-					formatted["class"] += " new-sub-group-row"
-
-				if (cell.isEndOfGroup)
-					formatted["class"] += " last-group-row"
-
-				columnCells[rowNo] = formatted
-			}
-		}
-
-		return columnCells
-
-	},
-
-	_getFootnotes: function (indices) {
-
-		var footnotes = Array(indices.length)
-		var optFootnotes = this.model.get("footnotes");
-
-		for (var i = 0; i < indices.length; i++) {
-
-			var index = indices[i]
-
-			if (_.isString(index)) {
-
-				footnotes[i] = index
-
-			} else if (index < optFootnotes.length) {
-
-				var footnote = optFootnotes[index]
-				if (typeof footnote.symbol == "undefined")
-					footnotes[i] = this._symbol(index)
-				else if (_.isNumber(footnote.symbol))
-					footnotes[i] = this._symbol(footnote.symbol)
-				else
-					footnotes[i] = footnote.symbol
-			}
-			else {
-
-				footnotes[i] = this._symbol(index)
-			}
-
-		}
-
-		return footnotes
-
-	},
-
 	render: function () {
 		var optSchema = this.model.get("schema");
 		var optData = this.model.get("data");
@@ -702,90 +438,14 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 		var columnDefs = optSchema.fields
 		var columnCount = columnDefs.length
 
-		var rowData = optData;
-		var rowCount = rowData ? rowData.length : 0
+		let rowData = optData;
+		let rowCount = rowData ? rowData.length : 0
 
-		var columnHeaders = Array(columnCount)
-		var columns = Array(columnCount)
+		let columnsDict = createColumns(columnDefs, rowData, optFootnotes);
+		let columnHeaders = columnsDict['columnHeaders'];
+		let columns = columnsDict['columns'];
 
-
-		for (var colNo = 0; colNo < columnCount; colNo++) {
-
-			// populate column headers
-
-			var columnDef = columnDefs[colNo]
-			var columnName = columnDef.name
-
-			var title = columnDef.title
-			var overTitle = columnDef.overTitle
-
-			if (typeof title == "undefined")
-				title = columnName
-
-			if (title == "")
-				title = "&nbsp;"
-
-			var columnType = columnDef.type
-
-			var columnHeader = { content: title, header: true, type: columnType }
-
-			if (overTitle)
-				columnHeader.overTitle = overTitle
-
-			if (typeof columnDef[".footnotes"] != "undefined")
-				columnHeader.footnotes = this._getFootnotes(columnDef[".footnotes"])
-
-			columnHeaders[colNo] = columnHeader
-
-			// populate cells column-wise
-
-			var column = Array(rowCount)
-			var isGrouped = false
-
-			for (var rowNo = 0; rowNo < rowCount; rowNo++) {
-
-				var row = rowData[rowNo]
-				var content = row[columnName]
-				var cell = { content: content }
-
-				if (row['.footnotes'] && row['.footnotes'][columnName])
-					cell.footnotes = row['.footnotes'][columnName]
-
-				if (colNo == 0 && columnDef.type == "string" && row[".rowLevel"])
-					cell.content = Array(row[".rowLevel"] + 1).join("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;") + cell.content
-
-				if (row[".isNewGroup"]) {
-
-					cell.isStartOfGroup = true
-					isGrouped = true
-				}
-
-				if (row[".isNewSubGroup"]) {
-
-					cell.isStartOfSubGroup = true
-					isGrouped = true
-				}
-
-				if (isGrouped) {
-
-					if (rowNo + 1 < rowCount) {
-
-						if (rowData[rowNo + 1][".isNewGroup"])
-							cell.isEndOfGroup = true
-					}
-					else {
-
-						cell.isEndOfGroup = true
-					}
-				}
-
-				column[rowNo] = cell
-			}
-
-			columns[colNo] = column
-		}
-
-		var cells = Array(columnCount)
+		var cells = Array(columnCount);
 
 		for (var colNo = 0; colNo < columnCount; colNo++) {
 
@@ -796,7 +456,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 			var alignNumbers = !optCasesAcrossColumns  // numbers can't be aligned across rows
 			var combine = columnDefs[colNo].combine
 
-			cells[colNo] = this._formatColumn(column, type, format, alignNumbers, combine)
+			cells[colNo] = formatColumn(column, type, format, alignNumbers, combine, optFootnotes, true)
 		}
 
 		var columnsInColumn = {}  // dictionary of counts
@@ -878,6 +538,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 			}
 
 			cells = foldedCells
+
 			columnHeaders = foldedColumnHeaders
 			columnCount = foldedColumnHeaders.length
 			rowCount *= maxColumnsInColumn
@@ -885,7 +546,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 		if (optCasesAcrossColumns) {
 
-			var swapped = this._swapRowsAndColumns(columnHeaders, cells, optOverTitle)
+			var swapped = swapRowsAndColumns(columnHeaders, cells, optOverTitle)
 			cells = swapped.columns
 			columnHeaders = swapped.columnHeaders;
 			rowCount = swapped.rowCount
@@ -902,7 +563,6 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 			chunks.push('<table class="jasp-no-select">')
 		}
-
 
 
 		chunks.push('<thead>')
@@ -929,7 +589,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 		}
 
 		if (columnHeaders.length > 0) {
-			
+
 			var overTitles = false;
 			var overTitleSpace = false;
 			var overTitlesArray = [];
@@ -940,29 +600,29 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 					break;
 				}
 			}
-			
+
 			if (overTitlesArray.length > 0) {
 				// If we have an overTitle, we should make it
 				overTitles = true;
 			}
-			
+
 			var uniqueOverTitles = $.unique(overTitlesArray)
 			if (uniqueOverTitles.length > 1) {
-				// If we have more than one unique overTitle, we should make small 
-				// breaks in the line under the overTitle to indicate end of old and 
+				// If we have more than one unique overTitle, we should make small
+				// breaks in the line under the overTitle to indicate end of old and
 				// start of new overTitle. NB: with this option, the line is not copied
 				// to text processor.
 				overTitleSpace = true;
 			}
 
 			if (overTitles) {
-				
+
 				if (overTitleSpace) {
 					chunks.push('<tr class="over-title-space">')
 				} else {
 					chunks.push('<tr class="over-title">')
 				}
-				
+
 
 				var span = 1;
 				var oldTitle = columnHeaders[0].overTitle
@@ -999,7 +659,7 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 						chunks.push('<th colspan="' + (2 * span) + '">' + newTitle + '</th>')
 					}
 				}
-					
+
 
 				chunks.push('</tr>')
 			}

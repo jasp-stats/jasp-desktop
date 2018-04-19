@@ -86,6 +86,7 @@ private:
 	QWebChannel *_channel;
 
 	QMenu *_analysisMenu;
+	QMenu *_copySpecialMenu;
 	double _webViewZoom;
 
 	Json::Value _resultsMeta;
@@ -109,6 +110,7 @@ private slots:
 	void editTitleSelected();
 	void copySelected();
 	void citeSelected();
+	void latexCodeSelected();
 	void saveImage();
 	void editImage();
 	void noteSelected();

@@ -43,7 +43,7 @@ $(document).ready(function () {
 
 	var $instructions = $("#instructions")
 	var showInstructions = false;
-	
+
 	var analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
 
 
@@ -56,7 +56,7 @@ $(document).ready(function () {
 		jaspWidget.imageToEdit = image;
 		jaspWidget.render();
 	}
-	
+
 	window.select = function (id) {
 
 		if (selectedAnalysis != null)
@@ -141,6 +141,13 @@ $(document).ready(function () {
 	window.citeMenuClicked = function () {
 		if (window.menuObject.citeMenuClicked | window.menuObject.citeMenuClicked())
 			window.menuObject.toolbar.displayMessage("Citations copied to clipboard");
+
+		window.menuObject = null;
+	}
+
+	window.latexCodeMenuClicked = function () {
+		if (window.menuObject.latexCodeMenuClicked | window.menuObject.latexCodeMenuClicked())
+			window.menuObject.toolbar.displayMessage("Latex code copied to clipboard");
 
 		window.menuObject = null;
 	}
