@@ -20,7 +20,7 @@ QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 		default:										return "";
 		}
 	else if(role == ToolTipRole)
-		return QString("The '") + QString::fromStdString(col.name()) + "'-column " + (col.columnType() == Column::ColumnType::ColumnTypeScale ? "which can be used in numerical comparisons" : "which can not be used in numerical comparisons");
+		return QString("The '") + QString::fromStdString(col.name()) + "'-column " + (col.columnType() == Column::ColumnType::ColumnTypeScale ? "which can be used in numerical comparisons" : "which can only be used in (in)equivalence comparisons");
 
 	return QVariant();
 }
