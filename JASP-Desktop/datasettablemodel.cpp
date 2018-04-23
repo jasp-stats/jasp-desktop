@@ -34,21 +34,28 @@ DataSetTableModel::DataSetTableModel(QObject *parent) :
 {
 	_dataSet = NULL;
 
-	_nominalTextIcon = QIcon(":/icons/variable-nominal-text.svg");
-	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
-	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
-	_scaleIcon = QIcon(":/icons/variable-scale.svg");
+	_nominalTextIcon	= QIcon(":/icons/variable-nominal-text.svg");
+	_nominalIcon		= QIcon(":/icons/variable-nominal.svg");
+	_ordinalIcon		= QIcon(":/icons/variable-ordinal.svg");
+	_scaleIcon			= QIcon(":/icons/variable-scale.svg");
 }
 
-QVariant DataSetTableModel::getColumnTypesWithCorrespondingIcon(bool BothNominalVersions)
+QVariant DataSetTableModel::getColumnTypesWithCorrespondingIcon()
 {
 	QVariantList ColumnTypeAndIcons;
 
-	ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-scale.svg")));
-	ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-ordinal.svg")));
+	//enum ColumnType { ColumnTypeUnknown = 0, ColumnTypeNominal = 1, ColumnTypeNominalText = 2, ColumnTypeOrdinal = 4, ColumnTypeScale = 8 };
+
+	ColumnTypeAndIcons.push_back(QVariant(QString("")));
 	ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-nominal.svg")));
-	if(BothNominalVersions)
-		ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-nominal-text.svg")));
+	ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-nominal-text.svg")));
+	ColumnTypeAndIcons.push_back(QVariant(QString("")));
+	ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-ordinal.svg")));
+	for(int i=0; i<3;i++)
+		ColumnTypeAndIcons.push_back(QVariant(QString("")));
+
+	ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-scale.svg")));
+
 
 	return QVariant(ColumnTypeAndIcons);
 }

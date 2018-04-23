@@ -197,6 +197,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->quickWidget_Data->rootContext()->setContextProperty("generatedFilter",	QString(""));
 	ui->quickWidget_Data->rootContext()->setContextProperty("defaultFilter",	QString(DEFAULT_FILTER));
 
+	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeScale",			int(Column::ColumnType::ColumnTypeScale));
+	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeOrdinal",		int(Column::ColumnType::ColumnTypeOrdinal));
+	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeNominal",		int(Column::ColumnType::ColumnTypeNominal));
+	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeNominalText",	int(Column::ColumnType::ColumnTypeNominalText));
+
 	setFilterConstructorJSON(QString::fromStdString(_package->filterConstructorJSON));
 
 	ui->quickWidget_Data->setSource(QUrl(QString("qrc:///qml/dataset.qml")));

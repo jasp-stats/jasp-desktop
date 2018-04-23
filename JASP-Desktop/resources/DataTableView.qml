@@ -14,17 +14,6 @@ FocusScope
 		GradientStop { position: 1.0; color: "white" }
     }
 
-    Item
-    {
-        id: columnTypes
-        //Copied from column.h, should actually be exported or something like that
-        readonly property int columnTypeScale: 0
-        readonly property int columnTypeOrdinal: 1
-        readonly property int columnTypeNominal: 2
-        readonly property int columnTypeNominalText: 3
-    }
-
-
     Rectangle
     {
         id: filterToggleButton
@@ -98,8 +87,7 @@ FocusScope
 
         model: dataSetModel
 
-        readonly property var columnTypeAndIconPath: dataSetModel.getColumnTypesWithCorrespondingIcon(true)
-        readonly property var columnTypeChangeIconPaths:dataSetModel.getColumnTypesWithCorrespondingIcon(false)
+		readonly property var columnTypeAndIconPath: dataSetModel.getColumnTypesWithCorrespondingIcon()
 
         function clearColumns()
         {
@@ -192,7 +180,7 @@ FocusScope
                     anchors.leftMargin: 4
 
                     property int myColumnType: dataSetModel.columnIcon(styleData.column)
-                    source: myColumnType >= 0 ? dataSetTableView.columnTypeAndIconPath[myColumnType] : ""
+					source: dataSetTableView.columnTypeAndIconPath[myColumnType]
                     width: styleData.column > -1 ? __myRoot.__iconDim : 0
                     height:  __myRoot.__iconDim
 
@@ -201,7 +189,7 @@ FocusScope
                     {
                         colIcon.myColumnType = dataSetModel.setColumnTypeFromQML(styleData.column, columnType)
 
-                        if(variablesWindow.chosenColumn == styleData.column && colIcon.myColumnType == columnTypes.columnTypeScale)
+						if(variablesWindow.chosenColumn === styleData.column && colIcon.myColumnType === columnTypeScale)
                             variablesWindow.chooseColumn(-1)
 
 
@@ -231,27 +219,26 @@ FocusScope
 
                             Repeater{
                                 id: iconRepeater
-                                model: dataSetModel.getColumnTypesWithCorrespondingIcon(false)
+								model: [columnTypeScale, columnTypeOrdinal, columnTypeNominal]
 
                                 Button
                                 {
                                     id: columnTypeChangeIcon
-                                    iconSource: iconRepeater.model[index]
+									iconSource: dataSetTableView.columnTypeAndIconPath[iconRepeater.model[index]]
+
                                     width: __myRoot.__iconDim * 2.5 + nominalTextMeasure.width
-                                    //anchors.left: parent.left
-                                    //anchors.right: parent.right
 
                                     readonly property bool showThisTypeIcon: true // !((index == colIcon.myColumnType) || (index == columnTypes.columnTypeNominal && colIcon.myColumnType == columnTypes.columnTypeNominalText))
                                     height: showThisTypeIcon ? __myRoot.__iconDim * 1.5 : 0
 
-                                    text: index == columnTypes.columnTypeScale ? "Scale" : ( index == columnTypes.columnTypeOrdinal ? "Ordinal" : "Nominal")
+									text: iconRepeater.model[index] === columnTypeScale ? "Scale" : ( iconRepeater.model[index] === columnTypeOrdinal ? "Ordinal" : "Nominal")
 
 
                                     onClicked: columnTypeChosen()
 
                                     function columnTypeChosen()
                                     {
-                                        var columnType = index
+										var columnType = iconRepeater.model[index]
                                         popupIcons.close()
                                         colIcon.setColumnType(columnType)
                                         filterWindow.sendFilter()
@@ -312,7 +299,7 @@ FocusScope
 						anchors.fill: headerItem
 						onClicked:
 						{
-							var chooseThisColumn = (styleData.column > -1 && dataSetModel.columnIcon(styleData.column)  != columnTypes.columnTypeScale) ? styleData.column : -1
+							var chooseThisColumn = (styleData.column > -1 && dataSetModel.columnIcon(styleData.column)  !== columnTypeScale) ? styleData.column : -1
 							variablesWindow.chooseColumn(chooseThisColumn)
 
 						}

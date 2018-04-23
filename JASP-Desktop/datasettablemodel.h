@@ -55,7 +55,7 @@ public:
 	Q_INVOKABLE QVariant columnTitle(int column) const;
 	Q_INVOKABLE QVariant columnIcon(int column) const;
 	Q_INVOKABLE QVariant getCellValue(int column, int row) const { return data(index(row, column), Qt::DisplayRole); }
-	Q_INVOKABLE QVariant getColumnTypesWithCorrespondingIcon(bool BothNominalVersions = true);
+	Q_INVOKABLE QVariant getColumnTypesWithCorrespondingIcon();
 	Q_INVOKABLE QVariant getRowFilter(int row) { return (row >=0 && row < rowCount()) ? _dataSet->filterVector()[row] : true; }
 	Q_INVOKABLE QVariant columnHasFilter(int column) const;
 
