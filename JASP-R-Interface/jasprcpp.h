@@ -40,7 +40,7 @@ void jaspRCPP_setFilterWarning(SEXP Message);
 void jaspRCPP_setFilterError(SEXP Message);
 
 // This is a copy of column.h!!!!
-enum ColumnType { ColumnTypeUnknown = -1, ColumnTypeScale = 0, ColumnTypeOrdinal, ColumnTypeNominal, ColumnTypeNominalText};
+enum ColumnType { ColumnTypeUnknown = 0, ColumnTypeNominal = 1, ColumnTypeNominalText = 2, ColumnTypeOrdinal = 4, ColumnTypeScale = 8 };
 
 RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns, int* colMax);
 
