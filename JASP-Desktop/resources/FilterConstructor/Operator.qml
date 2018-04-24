@@ -6,6 +6,7 @@ Item
 
 	id: opRoot
 	objectName: "Operator"
+	property string __debugName: "Operator "+operator
 
 	property int initialWidth:  filterConstructor.blockDim * acceptsDrops ? 4 : 2
 	property string operator: "+"

@@ -2,7 +2,7 @@ import QtQuick 2.0
 
 ListView {
 	id: listOfStuff
-
+	property string __debugName: "ElementView"
 	//clip: true
 
 

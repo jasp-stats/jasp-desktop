@@ -3,6 +3,7 @@ import QtQuick 2.0
 Text
 {
 	text: "Button"
+	property string __debugName: "FilterConstructorButton"
 
 	property var onClickedFunction: function () {}
 

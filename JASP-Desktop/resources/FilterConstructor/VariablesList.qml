@@ -6,6 +6,7 @@ FocusScope
 {
 	id: variablesList
 	width: root.width / 3; height: 300
+	property string __debugName: "Variables"
 
 	property var model;
 	property string variablesListType;

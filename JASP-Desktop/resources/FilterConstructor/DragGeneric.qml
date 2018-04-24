@@ -21,6 +21,8 @@ MouseArea {
 	readonly property bool isABoolean: dragKeys.indexOf("boolean") >= 0
 	property bool wasChecked: false
 
+	property string __debugName: "DragGeneric " + shownChild !== undefined ? shownChild.__debugName : "?"
+
 	Rectangle
 	{
 		id: formulaNonBoolean
@@ -197,20 +199,30 @@ MouseArea {
 
 					for(var keyI=0; keyI<gobbleMeUp.dragKeys.length; keyI++)
 						if(leftDropSpot.dropKeys.indexOf(gobbleMeUp.dragKeys[keyI])>=0)
-						{
-							gobbleMeUp.releaseHere(leftDropSpot)
-							if(putResultHere !== scriptColumn) //we went deeper
-								releaseHere(putResultHere)
+							for(var myDragKeyI=0; myDragKeyI<this.dragKeys.length; myDragKeyI++)
+								if(putResultHere === scriptColumn || putResultHere.dropKeys.indexOf(dragKeys[myDragKeyI]) >= 0) //Make sure we are allowed to drop ourselves there!
+								{
+									gobbleMeUp.releaseHere(scriptColumn)
 
-                            return true
-						}
+									if(putResultHere !== scriptColumn) //we went deeper
+										this.releaseHere(putResultHere)
+
+									gobbleMeUp.releaseHere(leftDropSpot)
+
+									return true
+								}
+
 
 					//Ok, we couldnt actually take the entire node into ourselves. Maybe only the right part?
-					//Which means we have to place ourselves in the current gobbleMeUp!
+					//Which means we have to place ourselves in the dropSpot under the current gobbleMeUp!
 
 					putResultHere	= gobbleMeUp.returnFilledRightMostDropSpot()
 					if(putResultHere === null) return
 					gobbleMeUp		= putResultHere.containsItem
+
+					if(gobbleMeUp.objectName !== "DragGeneric")
+						console.log("gobbleMeUp: ", gobbleMeUp, " is not a dragGeneric but a ",	gobbleMeUp.objectName)
+
 				}
 
                 return false
@@ -242,6 +254,7 @@ MouseArea {
 
 			x: dragHotSpotX - (width / 2)
 			y: dragHotSpotY - (height / 2)
+			z: 10
 
 			visible: mouseArea.drag.active
 			SequentialAnimation on width {

@@ -3,7 +3,7 @@ import QtQuick 2.0
 Item
 {
 	//color: filterConstructor.jaspDarkBlue
-
+	property string __debugName: "OperatorSelector"
 	z: 2
 	property real horizontalCenterX: width / 2
 

@@ -2,6 +2,7 @@ import QtQuick 2.0
 
 DragGeneric {
 	shownChild: showMe
+	property string __debugName: "FunctionDrag"
 
 	property string functionName: "sum"
 	property var parameterNames: functionName != "!" ? ["x"] : []
