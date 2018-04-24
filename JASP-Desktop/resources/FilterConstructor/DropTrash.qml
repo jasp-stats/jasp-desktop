@@ -5,6 +5,7 @@ import QtQuick.Controls 2.2
 DropArea {
 	id: trashCan
 	objectName: "DropTrash"
+	property string __debugName: "DropTrash"
 
 	keys: [ "number", "boolean", "string", "variable" ]
 

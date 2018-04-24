@@ -5,6 +5,7 @@ Item
 {
 	id: funcRoot
 	objectName: "Function"
+	property string __debugName: "Function " + functionName
 
 	property int initialWidth: filterConstructor.blockDim * 3
 	property string functionName: "sum"

@@ -2,6 +2,7 @@ import QtQuick 2.0
 
 DragGeneric {
 	shownChild: showMe
+	property string __debugName: "OperatorDrag"
 
 	readonly property var everythingOperators: ["==", "!=", ]
 	readonly property var numberCompareOperators: ["<", ">", "<=", ">="]

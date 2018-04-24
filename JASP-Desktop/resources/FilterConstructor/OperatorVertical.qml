@@ -5,6 +5,7 @@ Item
 {
 	id: opRoot
 	objectName: "OperatorVertical"
+	property string __debugName: "OperatorVertical " + operator
 
 	property int initialHeight: filterConstructor.blockDim * 3
 	property string operator: "/"

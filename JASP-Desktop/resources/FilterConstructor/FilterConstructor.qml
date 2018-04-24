@@ -11,7 +11,7 @@ Item {
 	property real extraSpaceUnderColumns: 0
 
 	onVisibleChanged: if(visible) initializeFromJSON(filterConstructorJSONstring)
-
+	property string __debugName: "FilterConstructor"
 
 	OperatorSelector
 	{
@@ -135,6 +135,7 @@ Item {
 						z: parent.z + 1
 						id: scriptColumn
 						objectName: "scriptColumn"
+						property string __debugName: "scriptColumn"
 
 						anchors.fill: parent
 

@@ -5,6 +5,7 @@ DropArea {
 
 	id: dragTarget
 	objectName: "DropSpot"
+	property string __debugName: "DropSpot"
 
 	property var dropKeys: [ "number", "boolean", "string", "variable" ]
 	property alias dropProxy: dragTarget
@@ -27,7 +28,11 @@ DropArea {
 		iWasChecked = true
 
 		if(containsItem !== null)
+		{
+			if(containsItem.objectName !== "DragGeneric")
+				console.log("problem! ",parent.objectName," doesnt contain a dragger in dropper")
 			return containsItem.checkCompletenessFormulas()
+		}
 		return false
 	}
 
@@ -67,9 +72,14 @@ DropArea {
 	property var containsItem: null
 
 	onContainsItemChanged: {
-		if(containsItem == null)
+		if(containsItem === null)
 			width = Qt.binding(function(){ return dropText.contentWidth })
 		iWasChecked = false
+
+		if(containsItem === undefined)
+		{
+			console.log("containsItem for ",parent.objectName," just became undefined!")
+		}
 	}
 
 	Item
@@ -160,8 +170,6 @@ DropArea {
 				dragTarget.width = Qt.binding(function(){ return obj.width } )
 
 				obj.releaseHere(dragTarget)
-
-				dragTarget.containsItem = obj
 			}
 		}
 

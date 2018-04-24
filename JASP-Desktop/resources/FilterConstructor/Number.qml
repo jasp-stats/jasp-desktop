@@ -3,6 +3,7 @@ import QtQuick 2.0
 Item
 {
 	objectName: "Number"
+	property string __debugName: "Number " + value
 	property real value: 0
 
 	height:	filterConstructor.blockDim

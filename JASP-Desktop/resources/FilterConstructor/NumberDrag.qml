@@ -5,6 +5,7 @@ DragGeneric {
 
 	dragKeys: ["number"]
 	shownChild: showMe
+	property string __debugName: "NumberDrag"
 
 	Number
 	{
