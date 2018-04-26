@@ -338,7 +338,7 @@
           </widget>
          </item>
          <item row="0" column="0">
-          <widget class="BoundCheckBox" name="postSummary">
+          <widget class="BoundCheckBox" name="postSummaryTable">
            <property name="text">
             <string>Posterior summary</string>
            </property>

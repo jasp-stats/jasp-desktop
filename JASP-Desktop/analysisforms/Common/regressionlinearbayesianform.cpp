@@ -32,20 +32,20 @@ RegressionLinearBayesianForm::RegressionLinearBayesianForm(QWidget *parent) :
 
 	_dependentListModel = new TableModelVariablesAssigned(this);
 	_dependentListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
-	_dependentListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
+	_dependentListModel->setVariableTypesAllowed(Column::ColumnTypeScale);
 	_dependentListModel->setSource(&_availableVariablesModel);
 	ui->dependent->setModel(_dependentListModel);
 
 	_covariatesListModel = new TableModelVariablesAssigned(this);
 	_covariatesListModel->setSource(&_availableVariablesModel);
 	_covariatesListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
-	_covariatesListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	_covariatesListModel->setVariableTypesAllowed(Column::ColumnTypeScale);
 	ui->covariates->setModel(_covariatesListModel);
 
 	_wlsWeightsListModel = new TableModelVariablesAssigned();
 	_wlsWeightsListModel->setSource(&_availableVariablesModel);
 	_wlsWeightsListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
-	_wlsWeightsListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	_wlsWeightsListModel->setVariableTypesAllowed(Column::ColumnTypeScale);
 	ui->wlsWeights->setModel(_wlsWeightsListModel);
 
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);
@@ -284,7 +284,7 @@ void RegressionLinearBayesianForm::factorsChanged()
 
 // two functions below enable posteriorSummaryPlotCredibleIntervalBox
 // when either postSummary or postSummaryPlot are checked.
-void RegressionLinearBayesianForm::on_postSummary_toggled(bool checked)
+void RegressionLinearBayesianForm::on_postSummaryTable_toggled(bool checked)
 {
     bool turnOn = checked || ui->postSummaryPlot->isChecked();
     ui->posteriorSummaryPlotCredibleIntervalBox->setEnabled(turnOn);
@@ -292,6 +292,6 @@ void RegressionLinearBayesianForm::on_postSummary_toggled(bool checked)
 
 void RegressionLinearBayesianForm::on_postSummaryPlot_toggled(bool checked)
 {
-    bool turnOn = checked || ui->postSummary->isChecked();
+    bool turnOn = checked || ui->postSummaryTable->isChecked();
     ui->posteriorSummaryPlotCredibleIntervalBox->setEnabled(turnOn);
 }
