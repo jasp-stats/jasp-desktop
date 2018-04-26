@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.9
 import QtQuick.Controls 2.2
 
 //! [0]
@@ -31,6 +31,9 @@ DropArea {
 		width: (sizer / aspect) * parent.iconPadding
 
 		source: somethingHovers ? "qrc:/icons/trashcan_open.svg" : "qrc:/icons/trashcan.svg"
+		sourceSize.width: 160 * aspect
+		sourceSize.height: 160
+		mipmap: true
 
 		smooth: true
 	}

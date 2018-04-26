@@ -188,36 +188,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(_engineSync, &EngineSync::filterErrorTextChanged,	this,			&MainWindow::setFilterErrorText);
 	connect(_engineSync, &EngineSync::filterUpdated,			this,			&MainWindow::onFilterUpdated);
 
-	ui->quickWidget_Data->rootContext()->setContextProperty("mainWindow",		this);
-	ui->quickWidget_Data->rootContext()->setContextProperty("dataSetModel",		_tableModel);
-	ui->quickWidget_Data->rootContext()->setContextProperty("levelsTableModel", _levelsTableModel);
-	ui->quickWidget_Data->rootContext()->setContextProperty("columnsModel",		_columnsModel);
-	ui->quickWidget_Data->rootContext()->setContextProperty("engineSync",		_engineSync);
-	ui->quickWidget_Data->rootContext()->setContextProperty("filterErrorText",	QString(""));
-	ui->quickWidget_Data->rootContext()->setContextProperty("generatedFilter",	QString(""));
-	ui->quickWidget_Data->rootContext()->setContextProperty("defaultFilter",	QString(DEFAULT_FILTER));
-
-	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeScale",			int(Column::ColumnType::ColumnTypeScale));
-	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeOrdinal",		int(Column::ColumnType::ColumnTypeOrdinal));
-	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeNominal",		int(Column::ColumnType::ColumnTypeNominal));
-	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeNominalText",	int(Column::ColumnType::ColumnTypeNominalText));
-
-	setFilterConstructorJSON(QString::fromStdString(_package->filterConstructorJSON));
-
-	ui->quickWidget_Data->setSource(QUrl(QString("qrc:///qml/dataset.qml")));
-
-	QObject * DataView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataSetTableView");
-	connect(DataView, SIGNAL(dataTableDoubleClicked()), this, SLOT(startDataEditorHandler()));
-
-	QObject * levelsTableView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("levelsTableView");
-	connect(levelsTableView, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
-
-	QObject * easyFilterConstructor = ui->quickWidget_Data->rootObject()->findChild<QObject*>("filterWindow");
-	connect(easyFilterConstructor, SIGNAL(rCodeChanged(QString)), _labelFilterGenerator, SLOT(easyFilterConstructorRCodeChanged(QString)));
-
-	qmlProgressBar	= ui->quickWidget_Data->rootObject()->findChild<QObject*>("progressBarHolder");
-	qmlFilterWindow = ui->quickWidget_Data->rootObject()->findChild<QObject*>("filterWindow");
-	qmlStatusBar	= ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataStatusBar");
+	loadQML();
 
 	connect(_engineSync, &EngineSync::engineTerminated,		this,					&MainWindow::fatalError);
 
@@ -299,6 +270,40 @@ MainWindow::MainWindow(QWidget *parent) :
 		std::vector<std::string> missingvalues = fromQstringToStdVector(missingvaluestring, delimetor);
 		Utils::setEmptyValues(missingvalues);
 	}
+}
+
+void MainWindow::loadQML()
+{
+	ui->quickWidget_Data->rootContext()->setContextProperty("mainWindow",		this);
+	ui->quickWidget_Data->rootContext()->setContextProperty("dataSetModel",		_tableModel);
+	ui->quickWidget_Data->rootContext()->setContextProperty("levelsTableModel", _levelsTableModel);
+	ui->quickWidget_Data->rootContext()->setContextProperty("columnsModel",		_columnsModel);
+	ui->quickWidget_Data->rootContext()->setContextProperty("engineSync",		_engineSync);
+	ui->quickWidget_Data->rootContext()->setContextProperty("filterErrorText",	QString(""));
+	ui->quickWidget_Data->rootContext()->setContextProperty("generatedFilter",	QString(""));
+	ui->quickWidget_Data->rootContext()->setContextProperty("defaultFilter",	QString(DEFAULT_FILTER));
+
+	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeScale",			int(Column::ColumnType::ColumnTypeScale));
+	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeOrdinal",		int(Column::ColumnType::ColumnTypeOrdinal));
+	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeNominal",		int(Column::ColumnType::ColumnTypeNominal));
+	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeNominalText",	int(Column::ColumnType::ColumnTypeNominalText));
+
+	setFilterConstructorJSON(QString::fromStdString(_package->filterConstructorJSON));
+
+	ui->quickWidget_Data->setSource(QUrl(QString("qrc:///qml/dataset.qml")));
+
+	QObject * DataView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataSetTableView");
+	connect(DataView, SIGNAL(dataTableDoubleClicked()), this, SLOT(startDataEditorHandler()));
+
+	QObject * levelsTableView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("levelsTableView");
+	connect(levelsTableView, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
+
+	QObject * easyFilterConstructor = ui->quickWidget_Data->rootObject()->findChild<QObject*>("filterWindow");
+	connect(easyFilterConstructor, SIGNAL(rCodeChanged(QString)), _labelFilterGenerator, SLOT(easyFilterConstructorRCodeChanged(QString)));
+
+	qmlProgressBar	= ui->quickWidget_Data->rootObject()->findChild<QObject*>("progressBarHolder");
+	qmlFilterWindow = ui->quickWidget_Data->rootObject()->findChild<QObject*>("filterWindow");
+	qmlStatusBar	= ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataStatusBar");
 }
 
 
@@ -1196,6 +1201,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			ui->webViewResults->reload();
 			setWindowTitle("JASP");
 			triggerQmlColumnClear();
+			setFilterConstructorJSON("");
 
 			if (_applicationExiting)
 				QApplication::exit();
@@ -1220,7 +1226,7 @@ void MainWindow::populateUIfromDataSet()
 	_tableModel->setDataSet(_package->dataSet);
 	_levelsTableModel->setDataSet(_package->dataSet);
 	_columnsModel->setDataSet(_package->dataSet);
-	setFilterConstructorJSON(QString::fromStdString(_package->filterConstructorJSON));
+
 
 	if(_package->dataSet->rowCount() == 0)
 		ui->panel_1_Data->hide(); //for summary stats etc we dont want to see an empty data panel
@@ -1228,6 +1234,7 @@ void MainWindow::populateUIfromDataSet()
 	{
 		triggerQmlColumnReload();
 		setGeneratedFilter(QString::fromStdString(labelFilterGenerator(_package).generateFilter()));
+		setFilterConstructorJSON(QString::fromStdString(_package->filterConstructorJSON));
 		applyAndSendFilter(QString::fromStdString(_package->dataFilter));
 	}
 
@@ -1980,7 +1987,9 @@ void MainWindow::setGeneratedFilter(QString generatedFilter)
 void MainWindow::setGeneratedFilterAndSend(QString generatedFilter)
 {
 	setGeneratedFilter(generatedFilter);
-	QMetaObject::invokeMethod(qmlFilterWindow, "sendFilter");
+
+	if(_package->refreshAnalysesAfterFilter)
+		QMetaObject::invokeMethod(qmlFilterWindow, "sendFilter");
 }
 
 void MainWindow::setFilterConstructorJSON(QString jsonString)

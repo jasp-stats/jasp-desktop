@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.9
 
 
 Item
@@ -14,7 +14,7 @@ Item
 	property var parameterNames: []
 	property var parameterDropKeys: [[]]
 
-	property variant functionNameToImageSource: { "sum": "qrc:/icons/sum.png", "sd": "qrc:/icons/sigma.png", "var": "qrc:/icons/variance.png", "!": "qrc:/icons/negative.png", "sqrt":"qrc:/icons/rootHead.png"}
+	property variant functionNameToImageSource: { "sum": "qrc:/icons/sum.png", "prod": "qrc:/icons/product.png", "sd": "qrc:/icons/sigma.png", "var": "qrc:/icons/variance.png", "!": "qrc:/icons/negative.png", "sqrt":"qrc:/icons/rootHead.png"}
 	property string functionImageSource: functionNameToImageSource[functionName] !== undefined ? functionNameToImageSource[functionName] : ""
 	property bool isNested: false
 	property var booleanReturningFunctions: ["!"]
@@ -115,10 +115,14 @@ Item
 
             source: functionImageSource
 
+
             height: filterConstructor.blockDim
             width: height
+			sourceSize.width: filterConstructor.blockDim * 2
+			sourceSize.height: filterConstructor.blockDim * 2
 
             anchors.verticalCenter: parent.verticalCenter
+
         }
 
         Image
@@ -131,6 +135,9 @@ Item
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             width: filterConstructor.blockDim
+			sourceSize.width: filterConstructor.blockDim * 2
+			sourceSize.height: filterConstructor.blockDim * 3
+			smooth: true
         }
 	}
 

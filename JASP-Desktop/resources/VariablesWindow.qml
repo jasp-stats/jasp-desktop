@@ -108,6 +108,7 @@ FocusScope {
 
                     function moveUp()
                     {
+						levelsTableViewRectangle.focus = true
                         copySelection()
                         if(copiedSelection.length > 0 && copiedSelection[0] != 0)
                         {
@@ -128,6 +129,7 @@ FocusScope {
 
                     function moveDown()
                     {
+						levelsTableViewRectangle.focus = true
                         copySelectionReversed()
                         if(copiedSelection.length > 0 && (copiedSelection[0] != (levelsTableModel.rowCount() - 1)))
                         {
@@ -149,6 +151,7 @@ FocusScope {
 
                     function reverse()
                     {
+						levelsTableViewRectangle.focus = true
                         copySelection()
                         levelsTableModel.reverse()
                         selection.clear()

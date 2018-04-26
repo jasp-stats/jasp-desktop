@@ -1,5 +1,5 @@
 import QtQuick.Controls 2.3
-import QtQuick 2.0
+import QtQuick 2.9
 
 Item {
 	id: filterConstructor
@@ -10,7 +10,7 @@ Item {
 	signal rCodeChanged(string rScript)
 	property real extraSpaceUnderColumns: 0
 
-	onVisibleChanged: if(visible) initializeFromJSON(filterConstructorJSONstring)
+	onVisibleChanged: if(visible) initializeFromJSON(jsonConverter.jaspsFilterConstructorJSON)
 	property string __debugName: "FilterConstructor"
 
 	OperatorSelector
@@ -45,6 +45,7 @@ Item {
 			//anchors.bottom: parent.verticalCenter
 
 			height: parent.height / 5
+			mipmap: true
 
 			source: "qrc:/backgrounds/jasp-wave-down-light-blue-120.svg"
 		}
@@ -58,6 +59,7 @@ Item {
 			anchors.bottom: parent.bottom
 
 			height: parent.height / 5
+			mipmap: true
 
 			source: "qrc:/backgrounds/jasp-wave-up-light-green-120.svg"
 		}
@@ -73,7 +75,7 @@ Item {
 		anchors.top: columnsRow.bottom
 		anchors.left: parent.left
 		anchors.bottom: parent.bottom
-		anchors.bottomMargin: filterConstructor.extraSpaceUnderColumns
+		anchors.bottomMargin: filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
 
 		width: columns.width
 
@@ -138,6 +140,7 @@ Item {
 						property string __debugName: "scriptColumn"
 
 						anchors.fill: parent
+						anchors.margins: 4
 
 						function convertToR()
 						{
@@ -175,7 +178,7 @@ Item {
 				//anchors.bottomMargin: scrollScriptColumn.__horizontalScrollBar.visible ? 20 : 0
 				//anchors.rightMargin: scrollScriptColumn.__verticalScrollBar.visible ? 20 : 0
 
-				height: Math.min(110, scrollScriptColumn.height)
+				height: Math.min(80, scrollScriptColumn.height)
 			}
 
 
@@ -260,7 +263,6 @@ Item {
 		anchors.right: parent.right
 		anchors.bottom: parent.bottom
 
-
 		//border.width: 1
 		//border.color: "grey"
 
@@ -284,7 +286,7 @@ Item {
 
 				ListElement	{ type: "function";	functionName: "length";	functionParameters: "x";		functionParamTypes: "any";				toolTip: "returns number of elements in X" }
 				ListElement	{ type: "function";	functionName: "round";	functionParameters: "x,n";		functionParamTypes: "number,number";	toolTip: "rounds x to n decimals" }
-
+/*
 				ListElement	{ type: "separator" }
 				ListElement	{ type: "function";	functionName: "rnorm";	functionParameters: "n,mean,sd";functionParamTypes: "number,number,number";	toolTip: "generates a guassian distribution of n elements with specified mean and standard deviation sd" }
 				ListElement	{ type: "function";	functionName: "rexp";	functionParameters: "n,rate";	functionParamTypes: "number,number,number";	toolTip: "generates a exponential distribution of n elements with specified rate" }
@@ -299,7 +301,7 @@ Item {
 				ListElement	{ type: "function";	functionName: "acos";	functionParameters: "x";		functionParamTypes: "number";			toolTip: "arc or inverse cosine" }
 				ListElement	{ type: "function";	functionName: "atan";	functionParameters: "x";		functionParamTypes: "number";			toolTip: "arc or inverse tangent" }
 				ListElement	{ type: "function";	functionName: "atan2";	functionParameters: "x,y";		functionParamTypes: "number,number";	toolTip: "arc or inverse tangent that returns angle of x,y within a full circle" }
-
+*/
 				ListElement	{ type: "separator" }
 
 				ListElement	{ type: "function";	functionName: "log";	functionParameters: "x";		functionParamTypes: "number";			toolTip: "natural logarithm" }
@@ -316,6 +318,7 @@ Item {
 			anchors.right: parent.right
 			anchors.bottom: parent.bottom
 			anchors.margins: 2
+			anchors.bottomMargin: filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
 			width: 80
 		}
 	}
@@ -327,8 +330,13 @@ Item {
 
 		onJaspsFilterConstructorJSONChanged:
 		{
+			console.log("onJaspsFilterConstructorJSONChanged ",jaspsFilterConstructorJSON)
+
 			if(jaspsFilterConstructorJSON !== JSON.stringify(parent.returnFilterJSON()))
+			{
 				parent.initializeFromJSON(jaspsFilterConstructorJSON)
+				applyFilter.onClickedFunction()
+			}
 		}
 	}
 
@@ -338,6 +346,8 @@ Item {
 		trashCan.destroyAll();
 		if(jsonString !== "")
 			jsonConverter.convertJSONtoFormulas(JSON.parse(jsonString))
+
+
 	}
 
 
