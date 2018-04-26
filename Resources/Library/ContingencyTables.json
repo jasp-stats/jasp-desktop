@@ -101,11 +101,6 @@
 			"value": 1.0
 		},
 		{
-			"name": "countsObserved",
-			"type": "Boolean",
-			"default": true
-		},
-		{
 			"name": "countsExpected",
 			"type": "Boolean"
 		},
