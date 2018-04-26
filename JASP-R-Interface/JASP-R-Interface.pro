@@ -6,7 +6,7 @@ CONFIG += c++11
 TARGET = $$JASP_R_INTERFACE_NAME
 DESTDIR = ..
 TEMPLATE = lib
-linux:CONFIG += staticlib
+unix:CONFIG += staticlib
 
 QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.a'
 
@@ -70,12 +70,12 @@ windows{
     QMAKE_EXTRA_TARGETS += first copyfile
  }
 
-macx{
-	setpath.commands += install_name_tool -id @rpath/lib$$JASP_R_INTERFACE_NAME'.1.0.0.dylib' $$OUT_PWD/$$DESTDIR/lib$$JASP_R_INTERFACE_NAME'.1.0.0.dylib'
-	#first.depends = $(first) setpath
-	export(first.depends)
-	export(setpath.commands)
-	QMAKE_EXTRA_TARGETS += first setpath
-}
+#macx{
+#	setpath.commands += install_name_tool -id @rpath/lib$$JASP_R_INTERFACE_NAME'.1.0.0.dylib' $$OUT_PWD/$$DESTDIR/lib$$JASP_R_INTERFACE_NAME'.1.0.0.dylib'
+#	first.depends = $(first) setpath
+#	export(first.depends)
+#	export(setpath.commands)
+#	QMAKE_EXTRA_TARGETS += first setpath
+#}
 
 
