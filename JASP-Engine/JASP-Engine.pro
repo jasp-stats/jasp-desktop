@@ -28,7 +28,9 @@ INSTALLS += analysis_jsons
 
 DEPENDPATH = ..
 PRE_TARGETDEPS += ../JASP-Common
-LIBS +=  -l$$JASP_R_INTERFACE_NAME -L.. -lJASP-Common
+
+unix: PRE_TARGETDEPS += ../JASP-Common
+LIBS += -L.. -l$$JASP_R_INTERFACE_NAME -lJASP-Common
 
 include(../R_HOME.pri) #needed to build r-packages
 
@@ -76,6 +78,8 @@ macx:QMAKE_CXXFLAGS += -stdlib=libc++
 win32:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__ -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
 
 win32:LIBS += -lole32 -loleaut32
+macx:LIBS += -L$$_R_HOME/lib -lR
+
 
 mkpath($$OUT_PWD/../R/library)
 
