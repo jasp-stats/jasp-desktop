@@ -2899,6 +2899,20 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
    
     simpleEffectsTable[["data"]] <- simpleEffectRows
     
+    if (options$sumOfSquares == "type1") {
+      
+      .addFootnote(footnotes, text = "Type I Sum of Squares", symbol = "<em>Note.</em>")
+      
+    } else if (options$sumOfSquares == "type2") {
+      
+      .addFootnote(footnotes, text = "Type II Sum of Squares", symbol = "<em>Note.</em>")
+      
+    } else if (options$sumOfSquares == "type3") {
+      
+      .addFootnote(footnotes, text = "Type III Sum of Squares", symbol = "<em>Note.</em>")
+      
+    }
+    
   } else {
     if(options$sumOfSquares == "type1" ) {
       .addFootnote(footnotes, text = "Simple effects not yet available for type 1 SS.", 
