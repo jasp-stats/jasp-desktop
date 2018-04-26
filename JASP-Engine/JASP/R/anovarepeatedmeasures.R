@@ -2760,7 +2760,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
             if (subOptions$sumOfSquares != "type1") {
               modOneIndex <- which(row.names(modelSummary) == .v(simpleFactor))
               df <- modelSummary[modOneIndex,'num Df']
-              SS <- modelSummary[modOneIndex,'SS']   
+              SS <- modelSummary[modOneIndex,'Sum Sq']  
               if (!options$poolErrorTermSimpleEffects) {
                 fullAnovaMS <- modelSummary[modOneIndex,'Error SS'] / modelSummary[modOneIndex,'den Df']
                 fullAnovaDf <- modelSummary[modOneIndex,'den Df']
@@ -2851,9 +2851,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
                 if (subSubOptions$sumOfSquares != "type1") {
                   modTwoIndex <- which(row.names(modelSummary) == .v(simpleFactor))
                   df <- modelSummary[modTwoIndex,'num Df']
-                  SS <- modelSummary[modTwoIndex,'SS']   
+                  SS <- modelSummary[modTwoIndex,'Sum Sq']   
                   if (!options$poolErrorTermSimpleEffects) {
-                    fullAnovaMS <- modelSummary[modTwoIndex,'Error SS'] / modelSummary[modOneIndex,'den Df']
+                    fullAnovaMS <- modelSummary[modTwoIndex,'Error SS'] / modelSummary[modTwoIndex,'den Df']
                     fullAnovaDf <- modelSummary[modTwoIndex,'den Df']
                   }
                 } else {
