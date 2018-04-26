@@ -20,6 +20,8 @@ Item
 		id: colIcon
 		source: columnIcon
 		width: height
+		sourceSize.width: width
+		sourceSize.height: height
 
 		anchors.top: parent.top
 		anchors.left: parent.left

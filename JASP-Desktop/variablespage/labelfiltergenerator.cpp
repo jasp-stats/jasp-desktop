@@ -7,6 +7,8 @@ labelFilterGenerator::labelFilterGenerator(DataSetPackage *package, QObject *par
 
 std::string labelFilterGenerator::generateFilter()
 {
+	if(_package == NULL || _package->dataSet == NULL) return "generatedFilter <- NULL";
+
 	int neededFilters = 0;
 
 	for(Column & col : _package->dataSet->columns())

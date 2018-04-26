@@ -139,6 +139,8 @@ void LevelsTableModel::reverse() {
     if (_column == NULL)
         return;
 
+	beginResetModel();
+
     Labels &labels = _column->labels();
 	std::vector<Label> new_labels(labels.begin(), labels.end());
 
@@ -146,10 +148,11 @@ void LevelsTableModel::reverse() {
 
     labels.set(new_labels);
 
-    QModelIndex topLeft = createIndex(0,0);
+	/*QModelIndex topLeft = createIndex(0,0);
     QModelIndex bottonRight = createIndex(labels.size() - 1, 1);
     //emit a signal to make the view reread identified data
-    emit dataChanged(topLeft, bottonRight);
+	emit dataChanged(topLeft, bottonRight);*/
+	endResetModel();
 }
 
 Qt::ItemFlags LevelsTableModel::flags(const QModelIndex &index) const

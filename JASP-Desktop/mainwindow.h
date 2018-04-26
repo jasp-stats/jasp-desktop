@@ -149,6 +149,7 @@ private:
 	void removeAnalysisRequestHandler(int id);
 	
 	bool filterShortCut();
+	void loadQML();
 
 signals:
 	void updateAnalysesUserData(QString userData);

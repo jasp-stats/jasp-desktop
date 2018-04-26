@@ -27,19 +27,27 @@ MouseArea {
 	{
 		id: formulaNonBoolean
 		color: "transparent"
-		border.color: "red"
-		border.width: 1
+		border.color: visibleBecauseOfMouseHover ? "#14a1e3" : "red"
+		border.width: visibleBecauseOfMouseHover ? 2 : 1
+		radius: visibleBecauseOfMouseHover ? 10 : 0
+		anchors.margins: visibleBecauseOfMouseHover ? -3 : 0
 
 		anchors.fill: parent
 
-		visible: mouseArea.wasChecked && mouseArea.isFormula && !mouseArea.isABoolean
+		property bool visibleBecauseofCheckedError: mouseArea.wasChecked && mouseArea.isFormula && !mouseArea.isABoolean
+		property alias visibleBecauseOfMouseHover: mouseArea.shouldShowHoverOutline
+
+
+		visible: visibleBecauseofCheckedError || visibleBecauseOfMouseHover
+
+		z: -2
 	}
 
 	property string toolTipText: ""
 	property string shownToolTipText: formulaNonBoolean.visible ? "This formula should return logicals, try using '=', '>' or something similar." : toolTipText
 
-	ToolTip.delay: 500
-	//ToolTip.timeout: 1000
+	ToolTip.delay: 1000
+	ToolTip.timeout: 5000
 	ToolTip.visible: shownToolTipText != "" && containsMouse
 	ToolTip.text: shownToolTipText
 
@@ -62,13 +70,38 @@ MouseArea {
 	property var oldParent: null
 
 	hoverEnabled: true
-	cursorShape: (containsMouse && showMe.shouldDrag(mouseX, mouseY)) || drag.active  ? Qt.PointingHandCursor : Qt.ArrowCursor
+	cursorShape: (containsMouse && shownChild.shouldDrag(mouseX, mouseY)) || drag.active  ? Qt.PointingHandCursor : Qt.ArrowCursor
+
+	property bool shouldShowHoverOutline: false
+
+	onPositionChanged:
+	{
+		if(!mouseArea.drag.active)
+			shouldShowHoverOutline = shownChild.shouldDrag(mouseX, mouseY)
+
+	}
+
+	onExited: shouldShowHoverOutline = false
+	onEntered: removeAncestorsHoverOutlines()
+
+	function removeAncestorsHoverOutlines()
+	{
+		var ancestor = parent
+		while(ancestor !== scriptColumn && ancestor !== null && ancestor !== undefined)
+		{
+			if(ancestor.objectName === "DragGeneric")
+				ancestor.shouldShowHoverOutline = false
+			ancestor = ancestor.parent
+		}
+	}
+
 
 	onPressed:
 	{
+		shouldShowHoverOutline = false
 		oldParent = parent
 
-		if(!showMe.shouldDrag(mouse.x, mouse.y))
+		if(!shownChild.shouldDrag(mouse.x, mouse.y))
 			mouse.accepted = false
 		else
 		{
@@ -151,6 +184,9 @@ MouseArea {
 			parent.width = Qt.binding(function() { return dragMe.width })
 			parent.height = Qt.binding(function() { return dragMe.height })
 			parent.containsItem = this
+
+			shouldShowHoverOutline = false
+			removeAncestorsHoverOutlines()
 		}
 
 

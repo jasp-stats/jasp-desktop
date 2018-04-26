@@ -14,11 +14,7 @@ Text
 		onClicked: { focus = true; onClickedFunction()}
 
 		hoverEnabled: true
-
-		onPositionChanged:
-		{
-			cursorShape = containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
-		}
+		cursorShape : containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 	}
 
 	horizontalAlignment: Text.AlignHCenter
@@ -31,7 +27,7 @@ Text
 
 	Rectangle
 	{
-		color: mouseAreaButton.containsMouse ? " white" : "transparent"
+		color: mouseAreaButton.containsMouse ? "white" : "transparent"
 		border.color: "white"
 		border.width: 1
 		anchors.fill: parent

@@ -74,5 +74,8 @@
         <file>icons/and.png</file>
         <file>icons/gear.svg</file>
         <file>icons/modulo.png</file>
+        <file>icons/product.png</file>
+        <file>icons/NotR.png</file>
+        <file>icons/R.png</file>
     </qresource>
 </RCC>

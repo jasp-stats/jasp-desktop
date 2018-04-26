@@ -48,6 +48,8 @@ Rectangle {
         {
             id: filterWindow
             objectName: "filterWindow"
+
+			Layout.maximumHeight: rootDataset.height * 0.8
         }
 
         DataTableView

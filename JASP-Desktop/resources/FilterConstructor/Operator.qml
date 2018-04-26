@@ -120,6 +120,8 @@ Item
 		visible: operatorImageSource !== ""
 
 		source: operatorImageSource
+		sourceSize.width: filterConstructor.blockDim * 2
+		sourceSize.height: filterConstructor.blockDim * 2
 
 		height: filterConstructor.blockDim
 		width: height
