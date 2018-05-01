@@ -7,10 +7,10 @@ DropArea {
 	objectName: "DropTrash"
 	property string __debugName: "DropTrash"
 
-	keys: [ "number", "boolean", "string", "variable" ]
+	keys: [ "all" ]
 
 	onDropped: if(drop.drag.source !== null) drop.drag.source.destroy()
-	property real aspect: 1.7
+	property real aspect: 1.6
 	width: height / aspect
 	property real iconPadding: 0.9
 
@@ -31,9 +31,9 @@ DropArea {
 		width: (sizer / aspect) * parent.iconPadding
 
 		source: somethingHovers ? "qrc:/icons/trashcan_open.svg" : "qrc:/icons/trashcan.svg"
-		sourceSize.width: 160 * aspect
+		sourceSize.width: 160 / aspect
 		sourceSize.height: 160
-		mipmap: true
+		//mipmap: true
 
 		smooth: true
 	}

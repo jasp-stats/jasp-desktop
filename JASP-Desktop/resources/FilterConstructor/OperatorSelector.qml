@@ -6,11 +6,13 @@ Item
 	property string __debugName: "OperatorSelector"
 	z: 2
 	property real horizontalCenterX: width / 2
+	property real verticalCenterY: height / 2
 
 	Row
 	{
 		id: operatorRow
 		x: parent.horizontalCenterX - (width / 2)
+		y: parent.verticalCenterY - (height / 2)
 
 		OperatorDrag			{ operator: "+";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "addition" }
 		OperatorDrag			{ operator: "-";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "subtraction" }

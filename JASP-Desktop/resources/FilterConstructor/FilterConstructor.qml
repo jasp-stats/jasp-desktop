@@ -20,7 +20,7 @@ Item {
 		anchors.left: parent.left
 		anchors.right: parent.right
 
-		height: filterConstructor.blockDim
+		height: filterConstructor.blockDim * 1.75
 
 		z: 3
 
@@ -32,36 +32,89 @@ Item {
 		color: "white"
 
 		id: background
+		clip: true
 
 		anchors.fill: parent
 		z: -3
 
 		Image
 		{
-			id: topBack
+			id: topBackRight
 			anchors.top: parent.top
-			anchors.left: parent.left
+			anchors.left: parent.horizontalCenter
 			anchors.right: parent.right
 			//anchors.bottom: parent.verticalCenter
 
 			height: parent.height / 5
-			mipmap: true
+
+			horizontalAlignment: Image.AlignRight
+			fillMode: Image.TileHorizontally
 
 			source: "qrc:/backgrounds/jasp-wave-down-light-blue-120.svg"
+			sourceSize.height: 512
+			sourceSize.width: 1024
+
+			mirror: true
 		}
 
 		Image
 		{
-			id: bottomBack
-			//anchors.top: parent.top
+			id: topBackLeft
+			anchors.top: parent.top
 			anchors.left: parent.left
+			anchors.right: parent.horizontalCenter
+			//anchors.bottom: parent.verticalCenter
+
+			height: parent.height / 5
+
+			horizontalAlignment: Image.AlignRight
+			fillMode: Image.TileHorizontally
+
+			source: "qrc:/backgrounds/jasp-wave-down-light-blue-120.svg"
+			sourceSize.height: 512
+			sourceSize.width: 1024
+
+			mirror: false
+		}
+
+
+
+		Image
+		{
+			id: bottomBackRight
+			//anchors.top: parent.top
+			anchors.left: parent.horizontalCenter
 			anchors.right: parent.right
 			anchors.bottom: parent.bottom
 
-			height: parent.height / 5
-			mipmap: true
+			horizontalAlignment: Image.AlignRight
+			fillMode: Image.TileHorizontally
 
+			height: parent.height / 5
 			source: "qrc:/backgrounds/jasp-wave-up-light-green-120.svg"
+			sourceSize.height: 512
+			sourceSize.width: 1024
+
+			mirror: true
+		}
+
+		Image
+		{
+			id: bottomBackLeft
+			//anchors.top: parent.top
+			anchors.left: parent.left
+			anchors.right: parent.horizontalCenter
+			anchors.bottom: parent.bottom
+
+			horizontalAlignment: Image.AlignRight
+			fillMode: Image.TileHorizontally
+
+			height: parent.height / 5
+			source: "qrc:/backgrounds/jasp-wave-up-light-green-120.svg"
+			sourceSize.height: 512
+			sourceSize.width: 1024
+
+			mirror: false
 		}
 
 

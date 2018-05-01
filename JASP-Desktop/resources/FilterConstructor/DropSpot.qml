@@ -1,4 +1,7 @@
-import QtQuick 2.0
+import QtQuick 2.9
+import QtQuick.Controls 2.3
+
+
 
 DropArea {
 	//Rectangle { color: "transparent"; border.color: "blue"; border.width: 1; anchors.fill: parent } //debug for size of the dropspots
@@ -12,7 +15,7 @@ DropArea {
 
 	width:  implicitWidth
 	height: implicitHeight
-	keys: dropKeys
+	keys: ["all"]
 	property real originalWidth: defaultText.length * filterConstructor.blockDim * 0.4
 	property bool acceptsDrops: true
 	property string defaultText: acceptsDrops ? "..." : shouldShowX ? "x" : ""
@@ -44,6 +47,19 @@ DropArea {
 			return
 		}
 
+		var foundOneValidDragKey = false
+		for(var i=0; i<drag.source.dragKeys.length; i++)
+			if(dropKeys.indexOf(drag.source.dragKeys[i]) >= 0)
+				foundOneValidDragKey = true
+
+		if(!foundOneValidDragKey)
+		{
+			ToolTip.show("You cannot drop this element here, it is of the wrong type")
+			drag.accepted = false
+			return
+		}
+
+
 		var ancestry = parent
 
 		while(ancestry !== null)
@@ -65,6 +81,8 @@ DropArea {
 	{
 		if(containsItem == null)
 			width = originalWidth
+
+		ToolTip.hide()
 	}
 
 	//onDropped: containsItem = drop.drag.source

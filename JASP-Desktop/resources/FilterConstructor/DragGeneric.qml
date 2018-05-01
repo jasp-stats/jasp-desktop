@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.9
 import QtQuick.Controls 2.3
 
 
@@ -27,7 +27,7 @@ MouseArea {
 	{
 		id: formulaNonBoolean
 		color: "transparent"
-		border.color: visibleBecauseOfMouseHover ? "#14a1e3" : "red"
+		border.color: visibleBecauseOfMouseHover ? "#70c0ff" : "red"
 		border.width: visibleBecauseOfMouseHover ? 2 : 1
 		radius: visibleBecauseOfMouseHover ? 10 : 0
 		anchors.margins: visibleBecauseOfMouseHover ? -3 : 0
@@ -273,10 +273,12 @@ MouseArea {
 		x: mouseArea.x
 		y: mouseArea.y
 
-		Drag.keys: dragKeys
+		Drag.keys: ["all"]
 		Drag.active: mouseArea.drag.active
 		Drag.hotSpot.x: dragHotSpotX
 		Drag.hotSpot.y: dragHotSpotY
+
+		property alias dragKeys: mouseArea.dragKeys
 
 		Rectangle
 		{
