@@ -146,7 +146,7 @@ FocusScope
 				contentWidth: width
 				contentHeight: filterGeneratedBox.height + filterEditBox.height
 
-				Item
+				Rectangle
 				{
 					id: filterGeneratedBox
 					anchors.top: parent.top
@@ -154,6 +154,9 @@ FocusScope
 					anchors.right: parent.right
 
 					height: filterGeneratedEdit.contentHeight
+					color: "transparent"
+					border.color: "lightGray"
+					border.width: 1
 
 					New.TextArea
 					{
@@ -167,6 +170,7 @@ FocusScope
 						color: "gray"
 						selectByMouse: true
 						onActiveFocusChanged: if(!activeFocus) deselect()
+
 					}
 
 					New.Button

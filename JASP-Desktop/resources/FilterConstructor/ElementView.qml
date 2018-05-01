@@ -6,6 +6,8 @@ ListView {
 	//clip: true
 
 
+	property real widthMargin: 10
+	spacing: 4
 
 	delegate: MouseArea
 	{
@@ -45,7 +47,7 @@ ListView {
 			property string listToolTip:		type !== "separator" && type !== "text" ? toolTip : ""
 
 			//anchors.centerIn: parent
-			x: isColumn ? 0 : (parent.width - width)
+			x: isColumn ? listOfStuff.widthMargin / 2 : (parent.width - width) - (listOfStuff.widthMargin / 2)
 
 			sourceComponent: type === "operator" ?
 								 operatorComp :
@@ -66,8 +68,8 @@ ListView {
 			onLoaded:
 			{
 
-				if(listOfStuff.orientation !== ListView.Horizontal && listOfStuff.width < width)
-					listOfStuff.width = width
+				if(listOfStuff.orientation !== ListView.Horizontal && listOfStuff.width < width + listOfStuff.widthMargin)
+					listOfStuff.width = width + listOfStuff.widthMargin
 			}
 		}
 
@@ -78,7 +80,7 @@ ListView {
 		Component { id: functionComp;		FunctionDrag			{ toolTipText: listToolTip; functionName: listFunction;	acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef } }
 		Component { id: numberComp;			NumberDrag				{ toolTipText: listToolTip; value: listNumber;									alternativeDropFunction: alternativeDropFunctionDef } }
 		Component { id: stringComp;			StringDrag				{ toolTipText: listToolTip; text: listText;										alternativeDropFunction: alternativeDropFunctionDef } }
-		Component { id: separatorComp;		Item					{ height: filterConstructor.blockDim; width: listWidth; Rectangle { height: 1; color: "black"; width: listWidth ; anchors.centerIn: parent }  } }
+		Component { id: separatorComp;		Item					{ height: filterConstructor.blockDim; width: listWidth - listOfStuff.widthMargin; Rectangle { height: 1; color: "black"; width: parent.width ; anchors.centerIn: parent }  } }
 		Component { id: defaultComp;		Text					{ text: "Something wrong!"; color: "red" }  }
 		Component {	id: columnComp;			ColumnDrag				{ toolTipText: listToolTip; columnName: listColName; columnIcon: listColIcon;		alternativeDropFunction: alternativeDropFunctionDef } }
 
