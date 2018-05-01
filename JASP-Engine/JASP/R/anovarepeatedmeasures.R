@@ -659,7 +659,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		for (var in variables) {
 
 			formula <- as.formula(paste("~", .v(var)))
-			referenceGrid <- emmeans::lsmeans(fullModel, formula)
+			referenceGrid <- emmeans::emmeans(fullModel, formula)
 
 			referenceGridList[[var]] <- referenceGrid
 
@@ -2737,8 +2737,10 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
           subCovDataset <- covDataset[dataset[terms.base64[1]] == level,] 
         }
         subFactorNamesV <- factorNamesV
-        whichFactorsBesidesModerator <- !unlist(lapply((options[['betweenModelTerms']]), FUN = function(x){grepl(moderatorFactorOne, x)}))
-        subOptions[['betweenModelTerms']] <- options[['betweenModelTerms']][whichFactorsBesidesModerator]
+        whichTermsBesidesModerator <- !unlist(lapply((options[['betweenModelTerms']]), FUN = function(x){grepl(moderatorFactorOne, x)}))
+        whichFactorsBesidesModerator <- !unlist(lapply((options[['betweenSubjectFactors']]), FUN = function(x){grepl(moderatorFactorOne, x)}))
+        
+        subOptions[['betweenModelTerms']] <- options[['betweenModelTerms']][whichTermsBesidesModerator]
         subOptions[['betweenSubjectFactors']] <- options[['betweenSubjectFactors']][whichFactorsBesidesModerator]
       }
       areSimpleFactorCellsDropped <- ifelse(isSimpleFactorWithin, FALSE, (nrow(unique(subDataset[simpleFactor.base64])) <  
