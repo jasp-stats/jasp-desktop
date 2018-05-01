@@ -16,15 +16,6 @@ macx: QMAKE_CLEAN +=$$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.dylib'
 
 include(../R_HOME.pri)
 
-windows {
-	message(QT_ARCH $$QT_ARCH)
-	contains(QT_ARCH, i386) {
-		ARCH = i386
-	} else {
-		ARCH = x64
-	}
-}
-
 INCLUDEPATH += ../../boost_1_64_0
 
 DEFINES += JASP_R_INTERFACE_LIBRARY
