@@ -28,7 +28,6 @@ macx {
         R_EXE  = $$_R_HOME/bin/R
 }
 
-
 windows {
         isEmpty(_R_HOME):_R_HOME = $$OUT_PWD/../R
         R_EXE  = $$_R_HOME/bin/$$ARCH/R
@@ -36,8 +35,9 @@ windows {
 
 $$BUILDING_JASP_ENGINE {
 	linux: LIBS += -L$$_R_HOME/lib -lR -lrt # because linux JASP-R-Interface is staticlib
-} else {
 	macx:  LIBS += -L$$_R_HOME/lib -lR
+} else {
+	
 	win32: LIBS += -L$$_R_HOME/bin/$$ARCH -lR
 }
 
