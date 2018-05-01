@@ -773,14 +773,14 @@ JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 				if (_.isString(footnote)) {
 
-					chunks.push(this._symbol(i) + '&nbsp;')
+					chunks.push(symbol(i) + '&nbsp;')
 					chunks.push(footnote)
 				}
 
 				if (_.has(footnote, "symbol")) {
 
 					if (_.isNumber(footnote.symbol))
-						chunks.push(this._symbol(footnote.symbol) + '&nbsp;')
+						chunks.push(symbol(footnote.symbol) + '&nbsp;')
 					else
 						chunks.push(footnote.symbol + '&nbsp;')
 
