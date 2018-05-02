@@ -55,16 +55,8 @@ macx {
 	INCLUDEPATH += ../../boost_1_64_0
 }
 
-
 windows {
-	contains(QT_ARCH, i386) {
-		ARCH = i386
-	} else {
-		ARCH = x64
-	}
-
 	INCLUDEPATH += ../../boost_1_64_0
-
 }
 
 INCLUDEPATH += $$PWD/../JASP-Common/

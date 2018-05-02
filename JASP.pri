@@ -25,3 +25,13 @@ exists(/app/lib/*)  {} else {
     linux:	CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG }
 }
 macx | windows { CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG } }
+
+windows {
+	message(QT_ARCH $$QT_ARCH)
+	contains(QT_ARCH, i386) {
+		ARCH = i386
+	} else {
+		ARCH = x64
+	}
+}
+
