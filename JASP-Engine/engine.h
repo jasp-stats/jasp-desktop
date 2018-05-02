@@ -94,7 +94,7 @@ private:
 	int _slaveNo = 0;
 
 	bool _filterChanged = false;
-	std::string _filter = "return(genFilter)", _generatedFilter = "";
+	std::string _filter = "", _generatedFilter = "";
 
 	bool _rCodeEntered = false;
 	std::string _rCode = "";
