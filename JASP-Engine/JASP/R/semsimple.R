@@ -175,9 +175,9 @@
       return(model)
   }
 
-  variables <- variables[order(nchar(variables), decreasing=TRUE)]
-  with.s.quotes <- paste("'", variables, "'", sep="")
-  with.d.quotes <- paste('"', variables, '"', sep="")
+  variables <- variables[order(nchar(variables), decreasing = TRUE)]
+  with.s.quotes <- paste("\\b'", variables, "'\\b", sep="")
+  with.d.quotes <- paste('\\b"', variables, '"\\b', sep="")
 
   new.names <- .v(variables)
 
@@ -190,7 +190,7 @@
   }
 
   for (i in 1:length(variables)) {
-      model <- gsub(variables[i], new.names[i], model)
+      model <- gsub(paste0("\\b",variables[i], "\\b"), new.names[i], model)
   }
 
   return(model)
@@ -223,7 +223,6 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
     dataset <- dheader
   }
 
-  #browser()
 
   # Retrieve state:
   state <- .retrieveState()
