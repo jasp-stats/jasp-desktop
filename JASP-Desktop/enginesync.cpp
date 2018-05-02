@@ -429,7 +429,6 @@ void EngineSync::runScriptOnProcess(RScriptStore * scriptStore, int processNo)
 
 void EngineSync::sendMessages()
 {	
-	std::cout << "void EngineSync::sendMessages()\n" << std::flush;
 	
 	for (size_t i = 0; i < _engineStates.size(); i++) // this loop handles changes in running analyses
 		if (_engineStates[i] == engineState::analysis)
