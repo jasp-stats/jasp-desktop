@@ -6,7 +6,7 @@ CONFIG += c++11
 TARGET = $$JASP_R_INTERFACE_NAME
 DESTDIR = ..
 TEMPLATE = lib
-linux:CONFIG += staticlib
+unix:CONFIG += staticlib
 
 QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.a'
 
@@ -14,13 +14,9 @@ windows:QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_TARGET'*.lib' $$OU
 
 macx: QMAKE_CLEAN +=$$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.dylib'
 
-
-macx {
-    isEmpty(_R_HOME):_R_HOME = $$OUT_PWD/../../Frameworks/R.framework/Versions/$$CURRENT_R_VERSION/Resources
-}
+include(../R_HOME.pri)
 
 windows {
-    isEmpty(_R_HOME):_R_HOME = $$OUT_PWD/../R
 	message(QT_ARCH $$QT_ARCH)
 	contains(QT_ARCH, i386) {
 		ARCH = i386
@@ -61,13 +57,6 @@ INCLUDEPATH += \
     $$_R_HOME/library/Rcpp/include \
     $$_R_HOME/include
 
-
-macx:LIBS += \
-    -L$$_R_HOME/lib -lR
-
-win32:LIBS += \
-    -L$$_R_HOME/bin/$$ARCH -lR
-
 windows{
 	SOURCE_LIBFILE = $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_NAME'.a'
     SOURCE_LIBFILE ~= s,/,\\,g
@@ -81,12 +70,12 @@ windows{
     QMAKE_EXTRA_TARGETS += first copyfile
  }
 
-macx{
-	setpath.commands += install_name_tool -id @rpath/lib$$JASP_R_INTERFACE_NAME'.1.0.0.dylib' $$OUT_PWD/$$DESTDIR/lib$$JASP_R_INTERFACE_NAME'.1.0.0.dylib'
-	first.depends = $(first) setpath
-	export(first.depends)
-	export(setpath.commands)
-	QMAKE_EXTRA_TARGETS += first setpath
-}
+#macx{
+#	setpath.commands += install_name_tool -id @rpath/lib$$JASP_R_INTERFACE_NAME'.1.0.0.dylib' $$OUT_PWD/$$DESTDIR/lib$$JASP_R_INTERFACE_NAME'.1.0.0.dylib'
+#	first.depends = $(first) setpath
+#	export(first.depends)
+#	export(setpath.commands)
+#	QMAKE_EXTRA_TARGETS += first setpath
+#}
 
 

@@ -25,6 +25,17 @@
 #include "boost/signals2.hpp"
 #include "jsonredirect.h"
 
+#define DEFAULT_FILTER "# Here you can write your own filter using R directly.\n\n"\
+	"# The grey readonly code above here created a logical vector generatedFilter\n"\
+	"# generatedFilter is the result of the selected nominal/ordinal values,\n"\
+	"# combined with the constructed formulas of the easy filterconstructor.\n\n"\
+	"# By returning a logical vector, either by placing your selection at the end,\n"\
+	"# or by using return(), you decide which rows will be selected.\n\n"\
+	"# For example: to select only females with a testscore greater than 5:\n"\
+	"# Gender == \"Female\" & TestScore > 5\n\n"\
+	"# To combine this with the generated filter use: \n"\
+	"# generatedFilter & Gender == \"Female\" & TestScore > 5\n\n"\
+	"generatedFilter # returns the generated filter as the only filter"
 
 class DataSetPackage
 {
@@ -57,7 +68,8 @@ public:
 	bool isReady() const;
 	void setWaitingForReady();
 	void setAnalysesHTMLReady();
-	std::string dataFilter = "return(genFilter)";
+	std::string dataFilter = DEFAULT_FILTER, filterConstructorJSON = "";
+
 	bool refreshAnalysesAfterFilter = true;
 
 	boost::signals2::signal<void (DataSetPackage *source)> isModifiedChanged;

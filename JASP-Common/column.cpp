@@ -1252,3 +1252,23 @@ bool Column::allLabelsPassFilter() const
 			return false;
 	return true;
 }
+
+bool Column::hasFilter() const
+{
+	if(_columnType == ColumnTypeScale)
+	{
+//#ifdef JASP_DEBUG
+//		std::cout << "Scale columns do not yet have their own specific filtertype..\n" << std::flush;
+//#endif
+		//Maybe check filterConstructor-thingy?
+		return false;
+	}
+	else
+		return !allLabelsPassFilter();
+}
+
+void Column::resetFilter()
+{
+	for(int i=0; i< labels().size(); i++)
+		labels()[i].setFilterAllows(true);
+}

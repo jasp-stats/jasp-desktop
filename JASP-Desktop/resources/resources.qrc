@@ -15,6 +15,8 @@
         <file>cross.png</file>
         <file>arrow-reverse.png</file>
         <file>filter.png</file>
+        <file>eraser.png</file>
+        <file>eraser_all.png</file>
     </qresource>
     <qresource prefix="/qml">
         <file>dataset.qml</file>
@@ -26,6 +28,55 @@
         <file>ProgressBarHolder.qml</file>
         <file>DataTableView.qml</file>
         <file>PlusMinusCheckButton.qml</file>
+        <file>FilterConstructor/ColumnDrag.qml</file>
+        <file>FilterConstructor/ColumnsSelector.qml</file>
+        <file>FilterConstructor/DragGeneric.qml</file>
+        <file>FilterConstructor/DropSpot.qml</file>
+        <file>FilterConstructor/DropTrash.qml</file>
+        <file>FilterConstructor/ElementView.qml</file>
+        <file>FilterConstructor/FilterConstructor.qml</file>
+        <file>FilterConstructor/FilterConstructorButton.qml</file>
+        <file>FilterConstructor/Function.qml</file>
+        <file>FilterConstructor/FunctionDrag.qml</file>
+        <file>FilterConstructor/JASPColumn.qml</file>
+        <file>FilterConstructor/Number.qml</file>
+        <file>FilterConstructor/NumberDrag.qml</file>
+        <file>FilterConstructor/Operator.qml</file>
+        <file>FilterConstructor/OperatorDrag.qml</file>
+        <file>FilterConstructor/OperatorSelector.qml</file>
+        <file>FilterConstructor/OperatorVertical.qml</file>
+        <file>FilterConstructor/OperatorVerticalDrag.qml</file>
+        <file>FilterConstructor/String.qml</file>
+        <file>FilterConstructor/StringDrag.qml</file>
+        <file>FilterConstructor/VariablesList.qml</file>
+        <file>FilterConstructor/JSONtoFormulas.qml</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>backgrounds/jasp-wave-down-light-blue-120.svg</file>
+        <file>backgrounds/jasp-wave-up-light-green-120.svg</file>
+        <file>icons/variance.png</file>
+        <file>icons/trashcan.svg</file>
+        <file>icons/trashcan_open.svg</file>
+        <file>icons/sum.png</file>
+        <file>icons/sigma.png</file>
+        <file>icons/rootTail.png</file>
+        <file>icons/rootHead.png</file>
+        <file>icons/recycle.svg</file>
+        <file>icons/or.png</file>
+        <file>icons/notEqual.png</file>
+        <file>icons/negative.png</file>
+        <file>icons/lessThanEqual.png</file>
+        <file>icons/lessThan.png</file>
+        <file>icons/greaterThanEqual.png</file>
+        <file>icons/greaterThan.png</file>
+        <file>icons/equal.png</file>
+        <file>icons/divide.png</file>
+        <file>icons/and.png</file>
+        <file>icons/gear.svg</file>
+        <file>icons/modulo.png</file>
+        <file>icons/product.png</file>
+        <file>icons/NotR.png</file>
+        <file>icons/R.png</file>
     </qresource>
     <qresource prefix="/">
         <file>fonts/FiraCode-Retina.ttf</file>

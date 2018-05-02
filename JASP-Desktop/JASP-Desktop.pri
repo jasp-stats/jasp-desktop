@@ -143,7 +143,8 @@ SOURCES += \
     $$PWD/customwebenginepage.cpp \
     $$PWD/asyncloaderthread.cpp \
     $$PWD/aboutdialogjsinterface.cpp \
-    $$PWD/variablespage/labelfiltergenerator.cpp
+    $$PWD/variablespage/labelfiltergenerator.cpp \
+    $$PWD/columnsmodel.cpp
 
 
 HEADERS  += \
@@ -303,7 +304,8 @@ HEADERS  += \
     $$PWD/customwebenginepage.h \
     $$PWD/asyncloaderthread.h \
     $$PWD/aboutdialogjsinterface.h \
-    $$PWD/variablespage/labelfiltergenerator.h
+    $$PWD/variablespage/labelfiltergenerator.h \
+    $$PWD/columnsmodel.h
 
 FORMS += \
     $$PWD/aboutdialog.ui \
@@ -361,6 +363,7 @@ OTHER_FILES += \
     $$PWD/html/js/jquery-ui-1.10.1.custom.js \
     $$PWD/html/js/main.js \
     $$PWD/html/js/table.js \
+    $$PWD/html/js/utils.js \
     $$PWD/html/js/tables.js \
     $$PWD/html/js/underscore-min.js \
     $$PWD/html/js/underscore.js \

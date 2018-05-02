@@ -61,6 +61,13 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 	errorList <- NULL
 	
+	# do we look up raw or standardized alpha?
+	if (options[["alphaScaleStandardized"]][[1]] == "_2standardized") {
+	    options$alphaNms <- "std.alpha"
+	} else {
+	    options$alphaNms <- "raw_alpha"
+	}
+	
 	if (!is.null(variables) && length(variables) > 0) {
 		if (is.null(resultsAlpha)) { # was the main analysis retrieved from state?
 			
@@ -186,14 +193,14 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	if (options$sdScale)
 		fields[[length(fields) + 1]] <- list(name="sd", title="sd", type="number", format="sf:4;dp:3")
 
+	if (options[["mcDonaldScale"]])
+		fields[[length(fields) + 1]] <- list(name="omega", title="McDonald's \u03C9", type="number", format="sf:4;dp:3")
+
 	if (options$alphaScale)
 		fields[[length(fields) + 1]] <- list(name="alpha", title="Cronbach's \u03B1", type="number", format="sf:4;dp:3")
 
 	if (options$gutmannScale)
 		fields[[length(fields) + 1]] <- list(name="lambda", title="Gutmann's \u03BB6", type="number", format="sf:4;dp:3")
-
-	if (options[["mcDonaldScale"]])
-		fields[[length(fields) + 1]] <- list(name="omega", title="McDonald's \u03C9", type="number", format="sf:4;dp:3")
 
 	if (options[["glbScale"]])
 		fields[[length(fields) + 1]] <- list(name="glb", title="Greatest lower bound", type="number", format="sf:4;dp:3")
@@ -262,8 +269,8 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		lower <- NULL
 		upper <- NULL
 
-		if (options$alphaScale)
-			alpha <- .clean(r$total$raw_alpha)
+		if (options[["alphaScale"]])
+            alpha <- .clean(r$total[[options$alphaNms]])
 
 		if (options$gutmannScale)
 			lambda <- .clean(r$total[["G6(smc)"]])
@@ -328,14 +335,14 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	if (options$itemRestCor)
 		fields[[length(fields) + 1]] <- list(name="itemRestCor", title="item-rest correlation", type="number", format="sf:4;dp:3")
 
+	if (options[["mcDonaldItem"]])
+		fields[[length(fields) + 1]] <- list(name="omega", title="McDonald's \u03C9", type="number", format="sf:4;dp:3", overTitle = overTitle)
+
 	if (options$alphaItem)
 		fields[[length(fields) + 1]] <- list(name="alpha", title="Cronbach's \u03B1", type="number", format="sf:4;dp:3", overTitle = overTitle)
 
 	if (options$gutmannItem)
 		fields[[length(fields) + 1]] <- list(name="lambda", title="Gutmann's \u03BB6", type="number", format="sf:4;dp:3", overTitle = overTitle)
-
-	if (options[["mcDonaldItem"]])
-		fields[[length(fields) + 1]] <- list(name="omega", title="McDonald's \u03C9", type="number", format="sf:4;dp:3", overTitle = overTitle)
 
 	table[["schema"]] <- list(fields = fields)
 
@@ -380,7 +387,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 			}
 
 			if (options$alphaItem)
-				alpha <- .clean(r$alpha.drop[index,"raw_alpha"])
+				alpha <- .clean(r$alpha.drop[index, options$alphaNms])
 
 			if (options$gutmannItem)
 				lambda <- .clean(r$alpha.drop[index, "G6(smc)"])

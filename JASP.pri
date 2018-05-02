@@ -9,33 +9,19 @@ JASP_R_INTERFACE_NAME = $$JASP_R_INTERFACE_TARGET$$JASP_R_INTERFACE_MAJOR_VERSIO
 #R settings
 CURRENT_R_VERSION = 3.4
 DEFINES += "CURRENT_R_VERSION=\"$$CURRENT_R_VERSION\""
+BUILDING_JASP_ENGINE=false
 
-LINUX_SPECIAL_CASE = false
 
-linux {
-    _R_HOME = $$(R_HOME)
-
-    $$LINUX_SPECIAL_CASE {
-        _R_HOME = /usr/lib64/R
-        INCLUDEPATH += /usr/lib64/R/library/include
-        DEFINES += LIBJSON_DIR_UP
-    } else {
-        _R_HOME = /usr/lib/R
-        INCLUDEPATH += /usr/lib/R/library/include
+macx | windows | exists(/app/lib/*) { DEFINES += JASP_LIBJSON_STATIC } else
+{
+    linux {
+        CONFIG += link_pkgconfig
+        PKGCONFIG += jsoncpp
+        LIBS += -ljsoncpp
     }
-
-    QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
-    INCLUDEPATH += /usr/include/R/
-
-    LIBS += -L$$_R_HOME/lib -lR -lrt
-    R_EXE  = $$_R_HOME/bin/R
-
-
-    INCLUDEPATH += \
-        /usr/share/R/include \
-        $$_R_HOME/site-library/Rcpp/include
-} else {
-    _R_HOME = $$(R_HOME)
 }
 
-message(using R_HOME of $$_R_HOME)
+exists(/app/lib/*)  {} else {
+    linux:	CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG }
+}
+macx | windows { CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG } }

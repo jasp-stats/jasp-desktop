@@ -36,7 +36,7 @@
 			"default": false
 		},
 		{
-			"name": "postSummary",
+			"name": "postSummaryTable",
 			"type": "Boolean",
 			"default": false
 		},
@@ -84,7 +84,7 @@
 		{
 			"name": "shownModels",
 			"options": [ "limited", "unlimited" ],
-			"default": "unlimited",
+			"default": "limited",
 			"type": "List"
 		},
 		{

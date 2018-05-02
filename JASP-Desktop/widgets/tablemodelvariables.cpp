@@ -263,7 +263,7 @@ void TableModelVariables::setMimeType(const QString &mimeType)
 bool TableModelVariables::isSuggested(const Term &term) const
 {
 	QVariant v = requestInfo(term, VariableInfo::VariableType);
-	int variableType = v.toInt();
+	Column::ColumnType variableType = (Column::ColumnType)v.toInt();
 
 	return variableType & _variableTypesSuggested;
 }
@@ -271,7 +271,7 @@ bool TableModelVariables::isSuggested(const Term &term) const
 bool TableModelVariables::isAllowed(const Term &term) const
 {
 	QVariant v = requestInfo(term, VariableInfo::VariableType);
-	int variableType = v.toInt();
+	Column::ColumnType variableType = (Column::ColumnType)v.toInt();
 
 	return variableType == 0 || variableType & _variableTypesAllowed;
 }

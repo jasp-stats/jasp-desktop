@@ -10,7 +10,13 @@
     {
     	"name": "alphaScale",
     	"type": "Boolean",
-			"default" : true
+        "default" : false
+    },
+    {
+        "name": "alphaScaleStandardized",
+        "options": ["_1unstandardized", "_2standardized"],
+        "default": "_1unstandardized",
+        "type": "List"
     },
     {
     	"name": "gutmannScale",
@@ -25,7 +31,7 @@
     {
     	"name": "mcDonaldScale",
     	"type": "Boolean",
-			"default" : false
+			"default" : true
     },
     {
     	"name": "glbScale",

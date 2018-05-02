@@ -69,7 +69,7 @@ void ResultsJsInterface::resultsPageLoaded(bool success)
 		runJavaScript("window.setAppVersion('" + version + "')");
 #ifdef JASP_DEBUG
 		version+="-Debug";
-#endif		
+#endif
 
 		setGlobalJsValues();
 
@@ -91,6 +91,7 @@ void ResultsJsInterface::showAnalysesMenu(QString options)
 
 	QIcon _copyIcon = QIcon(":/icons/copy.png");
 	QIcon _citeIcon = QIcon(":/icons/cite.png");
+	QIcon _codeIcon = QIcon(":/icons/code-icon.png");
 	QIcon _collapseIcon = QIcon(":/icons/collapse.png");
 	QIcon _expandIcon = QIcon(":/icons/expand.png");
 	QIcon _saveImageIcon = QIcon(":/icons/document-save-as.png");
@@ -116,6 +117,18 @@ void ResultsJsInterface::showAnalysesMenu(QString options)
 
 	if (menuOptions["hasCopy"].asBool())
 		_analysisMenu->addAction(_copyIcon, "Copy", this, SLOT(copySelected()));
+
+	if (menuOptions["hasLatexCode"].asBool())  // TODO: || menuOptions["hasPlainText"].asBool())
+	{
+		_copySpecialMenu = _analysisMenu->addMenu(tr("&Copy special"));
+
+		_copySpecialMenu->addAction(_codeIcon, "Latex code", this, SLOT(latexCodeSelected()));
+
+		QAction *copyTextAction = new QAction("Copy text");
+		// connect(copyTextAction, SIGNAL(triggered), this, SLOT(copyTextSelected));
+		copyTextAction->setEnabled(false);
+		_copySpecialMenu->addAction(copyTextAction);
+	}
 
 	if (menuOptions["hasCite"].asBool())
 	{
@@ -207,6 +220,12 @@ void ResultsJsInterface::citeSelected()
 	runJavaScript("window.citeMenuClicked();");
 }
 
+void ResultsJsInterface::latexCodeSelected()
+{
+	tempfiles_purgeClipboard();
+	runJavaScript("window.latexCodeMenuClicked();");
+}
+
 void ResultsJsInterface::saveImage()
 {
 	runJavaScript("window.saveImageClicked();");
@@ -284,7 +303,7 @@ void ResultsJsInterface::setFixDecimalsHandler(QString numDecimals)
 void ResultsJsInterface::setGlobalJsValues()
 {
 	bool exactPValues = _mainWindow->_settings.value("exactPVals", 0).toBool();
-	QString exactPValueString = (exactPValues ? "true" : "false");	
+	QString exactPValueString = (exactPValues ? "true" : "false");
 	QString numDecimals = _mainWindow->_settings.value("numDecimals", 3).toString();
 	if (numDecimals.isEmpty())
 		numDecimals = "3";
@@ -319,11 +338,11 @@ void ResultsJsInterface::saveTempImage(int id, QString path, QByteArray data)
 void ResultsJsInterface::analysisImageEditedHandler(Analysis *analysis)
 {
 	Json::Value imgJson = analysis->getImgResults();
-	QString	results = tq(imgJson.toStyledString());   
+	QString	results = tq(imgJson.toStyledString());
 	results = escapeJavascriptString(results);
 	results = "window.modifySelectedImage(" + QString::number(analysis->id()) + ", JSON.parse('" + results + "'));";
 	runJavaScript(results);
-	
+
     return;
 }
 
@@ -379,10 +398,10 @@ void ResultsJsInterface::getImageInBase64(int id, const QString &path)
 	file->open(QIODevice::ReadOnly);
 	QByteArray image = file->readAll();
 	QString result = QString(image.toBase64());
-	
+
 	QString eval = QString("window.convertToBase64Done({ id: %1, result: '%2'});").arg(id).arg(result);
 	runJavaScript(eval);
-	
+
 }
 
 void ResultsJsInterface::pushToClipboard(const QString &mimeType, const QString &data, const QString &html)
@@ -593,4 +612,3 @@ void ResultsJsInterface::cbSetAllUserData(const QVariant &vAllUserData)
 	_allUserData = vAllUserData;
 	emit getAllUserDataCompleted();
 }
-

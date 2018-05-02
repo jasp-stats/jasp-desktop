@@ -36,6 +36,7 @@
 #include "fileevent.h"
 #include "resultsjsinterface.h"
 #include "customwebenginepage.h"
+#include "columnsmodel.h"
 
 class ResultsJsInterface;
 
@@ -55,6 +56,8 @@ public:
 
 	EngineSync* _engineSync;
 
+	Q_INVOKABLE void setFilterConstructorJSON(QString jsonString);
+
 protected:
 	virtual void resizeEvent(QResizeEvent *event) OVERRIDE;
 	virtual void dragEnterEvent(QDragEnterEvent *event) OVERRIDE;
@@ -71,6 +74,9 @@ private:
 	LevelsTableModel		*_levelsTableModel;
 	Analysis				*_currentAnalysis;
 	labelFilterGenerator	*_labelFilterGenerator;
+	ColumnsModel			*_columnsModel = NULL;
+
+	TableModelVariablesAvailable _availableVariablesModel;
 
 	int _scrollbarWidth = 0;
 
@@ -143,6 +149,7 @@ private:
 	void removeAnalysisRequestHandler(int id);
 	
 	bool filterShortCut();
+	void loadQML();
 
 signals:
 	void updateAnalysesUserData(QString userData);
@@ -198,12 +205,15 @@ private slots:
 	void hideProgress();
 	void setProgressStatus(QString status, int progress);
 
-	void setGeneratedFilter(QString genFilter);
-	void setGeneratedFilterAndSend(QString genFilter);
+	void setGeneratedFilter(QString generatedFilter);
+	void setGeneratedFilterAndSend(QString generatedFilter);
 	void setFilterErrorText(QString error);
 	void applyAndSendFilter(QString filter);
 	void setStatusBarText(QString text);
 	void onFilterUpdated();
+
+
+
 };
 
 #endif // MAINWIDGET_H

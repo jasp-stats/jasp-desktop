@@ -1018,10 +1018,10 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 				modelTermsCase <- strsplit(terms.base64[[1]],":")[[j]]
 				index <- unlist(lapply(modelTermsResults, function(x) .identicalTerms(x,modelTermsCase)))
 
-				SS <- result[index,"SS"]
+				SS <- result[index,"Sum Sq"]
 				df <- result[index,"num Df"]
 				MS <- SS / df
-				F <- .clean(result[index,"F"])
+				F <- .clean(result[index,"F value"])
 				p <- .clean(result[index,"Pr(>F)"])
 
 				row <- list("case"=terms.normal[[1]][j], "SS"=SS, "df"=df, "MS"=MS, "F"=F, "p"=p, ".isNewGroup" = newGroup)
@@ -1042,7 +1042,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 					if (result[index,"Error SS"] > 0) {
 
 						SSr <- result[index,"Error SS"]
-						SSt <- sum(result[indices,"SS"]) + SSr
+						SSt <- sum(result[indices,"Sum Sq"]) + SSr
 						MSr <- SSr/result[index,"den Df"]
 
 						row[["eta"]] <- SS / SSt
@@ -1551,10 +1551,10 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 					modelTermsCase <- strsplit(terms.base64[[i]],":")[[j]]
 					index <- unlist(lapply(modelTermsResults, function(x) .identicalTerms(x,modelTermsCase)))
 
-					SS <- result[index,"SS"]
+					SS <- result[index,"Sum Sq"]
 					df <- result[index,"num Df"]
 					MS <- SS / df
-					F <- .clean(result[index,"F"])
+					F <- .clean(result[index,"F value"])
 					p <- .clean(result[index,"Pr(>F)"])
 					dfR <- result[index,"den Df"]
 
@@ -1636,12 +1636,12 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 							if (result[index,"Error SS"] > 0) {
 
 								SSr <- result[index,"Error SS"]
-								SSt <- sum(result[indices,"SS"]) + SSr
+								SSt <- sum(result[indices,"Sum Sq"]) + SSr
 								MSr <- SSr/result[index,"den Df"]
 								row[["eta"]] <- SS / SSt
 								row[["partialEta"]] <- SS / (SS + SSr)
 								n <- result[1, 'den Df'] + 1
-								MSm <- result[index, "SS"] / result[index, "num Df"] 
+								MSm <- result[index, "Sum Sq"] / result[index, "num Df"] 
 								MSb <- result[1, 'Error SS'] / (n - 1)
 								omega <- (df / (n * (df + 1)) * (MSm - MSr)) / 
 								         (MSr + ((MSb - MSr) / (df + 1)) +

@@ -160,8 +160,8 @@ public:
 	Doubles AsDoubles;
 	Ints AsInts;
 
-	///ColumnType is strictly 0...N so that we may use it directly as index in (for instance) dataset.qml and datasettablemodel
-	enum ColumnType { ColumnTypeUnknown = -1, ColumnTypeScale = 0, ColumnTypeOrdinal, ColumnTypeNominal, ColumnTypeNominalText  };
+	///ColumnType is set up to be used as bitflags in places such as assignedVariablesModel and such
+	enum ColumnType { ColumnTypeUnknown = 0, ColumnTypeNominal = 1, ColumnTypeNominalText = 2, ColumnTypeOrdinal = 4, ColumnTypeScale = 8 };
 
 	static std::string getColumnTypeAsString(ColumnType type);
 
@@ -184,6 +184,10 @@ public:
 	void setColumnAsNominalOrOrdinal(const std::vector<int> &values, std::map<int, std::string> &uniqueValues, bool is_ordinal = false);
 	void setColumnAsScale(const std::vector<double> &values);
 	bool allLabelsPassFilter() const;
+
+	bool hasFilter() const;
+
+	void resetFilter();
 
 private:
 	void _setColumnAsNominalOrOrdinal(const std::vector<int> &values, bool is_ordinal = false);

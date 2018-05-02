@@ -293,7 +293,6 @@ void EngineSync::process()
 					analysis->setResults(results);
 					clearAnalysesInProgress(i);
 					
-					sendMessages();
 	
 					if (_log != NULL)
 					{
@@ -307,21 +306,19 @@ void EngineSync::process()
 					analysis->setStatus(Analysis::Complete);
 					analysis->setImageResults(results);
 					clearAnalysesInProgress(i);
-					sendMessages();
 				}
 				else if (status == "imageEdited")
 				{
 					analysis->setStatus(Analysis::Complete);
 					analysis->setImageEdited(results);
 					clearAnalysesInProgress(i);
-					sendMessages();
 				}
 				else if (status == "complete")
 				{
 					analysis->setStatus(Analysis::Complete);
 					analysis->setResults(results);
 					clearAnalysesInProgress(i);
-					sendMessages();
+
 				}
 				else if (status == "inited")
 				{
@@ -332,7 +329,6 @@ void EngineSync::process()
 	
 					analysis->setResults(results);
 					clearAnalysesInProgress(i);
-					sendMessages();
 				}
 				else if (status == "running" && analysis->status() == Analysis::Initing)
 				{
@@ -343,11 +339,7 @@ void EngineSync::process()
 				{
 					analysis->setResults(results, progress);
 				}
-				else
-				{
-					sendMessages();
-				}
-				
+
 				break;
 			}
 			}
@@ -355,6 +347,7 @@ void EngineSync::process()
 	}
 	
 	processScriptQueue();
+	sendMessages();
 }
 
 void EngineSync::processNewFilterResult(std::vector<bool> filterResult)

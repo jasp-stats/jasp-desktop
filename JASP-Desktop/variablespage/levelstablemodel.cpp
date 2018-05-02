@@ -20,6 +20,10 @@ void LevelsTableModel::setColumn(Column *column)
 	_column = column;
 	endResetModel();
 	emit resizeValueColumn();
+
+	emit labelFilterChanged();
+	notifyColumnHasFilterChanged();
+	emit filteredOutChanged();
 }
 
 void LevelsTableModel::refresh()
@@ -27,7 +31,10 @@ void LevelsTableModel::refresh()
 	beginResetModel();
 	endResetModel();
 	emit resizeValueColumn();
+
 	emit labelFilterChanged();
+	notifyColumnHasFilterChanged();
+	emit filteredOutChanged();
 }
 
 void LevelsTableModel::clearColumn()
@@ -103,21 +110,21 @@ void LevelsTableModel::_moveRows(QModelIndexList &selection, bool up) {
 	if (_column == NULL)
 		return;
 
+
 	Labels &labels = _column->labels();
 	std::vector<Label> new_labels(labels.begin(), labels.end());
 
 	BOOST_FOREACH (QModelIndex &index, selection)
 	{
-		if (index.column() == 0) {
+		//if (index.column() == 0) {
 			iter_swap(new_labels.begin() + index.row(), new_labels.begin() + (index.row() + (up ? - 1: 1)));
-		}
+		//}
 	}
-	labels.set(new_labels);
 
-	QModelIndex topLeft = createIndex(0,0);
-	QModelIndex bottonRight = createIndex(labels.size(), columnCount());
-	//emit a signal to make the view reread identified data
-	emit dataChanged(topLeft, bottonRight);
+	beginResetModel();
+	labels.set(new_labels);
+	endResetModel();
+
 }
 
 void LevelsTableModel::moveUp(QModelIndexList &selection) {
@@ -132,6 +139,8 @@ void LevelsTableModel::reverse() {
     if (_column == NULL)
         return;
 
+	beginResetModel();
+
     Labels &labels = _column->labels();
 	std::vector<Label> new_labels(labels.begin(), labels.end());
 
@@ -139,10 +148,11 @@ void LevelsTableModel::reverse() {
 
     labels.set(new_labels);
 
-    QModelIndex topLeft = createIndex(0,0);
+	/*QModelIndex topLeft = createIndex(0,0);
     QModelIndex bottonRight = createIndex(labels.size() - 1, 1);
     //emit a signal to make the view reread identified data
-    emit dataChanged(topLeft, bottonRight);
+	emit dataChanged(topLeft, bottonRight);*/
+	endResetModel();
 }
 
 Qt::ItemFlags LevelsTableModel::flags(const QModelIndex &index) const
@@ -199,6 +209,17 @@ QModelIndexList LevelsTableModel::convertQVariantList_to_QModelIndexList(QVarian
 
 }
 
+void LevelsTableModel::resetFilterAllows()
+{
+	beginResetModel();
+	_column->resetFilter();
+	endResetModel();
+
+	notifyColumnHasFilterChanged();
+	emit labelFilterChanged();
+	emit filteredOutChanged();
+}
+
 void LevelsTableModel::setAllowFilterOnLabel(int row, bool newAllowValue)
 {
 	bool atLeastOneRemains = newAllowValue;
@@ -213,9 +234,14 @@ void LevelsTableModel::setAllowFilterOnLabel(int row, bool newAllowValue)
 
 	if(atLeastOneRemains)
 	{
+		bool before = _column->hasFilter();
 		_column->labels()[row].setFilterAllows(newAllowValue);
+		if(before != _column->hasFilter())
+			notifyColumnHasFilterChanged();
+
 		emit labelFilterChanged();
 		emit dataChanged(index(row, 2), index(row, 2)); //to make sure the checkbox is set to the right value
+		emit filteredOutChanged();
 	}
 
 
@@ -224,4 +250,18 @@ void LevelsTableModel::setAllowFilterOnLabel(int row, bool newAllowValue)
 bool LevelsTableModel::allowFilter(int row)
 {
 	return _column->labels()[row].filterAllows();
+}
+
+int LevelsTableModel::filteredOut()
+{
+	if(_column == NULL)
+		return 0;
+
+	int filteredOut = 0;
+
+	for(int i=0; i< _column->labels().size(); i++)
+		if(!_column->labels()[i].filterAllows())
+			filteredOut++;
+
+	return filteredOut;
 }

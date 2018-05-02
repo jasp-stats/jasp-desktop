@@ -30,6 +30,7 @@
 class DataSetTableModel : public QAbstractTableModel
 {
     Q_OBJECT
+	Q_PROPERTY(int columnsFilteredCount READ columnsFilteredCount NOTIFY columnsFilteredCountChanged)
 
 public:
     explicit DataSetTableModel(QObject *parent = 0);
@@ -54,12 +55,19 @@ public:
 	Q_INVOKABLE QVariant columnTitle(int column) const;
 	Q_INVOKABLE QVariant columnIcon(int column) const;
 	Q_INVOKABLE QVariant getCellValue(int column, int row) const { return data(index(row, column), Qt::DisplayRole); }
-	Q_INVOKABLE QVariant getColumnTypesWithCorrespondingIcon(bool BothNominalVersions = true);
+	Q_INVOKABLE QVariant getColumnTypesWithCorrespondingIcon();
 	Q_INVOKABLE QVariant getRowFilter(int row) { return (row >=0 && row < rowCount()) ? _dataSet->filterVector()[row] : true; }
+	Q_INVOKABLE QVariant columnHasFilter(int column) const;
+
+	Q_INVOKABLE void resetAllFilters();
+
+	int columnsFilteredCount();
+	void notifyColumnFilterStatusChanged() { emit columnsFilteredCountChanged(); }
     
 signals:
-
+	void columnsFilteredCountChanged();
 	void badDataEntered(const QModelIndex index);
+	void allFiltersReset();
 
 public slots:
 	void refresh() { beginResetModel(); endResetModel(); }

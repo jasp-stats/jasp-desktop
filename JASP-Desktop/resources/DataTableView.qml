@@ -10,20 +10,9 @@ FocusScope
     readonly property int __headerHeight: 20
 
     property var headersGradient: Gradient{
-        GradientStop { position: 0.2; color: systemPalette.midlight }
-        GradientStop { position: 1.0; color: systemPalette.light }
+		GradientStop { position: 0.2; color: "lightGrey" }
+		GradientStop { position: 1.0; color: "white" }
     }
-
-    Item
-    {
-        id: columnTypes
-        //Copied from column.h, should actually be exported or something like that
-        readonly property int columnTypeScale: 0
-        readonly property int columnTypeOrdinal: 1
-        readonly property int columnTypeNominal: 2
-        readonly property int columnTypeNominalText: 3
-    }
-
 
     Rectangle
     {
@@ -76,7 +65,7 @@ FocusScope
         ToolTip
         {
              id: filterToggleButtonToolTip
-             text: "Toggle visibilty of filtering functionality"
+			 text: filterWindow.opened ? "Hide filtering functionality" : "Show filtering functionality"
             // target: filterToggleButton
              visible: false
          }
@@ -98,8 +87,7 @@ FocusScope
 
         model: dataSetModel
 
-        readonly property var columnTypeAndIconPath: dataSetModel.getColumnTypesWithCorrespondingIcon(true)
-        readonly property var columnTypeChangeIconPaths:dataSetModel.getColumnTypesWithCorrespondingIcon(false)
+		readonly property var columnTypeAndIconPath: dataSetModel.getColumnTypesWithCorrespondingIcon()
 
         function clearColumns()
         {
@@ -124,11 +112,11 @@ FocusScope
 
         function resizeColumnsWithHeader()
         {
-            var extraPadding = 15
+			var extraPaddingTitle = 55
             for(var col=0; col<columnCount; col++)
             {
                 var title = dataSetModel.columnTitle(col)
-                var minimumWidth = calculateMinimumRequiredColumnWidthTitle(col, title, 20 + extraPadding, 1000)
+				var minimumWidth = calculateMinimumRequiredColumnWidthTitle(col, title, extraPaddingTitle, 1000)
                 var column = getColumn(col)
                 column.width = minimumWidth
             }
@@ -192,7 +180,7 @@ FocusScope
                     anchors.leftMargin: 4
 
                     property int myColumnType: dataSetModel.columnIcon(styleData.column)
-                    source: myColumnType >= 0 ? dataSetTableView.columnTypeAndIconPath[myColumnType] : ""
+					source: dataSetTableView.columnTypeAndIconPath[myColumnType]
                     width: styleData.column > -1 ? __myRoot.__iconDim : 0
                     height:  __myRoot.__iconDim
 
@@ -201,7 +189,7 @@ FocusScope
                     {
                         colIcon.myColumnType = dataSetModel.setColumnTypeFromQML(styleData.column, columnType)
 
-                        if(variablesWindow.chosenColumn == styleData.column && colIcon.myColumnType == columnTypes.columnTypeScale)
+						if(variablesWindow.chosenColumn === styleData.column && colIcon.myColumnType === columnTypeScale)
                             variablesWindow.chooseColumn(-1)
 
 
@@ -231,27 +219,26 @@ FocusScope
 
                             Repeater{
                                 id: iconRepeater
-                                model: dataSetModel.getColumnTypesWithCorrespondingIcon(false)
+								model: [columnTypeScale, columnTypeOrdinal, columnTypeNominal]
 
                                 Button
                                 {
                                     id: columnTypeChangeIcon
-                                    iconSource: iconRepeater.model[index]
+									iconSource: dataSetTableView.columnTypeAndIconPath[iconRepeater.model[index]]
+
                                     width: __myRoot.__iconDim * 2.5 + nominalTextMeasure.width
-                                    //anchors.left: parent.left
-                                    //anchors.right: parent.right
 
                                     readonly property bool showThisTypeIcon: true // !((index == colIcon.myColumnType) || (index == columnTypes.columnTypeNominal && colIcon.myColumnType == columnTypes.columnTypeNominalText))
                                     height: showThisTypeIcon ? __myRoot.__iconDim * 1.5 : 0
 
-                                    text: index == columnTypes.columnTypeScale ? "Scale" : ( index == columnTypes.columnTypeOrdinal ? "Ordinal" : "Nominal")
+									text: iconRepeater.model[index] === columnTypeScale ? "Scale" : ( iconRepeater.model[index] === columnTypeOrdinal ? "Ordinal" : "Nominal")
 
 
                                     onClicked: columnTypeChosen()
 
                                     function columnTypeChosen()
                                     {
-                                        var columnType = index
+										var columnType = iconRepeater.model[index]
                                         popupIcons.close()
                                         colIcon.setColumnType(columnType)
                                         filterWindow.sendFilter()
@@ -265,27 +252,60 @@ FocusScope
                 }
 
 
-                Text
-                {
-                    id: headerText
-                    anchors.top: colHeader.top
-                    anchors.bottom: colHeader.bottom
-                    anchors.left: colIcon.right
-                    anchors.right: colHeader.right
-                    text: styleData.value //dataSetModel.columnTitle(styleData.column);
-                    leftPadding: headerBorderRectangle.iconTextPadding
+				Item
+				{
+					id: headerItem
+					anchors.top: colHeader.top
+					anchors.left: colIcon.right
+					anchors.right: colHeader.right
+					anchors.bottom: colHeader.bottom
+					anchors.rightMargin: 2
 
-                    MouseArea
-                    {
-                        anchors.fill: parent
-                        onClicked:
-                        {
-                            var chooseThisColumn = (styleData.column > -1 && dataSetModel.columnIcon(styleData.column)  != columnTypes.columnTypeScale) ? styleData.column : -1
-                            variablesWindow.chooseColumn(chooseThisColumn)
+					Text
+					{
+						id: headerText
+						anchors.top: headerItem.top
+						anchors.left: headerItem.left
+						//anchors.right: colFilterOn.left
+						anchors.bottom: headerItem.bottom
 
-                        }
-                    }
-                }
+						text: styleData.value //dataSetModel.columnTitle(styleData.column);
+						leftPadding: headerBorderRectangle.iconTextPadding
+						rightPadding: colFilterOn.thisColumnIsFiltered ? headerBorderRectangle.iconTextPadding * 0.5 : 0
+
+
+					}
+
+					Image
+					{
+						id: colFilterOn
+						anchors.top: headerItem.top
+						anchors.left: headerText.right
+						//anchors.right: parent.right
+						anchors.bottom: headerItem.bottom
+
+						readonly property bool thisColumnIsFiltered: dataSetModel.columnsFilteredCount, dataSetModel.columnHasFilter(styleData.column)
+
+						anchors.margins: thisColumnIsFiltered ? 1 : 0
+
+						source: "../images/filter.png"
+						width: thisColumnIsFiltered ? __myRoot.__iconDim : 0
+						height:  __myRoot.__iconDim
+
+					}
+
+					MouseArea
+					{
+						anchors.fill: headerItem
+						onClicked:
+						{
+							var chooseThisColumn = (styleData.column > -1 && dataSetModel.columnIcon(styleData.column)  !== columnTypeScale) ? styleData.column : -1
+							variablesWindow.chooseColumn(chooseThisColumn)
+
+						}
+					}
+				}
+
             }
         }
 
@@ -296,44 +316,53 @@ FocusScope
 
             readonly property bool rowIsUsed: dataSetModel.getRowFilter(styleData.row)
 
-            Rectangle
-            {
-                id: borderRectangle
-                color: "transparent"
-                border.width:   dataSetTableView.drawCellBorders ? 1 : 0
-                border.color:  systemPalette.mid
-                radius: 0
-                width: parent.width + 1
-                height: parent.height + 1
-                x: parent.x - 1
-                y: parent.y - 1
-                visible: itemItem.rowIsUsed
+			Rectangle
+			{
+				id: borderRectangle
+				color: "transparent"
 
-            }
 
-            Text {
-                id: itemText
-                text: styleData.value
-                color: itemItem.rowIsUsed ? systemPalette.text : systemPalette.mid
-                elide: styleData.elideMode
-                horizontalAlignment: styleData.textAlignment
-                leftPadding: 4
-                anchors.verticalCenter: parent.verticalCenter
+				border.width:   dataSetTableView.drawCellBorders ? 1 : 0
+				border.color:  styleData.selected ? systemPalette.dark :systemPalette.mid
+				radius: 0
+				width: parent.width + 1
+				height: parent.height + 1
+				x: parent.x - 1
+				y: parent.y - 1
+				visible: itemItem.rowIsUsed || styleData.selected
+			}
 
-            }
+			Rectangle
+			{
+				//we need this annoying rectangle to make the letters look normal because otherwise it draws them twice for some reason..
+				id: backgroundRectangle
+				color: styleData.selected ? systemPalette.dark :  (styleData.alternate && dataSetModel.getRowFilter(styleData.row) ? systemPalette.midlight : systemPalette.light)
+
+
+				border.width:  0
+				border.color:  systemPalette.mid
+				radius: 0
+				width: parent.width - 1
+				height: parent.height - 1
+				x: parent.x
+				y: parent.y
+			}
+
+
+			Text {
+				id: itemText
+				text: styleData.value
+				color: itemItem.rowIsUsed ? systemPalette.text : systemPalette.mid
+				elide: styleData.elideMode
+				leftPadding: 4
+				horizontalAlignment: styleData.textAlignment
+				anchors.verticalCenter: parent.verticalCenter
+
+			}
+
         }
 
-        rowDelegate: Item
-        {
-            height: 30
-            Rectangle
-            {
-                color: styleData.selected ? systemPalette.dark :  (styleData.alternate && dataSetModel.getRowFilter(styleData.row) ? systemPalette.midlight : systemPalette.light)
-                height: parent.height - 1
-                anchors.left: parent.left
-                anchors.right: parent.right
-            }
-        }
+		rowDelegate: Item { height: 30 }
 
         rowNumberDelegate: Rectangle
         {

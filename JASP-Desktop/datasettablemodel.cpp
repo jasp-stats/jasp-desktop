@@ -34,21 +34,28 @@ DataSetTableModel::DataSetTableModel(QObject *parent) :
 {
 	_dataSet = NULL;
 
-	_nominalTextIcon = QIcon(":/icons/variable-nominal-text.svg");
-	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
-	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
-	_scaleIcon = QIcon(":/icons/variable-scale.svg");
+	_nominalTextIcon	= QIcon(":/icons/variable-nominal-text.svg");
+	_nominalIcon		= QIcon(":/icons/variable-nominal.svg");
+	_ordinalIcon		= QIcon(":/icons/variable-ordinal.svg");
+	_scaleIcon			= QIcon(":/icons/variable-scale.svg");
 }
 
-QVariant DataSetTableModel::getColumnTypesWithCorrespondingIcon(bool BothNominalVersions)
+QVariant DataSetTableModel::getColumnTypesWithCorrespondingIcon()
 {
 	QVariantList ColumnTypeAndIcons;
 
-	ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-scale.svg")));
-	ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-ordinal.svg")));
+	//enum ColumnType { ColumnTypeUnknown = 0, ColumnTypeNominal = 1, ColumnTypeNominalText = 2, ColumnTypeOrdinal = 4, ColumnTypeScale = 8 };
+
+	ColumnTypeAndIcons.push_back(QVariant(QString("")));
 	ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-nominal.svg")));
-	if(BothNominalVersions)
-		ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-nominal-text.svg")));
+	ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-nominal-text.svg")));
+	ColumnTypeAndIcons.push_back(QVariant(QString("")));
+	ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-ordinal.svg")));
+	for(int i=0; i<3;i++)
+		ColumnTypeAndIcons.push_back(QVariant(QString("")));
+
+	ColumnTypeAndIcons.push_back(QVariant(QString("../icons/variable-scale.svg")));
+
 
 	return QVariant(ColumnTypeAndIcons);
 }
@@ -58,6 +65,7 @@ void DataSetTableModel::setDataSet(DataSet* dataSet)
     beginResetModel();
 	_dataSet = dataSet;
     endResetModel();
+	notifyColumnFilterStatusChanged();
 }
 
 
@@ -118,6 +126,40 @@ QVariant DataSetTableModel::columnIcon(int column) const
 	}
 	else
 		return QVariant(-1);
+}
+
+QVariant DataSetTableModel::columnHasFilter(int column) const
+{
+	if(_dataSet != NULL && column >= 0 && column < _dataSet->columnCount())
+	{
+		QString value = tq(_dataSet->column(column).name());
+		return QVariant(_dataSet->column(column).hasFilter());
+	}
+	else
+		return QVariant(false);
+}
+
+int DataSetTableModel::columnsFilteredCount()
+{
+	if(_dataSet == NULL) return 0;
+
+	int colsFiltered = 0;
+
+	for(int column=0; column<_dataSet->columnCount(); column++)
+		if(_dataSet->column(column).hasFilter())
+			colsFiltered++;
+
+	return colsFiltered;
+}
+
+void DataSetTableModel::resetAllFilters()
+{
+	for(int col=0; col<_dataSet->columnCount(); col++)
+		_dataSet->column(col).resetFilter();
+
+	emit allFiltersReset();
+	notifyColumnFilterStatusChanged();
+
 }
 
 QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientation, int role) const

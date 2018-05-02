@@ -3,6 +3,7 @@ QT += core
 QT -= gui
 
 include(../JASP.pri)
+BUILDING_JASP_ENGINE=true
 
 CONFIG += c++11
 linux:CONFIG += -pipe
@@ -27,7 +28,11 @@ INSTALLS += analysis_jsons
 
 DEPENDPATH = ..
 PRE_TARGETDEPS += ../JASP-Common
-LIBS +=  -l$$JASP_R_INTERFACE_NAME -L.. -lJASP-Common
+
+unix: PRE_TARGETDEPS += ../JASP-Common
+LIBS += -L.. -l$$JASP_R_INTERFACE_NAME -lJASP-Common
+
+include(../R_HOME.pri) #needed to build r-packages
 
 windows:CONFIG(ReleaseBuild) {
 	LIBS += -llibboost_filesystem-vc141-mt-1_64 -llibboost_system-vc141-mt-1_64 -larchive.dll
@@ -48,9 +53,6 @@ linux {
 
 macx {
 	INCLUDEPATH += ../../boost_1_64_0
-
-	isEmpty(_R_HOME):_R_HOME = $$OUT_PWD/../../Frameworks/R.framework/Versions/$$CURRENT_R_VERSION/Resources
-	R_EXE  = $$_R_HOME/bin/R
 }
 
 
@@ -63,12 +65,7 @@ windows {
 
 	INCLUDEPATH += ../../boost_1_64_0
 
-	isEmpty(_R_HOME):_R_HOME = $$OUT_PWD/../R
-	R_EXE  = $$_R_HOME/bin/$$ARCH/R
 }
-
-macx | windows | exists(/app/lib/*) { DEFINES += JASP_LIBJSON_STATIC
-} else { linux { LIBS += -ljsoncpp} }
 
 INCLUDEPATH += $$PWD/../JASP-Common/
 
@@ -81,6 +78,8 @@ macx:QMAKE_CXXFLAGS += -stdlib=libc++
 win32:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__ -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
 
 win32:LIBS += -lole32 -loleaut32
+macx:LIBS += -L$$_R_HOME/lib -lR
+
 
 mkpath($$OUT_PWD/../R/library)
 
@@ -91,7 +90,6 @@ exists(/app/lib/*) {
 } else {
 	InstallJASPRPackage.commands		= \"$$R_EXE\" CMD INSTALL --library=$$OUT_PWD/../R/library $$PWD/JASP
 	InstallJASPgraphsRPackage.commands	= \"$$R_EXE\" CMD INSTALL --library=$$OUT_PWD/../R/library $$PWD/JASPgraphs
-	CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG }
 }
 
 QMAKE_EXTRA_TARGETS += InstallJASPRPackage

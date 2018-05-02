@@ -25,6 +25,7 @@ Rectangle {
         objectName: "progressBarHolder"
     }
 
+
     SplitView
     {
         id: splitViewData
@@ -47,6 +48,8 @@ Rectangle {
         {
             id: filterWindow
             objectName: "filterWindow"
+
+			Layout.maximumHeight: rootDataset.height * 0.8
         }
 
         DataTableView
@@ -56,5 +59,8 @@ Rectangle {
             headersGradient: myHeadersGradient
         }
 
-    }
+	}
+
+
+
 }
