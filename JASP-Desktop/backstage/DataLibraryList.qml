@@ -14,8 +14,6 @@ ListView
 	
 	spacing : 10
 	
-	anchors.leftMargin: 10
-	
 	model : dataLibraryListModel
 	
 	delegate: Rectangle 
@@ -27,7 +25,6 @@ ListView
 		//color:"lightblue"
 		border.width : 0
 		border.color : "lightblue"
-		anchors.leftMargin : 20
 		
 		Text {
 			id:textDescription

@@ -29,6 +29,7 @@ BreadCrumbs::BreadCrumbs(QWidget *parent) : QWidget(parent)
 
 	_layout = new QHBoxLayout(this);
 	_layout->setSpacing(4);
+	_layout->setContentsMargins(12, 12, 12, 12); //Position breadcrumbs
 	setLayout(_layout);
 
 	_buttons = new QButtonGroup(this);

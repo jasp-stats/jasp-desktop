@@ -51,7 +51,7 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	_bsCurrent = new FSBrowser(_tabWidget, FSBrowser::BrowseCurrent);
 	_bsCurrent->setFSModel(_fsmCurrent);
 	
-	//Computer
+	//Computer tab shows Recent Folders 
 	_bsComputer = new BackstageComputer(_tabWidget);
 
 	// OSF

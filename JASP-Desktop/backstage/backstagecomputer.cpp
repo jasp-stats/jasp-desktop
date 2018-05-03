@@ -37,6 +37,8 @@ BackstageComputer::BackstageComputer(QWidget *parent) :
 	ui->browser->setBrowseMode(FSBrowser::BrowseOpenFolder);
 	ui->browser->setViewType(FSBrowser::ListView);
 	ui->browser->setFSModel(_model);
+	ui->browser->setContentsMargins(0, 0, 0, 0); //Position Recent folders
+	ui->label->setContentsMargins(12, 12, 0, 0);  //Position Recent folder label
 
 	installEventFilter(this);
 
