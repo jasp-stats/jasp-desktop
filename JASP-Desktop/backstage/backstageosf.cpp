@@ -38,7 +38,7 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	layout->addWidget(topRow);
 
 	QGridLayout *topRowLayout = new QGridLayout();
-	topRowLayout->setContentsMargins(0, 6, 12, 0);
+	topRowLayout->setContentsMargins(0, 0, 12, 0);
 	topRow->setLayout(topRowLayout);
 
 	QLabel *label = new QLabel("Open Science Framework", topRow);
@@ -48,7 +48,7 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	QSizePolicy sp = label->sizePolicy();
 	sp.setHorizontalStretch(1);
 	label->setSizePolicy(sp);
-	label->setContentsMargins(10, 6, 0, 0);
+	label->setContentsMargins(12, 12, 0, 0);  //Position BackstageOSF label
 	topRowLayout->addWidget(label, 0, 0);
 
 	_logoutButton = new QToolButton(topRow);

@@ -6,7 +6,6 @@ ListView
 {
 	anchors.left:parent.left
 	anchors.right:parent.right
-	anchors.leftMargin: 15
 
 	model: dataLibraryBreadCrumbsModel
 
@@ -14,21 +13,21 @@ ListView
 
 	delegate: RowLayout
 	{
+		anchors.verticalCenter : parent.verticalCenter
+		
 		Rectangle
 		{
 			id:rect
-			height: 40
+			height: 20
 			width: 100
-			color: "lightblue"
-			radius: 15
-			border.color: "white"
-			border.width: 2
+			border.color: "black"
+			border.width: 1
 			Button
 			{
 				id:crumbbutton
 				text: model.name
 				Layout.fillWidth: true
-				anchors.margins: 5
+				anchors.margins: 1
 				anchors.fill: parent
 				ToolTip.text:  index < count -1 ? "Back to " + model.name : model.name;
 				ToolTip.visible: count > 1 ? hovered  : false
