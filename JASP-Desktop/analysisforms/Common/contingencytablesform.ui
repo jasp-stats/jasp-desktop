@@ -758,7 +758,7 @@
             <string>Counts</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
-            <item row="3" column="0">
+            <item row="2" column="0">
              <widget class="QWidget" name="widget_12" native="true">
               <property name="maximumSize">
                <size>
@@ -769,20 +769,13 @@
              </widget>
             </item>
             <item row="0" column="0" colspan="2">
-             <widget class="BoundCheckBox" name="countsObserved">
-              <property name="text">
-               <string>Observed</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0" colspan="2">
              <widget class="BoundCheckBox" name="countsExpected">
               <property name="text">
                <string>Expected</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="2">
+            <item row="2" column="2">
              <widget class="BoundTextBox" name="hideSmallCountsLessThan">
               <property name="enabled">
                <bool>false</bool>
@@ -795,14 +788,7 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="hideSmallCounts">
-              <property name="text">
-               <string>Hide small counts</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
+            <item row="2" column="1">
              <widget class="QLabel" name="hideSmallCountsLessThanLabel">
               <property name="enabled">
                <bool>false</bool>
@@ -815,6 +801,13 @@
               </property>
               <property name="text">
                <string>Less than</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="hideSmallCounts">
+              <property name="text">
+               <string>Hide small counts</string>
               </property>
              </widget>
             </item>
@@ -982,12 +975,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>GroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/groupbox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
@@ -999,24 +986,30 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
-   <class>boundSingleItemView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundsingleitemview.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundListView</class>
    <extends>QListView</extends>
    <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>boundSingleItemView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundsingleitemview.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
@@ -1048,7 +1041,6 @@
   <tabstop>cochransAndMantel</tabstop>
   <tabstop>testOddsRatioEquals</tabstop>
   <tabstop>pushButton_2</tabstop>
-  <tabstop>countsObserved</tabstop>
   <tabstop>countsExpected</tabstop>
   <tabstop>hideSmallCounts</tabstop>
   <tabstop>hideSmallCountsLessThan</tabstop>
