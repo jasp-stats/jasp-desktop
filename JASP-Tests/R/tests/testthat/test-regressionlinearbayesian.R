@@ -18,19 +18,17 @@ test_that("Main tables results match", {
     table <- results[["results"]][["regressionTable"]][["data"]]
     expect_equal_tables(
         table,
-        list("contGamma", 1, 3.39687431385796, 0.772565707223374, 0.061000885146905,
-             0.5, "Null model", 0.29438828393514, 0.29438828393514, 0.227434292776626,
-             0, 0.5), 
+        list("Null model", 1, 4.74865017735093, 0.826046120541498, 0, 0.5,
+             "contGamma", 0.210586158729818, 0.210586158729818, 0.173953879458502,
+             1.55940279678024e-06, 0.5), 
         label = "regressionTable"
     )
     
     table <- results[["results"]][["posteriorSummary"]][["posteriorSummaryTable"]][["data"]]
     expect_equal_tables(
         table,
-        list("Intercept", -0.255843391953333, 0.0993902662352492, 1, 1, 1,
-             -0.453055243040002, -0.0586315408666647, "contGamma", -0.000690480780951939,
-             0.0586422991479854, 0.772565707223374, 0.5, 3.39687431385796,
-             -0.117049524830386, 0.115668563268482), 
+        list("Intercept", -0.255843391953333, 0.098887098249712, 1, 1, 1, -0.452056848593604,
+              -0.0596299353130632), 
         label = "posteriorSummaryTable"
     )
     
