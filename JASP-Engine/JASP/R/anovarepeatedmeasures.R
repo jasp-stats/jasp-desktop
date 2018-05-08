@@ -659,7 +659,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		for (var in variables) {
 
 			formula <- as.formula(paste("~", .v(var)))
-			referenceGrid <- emmeans::lsmeans(fullModel, formula)
+			referenceGrid <- emmeans::emmeans(fullModel, formula)
 
 			referenceGridList[[var]] <- referenceGrid
 
@@ -2737,8 +2737,10 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
           subCovDataset <- covDataset[dataset[terms.base64[1]] == level,] 
         }
         subFactorNamesV <- factorNamesV
-        whichFactorsBesidesModerator <- !unlist(lapply((options[['betweenModelTerms']]), FUN = function(x){grepl(moderatorFactorOne, x)}))
-        subOptions[['betweenModelTerms']] <- options[['betweenModelTerms']][whichFactorsBesidesModerator]
+        whichTermsBesidesModerator <- !unlist(lapply((options[['betweenModelTerms']]), FUN = function(x){grepl(moderatorFactorOne, x)}))
+        whichFactorsBesidesModerator <- !unlist(lapply((options[['betweenSubjectFactors']]), FUN = function(x){grepl(moderatorFactorOne, x)}))
+        
+        subOptions[['betweenModelTerms']] <- options[['betweenModelTerms']][whichTermsBesidesModerator]
         subOptions[['betweenSubjectFactors']] <- options[['betweenSubjectFactors']][whichFactorsBesidesModerator]
       }
       areSimpleFactorCellsDropped <- ifelse(isSimpleFactorWithin, FALSE, (nrow(unique(subDataset[simpleFactor.base64])) <  
@@ -2760,7 +2762,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
             if (subOptions$sumOfSquares != "type1") {
               modOneIndex <- which(row.names(modelSummary) == .v(simpleFactor))
               df <- modelSummary[modOneIndex,'num Df']
-              SS <- modelSummary[modOneIndex,'SS']   
+              SS <- modelSummary[modOneIndex,'Sum Sq']  
               if (!options$poolErrorTermSimpleEffects) {
                 fullAnovaMS <- modelSummary[modOneIndex,'Error SS'] / modelSummary[modOneIndex,'den Df']
                 fullAnovaDf <- modelSummary[modOneIndex,'den Df']
@@ -2851,9 +2853,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
                 if (subSubOptions$sumOfSquares != "type1") {
                   modTwoIndex <- which(row.names(modelSummary) == .v(simpleFactor))
                   df <- modelSummary[modTwoIndex,'num Df']
-                  SS <- modelSummary[modTwoIndex,'SS']   
+                  SS <- modelSummary[modTwoIndex,'Sum Sq']   
                   if (!options$poolErrorTermSimpleEffects) {
-                    fullAnovaMS <- modelSummary[modTwoIndex,'Error SS'] / modelSummary[modOneIndex,'den Df']
+                    fullAnovaMS <- modelSummary[modTwoIndex,'Error SS'] / modelSummary[modTwoIndex,'den Df']
                     fullAnovaDf <- modelSummary[modTwoIndex,'den Df']
                   }
                 } else {
@@ -2898,6 +2900,20 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
     }
    
     simpleEffectsTable[["data"]] <- simpleEffectRows
+    
+    if (options$sumOfSquares == "type1") {
+      
+      .addFootnote(footnotes, text = "Type I Sum of Squares", symbol = "<em>Note.</em>")
+      
+    } else if (options$sumOfSquares == "type2") {
+      
+      .addFootnote(footnotes, text = "Type II Sum of Squares", symbol = "<em>Note.</em>")
+      
+    } else if (options$sumOfSquares == "type3") {
+      
+      .addFootnote(footnotes, text = "Type III Sum of Squares", symbol = "<em>Note.</em>")
+      
+    }
     
   } else {
     if(options$sumOfSquares == "type1" ) {

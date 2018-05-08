@@ -245,4 +245,39 @@ test_that("Effect Size Calculation correct", {
   expect_equal_tables(table, refTable)
 })
 
+test_that("Simple Effects table match", {
+  
+  options <- initOpts()
+  
+  options$betweenSubjectFactors <- "gender"
+  options$betweenModelTerms <- list(
+    list(components = "gender")
+  )
+  
+  options$withinModelTerms
+  options$simpleFactor <- "Looks"
+  options$moderatorFactorOne <- "gender"
+  options$moderatorFactorTwo <- "Charisma"
+  
+  results <- jasptools::run(name = "AnovaRepeatedMeasures",
+                            dataset = "AnovaMixedEffects.csv", #mydat,
+                            options = options,
+                            view = FALSE, quiet = TRUE)
+  
+  refTable <- list("Female", "High", 42.4666666666668, 2, 21.2333333333334, 0.639629588307488, 
+                   0.539062933641058, "TRUE", "Female", "Some", 6444.46666666667, 2, 
+                   3222.23333333334, 105.034770010866, 1.18808350406329e-10, "FALSE",               
+                   "Female", "None", 187.8, 2, 93.8999999999999, 10.1696750902527, 
+                   0.0011082808185639, "FALSE", "Male", "High", 5661.66666666667, 2, 
+                   2830.83333333333, 82.5850891410049, 8.54593593608342e-10, "TRUE", 
+                   "Male", "Some", 8157.26666666666, 2 ,4078.63333333333, 121.267591674926,
+                   3.58637028279497e-11, "FALSE", "Male", "None", 10955, 2, 5477.5,
+                   292.566765578635, 1.87815435905324e-14, "FALSE")
+  
+  table <- results[["results"]][["simpleEffects"]][["data"]]
+  expect_equal_tables(table, refTable)
+})
+
+
+
 
