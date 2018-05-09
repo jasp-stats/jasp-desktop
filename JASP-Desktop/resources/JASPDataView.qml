@@ -5,6 +5,7 @@ import JASP 1.0
 
 FocusScope
 {
+	id: __JASPDataViewRoot
 	property alias model: theView.model
 
 	property alias itemDelegate: theView.itemDelegate
@@ -17,6 +18,7 @@ FocusScope
 
 	//property alias font: theView.font //not properly implemented
 
+	signal doubleClicked()
 
 	Flickable
 	{
@@ -31,6 +33,8 @@ FocusScope
 
 		clip: true
 
+		property bool ignoreFlick: false
+
 		DataSetView
 		{
 			z: -1
@@ -42,29 +46,46 @@ FocusScope
 			viewportW: myFlickable.visibleArea.widthRatio * width
 			viewportH: myFlickable.visibleArea.heightRatio * height
 
+			MouseArea
+			{
+
+				property real lastTimeClicked: -1
+				property real doubleClickTime: 400
+
+				anchors.fill: parent
+
+				onReleased:
+				{
+					var curTime = new Date().getTime()
+
+					if(lastTimeClicked === -1)
+					{
+						lastTimeClicked = curTime
+					}
+					else if(curTime - lastTimeClicked < doubleClickTime)
+					{
+						lastTimeClicked = -1
+						__JASPDataViewRoot.doubleClicked()
+					}
+					else
+						lastTimeClicked = -1
+				}
+			}
+		}
+
+		onFlickStarted:
+		{
+			if(ignoreFlick)
+				cancelFlick()
+			ignoreFlick = false
 		}
 
 
 		ScrollBar.vertical: ScrollBar { id: vertiScroller; z:2}
 		ScrollBar.horizontal: ScrollBar { z:2}
-
 	}
 
-/*
-	MouseArea
-	{
-		anchors.fill: parent
 
-		acceptedButtons: Qt.NoButton
 
-		onWheel:
-		{
-			console.log("wheeel!")
-
-			myFlickable.flickDeceleration = -10000
-
-			wheel.accepted = false
-		}
-	}*/
 
 }

@@ -7,6 +7,10 @@ FocusScope
 {
     id: __myRoot
 
+	signal doubleClicked()
+
+
+
 	Rectangle
 	{
 		color: "white"
@@ -21,6 +25,8 @@ FocusScope
 			anchors.fill: parent
 			//headersGradient: myHeadersGradient
 			model: dataSetModel
+
+			onDoubleClicked: __myRoot.doubleClicked()
 
 
 			leftTopCornerItem:
