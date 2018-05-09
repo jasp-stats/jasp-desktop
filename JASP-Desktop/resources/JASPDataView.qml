@@ -33,8 +33,6 @@ FocusScope
 
 		clip: true
 
-		property bool ignoreFlick: false
-
 		DataSetView
 		{
 			z: -1
@@ -48,9 +46,9 @@ FocusScope
 
 			MouseArea
 			{
-
+				z: -10
 				property real lastTimeClicked: -1
-				property real doubleClickTime: 400
+				property real doubleClickTime: 500
 
 				anchors.fill: parent
 
@@ -71,13 +69,6 @@ FocusScope
 						lastTimeClicked = -1
 				}
 			}
-		}
-
-		onFlickStarted:
-		{
-			if(ignoreFlick)
-				cancelFlick()
-			ignoreFlick = false
 		}
 
 
