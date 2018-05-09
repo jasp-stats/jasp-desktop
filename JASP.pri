@@ -26,6 +26,7 @@ exists(/app/lib/*)  {} else {
 }
 macx | windows { CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG } }
 
+
 windows {
 	message(QT_ARCH $$QT_ARCH)
 	contains(QT_ARCH, i386) {
@@ -34,4 +35,6 @@ windows {
 		ARCH = x64
 	}
 }
+
+unix: QMAKE_CXXFLAGS += -Werror=return-type
 

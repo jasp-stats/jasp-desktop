@@ -107,7 +107,7 @@
 #include "module.h"
 
 #include "options/optionvariablesgroups.h"
-
+#include "datasetview.h"
 
 using namespace std;
 
@@ -187,6 +187,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(_engineSync, &EngineSync::filterUpdated,			_tableModel,	&DataSetTableModel::refresh);
 	connect(_engineSync, &EngineSync::filterErrorTextChanged,	this,			&MainWindow::setFilterErrorText);
 	connect(_engineSync, &EngineSync::filterUpdated,			this,			&MainWindow::onFilterUpdated);
+
+	qmlRegisterType<DataSetView>("JASP", 1, 0, "DataSetView");
 
 	loadQML();
 

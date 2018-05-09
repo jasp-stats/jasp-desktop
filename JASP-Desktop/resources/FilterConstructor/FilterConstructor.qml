@@ -231,7 +231,7 @@ Item {
 				//anchors.bottomMargin: scrollScriptColumn.__horizontalScrollBar.visible ? 20 : 0
 				//anchors.rightMargin: scrollScriptColumn.__verticalScrollBar.visible ? 20 : 0
 
-				height: Math.min(80, scrollScriptColumn.height)
+				height: Math.min(60, scrollScriptColumn.height)
 			}
 
 

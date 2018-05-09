@@ -144,7 +144,8 @@ SOURCES += \
     $$PWD/asyncloaderthread.cpp \
     $$PWD/aboutdialogjsinterface.cpp \
     $$PWD/variablespage/labelfiltergenerator.cpp \
-    $$PWD/columnsmodel.cpp
+    $$PWD/columnsmodel.cpp \
+    $$PWD/datasetview.cpp
 
 
 HEADERS  += \
@@ -305,7 +306,8 @@ HEADERS  += \
     $$PWD/asyncloaderthread.h \
     $$PWD/aboutdialogjsinterface.h \
     $$PWD/variablespage/labelfiltergenerator.h \
-    $$PWD/columnsmodel.h
+    $$PWD/columnsmodel.h \
+    $$PWD/datasetview.h
 
 FORMS += \
     $$PWD/aboutdialog.ui \
