@@ -29,6 +29,8 @@ FocusScope
 			onDoubleClicked: __myRoot.doubleClicked()
 
 
+
+
 			leftTopCornerItem:
 				Rectangle
 				{
@@ -60,7 +62,7 @@ FocusScope
 					{
 						id: filterToggleButtonMouseArea
 						anchors.fill: parent
-						onClicked: filterWindow.toggle()
+						onPressed: filterWindow.toggle()
 						hoverEnabled: true
 					}
 				}
