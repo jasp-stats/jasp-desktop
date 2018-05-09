@@ -1,9 +1,11 @@
-print(.libPaths())
 print(getwd())
+print(dir())
+print(.libPaths())
+
 lib <- .libPaths()[1]
 repos <- "https://cloud.r-project.org"
 
-script <- readLines("/JASP-Engine/JASP/R/packagecheck.R")
+script <- readLines("JASP-Engine/JASP/R/packagecheck.R")
 
 lst <- regmatches(script, gregexpr("(?<=\')(.*?)(?=\')", script, perl = TRUE))
 lst <- lst[lengths(lst) > 0]
