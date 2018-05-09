@@ -53,8 +53,12 @@ Rectangle {
 
 		DataTableView
 		{
-
+			objectName: "dataSetTableView"
 			Layout.fillHeight: true
+
+			signal dataTableDoubleClicked()
+
+			onDoubleClicked: dataTableDoubleClicked()
         }
 	}
 }
