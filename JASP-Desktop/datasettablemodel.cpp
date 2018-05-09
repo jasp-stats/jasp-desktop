@@ -90,17 +90,30 @@ QVariant DataSetTableModel::data(const QModelIndex &index, int role) const
 	if (_dataSet == NULL)
 		return QVariant();
 
-	int column = -1;
+	int column = index.column();
 
-	if (role == Qt::DisplayRole)
-		column = index.column();
-	else if(role >= Qt::UserRole)
-		column = role - Qt::UserRole;
 
-	if(column > -1)
+	if(column > -1 && column < columnCount())
 	{
-		QString value = tq(_dataSet->column(column)[index.row()]);
-		return QVariant(value);
+		if(role == Qt::DisplayRole)
+			return tq(_dataSet->column(column)[index.row()]);
+		else if(role == (int)specialRoles::active)
+			return getRowFilter(index.row());
+		else if(role == (int)specialRoles::lines)
+		{
+			bool iAmActive = getRowFilter(index.row()).toBool();
+
+			bool left = iAmActive, right = iAmActive && index.column() == columnCount() - 1; //always draw left line and right line only if last col
+			bool up = iAmActive || (index.row() > 0 && data(this->index(index.row() - 1, index.column()), (int)specialRoles::active).toBool()); //draw upper line if i am active or if not when my upstairs neighbour is active
+			bool down = (iAmActive && index.row() == rowCount() - 1) || (!iAmActive && index.row() < rowCount() - 1 && data(this->index(index.row() + 1, index.column()), (int)specialRoles::active).toBool()); //draw down line only if i am the last row or if i am inactive and my downstairs neighbour is active
+
+			return	(left ?		1 : 0) +
+					(right ?	2 : 0) +
+					(up ?		4 : 0) +
+					(down ?		8 : 0);
+		}
+
+
 	}
 
     return QVariant();
@@ -162,6 +175,35 @@ void DataSetTableModel::resetAllFilters()
 
 }
 
+int DataSetTableModel::getMaximumColumnWidthInCharacters(int columnIndex) const
+{
+	if(columnIndex < 0 || columnIndex >= _dataSet->columnCount()) return 0;
+
+	Column & col = _dataSet->column(columnIndex);
+
+	int extraPad = 2;
+
+	switch(col.columnType())
+	{
+	case Column::ColumnTypeScale:
+		return 6 + extraPad; //default precision of stringstream is 6 (and sstream is used in displaying scale values) + some padding because of dots and whatnot
+
+	case Column::ColumnTypeUnknown:
+		return 0;
+
+	default:
+	{
+		int tempVal = 0;
+
+		for(int labelIndex=0; labelIndex < col.labels().size(); labelIndex++)
+			tempVal = std::max(tempVal, (int)col.labels().getLabelFromRow(labelIndex).length());
+
+		return tempVal + extraPad;
+	}
+	}
+
+}
+
 QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientation, int role) const
 {
 	if (_dataSet == NULL)
@@ -171,7 +213,7 @@ QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientatio
 	{
 		if (orientation == Qt::Horizontal)
 		{
-			QString value = tq(_dataSet->column(section).name()) + QString("        ");
+			QString value = tq(_dataSet->column(section).name());
 			return QVariant(value);
 		}
 		else
@@ -179,27 +221,16 @@ QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientatio
 			return QVariant(section + 1);
 		}
 	}
-	else if (role == Qt::DecorationRole && orientation == Qt::Horizontal)
+	else if(role == (int)specialRoles::maxColString) //A query from DataSetView for the maximumlength string to be expected! This to accomodate columnwidth
 	{
-		Column &column = _dataSet->column(section);
+		//calculate some maximum string?
+		QString dummyText = headerData(section, orientation, Qt::DisplayRole).toString() + "XXXX"; //Bit of padding for filtersymbol and columnIcon
+		int colWidth = getMaximumColumnWidthInCharacters(section);
 
-		switch (column.columnType())
-		{
-		case Column::ColumnTypeNominalText:
-			return QVariant(_nominalTextIcon);
-		case Column::ColumnTypeNominal:
-			return QVariant(_nominalIcon);
-		case Column::ColumnTypeOrdinal:
-			return QVariant(_ordinalIcon);
-		case Column::ColumnTypeScale:
-			return QVariant(_scaleIcon);
-		default:
-			return QVariant();
-		}
-	}
-	else if (role == Qt::SizeHintRole && orientation == Qt::Vertical)
-	{
-		return QVariant(/*QSize(80, -1)*/);
+		while(colWidth > dummyText.length())
+			dummyText += "X";
+
+		return dummyText;
 	}
 	else if (role == Qt::TextAlignmentRole)
 	{
@@ -213,23 +244,14 @@ QHash<int, QByteArray> DataSetTableModel::roleNames() const
 {
 	QHash<int, QByteArray> roles = QAbstractTableModel::roleNames ();
 
-	for(int i=0; i<columnCount(); i++)
-		roles[Qt::UserRole + i] = (QString("column_")+QString::number(i)).toUtf8();
+
+	roles[(int)specialRoles::active]		= QString("active").toUtf8();
+	roles[(int)specialRoles::lines]			= QString("lines").toUtf8();
+	roles[(int)specialRoles::maxColString]	= QString("maxColString").toUtf8();
 
 	return roles;
 }
 
-QStringList DataSetTableModel::userRoleNames() const
-{
-	QMap<int, QString> res;
-	QHashIterator<int, QByteArray> i(roleNames());
-	while (i.hasNext()) {
-		i.next();
-		if(i.key() >= Qt::UserRole)
-			res[i.key()] = i.value();
-	}
-	return res.values();
-}
 
 bool DataSetTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
@@ -281,4 +303,12 @@ void DataSetTableModel::refreshColumn(Column * column)
 	for(int col=0; col<_dataSet->columns().size(); col++)
 		if(&(_dataSet->columns()[col]) == column)
 			emit dataChanged(index(0, col), index(rowCount()-1, col));
+}
+
+int DataSetTableModel::setColumnTypeFromQML(int columnIndex, int newColumnType)
+{
+	setColumnType(columnIndex, (Column::ColumnType)newColumnType);
+	emit headerDataChanged(Qt::Orientation::Horizontal, columnIndex, columnIndex);
+	return getColumnType(columnIndex);
+
 }

@@ -50,6 +50,7 @@
         <file>FilterConstructor/StringDrag.qml</file>
         <file>FilterConstructor/VariablesList.qml</file>
         <file>FilterConstructor/JSONtoFormulas.qml</file>
+        <file>JASPDataView.qml</file>
     </qresource>
     <qresource prefix="/">
         <file>backgrounds/jasp-wave-down-light-blue-120.svg</file>
