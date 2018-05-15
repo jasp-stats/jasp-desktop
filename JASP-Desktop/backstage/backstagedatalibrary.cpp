@@ -11,12 +11,11 @@ BackstageDataLibrary::BackstageDataLibrary(QWidget *parent) : BackstagePage(pare
 	
 	_dataLibraryListModel = new DataLibraryListModel(this);
 	_dataLibraryListModel->setDataLibraryBreadCrumbsModel(_dataLibraryBreadCrumbsModel);
-		
-	ui->QmlContent->setSource(QUrl(QStringLiteral("qrc:/backstage/BackstageDataLibrary.qml")));
 	
 	ui->QmlContent->rootContext()->setContextProperty("dataLibraryListModel",_dataLibraryListModel);
 	ui->QmlContent->rootContext()->setContextProperty("dataLibraryBreadCrumbsModel",_dataLibraryBreadCrumbsModel);
 	ui->QmlContent->rootContext()->setContextProperty("backstagedatalibrary",this);		
+	ui->QmlContent->setSource(QUrl(QStringLiteral("qrc:/backstage/BackstageDataLibrary.qml")));
 }
 
 BackstageDataLibrary::~BackstageDataLibrary()
