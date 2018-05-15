@@ -772,22 +772,81 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 			for(contrastType in contrastTypes) {
 
-				contrastMatrix <- .anovaCreateContrast(column, contrastType)
-				c <- lapply(as.data.frame(contrastMatrix), as.vector)
-				names(c) <- .v(.anovaContrastCases(column, contrastType))
-
+			  contrastMatrix <- .rmAnovaCreateContrast(column, contrastType)
+				contrCoef <- lapply(as.data.frame(contrastMatrix), as.vector)
+				names(contrCoef) <- .v(.anovaContrastCases(column, contrastType))
+        
 				if (contrastType == "none") {
 					r <- NULL
 				} else {
-					r <- emmeans::contrast(referenceGrid[[contrast$variable]], c)
+					r <- emmeans::contrast(referenceGrid[[contrast$variable]], contrCoef)
 				}
-
 				resultsContrasts[[contrast$variable]][[contrastType]] <- summary(r)
 			}
 		}
 
 		return(resultsContrasts)
 }
+
+.rmAnovaCreateContrast <- function (column, contrast.type) {
+  
+  levels <- levels(column)
+  n.levels <- length(levels)
+  
+  contr <- NULL
+
+  if (contrast.type == "none") {
+    
+    options(contrasts = c("contr.sum","contr.poly"))
+    contr <- NULL
+    
+  } else if (contrast.type == "deviation") {
+    
+    contr <- matrix(0,nrow = n.levels, ncol = n.levels - 1)
+    for (i in 2:n.levels) {
+      contr[,(i-1)] <-  -1 / n.levels
+      contr[i,(i-1)] <- (n.levels - 1) / n.levels
+    }
+    
+  } else if (contrast.type == "simple") {
+    
+    contr <- matrix(0,nrow = n.levels, ncol = n.levels - 1)
+    for (i in 1:n.levels-1) {
+      contr[c(1,i+1),i]<- c(1,-1) * -1
+    }
+    
+  } else if (contrast.type == "Helmert") {
+    
+    contr <- contr.helmert(levels) 
+    contr <- apply(contr, 2, function(x){ x/max(abs(x))})
+    contr <- matrix(rev(contr), ncol = ncol(contr), nrow = nrow(contr))
+    
+  } else if (contrast.type == "repeated") {
+    
+    contr <- matrix(0,nrow = n.levels, ncol = n.levels - 1)
+    
+    for (i in 1:(n.levels-1)) {
+      contr[i,i] <- 1
+      contr[i+1,i] <- -1
+    }
+    
+  } else if (contrast.type == "difference") {
+
+    contr <- contr.helmert(levels) 
+    contr <- apply(contr, 2, function(x){ x/max(abs(x))})
+    
+  } else if (contrast.type == "polynomial") {
+    
+    contr <- contr.poly(levels)
+  }
+
+  if (! is.null(contr)) {
+    dimnames(contr) <- list(NULL, 1:dim(contr)[2])
+  }
+  
+  contr
+}
+
 
 .identicalTerms <- function(x,y) {
 

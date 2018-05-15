@@ -205,9 +205,9 @@ test_that("(Repeated) Contrast table match", {
                             dataset = "AnovaMixedEffects.csv", options = options,
                             view = FALSE, quiet = TRUE)
   
-  refTable <- list("Attractive - Average", 13.5333333333333, 0.521959482105862, 25.9279384651327,
-                   6.94207506292919e-25, "TRUE", "Average - Ugly", 12.75, 0.521959482105862,
-                   24.4271834061903, 5.30699268885104e-24, "FALSE")
+  refTable <- list("Attractive - Average", 14.31667, 0.9040603, 15.83596,
+                   8.431449e-18, "TRUE", "Average - Ugly", 11.96667, 0.9040603,
+                   13.23658, 2.1268e-15, "FALSE")
   
   table <- results[["results"]][["contrasts"]][["collection"]][[1]][["data"]]
   expect_equal_tables(table, refTable)
