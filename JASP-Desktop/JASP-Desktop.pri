@@ -148,7 +148,7 @@ SOURCES += \
     $$PWD/columnsmodel.cpp \
     $$PWD/datasetview.cpp \
     $$PWD/jsonutilities.cpp \
-    $PWD/backstage/backstagedatalibrary.cpp \
+    $$PWD/backstage/backstagedatalibrary.cpp \
     $$PWD/backstage/datalibrarylistmodel.cpp \
     $$PWD/backstage/datalibrarybreadcrumbsmodel.cpp
 
@@ -315,6 +315,8 @@ HEADERS  += \
     $$PWD/columnsmodel.h \
     $$PWD/datasetview.h \
     $$PWD/jsonutilities.h \
+    $$PWD/backstage/backstagedatalibrary.h \
+    $$PWD/backstage/datalibrarylistmodel.h \
     $$PWD/backstage/datalibrarybreadcrumbsmodel.h
 
 FORMS += \

@@ -5,8 +5,6 @@ import QtQuick.Layouts 1.3
 Rectangle
 {
     id:rect
-    width:800
-    height:800
     objectName: "rect"
     color: "#ececec"
 
@@ -48,10 +46,12 @@ Rectangle
     {
         id: datalibrarylist
         width: rect.width
+		height: rect.height - 100
         anchors.top: secondseparator.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-		anchors.leftMargin: 24  //Position datalibrary items
+		anchors.leftMargin: 12  //Position datalibrary items
+		anchors.topMargin: 6 
     }
 }
 
