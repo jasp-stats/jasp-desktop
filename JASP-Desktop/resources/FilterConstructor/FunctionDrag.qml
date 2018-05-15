@@ -5,7 +5,7 @@ DragGeneric {
 	property string __debugName: "FunctionDrag"
 
 	property string functionName: "sum"
-	property var parameterNames: functionName != "!" ? ["x"] : []
+	property var parameterNames: functionName != "!" ? ["y"] : []
 	property var parameterDropKeys: ["???"]
 
 	property bool acceptsDrops: true

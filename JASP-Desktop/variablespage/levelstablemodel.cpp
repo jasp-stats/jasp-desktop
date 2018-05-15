@@ -19,7 +19,7 @@ void LevelsTableModel::setColumn(Column *column)
 	beginResetModel();
 	_column = column;
 	endResetModel();
-	emit resizeValueColumn();
+	emit resizeLabelColumn();
 
 	emit labelFilterChanged();
 	notifyColumnHasFilterChanged();
@@ -30,7 +30,7 @@ void LevelsTableModel::refresh()
 {
 	beginResetModel();
 	endResetModel();
-	emit resizeValueColumn();
+	emit resizeLabelColumn();
 
 	emit labelFilterChanged();
 	notifyColumnHasFilterChanged();

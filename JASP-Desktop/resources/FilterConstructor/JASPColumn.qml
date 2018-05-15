@@ -3,7 +3,7 @@ import QtQuick 2.9
 Item
 {
 	objectName: "Column"
-	property string __debugName: "JASPColumn"
+	property string __debugName: "JASPColumn " + columnName
 	property string columnName: "?"
 	property string columnIcon: ""
 

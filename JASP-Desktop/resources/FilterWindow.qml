@@ -55,67 +55,119 @@ FocusScope
 
 	signal rCodeChanged(string rScript)
 
-	FilterConstructor {
-		id: easyFilterConstructor
+	Item
+	{
 		anchors.fill: parent
 		visible: parent.showEasyFilter
-		extraSpaceUnderColumns: gearAdvanced.height
 
-		Image
+		FilterConstructor
 		{
-			id: gearAdvanced
-			source: "qrc:/icons/R.png"
-			anchors.bottom: parent.bottom
-			anchors.left: parent.left
-			anchors.margins: 4
-			width: 22
-			height: width
-
-			sourceSize.width: width
-			sourceSize.height: height
-
-			MouseArea
-			{
-				anchors.fill: parent
-				onClicked: filterContainer.showEasyFilter = false
-				hoverEnabled: true
-
-				New.ToolTip.delay: 500
-				New.ToolTip.visible: containsMouse
-				New.ToolTip.text: "Click here to switch to an advanced filter-editor (using R directly)"
-
-				cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
-			}
-		}
-
-		Image
-		{
-			id: closeEasyFilter
-			source: "../images/cross.png"
-			anchors.bottom: parent.bottom
+			anchors.bottom: closeEasyFilterButton.top
 			anchors.right: parent.right
-			anchors.margins: 4
-			width: 22
-			height: width
+			anchors.left: parent.left
+			anchors.top: parent.top
 
-			sourceSize.width: width
-			sourceSize.height: height
+			id: easyFilterConstructor
 
-			MouseArea
+			onRCodeChanged: filterContainer.rCodeChanged(rScript)
+
+			clip: true
+
+			function askIfChanged(closeFunc)
 			{
-				anchors.fill: parent
-				onClicked: filterWindow.toggle()
-				hoverEnabled: true
+				if((somethingChanged && jsonChanged())|| !lastCheckPassed)
+				{
+					easySaveDialog.closeFunc = closeFunc
+					easySaveDialog.open()
+				}
+				else
+					closeFunc()
+			}
 
-				New.ToolTip.delay: 500
-				New.ToolTip.visible: containsMouse
-				New.ToolTip.text: "Click here to close the filter constructor"
+			New.Dialog
+			{
+				id: easySaveDialog
 
-				cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+				x: (easyFilterConstructor.width - width) / 2
+				y: (easyFilterConstructor.height - height) / 2
+
+				modal: true
+				title: "Filter Changed"
+				standardButtons: New.Dialog.Save | New.Dialog.Discard | New.Dialog.Cancel
+				property var closeFunc: undefined
+
+				onAccepted:
+				{
+					if(easyFilterConstructor.checkAndApplyFilter())
+						closeFunc()
+					close()
+				}
+
+				onRejected: { close() }
+				onDiscarded: { closeFunc(); close() }
+
+				contentItem: Text
+				{
+					text: "There are unapplied changes to your filter, what would you like to do with them?"
+					wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+				}
 			}
 		}
 
-		onRCodeChanged: filterContainer.rCodeChanged(rScript)
+		FilterButton
+		{
+			id: rFilterButton
+			icon.source: "qrc:/icons/R.png"
+			anchors.left: parent.left
+			anchors.bottom: parent.bottom
+			anchors.top: closeEasyFilterButton.top
+
+			onClicked: easyFilterConstructor.askIfChanged(function() { filterContainer.showEasyFilter = false } )
+
+
+			width: height
+
+			toolTip: "Switch to the advanced filter-editor (using R directly)"
+
+		}
+
+		FilterButton
+		{
+			id: applyEasyFilter
+			text: easyFilterConstructor.somethingChanged ? "Apply Filter" : "Filter Applied"
+			disabled: !easyFilterConstructor.somethingChanged
+			anchors.left: rFilterButton.right
+			anchors.right: helpEasyFilterButton.left
+			anchors.bottom: parent.bottom
+			anchors.top: closeEasyFilterButton.top
+
+			onClicked: easyFilterConstructor.checkAndApplyFilter()
+
+			toolTip: easyFilterConstructor.somethingChanged ? "Click to apply filter" : "Filter is already applied"
+		}
+
+		FilterButton
+		{
+			id: helpEasyFilterButton
+			icon.source: "qrc:/icons/QuestionMark.png"
+			anchors.right: closeEasyFilterButton.left
+			anchors.bottom: parent.bottom
+			anchors.top: closeEasyFilterButton.top
+
+			onClicked: mainWindow.showHelpFromQML("other/EasyFilterConstructor");
+			toolTip: "Open Documentation"
+		}
+
+		FilterButton
+		{
+			id: closeEasyFilterButton
+			icon.source: "../images/cross.png"
+			anchors.right: parent.right
+			anchors.bottom: parent.bottom
+
+			onClicked: easyFilterConstructor.askIfChanged(function() { filterWindow.toggle() } )
+			toolTip: "Hide filter"
+		}
 	}
 
     SplitView
@@ -126,21 +178,18 @@ FocusScope
         orientation: Qt.Vertical
 
         Rectangle {
-            id: filterEditPlusButton
-            color: systemPalette.base
+			id: filterEditRectangle
+			color: "white"
 
             border.width: 1
-            border.color: systemPalette.mid
+			border.color: "lightGrey"
             Layout.fillHeight: true
             Layout.minimumHeight: applyFilter.height + filterWindow.minimumHeightTextBoxes + filterGeneratedBox.contentHeight
 
 			New.ScrollView
 			{
 				id: filterScroller
-				anchors.top: parent.top
-				anchors.left: parent.left
-				anchors.right: parent.right
-				anchors.bottom: applyFilter.top
+				anchors.fill: parent
 				clip: true
 
 				contentWidth: width
@@ -170,6 +219,8 @@ FocusScope
 						color: "gray"
 						selectByMouse: true
 						onActiveFocusChanged: if(!activeFocus) deselect()
+
+						font.family: "Courier"
 
 					}
 
@@ -208,111 +259,53 @@ FocusScope
 						height: contentHeight + 30
 						selectByMouse: true
 						onActiveFocusChanged: if(!activeFocus) deselect()
+
+						property bool changedSinceLastApply: text !== filterContainer.lastAppliedFilter
+
+						font.family: "Courier"
 					}
 				}
 			}
 
-
-			New.Button
+			function askIfChanged(closeFunc)
 			{
-				id: easyFilterButton
-				//icon.source: "qrc:/icons/NotR.png"
-				anchors.left: parent.left
-				anchors.bottom: parent.bottom
-				anchors.top: closeFilterButton.top
-
-				onClicked: filterContainer.showEasyFilter = true
-
-				width: visible ? height : 0
-
-
-
-				MouseArea
+				if(filterEdit.changedSinceLastApply)
 				{
-					anchors.fill: parent
-					New.ToolTip.delay: 500
-					New.ToolTip.visible: containsMouse
-					New.ToolTip.text: "Click here to switch to the easier filter-constructor"
-					acceptedButtons: Qt.NoButton
+					saveDialog.closeFunc = closeFunc
+					saveDialog.open()
 				}
-
-				background: Rectangle
-				{
-					color: parent.hovered ? "white" : "lightGrey"
-					border.color: parent.hovered ? "black" : "grey"
-					border.width: 1
-
-					Image
-					{
-						source: "qrc:/icons/NotR.png"
-						sourceSize.width: width
-						sourceSize.height: height
-
-						anchors.fill: parent
-						anchors.margins: 6
-					}
-				}
+				else
+					closeFunc()
 			}
 
-			New.Button
+			New.Dialog
 			{
-				id: clearFilterButton
-				icon.source: "../images/eraser.png"
-				anchors.left: easyFilterButton.right
-				anchors.bottom: parent.bottom
-				anchors.top: closeFilterButton.top
+				id: saveDialog
 
-				onClicked: filterWindow.resetFilter()
+				x: (filterEditRectangle.width - width) / 2
+				y: (filterEditRectangle.height - height) / 2
 
-				width: visible ? implicitWidth : 0
-				height: filterContainer.buttonsHeight
-				visible: filterEdit.text != defaultFilter
+				modal: true
+				title: "Filter Changed"
+				standardButtons: New.Dialog.Save | New.Dialog.Discard | New.Dialog.Cancel
+				property var closeFunc: undefined
 
-				background: Rectangle
+				onAccepted:
 				{
-					color: parent.hovered ? "white" : "lightGrey"
-					border.color: parent.hovered ? "black" : "grey"
-					border.width: 1
+					filterWindow.applyAndSendFilter(filterEdit.text)
+					closeFunc()
+					close()
+				}
+
+				onRejected: { close() }
+				onDiscarded: { closeFunc(); close() }
+
+				contentItem: Text
+				{
+					text: "There are unapplied changes to your filter, what would you like to do with them?"
+					wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 				}
 			}
-
-			New.Button
-            {
-                id: applyFilter
-                text: "Apply Filter"
-                anchors.left: clearFilterButton.right
-                anchors.right: closeFilterButton.left
-                anchors.bottom: parent.bottom
-				anchors.top: closeFilterButton.top
-
-                onClicked: filterWindow.applyAndSendFilter(filterEdit.text)
-
-				background: Rectangle
-				{
-					color: parent.hovered ? "white" : "lightGrey"
-					border.color: parent.hovered ? "black" : "grey"
-					border.width: 1
-				}
-
-            }
-
-			New.Button
-            {
-                id: closeFilterButton
-				icon.source: "../images/cross.png"
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-
-                onClicked: filterWindow.toggle()
-			//	height: filterContainer.buttonsHeight
-
-				background: Rectangle
-				{
-					color: parent.hovered ? "white" : "lightGrey"
-					border.color: parent.hovered ? "black" : "grey"
-					border.width: 1
-				}
-            }
         }
 
 		New.ScrollView
@@ -328,6 +321,8 @@ FocusScope
 				text: filterErrorText
 				selectByMouse: true
 				onActiveFocusChanged: if(!activeFocus) deselect()
+
+				font.family: "Courier"
 
 
 				states: [
@@ -346,6 +341,85 @@ FocusScope
 			}
 		}
 
+		Item
+		{
+			id: filterButtons
+			height: closeFilterButton.height
+			anchors.left: parent.left
+			anchors.right: parent.right
+
+			FilterButton
+			{
+				id: easyFilterButton
+				icon.source: "qrc:/icons/NotR.png"
+				anchors.left: parent.left
+				anchors.bottom: parent.bottom
+				anchors.top: closeFilterButton.top
+
+				onClicked: filterEditRectangle.askIfChanged(function (){ filterContainer.showEasyFilter = true })
+
+				width: visible ? height : 0
+
+				toolTip: "Switch to the drag and drop filter-constructor"
+
+			}
+
+			FilterButton
+			{
+				id: clearFilterButton
+				icon.source: "../images/eraser.png"
+				anchors.left: easyFilterButton.right
+				anchors.bottom: parent.bottom
+				anchors.top: closeFilterButton.top
+
+				onClicked: filterWindow.resetFilter()
+
+				width: visible ? implicitWidth : 0
+				height: filterContainer.buttonsHeight
+				visible: filterEdit.text !== defaultFilter
+
+				toolTip: "Reset to default filter"
+			}
+
+			FilterButton
+			{
+				id: applyFilter
+
+				text: filterEdit.changedSinceLastApply ? "Apply Filter" : "Filter Applied"
+				disabled: !filterEdit.changedSinceLastApply
+				anchors.left: clearFilterButton.right
+				anchors.right: helpButton.left
+				anchors.bottom: parent.bottom
+				anchors.top: closeFilterButton.top
+
+				onClicked: filterWindow.applyAndSendFilter(filterEdit.text)
+
+				toolTip: filterEdit.changedSinceLastApply ? "Click to apply filter" : "Filter is already applied"
+			}
+
+			FilterButton
+			{
+				id: helpButton
+				icon.source: "qrc:/icons/QuestionMark.png"
+				anchors.right: closeFilterButton.left
+				anchors.bottom: parent.bottom
+				anchors.top: closeFilterButton.top
+
+				onClicked: mainWindow.showHelpFromQML("other/RFilterConstructor");
+				toolTip: "Open Documentation"
+			}
+
+			FilterButton
+			{
+				id: closeFilterButton
+				icon.source: "../images/cross.png"
+				anchors.right: parent.right
+				anchors.bottom: parent.bottom
+
+				onClicked: filterEditRectangle.askIfChanged(function (){ filterWindow.toggle() })
+				toolTip: "Hide filter"
+			}
+		}
     }
 
 }

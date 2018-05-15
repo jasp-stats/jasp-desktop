@@ -37,6 +37,7 @@
 #include "resultsjsinterface.h"
 #include "customwebenginepage.h"
 #include "columnsmodel.h"
+#include "jsonutilities.h"
 
 class ResultsJsInterface;
 
@@ -56,6 +57,8 @@ public:
 
 
 	Q_INVOKABLE void setFilterConstructorJSON(QString jsonString);
+	Q_INVOKABLE void showHelpFromQML(QString pageName);
+
 
 protected:
 	virtual void resizeEvent(QResizeEvent *event) OVERRIDE;
@@ -84,8 +87,6 @@ private:
 	Analyses *_analyses;
 	EngineSync* _engineSync;
 
-	void triggerQmlColumnReload();
-	void triggerQmlColumnClear();
 
 	void refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns
 									, std::vector<std::string> &missingColumns
@@ -198,7 +199,7 @@ private slots:
 
     void emptyValuesChangedHandler();
 
-	void resizeVariablesWindowValueColumn();
+	void resizeVariablesWindowLabelColumn();
 	void closeVariablesPage();
 
 	void showProgress();

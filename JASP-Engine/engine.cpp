@@ -368,7 +368,7 @@ void Engine::sendResults()
 	_channel->send(message);
 }
 
-void Engine::sendFilterResult(std::vector<bool> filterResult)
+void Engine::sendFilterResult(std::vector<bool> filterResult, std::string warning)
 {
 	Json::Value filterResponse = Json::Value(Json::objectValue);
 
@@ -376,6 +376,9 @@ void Engine::sendFilterResult(std::vector<bool> filterResult)
 	for(bool f : filterResult)
 		filterResultList.append(f);
 	filterResponse["filterResult"] = filterResultList;
+
+	if(warning != "")
+		filterResponse["filterError"] = warning;
 
 	std::string msg = filterResponse.toStyledString();
 	_channel->send(msg);
@@ -465,12 +468,10 @@ void Engine::applyFilter()
 	{
 		std::vector<bool> filterResult = rbridge_applyFilter(filter, generatedFilter);
 
-		sendFilterResult(filterResult);
-
 		std::string RPossibleWarning = jaspRCPP_getLastFilterErrorMsg();
 
-		if(RPossibleWarning.length() > 0)
-			sendFilterError(RPossibleWarning);
+		sendFilterResult(filterResult, RPossibleWarning);
+
 	}
 	catch(filterException & e)
 	{

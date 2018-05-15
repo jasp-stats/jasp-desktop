@@ -24,7 +24,7 @@ Item
 
 
 		onAccepted: focus = false
-		onActiveFocusChanged:	if(!activeFocus && textIsWrong()) destroyMe(); else text = parseFloat(text)
+		onActiveFocusChanged:	if(!activeFocus && textIsWrong()) destroyMe(); else { text = parseFloat(text); value = text }
 
 		function textIsWrong() { return (text === "" || isNaN(parseFloat(text))) }
 

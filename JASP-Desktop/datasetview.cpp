@@ -79,6 +79,7 @@ void DataSetView::setRolenames()
 void DataSetView::calculateCellSizes()
 {
 
+
 	_cellSizes.clear();
 	_dataColsMaxWidth.clear();
 
@@ -88,6 +89,8 @@ void DataSetView::calculateCellSizes()
 			storeTextItem(row.first, col.first, false);
 		col.second.clear();
 	}
+
+	if(_model == NULL) return;
 
 	_cellSizes.resize(_model->columnCount());
 	_colXPositions.resize(_model->columnCount());
@@ -166,7 +169,11 @@ void DataSetView::viewportChanged()
 	currentViewportRowMax = std::min(qRound(rightBottom.y()	/ _dataRowsMaxHeight) + 1,	_model->rowCount());
 
 	// remove superflouous textItems if they exist (aka store them in stack)
-	if(_previousViewportRowMin != -1 && _previousViewportRowMax != -1 && _previousViewportColMin != -1 && _previousViewportColMax != -1)
+	int maxRows = _model->rowCount(), maxCols = _model->columnCount();
+	if(
+			_previousViewportRowMin >= 0		&& _previousViewportRowMax >= 0			&& _previousViewportColMin >= 0			&& _previousViewportColMax >= 0 &&
+			_previousViewportRowMin < maxRows	&& _previousViewportRowMax < maxRows	&& _previousViewportColMin < maxCols	&& _previousViewportColMax < maxCols
+	)
 	{
 		for(int col=_previousViewportColMin; col<_previousViewportColMax; col++)
 		{
@@ -220,7 +227,7 @@ void DataSetView::viewportChanged()
 
 		}
 
-	_lines.push_back(std::make_pair(QVector2D(_viewportX,						_viewportY),						QVector2D(_viewportX,						_viewportY + _viewportH)));
+	_lines.push_back(std::make_pair(QVector2D(_viewportX + 0.01f,				_viewportY),						QVector2D(_viewportX + 0.01f,				_viewportY + _viewportH)));
 	_lines.push_back(std::make_pair(QVector2D(_viewportX + _rowNumberMaxWidth,	_viewportY),						QVector2D(_viewportX + _rowNumberMaxWidth,	_viewportY + _viewportH)));
 
 	_lines.push_back(std::make_pair(QVector2D(_viewportX,						_viewportY + 0.01f),						QVector2D(_viewportX + _viewportW,			_viewportY+ 0.01f)));
@@ -386,7 +393,7 @@ QQuickItem * DataSetView::createRowNumber(int row)
 			_rowNumberStorage.pop();
 
 			rowNumber = itemCon->item;
-			setStyleDataRowNumber(itemCon->context, row);
+			setStyleDataRowNumber(itemCon->context, row + 1);
 		}
 		else
 		{
@@ -394,7 +401,7 @@ QQuickItem * DataSetView::createRowNumber(int row)
 			std::cout << "createRowNumber("<<row<<") ex nihilo!\n" << std::flush;
 #endif
 			QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
-			itemCon = new ItemContextualized(setStyleDataRowNumber(NULL, row));
+			itemCon = new ItemContextualized(setStyleDataRowNumber(NULL, row + 1));
 
 			_rowNumberDelegate->create(localIncubator, itemCon->context);
 			rowNumber = qobject_cast<QQuickItem*>(localIncubator.object());

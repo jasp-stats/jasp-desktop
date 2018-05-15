@@ -29,7 +29,7 @@ FocusScope
 		contentWidth: theView.width
 		contentHeight: theView.height
 
-		flickDeceleration: 4000
+		//flickDeceleration: 4000
 
 		clip: true
 
@@ -67,6 +67,17 @@ FocusScope
 					}
 					else
 						lastTimeClicked = -1
+				}
+
+				onWheel:
+				{
+					//console.log("wheel.angleDelta ",wheel.angleDelta)
+					if(wheel.angleDelta.y == 120)
+						vertiScroller.decrease()
+					else if(wheel.angleDelta.y == -120)
+						vertiScroller.increase()
+					else
+						wheel.accepted = false
 				}
 			}
 		}

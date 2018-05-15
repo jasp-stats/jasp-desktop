@@ -31,9 +31,9 @@ FocusScope
 	}
 
 	function moveSelectedItems(target) {
-		console.log('move');
+		//console.log('move');
 		if (!hasSelectedItems) {
-			console.log('no item selected');
+			//console.log('no item selected');
 			return;
 		}
 
@@ -160,7 +160,7 @@ FocusScope
 				}
 				if (!added)
 					selectedItems.push(item);
-				console.log("selected item added");
+				//console.log("selected item added");
 				variablesList.selectedItemsChanged();
 			}
 

@@ -35,7 +35,6 @@
         <file>FilterConstructor/DropTrash.qml</file>
         <file>FilterConstructor/ElementView.qml</file>
         <file>FilterConstructor/FilterConstructor.qml</file>
-        <file>FilterConstructor/FilterConstructorButton.qml</file>
         <file>FilterConstructor/Function.qml</file>
         <file>FilterConstructor/FunctionDrag.qml</file>
         <file>FilterConstructor/JASPColumn.qml</file>
@@ -51,10 +50,9 @@
         <file>FilterConstructor/VariablesList.qml</file>
         <file>FilterConstructor/JSONtoFormulas.qml</file>
         <file>JASPDataView.qml</file>
+        <file>FilterButton.qml</file>
     </qresource>
     <qresource prefix="/">
-        <file>backgrounds/jasp-wave-down-light-blue-120.svg</file>
-        <file>backgrounds/jasp-wave-up-light-green-120.svg</file>
         <file>icons/variance.png</file>
         <file>icons/trashcan.svg</file>
         <file>icons/trashcan_open.svg</file>
@@ -78,5 +76,6 @@
         <file>icons/product.png</file>
         <file>icons/NotR.png</file>
         <file>icons/R.png</file>
+        <file>icons/QuestionMark.png</file>
     </qresource>
 </RCC>

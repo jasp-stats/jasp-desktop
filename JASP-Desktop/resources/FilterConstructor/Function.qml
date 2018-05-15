@@ -21,14 +21,15 @@ Item
 
 	property var dragKeys: booleanReturningFunctions.indexOf(functionName) >= 0 ? ["boolean"] : [ "number" ]
 
+	readonly property bool isMean: false //functionName === "mean"
+	readonly property bool isAbs:  functionName === "abs"
+	readonly property bool isRoot: functionName === "sqrt"
+	readonly property bool showParentheses: !isMean && (parameterNames.length > 1 || isAbs || functionImageSource === "")
+
+	property real extraMeanWidth: (isMean ? 10 : 0)
+
 	height: meanBar.height + Math.max(dropRow.height, filterConstructor.blockDim)
 	width: functionDef.width + haakjesLinks.width + dropRow.width + haakjesRechts.width + extraMeanWidth
-	property real extraMeanWidth: (functionName === "mean" ? 10 : 0)
-
-	readonly property bool showParentheses: functionName !== "mean" && (parameterNames.length > 1 || functionName === "abs" || functionImageSource === "")
-    readonly property bool isRoot: functionName === "sqrt"
-    readonly property bool isMean: functionName === "mean"
-    readonly property bool isAbs:  functionName === "abs"
 
 	function shouldDrag(mouseX, mouseY)
 	{
@@ -252,9 +253,10 @@ Item
 			function checkCompletenessFormulas()
 			{
 				var allComplete = true
-				for(var i=0; i<funcRoot.parameterNames.length; i++)
-					if(!dropRepeat.itemAt(i).getDropSpot().checkCompletenessFormulas())
+				for(var i=0; i<dropRepeat.count; i++)
+					if(!dropRepeat.itemAt(i).checkCompletenessFormulas())
 						allComplete = false
+
 				return allComplete
 			}
 
@@ -305,6 +307,11 @@ Item
 
 				function getDropSpot() { return spot }
 
+				function checkCompletenessFormulas()
+				{
+					return spot.checkCompletenessFormulas()
+				}
+
 
 
 				DropSpot {
@@ -319,7 +326,7 @@ Item
 					defaultText: funcRoot.parameterNames[index]
 					dropKeys: funcRoot.parameterDropKeys[index]
 
-					droppedShouldBeNested: funcRoot.parameterNames.length === 1 && functionName !== "abs" && functionName !== "mean"
+					droppedShouldBeNested: funcRoot.parameterNames.length === 1 && !funcRoot.isAbs && !funcRoot.isMean
 					shouldShowX: funcRoot.parameterNames <= 1
 				}
 
