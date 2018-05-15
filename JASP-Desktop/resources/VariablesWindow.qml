@@ -98,13 +98,21 @@ FocusScope {
                             columnChanged(dataSetModel.columnTitle(variablesWindow.chosenColumn))
                     }
 
-                    function resizeValueColumn()
-                    {
-                        var title = "Values!"
-                        var minimumWidth = calculateMinimumRequiredColumnWidthTitle(0, title, 0, 0)
-                        levelsTableViewValueColumn.width = minimumWidth + 10
+					function resizeValueColumn()
+					{
+						var title = "Values!"
+						var minimumWidth = calculateMinimumRequiredColumnWidthTitle(1, title, 0, 0)
+						levelsTableViewValueColumn.width = minimumWidth + 10
 
-                    }
+					}
+
+					function resizeLabelColumn()
+					{
+						/*var title = "Labels!"
+						var minimumWidth = calculateMinimumRequiredColumnWidthTitle(2, title, 0, 0)
+						levelsTableViewLabelColumn.width = minimumWidth + 10*/
+
+					}
 
                     function moveUp()
                     {
@@ -181,6 +189,8 @@ FocusScope {
                         id: levelsTableViewValueColumn
                         title: "Value"
                         role: "value"
+						width: 100
+						//width: levelsTableView.width - levelsTableViewLabelColumn.width - 20 - levelsTableViewFilterColumn.width
                     }
 
                     TableViewColumn
@@ -188,7 +198,7 @@ FocusScope {
                         id: levelsTableViewLabelColumn
                         title: "Label"
                         role: "label"
-                        width: levelsTableView.width - levelsTableViewValueColumn.width - 20 - levelsTableViewFilterColumn.width
+						width: levelsTableView.width - levelsTableViewValueColumn.width - 20 - levelsTableViewFilterColumn.width
                     }
 
                     headerDelegate: Rectangle
@@ -235,6 +245,8 @@ FocusScope {
 
 
                         sourceComponent: styleData.column == 0 ? filterCheckBoxVariablesWindowTemplate : (styleData.column == 2 ? textInputVariablesWindowTemplate : textDisplayVariablesWindowTemplate)
+
+						height: 30
 
                         //anchors.fill: parent
                     }
@@ -286,12 +298,13 @@ FocusScope {
 						{
 							anchors.fill: parent
 							color: colorBackground
+
+
 							Text {
 								color: colorItem
 								text: textItem
 								elide: Text.ElideMiddle
 								anchors.fill: parent
-
 							}
 						}
                     }

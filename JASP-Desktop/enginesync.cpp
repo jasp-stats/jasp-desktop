@@ -242,6 +242,9 @@ void EngineSync::process()
 						filterResult.push_back(jsonResult.asBool());
 
 					processNewFilterResult(filterResult);
+
+					if(json.get("filterError", "").asString() != "")
+						emit filterErrorTextChanged(QString::fromStdString(json.get("filterError", "there was a warning").asString()));
 				}
 				else
 					emit filterErrorTextChanged(QString::fromStdString(json.get("filterError", "something went wrong").asString()));

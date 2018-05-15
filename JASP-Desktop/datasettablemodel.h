@@ -63,12 +63,15 @@ public:
 	Q_INVOKABLE QVariant getColumnTypesWithCorrespondingIcon();
 	Q_INVOKABLE QVariant getRowFilter(int row) const { return (row >=0 && row < rowCount()) ? _dataSet->filterVector()[row] : true; }
 	Q_INVOKABLE QVariant columnHasFilter(int column) const;
+	Q_INVOKABLE QVariant columnUsedInEasyFilter(int column) const;
 
 	Q_INVOKABLE void resetAllFilters();
 
 	int columnsFilteredCount();
 	void notifyColumnFilterStatusChanged() { emit columnsFilteredCountChanged(); }
-    
+
+	void setColumnsUsedInEasyFilter(std::set<std::string> usedColumns);
+
 signals:
 	void columnsFilteredCountChanged();
 	void badDataEntered(const QModelIndex index);
@@ -85,6 +88,8 @@ private:
 	QIcon _nominalIcon;
 	QIcon _ordinalIcon;
 	QIcon _scaleIcon;
+
+	std::map<std::string, bool> columnNameUsedInEasyFilter;
 };
 
 #endif // DATASETTABLEMODEL_H

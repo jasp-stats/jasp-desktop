@@ -55,7 +55,7 @@ private:
 	void saveImage();
     void editImage();
 	void sendResults();
-	void sendFilterResult(std::vector<bool> filterResult);
+	void sendFilterResult(std::vector<bool> filterResult, std::string warning = "");
 	void sendFilterError(std::string errorMessage);
 	void evalRCode(const std::string &rCode);
 	void sendRCodeResult(std::string rCodeResult);

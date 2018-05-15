@@ -8,8 +8,6 @@ DragGeneric {
 	dragKeys: showMe.dragKeys
 	property real colScaler: 1
 
-	property string __debugName: "ColumnDrag " + columnName
-
 	JASPColumn
 	{
 		id: showMe

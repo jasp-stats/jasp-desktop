@@ -144,12 +144,18 @@ QVariant DataSetTableModel::columnIcon(int column) const
 QVariant DataSetTableModel::columnHasFilter(int column) const
 {
 	if(_dataSet != NULL && column >= 0 && column < _dataSet->columnCount())
-	{
-		QString value = tq(_dataSet->column(column).name());
 		return QVariant(_dataSet->column(column).hasFilter());
+	return QVariant(false);
+}
+
+QVariant DataSetTableModel::columnUsedInEasyFilter(int column) const
+{
+	if(_dataSet != NULL && column >= 0 && column < _dataSet->columnCount())
+	{
+		std::string colName = _dataSet->column(column).name();
+		return QVariant(columnNameUsedInEasyFilter.count(colName) > 0 && columnNameUsedInEasyFilter.at(colName));
 	}
-	else
-		return QVariant(false);
+	return QVariant(false);
 }
 
 int DataSetTableModel::columnsFilteredCount()
@@ -311,4 +317,14 @@ int DataSetTableModel::setColumnTypeFromQML(int columnIndex, int newColumnType)
 	emit headerDataChanged(Qt::Orientation::Horizontal, columnIndex, columnIndex);
 	return getColumnType(columnIndex);
 
+}
+
+void DataSetTableModel::setColumnsUsedInEasyFilter(std::set<std::string> usedColumns)
+{
+	columnNameUsedInEasyFilter.clear();
+
+	for(auto & col : usedColumns)
+		columnNameUsedInEasyFilter[col] = true;
+
+	notifyColumnFilterStatusChanged();
 }

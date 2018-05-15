@@ -56,7 +56,7 @@ public slots:
 
 signals:
 	void refreshConnectedModels(Column * column);
-	void resizeValueColumn();
+	void resizeLabelColumn();
 	void labelFilterChanged();
 	void notifyColumnHasFilterChanged(); //should be on column but column is not a Qt object.
 	void filteredOutChanged();

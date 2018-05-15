@@ -77,7 +77,7 @@ struct RBridgeCallBacks {
 	ReadDataSetDescriptionCB	readDataSetDescriptionCB;
 	RequestStateFileSourceCB	requestStateFileSourceCB;
 	RequestTempFileNameCB		requestTempFileNameCB;
-	RequestTempRootNameCB requestTempRootNameCB;
+	RequestTempRootNameCB		requestTempRootNameCB;
 	RunCallbackCB				runCallbackCB;
 	ReadADataSetCB				readFullDataSetCB;
 	ReadADataSetCB				readFilterDataSetCB;

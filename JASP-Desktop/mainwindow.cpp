@@ -174,7 +174,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(_levelsTableModel,		&LevelsTableModel::refreshConnectedModels,			_tableModel,			&DataSetTableModel::refreshColumn);
 	connect(_levelsTableModel,		&LevelsTableModel::notifyColumnHasFilterChanged,	_tableModel,			&DataSetTableModel::notifyColumnFilterStatusChanged);
-	connect(_levelsTableModel,		&LevelsTableModel::resizeValueColumn,				this,					&MainWindow::resizeVariablesWindowValueColumn);
+	connect(_levelsTableModel,		&LevelsTableModel::resizeLabelColumn,				this,					&MainWindow::resizeVariablesWindowLabelColumn);
 	connect(_levelsTableModel,		&LevelsTableModel::labelFilterChanged,				_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged);
 	connect(_labelFilterGenerator,	&labelFilterGenerator::setGeneratedFilter,			this,					&MainWindow::setGeneratedFilterAndSend);
 	connect(_tableModel,			&DataSetTableModel::allFiltersReset,				_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged);
@@ -562,7 +562,6 @@ void MainWindow::packageDataChanged(DataSetPackage *package,
 	_tableModel->setDataSet(_package->dataSet);
 	_levelsTableModel->setDataSet(_package->dataSet);
 	_columnsModel->setDataSet(_package->dataSet);
-	triggerQmlColumnReload();
 
 	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns);
 }
@@ -1088,35 +1087,16 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	}
 }
 
-void MainWindow::resizeVariablesWindowValueColumn()
+void MainWindow::resizeVariablesWindowLabelColumn()
 {
 	QObject * levelsTableView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("levelsTableView");
-	QMetaObject::invokeMethod(levelsTableView, "resizeValueColumn");
+	QMetaObject::invokeMethod(levelsTableView, "resizeLabelColumn");
 }
 
 void MainWindow::closeVariablesPage()
 {
 	QObject * levelsTableView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("levelsTableView");
 	QMetaObject::invokeMethod(levelsTableView, "closeYourself");
-}
-
-
-void MainWindow::triggerQmlColumnReload()
-{
-	QObject * DataView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataSetTableView");
-
-	if(DataView != NULL)
-		QMetaObject::invokeMethod(DataView, "reloadColumns");
-
-}
-
-void MainWindow::triggerQmlColumnClear()
-{
-	QObject * DataView = ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataSetTableView");
-
-	if(DataView != NULL)
-		QMetaObject::invokeMethod(DataView, "clearColumns");
-
 }
 
 void MainWindow::dataSetIOCompleted(FileEvent *event)
@@ -1202,7 +1182,6 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			updateMenuEnabledDisabledStatus();
 			ui->webViewResults->reload();
 			setWindowTitle("JASP");
-			triggerQmlColumnClear();
 			setFilterConstructorJSON("");
 
 			if (_applicationExiting)
@@ -1234,7 +1213,6 @@ void MainWindow::populateUIfromDataSet()
 		ui->panel_1_Data->hide(); //for summary stats etc we dont want to see an empty data panel
 	else
 	{
-		triggerQmlColumnReload();
 		setGeneratedFilter(QString::fromStdString(labelFilterGenerator(_package).generateFilter()));
 		setFilterConstructorJSON(QString::fromStdString(_package->filterConstructorJSON));
 		applyAndSendFilter(QString::fromStdString(_package->dataFilter));
@@ -1393,6 +1371,13 @@ void MainWindow::helpFirstLoaded(bool ok)
 		requestHelpPage("index");
 }
 
+void MainWindow::showHelpFromQML(QString pageName)
+{
+	if(!ui->panel_4_Help->isVisible())
+		helpToggled(true);
+
+	requestHelpPage(pageName);
+}
 
 void MainWindow::requestHelpPage(const QString &pageName)
 {
@@ -1994,9 +1979,13 @@ void MainWindow::setGeneratedFilterAndSend(QString generatedFilter)
 		QMetaObject::invokeMethod(qmlFilterWindow, "sendFilter");
 }
 
+
+
 void MainWindow::setFilterConstructorJSON(QString jsonString)
 {
 	_package->filterConstructorJSON = jsonString.toStdString();
+
+	_tableModel->setColumnsUsedInEasyFilter(JsonUtilities::convertEasyFilterJSONToSet(_package->filterConstructorJSON));
 
 	ui->quickWidget_Data->rootContext()->setContextProperty("filterConstructorJSONstring", jsonString);
 }
