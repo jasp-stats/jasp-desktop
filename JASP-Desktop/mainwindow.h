@@ -190,6 +190,9 @@ private slots:
 	void openKeysSelected();
 	void syncKeysSelected();
 	void refreshKeysSelected();
+	void zoomInKeysSelected();
+	void zoomOutKeysSelected();
+	void zoomEqualKeysSelected();
 
 	void illegalOptionStateChanged();
 	void fatalError();
