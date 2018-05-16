@@ -232,112 +232,76 @@ FocusScope {
 
 					rowDelegate: null
 
-                    itemDelegate: Loader
-                    {
-                        property string textItem: styleData.value
-                        property color colorItem: systemPalette.text
-                        property int rowItem: styleData.row
-                        property int colItem: styleData.column
-                        property var valueItem: styleData.value
-						property bool alternate: rowItem % 2 == 1
-						property bool selected: levelsTableView.selection.timesUpdated, levelsTableView.selection.contains(rowItem); //Comma is a hack to get this to update: http://blog.mardy.it/2016/11/qml-trick-force-re-evaluation-of.html
-						property color colorBackground: selected ? systemPalette.dark : (alternate ? systemPalette.midlight : systemPalette.light)
-
-
-                        sourceComponent: styleData.column == 0 ? filterCheckBoxVariablesWindowTemplate : (styleData.column == 2 ? textInputVariablesWindowTemplate : textDisplayVariablesWindowTemplate)
+					itemDelegate: Rectangle
+					{
+						color: levelsTableView.selection.timesUpdated, levelsTableView.selection.contains(styleData.row) ? systemPalette.dark : (styleData.row % 2 == 1 ? systemPalette.midlight : systemPalette.light)
 
 						height: 30
 
-                        //anchors.fill: parent
-                    }
-
-                    Component {
-                        id: textInputVariablesWindowTemplate
-						Rectangle
+						PlusMinusCheckButton
 						{
-							anchors.fill: parent
-							color: colorBackground
+							visible: styleData.column == 0
 
-							TextInput {
-								color: colorItem
+							anchors.top: parent.top
+							anchors.bottom: parent.bottom
+							anchors.horizontalCenter: parent.horizontalCenter
 
-								text: textItem
-								clip: true
-								selectByMouse: true
-								autoScroll: true
+							width: height
+							color: systemPalette.text
+							checked: styleData.value
 
-								anchors.fill: parent
-								function acceptChanges() { levelsTableModel.setData(levelsTableModel.index(rowItem, colItem), text) }
-								onEditingFinished: acceptChanges()
-
-								onActiveFocusChanged:
-									if(activeFocus)
-									{
-										levelsTableView.selection.clear()
-										levelsTableView.selection.select(rowItem, rowItem)
-									}
-									else if(focus)
-										focus = false
-
-
-
-
-								MouseArea
-								{
-									anchors.fill: parent
-									acceptedButtons: Qt.NoButton
-									cursorShape: Qt.IBeamCursor
-								}
-							}
-						}
-                    }
-
-                    Component {
-                        id: textDisplayVariablesWindowTemplate
-						Rectangle
-						{
-							anchors.fill: parent
-							color: colorBackground
-
-
-							Text {
-								color: colorItem
-								text: textItem
-								elide: Text.ElideMiddle
-								anchors.fill: parent
-							}
-						}
-                    }
-
-                    Component {
-                        id: filterCheckBoxVariablesWindowTemplate
-						Rectangle
-						{
-							id: plusMinusRect
-							anchors.fill: parent
-							color: colorBackground
-
-							PlusMinusCheckButton
+							id: filterCheckButton
+							onClicked:
 							{
-								anchors.top: plusMinusRect.top
-								anchors.bottom: plusMinusRect.bottom
-								anchors.horizontalCenter: plusMinusRect.horizontalCenter
-
-								width: height
-								color: colorItem
-								checked: valueItem
-
-								id: filterCheckButton
-								onClicked:
-								{
-									if(checked != valueItem)
-										 levelsTableModel.setAllowFilterOnLabel(rowItem, checked);
-									checked = levelsTableModel.allowFilter(rowItem);
-								}
+								if(checked !== styleData.value)
+									 levelsTableModel.setAllowFilterOnLabel(styleData.row, checked);
+								checked = levelsTableModel.allowFilter(styleData.row);
 							}
 						}
-                    }
 
+						Text {
+							visible: styleData.column == 1
+
+							color: systemPalette.text
+							text: styleData.value
+							elide: Text.ElideMiddle
+							anchors.fill: parent
+						}
+
+						TextInput {
+							visible: 2 == styleData.column
+
+							color: systemPalette.text
+
+							text: styleData.value
+							clip: true
+							selectByMouse: true
+							autoScroll: true
+
+							anchors.fill: parent
+							function acceptChanges() { levelsTableModel.setData(levelsTableModel.index(styleData.row, styleData.column), text) }
+							onEditingFinished: acceptChanges()
+
+							onActiveFocusChanged:
+								if(activeFocus)
+								{
+									levelsTableView.selection.clear()
+									levelsTableView.selection.select(styleData.row, styleData.row)
+								}
+								else if(focus)
+									focus = false
+
+
+
+
+							MouseArea
+							{
+								anchors.fill: parent
+								acceptedButtons: Qt.NoButton
+								cursorShape: Qt.IBeamCursor
+							}
+						}
+					}
                 }
 
                 ColumnLayout
