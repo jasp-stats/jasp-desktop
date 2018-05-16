@@ -47,7 +47,7 @@ public:
 	Q_INVOKABLE bool allowFilter(int row);
 	Q_INVOKABLE void resetFilterAllows();
 
-	void setDataSet(DataSet * thisDataSet) { _dataSet = thisDataSet; refresh(); }
+	void setDataSet(DataSet * thisDataSet);
 	int filteredOut();
 
 public slots:

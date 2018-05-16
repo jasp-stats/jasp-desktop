@@ -240,7 +240,7 @@ FocusScope {
 
 						PlusMinusCheckButton
 						{
-							visible: styleData.column == 0
+							visible: styleData.column === 0
 
 							anchors.top: parent.top
 							anchors.bottom: parent.bottom
@@ -252,15 +252,12 @@ FocusScope {
 
 							id: filterCheckButton
 							onClicked:
-							{
 								if(checked !== styleData.value)
 									 levelsTableModel.setAllowFilterOnLabel(styleData.row, checked);
-								checked = levelsTableModel.allowFilter(styleData.row);
-							}
 						}
 
 						Text {
-							visible: styleData.column == 1
+							visible: styleData.column === 1
 
 							color: systemPalette.text
 							text: styleData.value
@@ -269,7 +266,7 @@ FocusScope {
 						}
 
 						TextInput {
-							visible: 2 == styleData.column
+							visible: styleData.column === 2
 
 							color: systemPalette.text
 
