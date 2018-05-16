@@ -756,7 +756,7 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	else if (name == "ContingencyTablesBayesian")
 		form = new ContingencyTablesBayesianForm(contentArea);
 	else if (name == "SEMSimple")
-		form = new SEMSimpleForm(this);
+		form = new SEMSimpleForm(contentArea);
 	else if (name == "AncovaBayesian")
 		form = new AncovaBayesianForm(contentArea);
 	else if (name == "AnovaRepeatedMeasuresBayesian")
@@ -795,6 +795,11 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
+	if(form != NULL)
+	{
+		connect(form,			&AnalysisForm::sendRScript, _engineSync,	&EngineSync::sendRCode);
+		connect(_engineSync,	&EngineSync::rCodeReturned, form,			&AnalysisForm::runScriptRequestDone);
+	}
 
 	return form;
 }

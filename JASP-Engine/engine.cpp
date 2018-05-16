@@ -261,8 +261,9 @@ bool Engine::receiveMessages(int timeout)
 		
 		if (jsonRequest.get("rCode", "").asString() != "")
 		{
-			_rCodeEntered = true;
-			_rCode = jsonRequest.get("rCode", "").asString();
+			_rCodeEntered	= true;
+			_rCode			= jsonRequest.get("rCode", "").asString();
+			_rCodeRequestId	= jsonRequest.get("requestId", -1).asInt();
 			
 			return false; //This is not an analysis-run-request or anything like that, so quit like a not-message.
 		}
@@ -518,6 +519,7 @@ void Engine::sendRCodeResult(std::string rCodeResult)
 	Json::Value rCodeResponse = Json::Value(Json::objectValue);
 
 	rCodeResponse["rCodeResult"] = rCodeResult;
+	rCodeResponse["requestId"]	= _rCodeRequestId;
 
 	std::string msg = rCodeResponse.toStyledString();
 	_channel->send(msg);
@@ -528,6 +530,7 @@ void Engine::sendRCodeError()
 	Json::Value rCodeResponse = Json::Value(Json::objectValue);
 
 	rCodeResponse["rCodeError"] = "R Code failed for unknown reason. Check that R function returns a string.";
+	rCodeResponse["requestId"]	= _rCodeRequestId;
 
 	std::string msg = rCodeResponse.toStyledString();
 	_channel->send(msg);

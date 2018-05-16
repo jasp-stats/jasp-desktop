@@ -98,6 +98,7 @@ private:
 
 	bool _rCodeEntered = false;
 	std::string _rCode = "";
+	int _rCodeRequestId = -1;
 };
 
 #endif // ENGINE_H

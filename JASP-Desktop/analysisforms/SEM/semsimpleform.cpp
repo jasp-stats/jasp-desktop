@@ -20,10 +20,9 @@
 #include "ui_semsimpleform.h"
 #include "widgets/itemmodelselectvariable.h"
 
-SEMSimpleForm::SEMSimpleForm(MainWindow *parent) :
+SEMSimpleForm::SEMSimpleForm(QWidget *parent) :
 	AnalysisForm("SEMSimpleForm", parent),
-	ui(new Ui::SEMSimpleForm),
-	_mainWindow(parent)
+	ui(new Ui::SEMSimpleForm)
 {
 	ui->setupUi(this);
 	
@@ -37,8 +36,6 @@ SEMSimpleForm::SEMSimpleForm(MainWindow *parent) :
 	ui->containerAdvanced->hide();
 	
 	connect(ui->model, &BoundTextEdit::applyRequest, this, &SEMSimpleForm::checkSyntax);
-	connect(_mainWindow->_engineSync, &EngineSync::rCodeReturned, ui->model, &BoundTextEdit::applyModel);
-	
 }
 
 SEMSimpleForm::~SEMSimpleForm()
@@ -82,5 +79,10 @@ void SEMSimpleForm::checkSyntax()
 		.append(colNames)
 		.append(")");
 	
-	_mainWindow->_engineSync->sendRCode(checkCode);
+	runRScript(checkCode);
+}
+
+void SEMSimpleForm::rScriptDoneHandler(QVariant key, const QString & result)
+{
+	ui->model->applyModel(result);
 }

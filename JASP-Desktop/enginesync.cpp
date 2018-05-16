@@ -144,7 +144,6 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 
 	if (analysis->status() == Analysis::Empty)
 	{
-		std::cout <<"analysis->status() == Analysis::Empty\n" << std::flush;
 		perform = "init";
 		analysis->setStatus(Analysis::Initing);
 	}
@@ -158,13 +157,11 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
     }
 	else if (analysis->status() == Analysis::Aborting)
 	{
-		std::cout <<"analysis->status() == Analysis::Aborting\n" << std::flush;
 		perform = "abort";
 		analysis->setStatus(Analysis::Aborted);
 	}
 	else
 	{
-		std::cout <<"analysis->status() something else\n" << std::flush;
 		perform = "run";
 		analysis->setStatus(Analysis::Running);
 	}
@@ -257,9 +254,14 @@ void EngineSync::process()
 				//Do some RCode magic				
 				_engineStates[i] = engineState::idle;
 				
-				if (json.get("rCodeResult", Json::Value(Json::intValue)).isString()) {
-					std::cout << "R Code returned: " << json.get("rCodeResult", "") << std::flush;
-					emit rCodeReturned(QString::fromStdString(json.get("rCodeResult", "").asString()));
+				if (json.get("rCodeResult", Json::Value(Json::intValue)).isString())
+				{
+					std::string rCodeResult = json.get("rCodeResult", "").asString();
+					int requestId			= json.get("requestId", -1).asInt();
+					
+					std::cout << "R Code for request (" << requestId << ") returned: " << rCodeResult << std::flush;
+
+					emit rCodeReturned(QString::fromStdString(rCodeResult), requestId);
 				} 
 				
 				if (json.get("rCodeError", Json::Value(Json::intValue)).isString()) {
@@ -367,9 +369,9 @@ void EngineSync::sendFilter(QString generatedFilter, QString filter)
 	waitingScripts.push(new RFilterStore(generatedFilter, filter));
 }
 
-void EngineSync::sendRCode(QString rCode)
+void EngineSync::sendRCode(QString rCode, int requestId)
 {
-	waitingScripts.push(new RScriptStore(rCode));
+	waitingScripts.push(new RScriptStore(requestId, rCode));
 }
 
 void EngineSync::processScriptQueue()
@@ -412,7 +414,8 @@ void EngineSync::runScriptOnProcess(RScriptStore * scriptStore, int processNo)
 
 	Json::Value json = Json::Value(Json::objectValue);
 
-	json["rCode"] = scriptStore->script.toStdString();
+	json["rCode"]		= scriptStore->script.toStdString();
+	json["requestId"]	= scriptStore->requestId;
 	
 	string str = json.toStyledString();
 	_channels[processNo]->send(str);

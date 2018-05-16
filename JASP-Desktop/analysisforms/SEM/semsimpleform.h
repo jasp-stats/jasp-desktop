@@ -31,13 +31,15 @@ class SEMSimpleForm : public AnalysisForm
 	Q_OBJECT
 
 public:
-	explicit SEMSimpleForm(MainWindow *parent = 0);
+	explicit SEMSimpleForm(QWidget *parent = 0);
 	~SEMSimpleForm();
 
+protected:
+	void rScriptDoneHandler(QVariant key, const QString & result) override;
+	
 private:
 	Ui::SEMSimpleForm *ui;
-	MainWindow* _mainWindow;
-	
+		
 private slots:
 	void checkSyntax();
 };

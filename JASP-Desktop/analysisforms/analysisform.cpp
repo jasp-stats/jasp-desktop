@@ -33,6 +33,8 @@
 
 using namespace std;
 
+int AnalysisForm::_scriptRequestCounter = 0;
+
 AnalysisForm::AnalysisForm(QString name, QWidget *parent) :
 	QWidget(parent),
 	_availableVariablesModel(parent)
@@ -178,3 +180,32 @@ void AnalysisForm::illegalValueHandler(Bound *source)
 {
 	updateIllegalStatus();
 }
+
+void AnalysisForm::runRScript(QString script, QVariant key)
+{
+	int newRequestId = _scriptRequestCounter++;
+	_scriptRequestIdToKey[newRequestId] = key;
+	
+	emit sendRScript(script, newRequestId);
+}
+
+void AnalysisForm::runScriptRequestDone(const QString & result, int requestId)
+{
+	if(!runRScriptRequestedForId(requestId)) return;	
+
+	QVariant key = _scriptRequestIdToKey[requestId];
+	_scriptRequestIdToKey.erase(requestId);
+	
+	rScriptDoneHandler(key, result);
+}
+
+void AnalysisForm::rScriptDoneHandler(QVariant key, const QString & result) 
+{ 
+	throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler\n");	
+}
+
+bool AnalysisForm::runRScriptRequestedForId(int requestId) 
+{ 
+	return _scriptRequestIdToKey.count(requestId) > 0; 
+}
+

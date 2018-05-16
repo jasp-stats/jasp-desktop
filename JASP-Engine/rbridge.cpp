@@ -589,7 +589,7 @@ std::string	rbridge_encodeColumnNamesToBase64(std::string & filterCode)
 	rbridge_findColumnsUsedInDataSet();
 	filterColumnsUsed.clear();
 
-	static std::regex nonNameChar("[^\.[:alnum:]]");
+	static std::regex nonNameChar("[^\\.[:alnum:]]");
 
 	//for now we simply replace any found columnname by its Base64 variant if found
 	size_t foundPos = -1;

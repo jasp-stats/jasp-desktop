@@ -48,13 +48,21 @@ public:
 
 	bool hasIllegalValue() const;
 	const QString &illegalValueMessage() const;
+	
+	void runRScript(QString script, QVariant key = QVariant());
+	
+public slots:
+	void runScriptRequestDone(const QString & result, int requestId);
 
 signals:
 	void illegalChanged();
-
+	void sendRScript(QString script, int key);
+	
 protected:
 
 	virtual QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const OVERRIDE;
+	virtual void rScriptDoneHandler(QVariant key, const QString & result);
+	bool runRScriptRequestedForId(int requestId);
 
 	DataSet *_dataSet;
 	Options *_options;
@@ -70,7 +78,9 @@ protected:
 	bool _hasIllegalValue;
 	QString _illegalMessage;
 	
-	
+	static int _scriptRequestCounter;
+	std::map<int, QVariant> _scriptRequestIdToKey;
+		
 };
 
 #endif // ANALYSISFORM_H
