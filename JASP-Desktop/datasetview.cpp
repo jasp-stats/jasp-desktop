@@ -90,6 +90,20 @@ void DataSetView::calculateCellSizes()
 		col.second.clear();
 	}
 
+	std::list<int> cols, rows;
+
+	for(auto col : _columnHeaderItems)
+		cols.push_back(col.first);
+
+	for(auto col : cols)
+		storeColumnHeader(col);
+
+	for(auto row : _rowNumberItems)
+		rows.push_back(row.first);
+
+	for(auto row : rows)
+		storeRowNumber(row);
+
 	if(_model == NULL) return;
 
 	_cellSizes.resize(_model->columnCount());
