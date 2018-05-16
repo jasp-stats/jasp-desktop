@@ -77,6 +77,8 @@ private:
 	Analysis				*_currentAnalysis;
 	labelFilterGenerator	*_labelFilterGenerator;
 	ColumnsModel			*_columnsModel = NULL;
+	
+	std::map<Analysis*, AnalysisForm*> _analysisFormsMap;
 
 	TableModelVariablesAvailable _availableVariablesModel;
 
