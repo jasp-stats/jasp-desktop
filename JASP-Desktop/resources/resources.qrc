@@ -77,5 +77,7 @@
         <file>icons/NotR.png</file>
         <file>icons/R.png</file>
         <file>icons/QuestionMark.png</file>
+        <file>icons/trashcan_open.png</file>
+        <file>icons/trashcan.png</file>
     </qresource>
 </RCC>
