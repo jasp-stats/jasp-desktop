@@ -122,8 +122,8 @@ protected:
 	QQuickItem * createRowNumber(int row);
 	void storeRowNumber(int row);
 
-	QQuickItem * createColumnHeader(int row);
-	void storeColumnHeader(int row);
+	QQuickItem * createColumnHeader(int col);
+	void storeColumnHeader(int col);
 
 	QQuickItem * createleftTopCorner();
 
