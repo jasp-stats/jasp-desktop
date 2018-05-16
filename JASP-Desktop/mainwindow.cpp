@@ -106,6 +106,7 @@
 #include "sharedmemory.h"
 #include "module.h"
 
+
 #include "options/optionvariablesgroups.h"
 #include "datasetview.h"
 
@@ -825,6 +826,11 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
+	if(form != NULL)
+	{
+		connect(form,			&AnalysisForm::sendRScript, _engineSync,	&EngineSync::sendRCode);
+		connect(_engineSync,	&EngineSync::rCodeReturned, form,			&AnalysisForm::runScriptRequestDone);
+	}
 
 	return form;
 }

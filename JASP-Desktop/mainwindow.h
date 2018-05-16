@@ -55,6 +55,7 @@ public:
 	void open(QString filepath);
 	virtual ~MainWindow();
 
+	EngineSync* _engineSync;
 
 	Q_INVOKABLE void setFilterConstructorJSON(QString jsonString);
 	Q_INVOKABLE void showHelpFromQML(QString pageName);
@@ -87,7 +88,6 @@ private:
 	QString _lastRequestedHelpPage;
 
 	Analyses *_analyses;
-	EngineSync* _engineSync;
 
 
 	void refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns

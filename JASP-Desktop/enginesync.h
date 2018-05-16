@@ -43,23 +43,19 @@ enum class engineState { idle, analysis, filter, rcode };
 
 struct RScriptStore
 {
-	RScriptStore(QString newscript, engineState newtypeScript = engineState::rcode)
-	{
-		script = newscript;
-		typeScript = newtypeScript;
-	}
+	RScriptStore(int requestId, QString script, engineState typeScript = engineState::rcode) 
+		: typeScript(typeScript), script(script), requestId(requestId) {}
 	
 	engineState typeScript; //should be filter/rcode/etc
 	QString		script;
+	int			requestId;
 	
 };
 
 struct RFilterStore : public RScriptStore
 {
-	RFilterStore(QString newgeneratedfilter, QString newfilter) : RScriptStore(newfilter, engineState::filter)
-	{
-		generatedfilter = newgeneratedfilter;
-	}
+	RFilterStore(QString generatedfilter, QString filter) : RScriptStore(-1, filter, engineState::filter), generatedfilter(generatedfilter)
+	{ }
 	
 	QString generatedfilter; 
 };
@@ -88,14 +84,15 @@ public:
 	Q_INVOKABLE void sendFilter(QString generatedFilter, QString filter);
 	Q_INVOKABLE QString getFilter() { return dataFilter; }
 	
-	Q_INVOKABLE void sendRCode(QString rCode);
+public slots:
+	void sendRCode(QString rCode, int requestId);
 	
 	
 signals:
 	void engineTerminated();
 	void filterUpdated();
 	void filterErrorTextChanged(QString error);
-	void rCodeReturned(QString result);
+	void rCodeReturned(QString result, int requestId);
 
 private:
 

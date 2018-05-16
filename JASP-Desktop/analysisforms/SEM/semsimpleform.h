@@ -20,6 +20,7 @@
 #define SEMSIMPLEFORM_H
 
 #include "../analysisform.h"
+#include "mainwindow.h"
 
 namespace Ui {
 class SEMSimpleForm;
@@ -33,8 +34,14 @@ public:
 	explicit SEMSimpleForm(QWidget *parent = 0);
 	~SEMSimpleForm();
 
+protected:
+	void rScriptDoneHandler(QVariant key, const QString & result) override;
+	
 private:
 	Ui::SEMSimpleForm *ui;
+		
+private slots:
+	void checkSyntax();
 };
 
 #endif // SEMSIMPLEFORM_H

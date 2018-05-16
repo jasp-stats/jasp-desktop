@@ -41,13 +41,13 @@ class Engine
 {
 public:
 	explicit Engine();
-	
+
 public:
 
 	void run();
 	void setSlaveNo(int no);
 	void applyFilter();
-	
+
 private:
 
 	bool receiveMessages(int timeout = 0);
@@ -57,7 +57,7 @@ private:
 	void sendResults();
 	void sendFilterResult(std::vector<bool> filterResult, std::string warning = "");
 	void sendFilterError(std::string errorMessage);
-	void evalRCode(const std::string &rCode);
+	void evalRCode();
 	void sendRCodeResult(std::string rCodeResult);
 	void sendRCodeError();
 	std::string callback(const std::string &results, int progress);
@@ -93,8 +93,12 @@ private:
 
 	int _slaveNo = 0;
 
-	bool filterChanged = false;
-	std::string filter = "", generatedFilter = "";
+	bool _filterChanged = false;
+	std::string _filter = "", _generatedFilter = "";
+
+	bool _rCodeEntered = false;
+	std::string _rCode = "";
+	int _rCodeRequestId = -1;
 };
 
 #endif // ENGINE_H

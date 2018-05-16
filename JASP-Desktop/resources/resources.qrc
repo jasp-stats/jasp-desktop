@@ -80,4 +80,8 @@
         <file>icons/trashcan_open.png</file>
         <file>icons/trashcan.png</file>
     </qresource>
+    <qresource prefix="/">
+        <file>fonts/FiraCode-Retina.ttf</file>
+    </qresource>
+    <qresource prefix="/fonts"/>
 </RCC>

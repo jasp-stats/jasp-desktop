@@ -36,8 +36,10 @@ public:
 	void populateFromOption(Option *option);
 
 signals:
-
+	void applyRequest();
+	
 public slots:
+	void applyModel(QString result);
 
 private slots:
 	void cursorPositionChangedHandler();
@@ -47,7 +49,6 @@ private slots:
 protected:
 	void keyPressEvent(QKeyEvent *event) OVERRIDE;
 	void resizeEvent(QResizeEvent *e) OVERRIDE;
-	void paintEvent(QPaintEvent *event) OVERRIDE;
 	void insertFromMimeData(const QMimeData *source) OVERRIDE;
 
 private:

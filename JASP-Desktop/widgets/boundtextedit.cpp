@@ -21,6 +21,7 @@
 #include <QKeyEvent>
 #include <QPaintEvent>
 #include <QPainter>
+#include <QFontDatabase>
 
 #include "qutils.h"
 
@@ -30,21 +31,29 @@ BoundTextEdit::BoundTextEdit(QWidget *parent) :
 	_model = new TextModelLavaan(this);
 	setDocument(_model);
 
-	connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(cursorPositionChangedHandler()));
-	connect(_model, SIGNAL(errorStateChanged()), this, SLOT(errorStateChangedHandler()));
-	connect(_model, SIGNAL(contentsChanged()), this, SLOT(contentsChangedHandler()));
+	connect(this,	&BoundTextEdit::cursorPositionChanged,	this, &BoundTextEdit::cursorPositionChangedHandler);
+	connect(_model, &TextModelLavaan::errorStateChanged,	this, &BoundTextEdit::errorStateChangedHandler);
+	connect(_model, &TextModelLavaan::contentsChanged,		this, &BoundTextEdit::contentsChangedHandler);
 
 	this->setLineWrapMode(QTextEdit::NoWrap);
-
-	QFont font("Monospace");
+	this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	this->setAcceptRichText(false);
+	
+	
+	
+	int id = QFontDatabase::addApplicationFont(":/fonts/FiraCode-Retina.ttf");
+	QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+	
+	QFont font(family);
 	font.setStyleHint(QFont::Monospace);
+	font.setPointSize(10);
 	this->setFont(font);
 
 	QFontMetrics metrics(font);
-	this->setTabStopWidth(metrics.width("    ") + 2);
+	this->setTabStopWidth(metrics.width("  ") + 2);
 
-	_errorStylesheet = "padding : 4px 2px ; text-align : right ; background-color : pink ;";
-	_okStylesheet    = "padding : 4px 2px ; text-align : right ; ";
+	_errorStylesheet = "padding: 4px; padding-right: 1.5em; background-color: rgba(255,0,0,128); margin-left: 100%;";
+	_okStylesheet    = "padding: 4px; padding-right: 1.5em; margin-left: 100%;";
 
 #ifdef __APPLE__
 	_okMessage = "\u2318 + Enter to apply";
@@ -53,9 +62,13 @@ BoundTextEdit::BoundTextEdit(QWidget *parent) :
 #endif
 
 	_status = new QLabel(this);
+	_status->setWordWrap(true);
+	_status->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+	_status->setAlignment(Qt::AlignBottom | Qt::AlignRight);
 	_status->setStyleSheet(_okStylesheet);
 	_status->setText(_okMessage);
-
+	_status->setAttribute(Qt::WA_TransparentForMouseEvents);
+	
 	_applied = true;
 }
 
@@ -74,6 +87,22 @@ void BoundTextEdit::populateFromOption(Option *option)
 	this->setPlainText(QString::fromStdString(text->value()));
 }
 
+void BoundTextEdit::applyModel(QString result)
+{
+	std::cout << "result of length " << result.length() << ": " << result.toStdString() << std::flush;
+	if (result.length() == 0) {
+		_status->setStyleSheet(_okStylesheet);
+		_status->setAlignment(Qt::AlignRight);
+		_status->setText("Model applied");
+		_model->apply();
+		_applied = true;
+	} else {
+		_status->setStyleSheet(_errorStylesheet);
+		_status->setAlignment(Qt::AlignLeft);
+		_status->setText(result);
+	}
+}
+
 void BoundTextEdit::cursorPositionChangedHandler()
 {
 	QTextCursor cursor = textCursor();
@@ -85,12 +114,14 @@ void BoundTextEdit::errorStateChangedHandler()
 	if (_model->inError())
 	{
 		_status->setStyleSheet(_errorStylesheet);
+		_status->setAlignment(Qt::AlignLeft);
 		_status->setText(_model->errorMessage());
 	}
 	else
 	{
 		_status->setStyleSheet(_okStylesheet);
-		_status->setText(_okMessage + " *");
+		_status->setAlignment(Qt::AlignRight);
+		_status->setText(_okMessage);
 	}
 }
 
@@ -99,7 +130,7 @@ void BoundTextEdit::contentsChangedHandler()
 	if (_applied)
 	{
 		_applied = false;
-		_status->setText(_okMessage + " *");
+		_status->setText(_okMessage);
 	}
 }
 
@@ -108,11 +139,9 @@ void BoundTextEdit::keyPressEvent(QKeyEvent *event)
 	if (_model != NULL)
 	{
 		int modifiers = Qt::ControlModifier | Qt::MetaModifier;
-		if ((event->modifiers() & modifiers) && event->key() == Qt::Key_Return)
+		if ((event->modifiers() & modifiers) && (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter))
 		{
-			_applied = true;
-			_status->setText(_okMessage);
-			_model->apply();
+			emit applyRequest();
 		}
 		else
 		{
@@ -131,43 +160,8 @@ void BoundTextEdit::resizeEvent(QResizeEvent *e)
 	_status->resize(this->width() - 2, _status->sizeHint().height());
 }
 
-void BoundTextEdit::paintEvent(QPaintEvent *event)
-{
-	QTextEdit::paintEvent(event);
-
-	if (_model->inError() && textCursor().blockNumber() != _model->errorBlock())
-	{
-		QTextBlock block = _model->findBlockByNumber(_model->errorBlock());
-
-		QTextCursor cursor(block);
-		cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor, _model->errorTokenPos());
-
-		QRect startPos = cursorRect(cursor);
-		QRect bounds;
-
-		if (_model->errorTokenLength() > 0)
-		{
-			cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, _model->errorTokenLength());
-			bounds = cursorRect(cursor).united(startPos);
-		}
-		else
-		{
-			bounds = cursorRect(cursor);
-			bounds.setWidth(30);
-			bounds.setLeft(bounds.left() + 4);
-		}
-
-		QPainter painter(this->viewport());
-		painter.setPen(QPen(QBrush(Qt::red), 2));
-		painter.drawLine(bounds.bottomLeft(), bounds.bottomRight());
-
-	}
-}
 
 void BoundTextEdit::insertFromMimeData(const QMimeData *source)
 {
 	QTextEdit::insertFromMimeData(source);
-
-	if (_model != NULL)
-		_model->checkEverything();
 }

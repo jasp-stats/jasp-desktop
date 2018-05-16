@@ -30,27 +30,27 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 	}
 
 	analysis <- eval(parse(text=name))
-	
+
 	env <- new.env()
 	env$callback <- callback
 	env$time <- Sys.time()
 	env$i <- 1
 
 	if (perform == "init") {
-	
+
 		the.callback <- function(...) list(status="ok")
-		
+
 	} else {
-	
+
 		the.callback <- function(...) {
-			
+
 			t <- Sys.time()
-			
+
 			cat(paste("Callback", env$i, ":", t - env$time, "\n"))
-			
+
 			env$time <- t
 			env$i <- env$i + 1
-			
+
 			return(env$callback(...))
 		}
 	}
@@ -68,14 +68,14 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 	if ('state' %in% names(formals(analysis))) {
 		oldState <- .getStateFromKey(stateKey, options)
 	}
-	
+
 	if (perform == "init" && ! requiresInit) {
 
 		emptyResults <- try(.createEmptyResults(resultsMeta), silent=TRUE)
 		if (inherits(emptyResults, "try-error")) {
 			msg <- .sanitizeForJson(emptyResults)
 			return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", msg, "\" } }", sep=""))
-		}	
+		}
 
 		results <- list()
 		results[["results"]] <- emptyResults
@@ -83,7 +83,7 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 		results[["status"]] <- "inited"
 
 		json <- try({ rjson::toJSON(results) })
-		
+
 		if (inherits(results, "try-error"))
 			return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
 
@@ -92,80 +92,80 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 	}
 
 	results <- tryCatch(expr={
-		
+
 				withCallingHandlers(expr={
-					
+
 					analysis(dataset=dataset, options=options, perform=perform, callback=the.callback, state=oldState)
-					
-				}, 
+
+				},
 				error=.addStackTrace)
-				
+
 	},
 	error=function(e) e)
 
 	if (inherits(results, "expectedError")) {
-		
+
 		errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", results$message, "\" } }", sep="")
-		
+
 		errorResponse
-		
+
 	} else if (inherits(results, "error")) {
-		
+
 		error <- .sanitizeForJson(results)
-		
+
 		stackTrace <- .sanitizeForJson(results$stackTrace)
 		stackTrace <- paste(stackTrace, collapse="<br><br>")
-		
+
 		errorMessage <- .generateErrorMessage(type='exception', error=error, stackTrace=stackTrace)
 		errorResponse <- paste("{ \"status\" : \"exception\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
-		
+
 		errorResponse
-		
+
 	} else if (is.null(results)) {
-	
+
 		"null"
-	
+
 	} else {
-	
+
 		keep <- newState <- NULL
-	
+
 		if ("state" %in% names(results)) {
 
 			newState <- results$state
 			results$state <- NULL
 
 		}
-		
+
 		if ("results" %in% names(results)) {
-		
+
 			results <- try(.parseResults(results, title, resultsMeta, oldState), silent=TRUE)
 			if (inherits(results, "try-error")) {
 				msg <- .sanitizeForJson(results)
 				return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", msg, "\" } }", sep=""))
-			}	
-			
+			}
+
 			if (! is.null(names(newState)))
 				newState[["figures"]] <- .imgToState(results$results)
-			
+
 			results <- .imgToResults(results)
 			results$results <- .addCitationToResults(results$results)
 
 			keep <- .saveState(newState)$relativePath
 			results$keep <- c(results$keep, keep)  # keep the state file
-			
+
 		} else {
-		
+
 			results <- .addCitationToResults(results)
 		}
-		
+
 		json <- try({ rjson::toJSON(results) })
-		
+
 		if (class(json) == "try-error") {
-		
+
 			return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
-			
+
 		} else {
-		
+
 			return(json)
 		}
 	}
@@ -173,15 +173,15 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 }
 
 initEnvironment <- function() {
-	
+
 	packages <- c("BayesFactor", "bootnet") # Add any package that needs pre-loading
-	
+
 	for (package in packages) {
 		if (base::isNamespaceLoaded(package) == FALSE) {
 			try(base::loadNamespace(package), silent=TRUE)
 		}
 	}
-	
+
 	if (base::exists(".requestTempRootNameNative")) {
 		paths <- .fromRCPP(".requestTempRootNameNative")
 		root = paths$root
@@ -196,6 +196,51 @@ initEnvironment <- function() {
 checkPackages <- function() {
 	rjson::toJSON(.checkPackages())
 }
+
+
+checkLavaanModel <- function(model, availableVars) {
+  # function returns informative printable string if there is an error, else ""
+  if (model == "") return("Enter a model")
+
+  # translate to base64 - function from semsimple.R
+  vvars <- .v(availableVars)
+  usedvars <- .getUsedVars(model, vvars);
+  vmodel <- .translateModel(model, usedvars);
+
+  unvvars <- availableVars
+  names(unvvars) <- vvars
+
+
+
+  # Check model syntax
+  parsed <- try(lavaan::lavParseModelString(vmodel, TRUE), silent = TRUE)
+  if (inherits(parsed, "try-error")) {
+    msg <- attr(parsed, "condition")$message
+    if (msg == "NA/NaN argument") {
+      return("Enter a model")
+    }
+    return(stringr::str_replace_all(msg, unvvars))
+  }
+
+  # Check variable names
+  if (!missing(availableVars)) {
+    latents <- unique(parsed[parsed$op == "=~",]$lhs)
+    modelVars <- setdiff(unique(c(parsed$lhs, parsed$rhs)), latents)
+
+    modelVarsInAvailableVars <- (modelVars %in% vvars)
+    if (!all(modelVarsInAvailableVars)) {
+      notRecognized <- modelVars[!modelVarsInAvailableVars]
+      return(paste("Variable(s) in model syntax not recognized:",
+                   paste(stringr::str_replace_all(notRecognized, unvvars),
+                         collapse = ", ")))
+    }
+  }
+
+  # if checks pass, return empty string
+  return("")
+}
+
+
 
 .sanitizeForJson <- function(obj) {
 	# Removes elements that are not translatable to json
@@ -214,19 +259,19 @@ checkPackages <- function() {
 }
 
 .createEmptyResults <- function(resultsMeta) {
-	# Dispatches functions which build a fully completed results & .meta list that mimics the output 
+	# Dispatches functions which build a fully completed results & .meta list that mimics the output
 	# of the init phase of an analysis (empty tables, empty plots)
 	#
 	# Args:
-	# - resultsMeta: full (named) list taken from the analysis json file, 
-	#                contains all output descriptions of tables/plots/containers 
+	# - resultsMeta: full (named) list taken from the analysis json file,
+	#                contains all output descriptions of tables/plots/containers
 	#
 	# Return:
 	# - results list with row lists for tables and png's for plots and a .meta entry
 	#
 	if (length(resultsMeta) == 0)
 		stop("No items to show, please add a results description or set init to true")
-	
+
 	showItems <- logical(length(resultsMeta))
 	for (i in 1:length(resultsMeta)) {
 		item <- resultsMeta[[i]]
@@ -235,19 +280,19 @@ checkPackages <- function() {
 	}
 	if (sum(showItems) == 0)
 		stop("None of the result items has show set to 'true', cannot skip init phase")
-		
+
 	results <- .resultsFromResultsMeta(resultsMeta[showItems])
 	results[[".meta"]] <- .getAnalysisMeta(results, resultsMeta)
-	
+
 	return(results)
 }
 
 .resultsFromResultsMeta <- function(resultsMeta) {
-	# Builds a fully completed results list which mimics the output of the init phase 
+	# Builds a fully completed results list which mimics the output of the init phase
 	# of an analysis (empty tables, empty plots)
 	#
 	# Args:
-	# - resultsMeta: condensed (named) list of results elements that had 
+	# - resultsMeta: condensed (named) list of results elements that had
 	#                "show": true in the analysis json file
 	#
 	# Return:
@@ -290,7 +335,7 @@ checkPackages <- function() {
 	}
 	if (length(cols) == 0)
 		return(NULL)
-	
+
 	table <- matrix(".", nrow=1, ncol=length(cols))
 	colnames(table) <- cols
 	return(table)
@@ -304,8 +349,8 @@ checkPackages <- function() {
 	# Args:
 	# - results: list with (non-parsed) output elements from an analysis
 	# - title: the title of the analysis, taken from the analysis json file
-	# - resultsMeta: full (named) list taken from the analysis json file, 
-	#                contains all output descriptions of tables/plots/containers 
+	# - resultsMeta: full (named) list taken from the analysis json file,
+	#                contains all output descriptions of tables/plots/containers
 	# - oldState: state file that was retrieved before the current analysis ran
 	#
 	# Return:
@@ -314,10 +359,10 @@ checkPackages <- function() {
 	#
 	if (is.null(resultsMeta)) # old analysis type
 		return(results)
-	
+
 	if (length(resultsMeta) == 0)
 		stop("Cannot locate any items in the results description")
-	
+
 	if (! is.null(title))
 		results[["results"]][["title"]] <- title
 
@@ -327,21 +372,21 @@ checkPackages <- function() {
 	resultsMeta <- .simplifyResultsMeta(resultsMeta) # this basically flattens the nested table/images in containers
 
 	results$results <- .convertResults(results$results, resultsMeta, oldState) # make the results Qt ready
-	
+
 	if (is.null(results$keep))
 		results$keep <- .getKeepImages(results$results)
-	
+
 	return(results)
 }
 
 .getAnalysisMeta <- function(results, resultsMeta) {
-	# Builds the .meta element of the analysis and dispatches a function to discover 
+	# Builds the .meta element of the analysis and dispatches a function to discover
 	# nested structures. .meta describes all elements in results such as their name, title and type
 	#
 	# Args:
 	# - results: list with (parsed or non-parsed) output elements from an analysis
-	# - resultsMeta: full (named) list taken from the analysis json file, 
-	#                contains all output descriptions of tables/plots/containers 
+	# - resultsMeta: full (named) list taken from the analysis json file,
+	#                contains all output descriptions of tables/plots/containers
 	#
 	# Return:
 	# - the description of the results ready to be returned by run as is
@@ -383,11 +428,11 @@ checkPackages <- function() {
 	#
 	meta <- list()
 	parsedNames <- NULL
-	for (i in 1:length(result)) {	
+	for (i in 1:length(result)) {
 		name <- ""
 		if (! is.null(names(result)))
 			name <- names(result)[i]
-		
+
 		type <- .getResultType(result[i])
 		if (is.null(type)) # probably a title
 			next
@@ -398,7 +443,7 @@ checkPackages <- function() {
 				meta[[length(meta)+1]] <- list(name=name, type=type, meta=collectionType)
 				next
 			}
-		} 
+		}
 		else if (type == "image" || type == "table") {
 			if (name %in% parsedNames)
 				next
@@ -406,27 +451,27 @@ checkPackages <- function() {
 			parsedNames <- c(parsedNames, name)
 			next
 		}
-		
+
 		nextLevel <- result[[i]]
 		if (type == "collection")
 			nextLevel <- result[[i]][["collection"]]
-		
+
 		if (parent == "object") # we want list(list()) instead of just list() as each branch may be a different type
 			meta[[length(meta)+1]] <- list(name=name, type=type, meta=.analysisMetaFromResults(nextLevel, inCollection, parent=type, objectName=objectName, depth=depth+1))
 		else
 			meta <- list(name=name, type=type, meta=.analysisMetaFromResults(nextLevel, inCollection, parent=type, objectName=objectName, depth=depth+1))
-		
+
 		if (inCollection) # we only needed to follow a single branch and have done so
 			break
 	}
-	
+
 	if (length(meta) == 0) { # this is an error, we could not figure out the type
 		classes <- paste(class(result), collapse=", ")
 		childClasses <- paste(class(unlist(result, recursive=FALSE)), collapse=", ")
 		resultNames <- paste(names(result), collapse=", ")
 		childNames <- paste(names(unlist(result, recursive=FALSE)), collapse=", ")
 		if (resultNames == "") resultNames <- "<unnamed>"
-		if (childNames == "") childNames <- "<unnamed>"		
+		if (childNames == "") childNames <- "<unnamed>"
 		stop(paste0("Could not create meta for ", objectName, " at depth ", depth, " (class: ", classes, ", names: ", resultNames, ", class children: ", childClasses, ", names children: ", childNames, ")"))
 	}
 
@@ -454,7 +499,7 @@ checkPackages <- function() {
 			type <- "collection"
 		else
 			type <- .getTerminalType(item)
-		
+
 		if (! is.null(type))
 			types <- c(types, type)
 		else
@@ -464,7 +509,7 @@ checkPackages <- function() {
 	type <- unique(types)
 	if (length(type) != 1) # multiple different types, not sure which to pick
 		return(NULL)
-	
+
 	return(type)
 }
 
@@ -478,7 +523,7 @@ checkPackages <- function() {
 	# Return:
 	# - NULL if not a plot/table, otherwise a string with 'image' or 'table'
 	#
-	
+
 	# old analysis
 	if (is.list(result) && "data" %in% names(result)) {
 		if (is.list(result[["data"]]) && "schema" %in% names(result))
@@ -500,8 +545,8 @@ checkPackages <- function() {
 	# specifically meant for container types
 	#
 	# Args:
-	# - resultsMeta: full (named) list taken from the analysis json file, 
-	#                contains all output descriptions of tables/plots/containers 
+	# - resultsMeta: full (named) list taken from the analysis json file,
+	#                contains all output descriptions of tables/plots/containers
 	#
 	# Return:
 	# - named list identical to input except for the fact that containers are removed
@@ -558,7 +603,7 @@ checkPackages <- function() {
 	#
 	# Args:
 	# - results: list with (non-parsed) output elements from an analysis [recursive]
-	# - resultsMeta: expanded (named) list taken from the analysis json file and 
+	# - resultsMeta: expanded (named) list taken from the analysis json file and
 	#                parsed by .simplifyResultsMeta(), contains all output descriptions of tables/plots
 	# - oldState: state file that was retrieved before the current analysis ran
 	# - name: last name of a results element that was found in resultsMeta, intended for
@@ -571,15 +616,15 @@ checkPackages <- function() {
 	#
 	for (i in 1:length(results)) {
 		result <- results[[i]]
-		
+
 		type <- .getTerminalType(result)
 		if (is.null(type) && ! "list" %in% class(result)) # e.g., a title
 			next
-		
+
 		proposal <- names(results)[i]
 		if (is.character(proposal) && proposal %in% names(resultsMeta))
 			name <- proposal
-		
+
 		if (! is.null(type) && (type == "image" || type == "table")) {
 			if (type == "table") {
 				results[[i]] <- .convertTable(result, resultsMeta, name)
@@ -589,7 +634,7 @@ checkPackages <- function() {
 		} else { # go deeper
 			results[[i]] <- .convertResults(result, resultsMeta, oldState, name)
 		}
-		
+
 	}
 	return(results)
 }
@@ -599,7 +644,7 @@ checkPackages <- function() {
 	#
 	# Args:
 	# - plotObj: plot.new function if initing and ggplot2 or recordedPlot object if running
-	# - resultsMeta: expanded (named) list taken from the analysis json file and 
+	# - resultsMeta: expanded (named) list taken from the analysis json file and
 	#                parsed by .simplifyResultsMeta(), contains all output descriptions of tables/plots
 	# - oldState: state file that was retrieved before the current analysis ran
 	# - name: NULL or a character string with the name of the plot object in the analysis json
@@ -610,12 +655,12 @@ checkPackages <- function() {
 	#
 	if (! any(class(plotObj) %in% c("recordedplot", "ggplot", "function")))
 		return(plotObj)
-	
+
 	attr <- attributes(plotObj)
 	plotMeta <- .getItemMeta(resultsMeta, attr, name, type="image")
 	if (is.null(plotMeta))
 		stop("Could not find meta description for current plot")
-		
+
 	plot <- list()
 	plot[["title"]] <- .getItemTitle(plotObj, attr, plotMeta)
 
@@ -665,7 +710,7 @@ checkPackages <- function() {
 	#
 	# Args:
 	# - table: data.frame, matrix or a row list
-	# - resultsMeta: expanded (named) list taken from the analysis json file and 
+	# - resultsMeta: expanded (named) list taken from the analysis json file and
 	#                parsed by .simplifyResultsMeta(), contains all output descriptions of tables/plots
 	# - name: NULL or a character string with the name of the table in the analysis json
 	#
@@ -676,7 +721,7 @@ checkPackages <- function() {
 	tableMeta <- .getItemMeta(resultsMeta, attr, name, type="table")
 	if (is.null(tableMeta))
 		stop("Could not find meta description for current table")
-	
+
 	footnotes <- customSchema <- error <- NULL
 	if (! is.null(attr) && (is.matrix(table) || is.data.frame(table))) {
 		if ("jasp.footnotes" %in% names(attr))
@@ -686,10 +731,10 @@ checkPackages <- function() {
 		if ("jasp.error" %in% names(attr))
 			error <- attr[["jasp.error"]]
 	}
-	
+
 	if (is.matrix(table))
 		table <- as.data.frame(table)
-		
+
 	if (is.jasp.data.frame(table)) # at this point we want to have the default drop behaviour again
 		attr(table, "class") <- "data.frame"
 
@@ -699,19 +744,19 @@ checkPackages <- function() {
 
 	if (is.data.frame(table))
 		table <- list(data=.toListTable(table, tableMeta[["columns"]]))
-	
+
 	table[["title"]] <- .getItemTitle(table, attr, tableMeta)
 	table[["status"]] <- "complete"
-	
+
 	if (is.null(table[["schema"]]))
 		table[["schema"]] <- .createTableSchema(table, tableMeta[["columns"]], customSchema)
-	
+
 	if (! is.null(footnotes))
 		table <- .addTableFootnotes(table, footnotes)
-	
+
 	if (! is.null(error))
 		table[["error"]] <- list(errorType="badData", errorMessage=error)
-	
+
 	return(table)
 }
 
@@ -720,14 +765,14 @@ checkPackages <- function() {
 	# find it by name (from .convertResults()) or in the attributes (from the object itself)
 	#
 	# Args:
-	# - resultsMeta: expanded (named) list taken from the analysis json file and 
+	# - resultsMeta: expanded (named) list taken from the analysis json file and
 	#                parsed by .simplifyResultsMeta(), contains all output descriptions of tables/plots
 	# - attr: named list with attributes of the output item
 	# - name: NULL or a character string with the name of the item
 	# - type: 'table' or 'image'
 	#
 	# Return:
-	# - NULL if not found and otherwise a selected (named) list for a specific output item, 
+	# - NULL if not found and otherwise a selected (named) list for a specific output item,
 	#   taken from the analysis json file
 	#
 	itemMeta <- NULL
@@ -742,7 +787,7 @@ checkPackages <- function() {
 }
 
 .getItemTitle <- function(obj, attr, itemMeta) {
-	# Retrieves the title of an output item; it will attempt to find it in the obj, 
+	# Retrieves the title of an output item; it will attempt to find it in the obj,
 	# meta or results. Multiple sources must be checked as the title may be dynamic
 	#
 	# Args:
@@ -778,7 +823,7 @@ checkPackages <- function() {
 
 	plotName <- NULL
 	attributes(plotObj) <- NULL
-	samePlot <- vapply(oldState[["figures"]], 
+	samePlot <- vapply(oldState[["figures"]],
 		function(obj) {
 			attributes(obj) <- NULL
 			identical(plotObj, obj) # note: all.equal is very slow for deeply nested lists
@@ -822,7 +867,7 @@ checkPackages <- function() {
 		return(table)
 	if (nrow(table) == 1)
 		return(cbind(table, .isNewGroup=TRUE))
-	
+
 	grouping <- table[which]
 	isNewGroup <- logical(nrow(grouping))
 	isNewGroup[1] <- TRUE
@@ -852,7 +897,7 @@ checkPackages <- function() {
 }
 
 .createTableSchema <- function(table, colsMeta, customMeta) {
-	# Dispatches functions that create the schema which describes the table (column 
+	# Dispatches functions that create the schema which describes the table (column
 	# meta for columns not in the table is discarded)
 	#
 	# Args:
@@ -862,7 +907,7 @@ checkPackages <- function() {
 	#               the meta may contain complete new columns, or changes to existing columns
 	#
 	# Return:
-	# - an unnamed schema list that describes the actual columns in the table 
+	# - an unnamed schema list that describes the actual columns in the table
 	#   (with stuff like format="sf:4;dp:3")
 	#
 	if (! is.null(customMeta)) # a custom fields list was added to the table
@@ -887,7 +932,7 @@ checkPackages <- function() {
 	for (custom in customMeta) {
 		if (! "name" %in% names(custom))
 			stop("Could not locate 'name' in custom table meta")
-		
+
 		metaAdded <- FALSE
 		name <- custom[["name"]]
 		for (i in 1:length(colsMeta)) {
@@ -898,7 +943,7 @@ checkPackages <- function() {
 				break
 			}
 		}
-		
+
 		if (! metaAdded) # it is not an existing column
 			colsMeta[[length(colsMeta)+1]] <- custom
 	}
@@ -910,7 +955,7 @@ checkPackages <- function() {
 	#
 	# Args:
 	# - table: row list
-	# - colsMeta: full (unnamed) list of table columns taken from the analysis json file and 
+	# - colsMeta: full (unnamed) list of table columns taken from the analysis json file and
 	#             possibly combined with custom supplementary meta (see .addCustomTableMeta())
 	#
 	# Return:
@@ -955,7 +1000,7 @@ checkPackages <- function() {
 }
 
 .coerceColTypes <- function(df, colsMeta) {
-	# Coerces columns of a data.frame to the types that are specified in the 
+	# Coerces columns of a data.frame to the types that are specified in the
 	# corresponding column descriptions (numeric/integer)
 	#
 	# Args:
@@ -1084,8 +1129,8 @@ is.jasp.data.frame <- function(df) {
 }
 
 `[.jasp.data.frame` <- function(x, i, j, drop=FALSE) {
-	# Extracts parts of a data.frame as usual, but with the added benefit that 
-	# (1) attributes starting with "jasp." are never dropped and 
+	# Extracts parts of a data.frame as usual, but with the added benefit that
+	# (1) attributes starting with "jasp." are never dropped and
 	# (2) a data.frame is never reduced ('dropped') to a vector
 	#
 	# Args:
@@ -1101,8 +1146,8 @@ is.jasp.data.frame <- function(df) {
 }
 
 rbind.jasp.data.frame <- function(..., stringsAsFactors=FALSE) {
-	# Row binds to a data.frame as usual, but with the added benefit that 
-	# (1) names remain intact when row binding to an empty data.frame, 
+	# Row binds to a data.frame as usual, but with the added benefit that
+	# (1) names remain intact when row binding to an empty data.frame,
 	# (2) attributes starting with "jasp." are never dropped,
 	# (3) a 'mixed' vector with characters and numeric can be supplied and will be coerced appropriately,
 	# (4) a data.frame never creates factors and so rbinding new char values to a col works
@@ -1140,7 +1185,7 @@ rbind.jasp.data.frame <- function(..., stringsAsFactors=FALSE) {
 }
 
 cbind.jasp.data.frame <- function(..., stringsAsFactors=FALSE) {
-	# Column binds to a data.frame as usual, but with the added benefit that 
+	# Column binds to a data.frame as usual, but with the added benefit that
 	# (1) attributes starting with "jasp." are never dropped,
 	# (2) a data.frame never will never have any factors by default
 	#
@@ -1157,7 +1202,7 @@ cbind.jasp.data.frame <- function(..., stringsAsFactors=FALSE) {
 }
 
 subset.jasp.data.frame <- function(x, ...) {
-	# Subsets a data.frame as usual, but with the added benefit that 
+	# Subsets a data.frame as usual, but with the added benefit that
 	# attributes starting with "jasp." are never dropped
 	#
 	# Args:
@@ -1190,44 +1235,44 @@ isTryError <- function(obj){
 	if ("citation" %in% names(table) ) {
 
 		cite <- c(.fromRCPP(".baseCitation"), table$citation)
-		
+
 		for (i in seq_along(cite))
 			base::Encoding(cite[[i]]) <- "UTF-8"
-		
+
 		table$citation <- cite
 
 	} else {
-	
+
 		cite <- .fromRCPP(".baseCitation")
 		base::Encoding(cite) <- "UTF-8"
-	
+
 		table$citation <- list(cite)
 	}
-	
+
 	table
 }
 
 .addCitationToResults <- function(results) {
 
 	if ("status" %in% names(results)) {
-	
+
 		res <- results$results
-		
+
 	} else {
-	
+
 		res <- results
 	}
-	
+
 	for (m in res$.meta) {
 
 		item.name <- m$name
-		
+
 		if (item.name %in% names(res)) {
-	
+
 			if (m$type == "table") {
-	
+
 				res[[item.name]] <- .addCitationToTable(res[[item.name]])
-				
+
 			} else if (m$type == "tables") {
 
 				for (i in .indices(res[[item.name]]))
@@ -1235,17 +1280,17 @@ isTryError <- function(obj){
 			}
 		}
 	}
-	
-	
+
+
 	if ("status" %in% names(results)) {
-	
+
 		results$results <- res
-		
+
 	} else {
-	
+
 		results <- res
 	}
-	
+
 	results
 }
 
@@ -1253,8 +1298,8 @@ isTryError <- function(obj){
 	# Parses the data key so JASP knows how to read the different columns in the dataset
 	#
 	# Args:
-	# - dataKey: named list (from the analysis json) with the possible entries 'factor', 
-	#            'numeric', 'ordinal', 'auto' and 'excludeNA'; the values for these entries 
+	# - dataKey: named list (from the analysis json) with the possible entries 'factor',
+	#            'numeric', 'ordinal', 'auto' and 'excludeNA'; the values for these entries
 	#            should be names of options
 	# - options: named list (from the analysis json) with options to run the analysis with
 	#
@@ -1263,33 +1308,33 @@ isTryError <- function(obj){
 	#
   if (length(dataKey) == 0)
     stop("no columns found to be imported")
-  
+
   colsToLoad <- vector("list", length(dataKey))
   names(colsToLoad) <- names(dataKey)
   for (colType in names(dataKey)) {
     opts <- dataKey[[colType]]
     if (! is.null(opts))
       colsToLoad[[colType]] <- .optsToColNames(opts, options)
-    else 
+    else
       colsToLoad[[colType]] <- NULL
   }
-  
+
   auto <- excludeNA <- NULL
   if ("auto" %in% names(colsToLoad)) {
     auto <- colsToLoad[["auto"]]
     colsToLoad[[auto]] <- NULL
   }
-  
+
   if ("excludeNA" %in% names(colsToLoad)) {
     excludeNA <- colsToLoad[["excludeNA"]]
     colsToLoad[["excludeNA"]] <- NULL
   }
-  
+
   names(colsToLoad) <- sapply(names(colsToLoad), function(name) paste0("columns.as.", name))
-  
+
   if (! is.null(auto))
     colsToLoad[["columns"]] <- auto
-  
+
   if (! is.null(excludeNA))
     colsToLoad[["exclude.na.listwise"]] <- excludeNA
 
@@ -1297,11 +1342,11 @@ isTryError <- function(obj){
 }
 
 .optsToColNames <- function(opts, options) {
-	# Looks up the options associated with a given colType in the general options list 
+	# Looks up the options associated with a given colType in the general options list
 	# and returns their values
 	#
 	# Args:
-	# - opts: options that correspond with a certain colType (e.g., in 
+	# - opts: options that correspond with a certain colType (e.g., in
 	#         "factor": "fixedFactor" this is "fixedFactor")
 	# - options: named list (from the analysis json) with options to run the analysis with
 	#
@@ -1314,7 +1359,7 @@ isTryError <- function(obj){
   if (any(! opts %in% names(options))) {
 		indices <- which(! opts %in% names(options))
 		stop(paste0("Trying to find dataset columns to read, but it appears some options don't exist: '", paste(opts[indices], collapse=", "), "'"))
-	}  
+	}
 
   result <- NULL
   for (opt in opts) {
@@ -1332,7 +1377,7 @@ isTryError <- function(obj){
 
 	dataset <- .fromRCPP(".readDatasetToEndNative", unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
 	dataset <- .excludeNaListwise(dataset, exclude.na.listwise)
-	
+
 	dataset
 }
 
@@ -1342,7 +1387,7 @@ isTryError <- function(obj){
 		return (data.frame())
 
 	dataset <- .fromRCPP(".readDataSetHeaderNative", unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
-	
+
 	dataset
 }
 
@@ -1367,7 +1412,7 @@ isTryError <- function(obj){
 	for (column.name in columns.as.ordinal) {
 
 		column <- as.ordered(df[[column.name]])
-		
+
 		if (length(column) == 0) {
 			.quitAnalysis("Error: no data! Check for missing values.")
 		}
@@ -1383,7 +1428,7 @@ isTryError <- function(obj){
 	for (column.name in columns.as.factor) {
 
 		column <- as.factor(df[[column.name]])
-		
+
 		if (length(column) == 0) {
 			.quitAnalysis("Error: no data! Check for missing values.")
 		}
@@ -1399,7 +1444,7 @@ isTryError <- function(obj){
 	for (column.name in columns.as.numeric) {
 
 		column <- as.numeric(as.character(df[[column.name]]))
-		
+
 		if (length(column) == 0) {
 			.quitAnalysis("Error: no data! Check for missing values.")
 		}
@@ -1425,29 +1470,29 @@ isTryError <- function(obj){
 .excludeNaListwise <- function(dataset, exclude.na.listwise) {
 
 	if ( ! is.null(exclude.na.listwise)) {
-	
+
 		rows.to.exclude <- c()
-		
+
 		for (col in .v(exclude.na.listwise))
 			rows.to.exclude <- c(rows.to.exclude, which(is.na(dataset[[col]])))
-		
+
 		rows.to.exclude <- unique(rows.to.exclude)
 
 		rows.to.keep <- 1:dim(dataset)[1]
 		rows.to.keep <- rows.to.keep[ ! rows.to.keep %in% rows.to.exclude]
-		
+
 		new.dataset <- dataset[rows.to.keep,]
-		
+
 		if (class(new.dataset) != "data.frame") {   # HACK! if only one column, R turns it into a factor (because it's stupid)
-		
+
 			dataset <- na.omit(dataset)
-			
+
 		} else {
-		
+
 			dataset <- new.dataset
 		}
 	}
-	
+
 	dataset
 }
 
@@ -1499,7 +1544,7 @@ isTryError <- function(obj){
 		location <- .fromRCPP(".requestStateFileNameNative")
 
 		relativePath <- location$relativePath
-		
+
 		# when run in jasptools do not save the state, but store it internally
 		searchPath <- search()
 		if ("package:jasptools" %in% searchPath) {
@@ -1508,7 +1553,7 @@ isTryError <- function(obj){
 		}
 
 		base::Encoding(relativePath) <- "UTF-8"
-		
+
 		try(suppressWarnings(base::save(state, file=relativePath, compress=FALSE)), silent = FALSE)
 	}
   result <- list(relativePath = relativePath)
@@ -1518,7 +1563,7 @@ isTryError <- function(obj){
 .retrieveState <- function() {
 
 	state <- NULL
-	
+
 	if (base::exists(".requestStateFileNameNative")) {
 
 		location <- .fromRCPP(".requestStateFileNameNative")
@@ -1533,7 +1578,7 @@ isTryError <- function(obj){
 		  warning=function(w) w
 		)
 	}
-	
+
 	state
 }
 
@@ -1569,7 +1614,7 @@ isTryError <- function(obj){
 }
 
 .addBaseSetsState <- function(stateKey) {
-	# Replaces placeholders in state keys with the options associated with those 
+	# Replaces placeholders in state keys with the options associated with those
 	# placeholders
 	#
 	# Args:
@@ -1599,76 +1644,76 @@ isTryError <- function(obj){
 
 	f  <- rm.factors[[length(rm.factors)]]
 	df <- data.frame(factor(unlist(f$levels), unlist(f$levels)))
-	
+
 	names(df) <- .v(f$name)
-	
+
 	row.count <- dim(df)[1]
-	
+
 
 	i <- length(rm.factors) - 1
 	while (i > 0) {
-	
+
 		f <- rm.factors[[i]]
-	
+
 		new.df <- df
 
 		j <- 2
 		while (j <= length(f$levels)) {
-		
+
 			new.df <- rbind(new.df, df)
 			j <- j + 1
 		}
-		
+
 		df <- new.df
-		
+
 		row.count <- dim(df)[1]
 
 		cells <- rep(unlist(f$levels), each=row.count / length(f$levels))
 		cells <- factor(cells, unlist(f$levels))
-		
+
 		df <- cbind(cells, df)
 		names(df)[[1]] <- .v(f$name)
-		
+
 		i <- i - 1
 	}
-	
+
 	ds <- subset(dataset, select=.v(rm.vars))
 	ds <- t(as.matrix(ds))
-	
+
 	df <- cbind(df, dependent=as.numeric(c(ds)))
-	
+
 	for (bt.var in bt.vars) {
 
 		cells <- rep(dataset[[.v(bt.var)]], each=row.count)
 		new.col <- list()
 		new.col[[.v(bt.var)]] <- cells
-		
+
 		df <- cbind(df, new.col)
 	}
-	
+
 	subjects <- 1:(dim(dataset)[1])
 	subjects <- as.factor(rep(subjects, each=row.count))
-	
+
 	df <- cbind(df, subject=subjects)
 
 	df
 }
 
 .vf <- function(formula) {
-	
+
 	in.pieces <- .decompose(formula)
 	ved <- .jrapply(in.pieces, .v)
 	.compose(ved)
 }
 
 .unvf <- function(formula) {
-	
+
 	in.pieces <- .decompose(formula)
 	unved <- .jrapply(in.pieces, .unv)
-	
+
 	interaction.symbol <- "\u2009\u273B\u2009"
 	base::Encoding(interaction.symbol) <- "UTF-8"
-	
+
 	.compose(unved, interaction.symbol)
 }
 
@@ -1677,15 +1722,15 @@ isTryError <- function(obj){
 	lapply(as.list(formulas), function(formula) {
 
 		sides <- strsplit(formula, "~", fixed=TRUE)[[1]]
-		
+
 		lapply(sides, function(formula) {
-			
+
 			terms <- strsplit(formula, "+", fixed=TRUE)
-			
+
 			lapply(terms, function(term) {
 			components <- strsplit(term, ":")
 			components <- sapply(components, stringr::str_trim, simplify=FALSE)
-			
+
 			})[[1]]
 		})
 	})
@@ -1694,28 +1739,28 @@ isTryError <- function(obj){
 .compose <- function(formulas, i.symbol=":") {
 
 	sapply(formulas, function(formula) {
-		
+
 		formula <- sapply(formula, function(side) {
-			
+
 			side <- sapply(side, function(term) {
-			
+
 				term <- sapply(term, function(component) { base::Encoding(component) <- "UTF-8" ; component })
-			
+
 				paste(term, collapse=i.symbol)
 			})
-			
+
 			paste(side, collapse=" + ")
 		})
-		
+
 		paste(formula, collapse=" ~ ")
 	})
 }
 
 
 .jrapply <- function(X, FUN) {
-	
+
 	if (is.list(X) && length(X) > 0) {
-		
+
 		for (i in 1:length(X)) {
 			X[[i]] <- .jrapply(X[[i]], FUN)
 		}
@@ -1723,7 +1768,7 @@ isTryError <- function(obj){
 	else {
 		X <- FUN(X)
 	}
-	
+
 	X
 }
 
@@ -1743,21 +1788,21 @@ callback <- function(results=NULL, progress=NULL) {
 		} else {
 			json.string <- rjson::toJSON(.imgToResults(results))
 		}
-		
+
 		if (is.null(progress)) {
 			progress <- -1
 		} else if (! is.numeric(progress)) {
 			stop("Provide a numeric value to the progress updater")
 		}
-		
+
 		response <- .fromRCPP(".callbackNative", json.string, progress)
-		
+
 		if (is.character(response)) {
-		
+
 			ret <- rjson::fromJSON(base::paste("[", response, "]"))[[1]]
-			
+
 		} else {
-		
+
 			ret <- response
 		}
 	}
@@ -1766,7 +1811,7 @@ callback <- function(results=NULL, progress=NULL) {
 }
 
 .cat <- function(object) {
-	
+
 	cat(rjson::toJSON(object))
 }
 
@@ -1774,20 +1819,20 @@ callback <- function(results=NULL, progress=NULL) {
 
 	if (dim(df)[1] == 0 || dim(df)[2] == 0)
 		return(list())
-		
+
 	column.names <- names(df)
 	rows <- list()
 
 	for (i in 1:dim(df)[1]) {
-	
+
 		row <- list()
-		
+
 		for (j in 1:length(column.names))
 			row[[j]] <- df[i,j]
-		
+
 		if ( ! discard.column.names)
 			names(row) <- column.names
-		
+
 		rows[[i]] <- row
 	}
 
@@ -1800,7 +1845,7 @@ callback <- function(results=NULL, progress=NULL) {
 
 	if (length(v) > 0)
 		indices <- 1:length(v)
-	
+
 	indices
 }
 
@@ -1810,7 +1855,7 @@ callback <- function(results=NULL, progress=NULL) {
 		seq <- c()
 	else
 		seq <- from:to
-		
+
 	seq
 }
 
@@ -1823,7 +1868,7 @@ callback <- function(results=NULL, progress=NULL) {
 
 .clean <- function(value) {
     # Clean function value so it can be reported in json/html
-    
+
 	if (is.list(value)) {
 	    if (is.null(names(value))) {
 	        for (i in length(value)) {
@@ -1852,7 +1897,7 @@ callback <- function(results=NULL, progress=NULL) {
 	if (is.na(value)) {
 	    return("NaN")
 	}
-    
+
     if (identical(value, numeric(0))) {
         return("")
     }
@@ -1860,33 +1905,33 @@ callback <- function(results=NULL, progress=NULL) {
 	if (value == Inf) {
 	    return("\u221E")
 	}
-		
+
 	if (value == -Inf) {
 	    return("-\u221E")
 	}
-		
+
 	stop("could not clean value")
 }
 
 .parseMessage <- function(message, class, ...) {
 	args <- list(...)
-	
+
 	if (class == "error") {
 		# If a grouping argument is added, the message 'after grouping on {{}}' is automatically included.
 		if (! is.null(args[['grouping']])) {
 			message <- paste(message, .messages('error', 'grouping'))
 		}
 	}
-	
+
 	# Find all {{string}}'s that needs to be replaced by values.
 	toBeReplaced <- regmatches(message, gregexpr("(?<=\\{{)\\S*?(?=\\}})", message, perl=TRUE))[[1]]
 	if (base::identical(toBeReplaced, character(0)) == FALSE) { # Were there any {{string}}'s?
-		
+
 		if (all(toBeReplaced %in% names(args)) == FALSE) { # Were all replacements provided in the arguments?
 			missingReplacements <- toBeReplaced[! toBeReplaced %in% names(args)]
 			stop('Missing required replacement(s): "', paste(missingReplacements, collapse=','), '"')
 		}
-		
+
 		for (i in 1:length(toBeReplaced)) {
 			value <- args[[ toBeReplaced[i] ]]
 			if (length(value) > 1) { # Some arguments may have multiple values, e.g. amount = c('< 3', '> 5000').
@@ -1898,9 +1943,9 @@ callback <- function(results=NULL, progress=NULL) {
 			}
 			message <- gsub(paste0('{{', toBeReplaced[i], '}}'), value, message, fixed=TRUE)
 		}
-		
+
 	}
-	
+
 	# Find all values we do not want in the output, e.g. we do not want to show !=
 	replaceInMessage <- list('!=' = '≠', '==' = '=')
 	for (i in 1:length(replaceInMessage)) {
@@ -1908,74 +1953,74 @@ callback <- function(results=NULL, progress=NULL) {
 			message <- gsub(names(replaceInMessage)[i], replaceInMessage[[i]], message)
 		}
 	}
-	
+
 	return(message)
 }
 
 
 .newFootnotes <- function() {
-	
+
 	footnotes <- new.env()
 	footnotes$footnotes <- list()
 	footnotes$next.symbol <- 0
-	
+
 	class(footnotes) <- c("footnotes", class(footnotes))
-	
+
 	footnotes
 }
 
 as.list.footnotes <- function(footnotes) {
-	
+
 	footnotes$footnotes
 }
 
 .addFootnote <- function(footnotes, text, symbol=NULL, row=NULL, cols=NULL) {
-	
+
 	if (! is.null(row) && ! is.numeric(row))
 		stop("Expecting row to be a numeric index")
-	
+
 	if (! is.null(cols) && ! is.character(cols))
 		stop("Expecting cols to be a (vector of) character name(s)")
-	
+
 	if (length(footnotes$footnotes) == 0) {
-		
+
 		if (is.null(symbol)) {
-		
+
 			symbol <- footnotes$next.symbol
-			footnotes$next.symbol <- symbol + 1	
+			footnotes$next.symbol <- symbol + 1
 		}
-		
+
 		footnotes$footnotes <- list(list(symbol=symbol, text=text, row=row, cols=cols))
-		
+
 		return(0)
-		
+
 	} else {
-		
+
 		for (i in 1:length(footnotes$footnotes)) {
-			
+
 			footnote <- footnotes$footnotes[[i]]
-			
+
 			if ("text" %in% names(footnote)) {
 				existingMessage <- footnote$text
 			} else {
 				existingMessage <- footnote
 			}
-			
+
 			if (existingMessage == text)
 				return(i-1)
 		}
-		
+
 		if (is.null(symbol)) {
-		
+
 			symbol <- footnotes$next.symbol
-			footnotes$next.symbol <- symbol + 1	
+			footnotes$next.symbol <- symbol + 1
 		}
 
 		new.footnote <- list(symbol=symbol, text=text, row=row, cols=cols)
-		
+
 		index <- length(footnotes$footnotes)+1
 		footnotes$footnotes[[index]] <- new.footnote
-		
+
 		return(index-1)
 	}
 }
@@ -1985,108 +2030,108 @@ as.list.footnotes <- function(footnotes) {
 
 	# returns TRUE if different or not really comparable
 	# returns a list of what has changed if non-identical named lists provided
-	
+
 	if (is.null(names(one)) == ( ! is.null(names(two))))  # if one list has names, and the other not
 		return(TRUE)
-	
+
 	changed <- list()
-	
+
 	if (is.null(names(one)) == FALSE) {
-		
+
 		names1 <- names(one)
 		names2 <- names(two)
-		
+
 		for (name in names1) {
-			
+
 			if (name %in% names2) {
-				
+
 				item1 <- one[[name]]
 				item2 <- two[[name]]
-				
+
 				if (base::identical(item1, item2) == FALSE) {
-				
+
 					changed[[name]] <- TRUE
-					
+
 				} else {
-				
+
 					changed[[name]] <- FALSE
 				}
-				
+
 			} else {
-				
+
 				changed[[name]] <- TRUE
-				
+
 			}
-			
+
 		}
-		
+
 		for (name in names2) {
-			
+
 			if ((name %in% names1) == FALSE)
 				changed[[name]] <- TRUE
 		}
-		
+
 	} else if (base::identical(one, two)) {
-		
+
 		return(FALSE)
-		
+
 	} else {
-	
+
 		return (TRUE)
 	}
-	
+
 	changed
 }
 
 
 .optionsChanged <- function(opts1, opts2, subset=NULL) {
-	
+
   changed <- .diff(opts1, opts2)
   if (! is.list(changed)) {
     return(TRUE)
   }
-  
+
 	if (! is.null(subset)) {
 	  changed <- changed[names(changed) %in% subset]
 	  if (length(changed) == 0) {
 	    stop(paste0("None of the gui options (", paste(subset, collapse=", "), ") is in the options list."))
 	  }
 	}
-  
+
   if (sum(sapply(changed, isTRUE)) > 0) {
     return(TRUE)
   }
-  
+
   return(FALSE)
 }
 
 
 .getStateItems <- function(state, options, key) {
-	
-  if (is.null(names(state)) || is.null(names(state$options)) || 
+
+  if (is.null(names(state)) || is.null(names(state$options)) ||
       is.null(names(options)) || is.null(names(key))) {
     return(NULL)
   }
 
   result <- list()
   for (item in names(state)) {
-		
+
 		if (item %in% names(key) == FALSE) {
       result[[item]] <- state[[item]]
       next
     }
-    
+
     change <- .optionsChanged(state$options, options, key[[item]])
     if (change == FALSE) {
       result[[item]] <- state[[item]]
 		}
-    
+
   }
-	
+
 	if (length(names(result)) > 0) {
 		return(result)
 	}
-  
+
   return(NULL)
 }
 
@@ -2096,17 +2141,17 @@ as.list.footnotes <- function(footnotes) {
 	image <- list()
 
 	# Operating System information
-	type <- "cairo"  
+	type <- "cairo"
 	if (Sys.info()["sysname"]=="Darwin"){
 	    type <- "quartz"
 	}
-	
+
 	# Calculate pixel multiplier
 	pngMultip <- .fromRCPP(".ppi") / 96
-	
+
 	# Create png file location
 	location <- .fromRCPP(".requestTempFileNameNative", "png")
-	
+
 	# TRUE if called from analysis, FALSE if called from editImage
 	if (is.null(relativePathpng))
 	  relativePathpng <- location$relativePath
@@ -2124,9 +2169,9 @@ as.list.footnotes <- function(footnotes) {
 
 	# Open graphics device and plot
 	grDevices::png(filename=relativePathpng, width=width * pngMultip,
-	               height=height * pngMultip, bg="transparent", 
+	               height=height * pngMultip, bg="transparent",
 	               res=72 * pngMultip, type=type)
-	
+
 	if (is.function(plot) && !isRecordedPlot) {
 		if (obj) dev.control('enable') # enable plot recording
 		eval(plot())
@@ -2137,11 +2182,11 @@ as.list.footnotes <- function(footnotes) {
 		print(plot)
 	}
 	dev.off()
-	
+
 	# Save path & plot object to output
 	image[["png"]] <- relativePathpng
 	if (obj) image[["obj"]] <- plot
-	
+
 	# Return relative paths in list
 	image
 }
@@ -2155,7 +2200,7 @@ saveImage <- function(plotName, format, height, width){
 
 	# create file location string
 	location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
-	
+
 	# Get file size in inches by creating a mock file and closing it
 	pngMultip <- .fromRCPP(".ppi") / 96
 	png(filename="dpi.png", width=width * pngMultip,
@@ -2167,7 +2212,7 @@ saveImage <- function(plotName, format, height, width){
 
     # Open correct graphics device
 	if (format == "eps") {
-		
+
 		grDevices::cairo_ps(filename=relativePath, width=insize[1],
 												height=insize[2], bg="transparent")
 
@@ -2239,13 +2284,13 @@ saveImage <- function(plotName, format, height, width){
 	suppressWarnings(grDevices::replayPlot(rec_plot))
 }
 
-# This recursive function removes all non-jsonifyable image objects from a 
+# This recursive function removes all non-jsonifyable image objects from a
 # result list, while retaining the structure of said list.
 .imgToResults <- function(lst) {
 
 	if (! "list" %in% class(lst))
 		return(lst) # we are at an end node or have a non-list/custom object, stop
-	
+
 	if (all(c("data", "obj") %in% names(lst)) && is.character(lst[["data"]])) {
 		# found a figure! remove its object!
 		lst <- lst[names(lst) != "obj"]
@@ -2255,13 +2300,13 @@ saveImage <- function(plotName, format, height, width){
 	return(lapply(lst, .imgToResults))
 }
 
-# This recursive function takes a results object and extracts all the figure 
-# objects from it, irrespective of their location within the nested structure. 
+# This recursive function takes a results object and extracts all the figure
+# objects from it, irrespective of their location within the nested structure.
 # It then returns a named list of image objects.
 .imgToState <- function(lst) {
 
 	result <- list()
-	
+
 	if (!is.list(lst))
 		return(NULL) # we are at an end node, stop
 
@@ -2271,7 +2316,7 @@ saveImage <- function(plotName, format, height, width){
 		return(result)
 	}
 
-	# Recurse into the next level (unname to avoid concatenating list names 
+	# Recurse into the next level (unname to avoid concatenating list names
 	# such as (name1.name2."data"))
 	return(unlist(lapply(unname(lst), .imgToState), recursive = FALSE))
 
@@ -2298,22 +2343,22 @@ formula.modelTerms <- function(modelTerms, env = parent.frame()) {
 }
 
 
-b64 <- function(x, ...) UseMethod("b64")   ## Translate names in x to 'base64' 
-d64 <- function(x, ...) UseMethod("d64")   ## Untranslate names in x from 'base64' 
+b64 <- function(x, ...) UseMethod("b64")   ## Translate names in x to 'base64'
+d64 <- function(x, ...) UseMethod("d64")   ## Untranslate names in x from 'base64'
 
 b64.character <- function(x, values, prefix = "X", ...) {
-  if (missing(values)) 
+  if (missing(values))
     return(.v(x, prefix = prefix))
-  
+
   for (value in values)
     x = gsub(value, b64(value), x)
   x
 }
 
 d64.character <- function(x, values, ...) {
-  if (missing(values)) 
+  if (missing(values))
     return(.unv(x))
-  
+
   for (value in values)
     x = gsub(value, d64(value), x)
   x
@@ -2384,29 +2429,29 @@ b64.list <- function(x, ...) {
 d64.list <- function(x, ...) {
   rapply(x, d64, ..., how = "replace")
 }
-	
+
 .newProgressbar <- function(ticks, callback, skim=5, response=FALSE, parallel=FALSE) {
   # This closure normally returns a progressbar function that expects to be called "ticks" times.
   # If used in a parallel environment it returns a structure to the master process which is
   # updated in the separate processes by .updateParallelProgressbar().
-  
+
 	ticks <- suppressWarnings(as.integer(ticks))
 	if (is.na(ticks) || ticks <= 0)
 		stop("Invalid value provided to 'ticks', expecting positive integer")
-	
+
 	if (! is.function(callback))
 		stop("The value provided to 'callback' does not appear to be a function")
-	
+
 	if (! is.numeric(skim) || skim < 0 || skim >= 100)
 		stop("Invalid value provided to 'skim', expecting numeric value in the range of 0-99")
-	
+
 	if (parallel)
 		response <- TRUE
-	
+
 	progress <- 0
 	tick <- (100 - skim) / ticks
 	createEmpty <- TRUE
-	
+
 	updater <- function(results=NULL, complete=FALSE) {
 		if (createEmpty) {
 			createEmpty <<- FALSE
@@ -2415,67 +2460,67 @@ d64.list <- function(x, ...) {
 		} else {
 			progress <<- progress + tick
 		}
-		
+
 		if (progress > 100)
 			progress <<- 100
-			
+
 		output <- callback(results=results, progress=round(progress))
-		
+
 		if (response)
 			return(output)
 	}
-	
+
 	updater() # create empty progressbar
-	
+
 	if (parallel)
 		return(structure(list(updater=updater), class="JASP-progressbar"))
-	
+
 	return(updater)
 }
 
 # Update the progressbar in a parallel environment.
-# It requires the progressbar from .newProgressbar() (this structure itself remains in the master process); 
+# It requires the progressbar from .newProgressbar() (this structure itself remains in the master process);
 # if the callback indicates a change in UI options the cluster is stopped with a warning.
 .updateParallelProgressbar <- function(progressbar, cluster, results=NULL, complete=FALSE) {
-	
+
 	if (! inherits(progressbar, "JASP-progressbar"))
 		stop("Object provided in 'progressbar' is not of class JASP progressbar")
-	
+
 	if (! inherits(cluster, "cluster"))
 		stop("Object provided in 'cluster' is not of class cluster")
-	
+
 	response <- progressbar$updater(results, complete)
-	
+
 	if (! .shouldContinue(response)) {
 		snow::stopCluster(cluster)
 		stop("Cancelled by callback")
 	}
-	
+
 	invisible(response)
 }
 
-# Create a cluster to perform parallel computations. 
+# Create a cluster to perform parallel computations.
 # You can pass it objects (and a progressbar) to be exported to the cluster.
 # To be used in combination with the foreach package.
 .makeParallelSetup <- function(pb=NULL, objs=NULL, env=NULL) {
-	
+
 	nCores <- parallel::detectCores(TRUE) - 1
 	if (is.na(nCores) || nCores == 0)
 		nCores <- 1
-		
+
 	cl <- snow::makeSOCKcluster(nCores)
 	doSNOW::registerDoSNOW(cl)
 	if (! is.null(objs) && ! is.null(env))
 		snow::clusterExport(cl, objs, envir=env)
-	
+
 	dopar <- foreach::`%dopar%`
-	
+
 	progress <- NULL
 	if (! is.null(pb))
 		progress <- function() .updateParallelProgressbar(pb, cl)
-	
+
 	stopCluster <- substitute(try(snow::stopCluster(cl), silent=TRUE))
-		
+
 	return(list(cl=cl, progress=list(progress=progress), dopar=dopar, stopCluster=stopCluster))
 }
 
@@ -2543,7 +2588,7 @@ editImage <- function(plotName, type, height, width) {
 			newPlot # results == newPlot
 		})
 	}
-	
+
 	# plotName <- base::normalizePath(plotName)
 	# plotName <- stringr::str_split(plotName, "JASP")[[1]][[2]]
 
