@@ -54,8 +54,25 @@ ResultsJsInterface::ResultsJsInterface(QWidget *parent) : QObject(parent)
 void ResultsJsInterface::setZoom(double zoom)
 {
 	_webViewZoom = zoom;
+	QString js = "window.setZoom(" + QString::number(zoom) + ")";
+	runJavaScript(js);
 }
 
+void ResultsJsInterface::zoomIn()
+{
+	setZoom(_webViewZoom + 0.2);
+}
+
+void ResultsJsInterface::zoomOut()
+{
+	if (_webViewZoom >= 0.4)
+		setZoom(_webViewZoom - 0.2);
+}
+
+void ResultsJsInterface::zoomReset()
+{
+	setZoom(1);
+}
 
 
 void ResultsJsInterface::resultsPageLoaded(bool success)

@@ -46,6 +46,10 @@ $(document).ready(function () {
 
 	var analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
 
+    window.setZoom = function (zoom) {
+        var zoomProcent = "" + Math.floor(zoom * 100) + "%"
+        document.body.style.zoom = zoomProcent
+    }
 
 	window.reRenderAnalyses = function () {
 		analyses.reRender();

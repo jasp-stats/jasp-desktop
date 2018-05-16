@@ -136,6 +136,12 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect(syncShortcut, SIGNAL(activated()), this, SLOT(syncKeysSelected()));
 	QShortcut *refreshShortcut = new QShortcut(QKeySequence("Ctrl+R"), this);
 	QObject::connect(refreshShortcut, SIGNAL(activated()), this, SLOT(refreshKeysSelected()));
+	QShortcut *plusShortcut = new QShortcut(QKeySequence("Ctrl++"), this);
+	QObject::connect(plusShortcut, SIGNAL(activated()), this, SLOT(zoomInKeysSelected()));
+	QShortcut *minShortcut = new QShortcut(QKeySequence("Ctrl+-"), this);
+	QObject::connect(minShortcut, SIGNAL(activated()), this, SLOT(zoomOutKeysSelected()));
+	QShortcut *equalShortcut = new QShortcut(QKeySequence("Ctrl+="), this);
+	QObject::connect(equalShortcut, SIGNAL(activated()), this, SLOT(zoomEqualKeysSelected()));
 
 
 	int initalTableWidth = 575;
@@ -437,6 +443,30 @@ void MainWindow::refreshKeysSelected()
 		return;
 	
 	refreshAllAnalyses();
+}
+
+void MainWindow::zoomInKeysSelected()
+{
+	if (filterShortCut())
+		return;
+	
+	_resultsJsInterface->zoomIn();
+}
+
+void MainWindow::zoomOutKeysSelected()
+{
+	if (filterShortCut())
+		return;
+	
+	_resultsJsInterface->zoomOut();
+}
+
+void MainWindow::zoomEqualKeysSelected()
+{
+	if (filterShortCut())
+		return;
+	
+	_resultsJsInterface->zoomReset();
 }
 
 
