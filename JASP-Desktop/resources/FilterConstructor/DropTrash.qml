@@ -30,7 +30,7 @@ DropArea {
 		height: sizer * parent.iconPadding
 		width: (sizer / aspect) * parent.iconPadding
 
-		source: somethingHovers ? "qrc:/icons/trashcan_open.svg" : "qrc:/icons/trashcan.svg"
+		source: somethingHovers ? "qrc:/icons/trashcan_open.png" : "qrc:/icons/trashcan.png"
 		sourceSize.width: 160 / aspect
 		sourceSize.height: 160
 		//mipmap: true

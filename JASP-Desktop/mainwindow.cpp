@@ -1403,10 +1403,17 @@ void MainWindow::helpFirstLoaded(bool ok)
 
 void MainWindow::showHelpFromQML(QString pageName)
 {
-	if(!ui->panel_4_Help->isVisible())
-		helpToggled(true);
+	if(_lastRequestedHelpPage == pageName && ui->panel_4_Help->isVisible())
+	{
+		helpToggled(false);
+	}
+	else
+	{
+		if(!ui->panel_4_Help->isVisible())
+			helpToggled(true);
 
-	requestHelpPage(pageName);
+		requestHelpPage(pageName);
+	}
 }
 
 void MainWindow::requestHelpPage(const QString &pageName)
@@ -1434,6 +1441,8 @@ void MainWindow::requestHelpPage(const QString &pageName)
 	QString js = "window.render(\"" + content + "\")";
 
 	ui->webViewHelp->page()->runJavaScript(js);
+
+	_lastRequestedHelpPage = pageName;
 }
 
 

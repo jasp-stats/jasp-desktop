@@ -84,6 +84,8 @@ private:
 
 	OnlineDataManager *_odm;
 
+	QString _lastRequestedHelpPage;
+
 	Analyses *_analyses;
 	EngineSync* _engineSync;
 

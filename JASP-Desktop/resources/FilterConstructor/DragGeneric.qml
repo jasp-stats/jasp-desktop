@@ -71,6 +71,7 @@ MouseArea {
 
 	hoverEnabled: true
 	cursorShape: (containsMouse && shownChild.shouldDrag(mouseX, mouseY)) || drag.active  ? Qt.PointingHandCursor : Qt.ArrowCursor
+	acceptedButtons: Qt.LeftButton | Qt.RightButton
 
 	property bool shouldShowHoverOutline: false
 
@@ -110,15 +111,25 @@ MouseArea {
 	{
 		//console.log(__debugName," onPressed")
 
-		shouldShowHoverOutline = false
-		oldParent = parent
-
-		if(!shownChild.shouldDrag(mouse.x, mouse.y))
-			mouse.accepted = false
+		if(mouse.buttons === Qt.RightButton)
+		{
+			//delete me!
+			if(alternativeDropFunction === null)
+				this.destroy();
+		}
 		else
 		{
-			mouseArea.dragHotSpotX = mouse.x
-			mouseArea.dragHotSpotY = mouse.y
+
+			shouldShowHoverOutline = false
+			oldParent = parent
+
+			if(!shownChild.shouldDrag(mouse.x, mouse.y))
+				mouse.accepted = false
+			else
+			{
+				mouseArea.dragHotSpotX = mouse.x
+				mouseArea.dragHotSpotY = mouse.y
+			}
 		}
 	}
 

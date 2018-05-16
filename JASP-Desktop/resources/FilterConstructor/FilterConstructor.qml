@@ -12,6 +12,9 @@ Item {
 	property bool somethingChanged: false
 
 	property bool lastCheckPassed: true
+	property bool showStartupMsg: true
+
+	onSomethingChangedChanged: showStartupMsg = false
 
 	onVisibleChanged: if(visible) initializeFromJSON(jsonConverter.jaspsFilterConstructorJSON)
 	property string __debugName: "FilterConstructor"
@@ -201,7 +204,7 @@ Item {
 
 		Text
 		{
-			property string filterText: "Welcome to the filterconstructor of JASP!<br>"
+			property string filterText: "Welcome to the filterconstructor of JASP!<br>" + (showStartupMsg ? "Try dragging and dropping!<br>" : "")
 			id: hints
 			text: filterText + (filterErrorText !== "" ? "<br><i><font color=\"red\">"+filterErrorText+"</font></i>" : "")
 
@@ -290,6 +293,10 @@ Item {
 
 	function jsonChanged()
 	{
+		//.replace(/\s/g,'')
+		console.log("last: ",jsonConverter.lastProperlyConstructedJSON.replace(/\s/g,''))
+		console.log("new:  ",JSON.stringify(returnFilterJSON()).replace(/\s/g,''))
+
 		return jsonConverter.lastProperlyConstructedJSON !== JSON.stringify(returnFilterJSON())
 	}
 
@@ -297,7 +304,7 @@ Item {
 	{
 		id: jsonConverter
 		property string jaspsFilterConstructorJSON: filterConstructorJSONstring
-		property string lastProperlyConstructedJSON: ""
+		property string lastProperlyConstructedJSON: "{\"formulas\":[]}"
 
 		onJaspsFilterConstructorJSONChanged:
 		{
