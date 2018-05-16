@@ -3022,7 +3022,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
     
     maximumFvalue <- max(fValues)
     
-    if (maximumFvalue > options$steppingMethodCriteriaFEntry) {
+    if (! is.na(maximumFvalue) && maximumFvalue > options$steppingMethodCriteriaFEntry) {
       
       maximumFvalueVariable <- candidate.variables[which.max(fValues)]
       variables.in.model <- c(variables.in.model, maximumFvalueVariable)
@@ -3033,7 +3033,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
     
     minimumPvalue <- min(pValues)
     
-    if (minimumPvalue < options$steppingMethodCriteriaPEntry) {
+    if (! is.na(minimumPvalue) && minimumPvalue < options$steppingMethodCriteriaPEntry) {
       
       minimumPvalueVariable <- candidate.variables[which.min(pValues)]
       variables.in.model <- c(variables.in.model, minimumPvalueVariable)
