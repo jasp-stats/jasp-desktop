@@ -141,6 +141,8 @@ protected:
 	void setRolenames();
 
 	float _rowNumberMaxWidth = 0;
+	
+	bool _linesWasChanged = false;
 
 signals:
 	void modelChanged();
