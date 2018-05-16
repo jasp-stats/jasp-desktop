@@ -24,17 +24,18 @@ DataSetPackage::DataSetPackage()
 
 void DataSetPackage::reset()
 {
-	dataSet = NULL;
-	emptyValuesMap.clear();
-	archiveVersion = Version();
-	dataArchiveVersion = Version();
-	analysesHTML = std::string();
-	analysesData = Json::arrayValue;
-	hasAnalyses = false;
-	warningMessage = std::string();
-	_isLoaded = false;
-	_analysesHTMLReady = false;
+	dataSet				= NULL;
+	archiveVersion		= Version();
+	dataArchiveVersion	= Version();
+	analysesHTML		= std::string();
+	analysesData		= Json::arrayValue;
+	hasAnalyses			= false;
+	warningMessage		= std::string();
+	_isLoaded			= false;
+	_analysesHTMLReady	= false;
+
 	setModified(false);
+	emptyValuesMap.clear();
 }
 
 void DataSetPackage::setModified(bool value)

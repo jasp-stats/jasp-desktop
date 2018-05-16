@@ -20,10 +20,6 @@ void LevelsTableModel::setColumn(Column *column)
 	_column = column;
 	endResetModel();
 	emit resizeLabelColumn();
-
-	emit labelFilterChanged();
-	notifyColumnHasFilterChanged();
-	emit filteredOutChanged();
 }
 
 void LevelsTableModel::refresh()
@@ -31,15 +27,17 @@ void LevelsTableModel::refresh()
 	beginResetModel();
 	endResetModel();
 	emit resizeLabelColumn();
-
-	emit labelFilterChanged();
-	notifyColumnHasFilterChanged();
-	emit filteredOutChanged();
 }
 
 void LevelsTableModel::clearColumn()
 {
 	setColumn(NULL);
+}
+
+void LevelsTableModel::setDataSet(DataSet * thisDataSet)
+{
+	_dataSet = thisDataSet;
+	clearColumn(); //also resets model
 }
 
 int LevelsTableModel::rowCount(const QModelIndex &parent) const
@@ -178,7 +176,9 @@ bool LevelsTableModel::setData(const QModelIndex & index, const QVariant & value
 				emit dataChanged(index, index);
 
 			emit refreshConnectedModels(_column);
+
 			emit labelFilterChanged();
+
 		}
     }
 

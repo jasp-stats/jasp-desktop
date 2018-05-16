@@ -10,6 +10,7 @@ Item {
 	signal rCodeChanged(string rScript)
 	property real extraSpaceUnderColumns: 0
 	property bool somethingChanged: false
+
 	property bool lastCheckPassed: true
 
 	onVisibleChanged: if(visible) initializeFromJSON(jsonConverter.jaspsFilterConstructorJSON)
@@ -289,13 +290,14 @@ Item {
 
 	function jsonChanged()
 	{
-		return jsonConverter.jaspsFilterConstructorJSON !== JSON.stringify(returnFilterJSON())
+		return jsonConverter.lastProperlyConstructedJSON !== JSON.stringify(returnFilterJSON())
 	}
 
 	JSONtoFormulas
 	{
 		id: jsonConverter
 		property string jaspsFilterConstructorJSON: filterConstructorJSONstring
+		property string lastProperlyConstructedJSON: ""
 
 		onJaspsFilterConstructorJSONChanged:
 		{
@@ -304,8 +306,10 @@ Item {
 			if(jaspsFilterConstructorJSON !== JSON.stringify(parent.returnFilterJSON()))
 			{
 				parent.initializeFromJSON(jaspsFilterConstructorJSON)
-				applyFilter.onClickedFunction()
+				filterConstructor.checkAndApplyFilter()
 			}
+
+			jsonConverter.lastProperlyConstructedJSON = JSON.stringify(returnFilterJSON())
 		}
 	}
 
@@ -315,11 +319,5 @@ Item {
 		trashCan.destroyAll();
 		if(jsonString !== "")
 			jsonConverter.convertJSONtoFormulas(JSON.parse(jsonString))
-
-
 	}
-
-
-
-
 }

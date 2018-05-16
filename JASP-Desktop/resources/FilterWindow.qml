@@ -75,7 +75,7 @@ FocusScope
 
 			function askIfChanged(closeFunc)
 			{
-				if((somethingChanged && jsonChanged())|| !lastCheckPassed)
+				if(jsonChanged() || !lastCheckPassed)
 				{
 					easySaveDialog.closeFunc = closeFunc
 					easySaveDialog.open()
