@@ -278,6 +278,8 @@ void DataSetView::viewportChanged()
 		if(col == _model->columnCount() - 1 && pos1.x()  > _rowNumberMaxWidth + _viewportX)
 			_lines.push_back(std::make_pair(QVector2D(pos1.x(), pos0.y()), QVector2D(pos1.x(), pos1.y())));
 	}
+	
+	_linesWasChanged = true;
 
 
 	createleftTopCorner();
@@ -771,12 +773,19 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
 	if(!oldNode)
 		oldNode = new QSGNode();
-
+	else if(!_linesWasChanged)
+		return oldNode;
+	
+	
+	
+	
 	QSGGeometryNode * currentNode = static_cast<QSGGeometryNode*>(oldNode->firstChild());
 
 
 	for(int lineIndex=0; lineIndex<_lines.size();)
 	{
+		bool justAdded = false;
+		
 		if(currentNode == NULL)
 		{
 			currentNode = new QSGGeometryNode;
@@ -785,12 +794,12 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 			currentNode->setFlag(QSGNode::OwnsGeometry, true);
 			currentNode->setMaterial(&material);
 
-			oldNode->appendChildNode(currentNode);
+			justAdded = true;
 		}
 
 		int geomSize = std::min(linesPerNode, (int)(_lines.size() - lineIndex));
 		geomSize *= 2;
-
+		
 		QSGGeometry *geometry = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), geomSize);
 		geometry->setLineWidth(1);
 		geometry->setDrawingMode(GL_LINES);
@@ -806,6 +815,9 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 		}
 
 		currentNode->setGeometry(geometry);
+		
+		if(justAdded)
+			oldNode->appendChildNode(currentNode);
 
 		currentNode = static_cast<QSGGeometryNode*>(currentNode->nextSibling());
 	}
@@ -827,6 +839,7 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 		delete childToDie;
 	}
 
+	_linesWasChanged = false;
 
 	return oldNode;
 }

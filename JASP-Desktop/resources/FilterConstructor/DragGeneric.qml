@@ -117,8 +117,8 @@ MouseArea {
 			mouse.accepted = false
 		else
 		{
-			dragHotSpotX = mouse.x
-			dragHotSpotY = mouse.y
+			mouseArea.dragHotSpotX = mouse.x
+			mouseArea.dragHotSpotY = mouse.y
 		}
 	}
 
@@ -303,8 +303,8 @@ MouseArea {
 
 		Drag.keys: ["all"]
 		Drag.active: mouseArea.drag.active
-		Drag.hotSpot.x: dragHotSpotX
-		Drag.hotSpot.y: dragHotSpotY
+		Drag.hotSpot.x: mouseArea.dragHotSpotX
+		Drag.hotSpot.y: mouseArea.dragHotSpotY
 
 		property alias dragKeys: mouseArea.dragKeys
 
@@ -318,8 +318,8 @@ MouseArea {
 			border.color: "#14a1e3"
 			border.width: 2
 
-			x: dragHotSpotX - (width / 2)
-			y: dragHotSpotY - (height / 2)
+			x: mouseArea.dragHotSpotX - (width / 2)
+			y: mouseArea.dragHotSpotY - (height / 2)
 			z: 10
 
 			visible: mouseArea.drag.active
@@ -327,6 +327,7 @@ MouseArea {
 				NumberAnimation { from: 1; to: dragHandleVisualizer.maxWidth; duration: 500;  }
 				NumberAnimation { from: dragHandleVisualizer.maxWidth; to: 1; duration: 500;  }
 				loops: Animation.Infinite
+				paused: !dragHandleVisualizer.visible
 			}
 
 		}
