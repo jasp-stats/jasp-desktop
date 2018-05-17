@@ -449,16 +449,10 @@ Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(RBridgeColumn* colRe
 		dataFrame = Rcpp::DataFrame(list);
 
 		Rcpp::IntegerVector rowNames;
-		std::cout << "building dataframe rownames!\n";
-		for(int row=0; row<colResults[colMax].nbRows; row++)
-		{
-			int curRowName = colResults[colMax].ints[row];
-			rowNames.push_back(curRowName);
-			std::cout<< curRowName << " - ";
-		}
-		std::cout << std::endl << std::flush;
 
-		//Rcpp::rownames(dataFrame) = rowNames;
+		for(int row=0; row<colResults[colMax].nbRows; row++)
+			rowNames.push_back(colResults[colMax].ints[row]);
+
 		dataFrame.attr("row.names") = rowNames;
 
 	}
