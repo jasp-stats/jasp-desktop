@@ -495,6 +495,7 @@ void EngineSync::startSlaveProcess(int no)
 
 	QStringList args;
 	args << QString::number(no);
+	args << QString::number(ProcessInfo::currentPID());
 	
 #ifdef __WIN32__
 	QString rHomePath = programDir.absoluteFilePath("R");
@@ -529,9 +530,6 @@ void EngineSync::startSlaveProcess(int no)
 
 	env.insert("PATH", programDir.absoluteFilePath("R\\library\\RInside\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\library\\Rcpp\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\bin\\" ARCH_SUBPATH));
 	env.insert("R_HOME", rHome.absolutePath());
-
-	unsigned long processId = ProcessInfo::currentPID();
-    args << QString::number(processId);
 
 #undef ARCH_SUBPATH
 

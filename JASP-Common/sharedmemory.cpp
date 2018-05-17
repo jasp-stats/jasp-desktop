@@ -47,13 +47,16 @@ DataSet *SharedMemory::createDataSet()
 	return _memory->construct<DataSet>(interprocess::unique_instance)(_memory);
 }
 
-DataSet *SharedMemory::retrieveDataSet()
+DataSet *SharedMemory::retrieveDataSet(unsigned long parentPID)
 {
 	if (_memory == NULL)
 	{
+		if(parentPID == 0)
+			parentPID = ProcessInfo::parentPID();
+
 		stringstream ss;
 		ss << "JASP-DATA-";
-		ss << ProcessInfo::parentPID();
+		ss << parentPID;
 		_memoryName = ss.str();
 
 
