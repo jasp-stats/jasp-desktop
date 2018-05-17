@@ -101,11 +101,15 @@ QVariant DataSetTableModel::data(const QModelIndex &index, int role) const
 			return getRowFilter(index.row());
 		else if(role == (int)specialRoles::lines)
 		{
-			bool iAmActive = getRowFilter(index.row()).toBool();
+			bool	iAmActive = getRowFilter(index.row()).toBool(),
+					//aboveMeIsActive = index.row() > 0				&& data(this->index(index.row() - 1, index.column()), (int)specialRoles::active).toBool();
+					belowMeIsActive = index.row() < rowCount() - 1	&& data(this->index(index.row() + 1, index.column()), (int)specialRoles::active).toBool();
+					//iAmLastRow = index.row() == rowCount() - 1;
 
-			bool left = iAmActive, right = iAmActive && index.column() == columnCount() - 1; //always draw left line and right line only if last col
-			bool up = iAmActive || (index.row() > 0 && data(this->index(index.row() - 1, index.column()), (int)specialRoles::active).toBool()); //draw upper line if i am active or if not when my upstairs neighbour is active
-			bool down = (iAmActive && index.row() == rowCount() - 1) || (!iAmActive && index.row() < rowCount() - 1 && data(this->index(index.row() + 1, index.column()), (int)specialRoles::active).toBool()); //draw down line only if i am the last row or if i am inactive and my downstairs neighbour is active
+			bool	up		= iAmActive,
+					left	= iAmActive,
+					down	= iAmActive && !belowMeIsActive,
+					right	= iAmActive && index.column() == columnCount() - 1; //always draw left line and right line only if last col
 
 			return	(left ?		1 : 0) +
 					(right ?	2 : 0) +
@@ -230,7 +234,7 @@ QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientatio
 	else if(role == (int)specialRoles::maxColString) //A query from DataSetView for the maximumlength string to be expected! This to accomodate columnwidth
 	{
 		//calculate some maximum string?
-		QString dummyText = headerData(section, orientation, Qt::DisplayRole).toString() + "XXXX"; //Bit of padding for filtersymbol and columnIcon
+		QString dummyText = headerData(section, orientation, Qt::DisplayRole).toString() + "XXXXXX"; //Bit of padding for filtersymbol and columnIcon
 		int colWidth = getMaximumColumnWidthInCharacters(section);
 
 		while(colWidth > dummyText.length())

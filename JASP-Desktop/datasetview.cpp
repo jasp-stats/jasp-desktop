@@ -52,7 +52,7 @@ void DataSetView::setModel(QAbstractTableModel * model)
 
 		setRolenames();
 
-		QSizeF calcedSizeRowNumber = _metricsFont.size(Qt::TextSingleLine, QString::fromStdString(std::to_string(_model->rowCount())));
+		QSizeF calcedSizeRowNumber = _metricsFont.size(Qt::TextSingleLine, QString::fromStdString(std::to_string(_model->rowCount()) + "XX"));
 		_rowNumberMaxWidth = calcedSizeRowNumber.width() + 30;
 
 		//recalculateCellSizes = true;
@@ -146,43 +146,60 @@ void DataSetView::calculateCellSizes()
 	emit itemSizeChanged();
 }
 
-
 void DataSetView::viewportChanged()
 {
 	if(_model == NULL || _viewportX != _viewportX || _viewportY != _viewportY || _viewportW != _viewportW || _viewportH != _viewportH ) //only possible if they are NaN
 		return;
 
-#ifdef DEBUG_VIEWPORT
+#ifdef DATASETVIEW_DEBUG_VIEWPORT
 	std::cout << "viewportChanged!\n" <<std::flush;
 #endif
+
+	determineCurrentViewPortIndices();
+	storeOutOfViewItems();
+	buildNewLinesAndCreateNewItems();
+
+	update();
+
+	_previousViewportColMin = _currentViewportColMin;
+	_previousViewportColMax = _currentViewportColMax;
+	_previousViewportRowMin = _currentViewportRowMin;
+	_previousViewportRowMax = _currentViewportRowMax;
+}
+
+
+void DataSetView::determineCurrentViewPortIndices()
+{
 	QVector2D leftTop(_viewportX, _viewportY);
 	QVector2D viewSize(_viewportW, _viewportH);
 	QVector2D rightBottom(leftTop + viewSize);
 
-	int currentViewportColMin = -1, currentViewportColMax = -1, currentViewportRowMin = -1, currentViewportRowMax = -1;
-
 	float cumulative = 0;
-	for(int col=0; col<_model->columnCount() && currentViewportColMax == -1; col++)
+	for(int col=0; col<_model->columnCount() && _currentViewportColMax == -1; col++)
 	{
-		if(currentViewportColMax == -1 && cumulative > rightBottom.x())
-			currentViewportColMax = col;
-
+		if(_currentViewportColMax == -1 && cumulative > rightBottom.x())	_currentViewportColMax = col;
 		cumulative += _dataColsMaxWidth[col];
-
-		if(currentViewportColMin == -1 && cumulative > leftTop.x())
-			currentViewportColMin = col;
+		if(_currentViewportColMin == -1 && cumulative > leftTop.x())		_currentViewportColMin = col;
 	}
 
-	if(currentViewportColMax == -1)
-		currentViewportColMax = _model->columnCount();
+	if(_currentViewportColMax == -1)
+		_currentViewportColMax = _model->columnCount();
 
-	currentViewportColMin = std::max(0,						currentViewportColMin - _viewportMargin);
-	currentViewportColMax = std::min(_model->columnCount(),	currentViewportColMax + _viewportMargin);
+	_currentViewportColMin = std::max(0,						_currentViewportColMin - _viewportMargin);
+	_currentViewportColMax = std::max(0, std::min(_model->columnCount(),	_currentViewportColMax + _viewportMargin));
 
-	currentViewportRowMin = std::max(qRound(leftTop.y()		/ _dataRowsMaxHeight) - 1,	0);
-	currentViewportRowMax = std::min(qRound(rightBottom.y()	/ _dataRowsMaxHeight) + 1,	_model->rowCount());
+	_currentViewportRowMin = std::max(0, qRound(leftTop.y()		/ _dataRowsMaxHeight) - 1);
+	_currentViewportRowMax = std::max(0, std::min(qRound(rightBottom.y()	/ _dataRowsMaxHeight) + 1,	_model->rowCount()));
 
-	// remove superflouous textItems if they exist (aka store them in stack)
+#ifdef DATASETVIEW_DEBUG_VIEWPORT
+	std::cout << "viewport X: " << _viewportX << " Y: " << _viewportY << " W: " << _viewportW << " H: " << _viewportH <<  std::endl << std::flush;
+	std::cout << "_previousViewport\tColMin: " << _previousViewportColMin << "\tColMax: " << _previousViewportColMax << "\tRowMin: " << _previousViewportRowMin << "\tRowMax: " << _previousViewportRowMax << "\n";
+	std::cout << "_currentViewport\tColMin: "  << _currentViewportColMin  << "\tColMax: " << _currentViewportColMax  << "\tRowMin: " << _currentViewportRowMin  << "\tRowMax: " << _currentViewportRowMax  << "\n" << std::flush;
+#endif
+}
+
+void DataSetView::storeOutOfViewItems()
+{
 	int maxRows = _model->rowCount(), maxCols = _model->columnCount();
 	if(
 			_previousViewportRowMin >= 0		&& _previousViewportRowMax >= 0			&& _previousViewportColMin >= 0			&& _previousViewportColMax >= 0 &&
@@ -191,45 +208,48 @@ void DataSetView::viewportChanged()
 	{
 		for(int col=_previousViewportColMin; col<_previousViewportColMax; col++)
 		{
-			for(int row=_previousViewportRowMin; row < currentViewportRowMin; row++)
+			for(int row=_previousViewportRowMin; row < _currentViewportRowMin; row++)
 				storeTextItem(row, col);
 
-			for(int row=currentViewportRowMax; row < _previousViewportRowMax; row++)
+			for(int row=_currentViewportRowMax; row < _previousViewportRowMax; row++)
 				storeTextItem(row, col);
 		}
 
 		for(int row=_previousViewportRowMin; row<_previousViewportRowMax; row++)
 		{
-			for(int col=_previousViewportColMin; col < currentViewportColMin; col++)
+			for(int col=_previousViewportColMin; col < _currentViewportColMin; col++)
 				storeTextItem(row, col);
 
-			for(int col=currentViewportColMax; col < _previousViewportColMax; col++)
+			for(int col=_currentViewportColMax; col < _previousViewportColMax; col++)
 				storeTextItem(row, col);
 		}
 
-		for(int row=_previousViewportRowMin; row < currentViewportRowMin; row++)
+		for(int row=_previousViewportRowMin; row < _currentViewportRowMin; row++)
 			storeRowNumber(row);
 
-		for(int row=currentViewportRowMax; row < _previousViewportRowMax; row++)
+		for(int row=_currentViewportRowMax; row < _previousViewportRowMax; row++)
 			storeRowNumber(row);
 	}
+}
 
+void DataSetView::buildNewLinesAndCreateNewItems()
+{
 	_lines.clear();
 
 	//and now we should create some new ones!
 
-	for(int col=currentViewportColMin; col<currentViewportColMax; col++)
-		for(int row=currentViewportRowMin; row<currentViewportRowMax; row++)
+	for(int col=_currentViewportColMin; col<_currentViewportColMax; col++)
+		for(int row=_currentViewportRowMin; row<_currentViewportRowMax; row++)
 		{
 			QVector2D pos0(_colXPositions[col],					_dataRowsMaxHeight + row * _dataRowsMaxHeight);
 			QVector2D pos1(pos0.x() + _dataColsMaxWidth[col],	pos0.y()+ _dataRowsMaxHeight);
 
 			int lineFlags = _model->data(_model->index(row, col), _roleNameToRole["lines"]).toInt();
 
-			bool	left	= (lineFlags & 1 > 0)	&& pos0.x()  > _rowNumberMaxWidth + _viewportX,
-					right	= (lineFlags & 2 > 0)	&& pos1.x()  > _rowNumberMaxWidth + _viewportX,
-					up		= lineFlags & 4 > 0		&& pos0.y()  > _dataRowsMaxHeight + _viewportY,
-					down	= lineFlags & 8 > 0		&& pos1.y()  > _dataRowsMaxHeight + _viewportY;
+			bool	left	= (lineFlags & 1) > 0	&& pos0.x()  > _rowNumberMaxWidth + _viewportX,
+					right	= (lineFlags & 2) > 0	&& pos1.x()  > _rowNumberMaxWidth + _viewportX,
+					up		= (lineFlags & 4) > 0	&& pos0.y()  > _dataRowsMaxHeight + _viewportY,
+					down	= (lineFlags & 8) > 0	&& pos1.y()  > _dataRowsMaxHeight + _viewportY;
 
 			createTextItem(row, col);
 
@@ -241,14 +261,14 @@ void DataSetView::viewportChanged()
 
 		}
 
-	_lines.push_back(std::make_pair(QVector2D(_viewportX + 0.01f,				_viewportY),						QVector2D(_viewportX + 0.01f,				_viewportY + _viewportH)));
+	_lines.push_back(std::make_pair(QVector2D(_viewportX + 0.5f,				_viewportY),						QVector2D(_viewportX + 0.5f,				_viewportY + _viewportH)));
 	_lines.push_back(std::make_pair(QVector2D(_viewportX + _rowNumberMaxWidth,	_viewportY),						QVector2D(_viewportX + _rowNumberMaxWidth,	_viewportY + _viewportH)));
 
-	_lines.push_back(std::make_pair(QVector2D(_viewportX,						_viewportY + 0.01f),						QVector2D(_viewportX + _viewportW,			_viewportY+ 0.01f)));
+	_lines.push_back(std::make_pair(QVector2D(_viewportX,						_viewportY + 0.5f),					QVector2D(_viewportX + _viewportW,			_viewportY+ 0.5f)));
 	_lines.push_back(std::make_pair(QVector2D(_viewportX,						_viewportY + _dataRowsMaxHeight),	QVector2D(_viewportX + _viewportW,			_viewportY + _dataRowsMaxHeight)));
 
 
-	for(int row=currentViewportRowMin; row<currentViewportRowMax; row++)
+	for(int row=_currentViewportRowMin; row<_currentViewportRowMax; row++)
 	{
 		createRowNumber(row);
 
@@ -263,7 +283,7 @@ void DataSetView::viewportChanged()
 			_lines.push_back(std::make_pair(QVector2D(pos0.x(), pos1.y()), QVector2D(pos1.x(), pos1.y())));
 	}
 
-	for(int col=currentViewportColMin; col<currentViewportColMax; col++)
+	for(int col=_currentViewportColMin; col<_currentViewportColMax; col++)
 	{
 
 		createColumnHeader(col);
@@ -278,25 +298,10 @@ void DataSetView::viewportChanged()
 		if(col == _model->columnCount() - 1 && pos1.x()  > _rowNumberMaxWidth + _viewportX)
 			_lines.push_back(std::make_pair(QVector2D(pos1.x(), pos0.y()), QVector2D(pos1.x(), pos1.y())));
 	}
-	
+
 	_linesWasChanged = true;
 
-
 	createleftTopCorner();
-
-
-	update();
-
-#ifdef DEBUG_VIEWPORT
-	std::cout << "viewport X: " << _viewportX << " Y: " << _viewportY << " W: " << _viewportW << " H: " << _viewportH <<  std::endl << std::flush;
-	std::cout << "_previousViewport ColMin: "<<_previousViewportColMin<<" ColMax: "<<_previousViewportColMax<<" RowMin: "<<_previousViewportRowMin<<" RowMax: "<<_previousViewportRowMax<<"\n";
-	std::cout << "currentViewport ColMin: "<<currentViewportColMin<<" ColMax: "<<currentViewportColMax<<" RowMin: "<<currentViewportRowMin<<" RowMax: "<<currentViewportRowMax<<"\n"<<std::flush;
-#endif
-
-	_previousViewportColMin = currentViewportColMin;
-	_previousViewportColMax = currentViewportColMax;
-	_previousViewportRowMin = currentViewportRowMin;
-	_previousViewportRowMax = currentViewportRowMax;
 }
 
 QQuickItem * DataSetView::createTextItem(int row, int col)
@@ -320,7 +325,7 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 
 		if(_textItemStorage.size() > 0)
 		{
-#ifdef DEBUG_VIEWPORT
+#ifdef DATASETVIEW_DEBUG_CREATION
 			std::cout << "createTextItem("<<row<<", "<<col<<") from storage!\n" << std::flush;
 #endif
 			itemCon = _textItemStorage.top();
@@ -330,7 +335,7 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 		}
 		else
 		{
-#ifdef DEBUG_VIEWPORT
+#ifdef DATASETVIEW_DEBUG_CREATION
 			std::cout << "createTextItem("<<row<<", "<<col<<") ex nihilo!\n" << std::flush;
 #endif
 			QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
@@ -356,7 +361,7 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 
 void DataSetView::storeTextItem(int row, int col, bool cleanUp)
 {
-#ifdef DEBUG_VIEWPORT
+#ifdef DATASETVIEW_DEBUG_CREATION
 	std::cout << "storeTextItem("<<row<<", "<<col<<") in storage!\n" << std::flush;
 #endif
 	if((_cellTextItems.count(col) == 0 && _cellTextItems[col].count(row) == 0) || _cellTextItems[col][row] == NULL) return;
@@ -402,7 +407,7 @@ QQuickItem * DataSetView::createRowNumber(int row)
 	{
 		if(_rowNumberStorage.size() > 0)
 		{
-#ifdef DEBUG_VIEWPORT
+#ifdef DATASETVIEW_DEBUG_CREATION
 			std::cout << "createRowNumber("<<row<<") from storage!\n" << std::flush;
 #endif
 			 itemCon = _rowNumberStorage.top();
@@ -413,7 +418,7 @@ QQuickItem * DataSetView::createRowNumber(int row)
 		}
 		else
 		{
-#ifdef DEBUG_VIEWPORT
+#ifdef DATASETVIEW_DEBUG_CREATION
 			std::cout << "createRowNumber("<<row<<") ex nihilo!\n" << std::flush;
 #endif
 			QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
@@ -449,7 +454,7 @@ QQuickItem * DataSetView::createRowNumber(int row)
 
 void DataSetView::storeRowNumber(int row)
 {
-#ifdef DEBUG_VIEWPORT
+#ifdef DATASETVIEW_DEBUG_CREATION
 	std::cout << "storeRowNumber("<<row<<") in storage!\n" << std::flush;
 #endif
 
@@ -487,7 +492,7 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 	{
 		if(_columnHeaderStorage.size() > 0)
 		{
-#ifdef DEBUG_VIEWPORT
+#ifdef DATASETVIEW_DEBUG_CREATION
 			std::cout << "createColumnHeader("<<col<<") from storage!\n" << std::flush;
 #endif
 			itemCon = _columnHeaderStorage.top();
@@ -498,7 +503,7 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 		}
 		else
 		{
-#ifdef DEBUG_VIEWPORT
+#ifdef DATASETVIEW_DEBUG_CREATION
 			std::cout << "createColumnHeader("<<col<<") ex nihilo!\n" << std::flush;
 #endif
 			QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
@@ -532,7 +537,7 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 
 void DataSetView::storeColumnHeader(int col)
 {
-#ifdef DEBUG_VIEWPORT
+#ifdef DATASETVIEW_DEBUG_CREATION
 	std::cout << "storeColumnHeader("<<col<<") in storage!\n" << std::flush;
 #endif
 
@@ -868,6 +873,8 @@ void DataSetView::setViewportY(float newViewportY)
 
 void DataSetView::setViewportW(float newViewportW)
 {
+	newViewportW = std::min(newViewportW, _viewportReasonableMaximumW);
+
 	if(newViewportW != _viewportW)
 	{
 		//std::cout << "setViewPortW!\n" << std::flush;
@@ -878,9 +885,10 @@ void DataSetView::setViewportW(float newViewportW)
 
 void DataSetView::setViewportH(float newViewportH)
 {
+	newViewportH = std::min(newViewportH, _viewportReasonableMaximumH);
+
 	if(newViewportH != _viewportH)
 	{
-		//std::cout << "setViewPortH!\n" << std::flush;
 		_viewportH = newViewportH;
 		emit viewportHChanged();
 	}

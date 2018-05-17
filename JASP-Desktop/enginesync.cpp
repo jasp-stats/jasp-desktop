@@ -220,7 +220,6 @@ void EngineSync::process()
 		{
 #ifdef JASP_DEBUG
 			std::cout << "message received\n";
-			std::cout << data << "\n";
 			std::cout.flush();
 #endif
 
@@ -277,6 +276,11 @@ void EngineSync::process()
 				
 			case engineState::analysis:
 			{
+#ifdef JASP_DEBUG
+				std::cout << data << std::endl;
+				std::cout.flush();
+#endif
+
 				Analysis *analysis	= _analysesInProgress[i];
 				
 				int id				= json.get("id", -1).asInt();

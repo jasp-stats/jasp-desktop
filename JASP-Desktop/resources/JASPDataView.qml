@@ -75,7 +75,7 @@ FocusScope
 					if(wheel.angleDelta.y == 120)
 						vertiScroller.decrease()
 					else if(wheel.angleDelta.y == -120)
-						vertiScroller.increase()
+							vertiScroller.increase()
 					else
 						wheel.accepted = false
 				}
@@ -83,8 +83,41 @@ FocusScope
 		}
 
 
-		ScrollBar.vertical: ScrollBar { id: vertiScroller; z:2}
-		ScrollBar.horizontal: ScrollBar { z:2}
+		ScrollBar.vertical: ScrollBar
+		{
+			id: vertiScroller;
+			z: 0
+
+			stepSize: 0.025
+			//onSizeChanged: if(size < 0.02)	size = 0.02 // a bit crude and doesnt rebind later but it works, which means we can see it at the very least...
+
+			/*
+			contentItem: Item
+			{
+				implicitWidth: 8
+				implicitHeight: Math.max((parent.height * parent.size), implicitWidth)
+			}
+
+
+			Rectangle
+			{
+				opacity: 0.5
+				y: parent.position * parent.height
+				width: parent.width
+				height: Math.max((parent.height * parent.size), width)
+				color: "#14a1e3"
+				radius: width
+			}*/
+
+
+		}
+
+		ScrollBar.horizontal: ScrollBar
+		{
+			z: 0
+			stepSize: 0.025
+			//onSizeChanged: if(size < 0.02)	size = 0.02
+		}
 	}
 
 
