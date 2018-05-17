@@ -248,7 +248,6 @@ bool Engine::receiveMessages(int timeout)
 	{
 #ifdef JASP_DEBUG
 		std::cout << "received message" << std::endl;
-		std::cout << data << std::endl;
 		std::cout.flush();
 #endif
 		Json::Value jsonRequest;
@@ -272,6 +271,11 @@ bool Engine::receiveMessages(int timeout)
 			
 			return false; //This is not an analysis-run-request or anything like that, so quit like a not-message.
 		}
+
+#ifdef JASP_DEBUG
+		std::cout << data << std::endl;
+		std::cout.flush();
+#endif
 
 		int analysisId = jsonRequest.get("id", -1).asInt();
 		string perform = jsonRequest.get("perform", "run").asString();

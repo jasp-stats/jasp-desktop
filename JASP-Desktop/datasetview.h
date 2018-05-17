@@ -12,7 +12,8 @@
 #include <QFontMetricsF>
 #include <QtQml>
 
-//#define DEBUG_VIEWPORT
+//#define DATASETVIEW_DEBUG_VIEWPORT
+//#define DATASETVIEW_DEBUG_CREATION
 
 struct ItemContextualized
 {
@@ -80,6 +81,11 @@ public:
 	void setLeftTopCornerItem(QQuickItem * newItem);
 
 protected:
+	void setRolenames();
+	void determineCurrentViewPortIndices();
+	void storeOutOfViewItems();
+	void buildNewLinesAndCreateNewItems();
+
 	QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
 
 	QAbstractTableModel * _model = NULL;
@@ -113,8 +119,16 @@ protected:
 
 	QFont _font;
 
-	float _viewportX=0, _viewportY=0, _viewportW=1, _viewportH=1;
-	int _previousViewportColMin = -1, _previousViewportColMax = -1, _previousViewportRowMin = -1, _previousViewportRowMax = -1, _viewportMargin = 10;
+	float _viewportX=0, _viewportY=0, _viewportW=1, _viewportH=1, _viewportReasonableMaximumW = 5000, _viewportReasonableMaximumH = 3000;
+	int _previousViewportColMin = -1,
+		_previousViewportColMax = -1,
+		_previousViewportRowMin = -1,
+		_previousViewportRowMax = -1,
+		_viewportMargin			= 10,
+		_currentViewportColMin	= -1,
+		_currentViewportColMax	= -1,
+		_currentViewportRowMin	= -1,
+		_currentViewportRowMax	= -1;
 
 	QQuickItem * createTextItem(int row, int col);
 	void storeTextItem(int row, int col, bool cleanUp = true);
@@ -138,7 +152,7 @@ protected:
 
 	std::map<std::string, int> _roleNameToRole;
 
-	void setRolenames();
+
 
 	float _rowNumberMaxWidth = 0;
 	
