@@ -726,7 +726,11 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 
 AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 {
-	return loadForm(analysis->name());
+	if (_analysisFormsMap.count(analysis) == 0)
+		_analysisFormsMap[analysis] = loadForm(analysis->name());
+	
+	_analysisFormsMap[analysis]->show();
+	return _analysisFormsMap[analysis];
 }
 
 
@@ -895,7 +899,6 @@ void MainWindow::closeCurrentOptionsWidget()
 		disconnect(_currentOptionsWidget, SIGNAL(illegalChanged()), this, SLOT(illegalOptionStateChanged()));
 
 		_currentOptionsWidget->hide();
-		_currentOptionsWidget->unbind();
 		_currentOptionsWidget = NULL;
 	}
 }
@@ -1207,8 +1210,14 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 	{
 		if (event->successful())
 		{
-			_analyses->clear();
 			closeCurrentOptionsWidget();
+			for (auto &keyvalue : _analysisFormsMap)
+			{
+				AnalysisForm* form = keyvalue.second;
+				delete form;
+			}
+			_analysisFormsMap.clear();
+			_analyses->clear();
 			hideOptionsPanel();
 			_tableModel->clearDataSet();
 			_levelsTableModel->setDataSet(NULL);
@@ -1686,9 +1695,7 @@ void MainWindow::analysisOKed()
 		if (_log != NULL)
 			_log->log("Analysis OKed", info);
 
-		_currentOptionsWidget->hide();
-		_currentOptionsWidget->unbind();
-		_currentOptionsWidget = NULL;
+		closeCurrentOptionsWidget();
 	}
 
 	_resultsJsInterface->unselect();
@@ -1717,10 +1724,11 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 	if (_currentOptionsWidget != NULL && analysis == _currentAnalysis)
 	{
 		selected = true;
-		_currentOptionsWidget->hide();
-		_currentOptionsWidget->unbind();
-		_currentOptionsWidget = NULL;
+		closeCurrentOptionsWidget();
 	}
+	
+	delete _analysisFormsMap[analysis];
+	_analysisFormsMap.erase(analysis);
 
 	analysis->setVisible(false);
 
