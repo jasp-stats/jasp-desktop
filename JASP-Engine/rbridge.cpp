@@ -46,7 +46,7 @@ void rbridge_init()
 		rbridge_requestTempRootName,
 		rbridge_runCallback,
 		rbridge_readFullDataSet,
-		rbridge_readFilterDataSet
+		rbridge_readDataSetForFiltering
 	};
 
 	jaspRCPP_init(AppInfo::getBuildYear().c_str(), AppInfo::version.asString().c_str(), &callbacks);
@@ -155,7 +155,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSet(int * colMax)
 	return returnThis;
 }
 
-extern "C" RBridgeColumn* STDCALL rbridge_readFilterDataSet(int * colMax)
+extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFiltering(int * colMax)
 {
 	if (rbridge_dataSet == NULL)
 		rbridge_dataSet = rbridge_dataSetSource();
@@ -199,9 +199,18 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	if (resultCols)
 		freeRBridgeColumns(resultCols, lastColMax);
 	lastColMax = colMax;
-	resultCols = (RBridgeColumn*)calloc(colMax, sizeof(RBridgeColumn));
+	resultCols = (RBridgeColumn*)calloc(colMax + 1, sizeof(RBridgeColumn));
 
 	int filteredRowCount = obeyFilter ? rbridge_dataSet->filteredRowCount() : rbridge_dataSet->rowCount();
+
+	// lets make some rownumbers/names for R that takes into account being filtered or not!
+	resultCols[colMax].ints		= (int*)calloc(filteredRowCount, sizeof(int));
+	resultCols[colMax].nbRows	= filteredRowCount;
+	int filteredRow				= 0;
+	for(int i=0; i<rbridge_dataSet->rowCount(); i++)
+		if(rbridge_dataSet->filterVector()[i])
+			resultCols[colMax].ints[filteredRow++] = i + 1; //R needs 1-based index
+
 
 	for (int colNo = 0; colNo < colMax; colNo++)
 	{
@@ -502,6 +511,7 @@ void freeRBridgeColumns(RBridgeColumn *columns, int colMax)
 		if (column.hasLabels)
 			freeLabels(column.labels, column.nbLabels);
 	}
+	free(columns[colMax].ints); //rownames/numbers
 	free(columns);
 }
 

@@ -1742,8 +1742,30 @@ Descriptives <- function(dataset=NULL, options, perform="run",
   # Plot
   splitPlot <- list()
 
+  print("haalo!")
+  print(row.names(dataset))
+  print("dataset:")
+  print(dataset)
+  # we need to know which index in y is related to which index in the actual data, so we should not forget the NAs somehow, lets make a list of indices.
+  yWithNA         <- dataset[[.v(variable)]]
+  y               <- na.omit(dataset[[.v(variable)]])
+  yIndexToActual  <- y
+  yWithNAIndex    <- 1
+  yNoNAIndex      <- 1
+  while(yWithNAIndex <= length(yWithNA))
+  {
+    if(!is.na(yWithNA[[yWithNAIndex]]))
+    {
+      yIndexToActual[[yNoNAIndex]] <- row.names(dataset)[[yWithNAIndex]]
+      yNoNAIndex <- yNoNAIndex + 1
+    }
 
-  y <- na.omit(dataset[[.v(variable)]])
+    yWithNAIndex <- yWithNAIndex + 1
+  }
+
+
+
+
 
   splitPlot[["title"]] <- variable
   splitPlot[["name"]]  <- variable
@@ -1789,6 +1811,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
     }
 
     plotDat <- data.frame(group = group, y = y)
+    row.names(plotDat) <- yIndexToActual
 
     # Identify outliers to label
     plotDat$outlier <- FALSE

@@ -46,7 +46,7 @@
 extern "C" {
 	RBridgeColumn*				STDCALL rbridge_readDataSet(RBridgeColumnType* columns, int colMax, bool obeyFilter);
 	RBridgeColumn*				STDCALL rbridge_readFullDataSet(int * colMax);
-	RBridgeColumn*				STDCALL rbridge_readFilterDataSet(int * colMax);
+	RBridgeColumn*				STDCALL rbridge_readDataSetForFiltering(int * colMax);
 	char**						STDCALL rbridge_readDataColumnNames(int *colMax);
 	RBridgeColumnDescription*	STDCALL rbridge_readDataSetDescription(RBridgeColumnType* columns, int colMax);
 	bool						STDCALL rbridge_test(char** root);
