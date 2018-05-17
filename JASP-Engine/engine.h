@@ -40,9 +40,8 @@
 class Engine
 {
 public:
-	explicit Engine();
-
-public:
+	explicit Engine(int slaveNo, unsigned long parentPID);
+	static Engine * theEngine() { return _EngineInstance; } //There is only ever one engine in a process so we might as well have a static pointer to it.
 
 	void run();
 	void setSlaveNo(int no);
@@ -51,6 +50,9 @@ public:
 private:
 
 	bool receiveMessages(int timeout = 0);
+private:
+	static Engine * _EngineInstance;
+
 	void runAnalysis();
 	void saveImage();
     void editImage();
@@ -92,6 +94,8 @@ private:
 	DataSet *_dataSet = NULL;
 
 	int _slaveNo = 0;
+	unsigned long _parentPID = 0;
+
 
 	bool _filterChanged = false;
 	std::string _filter = "", _generatedFilter = "";

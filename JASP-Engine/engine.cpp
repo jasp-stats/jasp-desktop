@@ -40,11 +40,16 @@ using namespace std;
 using namespace boost::interprocess;
 using namespace boost::posix_time;
 
-Engine::Engine()
-{
+Engine * Engine::_EngineInstance = NULL;
 
-	
-	tempfiles_attach(ProcessInfo::parentPID());
+Engine::Engine(int slaveNo, unsigned long parentPID)
+{
+	Q_ASSERT(_EngineInstance == NULL);
+	_EngineInstance = this;
+
+	_slaveNo = slaveNo;
+	_parentPID = parentPID;
+	tempfiles_attach(parentPID);
 
 	rbridge_setDataSetSource(boost::bind(&Engine::provideDataSet, this));
 	rbridge_setFileNameSource(boost::bind(&Engine::provideTempFileName, this, _1, _2, _3));
@@ -210,7 +215,7 @@ void Engine::run()
 #endif
 
 	stringstream ss;
-	ss << "JASP-IPC-" << ProcessInfo::parentPID();
+	ss << "JASP-IPC-" << _parentPID;
 	string memoryName = ss.str();
 
 	_channel = new IPCChannel(memoryName, _slaveNo, true);
@@ -459,7 +464,7 @@ string Engine::callback(const string &results, int progress)
 
 DataSet * Engine::provideDataSet()
 {
-	return SharedMemory::retrieveDataSet();
+	return SharedMemory::retrieveDataSet(_parentPID);
 }
 
 void Engine::provideStateFileName(string &root, string &relativePath)
