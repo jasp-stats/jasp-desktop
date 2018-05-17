@@ -17,10 +17,9 @@ matrix:
         "sudo apt-get install r-cran-rcppeigen",
         "sudo apt-get install r-cran-plogr"
       ]
-      install: Rscript -e 'install.packages(c("testthat", "vdiffr", "rjson", "BAS"))'
+      install: Rscript -e 'install.packages(c("testthat", "vdiffr"))'
       script:
         - Rscript Tools/requiredPackages.R JASP-Engine/JASP/R true
-        - Rscript -e 'source("JASP-Engine/JASP/R/packagecheck.R"); print(.checkPackages())'
         - Rscript Tools/showVersion.R
         - cd JASP-Tests/R/tests/
         - R < testthat.R --no-save
