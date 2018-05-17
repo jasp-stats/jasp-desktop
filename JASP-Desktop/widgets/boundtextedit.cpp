@@ -89,8 +89,9 @@ void BoundTextEdit::populateFromOption(Option *option)
 
 void BoundTextEdit::applyModel(QString result)
 {
-	std::cout << "result of length " << result.length() << ": " << result.toStdString() << std::flush;
-	if (result.length() == 0) {
+    //std::cout << "result of length " << result.length() << ": " << result.toStdString() << std::flush;
+
+    if (result.length() == 0) {
 		_status->setStyleSheet(_okStylesheet);
 		_status->setAlignment(Qt::AlignRight);
 		_status->setText("Model applied");

@@ -93,7 +93,6 @@ void TextModelLavaan::contentChangedHandler()
 TextModelLavaan::SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent)
 	: QSyntaxHighlighter(parent)
 {
-	std::cout << "Syntax highlighter set" << std::flush;
 	
 	HighlightingRule rule;
 	
