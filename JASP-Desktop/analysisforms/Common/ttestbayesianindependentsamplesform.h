@@ -34,6 +34,13 @@ public:
 	explicit TTestBayesianIndependentSamplesForm(QWidget *parent = 0);
 	~TTestBayesianIndependentSamplesForm();
 
+private slots:
+    void on_wilcoxTest_clicked(bool checked);
+
+    void on_StudentStatistic_clicked(bool checked);
+
+    void on_WilcoxonStatistic_clicked(bool checked);
+
 private:
 	Ui::TTestBayesianIndependentSamplesForm *ui;
 };

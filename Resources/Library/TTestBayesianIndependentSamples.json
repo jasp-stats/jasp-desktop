@@ -17,6 +17,19 @@
 			"type": "Boolean"
 		},
 		{
+			"name": "testStatistic",
+			"options": [ "Student", "Wilcoxon"],
+			"default": "Student",
+			"type": "List"
+		},
+		{
+			"default": 1000,
+			"name": "wilcoxonSamplesNumber",
+			"type": "Integer",
+			"min": 100,
+			"max": 10000
+		},
+		{
 			"name": "hypothesis",
 			"options": [ "groupsNotEqual", "groupOneGreater", "groupTwoGreater" ],
 			"default": "groupsNotEqual",
