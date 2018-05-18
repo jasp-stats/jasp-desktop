@@ -513,7 +513,8 @@ NetworkAnalysis <- function (
 			t1 <- Sys.time()
 
 			dev.off() # close the fake png
-			file.remove(tempFileName) # remove the fake png file
+			if (file.exists(tempFileName))
+				file.remove(tempFileName) # remove the fake png file
 
 			timing[nw] <- difftime(t1, t0, units = "secs") # ensure times are always seconds
 			network[["corMessage"]] <- msg
@@ -661,7 +662,8 @@ NetworkAnalysis <- function (
 											repulsion = options[["repulsion"]])
 
 			dev.off() # close the fake png
-			file.remove(tempFileName) # remove the fake png file
+			if (file.exists(tempFileName))
+				file.remove(tempFileName) # remove the fake png file
 
 		} else {
 
@@ -777,7 +779,8 @@ NetworkAnalysis <- function (
 		}
 
 		dev.off() # close the fake png
-		file.remove(tempFileName) # remove the fake png file
+		if (file.exists(tempFileName))
+			file.remove(tempFileName) # remove the fake png file
 
 	}
 

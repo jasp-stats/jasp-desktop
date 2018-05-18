@@ -14,13 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+fromJSON <- function(x) jsonlite::fromJSON(x, TRUE, FALSE, FALSE)
+toJSON <- function(x) jsonlite::toJSON(x, auto_unbox = TRUE, digits = NA)
 
 run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresInit=TRUE, perform="run") {
 
-	dataKey <- rjson::fromJSON(dataKey)
-	options <- rjson::fromJSON(options)
-	resultsMeta <- rjson::fromJSON(resultsMeta)
-	stateKey <- rjson::fromJSON(stateKey)
+	dataKey <- fromJSON(dataKey)
+	options <- fromJSON(options)
+	resultsMeta <- fromJSON(resultsMeta)
+	stateKey <- fromJSON(stateKey)
 
 	if (base::exists(".requestStateFileNameNative")) {
 		location <- .fromRCPP(".requestStateFileNameNative")
@@ -82,7 +84,8 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 		results[["results"]][["title"]] <- title
 		results[["status"]] <- "inited"
 
-		json <- try({ rjson::toJSON(results) })
+
+		json <- try({ toJSON(results) })
 
 		if (inherits(results, "try-error"))
 			return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
@@ -157,9 +160,7 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 
 			results <- .addCitationToResults(results)
 		}
-
-		json <- try({ rjson::toJSON(results) })
-
+		json <- try({ toJSON(results) })
 		if (class(json) == "try-error") {
 
 			return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
@@ -194,7 +195,7 @@ initEnvironment <- function() {
 
 
 checkPackages <- function() {
-	rjson::toJSON(.checkPackages())
+	toJSON(.checkPackages())
 }
 
 
@@ -249,7 +250,7 @@ checkLavaanModel <- function(model, availableVars) {
 	# - obj: character string or obj coercible to string (e.g. a try-error)
 	#
 	# Return:
-	# - character string ready to be put into rjson::toJSON
+	# - character string ready to be put into toJSON
 	#
 	str <- as.character(obj)
 	str <- gsub("\"", "'", str, fixed=TRUE)
@@ -1786,7 +1787,7 @@ callback <- function(results=NULL, progress=NULL) {
 		if (is.null(results)) {
 			json.string <- "null"
 		} else {
-			json.string <- rjson::toJSON(.imgToResults(results))
+			json.string <- toJSON(.imgToResults(results))
 		}
 
 		if (is.null(progress)) {
@@ -1799,8 +1800,8 @@ callback <- function(results=NULL, progress=NULL) {
 
 		if (is.character(response)) {
 
-			ret <- rjson::fromJSON(base::paste("[", response, "]"))[[1]]
-
+			ret <- fromJSON(base::paste("[", response, "]"))[[1]]
+			
 		} else {
 
 			ret <- response
@@ -1812,7 +1813,8 @@ callback <- function(results=NULL, progress=NULL) {
 
 .cat <- function(object) {
 
-	cat(rjson::toJSON(object))
+	cat(toJSON(object))
+
 }
 
 .dataFrameToRowList <- function(df, discard.column.names=FALSE) {
@@ -2617,7 +2619,7 @@ editImage <- function(plotName, type, height, width) {
 		.saveState(state)
 	}
 
-	rjson::toJSON(response)
+	toJSON(response)
 }
 
 .modifyStateFigures <- function(x, identifier, replacement, completeObject = TRUE) {
@@ -2665,4 +2667,13 @@ editImage <- function(plotName, type, height, width) {
       return(unlist(lapply(unname(x), .getFigureFromState, identifier), recursive = FALSE))
     }
   }
+}
+
+.quietDuringUnitTest <- function(expr) {
+	# check from testthat::skip_on_travis
+	if (identical(Sys.getenv("TRAVIS"), "true")) {
+		return(suppressWarnings(suppressMessages(expr)))
+	} else {
+		return(expr)
+	}
 }
