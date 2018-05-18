@@ -52,6 +52,10 @@ FocusScope
 
 				anchors.fill: parent
 
+				hoverEnabled: true
+
+				cursorShape: containsMouse ? Qt.OpenHandCursor : Qt.ArrowCursor
+
 				onReleased:
 				{
 					var curTime = new Date().getTime()

@@ -66,6 +66,7 @@ FocusScope
 						anchors.fill: parent
 						onClicked: filterWindow.toggle()
 						hoverEnabled: true
+						cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 					}
 				}
 
@@ -135,6 +136,7 @@ FocusScope
 						ToolTip.text: "Click here to change columntype"
 						ToolTip.timeout: 3000
 						ToolTip.delay: 500
+						cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 
 					}
 
@@ -268,6 +270,7 @@ FocusScope
 					ToolTip.text: "Click here to change labels"
 					ToolTip.timeout: 3000
 					ToolTip.delay: 500
+					cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 				}
 			}
 		}

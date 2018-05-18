@@ -17,4 +17,12 @@ Button
 	ToolTip.timeout: 3500
 	ToolTip.visible: hovered
 	ToolTip.text: toolTip
+
+	MouseArea
+	{
+		anchors.fill: parent
+		acceptedButtons: Qt.NoButton
+		hoverEnabled: true
+		cursorShape: containsMouse && !parent.disabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+	}
 }
