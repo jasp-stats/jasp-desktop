@@ -146,7 +146,10 @@ SOURCES += \
     $$PWD/variablespage/labelfiltergenerator.cpp \
     $$PWD/columnsmodel.cpp \
     $$PWD/datasetview.cpp \
-    $$PWD/jsonutilities.cpp
+    $$PWD/jsonutilities.cpp \
+    $$PWD/backstage/backstagedatalibrary.cpp \
+    $$PWD/backstage/datalibrarylistmodel.cpp \
+    $$PWD/backstage/datalibrarybreadcrumbsmodel.cpp
 
 
 HEADERS  += \
@@ -309,7 +312,10 @@ HEADERS  += \
     $$PWD/variablespage/labelfiltergenerator.h \
     $$PWD/columnsmodel.h \
     $$PWD/datasetview.h \
-    $$PWD/jsonutilities.h
+    $$PWD/jsonutilities.h \
+    $$PWD/backstage/backstagedatalibrary.h \
+    $$PWD/backstage/datalibrarylistmodel.h \
+    $$PWD/backstage/datalibrarybreadcrumbsmodel.h
 
 FORMS += \
     $$PWD/aboutdialog.ui \
@@ -321,7 +327,8 @@ FORMS += \
     $$PWD/variableswidget.ui \
     $$PWD/widgets/anovamodelwidget.ui \
     $$PWD/widgets/boundassignwidget.ui \
-    $$PWD/widgets/subjectivepriorswidget.ui
+    $$PWD/widgets/subjectivepriorswidget.ui \
+    $$PWD/backstage/backstagedatalibrary.ui
 
 RESOURCES += \
     $$PWD/backstage/backstage.qrc \

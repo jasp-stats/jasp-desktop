@@ -41,31 +41,30 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	layout->addWidget(_tabWidget, 0, 0);
 	layout->addWidget(webWidget, 0, 1);
 
-	_fsmRecent   = new FSBMRecent(this);
-	_fsmCurrent  = new FSBMCurrent(this);
-	_fsmExamples = new FSBMExamples(this);
-
 	// Recent Files 
+	_fsmRecent   = new FSBMRecent(this);
 	_bsRecent = new FSBrowser(_tabWidget, FSBrowser::BrowseRecentFiles);
 	_bsRecent->setFSModel(_fsmRecent);
 
 	// Recent Folders 
+	_fsmCurrent  = new FSBMCurrent(this);	
 	_bsCurrent = new FSBrowser(_tabWidget, FSBrowser::BrowseCurrent);
 	_bsCurrent->setFSModel(_fsmCurrent);
+	
+	//Computer tab shows Recent Folders 
 	_bsComputer = new BackstageComputer(_tabWidget);
 
 	// OSF
 	_bsOSF = new BackstageOSF(_tabWidget);
 
-	// Examples
-	_bsExamples = new FSBrowser(_tabWidget,FSBrowser::BrowseExamples);
-	_bsExamples->setFSModel(_fsmExamples);
+	// DataLibrary
+	_bsDataLibrary = new BackstageDataLibrary(_tabWidget);
 	
 	_tabWidget->addTab(_bsRecent, "Recent");
 	_tabWidget->addTab(_bsCurrent, "Current");
 	_tabWidget->addTab(_bsComputer, "Computer");
 	_tabWidget->addTab(_bsOSF, "OSF");
-	_tabWidget->addTab(_bsExamples, "Examples");
+	_tabWidget->addTab(_bsDataLibrary, "Data Library");
 
 	_tabWidget->hideTab(_bsCurrent);
 
@@ -74,12 +73,15 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	connect(&_watcher, SIGNAL(fileChanged(const QString&)), this, SLOT(dataFileModifiedHandler(const QString&)));
 	connect(_bsComputer, SIGNAL(dataSetIORequest(FileEvent *)), this, SLOT(dataSetIORequestHandler(FileEvent *)));
 	connect(_bsOSF, SIGNAL(dataSetIORequest(FileEvent *)), this, SLOT(dataSetIORequestHandler(FileEvent *)));
-	connect(_bsExamples, SIGNAL(entryOpened(QString)), this, SLOT(dataSetOpenExampleRequestHandler(QString)));
-
+	connect(_bsDataLibrary, SIGNAL(dataSetIORequest(FileEvent *)), this, SLOT(dataSetIORequestHandler(FileEvent *)));
+	
+	
 	VerticalTabWidget *osvw = tabWidget();
 	VerticalTabBar *vtb = osvw->tabBar();
+		
 	connect(vtb, SIGNAL(currentChanged(int)), this, SLOT(tabWidgetChanged(int)));
 	connect(vtb, SIGNAL(currentChanging(int,bool&)), this, SLOT(tabWidgetChanging(int,bool&)));
+	
 }
 
 bool OpenSaveWidget::changeTabIfCurrentFileEmpty()
@@ -133,25 +135,21 @@ void OpenSaveWidget::setSaveMode(FileEvent::FileMode mode)
 	_bsOSF->setMode(_mode);
 	_bsOSF->setCurrentFileName(getDefaultOutFileName());
 
-
 	if (_mode == FileEvent::FileOpen)
 	{
 		_tabWidget->hideTab(_bsCurrent);
 		_tabWidget->showTab(_bsRecent);
-		_tabWidget->showTab(_bsExamples);
 	}
 	else if (_mode == FileEvent::FileSyncData)
 	{
 		_tabWidget->showTab(_bsCurrent);
 		_tabWidget->hideTab(_bsRecent);
-		_tabWidget->hideTab(_bsExamples);
 		_tabWidget->tabBar()->setTabEnabled(FileLocation::Current, !_fsmCurrent->getCurrent().isEmpty());
 	}
 	else
 	{
 		_tabWidget->hideTab(_bsCurrent);
 		_tabWidget->hideTab(_bsRecent);
-		_tabWidget->hideTab(_bsExamples);
 	}
 }
 
@@ -243,13 +241,10 @@ void OpenSaveWidget::dataSetIOCompleted(FileEvent *event)
 	{
 		if (event->successful())
 		{	
-			if (_fsmExamples->contains(event->path()) == false)
-			{
-				//  don't add examples to the recent list
-				_fsmRecent->addRecent(event->path());
-				_bsComputer->addRecent(event->path());
-			}
-
+			//  don't add examples to the recent list
+			_fsmRecent->addRecent(event->path());
+			_bsComputer->addRecent(event->path());
+			
 			if (event->operation() == FileEvent::FileOpen && !event->isReadOnly())
 				setCurrentDataFile(event->dataFilePath());
 
@@ -305,7 +300,6 @@ void OpenSaveWidget::clearSyncData()
 	setDataFileWatcher(false); // must be done before setting the current to empty.
 	_fsmCurrent->setCurrent(QString());
 	_tabWidget->tabBar()->setTabEnabled(FileLocation::Current, false);
-	_tabWidget->tabBar()->click(FileLocation::Computer);
 }
 
 void OpenSaveWidget::setCurrentDataFile(const QString &path)

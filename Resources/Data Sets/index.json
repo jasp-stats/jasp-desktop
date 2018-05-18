@@ -1,27 +1,651 @@
-[
-	{
-		"name" : "Political Democracy (Bollen, 1989)",
-		"path" : "Political Democracy (Bollen, 1989).csv",
-		"description" : "A SEM data set"
-	},
-	{
-		"name" : "Bugs (Ryan, Wilde & Crist, 2013)",
-		"path" : "Bugs (Ryan, Wilde & Crist, 2013).csv",
-		"description" : "A repeated measures ANOVA data set"
-	},
-	{
-		"name" : "Tooth Growth",
-		"path" : "Tooth Growth.csv",
-		"description" : "An uninspiring ANOVA data set"
-	},
-	{
-		"name" : "Kitchen Rolls",
-		"path" : "Kitchen Rolls.csv",
-		"description" : "A nice t-test data set"
-	},
-	{
-		"name" : "Big 5 (Dolan, Oort, Stoel & Wicherts, 2009)",
-		"path" : "Big 5 (Dolan, Oort, Stoel & Wicherts, 2009).csv",
-		"description" : "A nice correlation data set"
-	}
-]
+{
+  "name": ["Categories"],
+  "path": ["Examples"],
+  "description": ["General Examples"],
+  "kind": ["folder"],
+  "children": [
+    {
+      "name": "Data Library",
+      "path": "Data Library",
+      "description": "Data library of educational JASP files and belonging data files. ",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "1. Descriptives",
+          "path": "1. Descriptives",
+          "description": "",
+          "kind": "folder",
+          "children": [
+            {
+              "name": "Fear of Statistics",
+              "path": "Fear of Statistics.jasp",
+              "description": "Fear of Statistics",
+              "kind": "file",
+              "associated_datafile": "Fear of Statistics.csv"
+            },
+            {
+              "name": "Sleep",
+              "path": "Sleep.jasp",
+              "description": "Sleep.jasp",
+              "kind": "file",
+              "associated_datafile": "Sleep.csv"
+            }
+          ]
+        },
+        {
+          "name": "2. T-Tests",
+          "path": "2. T-Tests",
+          "description": "",
+          "kind": "folder",
+          "children": [
+            {
+              "name": "Directed Reading Activities",
+              "path": "Directed Reading Activities.jasp",
+              "description": "Directed Reading Activities.jasp",
+              "kind": "file",
+              "associated_datafile": "Directed Reading Activities.csv"
+            },
+            {
+              "name": "Eye Movements",
+              "path": "Eye Movements.jasp",
+              "description": "Eye Movements",
+              "kind": "file",
+              "associated_datafile": "Eye Movements.csv"
+            },
+            {
+              "name": "Invisibility",
+              "path": "Invisibility.jasp",
+              "description": "Invisibility",
+              "kind": "file",
+              "associated_datafile": "Invisibility.csv"
+            },
+            {
+              "name": "Kitchen Rolls",
+              "path": "Kitchen Rolls.jasp",
+              "description": "Kitchen Rolls",
+              "kind": "file",
+              "associated_datafile": "Kitchen Rolls.csv"
+            },
+            {
+              "name": "Moon and Aggression",
+              "path": "Moon and Aggression.jasp",
+              "description": "Moon and Aggression",
+              "kind": "file",
+              "associated_datafile": "Moon and Aggression.csv"
+            },
+            {
+              "name": "Weight Gain",
+              "path": "Weight Gain.jasp",
+              "description": "Weight Gain.jasp",
+              "kind": "file",
+              "associated_datafile": "Weight Gain.csv"
+            }
+          ]
+        },
+        {
+          "name": "3. ANOVA",
+          "path": "3. ANOVA",
+          "description": "",
+          "kind": "folder",
+          "children": [
+            {
+              "name": "Alcohol Attitudes",
+              "path": "Alcohol Attitudes.jasp",
+              "description": "Alcohol Attitudes.jasp",
+              "kind": "file",
+              "associated_datafile": "Alcohol Attitudes.csv"
+            },
+            {
+              "name": "Beer Goggles",
+              "path": "Beer Goggles.jasp",
+              "description": "Beer Goggles.jasp",
+              "kind": "file",
+              "associated_datafile": "Beer Goggles.csv"
+            },
+            {
+              "name": "Bush Tucker Food",
+              "path": "Bush Tucker Food.jasp",
+              "description": "Bush Tucker Food.jasp",
+              "kind": "file",
+              "associated_datafile": "Bush Tucker Food.csv"
+            },
+            {
+              "name": "Erotic Pictures and Love",
+              "path": "Erotic Pictures and Love.jasp",
+              "description": "Erotic Pictures and Love.jasp",
+              "kind": "file",
+              "associated_datafile": "Erotic Pictures and Love.csv"
+            },
+            {
+              "name": "Facebook Friends",
+              "path": "Facebook Friends.jasp",
+              "description": "Facebook Friends.jasp",
+              "kind": "file",
+              "associated_datafile": "Facebook Friends.csv"
+            },
+            {
+              "name": "Heart Rate",
+              "path": "Heart Rate.jasp",
+              "description": "Heart Rate.jasp",
+              "kind": "file",
+              "associated_datafile": "Heart Rate.csv"
+            },
+            {
+              "name": "Looks or Personality",
+              "path": "Looks or Personality.jasp",
+              "description": "Looks or Personality.jasp",
+              "kind": "file",
+              "associated_datafile": "Looks or Personality.csv"
+            },
+            {
+              "name": "Pain Thresholds",
+              "path": "Pain Thresholds.jasp",
+              "description": "Pain Thresholds.jasp",
+              "kind": "file",
+              "associated_datafile": "Pain Thresholds.csv"
+            },
+            {
+              "name": "Response to Eye Color",
+              "path": "Response to Eye Color.jasp",
+              "description": "Response to Eye Color.jasp",
+              "kind": "file",
+              "associated_datafile": "Response to Eye Color.csv"
+            },
+            {
+              "name": "Singers",
+              "path": "Singers.jasp",
+              "description": "Singers.jasp",
+              "kind": "file",
+              "associated_datafile": "Singers.csv"
+            },
+            {
+              "name": "Tooth Growth",
+              "path": "Tooth Growth.jasp",
+              "description": "Tooth Growth.jasp",
+              "kind": "file",
+              "associated_datafile": "Tooth Growth.csv"
+            },
+            {
+              "name": "Viagra",
+              "path": "Viagra.jasp",
+              "description": "Viagra.jasp",
+              "kind": "file",
+              "associated_datafile": "Viagra.csv"
+            }
+          ]
+        },
+        {
+          "name": "4. Regression",
+          "path": "4. Regression",
+          "description": "",
+          "kind": "folder",
+          "children": [
+            {
+              "name": "Adam Sandler",
+              "path": "Adam Sandler.jasp",
+              "description": "Adam Sandler.jasp",
+              "kind": "file",
+              "associated_datafile": "Adam Sandler.csv"
+            },
+            {
+              "name": "Album Sales",
+              "path": "Album Sales.jasp",
+              "description": "Album Sales.jasp",
+              "kind": "file",
+              "associated_datafile": "Album Sales.csv"
+            },
+            {
+              "name": "Auction",
+              "path": "Auction.jasp",
+              "description": "Auction.jasp",
+              "kind": "file",
+              "associated_datafile": "Auction.csv"
+            },
+            {
+              "name": "Big Five Personality Traits",
+              "path": "Big Five Personality Traits.jasp",
+              "description": "Big Five Personality Traits.jasp",
+              "kind": "file",
+              "associated_datafile": "Big Five Personality Traits.csv"
+            },
+            {
+              "name": "College Success",
+              "path": "College Success.jasp",
+              "description": "College Success.jasp",
+              "kind": "file",
+              "associated_datafile": "College Success.csv"
+            },
+            {
+              "name": "Exam Anxiety",
+              "path": "Exam Anxiety.jasp",
+              "description": "Exam Anxiety.jasp",
+              "kind": "file",
+              "associated_datafile": "Exam Anxiety.csv"
+            },
+            {
+              "name": "Fidgeting and Fat Gain",
+              "path": "Fidgeting and Fat Gain.jasp",
+              "description": "Fidgeting and Fat Gain.jasp",
+              "kind": "file",
+              "associated_datafile": "Fidgeting and Fat Gain.csv"
+            },
+            {
+              "name": "Glasgow Norms",
+              "path": "Glasgow Norms.jasp",
+              "description": "Glasgow Norms.jasp",
+              "kind": "file",
+              "associated_datafile": "Glasgow Norms.csv"
+            },
+            {
+              "name": "Physical Activity and BMI",
+              "path": "Physical Activity and BMI.jasp",
+              "description": "Physical Activity and BMI.jasp",
+              "kind": "file",
+              "associated_datafile": "Physical Activity and BMI.csv"
+            },
+            {
+              "name": "The Biggest Liar",
+              "path": "The Biggest Liar.jasp",
+              "description": "The Biggest Liar.jasp",
+              "kind": "file",
+              "associated_datafile": "The Biggest Liar.csv"
+            },
+            {
+              "name": "Titanic Disaster",
+              "path": "Titanic Disaster.jasp",
+              "description": "Titanic Disaster.jasp",
+              "kind": "file",
+              "associated_datafile": "Titanic Disaster.csv"
+            }
+          ]
+        },
+        {
+          "name": "5. Frequencies",
+          "path": "5. Frequencies",
+          "description": "",
+          "kind": "folder",
+          "children": [
+            {
+              "name": "Dancing Cats and Dogs",
+              "path": "Dancing Cats and Dogs.jasp",
+              "description": "Dancing Cats and Dogs.jasp",
+              "kind": "file",
+              "associated_datafile": "Dancing Cats and Dogs.csv"
+            },
+            {
+              "name": "Dancing Cats",
+              "path": "Dancing Cats.jasp",
+              "description": "Dancing Cats.jasp",
+              "kind": "file",
+              "associated_datafile": "Dancing Cats.csv"
+            },
+            {
+              "name": "Death Penalty",
+              "path": "Death Penalty.jasp",
+              "description": "Death Penalty.jasp",
+              "kind": "file",
+              "associated_datafile": "Death Penalty.csv"
+            },
+            {
+              "name": "Emily Rosa",
+              "path": "Emily Rosa.jasp",
+              "description": "Emily Rosa.jasp",
+              "kind": "file",
+              "associated_datafile": "Emily Rosa.csv"
+            },
+            {
+              "name": "Health Habits",
+              "path": "Health Habits.jasp",
+              "description": "Health Habits.jasp",
+              "kind": "file",
+              "associated_datafile": "Health Habits.csv"
+            },
+            {
+              "name": "Listerism",
+              "path": "Listerism.jasp",
+              "description": "Listerism.jasp",
+              "kind": "file",
+              "associated_datafile": "Listerism.csv"
+            },
+            {
+              "name": "Memory of Life Stresses",
+              "path": "Memory of Life Stresses.jasp",
+              "description": "Memory of Life Stresses.jasp",
+              "kind": "file",
+              "associated_datafile": "Memory of Life Stresses.csv"
+            },
+            {
+              "name": "MOOC Bias",
+              "path": "MOOC Bias.jasp",
+              "description": "MOOC Bias.jasp",
+              "kind": "file",
+              "associated_datafile": "MOOC Bias.csv"
+            },
+            {
+              "name": "Three Sided Coin",
+              "path": "Three Sided Coin.jasp",
+              "description": "Three Sided Coin.jasp",
+              "kind": "file"
+            },
+            {
+              "name": "Zombies",
+              "path": "Zombies.jasp",
+              "description": "Zombies.jasp",
+              "kind": "file",
+              "associated_datafile": "Zombies.csv"
+            }
+          ]
+        },
+        {
+          "name": "6. Factor",
+          "path": "6. Factor",
+          "description": "",
+          "kind": "folder",
+          "children": [
+            {
+              "name": "G Factor",
+              "path": "G Factor.jasp",
+              "description": "G Factor.jasp",
+              "kind": "file",
+              "associated_datafile": "G Factor.csv"
+            }
+          ]
+        },
+        {
+          "name": "7. Meta-analysis",
+          "path": "7. Meta-analysis",
+          "description": "",
+          "kind": "folder",
+          "children": [
+            {
+              "name": "BCG Vaccine",
+              "path": "BCG Vaccine.jasp",
+              "description": "BCG Vaccine.jasp",
+              "kind": "file",
+              "associated_datafile": "BCG Vaccine.csv"
+            }
+          ]
+        },
+        {
+          "name": "8. Network Analysis",
+          "path": "8. Network Analysis",
+          "description": "",
+          "kind": "folder",
+          "children": [
+            {
+              "name": "Big Five Inventory",
+              "path": "Big Five Inventory.jasp",
+              "description": "Big Five Inventory.jasp",
+              "kind": "file",
+              "associated_datafile": "Big Five Inventory.csv"
+            }
+          ]
+        },
+        {
+          "name": "9. Structural Equation Modeling",
+          "path": "9. Structural Equation Modeling",
+          "description": "",
+          "kind": "folder",
+          "children": [
+            {
+              "name": "Political Democracy",
+              "path": "Political Democracy.jasp",
+              "description": "Political Democracy.jasp",
+              "kind": "file",
+              "associated_datafile": "Political Democracy.csv"
+            }
+          ]
+        },
+        {
+          "name": "10. Miscellaneous",
+          "path": "10. Miscellaneous",
+          "description": "",
+          "kind": "folder",
+          "children": [
+            {
+              "name": "Anscombe Quartet",
+              "path": "Anscombe Quartet.jasp",
+              "description": "Anscombe Quartet.jasp",
+              "kind": "file",
+              "associated_datafile": "Anscombe Quartet.csv"
+            },
+            {
+              "name": "Missing Data",
+              "path": "Missing Data.jasp",
+              "description": "Missing Data.jasp",
+              "kind": "file",
+              "associated_datafile": "Missing Data.csv"
+            },
+            {
+              "name": "Presidents",
+              "path": "Presidents.jasp",
+              "description": "Presidents.jasp",
+              "kind": "file",
+              "associated_datafile": "Presidents.csv"
+            }
+          ]
+        },
+        {
+          "name": "Books",
+          "path": "Books",
+          "description": "",
+          "kind": "folder",
+          "children": [
+            {
+              "name": "Field -  Discovering Statistics",
+              "path": "Field -  Discovering Statistics",
+              "description": "",
+              "kind": "folder",
+              "children": [
+                {
+                  "name": "Album Sales",
+                  "path": "Album Sales.jasp",
+                  "description": "Album Sales.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Album Sales.csv"
+                },
+                {
+                  "name": "Alcohol Attitudes",
+                  "path": "Alcohol Attitudes.jasp",
+                  "description": "Alcohol Attitudes.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Alcohol Attitudes.csv"
+                },
+                {
+                  "name": "Beer Goggles",
+                  "path": "Beer Goggles.jasp",
+                  "description": "Beer Goggles.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Beer Goggles.csv"
+                },
+                {
+                  "name": "Bush Tucker Food",
+                  "path": "Bush Tucker Food.jasp",
+                  "description": "Bush Tucker Food.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Bush Tucker Food.csv"
+                },
+                {
+                  "name": "Dancing Cats and Dogs",
+                  "path": "Dancing Cats and Dogs.jasp",
+                  "description": "Dancing Cats and Dogs.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Dancing Cats and Dogs.csv"
+                },
+                {
+                  "name": "Dancing Cats",
+                  "path": "Dancing Cats.jasp",
+                  "description": "Dancing Cats.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Dancing Cats.csv"
+                },
+                {
+                  "name": "Exam Anxiety",
+                  "path": "Exam Anxiety.jasp",
+                  "description": "Exam Anxiety.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Exam Anxiety.csv"
+                },
+                {
+                  "name": "Fear of Statistics",
+                  "path": "Fear of Statistics.jasp",
+                  "description": "Fear of Statistics.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Fear of Statistics.csv"
+                },
+                {
+                  "name": "Invisibility",
+                  "path": "Invisibility.jasp",
+                  "description": "Invisibility.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Invisibility.csv"
+                },
+                {
+                  "name": "Looks or Personality",
+                  "path": "Looks or Personality.jasp",
+                  "description": "Looks or Personality.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Looks or Personality.csv"
+                },
+                {
+                  "name": "The Biggest Liar",
+                  "path": "The Biggest Liar.jasp",
+                  "description": "The Biggest Liar.jasp",
+                  "kind": "file",
+                  "associated_datafile": "The Biggest Liar.csv"
+                },
+                {
+                  "name": "Viagra",
+                  "path": "Viagra.jasp",
+                  "description": "Viagra.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Viagra.csv"
+                }
+              ]
+            },
+            {
+              "name": "Moore, McCabe and Craig -  Introduction to the Practice of Statistics",
+              "path": "Moore, McCabe and Craig -  Introduction to the Practice of Statistics",
+              "description": "",
+              "kind": "folder",
+              "children": [
+                {
+                  "name": "College Success",
+                  "path": "College Success.jasp",
+                  "description": "College Success.jasp",
+                  "kind": "file",
+                  "associated_datafile": "College Success.csv"
+                },
+                {
+                  "name": "Directed Reading Activities",
+                  "path": "Directed Reading Activities.jasp",
+                  "description": "Directed Reading Activities.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Directed Reading Activities.csv"
+                },
+                {
+                  "name": "Facebook Friends",
+                  "path": "Facebook Friends.jasp",
+                  "description": "Facebook Friends.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Facebook Friends.csv"
+                },
+                {
+                  "name": "Fidgeting and Fat Gain",
+                  "path": "Fidgeting and Fat Gain.jasp",
+                  "description": "Fidgeting and Fat Gain.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Fidgeting and Fat Gain.csv"
+                },
+                {
+                  "name": "Health Habits",
+                  "path": "Health Habits.jasp",
+                  "description": "Health Habits.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Health Habits.csv"
+                },
+                {
+                  "name": "Heart Rate",
+                  "path": "Heart Rate.jasp",
+                  "description": "Heart Rate.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Heart Rate.csv"
+                },
+                {
+                  "name": "Moon and Aggression",
+                  "path": "Moon and Aggression.jasp",
+                  "description": "Moon and Aggression.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Moon and Aggression.csv"
+                },
+                {
+                  "name": "Physical Activity and BMI",
+                  "path": "Physical Activity and BMI.jasp",
+                  "description": "Physical Activity and BMI.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Physical Activity and BMI.csv"
+                },
+                {
+                  "name": "Response to Eye Color",
+                  "path": "Response to Eye Color.jasp",
+                  "description": "Response to Eye Color.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Response to Eye Color.csv"
+                },
+                {
+                  "name": "Sun Block Lotions",
+                  "path": "Sun Block Lotions.jasp",
+                  "description": "Sun Block Lotions.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Sun Block Lotions.csv"
+                },
+                {
+                  "name": "Weight Gain",
+                  "path": "Weight Gain.jasp",
+                  "description": "Weight Gain.jasp",
+                  "kind": "file",
+                  "associated_datafile": "Weight Gain.csv"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Political Democracy (Bollen, 1989)",
+      "path": "Political Democracy (Bollen, 1989).csv",
+      "description": "A SEM data set",
+      "kind": "file",
+      "children": [null]
+    },
+    {
+      "name": "Bugs (Ryan, Wilde & Crist, 2013)",
+      "path": "Bugs (Ryan, Wilde & Crist, 2013).csv",
+      "description": "A repeated measures ANOVA data set",
+      "kind": "file",
+      "children": [null]
+    },
+    {
+      "name": "Tooth Growth",
+      "path": "Tooth Growth.csv",
+      "description": "An uninspiring ANOVA data set",
+      "kind": "file",
+      "children": [null]
+    },
+    {
+      "name": "Kitchen Rolls",
+      "path": "Kitchen Rolls.csv",
+      "description": "A nice t-test data set",
+      "kind": "file",
+      "children": [null]
+    },
+    {
+      "name": "Big 5 (Dolan, Oort, Stoel & Wicherts, 2009)",
+      "path": "Big 5 (Dolan, Oort, Stoel & Wicherts, 2009).csv",
+      "description": "A nice correlation data set",
+      "kind": "file",
+      "children": [null]
+    }
+  ]
+}

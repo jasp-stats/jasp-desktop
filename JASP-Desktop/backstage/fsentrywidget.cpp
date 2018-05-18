@@ -193,25 +193,56 @@ void FSEntryWidget::doubleClickHandler()
 
 void FSEntryWidget::initIcons()
 {
+	
 	if (_smallIcons != NULL)
 		return;
 
+	_smallIcons = getEntryTypeIcons(true); //compact = true i.e. small icons
+	_largeIcons = getEntryTypeIcons(false);
+	
+}
+
+QPixmap *FSEntryWidget::getEntryTypeIcons(bool compact)
+{
+	
 	QSize smallSize(32, 32);
 	QSize largeSize(40, 40);
-
-	_smallIcons = new QPixmap[FSEntry::NoOfTypes];
-	_largeIcons = new QPixmap[FSEntry::NoOfTypes];
-
-	_smallIcons[FSEntry::JASP] = QPixmap(QIcon(":/icons/file-jasp.svg").pixmap(smallSize));
-	_smallIcons[FSEntry::CSV] = QPixmap(QIcon(":/icons/spreadsheet.svg").pixmap(smallSize));
-	_smallIcons[FSEntry::SPSS] = QPixmap(QIcon(":/icons/spreadsheet.svg").pixmap(smallSize));
-	_smallIcons[FSEntry::Other] = QPixmap(QIcon(":/icons/spreadsheet.svg").pixmap(smallSize));
-	_smallIcons[FSEntry::Folder] = QPixmap(QIcon(":/icons/folder.svg").pixmap(smallSize));
-
-	_largeIcons[FSEntry::JASP] = QPixmap(QIcon(":/icons/file-jasp.svg").pixmap(largeSize));
-	_largeIcons[FSEntry::CSV] = QPixmap(QIcon(":/icons/spreadsheet.svg").pixmap(largeSize));
-	_largeIcons[FSEntry::SPSS] = QPixmap(QIcon(":/icons/spreadsheet.svg").pixmap(largeSize));
-	_largeIcons[FSEntry::Other] = QPixmap(QIcon(":/icons/spreadsheet.svg").pixmap(largeSize));
-	_largeIcons[FSEntry::Folder] = QPixmap(QIcon(":/icons/folder.svg").pixmap(largeSize));
+	
+	QHash<int, QString> iconsources = sourcesIcons();
+	
+	QPixmap * iconPixmap = new QPixmap[FSEntry::NoOfTypes];
+	
+	if (compact)
+	{
+		iconPixmap[FSEntry::JASP] = QPixmap(QIcon(iconsources[FSEntry::JASP]).pixmap(smallSize));
+		iconPixmap[FSEntry::CSV] = QPixmap(QIcon(iconsources[FSEntry::CSV]).pixmap(smallSize));
+		iconPixmap[FSEntry::SPSS] = QPixmap(QIcon(iconsources[FSEntry::SPSS]).pixmap(smallSize));
+		iconPixmap[FSEntry::Other] = QPixmap(QIcon(iconsources[FSEntry::Other]).pixmap(smallSize));
+		iconPixmap[FSEntry::Folder] = QPixmap(QIcon(iconsources[FSEntry::Folder]).pixmap(smallSize));
+		
+	}
+	else
+	{
+		iconPixmap[FSEntry::JASP] = QPixmap(QIcon(iconsources[FSEntry::JASP]).pixmap(largeSize));
+		iconPixmap[FSEntry::CSV] = QPixmap(QIcon(iconsources[FSEntry::CSV]).pixmap(largeSize));
+		iconPixmap[FSEntry::SPSS] = QPixmap(QIcon(iconsources[FSEntry::SPSS]).pixmap(largeSize));
+		iconPixmap[FSEntry::Other] = QPixmap(QIcon(iconsources[FSEntry::Other]).pixmap(largeSize));
+		iconPixmap[FSEntry::Folder] = QPixmap(QIcon(iconsources[FSEntry::Folder]).pixmap(largeSize));
+	
+	}	
+	return iconPixmap;	
 }
+
+
+QHash<int, QString> FSEntryWidget::sourcesIcons() 
+{
+	QHash<int, QString> icons;
+	icons[FSEntry::JASP] = ":/icons/file-jasp.svg";
+	icons[FSEntry::CSV] =":/icons/spreadsheet.svg";
+	icons[FSEntry::SPSS] = ":/icons/spreadsheet.svg";
+	icons[FSEntry::Other] =":/icons/spreadsheet.svg";
+	icons[FSEntry::Folder] = ":/icons/folder.svg";
+	return icons;
+}
+
 

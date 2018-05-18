@@ -29,6 +29,7 @@ BreadCrumbs::BreadCrumbs(QWidget *parent) : QWidget(parent)
 
 	_layout = new QHBoxLayout(this);
 	_layout->setSpacing(4);
+	_layout->setContentsMargins(12, 12, 12, 12); //Position breadcrumbs
 	setLayout(_layout);
 
 	_buttons = new QButtonGroup(this);
@@ -40,12 +41,18 @@ BreadCrumbs::BreadCrumbs(QWidget *parent) : QWidget(parent)
 	_layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
 
 	connect(_dotDotDotButton, SIGNAL(clicked(bool)), this, SLOT(dotDotDotClicked()));
+	_separator = QChar('/');
 }
 
 void BreadCrumbs::setRootPath(const QString &path)
 {
 	_rootPath = path;
-	_rootPieces = path.split("/", QString::SkipEmptyParts);
+	_rootPieces = path.split(_separator, QString::SkipEmptyParts);
+}
+
+void BreadCrumbs::setSeperator(const QChar &separator)
+{
+	_separator = separator;
 }
 
 void BreadCrumbs::setPath(QString path)
@@ -55,7 +62,7 @@ void BreadCrumbs::setPath(QString path)
 
 	_path = path;
 
-	QStringList pieces = _path.split("/", QString::SkipEmptyParts);
+	QStringList pieces = _path.split(_separator, QString::SkipEmptyParts);
 
 	for (int i = 0; i < _rootPieces.length(); i++)
 		pieces.pop_front();
@@ -90,7 +97,7 @@ void BreadCrumbs::buttonClicked()
 	for (int i = 0; i < toPop; i++)
 		_pathPieces.pop_back();
 
-	_path = _rootPath + "/" + _pathPieces.join("/");
+	_path = _rootPath + _separator + _pathPieces.join(_separator);
 
 	if (_model != NULL)
 		_model->setPath(_path);
@@ -114,7 +121,7 @@ void BreadCrumbs::dotDotDotClicked()
 			pieces.pop_back();
 
 		_pathPieces = pieces;
-		_path = _rootPath + "/" + _pathPieces.join("/");
+		_path = _rootPath + _separator + _pathPieces.join(_separator);
 	}
 
 	if (_model != NULL)

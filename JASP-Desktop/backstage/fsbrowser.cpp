@@ -36,7 +36,7 @@ FSBrowser::FSBrowser(QWidget *parent, FSBrowser::BrowseMode mode) : QWidget(pare
 	_viewType = FSBrowser::IconView;
 
 	QGridLayout *layout = new QGridLayout(this);
-	layout->setContentsMargins(12, 12, 0, 0);
+	layout->setContentsMargins(12, 12, 0, 0);  //Position all file and folder elements asn recent file label
 	setLayout(layout);
 	
 #ifdef __APPLE__
@@ -177,12 +177,12 @@ void FSBrowser::refresh()
 		if (_viewType == ListView)
 		{
 			compact = true;
-			_scrollPaneLayout->setContentsMargins(8, 8, 8, 8);
-			_scrollPaneLayout->setSpacing(0);
+			_scrollPaneLayout->setContentsMargins(12, 8, 8, 8);  //Position Folders
+			_scrollPaneLayout->setSpacing(0); 
 		}
 		else
 		{
-			_scrollPaneLayout->setContentsMargins(12, 12, 12, 12);
+			_scrollPaneLayout->setContentsMargins(12, 12, 12, 12); //Position Files in recent
 			_scrollPaneLayout->setSpacing(8);
 		}
 

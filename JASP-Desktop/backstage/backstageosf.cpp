@@ -38,7 +38,7 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	layout->addWidget(topRow);
 
 	QGridLayout *topRowLayout = new QGridLayout();
-	topRowLayout->setContentsMargins(0, 6, 12, 0);
+	topRowLayout->setContentsMargins(0, 0, 12, 0);
 	topRow->setLayout(topRowLayout);
 
 	QLabel *label = new QLabel("Open Science Framework", topRow);
@@ -48,7 +48,7 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	QSizePolicy sp = label->sizePolicy();
 	sp.setHorizontalStretch(1);
 	label->setSizePolicy(sp);
-	label->setContentsMargins(10, 6, 0, 0);
+	label->setContentsMargins(12, 12, 0, 0);  //Position BackstageOSF label
 	topRowLayout->addWidget(label, 0, 0);
 
 	_logoutButton = new QToolButton(topRow);
@@ -91,7 +91,7 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 
 	_saveButton = new QPushButton(_fileNameContainer);
 	_saveButton->setText("Save");
-	_saveButton->setEnabled(false);
+	_saveButton->setEnabled(true);
 	saveLayout->addWidget(_saveButton, 0, Qt::AlignRight);
 
 	QWidget *line;
@@ -114,6 +114,7 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 
 	_breadCrumbs->setModel(_model);
 	_breadCrumbs->setEnabled(false);
+	_breadCrumbs->setSeperator(QChar('/'));
 
 	connect(_fsBrowser, SIGNAL(entryOpened(QString)), this, SLOT(notifyDataSetOpened(QString)));
 	connect(_fsBrowser, SIGNAL(entrySelected(QString)), this, SLOT(notifyDataSetSelected(QString)));

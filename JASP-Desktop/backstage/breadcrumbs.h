@@ -37,6 +37,7 @@ public:
 	explicit BreadCrumbs(QWidget *parent = 0);
 
 	void setRootPath(const QString &path);
+	void setSeperator(const QChar &separator);
 	const QString &path() const;
 
 	void setModel(FSBModel *model);
@@ -64,6 +65,7 @@ private:
 
 	QString _rootPath;
 	QString _path;
+	QChar _separator;
 
 	QStringList _rootPieces;
 	QStringList _pathPieces;
