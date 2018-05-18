@@ -414,47 +414,25 @@ Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(RBridgeColumn* colRe
 	if (colResults)
 	{
 		Rcpp::List list(colMax);
-		Rcpp::CharacterVector columnNames;
+		Rcpp::CharacterVector columnNames(colMax);
+
 		for (int i = 0; i < colMax; i++)
 		{
 			RBridgeColumn& colResult = colResults[i];
-			columnNames.push_back(colResult.name);
-			int maxRow = colResult.nbRows;
+			columnNames[i] = colResult.name;
+
 			if (colResult.isScale)
-			{
-				Rcpp::NumericVector v(maxRow);
-				for (int j = 0; j < maxRow; j++)
-					v[j] = colResult.doubles[j];
-
-				list[i] = v;
-			}
-			else if (!colResult.hasLabels)
-			{
-				Rcpp::IntegerVector v(maxRow);
-				for (int j = 0; j < maxRow; j++)
-					v[j] = colResult.ints[j];
-				list[i] = v;
-			}
+				list[i] = Rcpp::NumericVector(colResult.doubles, colResult.doubles + colResult.nbRows);
+			else if(!colResult.hasLabels)
+				list[i] = Rcpp::IntegerVector(colResult.ints, colResult.ints + colResult.nbRows);
 			else
-			{
-				Rcpp::IntegerVector v(maxRow);
-				for (int j = 0; j < maxRow; j++)
-					v[j] = colResult.ints[j];
-				jaspRCPP_makeFactor(v, colResult.labels, colResult.nbLabels, colResult.isOrdinal);
-				list[i] = v;
-			}
+				list[i] = jaspRCPP_makeFactor(Rcpp::IntegerVector(colResult.ints, colResult.ints + colResult.nbRows), colResult.labels, colResult.nbLabels, colResult.isOrdinal);
+
 		}
-		list.attr("names") = columnNames;
 
-		dataFrame = Rcpp::DataFrame(list);
-
-		Rcpp::IntegerVector rowNames;
-
-		for(int row=0; row<colResults[colMax].nbRows; row++)
-			rowNames.push_back(colResults[colMax].ints[row]);
-
-		dataFrame.attr("row.names") = rowNames;
-
+		list.attr("names")			= columnNames;
+		dataFrame					= Rcpp::DataFrame(list);
+		dataFrame.attr("row.names") = Rcpp::IntegerVector(colResults[colMax].ints, colResults[colMax].ints + colResults[colMax].nbRows);
 	}
 
 	return dataFrame;
@@ -472,26 +450,19 @@ Rcpp::DataFrame jaspRCPP_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumer
 	if (columnsDescription)
 	{
 		Rcpp::List list(colMax);
-		Rcpp::CharacterVector columnNames;
+		Rcpp::CharacterVector columnNames(colMax);
 
 		for (int i = 0; i < colMax; i++)
 		{
 			RBridgeColumnDescription& colDescription = columnsDescription[i];
-			columnNames.push_back(colDescription.name);
+			columnNames[i] = colDescription.name;
+
 			if (colDescription.isScale)
-			{
 				list(i) = Rcpp::NumericVector(0);
-			}
 			else if (!colDescription.hasLabels)
-			{
 				list(i) = Rcpp::IntegerVector(0);
-			}
 			else
-			{
-				Rcpp::IntegerVector v(0);
-				jaspRCPP_makeFactor(v, colDescription.labels, colDescription.nbLabels, colDescription.isOrdinal);
-				list(i) = v;
-			}
+				list(i) = jaspRCPP_makeFactor(Rcpp::IntegerVector(0), colDescription.labels, colDescription.nbLabels, colDescription.isOrdinal);
 		}
 
 		list.attr("names") = columnNames;
@@ -502,7 +473,7 @@ Rcpp::DataFrame jaspRCPP_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumer
 
 }
 
-void jaspRCPP_makeFactor(Rcpp::IntegerVector &v, char** levels, int nbLevels, bool ordinal)
+Rcpp::IntegerVector jaspRCPP_makeFactor(Rcpp::IntegerVector v, char** levels, int nbLevels, bool ordinal)
 {
 	Rcpp::CharacterVector labels;
 	for (int i = 0; i < nbLevels; i++)
@@ -515,4 +486,6 @@ void jaspRCPP_makeFactor(Rcpp::IntegerVector &v, char** levels, int nbLevels, bo
 	cla55.push_back("factor");
 
 	v.attr("class") = cla55;
+
+	return v;
 }
