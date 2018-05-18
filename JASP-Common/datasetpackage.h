@@ -26,7 +26,7 @@
 #include "jsonredirect.h"
 
 #define DEFAULT_FILTER "# Write your own filter using R directly.\n\n"\
-	"# The grey readonly code above here created a logical vector generatedFilter\n"\
+	"# The readonly code above created generatedFilter, a logical vector\n"\
 	"# Add filters using R syntax\n\n"\
 	"# Create new filters as follows:\n"\
 	"#\tGender == \"Female\" & TestScore > 5\n\n"\
