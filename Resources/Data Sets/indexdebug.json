@@ -53,14 +53,14 @@
               "associated_datafile": "Eye Movements.csv"
             },
             {
-              "name": "Invisibility.jasp",
+              "name": "Invisibility",
               "path": "Invisibility.jasp",
               "description": "Invisibility",
               "kind": "file",
               "associated_datafile": "Invisibility.csv"
             },
             {
-              "name": "Kitchen Rolls.jasp",
+              "name": "Kitchen Rolls",
               "path": "Kitchen Rolls.jasp",
               "description": "Kitchen Rolls",
               "kind": "file",

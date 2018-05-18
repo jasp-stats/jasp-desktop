@@ -93,7 +93,6 @@ ListView
 						hoverEnabled: true
 						
 						onDoubleClicked: {
-							console.log("Open datafile")
 							dataLibraryListModel.openFile(model.dirpath + model.associated_datafile)				
 						}					
 					}

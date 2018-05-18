@@ -7,7 +7,7 @@
     {
       "name": "Data Library",
       "path": "Data Library",
-      "description": "Example Data Files",
+      "description": "Data library of educational JASP files and belonging data files. ",
       "kind": "folder",
       "children": [
         {
@@ -19,7 +19,7 @@
             {
               "name": "Fear of Statistics",
               "path": "Fear of Statistics.jasp",
-              "description": "Fear of Statistics.jasp",
+              "description": "Fear of Statistics",
               "kind": "file",
               "associated_datafile": "Fear of Statistics.csv"
             },
@@ -48,28 +48,28 @@
             {
               "name": "Eye Movements",
               "path": "Eye Movements.jasp",
-              "description": "Eye Movements.jasp",
+              "description": "Eye Movements",
               "kind": "file",
               "associated_datafile": "Eye Movements.csv"
             },
             {
               "name": "Invisibility",
               "path": "Invisibility.jasp",
-              "description": "Invisibility.jasp",
+              "description": "Invisibility",
               "kind": "file",
               "associated_datafile": "Invisibility.csv"
             },
             {
               "name": "Kitchen Rolls",
               "path": "Kitchen Rolls.jasp",
-              "description": "Kitchen Rolls.jasp",
+              "description": "Kitchen Rolls",
               "kind": "file",
               "associated_datafile": "Kitchen Rolls.csv"
             },
             {
               "name": "Moon and Aggression",
               "path": "Moon and Aggression.jasp",
-              "description": "Moon and Aggression.jasp",
+              "description": "Moon and Aggression",
               "kind": "file",
               "associated_datafile": "Moon and Aggression.csv"
             },

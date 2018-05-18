@@ -12,7 +12,6 @@ SOURCES += \
     $$PWD/availablefields.cpp \
     $$PWD/backstage/authwidget.cpp \
     $$PWD/backstage/backstagecomputer.cpp \
-    $$PWD/backstage/backstageexamples.cpp \
     $$PWD/backstage/backstageosf.cpp \
     $$PWD/backstage/backstagepage.cpp \
     $$PWD/backstage/breadcrumbs.cpp \
@@ -164,7 +163,6 @@ HEADERS  += \
     $$PWD/availablefields.h \
     $$PWD/backstage/authwidget.h \
     $$PWD/backstage/backstagecomputer.h \
-    $$PWD/backstage/backstageexamples.h \
     $$PWD/backstage/backstageosf.h \
     $$PWD/backstage/backstagepage.h \
     $$PWD/backstage/breadcrumbs.h \
