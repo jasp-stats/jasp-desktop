@@ -2315,6 +2315,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		}
 
 		if (options$plotResidualsCovariates && length(options$modelTerms) > 0 && dependent.variable != "") {
+		  
+		  k <- 1
 
 			for (var in seq_along(variables.in.model)) {
 
@@ -2330,7 +2332,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					stateIndex <- which(state$plotTypes == paste0("plotResidualsCovariates", variables.in.model[var]))[1]
 
 					plots.regression[[j]] <- state$plotsRegression[[stateIndex]]
-					plotsResVsCov[[j]] <- state$plotsRegression[[stateIndex]]
+					plotsResVsCov[[k]] <- state$plotsRegression[[stateIndex]]
 					results[["plotsResVsCov"]]$collection <- plotsResVsCov
 
 				} else {
@@ -2356,7 +2358,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					}
 
 					plots.regression[[j]]$status <- "running"
-					plotsResVsCov[[j-1]] <- plots.regression[[j]]
+					plotsResVsCov[[k]] <- plots.regression[[j]]
 
 					results[["plotsResVsCov"]]$collection <- plotsResVsCov
 
@@ -2398,7 +2400,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 					plot[["status"]] <- "complete"
 					plots.regression[[j]] <- plot
-					plotsResVsCov[[j-1]] <- plot
+					plotsResVsCov[[k]] <- plot
 					results[["plotsResVsCov"]]$collection <- plotsResVsCov
 
 					if ( ! .shouldContinue(callback(results)))
@@ -2407,6 +2409,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				}
 
 				j <- j + 1
+				k <- k + 1
 
 			}
 		}
