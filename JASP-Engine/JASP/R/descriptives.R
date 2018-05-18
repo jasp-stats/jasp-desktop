@@ -1742,10 +1742,6 @@ Descriptives <- function(dataset=NULL, options, perform="run",
   # Plot
   splitPlot <- list()
 
-  print("haalo!")
-  print(row.names(dataset))
-  print("dataset:")
-  print(dataset)
   # we need to know which index in y is related to which index in the actual data, so we should not forget the NAs somehow, lets make a list of indices.
   yWithNA         <- dataset[[.v(variable)]]
   y               <- na.omit(dataset[[.v(variable)]])
