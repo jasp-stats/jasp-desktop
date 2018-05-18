@@ -1,0 +1,8 @@
+The fillowing JASP files and belonging data examples are distributed under 
+the follwing licenses:
+
+- Andy Field examples
+see license.txt in : "Field -  Discovering Statistics"
+
+- Moore et al. examples
+see licene.txt in : "Moore, McCabe and Craig -  Introduction to the Practice of Statistics"   
