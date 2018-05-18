@@ -1,7 +1,11 @@
-# Contributing to jasp
+# Requesting new features, or reporting bugs:
 
-Anyone is welcome to contribute to JASP. If you would like to create a new module/analysis, fix a
-bug you found, or implemented a feature, please submit a pull request. See
+To request a new feature, or report a bug, please consult the following [blog post](https://jasp-stats.org/2018/03/29/request-feature-report-bug-jasp/)
+
+# Contributing to JASP
+
+Anyone is welcome to contribute to JASP. If you have created a new module/analysis, fixed a
+bug you found, or implemented a feature on your own branch, please submit a pull request. See
 [Dev Docs](Docs/development) for more details about the development.
 
 ## Pull request process
