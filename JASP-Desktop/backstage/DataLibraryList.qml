@@ -94,7 +94,8 @@ ListView
 						
 						onDoubleClicked: {
 							dataLibraryListModel.openFile(model.dirpath + model.associated_datafile)				
-						}					
+						}
+						cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 					}
 					
 					ToolTip {
@@ -133,6 +134,8 @@ ListView
 						else
 							dataLibraryListModel.openFile(model.path)				
 					}	
+
+					cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 					
 				}
 				

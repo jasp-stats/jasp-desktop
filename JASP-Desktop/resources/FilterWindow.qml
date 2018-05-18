@@ -221,6 +221,7 @@ FocusScope
 						onActiveFocusChanged: if(!activeFocus) deselect()
 
 						font.family: "Courier"
+						wrapMode: New.TextArea.WrapAtWordBoundaryOrAnywhere
 
 					}
 
@@ -263,6 +264,7 @@ FocusScope
 						property bool changedSinceLastApply: text !== filterContainer.lastAppliedFilter
 
 						font.family: "Courier"
+						wrapMode: New.TextArea.WrapAtWordBoundaryOrAnywhere
 					}
 				}
 			}

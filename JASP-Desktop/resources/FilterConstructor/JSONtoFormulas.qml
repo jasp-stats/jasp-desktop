@@ -3,7 +3,7 @@ import QtQuick 2.0
 Item {
 	function convertJSONtoFormulas(jsonObj)
 	{
-		if(jsonObj === null) return
+		if(jsonObj === null || jsonObj === undefined) return
 
 		for(var i=0; i<jsonObj.formulas.length; i++)
 			convertJSONtoItem(jsonObj.formulas[i], scriptColumn)
