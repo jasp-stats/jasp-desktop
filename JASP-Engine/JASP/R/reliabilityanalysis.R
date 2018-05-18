@@ -132,8 +132,8 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		}
 
 		# calculate chronbach alpha, gutmanns lambda6, and average inter item corrrelation
-		relyFit <- psych::alpha(dataList[["covariance"]], key = key)
-		
+		relyFit <- .quietDuringUnitTest(psych::alpha(dataList[["covariance"]], key = key))
+
 		# because we supply a correlation matrix and not raw data, we have to add these ourselves
 		relyFit[["total"]][["mean"]] <- mean(dataList[["itemMeans"]])
 		relyFit[["total"]][["sd"]] <- stats::sd(dataList[["itemMeans"]])
@@ -151,22 +151,23 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 		} else { # try since the glb is error prone icm reverse scaled items. Requires further investigation/ this might be a bug in psych.
 
-			relyFit[["glb"]] <- try(psych::glb(r = dataList[["correlation"]], key = key)[["glb.max"]], silent = TRUE)
+			relyFit[["glb"]] <- .quietDuringUnitTest(try(psych::glb(r = dataList[["correlation"]], key = key)[["glb.max"]], silent = TRUE))
 
 		}
 
 		# calculate McDonalds omega
-		omega <- psych::omega(m = dataList[["correlation"]], nfactors = 1, flip = FALSE, plot = FALSE, 
-							  n.iter = 1, n.obs = nObs)[["omega.tot"]]
+		omega <- .quietDuringUnitTest(psych::omega(m = dataList[["correlation"]], nfactors = 1, flip = FALSE, plot = FALSE, 
+							  n.iter = 1, n.obs = nObs)[["omega.tot"]])
 
 		# calculate McDonalds omega if item dropped
 		omegaDropped <- NULL
 		if (nVar > 2) {
 			omegaDropped <- numeric(length = nVar)
 			for (i in 1:nVar) {
-				omegaDropped[i] <- psych::omega(m = dataList[["correlation"]][-i, -i], 
-												nfactors = 1, n.iter = 1, n.obs = nObs,
-												flip = FALSE, plot = FALSE)[["omega.tot"]]
+
+					omegaDropped[i] <- .quietDuringUnitTest(psych::omega(m = dataList[["correlation"]][-i, -i], 
+													nfactors = 1, n.iter = 1, n.obs = nObs,
+													flip = FALSE, plot = FALSE)[["omega.tot"]])
 			}
 		}
 

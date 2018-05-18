@@ -2668,3 +2668,12 @@ editImage <- function(plotName, type, height, width) {
     }
   }
 }
+
+.quietDuringUnitTest <- function(expr) {
+	# check from testthat::skip_on_travis
+	if (identical(Sys.getenv("TRAVIS"), "true")) {
+		return(suppressWarnings(suppressMessages(expr)))
+	} else {
+		return(expr)
+	}
+}
