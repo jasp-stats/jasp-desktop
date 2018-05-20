@@ -1403,7 +1403,7 @@ RegressionLinearBayesian <- function (
 		g <- JASPgraphs::drawBars(dat = dfBar, width = width)
 		g <- JASPgraphs::drawLines(g, dat = dfLine,
 								   mapping = ggplot2::aes(x = x, y = y, group = g, linetype = g0), show.legend = TRUE) +
-			ggplot2::ylab("Marginal Inclusion Probability") +
+			ggplot2::scale_y_continuous("Marginal Inclusion Probability", breaks = seq(0, 1, .2), limits = 0:1) +
 			ggplot2::xlab("") +
 			ggplot2::scale_linetype_manual(name = "", values = 2, labels = "Prior\nInclusion\nProbabilities") 
 
