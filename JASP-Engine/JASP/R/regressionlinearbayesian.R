@@ -31,7 +31,7 @@ RegressionLinearBayesian <- function (
 						 	 	 "samplingMethod", "iterationsMCMC", "numberOfModels")
 	stateKey <- list(
 		bas_obj = modelOpts,
-		postSummary = c(modelOpts, "summaryType", "posteriorSummaryPlotCredibleIntervalValue"),
+		postSummary = c(modelOpts, "summaryType", "posteriorSummaryPlotCredibleIntervalValue", "nSimForCRI"),
 		postSummaryTable = c(modelOpts, "postSummaryTable", "summaryType", "posteriorSummaryPlotCredibleIntervalValue"),
 		postSummaryPlot = c(modelOpts, "postSummaryPlot", "summaryType", "posteriorSummaryPlotCredibleIntervalValue", "omitIntercept"),
 		descriptives = c("dependent", "covariates"),
@@ -301,9 +301,9 @@ RegressionLinearBayesian <- function (
 	}
 
 	if (perform == "run") {
-		dataset <- .readDataSetToEnd(columns.as.numeric = vars, exclude.na.listwise = vars)
+		dataset <- .readDataSetToEnd(columns = vars, exclude.na.listwise = vars)
 	} else {
-		dataset <- .readDataSetHeader(columns.as.numeric = vars)
+		dataset <- .readDataSetHeader(columns = vars)
 	}
 
 	return(dataset)
@@ -494,9 +494,10 @@ RegressionLinearBayesian <- function (
 		status$error <- TRUE
 		status$error.message <- .extractErrorMessage(bas_lm)
 	} else {
-		if (hasInteraction) {
-			bas_lm <- BAS:::force.heredity.bas(object = bas_lm, prior.prob = pInteraction)
-		}
+		bas_lm <- BAS::force.heredity.bas(bas_lm)
+#		if (hasInteraction) {
+#			bas_lm <- BAS:::force.heredity.bas(object = bas_lm, prior.prob = pInteraction)
+#		}
 		
 		bas_lm[["interaction"]] <- list(
 			hasInteraction = hasInteraction,
@@ -1399,6 +1400,8 @@ RegressionLinearBayesian <- function (
 			g = rep(factor(variables), each = 2),
 			g0 = factor(1)
 		)
+		yLimits <- JASPgraphs::getPrettyAxisBreaks(c(priorProb, probne0))
+		yBreaks <- seq(yLimits[1], yLimits[2], length.out = 5)
 
 		g <- JASPgraphs::drawBars(dat = dfBar, width = width)
 		g <- JASPgraphs::drawLines(g, dat = dfLine,
@@ -1586,7 +1589,7 @@ RegressionLinearBayesian <- function (
 		# only need to recalculate this if bas_obj was remade (which implies bas_obj[["posteriorSummary"]] is NULL)
 		coefBMA <- .coefBas(bas_obj, estimator = "BMA", dataset = dataset, weights = bas_obj[["weights"]])
 		
-		conf95BMA <- try(stats::confint(coefBMA,  level = 0.95))
+		conf95BMA <- try(stats::confint(coefBMA, level = 0.95, nsim = options$nSimForCRI))
 		if (isTryError(conf95BMA)) {
 		    conf95BMA <- cbind(NA, NA, coefBMA$postmean)
 		    rownames(conf95BMA) <- coefBMA$namesx

@@ -26,20 +26,20 @@ RegressionLinearBayesianForm::RegressionLinearBayesianForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	_availableVariablesModel.setVariableTypesSuggested(Column::ColumnTypeScale);
+	_availableVariablesModel.setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	_availableVariablesModel.setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	ui->listAvailableFields->setModel(&_availableVariablesModel);
 
 	_dependentListModel = new TableModelVariablesAssigned(this);
-	_dependentListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
-	_dependentListModel->setVariableTypesAllowed(Column::ColumnTypeScale);
+	_dependentListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
+	_dependentListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	_dependentListModel->setSource(&_availableVariablesModel);
 	ui->dependent->setModel(_dependentListModel);
 
 	_covariatesListModel = new TableModelVariablesAssigned(this);
 	_covariatesListModel->setSource(&_availableVariablesModel);
-	_covariatesListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
-	_covariatesListModel->setVariableTypesAllowed(Column::ColumnTypeScale);
+	_covariatesListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
+	_covariatesListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	ui->covariates->setModel(_covariatesListModel);
 
 	_wlsWeightsListModel = new TableModelVariablesAssigned();
