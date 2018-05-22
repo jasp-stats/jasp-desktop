@@ -34,6 +34,8 @@ public:
 	explicit SubjectivePriorsWidget(QWidget *parent = 0);
 	~SubjectivePriorsWidget();
 
+    void changeStandardizedPriorsStatus(bool);
+
 private slots:
 	void on__1standardizedEffectSize_toggled(bool checked);
 	void on__2dienesRawEffectSize_toggled(bool checked);

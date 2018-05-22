@@ -17,11 +17,10 @@
 
 TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
   # 
-
 	dependents <- unlist(options$variables)
-
 	grouping   <- options$groupingVariable
-
+	options[["wilcoxTest"]] <- options$testStatistic ==  "Wilcoxon"
+	
 	if (grouping == "")
 		grouping <- NULL
 
@@ -72,7 +71,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	)
 	
 	results[[".meta"]] <- meta
-	results[["title"]] <- "Bayesian Independent Samples T-Test"
+	results[["title"]] <- ifelse(options$wilcoxTest, "Bayesian Mann-Whitney U Test", "Bayesian Independent Samples T-Test")
 
 	state <- .retrieveState()
 	diff <- NULL
@@ -81,8 +80,34 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		diff <- .diff(options, state$options)
 	}
 
-	ttest.results <- .ttestBayesianIndependentSamplesTTest(dataset, options, perform, state=state, diff=diff)
-
+	# Needs to include following function for reactive progress bar for MCMC sampling
+	env <- environment()
+	callBackWilcoxonMCMC <- function(results = NULL, progress = NULL) {
+	  
+	  response <- callback(results, progress)
+	  if (response[["status"]] == "changed") {
+	    
+	    optsForSampling <- c(
+	      "variables", "groupingVariable", "wilcoxTest", "wilcoxonSamplesNumber",
+	      "missingValues", "priorWidth"
+	    )
+	    
+	    change <- .diff(env[["options"]], response[["options"]])
+	    env[["options"]] <- response[["options"]]
+	    
+	    # if not any of the relevant options changed, status is ok
+	    if (!any(unlist(change[optsForSampling])))
+	      response[["status"]] <- "ok"
+	  }
+	  return(response)
+	  
+	}
+	
+	ttest.results <- .ttestBayesianIndependentSamplesTTest(dataset, options, perform, state=state, diff=diff, callBackWilcoxonMCMC)
+  # If relevant settings are changed during sampling, ttest.results will be NULL
+	# This triggers an automatic redo of the analysis
+	if(is.null(ttest.results)) return(list(results = NULL, status = "inited"))
+	
 	results[["ttest"]] <- ttest.results[["ttest"]]
 	status <- ttest.results[["status"]]
 	g1 <- ttest.results[["g1"]]
@@ -94,6 +119,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	tValue <- ttest.results[["tValue"]]
 	n_group2 <- ttest.results[["n_group2"]]
 	n_group1 <- ttest.results[["n_group1"]]
+	deltaSamplesWilcox <- ttest.results[["delta"]]
 
 	if(is.null(options()$BFMaxModels)) options(BFMaxModels = 50000)
 	if(is.null(options()$BFpretestIterations)) options(BFpretestIterations = 100)
@@ -124,7 +150,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	descriptivesPlots <- list()
 	plotTypes <- list()
 	plotVariables <- list()
-
 
 
 	if (options$plotPriorAndPosterior || options$plotSequentialAnalysis || options$plotBayesFactorRobustness || options$descriptivesPlots) {
@@ -192,8 +217,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
 					&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE &&
 					diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
-					diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-					options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes) {
+					diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && diff$wilcoxTest == FALSE && 
+					diff$wilcoxonSamplesNumber == FALSE && options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes) {
 
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
@@ -205,8 +230,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
 							&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE &&
 							diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&	diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
-							diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-							!options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlot" %in% state$plotTypes) {
+							diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && diff$wilcoxTest == FALSE && 
+							diff$wilcoxonSamplesNumber == FALSE && !options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlot" %in% state$plotTypes) {
 
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# if the requested plot already exists use it
@@ -485,8 +510,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
 						&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE &&
 						diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&	diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
-						diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-						options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes) {
+						diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && diff$wilcoxTest == FALSE && 
+						diff$wilcoxonSamplesNumber == FALSE && options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes) {
 
 						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 						# then, if the requested plot already exists, use it
@@ -499,7 +524,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 								diff$hypothesis == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
 								diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&
 								diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE &&
-								diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
+								diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && diff$wilcoxTest == FALSE && diff$wilcoxonSamplesNumber == FALSE &&
 								!options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlot" %in% state$plotTypes) {
 
 						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
@@ -531,10 +556,10 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						                                              paired = FALSE, oneSided = oneSided, BF = BF10post[i],
 						                                              BFH1H0 = BFH1H0, rscale = options$priorWidth,
 						                                              addInformation = options$plotPriorAndPosteriorAdditionalInfo,
-						                                              options = options)
+						                                              options = options, delta = deltaSamplesWilcox[[i]])
 						        }
 						        content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
-
+  
 						        plot[["convertible"]] <- TRUE
 						        plot[["obj"]] <- content[["obj"]]
 						        plot[["data"]] <- content[["png"]]
@@ -747,14 +772,14 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 		return(list(results=results, status="complete", state=list(options=options, results=results, plotsTtest=plots.ttest, plotTypes=plotTypes, plotVariables=plotVariables,
 		descriptPlotVariables=descriptPlotVariables, descriptivesPlots=descriptivesPlots, status=status, plottingError=plottingError, BF10post=BF10post, errorFootnotes=errorFootnotes,
-		tValue = tValue, n_group2 = n_group2, n_group1 = n_group1),
+		tValue = tValue, n_group2 = n_group2, n_group1 = n_group1, delta = deltaSamplesWilcox),
 		keep=keep))
 	}
 
 }
 
 
-.ttestBayesianIndependentSamplesTTest <- function(dataset, options, perform, state, diff) {
+.ttestBayesianIndependentSamplesTTest <- function(dataset, options, perform, state, diff, callBackWilcoxonMCMC) {
 
 
 	g1 <- NULL
@@ -762,12 +787,16 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 	ttest <- list()
 
-	ttest[["title"]] <- "Bayesian Independent Samples T-Test"
-
-	if (options$effectSizeStandardized == "default") {
+	ttest[["title"]] <- ifelse(options$wilcoxTest, "Bayesian Mann-Whitney U Test", "Bayesian Independent Samples T-Test")
+	
+	if (options$effectSizeStandardized == "default" & !options$wilcoxTest) {
 	  ttest[["citation"]] <- list(
 	    "Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
 	    "Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
+	} else if (options$wilcoxTest) {
+	  ttest[["citation"]] <- list(
+	    "van Doorn, J., Ly, A., Marsman, M., & Wagenmakers, E. J. (2018). Bayesian Latent-Normal Inference for the Rank Sum Test, the Signed Rank Test, and Spearman's rho. Manuscript submitted for publication and uploaded to arXiv: https://arxiv.org/abs/1703.01805"
+	  )
 	} else if (options$effectSizeStandardized == "informative") {
 	  ttest[["citation"]] <- list(
 	    "Gronau, Q. F., Ly, A., & Wagenmakers, E.-J. (2017). Informed Bayesian T-Tests. Manuscript submitted for publication and uploaded to arXiv: https://arxiv.org/abs/1704.02479")
@@ -819,13 +848,18 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		}
 	}
 
-	if (options$hypothesis == "groupsNotEqual") {
+	if (options$hypothesis == "groupsNotEqual" & !options$wilcoxTest) {
 
 		fields[[length(fields)+1]] <- list(name="error", type="number", format="sf:4;dp:3", title="error %")
 
-	} else {
+	} else if(!options$wilcoxTest) {
 
 		fields[[length(fields)+1]] <- list(name="error", type="number", format="sf:4;dp:3;~", title="error %")
+		
+	} else if (options$wilcoxTest) {
+	  # display Wilcoxon statistic instead of error % 
+	  fields[[length(fields)+1]] <- list(name="error", type="number", format="sf:4;dp:3;", title="W")
+    
 	}
 
 	ttest[["schema"]] <- list(fields=fields)
@@ -866,13 +900,14 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	n_group1 <- rep(NA, length(options[["variables"]]))
 	plottingError <- rep("error", length(options$variables))
 	errorFootnotes <- rep("no", length(options$variables))
-
+	delta <- list()
+	
 	for (variable in options[["variables"]]) {
 
 		if (!is.null(state) && variable %in% state$options$variables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
 			&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE &&
 			diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE &&
-			diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE)))) {
+			diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE && diff$wilcoxTest == FALSE && diff$wilcoxonSamplesNumber == FALSE)))) {
 
 				index <- which(state$options$variables == variable)
 
@@ -944,7 +979,12 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			rowNo <- 1
 
 			i <- 1
-
+			
+			if (options$wilcoxTest) {
+			  progressbar <- .newProgressbar(ticks=length(options[["variables"]]) * round(options$wilcoxonSamplesNumber / 1e2, 0), 
+			                                                 callback = callBackWilcoxonMCMC, response=TRUE)
+			}
+			
 			for (variable in options[["variables"]]) {
 
 				# BayesFactor package doesn't handle NAs, so it is necessary to exclude them
@@ -980,8 +1020,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				if (!is.null(state) && variable %in% state$options$variables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
 				&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE &&
 				diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE &&
-				diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE)))) {
-
+				diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE && diff$wilcoxTest == FALSE && diff$wilcoxonSamplesNumber == FALSE)))) {
+          
 					index <- which(state$options$variables == variable)
 
 					if (state$errorFootnotes[index] == "no") {
@@ -1032,6 +1072,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					n_group1[rowNo] <- state$n_group1[index]
 					status[rowNo] <- state$status[index]
 					plottingError[rowNo] <- state$plottingError[index]
+					delta[[rowNo]] <- state$delta[[index]]
 
 				} else {
 
@@ -1047,13 +1088,44 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				    }
 
 					result <- try (silent=FALSE, expr= {
-
-					  r <- .generalTtestBF(x = group2, y = group1, paired = FALSE, oneSided = oneSided, options = options)
-					  bf.raw <- r[["bf"]]
-					  tValue[i] <- r[["tValue"]]
-					  n_group2[i] <- r[["n1"]]
-					  n_group1[i] <- r[["n2"]]
-
+					  
+					  n_group2[i] <- length(group2)
+					  n_group1[i] <- length(group1)
+            
+					  if (!options$wilcoxTest) {
+					    
+  					  r <- .generalTtestBF(x = group2, y = group1, paired = FALSE, oneSided = oneSided, options = options)
+  					  bf.raw <- r[["bf"]]
+  					  error <- .clean(r[["error"]])
+  					  tValue[i] <- r[["tValue"]]
+  					  delta[[i]] <- NA
+  					  
+  					  
+					  } else if (options$wilcoxTest) {
+					    # If the samples can be reused, don't call the Gibbs sampler again, but recalculate the
+					    # Bayes factor with new settings and take the samples from state.
+              if (!is.null(diff) && !is.null(state$delta[[i]]) && diff$hypothesis == TRUE && diff$priorWidth == FALSE && diff$groupingVariable == FALSE &&
+                 diff$missingValues == FALSE && diff$wilcoxonSamplesNumber == FALSE) {
+                
+                delta[[i]] <- state$delta[[i]]
+                bf.raw <- .computeBayesFactorWilcoxon(deltaSamples = delta[[i]], cauchyPriorParameter = options$priorWidth, oneSided = oneSided)
+                
+              } else {
+                
+                r <- .rankSumGibbsSampler(x = group2, y = group1, nSamples = options$wilcoxonSamplesNumber, nBurnin = 0,
+                                          cauchyPriorParameter = options$priorWidth, progressbar = progressbar)
+                if(is.null(r)) return() # Return null if settings are changed
+                delta[[i]] <- r[["deltaSamples"]]
+                bf.raw <- .computeBayesFactorWilcoxon(deltaSamples = r[["deltaSamples"]], cauchyPriorParameter = options$priorWidth, oneSided = oneSided)
+                
+              }
+					    
+					    wValue <- unname(wilcox.test(group2, group1, paired = FALSE)$statistic)
+					    error <- wValue
+					    tValue[i] <- median(delta[[i]])
+					    
+					  }
+					  
 						if (options$bayesFactorType == "BF01")
 							bf.raw <- 1 / bf.raw
 
@@ -1065,9 +1137,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 							BF <- log(BF10post[i])
 							BF <- .clean(BF)
 						}
-
-						# error <- .clean(as.numeric(bf@bayesFactor$error))
-						error <- .clean(r[["error"]])
 
 						if (is.na(bf.raw)) {
 
@@ -1151,7 +1220,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 	list(ttest = ttest, status = status, g1 = g1, g2 = g2, BFH1H0 = BFH1H0, plottingError = plottingError,
 	     BF10post = BF10post, errorFootnotes = errorFootnotes, tValue = tValue, n_group2 = n_group2,
-	     n_group1 = n_group1)
+	     n_group1 = n_group1, delta = delta)
 }
 
 .base_breaks_x <- function(x) {
@@ -1371,4 +1440,98 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 	descriptives[["data"]] <- data
 	descriptives
+}
+
+
+.rankSumGibbsSampler <- function(xVals, yVals, nSamples = 1e3, cauchyPriorParameter = 1/sqrt(2),
+                                 nBurnin = 0, nGibbsIterations = 10, progressbar){
+  n1 <- length(xVals)
+  n2 <- length(yVals)
+  allRanks <- rank(c(xVals,yVals))
+  xRanks <- allRanks[1:n1]
+  yRanks <- allRanks[(n1+1):(n1+n2)]
+  
+  allVals <- sort(rnorm((n1+n2)))[allRanks] # initial values
+  nSamples <- nSamples + nBurnin
+  deltaSamples <- gSamples <- muSamples <- numeric(nSamples)
+  
+  oldMuProp <- oldDeltaProp <- 0
+  
+  for (j in 1:nSamples) {
+
+    if (j %% 1e2 == 0 ) { 
+      response <- progressbar()
+      if (response[["status"]] != "ok")
+        return()
+    }
+    
+    for (i in sample(1:(n1+n2))) {
+      underx <- allVals[allRanks < allRanks[i]][order(allVals[allRanks < allRanks[i]], decreasing = T)][1]
+      upperx <- allVals[allRanks > allRanks[i]][order(allVals[allRanks > allRanks[i]], decreasing = F)][1]
+      if (is.na(underx)) {underx <- -Inf}
+      if (is.na(upperx)) {upperx <- Inf}
+      
+      if (i <= n1) {
+        allVals[i] <- .truncNormSample(mu = (-0.5*oldMuProp), sd = 1, lBound = underx, uBound = upperx)
+      } else if (i > n1) {
+        allVals[i] <- .truncNormSample(mu = (0.5*oldMuProp), sd = 1, lBound = underx, uBound = upperx)
+      }
+    }
+    
+    xVals <- allVals[1:n1]
+    yVals <- allVals[(n1+1):(n1+n2)]
+    
+    gibbsResult <- .sampleGibbsTwoSampleWilcoxon(x = xVals, y = yVals, n1 = n1, n2 = n2, nIter = nGibbsIterations,
+                                                 rscale = cauchyPriorParameter)
+    
+    muSamples[j] <- oldMuProp <- gibbsResult[3]
+    deltaSamples[j] <- oldDeltaProp <- gibbsResult[1]
+  }
+  
+  deltaSamples <- -1 * deltaSamples[-(1:nBurnin)]
+
+  return(list(deltaSamples = deltaSamples))
+}
+
+.sampleGibbsTwoSampleWilcoxon <- function(x, y, n1, n2, nIter = 10, rscale = 1/sqrt(2)) {
+  meanx <- mean(x)
+  meany <- mean(y)
+  n1 <- length(x)
+  n2 <- length(y)
+  sigmaSq <- 1 # Arbitrary number for sigma
+  g <- 1
+  for(i in 1:nIter){   
+    #sample mu
+    varMu <- (4 * g * sigmaSq) / ( 4 + g * (n1 + n2) )
+    meanMu <- (2 * g * (n2 * meany - n1 * meanx)) / ((g * (n1 + n2) + 4))
+    mu <- rnorm(1, meanMu, sqrt(varMu)) 
+    # sample g
+    betaG <- (mu^2 + sigmaSq * rscale^2) / (2*sigmaSq)
+    g <- 1/rgamma(1, 1, betaG)
+    # convert to delta
+    delta <- mu / sqrt(sigmaSq)
+  }
+  return(c(delta, sigmaSq, mu, g))
+}
+
+.truncNormSample <- function(lBound = -Inf, uBound = Inf, mu = 0, sd = 1) {
+  
+  lBoundUni <- pnorm(lBound, mean = mu, sd = sd)
+  uBoundUni <- pnorm(uBound, mean = mu, sd = sd)  
+  mySample <- qnorm(runif(1, lBoundUni, uBoundUni), mean = mu, sd = sd)
+  
+  return(mySample)
+}
+
+.computeBayesFactorWilcoxon <- function(deltaSamples, cauchyPriorParameter, oneSided) {
+  postDens <- logspline::logspline(deltaSamples)
+  densZeroPoint <- logspline::dlogspline(0, postDens)
+  priorDensZeroPoint <- dcauchy(0, scale = cauchyPriorParameter)
+  
+  corFactorPosterior <- ifelse(oneSided == "right" , 1 - logspline::plogspline(0, postDens), logspline::plogspline(0, postDens) )
+  corFactorPrior <-  pcauchy(0, scale = cauchyPriorParameter, lower.tail = (oneSided != "right" ))
+  
+  bf <- ifelse(oneSided == FALSE,  priorDensZeroPoint / densZeroPoint, 
+               (priorDensZeroPoint / corFactorPrior) / (densZeroPoint / corFactorPosterior))
+  return(bf)
 }
