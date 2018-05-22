@@ -44,7 +44,6 @@ Engine * Engine::_EngineInstance = NULL;
 
 Engine::Engine(int slaveNo, unsigned long parentPID)
 {
-	Q_ASSERT(_EngineInstance == NULL);
 	_EngineInstance = this;
 
 	_slaveNo = slaveNo;
