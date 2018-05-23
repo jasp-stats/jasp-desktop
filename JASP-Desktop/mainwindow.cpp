@@ -1989,9 +1989,6 @@ void MainWindow::setFilterErrorText(QString error)
 void MainWindow::applyAndSendFilter(QString filter)
 {
 	QMetaObject::invokeMethod(qmlFilterWindow, "applyAndSendFilter", Q_ARG(QVariant, QVariant(filter)));
-	if(filter.length() > 0 && filter != "*" && filter != DEFAULT_FILTER)
-		QMetaObject::invokeMethod(qmlFilterWindow, "open");
-
 }
 
 void MainWindow::setStatusBarText(QString text)
