@@ -24,7 +24,7 @@ ListView
 		//model type: JASP = 0, CSV = 1, SPSS = 2, Folder = 3, Other = 4, NoOfTypes = 5
 		
 		if (type === 3)  
-			return "Double click to navigate to folder"
+			return "Press to navigate to folder"
 		
 		if ( (associated_datafile === "" && type === 0) || (associated_datafile !== "" && mousearea === "commonMouseArea") )
 			return "Double click to open JASP file"		
@@ -128,10 +128,13 @@ ListView
 					anchors.fill: parent
 					hoverEnabled: true
 					
-					onDoubleClicked: {
+					onClicked: {
 						if (model.type === 3) //Folder type
 							dataLibraryListModel.changePath(model.name);
-						else
+					}
+					
+					onDoubleClicked: {
+						if (model.type !== 3) //Other then folder type
 							dataLibraryListModel.openFile(model.path)				
 					}	
 

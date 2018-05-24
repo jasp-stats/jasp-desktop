@@ -174,7 +174,7 @@ void FSEntryWidget::nextCheckState()
 
 void FSEntryWidget::clickedHandler()
 {
-	if (_clickMeans == ClickIsOpen)
+	if (_clickMeans == ClickIsOpen || entryType() == FSEntry::Folder) //Navigate to folder on sigle click
 	{
 		emit opened();
 	}
