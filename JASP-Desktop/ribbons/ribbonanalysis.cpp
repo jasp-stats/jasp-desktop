@@ -33,6 +33,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	addRibbonButton(ui->anovaButton);
 	addRibbonButton(ui->frequenciesButton);
 	addRibbonButton(ui->regressionButton);
+	addRibbonButton(ui->abtestButton);
 	addRibbonButton(ui->factoranalysisButton);
 
 //	connect(ui->Descriptives, SIGNAL(clicked()), this, SLOT(itemSelected()));
@@ -88,6 +89,8 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 
 	ui->regressionButton->setMenu(menu);
 
+    ui->abtestButton->setObjectName("ABTestBayesian");
+	connect(ui->abtestButton, SIGNAL(clicked()), this, SLOT(itemSelected()));
 
 	menu = new QMenu(this);
 

@@ -1,0 +1,72 @@
+{
+	"name": "ABTestBayesian",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+		{
+			"name": "variables",
+			"type": "Variables"
+		},
+		{
+			"format": "",
+			"name": "normal_mu",
+			"type": "Number",
+			"value": 0
+		},
+		{
+			"format": "",
+			"name": "normal_sigma",
+			"type": "Number",
+			"value": 1
+		},
+		{
+			"name": "bayesFactorType",
+			"options": [ "BF10", "BF01", "LogBF10" ],
+			"default": "BF10",
+			"type": "List"
+		},
+		{
+			"default": false,
+			"name": "plotPriorAndPosterior",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotPosteriorType",
+			"type": "List",
+			"options": [
+				"LogOddsRatio",
+				"OddsRatio",
+				"RelativeRisk",
+				"AbsoluteRisk",
+				"p1&p2"
+			],
+			"default": "LogOddsRatio"
+		},
+		{
+			"default": false,
+			"name": "plotSequentialAnalysis",
+			"type": "Boolean"
+		},
+		{
+			"name": "orEqualTo1Prob",
+			"type": "Number",
+			"value": 0.5,
+			"min": 0.0,
+			"max": 1.0
+		},
+		{
+			"name": "orGreaterThan1Prob",
+			"type": "Number",
+			"value": 0.25,
+			"min": 0.0,
+			"max": 1.0
+		},
+		{
+			"name": "orLessThan1Prob",
+			"type": "Number",
+			"value": 0.25,
+			"min": 0.0,
+			"max": 1.0
+		}
+	]
+}

@@ -19,6 +19,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "analysisforms/Common/abtestbayesianform.h"
 #include "analysisforms/Common/ancovabayesianform.h"
 #include "analysisforms/Common/ancovaform.h"
 #include "analysisforms/Common/ancovamultivariateform.h"
@@ -427,7 +428,7 @@ bool MainWindow::filterShortCut()
 }
 
 void MainWindow::saveKeysSelected()
-{	
+{
 	if (filterShortCut())
 		return;
 
@@ -449,7 +450,7 @@ void MainWindow::refreshKeysSelected()
 {
 	if (filterShortCut())
 		return;
-	
+
 	refreshAllAnalyses();
 }
 
@@ -457,7 +458,7 @@ void MainWindow::zoomInKeysSelected()
 {
 	if (filterShortCut())
 		return;
-	
+
 	_resultsJsInterface->zoomIn();
 }
 
@@ -465,7 +466,7 @@ void MainWindow::zoomOutKeysSelected()
 {
 	if (filterShortCut())
 		return;
-	
+
 	_resultsJsInterface->zoomOut();
 }
 
@@ -473,7 +474,7 @@ void MainWindow::zoomEqualKeysSelected()
 {
 	if (filterShortCut())
 		return;
-	
+
 	_resultsJsInterface->zoomReset();
 }
 
@@ -769,6 +770,7 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	else if (name == "AnovaOneWay")									form = new AnovaOneWayForm(contentArea);
 	else if (name == "Correlation")									form = new CorrelationForm(contentArea);
 	else if (name == "Descriptives")								form = new DescriptivesForm(contentArea);
+	else if (name == "ABTestBayesian")								form = new ABTestBayesianForm(contentArea);
 	else if (name == "NetworkAnalysis")								form = new NetworkAnalysisForm(contentArea);
 	else if (name == "MultinomialTest")								form = new MultinomialTestForm(contentArea);
 	else if (name == "RegressionLinear")							form = new RegressionLinearForm(contentArea);
@@ -1036,7 +1038,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
-		
+
 		if (_package->isModified())
 		{
 			QString title = windowTitle();
@@ -1205,7 +1207,7 @@ void MainWindow::populateUIfromDataSet()
 	}
 
 
-	
+
 	hideProgress();
 
 	bool errorFound = false;
@@ -1653,7 +1655,7 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 		selected = true;
 		closeCurrentOptionsWidget();
 	}
-	
+
 	delete _analysisFormsMap[analysis];
 	_analysisFormsMap.erase(analysis);
 
@@ -1917,7 +1919,7 @@ void MainWindow::onFilterUpdated()
 	if(_package->hasFilter())	ss << "Data has " << TotalCount << " rows, " << TotalThroughFilter << " (~" << (int)round(PercentageThrough) << "%)  passed through filter";
 
 	setStatusBarText(QString::fromStdString(ss.str()));
-	
+
 	if(_package->refreshAnalysesAfterFilter()) //After loading a JASP package we do not want to rerun all analyses because it might take very long
 		refreshAllAnalyses(); 
 	_package->setRefreshAnalysesAfterFilter(true);

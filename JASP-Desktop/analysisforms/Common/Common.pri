@@ -1,5 +1,6 @@
 SOURCES += \
     $$PWD/../../ribbons/ribbonanalysis.cpp \
+    $$PWD/abtestbayesianform.cpp \
     $$PWD/ancovabayesianform.cpp \
     $$PWD/ancovaform.cpp \
     $$PWD/ancovamultivariateform.cpp \
@@ -36,6 +37,7 @@ SOURCES += \
 
 HEADERS += \
     $$PWD/../../ribbons/ribbonanalysis.h \
+    $$PWD/abtestbayesianform.h \
     $$PWD/ancovabayesianform.h \
     $$PWD/ancovaform.h \
     $$PWD/ancovamultivariateform.h \
@@ -72,6 +74,7 @@ HEADERS += \
 
 FORMS += \
     $$PWD/../../ribbons/ribbonanalysis.ui \
+    $$PWD/abtestbayesianform.ui \
     $$PWD/ancovabayesianform.ui \
     $$PWD/ancovaform.ui \
     $$PWD/ancovamultivariateform.ui \
