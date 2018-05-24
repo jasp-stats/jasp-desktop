@@ -81,6 +81,7 @@ public slots:
 
 	void exportSelected(const QString &filename);
 	void getImageInBase64(int id, const QString &path);
+	void openFileTab();
 	
 
 private:
