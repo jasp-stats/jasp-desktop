@@ -137,7 +137,10 @@ bool FSEntryWidget::eventFilter(QObject *object, QEvent *event)
 	{
 		if (event->type() == QEvent::MouseButtonPress)
 		{
-			clickedHandler();
+			if (this->entryType() == FSEntry::Folder)
+				doubleClickHandler();
+			else
+				clickedHandler();
 			return true;
 		}
 		else if (event->type() == QEvent::MouseButtonDblClick)
