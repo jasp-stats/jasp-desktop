@@ -128,10 +128,13 @@ ListView
 					anchors.fill: parent
 					hoverEnabled: true
 					
-					onDoubleClicked: {
+					onClicked: {
 						if (model.type === 3) //Folder type
 							dataLibraryListModel.changePath(model.name);
-						else
+					}
+					
+					onDoubleClicked: {
+						if (model.type !== 3) //Other then folder type
 							dataLibraryListModel.openFile(model.path)				
 					}	
 
