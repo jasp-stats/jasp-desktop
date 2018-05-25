@@ -1140,7 +1140,7 @@
                <item row="1" column="0">
                 <widget class="QLabel" name="label_nSimForCRI">
                  <property name="text">
-                  <string>No. Samples for credible interval</string>
+                  <string>No. samples for credible interval</string>
                  </property>
                 </widget>
                </item>
