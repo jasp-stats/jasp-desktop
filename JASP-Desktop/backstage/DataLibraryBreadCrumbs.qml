@@ -19,41 +19,59 @@ ListView
 		{
 			id:rect
 			height: 20
-			width: 100
-			border.color: "black"
-			border.width: 1
-			Button
-			{
-				id:crumbbutton
+			width: rectArrow.width + rectButton.width 
+						
+			Rectangle {
+				id : rectArrow
+				color: "#ececec"
 				
-				background: Rectangle {
-							anchors.fill: parent
-							gradient: Gradient {
-								GradientStop { position: 0 ; color:  "lightgray" }
-								GradientStop { position: 1 ; color:  "white" }
-							}
-				}
+				height: rect.height 
+				width: model.index > 0 ? height   : 0
+				anchors.verticalCenter: rectButton.verticalCenter
+				visible: model.index > 0
 				
-				
-				text: model.name
-				Layout.fillWidth: true
-				anchors.margins: 1
-				anchors.fill: parent
-				ToolTip.text:  index < count -1 ? "Back to " + model.name : model.name;
-				ToolTip.visible: count > 1 ? hovered  : false
-				onClicked: {
-					dataLibraryListModel.changePath(model.name);
+				Image {
+					anchors.fill: parent
+					id: rightArrow
+					source: "../icons/right-arrow.png"
 				}
 			}
-		}
-
-		Text {
-			id: arrow
-			height: 10
-			width: 20
-			anchors.verticalCenter: rect.verticalCenter
-			anchors.right: rect.left
-			text: model.index > 0 ? "-->" : "";
-		}
+			
+			Rectangle
+			{
+				id: rectButton
+				height: rect.height
+				width: 100				
+				border.color: "black"
+				border.width: 1
+				
+				anchors.left:  model.index > 0 ? rectArrow.right : rect.left
+				
+				Button
+				{
+					id:crumbbutton
+					
+					background: Rectangle {
+						anchors.fill: parent
+						gradient: Gradient {
+							GradientStop { position: 0 ; color:  "lightgray" }
+							GradientStop { position: 1 ; color:  "white" }
+						}
+					}
+										
+					text: model.name					
+					Layout.fillWidth: true
+					height: rect.height
+					width: rectButton.width
+					anchors.margins: 1
+					anchors.fill: parent
+					ToolTip.text:  index < count -1 ? "Back to " + model.name : model.name;
+					ToolTip.visible: count > 1 ? hovered  : false
+					onClicked: {
+						dataLibraryListModel.changePath(model.name);
+					}
+				}
+			}			
+		}	
 	}
 }
