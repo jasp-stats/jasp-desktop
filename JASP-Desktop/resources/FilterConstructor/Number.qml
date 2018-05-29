@@ -24,7 +24,7 @@ Item
 
 
 		onAccepted: focus = false
-		onActiveFocusChanged:	if(!activeFocus && textIsWrong()) destroyMe(); else { text = parseFloat(text); value = text }
+		onActiveFocusChanged:	if(!activeFocus) { if(textIsWrong()) destroyMe(); else { text = parseFloat(text); value = text; filterConstructor.somethingChanged = true } }
 
 		function textIsWrong() { return (text === "" || isNaN(parseFloat(text))) }
 
@@ -34,6 +34,7 @@ Item
 				numberRoot.parent.releaseHere(scriptColumn)
 
 			numberRoot.parent.destroy()
+			filterConstructor.somethingChanged = true
 		}
 	}
 

@@ -2002,10 +2002,8 @@ void MainWindow::onFilterUpdated()
 	double PercentageThrough = 100.0 * ((double)TotalThroughFilter) / ((double)TotalCount);
 
 	std::stringstream ss;
-	if(TotalCount > TotalThroughFilter)
-		ss << "Data has " << TotalCount << " rows, " << TotalThroughFilter << " (~" << (int)round(PercentageThrough) << "%)  passed through filter to be used  in analyses";
-	else if(_package->dataFilter != "" && _package->dataFilter != "*")
-		ss.str("Filter passes everything");
+	if(_package->hasFilter())
+		ss << "Data has " << TotalCount << " rows, " << TotalThroughFilter << " (~" << (int)round(PercentageThrough) << "%)  passed through filter";
 	else
 		ss.str("");
 

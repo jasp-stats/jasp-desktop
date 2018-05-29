@@ -280,13 +280,13 @@ FocusScope
 					hoverEnabled: true
 
 					onDoubleClicked: {
-						console.log("onDoubleClicked");
+						//console.log("onDoubleClicked");
 						listView.clearSelectedItems(); // Must be before itemDoubleClicked: listView does not exist anymore afterwards
 						itemDoubleClicked(index, variablesList);
 					}
 
 					onClicked: {
-						console.log("onClicked");
+						//console.log("onClicked");
 						itemWrapper.forceActiveFocus();
 						if (itemRectangle.clearOtherSelectedItemsWhenClicked) {
 							listView.clearSelectedItems();
@@ -295,7 +295,7 @@ FocusScope
 					}
 
 					onPressed: {
-						console.log("onPressed");
+						//console.log("onPressed");
 						itemRectangle.clearOtherSelectedItemsWhenClicked = false;
 						if (mouse.modifiers & Qt.ControlModifier) {
 							listView.selectItem(itemRectangle, !itemRectangle.selected);
@@ -320,7 +320,7 @@ FocusScope
 					}
 
 					drag.onActiveChanged: {
-						console.log("drag.onActiveChanged");
+						//console.log("drag.onActiveChanged");
 						if (drag.active) {
 							if (itemRectangle.selected) {
 								itemRectangle.dragging = true;
@@ -340,7 +340,7 @@ FocusScope
 							for (var i = 0; i < listView.selectedItems.length; i++) {
 								var selectedItem = listView.selectedItems[i];
 								selectedIndexes.push(selectedItem.rank);
-								console.log("dropped item " + selectedItem.rank);
+								//console.log("dropped item " + selectedItem.rank);
 								selectedItem.dragging = false;
 								selectedItem.x = selectedItem.x; // break bindings
 								selectedItem.y = selectedItem.y;
@@ -351,7 +351,7 @@ FocusScope
 									return;
 								listView.clearSelectedItems(); // Must be before itemsDropped: listView does not exist anymore afterwards
 								itemsDropped(selectedIndexes, variablesList, dropTarget);
-								console.log("items dropped");
+								//console.log("items dropped");
 							}
 						}
 					}

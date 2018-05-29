@@ -231,6 +231,10 @@ void EngineSync::process()
 			{
 			case engineState::filter:
 			{
+#ifdef JASP_DEBUG
+			std::cout << "msg is filter reply" << std::endl << std::flush;
+#endif
+
 				if(json.get("filterResult", Json::Value(Json::intValue)).isArray()) //If the result is an array then it came from the engine.
 				{
 					std::vector<bool> filterResult;
@@ -253,6 +257,9 @@ void EngineSync::process()
 				
 			case engineState::rcode:
 			{
+#ifdef JASP_DEBUG
+			std::cout << "msg is rCode reply" << std::endl << std::flush;
+#endif
 				//Do some RCode magic				
 				_engineStates[i] = engineState::idle;
 				

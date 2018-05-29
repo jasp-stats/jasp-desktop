@@ -23,7 +23,7 @@ Item
 		font.pixelSize: filterConstructor.fontPixelSize
 
 		onAccepted: focus = false
-		onActiveFocusChanged:	if(!activeFocus && text === "") destroyMe()
+		onActiveFocusChanged:	if(!activeFocus) { if(text === "") destroyMe(); else filterConstructor.somethingChanged = true; }
 
 		function destroyMe()
 		{
@@ -31,6 +31,7 @@ Item
 				stringRoot.parent.releaseHere(scriptColumn)
 
 			stringRoot.parent.destroy()
+			filterConstructor.somethingChanged = true
 		}
 	}
 

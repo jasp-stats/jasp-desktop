@@ -27,6 +27,7 @@ void LevelsTableModel::refresh()
 	beginResetModel();
 	endResetModel();
 	emit resizeLabelColumn();
+	emit filteredOutChanged();
 }
 
 void LevelsTableModel::clearColumn()

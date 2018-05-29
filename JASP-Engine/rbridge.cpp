@@ -599,7 +599,7 @@ std::string	rbridge_encodeColumnNamesToBase64(std::string & filterCode)
 	rbridge_findColumnsUsedInDataSet();
 	filterColumnsUsed.clear();
 
-	static std::regex nonNameChar("[^\\.[:alnum:]]");
+	static std::regex nonNameChar("[^\\.A-Za-z0-9]");
 
 	//for now we simply replace any found columnname by its Base64 variant if found
 	size_t foundPos = -1;
@@ -611,8 +611,8 @@ std::string	rbridge_encodeColumnNamesToBase64(std::string & filterCode)
 		{
 			size_t foundPosEnd = foundPos + col.length();
 			//First check if it is a "free columnname" aka is there some space or a kind in front of it. We would not want to replace a part of another term (Imagine what happens when you use a columname such as "E" and a filter that includes the term TRUE, it does not end well..)
-			bool startIsFree = foundPos == 0									|| std::regex_match(filterBase64.substr(foundPos	 - 1, 1),	nonNameChar);
-			bool endIsFree = foundPos  + col.length() == filterBase64.length()	|| (std::regex_match(filterBase64.substr(foundPosEnd + 1, 1),	nonNameChar) && filterBase64[foundPosEnd] != '('); //Check for "(" as well because maybe someone has a columnname such as rep or if or something weird like that
+			bool startIsFree	= foundPos == 0							|| std::regex_match(filterBase64.substr(foundPos - 1, 1),	nonNameChar);
+			bool endIsFree		= foundPosEnd == filterBase64.length()	|| (std::regex_match(filterBase64.substr(foundPosEnd, 1),	nonNameChar) && filterBase64[foundPosEnd] != '('); //Check for "(" as well because maybe someone has a columnname such as rep or if or something weird like that
 
 			if(startIsFree && endIsFree)
 			{

@@ -14,10 +14,18 @@ Item {
 	property bool lastCheckPassed: true
 	property bool showStartupMsg: true
 
-	onSomethingChangedChanged: showStartupMsg = false
+	onSomethingChangedChanged:
+	{
+		showStartupMsg = false
+
+		if(somethingChanged)
+			hints.filterText = ""
+	}
 
 	onVisibleChanged: if(visible) initializeFromJSON(jsonConverter.jaspsFilterConstructorJSON)
 	property string __debugName: "FilterConstructor"
+
+
 
 
 	function checkAndApplyFilter()
@@ -43,19 +51,19 @@ Item {
 		if(allCorrect && allBoolean)
 		{
 			if(noFormulas)
-				hints.filterText += "Filter cleared.<br>"
+				hints.filterText += "Filter cleared<br>"
 			else
-				hints.filterText += "Filter applied!<br>"
+				hints.filterText += "Filter applied<br>"
 
 			filterConstructor.rCodeChanged(scriptColumn.convertToR())
 			mainWindow.setFilterConstructorJSON(JSON.stringify(filterConstructor.returnFilterJSON()))
 		}
 
 		if(!allCorrect)
-			hints.filterText += "You did not fill in all the arguments yet, see the fields marked in red.<br>"
+			hints.filterText += "Please enter all arguments - see the fields marked in red.<br>"
 
 		if(!allBoolean)
-			hints.filterText += (!allCorrect ? "<br>" : "" ) + "Not every formula returns a set of logicals and thus cannot be used in the filter, to remedy this try to place comparison-operators such as '=' or '<' and the like as the roots of each formula.<br>"
+			hints.filterText += (!allCorrect ? "<br>" : "" ) + "Formula does not return a set of logical values, and therefore cannot be used in the filter.<br>"
 
 		lastCheckPassed = allCorrect && allBoolean
 		return lastCheckPassed
@@ -294,8 +302,8 @@ Item {
 	function jsonChanged()
 	{
 		//.replace(/\s/g,'')
-		console.log("last: ",jsonConverter.lastProperlyConstructedJSON.replace(/\s/g,''))
-		console.log("new:  ",JSON.stringify(returnFilterJSON()).replace(/\s/g,''))
+		//console.log("last: ",jsonConverter.lastProperlyConstructedJSON.replace(/\s/g,''))
+		//console.log("new:  ",JSON.stringify(returnFilterJSON()).replace(/\s/g,''))
 
 		return jsonConverter.lastProperlyConstructedJSON !== JSON.stringify(returnFilterJSON())
 	}

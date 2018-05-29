@@ -44,6 +44,7 @@ Engine * Engine::_EngineInstance = NULL;
 
 Engine::Engine(int slaveNo, unsigned long parentPID)
 {
+	assert(_EngineInstance == NULL);
 	_EngineInstance = this;
 
 	_slaveNo = slaveNo;
@@ -246,8 +247,7 @@ bool Engine::receiveMessages(int timeout)
 	if (_channel->receive(data, timeout))
 	{
 #ifdef JASP_DEBUG
-		std::cout << "received message" << std::endl;
-		std::cout.flush();
+		std::cout << "received message" << std::endl << std::flush;
 #endif
 		Json::Value jsonRequest;
 		Json::Reader r;
@@ -255,6 +255,10 @@ bool Engine::receiveMessages(int timeout)
 
 		if(jsonRequest.get("filter", "").asString() != "")
 		{
+#ifdef JASP_DEBUG
+			std::cout << "msg is filterrequest" << std::endl << std::flush;
+#endif
+
 			_filterChanged = true;
 			_filter = jsonRequest.get("filter", "").asString();
 			_generatedFilter = jsonRequest.get("generatedFilter", "").asString();
@@ -264,6 +268,10 @@ bool Engine::receiveMessages(int timeout)
 		
 		if (jsonRequest.get("rCode", "").asString() != "")
 		{
+#ifdef JASP_DEBUG
+			std::cout << "msg is rCode request" << std::endl << std::flush;
+#endif
+
 			_rCodeEntered	= true;
 			_rCode			= jsonRequest.get("rCode", "").asString();
 			_rCodeRequestId	= jsonRequest.get("requestId", -1).asInt();
