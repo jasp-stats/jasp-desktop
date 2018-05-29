@@ -549,6 +549,11 @@ void ResultsJsInterface::exportHTML()
 	runJavaScript("window.exportHTML('%EXPORT%');");
 }
 
+void ResultsJsInterface::openFileTab()
+{
+	_mainWindow->ui->tabBar->setCurrentTab("first");
+}
+
 QString ResultsJsInterface::escapeJavascriptString(const QString &str)
 {
 	QString out;
