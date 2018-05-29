@@ -267,7 +267,7 @@ FocusScope
 
 					hoverEnabled: true
 					ToolTip.visible: containsMouse && dataSetModel.columnIcon(columnIndex)  !== columnTypeScale
-					ToolTip.text: "Click here to change labels"
+					ToolTip.text: "Click here to change labels" + (colFilterOn.thisColumnIsFiltered ? " or inspect filter" : "" )
 					ToolTip.timeout: 3000
 					ToolTip.delay: 500
 					cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor

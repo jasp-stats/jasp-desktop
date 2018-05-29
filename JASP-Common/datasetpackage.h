@@ -25,15 +25,15 @@
 #include "boost/signals2.hpp"
 #include "jsonredirect.h"
 
-#define DEFAULT_FILTER "# Write your own filter using R directly.\n\n"\
-	"# The readonly code above created generatedFilter, a logical vector\n"\
-	"# Add filters using R syntax\n\n"\
-	"# Create new filters as follows:\n"\
+#define DEFAULT_FILTER "# The read-only code above created generatedFilter, a logical vector\n\n"\
+	"# Add filters using R syntax as follows:\n"\
 	"#\tGender == \"Female\" & TestScore > 5\n\n"\
 	"# Combine this with your non-R filter selection\n"\
 	"#\tgeneratedFilter & Gender == \"Female\" & TestScore > 5\n\n"\
 	"# The last line will determine the filter to be applied\n\n"\
 	"generatedFilter # only use the non-R filter"
+
+#define DEFAULT_FILTER_JSON "{\"formulas\":[]}"
 
 class DataSetPackage
 {
@@ -66,7 +66,8 @@ public:
 	bool isReady() const;
 	void setWaitingForReady();
 	void setAnalysesHTMLReady();
-	std::string dataFilter = DEFAULT_FILTER, filterConstructorJSON = "";
+	bool hasFilter() { return dataFilter != DEFAULT_FILTER || filterConstructorJSON != DEFAULT_FILTER_JSON; }
+	std::string dataFilter = DEFAULT_FILTER, filterConstructorJSON = DEFAULT_FILTER_JSON;
 
 	bool refreshAnalysesAfterFilter = true;
 

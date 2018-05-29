@@ -4,10 +4,12 @@ import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.3
 
 FocusScope {
-    height: 200
+	height: calculatedMinimumHeight
     visible: opened
 
-    Layout.minimumHeight: buttonColumnVariablesWindow.minimumHeight
+	property real calculatedMinimumHeight: buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height + 6
+
+	Layout.minimumHeight: calculatedMinimumHeight
 
 
     property var headersGradient: Gradient{
@@ -68,6 +70,8 @@ FocusScope {
                     anchors.left: parent.left
                     anchors.right: buttonColumnVariablesWindow.left
                     anchors.bottom: parent.bottom
+
+					anchors.rightMargin: 2
 
                     signal columnChanged(string columnName)
 
@@ -179,7 +183,7 @@ FocusScope {
                     {
                         id: levelsTableViewFilterColumn
                         title: "Filter"
-                        width: 36
+						width: 40
                         role: "filter"
                     }
 
@@ -208,8 +212,8 @@ FocusScope {
                         color: systemPalette.mid
                         border.width: 0
                         radius: 0
-                        height: headerTextVars.implicitHeight
-                        width: headerTextVars.width
+						height: headerTextVars.contentHeight + 8
+						//width: headerTextVars.width + 8
 
                         Rectangle
                         {
@@ -226,6 +230,9 @@ FocusScope {
                                 id: headerTextVars
                                 text: styleData.value
                                 color: systemPalette.text
+
+								anchors.verticalCenter: parent.verticalCenter
+								x: 4
                             }
                         }
                     }
@@ -238,8 +245,10 @@ FocusScope {
 
 						height: 30
 
-						PlusMinusCheckButton
+						New.Button
 						{
+							id: filterCheckButton
+							checkable: true
 							visible: styleData.column === 0
 
 							anchors.top: parent.top
@@ -247,13 +256,24 @@ FocusScope {
 							anchors.horizontalCenter: parent.horizontalCenter
 
 							width: height
-							color: systemPalette.text
+
 							checked: styleData.value
 
-							id: filterCheckButton
+
 							onClicked:
 								if(checked !== styleData.value)
 									 levelsTableModel.setAllowFilterOnLabel(styleData.row, checked);
+
+							background: Image
+							{
+								source: filterCheckButton.checked ? "qrc:/icons/check-mark.png" : "../images/cross.png"
+								sourceSize.width: Math.max(40, width)
+								sourceSize.height: Math.max(40, height)
+								width: filterCheckButton.width
+								height: filterCheckButton.height
+
+							}
+
 						}
 
 						Text {
@@ -309,47 +329,69 @@ FocusScope {
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
 					spacing: 2
-					property real minimumHeight: (variablesWindowCloseButton.height + spacing) * 5 + ( 3 * spacing)
+					property int shownButtons: 4 + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
+					property real minimumHeight: (buttonHeight + spacing) * shownButtons + (3 * spacing)
+					property real buttonHeight: 26
 
-                    Button
+					FilterButton
                     {
                         //text: "UP"
-                        iconSource: "../images/arrow-up.png"
+						iconSource: "../images/arrow-up.png"
 
                         onClicked: levelsTableView.moveUp()
+						toolTip: "Move selected labels up"
+
+						height: buttonColumnVariablesWindow.buttonHeight
+						implicitHeight: buttonColumnVariablesWindow.buttonHeight
                     }
 
-                    Button
+					FilterButton
                     {
                         //text: "DOWN"
-                        iconSource: "../images/arrow-down.png"
+						iconSource: "../images/arrow-down.png"
 
                         onClicked: levelsTableView.moveDown()
+						toolTip: "Move selected labels down"
+
+						height: buttonColumnVariablesWindow.buttonHeight
+						implicitHeight: buttonColumnVariablesWindow.buttonHeight
                     }
 
-					Button
+					FilterButton
 					{
 						//text: "REVERSE"
 						iconSource: "../images/arrow-reverse.png"
 						onClicked: levelsTableView.reverse()
 
+						toolTip: "Reverse order of all labels"
+
+						height: buttonColumnVariablesWindow.buttonHeight
+						implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					}
 
-					Button
+					FilterButton
 					{
-						//text: "ERASER"
+						id: eraseFiltersOnThisColumn
 						iconSource: "../images/eraser.png"
 						onClicked: levelsTableModel.resetFilterAllows()
 						visible: levelsTableModel.filteredOut > 0
 
+						toolTip: "Reset all filter checkmarks for this column"
+
+						height: buttonColumnVariablesWindow.buttonHeight
+						implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					}
 
-					Button
+					FilterButton
 					{
-						//text: "ERASER ALL"
+						id: eraseFiltersOnAllColumns
 						iconSource: "../images/eraser_all.png"
 						onClicked: dataSetModel.resetAllFilters()
 						visible: dataSetModel.columnsFilteredCount > (levelsTableModel.filteredOut > 0 ? 1 : 0)
+						height: buttonColumnVariablesWindow.buttonHeight
+						implicitHeight: buttonColumnVariablesWindow.buttonHeight
+
+						toolTip: "Reset all filter checkmarks for all columns"
 					}
 
                     Item //Spacer
@@ -357,11 +399,15 @@ FocusScope {
                         Layout.fillHeight: true
                     }
 
-                    Button
+					FilterButton
                     {
                         id: variablesWindowCloseButton
-                        iconSource: "../images/cross.png"
+						iconSource: "../images/cross.png"
                         onClicked: variablesWindow.chooseColumn(-1)
+						height: buttonColumnVariablesWindow.buttonHeight
+						implicitHeight: buttonColumnVariablesWindow.buttonHeight
+
+						toolTip: "Close this view"
                     }
                 }
             }

@@ -79,9 +79,8 @@
         <file>icons/QuestionMark.png</file>
         <file>icons/trashcan_open.png</file>
         <file>icons/trashcan.png</file>
-    </qresource>
-    <qresource prefix="/">
         <file>fonts/FiraCode-Retina.ttf</file>
+        <file>icons/check-mark.png</file>
     </qresource>
     <qresource prefix="/fonts"/>
 </RCC>

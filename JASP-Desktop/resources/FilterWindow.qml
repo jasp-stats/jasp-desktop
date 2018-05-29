@@ -7,8 +7,8 @@ import "FilterConstructor"
 FocusScope
 {
 	id: filterContainer
-    height: filterWindow.minimumHeightTextBoxes * 3
-	Layout.minimumHeight: showEasyFilter ? easyFilterConstructor.desiredMinimumHeight : filterWindow.minimumHeightTextBoxes + applyFilter.implicitHeight + (filterErrorScroll.visible ? filterError.contentHeight : 0 ) + filterGeneratedBox.height
+	height: rFilterFields.desiredMinimumHeight
+	Layout.minimumHeight: showEasyFilter ? easyFilterConstructor.desiredMinimumHeight : rFilterFields.desiredMinimumHeight
 
     visible: opened
 
@@ -108,7 +108,7 @@ FocusScope
 
 				contentItem: Text
 				{
-					text: "There are unapplied changes to your filter, what would you like to do with them?"
+					text: "There are unapplied changes to your filter; what would you like to do?"
 					wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 				}
 			}
@@ -117,7 +117,7 @@ FocusScope
 		FilterButton
 		{
 			id: rFilterButton
-			icon.source: "qrc:/icons/R.png"
+			iconSource: "qrc:/icons/R.png"
 			anchors.left: parent.left
 			anchors.bottom: parent.bottom
 			anchors.top: closeEasyFilterButton.top
@@ -127,14 +127,14 @@ FocusScope
 
 			width: height
 
-			toolTip: "Switch to the advanced filter-editor (using R directly)"
+			toolTip: "Switch to the R filter"
 
 		}
 
 		FilterButton
 		{
 			id: applyEasyFilter
-			text: easyFilterConstructor.somethingChanged ? "Apply Filter" : "Filter Applied"
+			text: easyFilterConstructor.somethingChanged ? "Apply pass-through Filter" : "Filter Applied"
 			disabled: !easyFilterConstructor.somethingChanged
 			anchors.left: rFilterButton.right
 			anchors.right: helpEasyFilterButton.left
@@ -149,7 +149,7 @@ FocusScope
 		FilterButton
 		{
 			id: helpEasyFilterButton
-			icon.source: "qrc:/icons/QuestionMark.png"
+			iconSource: "qrc:/icons/QuestionMark.png"
 			anchors.right: closeEasyFilterButton.left
 			anchors.bottom: parent.bottom
 			anchors.top: closeEasyFilterButton.top
@@ -161,7 +161,7 @@ FocusScope
 		FilterButton
 		{
 			id: closeEasyFilterButton
-			icon.source: "../images/cross.png"
+			iconSource: "../images/cross.png"
 			anchors.right: parent.right
 			anchors.bottom: parent.bottom
 
@@ -170,12 +170,14 @@ FocusScope
 		}
 	}
 
-    SplitView
+	Item
     {
+		id: rFilterFields
 		visible: !parent.showEasyFilter
         anchors.fill: parent
+		property real desiredMinimumHeight: filterButtons.height + (filterErrorScroll.visible ? filterErrorScroll.height : 0 ) + filterEditRectangle.desiredMinimumHeight
 
-        orientation: Qt.Vertical
+		//orientation: Qt.Vertical
 
         Rectangle {
 			id: filterEditRectangle
@@ -183,8 +185,15 @@ FocusScope
 
             border.width: 1
 			border.color: "lightGrey"
-            Layout.fillHeight: true
-            Layout.minimumHeight: applyFilter.height + filterWindow.minimumHeightTextBoxes + filterGeneratedBox.contentHeight
+			//Layout.fillHeight: true
+			//Layout.minimumHeight: applyFilter.height + filterWindow.minimumHeightTextBoxes + filterGeneratedBox.contentHeight
+			property real desiredMinimumHeight: applyFilter.height + filterWindow.minimumHeightTextBoxes + filterGeneratedBox.contentHeight
+
+
+			anchors.top: parent.top
+			anchors.bottom: filterErrorScroll.top
+			anchors.left: parent.left
+			anchors.right: parent.right
 
 			New.ScrollView
 			{
@@ -225,18 +234,20 @@ FocusScope
 
 					}
 
-					New.Button
+					FilterButton
 					{
 						id: resetAllGeneratedFilters
 						anchors.left: parent.left
 						anchors.verticalCenter: parent.verticalCenter
-						width: dataSetModel.columnsFilteredCount > 0 ? implicitWidth : 0
-						icon.source: "../images/eraser_all.png"
+						width: dataSetModel.columnsFilteredCount > 0 ? height : 0
+						iconSource: "../images/eraser_all.png"
 						visible: dataSetModel.columnsFilteredCount > 0
 						anchors.margins: 1
 						onClicked: dataSetModel.resetAllFilters()
+						height: filterGeneratedBox.height
+						toolTip: "Reset all checkmarks on all labels"
 
-						background: Rectangle {	color: "transparent" }
+						//background: Rectangle {	color: "transparent" }
 					}
 				}
 
@@ -304,7 +315,7 @@ FocusScope
 
 				contentItem: Text
 				{
-					text: "There are unapplied changes to your filter, what would you like to do with them?"
+					text: "There are unapplied changes to your filter; what would you like to do?"
 					wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 				}
 			}
@@ -312,15 +323,20 @@ FocusScope
 
 		New.ScrollView
 		{
-			Layout.minimumHeight: filterWindow.minimumHeightTextBoxes//filterError.contentHeight//Math.min(filterError.contentHeight, filterWindow.minimumHeightTextBoxes)
 			id: filterErrorScroll
+			height: filterWindow.minimumHeightTextBoxes//filterError.contentHeight//Math.min(filterError.contentHeight, filterWindow.minimumHeightTextBoxes)
+
+			anchors.left: parent.left
+			anchors.right: parent.right
+			anchors.bottom: filterButtons.top
 
 			New.TextArea
 			{
 				id: filterError
 				color: "red"
 				readOnly: true
-				text: filterErrorText
+				text: filterErrorText + "\n"
+
 				selectByMouse: true
 				onActiveFocusChanged: if(!activeFocus) deselect()
 
@@ -331,13 +347,13 @@ FocusScope
 					State {
 						name: "closed"
 						PropertyChanges { target: filterErrorScroll; visible: false; height: 0 }
-						when: filterError.text.length == 0
+						when: filterErrorText.length === 0
 					},
 					State {
 						name: "opened"
 						PropertyChanges { target: filterErrorScroll; visible: true; height: filterError.contentHeight} //Math.min( , filterWindow.minimumHeightTextBoxes)
 
-						when: filterError.text.length > 0
+						when: filterErrorText.length > 0
 					}
 				]
 			}
@@ -349,11 +365,12 @@ FocusScope
 			height: closeFilterButton.height
 			anchors.left: parent.left
 			anchors.right: parent.right
+			anchors.bottom: parent.bottom
 
 			FilterButton
 			{
 				id: easyFilterButton
-				icon.source: "qrc:/icons/NotR.png"
+				iconSource: "qrc:/icons/NotR.png"
 				anchors.left: parent.left
 				anchors.bottom: parent.bottom
 				anchors.top: closeFilterButton.top
@@ -362,14 +379,14 @@ FocusScope
 
 				width: visible ? height : 0
 
-				toolTip: "Switch to the drag and drop filter-constructor"
+				toolTip: "Switch to the drag and drop filter"
 
 			}
 
 			FilterButton
 			{
 				id: clearFilterButton
-				icon.source: "../images/eraser.png"
+				iconSource: "../images/eraser.png"
 				anchors.left: easyFilterButton.right
 				anchors.bottom: parent.bottom
 				anchors.top: closeFilterButton.top
@@ -387,7 +404,7 @@ FocusScope
 			{
 				id: applyFilter
 
-				text: filterEdit.changedSinceLastApply ? "Apply Filter" : "Filter Applied"
+				text: filterEdit.changedSinceLastApply ? "Apply pass-through Filter" : "Filter Applied"
 				disabled: !filterEdit.changedSinceLastApply
 				anchors.left: clearFilterButton.right
 				anchors.right: helpButton.left
@@ -402,7 +419,7 @@ FocusScope
 			FilterButton
 			{
 				id: helpButton
-				icon.source: "qrc:/icons/QuestionMark.png"
+				iconSource: "qrc:/icons/QuestionMark.png"
 				anchors.right: closeFilterButton.left
 				anchors.bottom: parent.bottom
 				anchors.top: closeFilterButton.top
@@ -414,7 +431,7 @@ FocusScope
 			FilterButton
 			{
 				id: closeFilterButton
-				icon.source: "../images/cross.png"
+				iconSource: "../images/cross.png"
 				anchors.right: parent.right
 				anchors.bottom: parent.bottom
 
