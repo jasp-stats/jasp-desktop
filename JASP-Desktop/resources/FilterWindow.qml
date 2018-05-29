@@ -134,7 +134,7 @@ FocusScope
 		FilterButton
 		{
 			id: applyEasyFilter
-			text: easyFilterConstructor.somethingChanged ? "Apply pass-through Filter" : "Filter Applied"
+			text: easyFilterConstructor.somethingChanged ? "Apply pass-through filter" : "Filter applied"
 			disabled: !easyFilterConstructor.somethingChanged
 			anchors.left: rFilterButton.right
 			anchors.right: helpEasyFilterButton.left
@@ -404,7 +404,7 @@ FocusScope
 			{
 				id: applyFilter
 
-				text: filterEdit.changedSinceLastApply ? "Apply pass-through Filter" : "Filter Applied"
+				text: filterEdit.changedSinceLastApply ? "Apply pass-through filter" : "Filter applied"
 				disabled: !filterEdit.changedSinceLastApply
 				anchors.left: clearFilterButton.right
 				anchors.right: helpButton.left

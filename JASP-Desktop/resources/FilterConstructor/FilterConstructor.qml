@@ -226,6 +226,7 @@ Item {
 			horizontalAlignment: TextArea.AlignHCenter
 
 			textFormat: Text.StyledText
+			font.pixelSize: filterConstructor.fontPixelSize
 		}
 
 	}

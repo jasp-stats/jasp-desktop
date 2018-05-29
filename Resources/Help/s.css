@@ -21,3 +21,31 @@ h3
 {
 	font-size: 125% ;
 }
+
+details
+{
+  background-color: white;
+  padding: 5px;
+  border-radius: 6px;
+  border: 3px groove lightgrey;
+  margin: 5px;
+}
+
+img
+{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  /*width: 100%;*/
+  max-width: 100%;
+}
+
+li
+{
+  padding: 4px
+}
+
+.code
+{
+  font-family: "Courier New", Courier, monospace;
+}
