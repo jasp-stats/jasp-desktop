@@ -25,14 +25,7 @@
 #include "boost/signals2.hpp"
 #include "jsonredirect.h"
 
-#define DEFAULT_FILTER "# The read-only code above created generatedFilter, a logical vector\n\n"\
-	"# Add filters using R syntax as follows:\n"\
-	"#\tGender == \"Female\" & TestScore > 5\n\n"\
-	"# Combine this with your non-R filter selection\n"\
-	"#\tgeneratedFilter & Gender == \"Female\" & TestScore > 5\n\n"\
-	"# The last line will determine the filter to be applied\n\n"\
-	"generatedFilter # only use the non-R filter"
-
+#define DEFAULT_FILTER "# Add filters using R syntax here, see question mark for help.\n\ngeneratedFilter # by default: pass the non-R filter(s)"
 #define DEFAULT_FILTER_JSON "{\"formulas\":[]}"
 
 class DataSetPackage

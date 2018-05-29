@@ -25,10 +25,10 @@ Item
 		property string logicalnessText: ", returns a logical and can be used as the root of a formula for filtering"
 		OperatorDrag			{ operator: "==";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "equality" + operatorRow.logicalnessText }
 		OperatorDrag			{ operator: "!=";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "inequality" + operatorRow.logicalnessText }
-		OperatorDrag			{ operator: "<";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "smaller then" + operatorRow.logicalnessText }
-		OperatorDrag			{ operator: "<=";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "smaller then or equal to" + operatorRow.logicalnessText }
-		OperatorDrag			{ operator: ">";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "greater then" + operatorRow.logicalnessText }
-		OperatorDrag			{ operator: ">=";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "greater then or equal to" + operatorRow.logicalnessText }
+		OperatorDrag			{ operator: "<";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "less than" + operatorRow.logicalnessText }
+		OperatorDrag			{ operator: "<=";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "less than or equal to" + operatorRow.logicalnessText }
+		OperatorDrag			{ operator: ">";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "greater than" + operatorRow.logicalnessText }
+		OperatorDrag			{ operator: ">=";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "greater than or equal to" + operatorRow.logicalnessText }
 		OperatorDrag			{ operator: "&";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "and" + operatorRow.logicalnessText }
 		OperatorDrag			{ operator: "|";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "or" + operatorRow.logicalnessText }
 		FunctionDrag			{ functionName: "!";	acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; parameterNames: []; parameterDropKeys: []; toolTipText: "not" + operatorRow.logicalnessText }

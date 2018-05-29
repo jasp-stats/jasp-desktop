@@ -967,8 +967,8 @@ void MainWindow::helpToggled(bool on)
 
 	if (on)
 	{
-		if (helpWidth < 200)
-			helpWidth = 200;
+		if (helpWidth < 400)
+			helpWidth = 400;
 
 		QList<int> sizes = ui->splitter->sizes();
 
@@ -1433,29 +1433,35 @@ void MainWindow::showHelpFromQML(QString pageName)
 
 void MainWindow::requestHelpPage(const QString &pageName)
 {
-	QFile file(AppDirs::help() + "/" + pageName + ".md");
+	QFile fileMD(AppDirs::help() + "/" + pageName + ".md"), fileHTML(AppDirs::help() + "/" + pageName + ".html");
 
-	QString content;
+	QString content, renderFunc = "window.render";
 
-	if (file.exists())
+
+	if (fileHTML.exists())
 	{
-		file.open(QFile::ReadOnly);
-		content = QString::fromUtf8(file.readAll());
-		file.close();
+		fileHTML.open(QFile::ReadOnly);
+		content = QString::fromUtf8(fileHTML.readAll());
+		fileHTML.close();
+
+		renderFunc = "window.renderHtml";
+
+	}
+	else if (fileMD.exists())
+	{
+		fileMD.open(QFile::ReadOnly);
+		content = QString::fromUtf8(fileMD.readAll());
+		fileMD.close();
 	}
 	else
-	{
 		content = "Coming Soon!\n========\n\nThere is currently no help available for this analysis.\n\nAdditional documentation will be available in future releases of JASP.";
-	}
 
 	content.replace("\"", "\\\"");
 	content.replace("\r\n", "\\n");
 	content.replace("\r", "\\n");
 	content.replace("\n", "\\n");
 
-	QString js = "window.render(\"" + content + "\")";
-
-	ui->webViewHelp->page()->runJavaScript(js);
+	ui->webViewHelp->page()->runJavaScript(renderFunc + "(\"" + content + "\")");
 
 	_lastRequestedHelpPage = pageName;
 }

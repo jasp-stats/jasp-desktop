@@ -61,7 +61,7 @@ Rectangle
 		text: filterButtonRoot.text
 		visible: filterButtonRoot.iconSource == ""
 
-		font.pixelSize: Math.max(filterButtonRoot.height * 0.5, Math.min(18, filterButtonRoot.height - 2))
+		font.pixelSize: Math.max(filterButtonRoot.height * 0.4, Math.min(12, filterButtonRoot.height - 2))
 
 		height: contentHeight
 		width: contentWidth
