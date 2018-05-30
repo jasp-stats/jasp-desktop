@@ -67,7 +67,10 @@ DataSet *SharedMemory::retrieveDataSet(unsigned long parentPID)
 
 DataSet *SharedMemory::enlargeDataSet(DataSet *)
 {
-	interprocess::managed_shared_memory::grow(_memoryName.c_str(), _memory->get_size());
+	size_t extraSize = _memory->get_size();
+	delete _memory;
+
+	interprocess::managed_shared_memory::grow(_memoryName.c_str(), extraSize);
 	_memory = new interprocess::managed_shared_memory(interprocess::open_only, _memoryName.c_str());
 
 	DataSet *dataSet = retrieveDataSet();

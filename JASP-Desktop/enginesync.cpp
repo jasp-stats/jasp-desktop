@@ -284,7 +284,8 @@ void EngineSync::process()
 			case engineState::analysis:
 			{
 #ifdef JASP_DEBUG
-				std::cout << data << std::endl;
+				//std::cout << data << std::endl;
+				std::cout << "its a bunch of data\n";
 				std::cout.flush();
 #endif
 
