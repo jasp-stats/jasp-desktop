@@ -4,12 +4,10 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Styles 1.0
 import QtQuick.Window 2.3
 
-
-
 ListView 
 {
 	id : listview
-		
+	
 	clip: true
 	
 	ScrollBar.vertical: ScrollBar {}
@@ -27,9 +25,11 @@ ListView
 			return "Press to navigate to folder"
 		
 		if ( (associated_datafile === "" && type === 0) || (associated_datafile !== "" && mousearea === "commonMouseArea") )
-			return "Double click to open JASP file"		
+			return "Double click to open JASP file"	
 		
-		return "Double click to open data file"				
+		var a = ""
+		if (associated_datafile !== "") a =" associated"
+		return "Double click to open" + a + " data file"				
 		
 	}
 	
@@ -61,26 +61,47 @@ ListView
 				color: commonMouseArea.containsMouse ?  "darkgray" : "#dcdadb"
 				
 				Image {
-					id : fileimage
+					id : firstFileOrFolderImage
 					
 					height: 0.95 * parent.height
 					width: height
-					anchors.left: rectTitle.left
+					anchors.left: model.type===3 ? rectTitle.left : undefined
+					anchors.right: model.type!==3 ? associatedDatafileImage.left : undefined 
 					anchors.top:rectTitle.top
 					anchors.leftMargin: 10
 					
 					fillMode: Image.PreserveAspectFit
 					source: model.iconsource
+					MouseArea {
+						id: firstFileOrFolderMouseArea
+						z:-2
+						anchors.fill: parent
+						hoverEnabled: true
+						cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+						
+						onDoubleClicked: {
+							dataLibraryListModel.openFile(model.path)				
+						}
+						
+						
+					}
+					
+					ToolTip {
+						id: firstFileOrFolderTooltip
+						delay: 500
+						text: commonToolTip.text
+						visible: firstFileOrFolderMouseArea.containsMouse
+					}					
 				}
 				
 				Image {
-					id : datafileimage
+					id : associatedDatafileImage
 					
 					height: 0.95 * parent.height
 					width: model.associated_datafile === "" ? 0 : height
-					anchors.left: fileimage.right
+					anchors.right : parent.right
 					anchors.top:rectTitle.top
-					anchors.leftMargin: 10
+					anchors.rightMargin: 10
 					
 					fillMode: Image.PreserveAspectFit
 					source: model.dataiconsource
@@ -103,8 +124,7 @@ ListView
 						delay: 500
 						text: toolTipText(model.type, model.associated_datafile, "datafileMouseArea")
 						visible: datafileMouseArea.containsMouse
-					}
-					
+					}					
 				}
 				
 				Text {
@@ -112,15 +132,13 @@ ListView
 					
 					height: parent.height
 					anchors.top:parent.top
-					anchors.left:datafileimage.right
+					anchors.left: model.type === 3 ? firstFileOrFolderImage.right : parent.left
 					anchors.right:parent.right					
 					anchors.leftMargin: 10
 					
 					text: model.name  //i.e. title
 					horizontalAlignment: Text.AlignLeft
-					verticalAlignment: Text.AlignVCenter
-					
-					
+					verticalAlignment: Text.AlignVCenter					
 				}
 				
 				MouseArea {
@@ -138,7 +156,7 @@ ListView
 						if (model.type !== 3) //Other then folder type
 							dataLibraryListModel.openFile(model.path)				
 					}	
-
+					
 					cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 					
 				}
