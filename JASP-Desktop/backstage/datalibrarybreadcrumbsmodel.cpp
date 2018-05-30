@@ -130,16 +130,6 @@ void DataLibraryBreadCrumbsModel::removeLastCrumb()
 	
 }
 
-void DataLibraryBreadCrumbsModel::handleCrumbClicked(int index)
-{
-//	QMessageBox msgBox;	
-//	QString txt = "Index : " + QString::number(index) + " belonging crumb :" + _dataList[index];
-//	msgBox.setText(txt);
-//	msgBox.setInformativeText(txt);
-//	msgBox.setStandardButtons(QMessageBox::Ok);
-//	msgBox.exec();
-}
-
 void DataLibraryBreadCrumbsModel::setSeperator(const QChar &separator)
 {
 	_separator = separator;

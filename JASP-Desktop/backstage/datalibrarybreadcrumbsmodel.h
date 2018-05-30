@@ -34,7 +34,6 @@ public slots:
 	QString changeCrumb(QString crum);
 	void removeLastCrumb();
 	bool removeCrumbsAfterIndex(int index);
-	void handleCrumbClicked(int index);
 	
 private:
 	QStringList _pathList;

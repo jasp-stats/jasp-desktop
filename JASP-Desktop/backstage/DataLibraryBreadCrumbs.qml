@@ -6,11 +6,11 @@ ListView
 {
 	anchors.left:parent.left
 	anchors.right:parent.right
-
+	
 	model: dataLibraryBreadCrumbsModel
-
+	
 	orientation: ListView.Horizontal
-
+	
 	delegate: RowLayout
 	{
 		anchors.verticalCenter : parent.verticalCenter
@@ -64,11 +64,10 @@ ListView
 						id: crumbbuttonMouseArea
 						hoverEnabled: true
 						anchors.fill: parent
-						cursorShape: containsMouse && index < count -1 ? Qt.PointingHandCursor : Qt.ArrowCursor
+						cursorShape: Qt.PointingHandCursor 
 						onClicked: {
 							dataLibraryListModel.changePath(model.name);
-						}
-						
+						}					
 					}
 					
 					text: model.name
