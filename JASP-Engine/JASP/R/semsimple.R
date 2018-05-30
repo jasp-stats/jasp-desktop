@@ -449,7 +449,7 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
   meta[[11]] <- list(name="mardiasCoefficient", type="table")
 
   results[[".meta"]] <- meta
-  results[["title"]] <- "Latent Variable Analysis"
+  results[["title"]] <- "lavaan: Structural Equation Modeling"
 
   # Error:
   error <- !inputCorrect || (errorMessage!="" & perform == "run" & options$model != "")
@@ -884,6 +884,10 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
     }
   }
 
+  results[["parameterEstimates"]][["citation"]] <-
+  results[["fit"]][["citation"]] <- list(
+    "Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling. Journal of Statistical Software, 48(2), 1-36. URL http://www.jstatsoft.org/v48/i02/"
+  )
   # Return
   status <- list(ready=TRUE, error=error, errorMessage=errorMessage)
   if (perform == "run" && status$ready) {
