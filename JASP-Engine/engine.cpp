@@ -280,7 +280,8 @@ bool Engine::receiveMessages(int timeout)
 		}
 
 #ifdef JASP_DEBUG
-		std::cout << data << std::endl;
+		//std::cout << data << std::endl;
+		std::cout << "its an analysis request\n";
 		std::cout.flush();
 #endif
 
