@@ -238,9 +238,11 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
     errorCheck <- .hasErrors(dataset, perform = perform,
                              type = c("varCovMatrix", "infinity"),
                              message='default', exitAnalysisIfErrors = TRUE)
-  } else {
+  } else if (ncol(dataset) > 0) {
     errorCheck <- .hasErrors(dataset, perform = perform, type = c("infinity"),
                              message='default', exitAnalysisIfErrors = TRUE)
+  } else {
+    errorCheck <- FALSE
   }
 
   # Check mean structure:
