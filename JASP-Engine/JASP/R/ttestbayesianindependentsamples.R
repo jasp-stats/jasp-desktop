@@ -1104,8 +1104,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					  } else if (options$wilcoxTest) {
 					    # If the samples can be reused, don't call the Gibbs sampler again, but recalculate the
 					    # Bayes factor with new settings and take the samples from state.
-              if (!is.null(diff) && !is.null(state$delta[[i]]) && diff$hypothesis == TRUE && diff$priorWidth == FALSE && diff$groupingVariable == FALSE &&
-                 diff$missingValues == FALSE && diff$wilcoxonSamplesNumber == FALSE) {
+					    if (!is.null(diff) && length(state$delta) >= i && !is.null(state$delta[[i]]) && diff$hypothesis == TRUE && diff$priorWidth == FALSE && diff$groupingVariable == FALSE &&
+					        diff$missingValues == FALSE && diff$wilcoxonSamplesNumber == FALSE) {
                 
                 delta[[i]] <- state$delta[[i]]
                 bf.raw <- .computeBayesFactorWilcoxon(deltaSamples = delta[[i]], cauchyPriorParameter = options$priorWidth, oneSided = oneSided)
