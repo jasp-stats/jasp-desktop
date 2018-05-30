@@ -54,7 +54,7 @@ FocusScope
 
 				hoverEnabled: true
 
-				cursorShape: containsMouse ? Qt.OpenHandCursor : Qt.ArrowCursor
+				cursorShape: !containsMouse ? Qt.ArrowCursor :  myFlickable.dragging ? Qt.ClosedHandCursor : Qt.OpenHandCursor
 
 				onReleased:
 				{
