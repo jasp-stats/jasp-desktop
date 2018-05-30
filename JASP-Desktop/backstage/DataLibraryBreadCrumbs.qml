@@ -20,7 +20,7 @@ ListView
 			id:rect
 			height: 20
 			width: rectArrow.width + rectButton.width 
-						
+			
 			Rectangle {
 				id : rectArrow
 				color: "#ececec"
@@ -42,7 +42,7 @@ ListView
 				id: rectButton
 				height: rect.height
 				width: 100				
-				border.color: "black"
+				border.color: "gray"
 				border.width: 1
 				
 				anchors.left:  model.index > 0 ? rectArrow.right : rect.left
@@ -54,22 +54,32 @@ ListView
 					background: Rectangle {
 						anchors.fill: parent
 						gradient: Gradient {
-							GradientStop { position: 0 ; color:  "lightgray" }
+							GradientStop { position: 0 ; color:  "#e5e5e5" }
 							GradientStop { position: 1 ; color:  "white" }
 						}
 					}
-										
-					text: model.name					
+					
+					MouseArea
+					{
+						id: crumbbuttonMouseArea
+						hoverEnabled: true
+						anchors.fill: parent
+						cursorShape: containsMouse && index < count -1 ? Qt.PointingHandCursor : Qt.ArrowCursor
+						onClicked: {
+							dataLibraryListModel.changePath(model.name);
+						}
+						
+					}
+					
+					text: model.name
 					Layout.fillWidth: true
 					height: rect.height
 					width: rectButton.width
 					anchors.margins: 1
 					anchors.fill: parent
+					ToolTip.delay: 500
 					ToolTip.text:  index < count -1 ? "Back to " + model.name : model.name;
 					ToolTip.visible: count > 1 ? hovered  : false
-					onClicked: {
-						dataLibraryListModel.changePath(model.name);
-					}
 				}
 			}			
 		}	

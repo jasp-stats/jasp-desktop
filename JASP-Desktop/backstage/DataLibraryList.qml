@@ -100,6 +100,7 @@ ListView
 					
 					ToolTip {
 						id: datafileToolTip
+						delay: 500
 						text: toolTipText(model.type, model.associated_datafile, "datafileMouseArea")
 						visible: datafileMouseArea.containsMouse
 					}
@@ -144,6 +145,7 @@ ListView
 				
 				ToolTip {
 					id: commonToolTip
+					delay: 500
 					text: toolTipText(model.type, model.associated_datafile, "commonMouseArea")
 					visible: commonMouseArea.containsMouse
 				}
@@ -181,7 +183,7 @@ ListView
 					font.family: "SansSerif"
 					font.pixelSize: 12
 					textFormat: Text.StyledText				
-					text: "<i>Description:</i><br>" + model.description								
+					text: model.description								
 				}				
 			}						
 		}		
