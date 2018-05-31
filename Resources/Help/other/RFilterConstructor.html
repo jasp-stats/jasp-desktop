@@ -27,6 +27,14 @@
 					<b>Filtering on Gender and TestScore while taking into account easy-filter and label-selection</b>
 					<p class="code">generatedFilter & Gender == "Female" & TestScore > 5</p>
 			</li>
+
+			<li>
+				<b>Filtering on Age conditioned on Sex</b>
+				<p class="code">Age < mean(Age) %|% Sex</p>
+				<p>The operator %|% is a JASP-specific R-operator that makes sure the code to the left of it is run separately for each condition to it's right. 
+					In this case it means that the filter passes all rows on which Age is lower than the mean Age for that specific Sex.</p>
+
+			</li>
 	</ul>
 </p>
 

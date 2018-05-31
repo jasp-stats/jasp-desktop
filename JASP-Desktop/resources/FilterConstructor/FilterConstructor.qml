@@ -312,21 +312,29 @@ Item {
 	JSONtoFormulas
 	{
 		id: jsonConverter
-		property string jaspsFilterConstructorJSON: filterConstructorJSONstring
+		objectName: "jsonConverter"
+		property string jaspsFilterConstructorJSON:  "{\"formulas\":[]}"
 		property string lastProperlyConstructedJSON: "{\"formulas\":[]}"
 
 		onJaspsFilterConstructorJSONChanged:
 		{
-			//console.log("onJaspsFilterConstructorJSONChanged ",jaspsFilterConstructorJSON)
+			console.log("onJaspsFilterConstructorJSONChanged ",jaspsFilterConstructorJSON)
 
-			if(jaspsFilterConstructorJSON !== JSON.stringify(parent.returnFilterJSON()))
+			if(jsonConverter.jaspsFilterConstructorJSON !== JSON.stringify(parent.returnFilterJSON()))
 			{
-				parent.initializeFromJSON(jaspsFilterConstructorJSON)
+				parent.initializeFromJSON(jsonConverter.jaspsFilterConstructorJSON)
 				filterConstructor.checkAndApplyFilter()
 			}
 
 			jsonConverter.lastProperlyConstructedJSON = JSON.stringify(returnFilterJSON())
 		}
+
+		function setNewJSONFromCPP(newJsonString)
+		{
+			jaspsFilterConstructorJSON = newJsonString
+		}
+
+		visible: false
 	}
 
 	function returnFilterJSON()				{ return scriptColumn.convertToJSON() }

@@ -31,6 +31,7 @@ Item
 		OperatorDrag			{ operator: ">=";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "greater than or equal to" + operatorRow.logicalnessText }
 		OperatorDrag			{ operator: "&";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "and" + operatorRow.logicalnessText }
 		OperatorDrag			{ operator: "|";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "or" + operatorRow.logicalnessText }
+		OperatorDrag			{ operator: "%|%";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "condition by, divides all results and data on the left-hand side up according to the categories on its right" }
 		FunctionDrag			{ functionName: "!";	acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; parameterNames: []; parameterDropKeys: []; toolTipText: "not" + operatorRow.logicalnessText }
 
 	}

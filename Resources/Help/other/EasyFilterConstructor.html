@@ -4,7 +4,7 @@
 
 
 <details>
-	<summary><b>Filtering a Continuous Column</b></summary>
+	<summary><b>Filtering a continuous column</b></summary>
 	<p>
 	This example shows how you can use the easy filter to check for equivalence or greater/less than and the like. 
 	We will use the included dataset "Kitchen Rolls" and will filter on the PartipantNumber-column.
@@ -48,18 +48,46 @@
 </details>
 
 <details>
-		<summary><b>Filtering on standard deviation</b></summary>
-		<p>This example shows you how to filter based on being larger than it's own standard deviation.</p>	
-		<img src="other/FilteringStandardDeviation.gif"/>
+	<summary><b>Filtering on standard deviation</b></summary>
+	<p>This example shows you how to filter based on being larger than it's own standard deviation.</p>	
+	<img src="other/FilteringStandardDeviation.gif"/>
+	<ul>
+		<li>We will filter 'mean_NEO', so we enter it as the basis of our first formula.</li>
+		<li>Clicking the '>' symbol adds it to the formula.</li>
+		<li>Because we want to check for the standard deviation we click the corresponding &sigma; symbol from the function overview to the right.</li>
+		<li>We then drop another copy of 'mean_NEO' into this and apply our filter.</li>
+		<li>Now we see that only rows 4 and 5 are inactive.</li>
+		<li>To see the contrast with a larger value we multiply the standard deviation by adding '*' and typing 2 on the righthand side.</li>
+		<li>After choosing apply we now see that only row 2 remains active.</li>
+		<li>After that the filter is cleared and the animation repeats.</li>
+	</ul>
+	<p>Of course you can also use the other functions in the list on the right in combination with the operators above to check for many desired values.</p>
+</details>
+
+<details>
+		<summary><b>Conditioned filtering - simple example</b></summary>
+		<p>This is a simple example to show how you can use conditional filtering. In this case we just want the rows that show the maximum age.</p>	
+		<img src="other/FilteringAgeConditional.gif"/>
 		<ul>
-			<li>We will filter 'mean_NEO', so we enter it as the basis of our first formula.</li>
-			<li>Clicking the '>' symbol adds it to the formula.</li>
-			<li>Because we want to check for the standard deviation we click the corresponding <i>sigma</i> symbol from the function overview to the right.</li>
-			<li>We then drop another copy of 'mean_NEO' into this and apply our filter.</li>
-			<li>Now we see that only rows 4 and 5 are inactive.</li>
-			<li>To see the contrast with a larger value we multiply the standard deviation by adding '*' and typing 2 on the righthand side.</li>
-			<li>After choosing apply we now see that only row 2 remains active.</li>
-			<li>After that the filter is cleared and the animation repeats.</li>
+			<li>We will filter 'Age', so we enter it as the basis of our first formula.</li>
+			<li>Clicking the '=' symbol adds it to the formula.</li>
+			<li>Then we add 'max(Age)' and apply it.</li>
+			<li>We now see there is one active row showing a 51 year old female.</li>
+			<li>To get the maximum age per sex we add the 'condition on'-operator or '|' followed by 'Sex'.</li>
+			<li>After applying we see that besides the woman there is now also an active row with a 38 year old male.</li>
 		</ul>
-		<p>Of course you can also use the other functions in the list on the right in combination with the operators above to check for many desired values.</p>
-	</details>
+</details>
+
+<details>
+		<summary><b>Conditioned filtering - outliers per group</b></summary>
+		<p>This is a simple example to show how you can filter outliers per group using conditional filtering.</p>	
+		<img src="other/FilteringExtraConditional.gif"/>
+		<ul>
+			<li>We will filter the absolute value of 'extra'.</li>
+			<li>To this is added '>' and &sigma; for the variance</li>
+			<li>'extra' is placed inside the sigma and the result multiplied by 2.</li>
+			<li>After applying we see that there are 3 active rows that pass this criterium, all in group '2'</li>
+			<li>To get the outliers per group we add the 'condition on'-operator or '|' followed by 'group'.</li>
+			<li>After applying we see that there is one more active row, this time from group '1'.</li>
+		</ul>
+</details>
