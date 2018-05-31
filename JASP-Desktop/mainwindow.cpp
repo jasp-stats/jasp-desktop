@@ -1227,7 +1227,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			updateMenuEnabledDisabledStatus();
 			ui->webViewResults->reload();
 			setWindowTitle("JASP");
-			setFilterConstructorJSON("");
+			setFilterConstructorJSON();
 
 			if (_applicationExiting)
 				QApplication::exit();
@@ -2041,5 +2041,6 @@ void MainWindow::setFilterConstructorJSON(QString jsonString)
 
 	_tableModel->setColumnsUsedInEasyFilter(JsonUtilities::convertEasyFilterJSONToSet(_package->filterConstructorJSON));
 
-	ui->quickWidget_Data->rootContext()->setContextProperty("filterConstructorJSONstring", jsonString);
+	QObject * jsonConverter = ui->quickWidget_Data->rootObject()->findChild<QObject*>("jsonConverter");
+	QMetaObject::invokeMethod(jsonConverter, "setNewJSONFromCPP", Q_ARG(QVariant, QVariant(jsonString)));
 }

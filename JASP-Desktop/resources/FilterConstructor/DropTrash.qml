@@ -59,6 +59,8 @@ DropArea {
 	{
 		for(var i=scriptColumn.children.length-1; i >= 0; i--)
 			scriptColumn.children[i].destroy()
+
+		scriptColumn.children = ""
 	}
 
 

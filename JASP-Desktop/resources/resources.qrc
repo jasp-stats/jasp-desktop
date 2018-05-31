@@ -81,6 +81,7 @@
         <file>icons/trashcan.png</file>
         <file>fonts/FiraCode-Retina.ttf</file>
         <file>icons/check-mark.png</file>
+        <file>icons/ConditionBy.png</file>
     </qresource>
     <qresource prefix="/fonts"/>
 </RCC>

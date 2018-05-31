@@ -57,7 +57,7 @@ public:
 
 	EngineSync* _engineSync;
 
-	Q_INVOKABLE void setFilterConstructorJSON(QString jsonString);
+	Q_INVOKABLE void setFilterConstructorJSON(QString jsonString = DEFAULT_FILTER_JSON);
 	Q_INVOKABLE void showHelpFromQML(QString pageName);
 
 
