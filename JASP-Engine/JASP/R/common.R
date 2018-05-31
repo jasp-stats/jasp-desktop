@@ -19,6 +19,8 @@ toJSON    <- function(x) jsonlite::toJSON(x, auto_unbox = TRUE, digits = NA, nul
 
 run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresInit=TRUE, perform="run") {
 
+	if (identical(.Platform$OS.type, "windows"))
+		compiler::enableJIT(0)
 	dataKey <- fromJSON(dataKey)
 	options <- fromJSON(options)
 	resultsMeta <- fromJSON(resultsMeta)
