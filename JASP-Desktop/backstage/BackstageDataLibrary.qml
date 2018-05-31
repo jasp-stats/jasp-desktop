@@ -45,13 +45,13 @@ Rectangle
 	DataLibraryList
 	{
 		id: datalibrarylist
-		width: rect.width
-		height: rect.height - 100
 		anchors.top: secondseparator.bottom
+		anchors.bottom: parent.bottom
 		anchors.left: parent.left
 		anchors.right: parent.right
 		anchors.leftMargin: 12  //Position datalibrary items
 		anchors.topMargin: 6 
+		anchors.bottomMargin: 6
 	}
 }
 

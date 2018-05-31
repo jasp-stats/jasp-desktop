@@ -5,7 +5,8 @@
 DataLibraryBreadCrumbsModel::DataLibraryBreadCrumbsModel(QObject *parent)
 	: QAbstractListModel(parent)
 {	
-	_pathList.append(FSBMExamples::rootelementname);	
+	_crumbNameList.append(FSBMExamples::rootelementname);
+	_physicalPathList.append(FSBMExamples::rootelementname);
 }
 
 int DataLibraryBreadCrumbsModel::rowCount(const QModelIndex &parent) const
@@ -15,7 +16,7 @@ int DataLibraryBreadCrumbsModel::rowCount(const QModelIndex &parent) const
 	if (parent.isValid())
 		return 0;
 	
-	return parent.isValid() ? 0 : _pathList.count();
+	return parent.isValid() ? 0 : _crumbNameList.count();
 	
 }
 
@@ -25,12 +26,12 @@ QVariant DataLibraryBreadCrumbsModel::data(const QModelIndex &index, int role) c
 	if (!index.isValid())
 		return QVariant();
 	
-	if (index.row() < 0 || index.row() >= _pathList.count())
+	if (index.row() < 0 || index.row() >= _crumbNameList.count())
         return QVariant();
 	
     switch (role) {
         case NameRole:
-            return _pathList[index.row()];
+            return _crumbNameList[index.row()];
          default:
             return QVariant();
     }
@@ -39,11 +40,11 @@ QVariant DataLibraryBreadCrumbsModel::data(const QModelIndex &index, int role) c
 
 bool DataLibraryBreadCrumbsModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-	if (index.row() < 0 || index.row() >= _pathList.count())
+	if (index.row() < 0 || index.row() >= _crumbNameList.count())
         return false;
 	
 	if (data(index, role) != value) {
-		_pathList[index.row()] = value.toString();
+		_crumbNameList[index.row()] = value.toString();
 		emit dataChanged(index, index, QVector<int>() << role);
 		return true;
 	}
@@ -68,48 +69,36 @@ QHash<int, QByteArray> DataLibraryBreadCrumbsModel::roleNames() const
 	
 }
 
-void DataLibraryBreadCrumbsModel::appendCrumb(QString crumb)
+void DataLibraryBreadCrumbsModel::appendCrumb(const QString &crumbname, const QString &path)
 {
-	const int lastRowIndex = _pathList.size();
+	const int lastRowIndex = _crumbNameList.size();
     
 	beginInsertRows(QModelIndex(), lastRowIndex, lastRowIndex);
-	_pathList.append(crumb);
+	_crumbNameList.append(crumbname);
+	_physicalPathList.append(path);
 	endInsertRows();
 }
 
-QString DataLibraryBreadCrumbsModel::changeCrumb(QString crumb)
+QString DataLibraryBreadCrumbsModel::switchCrumb(const int &index)
 {
-	//Set the latest breadcrumb to crumb and remove others if necessary.
-	//If crumb is not in the list add this one.
-	
-	QString path = "";
-	
-	//Check if crumb is in the list, we expect no doubles
-	int index = _pathList.indexOf(crumb);
-	
-	if (index == -1) //crumb not found
-		appendCrumb(crumb);	
-	else
-	{
-		if (index+1 < _pathList.count())
-			removeCrumbsAfterIndex(index+1);
-	}
-	
-	path = _pathList.join(_separator);
-	return path;
-	
+	removeCrumbsAfterIndex(index+1);
+	return _physicalPathList.at(index);
 }
+
 
 bool DataLibraryBreadCrumbsModel::removeCrumbsAfterIndex(int index)
 {
-	const int lastRowIndex = _pathList.size() - 1;	
+	const int lastRowIndex = _crumbNameList.size() - 1;	
 	
 	if (index > lastRowIndex )
 		return false;
 	
 	beginRemoveRows(QModelIndex(), index, lastRowIndex);
 	for (int ix = lastRowIndex; ix >= index ; --ix )
-		_pathList.removeLast();
+	{
+		_crumbNameList.removeLast();
+		_physicalPathList.removeLast();
+	}
     endRemoveRows();
 	
 	return true;
@@ -119,13 +108,13 @@ bool DataLibraryBreadCrumbsModel::removeCrumbsAfterIndex(int index)
 
 void DataLibraryBreadCrumbsModel::removeLastCrumb()
 {
-	if (_pathList.isEmpty())
+	if (_crumbNameList.isEmpty())
         return;
 	
-    const int lastRowIndex = (_pathList.size() - 1);
+    const int lastRowIndex = (_crumbNameList.size() - 1);
 
 	beginRemoveRows(QModelIndex(), lastRowIndex, lastRowIndex);
-    _pathList.removeLast();
+    _crumbNameList.removeLast();
     endRemoveRows();
 	
 }

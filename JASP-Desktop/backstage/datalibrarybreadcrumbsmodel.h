@@ -30,13 +30,14 @@ public:
 	QHash<int, QByteArray> roleNames() const override;
 	
 public slots:
-	void appendCrumb(QString crumb);
-	QString changeCrumb(QString crum);
+	void appendCrumb(const QString &crumbname, const QString &path);
+	QString switchCrumb(const int &index);
 	void removeLastCrumb();
 	bool removeCrumbsAfterIndex(int index);
 	
 private:
-	QStringList _pathList;
+	QStringList _crumbNameList;
+	QStringList _physicalPathList;
 	QChar _separator = QChar('/');	
 };
 
