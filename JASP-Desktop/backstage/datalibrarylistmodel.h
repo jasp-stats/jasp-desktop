@@ -44,7 +44,9 @@ signals:
 	void openFile(FileEvent *event);
 
 public slots:
-	void changePath(const QString& path);
+	void changePath(const QString& name, const QString& path);
+	void changePath(const int& index);
+	
 	void openFile(const QString& path);
 
 private:

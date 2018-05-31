@@ -66,7 +66,7 @@ ListView
 						anchors.fill: parent
 						cursorShape: Qt.PointingHandCursor 
 						onClicked: {
-							dataLibraryListModel.changePath(model.name);
+							dataLibraryListModel.changePath(model.index);
 						}					
 					}
 					
