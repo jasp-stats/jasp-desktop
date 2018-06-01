@@ -30,9 +30,13 @@
 
 			<li>
 				<b>Filtering on Age conditioned on Sex</b>
-				<p class="code">Age < mean(Age) %|% Sex</p>
-				<p>The operator %|% is a JASP-specific R-operator that makes sure the code to the left of it is run separately for each condition to it's right. 
-					In this case it means that the filter passes all rows on which Age is lower than the mean Age for that specific Sex.</p>
+				<p class="code">(mean(Age) > Age) %|% Sex</p>
+				<p>
+					The operator %|% is a JASP-specific R-operator that makes sure the code to the left of it is run separately for each condition to it's right. 
+					In this case it means that the filter passes all rows on which Age is lower than the mean Age for that specific Sex.
+					Be sure to add the parentheses around the exact expression that you wish to be conditioned though, the following would not work as expected: <span class="code">mean(Age) &gt; Age %|% Sex</span>.
+					This would just condition Age on Sex, while leaving mean(Age) to be calculated for the whole column.
+				</p>
 
 			</li>
 	</ul>
