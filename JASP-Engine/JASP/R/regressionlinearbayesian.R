@@ -29,11 +29,12 @@ RegressionLinearBayesian <- function (
 						 		 "priorRegressionCoefficients", "alpha", "rScale",
 						 	 	 "modelPrior", "betaBinomialParamA", "betaBinomialParamB", "bernoulliParam",
 						 	 	 "samplingMethod", "iterationsMCMC", "numberOfModels")
+	summaryOpts <- c("summaryType", "posteriorSummaryPlotCredibleIntervalValue", "nSimForCRI")
 	stateKey <- list(
 		bas_obj = modelOpts,
-		postSummary = c(modelOpts, "summaryType", "posteriorSummaryPlotCredibleIntervalValue"),
-		postSummaryTable = c(modelOpts, "postSummaryTable", "summaryType", "posteriorSummaryPlotCredibleIntervalValue"),
-		postSummaryPlot = c(modelOpts, "postSummaryPlot", "summaryType", "posteriorSummaryPlotCredibleIntervalValue", "omitIntercept"),
+		postSummary = c(modelOpts, summaryOpts),
+		postSummaryTable = c(modelOpts, summaryOpts, "postSummaryTable"),
+		postSummaryPlot = c(modelOpts, summaryOpts, "postSummaryPlot", "omitIntercept"),
 		descriptives = c("dependent", "covariates"),
 		plotPosteriorLogOdds = c(modelOpts, "plotLogPosteriorOdds"),
 		plotCoefficientsPosterior = c(modelOpts, "plotCoefficientsPosterior"),
@@ -41,7 +42,7 @@ RegressionLinearBayesian <- function (
 		plotModelProbabilities = c(modelOpts, "plotModelProbabilities"),
 		plotModelComplexity = c(modelOpts, "plotModelComplexity"),
 		plotInclusionProbabilities = c(modelOpts, "plotInclusionProbabilities")
-	) # TODO: check if this dependence is correct
+	)
 
 	# Initialize the variables
 	bas_obj <- state$bas_obj
@@ -301,9 +302,9 @@ RegressionLinearBayesian <- function (
 	}
 
 	if (perform == "run") {
-		dataset <- .readDataSetToEnd(columns.as.numeric = vars, exclude.na.listwise = vars)
+		dataset <- .readDataSetToEnd(columns = vars, exclude.na.listwise = vars)
 	} else {
-		dataset <- .readDataSetHeader(columns.as.numeric = vars)
+		dataset <- .readDataSetHeader(columns = vars)
 	}
 
 	return(dataset)
@@ -461,7 +462,7 @@ RegressionLinearBayesian <- function (
 	# iterations for MCMC
 	MCMC.iterations <- NULL
 	if (options$samplingMethod == "MCMC" && options$iterationsMCMC > 0) {
-		MCMC.iterations <- options$numberOfModels
+		MCMC.iterations <- options$iterationsMCMC
 	}
 
 	# parameter for hyper-g's or jzs (all use same alpha param in bas.lm)
@@ -494,10 +495,8 @@ RegressionLinearBayesian <- function (
 		status$error <- TRUE
 		status$error.message <- .extractErrorMessage(bas_lm)
 	} else {
-		if (hasInteraction) {
-			bas_lm <- BAS:::force.heredity.bas(object = bas_lm, prior.prob = pInteraction)
-		}
-		
+		if (bas_lm$n.models > 1 && nPreds > 1) # can crash without this check
+			bas_lm <- BAS::force.heredity.bas(bas_lm)
 		bas_lm[["interaction"]] <- list(
 			hasInteraction = hasInteraction,
 			footnote = footnoteInteraction,
@@ -1399,16 +1398,22 @@ RegressionLinearBayesian <- function (
 			g = rep(factor(variables), each = 2),
 			g0 = factor(1)
 		)
+		base <- .1
+		yLimits <- c(0, base * ceiling(max(c(priorProb, probne0)) / base))
+		yBreaks <- seq(yLimits[1], yLimits[2], length.out = 5)
 
 		g <- JASPgraphs::drawBars(dat = dfBar, width = width)
 		g <- JASPgraphs::drawLines(g, dat = dfLine,
 								   mapping = ggplot2::aes(x = x, y = y, group = g, linetype = g0), show.legend = TRUE) +
-			ggplot2::ylab("Marginal Inclusion Probability") +
+			ggplot2::scale_y_continuous("Marginal Inclusion Probability", breaks = yBreaks, limits = yLimits) +
 			ggplot2::xlab("") +
-			ggplot2::scale_linetype_manual(name = "", values = 2, labels = "Prior\nInclusion\nProbabilities") 
-
-		g <- JASPgraphs::themeJasp(g, horizontal = TRUE, legend.position = "right")
-
+			ggplot2::scale_linetype_manual(name = "", values = 2, labels = "Prior\nInclusion\nProbabilities")
+		
+		g <- JASPgraphs::themeJasp(g, horizontal = TRUE, legend.position = "right") +
+			ggplot2::theme(
+				legend.title = ggplot2::element_text(size = .8*JASPgraphs::graphOptions("fontsize"))
+			)
+		
 		return(g)
 
 	}
@@ -1579,14 +1584,15 @@ RegressionLinearBayesian <- function (
 	# done here such that the information in the plots and tables always matches
 	# if a user selects the same options. (The method uses approximations and otherwise decimals are off)
 	footnote <- NULL
-	if (!is.null(bas_obj[["posteriorSummary"]])) {
+	if (!is.null(bas_obj[["posteriorSummary"]]) && 
+		identical(bas_obj[["posteriorSummary"]][["nSimForCRI"]], options[["nSimForCRI"]])) {
 		coefBMA <- bas_obj[["posteriorSummary"]][["coefBMA"]]
 		conf95BMA <- bas_obj[["posteriorSummary"]][["conf95BMA"]]
 	} else {
 		# only need to recalculate this if bas_obj was remade (which implies bas_obj[["posteriorSummary"]] is NULL)
 		coefBMA <- .coefBas(bas_obj, estimator = "BMA", dataset = dataset, weights = bas_obj[["weights"]])
 		
-		conf95BMA <- try(stats::confint(coefBMA,  level = 0.95))
+		conf95BMA <- try(stats::confint(coefBMA, level = 0.95, nsim = options$nSimForCRI))
 		if (isTryError(conf95BMA)) {
 		    conf95BMA <- cbind(NA, NA, coefBMA$postmean)
 		    rownames(conf95BMA) <- coefBMA$namesx
@@ -1603,7 +1609,7 @@ RegressionLinearBayesian <- function (
 		conf95 <- conf95BMA
 	} else {
 		coef <- .coefBas(bas_obj, estimator = estimator, dataset = dataset, weights = bas_obj[["weights"]])
-		conf95 <- confint(coef, level = criVal)
+		conf95 <- stats::confint(coef, level = criVal, nsim = options$nSimForCRI)
 	}
 
 	probne0 <- coef[["probne0"]]
@@ -1618,7 +1624,8 @@ RegressionLinearBayesian <- function (
 	}
 
 	return(list(coef = coef, loopIdx = loopIdx, coefficients = coefficients, probne0 = probne0,
-				conf95 = conf95, coefBMA = coefBMA, conf95BMA = conf95BMA, footnote = footnote))
+				conf95 = conf95, coefBMA = coefBMA, conf95BMA = conf95BMA, footnote = footnote,
+				nSimForCRI = options[["nSimForCRI"]]))
 }
 
 .coefBas <- function (object, n.models, estimator = "BMA",

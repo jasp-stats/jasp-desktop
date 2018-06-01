@@ -185,6 +185,13 @@
 				}
 			],
 			"type": "Table"
+		},
+		{
+			"name": "nSimForCRI",
+			"type": "Integer",
+			"default": 1000,
+			"min": 100,
+			"max": 1000000
 		}
 	]
 }
