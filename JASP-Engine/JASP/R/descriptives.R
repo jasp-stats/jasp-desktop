@@ -1892,7 +1892,7 @@ Descriptives <- function(dataset=NULL, options, perform="run",
     }
 
     if (options$splitPlotOutlierLabel && (options$splitPlotBoxplot || options$splitPlotJitter)){
-      p <- p + ggplot2::geom_text(ggplot2::aes(label=label), hjust=-0.3)
+      p <- p + ggrepel::geom_text_repel(ggplot2::aes(label=label), hjust=-0.3)
     }
 
     ### Theming & Cleaning
