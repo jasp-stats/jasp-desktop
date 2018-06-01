@@ -4,8 +4,20 @@
 	"version": "1.00",
 	"options": [
 		{
-			"name": "variables",
-			"type": "Variables"
+			"name": "n1",
+			"type": "Variable"
+		},
+		{
+			"name": "y1",
+			"type": "Variable"
+		},
+		{
+			"name": "n2",
+			"type": "Variable"
+		},
+		{
+			"name": "y2",
+			"type": "Variable"
 		},
 		{
 			"format": "",

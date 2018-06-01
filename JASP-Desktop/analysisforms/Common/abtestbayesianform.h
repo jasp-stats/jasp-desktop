@@ -35,6 +35,11 @@ public:
 
 private:
 	Ui::ABTestBayesianForm *ui;
+
+	TableModelVariablesAssigned *_n1Model;
+	TableModelVariablesAssigned *_y1Model;
+	TableModelVariablesAssigned *_n2Model;
+	TableModelVariablesAssigned *_y2Model;
 };
 
 #endif // ABTESTBAYESIANFORM_H

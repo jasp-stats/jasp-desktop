@@ -25,15 +25,38 @@ ABTestBayesianForm::ABTestBayesianForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	_availableVariablesModel.setVariableTypesSuggested(Column::ColumnTypeScale);
+	_availableVariablesModel.setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	ui->listAvailableVariables->setModel(&_availableVariablesModel);
-	ui->listAvailableVariables->setDoubleClickTarget(ui->variables);
 
-	TableModelVariablesAssigned *model = new TableModelVariablesAssigned(this);
-	model->setSource(&_availableVariablesModel);
+	_n1Model = new TableModelVariablesAssigned(this);
+	_n1Model->setVariableTypesSuggested(Column::ColumnTypeScale);
+	_n1Model->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
+	_n1Model->setSource(&_availableVariablesModel);
+	ui->n1->setModel(_n1Model);
 
-	ui->variables->setModel(model);
-	ui->variables->setDoubleClickTarget(ui->listAvailableVariables);
-	ui->assignButton->setSourceAndTarget(ui->listAvailableVariables, ui->variables);
+	_n2Model = new TableModelVariablesAssigned(this);
+	_n2Model->setVariableTypesSuggested(Column::ColumnTypeScale);
+	_n2Model->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
+	_n2Model->setSource(&_availableVariablesModel);
+	ui->n2->setModel(_n2Model);
+
+	_y1Model = new TableModelVariablesAssigned(this);
+	_y1Model->setVariableTypesSuggested(Column::ColumnTypeScale);
+	_y1Model->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
+	_y1Model->setSource(&_availableVariablesModel);
+	ui->y1->setModel(_y1Model);
+
+	_y2Model = new TableModelVariablesAssigned();
+	_y2Model->setSource(&_availableVariablesModel);
+	_y2Model->setVariableTypesSuggested(Column::ColumnTypeScale);
+	_y2Model->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
+	ui->y2->setModel(_y2Model);
+
+	ui->buttonAssign_n1->setSourceAndTarget(ui->listAvailableVariables, ui->n1);
+	ui->buttonAssign_y1->setSourceAndTarget(ui->listAvailableVariables, ui->y1);
+	ui->buttonAssign_n2->setSourceAndTarget(ui->listAvailableVariables, ui->n2);
+	ui->buttonAssign_y2->setSourceAndTarget(ui->listAvailableVariables, ui->y2);
 
 	ui->advancedOptions->hide();
 }
