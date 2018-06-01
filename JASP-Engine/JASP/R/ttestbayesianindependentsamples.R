@@ -156,10 +156,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 	if (options$plotPriorAndPosterior || options$plotSequentialAnalysis || options$plotBayesFactorRobustness || options$descriptivesPlots) {
 
-		iint <- 1
-		q <- 1
-		descriptInd <- 1
-
 		BFtype <- options$bayesFactorType
 		BFtypeRequiresNewPlot <- TRUE
 
@@ -175,6 +171,50 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			}
 		}
 
+		# here make the booleans required for wether an analysis should be done or not.
+		# this code should be ported to Tim's state system.
+		boolDescriptivesPlots <- !is.null(state) && options$descriptivesPlots && (
+			identical(diff, FALSE) || 
+				(is.list(diff) && diff$groupingVariable == FALSE && diff$missingValues == FALSE && 
+				 	diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$descriptivesPlotsCredibleInterval == FALSE)
+			)
+		
+		boolPriorAndPosterior <- !is.null(state) && !is.null(diff) && 
+			(identical(diff, FALSE) || 
+			 	(is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$groupingVariable == FALSE && 
+			 					   	diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && 
+			 					   	diff$effectSizeStandardized == FALSE &&	diff$informativeStandardizedEffectSize == FALSE &&
+			 					   	diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE && 
+			 					   	diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && 
+			 					   	diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE
+			 ))) && diff$wilcoxTest == FALSE && diff$wilcoxonSamplesNumber == FALSE
+		
+		boolBayesFactorRobustness <- !is.null(state) && !is.null(diff) && 
+			(identical(diff, FALSE) || 
+			 	(is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE && BFtypeRequiresNewPlot == FALSE && 
+			 					   	diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && 
+			 					   	diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE && 
+			 					   	diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && 
+			 					   	diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
+			 					   	diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE &&
+			 					   	diff$informativeNormalStd == FALSE
+			 )))
+		
+		boolSequentialRobustnessanalysis <- !is.null(state) && !is.null(diff) && 
+			(identical(diff, FALSE) || 
+			 	(is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE && BFtypeRequiresNewPlot == FALSE && 
+			 					   	diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && 
+			 					   	diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE && 
+			 					   	diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && 
+			 					   	diff$informativeCauchyScale == FALSE &&	diff$informativeTLocation == FALSE && 
+			 					   	diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && 
+			 					   	diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE
+		)))
+
+		iint <- 1
+		q <- 1
+		descriptInd <- 1
+
 		for (variable in options[["variables"]]){
 
 			plotGroups[[iint]] <- list()
@@ -183,8 +223,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 			if (options$descriptivesPlots) {
 
-				if (!is.null(state) && variable %in% state$descriptPlotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$groupingVariable == FALSE &&
-					diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$descriptivesPlotsCredibleInterval == FALSE))) && options$descriptivesPlots) {
+				if (boolDescriptivesPlots && variable %in% state$descriptPlotVariables) {
 
 
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
@@ -216,11 +255,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 			if (options$plotPriorAndPosterior){
 
-				if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-					&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE &&
-					diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
-					diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && diff$wilcoxTest == FALSE && 
-					diff$wilcoxonSamplesNumber == FALSE && options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes) {
+				if (boolPriorAndPosterior && variable %in% state$plotVariables && 
+					options$plotPriorAndPosteriorAdditionalInfo && 
+					"posteriorPlotAddInfo" %in% state$plotTypes) {
 
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
@@ -229,11 +266,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 					plots.ttest[[q]] <- state$plotsTtest[[index]]
 
-				} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-							&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE &&
-							diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&	diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
-							diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && diff$wilcoxTest == FALSE && 
-							diff$wilcoxonSamplesNumber == FALSE && !options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlot" %in% state$plotTypes) {
+				} else if (boolPriorAndPosterior && variable %in% state$plotVariables && 
+						   !options$plotPriorAndPosteriorAdditionalInfo &&
+						   "posteriorPlot" %in% state$plotTypes) {
 
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# if the requested plot already exists use it
@@ -282,11 +317,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 			if (options$plotBayesFactorRobustness) {
 
-				if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-					&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
-					diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE &&
-					diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-					"robustnessPlotAddInfo" %in% state$plotTypes && options$plotBayesFactorRobustnessAdditionalInfo) {
+				if (boolBayesFactorRobustness && variable %in% state$plotVariables &&
+					options$plotBayesFactorRobustnessAdditionalInfo &&
+					"robustnessPlotAddInfo" %in% state$plotTypes) {
 
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
@@ -294,11 +327,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 					plots.ttest[[length(plots.ttest)+1]] <- state$plotsTtest[[index]]
 
-				} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-					&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
-					diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE &&
-					diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-					"robustnessPlot" %in% state$plotTypes && !options$plotBayesFactorRobustnessAdditionalInfo) {
+				} else if (boolBayesFactorRobustness && variable %in% state$plotVariables &&
+						   !options$plotBayesFactorRobustnessAdditionalInfo &&
+						   "robustnessPlot" %in% state$plotType) {
 
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
@@ -342,11 +373,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 			if (options$plotSequentialAnalysis) {
 
-				if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-					&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
-					diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE &&
-					diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-					options$plotSequentialAnalysisRobustness && "sequentialRobustnessPlot" %in% state$plotTypes) {
+				if (boolSequentialRobustnessanalysis && variable %in% state$plotVariables && 
+					options$plotSequentialAnalysisRobustness && 
+					"sequentialRobustnessPlot" %in% state$plotTypes) {
 
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
@@ -355,11 +384,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 					plots.ttest[[q]] <- state$plotsTtest[[index]]
 
-				} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-							&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
-							diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE &&
-							diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-							!options$plotSequentialAnalysisRobustness && "sequentialPlot" %in% state$plotTypes) {
+				} else if (boolSequentialRobustnessanalysis && variable %in% state$plotVariables &&
+						   !options$plotSequentialAnalysisRobustness && 
+						   "sequentialPlot" %in% state$plotTypes) {
 
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists use it
@@ -452,8 +479,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				if (options$descriptivesPlots) {
 
 
-					if (!is.null(state) && variable %in% state$descriptPlotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$groupingVariable == FALSE &&
-						diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$descriptivesPlotsCredibleInterval == FALSE))) && options$descriptivesPlots) {
+					if (boolDescriptivesPlots && variable %in% state$descriptPlotVariables) {
 
 						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 						# then, if the requested plot already exists, use it
@@ -509,11 +535,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 				if (options$plotPriorAndPosterior) {
 
-					if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-						&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE &&
-						diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&	diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
-						diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && diff$wilcoxTest == FALSE && 
-						diff$wilcoxonSamplesNumber == FALSE && options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes) {
+					if (boolPriorAndPosterior && variable %in% state$plotVariables && 
+						options$plotPriorAndPosteriorAdditionalInfo &&
+						"posteriorPlotAddInfo" %in% state$plotTypes) {
 
 						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 						# then, if the requested plot already exists, use it
@@ -522,12 +546,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 						plots.ttest[[z]] <- state$plotsTtest[[index]]
 
-					} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE &&
-								diff$hypothesis == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
-								diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&
-								diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE &&
-								diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && diff$wilcoxTest == FALSE && diff$wilcoxonSamplesNumber == FALSE &&
-								!options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlot" %in% state$plotTypes) {
+					} else if (boolPriorAndPosterior && variable %in% state$plotVariables && 
+							   !options$plotPriorAndPosteriorAdditionalInfo &&
+							   "posteriorPlot" %in% state$plotTypes) {
 
 						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 						# if the requested plot already exists use it
@@ -592,11 +613,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				}
 
 				if (options$plotBayesFactorRobustness) {
-					if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-						&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
-						diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&	diff$informativeCauchyScale == FALSE &&
-						diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-						"robustnessPlotAddInfo" %in% state$plotTypes && options$plotBayesFactorRobustnessAdditionalInfo) {
+					if (boolBayesFactorRobustness && variable %in% state$plotVariables && 
+						options$plotBayesFactorRobustnessAdditionalInfo && 
+						"robustnessPlotAddInfo" %in% state$plotTypes) {
 
 						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 						# then, if the requested plot already exists, use it
@@ -605,11 +624,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 						plots.ttest[[z]] <- state$plotsTtest[[index]]
 
-					} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-						&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
-						diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&	diff$informativeCauchyScale == FALSE &&
-						diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-						"robustnessPlot" %in% state$plotTypes && !options$plotBayesFactorRobustnessAdditionalInfo) {
+					} else if (boolBayesFactorRobustness && variable %in% state$plotVariables && 
+							   !options$plotBayesFactorRobustnessAdditionalInfo &&
+							   "robustnessPlot" %in% state$plotTypes) {
 
 						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 						# then, if the requested plot already exists, use it
@@ -670,11 +687,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 				if (options$plotSequentialAnalysis) {
 
-					if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-						&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
-						diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE &&
-						diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-						options$plotSequentialAnalysisRobustness && "sequentialRobustnessPlot" %in% state$plotTypes) {
+					if (boolSequentialRobustnessanalysis && variable %in% state$plotVariables && 
+						options$plotSequentialAnalysisRobustness &&
+						"sequentialRobustnessPlot" %in% state$plotTypes) {
 
 						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 						# then, if the requested plot already exists, use it
@@ -684,12 +699,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						plots.ttest[[z]] <- state$plotsTtest[[index]]
 						results[["inferentialPlots"]][["collection"]][[i]][["BFsequentialPlot"]][["status"]] <- "complete"
 
-					} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE &&
-								diff$hypothesis == FALSE && BFtypeRequiresNewPlot == FALSE  && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE &&
-								diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&
-								diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE &&
-								diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE)))
-								&& !options$plotSequentialAnalysisRobustness && "sequentialPlot" %in% state$plotTypes) {
+					} else if (boolSequentialRobustnessanalysis && variable %in% state$plotVariables &&
+							   !options$plotSequentialAnalysisRobustness && 
+							   "sequentialPlot" %in% state$plotTypes) {
 
 						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 						# then, if the requested plot already exists use it
@@ -771,11 +783,16 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		return(list(results=results, status="inited", state=state, keep=keep))
 
 	} else {
+		
+		state <- list(
+			options = options, results = results, plotsTtest = plots.ttest, 
+			plotTypes = plotTypes, plotVariables = plotVariables,
+			descriptPlotVariables = descriptPlotVariables, descriptivesPlots = descriptivesPlots, 
+			status = status, plottingError = plottingError, BF10post = BF10post, errorFootnotes = errorFootnotes,
+			tValue = tValue, n_group2 = n_group2, n_group1 = n_group1, delta = deltaSamplesWilcox
+		)
 
-		return(list(results=results, status="complete", state=list(options=options, results=results, plotsTtest=plots.ttest, plotTypes=plotTypes, plotVariables=plotVariables,
-		descriptPlotVariables=descriptPlotVariables, descriptivesPlots=descriptivesPlots, status=status, plottingError=plottingError, BF10post=BF10post, errorFootnotes=errorFootnotes,
-		tValue = tValue, n_group2 = n_group2, n_group1 = n_group1, delta = deltaSamplesWilcox),
-		keep=keep))
+		return(list(results=results, status="complete", state = state, keep = keep))
 	}
 
 }
