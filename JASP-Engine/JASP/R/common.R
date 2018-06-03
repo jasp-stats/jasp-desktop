@@ -70,7 +70,10 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 
 	oldState <- NULL
 	if ('state' %in% names(formals(analysis))) {
+	  print("newsystem")
 		oldState <- .getStateFromKey(stateKey, options)
+	} else {
+	  print("oldsystem")
 	}
 
 	if (perform == "init" && ! requiresInit) {
@@ -1611,6 +1614,7 @@ isTryError <- function(obj){
 		} else {
 			return(NULL)
 		}
+	  print("getting state items")
 		state <- .getStateItems(state=state, options=options, key=key)
 	}
 	return(state)
@@ -2088,23 +2092,86 @@ as.list.footnotes <- function(footnotes) {
 }
 
 
-.optionsChanged <- function(opts1, opts2, subset=NULL) {
+.optionsChanged <- function(stateOptions, newOptions, subset=NULL, state = NULL) {
 
-  changed <- .diff(opts1, opts2)
+  changed <- .diff(stateOptions, newOptions)
   if (! is.list(changed)) {
     return(TRUE)
   }
 
 	if (! is.null(subset)) {
-	  changed <- changed[names(changed) %in% subset]
-	  if (length(changed) == 0) {
-	    stop(paste0("None of the gui options (", paste(subset, collapse=", "), ") is in the options list."))
+	  
+	  if (is.list(subset)) {
+	    
+	    subsetChar <- unlist(subset[sapply(subset, is.character)])
+	    subsetExpr <- subset[sapply(subset, is.expression)]
+	    
+	  } else {
+	    
+	    subsetChar <- subset
+	    subsetExpr <- NULL
+	    
+	  }
+		
+	  # deal with character input
+	  if (length(subsetChar) > 0) {
+	    print("Handling Character")
+	    changed <- changed[names(changed) %in% subsetChar]
+	    if (length(changed) == 0) {
+	      stop(paste0("None of the gui options (", paste(subsetChar, collapse=", "), ") is in the options list."))
+	    }
+	  }
+	  # if changes detected, discard state item and exit early
+	  if (sum(sapply(changed, isTRUE)) > 0) {
+	    return(TRUE)
+	  }
+	  
+	  # deal with expression input
+	  subsetExpr <- subset[sapply(subset, is.expression)]
+	  if (length(subsetExpr) > 0) {
+	    print("Handling Expression")
+	    for (expr in subsetExpr) {
+	      # execute expressions inside empty environments
+	      # to avoid contamination across expressions.
+    	  e <- new.env()
+        e$options <- newOptions
+        e$state <- state
+	      r <- try(eval(expr = expr, envir = e))
+	      if (isTryError(r)) { # give developer an informative error
+	        print(r)
+	        warning(sprintf("Statekey expression gave an error! Expression was: %s", expr))
+	      } else if (!isTRUE(r)) { # if expression not TRUE, discard state item and exit early
+	        return(TRUE)
+	      }
+	    }
+	  }
+	  
+	  # if we got here, the item is useable
+	  # now check if we have a collection with subdependencies
+	  if (!is.null(attr(subset, "collection"))) {
+	      print("Handling collection")
+	      print(subset)
+	      collectionKey <- attr(subset, "collection")
+	      r <- sapply(collectionKey, .optionsChanged, 
+	             stateOptions = stateOptions, 
+	             newOptions = newOptions, 
+	             state = state
+	      )
+	      print(r)
+	      # if any subsets where TRUE they should be omitted
+	      if (!is.logical(r))
+	        stop("collection key gave non-logical output!")
+	      # r <- c(r, rep(FALSE, length()))
+	      if (any(r)) { # if false, all subsets are kept
+	        if (all(r)) { # if true, all subsets unuseable
+	          return(TRUE)
+	        } else { # some subsets useable
+	          return(which(!r)) 
+	        }
+	      }
+
 	  }
 	}
-
-  if (sum(sapply(changed, isTRUE)) > 0) {
-    return(TRUE)
-  }
 
   return(FALSE)
 }
@@ -2120,16 +2187,27 @@ as.list.footnotes <- function(footnotes) {
   result <- list()
   for (item in names(state)) {
 
+  	# if name of state item not in key, keep the item
 		if (item %in% names(key) == FALSE) {
       result[[item]] <- state[[item]]
       next
     }
-
-    change <- .optionsChanged(state$options, options, key[[item]])
-    if (change == FALSE) {
+    print(sprintf("Item: %s", item))
+    change <- .optionsChanged(stateOptions = state$options, 
+                              newOptions   = options, 
+                              subset       = key[[item]], 
+                              state        = state)
+    if (isTRUE(change)) { # item unuseable
+      next
+    } else if (identical(change, FALSE)) { # item completely useable
       result[[item]] <- state[[item]]
+    } else if (is.integer(change)) { # item partially useable
+		  result[[item]] <- state[[item]][change]
 		}
-
+    if (is.null(result[[item]]))
+      print(sprintf("Item %s not in state", item))
+    else 
+      print(sprintf("Item %s in state", item))
   }
 
 	if (length(names(result)) > 0) {
@@ -2137,6 +2215,11 @@ as.list.footnotes <- function(footnotes) {
 	}
 
   return(NULL)
+}
+
+.stateDependsOnVar <- function(variables, optionsName = "variables") {
+  collectionKey <- paste0(variables, ' %in% options[["', optionsName, '"]]')
+  return(lapply(collectionKey, function(x) list(as.expression(x))))
 }
 
 
