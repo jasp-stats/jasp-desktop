@@ -718,7 +718,41 @@ A filling up a table function has typically the following arguments:
 .fillUpBinomialTable <- function(binomialTable, options, ready, resultsTable) {
 ```
 
-##### Step 4.1.2: Adding Results to Tables (If Ready)
+
+Now if the analysis is called again and e.g. `sampleMode` changes, only the plot will be returned.
+If there are state items you would like to keep indefinitely -- regardless of the options a user changes -- you must omit these in the stateKey. Elements of the statekey can also be a list instead of a character vector. The only reason to use a list is to mix expressions in the stateKey with options. This allows for more complicated dependency checks. For example:
+```
+# a descriptives plot for each variable
+state[["plotDescriptives"]] <- plotDescriptives
+stateKey[["plotDescriptives"]] <- list(expression("contNormal" %in% options[["variables"]]), "fixedFactors")
+```
+Expressions are evaluated in a stand-alone environment where two other variables are present:
+`options`, the *new* options, and `state`, the state. These are the only objects that can be called. If the expression succeeds, TRUE should be returned. For all other outputs this element in the state will be discarded. If the expression gives an error, a warning is given inside QT.
+
+
+Some analyses contain collections of object, e.g., a descriptive plot for every variable. Now if a variable is removed from the anlayses, all plots except for one are still useable. The stateKey can be specified individually for each element of a collection. An example is given below.
+```
+state <- list(
+  descriptivesPlot = list(v1 = ggplotObjectV1,
+                          v2 = ggplotObjectV2,
+                          v3 = ggplotObjectV3)
+)
+stateKey <- list(
+  descriptivesPlot = c("showDescriptivesPlot") # changing this removes the entire element 'descriptivesPlot'.
+)
+attr(stateKey[["descriptivesPlot"]], "collection") <- list(
+  # each subselement also depends on the presence of a variable
+  v1 = list(expression(v1 %in% options[["variables"]])),
+  v2 = list(expression(v2 %in% options[["variables"]])),
+  v3 = list(expression(v3 %in% options[["variables"]]))
+)
+# the above is the likely the most common case, hence there exists a convenience function
+variables <- paste0("v", 1:3)
+collectionKey <- .stateDependsOnVar(variables)
+attr(stateKey[["descriptivesPlot"]], "collection") <- collectionKey
+```
+In the example above, all ggplot objects in the state depend on the option `showDescriptivesPlot`. In addition, each individual ggplot object depends on whether a variable is included in `options[["variables"]]`. The subelements of a collection are checked by name, or if there are no names in order. Subelements without checks are kept by default. Collections keys cannot be nested inside collection keys (there is no recursion). Also, it would be bad practice to organize the state that way.
+
 
 If the results could be computed (ready == TRUE), it is time to add the results to the table that we created earlier (Step 3). Oftentimes, we need to add one row for each dependent variable or for each predictor. Therefore, the results are often added in for loops. In the example provided below, one row with results is added for each level of each dependent variable. The results are taken from the results argument computed in the corresponding results function.
 

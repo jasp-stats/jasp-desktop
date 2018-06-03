@@ -15,8 +15,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run", callback=function(...) 0, state = NULL, ...) {
   # 
+  print(perform)
+  print('str(state$descriptivesPlots, max.level = 3)')
+  print(str(state$descriptivesPlots, max.level = 3))
+  print('str(state, max.level = 3)')
+  print(str(state, max.level = 3))
 	dependents <- unlist(options$variables)
 	grouping   <- options$groupingVariable
 	options[["wilcoxTest"]] <- options$testStatistic ==  "Wilcoxon"
@@ -75,7 +80,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	results[[".meta"]] <- meta
 	results[["title"]] <- ifelse(options$wilcoxTest, "Bayesian Mann-Whitney U Test", "Bayesian Independent Samples T-Test")
 
-	state <- .retrieveState()
+	# state <- .retrieveState()
 	diff <- NULL
 
 	if (!is.null(state)) {
@@ -778,20 +783,40 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	descriptivesPlots <- descriptivesPlots
 	plots.ttest <- plots.ttest
 
+	stateKey <- list(
+	  descriptivesPlots = c("groupingVariable", "missingValues", "descriptivesPlotsCredibleInterval")
+	)
+	
+	collectionKey <- .stateDependsOnVar(descriptPlotVariables)
+	attr(stateKey[["descriptivesPlots"]], "collection") <- collectionKey
+
 	if (perform == "init") {
 
+	  print("after init")
+    str(state, max.level = 3)
+    if (!is.null(state) && is.null(attr(state, "key"))) {
+      print("init had no stateKey")
+      attr(state, "key") <- stateKey
+    }
 		return(list(results=results, status="inited", state=state, keep=keep))
 
 	} else {
-		
-		state <- list(
-			options = options, results = results, plotsTtest = plots.ttest, 
-			plotTypes = plotTypes, plotVariables = plotVariables,
-			descriptPlotVariables = descriptPlotVariables, descriptivesPlots = descriptivesPlots, 
-			status = status, plottingError = plottingError, BF10post = BF10post, errorFootnotes = errorFootnotes,
-			tValue = tValue, n_group2 = n_group2, n_group1 = n_group1, delta = deltaSamplesWilcox
-		)
 
+		state <- list(
+			options = options, results = results, 
+			plotsTtest = plots.ttest, 
+			plotTypes = plotTypes, 
+			plotVariables = plotVariables,
+			descriptPlotVariables = descriptPlotVariables, 
+			descriptivesPlots = descriptivesPlots, 
+			status = status, plottingError = plottingError, 
+			BF10post = BF10post, errorFootnotes = errorFootnotes,
+			tValue = tValue, n_group2 = n_group2, n_group1 = n_group1, 
+			delta = deltaSamplesWilcox
+		)
+		attr(state, "key") <- stateKey
+    print("after run")
+    str(state, max.level = 3)
 		return(list(results=results, status="complete", state = state, keep = keep))
 	}
 
