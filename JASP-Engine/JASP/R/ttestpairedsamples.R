@@ -26,6 +26,15 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 	results <- init[["results"]]
 	dataset <- init[["dataset"]]
 	
+	# test whether pairs are identical
+	if (length(options$pairs) > 0) {
+	  for (i in 1:length(options$pairs)) {
+	    datasetErrorCheck <- data.frame(dataset[[.v(options$pairs[[i]][[1]])]] - dataset[[.v(options$pairs[[i]][[2]])]])
+	    colnames(datasetErrorCheck) <- .v(paste0("Difference between ", options$pairs[[i]][[1]], " and ", options$pairs[[i]][[2]]))
+	    .hasErrors(datasetErrorCheck, perform, type = "variance", exitAnalysisIfErrors = TRUE)
+	  }
+	}
+	
 	## call the specific paired T-Test functions
 	results[["ttest"]] <- .ttestPairedSamples(dataset, options, perform)
 	descriptivesTable <- .ttestPairedSamplesDescriptives(dataset, options, perform)
