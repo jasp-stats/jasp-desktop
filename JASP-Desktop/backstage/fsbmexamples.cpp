@@ -37,6 +37,7 @@ FSBMExamples::FSBMExamples(QObject *parent, QString root)
 	: FSBModel(parent)
 {
 	_rootPath = _path = root;
+	_dataLibraryRootPath = "";
 	_doc = NULL;
 
 }
@@ -52,7 +53,7 @@ void FSBMExamples::refresh()
 
 	if (_doc == NULL)
 		_doc = getJsonDocument();
-
+	
 	emit processingEntries();
 
 	_entries.clear();
@@ -72,6 +73,9 @@ void FSBMExamples::loadRootElements()
 
 	QJsonObject jsonroot = _doc->object();
 	QJsonArray children = jsonroot.value("children").toArray();
+	
+	if (_dataLibraryRootPath == "")
+		_dataLibraryRootPath = AppDirs::examples() +  QDir::separator()  + jsonroot["path"].toString() + QDir::separator(); 
 
 	_entries.clear();
 
@@ -92,8 +96,8 @@ void FSBMExamples::loadRootElements()
 		}
 		else
 		{
-			path = AppDirs::examples() +  QDir::separator()  + path;
-			if (associated_datafile != "") associated_datafile = AppDirs::examples() +  QDir::separator()  + associated_datafile;
+			path = _dataLibraryRootPath  + path;
+			if (associated_datafile != "") associated_datafile = _dataLibraryRootPath + associated_datafile;
 			_entries.append(createEntry(path, name, description, FSEntry::getEntryTypeFromPath(path), associated_datafile));
 		}
 	}
@@ -106,7 +110,7 @@ void FSBMExamples::loadFilesAndFolders(const QString &docpath)
 {
 
 	bool found = false;
-	QString relpath = QDir::separator();
+	QString relpath = "";
 
 	if (_doc == NULL)
 		return;
@@ -136,7 +140,6 @@ void FSBMExamples::loadFilesAndFolders(const QString &docpath)
 				break;
 			}
 		}
-
 	}
 
 	if (found)
@@ -160,8 +163,8 @@ void FSBMExamples::loadFilesAndFolders(const QString &docpath)
 			}
 			else
 			{
-				path = AppDirs::examples() +  QDir::separator() + relpath +  QDir::separator() + path;
-				if (associated_datafile != "") associated_datafile = AppDirs::examples() +  QDir::separator() + relpath  + associated_datafile;
+				path = _dataLibraryRootPath + relpath +  QDir::separator() + path;
+				if (associated_datafile != "") associated_datafile = _dataLibraryRootPath + relpath + associated_datafile;
 				_entries.append(createEntry(path, name, description, FSEntry::getEntryTypeFromPath(path), associated_datafile));
 			}
 		}

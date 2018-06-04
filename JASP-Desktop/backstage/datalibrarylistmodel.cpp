@@ -135,16 +135,30 @@ void DataLibraryListModel::setDataLibraryBreadCrumbsModel(DataLibraryBreadCrumbs
 	_dataLibraryBreadCrumbsModel = dataLibraryBreadCrumbsModel;
 }
 
-void DataLibraryListModel::changePath(const QString &path)
+void DataLibraryListModel::changePath(const QString &name, const QString &path)
 {
-	beginResetModel();
+	beginResetModel();	
+	_dataLibraryBreadCrumbsModel->appendCrumb(name , path);
 	
-	QString newpath = _dataLibraryBreadCrumbsModel->changeCrumb(path);
-
-	_fsbmExampleModel->setPath(newpath);
+	_fsbmExampleModel->setPath(path);
 	_fsbmExampleModel->refresh();
 
 	endResetModel();
+}
+
+void DataLibraryListModel::changePath(const int &index)
+{
+	beginResetModel();	
+	
+	QString path;
+	
+	path = _dataLibraryBreadCrumbsModel->switchCrumb(index);
+	
+	_fsbmExampleModel->setPath(path);
+	_fsbmExampleModel->refresh();
+	
+	endResetModel();
+	
 }
 
 void DataLibraryListModel::openFile(const QString &path)

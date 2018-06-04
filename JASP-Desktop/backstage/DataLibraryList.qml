@@ -149,7 +149,7 @@ ListView
 					
 					onClicked: {
 						if (model.type === 3) //Folder type
-							dataLibraryListModel.changePath(model.name);
+							dataLibraryListModel.changePath(model.name, model.path);
 					}
 					
 					onDoubleClicked: {

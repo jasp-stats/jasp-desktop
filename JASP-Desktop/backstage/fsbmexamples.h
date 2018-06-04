@@ -46,6 +46,7 @@ private:
 	QJsonDocument *getJsonDocument();
 	QJsonDocument *_doc;
 	bool isFolder(const QString &kind);	
+	QString _dataLibraryRootPath;
 	
 	static ExtendedFSEntry createEntry(const QString &path, const QString &name, const QString &description, FSEntry::EntryType type = FSEntry::Other, const QString &associated_datafile = "");	
 	FileSystemExtendedEntryList _entries;
