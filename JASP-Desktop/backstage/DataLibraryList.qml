@@ -79,8 +79,14 @@ ListView
 						hoverEnabled: true
 						cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 						
+						onClicked: {
+							if (model.type === 3) //Folder type
+								dataLibraryListModel.changePath(model.name, model.path);
+						}
+						
 						onDoubleClicked: {
-							dataLibraryListModel.openFile(model.path)				
+							if (model.type !== 3) //Other then folder type
+								dataLibraryListModel.openFile(model.path)				
 						}
 						
 						
