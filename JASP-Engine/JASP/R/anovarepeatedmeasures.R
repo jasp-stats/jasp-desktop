@@ -655,7 +655,23 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 .referenceGrid <- function (options, fullModel) {
 		referenceGridList <- list()
-		variables <- unlist(c(options$betweenSubjectFactors, lapply(options$repeatedMeasuresFactors, function(x) x$name)))
+		variables <- unlist(c(lapply(options$betweenModelTerms, 
+		  function(x) {
+		    if (length(x$components) == 1) {
+		      return (x$components)
+		    } else {
+		      return(NULL)
+		    }
+		  }), lapply(options$withinModelTerms,
+		  function(x) {
+		    if (length(x$components) == 1) {
+		      return (x$components)
+		    } else {
+		      return(NULL)
+		    }
+		  })
+		))
+
 		for (var in variables) {
 
 			formula <- as.formula(paste("~", .v(var)))
@@ -671,7 +687,23 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 .resultsPostHoc <- function (referenceGrid, options, dataset, fullModel) {
     resultsPostHoc <- list()
   
-		variables <- unlist(c(options$betweenSubjectFactors, lapply(options$repeatedMeasuresFactors, function(x) x$name)))
+    variables <- unlist(c(lapply(options$betweenModelTerms, 
+                                 function(x) {
+                                   if (length(x$components) == 1) {
+                                     return (x$components)
+                                   } else {
+                                     return(NULL)
+                                   }
+                                 }), lapply(options$withinModelTerms,
+                                            function(x) {
+                                              if (length(x$components) == 1) {
+                                                return (x$components)
+                                              } else {
+                                                return(NULL)
+                                              }
+                                            })
+    ))
+    
 
 		postHocData <- fullModel$data$wide
 		factorNamesV <- colnames(postHocData) # Names to use to refer to variables in data
@@ -765,6 +797,10 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		contrastTypes <- c("none", "deviation", "simple", "Helmert", "repeated", "difference", "polynomial")
 
 		for (contrast in options$contrasts) {
+		  
+		  if (! contrast$variable %in% names(referenceGrid)) {
+		    next
+		  }
 
 			resultsContrasts[[contrast$variable]] <- list()
 
@@ -2023,6 +2059,10 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	contrastTables <- list()
 
 	for (contrast in options$contrasts) {
+	  
+	  if (! contrast$variable %in% names(stateContrasts)) {
+	    next
+	  }
 
 		if (contrast$contrast != "none") {
 
@@ -2057,7 +2097,12 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 					row[["Comparison"]] <- .unv(result$contrast[i])
 					row[["Estimate"]] <- .clean(as.numeric(result$estimate[i]))
 					row[["SE"]] <- .clean(as.numeric(result$SE[i]))
-					row[["t"]] <- .clean(as.numeric(result$t.ratio[i]))
+					if ("z.ratio" %in% names(result)) {
+					  contrastTable$schema$fields[[4]]$name <- "z"
+					  row[["z"]] <- .clean(as.numeric(result$z.ratio[i]))
+					} else {
+					  row[["t"]] <- .clean(as.numeric(result$t.ratio[i]))
+					}
 					row[["p"]] <- .clean(as.numeric(result$p.value[i]))
 
 					if(length(rows) == 0)  {
@@ -2182,10 +2227,23 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 						SE  <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$SE[index]))
 
 						if (reverse) {
-							t <- .clean(-as.numeric(statePostHoc[[posthoc.var]]$resultBonf$t.ratio[index]))
+						  
+						  if ("z.ratio" %in% names(statePostHoc[[posthoc.var]]$resultBonf)) {
+						    posthoc.table$schema$fields[[5]]$name <- "z"
+						    z <- .clean(-as.numeric(statePostHoc[[posthoc.var]]$resultBonf$z.ratio[index]))
+						  } else {
+						    t <- .clean(-as.numeric(statePostHoc[[posthoc.var]]$resultBonf$t.ratio[index]))
+						  }
 
 						} else {
-							t <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$t.ratio[index]))
+						  
+						  if ("z.ratio" %in% names(statePostHoc[[posthoc.var]]$resultBonf)) {
+						    posthoc.table$schema$fields[[5]]$name <- "z"
+						    z <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$z.ratio[index]))
+						  } else {
+						    t <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$t.ratio[index]))
+						  }
+						  
 						}
 
 						if (options$postHocTestEffectSize) 
@@ -2217,7 +2275,11 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 					row[["Mean Difference"]] <- md
 					row[["SE"]]  <- SE
-					row[["t"]] <- t
+					if (posthoc.table$schema$fields[[5]]$name == "z") {
+					  row[["z"]] <- z
+					} else {
+					  row[["t"]] <- t
+					}
 					row[["Cohen's d"]] <- effectSize
 					row[["tukey"]] <- pTukey
 					row[["scheffe"]] <- pScheffe
