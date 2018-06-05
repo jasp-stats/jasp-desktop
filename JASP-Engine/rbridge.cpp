@@ -118,6 +118,8 @@ extern "C" bool STDCALL rbridge_runCallback(const char* in, int progress, const 
 string rbridge_run(const string &name, const string &title, bool &requiresInit, const string &dataKey, const string &options, const string &resultsMeta, const string &stateKey, const string &perform, int ppi, RCallback callback)
 {
 	rbridge_callback = callback;
+	rbridge_dataSet = rbridge_dataSetSource();
+	
 
 	const char* results = jaspRCPP_run(name.c_str(), title.c_str(), requiresInit, dataKey.c_str(), options.c_str(), resultsMeta.c_str(), stateKey.c_str(), perform.c_str(), ppi);
 	rbridge_callback = NULL;
@@ -664,8 +666,7 @@ void rbridge_findColumnsUsedInDataSet()
 
 std::vector<bool> rbridge_applyFilter(std::string & filterCode, std::string & generatedFilterCode)
 {
-	if (rbridge_dataSet == NULL)
-		rbridge_dataSet = rbridge_dataSetSource();
+	rbridge_dataSet = rbridge_dataSetSource();
 
 	size_t rowCount = rbridge_dataSet->rowCount();
 
