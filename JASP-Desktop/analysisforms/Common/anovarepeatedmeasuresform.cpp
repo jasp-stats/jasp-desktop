@@ -53,7 +53,8 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	_betweenSubjectsFactorsListModel = new TableModelVariablesAssigned(this);
 	_betweenSubjectsFactorsListModel->setSource(&_availableVariablesModel);
 	_betweenSubjectsFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->betweenSubjectFactors->setModel(_betweenSubjectsFactorsListModel);
+    _betweenSubjectsFactorsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+    ui->betweenSubjectFactors->setModel(_betweenSubjectsFactorsListModel);
 
 	_covariatesListModel = new TableModelVariablesAssigned(this);
 	_covariatesListModel->setSource(&_availableVariablesModel);
