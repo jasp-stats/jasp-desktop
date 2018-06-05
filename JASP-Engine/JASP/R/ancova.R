@@ -719,6 +719,28 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			anova[["title"]] <- "ANCOVA"
 
 		}
+	  
+	  options$homogeneityCorrections <- FALSE
+	  
+	}
+	
+	corrections <- NULL
+	
+	if (options$homogeneityCorrections) {
+	  
+	  if (length(options$modelTerms) > 1)
+	  
+	  if (options$homogeneityNone) {
+	    corrections <- c(corrections, "None")
+	  }
+	  
+	  if (options$homogeneityBrown) {
+	    corrections <- c(corrections, "Brown-Forsythe")
+	  }
+	  
+	  if (options$homogeneityWelch) {
+	    corrections <- c(corrections, "Welch")
+	  }
 	}
 
 	fields <- list(
@@ -728,6 +750,18 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		list(name="Mean Square", type="number", format="sf:4;dp:3"),
 		list(name="F", type="number", format="sf:4;dp:3"),
 		list(name="p", type="number", format="dp:3;p:.001"))
+	
+	if (options$homogeneityCorrections && !is.null(corrections)) {
+	  fields <- list(
+	    list(name="Cases", type="string"),
+	    list(name="cor", type="string", title="Homogeneity Correction"),
+	    list(name="Sum of Squares", type="number", format="sf:4;dp:3"),
+	    list(name="df", type="number", format="sf:4;dp:3"),
+	    list(name="Mean Square", type="number", format="sf:4;dp:3"),
+	    list(name="F", type="number", format="sf:4;dp:3"),
+	    list(name="p", type="number", format="dp:3;p:.001"))
+	}
+	
 
 	if (options$VovkSellkeMPR) {
     fields[[length(fields) + 1]] <- list(name = "VovkSellkeMPR",
@@ -787,15 +821,49 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		anova.rows <- list()
 
 		for (i in .indices(terms.normal)) {
+		  
+		  if (options$homogeneityCorrections && !is.null(corrections)) {
+		    
+		    counter <- 1
+		    
+		    if (options$homogeneityNone) {
+		      row <- list("case"="Residual", "cor"="None", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
+		      if (options$VovkSellkeMPR){
+		        row[["VovkSellkeMPR"]] <- ""
+		      }
+		      anova.rows[[length(anova.rows) + 1]] <- row
+		      counter <- counter + 1
+		    }
+		    
+		    if (options$homogeneityBrown) {
+		      row <- list("case"="Residual", "cor"="Brown-Forsythe", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
+		      if (options$VovkSellkeMPR){
+		        row[["VovkSellkeMPR"]] <- ""
+		      }
+		      anova.rows[[length(anova.rows) + 1]] <- row
+		      counter <- counter + 1
+		    }
+		    
+		    if (options$homogeneityWelch) {
+		      row <- list("case"="Residual", "cor"="Welch", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
+		      if (options$VovkSellkeMPR){
+		        row[["VovkSellkeMPR"]] <- ""
+		      }
+		      anova.rows[[length(anova.rows) + 1]] <- row
+		      counter <- counter + 1
+		    }
+		    
+		  } else {
 
-			if(i == 1 || (!is.null(unlist(options$covariates)) && terms.normal[i] == options$covariates[[1]] && !reorderModelTerms$interactions)) {
-				newGroup <- TRUE
-			} else {
-				newGroup <- FALSE
-			}
-
-			row <- list("Cases"=terms.normal[i], "Sum of Squares"=".", "df"=".", "Mean Square"=".", "F"=".", "p"=".", ".isNewGroup" = newGroup)
-			anova.rows[[length(anova.rows) + 1]] <- row
+  			if(i == 1 || (!is.null(unlist(options$covariates)) && terms.normal[i] == options$covariates[[1]] && !reorderModelTerms$interactions)) {
+  				newGroup <- TRUE
+  			} else {
+  				newGroup <- FALSE
+  			}
+  
+  			row <- list("Cases"=terms.normal[i], "Sum of Squares"=".", "df"=".", "Mean Square"=".", "F"=".", "p"=".", ".isNewGroup" = newGroup)
+  			anova.rows[[length(anova.rows) + 1]] <- row
+		  }
 		}
 
 		row <- list("Cases"="Residual", "Sum of Squares"=".", "df"=".", "Mean Square"=".", "F"=".", "p"=".", ".isNewGroup" = TRUE)
@@ -805,7 +873,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 		if (status$error)
 			anova[["error"]] <- list(errorType="badData", errorMessage=status$errorMessage)
-
 
 	} else {
 
@@ -897,7 +964,58 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					row[["VovkSellkeMPR"]] <-  ifelse(p!="",.VovkSellkeMPR(p),"")
 				}
 
-				rows[[length(rows) + 1]] <- row
+				if (options$homogeneityCorrections && !is.null(corrections)) {
+				  
+				  counter <- 1
+				  if (options$homogeneityNone) {
+				    row[['cor']] <- "None"
+				    row[['.isNewGroup']] <- counter == 1
+				    rows[[length(rows) + 1]] <- row
+				    counter <- counter + 1
+				  }
+				  
+				  if (options$homogeneityBrown) {
+				    
+				    row[['cor']] <- "Brown-Forsythe"
+				    row[['.isNewGroup']] <- counter == 1
+				    bfResult <- onewaytests::bf.test(as.formula(modelDef$model.def), model$model)
+				    if (term != "Residuals") {
+				      row[['df']] <- bfResult[['parameter']][[1]]
+				      row[['p']] <- bfResult[['p.value']]
+				      row[['F']] <- bfResult[['statistic']]
+				    } else {
+				      row[['df']] <- bfResult[['parameter']][[2]]
+				    }
+				    row[['Mean Square']] <- row[['Sum of Squares']] / row[['df']]
+				    
+				    rows[[length(rows) + 1]] <- row
+				    counter <- counter + 1				 
+				  }
+				  
+				  if (options$homogeneityWelch) {
+
+				    row[['cor']] <- "Welch"
+				    row[['.isNewGroup']] <- counter == 1
+				    if (length(options$modelTerms) > 1) stop()
+				    welchResult <- stats::oneway.test(as.formula(modelDef$model.def), model$model, var.equal = FALSE)
+				    if (term != "Residuals") {
+				      row[['df']] <- welchResult[['parameter']][[1]]
+				      row[['p']] <- welchResult[['p.value']]
+				      row[['F']] <- welchResult[['statistic']]
+				    } else {
+				      row[['df']] <- welchResult[['parameter']][[2]]
+				    }
+				    row[['Mean Square']] <- row[['Sum of Squares']] / row[['df']]
+			
+				    rows[[length(rows) + 1]] <- row
+				    counter <- counter + 1				  
+				  }
+				  
+				} else {
+				  
+				  rows[[length(rows) + 1]] <- row
+				  
+				}
 			}
 
 			rows
@@ -912,6 +1030,10 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 				errorMessage <- "Residual sums of squares and/or residual degrees of freedom are equal to zero indicating perfect fit.<br><br>(ANOVA F-tests on an essentially perfect fit are unreliable)"
 
+			}
+			
+			if ((options$homogeneityBrown || options$homogeneityWelch) && length(options$modelTerms) > 1) {
+			  errorMessage <- "The Brown-Forsythe and Welch corrections are only available for oneway ANOVA's"
 			}
 
 			status$error <- TRUE

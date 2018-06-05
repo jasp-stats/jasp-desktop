@@ -850,27 +850,64 @@
            <property name="title">
             <string/>
            </property>
-           <layout class="QGridLayout" name="gridLayout_31">
-            <property name="leftMargin">
-             <number>12</number>
-            </property>
-            <property name="topMargin">
-             <number>3</number>
-            </property>
-            <property name="bottomMargin">
-             <number>12</number>
-            </property>
-            <item row="1" column="0">
+           <layout class="QGridLayout" name="gridLayout_9">
+            <item row="4" column="0" colspan="2">
              <widget class="BoundCheckBox" name="qqPlot">
               <property name="text">
                <string>Q-Q plot of residuals</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
+            <item row="3" column="0" colspan="2">
+             <widget class="QWidget" name="widgetHomogeneityCorrections" native="true">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_38">
+               <property name="leftMargin">
+                <number>24</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="1">
+                <widget class="BoundCheckBox" name="homogeneityBrown">
+                 <property name="text">
+                  <string>Brown-Forsythe</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="BoundCheckBox" name="homogeneityWelch">
+                 <property name="text">
+                  <string>Welch</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="BoundCheckBox" name="homogeneityNone">
+                 <property name="text">
+                  <string>None</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="0" rowspan="2" colspan="2">
              <widget class="BoundCheckBox" name="homogeneityTests">
               <property name="text">
                <string>Homogeneity tests</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="homogeneityCorrections">
+              <property name="text">
+               <string>Homogeneity corrections</string>
               </property>
              </widget>
             </item>
@@ -2266,6 +2303,22 @@
     <hint type="destinationlabel">
      <x>142</x>
      <y>2500</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>homogeneityCorrections</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetHomogeneityCorrections</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>190</x>
+     <y>1052</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>358</x>
+     <y>1079</y>
     </hint>
    </hints>
   </connection>
