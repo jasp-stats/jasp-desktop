@@ -687,6 +687,18 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	}
 
 
+	if (options$homogeneityCorrections && !is.null(corrections)) {
+	  fields <- list(
+	    list(name="Cases", type="string"),
+	    list(name="cor", type="string", title="Homogeneity Correction"),
+	    list(name="Sum of Squares", type="number", format="sf:4;dp:3"),
+	    list(name="df", type="number", format="sf:4;dp:3"),
+	    list(name="Mean Square", type="number", format="sf:4;dp:3"),
+	    list(name="F", type="number", format="sf:4;dp:3"),
+	    list(name="p", type="number", format="dp:3;p:.001"))
+	}
+
+
 	if (options$VovkSellkeMPR) {
     fields[[length(fields) + 1]] <- list(name = "VovkSellkeMPR",
                                         title = "VS-MPR\u002A",
@@ -889,7 +901,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				}
 
 				if (options$homogeneityCorrections && !is.null(corrections)) {
-
+				  
 				  counter <- 1
 				  if (options$homogeneityNone) {
 				    row[['cor']] <- "None"
@@ -954,6 +966,10 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 				errorMessage <- "Residual sums of squares and/or residual degrees of freedom are equal to zero indicating perfect fit.<br><br>(ANOVA F-tests on an essentially perfect fit are unreliable)"
 
+			}
+
+			if ((options$homogeneityBrown || options$homogeneityWelch) && length(options$modelTerms) > 1) {
+			  errorMessage <- "The Brown-Forsythe and Welch corrections are only available for oneway ANOVA's"
 			}
 
 			if ((options$homogeneityBrown || options$homogeneityWelch) && length(options$modelTerms) > 1) {
@@ -2101,7 +2117,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     }
 
     dunnTable[["data"]] <- rows
-    
+
     dunnTableCollection[[length(dunnTableCollection)+1]] <- dunnTable
     stateDunn <- dunnTableCollection
   }
