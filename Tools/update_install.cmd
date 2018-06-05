@@ -20,7 +20,7 @@ COPY %BUILD_DIR_32%\JASPEngine.exe /Y _x86
 COPY %BUILD_DIR_32%\*.dll /Y _x86
 
 COPY %BUILD_DIR_64%\JASP.exe /Y _x64
-COPY %BUILD_DIR_64%\JASPEngine.exe /Y _x64
+COPY %BUILD_DIR_64%\JASPEngine.exe /Y _x64  
 COPY %BUILD_DIR_64%\*.dll /Y _x64
 
 REM ---- QT Core -------
@@ -29,7 +29,9 @@ REM %QT-MSVC-BIN-2017%\windeployqt.exe %BUILD_DIR_64%\JASPEngine.exe --compiler-
 REM COPY %QT-MSVC-BIN-2017%\Qt5Core.dll _x64
 
 cd _x86
-%QT-MSVC-BIN-2015%\windeployqt.exe --compiler-runtime --release JASP.exe 
+REM %QT-MSVC-BIN-2015%\windeployqt.exe --compiler-runtime --release JASP.exe
+%QT-MSVC-BIN-2015%\windeployqt.exe -core -gui -webenginewidgets -webchannel -svg -network -printsupport -xml -qml -quick -quickwidgets --qmldir C:\Jasp\Build\jasp-desktop\JASP-Desktop\resources JASP.exe 
+ 
 cd ..
 
 cd _x64
