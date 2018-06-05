@@ -83,12 +83,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	results[[".meta"]] <- meta
 	results[["title"]] <- ifelse(options$wilcoxTest, "Bayesian Mann-Whitney U Test", "Bayesian Independent Samples T-Test")
 
-	diff <- NULL
-
-	if (!is.null(state)) {
-		diff <- .diff(options, state$options)
-	}
-
 	# Needs to include following function for reactive progress bar for MCMC sampling
 	env <- environment()
 	callBackWilcoxonMCMC <- function(results = NULL, progress = NULL) {
@@ -137,8 +131,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	if(is.null(options()$BFprogress)) options(BFprogress = interactive())
 	if(is.null(options()$BFfactorsMax)) options(BFfactorsMax = 5)
 
-	descriptivesTable <- .ttestBayesianIndependentSamplesDescriptives(dataset, options, perform)
-	results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives")
+	descriptivesTable <- .ttestBayesianIndependentSamplesDescriptives(dataset, options, perform, state)
+	results[["descriptives"]] <- list(descriptivesTable = descriptivesTable[["descriptives"]], title = "Descriptives")
 
 	if (options$hypothesis == "groupOneGreater") {
 
@@ -461,7 +455,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 					if ( ! .shouldContinue(callback(results)))
 						return()
-
 				}
 
 				if (options$plotSequentialAnalysis) {
@@ -532,7 +525,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	for (plot in sequentialPlots)
 		keep <- c(keep, plot$data)
 
-	# wilcoxExpr <- bquote(options[["testStatistic"]] == .(options[["testStatistic"]]))
 	defaults <- c("priorWidth", "hypothesis", "groupingVariable", "missingValues",
 								"effectSizeStandardized", "informativeStandardizedEffectSize",
 								"informativeCauchyLocation", "informativeCauchyScale", "informativeTLocation",
@@ -544,14 +536,16 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		priorAndPosteriorPlots = c(defaults, "plotHeight", "plotWidth", "plotPriorAndPosteriorAdditionalInfo"),
 		robustnessPlots = c(defaults, "plotHeight", "plotWidth", "plotBayesFactorRobustnessAdditionalInfo"),
 		sequentialPlots = c(defaults, "plotHeight", "plotWidth", "plotSequentialAnalysisRobustness"),
-		delta = c("hypothesis", "priorWidth", "groupingVariable", "missingValues", "wilcoxonSamplesNumber")
+		delta = c("hypothesis", "priorWidth", "groupingVariable", "missingValues", "wilcoxonSamplesNumber"),
+		descriptivesData = c("descriptives", "groupingVariable", "missingValues", "descriptivesPlotsCredibleInterval")
 	)
 	
 	# all collection keys are the same!
 	collectionKey <- .stateDependsOnVar(dependents)
-	for (e in c("ttestData", "descriptivesPlots", "priorAndPosteriorPlots", "robustnessPlots", "sequentialPlots", "delta"))
+	for (e in c("ttestData", "descriptivesPlots", "priorAndPosteriorPlots", "robustnessPlots", "sequentialPlots", 
+							"delta", "descriptivesData")) {
 		attr(stateKey[[e]], "collection") <- collectionKey
-
+	}
 	if (perform == "init") {
 
     if (!is.null(state) && is.null(attr(state, "key")))
@@ -562,8 +556,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	} else {
 
 		state <- list(
-			options = options, results = results, 
+			options = options,
 			ttestData = ttest.results[["ttestData"]],
+			descriptivesData = descriptivesTable[["descriptivesData"]],
 			descriptivesPlots = descriptivesPlots, 
 			priorAndPosteriorPlots = priorAndPosteriorPlots,
 			robustnessPlots = robustnessPlots,
@@ -819,7 +814,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
                                           cauchyPriorParameter = options$priorWidth, progressbar = progressbar)
                 if(is.null(r)) return() # Return null if settings are changed
                 delta[[variable]] <- r[["deltaSamples"]]
-
                 bf.raw <- .computeBayesFactorWilcoxon(deltaSamples = r[["deltaSamples"]], cauchyPriorParameter = options$priorWidth, oneSided = oneSided)
                 
               }
@@ -939,7 +933,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 }
 
 .ttestBayesianIndependentSamplesDescriptives <- function(dataset, options, perform,
-												 state = NULL, diff = NULL) {
+												 state = NULL) {
 	if (options$descriptives == FALSE) return(NULL)
 
 	descriptives = list("title" = "Group Descriptives")
@@ -967,135 +961,69 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	}
 
 	descriptives[["schema"]] <- list(fields = fields)
-	data <- list()
-
-
-	## function to check if everything is alright with the options
-	isAllright <- function(variable, options, state = NULL, diff = NULL) {
-
-		# check if the variable is in the state variables
-		cond1 <- !is.null(state) && variable %in% state$options$variables
-
-		# check if either diff is true, or it's a list and descriptives,
-		# and groupingVariable, missingValues are FALSE
-		cond2 <- (!is.null(diff) && (is.logical(diff) && diff == FALSE) || (is.list(diff)
-				 && !any(diff$descriptives,diff$groupingVariable, diff$missingValues)))
-
-		cond1 && cond2
-	}
-
+	data <- state[["descriptivesData"]]
+	nvar <- length(options[["variables"]])
 	variables <- options$variables
+	groups <- options$groupingVariable
 	if (length(variables) == 0) variables <- "."
 
+	if (perform == "init" || nvar == 0 || groups == "")
 	for (variable in variables) {
-
-		if (isAllright(variable, options, state, diff)) {
-
-			stateDat <- state$results$descriptives$data
-			descriptivesVariables <- as.character(length(stateDat))
-
-			for (i in seq_along(stateDat))
-				descriptivesVariables[i] <- stateDat[[i]]$variable
-
-			indices <- which(descriptivesVariables == variable)
-			data[[length(data) + 1]] <- stateDat[[indices[1]]]
-			data[[length(data) + 1]] <- stateDat[[indices[2]]]
-
-		} else {
-			data[[length(data) + 1]] <- list(variable = variable, .isNewGroup = TRUE)
-			data[[length(data) + 1]] <- list(variable = variable)
+		if (is.null(data[[variable]])) {
+			data[[variable]][[1]] <- list(variable = variable, .isNewGroup = TRUE)
+			data[[variable]][[2]] <- list(variable = variable)
 		}
 	}
-
-	## check if we are done with all this crap
-	done <- (!is.null(state) &&
-			 state$options$descriptives &&
-			 all(variables %in% state$options$variables))
-
-	if (done) descriptives[["status"]] <- "complete"
-
-	groups <- options$groupingVariable
-
-	## if we actually have to do the test, and we have a grouping variable
-	if (perform == "run" && groups != "") {
+	if (perform == "run" && nvar >= 1 && groups != "") {
 		levels <- base::levels(dataset[[ .v(groups) ]])
+		groupingData <- dataset[[.v(groups)]]
+		for (variable in variables) {
+			if (is.null(data[[variable]])) {
+				for (i in 1:2) {
 
-		## if people don't know what a t-test is...
-		if (length(levels) != 2) {
-			descriptives[["error"]] <- list(errorType = "badData")
+					level <- levels[i]
+					variableData <- dataset[[.v(variable)]]
 
-		} else {
+					groupData <- variableData[groupingData == level]
+					groupDataOm <- na.omit(groupData)
 
-			rowNo <- 1
-			groupingData <- dataset[[.v(groups)]]
+					if (class(groupDataOm) != "factor") {
 
-			## do the whole loop as above again
-			for (variable in variables) {
+						posteriorSummary <- .posteriorSummaryGroupMean(variable=groupDataOm, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
+						ciLower <- .clean(posteriorSummary$ciLower)
+						ciUpper <- .clean(posteriorSummary$ciUpper)
 
-				# if everything is alright, add stuff to data
-				if (isAllright(variable, options, state, diff)) {
+						n <- .clean(length(groupDataOm))
+						mean <- .clean(mean(groupDataOm))
+						std <- .clean(sd(groupDataOm))
+						sem <- .clean(sd(groupDataOm) / sqrt(length(groupDataOm)))
 
-					stateDat <- state$results$descriptives$data
-					descriptivesVariables <- as.character(length(stateDat))
+						result <- list(variable = variable, group = level,
+													 N = n, mean = mean, sd = std, se = sem, lowerCI = ciLower,
+													 upperCI = ciUpper)
 
-					for (i in seq_along(stateDat))
-						descriptivesVariables[i] <- stateDat[[i]]$variable
-
-					indices <- which(descriptivesVariables == variable)
-
-					data[[rowNo]] <- stateDat[[indices[1]]]
-					data[[rowNo]] <- stateDat[[indices[2]]]
-
-					rowNo <- rowNo + 2
-
-				} else {
-
-					for (i in 1:2) {
-
-					  level <- levels[i]
-					  variableData <- dataset[[.v(variable)]]
-
-					  groupData <- variableData[groupingData == level]
-					  groupDataOm <- na.omit(groupData)
-
-					  if (class(groupDataOm) != "factor") {
-
-							posteriorSummary <- .posteriorSummaryGroupMean(variable=groupDataOm, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
-							ciLower <- .clean(posteriorSummary$ciLower)
-							ciUpper <- .clean(posteriorSummary$ciUpper)
-
-						  n <- .clean(length(groupDataOm))
-						  mean <- .clean(mean(groupDataOm))
-						  std <- .clean(sd(groupDataOm))
-						  sem <- .clean(sd(groupDataOm) / sqrt(length(groupDataOm)))
-
-						  result <- list(variable = variable, group = level,
-										 N = n, mean = mean, sd = std, se = sem, lowerCI = ciLower,
-										 upperCI = ciUpper)
-
-					  } else {
+					} else {
 
 						n <- .clean(length(groupDataOm))
 						result <- list(variable = variable, group = "",
-									   N = n, mean = "", sd = "", se = "", lowerCI = "",
-										 upperCI = "")
+													 N = n, mean = "", sd = "", se = "", lowerCI = "",
+													 upperCI = "")
 					}
 
 					if (i == 1) {
 						result[[".isNewGroup"]] <- TRUE
 					}
 
-					data[[rowNo]] <- result
-					rowNo <- rowNo + 1
-					}
+					data[[variable]][[i]] <- result
 				}
 			}
 		}
 		descriptives[["status"]] <- "complete"
 	}
 
-	descriptives[["data"]] <- data
-	descriptives
+	# drop the names
+	descriptives[["data"]] <- unlist(data, recursive = FALSE, use.names = FALSE)
+	return(list(descriptives = descriptives, descriptivesData = data))
 }
 
 
