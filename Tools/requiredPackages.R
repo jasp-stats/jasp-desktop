@@ -49,6 +49,7 @@ for (file in files) {
 
 # Temporarly add the GPArotation manually (incorrectly marked as "Suggest' in psych) 
 reqPkgs <- c(reqPkgs, "GPArotation")
+reqPkgs <- reqPkgs[!reqPkgs %in% 'JASPgraphs']
 # Exclude jasptools manually (should not be shipped)
 basePkgs <- c(basePkgs, "jasptools")
 reqPkgs <- sort(unique(reqPkgs))
