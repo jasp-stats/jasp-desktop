@@ -8,9 +8,14 @@ ListView
 {
 	id : listview
 	
+	property bool m_TopButtonHovered: false
+		
 	clip: true
 	
-	ScrollBar.vertical: ScrollBar {}
+	ScrollBar.vertical: ScrollBar {
+		active: m_TopButtonHovered
+	}
+	
 	spacing : 10
 	
 	model : dataLibraryListModel
@@ -89,7 +94,9 @@ ListView
 								dataLibraryListModel.openFile(model.path)				
 						}
 						
-						
+						onEntered: m_TopButtonHovered = true;
+						onExited: m_TopButtonHovered = false;						
+					
 					}
 					
 					ToolTip {
@@ -162,6 +169,10 @@ ListView
 						if (model.type !== 3) //Other then folder type
 							dataLibraryListModel.openFile(model.path)				
 					}	
+					
+					onEntered: m_TopButtonHovered = true;
+					onExited: m_TopButtonHovered = false;						
+					
 					
 					cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 					
