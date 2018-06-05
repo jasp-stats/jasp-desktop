@@ -79,6 +79,23 @@
 			"value": 0.25,
 			"min": 0.0,
 			"max": 1.0
+		},
+		{
+			"name": "numSamples",
+			"type": "Integer",
+			"default": 10000,
+			"min": 1
+		},
+		{
+			"name": "descriptives",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "bayesFactorOrder",
+			"options": [ "bestModelTop", "nullModelTop" ],
+			"default": "nullModelTop",
+			"type": "List"
 		}
 	]
 }

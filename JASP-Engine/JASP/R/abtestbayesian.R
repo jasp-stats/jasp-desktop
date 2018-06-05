@@ -12,23 +12,24 @@ ABTestBayesian <- function(
 ) {
 
     # TODO:
-    # 1. normal_sigma = 0, analysis freezes
-    # 2. prior probs does not seem to affect posterior plot
     # 3. Data reading function is inneficient
     # 4. Code repetition in plotting functions
 
     # Configure the state
-    modelOpts <- c("variables", "normal_mu", "normal_sigma", "orEqualTo1Prob", "orLessThan1Prob", "orGreaterThan1Prob")
+    variableOpts <- c("n1", "y1", "n2", "y2")
+    modelOpts <- c(variableOpts, "normal_mu", "normal_sigma", "orEqualTo1Prob", "orLessThan1Prob",
+                   "orGreaterThan1Prob", "numSamples")
 
-    # TODO: check if this dependence is correct
     stateKey <- list(
         ab_obj = modelOpts,
+        descriptives = variableOpts,
         plotPosterior = c(modelOpts, "plotPosteriorType", "plotPosterior"),
         plotSequentialAnalysis = c(modelOpts, "plotSequentialAnalysis")
     )
 
     # Initialize the variables
     ab_obj <- state$ab_obj
+    descriptives <- state$descriptives
     plotPosterior <- state$plotPosterior
     plotSequentialAnalysis <- state$plotSequentialAnalysis
     status <- state$status
@@ -69,10 +70,13 @@ ABTestBayesian <- function(
         )
     }
 
+    if (options$descriptives && is.null(descriptives)) {
+        descriptives <- .descriptivesTable.abTest(dataset, status, perform, options)
+    }
+
     if (options$plotPriorAndPosterior && is.null(plotPosterior)) {
-        plotPosterior <- .plotPosterior.abTest(
-            ab_obj = ab_obj, status = status, perform = perform, posteriorPlotType = options[["plotPosteriorType"]]
-        )
+        plotPosterior <- .plotPosterior.abTest(ab_obj = ab_obj, status = status, perform = perform,
+                                               posteriorPlotType = options[["plotPosteriorType"]])
     }
 
     if (options$plotSequentialAnalysis && is.null(plotSequentialAnalysis)) {
@@ -81,50 +85,51 @@ ABTestBayesian <- function(
 
 
     # Assign to results
-	results <- list()
-	results[[".meta"]] <- .createMeta.abTest()
-	results[["title"]] <- "Bayesian A/B Test"
+    results <- list()
+    results[[".meta"]] <- .createMeta.abTest()
+    results[["title"]] <- "Bayesian A/B Test"
 
-	results[["abTestTable"]] <- .fillABTable.abTest(data = abTableData,
-		status = status, perform = perform, options = options)
+    results[["abTestTable"]] <- .fillABTable.abTest(data = abTableData, status = status, perform = perform,
+                                                    options = options)
 
-	if (options$plotPriorAndPosterior || options$plotSequentialAnalysis) {
+    if (options$descriptives) {
+        results[["descriptivesTable"]] <- descriptives
+    }
 
-		results[["inferentialPlots"]] <-
-			list(
-				title = "Inferential Plots",
-				PosteriorPlot = plotPosterior,
-				SequentialAnalysisPlot = plotSequentialAnalysis
-			)
-	}
+    if (options$plotPriorAndPosterior || options$plotSequentialAnalysis) {
 
-	# Set keep and the state
-	if (perform == "init") {
-		statusAnalysis <- "inited"
-		keep <- state$keep
-	} else { #run
-		statusAnalysis <- "complete"
-		keep <- c(plotPosterior$data, plotSequentialAnalysis$data)
+        results[["inferentialPlots"]] <- list(title = "Inferential Plots", PosteriorPlot = plotPosterior,
+                                              SequentialAnalysisPlot = plotSequentialAnalysis)
+    }
 
-		state <- list(
-			options = options,
-			ab_obj = ab_obj,
-			plotPosterior = plotPosterior,
-			plotSequentialAnalysis = plotSequentialAnalysis,
-			status = status,
-			keep = keep
-		)
-	}
+    # Set keep and the state
+    if (perform == "init") {
+        statusAnalysis <- "inited"
+        keep <- state$keep
+    } else { #run
+        statusAnalysis <- "complete"
+        keep <- c(plotPosterior$data, plotSequentialAnalysis$data)
 
-	if (!is.null(state))
-		attr(state, "key") <- stateKey
+        state <- list(
+            options = options,
+            ab_obj = ab_obj,
+            descriptives = descriptives,
+            plotPosterior = plotPosterior,
+            plotSequentialAnalysis = plotSequentialAnalysis,
+            status = status,
+            keep = keep
+        )
+    }
 
-	return(list(
-		keep = keep,
-		results = results,
-		status = statusAnalysis,
-		state = state)
-	)
+    if (!is.null(state))
+        attr(state, "key") <- stateKey
+
+    return(list(
+        keep = keep,
+        results = results,
+        status = statusAnalysis,
+        state = state)
+    )
 }
 
 .createMeta.abTest <- function() {
@@ -135,7 +140,8 @@ ABTestBayesian <- function(
 
     meta <- list()
     meta[[1]] <- list(name = "abTestTable", type = "table")
-    meta[[2]] <- list(
+    meta[[2]] <- list(name = "descriptivesTable", type = "table")
+    meta[[3]] <- list(
         name="inferentialPlots",
         type="object",
         meta=list(
@@ -269,10 +275,6 @@ ABTestBayesian <- function(
     # Return:
     #   list containing the ab object
 
-
-    # TODO
-    # return (list(ab_obj=NULL, status=status))
-
     prior_par <- list(mu_psi = options$normal_mu, sigma_psi = options$normal_sigma, mu_beta = 0, sigma_beta = 1)
 
     # Normalize prior probabilities
@@ -284,9 +286,8 @@ ABTestBayesian <- function(
     prior_prob <- c(0, orGreaterThan1Prob, orLessThan1Prob, orEqualTo1Prob)
     names(prior_prob) <- c("H1", "H+", "H-", "H0")
 
-    ab <- try(
-        abtest::ab_test(data = dataset, prior_par = prior_par, prior_prob = prior_prob, posterior = TRUE)
-    )
+    ab <- try(abtest::ab_test(data = dataset, prior_par = prior_par, prior_prob = prior_prob,
+                              posterior = TRUE, nsamples = options$numSamples))
 
     if (isTryError(ab)) {
         status$ready <- FALSE
@@ -311,19 +312,19 @@ ABTestBayesian <- function(
 		return(NULL)
 	}
 
-    if (options$bayesFactorType == "BF10") {
-        bf10 <- 1
-        bfplus0 <- ab_obj$bf[["bfplus0"]]
-        bfminus0 <- ab_obj$bf[["bfminus0"]]
-    } else if (options$bayesFactorType == "BF01") {
-        bf10 <- 1
-        bfplus0 <- 1 / ab_obj$bf[["bfplus0"]]
-        bfminus0 <- 1 / ab_obj$bf[["bfminus0"]]
-    } else if (options$bayesFactorType == "LogBF10") {
-        bf10 <- 0
-        bfplus0 <- ab_obj$logbf[["bfplus0"]]
-        bfminus0 <- ab_obj$logbf[["bfminus0"]]
-    }
+    # if (options$bayesFactorType == "BF10") {
+    #     bf10 <- 1
+    #     bfplus0 <- ab_obj$bf[["bfplus0"]]
+    #     bfminus0 <- ab_obj$bf[["bfminus0"]]
+    # } else if (options$bayesFactorType == "BF01") {
+    #     bf10 <- 1
+    #     bfplus0 <- 1 / ab_obj$bf[["bfplus0"]]
+    #     bfminus0 <- 1 / ab_obj$bf[["bfminus0"]]
+    # } else if (options$bayesFactorType == "LogBF10") {
+    #     bf10 <- 0
+    #     bfplus0 <- ab_obj$logbf[["bfplus0"]]
+    #     bfminus0 <- ab_obj$logbf[["bfminus0"]]
+    # }
 
     # Normalize prior probabilities
     sum_logor = options$orGreaterThan1Prob + options$orLessThan1Prob + options$orEqualTo1Prob
@@ -335,31 +336,101 @@ ABTestBayesian <- function(
 
     output.rows[[1]] <- list(
         "Models" = "Log odds ratio = 0",
-        "BF" = .clean(bf10),
+        "BF" = .clean(1.00),
         "P(M|data)" = ab_obj$post_prob[["H0"]],
         "P(M)" = .clean(orEqualTo1Prob)
     )
 
     output.rows[[2]] <- list(
         "Models" = "Log odds ratio > 0",
-        "BF" = .clean(bfplus0),
+        "BF" = .clean(ab_obj$bf[["bfplus0"]]),
         "P(M|data)" = ab_obj$post_prob[["H+"]],
         "P(M)" = .clean(orGreaterThan1Prob)
     )
 
     output.rows[[3]] <- list(
         "Models" = "Log odds ratio < 0",
-        "BF" = .clean(bfminus0),
+        "BF" = .clean(ab_obj$bf[["bfminus0"]]),
         "P(M|data)" = ab_obj$post_prob[["H-"]],
         "P(M)" = .clean(orLessThan1Prob)
     )
 
+    if (options$bayesFactorOrder == "bestModelTop") {
+        ordered <- output.rows[order(sapply(output.rows, "[[", "P(M|data)"), decreasing = TRUE)]
+
+        best_model_bf <- ordered[[1]]$BF
+        ordered[[1]]$BF <- .clean(ordered[[1]]$BF / best_model_bf)
+        ordered[[2]]$BF <- .clean(ordered[[2]]$BF / best_model_bf)
+        ordered[[3]]$BF <- .clean(ordered[[3]]$BF / best_model_bf)
+
+        output.rows <- ordered
+    }
+
+    if (options$bayesFactorType == "BF01") {
+        output.rows[[1]]$BF <-.clean(1 / output.rows[[1]]$BF)
+        output.rows[[2]]$BF <-.clean(1 / output.rows[[2]]$BF)
+        output.rows[[3]]$BF <-.clean(1 / output.rows[[3]]$BF)
+
+        # output.rows <- lapply(output.rows, function(x) {x$BF <- .clean(1 / x$BF); return(x)})
+    } else if (options$bayesFactorType == "LogBF10") {
+        output.rows[[1]]$BF <-.clean(base::log(output.rows[[1]]$BF))
+        output.rows[[2]]$BF <-.clean(base::log(output.rows[[2]]$BF))
+        output.rows[[3]]$BF <-.clean(base::log(output.rows[[3]]$BF))
+    }
 
     # Add footnotes if necessary
     footnotes <- NULL
 
 	return(list(rows=output.rows, notes=footnotes))
 }
+
+.descriptivesTable.abTest <- function(dataset, status, perform, options) {
+    # Generate a descriptives table (counts, total, proportion)
+    #
+    # Args:
+    #   dataset: data read by .readData.basReg()
+    #   status: current status of the analysis
+    #   perform: 'run' or 'init'
+    #   options: a list of user options
+    #
+    # Return:
+    #   List with completed descriptives table; may be inserted in results as is
+
+    descriptives <- list()
+    print("status")
+    print(status)
+    descriptives[["title"]] <- "Descriptives"
+
+    fields <- list(
+        list(name="group",      title="",           type="string" ),
+        list(name="counts",     title="Counts",     type="integer"),
+        list(name="total",      title="Total",      type="integer"),
+        list(name="proportion", title="Porportion", type="number", format="sf:4;dp:3")
+    )
+
+    descriptives[["schema"]] <- list(fields=fields)
+
+    if (status$ready && perform == "run") {
+        rows <- list()
+
+        num_rows = length(dataset$y1)
+        counts = dataset$y1[num_rows]
+        total = dataset$n1[num_rows]
+        rows[[1]] <- list(group = "Group 1", counts = counts, total = total, proportion = counts / total)
+
+        counts = dataset$y2[num_rows]
+        total = dataset$n2[num_rows]
+        rows[[2]] <- list(group = "Group 2", counts = counts, total = total, proportion = counts / total)
+
+        descriptives[["data"]] <- rows
+
+    } else {
+       descriptives[["data"]][[1]] <- list(group = ".", counts = ".", total = ".", proportion = ".")
+   }
+
+	return(descriptives)
+}
+
 
 .makeEmptyPlot.abTest <- function(xlab = NULL, ylab = NULL, title = NULL, status) {
 	# Convenience function to create empty x and y-axes
@@ -375,6 +446,7 @@ ABTestBayesian <- function(
 
 	plot <- list()
 	plot[["title"]] <- title
+    plot[["status"]] <- "waiting"
 
 	plotFunc <- function() {
 		plot(1, type = "n", xlim = 0:1, ylim = 0:1, bty = "n", axes = FALSE, xlab = "", ylab = "")
