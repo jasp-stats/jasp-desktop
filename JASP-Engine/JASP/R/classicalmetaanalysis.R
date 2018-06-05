@@ -732,7 +732,11 @@ as_jaspTable.data.frame <- function(x, title = "", ...) {
     
     format <- ""
     if (type == "number") {
+      if (! is.null(options(paste0("jasp_",type,"_format"))[[1]])) {
       format <- options(paste0("jasp_",type,"_format"))[[1]]
+      } else {
+        format <- "sf:4;dp:3"
+      }
       if (name == "p" | name == "pval")
         format <- "dp:3;p:.001"
     }
