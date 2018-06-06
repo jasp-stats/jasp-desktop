@@ -1803,7 +1803,7 @@ callback <- function(results=NULL, progress=NULL) {
 		if (is.character(response)) {
 
 			ret <- fromJSON(base::paste("[", response, "]"))[[1]]
-			
+
 		} else {
 
 			ret <- response
@@ -2181,9 +2181,10 @@ as.list.footnotes <- function(footnotes) {
 		eval(plot())
 		if (obj) plot <- recordPlot() # save plot to R object
 	} else if (isRecordedPlot) { # function was called from editImage to resize the plot
-	    .redrawPlot(plot) #(see below)
+	  .redrawPlot(plot) #(see below)
 	} else {
-		print(plot)
+		# plot objects such as ggplot and qgraph
+		plot(plot)
 	}
 	dev.off()
 
