@@ -134,11 +134,14 @@ void OpenSaveWidget::setSaveMode(FileEvent::FileMode mode)
 
 	_bsOSF->setMode(_mode);
 	_bsOSF->setCurrentFileName(getDefaultOutFileName());
+	
+	_tabWidget->hideTab(_bsDataLibrary);
 
 	if (_mode == FileEvent::FileOpen)
 	{
 		_tabWidget->hideTab(_bsCurrent);
 		_tabWidget->showTab(_bsRecent);
+		_tabWidget->showTab(_bsDataLibrary);
 	}
 	else if (_mode == FileEvent::FileSyncData)
 	{
@@ -149,7 +152,7 @@ void OpenSaveWidget::setSaveMode(FileEvent::FileMode mode)
 	else
 	{
 		_tabWidget->hideTab(_bsCurrent);
-		_tabWidget->hideTab(_bsRecent);
+		_tabWidget->hideTab(_bsRecent);				
 	}
 }
 
