@@ -59,7 +59,6 @@ DataSet *SharedMemory::retrieveDataSet(unsigned long parentPID)
 		ss << parentPID;
 		_memoryName = ss.str();
 
-
 		_memory = new interprocess::managed_shared_memory(interprocess::open_read_only, _memoryName.c_str());
 	}
 
