@@ -20,6 +20,8 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 	run <- (perform == "run")
 	state <- .retrieveState()
 
+	options[["wilcoxTest"]] <- FALSE
+
 	# difference between the previous state options and current options
 	diff <- NULL
 
