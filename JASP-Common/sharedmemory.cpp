@@ -59,12 +59,7 @@ DataSet *SharedMemory::retrieveDataSet(unsigned long parentPID)
 		ss << parentPID;
 		_memoryName = ss.str();
 
-
-		try {
-			_memory = new interprocess::managed_shared_memory(interprocess::open_read_only, _memoryName.c_str());
-		} catch (interprocess::interprocess_exception e) {
-			return NULL;
-		}
+		_memory = new interprocess::managed_shared_memory(interprocess::open_read_only, _memoryName.c_str());
 	}
 
 	return _memory->find<DataSet>(interprocess::unique_instance).first;

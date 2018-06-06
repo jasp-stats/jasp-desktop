@@ -118,8 +118,10 @@ extern "C" bool STDCALL rbridge_runCallback(const char* in, int progress, const 
 string rbridge_run(const string &name, const string &title, bool &requiresInit, const string &dataKey, const string &options, const string &resultsMeta, const string &stateKey, const string &perform, int ppi, RCallback callback)
 {
 	rbridge_callback = callback;
-	rbridge_dataSet = rbridge_dataSetSource();
-	
+	if (rbridge_dataSet != NULL) {
+		rbridge_dataSet = rbridge_dataSetSource();
+	}
+
 
 	const char* results = jaspRCPP_run(name.c_str(), title.c_str(), requiresInit, dataKey.c_str(), options.c_str(), resultsMeta.c_str(), stateKey.c_str(), perform.c_str(), ppi);
 	rbridge_callback = NULL;
@@ -415,7 +417,7 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 		Column::ColumnType columnType = column.columnType();
 
 		Column::ColumnType requestedType = (Column::ColumnType)columnInfo.type;
-		
+
 		if (requestedType == Column::ColumnTypeUnknown)
 			requestedType = columnType;
 
@@ -491,9 +493,9 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 				}
 
 				resultCol.labels = rbridge_getLabels(labels, resultCol.nbLabels);
-					
+
 			}
-		
+
 		}
 	}
 
