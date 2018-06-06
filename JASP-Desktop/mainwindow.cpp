@@ -404,26 +404,26 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 bool MainWindow::filterShortCut()
 {
-	bool exclude = false;
-
+	bool exclude = _excludeKey;
 #ifdef __APPLE__
+	if (exclude)
+		qDebug() << "KEY EXCLUDED!";
 	// This is a workaround for Qt Bug https://bugreports.qt.io/browse/QTBUG-67016
 	// When we move to a Qt version (probably 5.11) where this bug is solved, we have to remove this workaround!
-	static int counter = 0;
-	counter++;
-	
-	if (counter % 3 != 1)
-		exclude = true;
+	_excludeKey = true;
+	QTimer *timer = new QTimer(this);
+	connect(timer, SIGNAL(timeout()), this, SLOT(updateExcludeKey()));
+	timer->start(100);
 #endif
 	
 	return exclude;
 }
 
 void MainWindow::saveKeysSelected()
-{
+{	
 	if (filterShortCut())
 		return;
-	
+
 	if (_package->isModified())
 	{
 		ui->backStage->save();
@@ -2018,6 +2018,11 @@ void MainWindow::onFilterUpdated()
 	if(_package->refreshAnalysesAfterFilter) //After loading a JASP package we do not want to rerun all analyses because it might take very long
 		refreshAllAnalyses(); 
 	_package->refreshAnalysesAfterFilter = true;
+}
+
+void MainWindow::updateExcludeKey()
+{
+	_excludeKey = false;
 }
 
 void MainWindow::setGeneratedFilter(QString generatedFilter)

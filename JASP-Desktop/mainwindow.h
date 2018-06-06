@@ -136,6 +136,8 @@ private:
 	QString _currentFilePath;
 
 	CustomWebEnginePage* _customPage;
+	
+	bool _excludeKey = false;
 
 	QString escapeJavascriptString(const QString &str);
 	void getAnalysesUserData();
@@ -220,7 +222,7 @@ private slots:
 	void setStatusBarText(QString text);
 	void onFilterUpdated();
 
-
+	void updateExcludeKey();
 
 };
 

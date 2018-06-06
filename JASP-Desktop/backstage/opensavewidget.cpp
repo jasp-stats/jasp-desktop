@@ -29,6 +29,7 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 {
 	_mode = FileEvent::FileOpen;
 	_currentFileType = Utils::FileType::unknown;
+	_currentFileReadOnly = false;
 
 	QGridLayout *layout = new QGridLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
@@ -177,7 +178,7 @@ FileEvent *OpenSaveWidget::save()
 {
 	FileEvent *event;
 
-	if (_currentFileType != Utils::FileType::jasp)
+	if (_currentFileType != Utils::FileType::jasp || _currentFileReadOnly)
 	{
 		event = _bsComputer->browseSave();
 		if (event->isCompleted())
@@ -245,8 +246,11 @@ void OpenSaveWidget::dataSetIOCompleted(FileEvent *event)
 		if (event->successful())
 		{	
 			//  don't add examples to the recent list
-			_fsmRecent->addRecent(event->path());
-			_bsComputer->addRecent(event->path());
+			if (!event->isReadOnly())
+			{
+				_fsmRecent->addRecent(event->path());
+				_bsComputer->addRecent(event->path());
+			}
 			
 			if (event->operation() == FileEvent::FileOpen && !event->isReadOnly())
 				setCurrentDataFile(event->dataFilePath());
@@ -257,6 +261,7 @@ void OpenSaveWidget::dataSetIOCompleted(FileEvent *event)
 
 			_currentFilePath = event->path();
 			_currentFileType = event->type();
+			_currentFileReadOnly = event->isReadOnly();
 		}
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
@@ -271,6 +276,7 @@ void OpenSaveWidget::dataSetIOCompleted(FileEvent *event)
 		_bsComputer->clearFileName();
 		_currentFilePath = "";
 		_currentFileType = Utils::FileType::unknown;
+		_currentFileReadOnly = false;
 		clearSyncData();
 	}
 }
@@ -379,6 +385,11 @@ Utils::FileType OpenSaveWidget::getCurrentFileType()
 QString OpenSaveWidget::getCurrentFilePath()
 {
 	return _currentFilePath;
+}
+
+bool OpenSaveWidget::isCurrentFileReadOnly()
+{
+	return _currentFileReadOnly;
 }
 
 QString OpenSaveWidget::getDefaultOutFileName()

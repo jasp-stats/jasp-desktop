@@ -61,6 +61,7 @@ public:
 
 	Utils::FileType getCurrentFileType();
 	QString getCurrentFilePath();
+	bool isCurrentFileReadOnly();
 	QString getDefaultOutFileName();
 
 public slots:
@@ -88,6 +89,7 @@ private:
 
 	QString _currentFilePath;
 	Utils::FileType _currentFileType;
+	bool _currentFileReadOnly;
 
 	FileEvent::FileMode _mode;
 
