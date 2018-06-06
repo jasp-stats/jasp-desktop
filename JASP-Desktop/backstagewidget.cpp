@@ -159,7 +159,7 @@ void BackStageWidget::tabPageChanging(int index, bool &cancel)
 		break;
 
 	case FileOperation::Save:  // Save
-		if (_openAndSaveWidget->getCurrentFileType() == Utils::FileType::jasp)
+		if (_openAndSaveWidget->getCurrentFileType() == Utils::FileType::jasp && !_openAndSaveWidget->isCurrentFileReadOnly())
 			_openAndSaveWidget->save();
 		else
 		{
