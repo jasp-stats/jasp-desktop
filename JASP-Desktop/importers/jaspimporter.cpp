@@ -86,7 +86,8 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 	packageData->dataFileTimestamp		= metaData["dataFileTimestamp"].isNull() ? 0 : metaData["dataFileTimestamp"].asInt();
 
 	packageData->dataFilter				= metaData.get("filterData", DEFAULT_FILTER).asString();
-	packageData->filterConstructorJSON	= metaData.get("filterConstructorJSON", DEFAULT_FILTER_JSON).asString();
+	Json::Value jsonFilterConstructor	= metaData.get("filterConstructorJSON", DEFAULT_FILTER_JSON);
+	packageData->filterConstructorJSON	= jsonFilterConstructor.isObject() ? jsonFilterConstructor.toStyledString() : jsonFilterConstructor.asString();
 
 	packageData->refreshAnalysesAfterFilter = false;
 	
