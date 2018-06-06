@@ -2,6 +2,7 @@ QT_DIR=~/Qt/5.10.1
 R_FRAMEWORK=~/JASP/Build/Frameworks/R.framework
 JASP_DESKTOP=~/JASP/Build/jasp-desktop
 JASP_VERSION=0.9
+CURRENT_R_VERSION=3.4
 
 # This script builds the JASP.dmg installer
 # Check that you R.framework is unique (no other test versions).
@@ -53,11 +54,27 @@ cp app/JASPEngine.app/Contents/MacOS/JASPEngine app/JASP.app/Contents/MacOS/
 rm -rf app/JASPEngine.app/
 
 # Copy the R.framework in, the Resources, App info, icon, etc.
-
-cp -r $R_FRAMEWORK app/JASP.app/Contents/Frameworks
-cp -r $JASP_DESKTOP/Resources/* app/JASP.app/Contents/Resources
+APP_R_FRAMEWORK=app/JASP.app/Contents/Frameworks/R.Framework
+cp -R $R_FRAMEWORK $APP_R_FRAMEWORK
+cp -R $JASP_DESKTOP/Resources/* app/JASP.app/Contents/Resources
 rm app/JASP.app/Contents/Resources/TestFiles.zip
-cp -r R           app/JASP.app/Contents/MacOS
+cp -R R           app/JASP.app/Contents/MacOS
+
+cd $APP_R_FRAMEWORK/Versions
+ln -s $CURRENT_R_VERSION Current
+cd Current
+ln -s ./Resources/include Headers
+ln -s ./Resources/lib/libR.dylib R
+cd ../..
+ln -s ./Versions/Current/Headers Headers
+ln -s ./Versions/Current/Libraries Libraries
+ln -s ./Versions/Current/PrivateHeaders PrivateHeaders
+ln -s ./Versions/Current/Resources Resources
+find . -name '*.cpp' -exec rm {} \;
+find . -name '*.c' -exec rm {} \;
+find . -name '*.h' -exec rm {} \;
+find . -name '*.f' -exec rm {} \;
+cd ../../../../..
 
 #Copy the Openssl from Qt to our Framework because OSF no longer supports tlsv1 traffic
 cp libcrypto.1.0.0.dylib app/JASP.app/Contents/Libraries/
