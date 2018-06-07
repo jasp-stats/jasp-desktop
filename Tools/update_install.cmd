@@ -13,6 +13,7 @@ MKDIR Help
 
 REM --- Update JASP install Folder ------
 SET JASP-BUILD=c:\Jasp\Build
+SET JASP-REDIST=c:\Jasp\Redist
 SET BUILD_DIR_32=%JASP-BUILD%\build-JASP-Release-32
 SET BUILD_DIR_64=%JASP-BUILD%\build-JASP-Release-64
 SET JASP-DESKTOP=%JASP-BUILD%\jasp-desktop
@@ -40,16 +41,25 @@ REM COPY %QT-MSVC-BIN-2017%\Qt5Core.dll _x64
 cd _x86
 REM %QT-MSVC-BIN-2015%\windeployqt.exe --compiler-runtime --release JASP.exe
 %QT-MSVC-BIN-2015%\windeployqt.exe -core -gui -webenginewidgets -webchannel -svg -network -printsupport -xml -qml -quick -quickwidgets --qmldir %JASP-DESKTOP%\JASP-Desktop\resources JASP.exe 
- 
+
+REM --- Copy Redist ---
+COPY %JASP-REDIST%\vcredist_x86.exe .
+
+
 cd ..
 
 cd _x64
 %QT-MSVC-BIN-2017%\windeployqt.exe -core -gui -webenginewidgets -webchannel -svg -network -printsupport -xml -qml -quick -quickwidgets --qmldir %JASP-DESKTOP%\JASP-Desktop\resources JASP.exe 
+
+REM --- Copy Redist ---
+COPY %JASP-REDIST%\vcredist_x64.exe .
+
 cd ..
  
 REM ---- Update Resources -------
 RMDIR Resources /S /Q
 XCOPY %JASP-DESKTOP%\Resources /E /I Resources
+DEL Resources\TestFiles.zip
 
 REM ---- Update Help -------
 RMDIR Help /S /Q
