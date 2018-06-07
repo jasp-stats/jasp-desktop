@@ -180,8 +180,10 @@ SetOverwrite ifnewer
 
 ${If} ${RunningX64}
 	!include includeFiles64.nsi
+	ExecWait '"$INSTDIR\vcredist_x64.exe" /passive /norestart'
 ${else}
 	!include includeFiles32.nsi
+	ExecWait '"$INSTDIR\vcredist_x86.exe" /passive /norestart'
 ${EndIf}
 
 SectionEnd
