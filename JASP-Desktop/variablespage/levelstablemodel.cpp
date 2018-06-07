@@ -174,11 +174,13 @@ bool LevelsTableModel::setData(const QModelIndex & index, const QVariant & value
         if (new_label != "") {
             Labels &labels = _column->labels();
 			if (labels.setLabelFromRow(index.row(), new_label))
+			{
 				emit dataChanged(index, index);
 
-			emit refreshConnectedModels(_column);
+				emit refreshConnectedModels(_column);
 
-			emit labelFilterChanged();
+				emit labelFilterChanged();
+			}
 
 		}
     }
