@@ -2,6 +2,15 @@ ECHO OFF
 
 CD Install
 
+RMDIR _x86 /S /Q
+RMDIR _x64 /S /Q
+RMDIR Help /S /Q
+RMDIR Resources /S /Q
+MKDIR _x86
+MKDIR _x64
+MKDIR Resources
+MKDIR Help
+
 REM --- Update JASP install Folder ------
 SET JASP-BUILD=c:\Jasp\Build
 SET BUILD_DIR_32=%JASP-BUILD%\build-JASP-Release-32
@@ -30,12 +39,12 @@ REM COPY %QT-MSVC-BIN-2017%\Qt5Core.dll _x64
 
 cd _x86
 REM %QT-MSVC-BIN-2015%\windeployqt.exe --compiler-runtime --release JASP.exe
-%QT-MSVC-BIN-2015%\windeployqt.exe -core -gui -webenginewidgets -webchannel -svg -network -printsupport -xml -qml -quick -quickwidgets --qmldir C:\Jasp\Build\jasp-desktop\JASP-Desktop\resources JASP.exe 
+%QT-MSVC-BIN-2015%\windeployqt.exe -core -gui -webenginewidgets -webchannel -svg -network -printsupport -xml -qml -quick -quickwidgets --qmldir %JASP-DESKTOP%\JASP-Desktop\resources JASP.exe 
  
 cd ..
 
 cd _x64
-%QT-MSVC-BIN-2017%\windeployqt.exe -core -gui -webenginewidgets -webchannel -svg -network -printsupport -xml -qml -quick -quickwidgets --qmldir C:\Jasp\Build\jasp-desktop\JASP-Desktop\resources JASP.exe 
+%QT-MSVC-BIN-2017%\windeployqt.exe -core -gui -webenginewidgets -webchannel -svg -network -printsupport -xml -qml -quick -quickwidgets --qmldir %JASP-DESKTOP%\JASP-Desktop\resources JASP.exe 
 cd ..
  
 REM ---- Update Resources -------
