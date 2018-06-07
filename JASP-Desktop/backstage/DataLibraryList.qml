@@ -9,6 +9,7 @@ ListView
 	id : listview
 	
 	property bool m_TopButtonHovered: false
+	maximumFlickVelocity: 700
 		
 	clip: true
 	
