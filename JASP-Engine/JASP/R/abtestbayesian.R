@@ -17,14 +17,16 @@ ABTestBayesian <- function(
 
     # Configure the state
     variableOpts <- c("n1", "y1", "n2", "y2")
+    priorOpts <- c("normal_mu", "normal_sigma")
     modelOpts <- c(variableOpts, "normal_mu", "normal_sigma", "orEqualTo1Prob", "orLessThan1Prob",
                    "orGreaterThan1Prob", "numSamples")
 
     stateKey <- list(
         ab_obj = modelOpts,
         descriptives = variableOpts,
-        plotPosterior = c(modelOpts, "plotPosteriorType", "plotPosterior"),
-        plotSequentialAnalysis = c(modelOpts, "plotSequentialAnalysis")
+        plotPosterior = c(modelOpts, "plotPosteriorType", "plotPriorAndPosterior"),
+        plotSequentialAnalysis = c(modelOpts, "plotSequentialAnalysis"),
+        plotPrior = c(priorOpts, "plotPriorType", "plotPriorOnly")
     )
 
     # Initialize the variables
@@ -32,6 +34,7 @@ ABTestBayesian <- function(
     descriptives <- state$descriptives
     plotPosterior <- state$plotPosterior
     plotSequentialAnalysis <- state$plotSequentialAnalysis
+    plotPrior <- state$plotPrior
     status <- state$status
 
     # Read the selected columns
@@ -74,7 +77,7 @@ ABTestBayesian <- function(
         descriptives <- .descriptivesTable.abTest(dataset, status, perform, options)
     }
 
-    if (options$plotPriorAndPosterior && is.null(plotPosterior)) {
+    if (options[["plotPriorAndPosterior"]] && is.null(plotPosterior)) {
         plotPosterior <- .plotPosterior.abTest(ab_obj = ab_obj, status = status, perform = perform,
                                                posteriorPlotType = options[["plotPosteriorType"]])
     }
@@ -83,6 +86,10 @@ ABTestBayesian <- function(
         plotSequentialAnalysis <- .plotSequentialAnalysis.abTest(ab_obj = ab_obj, status = status, perform = perform)
     }
 
+    if (options[["plotPriorOnly"]] && is.null(plotPrior)) {
+        plotPrior <- .plotPrior.abTest(options = options, status = status, perform = perform,
+                                       priorPlotType = options[["plotPriorType"]])
+    }
 
     # Assign to results
     results <- list()
@@ -96,10 +103,10 @@ ABTestBayesian <- function(
         results[["descriptivesTable"]] <- descriptives
     }
 
-    if (options$plotPriorAndPosterior || options$plotSequentialAnalysis) {
+    if (options[["plotPriorAndPosterior"]] || options$plotSequentialAnalysis || options[["plotPriorOnly"]]) {
 
         results[["inferentialPlots"]] <- list(title = "Inferential Plots", PosteriorPlot = plotPosterior,
-                                              SequentialAnalysisPlot = plotSequentialAnalysis)
+                                              SequentialAnalysisPlot = plotSequentialAnalysis, PriorPlot = plotPrior)
     }
 
     # Set keep and the state
@@ -108,7 +115,7 @@ ABTestBayesian <- function(
         keep <- state$keep
     } else { #run
         statusAnalysis <- "complete"
-        keep <- c(plotPosterior$data, plotSequentialAnalysis$data)
+        keep <- c(plotPosterior$data, plotSequentialAnalysis$data, plotPrior$data)
 
         state <- list(
             options = options,
@@ -116,6 +123,7 @@ ABTestBayesian <- function(
             descriptives = descriptives,
             plotPosterior = plotPosterior,
             plotSequentialAnalysis = plotSequentialAnalysis,
+            plotPrior = plotPrior,
             status = status,
             keep = keep
         )
@@ -132,6 +140,7 @@ ABTestBayesian <- function(
     )
 }
 
+
 .createMeta.abTest <- function() {
     # Creates and returns the 'meta' list required as a template to populate the output
     #
@@ -146,7 +155,8 @@ ABTestBayesian <- function(
         type="object",
         meta=list(
             list(name = "PosteriorPlot", type = "image"),
-            list(name = "SequentialAnalysisPlot", type = "image")
+            list(name = "SequentialAnalysisPlot", type = "image"),
+            list(name = "PriorPlot", type = "image")
         )
     )
 
@@ -297,6 +307,7 @@ ABTestBayesian <- function(
 	return(list(ab_obj = ab, status = status))
 }
 
+
 .calcDataTable.abTest <-function(ab_obj, status, options) {
     # Calculate the data needed for the main table
 	#
@@ -384,6 +395,7 @@ ABTestBayesian <- function(
 	return(list(rows=output.rows, notes=footnotes))
 }
 
+
 .descriptivesTable.abTest <- function(dataset, status, perform, options) {
     # Generate a descriptives table (counts, total, proportion)
     #
@@ -405,7 +417,7 @@ ABTestBayesian <- function(
         list(name="group",      title="",           type="string" ),
         list(name="counts",     title="Counts",     type="integer"),
         list(name="total",      title="Total",      type="integer"),
-        list(name="proportion", title="Porportion", type="number", format="sf:4;dp:3")
+        list(name="proportion", title="Proportion", type="number", format="sf:4;dp:3")
     )
 
     descriptives[["schema"]] <- list(fields=fields)
@@ -538,6 +550,69 @@ ABTestBayesian <- function(
     return (plot)
 }
 
+
+.plotPrior.abTest <- function(options, status, perform, priorPlotType) {
+    # Plot the prior
+    #
+    # Args:
+    #   options
+    #   status: current status of the analysis
+    #   perform: 'run' or 'init'
+    #   priorPlotType
+    #
+    # Return:
+    #   list with plot data
+
+    prior_par <- list(mu_psi = options$normal_mu, sigma_psi = options$normal_sigma, mu_beta = 0, sigma_beta = 1)
+
+    title <- "Prior"
+    emptyPlot <- .makeEmptyPlot.abTest(title = title, status = status)
+
+	if (!(perform == "run")) {
+        return (emptyPlot)
+    }
+
+    what <- switch(
+        priorPlotType,
+        "LogOddsRatio" = "logor",
+        "OddsRatio" = "or",
+        "RelativeRisk" = "rrisk",
+        "AbsoluteRisk" = "arisk",
+        "p1&p2" = "p1p2",
+        "p1" = "p1",
+        "p2" = "p2"
+    )
+
+    plot <- list()
+    plot[["title"]]  <- title
+    plot[["status"]] <- "waiting"
+
+    p <- try(silent = FALSE, expr = {
+
+        plotFunc <- function() {
+            abtest::plot_prior(prior_par = prior_par, what = what, hypothesis = "H1")
+        }
+        # plotObj <- .plotImage.basReg(bas_obj) # to be implemented later
+        content <- .writeImage(width = 530, height = 400, plot = plotFunc)
+
+        plot[["convertible"]] <- TRUE
+        plot[["obj"]] <- content[["obj"]]
+        plot[["data"]] <- content[["png"]]
+        plot[["width"]] <- 530
+        plot[["height"]] <- 400
+        plot[["status"]] <- "complete"
+    })
+
+    if (class(p) == "try-error") {
+    	errorMessage <- .extractErrorMessage(p)
+    	plot[["error"]] <- list(error="badData",
+    					errorMessage = paste("Plotting is not possible: ", errorMessage))
+    }
+
+    plot[["status"]] <- "complete"
+
+    return (plot)
+}
 
 
 .plotSequentialAnalysis.abTest <- function(ab_obj, status, perform) {
