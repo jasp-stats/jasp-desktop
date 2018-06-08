@@ -161,7 +161,7 @@
 			"name": "informativeTScale",
 			"type": "Number",
 			"value": 0.7070,
-			"min": 0,
+			"min": 0.001,
 			"max": 2
 		},
 		{
@@ -170,7 +170,7 @@
 			"type": "Number",
 			"value": 1,
 			"min": 1,
-			"max": 500
+			"max": 100
 		},
 		{
 			"format": "",
