@@ -91,8 +91,13 @@ test_that("Analysis handles errors", {
   options$variables <- "debSame"
   options$groupingVariable <- "contBinom"
   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
-  expect_true(any(grepl("variance", notes, ignore.case=TRUE)), label = "No variance check")
+  obj <- results
+  obj$results$errorMessage <- NULL # error message can change and shouldn't tested.
+  expect_equal(object = obj, expected = structure(list(
+  	status = "error", results = structure(list(title = "error", error = 1L), .Names = c("title", "error"))),
+  	.Names = c("status", "results")),
+  	label = "Variance check"
+  )
 
   options$variables <- "debMiss99"
   options$groupingVariable <- "contBinom"

@@ -45,8 +45,10 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 	# error handling #####
 	if (length(options$variables) != 0 && options$groupingVariable != '') {
-	    errors <- .hasErrors(dataset, perform, type = 'factorLevels',
+	    errors <- .hasErrors(dataset, perform, type = c('factorLevels', 'variance'),
 	                         factorLevels.target = options$groupingVariable, factorLevels.amount = '!= 2',
+	                         variance.target = dependents,
+	                         variance.grouping = options$groupingVariable,
 	                         exitAnalysisIfErrors = TRUE)
 	}
 
