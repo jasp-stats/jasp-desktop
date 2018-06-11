@@ -164,7 +164,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 
     if (options$testValue != 0) {
 
-      message <- paste("For all tests, the alternative hypothesis specifies that the population mean is different from ", options$testValue,".", sep="")
+      message <- paste0("For all tests, the alternative hypothesis specifies that the population mean is different from ", options$testValue,".")
       .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
     }
   }
