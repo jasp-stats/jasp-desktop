@@ -901,7 +901,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				}
 
 				if (options$homogeneityCorrections && !is.null(corrections)) {
-				  
+
 				  counter <- 1
 				  if (options$homogeneityNone) {
 				    row[['cor']] <- "None"
@@ -969,7 +969,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			}
 
 			if ((options$homogeneityBrown || options$homogeneityWelch) && length(options$modelTerms) > 1) {
-			  errorMessage <- "The Brown-Forsythe and Welch corrections are only available for oneway ANOVA's"
+			  errorMessage <- "The Brown-Forsythe and Welch corrections are only available for one-way ANOVA"
 			}
 
 			if ((options$homogeneityBrown || options$homogeneityWelch) && length(options$modelTerms) > 1) {
@@ -1278,6 +1278,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 			statePostHoc[[posthoc.var]]$confidenceIntervals <- matrix(ncol = 2, confint(r)[['confint']][,2:3])
 
+			statePostHoc[[posthoc.var]]$confidenceIntervals <- matrix(ncol = 2, confint(r)[['confint']][,2:3])
+
 			statePostHoc[[posthoc.var]]$comparisonsTukSchef <- strsplit(names(statePostHoc[[posthoc.var]]$resultTukey$test$coefficients)," - ")
 			statePostHoc[[posthoc.var]]$comparisonsBonfHolm <- strsplit(names(statePostHoc[[posthoc.var]]$resultBonf$test$coefficients)," - ")
 
@@ -1344,7 +1346,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					    uprBound <- .clean(statePostHoc[[posthoc.var]]$confidenceIntervals[index1, 2])
 						}
 
-
+						
 						if (options$postHocTestEffectSize & nrow(dataset) > 0) {
 						  x <- dataset[(dataset[.v(posthoc.var)] == variable.levels[[i]]), .v(options$dependent)]
 						  y <- dataset[(dataset[.v(posthoc.var)] == variable.levels[[j]]), .v(options$dependent)]
