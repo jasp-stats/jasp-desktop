@@ -1033,7 +1033,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			}
 			
 			if ((options$homogeneityBrown || options$homogeneityWelch) && length(options$modelTerms) > 1) {
-			  errorMessage <- "The Brown-Forsythe and Welch corrections are only available for oneway ANOVA's"
+			  errorMessage <- "The Brown-Forsythe and Welch corrections are only available for one-way ANOVA"
 			}
 
 			status$error <- TRUE
@@ -1078,6 +1078,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	contrast.tables <- list()
 
 	if (perform == "run" && status$ready && status$error == FALSE)
+
 		contrast.summary <- summary.lm(model)[["coefficients"]]
 
 	for (contrast in options$contrasts) {
@@ -1100,6 +1101,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				list(name="Comparison", type="string"),
 				list(name="Estimate", type="number", format="sf:4;dp:3"),
 				list(name="Std. Error", type="number", format="sf:4;dp:3"),
+				list(name="df", type="integer"),
 				list(name="t", type="number", format="sf:4;dp:3"),
 				list(name="p", type="number", format="dp:3;p:.001")))
 
@@ -1149,11 +1151,16 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					SE  <- contrast.summary[nam,"Std. Error"]
 					t   <- contrast.summary[nam,"t value"]
 					p   <- contrast.summary[nam,"Pr(>|t|)"]
-
+					
+					# tempContr <- model[['contrasts']][[v]]
+					# tempContr <- cbind(tempContr, (1 / length(.indices(cases)) ))
+					# df  <- .clean(sum(abs(sign(t(solve(tempContr))[,i]) * table(model[['model']][[v]]))) - 2)
+          df <- nrow(dataset) - nlevels(dataset[,v])
+            
 					if (is.na(p))
 						p <- ""
 
-					row <- list("Comparison"=case, "Estimate"=est, "Std. Error"=SE, "t"=t, "p"=p)
+					row <- list("Comparison"=case, "Estimate"=est, "Std. Error"=SE, "t"=t, "p"=p, "df"=df)
 
 					if(length(contrast.rows) == 0)  {
 						row[[".isNewGroup"]] <- TRUE
@@ -1235,6 +1242,10 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			list(name="(I)",title="", type="string", combine=TRUE),
 			list(name="(J)",title="", type="string"),
 			list(name="Mean Difference", type="number", format="sf:4;dp:3"),
+			list(name="lwrBound", type = "number", title = "Lower", 
+			     format = "sf:4;dp:3", overTitle =  "95% CI for Mean Difference"),
+			list(name="uprBound", type="number", title = "Upper",
+			     format="sf:4;dp:3", overTitle =  "95% CI for Mean Difference"),
 			list(name="SE", type="number", format="sf:4;dp:3"),
 			list(name="t", type="number", format="sf:4;dp:3"))
 
@@ -1260,7 +1271,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 		rows <- list()
 
-		variable.levels <- levels(dataset[[ .v(posthoc.var) ]])
+		variable.levels <- levels(droplevels(dataset[[ .v(posthoc.var) ]]))
 		nLevels <- length(variable.levels)
 
 		if (perform == "run" && status$ready && status$error == FALSE && is.null(statePostHoc[[posthoc.var]]) && !singular) {
@@ -1281,7 +1292,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			statePostHoc[[posthoc.var]]$resultScheffe <- 1-pf(tTukey**2/(modelRank-1),modelRank-1,dfResidual)
 
 			# Results using the Bonferroni method
-
 			contrastMatrix <- list(.postHocContrasts(variable.levels, dataset, options))
 			names(contrastMatrix) <- .v(posthoc.var)
 			r <- multcomp::glht(model,do.call(multcomp::mcp, contrastMatrix))
@@ -1290,6 +1300,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			# Results using the Holm method
 
 			statePostHoc[[posthoc.var]]$resultHolm <- summary(r,test=multcomp::adjusted("holm"))
+			
+			statePostHoc[[posthoc.var]]$confidenceIntervals <- matrix(ncol = 2, confint(r)[['confint']][,2:3])
 
 			statePostHoc[[posthoc.var]]$comparisonsTukSchef <- strsplit(names(statePostHoc[[posthoc.var]]$resultTukey$test$coefficients)," - ")
 			statePostHoc[[posthoc.var]]$comparisonsBonfHolm <- strsplit(names(statePostHoc[[posthoc.var]]$resultBonf$test$coefficients)," - ")
@@ -1349,6 +1361,15 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 						} else {
 							t <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultTukey$test$tstat[index1]))
 						}
+
+						if (reverse) {
+						  lwrBound <- .clean(-statePostHoc[[posthoc.var]]$confidenceIntervals[index1, 2])
+						  uprBound <- .clean(-statePostHoc[[posthoc.var]]$confidenceIntervals[index1, 1])
+					  } else {
+					    lwrBound <- .clean(statePostHoc[[posthoc.var]]$confidenceIntervals[index1, 1])
+					    uprBound <- .clean(statePostHoc[[posthoc.var]]$confidenceIntervals[index1, 2])
+						}
+
 						
 						if (options$postHocTestEffectSize & nrow(dataset) > 0) {
 						  x <- dataset[(dataset[.v(posthoc.var)] == variable.levels[[i]]), .v(options$dependent)]
@@ -1380,6 +1401,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					row[["scheffe"]] <- pScheffe
 					row[["bonferroni"]] <- pBonf
 					row[["holm"]] <- pHolm
+					row[["lwrBound"]] <- lwrBound
+					row[["uprBound"]] <- uprBound
 
 					posthoc.table[["status"]] <- "complete"
 
