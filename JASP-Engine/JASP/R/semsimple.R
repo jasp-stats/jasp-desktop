@@ -550,12 +550,13 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
     # parEstimates[["cases"]] <- rep("",NROW(sem_parest))
     for (i in seq_len(NROW(sem_parest))) {
       estimates <- sem_parest[i, ]
-      estimates["lhs"] <- .unv(estimates["lhs"])
-      if (estimates["rhs"] == "") {
-        estimates["rhs"] <- ""
-      } else {
+      if (estimates["lhs"] %in% .v(variables)) {
+        estimates["lhs"] <- .unv(estimates["lhs"])
+      }
+      if (estimates["rhs"] %in% .v(variables)) {
         estimates["rhs"] <- .unv(estimates["rhs"])
       }
+
       estimates[is.na(estimates)] <- '.'
       parEstimates[["data"]][[i]] <- as.list(estimates)
     }
@@ -590,17 +591,6 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
       # Extract modidffication indices:
       sem_modind <- lavaan:::modificationIndices(semResults)
 
-      # Converting base 64 to normal
-      #
-      # Base64:
-      sem_modind$lhs <- .unv(sem_modind$lhs)
-
-      # TODO (Sacha): Can we only have empty strings "" on the right-hand side
-      # TODO (Tim): This is definitely a hack now, perhaps change this in common
-      #
-      sem_modind$rhs[sem_modind$rhs == ""] <- .v("")
-      sem_modind$rhs <- .unv(sem_modind$rhs)
-
       ### Remove NA:
       sem_modind <- sem_modind[!is.na(sem_modind$mi), , drop=FALSE]
 
@@ -611,6 +601,18 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
       if (isTRUE(options$outputModificationIndicesHideLowIndices)) {
         sem_modind <- sem_modind[sem_modind$mi > options$outputModificationIndicesHideLowIndicesThreshold, , drop=FALSE]
       }
+
+      # Converting base 64 to normal
+      print("Converting base 64 to normal")
+      print(sem_modind["lhs"])
+      print(variables)
+      print(.v(variables))
+      varind <- as.matrix(sem_modind["lhs"]) %in% .v(variables)
+      print(varind)
+      sem_modind["lhs"][varind,1] <- .unv(sem_modind["lhs"][varind,1])
+      varind <- as.matrix(sem_modind["rhs"]) %in% .v(variables)
+      print(varind)
+      sem_modind["rhs"][varind,1] <- .unv(sem_modind["rhs"][varind,1])
 
       modIndices[["cases"]] <- rep("", nrow(sem_modind))
       for (i in seq_len(nrow(sem_modind))) {
@@ -630,41 +632,6 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 
 
   ## FIT MEASURES ###
-# if (options$outputAdditionalFitMeasures){
-#   fitMeasures <- list()
-#   fitMeasures[["title"]] <- "Fit Measures"
-#   fitMeasures[["schema"]] <- list(fields = list(
-#     list(name="Type", title = "", type="string"),
-#     list(name="Measure", type="number", format="dp:3")))
-#
-#
-#   cases <- c("fmin", "chisq", "df", "pvalue", "baseline.chisq", "baseline.df",
-#              "baseline.pvalue", "cfi", "tli", "nnfi", "rfi", "nfi", "pnfi",
-#              "ifi", "rni", "logl", "unrestricted.logl", "npar", "aic", "bic",
-#              "ntotal", "bic2", "rmsea", "rmsea.ci.lower", "rmsea.ci.upper",
-#              "rmsea.pvalue", "rmr", "rmr_nomean", "srmr", "srmr_nomean", "cn_05",
-#              "cn_01", "gfi", "agfi", "pgfi", "mfi", "ecvi")
-#
-#   if (!is.null(semResults))
-#   {
-#     sem_fitm <- unlist(lavaan:::fitMeasures(semResults))
-#     #data <- lapply(as.list(unname(sem_fitm)) , function(x) {names(x) <- "Measure";x})
-#   } #else data <- list()
-#
-#   for (i in seq_along(cases))
-#   {
-#     entry <- list(Type = cases[i], Measure = ".")
-#     if (!is.null(semResults))
-#     {
-#       entry$Measure <- sem_fitm[[i]]
-#     }
-#     fitMeasures[["data"]][[i]] <- entry
-#   }
-#   if (errorMessage!="" & perform == "run" & options$model != "") fitMeasures[['error']] <- list(errorType="badData")
-#   results[["fitMeasures"]] <- fitMeasures
-# }
-
-
   if (options$outputAdditionalFitMeasures) {
       if (!is.null(semResults)) {
           sem_fitm <- unlist(lavaan:::fitMeasures(semResults))
