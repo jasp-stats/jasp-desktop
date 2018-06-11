@@ -21,7 +21,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	numeric.variables <- numeric.variables[numeric.variables != ""]
 	factor.variables <- c(unlist(options$fixedFactors),unlist(options$randomFactors),unlist(options$repeatedMeasures))
 	factor.variables <- factor.variables[factor.variables != ""]
-  
+
 	if (is.null(dataset)) {
 
 		if (perform == "run") {
@@ -121,24 +121,24 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			stateMarginalMeans <- state$stateMarginalMeans
 
 		}
-		
+
 		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE &&
 		    diff[['simpleFactor']] == FALSE && diff[['moderatorFactorOne']] == FALSE && diff[['moderatorFactorTwo']] == FALSE) {
-		  
+
 		  # old simple effects tables can be used
-		  
+
 		  stateSimpleEffects <- state$stateSimpleEffects
 
 		}
-		
-		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && 
+
+		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE &&
 		    diff[['kruskalVariablesAssigned']] == FALSE && diff[['contrasts']] == FALSE && diff[['dunnTest']]) {
-		  
+
 		  # old Kruskal/Dunn table can be used
-		  
+
 		  stateKruskal <- state$stateKruskal
 		  stateDunn <- state$stateDunn
-		  
+
 		}
 	}
 
@@ -194,7 +194,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	result <- .anovaTable(options, model, status, singular)
 	results[["anova"]] <- result$result
 	status <- result$status
-  
+
 
 
 	## Create Levene's Table
@@ -278,14 +278,14 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	}
 
 	## Create Simple Effects Table
-	
+
 	if (is.null(stateSimpleEffects)) {
 
 	  result <- .anovaSimpleEffects(dataset, options, perform, results[["anova"]], status, singular, stateSimpleEffects)
 	  results[["simpleEffects"]] <- result$result
 	  status <- result$status
 	  stateSimpleEffects <- result$stateSimpleEffects
-	 
+
 	} else {
 
 	  results[["simpleEffects"]] <- stateSimpleEffects
@@ -293,29 +293,29 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	}
 
 	if (is.null(stateKruskal)) {
-	  
+
 	  result <- .anovaKruskal(dataset, options, perform, status, singular, stateKruskal)
 	  results[["kruskal"]] <- result$result
 	  status <- result$status
 	  stateKruskal <- result$stateKruskal
-	  
+
 	} else {
-	  
+
 	  results[["kruskal"]] <- stateKruskal
-	  
+
 	}
-	
+
 	if (is.null(stateDunn)) {
-	  
+
 	  result <- .anovaDunnTable(dataset, options, perform, model, status, stateDunn, singular)
 	  results[["dunn"]] <- list(collection=result$result, title = "Dunn's Post Hoc Tests")
 	  status <- result$status
 	  stateDunn <- result$stateDunn
 
 	} else {
-	  
+
 	  results[["dunn"]] <- stateDunn
-	  
+
 	}
 
 	## Create Descriptives Table
@@ -399,13 +399,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	state[["stateSimpleEffects"]] <- stateSimpleEffects
 	state[["stateKruskal"]] <- stateKruskal
 	state[["stateDunn"]] <- stateDunn
-	
+
 	if (perform == "init" && status$ready && status$error == FALSE) {
-	  
+
 		return(list(results=results, status="inited", state=state, keep=c(stateqqPlot$data, keepDescriptivesPlot)))
 
 	} else {
-	  
+
 		return(list(results=results, status="complete", state=state, keep=c(stateqqPlot$data, keepDescriptivesPlot)))
 	}
 }
@@ -480,7 +480,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		for (i in 1:n.levels-1) {
 			contr[c(1,i+1),i]<- c(1,-1)
 		}
-		
+
 		contr <- contr * -1
 
 	} else if (contrast.type == "simple") {
@@ -504,9 +504,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	} else if (contrast.type == "difference") {
 
 		contr <- matrix(0,nrow = n.levels, ncol = n.levels - 1)
-		
+
 		for (i in 1:(n.levels - 1)) {
-		  
+
 		  k <- 1 / (i +1)
 		  contr[1:(i+1),i] <- c( rep(-k, i), k * i)
 		}
@@ -666,7 +666,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 }
 
 .anovaModel <- function(dataset, options) {
-  
+
 	reorderModelTerms <-  .reorderModelTerms(options)
 	modelTerms <- reorderModelTerms$modelTerms
 
@@ -719,25 +719,25 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			anova[["title"]] <- "ANCOVA"
 
 		}
-	  
+
 	  options$homogeneityCorrections <- FALSE
-	  
+
 	}
-	
+
 	corrections <- NULL
-	
+
 	if (options$homogeneityCorrections) {
-	  
+
 	  if (length(options$modelTerms) > 1)
-	  
+
 	  if (options$homogeneityNone) {
 	    corrections <- c(corrections, "None")
 	  }
-	  
+
 	  if (options$homogeneityBrown) {
 	    corrections <- c(corrections, "Brown-Forsythe")
 	  }
-	  
+
 	  if (options$homogeneityWelch) {
 	    corrections <- c(corrections, "Welch")
 	  }
@@ -750,7 +750,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		list(name="Mean Square", type="number", format="sf:4;dp:3"),
 		list(name="F", type="number", format="sf:4;dp:3"),
 		list(name="p", type="number", format="dp:3;p:.001"))
-	
+
 	if (options$homogeneityCorrections && !is.null(corrections)) {
 	  fields <- list(
 	    list(name="Cases", type="string"),
@@ -761,7 +761,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	    list(name="F", type="number", format="sf:4;dp:3"),
 	    list(name="p", type="number", format="dp:3;p:.001"))
 	}
-	
+
 
 	if (options$VovkSellkeMPR) {
     fields[[length(fields) + 1]] <- list(name = "VovkSellkeMPR",
@@ -821,11 +821,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		anova.rows <- list()
 
 		for (i in .indices(terms.normal)) {
-		  
+
 		  if (options$homogeneityCorrections && !is.null(corrections)) {
-		    
+
 		    counter <- 1
-		    
+
 		    if (options$homogeneityNone) {
 		      row <- list("case"="Residual", "cor"="None", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
 		      if (options$VovkSellkeMPR){
@@ -834,7 +834,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		      anova.rows[[length(anova.rows) + 1]] <- row
 		      counter <- counter + 1
 		    }
-		    
+
 		    if (options$homogeneityBrown) {
 		      row <- list("case"="Residual", "cor"="Brown-Forsythe", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
 		      if (options$VovkSellkeMPR){
@@ -843,7 +843,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		      anova.rows[[length(anova.rows) + 1]] <- row
 		      counter <- counter + 1
 		    }
-		    
+
 		    if (options$homogeneityWelch) {
 		      row <- list("case"="Residual", "cor"="Welch", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
 		      if (options$VovkSellkeMPR){
@@ -852,7 +852,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		      anova.rows[[length(anova.rows) + 1]] <- row
 		      counter <- counter + 1
 		    }
-		    
+
 		  } else {
 
   			if(i == 1 || (!is.null(unlist(options$covariates)) && terms.normal[i] == options$covariates[[1]] && !reorderModelTerms$interactions)) {
@@ -860,7 +860,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   			} else {
   				newGroup <- FALSE
   			}
-  
+
   			row <- list("Cases"=terms.normal[i], "Sum of Squares"=".", "df"=".", "Mean Square"=".", "F"=".", "p"=".", ".isNewGroup" = newGroup)
   			anova.rows[[length(anova.rows) + 1]] <- row
 		  }
@@ -965,7 +965,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				}
 
 				if (options$homogeneityCorrections && !is.null(corrections)) {
-				  
+
 				  counter <- 1
 				  if (options$homogeneityNone) {
 				    row[['cor']] <- "None"
@@ -973,9 +973,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				    rows[[length(rows) + 1]] <- row
 				    counter <- counter + 1
 				  }
-				  
+
 				  if (options$homogeneityBrown) {
-				    
+
 				    row[['cor']] <- "Brown-Forsythe"
 				    row[['.isNewGroup']] <- counter == 1
 				    bfResult <- onewaytests::bf.test(as.formula(modelDef$model.def), model$model)
@@ -987,11 +987,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				      row[['df']] <- bfResult[['parameter']][[2]]
 				    }
 				    row[['Mean Square']] <- row[['Sum of Squares']] / row[['df']]
-				    
+
 				    rows[[length(rows) + 1]] <- row
-				    counter <- counter + 1				 
+				    counter <- counter + 1
 				  }
-				  
+
 				  if (options$homogeneityWelch) {
 
 				    row[['cor']] <- "Welch"
@@ -1006,15 +1006,15 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				      row[['df']] <- welchResult[['parameter']][[2]]
 				    }
 				    row[['Mean Square']] <- row[['Sum of Squares']] / row[['df']]
-			
+
 				    rows[[length(rows) + 1]] <- row
-				    counter <- counter + 1				  
+				    counter <- counter + 1
 				  }
-				  
+
 				} else {
-				  
+
 				  rows[[length(rows) + 1]] <- row
-				  
+
 				}
 			}
 
@@ -1031,10 +1031,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				errorMessage <- "Residual sums of squares and/or residual degrees of freedom are equal to zero indicating perfect fit.<br><br>(ANOVA F-tests on an essentially perfect fit are unreliable)"
 
 			}
-			
-			if ((options$homogeneityBrown || options$homogeneityWelch) && length(options$modelTerms) > 1) {
 
-			  errorMessage <- "The Brown-Forsythe and Welch corrections are only available for oneway ANOVA's"
+			if ((options$homogeneityBrown || options$homogeneityWelch) && length(options$modelTerms) > 1) {
+			  errorMessage <- "The Brown-Forsythe and Welch corrections are only available for one-way ANOVA"
 			}
 
 			status$error <- TRUE
@@ -1152,12 +1151,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					SE  <- contrast.summary[nam,"Std. Error"]
 					t   <- contrast.summary[nam,"t value"]
 					p   <- contrast.summary[nam,"Pr(>|t|)"]
-					
+
 					# tempContr <- model[['contrasts']][[v]]
 					# tempContr <- cbind(tempContr, (1 / length(.indices(cases)) ))
 					# df  <- .clean(sum(abs(sign(t(solve(tempContr))[,i]) * table(model[['model']][[v]]))) - 2)
           df <- nrow(dataset) - nlevels(dataset[,v])
-            
+
 					if (is.na(p))
 						p <- ""
 
@@ -1243,7 +1242,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			list(name="(I)",title="", type="string", combine=TRUE),
 			list(name="(J)",title="", type="string"),
 			list(name="Mean Difference", type="number", format="sf:4;dp:3"),
-			list(name="lwrBound", type = "number", title = "Lower", 
+			list(name="lwrBound", type = "number", title = "Lower",
 			     format = "sf:4;dp:3", overTitle =  "95% CI for Mean Difference"),
 			list(name="uprBound", type="number", title = "Upper",
 			     format="sf:4;dp:3", overTitle =  "95% CI for Mean Difference"),
@@ -1252,10 +1251,10 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 		if (options$postHocTestEffectSize) {
 		  fields[[length(fields) + 1]] <- list(name="Cohen's d", title="Cohen's d", type="number", format="sf:4;dp:3")
-		  posthoc.table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", 
+		  posthoc.table[["footnotes"]] <- list(list(symbol="<i>Note.</i>",
 		                                            text="Cohen's d does not correct for multiple comparisons."))
 		}
-		
+
 		if (options$postHocTestsTukey)
 			fields[[length(fields) + 1]] <- list(name="tukey", title="p<sub>tukey</sub>", type="number", format="dp:3;p:.001")
 
@@ -1297,18 +1296,18 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			names(contrastMatrix) <- .v(posthoc.var)
 			r <- multcomp::glht(model,do.call(multcomp::mcp, contrastMatrix))
 			statePostHoc[[posthoc.var]]$resultBonf <- summary(r,test=multcomp::adjusted("bonferroni"))
-      
+
 			# Results using the Holm method
 
 			statePostHoc[[posthoc.var]]$resultHolm <- summary(r,test=multcomp::adjusted("holm"))
-			
+
 			statePostHoc[[posthoc.var]]$confidenceIntervals <- matrix(ncol = 2, confint(r)[['confint']][,2:3])
 
 			statePostHoc[[posthoc.var]]$comparisonsTukSchef <- strsplit(names(statePostHoc[[posthoc.var]]$resultTukey$test$coefficients)," - ")
 			statePostHoc[[posthoc.var]]$comparisonsBonfHolm <- strsplit(names(statePostHoc[[posthoc.var]]$resultBonf$test$coefficients)," - ")
-			
+
 		}
-		
+
 		for (i in 1:length(variable.levels)) {
 
 			for (j in .seqx(i+1, length(variable.levels))) {
@@ -1320,7 +1319,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				pBonf <- ""
 				pHolm <- ""
 				effectSize <- ""
-				
+
 
 				if (!is.null(statePostHoc[[posthoc.var]])) {
 
@@ -1371,7 +1370,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					    uprBound <- .clean(statePostHoc[[posthoc.var]]$confidenceIntervals[index1, 2])
 						}
 
-						
+
 						if (options$postHocTestEffectSize & nrow(dataset) > 0) {
 						  x <- dataset[(dataset[.v(posthoc.var)] == variable.levels[[i]]), .v(options$dependent)]
 						  y <- dataset[(dataset[.v(posthoc.var)] == variable.levels[[j]]), .v(options$dependent)]
@@ -1593,14 +1592,14 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		#r <- car::leveneTest(levene.formula, dataset, center = "mean")
 		r <- summary(aov(levene.formula, dataset))
 		error <- base::tryCatch(summary(aov(levene.formula, dataset)),error=function(e) e, warning=function(w) w)
-		
+
 		if (!is.null(error$message) && error$message == "ANOVA F-tests on an essentially perfect fit are unreliable") {
 
 			errorMessage <- "F-value equal to zero indicating perfect fit.<br><br>(Levene's tests on an essentially perfect fit are unreliable)"
 			levenes.table[["error"]] <- list(error="badData", errorMessage = errorMessage)
 
 		}
-		
+
 		if (options$VovkSellkeMPR){
 		  levenes.table[["data"]] <- list(list("F"=.clean(r[[1]]$`F value`[1]), "df1"=r[[1]]$Df[1], "df2"=r[[1]]$Df[2], "p"=.clean(r[[1]]$`Pr(>F)`[1]), "VovkSellkeMPR"=.VovkSellkeMPR(r[[1]]$`Pr(>F)`[1]), ".isNewGroup"=TRUE))
 		} else {
@@ -1818,22 +1817,22 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 }
 
 .anovaSimpleEffects <- function(dataset, options, perform, fullAnovaTable, status, singular, stateSimpleEffects) {
-  
+
   if (identical(options$simpleFactor, "") | identical(options$moderatorFactorOne, ""))
     return (list(result=NULL, status=status))
-  
-  
+
+
   terms <- c(options$moderatorFactorOne,options$moderatorFactorTwo)
   terms.base64 <- c()
   terms.normal <- c()
   simpleFactor.base64 <- .v(options$simpleFactor)
-  
+
   for (term in terms) {
-    
+
     components <- unlist(term)
     term.base64 <- paste(.v(components), collapse=":", sep="")
     term.normal <- paste(components, collapse=" \u273B ", sep="")
-    
+
     terms.base64 <- c(terms.base64, term.base64)
     terms.normal <- c(terms.normal, term.normal)
   }
@@ -1848,17 +1847,17 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     list(name="MeanSquare", type="number", format="sf:4;dp:3", title = "Mean Square"),
     list(name="F", type="number", format="sf:4;dp:3", title = "F"),
     list(name="p", type="number", format="dp:3;p:.001", title = "p"))
-  
+
   if (identical(options$moderatorFactorTwo, ""))
     fields <- fields[-2]
-  
+
   footnotes <- .newFootnotes()
-  
+
   simpleEffectsTable[["schema"]] <- list(fields=fields)
 
-  
+
   tableCounter <- 1
-  fullAnovaMS <- fullAnovaTable$data[[length(fullAnovaTable$data)]]$`Mean Square` 
+  fullAnovaMS <- fullAnovaTable$data[[length(fullAnovaTable$data)]]$`Mean Square`
   fullAnovaDf <- fullAnovaTable$data[[length(fullAnovaTable$data)]]$df
   simpleEffectRows <- list()
   rows <- list()
@@ -1874,10 +1873,10 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     lvls[[variable]] <- levels(factor)
   }
   if (perform == "run" && status$ready && status$error == FALSE)  {
-  
+
     for (level in lvls[[1]]) {
       # For each level of the first moderator factor, take a subset of the dataset, and adjust the options object
-      # Suboptions is the same as options, except that the first moderator factor has been removed as a predictor 
+      # Suboptions is the same as options, except that the first moderator factor has been removed as a predictor
       # (because each subset only has one level of that factor). The same procedure is applied to the second moderator, if specified.
       subDataset <- subset(dataset, dataset[terms.base64[1]] == level)
       subOptions <- options
@@ -1902,7 +1901,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
             F <- MS / fullAnovaMS
             p <- pf(F, df, fullAnovaDf, lower.tail = FALSE)
             row <- list("ModOne"=level, "SumSquares"=SS, "df"=df, "MeanSquare"=MS, "F"=F, "p"=p, ".isNewGroup" = newGroup)
-            
+
         }
         simpleEffectRows[[length(simpleEffectRows) + 1]] <- row
       } else {
@@ -1931,140 +1930,140 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
             simpleEffectRows[[length(simpleEffectRows) + 1]] <- row
           }
       }
-   
-      
+
+
     }
-    
+
     simpleEffectsTable[["data"]] <- simpleEffectRows
-    
+
   } else {
 
     simpleEffectsTable[["data"]]  <- list(list("ModOne"=terms.normal, "SumSquares"=".", "df"=".", "MeanSquare"=".", "F"=".", "p"=".", ".isNewGroup" = TRUE))
   }
-  
+
   simpleEffectsTable[["footnotes"]] <- as.list(footnotes)
   simpleEffectsTable[["status"]] <- "complete"
-    
+
   if (perform == "run" && status$ready && status$error == FALSE)  {
-    
+
     stateSimpleEffects <- simpleEffectsTable
-    
+
   } else {
-    
+
     stateSimpleEffects <- NULL
-    
+
   }
-  
+
   list(result=simpleEffectsTable, status=status, stateSimpleEffects=stateSimpleEffects)
 }
 
 .anovaKruskal <- function(dataset, options, perform, status, singular, stateKruskal) {
-  
+
   if (is.null(options$kruskalVariablesAssigned))
     return (list(result=NULL, status=status))
-  
+
   terms <- options$kruskalVariablesAssigned
-  
+
   terms.base64 <- c()
   terms.normal <- c()
-  
+
   for (term in terms) {
-    
+
     components <- unlist(term)
     term.base64 <- paste(.v(components), collapse=":", sep="")
     term.normal <- paste(components, collapse=" \u273B ", sep="")
-    
+
     terms.base64 <- c(terms.base64, term.base64)
     terms.normal <- c(terms.normal, term.normal)
   }
 
   nRows <- length(terms.base64)
-  
+
   result <- list()
-  
+
   result[["title"]] <- paste("Kruskal-Wallis Test")
   result[["name"]] <- paste("kruskalTable")
-  
+
   fields <- list()
   fields[[length(fields) + 1]] <- list(name="Factor", type="string")
   fields[[length(fields) + 1]] <- list(name="Statistic", type="number", format="sf:4;dp:3")
   fields[[length(fields) + 1]] <- list(name="df", type="integer")
   fields[[length(fields) + 1]] <- list(name="p", type="number", format="dp:3;p:.001")
-  
+
   footnotes <- .newFootnotes()
   result[["schema"]] <- list(fields=fields)
-  
+
   rows <- list()
-  
+
   for (i in .indices(terms.base64)) {
 
     if (perform == "run" && status$ready && status$error == FALSE)  {
-        
+
         row <- list()
-        
+
         reorderModelTerms <-  .reorderModelTerms(options)
         modelTerms <- reorderModelTerms$modelTerms
         model.formula <- as.formula(paste(.v(options$dependent), terms.base64[i], sep= "~"))
         r <- kruskal.test(model.formula, data = dataset)
-        
+
         row[["Factor"]] <- terms.normal[i]
         row[["Statistic"]] <- .clean(r$statistic[[1]])
         row[["df"]] <- .clean(r$parameter[[1]])
         row[["p"]] <-.clean(r$p.value[[1]])
-        
+
         rows[[i]] <- row
-        
+
     } else {
-      
+
         row <- list()
         row[["Factor"]] <- terms.normal[i]
         row[["Statistic"]] <- "."
         row[["df"]] <- "."
         row[["p"]] <- "."
-        
+
         rows[[i]] <- row
-          
+
     }
   }
-  
+
   result[["data"]] <- rows
   result[["status"]] <- "complete"
-    
-  result[["footnotes"]] <- as.list(footnotes)
-    
 
-  
+  result[["footnotes"]] <- as.list(footnotes)
+
+
+
   if (perform == "run" && status$ready && status$error == FALSE)  {
-    
+
     stateKruskal <- result
-    
+
   } else {
-    
+
     stateKruskal <- NULL
-    
+
   }
-  
+
   list(result=result, status=status, stateKruskal=stateKruskal)
 }
 
 .anovaDunnTable <- function(dataset, options, perform, model, status, stateDunn, singular) {
-  
+
   if (options$dunnTest == FALSE)
     return (list(result=NULL, status=status, stateDunn=NULL))
-  
+
   dunnVariables <- unlist(options$kruskalVariablesAssigned)
   dependentVar <- options$dependent
-  
+
   dunnTables <- list()
   stateDunn <- list()
-  
+
   for (dunnVar in dunnVariables) {
-    
+
     dunnTable <- list()
-    
+
     dunnTable[["title"]] <- paste("Dunn's Post Hoc Comparisons - ", dunnVar, sep="")
     dunnTable[["name"]] <- paste("dunnTest_", dunnVar, sep="")
-    
+
     fields <- list(
       list(name="(I)",title="", type="string", combine=TRUE),
       list(name="(J)",title="", type="string"),
@@ -2075,65 +2074,65 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       list(name="bonferroni", title="p<sub>bonf</sub>", type="number", format="dp:3;p:.001"),
       list(name="holm",title="p<sub>holm</sub>", type="number", format="dp:3;p:.001")
     )
-    
+
     dunnTable[["schema"]] <- list(fields=fields)
-    
+
     rows <- list()
-    
+
     if (perform == "run" && status$ready && status$error == FALSE)  {
-      
+
       variableLevels <- levels(dataset[[ .v(dunnVar) ]])
       nLevels <- length(variableLevels)
       nPerGroup <- unname(unlist(table(dataset[[ .v(dunnVar) ]])))
       bigN <- sum(nPerGroup)
-      
+
       fullRanks <- rank(dataset[[ .v(dependentVar) ]])
       ranksPerGroup <- by(fullRanks, dataset[[ .v(dunnVar) ]], list)
       sumPerGroup <- unlist(lapply(ranksPerGroup, FUN = sum))
       meanPerGroup <- unname(sumPerGroup/nPerGroup)
-      
+
       tab <- table(unlist(ranksPerGroup))
-      nTies <- tab[tab > 1] 
+      nTies <- tab[tab > 1]
       nTies <- sum(nTies^3 - nTies)
-      
+
       for (i in 1:nLevels) {
-        
+
         for (j in .seqx(i+1, nLevels)) {
-          
+
           row <- list("(I)"=variableLevels[[i]], "(J)"=variableLevels[[j]])
 
           sigmaAB <- sqrt( ( (bigN * (bigN + 1))/12 - nTies/(12 * (bigN - 1)) ) * (1/nPerGroup[i] + 1/nPerGroup[j] )  )
-          zAB <- (meanPerGroup[i] - meanPerGroup[j]) / sigmaAB 
+          zAB <- (meanPerGroup[i] - meanPerGroup[j]) / sigmaAB
           pValAB <- pnorm(abs(zAB), lower.tail = FALSE)
-          
+
           row[["z"]] <- .clean(zAB)
           row[["wA"]]  <- .clean(meanPerGroup[i])
           row[["wB"]] <- .clean(meanPerGroup[j])
           row[["pval"]] <- .clean(pValAB)
           row[["bonferroni"]] <- .clean(pValAB)
           row[["holm"]] <- .clean(pValAB)
-            
+
           dunnTable[["status"]] <- "complete"
           rows[[length(rows)+1]] <- row
 
         }
-          
+
         if (length(rows) == 0)  {
           row[[".isNewGroup"]] <- TRUE
         } else {
           row[[".isNewGroup"]] <- FALSE
         }
       }
-  
+
       allP <- unlist(lapply(rows, function(x) x$p))
       allBonf <- p.adjust(allP, method = "bonferroni")
       allHolm <- p.adjust(allP, method = "holm")
-      
+
       for (k in 1:length(rows)) {
         rows[[k]][['bonferroni']] <- .clean(allBonf[k])
         rows[[k]][['holm']] <- .clean(allHolm[k])
       }
-      
+
     } else {
       row <- list("(I)"= ".", "(J)"= ".")
       row[["z"]] <- "."
@@ -2142,12 +2141,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       row[["pval"]] <- "."
       row[["bonferroni"]] <- "."
       row[["holm"]] <- "."
-      
+
       rows[[length(rows)+1]] <- row
     }
 
     dunnTable[["data"]] <- rows
-    
+
     dunnTables[[length(dunnTables)+1]] <- dunnTable
     stateDunn <- dunnTables
   }
@@ -2311,7 +2310,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 									   plot = p, obj = TRUE)
 
 			}
-			
+
 			descriptivesPlot[["data"]] <- content[["png"]]
 			descriptivesPlot[["obj"]] <- content[["obj"]]
 			descriptivesPlot[["convertible"]] <- TRUE
