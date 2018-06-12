@@ -30,6 +30,8 @@ BinomialTestBayesianForm::BinomialTestBayesianForm(QWidget *parent) :
 
 	TableModelVariablesAssigned *model = new TableModelVariablesAssigned(this);
 	model->setSource(&_availableVariablesModel);
+    model->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+    model->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeNominalText | Column::ColumnTypeOrdinal);
 
 	ui->variables->setModel(model);
 	ui->variables->setDoubleClickTarget(ui->listAvailableVariables);

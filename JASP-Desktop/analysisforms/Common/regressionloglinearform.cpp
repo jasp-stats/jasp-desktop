@@ -36,7 +36,8 @@ RegressionLogLinearForm::RegressionLogLinearForm(QWidget *parent) :
 	_factorsModel = new TableModelVariablesAssigned();
 	_factorsModel->setSource(&_availableVariablesModel);
 	_factorsModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->factors->setModel(_factorsModel);
+    _factorsModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeNominalText | Column::ColumnTypeOrdinal);
+    ui->factors->setModel(_factorsModel);
 
 	ui->buttonAssignCounts->setSourceAndTarget(ui->listAvailableFields, ui->counts);
 	ui->buttonAssignFactors->setSourceAndTarget(ui->listAvailableFields, ui->factors);
