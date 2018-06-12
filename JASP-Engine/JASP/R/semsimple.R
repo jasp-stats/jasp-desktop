@@ -603,15 +603,9 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
       }
 
       # Converting base 64 to normal
-      print("Converting base 64 to normal")
-      print(sem_modind["lhs"])
-      print(variables)
-      print(.v(variables))
       varind <- as.matrix(sem_modind["lhs"]) %in% .v(variables)
-      print(varind)
       sem_modind["lhs"][varind,1] <- .unv(sem_modind["lhs"][varind,1])
       varind <- as.matrix(sem_modind["rhs"]) %in% .v(variables)
-      print(varind)
       sem_modind["rhs"][varind,1] <- .unv(sem_modind["rhs"][varind,1])
 
       modIndices[["cases"]] <- rep("", nrow(sem_modind))
