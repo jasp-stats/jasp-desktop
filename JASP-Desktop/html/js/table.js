@@ -214,7 +214,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 
 		let latexCode = "";
 		// title
-		latexCode += "\\begin{table}[h]\n\t\\centering\n\t\\caption{" + optTitle + "}\n";
+		latexCode += "\\begin{table}[h]\n\t\\centering\n\t\\caption{" + formatCellforLatex(optTitle) + "}\n";
 
 		// alignments - {lrrr}
 		let columns = data.headers.length;
