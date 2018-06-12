@@ -82,7 +82,8 @@
 		},
 		{
 			"name": "plotPosteriorOddsRatioAdditionalInfo",
-			"type": "Boolean"
+			"type": "Boolean",
+			"default": true
 		},
 		{
 			"name": "plotPosteriorEffectSize",
