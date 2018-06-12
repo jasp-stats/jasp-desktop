@@ -1138,7 +1138,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 		rows <- list()
 
-		variable.levels <- levels(dataset[[ .v(posthoc.var) ]])
+		variable.levels <- levels(droplevels(dataset[[ .v(posthoc.var) ]]))
 		nLevels <- length(variable.levels)
 
 		if (perform == "run" && status$ready && status$error == FALSE && is.null(statePostHoc[[posthoc.var]]) && !singular) {
