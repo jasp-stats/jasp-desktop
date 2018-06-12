@@ -48,7 +48,8 @@ ContingencyTablesBayesianForm::ContingencyTablesBayesianForm(QWidget *parent) :
 	_layersModel = new TableModelVariablesLevels();
 	_layersModel->setSource(&_availableVariablesModel);
 	_layersModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->layers->setModel(_layersModel);
+    _layersModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeNominalText | Column::ColumnTypeOrdinal);
+    ui->layers->setModel(_layersModel);
 
 	ui->buttonAssignRows->setSourceAndTarget(ui->listAvailableFields, ui->rows);
 	ui->buttonAssignColumns->setSourceAndTarget(ui->listAvailableFields, ui->columns);
