@@ -225,7 +225,7 @@ QPushButton::menu-indicator {
               </property>
               <property name="minimumSize">
                <size>
-                <width>70</width>
+                <width>100</width>
                 <height>0</height>
                </size>
               </property>
@@ -350,8 +350,8 @@ QPushButton::menu-indicator {
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>301</width>
-                       <height>718</height>
+                       <width>300</width>
+                       <height>714</height>
                       </rect>
                      </property>
                      <property name="sizePolicy">
