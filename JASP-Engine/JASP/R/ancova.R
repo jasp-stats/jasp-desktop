@@ -322,7 +322,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	state[["stateMarginalMeans"]] <- stateMarginalMeans
 	state[["stateSimpleEffects"]] <- stateSimpleEffects
 	state[["stateKruskal"]] <- stateKruskal
-	
+
 
 	if (perform == "init" && status$ready && status$error == FALSE) {
 
@@ -687,6 +687,18 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	}
 
 
+	if (options$homogeneityCorrections && !is.null(corrections)) {
+	  fields <- list(
+	    list(name="Cases", type="string"),
+	    list(name="cor", type="string", title="Homogeneity Correction"),
+	    list(name="Sum of Squares", type="number", format="sf:4;dp:3"),
+	    list(name="df", type="number", format="sf:4;dp:3"),
+	    list(name="Mean Square", type="number", format="sf:4;dp:3"),
+	    list(name="F", type="number", format="sf:4;dp:3"),
+	    list(name="p", type="number", format="dp:3;p:.001"))
+	}
+
+
 	if (options$VovkSellkeMPR) {
     fields[[length(fields) + 1]] <- list(name = "VovkSellkeMPR",
                                         title = "VS-MPR\u002A",
@@ -954,6 +966,10 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 				errorMessage <- "Residual sums of squares and/or residual degrees of freedom are equal to zero indicating perfect fit.<br><br>(ANOVA F-tests on an essentially perfect fit are unreliable)"
 
+			}
+
+			if ((options$homogeneityBrown || options$homogeneityWelch) && length(options$modelTerms) > 1) {
+			  errorMessage <- "The Brown-Forsythe and Welch corrections are only available for one-way ANOVA"
 			}
 
 			if ((options$homogeneityBrown || options$homogeneityWelch) && length(options$modelTerms) > 1) {
@@ -1264,6 +1280,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 			statePostHoc[[posthoc.var]]$confidenceIntervals <- matrix(ncol = 2, confint(r)[['confint']][,2:3])
 
+			statePostHoc[[posthoc.var]]$confidenceIntervals <- matrix(ncol = 2, confint(r)[['confint']][,2:3])
+
 			statePostHoc[[posthoc.var]]$comparisonsTukSchef <- strsplit(names(statePostHoc[[posthoc.var]]$resultTukey$test$coefficients)," - ")
 			statePostHoc[[posthoc.var]]$comparisonsBonfHolm <- strsplit(names(statePostHoc[[posthoc.var]]$resultBonf$test$coefficients)," - ")
 
@@ -1280,7 +1298,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				pBonf <- ""
 				pHolm <- ""
 				effectSize <- ""
-
 
 				if (!is.null(statePostHoc[[posthoc.var]])) {
 
@@ -2008,14 +2025,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 }
 
 .anovaDunnTable <- function(dataset, options, perform, model, status, stateDunn, singular) {
-
-  if (options$dunnTest == FALSE)
-    return (list(result=NULL, status=status, stateDunn=NULL))
-
-  dunnVariables <- unlist(options$kruskalVariablesAssigned)
+  
+  dunnVariables <- unlist(options$postHocTestsVariables)
   dependentVar <- options$dependent
 
-  dunnTables <- list()
+  dunnTableCollection <- list()
   stateDunn <- list()
 
   for (dunnVar in dunnVariables) {
