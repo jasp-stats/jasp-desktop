@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ..., state = NULL) {
 
 	numeric.variables <- c(unlist(options$dependent),unlist(options$covariates),unlist(options$wlsWeight))
 	numeric.variables <- numeric.variables[numeric.variables != ""]
@@ -44,103 +44,37 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	## Retrieve State
 
-	state <- .retrieveState()
+	anovaModel <- state$model
+	statePostHoc <- state$statePostHoc
+	stateqqPlot <- state$stateqqPlot
+	stateDescriptivesPlot <- state$stateDescriptivesPlot
+	stateContrasts <- state$stateContrasts
+	stateLevene <- state$stateLevene
+	stateMarginalMeans <- state$stateMarginalMeans
+	stateSimpleEffects <- state$stateSimpleEffects
+	stateDescriptivesTable <- state$stateDescriptivesTable
+	stateKruskal <- state$stateKruskal
 
-	anovaModel <- NULL
-	statePostHoc <- NULL
-	stateqqPlot <- NULL
-	stateDescriptivesPlot <- NULL
-	stateContrasts <- NULL
-	stateLevene <- NULL
-	stateMarginalMeans <- NULL
-	stateSimpleEffects <- NULL
-	stateDescriptivesTable <- NULL
-	stateKruskal <- NULL
-	stateDunn <- NULL
+	defaults <- c("modelTerms", "dependent", "wlsWeights")
 
-	if ( ! is.null(state)) {  # is there state?
+	stateKey <- list(
+	  model = c(defaults, "contrasts"),
+	  stateContrasts = c(defaults, "contrasts"),
+	  statePostHoc = c(defaults, "postHocTestsVariables", "postHocTestsTypeStandard", "postHocTestsTypeDunn",
+	                   "postHocTestsTypeGames", "postHocTestsHolm", "postHocTestsScheffe", "postHocTestsTukey", "postHocTestsBonferroni",
+	                   "postHocTestEffectSize"),
+	  stateqqPlot = c(defaults, "qqPlot", "plotWidthQQPlot", "plotHeightQQPlot"),
+	  stateDescriptivesPlot = c(defaults, "plotHorizontalAxis", "plotSeparateLines", "plotSeparatePlots",
+                              "plotErrorBars", "errorBarType",  "confidenceIntervalInterval", "plotWidthDescriptivesPlotLegend",
+                              "plotHeightDescriptivesPlotLegend", "plotWidthDescriptivesPlotNoLegend", "plotHeightDescriptivesPlotNoLegend" ),
+	  stateLevene = c(defaults, "homogeneityTests", "VovkSellkeMPR"),
+	  stateDescriptivesTable = c(defaults, "descriptives"),
+	  stateMarginalMeans = c(defaults, "marginalMeansTerms", "marginalMeansCompareMainEffects", "marginalMeansCIAdjustment"),
+	  stateSimpleEffects = c(defaults, "simpleFactor", "moderatorFactorOne", "moderatorFactorTwo"),
+	  stateKruskal = c(defaults, "kruskalVariablesAssigned"))
 
-		diff <- .diff(options, state$options)  # compare old and new options
-
-		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && diff[['contrasts']] == FALSE) {
-
-			# old model and contrasts can be used
-
-			anovaModel <- state$model
-			stateContrasts <- state$stateContrasts
-
-		}
-
-		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && diff[['postHocTestsVariables']] == FALSE) {
-
-			# old post hoc results can be used
-
-			statePostHoc <- state$statePostHoc
-		}
-
-		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && diff[['qqPlot']] == FALSE &&
-			diff[['plotWidthQQPlot']] == FALSE && diff[['plotHeightQQPlot']] == FALSE) {
-
-			# old Q-Q plot can be used
-
-			stateqqPlot <- state$stateqqPlot
-		}
-
-		if (is.list(diff) && diff[['dependent']] == FALSE && diff[['plotHorizontalAxis']] == FALSE && diff[['plotSeparateLines']] == FALSE && diff[['plotSeparatePlots']] == FALSE &&
-			diff[['plotErrorBars']] == FALSE && !(diff[['errorBarType']] == TRUE && options$plotErrorBars == TRUE) &&
-			!(diff[['confidenceIntervalInterval']] == TRUE && options$errorBarType == "confidenceInterval" && options$plotErrorBars == TRUE) &&
-			diff[['plotWidthDescriptivesPlotLegend']] == FALSE && diff[['plotHeightDescriptivesPlotLegend']] == FALSE &&
-			diff[['plotWidthDescriptivesPlotNoLegend']] == FALSE && diff[['plotHeightDescriptivesPlotNoLegend']] == FALSE) {
-
-			# old descriptives plots can be used
-
-			stateDescriptivesPlot <- state$stateDescriptivesPlot
-		}
-
-		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && diff[['homogeneityTests']] == FALSE && diff[['VovkSellkeMPR']] == FALSE) {
-
-			# old levene's table can be used
-
-			stateLevene <- state$stateLevene
-
-		}
-
-		if (is.list(diff) && diff[['fixedFactors']] == FALSE && diff[['dependent']] == FALSE && diff[['descriptives']] == FALSE) {
-
-			# old descriptives table can be used
-
-			stateDescriptivesTable <- state$stateDescriptivesTable
-
-		}
-
-		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE &&
-			diff[['marginalMeansTerms']] == FALSE && diff[['marginalMeansCompareMainEffects']] == FALSE && diff[['marginalMeansCIAdjustment']] == FALSE) {
-
-			# old marginal means tables can be used
-
-			stateMarginalMeans <- state$stateMarginalMeans
-
-		}
-
-		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE &&
-		    diff[['simpleFactor']] == FALSE && diff[['moderatorFactorOne']] == FALSE && diff[['moderatorFactorTwo']] == FALSE) {
-
-		  # old simple effects tables can be used
-
-		  stateSimpleEffects <- state$stateSimpleEffects
-
-		}
-
-		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE &&
-		    diff[['kruskalVariablesAssigned']] == FALSE && diff[['contrasts']] == FALSE && diff[['dunnTest']]) {
-
-		  # old Kruskal/Dunn table can be used
-
-		  stateKruskal <- state$stateKruskal
-		  stateDunn <- state$stateDunn
-
-		}
-	}
+	if (!is.null(state) && is.null(attr(state, "key")))
+	  attr(state, "key") <- stateKey
 
 
 	## Create Title
@@ -155,16 +89,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	}
 
-
 	status <- .anovaCheck(dataset, options, perform)
-
 
 
 	## Setup Contrasts
 
 	if (perform == "run" && status$ready && status$error == FALSE)
 		dataset <- .anovaSetupContrasts(dataset, options)
-
 
 
 	## Perform ANOVA
@@ -254,18 +185,25 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 
 	## Create Post Hoc Tables
+  if (is.null(statePostHoc)) {
 
-	result <- .anovaPostHocTable(dataset, options, perform, model, status, statePostHoc, singular)
+    result <- .anovaPostHocTableCollection(dataset, options, perform, model, status, statePostHoc, singular)
+  	results[["posthoc"]] <- list(collection=result$result, title = "Post Hoc Tests")
+  	status <- result$status
+  	statePostHoc <- result$statePostHoc
 
-	results[["posthoc"]] <- list(collection=result$result, title = "Post Hoc Tests")
-	status <- result$status
-	statePostHoc <- result$statePostHoc
+  } else {
+
+    results[["posthoc"]] <- list(collection=statePostHoc, title = "Post Hoc Tests")
+
+  }
 
 
 
 	## Create Marginal Means Table
 
 	if (is.null(stateMarginalMeans)) {
+
 		result <- .anovaMarginalMeans(dataset, options, perform, model, status, singular, stateMarginalMeans)
 		results[["marginalMeans"]] <- list(collection=result$result, title = "Marginal Means")
 		status <- result$status
@@ -302,19 +240,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	} else {
 
 	  results[["kruskal"]] <- stateKruskal
-
-	}
-
-	if (is.null(stateDunn)) {
-
-	  result <- .anovaDunnTable(dataset, options, perform, model, status, stateDunn, singular)
-	  results[["dunn"]] <- list(collection=result$result, title = "Dunn's Post Hoc Tests")
-	  status <- result$status
-	  stateDunn <- result$stateDunn
-
-	} else {
-
-	  results[["dunn"]] <- stateDunn
 
 	}
 
@@ -370,8 +295,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		list(name="posthoc", type="collection", meta="table"),
 		list(name="marginalMeans", type="collection", meta="table"),
 		list(name="simpleEffects", type="table"),
-		list(name="kruskal", type="table"),
-		list(name="dunn", type="collection", meta="table")
+		list(name="kruskal", type="table")
 	)
 
 	if (length(descriptivesPlot) == 1) {
@@ -398,7 +322,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	state[["stateMarginalMeans"]] <- stateMarginalMeans
 	state[["stateSimpleEffects"]] <- stateSimpleEffects
 	state[["stateKruskal"]] <- stateKruskal
-	state[["stateDunn"]] <- stateDunn
+	
 
 	if (perform == "init" && status$ready && status$error == FALSE) {
 
@@ -1222,6 +1146,41 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	return(contrasts)
 }
 
+.anovaPostHocTableCollection <- function(dataset, options, perform, model, status, statePostHoc, singular) {
+
+  posthoc.tables <- list()
+
+  if (options$postHocTestsTypeStandard) {
+    standardPostHoc <- .anovaPostHocTable(dataset, options, perform, model, status, statePostHoc[['Standard']], singular)
+    posthoc.tables <- standardPostHoc[['result']]
+    statePostHoc[['Standard']] <- standardPostHoc[['statePostHoc']]
+    status <- standardPostHoc[['status']]
+  }
+
+  if (options$postHocTestsTypeGames && !status$error) {
+    gamesPostHoc <- .anovaGamesTable(dataset, options, perform, model, status, statePostHoc[['Games']], singular)
+    posthoc.tables <- c(posthoc.tables, gamesPostHoc[['result']])
+    statePostHoc[['Games']] <- gamesPostHoc[['statePostHoc']]
+    status <- gamesPostHoc[['status']]
+  }
+
+  if (options$postHocTestsTypeDunnett && !status$error) {
+    dunnettPostHoc <- .anovaDunnettTable(dataset, options, perform, model, status, statePostHoc[['Dunnett']], singular)
+    posthoc.tables <- c(posthoc.tables, dunnettPostHoc[['result']])
+    statePostHoc[['Dunnett']] <- dunnettPostHoc[['statePostHoc']]
+    status <- dunnettPostHoc[['status']]
+  }
+
+  if (options$postHocTestsTypeDunn && !status$error) {
+    dunnPostHoc <- .anovaDunnTable(dataset, options, perform, model, status, statePostHoc[['Dunn']], singular)
+    posthoc.tables <- c(posthoc.tables, dunnPostHoc[['result']])
+    statePostHoc[['Dunn']] <- dunnPostHoc[['statePostHoc']]
+    status <- dunnPostHoc[['status']]
+  }
+  list(result=posthoc.tables, status=status, statePostHoc=posthoc.tables)
+
+}
+
 .anovaPostHocTable <- function(dataset, options, perform, model, status, statePostHoc, singular) {
 
 	posthoc.variables <- unlist(options$postHocTestsVariables)
@@ -1395,7 +1354,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 							pHolm <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultHolm$test$pvalues[index2]))
 					}
 
-					row[["Mean Difference"]] <- md
+				  row[["Mean Difference"]] <- md
 					row[["SE"]]  <- SE
 					row[["t"]] <- t
 					row[["Cohen's d"]] <- effectSize
@@ -2083,7 +2042,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
     if (perform == "run" && status$ready && status$error == FALSE)  {
 
-      variableLevels <- levels(dataset[[ .v(dunnVar) ]])
+      variableLevels <- levels(droplevels(dataset[[ .v(dunnVar) ]]))
       nLevels <- length(variableLevels)
       nPerGroup <- unname(unlist(table(dataset[[ .v(dunnVar) ]])))
       bigN <- sum(nPerGroup)
@@ -2149,11 +2108,193 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
     dunnTable[["data"]] <- rows
 
-    dunnTables[[length(dunnTables)+1]] <- dunnTable
-    stateDunn <- dunnTables
+    dunnTableCollection[[length(dunnTableCollection)+1]] <- dunnTable
+    stateDunn <- dunnTableCollection
   }
 
-  list(result=dunnTables, status=status, stateDunn=stateDunn)
+  list(result=dunnTableCollection, status=status, statePostHoc=stateDunn)
+}
+
+.anovaGamesTable <- function(dataset, options, perform, model, status, stateGames, singular) {
+
+  gamesVariables <- unlist(options$postHocTestsVariables)
+  dependentVar <- dataset[[ .v(options$dependent) ]]
+
+  gamesTables <- list()
+  stateGames <- list()
+
+  for (gamesVar in gamesVariables) {
+
+    gamesTable <- list()
+
+    gamesTable[["title"]] <- paste("Games-Howell Post Hoc Comparisons - ", gamesVar, sep="")
+    gamesTable[["name"]] <- paste("gamesTest_", gamesVar, sep="")
+
+    fields <- list(
+      list(name="(I)",title="", type="string", combine=TRUE),
+      list(name="(J)",title="", type="string"),
+      list(name="Mean Difference", type="number", format="sf:4;dp:3"),
+      list(name="lwrBound", type = "number", title = "Lower",
+           format = "sf:4;dp:3", overTitle =  "95% CI for Mean Difference"),
+      list(name="uprBound", type="number", title = "Upper",
+           format="sf:4;dp:3", overTitle =  "95% CI for Mean Difference"),
+      list(name="SE", type="number", format="sf:4;dp:3"),
+      list(name="t", type="number", format="sf:4;dp:3"),
+      list(name="pTukey", title="p<sub>tukey</sub>", type="number", format="dp:3;p:.001"))
+
+    gamesTable[["schema"]] <- list(fields=fields)
+
+    rows <- list()
+
+    if (perform == "run" && status$ready && status$error == FALSE)  {
+
+      groupingVar <- dataset[[ .v(gamesVar) ]]
+      variableLevels <- levels(droplevels(groupingVar))
+      nLevels <- length(variableLevels)
+      meanPerLevel <- tapply(dependentVar, groupingVar, mean)
+      nPerLevel <- tapply(dependentVar, groupingVar, length)
+      varPerLevel <- tapply(dependentVar, groupingVar, var)
+
+      for (i in 1:nLevels) {
+
+        for (j in .seqx(i+1, nLevels)) {
+
+          row <- list("(I)"=variableLevels[[i]], "(J)"=variableLevels[[j]])
+
+          meanDiff <- meanPerLevel[[i]] - meanPerLevel[[j]]
+
+          t <- abs(meanDiff) / sqrt((varPerLevel[[i]] / nPerLevel[[i]]) + (varPerLevel[[j]] / nPerLevel[[j]]))
+
+          df <- (varPerLevel[[i]] / nPerLevel[[i]] + varPerLevel[[j]] / nPerLevel[[j]])^2 / # Numerator Degrees of Freedom
+            ((varPerLevel[[i]] / nPerLevel[[i]])^2 / (nPerLevel[[i]] - 1) + # Part 1 of Denominator Degrees of Freedom
+               (varPerLevel[[j]] / nPerLevel[[j]])^2 / (nPerLevel[[j]] - 1)) # Part 2 of Denominator Degrees of Freedom
+
+          pVal <- ptukey(t * sqrt(2), nLevels, df, lower.tail = FALSE)
+
+          se <- sqrt(0.5 * (varPerLevel[[i]] / nPerLevel[[i]] + varPerLevel[[j]] / nPerLevel[[j]]))
+
+          upperConf <- meanDiff + qtukey(p = 0.95, nmeans = nLevels, df = df) * se
+          lowerConf <- meanDiff - qtukey(p = 0.95, nmeans = nLevels, df = df) * se
+
+
+          row[["Mean Difference"]] <- .clean(meanDiff)
+          row[["t"]]  <- .clean(t * sign(meanDiff))
+          row[["SE"]] <- .clean(se)
+          row[["lwrBound"]]  <- .clean(lowerConf)
+          row[["uprBound"]] <- .clean(upperConf)
+          row[["pTukey"]] <- .clean(pVal)
+          row[["df"]] <- .clean(df)
+
+          gamesTable[["status"]] <- "complete"
+          rows[[length(rows)+1]] <- row
+
+        }
+
+        if (length(rows) == 0)  {
+          row[[".isNewGroup"]] <- TRUE
+        } else {
+          row[[".isNewGroup"]] <- FALSE
+        }
+      }
+
+    } else {
+      row <- list("(I)"= ".", "(J)"= ".")
+      row[["Mean Difference"]] <- "."
+      row[["t"]]  <- "."
+      row[["SE"]] <- "."
+      row[["lwrBound"]]  <- "."
+      row[["uprBound"]] <- "."
+      row[["pTukey"]] <- "."
+      row[["df"]] <- "."
+
+      rows[[length(rows)+1]] <- row
+    }
+
+    gamesTable[["data"]] <- rows
+
+    gamesTables[[length(gamesTables)+1]] <- gamesTable
+    stateGames <- gamesTables
+  }
+
+  list(result=gamesTables, status=status, statePostHoc=stateGames)
+}
+
+.anovaDunnettTable <- function(dataset, options, perform, model, status, stateDunnett, singular) {
+
+  dunnettVariables <- unlist(options$postHocTestsVariables)
+  dependentVariable <- dataset[[ .v(options$dependent) ]]
+  dunnettTables <- list()
+  statedunnett <- list()
+
+  for (dunnettVar in dunnettVariables) {
+
+    dunnettTable <- list()
+
+    dunnettTable[["title"]] <- paste("Dunnett Post Hoc Comparisons - ", dunnettVar, sep="")
+    dunnettTable[["name"]] <- paste("dunnettTest_", dunnettVar, sep="")
+
+    fields <- list(
+      list(name="Comparison",title="", type="string"),
+      list(name="Mean Difference", type="number", format="sf:4;dp:3"),
+      # list(name="lwrBound", type = "number", title = "Lower",
+      #      format = "sf:4;dp:3", overTitle =  "95% CI for Mean Difference"),
+      # list(name="uprBound", type="number", title = "Upper",
+      #      format="sf:4;dp:3", overTitle =  "95% CI for Mean Difference"),
+      list(name="SE", type="number", format="sf:4;dp:3"),
+      list(name="t", type="number", format="sf:4;dp:3"),
+      list(name="p", title="p<sub>dunnett</sub>", type="number", format="dp:3;p:.001"))
+
+    dunnettTable[["schema"]] <- list(fields=fields)
+
+    rows <- list()
+
+    if (perform == "run" && status$ready && status$error == FALSE)  {
+
+      Group <- dataset[[ .v(dunnettVar) ]]
+      nLevels <- length(unique(Group))
+
+      dunAOV <- aov(dependentVariable ~ Group)
+
+      dunnettFit <- multcomp::glht(dunAOV, linfct=multcomp::mcp(Group="Dunnett"))
+      dunnettResult <- summary(dunnettFit)[["test"]]
+
+
+      for (i in 1:(nLevels-1)) {
+
+        row <- list("Comparison" = names(dunnettResult$coefficients)[i])
+        row[["Mean Difference"]] <- .clean(dunnettResult$coefficients[i])
+        row[["t"]]  <- .clean(dunnettResult$tstat[i])
+        row[["SE"]] <- .clean(dunnettResult$sigma[i])
+        row[["p"]] <- .clean(dunnettResult$pvalues[i])
+
+        dunnettTable[["status"]] <- "complete"
+        rows[[length(rows)+1]] <- row
+
+        if (length(rows) == 0)  {
+          row[[".isNewGroup"]] <- TRUE
+        } else {
+          row[[".isNewGroup"]] <- FALSE
+        }
+      }
+
+    } else {
+
+      row <- list("Comparison" = ".")
+      row[["Mean Difference"]] <- "."
+      row[["t"]]  <- "."
+      row[["SE"]] <- "."
+      row[["p"]] <- "."
+
+      rows[[length(rows)+1]] <- row
+    }
+
+    dunnettTable[["data"]] <- rows
+
+    dunnettTables[[length(dunnettTables)+1]] <- dunnettTable
+    stateDunnett <- dunnettTables
+  }
+
+  list(result=dunnettTables, status=status, statePostHoc=stateDunnett)
 }
 
 .anovaDescriptivesPlot <- function(dataset, options, perform, status, stateDescriptivesPlot) {
