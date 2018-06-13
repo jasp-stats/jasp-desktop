@@ -322,7 +322,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	state[["stateMarginalMeans"]] <- stateMarginalMeans
 	state[["stateSimpleEffects"]] <- stateSimpleEffects
 	state[["stateKruskal"]] <- stateKruskal
-
+	
 
 	if (perform == "init" && status$ready && status$error == FALSE) {
 
