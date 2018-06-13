@@ -729,57 +729,8 @@
       </item>
       <item row="1" column="0">
        <widget class="QWidget" name="containerPostHocTests" native="true">
-        <layout class="QGridLayout" name="gridLayout_19">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item row="2" column="0">
-          <widget class="GroupBox" name="groupPostHocOptions">
-           <property name="title">
-            <string>Correction</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_17">
-            <item row="3" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsHolm">
-              <property name="text">
-               <string>Holm</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsBonferroni">
-              <property name="text">
-               <string>Bonferroni</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsTukey">
-              <property name="text">
-               <string>Tukey</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsScheffe">
-              <property name="text">
-               <string>Scheffe</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout_9">
+         <item row="0" column="0" colspan="2">
           <widget class="BoundAssignWidget" name="postHocTestsVariables" native="true">
            <property name="minimumSize">
             <size>
@@ -794,6 +745,80 @@
            <property name="text">
             <string>Effect size</string>
            </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="GroupBox" name="groupPostHocOptions">
+           <property name="title">
+            <string>Correction</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_17">
+            <item row="3" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsHolm">
+              <property name="text">
+               <string>Holm</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsTukey">
+              <property name="text">
+               <string>Tukey</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsBonferroni">
+              <property name="text">
+               <string>Bonferroni</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsScheffe">
+              <property name="text">
+               <string>Scheffe</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="GroupBox" name="groupPostHocTypes">
+           <property name="title">
+            <string>Type</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_10">
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsTypeStandard">
+              <property name="text">
+               <string>Standard</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsTypeGames">
+              <property name="text">
+               <string>Games-Howell</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsTypeDunnett">
+              <property name="text">
+               <string>Dunnett</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsTypeDunn">
+              <property name="text">
+               <string>Dunn</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
@@ -2201,13 +2226,6 @@
              </widget>
             </item>
            </layout>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="BoundCheckBox" name="dunnTest">
-           <property name="text">
-            <string>Dunn's post hoc test</string>
-           </property>
           </widget>
          </item>
         </layout>

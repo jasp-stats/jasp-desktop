@@ -72,10 +72,6 @@
 			"type": "Boolean"
 		},
 		{
-			"name": "postHocTestEffectSize",
-			"type": "Boolean"
-		},
-		{
 			"name": "postHocTestsHolm",
 			"type": "Boolean"
 		},
@@ -86,6 +82,27 @@
 		},
 		{
 			"name": "postHocTestsScheffe",
+			"type": "Boolean"
+		},
+		{
+			"name": "postHocTestEffectSize",
+			"type": "Boolean"
+		},
+		{
+			"name": "postHocTestsTypeStandard",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "postHocTestsTypeGames",
+			"type": "Boolean"
+		},
+		{
+			"name": "postHocTestsTypeDunn",
+			"type": "Boolean"
+		},
+		{
+			"name": "postHocTestsTypeDunnett",
 			"type": "Boolean"
 		},
 		{
@@ -117,10 +134,6 @@
 		{
 			"name": "kruskalVariablesAssigned",
 			"type": "Terms"
-		},
-		{
-			"name": "dunnTest",
-			"type": "Boolean"
 		},
 		{
 			"name": "descriptives",
