@@ -1920,7 +1920,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 .anovaKruskal <- function(dataset, options, perform, status, singular, stateKruskal) {
 
-  if (is.null(options$kruskalVariablesAssigned))
+  if (!length(options$kruskalVariablesAssigned))
     return (list(result=NULL, status=status))
 
   terms <- options$kruskalVariablesAssigned
