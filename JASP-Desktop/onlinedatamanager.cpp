@@ -34,6 +34,7 @@ OnlineDataManager::OnlineDataManager(QObject *parent):
 	QObject(parent)
 {
 	setNetworkAccessManager(OnlineDataManager::OSF, new OSFNAM(this));
+	initAuthentication(OnlineDataManager::OSF);
 }
 
 OnlineDataManager::~OnlineDataManager()

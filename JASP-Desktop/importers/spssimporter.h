@@ -40,8 +40,8 @@ namespace spss
 class SPSSImporter : public Importer
 {
 public:
-	SPSSImporter(DataSetPackage *packageData);
-	virtual ~SPSSImporter();
+	SPSSImporter(DataSetPackage *packageData) : Importer(packageData)	{ _packageData->setIsArchive(false); }
+	virtual ~SPSSImporter() {}
 
 	/**
 	* @brief ReportProgress Reports progress for stream.

@@ -214,17 +214,25 @@ const Label &Labels::getLabelObjectFromKey(int index) const
 
 bool Labels::setLabelFromRow(int row, const string &display)
 {
-	if (row >= (int)_labels.size())
+	if (row >= (int)_labels.size() || row < 0)
 	{
 		std::cout << "Set label with wrong row: " << row << ", size: " << _labels.size() << std::endl;
 		std::cout.flush();
 		return false;
 	}
-	Label &label = _labels.at(row);
-	if (label.text() == display)
-		return false;
 
-	_setNewStringForLabel(label, display);
+	try
+	{
+		Label &label = _labels.at(row);
+		if (label.text() == display)
+			return false;
+
+		_setNewStringForLabel(label, display);
+	}
+	catch(...)
+	{
+		return false;
+	}
 	return true;
 }
 

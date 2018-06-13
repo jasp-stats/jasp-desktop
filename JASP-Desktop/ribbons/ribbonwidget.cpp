@@ -44,10 +44,8 @@ void RibbonWidget::setDataSetLoaded(bool loaded)
 {
 	foreach (RibbonButton *button, _buttons)
 	{
-		if (loaded)
-			button->setEnabled(true);
-		else if (button->isDataSetNeeded())
-			button->setEnabled(false);
+		if (loaded)							button->setEnabled(true);
+		else if (button->isDataSetNeeded())	button->setEnabled(false);
 	}
 }
 

@@ -297,8 +297,12 @@ FocusScope {
 							autoScroll: true
 
 							anchors.fill: parent
-							function acceptChanges() { levelsTableModel.setData(levelsTableModel.index(styleData.row, styleData.column), text) }
-							onEditingFinished: acceptChanges()
+							function acceptChanges()
+							{
+								if(styleData.row >= 0 && styleData.column >= 0)
+									levelsTableModel.setData(levelsTableModel.index(styleData.row, styleData.column), text)
+							}
+							onEditingFinished: focus = false
 
 							onActiveFocusChanged:
 								if(activeFocus)
@@ -306,8 +310,12 @@ FocusScope {
 									levelsTableView.selection.clear()
 									levelsTableView.selection.select(styleData.row, styleData.row)
 								}
-								else if(focus)
-									focus = false
+								else
+								{
+									if(focus)
+										focus = false
+									acceptChanges()
+								}
 
 
 

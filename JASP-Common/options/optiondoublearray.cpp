@@ -21,10 +21,6 @@
 
 using namespace std;
 
-OptionDoubleArray::OptionDoubleArray()
-{
-}
-
 void OptionDoubleArray::init(const Json::Value &data)
 {
 	this->set(data.get("default", Json::nullValue));

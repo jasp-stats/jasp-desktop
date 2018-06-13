@@ -24,7 +24,7 @@
 class OptionString : public OptionI<std::string>
 {
 public:
-	OptionString(std::string value = "", std::string regexp = "", int max = -1);
+	OptionString(std::string value = "", std::string regexp = "", int max = -1) : OptionI(), _max(max), _regexp(regexp) { _value = value;}
 
 	virtual void init(const Json::Value &data) OVERRIDE;
 

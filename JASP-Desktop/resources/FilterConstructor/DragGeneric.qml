@@ -25,28 +25,8 @@ MouseArea {
 
 	property string __debugName: "DragGeneric " + shownChild !== undefined ? shownChild.__debugName : "?"
 
-	Rectangle
-	{
-		id: formulaNonBoolean
-		color: "transparent"
-		border.color: visibleBecauseOfMouseHover ? "#70c0ff" : "red"
-		border.width: visibleBecauseOfMouseHover ? 2 : 1
-		radius: visibleBecauseOfMouseHover ? 10 : 0
-		anchors.margins: visibleBecauseOfMouseHover ? -3 : 0
-
-		anchors.fill: parent
-
-		property bool visibleBecauseofCheckedError: mouseArea.wasChecked && mouseArea.isFormula && !mouseArea.isABoolean
-		property alias visibleBecauseOfMouseHover: mouseArea.shouldShowHoverOutline
-
-
-		visible: visibleBecauseofCheckedError || visibleBecauseOfMouseHover
-
-		z: -2
-	}
-
 	property string toolTipText: ""
-	property string shownToolTipText: formulaNonBoolean.visible ? "This formula should return logicals, try using '=', '>' or something similar." : toolTipText
+	property string shownToolTipText: toolTipText
 
 	ToolTip.delay: 1000
 	ToolTip.timeout: 5000

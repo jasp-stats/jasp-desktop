@@ -30,51 +30,100 @@
 
 class DataSetPackage
 {
+	typedef std::map<std::string, std::map<int, std::string>> emptyValsType;
+
 public:
-	DataSetPackage();
+			DataSetPackage();
 
-	DataSet *dataSet = NULL;
-	std::map<std::string, std::map<int, std::string> > emptyValuesMap;
-	std::string analysesHTML;
-	Json::Value analysesData;
-	Version archiveVersion;
-	Version dataArchiveVersion;
-	bool isArchive = false;
-	std::string warningMessage;
+			void			reset();
+			void			storeInEmptyValues(std::string columnName, std::map<int, std::string> emptyValues)	{ _emptyValuesMap[columnName] = emptyValues;	}
+			void			resetEmptyValues()																	{ _emptyValuesMap.clear();											}
 
-	std::string id;
-	std::string initalMD5;
+			std::string		id()							const	{ return _id;							}
+			bool			isReady()						const	{ return _analysesHTMLReady;			}
+			DataSet			*dataSet()								{ return _dataSet;						}
+			bool			isLoaded()						const	{ return _isLoaded;						}
+			bool			hasFilter()								{ return _dataFilter != DEFAULT_FILTER || _filterConstructorJSON != DEFAULT_FILTER_JSON; }
+			bool			isArchive()						const	{ return _isArchive;					}
+			bool			isModified()					const	{ return _isModified;					}
+			std::string		dataFilter()					const	{ return _dataFilter;					}
+			std::string		initialMD5()					const	{ return _initialMD5;					}
+			bool			hasAnalyses()					const	{ return _analysesData.size() > 0;		}
+			std::string		dataFilePath()					const	{ return _dataFilePath;					}
+	const	std::string&	analysesHTML()					const	{ return _analysesHTML;					}
+	const	Json::Value&	analysesData()					const	{ return _analysesData;					}
+	const	std::string&	warningMessage()				const	{ return _warningMessage;				}
+	const	Version&		archiveVersion()				const	{ return _archiveVersion;				}
+	const	emptyValsType&	emptyValuesMap()				const	{ return _emptyValuesMap;				}
+			bool			dataFileReadOnly()				const	{ return _dataFileReadOnly;				}
+			uint			dataFileTimestamp()				const	{ return _dataFileTimestamp;			}
+	const	Version&		dataArchiveVersion()			const	{ return _dataArchiveVersion;			}
+	const	std::string&	filterConstructorJson()			const	{ return _filterConstructorJSON;		}
+			bool			refreshAnalysesAfterFilter()	const	{ return _refreshAnalysesAfterFilter;	}
 
-	std::string dataFilePath;
-	uint dataFileTimestamp;
-	bool dataFileReadOnly;
 
-	bool hasAnalyses;
+			void			setDataArchiveVersion(Version archiveVersion)	{ _dataArchiveVersion			= archiveVersion;	}
+			void			setRefreshAnalysesAfterFilter(bool refresh)		{ _refreshAnalysesAfterFilter	= refresh;			}
+			void			setFilterConstructorJson(std::string json)		{ _filterConstructorJSON		= json;				}
+			void			setAnalysesData(Json::Value analysesData)		{ _analysesData					= analysesData;		}
+			void			setArchiveVersion(Version archiveVersion)		{ _archiveVersion				= archiveVersion;	}
+			void			setWarningMessage(std::string message)			{ _warningMessage				= message;			}
+			void			setDataFilePath(std::string filePath)			{ _dataFilePath					= filePath;			}
+			void			setInitialMD5(std::string initialMD5)			{ _initialMD5					= initialMD5;		}
+			void			setDataFileTimestamp(uint timestamp)			{ _dataFileTimestamp			= timestamp;		}
+			void			setDataFileReadOnly(bool readOnly)				{ _dataFileReadOnly				= readOnly;			}
+			void			setAnalysesHTML(std::string html)				{ _analysesHTML					= html;				}
+			void			setDataFilter(std::string filter)				{ _dataFilter					= filter;			}
+			void			setDataSet(DataSet * dataSet)					{ _dataSet						= dataSet;			}
+			void			setIsArchive(bool isArchive)					{ _isArchive					= isArchive;		}
+			void			setModified(bool value);
+			void			setAnalysesHTMLReady()							{ _analysesHTMLReady			= true;				}
+			void			setId(std::string id)							{ _id							= id;				}
+			void			setWaitingForReady()							{ _analysesHTMLReady			= false;			}
+			void			setLoaded()										{ _isLoaded						= true;				}
 
-	void reset();
-	void setModified(bool value);
-	bool isModified() const;
-	void setLoaded();
-	bool isLoaded() const;
-	bool isReady() const;
-	void setWaitingForReady();
-	void setAnalysesHTMLReady();
-	bool hasFilter() { return dataFilter != DEFAULT_FILTER || filterConstructorJSON != DEFAULT_FILTER_JSON; }
-	std::string dataFilter = DEFAULT_FILTER, filterConstructorJSON = DEFAULT_FILTER_JSON;
+			bool isColumnNameFree(std::string name)			const;
+			bool isColumnComputed(size_t colIndex)			const;
+			bool isColumnComputed(std::string name)			const;
+			bool isColumnInvalidated(size_t colIndex)		const;
+			bool isComputedColumnWithError(size_t colIndex) const;
 
-	bool refreshAnalysesAfterFilter = true;
+			void createComputedColumn(std::string name, Column::ColumnType columnType, size_t newColumnIndex, ComputedColumn::computedType desiredType);
+			void removeColumn(std::string name)	{	_computedColumns.removeComputedColumn(name, &(_dataSet->columns()));	}
 
-	boost::signals2::signal<void (DataSetPackage *source)> isModifiedChanged;
-	boost::signals2::signal<void (DataSetPackage *source
-								  , std::vector<std::string> &changedColumns
-								  , std::vector<std::string> &missingColumns
-								  , std::map<std::string, std::string> &changeNameColumns
-								  )> dataChanged;
+			ComputedColumns	* computedColumnsPointer();
+
+			boost::signals2::signal<void (DataSetPackage *source)>																																					isModifiedChanged;
+			boost::signals2::signal<void (DataSetPackage *source, std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns)>		dataChanged;
 
 private:
-	bool _isModified = false;
-	bool _isLoaded = false;
-	bool _analysesHTMLReady = false;
+
+
+	DataSet				*_dataSet = NULL;
+	emptyValsType		_emptyValuesMap;
+
+	std::string			_analysesHTML,
+						_id,
+						_warningMessage,
+						_initialMD5,
+						_dataFilePath,
+						_dataFilter				= DEFAULT_FILTER,
+						_filterConstructorJSON	= DEFAULT_FILTER_JSON;
+
+	bool				_isArchive					= false,
+						_dataFileReadOnly,
+						_refreshAnalysesAfterFilter = true,
+						_isModified					= false,
+						_isLoaded					= false,
+						_analysesHTMLReady			= false;
+
+	Json::Value			_analysesData;
+	Version				_archiveVersion,
+						_dataArchiveVersion;
+
+	uint				_dataFileTimestamp;
+
+	ComputedColumns		_computedColumns;
 };
 
 #endif // FILEPACKAGE_H

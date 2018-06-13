@@ -33,35 +33,47 @@ typedef boost::container::vector<Column, ColumnAllocator> ColumnVector;
 class Columns
 {
 	friend class DataSet;
+	friend class ComputedColumns;
 
 public:
 
-	Columns(boost::interprocess::managed_shared_memory *mem);
+	Columns(boost::interprocess::managed_shared_memory *mem) : _columnStore(mem->get_segment_manager()), _mem(mem) { }
 
-	Column& at(int index);
-	Column& get(std::string name);
-	void removeColumn(int index);
+	size_t findIndexByName(std::string name) const;
+			Column& at(size_t index)		{ return _columnStore.at(index); }
+	const	Column& at(size_t index) const	{ return _columnStore.at(index); }
+
+	Column& get(std::string name)	{ return _columnStore[findIndexByName(name)]; }
+
+	void removeColumn(size_t index);
+	void removeColumn(std::string name);
 
 	ColumnVector _columnStore;
 
 	typedef ColumnVector::iterator iterator;
+	typedef ColumnVector::const_iterator const_iterator;
 
-	iterator begin();
-	iterator end();
+	iterator begin()				{ return _columnStore.begin();	}
+	iterator end()					{ return _columnStore.end();	}
+	const_iterator begin()	const	{ return _columnStore.begin();	}
+	const_iterator end()	const	{ return _columnStore.end();	}
+	size_t columnCount()	const	{ return _columnStore.size();	}
+	size_t minRowCount()	const;
+	size_t maxRowCount()	const;
 
-	size_t size() {	return _columnStore.size();	}
-
-			Column & operator[](size_t i) {			return _columnStore[i]; }
-	const	Column & operator[](size_t i) const {	return _columnStore[i]; }
+			Column & operator[](size_t i)				{ return _columnStore[i]; }
+	const	Column & operator[](size_t i) const			{ return _columnStore[i]; }
+			Column & operator[](std::string name)		{ return _columnStore[findIndexByName(name)]; }
+	const	Column & operator[](std::string name) const { return _columnStore[findIndexByName(name)]; }
 
 private:
-
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
 
 	boost::interprocess::managed_shared_memory *_mem;
 
-	void setRowCount(int rowCount);
-	void setColumnCount(int columnCount);
+
+	void setRowCount(size_t rowCount);
+	void setColumnCount(size_t columnCount);
 
 };
 

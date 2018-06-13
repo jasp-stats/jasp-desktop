@@ -17,12 +17,12 @@ void ImportDataSet::addColumn(ImportColumn *column)
 	_columns.push_back(column);
 }
 
-int ImportDataSet::columnCount() const
+size_t ImportDataSet::columnCount() const
 {
 	return _columns.size();
 }
 
-int ImportDataSet::rowCount() const
+size_t ImportDataSet::rowCount() const
 {
 	if (columnCount() == 0)
 		return 0;

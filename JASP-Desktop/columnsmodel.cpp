@@ -27,10 +27,10 @@ QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 
 QHash<int, QByteArray> ColumnsModel::roleNames() const {
 	static const auto roles = QHash<int, QByteArray>{
-		{ NameRole,			"columnName"},
-		{ TypeRole,			"type"},
-		{ IconSourceRole,	"columnIcon"},
-		{ ToolTipRole,		"toolTip"}
+		{ NameRole,					"columnName"},
+		{ TypeRole,					"type"},
+		{ IconSourceRole,			"columnIcon"},
+		{ ToolTipRole,				"toolTip"}
 	};
 
 	return roles;

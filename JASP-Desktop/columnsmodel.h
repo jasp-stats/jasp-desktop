@@ -22,10 +22,10 @@ public:
 	ColumnsModel(QObject *parent = NULL) : QAbstractTableModel(parent) {}
 	void setDataSet(DataSet *dataSet);
 
-	virtual int rowCount(const QModelIndex &parent = QModelIndex())				const OVERRIDE { return _dataSet == NULL ? 0 : _dataSet->columnCount();  }
-	virtual int columnCount(const QModelIndex &parent = QModelIndex())			const OVERRIDE { const static int roleNamesCount = roleNames().size(); return roleNamesCount; }
-	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
-	virtual QHash<int, QByteArray> roleNames()									const OVERRIDE;
+	int rowCount(const QModelIndex &parent = QModelIndex())				const override { return _dataSet == NULL ? 0 : _dataSet->columnCount();  }
+	int columnCount(const QModelIndex &parent = QModelIndex())			const override { const static int roleNamesCount = roleNames().size(); return roleNamesCount; }
+	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+	QHash<int, QByteArray> roleNames()									const override;
 
 public slots:
 	void refresh() { beginResetModel(); endResetModel(); }

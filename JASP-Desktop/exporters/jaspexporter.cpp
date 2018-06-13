@@ -33,10 +33,8 @@
 #include "appinfo.h"
 #include <QDebug>
 
-using namespace std;
-
 const Version JASPExporter::dataArchiveVersion = Version("1.0.2");
-const Version JASPExporter::jaspArchiveVersion = Version("2.0.0");
+const Version JASPExporter::jaspArchiveVersion = Version("3.0.0");
 
 
 JASPExporter::JASPExporter() {
@@ -58,14 +56,14 @@ void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 #endif
 
 	if (errorCode != ARCHIVE_OK)
-		throw runtime_error("File could not be opened.");
+		throw std::runtime_error("File could not be opened.");
 
 	saveDataArchive(a, package, progressCallback);
 	saveJASPArchive(a, package, progressCallback);
 
 	errorCode = archive_write_close(a);
 	if (errorCode != ARCHIVE_OK)
-		throw runtime_error("File could not be closed.");
+		throw std::runtime_error("File could not be closed.");
 
 	errorCode = archive_write_free(a);
 
@@ -79,41 +77,45 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 
 	struct archive_entry *entry;
 
-	DataSet *dataset = package->dataSet;
+	DataSet *dataset = package->dataSet();
 
 	unsigned long long progress;
 	unsigned long long lastProgress = -1;
 
-	Json::Value labelsData = Json::objectValue;
-	Json::Value metaData = Json::objectValue;
+	Json::Value labelsData	= Json::objectValue;
+	Json::Value metaData	= Json::objectValue;
 
-	Json::Value &dataSet = metaData["dataSet"];
-	metaData["dataFilePath"] = Json::Value(package->dataFilePath);
-	metaData["dataFileReadOnly"] = Json::Value(package->dataFileReadOnly);
-	metaData["dataFileTimestamp"] = Json::Value(package->dataFileTimestamp);
-	Json::Value emptyValuesJson = Json::arrayValue;
-	const vector<string>& emptyValuesVector = Utils::getEmptyValues();
-	for (auto it = emptyValuesVector.begin(); it != emptyValuesVector.end(); ++it)
-		emptyValuesJson.append(*it);
-	metaData["emptyValues"] = emptyValuesJson;
+	Json::Value &dataSet			= metaData["dataSet"];
+	metaData["dataFilePath"]		= Json::Value(package->dataFilePath());
+	metaData["dataFileReadOnly"]	= Json::Value(package->dataFileReadOnly());
+	metaData["dataFileTimestamp"]	= Json::Value(package->dataFileTimestamp());
+	Json::Value emptyValuesJson		= Json::arrayValue;
 
-	metaData["filterData"] = Json::Value(package->dataFilter);
-	metaData["filterConstructorJSON"] = package->filterConstructorJSON;
+	const std::vector<std::string>& emptyValuesVector = Utils::getEmptyValues();
+	for (auto it : emptyValuesVector)
+		emptyValuesJson.append(it);
 
-	dataSet["rowCount"] = Json::Value(dataset ? dataset->rowCount() : 0);
-	dataSet["columnCount"] = Json::Value(dataset ? dataset->columnCount(): 0);
+	metaData["emptyValues"]				= emptyValuesJson;
+	metaData["filterData"]				= Json::Value(package->dataFilter());
+	metaData["filterConstructorJSON"]	= package->filterConstructorJson();
+	metaData["computedColumns"]			= package->computedColumnsPointer()->convertToJson();
+	dataSet["rowCount"]					= Json::Value(dataset ? (int)dataset->rowCount() : 0);
+	dataSet["columnCount"]				= Json::Value(dataset ? (int)dataset->columnCount(): 0);
 
-	Json::Value emptyValuesMapJson = Json::objectValue;
-	for (auto it = package->emptyValuesMap.begin(); it != package->emptyValuesMap.end(); ++it)
+	dataSet["emptyValuesMap"]			= Json::objectValue;
+
+	for (auto it : package->emptyValuesMap())
 	{
-		string colName = it->first;
-		std::map<int, string> map = it->second;
-		Json::Value mapJson = Json::objectValue;
-		for (auto it2 = map.begin(); it2 != map.end(); ++it2)
-			mapJson[to_string(it2->first)] = it2->second;
-		emptyValuesMapJson[colName] = mapJson;
+		std::string colName		= it.first;
+		auto		map			= it.second;
+		Json::Value mapJson		= Json::objectValue;
+
+		for (auto it2 : map)
+			mapJson[std::to_string(it2.first)] = it2.second;
+
+		dataSet["emptyValuesMap"][colName] = mapJson;
 	}
-	dataSet["emptyValuesMap"] = emptyValuesMapJson;
+
 
 	Json::Value columnsData = Json::arrayValue;
 
@@ -122,12 +124,13 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 	int columnCount = dataset ? dataset->columnCount() : 0;
 	for (int i = 0; i < columnCount; i++)
 	{
-		Column &column = dataset->column(i);
-		string name = column.name();
-		Json::Value columnMetaData = Json::Value(Json::objectValue);	
-		columnMetaData["name"] = Json::Value(name);
-		columnMetaData["measureType"] = Json::Value(getColumnTypeName(column.columnType()));
-		if (column.columnType() != Column::ColumnTypeScale)
+		Column &column					= dataset->column(i);
+		std::string name				= column.name();
+		Json::Value columnMetaData		= Json::Value(Json::objectValue);
+		columnMetaData["name"]			= Json::Value(name);
+		columnMetaData["measureType"]	= Json::Value(getColumnTypeName(column.columnType()));
+
+		if (column.columnType()			!= Column::ColumnTypeScale)
 		{
 			columnMetaData["type"] = Json::Value("integer");
 			dataSize += sizeof(int) * dataset->rowCount();
@@ -144,27 +147,27 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 			Labels &labels = column.labels();
 			if (labels.size() > 0)
 			{
-				Json::Value &columnLabelData = labelsData[name];
-				Json::Value &labelsMetaData = columnLabelData["labels"];
+				Json::Value &columnLabelData	= labelsData[name];
+				Json::Value &labelsMetaData		= columnLabelData["labels"];
 				int labelIndex = 0;
 
-				for (Labels::const_iterator iter = labels.begin(); iter != labels.end(); iter++)
+				for (const Label &label : labels)
 				{
-					const Label &label = *iter;
-					Json::Value keyValueFilterPair = Json::arrayValue;
+					Json::Value keyValueFilterPair(Json::arrayValue);
+
 					keyValueFilterPair.append(label.value());
 					keyValueFilterPair.append(label.text());
 					keyValueFilterPair.append(label.filterAllows());
+
 					labelsMetaData.append(keyValueFilterPair);
 					labelIndex += 1;
 				}
 
-				Json::Value &orgStringValuesMetaData = columnLabelData["orgStringValues"];
-				std::map<int, std::string> &orgLabels = labels.getOrgStringValues();
-				for (std::map<int, std::string>::const_iterator iter = orgLabels.begin(); iter != orgLabels.end(); ++iter)
+				Json::Value &orgStringValuesMetaData	= columnLabelData["orgStringValues"];
+				std::map<int, std::string> &orgLabels	= labels.getOrgStringValues();
+				for (const std::pair<int, std::string> &pair : orgLabels)
 				{
-					const std::pair<int, std::string> &pair = *iter;
-					Json::Value keyValuePair = Json::arrayValue;
+					Json::Value keyValuePair(Json::arrayValue);
 					keyValuePair.append(pair.first);
 					keyValuePair.append(pair.second);
 					orgStringValuesMetaData.append(keyValuePair);
@@ -181,15 +184,14 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 			lastProgress = progress;
 		}
 	}
-	dataSet["fields"] = columnsData;
-
+	dataSet["fields"]		= columnsData;
 
 	//Create new entry for archive
-	string metaDataString = metaData.toStyledString();
-	int sizeOfMetaData = metaDataString.size();
+	std::string metaDataString	= metaData.toStyledString();
+	int sizeOfMetaData			= metaDataString.size();
+	entry						= archive_entry_new();
+	std::string dd2				= std::string("metadata.json");
 
-	entry = archive_entry_new();
-	string dd2 = string("metadata.json");
 	archive_entry_set_pathname(entry, dd2.c_str());
 	archive_entry_set_size(entry, sizeOfMetaData);
 	archive_entry_set_filetype(entry, AE_IFREG);
@@ -202,11 +204,11 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 
 
 	//Create new entry for archive
-	string labelDataString = labelsData.toStyledString();
+	std::string labelDataString = labelsData.toStyledString();
 	int sizeOflabelData = labelDataString.size();
 
 	entry = archive_entry_new();
-	string dd9 = string("xdata.json");
+	std::string dd9 = std::string("xdata.json");
 	archive_entry_set_pathname(entry, dd9.c_str());
 	archive_entry_set_size(entry, sizeOflabelData);
 	archive_entry_set_filetype(entry, AE_IFREG);
@@ -220,7 +222,7 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 
 	//Create new entry for archive NOTE: must be done before data is added
 	entry = archive_entry_new();
-	string dd = string("data.bin");
+	std::string dd = std::string("data.bin");
 	archive_entry_set_pathname(entry, dd.c_str());
 	archive_entry_set_size(entry, dataSize);
 	archive_entry_set_filetype(entry, AE_IFREG);
@@ -261,10 +263,10 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 	archive_entry_free(entry);
 
 	//Create new entry for archive: HTML results
-	string html = package->analysesHTML;
+	std::string html = package->analysesHTML();
 	int htmlSize = html.size();
 	entry = archive_entry_new();
-	string dd3 = string("index.html");
+	std::string dd3 = std::string("index.html");
 	archive_entry_set_pathname(entry, dd3.c_str());
 	archive_entry_set_size(entry, htmlSize);
 	archive_entry_set_filetype(entry, AE_IFREG);
@@ -273,7 +275,7 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 
 	int ws = archive_write_data(a, html.c_str(), htmlSize);
 	if (ws != htmlSize)
-		throw runtime_error("Can't save jasp archive writing ERROR");
+		throw std::runtime_error("Can't save jasp archive writing ERROR");
 
 	archive_entry_free(entry);
 
@@ -281,18 +283,18 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 
 void JASPExporter::saveJASPArchive(archive *a, DataSetPackage *package, boost::function<void (const std::string &, int)> progressCallback)
 {
-	if (package->hasAnalyses)
+	if (package->hasAnalyses())
 	{
 		struct archive_entry *entry;
 
-		Json::Value &analysesJson = package->analysesData;
+		const Json::Value &analysesJson = package->analysesData();
 
 		//Create new entry for archive NOTE: must be done before data is added
-		string analysesString = analysesJson.toStyledString();
+		std::string analysesString = analysesJson.toStyledString();
 		int sizeOfAnalysesString = analysesString.size();
 
 		entry = archive_entry_new();
-		string dd4 = string("analyses.json");
+		std::string dd4 = std::string("analyses.json");
 		archive_entry_set_pathname(entry, dd4.c_str());
 		archive_entry_set_size(entry, sizeOfAnalysesString);
 		archive_entry_set_filetype(entry, AE_IFREG);
@@ -312,7 +314,7 @@ void JASPExporter::saveJASPArchive(archive *a, DataSetPackage *package, boost::f
 		for (Json::Value::iterator iter = analysesDataList.begin(); iter != analysesDataList.end(); iter++)
 		{
 			Json::Value &analysisJson = *iter;
-			vector<string> paths = tempfiles_retrieveList(analysisJson["id"].asInt());
+			std::vector<std::string> paths = tempfiles_retrieveList(analysisJson["id"].asInt());
 			for (size_t j = 0; j < paths.size(); j++)
 			{
 				FileReader fileInfo = FileReader(tempfiles_sessionDirName() + "/" + paths[j]);
@@ -321,7 +323,7 @@ void JASPExporter::saveJASPArchive(archive *a, DataSetPackage *package, boost::f
 					int imageSize = fileInfo.size();
 
 					entry = archive_entry_new();
-					string dd4 = paths[j];
+					std::string dd4 = paths[j];
 					archive_entry_set_pathname(entry, dd4.c_str());
 					archive_entry_set_size(entry, imageSize);
 					archive_entry_set_filetype(entry, AE_IFREG);
@@ -337,7 +339,7 @@ void JASPExporter::saveJASPArchive(archive *a, DataSetPackage *package, boost::f
 					archive_entry_free(entry);
 
 					if (errorCode < 0)
-						throw runtime_error("Required resource files could not be accessed.");
+						throw std::runtime_error("Required resource files could not be accessed.");
 				}
 				fileInfo.close();
 			}
@@ -349,7 +351,7 @@ void JASPExporter::createJARContents(archive *a)
 {
 	struct archive_entry *entry = archive_entry_new();
 
-	stringstream manifestStream;
+	std::stringstream manifestStream;
 	manifestStream << "Manifest-Version: 1.0" << "\n";
 	manifestStream << "Created-By: " << AppInfo::getShortDesc() << "\n";
 	manifestStream << "Data-Archive-Version: " << dataArchiveVersion.asString() << "\n";
@@ -357,11 +359,11 @@ void JASPExporter::createJARContents(archive *a)
 
 	manifestStream.flush();
 
-	const std::string& tmp = manifestStream.str();
-	int manifestSize = tmp.size();
-	const char* manifest = tmp.c_str();
+	const std::string& tmp	= manifestStream.str();
+	int manifestSize		= tmp.size();
+	const char* manifest	= tmp.c_str();
 
-	string f1 = string("META-INF/MANIFEST.MF");
+	std::string f1 = std::string("META-INF/MANIFEST.MF");
 	archive_entry_set_pathname(entry, f1.c_str());
 	archive_entry_set_size(entry, manifestSize);
 	archive_entry_set_filetype(entry, AE_IFREG);
@@ -374,20 +376,15 @@ void JASPExporter::createJARContents(archive *a)
 }
 
 
-string JASPExporter::getColumnTypeName(Column::ColumnType columnType)
+std::string JASPExporter::getColumnTypeName(Column::ColumnType columnType)
 {
 	switch(columnType)
 	{
-	case Column::ColumnTypeNominal:
-		return "Nominal";
-	case Column::ColumnTypeNominalText:
-		return "NominalText";
-	case Column::ColumnTypeOrdinal:
-		return "Ordinal";
-	case Column::ColumnTypeScale:
-		return "Continuous";
-	default:
-		return "Unknown";
+	case Column::ColumnTypeNominal:			return "Nominal";
+	case Column::ColumnTypeNominalText:		return "NominalText";
+	case Column::ColumnTypeOrdinal:			return "Ordinal";
+	case Column::ColumnTypeScale:			return "Continuous";
+	default:								return "Unknown";
 	}
 
 }

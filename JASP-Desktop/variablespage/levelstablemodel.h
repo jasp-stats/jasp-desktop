@@ -52,13 +52,14 @@ public:
 
 public slots:
 	void refresh();
+	void refreshColumn(Column * column);
 
 
 signals:
 	void refreshConnectedModels(Column * column);
 	void resizeLabelColumn();
 	void labelFilterChanged();
-	void notifyColumnHasFilterChanged(); //should be on column but column is not a Qt object.
+	void notifyColumnHasFilterChanged(int column); //should be on column but column is not a Qt object.
 	void filteredOutChanged();
 
 private:
@@ -66,6 +67,7 @@ private:
 	DataSet * _dataSet = NULL;
 
 	void _moveRows(QModelIndexList &selection, bool up = true);
+	int currentColumnIndex();
 
 };
 

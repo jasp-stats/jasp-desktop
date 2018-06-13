@@ -42,9 +42,9 @@ public:
 	Analysis *get(int id) const;
 	void clear();
 
-	typedef QList<Analysis*>::iterator iterator;
-	iterator begin();
-	iterator end();
+	typedef std::vector<Analysis*>::iterator iterator;
+	iterator begin()	{ return _analyses.begin(); }
+	iterator end()		{ return _analyses.end(); }
 
 	int count() const;
 
@@ -80,7 +80,7 @@ private:
     void analysisImageEditedHandler(Analysis *analysis);
 	void analysisResultsChangedHandler(Analysis *analysis);
 
-	QList<Analysis*> _analyses;
+	 std::vector<Analysis*> _analyses;
 
 	int _nextId;
 

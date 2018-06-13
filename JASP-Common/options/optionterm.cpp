@@ -21,11 +21,6 @@
 
 using namespace std;
 
-OptionTerm::OptionTerm()
-	: OptionTerms(false, true)
-{
-}
-
 Json::Value OptionTerm::asJSON() const
 {
 	Json::Value v(Json::arrayValue);

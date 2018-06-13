@@ -26,8 +26,6 @@
 #include "backstage/verticaltabbar.h"
 #include "backstage/opensavewidget.h"
 #include "fileevent.h"
-
-#include "activitylog.h"
 #include "analysis.h"
 
 class BackStageWidget : public QWidget
@@ -38,7 +36,6 @@ public:
 	explicit BackStageWidget(QWidget *parent = NULL);
 	void setOnlineDataManager(OnlineDataManager *odm);
 
-	void setLog(ActivityLog *log);
 	FileEvent *open();
 	FileEvent *open(const QString &filepath);
 	FileEvent *save();

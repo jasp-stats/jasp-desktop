@@ -19,38 +19,44 @@
 #define OPTION_H
 
 #include <string>
+#include <set>
 
 #include <boost/signals2.hpp>
 #include <boost/bind.hpp>
 #include "jsonredirect.h"
 
 class Options;
+class Analysis;
 
 class Option
 {
 public:
-	Option(bool transient = false);
-	virtual ~Option();
+						Option(bool transient = false) : _isTransient(transient) {}
 
-	virtual void init(const Json::Value &) { };
-	virtual Json::Value asJSON() const = 0;
-	virtual void set(const Json::Value& value) = 0;
-	virtual Option *clone() const = 0;
+	virtual				~Option() {}
+	virtual void		init(const Json::Value &)		{ }
+	virtual void		set(const Json::Value& value)	= 0;
+	virtual Json::Value asJSON() const					= 0;
+	virtual Option		*clone() const					= 0;
+
+	virtual std::set<std::string> usedVariables()		{ return std::set<std::string>(); }
+	virtual void		removeUsedVariable(std::string)	{  }
+
+			void		blockSignals(bool block, bool notifyOnceUnblocked = true);
+			bool		isTransient() const;
+
 
 	boost::signals2::signal<void (Option *)> changed;
 
-	void blockSignals(bool block, bool notifyOnceUnblocked = true);
 
-	bool isTransient() const;
 	
 protected:
-	void notifyChanged();
-	bool _isTransient;
+	void	notifyChanged();
+	bool	_isTransient;
 
 private:
-
-	int _signalsBlocked;
-	bool _shouldSignalOnceUnblocked;
+	int		_signalsBlocked				= 0;
+	bool	_shouldSignalOnceUnblocked	= false;
 
 };
 

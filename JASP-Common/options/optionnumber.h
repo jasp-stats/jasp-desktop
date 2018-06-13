@@ -27,8 +27,8 @@
 class OptionNumber : public OptionI<double>
 {
 public:
-	OptionNumber();
-	OptionNumber(double value, double minimum = -999999, double maximum = 999999, std::string format = "");
+	OptionNumber()																							: OptionI() {}
+	OptionNumber(double value, double minimum = -999999, double maximum = 999999, std::string format = "")  : OptionI(), _min(minimum), _max(maximum), _format(format) { _value = value; }
 
 	virtual void init(const Json::Value &data) OVERRIDE;
 

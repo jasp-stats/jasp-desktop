@@ -18,7 +18,7 @@
 #include "optionlist.h"
 #include <boost/foreach.hpp>
 
-OptionList::OptionList(const std::vector<std::string> &options, std::string selected)
+OptionList::OptionList(const std::vector<std::string> &options, std::string selected) : OptionI()
 {
 	_options = options;
 	if (selected == "")
@@ -27,10 +27,7 @@ OptionList::OptionList(const std::vector<std::string> &options, std::string sele
 		_value = selected;
 }
 
-OptionList::OptionList()
-{
 
-}
 
 void OptionList::init(const Json::Value &data)
 {

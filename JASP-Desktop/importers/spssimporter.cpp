@@ -31,23 +31,13 @@
 
 #include "./convertedstringcontainer.h"
 
-using namespace std;
-using namespace boost;
-using namespace spss;
-
-SPSSImporter::SPSSImporter(DataSetPackage *packageData) : Importer(packageData)
+namespace spss
 {
-	_packageData->isArchive = false;
-}
 
-SPSSImporter::~SPSSImporter()
-{
-}
-
-ImportDataSet* SPSSImporter::loadFile(const string &locator, boost::function<void(const string &, int)> progress)
+ImportDataSet* SPSSImporter::loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progress)
 {
 	// Open the file.
-	SPSSStream stream(locator.c_str(), ios::in | ios::binary);
+	SPSSStream stream(locator.c_str(), std::ios::in | std::ios::binary);
 
 	// Get it's size
 	stream.seekg(0, stream.end);
@@ -182,12 +172,12 @@ ImportDataSet* SPSSImporter::loadFile(const string &locator, boost::function<voi
 		case rectype_unknown:
 		default:
 		{
-			string msg("Unknown record type '"); msg.append(rec_type.u, sizeof(rec_type.u)); msg.append("' found.\n"
+			std::string msg("Unknown record type '"); msg.append(rec_type.u, sizeof(rec_type.u)); msg.append("' found.\n"
 				"The SAV importer cannot yet read this file.\n"
 				"Please report this error at \n"
 				"https://github.com/jasp-stats/jasp-desktop/issues\n"
 				"including a small sample .SAV file that produces this message.");
-			throw runtime_error(msg);
+			throw std::runtime_error(msg);
 			break;
 		}
 		}
@@ -195,11 +185,11 @@ ImportDataSet* SPSSImporter::loadFile(const string &locator, boost::function<voi
 
 	//If we got a file header then..
 	if (pFileHeaderRecord == 0)
-		throw runtime_error("No header found in .SAV file.");
+		throw std::runtime_error("No header found in .SAV file.");
 
 	dataset->setHeaderInfo(integerInfo, floatInfo);
 
-	// Now convert the string in the header that we are interested in.,
+	// Now convert the std::string in the header that we are interested in.,
 	ConvertedStringContainer::processAllStrings(dataset->stringsConv());
 
 	// Set the right name for each column and build the name to col map
@@ -212,34 +202,34 @@ ImportDataSet* SPSSImporter::loadFile(const string &locator, boost::function<voi
 	_processStringsPostLoad(dataset, progress);
 
 
-	DEBUG_COUT5("Read ", data.numDbls(), " doubles and ", data.numStrs(), " string cells.");
+	DEBUG_COUT5("Read ", data.numDbls(), " doubles and ", data.numStrs(), " std::string cells.");
 
 
 	// bail if unknown number of cases.
 	if (dataset->hasNoCases())
-		throw runtime_error("Found no cases in .SAV file.");
+		throw std::runtime_error("Found no cases in .SAV file.");
 
 	delete pFileHeaderRecord;
 	return dataset;
 }
 
 /**
- * @brief _processStringsPostLoad - Deals with very Long strings (len > 255) and CP processes all strings.
+ * @brief _processStringsPostLoad - Deals with very Long std::strings (len > 255) and CP processes all std::strings.
  * Call after the data is loaded!.
  */
 void SPSSImporter::_processStringsPostLoad(SPSSImportDataSet *dataset, boost::function<void (const std::string &, int)> progress)
 {
-	// For every found very long string.
+	// For every found very long std::string.
 	const SPSSImportDataSet::LongColsData &strLens = dataset->veryLongColsDat();
 	float numStrlens = distance(strLens.begin(), strLens.end());
-	for (map<string, size_t>::const_iterator ituple = strLens.begin(); ituple != strLens.end(); ituple++)
+	for (std::map<std::string, size_t>::const_iterator ituple = strLens.begin(); ituple != strLens.end(); ituple++)
 	{
 		{ // report progress
 			float prog = 100.0 * ((float) distance(strLens.begin(), ituple)) / numStrlens;
 			static float lastProg = -1.0;
 			if ((prog - lastProg) >= 1.0)
 			{
-				progress("Processing long strings.", (int) (prog + 0.5));
+				progress("Processing long std::strings.", (int) (prog + 0.5));
 				lastProg = prog;
 			}
 
@@ -257,18 +247,18 @@ void SPSSImporter::_processStringsPostLoad(SPSSImportDataSet *dataset, boost::fu
 		const long mergedStrlen = 252;
 		// Shouldn't happen..
 		if (rootIter == dataset->end())
-			throw runtime_error("Failed to process a very long string value.");
+			throw std::runtime_error("Failed to process a very long std::string value.");
 
 		SPSSImportColumn* rootColumn = dynamic_cast<SPSSImportColumn*>(*rootIter);
-		// merged strings are slightly shorter than what is in the file.
+		// merged std::strings are slightly shorter than what is in the file.
 		// See Appendix B System File Format, PSPP devloper's Guide, release 0.10.2 pp69
 		if (rootColumn->spssStringLen() == 255)
 			rootColumn->spssStringLen(mergedStrlen);
 
-		// Chop the length of the strings in the root col.
+		// Chop the length of the std::strings in the root col.
 		for (size_t cse  = 0; cse < rootColumn->strings.size(); cse++)
 		{
-			string str = rootColumn->strings[cse].substr(0, rootColumn->spssStringLen());
+			std::string str = rootColumn->strings[cse].substr(0, rootColumn->spssStringLen());
 			rootColumn->strings[cse] = str;
 		}
 
@@ -279,23 +269,22 @@ void SPSSImporter::_processStringsPostLoad(SPSSImportDataSet *dataset, boost::fu
 			++nextcolIter;
 			SPSSImportColumn* nextcol = dynamic_cast<SPSSImportColumn*>(*nextcolIter);
 			// How much to fetch?
-			long needed = min(ituple->second - rootColumn->spssStringLen(), rootColumn->spssStringLen());
-			needed = min(mergedStrlen, needed);
+			long needed = std::min(mergedStrlen, long(std::min(ituple->second - rootColumn->spssStringLen(), rootColumn->spssStringLen())));
 
-			// Concatinate all the strings, going down the cases.
+			// Concatinate all the std::strings, going down the cases.
 			for (size_t cse  = 0; cse < rootColumn->strings.size(); cse++)
 			{
 				if (needed > 0)
 					rootColumn->strings[cse].append(nextcol->strings[cse], 0, needed);
 			}
-			// Advance the string length.
+			// Advance the std::string length.
 			rootColumn->spssStringLen( rootColumn->spssStringLen() + needed );
 			// Dump the column.
 			dataset->erase(nextcolIter);
 		}
 	}
 
-	// Trim trialing spaces for all strings in the data set.
+	// Trim trialing spaces for all std::strings in the data set.
 	size_t numCols = distance(dataset->begin(), dataset->end());
 	for (ImportColumns::iterator iCol = dataset->begin(); iCol != dataset->end(); ++iCol)
 	{
@@ -305,7 +294,7 @@ void SPSSImporter::_processStringsPostLoad(SPSSImportDataSet *dataset, boost::fu
 			static float lastProg = -1.0;
 			if ((prog - lastProg) >= 1.0)
 			{
-				progress("Processing strings.", (int) (prog + 0.5));
+				progress("Processing std::strings.", (int) (prog + 0.5));
 				lastProg = prog;
 			}
 		}
@@ -348,7 +337,7 @@ void SPSSImporter::fillSharedMemoryColumn(ImportColumn *importColumn, Column &co
 			break;
 
 		case SPSSImportColumn::cellDouble:
-			 // convert to UTF-8 strings.
+			 // convert to UTF-8 std::strings.
 			spssCol->setColumnConvertDblToString(column);
 			break;
 		}
@@ -417,3 +406,4 @@ SPSSImportColumn& SPSSImporter::getNextColumn(SPSSImportDataSet *dataset)
 	return *result;
 }
 
+}

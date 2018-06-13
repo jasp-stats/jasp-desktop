@@ -28,9 +28,15 @@ using namespace boost::uuids;
 using namespace boost;
 using namespace std;
 
-Analysis::Analysis(int id, string module, string name, string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Options *options, const Version &version, bool autorun, bool usedata, bool useJaspResults)
-	: _options(options), _id(id), _module(module), _name(name), _title(title), _requiresInit(requiresInit), _dataKey(dataKey), _stateKey(stateKey), _resultsMeta(resultsMeta), _autorun(autorun), _usedata(usedata), _jaspResultsAnalysis(useJaspResults), _version(version)
+Analysis::Analysis(int id, string module, string name, string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Json::Value optionsJson, const Version &version, Json::Value *data, bool autorun, bool usedata, bool useJaspResults)
+	: _id(id), _module(module), _name(name), _title(title), _requiresInit(requiresInit), _dataKey(dataKey), _stateKey(stateKey), _resultsMeta(resultsMeta), _autorun(autorun), _usedata(usedata), _jaspResultsAnalysis(useJaspResults), _version(version)
 {
+	_options = new Options();
+
+	if (optionsJson != Json::nullValue)	_options->init(optionsJson);
+	else								perror("malformed analysis definition");
+	if (data != NULL)					_options->set(*data);
+
 	_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this, _1));
 
 	_status = Empty;
@@ -76,20 +82,6 @@ void Analysis::setImageEdited(Json::Value results)
     imageEdited(this);
 }
 
-void Analysis::setUserData(Json::Value userData)
-{
-	_userData = userData;
-}
-
-const Json::Value &Analysis::results() const
-{
-	return _results;
-}
-
-const Json::Value &Analysis::userData() const
-{
-	return _userData;
-}
 
 void Analysis::refresh()
 {
@@ -100,106 +92,51 @@ void Analysis::refresh()
 
 Analysis::Status Analysis::parseStatus(string name)
 {
-	if (name == "empty")
-		return Analysis::Empty;
-	else if (name == "waiting")
-		return Analysis::Inited;
-	else if (name == "running")
-		return Analysis::Running;
-	else if (name == "complete")
-		return Analysis::Complete;
-	else if (name == "aborted")
-		return Analysis::Aborted;
-	else if (name == "SaveImg")
-		return Analysis::SaveImg;
-    else if (name == "EditImg")
-        return Analysis::SaveImg;
-	else if (name == "exception")
-		return Analysis::Exception;
-	else
-		return Analysis::Error;
+	if (name == "empty")			return Analysis::Empty;
+	else if (name == "waiting")		return Analysis::Inited;
+	else if (name == "running")		return Analysis::Running;
+	else if (name == "complete")	return Analysis::Complete;
+	else if (name == "aborted")		return Analysis::Aborted;
+	else if (name == "SaveImg")		return Analysis::SaveImg;
+	else if (name == "EditImg")		return Analysis::SaveImg;
+	else if (name == "exception")	return Analysis::Exception;
+	else							return Analysis::Error;
 }
 
 Json::Value Analysis::asJSON() const
 {
 	Json::Value analysisAsJson = Json::objectValue;
 
-	analysisAsJson["id"] = _id;
-	analysisAsJson["name"] = _name;
-	analysisAsJson["title"] = _title;
-	analysisAsJson["requiresInit"] = _requiresInit;
-	analysisAsJson["dataKey"] = _dataKey;
-	analysisAsJson["stateKey"] = _stateKey;
-	analysisAsJson["resultsMeta"] = _resultsMeta;
-	analysisAsJson["module"] = _module;
-	analysisAsJson["progress"] = _progress;
-	analysisAsJson["version"] = _version.asString();
-	analysisAsJson["results"] = _results;
+	analysisAsJson["id"]			= _id;
+	analysisAsJson["name"]			= _name;
+	analysisAsJson["title"]			= _title;
+	analysisAsJson["requiresInit"]	= _requiresInit;
+	analysisAsJson["dataKey"]		= _dataKey;
+	analysisAsJson["stateKey"]		= _stateKey;
+	analysisAsJson["resultsMeta"]	= _resultsMeta;
+	analysisAsJson["module"]		= _module;
+	analysisAsJson["progress"]		= _progress;
+	analysisAsJson["version"]		= _version.asString();
+	analysisAsJson["results"]		= _results;
 
 	string status;
 
 	switch (_status)
 	{
-	case Analysis::Empty:
-		status = "empty";
-		break;
-	case Analysis::Inited:
-		status = "waiting";
-		break;
-	case Analysis::Running:
-		status = "running";
-		break;
-	case Analysis::Complete:
-		status = "complete";
-		break;
-	case Analysis::Aborted:
-		status = "aborted";
-		break;
-	case Analysis::SaveImg:
-		status = "SaveImg";
-    case Analysis::EditImg:
-        status = "EditImg";
-	case Analysis::Exception:
-		status = "exception";
-		break;
-	default:
-		status = "error";
-		break;
+	case Analysis::Empty:		status = "empty";		break;
+	case Analysis::Inited:		status = "waiting";		break;
+	case Analysis::Running:		status = "running";		break;
+	case Analysis::Complete:	status = "complete";	break;
+	case Analysis::Aborted:		status = "aborted";		break;
+	case Analysis::SaveImg:		status = "SaveImg";		break;
+	case Analysis::EditImg:		status = "EditImg";		break;
+	case Analysis::Exception:	status = "exception";	break;
+	default:					status = "error";		break;
 	}
 
 	analysisAsJson["status"] = status;
 
 	return analysisAsJson;
-}
-
-void Analysis::setVisible(bool visible)
-{
-	_visible = visible;
-}
-
-int Analysis::revision()
-{
-	return _revision;
-}
-
-bool Analysis::isVisible()
-{
-	return _visible;
-}
-
-bool Analysis::isRefreshBlocked()
-{
-	return _refreshBlocked;
-}
-
-void Analysis::setRefreshBlocked(bool block)
-{
-	_refreshBlocked = block;
-}
-
-Analysis::Status Analysis::status() const
-{
-	return _status;
 }
 
 void Analysis::setStatus(Analysis::Status status)
@@ -212,60 +149,8 @@ void Analysis::setStatus(Analysis::Status status)
 	_status = status;
 }
 
-const string &Analysis::name() const
-{
-	return _name;
-}
 
-const string &Analysis::title() const
-{
-	return _title;
-}
 
-const Json::Value &Analysis::requiresInit() const
-{
-	return _requiresInit;
-}
-
-const Json::Value &Analysis::dataKey() const
-{
-	return _dataKey;
-}
-
-const Json::Value &Analysis::stateKey() const
-{
-	return _stateKey;
-}
-
-const Json::Value &Analysis::resultsMeta() const
-{
-	return _resultsMeta;
-}
-
-const string &Analysis::module() const
-{
-	return _module;
-}
-
-int Analysis::id() const
-{
-	return _id;
-}
-
-bool Analysis::isAutorun() const
-{
-	return _autorun;
-}
-
-bool Analysis::useData() const
-{
-	return _usedata;
-}
-
-Options *Analysis::options() const
-{
-	return _options;
-}
 
 void Analysis::optionsChangedHandler(Option *option)
 {
@@ -294,17 +179,16 @@ int Analysis::callback(Json::Value results)
 	}
 }
 
-void Analysis::setSaveImgOptions(Json::Value &options)
+
+performType Analysis::desiredPerformTypeFromAnalysisStatus() const
 {
-	_saveImgOptions = options;
+	switch(status())
+	{
+	case Analysis::Empty:		return(usesJaspResults() ? performType::run : performType::init);
+	case Analysis::SaveImg:		return(performType::saveImg);
+	case Analysis::EditImg:		return(performType::editImg);
+	case Analysis::Aborting:	return(performType::abort);
+	default:					return(performType::run);
+	}
 }
 
-Json::Value Analysis::getSaveImgOptions()
-{
-	return _saveImgOptions;
-}
-
-Json::Value Analysis::getImgResults()
-{
-	return _imgResults;
-}

@@ -7,11 +7,11 @@ labelFilterGenerator::labelFilterGenerator(DataSetPackage *package, QObject *par
 
 std::string labelFilterGenerator::generateFilter()
 {
-	if(_package == NULL || _package->dataSet == NULL) return "generatedFilter <- NULL";
+	if(_package == NULL || _package->dataSet() == NULL) return "generatedFilter <- NULL";
 
 	int neededFilters = 0;
 
-	for(Column & col : _package->dataSet->columns())
+	for(Column & col : _package->dataSet()->columns())
 		if(labelNeedsFilter(col))
 			neededFilters++;
 
@@ -22,7 +22,7 @@ std::string labelFilterGenerator::generateFilter()
 	if(neededFilters == 0)
 	{
 		if(easyFilterConstructorRScript == "")
-			newGeneratedFilter << "rep(TRUE," << _package->dataSet->rowCount() << ")";
+			newGeneratedFilter << "rep(TRUE," << _package->dataSet()->rowCount() << ")";
 		else
 			newGeneratedFilter << "("<<easyFilterConstructorRScript<<")";
 	}
@@ -34,7 +34,7 @@ std::string labelFilterGenerator::generateFilter()
 			newGeneratedFilter << "(";
 
 
-		for(Column & col : _package->dataSet->columns())
+		for(Column & col : _package->dataSet()->columns())
 			if(labelNeedsFilter(col))
 			{
 				newGeneratedFilter << (first ? "" : " & ") << generateLabelFilter(col);

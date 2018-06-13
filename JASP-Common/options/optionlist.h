@@ -25,7 +25,7 @@ class OptionList : public OptionI<std::string>
 {
 public:
 	OptionList(const std::vector<std::string> &options, std::string selected = "");
-	OptionList();
+	OptionList() : OptionI() {}
 
 	virtual void init(const Json::Value &data) OVERRIDE;
 

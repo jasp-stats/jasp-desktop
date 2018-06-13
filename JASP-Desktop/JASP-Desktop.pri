@@ -3,7 +3,6 @@ windows:RC_FILE = $$PWD/icon.rc
 
 SOURCES += \
     $$PWD/aboutdialog.cpp \
-    $$PWD/activitylog.cpp \
     $$PWD/analyses.cpp \
     $$PWD/analysisforms/analysisform.cpp \
     $$PWD/appdirs.cpp \
@@ -150,12 +149,14 @@ SOURCES += \
     $$PWD/backstage/backstagedatalibrary.cpp \
     $$PWD/backstage/datalibrarylistmodel.cpp \
     $$PWD/backstage/datalibrarybreadcrumbsmodel.cpp \
-    $$PWD/settings.cpp
+    $$PWD/settings.cpp \
+    $$PWD/enginerepresentation.cpp \
+    $$PWD/computedcolumnsmodel.cpp
+
 
 
 HEADERS  += \
     $$PWD/aboutdialog.h \
-    $$PWD/activitylog.h \
     $$PWD/analyses.h \
     $$PWD/analysisforms/analysisform.h \
     $$PWD/appdirs.h \
@@ -317,7 +318,10 @@ HEADERS  += \
     $$PWD/backstage/backstagedatalibrary.h \
     $$PWD/backstage/datalibrarylistmodel.h \
     $$PWD/backstage/datalibrarybreadcrumbsmodel.h \
-    $$PWD/settings.h
+    $$PWD/settings.h \
+    $$PWD/enginerepresentation.h \
+    $$PWD/rscriptstore.h \
+    $$PWD/computedcolumnsmodel.h
 
 FORMS += \
     $$PWD/aboutdialog.ui \

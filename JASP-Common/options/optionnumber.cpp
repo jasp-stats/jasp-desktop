@@ -19,18 +19,6 @@
 
 using namespace std;
 
-OptionNumber::OptionNumber(double value, double min, double max, string format)
-{
-	_value = value;
-	_min = min;
-	_max = max;
-	_format = format;
-}
-
-OptionNumber::OptionNumber()
-{
-}
-
 void OptionNumber::init(const Json::Value &data)
 {
 	_value = data.get("value", 0.0).asDouble();

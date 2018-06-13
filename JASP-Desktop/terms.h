@@ -21,6 +21,7 @@
 
 #include <vector>
 #include <string>
+#include <set>
 
 #include <QString>
 #include <QList>
@@ -78,16 +79,17 @@ public:
 	bool contains(const Term &term) const;
 	bool contains(const std::string component);
 
-	std::vector<std::string> asVector() const;
-	std::vector<std::vector<std::string> > asVectorOfVectors() const;
-	QList<QString> asQList() const;
-	QList<QList<QString> > asQListOfQLists() const;
+	std::vector<std::string>				asVector()			const;
+	std::set<std::string>					asSet()				const;
+	std::vector<std::vector<std::string> >	asVectorOfVectors()	const;
+	QList<QString>							asQList()			const;
+	QList<QList<QString> >					asQListOfQLists()	const;
 
-	Term sortComponents(const Term &term) const;
-	Terms sortComponents(const Terms &terms) const;
+	Term	sortComponents(const Term &term)	const;
+	Terms	sortComponents(const Terms &terms)	const;
 
-	Terms crossCombinations() const;
-	Terms wayCombinations(int ways) const;
+	Terms crossCombinations()					const;
+	Terms wayCombinations(int ways)				const;
 	Terms ffCombinations(const Terms &terms);
 
 	std::string asString() const;
@@ -97,10 +99,10 @@ public:
 
 private:
 
-	int rankOf(const QString &component) const;
-	int termCompare(const Term& t1, const Term& t2) const;
-	bool termLessThan(const Term &t1, const Term &t2) const;
-	bool componentLessThan(const QString &c1, const QString &c2) const;
+	int		rankOf(const QString &component)						const;
+	int		termCompare(const Term& t1, const Term& t2)				const;
+	bool	termLessThan(const Term &t1, const Term &t2)			const;
+	bool	componentLessThan(const QString &c1, const QString &c2)	const;
 
 	const Terms *_parent;
 	std::vector<Term> _terms;

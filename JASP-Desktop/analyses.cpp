@@ -98,16 +98,6 @@ Analysis *Analyses::get(int id) const
 		return NULL;
 }
 
-QList<Analysis*>::iterator Analyses::begin()
-{
-	return _analyses.begin();
-}
-
-QList<Analysis*>::iterator Analyses::end()
-{
-	return _analyses.end();
-}
-
 int Analyses::count() const
 {
 	int c = 0;

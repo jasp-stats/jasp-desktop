@@ -49,6 +49,8 @@ public:
 	void send(std::string &data, bool alreadyLockedMutex = false);
 	bool receive(std::string &data, int timeout = 0);
 
+	int channelNumber() { return _channelNumber; }
+
 private:
 
 	bool tryWait(int timeout = 0);

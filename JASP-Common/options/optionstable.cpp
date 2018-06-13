@@ -24,12 +24,6 @@
 using namespace Json;
 using namespace std;
 
-OptionsTable::OptionsTable(Options *rowTemplate)
-	: OptionI(true)
-{
-	_template = rowTemplate;
-}
-
 void OptionsTable::init(const Json::Value &data)
 {
 	_template = new Options();
@@ -74,7 +68,7 @@ Option *OptionsTable::clone() const
 {
 	Options *rowTemplate = static_cast<Options*>(this->rowTemplate()->clone());
 
-	OptionsTable *c = new OptionsTable(rowTemplate);
+	OptionsTable *c = new OptionsTable();
 
 	std::vector<Options *> rows;
 

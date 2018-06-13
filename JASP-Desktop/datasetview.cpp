@@ -20,12 +20,13 @@ DataSetView::DataSetView() : _metricsFont(_font)
 	connect(this, &DataSetView::viewportWChanged, this, &DataSetView::viewportChanged);
 	connect(this, &DataSetView::viewportHChanged, this, &DataSetView::viewportChanged);
 
-	connect(this, &DataSetView::itemDelegateChanged, this, &DataSetView::reloadTextItems);
-	connect(this, &DataSetView::rowNumberDelegateChanged, this, &DataSetView::reloadRowNumbers);
-	connect(this, &DataSetView::columnHeaderDelegateChanged, this, &DataSetView::reloadColumnHeaders);
+	connect(this, &DataSetView::itemDelegateChanged,			this, &DataSetView::reloadTextItems);
+	connect(this, &DataSetView::rowNumberDelegateChanged,		this, &DataSetView::reloadRowNumbers);
+	connect(this, &DataSetView::columnHeaderDelegateChanged,	this, &DataSetView::reloadColumnHeaders);
 
-	connect(this, &DataSetView::itemHorizontalPaddingChanged, this, &DataSetView::calculateCellSizes);
-	connect(this, &DataSetView::itemVerticalPaddingChanged, this, &DataSetView::calculateCellSizes);
+	connect(this, &DataSetView::itemHorizontalPaddingChanged,	this, &DataSetView::calculateCellSizes);
+	connect(this, &DataSetView::itemVerticalPaddingChanged,		this, &DataSetView::calculateCellSizes);
+	connect(this, &DataSetView::extraColumnItemChanged,			this, &DataSetView::calculateCellSizes);
 
 	connect(this, &DataSetView::itemSizeChanged, this, &DataSetView::reloadTextItems);
 	connect(this, &DataSetView::itemSizeChanged, this, &DataSetView::reloadRowNumbers);
@@ -78,8 +79,6 @@ void DataSetView::setRolenames()
 
 void DataSetView::calculateCellSizes()
 {
-
-
 	_cellSizes.clear();
 	_dataColsMaxWidth.clear();
 
@@ -138,8 +137,9 @@ void DataSetView::calculateCellSizes()
 		x += _dataColsMaxWidth[col];
 	}
 
+	_dataWidth = w;
 
-	setWidth(w);
+	setWidth(_dataWidth + extraColumnWidth());
 	setHeight( _dataRowsMaxHeight * (_model->rowCount() + 1));
 	_recalculateCellSizes = false;
 
@@ -267,6 +267,9 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 	_lines.push_back(std::make_pair(QVector2D(_viewportX,						_viewportY + 0.5f),					QVector2D(_viewportX + _viewportW,			_viewportY+ 0.5f)));
 	_lines.push_back(std::make_pair(QVector2D(_viewportX,						_viewportY + _dataRowsMaxHeight),	QVector2D(_viewportX + _viewportW,			_viewportY + _dataRowsMaxHeight)));
 
+	if(_extraColumnItem != NULL)
+		_lines.push_back(std::make_pair(QVector2D(_dataWidth + extraColumnWidth(), _viewportY), QVector2D(_dataWidth + extraColumnWidth(), _viewportY + _dataRowsMaxHeight)));
+
 
 	for(int row=_currentViewportRowMin; row<_currentViewportRowMax; row++)
 	{
@@ -302,6 +305,7 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 	_linesWasChanged = true;
 
 	createleftTopCorner();
+	updateExtraColumnItem();
 }
 
 QQuickItem * DataSetView::createTextItem(int row, int col)
@@ -503,7 +507,13 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 			_columnHeaderStorage.pop();
 			columnHeader = itemCon->item;
 
-			setStyleDataColumnHeader(itemCon->context, _model->headerData(col, Qt::Orientation::Horizontal).toString(), col);
+			setStyleDataColumnHeader(itemCon->context,
+									_model->headerData(col, Qt::Orientation::Horizontal).toString(),
+									col,
+									_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["columnIsComputed"]).toBool(),
+									_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["computedColumnIsInvalidated"]).toBool(),
+									_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["columnIsFiltered"]).toBool(),
+									_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["computedColumnHasError"]).toBool());
 		}
 		else
 		{
@@ -511,7 +521,15 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 			std::cout << "createColumnHeader("<<col<<") ex nihilo!\n" << std::flush;
 #endif
 			QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
-			itemCon = new ItemContextualized(setStyleDataColumnHeader(NULL, _model->headerData(col, Qt::Orientation::Horizontal).toString(), col));
+			itemCon = new ItemContextualized(setStyleDataColumnHeader(
+												NULL,
+												_model->headerData(col, Qt::Orientation::Horizontal).toString(),
+												col,
+												_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["columnIsComputed"]).toBool(),
+												_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["computedColumnIsInvalidated"]).toBool(),
+												_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["columnIsFiltered"]).toBool(),
+												_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["computedColumnHasError"]).toBool()));
+
 			_columnHeaderDelegate->create(localIncubator, itemCon->context);
 			columnHeader = qobject_cast<QQuickItem*>(localIncubator.object());
 			itemCon->item = columnHeader;
@@ -593,30 +611,15 @@ QQuickItem * DataSetView::createleftTopCorner()
 	return _leftTopItem;
 }
 
-QQuickItem * DataSetView::createStyleData(QQmlContext * theContext)
+void DataSetView::updateExtraColumnItem()
 {
+	//std::cout << "createleftTopCorner() called!\n" << std::flush;
+	if(_extraColumnItem == NULL)
+		return;
 
-	if(_styleDataCreator == NULL)
-	{
-		_styleDataCreator = new QQmlComponent(qmlEngine(this));
-        _styleDataCreator->setData("import QtQuick 2.9\n Item { "
-							 "property bool active: true;"
-							 "property string text: \"???\";"
-							 "property int columnIndex: -1;"
-							 "property int rowIndex: -1; }", QUrl());
-	}
-
-
-	QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
-	_styleDataCreator->create(localIncubator);
-	QQuickItem * _styleData = qobject_cast<QQuickItem*>(localIncubator.object());
-
-	_styleData->setParent(this);
-	_styleData->setParentItem(this);
-	_styleData->setVisible(false);
-
-
-	return _styleData;
+	_extraColumnItem->setHeight(_dataRowsMaxHeight);
+	_extraColumnItem->setX(_dataWidth);
+	_extraColumnItem->setY(_viewportY);
 }
 
 QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, QString text, bool active, int column, int row)
@@ -642,13 +645,17 @@ QQmlContext * DataSetView::setStyleDataRowNumber(QQmlContext * previousContext, 
 	return previousContext;
 }
 
-QQmlContext * DataSetView::setStyleDataColumnHeader(QQmlContext * previousContext, QString text, int column)
+QQmlContext * DataSetView::setStyleDataColumnHeader(QQmlContext * previousContext, QString text, int column, bool isComputed, bool isInvalidated, bool isFiltered, bool hasComputedError)
 {
 	if(previousContext == NULL)
 		previousContext = new QQmlContext(qmlContext(this), this);
 
-	previousContext->setContextProperty("headerText",	text);
-	previousContext->setContextProperty("columnIndex",	column);
+	previousContext->setContextProperty("headerText",			text);
+	previousContext->setContextProperty("columnIndex",			column);
+	previousContext->setContextProperty("columnIsComputed",		isComputed);
+	previousContext->setContextProperty("columnIsInvalidated",	isInvalidated);
+	previousContext->setContextProperty("columnIsFiltered",		isFiltered);
+	previousContext->setContextProperty("columnHasError",		hasComputedError);
 
 	return previousContext;
 }
@@ -718,6 +725,34 @@ void DataSetView::setLeftTopCornerItem(QQuickItem * newItem)
 		}
 
 		emit leftTopCornerItemChanged();
+	}
+}
+
+void DataSetView::setExtraColumnItem(QQuickItem * newItem)
+{
+	if(newItem != _extraColumnItem)
+	{
+		if(_extraColumnItem != NULL)
+			delete _extraColumnItem;
+		_extraColumnItem = newItem;
+
+		if(_extraColumnItem != NULL)
+		{
+
+			_extraColumnItem->setParent(this);
+			_extraColumnItem->setParentItem(this);
+
+			_extraColumnItem->setZ(-1);
+
+			_extraColumnItem->setVisible(true);
+
+			_extraColumnItem->setHeight(_dataRowsMaxHeight);
+			_extraColumnItem->setX(_dataWidth);
+			_extraColumnItem->setY(_viewportY);
+
+		}
+
+		emit extraColumnItemChanged();
 	}
 }
 

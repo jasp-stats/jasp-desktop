@@ -29,8 +29,6 @@ using namespace boost;
 
 Analysis *AnalysisLoader::load(int id, string moduleName, string analysisName, const Version &version, Json::Value *data)
 {
-	Options *options = new Options();
-
 	string path = Dirs::libraryDir() + "/" + analysisName + ".json";
 
 	nowide::ifstream file(path.c_str(), fstream::in);
@@ -47,21 +45,12 @@ Analysis *AnalysisLoader::load(int id, string moduleName, string analysisName, c
 		Json::Value resultsMeta		= analysisDesc.get("results",		Json::nullValue);
 		Json::Value optionsJson		= analysisDesc.get("options",		Json::nullValue);
 		bool usesJaspResults		= analysisDesc.get("jaspResults",	false).asBool();
-
-		if (optionsJson != Json::nullValue)
-			options->init(optionsJson);
-		else
-			perror("malformed analysis definition");
-
-		bool autorun = analysisDesc.get("autorun", false).asBool();
-		bool usedata = analysisDesc.get("usedata", true).asBool();
-
-		if (data != NULL)
-			options->set(*data);
+		bool autorun				= analysisDesc.get("autorun",		false).asBool();
+		bool usedata				= analysisDesc.get("usedata",		true).asBool();
 
 		file.close();
 
-		return new Analysis(id, moduleName, analysisName, analysisTitle, requiresInit, dataKey, stateKey, resultsMeta, options, version, autorun, usedata, usesJaspResults);
+		return new Analysis(id, moduleName, analysisName, analysisTitle, requiresInit, dataKey, stateKey, resultsMeta, optionsJson, version, data, autorun, usedata, usesJaspResults);
 	}
 
 	throw runtime_error(analysisName + " does not exist in your JASP version.");
