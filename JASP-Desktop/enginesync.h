@@ -27,38 +27,8 @@
 
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
 
-#include <QProcess>
-#include <QTimer>
-#include <vector>
+#include "enginerepresentation.h"
 
-#include "options/options.h"
-#include "analysis.h"
-#include "analyses.h"
-#include "ipcchannel.h"
-#include "activitylog.h"
-#include "datasetpackage.h"
-#include <queue>
-
-enum class engineState { idle, analysis, filter, rcode };
-
-struct RScriptStore
-{
-	RScriptStore(int requestId, QString script, engineState typeScript = engineState::rcode) 
-		: typeScript(typeScript), script(script), requestId(requestId) {}
-	
-	engineState typeScript; //should be filter/rcode/etc
-	QString		script;
-	int			requestId;
-	
-};
-
-struct RFilterStore : public RScriptStore
-{
-	RFilterStore(QString generatedfilter, QString filter) : RScriptStore(-1, filter, engineState::filter), generatedfilter(generatedfilter)
-	{ }
-	
-	QString generatedfilter; 
-};
 
 /* EngineSync is responsible for launching the background
  * processes, scheduling analyses, and for sending and
@@ -76,62 +46,46 @@ public:
 
 	void start();
 
-	bool engineStarted();
-	void setLog(ActivityLog *log);
-
-	void setPPI(int ppi);
+	bool engineStarted()			{ return _engineStarted; }
 
 	Q_INVOKABLE void sendFilter(QString generatedFilter, QString filter);
-	Q_INVOKABLE QString getFilter() { return dataFilter; }
+	Q_INVOKABLE QString getFilter() { return _dataFilter; }
 	
 public slots:
 	void sendRCode(QString rCode, int requestId);
-	
+	void processNewFilterResult(std::vector<bool> filterResult);
+	void computeColumn(QString columnName, QString computeCode, Column::ColumnType columnType);
 	
 signals:
 	void engineTerminated();
 	void filterUpdated();
 	void filterErrorTextChanged(QString error);
 	void rCodeReturned(QString result, int requestId);
+	void ppiChanged(int newPPI);
+	void computeColumnSucceeded(std::string columnName, std::string warning);
+	void computeColumnFailed(std::string columnName, std::string error);
+
 
 private:
+	bool		idleEngineAvailable();
+	QProcess*	startSlaveProcess(int no);
+	void		processScriptQueue();
 
-	Analyses *_analyses;
-	bool _engineStarted = false;
-	ActivityLog *_log = NULL;
-	DataSetPackage *_package;
-	std::queue<RScriptStore*> waitingScripts;
+	Analyses		*_analyses;
+	bool			_engineStarted = false;
+	DataSetPackage	*_package;
 
-	int _ppi = 96;
+	std::queue<RScriptStore*>			_waitingScripts;
+	std::vector<EngineRepresentation*>	_engines;
 
-	std::vector<QProcess *>		_slaveProcesses;
-	std::vector<IPCChannel *>	_channels;
-	std::vector<Analysis *>		_analysesInProgress;
-	std::vector<engineState>	_engineStates;
 
-	IPCChannel *nextFreeProcess(Analysis *analysis);
-	void sendToProcess(int processNo, Analysis *analysis);
-
-	void startSlaveProcess(int no);
-
-	std::string _memoryName;
-	std::string _engineInfo;	
-	QString dataFilter;
-
-	void processNewFilterResult(std::vector<bool> filterResult);
-	void processScriptQueue();
-	void runScriptOnProcess(RFilterStore * filterStore, int processNo);
-	void runScriptOnProcess(RScriptStore * scriptStore, int processNo);
-	
-	void clearAnalysesInProgress(int i)
-	{
-		_analysesInProgress[i] = NULL;
-		_engineStates[i] = engineState::idle;
-	}
+	std::string _memoryName,
+				_engineInfo;
+	QString		_dataFilter;
 
 private slots:
-
-	void sendMessages();
+	void dataFilterChanged(QString newDataFilter) { _dataFilter = newDataFilter; }
+	void ProcessAnalysisRequests();
 	void deleteOrphanedTempFiles();
 	void heartbeatTempFiles();
 

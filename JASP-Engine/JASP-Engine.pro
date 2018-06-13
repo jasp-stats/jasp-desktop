@@ -15,7 +15,8 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
-exists(/app/lib/*)	{ INSTALLPATH = /app/bin } else	{
+exists(/app/lib/*)	{ INSTALLPATH = /app/bin
+ } else	{
 	INSTALLPATH = /usr/bin
 }
 

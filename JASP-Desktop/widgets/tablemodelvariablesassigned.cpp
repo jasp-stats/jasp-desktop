@@ -26,13 +26,6 @@
 
 using namespace std;
 
-TableModelVariablesAssigned::TableModelVariablesAssigned(QObject *parent)
-	: TableModelVariables(parent)
-{
-	_boundTo = NULL;
-	_source = NULL;
-	_sorted = false;
-}
 
 void TableModelVariablesAssigned::bindTo(Option *option)
 {

@@ -28,10 +28,13 @@
 #include "datablock.h"
 #include "labels.h"
 
+
 class Column
 {
 	friend class DataSet;
 	friend class Columns;
+	friend class ComputedColumn;
+	friend class ComputedColumns;
 	friend class DataSetLoader;
 	friend class boost::iterator_core_access;
 
@@ -46,11 +49,20 @@ class Column
 	typedef boost::interprocess::allocator<String, boost::interprocess::managed_shared_memory::segment_manager> StringAllocator;
 
 public:
+	///ColumnType is set up to be used as bitflags in places such as assignedVariablesModel and such
+	enum ColumnType { ColumnTypeUnknown = 0, ColumnTypeNominal = 1, ColumnTypeNominalText = 2, ColumnTypeOrdinal = 4, ColumnTypeScale = 8 };
+
 	static bool isEmptyValue(const std::string& val);
 	static bool isEmptyValue(const double& val);
 
 	bool resetEmptyValues(std::map<int, std::string>& emptyValuesMap);
 
+
+	void overwriteDataWithScale(std::vector<double> scalarData);
+	void overwriteDataWithOrdinal(std::vector<int> ordinalData);
+	void overwriteDataWithNominal(std::vector<int> nominalData);
+	void overwriteDataWithNominal(std::vector<std::string> nominalData);
+	void setDefaultValues(ColumnType columnType = ColumnTypeUnknown);
 
 	typedef struct IntsStruct
 	{
@@ -119,15 +131,23 @@ public:
 		iterator end();
 
 	private:
-		DoublesStruct();
+		DoublesStruct() {}
 
 		Column *getParent() const;
 
 	} Doubles;
 
-	Column(boost::interprocess::managed_shared_memory *mem);
-	Column(const Column& col);
-	~Column();
+	Column(boost::interprocess::managed_shared_memory *mem)  : _mem(mem), _name(mem->get_segment_manager()), _columnType(Column::ColumnTypeNominal), _rowCount(0), _blocks(std::less<ull>(), mem->get_segment_manager()), _labels(mem)
+	{
+		_id = ++count;
+	}
+
+	Column(const Column& col) : _mem(col._mem), _name(col._name), _columnType(col._columnType), _rowCount(col._rowCount), _blocks(col._blocks), _labels(col._labels)
+	{
+		_id = ++count;
+	}
+
+	~Column() {}
 
 	std::string name() const;
 	int id() const;
@@ -160,17 +180,17 @@ public:
 	Doubles AsDoubles;
 	Ints AsInts;
 
-	///ColumnType is set up to be used as bitflags in places such as assignedVariablesModel and such
-	enum ColumnType { ColumnTypeUnknown = 0, ColumnTypeNominal = 1, ColumnTypeNominalText = 2, ColumnTypeOrdinal = 4, ColumnTypeScale = 8 };
 
-	static std::string getColumnTypeAsString(ColumnType type);
+
+	static std::string columnTypeToString(ColumnType type);
+	static ColumnType columnTypeFromString(std::string type);
 
 	void setColumnType(ColumnType columnType);
 	ColumnType columnType() const;
 
 	bool changeColumnType(ColumnType newColumnType);
 
-	int rowCount() const;
+	size_t rowCount() const { return _rowCount; }
 
 	Labels& labels();
 
@@ -178,25 +198,30 @@ public:
 
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
 
-	std::map<int, std::string> setColumnAsNominalText(const std::vector<std::string> &values);
-	std::map<int, std::string> setColumnAsNominalText(const std::vector<std::string> &values, const std::map<std::string, std::string> &labels);
-	void setColumnAsNominalOrOrdinal(const std::vector<int> &values, const std::set<int> &uniqueValues, bool is_ordinal = false);
-	void setColumnAsNominalOrOrdinal(const std::vector<int> &values, std::map<int, std::string> &uniqueValues, bool is_ordinal = false);
-	void setColumnAsScale(const std::vector<double> &values);
+	void						setColumnAsScale(const std::vector<double> &values);
+
+	std::map<int, std::string>	setColumnAsNominalText(const std::vector<std::string> &values,	const std::map<std::string, std::string> &labels);
+	std::map<int, std::string>	setColumnAsNominalText(const std::vector<std::string> &values)	{ return setColumnAsNominalText(values, std::map<std::string, std::string>()); }
+
+	void						setColumnAsNominalOrOrdinal(const std::vector<int> &values,		const std::set<int> &uniqueValues,			bool is_ordinal = false);
+	void						setColumnAsNominalOrOrdinal(const std::vector<int> &values,		std::map<int, std::string> &uniqueValues,	bool is_ordinal = false);
+	void						setColumnAsNominalOrOrdinal(const std::vector<int> &values,													bool is_ordinal = false)	{ setColumnAsNominalOrOrdinal(values, std::set<int>(values.begin(), values.end()), is_ordinal); }
+
 	bool allLabelsPassFilter() const;
 
 	bool hasFilter() const;
 
 	void resetFilter();
 
-private:
+private:	
+
 	void _setColumnAsNominalOrOrdinal(const std::vector<int> &values, bool is_ordinal = false);
 
 	boost::interprocess::managed_shared_memory *_mem;
 
 	String _name;
 	ColumnType _columnType;
-	int _rowCount;
+	size_t _rowCount;
 
 	BlockMap _blocks;
 	Labels _labels;

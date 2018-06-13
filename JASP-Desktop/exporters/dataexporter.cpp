@@ -39,7 +39,7 @@ void DataExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 
 	boost::nowide::ofstream outfile(path.c_str(), ios::out);
 
-	DataSet *dataset = package->dataSet;
+	DataSet *dataset = package->dataSet();
 
 	int columnCount = dataset->columnCount();
 	for (int i = 0; i < columnCount; i++)

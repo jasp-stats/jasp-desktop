@@ -33,9 +33,8 @@ class ODSImportDataSet;
 class ODSImporter : public Importer
 {
 public:
-	//	static void loadDataSet(DataSetPackage *packageData, const std::string &locator, boost::function<void (const std::string &, int)> progressCallback);
-	ODSImporter(DataSetPackage *packageData);
-	virtual ~ODSImporter();
+	ODSImporter(DataSetPackage *packageData)  : Importer(packageData) {	packageData->setIsArchive(false); }
+	virtual ~ODSImporter() {}
 
 protected:
 	// Implmemtation of Inporter base class.

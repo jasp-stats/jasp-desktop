@@ -35,14 +35,10 @@
 
 using namespace std;
 
-Options::Options()
-	: names(&_options)
-{
-}
 
 Options::~Options()
 {
-	BOOST_FOREACH(OptionNamed item, _options)
+	for(OptionNamed item : _options)
 		delete item.second;
 }
 
@@ -57,53 +53,39 @@ void Options::init(const Json::Value &array)
 	{
 		Json::Value value = (*itr);
 
-		Json::Value &name = value["name"];
-		Json::Value &type = value["type"];
+		std::string name = value["name"].asString(),
+					type = value["type"].asString();
 
-		string typeString = type.asString();
-		Option *option = createOption(typeString);
+		Option *option = createOption(type, name);
 
 		if (option != NULL)
 		{
 			option->init(value);
-			add(name.asString(), option);
+			add(name, option);
 		}
 		else
 		{
-            cout << "Unknown data type: " << typeString << "\n";
+			cout << "Unknown data type: " << type << "\n";
             cout.flush();
 		}
 	}
 }
 
-Option* Options::createOption(string typeString)
+Option* Options::createOption(string typeString, string name)
 {
-	if (typeString == "Boolean")
-		return new OptionBoolean();
-	else if (typeString == "Integer")
-		return new OptionInteger();
-	else if (typeString == "IntegerArray")
-		return new OptionIntegerArray();
-	else if (typeString == "DoubleArray")
-		return new OptionDoubleArray();
-	else if (typeString == "List")
-		return new OptionList();
-	else if (typeString == "Number")
-		return new OptionNumber();
-	else if (typeString == "Table")
-		return new OptionsTable();
-	else if (typeString == "String")
-		return new OptionString();
-	else if (typeString == "Term")
-		return new OptionTerm();
-	else if (typeString == "Terms")
-		return new OptionTerms();
-	else if (typeString == "Variable")
-		return new OptionVariable();
-	else if (typeString == "Variables")
-		return new OptionVariables();
-	else if (typeString == "VariablesGroups")
-		return new OptionVariablesGroups();
+	if		(typeString == "List")				return new OptionList();
+	else if (typeString == "Term")				return new OptionTerm();
+	else if (typeString == "Terms")				return new OptionTerms();
+	else if (typeString == "Table")				return new OptionsTable();
+	else if (typeString == "Number")			return new OptionNumber();
+	else if (typeString == "String")			return new OptionString();
+	else if	(typeString == "Boolean")			return new OptionBoolean();
+	else if (typeString == "Integer")			return new OptionInteger();
+	else if (typeString == "Variable")			return new OptionVariable();
+	else if (typeString == "Variables")			return new OptionVariables();
+	else if (typeString == "DoubleArray")		return new OptionDoubleArray();
+	else if (typeString == "IntegerArray")		return new OptionIntegerArray();
+	else if (typeString == "VariablesGroups")	return new OptionVariablesGroups();
 
 	return NULL;
 }
@@ -230,3 +212,23 @@ size_t Options::size() const
 	return _options.size();
 }
 
+std::set<std::string> Options::usedVariables()
+{
+	std::set<std::string> combined;
+
+	for(OptionNamed option : _options)
+	{
+		std::set<std::string> cols = option.second->usedVariables();
+		combined.insert(cols.begin(), cols.end());
+	}
+
+	return combined;
+}
+
+void Options::removeUsedVariable(std::string var)
+{
+	for(OptionNamed option : _options)
+		option.second->removeUsedVariable(var);
+
+	notifyChanged();
+}

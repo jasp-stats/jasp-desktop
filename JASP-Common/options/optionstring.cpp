@@ -19,13 +19,6 @@
 
 using namespace std;
 
-OptionString::OptionString(string value, string regexp, int max)
-{
-	_value = value;
-	_max = max;
-	_regexp = regexp;
-}
-
 void OptionString::init(const Json::Value &data)
 {
 	_value = data.get("default", "").asString();

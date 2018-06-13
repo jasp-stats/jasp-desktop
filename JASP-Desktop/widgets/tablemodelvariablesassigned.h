@@ -26,11 +26,13 @@
 
 #include "column.h"
 
+class AnalysisForm; //forward def
+
 class TableModelVariablesAssigned : public TableModelVariables, public BoundModel
 {
 	Q_OBJECT
 public:
-	explicit TableModelVariablesAssigned(QObject *parent = 0);
+	explicit TableModelVariablesAssigned(QWidget *parent = NULL) : TableModelVariables(parent) {}
 
 	virtual void bindTo(Option *option) OVERRIDE;
 	virtual void unbind() OVERRIDE;
@@ -60,9 +62,9 @@ private:
 	void unassign(const Terms &variables);
 	void setAssigned(const Terms &variables);
 
-	OptionTerms *_boundTo;
-	TableModelVariablesAvailable *_source;
-	bool _sorted;
+	OptionTerms						*_boundTo	= NULL;
+	TableModelVariablesAvailable	*_source	= NULL;
+	bool							_sorted		= false;
 
 	Terms _toSendBack;
 	Terms _delayDropped;

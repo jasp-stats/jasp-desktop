@@ -127,7 +127,7 @@ bool PreferencesDialog::addStringToEmptyValueList(const QString &in)
 
 	if (!prepare.isEmpty())
 	{
-		for (unsigned int i=0; i<ui->missingValuesList->count(); ++i)
+		for (int i=0; i<ui->missingValuesList->count(); ++i)
 		{
 			if (ui->missingValuesList->item(i)->text() == prepare)
 			{

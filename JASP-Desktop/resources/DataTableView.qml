@@ -32,7 +32,6 @@ FocusScope
 
 			onDoubleClicked: __myRoot.doubleClicked()
 
-
 			leftTopCornerItem:
 				Rectangle
 				{
@@ -70,6 +69,50 @@ FocusScope
 					}
 				}
 
+			CreateComputeColumnDialog { id: createComputeDialog	}
+
+			extraColumnItem:
+				Rectangle
+				{
+					id: addColumnButton
+
+					width: 40
+
+					gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
+										GradientStop { position: 1.0;	color: "#DDDDDD" }	GradientStop { position: 0.77;	color: "#DDDDDD" }	}
+
+					ToolTip.text: "Add computed column"
+					ToolTip.timeout: 4500
+					ToolTip.delay: 500
+					ToolTip.visible: addColumnButtonMouseArea.containsMouse
+
+					Image
+					{
+						source: "/icons/addition.png"
+						anchors.top: parent.top
+						anchors.bottom: parent.bottom
+						anchors.horizontalCenter: parent.horizontalCenter
+
+						anchors.margins: 4
+
+						sourceSize.width: width
+						sourceSize.height: height
+						width: height
+
+					}
+
+					MouseArea
+					{
+						id: addColumnButtonMouseArea
+						anchors.fill: parent
+						onClicked: createComputeDialog.open()
+						hoverEnabled: true
+						cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+					}
+
+
+				}
+
 			rowNumberDelegate:
 				Rectangle
 				{
@@ -83,23 +126,6 @@ FocusScope
 				id: headerRoot
 				property real iconTextPadding: 10
 				readonly property int __iconDim: 16
-
-				Text
-				{
-					id: headerTextItem
-
-					text: headerText
-
-					horizontalAlignment: Text.AlignHCenter
-
-					anchors.horizontalCenter: headerRoot.horizontalCenter
-					anchors.verticalCenter: headerRoot.verticalCenter
-				}
-
-
-
-				gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
-									GradientStop { position: 0.77;	color: "#DDDDDD" }	GradientStop { position: 1.0;	color: "#DDDDDD" }	}
 
 				Image
 				{
@@ -158,7 +184,7 @@ FocusScope
 
 							Repeater{
 								id: iconRepeater
-								model: [columnTypeScale, columnTypeOrdinal, columnTypeNominal]
+								model: [columnTypeScale, columnTypeOrdinal, columnTypeNominal] //these are set in the rootcontext in mainwindow!
 
 								Rectangle
 								{
@@ -226,6 +252,91 @@ FocusScope
 					}
 				}
 
+				Image
+				{
+					id: colIsComputed
+
+					anchors.left: colIcon.right
+					anchors.verticalCenter: parent.verticalCenter
+
+					anchors.margins: visible ? 1 : 0
+
+					source: "../icons/computed.png"
+					sourceSize.width:  headerRoot.__iconDim * 2
+					sourceSize.height:  headerRoot.__iconDim * 2
+
+					width: visible ? headerRoot.__iconDim : 0
+					height:  headerRoot.__iconDim
+					visible: columnIsComputed
+
+					MouseArea
+					{
+						anchors.fill: parent
+						onClicked: computeColumnWindow.open(dataSetModel.headerData(columnIndex, Qt.Horizontal))
+
+						hoverEnabled: true
+						ToolTip.visible: containsMouse
+						ToolTip.text: "Click here to change the columns formulas"
+						ToolTip.timeout: 3000
+						ToolTip.delay: 500
+						cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+
+					}
+				}
+
+				Text
+				{
+					id: headerTextItem
+
+					text: headerText
+
+					horizontalAlignment: Text.AlignHCenter
+
+					anchors.horizontalCenter: headerRoot.horizontalCenter
+					anchors.verticalCenter: headerRoot.verticalCenter
+				}
+
+
+
+				gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
+									GradientStop { position: 0.77;	color: "#DDDDDD" }	GradientStop { position: 1.0;	color: "#DDDDDD" }	}
+
+
+
+
+
+				AnimatedImage
+				{
+					id: colIsInvalidated
+
+					anchors.right: colFilterOn.left
+					anchors.verticalCenter: parent.verticalCenter
+
+
+					anchors.margins: visible ? 1 : 0
+
+					source: "../icons/loading.gif"
+					width: visible ? headerRoot.__iconDim : 0
+					height:  headerRoot.__iconDim
+					playing: visible
+					visible: columnIsInvalidated
+				}
+
+				Image
+				{
+					id: colHasError
+
+					anchors.right: colFilterOn.left
+					anchors.verticalCenter: parent.verticalCenter
+
+					source: "../icons/error.png"
+					sourceSize.width:  headerRoot.__iconDim
+					sourceSize.height:  headerRoot.__iconDim
+
+					width: columnHasError ? headerRoot.__iconDim : 0
+					height:  headerRoot.__iconDim
+					visible: columnHasError && !columnIsInvalidated
+				}
 
 
 				Image
@@ -233,21 +344,23 @@ FocusScope
 					id: colFilterOn
 
 					anchors.right: parent.right
+					anchors.margins: columnIsFiltered ? 1 : 0
 					anchors.verticalCenter: parent.verticalCenter
 
-					readonly property bool thisColumnIsFiltered: dataSetModel.columnsFilteredCount, dataSetModel.columnHasFilter(columnIndex) || dataSetModel.columnUsedInEasyFilter(columnIndex) //extra field before comma is a hack to trigger reload on property binding
-
-					anchors.margins: thisColumnIsFiltered ? 1 : 0
-
 					source: "../images/filter.png"
-					width: thisColumnIsFiltered ? headerRoot.__iconDim : 0
+					sourceSize.width:  headerRoot.__iconDim
+					sourceSize.height:  headerRoot.__iconDim
+
+					width: columnIsFiltered ? headerRoot.__iconDim : 0
 					height:  headerRoot.__iconDim
 
 				}
 
+
+
 				MouseArea
 				{
-					anchors.left: colIcon.right
+					anchors.left: colIsComputed.right
 					anchors.top: parent.top
 					anchors.bottom: parent.bottom
 					anchors.right: parent.right
@@ -266,7 +379,7 @@ FocusScope
 
 					hoverEnabled: true
 					ToolTip.visible: containsMouse && dataSetModel.columnIcon(columnIndex)  !== columnTypeScale
-					ToolTip.text: "Click here to change labels" + (colFilterOn.thisColumnIsFiltered ? " or inspect filter" : "" )
+					ToolTip.text: "Click here to change labels" + (columnIsFiltered ? " or inspect filter" : "" )
 					ToolTip.timeout: 3000
 					ToolTip.delay: 500
 					cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor

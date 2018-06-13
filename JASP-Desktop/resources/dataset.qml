@@ -51,6 +51,13 @@ Rectangle {
 			Layout.maximumHeight: rootDataset.height * 0.8
         }
 
+		ComputeColumnWindow
+		{
+			id: computeColumnWindow
+			objectName: "computeColumnWindow"
+			Layout.maximumHeight: rootDataset.height * 0.8
+		}
+
 		DataTableView
 		{
 			objectName: "dataSetTableView"

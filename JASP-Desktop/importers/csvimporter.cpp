@@ -24,7 +24,7 @@ using namespace std;
 
 CSVImporter::CSVImporter(DataSetPackage *packageData) : Importer(packageData)
 {
-	_packageData->isArchive = false;
+	_packageData->setIsArchive(false);
 }
 
 ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void(const string &, int)> progressCallback)

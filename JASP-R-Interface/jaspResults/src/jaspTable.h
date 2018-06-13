@@ -117,7 +117,7 @@ private:
 		extractRowNames(newData, true);
 
 		_data.clear();
-		for(int col=0; col<newData.size(); col++)
+		for(size_t col=0; col<newData.size(); col++)
 			addOrSetColumnInData(jaspJson::RcppVector_to_VectorJson((Rcpp::RObject)newData[col]), localColNames.size() > col ? localColNames[col] : "");
 	}
 
@@ -129,7 +129,7 @@ private:
 		std::vector<std::vector<Json::Value>> jsonMat = jaspJson::RcppMatrix_to_Vector2Json<RTYPE>(newData);
 
 		_data.clear();
-		for(int col=0; col<jsonMat.size(); col++)
+		for(size_t col=0; col<jsonMat.size(); col++)
 			addOrSetColumnInData(jsonMat[col], localColNames.size() > col ? localColNames[col] : "");
 	}
 
@@ -139,7 +139,8 @@ private:
 
 		_data.push_back(jaspJson::RcppVector_to_VectorJson<RTYPE>(newData));
 	}
-	template<int RTYPE>	void setColumnFromVector(Rcpp::Vector<RTYPE> newData, int col)
+
+	template<int RTYPE>	void setColumnFromVector(Rcpp::Vector<RTYPE> newData, size_t col)
 	{
 		setRowNamesWhereApplicable(extractElementOrColumnNames(newData));
 
@@ -160,7 +161,7 @@ private:
 
 		std::vector<std::vector<Json::Value>> jsonMat = jaspJson::RcppMatrix_to_Vector2Json<RTYPE>(newData);
 
-		for(int col=0; col<jsonMat.size(); col++)
+		for(size_t col=0; col<jsonMat.size(); col++)
 			addOrSetColumnInData(jsonMat[col], localColNames.size() > col ? localColNames[col] : "");
 	}
 
@@ -209,14 +210,14 @@ private:
 
 		std::vector<std::string> localRowNames = extractElementOrColumnNames(newData);
 
-		for(int row=0; row<localRowNames.size(); row++)
+		for(size_t row=0; row<localRowNames.size(); row++)
 			_rowNames[row + equalizedColumnsLength] = localRowNames[row];
 
-		for(int row=0; row<newRowNames.size(); row++)
+		for(size_t row=0; row<newRowNames.size(); row++)
 			_rowNames[row + equalizedColumnsLength] = newRowNames[row];
 
 
-		for(int row=0; row<newData.size(); row++)
+		for(size_t row=0; row<newData.size(); row++)
 		{
 			Rcpp::RObject rij = (Rcpp::RObject)newData[row];
 
@@ -227,7 +228,7 @@ private:
 
 			auto jsonRij = jaspJson::RcppVector_to_VectorJson(rij);
 
-			for(int col=0; col<jsonRij.size(); col++)
+			for(size_t col=0; col<jsonRij.size(); col++)
 				previouslyAddedUnnamedCols = pushbackToColumnInData(std::vector<Json::Value>({jsonRij[col]}), localColNames.size() > col ? localColNames[col] : "", equalizedColumnsLength, previouslyAddedUnnamedCols);
 
 		}

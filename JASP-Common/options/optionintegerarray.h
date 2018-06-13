@@ -24,7 +24,7 @@
 class OptionIntegerArray : public OptionI<std::vector<int> >
 {
 public:
-	OptionIntegerArray();
+	OptionIntegerArray() : OptionI() {}
 
 	virtual void init(const Json::Value &data) OVERRIDE;
 	virtual Json::Value asJSON() const OVERRIDE;

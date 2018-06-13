@@ -29,20 +29,20 @@ class OptionInteger : public OptionI<int>
 public:
 	OptionInteger(int value = 0, int minimum = -999999, int maximum = 999999, std::string format = "");
 
-	virtual void init(const Json::Value &data) OVERRIDE;
-	virtual Json::Value asJSON() const OVERRIDE;
-	virtual void set(const Json::Value& value) OVERRIDE;
-	virtual Option* clone() const OVERRIDE;
+	void		init(const Json::Value &data)			override;
+	void		set(const Json::Value& value)			override;
+	Json::Value asJSON()						const	override;
+	Option		*clone()						const	override;
 
-  int minimum() const;
-  int maximum() const;
+	int minimum() const;
+	int maximum() const;
 
-  std::string format() const;
+	std::string format() const;
 
 protected:
-  int _min;
-  int _max;
-  std::string _format;
+	int _min;
+	int _max;
+	std::string _format;
 };
 
 #endif // OPTIONINTEGER_H

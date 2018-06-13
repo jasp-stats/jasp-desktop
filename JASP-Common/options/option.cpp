@@ -16,19 +16,9 @@
 //
 
 #include "option.h"
+#include "analysis.h"
 
 using namespace std;
-
-Option::Option(bool transient)
-{
-	_isTransient = transient;
-	_signalsBlocked = 0;
-	_shouldSignalOnceUnblocked = false;
-}
-
-Option::~Option()
-{
-}
 
 void Option::blockSignals(bool block, bool notifyOnceUnblocked)
 {
@@ -62,8 +52,6 @@ void Option::notifyChanged()
 	else
 		changed(this);
 }
-
-
 
 
 

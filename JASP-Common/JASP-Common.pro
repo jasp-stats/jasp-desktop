@@ -10,12 +10,9 @@ CONFIG += c++11
  
 include(../JASP.pri)
 
-
    macx:INCLUDEPATH += ../../boost_1_64_0
 windows:INCLUDEPATH += ../../boost_1_64_0
 
-
-include(../JASP.pri)
 
 windows:LIBS += -lole32 -loleaut32 -larchive.dll
 
@@ -67,7 +64,10 @@ SOURCES += \
 	sharedmemory.cpp \
 	tempfiles.cpp \
 	utils.cpp \
-	version.cpp
+	version.cpp \
+    computedcolumn.cpp \
+    computedcolumns.cpp \
+    enginedefinitions.cpp
 
 HEADERS += \
 	analysis.h \
@@ -123,10 +123,14 @@ HEADERS += \
 	utils.h \
 	version.h \
     options/optionvariablei.h \
-    jsonredirect.h
+    jsonredirect.h \
+    computedcolumn.h \
+    computedcolumns.h \
+    enginedefinitions.h
 
 #exists(/app/lib/*) should only be true when building flatpak
-macx | windows | exists(/app/lib/*) {
+#macx | windows | exists(/app/lib/*)
+contains(DEFINES, JASP_LIBJSON_STATIC) {
 
     SOURCES += \
             lib_json/json_internalarray.inl \

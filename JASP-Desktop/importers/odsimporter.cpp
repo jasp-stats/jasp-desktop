@@ -24,31 +24,11 @@
 
 #include <QXmlInputSource>
 
-
-
-using namespace std;
-using namespace boost;
-using namespace ods;
-
-
-//Data * ODSImporter::_dta = 0;
-
-ODSImporter::ODSImporter(DataSetPackage *packageData)
-	: Importer(packageData)
+namespace ods
 {
-	// Spreadsheet files are never JASP archives.
-	packageData->isArchive = false;
-}
-
-ODSImporter::~ODSImporter()
-{
-}
-
-
-
 
 // Implmemtation of Inporter base class.
-ImportDataSet* ODSImporter::loadFile(const string &locator, boost::function<void(const string &, int)> progressCallback)
+ImportDataSet* ODSImporter::loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback)
 {
 	// Create new data set.
 	ODSImportDataSet * result = new ODSImportDataSet(this);
@@ -74,24 +54,24 @@ ImportDataSet* ODSImporter::loadFile(const string &locator, boost::function<void
 void ODSImporter::fillSharedMemoryColumn(ImportColumn *importColumn, Column &column)
 {
 	ODSImportColumn *odsColumn = dynamic_cast<ODSImportColumn *>(importColumn);
-	const vector<string> &values = odsColumn->getData();
+	const std::vector<std::string> &values = odsColumn->getData();
 
 	fillSharedMemoryColumnWithStrings(values, column);
 
 
 }
 
-void ODSImporter::readManifest(const string &path, ODSImportDataSet *dataset)
+void ODSImporter::readManifest(const std::string &path, ODSImportDataSet *dataset)
 {
 
 	QXmlInputSource src;
 	{
 		// Get the data file proper from the ODS manifest file.
 		FileReader manifest(path, ODSImportDataSet::manifestPath);
-		string tmp;
+		std::string tmp;
 		int errorCode = 0;
 		if (((tmp = manifest.readAllData(4096, errorCode)).size() == 0) || (errorCode < 0))
-			throw runtime_error("Error reading manifest in ODS.");
+			throw std::runtime_error("Error reading manifest in ODS.");
 		src.setData(QString::fromStdString(tmp));
 		manifest.close();
 	}
@@ -105,17 +85,17 @@ void ODSImporter::readManifest(const string &path, ODSImportDataSet *dataset)
 	}
 }
 
-void ODSImporter::readContents(const string &path, ODSImportDataSet *dataset)
+void ODSImporter::readContents(const std::string &path, ODSImportDataSet *dataset)
 {
 
 	FileReader contents(path, dataset->getContentFilename());
 
 	QXmlInputSource src;
 	{
-		string tmp;
+		std::string tmp;
 		int errorCode = 0;
 		if (((tmp = contents.readAllData(4096, errorCode)).size() == 0) || (errorCode < 0))
-			throw runtime_error("Error reading contents in ODS.");
+			throw std::runtime_error("Error reading contents in ODS.");
 		src.setData(QString::fromStdString(tmp));
 	}
 
@@ -130,3 +110,4 @@ void ODSImporter::readContents(const string &path, ODSImportDataSet *dataset)
 	contents.close();
 }
 
+}

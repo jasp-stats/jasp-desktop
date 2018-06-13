@@ -59,7 +59,7 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
 
 	if (_dataSet != NULL)
 	{
-		BOOST_FOREACH(Column &column, dataSet->columns())
+		for(Column &column : dataSet->columns())
 			columnNames.push_back(column.name());
 	}
 
@@ -68,7 +68,7 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
 
 	_options = options;
 
-	BOOST_FOREACH(const string &name, options->names)
+	for(const string &name : options->names)
 	{
 		Option *option = options->get(name);
 
@@ -86,9 +86,7 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
 			boundChild->illegalChanged.connect(boost::bind(&AnalysisForm::illegalValueHandler, this, _1));
 		}
 		else
-		{
 			qDebug() << "child not found : " << qsName << " in AnalysisForm::setOptions()";
-		}
 	}
 
 	updateIllegalStatus();

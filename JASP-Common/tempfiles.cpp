@@ -31,9 +31,9 @@ using namespace std;
 using namespace boost;
 
 long _tempfiles_sessionId;
-string _tempfiles_sessionDirName;
-string _tempfiles_statusFileName;
-string _tempfiles_clipboard;
+string	_tempfiles_sessionDirName,
+		_tempfiles_statusFileName,
+		_tempfiles_clipboard;
 int _tempfiles_nextFileId;
 vector<string> tempfiles_shmemNames;
 
@@ -41,27 +41,11 @@ void tempfiles_init(long sessionId)
 {
 	system::error_code error;
 
-	_tempfiles_sessionId = sessionId;
-	_tempfiles_nextFileId = 0;
-
-	stringstream ss;
-	ss << Dirs::tempDir();
-	ss << "/";
-	ss << sessionId;
-
-	_tempfiles_sessionDirName = ss.str();
-
-	ss << "/status";
-
-	_tempfiles_statusFileName = ss.str();
-
-	stringstream ss2;
-	ss2 << Dirs::tempDir();
-	ss2 << "/";
-	ss2 << "clipboard";
-
-	_tempfiles_clipboard = ss2.str();
-
+	_tempfiles_sessionId		= sessionId;
+	_tempfiles_nextFileId		= 0;
+	_tempfiles_sessionDirName	= Dirs::tempDir() + "/" + std::to_string(sessionId);
+	_tempfiles_statusFileName	= _tempfiles_sessionDirName +  "/status";
+	_tempfiles_clipboard		= Dirs::tempDir() + "/clipboard";
 
 	filesystem::path sessionPath = Utils::osPath(_tempfiles_sessionDirName);
 
@@ -72,8 +56,7 @@ void tempfiles_init(long sessionId)
 	f.open(_tempfiles_statusFileName.c_str(), ios_base::out);
 	f.close();
 
-	filesystem::path clipboardPath = Utils::osPath(_tempfiles_clipboard);
-
+	//filesystem::path clipboardPath = Utils::osPath(_tempfiles_clipboard);
 	//if ( ! filesystem::exists(clipboardPath, error))
 	//	filesystem::create_directories(clipboardPath, error);
 }
