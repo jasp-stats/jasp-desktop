@@ -153,9 +153,9 @@
       list(name="dof", title="df", type="integer"),
       list(name="chi", title="\u03A7\u00B2", type="number", format="dp:3"),
       list(name="pvl", title="p", type="number", format="dp:3;p:.001"),
-      list(name="fad", title="McFadden R²", type="number", format="sf:4;dp:3"),
-      list(name="nag", title="Nagelkerke R²", type="number", format="sf:4;dp:3"),
-      list(name="tju", title="Tjur R²", type="number", format="sf:4;dp:3")
+      list(name="fad", title="McFadden R\u00B2", type="number", format="sf:4;dp:3"),
+      list(name="nag", title="Nagelkerke R\u00B2", type="number", format="sf:4;dp:3"),
+      list(name="tju", title="Tjur R\u00B2", type="number", format="sf:4;dp:3")
     )
 
     if (options[["method"]] != "enter") {
