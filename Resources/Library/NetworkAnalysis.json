@@ -283,7 +283,7 @@
 			"name": "showDetails",
 			"type": "Boolean",
 			"default": false
-			
+
 		},
 		{
 			"name": "scaleLabels",
@@ -338,7 +338,7 @@
 				"R",
 				"ggplot2"
 			],
-			"default": "rainbow"
+			"default": "colorblind"
 		},
 		{
 			"name": "edgeColors",
@@ -353,7 +353,7 @@
 				"Reddit",
 				"Fried"
 			],
-			"default": "classic"
+			"default": "colorblind"
 		},
 		{
 			"name": "showMgmVariableType",
