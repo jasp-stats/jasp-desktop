@@ -911,6 +911,8 @@ void MainWindow::analysisSelectedHandler(int id)
 	if (_currentAnalysis != NULL)
 	{
 		showForm(_currentAnalysis);
+		ui->tabBar->setCurrentTab(QString::fromStdString(_currentAnalysis->module()));
+		
 
 		QString info("%1,%2");
 		info = info.arg(tq(_currentAnalysis->name()));
