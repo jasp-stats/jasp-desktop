@@ -37,18 +37,12 @@ Default Output
  - Exclude cases listwise: In case of multiple correlation tests within a single analysis, each test will be conducted using only cases with valid data for all variables. Sample size is therefore constant across the tests.
 
 ### Output:
-- The Pearson correlation between "Value" and "Revenue" equals -0.323; the data are 1.039501 times more likely under the null hypothesis that the population correlation equals 0
-than under the two-sided alternative hypothesis that the population correlation does not equal 0, BF10 = 0.962.
-- The Pearson correlation between "Value" and "Debt" equals 0.986; the data are 3.772e+19 times more likely under the two-sided alternative hypothesis that the population correlation does
-not equal 0 than under null hypothesis that the population correlation equals 0, BF10 = 3.772e+19.
-- The Pearson correlation between "Value" and "Income" equals 0.718; the data are 2995.516 times more likely under the two-sided alternative hypothesis that the population correlation does
-not equal 0 than under null hypothesis that the population correlation equals 0, BF10 = 2995.516.
-- The Pearson correlation between "Revenue" and "Debt" equals -0.339; the data are 1.126 times more likely under the two-sided alternative hypothesis that the population correlation does
-not equal 0 than under null hypothesis that the population correlation equals 0, BF10 = 1.126.
-- The Pearson correlation between "Revenue" and "Income" equals -0.301; the data are 1.267427 times more likely under the null hypothesis that the population correlation equals 0
-than under the two-sided alternative hypothesis that the population correlation does not equal 0, BF10 = 0.789.
-- The Pearson correlation between "Debt" and "Income" equals 0.713; the data are 2494.484 times more likely under the two-sided alternative hypothesis that the population correlation does
-not equal 0 than under null hypothesis that the population correlation equals 0, BF10 = 2494.484.
+- The Pearson correlation between "Value" and "Revenue" equals -0.323; the data are 1.039501 times more likely under the null hypothesis that the population correlation equals 0 than under the two-sided alternative hypothesis that the population correlation does not equal 0, BF10 = 0.962.
+- The Pearson correlation between "Value" and "Debt" equals 0.986; the data are 3.772e+19 times more likely under the two-sided alternative hypothesis that the population correlation does not equal 0 than under null hypothesis that the population correlation equals 0, BF10 = 3.772e+19.
+- The Pearson correlation between "Value" and "Income" equals 0.718; the data are 2995.516 times more likely under the two-sided alternative hypothesis that the population correlation does not equal 0 than under null hypothesis that the population correlation equals 0, BF10 = 2995.516.
+- The Pearson correlation between "Revenue" and "Debt" equals -0.339; the data are 1.126 times more likely under the two-sided alternative hypothesis that the population correlation does not equal 0 than under null hypothesis that the population correlation equals 0, BF10 = 1.126.
+- The Pearson correlation between "Revenue" and "Income" equals -0.301; the data are 1.267427 times more likely under the null hypothesis that the population correlation equals 0 than under the two-sided alternative hypothesis that the population correlation does not equal 0, BF10 = 0.789.
+- The Pearson correlation between "Debt" and "Income" equals 0.713; the data are 2494.484 times more likely under the two-sided alternative hypothesis that the population correlation does not equal 0 than under null hypothesis that the population correlation equals 0, BF10 = 2494.484.
 
 Additional Options
 -------
