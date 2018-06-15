@@ -43,7 +43,7 @@ public:
 
 	virtual QHash<int, QByteArray> roleNames() const OVERRIDE;
 
-	Q_INVOKABLE void setAllowFilterOnLabel(int row, bool newAllowValue);
+	Q_INVOKABLE bool setAllowFilterOnLabel(int row, bool newAllowValue);
 	Q_INVOKABLE bool allowFilter(int row);
 	Q_INVOKABLE void resetFilterAllows();
 
