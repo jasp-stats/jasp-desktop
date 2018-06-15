@@ -27,7 +27,6 @@
 
 #include <QLabel>
 #include <QCursor>
-#include <QSettings>
 #include <QLineEdit>
 
 class BackstageOSF : public BackstagePage
@@ -77,8 +76,6 @@ private:
 	QPushButton *_saveButton;
 	QToolButton *_newFolderButton;
 	QString _currentFileName;
-
-	QSettings _settings;
 
 	class HyperlinkLabel : public QLabel
 	{

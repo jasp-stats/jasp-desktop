@@ -20,9 +20,6 @@
 #define FSBROWSERMODELRECENT_H
 
 #include "fsbmodel.h"
-
-#include <QSettings>
-
 #include "common.h"
 
 class FSBMRecent : public FSBModel
@@ -42,8 +39,6 @@ private:
 	QStringList load();
 	void populate(const QStringList &paths);
 	bool isUrl(const QString &path) const;
-
-	QSettings _settings;
 
 };
 

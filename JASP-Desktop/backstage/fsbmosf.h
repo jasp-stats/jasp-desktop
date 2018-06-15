@@ -22,7 +22,6 @@
 #include <QPushButton>
 #include <QNetworkAccessManager>
 #include <QMap>
-#include <QSettings>
 
 #include "fsbmodel.h"
 #include "common.h"
@@ -72,8 +71,6 @@ private slots:
 	void gotFilesAndFolders();
 
 private:
-
-	QSettings _settings;
 
 	void setAuthenticated(bool value);
 

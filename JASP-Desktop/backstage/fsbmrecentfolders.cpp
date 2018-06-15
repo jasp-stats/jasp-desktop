@@ -22,6 +22,7 @@
 #include <QStandardPaths>
 #include <QDir>
 #include <QDebug>
+#include "settings.h"
 
 FSBMRecentFolders::FSBMRecentFolders(QObject *parent)
 	: FSBModel(parent)
@@ -56,9 +57,9 @@ void FSBMRecentFolders::addRecent(QString path)
 
 QStringList FSBMRecentFolders::readRecents()
 {
-	_settings.sync();
+	Settings::sync();
 
-	QVariant v = _settings.value("recentFolders");
+	QVariant v = Settings::value(Settings::RECENT_FOLDERS);
 	if (v.type() != QVariant::StringList && v.type() != QVariant::String)
 	{
 		// oddly, under linux, loading a setting value of type StringList which has
@@ -86,7 +87,7 @@ QStringList FSBMRecentFolders::readRecents()
 		recents.append(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation));
 		recents.append(QStandardPaths::standardLocations(QStandardPaths::DesktopLocation));
 
-		_settings.setValue("recentFolders", recents);
+		Settings::setValue(Settings::RECENT_FOLDERS, recents);
 	}
 
 	return recents;
@@ -111,8 +112,8 @@ void FSBMRecentFolders::setAndSaveRecents(const QStringList &recents)
 
 	setRecents(recents);
 
-	_settings.setValue("recentFolders", recents);
-	_settings.sync();
+	Settings::setValue(Settings::RECENT_FOLDERS, recents);
+	Settings::sync();
 }
 
 

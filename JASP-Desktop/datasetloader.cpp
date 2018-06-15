@@ -29,7 +29,6 @@
 #include "importers/odsimporter.h"
 
 #include <QFileInfo>
-#include <QSettings>
 
 using namespace std;
 using namespace spss;

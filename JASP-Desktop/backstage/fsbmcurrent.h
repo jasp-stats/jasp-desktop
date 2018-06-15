@@ -20,9 +20,6 @@
 #define FSBROWSERMODELCURRENT_H
 
 #include "fsbmodel.h"
-
-#include <QSettings>
-
 #include "common.h"
 
 class FSBMCurrent : public FSBModel

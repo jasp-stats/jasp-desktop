@@ -105,7 +105,7 @@
 #include "column.h"
 #include "sharedmemory.h"
 #include "module.h"
-
+#include "settings.h"
 
 #include "options/optionvariablesgroups.h"
 #include "datasetview.h"
@@ -272,7 +272,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->panel_2_Options->hide();
 
 	// init Empty Values
-	QString missingvaluestring = _settings.value("MissingValueList", "").toString();
+	QString missingvaluestring = Settings::value(Settings::MISSING_VALUES_LIST).toString();
 	if (missingvaluestring != "")
 	{
 		QString delimetor = "|";
@@ -606,9 +606,9 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 
 	if (showInstructions)
 	{
-		if (_settings.value("instructionsShown", false).toBool() == false)
+		if (Settings::value(Settings::INSTRUCTIONS_SHOWN).toBool() == false)
 		{
-			_settings.setValue("instructionsShown", true);
+			Settings::setValue(Settings::INSTRUCTIONS_SHOWN, true);
 			_resultsJsInterface->showInstruction();
 		}
 
@@ -1938,8 +1938,8 @@ void MainWindow::startDataEditor(QString path)
 {
 	QFileInfo fileInfo(path);
 
-	int useDefaultSpreadsheetEditor = _settings.value("useDefaultSpreadsheetEditor", 1).toInt();
-	QString appname = _settings.value("spreadsheetEditorName", "").toString();
+	int useDefaultSpreadsheetEditor = Settings::value(Settings::USE_DEFAULT_SPREADSHEET_EDITOR).toInt();
+	QString appname = Settings::value(Settings::SPREADSHEET_EDITOR_NAME).toString();
 
 	if (QString::compare(fileInfo.suffix(), "sav", Qt::CaseInsensitive) == 0)
 	{

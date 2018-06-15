@@ -23,7 +23,6 @@
 
 #include <QWebEngineView>
 #include <QFileSystemWatcher>
-#include <QSettings>
 
 #include "verticaltabwidget.h"
 #include "fsbmrecent.h"
@@ -106,7 +105,6 @@ private:
 	BackstageDataLibrary *_bsDataLibrary;
 	
 	QFileSystemWatcher _watcher;
-	QSettings _settings;
 };
 
 #endif // OPENWIDGET_H

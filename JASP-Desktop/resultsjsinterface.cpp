@@ -29,6 +29,7 @@
 #include "tempfiles.h"
 #include "analysis.h"
 #include <functional>
+#include "settings.h"
 
 ResultsJsInterface::ResultsJsInterface(QWidget *parent) : QObject(parent)
 {
@@ -319,15 +320,13 @@ void ResultsJsInterface::setFixDecimalsHandler(QString numDecimals)
 
 void ResultsJsInterface::setGlobalJsValues()
 {
-	bool exactPValues = _mainWindow->_settings.value("exactPVals", 0).toBool();
+	bool exactPValues = Settings::value(Settings::EXACT_PVALUES).toBool();
 	QString exactPValueString = (exactPValues ? "true" : "false");
-	QString numDecimals = _mainWindow->_settings.value("numDecimals", 3).toString();
-	if (numDecimals.isEmpty())
-		numDecimals = "3";
+	QString numDecimals = Settings::value(Settings::NUM_DECIMALS).toString();
 	QString tempFolder = "file:///" + tq(tempfiles_sessionDirName());
 
 	QString js = "window.globSet.pExact = " + exactPValueString;
-	js += "; window.globSet.decimals = " + numDecimals;
+	js += "; window.globSet.decimals = " + (numDecimals.isEmpty() ? "\"\"" : numDecimals);
 	js += "; window.globSet.tempFolder = \"" + tempFolder + "/\"";
 	runJavaScript(js);
 }

@@ -33,6 +33,7 @@
 #include "fsentry.h"
 #include "onlinedatamanager.h"
 #include "simplecrypt.h"
+#include "settings.h"
 
 FSBMOSF::FSBMOSF()
 {
@@ -101,7 +102,7 @@ void FSBMOSF::authenticate(const QString &username, const QString &password)
 	}
 
 
-	_settings.sync();
+	Settings::sync();
 
 	setAuthenticated(success);
 }

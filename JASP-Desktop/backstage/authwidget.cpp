@@ -21,13 +21,14 @@
 
 #include <QKeyEvent>
 #include <QMessageBox>
+#include "settings.h"
 
 AuthWidget::AuthWidget(QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::AuthWidget)
 {
 	ui->setupUi(this);
-	ui->RememberMeCheckBox->setChecked(_settings.value("OSFRememberMe", false).toBool());
+	ui->RememberMeCheckBox->setChecked(Settings::value(Settings::OSF_REMEMBER_ME).toBool());
 
 	connect(ui->loginButton, SIGNAL(clicked(bool)), this, SLOT(loginSelected()));
 	connect(ui->RememberMeCheckBox, SIGNAL(clicked(bool)), this, SLOT(on_RememberMeCheckBox_clicked(bool)));
@@ -44,7 +45,7 @@ AuthWidget::~AuthWidget()
 void AuthWidget::setUsernameclearPassword()
 {
 	ui->password->setText("");
-	QString username = _settings.value("OSFUsername", "").toString();
+	QString username = Settings::value(Settings::OSF_USERNAME).toString();
 	ui->email->setText(username);
 }
 
@@ -84,7 +85,7 @@ void AuthWidget::loginSelected()
 void AuthWidget::on_RememberMeCheckBox_clicked(bool check)
 {
 	if (check)
-		_settings.setValue("OSFRememberMe", check);
+		Settings::setValue(Settings::OSF_REMEMBER_ME, check);
 	else
-		_settings.remove("OSFRememberMe");
+		Settings::remove(Settings::OSF_REMEMBER_ME);
 }

@@ -7,7 +7,6 @@
 #include "onlinedatanode.h"
 #include "onlineusernode.h"
 
-#include <QSettings>
 #include <map>
 
 class OnlineDataManager : public QObject
@@ -83,8 +82,6 @@ private:
 	OnlineDataNode *getOnlineNodeData(QString nodePath, QString id);
 
 	static bool md5UploadFilter(OnlineDataNode *dataNode, OnlineDataNode::ActionFilter *filter);
-	QSettings _settings;
-
 };
 
 #endif // ONLINEDATAMANAGER_H

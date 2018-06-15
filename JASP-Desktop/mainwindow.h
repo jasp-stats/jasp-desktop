@@ -130,7 +130,6 @@ private:
 	bool _resultsViewLoaded = false;
 	bool _openedUsingArgs = false;
 	QString _openOnLoadFilename;
-	QSettings _settings;
 	ActivityLog *_log;
 	QString _fatalError;
 	QString _currentFilePath;

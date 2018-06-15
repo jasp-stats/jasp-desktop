@@ -22,6 +22,7 @@
 #include <QFileInfo>
 #include <QEvent>
 #include <QDebug>
+#include "settings.h"
 
 FSBMRecent::FSBMRecent(QObject *parent)
 	: FSBModel(parent)
@@ -52,8 +53,8 @@ void FSBMRecent::addRecent(const QString &path)
 	while (recents.size() > 5)
 		recents.removeLast();
 
-	_settings.setValue("recentItems", recents);
-	_settings.sync();
+	Settings::setValue(Settings::RECENT_ITEMS, recents);
+	Settings::sync();
 
 	populate(recents);
 }
@@ -71,8 +72,8 @@ void FSBMRecent::filter(bool (*filterFunction)(QString))
 		}
 	}
 
-	_settings.setValue("recentItems", recents);
-	_settings.sync();
+	Settings::setValue(Settings::RECENT_ITEMS, recents);
+	Settings::sync();
 
 	populate(recents);
 }
@@ -103,9 +104,9 @@ bool FSBMRecent::isUrl(const QString &path) const {
 
 QStringList FSBMRecent::load()
 {
-	_settings.sync();
+	Settings::sync();
 
-	QVariant v = _settings.value("recentItems");
+	QVariant v = Settings::value(Settings::RECENT_ITEMS);
 	if (v.type() != QVariant::StringList && v.type() != QVariant::String)
 	{
 		// oddly, under linux, loading a setting value of type StringList which has

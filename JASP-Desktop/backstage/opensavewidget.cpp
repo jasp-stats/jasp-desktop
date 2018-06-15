@@ -24,6 +24,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <iostream>
+#include "settings.h"
 
 OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 {
@@ -324,7 +325,7 @@ void OpenSaveWidget::setCurrentDataFile(const QString &path)
 		if (checkSyncFileExists(path))
 		{
 			enableCurrentTab = true;
-			int sync = _settings.value("dataAutoSynchronization", 1).toInt();
+			int sync = Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION).toInt();
 			if (sync > 0)
 				_watcher.addPath(path);
 		}
@@ -360,7 +361,7 @@ void OpenSaveWidget::dataSetOpenExampleRequestHandler(QString path)
 
 void OpenSaveWidget::dataFileModifiedHandler(QString path)
 {
-	int autoSync = _settings.value("dataAutoSynchronization", 1).toInt();
+	int autoSync = Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION).toInt();
 	if (autoSync > 0)
 		dataSetOpenCurrentRequestHandler(path);
 }

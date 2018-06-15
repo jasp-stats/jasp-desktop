@@ -28,7 +28,6 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QAction>
-#include <QSettings>
 #include <QSignalMapper>
 
 class PreferencesDialog;
@@ -85,7 +84,6 @@ private:
 	QHBoxLayout *_layout;
 
 	QPushButton *_helpTab;
-	QSettings _settings;
 	QPushButton *_currentTab = NULL;
 	QPushButton *_currentModule = NULL;
 

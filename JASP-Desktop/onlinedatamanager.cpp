@@ -28,6 +28,7 @@
 #include <QMessageBox>
 #include "simplecrypt.h"
 #include "simplecryptkey.h"
+#include "settings.h"
 
 OnlineDataManager::OnlineDataManager(QObject *parent):
 	QObject(parent)
@@ -68,9 +69,9 @@ void OnlineDataManager::savePassword(OnlineDataManager::Provider provider, QStri
 
 	if (provider == OnlineDataManager::OSF)
 	{
-		_settings.setValue("OSFPassword", crypto.encryptToString(password));
-		_settings.setValue("OSFEncryption", SimpleCryptEncryption);
-		_settings.sync();
+		Settings::setValue(Settings::OSF_PASSWORD, crypto.encryptToString(password));
+		Settings::setValue(Settings::OSF_ENCRYPTION, SimpleCryptEncryption);
+		Settings::sync();
 	}
 }
 
@@ -78,8 +79,8 @@ void OnlineDataManager::saveUsername(OnlineDataManager::Provider provider, QStri
 {
 	if (provider == OnlineDataManager::OSF)
 	{
-		_settings.setValue("OSFUsername", username);
-		_settings.sync();
+		Settings::setValue(Settings::OSF_USERNAME, username);
+		Settings::sync();
 	}
 }
 
@@ -88,7 +89,7 @@ QString OnlineDataManager::getUsername(OnlineDataManager::Provider provider)
 	QString username = "";
 
 	if (provider == OnlineDataManager::OSF)
-		username = _settings.value("OSFUsername", "").toString();
+		username = Settings::value(Settings::OSF_USERNAME).toString();
 
 	return username;
 
@@ -103,11 +104,11 @@ QString OnlineDataManager::getPassword(OnlineDataManager::Provider provider)
 
 	if (provider == OnlineDataManager::OSF)
 	{
-		if (_settings.value("OSFEncryption", 0).toInt() == SimpleCryptEncryption)
-			password = crypto.decryptToString(_settings.value("OSFPassword", "").toString());
+		if (Settings::value(Settings::OSF_ENCRYPTION).toInt() == SimpleCryptEncryption)
+			password = crypto.decryptToString(Settings::value(Settings::OSF_PASSWORD).toString());
 		else
 		{
-			password = _settings.value("OSFPassword", "").toString();
+			password = Settings::value(Settings::OSF_PASSWORD).toString();
 			if (password!="") savePassword(OnlineDataManager::OSF, password);
 		}
 	}
@@ -119,8 +120,8 @@ void OnlineDataManager::removePassword(OnlineDataManager::Provider provider)
 {
 	if (provider == OnlineDataManager::OSF)
 	{
-		_settings.remove("OSFPassword");
-		_settings.sync();
+		Settings::remove(Settings::OSF_PASSWORD);
+		Settings::sync();
 	}
 }
 
@@ -129,9 +130,9 @@ void OnlineDataManager::clearAuthenticationOnExit(OnlineDataManager::Provider pr
 	if (provider == OnlineDataManager::OSF)
 	{
 		//If User switch 'Remember me' is off remove OSF settings
-		if (_settings.value("OSFRememberMe", false).toBool() == false)
-			_settings.remove("OSFPassword");
-		_settings.sync();
+		if (Settings::value(Settings::OSF_REMEMBER_ME).toBool() == false)
+			Settings::remove(Settings::OSF_PASSWORD);
+		Settings::sync();
 	}
 }
 

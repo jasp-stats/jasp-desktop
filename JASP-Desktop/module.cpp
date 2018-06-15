@@ -16,7 +16,6 @@
 //
 
 #include "module.h"
-#include "QSettings"
 #include <QDebug>
 
 using namespace std;
