@@ -34,6 +34,8 @@ DescriptivesForm::DescriptivesForm(QWidget *parent) :
 
 	TableModelVariablesAssigned *model = new TableModelVariablesAssigned(this);
 	model->setSource(&_availableVariablesModel);
+    model->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
+    model->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale | Column::ColumnTypeNominalText);
 
 	ui->variables->setModel(model);
 	ui->variables->setDoubleClickTarget(ui->listAvailableFields);
