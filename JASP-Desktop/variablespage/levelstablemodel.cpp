@@ -223,7 +223,7 @@ void LevelsTableModel::resetFilterAllows()
 	emit filteredOutChanged();
 }
 
-void LevelsTableModel::setAllowFilterOnLabel(int row, bool newAllowValue)
+bool LevelsTableModel::setAllowFilterOnLabel(int row, bool newAllowValue)
 {
 	bool atLeastOneRemains = newAllowValue;
 
@@ -247,7 +247,7 @@ void LevelsTableModel::setAllowFilterOnLabel(int row, bool newAllowValue)
 		emit filteredOutChanged();
 	}
 
-
+	return atLeastOneRemains;
 }
 
 bool LevelsTableModel::allowFilter(int row)

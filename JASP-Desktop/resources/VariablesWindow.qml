@@ -262,7 +262,8 @@ FocusScope {
 
 							onClicked:
 								if(checked !== styleData.value)
-									 levelsTableModel.setAllowFilterOnLabel(styleData.row, checked);
+									 if (!levelsTableModel.setAllowFilterOnLabel(styleData.row, checked))
+                                         checked = true;
 
 							background: Image
 							{
