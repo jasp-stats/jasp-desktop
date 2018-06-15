@@ -750,7 +750,7 @@
          <item row="2" column="0">
           <widget class="GroupBox" name="groupPostHocOptions">
            <property name="title">
-            <string>Correction</string>
+            <string>Correction for Standard Post Hoc</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_17">
             <item row="3" column="0">
