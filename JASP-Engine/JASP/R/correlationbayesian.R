@@ -1091,7 +1091,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 .metropolisOneStep <- function (rhoCurrent, n, r, kappa=1) {
 	#
 	zCurrent <- atanh(rhoCurrent)
-	zCandidate <- rnorm(1, mean=atanh(r), sd=1/sqrt(n-3))
+
+	if (n <= 3) {
+		std <- 1
+	} else {
+		std <- 1 / sqrt(n - 3)
+	}
+
+	zCandidate <- rnorm(1, mean=atanh(r), sd=std)
 
 	candidateAcceptance <- .logTarget(zCandidate, n=n, r=r, kappa)+.logProposal(zCurrent, n, r)-
 		(.logTarget(zCurrent, n=n, r=r, kappa)+.logProposal(zCandidate, n, r))
