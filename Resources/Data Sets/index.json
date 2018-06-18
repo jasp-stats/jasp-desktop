@@ -74,10 +74,10 @@
             },
             {
               "name": "Invisibility Cloak",
-              "path": "../../../Data Library/2. T-tests/Invisibility Cloak.jasp",
+              "path": "../../../Data Library/2. T-Tests/Invisibility Cloak.jasp",
               "description": "The number of mischievous acts committed by two groups of people, those with and those without an invisibility cloak. <br><br> <i>Fictional data from Andy Field.<\/i>",
               "kind": "file",
-              "associated_datafile": "../../../Data Library/2. T-tests/Invisibility Cloak.csv"
+              "associated_datafile": "../../../Data Library/2. T-Tests/Invisibility Cloak.csv"
             },
             {
               "name": "Looks or Personality",
@@ -117,10 +117,10 @@
             },
             {
               "name": "Directed Reading Activities",
-              "path": "../../../Data Library/2. T-tests/Directed Reading Activities.jasp",
+              "path": "../../../Data Library/2. T-Tests/Directed Reading Activities.jasp",
               "description": "Reading performance of two groups of pupils - one control group and one group that was given Directed Reading Activities. <br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
               "kind": "file",
-              "associated_datafile": "../../../Data Library/2. T-tests/Directed Reading Activities.csv"
+              "associated_datafile": "../../../Data Library/2. T-Tests/Directed Reading Activities.csv"
             },
             {
               "name": "Facebook Friends",
@@ -152,10 +152,10 @@
             },
             {
               "name": "Moon and Aggression",
-              "path": "../../../Data Library/2. T-tests/Moon and Aggression.jasp",
+              "path": "../../../Data Library/2. T-Tests/Moon and Aggression.jasp",
               "description": "The number of disruptive behaviors by dementia patients during two different phases of the lunar cycle. <br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
               "kind": "file",
-              "associated_datafile": "../../../Data Library/2. T-tests/Moon and Aggression.csv"
+              "associated_datafile": "../../../Data Library/2. T-Tests/Moon and Aggression.csv"
             },
             {
               "name": "Physical Activity and BMI",
@@ -173,10 +173,10 @@
             },
             {
               "name": "Weight Gain",
-              "path": "../../../Data Library/2. T-tests/Weight Gain.jasp",
+              "path": "../../../Data Library/2. T-Tests/Weight Gain.jasp",
               "description": "Weight of 16 participants before and after an eight-week period of excessive calorie intake. <br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
               "kind": "file",
-              "associated_datafile": "../../../Data Library/2. T-tests/Weight Gain.csv"
+              "associated_datafile": "../../../Data Library/2. T-Tests/Weight Gain.csv"
             }
           ]
         }
@@ -205,8 +205,8 @@
       ]
     },
     {
-      "name": "2. T-tests",
-      "path": "2. T-tests",
+      "name": "2. T-Tests",
+      "path": "2. T-Tests",
       "description": "",
       "kind": "folder",
       "children": [
