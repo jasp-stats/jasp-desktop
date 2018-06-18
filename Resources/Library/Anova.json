@@ -60,6 +60,11 @@
 			"type": "Table"
 		},
 		{
+			"name": "contrastAssumeEqualVariance",
+			"type": "Boolean",
+			"default": true
+		},
+		{
 			"name": "postHocTestsVariables",
 			"type": "Variables"
 		},
@@ -99,6 +104,18 @@
 		},
 		{
 			"name": "postHocTestsTypeDunnett",
+			"type": "Boolean"
+		},
+		{
+			"format": "%",
+			"max": 0.999,
+			"min": 0.000,
+			"name": "confidenceIntervalIntervalPostHoc",
+			"type": "Number",
+			"value": 0.95
+		},
+		{
+		  "name": "confidenceIntervalsPostHoc",
 			"type": "Boolean"
 		},
 		{

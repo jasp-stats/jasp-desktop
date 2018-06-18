@@ -59,10 +59,10 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	stateKey <- list(
 	  model = c(defaults, "contrasts"),
-	  stateContrasts = c(defaults, "contrasts"),
+	  stateContrasts = c(defaults, "contrasts", "contrastAssumeEqualVariance"),
 	  statePostHoc = c(defaults, "postHocTestsVariables", "postHocTestsTypeStandard", "postHocTestsTypeDunn",
 	                   "postHocTestsTypeGames", "postHocTestsHolm", "postHocTestsScheffe", "postHocTestsTukey", "postHocTestsBonferroni",
-	                   "postHocTestEffectSize"),
+	                   "postHocTestEffectSize", "confidenceIntervalIntervalPostHoc", "confidenceIntervalsPostHoc"),
 	  stateqqPlot = c(defaults, "qqPlot", "plotWidthQQPlot", "plotHeightQQPlot"),
 	  stateDescriptivesPlot = c(defaults, "plotHorizontalAxis", "plotSeparateLines", "plotSeparatePlots",
                               "plotErrorBars", "errorBarType",  "confidenceIntervalInterval", "plotWidthDescriptivesPlotLegend",
@@ -1017,9 +1017,16 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	contrast.tables <- list()
 
-	if (perform == "run" && status$ready && status$error == FALSE)
+	if (perform == "run" && status$ready && status$error == FALSE) {
 
 		contrast.summary <- summary.lm(model)[["coefficients"]]
+	  
+	  if (!options$contrastAssumeEqualVariance) {
+	    model$rse <- sandwich::vcovHC(model, type="HC1")
+  	  contrast.summary <- lmtest::coeftest(model, model$rse)
+	  }
+	
+	}
 
 	for (contrast in options$contrasts) {
 
@@ -1050,7 +1057,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			v <- .v(variable)
 
 			column <- dataset[[ v ]]
-
+			
 			cases <- .anovaContrastCases(column, contrast.type)
 
 			if (contrast == "polynomial" && length(cases) > 5)
@@ -1092,10 +1099,22 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					t   <- contrast.summary[nam,"t value"]
 					p   <- contrast.summary[nam,"Pr(>|t|)"]
 
-					# tempContr <- model[['contrasts']][[v]]
-					# tempContr <- cbind(tempContr, (1 / length(.indices(cases)) ))
-					# df  <- .clean(sum(abs(sign(t(solve(tempContr))[,i]) * table(model[['model']][[v]]))) - 2)
           df <- nrow(dataset) - nlevels(dataset[,v])
+
+          if (!options$contrastAssumeEqualVariance) {
+            g1 <- (unlist(strsplit(strsplit(case, " - ")[[1]][1], ", ")))
+            g2 <- (unlist(strsplit(strsplit(case, " - ")[[1]][2], ", ")))
+            
+            dv = dataset[[.v(options$dependent)]]
+            sig1 <- var(dv[column %in% g1])
+            sig2 <- var(dv[column %in% g2])
+            
+            l1 <- length(dv[column %in% g1])
+            l2 <- length(dv[column %in% g2])
+            
+            df <- round(((sig1/l1) + (sig2/l2))^2 / (((sig1/l1)^2 / (l1-1)) + ((sig2/l2)^2 / (l2-1))), 4)
+            p <- pt(abs(t), df, lower.tail = FALSE) * 2
+          }
 
 					if (is.na(p))
 						p <- ""
@@ -1217,13 +1236,23 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			list(name="(I)",title="", type="string", combine=TRUE),
 			list(name="(J)",title="", type="string"),
 			list(name="Mean Difference", type="number", format="sf:4;dp:3"),
-			list(name="lwrBound", type = "number", title = "Lower",
-			     format = "sf:4;dp:3", overTitle =  "95% CI for Mean Difference"),
-			list(name="uprBound", type="number", title = "Upper",
-			     format="sf:4;dp:3", overTitle =  "95% CI for Mean Difference"),
 			list(name="SE", type="number", format="sf:4;dp:3"),
 			list(name="t", type="number", format="sf:4;dp:3"))
-
+		
+		postHocInterval  <- options$confidenceIntervalIntervalPostHoc
+		if (options$confidenceIntervalsPostHoc) {
+		  fields <- list(
+		    list(name="(I)",title="", type="string", combine=TRUE),
+		    list(name="(J)",title="", type="string"),
+		    list(name="Mean Difference", type="number", format="sf:4;dp:3"),
+		    list(name="lwrBound", type = "number", title = "Lower",
+		         format="sf:4;dp:3", overTitle=paste(postHocInterval, "% CI for Mean Difference", collapse = "")),
+		    list(name="uprBound", type="number", title = "Upper",
+		         format="sf:4;dp:3", overTitle=paste(postHocInterval, "% CI for Mean Difference", collapse = "")),
+		    list(name="SE", type="number", format="sf:4;dp:3"),
+		    list(name="t", type="number", format="sf:4;dp:3"))
+		}
+		
 		if (options$postHocTestEffectSize) {
 		  fields[[length(fields) + 1]] <- list(name="Cohen's d", title="Cohen's d", type="number", format="sf:4;dp:3")
 		  posthoc.table[["footnotes"]] <- list(list(symbol="<i>Note.</i>",
@@ -1276,11 +1305,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 			statePostHoc[[posthoc.var]]$resultHolm <- summary(r,test=multcomp::adjusted("holm"))
 
-			statePostHoc[[posthoc.var]]$confidenceIntervals <- matrix(ncol = 2, confint(r)[['confint']][,2:3])
-
-			statePostHoc[[posthoc.var]]$confidenceIntervals <- matrix(ncol = 2, confint(r)[['confint']][,2:3])
-
-			statePostHoc[[posthoc.var]]$confidenceIntervals <- matrix(ncol = 2, confint(r)[['confint']][,2:3])
+			statePostHoc[[posthoc.var]]$confidenceIntervals <- matrix(ncol = 2, confint(r,level = postHocInterval)[['confint']][,2:3])
 
 			statePostHoc[[posthoc.var]]$comparisonsTukSchef <- strsplit(names(statePostHoc[[posthoc.var]]$resultTukey$test$coefficients)," - ")
 			statePostHoc[[posthoc.var]]$comparisonsBonfHolm <- strsplit(names(statePostHoc[[posthoc.var]]$resultBonf$test$coefficients)," - ")
@@ -2133,7 +2158,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
   gamesVariables <- unlist(options$postHocTestsVariables)
   dependentVar <- dataset[[ .v(options$dependent) ]]
-
+  postHocInterval  <- options$confidenceIntervalIntervalPostHoc
+  
   gamesTables <- list()
   stateGames <- list()
 
@@ -2156,6 +2182,20 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       list(name="t", type="number", format="sf:4;dp:3"),
       list(name="pTukey", title="p<sub>tukey</sub>", type="number", format="dp:3;p:.001"))
 
+    if (options$confidenceIntervalsPostHoc) {
+      fields <- list(
+        list(name="(I)",title="", type="string", combine=TRUE),
+        list(name="(J)",title="", type="string"),
+        list(name="Mean Difference", type="number", format="sf:4;dp:3"),
+        list(name="lwrBound", type = "number", title = "Lower",
+             format="sf:4;dp:3", overTitle=paste(postHocInterval, "% CI for Mean Difference", collapse = "")),
+        list(name="uprBound", type="number", title = "Upper",
+             format="sf:4;dp:3", overTitle=paste(postHocInterval, "% CI for Mean Difference", collapse = "")),
+        list(name="SE", type="number", format="sf:4;dp:3"),
+        list(name="t", type="number", format="sf:4;dp:3"),
+        list(name="pTukey", title="p<sub>tukey</sub>", type="number", format="dp:3;p:.001"))
+    }
+    
     gamesTable[["schema"]] <- list(fields=fields)
 
     rows <- list()
@@ -2187,8 +2227,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
           se <- sqrt(0.5 * (varPerLevel[[i]] / nPerLevel[[i]] + varPerLevel[[j]] / nPerLevel[[j]]))
 
-          upperConf <- meanDiff + qtukey(p = 0.95, nmeans = nLevels, df = df) * se
-          lowerConf <- meanDiff - qtukey(p = 0.95, nmeans = nLevels, df = df) * se
+          upperConf <- meanDiff + qtukey(p = postHocInterval, nmeans = nLevels, df = df) * se
+          lowerConf <- meanDiff - qtukey(p = postHocInterval, nmeans = nLevels, df = df) * se
 
 
           row[["Mean Difference"]] <- .clean(meanDiff)
