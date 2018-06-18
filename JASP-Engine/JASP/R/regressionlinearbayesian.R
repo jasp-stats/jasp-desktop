@@ -577,7 +577,7 @@ RegressionLinearBayesian <- function (
   # null model name
 	null.model <- "Null model"
 	if (sum(nuisanceTerms) > 0) {
-		null.model <- paste("Null model (incl. ", paste(.unvf(names(which(nuisanceTerms))), collapse = ", "), ")", sep = "")
+		null.model <- paste("Null model (incl. ", paste(names(which(nuisanceTerms)), collapse = ", "), ")", sep = "")
 	}
 
 	# generate all model names
