@@ -300,7 +300,11 @@
 			errorMessage <- .extractErrorMessage(p)
 
 			if (errorMessage == "'from' cannot be NA, NaN or infinite") {
-				errorMessage <- "The Bayes factor is infinite"
+				errorMessage <- "The Bayes factor is infinite."
+			} else if (errorMessage == "Infinite value encountered.") {
+				if (options$effectSizeStandardized == 'informative') {
+					errorMessage <- "Posterior too peaked."
+				}
 			} else if (!is.null(bayesFactorObject)) {
 				if (.clean(exp(bayesFactorObject$bf)) == "\u221E") {
 					errorMessage <- "The Bayes factor is infinite"
