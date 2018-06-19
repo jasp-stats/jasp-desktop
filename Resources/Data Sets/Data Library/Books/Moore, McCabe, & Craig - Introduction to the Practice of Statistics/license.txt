@@ -1,0 +1,32 @@
+The sample files in the folders below are distributed
+under the following license restrictions:
+
+This data set comes from Moore, D. S., McCabe, G. P., and Craig, B. A. 
+(2012). (Introduction to the Practice of Statistics) (7th ed.). New York: W. H. Freeman and Company. 
+The example was created by Moore, McCabe and Craig who therefore own the copyright. Moore, McCabe and Craig 
+generously agreed that we can include the data set in the JASP data library. This data set is also publicly 
+available on the website that accompanies their book, url(whfreeman.com/ips7e). Without the authors' explicit 
+consent, this data set may not be distributed for commercial purposes, this data set may not be edited, and this 
+data set may not be presented without acknowledging its source (i.e., the terms of  a CC BY-NC-ND license see https://creativecommons.org/licenses/by-nc-nd/3.0/).
+
+
+
+The files are under the following directories:
+
+2. T-tests
+ - Directed Reading Activities
+ - Moon and Aggression
+ - Weigth Gain
+
+3. ANOVA
+ - Facebook Friends
+ - Heart Rate
+ - Response to Eye Color
+
+4. Regression
+ - College Success
+ - Fidgeting and Fat Gain
+ - Physical Activity and BMI
+
+5. Frequencies 
+ - Health Habits
