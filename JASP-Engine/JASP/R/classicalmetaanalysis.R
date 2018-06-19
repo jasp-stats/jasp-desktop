@@ -120,7 +120,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     dataset <- .readDS(
       columns.as.factor  = factor.variables,
       columns.as.numeric = numeric.variables,
-      exclude.na.listwise = c()	# let metafor::rma deal with NA's
+      exclude.na.listwise = numeric.variables
     )
     
     .hasErrors(dataset, perform, type=c("infinity", "observations"),
