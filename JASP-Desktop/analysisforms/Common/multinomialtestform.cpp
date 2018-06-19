@@ -218,7 +218,7 @@ void MultinomialTestForm::addColumnToTable() {
 	int rowCount = ui->tableWidget->rowCount();
 
 	// Add column labels (Hypotheses labels)
-	
+
 	horizontalLabels = QStringList();
 	QString letters[5] = {"a", "b", "c", "d", "e"};
 	for (int col = 1; col <= columnCount; ++col) {
@@ -256,7 +256,7 @@ bool MultinomialTestForm::deleteColumnFromTable() {
 	// Assign the new hypothesis labels
 	QString letters[5] = {"a", "b", "c", "d", "e"};
 	for (int i = 0; i < columns; ++i) {
-		horizontalLabels << "H₀ (" + letters[i] + ")";
+		horizontalLabels << QString::fromUtf8("H\u2080 (") + letters[i] + QString::fromUtf8(")");
 	}
 
 	ui->tableWidget->setHorizontalHeaderLabels(horizontalLabels);
