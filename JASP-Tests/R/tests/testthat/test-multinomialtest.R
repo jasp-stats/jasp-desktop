@@ -20,7 +20,7 @@ test_that("Main table results match", {
   maintable <- results[["results"]][["chisq"]][["data"]]
   desctable <- results[["results"]][["descriptivesTable"]][["data"]]
   expect_equal_tables(maintable,
-                      list("H1", 5.72, 3, 0.126056548007017, 1.40914224189199))
+                      list(list(case = "H\u2080 (a)", chisquare = 5.72, df = 3, p = 0.126056548007017, VovkSellkeMPR = 1.40914224189199)))
   expect_equal_tables(desctable,
                       list("f1", 0.49, 0.5,
                            "f2", 0.49, 0.42,

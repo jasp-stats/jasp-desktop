@@ -628,7 +628,7 @@ MultinomialTest <- function (dataset = NULL, options, perform = "run",
       }
     })
 
-    colnames(eProps) <- sapply(options$tableWidget, function(x) x$name)
+    colnames(eProps) <- sapply(seq_along(options$tableWidget), function(x) paste0("H\u2080 (", letters[x], ")"))
     rownames(eProps) <- options$tableWidget[[1]]$levels
 
     return(as.data.frame(eProps))
