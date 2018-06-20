@@ -3,9 +3,9 @@ LINUX_SPECIAL_CASE = false
 _R_HOME = $$(R_HOME)
 
 linux {
-	exists(/app/lib/*) {
-        _R_HOME = /app/lib64/R
-        INCLUDEPATH += /app/lib64/R/library/include
+    $$LINUX_SPECIAL_CASE | exists(/app/lib/*) {
+        _R_HOME = /usr/lib64/R
+        INCLUDEPATH += /usr/lib64/R/library/include
     } else {
 		$$LINUX_SPECIAL_CASE {
 			_R_HOME = /usr/lib64/R
@@ -42,7 +42,7 @@ $$BUILDING_JASP_ENGINE {
 	linux: LIBS += -L$$_R_HOME/lib -lR -lrt # because linux JASP-R-Interface is staticlib
 	macx:  LIBS += -L$$_R_HOME/lib -lR
 } else {
-	
+
 	win32: LIBS += -L$$_R_HOME/bin/$$ARCH -lR
 }
 
