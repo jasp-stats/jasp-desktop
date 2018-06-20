@@ -1009,12 +1009,12 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			hasRemoveAllAnalyses: parent.menuName === 'All',
 			hasRefreshAllAnalyses: parent.menuName === 'All',
 			hasCollapse: (parent.hasCollapse === undefined || parent.hasCollapse()) && parent.collapseMenuClicked !== undefined,
-			hasLatexCode: (parent.hasLatexCode === undefined || parent.hasLatexCode()) && parent.latexCodeMenuClicked !== undefined,
+			hasLaTeXCode: (parent.hasLaTeXCode === undefined || parent.hasLaTeXCode()) && parent.latexCodeMenuClicked !== undefined,
 
 			objectName: parent.menuName,
 		};
 
-		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasSaveImg || this.options.hasEditImg || this.options.hasNotes || this.options.hasRemove || this.options.hasRemoveAll || this.options.hasEditTitle || this.options.hasCollapse || this.options.hasLatexCode;
+		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasSaveImg || this.options.hasEditImg || this.options.hasNotes || this.options.hasRemove || this.options.hasRemoveAll || this.options.hasEditTitle || this.options.hasCollapse || this.options.hasLaTeXCode;
 	},
 
 	selectionElement: function() {

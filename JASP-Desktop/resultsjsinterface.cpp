@@ -136,11 +136,11 @@ void ResultsJsInterface::showAnalysesMenu(QString options)
 	if (menuOptions["hasCopy"].asBool())
 		_analysisMenu->addAction(_copyIcon, "Copy", this, SLOT(copySelected()));
 
-	if (menuOptions["hasLatexCode"].asBool())  // TODO: || menuOptions["hasPlainText"].asBool())
+	if (menuOptions["hasLaTeXCode"].asBool())  // TODO: || menuOptions["hasPlainText"].asBool())
 	{
 		_copySpecialMenu = _analysisMenu->addMenu(tr("&Copy special"));
 
-		_copySpecialMenu->addAction(_codeIcon, "Latex code", this, SLOT(latexCodeSelected()));
+		_copySpecialMenu->addAction(_codeIcon, "LaTeX code", this, SLOT(latexCodeSelected()));
 
 		QAction *copyTextAction = new QAction("Copy text");
 		// connect(copyTextAction, SIGNAL(triggered), this, SLOT(copyTextSelected));

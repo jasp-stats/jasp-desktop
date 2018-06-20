@@ -63,12 +63,12 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		return true;
 	},
 
-	hasLatexCode: function () {
-		var optLatexCode = this.model.get("latexCode");
-		return optLatexCode !== null
+	hasLaTeXCode: function () {
+		var optLaTeXCode = this.model.get("latexCode");
+		return optLaTeXCode !== null
 	},
 
-	_generateLatexCode: function() {
+	_generateLaTeXCode: function() {
 		/**
 		 * Generates the latex code for tables
 		 */
@@ -188,7 +188,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		return {'headers': columnHeaders, 'cells': cells}
 	},
 
-	_getLatexCode: function() {
+	_getLaTeXCode: function() {
 		/**
 		 * Generates the latex code for the table
 		 */
@@ -200,7 +200,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		let optOverTitle = this.model.get('overTitle')
 		let optFootnotes = this.model.get('footnotes');
 
-		let data = this._generateLatexCode();
+		let data = this._generateLaTeXCode();
 
 		// TODO: footnotes formatting
 
@@ -214,7 +214,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 
 		let latexCode = "";
 		// title
-		latexCode += "\\begin{table}[h]\n\t\\centering\n\t\\caption{" + formatCellforLatex(optTitle) + "}\n";
+		latexCode += "\\begin{table}[h]\n\t\\centering\n\t\\caption{" + formatCellforLaTeX(optTitle) + "}\n";
 
 		// alignments - {lrrr}
 		let columns = data.headers.length;
@@ -249,10 +249,10 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 					if (current !== undefined) {
 						if (prev === current) {
 							count++;
-							latexCode += ('\\multicolumn{' + count + '}{c}{'+ formatCellforLatex(prev) + '} ');
+							latexCode += ('\\multicolumn{' + count + '}{c}{'+ formatCellforLaTeX(prev) + '} ');
 							cline_text += '\\cline{' + (i - count + 2) + '-' + (i + 1) + '}';
 						} else {
-							latexCode += ('\\multicolumn{' + count + '}{c}{'+ formatCellforLatex(prev) + '} & ');
+							latexCode += ('\\multicolumn{' + count + '}{c}{'+ formatCellforLaTeX(prev) + '} & ');
 							cline_text += '\\cline{' + (i - count + 2) + '-' + (i + 1) + '}';
 							latexCode += ('\\multicolumn{1}{c}{'+ current + '} ');
 						}
@@ -262,7 +262,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 
 				if (current === undefined) {
 					if (prev !== undefined) {
-						latexCode += ('\\multicolumn{' + count + '}{c}{'+ formatCellforLatex(prev) + '} & ');
+						latexCode += ('\\multicolumn{' + count + '}{c}{'+ formatCellforLaTeX(prev) + '} & ');
 						cline_text += '\\cline{' + (i - count + 1) + '-' + i + '}';
 					}
 
@@ -274,7 +274,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 					}
 				} else {
 					if (current !== prev && prev !== undefined) {
-						latexCode += ('\\multicolumn{' + count + '}{c}{'+ formatCellforLatex(prev) + '} & ');
+						latexCode += ('\\multicolumn{' + count + '}{c}{'+ formatCellforLaTeX(prev) + '} & ');
 						cline_text += '\\cline{' + (i - count + 1) + '-' + i + '}';
 						count = 1;
 					} else {
@@ -290,7 +290,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		}
 
 		for (let i = 0; i < columns; ++i) {
-			latexCode += (formatCellforLatex(data.headers[i].content) + ' ');
+			latexCode += (formatCellforLaTeX(data.headers[i].content) + ' ');
 			if (i !== columns - 1) {
 				latexCode += '& ';
 			}
@@ -313,13 +313,13 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 
 			latexCode += '\t\t';
 			if (maxRows === data.cells[0].length) {
-				content = formatCellforLatex(data.cells[0][r].content);
+				content = formatCellforLaTeX(data.cells[0][r].content);
 				if (previousContent !== content) {
 					latexCode += content;
 					previousContent = content;
 				}
 			} else if (incrementFirstCol) {
-				latexCode += (formatCellforLatex(data.cells[0][firstColRow].content));
+				latexCode += (formatCellforLaTeX(data.cells[0][firstColRow].content));
 			}
 			latexCode += (' & ');
 
@@ -333,7 +333,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 			}
 
 			for (let c = 1; c < columns; ++c) {
-				latexCode += (formatCellforLatex(data.cells[c][r].content) + ' ');
+				latexCode += (formatCellforLaTeX(data.cells[c][r].content) + ' ');
 				if (c != columns - 1) {
 					latexCode += ('& ');
 				} else {
@@ -377,7 +377,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
 		exportParams.includeNotes = false;
 
-		let latexCode = this._getLatexCode();
+		let latexCode = this._getLaTeXCode();
 
 		let htmlCite = '<p>' + latexCode + '</p>';
 		let exportContent = new JASPWidgets.Exporter.data(latexCode, htmlCite);

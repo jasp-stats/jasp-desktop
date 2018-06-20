@@ -701,7 +701,7 @@ function swapRowsAndColumns (columnHeaders, columns, optOverTitle) {
     }
 }
 
-function formatCellforLatex (toFormat) {
+function formatCellforLaTeX (toFormat) {
     /**
      * Format text to compatible latex code
      * @param toFormat - string
