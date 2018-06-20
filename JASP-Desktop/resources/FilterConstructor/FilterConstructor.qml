@@ -212,7 +212,7 @@ Item {
 
 		Text
 		{
-			property string filterText: "Welcome to the filterconstructor of JASP!<br>" + (showStartupMsg ? "Try dragging and dropping!<br>" : "")
+			property string filterText: "Welcome to the drag and drop filter!<br>"
 			id: hints
 			text: filterText + (filterErrorText !== "" ? "<br><i><font color=\"red\">"+filterErrorText+"</font></i>" : "")
 
