@@ -3,11 +3,11 @@ Maintainer: jasp-uva <b.boutin@uva.nl>
 Section: science
 Priority: optional
 Standards-Version: 3.9.8
-Build-Depends: libboost-dev, r-base-core, r-cran-rcpp, r-cran-rinside, libqt5widgets5, qtwebengine5-dev, libqt5webchannel5-dev, libqt5svg5-dev, qt5-qmake, libarchive-dev, libboost-filesystem-dev, libboost-system-dev, libjsoncpp-dev, qtbase5-dev, debhelper (>= 9)
+Build-Depends: pkg-config, libboost-dev, r-base-core, r-cran-rcpp, r-cran-rinside, r-cran-ggplot2, r-cran-jsonlite, r-cran-rjson, qtquickcontrols2-5-dev, qml-module-qtquick-controls2, libqt5widgets5, qtwebengine5-dev, libqt5webchannel5-dev, libqt5svg5-dev, qt5-qmake, libarchive-dev, libboost-filesystem-dev, libboost-system-dev, libjsoncpp-dev, qtbase5-dev, debhelper (>= 9)
 
 Package: jasp
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libjsoncpp1, r-base-core, r-cran-rcpp, r-cran-rinside, r-cran-bayesfactor, r-cran-lme4, r-cran-afex, r-cran-car, r-cran-effects, r-cran-logspline, r-cran-lsmeans, r-cran-plotrix, r-cran-rjson, r-cran-vcd, r-cran-vcdextra, r-cran-ggplot2, r-cran-hypergeo, libqt5webenginewidgets5, libqt5webengine5, libqt5webenginecore5, libqt5svg5, openssl
+Depends: ${shlibs:Depends}, ${misc:Depends}, libjsoncpp1, r-base-core, r-cran-rcpp, r-cran-rinside, r-cran-bayesfactor, r-cran-lme4, r-cran-afex, r-cran-car, r-cran-effects, r-cran-logspline, r-cran-lsmeans, r-cran-plotrix, r-cran-rjson, r-cran-vcd, r-cran-vcdextra, r-cran-ggplot2, r-cran-hypergeo, r-cran-ggplot2, r-cran-jsonlite, libqt5quickcontrols2-5, libqt5webenginewidgets5, libqt5webengine5, libqt5webenginecore5, libqt5svg5, openssl, qml-module-qtquick-controls2
 Description: Offers standard analysis procedures in both their classical and Bayesian form
  JASP is a cross platform statistical software program with a state-of-the-art
  graphical user interface. It offers standard analysis procedures in both 
