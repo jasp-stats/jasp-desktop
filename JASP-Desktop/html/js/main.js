@@ -151,7 +151,7 @@ $(document).ready(function () {
 
 	window.latexCodeMenuClicked = function () {
 		if (window.menuObject.latexCodeMenuClicked | window.menuObject.latexCodeMenuClicked())
-			window.menuObject.toolbar.displayMessage("Latex code copied to clipboard");
+			window.menuObject.toolbar.displayMessage("LaTeX code copied to clipboard");
 
 		window.menuObject = null;
 	}
