@@ -15,6 +15,7 @@ BUILDING_JASP_ENGINE=false
 macx | windows | exists(/app/lib/*) { DEFINES += JASP_LIBJSON_STATIC } else
 {
     linux {
+        QT_CONFIG -= no-pkg-config
         CONFIG += link_pkgconfig
         PKGCONFIG += jsoncpp
         LIBS += -ljsoncpp

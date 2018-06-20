@@ -314,7 +314,7 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 		if(_itemDelegate == NULL)
 		{
 			_itemDelegate = new QQmlComponent(qmlEngine(this));
-			_itemDelegate->setData("import QtQuick 2.10\nText { text: itemText; color: itemActive ? 'black' : 'grey' }", QUrl());
+            _itemDelegate->setData("import QtQuick 2.9\nText { text: itemText; color: itemActive ? 'black' : 'grey' }", QUrl());
 		}
 
 		QQuickItem * textItem = NULL;
@@ -341,6 +341,10 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 			QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
 			itemCon = new ItemContextualized(setStyleDataItem(NULL, _model->data(ind).toString(), active, col, row));
 			_itemDelegate->create(localIncubator, itemCon->context);
+
+            if(localIncubator.isError())
+                throw std::runtime_error("Something went wrong incubating an item delegate for tableview!");
+
 			textItem = qobject_cast<QQuickItem*>(localIncubator.object());
 			itemCon->item = textItem;
 
@@ -394,7 +398,7 @@ QQuickItem * DataSetView::createRowNumber(int row)
 	if(_rowNumberDelegate == NULL)
 	{
 		_rowNumberDelegate = new QQmlComponent(qmlEngine(this));
-		_rowNumberDelegate->setData("import QtQuick 2.10\nItem {\n"
+        _rowNumberDelegate->setData("import QtQuick 2.9\nItem {\n"
 			"Rectangle	{ color: \"lightGrey\";	anchors.fill: parent }\n"
 			"Text		{ text: rowIndex; anchors.centerIn: parent }\n"
 		"}", QUrl());
@@ -478,7 +482,7 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 	if(_columnHeaderDelegate == NULL)
 	{
 		_columnHeaderDelegate = new QQmlComponent(qmlEngine(this));
-		_columnHeaderDelegate->setData("import QtQuick 2.10\nItem {\n"
+        _columnHeaderDelegate->setData("import QtQuick 2.9\nItem {\n"
 			"Rectangle	{ color: \"lightGrey\";	anchors.fill: parent }\n"
 			"Text		{ text: headerText; anchors.centerIn: parent }\n"
 		"}", QUrl());
@@ -562,7 +566,7 @@ QQuickItem * DataSetView::createleftTopCorner()
 		if(_leftTopCornerDelegate == NULL)
 		{
 			_leftTopCornerDelegate = new QQmlComponent(qmlEngine(this));
-			_leftTopCornerDelegate->setData("import QtQuick 2.10\nItem {}", QUrl());
+            _leftTopCornerDelegate->setData("import QtQuick 2.9\nItem {}", QUrl());
 		}
 
 		QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
@@ -595,7 +599,7 @@ QQuickItem * DataSetView::createStyleData(QQmlContext * theContext)
 	if(_styleDataCreator == NULL)
 	{
 		_styleDataCreator = new QQmlComponent(qmlEngine(this));
-		_styleDataCreator->setData("import QtQuick 2.10\n Item { "
+        _styleDataCreator->setData("import QtQuick 2.9\n Item { "
 							 "property bool active: true;"
 							 "property string text: \"???\";"
 							 "property int columnIndex: -1;"

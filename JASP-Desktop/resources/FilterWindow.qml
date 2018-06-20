@@ -1,5 +1,5 @@
 import QtQuick 2.7
-import QtQuick.Controls 2.3 as New
+import QtQuick.Controls 2.2 as New
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.3
 import "FilterConstructor"
@@ -93,18 +93,41 @@ FocusScope
 
 				modal: true
 				title: "Filter Changed"
-				standardButtons: New.Dialog.Save | New.Dialog.Discard | New.Dialog.Cancel
-				property var closeFunc: undefined
+                property var closeFunc: undefined
 
-				onAccepted:
-				{
-					if(easyFilterConstructor.checkAndApplyFilter())
-						closeFunc()
-					close()
-				}
+                footer: New.DialogButtonBox
+                {
+                    New.Button
+                    {
+                        text: qsTr("Save")
+                        onClicked:
+                        {
+                            if(easyFilterConstructor.checkAndApplyFilter())
+                                easySaveDialog.closeFunc();
+                            easySaveDialog.close();
+                        }
+                    }
 
-				onRejected: { close() }
-				onDiscarded: { closeFunc(); close() }
+                    New.Button {
+                        text: qsTr("Cancel")
+
+                        onClicked:
+                        {
+                            easySaveDialog.close();
+                        }
+
+                    }
+                    New.Button {
+                        text: qsTr("Discard")
+
+                        onClicked:
+                        {
+                            easySaveDialog.closeFunc();
+                            easySaveDialog.close();
+                        }
+
+                    }
+                }
 
 				contentItem: Text
 				{
@@ -301,18 +324,41 @@ FocusScope
 
 				modal: true
 				title: "Filter Changed"
-				standardButtons: New.Dialog.Save | New.Dialog.Discard | New.Dialog.Cancel
-				property var closeFunc: undefined
+                property var closeFunc: undefined
 
-				onAccepted:
-				{
-					filterWindow.applyAndSendFilter(filterEdit.text)
-					closeFunc()
-					close()
-				}
+                footer: New.DialogButtonBox
+                {
+                    New.Button
+                    {
+                        text: qsTr("Save")
+                        onClicked:
+                        {
+                            filterWindow.applyAndSendFilter(filterEdit.text)
+                            saveDialog.closeFunc()
+                            saveDialog.close()
+                        }
+                    }
 
-				onRejected: { close() }
-				onDiscarded: { closeFunc(); close() }
+                    New.Button {
+                        text: qsTr("Cancel")
+
+                        onClicked:
+                        {
+                            saveDialog.close()
+                        }
+
+                    }
+                    New.Button {
+                        text: qsTr("Discard")
+
+                        onClicked:
+                        {
+                            saveDialog.closeFunc();
+                            saveDialog.close();
+                        }
+
+                    }
+                }
 
 				contentItem: Text
 				{
