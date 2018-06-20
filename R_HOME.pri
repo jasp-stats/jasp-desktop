@@ -3,7 +3,7 @@ LINUX_SPECIAL_CASE = false
 _R_HOME = $$(R_HOME)
 
 linux {
-    $$LINUX_SPECIAL_CASE {
+    $$LINUX_SPECIAL_CASE | exists(/app/lib/*) {
         _R_HOME = /usr/lib64/R
         INCLUDEPATH += /usr/lib64/R/library/include
     } else {
