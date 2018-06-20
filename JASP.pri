@@ -12,9 +12,12 @@ DEFINES += "CURRENT_R_VERSION=\"$$CURRENT_R_VERSION\""
 BUILDING_JASP_ENGINE=false
 
 
-macx | windows | exists(/app/lib/*) { DEFINES += JASP_LIBJSON_STATIC } else
-{
+macx | windows | exists(/app/lib/*) { 
+	message(using libjson static)
+	DEFINES += JASP_LIBJSON_STATIC 
+} else {
     linux {
+	message(using libjson from distro and pkgconfig)
         QT_CONFIG -= no-pkg-config
         CONFIG += link_pkgconfig
         PKGCONFIG += jsoncpp
