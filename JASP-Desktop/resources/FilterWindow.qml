@@ -134,7 +134,8 @@ FocusScope
 		FilterButton
 		{
 			id: applyEasyFilter
-			text: easyFilterConstructor.somethingChanged ? "Apply pass-through filter" : "Filter applied"
+			property bool showApplyNotApplied: easyFilterConstructor.somethingChanged || easyFilterConstructor.showStartupMsg
+			text: showApplyNotApplied ? "Apply pass-through filter" : "Filter applied"
 			disabled: !easyFilterConstructor.somethingChanged
 			anchors.left: rFilterButton.right
 			anchors.right: helpEasyFilterButton.left
@@ -143,7 +144,7 @@ FocusScope
 
 			onClicked: easyFilterConstructor.checkAndApplyFilter()
 
-			toolTip: easyFilterConstructor.somethingChanged ? "Click to apply filter" : "Filter is already applied"
+			toolTip: showApplyNotApplied ? "Click to apply filter" : "Filter is already applied"
 		}
 
 		FilterButton
@@ -404,7 +405,9 @@ FocusScope
 			{
 				id: applyFilter
 
-				text: filterEdit.changedSinceLastApply ? "Apply pass-through filter" : "Filter applied"
+				property bool filterIsDefault: filterEdit.text === defaultFilter
+
+				text: filterEdit.changedSinceLastApply ? "Apply pass-through filter" : filterIsDefault ? "Default filter applied" : "Filter applied"
 				disabled: !filterEdit.changedSinceLastApply
 				anchors.left: clearFilterButton.right
 				anchors.right: helpButton.left
@@ -413,7 +416,7 @@ FocusScope
 
 				onClicked: filterWindow.applyAndSendFilter(filterEdit.text)
 
-				toolTip: filterEdit.changedSinceLastApply ? "Click to apply filter" : "Filter is already applied"
+				toolTip: filterEdit.changedSinceLastApply ? "Click to apply filter" : filterIsDefault ? "Filter is unchanged from default" : "Filter is already applied"
 			}
 
 			FilterButton
