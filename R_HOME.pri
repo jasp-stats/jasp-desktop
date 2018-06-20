@@ -3,13 +3,18 @@ LINUX_SPECIAL_CASE = false
 _R_HOME = $$(R_HOME)
 
 linux {
-    $$LINUX_SPECIAL_CASE | exists(/app/lib/*) {
-        _R_HOME = /usr/lib64/R
-        INCLUDEPATH += /usr/lib64/R/library/include
+	exists(/app/lib/*) {
+        _R_HOME = /app/lib64/R
+        INCLUDEPATH += /app/lib64/R/library/include
     } else {
-        _R_HOME = /usr/lib/R
-        INCLUDEPATH += /usr/lib/R/library/include
-    }
+		$$LINUX_SPECIAL_CASE {
+			_R_HOME = /usr/lib64/R
+			INCLUDEPATH += /usr/lib64/R/library/include
+		} else {
+			_R_HOME = /usr/lib/R
+			INCLUDEPATH += /usr/lib/R/library/include
+		}
+	}
 
     QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
     INCLUDEPATH += /usr/include/R/
