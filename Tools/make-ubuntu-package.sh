@@ -5,9 +5,8 @@ MinorVersion=`grep -oP		'VersionMinor\(\K[0123456789]+(?=\))' ../JASP-Common/app
 RevisionVersion=`grep -oP	'VersionRevision\(\K[0123456789]+(?=\))' ../JASP-Common/appinfo.cpp`
 BuildVersion=`grep -oP		'VersionBuildNumber\(\K[0123456789]+(?=\))' ../JASP-Common/appinfo.cpp`
 
-JASPFolder=jasp-$MajorVersion.$MinorVersion.$RevisionVersion.5
-JASPTar=jasp_$MajorVersion.$MinorVersion.$RevisionVersion.5.orig.tar.gz
-
+JASPFolder=jasp-$MajorVersion.$MinorVersion.$RevisionVersion.4
+JASPTar=jasp_$MajorVersion.$MinorVersion.$RevisionVersion.4.orig.tar.gz
 
 echo Making ubuntu package $JASPFolder
 
