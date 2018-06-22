@@ -517,7 +517,11 @@ void EngineSync::startSlaveProcess(int no)
 #ifndef R_HOME
 	QString rHomePath = programDir.absoluteFilePath("R/lib/libR.so");
 	if (QFileInfo(rHomePath).exists() == false)
-		rHomePath = "/usr/lib/R";
+#ifdef FLATPAK_USED
+		rHomePath = "/app/lib64/R/";
+#else
+		rHomePath = "/usr/lib/R/";
+#endif
 #else
 	QString rHomePath;
 	if (QDir::isRelativePath(R_HOME))
@@ -525,7 +529,6 @@ void EngineSync::startSlaveProcess(int no)
 	else
 		rHomePath = R_HOME;
 #endif
-
 #endif
 
 	QDir rHome(rHomePath);
@@ -566,7 +569,6 @@ void EngineSync::startSlaveProcess(int no)
 	env.insert("R_LIBS_USER", "something-which-doesnt-exist");
 
 #else  // linux
-
 	env.insert("LD_LIBRARY_PATH",	rHome.absoluteFilePath("lib") + ":" + rHome.absoluteFilePath("library/RInside/lib") + ":" + rHome.absoluteFilePath("library/Rcpp/lib") + ":" + rHome.absoluteFilePath("site-library/RInside/lib") + ":" + rHome.absoluteFilePath("site-library/Rcpp/lib") + ":/app/lib/:/app/lib64/");
 	env.insert("R_HOME",			rHome.absolutePath());
 	env.insert("R_LIBS",			programDir.absoluteFilePath("R/library") + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
