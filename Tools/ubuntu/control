@@ -7,7 +7,7 @@ Build-Depends: pkg-config, libboost-dev, r-base-core, r-cran-rcpp, r-cran-rinsid
 
 Package: jasp
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libjsoncpp1, r-base-core, r-cran-rcpp, r-cran-rinside, r-cran-bayesfactor, r-cran-lme4, r-cran-afex, r-cran-car, r-cran-effects, r-cran-logspline, r-cran-lsmeans, r-cran-plotrix, r-cran-rjson, r-cran-vcd, r-cran-devtools, r-cran-vcdextra, r-cran-ggplot2, r-cran-hypergeo, r-cran-ggplot2, r-cran-jsonlite, libqt5quickcontrols2-5, libqt5webenginewidgets5, libqt5webengine5, libqt5webenginecore5, libqt5svg5, openssl, qml-module-qtquick-controls2, libcurl4-openssl-dev
+Depends: ${shlibs:Depends}, ${misc:Depends}, libjsoncpp1, r-base-core, r-cran-rcpp, r-cran-rinside, r-cran-bayesfactor, r-cran-lme4, r-cran-afex, r-cran-car, r-cran-effects, r-cran-logspline, r-cran-lsmeans, r-cran-plotrix, r-cran-rjson, r-cran-vcd, r-cran-vcdextra, r-cran-ggplot2, r-cran-hypergeo, r-cran-ggplot2, r-cran-jsonlite, libqt5quickcontrols2-5, libqt5webenginewidgets5, libqt5webengine5, libqt5webenginecore5, libqt5svg5, openssl, qml-module-qtquick-controls2
 Description: Offers standard analysis procedures in both their classical and Bayesian form
  JASP is a cross platform statistical software program with a state-of-the-art
  graphical user interface. It offers standard analysis procedures in both 

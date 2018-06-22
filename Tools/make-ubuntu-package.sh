@@ -8,6 +8,7 @@ BuildVersion=`grep -oP		'VersionBuildNumber\(\K[0123456789]+(?=\))' ../JASP-Comm
 JASPFolder=jasp-$MajorVersion.$MinorVersion.$RevisionVersion.5
 JASPTar=jasp_$MajorVersion.$MinorVersion.$RevisionVersion.5.orig.tar.gz
 
+
 echo Making ubuntu package $JASPFolder
 
 # This is where we are gonna make our package:
@@ -18,7 +19,7 @@ mkdir ../../$JASPFolder/$JASPFolder
 cp -R ../* ../../$JASPFolder/$JASPFolder
 
 #now we need to set up a folderstructure that the ubuntu debialbuild likes
-UbuntuVersionThing=jasp_`grep -oP 'jasp \(\K[^)]+(?=\) artful; urgency=high)' ubuntu/changelog`
+UbuntuVersionThing=jasp_`grep -oP 'jasp \(\K[^)]+(?=\) bionic; urgency=high)' ubuntu/changelog`
 UbuntuDebianFolderHolder=$UbuntuVersionThing.debian
 
 echo $UbuntuDebianFolderHolder
