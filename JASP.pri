@@ -25,10 +25,8 @@ macx | windows | exists(/app/lib/*) {
     }
 }
 
-exists(/app/lib/*) {
-  linux:  DEFINES += FLATPAK_USED
-} else {
-  linux:	CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG }
+exists(/app/lib/*)  {} else {
+    linux:	CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG }
 }
 macx | windows { CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG } }
 
