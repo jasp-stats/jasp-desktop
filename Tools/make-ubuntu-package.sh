@@ -5,8 +5,14 @@ MinorVersion=`grep -oP		'VersionMinor\(\K[0123456789]+(?=\))' ../JASP-Common/app
 RevisionVersion=`grep -oP	'VersionRevision\(\K[0123456789]+(?=\))' ../JASP-Common/appinfo.cpp`
 BuildVersion=`grep -oP		'VersionBuildNumber\(\K[0123456789]+(?=\))' ../JASP-Common/appinfo.cpp`
 
+<<<<<<< HEAD
 JASPFolder=jasp-$MajorVersion.$MinorVersion.$RevisionVersion.4
 JASPTar=jasp_$MajorVersion.$MinorVersion.$RevisionVersion.4.orig.tar.gz
+=======
+JASPFolder=jasp-$MajorVersion.$MinorVersion.$RevisionVersion.6
+JASPTar=jasp_$MajorVersion.$MinorVersion.$RevisionVersion.6.orig.tar.gz
+
+>>>>>>> a3b595b5... Some additional changes for ubuntu (adding most of the r packages needed and makings sure qml modules are included)
 
 echo Making ubuntu package $JASPFolder
 
@@ -18,7 +24,7 @@ mkdir ../../$JASPFolder/$JASPFolder
 cp -R ../* ../../$JASPFolder/$JASPFolder
 
 #now we need to set up a folderstructure that the ubuntu debialbuild likes
-UbuntuVersionThing=jasp_`grep -oP 'jasp \(\K[^)]+(?=\) bionic; urgency=high)' ubuntu/changelog`
+UbuntuVersionThing=jasp_`grep -oP 'jasp \(\K[^)]+(?=\) \w+; urgency=high)' ubuntu/changelog`
 UbuntuDebianFolderHolder=$UbuntuVersionThing.debian
 
 echo $UbuntuDebianFolderHolder
