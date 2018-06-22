@@ -536,7 +536,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		priorAndPosteriorPlots = c(defaults, "plotHeight", "plotWidth", "plotPriorAndPosteriorAdditionalInfo"),
 		robustnessPlots = c(defaults, "plotHeight", "plotWidth", "plotBayesFactorRobustnessAdditionalInfo"),
 		sequentialPlots = c(defaults, "plotHeight", "plotWidth", "plotSequentialAnalysisRobustness"),
-		delta = c("hypothesis", "priorWidth", "groupingVariable", "missingValues", "wilcoxonSamplesNumber"),
+		delta = c("priorWidth", "groupingVariable", "missingValues", "wilcoxonSamplesNumber"),
 		descriptivesData = c("descriptives", "groupingVariable", "missingValues", "descriptivesPlotsCredibleInterval")
 	)
 	
@@ -1118,30 +1118,4 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
   bf <- ifelse(oneSided == FALSE,  priorDensZeroPoint / densZeroPoint, 
                (priorDensZeroPoint / corFactorPrior) / (densZeroPoint / corFactorPosterior))
   return(bf)
-}
-
-.recodeBFtype <- function(bfOld, newBFtype, oldBFtype) {
-
-	if (oldBFtype == newBFtype)
-		return(bfOld)
-
-	if (oldBFtype == "BF10") {
-		if (newBFtype == "BF01") {
-			return(1 / bfOld)
-		} else {
-			return(log(bfOld))
-		}
-	} else if (oldBFtype == "BF01") {
-		if (newBFtype == "BF10") {
-			return(1 / bfOld)
-		} else {
-			return(log(1 / bfOld))
-		}
-	} else {
-		if (newBFtype == "BF10") {
-			return(exp(bfOld))
-		} else {
-			return(1 / exp(bfOld))
-		}
-	}
 }
