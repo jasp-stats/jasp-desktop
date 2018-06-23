@@ -913,44 +913,7 @@
       <item row="1" column="0">
        <widget class="QWidget" name="containerPostHocTests" native="true">
         <layout class="QGridLayout" name="gridLayout_31">
-         <item row="3" column="2">
-          <widget class="GroupBox" name="groupPostHocTypes">
-           <property name="title">
-            <string>Type</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_10">
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsTypeStandard">
-              <property name="text">
-               <string>Standard</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsTypeGames">
-              <property name="text">
-               <string>Games-Howell</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsTypeDunnett">
-              <property name="text">
-               <string>Dunnett</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsTypeDunn">
-              <property name="text">
-               <string>Dunn</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="0" column="0" rowspan="2" colspan="3">
+         <item row="0" column="0" colspan="2">
           <widget class="BoundAssignWidget" name="postHocTestsVariables" native="true">
            <property name="minimumSize">
             <size>
@@ -960,7 +923,114 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0" colspan="2">
+         <item row="1" column="0">
+          <widget class="QWidget" name="confidenceIntervalsIntervalContainer" native="true">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_19">
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="postHocTestEffectSize">
+              <property name="text">
+               <string>Effect size</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="BoundCheckBox" name="confidenceIntervalsPostHoc">
+              <property name="text">
+               <string>Confidence intervals</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QWidget" name="widgetConfidenceIntervalIntervalPostHoc" native="true">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_37">
+               <property name="leftMargin">
+                <number>9</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="2">
+                <widget class="QLabel" name="label_22">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>%</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="BoundTextBox" name="confidenceIntervalIntervalPostHoc">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>60</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>60</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>95</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <spacer name="horizontalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="2" column="0">
           <widget class="GroupBox" name="groupPostHocOptions">
            <property name="title">
             <string>Correction</string>
@@ -997,99 +1067,38 @@
            </layout>
           </widget>
          </item>
-         <item row="2" column="0">
-          <widget class="QWidget" name="confidenceIntervalsIntervalContainer" native="true">
-           <property name="enabled">
-            <bool>true</bool>
+         <item row="2" column="1">
+          <widget class="GroupBox" name="groupPostHocTypes">
+           <property name="title">
+            <string>Type</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_19">
+           <layout class="QGridLayout" name="gridLayout_10">
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="postHocTestEffectSize">
+             <widget class="BoundCheckBox" name="postHocTestsTypeStandard">
               <property name="text">
-               <string>Effect size</string>
+               <string>Standard</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
-             <widget class="BoundCheckBox" name="confidenceIntervalsPostHoc">
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsTypeGames">
               <property name="text">
-               <string>Confidence intervals</string>
+               <string>Games-Howell</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="2">
-             <widget class="QWidget" name="widgetConfidenceIntervalIntervalPostHoc" native="true">
-              <property name="enabled">
-               <bool>false</bool>
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsTypeDunnett">
+              <property name="text">
+               <string>Dunnett</string>
               </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsTypeDunn">
+              <property name="text">
+               <string>Dunn</string>
               </property>
-              <layout class="QGridLayout" name="gridLayout_37">
-               <property name="leftMargin">
-                <number>40</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item row="0" column="1">
-                <widget class="BoundTextBox" name="confidenceIntervalIntervalPostHoc">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>60</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>60</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <widget class="QLabel" name="label_22">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>%</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_20">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Interval</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
              </widget>
             </item>
            </layout>
@@ -2430,12 +2439,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>207</x>
-     <y>1622</y>
+     <x>364</x>
+     <y>1672</y>
     </hint>
     <hint type="destinationlabel">
-     <x>207</x>
-     <y>1652</y>
+     <x>488</x>
+     <y>1672</y>
     </hint>
    </hints>
   </connection>

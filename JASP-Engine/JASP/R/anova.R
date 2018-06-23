@@ -15,11 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0, state = NULL, ...) {
 
     options$covariates <- NULL
 
-    results <- Ancova(dataset, options, perform, callback)
+    results <- Ancova(dataset, options, perform, callback, state)
 
     return(results)
 
