@@ -1,8 +1,23 @@
 QT_DIR=~/Qt/5.10.1
 R_FRAMEWORK=~/JASP/Build/Frameworks/R.framework
 JASP_DESKTOP=~/JASP/Build/jasp-desktop
-JASP_VERSION=0.9
+JASP_VERSION=0.9.0.1
 CURRENT_R_VERSION=3.4
+
+if [ ! -d "$QT_DIR" ]; then
+  echo "Wrong QT folder"
+  exit
+fi
+
+if [ ! -d "$R_FRAMEWORK" ]; then
+  echo "Wrong R Framework folder"
+  exit
+fi
+
+if [ ! -d "$JASP_DESKTOP" ]; then
+  echo "Wrong JASP_DESKTOP folder"
+  exit
+fi
 
 # This script builds the JASP.dmg installer
 # Check that you R.framework is unique (no other test versions).
