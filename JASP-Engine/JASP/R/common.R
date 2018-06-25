@@ -14,7 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-fromJSON  <- function(x) jsonlite::fromJSON(x, TRUE, FALSE, FALSE)
+fromJSON  <- function(x) {
+		Encoding(x) <- "UTF-8"
+		jsonlite::fromJSON(x, TRUE, FALSE, FALSE)
+	}
 toJSON    <- function(x) jsonlite::toJSON(x, auto_unbox = TRUE, digits = NA, null="null")
 
 run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresInit=TRUE, perform="run") {
