@@ -912,8 +912,7 @@
   # http://dx.doi.org/10.1198/tast.2009.08210
   ps <- predict(glmModel, type = "response")
   ys <- glmModel[["y"]]
-  return(max(c(0,mean(ps[ys])-mean(ps[-ys]))))
-
+  return(abs(mean(ps[ys])-mean(ps[-ys])))
 }
 
 .bic <- function(glmModel) {
