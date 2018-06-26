@@ -150,7 +150,6 @@ FocusScope
 
 						closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
 
-						TextMetrics { id: nominalTextMeasure; text: "Nominal"}
 
 						Column
 						{

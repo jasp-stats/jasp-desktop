@@ -5,7 +5,7 @@ ListView {
 	property string __debugName: "ElementView"
 	//clip: true
 
-
+	property real maxWidth: 200
 	property real widthMargin: 10
 	spacing: 4
 
@@ -82,6 +82,7 @@ ListView {
 
 				if(listOfStuff.orientation !== ListView.Horizontal && listOfStuff.width < width + listOfStuff.widthMargin)
 					listOfStuff.width = width + listOfStuff.widthMargin
+
 			}
 		}
 

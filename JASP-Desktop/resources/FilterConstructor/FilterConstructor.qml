@@ -318,7 +318,7 @@ Item {
 
 		onJaspsFilterConstructorJSONChanged:
 		{
-			console.log("onJaspsFilterConstructorJSONChanged ",jaspsFilterConstructorJSON)
+			//console.log("onJaspsFilterConstructorJSONChanged ",jaspsFilterConstructorJSON)
 
 			if(jsonConverter.jaspsFilterConstructorJSON !== JSON.stringify(parent.returnFilterJSON()))
 			{
