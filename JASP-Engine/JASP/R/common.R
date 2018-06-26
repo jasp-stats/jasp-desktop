@@ -14,10 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-fromJSON  <- function(x) {
-		Encoding(x) <- "UTF-8"
-		jsonlite::fromJSON(x, TRUE, FALSE, FALSE)
-	}
+fromJSON  <- function(x) jsonlite::fromJSON(x, TRUE, FALSE, FALSE)
 toJSON    <- function(x) jsonlite::toJSON(x, auto_unbox = TRUE, digits = NA, null="null")
 
 run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresInit=TRUE, perform="run") {
@@ -180,6 +177,7 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 
 initEnvironment <- function() {
 
+	Sys.setlocale("LC_CTYPE", "en_US.UTF-8")
 	packages <- c("BayesFactor", "bootnet") # Add any package that needs pre-loading
 
 	for (package in packages) {
