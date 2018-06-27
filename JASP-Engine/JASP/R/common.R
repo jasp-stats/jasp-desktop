@@ -176,8 +176,7 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 }
 
 initEnvironment <- function() {
-
-	Sys.setlocale("LC_CTYPE", "en_US.UTF-8")
+	Sys.setlocale("LC_CTYPE", "UTF-8")
 	packages <- c("BayesFactor", "bootnet") # Add any package that needs pre-loading
 
 	for (package in packages) {
