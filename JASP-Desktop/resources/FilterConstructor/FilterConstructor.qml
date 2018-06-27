@@ -30,6 +30,7 @@ Item {
 
 	function checkAndApplyFilter()
 	{
+		focus = true
 		filterConstructor.somethingChanged = false
 		var allCorrect = true
 		var allBoolean = true
