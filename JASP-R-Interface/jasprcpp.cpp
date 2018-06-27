@@ -37,6 +37,7 @@ RequestStateFileSourceCB requestStateFileSourceCB;
 
 static const string NullString = "null";
 static std::string lastFilterErrorMsg = "";
+static cetype_t Encoding = CE_UTF8;
 
 
 extern "C" {
@@ -92,12 +93,18 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, bool requi
 
 	RInside &rInside = rinside->instance();
 
+	Rcpp::String jsonOptions = options;
+	Rcpp::String jsonResultsMeta = resultsMeta;
+	jsonOptions.set_encoding(Encoding);
+	jsonResultsMeta.set_encoding(Encoding);
+
+
 	rInside["name"]			= name;
 	rInside["title"]		= title;
 	rInside["requiresInit"]	= requiresInit;
 	rInside["dataKey"]		= dataKey;
-	rInside["options"]		= options;
-	rInside["resultsMeta"]	= resultsMeta;
+	rInside["options"]		= jsonOptions;
+	rInside["resultsMeta"]	= jsonResultsMeta;
 	rInside["stateKey"]		= stateKey;
 	rInside["perform"]		= perform;
 	rInside[".ppi"]			= ppi;
@@ -475,9 +482,13 @@ Rcpp::DataFrame jaspRCPP_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumer
 
 Rcpp::IntegerVector jaspRCPP_makeFactor(Rcpp::IntegerVector v, char** levels, int nbLevels, bool ordinal)
 {
-	Rcpp::CharacterVector labels;
+	Rcpp::StringVector labels;
 	for (int i = 0; i < nbLevels; i++)
-		labels.push_back(levels[i]);
+	{
+		Rcpp::String s = levels[i];
+		s.set_encoding(Encoding);
+		labels.push_back(s);
+	}
 
 	v.attr("levels") = labels;
 	vector<string> cla55;
