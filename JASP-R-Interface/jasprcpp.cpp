@@ -421,12 +421,14 @@ Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(RBridgeColumn* colRe
 	if (colResults)
 	{
 		Rcpp::List list(colMax);
-		Rcpp::CharacterVector columnNames(colMax);
+		Rcpp::StringVector columnNames(colMax);
 
 		for (int i = 0; i < colMax; i++)
 		{
 			RBridgeColumn& colResult = colResults[i];
-			columnNames[i] = colResult.name;
+			Rcpp::String colName = colResult.name;
+			colName.set_encoding(Encoding);
+			columnNames[i] = colName;
 
 			if (colResult.isScale)
 				list[i] = Rcpp::NumericVector(colResult.doubles, colResult.doubles + colResult.nbRows);
@@ -457,12 +459,14 @@ Rcpp::DataFrame jaspRCPP_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumer
 	if (columnsDescription)
 	{
 		Rcpp::List list(colMax);
-		Rcpp::CharacterVector columnNames(colMax);
+		Rcpp::StringVector columnNames(colMax);
 
 		for (int i = 0; i < colMax; i++)
 		{
 			RBridgeColumnDescription& colDescription = columnsDescription[i];
-			columnNames[i] = colDescription.name;
+			Rcpp::String colName = colDescription.name;
+			colName.set_encoding(Encoding);
+			columnNames[i] = colName;
 
 			if (colDescription.isScale)
 				list(i) = Rcpp::NumericVector(0);
