@@ -535,7 +535,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 		for (component in components) {
 
-			nLevels <- length(levels(dataset[[ .v(component) ]]))
+		  nLevels <- nrow(plyr::count(dataset[[ .v(component) ]]))
 
 			if (nLevels < 2)
 				independentsWithLessThanTwoLevels <- c(independentsWithLessThanTwoLevels, component)
@@ -908,9 +908,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			errorMessage <- .extractErrorMessage(anova.rows)
 
 			if (errorMessage == "U[1,1] = 0" || errorMessage == "NA/NaN/Inf in foreign function call (arg 1)" || errorMessage == "undefined columns selected" ||
-				errorMessage == "ANOVA F-tests on an essentially perfect fit are unreliable") {
+				errorMessage == "ANOVA F-tests on an essentially perfect fit are unreliable" || errorMessage == "residual df = 0") {
 
-				errorMessage <- "Residual sums of squares and/or residual degrees of freedom are equal to zero indicating perfect fit.<br><br>(ANOVA F-tests on an essentially perfect fit are unreliable)"
+				errorMessage <- "Residual sums of squares and/or residual degrees of freedom are equal to zero indicating perfect fit.<br><br>(ANOVA F-tests on an essentially perfect fit are unreliable.) <br><br> Potential reasons for this to occur are a very small number of observations or a large number of missing values."
 
 			}
 

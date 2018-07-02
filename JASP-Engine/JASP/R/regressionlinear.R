@@ -288,7 +288,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		}
 
 
-		if (perform == "run" && (options$method == "backward" || options$method == "forward" || options$method == "stepwise")) {
+		if (perform == "run" && (options$method == "backward" || options$method == "forward" || options$method == "stepwise") && length(list.of.errors) == 0) {
 
 			if (length(options$modelTerm) > 0) {
 

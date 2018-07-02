@@ -400,7 +400,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 		for (component in components) {
 
-			nLevels <- length(levels(dataset[[ .v(component) ]]))
+			nLevels <- nrow(plyr::count(dataset[[ .v(component) ]]))
 
 			if (nLevels < 2)
 				independentsWithLessThanTwoLevels <- c(independentsWithLessThanTwoLevels, component)

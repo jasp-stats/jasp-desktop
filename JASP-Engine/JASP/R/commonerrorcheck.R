@@ -511,6 +511,11 @@
     return(list(error=TRUE,reason="Matrix is not symmetrical"))
   }
   
+  # Covariance matrix contains infinity
+  if (any(dataset == Inf)) {
+    return(list(error=TRUE,reason="Matrix contains infinity"))
+  }
+  
   # Positive-definite?
   if (posdef && any(round(eigen(dataset)$values,10) <= 0)){
     vars <- .checkForPerfectCorrelations(dataset)
