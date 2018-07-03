@@ -10,15 +10,14 @@ DropArea {
 	keys: [ "all" ]
 
 	onDropped: if(drop.drag.source !== null) drop.drag.source.destroy()
-	property real aspect: 1.6
+	property real aspect: 1.5
 	width: height / aspect
-	property real iconPadding: 0.9
+	property real iconPadding: 0.7
 
 	property bool somethingHovers: false
 
 	onEntered: somethingHovers = true
 	onExited: somethingHovers = false
-
 
 	Image
 	{
@@ -27,10 +26,12 @@ DropArea {
 
 		property real sizer: (trashCan.height < trashCan.width * aspect ? trashCan.height : trashCan.width * aspect)
 
-		height: sizer * parent.iconPadding
-		width: (sizer / aspect) * parent.iconPadding
+		height: (sizer) * parent.iconPadding
+		width: (sizer) * parent.iconPadding
 
-		source: somethingHovers ? "qrc:/icons/trashcan_open.png" : "qrc:/icons/trashcan.png"
+		// Flaticon basic license
+		// Icon made by [Smashicons] (https://www.flaticon.com/authors/smashicons) from www.flaticon.com
+		source: somethingHovers ? "qrc:/icons/trashcan_open.svg" : "qrc:/icons/trashcan.svg"
 		sourceSize.width: 160 / aspect
 		sourceSize.height: 160
 		//mipmap: true
@@ -52,7 +53,6 @@ DropArea {
 		hoverEnabled: true
 
 		cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
-
 	}
 
 	function destroyAll(apply)
