@@ -15,11 +15,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run", callback=function(...) 0, state = NULL, ...) {
   # 
 	dependents <- unlist(options$variables)
 	grouping   <- options$groupingVariable
 	options[["wilcoxTest"]] <- options$testStatistic ==  "Wilcoxon"
+	AtTheEndResetPlotRobustnessSequential <- NULL
+	if (options[["wilcoxTest"]]) {
+		# when a user requests robustness/ sequential plots first and then selects wilcoxTest
+		# jasp will still provide these as TRUE, but they shouldn't be.
+		AtTheEndResetPlotRobustnessSequential <- options[c("plotBayesFactorRobustness", "plotSequentialAnalysis")]
+		options[["plotBayesFactorRobustness"]] <- FALSE
+		options[["plotSequentialAnalysis"]] <- FALSE
+	}
 	
 	if (grouping == "")
 		grouping <- NULL
@@ -75,13 +83,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	results[[".meta"]] <- meta
 	results[["title"]] <- ifelse(options$wilcoxTest, "Bayesian Mann-Whitney U Test", "Bayesian Independent Samples T-Test")
 
-	state <- .retrieveState()
-	diff <- NULL
-
-	if (!is.null(state)) {
-		diff <- .diff(options, state$options)
-	}
-
 	# Needs to include following function for reactive progress bar for MCMC sampling
 	env <- environment()
 	callBackWilcoxonMCMC <- function(results = NULL, progress = NULL) {
@@ -105,7 +106,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	  
 	}
 	
-	ttest.results <- .ttestBayesianIndependentSamplesTTest(dataset, options, perform, state=state, diff=diff, callBackWilcoxonMCMC)
+	ttest.results <- .ttestBayesianIndependentSamplesTTest(dataset, options, perform, state=state, callBackWilcoxonMCMC)
   # If relevant settings are changed during sampling, ttest.results will be NULL
 	# This triggers an automatic redo of the analysis
 	if(is.null(ttest.results)) return(list(results = NULL, status = "inited"))
@@ -130,8 +131,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	if(is.null(options()$BFprogress)) options(BFprogress = interactive())
 	if(is.null(options()$BFfactorsMax)) options(BFfactorsMax = 5)
 
-	descriptivesTable <- .ttestBayesianIndependentSamplesDescriptives(dataset, options, perform)
-	results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives")
+	descriptivesTable <- .ttestBayesianIndependentSamplesDescriptives(dataset, options, perform, state)
+	results[["descriptives"]] <- list(descriptivesTable = descriptivesTable[["descriptives"]], title = "Descriptives")
 
 	if (options$hypothesis == "groupOneGreater") {
 
@@ -147,18 +148,13 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	}
 
 	plotGroups <- list()
-	plots.ttest <- list()
-	descriptPlotVariables <- list()
-	descriptivesPlots <- list()
-	plotTypes <- list()
-	plotVariables <- list()
+	descriptivesPlots <- state[["descriptivesPlots"]]
+	priorAndPosteriorPlots <- state[["priorAndPosteriorPlots"]]
+	robustnessPlots <- state[["robustnessPlots"]]
+	sequentialPlots <- state[["sequentialPlots"]]
 
 
 	if (options$plotPriorAndPosterior || options$plotSequentialAnalysis || options$plotBayesFactorRobustness || options$descriptivesPlots) {
-
-		iint <- 1
-		q <- 1
-		descriptInd <- 1
 
 		BFtype <- options$bayesFactorType
 		BFtypeRequiresNewPlot <- TRUE
@@ -177,73 +173,30 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 		for (variable in options[["variables"]]){
 
-			plotGroups[[iint]] <- list()
-			plotGroups[[iint]][["title"]] <- variable
-			plotGroups[[iint]][["name"]] <- variable
+			plotGroups[[variable]] <- list()
+			plotGroups[[variable]][["title"]] <- variable
+			plotGroups[[variable]][["name"]] <- variable
 
-			if (options$descriptivesPlots) {
-
-				if (!is.null(state) && variable %in% state$descriptPlotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$groupingVariable == FALSE &&
-					diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$descriptivesPlotsCredibleInterval == FALSE))) && options$descriptivesPlots) {
-
-
-					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-					# then, if the requested plot already exists, use it
-
-					index <- which(state$descriptPlotVariables == variable)
-
-					descriptivesPlots[[descriptInd]] <- state$descriptivesPlots[[index]]
-
-
-				} else {
+			if (options[["descriptivesPlots"]]) {
+				# if the element is null it needs to be remade, otherwise it's already reused
+				if (is.null(descriptivesPlots[[variable]])) {
 					descriptivesPlot <- list()
 
 					descriptivesPlot[["title"]] <- variable
-					descriptivesPlot[["width"]] <- options$plotWidth
-					descriptivesPlot[["height"]] <- options$plotHeight
-					#descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+					descriptivesPlot[["width"]] <- options[["plotWidth"]]
+					descriptivesPlot[["height"]] <- options[["plotHeight"]]
 					descriptivesPlot[["status"]] <- "waiting"
 					descriptivesPlot[["data"]] <- ""
 
-					descriptivesPlots[[descriptInd]] <- descriptivesPlot
+					descriptivesPlots[[variable]] <- descriptivesPlot
+
 				}
 
-
-				descriptPlotVariables[[length(descriptPlotVariables)+1]] <- variable
-
-				descriptInd <- descriptInd + 1
 			}
 
 			if (options$plotPriorAndPosterior){
-
-				if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-					&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE &&
-					diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
-					diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && diff$wilcoxTest == FALSE && 
-					diff$wilcoxonSamplesNumber == FALSE && options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes) {
-
-					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-					# then, if the requested plot already exists, use it
-
-					index <- which(state$plotVariables == variable & state$plotTypes == "posteriorPlotAddInfo")
-
-					plots.ttest[[q]] <- state$plotsTtest[[index]]
-
-				} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-							&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE &&
-							diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&	diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
-							diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && diff$wilcoxTest == FALSE && 
-							diff$wilcoxonSamplesNumber == FALSE && !options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlot" %in% state$plotTypes) {
-
-					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-					# if the requested plot already exists use it
-
-					index <- which(state$plotVariables == variable & state$plotTypes == "posteriorPlot")
-
-					plots.ttest[[q]] <- state$plotsTtest[[index]]
-
-				} else {
-
+				# if the element is null it needs to be remade, otherwise it's already reused
+				if (is.null(priorAndPosteriorPlots[[variable]])) {
 					plot <- list()
 
 					plot[["title"]] <- "Prior and Posterior"
@@ -260,55 +213,16 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					plot[["obj"]] <- content[["obj"]]
 					plot[["data"]] <- content[["png"]]
 
-					plots.ttest[[q]] <- plot
+					priorAndPosteriorPlots[[variable]] <- plot
 				}
 
 
-				if (options$plotPriorAndPosteriorAdditionalInfo) {
-
-					plotTypes[[length(plotTypes)+1]] <- "posteriorPlotAddInfo"
-
-				} else {
-
-					plotTypes[[length(plotTypes)+1]] <- "posteriorPlot"
-				}
-
-				plotGroups[[iint]][["PriorPosteriorPlot"]] <- plots.ttest[[q]]
-				plotVariables[[length(plotVariables)+1]] <- variable
-
-				q <- q + 1
-
+				plotGroups[[variable]][["PriorPosteriorPlot"]] <- priorAndPosteriorPlots[[variable]]
 			}
 
 			if (options$plotBayesFactorRobustness) {
-
-				if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-					&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
-					diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE &&
-					diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-					"robustnessPlotAddInfo" %in% state$plotTypes && options$plotBayesFactorRobustnessAdditionalInfo) {
-
-					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-					# then, if the requested plot already exists, use it
-					index <- which(state$plotVariables == variable & state$plotTypes == "robustnessPlotAddInfo")
-
-					plots.ttest[[length(plots.ttest)+1]] <- state$plotsTtest[[index]]
-
-				} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-					&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
-					diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE &&
-					diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-					"robustnessPlot" %in% state$plotTypes && !options$plotBayesFactorRobustnessAdditionalInfo) {
-
-					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-					# then, if the requested plot already exists, use it
-
-					index <- which(state$plotVariables == variable & state$plotTypes == "robustnessPlot")
-
-					plots.ttest[[q]] <- state$plotsTtest[[index]]
-
-				} else {
-
+				# if the element is null it needs to be remade, otherwise it's already reused
+				if (is.null(robustnessPlots[[variable]])) {
 					plot <- list()
 
 					plot[["title"]] <- "Bayes Factor Robustness Check"
@@ -324,52 +238,15 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					plot[["convertible"]] <- TRUE
 					plot[["obj"]] <- content[["obj"]]
 					plot[["data"]] <- content[["png"]]
+					robustnessPlots[[variable]] <- plot
 
-					plots.ttest[[q]] <- plot
 				}
-
-				if (options$plotBayesFactorRobustnessAdditionalInfo) {
-					plotTypes[[length(plotTypes)+1]] <- "robustnessPlotAddInfo"
-				} else {
-					plotTypes[[length(plotTypes)+1]] <- "robustnessPlot"
-				}
-
-				plotVariables[[length(plotVariables)+1]] <- variable
-				plotGroups[[iint]][["BFrobustnessPlot"]] <- plots.ttest[[q]]
-
-				q <- q + 1
+				plotGroups[[variable]][["BFrobustnessPlot"]] <- robustnessPlots[[variable]]
 			}
 
 			if (options$plotSequentialAnalysis) {
-
-				if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-					&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
-					diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE &&
-					diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-					options$plotSequentialAnalysisRobustness && "sequentialRobustnessPlot" %in% state$plotTypes) {
-
-					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-					# then, if the requested plot already exists, use it
-
-					index <- which(state$plotVariables == variable & state$plotTypes == "sequentialRobustnessPlot")
-
-					plots.ttest[[q]] <- state$plotsTtest[[index]]
-
-				} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-							&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
-							diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE &&
-							diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-							!options$plotSequentialAnalysisRobustness && "sequentialPlot" %in% state$plotTypes) {
-
-					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-					# then, if the requested plot already exists use it
-
-					index <- which(state$plotVariables == variable & state$plotTypes == "sequentialPlot")
-
-					plots.ttest[[q]] <- state$plotsTtest[[index]]
-
-				} else {
-
+				# if the element is null it needs to be remade, otherwise it's already reused
+				if (is.null(sequentialPlots[[variable]])) {
 					plot <- list()
 
 					plot[["title"]] <- "Sequential Analysis"
@@ -386,37 +263,20 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					plot[["obj"]] <- content[["obj"]]
 					plot[["data"]] <- content[["png"]]
 
-					plots.ttest[[q]] <- plot
+					sequentialPlots[[variable]] <- plot
 				}
-
-
-				if (options$plotSequentialAnalysisRobustness) {
-
-					plotTypes[[length(plotTypes)+1]] <- "sequentialRobustnessPlot"
-
-				} else {
-
-					plotTypes[[length(plotTypes)+1]] <- "sequentialPlot"
-				}
-
-				plotVariables[[length(plotVariables)+1]] <- variable
-				plotGroups[[iint]][["BFsequentialPlot"]] <- plots.ttest[[q]]
-
-				q <- q + 1
-
+				plotGroups[[variable]][["BFsequentialPlot"]] <- sequentialPlots[[variable]]
 			}
-
-			iint <- iint + 1
 
 		}
 
-
 		if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis)
 			results[["inferentialPlots"]] <- list(title=ifelse(length(options[["variables"]]) > 1 || sum(c(options$plotPriorAndPosterior, options$plotBayesFactorRobustness, options$plotSequentialAnalysis)) > 1,
-				"Inferential Plots", "Inferential Plot"), collection=plotGroups)
+				"Inferential Plots", "Inferential Plot"), collection=unname(plotGroups))
 
 		if (options$descriptivesPlots)
-			results[["descriptives"]][["descriptivesPlots"]] <- list(title=ifelse(length(options[["variables"]]) > 1, "Descriptives Plots", "Descriptives Plot"), collection=descriptivesPlots)
+			results[["descriptives"]][["descriptivesPlots"]] <- list(title=ifelse(length(options[["variables"]]) > 1, "Descriptives Plots", "Descriptives Plot"),
+																															 collection=unname(descriptivesPlots))
 
 
 		if (perform == "run" && length(options$variables) > 0 && !is.null(grouping)) {
@@ -424,11 +284,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			if ( ! .shouldContinue(callback(results)))
 				return()
 
-			statusInd <- 1
-			i <- 1
-			z <- 1
-			descriptInd <- 1
-
+			hasNoData <- function(x) identical(x[["status"]], "waiting")
 			for (variable in options[["variables"]]) {
 
 			    errors <- .hasErrors(dataset, perform, message = 'short', type = c('infinity','observations','variance'),
@@ -451,26 +307,16 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 				if (options$descriptivesPlots) {
 
+					# if the plot data is empty it wasn't obtained from state and needs to be remade
+					if (hasNoData(descriptivesPlots[[variable]])) {
 
-					if (!is.null(state) && variable %in% state$descriptPlotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$groupingVariable == FALSE &&
-						diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$descriptivesPlotsCredibleInterval == FALSE))) && options$descriptivesPlots) {
-
-						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-						# then, if the requested plot already exists, use it
-
-						index <- which(state$descriptPlotVariables == variable)
-
-						descriptivesPlots[[descriptInd]] <- state$descriptivesPlots[[index]]
-
-
-					} else {
-
-						results[["descriptives"]][["descriptivesPlots"]][["collection"]][[i]][["status"]] <- "running"
+						descriptivesPlots[[variable]][["status"]] <- "running"
+						results[["descriptives"]][["descriptivesPlots"]][["collection"]] <- unname(descriptivesPlots)
 
 						if ( ! .shouldContinue(callback(results)))
 							return()
 
-						plot <- descriptivesPlots[[descriptInd]]
+						plot <- descriptivesPlots[[variable]]
 
 						if (!is.null(errorMessage)) {
 
@@ -495,12 +341,10 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 						plot[["status"]] <- "complete"
 
-						descriptivesPlots[[descriptInd]] <- plot
+						descriptivesPlots[[variable]] <- plot
 					}
 
-					results[["descriptives"]][["descriptivesPlots"]][["collection"]] <- descriptivesPlots
-
-					descriptInd <- descriptInd + 1
+					results[["descriptives"]][["descriptivesPlots"]][["collection"]] <- unname(descriptivesPlots)
 
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -509,41 +353,15 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 				if (options$plotPriorAndPosterior) {
 
-					if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-						&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE &&
-						diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&	diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE &&
-						diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && diff$wilcoxTest == FALSE && 
-						diff$wilcoxonSamplesNumber == FALSE && options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes) {
+					if (hasNoData(priorAndPosteriorPlots[[variable]])) {
 
-						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-						# then, if the requested plot already exists, use it
-
-						index <- which(state$plotVariables == variable & state$plotTypes == "posteriorPlotAddInfo")
-
-						plots.ttest[[z]] <- state$plotsTtest[[index]]
-
-					} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE &&
-								diff$hypothesis == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
-								diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&
-								diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE &&
-								diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) && diff$wilcoxTest == FALSE && diff$wilcoxonSamplesNumber == FALSE &&
-								!options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlot" %in% state$plotTypes) {
-
-						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-						# if the requested plot already exists use it
-
-						index <- which(state$plotVariables == variable & state$plotTypes == "posteriorPlot")
-
-						plots.ttest[[z]] <- state$plotsTtest[[index]]
-
-					} else {
-
-						results[["inferentialPlots"]][["collection"]][[i]][["PriorPosteriorPlot"]][["status"]] <- "running"
+						plotGroups[[variable]][["PriorPosteriorPlot"]][["status"]] <- "running"
+						results[["inferentialPlots"]][["collection"]] <- unname(plotGroups)
 
 						if ( ! .shouldContinue(callback(results)))
 							return()
 
-						plot <- plots.ttest[[z]]
+						plot <- priorAndPosteriorPlots[[variable]]
 
 						if (!is.null(errorMessage)) {
 
@@ -554,11 +372,11 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						    p <- try(silent= FALSE, expr= {
 
 						        .plotFunc <- function() {
-						            .plotPosterior.summarystats.ttest(t = tValue[i], n1 = n_group2[i], n2 = n_group1[i],
-						                                              paired = FALSE, oneSided = oneSided, BF = BF10post[i],
+						            .plotPosterior.summarystats.ttest(t = tValue[variable], n1 = n_group2[variable], n2 = n_group1[variable],
+						                                              paired = FALSE, oneSided = oneSided, BF = BF10post[variable],
 						                                              BFH1H0 = BFH1H0, rscale = options$priorWidth,
 						                                              addInformation = options$plotPriorAndPosteriorAdditionalInfo,
-						                                              options = options, delta = deltaSamplesWilcox[[i]])
+						                                              options = options, delta = deltaSamplesWilcox[[variable]])
 						        }
 						        content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
   
@@ -577,55 +395,28 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 						plot[["status"]] <- "complete"
 
-						plots.ttest[[z]] <- plot
+						priorAndPosteriorPlots[[variable]] <- plot
+
 					}
 
-					plotGroups[[i]][["PriorPosteriorPlot"]] <- plots.ttest[[z]]
-
-
-					results[["inferentialPlots"]][["collection"]] <- plotGroups
-
-					z <- z + 1
+					plotGroups[[variable]][["PriorPosteriorPlot"]] <- priorAndPosteriorPlots[[variable]]
+					results[["inferentialPlots"]][["collection"]] <- unname(plotGroups)
 
 					if ( ! .shouldContinue(callback(results)))
 						return()
 				}
 
 				if (options$plotBayesFactorRobustness) {
-					if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-						&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
-						diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&	diff$informativeCauchyScale == FALSE &&
-						diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-						"robustnessPlotAddInfo" %in% state$plotTypes && options$plotBayesFactorRobustnessAdditionalInfo) {
 
-						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-						# then, if the requested plot already exists, use it
+					if (hasNoData(robustnessPlots[[variable]])) {
 
-						index <- which(state$plotVariables == variable & state$plotTypes == "robustnessPlotAddInfo")
-
-						plots.ttest[[z]] <- state$plotsTtest[[index]]
-
-					} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-						&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
-						diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&	diff$informativeCauchyScale == FALSE &&
-						diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-						"robustnessPlot" %in% state$plotTypes && !options$plotBayesFactorRobustnessAdditionalInfo) {
-
-						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-						# then, if the requested plot already exists, use it
-
-						index <- which(state$plotVariables == variable & state$plotTypes == "robustnessPlot")
-
-						plots.ttest[[z]] <- state$plotsTtest[[index]]
-
-					} else {
-
-						results[["inferentialPlots"]][["collection"]][[i]][["BFrobustnessPlot"]][["status"]] <- "running"
+						plotGroups[[variable]][["BFrobustnessPlot"]][["status"]] <- "running"
+						results[["inferentialPlots"]][["collection"]] <- unname(plotGroups)
 
 						if ( ! .shouldContinue(callback(results)))
 							return()
 
-						plot <- plots.ttest[[z]]
+						plot <- robustnessPlots[[variable]]
 
 						if (options$effectSizeStandardized == "informative") {
 						  errorMessage="Bayes factor robustness check plot currently not supported for informed prior."
@@ -634,78 +425,48 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 						if (!is.null(errorMessage)) {
 
-						    plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+						   plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
 
 						} else {
 
-							p <- try(silent= FALSE, expr= {
+						  p <- try(silent= FALSE, expr= {
 
-									.plotFunc <- function() {
-										.plotBF.robustnessCheck.ttest(x= group2, y= group1, BF10post=ifelse((options$bayesFactorType=="LogBF10"), exp(BF10post[i]), BF10post[i]), paired= FALSE, oneSided= oneSided,
-										                              rscale = options$priorWidth, BFH1H0= BFH1H0, additionalInformation=options$plotBayesFactorRobustnessAdditionalInfo)
-									}
-									content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+								.plotFunc <- function() {
+									.plotBF.robustnessCheck.ttest(x= group2, y= group1, BF10post=ifelse((options$bayesFactorType=="LogBF10"), exp(BF10post[variable]), BF10post[variable]), paired= FALSE, oneSided= oneSided,
+                                                rscale = options$priorWidth, BFH1H0= BFH1H0, additionalInformation=options$plotBayesFactorRobustnessAdditionalInfo)
+								}
+								content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
 
-									plot[["convertible"]] <- TRUE
-									plot[["obj"]] <- content[["obj"]]
-									plot[["data"]] <- content[["png"]]
+								plot[["convertible"]] <- TRUE
+								plot[["obj"]] <- content[["obj"]]
+								plot[["data"]] <- content[["png"]]
 
-								})
+							})
 
 						}
 
 						plot[["status"]] <- "complete"
+						robustnessPlots[[variable]] <- plot
 
-						plots.ttest[[z]] <- plot
 					}
 
-					plotGroups[[i]][["BFrobustnessPlot"]] <- plots.ttest[[z]]
-					results[["inferentialPlots"]][["collection"]] <- plotGroups # add plots without image object to results
-
-					z <- z + 1
+					plotGroups[[variable]][["BFrobustnessPlot"]] <- robustnessPlots[[variable]]
+					results[["inferentialPlots"]][["collection"]] <- unname(plotGroups)
 
 					if ( ! .shouldContinue(callback(results)))
 						return()
 				}
 
 				if (options$plotSequentialAnalysis) {
+					if (hasNoData(sequentialPlots[[variable]])) {
 
-					if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-						&& BFtypeRequiresNewPlot == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE &&
-						diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE &&
-						diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE))) &&
-						options$plotSequentialAnalysisRobustness && "sequentialRobustnessPlot" %in% state$plotTypes) {
-
-						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-						# then, if the requested plot already exists, use it
-
-						index <- which(state$plotVariables == variable & state$plotTypes == "sequentialRobustnessPlot")
-
-						plots.ttest[[z]] <- state$plotsTtest[[index]]
-						results[["inferentialPlots"]][["collection"]][[i]][["BFsequentialPlot"]][["status"]] <- "complete"
-
-					} else if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE &&
-								diff$hypothesis == FALSE && BFtypeRequiresNewPlot == FALSE  && diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE &&
-								diff$plotWidth == FALSE && diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE && diff$informativeCauchyLocation == FALSE &&
-								diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE &&
-								diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE)))
-								&& !options$plotSequentialAnalysisRobustness && "sequentialPlot" %in% state$plotTypes) {
-
-						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-						# then, if the requested plot already exists use it
-
-						index <- which(state$plotVariables == variable & state$plotTypes == "sequentialPlot")
-
-						plots.ttest[[z]] <- state$plotsTtest[[index]]
-						results[["inferentialPlots"]][["collection"]][[i]][["BFsequentialPlot"]][["status"]] <- "complete"
-					} else {
-
-						results[["inferentialPlots"]][["collection"]][[i]][["BFsequentialPlot"]][["status"]] <- "running"
+						plotGroups[[variable]][["BFsequentialPlot"]][["status"]] <- "running"
+						results[["inferentialPlots"]][["collection"]] <- unname(plotGroups)
 
 						if ( ! .shouldContinue(callback(results)))
 							return()
 
-						plot <- plots.ttest[[z]]
+						plot <- sequentialPlots[[variable]]
 
 						if (options$plotSequentialAnalysisRobustness && options$effectSizeStandardized == "informative") {
 						  plot[["error"]] <- list(error="badData", errorMessage="Sequential analysis robustness check plot currently not supported for informed prior.")
@@ -720,7 +481,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 							p <- try(silent= FALSE, expr= {
 
 									.plotFunc <- function() {
-										.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, BF10post=BF10post[i],
+										.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, BF10post=BF10post[variable],
 															plotDifferentPriors= options$plotSequentialAnalysisRobustness, subDataSet=subDataSet, level1=g1, level2=g2, options = options)
 									}
 									content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
@@ -735,53 +496,88 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 						plot[["status"]] <- "complete"
 
-						plots.ttest[[z]] <- plot
+						sequentialPlots[[variable]] <- plot
 					}
 
-					plotGroups[[i]][["BFsequentialPlot"]] <- plots.ttest[[z]]
-					results[["inferentialPlots"]][["collection"]] <- plotGroups
+					plotGroups[[variable]][["BFsequentialPlot"]] <- sequentialPlots[[variable]]
+					results[["inferentialPlots"]][["collection"]] <- unname(plotGroups)
 
-
-					z <- z + 1
 
 					if ( ! .shouldContinue(callback(results)))
 						return()
 				}
 
-				statusInd <- statusInd + 1
-				i <- i + 1
 			}
 		}
 	}
-
+	
+	if (!is.null(AtTheEndResetPlotRobustnessSequential))
+		options[c("plotBayesFactorRobustness", "plotSequentialAnalysis")] <- AtTheEndResetPlotRobustnessSequential
 
 	keep <- NULL
 
-	for (plot in plots.ttest)
-		keep <- c(keep, plot$data)
-
 	for (plot in descriptivesPlots)
 		keep <- c(keep, plot$data)
+	for (plot in priorAndPosteriorPlots)
+		keep <- c(keep, plot$data)
+	for (plot in robustnessPlots)
+		keep <- c(keep, plot$data)
+	for (plot in sequentialPlots)
+		keep <- c(keep, plot$data)
 
-	descriptivesPlots <- descriptivesPlots
-	plots.ttest <- plots.ttest
-
+	defaults <- c("priorWidth", "hypothesis", "groupingVariable", "missingValues",
+								"effectSizeStandardized", "informativeStandardizedEffectSize",
+								"informativeCauchyLocation", "informativeCauchyScale", "informativeTLocation",
+								"informativeTScale", "informativeTDf", "informativeNormalMean",
+								"informativeNormalStd", "testStatistic", "wilcoxonSamplesNumber")
+	stateKey <- list(
+		ttestData = defaults,
+		descriptivesPlots = c("groupingVariable", "missingValues", "descriptivesPlotsCredibleInterval"),
+		priorAndPosteriorPlots = c(defaults, "plotHeight", "plotWidth", "plotPriorAndPosteriorAdditionalInfo"),
+		robustnessPlots = c(defaults, "plotHeight", "plotWidth", "plotBayesFactorRobustnessAdditionalInfo"),
+		sequentialPlots = c(defaults, "plotHeight", "plotWidth", "plotSequentialAnalysisRobustness"),
+		delta = c("priorWidth", "groupingVariable", "missingValues", "wilcoxonSamplesNumber"),
+		descriptivesData = c("descriptives", "groupingVariable", "missingValues", "descriptivesPlotsCredibleInterval")
+	)
+	
+	# all collection keys are the same!
+	collectionKey <- .stateDependsOnVar(dependents)
+	for (e in c("ttestData", "descriptivesPlots", "priorAndPosteriorPlots", "robustnessPlots", "sequentialPlots", 
+							"delta", "descriptivesData")) {
+		attr(stateKey[[e]], "collection") <- collectionKey
+	}
 	if (perform == "init") {
+
+    if (!is.null(state) && is.null(attr(state, "key")))
+      attr(state, "key") <- stateKey
 
 		return(list(results=results, status="inited", state=state, keep=keep))
 
 	} else {
 
-		return(list(results=results, status="complete", state=list(options=options, results=results, plotsTtest=plots.ttest, plotTypes=plotTypes, plotVariables=plotVariables,
-		descriptPlotVariables=descriptPlotVariables, descriptivesPlots=descriptivesPlots, status=status, plottingError=plottingError, BF10post=BF10post, errorFootnotes=errorFootnotes,
-		tValue = tValue, n_group2 = n_group2, n_group1 = n_group1, delta = deltaSamplesWilcox),
-		keep=keep))
+		state <- list(
+			options = options,
+			ttestData = ttest.results[["ttestData"]],
+			descriptivesData = descriptivesTable[["descriptivesData"]],
+			descriptivesPlots = descriptivesPlots, 
+			priorAndPosteriorPlots = priorAndPosteriorPlots,
+			robustnessPlots = robustnessPlots,
+			sequentialPlots = sequentialPlots,
+			status = status, plottingError = plottingError, 
+			BF10post = BF10post, errorFootnotes = errorFootnotes,
+			tValue = tValue, n_group2 = n_group2, n_group1 = n_group1, 
+			delta = deltaSamplesWilcox
+		)
+		state <- state[lengths(state) > 0] # keep only non-NULL items in state
+		attr(state, "key") <- stateKey
+
+		return(list(results=results, status="complete", state = state, keep = keep))
 	}
 
 }
 
 
-.ttestBayesianIndependentSamplesTTest <- function(dataset, options, perform, state, diff, callBackWilcoxonMCMC) {
+.ttestBayesianIndependentSamplesTTest <- function(dataset, options, perform, state, callBackWilcoxonMCMC) {
 
 
 	g1 <- NULL
@@ -870,16 +666,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 	levels <- base::levels(dataset[[ .v(options$groupingVariable) ]])
 
-	if (length(levels) != 2) {
+	g1 <- levels[1]
+	g2 <- levels[2]
 
-		g1 <- "1"
-		g2 <- "2"
-
-	} else {
-
-		g1 <- levels[1]
-		g2 <- levels[2]
-	}
 
 	if (options$hypothesis == "groupOneGreater") {
 
@@ -893,97 +682,41 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	}
 
 
-	ttest.rows <- list()
-
-	status <- rep("ok", length(options$variables))
-	BF10post <- numeric(length(options$variables))
-	tValue <- rep(NA, length(options[["variables"]]))
-	n_group2 <- rep(NA, length(options[["variables"]]))
-	n_group1 <- rep(NA, length(options[["variables"]]))
-	plottingError <- rep("error", length(options$variables))
-	errorFootnotes <- rep("no", length(options$variables))
+	nvar <- length(options[["variables"]])
+	status <- rep("ok", nvar)
+	BF10post <- numeric(nvar)
+	tValue <- rep(NA, nvar)
+	n_group2 <- rep(NA, nvar)
+	n_group1 <- rep(NA, nvar)
+	plottingError <- rep("error", nvar)
+	errorFootnotes <- rep("no", nvar)
 	delta <- list()
 	
-	for (variable in options[["variables"]]) {
+	ttest.rows <- state[["ttestData"]]
 
-		if (!is.null(state) && variable %in% state$options$variables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-			&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE &&
-			diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE &&
-			diff$informativeTDf == FALSE && diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE && diff$wilcoxTest == FALSE && diff$wilcoxonSamplesNumber == FALSE)))) {
-
-				index <- which(state$options$variables == variable)
-
-				if (state$errorFootnotes[index] == "no") {
-
-					ttest.rows[[length(ttest.rows)+1]] <- state$results$ttest$data[[index]]
-
-					if (! (is.logical(diff) && diff == FALSE) && diff$bayesFactorType) {
-
-						if (state$options$bayesFactorType == "BF10") {
-
-							if (options$bayesFactorType == "BF01") {
-								ttest.rows[[length(ttest.rows)]]$BF <- 1 / state$results$ttest$data[[index]]$BF
-							} else if (options$bayesFactorType == "LogBF10") {
-								ttest.rows[[length(ttest.rows)]]$BF <- log(state$results$ttest$data[[index]]$BF)
-							}
-
-						} else if (state$options$bayesFactorType == "BF01") {
-
-							if (options$bayesFactorType == "BF10") {
-								ttest.rows[[length(ttest.rows)]]$BF <- 1 / state$results$ttest$data[[index]]$BF
-							} else if (options$bayesFactorType == "LogBF10") {
-								ttest.rows[[length(ttest.rows)]]$BF <- log(1 / state$results$ttest$data[[index]]$BF)
-							}
-
-						} else if (state$options$bayesFactorType == "LogBF10") {
-
-							if (options$bayesFactorType == "BF10") {
-								ttest.rows[[length(ttest.rows)]]$BF <- exp(state$results$ttest$data[[index]]$BF)
-							} else if (options$bayesFactorType == "BF01") {
-								ttest.rows[[length(ttest.rows)]]$BF <- 1 / exp(state$results$ttest$data[[index]]$BF)
-							}
-						}
-					}
-
-				} else {
-
-					index2 <- .addFootnote(footnotes, state$errorFootnotes[index])
-
-					ttest.rows[[length(ttest.rows)+1]] <- list(.variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index2)))
-
-				}
-
-			} else {
-
-				ttest.rows[[length(ttest.rows)+1]] <- list(.variable=variable)
+	if (perform == "init" || nvar == 0 || options$groupingVariable == "") {
+		for (variable in options[["variables"]]) {
+			if (is.null(ttest.rows[[variable]])) {
+				ttest.rows[[variable]] <- list(.variable=variable)
 			}
+		}
 	}
 
-	rowCompleted <- logical(length(ttest.rows))
-
-	for (i in seq_along(ttest.rows))
-		rowCompleted[i] <- ifelse(length(ttest.rows[[i]]) > 1, TRUE, FALSE)
-
-	if (!is.null(state) && all(options[["variables"]] %in% state$options$variables) && options$groupingVariable == state$options$groupingVariable && all(rowCompleted))
+	rowCompleted <- lengths(ttest.rows) > 1
+	if (all(rowCompleted))
 		ttest[["status"]] <- "complete"
 
-	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
+	if (perform == "run" && nvar != 0 && options$groupingVariable != "") {
 
-		if (length(levels) != 2) {
-
-			ttest[["error"]] <- list(errorType="badData", errorMessage="The Grouping Variable must have 2 levels")
-
-			status <- rep("error", length(options$variables))
-			plottingError <- rep("Plotting is not possible: The Grouping Variable must have 2 levels", length(options$variables))
-
-		} else {
-
-			rowNo <- 1
-
-			i <- 1
-			
 			if (options$wilcoxTest) {
-			  progressbar <- .newProgressbar(ticks=length(options[["variables"]]) * round(options$wilcoxonSamplesNumber / 1e2, 0), 
+
+			  # all variables - the ones we sampled before
+				print(str(state$delta))
+				todo <- nvar
+				if (!is.null(state$delta))
+			  	todo <- todo - sum(sapply(state$delta, function(x) isTRUE(!is.null(x) && !is.na(x))))
+			  if (todo > 0)
+				  progressbar <- .newProgressbar(ticks=todo * round(options$wilcoxonSamplesNumber / 1e2, 0),
 			                                                 callback = callBackWilcoxonMCMC, response=TRUE)
 			}
 			
@@ -1018,63 +751,27 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					oneSided <- FALSE
 				}
 
+				if (!is.null(ttest.rows[[variable]])) {
 
-				if (!is.null(state) && variable %in% state$options$variables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE
-				&& diff$groupingVariable == FALSE && diff$missingValues == FALSE && diff$effectSizeStandardized == FALSE && diff$informativeStandardizedEffectSize == FALSE &&
-				diff$informativeCauchyLocation == FALSE && diff$informativeCauchyScale == FALSE && diff$informativeTLocation == FALSE && diff$informativeTScale == FALSE && diff$informativeTDf == FALSE &&
-				diff$informativeNormalMean == FALSE && diff$informativeNormalStd == FALSE && diff$wilcoxTest == FALSE && diff$wilcoxonSamplesNumber == FALSE)))) {
-          
-					index <- which(state$options$variables == variable)
+					# row retrieved from state, only possible change is BF01 to BF10/ log(BF01)
+					if (is.null(ttest.rows[[variable]][[".footnotes"]])) {
 
-					if (state$errorFootnotes[index] == "no") {
-
-						ttest.rows[[rowNo]] <- state$results$ttest$data[[index]]
-
-						if (! (is.logical(diff) && diff == FALSE) && diff$bayesFactorType) {
-
-							if (state$options$bayesFactorType == "BF10") {
-
-								if (options$bayesFactorType == "BF01") {
-									ttest.rows[[rowNo]]$BF <- 1 / state$results$ttest$data[[index]]$BF
-								} else if (options$bayesFactorType == "LogBF10") {
-									ttest.rows[[rowNo]]$BF <- log(state$results$ttest$data[[index]]$BF)
-								}
-
-							} else if (state$options$bayesFactorType == "BF01") {
-
-								if (options$bayesFactorType == "BF10") {
-									ttest.rows[[rowNo]]$BF <- 1 / state$results$ttest$data[[index]]$BF
-								} else if (options$bayesFactorType == "LogBF10") {
-									ttest.rows[[rowNo]]$BF <- log(1 / state$results$ttest$data[[index]]$BF)
-								}
-
-							} else if (state$options$bayesFactorType == "LogBF10") {
-
-								if (options$bayesFactorType == "BF10") {
-									ttest.rows[[rowNo]]$BF <- exp(state$results$ttest$data[[index]]$BF)
-								} else if (options$bayesFactorType == "BF01") {
-									ttest.rows[[rowNo]]$BF <- 1 / exp(state$results$ttest$data[[index]]$BF)
-								}
-							}
-						}
-
-					} else {
-
-						index2 <- .addFootnote(footnotes, state$errorFootnotes[index])
-
-						errorFootnotes[rowNo] <- state$errorFootnotes[index]
-
-						ttest.rows[[rowNo]] <- list(.variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index2)))
+						# if BFtype changed, change it. (BF01, BF10, log(BF01))
+						ttest.rows[[variable]][["BF"]] <-
+							.recodeBFtype(bfOld = ttest.rows[[variable]][["BF"]],
+														newBFtype = options[["bayesFactorType"]],
+														oldBFtype = state[["options"]][["bayesFactorType"]]
+							)
 
 					}
 
-					BF10post[rowNo] <- ttest.rows[[rowNo]]$BF # state$BF10post[index]
-					tValue[rowNo] <- state$tValue[index]
-					n_group2[rowNo] <- state$n_group2[index]
-					n_group1[rowNo] <- state$n_group1[index]
-					status[rowNo] <- state$status[index]
-					plottingError[rowNo] <- state$plottingError[index]
-					delta[[rowNo]] <- state$delta[[index]]
+					BF10post[variable] <- ttest.rows[[variable]]$BF # state$BF10post[index]
+					tValue[variable] <- state$tValue[variable]
+					n_group2[variable] <- state$n_group2[variable]
+					n_group1[variable] <- state$n_group1[variable]
+					status[variable] <- state$status[variable]
+					plottingError[variable] <- state$plottingError[variable]
+					delta[[variable]] <- state$delta[[variable]]
 
 				} else {
 
@@ -1091,95 +788,67 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 					result <- try (silent=FALSE, expr= {
 					  
-					  n_group2[i] <- length(group2)
-					  n_group1[i] <- length(group1)
+					  n_group2[variable] <- length(group2)
+					  n_group1[variable] <- length(group1)
             
 					  if (!options$wilcoxTest) {
 					    
   					  r <- .generalTtestBF(x = group2, y = group1, paired = FALSE, oneSided = oneSided, options = options)
   					  bf.raw <- r[["bf"]]
   					  error <- .clean(r[["error"]])
-  					  tValue[i] <- r[["tValue"]]
-  					  delta[[i]] <- NA
-  					  
-  					  
+  					  tValue[variable] <- r[["tValue"]]
+  					  delta[[variable]] <- NA
+
 					  } else if (options$wilcoxTest) {
+
 					    # If the samples can be reused, don't call the Gibbs sampler again, but recalculate the
 					    # Bayes factor with new settings and take the samples from state.
-					    if (!is.null(diff) && length(state$delta) >= i && !is.null(state$delta[[i]]) && diff$hypothesis == TRUE && diff$priorWidth == FALSE && diff$groupingVariable == FALSE &&
-					        diff$missingValues == FALSE && diff$wilcoxonSamplesNumber == FALSE) {
-                
-                delta[[i]] <- state$delta[[i]]
-                bf.raw <- .computeBayesFactorWilcoxon(deltaSamples = delta[[i]], cauchyPriorParameter = options$priorWidth, oneSided = oneSided)
+					    if (!is.null(state$delta[[variable]]) && !is.na(state$delta[[variable]])) {
+
+                delta[[variable]] <- state$delta[[variable]]
+                bf.raw <- .computeBayesFactorWilcoxon(deltaSamples = delta[[variable]], cauchyPriorParameter = options$priorWidth, oneSided = oneSided)
                 
               } else {
-                
+
                 r <- .rankSumGibbsSampler(x = group2, y = group1, nSamples = options$wilcoxonSamplesNumber, nBurnin = 0,
                                           cauchyPriorParameter = options$priorWidth, progressbar = progressbar)
                 if(is.null(r)) return() # Return null if settings are changed
-                delta[[i]] <- r[["deltaSamples"]]
+                delta[[variable]] <- r[["deltaSamples"]]
                 bf.raw <- .computeBayesFactorWilcoxon(deltaSamples = r[["deltaSamples"]], cauchyPriorParameter = options$priorWidth, oneSided = oneSided)
                 
               }
 					    
 					    wValue <- unname(wilcox.test(group2, group1, paired = FALSE)$statistic)
 					    error <- wValue
-					    tValue[i] <- median(delta[[i]])
+					    tValue[variable] <- median(delta[[variable]])
 					    
 					  }
 					  
-						if (options$bayesFactorType == "BF01")
-							bf.raw <- 1 / bf.raw
+					  bf.raw <- .recodeBFtype(bfOld = bf.raw,
+					  												newBFtype = options$bayesFactorType,
+					  												oldBFtype = "BF10"
+					  )
 
-						BF10post[i] <- bf.raw
+						BF10post[variable] <- bf.raw
 						BF <- .clean(bf.raw)
-
-						if (options$bayesFactorType == "LogBF10") {
-
-							BF <- log(BF10post[i])
-							BF <- .clean(BF)
-						}
 
 						if (is.na(bf.raw)) {
 
-							status[rowNo] <- "error"
-							plottingError[rowNo] <- "Plotting is not possible: Bayes factor could not be calculated"
+							status[variable] <- "error"
+							plottingError[variable] <- "Plotting is not possible: Bayes factor could not be calculated"
 						}
 
-						if(is.infinite(bf.raw)){
+						if (is.infinite(bf.raw) || is.infinite(1/bf.raw)) {
 
 							if(options$plotPriorAndPosterior | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness | options$plotBayesFactorRobustness){
 
 
-								status[rowNo] <- "error"
-								plottingError[rowNo] <- "Plotting is not possible: Bayes factor is infinite"
-							}
-						}
-
-						if(is.infinite(1/bf.raw)){
-
-							if(options$plotPriorAndPosterior | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness | options$plotBayesFactorRobustness){
-
-								status[rowNo] <- "error"
-								plottingError[rowNo] <- "Plotting is not possible: The Bayes factor is too small"
-							}
-						}
-
-						ind <- which(group1 == group1[1])
-						idData <- sum((ind+1)-(1:(length(ind))) == 1)
-
-						ind2 <- which(group2 == group2[1])
-						idData2 <- sum((ind2+1)-(1:(length(ind2))) == 1)
-
-						if(idData > 1 && idData2 > 1 && (options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
-
-							if(options$plotPriorAndPosterior | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness | options$plotBayesFactorRobustness){
-
-								# errorMessage <- paste("Sequential Analysis not possible: The first observations are identical")
-								# index <- .addFootnote(footnotes, errorMessage)
-
-								# status[rowNo] <- "sequentialNotPossible"
-								# plottingError[rowNo] <- "Sequential Analysis not possible: The first observations are identical"
+								status[variable] <- "error"
+								if (is.infinite(bf.raw)) {
+									plottingError[variable] <- "Plotting is not possible: Bayes factor is infinite"
+								} else {
+									plottingError[variable] <- "Plotting is not possible: The Bayes factor is too small"
+								}
 							}
 						}
 
@@ -1197,32 +866,25 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 						index <- .addFootnote(footnotes, errorMessage)
 
-						errorFootnotes[rowNo] <- errorMessage
+						errorFootnotes[variable] <- errorMessage
 
 						result <- list(.variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
 
-						status[rowNo] <- "error"
+						status[variable] <- "error"
 					}
-
-					ttest.rows[[rowNo]] <- result
-
+					ttest.rows[[variable]] <- result
 				}
-
-				rowNo <- rowNo + 1
-				i <- i + 1
 			}
-		}
-
 		ttest[["status"]] <- "complete"
 	}
 
-	ttest[["footnotes"]] <- as.list(footnotes)
-	ttest[["data"]] <- ttest.rows
-
+	# drop the variable names
+	ttest[["footnotes"]] <- as.list(unname(footnotes))
+	ttest[["data"]] <- unname(ttest.rows)
 
 	list(ttest = ttest, status = status, g1 = g1, g2 = g2, BFH1H0 = BFH1H0, plottingError = plottingError,
 	     BF10post = BF10post, errorFootnotes = errorFootnotes, tValue = tValue, n_group2 = n_group2,
-	     n_group1 = n_group1, delta = delta)
+	     n_group1 = n_group1, delta = delta, ttestData = ttest.rows)
 }
 
 .base_breaks_x <- function(x) {
@@ -1285,7 +947,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 }
 
 .ttestBayesianIndependentSamplesDescriptives <- function(dataset, options, perform,
-												 state = NULL, diff = NULL) {
+												 state = NULL) {
 	if (options$descriptives == FALSE) return(NULL)
 
 	descriptives = list("title" = "Group Descriptives")
@@ -1313,135 +975,69 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	}
 
 	descriptives[["schema"]] <- list(fields = fields)
-	data <- list()
-
-
-	## function to check if everything is alright with the options
-	isAllright <- function(variable, options, state = NULL, diff = NULL) {
-
-		# check if the variable is in the state variables
-		cond1 <- !is.null(state) && variable %in% state$options$variables
-
-		# check if either diff is true, or it's a list and descriptives,
-		# and groupingVariable, missingValues are FALSE
-		cond2 <- (!is.null(diff) && (is.logical(diff) && diff == FALSE) || (is.list(diff)
-				 && !any(diff$descriptives,diff$groupingVariable, diff$missingValues)))
-
-		cond1 && cond2
-	}
-
+	data <- state[["descriptivesData"]]
+	nvar <- length(options[["variables"]])
 	variables <- options$variables
+	groups <- options$groupingVariable
 	if (length(variables) == 0) variables <- "."
 
+	if (perform == "init" || nvar == 0 || groups == "")
 	for (variable in variables) {
-
-		if (isAllright(variable, options, state, diff)) {
-
-			stateDat <- state$results$descriptives$data
-			descriptivesVariables <- as.character(length(stateDat))
-
-			for (i in seq_along(stateDat))
-				descriptivesVariables[i] <- stateDat[[i]]$variable
-
-			indices <- which(descriptivesVariables == variable)
-			data[[length(data) + 1]] <- stateDat[[indices[1]]]
-			data[[length(data) + 1]] <- stateDat[[indices[2]]]
-
-		} else {
-			data[[length(data) + 1]] <- list(variable = variable, .isNewGroup = TRUE)
-			data[[length(data) + 1]] <- list(variable = variable)
+		if (is.null(data[[variable]])) {
+			data[[variable]][[1]] <- list(variable = variable, .isNewGroup = TRUE)
+			data[[variable]][[2]] <- list(variable = variable)
 		}
 	}
-
-	## check if we are done with all this crap
-	done <- (!is.null(state) &&
-			 state$options$descriptives &&
-			 all(variables %in% state$options$variables))
-
-	if (done) descriptives[["status"]] <- "complete"
-
-	groups <- options$groupingVariable
-
-	## if we actually have to do the test, and we have a grouping variable
-	if (perform == "run" && groups != "") {
+	if (perform == "run" && nvar >= 1 && groups != "") {
 		levels <- base::levels(dataset[[ .v(groups) ]])
+		groupingData <- dataset[[.v(groups)]]
+		for (variable in variables) {
+			if (is.null(data[[variable]])) {
+				for (i in 1:2) {
 
-		## if people don't know what a t-test is...
-		if (length(levels) != 2) {
-			descriptives[["error"]] <- list(errorType = "badData")
+					level <- levels[i]
+					variableData <- dataset[[.v(variable)]]
 
-		} else {
+					groupData <- variableData[groupingData == level]
+					groupDataOm <- na.omit(groupData)
 
-			rowNo <- 1
-			groupingData <- dataset[[.v(groups)]]
+					if (class(groupDataOm) != "factor") {
 
-			## do the whole loop as above again
-			for (variable in variables) {
+						posteriorSummary <- .posteriorSummaryGroupMean(variable=groupDataOm, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
+						ciLower <- .clean(posteriorSummary$ciLower)
+						ciUpper <- .clean(posteriorSummary$ciUpper)
 
-				# if everything is alright, add stuff to data
-				if (isAllright(variable, options, state, diff)) {
+						n <- .clean(length(groupDataOm))
+						mean <- .clean(mean(groupDataOm))
+						std <- .clean(sd(groupDataOm))
+						sem <- .clean(sd(groupDataOm) / sqrt(length(groupDataOm)))
 
-					stateDat <- state$results$descriptives$data
-					descriptivesVariables <- as.character(length(stateDat))
+						result <- list(variable = variable, group = level,
+													 N = n, mean = mean, sd = std, se = sem, lowerCI = ciLower,
+													 upperCI = ciUpper)
 
-					for (i in seq_along(stateDat))
-						descriptivesVariables[i] <- stateDat[[i]]$variable
-
-					indices <- which(descriptivesVariables == variable)
-
-					data[[rowNo]] <- stateDat[[indices[1]]]
-					data[[rowNo]] <- stateDat[[indices[2]]]
-
-					rowNo <- rowNo + 2
-
-				} else {
-
-					for (i in 1:2) {
-
-					  level <- levels[i]
-					  variableData <- dataset[[.v(variable)]]
-
-					  groupData <- variableData[groupingData == level]
-					  groupDataOm <- na.omit(groupData)
-
-					  if (class(groupDataOm) != "factor") {
-
-							posteriorSummary <- .posteriorSummaryGroupMean(variable=groupDataOm, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
-							ciLower <- .clean(posteriorSummary$ciLower)
-							ciUpper <- .clean(posteriorSummary$ciUpper)
-
-						  n <- .clean(length(groupDataOm))
-						  mean <- .clean(mean(groupDataOm))
-						  std <- .clean(sd(groupDataOm))
-						  sem <- .clean(sd(groupDataOm) / sqrt(length(groupDataOm)))
-
-						  result <- list(variable = variable, group = level,
-										 N = n, mean = mean, sd = std, se = sem, lowerCI = ciLower,
-										 upperCI = ciUpper)
-
-					  } else {
+					} else {
 
 						n <- .clean(length(groupDataOm))
 						result <- list(variable = variable, group = "",
-									   N = n, mean = "", sd = "", se = "", lowerCI = "",
-										 upperCI = "")
+													 N = n, mean = "", sd = "", se = "", lowerCI = "",
+													 upperCI = "")
 					}
 
 					if (i == 1) {
 						result[[".isNewGroup"]] <- TRUE
 					}
 
-					data[[rowNo]] <- result
-					rowNo <- rowNo + 1
-					}
+					data[[variable]][[i]] <- result
 				}
 			}
 		}
 		descriptives[["status"]] <- "complete"
 	}
 
-	descriptives[["data"]] <- data
-	descriptives
+	# drop the names
+	descriptives[["data"]] <- unlist(data, recursive = FALSE, use.names = FALSE)
+	return(list(descriptives = descriptives, descriptivesData = data))
 }
 
 

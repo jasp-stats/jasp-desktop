@@ -2088,31 +2088,89 @@ as.list.footnotes <- function(footnotes) {
 }
 
 
-.optionsChanged <- function(opts1, opts2, subset=NULL) {
+.optionsChanged <- function(stateOptions, newOptions, subset=NULL, state = NULL, insideCollection = FALSE) {
 
-  changed <- .diff(opts1, opts2)
+  changed <- .diff(stateOptions, newOptions)
   if (! is.list(changed)) {
     return(TRUE)
   }
-
-	if (! is.null(subset)) {
-	  changed <- changed[names(changed) %in% subset]
-	  if (length(changed) == 0) {
-	    stop(paste0("None of the gui options (", paste(subset, collapse=", "), ") is in the options list."))
-	  }
-	}
-
-  if (sum(sapply(changed, isTRUE)) > 0) {
-    return(TRUE)
+  
+  if (! is.null(subset)) {
+    if (is.list(subset)) {
+      
+      subsetChar <- unlist(subset[sapply(subset, is.character)])
+      subsetExpr <- subset[sapply(subset, is.expression)]
+      
+    } else {
+      
+      subsetChar <- subset
+      subsetExpr <- NULL
+      
+    }
+    
+    # deal with character input
+    if (length(subsetChar) > 0) {
+      changed <- changed[names(changed) %in% subsetChar]
+      if (length(changed) == 0) {
+        stop(paste0("None of the gui options (", paste(subsetChar, collapse=", "), ") is in the options list."))
+      }
+      # if changes detected, discard state item and exit early
+      if (sum(sapply(changed, isTRUE)) > 0) {
+        return(TRUE)
+      }
+    }
+    
+    # deal with expression input
+    if (length(subsetExpr) > 0) {
+      for (expr in subsetExpr) {
+        # execute expressions inside empty environments
+        # to avoid contamination across expressions.
+        e <- new.env()
+        e$options <- newOptions
+        e$state <- state
+        r <- try(eval(expr = expr, envir = e))
+        if (isTryError(r)) { # give developer an informative error
+          warning(sprintf("Statekey expression gave an error! Expression was: %s", expr))
+        } else if (!isTRUE(r)) { # if expression not TRUE, discard state item and exit early
+          return(TRUE)
+        }
+      }
+    }
+    
+    # if we got here, the item is useable
+    # now check if we have a collection with subdependencies
+    if (!is.null(attr(subset, "collection"))) {
+      if (insideCollection)
+        stop("Nested collections are not allowed in the state!")
+      
+      collectionKey <- attr(subset, "collection")
+      resExpr <- sapply(collectionKey, .optionsChanged,
+                        stateOptions = stateOptions, 
+                        newOptions = newOptions, 
+                        state = state,
+                        insideCollection = TRUE
+      )
+      
+      # if any subsets where TRUE they should be omitted
+      if (!is.logical(resExpr))
+        stop("collection key gave non-logical output!")
+      
+      if (any(resExpr)) { # if false, all subsets are kept
+        if (all(resExpr)) { # if true, all subsets unuseable
+          return(TRUE)
+        } else { # some subsets useable
+          return(which(!resExpr))
+        }
+      }
+    }
   }
-
   return(FALSE)
 }
 
 
 .getStateItems <- function(state, options, key) {
 
-  if (is.null(names(state)) || is.null(names(state$options)) ||
+  if (is.null(names(state)) || is.null(names(state[["options"]])) ||
       is.null(names(options)) || is.null(names(key))) {
     return(NULL)
   }
@@ -2120,14 +2178,19 @@ as.list.footnotes <- function(footnotes) {
   result <- list()
   for (item in names(state)) {
 
+  	# if name of state item not in key, keep the item
 		if (item %in% names(key) == FALSE) {
       result[[item]] <- state[[item]]
       next
     }
-
-    change <- .optionsChanged(state$options, options, key[[item]])
-    if (change == FALSE) {
+    change <- .optionsChanged(stateOptions = state[["options"]], newOptions = options,
+															subset = key[[item]], state = state)
+    if (isTRUE(change)) { # item unuseable
+      next
+    } else if (identical(change, FALSE)) { # item completely useable
       result[[item]] <- state[[item]]
+    } else if (is.integer(change)) { # item partially useable
+   		result[[item]] <- state[[item]][change]
 		}
 
   }
@@ -2137,6 +2200,22 @@ as.list.footnotes <- function(footnotes) {
 	}
 
   return(NULL)
+}
+
+.stateDependsOnVar <- function(variables, optionsName = "variables") {
+	if (is.null(variables) || identical(variables, ""))
+		return(NULL)
+	if (!is.character(variables))
+		stop(sprintf("Argument variables must be of type character, got a %s", class(variables)))
+	if (is.vector(variables)) {
+  	tmp <- paste0('"', variables, '"')
+	} else if (is.matrix(variables)) {
+		tmp <- apply(variables, 1, function(x) paste0("c(", paste0('"', x, '"', collapse = ", "), ")"))
+	} else {
+		stop("Argument variables not understood. Must be a character vector or a character matrix.")
+	}
+	collectionKey <- paste0(tmp, ' %in% options[["', optionsName, '"]]')
+  return(lapply(collectionKey, function(x) list(as.expression(parse(text = x)))))
 }
 
 
@@ -2698,4 +2777,37 @@ editImage <- function(plotName, type, height, width) {
   }
 
   return(v)
+}
+
+.recodeBFtype <- function(bfOld, newBFtype, oldBFtype) {
+
+	# Arguments:
+	# bfOld: the current value of the Bayes factor
+	# newBFtype: the new type of Bayes factor, e.g., BF10, BF01,
+	# oldBFtype: the current type of the Bayes factor, e.g., BF10, BF01,
+	#
+	# note: log(BF10) is the 'else' type, it is not explicitly checked.
+
+	if (oldBFtype == newBFtype)
+		return(bfOld)
+
+	if (oldBFtype == "BF10") {
+		if (newBFtype == "BF01") {
+			return(1 / bfOld)
+		} else {
+			return(log(bfOld))
+		}
+	} else if (oldBFtype == "BF01") {
+		if (newBFtype == "BF10") {
+			return(1 / bfOld)
+		} else {
+			return(log(1 / bfOld))
+		}
+	} else { # log(BF10)
+		if (newBFtype == "BF10") {
+			return(exp(bfOld))
+		} else {
+			return(1 / exp(bfOld))
+		}
+	}
 }
