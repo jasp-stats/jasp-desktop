@@ -10,11 +10,16 @@ ListView
 	
 	property bool m_TopButtonHovered: false
 	maximumFlickVelocity: 700
-		
+	
 	clip: true
 	
-	ScrollBar.vertical: ScrollBar {
-		active: m_TopButtonHovered
+	CustomScrollBar {
+		id:rightscrollbar
+		handleSize: 7
+		bkColor: "white"
+		fgColor: "black"
+		outerradius: false
+		flickable: parent
 	}
 	
 	spacing : 10
@@ -33,9 +38,7 @@ ListView
 		if ( (associated_datafile === "" && type === 0) || (associated_datafile !== "" && mousearea === "commonMouseArea") )
 			return "Double click to open JASP file"	
 		
-		var a = ""
-		if (associated_datafile !== "") a =" associated"
-		return "Double click to open" + a + " data file"				
+		return "Double click to open data file"				
 		
 	}
 	
@@ -50,6 +53,7 @@ ListView
 			height: rectTitle.height + rectDescription.height + 3
 			border.width: 1
 			border.color: "darkgray"
+			anchors.right: listview.right
 			
 			color: "#ececec"  
 			
@@ -97,7 +101,7 @@ ListView
 						
 						onEntered: m_TopButtonHovered = true;
 						onExited: m_TopButtonHovered = false;						
-					
+						
 					}
 					
 					ToolTip {
@@ -115,7 +119,7 @@ ListView
 					width: model.associated_datafile === "" ? 0 : height
 					anchors.right : parent.right
 					anchors.top:rectTitle.top
-					anchors.rightMargin: 10
+					anchors.rightMargin: rightscrollbar.width + 1
 					
 					fillMode: Image.PreserveAspectFit
 					source: model.dataiconsource
@@ -211,7 +215,7 @@ ListView
 					anchors.top: parent.top
 					
 					anchors.leftMargin: 10					
-					anchors.rightMargin: 10
+					anchors.rightMargin: rightscrollbar.width + 5
 					anchors.topMargin: 10
 					
 					horizontalAlignment: Text.AlignJustify
