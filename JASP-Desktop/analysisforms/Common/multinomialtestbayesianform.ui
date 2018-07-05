@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>618</width>
-    <height>1525</height>
+    <width>565</width>
+    <height>1347</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -272,7 +272,7 @@
       <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="4" column="0" colspan="2">
+      <item row="5" column="0" colspan="2">
        <widget class="QWidget" name="widget_expectedProbsTable" native="true">
         <layout class="QGridLayout" name="layout_expectedProbsTable">
          <item row="0" column="0">
@@ -356,6 +356,26 @@
         <property name="text">
          <string>Equal proportions</string>
         </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QRadioButton" name="_3restrictedHypotheses">
+        <property name="text">
+         <string>Restricted Hypotheses</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0" colspan="2">
+       <widget class="QWidget" name="widget_expectedProbsTable_2" native="true">
+        <layout class="QGridLayout" name="layout_expectedProbsTable_2">
+         <item row="0" column="0">
+          <widget class="QQuickWidget" name="restrictedHypotheses">
+           <property name="resizeMode">
+            <enum>QQuickWidget::SizeRootObjectToView</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
@@ -673,6 +693,11 @@
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>QQuickWidget</class>
+   <extends>QWidget</extends>
+   <header>QtQuickWidgets/QQuickWidget</header>
+  </customwidget>
   <customwidget>
    <class>AssignButton</class>
    <extends>QPushButton</extends>

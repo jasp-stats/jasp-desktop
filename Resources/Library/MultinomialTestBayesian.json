@@ -38,7 +38,7 @@
 		},
 		{
 			"name": "hypothesis",
-			"options": [ "multinomialTest", "expectedProbs" ],
+			"options": [ "multinomialTest", "expectedProbs", "restrictedHypotheses" ],
 			"default": "multinomialTest",
 			"type": "List"
 		},

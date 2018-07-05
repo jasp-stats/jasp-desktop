@@ -19,6 +19,8 @@
 #include "multinomialtestbayesianform.h"
 #include "ui_multinomialtestbayesianform.h"
 
+#include <QQmlContext>
+
 MultinomialTestBayesianForm::MultinomialTestBayesianForm(QWidget *parent) :
 	AnalysisForm("MultinomialTestBayesianForm", parent),
 	ui(new Ui::MultinomialTestBayesianForm)
@@ -66,11 +68,22 @@ MultinomialTestBayesianForm::MultinomialTestBayesianForm(QWidget *parent) :
 
 	connect(probVarModel, SIGNAL(assignmentsChanged()), this, SLOT(expectedCountsHandler()));
 	connect(ui->tableWidget, SIGNAL(cellChanged(int, int)), this, SLOT(cellChangedHandler()));
+
+
+	loadQML();
 }
 
 MultinomialTestBayesianForm::~MultinomialTestBayesianForm()
 {
 	delete ui;
+}
+
+void MultinomialTestBayesianForm::loadQML()
+{
+	ui->restrictedHypotheses->rootContext()->setContextProperty("filterErrorText",	QString(""));
+	ui->restrictedHypotheses->rootContext()->setContextProperty("generatedFilter",	QString(""));
+	ui->restrictedHypotheses->rootContext()->setContextProperty("defaultFilter",	QString(""));
+    ui->restrictedHypotheses->setSource(QUrl(QString("qrc:///qml/hypothesesWidget.qml")));
 }
 
 void MultinomialTestBayesianForm::bindTo(Options *options, DataSet *dataSet)
@@ -218,7 +231,7 @@ void MultinomialTestBayesianForm::addColumnToTable() {
 	int rowCount = ui->tableWidget->rowCount();
 
 	// Add column labels (Hypotheses labels)
-	
+
 	horizontalLabels = QStringList();
 	QString letters[5] = {"a", "b", "c", "d", "e"};
 	for (int col = 1; col <= columnCount; ++col) {

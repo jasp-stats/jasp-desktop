@@ -51,6 +51,7 @@ private slots:
 	void expectedCountsHandler();
 	void countModelHandler();
 	void cellChangedHandler();
+	void loadQML();
 
 private:
 	Ui::MultinomialTestBayesianForm *ui;
