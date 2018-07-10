@@ -67,6 +67,7 @@ HEADERS += \
 
 
 windows{
+  QMAKE_CXXFLAGS += -Og #for big object files
   SOURCE_LIBFILE = $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_NAME'.a'
    SOURCE_LIBFILE ~= s,/,\\,g
 	DEST_LIBFILE = $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_NAME'.lib'
