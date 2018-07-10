@@ -605,16 +605,8 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 {
   if (any(is.infinite(column)))   return(createJaspPlot(plot=function() { .barplotJASP(variable=variable, dontPlotData=TRUE) }, title=variable, width=width, height=height, error="badData", errorMessage="Plotting is not possible: Variable contains infinity"))
   else if (length(column) < 3)    return(createJaspPlot(plot=function() { .barplotJASP(variable=variable, dontPlotData=TRUE) }, title=variable, width=width, height=height, error="badData", errorMessage="Plotting is not possible: Too few rows (left)"))
-  else if (
-    (length(column) > 0 && is.factor(column)) ||
-    (is.numeric(column) && all(!is.na(column) & (column %% 1 == 0))) #&& length(unique(column)) <= 24)
-   )
-  {
-    if (!is.factor(column))
-      column <- as.factor(column)
-
+  else if (length(column) > 0 && is.factor(column))
     return(createJaspPlot(plot=function() { .barplotJASP(column, variable) }, title=variable, width=width, height=height))
-  }
   else if (length(column) > 0 && !is.factor(column))
     return(createJaspPlot(plot=.plotMarginal(column, variableName=variable, displayDensity = displayDensity ), title=variable, width=width, height=height))
 }
