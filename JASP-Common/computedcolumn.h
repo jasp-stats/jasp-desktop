@@ -3,6 +3,7 @@
 
 #include "columns.h"
 #include "jsonredirect.h"
+#include <list>
 
 // #include "analysis.h" // for use later on
 
