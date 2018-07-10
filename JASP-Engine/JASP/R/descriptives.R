@@ -607,7 +607,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   else if (length(column) < 3)    return(createJaspPlot(plot=function() { .barplotJASP(variable=variable, dontPlotData=TRUE) }, title=variable, width=width, height=height, error="badData", errorMessage="Plotting is not possible: Too few rows (left)"))
   else if (
     (length(column) > 0 && is.factor(column)) ||
-    (is.numeric(column) && all(!is.na(column) & (column %% 1 == 0)) && length(unique(column)) <= 24)
+    (is.numeric(column) && all(!is.na(column) & (column %% 1 == 0))) #&& length(unique(column)) <= 24)
    )
   {
     if (!is.factor(column))
