@@ -44,6 +44,17 @@
 			"name": "regressionCoefficientsEstimates",
 			"type": "Boolean"
 		},
+        {
+            "default": false,
+            "name": "regressionCoefficientsBootstrapping",
+            "type": "Boolean"
+        },
+        {
+            "default": 5000,
+            "name": "regressionCoefficientsBootstrappingReplicates",
+            "type": "Integer",
+            "min": 100
+        },
 		{
 			"default": false,
 			"name": "regressionCoefficientsConfidenceIntervals",
@@ -51,8 +62,8 @@
 		},
 		{
 			"default": 95,
-			"name": "regressionCoefficientsConfidenceIntervalsInterval",
-			"type": "Integer",
+            "name": "regressionCoefficientsConfidenceIntervalsInterval",
+            "type": "Integer",
 			"min": 1,
 			"max": 99
 		},
@@ -99,7 +110,7 @@
 		{
 			"name": "residualsCasewiseDiagnosticsType",
 			"type": "List",
-			"options": [ "outliersOutside", "allCases" ]
+            "options": [ "outliersOutside", "cooksDistance", "allCases" ]
 		},
 		{
 			"default": 3,
@@ -107,6 +118,12 @@
 			"type": "Integer",
 			"min": 0
 		},
+        {
+            "name": "residualsCasewiseDiagnosticsCooksDistance",
+            "type": "Number",
+            "default": 1,
+            "min": 0
+        },
 		{
 			"name": "steppingMethodCriteriaType",
 			"options": [ "usePValue", "useFValue" ],
@@ -184,6 +201,12 @@
 			"name": "plotResidualsQQ",
 			"type": "Boolean"
 		},
+        {
+            "default": false,
+            "name": "plotsPartialRegression",
+            "type": "Boolean"
+        },
+
 		{
 		  "name": "VovkSellkeMPR",
 		  "type": "Boolean",

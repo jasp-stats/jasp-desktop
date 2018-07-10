@@ -60,7 +60,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Assumption Checks</string>
+         <string>Plots</string>
         </property>
        </widget>
       </item>
@@ -114,6 +114,13 @@
               </property>
              </widget>
             </item>
+            <item row="6" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="plotResidualsQQ">
+              <property name="text">
+               <string>Q-Q plot standardized residuals</string>
+              </property>
+             </widget>
+            </item>
             <item row="3" column="0" colspan="3">
              <widget class="BoundCheckBox" name="plotResidualsHistogram">
               <property name="text">
@@ -142,10 +149,10 @@
               </property>
              </widget>
             </item>
-            <item row="6" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="plotResidualsQQ">
+            <item row="7" column="0">
+             <widget class="BoundCheckBox" name="plotsPartialRegression">
               <property name="text">
-               <string>Q-Q plot standardized residuals</string>
+               <string>Partial plots</string>
               </property>
              </widget>
             </item>
@@ -198,6 +205,60 @@
          <property name="bottomMargin">
           <number>0</number>
          </property>
+         <item row="0" column="2" rowspan="2">
+          <widget class="QWidget" name="widget_20" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>1</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="GroupBox" name="groupBox_2">
+           <property name="title">
+            <string/>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_6">
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="rSquaredChange">
+              <property name="text">
+               <string>R squared change</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="descriptives">
+              <property name="text">
+               <string>Descriptives</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="BoundCheckBox" name="partAndPartialCorrelations">
+              <property name="text">
+               <string>Part and partial correlations</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="BoundCheckBox" name="collinearityDiagnostics">
+              <property name="text">
+               <string>Collinearity diagnostics</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="modelFit">
+              <property name="text">
+               <string>Model fit</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
          <item row="1" column="0" colspan="2">
           <widget class="GroupBox" name="groupBoxResiduals">
            <property name="title">
@@ -210,25 +271,16 @@
                <bool>false</bool>
               </property>
               <layout class="QGridLayout" name="gridLayout_7">
-               <property name="leftMargin">
-                <number>20</number>
-               </property>
                <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
                 <number>0</number>
                </property>
                <property name="bottomMargin">
                 <number>0</number>
                </property>
-               <property name="verticalSpacing">
-                <number>0</number>
-               </property>
                <item row="0" column="0">
                 <widget class="QRadioButton" name="_1outliersOutside">
                  <property name="text">
-                  <string>Outliers outside</string>
+                  <string>Standardized residual &gt;</string>
                  </property>
                 </widget>
                </item>
@@ -242,17 +294,39 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="2">
-                <widget class="QLabel" name="label_6">
+               <item row="1" column="0">
+                <widget class="QRadioButton" name="_2cooksDistance">
                  <property name="text">
-                  <string>standard deviations</string>
+                  <string>Cook's distance &gt; </string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="0">
-                <widget class="QRadioButton" name="_2allCases">
+               <item row="1" column="1" colspan="2">
+                <widget class="BoundTextBox" name="residualsCasewiseDiagnosticsCooksDistance">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>60</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0" colspan="3">
+                <widget class="QRadioButton" name="_3allCases">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>27</height>
+                  </size>
+                 </property>
                  <property name="text">
-                  <string>All cases</string>
+                  <string>All</string>
                  </property>
                 </widget>
                </item>
@@ -295,47 +369,81 @@
             <string>Regression Coefficients</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
-            <item row="0" column="0" colspan="2">
+            <item row="0" column="0" colspan="3">
              <widget class="BoundCheckBox" name="regressionCoefficientsEstimates">
               <property name="text">
                <string>Estimates</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="0" colspan="4">
+            <item row="2" column="0">
              <widget class="BoundCheckBox" name="regressionCoefficientsConfidenceIntervals">
               <property name="text">
                <string>Confidence intervals</string>
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QWidget" name="panelConfidenceInterval" native="true">
+            <item row="2" column="2">
+             <widget class="QLabel" name="label_IntervalPercent">
+              <property name="text">
+               <string>%</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="regressionCoefficientsCovarianceMatrix">
+              <property name="text">
+               <string>Covariance matrix</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="BoundTextBox" name="regressionCoefficientsConfidenceIntervalsInterval">
+              <property name="maximumSize">
+               <size>
+                <width>60</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QWidget" name="panelBootstrapping" native="true">
               <property name="enabled">
                <bool>false</bool>
               </property>
-              <layout class="QGridLayout" name="gridLayout_18">
-               <property name="leftMargin">
-                <number>20</number>
-               </property>
+              <layout class="QGridLayout" name="gridLayout_4" columnstretch="0,0,0">
                <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
                 <number>0</number>
                </property>
                <property name="bottomMargin">
                 <number>0</number>
                </property>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label">
+               <property name="spacing">
+                <number>-1</number>
+               </property>
+               <item row="0" column="2">
+                <widget class="QLabel" name="label_BootstrappingReplicates">
                  <property name="text">
-                  <string>Interval</string>
+                  <string>bootstraps</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="BoundCheckBox" name="regressionCoefficientsBootstrapping">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>From</string>
                  </property>
                 </widget>
                </item>
                <item row="0" column="1">
-                <widget class="BoundTextBox" name="regressionCoefficientsConfidenceIntervalsInterval">
+                <widget class="BoundTextBox" name="regressionCoefficientsBootstrappingReplicates">
                  <property name="maximumSize">
                   <size>
                    <width>60</width>
@@ -344,78 +452,10 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="2">
-                <widget class="QLabel" name="label_2">
-                 <property name="text">
-                  <string>%</string>
-                 </property>
-                </widget>
-               </item>
               </layout>
              </widget>
             </item>
-            <item row="3" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="regressionCoefficientsCovarianceMatrix">
-              <property name="text">
-               <string>Covariance matrix</string>
-              </property>
-             </widget>
-            </item>
            </layout>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="GroupBox" name="groupBox_2">
-           <property name="title">
-            <string/>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_6">
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="modelFit">
-              <property name="text">
-               <string>Model fit</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="rSquaredChange">
-              <property name="text">
-               <string>R squared change</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="BoundCheckBox" name="descriptives">
-              <property name="text">
-               <string>Descriptives</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="BoundCheckBox" name="partAndPartialCorrelations">
-              <property name="text">
-               <string>Part and partial correlations</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="BoundCheckBox" name="collinearityDiagnostics">
-              <property name="text">
-               <string>Collinearity diagnostics</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="0" column="2" rowspan="2">
-          <widget class="QWidget" name="widget_20" native="true">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>1</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
           </widget>
          </item>
         </layout>
@@ -1182,7 +1222,6 @@
   <tabstop>pushButton</tabstop>
   <tabstop>regressionCoefficientsEstimates</tabstop>
   <tabstop>regressionCoefficientsConfidenceIntervals</tabstop>
-  <tabstop>regressionCoefficientsConfidenceIntervalsInterval</tabstop>
   <tabstop>regressionCoefficientsCovarianceMatrix</tabstop>
   <tabstop>modelFit</tabstop>
   <tabstop>rSquaredChange</tabstop>
@@ -1193,7 +1232,7 @@
   <tabstop>residualsCasewiseDiagnostics</tabstop>
   <tabstop>_1outliersOutside</tabstop>
   <tabstop>residualsCasewiseDiagnosticsOutliersOutside</tabstop>
-  <tabstop>_2allCases</tabstop>
+  <tabstop>_3allCases</tabstop>
   <tabstop>pushButton_2</tabstop>
   <tabstop>_1usePValue</tabstop>
   <tabstop>steppingMethodCriteriaPEntry</tabstop>
@@ -1216,14 +1255,14 @@
  <resources/>
  <connections>
   <connection>
-   <sender>regressionCoefficientsConfidenceIntervals</sender>
+   <sender>regressionCoefficientsEstimates</sender>
    <signal>toggled(bool)</signal>
-   <receiver>panelConfidenceInterval</receiver>
+   <receiver>panelBootstrapping</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>112</x>
-     <y>608</y>
+     <x>189</x>
+     <y>1045</y>
     </hint>
     <hint type="destinationlabel">
      <x>103</x>
