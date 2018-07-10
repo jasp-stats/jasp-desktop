@@ -259,7 +259,7 @@ void MainWindow::initQWidgetGUIParts()
 	_okButton	= new QPushButton(QString("OK"), _buttonPanel);
 	_okButton->setDefault(true);
 
-	QMenuBar *_mMenuBar = new QMenuBar(this);
+	QMenuBar *_mMenuBar = new QMenuBar(0);
 	QMenu *aboutMenu	= _mMenuBar->addMenu("JASP");
 	aboutMenu->addAction("About",ui->tabBar,SLOT(showAbout()));
 	_mMenuBar->addMenu(aboutMenu);
