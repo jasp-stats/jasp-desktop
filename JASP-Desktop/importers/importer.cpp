@@ -162,6 +162,7 @@ DataSet* Importer::setDataSetSize(int columnCount, int rowCount)
 	do
 	{
 		try {
+			std::cout << "Importer::setDataSetSize columnCount(): " << columnCount << std::endl;
 			dataSet->setColumnCount(columnCount);
 			if (rowCount > 0)
 				dataSet->setRowCount(rowCount);
@@ -200,6 +201,10 @@ DataSet* Importer::setDataSetSize(int columnCount, int rowCount)
 	return dataSet;
 }
 
+void Importer::initColumn(std::string colName, ImportColumn *importColumn)
+{
+	initColumn(_packageData->dataSet()->getColumnIndex(colName), importColumn);
+}
 
 void Importer::initColumn(int colNo, ImportColumn *importColumn)
 {
@@ -260,20 +265,23 @@ void Importer::_syncPackage(
 		for (auto indexColChanged : changedColumns)
 		{
 			std::cout << "Column changed " << indexColChanged.first << std::endl;
-			Column &column		= _packageData->dataSet()->column(indexColChanged.first);
-			std::string colName	= column.name();
+			//Column &column		= _packageData->dataSet()->column(indexColChanged.first);
+			std::string colName	= indexColChanged.second->name();
 			_changedColumns.push_back(colName);
-			initColumn(indexColChanged.first, syncDataSet->getColumn(colName));
+			initColumn(colName, syncDataSet->getColumn(colName));
 		}
 	}
 
 	if (newColumns.size() > 0)
 	{
-		setDataSetSize(colNo + newColumns.size(), syncDataSet->rowCount());
+		//setDataSetSize(colNo + newColumns.size(), syncDataSet->rowCount());
+
 		for (auto it = newColumns.begin(); it != newColumns.end(); ++it, ++colNo)
 		{
+			increaseDataSetColCount(syncDataSet->rowCount());
+
 			std::cout << "New column " << it->first << std::endl;
-			initColumn(colNo, syncDataSet->getColumn(it->first));
+			initColumn(_packageData->dataSet()->columnCount() - 1, syncDataSet->getColumn(it->first));
 		}
 	}
 

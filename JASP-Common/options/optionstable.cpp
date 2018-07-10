@@ -68,7 +68,7 @@ Option *OptionsTable::clone() const
 {
 	Options *rowTemplate = static_cast<Options*>(this->rowTemplate()->clone());
 
-	OptionsTable *c = new OptionsTable();
+	OptionsTable *c = new OptionsTable(rowTemplate);
 
 	std::vector<Options *> rows;
 

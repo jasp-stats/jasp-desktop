@@ -63,15 +63,29 @@ FocusScope
 		else								close()
 	}
 
-	property real desiredMinimumHeight: computeColumnButtons.height + computeColumnErrorScroll.height + computeColumnEditRectangle.desiredMinimumHeight
+	property real desiredMinimumHeight: computeColumnButtons.height + computeColumnErrorScroll.height + (computedColumnsInterface.computeColumnUsesRCode ? computeColumnEditRectangle.desiredMinimumHeight : computedColumnConstructor.desiredMinimumHeight) + computeColumnTitle.height
 
+
+
+	Text
+	{
+		id: computeColumnTitle
+		text: computedColumnsInterface.computeColumnNameSelected !== "" ? computedColumnsInterface.computeColumnNameSelected : "Select a column"
+		anchors.top: parent.top
+		anchors.horizontalCenter: parent.horizontalCenter
+
+		horizontalAlignment: Text.AlignHCenter
+		font.pixelSize: 20
+		font.bold: true
+
+	}
 
 	Item
 	{
 		id: computeColumnCodeArea
 
 
-		anchors.top: parent.top
+		anchors.top: computeColumnTitle.bottom
 		anchors.bottom: computeColumnErrorScroll.top
 		anchors.left: parent.left
 		anchors.right: parent.right
@@ -84,32 +98,17 @@ FocusScope
 			border.width: 1
 			border.color: "lightGrey"
 
-			property real desiredMinimumHeight: computedColumnContainer.minimumHeightTextBoxes + computeColumnTitle.height
+			property real desiredMinimumHeight: computedColumnContainer.minimumHeightTextBoxes
 
 			visible: computedColumnContainer.userLikesR
 
 			anchors.fill: parent
 
-			Text
-			{
-				id: computeColumnTitle
-				text: computedColumnsInterface.computeColumnNameSelected !== "" ? computedColumnsInterface.computeColumnNameSelected : "Select a column"
-				anchors.top: parent.top
-				anchors.horizontalCenter: parent.horizontalCenter
-
-				horizontalAlignment: Text.AlignHCenter
-				font.pixelSize: 20
-				font.bold: true
-
-			}
-
-
 			TextArea
 			{
-
 				id: computeColumnEdit
 
-				anchors.top: computeColumnTitle.bottom
+				anchors.top: parent.top
 				anchors.left: parent.left
 				anchors.right: parent.right
 				height: contentHeight + 30
