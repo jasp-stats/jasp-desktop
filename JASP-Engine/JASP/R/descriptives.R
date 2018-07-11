@@ -111,7 +111,6 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
         else          distPlots[[var]] <- .descriptivesFrequencyPlots(dataset = dataset,  options = options, variable = var)
       }
 
-
     if(distPlots$length == 0)
       jaspResults[["distributionPlots"]] <- NULL
   }
@@ -588,7 +587,10 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     plotResult$setOptionMustBeDependency("splitBy",         options$splitBy)
 
     for (l in split)
+    {
       plotResult[[l]] <- .descriptivesFrequencyPlots_SubFunc(column=dataset[[l]][[.v(variable)]], variable=l, width=options$plotWidth, height=options$plotHeight)
+      plotResult[[l]]$copyDependenciesFromJaspObject(plotResult)
+    }
 
 
     return(plotResult)
@@ -596,6 +598,8 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   }
   else
   {
+
+
     column <- dataset[[ .v(variable) ]]
     aPlot <- .descriptivesFrequencyPlots_SubFunc(column=column[!is.na(column)], variable=variable, width=options$plotWidth, height=options$plotHeight)
     aPlot$setOptionMustContainDependency("variables",  variable)
