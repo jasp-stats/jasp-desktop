@@ -248,7 +248,6 @@ void EngineRepresentation::processAnalysisReply(Json::Value json)
 
 #ifdef PRINT_ENGINE_MESSAGES
 	std::cout << "Analysis reply: " << json.toStyledString() << std::endl;
-	std::cout.flush();
 #endif
 
 	Analysis *analysis			= _analysisInProgress;
@@ -264,8 +263,7 @@ void EngineRepresentation::processAnalysisReply(Json::Value json)
 	if(analysis->revision() > revision) //I guess we changed some option or something?
 		return;
 
-	if(analysis->status() != Analysis::Running)
-		analysis->setStatus(analysisResultStatusToAnalysStatus(status, analysis));
+	analysis->setStatus(analysisResultStatusToAnalysStatus(status, analysis));
 
 	switch(status)
 	{

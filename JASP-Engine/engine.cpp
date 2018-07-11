@@ -329,7 +329,8 @@ void Engine::sendAnalysisResults()
 	response["revision"]	= _analysisRevision;
 	response["progress"]	= _progress;
 
-	analysisResultStatus resultStatus = !_analysisResults.isObject() ? getStatusToAnalysisStatus() : analysisResultStatusFromString(_analysisResults.get("status", "").asString());
+	bool					sensibleResultsStatus	= _analysisResults.isObject() && _analysisResults.get("status", Json::nullValue) != Json::nullValue;
+	analysisResultStatus	resultStatus			= !sensibleResultsStatus ? getStatusToAnalysisStatus() : analysisResultStatusFromString(_analysisResults["status"].asString());
 
 	response["results"] = _analysisResults.get("results", _analysisResults);
 	response["status"]  = analysisResultStatusToString(resultStatus);
@@ -512,8 +513,8 @@ std::string Engine::callback(const std::string &results, int progress)
 	}
 	else if (progress >= 0 && _status == running)
 	{
-		_analysisResultsString	= Json::nullValue;
-		_analysisResults		= "";
+		_analysisResultsString	= "";
+		_analysisResults		= Json::nullValue;
 		_progress				= progress;
 
 		sendAnalysisResults();

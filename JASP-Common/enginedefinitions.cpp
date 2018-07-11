@@ -48,7 +48,7 @@ performType performTypeFromString(std::string p)
 }
 
 std::string analysisResultStatusToString(analysisResultStatus a)
-{
+{	
 	switch(a)
 	{
 	case analysisResultStatus::error:		return "error";
@@ -59,7 +59,8 @@ std::string analysisResultStatusToString(analysisResultStatus a)
 	case analysisResultStatus::inited:		return "inited";
 	case analysisResultStatus::running:		return "running";
 	case analysisResultStatus::changed:		return "changed";
-	default:								throw std::logic_error("When you define new analysisResultStatuss you should add them to analysisResultStatusToString and analysisResultStatusFromString!");
+	case analysisResultStatus::waiting:		return "waiting";
+	default:								throw std::logic_error("When you define new analysisResultStatuss you should add them to analysisResultStatusToString!");
 	}
 }
 
@@ -73,5 +74,6 @@ analysisResultStatus analysisResultStatusFromString(std::string p)
 	else if(p == "inited")		return analysisResultStatus::inited;
 	else if(p == "running")		return analysisResultStatus::running;
 	else if(p == "changed")		return analysisResultStatus::changed;
-	else						throw std::logic_error("When you define new analysisResultStatuss you should add them to analysisResultStatusToString and analysisResultStatusFromString!");
+	else if(p == "waiting")		return analysisResultStatus::waiting;
+	else						throw std::logic_error("When you define new analysisResultStatuses you should add them " + p + " to analysisResultStatusToString and analysisResultStatusFromString!");
 }
