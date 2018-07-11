@@ -192,8 +192,6 @@ void Engine::receiveAnalysisMessage(Json::Value jsonRequest)
 
 	}
 
-	currentEngineState = engineState::idle;
-
 	if (_status == toInit || _status == toRun || _status == changed || _status == saveImg || _status == editImg)
 	{
 		_analysisName			= jsonRequest.get("name",			Json::nullValue).asString();
@@ -211,6 +209,8 @@ void Engine::receiveAnalysisMessage(Json::Value jsonRequest)
 		currentEngineState = engineState::analysis;
 	}
 }
+
+
 
 
 void Engine::runAnalysis()
@@ -263,6 +263,7 @@ void Engine::runAnalysis()
 			sendAnalysisResults();
 		}
 
+		currentEngineState = engineState::idle;
 		_status		= empty;
 		removeNonKeepFiles(_analysisResults.isObject() ? _analysisResults.get("keep", Json::nullValue) : Json::nullValue);
 
@@ -285,6 +286,7 @@ void Engine::saveImage()
 	_progress									= -1;
 	sendAnalysisResults();
 	_status										= empty;
+	currentEngineState							= engineState::idle;
 
 }
 
@@ -298,10 +300,11 @@ void Engine::editImage()
 
 	Json::Reader().parse(result, _analysisResults, false);
 
-	_status		= complete;
-	_progress	= -1;
+	_status				= complete;
+	_progress			= -1;
 	sendAnalysisResults();
-	_status		= empty;
+	_status				= empty;
+	currentEngineState	= engineState::idle;
 }
 
 analysisResultStatus Engine::getStatusToAnalysisStatus()
@@ -318,8 +321,6 @@ analysisResultStatus Engine::getStatusToAnalysisStatus()
 
 void Engine::sendAnalysisResults()
 {
-
-	if(_analysisJaspResults) return; //jaspResults will make sure the results are sent to the other side
 	Json::Value response = Json::Value(Json::objectValue);
 
 	response["typeRequest"]	= engineStateToString(engineState::analysis);

@@ -162,7 +162,6 @@ DataSet* Importer::setDataSetSize(int columnCount, int rowCount)
 	do
 	{
 		try {
-			std::cout << "Importer::setDataSetSize columnCount(): " << columnCount << std::endl;
 			dataSet->setColumnCount(columnCount);
 			if (rowCount > 0)
 				dataSet->setRowCount(rowCount);

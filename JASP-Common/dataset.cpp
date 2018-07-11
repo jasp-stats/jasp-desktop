@@ -47,8 +47,6 @@ void DataSet::setSharedMemory(boost::interprocess::managed_shared_memory *mem)
 	_mem = mem;
 	_columns.setSharedMemory(mem);
 
-	std::cout << "DataSet::setSharedMemory!\n" << std::flush;
-
 	_filterVector = BoolVector(mem->get_segment_manager());
 	for(size_t i=0; i<maxRowCount(); i++)
 		_filterVector.push_back(true);
