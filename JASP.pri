@@ -13,6 +13,8 @@ CURRENT_R_VERSION = 3.4
 DEFINES += "CURRENT_R_VERSION=\"$$CURRENT_R_VERSION\""
 BUILDING_JASP_ENGINE=false
 
+DEFINES += PRINT_ENGINE_MESSAGES
+
 #macx | windows | exists(/app/lib/*) {
 #	message(using libjson static)
   DEFINES += JASP_LIBJSON_STATIC # lets just always use libjson-static, they keep moving the include files...

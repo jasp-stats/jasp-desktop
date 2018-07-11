@@ -175,6 +175,7 @@ FocusScope {
                             selection.select(selectThis, selectThis)
                         }
 
+						sendCurrentColumnChanged()
                     }
 
                     function closeYourself() { variablesWindow.chooseColumn(-1) }

@@ -12,7 +12,7 @@ enum class performType	{ init, run, abort, saveImg, editImg};
 std::string performTypeToString(performType p);
 performType performTypeFromString(std::string p);
 
-enum class analysisResultStatus  { error, exception, imageSaved, imageEdited, complete, inited, running, changed};
+enum class analysisResultStatus  { error, exception, imageSaved, imageEdited, complete, inited, running, changed, waiting};
 std::string analysisResultStatusToString(analysisResultStatus p);
 analysisResultStatus analysisResultStatusFromString(std::string p);
 
