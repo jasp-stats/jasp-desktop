@@ -20,6 +20,7 @@
 #include "ui_multinomialtestbayesianform.h"
 
 #include <QQmlContext>
+#include <QDebug>
 
 MultinomialTestBayesianForm::MultinomialTestBayesianForm(QWidget *parent) :
 	AnalysisForm("MultinomialTestBayesianForm", parent),
@@ -69,8 +70,6 @@ MultinomialTestBayesianForm::MultinomialTestBayesianForm(QWidget *parent) :
 	connect(probVarModel, SIGNAL(assignmentsChanged()), this, SLOT(expectedCountsHandler()));
 	connect(ui->tableWidget, SIGNAL(cellChanged(int, int)), this, SLOT(cellChangedHandler()));
 
-
-	loadQML();
 }
 
 MultinomialTestBayesianForm::~MultinomialTestBayesianForm()
@@ -80,9 +79,15 @@ MultinomialTestBayesianForm::~MultinomialTestBayesianForm()
 
 void MultinomialTestBayesianForm::loadQML()
 {
+
+	qDebug() << "************************";
+	qDebug() << QString::number(_columnsModel->numRows());
+	qDebug() << "************************";
+
 	ui->restrictedHypotheses->rootContext()->setContextProperty("filterErrorText",	QString(""));
 	ui->restrictedHypotheses->rootContext()->setContextProperty("generatedFilter",	QString(""));
 	ui->restrictedHypotheses->rootContext()->setContextProperty("defaultFilter",	QString(""));
+	ui->restrictedHypotheses->rootContext()->setContextProperty("columnsModel",		_columnsModel);
     ui->restrictedHypotheses->setSource(QUrl(QString("qrc:///qml/hypothesesWidget.qml")));
 }
 
@@ -123,6 +128,14 @@ void MultinomialTestBayesianForm::bindTo(Options *options, DataSet *dataSet)
 	// countModelHandler();
 
 	expectedCountsHandler();
+
+	if (_columnsModel == NULL) {
+		// FIXME: This is a hack. remove it
+		_columnsModel = new ColumnsModel(this);
+		_columnsModel->setDataSet(_dataSet);
+
+		loadQML();
+	}
 }
 
 void MultinomialTestBayesianForm::expectedCountsHandler()

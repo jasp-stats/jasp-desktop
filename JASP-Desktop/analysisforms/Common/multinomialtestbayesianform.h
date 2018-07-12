@@ -25,6 +25,8 @@
 #include "../analysisform.h"
 #include "options/optionvariable.h"
 
+#include "columnsmodel.h"
+
 namespace Ui {
 class MultinomialTestBayesianForm;
 }
@@ -60,6 +62,8 @@ private:
 	TableModelVariablesAssigned *factorModel;
 	std::string _previous;
 	Options *_options;
+
+	ColumnsModel *_columnsModel = NULL;
 };
 
 #endif // MULTINOMIALTESTBAYESIANFORM_H
