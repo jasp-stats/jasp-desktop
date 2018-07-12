@@ -38,6 +38,18 @@ public:
 	Q_INVOKABLE void	sendCode(QString code);
 	Q_INVOKABLE void	sendCode(QString code, QString json);
 
+	Q_INVOKABLE bool	isColumnNameFree(QString name)						{ return _package->isColumnNameFree(name.toStdString()); }
+
+				ComputedColumn*		createComputedColumn(QString name, int columnType, ComputedColumn::computedType computeType);
+	Q_INVOKABLE void				createComputedColumn(QString name, int columnType, bool jsonPlease)									{ createComputedColumn(name, columnType, jsonPlease ? ComputedColumn::computedType::constructorCode : ComputedColumn::computedType::rCode);	}
+
+				ComputedColumns*	computedColumnsPointer() { return _package->computedColumnsPointer(); }
+
+				bool				areLoopDependenciesOk(std::string columnName);
+				bool				areLoopDependenciesOk(std::string columnName, std::string code);
+
+	Q_INVOKABLE bool	showAnalysisFormForColumn(QString columnName);
+
 private:
 				void	validate(QString name);
 				void	setAnalyses(Analyses * analyses)				{ _analyses = analyses; }
@@ -57,11 +69,16 @@ signals:
 				void	headerDataChanged(Qt::Orientation orientation, int first, int last);
 				void	sendComputeCode(QString columnName, QString code, Column::ColumnType columnType);
 				void	computeColumnUsesRCodeChanged();
+				void	dataSetChanged(DataSet * newDataSet);
+				void	refreshData();
+				void	showAnalysisForm(Analysis *analysis);
 
 public slots:
-				void	computeColumnSucceeded(std::string columnName, std::string warning);
-				void	computeColumnFailed(std::string columnName, std::string error);
-				void	columnDataTypeChanged(std::string columnName)							{ checkForDependentColumnsToBeSent(columnName, true); }
+				void				computeColumnSucceeded(std::string columnName, std::string warning);
+				void				computeColumnFailed(std::string columnName, std::string error);
+				void				columnDataTypeChanged(std::string columnName)							{ checkForDependentColumnsToBeSent(columnName, true); }
+				ComputedColumn *	requestComputedColumnCreation(std::string columnName, Analysis * analysis);
+				void				requestComputedColumnDestruction(std::string columnName);
 
 private:
 

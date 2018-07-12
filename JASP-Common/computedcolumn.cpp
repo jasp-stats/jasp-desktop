@@ -1,12 +1,13 @@
-#include "computedcolumn.h"
 #include <regex>
+#include "computedcolumn.h"
+#include "analysis.h"
 
 bool ComputedColumn::setRCode(std::string rCode)
 {
 	if(_rCode != rCode)
 	{
 		_rCode = rCode;
-		_dependsOnColumns = findUsedColumnNames();
+		findDependencies();
 		invalidate();
 		return true;
 	}
@@ -36,6 +37,12 @@ bool ComputedColumn::setError(std::string error)
 	return false;
 }
 
+void ComputedColumn::setAnalysis(Analysis *analysis)
+{
+	_analysis	= analysis;
+	_analysisId = _analysis == NULL ? -1 : _analysis->id();
+}
+
 std::vector<std::string> ComputedColumn::_allColumnNames;
 
 void ComputedColumn::setAllColumnNames(std::set<std::string> names)
@@ -47,12 +54,15 @@ void ComputedColumn::setAllColumnNames(std::set<std::string> names)
 
 std::set<std::string> ComputedColumn::findUsedColumnNames(std::string searchThis)
 {
+	if(_codeType == computedType::analysis && _analysis != NULL)
+		return _analysis->usedVariables();
+
 	//sort of based on rbridge_encodeColumnNamesToBase64
 	static std::regex nonNameChar("[^\\.A-Za-z0-9]");
 	std::set<std::string> columnsFound;
 
 	size_t foundPos = -1;
-	for(std::string col : _allColumnNames)
+	for(const std::string & col : _allColumnNames)
 	{
 		while((foundPos = searchThis.find(col, foundPos + 1)) != std::string::npos)
 		{
@@ -64,13 +74,53 @@ std::set<std::string> ComputedColumn::findUsedColumnNames(std::string searchThis
 			if(startIsFree && endIsFree)
 			{
 				columnsFound.insert(col);
-				searchThis = searchThis.substr(0, foundPos) + searchThis.substr(foundPosEnd); // remove the found entry
+				searchThis.replace(foundPos, col.length(), ""); // remove the found entry
 			}
 
 		}
 	}
 
 	return columnsFound;
+}
+
+void ComputedColumn::replaceChangedColumnNamesInRCode(std::map<std::string, std::string> changedNames)
+{
+	//sort of based on rbridge_encodeColumnNamesToBase64
+	static std::regex nonNameChar("[^\\.A-Za-z0-9]");
+
+	std::map<std::string, std::string> columnToEncode, encodeToColumn; //First we convert all columnNames we find into something generic (to avoid replacing part of cols like "Height Ratio" when replacing "Height"
+	const static std::string genericPrepender("!@#$%JASP_Column_PlaceHolder"); //I guess nobody will use this unless they are looking at these sources and feel like having a laugh?
+
+	int counter = 0;
+	for(const std::string & column : _allColumnNames)
+	{
+		std::string encoded = genericPrepender + std::to_string(counter++) + "!@#$%";
+		columnToEncode[column]  = encoded;
+		encodeToColumn[encoded] = changedNames.count(column) > 0 ? changedNames.at(column) : column;
+	}
+
+	std::string searchThis = _rCode;
+
+	size_t foundPos = -1;
+	for(const std::string & col : _allColumnNames)
+	{
+		while((foundPos = searchThis.find(col, foundPos + 1)) != std::string::npos)
+		{
+			size_t foundPosEnd = foundPos + col.length();
+			//First check if it is a "free columnname" aka is there some space or a kind in front of it. We would not want to replace a part of another term (Imagine what happens when you use a columname such as "E" and a filter that includes the term TRUE, it does not end well..)
+			bool startIsFree	= foundPos == 0							|| std::regex_match(searchThis.substr(foundPos - 1, 1),	nonNameChar);
+			bool endIsFree		= foundPosEnd == searchThis.length()	|| (std::regex_match(searchThis.substr(foundPosEnd, 1),	nonNameChar) && searchThis[foundPosEnd] != '('); //Check for "(" as well because maybe someone has a columnname such as rep or if or something weird like that
+
+			if(startIsFree && endIsFree)
+				searchThis.replace(foundPos, col.length(), columnToEncode[col]); // encode the found entry
+		}
+	}
+
+	for(auto encCol : encodeToColumn)
+		for(std::string::size_type pos = searchThis.find(encCol.first, 0); pos != std::string::npos; pos = searchThis.find(encCol.first, pos))
+			searchThis.replace(pos, encCol.first.length(), encCol.second); //Replacing em all with either the original columnName or the new columnname!
+
+	setRCode(searchThis);
 }
 
 bool ComputedColumn::iShouldBeSentAgain()
@@ -126,6 +176,8 @@ void ComputedColumn::_checkForLoopInDepenedencies(std::set<std::string> foundNam
 	std::list<std::string> superLoopList(loopList);
 	superLoopList.push_back(_name);
 
+	findDependencies();
+
 	for(auto col : *_computedColumns)
 		if(_dependsOnColumns.count(col->name()) > 0)
 			col->_checkForLoopInDepenedencies(foundNames, superLoopList);
@@ -136,6 +188,7 @@ std::string	ComputedColumn::computedTypeToString(computedType type)
 	switch(type)
 	{
 	case computedType::constructorCode:	return  "constructorCode";
+	case computedType::analysis:		return  "analysis";
 	case computedType::rCode:			return  "rCode";
 	default:							throw std::runtime_error("Add new computedType types to computedTypeToString!");
 	}
@@ -143,9 +196,10 @@ std::string	ComputedColumn::computedTypeToString(computedType type)
 
 ComputedColumn::computedType ComputedColumn::computedTypeFromString(std::string type)
 {
-	if(type == "constructorCode")	return computedType::constructorCode;
-	else if(type == "rCode")		return computedType::rCode;
-	else							throw std::runtime_error("Add new computedType types to computedTypeFromString!");
+	if		(type == "constructorCode")	return computedType::constructorCode;
+	else if	(type == "analysis")		return computedType::analysis;
+	else if	(type == "rCode")			return computedType::rCode;
+	else								throw std::runtime_error("Add new computedType types to computedTypeFromString!");
 }
 
 Json::Value	ComputedColumn::convertToJson()
@@ -154,6 +208,7 @@ Json::Value	ComputedColumn::convertToJson()
 
 	json["constructorCode"]	= _constructorCode;
 	json["invalidated"]		= _invalidated;
+	json["analysisId"]		= _analysisId;
 	json["codeType"]		= computedTypeToString(_codeType);
 	json["rCode"]			= _rCode;
 	json["error"]			= _error;
@@ -162,28 +217,29 @@ Json::Value	ComputedColumn::convertToJson()
 	return json;
 }
 
-//Conversion from JSON!
-ComputedColumn::ComputedColumn(std::vector<ComputedColumn*> * allComputedColumns, Columns * columns, Json::Value json) : _computedColumns(allComputedColumns)
+ComputedColumn::ComputedColumn(std::vector<ComputedColumn*> * allComputedColumns, Columns * columns, Json::Value json) //Conversion from JSON!
+: _computedColumns(allComputedColumns)
 {
 	_constructorCode	= json["constructorCode"];
 	_invalidated		= json["invalidated"].asBool();
+	_analysisId			= json["analysisId"].asInt();
 	_codeType			= computedTypeFromString(json["codeType"].asString());
 	_rCode				= json["rCode"].asString();
 	_error				= json["error"].asString();
 	_name				= json["name"].asString();
 
 	_outputColumn		= &(*columns)[_name];
+
 }
 
+void ComputedColumn::findDependencies()
+{
+	if(_codeType == computedType::analysis && _analysis != NULL)	_dependsOnColumns = _analysis->usedVariables();
+	else															_dependsOnColumns = findUsedColumnNames();
+}
 
-
-
-
-
-
-
-
-
-
-
-
+const std::set<std::string> &  ComputedColumn::dependsOnColumns()
+{
+	findDependencies();
+	return _dependsOnColumns;
+}

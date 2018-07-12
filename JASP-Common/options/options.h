@@ -40,16 +40,19 @@ public:
 	void		set(const Json::Value &json)					override;
 	Json::Value asJSON()								const	override;
 	Json::Value asJSON(bool includeTransient)			const;
-	Option		*createOption(std::string typeString, std::string name);
 	void		add(std::string name, Option *option);
-	size_t		size()									const;
+	size_t		size()									const				{ return _options.size(); }
 
-	Option		*get(std::string name)					const;
-	Option		*get(int index);
+	Option*		get(std::string name)					const;
+	Option*		get(int index)												{ return _options.at(index).second; }
 	void		get(int index, std::string &name, Option *&option);
 
-	std::set<std::string>	usedVariables() override;
-	void					removeUsedVariable(std::string var)	override;
+	Option*		createOption(std::string typeString);
+
+	std::set<std::string>	usedVariables()													override;
+	void					removeUsedVariable(std::string var)								override;
+	void					replaceVariableName(std::string oldName, std::string newName)	override;
+	std::set<std::string>	columnsCreated()												override;
 
 	class Names
 	{
@@ -88,7 +91,7 @@ private:
 	static void insertValue(const std::string &name, Json::Value& value, Json::Value &root);
 	static bool extractValue(const std::string &name, const Json::Value &root, Json::Value &value);
 
-	void optionsChanged(Option *option);
+	void optionsChanged(Option *);
 
 
 };

@@ -20,6 +20,7 @@
 DataSetPackage::DataSetPackage()
 {
 	reset();
+	informComputedColumnsOfPackage();
 }
 
 void DataSetPackage::reset()
@@ -98,26 +99,20 @@ bool DataSetPackage::isColumnInvalidated(size_t colIndex) const
 	return false;
 }
 
-bool DataSetPackage::isComputedColumnWithError(size_t colIndex) const
+std::string DataSetPackage::getComputedColumnError(size_t colIndex) const
 {
 	try
 	{
 		const Column & normalCol		= _dataSet->columns().at(colIndex);
 		const ComputedColumn & compCol	= _computedColumns[normalCol.name()];
 
-		return compCol.hasError();
+		return compCol.error();
 	}
 	catch(...) {}
 
-	return false;
+	return "";
 }
 
-
-void DataSetPackage::createComputedColumn(std::string name, Column::ColumnType columnType, size_t newColumnIndex, ComputedColumn::computedType desiredType)
-{
-	assert(newColumnIndex == _dataSet->columnCount() - 1);
-	_computedColumns.createComputedColumn(name, columnType, &(_dataSet->columns()), desiredType);
-}
 
 ComputedColumns	* DataSetPackage::computedColumnsPointer()
 {

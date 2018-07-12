@@ -26,7 +26,8 @@ class OptionI : public Option
 {
 
 public:
-	OptionI(bool transient = false) : Option(transient) { }
+	OptionI(bool transient = false)				: Option(transient)					{ }
+	OptionI(T value, bool transient = false)	: Option(transient), _value(value)	{ }
 
 	virtual T		value()	const				{ return _value; }
 	virtual void	setValue(const T &value)

@@ -226,8 +226,8 @@ int LevelsTableModel::currentColumnIndex()
 	if(_column == NULL)
 		return -1;
 
-
-	return _dataSet->columns().findIndexByName(_column->name());
+	try			{ return _dataSet->columns().findIndexByName(_column->name()); }
+	catch(...)	{ return -1; }
 }
 
 void LevelsTableModel::resetFilterAllows()

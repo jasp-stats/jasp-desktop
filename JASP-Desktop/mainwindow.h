@@ -91,7 +91,7 @@ private:
 
 	AnalysisForm* loadForm(Analysis *analysis);
 	AnalysisForm* loadForm(const std::string name);
-	void showForm(Analysis *analysis);
+
 	void closeCurrentOptionsWidget();
 	void removeAnalysis(Analysis *analysis);
 
@@ -110,6 +110,7 @@ private:
 	void analysisSaveImageHandler(int id, QString options);
 	void analysisEditImageHandler(int id, QString options);
 	void removeAnalysisRequestHandler(int id);
+	void matchComputedColumnsToAnalyses();
 
 	bool filterShortCut();
 	void loadQML();
@@ -120,6 +121,8 @@ signals:
 	void ppiChanged(int newPPI);
 
 private slots:
+	void showForm(Analysis *analysis);
+
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisImageSavedHandler(Analysis* analysis);
 
@@ -158,7 +161,7 @@ private slots:
 	void zoomOutKeysSelected();
 	void zoomEqualKeysSelected();
 
-	void illegalOptionStateChanged();
+	void illegalOptionStateChanged(AnalysisForm * form);
 	void fatalError();
 
 	void helpFirstLoaded(bool ok);
@@ -215,9 +218,9 @@ private:
 
 	AsyncLoader						_loader;
 	AsyncLoaderThread				_loaderThread;
-	QObject							*qmlProgressBar		= NULL,
-									*qmlFilterWindow	= NULL,
-									*qmlStatusBar		= NULL;
+	QObject							*qmlProgressBar				= NULL,
+									*qmlFilterWindow			= NULL,
+									*qmlStatusBar				= NULL;
 
 	bool							_inited,
 									_applicationExiting		= false,

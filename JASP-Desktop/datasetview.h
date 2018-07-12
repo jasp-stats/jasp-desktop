@@ -152,7 +152,7 @@ protected:
 
 	QQmlContext * setStyleDataItem(			QQmlContext * previousContext, QString text, bool active, int column, int row);
 	QQmlContext * setStyleDataRowNumber(	QQmlContext * previousContext, int row);
-	QQmlContext * setStyleDataColumnHeader(	QQmlContext * previousContext, QString text, int column, bool isComputed, bool isInvalidated, bool isFiltered, bool hasComputedError);
+	QQmlContext * setStyleDataColumnHeader(	QQmlContext * previousContext, QString text, int column, bool isComputed, bool isInvalidated, bool isFiltered,  QString computedError);
 
 
 	QFontMetricsF _metricsFont;
@@ -197,10 +197,10 @@ public slots:
 
 	void calculateCellSizes();
 
-	void modelDataChanged(const QModelIndex & begin, const QModelIndex & end, const QVector<int> & roles);
-	void modelHeaderDataChanged(Qt::Orientation orientation, int first, int last);
-	void modelAboutToBeReset();
-	void modelWasReset();
+	void modelDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)	{ calculateCellSizes(); }
+	void modelHeaderDataChanged(Qt::Orientation, int, int)									{ calculateCellSizes(); }
+	void modelAboutToBeReset()																{}
+	void modelWasReset()																	{ setRolenames(); calculateCellSizes(); }
 
 };
 

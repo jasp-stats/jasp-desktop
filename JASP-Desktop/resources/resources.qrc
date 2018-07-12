@@ -54,6 +54,7 @@
         <file>ComputeColumnWindow.qml</file>
         <file>CreateComputeColumnDialog.qml</file>
         <file>FilterConstructor/ComputedColumnsConstructor.qml</file>
+        <file>FilterConstructor/OperatorSelectorComputedColumns.qml</file>
     </qresource>
     <qresource prefix="/">
         <file>icons/variance.png</file>

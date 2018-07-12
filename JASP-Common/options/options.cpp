@@ -19,18 +19,19 @@
 
 #include <boost/foreach.hpp>
 
-#include "options/optionboolean.h"
-#include "options/optioninteger.h"
-#include "options/optionintegerarray.h"
-#include "options/optiondoublearray.h"
 #include "options/optionlist.h"
+#include "options/optionterm.h"
+#include "options/optionterms.h"
 #include "options/optionnumber.h"
 #include "options/optionstable.h"
 #include "options/optionstring.h"
-#include "options/optionterm.h"
-#include "options/optionterms.h"
+#include "options/optionboolean.h"
+#include "options/optioninteger.h"
 #include "options/optionvariable.h"
 #include "options/optionvariables.h"
+#include "options/optiondoublearray.h"
+#include "options/optionintegerarray.h"
+#include "options/optioncomputedcolumn.h"
 #include "options/optionvariablesgroups.h"
 
 using namespace std;
@@ -56,7 +57,7 @@ void Options::init(const Json::Value &array)
 		std::string name = value["name"].asString(),
 					type = value["type"].asString();
 
-		Option *option = createOption(type, name);
+		Option *option = createOption(type);
 
 		if (option != NULL)
 		{
@@ -71,7 +72,7 @@ void Options::init(const Json::Value &array)
 	}
 }
 
-Option* Options::createOption(string typeString, string name)
+Option* Options::createOption(string typeString)
 {
 	if		(typeString == "List")				return new OptionList();
 	else if (typeString == "Term")				return new OptionTerm();
@@ -85,6 +86,7 @@ Option* Options::createOption(string typeString, string name)
 	else if (typeString == "Variables")			return new OptionVariables();
 	else if (typeString == "DoubleArray")		return new OptionDoubleArray();
 	else if (typeString == "IntegerArray")		return new OptionIntegerArray();
+	else if (typeString == "ComputedColumn")	return new OptionComputedColumn();
 	else if (typeString == "VariablesGroups")	return new OptionVariablesGroups();
 
 	return NULL;
@@ -93,10 +95,12 @@ Option* Options::createOption(string typeString, string name)
 void Options::add(string name, Option *option)
 {
 	_options.push_back(OptionNamed(name, option));
-	option->changed.connect(boost::bind(&Options::optionsChanged, this, _1));
+	option->changed.connect(							boost::bind( &Options::optionsChanged,							this, _1));
+	option->requestComputedColumnCreation.connect(		boost::bind( &Option::notifyRequestComputedColumnCreation,		this, _1));
+	option->requestComputedColumnDestruction.connect(	boost::bind( &Option::notifyRequestComputedColumnDestruction,	this, _1));
 }
 
-void Options::optionsChanged(Option *option)
+void Options::optionsChanged(Option *)
 {
 	notifyChanged();
 }
@@ -105,7 +109,7 @@ Json::Value Options::asJSON(bool includeTransient) const
 {
 	Json::Value top = Json::objectValue;
 
-	BOOST_FOREACH(OptionNamed item, _options)
+	for(OptionNamed item : _options)
 	{
 		if (includeTransient == false && item.second->isTransient())
 			continue;
@@ -120,10 +124,11 @@ Json::Value Options::asJSON(bool includeTransient) const
 
 void Options::set(const Json::Value &json)
 {
-	BOOST_FOREACH(OptionNamed item, _options)
+	for(OptionNamed item : _options)
 	{
-		string name = item.first;
+		string		name = item.first;
 		Json::Value value;
+
 		if (extractValue(name, json, value))
 			item.second->set(value);
 	}
@@ -138,15 +143,14 @@ void Options::insertValue(const string &name, Json::Value &value, Json::Value &r
 	if ((endPos = name.find('/', 0)) != string::npos)
 	{
 		string groupName = name.substr(0, endPos);
-		string itemName = name.substr(endPos + 1);
+		string itemName	 = name.substr(endPos + 1);
 
 		insertValue(itemName, value, root[groupName]);
 	}
 	else
-	{
 		root[name] = value;
-	}
 }
+
 
 bool Options::extractValue(const string &name, const Json::Value &root, Json::Value &value)
 {
@@ -155,7 +159,7 @@ bool Options::extractValue(const string &name, const Json::Value &root, Json::Va
 	if ((endPos = name.find('/', 0)) != string::npos)
 	{
 		string groupName = name.substr(0, endPos);
-		string itemName = name.substr(endPos + 1);
+		string itemName  = name.substr(endPos + 1);
 
 		return extractValue(itemName, root[groupName], value);
 	}
@@ -165,14 +169,12 @@ bool Options::extractValue(const string &name, const Json::Value &root, Json::Va
 		return true;
 	}
 	else
-	{
 		return false;
-	}
 }
 
 Option *Options::get(string name) const
 {
-	BOOST_FOREACH(OptionNamed p, _options)
+	for(OptionNamed p : _options)
 	{
 		if (p.first == name)
 			return p.second;
@@ -181,23 +183,20 @@ Option *Options::get(string name) const
 	return NULL;
 }
 
-Option *Options::get(int index)
-{
-	return _options.at(index).second;
-}
 
 void Options::get(int index, string &name, Option *&option)
 {
 	OptionNamed optionWithName = _options.at(index);
-	name = optionWithName.first;
-	option = optionWithName.second;
+
+	name	= optionWithName.first;
+	option	= optionWithName.second;
 }
 
 Option *Options::clone() const
 {
 	Options *c = new Options();
 
-	BOOST_FOREACH(const OptionNamed &option, _options)
+	for(const OptionNamed &option : _options)
 	{
 		(void)_options;
 		Option *oc = option.second->clone();
@@ -205,11 +204,6 @@ Option *Options::clone() const
 	}
 
 	return c;
-}
-
-size_t Options::size() const
-{
-	return _options.size();
 }
 
 std::set<std::string> Options::usedVariables()
@@ -225,10 +219,31 @@ std::set<std::string> Options::usedVariables()
 	return combined;
 }
 
+std::set<std::string> Options::columnsCreated()
+{
+	std::set<std::string> combined;
+
+	for(OptionNamed option : _options)
+	{
+		std::set<std::string> cols = option.second->columnsCreated();
+		combined.insert(cols.begin(), cols.end());
+	}
+
+	return combined;
+}
+
 void Options::removeUsedVariable(std::string var)
 {
 	for(OptionNamed option : _options)
 		option.second->removeUsedVariable(var);
+
+	notifyChanged();
+}
+
+void Options::replaceVariableName(std::string oldName, std::string newName)
+{
+	for(OptionNamed option : _options)
+		option.second->replaceVariableName(oldName, newName);
 
 	notifyChanged();
 }

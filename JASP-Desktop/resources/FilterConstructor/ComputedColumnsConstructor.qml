@@ -3,6 +3,7 @@ import QtQuick 2.9
 
 Item {
 	id: filterConstructor
+	objectName:  "computedColumnsConstructor"
 	property real blockDim: 20
 	property real fontPixelSize: 14
 	property var allKeys: ["number", "boolean", "string", "variable"]
@@ -24,7 +25,6 @@ Item {
 			hints.filterText = ""
 	}
 
-	onVisibleChanged: if(visible) initializeFromJSON(jsonConverterComputedColumns.jaspsfilterConstructorJSON)
 	property string __debugName: "filterConstructorComputedColumns"
 
 	property string rCode: ""
@@ -70,7 +70,7 @@ Item {
 		return lastCheckPassed
 	}
 
-	OperatorSelector
+	OperatorSelectorComputedColumns
 	{
 		id: columnsRow
 		anchors.top: parent.top

@@ -16,12 +16,14 @@ FocusScope
 	property bool	userLikesR:					computedColumnsInterface.computeColumnUsesRCode
 	property bool	dataSetLoaded:				computedColumnsInterface.datasetLoaded
 	property string jsonConstructedModel:		computedColumnsInterface.computeColumnJson
+	property string computeColumnRCode:			computedColumnsInterface.computeColumnRCode
 	property int	minimumHeightTextBoxes:		50
 	property string selectedColumnNameMirror:	computedColumnsInterface.computeColumnNameSelected
 
 	onDataSetLoadedChanged:				if(!dataSetLoaded) close();
 	onSelectedColumnNameMirrorChanged:	if(selectedColumnNameMirror === "") close();
-	onJsonConstructedModelChanged:		computedColumnConstructor.initializeFromJSON(userLikesR ? "{\"formulas\":[]}" : jsonConstructedModel)
+	onJsonConstructedModelChanged:		computedColumnConstructor.initializeFromJSON(userLikesR ? "{\"formulas\":[]}" : jsonConstructedModel);
+	onComputeColumnRCodeChanged:		computeColumnEdit.text = computeColumnRCode;
 
 	function close()
     {
@@ -31,7 +33,9 @@ FocusScope
 
 	function open(columnName)
     {
-		if(computedColumnsInterface.computeColumnNameSelected !== columnName)
+		if(computedColumnsInterface.showAnalysisFormForColumn(columnName))
+				close();
+		else if(computedColumnsInterface.computeColumnNameSelected !== columnName)
 		{
 			opened = true
 

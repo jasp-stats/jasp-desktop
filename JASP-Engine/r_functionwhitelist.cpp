@@ -185,7 +185,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"which.max",
 	"which.min",
 	"xtabs",
-	".setColumnDataAsScale", ".setColumnDataAsOrdinal", ".setColumnDataAsNominal", ".setColumnDataAsNominalText", "function"
+	".setColumnDataAsScale", ".setColumnDataAsOrdinal", ".setColumnDataAsNominal", ".setColumnDataAsNominalText", "function", "stop"
 	};
 
 

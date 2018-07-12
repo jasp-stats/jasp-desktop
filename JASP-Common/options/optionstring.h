@@ -24,19 +24,18 @@
 class OptionString : public OptionI<std::string>
 {
 public:
-	OptionString(std::string value = "", std::string regexp = "", int max = -1) : OptionI(), _max(max), _regexp(regexp) { _value = value;}
+	OptionString(std::string value = "", std::string regexp = "", int max = -1) : OptionI(value), _max(max), _regexp(regexp) {}
 
-	virtual void init(const Json::Value &data) OVERRIDE;
+	void		init(const Json::Value &data)			override;
+	void		set(const Json::Value &value)			override;
+	Json::Value asJSON()						const	override;
+	Option*		clone()							const	override;
 
-	Json::Value asJSON() const OVERRIDE;
-	void set(const Json::Value &value) OVERRIDE;
-	virtual Option* clone() const OVERRIDE;
-
-	int max() const;
-	std::string regexp() const;
+	int			max()		const;
+	std::string regexp()	const;
 
   protected:
-	int _max;
+	int			_max;
 	std::string _regexp;
 
 };

@@ -168,63 +168,68 @@ void MainWindow::makeConnections()
 	CONNECT_SHORTCUT("Ctrl+-",		&MainWindow::zoomOutKeysSelected);
 	CONNECT_SHORTCUT("Ctrl+=",		&MainWindow::zoomEqualKeysSelected);
 
-	connect(ui->tabBar,				&TabBar::currentChanged,							this,					&MainWindow::tabChanged								);
-	connect(ui->tabBar,				&TabBar::helpToggled,								this,					&MainWindow::helpToggled							);
+	connect(ui->tabBar,				&TabBar::currentChanged,							this,					&MainWindow::tabChanged										);
+	connect(ui->tabBar,				&TabBar::helpToggled,								this,					&MainWindow::helpToggled									);
 
-	connect(_labelFilterGenerator,	&labelFilterGenerator::setGeneratedFilter,			this,					&MainWindow::setGeneratedFilterAndSend				);
+	connect(_labelFilterGenerator,	&labelFilterGenerator::setGeneratedFilter,			this,					&MainWindow::setGeneratedFilterAndSend						);
 
-	connect(_levelsTableModel,		&LevelsTableModel::resizeLabelColumn,				this,					&MainWindow::resizeVariablesWindowLabelColumn		);
-	connect(_levelsTableModel,		&LevelsTableModel::labelFilterChanged,				_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged			);
-	connect(_levelsTableModel,		&LevelsTableModel::refreshConnectedModels,			_tableModel,			&DataSetTableModel::refreshColumn					);
-	connect(_levelsTableModel,		&LevelsTableModel::notifyColumnHasFilterChanged,	_tableModel,			&DataSetTableModel::notifyColumnFilterStatusChanged	);
+	connect(_levelsTableModel,		&LevelsTableModel::resizeLabelColumn,				this,					&MainWindow::resizeVariablesWindowLabelColumn				);
+	connect(_levelsTableModel,		&LevelsTableModel::labelFilterChanged,				_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged					);
+	connect(_levelsTableModel,		&LevelsTableModel::refreshConnectedModels,			_tableModel,			&DataSetTableModel::refreshColumn							);
+	connect(_levelsTableModel,		&LevelsTableModel::notifyColumnHasFilterChanged,	_tableModel,			&DataSetTableModel::notifyColumnFilterStatusChanged			);
 
-	connect(_tableModel,			&DataSetTableModel::dataSetChanged,					this,					&MainWindow::dataSetChanged							);
-	connect(_tableModel,			&DataSetTableModel::allFiltersReset,				_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged			);
-	connect(_tableModel,			&DataSetTableModel::allFiltersReset,				_levelsTableModel,		&LevelsTableModel::refresh							);
-	connect(_tableModel,			&DataSetTableModel::modelReset,						_levelsTableModel,		&LevelsTableModel::refresh							);
-	connect(_tableModel,			&DataSetTableModel::headerDataChanged,				_columnsModel,			&ColumnsModel::datasetHeaderDataChanged				);
-	connect(_tableModel,			&DataSetTableModel::modelReset,						_columnsModel,			&ColumnsModel::refresh								);
-	connect(_tableModel,			&DataSetTableModel::columnDataTypeChanged,			_computedColumnsModel,	&ComputedColumnsModel::columnDataTypeChanged		);
+	connect(_tableModel,			&DataSetTableModel::dataSetChanged,					this,					&MainWindow::dataSetChanged									);
+	connect(_tableModel,			&DataSetTableModel::allFiltersReset,				_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged					);
+	connect(_tableModel,			&DataSetTableModel::allFiltersReset,				_levelsTableModel,		&LevelsTableModel::refresh									);
+	connect(_tableModel,			&DataSetTableModel::modelReset,						_levelsTableModel,		&LevelsTableModel::refresh									);
+	connect(_tableModel,			&DataSetTableModel::headerDataChanged,				_columnsModel,			&ColumnsModel::datasetHeaderDataChanged						);
+	connect(_tableModel,			&DataSetTableModel::modelReset,						_columnsModel,			&ColumnsModel::refresh										);
+	connect(_tableModel,			&DataSetTableModel::columnDataTypeChanged,			_computedColumnsModel,	&ComputedColumnsModel::columnDataTypeChanged				);
 
-	connect(_engineSync,			&EngineSync::filterUpdated,							_tableModel,			&DataSetTableModel::refresh							);
-	connect(_engineSync,			&EngineSync::filterErrorTextChanged,				this,					&MainWindow::setFilterErrorText						);
-	connect(_engineSync,			&EngineSync::filterUpdated,							this,					&MainWindow::onFilterUpdated						);
-	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_computedColumnsModel,	&ComputedColumnsModel::computeColumnSucceeded		);
-	connect(_engineSync,			&EngineSync::computeColumnFailed,					_computedColumnsModel,	&ComputedColumnsModel::computeColumnFailed			);
+	connect(_engineSync,			&EngineSync::filterUpdated,							_tableModel,			&DataSetTableModel::refresh									);
+	connect(_engineSync,			&EngineSync::filterErrorTextChanged,				this,					&MainWindow::setFilterErrorText								);
+	connect(_engineSync,			&EngineSync::filterUpdated,							this,					&MainWindow::onFilterUpdated								);
+	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_computedColumnsModel,	&ComputedColumnsModel::computeColumnSucceeded				);
+	connect(_engineSync,			&EngineSync::computeColumnFailed,					_computedColumnsModel,	&ComputedColumnsModel::computeColumnFailed					);
 
 	qRegisterMetaType<Column::ColumnType>();
 
-	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshColumn,				_tableModel,			&DataSetTableModel::refreshColumn,					Qt::QueuedConnection);
-	connect(_computedColumnsModel,	&ComputedColumnsModel::headerDataChanged,			_tableModel,			&DataSetTableModel::headerDataChanged				);
-	connect(_computedColumnsModel,	&ComputedColumnsModel::sendComputeCode,				_engineSync,			&EngineSync::computeColumn,							Qt::QueuedConnection);
-	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshColumn,				_levelsTableModel,		&LevelsTableModel::refreshColumn					);
+	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshColumn,				_tableModel,			&DataSetTableModel::refreshColumn,							Qt::QueuedConnection);
+	connect(_computedColumnsModel,	&ComputedColumnsModel::headerDataChanged,			_tableModel,			&DataSetTableModel::headerDataChanged						);
+	connect(_computedColumnsModel,	&ComputedColumnsModel::sendComputeCode,				_engineSync,			&EngineSync::computeColumn,									Qt::QueuedConnection);
+	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshColumn,				_levelsTableModel,		&LevelsTableModel::refreshColumn							);
+	connect(_computedColumnsModel,	&ComputedColumnsModel::dataSetChanged,				_tableModel,			&DataSetTableModel::dataSetChanged							);
+	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshData,					_tableModel,			&DataSetTableModel::refresh									);
+	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			this,					&MainWindow::showForm										);
 
-	connect(this,					&MainWindow::ppiChanged,							_engineSync,			&EngineSync::ppiChanged								);
+	connect(this,					&MainWindow::ppiChanged,							_engineSync,			&EngineSync::ppiChanged										);
 
-	connect(_engineSync,			&EngineSync::engineTerminated,						this,					&MainWindow::fatalError								);
+	connect(_engineSync,			&EngineSync::engineTerminated,						this,					&MainWindow::fatalError										);
 
-	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler			);
-	connect(_analyses,				&Analyses::analysisImageSaved,						this,					&MainWindow::analysisImageSavedHandler				);
-	connect(_analyses,				&Analyses::analysisAdded,							ui->backStage,			&BackStageWidget::analysisAdded						);
-	connect(_analyses,				&Analyses::analysisImageEdited,						_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler		);
+	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
+	connect(_analyses,				&Analyses::analysisImageSaved,						this,					&MainWindow::analysisImageSavedHandler						);
+	connect(_analyses,				&Analyses::analysisAdded,							ui->backStage,			&BackStageWidget::analysisAdded								);
+	connect(_analyses,				&Analyses::analysisImageEdited,						_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler				);
+	connect(_analyses,				&Analyses::requestComputedColumnCreation,			_computedColumnsModel,	&ComputedColumnsModel::requestComputedColumnCreation,		Qt::UniqueConnection);
+	connect(_analyses,				&Analyses::requestComputedColumnDestruction,		_computedColumnsModel,	&ComputedColumnsModel::requestComputedColumnDestruction,	Qt::UniqueConnection);
 
-	connect(ui->backStage,			&BackStageWidget::dataSetIORequest,					this,					&MainWindow::dataSetIORequest						);
-	connect(ui->backStage,			&BackStageWidget::exportSelected,					_resultsJsInterface,	&ResultsJsInterface::exportSelected					);
+	connect(ui->backStage,			&BackStageWidget::dataSetIORequest,					this,					&MainWindow::dataSetIORequest								);
+	connect(ui->backStage,			&BackStageWidget::exportSelected,					_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
 
-	connect(ui->tabBar,				&TabBar::dataAutoSynchronizationChanged,			ui->backStage,			&BackStageWidget::dataAutoSynchronizationChanged	);
-	connect(ui->tabBar,				&TabBar::setExactPValuesHandler,					_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler			);
-	connect(ui->tabBar,				&TabBar::setFixDecimalsHandler,						_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler			);
-	connect(ui->tabBar,				&TabBar::emptyValuesChangedHandler,					this,					&MainWindow::emptyValuesChangedHandler				);
+	connect(ui->tabBar,				&TabBar::dataAutoSynchronizationChanged,			ui->backStage,			&BackStageWidget::dataAutoSynchronizationChanged			);
+	connect(ui->tabBar,				&TabBar::setExactPValuesHandler,					_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler					);
+	connect(ui->tabBar,				&TabBar::setFixDecimalsHandler,						_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler					);
+	connect(ui->tabBar,				&TabBar::emptyValuesChangedHandler,					this,					&MainWindow::emptyValuesChangedHandler						);
 
-	connect(&_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus						);
+	connect(&_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus								);
 
-	connect(_okButton,				&QPushButton::clicked,								this,					&MainWindow::analysisOKed							);
+	connect(_okButton,				&QPushButton::clicked,								this,					&MainWindow::analysisOKed									);
 
-	connect(_runButton,				&QPushButton::clicked,								this,					&MainWindow::analysisRunned							);
+	connect(_runButton,				&QPushButton::clicked,								this,					&MainWindow::analysisRunned									);
 
-	connect(ui->splitter,			&QSplitter::splitterMoved,							this,					&MainWindow::splitterMovedHandler					);
+	connect(ui->splitter,			&QSplitter::splitterMoved,							this,					&MainWindow::splitterMovedHandler							);
 
-	connect(ui->webViewHelp,		&CustomWebEngineView::loadFinished,					this,					&MainWindow::helpFirstLoaded						);
+	connect(ui->webViewHelp,		&CustomWebEngineView::loadFinished,					this,					&MainWindow::helpFirstLoaded								);
 
 	connectRibbonButton(ui->ribbonAnalysis);
 	connectRibbonButton(ui->ribbonSEM);
@@ -312,9 +317,9 @@ void MainWindow::loadQML()
 	connect(levelsTableView,		SIGNAL(columnChanged(QString)),		this,					SLOT(refreshAnalysesUsingColumn(QString)));
 	connect(easyFilterConstructor,	SIGNAL(rCodeChanged(QString)),		_labelFilterGenerator,	SLOT(easyFilterConstructorRCodeChanged(QString)));
 
-	qmlProgressBar	= ui->quickWidget_Data->rootObject()->findChild<QObject*>("progressBarHolder");
-	qmlFilterWindow = ui->quickWidget_Data->rootObject()->findChild<QObject*>("filterWindow");
-	qmlStatusBar	= ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataStatusBar");
+	qmlProgressBar			= ui->quickWidget_Data->rootObject()->findChild<QObject*>("progressBarHolder");
+	qmlFilterWindow			= ui->quickWidget_Data->rootObject()->findChild<QObject*>("filterWindow");
+	qmlStatusBar			= ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataStatusBar");
 }
 
 
@@ -482,14 +487,11 @@ void MainWindow::syncKeysSelected()
 }
 
 
-void MainWindow::illegalOptionStateChanged()
+void MainWindow::illegalOptionStateChanged(AnalysisForm * form)
 {
-	if (_currentOptionsWidget == NULL)
-		return;
-
-	if (_currentOptionsWidget->hasIllegalValue())
+	if (form->hasIllegalValue())
 	{
-		ui->optionsErrorLabel->setText(_currentOptionsWidget->illegalValueMessage());
+		ui->optionsErrorLabel->setText(form->illegalValueMessage());
 		ui->optionsErrorPanel->show();
 	}
 	else
@@ -514,73 +516,55 @@ void MainWindow::packageChanged(DataSetPackage *package)
 }
 
 
-void MainWindow::refreshAnalysesUsingColumns(vector<string> &changedColumns,
-											 vector<string> &missingColumns,
-											 map<string, string> &changeNameColumns)
+void MainWindow::refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns,	 std::vector<std::string> &missingColumns,	 std::map<std::string, std::string> &changeNameColumns)
 {
-	vector<string> oldColumnNames;
-	for (map<string, string>::iterator it = changeNameColumns.begin(); it != changeNameColumns.end(); ++it)
-		oldColumnNames.push_back(it->first);
+	std::vector<std::string> oldColumnNames;
+
+	for (auto & keyval : changeNameColumns)
+		oldColumnNames.push_back(keyval.first);
+
 	sort(changedColumns.begin(), changedColumns.end());
 	sort(missingColumns.begin(), missingColumns.end());
 	sort(oldColumnNames.begin(), oldColumnNames.end());
 
-	set<Analysis *> analysesToRefresh;
-	for (Analyses::iterator analysisIt = _analyses->begin(); analysisIt != _analyses->end(); ++analysisIt)
+	std::set<Analysis *> analysesToRefresh;
+
+	for (Analysis* analysis : *_analyses)
 	{
-		Analysis* analysis = *analysisIt;
 		if (analysis == NULL) continue;
 
-		Options* options = analysis->options();
-		for (size_t i = 0; i < options->size(); ++i)
+		std::set<std::string> variables = analysis->usedVariables();
+
+		if (!variables.empty())
 		{
-			Option *option = options->get(i);
-			OptionVariableI *optionVariables = dynamic_cast<OptionVariableI *>(option);
-			if (optionVariables != NULL)
-			{
-				vector<string> variables = optionVariables->variables();
-				if (!variables.empty())
-				{
-					sort(variables.begin(), variables.end());
-					vector<string> interChangecol, interChangename, interMissingcol;
-					set_intersection(variables.begin(), variables.end(), changedColumns.begin(), changedColumns.end(), back_inserter(interChangecol));
-					set_intersection(variables.begin(), variables.end(), oldColumnNames.begin(), oldColumnNames.end(), back_inserter(interChangename));
-					set_intersection(variables.begin(), variables.end(), missingColumns.begin(), missingColumns.end(), back_inserter(interMissingcol));
+			std::vector<std::string> interChangecol, interChangename, interMissingcol;
 
-					if (interChangecol.size() > 0)
-					{
-						analysesToRefresh.insert(analysis);
-					}
+			std::set_intersection(variables.begin(), variables.end(), changedColumns.begin(), changedColumns.end(), std::back_inserter(interChangecol));
+			std::set_intersection(variables.begin(), variables.end(), oldColumnNames.begin(), oldColumnNames.end(), std::back_inserter(interChangename));
+			std::set_intersection(variables.begin(), variables.end(), missingColumns.begin(), missingColumns.end(), std::back_inserter(interMissingcol));
 
-					if (interChangename.size() > 0)
-					{
-						analysis->setRefreshBlocked(true);
-						for (vector<string>::iterator varnameIt = interChangename.begin(); varnameIt != interChangename.end(); ++varnameIt)
-						{
-							string varname = *varnameIt;
-							string newname = changeNameColumns[varname];
-							optionVariables->replaceName(varname, newname);
-						}
-						analysesToRefresh.insert(analysis);
-					}
+			bool	aNameChanged	= interChangename.size() > 0,
+					aColumnRemoved	= interMissingcol.size() > 0,
+					aColumnChanged	= interChangecol.size() > 0;
 
-					if (interMissingcol.size() > 0)
-					{
-						analysis->setRefreshBlocked(true);
-						for (vector<string>::iterator varnameIt= interMissingcol.begin(); varnameIt!= interMissingcol.end(); ++varnameIt)
-						{
-							optionVariables->removeName(*varnameIt);
-							analysesToRefresh.insert(analysis);
-						}
-					}
-				}
-			}
+			if(aNameChanged || aColumnRemoved)
+				analysis->setRefreshBlocked(true);
+
+			if (aColumnRemoved)
+				for (std::string & varname : interMissingcol)
+					analysis->removeUsedVariable(varname);
+
+			if (aNameChanged)
+				for (std::string & varname : interChangename)
+					analysis->replaceVariableName(varname, changeNameColumns[varname]);
+
+			if (aNameChanged || aColumnRemoved || aColumnChanged)
+				analysesToRefresh.insert(analysis);
 		}
 	}
 
-	for (set<Analysis *>::iterator it = analysesToRefresh.begin(); it != analysesToRefresh.end(); ++it)
+	for (Analysis *analysis : analysesToRefresh)
 	{
-		Analysis *analysis = *it;
 		analysis->setRefreshBlocked(false);
 		analysis->refresh();
 	}
@@ -742,9 +726,35 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 {
 	if (_analysisFormsMap.count(analysis) == 0)
-		_analysisFormsMap[analysis] = loadForm(analysis->name());
+	{
+		AnalysisForm * formCreated	= loadForm(analysis->name());
+		_analysisFormsMap[analysis] = formCreated;
+
+		//sizing of options widget and panel to fit buttons and conform to largest size for consistency
+		for (QObject * child : formCreated->children())
+		{
+			QWidget* w = dynamic_cast<QWidget*>(child);
+			if (w != NULL && w->objectName() == "topWidget")
+			{
+				w->setContentsMargins(0, 0, _buttonPanel->width(), 0);
+				break;
+			}
+		}
+
+
+		Options *options = analysis->options();
+		DataSet *dataSet = _package->dataSet();
+		formCreated->connectToAvailableVariablesModel(dataSet);
+		formCreated->bindTo(options, dataSet);
+
+		connect(formCreated, &AnalysisForm::illegalChanged, this, &MainWindow::illegalOptionStateChanged);
+	}
+	else
+		_analysisFormsMap[analysis]->connectToAvailableVariablesModel(_package->dataSet());
 	
+	illegalOptionStateChanged(_analysisFormsMap[analysis]);
 	_analysisFormsMap[analysis]->show();
+
 	return _analysisFormsMap[analysis];
 }
 
@@ -755,92 +765,49 @@ AnalysisForm* MainWindow::loadForm(const string name)
 
 	QWidget *contentArea = ui->optionsContentArea;
 
-	if (name == "Descriptives")
-		form = new DescriptivesForm(contentArea);
-	else if (name == "TTestBayesianOneSample")
-		form = new TTestBayesianOneSampleForm(contentArea);
-	else if (name == "TTestBayesianIndependentSamples")
-		form = new TTestBayesianIndependentSamplesForm(contentArea);
-	else if (name == "TTestBayesianPairedSamples")
-		form = new TTestBayesianPairedSamplesForm(contentArea);
-	else if (name == "TTestIndependentSamples")
-		form = new TTestIndependentSamplesForm(contentArea);
-	else if (name == "TTestPairedSamples")
-		form = new TTestPairedSamplesForm(contentArea);
-	else if (name == "TTestOneSample")
-		form = new TTestOneSampleForm(contentArea);
-	else if (name == "AnovaBayesian")
-		form = new AnovaBayesianForm(contentArea);
-	else if (name == "AnovaOneWay")
-		form = new AnovaOneWayForm(contentArea);
-	else if (name == "Anova")
-		form = new AnovaForm(contentArea);
-	else if (name == "AnovaRepeatedMeasures")
-		form = new AnovaRepeatedMeasuresForm(contentArea);
-	else if (name == "Ancova")
-		form = new AncovaForm(contentArea);
-	else if (name == "AnovaMultivariate")
-		form = new AnovaMultivariateForm(contentArea);
-	else if (name == "AncovaMultivariate")
-		form = new AncovaMultivariateForm(contentArea);
-	else if (name == "RegressionLinear")
-		form = new RegressionLinearForm(contentArea);
-	else if (name == "RegressionLinearBayesian")
-		form = new RegressionLinearBayesianForm(contentArea);
-	else if (name == "RegressionLogistic")
-		form = new RegressionLogisticForm(contentArea);
-	else if (name == "RegressionLogLinear")
-		form = new RegressionLogLinearForm(contentArea);
-	else if (name == "RegressionLogLinearBayesian")
-		form = new RegressionLogLinearBayesianForm(contentArea);
-	else if (name == "Correlation")
-		form = new CorrelationForm(contentArea);
-	else if (name == "CorrelationBayesian")
-		form = new CorrelationBayesianForm(contentArea);
-	else if (name == "CorrelationBayesianPairs")
-		form = new CorrelationBayesianPairsForm(contentArea);
-	else if (name == "CorrelationPartial")
-		form = new CorrelationPartialForm(contentArea);
-	else if (name == "ContingencyTables")
-		form = new ContingencyTablesForm(contentArea);
-	else if (name == "ContingencyTablesBayesian")
-		form = new ContingencyTablesBayesianForm(contentArea);
-	else if (name == "SEMSimple")
-		form = new SEMSimpleForm(contentArea);
-	else if (name == "AncovaBayesian")
-		form = new AncovaBayesianForm(contentArea);
-	else if (name == "AnovaRepeatedMeasuresBayesian")
-		form = new AnovaRepeatedMeasuresBayesianForm(contentArea);
-	else if (name == "BinomialTest")
-		form = new BinomialTestForm(contentArea);
-	else if (name == "MultinomialTest")
-		form = new MultinomialTestForm(contentArea);
-	else if (name == "BinomialTestBayesian")
-		form = new BinomialTestBayesianForm(contentArea);
-	else if (name == "ReliabilityAnalysis")
-		form = new ReliabilityAnalysisForm(contentArea);
-	else if (name == "ExploratoryFactorAnalysis")
-		form = new ExploratoryFactorAnalysisForm(contentArea);
-	else if (name == "PrincipalComponentAnalysis")
-		form = new PrincipalComponentAnalysisForm(contentArea);
-	else if (name == "SummaryStatsTTestBayesianOneSample")
-		form = new SummaryStatsTTestBayesianOneSampleForm(contentArea);
-	else if (name == "SummaryStatsTTestBayesianIndependentSamples")
-		form = new SummaryStatsTTestBayesianIndependentSamplesForm(contentArea);
-	else if (name == "SummaryStatsTTestBayesianPairedSamples")
-		form = new SummaryStatsTTestBayesianPairedSamplesForm(contentArea);
-	else if (name == "SummaryStatsBinomialTestBayesian")
-		form = new SummaryStatsBinomialTestBayesianForm(contentArea);
-	else if (name == "SummaryStatsRegressionLinearBayesian")
-		form = new SummaryStatsRegressionLinearBayesianForm(contentArea);
-	else if (name == "SummaryStatsCorrelationBayesianPairs")
-		form = new SummaryStatsCorrelationBayesianPairsForm(contentArea);
-	else if (name == "ClassicalMetaAnalysis")
-		form = new ClassicalMetaAnalysisForm(contentArea);
-	else if (name == "NetworkAnalysis")
-		form = new NetworkAnalysisForm(contentArea);
-	else if (name == "ReinforcementLearningR11tLearning")
-		form = new ReinforcementLearningR11tLearningForm(contentArea);
+	if		(name == "Ancova")										form = new AncovaForm(contentArea);
+	else if (name == "AnovaOneWay")									form = new AnovaOneWayForm(contentArea);
+	else if (name == "Correlation")									form = new CorrelationForm(contentArea);
+	else if (name == "Descriptives")								form = new DescriptivesForm(contentArea);
+	else if (name == "NetworkAnalysis")								form = new NetworkAnalysisForm(contentArea);
+	else if (name == "MultinomialTest")								form = new MultinomialTestForm(contentArea);
+	else if (name == "RegressionLinear")							form = new RegressionLinearForm(contentArea);
+	else if (name == "AnovaMultivariate")							form = new AnovaMultivariateForm(contentArea);
+	else if (name == "AncovaMultivariate")							form = new AncovaMultivariateForm(contentArea);
+	else if (name == "CorrelationPartial")							form = new CorrelationPartialForm(contentArea);
+	else if (name == "RegressionLogistic")							form = new RegressionLogisticForm(contentArea);
+	else if (name == "RegressionLogLinear")							form = new RegressionLogLinearForm(contentArea);
+	else if (name == "AnovaRepeatedMeasures")						form = new AnovaRepeatedMeasuresForm(contentArea);
+	else if (name == "TTestBayesianOneSample")						form = new TTestBayesianOneSampleForm(contentArea);
+	else if (name == "CorrelationBayesianPairs")					form = new CorrelationBayesianPairsForm(contentArea);
+	else if (name == "ExploratoryFactorAnalysis")					form = new ExploratoryFactorAnalysisForm(contentArea);
+	else if (name == "PrincipalComponentAnalysis")					form = new PrincipalComponentAnalysisForm(contentArea);
+	else if (name == "RegressionLogLinearBayesian")					form = new RegressionLogLinearBayesianForm(contentArea);
+	else if (name == "TTestBayesianIndependentSamples")				form = new TTestBayesianIndependentSamplesForm(contentArea);
+	else if (name == "SummaryStatsRegressionLinearBayesian")		form = new SummaryStatsRegressionLinearBayesianForm(contentArea);
+	else if (name == "SummaryStatsTTestBayesianIndependentSamples")	form = new SummaryStatsTTestBayesianIndependentSamplesForm(contentArea);
+	else if (name == "SummaryStatsTTestBayesianPairedSamples")		form = new SummaryStatsTTestBayesianPairedSamplesForm(contentArea);
+	else if (name == "SummaryStatsCorrelationBayesianPairs")		form = new SummaryStatsCorrelationBayesianPairsForm(contentArea);
+	else if (name == "SummaryStatsTTestBayesianOneSample")			form = new SummaryStatsTTestBayesianOneSampleForm(contentArea);
+	else if (name == "ReinforcementLearningR11tLearning")			form = new ReinforcementLearningR11tLearningForm(contentArea);
+	else if (name == "SummaryStatsBinomialTestBayesian")			form = new SummaryStatsBinomialTestBayesianForm(contentArea);
+	else if (name == "AnovaRepeatedMeasuresBayesian")				form = new AnovaRepeatedMeasuresBayesianForm(contentArea);
+	else if (name == "TTestBayesianPairedSamples")					form = new TTestBayesianPairedSamplesForm(contentArea);
+	else if (name == "ContingencyTablesBayesian")					form = new ContingencyTablesBayesianForm(contentArea);
+	else if (name == "RegressionLinearBayesian")					form = new RegressionLinearBayesianForm(contentArea);
+	else if (name == "TTestIndependentSamples")						form = new TTestIndependentSamplesForm(contentArea);
+	else if (name == "ClassicalMetaAnalysis")						form = new ClassicalMetaAnalysisForm(contentArea);
+	else if (name == "BinomialTestBayesian")						form = new BinomialTestBayesianForm(contentArea);
+	else if (name == "CorrelationBayesian")							form = new CorrelationBayesianForm(contentArea);
+	else if (name == "ReliabilityAnalysis")							form = new ReliabilityAnalysisForm(contentArea);
+	else if (name == "TTestPairedSamples")							form = new TTestPairedSamplesForm(contentArea);
+	else if (name == "ContingencyTables")							form = new ContingencyTablesForm(contentArea);
+	else if (name == "TTestOneSample")								form = new TTestOneSampleForm(contentArea);
+	else if (name == "AncovaBayesian")								form = new AncovaBayesianForm(contentArea);
+	else if (name == "AnovaBayesian")								form = new AnovaBayesianForm(contentArea);
+	else if (name == "BinomialTest")								form = new BinomialTestForm(contentArea);
+	else if (name == "SEMSimple")									form = new SEMSimpleForm(contentArea);
+	else if (name == "Anova")										form = new AnovaForm(contentArea);
 ///// 4-analysis if-else ladder
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
@@ -863,31 +830,16 @@ void MainWindow::showForm(Analysis *analysis)
 
 	if (_currentOptionsWidget != NULL)
 	{
-		//sizing of options widget and panel to fit buttons and conform to largest size for consistency
 
-		QObjectList siblings = _currentOptionsWidget->children();
-		for (QObjectList::Iterator itr = siblings.begin(); itr != siblings.end(); itr++) {
-			QWidget* w = dynamic_cast<QWidget*>(*itr);
-			if (w != NULL && w->objectName() == "topWidget") {
-				w->setContentsMargins(0, 0, _buttonPanel->width(), 0);
-				break;
-			}
-		}
+		int requiredSize		= _currentOptionsWidget->sizeHint().width();
+		int currentOptionSpace	= ui->panel_2_Options->minimumWidth() - _scrollbarWidth;
 
-		int requiredSize = _currentOptionsWidget->sizeHint().width();
-		int currentOptionSpace = ui->panel_2_Options->minimumWidth() - _scrollbarWidth;
-		if (requiredSize > currentOptionSpace) {
+		if (requiredSize > currentOptionSpace)
+		{
 			ui->panel_2_Options->setMinimumWidth(requiredSize + _scrollbarWidth);
 			_buttonPanel->move(ui->panel_2_Options->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 		}
 		_currentOptionsWidget->setMinimumWidth(ui->panel_2_Options->minimumWidth() - _scrollbarWidth);
-
-		Options *options = analysis->options();
-		DataSet *dataSet = _package->dataSet();
-		_currentOptionsWidget->bindTo(options, dataSet);
-
-		connect(_currentOptionsWidget, SIGNAL(illegalChanged()), this, SLOT(illegalOptionStateChanged()));
-		illegalOptionStateChanged();
 
 		_currentOptionsWidget->show();
 		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget,0, 0, Qt::AlignRight | Qt::AlignTop);
@@ -911,8 +863,6 @@ void MainWindow::closeCurrentOptionsWidget()
 {
 	if (_currentOptionsWidget != NULL)
 	{
-		disconnect(_currentOptionsWidget, SIGNAL(illegalChanged()), this, SLOT(illegalOptionStateChanged()));
-
 		_currentOptionsWidget->hide();
 		_currentOptionsWidget = NULL;
 	}
@@ -1298,16 +1248,16 @@ void MainWindow::populateUIfromDataSet()
 						module = "Common";
 					int id = analysisData["id"].asInt();
 
-					Json::Value &optionsJson = analysisData["options"];
-					Json::Value &resultsJson = analysisData["results"];
-					Json::Value &userDataJson = analysisData["userdata"];
-					Json::Value &versionJson = analysisData["version"];
+					Json::Value &optionsJson	= analysisData["options"];
+					Json::Value &resultsJson	= analysisData["results"];
+					Json::Value &userDataJson	= analysisData["userdata"];
+					Json::Value &versionJson	= analysisData["version"];
 
-					Version version = versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
+					Version version				= versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
 
-					Analysis::Status status = Analysis::parseStatus(analysisData["status"].asString());
+					Analysis::Status status		= Analysis::parseStatus(analysisData["status"].asString());
 
-					Analysis *analysis = _analyses->create(module, name, id, version, &optionsJson, status);
+					Analysis *analysis			= _analyses->create(module, name, id, version, &optionsJson, status);
 
 					analysis->setUserData(userDataJson);
 					analysis->setResults(resultsJson);
@@ -1334,9 +1284,18 @@ void MainWindow::populateUIfromDataSet()
 	if (_package->warningMessage() != "")	QMessageBox::warning(this, "", tq(_package->warningMessage()));
 	else if (errorFound)					QMessageBox::warning(this, "", tq(errorMsg.str()));
 
+	matchComputedColumnsToAnalyses();
+
 	_package->setLoaded();
 	updateMenuEnabledDisabledStatus();
 	checkUsedModules();
+}
+
+void MainWindow::matchComputedColumnsToAnalyses()
+{
+	for(ComputedColumn * col : *_package->computedColumnsPointer())
+		if(col->analysisId() != -1)
+			col->setAnalysis(_analyses->get(col->analysisId()));
 }
 
 
@@ -1988,7 +1947,7 @@ void MainWindow::setFilterConstructorJson(QString jsonString)
 {
 	_package->setFilterConstructorJson(jsonString.toStdString());
 
-	_tableModel->setColumnsUsedInEasyFilter(JsonUtilities::convertEasyFilterJSONToSet(_package->filterConstructorJson()));
+	_tableModel->setColumnsUsedInEasyFilter(JsonUtilities::convertDragNDropFilterJSONToSet(_package->filterConstructorJson()));
 
 	QObject * jsonConverter = ui->quickWidget_Data->rootObject()->findChild<QObject*>("jsonConverter");
 	QMetaObject::invokeMethod(jsonConverter, "setNewJSONFromCPP", Q_ARG(QVariant, QVariant(jsonString)));

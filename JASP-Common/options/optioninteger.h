@@ -27,7 +27,7 @@
 class OptionInteger : public OptionI<int>
 {
 public:
-	OptionInteger(int value = 0, int minimum = -999999, int maximum = 999999, std::string format = "");
+	OptionInteger(int value = 0, int minimum = -999999, int maximum = 999999, std::string format = "") : OptionI(value), _min(minimum), _max(maximum), _format(format) {}
 
 	void		init(const Json::Value &data)			override;
 	void		set(const Json::Value& value)			override;
@@ -40,8 +40,8 @@ public:
 	std::string format() const;
 
 protected:
-	int _min;
-	int _max;
+	int			_min;
+	int			_max;
 	std::string _format;
 };
 

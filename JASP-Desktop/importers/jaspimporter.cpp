@@ -134,8 +134,8 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 
 	do
 	{
-		try {
-
+		try
+		{
 			success				= true;
 			DataSet *dataSet	= packageData->dataSet();
 
@@ -271,7 +271,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 	}
 	dataEntry.close();
 
-	packageData->computedColumnsPointer()->convertFromJson(metaData.get("computedColumns", Json::arrayValue), &packageData->dataSet()->columns());
+	packageData->computedColumnsPointer()->convertFromJson(metaData.get("computedColumns", Json::arrayValue));
 
 	//Take out for the time being
 	/*string entryName3 = "results.html";

@@ -82,14 +82,14 @@ public:
 			void			setWaitingForReady()							{ _analysesHTMLReady			= false;			}
 			void			setLoaded()										{ _isLoaded						= true;				}
 
-			bool isColumnNameFree(std::string name)			const;
-			bool isColumnComputed(size_t colIndex)			const;
-			bool isColumnComputed(std::string name)			const;
-			bool isColumnInvalidated(size_t colIndex)		const;
-			bool isComputedColumnWithError(size_t colIndex) const;
+			bool		isColumnNameFree(std::string name)		const;
+			bool		isColumnComputed(size_t colIndex)		const;
+			bool		isColumnComputed(std::string name)		const;
+			bool		isColumnInvalidated(size_t colIndex)	const;
+			std::string	getComputedColumnError(size_t colIndex) const;
 
-			void createComputedColumn(std::string name, Column::ColumnType columnType, size_t newColumnIndex, ComputedColumn::computedType desiredType);
-			void removeColumn(std::string name)	{	_computedColumns.removeComputedColumn(name, &(_dataSet->columns()));	}
+			void removeColumn(std::string name)		{ _computedColumns.removeComputedColumn(name);	}
+			void informComputedColumnsOfPackage()	{ _computedColumns.setPackage(this); }
 
 			ComputedColumns	* computedColumnsPointer();
 

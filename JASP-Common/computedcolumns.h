@@ -4,16 +4,20 @@
 #include "columns.h"
 #include "computedcolumn.h"
 
+class DataSetPackage;
+class Columns;
+
 class ComputedColumns
 {
 public:
 	typedef std::vector<ComputedColumn*>::iterator iterator;
 
-	ComputedColumns() {}
-
-	ComputedColumn *	createComputedColumn(std::string name, Column::ColumnType type, Columns * columns, ComputedColumn::computedType desiredType);
-	void				removeComputedColumn(std::string name, Columns * columns);
-	void				refreshColumnPointers(Columns * columns);
+						ComputedColumns() {}
+	ComputedColumn *	createComputedColumn(std::string name, Column::ColumnType type, ComputedColumn::computedType desiredType);
+	void				removeComputedColumn(std::string name);
+	void				refreshColumnPointers();
+	void				setPackage(DataSetPackage * package) { _package = package; }
+	void				findAllColumnNames();
 
 	bool				setConstructorJson(std::string name, std::string json);
 	bool				setRCode(std::string name, std::string rCode);
@@ -37,12 +41,14 @@ public:
 	const	ComputedColumn & operator[](std::string name)	const	{ return *_computedColumns[findIndexByName(name)]; }
 
 	Json::Value			convertToJson();
-	void				convertFromJson(Json::Value json, Columns * columns);
+	void				convertFromJson(Json::Value json);
+
+	Columns&			columns();
 
 private:
-			void		findAllColumnNames(Columns * columns);
 
 	std::vector<ComputedColumn*>	_computedColumns;
+	DataSetPackage*					_package = NULL;
 
 };
 
