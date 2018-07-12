@@ -1,22 +1,25 @@
 #include "computedcolumns.h"
+#include "datasetpackage.h"
 
-ComputedColumn * ComputedColumns::createComputedColumn(std::string name, Column::ColumnType type, Columns * columns, ComputedColumn::computedType desiredType)
+Columns& ComputedColumns::columns()
 {
-	Column * column = &columns->at(columns->columnCount() - 1);
+	return _package->dataSet()->columns();
+}
 
-	column->setName(name);
-	column->_setRowCount(columns->maxRowCount());
+ComputedColumn * ComputedColumns::createComputedColumn(std::string name, Column::ColumnType type, ComputedColumn::computedType desiredType)
+{
+	Column			* column			= columns().createColumn(name);
+	ComputedColumn	* newComputedColumn = new ComputedColumn(&_computedColumns, column, desiredType);
 
-	ComputedColumn * newComputedColumn = new ComputedColumn(&_computedColumns, column, desiredType);
 	_computedColumns.push_back(newComputedColumn);
 	column->setDefaultValues(type);
 
-	refreshColumnPointers(columns);
+	refreshColumnPointers();
 
 	return newComputedColumn;
 }
 
-void ComputedColumns::removeComputedColumn(std::string name, Columns * columns)
+void ComputedColumns::removeComputedColumn(std::string name)
 {
 	for(auto it=_computedColumns.begin(); it != _computedColumns.end(); it++)
 		if((*it)->name() == name)
@@ -26,16 +29,16 @@ void ComputedColumns::removeComputedColumn(std::string name, Columns * columns)
 			break;
 		}
 
-	columns->removeColumn(name);  //This moves the columns, meaning the pointers in the other computeColumns are now no longer valid..
-	refreshColumnPointers(columns);
+	columns().removeColumn(name);  //This moves the columns, meaning the pointers in the other computeColumns are now no longer valid..
+	refreshColumnPointers();
 }
 
-void ComputedColumns::refreshColumnPointers(Columns * columns)
+void ComputedColumns::refreshColumnPointers()
 {
 	for(ComputedColumn * col : _computedColumns)
-		col->setColumn(&(columns->get(col->name())));
+		col->setColumn(&(columns().get(col->name())));
 
-	findAllColumnNames(columns);
+	findAllColumnNames();
 }
 
 size_t ComputedColumns::findIndexByName(std::string name) const
@@ -116,11 +119,11 @@ std::string ComputedColumns::getError(std::string name)
 	return "";
 }
 
-void ComputedColumns::findAllColumnNames(Columns * columns)
+void ComputedColumns::findAllColumnNames()
 {
 	std::set<std::string> names;
 
-	for(Column & col : *columns)
+	for(Column & col : columns())
 		names.insert(col.name());
 
 	ComputedColumn::setAllColumnNames(names);
@@ -136,12 +139,15 @@ Json::Value	ComputedColumns::convertToJson()
 	return json;
 }
 
-void ComputedColumns::convertFromJson(Json::Value json, Columns * columns)
+void ComputedColumns::convertFromJson(Json::Value json)
 {
 	_computedColumns.clear();
 
 	for(auto colJson : json)
-		_computedColumns.push_back(new ComputedColumn(&_computedColumns, columns, colJson));
+		_computedColumns.push_back(new ComputedColumn(&_computedColumns, &columns(), colJson));
 
-	findAllColumnNames(columns);
+	findAllColumnNames();
+
+	for(ComputedColumn * col : _computedColumns)
+		col->findDependencies();
 }

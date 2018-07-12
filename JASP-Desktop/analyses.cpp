@@ -32,24 +32,12 @@
 
 using namespace std;
 
-Analyses::Analyses()
+Analysis* Analyses::create(const QString &module, const QString &name)
 {
-	_nextId = 0;
-
-	//QTimer *timer = new QTimer(this);
-	//timer->setInterval(5000);
-	//
-	//QObject::connect(timer, SIGNAL(timeout()), this, SLOT(flushDefaultsToDisk()));
-	//
-	//timer->start();
+	return create(module, name, _nextId++, AppInfo::version);
 }
 
-Analysis *Analyses::create(const QString &module, const QString &name)
-{
-	return create(module, name, _nextId++, AppInfo::version, NULL, Analysis::Empty);
-}
-
-Analysis *Analyses::create(const QString &module, const QString &name, int id, const Version &version, Json::Value *options, Analysis::Status status)
+Analysis* Analyses::create(const QString &module, const QString &name, int id, const Version &version, Json::Value *options, Analysis::Status status)
 {
 	if (id >= _nextId)
 		_nextId = id + 1;
@@ -57,21 +45,20 @@ Analysis *Analyses::create(const QString &module, const QString &name, int id, c
 	Analysis *analysis = AnalysisLoader::load(id, module.toStdString(), name.toStdString(), version, options);
 	analysis->setStatus(status);
 
-//	if (options == NULL)
-//		assignDefaults(analysis);
-
 	while (id >= _analyses.size())
 		_analyses.push_back(NULL);
 
 	_analyses[id] = analysis;
 
-	analysis->optionsChanged.connect(boost::bind(&Analyses::analysisOptionsChangedHandler, this, _1));
-	analysis->toRefresh.connect(boost::bind(&Analyses::analysisToRefreshHandler, this, _1));
-	analysis->saveImage.connect(boost::bind(&Analyses::analysisSaveImageHandler, this, _1, _2));
-	analysis->imageSaved.connect(boost::bind(&Analyses::analysisImageSavedHandler, this, _1));
-    analysis->editImage.connect(boost::bind(&Analyses::analysisEditImageHandler, this, _1, _2));
-    analysis->imageEdited.connect(boost::bind(&Analyses::analysisImageEditedHandler, this, _1));
-	analysis->resultsChanged.connect(boost::bind(&Analyses::analysisResultsChangedHandler, this, _1));
+	analysis->toRefresh.connect(						boost::bind( &Analyses::analysisToRefreshHandler,			this, _1	 ));
+	analysis->saveImage.connect(						boost::bind( &Analyses::analysisSaveImageHandler,			this, _1, _2 ));
+	analysis->editImage.connect(						boost::bind( &Analyses::analysisEditImageHandler,			this, _1, _2 ));
+	analysis->imageSaved.connect(						boost::bind( &Analyses::analysisImageSavedHandler,			this, _1	 ));
+	analysis->imageEdited.connect(						boost::bind( &Analyses::analysisImageEditedHandler,			this, _1	 ));
+	analysis->optionsChanged.connect(					boost::bind( &Analyses::analysisOptionsChangedHandler,		this, _1	 ));
+	analysis->resultsChanged.connect(					boost::bind( &Analyses::analysisResultsChangedHandler,		this, _1	 ));
+	analysis->requestComputedColumnCreation.connect(	boost::bind( &Analyses::requestComputedColumnCreation,		this, _1, _2 ));
+	analysis->requestComputedColumnDestruction.connect(	boost::bind( &Analyses::requestComputedColumnDestruction,	this, _1	 ));
 
 	analysisAdded(analysis);
 
@@ -80,144 +67,22 @@ Analysis *Analyses::create(const QString &module, const QString &name, int id, c
 
 void Analyses::clear()
 {
-	for (Analyses::iterator itr = this->begin(); itr != this->end(); itr++)
-	{
-		Analysis *analysis = *itr;
+	for (Analysis *analysis : _analyses)
 		delete analysis;
-	}
 
 	_analyses.clear();
-	_defaults.clear();
 }
 
-Analysis *Analyses::get(int id) const
-{
-	if (id < _analyses.size())
-		return _analyses.at(id);
-	else
-		return NULL;
-}
 
 int Analyses::count() const
 {
 	int c = 0;
 
-	BOOST_FOREACH(Analysis *analysis, _analyses)
-	{
+	for (Analysis *analysis : _analyses)
 		if (analysis != NULL)
 			c++;
-	}
 
 	return c;
-}
-
-void Analyses::flushDefaultsToDisk()
-{
-	QString path = AppDirs::analysisDefaultsDir();
-
-	BOOST_FOREACH (Defaults &defaults, _defaults)
-	{
-		if (defaults.needsSync)
-		{
-			std::string json = defaults.options->asJSON(false).toStyledString();
-
-			QString fileName = QString("%1/%2.json").arg(path).arg(defaults.analysisName);
-			QString tmpFileName = QString("%1.%2").arg(fileName).arg(ProcessInfo::currentPID());
-
-			QFile file(tmpFileName);
-
-			file.open(QIODevice::WriteOnly | QIODevice::Truncate);
-			file.write(json.c_str(), json.length());
-			file.close();
-
-			if (Utils::renameOverwrite(tmpFileName.toStdString(), fileName.toStdString()))
-				defaults.needsSync = false;
-			else
-				file.remove();
-		}
-	}
-}
-
-void Analyses::assignDefaults(Analysis *analysis)
-{
-	QString name = QString::fromStdString(analysis->name());
-
-	if (_defaults.contains(name))
-	{
-		analysis->options()->set(_defaults[name].options->asJSON());
-	}
-	/*else
-	{
-		QString path = AppDirs::analysisDefaultsDir() + "/" + name + ".json";
-		QFile file(path);
-
-		bool defaultsExist = file.exists();
-
-		if (defaultsExist)
-		{
-			file.open(QFile::ReadOnly);
-			QByteArray contents = file.readAll();
-			Json::Reader reader;
-			Json::Value root;
-
-			if (reader.parse(contents.constData(), contents.constData() + contents.length(), root, false))
-				analysis->options()->set(root);
-		}
-
-		Defaults defs;
-		defs.analysisName = name;
-		defs.options = static_cast<Options*>(analysis->options()->clone());
-
-		if (defaultsExist == false)
-		{
-			defs.needsSync = true;
-			_defaults[name] = defs;
-			flushDefaultsToDisk();
-		}
-		else
-		{
-			defs.needsSync = false;
-			_defaults[name] = defs;
-		}
-
-	}*/
-}
-void Analyses::analysisResultsChangedHandler(Analysis *analysis)
-{
-	analysisResultsChanged(analysis);
-}
-
-void Analyses::analysisImageSavedHandler(Analysis *analysis)
-{
-	analysisImageSaved(analysis);
-}
-
-void Analyses::analysisImageEditedHandler(Analysis *analysis)
-{
-    analysisImageEdited(analysis);
-}
-
-void Analyses::analysisOptionsChangedHandler(Analysis *analysis)
-{
-	QString name = QString::fromStdString(analysis->name());
-
-	if (_defaults.contains(name))
-	{
-		Defaults &defaults = _defaults[name];
-		defaults.options->set(analysis->options()->asJSON());
-		defaults.needsSync = true;
-	}
-	else
-	{
-		Defaults defaults;
-
-		defaults.analysisName = name;
-		defaults.options = static_cast<Options*>(analysis->options()->clone());
-		defaults.needsSync = true;
-		_defaults[name] = defaults;
-	}
-
-	analysisOptionsChanged(analysis);
 }
 
 void Analyses::analysisToRefreshHandler(Analysis *analysis)

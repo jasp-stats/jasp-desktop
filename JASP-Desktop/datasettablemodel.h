@@ -33,7 +33,7 @@ class DataSetTableModel : public QAbstractTableModel
 	Q_PROPERTY(int columnsFilteredCount READ columnsFilteredCount NOTIFY columnsFilteredCountChanged)
 
 public:
-	enum class	specialRoles { active = Qt::UserRole, lines, maxColString, columnIsComputed, computedColumnIsInvalidated, columnIsFiltered, computedColumnHasError };
+	enum class	specialRoles { active = Qt::UserRole, lines, maxColString, columnIsComputed, computedColumnIsInvalidated, columnIsFiltered, computedColumnError };
 
 	explicit						DataSetTableModel(QObject *parent = 0);
 
@@ -47,7 +47,6 @@ public:
 				Qt::ItemFlags		flags(const QModelIndex &index)														const	override;
 
 	Q_INVOKABLE bool				isColumnNameFree(QString name)						{ return _package->isColumnNameFree(name.toStdString()); }
-	Q_INVOKABLE void				createComputedColumn(QString name, int columnType, bool jsonPlease);
 	Q_INVOKABLE bool				getRowFilter(int row)					const		{ return (row >=0 && row < rowCount()) ? _dataSet->filterVector()[row] : true; }
 	Q_INVOKABLE	QVariant			columnTitle(int column)					const;
 	Q_INVOKABLE QVariant			columnIcon(int column)					const;
@@ -68,7 +67,7 @@ public:
 				Column::ColumnType	getColumnType(int columnIndex);
 				bool				isComputedColumn(int colIndex)				const { return _package->isColumnComputed(colIndex); }
 				bool				isComputedColumnInvalided(int colIndex)		const { return _package->isColumnInvalidated(colIndex); }
-				bool				isComputedColumnWithError(int colIndex)		const { return _package->isComputedColumnWithError(colIndex); }
+				QString				getComputedColumnError(int colIndex)		const { return QString::fromStdString(_package->getComputedColumnError(colIndex)); }
 
 signals:
 				void				columnsFilteredCountChanged();

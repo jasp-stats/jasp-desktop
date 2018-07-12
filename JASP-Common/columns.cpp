@@ -97,3 +97,14 @@ size_t Columns::findIndexByName(std::string name) const
 	throw std::runtime_error("Cannot find column by name: " + name);
 }
 
+
+Column * Columns::createColumn(std::string name)
+{
+	Column * column = &at(columnCount() - 1);
+
+	column->setName(name);
+	column->_setRowCount(maxRowCount());
+
+	return column;
+}
+

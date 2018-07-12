@@ -50,12 +50,13 @@ public:
 	const QString &illegalValueMessage() const;
 	
 	void runRScript(QString script, QVariant key = QVariant());
+	void connectToAvailableVariablesModel(DataSet *dataSet);
 	
 public slots:
 	void runScriptRequestDone(const QString & result, int requestId);
 
 signals:
-	void illegalChanged();
+	void illegalChanged(AnalysisForm * form);
 	void sendRScript(QString script, int key);
 	
 protected:

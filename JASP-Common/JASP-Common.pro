@@ -67,7 +67,8 @@ SOURCES += \
 	version.cpp \
     computedcolumn.cpp \
     computedcolumns.cpp \
-    enginedefinitions.cpp
+    enginedefinitions.cpp \
+    options/optioncomputedcolumn.cpp
 
 HEADERS += \
 	analysis.h \
@@ -126,7 +127,8 @@ HEADERS += \
     jsonredirect.h \
     computedcolumn.h \
     computedcolumns.h \
-    enginedefinitions.h
+    enginedefinitions.h \
+    options/optioncomputedcolumn.h
 
 #exists(/app/lib/*) should only be true when building flatpak
 #macx | windows | exists(/app/lib/*)

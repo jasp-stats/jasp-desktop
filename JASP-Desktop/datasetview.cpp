@@ -513,7 +513,7 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 									_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["columnIsComputed"]).toBool(),
 									_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["computedColumnIsInvalidated"]).toBool(),
 									_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["columnIsFiltered"]).toBool(),
-									_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["computedColumnHasError"]).toBool());
+									_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["computedColumnError"]).toString());
 		}
 		else
 		{
@@ -528,7 +528,7 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 												_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["columnIsComputed"]).toBool(),
 												_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["computedColumnIsInvalidated"]).toBool(),
 												_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["columnIsFiltered"]).toBool(),
-												_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["computedColumnHasError"]).toBool()));
+												_model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["computedColumnError"]).toString()));
 
 			_columnHeaderDelegate->create(localIncubator, itemCon->context);
 			columnHeader = qobject_cast<QQuickItem*>(localIncubator.object());
@@ -645,7 +645,7 @@ QQmlContext * DataSetView::setStyleDataRowNumber(QQmlContext * previousContext, 
 	return previousContext;
 }
 
-QQmlContext * DataSetView::setStyleDataColumnHeader(QQmlContext * previousContext, QString text, int column, bool isComputed, bool isInvalidated, bool isFiltered, bool hasComputedError)
+QQmlContext * DataSetView::setStyleDataColumnHeader(QQmlContext * previousContext, QString text, int column, bool isComputed, bool isInvalidated, bool isFiltered, QString computedError)
 {
 	if(previousContext == NULL)
 		previousContext = new QQmlContext(qmlContext(this), this);
@@ -655,7 +655,7 @@ QQmlContext * DataSetView::setStyleDataColumnHeader(QQmlContext * previousContex
 	previousContext->setContextProperty("columnIsComputed",		isComputed);
 	previousContext->setContextProperty("columnIsInvalidated",	isInvalidated);
 	previousContext->setContextProperty("columnIsFiltered",		isFiltered);
-	previousContext->setContextProperty("columnHasError",		hasComputedError);
+	previousContext->setContextProperty("columnError",			computedError);
 
 	return previousContext;
 }
@@ -931,25 +931,4 @@ void DataSetView::setViewportH(float newViewportH)
 		_viewportH = newViewportH;
 		emit viewportHChanged();
 	}
-}
-
-void DataSetView::modelDataChanged(const QModelIndex & begin, const QModelIndex & end, const QVector<int> & roles)
-{
-	calculateCellSizes();
-}
-
-void DataSetView::modelHeaderDataChanged(Qt::Orientation orientation, int first, int last)
-{
-	calculateCellSizes();
-}
-
-void DataSetView::modelAboutToBeReset()
-{
-
-}
-
-void DataSetView::modelWasReset()
-{
-	setRolenames();
-	calculateCellSizes();
 }

@@ -28,6 +28,8 @@
 
 #include <set>
 
+class ComputedColumn;
+
 class Analysis
 {
 	typedef std::map<std::string, std::set<std::string>> optionColumns;
@@ -49,6 +51,11 @@ public:
 	boost::signals2::signal<void (Analysis *source, Json::Value &options)>	editImage;
 	boost::signals2::signal<void (Analysis *source)>						imageEdited;
 	boost::signals2::signal<void (Analysis *source)>						resultsChanged;
+
+	boost::signals2::signal<void				(std::string columnName)>														requestComputedColumnDestruction;
+	boost::signals2::signal<ComputedColumn *	(std::string columnName, Analysis *source), return_not_NULL<ComputedColumn *>>	requestComputedColumnCreation;
+
+
 
 	void setResults(Json::Value results, int progress = -1);
 	void setImageResults(Json::Value results);
@@ -97,9 +104,10 @@ public:
 
 	performType desiredPerformTypeFromAnalysisStatus() const;
 
-	std::set<std::string>	usedColumnNames()						{ return _options->usedVariables(); }
-	void					removeUsedColumnName(std::string var)	{ _options->removeUsedVariable(var); }
-
+	std::set<std::string>	usedVariables()													{ return _options->usedVariables();					}
+	std::set<std::string>	columnsCreated()												{ return _options->columnsCreated();					}
+	void					removeUsedVariable(std::string var)								{ _options->removeUsedVariable(var);				}
+	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}
 
 protected:
 	int callback(Json::Value results);
@@ -117,7 +125,9 @@ protected:
 
 
 private:
-	void optionsChangedHandler(Option *option);
+	void				optionsChangedHandler(Option *option);
+	ComputedColumn *	requestComputedColumnCreationHandler(std::string columnName)	{ return requestComputedColumnCreation(columnName, this); }
+	void				requestComputedColumnDestructionHandler(std::string columnName) { requestComputedColumnDestruction(columnName); }
 
 	int			_id;
 	std::string	_module,
@@ -132,6 +142,7 @@ private:
 				_jaspResultsAnalysis;
 	Version		_version;
 	int			_revision		= 0;
+
 };
 
 #endif // ANALYSIS_H

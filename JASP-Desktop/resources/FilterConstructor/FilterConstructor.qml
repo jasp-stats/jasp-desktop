@@ -3,6 +3,8 @@ import QtQuick 2.9
 
 Item {
 	id: filterConstructor
+	objectName:  "filterConstructor"
+
 	property real blockDim: 20
 	property real fontPixelSize: 14
 	property var allKeys: ["number", "boolean", "string", "variable"]

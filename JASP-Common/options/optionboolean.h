@@ -24,7 +24,7 @@
 class OptionBoolean : public OptionI<bool>
 {
 public:
-	OptionBoolean(bool defaultValue = false) : OptionI() {	_value = defaultValue;	}
+	OptionBoolean(bool defaultValue = false) : OptionI(defaultValue, false) {}
 
 	void		init(const Json::Value &data)			override;
 	void		set(const Json::Value& value)			override;

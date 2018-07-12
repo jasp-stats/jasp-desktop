@@ -48,24 +48,27 @@ AnalysisForm::AnalysisForm(QString name, QWidget *parent) :
 	_hasIllegalValue = false;
 }
 
+void AnalysisForm::connectToAvailableVariablesModel(DataSet *dataSet)
+{
+	_dataSet = dataSet;
+
+	vector<string> columnNames;
+
+	if (_dataSet != NULL)
+		for(Column &column : dataSet->columns())
+			columnNames.push_back(column.name());
+
+
+	_availableVariablesModel.setInfoProvider(this);
+	_availableVariablesModel.setVariables(columnNames);
+}
+
 void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
 {
 	if (_options != NULL)
 		unbind();
 
 	_dataSet = dataSet;
-
-	vector<string> columnNames;
-
-	if (_dataSet != NULL)
-	{
-		for(Column &column : dataSet->columns())
-			columnNames.push_back(column.name());
-	}
-
-	_availableVariablesModel.setInfoProvider(this);
-	_availableVariablesModel.setVariables(columnNames);
-
 	_options = options;
 
 	for(const string &name : options->names)
@@ -170,7 +173,7 @@ void AnalysisForm::updateIllegalStatus()
 		_hasIllegalValue = illegal;
 		_illegalMessage = message;
 
-		emit illegalChanged();
+		emit illegalChanged(this);
 	}
 }
 

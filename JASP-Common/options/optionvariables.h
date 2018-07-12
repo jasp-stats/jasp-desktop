@@ -37,6 +37,7 @@ public:
 
 	std::set<std::string>		usedVariables()													override;
 	void						removeUsedVariable(std::string var)								override;
+	void						replaceVariableName(std::string oldName, std::string newName)	override	{ replaceName(oldName, newName); }
 
 protected:
 	OptionVariables(bool onlyOneTerm) : OptionTerms(true, onlyOneTerm)	{}

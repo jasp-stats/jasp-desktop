@@ -246,7 +246,7 @@ QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientatio
 	else if(role == (int)specialRoles::columnIsComputed)			return isComputedColumn(section);
 	else if(role == (int)specialRoles::computedColumnIsInvalidated)	return isComputedColumnInvalided(section);
 	else if(role == (int)specialRoles::columnIsFiltered)			return columnHasFilter(section) || columnUsedInEasyFilter(section);
-	else if(role == (int)specialRoles::computedColumnHasError)		return isComputedColumnWithError(section);
+	else if(role == (int)specialRoles::computedColumnError)			return getComputedColumnError(section);
 
 
 	return QVariant();
@@ -262,7 +262,7 @@ QHash<int, QByteArray> DataSetTableModel::roleNames() const
 	roles[(int)specialRoles::maxColString]					= QString("maxColString").toUtf8();
 	roles[(int)specialRoles::columnIsFiltered]				= QString("columnIsFiltered").toUtf8();
 	roles[(int)specialRoles::columnIsComputed]				= QString("columnIsComputed").toUtf8();
-	roles[(int)specialRoles::computedColumnHasError]		= QString("computedColumnHasError").toUtf8();
+	roles[(int)specialRoles::computedColumnError]			= QString("computedColumnError").toUtf8();
 	roles[(int)specialRoles::computedColumnIsInvalidated]	= QString("computedColumnIsInvalidated").toUtf8();
 
 	return roles;
@@ -345,43 +345,13 @@ void DataSetTableModel::setColumnsUsedInEasyFilter(std::set<std::string> usedCol
 	for(auto & col : usedColumns)
 	{
 		columnNameUsedInEasyFilter[col] = true;
-		notifyColumnFilterStatusChanged(_dataSet->columns().findIndexByName(col));
+		try { notifyColumnFilterStatusChanged(_dataSet->columns().findIndexByName(col)); } catch(...) {}
 	}
 }
 
 void DataSetTableModel::notifyColumnFilterStatusChanged(int columnIndex)
 {
 	emit columnsFilteredCountChanged();
-
 	emit headerDataChanged(Qt::Horizontal, columnIndex, columnIndex);
 }
 
-
-void DataSetTableModel::createComputedColumn(QString name, int columnType, bool jsonPlease)
-{
-	bool success			= false;
-	size_t newColumnIndex	= _dataSet->columnCount();
-	DataSet	*theData		= _dataSet;
-
-	do
-	{
-		try {
-			theData->setColumnCount(newColumnIndex + 1);
-			success = true;
-		}
-		catch (boost::interprocess::bad_alloc &e)
-		{
-			try {	theData = SharedMemory::enlargeDataSet(theData);	}
-			catch (exception &e)	{	throw runtime_error("Out of memory: this data set is too large for your computer's available memory");	}
-		}
-		catch (exception e)	{	cout << "DataSetTableModel::createComputedColum std::exception: " << e.what() << std::endl; 	}
-		catch (...)			{	cout << "DataSetTableModel::createComputedColum some other exception\n " << std::endl;			}
-	}
-	while (!success);
-
-	if(theData != _dataSet)
-		emit dataSetChanged(_dataSet); //also changes _dataSet!
-
-	_package->createComputedColumn(name.toStdString(), (Column::ColumnType)columnType, newColumnIndex, jsonPlease ? ComputedColumn::computedType::constructorCode : ComputedColumn::computedType::rCode);
-	refresh();
-}

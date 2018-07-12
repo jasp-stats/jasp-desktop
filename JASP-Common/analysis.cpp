@@ -37,7 +37,9 @@ Analysis::Analysis(int id, string module, string name, string title, Json::Value
 	else								perror("malformed analysis definition");
 	if (data != NULL)					_options->set(*data);
 
-	_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this, _1));
+	_options->changed.connect(							boost::bind( &Analysis::optionsChangedHandler,						this, _1));
+	_options->requestComputedColumnCreation.connect(	boost::bind( &Analysis::requestComputedColumnCreationHandler,		this, _1));
+	_options->requestComputedColumnDestruction.connect(	boost::bind( &Analysis::requestComputedColumnDestructionHandler,	this, _1));
 
 	_status = Empty;
 	_progress = -1;
@@ -161,6 +163,7 @@ void Analysis::optionsChangedHandler(Option *option)
 	_revision++;
 	optionsChanged(this);
 }
+
 
 int Analysis::callback(Json::Value results)
 {

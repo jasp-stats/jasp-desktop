@@ -162,10 +162,8 @@ void EngineRepresentation::processComputeColumnReply(Json::Value json)
 	std::string error		= json.get("error", "").asString();
 	std::string columnName	= json.get("columnName", "").asString();
 
-	if(result == "succes")
-		emit computeColumnSucceeded(columnName, error);
-	else
-		emit computeColumnFailed(columnName, error == "" ? "Unknown Error" : error);
+	if(result == "succes")	emit computeColumnSucceeded(columnName, error);
+	else					emit computeColumnFailed(columnName, error == "" ? "Unknown Error" : error);
 }
 
 void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
@@ -279,11 +277,21 @@ void EngineRepresentation::processAnalysisReply(Json::Value json)
 		break;
 
 	case analysisResultStatus::error:
+		analysis->setResults(results);
+		clearAnalysisInProgress();
+
+		for(std::string col : analysis->columnsCreated())
+			emit computeColumnFailed(col, "Analysis had an error..");
+		break;
+
 	case analysisResultStatus::exception:
 	case analysisResultStatus::inited:
 	case analysisResultStatus::complete:
 		analysis->setResults(results);
 		clearAnalysisInProgress();
+
+		for(std::string col : analysis->columnsCreated())
+			emit computeColumnSucceeded(col, "");
 		break;
 
 	case analysisResultStatus::running:

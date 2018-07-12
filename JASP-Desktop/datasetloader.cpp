@@ -49,12 +49,9 @@ Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const string &
 	Importer* result = NULL;
 	string ext = getExtension(locator, extension);
 
-	if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt"))
-		result = new CSVImporter(packageData);
-	else if (boost::iequals(ext,".sav"))
-		result = new SPSSImporter(packageData);
-	else if (boost::iequals(ext,".ods"))
-		result = new ODSImporter(packageData);
+	if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt"))	result = new CSVImporter(packageData);
+	else if (boost::iequals(ext,".sav"))							result = new SPSSImporter(packageData);
+	else if (boost::iequals(ext,".ods"))							result = new ODSImporter(packageData);
 
 	return result;
 }

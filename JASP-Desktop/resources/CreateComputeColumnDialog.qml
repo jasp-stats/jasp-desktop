@@ -24,9 +24,9 @@ Popup {
 
 	function createComputedColumn()
 	{
-		if(dataSetModel.isColumnNameFree(nameEdit.text))
+		if(computedColumnsInterface.isColumnNameFree(nameEdit.text))
 		{
-			dataSetModel.createComputedColumn(nameEdit.text, rootCreateComputedColumn.selectedColumnType, popupCreateComputedColumn.computeTypeIsJson)
+			computedColumnsInterface.createComputedColumn(nameEdit.text, rootCreateComputedColumn.selectedColumnType, popupCreateComputedColumn.computeTypeIsJson)
 			focus = true
 			popupCreateComputedColumn.close()
 			if(!computeColumnWindow.changed)

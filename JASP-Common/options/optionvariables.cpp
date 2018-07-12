@@ -116,4 +116,3 @@ void  OptionVariables::removeUsedVariable(std::string var)
 		removeName(var);
 }
 
-

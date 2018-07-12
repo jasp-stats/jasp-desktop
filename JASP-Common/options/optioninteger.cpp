@@ -17,14 +17,6 @@
 
 #include "optioninteger.h"
 
-OptionInteger::OptionInteger(int value, int min, int max, std::string format) : OptionI()
-{
-	_value	= value;
-	_min	= min;
-	_max	= max;
-	_format = format;
-}
-
 void OptionInteger::init(const Json::Value &data)
 {
 	_value	= data.get("default", 0).asInt();

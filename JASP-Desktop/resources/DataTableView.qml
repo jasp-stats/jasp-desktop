@@ -9,8 +9,6 @@ FocusScope
 
 	signal doubleClicked()
 
-
-
 	Rectangle
 	{
 		color: "white"
@@ -184,7 +182,7 @@ FocusScope
 
 							Repeater{
 								id: iconRepeater
-								model: [columnTypeScale, columnTypeOrdinal, columnTypeNominal] //these are set in the rootcontext in mainwindow!
+								model: columnIsComputed ? [columnTypeScale, columnTypeOrdinal, columnTypeNominal, columnTypeNominalText] :  [columnTypeScale, columnTypeOrdinal, columnTypeNominal] //these are set in the rootcontext in mainwindow!
 
 								Rectangle
 								{
@@ -220,7 +218,7 @@ FocusScope
 										Text
 										{
 											id: popupText
-											text: iconRepeater.model[index] === columnTypeScale ? "Scale" : ( iconRepeater.model[index] === columnTypeOrdinal ? "Ordinal" : "Nominal")
+											text: iconRepeater.model[index] === columnTypeScale ? "Scale" : iconRepeater.model[index] === columnTypeOrdinal ? "Ordinal" : iconRepeater.model[index] === columnTypeNominal ? "Nominal" : "Text"
 
 											anchors.left: popupIconImage.right
 											anchors.leftMargin: 10
@@ -326,16 +324,32 @@ FocusScope
 				{
 					id: colHasError
 
-					anchors.right: colFilterOn.left
+					anchors.right: colIsInvalidated.left
 					anchors.verticalCenter: parent.verticalCenter
+					anchors.margins: visible ? 1 : 0
 
 					source: "../icons/error.png"
 					sourceSize.width:  headerRoot.__iconDim
 					sourceSize.height:  headerRoot.__iconDim
 
-					width: columnHasError ? headerRoot.__iconDim : 0
+					width: columnError.length > 0 ? headerRoot.__iconDim : 0
 					height:  headerRoot.__iconDim
-					visible: columnHasError && !columnIsInvalidated
+					visible: columnError.length > 0 // && !columnIsInvalidated
+
+					MouseArea
+					{
+						anchors.fill: parent
+						onClicked: computeColumnWindow.open(dataSetModel.headerData(columnIndex, Qt.Horizontal))
+
+						hoverEnabled: true
+						ToolTip.visible: containsMouse && columnError.length > 0
+						ToolTip.text: columnError
+						ToolTip.timeout: 3000
+						ToolTip.delay: 500
+						cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+
+					}
+
 				}
 
 
@@ -363,7 +377,7 @@ FocusScope
 					anchors.left: colIsComputed.right
 					anchors.top: parent.top
 					anchors.bottom: parent.bottom
-					anchors.right: parent.right
+					anchors.right: colHasError.left
 					onClicked:
 					{
 						var chooseThisColumn = (columnIndex > -1 && dataSetModel.columnIcon(columnIndex)  !== columnTypeScale) ? columnIndex : -1
@@ -382,7 +396,7 @@ FocusScope
 					ToolTip.text: "Click here to change labels" + (columnIsFiltered ? " or inspect filter" : "" )
 					ToolTip.timeout: 3000
 					ToolTip.delay: 500
-					cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+					cursorShape: containsMouse && dataSetModel.columnIcon(columnIndex)  !== columnTypeScale ? Qt.PointingHandCursor : Qt.ArrowCursor
 				}
 			}
 		}
