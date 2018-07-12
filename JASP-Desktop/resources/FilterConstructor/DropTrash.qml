@@ -48,7 +48,7 @@ DropArea {
 		ToolTip.delay: 500
 		//ToolTip.timeout: 1000
 		ToolTip.visible: containsMouse
-		ToolTip.text: "Dump unwanted formula snippets here; doubleclick to clean up the entire slate"
+		ToolTip.text: "Dump unwanted formula snippets here.<br>Doubleclick to clean up the entire slate."
 
 		hoverEnabled: true
 
