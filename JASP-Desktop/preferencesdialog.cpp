@@ -41,6 +41,14 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 	if (spreadsheetEditorName != "")
 		ui->spreadsheetEditorName->setText(spreadsheetEditorName);
 
+	QString testAnalyseQMLName = Settings::value(Settings::TEST_ANALYSIS_QML).toString();
+	if (testAnalyseQMLName != "")
+		ui->testAnalyseQMLName->setText(testAnalyseQMLName);
+	
+	QString testAnalyseRName = Settings::value(Settings::TEST_ANALYSIS_R).toString();
+	if (testAnalyseRName != "")
+		ui->testAnalyseRName->setText(testAnalyseRName);
+	
 	// Remove Question mark Help sign (Only on windows )
 	this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
@@ -53,6 +61,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 	connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(savePreferences()));
 	connect(ui->useDefaultSpreadsheetEditor, SIGNAL(clicked(bool)), this, SLOT(setDefaultEditorCheck(bool)));
 	connect(ui->openEditor, SIGNAL(pressed()),this, SLOT(getSpreadsheetEditor()));
+	connect(ui->openQMLFile, SIGNAL(pressed()),this, SLOT(getQMLFile()));
+	connect(ui->openRFile, SIGNAL(pressed()),this, SLOT(getRFile()));
 	connect(ui->tabsPreferences, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
 	
 	ui->tabsPreferences->setCurrentIndex(_currentTab);
@@ -229,6 +239,8 @@ void PreferencesDialog::savePreferences()
 	if (numDecimals != savedNumDecimals)
         _tabBar->setFixDecimals(numDecimals);
 	
+	Settings::setValue(Settings::TEST_ANALYSIS_QML, ui->testAnalyseQMLName->text());
+	Settings::setValue(Settings::TEST_ANALYSIS_R, ui->testAnalyseRName->text());
 	//Done
 	Settings::sync();
 
@@ -272,6 +284,43 @@ void PreferencesDialog::getSpreadsheetEditor()
 		ui->spreadsheetEditorName->setText(filename);
 	
 }
+
+void PreferencesDialog::getQMLFile()
+{
+	QString filter = "File Description (*.qml)";
+	QString folder;
+
+#ifdef __WIN32__
+	folder = "c:\\";
+#elif __APPLE__
+	folder = "~/Documenents";
+#else
+	folder = "/";
+#endif
+
+	QString filename = QFileDialog::getOpenFileName(this, "Select a file...", folder, filter);
+	if (filename != "")
+		ui->testAnalyseQMLName->setText(filename);	
+}
+
+void PreferencesDialog::getRFile()
+{
+	QString filter = "File Description (*.R)";
+	QString folder;
+
+#ifdef __WIN32__
+	folder = "c:\\";
+#elif __APPLE__
+	folder = "~/Documenents";
+#else
+	folder = "/";
+#endif
+
+	QString filename = QFileDialog::getOpenFileName(this, "Select a file...", folder, filter);
+	if (filename != "")
+		ui->testAnalyseRName->setText(filename);	
+}
+
 
 void PreferencesDialog::showEvent(QShowEvent * event)
 {

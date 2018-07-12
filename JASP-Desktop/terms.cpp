@@ -514,8 +514,6 @@ bool Terms::discardWhatDoesntContainTheseComponents(const Terms &terms)
 		),
 		_terms.end()
 	);
-	
-	vector<Term>::iterator titr = _terms.begin();
 
 	return changed;
 }

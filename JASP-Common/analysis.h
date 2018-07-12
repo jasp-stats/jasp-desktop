@@ -38,7 +38,7 @@ public:
 
 	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted, Error, SaveImg, EditImg, Exception };
 
-	Analysis(int id, std::string module, std::string name, std::string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Json::Value optionsJson, const Version &version, Json::Value *data, bool isAutorun = true, bool usedata = true, bool useJaspResults = false);
+	Analysis(int id, std::string module, std::string name, std::string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Json::Value optionsJson, const Version &version, Json::Value *data, bool isAutorun = true, bool usedata = true, bool fromQML = false, bool useJaspResults = false);
 
 	virtual ~Analysis();
 
@@ -67,7 +67,9 @@ public:
 	void setVisible(bool visible)						{ _visible = visible;			}
 	void setRefreshBlocked(bool block)					{ _refreshBlocked = block;		}
 	void setSaveImgOptions(Json::Value &options)		{ _saveImgOptions = options;	}
-
+	void setRFile(const std::string &file)				{ _rfile = file;				}
+	void setUsesDataResults(bool usesDataResults)		{ _jaspResultsAnalysis = usesDataResults;}
+	
 	//getters
 	const	Json::Value &results()				const	{ return _results;				}
 	const	Json::Value &userData()				const	{ return _userData;				}
@@ -77,10 +79,12 @@ public:
 	const	Json::Value &resultsMeta()			const	{ return _resultsMeta;			}
 	const	std::string &name()					const	{ return _name;					}
 	const	std::string &title()				const	{ return _title;				}
+	const	std::string &rfile()				const	{ return _rfile;				}
 	const	std::string &module()				const	{ return _module;				}
 			int			id()					const	{ return _id;					}
 			bool		isAutorun()				const	{ return _autorun;				}
 			bool		useData()				const	{ return _usedata;				}
+			bool		fromQML()				const	{ return _fromQML;				}
 			bool		usesJaspResults()		const	{ return _jaspResultsAnalysis;	}
 			Status		status()				const	{ return _status;				}
 			int			revision()				const	{ return _revision;				}
@@ -105,10 +109,12 @@ public:
 
 	performType desiredPerformTypeFromAnalysisStatus() const;
 
+
 	std::set<std::string>	usedVariables()													{ return _options->usedVariables();					}
-	std::set<std::string>	columnsCreated()												{ return _options->columnsCreated();					}
+	std::set<std::string>	columnsCreated()												{ return _options->columnsCreated();				}
 	void					removeUsedVariable(std::string var)								{ _options->removeUsedVariable(var);				}
 	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}
+
 
 protected:
 	int callback(Json::Value results);
@@ -124,7 +130,6 @@ protected:
 				_saveImgOptions	= Json::nullValue;
 	int			_progress;
 
-
 private:
 	void				optionsChangedHandler(Option *option);
 	ComputedColumn *	requestComputedColumnCreationHandler(std::string columnName)	{ return requestComputedColumnCreation(columnName, this); }
@@ -133,13 +138,15 @@ private:
 	int			_id;
 	std::string	_module,
 				_name,
-				_title;
+				_title,
+				_rfile;
 	Json::Value _requiresInit,
 				_dataKey,
 				_stateKey,
 				_resultsMeta;
 	bool		_autorun,
 				_usedata,
+				_fromQML,
 				_jaspResultsAnalysis;
 	Version		_version;
 	int			_revision		= 0;

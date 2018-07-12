@@ -19,6 +19,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "analysisforms/analysisqmlform.h"
 #include "analysisforms/Common/ancovabayesianform.h"
 #include "analysisforms/Common/ancovaform.h"
 #include "analysisforms/Common/ancovamultivariateform.h"
@@ -739,7 +740,7 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 {
 	if (_analysisFormsMap.count(analysis) == 0)
 	{
-		AnalysisForm * formCreated	= loadForm(analysis->name());
+		AnalysisForm * formCreated	= createAnalysisForm(analysis);
 		_analysisFormsMap[analysis] = formCreated;
 
 		//sizing of options widget and panel to fit buttons and conform to largest size for consistency
@@ -756,13 +757,13 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 
 		Options *options = analysis->options();
 		DataSet *dataSet = _package->dataSet();
-		formCreated->connectToAvailableVariablesModel(dataSet);
 		formCreated->bindTo(options, dataSet);
 
 		connect(formCreated, &AnalysisForm::illegalChanged, this, &MainWindow::illegalOptionStateChanged);
 	}
-	else
-		_analysisFormsMap[analysis]->connectToAvailableVariablesModel(_package->dataSet());
+	//else
+		//We no longer need to do this? _analysisFormsMap[analysis]->connectToAvailableVariablesModel(_package->dataSet());
+
 	
 	illegalOptionStateChanged(_analysisFormsMap[analysis]);
 	_analysisFormsMap[analysis]->show();
@@ -770,14 +771,17 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 	return _analysisFormsMap[analysis];
 }
 
-
-AnalysisForm* MainWindow::loadForm(const string name)
+AnalysisForm* MainWindow::createAnalysisForm(Analysis *analysis)
 {
+	const string name = analysis->name();
+
+	qDebug() << "Form " << QString::fromStdString(name) << " loaded";
 	AnalysisForm *form = NULL;
 
 	QWidget *contentArea = ui->optionsContentArea;
 
-	if		(name == "Ancova")										form = new AncovaForm(contentArea);
+	if (analysis->fromQML())										form = new AnalysisQMLForm(contentArea, analysis);
+	else if (name == "Ancova")										form = new AncovaForm(contentArea);
 	else if (name == "AnovaOneWay")									form = new AnovaOneWayForm(contentArea);
 	else if (name == "Correlation")									form = new CorrelationForm(contentArea);
 	else if (name == "Descriptives")								form = new DescriptivesForm(contentArea);
@@ -820,11 +824,10 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	else if (name == "BinomialTest")								form = new BinomialTestForm(contentArea);
 	else if (name == "SEMSimple")									form = new SEMSimpleForm(contentArea);
 	else if (name == "Anova")										form = new AnovaForm(contentArea);
-///// 4-analysis if-else ladder
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
-	if(form != NULL)
+	if (form != NULL)
 	{
 		connect(form,			&AnalysisForm::sendRScript, _engineSync,	&EngineSync::sendRCode);
 		connect(_engineSync,	&EngineSync::rCodeReturned, form,			&AnalysisForm::runScriptRequestDone);
@@ -854,7 +857,8 @@ void MainWindow::showForm(Analysis *analysis)
 		_currentOptionsWidget->setMinimumWidth(ui->panel_2_Options->minimumWidth() - _scrollbarWidth);
 
 		_currentOptionsWidget->show();
-		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget,0, 0, Qt::AlignRight | Qt::AlignTop);
+		ui->scrollArea->setVerticalScrollBarPolicy(analysis->fromQML() ? Qt::ScrollBarAlwaysOff : Qt::ScrollBarAlwaysOn);
+		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget);//,0, 0, Qt::AlignRight | Qt::AlignTop);
 
 		if (ui->panel_2_Options->isVisible() == false)
 			showOptionsPanel();
@@ -875,7 +879,8 @@ void MainWindow::closeCurrentOptionsWidget()
 {
 	if (_currentOptionsWidget != NULL)
 	{
-		_currentOptionsWidget->hide();
+		//no need to disconnect illegalChanged and illegalOptionStateChanged, options shouldn't change if the form isn't visible right?
+		_currentOptionsWidget->getWidget()->hide();
 		_currentOptionsWidget = NULL;
 	}
 }
@@ -1003,7 +1008,9 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 				if (analysis != NULL && analysis->isVisible())
 				{
 					Json::Value analysisData = analysis->asJSON();
-					analysisData["options"] = analysis->options()->asJSON();
+					bool fromQML = analysis->fromQML();
+					analysisData["fromQML"] = fromQML;
+					analysisData["options"] = fromQML ? analysis->options()->asJSONWithType(true) : analysis->options()->asJSON(true);
 					analysisData["userdata"] = analysis->userData();
 					analysesDataList.append(analysisData);
 				}
@@ -1254,11 +1261,9 @@ void MainWindow::populateUIfromDataSet()
 				{
 					Json::Value &analysisData = *iter;
 
-					QString name = QString::fromStdString(analysisData["name"].asString());
-					QString module = QString::fromStdString(analysisData["module"].asString());
-					if (module.isEmpty())
-						module = "Common";
-					int id = analysisData["id"].asInt();
+					QString name				= QString::fromStdString(analysisData["name"].asString());
+					QString module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common";
+					int id						= analysisData["id"].asInt();
 
 					Json::Value &optionsJson	= analysisData["options"];
 					Json::Value &resultsJson	= analysisData["results"];
@@ -1266,11 +1271,11 @@ void MainWindow::populateUIfromDataSet()
 					Json::Value &versionJson	= analysisData["version"];
 
 					Version version				= versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
-
 					Analysis::Status status		= Analysis::parseStatus(analysisData["status"].asString());
 
 					Analysis *analysis			= _analyses->create(module, name, id, version, &optionsJson, status);
 
+					_analyses->analysisAdded(analysis);
 					analysis->setUserData(userDataJson);
 					analysis->setResults(resultsJson);
 				}
@@ -1464,6 +1469,8 @@ void MainWindow::itemSelected(const QString &item)
 		_currentAnalysis = _analyses->create(module.name(), item);
 
 		showForm(_currentAnalysis);
+		_analyses->analysisAdded(_currentAnalysis);
+		
 		_resultsJsInterface->showAnalysis(_currentAnalysis->id());
 
 		QString info("%1,%2");
@@ -1938,6 +1945,15 @@ void MainWindow::onFilterUpdated()
 void MainWindow::updateExcludeKey()
 {
 	_excludeKey = false;
+}
+
+void MainWindow::analysisFormChangedHandler(Analysis *analysis)
+{
+	if (_currentOptionsWidget == _analysisFormsMap[analysis])
+		closeCurrentOptionsWidget();
+	delete _analysisFormsMap[analysis];
+	_analysisFormsMap.erase(analysis);
+	showForm(analysis);
 }
 
 void MainWindow::setGeneratedFilter(QString generatedFilter)

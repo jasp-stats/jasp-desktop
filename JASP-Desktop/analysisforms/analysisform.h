@@ -36,8 +36,9 @@
 #include "widgets/tablemodelvariablesavailable.h"
 
 #include "variableinfo.h"
+#include "analysis.h"
 
-class AnalysisForm : public QWidget, protected VariableInfoProvider
+class AnalysisForm : public QWidget, public VariableInfoProvider
 {
 	Q_OBJECT
 
@@ -49,8 +50,11 @@ public:
 	bool hasIllegalValue() const;
 	const QString &illegalValueMessage() const;
 	
+	void illegalValueHandler(Bound *source);
+	
+	virtual QWidget* getWidget();
+	
 	void runRScript(QString script, QVariant key = QVariant());
-	void connectToAvailableVariablesModel(DataSet *dataSet);
 	
 public slots:
 	void runScriptRequestDone(const QString & result, int requestId);
@@ -58,12 +62,15 @@ public slots:
 signals:
 	void illegalChanged(AnalysisForm * form);
 	void sendRScript(QString script, int key);
+	void formChanged(Analysis* analysis);
 	
 protected:
 
 	virtual QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const OVERRIDE;
 	virtual void rScriptDoneHandler(QVariant key, const QString & result);
 	bool runRScriptRequestedForId(int requestId);
+
+	virtual void setVariablesModel();
 
 	DataSet *_dataSet;
 	Options *_options;
@@ -75,7 +82,6 @@ protected:
 	void updateIllegalStatus();
 
 	std::list<Bound *> _bounds;
-	void illegalValueHandler(Bound *source);
 	bool _hasIllegalValue;
 	QString _illegalMessage;
 

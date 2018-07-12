@@ -20,7 +20,9 @@ public:
 		OSF_USERNAME,
 		OSF_PASSWORD,
 		OSF_ENCRYPTION,
-		OSF_REMEMBER_ME
+		OSF_REMEMBER_ME,
+		TEST_ANALYSIS_QML,
+		TEST_ANALYSIS_R
 	};
 
 	static QVariant value(Settings::Type key);

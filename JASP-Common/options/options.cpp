@@ -61,12 +61,16 @@ void Options::init(const Json::Value &array)
 
 		if (option != NULL)
 		{
-			option->init(value);
+			Json::Value &val = value["value"];
+			if (val != Json::nullValue)
+				option->set(val);	
+			else
+				option->init(value);
 			add(name, option);
 		}
 		else
 		{
-			cout << "Unknown data type: " << type << "\n";
+            cout << "Unknown data type: '" << type << "' for name '" << name << "'\n";
             cout.flush();
 		}
 	}
@@ -92,6 +96,37 @@ Option* Options::createOption(string typeString)
 	return NULL;
 }
 
+string Options::getType(Option* option) const
+{
+	if (dynamic_cast<OptionBoolean*>(option))
+		return "Boolean";
+	if (dynamic_cast<OptionInteger*>(option))
+		return "Integer";
+	if (dynamic_cast<OptionIntegerArray*>(option))
+		return "IntegerArray";
+	if (dynamic_cast<OptionList*>(option))
+		return "List";
+	if (dynamic_cast<OptionNumber*>(option))
+		return "Number";
+	if (dynamic_cast<OptionsTable*>(option))
+		return "Table";
+	if (dynamic_cast<OptionString*>(option))
+		return "String";
+	if (dynamic_cast<OptionVariable*>(option))
+		return "Variable";
+	if (dynamic_cast<OptionVariables*>(option))
+		return "Variables";
+	if (dynamic_cast<OptionTerm*>(option))
+		return "Term";
+	if (dynamic_cast<OptionTerms*>(option))
+		return "Terms";
+	if (dynamic_cast<OptionVariablesGroups*>(option))
+		return "VariablesGroups";
+
+	return "";
+}
+
+
 void Options::add(string name, Option *option)
 {
 	_options.push_back(OptionNamed(name, option));
@@ -104,6 +139,29 @@ void Options::optionsChanged(Option *)
 {
 	notifyChanged();
 }
+
+Json::Value Options::asJSONWithType(bool includeTransient) const
+{
+	Json::Value top = Json::arrayValue;
+
+	BOOST_FOREACH(OptionNamed item, _options)
+	{
+		if (includeTransient == false && item.second->isTransient())
+			continue;
+		Json::Value jsonValue = Json::objectValue;
+
+		string name = item.first;
+		Option* option = item.second;
+		jsonValue["name"] = name;
+		jsonValue["type"] = getType(option);
+		jsonValue["value"] = option->asJSON();
+		
+		top.append(jsonValue);
+	}
+
+	return top;
+}
+
 
 Json::Value Options::asJSON(bool includeTransient) const
 {

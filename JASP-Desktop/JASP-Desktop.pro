@@ -1,4 +1,4 @@
-QT += core gui webenginewidgets webchannel svg network printsupport xml qml quick quickwidgets
+QT += core gui webenginewidgets webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2
 
 include(../JASP.pri)
 
@@ -61,6 +61,9 @@ macx:QMAKE_CXXFLAGS += -stdlib=libc++
 windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__ -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
 
 INCLUDEPATH += $$PWD/../JASP-Common/
+
+# Additional import path used to resolve QML modules in Qt Creator's code model
+QML_IMPORT_PATH = $$PWD/imports
 
 include(JASP-Desktop.pri)
 

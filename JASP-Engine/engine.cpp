@@ -329,6 +329,7 @@ void Engine::receiveAnalysisMessage(Json::Value jsonRequest)
 		_analysisStateKey		= jsonRequest.get("stateKey",		Json::nullValue).toStyledString();
 		_analysisRevision		= jsonRequest.get("revision",		-1).asInt();
 		_imageOptions			= jsonRequest.get("image",			Json::nullValue);
+		_rfile					= jsonRequest.get("rfile",			Json::nullValue).asString();
 		_analysisJaspResults	= jsonRequest.get("jaspResults",	false).asBool();
 		_analysisRequiresInit	= jsonRequest.get("requiresInit", Json::nullValue).isNull() ? true : jsonRequest.get("requiresInit", true).asBool();
 		_ppi					= jsonRequest.get("ppi",			96).asInt();
@@ -354,7 +355,7 @@ void Engine::runAnalysis()
 	RCallback callback					= boost::bind(&Engine::callback, this, _1, _2);
 
 	_currentAnalysisKnowsAboutChange	= false;
-	_analysisResultsString				= rbridge_run(_analysisName, _analysisTitle, _analysisRequiresInit, _analysisDataKey, _analysisOptions, _analysisResultsMeta, _analysisStateKey, _analysisId, _analysisRevision, perform, _ppi, callback, _analysisJaspResults);
+	_analysisResultsString				= rbridge_run(_analysisName, _analysisTitle, _rfile, _analysisRequiresInit, _analysisDataKey, _analysisOptions, _analysisResultsMeta, _analysisStateKey, _analysisId, _analysisRevision, perform, _ppi, callback, _analysisJaspResults);
 
 	if (_status == initing || _status == running)  // if status hasn't changed
 		receiveMessages();

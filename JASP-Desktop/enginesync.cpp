@@ -120,7 +120,6 @@ void EngineSync::start()
 	timerBeat->start(30000);
 }
 
-
 void EngineSync::process()
 {
 	for (auto engine : _engines)

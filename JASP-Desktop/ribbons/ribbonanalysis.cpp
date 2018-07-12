@@ -35,14 +35,17 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	addRibbonButton(ui->regressionButton);
 	addRibbonButton(ui->factoranalysisButton);
 
-//	connect(ui->Descriptives, SIGNAL(clicked()), this, SLOT(itemSelected()));
-
 	QMenu *menu;
 
 	menu = new QMenu(this);
 	menu->addAction(QString("Descriptive Statistics"), this, SLOT(itemSelected()))->setObjectName("Descriptives");
 	menu->addAction(QString("Reliability Analysis"), this, SLOT(itemSelected()))->setObjectName("ReliabilityAnalysis");
-
+	menu->addSeparator();
+#ifdef QT_DEBUG
+	menu->addAction(QString("QML Descriptives Statistics"), this, SLOT(itemSelected()))->setObjectName("QMLDescriptives");
+	menu->addAction(QString("QML Reliability Analysis"), this, SLOT(itemSelected()))->setObjectName("QMLReliabilityAnalysis");
+	menu->addAction(QString("QML Analysis Test"), this, SLOT(itemSelected()))->setObjectName("QMLAnalysisTest");
+#endif	
 	ui->Descriptives->setMenu(menu);
 
 	menu = new QMenu(this);
@@ -55,7 +58,18 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu->addAction(QString("Bayesian Independent Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestBayesianIndependentSamples");
 	menu->addAction(QString("Bayesian Paired Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestBayesianPairedSamples");
 	menu->addAction(QString("Bayesian One Sample T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestBayesianOneSample");
+	
+#ifdef QT_DEBUG
+	menu->addSeparator();
+	menu->addAction(QString("QML Independent Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("QMLTTestIndependentSamples");
+	menu->addAction(QString("QML Paired Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("QMLTTestPairedSamples");
+	menu->addAction(QString("QML One Sample T-Test"), this, SLOT(itemSelected()))->setObjectName("QMLTTestOneSample");
 
+	menu->addSeparator();
+	menu->addAction(QString("QML Bayesian Independent Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("QMLTTestBayesianIndependentSamples");
+	menu->addAction(QString("QML Bayesian Paired Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("QMLTTestBayesianPairedSamples");
+	menu->addAction(QString("QML Bayesian One Sample T-Test"), this, SLOT(itemSelected()))->setObjectName("QMLTTestBayesianOneSample");
+#endif
 	ui->ttestButton->setMenu(menu);
 
 
@@ -70,6 +84,11 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu->addAction(QString("Bayesian ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaBayesian");
 	menu->addAction(QString("Bayesian Repeated Measures ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaRepeatedMeasuresBayesian");
 	menu->addAction(QString("Bayesian ANCOVA"), this, SLOT(itemSelected()))->setObjectName("AncovaBayesian");
+
+#ifdef QT_DEBUG
+	menu->addSeparator();
+	menu->addAction(QString("QML ANOVA"), this, SLOT(itemSelected()))->setObjectName("QMLAnova");
+#endif
 
 	ui->anovaButton->setMenu(menu);
 

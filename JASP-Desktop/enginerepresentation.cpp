@@ -193,6 +193,7 @@ void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
 	json["perform"]			= performTypeToString(perform);
 	json["requiresInit"]	= analysis->requiresInit();
 	json["revision"]		= analysis->revision();
+	json["rfile"]			= analysis->rfile();
 	json["jaspResults"]		= analysis->usesJaspResults();
 
 

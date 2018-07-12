@@ -60,7 +60,8 @@ Analysis* Analyses::create(const QString &module, const QString &name, int id, c
 	analysis->requestComputedColumnCreation.connect(	boost::bind( &Analyses::requestComputedColumnCreation,		this, _1, _2 ));
 	analysis->requestComputedColumnDestruction.connect(	boost::bind( &Analyses::requestComputedColumnDestruction,	this, _1	 ));
 
-	analysisAdded(analysis);
+//	Send the analysesAdded signal afterwards: the analysis may need extra settings after creation
+//	analysisAdded(analysis);
 
 	return analysis;
 }

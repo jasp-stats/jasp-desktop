@@ -90,7 +90,7 @@ private:
 	bool closeRequestCheck(bool &isSaving);
 
 	AnalysisForm* loadForm(Analysis *analysis);
-	AnalysisForm* loadForm(const std::string name);
+	AnalysisForm* createAnalysisForm(Analysis *analysis);
 
 	void closeCurrentOptionsWidget();
 	void removeAnalysis(Analysis *analysis);
@@ -184,6 +184,7 @@ private slots:
 	void onFilterUpdated();
 
 	void updateExcludeKey();
+	void analysisFormChangedHandler(Analysis *analysis);	
 	void dataSetChanged(DataSet * dataSet);
 
 

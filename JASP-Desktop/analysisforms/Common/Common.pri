@@ -105,3 +105,15 @@ FORMS += \
     $$PWD/ttestonesampleform.ui \
     $$PWD/ttestpairedsamplesform.ui \
     $$PWD/multinomialtestform.ui
+
+DISTFILES += \
+    $$PWD/QMLDescriptives.qml \
+    $$PWD/QMLReliability.qml \
+    $$PWD/../../style/qmldir \
+    $$PWD/../../style/Theme.qml \
+    $$PWD/QMLTTestIndependentSamples.qml \
+    $$PWD/QMLTTestPairedSamples.qml \
+    $$PWD/QMLTTestOneSample.qml \
+    $$PWD/QMLTTestBayesianIndependentSamples.qml \
+    $$PWD/QMLTTestBayesianPairedSamples.qml \
+    $$PWD/QMLTTestBayesianOneSample.qml

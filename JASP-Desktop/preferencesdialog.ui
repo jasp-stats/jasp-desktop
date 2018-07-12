@@ -151,7 +151,7 @@ border-top-right-radius:4px;
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>3</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideNone</enum>
@@ -160,7 +160,7 @@ border-top-right-radius:4px;
         <attribute name="title">
          <string>Data Editing</string>
         </attribute>
-        <widget class="QWidget" name="">
+        <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
            <x>12</x>
@@ -517,6 +517,107 @@ border-top-right-radius:4px;
           </spacer>
          </item>
         </layout>
+       </widget>
+       <widget class="QWidget" name="tab_4">
+        <attribute name="title">
+         <string>Test Analysis</string>
+        </attribute>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>12</x>
+           <y>12</y>
+           <width>441</width>
+           <height>82</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>QML File:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="openQMLFile">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>75</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Open</string>
+              </property>
+              <property name="checkable">
+               <bool>false</bool>
+              </property>
+              <property name="autoDefault">
+               <bool>true</bool>
+              </property>
+              <property name="default">
+               <bool>false</bool>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="testAnalyseQMLName"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>R File:     </string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="openRFile">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>75</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Open</string>
+              </property>
+              <property name="checkable">
+               <bool>false</bool>
+              </property>
+              <property name="autoDefault">
+               <bool>true</bool>
+              </property>
+              <property name="default">
+               <bool>false</bool>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="testAnalyseRName"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
        </widget>
       </widget>
      </item>

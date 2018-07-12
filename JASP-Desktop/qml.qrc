@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/">
+        <file>QMLTheme/Theme/qmldir</file>
+        <file>QMLTheme/Theme/Theme.qml</file>
+        <file>JASPControls/Button.qml</file>
+        <file>JASPControls/CheckBox.qml</file>
+        <file>JASPControls/Switch.qml</file>
+        <file>JASPControls/AssignedVariablesList.qml</file>
+        <file>JASPControls/VariablesList.qml</file>
+        <file>JASPControls/Form.qml</file>
+        <file>JASPControls/AssignButton.qml</file>
+        <file>JASPControls/ExpanderButton.qml</file>
+        <file>JASPControls/TextField.qml</file>
+        <file>JASPControls/VariablesForm.qml</file>
+        <file>JASPControls/RadioButton.qml</file>
+        <file>JASPControls/Label.qml</file>
+        <file>JASPControls/GroupBox.qml</file>
+        <file>JASPControls/JASPControl.qml</file>
+        <file>JASPControls/GridLayout.qml</file>
+        <file>JASPControls/ButtonGroup.qml</file>
+        <file>JASPControls/PercentField.qml</file>
+        <file>JASPControls/TableView.qml</file>
+        <file>JASPControls/ComboBox.qml</file>
+    </qresource>
+</RCC>

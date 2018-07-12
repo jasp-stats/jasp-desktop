@@ -29,29 +29,47 @@ using namespace boost;
 
 Analysis *AnalysisLoader::load(int id, string moduleName, string analysisName, const Version &version, Json::Value *data)
 {
-	string path = Dirs::libraryDir() + "/" + analysisName + ".json";
+	bool autorun = true;
+	bool usedata = true;
+	bool fromQML = true;
+	bool usesJaspResults = false;
 
+	string analysisTitle = analysisName;
+	Json::Value requiresInit = Json::nullValue;
+	Json::Value dataKey = Json::nullValue;
+	Json::Value stateKey = Json::nullValue;
+	Json::Value resultsMeta = Json::nullValue;
+	Json::Value optionsJson = Json::nullValue;
+	
+	string path = Dirs::libraryDir() + "/" + analysisName + ".json";
 	nowide::ifstream file(path.c_str(), fstream::in);
 	if (file.is_open())
 	{
+		fromQML = false;
 		Json::Value analysisDesc;
 		Json::Reader parser;
 		parser.parse(file, analysisDesc);
 		
-		string analysisTitle		= analysisDesc.get("title",			Json::nullValue).asString();
-		Json::Value requiresInit	= analysisDesc.get("init",			Json::nullValue);
-		Json::Value dataKey			= analysisDesc.get("dataset",		Json::nullValue);
-		Json::Value stateKey		= analysisDesc.get("state",			Json::nullValue);
-		Json::Value resultsMeta		= analysisDesc.get("results",		Json::nullValue);
-		Json::Value optionsJson		= analysisDesc.get("options",		Json::nullValue);
-		bool usesJaspResults		= analysisDesc.get("jaspResults",	false).asBool();
-		bool autorun				= analysisDesc.get("autorun",		false).asBool();
-		bool usedata				= analysisDesc.get("usedata",		true).asBool();
+		analysisTitle		= analysisDesc.get("title",			Json::nullValue).asString();
+		requiresInit		= analysisDesc.get("init",			Json::nullValue);
+		dataKey				= analysisDesc.get("dataset",		Json::nullValue);
+		stateKey			= analysisDesc.get("state",			Json::nullValue);
+		resultsMeta			= analysisDesc.get("results",		Json::nullValue);
+		optionsJson			= analysisDesc.get("options",		Json::nullValue);
+		usesJaspResults		= analysisDesc.get("jaspResults",	false).asBool();
+		autorun				= analysisDesc.get("autorun",		false).asBool();
+		usedata				= analysisDesc.get("usedata",		true).asBool();
 
 		file.close();
-
-		return new Analysis(id, moduleName, analysisName, analysisTitle, requiresInit, dataKey, stateKey, resultsMeta, optionsJson, version, data, autorun, usedata, usesJaspResults);
 	}
+	
+	if (fromQML)
+	{
+		// Temporary solution!!
+		if (analysisName.substr(0,3) == "QML")
+			analysisName = analysisName.substr(3);
+	}
+	
 
-	throw runtime_error(analysisName + " does not exist in your JASP version.");
+	return new Analysis(id, moduleName, analysisName, analysisTitle, requiresInit, dataKey, stateKey, resultsMeta, optionsJson, version, data, autorun, usedata, fromQML, usesJaspResults);
 }

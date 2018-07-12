@@ -21,7 +21,6 @@
 #include <QDialog>
 #include <QGridLayout>
 #include <QLayout>
-#include <QDebug>
 
 #include "application.h"
 

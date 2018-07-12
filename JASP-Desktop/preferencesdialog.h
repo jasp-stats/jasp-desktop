@@ -34,6 +34,8 @@ public slots:
 	void savePreferences();
 	void setDefaultEditorCheck(bool defaulteditor);
 	void getSpreadsheetEditor();
+	void getQMLFile();
+	void getRFile();
 
 protected:
 	void virtual showEvent(QShowEvent * event);

@@ -40,12 +40,16 @@ public:
 	void		set(const Json::Value &json)					override;
 	Json::Value asJSON()								const	override;
 	Json::Value asJSON(bool includeTransient)			const;
+	Json::Value asJSONWithType(bool includeTransient)	const;
+
 	void		add(std::string name, Option *option);
 	size_t		size()									const				{ return _options.size(); }
 
 	Option*		get(std::string name)					const;
 	Option*		get(int index)												{ return _options.at(index).second; }
 	void		get(int index, std::string &name, Option *&option);
+	std::string getType(Option *option) const;
+	
 
 	Option*		createOption(std::string typeString);
 

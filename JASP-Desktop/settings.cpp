@@ -15,7 +15,9 @@ const Settings::Setting Settings::Values[] = {
 	{"OSFUsername", ""},
 	{"OSFPassword", ""},
 	{"OSFEncryption", 0},
-	{"OSFRememberMe", false}
+	{"OSFRememberMe", false},
+	{"testAnalysisQML", ""},
+	{"testAnalysisR", ""}
 };
 
 QVariant Settings::value(Settings::Type key)

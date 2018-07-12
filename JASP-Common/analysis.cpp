@@ -29,14 +29,17 @@ using namespace boost::uuids;
 using namespace boost;
 using namespace std;
 
-Analysis::Analysis(int id, string module, string name, string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Json::Value optionsJson, const Version &version, Json::Value *data, bool autorun, bool usedata, bool useJaspResults)
-	: _id(id), _module(module), _name(name), _title(title), _requiresInit(requiresInit), _dataKey(dataKey), _stateKey(stateKey), _resultsMeta(resultsMeta), _autorun(autorun), _usedata(usedata), _jaspResultsAnalysis(useJaspResults), _version(version)
+Analysis::Analysis(int id, string module, string name, string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Json::Value optionsJson, const Version &version, Json::Value *data, bool autorun, bool usedata, bool fromQML, bool useJaspResults)
+	: _id(id), _module(module), _name(name), _title(title), _requiresInit(requiresInit), _dataKey(dataKey), _stateKey(stateKey), _resultsMeta(resultsMeta), _autorun(autorun), _usedata(usedata), _fromQML(fromQML), _jaspResultsAnalysis(useJaspResults), _version(version)
 {
 	_options = new Options();
 
-	if (optionsJson != Json::nullValue)	_options->init(optionsJson);
-	else								perror("malformed analysis definition");
-	if (data != NULL)					_options->set(*data);
+	if (!fromQML)
+	{
+		if (optionsJson != Json::nullValue)	_options->init(optionsJson);
+		else								perror("malformed analysis definition");
+	}
+	if (data != NULL)						_options->set(*data);
 
 	_options->changed.connect(							boost::bind( &Analysis::optionsChangedHandler,						this, _1));
 	_options->requestComputedColumnCreation.connect(	boost::bind( &Analysis::requestComputedColumnCreationHandler,		this, _1));
@@ -113,6 +116,7 @@ Json::Value Analysis::asJSON() const
 	analysisAsJson["id"]			= _id;
 	analysisAsJson["name"]			= _name;
 	analysisAsJson["title"]			= _title;
+	analysisAsJson["rfile"]			= _rfile;
 	analysisAsJson["requiresInit"]	= _requiresInit;
 	analysisAsJson["dataKey"]		= _dataKey;
 	analysisAsJson["stateKey"]		= _stateKey;
@@ -151,9 +155,6 @@ void Analysis::setStatus(Analysis::Status status)
 	}
 	_status = status;
 }
-
-
-
 
 void Analysis::optionsChangedHandler(Option *option)
 {
@@ -195,4 +196,3 @@ performType Analysis::desiredPerformTypeFromAnalysisStatus() const
 	default:					return(performType::run);
 	}
 }
-

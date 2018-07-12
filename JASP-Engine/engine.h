@@ -97,7 +97,6 @@ private: // Data:
 
 	Status _status = empty;
 
-
 	int			_analysisId,
 				_analysisRevision,
 				_progress,
@@ -114,7 +113,16 @@ private: // Data:
 				_analysisOptions,
 				_analysisResultsMeta,
 				_analysisStateKey,
-				_analysisResultsString;
+
+				_analysisResultsString,
+				_filter = "",
+				_generatedFilter = "",
+				_rCode = "",
+				_rfile = "",
+				_computeColumnCode = "",
+				_computeColumnName = "";
+
+	Column::ColumnType		_computeColumnType = Column::ColumnTypeUnknown;
 
 	Json::Value _imageOptions,
 				_analysisResults;

@@ -155,9 +155,23 @@ SOURCES += \
     $$PWD/modules/dynamicmodule.cpp \
     $$PWD/modules/dynamicmodules.cpp \
     $$PWD/modules/analysisentry.cpp \
-    $$PWD/modules/ribbonentry.cpp
-
-
+    $$PWD/modules/ribbonentry.cpp \
+    $$PWD/analysisforms/analysisqmlform.cpp \
+    $$PWD/widgets/listmodelanovaassigned.cpp \
+    $$PWD/widgets/boundqmllistviewvariables.cpp \
+    $$PWD/widgets/boundqmllistviewanova.cpp \
+    $$PWD/widgets/boundqmllistviewpairs.cpp \
+    $$PWD/widgets/boundqmlcheckbox.cpp \
+    $$PWD/boundqmlitem.cpp \
+    $$PWD/widgets/boundqmlradiobuttons.cpp \
+    $$PWD/widgets/boundqmltextinput.cpp \
+    $$PWD/widgets/listmodelpairsassigned.cpp \
+    $$PWD/widgets/listmodel.cpp \
+    $$PWD/widgets/boundqmllistview.cpp \
+    $$PWD/widgets/listmodeltermsassigned.cpp \
+    $$PWD/widgets/listmodeltermsavailable.cpp \
+    $$PWD/widgets/boundqmltableview.cpp \
+    $$PWD/widgets/listmodeltable.cpp
 
 HEADERS  += \
     $$PWD/aboutdialog.h \
@@ -329,7 +343,25 @@ HEADERS  += \
     $$PWD/modules/dynamicmodule.h \
     $$PWD/modules/dynamicmodules.h \
     $$PWD/modules/analysisentry.h \
-    $$PWD/modules/ribbonentry.h
+    $$PWD/modules/ribbonentry.h \
+    $$PWD/analysisforms/analysisqmlform.h \
+    $$PWD/widgets/listmodel.h \
+    $$PWD/widgets/listmodelassigned.h \
+    $$PWD/widgets/listmodelavailable.h \
+    $$PWD/widgets/listmodelanovaassigned.h \
+    $$PWD/widgets/boundqmllistviewvariables.h \
+    $$PWD/widgets/boundqmllistviewanova.h \
+    $$PWD/widgets/boundqmllistviewpairs.h \
+    $$PWD/widgets/boundqmlcheckbox.h \
+    $$PWD/boundqmlitem.h \
+    $$PWD/widgets/boundqmlradiobuttons.h \
+    $$PWD/widgets/boundqmltextinput.h \
+    $$PWD/widgets/listmodelpairsassigned.h \
+    $$PWD/widgets/boundqmllistview.h \
+    $$PWD/widgets/listmodeltermsassigned.h \
+    $$PWD/widgets/listmodeltermsavailable.h \
+    $$PWD/widgets/boundqmltableview.h \
+    $$PWD/widgets/listmodeltable.h
 
 FORMS += \
     $$PWD/aboutdialog.ui \
@@ -348,7 +380,8 @@ RESOURCES += \
     $$PWD/backstage/backstage.qrc \
     $$PWD/html/html.qrc \
     $$PWD/resources/icons.qrc \
-    $$PWD/resources/resources.qrc
+    $$PWD/resources/resources.qrc \
+    $$PWD/qml.qrc
 
    unix:OTHER_FILES += $$PWD/icon.icns
 windows:OTHER_FILES += $$PWD/icon.rc

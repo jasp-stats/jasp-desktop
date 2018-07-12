@@ -136,7 +136,7 @@ extern "C" bool STDCALL rbridge_runCallback(const char* in, int progress, const 
 	return true;
 }
 
-std::string rbridge_run(const std::string &name, const std::string &title, bool &requiresInit, const std::string &dataKey, const std::string &options, const std::string &resultsMeta, const std::string &stateKey, int analysisID, int analysisRevision, const std::string &perform, int ppi, RCallback callback, bool useJaspResults)
+std::string rbridge_run(const std::string &name, const std::string &title, const std::string &rfile, bool &requiresInit, const std::string &dataKey, const std::string &options, const std::string &resultsMeta, const std::string &stateKey, int analysisID, int analysisRevision, const std::string &perform, int ppi, RCallback callback, bool useJaspResults)
 {
 	rbridge_callback = callback;
 	if (rbridge_dataSet != NULL) {
@@ -144,7 +144,7 @@ std::string rbridge_run(const std::string &name, const std::string &title, bool 
 	}
 
 
-	const char* results = jaspRCPP_run(name.c_str(), title.c_str(), requiresInit, dataKey.c_str(), options.c_str(), resultsMeta.c_str(), stateKey.c_str(), perform.c_str(), ppi, analysisID, analysisRevision, useJaspResults);
+	const char* results = jaspRCPP_run(name.c_str(), title.c_str(), rfile.c_str(), requiresInit, dataKey.c_str(), options.c_str(), resultsMeta.c_str(), stateKey.c_str(), perform.c_str(), ppi, analysisID, analysisRevision, useJaspResults);
 	rbridge_callback = NULL;
 	std::string str = results;
 

@@ -103,7 +103,7 @@ typedef bool (*pollMessagesFuncDef)();
 
 // Calls from rbridge to jaspRCPP
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks *calbacks, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction);
-RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_run(const char* name, const char* title, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults);
+RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_run(const char* name, const char* title, const char* rfile, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults);
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_check();
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_saveImage(const char *name, const char *type, const int height, const int width, const int ppi);
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_editImage(const char *name, const char *type, const int height, const int width, const int ppi);

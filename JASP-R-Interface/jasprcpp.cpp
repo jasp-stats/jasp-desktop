@@ -18,6 +18,9 @@
 #include "jasprcpp.h"
 #include "rinside_consolelogging.h"
 #include "jaspResults/src/jaspResults.h"
+#include <iostream>
+
+using namespace std;
 
 #ifndef __WIN32__
 RInside_ConsoleLogging *rinside_consoleLog;
@@ -119,10 +122,10 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 }
 
 
-const char* STDCALL jaspRCPP_run(const char* name, const char* title, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults)
+const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char* rfile, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults)
 {
 	SEXP results;
-
+	
 	RInside &rInside = rinside->instance();
 
 	Rcpp::String jsonOptions = options;
@@ -144,6 +147,15 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, bool requi
 #ifndef __WIN32__
 	rinside_consoleLog->clearConsoleBuffer();
 #endif
+	
+	if (rfile && *rfile)
+	{
+		stringstream ss;
+		ss << "loadNamespace(\"JASP\"); source(\"";
+		ss << rfile;
+		ss << "\")";
+		rinside->parseEvalQNT(ss.str());
+	}
 	
 	if(usesJaspResults)
 	{

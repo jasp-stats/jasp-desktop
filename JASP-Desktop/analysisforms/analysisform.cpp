@@ -24,7 +24,6 @@
 #include <QDebug>
 
 #include <boost/bind.hpp>
-#include <boost/foreach.hpp>
 
 #include "bound.h"
 #include "qutils.h"
@@ -48,21 +47,6 @@ AnalysisForm::AnalysisForm(QString name, QWidget *parent) :
 	_hasIllegalValue = false;
 }
 
-void AnalysisForm::connectToAvailableVariablesModel(DataSet *dataSet)
-{
-	_dataSet = dataSet;
-
-	vector<string> columnNames;
-
-	if (_dataSet != NULL)
-		for(Column &column : dataSet->columns())
-			columnNames.push_back(column.name());
-
-
-	_availableVariablesModel.setInfoProvider(this);
-	_availableVariablesModel.setVariables(columnNames);
-}
-
 void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
 {
 	if (_options != NULL)
@@ -71,7 +55,9 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
 	_dataSet = dataSet;
 	_options = options;
 
-	for(const string &name : options->names)
+	setVariablesModel();
+
+	for (const string &name: options->names)
 	{
 		Option *option = options->get(name);
 
@@ -95,6 +81,7 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
 	updateIllegalStatus();
 }
 
+
 void AnalysisForm::unbind()
 {
 	_bounds.clear();
@@ -103,7 +90,7 @@ void AnalysisForm::unbind()
 	if (_options == NULL)
 		return;
 
-	BOOST_FOREACH(const string &name, _options->names)
+	for (const string &name: _options->names)
 	{
 		QString qsName = QString::fromUtf8(name.c_str(), name.length());
 		qsName.replace('/', '_');
@@ -150,6 +137,20 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 	{
 		return QVariant();
 	}
+}
+
+void AnalysisForm::setVariablesModel()
+{
+	vector<string> columnNames;
+
+	if (_dataSet != NULL)
+	{
+		for (Column &column: _dataSet->columns())
+			columnNames.push_back(column.name());
+	}
+
+	_availableVariablesModel.setInfoProvider(this);
+	_availableVariablesModel.setVariables(columnNames);
 }
 
 void AnalysisForm::updateIllegalStatus()
@@ -210,3 +211,7 @@ bool AnalysisForm::runRScriptRequestedForId(int requestId)
 	return _scriptRequestIdToKey.count(requestId) > 0; 
 }
 
+QWidget *AnalysisForm::getWidget()
+{
+	return this;
+}
