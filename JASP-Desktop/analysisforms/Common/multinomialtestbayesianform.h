@@ -42,6 +42,7 @@ public:
 	bool deleteColumnFromTable();
 	void resetTable();
 	void setTableVerticalHeaders();
+	Q_INVOKABLE void sendFilter(QString);
 
 	void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
 

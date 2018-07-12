@@ -97,6 +97,10 @@
 			"name": "plotHeight",
 			"type": "Integer",
 			"default": 300
+		},
+		{
+			"name": "restrictedHypothesis",
+			"type": "String"
 		}
   ]
 }

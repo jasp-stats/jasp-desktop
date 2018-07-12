@@ -160,7 +160,7 @@ MultinomialTestBayesian <- function (dataset = NULL, options, perform = "run",
   #   Object (chisquare test)
 
   multBayesResults <- NULL
-  
+
   if (perform == "run" && !is.null(fact)) {
     # first determine the hypotheses
     f <- dataset[[.v(fact)]]
@@ -174,19 +174,19 @@ MultinomialTestBayesian <- function (dataset = NULL, options, perform = "run",
       }
       f <- factor(rep(f, c), levels = levels(f))
     }
-    
+
     t <- table(f)
     nlev <- nlevels(f)
 
     hyps <- .multinomialHypotheses(dataset, options, nlev)
-    
+
     # create a named list with as values the chi-square result objects
     multBayesResults <- lapply(hyps, function(h) {
       # catch warning message and append to object if necessary
       csr <- NULL
       warn <- NULL
       resultsObject <- .bayesFactorExactEquality(counts = t, thetas = h, options)
-      
+
       csr <- list(
         BF = resultsObject[["BF"]],
         warn = resultsObject[["warn"]],
@@ -216,7 +216,7 @@ MultinomialTestBayesian <- function (dataset = NULL, options, perform = "run",
   table <- list()
   footnotes <- .newFootnotes()
   table[["title"]] <- "Bayesian Multinomial Test"
-  
+
   # Bayes factor type
   if (options$bayesFactorType == "BF01") {
     bf.title <- "BF\u2080\u2081"
@@ -402,12 +402,12 @@ MultinomialTestBayesian <- function (dataset = NULL, options, perform = "run",
     } else {
       colnames(tableFrame)[-(1:2)] <- nms
     }
-    
+
     # Add credibleInterval for observed counts
     if (options$credibleInterval){
       n <- sum(multBayesResults[[1]][["observed"]])
       # compute cis
-      ci <- .multMedianAndCredibleIntervals(multBayesResults[[1]][["observed"]], 
+      ci <- .multMedianAndCredibleIntervals(multBayesResults[[1]][["observed"]],
                                             options$credibleIntervalInterval)
       ci <- ci * n # on the count scale
 
@@ -473,7 +473,7 @@ MultinomialTestBayesian <- function (dataset = NULL, options, perform = "run",
     # Calculate confidence interval
     cl <- options$descriptivesPlotCredibleInterval
     n <- sum(multBayesResults[[1]][["observed"]])
-    ci <- .multMedianAndCredibleIntervals(multBayesResults[[1]][["observed"]], 
+    ci <- .multMedianAndCredibleIntervals(multBayesResults[[1]][["observed"]],
                                           options$credibleIntervalInterval)
     ci <- ci * n # on the count scale
     ciDf <- data.frame(data.frame(ci))/div
@@ -558,23 +558,23 @@ MultinomialTestBayesian <- function (dataset = NULL, options, perform = "run",
     thetas <- thetas/sum(thetas)
     warn   <- "Parameters have been rescaled."
   }
-  
+
   # expected counts under the null hypothesis (Binomial median)
   expected <- sum(counts)*thetas
-  
+
   lbeta.xa <- sum(lgamma(alphas + counts)) - lgamma(sum(alphas + counts))
   lbeta.a  <- sum(lgamma(alphas)) - lgamma(sum(alphas))
-  
+
   if (any(rowSums(cbind(thetas, counts)) == 0)) {
-    
+
     # in this case, counts*log(thetas) should be zero, omit to avoid numerical issue with log(0)
-    
-    logBF10 <- (lbeta.xa-lbeta.a) 
-    
+
+    logBF10 <- (lbeta.xa-lbeta.a)
+
   } else {
-    
+
     logBF10 <- (lbeta.xa-lbeta.a) + (0 - sum(counts * log(thetas)))
-    
+
   }
   if (options$bayesFactorType == "LogBF10") {
     BF <- logBF10
@@ -583,11 +583,11 @@ MultinomialTestBayesian <- function (dataset = NULL, options, perform = "run",
   } else if(options$bayesFactorType == "BF01") {
     BF <- 1/exp(logBF10)
   }
-  
+
   return(list(BF = BF,
               warn = warn,
               expected = expected))
-  
+
 }
 
 
@@ -597,30 +597,30 @@ MultinomialTestBayesian <- function (dataset = NULL, options, perform = "run",
   # counts: vector of observed data
   # credibleIntervalInterval: value of the credible interval (e.g., 0.95)
   #
-  # output: matrix with median (if specified), lower and upper bound of CI 
+  # output: matrix with median (if specified), lower and upper bound of CI
   #         for each parameters estimate (based on marginal beta distributions)
-  
+
   N <- sum(counts)
   alphas <- rep(1, length(counts))
-  
+
   lower <- (1 - credibleIntervalInterval)/2
   upper <- 1 - lower
-  
+
   # median and credible intervals
   medianCI <- matrix(NA, ncol = 2, nrow = length(counts))
   colnames(medianCI) <- c('lowerCI', 'upperCI')
-  
+
   for(i in seq_along(counts)){
     k <- counts[i]
     a <- alphas[i]
     b <- sum(alphas[-i])
-    medianCI[i, ] <- qbeta(c(lower, upper), a + k, b + N - k) 
-  
+    medianCI[i, ] <- qbeta(c(lower, upper), a + k, b + N - k)
+
   if(computeMedian == TRUE){
     medianCI <- cbind(medianCI, qbeta(c(0.5), a + k, b + N - k))
     colnames(medianCI)[3] <- c('median')
   }
   }
-  
+
   return(medianCI)
 }

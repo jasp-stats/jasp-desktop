@@ -7,8 +7,7 @@ Item {
     property real blockDim: 20
     property real fontPixelSize: 14
     property var allKeys: ["number", "boolean", "string", "variable"]
-    readonly property real desiredMinimumHeight: columnsRow.height + hints.height
-                                                 + applyFilter.height + (blockDim * 3)
+    readonly property real desiredMinimumHeight: columnsRow.height + hints.height + (blockDim * 3)
     signal rCodeChanged(string rScript)
     property real extraSpaceUnderColumns: 0
     property bool somethingChanged: false
@@ -54,8 +53,10 @@ Item {
                 hints.filterText += "Applied<br>"
 
             filterConstructor.rCodeChanged(scriptColumn.convertToR())
-            mainWindow.setFilterConstructorJSON(
-                        JSON.stringify(filterConstructor.returnFilterJSON()))
+
+            analysisObject.sendFilter(scriptColumn.convertToR())
+            // mainWindow.setFilterConstructorJSON(
+            //             JSON.stringify(filterConstructor.returnFilterJSON()))
         }
 
         if (!allCorrect)

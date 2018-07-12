@@ -60,6 +60,8 @@ MultinomialTestBayesianForm::MultinomialTestBayesianForm(QWidget *parent) :
 	ui->exProbVar->setDoubleClickTarget(ui->listAvailableVariables);
 	ui->assignExProbVar->setSourceAndTarget(ui->listAvailableVariables, ui->exProbVar);
 
+	ui->widget_restrictedHypotheses->hide();
+	ui->restrictedHypothesis->hide();  // FIXME: This is a hack
 	ui->widget_expectedProbsTable->hide();
 
 	connect(factorModel, SIGNAL(assignmentsChanged()), this, SLOT(addFixedFactors()));
@@ -69,7 +71,6 @@ MultinomialTestBayesianForm::MultinomialTestBayesianForm(QWidget *parent) :
 
 	connect(probVarModel, SIGNAL(assignmentsChanged()), this, SLOT(expectedCountsHandler()));
 	connect(ui->tableWidget, SIGNAL(cellChanged(int, int)), this, SLOT(cellChangedHandler()));
-
 }
 
 MultinomialTestBayesianForm::~MultinomialTestBayesianForm()
@@ -79,16 +80,16 @@ MultinomialTestBayesianForm::~MultinomialTestBayesianForm()
 
 void MultinomialTestBayesianForm::loadQML()
 {
-
-	qDebug() << "************************";
-	qDebug() << QString::number(_columnsModel->numRows());
-	qDebug() << "************************";
-
+	ui->restrictedHypotheses->rootContext()->setContextProperty("analysisObject",	this);
 	ui->restrictedHypotheses->rootContext()->setContextProperty("filterErrorText",	QString(""));
-	ui->restrictedHypotheses->rootContext()->setContextProperty("generatedFilter",	QString(""));
-	ui->restrictedHypotheses->rootContext()->setContextProperty("defaultFilter",	QString(""));
 	ui->restrictedHypotheses->rootContext()->setContextProperty("columnsModel",		_columnsModel);
-    ui->restrictedHypotheses->setSource(QUrl(QString("qrc:///qml/hypothesesWidget.qml")));
+	ui->restrictedHypotheses->setSource(QUrl(QString("qrc:///qml/hypothesesWidget.qml")));
+}
+
+void MultinomialTestBayesianForm::sendFilter(QString generatedFilter)
+{
+	ui->restrictedHypothesis->setText(generatedFilter);
+	ui->restrictedHypothesis->finalise();
 }
 
 void MultinomialTestBayesianForm::bindTo(Options *options, DataSet *dataSet)
