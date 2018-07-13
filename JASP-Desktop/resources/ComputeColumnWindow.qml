@@ -312,14 +312,14 @@ FocusScope
 		FilterButton
 		{
 			id: closeColumnEditorButton
-			iconSource: "../images/cross.png"
+			iconSource: "../icons/cross.png"
 			anchors.right: parent.right
 			anchors.bottom: parent.bottom
 
 			onClicked: computedColumnContainer.askIfChangedOrClose()
 
 			toolTip: "Close computed column window"
-		}		
+		}
 	}
 
 	Dialog

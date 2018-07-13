@@ -39,9 +39,9 @@ void AssignButton::setAssignDirection(bool assign)
 	_assignDirection = assign;
 
 	if (assign)
-		setIcon(QIcon(":/images/arrow-right.png"));
+		setIcon(QIcon(":/icons/arrow-right.png"));
 	else
-		setIcon(QIcon(":/images/arrow-left.png"));
+		setIcon(QIcon(":/icons/arrow-left.png"));
 }
 
 bool AssignButton::isAssign()
@@ -78,7 +78,7 @@ void AssignButton::buttonClicked()
 }
 
 void AssignButton::sourceChanged()
-{	
+{
 	setAssignDirection(true);
 
 	if (_target == NULL)
@@ -100,7 +100,7 @@ void AssignButton::sourceChanged()
 }
 
 void AssignButton::targetChanged()
-{	
+{
 	setAssignDirection(false);
 
 	if (_source == NULL)
@@ -120,6 +120,3 @@ void AssignButton::targetChanged()
 		this->setEnabled(false);
 	}
 }
-
-
-

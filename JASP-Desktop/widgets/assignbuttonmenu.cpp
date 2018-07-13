@@ -31,7 +31,7 @@ AssignButtonMenu::AssignButtonMenu(QWidget *parent)
 
 	connect(this, SIGNAL(clicked()), this, SLOT(buttonClicked()));
 
-	setIcon(QIcon(":/images/arrow-right.png"));
+	setIcon(QIcon(":/icons/arrow-right.png"));
 
 	setEnabled(false);
 }
@@ -86,6 +86,3 @@ void AssignButtonMenu::targetChanged()
 {
 	setEnabled(false);
 }
-
-
-

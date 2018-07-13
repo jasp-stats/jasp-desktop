@@ -6,7 +6,7 @@ import "SelectHypothesis"
 
 
 FocusScope {
-    id: filterContainer
+    id: hypothesisContainer
     visible: true
 
     property bool opened: false
@@ -28,8 +28,6 @@ FocusScope {
             toggle()
     }
 
-    signal rCodeChanged(string rScript)
-
     Item {
         anchors.fill: parent
 
@@ -40,8 +38,6 @@ FocusScope {
             anchors.top: parent.top
 
             id: easyFilterConstructor
-
-            onRCodeChanged: filterContainer.rCodeChanged(rScript)
             clip: true
 
             function askIfChanged(closeFunc) {
@@ -59,7 +55,7 @@ FocusScope {
                 y: (easyFilterConstructor.height - height) / 2
 
                 modal: true
-                title: "Filter Changed"
+                title: "Hypothesis Changed"
                 property var closeFunc: undefined
 
                 footer: New.DialogButtonBox {
@@ -71,7 +67,6 @@ FocusScope {
                             easySaveDialog.close()
                         }
                     }
-
                     New.Button {
                         text: qsTr("Cancel")
 
@@ -100,7 +95,7 @@ FocusScope {
             id: applyEasyFilter
             property bool showApplyNotApplied: easyFilterConstructor.somethingChanged
                                                || easyFilterConstructor.showStartupMsg
-            text: showApplyNotApplied ? "Add restricted Hypothesis" : "Added"
+            text: showApplyNotApplied ? "Add Hypothesis" : "Added"
             disabled: !easyFilterConstructor.somethingChanged
 
             anchors.left: parent.left
@@ -120,7 +115,7 @@ FocusScope {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
 
-            onClicked: mainWindow.showHelpFromQML("other/EasyFilterConstructor")
+            onClicked: mainWindow.showHelpFromQML("other/AddRestrictedHypothesis")
             toolTip: "Open Documentation"
         }
     }

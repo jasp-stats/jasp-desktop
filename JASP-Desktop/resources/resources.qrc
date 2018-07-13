@@ -113,6 +113,23 @@
         <file>icons/loading.gif</file>
         <file>icons/error.png</file>
         <file>icons/square_trashcan.png</file>
+        <file>icons/expander-arrow-up.png</file>
+        <file>icons/expander-arrow-up-hover.png</file>
+        <file>icons/expander-arrow-up-disabled.png</file>
+        <file>icons/expander-arrow-down.png</file>
+        <file>icons/expander-arrow-down-hover.png</file>
+        <file>icons/expander-arrow-down-disabled.png</file>
+        <file>icons/expanded.png</file>
+        <file>icons/arrow-right.png</file>
+        <file>icons/arrow-left.png</file>
+        <file>icons/arrow-up.png</file>
+        <file>icons/arrow-down.png</file>
+        <file>icons/arrow-up-down.png</file>
+        <file>icons/cross.png</file>
+        <file>icons/arrow-reverse.png</file>
+        <file>icons/filter.png</file>
+        <file>icons/eraser.png</file>
+        <file>icons/eraser_all.png</file>
         <file>icons/columnConstructorBackground.png</file>
         <file>icons/filterConstructorBackground.png</file>
     </qresource>

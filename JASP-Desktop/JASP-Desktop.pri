@@ -401,15 +401,15 @@ OTHER_FILES += \
     $$PWD/html/js/tables.js \
     $$PWD/html/js/underscore-min.js \
     $$PWD/html/js/underscore.js \
-    $$PWD/resources/arrow-left.png \
-    $$PWD/resources/arrow-right.png \
-    $$PWD/resources/expanded.png \
-    $$PWD/resources/expander-arrow-down-disabled.png \
-    $$PWD/resources/expander-arrow-down-hover.png \
-    $$PWD/resources/expander-arrow-down.png \
-    $$PWD/resources/expander-arrow-up-disabled.png \
-    $$PWD/resources/expander-arrow-up-hover.png \
-    $$PWD/resources/expander-arrow-up.png \
+    $$PWD/resources/icons/arrow-left.png \
+    $$PWD/resources/icons/arrow-right.png \
+    $$PWD/resources/icons/expanded.png \
+    $$PWD/resources/icons/expander-arrow-down-disabled.png \
+    $$PWD/resources/icons/expander-arrow-down-hover.png \
+    $$PWD/resources/icons/expander-arrow-down.png \
+    $$PWD/resources/icons/expander-arrow-up-disabled.png \
+    $$PWD/resources/icons/expander-arrow-up-hover.png \
+    $$PWD/resources/icons/expander-arrow-up.png \
     $$PWD/resources/icons/accessories-calculator.png \
     $$PWD/resources/icons/accessories-text-editor.png \
     $$PWD/resources/icons/analysis-background-clicked.png \

@@ -268,7 +268,7 @@ FocusScope {
 
 							background: Image
 							{
-								source: filterCheckButton.checked ? "qrc:/icons/check-mark.png" : "../images/cross.png"
+								source: filterCheckButton.checked ? "qrc:/icons/check-mark.png" : "../icons/cross.png"
 								sourceSize.width: Math.max(40, width)
 								sourceSize.height: Math.max(40, height)
 								width: filterCheckButton.width
@@ -346,7 +346,7 @@ FocusScope {
 					FilterButton
                     {
                         //text: "UP"
-						iconSource: "../images/arrow-up.png"
+						iconSource: "../icons/arrow-up.png"
 
                         onClicked: levelsTableView.moveUp()
 						toolTip: "Move selected labels up"
@@ -358,7 +358,7 @@ FocusScope {
 					FilterButton
                     {
                         //text: "DOWN"
-						iconSource: "../images/arrow-down.png"
+						iconSource: "../icons/arrow-down.png"
 
                         onClicked: levelsTableView.moveDown()
 						toolTip: "Move selected labels down"
@@ -370,7 +370,7 @@ FocusScope {
 					FilterButton
 					{
 						//text: "REVERSE"
-						iconSource: "../images/arrow-reverse.png"
+						iconSource: "../icons/arrow-reverse.png"
 						onClicked: levelsTableView.reverse()
 
 						toolTip: "Reverse order of all labels"
@@ -382,7 +382,7 @@ FocusScope {
 					FilterButton
 					{
 						id: eraseFiltersOnThisColumn
-						iconSource: "../images/eraser.png"
+						iconSource: "../icons/eraser.png"
 						onClicked: levelsTableModel.resetFilterAllows()
 						visible: levelsTableModel.filteredOut > 0
 
@@ -395,7 +395,7 @@ FocusScope {
 					FilterButton
 					{
 						id: eraseFiltersOnAllColumns
-						iconSource: "../images/eraser_all.png"
+						iconSource: "../icons/eraser_all.png"
 						onClicked: dataSetModel.resetAllFilters()
 						visible: dataSetModel.columnsFilteredCount > (levelsTableModel.filteredOut > 0 ? 1 : 0)
 						height: buttonColumnVariablesWindow.buttonHeight
@@ -412,7 +412,7 @@ FocusScope {
 					FilterButton
                     {
                         id: variablesWindowCloseButton
-						iconSource: "../images/cross.png"
+						iconSource: "../icons/cross.png"
                         onClicked: variablesWindow.chooseColumn(-1)
 						height: buttonColumnVariablesWindow.buttonHeight
 						implicitHeight: buttonColumnVariablesWindow.buttonHeight

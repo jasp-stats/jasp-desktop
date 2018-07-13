@@ -208,7 +208,7 @@ FocusScope
 		FilterButton
 		{
 			id: closeEasyFilterButton
-			iconSource: "../images/cross.png"
+			iconSource: "../icons/cross.png"
 			anchors.right: parent.right
 			anchors.bottom: parent.bottom
 
@@ -302,7 +302,7 @@ FocusScope
 						anchors.left: parent.left
 						anchors.verticalCenter: parent.verticalCenter
 						width: dataSetModel.columnsFilteredCount > 0 ? height : 0
-						iconSource: "../images/eraser_all.png"
+						iconSource: "../icons/eraser_all.png"
 						visible: dataSetModel.columnsFilteredCount > 0
 						anchors.margins: 1
 						onClicked: dataSetModel.resetAllFilters()
@@ -471,7 +471,7 @@ FocusScope
 			FilterButton
 			{
 				id: clearFilterButton
-				iconSource: "../images/eraser.png"
+				iconSource: "../icons/eraser.png"
 				anchors.left: easyFilterButton.right
 				anchors.bottom: parent.bottom
 				anchors.top: closeFilterButton.top
@@ -519,7 +519,7 @@ FocusScope
 			FilterButton
 			{
 				id: closeFilterButton
-				iconSource: "../images/cross.png"
+				iconSource: "../icons/cross.png"
 				anchors.right: parent.right
 				anchors.bottom: parent.bottom
 
