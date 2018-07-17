@@ -65,7 +65,7 @@ Item {
 		}
 
 		if(!allCorrect)
-			hints.filterText += "Please enter all arguments - see the fields marked in red.<br>"
+			hints.filterText += "Please enter all arguments - see fields marked in red.<br>"
 
 		if(!allBoolean)
 			hints.filterText += (!allCorrect ? "<br>" : "" ) + "Formula does not return a set of logical values, and therefore cannot be used in the filter.<br>"

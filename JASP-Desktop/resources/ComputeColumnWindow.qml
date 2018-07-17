@@ -155,8 +155,8 @@ FocusScope
 				ListElement	{ type: "function";	functionName: "cut";	functionParameters: "values,numBreaks";	functionParamTypes: "number,number";			toolTip: "break your data up in numBreaks levels" }
 
 				ListElement	{ type: "separator" }
-				ListElement	{ type: "function";	functionName: "rnorm";	functionParameters: "n,mean,sd";functionParamTypes: "number,number,number";	toolTip: "generates a guassian distribution of n elements with specified mean and standard deviation sd" }
-				ListElement	{ type: "function";	functionName: "rexp";	functionParameters: "n,rate";	functionParamTypes: "number,number,number";	toolTip: "generates a exponential distribution of n elements with specified rate" }
+				ListElement	{ type: "function";	functionName: "rnorm";	functionParameters: "n,mean,sd";functionParamTypes: "number,number,number";	toolTip: "generates a Gaussian distribution of n elements with specified mean and standard deviation sd" }
+				ListElement	{ type: "function";	functionName: "rexp";	functionParameters: "n,rate";	functionParamTypes: "number,number,number";	toolTip: "generates an exponential distribution of n elements with specified rate" }
 
 				ListElement	{ type: "separator" }
 
@@ -238,7 +238,7 @@ FocusScope
 
 			onClicked: computedColumnContainer.applyComputedColumn()
 
-			toolTip: computeColumnEdit.changedSinceLastApply ? "Click to apply computeColumn" : "computeColumn is already applied"
+			toolTip: computeColumnEdit.changedSinceLastApply ? "Click to compute column" : "Column (in line to be) computed"
 		}
 
 		FilterButton

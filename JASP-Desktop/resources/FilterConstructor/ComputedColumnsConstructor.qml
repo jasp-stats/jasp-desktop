@@ -61,10 +61,10 @@ Item {
 		}
 
 		if(!allCorrect)
-			hints.filterText += "Please enter all arguments - see the fields marked in red.<br>"
+			hints.filterText += "Please enter all arguments - see fields marked in red.<br>"
 
 		if(!onlyOneFormula && !noFormulas)
-			hints.filterText += (!allCorrect ? "<br>" : "" ) + "There can be only 1 formula for a computed column.<br>"
+			hints.filterText += (!allCorrect ? "<br>" : "" ) + "Only one formula per computed column allowed.<br>"
 
 		lastCheckPassed = allCorrect && onlyOneFormula
 		return lastCheckPassed
