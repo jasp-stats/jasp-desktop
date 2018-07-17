@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-BinomialTest <- function(jaspResults, dataset, options, state = NULL, ...) {
+BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
 
 	variables <- unlist(options$variables)
 
@@ -27,7 +27,7 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL, ...) {
 	  dataset <- .readDataSetToEnd(columns=variables)
 	}
 	
-	# Initialise the results
+	# Set title
 	jaspResults$title <- "Binomial Test"
 	
 	# Create Binomial Table
