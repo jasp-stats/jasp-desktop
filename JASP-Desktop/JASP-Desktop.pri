@@ -151,7 +151,11 @@ SOURCES += \
     $$PWD/backstage/datalibrarybreadcrumbsmodel.cpp \
     $$PWD/settings.cpp \
     $$PWD/enginerepresentation.cpp \
-    $$PWD/computedcolumnsmodel.cpp
+    $$PWD/computedcolumnsmodel.cpp \
+    $$PWD/modules/dynamicmodule.cpp \
+    $$PWD/modules/dynamicmodules.cpp \
+    $$PWD/modules/analysisentry.cpp \
+    $$PWD/modules/ribbonentry.cpp
 
 
 
@@ -321,7 +325,11 @@ HEADERS  += \
     $$PWD/settings.h \
     $$PWD/enginerepresentation.h \
     $$PWD/rscriptstore.h \
-    $$PWD/computedcolumnsmodel.h
+    $$PWD/computedcolumnsmodel.h \
+    $$PWD/modules/dynamicmodule.h \
+    $$PWD/modules/dynamicmodules.h \
+    $$PWD/modules/analysisentry.h \
+    $$PWD/modules/ribbonentry.h
 
 FORMS += \
     $$PWD/aboutdialog.ui \

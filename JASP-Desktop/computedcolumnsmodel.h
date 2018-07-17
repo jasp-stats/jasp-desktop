@@ -18,7 +18,7 @@ class ComputedColumnsModel : public QObject
 	Q_PROPERTY(bool		datasetLoaded				READ datasetLoaded															NOTIFY datasetLoadedChanged				)
 
 public:
-	explicit	ComputedColumnsModel(Analyses * analyses, QObject * parent) : QObject(parent), _analyses(analyses) { }
+	explicit	ComputedColumnsModel(Analyses * analyses, QObject * parent);
 
 				bool	datasetLoaded()					{ return _package != NULL; }
 				QString	computeColumnRCode();

@@ -40,7 +40,7 @@ void Settings::remove(Settings::Type key)
 
 QSettings *Settings::getSettings()
 {
-	// if _settings is created immediately, it use a wrong place to store its data.
+	// if _settings is created immediately, it uses an invalid place to store its data.
 	if (!_settings)
 		_settings = new QSettings();
 	return _settings;

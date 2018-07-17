@@ -55,6 +55,7 @@ public:
 	boost::signals2::signal<void				(std::string columnName)>														requestComputedColumnDestruction;
 	boost::signals2::signal<ComputedColumn *	(std::string columnName, Analysis *source), return_not_NULL<ComputedColumn *>>	requestComputedColumnCreation;
 
+	bool isWaitingForModule() { return false; }
 
 
 	void setResults(Json::Value results, int progress = -1);

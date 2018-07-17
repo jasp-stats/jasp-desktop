@@ -14,6 +14,7 @@
 #include <queue>
 #include "enginedefinitions.h"
 #include "rscriptstore.h"
+#include "modules/dynamicmodules.h"
 
 class EngineRepresentation : public QObject
 {
@@ -33,18 +34,20 @@ public:
 	void runScriptOnProcess(RScriptStore * scriptStore);
 	void runScriptOnProcess(RComputeColumnStore * computeColumnStore);
 	void runAnalysisOnProcess(Analysis *analysis);
+	void runModuleRequestOnProcess(Json::Value request);
 
 	void process();
-	void processFilterReply(		Json::Value json);
 	void processRCodeReply(			Json::Value json);
-	void processComputeColumnReply(	Json::Value json);
+	void processFilterReply(		Json::Value json);
 	void processAnalysisReply(		Json::Value json);
+	void processComputeColumnReply(	Json::Value json);
+	void processModuleRequestReply(	Json::Value json);
 
 	void setChannel(IPCChannel * channel)			{ _channel = channel; }
 	void setSlaveProcess(QProcess * slaveProcess)	{ _slaveProcess = slaveProcess; }
 	int channelNumber()								{ return _channel->channelNumber(); }
 
-	void sendString(std::string str) { _channel->send(str); }
+	void sendString(std::string str)				{ _channel->send(str); }
 
 private:
 	Analysis::Status analysisResultStatusToAnalysStatus(analysisResultStatus result, Analysis * analysis);
@@ -59,15 +62,20 @@ signals:
 	void engineTerminated();
 
 	void filterUpdated();
-	void filterErrorTextChanged(QString error);
-	void computeColumnErrorTextChanged(QString error);
-	void processNewFilterResult(std::vector<bool> filterResult);
-	void dataFilterChanged(QString newDataFilter);
+	void filterErrorTextChanged(	QString error);
+	void dataFilterChanged(			QString newDataFilter);
+	void processNewFilterResult(	std::vector<bool> filterResult);
 
 	void rCodeReturned(QString result, int requestId);
 
-	void computeColumnSucceeded(std::string columnName, std::string warning);
-	void computeColumnFailed(std::string columnName, std::string error);
+	void computeColumnErrorTextChanged(	QString error);
+	void computeColumnSucceeded(		std::string columnName, std::string warning);
+	void computeColumnFailed(			std::string columnName, std::string error);
+
+	void moduleInstallationSucceeded(	std::string moduleName);
+	void moduleInstallationFailed(		std::string moduleName, std::string errorMessage);
+	void moduleLoadingSucceeded(		std::string moduleName);
+	void moduleLoadingFailed(			std::string moduleName, std::string errorMessage);
 
 public slots:
 	void ppiChanged(int newPPI) { _ppi = newPPI; }

@@ -88,15 +88,12 @@ void Engine::run()
 	{
 		receiveMessages(100);
 
-		switch(currentEngineState)
+		switch(_currentEngineState)
 		{
 		case engineState::idle:									break;
 		case engineState::analysis:			runAnalysis();		break;
-		case engineState::filter:			runFilter();		break;
-		case engineState::rCode:			runRCode();			break;
-		case engineState::computeColumn:	runComputeColumn();	break;
 		default:
-			throw std::runtime_error("Enginestate " + engineStateToString(currentEngineState) + " not checked in Engine::run()!");
+			std::cout << "Engine got stuck in engineState " << engineStateToString(_currentEngineState) << " which is not supposed to happen..." << std::endl;
 		}
 	}
 
@@ -126,6 +123,7 @@ bool Engine::receiveMessages(int timeout)
 		case engineState::filter:			receiveFilterMessage(jsonRequest);			break;
 		case engineState::rCode:			receiveRCodeMessage(jsonRequest);			break;
 		case engineState::computeColumn:	receiveComputeColumnMessage(jsonRequest);	break;
+		case engineState::moduleRequest:	receiveModuleRequestMessage(jsonRequest);	break;
 		default:							throw std::runtime_error("Engine::receiveMessages implement your new engineState!");
 		}
 	}
@@ -135,28 +133,157 @@ bool Engine::receiveMessages(int timeout)
 
 void Engine::receiveFilterMessage(Json::Value jsonRequest)
 {
-	currentEngineState = engineState::filter;
+	_currentEngineState			= engineState::filter;
+	std::string filter			= jsonRequest.get("filter", "").asString();
+	std::string generatedFilter = jsonRequest.get("generatedFilter", "").asString();
 
-	_filter = jsonRequest.get("filter", "").asString();
-	_generatedFilter = jsonRequest.get("generatedFilter", "").asString();
+	runFilter(filter, generatedFilter);
+}
+
+void Engine::runFilter(std::string filter, std::string generatedFilter)
+{
+	try
+	{
+		std::vector<bool> filterResult	= rbridge_applyFilter(filter, generatedFilter);
+		std::string RPossibleWarning	= jaspRCPP_getLastErrorMsg();
+
+		sendFilterResult(filterResult, RPossibleWarning);
+
+	}
+	catch(filterException & e)
+	{
+		sendFilterError(std::string(e.what()).length() > 0 ? e.what() : "Something went wrong with the filter but it is unclear what.");
+	}
+
+	_currentEngineState = engineState::idle;
+}
+
+void Engine::sendFilterResult(std::vector<bool> filterResult, std::string warning)
+{
+	Json::Value filterResponse(Json::objectValue);
+
+	filterResponse["typeRequest"]	= engineStateToString(engineState::filter);
+	filterResponse["filterResult"]	= Json::arrayValue;
+
+	for(bool f : filterResult)	filterResponse["filterResult"].append(f);
+	if(warning != "")			filterResponse["filterError"] = warning;
+
+	sendString(filterResponse.toStyledString());
+}
+
+void Engine::sendFilterError(std::string errorMessage)
+{
+	Json::Value filterResponse = Json::Value(Json::objectValue);
+
+	filterResponse["typeRequest"] = engineStateToString(engineState::filter);
+	filterResponse["filterError"] = errorMessage;
+
+	sendString(filterResponse.toStyledString());
 }
 
 void Engine::receiveRCodeMessage(Json::Value jsonRequest)
 {
-	currentEngineState = engineState::rCode;
+	_currentEngineState	= engineState::rCode;
+	std::string rCode	= jsonRequest.get("rCode", "").asString();
+	int rCodeRequestId	= jsonRequest.get("requestId", -1).asInt();
 
-	_rCode			= jsonRequest.get("rCode", "").asString();
-	_rCodeRequestId	= jsonRequest.get("requestId", -1).asInt();
+	runRCode(rCode, rCodeRequestId);
+}
+
+void Engine::runRCode(std::string rCode, int rCodeRequestId)
+{
+	std::string rCodeResult = jaspRCPP_evalRCode(rCode.c_str());
+
+	if (rCodeResult == "null")	sendRCodeError(rCodeRequestId);
+	else						sendRCodeResult(rCodeResult, rCodeRequestId);
+
+	_currentEngineState = engineState::idle;
+}
+
+void Engine::sendRCodeResult(std::string rCodeResult, int rCodeRequestId)
+{
+	Json::Value rCodeResponse(Json::objectValue);
+
+	std::string RError				= jaspRCPP_getLastErrorMsg();
+	if(RError.size() > 0)
+		rCodeResponse["rCodeError"]	= RError;
+
+	rCodeResponse["typeRequest"]	= engineStateToString(engineState::rCode);
+	rCodeResponse["rCodeResult"]	= rCodeResult;
+	rCodeResponse["requestId"]		= rCodeRequestId;
+
+
+	sendString(rCodeResponse.toStyledString());
+}
+
+void Engine::sendRCodeError(int rCodeRequestId)
+{
+	std::cout << "R Code yielded error" << std::endl << std::flush;
+
+	Json::Value rCodeResponse		= Json::objectValue;
+	std::string RError				= jaspRCPP_getLastErrorMsg();
+	rCodeResponse["typeRequest"]	= engineStateToString(engineState::rCode);
+	rCodeResponse["rCodeError"]		= RError.size() == 0 ? "R Code failed for unknown reason. Check that R function returns a string." : RError;
+	rCodeResponse["requestId"]		= rCodeRequestId;
+
+	sendString(rCodeResponse.toStyledString());
 }
 
 void Engine::receiveComputeColumnMessage(Json::Value jsonRequest)
 {
-	currentEngineState = engineState::computeColumn;
+	_currentEngineState = engineState::computeColumn;
 
-	_computeColumnName	= jsonRequest.get("columnName", "").asString();
-	_computeColumnCode	= jsonRequest.get("computeCode", "").asString();
-	_computeColumnType	= Column::columnTypeFromString(jsonRequest.get("columnType", "").asString());
+	std::string			computeColumnName = jsonRequest.get("columnName", "").asString();
+	std::string			computeColumnCode = jsonRequest.get("computeCode", "").asString();
+	Column::ColumnType	computeColumnType = Column::columnTypeFromString(jsonRequest.get("columnType", "").asString());
+
+	runComputeColumn(computeColumnName, computeColumnCode, computeColumnType);
 }
+
+void Engine::runComputeColumn(std::string computeColumnName, std::string computeColumnCode, Column::ColumnType computeColumnType)
+{
+	static const std::map<Column::ColumnType, std::string> setColumnFunction = {{Column::ColumnTypeScale,".setColumnDataAsScale"}, {Column::ColumnTypeOrdinal,".setColumnDataAsOrdinal"}, {Column::ColumnTypeNominal,".setColumnDataAsNominal"}, {Column::ColumnTypeNominalText,".setColumnDataAsNominalText"}};
+
+	std::string computeColumnCodeComplete	= "calcedVals <- {"+computeColumnCode +"};\n" + setColumnFunction.at(computeColumnType) + "('" + computeColumnName +"', calcedVals);\n return('succes');";
+	std::string computeColumnResultStr		= rbridge_evalRCodeWhiteListed(computeColumnCodeComplete);
+
+	Json::Value computeColumnResponse		= Json::objectValue;
+	computeColumnResponse["typeRequest"]	= engineStateToString(engineState::computeColumn);
+	computeColumnResponse["result"]			= computeColumnResultStr;
+	computeColumnResponse["error"]			= jaspRCPP_getLastErrorMsg();
+	computeColumnResponse["columnName"]		= computeColumnName;
+
+	sendString(computeColumnResponse.toStyledString());
+
+	_currentEngineState = engineState::idle;
+}
+
+
+void Engine::receiveModuleRequestMessage(Json::Value jsonRequest)
+{
+	_currentEngineState = engineState::moduleRequest;
+
+	std::string		moduleRequest	= jsonRequest["moduleRequest"].asString();
+	std::string		moduleCode		= jsonRequest["moduleCode"].asString();
+	std::string		moduleName		= jsonRequest["moduleName"].asString();
+
+	std::string		result			= jaspRCPP_evalRCode(moduleCode.c_str());
+	bool			fail			= result == "null";
+
+	Json::Value		jsonAnswer		= Json::objectValue;
+
+	jsonAnswer["moduleRequest"]		= moduleRequest;
+	jsonAnswer["moduleName"]		= moduleName;
+	jsonAnswer["succes"]			= !fail;
+	jsonAnswer["error"]				= jaspRCPP_getLastErrorMsg();
+
+	sendString(jsonAnswer.toStyledString());
+
+	_currentEngineState = engineState::idle;
+}
+
+
+//Analysis stuff:
 
 void Engine::receiveAnalysisMessage(Json::Value jsonRequest)
 {
@@ -206,12 +333,9 @@ void Engine::receiveAnalysisMessage(Json::Value jsonRequest)
 		_analysisRequiresInit	= jsonRequest.get("requiresInit", Json::nullValue).isNull() ? true : jsonRequest.get("requiresInit", true).asBool();
 		_ppi					= jsonRequest.get("ppi",			96).asInt();
 
-		currentEngineState = engineState::analysis;
+		_currentEngineState = engineState::analysis;
 	}
 }
-
-
-
 
 void Engine::runAnalysis()
 {
@@ -253,7 +377,6 @@ void Engine::runAnalysis()
 	}
 	else
 	{
-
 		Json::Reader().parse(_analysisResultsString, _analysisResults, false);
 
 		if(!_analysisJaspResults)
@@ -263,7 +386,7 @@ void Engine::runAnalysis()
 			sendAnalysisResults();
 		}
 
-		currentEngineState = engineState::idle;
+		_currentEngineState = engineState::idle;
 		_status		= empty;
 		removeNonKeepFiles(_analysisResults.isObject() ? _analysisResults.get("keep", Json::nullValue) : Json::nullValue);
 
@@ -286,7 +409,7 @@ void Engine::saveImage()
 	_progress									= -1;
 	sendAnalysisResults();
 	_status										= empty;
-	currentEngineState							= engineState::idle;
+	_currentEngineState							= engineState::idle;
 
 }
 
@@ -304,7 +427,7 @@ void Engine::editImage()
 	_progress			= -1;
 	sendAnalysisResults();
 	_status				= empty;
-	currentEngineState	= engineState::idle;
+	_currentEngineState	= engineState::idle;
 }
 
 analysisResultStatus Engine::getStatusToAnalysisStatus()
@@ -337,107 +460,6 @@ void Engine::sendAnalysisResults()
 
 	sendString(response.toStyledString());
 }
-
-void Engine::runFilter()
-{
-	try
-	{
-		std::vector<bool> filterResult	= rbridge_applyFilter(_filter, _generatedFilter);
-		std::string RPossibleWarning	= jaspRCPP_getLastErrorMsg();
-
-		sendFilterResult(filterResult, RPossibleWarning);
-
-	}
-	catch(filterException & e)
-	{
-		sendFilterError(std::string(e.what()).length() > 0 ? e.what() : "Something went wrong with the filter but it is unclear what.");
-	}
-
-	currentEngineState = engineState::idle;
-}
-
-void Engine::sendFilterResult(std::vector<bool> filterResult, std::string warning)
-{
-	Json::Value filterResponse(Json::objectValue);
-
-	filterResponse["typeRequest"]	= engineStateToString(engineState::filter);
-	filterResponse["filterResult"]	= Json::arrayValue;
-
-	for(bool f : filterResult)	filterResponse["filterResult"].append(f);
-	if(warning != "")			filterResponse["filterError"] = warning;
-
-	sendString(filterResponse.toStyledString());
-}
-
-void Engine::sendFilterError(std::string errorMessage)
-{
-	Json::Value filterResponse = Json::Value(Json::objectValue);
-
-	filterResponse["typeRequest"] = engineStateToString(engineState::filter);
-	filterResponse["filterError"] = errorMessage;
-
-	sendString(filterResponse.toStyledString());
-}
-
-
-// Evaluating arbitrary R code (as string) which returns a string
-void Engine::runRCode()
-{
-	std::string rCodeResult = jaspRCPP_evalRCode(_rCode.c_str());
-	
-	if (rCodeResult == "null")	sendRCodeError();
-	else						sendRCodeResult(rCodeResult);
-
-	currentEngineState = engineState::idle;
-}
-
-void Engine::sendRCodeResult(std::string rCodeResult)
-{
-	Json::Value rCodeResponse(Json::objectValue);
-
-	std::string RError				= jaspRCPP_getLastErrorMsg();
-	if(RError.size() > 0)
-		rCodeResponse["rCodeError"]	= RError;
-
-	rCodeResponse["typeRequest"]	= engineStateToString(engineState::rCode);
-	rCodeResponse["rCodeResult"]	= rCodeResult;
-	rCodeResponse["requestId"]		= _rCodeRequestId;
-
-
-	sendString(rCodeResponse.toStyledString());
-}
-
-void Engine::sendRCodeError()
-{
-	std::cout << "R Code yielded error" << std::endl << std::flush;
-
-	Json::Value rCodeResponse		= Json::objectValue;
-	std::string RError				= jaspRCPP_getLastErrorMsg();
-	rCodeResponse["typeRequest"]	= engineStateToString(engineState::rCode);
-	rCodeResponse["rCodeError"]		= RError.size() == 0 ? "R Code failed for unknown reason. Check that R function returns a string." : RError;
-	rCodeResponse["requestId"]		= _rCodeRequestId;
-
-	sendString(rCodeResponse.toStyledString());
-}
-
-void Engine::runComputeColumn()
-{
-	static const std::map<Column::ColumnType, std::string> setColumnFunction = {{Column::ColumnTypeScale,".setColumnDataAsScale"}, {Column::ColumnTypeOrdinal,".setColumnDataAsOrdinal"}, {Column::ColumnTypeNominal,".setColumnDataAsNominal"}, {Column::ColumnTypeNominalText,".setColumnDataAsNominalText"}};
-
-	std::string computeColumnCodeComplete	= "calcedVals <- {"+_computeColumnCode +"};\n" + setColumnFunction.at(_computeColumnType) + "('" + _computeColumnName +"', calcedVals);\n return('succes');";
-	std::string computeColumnResultStr		= rbridge_evalRCodeWhiteListed(computeColumnCodeComplete);
-
-	Json::Value computeColumnResponse		= Json::objectValue;
-	computeColumnResponse["typeRequest"]	= engineStateToString(engineState::computeColumn);
-	computeColumnResponse["result"]			= computeColumnResultStr;
-	computeColumnResponse["error"]			= jaspRCPP_getLastErrorMsg();
-	computeColumnResponse["columnName"]		= _computeColumnName;
-
-	sendString(computeColumnResponse.toStyledString());
-
-	currentEngineState = engineState::idle;
-}
-
 
 void Engine::removeNonKeepFiles(Json::Value filesToKeepValue)
 {

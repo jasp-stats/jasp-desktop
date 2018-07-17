@@ -52,6 +52,7 @@ void EngineRepresentation::process()
 		case engineState::rCode:			processRCodeReply(json);			break;
 		case engineState::analysis:			processAnalysisReply(json);			break;
 		case engineState::computeColumn:	processComputeColumnReply(json);	break;
+		case engineState::moduleRequest:	processModuleRequestReply(json);	break;
 		default:							throw std::logic_error("If you define new engineStates you should add them to the switch in EngineRepresentation::process()!");
 		}
 	}
@@ -308,4 +309,41 @@ void EngineRepresentation::handleRunningAnalysisStatusChanges()
 
 	if(_analysisInProgress->isEmpty() || _analysisInProgress->isAborted())
 		runAnalysisOnProcess(_analysisInProgress);
+}
+
+void EngineRepresentation::runModuleRequestOnProcess(Json::Value request)
+{
+	_engineState			= engineState::moduleRequest;
+	request["typeRequest"]	= engineStateToString(_engineState);
+
+	sendString(request.toStyledString());
+}
+
+void EngineRepresentation::processModuleRequestReply(Json::Value json)
+{
+	if(_engineState != engineState::moduleRequest)
+		throw std::runtime_error("Received an unexpected moduleRequest reply!");
+	_engineState = engineState::idle;
+
+	moduleStatus moduleRequest	= moduleStatusFromString(json["moduleRequest"].asString());
+	bool succes					= json["succes"].asBool();
+	std::string moduleName		= json["moduleName"].asString();
+	auto getError				= [&](){ return json.get("error", "Unknown error").asString(); };
+
+	switch(moduleRequest)
+	{
+	case moduleStatus::installNeeded:
+		if(succes)	emit moduleInstallationSucceeded(moduleName);
+		else		emit moduleInstallationFailed(moduleName, getError());
+		break;
+
+	case moduleStatus::loadingNeeded:
+		if(succes)	emit moduleLoadingSucceeded(moduleName);
+		else		emit moduleLoadingFailed(moduleName, getError());
+		break;
+
+	default:
+		throw std::runtime_error("Unsupported module request reply to EngineRepresentation::processModuleRequestReply!");
+	}
+
 }

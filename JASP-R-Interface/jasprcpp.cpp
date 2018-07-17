@@ -109,9 +109,12 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside["jasp.analyses"] = Rcpp::List();
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
+	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"modules\"))");
 
 	rinside->parseEvalNT("initEnvironment()");
 
+
+	//rinside->parseEvalNT("print('installing modules!'); install.packages('modules', repos='https://cloud.r-project.org', Ncpus=4, lib='/Users/jorisgoosen/.JASP/library'); print('installing modules worked?'); ");
 
 }
 

@@ -2,6 +2,12 @@
 #include "jsonutilities.h"
 #include "sharedmemory.h"
 
+ComputedColumnsModel::ComputedColumnsModel(Analyses * analyses, QObject * parent) : QObject(parent), _analyses(analyses)
+{
+	connect(_analyses,	&Analyses::requestComputedColumnCreation,		this,	&ComputedColumnsModel::requestComputedColumnCreation,		Qt::UniqueConnection);
+	connect(_analyses,	&Analyses::requestComputedColumnDestruction,	this,	&ComputedColumnsModel::requestComputedColumnDestruction,	Qt::UniqueConnection);
+}
+
 QString ComputedColumnsModel::computeColumnRCode()
 {
 	if(_currentlySelectedName == "" || _computedColumns == NULL)

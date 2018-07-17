@@ -41,7 +41,7 @@ class EngineSync : public QObject
 	Q_OBJECT
 
 public:
-	EngineSync(Analyses *analyses, DataSetPackage *package, QObject *parent);
+	EngineSync(Analyses *analyses, DataSetPackage *package, DynamicModules *dynamicModules, QObject *parent);
 	~EngineSync();
 
 	void start();
@@ -58,22 +58,33 @@ public slots:
 	
 signals:
 	void engineTerminated();
+
 	void filterUpdated();
 	void filterErrorTextChanged(QString error);
+
 	void rCodeReturned(QString result, int requestId);
+
 	void ppiChanged(int newPPI);
+
 	void computeColumnSucceeded(std::string columnName, std::string warning);
-	void computeColumnFailed(std::string columnName, std::string error);
+	void computeColumnFailed(	std::string columnName, std::string error);
+
+	void moduleInstallationSucceeded(	std::string moduleName);
+	void moduleInstallationFailed(		std::string moduleName, std::string errorMessage);
+	void moduleLoadingSucceeded(		std::string moduleName);
+	void moduleLoadingFailed(			std::string moduleName, std::string errorMessage);
 
 
 private:
 	bool		idleEngineAvailable();
 	QProcess*	startSlaveProcess(int no);
 	void		processScriptQueue();
+	void		processDynamicModules();
 
 	Analyses		*_analyses;
 	bool			_engineStarted = false;
 	DataSetPackage	*_package;
+	DynamicModules	*_dynamicModules;
 
 	std::queue<RScriptStore*>			_waitingScripts;
 	std::vector<EngineRepresentation*>	_engines;

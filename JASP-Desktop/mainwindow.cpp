@@ -108,6 +108,7 @@
 
 #include "options/optionvariablesgroups.h"
 #include "datasetview.h"
+#include "modules/dynamicmodules.h"
 
 using namespace std;
 
@@ -127,8 +128,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	_labelFilterGenerator	= new labelFilterGenerator(_package, this);
 	_columnsModel			= new ColumnsModel(this);
 	_analyses				= new Analyses();
-	_engineSync				= new EngineSync(_analyses, _package, this);
+	_dynamicModules			= new DynamicModules(this);
+	_engineSync				= new EngineSync(_analyses, _package, _dynamicModules, this);
 	_computedColumnsModel	= new ComputedColumnsModel(_analyses, this);
+
 
 	StartOnlineDataManager();
 	initQWidgetGUIParts();
@@ -140,6 +143,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	QString missingvaluestring = _settings.value("MissingValueList", "").toString();
 	if (missingvaluestring != "")
 		Utils::setEmptyValues(fromQstringToStdVector(missingvaluestring, "|"));
+
+	try
+	{
+		_dynamicModules->loadModule("/Users/jorisgoosen/Broncode/jasp-desktop/Resources/Example Module/");
+	}
+	catch(std::exception e)
+	{
+		std::cout << "Loading testing module had a problem: " << e.what() << std::endl;
+
+	}
 }
 
 void MainWindow::StartOnlineDataManager()
@@ -189,6 +202,7 @@ void MainWindow::makeConnections()
 	connect(_engineSync,			&EngineSync::filterUpdated,							_tableModel,			&DataSetTableModel::refresh									);
 	connect(_engineSync,			&EngineSync::filterErrorTextChanged,				this,					&MainWindow::setFilterErrorText								);
 	connect(_engineSync,			&EngineSync::filterUpdated,							this,					&MainWindow::onFilterUpdated								);
+
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_computedColumnsModel,	&ComputedColumnsModel::computeColumnSucceeded				);
 	connect(_engineSync,			&EngineSync::computeColumnFailed,					_computedColumnsModel,	&ComputedColumnsModel::computeColumnFailed					);
 
@@ -210,8 +224,6 @@ void MainWindow::makeConnections()
 	connect(_analyses,				&Analyses::analysisImageSaved,						this,					&MainWindow::analysisImageSavedHandler						);
 	connect(_analyses,				&Analyses::analysisAdded,							ui->backStage,			&BackStageWidget::analysisAdded								);
 	connect(_analyses,				&Analyses::analysisImageEdited,						_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler				);
-	connect(_analyses,				&Analyses::requestComputedColumnCreation,			_computedColumnsModel,	&ComputedColumnsModel::requestComputedColumnCreation,		Qt::UniqueConnection);
-	connect(_analyses,				&Analyses::requestComputedColumnDestruction,		_computedColumnsModel,	&ComputedColumnsModel::requestComputedColumnDestruction,	Qt::UniqueConnection);
 
 	connect(ui->backStage,			&BackStageWidget::dataSetIORequest,					this,					&MainWindow::dataSetIORequest								);
 	connect(ui->backStage,			&BackStageWidget::exportSelected,					_resultsJsInterface,	&ResultsJsInterface::exportSelected							);

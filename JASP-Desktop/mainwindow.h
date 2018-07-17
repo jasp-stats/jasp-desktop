@@ -202,7 +202,8 @@ private:
 	labelFilterGenerator			*_labelFilterGenerator;
 	ColumnsModel					*_columnsModel			= NULL;
 	ComputedColumnsModel			*_computedColumnsModel	= NULL;
-	OnlineDataManager				*_odm;
+	OnlineDataManager				*_odm					= NULL;
+	DynamicModules					*_dynamicModules		= NULL;
 	
 	analysisFormMap					_analysisFormsMap;
 	TableModelVariablesAvailable	_availableVariablesModel;

@@ -37,20 +37,22 @@
 using namespace boost::interprocess;
 
 
-EngineSync::EngineSync(Analyses *analyses, DataSetPackage *package, QObject *parent = 0)
-	: QObject(parent)
+EngineSync::EngineSync(Analyses *analyses, DataSetPackage *package, DynamicModules *dynamicModules, QObject *parent = 0)
+	: QObject(parent), _analyses(analyses), _package(package), _dynamicModules(dynamicModules)
 {
-	_analyses = analyses;
-	_package = package;
+	connect(_analyses,	&Analyses::analysisAdded,							this,					&EngineSync::ProcessAnalysisRequests	);
+	connect(_analyses,	&Analyses::analysisToRefresh,						this,					&EngineSync::ProcessAnalysisRequests	);
+	connect(_analyses,	&Analyses::analysisSaveImage,						this,					&EngineSync::ProcessAnalysisRequests	);
+	connect(_analyses,	&Analyses::analysisEditImage,						this,					&EngineSync::ProcessAnalysisRequests	);
+	connect(_analyses,	&Analyses::analysisOptionsChanged,					this,					&EngineSync::ProcessAnalysisRequests	);
 
-	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
-	connect(_analyses, SIGNAL(analysisOptionsChanged(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
-	connect(_analyses, SIGNAL(analysisToRefresh(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
-	connect(_analyses, SIGNAL(analysisSaveImage(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
-	connect(_analyses, SIGNAL(analysisEditImage(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
+	connect(this,		&EngineSync::moduleLoadingFailed,					_dynamicModules,		&DynamicModules::loadingFailed			);
+	connect(this,		&EngineSync::moduleLoadingSucceeded,				_dynamicModules,		&DynamicModules::loadingSucceeded		);
+	connect(this,		&EngineSync::moduleInstallationFailed,				_dynamicModules,		&DynamicModules::installationFailed		);
+	connect(this,		&EngineSync::moduleInstallationSucceeded,			_dynamicModules,		&DynamicModules::installationSucceeded	);
 
 	// delay start so as not to increase program start up time
-	QTimer::singleShot(100, this, SLOT(deleteOrphanedTempFiles()));
+	QTimer::singleShot(100, this, &EngineSync::deleteOrphanedTempFiles);
 }
 
 EngineSync::~EngineSync()
@@ -83,14 +85,23 @@ void EngineSync::start()
 		{
 			_engines[i] = new EngineRepresentation(new IPCChannel(_memoryName, i), startSlaveProcess(i), this);
 
-			connect(_engines[i],	&EngineRepresentation::engineTerminated,				this,			&EngineSync::engineTerminated);
-			connect(_engines[i],	&EngineRepresentation::filterUpdated,					this,			&EngineSync::filterUpdated);
-			connect(_engines[i],	&EngineRepresentation::filterErrorTextChanged,			this,			&EngineSync::filterErrorTextChanged);
 			connect(_engines[i],	&EngineRepresentation::rCodeReturned,					this,			&EngineSync::rCodeReturned);
-			connect(_engines[i],	&EngineRepresentation::processNewFilterResult,			this,			&EngineSync::processNewFilterResult);
+
+			connect(_engines[i],	&EngineRepresentation::filterUpdated,					this,			&EngineSync::filterUpdated);
 			connect(_engines[i],	&EngineRepresentation::dataFilterChanged,				this,			&EngineSync::dataFilterChanged);
+			connect(_engines[i],	&EngineRepresentation::processNewFilterResult,			this,			&EngineSync::processNewFilterResult);
+			connect(_engines[i],	&EngineRepresentation::filterErrorTextChanged,			this,			&EngineSync::filterErrorTextChanged);
+
 			connect(_engines[i],	&EngineRepresentation::computeColumnSucceeded,			this,			&EngineSync::computeColumnSucceeded);
 			connect(_engines[i],	&EngineRepresentation::computeColumnFailed,				this,			&EngineSync::computeColumnFailed);
+
+			connect(_engines[i],	&EngineRepresentation::engineTerminated,				this,			&EngineSync::engineTerminated);
+
+			connect(_engines[i],	&EngineRepresentation::moduleLoadingFailed,				this,			&EngineSync::moduleLoadingFailed);
+			connect(_engines[i],	&EngineRepresentation::moduleLoadingSucceeded,			this,			&EngineSync::moduleLoadingSucceeded);
+			connect(_engines[i],	&EngineRepresentation::moduleInstallationFailed,		this,			&EngineSync::moduleInstallationFailed);
+			connect(_engines[i],	&EngineRepresentation::moduleInstallationSucceeded,		this,			&EngineSync::moduleInstallationSucceeded);
+
 			connect(this,			&EngineSync::ppiChanged,								_engines[i],	&EngineRepresentation::ppiChanged);
 		}
 	}
@@ -100,13 +111,13 @@ void EngineSync::start()
 		throw e;
 	}
 
-	QTimer *timer = new QTimer(this);
-	connect(timer, SIGNAL(timeout()), this, SLOT(process()));
-	timer->start(50);
+	QTimer *timerProcess = new QTimer(this), *timerBeat = new QTimer(this);
 
-	timer = new QTimer(this);
-	connect(timer, SIGNAL(timeout()), this, SLOT(heartbeatTempFiles()));
-	timer->start(30000);
+	connect(timerProcess,	&QTimer::timeout, this, &EngineSync::process);
+	connect(timerBeat,		&QTimer::timeout, this, &EngineSync::heartbeatTempFiles);
+
+	timerProcess->start(50);
+	timerBeat->start(30000);
 }
 
 
@@ -116,6 +127,7 @@ void EngineSync::process()
 		engine->process();
 	
 	processScriptQueue();
+	processDynamicModules();
 	ProcessAnalysisRequests();
 }
 
@@ -123,7 +135,6 @@ void EngineSync::processNewFilterResult(std::vector<bool> filterResult)
 {
 	if(_package == NULL || _package->dataSet() == NULL)
 		return;
-
 	
 	_package->setDataFilter(_dataFilter.toStdString()); //remember the filter that was last used and actually gave results.
 	_package->dataSet()->setFilterVector(filterResult);
@@ -169,7 +180,7 @@ void EngineSync::processScriptQueue()
 
 			RScriptStore * waiting = _waitingScripts.front();
 			_waitingScripts.pop();
-			
+
 			switch(waiting->typeScript)
 			{
 			case engineState::rCode:			engine->runScriptOnProcess(waiting);						break;
@@ -177,8 +188,20 @@ void EngineSync::processScriptQueue()
 			case engineState::computeColumn:	engine->runScriptOnProcess((RComputeColumnStore*)waiting);	break;
 			default:							throw std::runtime_error("engineState " + engineStateToString(waiting->typeScript) + " unknown in EngineSync::processScriptQueue()!");
 			}
-			
+
 			delete waiting; //clean up
+		}
+}
+
+
+void EngineSync::processDynamicModules()
+{
+	for(auto engine : _engines)
+		if(engine->isIdle())
+		{
+			if		(_dynamicModules->aModuleNeedsPackagesInstalled())		engine->runModuleRequestOnProcess(_dynamicModules->requestJsonForPackageInstallationRequest());
+			else if	(_dynamicModules->aModuleNeedsToBeLoadedInR())			engine->runModuleRequestOnProcess(_dynamicModules->requestJsonForPackageLoadingRequest());
+
 		}
 }
 
@@ -190,12 +213,11 @@ bool EngineSync::idleEngineAvailable()
 	return false;
 }
 
-
 void EngineSync::ProcessAnalysisRequests()
 {	
 	const size_t initedAnalysesStartIndex =
 #ifndef JASP_DEBUG
-			1; // don't perform 'runs' on process 0, "only" inits & filters & rCode & columnCoputes.
+			1; // don't perform 'runs' on process 0, "only" inits & filters & rCode & columnComputes & moduleRequests.
 #else
 			0;
 #endif
@@ -208,20 +230,14 @@ void EngineSync::ProcessAnalysisRequests()
 		if(!idleEngineAvailable())
 			return;
 
-		if (analysis == NULL)
+		if (analysis == NULL || analysis->isWaitingForModule())
 			continue;
-		
-		if (analysis->isEmpty() || analysis->isSaveImg() || analysis->isEditImg())
-		{
-			for(auto engine : _engines)
-				if(engine->isIdle())
-				{
-					engine->runAnalysisOnProcess(analysis);
-					break;
-				}
-		}
-		else if (analysis->isInited())
-			for (size_t i = initedAnalysesStartIndex; i<_engines.size(); i++)
+
+		bool canUseFirstEngine	= analysis->isEmpty()	|| analysis->isSaveImg() || analysis->isEditImg();
+		bool needsToRun			= canUseFirstEngine		|| analysis->isInited();
+
+		if(needsToRun)
+			for (size_t i = canUseFirstEngine ? 0 : initedAnalysesStartIndex; i<_engines.size(); i++)
 				if (_engines[i]->isIdle())
 				{
 					_engines[i]->runAnalysisOnProcess(analysis);
@@ -232,13 +248,12 @@ void EngineSync::ProcessAnalysisRequests()
 
 QProcess * EngineSync::startSlaveProcess(int no)
 {
-	QDir programDir = QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir();
+	QDir programDir			= QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir();
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-	QString engineExe = QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir().absoluteFilePath("JASPEngine");
+	QString engineExe		= QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir().absoluteFilePath("JASPEngine");
 
 	QStringList args;
-	args << QString::number(no);
-	args << QString::number(ProcessInfo::currentPID());
+	args << QString::number(no) << QString::number(ProcessInfo::currentPID());
 
 #ifdef __WIN32__
 	QString rHomePath = programDir.absoluteFilePath("R");
@@ -255,11 +270,7 @@ QProcess * EngineSync::startSlaveProcess(int no)
 		rHomePath = "/usr/lib/R/";
 #endif
 #else
-	QString rHomePath;
-	if (QDir::isRelativePath(R_HOME))
-		rHomePath = programDir.absoluteFilePath(R_HOME);
-	else
-		rHomePath = R_HOME;
+	QString rHomePath = QDir::isRelativePath(R_HOME) ? programDir.absoluteFilePath(R_HOME) : R_HOME;
 #endif
 #endif
 
@@ -274,31 +285,33 @@ QProcess * EngineSync::startSlaveProcess(int no)
 #define ARCH_SUBPATH "x64"
 #endif
 
-	env.insert("PATH", programDir.absoluteFilePath("R\\library\\RInside\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\library\\Rcpp\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\bin\\" ARCH_SUBPATH));
-	env.insert("R_HOME", rHome.absolutePath());
+	env.insert("PATH",				programDir.absoluteFilePath("R\\library\\RInside\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\library\\Rcpp\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\bin\\" ARCH_SUBPATH));
+	env.insert("R_HOME",			rHome.absolutePath());
 
 #undef ARCH_SUBPATH
 
-	env.insert("R_LIBS", rHome.absoluteFilePath("library"));
+	env.insert("R_LIBS",			rHome.absoluteFilePath("library"));
 
-	env.insert("R_ENVIRON", "something-which-doesnt-exist");
-	env.insert("R_PROFILE", "something-which-doesnt-exist");
-	env.insert("R_PROFILE_USER", "something-which-doesnt-exist");
-	env.insert("R_ENVIRON_USER", "something-which-doesnt-exist");
-	env.insert("R_LIBS_SITE", "something-which-doesnt-exist");
-	env.insert("R_LIBS_USER", "something-which-doesnt-exist");
+	env.insert("R_ENVIRON",			"something-which-doesnt-exist");
+	env.insert("R_PROFILE",			"something-which-doesnt-exist");
+	env.insert("R_PROFILE_USER",	"something-which-doesnt-exist");
+	env.insert("R_ENVIRON_USER",	"something-which-doesnt-exist");
+	env.insert("R_LIBS_SITE",		"something-which-doesnt-exist");
+	env.insert("R_LIBS_USER",		"something-which-doesnt-exist");
 
 #elif __APPLE__
 
-	env.insert("R_HOME", rHome.absolutePath());
-	env.insert("R_LIBS", rHome.absoluteFilePath("library") + ":" + programDir.absoluteFilePath("R/library"));
+	env.insert("R_HOME",			rHome.absolutePath());
+	env.insert("R_LIBS",			rHome.absoluteFilePath("library") + ":" + programDir.absoluteFilePath("R/library"));
 
-	env.insert("R_ENVIRON", "something-which-doesnt-exist");
-	env.insert("R_PROFILE", "something-which-doesnt-exist");
-	env.insert("R_PROFILE_USER", "something-which-doesnt-exist");
-	env.insert("R_ENVIRON_USER", "something-which-doesnt-exist");
-	env.insert("R_LIBS_SITE", "something-which-doesnt-exist");
-	env.insert("R_LIBS_USER", "something-which-doesnt-exist");
+	env.insert("R_ENVIRON",			"something-which-doesnt-exist");
+	env.insert("R_PROFILE",			"something-which-doesnt-exist");
+	env.insert("R_PROFILE_USER",	"something-which-doesnt-exist");
+	env.insert("R_ENVIRON_USER",	"something-which-doesnt-exist");
+	env.insert("R_LIBS_SITE",		"something-which-doesnt-exist");
+	env.insert("R_LIBS_USER",		"/Users/jorisgoosen/.JASP/library");
+
+	std::cout << "env.insert(\"R_LIBS_USER\", \"/Users/jorisgoosen/.JASP/library\"); IS STILL BEING SET! REMOVE THIS BEFORE MERGING INTO DEVELOPMENT!" << std::endl;
 
 #else  // linux
 	env.insert("LD_LIBRARY_PATH",	rHome.absoluteFilePath("lib") + ":" + rHome.absoluteFilePath("library/RInside/lib") + ":" + rHome.absoluteFilePath("library/Rcpp/lib") + ":" + rHome.absoluteFilePath("site-library/RInside/lib") + ":" + rHome.absoluteFilePath("site-library/Rcpp/lib") + ":/app/lib/:/app/lib64/");
@@ -335,11 +348,11 @@ QProcess * EngineSync::startSlaveProcess(int no)
 
 	slave->start(engineExe, args);
 
-	connect(slave, SIGNAL(readyReadStandardOutput()), this, SLOT(subProcessStandardOutput()));
-	connect(slave, SIGNAL(readyReadStandardError()), this, SLOT(subProcessStandardError()));
-	connect(slave, SIGNAL(error(QProcess::ProcessError)), this, SLOT(subProcessError(QProcess::ProcessError)));
-	connect(slave, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(subprocessFinished(int,QProcess::ExitStatus)));
-	connect(slave, SIGNAL(started()), this, SLOT(subProcessStarted()));
+	connect(slave, &QProcess::readyReadStandardOutput,	this,	&EngineSync::subProcessStandardOutput);
+	connect(slave, &QProcess::readyReadStandardError,	this,	&EngineSync::subProcessStandardError);
+	connect(slave, &QProcess::finished,					this,	&EngineSync::subprocessFinished);
+	connect(slave, &QProcess::started,					this,	&EngineSync::subProcessStarted);
+	connect(slave, &QProcess::error,					this,	&EngineSync::subProcessError);
 
 	return slave;
 }
@@ -356,8 +369,8 @@ void EngineSync::heartbeatTempFiles()
 
 void EngineSync::subProcessStandardOutput()
 {
-	QProcess *process = qobject_cast<QProcess *>(this->sender());
-	QByteArray data = process->readAllStandardOutput();
+	QProcess *process	= qobject_cast<QProcess *>(this->sender());
+	QByteArray data		= process->readAllStandardOutput();
 	qDebug() << QString(data);
 }
 
