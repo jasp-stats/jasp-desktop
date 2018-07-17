@@ -201,8 +201,8 @@ void jaspTable::addRows(Rcpp::RObject newData, Rcpp::CharacterVector rowNames)
 		return;
 
 	//Maybe this is overkill?
-	if(Rcpp::is<Rcpp::DataFrame>(newData))				addRowsFromList(convertFactorsToCharacters((Rcpp::DataFrame)	newData),	rowNames);
-	else if(Rcpp::is<Rcpp::List>(newData))				addRowsFromList((Rcpp::List)									newData,	rowNames);
+	if(Rcpp::is<Rcpp::DataFrame>(newData))				addRowsFromDataFrame((Rcpp::DataFrame)				newData);
+	else if(Rcpp::is<Rcpp::List>(newData))				addRowsFromList((Rcpp::List)						newData, rowNames);
 
 	else if(Rcpp::is<Rcpp::NumericMatrix>(newData))		addRowsFromMatrix<REALSXP>((Rcpp::NumericMatrix)	newData, rowNames);
 	else if(Rcpp::is<Rcpp::LogicalMatrix>(newData))		addRowsFromMatrix<LGLSXP>((Rcpp::LogicalMatrix)		newData, rowNames);

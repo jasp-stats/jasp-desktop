@@ -235,6 +235,23 @@ private:
 
 	}
 
+	void addRowsFromDataFrame(Rcpp::DataFrame newData)
+	{
+		newData							= convertFactorsToCharacters(newData);
+		int equalizedColumnsLength		= equalizeColumnsLengths();
+		int previouslyAddedUnnamedCols	= 0;
+
+		std::vector<std::string> localColNames = extractElementOrColumnNames(newData);
+
+		for(size_t col=0; col<newData.size(); col++)
+		{
+			Rcpp::RObject kolom			= (Rcpp::RObject)newData[col];
+			auto jsonKolom				= jaspJson::RcppVector_to_VectorJson(kolom);
+			previouslyAddedUnnamedCols	= pushbackToColumnInData(jsonKolom, localColNames.size() > col ? localColNames[col] : "", equalizedColumnsLength, previouslyAddedUnnamedCols);
+		}
+
+	}
+
 	template<int RTYPE>	void addRowsFromMatrix(Rcpp::Matrix<RTYPE> newData, Rcpp::CharacterVector newRowNames)
 	{
 		std::vector<std::string> localColNames = extractElementOrColumnNames(newData);
