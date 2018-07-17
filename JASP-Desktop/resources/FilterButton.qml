@@ -14,7 +14,7 @@ Rectangle
 	property bool disabled: false
 	property bool selected: false
 	property string iconSource: ""
-	property real buttonPadding: 4
+	property real buttonPadding: buttonIcon.visible ? 4 : 16
 	property alias hovered: buttonMouseArea.containsMouse
 
 	implicitWidth: buttonIcon.visible ? 32 : buttonText.width + buttonPadding

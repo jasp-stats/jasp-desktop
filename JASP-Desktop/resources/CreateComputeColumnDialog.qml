@@ -76,7 +76,7 @@ Popup {
 			Text
 			{
 				id: nameLabel
-				text: "Enter name:"
+				text: "Name:"
 				anchors.left: parent.left
 				anchors.verticalCenter: parent.verticalCenter
 				verticalAlignment: Text.AlignVCenter
@@ -165,7 +165,7 @@ Popup {
 
 				width: height
 
-				toolTip: "Define the column through R Code"
+				toolTip: "Define column through R code"
 			}
 
 			FilterButton
@@ -184,7 +184,7 @@ Popup {
 
 				width: height
 
-				toolTip: "Define the column through drag&drop formulas"
+				toolTip: "Define column through drag and drop formulas"
 			}
 
 		}
@@ -243,7 +243,7 @@ Popup {
 						Text
 						{
 							id: popupText
-							text: iconRepeater.model[index] === columnTypeScale ? "Scale" : ( iconRepeater.model[index] === columnTypeOrdinal ? "Ordinal" :  iconRepeater.model[index] === columnTypeNominal ? "Nominal" : "Nominal Text")
+							text: iconRepeater.model[index] === columnTypeScale ? "Scale" : ( iconRepeater.model[index] === columnTypeOrdinal ? "Ordinal" :  iconRepeater.model[index] === columnTypeNominal ? "Nominal" : "Text")
 
 							anchors.left: popupIconComputeImage.right
 							anchors.verticalCenter: parent.verticalCenter
@@ -277,9 +277,9 @@ Popup {
 			anchors.topMargin: 10
 			anchors.horizontalCenter: parent.horizontalCenter
 
-			text: "Create Column"
+			text: "Create"
 			disabled: !nameEdit.validEntry
-			toolTip: nameEdit.validEntry ? "Click here to create your new compute column '" + nameEdit.text + "'" : "Enter a valid name for computed column.."
+			toolTip: nameEdit.validEntry ? "Click here to create your new computed column '" + nameEdit.text + "'" : "Enter a valid (unused) name for computed column"
 
 			onClicked: popupCreateComputedColumn.createComputedColumn()
 		}
