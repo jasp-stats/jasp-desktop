@@ -47,7 +47,7 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
 
 .binomialTable <- function(dataset, options, jaspResults) {
   
-  if (!is.null(jaspResults[["binomialTest"]])) {
+  if (!is.null(jaspResults[["binomialTable"]])) {
     return() #The options for this table didn't change so we don't need to rebuild it
   }
   
