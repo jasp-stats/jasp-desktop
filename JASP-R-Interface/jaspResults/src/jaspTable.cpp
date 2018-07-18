@@ -457,7 +457,7 @@ Json::Value	jaspTable::schemaJson()
 		if(colFormat != "")
 			field["format"]	= colFormat;
 
-		if(colName != ".isNewGroup" && (!_showSpecifiedColumnsOnly || _colNames[col] != ""))
+		if(colName != ".isNewGroup" && (!_showSpecifiedColumnsOnly || _specifiedColumns.count(_colNames[col]) > 0))
 			fields.append(field);
 
 	}
@@ -566,7 +566,10 @@ std::string jaspTable::getColType(int col)
 ///Going to assume it is called like addColumInfo(name=NULL, title=NULL, type=NULL, format=NULL, combine=NULL)
 void jaspTable::addColumnInfo(Rcpp::RObject name, Rcpp::RObject title, Rcpp::RObject type, Rcpp::RObject format, Rcpp::RObject combine, Rcpp::RObject overtitle)
 {
-	_colNames.add(name.isNULL() ? "col"+ std::to_string(_colNames.rowCount()) : Rcpp::as<std::string>(name));
+	std::string colName = name.isNULL() ? "col"+ std::to_string(_colNames.rowCount()) : Rcpp::as<std::string>(name);
+	_specifiedColumns.insert(colName);
+
+	_colNames.add(colName);
 
 	std::string lastAddedColName = getColName(_colNames.rowCount() - 1);
 
@@ -621,6 +624,10 @@ Json::Value jaspTable::convertToJSON()
 
 	obj["colRowCombinations"] = colRowCombos;
 
+	obj["specifiedColumns"] = Json::arrayValue;
+	for(const std::string & specifiedColumnName : _specifiedColumns)
+		obj["specifiedColumns"].append(specifiedColumnName);
+
 	return obj;
 }
 
@@ -663,5 +670,9 @@ void jaspTable::convertFromJSON_SetFields(Json::Value in)
 
 	for(auto & colRowCombo : colRowCombos)
 		_colRowCombinations.push_back(jaspColRowCombination(colRowCombo));
+
+	 _specifiedColumns.clear();
+	for(Json::Value & specifiedColumnName : in.get("specifiedColumns", Json::arrayValue))
+		_specifiedColumns.insert(specifiedColumnName.asString());
 }
 

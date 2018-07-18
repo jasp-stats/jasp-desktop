@@ -95,6 +95,8 @@ public:
 					_error = "",
 					_errorMessage = "";
 
+	std::set<std::string> _specifiedColumns;
+
 private:
 	int getDesiredColumnIndexFromNameForColumnAdding(std::string colName);
 	int getDesiredColumnIndexFromNameForRowAdding(std::string colName, int previouslyAddedUnnamed);
