@@ -17,14 +17,12 @@
 
 BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
 
-	variables <- unlist(options$variables)
-
 	if (is.null(state)) {
 	  state <- list()
 	}
 	
 	if (is.null(dataset)) {
-	  dataset <- .readDataSetToEnd(columns=variables)
+	  dataset <- .readDataSetToEnd(columns=options$variables)
 	}
 	
 	# Set title
@@ -51,7 +49,6 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
     return() #The options for this table didn't change so we don't need to rebuild it
   }
   
-  variables <- unlist(options$variables)
   binomialTable <- createJaspTable("Binomial Test")
   jaspResults[["binomialTable"]] <- binomialTable
 
