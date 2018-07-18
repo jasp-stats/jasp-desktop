@@ -566,7 +566,7 @@ std::string jaspTable::getColType(int col)
 ///Going to assume it is called like addColumInfo(name=NULL, title=NULL, type=NULL, format=NULL, combine=NULL)
 void jaspTable::addColumnInfo(Rcpp::RObject name, Rcpp::RObject title, Rcpp::RObject type, Rcpp::RObject format, Rcpp::RObject combine, Rcpp::RObject overtitle)
 {
-	_colNames.add(name.isNULL() ? "col"+ std::to_string(col) : Rcpp::as<std::string>(name));
+	_colNames.add(name.isNULL() ? "col"+ std::to_string(_colNames.rowCount()) : Rcpp::as<std::string>(name));
 
 	std::string lastAddedColName = getColName(_colNames.rowCount() - 1);
 
