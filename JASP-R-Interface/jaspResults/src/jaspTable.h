@@ -88,9 +88,12 @@ public:
 
 	Json::Value getCell(int col, int row);
 
-	bool _transposeTable = false, _transposeWithOvertitle = false;
-
-	std::string _status = "complete", _error = "", _errorMessage = "";
+	bool			_transposeTable = false,
+					_transposeWithOvertitle = false,
+					_showSpecifiedColumnsOnly = false;
+	std::string		_status = "complete",
+					_error = "",
+					_errorMessage = "";
 
 private:
 	int getDesiredColumnIndexFromNameForColumnAdding(std::string colName);
@@ -390,11 +393,12 @@ public:
 	void setColumn(std::string columnName, Rcpp::RObject column)		{ ((jaspTable*)myJaspObject)->setColumn(columnName, column); }
 
 
-	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, bool,			_transposeTable,			TransposeTable)
-	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, bool,			_transposeWithOvertitle,	TransposeWithOvertitle)
-	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, std::string,	_status,					Status)
-	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, std::string,	_error,						Error)
-	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, std::string,	_errorMessage,				ErrorMessage)
+	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, bool,			_transposeTable,				TransposeTable)
+	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, bool,			_transposeWithOvertitle,		TransposeWithOvertitle)
+	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, std::string,	_status,						Status)
+	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, std::string,	_error,							Error)
+	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, std::string,	_errorMessage,					ErrorMessage)
+	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, bool,			_showSpecifiedColumnsOnly,		ShowSpecifiedColumnsOnly)
 };
 
 RCPP_EXPOSED_CLASS_NODECL(jaspTable_Interface)
