@@ -457,7 +457,7 @@ Json::Value	jaspTable::schemaJson()
 		if(colFormat != "")
 			field["format"]	= colFormat;
 
-		if(colName != ".isNewGroup")
+		if(colName != ".isNewGroup" && (!_showSpecifiedColumnsOnly || _colNames[col] != ""))
 			fields.append(field);
 
 	}
@@ -566,7 +566,7 @@ std::string jaspTable::getColType(int col)
 ///Going to assume it is called like addColumInfo(name=NULL, title=NULL, type=NULL, format=NULL, combine=NULL)
 void jaspTable::addColumnInfo(Rcpp::RObject name, Rcpp::RObject title, Rcpp::RObject type, Rcpp::RObject format, Rcpp::RObject combine, Rcpp::RObject overtitle)
 {
-	_colNames.add(name.isNULL() ? "" : Rcpp::as<std::string>(name));
+	_colNames.add(name.isNULL() ? "col"+ std::to_string(col) : Rcpp::as<std::string>(name));
 
 	std::string lastAddedColName = getColName(_colNames.rowCount() - 1);
 
@@ -588,6 +588,7 @@ Json::Value jaspTable::convertToJSON()
 	obj["footnotes"]				= _footnotes;
 	obj["transposeTable"]			= _transposeTable;
 	obj["transposeWithOvertitle"]	= _transposeWithOvertitle;
+	obj["showSpecifiedColumnsOnly"]	= _showSpecifiedColumnsOnly;
 
 	obj["colNames"]		= _colNames.convertToJSON();
 	obj["colTypes"]		= _colTypes.convertToJSON();
@@ -628,12 +629,14 @@ void jaspTable::convertFromJSON_SetFields(Json::Value in)
 	jaspObject::convertFromJSON_SetFields(in);
 
 
-	_status					= in.get("status",					"null").asString();
-	_error					= in.get("error",					"null").asString();
-	_errorMessage			= in.get("errorMessage",			"null").asString();
-	_footnotes				= in.get("footnotes",				Json::arrayValue);
-	_transposeTable			= in.get("transposeTable",			false).asBool();
-	_transposeWithOvertitle	= in.get("transposeWithOvertitle",	false).asBool();
+	_status						= in.get("status",						"null").asString();
+	_error						= in.get("error",						"null").asString();
+	_errorMessage				= in.get("errorMessage",				"null").asString();
+	_footnotes					= in.get("footnotes",					Json::arrayValue);
+	_transposeTable				= in.get("transposeTable",				false).asBool();
+	_transposeWithOvertitle		= in.get("transposeWithOvertitle",		false).asBool();
+	_showSpecifiedColumnsOnly	= in.get("showSpecifiedColumnsOnly",	false).asBool();
+
 
 	_colNames.convertFromJSON_SetFields(	in.get("colNames",		Json::objectValue));
 	_colTypes.convertFromJSON_SetFields(	in.get("colTypes",		Json::objectValue));
