@@ -25,7 +25,7 @@
 #include "../analysisform.h"
 #include "options/optionvariable.h"
 
-#include "columnsmodel.h"
+#include "factorsmodel.h"
 
 namespace Ui {
 class MultinomialTestBayesianForm;
@@ -41,6 +41,7 @@ public:
 	void addColumnToTable();
 	bool deleteColumnFromTable();
 	void resetTable();
+	void resetRestrictedHypothesis();
 	void setTableVerticalHeaders();
 	Q_INVOKABLE void sendFilter(QString);
 
@@ -64,7 +65,7 @@ private:
 	std::string _previous;
 	Options *_options;
 
-	ColumnsModel *_columnsModel = NULL;
+	FactorsModel *_fModel = NULL;
 };
 
 #endif // MULTINOMIALTESTBAYESIANFORM_H

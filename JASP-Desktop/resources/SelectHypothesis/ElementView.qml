@@ -38,7 +38,6 @@ ListView {
                 _text = text
             } else if (type == "column") {
                 _columnName = columnName
-                _columnIcon = columnIcon
             }
 
             if (type == "operator")
@@ -80,11 +79,10 @@ ListView {
                                                            })
             else if (type == "column")
                 obj = columnCompBetterContext.createObject(scriptColumn, {
-                                                               toolTipText: toolTip,
+                                                               toolTipText: "",
                                                                alternativeDropFunction: null,
                                                                columnName: _columnName,
-                                                               acceptsDrops: true,
-                                                               columnIcon: columnIcon
+                                                               acceptsDrops: true
                                                            })
 
             return obj
@@ -101,9 +99,7 @@ ListView {
             property string listText: type === "string" ? text : "???"
             property real listWidth: parent.width
             property string listColName: isColumn ? columnName : "???"
-            property string listColIcon: isColumn ? columnIcon : "???"
-            property string listToolTip: type !== "separator"
-                                         && type !== "text" ? toolTip : ""
+            property string listToolTip: "" //type !== "separator" && type !== "text" ? toolTip : ""
 
             //anchors.centerIn: parent
             x: isColumn ? listOfStuff.widthMargin / 2 : (parent.width - width)
@@ -190,7 +186,6 @@ ListView {
             ColumnDrag {
                 toolTipText: listToolTip
                 columnName: listColName
-                columnIcon: listColIcon
                 alternativeDropFunction: alternativeDropFunctionDef
             }
         }

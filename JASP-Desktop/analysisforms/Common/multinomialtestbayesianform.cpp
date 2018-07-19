@@ -24,8 +24,7 @@
 
 MultinomialTestBayesianForm::MultinomialTestBayesianForm(QWidget *parent) :
 	AnalysisForm("MultinomialTestBayesianForm", parent),
-	ui(new Ui::MultinomialTestBayesianForm)
-{
+	ui(new Ui::MultinomialTestBayesianForm) {
 	ui->setupUi(this);
 
 	_options = NULL;
@@ -64,36 +63,34 @@ MultinomialTestBayesianForm::MultinomialTestBayesianForm(QWidget *parent) :
 	ui->restrictedHypothesis->hide();  // FIXME: This is a hack
 	ui->widget_expectedProbsTable->hide();
 
+	loadQML();
+
 	connect(factorModel, SIGNAL(assignmentsChanged()), this, SLOT(addFixedFactors()));
-
-	// TODO: Remove exProbVar if counts is empty
-	// connect(countModel, SIGNAL(assignmentsChanged()), this, SLOT(countModelHandler()));
-
 	connect(probVarModel, SIGNAL(assignmentsChanged()), this, SLOT(expectedCountsHandler()));
 	connect(ui->tableWidget, SIGNAL(cellChanged(int, int)), this, SLOT(cellChangedHandler()));
 }
 
-MultinomialTestBayesianForm::~MultinomialTestBayesianForm()
-{
+MultinomialTestBayesianForm::~MultinomialTestBayesianForm() {
 	delete ui;
 }
 
-void MultinomialTestBayesianForm::loadQML()
-{
+void MultinomialTestBayesianForm::loadQML() {
+
+	_fModel = new FactorsModel(this);
+	_fModel->setDataSet(_dataSet);
+
 	ui->restrictedHypotheses->rootContext()->setContextProperty("analysisObject",	this);
 	ui->restrictedHypotheses->rootContext()->setContextProperty("filterErrorText",	QString(""));
-	ui->restrictedHypotheses->rootContext()->setContextProperty("columnsModel",		_columnsModel);
+	ui->restrictedHypotheses->rootContext()->setContextProperty("columnsModel",		_fModel);
 	ui->restrictedHypotheses->setSource(QUrl(QString("qrc:///qml/hypothesesWidget.qml")));
 }
 
-void MultinomialTestBayesianForm::sendFilter(QString generatedFilter)
-{
+void MultinomialTestBayesianForm::sendFilter(QString generatedFilter) {
 	ui->restrictedHypothesis->setText(generatedFilter);
 	ui->restrictedHypothesis->finalise();
 }
 
-void MultinomialTestBayesianForm::bindTo(Options *options, DataSet *dataSet)
-{
+void MultinomialTestBayesianForm::bindTo(Options *options, DataSet *dataSet) {
 	AnalysisForm::bindTo(options, dataSet);
 
 	_options = options;
@@ -130,17 +127,17 @@ void MultinomialTestBayesianForm::bindTo(Options *options, DataSet *dataSet)
 
 	expectedCountsHandler();
 
-	if (_columnsModel == NULL) {
-		// FIXME: This is a hack. remove it
-		_columnsModel = new ColumnsModel(this);
-		_columnsModel->setDataSet(_dataSet);
-
-		loadQML();
-	}
+	// if (_fModel == NULL) {
+	// 	// FIXME: This is a hack. remove it
+    //     _fModel = new FactorsModel(this);
+	// 	_fModel->setDataSet(_dataSet);
+    //     // _fModel->setFactors(_dataSet->column(factorModel->assigned().asString()).labels());
+	//
+	// 	loadQML();
+	// }
 }
 
-void MultinomialTestBayesianForm::expectedCountsHandler()
-{
+void MultinomialTestBayesianForm::expectedCountsHandler() {
 	if (_options != NULL && _options->get("exProbVar") != NULL) {
 		std::string column = dynamic_cast<OptionVariable *>(_options->get("exProbVar"))->variable();
 
@@ -152,8 +149,7 @@ void MultinomialTestBayesianForm::expectedCountsHandler()
 	}
 }
 
-void MultinomialTestBayesianForm::countModelHandler()
-{
+void MultinomialTestBayesianForm::countModelHandler() {
 	if (_options != NULL && _options->get("counts") != NULL) {
 		std::string column = dynamic_cast<OptionVariable *>(_options->get("counts"))->variable();
 
@@ -165,8 +161,7 @@ void MultinomialTestBayesianForm::countModelHandler()
 	}
 }
 
-void MultinomialTestBayesianForm::setTableVerticalHeaders()
-{
+void MultinomialTestBayesianForm::setTableVerticalHeaders() {
 	ui->tableWidget->blockSignals(true);
 
 	int row = 0;
@@ -188,8 +183,7 @@ void MultinomialTestBayesianForm::setTableVerticalHeaders()
 	ui->tableWidget->blockSignals(false);
 }
 
-void MultinomialTestBayesianForm::cellChangedHandler()
-{
+void MultinomialTestBayesianForm::cellChangedHandler() {
 	ui->tableWidget->updateTableValues();
 }
 
@@ -201,6 +195,23 @@ void MultinomialTestBayesianForm::addFixedFactors() {
 
 	_previous = factorModel->assigned().asString();
 	resetTable();
+	resetRestrictedHypothesis();
+}
+
+void MultinomialTestBayesianForm::resetRestrictedHypothesis() {
+
+	Labels labels = _dataSet->column(factorModel->assigned().asString()).labels();
+	verticalLabels = QStringList();
+
+	if (_dataSet != NULL && factorModel->assigned().size() > 0) {
+		// labels for the current column
+		for (LabelVector::const_iterator it = labels.begin(); it != labels.end(); ++it) {
+			const Label &label = *it;
+			verticalLabels << QString::fromStdString(label.text());
+		}
+	}
+
+	_fModel->setFactors(verticalLabels);
 }
 
 void MultinomialTestBayesianForm::resetTable() {
@@ -297,20 +308,17 @@ bool MultinomialTestBayesianForm::deleteColumnFromTable() {
 	return true;
 }
 
-void MultinomialTestBayesianForm::on_addColumn_clicked(bool checked)
-{
+void MultinomialTestBayesianForm::on_addColumn_clicked(bool checked) {
 	addColumnToTable();
 	ui->tableWidget->updateTableValues();
 }
 
-void MultinomialTestBayesianForm::on_deleteColumn_clicked(bool checked)
-{
+void MultinomialTestBayesianForm::on_deleteColumn_clicked(bool checked) {
 	if (deleteColumnFromTable()) {
 		ui->tableWidget->updateTableValues();
 	}
 }
 
-void MultinomialTestBayesianForm::on_resetColumns_clicked(bool checked)
-{
+void MultinomialTestBayesianForm::on_resetColumns_clicked(bool checked) {
 	resetTable();
 }

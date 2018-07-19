@@ -48,7 +48,7 @@ Item {
         else if (jsonObj.nodeType === "String")
             createString(jsonObj.text, toolTip).releaseHere(dropItHere)
         else if (jsonObj.nodeType === "Column")
-            createColumn(jsonObj.columnName, jsonObj.columnIcon,
+            createColumn(jsonObj.columnName,
                          toolTip).releaseHere(dropItHere)
     }
 
@@ -84,11 +84,9 @@ Item {
                                            text: text
                                        })
     }
-    function createColumn(columnName, columnIcon, toolTip) {
+    function createColumn(columnNamn, toolTip) {
         return columnComp.createObject(scriptColumn, {
-                                           toolTipText: toolTip,
-                                           columnName: columnName,
-                                           columnIcon: columnIcon
+                                           toolTipText: toolTip
                                        })
     }
 

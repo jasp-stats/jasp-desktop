@@ -39,7 +39,6 @@ Rectangle {
             ColumnDrag {
                 id: col
                 columnName: name
-                columnIcon: type
                 alternativeDropFunction: createFunc
             }
 
@@ -47,7 +46,6 @@ Rectangle {
             property var createFunc: function () {
                 return columnComp.createObject(scriptColumn, {
                                                    columnName: name,
-                                                   columnIcon: type,
                                                    alternativeDropFunction: null
                                                })
             }
