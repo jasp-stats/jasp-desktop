@@ -44,6 +44,8 @@ std::string jaspResults::getStatus()
 
 void jaspResults::complete()
 {
+	completeChildren();
+
 	if(getStatus() == "running")
 		setStatus("complete");
 
