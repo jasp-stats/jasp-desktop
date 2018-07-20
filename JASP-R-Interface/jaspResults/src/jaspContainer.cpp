@@ -178,7 +178,24 @@ void jaspContainer::childFinalizedHandler(jaspObject *child)
 
 }
 
+void jaspContainer::completeChildren()
+{
+	for(auto keyval : _data)
+	{
+		jaspObject * obj = keyval.second;
 
+		switch(obj->getType())
+		{
+		case jaspObjectType::container:
+			static_cast<jaspContainer*>(obj)->completeChildren();
+			break;
+
+		case jaspObjectType::table:
+			static_cast<jaspTable*>(obj)->complete();
+			break;
+		}
+	}
+}
 
 Json::Value jaspContainer::convertToJSON()
 {

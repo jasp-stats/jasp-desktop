@@ -76,6 +76,8 @@ public:
 
 	std::string dataToString(std::string prefix) override;
 
+	void complete() { if(_status == "running") _status = "complete"; }
+
 	//void combineColumns(Rcpp::map_named_args named_args)	{ named_args["colNames"] = Rcpp::RObject(); named_args["colOvertitles"] = Rcpp::RObject(); combineCells(named_args); }
 	//void combineRows(Rcpp::map_named_args named_args)		{ named_args["rowNames"] = Rcpp::RObject(); named_args["rowOvertitles"] = Rcpp::RObject(); combineCells(named_args); }
 	//void combineCells(Rcpp::map_named_args & named_args);
@@ -91,7 +93,7 @@ public:
 	bool			_transposeTable = false,
 					_transposeWithOvertitle = false,
 					_showSpecifiedColumnsOnly = false;
-	std::string		_status = "complete",
+	std::string		_status = "running",
 					_error = "",
 					_errorMessage = "";
 
