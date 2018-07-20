@@ -77,11 +77,11 @@ MultinomialTestBayesianForm::~MultinomialTestBayesianForm() {
 void MultinomialTestBayesianForm::loadQML() {
 
 	_fModel = new FactorsModel(this);
-	_fModel->setDataSet(_dataSet);
 
 	ui->restrictedHypotheses->rootContext()->setContextProperty("analysisObject",	this);
 	ui->restrictedHypotheses->rootContext()->setContextProperty("filterErrorText",	QString(""));
 	ui->restrictedHypotheses->rootContext()->setContextProperty("columnsModel",		_fModel);
+
 	ui->restrictedHypotheses->setSource(QUrl(QString("qrc:///qml/hypothesesWidget.qml")));
 }
 
@@ -126,15 +126,6 @@ void MultinomialTestBayesianForm::bindTo(Options *options, DataSet *dataSet) {
 	// countModelHandler();
 
 	expectedCountsHandler();
-
-	// if (_fModel == NULL) {
-	// 	// FIXME: This is a hack. remove it
-    //     _fModel = new FactorsModel(this);
-	// 	_fModel->setDataSet(_dataSet);
-    //     // _fModel->setFactors(_dataSet->column(factorModel->assigned().asString()).labels());
-	//
-	// 	loadQML();
-	// }
 }
 
 void MultinomialTestBayesianForm::expectedCountsHandler() {
@@ -260,7 +251,7 @@ void MultinomialTestBayesianForm::addColumnToTable() {
 	horizontalLabels = QStringList();
 	QString letters[5] = {"a", "b", "c", "d", "e"};
 	for (int col = 1; col <= columnCount; ++col) {
-		horizontalLabels << "H₀ (" + letters[col-1] + ")";
+		horizontalLabels << "H\u2080 (" + letters[col-1] + ")";
 	}
 	ui->tableWidget->setColumnCount(columnCount);
 	ui->tableWidget->setHorizontalHeaderLabels(horizontalLabels);
@@ -294,7 +285,7 @@ bool MultinomialTestBayesianForm::deleteColumnFromTable() {
 	// Assign the new hypothesis labels
 	QString letters[5] = {"a", "b", "c", "d", "e"};
 	for (int i = 0; i < columns; ++i) {
-		horizontalLabels << "H₀ (" + letters[i] + ")";
+		horizontalLabels << "H\u2080 (" + letters[i] + ")";
 	}
 
 	ui->tableWidget->setHorizontalHeaderLabels(horizontalLabels);

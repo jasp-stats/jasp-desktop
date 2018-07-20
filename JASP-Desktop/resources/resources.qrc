@@ -58,25 +58,15 @@
         <file>FilterConstructor/ComputedColumnsConstructor.qml</file>
         <file>FilterConstructor/OperatorSelectorComputedColumns.qml</file>
         <file>SelectHypothesis/ColumnDrag.qml</file>
-        <file>SelectHypothesis/ColumnsSelector.qml</file>
         <file>SelectHypothesis/DragGeneric.qml</file>
         <file>SelectHypothesis/DropSpot.qml</file>
         <file>SelectHypothesis/DropTrash.qml</file>
         <file>SelectHypothesis/ElementView.qml</file>
         <file>SelectHypothesis/HypothesisConstructor.qml</file>
-        <file>SelectHypothesis/Function.qml</file>
-        <file>SelectHypothesis/FunctionDrag.qml</file>
         <file>SelectHypothesis/JASPColumn.qml</file>
-        <file>SelectHypothesis/Number.qml</file>
-        <file>SelectHypothesis/NumberDrag.qml</file>
         <file>SelectHypothesis/Operator.qml</file>
         <file>SelectHypothesis/OperatorDrag.qml</file>
         <file>SelectHypothesis/OperatorSelector.qml</file>
-        <file>SelectHypothesis/OperatorVertical.qml</file>
-        <file>SelectHypothesis/OperatorVerticalDrag.qml</file>
-        <file>SelectHypothesis/String.qml</file>
-        <file>SelectHypothesis/StringDrag.qml</file>
-        <file>SelectHypothesis/VariablesList.qml</file>
         <file>SelectHypothesis/JSONtoFormulas.qml</file>
         <file>JASPMouseAreaToolTipped.qml</file>
         <file>JASPScrollBar.qml</file>

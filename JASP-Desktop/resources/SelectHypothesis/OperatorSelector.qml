@@ -38,16 +38,6 @@ Item {
         OperatorDrag {
         }
     }
-    Component {
-        id: operatorvertComp
-        OperatorVerticalDrag {
-        }
-    }
-    Component {
-        id: functionComp
-        FunctionDrag {
-        }
-    }
 
     property var alternativeDropFunctionDef: function (caller) {
         var obj = null
@@ -59,20 +49,6 @@ Item {
                                                 operator: caller.operator,
                                                 acceptsDrops: true
                                             })
-        else if (caller.shownChild.objectName === "OperatorVertical")
-            obj = operatorvertComp.createObject(scriptColumn, {
-                                                    toolTipText: caller.toolTipText,
-                                                    alternativeDropFunction: null,
-                                                    operator: caller.operator,
-                                                    acceptsDrops: true
-                                                })
-        else if (caller.shownChild.objectName === "Function")
-            obj = functionComp.createObject(scriptColumn, {
-                                                toolTipText: caller.toolTipText,
-                                                alternativeDropFunction: null,
-                                                functionName: caller.functionName,
-                                                acceptsDrops: true
-                                            }) //,  "parameterNames": caller.functionName === "!" ? ["logical(s)"] : ["value(s)"], parameterDropKeys: caller.functionName === "!" ? ["boolean"] : ["number"] })
 
         return obj
     }

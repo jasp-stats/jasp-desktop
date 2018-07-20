@@ -221,15 +221,4 @@ DropArea {
             color: "#BB0000"
         }
     }
-
-    Component {
-        id: numberComp
-        NumberDrag {
-        }
-    }
-    Component {
-        id: stringComp
-        StringDrag {
-        }
-    }
 }

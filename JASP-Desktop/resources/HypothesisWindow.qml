@@ -32,7 +32,7 @@ FocusScope {
         anchors.fill: parent
 
         HypothesisConstructor {
-            anchors.bottom: helpEasyFilterButton.top
+            anchors.bottom: applyEasyFilter.top
             anchors.right: parent.right
             anchors.left: parent.left
             anchors.top: parent.top
@@ -99,24 +99,13 @@ FocusScope {
             disabled: !easyFilterConstructor.somethingChanged
 
             anchors.left: parent.left
-            anchors.right: helpEasyFilterButton.left
+            anchors.right: parent.right
             anchors.bottom: parent.bottom
-            anchors.top: helpEasyFilterButton.top
             anchors.rightMargin: 5
 
             onClicked: easyFilterConstructor.checkAndApplyFilter()
 
             toolTip: showApplyNotApplied ? "Click to add hypothesis" : "Hypothesis is already added"
-        }
-
-        FilterButton {
-            id: helpEasyFilterButton
-            iconSource: "qrc:/icons/QuestionMark.png"
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-
-            onClicked: mainWindow.showHelpFromQML("other/AddRestrictedHypothesis")
-            toolTip: "Open Documentation"
         }
     }
 }

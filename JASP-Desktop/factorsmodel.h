@@ -38,12 +38,7 @@ public:
 	 };
 
 	FactorsModel(QObject *parent = NULL) : QAbstractTableModel(parent) {}
-	void setDataSet(DataSet *dataSet);
-	// void setFactors(Labels &labels);
 	void setFactors(QStringList);
-
-	// int rowCount(const QModelIndex &parent = QModelIndex())				const override { return _dataSet == NULL ? 0 : _dataSet->columnCount();  }
-	// int columnCount(const QModelIndex &parent = QModelIndex())			const override { const static int roleNamesCount = roleNames().size(); return roleNamesCount; }
 
 	int rowCount(const QModelIndex &parent = QModelIndex())				const override { return _labels.length();  }
 	int columnCount(const QModelIndex &parent = QModelIndex())			const override { const static int roleNamesCount = roleNames().size(); return roleNamesCount; }
@@ -54,12 +49,8 @@ public:
 
 public slots:
 	void refresh() { beginResetModel(); endResetModel(); }
-	void refreshColumn(Column * column);
-
-	void datasetHeaderDataChanged(Qt::Orientation orientation, int first, int last);
 
 private:
-	DataSet *_dataSet = NULL;
 	QStringList _labels = QStringList();
 
 };

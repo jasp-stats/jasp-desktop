@@ -95,26 +95,7 @@ Item {
         OperatorDrag {
         }
     }
-    Component {
-        id: operatorvertComp
-        OperatorVerticalDrag {
-        }
-    }
-    Component {
-        id: functionComp
-        FunctionDrag {
-        }
-    }
-    Component {
-        id: numberComp
-        NumberDrag {
-        }
-    }
-    Component {
-        id: stringComp
-        StringDrag {
-        }
-    }
+
     Component {
         id: columnComp
         ColumnDrag {

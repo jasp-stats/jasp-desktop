@@ -29,14 +29,6 @@ QVariant FactorsModel::data(const QModelIndex &index, int role) const
 		return QVariant();
 	}
 
-	Column & col=_dataSet->column(index.row());
-
-        // return QString::fromStdString(col.name());
-
-	qDebug() << "___________________________";
-	qDebug() << _labels;
-	qDebug() << "___________________________";
-
 	if(role == NameRole)
         return _labels.at(index.row());
 	else if(role == TypeRole)
@@ -54,28 +46,9 @@ QHash<int, QByteArray> FactorsModel::roleNames() const {
 	return roles;
 }
 
-void FactorsModel::setDataSet(DataSet *dataSet)
-{
-	beginResetModel();
-	_dataSet = dataSet;
-	endResetModel();
-}
-
 void FactorsModel::setFactors(QStringList labels)
 {
 	beginResetModel();
-   _labels = labels;
+	_labels = labels;
 	endResetModel();
-}
-
-void FactorsModel::refreshColumn(Column * column)
-{
-	// int rowChanged = _dataSet->getColumnIndex(column->name());
-	int rowChanged = 0;
-	emit dataChanged(index(rowChanged, 0), index(rowChanged, columnCount()));
-}
-
-void FactorsModel::datasetHeaderDataChanged(Qt::Orientation orientation, int first, int last)
-{
-	emit dataChanged(index(first, 0), index(last, columnCount()-1));
 }

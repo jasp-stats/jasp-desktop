@@ -3,17 +3,17 @@ import QtQuick 2.9
 
 
 Item {
-    id: filterConstructor
-    property real blockDim: 20
-    property real fontPixelSize: 14
-    property var allKeys: ["number", "boolean", "string", "variable"]
-    readonly property real desiredMinimumHeight: columnsRow.height + hints.height + (blockDim * 3)
-    signal rCodeChanged(string rScript)
-    property real extraSpaceUnderColumns: 0
-    property bool somethingChanged: false
+    id                                           : filterConstructor
 
-    property bool lastCheckPassed: true
-    property bool showStartupMsg: true
+             property real blockDim              : 20
+             property real fontPixelSize         : 14
+    readonly property real desiredMinimumHeight  : columnsRow.height + hints.height + (blockDim * 3)
+             property real extraSpaceUnderColumns: 0
+             property bool somethingChanged      : false
+             property bool lastCheckPassed       : true
+             property bool showStartupMsg        : true
+
+    signal rCodeChanged(string rScript)
 
     onSomethingChangedChanged: {
         showStartupMsg = false
@@ -23,8 +23,7 @@ Item {
     }
 
     onVisibleChanged: if (visible)
-                          initializeFromJSON(
-                                      jsonConverter.jaspsFilterConstructorJSON)
+                          initializeFromJSON(jsonConverter.jaspsFilterConstructorJSON)
     property string __debugName: "FilterConstructor"
 
     function checkAndApplyFilter() {
