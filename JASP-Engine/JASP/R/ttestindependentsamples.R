@@ -15,822 +15,842 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
-									callback = function(...) 0, ...) {
-	
-	state <- .retrieveState()
-	
-	## call the common initialization function
-	init <- .initializeTTest(dataset, options, perform, type = "independent-samples")
+TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL) {
+  
+  # Update options
+  if (options$hypothesis == "groupOneGreater") {
+    options$hypothesis <- "greater"
+  } else if (options$hypothesis == "groupTwoGreater") {
+    options$hypothesis <- "less"
+  } else {
+    options$hypothesis <- "two.sided"
+  }
+  
+  # Define state if empty
+  if (is.null(state)) {
+    state <- list()
+  }
+  
+  # Read dataset
+  if (options$groupingVariable == "") {
+    options$groupingVariable <- NULL
+  }
 
-	results <- init[["results"]]
-	dataset <- init[["dataset"]]
-	
-	if (length(options$variables) != 0 && options$groupingVariable != '') {
-		errors <- .hasErrors(dataset, perform, type = 'factorLevels',
-												factorLevels.target = options$groupingVariable, factorLevels.amount = '!= 2',
-												exitAnalysisIfErrors = TRUE)
-	}
-
-	## call the specific independent T-Test functions
-	results[["ttest"]] <- .ttestIndependentSamplesTTest(dataset, options, perform)
-	descriptivesTable <- .ttestIndependentSamplesDescriptives(dataset, options, perform)
-	levene <- .ttestIndependentSamplesInequalityOfVariances(dataset, options, perform)
-	shapiroWilk <- .ttestIndependentSamplesNormalityTest(dataset, options, perform)
-	results[["assumptionChecks"]] <- list(shapiroWilk = shapiroWilk, levene = levene, title = "Assumption Checks")
-
-
-	keep <- NULL
-	## if the user wants descriptive plots, s/he shall get them!
-	if (options$descriptivesPlots && length(options$variables) > 0) {
-
-		plotTitle <- ifelse(length(options$variables) > 1, "Descriptives Plots", "Descriptives Plot")
-		descriptivesPlots <- .independentSamplesTTestDescriptivesPlot(dataset, options, perform)
-		if (!is.null(descriptivesPlots[[1]][["obj"]])){
-			keep <- unlist(lapply(descriptivesPlots, function(x) x[["data"]]),NULL)
-		}
-		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, 
-																			title = "Descriptives", 
-																			descriptivesPlots = list(collection = descriptivesPlots, 
-																															 title = plotTitle))
-
-	} else {
-
-		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives")
-	
-	}
-	
-	## return the results object
-	if (perform == "init") {
-		return(list(results=results, status="inited"))
-	} else {
-		return(list(results=results, status="complete", 
-								state = list(options = options, results = results),
-								keep = keep))
-	}
-}
-
-
-.ttestIndependentSamplesTTest <- function(dataset, options, perform) {
-
-	ttest <- list()
-	wantsEffect <- options$effectSize
-	wantsDifference <- options$meanDifference
-	wantsConfidenceMeanDiff <- (options$meanDiffConfidenceIntervalCheckbox &&  options$meanDifference)
-	wantsConfidenceEffSize <- (options$effSizeConfidenceIntervalCheckbox && options$effectSize)
-	percentConfidenceMeanDiff <- options$descriptivesMeanDiffConfidenceIntervalPercent
-	percentConfidenceEffSize <- options$descriptivesEffectSizeConfidenceIntervalPercent
-		## can make any combination of the following tests:
-	wantsWelchs <- options$welchs
-	wantsStudents <- options$students
-	wantsWilcox <- options$mannWhitneyU
-
-	## setup table for the independent samples t-test; add column test at the
-	## beginning, and remove it later should the user only specify one test
-	fields <- list(list(name = "v", title = "", type = "string", combine = TRUE),
-				   list(name = "test", type = "string", title = "Test"),
-				   list(name = "df", type = "number", format = "sf:4;dp:3"),
-				   list(name = "p", type = "number", format = "dp:3;p:.001"))
-
-	allTests <- c(wantsStudents, wantsWelchs, wantsWilcox)
-	onlyTest <- sum(allTests) == 1
-
-	title <- "Independent Samples T-Test"
-	footnotes <- .newFootnotes()
-
-	## get the right statistics for the table and, if only one test type, add footnote
-	if (wantsWilcox && onlyTest) {
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Mann-Whitney U test.")
-		testStat <- "W"
-		fields <- fields[-3] # Wilcoxon's test doesn't have degrees of freedoms
-	} else if (wantsWelchs && onlyTest) {
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Welch's t-test.")
-		testStat <- "t"	
-	} else if (wantsStudents && onlyTest) {
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Student's t-test.")
-		testStat <- "t"
-	} else {
-		testStat <- "Statistic"
-	}
-
-	ttest["title"] <- title
-
-	## if only doing Student's / Welch's, the table should have "t" as column name
-	## for the test statistic; when doing only Wilcoxon's, the name should be "W";
-	## when doing both, it should be "statistic"
-	fields <- append(fields, list(list(name = testStat, type = "number",
-									   format = "sf:4;dp:3")), 2)
-
-  ## add max(BF_10) from commonBF
-	if (options$VovkSellkeMPR) {
-		.addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
-	  <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value, the maximum
-		possible odds in favor of H\u2081 over H\u2080 equals
-		1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
-		(Sellke, Bayarri, & Berger, 2001).")
-		fields[[length(fields) + 1]] <- list(name = "VovkSellkeMPR",
-																				 title = "VS-MPR\u002A",
- 											 							 		 type = "number",
-																				 format = "sf:4;dp:3")
-	}
-	
-	if (!wantsWilcox) {
-	  nameOfLocationParameter <- "Mean Difference"
-	  nameOfEffectSize <- "Cohen's d"
-	} else if (wantsWilcox && onlyTest) {
-	  nameOfLocationParameter <- "Hodges-Lehmann Estimate"
-	  nameOfEffectSize <- "Rank-Biserial Correlation"
-	} else if (wantsWilcox && (wantsStudents || wantsWelchs)) {
-	  nameOfLocationParameter <-  "Location Parameter"
-	  nameOfEffectSize <-  "Effect Size"
-	}
-
-	## add mean difference and standard error difference
-	if (wantsDifference) {
-		fields[[length(fields) + 1]] <- list(name = "md", title = nameOfLocationParameter,
-											 type = "number", format = "sf:4;dp:3")
-		if (!(wantsWilcox && onlyTest)) { # Only add SE Difference if not only MannWhitney is requested
-		fields[[length(fields) + 1]] <- list(name = "sed", title = "SE Difference",
-											 type = "number", format = "sf:4;dp:3")
-		}
-	}
-	if (wantsDifference && wantsWilcox && wantsStudents && wantsWelchs) {
-	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test and Welch t-test, 
-	               location parameter is given by mean difference; for the Mann-Whitney test, 
-	               location parameter is given by the Hodges-Lehmann estimate.")
-	} else if (wantsDifference && wantsWilcox && wantsStudents) {
-	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test, 
-	               location parameter is given by mean difference; for the Mann-Whitney test, 
-	               location parameter is given by Hodges-Lehmann estimate.")
-	} else if (wantsDifference && wantsWilcox && wantsWelchs) {
-	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Welch t-test, 
-	               location parameter is given by mean difference; for the Mann-Whitney test, 
-	               location parameter is given by Hodges-Lehmann estimate.")
-	}
-	  
-	if (wantsConfidenceMeanDiff) {
-	  interval <- 100 * percentConfidenceMeanDiff
-	  title <- paste0(interval, "% CI for ", nameOfLocationParameter)
-	  
-	  fields[[length(fields) + 1]] <- list(name = "lowerCIlocationParameter", type = "number",
-	                                       format = "sf:4;dp:3", title = "Lower",
-	                                       overTitle = title)
-	  fields[[length(fields) + 1]] <- list(name = "upperCIlocationParameter", type = "number",
-	                                       format = "sf:4;dp:3", title = "Upper",
-	                                       overTitle = title)
-	}
-
-	## add Cohen's d
-	if (wantsEffect) {
-		fields[[length(fields) + 1]] <- list(name = "d", title = nameOfEffectSize,
-											 type = "number", format = "sf:4;dp:3")
-  	if (wantsWilcox && wantsStudents && wantsWelchs) {
-  	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test and Welch t-test, 
-  	               effect size is given by Cohen's <em>d</em>; for the Mann-Whitney test, 
-  	               effect size is given by the rank biserial correlation.")
-  	} else if (wantsWilcox && wantsStudents) {
-  	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test, 
-  	               effect size is given by Cohen's <em>d</em>; for the Mann-Whitney test, 
-  	               effect size is given by the rank biserial correlation.")
-  	} else if (wantsWilcox && wantsWelchs) {
-  	  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Welch t-test, 
-  	               effect size is given by Cohen's <em>d</em>; for the Mann-Whitney test, 
-  	               effect size is given by the rank biserial correlation.")
-  	}
-	}
-
-	## I hope they know what they are doing! :)
-	if (wantsConfidenceEffSize) {
-		interval <- 100 * percentConfidenceEffSize
-		title <- paste0(interval, "% CI for ", nameOfEffectSize)
-
-		fields[[length(fields) + 1]] <- list(name = "lowerCIeffectSize", type = "number",
-											 format = "sf:4;dp:3", title = "Lower",
-											 overTitle = title)
-		fields[[length(fields) + 1]] <- list(name = "upperCIeffectSize", type = "number",
-											 format = "sf:4;dp:3", title = "Upper",
-											 overTitle = title)
-	}
-
-	## add all the fields that we may or may not have added
-	## in the initialization phase, remove the Test column
-	ttest[["schema"]] <- list(fields = fields[-2])
-
-	## check if we are ready to perform!
-	ready <- (perform == "run" && length(options$variables) != 0
-			  && options$groupingVariable != "")
-
-	ttest.rows <- list()
-	variables <- options$variables
-	if (length(variables) == 0) variables <- "."
-
-	## add a row for each variable, even before we are conducting tests
-	for (variable in variables) {
-		ttest.rows[[length(ttest.rows) + 1]] <- list(v = variable)
-	}
-
+  if (options$missingValues == "excludeListwise") {
+    exclude <- options$variables
+  } else {
+    exclude <- NULL
+  }
+  
+  dataset <- .readDataSetToEnd(columns.as.numeric = options$variables,
+                               columns.as.factor = options$groupingVariable,
+                               exclude.na.listwise = exclude)
+  
+  # Set title
+  jaspResults$title <- "Independent Samples T-Test"
+  
+  # Check if analyses can be conducted
+  ready <- (length(options$variables) > 0 && ! is.null(options$groupingVariable))
+  
+  # Check for errors
 	if (ready) {
-		levels <- base::levels(dataset[[ .v(options$groupingVariable) ]])
-
-		## does the user have a direction in mind?
-		if (options$hypothesis == "groupOneGreater") {
-
-			direction <- "greater"
-			message <- paste0("For all tests, the alternative hypothesis specifies that group <em>", levels[1],
-							  "</em> is greater than group <em>", levels[2], "</em>.")
-			.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
-
-		} else if (options$hypothesis == "groupTwoGreater") {
-			direction <- "less"
-			message <- paste0("For all tests, the alternative hypothesis specifies that group  <em>", levels[1],
-							  "</em> is less than group <em>", levels[2], "</em>.")
-			.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
-
-		} else {
-			direction <- "two.sided"
-		}
-
-
-		rowNo <- 1
-		whichTests <- list("1" = wantsStudents, "2" = wantsWelchs, "3" = wantsWilcox)
-		groupingData <- dataset[[ .v(options$groupingVariable) ]]
-
-		## for each variable specified, run each test that the user wants
-		for (variable in options$variables) {
-			
-			errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
-													all.target = variable, all.grouping = options$groupingVariable,
-													observations.amount = '< 2')
-
-			variableData <- dataset[[ .v(variable) ]]
-
-			## test is a number, indicating which tests should be run
-			for (test in seq_len(length(whichTests))) {
-
-				currentTest <- whichTests[[test]]
-
-				## don't run a test the user doesn't want
-				if (!currentTest) {
-					next
-				}
-				
-				errorMessage <- NULL
-				row.footnotes <- NULL
-
-				if (!identical(errors, FALSE)) {
-					errorMessage <- errors$message
-				} else {
-					## try to run the test, catching eventual errors
-					row <- try(silent = FALSE, expr = {
-
-						
-						ciEffSize <- percentConfidenceEffSize 
-						ciMeanDiff <- percentConfidenceMeanDiff
-						f <- as.formula(paste(.v(variable), "~",
-											  .v(options$groupingVariable)))
-						
-						y <- dataset[[ .v(variable) ]]
-						groups <- dataset[[ .v(options$groupingVariable) ]]
-						
-						sds <- tapply(y, groups, sd, na.rm = TRUE)
-						ms <- tapply(y, groups, mean, na.rm = TRUE)
-						ns <- tapply(y, groups, function(x) length(na.omit(x)))
-						
-
-						if (test == 3) {
-							whatTest <- "Mann-Whitney"
-							r <- stats::wilcox.test(f, data = dataset,
-													alternative = direction,
-													conf.int = TRUE, conf.level = ciMeanDiff, paired = FALSE)
-							df <- ""
-							sed <- ""
-							stat <- as.numeric(r$statistic)
-							m <- as.numeric(r$estimate)
-							d <- abs(.clean(as.numeric(1-(2*stat)/(ns[1]*ns[2])))) * sign(m)
-							# rankBis <- 1 - (2*stat)/(ns[1]*ns[2])
-							wSE <- sqrt((ns[1]*ns[2] * (ns[1]+ns[2] + 1))/12)
-							rankBisSE <- sqrt(4 * 1/(ns[1]*ns[2])^2 * wSE^2)
-							zRankBis <- atanh(d)
-							if(direction == "two.sided") {
-							  confIntEffSize <- sort(c(tanh(zRankBis + qnorm((1-ciEffSize)/2)*rankBisSE), tanh(zRankBis + qnorm((1+ciEffSize)/2)*rankBisSE)))
-							}else if (direction == "less") {
-							  confIntEffSize <- sort(c(-Inf, tanh(zRankBis + qnorm(ciEffSize)*rankBisSE)))
-							}else if (direction == "greater") {
-							  confIntEffSize <- sort(c(tanh(zRankBis + qnorm((1-ciEffSize))*rankBisSE), Inf))
-							}
-						} else {
-							whatTest <- ifelse(test == 2, "Welch", "Student")
-							r <- stats::t.test(f, data = dataset, alternative = direction,
-											   var.equal = test != 2, conf.level = ciMeanDiff, paired = FALSE)
-
-							df <- as.numeric(r$parameter)
-							m <- as.numeric(r$estimate[1]) - as.numeric(r$estimate[2])
-							stat <- as.numeric(r$statistic)
-							
-							num <-  (ns[1] - 1) * sds[1]^2 + (ns[2] - 1) * sds[2]^2
-							sdPooled <- sqrt(num / (ns[1] + ns[2] - 2))
-							if(test==2){ # Use different SE when using Welch T test!
-							  sdPooled <- sqrt(((sds[1]^2)+(sds[2]^2))/2)
-							}
-							
-							d <- .clean(as.numeric((ms[1] - ms[2]) / sdPooled)) # Cohen's d
-							sed <-  .clean((as.numeric(r$estimate[1]) - as.numeric(r$estimate[2]))/stat)
-							confIntEffSize <- c(0,0)
-							if (wantsConfidenceEffSize){
-							  alphaLevels <- sort( c( (1-ciEffSize), ciEffSize ) )
-							  
-							  if (direction == "two.sided") {
-							    alphaLevels[1] <- (1-ciEffSize) / 2
-							    alphaLevels[2] <- (ciEffSize + 1) / 2
-							  } 
-							  
-							  end1 <- abs(stat)
-							  while( pt(q=stat,df=df,ncp=end1) > alphaLevels[1]){
-							    end1 = end1 * 2
-							  }
-							  ncp1 <- uniroot(function(x) alphaLevels[1] - pt(q=stat, df=df, ncp=x),
-							                  c(2*stat-end1,end1))$root
-				
-							  end2 = -abs(stat)
-							  while( pt(q=stat,df=df,ncp=end2) < alphaLevels[2]){
-							    end2 = end2 * 2
-							  }
-							  ncp2 <- uniroot(function(x) alphaLevels[2] - pt(q=stat, df=df, ncp=x),
-							                  c(end2,2*stat-end2))$root
-							  
-							  confIntEffSize = sort(c(ncp1*sqrt(1/ns[1]+1/ns[2]),  ncp2*sqrt(1/ns[1]+1/ns[2]) ))[order(c(1-ciEffSize, ciEffSize ))]
-							  if (direction == "greater") {
-							    confIntEffSize[2] <- Inf
-							  } else if (direction == "less") 
-							    confIntEffSize[1] <- -Inf
-							  
-							  confIntEffSize <- sort(confIntEffSize)
-							}
-						}
-
-						## if the user doesn't want a Welch's t-test,
-						## give a footnote indicating if the equality of variance
-						## assumption is met; seems like in this setting there is no
-						## sampling plan, thus the p-value is not defined. haha!
-						if (!wantsWelchs && wantsStudents) {
-							levene <- car::leveneTest(variableData, groupingData, "mean")
-
-							## arbitrary cut-offs are arbitrary
-							if (!is.na(levene[1, 3]) && levene[1, 3] < 0.05) {
-								error <- .messages('footnote', 'leveneSign')
-								foot.index <- .addFootnote(footnotes, error)
-								row.footnotes <- list(p = list(foot.index))
-
-							}
-						}
-
-						## same for all t-tests
-						p <- as.numeric(r$p.value)
-
-						ciLow <- .clean(r$conf.int[1])
-						ciUp <- .clean(r$conf.int[2])
-						lowerCIeffectSize <- .clean(as.numeric(confIntEffSize[1]))
-						upperCIeffectSize <- .clean(as.numeric(confIntEffSize[2]))
-						# this will be the results object
-						res <- list(v = variable, test = whatTest, df = df, p = p,
-												md = m, d = d, lowerCIlocationParameter = ciLow, upperCIlocationParameter = ciUp,
-												lowerCIeffectSize = lowerCIeffectSize, upperCIeffectSize = upperCIeffectSize,
-												sed = sed, .footnotes = row.footnotes)
-						res[[testStat]] <- stat
-						if (options$VovkSellkeMPR){
-							res[["VovkSellkeMPR"]] <- .VovkSellkeMPR(p)
-						}
-						res
-					 })
-					 
-					## if there has been an error in computing the test, log it as footnote
-					if (isTryError(row)) {
-						errorMessage <- .extractErrorMessage(row)
-					}
-				}
-				
-				if (!is.null(errorMessage)) {
-					## log the error in a footnote
-					index <- .addFootnote(footnotes, errorMessage)
-					row.footnotes <- list(t = list(index))
-
-					row <- list(v = variable, test = "", df = "", p = "",
-								md = "", d = "", lowerCIlocationParameter = "", upperCIlocationParameter = "",
-								lowerCIeffectSize = "", upperCIeffectSize = "",
-								sed = "", .footnotes = list(t = list(index)))
-					row[[testStat]] <- .clean(NaN)
-				}
-				## if the user only wants more than one test
-				## update the table so that it shows the "Test" and "statistic" column
-				if (sum(allTests) > 1) {
-					ttest[["schema"]] <- list(fields = fields)
-				}
-
-				ttest.rows[[rowNo]] <- row
-				rowNo <- rowNo + 1
-			}
-		}
-		ttest[["footnotes"]] <- as.list(footnotes)
+	  
+	  # Error Check 1: Number of levels of the grouping variable
+	  .hasErrors(dataset = dataset, perform = "run", type = 'factorLevels',
+	             factorLevels.target = options$groupingVariable, factorLevels.amount = '!= 2',
+	             exitAnalysisIfErrors = TRUE)
+	  
+	  # Error Check 2: Weird data for grouping variable
+	  .hasErrors(dataset, perform = "run", type = c('observations', 'variance', 'infinity'),
+	             all.target = options$groupingVariable, observations.amount = c('< 3'),
+	             exitAnalysisIfErrors = TRUE)
+	  
+	  # Error Check 3: Weird data for dependent variable in each level of the grouping variable
+	  .hasErrors(dataset, perform = "run", type = c('observations', 'variance', 'infinity'),
+	             all.target = options$variables, all.grouping = options$groupingVariable,
+	             observations.amount = c('< 3'),
+	             exitAnalysisIfErrors = TRUE)
 	}
-
-	ttest[["data"]] <- ttest.rows
-	ttest
-}
-
-
-.ttestIndependentSamplesDescriptives <- function(dataset, options, perform,
-												 state = NULL, diff = NULL) {
-	if (options$descriptives == FALSE) return(NULL)
-
-	descriptives = list("title" = "Group Descriptives")
-
-	## sets up the table for the descriptives
-	fields <- list(
-		list(name = "variable", title = "", type = "string", combine = TRUE),
-		list(name = "group", title = "Group", type = "string"),
-		list(name = "N", title = "N", type = "number"),
-		list(name = "mean", title = "Mean", type = "number", format = "sf:4;dp:3"),
-		list(name = "sd", title = "SD", type = "number", format = "sf:4;dp:3"),
-		list(name = "se", title = "SE", type = "number", format = "sf:4;dp:3")
-	)
-
-	descriptives[["schema"]] <- list(fields = fields)
-	data <- list()
-
-
-	## function to check if everything is alright with the options
-	isAllright <- function(variable, options, state = NULL, diff = NULL) {
-
-		# check if the variable is in the state variables
-		cond1 <- !is.null(state) && variable %in% state$options$variables
-
-		# check if either diff is true, or it's a list and descriptives,
-		# and groupingVariable, missingValues are FALSE
-		cond2 <- (!is.null(diff) && (is.logical(diff) && diff == FALSE) || (is.list(diff)
-				 && !any(diff$descriptives,diff$groupingVariable, diff$missingValues)))
-
-		cond1 && cond2
-	}
-
-	variables <- options$variables
-	if (length(variables) == 0) variables <- "."
-
-	for (variable in variables) {
-
-		if (isAllright(variable, options, state, diff)) {
-
-			stateDat <- state$results$descriptives$data
-			descriptivesVariables <- as.character(length(stateDat))
-
-			for (i in seq_along(stateDat))
-				descriptivesVariables[i] <- stateDat[[i]]$variable
-
-			indices <- which(descriptivesVariables == variable)
-			data[[length(data) + 1]] <- stateDat[[indices[1]]]
-			data[[length(data) + 1]] <- stateDat[[indices[2]]]
-
-		} else {
-			data[[length(data) + 1]] <- list(variable = variable, .isNewGroup = TRUE)
-			data[[length(data) + 1]] <- list(variable = variable)
-		}
-	}
-
-	## check if we are done with all this crap
-	done <- (!is.null(state) &&
-			 state$options$descriptives &&
-			 all(variables %in% state$options$variables))
-
-	if (done) descriptives[["status"]] <- "complete"
-
-	groups <- options$groupingVariable
-
-	## if we actually have to do the test, and we have a grouping variable
-	if (perform == "run" && groups != "") {
-		levels <- base::levels(dataset[[ .v(groups) ]])
-
-		rowNo <- 1
-		groupingData <- dataset[[.v(groups)]]
-
-		## do the whole loop as above again
-		for (variable in variables) {
-
-			# if everything is alright, add stuff to data
-			if (isAllright(variable, options, state, diff)) {
-
-				stateDat <- state$results$descriptives$data
-				descriptivesVariables <- as.character(length(stateDat))
-
-				for (i in seq_along(stateDat))
-					descriptivesVariables[i] <- stateDat[[i]]$variable
-
-				indices <- which(descriptivesVariables == variable)
-
-				data[[rowNo]] <- stateDat[[indices[1]]]
-				data[[rowNo]] <- stateDat[[indices[2]]]
-
-				rowNo <- rowNo + 2
-
-			} else {
-
-				for (i in 1:2) {
-
-				  level <- levels[i]
-				  variableData <- dataset[[.v(variable)]]
-
-				  groupData <- variableData[groupingData == level]
-				  groupDataOm <- na.omit(groupData)
-
-				  if (class(groupDataOm) != "factor") {
-
-					  n <- .clean(length(groupDataOm))
-					  mean <- .clean(mean(groupDataOm))
-					  std <- .clean(sd(groupDataOm))
-					  sem <- .clean(sd(groupDataOm) / sqrt(length(groupDataOm)))
-
-					  result <- list(variable = variable, group = level,
-									 N = n, mean = mean, sd = std, se = sem)
-
-				  } else {
-
-					n <- .clean(length(groupDataOm))
-					result <- list(variable = variable, group = "",
-								   N = n, mean = "", sd = "", se = "")
-				}
-
-				if (i == 1) {
-					result[[".isNewGroup"]] <- TRUE
-				}
-
-				data[[rowNo]] <- result
-				rowNo <- rowNo + 1
-				}
-			}
-		}
-		descriptives[["status"]] <- "complete"
-	}
-
-	descriptives[["data"]] <- data
-	descriptives
-}
-
-
-.ttestIndependentSamplesInequalityOfVariances <- function(dataset, options, perform) {
-	if (options$equalityOfVariancesTests == FALSE) return(NULL)
-
-	levenes <- list("title" = "Test of Equality of Variances (Levene's)")
-	footnotes <- .newFootnotes()
-
-	## setup table for Levene's test
-	fields <- list(list(name = "variable", title = "", type = "string"),
-				   list(name = "F", type = "number", format = "sf:4;dp:3"),
-				   list(name = "df", type = "integer"),
-				   list(name = "p", type = "number", format = "dp:3;p:.001"))
-
-	levenes[["schema"]] <- list(fields = fields)
-
-	data <- list()
-	variables <- options$variables
-	groups <- options$groupingVariable
-	if (length(variables) == 0) variables <- "."
-
-	for (variable in variables) {
-		data[[length(data) + 1]] <- list(variable = variable)
-	}
-
-	if (perform == "run" && groups != "") {
-
-		levels <- base::levels(dataset[[ .v(groups) ]])
-
-		rowNo <- 1
-
-		for (variable in variables) {
-
-			result <- try(silent = TRUE, expr = {
-
-			  levene <- car::leveneTest(dataset[[ .v(variable) ]],
-										dataset[[ .v(groups) ]], "mean")
-
-			  F <- .clean(levene[1, "F value"])
-			  df <- .clean(levene[1, "Df"])
-			  p <- .clean(levene[1, "Pr(>F)"])
-
-			  row <- list(variable = variable, F = F, df = df, p = p)
-
-			  if (is.na(levene[1, "F value"])) {
-				  note <- "F-statistic could not be calculated"
-				  index <- .addFootnote(footnotes, note)
-				  row[[".footnotes"]] <- list(F = list(index))
-			  }
-
-			  row
-			})
-
-			if (isTryError(result)) {
-			  result <- list(variable = variable, F = "", df = "", p = "")
-			}
-
-			data[[rowNo]] <- result
-			rowNo <- rowNo + 1
-		}
-	}
-	levenes[["data"]] <- data
-	levenes[["footnotes"]] <- as.list(footnotes)
-	levenes
-}
-
-
-.ttestIndependentSamplesNormalityTest <- function(dataset, options, perform) {
-	if (options$normalityTests == FALSE) return(NULL)
-
-	normalityTests <- list("title" = "Test of Normality (Shapiro-Wilk)")
-
-	## these are the table fields associated with the normality test
-	fields <- list(
-		list(name = "dep", type = "string", title = "", combine = TRUE),
-		list(name = "lev", type = "string", title = ""),
-		list(name = "W", title = "W", type = "number", format = "sf:4;dp:3"),
-		list(name = "p", title = "p", type = "number", format = "dp:3;p:.001")
-	)
-
-	normalityTests[["schema"]] <- list(fields = fields)
-
-	footnotes <- .newFootnotes()
-	.addFootnote(footnotes, symbol = "<em>Note.</em>",
-				 text = "Significant results suggest a deviation from normality.")
-
-	## for a independent t-test, we need to check both group vectors for normality
-	normalityTests.results <- list()
-
-	variables <- options$variables
-	factor <- options$groupingVariable
-	levels <- levels(dataset[[.v(factor)]])
-
-	if (length(variables) == 0) variables = "."
-	if (length(levels) == 0) levels = c(".", ".")
-
-	for (variable in variables) {
-		count <- 0
-
-		## there will be maximal two levels
-		for (level in levels) {
-			count <- count + 1
-
-			## if everything looks fine, and we are ready to run
-			if (perform == "run" && length(variables) > 0 && !is.null(levels) && factor != "") {
-
-				## get the dependent variable at a certain factor level
-				data <- na.omit(dataset[[.v(variable)]][dataset[[.v(factor)]] == level])
-
-				row.footnotes <- NULL
-				error <- FALSE
-				
-				errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
-				                     all.target = variable,
-				                     observations.amount = c('< 3', '> 5000'),
-				                     all.grouping = factor,
-				                     all.groupingLevel = level)
-				
-				if (!identical(errors, FALSE)) {
-				    errorMessage <- errors$message
-				    foot.index <- .addFootnote(footnotes, errorMessage)
-				    row.footnotes <- list(W = list(foot.index), p = list(foot.index))
-				    error <- TRUE
-				}
-
-				## if the user did everything correctly :)
-				if (!error) {
-					r <- stats::shapiro.test(data)
-					W <- .clean(as.numeric(r$statistic))
-					p <- .clean(r$p.value)
-
-					## if that's the first variable, add a new row
-					newGroup <- level == levels[1]
-					result <- list(dep = variable, lev = level,
-								   W = W, p = p, .isNewGroup = newGroup)
-
-				## if there was a problem, foonote it
-				} else {
-
-					newGroup <- level == levels[1]
-					result <- list(dep = variable, lev = level,
-								   W = "NaN", p = "NaN", .isNewGroup = newGroup,
-								   .footnotes = row.footnotes)
-				}
-
-			## if we are not yet ready to perform
-			## create an empty table for immediate feedback
-			} else {
-
-				newGroup <- count == 1
-				result <- list(dep = variable, lev = level,
-							   W = ".", p = ".", .isNewGroup = newGroup)
-			}
-			normalityTests.results[[length(normalityTests.results) + 1]] <- result
-		}
-	}
-
-	normalityTests[["data"]] <- normalityTests.results
-	normalityTests[["footnotes"]] <- as.list(footnotes)
-	normalityTests
-}
-
-
-.independentSamplesTTestDescriptivesPlot <- function(dataset, options, perform) {
-
-	variables <- options$variables
-	groups <- options$groupingVariable
+  
+  # Create Parametric Independent Samples T-Test Table (if wanted)
+  if (options$student || options$welchs) {
+    .createIndependentSamplesTTestTableParametric(jaspResults = jaspResults, dataset = dataset, options = options,
+                                                  ready = ready)
+  }
+  
+  # Create Non-Parametric Independent Samples T-Test Table (if wanted)
+  if (options$mannWhitneyU) {
+    .createIndependentSamplesTTestTableNonParametric(jaspResults = jaspResults, dataset = dataset, options = options,
+                                                     ready = ready)
+  }
+  
+  # Create Assumption Checks Container (if wanted)
+  if (options$normalityTests || options$equalityOfVariancesTests) {
+    .createIndependentSamplesTTestAssumptionChecksContainer(jaspResults = jaspResults, dataset = dataset, 
+                                                            options = options, ready = ready)
+  }
+  
+  # Create Descriptives Container and Plots (if wanted)
+  if (options$descriptives || options$descriptivesPlots) {
+    .createIndependentSamplesTTestDescriptivesContainer(jaspResults = jaspResults, dataset = dataset, 
+                                                        options = options, ready = ready)
+  }
+
+	# Bring state$options up-to-date
+	state[["options"]] <- options
 	
-	descriptivesPlotList <- list()
+	return(state = state)
+}
 
-	if (perform == "run" && length(variables) > 0 && groups != "") {
+.createIndependentSamplesTTestTableParametric <- function(jaspResults, dataset, options, ready) {
+  
+  # Check if object can be reused (in case relevant options did not change)
+  if (!is.null(jaspResults[["independentSamplesTTestTableParametric"]])) {
+    return()
+  }
+  
+  # Create table
+  independentSamplesTTestTableParametric <- createJaspTable("Parametric Independent Samples T-Test")
+  jaspResults[["independentSamplesTTestTableParametric"]] <- independentSamplesTTestTableParametric
+  independentSamplesTTestTableParametric$showSpecifiedColumnsOnly <- TRUE
+  independentSamplesTTestTableParametric$dependOnOptions(c("variables", "groupingVariable", "missingValues", 
+                                                           "hypothesis", "students", "welchs", "VovkSellkeMPR",
+                                                           "meanDifference", "meanDiffConfidenceIntervalCheckbox", 
+                                                           "meanDiffConfidenceIntervalPercent",
+                                                           "effectSize", "effectSizeConfidenceIntervalCheckbox",
+                                                           "effectSizeConfidenceIntervalPercent", "effectSizeSD"))
+  
+  # Add columns for table
+  independentSamplesTTestTableParametric$addColumnInfo(    name = "variable",        title = "Variable",
+                                                           type = "string",          combine = TRUE)
+  independentSamplesTTestTableParametric$addColumnInfo(    name = "test",            title = "Test",               
+                                                           type = "string")
+  independentSamplesTTestTableParametric$addColumnInfo(    name = "statistic",       title = "Statistic",          
+                                                           type = "number",          format = "sf:4;dp:3")
+  independentSamplesTTestTableParametric$addColumnInfo(    name = "df",              title = "df",                 
+                                                           type = "number",          format = "sf:4;dp:3")
+  independentSamplesTTestTableParametric$addColumnInfo(    name = "p",               title = "p",
+                                                           type = "number",          format = "dp:3;p:.001")
+  if (options$VovkSellkeMPR) {
+    independentSamplesTTestTableParametric$addColumnInfo(  name = "VovkSellkeMPR",   title = "VS-MPR\u002A",
+                                                           type = "number",          format = "sf:4;dp:3")
+  }
+  if (options$meanDifference) {
+    independentSamplesTTestTableParametric$addColumnInfo(  name = "meanDiff",        title = "Mean Difference", 
+                                                           type = "number",          format = "sf:4;dp:3")
+    independentSamplesTTestTableParametric$addColumnInfo(  name = "seDiff",          title = "SE Difference",      
+                                                           type = "number",          format = "sf:4;dp:3")
+    if (options$meanDiffConfidenceIntervalCheckbox) {
+      independentSamplesTTestTableParametric$addColumnInfo(name = "meanDiffLowerCI", title = "Lower",
+                                                           type = "number",          format = "sf:4;dp:3",
+                                                           overtitle = paste0(100*options$meanDiffConfidenceIntervalPercent, "% CI for Mean Difference"))
+      independentSamplesTTestTableParametric$addColumnInfo(name = "meanDiffUpperCI", title = "Upper",
+                                                           type = "number",          format = "sf:4;dp:3",
+                                                           overtitle = paste0(100*options$meanDiffConfidenceIntervalPercent, "% CI for Mean Difference"))
+    }
+  }
+  if (options$effectSize) {
+    # Cohen's d
+    independentSamplesTTestTableParametric$addColumnInfo(  name = "cohensd",         title = "Cohen's d",
+                                                           type = "number",          format = "sf:4;dp:3")
+    if (options$effectSizeConfidenceIntervalCheckbox) {
+      independentSamplesTTestTableParametric$addColumnInfo(name = "cohensdLowerCI",  title = "Lower",
+                                                           type = "number",          format = "sf:4;dp:3",
+                                                           overtitle = paste0(100*options$effectSizeConfidenceIntervalPercent, "% CI for Cohen's d"))
+      independentSamplesTTestTableParametric$addColumnInfo(name = "cohensdUpperCI",  title = "Upper",
+                                                           type = "number",          format = "sf:4;dp:3",
+                                                           overtitle = paste0(100*options$effectSizeConfidenceIntervalPercent, "% CI for Cohen's d"))
+    }
+    # Hedges' g
+    independentSamplesTTestTableParametric$addColumnInfo(  name = "hedgesg",         title = "Hedges' g",
+                                                           type = "number",          format = "sf:4;dp:3")
+    if (options$effectSizeConfidenceIntervalCheckbox) {
+      independentSamplesTTestTableParametric$addColumnInfo(name = "hedgesgLowerCI",  title = "Lower",
+                                                           type = "number",          format = "sf:4;dp:3",
+                                                           overtitle = paste0(100*options$effectSizeConfidenceIntervalPercent, "% CI for Hedges' g"))
+      independentSamplesTTestTableParametric$addColumnInfo(name = "hedgesgUpperCI",  title = "Upper",
+                                                           type = "number",          format = "sf:4;dp:3",
+                                                           overtitle = paste0(100*options$effectSizeConfidenceIntervalPercent, "% CI for Hedges' g"))
+    }
+  }
+  
+  # Fill up table with results
+  .fillUpIndependentSamplesTTestTable(independentSamplesTTestTable = independentSamplesTTestTableParametric, 
+                                      dataset = dataset, options = options, parametric = TRUE, ready = ready)
+  
+  return(NULL)
+}
 
-		base_breaks_x <- function(x) {
-			b <- unique(as.numeric(x))
-			d <- data.frame(y = -Inf, yend = -Inf, x = min(b), xend = max(b))
-			list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y, xend = xend,
-				yend = yend), inherit.aes = FALSE, size = 1))
-		}
+.createIndependentSamplesTTestTableNonParametric <- function(jaspResults, dataset, options, ready) {
+  
+  # Check if object can be reused (in case relevant options did not change)
+  if (!is.null(jaspResults[["independentSamplesTTestTableNonParametric"]])) {
+    return()
+  }
+  
+  # Create table
+  independentSamplesTTestTableNonParametric <- createJaspTable("Non-Parametric Independent Samples T-Test")
+  jaspResults[["independentSamplesTTestTableNonParametric"]] <- independentSamplesTTestTableNonParametric
+  independentSamplesTTestTableNonParametric$showSpecifiedColumnsOnly <- TRUE
+  independentSamplesTTestTableNonParametric$dependOnOptions(c("variables", "groupingVariable", "missingValues", 
+                                                           "hypothesis", "mannWhitneyU", "VovkSellkeMPR",
+                                                           "meanDifference", "meanDiffConfidenceIntervalCheckbox", 
+                                                           "meanDiffConfidenceIntervalPercent",
+                                                           "effectSize", "effectSizeConfidenceIntervalCheckbox",
+                                                           "effectSizeConfidenceIntervalPercent"))
+  
+  # Add columns for table
+  independentSamplesTTestTableNonParametric$addColumnInfo(    name = "variable",           title = "Variable",
+                                                              type = "string",             combine = TRUE)
+  independentSamplesTTestTableNonParametric$addColumnInfo(    name = "test",               title = "Test",
+                                                              type = "string")
+  independentSamplesTTestTableNonParametric$addColumnInfo(    name = "statistic",          title = "Statistic",
+                                                              type = "number",             format = "sf:4;dp:3")
+  independentSamplesTTestTableNonParametric$addColumnInfo(    name = "p",                  title = "p",
+                                                              type = "number",             format = "dp:3;p:.001")
+  if (options$VovkSellkeMPR) {
+    independentSamplesTTestTableNonParametric$addColumnInfo(  name = "VovkSellkeMPR",      title = "VS-MPR\u002A",
+                                                              type = "number",             format = "sf:4;dp:3")
+  }
+  if (options$meanDifference) {
+    independentSamplesTTestTableNonParametric$addColumnInfo(  name = "hlEst",              title = "Hodges-Lehmann Estimate",
+                                                              type = "number",             format = "sf:4;dp:3")
+    if (options$meanDiffConfidenceIntervalCheckbox) {
+      independentSamplesTTestTableNonParametric$addColumnInfo(name = "hlEstLowerCI",       title = "Lower",
+                                                              type = "number",             format = "sf:4;dp:3",
+                                                              overtitle = paste0(100*options$meanDiffConfidenceIntervalPercent, "% CI for Hodges-Lehmann Estimate"))
+      independentSamplesTTestTableNonParametric$addColumnInfo(name = "hlEstUpperCI",       title = "Upper",
+                                                              type = "number",             format = "sf:4;dp:3",
+                                                              overtitle = paste0(100*options$meanDiffConfidenceIntervalPercent, "% CI for Hodges-Lehmann Estimate"))
+    }
+  }
+  if (options$effectSize) {
+    # Rank-Biserial Correlation
+    independentSamplesTTestTableNonParametric$addColumnInfo(  name = "rbc",                title = "Rank-Biserial Correlation",
+                                                              type = "number",             format = "sf:4;dp:3")
+    if (options$effectSizeConfidenceIntervalCheckbox) {
+      independentSamplesTTestTableNonParametric$addColumnInfo(name = "rbcLowerCI",         title = "Lower",
+                                                              type = "number",             format = "sf:4;dp:3",
+                                                              overtitle = paste0(100*options$effectSizeConfidenceIntervalPercent, "% CI for Rank-Biserial Correlation"))
+      independentSamplesTTestTableNonParametric$addColumnInfo(name = "rbcUpperCI",         title = "Upper",
+                                                              type = "number",             format = "sf:4;dp:3",
+                                                              overtitle = paste0(100*options$effectSizeConfidenceIntervalPercent, "% CI for Rank-Biserial Correlation"))
+    }
+    # Cliff delta
+    independentSamplesTTestTableNonParametric$addColumnInfo(  name = "cliffsDelta",        title = "Cliff's Delta",
+                                                              type = "number",             format = "sf:4;dp:3")
+    if (options$effectSizeConfidenceIntervalCheckbox) {
+      independentSamplesTTestTableNonParametric$addColumnInfo(name = "cliffsDeltaLowerCI", title = "Lower",
+                                                              type = "number",             format = "sf:4;dp:3",
+                                                              overtitle = paste0(100*options$effectSizeConfidenceIntervalPercent, "% CI for Cliff's Delta"))
+      independentSamplesTTestTableNonParametric$addColumnInfo(name = "cliffsDeltaUpperCI", title = "Upper",
+                                                              type = "number",             format = "sf:4;dp:3",
+                                                              overtitle = paste0(100*options$effectSizeConfidenceIntervalPercent, "% CI for Cliff's Delta"))
+    }
+  }
+  
+  # Fill up table with results
+  .fillUpIndependentSamplesTTestTable(independentSamplesTTestTable = independentSamplesTTestTableNonParametric, 
+                                      dataset = dataset, options = options, parametric = FALSE, ready = ready)
+  
+  return(NULL)
+}
 
-		base_breaks_y <- function(x) {
-			ci.pos <- c(x[, "dependent"] - x[, "ci"], x[, "dependent"] + x[, "ci"])
-			b <- pretty(ci.pos)
-			d <- data.frame(x = -Inf, xend = -Inf, y = min(b), yend = max(b))
-			list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y,xend = xend,
-				 yend = yend), inherit.aes = FALSE, size = 1),
-				 ggplot2::scale_y_continuous(breaks = c(min(b), max(b))))
-		}
-		
-		for (variableIndex in .indices(variables)) {
-		    
-		    descriptivesPlot <- list("title" = variables[variableIndex])
-		    
-		    errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
-		                         all.target = variables[variableIndex],
-		                         observations.amount = '< 2',
-		                         observations.grouping = options$groupingVariable)
-		    
-		    if (!identical(errors, FALSE)) {
-		        errorMessage <- errors$message
-		        
-		        descriptivesPlot[["data"]] <- ""
-		        descriptivesPlot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-		    } else {
-		        
-		        descriptivesPlot[["width"]] <- options$plotWidth
-		        descriptivesPlot[["height"]] <- options$plotHeight
-		        descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
-			
-			summaryStat <- .summarySE(as.data.frame(dataset), measurevar = .v(options$variables[variableIndex]),
-				groupvars = .v(options$groupingVariable), conf.interval = options$descriptivesPlotsConfidenceInterval,
-				na.rm = TRUE, .drop = FALSE)
+.fillUpIndependentSamplesTTestTable <- function(independentSamplesTTestTable, dataset, options, parametric, ready) {
+  
+  # If analysis can be conducted, run each test that the users wants for each variable
+  if (ready) {
+    
+    for (variable in options$variables) {
+      
+      # Prepare for running the t-tests
+      formula <- as.formula(paste(.v(variable), "~", .v(options$groupingVariable)))
+      y <- dataset[[ .v(variable) ]]
+      groups <- dataset[[ .v(options$groupingVariable) ]]
+      
+      sds <- tapply(y, groups, sd, na.rm = TRUE)
+      means <- tapply(y, groups, mean, na.rm = TRUE)
+      ns <- tapply(y, groups, function(x) length(na.omit(x)))
+      
+      # Run Student t-test for the parametric table (if wanted)
+      if (options$student == TRUE && parametric == TRUE) {
+        .addRowForIndependentSamplesTTestParametric(independentSamplesTTestTableParametric = independentSamplesTTestTable,
+                                                 dataset = dataset, options = options, 
+                                                 variable = variable, test = "Student",
+                                                 formula = formula, sds = sds, means = means, ns = ns)
+      }
+      
+      # Run Welch t-test for the parametric table (if wanted)
+      if (options$welchs == TRUE && parametric == TRUE) {
+        .addRowForIndependentSamplesTTestParametric(independentSamplesTTestTableParametric = independentSamplesTTestTable,
+                                                dataset = dataset, options = options, 
+                                                variable = variable, test = "Welch",
+                                                formula = formula, sds = sds, means = means, ns = ns)
+      }
+      
+      # Run Mann-Whitney-U test for the non-parametric table (if wanted) 
+      if (options$mannWhitneyU == TRUE && parametric == FALSE) {
+        .addRowForIndependentSamplesTTestNonParametric(independentSamplesTTestTableNonParametric = independentSamplesTTestTable,
+                                                       dataset = dataset, options = options,
+                                                       variable = variable, test = "Mann-Whitney",
+                                                       formula = formula, sds = sds, means = means, ns = ns)
+      }
+    }
 
-			colnames(summaryStat)[which(colnames(summaryStat) == .v(variables[variableIndex]))] <- "dependent"
-			colnames(summaryStat)[which(colnames(summaryStat) == .v(groups))] <- "groupingVariable"
+    # Add footnote: Check the equality of variance assumption if Welch is not selected
+    if (options$students == TRUE && options$welchs == FALSE && parametric == TRUE) {
+      levene <- car::leveneTest(y, groups, "mean")
+      if (!is.na(levene[1, 3]) && levene[1, 3] < 0.05) {
+        message <- .messages('footnote', 'leveneSign')
+        independentSamplesTTestTable$addFootnote(message = message, col_names = "p", row_names = variable)
+      }
+    }
+    
+    # Add footnote: VovkSellkeMPR
+    if (options$VovkSellkeMPR) {
+      message <- "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value, the maximum possible odds in favor of H\u2081 over H\u2080 equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37 (Sellke, Bayarri, & Berger, 2001)."
+      independentSamplesTTestTable$addFootnote(message = message, symbol = "\u002A")
+    }
+    
+    # Add footnote: Alternative hypothesis
+    if (options$hypothesis == "greater") {
+      message <- paste0("For all tests, the alternative hypothesis specifies that group <em>", levels(dataset[[.v(options$groupingVariable)]])[1],
+                        "</em> is greater than group <em>", levels(dataset[[.v(options$groupingVariable)]])[2], "</em>.")
+      independentSamplesTTestTable$addFootnote(message = message, symbol = "<em>Note.</em>")
+    } else if (options$hypothesis == "less") {
+      message <- paste0("For all tests, the alternative hypothesis specifies that group  <em>", levels(dataset[[.v(options$groupingVariable)]])[1],
+                        "</em> is less than group <em>", levels(dataset[[.v(options$groupingVariable)]])[2], "</em>.")
+      independentSamplesTTestTable$addFootnote(message = message, symbol = "<em>Note.</em>")
+    }
+    
+  # If analysis cannot be conducted, add an empty row
+  } else {
+    row <- list(variable = ".", test = ".", statistic = ".", df = ".", p = ".", VovkSellkeMPR = ".",
+                meanDiff = ".", seDiff = ".", meanDiffLowerCI = ".", meanDiffUpperCI = ".",
+                cohensd = ".", cohensdLowerCI = ".", cohensdUpperCI = ".",
+                hedgesg = ".", hedgesgLowerCI = ".", hedgesgUpperCI = ".",
+                hlEst = ".", hlEstLowerCI = ".", hlEstUpperCI = ".",
+                rbc = ".", rbcLowerCI = ".", rbcUpperCI = ".",
+                cliffsDelta = ".", cliffsDeltaLowerCI = ".", cliffsDeltaUpperCI = ".")
+    independentSamplesTTestTable$addRows(rows = row)
+  }
+  
+  return(NULL)
+}
 
-			pd <- ggplot2::position_dodge(0.2)
+.addRowForIndependentSamplesTTestParametric <- function(independentSamplesTTestTableParametric, dataset, options, 
+                                                        test, variable, formula, sds, means, ns) {
+  
+  # Try to run the test, catching eventual errors
+  result <- try(silent = FALSE, expr = {
+    
+    # Compute results for everything except for effect sizes
+    r <- stats::t.test(formula = formula, data = dataset, alternative = options$hypothesis,
+                       var.equal = (test == "Student"), conf.level = options$meanDiffConfidenceIntervalPercent, 
+                       paired = FALSE)
+    
+    stat <- .clean(as.numeric(r$statistic))
+    df <- .clean(as.numeric(r$parameter))
+    p <- .clean(as.numeric(r$p.value))
+    meanDiff <- .clean(as.numeric(r$estimate[1]) - as.numeric(r$estimate[2]))
+    seDiff <-  .clean((as.numeric(r$estimate[1]) - as.numeric(r$estimate[2]))/stat)
+    meanDiffLowerCI <- .clean(r$conf.int[1])
+    meanDiffUpperCI <- .clean(r$conf.int[2])
+    
+    # Prepare for computing the effect sizes
+    # Determine the sd depending on the kind of test and the effect size sd selected by the user
+    if (options$effectSizeSD == "effectSizeSDPooled") {
+      if (test == "Student") {
+        num <- (ns[1] - 1) * sds[1]^2 + (ns[2] - 1) * sds[2]^2
+        sdPooled <- sqrt(num / (ns[1] + ns[2] - 2))
+      } else if (test == "Welch") {
+        sdPooled <- sqrt(((sds[1]^2)+(sds[2]^2))/2)
+      }
+    } else if (options$effectSizeSD == "effectSizeSDGroup1") {
+      sdPooled <- sds[1]
+    } else if (options$effectSizeSD == "effectSizeSDGroup2") {
+      sdPooled <- sds[2]
+    }
+    
+    # Determine the proportion for the effect size ci depending on the kind of hypothesis selected by the user
+    if (options$hypothesis != "two.sided") {
+      ciEffSize <- 1-(1-options$effectSizeConfidenceIntervalPercent)*2
+    } else {
+      ciEffSize <- options$effectSizeConfidenceIntervalPercent
+    }
+    
+    # Compute results for effect sizes
+    effectsizes <- compute.es::mes2(m.1 = means[1], m.2 = means[2], s.pooled = sdPooled, n.1 = ns[1], n.2 = ns[2], 
+                                    level = ciEffSize*100, dig = 15, verbose = FALSE)
+    
+    cohensd <- .clean(as.numeric(effectsizes["d"]))
+    cohensdLowerCI <- .clean(as.numeric(effectsizes["l.d"]))
+    cohensdUpperCI <- .clean(as.numeric(effectsizes["u.d"]))
+    hedgesg <- .clean(as.numeric(effectsizes["g"]))
+    hedgesgLowerCI <- .clean(as.numeric(effectsizes["l.g"]))
+    hedgesgUpperCI <- .clean(as.numeric(effectsizes["u.g"]))
+    
+    if (options$hypothesis == "greater") {
+      cohensdUpperCI <- .clean(Inf)
+      hedgesgUpperCI <- .clean(Inf)
+    } else if (options$hypothesis == "less") {
+      cohensdLowerCI <- .clean(-Inf)
+      hedgesgLowerCI <- .clean(-Inf)
+    }
+    
+    # This is the row that will be added to the table
+    row <- list(variable = variable, test = test, statistic = stat, df = df, p = p, VovkSellkeMPR = .VovkSellkeMPR(p),
+                meanDiff = meanDiff, seDiff = seDiff, meanDiffLowerCI = meanDiffLowerCI, meanDiffUpperCI = meanDiffUpperCI,
+                cohensd = cohensd, cohensdLowerCI = cohensdLowerCI, cohensdUpperCI = cohensdUpperCI,
+                hedgesg = hedgesg, hedgesgLowerCI = hedgesgLowerCI, hedgesgUpperCI = hedgesgUpperCI)
+  })
+  
+  # If there has been an error in computing the test, add the error. Otherwise, add the row to the table.
+  if (isTryError(result)) {
+    independentSamplesTTestTableParametric$error <- "badData"
+    independentSamplesTTestTableParametric$errorMessage <- .extractErrorMessage(result)
+  } else {
+    independentSamplesTTestTableParametric$addRows(rows = row, rowNames = variable)
+  }
+  
+  return(NULL)
+}
 
-			p <- ggplot2::ggplot(summaryStat, ggplot2::aes(x = groupingVariable,
-				y = dependent, group = 1)) + ggplot2::geom_errorbar(ggplot2::aes(ymin = ciLower,
-				ymax = ciUpper), colour = "black", width = 0.2, position = pd) +
-				ggplot2::geom_line(position = pd, size = 0.7) + ggplot2::geom_point(position = pd,
-				size = 4) + ggplot2::ylab(unlist(options$variables[variableIndex])) + ggplot2::xlab(options$groupingVariable) +
-				ggplot2::theme_bw() +
-				ggplot2::theme(panel.grid.minor = ggplot2::element_blank(), plot.title = ggplot2::element_text(size = 18),
-				  panel.grid.major = ggplot2::element_blank(), axis.title.x = ggplot2::element_text(size = 18,
-					vjust = -0.2), axis.title.y = ggplot2::element_text(size = 18,
-					vjust = -1), axis.text.x = ggplot2::element_text(size = 15),
-				  axis.text.y = ggplot2::element_text(size = 15), panel.background = ggplot2::element_rect(fill = "transparent",
-					colour = NA), plot.background = ggplot2::element_rect(fill = "transparent",
-					colour = NA), legend.background = ggplot2::element_rect(fill = "transparent",
-					colour = NA), panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(),
-				  legend.key = ggplot2::element_blank(), legend.title = ggplot2::element_text(size = 12),
-				  legend.text = ggplot2::element_text(size = 12), axis.ticks = ggplot2::element_line(size = 0.5),
-				  axis.ticks.margin = grid::unit(1, "mm"), axis.ticks.length = grid::unit(3,
-					"mm"), plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) +
-				base_breaks_y(summaryStat) + base_breaks_x(summaryStat$groupingVariable)
+.addRowForIndependentSamplesTTestNonParametric <- function(independentSamplesTTestTableNonParametric, dataset, options, 
+                                                           test, variable, formula, sds, means, ns) {
+  
+  # Try to run the test, catching eventual errors
+  result <- try(silent = FALSE, expr = {
+    
+    # Compute results for everything except for effect sizes
+    r <- stats::wilcox.test(formula = formula, data = dataset, alternative = options$hypothesis,
+                            conf.int = TRUE, conf.level = options$meanDiffConfidenceIntervalPercent, 
+                            paired = FALSE)
+    
+    stat <- .clean(as.numeric(r$statistic))
+    p <- .clean(as.numeric(r$p.value))
+    hlEst <- .clean(as.numeric(r$estimate))
+    hlEstLowerCI <- .clean(r$conf.int[1])
+    hlEstUpperCI <- .clean(r$conf.int[2])
+    
+    # Compute results for Rank Biserial Correlation
+    rbc <- abs(.clean(as.numeric(1-(2*stat)/(ns[1]*ns[2])))) * sign(hlEst)
+    wSE <- sqrt((ns[1]*ns[2] * (ns[1]+ns[2] + 1))/12)
+    rankBisSE <- sqrt(4 * 1/(ns[1]*ns[2])^2 * wSE^2)
+    zRankBis <- atanh(rbc)
+    if(options$hypothesis == "two.sided") {
+      rbcConfInt <- sort(c(tanh(zRankBis + qnorm((1-options$effectSizeConfidenceIntervalPercent)/2)*rankBisSE), tanh(zRankBis + qnorm((1+options$effectSizeConfidenceIntervalPercent)/2)*rankBisSE)))
+    }else if (options$hypothesis == "less") {
+      rbcConfInt <- sort(c(-Inf, tanh(zRankBis + qnorm(options$effectSizeConfidenceIntervalPercent)*rankBisSE)))
+    }else if (options$hypothesis == "greater") {
+      rbcConfInt <- sort(c(tanh(zRankBis + qnorm((1-options$effectSizeConfidenceIntervalPercent))*rankBisSE), Inf))
+    }
+    rbcLowerCI <- .clean(as.numeric(rbcConfInt[1]))
+    rbcUpperCI <- .clean(as.numeric(rbcConfInt[2]))
+    
+    # Compute results for Cliff's Delta
+    if (options$hypothesis == "two.sided") {
+      ciEffSize <- options$effectSizeConfidenceIntervalPercent
+    } else if (options$hypothesis == "less") {
+      ciEffSize <- 1 - (1 - options$effectSizeConfidenceIntervalPercent) * 2
+    } else if (options$hypothesis == "greater") {
+      ciEffSize <- 1 - (1 - options$effectSizeConfidenceIntervalPercent) * 2
+    }
+    cliffsDeltaResults <- effsize::"cliff.delta"(formula = formula, data = dataset, conf.level = ciEffSize)
+    cliffsDelta <- .clean(as.numeric(cliffsDeltaResults[1]$estimate))
+    cliffsDeltaLowerCI <- .clean(as.numeric(cliffsDeltaResults[2]$conf.int[1]))
+    cliffsDeltaUpperCI <- .clean(as.numeric(cliffsDeltaResults[2]$conf.int[2]))
+    
+    if (options$hypothesis == "greater") {
+      cliffsDeltaUpperCI <- .clean(Inf)
+    } else if (options$hypothesis == "less") {
+      cliffsDeltaLowerCI <- .clean(-Inf)
+    }
+    
+    # This is the row that will be added to the table
+    row <- list(variable = variable, test = test, statistic = stat, p = p, VovkSellkeMPR = .VovkSellkeMPR(p),
+                hlEst = hlEst, hlEstLowerCI = hlEstLowerCI, hlEstUpperCI = hlEstUpperCI,
+                rbc = rbc, rbcLowerCI = rbcLowerCI, rbcUpperCI = rbcUpperCI,
+                cliffsDelta = cliffsDelta, cliffsDeltaLowerCI = cliffsDeltaLowerCI, cliffsDeltaUpperCI = cliffsDeltaUpperCI)
+  })
+  
+  # If there has been an error in computing the test, add the error. Otherwise, add the row to the table.
+  if (isTryError(result)) {
+    independentSamplesTTestTableNonParametric$error <- "badData"
+    independentSamplesTTestTableNonParametric$errorMessage <- .extractErrorMessage(result)
+  } else {
+    independentSamplesTTestTableNonParametric$addRows(rows = row, rowNames = variable)
+  }
+  
+  return(NULL)
+}
 
-			imgObj <- .writeImage(width = options$plotWidth, 
-														height = options$plotHeight, 
-														plot = p)
+.createIndependentSamplesTTestAssumptionChecksContainer <- function(jaspResults, dataset, options, ready) {
+  
+  # Check if object can be reused (in case relevant options did not change)
+  if (!is.null(jaspResults[["independentSamplesTTestAssumptionChecksContainer"]])) {
+    return()
+  }
+  
+  # Create container
+  independentSamplesTTestAssumptionChecksContainer <- createJaspContainer(title = "Assumption Checks")
+  jaspResults[["independentSamplesTTestAssumptionChecksContainer"]] <- independentSamplesTTestAssumptionChecksContainer
+  independentSamplesTTestAssumptionChecksContainer$dependOnOptions(c("variables", "groupingVariable", "missingValues", 
+                                                                     "normalityTests", "equalityOfVariancesTests"))
+  
+  # Create Shapiro-Wilk Table (if wanted)
+  if (options$normalityTests == TRUE) {
+    .createIndependentSamplesTTestShapiroWilkTable(independentSamplesTTestAssumptionChecksContainer = independentSamplesTTestAssumptionChecksContainer, 
+                                                   dataset = dataset, options = options, ready = ready)
+  }
+  
+  # Create Levene's Table (if wanted)
+  if (options$equalityOfVariancesTests == TRUE) {
+    .createIndependentSamplesTTestLevenesTable(independentSamplesTTestAssumptionChecksContainer = independentSamplesTTestAssumptionChecksContainer,
+                                               dataset = dataset, options = options, ready = ready)
+  }
+}
 
-			descriptivesPlot[["data"]] <- imgObj[["png"]]
-			descriptivesPlot[["obj"]] <- imgObj[["obj"]]
-			
-		    }
-		    
-			descriptivesPlot[["convertible"]] <- TRUE
-			descriptivesPlot[["status"]] <- "complete"
-			
-			descriptivesPlotList[[variableIndex]] <- descriptivesPlot
+.createIndependentSamplesTTestShapiroWilkTable <- function(independentSamplesTTestAssumptionChecksContainer, 
+                                                           dataset, options, ready) {
+  
+  # Check if object can be reused (in case relevant options did not change)
+  if (!is.null(independentSamplesTTestAssumptionChecksContainer[["independentSamplesTTestShapiroWilkTable"]])) {
+    return()
+  }
+  
+  # Create table
+  independentSamplesTTestShapiroWilkTable <- createJaspTable("Test of Normality (Shapiro-Wilk)")
+  independentSamplesTTestAssumptionChecksContainer[["independentSamplesTTestShapiroWilkTable"]] <- independentSamplesTTestShapiroWilkTable
+  independentSamplesTTestShapiroWilkTable$showSpecifiedColumnsOnly <- TRUE
+  independentSamplesTTestShapiroWilkTable$dependOnOptions(c("variables", "groupingVariable", "missingValues", 
+                                                            "normalityTests"))
+  
+  # Add columns for table
+  independentSamplesTTestShapiroWilkTable$addColumnInfo(name = "dv",     title = "",
+                                                        type = "string", combine = TRUE)
+  independentSamplesTTestShapiroWilkTable$addColumnInfo(name = "level",  title = "",
+                                                        type = "string")
+  independentSamplesTTestShapiroWilkTable$addColumnInfo(name = "W",      title = "W",
+                                                        type = "number", format = "sf:4;dp:3")
+  independentSamplesTTestShapiroWilkTable$addColumnInfo(name = "p",      title = "p",
+                                                        type = "number", format = "dp:3;p:.001")
+  
+  # Fill up table with results
+  .fillUpIndependentSamplesTTestShapiroWilkTable(independentSamplesTTestShapiroWilkTable = independentSamplesTTestShapiroWilkTable,
+                                                 dataset = dataset, options = options, ready = ready)
+  
+  # Add footnote: Interpretation of Results
+  independentSamplesTTestShapiroWilkTable$addFootnote(message = "Significant results suggest a deviation from normality.",
+                                                      symbol = "<em>Note.</em>")
+  
+  return(NULL)
+}
 
-		}
-		
-		return(descriptivesPlotList)
+.fillUpIndependentSamplesTTestShapiroWilkTable <- function(independentSamplesTTestShapiroWilkTable, dataset, options, ready) {
+  
+  # If analyses can be conducted, compute results and add row for each level of each variable
+  if (ready) {
+    for (variable in options$variables) {
+      for (level in levels(dataset[[.v(options$groupingVariable)]])) {
+        .addRowForIndependentSamplesTTestShapiroWilkTable(independentSamplesTTestShapiroWilkTable = independentSamplesTTestShapiroWilkTable,
+                                                          dataset = dataset, options = options, 
+                                                          variable = variable, level = level)
+      }
+    }
+  # If analyses cannot be conducted, add an empty row
+  } else {
+    row <- list(dv = ".", level = ".", W = ".", p = ".")
+    independentSamplesTTestShapiroWilkTable$addRows(rows = row)
+  }
+}
 
-	} else {
-	    
-	    return(NULL)
-	    
-	}
-	
+.addRowForIndependentSamplesTTestShapiroWilkTable <- function(independentSamplesTTestShapiroWilkTable, 
+                                                              dataset, options, variable, level) {
+  
+  # Get the dependent variable at a certain factor level
+  data <- na.omit(dataset[[.v(variable)]][dataset[[.v(options$groupingVariable)]] == level])
+  
+  # Compute results
+  r <- stats::shapiro.test(data)
+  W <- .clean(as.numeric(r$statistic))
+  p <- .clean(r$p.value)
+  
+  # Add row to the table
+  row <- list(dv = variable, level = level, W = W, p = p)
+  independentSamplesTTestShapiroWilkTable$addRows(rows = row, rowNames = paste0(variable, level))
+}
+
+.createIndependentSamplesTTestLevenesTable <- function(independentSamplesTTestAssumptionChecksContainer, 
+                                                       dataset, options, ready) {
+  
+  # Check if object can be reused (in case relevant options did not change)
+  if (!is.null(independentSamplesTTestAssumptionChecksContainer[["independentSamplesTTestLevenesTable"]])) {
+    return()
+  }
+  
+  # Create table
+  independentSamplesTTestLevenesTable <- createJaspTable("Test of Equality of Variances (Levene's)")
+  independentSamplesTTestAssumptionChecksContainer[["independentSamplesTTestLevenesTable"]] <- independentSamplesTTestLevenesTable
+  independentSamplesTTestLevenesTable$showSpecifiedColumnsOnly <- TRUE
+  independentSamplesTTestLevenesTable$dependOnOptions(c("variables", "groupingVariable", "missingValues", 
+                                                        "equalityOfVariancesTests"))
+  
+  # Add columns for table
+  independentSamplesTTestLevenesTable$addColumnInfo(name = "variable", title = "",
+                                                    type = "string")
+  independentSamplesTTestLevenesTable$addColumnInfo(name = "F",        title = "F",
+                                                    type = "number",   format = "sf:4;dp:3")
+  independentSamplesTTestLevenesTable$addColumnInfo(name = "df",       title = "df",
+                                                    type = "integer")
+  independentSamplesTTestLevenesTable$addColumnInfo(name = "p",        title = "p",
+                                                    type = "number",   format = "dp:3;p:.001")
+  
+  # Fill up table with results
+  .fillUpIndependentSamplesTTestLevenesTable(independentSamplesTTestLevenesTable = independentSamplesTTestLevenesTable,
+                                             dataset = dataset, options = options, ready = ready)
+  
+  # Add footnote: Interpretation of Results
+  independentSamplesTTestLevenesTable$addFootnote(message = "Significant results suggest a deviation from equality of variance.",
+                                                  symbol = "<em>Note.</em>")
+  
+  return(NULL)
+}
+
+.fillUpIndependentSamplesTTestLevenesTable <- function(independentSamplesTTestLevenesTable, dataset, options, ready) {
+  
+  # If analyses can be conducted, compute results and add row for each variable
+  if (ready) {
+    for (variable in options$variables) {
+      .addRowForIndependentSamplesTTestLevenesTable(independentSamplesTTestLevenesTable, 
+                                                    dataset, options, variable)
+    }
+  # If analyses cannot be conducted, add an empty row
+  } else {
+    row <- list(variable = ".", F = ".", df = ".", p = ".")
+    independentSamplesTTestLevenesTable$addRows(rows = row)
+  }
+  return(NULL)
+}
+
+.addRowForIndependentSamplesTTestLevenesTable <- function(independentSamplesTTestLevenesTable, 
+                                                          dataset, options, variable) {
+  # Compute results
+  levene <- car::leveneTest(dataset[[ .v(variable) ]],
+                            dataset[[ .v(options$groupingVariable) ]], "mean")
+  F <- .clean(levene[1, "F value"])
+  df <- .clean(levene[1, "Df"])
+  p <- .clean(levene[1, "Pr(>F)"])
+  
+  # Add row to the table
+  row <- list(variable = variable, F = F, df = df, p = p)
+  independentSamplesTTestLevenesTable$addRows(rows = row, rowNames = variable)
+}
+
+.createIndependentSamplesTTestDescriptivesContainer <- function(jaspResults, dataset, options, ready) {
+  
+  # Check if object can be reused (in case relevant options did not change)
+  if (!is.null(jaspResults[["independentSamplesTTestDescriptivesContainer"]])) {
+    return()
+  }
+  
+  # Create container
+  independentSamplesTTestDescriptivesContainer <- createJaspContainer(title = "Descriptives")
+  jaspResults[["independentSamplesTTestDescriptivesContainer"]] <- independentSamplesTTestDescriptivesContainer
+  independentSamplesTTestDescriptivesContainer$dependOnOptions(c("variables", "groupingVariable", "missingValues", 
+                                                                 "descriptives", "descriptivesPlots",
+                                                                 "descriptivesPlotsConfidenceInterval"))
+  
+  # Create Descriptives Table (if wanted)
+  if (options$descriptives == TRUE) {
+    .createIndependentSamplesTTestDescriptivesTable(independentSamplesTTestDescriptivesContainer = independentSamplesTTestDescriptivesContainer, 
+                                                   dataset = dataset, options = options, ready = ready)
+  }
+  
+  # Create Descriptives Plots Container (if wanted and if analyses can be conducted)
+  if (options$descriptivesPlots == TRUE && ready == TRUE) {
+    .createIndependentSamplesTTestDescriptivesPlotsContainer(independentSamplesTTestDescriptivesContainer = independentSamplesTTestDescriptivesContainer,
+                                               dataset = dataset, options = options)
+  }
+}
+
+.createIndependentSamplesTTestDescriptivesTable <- function(independentSamplesTTestDescriptivesContainer, 
+                                                            dataset, options, ready) {
+  
+  # Check if object can be reused (in case relevant options did not change)
+  if (!is.null(independentSamplesTTestDescriptivesContainer[["independentSamplesTTestDescriptivesTable"]])) {
+    return()
+  }
+  
+  # Create table
+  independentSamplesTTestDescriptivesTable <- createJaspTable(title = "Group Descriptives")
+  independentSamplesTTestDescriptivesContainer[["independentSamplesTTestDescriptivesTable"]] <- independentSamplesTTestDescriptivesTable
+  independentSamplesTTestDescriptivesTable$showSpecifiedColumnsOnly <- TRUE
+  independentSamplesTTestDescriptivesTable$dependOnOptions(c("variables", "groupingVariable", "missingValues",
+                                                             "descriptives"))
+  
+  # Add columns for table
+  independentSamplesTTestDescriptivesTable$addColumnInfo(name = "variable", title = "",
+                                                         type = "string",   combine = TRUE)
+  independentSamplesTTestDescriptivesTable$addColumnInfo(name = "group",    title = "Group",
+                                                         type = "string")
+  independentSamplesTTestDescriptivesTable$addColumnInfo(name = "N",        title = "N",
+                                                         type = "integer")
+  independentSamplesTTestDescriptivesTable$addColumnInfo(name = "mean",     title = "Mean",
+                                                         type = "number",   format = "sf:4;dp:3")
+  independentSamplesTTestDescriptivesTable$addColumnInfo(name = "sd",       title = "Std. Deviation",
+                                                         type = "number",   format = "sf:4;dp:3")
+  independentSamplesTTestDescriptivesTable$addColumnInfo(name = "se",       title = "Std. Error",
+                                                         type = "number",   format = "sf:4;dp:3")
+  
+  # Fill up table with results
+  .fillUpIndependentSamplesTTestDescriptivesTable(independentSamplesTTestDescriptivesTable = independentSamplesTTestDescriptivesTable,
+                                                  dataset = dataset, options = options, ready = ready)
+  
+  return(NULL)
+} 
+
+.fillUpIndependentSamplesTTestDescriptivesTable <- function(independentSamplesTTestDescriptivesTable, 
+                                                            dataset, options, ready) {
+  
+  # If analyses can be conducted, compute results and add row for each level of each variable
+  if (ready) {
+    for (variable in options$variables) {
+      for (level in levels(dataset[[.v(options$groupingVariable)]])) {
+        .addRowForIndependentSamplesTTestDescriptivesTable(independentSamplesTTestDescriptivesTable = independentSamplesTTestDescriptivesTable,
+                                                           dataset = dataset, options = options, 
+                                                           variable = variable, level = level)
+      }
+    }
+  # If analyses cannot be conducted, add an empty row
+  } else {
+    row <- list(variable = ".", group = ".", N = ".", mean = ".", sd = ".", se = ".")
+    independentSamplesTTestDescriptivesTable$addRows(rows = row)
+  }
+  
+  return(NULL)
+}
+
+.addRowForIndependentSamplesTTestDescriptivesTable <- function(independentSamplesTTestDescriptivesTable, 
+                                                              dataset, options, variable, level) {
+  
+  # Fet the dependent variable at a certain factor level
+  data <- na.omit(dataset[[.v(variable)]][dataset[[.v(options$groupingVariable)]] == level])
+  
+  # Compute results
+  n <- .clean(length(data))
+  mean <- .clean(mean(data))
+  std <- .clean(sd(data))
+  sem <- .clean(sd(data) / sqrt(length(data)))
+  
+  # Add row to the table
+  row <- list(variable = variable, group = level, N = n, mean = mean, sd = std, se = sem)
+  independentSamplesTTestDescriptivesTable$addRows(rows = row, rowNames = paste0(variable, level))
+}
+
+.createIndependentSamplesTTestDescriptivesPlotsContainer <- function(independentSamplesTTestDescriptivesContainer,
+                                                                     dataset, options) {
+  
+  # Check if object can be reused (in case relevant options did not change)
+  if (!is.null(independentSamplesTTestDescriptivesContainer[["independentSamplesTTestDescriptivesPlotsContainer"]])) {
+    return()
+  }
+  
+  # Create container
+  independentSamplesTTestDescriptivesPlotsContainer <- createJaspContainer(title = "Descriptives Plot(s)")
+  independentSamplesTTestDescriptivesContainer[["independentSamplesTTestDescriptivesPlotsContainer"]] <- independentSamplesTTestDescriptivesPlotsContainer
+  independentSamplesTTestDescriptivesPlotsContainer$dependOnOptions(c("variables", "groupingVariable", 
+                                                                      "missingValues", "descriptivesPlots",
+                                                                      "descriptivesPlotsConfidenceInterval",
+                                                                      "plotWidth", "plotHeight"))
+  
+  # Fill container with plots
+  .fillIndependentSamplesTTestDescriptivesPlotsContainerwithPlots(independentSamplesTTestDescriptivesPlotsContainer = independentSamplesTTestDescriptivesPlotsContainer,
+                                                                  dataset = dataset, options = options)
+  
+  return(NULL)
+}
+
+.fillIndependentSamplesTTestDescriptivesPlotsContainerwithPlots <- function(independentSamplesTTestDescriptivesPlotsContainer,
+                                                                            dataset, options) {
+  
+  # For each variable, create Descriptives Plot
+  for (variable in options$variables) {
+    
+    # Get plot that will be added to container
+    descriptivesPlot <- .createIndependentSamplesTTestDescriptivesPlots(dataset = dataset, options = options,
+                                                                        variable = variable)
+    
+    # Add plot to container
+    independentSamplesTTestDescriptivesPlot <- createJaspPlot(plot = descriptivesPlot, title = variable,
+                                                              width = options$plotWidth,
+                                                              height = options$plotHeight)
+    independentSamplesTTestDescriptivesPlotsContainer[[variable]] <- independentSamplesTTestDescriptivesPlot
+    independentSamplesTTestDescriptivesPlot$dependOnOptions(c("variables", "groupingVariable",
+                                                              "missingValues", "descriptivesPlots",
+                                                              "descriptivesPlotsConfidenceInterval",
+                                                              "plotWidth", "plotHeight"))
+  }
+        
+  return(NULL)
+}
+
+.createIndependentSamplesTTestDescriptivesPlots <- function(dataset, options, variable) {
+  
+  base_breaks_x <- function(x) {
+    b <- unique(as.numeric(x))
+    d <- data.frame(y = -Inf, yend = -Inf, x = min(b), xend = max(b))
+    list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y, xend = xend, yend = yend), 
+                               inherit.aes = FALSE, size = 1))
+  }
+  
+  base_breaks_y <- function(x) {
+    ci.pos <- c(x[, "dependent"] - x[, "ci"], x[, "dependent"] + x[, "ci"])
+    b <- pretty(ci.pos)
+    d <- data.frame(x = -Inf, xend = -Inf, y = min(b), yend = max(b))
+    list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y,xend = xend, yend = yend),
+                               inherit.aes = FALSE, size = 1),
+         ggplot2::scale_y_continuous(breaks = c(min(b), max(b))))
+  }
+  
+  summaryStat <- .summarySE(as.data.frame(dataset), measurevar = .v(variable),
+                            groupvars = .v(options$groupingVariable),
+                            conf.interval = options$descriptivesPlotsConfidenceInterval,
+                            na.rm = TRUE, .drop = FALSE)
+  
+  colnames(summaryStat)[which(colnames(summaryStat) == .v(variable))] <- "dependent"
+  colnames(summaryStat)[which(colnames(summaryStat) == .v(options$groupingVariable))] <- "groupingVariable"
+  
+  plotPosition <- ggplot2::position_dodge(0.2)
+  
+  descriptivesPlot <- ggplot2::ggplot(summaryStat, ggplot2::aes(x = groupingVariable, y = dependent, group = 1)) +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin = ciLower, ymax = ciUpper), colour = "black", width = 0.2, position = plotPosition) +
+    ggplot2::geom_line(position = plotPosition, size = 0.7) +
+    ggplot2::geom_point(position = plotPosition, size = 4) +
+    ggplot2::ylab(variable) +
+    ggplot2::xlab(options$groupingVariable) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
+                   plot.title = ggplot2::element_text(size = 18),
+                   panel.grid.major = ggplot2::element_blank(), 
+                   axis.title.x = ggplot2::element_text(size = 18, vjust = -0.2),
+                   axis.title.y = ggplot2::element_text(size = 18, vjust = -1),
+                   axis.text.x = ggplot2::element_text(size = 15),
+                   axis.text.y = ggplot2::element_text(size = 15),
+                   panel.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+                   plot.background = ggplot2::element_rect(fill = "transparent",  colour = NA),
+                   legend.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+                   panel.border = ggplot2::element_blank(),
+                   axis.line = ggplot2::element_blank(),
+                   legend.key = ggplot2::element_blank(),
+                   legend.title = ggplot2::element_text(size = 12),
+                   legend.text = ggplot2::element_text(size = 12),
+                   axis.ticks = ggplot2::element_line(size = 0.5),
+                   axis.ticks.margin = grid::unit(1, "mm"),
+                   axis.ticks.length = grid::unit(3, "mm"),
+                   plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) +
+    base_breaks_y(summaryStat) +
+    base_breaks_x(summaryStat$groupingVariable)
+  
+  return(descriptivesPlot)
 }
