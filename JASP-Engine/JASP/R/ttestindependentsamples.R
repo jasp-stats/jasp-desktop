@@ -49,23 +49,23 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   # Set title
   jaspResults$title <- "Independent Samples T-Test"
   
-  # Check if analyses can be conducted
+  # Check if results can be computed
   ready <- (length(options$variables) > 0 && ! is.null(options$groupingVariable))
   
   # Check for errors
 	if (ready) {
 	  
-	  # Error Check 1: Number of levels of the grouping variable
+	  # Error check 1: Number of levels of the grouping variable
 	  .hasErrors(dataset = dataset, perform = "run", type = 'factorLevels',
 	             factorLevels.target = options$groupingVariable, factorLevels.amount = '!= 2',
 	             exitAnalysisIfErrors = TRUE)
 	  
-	  # Error Check 2: Weird data for grouping variable
+	  # Error check 2: Weird data for grouping variable
 	  .hasErrors(dataset, perform = "run", type = c('observations', 'variance', 'infinity'),
 	             all.target = options$groupingVariable, observations.amount = c('< 3'),
 	             exitAnalysisIfErrors = TRUE)
 	  
-	  # Error Check 3: Weird data for dependent variable in each level of the grouping variable
+	  # Error check 3: Weird data for dependent variable in each level of the grouping variable
 	  .hasErrors(dataset, perform = "run", type = c('observations', 'variance', 'infinity'),
 	             all.target = options$variables, all.grouping = options$groupingVariable,
 	             observations.amount = c('< 3'),
@@ -96,7 +96,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
                                                         options = options, ready = ready)
   }
 
-	# Bring state$options up-to-date
+	# Bring state up-to-date
 	state[["options"]] <- options
 	
 	return(state = state)
@@ -106,7 +106,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   
   # Check if object can be reused (in case relevant options did not change)
   if (!is.null(jaspResults[["independentSamplesTTestTableParametric"]])) {
-    return()
+    return(NULL)
   }
   
   # Create table
@@ -120,7 +120,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
                                                            "effectSize", "effectSizeConfidenceIntervalCheckbox",
                                                            "effectSizeConfidenceIntervalPercent", "effectSizeSD"))
   
-  # Add columns for table
+  # Add columns to table
   independentSamplesTTestTableParametric$addColumnInfo(    name = "variable",        title = "Variable",
                                                            type = "string",          combine = TRUE)
   independentSamplesTTestTableParametric$addColumnInfo(    name = "test",            title = "Test",               
@@ -185,7 +185,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   
   # Check if object can be reused (in case relevant options did not change)
   if (!is.null(jaspResults[["independentSamplesTTestTableNonParametric"]])) {
-    return()
+    return(NULL)
   }
   
   # Create table
@@ -199,7 +199,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
                                                            "effectSize", "effectSizeConfidenceIntervalCheckbox",
                                                            "effectSizeConfidenceIntervalPercent"))
   
-  # Add columns for table
+  # Add columns to table
   independentSamplesTTestTableNonParametric$addColumnInfo(    name = "variable",           title = "Variable",
                                                               type = "string",             combine = TRUE)
   independentSamplesTTestTableNonParametric$addColumnInfo(    name = "test",               title = "Test",
@@ -258,7 +258,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
 
 .fillUpIndependentSamplesTTestTable <- function(independentSamplesTTestTable, dataset, options, parametric, ready) {
   
-  # If analysis can be conducted, run each test that the users wants for each variable
+  # If results can be computed, run each test that the users wants for each variable
   if (ready) {
     
     for (variable in options$variables) {
@@ -308,8 +308,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
     
     # Add footnote: VovkSellkeMPR
     if (options$VovkSellkeMPR) {
-      message <- "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value, the maximum possible odds in favor of H\u2081 over H\u2080 equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37 (Sellke, Bayarri, & Berger, 2001)."
-      independentSamplesTTestTable$addFootnote(message = message, symbol = "\u002A")
+      independentSamplesTTestTable$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A")
     }
     
     # Add footnote: Alternative hypothesis
@@ -323,7 +322,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
       independentSamplesTTestTable$addFootnote(message = message, symbol = "<em>Note.</em>")
     }
     
-  # If analysis cannot be conducted, add an empty row
+  # If results cannot be computed, add an empty row
   } else {
     row <- list(variable = ".", test = ".", statistic = ".", df = ".", p = ".", VovkSellkeMPR = ".",
                 meanDiff = ".", seDiff = ".", meanDiffLowerCI = ".", meanDiffUpperCI = ".",
@@ -489,7 +488,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   
   # Check if object can be reused (in case relevant options did not change)
   if (!is.null(jaspResults[["independentSamplesTTestAssumptionChecksContainer"]])) {
-    return()
+    return(NULL)
   }
   
   # Create container
@@ -509,6 +508,8 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
     .createIndependentSamplesTTestLevenesTable(independentSamplesTTestAssumptionChecksContainer = independentSamplesTTestAssumptionChecksContainer,
                                                dataset = dataset, options = options, ready = ready)
   }
+  
+  return(NULL)
 }
 
 .createIndependentSamplesTTestShapiroWilkTable <- function(independentSamplesTTestAssumptionChecksContainer, 
@@ -516,7 +517,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   
   # Check if object can be reused (in case relevant options did not change)
   if (!is.null(independentSamplesTTestAssumptionChecksContainer[["independentSamplesTTestShapiroWilkTable"]])) {
-    return()
+    return(NULL)
   }
   
   # Create table
@@ -526,7 +527,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   independentSamplesTTestShapiroWilkTable$dependOnOptions(c("variables", "groupingVariable", "missingValues", 
                                                             "normalityTests"))
   
-  # Add columns for table
+  # Add columns to table
   independentSamplesTTestShapiroWilkTable$addColumnInfo(name = "dv",     title = "",
                                                         type = "string", combine = TRUE)
   independentSamplesTTestShapiroWilkTable$addColumnInfo(name = "level",  title = "",
@@ -549,7 +550,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
 
 .fillUpIndependentSamplesTTestShapiroWilkTable <- function(independentSamplesTTestShapiroWilkTable, dataset, options, ready) {
   
-  # If analyses can be conducted, compute results and add row for each level of each variable
+  # If results can be computed, compute them and add row for each level of each variable
   if (ready) {
     for (variable in options$variables) {
       for (level in levels(dataset[[.v(options$groupingVariable)]])) {
@@ -558,11 +559,13 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
                                                           variable = variable, level = level)
       }
     }
-  # If analyses cannot be conducted, add an empty row
+  # If results cannot be computed, add an empty row
   } else {
     row <- list(dv = ".", level = ".", W = ".", p = ".")
     independentSamplesTTestShapiroWilkTable$addRows(rows = row)
   }
+  
+  return(NULL)
 }
 
 .addRowForIndependentSamplesTTestShapiroWilkTable <- function(independentSamplesTTestShapiroWilkTable, 
@@ -572,13 +575,15 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   data <- na.omit(dataset[[.v(variable)]][dataset[[.v(options$groupingVariable)]] == level])
   
   # Compute results
-  r <- stats::shapiro.test(data)
-  W <- .clean(as.numeric(r$statistic))
-  p <- .clean(r$p.value)
+  results <- stats::shapiro.test(data)
+  W <- .clean(as.numeric(results$statistic))
+  p <- .clean(results$p.value)
   
   # Add row to the table
   row <- list(dv = variable, level = level, W = W, p = p)
   independentSamplesTTestShapiroWilkTable$addRows(rows = row, rowNames = paste0(variable, level))
+  
+  return(NULL)
 }
 
 .createIndependentSamplesTTestLevenesTable <- function(independentSamplesTTestAssumptionChecksContainer, 
@@ -586,7 +591,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   
   # Check if object can be reused (in case relevant options did not change)
   if (!is.null(independentSamplesTTestAssumptionChecksContainer[["independentSamplesTTestLevenesTable"]])) {
-    return()
+    return(NULL)
   }
   
   # Create table
@@ -596,7 +601,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   independentSamplesTTestLevenesTable$dependOnOptions(c("variables", "groupingVariable", "missingValues", 
                                                         "equalityOfVariancesTests"))
   
-  # Add columns for table
+  # Add columns to table
   independentSamplesTTestLevenesTable$addColumnInfo(name = "variable", title = "",
                                                     type = "string")
   independentSamplesTTestLevenesTable$addColumnInfo(name = "F",        title = "F",
@@ -619,17 +624,18 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
 
 .fillUpIndependentSamplesTTestLevenesTable <- function(independentSamplesTTestLevenesTable, dataset, options, ready) {
   
-  # If analyses can be conducted, compute results and add row for each variable
+  # If results can be computed, compute them and add row for each variable
   if (ready) {
     for (variable in options$variables) {
       .addRowForIndependentSamplesTTestLevenesTable(independentSamplesTTestLevenesTable, 
                                                     dataset, options, variable)
     }
-  # If analyses cannot be conducted, add an empty row
+  # If results cannot be computed, add an empty row
   } else {
     row <- list(variable = ".", F = ".", df = ".", p = ".")
     independentSamplesTTestLevenesTable$addRows(rows = row)
   }
+  
   return(NULL)
 }
 
@@ -645,13 +651,15 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   # Add row to the table
   row <- list(variable = variable, F = F, df = df, p = p)
   independentSamplesTTestLevenesTable$addRows(rows = row, rowNames = variable)
+  
+  return(NULL)
 }
 
 .createIndependentSamplesTTestDescriptivesContainer <- function(jaspResults, dataset, options, ready) {
   
   # Check if object can be reused (in case relevant options did not change)
   if (!is.null(jaspResults[["independentSamplesTTestDescriptivesContainer"]])) {
-    return()
+    return(NULL)
   }
   
   # Create container
@@ -667,11 +675,13 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
                                                    dataset = dataset, options = options, ready = ready)
   }
   
-  # Create Descriptives Plots Container (if wanted and if analyses can be conducted)
+  # Create Descriptives Plots Container (if wanted and if results can be computed)
   if (options$descriptivesPlots == TRUE && ready == TRUE) {
     .createIndependentSamplesTTestDescriptivesPlotsContainer(independentSamplesTTestDescriptivesContainer = independentSamplesTTestDescriptivesContainer,
                                                dataset = dataset, options = options)
   }
+  
+  return(NULL)
 }
 
 .createIndependentSamplesTTestDescriptivesTable <- function(independentSamplesTTestDescriptivesContainer, 
@@ -679,7 +689,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   
   # Check if object can be reused (in case relevant options did not change)
   if (!is.null(independentSamplesTTestDescriptivesContainer[["independentSamplesTTestDescriptivesTable"]])) {
-    return()
+    return(NULL)
   }
   
   # Create table
@@ -689,7 +699,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   independentSamplesTTestDescriptivesTable$dependOnOptions(c("variables", "groupingVariable", "missingValues",
                                                              "descriptives"))
   
-  # Add columns for table
+  # Add columns to table
   independentSamplesTTestDescriptivesTable$addColumnInfo(name = "variable", title = "",
                                                          type = "string",   combine = TRUE)
   independentSamplesTTestDescriptivesTable$addColumnInfo(name = "group",    title = "Group",
@@ -708,12 +718,12 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
                                                   dataset = dataset, options = options, ready = ready)
   
   return(NULL)
-} 
+}
 
 .fillUpIndependentSamplesTTestDescriptivesTable <- function(independentSamplesTTestDescriptivesTable, 
                                                             dataset, options, ready) {
   
-  # If analyses can be conducted, compute results and add row for each level of each variable
+  # If results can be computed, compute them and add row for each level of each variable
   if (ready) {
     for (variable in options$variables) {
       for (level in levels(dataset[[.v(options$groupingVariable)]])) {
@@ -722,7 +732,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
                                                            variable = variable, level = level)
       }
     }
-  # If analyses cannot be conducted, add an empty row
+  # If results cannot be computed, add an empty row
   } else {
     row <- list(variable = ".", group = ".", N = ".", mean = ".", sd = ".", se = ".")
     independentSamplesTTestDescriptivesTable$addRows(rows = row)
@@ -734,7 +744,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
 .addRowForIndependentSamplesTTestDescriptivesTable <- function(independentSamplesTTestDescriptivesTable, 
                                                               dataset, options, variable, level) {
   
-  # Fet the dependent variable at a certain factor level
+  # Get the dependent variable at a certain factor level
   data <- na.omit(dataset[[.v(variable)]][dataset[[.v(options$groupingVariable)]] == level])
   
   # Compute results
@@ -746,6 +756,8 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   # Add row to the table
   row <- list(variable = variable, group = level, N = n, mean = mean, sd = std, se = sem)
   independentSamplesTTestDescriptivesTable$addRows(rows = row, rowNames = paste0(variable, level))
+  
+  return(NULL)
 }
 
 .createIndependentSamplesTTestDescriptivesPlotsContainer <- function(independentSamplesTTestDescriptivesContainer,
@@ -753,7 +765,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   
   # Check if object can be reused (in case relevant options did not change)
   if (!is.null(independentSamplesTTestDescriptivesContainer[["independentSamplesTTestDescriptivesPlotsContainer"]])) {
-    return()
+    return(NULL)
   }
   
   # Create container
@@ -764,39 +776,37 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
                                                                       "descriptivesPlotsConfidenceInterval",
                                                                       "plotWidth", "plotHeight"))
   
-  # Fill container with plots
-  .fillIndependentSamplesTTestDescriptivesPlotsContainerwithPlots(independentSamplesTTestDescriptivesPlotsContainer = independentSamplesTTestDescriptivesPlotsContainer,
-                                                                  dataset = dataset, options = options)
+  # For each variable, add plot
+  for (variable in options$variables) {
+    .addIndependentSamplesTTestDescriptivesPlot(independentSamplesTTestDescriptivesPlotsContainer = independentSamplesTTestDescriptivesPlotsContainer,
+                                                dataset = dataset, options = options, variable = variable)
+  }
   
   return(NULL)
 }
 
-.fillIndependentSamplesTTestDescriptivesPlotsContainerwithPlots <- function(independentSamplesTTestDescriptivesPlotsContainer,
-                                                                            dataset, options) {
+.addIndependentSamplesTTestDescriptivesPlot <- function(independentSamplesTTestDescriptivesPlotsContainer,
+                                                        dataset, options, variable) {
   
-  # For each variable, create Descriptives Plot
-  for (variable in options$variables) {
-    
-    # Get plot that will be added to container
-    descriptivesPlot <- .createIndependentSamplesTTestDescriptivesPlots(dataset = dataset, options = options,
-                                                                        variable = variable)
-    
-    # Add plot to container
-    independentSamplesTTestDescriptivesPlot <- createJaspPlot(plot = descriptivesPlot, title = variable,
-                                                              width = options$plotWidth,
-                                                              height = options$plotHeight)
-    independentSamplesTTestDescriptivesPlotsContainer[[variable]] <- independentSamplesTTestDescriptivesPlot
-    independentSamplesTTestDescriptivesPlot$dependOnOptions(c("variables", "groupingVariable",
-                                                              "missingValues", "descriptivesPlots",
-                                                              "descriptivesPlotsConfidenceInterval",
-                                                              "plotWidth", "plotHeight"))
-  }
+  # Make plot
+  descriptivesPlot <- .makeIndependentSamplesTTestDescriptivesPlots(dataset = dataset, options = options,
+                                                                    variable = variable)
+
+  # Add plot to container
+  independentSamplesTTestDescriptivesPlot <- createJaspPlot(plot = descriptivesPlot, title = variable,
+                                                            width = 350, height = 300)
+  independentSamplesTTestDescriptivesPlotsContainer[[variable]] <- independentSamplesTTestDescriptivesPlot
+  independentSamplesTTestDescriptivesPlot$dependOnOptions(c("variables", "groupingVariable",
+                                                            "missingValues", "descriptivesPlots",
+                                                            "descriptivesPlotsConfidenceInterval",
+                                                            "plotWidth", "plotHeight"))
         
   return(NULL)
 }
 
-.createIndependentSamplesTTestDescriptivesPlots <- function(dataset, options, variable) {
+.makeIndependentSamplesTTestDescriptivesPlots <- function(dataset, options, variable) {
   
+  # Define base breaks function for x
   base_breaks_x <- function(x) {
     b <- unique(as.numeric(x))
     d <- data.frame(y = -Inf, yend = -Inf, x = min(b), xend = max(b))
@@ -804,6 +814,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
                                inherit.aes = FALSE, size = 1))
   }
   
+  # Define base breaks function for y
   base_breaks_y <- function(x) {
     ci.pos <- c(x[, "dependent"] - x[, "ci"], x[, "dependent"] + x[, "ci"])
     b <- pretty(ci.pos)
@@ -813,6 +824,10 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
          ggplot2::scale_y_continuous(breaks = c(min(b), max(b))))
   }
   
+  # Define plot position
+  plotPosition <- ggplot2::position_dodge(0.2)
+  
+  # Put together data frames for plot
   summaryStat <- .summarySE(as.data.frame(dataset), measurevar = .v(variable),
                             groupvars = .v(options$groupingVariable),
                             conf.interval = options$descriptivesPlotsConfidenceInterval,
@@ -821,8 +836,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   colnames(summaryStat)[which(colnames(summaryStat) == .v(variable))] <- "dependent"
   colnames(summaryStat)[which(colnames(summaryStat) == .v(options$groupingVariable))] <- "groupingVariable"
   
-  plotPosition <- ggplot2::position_dodge(0.2)
-  
+  # Make plot
   descriptivesPlot <- ggplot2::ggplot(summaryStat, ggplot2::aes(x = groupingVariable, y = dependent, group = 1)) +
     ggplot2::geom_errorbar(ggplot2::aes(ymin = ciLower, ymax = ciUpper), colour = "black", width = 0.2, position = plotPosition) +
     ggplot2::geom_line(position = plotPosition, size = 0.7) +
@@ -852,5 +866,6 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
     base_breaks_y(summaryStat) +
     base_breaks_x(summaryStat$groupingVariable)
   
+  # Return plot
   return(descriptivesPlot)
 }

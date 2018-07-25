@@ -103,16 +103,6 @@
 			"name": "descriptivesPlotsConfidenceInterval",
 			"type": "Number",
 			"value": 0.950
-		},
-		{
-			"name": "plotWidth",
-			"type": "Integer",
-			"default": 350
-		},
-		{
-			"name": "plotHeight",
-			"type": "Integer",
-			"default": 300
-		}
+        }
 	]
 }
