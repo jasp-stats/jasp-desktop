@@ -34,6 +34,11 @@
 			"type": "Number",
 			"value": 0.950
 		},
+        {
+            "name": "VovkSellkeMPR",
+            "type": "Boolean",
+            "default": false
+        },
 		{
 			"name": "descriptivesPlots",
 			"type": "Boolean"
@@ -45,11 +50,6 @@
 			"name": "descriptivesPlotsConfidenceInterval",
 			"type": "Number",
 			"value": 0.950
-		},
-		{
-			"name": "VovkSellkeMPR",
-			"type": "Boolean",
-			"default": false
-		}
+        }
     ]
 }
