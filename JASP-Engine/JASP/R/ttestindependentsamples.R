@@ -19,11 +19,11 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   
   # Update options
   if (options$hypothesis == "groupOneGreater") {
-    options$hypothesis <- "greater"
+    options$hypothesisRec <- "greater"
   } else if (options$hypothesis == "groupTwoGreater") {
-    options$hypothesis <- "less"
+    options$hypothesisRec <- "less"
   } else {
-    options$hypothesis <- "two.sided"
+    options$hypothesisRec <- "two.sided"
   }
   
   # Define state if empty
@@ -312,11 +312,11 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
     }
     
     # Add footnote: Alternative hypothesis
-    if (options$hypothesis == "greater") {
+    if (options$hypothesisRec == "greater") {
       message <- paste0("For all tests, the alternative hypothesis specifies that group <em>", levels(dataset[[.v(options$groupingVariable)]])[1],
                         "</em> is greater than group <em>", levels(dataset[[.v(options$groupingVariable)]])[2], "</em>.")
       independentSamplesTTestTable$addFootnote(message = message, symbol = "<em>Note.</em>")
-    } else if (options$hypothesis == "less") {
+    } else if (options$hypothesisRec == "less") {
       message <- paste0("For all tests, the alternative hypothesis specifies that group  <em>", levels(dataset[[.v(options$groupingVariable)]])[1],
                         "</em> is less than group <em>", levels(dataset[[.v(options$groupingVariable)]])[2], "</em>.")
       independentSamplesTTestTable$addFootnote(message = message, symbol = "<em>Note.</em>")
@@ -344,7 +344,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   result <- try(silent = FALSE, expr = {
     
     # Compute results for everything except for effect sizes
-    r <- stats::t.test(formula = formula, data = dataset, alternative = options$hypothesis,
+    r <- stats::t.test(formula = formula, data = dataset, alternative = options$hypothesisRec,
                        var.equal = (test == "Student"), conf.level = options$meanDiffConfidenceIntervalPercent, 
                        paired = FALSE)
     
@@ -372,7 +372,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
     }
     
     # Determine the proportion for the effect size ci depending on the kind of hypothesis selected by the user
-    if (options$hypothesis != "two.sided") {
+    if (options$hypothesisRec != "two.sided") {
       ciEffSize <- 1-(1-options$effectSizeConfidenceIntervalPercent)*2
     } else {
       ciEffSize <- options$effectSizeConfidenceIntervalPercent
@@ -389,10 +389,10 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
     hedgesgLowerCI <- .clean(as.numeric(effectsizes["l.g"]))
     hedgesgUpperCI <- .clean(as.numeric(effectsizes["u.g"]))
     
-    if (options$hypothesis == "greater") {
+    if (options$hypothesisRec == "greater") {
       cohensdUpperCI <- .clean(Inf)
       hedgesgUpperCI <- .clean(Inf)
-    } else if (options$hypothesis == "less") {
+    } else if (options$hypothesisRec == "less") {
       cohensdLowerCI <- .clean(-Inf)
       hedgesgLowerCI <- .clean(-Inf)
     }
@@ -422,7 +422,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   result <- try(silent = FALSE, expr = {
     
     # Compute results for everything except for effect sizes
-    r <- stats::wilcox.test(formula = formula, data = dataset, alternative = options$hypothesis,
+    r <- stats::wilcox.test(formula = formula, data = dataset, alternative = options$hypothesisRec,
                             conf.int = TRUE, conf.level = options$meanDiffConfidenceIntervalPercent, 
                             paired = FALSE)
     
@@ -437,22 +437,22 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
     wSE <- sqrt((ns[1]*ns[2] * (ns[1]+ns[2] + 1))/12)
     rankBisSE <- sqrt(4 * 1/(ns[1]*ns[2])^2 * wSE^2)
     zRankBis <- atanh(rbc)
-    if(options$hypothesis == "two.sided") {
+    if (options$hypothesisRec == "two.sided") {
       rbcConfInt <- sort(c(tanh(zRankBis + qnorm((1-options$effectSizeConfidenceIntervalPercent)/2)*rankBisSE), tanh(zRankBis + qnorm((1+options$effectSizeConfidenceIntervalPercent)/2)*rankBisSE)))
-    }else if (options$hypothesis == "less") {
+    } else if (options$hypothesisRec == "less") {
       rbcConfInt <- sort(c(-Inf, tanh(zRankBis + qnorm(options$effectSizeConfidenceIntervalPercent)*rankBisSE)))
-    }else if (options$hypothesis == "greater") {
+    } else if (options$hypothesisRec == "greater") {
       rbcConfInt <- sort(c(tanh(zRankBis + qnorm((1-options$effectSizeConfidenceIntervalPercent))*rankBisSE), Inf))
     }
     rbcLowerCI <- .clean(as.numeric(rbcConfInt[1]))
     rbcUpperCI <- .clean(as.numeric(rbcConfInt[2]))
     
     # Compute results for Cliff's Delta
-    if (options$hypothesis == "two.sided") {
+    if (options$hypothesisRec == "two.sided") {
       ciEffSize <- options$effectSizeConfidenceIntervalPercent
-    } else if (options$hypothesis == "less") {
+    } else if (options$hypothesisRec == "less") {
       ciEffSize <- 1 - (1 - options$effectSizeConfidenceIntervalPercent) * 2
-    } else if (options$hypothesis == "greater") {
+    } else if (options$hypothesisRec == "greater") {
       ciEffSize <- 1 - (1 - options$effectSizeConfidenceIntervalPercent) * 2
     }
     cliffsDeltaResults <- effsize::"cliff.delta"(formula = formula, data = dataset, conf.level = ciEffSize)
@@ -460,9 +460,9 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
     cliffsDeltaLowerCI <- .clean(as.numeric(cliffsDeltaResults[2]$conf.int[1]))
     cliffsDeltaUpperCI <- .clean(as.numeric(cliffsDeltaResults[2]$conf.int[2]))
     
-    if (options$hypothesis == "greater") {
+    if (options$hypothesisRec == "greater") {
       cliffsDeltaUpperCI <- .clean(Inf)
-    } else if (options$hypothesis == "less") {
+    } else if (options$hypothesisRec == "less") {
       cliffsDeltaLowerCI <- .clean(-Inf)
     }
     
