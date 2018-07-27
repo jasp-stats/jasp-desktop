@@ -19,11 +19,11 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
   
   # Update options
   if (options$hypothesis == "notEqualToTestValue") {
-    options$hypothesis <- "two.sided"
+    options$hypothesisRec <- "two.sided"
   } else if (options$hypothesis == "greaterThanTestValue") {
-    options$hypothesis <- "greater"
+    options$hypothesisRec <- "greater"
   } else {
-    options$hypothesis <- "less"
+    options$hypothesisRec <- "less"
   }
 
   # Define state if empty
@@ -137,11 +137,11 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
     }
     
     # Add footnote: Alternative hypothesis
-    if (options$hypothesis == "two.sided") {
+    if (options$hypothesisRec == "two.sided") {
       binomialTable$addFootnote(message = .messages("footnote", "binomNeq", value=options$testValue), symbol="<em>Note.</em>")
-    } else if (options$hypothesis == "greater") {
+    } else if (options$hypothesisRec == "greater") {
       binomialTable$addFootnote(message = .messages("footnote", "binomGreater", value=options$testValue), symbol="<em>Note.</em>")
-    } else if (options$hypothesis == "less") {
+    } else if (options$hypothesisRec == "less") {
       binomialTable$addFootnote(message = .messages("footnote", "binomLess", value=options$testValue), symbol="<em>Note.</em>")
     }
     
@@ -161,7 +161,7 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
   nObs <- length(data)
   counts <- sum(data == level)
   proportion <- counts/nObs
-  results <- stats::binom.test(x = counts, n = nObs, p = options$testValue, alternative = options$hypothesis,
+  results <- stats::binom.test(x = counts, n = nObs, p = options$testValue, alternative = options$hypothesisRec,
                                conf.level = options$confidenceIntervalInterval)
   p <- results$p.value
   if (p == FALSE) {
