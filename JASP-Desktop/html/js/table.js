@@ -416,9 +416,9 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 			return self.$el.find('th, td:not(.squash-left)');
 		};
 
-		var tablePrimative = new JASPWidgets.tablePrimative({ model: this.model, className: "jasp-table-primative jasp-display-primative" });
-		this.localViews.push(tablePrimative);
-		this.views.push(tablePrimative);
+		var tablePrimitive = new JASPWidgets.tablePrimitive({ model: this.model, className: "jasp-table-primative jasp-display-primative" });
+		this.localViews.push(tablePrimitive);
+		this.views.push(tablePrimitive);
 	},
 
 	titleFormatOverride: 'span',
@@ -426,7 +426,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 	disableTitleExport: true,
 });
 
-JASPWidgets.tablePrimative = JASPWidgets.View.extend({
+JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 
 	render: function () {
 		var optSchema = this.model.get("schema");
