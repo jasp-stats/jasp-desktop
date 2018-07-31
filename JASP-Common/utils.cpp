@@ -255,7 +255,7 @@ void Utils::sleep(int ms)
 #endif
 }
 
-const string Utils::emptyValue = ".";
+const string Utils::emptyValue = "";
 const vector<string> Utils::_defaultEmptyValues = {"NaN", "nan", ".", "NA"};
 vector<double> Utils::_currentDoubleEmptyValues = {};
 vector<string> Utils::_currentEmptyValues = Utils::_defaultEmptyValues;

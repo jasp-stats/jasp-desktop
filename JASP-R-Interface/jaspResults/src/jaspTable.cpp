@@ -469,7 +469,7 @@ Json::Value	jaspTable::schemaJson()
 Json::Value jaspTable::getCell(int col, int row)
 {
 	if(_data.size() <= col || _data[col].size() <= row)
-		return Json::Value(Json::nullValue);
+		return Json::nullValue;
 	return _data[col][row];
 }
 
