@@ -25,7 +25,7 @@
 
 #include <QtAlgorithms>
 
-#include <boost/foreach.hpp>
+
 
 BoundGroupBox::BoundGroupBox(QWidget *parent) :
 	GroupBox(parent)
@@ -58,12 +58,12 @@ bool compareNames(QObject *left, QObject *right)
 
 void BoundGroupBox::updateGroup()
 {
-	BOOST_FOREACH(QAbstractButton *button, _buttonGroup->buttons())
+	for(QAbstractButton *button : _buttonGroup->buttons())
 		_buttonGroup->removeButton(button);
 
 	QList<QRadioButton *> buttons;
 
-	foreach (QObject *child, this->children())
+	for (QObject *child : this->children())
 	{
 		QRadioButton *radio = qobject_cast<QRadioButton *>(child);
 		if (radio != NULL)
@@ -75,7 +75,7 @@ void BoundGroupBox::updateGroup()
 	int index = 0;
 	int selectedIndex = _model.selectedIndex();
 
-	foreach (QRadioButton *button, buttons)
+	for (QRadioButton *button : buttons)
 	{
 		if (index == selectedIndex)
 			button->setChecked(true);

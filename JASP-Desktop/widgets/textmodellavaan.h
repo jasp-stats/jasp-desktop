@@ -21,7 +21,7 @@
 
 #include "common.h"
 #include "boundmodel.h"
-#include "options/optionstring.h"
+#include "analysis/options/optionstring.h"
 #include <QTextDocument>
 #include <QStringList>
 #include <QSyntaxHighlighter>

@@ -21,9 +21,9 @@
 
 #include <QAbstractListModel>
 #include <QQuickItem>
-#include "terms.h"
+#include "analysis/options/terms.h"
 #include "common.h"
-#include "variableinfo.h"
+#include "analysis/options/variableinfo.h"
 
 class AnalysisQMLForm;
 

@@ -3,6 +3,7 @@
 #include <set>
 #include <sstream>
 #include <queue>
+#include "enumutilities.h"
 #ifdef JASP_R_INTERFACE_LIBRARY
 #include "jsonredirect.h"
 #else
@@ -11,11 +12,8 @@
 
 void JASPprint(std::string msg);
 
-enum class jaspObjectType { unknown, container, table, plot, json, list, results, html, state };
-
-
-std::string		jaspObjectTypeToString(jaspObjectType type);
-jaspObjectType	jaspObjectTypeStringToObjectType(std::string type);
+DECLARE_ENUM(jaspObjectType, unknown, container, table, plot, json, list, results, html, state);
+jaspObjectType jaspObjectTypeStringToObjectType(std::string type);
 
 //Simple base-class for all JASP-objects, containing things like a title or a warning and stuff like that
 class jaspObject

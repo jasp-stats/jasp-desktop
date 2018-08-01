@@ -19,7 +19,7 @@
 #ifndef BOUNDQMLLISTVIEW_H
 #define BOUNDQMLLISTVIEW_H
 
-#include "boundqmlitem.h"
+#include "analysis/boundqmlitem.h"
 #include "listmodelassigned.h"
 
 class BoundQMLListView : public BoundQMLItem

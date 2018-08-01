@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>QMLTheme/Theme/qmldir</file>
-        <file>QMLTheme/Theme/Theme.qml</file>
         <file>JASPControls/Button.qml</file>
         <file>JASPControls/CheckBox.qml</file>
         <file>JASPControls/Switch.qml</file>
@@ -21,5 +20,7 @@
         <file>JASPControls/PercentField.qml</file>
         <file>JASPControls/TableView.qml</file>
         <file>JASPControls/ComboBox.qml</file>
+        <file>modules/ModuleInstaller.qml</file>
+        <file>QMLTheme/Theme/JASPTheme.qml</file>
     </qresource>
 </RCC>

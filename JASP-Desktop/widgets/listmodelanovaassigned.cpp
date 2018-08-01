@@ -17,8 +17,8 @@
 //
 
 #include "listmodelanovaassigned.h"
-#include "qutils.h"
-#include "options/optionboolean.h"
+#include "utilities/qutils.h"
+#include "analysis/options/optionboolean.h"
 #include "listmodeltermsavailable.h"
 #include "listmodeltermsassigned.h"
 
@@ -79,7 +79,7 @@ void ListModelAnovaAssigned::bindTo(Option *option)
 	_terms.clear();
 	_terms.removeParent();
 
-	foreach (Options *row, _rows)
+	for (Options *row : _rows)
 	{
 		OptionTerm *nameOption = static_cast<OptionTerm*>(row->get(0));
 		vector<string> term = nameOption->term();
@@ -112,7 +112,7 @@ void ListModelAnovaAssigned::removeTermsAfterBeingDropped(const QList<int> &indi
 	Terms terms = _terms;
 	Terms toRemove;
 
-	foreach (const int &index, sorted)
+	for (const int &index : sorted)
 	{
 		if (index != lastRowDeleted)
 		{
@@ -123,7 +123,7 @@ void ListModelAnovaAssigned::removeTermsAfterBeingDropped(const QList<int> &indi
 		lastRowDeleted = index;
 	}
 
-	foreach (const Term &rem, toRemove)
+	for (const Term &rem : toRemove)
 	{
 		size_t i = 0;
 

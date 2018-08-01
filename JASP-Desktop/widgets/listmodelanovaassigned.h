@@ -21,8 +21,8 @@
 
 #include "listmodelassigned.h"
 #include "listmodelavailable.h"
-#include "options/optionterm.h"
-#include "options/optionstable.h"
+#include "analysis/options/optionterm.h"
+#include "analysis/options/optionstable.h"
 
 class ListModelAnovaAssigned : public ListModelAssigned
 {

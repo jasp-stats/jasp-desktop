@@ -1,7 +1,7 @@
 #ifndef LISTMODELTABLE_H
 #define LISTMODELTABLE_H
 
-#include "analysisforms/analysisqmlform.h"
+#include "analysis/analysisqmlform.h"
 #include "common.h"
 
 #include <QAbstractListModel>

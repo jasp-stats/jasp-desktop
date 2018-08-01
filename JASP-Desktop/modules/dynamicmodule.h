@@ -11,22 +11,48 @@
 #include "ribbonentry.h"
 #include "jsonredirect.h"
 #include "enginedefinitions.h"
+#include "utilities/appdirs.h"
 
 namespace Modules
 {
+
+struct ModuleException : public std::runtime_error
+{
+	ModuleException(std::string moduleName, std::string problemDescription) : std::runtime_error("Module " + moduleName + " had a problem: " + problemDescription) {}
+};
 
 class DynamicModule : public QObject
 {
 	Q_OBJECT
 public:
-	explicit DynamicModule(QString moduleDirectory, QObject *parent) : QObject(parent), _moduleFolder(moduleDirectory) { loadModule(); }
+	explicit DynamicModule(QString moduleDirectory, QObject *parent) : QObject(parent), _moduleFolder(moduleDirectory)
+	{
+		_status = loadModule() ? moduleStatus::installNeeded : moduleStatus::loadingNeeded;
+	}
 
-	std::string		name()				const { return _name; }
-	bool			error()				const { return _status == moduleStatus::error; }
-	bool			readyForUse()		const { return _status == moduleStatus::readyForUse; }
-	bool			installNeeded()		const { return _status == moduleStatus::installNeeded; }
-	bool			loadingNeeded()		const { return _status == moduleStatus::loadingNeeded; }
-	QString			moduleRLibrary()	const { return _moduleFolder.absolutePath() + "/" + _libraryRName + "/"; }
+	~DynamicModule()
+	{
+		for(auto * entry : _ribbonEntries)
+			delete entry;
+		_ribbonEntries.clear();
+	}
+
+
+
+	std::string		name()				const { return _name;			}
+	std::string		title()				const { return _title;			}
+	std::string		author()			const { return _author;			}
+	int				version()			const { return _version;		}
+	std::string		website()			const { return _website;		}
+	std::string		license()			const { return _license;		}
+	std::string		maintainer()		const { return _maintainer;		}
+	std::string		description()		const { return _description;	}
+
+	bool			error()				const { return _status == moduleStatus::error;			}
+	bool			readyForUse()		const { return _status == moduleStatus::readyForUse;	}
+	bool			installNeeded()		const { return _status == moduleStatus::installNeeded;	}
+	bool			loadingNeeded()		const { return _status == moduleStatus::loadingNeeded;	}
+	QString			moduleRLibrary()	const { return  _moduleFolder.absolutePath() + "/" + _libraryRName + "/"; }
 	Json::Value		requiredPackages()	const { return _requiredPackages; }
 
 	Json::Value		requestJsonForPackageLoadingRequest();
@@ -36,12 +62,20 @@ public:
 	void		setInstalled(bool succes)	{ _status = succes ? moduleStatus::loadingNeeded	: moduleStatus::error; }
 	void		setLoaded(bool succes)		{ _status = succes ? moduleStatus::readyForUse		: moduleStatus::error; }
 
+	std::string	qmlFilePath(std::string qmlFileName)	const;
+	std::string	rModuleCall(std::string function)		const { return _name + "$" + function + _exposedPostFix; }
+
+	AnalysisEntry* firstAnalysisEntry(); //Just for testing
+	AnalysisEntry* retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile);
+
+	static std::string moduleNameFromFolder(std::string folderName) { folderName.erase(std::remove(folderName.begin(), folderName.end(), ' '), folderName.end());  return folderName;}
+
+	std::string generatedPackageName()					{ return _name+"Pkg"; }
 
 private:
-	void		loadModule();
+	bool		loadModule(); //returns true if install of package(s) should be done
 	void		generateRPackage();
 	void		createRLibraryFolder();
-	std::string generatedPackageName()					{ return _name+"Pkg"; }
 	std::string generateModuleLoadingR();
 	std::string generateModuleInstallingR();
 	std::string generateNamespaceFileForRPackage();
@@ -56,13 +90,16 @@ private:
 	std::string					_name,
 								_title,
 								_author,
+								_website,
 								_license,
 								_maintainer,
 								_description;
 
 	Json::Value					_requiredPackages;
-	std::vector<RibbonEntry>	_ribbonEntries;
-	const char *				_libraryRName = "libraryR";
+	std::vector<RibbonEntry*>	_ribbonEntries;
+	const char					*_libraryRName = "libraryR",
+								*_exposedPostFix = "_exposed";
+
 
 };
 

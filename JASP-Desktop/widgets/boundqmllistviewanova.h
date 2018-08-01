@@ -2,7 +2,7 @@
 #define BOUNDQMLLISTVIEWANOVA_H
 
 #include "boundqmllistview.h"
-#include "options/optionstable.h"
+#include "analysis/options/optionstable.h"
 #include "listmodelanovaassigned.h"
 
 class BoundQMLListViewAnova : public BoundQMLListView

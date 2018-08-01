@@ -19,11 +19,11 @@
 #ifndef BOUNDQMLTEXTINPUT_H
 #define BOUNDQMLTEXTINPUT_H
 
-#include "boundqmlitem.h"
-#include "options/optioninteger.h"
-#include "options/optionnumber.h"
-#include "options/optionstring.h"
-#include "options/optionintegerarray.h"
+#include "analysis/boundqmlitem.h"
+#include "analysis/options/optioninteger.h"
+#include "analysis/options/optionnumber.h"
+#include "analysis/options/optionstring.h"
+#include "analysis/options/optionintegerarray.h"
 
 #include <QObject>
 

@@ -20,7 +20,8 @@
 #include <sstream>
 #include <cstdio>
 
-#include "../JASP-Common/analysisloader.h"
+//#include "../JASP-Common/analysisloader.h"
+#include <boost/bind.hpp>
 #include "../JASP-Common/tempfiles.h"
 #include "../JASP-Common/utils.h"
 #include "../JASP-Common/sharedmemory.h"
@@ -49,7 +50,7 @@ Engine::Engine(int slaveNo, unsigned long parentPID) : _slaveNo(slaveNo), _paren
 	assert(_EngineInstance == NULL);
 	_EngineInstance = this;
 
-	tempfiles_attach(parentPID);
+	TempFiles::attach(parentPID);
 
 	rbridge_setDataSetSource(			boost::bind(&Engine::provideDataSet,				this));
 	rbridge_setFileNameSource(			boost::bind(&Engine::provideTempFileName,			this, _1, _2, _3));
@@ -282,27 +283,17 @@ void Engine::receiveModuleRequestMessage(Json::Value jsonRequest)
 	_currentEngineState = engineState::idle;
 }
 
-
-//Analysis stuff:
-
 void Engine::receiveAnalysisMessage(Json::Value jsonRequest)
 {
 #ifdef PRINT_ENGINE_MESSAGES
 	std::cout << jsonRequest.toStyledString() << std::endl;
-	std::cout.flush();
 #endif
 
 	int analysisId		= jsonRequest.get("id", -1).asInt();
 	performType perform	= performTypeFromString(jsonRequest.get("perform", "run").asString());
 
-	if (analysisId == _analysisId && _status == running)
-	{
-		// if the current running analysis has changed
-		if (perform == performType::init || (_analysisJaspResults && perform == performType::run))
-			_status = changed;
-		else
-			_status = aborted;
-	}
+	if (analysisId == _analysisId && _status == running) // if the current running analysis has changed
+		_status = (perform == performType::init || (_analysisJaspResults && perform == performType::run)) ? changed : aborted;
 	else
 	{
 		// the new analysis should be init or run (existing analyses will be aborted)
@@ -321,18 +312,19 @@ void Engine::receiveAnalysisMessage(Json::Value jsonRequest)
 
 	if (_status == toInit || _status == toRun || _status == changed || _status == saveImg || _status == editImg)
 	{
-		_analysisName			= jsonRequest.get("name",			Json::nullValue).asString();
-		_analysisTitle			= jsonRequest.get("title",			Json::nullValue).asString();
-		_analysisDataKey		= jsonRequest.get("dataKey",		Json::nullValue).toStyledString();
-		_analysisOptions		= jsonRequest.get("options",		Json::nullValue).toStyledString();
-		_analysisResultsMeta	= jsonRequest.get("resultsMeta",	Json::nullValue).toStyledString();
-		_analysisStateKey		= jsonRequest.get("stateKey",		Json::nullValue).toStyledString();
-		_analysisRevision		= jsonRequest.get("revision",		-1).asInt();
-		_imageOptions			= jsonRequest.get("image",			Json::nullValue);
-		_rfile					= jsonRequest.get("rfile",			Json::nullValue).asString();
-		_analysisJaspResults	= jsonRequest.get("jaspResults",	false).asBool();
-		_analysisRequiresInit	= jsonRequest.get("requiresInit", Json::nullValue).isNull() ? true : jsonRequest.get("requiresInit", true).asBool();
-		_ppi					= jsonRequest.get("ppi",			96).asInt();
+		_analysisName			= jsonRequest.get("name",				Json::nullValue).asString();
+		_analysisTitle			= jsonRequest.get("title",				Json::nullValue).asString();
+		_analysisDataKey		= jsonRequest.get("dataKey",			Json::nullValue).toStyledString();
+		_analysisOptions		= jsonRequest.get("options",			Json::nullValue).toStyledString();
+		_analysisResultsMeta	= jsonRequest.get("resultsMeta",		Json::nullValue).toStyledString();
+		_analysisStateKey		= jsonRequest.get("stateKey",			Json::nullValue).toStyledString();
+		_analysisRevision		= jsonRequest.get("revision",			-1).asInt();
+		_imageOptions			= jsonRequest.get("image",				Json::nullValue);
+		_analysisRFile			= jsonRequest.get("rfile",				"").asString();
+		_dynamicModuleCall		= jsonRequest.get("dynamicModuleCall",	"").asString();
+		_analysisJaspResults	= jsonRequest.get("jaspResults",		false).asBool();
+		_analysisRequiresInit	= jsonRequest.get("requiresInit",		Json::nullValue).isNull() ? true : jsonRequest.get("requiresInit", true).asBool();
+		_ppi					= jsonRequest.get("ppi",				96).asInt();
 
 		_currentEngineState = engineState::analysis;
 	}
@@ -355,7 +347,10 @@ void Engine::runAnalysis()
 	RCallback callback					= boost::bind(&Engine::callback, this, _1, _2);
 
 	_currentAnalysisKnowsAboutChange	= false;
-	_analysisResultsString				= rbridge_run(_analysisName, _analysisTitle, _rfile, _analysisRequiresInit, _analysisDataKey, _analysisOptions, _analysisResultsMeta, _analysisStateKey, _analysisId, _analysisRevision, perform, _ppi, callback, _analysisJaspResults);
+
+	_analysisResultsString = _dynamicModuleCall != "" ?
+			rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey, perform, _ppi, _analysisId, _analysisRevision)
+		:	rbridge_run(_analysisName, _analysisTitle, _analysisRFile, _analysisRequiresInit, _analysisDataKey, _analysisOptions, _analysisResultsMeta, _analysisStateKey, _analysisId, _analysisRevision, perform, _ppi, callback, _analysisJaspResults);
 
 	if (_status == initing || _status == running)  // if status hasn't changed
 		receiveMessages();
@@ -373,7 +368,7 @@ void Engine::runAnalysis()
 		_status = toInit;
 
 		if (_analysisResultsString == "null")
-			tempfiles_deleteList(tempfiles_retrieveList(_analysisId));
+			TempFiles::deleteList(TempFiles::retrieveList(_analysisId));
 		return;
 	}
 	else
@@ -482,11 +477,11 @@ void Engine::removeNonKeepFiles(Json::Value filesToKeepValue)
 		filesToKeep.push_back(filesToKeepValue.asString());
 	}
 
-	std::vector<std::string> tempFilesFromLastTime = tempfiles_retrieveList(_analysisId);
+	std::vector<std::string> tempFilesFromLastTime = TempFiles::retrieveList(_analysisId);
 
 	Utils::remove(tempFilesFromLastTime, filesToKeep);
 
-	tempfiles_deleteList(tempFilesFromLastTime);
+	TempFiles::deleteList(tempFilesFromLastTime);
 }
 
 
@@ -497,17 +492,17 @@ DataSet * Engine::provideDataSet()
 
 void Engine::provideStateFileName(std::string &root, std::string &relativePath)
 {
-	return tempfiles_createSpecific("state", _analysisId, root, relativePath);
+	return TempFiles::createSpecific("state", _analysisId, root, relativePath);
 }
 
 void Engine::provideJaspResultsFileName(std::string &root, std::string &relativePath)
 {
-	return tempfiles_createSpecific("jaspResults.json", _analysisId, root, relativePath);
+	return TempFiles::createSpecific("jaspResults.json", _analysisId, root, relativePath);
 }
 
 void Engine::provideTempFileName(const std::string &extension, std::string &root, std::string &relativePath)
 {
-	tempfiles_create(extension, _analysisId, root, relativePath);
+	TempFiles::create(extension, _analysisId, root, relativePath);
 }
 
 

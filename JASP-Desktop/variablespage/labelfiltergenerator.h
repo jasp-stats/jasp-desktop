@@ -2,7 +2,7 @@
 #define LABELFILTERGENERATOR_H
 
 #include <QObject>
-#include "datasetpackage.h"
+#include "data/datasetpackage.h"
 
 class labelFilterGenerator : public QObject
 {

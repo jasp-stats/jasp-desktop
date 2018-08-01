@@ -115,12 +115,8 @@ private: // Data:
 				_analysisStateKey,
 
 				_analysisResultsString,
-				_filter = "",
-				_generatedFilter = "",
-				_rCode = "",
-				_rfile = "",
-				_computeColumnCode = "",
-				_computeColumnName = "";
+				_analysisRFile		= "",
+				_dynamicModuleCall	= "";
 
 	Column::ColumnType		_computeColumnType = Column::ColumnTypeUnknown;
 

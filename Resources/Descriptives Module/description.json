@@ -1,0 +1,30 @@
+{
+	"moduleDescription" :
+	{
+		"title" : 		"Descriptives from a Module",
+		"description" : 	"Testing descriptives in a module.",
+		"version":		1,
+		"author":		"Someone",
+		"maintainer":		"Someone <Someone@Somewhere.org>",
+		"website":		"Somewhere.org",
+		"license":		"GPL (>= 2)"
+	},
+
+	"requiredPackages":	[],
+
+	"ribbonEntries":
+	[
+		{
+			"title": 	"DescriptivesModule",
+			"icon": 	"analysis-descriptives.svg",
+			"analyses":
+			[
+				{
+					"title":	"Descriptives from Module",
+					"qml":		"Descriptives.qml",
+					"function":	"Descriptives"
+				}
+			]
+		}
+	]
+}

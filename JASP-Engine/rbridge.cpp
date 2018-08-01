@@ -119,7 +119,7 @@ extern "C" bool STDCALL rbridge_requestTempFileName(const char* extensionAsStrin
 extern "C" const char* STDCALL rbridge_requestTempRootName()
 {
 	static std::string _root;
-	_root = tempfiles_sessionDirName();
+	_root = TempFiles::sessionDirName();
 
 	return _root.c_str();
 }
@@ -143,12 +143,21 @@ std::string rbridge_run(const std::string &name, const std::string &title, const
 		rbridge_dataSet = rbridge_dataSetSource();
 	}
 
-
 	const char* results = jaspRCPP_run(name.c_str(), title.c_str(), rfile.c_str(), requiresInit, dataKey.c_str(), options.c_str(), resultsMeta.c_str(), stateKey.c_str(), perform.c_str(), ppi, analysisID, analysisRevision, useJaspResults);
-	rbridge_callback = NULL;
-	std::string str = results;
+	rbridge_callback	= NULL;
 
-	return str;
+	return results;
+}
+
+
+std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, const std::string &perform, int ppi, int analysisID, int analysisRevision)
+{
+	rbridge_callback = NULL; //Only jaspResults here so callback is not needed
+
+	if (rbridge_dataSet != NULL)
+		rbridge_dataSet = rbridge_dataSetSource();
+
+	return jaspRCPP_runModuleCall(name.c_str(), title.c_str(), moduleCall.c_str(), dataKey.c_str(), options.c_str(), stateKey.c_str(), perform.c_str(), ppi, analysisID, analysisRevision);
 }
 
 extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSet(int * colMax)

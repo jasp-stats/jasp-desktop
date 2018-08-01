@@ -18,7 +18,7 @@
 #include "column.h"
 #include "utils.h"
 
-#include <boost/foreach.hpp>
+
 #include <sstream>
 #include <string>
 

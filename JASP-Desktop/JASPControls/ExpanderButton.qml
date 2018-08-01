@@ -17,7 +17,7 @@
 //
 import QtQuick 2.11
 import QtQuick.Layouts 1.3
-import Theme 1.0
+import JASPTheme 1.0
 
 FocusScope {
     id: expanderWrapper

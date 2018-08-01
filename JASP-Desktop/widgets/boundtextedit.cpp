@@ -23,7 +23,7 @@
 #include <QPainter>
 #include <QFontDatabase>
 
-#include "qutils.h"
+#include "utilities/qutils.h"
 
 BoundTextEdit::BoundTextEdit(QWidget *parent) :
 	QTextEdit(parent)

@@ -24,23 +24,23 @@
 
 #include "dataset.h"
 
-#include "datasettablemodel.h"
+#include "data/datasettablemodel.h"
 #include "variablespage/levelstablemodel.h"
 #include "variablespage/labelfiltergenerator.h"
-#include "enginesync.h"
-#include "analyses.h"
+#include "engine/enginesync.h"
+#include "analysis/analyses.h"
 
-#include "analysisforms/analysisform.h"
-#include "asyncloader.h"
-#include "asyncloaderthread.h"
-#include "fileevent.h"
-#include "resultsjsinterface.h"
-#include "customwebenginepage.h"
-#include "columnsmodel.h"
-#include "jsonutilities.h"
-#include "computedcolumnsmodel.h"
+#include "analysis/analysisform.h"
+#include "data/asyncloader.h"
+#include "data/asyncloaderthread.h"
+#include "data/fileevent.h"
+#include "utilities/resultsjsinterface.h"
+#include "widgets/customwebenginepage.h"
+#include "data/columnsmodel.h"
+#include "utilities/jsonutilities.h"
+#include "data/computedcolumnsmodel.h"
 
-#include "ribbons/ribbonwidget.h"
+#include "analysis/ribbons/ribbonwidget.h"
 
 class ResultsJsInterface;
 
@@ -63,11 +63,13 @@ public:
 	Q_INVOKABLE void setFilterConstructorJson(QString jsonString = DEFAULT_FILTER_JSON);
 	Q_INVOKABLE void showHelpFromQML(QString pageName);
 
+
+
 protected:
-	virtual void resizeEvent(QResizeEvent *event) OVERRIDE;
-	virtual void dragEnterEvent(QDragEnterEvent *event) OVERRIDE;
-	virtual void dropEvent(QDropEvent *event) OVERRIDE;
-	virtual void closeEvent(QCloseEvent *event) OVERRIDE;
+	virtual void resizeEvent(QResizeEvent *event)		override;
+	virtual void dragEnterEvent(QDragEnterEvent *event) override;
+	virtual void dropEvent(QDropEvent *event)			override;
+	virtual void closeEvent(QCloseEvent *event)			override;
 
 private:
 	void makeConnections();
@@ -94,6 +96,7 @@ private:
 
 	void closeCurrentOptionsWidget();
 	void removeAnalysis(Analysis *analysis);
+	void addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry);
 
 	QString escapeJavascriptString(const QString &str);
 	void getAnalysesUserData();
@@ -114,7 +117,11 @@ private:
 
 	bool filterShortCut();
 	void loadQML();
-	void connectRibbonButton(RibbonWidget * ribbon)								{ connect(ribbon,										QOverload<QString>::of(&RibbonWidget::itemSelected),				this,	&MainWindow::itemSelected); }
+	void connectRibbonButton(RibbonWidget * ribbon)								{ connect(ribbon,										QOverload<QString>::of(&RibbonWidget::itemSelected),				this,	&MainWindow::ribbonEntrySelected); }
+
+	QWebEngineView* getWebViewResults();
+	void			setCurrentTab(QString tabName);
+
 
 signals:
 	void updateAnalysesUserData(QString userData);
@@ -122,6 +129,7 @@ signals:
 
 private slots:
 	void showForm(Analysis *analysis);
+	void showQMLWindow(QString urlQml);
 
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisImageSavedHandler(Analysis* analysis);
@@ -136,7 +144,7 @@ private slots:
 	void dataSetIORequest(FileEvent *event);
 	void dataSetIOCompleted(FileEvent *event);
 	void populateUIfromDataSet();
-	void itemSelected(const QString &item);
+	void ribbonEntrySelected(const QString &item);
 
 	void adjustOptionsPanelWidth();
 	void splitterMovedHandler(int, int);

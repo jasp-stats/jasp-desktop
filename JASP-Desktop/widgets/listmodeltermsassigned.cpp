@@ -116,7 +116,7 @@ void ListModelTermsAssigned::removeTermsAfterBeingDropped(const QList<int> &indi
 {
 
 	_tempTermsToRemove.clear();
-	foreach (const int &index, indices)
+	for (const int &index : indices)
 		_tempTermsToRemove.add(_terms.at(index));
 	
 	unassign(_tempTermsToRemove);

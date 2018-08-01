@@ -3,28 +3,29 @@
 namespace Modules
 {
 
-void DynamicModule::loadModule()
+const char * standardRIndent = "  ";
+
+bool DynamicModule::loadModule()
 {
 	//Check some stuff
 
 	_moduleFolder.makeAbsolute();
 	QDir moduleDir(_moduleFolder.absoluteDir());
 
-	_name = moduleDir.dirName().toStdString();
-	_name.erase(std::remove(_name.begin(), _name.end(), ' '), _name.end()); //remove spaces
+	_name = moduleNameFromFolder(moduleDir.dirName().toStdString());
 
 	if(!_moduleFolder.exists())				throw std::runtime_error(_moduleFolder.absolutePath().toStdString() + " does not exist!");
 	else if(!_moduleFolder.isDir())			throw std::runtime_error(_moduleFolder.absolutePath().toStdString() + " is not a directory!");
 	else if(!_moduleFolder.isWritable())	throw std::runtime_error(_moduleFolder.absolutePath().toStdString() + " is not writable!");
 
 
-	auto checkForExistence = [&](QString name, bool isFile = false)
+	auto checkForExistence = [&](std::string name, bool isFile = false)
 	{
-		QFileInfo checkInfo(_moduleFolder.absolutePath() + "/" + name);
-		if(!checkInfo.exists())	throw std::runtime_error(name.toStdString() + " is missing from " + _moduleFolder.absolutePath().toStdString());
+		QFileInfo checkInfo(_moduleFolder.absolutePath() + "/" + QString::fromStdString(name));
+		if(!checkInfo.exists())	throw std::runtime_error(name + " is missing from " + _moduleFolder.absolutePath().toStdString());
 
-		if(!isFile	&& !checkInfo.isDir())	throw std::runtime_error(name.toStdString() + " is not, as expected, a directory");
-		if(isFile	&& !checkInfo.isFile())	throw std::runtime_error(name.toStdString() + " is not, as expected, a file");
+		if(!isFile	&& !checkInfo.isDir())	throw std::runtime_error(name + " is not, as expected, a directory");
+		if(isFile	&& !checkInfo.isFile())	throw std::runtime_error(name + " is not, as expected, a file");
 
 		return checkInfo;
 	};
@@ -51,21 +52,26 @@ void DynamicModule::loadModule()
 		_title							= moduleDescription.get("title",		_name).asString();
 		_author							= moduleDescription.get("author",		"Unknown").asString();
 		_license						= moduleDescription.get("license",		"Unknown").asString();
+		_website						= moduleDescription.get("website",		"Unknown").asString();
 		_maintainer						= moduleDescription.get("maintainer",	"JASP Team <info@jasp-stats.org>").asString();
 		_description					= moduleDescription.get("description",	"The R Code belonging to module" + _name).asString();
 		_version						= moduleDescription.get("version",		0).asInt();
 		_requiredPackages				= descriptionJson["requiredPackages"]; //can be sent straight to engine later on!
 
 		for(Json::Value & ribbonEntry : descriptionJson["ribbonEntries"])
-			_ribbonEntries.push_back(RibbonEntry(ribbonEntry));
+			_ribbonEntries.push_back(new RibbonEntry(ribbonEntry, this));
 	}
 	catch(std::exception e)
 	{
 		throw std::runtime_error("During the parsing of the description.json of the Module " + _name + " something went wrong: " + e.what());
 	}
 
-	createRLibraryFolder();
-	generateRPackage();
+	bool shouldInstall = false;
+
+	try { checkForExistence(_libraryRName);				} catch(...) {	createRLibraryFolder();	shouldInstall = true; }
+	try { checkForExistence(generatedPackageName());	} catch(...) {	generateRPackage();		shouldInstall = true; }
+
+	return shouldInstall;
 }
 
 void DynamicModule::createRLibraryFolder()
@@ -76,7 +82,6 @@ void DynamicModule::createRLibraryFolder()
 
 	if(!libDir.exists())
 		throw std::runtime_error("Failed creating library directory for Module ("+_name+")");
-
 }
 
 void DynamicModule::generateRPackage()
@@ -90,7 +95,7 @@ void DynamicModule::generateRPackage()
 	packageDir.mkdir(newRDir.dirName());
 
 	for(QString rFileName : newRDir.entryList(QDir::Files))
-		QFile::remove(rFileName);
+		QFile::remove(newRDir.absoluteFilePath(rFileName));
 
 	for(QString rFileName : origRDir.entryList(QDir::Files))
 		QFile::copy(origRDir.absoluteFilePath(rFileName), newRDir.absoluteFilePath(rFileName));
@@ -116,6 +121,7 @@ std::string DynamicModule::generateDescriptionFileForRPackage()
 		"\nVersion: "		<< std::to_string(_version) << ".0"
 		"\nDate: "			<< QDateTime::currentDateTime().toString("yyyy-MM-dd").toStdString() <<
 		"\nAuthor: "		<< _author <<
+		"\nWebsite: "		<< _website <<
 		"\nMaintainer: "	<< _maintainer <<
 		"\nDescription: "	<< _description <<
 		"\nLicense: "		<< _license;
@@ -145,9 +151,12 @@ std::string DynamicModule::generateNamespaceFileForRPackage()
 {
 	std::stringstream out;
 
-	for(RibbonEntry & ribbon : _ribbonEntries)
-		for(const AnalysisEntry & analysis : ribbon.analysisEntries())
-			out << "export(" << analysis.function() << ")\n";
+	for(RibbonEntry * ribbon : _ribbonEntries)
+		for(const AnalysisEntry * analysis : ribbon->analysisEntries())
+			out << "export(" << analysis->function() << ")\n";
+
+	for(Json::Value & pkgV : _requiredPackages)
+		out << standardRIndent << "import('" << pkgV["package"].asString() << "');\n";
 
 	return out.str();
 }
@@ -178,8 +187,6 @@ Json::Value	DynamicModule::requestJsonForPackageLoadingRequest()
 	return requestJson;
 }
 
-const char * standardRIndent = "  ";
-
 std::string DynamicModule::generateModuleInstallingR()
 {
 
@@ -192,25 +199,31 @@ std::string DynamicModule::generateModuleInstallingR()
 
 	std::stringstream out;
 
-	out << "libPathsToUse <- c(.libPaths(), '" << moduleRLibrary().toStdString() << "');\n" "{\n";
+	//out << "print(paste('ping=', pingr::ping('cloud.r-project.org', count=2)));\n";
+	//out <<" print(Sys.getenv());\n";
+
+	out << "libPathsToUse <- c(.libPaths(), '" << moduleRLibrary().toStdString() << "');\n"  "{\n"; //"print(libPathsToUse);\n"
+
+	const bool useWithLibPaths = true;
 
 	if(pkgsVersionless.size() > 0)
 	{
-		out << standardRIndent << "install.packages(repos='https://cloud.r-project.org', Ncpus=4, lib='" << moduleRLibrary().toStdString() << "', pkgs=c(";
+		out << standardRIndent << (useWithLibPaths ? "withr::with_libpaths(new=libPathsToUse,  " : "") << "install.packages(repos='https://cloud.r-project.org', Ncpus=4, lib='" << moduleRLibrary().toStdString() << "', pkgs=c(";
 
 		int count = 0;
 		for(const std::string & pkg : pkgsVersionless)
 			out << (count++ > 0 ? std::string(",\n") + standardRIndent + standardRIndent : "") << "'" << pkg << "'";
 
-		out << "));\n";
+		out << ")" << (useWithLibPaths ? ")" : "") <<  ");\n";
 	}
 
 	if(_requiredPackages.isArray())
 		for(Json::Value & pkgV : _requiredPackages)
 			if(!pkgV["version"].isNull())
-				out << standardRIndent << "withr::with_libpaths(new=libPathsToUse, devtools::install_version(repos='https://cloud.r-project.org', Ncpus=4, package='" << pkgV["package"].asString() << "', version='" << pkgV["version"].asString() << "', lib='" << moduleRLibrary().toStdString() << "', args='--library=\"" << moduleRLibrary().toStdString() << "\"'));\n";
+				out << standardRIndent << (useWithLibPaths ? "withr::with_libpaths(new=libPathsToUse,  " : "") << "devtools::install_version(repos='https://cloud.r-project.org', type='binary', Ncpus=4, package='" << pkgV["package"].asString() << "', version='" << pkgV["version"].asString() << "', lib='" << moduleRLibrary().toStdString() << "', args='--library=\"" << moduleRLibrary().toStdString() << "\"')" << (useWithLibPaths ? ")" : "") <<  ";\n";
 
-	out << standardRIndent << "install.packages(repos=NULL, pkgs='" << _generatedPackageFolder.absolutePath().toStdString() << "', lib='" << moduleRLibrary().toStdString() << "', type='source');" "\n" "}\n" "return('succes!')";
+	out << standardRIndent << (useWithLibPaths ? "withr::with_libpaths(new=libPathsToUse,  " : "");
+	out << "install.packages(repos=NULL, pkgs='" << _generatedPackageFolder.absolutePath().toStdString() << "', lib='" << moduleRLibrary().toStdString() << "', type='source')" << (useWithLibPaths ? ")" : "") <<  ";" "\n" "}\n" "return('succes!')";
 
 #ifdef JASP_DEBUG
 	std::cout << "DynamicModule(" << _name << ")::generateModuleInstallingR() generated:\n" << out.str() << std::endl;
@@ -224,15 +237,13 @@ std::string DynamicModule::generateModuleLoadingR()
 	std::stringstream out;
 
 	out << _name << " <- module({\n" << standardRIndent << ".libPaths('" << moduleRLibrary().toStdString() << "');\n";
-
-	for(Json::Value & pkgV : _requiredPackages)
-		out << standardRIndent << "import('" << pkgV["package"].asString() << "');\n";
+	//out << standardRIndent << "attach(loadNamespace('JASP'));\n";
 
 	out << standardRIndent << "import('" << generatedPackageName() << "');\n\n";
 
-	for(RibbonEntry & ribbon : _ribbonEntries)
-		for(const AnalysisEntry & analysis : ribbon.analysisEntries())
-			out << standardRIndent << analysis.function() << " <- function(...) " << analysis.function() << "(list(...))\n";
+	for(RibbonEntry * ribbon : _ribbonEntries)
+		for(const AnalysisEntry * analysis : ribbon->analysisEntries())
+			out << standardRIndent << analysis->function() << _exposedPostFix << " <- function(...) " << analysis->function() << "(...)\n";
 	out << "})\n" "return('succes!')";
 
 
@@ -241,6 +252,39 @@ std::string DynamicModule::generateModuleLoadingR()
 #endif
 
 	return out.str();
+}
+
+AnalysisEntry * DynamicModule::firstAnalysisEntry()
+{
+	if(_ribbonEntries.size() == 0)
+		throw std::runtime_error("Module has no entries!");
+	else
+		return _ribbonEntries[0]->firstAnalysisEntry();
+}
+
+std::string	DynamicModule::qmlFilePath(std::string qmlFileName)	const
+{
+	return _moduleFolder.absolutePath().toStdString() + "/qml/" + qmlFileName;
+}
+
+AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile)
+{
+	std::string moduleName		= jsonFromJaspFile.get("moduleName", "Modulename wasn't actually filled!").asString();
+	int			moduleVersion	= jsonFromJaspFile.get("moduleVersion", -1).asInt();
+
+	if(moduleName != name())
+		throw ModuleException(name(), "Tried to load an AnalysisEntry for module (" + moduleName +") from me...");
+
+	if(moduleVersion != version())
+		std::cerr << "Loading analysis based on different version of module(" << moduleName << "), but going ahead anyway. Analysis based on version: " << moduleVersion << " and actual loaded version of module is: " << version() << std::endl;
+
+	std::string ribbonTitle = jsonFromJaspFile.get("ribbonEntry", "RibbonEntry's title wasn't actually specified!").asString();
+
+	for(RibbonEntry * entry : _ribbonEntries)
+		if(entry->title() == ribbonTitle)
+			return entry->retrieveCorrespondingAnalysisEntry(jsonFromJaspFile);
+
+	throw ModuleException(name(), "Couldn't find RibbonEntry " + ribbonTitle);
 }
 
 }

@@ -22,7 +22,7 @@
 #include <QGridLayout>
 #include <QLayout>
 
-#include "application.h"
+#include "utilities/application.h"
 
 int main(int argc, char *argv[])
 {

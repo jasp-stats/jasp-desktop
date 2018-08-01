@@ -1,2 +1,2 @@
-module Theme
-singleton Theme 1.0 Theme.qml
+module JASPTheme
+singleton JASPTheme 1.0 JASPTheme.qml

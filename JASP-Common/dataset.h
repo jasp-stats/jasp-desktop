@@ -21,7 +21,6 @@
 #include <map>
 #include <iostream>
 #include "columns.h"
-#include "computedcolumns.h"
 
 typedef boost::interprocess::allocator<bool, boost::interprocess::managed_shared_memory::segment_manager> BoolAllocator;
 typedef boost::container::vector<bool, BoolAllocator> BoolVector;

@@ -19,8 +19,8 @@
 #ifndef BOUNDQMLTABLEVIEW_H
 #define BOUNDQMLTABLEVIEW_H
 
-#include "boundqmlitem.h"
-#include "options/optionstable.h"
+#include "analysis/boundqmlitem.h"
+#include "analysis/options/optionstable.h"
 #include "listmodel.h"
 #include "listmodeltable.h"
 #include <QObject>

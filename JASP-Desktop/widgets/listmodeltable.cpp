@@ -4,8 +4,8 @@
 
 ListModelTable::ListModelTable(AnalysisQMLForm *form, QQuickItem *item)
 	: QAbstractListModel(form)
-	, _item(item)
-	, _form(form)
+	, _form(form),
+	  _item(item)
 {
 	
 }

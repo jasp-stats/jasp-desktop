@@ -1,3 +1,4 @@
+#define ENUM_DECLARATION_CPP
 #include "jaspObject.h"
 #include "jaspJson.h"
 
@@ -7,41 +8,10 @@
 #include "lib_json/json_writer.cpp"
 #endif
 
-
-
-std::string jaspObjectTypeToString(jaspObjectType type)
-{
-	switch(type)
-	{
-	case jaspObjectType::container:	return "jaspContainer";
-	case jaspObjectType::table:		return "jaspTable";
-	case jaspObjectType::state:		return "jaspState";
-	case jaspObjectType::plot:		return "jaspPlot";
-	case jaspObjectType::json:		return "jaspJson";
-	case jaspObjectType::list:		return "jaspList";
-	case jaspObjectType::html:		return "jaspHtml";
-	case jaspObjectType::results:	return "jaspResults";
-	default:						return "jaspObject";
-	}
-}
-
 jaspObjectType jaspObjectTypeStringToObjectType(std::string type)
 {
-	static std::map<std::string, jaspObjectType> nameToType  ({
-		{"jaspContainer",	jaspObjectType::container},
-		{"jaspTable",		jaspObjectType::table},
-		{"jaspState",		jaspObjectType::state},
-		{"jaspPlot",		jaspObjectType::plot},
-		{"jaspJson",		jaspObjectType::json},
-		{"jaspList",		jaspObjectType::list},
-		{"jaspHtml",		jaspObjectType::html},
-		{"jaspResults",		jaspObjectType::results}});
-
-	if(nameToType.count(type) > 0)
-		return nameToType[type];
-	else
-		return jaspObjectType::unknown;
-
+	try			{ return jaspObjectTypeFromString(type); }
+	catch(...)	{ return jaspObjectType::unknown; }
 }
 
 void JASPprint(std::string msg)

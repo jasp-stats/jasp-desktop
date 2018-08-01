@@ -7,27 +7,36 @@
 
 namespace Modules
 {
+class RibbonEntry;
+class DynamicModule;
 
 class AnalysisEntry
 {
 public:
-	AnalysisEntry(Json::Value & analysisEntry) :
+	AnalysisEntry(Json::Value & analysisEntry, RibbonEntry * parentRibbonEntry) :
 		_title(				analysisEntry.get("title",				"???").asString()),
 		_function(			analysisEntry.get("function",			"???").asString()),
 		_qml(				analysisEntry.get("qml",				"???").asString()),
-		_usesJaspResults(	analysisEntry.get("usesJaspResults",	true).asBool())
+		_ribbonEntry(		parentRibbonEntry)
 	{}
 
-	std::string	title()				const { return _title;				}
-	std::string	function()			const { return _function;			}
-	std::string	qml()				const { return _qml;				}
-	bool		usesJaspResults()	const { return _usesJaspResults;	}
+	std::string		title()					const { return _title;				}
+	std::string		function()				const { return _function;			}
+	std::string		qml()					const { return _qml;				}
+
+	RibbonEntry*	ribbonEntry()			const { return _ribbonEntry;		}
+	DynamicModule*	dynamicModule()			const;
+	std::string		qmlFilePath()			const;
+	std::string		getFullRCall()			const;
+	Json::Value		getDefaultResults()		const;
+	Json::Value		asJsonForJaspFile()	const;
 
 private:
-	std::string		_title,
-					_function,
-					_qml;
-	bool			_usesJaspResults;
+	std::string		_title		= "",
+					_function	= "",
+					_qml		= "";
+
+	RibbonEntry*	_ribbonEntry = NULL;
 };
 
 }

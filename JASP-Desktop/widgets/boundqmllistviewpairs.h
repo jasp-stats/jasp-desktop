@@ -19,7 +19,7 @@
 #define BOUNDQMLLISTVIEWPAIRS_H
 
 #include "boundqmllistview.h"
-#include "options/optionvariables.h"
+#include "analysis/options/optionvariables.h"
 #include "listmodelpairsassigned.h"
 
 

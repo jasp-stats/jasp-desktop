@@ -157,4 +157,5 @@ OTHER_FILES  += \
 	JASP/R/ttestpairedsamples.R \
 	JASP/R/networkanalysis.R
 
-DISTFILES +=
+DISTFILES += \
+    JASP/R/exposeUs.R

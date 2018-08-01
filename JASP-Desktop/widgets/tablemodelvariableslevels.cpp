@@ -21,9 +21,9 @@
 #include <QMimeData>
 #include <QDebug>
 
-#include "options/optionstring.h"
-#include "options/optionlist.h"
-#include "options/optionvariables.h"
+#include "analysis/options/optionstring.h"
+#include "analysis/options/optionlist.h"
+#include "analysis/options/optionvariables.h"
 #include "column.h"
 
 using namespace std;
@@ -58,7 +58,7 @@ void TableModelVariablesLevels::bindTo(Option *option)
 
 	Terms alreadyAssigned;
 
-	foreach (Options *level, _levels)
+	for (Options *level : _levels)
 	{
 		OptionVariables *levelVariablesOption = static_cast<OptionVariables*>(level->get("variables"));
 		Terms variablesInLevel = levelVariablesOption->variables();
@@ -77,7 +77,7 @@ void TableModelVariablesLevels::mimeDataMoved(const QModelIndexList &indexes)
 
 	Terms toRemove;
 
-	foreach (const QModelIndex &index, indexes)
+	for (const QModelIndex &index : indexes)
 		toRemove.add(_rows.at(index.row()).title());
 
 	for (int i = _levels.size() - 1; i >= 0; i--)
@@ -386,7 +386,7 @@ bool TableModelVariablesLevels::dropMimeData(const QMimeData *data, Qt::DropActi
 			OptionVariables *variablesOption = dynamic_cast<OptionVariables*>(levelDroppedOn->get("variables"));
 			Terms currentVariables = variablesOption->variables();
 
-			foreach (const Term &variable, variables)
+			for (const Term &variable : variables)
 			{
 				if (currentVariables.contains(variable))  // prevent dropping to own level (because it introduces complications)
 					return false;
@@ -473,7 +473,7 @@ bool TableModelVariablesLevels::canDropMimeData(const QMimeData *data, Qt::DropA
 		Terms variables;
 		variables.set(encodedData);
 
-		foreach (const Term &variable, variables)
+		for (const Term &variable : variables)
 		{
 			if ( ! isAllowed(variable))
 				return false;
@@ -521,7 +521,7 @@ void TableModelVariablesLevels::refresh()
 			_rows.append(Row(list));
 		}
 
-		foreach (const string &variable, variables)
+		for (const string &variable : variables)
 			_rows.append(Row(tq(variable)));
 	}
 

@@ -17,7 +17,7 @@
 //
 
 #include "boundqmllistview.h"
-#include "analysisforms/analysisqmlform.h"
+#include "analysis/analysisqmlform.h"
 
 void BoundQMLListView::setUp()
 {

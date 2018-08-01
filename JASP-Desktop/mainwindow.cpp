@@ -19,107 +19,106 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "analysisforms/analysisqmlform.h"
-#include "analysisforms/Common/ancovabayesianform.h"
-#include "analysisforms/Common/ancovaform.h"
-#include "analysisforms/Common/ancovamultivariateform.h"
-#include "analysisforms/Common/anovabayesianform.h"
-#include "analysisforms/Common/anovaform.h"
-#include "analysisforms/Common/anovamultivariateform.h"
-#include "analysisforms/Common/anovaonewayform.h"
-#include "analysisforms/Common/anovarepeatedmeasuresbayesianform.h"
-#include "analysisforms/Common/anovarepeatedmeasuresform.h"
-#include "analysisforms/Common/binomialtestbayesianform.h"
-#include "analysisforms/Common/binomialtestform.h"
-#include "analysisforms/Common/contingencytablesbayesianform.h"
-#include "analysisforms/Common/contingencytablesform.h"
-#include "analysisforms/Common/correlationbayesianform.h"
-#include "analysisforms/Common/correlationbayesianpairsform.h"
-#include "analysisforms/Common/correlationform.h"
-#include "analysisforms/Common/correlationpartialform.h"
-#include "analysisforms/Common/descriptivesform.h"
-#include "analysisforms/Common/exploratoryfactoranalysisform.h"
-#include "analysisforms/Common/principalcomponentanalysisform.h"
-#include "analysisforms/Common/regressionlinearbayesianform.h"
-#include "analysisforms/Common/regressionlinearform.h"
-#include "analysisforms/Common/regressionlogisticform.h"
-#include "analysisforms/Common/regressionloglinearbayesianform.h"
-#include "analysisforms/Common/regressionloglinearform.h"
-#include "analysisforms/Common/reliabilityanalysisform.h"
-#include "analysisforms/Common/ttestbayesianindependentsamplesform.h"
-#include "analysisforms/Common/ttestbayesianonesampleform.h"
-#include "analysisforms/Common/ttestbayesianpairedsamplesform.h"
-#include "analysisforms/Common/ttestindependentsamplesform.h"
-#include "analysisforms/Common/ttestonesampleform.h"
-#include "analysisforms/Common/ttestpairedsamplesform.h"
-#include "analysisforms/Common/multinomialtestform.h"
+#include "analysis/analysisqmlform.h"
+#include "analysis/analysisforms/Common/ancovabayesianform.h"
+#include "analysis/analysisforms/Common/ancovaform.h"
+#include "analysis/analysisforms/Common/ancovamultivariateform.h"
+#include "analysis/analysisforms/Common/anovabayesianform.h"
+#include "analysis/analysisforms/Common/anovaform.h"
+#include "analysis/analysisforms/Common/anovamultivariateform.h"
+#include "analysis/analysisforms/Common/anovaonewayform.h"
+#include "analysis/analysisforms/Common/anovarepeatedmeasuresbayesianform.h"
+#include "analysis/analysisforms/Common/anovarepeatedmeasuresform.h"
+#include "analysis/analysisforms/Common/binomialtestbayesianform.h"
+#include "analysis/analysisforms/Common/binomialtestform.h"
+#include "analysis/analysisforms/Common/contingencytablesbayesianform.h"
+#include "analysis/analysisforms/Common/contingencytablesform.h"
+#include "analysis/analysisforms/Common/correlationbayesianform.h"
+#include "analysis/analysisforms/Common/correlationbayesianpairsform.h"
+#include "analysis/analysisforms/Common/correlationform.h"
+#include "analysis/analysisforms/Common/correlationpartialform.h"
+#include "analysis/analysisforms/Common/descriptivesform.h"
+#include "analysis/analysisforms/Common/exploratoryfactoranalysisform.h"
+#include "analysis/analysisforms/Common/principalcomponentanalysisform.h"
+#include "analysis/analysisforms/Common/regressionlinearbayesianform.h"
+#include "analysis/analysisforms/Common/regressionlinearform.h"
+#include "analysis/analysisforms/Common/regressionlogisticform.h"
+#include "analysis/analysisforms/Common/regressionloglinearbayesianform.h"
+#include "analysis/analysisforms/Common/regressionloglinearform.h"
+#include "analysis/analysisforms/Common/reliabilityanalysisform.h"
+#include "analysis/analysisforms/Common/ttestbayesianindependentsamplesform.h"
+#include "analysis/analysisforms/Common/ttestbayesianonesampleform.h"
+#include "analysis/analysisforms/Common/ttestbayesianpairedsamplesform.h"
+#include "analysis/analysisforms/Common/ttestindependentsamplesform.h"
+#include "analysis/analysisforms/Common/ttestonesampleform.h"
+#include "analysis/analysisforms/Common/ttestpairedsamplesform.h"
+#include "analysis/analysisforms/Common/multinomialtestform.h"
 
-#include "analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.h"
-#include "analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
-#include "analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h"
-#include "analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h"
-#include "analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.h"
-#include "analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.h"
+#include "analysis/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.h"
+#include "analysis/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
+#include "analysis/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h"
+#include "analysis/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h"
+#include "analysis/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.h"
+#include "analysis/analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.h"
 
-#include "analysisforms/SEM/semsimpleform.h"
+#include "analysis/analysisforms/SEM/semsimpleform.h"
 
-#include "analysisforms/ReinforcementLearning/reinforcementlearningr11tlearningform.h"
+#include "analysis/analysisforms/ReinforcementLearning/reinforcementlearningr11tlearningform.h"
 
-#include "analysisforms/Network/networkanalysisform.h"
+#include "analysis/analysisforms/Network/networkanalysisform.h"
 
-#include "analysisforms/MetaAnalysis/classicalmetaanalysisform.h"
+#include "analysis/analysisforms/MetaAnalysis/classicalmetaanalysisform.h"
 
 
 ///// 1-analyses headers
 
+#include <QDir>
 #include <QDebug>
 #include <QFile>
-#include <QFileInfo>
 #include <QToolTip>
+#include <QFileInfo>
+#include <QShortcut>
 #include <QMessageBox>
 #include <QStringBuilder>
-#include <QDropEvent>
-#include <QShortcut>
-#include <QDesktopWidget>
-#include <QTabBar>
-#include <QMenuBar>
-#include <QDir>
-#include <QFileDialog>
 #include <QDesktopServices>
+#include <QDesktopWidget>
+#include <QDropEvent>
+#include <QFileDialog>
 #include <QQmlContext>
 #include <QQuickItem>
+#include <QQuickView>
+#include <QMenuBar>
+#include <QTabBar>
 
-#include "analysisloader.h"
+#include "analysis/analysisloader.h"
 
-#include "qutils.h"
-#include "appdirs.h"
+#include "utilities/qutils.h"
+#include "utilities/appdirs.h"
 #include "tempfiles.h"
 #include "processinfo.h"
 #include "appinfo.h"
 
-#include "aboutdialog.h"
-#include "preferencesdialog.h"
+#include "gui/aboutdialog.h"
+#include "gui/preferencesdialog.h"
 #include <boost/filesystem.hpp>
 #include "dirs.h"
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include "column.h"
 #include "sharedmemory.h"
-#include "module.h"
-#include "settings.h"
+#include "modules/module.h"
+#include "utilities/settings.h"
 
-#include "options/optionvariablesgroups.h"
-#include "datasetview.h"
+#include "analysis/options/optionvariablesgroups.h"
+#include "JASPControls/datasetview.h"
 #include "modules/dynamicmodules.h"
 
 using namespace std;
-
-
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
 
-	tempfiles_init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
+	TempFiles::init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
 	_resultsJsInterface		= new ResultsJsInterface(this);
 	_package				= new DataSetPackage();
@@ -144,16 +143,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	QString missingvaluestring = _settings.value("MissingValueList", "").toString();
 	if (missingvaluestring != "")
 		Utils::setEmptyValues(fromQstringToStdVector(missingvaluestring, "|"));
-
-	try
-	{
-		_dynamicModules->loadModule("/Users/jorisgoosen/Broncode/jasp-desktop/Resources/Example Module/");
-	}
-	catch(std::exception e)
-	{
-		std::cout << "Loading testing module had a problem: " << e.what() << std::endl;
-
-	}
 }
 
 void MainWindow::StartOnlineDataManager()
@@ -244,6 +233,8 @@ void MainWindow::makeConnections()
 
 	connect(ui->webViewHelp,		&CustomWebEngineView::loadFinished,					this,					&MainWindow::helpFirstLoaded								);
 
+	connect(_dynamicModules,		&DynamicModules::showModuleInstallerWindow,			this,					&MainWindow::showQMLWindow									);
+
 	connectRibbonButton(ui->ribbonAnalysis);
 	connectRibbonButton(ui->ribbonSEM);
 	connectRibbonButton(ui->ribbonReinforcementLearning);
@@ -259,6 +250,7 @@ void MainWindow::initQWidgetGUIParts()
 	ui->splitter->setSizes(QList<int>({575}));
 
 	ui->tabBar->init();
+	ui->tabBar->addModuleInstallerEntryToPlusMenu(_dynamicModules);
 
 #ifdef __APPLE__
 	_scrollbarWidth = 3;
@@ -686,7 +678,7 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 		}
 		else
 		{
-			QString imagePath = QString::fromStdString(tempfiles_sessionDirName()) + "/" + root.get("name", Json::nullValue).asCString();
+			QString imagePath = QString::fromStdString(TempFiles::sessionDirName()) + "/" + root.get("name", Json::nullValue).asCString();
 			if (QFile::exists(finalPath))
 			{
 				QFile::remove(finalPath);
@@ -704,7 +696,7 @@ void MainWindow::analysisImageSavedHandler(Analysis *analysis)
 		return;
 	Json::Value inputOptions = results.get("inputOptions", Json::nullValue);
 
-	QString imagePath = QString::fromStdString(tempfiles_sessionDirName()) + "/" + results.get("name", Json::nullValue).asCString();
+	QString imagePath = QString::fromStdString(TempFiles::sessionDirName()) + "/" + results.get("name", Json::nullValue).asCString();
 	QString finalPath = QString::fromStdString(inputOptions.get("finalPath", Json::nullValue).asCString());
 	if (!finalPath.isEmpty())
 	{
@@ -845,8 +837,9 @@ void MainWindow::showForm(Analysis *analysis)
 
 	if (_currentOptionsWidget != NULL)
 	{
+		QWidget *theWidget = _currentOptionsWidget->getWidget();
 
-		int requiredSize		= _currentOptionsWidget->sizeHint().width();
+		int requiredSize		= theWidget->sizeHint().width();
 		int currentOptionSpace	= ui->panel_2_Options->minimumWidth() - _scrollbarWidth;
 
 		if (requiredSize > currentOptionSpace)
@@ -854,11 +847,13 @@ void MainWindow::showForm(Analysis *analysis)
 			ui->panel_2_Options->setMinimumWidth(requiredSize + _scrollbarWidth);
 			_buttonPanel->move(ui->panel_2_Options->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 		}
-		_currentOptionsWidget->setMinimumWidth(ui->panel_2_Options->minimumWidth() - _scrollbarWidth);
 
-		_currentOptionsWidget->show();
+		theWidget->setMinimumWidth(ui->panel_2_Options->minimumWidth() - _scrollbarWidth);
+
+		theWidget->show();
 		ui->scrollArea->setVerticalScrollBarPolicy(analysis->fromQML() ? Qt::ScrollBarAlwaysOff : Qt::ScrollBarAlwaysOn);
-		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget);//,0, 0, Qt::AlignRight | Qt::AlignTop);
+
+		ui->optionsContentAreaLayout->addWidget(theWidget);//, 0, 0, Qt::AlignRight | Qt::AlignTop);
 
 		if (ui->panel_2_Options->isVisible() == false)
 			showOptionsPanel();
@@ -984,7 +979,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 		}
 		else
 		{
-			connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+			connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
 			_loader.io(event, _package);
 			showProgress();
@@ -1001,37 +996,22 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			getAnalysesUserData();
 			_resultsJsInterface->exportPreviewHTML();
 
-			Json::Value analysesDataList = Json::arrayValue;
-			for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
-			{
-				Analysis *analysis = *itr;
-				if (analysis != NULL && analysis->isVisible())
-				{
-					Json::Value analysisData = analysis->asJSON();
-					bool fromQML = analysis->fromQML();
-					analysisData["fromQML"] = fromQML;
-					analysisData["options"] = fromQML ? analysis->options()->asJSONWithType(true) : analysis->options()->asJSON(true);
-					analysisData["userdata"] = analysis->userData();
-					analysesDataList.append(analysisData);
-				}
-			}
+			Json::Value analysesData(Json::objectValue);
 
-			Json::Value analysesData = Json::objectValue;
-			analysesData["analyses"] = analysesDataList;
-
-			analysesData["meta"] = _resultsJsInterface->getResultsMeta();
+			analysesData["analyses"]	= _analyses->asJson();
+			analysesData["meta"]		= _resultsJsInterface->getResultsMeta();
 
 			_package->setAnalysesData(analysesData);
 		}
 
-		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
 		_loader.io(event, _package);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileExportResults)
 	{
-		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 
 		_resultsJsInterface->exportHTML();
 
@@ -1040,7 +1020,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileExportData)
 	{
-		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 		_loader.io(event, _package);
 		showProgress();
 	}
@@ -1049,7 +1029,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 		if (_package->dataSet() == NULL)
 			return;
 
-		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+		connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 		_loader.io(event, _package);
 		showProgress();
 	}
@@ -1066,7 +1046,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			{
 				FileEvent *saveEvent = ui->backStage->save();
 				event->chain(saveEvent);
-				connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+				connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
 				ui->panel_1_Data->hide();
 			}
 			else if (reply == QMessageBox::Cancel)
@@ -1255,29 +1235,17 @@ void MainWindow::populateUIfromDataSet()
 				}
 			}
 
-			for (Json::ValueIterator iter = analysesDataList.begin(); iter != analysesDataList.end(); iter++)
+			for (Json::Value &analysisData : analysesDataList)
 			{
 				try
 				{
-					Json::Value &analysisData = *iter;
-
-					QString name				= QString::fromStdString(analysisData["name"].asString());
-					QString module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common";
-					int id						= analysisData["id"].asInt();
-
-					Json::Value &optionsJson	= analysisData["options"];
-					Json::Value &resultsJson	= analysisData["results"];
-					Json::Value &userDataJson	= analysisData["userdata"];
-					Json::Value &versionJson	= analysisData["version"];
-
-					Version version				= versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
-					Analysis::Status status		= Analysis::parseStatus(analysisData["status"].asString());
-
-					Analysis *analysis			= _analyses->create(module, name, id, version, &optionsJson, status);
-
-					_analyses->analysisAdded(analysis);
-					analysis->setUserData(userDataJson);
-					analysis->setResults(resultsJson);
+					_analyses->createFromJaspFileEntry(analysisData, _dynamicModules);
+				}
+				catch (Modules::ModuleException modProb)
+				{
+					//Maybe show a nicer messagebox?
+					errorFound = true;
+					corruptionStrings << "\n" << (++corruptAnalyses) << ": " << modProb.what();
 				}
 				catch (runtime_error e)
 				{
@@ -1293,7 +1261,7 @@ void MainWindow::populateUIfromDataSet()
 		}
 
 		if (corruptAnalyses == 1)
-			errorMsg << "An error was detected in an analyses. This analyses has been removed for the following reason:\n" << corruptionStrings.str();
+			errorMsg << "An error was detected in an analysis. This analysis has been removed for the following reason:\n" << corruptionStrings.str();
 		else if (corruptAnalyses > 1)
 			errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
 	}
@@ -1459,23 +1427,42 @@ void MainWindow::emptyValuesChangedHandler()
 	}
 }
 
-void MainWindow::itemSelected(const QString &item)
+void MainWindow::ribbonEntrySelected(const QString &item)
 {
 	try
 	{
-		QString currentActiveTab = ui->tabBar->getCurrentActiveTab();
-		const Module& module = Module::getModule(currentActiveTab);
+		QString currentActiveTab	= ui->tabBar->getCurrentActiveTab();
+		const Module& module		= Module::getModule(currentActiveTab);
 
-		_currentAnalysis = _analyses->create(module.name(), item);
+		_currentAnalysis			= _analyses->create(module.name(), item);
 
 		showForm(_currentAnalysis);
 		_analyses->analysisAdded(_currentAnalysis);
-		
+
 		_resultsJsInterface->showAnalysis(_currentAnalysis->id());
 
-		QString info("%1,%2");
-		info = info.arg(tq(_currentAnalysis->name()));
-		info = info.arg(_currentAnalysis->id());
+
+		checkUsedModules();
+	}
+	catch (runtime_error& e)
+	{
+		_fatalError = tq(e.what());
+		fatalError();
+	}
+}
+
+void MainWindow::addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry)
+{
+	try
+	{
+		_currentAnalysis = _analyses->create(entry);
+
+		showForm(_currentAnalysis);
+		_analyses->analysisAdded(_currentAnalysis);
+
+		_currentAnalysis->setResults(entry->getDefaultResults());
+
+		_resultsJsInterface->showAnalysis(_currentAnalysis->id());
 
 		checkUsedModules();
 	}
@@ -1742,13 +1729,10 @@ void MainWindow::getAnalysesUserData()
 	Json::Reader parser;
 	parser.parse(fq(userData.toString()), data);
 
-	for (Json::Value::iterator iter = data.begin(); iter != data.end(); iter++)
+	for (Json::Value &userDataObj  : data)
 	{
-		Json::Value &userDataObj = *iter;
-
-		Analysis *analysis = _analyses->get(userDataObj["id"].asInt());
-
-		Json::Value &analysisUserData = userDataObj["userdata"];
+		Analysis *analysis				= _analyses->get(userDataObj["id"].asInt());
+		Json::Value &analysisUserData	= userDataObj["userdata"];
 
 		analysis->setUserData(analysisUserData);
 	}
@@ -1980,3 +1964,29 @@ void MainWindow::setFilterConstructorJson(QString jsonString)
 	QObject * jsonConverter = ui->quickWidget_Data->rootObject()->findChild<QObject*>("jsonConverter");
 	QMetaObject::invokeMethod(jsonConverter, "setNewJSONFromCPP", Q_ARG(QVariant, QVariant(jsonString)));
 }
+
+QWebEngineView* MainWindow::getWebViewResults()
+{
+	return ui->webViewResults;
+}
+
+void MainWindow::setCurrentTab(QString tabName)
+{
+	ui->tabBar->setCurrentTab(tabName);
+}
+
+void MainWindow::showQMLWindow(QString urlQml)
+{
+	std::cout << "showing some qml in a separate window, should be all QML!" << std::endl;
+
+	QQuickView * newQMLWindow = new QQuickView;
+
+	newQMLWindow->rootContext()->setContextProperty("dynamicModules", _dynamicModules);
+	newQMLWindow->setSource(urlQml);
+	newQMLWindow->setResizeMode(QQuickView::SizeRootObjectToView);
+	newQMLWindow->show();
+
+	connect(newQMLWindow->rootObject(), SIGNAL(closeWindow()), newQMLWindow, SLOT(close()));
+
+}
+

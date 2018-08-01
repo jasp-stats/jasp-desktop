@@ -2,8 +2,8 @@
 #define LISTMODELAVAILABLE_H
 
 #include "listmodel.h"
-#include "terms.h"
-#include "variableinfo.h"
+#include "analysis/options/terms.h"
+#include "analysis/options/variableinfo.h"
 
 class ListModelAssigned;
 

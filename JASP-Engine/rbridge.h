@@ -76,6 +76,7 @@ extern "C" {
 	void rbridge_setColumnDataAsNominalTextSource(	boost::function<void(std::string&, std::vector<std::string>&)>	source);
 
 	std::string rbridge_run(const std::string &name, const std::string &title, const std::string &rfile, bool &requiresInit, const std::string &dataKey, const std::string &options, const std::string &resultsMeta, const std::string &stateKey, int analysisID, int analysisRevision, const std::string &perform = "run", int ppi = 96, RCallback callback = NULL, bool useJaspResults = false);
+	std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, const std::string &perform, int ppi, int analysisID, int analysisRevision);
 	std::string rbridge_check();
 
 

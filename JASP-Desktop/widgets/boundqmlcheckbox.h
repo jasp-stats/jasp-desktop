@@ -19,8 +19,8 @@
 #ifndef BOUNDQMLCHECKBOX_H
 #define BOUNDQMLCHECKBOX_H
 
-#include "boundqmlitem.h"
-#include "options/optionboolean.h"
+#include "analysis/boundqmlitem.h"
+#include "analysis/options/optionboolean.h"
 #include <QObject>
 
 class BoundQMLCheckBox : public BoundQMLItem

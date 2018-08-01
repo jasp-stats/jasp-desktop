@@ -124,7 +124,7 @@ void ListModelPairsAssigned::removeTermsAfterBeingDropped(const QList<int> &inde
 
 bool ListModelPairsAssigned::canDropTerms(const Terms *terms) const
 {
-	foreach (const Term &variable, *terms)
+	for (const Term &variable : *terms)
 	{
 		if ( ! isAllowed(variable))
 			return false;
@@ -180,7 +180,7 @@ void ListModelPairsAssigned::assignToOption()
 	{
 		vector<vector<string> > pairs;
 
-		foreach (const Term &qPair, _values)
+		for (const Term &qPair : _values)
 		{
 			vector<string> pair;
 			pair.push_back(qPair.at(0).toStdString());

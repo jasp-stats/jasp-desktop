@@ -78,5 +78,8 @@
         <file>icons/editImage.png</file>
         <file>icons/right-arrow.png</file>
         <file>icons/computed.png</file>
+        <file>icons/JASP_logo_gray.svg</file>
+        <file>icons/JASP_logo_green.svg</file>
+        <file>icons/JASP-logo_blue.svg</file>
     </qresource>
 </RCC>

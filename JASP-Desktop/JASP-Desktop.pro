@@ -1,11 +1,9 @@
 QT += core gui webenginewidgets webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2
+DEFINES += JASP_USES_QT_HERE
 
 include(../JASP.pri)
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-
-include(../JASP.pri)
 
 CONFIG += c++11
 
@@ -82,7 +80,7 @@ defineReplace(list_pri_files) {
 }
 
 # Directory containing the analysis forms
-ANALYSIS_DIR = $$PWD/analysisforms
+ANALYSIS_DIR = $$PWD/analysis/analysisforms
 # Directory containing the modules
 MODULES_DIR = $$list_pri_files($$ANALYSIS_DIR)
 
@@ -122,4 +120,3 @@ exists(/app/lib/*) {
 	flatpak_appinfo_icon128.path = /app/share/app-info/icons/flatpak/128x128
 	INSTALLS += flatpak_appinfo_icon128
 }
-

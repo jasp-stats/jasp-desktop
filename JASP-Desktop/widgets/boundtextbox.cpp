@@ -18,7 +18,7 @@
 
 #include "boundtextbox.h"
 
-#include <boost/foreach.hpp>
+
 
 #include <QIntValidator>
 #include <QDoubleValidator>
@@ -261,7 +261,7 @@ std::vector<int> BoundTextBox::QIntArrayValidator::parse(QString &input)
 
 	QStringList chunks = input.split(QChar(','), QString::SkipEmptyParts);
 
-	BOOST_FOREACH(QString &chunk, chunks)
+	for(QString &chunk : chunks)
 	{
 		bool ok;
 		int value = chunk.toInt(&ok);

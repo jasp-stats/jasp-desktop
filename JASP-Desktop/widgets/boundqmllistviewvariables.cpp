@@ -17,8 +17,8 @@
 //
 
 #include "boundqmllistviewvariables.h"
-#include "options/optionvariable.h"
-#include "analysisforms/analysisqmlform.h"
+#include "analysis/options/optionvariable.h"
+#include "analysis/analysisqmlform.h"
 #include "listmodeltermsavailable.h"
 
 #include <QQmlProperty>

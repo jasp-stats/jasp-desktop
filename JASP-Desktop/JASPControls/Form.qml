@@ -20,7 +20,7 @@ import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
 import "qrc:/JASPControls"
 
-import Theme 1.0
+import JASPTheme 1.0
 
 Rectangle {
     default property alias content: column.children

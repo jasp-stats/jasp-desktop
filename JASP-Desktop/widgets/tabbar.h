@@ -31,8 +31,9 @@
 #include <QSignalMapper>
 
 class PreferencesDialog;
+class DynamicModules;
 
-#include "aboutdialog.h"
+#include "gui/aboutdialog.h"
 
 class TabBar : public QWidget
 {
@@ -51,10 +52,12 @@ public:
 	void setCurrentTab(QString name);
 	QStringList getCurrentModules();
 	void setModulePlusMenu(QStringList usedModules = QStringList());
+	void addModuleInstallerEntryToPlusMenu(DynamicModules * dynamicModules);
 
 	void setExactPValues(bool exactPValues);
     void setFixDecimals(QString numDecimals);
     void emptyValuesChanged();
+
 
 
 	int count() const;

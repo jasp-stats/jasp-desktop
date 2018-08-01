@@ -18,7 +18,7 @@
 
 #include "listmodeltermsavailable.h"
 #include "listmodeltermsassigned.h"
-#include "analysisforms/analysisqmlform.h"
+#include "analysis/analysisqmlform.h"
 #include <QQmlProperty>
 
 ListModelTermsAvailable::ListModelTermsAvailable(AnalysisQMLForm *form, QQuickItem* item)
@@ -62,7 +62,7 @@ void ListModelTermsAvailable::initTerms(const Terms &terms)
 	Terms allowed;
 	Terms forbidden;
 
-	foreach (const Term &term, terms)
+	for (const Term &term : terms)
 	{
 		if ( ! isAllowed(term))
 			forbidden.add(term);

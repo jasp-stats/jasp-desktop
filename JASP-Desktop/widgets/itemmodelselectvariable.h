@@ -22,9 +22,9 @@
 #include <QAbstractListModel>
 #include "boundmodel.h"
 #include "common.h"
-#include "options/optionvariable.h"
+#include "analysis/options/optionvariable.h"
 #include "widgets/tablemodelvariablesavailable.h"
-#include "variableinfo.h"
+#include "analysis/options/variableinfo.h"
 
 typedef QPair<QString, int> ColumnInfo;
 

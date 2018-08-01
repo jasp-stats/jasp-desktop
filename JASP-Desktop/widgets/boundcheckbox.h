@@ -21,8 +21,8 @@
 
 #include <QCheckBox>
 
-#include "bound.h"
-#include "options/optionboolean.h"
+#include "analysis/options/bound.h"
+#include "analysis/options/optionboolean.h"
 
 
 class BoundCheckBox : public QCheckBox, public Bound

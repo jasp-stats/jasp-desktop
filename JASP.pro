@@ -10,7 +10,7 @@ SUBDIRS += \
 	JASP-Common \
         JASP-Engine \
         JASP-Desktop
-#	JASP-Tests
+#        JASP-Tests
 
 unix: SUBDIRS += $$JASP_R_INTERFACE_TARGET
 

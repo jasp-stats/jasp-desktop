@@ -21,9 +21,9 @@
 
 #include <QWidget>
 
-#include "bound.h"
+#include "analysis/options/bound.h"
 #include "common.h"
-#include "options/optionterms.h"
+#include "analysis/options/optionterms.h"
 #include "widgets/tablemodelvariablesavailable.h"
 #include "widgets/tablemodelvariablesassigned.h"
 

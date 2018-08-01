@@ -20,7 +20,7 @@
 #define LISTMODELPAIRSASSIGNED_H
 
 #include "listmodelassigned.h"
-#include "options/optionvariablesgroups.h"
+#include "analysis/options/optionvariablesgroups.h"
 
 class ListModelPairsAssigned: public ListModelAssigned 
 {

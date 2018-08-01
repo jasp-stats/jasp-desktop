@@ -17,9 +17,9 @@
 //
 
 #include "boundqmltableview.h"
-#include "options/optionvariable.h"
-#include "options/optionlist.h"
-#include "options/optionboolean.h"
+#include "analysis/options/optionvariable.h"
+#include "analysis/options/optionlist.h"
+#include "analysis/options/optionboolean.h"
 
 #include <QQmlProperty>
 

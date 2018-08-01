@@ -17,7 +17,7 @@
 //
 
 #include "boundqmllistviewpairs.h"
-#include "analysisforms/analysisqmlform.h"
+#include "analysis/analysisqmlform.h"
 #include <QQmlProperty>
 
 using namespace std;

@@ -17,7 +17,7 @@
 //
 
 #include "listmodel.h"
-#include "analysisforms/analysisqmlform.h"
+#include "analysis/analysisqmlform.h"
 
 #include <QTimer>
 #include <QQmlProperty>
@@ -165,7 +165,7 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 Terms *ListModel::termsFromIndexes(const QList<int> &indexes) const
 {
 	Terms* terms = new Terms;
-	foreach (const int &index, indexes)
+	for (const int &index : indexes)
 	{
 		Term term = _terms.at(index);
 		terms->add(term);
@@ -182,7 +182,7 @@ void ListModel::removeTermsAfterBeingDropped(const QList<int> &indexes)
 	
 		QList<int> sorted = indexes;
 		qSort(sorted.begin(), sorted.end(), qGreater<int>());
-		foreach (const int &index, sorted)
+		for (const int &index : sorted)
 			_terms.remove(index);
 	
 		endResetModel();
@@ -208,7 +208,7 @@ bool ListModel::dropTerms(const Terms *terms)
 
 bool ListModel::canDropTerms(const Terms *terms) const
 {
-	foreach (const Term &term, *terms)
+	for (const Term &term : *terms)
 	{
 		if ( ! isAllowed(term))
 			return false;

@@ -20,7 +20,7 @@
 #define LISTMODELTERMSASSIGNED_H
 
 #include "listmodelassigned.h"
-#include "options/optionterms.h"
+#include "analysis/options/optionterms.h"
 
 
 class ListModelTermsAssigned : public ListModelAssigned

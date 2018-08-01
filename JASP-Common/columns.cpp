@@ -17,7 +17,7 @@
 
 #include "columns.h"
 
-#include <boost/foreach.hpp>
+
 
 #include "sharedmemory.h"
 

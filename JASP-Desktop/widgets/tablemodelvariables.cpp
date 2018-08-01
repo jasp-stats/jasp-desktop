@@ -160,19 +160,15 @@ QMimeData *TableModelVariables::mimeData(const QModelIndexList &indexes) const
 
 	dataStream << indexes.length();
 
-	foreach (const QModelIndex &index, indexes)
-	{
+	for (const QModelIndex &index : indexes)
 		if (index.isValid())
 		{
 			Term term = _variables.at(index.row());
 			dataStream << term.components();
 		}
-	}
-
-	TableModelVariables* th1s = (TableModelVariables*) this;
-	th1s->_mimeData = mimeData;
 
 	mimeData->setData(_mimeType, encodedData);
+	mimeData->setData("application/pointerToSelf", QByteArray::fromStdString(std::to_string((unsigned long)this)));
 
 	return mimeData;
 }
@@ -185,7 +181,7 @@ void TableModelVariables::mimeDataMoved(const QModelIndexList &indexes)
 
 	qSort(sorted.begin(), sorted.end(), qGreater<QModelIndex>());
 
-	foreach (const QModelIndex &index, sorted)
+	for (const QModelIndex &index : sorted)
 		_variables.remove(index.row());
 
 	endResetModel();
@@ -231,7 +227,7 @@ bool TableModelVariables::canDropMimeData(const QMimeData *data, Qt::DropAction 
 		Terms variables;
 		variables.set(encodedData);
 
-		foreach (const Term &variable, variables)
+		for (const Term &variable : variables)
 		{
 			if ( ! isAllowed(variable))
 				return false;
@@ -278,5 +274,5 @@ bool TableModelVariables::isAllowed(const Term &term) const
 
 bool TableModelVariables::isDroppingToSelf(const QMimeData *mimeData) const
 {
-	return _mimeData == mimeData;
+	return mimeData->data("application/pointerToSelf") != QByteArray::fromStdString(std::to_string((unsigned long)this));
 }

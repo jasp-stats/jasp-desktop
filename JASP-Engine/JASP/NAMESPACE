@@ -1,2 +1,6 @@
 exportPattern("^[[:alpha:]]+")
 export(`%|%`)
+export('.readDataSetToEnd')
+export('.readDataSetHeader')
+export('.unv')
+export('.v')

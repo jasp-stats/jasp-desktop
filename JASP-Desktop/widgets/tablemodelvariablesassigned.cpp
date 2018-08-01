@@ -133,7 +133,7 @@ void TableModelVariablesAssigned::mimeDataMoved(const QModelIndexList &indices)
 
 	Terms variablesToRemove;
 
-	foreach (const QModelIndex &index, indices)
+	for (const QModelIndex &index : indices)
 		variablesToRemove.add(_variables.at(index.row()));
 
 	unassign(variablesToRemove);

@@ -125,7 +125,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char* rfile, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults)
 {
 	SEXP results;
-	
+
 	RInside &rInside = rinside->instance();
 
 	Rcpp::String jsonOptions = options;
@@ -147,7 +147,7 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char
 #ifndef __WIN32__
 	rinside_consoleLog->clearConsoleBuffer();
 #endif
-	
+
 	if (rfile && *rfile)
 	{
 		stringstream ss;
@@ -156,7 +156,7 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char
 		ss << "\")";
 		rinside->parseEvalQNT(ss.str());
 	}
-	
+
 	if(usesJaspResults)
 	{
 		///Some stuff for jaspResults etc
@@ -179,6 +179,49 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char
 #endif
 		jaspObject::destroyAllAllocatedObjects();
 	}
+
+	return str.c_str();
+}
+
+const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision)
+{
+	SEXP results;
+
+	RInside &rInside				= rinside->instance();
+	Rcpp::String jsonOptions		= options;
+	jsonOptions.set_encoding(Encoding);
+
+
+	rInside["name"]			= name;
+	rInside["title"]		= title;
+	rInside["requiresInit"]	= false;
+	rInside["dataKey"]		= dataKey;
+	rInside["options"]		= jsonOptions;
+	rInside["resultsMeta"]	= "null";
+	rInside["stateKey"]		= stateKey;
+	rInside["perform"]		= perform;
+	rInside["moduleCall"]	= moduleCall;
+	rInside[".ppi"]			= ppi;
+
+#ifndef __WIN32__
+	rinside_consoleLog->clearConsoleBuffer();
+#endif
+
+	jaspResults::setResponseData(analysisID, analysisRevision);
+	jaspResults::setSaveLocation(jaspRCPP_requestJaspResultsRelativeFilePath());
+
+	rInside.parseEval("runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey, functionCall=moduleCall)", results);
+
+	static std::string str;
+	if(Rcpp::is<std::string>(results))	str = Rcpp::as<std::string>(results);
+	else								str = "error!";
+
+
+#ifdef PRINT_ENGINE_MESSAGES
+	std::cout << "result of runJaspResults:\n" << str << std::endl << std::flush;
+#endif
+
+	jaspObject::destroyAllAllocatedObjects();
 
 	return str.c_str();
 }
@@ -300,8 +343,7 @@ const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
 	const std::string rCodeTryCatch(""
 		"returnVal = 'null';	"
 		"tryCatch(				"
-		"	{	returnVal <- eval(parse(text=.rCode)) },						"
-		"		warning	= function(w) { .setRWarning(toString(w$message))	},	"
+		"	suppressWarnings({	returnVal <- eval(parse(text=.rCode)) }),		"
 		"		error	= function(e) { .setRError(toString(e$message))	}		"
 		");			"
 		"returnVal	");
@@ -321,6 +363,11 @@ const char* STDCALL jaspRCPP_getRConsoleOutput()
 	static std::string output;
 	output = rinside_consoleLog->getConsoleOutput();
 	return output.c_str();
+}
+
+void STDCALL jaspRCPP_clearRConsoleOutput()
+{
+	rinside_consoleLog->clearConsoleBuffer();
 }
 #endif
 

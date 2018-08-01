@@ -21,7 +21,7 @@
 #include "column.h"
 
 #include <QDebug>
-#include "qutils.h"
+#include "utilities/qutils.h"
 
 using namespace std;
 
@@ -38,7 +38,7 @@ void TableModelVariablesAvailable::setVariables(const Terms &variables)
 	Terms allowed;
 	Terms forbidden;
 
-	foreach (const Term &term, variables)
+	for (const Term &term : variables)
 	{
 		if ( ! isAllowed(term))
 			forbidden.add(term);

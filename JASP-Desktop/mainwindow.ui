@@ -514,7 +514,7 @@ QPushButton::menu-indicator {
   <customwidget>
    <class>RibbonAnalysis</class>
    <extends>QWidget</extends>
-   <header>ribbons/ribbonanalysis.h</header>
+   <header>analysis/ribbons/ribbonanalysis.h</header>
    <container>1</container>
    <slots>
     <signal>itemSelected(QString)</signal>
@@ -523,19 +523,19 @@ QPushButton::menu-indicator {
   <customwidget>
    <class>RibbonSEM</class>
    <extends>QWidget</extends>
-   <header>ribbons/ribbonsem.h</header>
+   <header>analysis/ribbons/ribbonsem.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>RibbonSummaryStatistics</class>
    <extends>QWidget</extends>
-   <header>ribbons/ribbonsummarystatistics.h</header>
+   <header>analysis/ribbons/ribbonsummarystatistics.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>RibbonReinforcementLearning</class>
    <extends>QWidget</extends>
-   <header>ribbons/ribbonreinforcementlearning.h</header>
+   <header>analysis/ribbons/ribbonreinforcementlearning.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -553,19 +553,19 @@ QPushButton::menu-indicator {
   <customwidget>
    <class>BackStageWidget</class>
    <extends>QWidget</extends>
-   <header>backstagewidget.h</header>
+   <header>widgets/backstagewidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>RibbonMetaAnalysis</class>
    <extends>QWidget</extends>
-   <header>ribbons/ribbonmeta_analysis.h</header>
+   <header>analysis/ribbons/ribbonmeta_analysis.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>RibbonNetworkAnalysis</class>
    <extends>QWidget</extends>
-   <header>ribbons/ribbonnetworkanalysis.h</header>
+   <header>analysis/ribbons/ribbonnetworkanalysis.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

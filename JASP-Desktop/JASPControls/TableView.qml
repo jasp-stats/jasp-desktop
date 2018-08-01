@@ -1,7 +1,7 @@
 import QtQuick 2.11
 import QtQuick.Controls 2.4
 import QtQml.Models 2.2
-import Theme 1.0
+import JASPTheme 1.0
 
 JASPControl
 {

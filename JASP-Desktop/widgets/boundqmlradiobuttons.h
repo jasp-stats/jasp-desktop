@@ -19,8 +19,8 @@
 #ifndef BOUNDQMLRADIOBUTTONS_H
 #define BOUNDQMLRADIOBUTTONS_H
 
-#include "boundqmlitem.h"
-#include "options/optionstring.h"
+#include "analysis/boundqmlitem.h"
+#include "analysis/options/optionstring.h"
 #include <QObject>
 
 class BoundQMLRadioButtons : public BoundQMLItem
