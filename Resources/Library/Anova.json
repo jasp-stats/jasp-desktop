@@ -65,6 +65,18 @@
 			"default": true
 		},
 		{
+			"format": "%",
+			"max": 0.999,
+			"min": 0.000,
+			"name": "confidenceIntervalIntervalContrast",
+			"type": "Number",
+			"value": 0.95
+		},
+		{
+		  "name": "confidenceIntervalsContrast",
+			"type": "Boolean"
+		},
+		{
 			"name": "postHocTestsVariables",
 			"type": "Variables"
 		},

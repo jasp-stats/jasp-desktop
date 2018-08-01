@@ -304,7 +304,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   defaults <- c("modelTerms", "dependent", "wlsWeights")
   stateKey <- list(
     model = c(defaults, "contrasts"),
-    stateContrasts = c(defaults, "contrasts", "contrastAssumeEqualVariance"),
+    stateContrasts = c(defaults, "contrasts", "contrastAssumeEqualVariance", "confidenceIntervalIntervalContrast", "confidenceIntervalsContrast" ),
     statePostHoc = c(defaults, "postHocTestsVariables", "postHocTestsTypeStandard", "postHocTestsTypeDunn", "postHocTestsTypeDunnett",
                      "postHocTestsTypeGames", "postHocTestsHolm", "postHocTestsScheffe", "postHocTestsTukey", "postHocTestsBonferroni",
                      "postHocTestEffectSize", "confidenceIntervalIntervalPostHoc", "confidenceIntervalsPostHoc"),
@@ -1008,6 +1008,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
   	  contrast.summary <- lmtest::coeftest(model, model$rse)
 	  }
 
+		contrastConfidenceIntervals <- confint(model, level = options$confidenceIntervalIntervalContrast)
+
 	}
 
 	for (contrast in options$contrasts) {
@@ -1030,9 +1032,18 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				list(name="Comparison", type="string"),
 				list(name="Estimate", type="number", format="sf:4;dp:3"),
 				list(name="Std. Error", type="number", format="sf:4;dp:3"),
-				list(name="df", type="integer"),
+				list(name="df", type="number", format="sf:4;dp:3"),
 				list(name="t", type="number", format="sf:4;dp:3"),
 				list(name="p", type="number", format="dp:3;p:.001")))
+
+			if (options$confidenceIntervalsContrast) {
+
+			  thisOverTitle <- paste(options$confidenceIntervalIntervalContrast*100, "% CI for Mean Difference", sep = "")
+			  contrast.table[["schema"]][["fields"]][[7]] <- list(name="lwrBound", type = "number", title = "Lower",
+			                                                    format="sf:4;dp:3", overTitle=thisOverTitle)
+			  contrast.table[["schema"]][["fields"]][[8]] <- list(name="uprBound", type = "number", title = "Upper",
+                                                          format="sf:4;dp:3", overTitle=thisOverTitle)
+			}
 
 			footnotes <- .newFootnotes()
 
@@ -1080,28 +1091,30 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					SE  <- contrast.summary[nam,"Std. Error"]
 					t   <- contrast.summary[nam,"t value"]
 					p   <- contrast.summary[nam,"Pr(>|t|)"]
+					lwrBound <- contrastConfidenceIntervals[nam, 1]
+					uprBound <- contrastConfidenceIntervals[nam, 2]
 
           df <- nrow(dataset) - nlevels(dataset[,v])
 
           if (!options$contrastAssumeEqualVariance) {
-            g1 <- (unlist(strsplit(strsplit(case, " - ")[[1]][1], ", ")))
-            g2 <- (unlist(strsplit(strsplit(case, " - ")[[1]][2], ", ")))
 
-            dv = dataset[[.v(options$dependent)]]
-            sig1 <- var(dv[column %in% g1])
-            sig2 <- var(dv[column %in% g2])
+            dv <- dataset[[.v(options$dependent)]]
 
-            l1 <- length(dv[column %in% g1])
-            l2 <- length(dv[column %in% g2])
+            contrastMat <- t(model[['contrasts']][[v]])
+            vars <- tapply(dv, column, var)
+            ns <- tapply(dv, column, length)
 
-            df <- round(((sig1/l1) + (sig2/l2))^2 / (((sig1/l1)^2 / (l1-1)) + ((sig2/l2)^2 / (l2-1))), 4)
+            num <- (contrastMat[i,]^2 %*% (vars))^2
+            den <- sum((contrastMat[i,]^2 * vars)^2 / (ns-1))
+            df <-  as.numeric(num/den)
+
             p <- pt(abs(t), df, lower.tail = FALSE) * 2
           }
 
 					if (is.na(p))
 						p <- ""
 
-					row <- list("Comparison"=case, "Estimate"=est, "Std. Error"=SE, "t"=t, "p"=p, "df"=df)
+          row <- list("Comparison"=case, "Estimate"=est, "Std. Error"=SE, "t"=t, "p"=p, "df"=df, "lwrBound"=lwrBound, "uprBound"=uprBound)
 
 					if(length(contrast.rows) == 0)  {
 						row[[".isNewGroup"]] <- TRUE
@@ -1232,9 +1245,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
         list(name="(J)",title="", type="string"),
         list(name="Mean Difference", type="number", format="sf:4;dp:3"),
         list(name="lwrBound", type = "number", title = "Lower",
-             format="sf:4;dp:3", overTitle=paste(postHocInterval, "% CI for Mean Difference", collapse = "")),
+             format="sf:4;dp:3", overTitle=paste(postHocInterval*100, "% CI for Mean Difference", sep = "")),
         list(name="uprBound", type="number", title = "Upper",
-             format="sf:4;dp:3", overTitle=paste(postHocInterval, "% CI for Mean Difference", collapse = "")),
+             format="sf:4;dp:3", overTitle=paste(postHocInterval*100, "% CI for Mean Difference", sep = "")),
         list(name="SE", type="number", format="sf:4;dp:3"),
         list(name="t", type="number", format="sf:4;dp:3"))
     }
@@ -2163,9 +2176,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
         list(name="(J)",title="", type="string"),
         list(name="Mean Difference", type="number", format="sf:4;dp:3"),
         list(name="lwrBound", type = "number", title = "Lower",
-             format="sf:4;dp:3", overTitle=paste(postHocInterval, "% CI for Mean Difference", collapse = "")),
+             format="sf:4;dp:3", overTitle=paste(postHocInterval*100, "% CI for Mean Difference", sep = "")),
         list(name="uprBound", type="number", title = "Upper",
-             format="sf:4;dp:3", overTitle=paste(postHocInterval, "% CI for Mean Difference", collapse = "")),
+             format="sf:4;dp:3", overTitle=paste(postHocInterval*100, "% CI for Mean Difference", sep = "")),
         list(name="SE", type="number", format="sf:4;dp:3"),
         list(name="t", type="number", format="sf:4;dp:3"),
         list(name="pTukey", title="p<sub>tukey</sub>", type="number", format="dp:3;p:.001"))
@@ -2200,10 +2213,10 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
           pVal <- ptukey(t * sqrt(2), nLevels, df, lower.tail = FALSE)
 
-          se <- sqrt(0.5 * (varPerLevel[[i]] / nPerLevel[[i]] + varPerLevel[[j]] / nPerLevel[[j]]))
+          se <- sqrt((varPerLevel[[i]] / nPerLevel[[i]] + varPerLevel[[j]] / nPerLevel[[j]]))
 
-          upperConf <- meanDiff + qtukey(p = postHocInterval, nmeans = nLevels, df = df) * se
-          lowerConf <- meanDiff - qtukey(p = postHocInterval, nmeans = nLevels, df = df) * se
+          upperConf <- meanDiff + qtukey(p = postHocInterval, nmeans = nLevels, df = df) * se * sqrt(0.5)
+          lowerConf <- meanDiff - qtukey(p = postHocInterval, nmeans = nLevels, df = df) * se * sqrt(0.5)
 
 
           row[["Mean Difference"]] <- .clean(meanDiff)
@@ -2263,13 +2276,23 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     fields <- list(
       list(name="Comparison",title="", type="string"),
       list(name="Mean Difference", type="number", format="sf:4;dp:3"),
-      # list(name="lwrBound", type = "number", title = "Lower",
-      #      format = "sf:4;dp:3", overTitle =  "95% CI for Mean Difference"),
-      # list(name="uprBound", type="number", title = "Upper",
-      #      format="sf:4;dp:3", overTitle =  "95% CI for Mean Difference"),
       list(name="SE", type="number", format="sf:4;dp:3"),
       list(name="t", type="number", format="sf:4;dp:3"),
       list(name="p", title="p<sub>dunnett</sub>", type="number", format="dp:3;p:.001"))
+
+    if (options$confidenceIntervalsPostHoc) {
+      thisOverTitle <- paste(options$confidenceIntervalIntervalContrast*100, "% CI for Mean Difference", sep = "")
+      fields <- list(
+        list(name="Comparison",title="", type="string"),
+        list(name="Mean Difference", type="number", format="sf:4;dp:3"),
+        list(name="lwrBound", type = "number", title = "Lower",
+             format="sf:4;dp:3", overTitle=thisOverTitle),
+        list(name="uprBound", type="number", title = "Upper",
+             format="sf:4;dp:3", overTitle=thisOverTitle),
+        list(name="SE", type="number", format="sf:4;dp:3"),
+        list(name="t", type="number", format="sf:4;dp:3"),
+        list(name="p", title="p<sub>dunnett</sub>", type="number", format="dp:3;p:.001"))
+    }
 
     dunnettTable[["schema"]] <- list(fields=fields)
 
@@ -2284,7 +2307,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
       dunnettFit <- multcomp::glht(dunAOV, linfct=multcomp::mcp(Group="Dunnett"))
       dunnettResult <- summary(dunnettFit)[["test"]]
-
+      dunnettConfInt <- confint(dunnettFit, level = options$confidenceIntervalIntervalContrast)
 
       for (i in 1:(nLevels-1)) {
 
@@ -2293,6 +2316,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
         row[["t"]]  <- .clean(dunnettResult$tstat[i])
         row[["SE"]] <- .clean(dunnettResult$sigma[i])
         row[["p"]] <- .clean(dunnettResult$pvalues[i])
+        row[["lwrBound"]] <- .clean(dunnettConfInt$confint[i,2])
+        row[["uprBound"]] <- .clean(dunnettConfInt$confint[i,3])
+
 
         dunnettTable[["status"]] <- "complete"
         rows[[length(rows)+1]] <- row
@@ -2311,7 +2337,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       row[["t"]]  <- "."
       row[["SE"]] <- "."
       row[["p"]] <- "."
-
+      row[["lwrBound"]] <- "."
+      row[["uprBound"]] <- "."
       rows[[length(rows)+1]] <- row
     }
 
