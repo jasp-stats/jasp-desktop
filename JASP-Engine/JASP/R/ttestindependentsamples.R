@@ -693,7 +693,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   }
   
   # Create table
-  independentSamplesTTestDescriptivesTable <- createJaspTable(title = "Group Descriptives")
+  independentSamplesTTestDescriptivesTable <- createJaspTable(title = "Descriptive Statistics")
   independentSamplesTTestDescriptivesContainer[["independentSamplesTTestDescriptivesTable"]] <- independentSamplesTTestDescriptivesTable
   independentSamplesTTestDescriptivesTable$showSpecifiedColumnsOnly <- TRUE
   independentSamplesTTestDescriptivesTable$dependOnOptions(c("variables", "groupingVariable", "missingValues",
@@ -773,8 +773,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   independentSamplesTTestDescriptivesContainer[["independentSamplesTTestDescriptivesPlotsContainer"]] <- independentSamplesTTestDescriptivesPlotsContainer
   independentSamplesTTestDescriptivesPlotsContainer$dependOnOptions(c("variables", "groupingVariable", 
                                                                       "missingValues", "descriptivesPlots",
-                                                                      "descriptivesPlotsConfidenceInterval",
-                                                                      "plotWidth", "plotHeight"))
+                                                                      "descriptivesPlotsConfidenceInterval"))
   
   # For each variable, add plot
   for (variable in options$variables) {
@@ -798,8 +797,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   independentSamplesTTestDescriptivesPlotsContainer[[variable]] <- independentSamplesTTestDescriptivesPlot
   independentSamplesTTestDescriptivesPlot$dependOnOptions(c("variables", "groupingVariable",
                                                             "missingValues", "descriptivesPlots",
-                                                            "descriptivesPlotsConfidenceInterval",
-                                                            "plotWidth", "plotHeight"))
+                                                            "descriptivesPlotsConfidenceInterval"))
         
   return(NULL)
 }
