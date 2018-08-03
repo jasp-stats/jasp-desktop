@@ -457,7 +457,7 @@ Json::Value	jaspTable::schemaJson()
 		if(colFormat != "")
 			field["format"]	= colFormat;
 
-		if(colName != ".isNewGroup" && (!_showSpecifiedColumnsOnly || _specifiedColumns.count(_colNames[col]) > 0))
+		if(colName[0] != '.' && (!_showSpecifiedColumnsOnly || _specifiedColumns.count(_colNames[col]) > 0))
 			fields.append(field);
 
 	}
@@ -593,13 +593,14 @@ Json::Value jaspTable::convertToJSON()
 	obj["transposeWithOvertitle"]	= _transposeWithOvertitle;
 	obj["showSpecifiedColumnsOnly"]	= _showSpecifiedColumnsOnly;
 
-	obj["colNames"]		= _colNames.convertToJSON();
-	obj["colTypes"]		= _colTypes.convertToJSON();
-	obj["rowNames"]		= _rowNames.convertToJSON();
-	obj["rowTitles"]	= _rowTitles.convertToJSON();
-	obj["colTitles"]	= _colTitles.convertToJSON();
-	obj["colFormats"]	= _colFormats.convertToJSON();
-	obj["colCombines"]	= _colCombines.convertToJSON();
+	obj["colNames"]				= _colNames.convertToJSON();
+	obj["colTypes"]				= _colTypes.convertToJSON();
+	obj["rowNames"]				= _rowNames.convertToJSON();
+	obj["rowTitles"]			= _rowTitles.convertToJSON();
+	obj["colTitles"]			= _colTitles.convertToJSON();
+	obj["colOvertitles"]		= _colOvertitles.convertToJSON();
+	obj["colFormats"]			= _colFormats.convertToJSON();
+	obj["colCombines"]			= _colCombines.convertToJSON();
 
 
 
@@ -645,13 +646,14 @@ void jaspTable::convertFromJSON_SetFields(Json::Value in)
 	_showSpecifiedColumnsOnly	= in.get("showSpecifiedColumnsOnly",	false).asBool();
 
 
-	_colNames.convertFromJSON_SetFields(	in.get("colNames",		Json::objectValue));
-	_colTypes.convertFromJSON_SetFields(	in.get("colTypes",		Json::objectValue));
-	_rowNames.convertFromJSON_SetFields(	in.get("rowNames",		Json::objectValue));
-	_rowTitles.convertFromJSON_SetFields(	in.get("rowTitles",		Json::objectValue));
-	_colTitles.convertFromJSON_SetFields(	in.get("colTitles",		Json::objectValue));
-	_colFormats.convertFromJSON_SetFields(	in.get("colFormats",	Json::objectValue));
-	_colCombines.convertFromJSON_SetFields(	in.get("colCombines",	Json::objectValue));
+	_colNames.convertFromJSON_SetFields(		in.get("colNames",		Json::objectValue));
+	_colTypes.convertFromJSON_SetFields(		in.get("colTypes",		Json::objectValue));
+	_rowNames.convertFromJSON_SetFields(		in.get("rowNames",		Json::objectValue));
+	_rowTitles.convertFromJSON_SetFields(		in.get("rowTitles",		Json::objectValue));
+	_colTitles.convertFromJSON_SetFields(		in.get("colTitles",		Json::objectValue));
+	_colFormats.convertFromJSON_SetFields(		in.get("colFormats",	Json::objectValue));
+	_colCombines.convertFromJSON_SetFields(		in.get("colCombines",	Json::objectValue));
+	_colOvertitles.convertFromJSON_SetFields(	in.get("colOvertitles",	Json::objectValue));
 
 	_data.clear();
 	Json::Value dataColumns(in.get("data",	Json::arrayValue));
