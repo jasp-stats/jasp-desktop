@@ -1,7 +1,8 @@
 {
 	"name": "RegressionLinear",
 	"autorun": true,
-	"version": "1.00",
+    "version": "2.00",
+    "jaspResults": true,
 	"options": [
 		{
 			"name": "dependent",
