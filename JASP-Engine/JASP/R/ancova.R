@@ -1267,6 +1267,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
              format="sf:4;dp:3", overTitle=paste(postHocInterval*100, "% CI for Mean Difference", sep = "")),
         list(name="SE", type="number", format="sf:4;dp:3"),
         list(name="t", type="number", format="sf:4;dp:3"))
+      postHocTable[["footnotes"]] <- list(list(symbol="<i>Note.</i>",
+                                               text="Confidence intervals based on Tukey's HSD."))
     }
     
     if (options$postHocTestEffectSize) {
@@ -1317,10 +1319,10 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       resultPostHoc[[postHocVar]]$resultBonf <- summary(r,test=multcomp::adjusted("bonferroni"))
       
       # Results using the Holm method
-      
       resultPostHoc[[postHocVar]]$resultHolm <- summary(r,test=multcomp::adjusted("holm"))
-
-      resultPostHoc[[postHocVar]]$confidenceIntervals <- matrix(ncol = 2, confint(r,level = postHocInterval)[['confint']][,2:3])
+      
+      confIntResult <- TukeyHSD(model, conf.level = options$confidenceIntervalIntervalPostHoc)
+      resultPostHoc[[postHocVar]]$confidenceIntervals <-  matrix(ncol = 2, confIntResult[[.v(postHocVar)]][,2:3])
       
       resultPostHoc[[postHocVar]]$comparisonsTukSchef <- strsplit(names(resultPostHoc[[postHocVar]]$resultTukey$test$coefficients)," - ")
       resultPostHoc[[postHocVar]]$comparisonsBonfHolm <- strsplit(names(resultPostHoc[[postHocVar]]$resultBonf$test$coefficients)," - ")
@@ -1346,7 +1348,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
         
         if (length(class(resultPostHoc[[postHocVar]]$resultTukey)) == 1 && class(resultPostHoc[[postHocVar]]$resultTukey) == "try-error") {
           
-          posthoc.table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text="Some comparisons could not be performed. Possibly too few samples."))
+          postHocTable[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text="Some comparisons could not be performed. Possibly too few samples."))
           
         } else {
           
