@@ -1004,7 +1004,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		contrast.summary <- summary.lm(model)[["coefficients"]]
 
 	  if (!options$contrastAssumeEqualVariance) {
-	    model$rse <- sandwich::vcovHC(model, type="HC1")
+	    model$rse <- sandwich::vcovHC(model, type="HC2") # HC2 yields same result as SPSS
   	  contrast.summary <- lmtest::coeftest(model, model$rse)
 	  }
 
@@ -1093,20 +1093,21 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					p   <- contrast.summary[nam,"Pr(>|t|)"]
 					lwrBound <- contrastConfidenceIntervals[nam, 1]
 					uprBound <- contrastConfidenceIntervals[nam, 2]
+					nLevelsFac <-  nlevels(dataset[,v])
 
-          df <- nrow(dataset) - nlevels(dataset[,v])
+          df <- nrow(dataset) - nLevelsFac
 
           if (!options$contrastAssumeEqualVariance) {
 
-            dv <- dataset[[.v(options$dependent)]]
+            dv <- dataset[[ .v(options$dependent) ]]
 
-            contrastMat <- t(model[['contrasts']][[v]])
-            vars <- tapply(dv, column, var)
+            contrastMat <- (model[['contrasts']][[v]])
+            contrastMat <- (solve(cbind((contrastMat), 1/nLevelsFac))[-nLevelsFac,])
+            sds <- tapply(dv, column, sd)
             ns <- tapply(dv, column, length)
 
-            num <- (contrastMat[i,]^2 %*% (vars))^2
-            den <- sum((contrastMat[i,]^2 * vars)^2 / (ns-1))
-            df <-  as.numeric(num/den)
+            df <- ( (sum((contrastMat[i,])^2*sds^2/ns))^2 ) /
+              sum( ( (contrastMat[i,])^4*sds^4 ) / ( ns^2*(ns-1) ) )
 
             p <- pt(abs(t), df, lower.tail = FALSE) * 2
           }
