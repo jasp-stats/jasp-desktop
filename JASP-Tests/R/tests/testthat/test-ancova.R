@@ -143,12 +143,13 @@ test_that("Post Hoc table results match", {
   options$postHocTestsScheffe <- TRUE
   options$postHocTestsTukey <- TRUE
   options$postHocTestsVariables <- "facExperim"
+  options$postHocTestsTypeStandard <- TRUE
   results <- jasptools::run("Ancova", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["posthoc"]][["collection"]][[1]][["data"]]
   expect_equal_tables(table,
     list("control", "experimental", -0.0830902357515323, 0.21391801479091,
          -0.388420937024623, -0.078154288522293197, 0.698555762823947,
-         0.927393971055831, 0.698555762823947, 0.698555762823947, -0.5076583, 0.3414778, "TRUE")
+         0.927393971055831, 0.698555762823947, 0.698555762823947, -0.4966168, 0.3501177, "TRUE")
   )
 })
 
