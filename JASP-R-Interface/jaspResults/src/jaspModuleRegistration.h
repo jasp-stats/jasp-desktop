@@ -154,6 +154,8 @@ RCPP_MODULE(jaspResults)
 		.property("relativePathKeep",		&jaspResults_Interface::getRelativePathKeep,
 											&jaspResults_Interface::setRelativePathKeep,					"The relative path to where state is kept")
 
+		.method("getResults",				&jaspResults_Interface::getResults,								"Returns the latest version of the results json as a string")
+
 		.method("startProgressbar",			&jaspResults_Interface::startProgressbar,						"Opens the progressbar in the results for 'expectTicks' amount of ticks and will update results every 500ms.")
 		.method("startProgressbar",			&jaspResults_Interface::startProgressbarMs,						"Opens the progressbar in the results for 'expectTicks' amount of ticks and will keep at least timeBetweenUpdatesInMs milliseconds between consecutive updates.")
 		.method("progressbarTick",			&jaspResults_Interface::progressbarTick,						"Adds a tick to the progressbar")
