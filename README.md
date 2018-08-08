@@ -1,5 +1,5 @@
 <h2 align="center">
-  <img src="https://static.jasp-stats.org/green_logo_dark_text.png" height=120/>
+  <img src="https://static.jasp-stats.org/green_logo_dark_text.png" height=150/>
 </h2>
 
 <h5 align="center">
