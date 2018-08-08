@@ -16,7 +16,7 @@
 }	
 \section{Properties}{
 	\describe{
-		\item{\code{object}:}{The object to be stored in state. }	
+		\item{\code{object}:}{The object to be stored in or retrieved from state. Be sure to not access the stored object very often, because it will be unserialized every single time it is retrieved. }	
 	}
 }
 
@@ -26,7 +26,9 @@ Class \code{"\link{jaspObject}"}
 
 \examples{
 # Storing something in the state.
-jaspResults[["someTitle"]] <- createJaspState(list(data=c(1,2,3), "A list", c("optionA", "optionB"))
+jaspResults[["someTitle"]] <- createJaspState(list(data=c(1,2,3), "A list", c("optionA", "optionB")) #the list is serialized and stored in jaspResults
+					      
+previouslyStoredTitle <- jaspResults[["someTitle"]]$object #the stored list is unserialized again!					      
 }
 
 
