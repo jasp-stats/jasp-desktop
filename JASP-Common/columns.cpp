@@ -26,7 +26,9 @@ using boost::interprocess::offset_ptr;
 
 size_t Columns::minRowCount() const
 {
-	size_t minRowCount = SIZE_MAX;
+	if(columnCount() == 0) return 0; //If no columns then rowcount => 0
+	
+	size_t minRowCount = SIZE_MAX; 
 
 	for(const Column &column : *this)
 		minRowCount = std::min(minRowCount, column.rowCount());
@@ -37,6 +39,8 @@ size_t Columns::minRowCount() const
 
 size_t Columns::maxRowCount() const
 {
+	if(columnCount() == 0) return 0; //If no columns then rowcount => 0
+	
 	size_t maxRowCount = 0;
 
 	for(const Column &column : *this)
