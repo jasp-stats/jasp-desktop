@@ -1,5 +1,5 @@
 <h2 align="center">
-  <img src="JASP-Desktop/html/img/jasp-logo-black.svg" height=80/>
+  <img src="https://jasp-stats.org/wp-content/themes/jasp/images/logo.svg" height=80/>
   <br><br>
   A Fresh Way to do Statistics
 </h2>
