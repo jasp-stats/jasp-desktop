@@ -1,7 +1,5 @@
 <h2 align="center">
-  <img src="https://jasp-stats.org/wp-content/themes/jasp/images/logo.svg" height=80/>
-  <br><br>
-  A Fresh Way to do Statistics
+  <img src="https://static.jasp-stats.org/green_logo_dark_text.png" height=80/>
 </h2>
 
 <h5 align="center">
