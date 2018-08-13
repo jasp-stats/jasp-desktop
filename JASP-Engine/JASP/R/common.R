@@ -2919,6 +2919,11 @@ editImage <- function(plotName, type, height, width) {
 	}
 }
 
+# this function is part of base R from 3.5 onwards
+if (R.version$minor <= 5) {
+	isFALSE <- function(x) identical(FALSE, x)
+}
+
 ###########################
 ## JASP Results Wrappers ##
 ###########################
