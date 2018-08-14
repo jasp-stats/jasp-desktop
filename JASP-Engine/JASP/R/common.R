@@ -2800,19 +2800,7 @@ createJaspPlot <- function(plot=NULL, title="", width=320, height=320, aspectRat
     jaspPlotObj$errorMessage  <- errorMessage
   }
 
-  if(!is.null(plot))
-	{
-		writtenImage <- tryCatch(
-			.writeImage(width=width, height=height, plot),
-			error	= function(e) { jaspPlotObj$errorMessage <- e$message; return(NULL) }
-		)
-
-		if(!is.null(writtenImage))
-		{
-			jaspPlotObj$filePathPng <- writtenImage[["png"]]
-      jaspPlotObj$plotObject <- plot
-		}
-	}
+  jaspPlotObj$plotObject <- plot
 
   if(!is.null(dependencies))
     jaspPlotObj$dependOnOptions(dependencies)
