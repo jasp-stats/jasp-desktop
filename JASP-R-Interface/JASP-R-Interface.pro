@@ -72,10 +72,34 @@ windows{
    SOURCE_LIBFILE ~= s,/,\\,g
 	DEST_LIBFILE = $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_NAME'.lib'
   DEST_LIBFILE ~= s,/,\\,g
-  copyfile.commands += $$quote(cmd /c copy /Y $$SOURCE_LIBFILE $$DEST_LIBFILE)
 
-  first.depends = $(first) copyfile
-  export(first.depends)
-  export(copyfile.commands)
-  QMAKE_EXTRA_TARGETS += first copyfile
+  QMAKE_POST_LINK     += $$quote(cmd /c copy /Y $$SOURCE_LIBFILE $$DEST_LIBFILE)
 }
+
+### making sure that writeImage.R is available to jaspEngine:
+SRC_WRITE_IMAGE = $${PWD}/jaspResults/R/writeImage.R
+DEST_WRITE_IMAGE = $$OUT_PWD/$$DESTDIR/
+
+win32 {
+    SRC_WRITE_IMAGE ~= s,/,\\,g
+    DEST_WRITE_IMAGE ~= s,/,\\,g
+
+    copyWriteImg.commands  += $$quote(cmd /c xcopy /S /I /Y $${SRC_WRITE_IMAGE} $${DEST_WRITE_IMAGE})
+}
+
+unix {
+    copyWriteImg.commands += $(MKDIR) $$DEST_WRITE_IMAGE ;
+    copyWriteImg.commands += cp $$SRC_WRITE_IMAGE $$DEST_WRITE_IMAGE ;
+}
+
+
+! equals(PWD, $${OUT_PWD}) {
+    QMAKE_EXTRA_TARGETS += copyWriteImg
+    POST_TARGETDEPS     += copyWriteImg
+}
+
+DISTFILES += \
+    jaspResults/R/RcppExports.R \
+    jaspResults/R/zzaLoadModule.R \
+    jaspResults/R/zzzWrappers.R \
+    jaspResults/R/writeImage.R

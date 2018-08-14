@@ -60,8 +60,25 @@ void jaspPlot::addFootnote(std::string message, std::string symbol)
 
 void jaspPlot::setPlotObject(Rcpp::RObject obj)
 {
-	Rcpp::Function serialize("serialize");
+	_filePathPng = "";
 
+	if(!obj.isNULL())
+	{
+		Rcpp::Function tryToWriteImage("tryToWriteImageJaspResults");
+		Rcpp::List writeResult = tryToWriteImage(Rcpp::_["width"] = _width, Rcpp::_["height"] = _height, Rcpp::_["plot"] = obj);
+
+		if(writeResult.containsElementNamed("png"))
+			_filePathPng = Rcpp::as<std::string>(writeResult[writeResult.findName("png")]);
+
+		if(writeResult.containsElementNamed("error"))
+		{
+			_error			= "Error during writeImage";
+			_errorMessage	= Rcpp::as<std::string>(writeResult[writeResult.findName("error")]);
+		}
+	}
+
+
+	Rcpp::Function serialize("serialize");
 	_plotObjSerialized = serialize(Rcpp::_["object"] = obj, Rcpp::_["connection"] = R_NilValue, Rcpp::_["ascii"] = true);
 }
 

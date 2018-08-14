@@ -156,3 +156,7 @@ OTHER_FILES  += \
 	JASP/R/ttestonesample.R \
 	JASP/R/ttestpairedsamples.R \
 	JASP/R/networkanalysis.R
+
+DISTFILES += \
+    JASP/DESCRIPTION \
+    JASP/NAMESPACE

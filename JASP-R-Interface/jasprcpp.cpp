@@ -104,11 +104,12 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	//Adding some functions in R to the RefClass (generator) in the module
 	rInside.parseEvalQ("jaspResultsModule$jaspTable$methods(addColumnInfo = function(name=NULL, title=NULL, overtitle=NULL, type=NULL, format=NULL, combine=NULL) { addColumnInfoHelper(name, title, type, format, combine, overtitle) })");
-	rInside.parseEvalQ("jaspResultsModule$jaspTable$methods(addFootnote =   function(message=\"\", symbol=NULL, col_names=NULL, row_names=NULL) { addFootnoteHelper(message, symbol, col_names, row_names) })");
+	rInside.parseEvalQ("jaspResultsModule$jaspTable$methods(addFootnote =   function(message='', symbol=NULL, col_names=NULL, row_names=NULL) { addFootnoteHelper(message, symbol, col_names, row_names) })");
 
 	rInside["jasp.analyses"] = Rcpp::List();
-	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");
-	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
+	rInside.parseEvalQNT("suppressPackageStartupMessages(library('JASP'))");
+	rInside.parseEvalQNT("suppressPackageStartupMessages(library('methods'))");
+	rInside.parseEvalQNT("source(file='writeImage.R')");
 
 	rinside->parseEvalNT("initEnvironment()");
 

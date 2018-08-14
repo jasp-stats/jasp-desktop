@@ -667,13 +667,24 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     yWithNAIndex <- yWithNAIndex + 1
   }
 
+  thePlot <- createJaspPlot(plot=.initSplitPlot, title=variable, width=options$plotWidth, height=options$plotHeight, dependencies=depends)
+
 
   if (!is.numeric(y))
-    return(createJaspPlot(plot=.initSplitPlot, title=variable, width=options$plotWidth, height=options$plotHeight, error="badData", errorMessage="Plotting is not possible: Variable is not numeric!", dependencies=depends))
-  if (length(y) == 0)
-     return(createJaspPlot(plot=.initSplitPlot, title=variable, width=options$plotWidth, height=options$plotHeight, error="badData", errorMessage="Plotting is not possible: Variable only contains NA!", dependencies=depends))
+  {
+    thePlot$error         <- "badData"
+    thePlot$errorMessage  <- "Plotting is not possible: Variable is not numeric!"
+  }
+  else if (length(y) == 0)
+  {
+    thePlot$error         <- "badData"
+    thePlot$errorMessage  <- "Plotting is not possible: Variable only contains NA!"
+  }
   else if (!(options$splitPlotViolin || options$splitPlotBoxplot || options$splitPlotJitter))
-    return(createJaspPlot(plot=.initSplitPlot, title=variable, width=options$plotWidth, height=options$plotHeight, error="badData", errorMessage="Plotting is not possible: No plot type selected!", dependencies=depends))
+  {
+    thePlot$error         <- "badData"
+    thePlot$errorMessage  <- "Plotting is not possible: No plot type selected!"
+  }
   else
   {
     if (is.null(dataset[[.v(options$splitby)]])){
@@ -771,8 +782,10 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
         plot.margin=        grid::unit(c(0.1, 0.1, 0.6, 0.6), "cm"),
         legend.position=    "none")
 
-    return(createJaspPlot(plot=p, title=variable, width=options$plotWidth, height=options$plotHeight, dependencies=depends))
+    thePlot$plotObject <- p
   }
+
+  return(thePlot)
 }
 
 
