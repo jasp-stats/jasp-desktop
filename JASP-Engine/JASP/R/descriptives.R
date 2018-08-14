@@ -387,9 +387,9 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     if(!is.null(freqTabs[[variable]]))
       next
 
-    freqTabs[[variable]] <- createJaspTable(paste("Frequencies for", variable))
+    freqTab <- createJaspTable(paste("Frequencies for", variable))
 
-    freqTab <- freqTabs[[variable]]
+    freqTabs[[variable]] <- freqTab
     freqTab$setOptionMustContainDependency("variables", variable)
 
     if (wantsSplit) freqTab$addColumnInfo(name = "factor", title = splitName, type = "string", combine=TRUE)

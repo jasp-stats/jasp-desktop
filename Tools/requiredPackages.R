@@ -47,6 +47,12 @@ for (file in files) {
   reqPkgs <- c(reqPkgs, matches)
 }
 
+# for some reason, RcppArmadillo is not picked up as dependency
+# but it definitely needs to be installed before other packages.
+if (! "RcppArmadillo" %in% installed.packages()) {
+  install.packages("RcppArmadillo")
+}
+
 # Temporarly add the GPArotation manually (incorrectly marked as "Suggest' in psych) 
 reqPkgs <- c(reqPkgs, "GPArotation")
 reqPkgs <- reqPkgs[!reqPkgs %in% 'JASPgraphs']

@@ -183,7 +183,6 @@ runJaspResults <- function(name, title, dataKey, options, stateKey)
 
   dataKey     <- rjson::fromJSON(dataKey)
   options     <- rjson::fromJSON(options)
-  resultsMeta <- rjson::fromJSON(resultsMeta)
   stateKey    <- rjson::fromJSON(stateKey)
 
   if (base::exists(".requestStateFileNameNative")) {
