@@ -11,15 +11,12 @@ matrix:
         "sudo add-apt-repository \"deb http://archive.ubuntu.com/ubuntu/ xenial main\" -y",
         "sudo apt-get update -q",
         "echo 'Installing R package dependencies'",
-        "sudo apt-get install libfreetype6=2.6.1-0.1ubuntu2",
-        "sudo apt-get install libfreetype6-dev=2.6.1-0.1ubuntu2",
         "sudo apt-get install libnlopt-dev",
         "sudo apt-get install r-cran-rcppeigen",
         "sudo apt-get install r-cran-plogr"
       ]
-      install: Rscript -e 'install.packages(c("testthat", "vdiffr"))'
+      install: Rscript -e 'install.packages("testthat"); install.packages("JASP-R-Interface/jaspResults/", repos=NULL, type="source")'
       script:
         - Rscript Tools/requiredPackages.R JASP-Engine/JASP/R true
-        - Rscript Tools/showVersion.R
         - cd JASP-Tests/R/tests/
         - R < testthat.R --no-save

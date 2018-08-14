@@ -536,6 +536,14 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 	options(contrasts=c("contr.sum","contr.poly"))
 
+  # set these options once for all afex::aov_car calls,
+  # this ensures for instance that afex::aov_car always returns objects of class afex_aov.
+  afex::afex_options(
+    check_contrasts = TRUE, correction_aov = "GG", 
+    emmeans_model = "univariate", es_aov = "ges", factorize = TRUE, 
+    lmer_function = "lmerTest", method_mixed = "KR", return_aov = "afex_aov", 
+    set_data_arg = FALSE, sig_symbols = c(" +", " *", " **", " ***"), type = 3
+  )
 	if (options$sumOfSquares == "type1") {
 
 		result <- try(stats::aov(model.formula, data=dataset), silent = TRUE)
