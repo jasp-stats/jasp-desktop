@@ -1,44 +1,121 @@
+.onAttach <- function(libname, pkgname) {
+	require(Rcpp)
+	message(sprintf("jaspResults version: %s", packageVersion("jaspResults")))
+	env <- globalenv()
 
-extendJaspTableAndCreateJaspResults <- function()
-{
-	return(function()
+	if(exists("jaspResults", env))
 	{
-		library(Rcpp)
-		env <- globalenv()
-
-		if(exists("jaspResults", env))
-		{
-			print("Destroying all currently active jaspObjects, R will crash if you try to use any objects you still have loaded, and creating a *fresh* jaspResults.")
-			destroyAllAllocatedObjects()
-		}
-		
-
-		env$jaspResults <- create_cpp_jaspResults("Analysis Test")
-
-		setRefClass(
-			"jaspTableExtended", 
-			contains=c("Rcpp_jaspTable"), 
-			methods=list(
-				addColumnInfo 	= function(name=NULL, title=NULL, overtitle=NULL, type=NULL, format=NULL, combine=NULL) { addColumnInfoHelper(name, title, type, format, combine, overtitle) }, 
-				addFootnote 	= function(message="", symbol=NULL, col_names=NULL, row_names=NULL) { addFootnoteHelper(message, symbol, col_names, row_names) },
-				finalize		= function() {}
-				),
-			where=globalenv()
-		)
-
-		return("jaspResults has been created and can now be used to test/develop your analysis, try something like: 'jaspResults$print()' or 'jaspResults[[\"aTable\"]] <- createJaspTable()'.")
-	})
+		message("Destroying all currently active jaspObjects, R will crash if you try to use any objects you still have loaded, and creating a *fresh* jaspResults.")
+		destroyAllAllocatedObjects()
+		destroyAllAllocatedRObjects()
+	}
+	
+	env$jaspResults <- create_cpp_jaspResults("Analysis Test")
+	
+	setRefClass(
+		"jaspTableExtended", 
+		contains=c("Rcpp_jaspTable"), 
+		methods=list(
+			addColumnInfo 	= function(name=NULL, title=NULL, overtitle=NULL, type=NULL, format=NULL, combine=NULL) { addColumnInfoHelper(name, title, type, format, combine, overtitle) }, 
+			addFootnote 	= function(message="", symbol=NULL, col_names=NULL, row_names=NULL) { addFootnoteHelper(message, symbol, col_names, row_names) },
+			finalize		= function() {}
+		),
+		where=globalenv()
+	)
+	
+	e <- getNamespace("jaspResults")
+	unlockBinding('.__C__Rcpp_jaspTable', e)
+	
+	# these functions were obtained using dput on a method 
+	# e.g., dput(createJaspTable()$addColumnInfo)
+	# the refClassName was adjusted.
+	if (is.null(e$.__C__Rcpp_jaspTable@refMethods$addColumnInfo)) {
+		e$.__C__Rcpp_jaspTable@refMethods$addColumnInfo <- 
+			new("refMethodDef", 
+					.Data = function (name = NULL, title = NULL, overtitle = NULL, type = NULL, format = NULL, combine = NULL) {
+						addColumnInfoHelper(name, title, type, format, combine, overtitle)
+					}, 
+					mayCall = "addColumnInfoHelper", 
+					name = "addColumnInfo", 
+					refClassName = "Rcpp_jaspTable", 
+					superClassMethod = ""
+			)
+	}
+	if (is.null(e$.__C__Rcpp_jaspTable@refMethods$addFootnote)) {
+		e$.__C__Rcpp_jaspTable@refMethods$addFootnote <- 
+			new("refMethodDef", 
+					.Data = function (message = "", symbol = NULL, col_names = NULL, row_names = NULL) {
+						addFootnoteHelper(message, symbol, col_names, row_names)
+					}, 
+					mayCall = "addFootnoteHelper", 
+					name = "addFootnote",
+					refClassName = "Rcpp_jaspTable",
+					superClassMethod = ""
+			)
+	}
+	if (is.null(e$.__C__Rcpp_jaspTable@refMethods$finalize)) {
+		e$.__C__Rcpp_jaspTable@refMethods$finalize <- 
+			new("refMethodDef", 
+					.Data = function () {}, 
+					mayCall = character(0), 
+					name = "finalize", 
+					refClassName = "Rcpp_jaspTable", 
+					superClassMethod = "finalize#Rcpp_jaspTable"
+			)
+	}
+	lockBinding('.__C__Rcpp_jaspTable', e)
+	
+	message("jaspResults has been created and can now be used to test/develop your analysis, try something like:\njaspResults$print()\nor\njaspResults[[\"aTable\"]] <- createJaspTable()")
+	return(invisible(TRUE))
+	
 }
 
-# initJaspResults is a function that creates jaspResults for use in a stand-alone R environment
-initJaspResults <- extendJaspTableAndCreateJaspResults()
+initJaspResults <- function() .onAttach()
+
 
 checkForJaspResultsInit <- function()
 {
-	env <- globalenv()
+	if(!exists("jaspResults", .GlobalEnv))
+		.onAttach()
+}
 
-	if(!exists("jaspResults", env))
-		initJaspResults()
+is.JaspResultsObj <- function(x) {
+	isS4(x) && 
+		inherits(x, c("Rcpp_jaspPlot", "Rcpp_jaspHtml", "Rcpp_jaspResultsClass", 
+									"Rcpp_jaspIntlist", "Rcpp_jaspContainer", "Rcpp_jaspStringlist", 
+									"Rcpp_jaspObject", "Rcpp_jaspDoublelist", "Rcpp_jaspBoollist", 
+									"Rcpp_jaspTable", "Rcpp_jaspState",
+									"jaspTableExtended"
+									))
+}
+
+destroyAllAllocatedRObjects <- function() {
+
+	# some attempt to clear out R objects with invalid pointers	
+	s <- search()
+	envs2Search <- s[!(startsWith(s, "package:") | startsWith(s, "tools:") | s == "Autoloads")]
+	
+	for (envName in envs2Search) {
+		
+		nms2rm <- character()
+		env <- as.environment(envName)
+		
+		for (n in names(env)) {
+			if (is.JaspResultsObj(env[[n]])) {
+				
+				# check if externalpoint of object is invalid
+				if (isTRUE(try(silent = TRUE, identical(
+					env[[n]]$.pointer,
+					new("externalptr")
+					)))) {
+					nms2rm <- c(nms2rm, n)
+				}
+			}
+		}
+		# delete objects from env
+		if (length(nms2rm) > 0)
+				rm(list = nms2rm, envir = env)
+	}
 }
 
 ###########################
@@ -141,7 +218,7 @@ createJaspState <- function(object=NULL, title="", dependencies=NULL)
 {
   checkForJaspResultsInit()
 
-  stateObj <- jaspResultsModule$create_cpp_jaspState(title) # If we use R's constructor it will garbage collect our objects prematurely.. #
+  stateObj <- create_cpp_jaspState(title) # If we use R's constructor it will garbage collect our objects prematurely.. #
 
   if(!is.null(object))
     stateObj$object <- object
