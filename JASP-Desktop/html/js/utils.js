@@ -537,7 +537,7 @@ function createColumns(columnDefs, rowData, modelFootnotes) {
         for (let rowNo = 0; rowNo < rowCount; rowNo++) {
 
             let row = rowData[rowNo];
-            let content = row[columnName];
+			let content = row[columnName] === null ? '' : row[columnName];
             let cell = { content: content };
 
             if (row['.footnotes'] && row['.footnotes'][columnName])
@@ -565,6 +565,7 @@ function createColumns(columnDefs, rowData, modelFootnotes) {
                     cell.isEndOfGroup = true;
                 }
             }
+
             column[rowNo] = cell;
         }
 

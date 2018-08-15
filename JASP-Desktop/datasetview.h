@@ -40,6 +40,7 @@ class DataSetView : public QQuickItem
 	Q_PROPERTY( QQmlComponent * columnHeaderDelegate	READ columnHeaderDelegate	WRITE setColumnHeaderDelegate	NOTIFY columnHeaderDelegateChanged )
 
 	Q_PROPERTY( QQuickItem * leftTopCornerItem			READ leftTopCornerItem		WRITE setLeftTopCornerItem		NOTIFY leftTopCornerItemChanged )
+	Q_PROPERTY( QQuickItem * extraColumnItem			READ extraColumnItem		WRITE setExtraColumnItem		NOTIFY extraColumnItemChanged )
 
 	Q_PROPERTY( QFont font	MEMBER _font)
 
@@ -65,6 +66,7 @@ public:
 	QQmlComponent * columnHeaderDelegate()	{ return _columnHeaderDelegate; }
 
 	QQuickItem * leftTopCornerItem()	{ return _leftTopItem; }
+	QQuickItem * extraColumnItem()		{ return _extraColumnItem; }
 
 	void setViewportX(float newViewportX);
 	void setViewportY(float newViewportY);
@@ -79,6 +81,7 @@ public:
 	void setItemDelegate(QQmlComponent * newDelegate);
 
 	void setLeftTopCornerItem(QQuickItem * newItem);
+	void setExtraColumnItem(QQuickItem * newItem);
 
 protected:
 	void setRolenames();
@@ -100,14 +103,19 @@ protected:
 	std::map<int, ItemContextualized *>					_columnHeaderItems;
 	std::map<int, std::map<int, ItemContextualized *>>	_cellTextItems;			//[col][row]
 	std::vector<std::pair<QVector2D, QVector2D>>		_lines;
-	QQuickItem *										_leftTopItem = NULL;
+	QQuickItem											*_leftTopItem = NULL,
+														*_extraColumnItem = NULL;
 
-	float _dataRowsMaxHeight;
-	bool _recalculateCellSizes = false, _ignoreViewpoint = true;
+	bool _recalculateCellSizes = false,
+	_ignoreViewpoint = true;
 
-	float _fontPixelSize			= 20;
-	float _itemHorizontalPadding	= 8;
-	float _itemVerticalPadding		= 8;
+	float	_dataRowsMaxHeight,
+			_fontPixelSize			= 20,
+			_itemHorizontalPadding	= 8,
+			_itemVerticalPadding	= 8,
+			_dataWidth				= -1;
+
+	float extraColumnWidth() { return _extraColumnItem == NULL ? 0 : _extraColumnItem->width(); }
 
 	QQmlComponent	* _itemDelegate				= NULL;
 	QQmlComponent	* _rowNumberDelegate		= NULL;
@@ -139,13 +147,12 @@ protected:
 	QQuickItem * createColumnHeader(int col);
 	void storeColumnHeader(int col);
 
-	QQuickItem * createleftTopCorner();
-
-	QQuickItem * createStyleData(QQmlContext * theContext);
+	QQuickItem *	createleftTopCorner();
+	void			updateExtraColumnItem();
 
 	QQmlContext * setStyleDataItem(			QQmlContext * previousContext, QString text, bool active, int column, int row);
 	QQmlContext * setStyleDataRowNumber(	QQmlContext * previousContext, int row);
-	QQmlContext * setStyleDataColumnHeader(	QQmlContext * previousContext, QString text, int column);
+	QQmlContext * setStyleDataColumnHeader(	QQmlContext * previousContext, QString text, int column, bool isComputed, bool isInvalidated, bool isFiltered,  QString computedError);
 
 
 	QFontMetricsF _metricsFont;
@@ -173,6 +180,7 @@ signals:
 	void columnHeaderDelegateChanged();
 	void itemDelegateChanged();
 	void leftTopCornerItemChanged();
+	void extraColumnItemChanged();
 
 	void itemSizeChanged();
 
@@ -189,10 +197,10 @@ public slots:
 
 	void calculateCellSizes();
 
-	void modelDataChanged(const QModelIndex & begin, const QModelIndex & end, const QVector<int> & roles);
-	void modelHeaderDataChanged(Qt::Orientation orientation, int first, int last);
-	void modelAboutToBeReset();
-	void modelWasReset();
+	void modelDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)	{ calculateCellSizes(); }
+	void modelHeaderDataChanged(Qt::Orientation, int, int)									{ calculateCellSizes(); }
+	void modelAboutToBeReset()																{}
+	void modelWasReset()																	{ setRolenames(); calculateCellSizes(); }
 
 };
 

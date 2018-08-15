@@ -77,5 +77,6 @@
         <file>icons/addition.png</file>
         <file>icons/editImage.png</file>
         <file>icons/right-arrow.png</file>
+        <file>icons/computed.png</file>
     </qresource>
 </RCC>

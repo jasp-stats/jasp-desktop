@@ -21,9 +21,6 @@
 
 using namespace std;
 
-OptionIntegerArray::OptionIntegerArray()
-{
-}
 
 void OptionIntegerArray::init(const Json::Value &data)
 {

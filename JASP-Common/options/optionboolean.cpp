@@ -17,12 +17,6 @@
 
 #include "optionboolean.h"
 
-OptionBoolean::OptionBoolean(bool defaultValue)
-	: OptionI()
-{
-	_value = defaultValue;
-}
-
 void OptionBoolean::init(const Json::Value &data)
 {
 	_value = data.get("default", false).asBool();

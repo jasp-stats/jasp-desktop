@@ -21,46 +21,50 @@
 #include <map>
 #include <iostream>
 #include "columns.h"
+#include "computedcolumns.h"
 
 typedef boost::interprocess::allocator<bool, boost::interprocess::managed_shared_memory::segment_manager> BoolAllocator;
 typedef boost::container::vector<bool, BoolAllocator> BoolVector;
 
 class DataSet
 {
+	typedef std::map<std::string, std::map<int, std::string>> emptyValsType;
+
 public:
 
-	DataSet(boost::interprocess::managed_shared_memory *mem);
-	~DataSet();
+	DataSet(boost::interprocess::managed_shared_memory *mem) : _columns(mem), _filterVector(mem->get_segment_manager()), _mem(mem) { }
+	~DataSet() {}
 
-	int rowCount() const;
-	int columnCount() const;
+	size_t minRowCount()	const { return _columns.minRowCount(); }
+	size_t maxRowCount()	const { return _columns.maxRowCount(); }
+	size_t rowCount()		const;
+	size_t columnCount()	const { return _columns.columnCount(); }
 
-	Columns& columns();
-	Column& column(int index);
-	Column& column(std::string name);
+	Columns& columns()					{ return _columns; }
+	Column& column(size_t index)		{ return _columns.at(index);}
+	Column& column(std::string name)	{ return _columns.get(name);	}
 
-	int getColumnIndex(std::string name);
-	void setRowCount(int rowCount);
-	void setColumnCount(int columnCount);
-	void removeColumn(std::string name);
+	int  getColumnIndex(std::string name) { try{ return _columns.findIndexByName(name); } catch(...) { return -1;	} }
+	void setRowCount(size_t rowCount);
+	void setColumnCount(size_t columnCount);
+
 
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
 
 	std::string toString();
-	std::vector<std::string> resetEmptyValues(std::map<std::string, std::map<int, std::string> > &emptyValuesMap);
+	std::vector<std::string> resetEmptyValues(emptyValsType emptyValuesMap);
 
-	void setFilterVector(std::vector<bool> filterResult);
-	const BoolVector& filterVector() const { return _filterVector; }
-	int filteredRowCount() const { return _filteredRowCount; }
+	void				setFilterVector(std::vector<bool> filterResult);
+	const BoolVector&	filterVector()		const { return _filterVector; }
+	int					filteredRowCount()	const { return _filteredRowCount; }
 
-	bool allColumnsPassFilter();
+	bool allColumnsPassFilter()						const;
+
 
 private:
-	Columns		_columns;
-	int			_rowCount,
-				_columnCount,
-				_filteredRowCount;
-	BoolVector	_filterVector;
+	Columns			_columns;
+	int				_filteredRowCount = 0;
+	BoolVector		_filterVector;
 
 	boost::interprocess::managed_shared_memory *_mem;
 };

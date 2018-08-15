@@ -48,27 +48,30 @@ AnalysisForm::AnalysisForm(QString name, QWidget *parent) :
 	_hasIllegalValue = false;
 }
 
+void AnalysisForm::connectToAvailableVariablesModel(DataSet *dataSet)
+{
+	_dataSet = dataSet;
+
+	vector<string> columnNames;
+
+	if (_dataSet != NULL)
+		for(Column &column : dataSet->columns())
+			columnNames.push_back(column.name());
+
+
+	_availableVariablesModel.setInfoProvider(this);
+	_availableVariablesModel.setVariables(columnNames);
+}
+
 void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
 {
 	if (_options != NULL)
 		unbind();
 
 	_dataSet = dataSet;
-
-	vector<string> columnNames;
-
-	if (_dataSet != NULL)
-	{
-		BOOST_FOREACH(Column &column, dataSet->columns())
-			columnNames.push_back(column.name());
-	}
-
-	_availableVariablesModel.setInfoProvider(this);
-	_availableVariablesModel.setVariables(columnNames);
-
 	_options = options;
 
-	BOOST_FOREACH(const string &name, options->names)
+	for(const string &name : options->names)
 	{
 		Option *option = options->get(name);
 
@@ -86,9 +89,7 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
 			boundChild->illegalChanged.connect(boost::bind(&AnalysisForm::illegalValueHandler, this, _1));
 		}
 		else
-		{
 			qDebug() << "child not found : " << qsName << " in AnalysisForm::setOptions()";
-		}
 	}
 
 	updateIllegalStatus();
@@ -172,7 +173,7 @@ void AnalysisForm::updateIllegalStatus()
 		_hasIllegalValue = illegal;
 		_illegalMessage = message;
 
-		emit illegalChanged();
+		emit illegalChanged(this);
 	}
 }
 

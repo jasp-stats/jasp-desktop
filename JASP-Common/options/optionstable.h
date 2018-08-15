@@ -28,16 +28,15 @@
 class OptionsTable : public OptionI<std::vector<Options*> >
 {
 public:
-	OptionsTable(Options *rowTemplate = NULL);
+	OptionsTable(Options *rowTemplate = NULL) : OptionI(true), _template(rowTemplate) {}
 
-	virtual void init(const Json::Value &data) OVERRIDE;
+	void		init(const Json::Value &data)							override;
+	void		set(const Json::Value &value)							override;
+	Json::Value asJSON()										const	override;
+	Option*		clone()											const	override;
+	void		setValue(const std::vector<Options *> &value)			override;
 
-	virtual Json::Value asJSON() const OVERRIDE;
-	virtual void set(const Json::Value &value) OVERRIDE;
-	virtual Option* clone() const OVERRIDE;
-	virtual void setValue(const std::vector<Options *> &value) OVERRIDE;
-
-	Options *rowTemplate() const;
+	Options*	rowTemplate() const;
 
 private:
 	Options *_template;

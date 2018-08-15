@@ -3,7 +3,6 @@ windows:RC_FILE = $$PWD/icon.rc
 
 SOURCES += \
     $$PWD/aboutdialog.cpp \
-    $$PWD/activitylog.cpp \
     $$PWD/analyses.cpp \
     $$PWD/analysisforms/analysisform.cpp \
     $$PWD/appdirs.cpp \
@@ -150,12 +149,14 @@ SOURCES += \
     $$PWD/backstage/backstagedatalibrary.cpp \
     $$PWD/backstage/datalibrarylistmodel.cpp \
     $$PWD/backstage/datalibrarybreadcrumbsmodel.cpp \
-    $$PWD/settings.cpp
+    $$PWD/settings.cpp \
+    $$PWD/enginerepresentation.cpp \
+    $$PWD/computedcolumnsmodel.cpp
+
 
 
 HEADERS  += \
     $$PWD/aboutdialog.h \
-    $$PWD/activitylog.h \
     $$PWD/analyses.h \
     $$PWD/analysisforms/analysisform.h \
     $$PWD/appdirs.h \
@@ -317,7 +318,10 @@ HEADERS  += \
     $$PWD/backstage/backstagedatalibrary.h \
     $$PWD/backstage/datalibrarylistmodel.h \
     $$PWD/backstage/datalibrarybreadcrumbsmodel.h \
-    $$PWD/settings.h
+    $$PWD/settings.h \
+    $$PWD/enginerepresentation.h \
+    $$PWD/rscriptstore.h \
+    $$PWD/computedcolumnsmodel.h
 
 FORMS += \
     $$PWD/aboutdialog.ui \
@@ -505,4 +509,22 @@ DISTFILES += \
     $$PWD/backstage/firsttabsstylesheet.qss \
     $$PWD/backstage/secondtabsstylesheet.qss \
     $$PWD/html/css/images/tinylogo.svg \
-    $$PWD/resources/icons/file-jasp.svg
+    $$PWD/resources/icons/file-jasp.svg \
+    $$PWD/html/js/analyses.js \
+    $$PWD/html/js/analysis.js \
+    $$PWD/html/js/backbone-1.1.2.js \
+    $$PWD/html/js/collection.js \
+    $$PWD/html/js/etch.js \
+    $$PWD/html/js/image.js \
+    $$PWD/html/js/jaspwidgets.js \
+    $$PWD/html/js/jquery-1.9.1.js \
+    $$PWD/html/js/jquery-ui-1.10.1.custom.js \
+    $$PWD/html/js/jquery-ui-1.10.1.custom.min.js \
+    $$PWD/html/js/main.js \
+    $$PWD/html/js/mrkdwn.js \
+    $$PWD/html/js/object.js \
+    $$PWD/html/js/qwebchannel.js \
+    $$PWD/html/js/table.js \
+    $$PWD/html/js/underscore-min.js \
+    $$PWD/html/js/underscore.js \
+    $$PWD/html/js/utils.js

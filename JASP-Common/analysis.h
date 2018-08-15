@@ -24,17 +24,25 @@
 #include "version.h"
 
 #include "options/options.h"
+#include "enginedefinitions.h"
+
+#include <set>
+
+class ComputedColumn;
 
 class Analysis
 {
+	typedef std::map<std::string, std::set<std::string>> optionColumns;
+
 public:
 
 	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted, Error, SaveImg, EditImg, Exception };
 
-	Analysis(int id, std::string module, std::string name, std::string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Options *options, const Version &version, bool isAutorun = true, bool usedata = true, bool useJaspResults = false);
+	Analysis(int id, std::string module, std::string name, std::string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Json::Value optionsJson, const Version &version, Json::Value *data, bool isAutorun = true, bool usedata = true, bool useJaspResults = false);
+
 	virtual ~Analysis();
 
-	Options *options() const;
+	Options *options() const { return _options; }
 
 	boost::signals2::signal<void (Analysis *source)>						optionsChanged;
 	boost::signals2::signal<void (Analysis *source)>						toRefresh;
@@ -44,67 +52,84 @@ public:
 	boost::signals2::signal<void (Analysis *source)>						imageEdited;
 	boost::signals2::signal<void (Analysis *source)>						resultsChanged;
 
+	boost::signals2::signal<void				(std::string columnName)>														requestComputedColumnDestruction;
+	boost::signals2::signal<ComputedColumn *	(std::string columnName, Analysis *source), return_not_NULL<ComputedColumn *>>	requestComputedColumnCreation;
+
+
+
 	void setResults(Json::Value results, int progress = -1);
 	void setImageResults(Json::Value results);
 	void setImageEdited(Json::Value results);
-	void setUserData(Json::Value userData);
+	void setStatus(Status status);
+
+	void setUserData(Json::Value userData)				{ _userData = userData;			}
+	void setVisible(bool visible)						{ _visible = visible;			}
+	void setRefreshBlocked(bool block)					{ _refreshBlocked = block;		}
+	void setSaveImgOptions(Json::Value &options)		{ _saveImgOptions = options;	}
 
 	//getters
-	const	Json::Value &results()			const;
-	const	Json::Value &userData()			const;
+	const	Json::Value &results()				const	{ return _results;				}
+	const	Json::Value &userData()				const	{ return _userData;				}
+	const	Json::Value &requiresInit()			const	{ return _requiresInit;			}
+	const	Json::Value &dataKey()				const	{ return _dataKey;				}
+	const	Json::Value &stateKey()				const	{ return _stateKey;				}
+	const	Json::Value &resultsMeta()			const	{ return _resultsMeta;			}
+	const	std::string &name()					const	{ return _name;					}
+	const	std::string &title()				const	{ return _title;				}
+	const	std::string &module()				const	{ return _module;				}
+			int			id()					const	{ return _id;					}
+			bool		isAutorun()				const	{ return _autorun;				}
+			bool		useData()				const	{ return _usedata;				}
+			bool		usesJaspResults()		const	{ return _jaspResultsAnalysis;	}
+			Status		status()				const	{ return _status;				}
+			int			revision()				const	{ return _revision;				}
+			bool		isVisible()				const	{ return _visible;				}
+			bool		isRefreshBlocked()		const	{ return _refreshBlocked;		}
+	const	Json::Value	&getSaveImgOptions()	const	{ return _saveImgOptions;		}
+	const	Json::Value	&getImgResults()		const	{ return _imgResults;			}
+
+			void		refresh();
+	virtual void		abort();
+			void		scheduleRun();
+
 			Json::Value asJSON()			const;
-	const	Json::Value &requiresInit()		const;
-	const	Json::Value &dataKey()			const;
-	const	Json::Value &stateKey()			const;
-	const	Json::Value &resultsMeta()		const;
-	const	std::string &name()				const;
-	const	std::string &title()			const;
-	const	std::string &module()			const;
-			int			id()				const;
-			bool		isAutorun()			const;
-			bool		useData()			const;
-			bool		usesJaspResults()	const { return _jaspResultsAnalysis; }
 
+	static	Status		parseStatus(std::string name);
 
-			void refresh();
-	virtual void abort();
-			void scheduleRun();
+	bool isEmpty()		const { return status() == Empty; }
+	bool isAborted()	const { return status() == Aborted; }
+	bool isSaveImg()	const { return status() == SaveImg; }
+	bool isEditImg()	const { return status() == EditImg; }
+	bool isInited()		const { return status() == Inited; }
 
-	Status	status() const;
-	void	setStatus(Status status);
+	performType desiredPerformTypeFromAnalysisStatus() const;
 
-	bool isVisible();
-	void setVisible(bool visible);
-
-	bool isRefreshBlocked();
-	void setRefreshBlocked(bool block);
-
-	int revision();
-
-	void		setSaveImgOptions(Json::Value &options);
-	Json::Value getSaveImgOptions();
-	Json::Value getImgResults();
-
-	static Status parseStatus(std::string name);
-
+	std::set<std::string>	usedVariables()													{ return _options->usedVariables();					}
+	std::set<std::string>	columnsCreated()												{ return _options->columnsCreated();					}
+	void					removeUsedVariable(std::string var)								{ _options->removeUsedVariable(var);				}
+	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}
 
 protected:
+	int callback(Json::Value results);
 
-	Status _status;
-	bool _visible			= true;
-	bool _refreshBlocked	= false;
+	Status		_status;
+	bool		_visible		= true;
+	bool		_refreshBlocked	= false;
 
-	Options* _options;
+	Options*	_options;
 	Json::Value	_results		= Json::nullValue,
 				_imgResults		= Json::nullValue,
 				_userData		= Json::nullValue,
 				_saveImgOptions	= Json::nullValue;
-	int _progress;
+	int			_progress;
 
-	int callback(Json::Value results);
 
 private:
-	int _id;
+	void				optionsChangedHandler(Option *option);
+	ComputedColumn *	requestComputedColumnCreationHandler(std::string columnName)	{ return requestComputedColumnCreation(columnName, this); }
+	void				requestComputedColumnDestructionHandler(std::string columnName) { requestComputedColumnDestruction(columnName); }
+
+	int			_id;
 	std::string	_module,
 				_name,
 				_title;
@@ -116,10 +141,7 @@ private:
 				_usedata,
 				_jaspResultsAnalysis;
 	Version		_version;
-	int			_revision = 0;
-
-	void optionsChangedHandler(Option *option);
-
+	int			_revision		= 0;
 
 };
 

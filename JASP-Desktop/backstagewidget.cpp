@@ -84,10 +84,6 @@ void BackStageWidget::setOnlineDataManager(OnlineDataManager *odm)
 	_openAndSaveWidget->setOnlineDataManager(odm);
 }
 
-void BackStageWidget::setLog(ActivityLog *log)
-{
-
-}
 
 FileEvent *BackStageWidget::open()
 {

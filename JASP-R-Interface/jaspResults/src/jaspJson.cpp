@@ -2,8 +2,9 @@
 
 Json::Value jaspJson::RObject_to_JsonValue(Rcpp::RObject obj)
 {
-	if(Rcpp::is<Rcpp::DataFrame>(obj))				return RObject_to_JsonValue((Rcpp::List)					obj);
+	if(obj.isNULL())								return Json::nullValue;
 	else if(Rcpp::is<Rcpp::List>(obj))				return RObject_to_JsonValue((Rcpp::List)					obj);
+	else if(Rcpp::is<Rcpp::DataFrame>(obj))			return RObject_to_JsonValue((Rcpp::List)					obj);
 	else if(Rcpp::is<Rcpp::NumericMatrix>(obj))		return RObject_to_JsonValue<REALSXP>((Rcpp::NumericMatrix)	obj);
 	else if(Rcpp::is<Rcpp::NumericVector>(obj))		return RObject_to_JsonValue<REALSXP>((Rcpp::NumericVector)	obj);
 	else if(Rcpp::is<Rcpp::IntegerVector>(obj))		return RObject_to_JsonValue<INTSXP>((Rcpp::IntegerVector)	obj);
@@ -11,7 +12,6 @@ Json::Value jaspJson::RObject_to_JsonValue(Rcpp::RObject obj)
 	else if(Rcpp::is<Rcpp::CharacterVector>(obj))	return RObject_to_JsonValue<STRSXP>((Rcpp::CharacterVector)	obj);
 	else if(Rcpp::is<Rcpp::StringVector>(obj))		return RObject_to_JsonValue<STRSXP>((Rcpp::StringVector)	obj);
 	else if(obj.isS4())								return "an S4, which is too complicated for jaspResults now.";
-	else if(obj.isNULL())							return Json::Value(Json::nullValue);
 	else											return "something that is not understood by jaspResults right now..";
 }
 
@@ -31,31 +31,22 @@ Json::Value jaspJson::RObject_to_JsonValue(Rcpp::List obj)
 				atLeastOneNamed = true;
 	}
 
-	Json::Value val;
+	Json::Value val = atLeastOneNamed ? Json::objectValue : Json::arrayValue;
 
 	if(atLeastOneNamed)
-	{
-		//std::cout << "R List to object has at least one named element so we make it a json object!\n" << std::flush;
-
-		val = Json::Value(Json::objectValue);
 		for(int row=obj.size() - 1; row>=0; row--) //We go backwards because in R the first entry of a name in a list is used. So to emulate this we go backwars and we override an earlier occurence. (aka you have two elements with the name "a" in a list and in R list$a returns the first occurence. This is now also the element visible in the json.)
 		{
 			std::string name(namesList[row]);
+
 			if(name == "")
 				name = "element_" + std::to_string(row);
 
 			val[name] = RObject_to_JsonValue((Rcpp::RObject)obj[row]);
 		}
-	}
 	else
-	{
-		//std::cout << "R List to object has no named element so we make it a json array!\n" << std::flush;
-
-		val = Json::Value(Json::arrayValue);
-
 		for(int row=0; row<obj.size(); row++)
 			val.append(RObject_to_JsonValue((Rcpp::RObject)obj[row]));
-	}
+
 
 	return val;
 }

@@ -132,7 +132,7 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 			throw runtime_error("File '" + fq(path) + "' is being used by another application.");
 
 		if (event->IsOnlineNode())
-			QMetaObject::invokeMethod(_odm, "beginUploadFile", Qt::AutoConnection, Q_ARG(QString, event->path()), Q_ARG(QString, "asyncloader"), Q_ARG(QString, tq(package->id)), Q_ARG(QString, tq(package->initalMD5)));
+			QMetaObject::invokeMethod(_odm, "beginUploadFile", Qt::AutoConnection, Q_ARG(QString, event->path()), Q_ARG(QString, "asyncloader"), Q_ARG(QString, tq(package->id())), Q_ARG(QString, tq(package->initialMD5())));
 		else
 			event->setComplete();
 	}
@@ -226,23 +226,23 @@ void AsyncLoader::loadPackage(QString id)
 					throw runtime_error("The securtiy check of the downloaded file has failed.\n\nLoading has been cancelled due to an MD5 mismatch.");
 			}
 
-			_currentPackage->initalMD5 = fq(calcMD5);
+			_currentPackage->setInitialMD5(fq(calcMD5));
 
 			if (dataNode != NULL)
 			{
-				_currentPackage->id = fq(dataNode->nodeId());
+				_currentPackage->setId(fq(dataNode->nodeId()));
 				_currentEvent->setPath(dataNode->path());
 			}
 			else
-				_currentPackage->id = path;
+				_currentPackage->setId(path);
 
 			if (_currentEvent->type() != Utils::FileType::jasp)
 			{
-				_currentPackage->dataFilePath = _currentEvent->path().toStdString();
-				_currentPackage->dataFileTimestamp = _currentEvent->IsOnlineNode() ? 0 : QFileInfo(_currentEvent->path()).lastModified().toTime_t();
+				_currentPackage->setDataFilePath(_currentEvent->path().toStdString());
+				_currentPackage->setDataFileTimestamp(_currentEvent->IsOnlineNode() ? 0 : QFileInfo(_currentEvent->path()).lastModified().toTime_t());
 			}
-			_currentPackage->dataFileReadOnly = _currentEvent->isReadOnly();
-			_currentEvent->setDataFilePath(QString::fromStdString(_currentPackage->dataFilePath));
+			_currentPackage->setDataFileReadOnly(_currentEvent->isReadOnly());
+			_currentEvent->setDataFilePath(QString::fromStdString(_currentPackage->dataFilePath()));
 			_currentEvent->setComplete();
 
 			if (dataNode != NULL)
@@ -303,12 +303,8 @@ void AsyncLoader::uploadFileFinished(QString id)
 				_currentEvent->setPath(dataNode->path());
 			}
 
-			_currentPackage->initalMD5 = fq(fileChecksum(tq(path), QCryptographicHash::Md5));
-
-			if (dataNode != NULL)
-				_currentPackage->id = fq(dataNode->nodeId());
-			else
-				_currentPackage->id = path;
+			_currentPackage->setInitialMD5(fq(fileChecksum(tq(path), QCryptographicHash::Md5)));
+			_currentPackage->setId(dataNode != NULL ? fq(dataNode->nodeId()) : path);
 
 			_currentEvent->setComplete();
 

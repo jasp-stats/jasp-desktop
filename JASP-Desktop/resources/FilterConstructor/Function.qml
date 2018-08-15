@@ -51,11 +51,10 @@ Item
 		return compounded
 	}
 
-	function returnEmptyRightMostDropSpot()		{ return dropRepeat.rightMostEmptyDropSpot() }
-	function returnFilledRightMostDropSpot()	{ return dropRepeat.leftMostFilledDropSpot() }
+	function returnEmptyRightMostDropSpot()		{ return dropRepeat.rightMostEmptyDropSpot()	}
+	function returnFilledRightMostDropSpot()	{ return dropRepeat.leftMostFilledDropSpot()	}
 	function checkCompletenessFormulas()		{ return dropRepeat.checkCompletenessFormulas() }
-	function convertToJSON()					{ return dropRepeat.convertToJSON()	}
-
+	function convertToJSON()					{ return dropRepeat.convertToJSON()				}
 	function getParameterDropSpot(param)		{ return dropRepeat.getParameterDropSpot(param) }
 
 	Item

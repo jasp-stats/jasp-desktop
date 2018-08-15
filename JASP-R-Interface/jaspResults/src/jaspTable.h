@@ -76,6 +76,8 @@ public:
 
 	std::string dataToString(std::string prefix) override;
 
+	void complete() { if(_status == "running") _status = "complete"; }
+
 	//void combineColumns(Rcpp::map_named_args named_args)	{ named_args["colNames"] = Rcpp::RObject(); named_args["colOvertitles"] = Rcpp::RObject(); combineCells(named_args); }
 	//void combineRows(Rcpp::map_named_args named_args)		{ named_args["rowNames"] = Rcpp::RObject(); named_args["rowOvertitles"] = Rcpp::RObject(); combineCells(named_args); }
 	//void combineCells(Rcpp::map_named_args & named_args);
@@ -88,9 +90,14 @@ public:
 
 	Json::Value getCell(int col, int row);
 
-	bool _transposeTable = false, _transposeWithOvertitle = false;
+	bool			_transposeTable = false,
+					_transposeWithOvertitle = false,
+					_showSpecifiedColumnsOnly = false;
+	std::string		_status = "running",
+					_error = "",
+					_errorMessage = "";
 
-	std::string _status = "complete", _error = "", _errorMessage = "";
+	std::set<std::string> _specifiedColumns;
 
 private:
 	int getDesiredColumnIndexFromNameForColumnAdding(std::string colName);
@@ -117,7 +124,7 @@ private:
 		extractRowNames(newData, true);
 
 		_data.clear();
-		for(int col=0; col<newData.size(); col++)
+		for(size_t col=0; col<newData.size(); col++)
 			addOrSetColumnInData(jaspJson::RcppVector_to_VectorJson((Rcpp::RObject)newData[col]), localColNames.size() > col ? localColNames[col] : "");
 	}
 
@@ -129,7 +136,7 @@ private:
 		std::vector<std::vector<Json::Value>> jsonMat = jaspJson::RcppMatrix_to_Vector2Json<RTYPE>(newData);
 
 		_data.clear();
-		for(int col=0; col<jsonMat.size(); col++)
+		for(size_t col=0; col<jsonMat.size(); col++)
 			addOrSetColumnInData(jsonMat[col], localColNames.size() > col ? localColNames[col] : "");
 	}
 
@@ -139,7 +146,8 @@ private:
 
 		_data.push_back(jaspJson::RcppVector_to_VectorJson<RTYPE>(newData));
 	}
-	template<int RTYPE>	void setColumnFromVector(Rcpp::Vector<RTYPE> newData, int col)
+
+	template<int RTYPE>	void setColumnFromVector(Rcpp::Vector<RTYPE> newData, size_t col)
 	{
 		setRowNamesWhereApplicable(extractElementOrColumnNames(newData));
 
@@ -160,7 +168,7 @@ private:
 
 		std::vector<std::vector<Json::Value>> jsonMat = jaspJson::RcppMatrix_to_Vector2Json<RTYPE>(newData);
 
-		for(int col=0; col<jsonMat.size(); col++)
+		for(size_t col=0; col<jsonMat.size(); col++)
 			addOrSetColumnInData(jsonMat[col], localColNames.size() > col ? localColNames[col] : "");
 	}
 
@@ -209,14 +217,14 @@ private:
 
 		std::vector<std::string> localRowNames = extractElementOrColumnNames(newData);
 
-		for(int row=0; row<localRowNames.size(); row++)
+		for(size_t row=0; row<localRowNames.size(); row++)
 			_rowNames[row + equalizedColumnsLength] = localRowNames[row];
 
-		for(int row=0; row<newRowNames.size(); row++)
+		for(size_t row=0; row<newRowNames.size(); row++)
 			_rowNames[row + equalizedColumnsLength] = newRowNames[row];
 
 
-		for(int row=0; row<newData.size(); row++)
+		for(size_t row=0; row<newData.size(); row++)
 		{
 			Rcpp::RObject rij = (Rcpp::RObject)newData[row];
 
@@ -227,9 +235,26 @@ private:
 
 			auto jsonRij = jaspJson::RcppVector_to_VectorJson(rij);
 
-			for(int col=0; col<jsonRij.size(); col++)
+			for(size_t col=0; col<jsonRij.size(); col++)
 				previouslyAddedUnnamedCols = pushbackToColumnInData(std::vector<Json::Value>({jsonRij[col]}), localColNames.size() > col ? localColNames[col] : "", equalizedColumnsLength, previouslyAddedUnnamedCols);
 
+		}
+
+	}
+
+	void addRowsFromDataFrame(Rcpp::DataFrame newData)
+	{
+		newData							= convertFactorsToCharacters(newData);
+		int equalizedColumnsLength		= equalizeColumnsLengths();
+		int previouslyAddedUnnamedCols	= 0;
+
+		std::vector<std::string> localColNames = extractElementOrColumnNames(newData);
+
+		for(size_t col=0; col<newData.size(); col++)
+		{
+			Rcpp::RObject kolom			= (Rcpp::RObject)newData[col];
+			auto jsonKolom				= jaspJson::RcppVector_to_VectorJson(kolom);
+			previouslyAddedUnnamedCols	= pushbackToColumnInData(jsonKolom, localColNames.size() > col ? localColNames[col] : "", equalizedColumnsLength, previouslyAddedUnnamedCols);
 		}
 
 	}
@@ -372,11 +397,12 @@ public:
 	void setColumn(std::string columnName, Rcpp::RObject column)		{ ((jaspTable*)myJaspObject)->setColumn(columnName, column); }
 
 
-	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, bool,			_transposeTable,			TransposeTable)
-	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, bool,			_transposeWithOvertitle,	TransposeWithOvertitle)
-	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, std::string,	_status,					Status)
-	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, std::string,	_error,						Error)
-	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, std::string,	_errorMessage,				ErrorMessage)
+	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, bool,			_transposeTable,				TransposeTable)
+	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, bool,			_transposeWithOvertitle,		TransposeWithOvertitle)
+	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, std::string,	_status,						Status)
+	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, std::string,	_error,							Error)
+	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, std::string,	_errorMessage,					ErrorMessage)
+	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspTable, bool,			_showSpecifiedColumnsOnly,		ShowSpecifiedColumnsOnly)
 };
 
 RCPP_EXPOSED_CLASS_NODECL(jaspTable_Interface)

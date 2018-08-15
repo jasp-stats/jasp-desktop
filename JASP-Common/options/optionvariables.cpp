@@ -22,15 +22,7 @@
 
 using namespace std;
 
-OptionVariables::OptionVariables()
-	: OptionTerms(true, false)
-{
-}
 
-OptionVariables::OptionVariables(bool onlyOneTerm)
-	: OptionTerms(true, onlyOneTerm)
-{
-}
 
 Json::Value OptionVariables::asJSON() const
 {
@@ -82,6 +74,20 @@ vector<string> OptionVariables::variables() const
 	return values;
 }
 
+std::set<std::string> OptionVariables::usedVariables()
+{
+	std::set<std::string> values;
+
+	for (size_t i = 0; i < _value.size(); i++)
+	{
+		const vector<string> &variable = _value.at(i);
+		if (variable.size() > 0)
+			values.insert(variable.at(0));
+	}
+
+	return values;
+}
+
 void OptionVariables::replaceName(string oldName, string newName)
 {
 	vector<string> values = variables();
@@ -95,3 +101,18 @@ void OptionVariables::removeName(string name)
 	values.erase(remove(values.begin(), values.end(), name), values.end());
 	setValue(values);
 }
+
+void  OptionVariables::removeUsedVariable(std::string var)
+{
+	bool iContainVar = false;
+	for(std::string v : variables())
+		if(v == var)
+		{
+			iContainVar = true;
+			break;
+		}
+
+	if(iContainVar)
+		removeName(var);
+}
+

@@ -51,7 +51,7 @@ void ResultExporter::saveDataSet(const std::string &path, DataSetPackage* packag
 
 	if (_currentFileType == Utils::pdf)
 	{
-		QString htmlContent = QString::fromStdString(package->analysesHTML);
+		QString htmlContent = QString::fromStdString(package->analysesHTML());
 
 		//Next code could be a hack to show plots in pdf
 		//QUrl url = QUrl::fromLocalFile(QDir::current().absoluteFilePath("htmloutput.html"));
@@ -73,7 +73,7 @@ void ResultExporter::saveDataSet(const std::string &path, DataSetPackage* packag
 	{
 		boost::nowide::ofstream outfile(path.c_str(), std::ios::out);
 
-		outfile << package->analysesHTML;
+		outfile << package->analysesHTML();
 		outfile.flush();
 		outfile.close();
 	}

@@ -22,6 +22,12 @@ void LevelsTableModel::setColumn(Column *column)
 	emit resizeLabelColumn();
 }
 
+void LevelsTableModel::refreshColumn(Column * column)
+{
+	if(_column != NULL && _column == column)
+		refresh();
+}
+
 void LevelsTableModel::refresh()
 {
 	beginResetModel();
@@ -68,6 +74,9 @@ QVariant LevelsTableModel::data(const QModelIndex &index, int role) const
 
 	Labels &labels = _column->labels();
 	int row = index.row();
+
+	if(row < 0 || row >= rowCount())
+		return QVariant();
 
 
 	if(role == (int)Roles::ValueRole) return tq(labels.getValueFromRow(row));
@@ -212,13 +221,22 @@ QModelIndexList LevelsTableModel::convertQVariantList_to_QModelIndexList(QVarian
 
 }
 
+int LevelsTableModel::currentColumnIndex()
+{
+	if(_column == NULL)
+		return -1;
+
+	try			{ return _dataSet->columns().findIndexByName(_column->name()); }
+	catch(...)	{ return -1; }
+}
+
 void LevelsTableModel::resetFilterAllows()
 {
 	beginResetModel();
 	_column->resetFilter();
 	endResetModel();
 
-	notifyColumnHasFilterChanged();
+	emit notifyColumnHasFilterChanged(currentColumnIndex());
 	emit labelFilterChanged();
 	emit filteredOutChanged();
 }
@@ -228,7 +246,7 @@ bool LevelsTableModel::setAllowFilterOnLabel(int row, bool newAllowValue)
 	bool atLeastOneRemains = newAllowValue;
 
 	if(!atLeastOneRemains) //Do not let the user uncheck every single one because that is useless, the user wants to uncheck row so lets see if there is another one left after that.
-		for(int i=0; i< _column->labels().size(); i++)
+		for(size_t i=0; i< _column->labels().size(); i++)
 			if(i != row && _column->labels()[i].filterAllows())
 			{
 				atLeastOneRemains = true;
@@ -240,7 +258,7 @@ bool LevelsTableModel::setAllowFilterOnLabel(int row, bool newAllowValue)
 		bool before = _column->hasFilter();
 		_column->labels()[row].setFilterAllows(newAllowValue);
 		if(before != _column->hasFilter())
-			notifyColumnHasFilterChanged();
+			emit notifyColumnHasFilterChanged(currentColumnIndex());
 
 		emit labelFilterChanged();
 		emit dataChanged(index(row, 2), index(row, 2)); //to make sure the checkbox is set to the right value
@@ -262,7 +280,7 @@ int LevelsTableModel::filteredOut()
 
 	int filteredOut = 0;
 
-	for(int i=0; i< _column->labels().size(); i++)
+	for(size_t i=0; i< _column->labels().size(); i++)
 		if(!_column->labels()[i].filterAllows())
 			filteredOut++;
 

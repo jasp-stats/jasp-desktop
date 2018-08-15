@@ -24,62 +24,65 @@
 using namespace std;
 using boost::interprocess::offset_ptr;
 
-Columns::Columns(boost::interprocess::managed_shared_memory *mem) :
-	_columnStore(mem->get_segment_manager())
+size_t Columns::minRowCount() const
 {
-	_mem = mem;
+	if(columnCount() == 0) return 0; //If no columns then rowcount => 0
+	
+	size_t minRowCount = SIZE_MAX; 
+
+	for(const Column &column : *this)
+		minRowCount = std::min(minRowCount, column.rowCount());
+
+	return minRowCount;
 }
 
-Column &Columns::get(string name)
-{	
-	for(Column &column : *this)
-		if (column.name() == name)
-			return column;
 
+size_t Columns::maxRowCount() const
+{
+	if(columnCount() == 0) return 0; //If no columns then rowcount => 0
+	
+	size_t maxRowCount = 0;
 
-	string message = "Cannot find column ";
-	message += name;
-	throw runtime_error(message);
+	for(const Column &column : *this)
+		maxRowCount = std::max(maxRowCount, column.rowCount());
+
+	return maxRowCount;
 }
 
-void Columns::setRowCount(int rowCount)
+void Columns::setRowCount(size_t rowCount)
 {
 	for(Column &column : *this)
 		column._setRowCount(rowCount);
 }
 
-void Columns::setColumnCount(int columnCount)
+void Columns::setColumnCount(size_t columnCount)
 {
 	_columnStore.reserve(columnCount);
-	for (int i = _columnStore.size(); i < columnCount; i++)
+	for (size_t i = _columnStore.size(); i < columnCount; i++)
 		_columnStore.push_back(Column(_mem));
 }
 
-Column &Columns::at(int index)
-{
-	return _columnStore.at(index);
-}
 
-void Columns::removeColumn(int index)
+void Columns::removeColumn(size_t index)
 {
-	int i = 0;
-	for (ColumnVector::iterator it = _columnStore.begin(); it != _columnStore.end(); ++it, ++i)
-		if (i == index)
+	for (ColumnVector::iterator it = _columnStore.begin(); it != _columnStore.end(); ++it, --index)
+		if (index == 0)
 		{
 			_columnStore.erase(it);
-			break;
+			return;
 		}
 }
 
-Columns::iterator Columns::begin()
+void Columns::removeColumn(std::string name)
 {
-	return _columnStore.begin();
+	for (ColumnVector::iterator it = _columnStore.begin(); it != _columnStore.end(); ++it)
+		if((*it).name() == name)
+		{
+			_columnStore.erase(it);
+			return;
+		}
 }
 
-Columns::iterator Columns::end()
-{
-	return _columnStore.end();
-}
 
 void Columns::setSharedMemory(boost::interprocess::managed_shared_memory *mem)
 {
@@ -87,5 +90,25 @@ void Columns::setSharedMemory(boost::interprocess::managed_shared_memory *mem)
 
 	for(Column &column : *this)
 		column.setSharedMemory(mem);
+}
+
+size_t Columns::findIndexByName(std::string name) const
+{
+	for(size_t i=0; i<_columnStore.size(); i++)
+		if(_columnStore[i].name() == name)
+			return i;
+
+	throw std::runtime_error("Cannot find column by name: " + name);
+}
+
+
+Column * Columns::createColumn(std::string name)
+{
+	Column * column = &at(columnCount() - 1);
+
+	column->setName(name);
+	column->_setRowCount(maxRowCount());
+
+	return column;
 }
 

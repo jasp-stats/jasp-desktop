@@ -26,15 +26,18 @@
 class OptionVariablesGroups : public OptionI<std::vector<std::vector<std::string> > >, public OptionVariableI
 {
 public:
-	OptionVariablesGroups();
+	OptionVariablesGroups() : OptionI(true) { }
 
-	virtual Json::Value asJSON() const OVERRIDE;
-	virtual void set(const Json::Value& value) OVERRIDE;
-	virtual Option* clone() const OVERRIDE;
+	Json::Value					asJSON()												const	override;
+	void						set(const Json::Value& value)									override;
+	Option						*clone()												const	override;
 
-	virtual std::vector<std::string> variables() const OVERRIDE;
-	virtual void replaceName(std::string oldName, std::string newName) OVERRIDE;
-	virtual void removeName(std::string name) OVERRIDE;
+	std::vector<std::string>	variables()												const	override;
+	void						replaceName(std::string oldName, std::string newName)			override;
+	void						removeName(std::string name)									override;
+	std::set<std::string>		usedVariables()													override;
+	void						removeUsedVariable(std::string var)								override	{ removeName(var); }
+	void						replaceVariableName(std::string oldName, std::string newName)	override	{ replaceName(oldName, newName); }
 };
 
 #endif // OPTIONVARIABLESGROUPS_H

@@ -5,15 +5,16 @@ Rectangle
 {
 	id: filterButtonRoot
 
-	color:			!filterButtonRoot.disabled && filterButtonRoot.hovered ? "white" : "lightGrey"
-	border.color:	!filterButtonRoot.disabled && filterButtonRoot.hovered ? "black" : "grey"
+	color:			(!filterButtonRoot.disabled && filterButtonRoot.hovered) || filterButtonRoot.selected ? "white" : "lightGrey"
+	border.color:	(!filterButtonRoot.disabled && filterButtonRoot.hovered) || filterButtonRoot.selected ? "black" : "grey"
 	border.width: 1
 
 	property string text: ""
 	property string toolTip: "This is a button"
 	property bool disabled: false
+	property bool selected: false
 	property string iconSource: ""
-	property real buttonPadding: 4
+	property real buttonPadding: buttonIcon.visible ? 4 : 16
 	property alias hovered: buttonMouseArea.containsMouse
 
 	implicitWidth: buttonIcon.visible ? 32 : buttonText.width + buttonPadding
@@ -35,7 +36,7 @@ Rectangle
 		hoverEnabled: true
 		cursorShape: containsMouse && !parent.disabled ? Qt.PointingHandCursor : Qt.ArrowCursor
 
-		onClicked: filterButtonRoot.clicked()
+		onClicked: if(!filterButtonRoot.disabled) filterButtonRoot.clicked()
 	}
 
 	Image

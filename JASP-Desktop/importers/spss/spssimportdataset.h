@@ -52,7 +52,7 @@ public:
 
 	RW_ATTR(size_t, charsRemaining)		// The numer of chars (in this case!) remaind to read-in.
 
-	int rowCount() const;
+	size_t rowCount() const;
 
 	/**
 	 * @brief numCases Set the number of cases.

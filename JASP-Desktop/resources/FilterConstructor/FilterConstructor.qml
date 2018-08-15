@@ -3,6 +3,8 @@ import QtQuick 2.9
 
 Item {
 	id: filterConstructor
+	objectName:  "filterConstructor"
+
 	property real blockDim: 20
 	property real fontPixelSize: 14
 	property var allKeys: ["number", "boolean", "string", "variable"]
@@ -13,6 +15,8 @@ Item {
 
 	property bool lastCheckPassed: true
 	property bool showStartupMsg: true
+
+	property alias functionModel: functieLijst.model
 
 	onSomethingChangedChanged:
 	{
@@ -57,16 +61,16 @@ Item {
 				hints.filterText += "Filter applied<br>"
 
 			filterConstructor.rCodeChanged(scriptColumn.convertToR())
-			mainWindow.setFilterConstructorJSON(JSON.stringify(filterConstructor.returnFilterJSON()))
+			mainWindow.setFilterConstructorJson(JSON.stringify(filterConstructor.returnFilterJSON()))
 		}
 
 		if(!allCorrect)
-			hints.filterText += "Please enter all arguments - see the fields marked in red.<br>"
+			hints.filterText += "Please enter all arguments - see fields marked in red.<br>"
 
 		if(!allBoolean)
 			hints.filterText += (!allCorrect ? "<br>" : "" ) + "Formula does not return a set of logical values, and therefore cannot be used in the filter.<br>"
 
-		lastCheckPassed = allCorrect && allBoolean
+		lastCheckPassed = allCorrect &&  allBoolean
 		return lastCheckPassed
 	}
 
@@ -248,49 +252,6 @@ Item {
 		ElementView
 		{
 			id: functieLijst
-			model: ListModel
-			{
-
-				ListElement	{ type: "function";	functionName: "abs";	functionParameters: "values";	functionParamTypes: "number";			toolTip: "absolute value" }
-				ListElement	{ type: "function";	functionName: "sd";		functionParameters: "values";	functionParamTypes: "number";			toolTip: "standard deviation" }
-				ListElement	{ type: "function";	functionName: "var";	functionParameters: "values";	functionParamTypes: "number";			toolTip: "variance" }
-				ListElement	{ type: "function";	functionName: "sum";	functionParameters: "values";	functionParamTypes: "number";			toolTip: "summation" }
-				ListElement	{ type: "function";	functionName: "prod";	functionParameters: "values";	functionParamTypes: "number";			toolTip: "product of values" }
-
-				ListElement	{ type: "function";	functionName: "min";	functionParameters: "values";	functionParamTypes: "number";			toolTip: "returns minimum of values" }
-				ListElement	{ type: "function";	functionName: "max";	functionParameters: "values";	functionParamTypes: "number";			toolTip: "returns maximum of values" }
-				ListElement	{ type: "function";	functionName: "mean";	functionParameters: "values";	functionParamTypes: "number";			toolTip: "mean" }
-				ListElement	{ type: "function";	functionName: "round";	functionParameters: "y,n";		functionParamTypes: "number,number";	toolTip: "rounds y to n decimals" }
-				ListElement	{ type: "function";	functionName: "length";	functionParameters: "y";		functionParamTypes: "any";				toolTip: "returns number of elements in y" }
-				ListElement	{ type: "function";	functionName: "median";	functionParameters: "values";	functionParamTypes: "number";			toolTip: "median" }
-/*
-				ListElement	{ type: "separator" }
-				ListElement	{ type: "function";	functionName: "rnorm";	functionParameters: "n,mean,sd";functionParamTypes: "number,number,number";	toolTip: "generates a guassian distribution of n elements with specified mean and standard deviation sd" }
-				ListElement	{ type: "function";	functionName: "rexp";	functionParameters: "n,rate";	functionParamTypes: "number,number,number";	toolTip: "generates a exponential distribution of n elements with specified rate" }
-
-				ListElement	{ type: "separator" }
-
-				ListElement	{ type: "function";	functionName: "sin";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "sine" }
-				ListElement	{ type: "function";	functionName: "cos";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "cosine" }
-				ListElement	{ type: "function";	functionName: "tan";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "tangent" }
-
-				ListElement	{ type: "function";	functionName: "asin";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "arc or inverse sine" }
-				ListElement	{ type: "function";	functionName: "acos";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "arc or inverse cosine" }
-				ListElement	{ type: "function";	functionName: "atan";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "arc or inverse tangent" }
-				ListElement	{ type: "function";	functionName: "atan2";	functionParameters: "x,y";		functionParamTypes: "number,number";	toolTip: "arc or inverse tangent that returns angle of x,y within a full circle" }
-
-				ListElement	{ type: "separator" }
-
-				ListElement	{ type: "function";	functionName: "log";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "natural logarithm" }
-				ListElement	{ type: "function";	functionName: "log2";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "base 2 logarithm" }
-				ListElement	{ type: "function";	functionName: "log10";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "base 10 logarithm" }
-				ListElement	{ type: "function";	functionName: "logb";	functionParameters: "y,base";	functionParamTypes: "number";			toolTip: "logarithm of y in 'base'" }
-				ListElement	{ type: "function";	functionName: "exp";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "exponential" }
-
-				ListElement	{ type: "function";	functionName: "match";	functionParameters: "x,y";		functionParamTypes: "any,any";			toolTip: "returns the list X with NA for each element that is not in Y" } */
-
-
-			}
 			anchors.top: parent.top
 			anchors.right: parent.right
 			anchors.bottom: parent.bottom

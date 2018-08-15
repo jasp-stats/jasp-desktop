@@ -75,6 +75,11 @@ typedef bool						(STDCALL *RequestSpecificFileSourceCB)	(const char **root, con
 typedef bool						(STDCALL *RequestTempFileNameCB)		(const char* extensionAsString, const char **root, const char **relativePath);
 typedef const char*					(STDCALL *RequestTempRootNameCB)		();
 typedef bool						(STDCALL *RunCallbackCB)				(const char* in, int progress, const char** out);
+typedef void						(STDCALL *SetColumnAsScale)				(const char* columnName, double *		scalarData,		size_t length);
+typedef void						(STDCALL *SetColumnAsOrdinal)			(const char* columnName, int *			ordinalData,	size_t length);
+typedef void						(STDCALL *SetColumnAsNominal)			(const char* columnName, int *			nominalData,	size_t length);
+typedef void						(STDCALL *SetColumnAsNominalText)		(const char* columnName, const char **	nominalData,	size_t length);
+
 
 struct RBridgeCallBacks {
 	ReadDataSetCB				readDataSetCB;
@@ -87,6 +92,10 @@ struct RBridgeCallBacks {
 	ReadADataSetCB				readFullDataSetCB;
 	ReadADataSetCB				readFilterDataSetCB;
 	RequestSpecificFileSourceCB	requestJaspResultsFileSourceCB;
+	SetColumnAsScale			dataSetColumnAsScale;
+	SetColumnAsOrdinal			dataSetColumnAsOrdinal;
+	SetColumnAsNominal			dataSetColumnAsNominal;
+	SetColumnAsNominalText		dataSetColumnAsNominalText;
 };
 
 typedef void (*sendFuncDef)(const char *);
@@ -101,7 +110,9 @@ RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_editImage(const char *nam
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_evalRCode(const char *rCode);
 RBRIDGE_TO_JASP_INTERFACE int			STDCALL jaspRCPP_runFilter(const char * filtercode, bool ** arraypointer); //arraypointer points to a pointer that will contain the resulting list of filter-booleans if jaspRCPP_runFilter returns > 0
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_runScript(const char * scriptCode);
-RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_getLastFilterErrorMsg();
+RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_getLastErrorMsg();
+RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_resetErrorMsg();
+RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_setErrorMsg(const char* msg);
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_freeArrayPointer(bool ** arrayPointer);
 
 #ifndef __WIN32__

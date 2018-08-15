@@ -8,13 +8,14 @@ FocusScope
 	id: __JASPDataViewRoot
 	property alias model: theView.model
 
-	property alias itemDelegate: theView.itemDelegate
-	property alias rowNumberDelegate: theView.rowNumberDelegate
-	property alias columnHeaderDelegate: theView.columnHeaderDelegate
-	property alias leftTopCornerItem: theView.leftTopCornerItem
+	property alias itemDelegate:			theView.itemDelegate
+	property alias rowNumberDelegate:		theView.rowNumberDelegate
+	property alias columnHeaderDelegate:	theView.columnHeaderDelegate
+	property alias leftTopCornerItem:		theView.leftTopCornerItem
+	property alias extraColumnItem:			theView.extraColumnItem
 
-	property alias itemHorizontalPadding: theView.itemHorizontalPadding
-	property alias itemVerticalPadding: theView.itemVerticalPadding
+	property alias itemHorizontalPadding:	theView.itemHorizontalPadding
+	property alias itemVerticalPadding:		theView.itemVerticalPadding
 
 	//property alias font: theView.font //not properly implemented
 
@@ -85,7 +86,6 @@ FocusScope
 				}
 			}
 		}
-
 
 		ScrollBar.vertical: ScrollBar
 		{

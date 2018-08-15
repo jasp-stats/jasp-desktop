@@ -21,11 +21,6 @@
 
 using namespace std;
 
-OptionVariablesGroups::OptionVariablesGroups()
-	: OptionI(true)
-{
-}
-
 Json::Value OptionVariablesGroups::asJSON() const
 {
 	Json::Value v = Json::arrayValue;
@@ -77,10 +72,20 @@ std::vector<std::string> OptionVariablesGroups::variables() const
 {
 	std::vector<std::string> variables;
 	vector<vector<string> > values = value();
+
 	for (vector<vector<string> >::iterator it = values.begin(); it != values.end(); ++it)
-	{
 		variables.insert(variables.end(), it->begin(), it->end());
-	}
+
+	return variables;
+}
+
+std::set<std::string> OptionVariablesGroups::usedVariables()
+{
+	std::set<std::string>					variables;
+	std::vector<std::vector<std::string>>	values = value();
+
+	for (vector<vector<string> >::iterator it = values.begin(); it != values.end(); ++it)
+		variables.insert(it->begin(), it->end());
 
 	return variables;
 }
@@ -111,3 +116,5 @@ void OptionVariablesGroups::removeName(string name)
 	setValue(values_updated);
 
 }
+
+

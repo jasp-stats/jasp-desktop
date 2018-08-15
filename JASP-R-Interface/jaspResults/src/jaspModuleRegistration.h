@@ -110,11 +110,14 @@ RCPP_MODULE(jaspResults)
 		.method("addColumns",					&jaspTable_Interface::addColumns,					"Add one or more columns to the object, this class accepts the same datatypes as setdata.  Column- and rownames will be extracted as well but used only if the corresponding names aren't set yet.")
 		// is [[<- === .method("setColumn",					&jaspTable_Interface::setColumn,					"setColumn(columnName, columnData): set a vector or a list as a column for columnName.")
 
-		.property("transpose",					&jaspTable_Interface::getTransposeTable,
-												&jaspTable_Interface::setTransposeTable,			"If set to true will swap rows and columns in the results.")
+		.property("showSpecifiedColumnsOnly",	&jaspTable_Interface::getShowSpecifiedColumnsOnly,
+												&jaspTable_Interface::setShowSpecifiedColumnsOnly,	"If set to true will make only the specified columns (through addColumnInfo etc) show in the results.")
 
 		.property("transposeWithOvertitle",		&jaspTable_Interface::getTransposeWithOvertitle,
 												&jaspTable_Interface::setTransposeWithOvertitle,	"If set to true in combination with transpose == true it will use the first column of the data as overtitle.")
+
+		.property("transpose",					&jaspTable_Interface::getTransposeTable,
+												&jaspTable_Interface::setTransposeTable,			"If set to true will swap rows and columns in the results.")
 
 		.property("status",						&jaspTable_Interface::getStatus,
 												&jaspTable_Interface::setStatus,					"The status of the table, usually (and by default) 'complete'")
@@ -150,6 +153,8 @@ RCPP_MODULE(jaspResults)
 
 		.property("relativePathKeep",		&jaspResults_Interface::getRelativePathKeep,
 											&jaspResults_Interface::setRelativePathKeep,					"The relative path to where state is kept")
+
+		.method("getResults",				&jaspResults_Interface::getResults,								"Returns the latest version of the results json as a string")
 
 		.method("startProgressbar",			&jaspResults_Interface::startProgressbar,						"Opens the progressbar in the results for 'expectTicks' amount of ticks and will update results every 500ms.")
 		.method("startProgressbar",			&jaspResults_Interface::startProgressbarMs,						"Opens the progressbar in the results for 'expectTicks' amount of ticks and will keep at least timeBetweenUpdatesInMs milliseconds between consecutive updates.")

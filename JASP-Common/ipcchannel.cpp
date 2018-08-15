@@ -25,12 +25,12 @@ using namespace std;
 using namespace boost;
 using namespace boost::posix_time;
 
-IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave) : _baseName(name), _nameControl(name + "_control"), _nameMtS(name + "_MasterToSlave"), _nameStM(name + "_SlaveToMaster"), _channelNumber(channelNumber), _isSlave(isSlave)
+IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave) : _baseName(name + "#" + std::to_string(channelNumber)), _nameControl(name + "_control"), _nameMtS(name + "_MasterToSlave"), _nameStM(name + "_SlaveToMaster"), _channelNumber(channelNumber), _isSlave(isSlave)
 {
-	_memoryControl			= new interprocess::managed_shared_memory(interprocess::open_or_create, _baseName.c_str(), 1024);
+	_memoryControl			= new interprocess::managed_shared_memory(interprocess::open_or_create, _baseName.c_str(), 4096);
 
-	_sizeMtoS				= _memoryControl->find_or_construct<size_t>("sizeMasterToSlave")(512);
-	_sizeStoM				= _memoryControl->find_or_construct<size_t>("sizeSlaveToMaster")(512);
+	_sizeMtoS				= _memoryControl->find_or_construct<size_t>("sizeMasterToSlave")(4096);
+	_sizeStoM				= _memoryControl->find_or_construct<size_t>("sizeSlaveToMaster")(4096);
 
 	_memoryMasterToSlave	= new interprocess::managed_shared_memory(interprocess::open_or_create, _nameMtS.c_str(), *_sizeMtoS);
 	_memorySlaveToMaster	= new interprocess::managed_shared_memory(interprocess::open_or_create, _nameStM.c_str(), *_sizeStoM);

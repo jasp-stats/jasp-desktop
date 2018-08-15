@@ -40,14 +40,16 @@ public:
 	void finalizedHandler() override { complete(); }
 	void complete();
 	void saveResults();
+
 	void loadResults();
 	void setErrorMessage(std::string msg);
 	void setOptions(std::string opts);
 	void pruneInvalidatedData();
 
-	Rcpp::List getPlotObjectsForState();
-	Rcpp::List getPlotPathsForKeep();
-	Rcpp::List getKeepList();
+	Rcpp::List	getPlotObjectsForState();
+	Rcpp::List	getPlotPathsForKeep();
+	Rcpp::List	getKeepList();
+	std::string	getResults() { return constructResultJson(); }
 
 	std::string _relativePathKeep;
 
@@ -86,17 +88,18 @@ class  jaspResults_Interface : public jaspContainer_Interface
 public:
 	jaspResults_Interface(jaspObject * dataObj) : jaspContainer_Interface(dataObj) {}
 
-	void send()								{ ((jaspResults*)myJaspObject)->send(); }
-	void complete()							{ ((jaspResults*)myJaspObject)->complete(); }
-	void setErrorMessage(std::string msg)	{ ((jaspResults*)myJaspObject)->setErrorMessage(msg); }
-	Rcpp::List getPlotObjectsForState()		{ return ((jaspResults*)myJaspObject)->getPlotObjectsForState(); }
-	Rcpp::List getKeepList()				{ return ((jaspResults*)myJaspObject)->getKeepList(); }
-	void progressbarTick()					{ ((jaspResults*)myJaspObject)->progressbarTick(); }
+	void		send()								{ ((jaspResults*)myJaspObject)->send(); }
+	void		complete()							{ ((jaspResults*)myJaspObject)->complete(); }
+	void		setErrorMessage(std::string msg)	{ ((jaspResults*)myJaspObject)->setErrorMessage(msg); }
+	Rcpp::List	getPlotObjectsForState()			{ return ((jaspResults*)myJaspObject)->getPlotObjectsForState(); }
+	Rcpp::List	getKeepList()						{ return ((jaspResults*)myJaspObject)->getKeepList(); }
+	void		progressbarTick()					{ ((jaspResults*)myJaspObject)->progressbarTick(); }
+	std::string getResults()						{ return ((jaspResults*)myJaspObject)->getResults(); }
 
-	void startProgressbar(int expectedTicks) { ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks); }
-	void startProgressbarMs(int expectedTicks, int timeBetweenUpdatesInMs) { ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks, timeBetweenUpdatesInMs); }
+	void		startProgressbar(int expectedTicks)									{ ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks); }
+	void		startProgressbarMs(int expectedTicks, int timeBetweenUpdatesInMs)	{ ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks, timeBetweenUpdatesInMs); }
 
-	void setOptions(std::string opts)		{ ((jaspResults*)myJaspObject)->setOptions(opts); }
+	void		setOptions(std::string opts)		{ ((jaspResults*)myJaspObject)->setOptions(opts); }
 
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspResults, std::string,	_relativePathKeep, RelativePathKeep)
 };

@@ -41,6 +41,8 @@ public:
 	void		convertFromJSON_SetFields(Json::Value in) override;
 	void		checkDependenciesChildren(Json::Value currentOptions) override;
 
+	void		completeChildren();
+
 
 protected:
 	std::map<std::string, jaspObject*>	_data;

@@ -61,6 +61,7 @@ DropArea {
 			scriptColumn.children[i].destroy()
 
 		scriptColumn.children = ""
+		filterConstructor.checkAndApplyFilter()
 	}
 
 

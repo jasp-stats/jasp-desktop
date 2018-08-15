@@ -26,12 +26,16 @@
 class OptionVariable : public OptionVariables
 {
 public:
-	OptionVariable();
-	virtual void set(const Json::Value& value) OVERRIDE;
-	virtual Json::Value asJSON() const OVERRIDE;
-	virtual Option* clone() const OVERRIDE;
+	OptionVariable() : OptionVariables(true) {	}
 
-	std::string variable() const;
+	void					set(const Json::Value& value)			override;
+	Json::Value				asJSON()						const	override;
+	Option					*clone()						const	override;
+
+	std::string				variable()						const;
+	std::set<std::string>	usedVariables()							override { return std::set<std::string>({ variable() }); }
+	void					removeUsedVariable(std::string var)		override;
+
 };
 
 #endif // OPTIONVARIABLE_H

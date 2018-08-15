@@ -24,12 +24,6 @@
 using namespace Json;
 using namespace std;
 
-OptionsTable::OptionsTable(Options *rowTemplate)
-	: OptionI(true)
-{
-	_template = rowTemplate;
-}
-
 void OptionsTable::init(const Json::Value &data)
 {
 	_template = new Options();

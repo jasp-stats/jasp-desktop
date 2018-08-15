@@ -15,7 +15,8 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
-exists(/app/lib/*)	{ INSTALLPATH = /app/bin } else	{
+exists(/app/lib/*)	{ INSTALLPATH = /app/bin
+ } else	{
 	INSTALLPATH = /usr/bin
 }
 
@@ -155,3 +156,7 @@ OTHER_FILES  += \
 	JASP/R/ttestonesample.R \
 	JASP/R/ttestpairedsamples.R \
 	JASP/R/networkanalysis.R
+
+DISTFILES += \
+    JASP/DESCRIPTION \
+    JASP/NAMESPACE

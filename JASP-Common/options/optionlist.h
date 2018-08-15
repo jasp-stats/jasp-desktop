@@ -24,20 +24,19 @@
 class OptionList : public OptionI<std::string>
 {
 public:
-	OptionList(const std::vector<std::string> &options, std::string selected = "");
-	OptionList();
+	OptionList(const std::vector<std::string> &options, std::string selected = "")	: OptionI(selected == "" ? options.at(0) : selected), _options(options)	{}
+	OptionList()																	: OptionI()																	{}
 
-	virtual void init(const Json::Value &data) OVERRIDE;
-
-	virtual Json::Value asJSON() const OVERRIDE;
-	virtual void set(const Json::Value& value) OVERRIDE;
-	void set(size_t index);
-	const std::vector<std::string> options() const;
-	virtual Option* clone() const OVERRIDE;
+			void						init(const Json::Value &data)			override;
+			void						set(const Json::Value& value)			override;
+			Option*						clone()							const	override;
+			Json::Value					asJSON()						const	override;
+	const	std::vector<std::string>	options()						const;
+			void						set(size_t index);
 
 private:
-	std::vector<std::string> _options;
-	std::string _selected;
+	std::vector<std::string>	_options;
+	std::string					_selected;
 };
 
 #endif // OPTIONLIST_H

@@ -24,18 +24,23 @@
 class OptionVariables : public OptionTerms, public OptionVariableI
 {
 public:
-	OptionVariables();
+	OptionVariables() : OptionTerms(true, false) {}
 
-	virtual Json::Value asJSON()const OVERRIDE;
-	virtual void set(const Json::Value& value) OVERRIDE;
-	virtual Option* clone() const OVERRIDE;
 
-	virtual std::vector<std::string> variables() const OVERRIDE;
-	virtual void replaceName(std::string oldName, std::string newName) OVERRIDE;
-	virtual void removeName(std::string name) OVERRIDE;
+	Json::Value					asJSON()												const	override;
+	void						set(const Json::Value& value)									override;
+	Option*						clone()													const	override;
+
+	std::vector<std::string>	variables()												const	override;
+	void						replaceName(std::string oldName, std::string newName)			override;
+	void						removeName(std::string name)									override;
+
+	std::set<std::string>		usedVariables()													override;
+	void						removeUsedVariable(std::string var)								override;
+	void						replaceVariableName(std::string oldName, std::string newName)	override	{ replaceName(oldName, newName); }
 
 protected:
-	OptionVariables(bool onlyOneTerm);
+	OptionVariables(bool onlyOneTerm) : OptionTerms(true, onlyOneTerm)	{}
 
 };
 

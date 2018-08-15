@@ -224,6 +224,17 @@ vector<string> Terms::asVector() const
 	return items;
 }
 
+std::set<std::string> Terms::asSet() const
+{
+	std::set<std::string> items;
+
+	for(const Term &term : _terms)
+		for(std::string termComp : term.scomponents())
+			items.insert(termComp);
+
+	return items;
+}
+
 vector<vector<string> > Terms::asVectorOfVectors() const
 {
 	vector<vector<string> > items;

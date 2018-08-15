@@ -17,8 +17,8 @@ public:
 
 	virtual void addColumn(ImportColumn *column);
 
-	virtual int rowCount() const;
-	virtual int columnCount() const;
+	virtual size_t rowCount()		const;
+	virtual size_t columnCount()	const;
 
 	ImportColumn *getColumn(std::string name) const;
 	ImportColumns::iterator begin();

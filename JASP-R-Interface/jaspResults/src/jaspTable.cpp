@@ -201,8 +201,8 @@ void jaspTable::addRows(Rcpp::RObject newData, Rcpp::CharacterVector rowNames)
 		return;
 
 	//Maybe this is overkill?
-	if(Rcpp::is<Rcpp::DataFrame>(newData))				addRowsFromList(convertFactorsToCharacters((Rcpp::DataFrame)	newData),	rowNames);
-	else if(Rcpp::is<Rcpp::List>(newData))				addRowsFromList((Rcpp::List)									newData,	rowNames);
+	if(Rcpp::is<Rcpp::DataFrame>(newData))				addRowsFromDataFrame((Rcpp::DataFrame)				newData);
+	else if(Rcpp::is<Rcpp::List>(newData))				addRowsFromList((Rcpp::List)						newData, rowNames);
 
 	else if(Rcpp::is<Rcpp::NumericMatrix>(newData))		addRowsFromMatrix<REALSXP>((Rcpp::NumericMatrix)	newData, rowNames);
 	else if(Rcpp::is<Rcpp::LogicalMatrix>(newData))		addRowsFromMatrix<LGLSXP>((Rcpp::LogicalMatrix)		newData, rowNames);
@@ -457,7 +457,7 @@ Json::Value	jaspTable::schemaJson()
 		if(colFormat != "")
 			field["format"]	= colFormat;
 
-		if(colName != ".isNewGroup")
+		if(colName[0] != '.' && (!_showSpecifiedColumnsOnly || _specifiedColumns.count(_colNames[col]) > 0))
 			fields.append(field);
 
 	}
@@ -469,7 +469,7 @@ Json::Value	jaspTable::schemaJson()
 Json::Value jaspTable::getCell(int col, int row)
 {
 	if(_data.size() <= col || _data[col].size() <= row)
-		return Json::Value(Json::nullValue);
+		return Json::nullValue;
 	return _data[col][row];
 }
 
@@ -566,7 +566,10 @@ std::string jaspTable::getColType(int col)
 ///Going to assume it is called like addColumInfo(name=NULL, title=NULL, type=NULL, format=NULL, combine=NULL)
 void jaspTable::addColumnInfo(Rcpp::RObject name, Rcpp::RObject title, Rcpp::RObject type, Rcpp::RObject format, Rcpp::RObject combine, Rcpp::RObject overtitle)
 {
-	_colNames.add(name.isNULL() ? "" : Rcpp::as<std::string>(name));
+	std::string colName = name.isNULL() ? "col"+ std::to_string(_colNames.rowCount()) : Rcpp::as<std::string>(name);
+	_specifiedColumns.insert(colName);
+
+	_colNames.add(colName);
 
 	std::string lastAddedColName = getColName(_colNames.rowCount() - 1);
 
@@ -588,14 +591,16 @@ Json::Value jaspTable::convertToJSON()
 	obj["footnotes"]				= _footnotes;
 	obj["transposeTable"]			= _transposeTable;
 	obj["transposeWithOvertitle"]	= _transposeWithOvertitle;
+	obj["showSpecifiedColumnsOnly"]	= _showSpecifiedColumnsOnly;
 
-	obj["colNames"]		= _colNames.convertToJSON();
-	obj["colTypes"]		= _colTypes.convertToJSON();
-	obj["rowNames"]		= _rowNames.convertToJSON();
-	obj["rowTitles"]	= _rowTitles.convertToJSON();
-	obj["colTitles"]	= _colTitles.convertToJSON();
-	obj["colFormats"]	= _colFormats.convertToJSON();
-	obj["colCombines"]	= _colCombines.convertToJSON();
+	obj["colNames"]				= _colNames.convertToJSON();
+	obj["colTypes"]				= _colTypes.convertToJSON();
+	obj["rowNames"]				= _rowNames.convertToJSON();
+	obj["rowTitles"]			= _rowTitles.convertToJSON();
+	obj["colTitles"]			= _colTitles.convertToJSON();
+	obj["colOvertitles"]		= _colOvertitles.convertToJSON();
+	obj["colFormats"]			= _colFormats.convertToJSON();
+	obj["colCombines"]			= _colCombines.convertToJSON();
 
 
 
@@ -620,6 +625,10 @@ Json::Value jaspTable::convertToJSON()
 
 	obj["colRowCombinations"] = colRowCombos;
 
+	obj["specifiedColumns"] = Json::arrayValue;
+	for(const std::string & specifiedColumnName : _specifiedColumns)
+		obj["specifiedColumns"].append(specifiedColumnName);
+
 	return obj;
 }
 
@@ -628,20 +637,23 @@ void jaspTable::convertFromJSON_SetFields(Json::Value in)
 	jaspObject::convertFromJSON_SetFields(in);
 
 
-	_status					= in.get("status",					"null").asString();
-	_error					= in.get("error",					"null").asString();
-	_errorMessage			= in.get("errorMessage",			"null").asString();
-	_footnotes				= in.get("footnotes",				Json::arrayValue);
-	_transposeTable			= in.get("transposeTable",			false).asBool();
-	_transposeWithOvertitle	= in.get("transposeWithOvertitle",	false).asBool();
+	_status						= in.get("status",						"null").asString();
+	_error						= in.get("error",						"null").asString();
+	_errorMessage				= in.get("errorMessage",				"null").asString();
+	_footnotes					= in.get("footnotes",					Json::arrayValue);
+	_transposeTable				= in.get("transposeTable",				false).asBool();
+	_transposeWithOvertitle		= in.get("transposeWithOvertitle",		false).asBool();
+	_showSpecifiedColumnsOnly	= in.get("showSpecifiedColumnsOnly",	false).asBool();
 
-	_colNames.convertFromJSON_SetFields(	in.get("colNames",		Json::objectValue));
-	_colTypes.convertFromJSON_SetFields(	in.get("colTypes",		Json::objectValue));
-	_rowNames.convertFromJSON_SetFields(	in.get("rowNames",		Json::objectValue));
-	_rowTitles.convertFromJSON_SetFields(	in.get("rowTitles",		Json::objectValue));
-	_colTitles.convertFromJSON_SetFields(	in.get("colTitles",		Json::objectValue));
-	_colFormats.convertFromJSON_SetFields(	in.get("colFormats",	Json::objectValue));
-	_colCombines.convertFromJSON_SetFields(	in.get("colCombines",	Json::objectValue));
+
+	_colNames.convertFromJSON_SetFields(		in.get("colNames",		Json::objectValue));
+	_colTypes.convertFromJSON_SetFields(		in.get("colTypes",		Json::objectValue));
+	_rowNames.convertFromJSON_SetFields(		in.get("rowNames",		Json::objectValue));
+	_rowTitles.convertFromJSON_SetFields(		in.get("rowTitles",		Json::objectValue));
+	_colTitles.convertFromJSON_SetFields(		in.get("colTitles",		Json::objectValue));
+	_colFormats.convertFromJSON_SetFields(		in.get("colFormats",	Json::objectValue));
+	_colCombines.convertFromJSON_SetFields(		in.get("colCombines",	Json::objectValue));
+	_colOvertitles.convertFromJSON_SetFields(	in.get("colOvertitles",	Json::objectValue));
 
 	_data.clear();
 	Json::Value dataColumns(in.get("data",	Json::arrayValue));
@@ -660,5 +672,9 @@ void jaspTable::convertFromJSON_SetFields(Json::Value in)
 
 	for(auto & colRowCombo : colRowCombos)
 		_colRowCombinations.push_back(jaspColRowCombination(colRowCombo));
+
+	 _specifiedColumns.clear();
+	for(Json::Value & specifiedColumnName : in.get("specifiedColumns", Json::arrayValue))
+		_specifiedColumns.insert(specifiedColumnName.asString());
 }
 

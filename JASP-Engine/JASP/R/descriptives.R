@@ -107,7 +107,6 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
         else          distPlots[[var]] <- .descriptivesFrequencyPlots(dataset = dataset,  options = options, variable = var)
       }
 
-
     if(distPlots$length == 0)
       jaspResults[["distributionPlots"]] <- NULL
   }
@@ -384,9 +383,9 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     if(!is.null(freqTabs[[variable]]))
       next
 
-    freqTabs[[variable]] <- createJaspTable(paste("Frequencies for", variable))
+    freqTab <- createJaspTable(paste("Frequencies for", variable))
 
-    freqTab <- freqTabs[[variable]]
+    freqTabs[[variable]] <- freqTab
     freqTab$setOptionMustContainDependency("variables", variable)
 
     if (wantsSplit) freqTab$addColumnInfo(name = "factor", title = splitName, type = "string", combine=TRUE)
@@ -585,6 +584,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 
     for (l in split)
       plotResult[[l]] <- .descriptivesFrequencyPlots_SubFunc(column=dataset[[l]][[.v(variable)]], variable=l, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity)
+    }
 
 
     return(plotResult)
@@ -592,6 +592,8 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   }
   else
   {
+
+
     column <- dataset[[ .v(variable) ]]
     aPlot <- .descriptivesFrequencyPlots_SubFunc(column=column[!is.na(column)], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity)
     aPlot$setOptionMustContainDependency("variables",  variable)
@@ -651,13 +653,24 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     yWithNAIndex <- yWithNAIndex + 1
   }
 
+  thePlot <- createJaspPlot(plot=.initSplitPlot, title=variable, width=options$plotWidth, height=options$plotHeight, dependencies=depends)
+
 
   if (!is.numeric(y))
-    return(createJaspPlot(plot=.initSplitPlot, title=variable, width=options$plotWidth, height=options$plotHeight, error="badData", errorMessage="Plotting is not possible: Variable is not numeric!", dependencies=depends))
-  if (length(y) == 0)
-     return(createJaspPlot(plot=.initSplitPlot, title=variable, width=options$plotWidth, height=options$plotHeight, error="badData", errorMessage="Plotting is not possible: Variable only contains NA!", dependencies=depends))
+  {
+    thePlot$error         <- "badData"
+    thePlot$errorMessage  <- "Plotting is not possible: Variable is not numeric!"
+  }
+  else if (length(y) == 0)
+  {
+    thePlot$error         <- "badData"
+    thePlot$errorMessage  <- "Plotting is not possible: Variable only contains NA!"
+  }
   else if (!(options$splitPlotViolin || options$splitPlotBoxplot || options$splitPlotJitter))
-    return(createJaspPlot(plot=.initSplitPlot, title=variable, width=options$plotWidth, height=options$plotHeight, error="badData", errorMessage="Plotting is not possible: No plot type selected!", dependencies=depends))
+  {
+    thePlot$error         <- "badData"
+    thePlot$errorMessage  <- "Plotting is not possible: No plot type selected!"
+  }
   else
   {
     if (is.null(dataset[[.v(options$splitby)]])){
@@ -755,8 +768,10 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
         plot.margin=        grid::unit(c(0.1, 0.1, 0.6, 0.6), "cm"),
         legend.position=    "none")
 
-    return(createJaspPlot(plot=p, title=variable, width=options$plotWidth, height=options$plotHeight, dependencies=depends))
+    thePlot$plotObject <- p
   }
+
+  return(thePlot)
 }
 
 
