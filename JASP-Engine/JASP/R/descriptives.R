@@ -582,7 +582,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     plotResult$setOptionMustContainDependency("variables",  variable)
     plotResult$setOptionMustBeDependency("splitBy",         options$splitBy)
 
-    for (l in split)
+    for (l in split) {
       plotResult[[l]] <- .descriptivesFrequencyPlots_SubFunc(column=dataset[[l]][[.v(variable)]], variable=l, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity)
     }
 
