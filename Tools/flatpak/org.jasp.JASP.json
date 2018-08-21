@@ -1,7 +1,7 @@
 {
 	"app-id": "org.jasp.JASP",
 	"runtime": "org.kde.Sdk",
-	"runtime-version": "5.10",
+	"runtime-version": "5.11",
 	"sdk": "org.kde.Sdk",
 	"sdk-extensions": [
 		"org.freedesktop.Sdk.Extension.gfortran-62"
@@ -138,7 +138,7 @@
 			"sources": [
 				{
 					"type": "archive",
-					"url": "https://cran.r-project.org/src/contrib/e1071_1.6-8.tar.gz",
+					"url": "https://cran.r-project.org/src/contrib/Archive/e1071/e1071_1.6-8.tar.gz",
 					"sha256": "f68601743b9b49e1d1f8b9ec9963d6500d66158417c53f65bf7232678d88c622"
 				},
 				{
