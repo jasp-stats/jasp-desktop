@@ -38,6 +38,13 @@ RegressionLinear <- function(jaspResults, dataset, options, state = NULL) {
     }
   }
   
+  # Define model terms
+  if (options$includeConstant == TRUE) {
+    options[["model.terms"]] <- c("(Intercept)", options$main.effects.numeric.base64, options$interaction.effects.base64)
+  } else {
+    options[["model.terms"]] <- c(options$main.effects.numeric.base64, options$interaction.effects.base64)
+  }
+  
   # Add dependent variable and weights to options
   if (options$dependent != "") {
     options[["dependent.variable"]]        <- options$dependent
@@ -144,7 +151,8 @@ RegressionLinear <- function(jaspResults, dataset, options, state = NULL) {
 
 	# Create Coefficients Table (if wanted)
 	if (options$regressionCoefficientsEstimates) {
-	  .createLinearRegressionCoefficientsTable(jaspResults = jaspResults, dataset = dataset, options = options, ready = ready)
+	  .createLinearRegressionCoefficientsTable(jaspResults = jaspResults, dataset = dataset, options = options, ready = ready, 
+	                                           linearModels = linearModels)
 	}
 	
 	# Create Bootstrapping Coefficients Table (if wanted)
@@ -464,7 +472,7 @@ RegressionLinear <- function(jaspResults, dataset, options, state = NULL) {
   linearRegressionModelSummaryTable$addRows(rows = row, rowNames = modelNo)
 }
 
-.createLinearRegressionAnovaTable(jaspResults <- function(jaspResults, dataset, options, ready, linearModels) {
+.createLinearRegressionAnovaTable <- function(jaspResults, dataset, options, ready, linearModels) {
 
   # Check if object can be reused (in case relevant options did not change)
   if (!is.null(jaspResults[["linearRegressionAnovaTable"]])) {
@@ -475,14 +483,12 @@ RegressionLinear <- function(jaspResults, dataset, options, state = NULL) {
   linearRegressionAnovaTable <- createJaspTable(title = "ANOVA")
   jaspResults[["linearRegressionAnovaTable"]] <- linearRegressionAnovaTable
   #linearRegressionAnovaTable$showSpecifiedColumnsOnly <- TRUE
-  linearRegressionAnovaTable$dependOnOptions(c("dependent", "wlsWeights", "modelTerms", "rSquaredChange",
-                                                      "residualsDurbinWatson", "missingValues"))
+  linearRegressionAnovaTable$dependOnOptions(c("dependent", "wlsWeights", "modelTerms", "VovkSellkeMPR", "missingValues"))
   
   # Add columns to table
   linearRegressionAnovaTable$addColumnInfo(  name = "modelNo",       title = "Model",          type = "integer",
                                              combine = TRUE)
-  linearRegressionAnovaTable$addColumnInfo(  name = "type",          title = "",               type = "number",
-                                             format = "sf:4;dp:3")
+  linearRegressionAnovaTable$addColumnInfo(  name = "type",          title = "",               type = "string")
   linearRegressionAnovaTable$addColumnInfo(  name = "ssq",           title = "Sum of Squares", type = "number",
                                              format = "sf:4;dp:3")
   linearRegressionAnovaTable$addColumnInfo(  name = "df",            title = "df",             type = "integer")
@@ -496,10 +502,10 @@ RegressionLinear <- function(jaspResults, dataset, options, state = NULL) {
     linearRegressionAnovaTable$addColumnInfo(name = "VovkSellkeMPR", title = "VS-MPR\u002A",   type = "number",
                                              format = "sf:4;dp:3")
   }
-
+  
   # Fill up table with results
-  .fillUpLinearRegressionAnovaTable(linearRegressionAnovaTable = linearRegressionAnovaTable,
-                                    dataset = dataset, options = options, ready = ready, linearModels = linearModels)
+  .fillUpLinearRegressionAnovaTable(linearRegressionAnovaTable = linearRegressionAnovaTable, dataset = dataset, 
+                                    options = options, ready = ready, linearModels = linearModels)
   
   return(NULL)
 }
@@ -514,14 +520,8 @@ RegressionLinear <- function(jaspResults, dataset, options, state = NULL) {
     }
     
     if (options$VovkSellkeMPR) {
-      linearRegressionAnovaTable$addFootnote(message = )
-      .addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
-                   <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
-                   possible odds in favor of H\u2081 over H\u2080 equals
-                   1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
-                   (Sellke, Bayarri, & Berger, 2001).")
+      linearRegressionAnovaTable$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A")
     }
-    
   # If results cannot be computed, add an empty row
   } else {
     row <- list(modelNo = ".", type = ".", ssq = ".", df = ".", msq = ".", F = ".", p = ".", VovkSellkeMPR = ".")
@@ -531,479 +531,532 @@ RegressionLinear <- function(jaspResults, dataset, options, state = NULL) {
   return(NULL)
 }
 
-
-if (options$modelFit == TRUE) {
+.addRowForLinearRegressionAnovaTable <- function(linearRegressionAnovaTable, dataset, options, modelNo, linearModels) {
   
-
+  model      <- linearModels[[modelNo]]
+  lm.summary <- summary(model$lm.fit)
   
-
+  # Compute results
+  F			       <- lm.summary$fstatistic[1]
+  msq.residual <- (lm.summary$sigma) ^2
+  msq.model	   <- F * msq.residual
+  df.residual	 <- lm.summary$fstatistic[3]
+  df.model		 <- lm.summary$fstatistic[2]
+  df.total		 <- df.residual + df.model
+  ssq.residual <- msq.residual * df.residual
+  ssq.model		 <- msq.model * df.model
+  ssq.total		 <- ssq.residual + ssq.model
+  p            <- pf(q = F, df1 = df.model, df2 = df.residual, lower.tail = FALSE )
   
-  if (perform == "run" && length(list.of.errors) == 0) {
-    
-    for (m in 1:length(lm.model)) {
+  # Add "Regression" row to the table
+  row <- list(modelNo = modelNo, type = "Regression", ssq = .clean(ssq.model), df = .clean(df.model), 
+              msq = .clean(msq.model), F = .clean(F), p = .clean(p), VovkSellkeMPR = .clean(.VovkSellkeMPR(p)))
+  linearRegressionAnovaTable$addRows(rows = row, rowNames = "Regression")
+  
+  # Add "Residual" row to the table
+  row <- list(modelNo = modelNo, type = "Residual", ssq = .clean(ssq.residual), df = .clean(df.residual), 
+              msq = .clean(msq.residual), F = "", p = "", VovkSellkeMPR = "")
+  linearRegressionAnovaTable$addRows(rows = row, rowNames = "Residual")
+  
+  # Add "Total" row to the table
+  row <- list(modelNo = modelNo, type = "Total", ssq = .clean(ssq.total), df = .clean(df.total), 
+              msq = "", F = "", p = "", VovkSellkeMPR = "")
+  linearRegressionAnovaTable$addRows(rows = row, rowNames = "Total")
+}
+
+.createLinearRegressionCoefficientsTable <- function(jaspResults, dataset, options, ready, linearModels) {
+  
+  # Check if object can be reused (in case relevant options did not change)
+  if (!is.null(jaspResults[["linearRegressionCoefficientsTable"]])) {
+    return(NULL)
+  }
+  
+  # Create table
+  linearRegressionCoefficientsTable <- createJaspTable(title = "Coefficients")
+  jaspResults[["linearRegressionCoefficientsTable"]] <- linearRegressionCoefficientsTable
+  #linearRegressionCoefficientsTable$showSpecifiedColumnsOnly <- TRUE
+  linearRegressionCoefficientsTable$dependOnOptions(c("dependent", "wlsWeights", "modelTerms", "VovkSellkeMPR", 
+                                                      "regressionCoefficientsEstimates", "missingValues",
+                                                      "regressionCoefficientsConfidenceIntervals",
+                                                      "regressionCoefficientsConfidenceIntervalsInterval",
+                                                      "collinearityDiagnostics", "includeConstant",
+                                                      "method", "steppingMethodCriteriaType", 
+                                                      "steppingMethodCriteriaPEntry", "steppingMethodCriteriaPRemoval", 
+                                                      "steppingMethodCriteriaFEntry", "steppingMethodCriteriaFRemoval"))
+  
+  # Add columns to table
+  linearRegressionCoefficientsTable$addColumnInfo(  name = "modelNo",       title = "Model",          type = "integer",
+                                                    combine = TRUE)
+  linearRegressionCoefficientsTable$addColumnInfo(  name = "variable",      title = "",               type = "string")
+  linearRegressionCoefficientsTable$addColumnInfo(  name = "unst.coef",     title = "Unstandardized", type = "number",
+                                                    format = "sf:4;dp:3")
+  linearRegressionCoefficientsTable$addColumnInfo(  name = "se",            title = "SE",             type = "number",
+                                                    format = "sf:4;dp:3")
+  linearRegressionCoefficientsTable$addColumnInfo(  name = "stan.coef",     title = "Standardized",   type = "number",
+                                                    format = "sf:4;dp:3")
+  linearRegressionCoefficientsTable$addColumnInfo(  name = "t",             title = "t",              type = "number",
+                                                    format = "sf:4;dp:3")
+  linearRegressionCoefficientsTable$addColumnInfo(  name = "p",             title = "p",              type = "number",
+                                                    format = "sf:4;dp:3")
+  if (options$VovkSellkeMPR) {
+    linearRegressionCoefficientsTable$addColumnInfo(name = "VovkSellkeMPR", title = "VS-MPR\u002A",   type = "number",
+                                                    format = "sf:4;dp:3")
+  }
+  if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
+    linearRegressionCoefficientsTable$addColumnInfo(name = "lowerCI",       title = "Lower",          type = "number",
+                                                    format = "sf:4;dp:3",   overtitle = paste0(options$regressionCoefficientsConfidenceIntervalsInterval, "% CI"))
+    linearRegressionCoefficientsTable$addColumnInfo(name = "upperCI",       title = "Upper",          type = "number",
+                                                    format = "sf:4;dp:3",   overtitle = paste0(options$regressionCoefficientsConfidenceIntervalsInterval, "% CI"))
+  }
+  if (options$collinearityDiagnostics) {
+    linearRegressionCoefficientsTable$addColumnInfo(name = "tolerance",     title = "Tolerance",      type = "number",
+                                                    format = "sf:4;dp:3",   overtitle = "Collinearity Statistics")
+    linearRegressionCoefficientsTable$addColumnInfo(name = "vif",           title = "VIF",            type = "number",
+                                                    format = "sf:4;dp:3",   overtitle = "Collinearity Statistics")
+  }
+
+  # Fill up table with results
+  .fillUpLinearRegressionCoefficientsTable(linearRegressionCoefficientsTable = linearRegressionCoefficientsTable, 
+                                           dataset = dataset, options = options, ready = ready, linearModels = linearModels)
+  
+  return(NULL)
+}
+  
+.fillUpLinearRegressionCoefficientsTable <- function(linearRegressionCoefficientsTable, dataset, options, ready, 
+                                                     linearModels) {
+  
+  # If results can be computed, compute them and add row for each variable
+  if (ready) {
+    for (modelNo in 1:length(linearModels)) {
+      lm.model <- linearModels[[modelNo]]$lm.fit
+      lm.summary <- summary(lm.model)
+      lm.estimates <- lm.summary$coefficients
+      lm.confidence.interval <- confint(lm.model, level = options$regressionCoefficientsConfidenceIntervalsInterval / 100)
+      lm.collinearity.diagnostics <- .collinearityDiagnostics(lm.model, dataset, includeConstant = options$includeConstant)
       
-      if ( class(lm.model[[ m ]]$lm.fit) == "lm" && length( lm.model[[m]]$variables) > 0) {
-        
-        lm.summary <- summary(lm.model[[ m ]]$lm.fit)
-        
-        F			   <- lm.summary$fstatistic[1]
-        mss.residual	<- (lm.summary$sigma) ^2
-        mss.model	   <- F * mss.residual
-        df.residual	 <- lm.summary$fstatistic[3]
-        df.model		<- lm.summary$fstatistic[2]
-        df.total		<- df.residual + df.model
-        ss.residual <- mss.residual * df.residual
-        ss.model		<- mss.model * df.model
-        ss.total		<- ss.residual + ss.model
-        
-        p <- pf(q = F, df1 = df.model, df2 = df.residual, lower.tail = FALSE )
-        
-        len.an <- length(anova.result) + 1
-        
-        anova.result[[ len.an ]] <- empty.line
-        anova.result[[ len.an ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-        anova.result[[ len.an ]]$"Cases" <- "Regression"
-        anova.result[[ len.an ]]$"Sum of Squares" <- as.numeric(ss.model)
-        anova.result[[ len.an ]]$"df" <- as.integer(df.model)
-        anova.result[[ len.an ]]$"Mean Square" <- as.numeric(mss.model)
-        anova.result[[ len.an ]]$"F" <- as.numeric(F)
-        anova.result[[ len.an ]]$"p" <- as.numeric(p)
-        if (options$VovkSellkeMPR) {
-          anova.result[[ len.an ]]$"VovkSellkeMPR" <- .VovkSellkeMPR(anova.result[[ len.an ]]$"p")
-        }
-        anova.result[[ len.an ]]$".isNewGroup" <- TRUE
-        
-        len.an <- len.an + 1
-        
-        anova.result[[ len.an ]] <- empty.line
-        anova.result[[ len.an ]]$"Cases" <- "Residual"
-        anova.result[[ len.an ]]$"Sum of Squares" <- as.numeric(ss.residual)
-        anova.result[[ len.an ]]$"df" <- as.integer(df.residual)
-        anova.result[[ len.an ]]$"Mean Square" <- as.numeric(mss.residual)
-        
-        len.an <- len.an + 1
-        
-        anova.result[[ len.an ]] <- empty.line
-        anova.result[[ len.an ]]$"Cases" <- "Total"
-        anova.result[[ len.an ]]$"Sum of Squares" <- as.numeric(ss.total)
-        anova.result[[ len.an ]]$"df" <- as.integer(df.total)
-        
-      } else {
-        anova.result <- .addEmptyModel(anova.result,m)
+      for (term in rownames(lm.estimates)) {
+        results <- lm.estimates[term, ]
+        resultsCI <- lm.confidence.interval[term, ]
+        resultsCD <- list(tolerance = lm.collinearity.diagnostics$tolerance[[term]], 
+                          vif = lm.collinearity.diagnostics$VIF[[term]])
+        .addRowForLinearRegressionCoefficientsTable(linearRegressionCoefficientsTable = linearRegressionCoefficientsTable, 
+                                                    dataset = dataset, options = options, modelNo = modelNo, term = term, 
+                                                    results = results, resultsCI = resultsCI, resultsCD = resultsCD)
       }
     }
-    
+    if (options$VovkSellkeMPR) {
+      linearRegressionCoefficientsTable$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A")
+    }
+  # If results cannot be computed, add an empty row
   } else {
-    
-    number.of.init.models <- max(1, length(lm.model))
-    
-    for (m in 1:number.of.init.models) {
-      anova.result <- .addEmptyModel(anova.result,m)
-    }
-    
-    if (length(list.of.errors) > 0){
-      anova[["error"]] <- list(errorType = "badData")
-    }
+    row <- list(modelNo = ".", variable = ".", unst.coef = ".", se = ".", stan.coef = ".", t = ".", p = ".", 
+                VovkSellkeMPR = ".", lowerCI = ".", upperCI = ".", tolerance = ".", vif = ".")
+    linearRegressionCoefficientsTable$addRows(rows = row)
   }
-  anova[["data"]] <- anova.result
-  anova[["footnotes"]] <- as.list(footnotes)
   
-  results[["anova"]] <- anova
+  return(NULL)
+}
+
+.addRowForLinearRegressionCoefficientsTable <- function(linearRegressionCoefficientsTable, dataset, options, modelNo, 
+                                                        term, results, resultsCI, resultsCD) {
+  
+  unst.coef <- results[1]
+  se        <- results[2]
+  t         <- results[3]
+  p         <- results[4]
+  lowerCI   <- resultsCI[1]
+  upperCI   <- resultsCI[2]
+  if (term == "(Intercept") {
+    stan.coef <- "."
+    tolerance <- "."
+    vif       <- "."
+    variable  <- term
+  } else {
+    if (grepl(":", term)) {
+      vars <- unlist(strsplit(term, split = ":"))
+      int.var <- rep(1, nrow(dataset))
+      for (var in vars) {
+        int.var <- int.var * dataset[[ var ]]
+      }
+      sd.ind <- sd(int.var)
+      variable <- paste0(.unv(vars), collapse="\u2009\u273b\u2009")
+    } else {
+      sd.ind    <- sd( dataset[[ term ]] )
+      variable <- .unv(term)
+    }
+    sd.dep    <- sd( dataset[[ options[["dependent.variable.base64"]] ]] )
+    stan.coef <- unst.coef * sd.ind / sd.dep
+    tolerance <- resultsCD$tolerance
+    vif       <- resultsCD$vif
+  }
+  
+  # Add row
+  row <- list(modelNo = modelNo, variable = variable, unst.coef = .clean(unst.coef), se = .clean(se), 
+              stan.coef = .clean(stan.coef), t = .clean(t), p = .clean(p), VovkSellkeMPR = .clean(.VovkSellkeMPR(p)),
+              lowerCI = .clean(lowerCI), upperCI = .clean(upperCI), tolerance = .clean(tolerance), vif = .clean(vif))
+  linearRegressionCoefficientsTable$addRows(rows = row, rowNames = paste0(modelNo, " - ", variable))
+  
+  return(NULL)
+}
+
+.createLinearRegressionBootstrappingTable <- function(jaspResults, dataset, options, ready, linearModels) {
+  
+  # Check if object can be reused (in case relevant options did not change)
+  if (!is.null(jaspResults[["linearRegressionBootstrappingTable"]])) {
+    return(NULL)
+  }
+  
+  # Create table
+  linearRegressionBootstrappingTable <- createJaspTable(title = "Coefficients")
+  jaspResults[["linearRegressionBootstrappingTable"]] <- linearRegressionBootstrappingTable
+  #linearRegressionBootstrappingTable$showSpecifiedColumnsOnly <- TRUE
+  linearRegressionBootstrappingTable$dependOnOptions(c("dependent", "wlsWeights", "modelTerms", 
+                                                      "regressionCoefficientsBootstrapping", "missingValues",
+                                                      "regressionCoefficientsBootstrappingReplicates", "includeConstant",
+                                                      "method", "steppingMethodCriteriaType", 
+                                                      "steppingMethodCriteriaPEntry", "steppingMethodCriteriaPRemoval", 
+                                                      "steppingMethodCriteriaFEntry", "steppingMethodCriteriaFRemoval"))
+  
+  # Add columns to table
+  linearRegressionBootstrappingTable$addColumnInfo(  name = "modelNo",       title = "Model",          type = "integer",
+                                                     combine = TRUE)
+  linearRegressionBootstrappingTable$addColumnInfo(  name = "variable",      title = "",               type = "string")
+  linearRegressionBootstrappingTable$addColumnInfo(  name = "unst.coef",     title = "Unstandardized", type = "number",
+                                                     format = "sf:4;dp:3")
+  linearRegressionBootstrappingTable$addColumnInfo(  name = "bias",          title = "Bias",           type = "number",
+                                                     format = "sf:4;dp:3")
+  linearRegressionBootstrappingTable$addColumnInfo(  name = "se",            title = "SE",             type = "number",
+                                                     format = "sf:4;dp:3")
+  linearRegressionBootstrappingTable$addColumnInfo(  name = "lowerCI",       title = "Lower",          type = "number",
+                                                     format = "sf:4;dp:3",   overtitle = paste0("95% CI"))
+  linearRegressionBootstrappingTable$addColumnInfo(  name = "upperCI",       title = "Upper",          type = "number",
+                                                     format = "sf:4;dp:3",   overtitle = paste0("95% CI"))
+
+  # Fill up table with results
+  .fillUpLinearRegressionBootstrappingTable(linearRegressionBootstrappingTable = linearRegressionBootstrappingTable,
+                                            dataset = dataset, options = options, ready = ready, linearModels = linearModels)
+  
+  return(NULL)
+}
+
+.fillUpLinearRegressionBootstrappingTable <- function(linearRegressionBootstrappingTable, dataset, options, ready,
+                                                      linearModels) {
+  
+  # If results can be computed, compute them and add row for each variable
+  if (ready) {
+    for (modelNo in 1:length(linearModels)) {
+      lm.model <- linearModels[[modelNo]]$lm.fit
+      lm.summary <- summary(lm.model)
+      lm.estimates <- lm.summary$coefficients
+      lm.confidence.interval <- confint(lm.model, level = options$regressionCoefficientsConfidenceIntervalsInterval / 100)
+      lm.collinearity.diagnostics <- .collinearityDiagnostics(lm.model, dataset, includeConstant = options$includeConstant)
+      
+      for (term in rownames(lm.estimates)) {
+        results <- lm.estimates[term, ]
+        resultsCI <- lm.confidence.interval[term, ]
+        resultsCD <- list(tolerance = lm.collinearity.diagnostics$tolerance[[term]], 
+                          vif = lm.collinearity.diagnostics$VIF[[term]])
+        .addRowForLinearRegressionCoefficientsTable(linearRegressionCoefficientsTable = linearRegressionCoefficientsTable, 
+                                                    dataset = dataset, options = options, modelNo = modelNo, term = term, 
+                                                    results = results, resultsCI = resultsCI, resultsCD = resultsCD)
+      }
+    }
+  # If results cannot be computed, add an empty row
+  } else {
+    row <- list(modelNo = ".", variable = ".", unst.coef = ".", bias = ".", se = ".", lowerCI = ".", upperCI = ".")
+    linearRegressionBootstrappingTable$addRows(rows = row)
+  }
+  
+  return(NULL)
 }
 
 
-if (options$regressionCoefficientsEstimates == TRUE) {
-  
-  regression <- list()
-  regression[["title"]] <- "Coefficients"
-  
-  footnotes <- .newFootnotes()
-  
-  # Declare table elements
-  fields <- list(
-    list(name = "Model", type = "integer"),
-    list(name = "Name", title = "  ", type = "string"),
-    list(name = "Coefficient", title = "Unstandardized", type = "number", format = "sf:4;dp:3"),
-    list(name = "Standard Error", type="number", format = "sf:4;dp:3"),
-    list(name = "Standardized Coefficient", title = "Standardized", type = "number", format = "sf:4;dp:3"),
-    list(name = "t", type="number", format = "sf:4;dp:3"),
-    list(name = "p", type = "number", format = "dp:3;p:.001"))
-  
-  if (options$VovkSellkeMPR) {
-    .addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
-                 <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
-                 possible odds in favor of H\u2081 over H\u2080 equals
-                 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
-                 (Sellke, Bayarri, & Berger, 2001).")
-    fields[[length(fields) + 1]] <- list(name = "VovkSellkeMPR",
-                                         title = "VS-MPR\u002A",
-                                         type = "number",
-                                         format = "sf:4;dp:3")
-  }
-  
-  empty.line <- list( #for empty elements in tables when given output
-    "Model" = "",
-    "Name" = "",
-    "Coefficient" = "",
-    "Standard Error" = "",
-    "Standardized Coefficient" = "",
-    "t" = "",
-    "p" = "")
-  
-  if (options$VovkSellkeMPR) {
-    empty.line[["VovkSellkeMPR"]] <- ""
-  }
-  
-  dotted.line <- list( #for empty tables
-    "Model" = ".",
-    "Name" = ".",
-    "Coefficient" = ".",
-    "Standard Error" = ".",
-    "Standardized Coefficient" = ".",
-    "t" = ".",
-    "p" = ".")
-  
-  if (options$VovkSellkeMPR) {
-    dotted.line[["VovkSellkeMPR"]] <- "."
-  }
-  
-  if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
-    
-    alpha <- options$regressionCoefficientsConfidenceIntervalsInterval
-    alpha <- alpha / 100
-    
-    fields[[ length(fields) + 1 ]] <- list(name = "Lower Bound", title = "Lower", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
-    fields[[ length(fields) + 1 ]] <- list(name = "Upper Bound", title = "Upper", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
-    empty.line$"Lower Bound" = ""
-    empty.line$"Upper Bound" = ""
-    dotted.line$"Lower Bound" = "."
-    dotted.line$"Upper Bound" = "."
-  }
-  
-  if (options$collinearityDiagnostics) {
-    
-    fields[[ length(fields) + 1 ]] <- list(name = "Tolerance", title = "Tolerance", type = "number", format = "dp:3", overTitle="Collinearity Statistics")
-    fields[[ length(fields) + 1 ]] <- list(name = "VIF", title = "VIF", type = "number", format = "sf:4;dp:3", overTitle="Collinearity Statistics")
-    empty.line$"Tolerance" = ""
-    empty.line$"VIF" = ""
-    dotted.line$"Tolerance" = "."
-    dotted.line$"VIF" = "."
-  }
-  
-  regression[["schema"]] <- list(fields = fields)
-  
-  regression.result <- list()
-  
-  if (perform == "run" && length(list.of.errors) == 0) {
-    
-    for (m in 1:length(lm.model)) {
-      
-      if ( class(lm.model[[ m ]]$lm.fit) == "lm") {
+
+      for (m in 1:length(lm.model)) {
         
-        na.estimate.names <- NULL
-        
-        if(any(is.na(lm.model[[m]]$lm.fit$coefficients))){
+        if ( class(lm.model[[ m ]]$lm.fit) == "lm" && (! (length(lm.model[[m]]$variables) == 0 && options$includeConstant == FALSE))) {
           
-          #these estimates give back NA
-          na.estimate.names <- names(lm.model[[m]]$lm.fit$coefficients)[which(is.na(lm.model[[m]]$lm.fit$coefficients))]
-          # !!!!! if(all(is.na(tmp)))
-        }
-        
-        lm.summary = summary(lm.model[[ m ]]$lm.fit)
-        lm.estimates <- lm.summary$coefficients
-        
-        if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
+          na.estimate.names <- NULL
           
-          lm.confidence.interval <- confint(lm.model[[ m ]]$lm.fit, level = alpha)
-        }
-        
-        len.reg <- length(regression.result) + 1
-        v <- 0
-        
-        if (options$includeConstant == TRUE) {
-          
-          if(is.null(na.estimate.names) || na.estimate.names[1] != "(Intercept)"){
+          if(any(is.na(lm.model[[m]]$lm.fit$coefficients))){
             
-            v <- v + 1
-            
-            regression.result[[ len.reg ]] <- empty.line
-            regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-            regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
-            regression.result[[ len.reg ]]$"Coefficient" <- as.numeric(lm.estimates[v,1])
-            regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(lm.estimates[v,2])
-            regression.result[[ len.reg ]]$"t" <- as.numeric(lm.estimates[v,3])
-            regression.result[[ len.reg ]]$"p" <- as.numeric(lm.estimates[v,4])
-            if (options$VovkSellkeMPR) {
-              regression.result[[ len.reg ]]$"VovkSellkeMPR" <- .VovkSellkeMPR(regression.result[[ len.reg ]]$"p")
-            }
-            regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-            
-            if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
-              
-              regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( lm.confidence.interval[v,1] )
-              regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( lm.confidence.interval[v,2] )
-            }
-            
-            if (options$collinearityDiagnostics) {
-              
-              regression.result[[ len.reg ]]$"Tolerance" <- ""
-              regression.result[[ len.reg ]]$"VIF" <- ""
-            }
-            
-          } else {
-            
-            regression.result[[ len.reg ]] <- empty.line
-            regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-            regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
-            regression.result[[ len.reg ]]$"Coefficient" <- "NA"
-            regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
+            #these estimates give back NA
+            na.estimate.names <- names(lm.model[[m]]$lm.fit$coefficients)[which(is.na(lm.model[[m]]$lm.fit$coefficients))]
+            # !!!!! if(all(is.na(tmp)))
           }
           
-          len.reg <- len.reg + 1
-        }
-        
-        sd.dep <- sd( dataset[[ dependent.base64 ]] )
-        
-        if (length(lm.model[[ m ]]$variables) > 0) {
-          
-          variables.in.model <- lm.model[[ m ]]$variables
-          
-          if (options$collinearityDiagnostics)
-            collinearity.diagnostics[[length(collinearity.diagnostics)+1]] <- .collinearityDiagnostics(lm.model[[ m ]]$lm.fit, dataset, includeConstant=options$includeConstant)
-          
-          for (var in 1:length(variables.in.model)) {
-            
-            if(!is.null(na.estimate.names) && .v(variables.in.model[var])%in%na.estimate.names) {
-              
-              v <- v - 1
-              regression.result[[ len.reg ]] <- empty.line
-              
-              if (var == 1 && options$includeConstant == FALSE) {
-                
-                regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-                regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-              }
-              
-              if (grepl(":", variables.in.model[var])) {
-                
-                # if interaction term
-                
-                vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-                name <- paste0(vars, collapse="\u2009\u273b\u2009")
-                
-              } else {
-                
-                name <- as.character(variables.in.model[ var])
-              }
-              
-              regression.result[[ len.reg ]]$"Name" <- name
-              regression.result[[ len.reg ]]$"Coefficient" <- "NA"
-              
-              if (options$collinearityDiagnostics) {
-                
-                regression.result[[ len.reg ]]$"Tolerance" <- .clean(collinearity.diagnostics[[length(collinearity.diagnostics)]]$tolerance[[var]])
-                regression.result[[ len.reg ]]$"VIF" <- .clean(collinearity.diagnostics[[length(collinearity.diagnostics)]]$VIF[[var]])
-              }
-              
-              len.reg <- len.reg + 1
-              
+          .bootstrapping <- function(data, indices, formula, wlsWeights) {
+            d <- data[indices, , drop = FALSE] # allows boot to select sample
+            if (.unv(wlsWeights) == "") {
+              fit <- lm(formula = formula, data=d)
             } else {
-              
-              if (grepl(":", variables.in.model[var])) {
-                
-                # if interaction term
-                
-                vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-                
-                int.var <- rep(1, nrow(dataset))
-                
-                for (i in seq_along(vars))
-                  int.var <- int.var * dataset[[ .v(vars[i]) ]]
-                
-                sd.ind <- sd(int.var)
-                
-              } else {
-                
-                sd.ind <- sd( dataset[[ .v(variables.in.model[var]) ]])
-              }
-              
-              regression.result[[ len.reg ]] <- empty.line
-              
-              if (var == 1 && options$includeConstant == FALSE) {
-                
-                regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-                regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-              }
-              
-              if (grepl(":", variables.in.model[var])) {
-                
-                # if interaction term
-                
-                vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-                name <- paste0(vars, collapse="\u2009\u273b\u2009")
-                
-              } else {
-                
-                name <- as.character(variables.in.model[ var])
-              }
-              
-              regression.result[[ len.reg ]]$"Name" <- name
-              regression.result[[ len.reg ]]$"Coefficient" <- as.numeric(lm.estimates[v+var,1])
-              regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(lm.estimates[v+var,2])
-              regression.result[[ len.reg ]]$"Standardized Coefficient" <- as.numeric(lm.estimates[v+var,1] * sd.ind / sd.dep)
-              
-              regression.result[[ len.reg ]]$"t" <- as.numeric(lm.estimates[v+var,3])
-              regression.result[[ len.reg ]]$"p" <- as.numeric(lm.estimates[v+var,4])
-              
-              if (options$VovkSellkeMPR) {
-                regression.result[[ len.reg ]]$"VovkSellkeMPR" <- .VovkSellkeMPR(regression.result[[ len.reg ]]$"p")
-              }
-              
-              if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
-                
-                regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( lm.confidence.interval[v+var,1] )
-                regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( lm.confidence.interval[v+var,2] )
-              }
-              
-              if (options$collinearityDiagnostics) {
-                
-                regression.result[[ len.reg ]]$"Tolerance" <- .clean(collinearity.diagnostics[[length(collinearity.diagnostics)]]$tolerance[[var]])
-                regression.result[[ len.reg ]]$"VIF" <- .clean(collinearity.diagnostics[[length(collinearity.diagnostics)]]$VIF[[var]])
-              }
-              
-              len.reg <- len.reg + 1
+              weights <- d[[wlsWeights]]
+              fit <- lm(formula = formula, data=d, weights = weights)
             }
+            return(coef(fit))
           }
-        }
-        
-      } else {
-        
-        len.reg <- length(regression.result) + 1
-        regression.result[[ len.reg ]] <- dotted.line
-        regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-        
-        if (length(lm.model[[ m ]]$variables) > 0) {
           
-          variables.in.model <- lm.model[[ m ]]$variables
+          bootstrap.summary <- boot::boot(data = dataset, statistic = .bootstrapping, R = options$regressionCoefficientsBootstrappingReplicates, formula = formula(lm.model[[m]]$lm.fit), wlsWeights = .v(options$wlsWeights))
+          bootstrap.coef <- bootstrap.summary$t0
+          bootstrap.bias <- colMeans(bootstrap.summary$t, na.rm = TRUE) - bootstrap.coef
+          bootstrap.se <- matrixStats::colSds(bootstrap.summary$t, na.rm = TRUE)
           
+          len.reg <- length(bootstrap.regression.result) + 1
+          v <- 0
           
           if (options$includeConstant == TRUE) {
             
-            regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
-          }
-          
-          len.reg <- len.reg + 1
-          
-          for (var in 1:length(variables.in.model)) {
-            
-            regression.result[[ len.reg ]] <- dotted.line
-            
-            if (grepl(":", variables.in.model[var])) {
+            if(is.null(na.estimate.names) || na.estimate.names[1] != "(Intercept)"){
               
-              # if interaction term
+              v <- v + 1
               
-              vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-              name <- paste0(vars, collapse="\u2009\u273b\u2009")
+              bootstrap.regression.result[[ len.reg ]] <- empty.line
+              bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
+              bootstrap.regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
+              bootstrap.regression.result[[ len.reg ]]$"Coefficient" <- as.numeric(bootstrap.coef[v])
+              bootstrap.regression.result[[ len.reg ]]$"Bias" <- as.numeric(bootstrap.bias[v])
+              bootstrap.regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(bootstrap.se[v])
+              bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
               
-            } else {
-              
-              name <- as.character(variables.in.model[ var])
-            }
-            
-            regression.result[[ len.reg ]]$"Name" <- name
-            len.reg <- len.reg + 1
-          }
-        }
-      }
-    }
-    
-  } else {
-    
-    if (length(lm.model) > 0 ) {
-      
-      for (m in 1:length(lm.model)) {
-        
-        len.reg <- length(regression.result) + 1
-        
-        if (options$includeConstant == TRUE) {
-          
-          regression.result[[ len.reg ]] <- dotted.line
-          regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-          regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
-          regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-          len.reg <- len.reg + 1
-        }
-        
-        if (length(lm.model[[ m ]]$variables) > 0) {
-          
-          variables.in.model <- lm.model[[ m ]]$variables
-          
-          for (var in 1:length(variables.in.model)) {
-            
-            regression.result[[ len.reg ]] <- dotted.line
-            regression.result[[ len.reg ]]$"Model" <- ""
-            
-            if (var == 1 && options$includeConstant == FALSE) {
-              regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-              regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-            }
-            
-            if (grepl(":", variables.in.model[var])) {
-              
-              # if interaction term
-              
-              vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-              name <- paste0(vars, collapse="\u2009\u273b\u2009")
+              if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
+                bootstrap.ci <- boot::boot.ci(bootstrap.summary, type="bca", conf = alpha, index=v)
+                bootstrap.regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( bootstrap.ci$bca[4] )
+                bootstrap.regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( bootstrap.ci$bca[5] )
+              }
               
             } else {
               
-              name <- as.character(variables.in.model[ var])
+              bootstrap.regression.result[[ len.reg ]] <- empty.line
+              bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
+              bootstrap.regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
+              bootstrap.regression.result[[ len.reg ]]$"Coefficient" <- "NA"
+              bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
             }
             
-            regression.result[[ len.reg ]]$"Name" <- name
             len.reg <- len.reg + 1
+          }
+          
+          sd.dep <- sd( dataset[[ dependent.base64 ]] )
+          
+          if (length(lm.model[[ m ]]$variables) > 0) {
+            
+            variables.in.model <- lm.model[[ m ]]$variables
+            
+            for (var in 1:length(variables.in.model)) {
+              
+              if (!is.null(na.estimate.names) && .v(variables.in.model[var])%in%na.estimate.names) {
+                
+                v <- v - 1
+                bootstrap.regression.result[[ len.reg ]] <- empty.line
+                
+                if (var == 1 && options$includeConstant == FALSE) {
+                  
+                  bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
+                  bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
+                }
+                
+                if (grepl(":", variables.in.model[var])) {
+                  
+                  # if interaction term
+                  
+                  vars <- unlist(strsplit(variables.in.model[var], split = ":"))
+                  name <- paste0(vars, collapse="\u2009\u273b\u2009")
+                  
+                } else {
+                  
+                  name <- as.character(variables.in.model[ var])
+                }
+                
+                bootstrap.regression.result[[ len.reg ]]$"Name" <- name
+                bootstrap.regression.result[[ len.reg ]]$"Coefficient" <- "NA"
+                
+                len.reg <- len.reg + 1
+                
+              } else {
+                
+                if (grepl(":", variables.in.model[var])) {
+                  
+                  # if interaction term
+                  
+                  vars <- unlist(strsplit(variables.in.model[var], split = ":"))
+                  
+                  int.var <- rep(1, nrow(dataset))
+                  
+                  for (i in seq_along(vars))
+                    int.var <- int.var * dataset[[ .v(vars[i]) ]]
+                  
+                  sd.ind <- sd(int.var)
+                  
+                } else {
+                  
+                  sd.ind <- sd( dataset[[ .v(variables.in.model[var]) ]])
+                }
+                
+                bootstrap.regression.result[[ len.reg ]] <- empty.line
+                
+                if (var == 1 && options$includeConstant == FALSE) {
+                  
+                  bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
+                  bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
+                }
+                
+                if (grepl(":", variables.in.model[var])) {
+                  
+                  # if interaction term
+                  
+                  vars <- unlist(strsplit(variables.in.model[var], split = ":"))
+                  name <- paste0(vars, collapse="\u2009\u273b\u2009")
+                  
+                } else {
+                  
+                  name <- as.character(variables.in.model[ var])
+                }
+                
+                bootstrap.regression.result[[ len.reg ]]$"Name" <- name
+                bootstrap.regression.result[[ len.reg ]]$"Coefficient" <- as.numeric(bootstrap.coef[v+var])
+                bootstrap.regression.result[[ len.reg ]]$"Bias" <- as.numeric(bootstrap.bias[v+var])
+                bootstrap.regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(bootstrap.se[v+var])
+                
+                if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
+                  bootstrap.ci <- boot::boot.ci(bootstrap.summary, type="bca", conf = alpha, index=v+var)
+                  bootstrap.regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( bootstrap.ci$bca[4] )
+                  bootstrap.regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( bootstrap.ci$bca[5] )
+                }
+                
+                len.reg <- len.reg + 1
+              }
+            }
+          }
+          
+        } 
+        else {
+          
+          len.reg <- length(bootstrap.regression.result) + 1
+          bootstrap.regression.result[[ len.reg ]] <- dotted.line
+          bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
+          
+          if (length(lm.model[[ m ]]$variables) > 0) {
+            
+            variables.in.model <- lm.model[[ m ]]$variables
+            
+            
+            if (options$includeConstant == TRUE) {
+              
+              bootstrap.regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
+            }
+            
+            len.reg <- len.reg + 1
+            
+            for (var in 1:length(variables.in.model)) {
+              
+              bootstrap.regression.result[[ len.reg ]] <- dotted.line
+              
+              if (grepl(":", variables.in.model[var])) {
+                
+                # if interaction term
+                
+                vars <- unlist(strsplit(variables.in.model[var], split = ":"))
+                name <- paste0(vars, collapse="\u2009\u273b\u2009")
+                
+              } else {
+                
+                name <- as.character(variables.in.model[ var])
+              }
+              
+              bootstrap.regression.result[[ len.reg ]]$"Name" <- name
+              len.reg <- len.reg + 1
+            }
           }
         }
       }
       
     } else {
       
-      len.reg <- length(regression.result) + 1
-      regression.result[[ len.reg ]] <- dotted.line
-      regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-      
-      if (options$includeConstant == TRUE) {
+      if (length(lm.model) > 0 ) {
         
-        regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
-        regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
+        for (m in 1:length(lm.model)) {
+          
+          len.reg <- length(bootstrap.regression.result) + 1
+          
+          if (options$includeConstant == TRUE) {
+            
+            bootstrap.regression.result[[ len.reg ]] <- dotted.line
+            bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
+            bootstrap.regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
+            bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
+            len.reg <- len.reg + 1
+          }
+          
+          if (length(lm.model[[ m ]]$variables) > 0) {
+            
+            variables.in.model <- lm.model[[ m ]]$variables
+            
+            for (var in 1:length(variables.in.model)) {
+              
+              bootstrap.regression.result[[ len.reg ]] <- dotted.line
+              bootstrap.regression.result[[ len.reg ]]$"Model" <- ""
+              
+              if (var == 1 && options$includeConstant == FALSE) {
+                bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
+                bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
+              }
+              
+              if (grepl(":", variables.in.model[var])) {
+                
+                # if interaction term
+                
+                vars <- unlist(strsplit(variables.in.model[var], split = ":"))
+                name <- paste0(vars, collapse="\u2009\u273b\u2009")
+                
+              } else {
+                
+                name <- as.character(variables.in.model[ var])
+              }
+              
+              bootstrap.regression.result[[ len.reg ]]$"Name" <- name
+              len.reg <- len.reg + 1
+            }
+          }
+        }
+        
+      } else {
+        
+        len.reg <- length(bootstrap.regression.result) + 1
+        bootstrap.regression.result[[ len.reg ]] <- dotted.line
+        bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
+        
+        if (options$includeConstant == TRUE) {
+          
+          bootstrap.regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
+          bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
+        }
+      }
+      
+      if(length(list.of.errors) > 0){
+        
+        bootstrap.regression[["error"]] <- list(errorType="badData")
       }
     }
     
-    if(length(list.of.errors) > 0){
-      
-      regression[["error"]] <- list(errorType="badData")
-    }
-  }
-  
-  regression[["data"]] <- regression.result
-  
-  # Check whether variables in the regression model are redundant
-  if (! length(regression$data) == 0) {
-    for (i in 1:length(regression$data)) {
-      if (regression$data[[i]]$Coefficient=="NA") {
+    bootstrap.regression[["data"]] <- bootstrap.regression.result
+    
+    # Check whether variables in the regression model are redundant
+    for(i in 1:length(bootstrap.regression$data)) {
+      if (bootstrap.regression$data[[i]]$Coefficient=="NA") {
         # Add footnote
         footnotes <- .newFootnotes()
         .addFootnote(footnotes, "The regression coefficient for one or more of the variables specified in the regression model could not be estimated (that is, the coefficient is not available (NA)). The most likely reasons for this to occur are multicollinearity or a large number of missing values.", symbol = "\u207A")
         # Add footnote symbol to name of the redundant variable
-        regression$data[[i]]$Name <- paste0(regression$data[[i]]$Name, "\u207A")
+        bootstrap.regression$data[[i]]$Name <- paste0(bootstrap.regression$data[[i]]$Name, "\u207A")
       }
     }
+    
+    bootstrap.regression[["footnotes"]] <- as.list(footnotes)
+    results[["bootstrap.regression"]] <- bootstrap.regression
+    
   }
-  
-  regression[["footnotes"]] <- as.list(footnotes)
-  results[["regression"]] <- regression
-  
 }
+
 
 
 .createLinearRegressionDescriptivesTable <- function(jaspResults, dataset, options, ready) {
@@ -1263,5 +1316,107 @@ if (options$regressionCoefficientsEstimates == TRUE) {
   partialCor <- cor(cleaned.variable.of.interest, cleaned.dependent.variable)
   
   return(list(partCor=partCor, partialCor=partialCor))
+  
+}
+
+.collinearityDiagnostics <- function(lm.fit, dataset, includeConstant=TRUE) {
+  
+  ### create predictor variable matrix
+  X <- lm.fit$x
+  
+  ### scale predictor matrix
+  for (i in seq_len(ncol(X))) {
+    
+    X[ ,i] <- X[ ,i] / sqrt(sum(X[ ,i]^2)) # scale each column using Euclidean norm
+    
+  }
+  
+  ### eigenvalues
+  eigenvalues <- svd(X)$d^2 # see Liao & Valliant (2012)
+  
+  ### condition indices
+  conditionIndices <- sqrt(max(eigenvalues) / eigenvalues)
+  
+  ### variance proportions ( see e.g., Liao & Valliant, 2012 )
+  svdX <- svd(X) # singular value decomposition
+  M <- svdX$v %*% solve(diag(svdX$d))
+  Q <- M*M # Hadamard (elementwise) product
+  tQ <- t(Q)
+  
+  for (i in seq_len(ncol(tQ))) {
+    
+    tQ[, i] <- tQ[ ,i] / sum(tQ[ ,i])
+    
+  }
+  
+  varianceProportions <- tQ
+  
+  ### VIF (variance inflation factor)
+  
+  if ( ! includeConstant) {
+    
+    predictors <- colnames(lm.fit$x) # predictors in model (remove dependent variable and weights)
+    
+  } else {
+    
+    predictors <- colnames(lm.fit$x)[-1]
+  }
+  
+  VIF <- list()
+  tolerance <- list()
+  
+  if (length(predictors) == 1) {
+    
+    VIF[[predictors]] <- 1
+    tolerance[[predictors]] <- 1
+    
+  } else if (length(predictors) > 1) {
+    
+    for (predictor in predictors) {
+      
+      if (grepl(":", predictor)) {
+        
+        # if interaction term
+        
+        vars <- unlist(strsplit(predictor, split = ":"))
+        int.var <- rep(1, nrow(dataset))
+        
+        for (i in seq_along(vars))
+          int.var <- int.var * dataset[[ vars[i] ]]
+        
+        predictor.d <- paste0(vars, collapse=".")
+        dataset[[predictor.d]] <- int.var
+        
+      } else {
+        
+        predictor.d <- predictor
+      }
+      
+      # remove predictor from other predictors
+      index <- which(predictors == predictor)
+      cleanedPredictors <- predictors[-index]
+      
+      # create formula
+      definition <- paste(predictor.d, "~", paste(cleanedPredictors, collapse="+"))
+      formula <- as.formula(definition)
+      
+      # fit lm
+      fitVIF <- try(lm(formula, data=dataset), silent=TRUE)
+      
+      # VIF (variance inflation factor)
+      VIF[[predictor]] <- 1 / (1 - summary(fitVIF)$"r.squared")
+      
+      # tolerance
+      tolerance[[predictor]] <- 1 / VIF[[predictor]]
+    }
+  }
+  
+  output <- list(	eigenvalues=eigenvalues,
+                  conditionIndices=conditionIndices,
+                  varianceProportions=varianceProportions,
+                  VIF=VIF,
+                  tolerance=tolerance)
+  
+  return(output)
   
 }
