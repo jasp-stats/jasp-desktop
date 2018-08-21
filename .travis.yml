@@ -15,8 +15,7 @@ matrix:
         "sudo apt-get install r-cran-rcppeigen",
         "sudo apt-get install r-cran-plogr"
       ]
-      install: Rscript -e 'install.packages("testthat"); install.packages("JASP-R-Interface/jaspResults/", repos=NULL, type="source")'
+      install: Rscript Tools/requiredPackages.R JASP-Engine/JASP/R true true
       script:
-        - Rscript Tools/requiredPackages.R JASP-Engine/JASP/R true
         - cd JASP-Tests/R/tests/
         - R < testthat.R --no-save
