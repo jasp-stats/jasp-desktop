@@ -254,7 +254,6 @@ test_that("Simple Effects table match", {
     list(components = "gender")
   )
   
-  options$withinModelTerms
   options$simpleFactor <- "Looks"
   options$moderatorFactorOne <- "gender"
   options$moderatorFactorTwo <- "Charisma"
@@ -278,6 +277,28 @@ test_that("Simple Effects table match", {
   expect_equal_tables(table, refTable)
 })
 
+test_that("Nonparametric table match", {
+  
+  options <- initOpts()
+  
+  options$betweenSubjectFactors <- "gender"
+  options$betweenModelTerms <- list(
+    list(components = "gender")
+  )
+  
+  options$friedmanWithinFactor <- "Charisma"
+  
+  results <- jasptools::run(name = "AnovaRepeatedMeasures",
+                            dataset = "AnovaMixedEffects.csv", #mydat,
+                            options = options,
+                            view = FALSE, quiet = TRUE)
+  
+  refTable <- list( "Charisma", 40.074508162411, 2, 1.98577994376659e-09, -170.212868480726,
+                    26.3987755757377, 8, 158, 1.2968573602055e-25)
+  
+  table <- results[["results"]][["friedman"]][["data"]]
+  expect_equal_tables(table, refTable)
+})
 
 
 

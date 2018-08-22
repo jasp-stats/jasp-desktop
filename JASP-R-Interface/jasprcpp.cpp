@@ -53,6 +53,7 @@ void jaspRCPP_send(const char * msg)
 void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks* callbacks, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction)
 {
 	rinside = new RInside();
+
 #ifndef __WIN32__
 	rinside_consoleLog = new RInside_ConsoleLogging();
 	rinside->set_callbacks(rinside_consoleLog);
@@ -95,7 +96,8 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	static const char *baseCitationFormat	= "JASP Team (%s). JASP (Version %s) [Computer software].";
 	char baseCitation[200];
 	sprintf(baseCitation, baseCitationFormat, buildYear, version);
-	rInside[".baseCitation"] = baseCitation;
+    rInside[".baseCitation"] = baseCitation;
+
 
 	jaspResults::setSendFunc(sendToDesktopFunction);
 	jaspResults::setPollMessagesFunc(pollMessagesFunction);
@@ -105,15 +107,14 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	//Adding some functions in R to the RefClass (generator) in the module
 	rInside.parseEvalQ("jaspResultsModule$jaspTable$methods(addColumnInfo = function(name=NULL, title=NULL, overtitle=NULL, type=NULL, format=NULL, combine=NULL) { addColumnInfoHelper(name, title, type, format, combine, overtitle) })");
 	rInside.parseEvalQ("jaspResultsModule$jaspTable$methods(addFootnote =   function(message='', symbol=NULL, col_names=NULL, row_names=NULL) { addFootnoteHelper(message, symbol, col_names, row_names) })");
-
 	rInside["jasp.analyses"] = Rcpp::List();
+
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library('JASP'))");
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library('methods'))");
+
 	rInside.parseEvalQNT("source(file='writeImage.R')");
 
-	rinside->parseEvalNT("initEnvironment()");
-
-
+    rinside->parseEvalNT("initEnvironment()");
 }
 
 

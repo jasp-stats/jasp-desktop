@@ -60,15 +60,28 @@
 			"type": "Table"
 		},
 		{
+			"name": "contrastAssumeEqualVariance",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"format": "%",
+			"max": 0.999,
+			"min": 0.000,
+			"name": "confidenceIntervalIntervalContrast",
+			"type": "Number",
+			"value": 0.95
+		},
+		{
+		  "name": "confidenceIntervalsContrast",
+			"type": "Boolean"
+		},
+		{
 			"name": "postHocTestsVariables",
 			"type": "Variables"
 		},
 		{
 			"name": "postHocTestsBonferroni",
-			"type": "Boolean"
-		},
-		{
-			"name": "postHocTestEffectSize",
 			"type": "Boolean"
 		},
 		{
@@ -82,6 +95,39 @@
 		},
 		{
 			"name": "postHocTestsScheffe",
+			"type": "Boolean"
+		},
+		{
+			"name": "postHocTestEffectSize",
+			"type": "Boolean"
+		},
+		{
+			"name": "postHocTestsTypeStandard",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "postHocTestsTypeGames",
+			"type": "Boolean"
+		},
+		{
+			"name": "postHocTestsTypeDunn",
+			"type": "Boolean"
+		},
+		{
+			"name": "postHocTestsTypeDunnett",
+			"type": "Boolean"
+		},
+		{
+			"format": "%",
+			"max": 0.999,
+			"min": 0.000,
+			"name": "confidenceIntervalIntervalPostHoc",
+			"type": "Number",
+			"value": 0.95
+		},
+		{
+		  "name": "confidenceIntervalsPostHoc",
 			"type": "Boolean"
 		},
 		{
@@ -103,10 +149,6 @@
 			"type": "Terms"
 		},
 		{
-			"name": "dunnTest",
-			"type": "Boolean"
-		},
-		{
 			"name": "descriptives",
 			"type": "Boolean"
 		},
@@ -117,6 +159,45 @@
 		{
 			"name": "homogeneityTests",
 			"type": "Boolean"
+		},
+				{
+			"name": "homogeneityCorrections",
+			"type": "Boolean"
+		},
+		{
+			"name": "homogeneityNone",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "homogeneityWelch",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "homogeneityBrown",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "homogeneityCorrections",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "homogeneityNone",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "homogeneityWelch",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "homogeneityBrown",
+			"type": "Boolean",
+			"default": true
 		},
 		{
 			"name": "plotHorizontalAxis",
