@@ -120,3 +120,25 @@ exists(/app/lib/*) {
 	INSTALLS += flatpak_appinfo_icon128
 }
 
+#Lets create a nice shellscript that tells us which version of JASP and R we are building/using!
+unix {
+    SCRIPTFILENAME=$${OUT_PWD}/../versionScript.sh
+
+    createVersionScript.commands += echo \"$${LITERAL_HASH}!/bin/sh\"                                                                           >  $$SCRIPTFILENAME ;
+    createVersionScript.commands += echo \"JASP_VERSION_MAJOR=$$JASP_VERSION_MAJOR\"                                                            >> $$SCRIPTFILENAME ;
+    createVersionScript.commands += echo \"JASP_VERSION_MINOR=$$JASP_VERSION_MINOR\"                                                            >> $$SCRIPTFILENAME ;
+    createVersionScript.commands += echo \"JASP_VERSION_REVISION=$$JASP_VERSION_REVISION\"                                                      >> $$SCRIPTFILENAME ;
+    createVersionScript.commands += echo \"JASP_VERSION_BUILD=$$JASP_VERSION_BUILD\n\"                                                          >> $$SCRIPTFILENAME ;
+    createVersionScript.commands += echo \"JASP_VERSION=$${JASP_VERSION_MAJOR}.$${JASP_VERSION_MINOR}.$${JASP_VERSION_REVISION}.$${JASP_VERSION_BUILD}\n\"  >> $$SCRIPTFILENAME ;
+    createVersionScript.commands += echo \"CURRENT_R_VERSION=$$CURRENT_R_VERSION\"                                                              >> $$SCRIPTFILENAME ;
+
+    QMAKE_EXTRA_TARGETS += createVersionScript
+    POST_TARGETDEPS     += createVersionScript
+}
+
+#ENVIRONMENT_CRYPTKEY="$(SIMPLECRYPTKEY)"
+message("ENVIROMENT_CRYPTKEY: $$[ENVIRONMENT_CRYPTKEY]")
+!isEmpty($$[ENVIRONMENT_CRYPTKEY]) {
+    DEFINES+="ENVIRONMENT_CRYPTKEY=$$[ENVIRONMENT_CRYPTKEY]"
+}
+

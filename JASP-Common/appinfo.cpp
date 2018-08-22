@@ -18,10 +18,7 @@
 #include "appinfo.h"
 #include <sstream> 
 
-//Put separately for use in JASP/Tools/make-debian-package.sh.
-const int VersionMajor(0), VersionMinor(9), VersionRevision(0), VersionBuildNumber(256);
-
-const Version AppInfo::version = Version(VersionMajor, VersionMinor, VersionRevision, VersionBuildNumber);
+const Version AppInfo::version = Version(JASP_VERSION_MAJOR, JASP_VERSION_MINOR, JASP_VERSION_REVISION, JASP_VERSION_BUILD + 255); //Why the 255???
 const std::string AppInfo::name = "JASP";
 const std::string AppInfo::builddate = __DATE__ " " __TIME__ " (Netherlands)" ;
 

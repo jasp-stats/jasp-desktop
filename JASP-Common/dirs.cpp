@@ -271,7 +271,7 @@ string Dirs::rHomeDir()
 	string dir = exeDir();
 
 #ifdef __APPLE__
-	dir += "/../Frameworks/R.framework/Versions/" + AppInfo::getRVersion() + "/Resources";
+    dir += "/../Frameworks/R.framework/Versions/" + AppInfo::getRVersion() + "/Resources";
 #else
 	dir += "/R";
 #endif

@@ -94,7 +94,7 @@ The directory structure should be as follows:
 			- libJASP-R-Interface.dylib
 		[-] boost_1_64_0
 		[-] Frameworks
-			[-] R.framework
+                        [-] R.framework
 				[-] Versions
 					[+] 3.3
 
