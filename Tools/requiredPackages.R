@@ -31,14 +31,31 @@ if (length(args) == 0) {
 installed <- installed.packages()
 options("repos" = "https://cloud.r-project.org")
 
-diff <- system("git diff --name-only HEAD...$TRAVIS_BRANCH")
-print(diff)
-
-# some additional dependencies for travis
-# note that jaspResults should be installed before setwd(lib)!
 if (travis) {
+
+  # a number of environment variables are only available on travis.
+  # see here for an overview: https://docs.travis-ci.com/user/environment-variables/
   
-  if (! "jaspResults" %in% installed)
+  how <- Sys.getenv("TRAVIS_EVENT_TYPE")
+
+  # get changed files
+  if (identical(how, "pull_request")) {
+    diff <- system("git diff --name-only HEAD...$TRAVIS_BRANCH", intern = TRUE)
+  } else {
+    diff <- system("git diff --name-only @~..@", intern = TRUE)
+  }
+  
+  # ignore some things that may appear inside the diff
+  diff <- diff[!startsWith(diff, "warning: CRLF will be replaced by LF")]
+  diff <- diff[diff != "The file will have its original line endings in your working directory."]
+  
+  cat(sprintf("Travis understood that the following files where modified in this %s:\n\n %s\n",
+              how,
+              paste0(diff, collapse = "\n")))
+
+  # check some additional dependencies on travis
+  # note that jaspResults should be installed before setwd(lib)!
+  if (! "jaspResults" %in% installed || any(startsWith(diff, "JASP-R-Interface/jaspResults/")))
     install.packages("JASP-R-Interface/jaspResults/", repos=NULL, type="source")
 
   if (!"BH" %in% installed)
