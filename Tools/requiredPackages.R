@@ -1,15 +1,49 @@
 args <- commandArgs(trailingOnly = TRUE)
 
+install <- FALSE
+travis <- FALSE
 if (length(args) == 0) {
-  stop("\nRequires (1) path to R folder and optionally (2) boolean whether to install packages")
+  stop(paste0(
+    "\nRequired arguments:\n",
+    "\t(1) path to R folder.\n",
+    "\t(2) Optionally, boolean whether to install packages.\n",
+    "\t(3) Optionally, additional checks for Travis."
+  ))
 } else if (length(args) == 1) {
   lib <- args[1]
-  install <- FALSE
 } else if (length(args) == 2) {
   lib <- args[1]
   install <- ifelse(tolower(args[2]) == "true", TRUE, FALSE)
+} else if (length(args) == 3) {
+  lib <- args[1]
+  install <- ifelse(tolower(args[2]) == "true", TRUE, FALSE)
+  travis <- ifelse(tolower(args[3]) == "true", TRUE, FALSE)
 } else {
-  stop("\nAccepts only two arguments")
+  stop(paste0(
+    sprintf("\nExpected one, two or three arguments, got %d arguments.\n", length(args)),
+    "\nRequired arguments:\n",
+    "\t(1) path to R folder.\n",
+    "\t(2) Optionally, boolean whether to install packages.\n",
+    "\t(3) Optionally, additional checks for Travis."
+  ))
+}
+
+installed <- installed.packages()
+options("repos" = "https://cloud.r-project.org")
+
+diff <- system("git diff --name-only HEAD...$TRAVIS_BRANCH")
+print(diff)
+
+# some additional dependencies for travis
+# note that jaspResults should be installed before setwd(lib)!
+if (travis) {
+  
+  if (! "jaspResults" %in% installed)
+    install.packages("JASP-R-Interface/jaspResults/", repos=NULL, type="source")
+
+  if (!"BH" %in% installed)
+    install.packages("BH")
+
 }
 
 if (dir.exists(lib)) {
@@ -22,11 +56,13 @@ if (dir.exists(lib)) {
   stop("Could not find directory")
 }
 
-options("repos" = "https://cloud.r-project.org")
 
-if (! "stringr" %in% installed.packages()) {
-  install.packages("stringr")
+
+pkgs <- c("stringr", "testthat")
+for (pkg in pkgs[! pkgs %in% installed]) {
+  install.packages(pkg)
 }
+
 library(stringr)
 
 basePkgs <- installed.packages(priority="high")
@@ -49,7 +85,7 @@ for (file in files) {
 
 # for some reason, RcppArmadillo is not picked up as dependency
 # but it definitely needs to be installed before other packages.
-if (! "RcppArmadillo" %in% installed.packages()) {
+if (! "RcppArmadillo" %in% installed) {
   install.packages("RcppArmadillo")
 }
 
@@ -62,13 +98,16 @@ reqPkgs <- sort(unique(reqPkgs))
 reqPkgs <- reqPkgs[! reqPkgs %in% basePkgs]
 
 if (install) {
-  cat("Installing all missing packages...")
-  for (pkg in reqPkgs) {
-    if (! pkg %in% installed.packages()) {
+  pkgs2install <- reqPkgs[! reqPkgs %in% installed]
+  if (length(pkgs2install) > 0) {
+    cat("Installing all missing packages...")
+    for (pkg in pkgs2install) {
       install.packages(pkg, repos = 'https://cloud.r-project.org', dependencies = c("Depends", "Imports"))
     }
+    cat("\nFinished iterating over the required packages\n")
+  } else {
+    cat("\nAll required packages are available.\n")
   }
-  cat("\nFinished iterating over the required packages\n")
 } else {
   strPkgs <- paste0("'", reqPkgs, "'")
   installString <- paste0("install.packages(c(", paste(strPkgs, collapse=", "), "), repos = 'https://cloud.r-project.org', dependencies = c('Depends', 'Imports'))")
