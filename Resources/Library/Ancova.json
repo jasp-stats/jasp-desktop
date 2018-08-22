@@ -177,6 +177,26 @@
 			"type": "Boolean"
 		},
 		{
+			"name": "homogeneityCorrections",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "homogeneityNone",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "homogeneityWelch",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "homogeneityBrown",
+			"type": "Boolean",
+			"default": false
+		},
+		{
 			"name": "factorCovariateIndependence",
 			"type": "Boolean"
 		},

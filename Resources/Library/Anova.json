@@ -160,9 +160,10 @@
 			"name": "homogeneityTests",
 			"type": "Boolean"
 		},
-				{
+		{
 			"name": "homogeneityCorrections",
-			"type": "Boolean"
+			"type": "Boolean",
+			"default": false
 		},
 		{
 			"name": "homogeneityNone",
