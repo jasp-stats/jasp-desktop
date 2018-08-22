@@ -88,6 +88,10 @@ void FSBMExamples::loadRootElements()
 		QString name = file_or_folder["name"].toString();
 		QString description = file_or_folder["description"].toString();
 		QString type = file_or_folder["kind"].toString();
+		QString debug =  file_or_folder["debug"].toString();
+#ifndef JASP_DEBUG
+		if (debug.toLower() == "true") continue;		
+#endif	
 		QString associated_datafile = file_or_folder["associated_datafile"].toString();
 		if (isFolder(type))
 		{
@@ -156,6 +160,10 @@ void FSBMExamples::loadFilesAndFolders(const QString &docpath)
 			QString description = file_or_folder["description"].toString();
 			QString type = file_or_folder["kind"].toString();
 			QString associated_datafile = file_or_folder["associated_datafile"].toString();
+			QString debug =  file_or_folder["debug"].toString();
+#ifndef JASP_DEBUG
+			if (debug.toLower() == "true") continue;		
+#endif		
 			if (isFolder(type))
 			{
 				path = _path + QDir::separator()  + path;
@@ -178,10 +186,6 @@ QJsonDocument *FSBMExamples::getJsonDocument()
 {
 
 	QString filename = "index";
-
-#ifdef JASP_DEBUG
-	filename += "debug";
-#endif
 
 	QString fn = AppDirs::examples() + QDir::separator() + filename + ".json";
 	QFile index(fn);
