@@ -833,8 +833,6 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 
 .barplotJASP <- function(column, variable, dontPlotData= FALSE){
     
-    library(JASPgraphs)
-    
     # Hardcore xticks
     xticks <- pretty(c(1,5))
     yticks <- pretty(c(1,5))
@@ -912,8 +910,6 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 
 .plotScatterDescriptives <- function(xVar, yVar, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2){
 
-    library(JASPgraphs)
-    
     d <- data.frame(xx= xVar, yy= yVar)
     d <- na.omit(d)
     xVar <- d$xx

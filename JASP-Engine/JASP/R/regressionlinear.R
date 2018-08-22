@@ -3387,8 +3387,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 .plotResidualsHistogram <- function(res=NULL, resName="Residuals", dontPlotData=FALSE, cexYlab= 1.3, lwd= 2, rugs= FALSE) {
 
-    library(JASPgraphs)
-    
     if (dontPlotData) {
         
         p <- ggplot2::ggplot(data = data.frame(), mapping = ggplot2::aes())
