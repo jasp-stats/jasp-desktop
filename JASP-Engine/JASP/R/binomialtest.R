@@ -25,6 +25,14 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
   } else {
     options$hypothesisRec <- "less"
   }
+  
+  for (variable in options$variables) {
+    column <- dataset[[ .v(variable) ]]
+    data <- column[!is.na(column)]
+    levels <- levels(data)
+    browser()
+    options[[hypothesis]]["levels"] <- levels
+  }
 
   # Define state if empty
   if (is.null(state)) {
@@ -45,12 +53,7 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
 	# Check for errors
 	if (ready) {
 	  
-	  # Error Check 1: Number of levels of the variables
-	  .hasErrors(dataset = dataset, perform = "run", type = 'factorLevels',
-	             factorLevels.target = options$variables, factorLevels.amount = '< 2',
-	             exitAnalysisIfErrors = TRUE)
-	  
-	  # Error check 2: 0 observations for a level of a variable
+	  # Error check 1: 0 observations for a level of a variable
 	  for (variable in options$variables) {
 	    
 	    column <- dataset[[ .v(variable) ]]
@@ -64,21 +67,147 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
 	  }
 	}
 	
+	# Compute Results for Binomial Table
+	if (ready) {
+	  resultsTable <- .computeBinomialTableResults(dataset = dataset, options = options)
+	}
+	
+	# Compute Results for Binomial Plots
+	if (ready) {
+	  resultsPlots <- .computeBinomialPlotsResults(dataset = dataset, options = options)
+	}
+	
 	# Create Binomial Table
-	.createBinomialTable(jaspResults = jaspResults, dataset = dataset, options = options, ready = ready)
+	.createBinomialTable(jaspResults = jaspResults, options = options, ready = ready, resultsTable = resultsTable)
 	
 	# Create Descriptives Plots Container (if wanted and if results can be computed)
   if (options$descriptivesPlots == TRUE && ready == TRUE) {
-    .createBinomialDescriptivesPlotsContainerTotal(jaspResults = jaspResults, dataset = dataset, options = options)
+    .createBinomialDescriptivesPlotsContainerTotal(jaspResults = jaspResults, options = options, resultsPlots = resultsPlots)
   }
 	
 	# Bring state up-to-date
 	state[["options"]] <- options
 
-  return(state = state)
+  return(state)
 }
 
-.createBinomialTable <- function(jaspResults, dataset, options, ready) {
+.computeBinomialTableResults <- function(dataset, options) {
+  
+  # This will be the return object
+  results <- list()
+  
+  for (variable in options$variables) {
+    
+    # Prepare for running the binomial test
+    column <- dataset[[ .v(variable) ]]
+    data <- column[!is.na(column)]
+    levels <- levels(data)
+    
+    for (level in levels) {
+      
+      nObs <- length(data)
+      counts <- sum(data == level)
+      proportion <- counts/nObs
+      
+      resultsBinom <- stats::binom.test(x = counts, n = nObs, p = options$testValue, alternative = options$hypothesisRec,
+                                        conf.level = options$confidenceIntervalInterval)
+      p <- resultsBinom$p.value
+      if (p == FALSE) {
+        p <- 0
+      } else if (p == TRUE) {
+        p <- 1
+      }
+      lowerCI <- resultsBinom$conf.int[1]
+      upperCI <- resultsBinom$conf.int[2]
+      
+      # Add results for each level of each variable to results object
+      results[[variable]][[level]] <- list(variable = variable, level = level, counts = counts, total = nObs, 
+                                           proportion = proportion, p = p, VovkSellkeMPR = .VovkSellkeMPR(p), 
+                                           lowerCI = lowerCI, upperCI = upperCI)
+    }
+  }
+  # Return results object
+  return(results)
+}
+
+.computeBinomialPlotsResults <- function(dataset, options) {
+  
+  # This will be the return object
+  results <- list()
+  
+  for (variable in options$variables) {
+    
+    # Prepare for running the binomial test
+    column <- dataset[[ .v(variable) ]]
+    data <- column[!is.na(column)]
+    levels <- levels(data)
+    
+    for (level in levels) {
+      
+      # Define base breaks function for y
+      base_breaks_y <- function(x, testValue) {
+        d <- data.frame(x = -Inf, xend = -Inf, y = 0, yend = 1)
+        list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y, xend = xend,
+                                                          yend = yend),
+                                   inherit.aes = FALSE, size = 1),
+             ggplot2::scale_y_continuous(breaks = c(0,  round(testValue,3), 1)))
+      }
+      
+      # Define plot position
+      plotPosition <- ggplot2::position_dodge(0.2)
+      
+      # Compute data for plot
+      nObs <- length(data)
+      counts <- sum(data == level)
+      proportion <- counts/nObs
+      results <- stats::binom.test(x = counts, n = nObs, p = options$testValue, alternative = "two.sided", 
+                                   conf.level = options$descriptivesPlotsConfidenceInterval)
+      lowerCI <- results$conf.int[1]
+      upperCI <- results$conf.int[2]
+      
+      summaryStat <- data.frame(label = level, proportion = proportion, lowerCI = lowerCI, upperCI = upperCI)
+      dfTestValue <- data.frame(testValue = options$testValue)
+      
+      # Make plot
+      descriptivesPlot <- ggplot2::ggplot(summaryStat, ggplot2::aes(x = label, y = proportion, group = 1)) +
+        ggplot2::geom_errorbar(ggplot2::aes(ymin = lowerCI, ymax = upperCI), colour = "black", width = 0.2, 
+                               position = plotPosition) +
+        ggplot2::geom_point(position = plotPosition, size = 4) +
+        ggplot2::geom_hline(data = dfTestValue, ggplot2::aes(yintercept = options$testValue), linetype = "dashed") +
+        ggplot2::ylab(NULL) +
+        ggplot2::xlab(NULL) +
+        ggplot2::theme_bw() +
+        ggplot2::ylim(min = 0, max = 1) +
+        ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
+                       plot.title = ggplot2::element_text(size = 18),
+                       panel.grid.major = ggplot2::element_blank(),
+                       axis.title.x = ggplot2::element_blank(),
+                       axis.title.y = ggplot2::element_text(size = 18, vjust = -1),
+                       axis.text.x = ggplot2::element_text(size = 15),
+                       axis.text.y = ggplot2::element_text(size = 15),
+                       panel.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+                       plot.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+                       legend.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+                       panel.border = ggplot2::element_blank(),
+                       axis.line = ggplot2::element_blank(),
+                       legend.key = ggplot2::element_blank(),
+                       legend.title = ggplot2::element_text(size = 12),
+                       legend.text = ggplot2::element_text(size = 12),
+                       axis.ticks = ggplot2::element_line(size = 0.5),
+                       axis.ticks.margin = grid::unit(1, "mm"),
+                       axis.ticks.length = grid::unit(3, "mm"),
+                       plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) +
+        base_breaks_y(summaryStat, dfTestValue$testValue)
+      
+      # Add results for each level of each variable to results object
+      results[[variable]][[level]] <- descriptivesPlot
+    }
+  }
+  # Return results object
+  return(results)
+}
+
+.createBinomialTable <- function(jaspResults, options, ready, resultsTable) {
   
   # Check if object can be reused (in case relevant options did not change)
   if (!is.null(jaspResults[["binomialTable"]])) {
@@ -108,26 +237,20 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
   }
   
   # Fill up table with results
-  .fillUpBinomialTable(binomialTable = binomialTable, dataset = dataset, options = options, ready = ready)
+  .fillUpBinomialTable(binomialTable = binomialTable, options = options, ready = ready, resultsTable = resultsTable)
 
-  return(NULL)
+  # This analysis does not return anything
 }
 
-.fillUpBinomialTable <- function(binomialTable, dataset, options, ready) {
+.fillUpBinomialTable <- function(binomialTable, options, ready, resultsTable) {
   
   # If results can be computed, compute them and add row for each level of each variable
   if (ready == TRUE) {
     
     for (variable in options$variables) {
-      
-      # Prepare for running the binomial test
-      column <- dataset[[ .v(variable) ]]
-      data <- column[!is.na(column)]
-      levels <- levels(data)
-      
       for (level in levels) {
-        .addRowForBinomialTable(binomialTable = binomialTable, data = data, options = options,
-                                variable = variable, level = level)
+        row <- resultsTable[[variabe]][[level]]
+        binomialTable$addRows(row, rowNames = paste0(variable, " - ", level))
       }
     }
     
@@ -152,35 +275,10 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
     binomialTable$addRows(row)
   }
   
-  return(NULL)
+  # This analysis does not return anything
 }
 
-.addRowForBinomialTable <- function(binomialTable, data, options, variable, level) {
-  
-  # Compute results
-  nObs <- length(data)
-  counts <- sum(data == level)
-  proportion <- counts/nObs
-  results <- stats::binom.test(x = counts, n = nObs, p = options$testValue, alternative = options$hypothesisRec,
-                               conf.level = options$confidenceIntervalInterval)
-  p <- results$p.value
-  if (p == FALSE) {
-    p <- 0
-  } else if (p == TRUE) {
-    p <- 1
-  }
-  lowerCI <- results$conf.int[1]
-  upperCI <- results$conf.int[2]
-  
-  # Add row to the table
-  row <- list(variable = variable, level = level, counts = counts, total = nObs, proportion = proportion, p = p, 
-              VovkSellkeMPR = .VovkSellkeMPR(p), lowerCI = lowerCI, upperCI = upperCI)
-  binomialTable$addRows(row)
-  
-  return(NULL)
-}
-
-.createBinomialDescriptivesPlotsContainerTotal <- function(jaspResults, dataset, options) {
+.createBinomialDescriptivesPlotsContainers <- function(jaspResults, options, resultsPlots) {
   
   # Check if object can be reused (in case relevant options did not change)
   if (!is.null(jaspResults[["binomialDescriptivesPlotsContainerTotal"]])) {
@@ -195,119 +293,23 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
   
   # Create subcontainer for each variable
   for (variable in options$variables) {
-    .createBinomialDescriptivesPlotsContainerVariable(binomialDescriptivesPlotsContainerTotal = binomialDescriptivesPlotsContainerTotal,
-                                                      dataset = dataset, options = options, variable = variable)
+    binomialDescriptivesPlotsContainerVariable <- createJaspContainer(title = variable)
+    binomialDescriptivesPlotsContainerTotal[[variable]] <- binomialDescriptivesPlotsContainerVariable
   }
   
-  return(NULL)
+  # Fill up containers with plots
+  .fillUpBinomialDescriptivesPlotsContainers(binomialDescriptivesPlotsContainerTotal, options, resultsPlots)
+  
+  # This analysis does not return anything
 }
 
-.createBinomialDescriptivesPlotsContainerVariable <- function(binomialDescriptivesPlotsContainerTotal, dataset, 
-                                                              options, variable) {
-  
-  # Check if object can be reused (in case relevant options did not change)
-  if (!is.null(binomialDescriptivesPlotsContainerTotal[[variable]])) {
-    return(NULL)
-  }
-  
-  # Create subcontainer for variable
-  binomialDescriptivesPlotsContainerVariable <- createJaspContainer(title = variable)
-  binomialDescriptivesPlotsContainerTotal[[variable]] <- binomialDescriptivesPlotsContainerVariable
-  binomialDescriptivesPlotsContainerVariable$dependOnOptions(c("variables", "testValue", "descriptivesPlots",
-                                                               "descriptivesPlotsConfidenceInterval"))
-  
-  # Get levels and data for variable
-  column <- dataset[[ .v(variable) ]]
-  data <- column[!is.na(column)]
-  levels <- levels(data)
-  
-  # For each level, add plot
-  for (level in levels) {
-    .addBinomialDescriptivesPlot(binomialDescriptivesPlotsContainerVariable = binomialDescriptivesPlotsContainerVariable,
-                                 data = data, options = options, variable = variable, level = level)
-  }
-  
-  return(NULL)
-}
-
-.addBinomialDescriptivesPlot <- function(binomialDescriptivesPlotsContainerVariable, data, options,
-                                         variable, level) {
-  
-  # Check if object can be reused (in case relevant options did not change)
-  if (!is.null(binomialDescriptivesPlotsContainerVariable[[level]])) {
-    return(NULL)
-  }
-  
-  # Make plot
-  descriptivesPlot <- .makeBinomialDescriptivesPlot(data = data, options = options, 
-                                                    variable = variable, level = level)
+.fillUpBinomialDescriptivesPlotsContainers <- function(binomialDescriptivesPlotsContainerTotal, options, resultsPlots) {
   
   # Add plot to container
-  binomialDescriptivesPlotsLevel <- createJaspPlot(plot = descriptivesPlot, title = level)
+  binomialDescriptivesPlot <- createJaspPlot(plot = descriptivesPlot, title = level)
   binomialDescriptivesPlotsContainerVariable[[level]] <- binomialDescriptivesPlotsLevel
   binomialDescriptivesPlotsLevel$dependOnOptions(c("variables", "testValue", "descriptivesPlots",
                                                    "descriptivesPlotsConfidenceInterval"))
   
-  return(NULL)
-}
-
-.makeBinomialDescriptivesPlot <- function(data, options, variable, level) {
-  
-  # Define base breaks function for y
-  base_breaks_y <- function(x, testValue) {
-    d <- data.frame(x = -Inf, xend = -Inf, y = 0, yend = 1)
-    list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y, xend = xend,
-                                                      yend = yend),
-                               inherit.aes = FALSE, size = 1),
-         ggplot2::scale_y_continuous(breaks = c(0,  round(testValue,3), 1)))
-  }
-  
-  # Define plot position
-  plotPosition <- ggplot2::position_dodge(0.2)
-  
-  # Compute data for plot
-  nObs <- length(data)
-  counts <- sum(data == level)
-  proportion <- counts/nObs
-  results <- stats::binom.test(x = counts, n = nObs, p = options$testValue, alternative = "two.sided", 
-                               conf.level = options$descriptivesPlotsConfidenceInterval)
-  lowerCI <- results$conf.int[1]
-  upperCI <- results$conf.int[2]
-  
-  summaryStat <- data.frame(label = level, proportion = proportion, lowerCI = lowerCI, upperCI = upperCI)
-  dfTestValue <- data.frame(testValue = options$testValue)
-  
-  # Make plot
-  descriptivesPlot <- ggplot2::ggplot(summaryStat, ggplot2::aes(x = label, y = proportion, group = 1)) +
-    ggplot2::geom_errorbar(ggplot2::aes(ymin = lowerCI, ymax = upperCI), colour = "black", width = 0.2, 
-                           position = plotPosition) +
-    ggplot2::geom_point(position = plotPosition, size = 4) +
-    ggplot2::geom_hline(data = dfTestValue, ggplot2::aes(yintercept = options$testValue), linetype = "dashed") +
-    ggplot2::ylab(NULL) +
-    ggplot2::xlab(NULL) +
-    ggplot2::theme_bw() +
-    ggplot2::ylim(min = 0, max = 1) +
-    ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
-                   plot.title = ggplot2::element_text(size = 18),
-                   panel.grid.major = ggplot2::element_blank(),
-                   axis.title.x = ggplot2::element_blank(),
-                   axis.title.y = ggplot2::element_text(size = 18, vjust = -1),
-                   axis.text.x = ggplot2::element_text(size = 15),
-                   axis.text.y = ggplot2::element_text(size = 15),
-                   panel.background = ggplot2::element_rect(fill = "transparent", colour = NA),
-                   plot.background = ggplot2::element_rect(fill = "transparent", colour = NA),
-                   legend.background = ggplot2::element_rect(fill = "transparent", colour = NA),
-                   panel.border = ggplot2::element_blank(),
-                   axis.line = ggplot2::element_blank(),
-                   legend.key = ggplot2::element_blank(),
-                   legend.title = ggplot2::element_text(size = 12),
-                   legend.text = ggplot2::element_text(size = 12),
-                   axis.ticks = ggplot2::element_line(size = 0.5),
-                   axis.ticks.margin = grid::unit(1, "mm"),
-                   axis.ticks.length = grid::unit(3, "mm"),
-                   plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) +
-    base_breaks_y(summaryStat, dfTestValue$testValue)
-  
-  # Return plot
-  return(descriptivesPlot)
+  # This analysis does not return anything
 }
