@@ -4,6 +4,7 @@ context("Reliability Analysis")
 # - missing values exclusion
 
 test_that("Main table results match", {
+  browser()
   options <- jasptools::analysisOptions("ReliabilityAnalysis")
   options$variables <- c("contcor1", "contcor2", "contNormal")
   options$reverseScaledItems <- "contcor2"
@@ -16,12 +17,10 @@ test_that("Main table results match", {
   options$meanScale <- TRUE
   options$sdScale <- TRUE
   results <- jasptools::run("ReliabilityAnalysis", "test.csv", options, view=FALSE, quiet=TRUE)
-  table <- results[["results"]][["reliabilityScale"]][["data"]]
+  table <- results[["results"]][["reliabilityScaleTable"]][["data"]]
   expect_equal_tables(table,
-    list("scale", -0.757822989578577, -0.0677657928415725, 0.667932535083157,
-         0.622700230679449, -0.175972651899464, -0.02217061461, 0.144515070286093,
-         -1.45211881901153, -0.235388804018903)
-  )
+    list(-0.757823, -1.452119, -0.2353888, "Scale", 0.6227002, -0.06776579, -0.02217061461, 0.144515070286093, -0.1759727, 
+         0.667932535083157))
 })
 
 test_that("Item Statistics table matches", {
