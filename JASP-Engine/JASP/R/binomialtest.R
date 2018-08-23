@@ -26,14 +26,6 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
     options$hypothesisRec <- "less"
   }
   
-  for (variable in options$variables) {
-    column <- dataset[[ .v(variable) ]]
-    data <- column[!is.na(column)]
-    levels <- levels(data)
-    browser()
-    options[[hypothesis]]["levels"] <- levels
-  }
-
   # Define state if empty
   if (is.null(state)) {
 	  state <- list()
@@ -42,8 +34,18 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
   # Read dataset
   if (is.null(dataset)) {
 	  dataset <- .readDataSetToEnd(columns=options$variables)
-	}
-	
+  }
+  
+  # Update options (using dataset)
+  options[["levels"]] <- NULL
+  for (variable in options$variables) {
+    column <- dataset[[ .v(variable) ]]
+    data <- column[!is.na(column)]
+    levels <- levels(as.factor(data))
+    options[["levels"]] <- append(options$levels, list(levels))
+    names(options$levels)[which(options$variables %in% variable)] <- variable
+  }
+  
 	# Set title
 	jaspResults$title <- "Binomial Test"
 	
@@ -53,16 +55,20 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
 	# Check for errors
 	if (ready) {
 	  
-	  # Error check 1: 0 observations for a level of a variable
+	  # Error Check 1: Number of levels of the variables
+	  .hasErrors(dataset = dataset, perform = "run", type = 'factorLevels', factorLevels.target = options$variables, 
+	             factorLevels.amount = '< 1', exitAnalysisIfErrors = TRUE)
+	  
+	  # Error check 2: 0 observations for a level of a variable
 	  for (variable in options$variables) {
 	    
 	    column <- dataset[[ .v(variable) ]]
 	    data <- column[!is.na(column)]
-	    levels <- levels(data)
-	    
+	    levels <- levels(as.factor(data))
+
 	    for (level in levels) {
-	      .hasErrors(data[data == level], perform = "run", type = 'observations',
-	                 observations.amount = c('< 1'), exitAnalysisIfErrors = TRUE)
+	      .hasErrors(data[data == level], perform = "run", type = 'observations', observations.amount = c('< 1'), 
+	                 exitAnalysisIfErrors = TRUE)
 	    }
 	  }
 	}
@@ -82,7 +88,7 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
 	
 	# Create Descriptives Plots Container (if wanted and if results can be computed)
   if (options$descriptivesPlots == TRUE && ready == TRUE) {
-    .createBinomialDescriptivesPlotsContainerTotal(jaspResults = jaspResults, options = options, resultsPlots = resultsPlots)
+    .createBinomialDescriptivesPlotsContainers(jaspResults = jaspResults, options = options, resultsPlots = resultsPlots)
   }
 	
 	# Bring state up-to-date
@@ -98,10 +104,12 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
   
   for (variable in options$variables) {
     
+    results[[variable]] <- list()
+    
     # Prepare for running the binomial test
     column <- dataset[[ .v(variable) ]]
     data <- column[!is.na(column)]
-    levels <- levels(data)
+    levels <- levels(as.factor(data))
     
     for (level in levels) {
       
@@ -140,7 +148,7 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
     # Prepare for running the binomial test
     column <- dataset[[ .v(variable) ]]
     data <- column[!is.na(column)]
-    levels <- levels(data)
+    levels <- levels(as.factor(data))
     
     for (level in levels) {
       
@@ -160,10 +168,10 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
       nObs <- length(data)
       counts <- sum(data == level)
       proportion <- counts/nObs
-      results <- stats::binom.test(x = counts, n = nObs, p = options$testValue, alternative = "two.sided", 
-                                   conf.level = options$descriptivesPlotsConfidenceInterval)
-      lowerCI <- results$conf.int[1]
-      upperCI <- results$conf.int[2]
+      resultsBinom <- stats::binom.test(x = counts, n = nObs, p = options$testValue, alternative = "two.sided",
+                                        conf.level = options$descriptivesPlotsConfidenceInterval)
+      lowerCI <- resultsBinom$conf.int[1]
+      upperCI <- resultsBinom$conf.int[2]
       
       summaryStat <- data.frame(label = level, proportion = proportion, lowerCI = lowerCI, upperCI = upperCI)
       dfTestValue <- data.frame(testValue = options$testValue)
@@ -239,7 +247,7 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
   # Fill up table with results
   .fillUpBinomialTable(binomialTable = binomialTable, options = options, ready = ready, resultsTable = resultsTable)
 
-  # This analysis does not return anything
+  # This function does not return anything
 }
 
 .fillUpBinomialTable <- function(binomialTable, options, ready, resultsTable) {
@@ -248,8 +256,8 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
   if (ready == TRUE) {
     
     for (variable in options$variables) {
-      for (level in levels) {
-        row <- resultsTable[[variabe]][[level]]
+      for (level in options$levels[[variable]]) {
+        row <- resultsTable[[variable]][[level]]
         binomialTable$addRows(row, rowNames = paste0(variable, " - ", level))
       }
     }
@@ -275,7 +283,7 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
     binomialTable$addRows(row)
   }
   
-  # This analysis does not return anything
+  # This function does not return anything
 }
 
 .createBinomialDescriptivesPlotsContainers <- function(jaspResults, options, resultsPlots) {
@@ -295,21 +303,28 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
   for (variable in options$variables) {
     binomialDescriptivesPlotsContainerVariable <- createJaspContainer(title = variable)
     binomialDescriptivesPlotsContainerTotal[[variable]] <- binomialDescriptivesPlotsContainerVariable
+    binomialDescriptivesPlotsContainerVariable$dependOnOptions(c("variables", "testValue", "descriptivesPlots",
+                                                                 "descriptivesPlotsConfidenceInterval"))
   }
   
   # Fill up containers with plots
   .fillUpBinomialDescriptivesPlotsContainers(binomialDescriptivesPlotsContainerTotal, options, resultsPlots)
   
-  # This analysis does not return anything
+  # This function does not return anything
 }
 
 .fillUpBinomialDescriptivesPlotsContainers <- function(binomialDescriptivesPlotsContainerTotal, options, resultsPlots) {
   
-  # Add plot to container
-  binomialDescriptivesPlot <- createJaspPlot(plot = descriptivesPlot, title = level)
-  binomialDescriptivesPlotsContainerVariable[[level]] <- binomialDescriptivesPlotsLevel
-  binomialDescriptivesPlotsLevel$dependOnOptions(c("variables", "testValue", "descriptivesPlots",
-                                                   "descriptivesPlotsConfidenceInterval"))
+  for (variable in options$variables) {
+    for (level in options$levels[[variable]]) {
+      descriptivesPlot <- resultsPlots[[variable]][[level]]
+      binomialDescriptivesPlot <- createJaspPlot(plot = descriptivesPlot, title = level)
+      binomialDescriptivesPlotsContainerTotal[[variable]][[level]] <- binomialDescriptivesPlot
+      binomialDescriptivesPlot$dependOnOptions(c("variables", "testValue", "descriptivesPlots",
+                                                 "descriptivesPlotsConfidenceInterval"))
+      
+    }
+  }
   
-  # This analysis does not return anything
+  # This function does not return anything
 }
