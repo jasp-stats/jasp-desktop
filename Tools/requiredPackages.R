@@ -29,34 +29,46 @@ if (length(args) == 0) {
 }
 
 installed <- installed.packages()
+INSTALL_opts <- c("--no-docs", "--no-html", "--no-multiarch")
 options("repos" = "https://cloud.r-project.org")
 
 if (travis) {
 
+  # create ~/.R/makevars for C/   C++ compilation flags
+  dir.create("~/.R")
+  fileConn <- file("~/.R/Makevars")
+  writeLines(
+    paste(
+      "CFLAGS   += -O0",
+      "CXXFLAGS += -O0",
+      sep = "\n"
+    ), 
+    fileConn
+  )
+  close(fileConn)
+
   # a number of environment variables are only available on travis.
   # see here for an overview: https://docs.travis-ci.com/user/environment-variables/
-  
+
   how <- Sys.getenv("TRAVIS_EVENT_TYPE")
 
   # get changed files
-  if (identical(how, "pull_request")) {
-    diff <- system("git diff --name-only HEAD...$TRAVIS_BRANCH", intern = TRUE)
-  } else {
-    diff <- system("git diff --name-only @~..@", intern = TRUE)
-  }
-  
+  diff <- system("git diff --name-only @~..@", intern = TRUE)
+
   # ignore some things that may appear inside the diff
   diff <- diff[!startsWith(diff, "warning: CRLF will be replaced by LF")]
   diff <- diff[diff != "The file will have its original line endings in your working directory."]
-  
-  cat(sprintf("Travis understood that the following files where modified in this %s:\n\n %s\n",
-              how,
-              paste0(diff, collapse = "\n")))
+
+  # store the changed files for linting
+  saveRDS(diff[endsWith(diff, ".R")], file = "modifiedRfiles.rds")
+
+  cat(sprintf("\nTravis understood that the following files where modified in this %s:\n\n %s\n",
+              how, paste0(diff, collapse = "\n")))
 
   # check some additional dependencies on travis
   # note that jaspResults should be installed before setwd(lib)!
-  if (! "jaspResults" %in% installed || any(startsWith(diff, "JASP-R-Interface/jaspResults/")))
-    install.packages("JASP-R-Interface/jaspResults/", repos=NULL, type="source")
+  if (!"jaspResults" %in% installed || any(startsWith(diff, "JASP-R-Interface/jaspResults/")))
+    install.packages("JASP-R-Interface/jaspResults/", repos=NULL, type="source", INSTALL_opts = INSTALL_opts)
 
   if (!"BH" %in% installed)
     install.packages("BH")
@@ -103,10 +115,10 @@ for (file in files) {
 # for some reason, RcppArmadillo is not picked up as dependency
 # but it definitely needs to be installed before other packages.
 if (! "RcppArmadillo" %in% installed) {
-  install.packages("RcppArmadillo")
+  install.packages("RcppArmadillo", INSTALL_opts = INSTALL_opts)
 }
 
-# Temporarly add the GPArotation manually (incorrectly marked as "Suggest' in psych) 
+# Temporarly add the GPArotation manually (incorrectly marked as "Suggest' in psych)
 reqPkgs <- c(reqPkgs, "GPArotation")
 reqPkgs <- reqPkgs[!reqPkgs %in% 'JASPgraphs']
 # Exclude jasptools manually (should not be shipped)
@@ -119,11 +131,12 @@ if (install) {
   if (length(pkgs2install) > 0) {
     cat("Installing all missing packages...")
     for (pkg in pkgs2install) {
-      install.packages(pkg, repos = 'https://cloud.r-project.org', dependencies = c("Depends", "Imports"))
+      install.packages(pkg, repos = 'https://cloud.r-project.org', dependencies = c("Depends", "Imports"),
+                       INSTALL_opts = INSTALL_opts)
     }
     cat("\nFinished iterating over the required packages\n")
   } else {
-    cat("\nAll required packages are available.\n")
+    cat("\nAll required packages are available from cache.\n")
   }
 } else {
   strPkgs <- paste0("'", reqPkgs, "'")
@@ -143,4 +156,17 @@ if (install) {
   cat(paste0(depPkgs, collapse="\n"), "\n")
   cat("\nFull list of packages:\n")
   cat(paste0(allPkgs, collapse="\n"), "\n")
+}
+
+if (travis) {
+  old <- installed[, c("Version"), drop = FALSE]
+  installedPost <- installed.packages()
+  new <- installedPost[, c("Version"), drop = FALSE]
+  diffPkg <- !rownames(new) %in% rownames(old)
+  toShow <- rbind(old, new[diffPkg, , drop = FALSE])
+  toShow <- cbind(toShow, rep(c("Cache", "Installed"), c(nrow(old), sum(diffPkg))))
+  colnames(toShow) <- c("Version", "From")
+
+	msg <- cat("\nAVAILABLE PACKAGES\n")
+	print(toShow)
 }
