@@ -33,7 +33,7 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
 	
   # Read dataset
   if (is.null(dataset)) {
-	  dataset <- .readDataSetToEnd(columns=options$variables)
+    dataset <- .readDataSetToEnd(columns.as.factor = options$variables)
   }
   
   # Update options (using dataset)
