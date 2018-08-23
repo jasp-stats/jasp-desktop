@@ -74,12 +74,12 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
 	}
 	
 	# Compute Results for Binomial Table
-	if (ready && is.null(jaspResults[["binomialTable"]])) {
+	if (ready == TRUE && is.null(jaspResults[["binomialTable"]])) {
 	  resultsTable <- .computeBinomialTableResults(dataset = dataset, options = options)
 	}
 	
 	# Compute Results for Binomial Plots
-	if (ready && is.null(jaspResults[["binomialDescriptivesPlotsContainerTotal"]])) {
+	if (ready == TRUE && options$descriptivesPlots == TRUE && is.null(jaspResults[["binomialDescriptivesPlotsContainerTotal"]])) {
 	  resultsPlots <- .computeBinomialPlotsResults(dataset = dataset, options = options)
 	}
 	
@@ -87,7 +87,7 @@ BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
 	.createBinomialTable(jaspResults = jaspResults, options = options, ready = ready, resultsTable = resultsTable)
 	
 	# Create Descriptives Plots Container (if wanted and if results can be computed)
-  if (options$descriptivesPlots == TRUE && ready == TRUE) {
+  if (ready == TRUE && options$descriptivesPlots == TRUE) {
     .createBinomialDescriptivesPlotsContainers(jaspResults = jaspResults, options = options, resultsPlots = resultsPlots)
   }
 	
