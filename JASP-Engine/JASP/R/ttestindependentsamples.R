@@ -42,8 +42,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
     exclude <- NULL
   }
   
-  dataset <- .readDataSetToEnd(columns.as.numeric = options$variables,
-                               columns.as.factor = options$groupingVariable,
+  dataset <- .readDataSetToEnd(columns.as.numeric = options$variables, columns.as.factor = options$groupingVariable,
                                exclude.na.listwise = exclude)
   
   # Set title
@@ -72,6 +71,48 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
 	             exitAnalysisIfErrors = TRUE)
 	}
   
+  # Compute Results for Parametric Independent Samples T-Test Table
+  # Student
+  if (ready == TRUE && (options$student) && is.null(jaspResults[["independentSamplesTTestTableParametric"]])) {
+    resultsIndependentSamplesTTestStudent <- 
+      .computeResultsIndependentSamplesTTestTableParametric(dataset = dataset, options = options, test = "Student")
+  }
+  # Welch
+  if (ready == TRUE && (options$welchs) && is.null(jaspResults[["independentSamplesTTestTableParametric"]])) {
+    resultsIndependentSamplesTTestWelch <- 
+      .computeResultsIndependentSamplesTTestTableParametric(dataset = dataset, options = options, test = "Welch")
+  }
+    
+  # Compute Results for Non-Parametric Independent Samples T-Test Table
+  if (ready == TRUE && options$mannWhitneyU && is.null(jaspResults[["independentSamplesTTestTableNonParametric"]])) {
+    resultsIndependentSamplesTTestTableParametric <- 
+      .computeResultsIndependentSamplesTTestTableNonParametric(dataset = dataset, options = options)
+  }
+  
+  # Compute Results for Shapiro Wilk Table
+  if (ready == TRUE && options$normalityTests && is.null(jaspResults[["independentSamplesTTestAssumptionChecksContainer"]])) {
+    resultsIndependentSamplesTTestShapiroWilkTable <- 
+      .computeResultsIndependentSamplesTTestShapiroWilkTable(dataset = dataset, options = options)
+  }
+  
+  # Compute Results for Levenes Table
+  if (ready == TRUE && options$equalityOfVariancesTests && is.null(jaspResults[["independentSamplesTTestAssumptionChecksContainer"]])) {
+    resultsIndependentSamplesTTestLevenesTable <- 
+      .computeResultsIndependentSamplesTTestLevenesTable(dataset = dataset, options = options)
+  }
+
+  # Compute Results for Descriptives Table
+  if (ready == TRUE && options$descriptives && is.null(jaspResults[["independentSamplesTTestDescriptivesContainer"]])) {
+    resultsIndependentSamplesTTestDescriptivesTable <- 
+      .computeResultsIndependentSamplesTTestDescriptivesTable(dataset = dataset, options = options)
+  }
+  
+  # Compute Results for Descriptives Plots
+  if (ready == TRUE && options$descriptivesPlots && is.null(jaspResults[["independentSamplesTTestDescriptivesContainer"]])) {
+    resultsIndependentSamplesTTestDescriptivesPlots <- 
+      .computeResultsIndependentSamplesTTestDescriptivesPlots(dataset = dataset, options = options)
+  }
+  
   # Create Parametric Independent Samples T-Test Table (if wanted)
   if (options$student || options$welchs) {
     .createIndependentSamplesTTestTableParametric(jaspResults = jaspResults, dataset = dataset, options = options,
@@ -99,7 +140,304 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
 	# Bring state up-to-date
 	state[["options"]] <- options
 	
-	return(state = state)
+	return(state)
+}
+
+.computeResultsIndependentSamplesTTestTableParametric <- function(dataset, options, test) {
+  
+  # This is the return object
+  results <- list()
+  
+  for (variable in options$variables) {
+    
+    # Prepare for running the t-tests
+    formula <- as.formula(paste(.v(variable), "~", .v(options$groupingVariable)))
+    y <- dataset[[ .v(variable) ]]
+    groups <- dataset[[ .v(options$groupingVariable) ]]
+    
+    sds <- tapply(y, groups, sd, na.rm = TRUE)
+    means <- tapply(y, groups, mean, na.rm = TRUE)
+    ns <- tapply(y, groups, function(x) length(na.omit(x)))
+    
+    # Compute results for everything except for effect sizes
+    resultsTTest <- stats::t.test(formula = formula, data = dataset, alternative = options$hypothesisRec,
+                                  var.equal = (test == "Student"), conf.level = options$meanDiffConfidenceIntervalPercent,
+                                  paired = FALSE)
+    
+    stat            <- .clean(as.numeric(resultsTTest$statistic))
+    df              <- .clean(as.numeric(resultsTTest$parameter))
+    p               <- .clean(as.numeric(resultsTTest$p.value))
+    meanDiff        <- .clean(as.numeric(resultsTTest$estimate[1]) - as.numeric(resultsTTest$estimate[2]))
+    seDiff          <- .clean((as.numeric(resultsTTest$estimate[1]) - as.numeric(resultsTTest$estimate[2]))/stat)
+    meanDiffLowerCI <- .clean(as.numeric(resultsTTest$conf.int[1]))
+    meanDiffUpperCI <- .clean(as.numeric(resultsTTest$conf.int[2]))
+    
+    # Prepare for computing the effect sizes
+    # Determine the sd depending on the kind of test and the effect size sd selected by the user
+    if (options$effectSizeSD == "effectSizeSDPooled") {
+      if (test == "Student") {
+        num <- (ns[1] - 1) * sds[1]^2 + (ns[2] - 1) * sds[2]^2
+        sdPooled <- sqrt(num / (ns[1] + ns[2] - 2))
+      } else if (test == "Welch") {
+        sdPooled <- sqrt(((sds[1]^2)+(sds[2]^2))/2)
+      }
+    } else if (options$effectSizeSD == "effectSizeSDGroup1") {
+      sdPooled <- sds[1]
+    } else if (options$effectSizeSD == "effectSizeSDGroup2") {
+      sdPooled <- sds[2]
+    }
+    
+    # Determine the proportion for the effect size ci depending on the kind of hypothesis selected by the user
+    if (options$hypothesisRec != "two.sided") {
+      ciEffSize <- 1-(1-options$effectSizeConfidenceIntervalPercent)*2
+    } else {
+      ciEffSize <- options$effectSizeConfidenceIntervalPercent
+    }
+    
+    # Compute results for effect sizes
+    effectsizes <- compute.es::mes2(m.1 = means[1], m.2 = means[2], s.pooled = sdPooled, n.1 = ns[1], n.2 = ns[2], 
+                                    level = ciEffSize*100, dig = 15, verbose = FALSE)
+    
+    cohensd        <- .clean(as.numeric(effectsizes["d"]))
+    cohensdLowerCI <- .clean(as.numeric(effectsizes["l.d"]))
+    cohensdUpperCI <- .clean(as.numeric(effectsizes["u.d"]))
+    hedgesg        <- .clean(as.numeric(effectsizes["g"]))
+    hedgesgLowerCI <- .clean(as.numeric(effectsizes["l.g"]))
+    hedgesgUpperCI <- .clean(as.numeric(effectsizes["u.g"]))
+    
+    if (options$hypothesisRec == "greater") {
+      cohensdUpperCI <- .clean(Inf)
+      hedgesgUpperCI <- .clean(Inf)
+    } else if (options$hypothesisRec == "less") {
+      cohensdLowerCI <- .clean(-Inf)
+      hedgesgLowerCI <- .clean(-Inf)
+    }
+    
+    # Add results for variable to results object
+    results[[variable]] <- list(variable = variable, test = test, statistic = stat, df = df, p = p, VovkSellkeMPR = .VovkSellkeMPR(p),
+                                meanDiff = meanDiff, seDiff = seDiff, meanDiffLowerCI = meanDiffLowerCI, meanDiffUpperCI = meanDiffUpperCI,
+                                cohensd = cohensd, cohensdLowerCI = cohensdLowerCI, cohensdUpperCI = cohensdUpperCI,
+                                hedgesg = hedgesg, hedgesgLowerCI = hedgesgLowerCI, hedgesgUpperCI = hedgesgUpperCI)
+  }
+  
+  return(results)
+}
+
+.computeResultsIndependentSamplesTTestTableNonParametric <- function(dataset, options) {
+  
+  # This is the return object
+  results <- list()
+  
+  for (variable in options$variables) {
+    
+    # Prepare for running the t-tests
+    formula <- as.formula(paste(.v(variable), "~", .v(options$groupingVariable)))
+    y <- dataset[[ .v(variable) ]]
+    groups <- dataset[[ .v(options$groupingVariable) ]]
+    
+    sds <- tapply(y, groups, sd, na.rm = TRUE)
+    means <- tapply(y, groups, mean, na.rm = TRUE)
+    ns <- tapply(y, groups, function(x) length(na.omit(x)))
+    
+    # Compute results for everything except for effect sizes
+    resultsWilcox <- stats::wilcox.test(formula = formula, data = dataset, alternative = options$hypothesisRec,
+                                        conf.int = TRUE, conf.level = options$meanDiffConfidenceIntervalPercent,
+                                        paired = FALSE)
+    
+    stat         <- .clean(as.numeric(resultsWilcox$statistic))
+    p            <- .clean(as.numeric(resultsWilcox$p.value))
+    hlEst        <- .clean(as.numeric(resultsWilcox$estimate))
+    hlEstLowerCI <- .clean(as.numeric(resultsWilcox$conf.int[1]))
+    hlEstUpperCI <- .clean(as.numeric(resultsWilcox$conf.int[2]))
+    
+    # Compute results for Rank Biserial Correlation
+    rbc <- abs(.clean(as.numeric(1-(2*stat)/(ns[1]*ns[2])))) * sign(hlEst)
+    wSE <- sqrt((ns[1]*ns[2] * (ns[1]+ns[2] + 1))/12)
+    rankBisSE <- sqrt(4 * 1/(ns[1]*ns[2])^2 * wSE^2)
+    zRankBis <- atanh(rbc)
+    if (options$hypothesisRec == "two.sided") {
+      rbcConfInt <- sort(c(tanh(zRankBis + qnorm((1-options$effectSizeConfidenceIntervalPercent)/2)*rankBisSE), tanh(zRankBis + qnorm((1+options$effectSizeConfidenceIntervalPercent)/2)*rankBisSE)))
+    } else if (options$hypothesisRec == "less") {
+      rbcConfInt <- sort(c(-Inf, tanh(zRankBis + qnorm(options$effectSizeConfidenceIntervalPercent)*rankBisSE)))
+    } else if (options$hypothesisRec == "greater") {
+      rbcConfInt <- sort(c(tanh(zRankBis + qnorm((1-options$effectSizeConfidenceIntervalPercent))*rankBisSE), Inf))
+    }
+    rbcLowerCI <- .clean(as.numeric(rbcConfInt[1]))
+    rbcUpperCI <- .clean(as.numeric(rbcConfInt[2]))
+    
+    # Compute results for Cliff's Delta
+    if (options$hypothesisRec == "two.sided") {
+      ciEffSize <- options$effectSizeConfidenceIntervalPercent
+    } else if (options$hypothesisRec == "less") {
+      ciEffSize <- 1 - (1 - options$effectSizeConfidenceIntervalPercent) * 2
+    } else if (options$hypothesisRec == "greater") {
+      ciEffSize <- 1 - (1 - options$effectSizeConfidenceIntervalPercent) * 2
+    }
+    cliffsDeltaResults <- effsize::"cliff.delta"(formula = formula, data = dataset, conf.level = ciEffSize)
+    cliffsDelta        <- .clean(as.numeric(cliffsDeltaResults[1]$estimate))
+    cliffsDeltaLowerCI <- .clean(as.numeric(cliffsDeltaResults[2]$conf.int[1]))
+    cliffsDeltaUpperCI <- .clean(as.numeric(cliffsDeltaResults[2]$conf.int[2]))
+    
+    if (options$hypothesisRec == "greater") {
+      cliffsDeltaUpperCI <- .clean(Inf)
+    } else if (options$hypothesisRec == "less") {
+      cliffsDeltaLowerCI <- .clean(-Inf)
+    }
+    
+    # Add results for variable to results object
+    results[[variable]] <- list(variable = variable, test = test, statistic = stat, p = p, VovkSellkeMPR = .VovkSellkeMPR(p),
+                                hlEst = hlEst, hlEstLowerCI = hlEstLowerCI, hlEstUpperCI = hlEstUpperCI,
+                                rbc = rbc, rbcLowerCI = rbcLowerCI, rbcUpperCI = rbcUpperCI,
+                                cliffsDelta = cliffsDelta, cliffsDeltaLowerCI = cliffsDeltaLowerCI, cliffsDeltaUpperCI = cliffsDeltaUpperCI)
+  }
+
+  # Return results object
+  return(results)
+}
+
+.computeResultsIndependentSamplesTTestShapiroWilkTable <- function(dataset, options) {
+  
+  # This is the return object
+  results <- list()
+  
+  for (variable in options$variables) {
+    for (level in levels(dataset[[.v(options$groupingVariable)]])) {
+      
+      # Get the dependent variable at a certain factor level
+      data <- na.omit(dataset[[.v(variable)]][dataset[[.v(options$groupingVariable)]] == level])
+      
+      # Compute results
+      resultsShapiro <- stats::shapiro.test(data)
+      W              <- .clean(as.numeric(resultsShapiro$statistic))
+      p              <- .clean(as.numeric(resultsShapiro$p.value))
+      
+      # Add result for level of variable to results object
+      results[[variable]][[level]] <- list(dv = variable, level = level, W = W, p = p)
+    }
+  }
+  
+  # Return results objects
+  return(results)
+}
+
+.computeResultsIndependentSamplesTTestLevenesTable <- function(dataset, options) {
+  
+  # This is the return object
+  results <- list()
+  
+  for (variable in options$variables) {
+    
+    # Compute results
+    resultsLevene <- car::leveneTest(dataset[[ .v(variable) ]], dataset[[ .v(options$groupingVariable) ]], "mean")
+    F  <- .clean(as.numeric(resultsLevene[1, "F value"]))
+    df <- .clean(as.numeric(resultsLevene[1, "Df"]))
+    p  <- .clean(as.numeric(resultsLevene[1, "Pr(>F)"]))
+    
+    # Add results for variable to results object
+    results[[variable]] <- list(variable = variable, F = F, df = df, p = p)
+  }
+
+  # Return results object
+  return(results)
+}
+
+.computeResultsIndependentSamplesTTestDescriptivesTable <- function(dataset, options) {
+  
+  # This is the return object
+  results <- list()
+  
+  for (variable in options$variables) {
+    for (level in levels(dataset[[.v(options$groupingVariable)]])) {
+      
+      # Get the dependent variable at a certain factor level
+      data <- na.omit(dataset[[.v(variable)]][dataset[[.v(options$groupingVariable)]] == level])
+      
+      # Compute results
+      n <- .clean(length(data))
+      mean <- .clean(mean(data))
+      std <- .clean(sd(data))
+      sem <- .clean(sd(data) / sqrt(length(data)))
+      
+      # Add results for level of variable to results object
+      results[[variable]][[level]] <- list(variable = variable, group = level, N = n, mean = mean, sd = std, se = sem)
+    }
+  }
+  
+  # Return results object
+  return(results)
+}
+
+.computeResultsIndependentSamplesTTestDescriptivesPlots <- function(dataset, options) {
+  
+  # This is the return object
+  results <- list()
+  
+  # Define base breaks function for x
+  base_breaks_x <- function(x) {
+    b <- unique(as.numeric(x))
+    d <- data.frame(y = -Inf, yend = -Inf, x = min(b), xend = max(b))
+    list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y, xend = xend, yend = yend), 
+                               inherit.aes = FALSE, size = 1))
+  }
+  
+  # Define base breaks function for y
+  base_breaks_y <- function(x) {
+    ci.pos <- c(x[, "dependent"] - x[, "ci"], x[, "dependent"] + x[, "ci"])
+    b <- pretty(ci.pos)
+    d <- data.frame(x = -Inf, xend = -Inf, y = min(b), yend = max(b))
+    list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y,xend = xend, yend = yend),
+                               inherit.aes = FALSE, size = 1),
+         ggplot2::scale_y_continuous(breaks = c(min(b), max(b))))
+  }
+  
+  # Define plot position
+  plotPosition <- ggplot2::position_dodge(0.2)
+  
+  for (variable in options$variables) {
+    
+    # Put together data frames for plot
+    summaryStat <- .summarySE(as.data.frame(dataset), measurevar = .v(variable), groupvars = .v(options$groupingVariable),
+                            conf.interval = options$descriptivesPlotsConfidenceInterval, na.rm = TRUE, .drop = FALSE)
+    
+    colnames(summaryStat)[which(colnames(summaryStat) == .v(variable))] <- "dependent"
+    colnames(summaryStat)[which(colnames(summaryStat) == .v(options$groupingVariable))] <- "groupingVariable"
+    
+    # Make plot
+    descriptivesPlot <- ggplot2::ggplot(summaryStat, ggplot2::aes(x = groupingVariable, y = dependent, group = 1)) +
+      ggplot2::geom_errorbar(ggplot2::aes(ymin = ciLower, ymax = ciUpper), colour = "black", width = 0.2, position = plotPosition) +
+      ggplot2::geom_line(position = plotPosition, size = 0.7) +
+      ggplot2::geom_point(position = plotPosition, size = 4) +
+      ggplot2::ylab(variable) +
+      ggplot2::xlab(options$groupingVariable) +
+      ggplot2::theme_bw() +
+      ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
+                     plot.title = ggplot2::element_text(size = 18),
+                     panel.grid.major = ggplot2::element_blank(),
+                     axis.title.x = ggplot2::element_text(size = 18, vjust = -0.2),
+                     axis.title.y = ggplot2::element_text(size = 18, vjust = -1),
+                     axis.text.x = ggplot2::element_text(size = 15),
+                     axis.text.y = ggplot2::element_text(size = 15),
+                     panel.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+                     plot.background = ggplot2::element_rect(fill = "transparent",  colour = NA),
+                     legend.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+                     panel.border = ggplot2::element_blank(),
+                     axis.line = ggplot2::element_blank(),
+                     legend.key = ggplot2::element_blank(),
+                     legend.title = ggplot2::element_text(size = 12),
+                     legend.text = ggplot2::element_text(size = 12),
+                     axis.ticks = ggplot2::element_line(size = 0.5),
+                     axis.ticks.margin = grid::unit(1, "mm"),
+                     axis.ticks.length = grid::unit(3, "mm"),
+                     plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) +
+      base_breaks_y(summaryStat) +
+      base_breaks_x(summaryStat$groupingVariable)
+    
+    # Add plot for variable to results object
+    results[[variable]] <- descriptivesPlot
+  }
+  
+  # Return results object
+  return(results)
 }
 
 .createIndependentSamplesTTestTableParametric <- function(jaspResults, dataset, options, ready) {
@@ -175,10 +513,10 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   }
   
   # Fill up table with results
-  .fillUpIndependentSamplesTTestTable(independentSamplesTTestTable = independentSamplesTTestTableParametric, 
-                                      dataset = dataset, options = options, parametric = TRUE, ready = ready)
+  .fillUpIndependentSamplesTTestTable(independentSamplesTTestTableParametric = independentSamplesTTestTableParametric, 
+                                      dataset = dataset, options = options, ready = ready)
   
-  return(NULL)
+  # This function does not return anything
 }
 
 .createIndependentSamplesTTestTableNonParametric <- function(jaspResults, dataset, options, ready) {
@@ -253,27 +591,19 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   .fillUpIndependentSamplesTTestTable(independentSamplesTTestTable = independentSamplesTTestTableNonParametric, 
                                       dataset = dataset, options = options, parametric = FALSE, ready = ready)
   
-  return(NULL)
+  # This function does not return anything
 }
 
-.fillUpIndependentSamplesTTestTable <- function(independentSamplesTTestTable, dataset, options, parametric, ready) {
+.fillUpIndependentSamplesTTestTableParametric <- function(independentSamplesTTestTableParametric, dataset, options, ready) {
   
   # If results can be computed, run each test that the users wants for each variable
   if (ready) {
     
     for (variable in options$variables) {
       
-      # Prepare for running the t-tests
-      formula <- as.formula(paste(.v(variable), "~", .v(options$groupingVariable)))
-      y <- dataset[[ .v(variable) ]]
-      groups <- dataset[[ .v(options$groupingVariable) ]]
-      
-      sds <- tapply(y, groups, sd, na.rm = TRUE)
-      means <- tapply(y, groups, mean, na.rm = TRUE)
-      ns <- tapply(y, groups, function(x) length(na.omit(x)))
-      
-      # Run Student t-test for the parametric table (if wanted)
-      if (options$student == TRUE && parametric == TRUE) {
+      # Add results from Student t-test (if wanted)
+      if (options$student == TRUE) {
+        independentSamplesTTestTableParametric$addRows(rows = result)
         .addRowForIndependentSamplesTTestParametric(independentSamplesTTestTableParametric = independentSamplesTTestTable,
                                                  dataset = dataset, options = options, 
                                                  variable = variable, test = "Student",
@@ -334,154 +664,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
     independentSamplesTTestTable$addRows(rows = row)
   }
   
-  return(NULL)
-}
-
-.addRowForIndependentSamplesTTestParametric <- function(independentSamplesTTestTableParametric, dataset, options, 
-                                                        test, variable, formula, sds, means, ns) {
-  
-  # Try to run the test, catching eventual errors
-  result <- try(silent = FALSE, expr = {
-    
-    # Compute results for everything except for effect sizes
-    r <- stats::t.test(formula = formula, data = dataset, alternative = options$hypothesisRec,
-                       var.equal = (test == "Student"), conf.level = options$meanDiffConfidenceIntervalPercent, 
-                       paired = FALSE)
-    
-    stat <- .clean(as.numeric(r$statistic))
-    df <- .clean(as.numeric(r$parameter))
-    p <- .clean(as.numeric(r$p.value))
-    meanDiff <- .clean(as.numeric(r$estimate[1]) - as.numeric(r$estimate[2]))
-    seDiff <-  .clean((as.numeric(r$estimate[1]) - as.numeric(r$estimate[2]))/stat)
-    meanDiffLowerCI <- .clean(r$conf.int[1])
-    meanDiffUpperCI <- .clean(r$conf.int[2])
-    
-    # Prepare for computing the effect sizes
-    # Determine the sd depending on the kind of test and the effect size sd selected by the user
-    if (options$effectSizeSD == "effectSizeSDPooled") {
-      if (test == "Student") {
-        num <- (ns[1] - 1) * sds[1]^2 + (ns[2] - 1) * sds[2]^2
-        sdPooled <- sqrt(num / (ns[1] + ns[2] - 2))
-      } else if (test == "Welch") {
-        sdPooled <- sqrt(((sds[1]^2)+(sds[2]^2))/2)
-      }
-    } else if (options$effectSizeSD == "effectSizeSDGroup1") {
-      sdPooled <- sds[1]
-    } else if (options$effectSizeSD == "effectSizeSDGroup2") {
-      sdPooled <- sds[2]
-    }
-    
-    # Determine the proportion for the effect size ci depending on the kind of hypothesis selected by the user
-    if (options$hypothesisRec != "two.sided") {
-      ciEffSize <- 1-(1-options$effectSizeConfidenceIntervalPercent)*2
-    } else {
-      ciEffSize <- options$effectSizeConfidenceIntervalPercent
-    }
-    
-    # Compute results for effect sizes
-    effectsizes <- compute.es::mes2(m.1 = means[1], m.2 = means[2], s.pooled = sdPooled, n.1 = ns[1], n.2 = ns[2], 
-                                    level = ciEffSize*100, dig = 15, verbose = FALSE)
-    
-    cohensd <- .clean(as.numeric(effectsizes["d"]))
-    cohensdLowerCI <- .clean(as.numeric(effectsizes["l.d"]))
-    cohensdUpperCI <- .clean(as.numeric(effectsizes["u.d"]))
-    hedgesg <- .clean(as.numeric(effectsizes["g"]))
-    hedgesgLowerCI <- .clean(as.numeric(effectsizes["l.g"]))
-    hedgesgUpperCI <- .clean(as.numeric(effectsizes["u.g"]))
-    
-    if (options$hypothesisRec == "greater") {
-      cohensdUpperCI <- .clean(Inf)
-      hedgesgUpperCI <- .clean(Inf)
-    } else if (options$hypothesisRec == "less") {
-      cohensdLowerCI <- .clean(-Inf)
-      hedgesgLowerCI <- .clean(-Inf)
-    }
-    
-    # This is the row that will be added to the table
-    row <- list(variable = variable, test = test, statistic = stat, df = df, p = p, VovkSellkeMPR = .VovkSellkeMPR(p),
-                meanDiff = meanDiff, seDiff = seDiff, meanDiffLowerCI = meanDiffLowerCI, meanDiffUpperCI = meanDiffUpperCI,
-                cohensd = cohensd, cohensdLowerCI = cohensdLowerCI, cohensdUpperCI = cohensdUpperCI,
-                hedgesg = hedgesg, hedgesgLowerCI = hedgesgLowerCI, hedgesgUpperCI = hedgesgUpperCI)
-  })
-  
-  # If there has been an error in computing the test, add the error. Otherwise, add the row to the table.
-  if (isTryError(result)) {
-    independentSamplesTTestTableParametric$error <- "badData"
-    independentSamplesTTestTableParametric$errorMessage <- .extractErrorMessage(result)
-  } else {
-    independentSamplesTTestTableParametric$addRows(rows = row, rowNames = variable)
-  }
-  
-  return(NULL)
-}
-
-.addRowForIndependentSamplesTTestNonParametric <- function(independentSamplesTTestTableNonParametric, dataset, options, 
-                                                           test, variable, formula, sds, means, ns) {
-  
-  # Try to run the test, catching eventual errors
-  result <- try(silent = FALSE, expr = {
-    
-    # Compute results for everything except for effect sizes
-    r <- stats::wilcox.test(formula = formula, data = dataset, alternative = options$hypothesisRec,
-                            conf.int = TRUE, conf.level = options$meanDiffConfidenceIntervalPercent, 
-                            paired = FALSE)
-    
-    stat <- .clean(as.numeric(r$statistic))
-    p <- .clean(as.numeric(r$p.value))
-    hlEst <- .clean(as.numeric(r$estimate))
-    hlEstLowerCI <- .clean(r$conf.int[1])
-    hlEstUpperCI <- .clean(r$conf.int[2])
-    
-    # Compute results for Rank Biserial Correlation
-    rbc <- abs(.clean(as.numeric(1-(2*stat)/(ns[1]*ns[2])))) * sign(hlEst)
-    wSE <- sqrt((ns[1]*ns[2] * (ns[1]+ns[2] + 1))/12)
-    rankBisSE <- sqrt(4 * 1/(ns[1]*ns[2])^2 * wSE^2)
-    zRankBis <- atanh(rbc)
-    if (options$hypothesisRec == "two.sided") {
-      rbcConfInt <- sort(c(tanh(zRankBis + qnorm((1-options$effectSizeConfidenceIntervalPercent)/2)*rankBisSE), tanh(zRankBis + qnorm((1+options$effectSizeConfidenceIntervalPercent)/2)*rankBisSE)))
-    } else if (options$hypothesisRec == "less") {
-      rbcConfInt <- sort(c(-Inf, tanh(zRankBis + qnorm(options$effectSizeConfidenceIntervalPercent)*rankBisSE)))
-    } else if (options$hypothesisRec == "greater") {
-      rbcConfInt <- sort(c(tanh(zRankBis + qnorm((1-options$effectSizeConfidenceIntervalPercent))*rankBisSE), Inf))
-    }
-    rbcLowerCI <- .clean(as.numeric(rbcConfInt[1]))
-    rbcUpperCI <- .clean(as.numeric(rbcConfInt[2]))
-    
-    # Compute results for Cliff's Delta
-    if (options$hypothesisRec == "two.sided") {
-      ciEffSize <- options$effectSizeConfidenceIntervalPercent
-    } else if (options$hypothesisRec == "less") {
-      ciEffSize <- 1 - (1 - options$effectSizeConfidenceIntervalPercent) * 2
-    } else if (options$hypothesisRec == "greater") {
-      ciEffSize <- 1 - (1 - options$effectSizeConfidenceIntervalPercent) * 2
-    }
-    cliffsDeltaResults <- effsize::"cliff.delta"(formula = formula, data = dataset, conf.level = ciEffSize)
-    cliffsDelta <- .clean(as.numeric(cliffsDeltaResults[1]$estimate))
-    cliffsDeltaLowerCI <- .clean(as.numeric(cliffsDeltaResults[2]$conf.int[1]))
-    cliffsDeltaUpperCI <- .clean(as.numeric(cliffsDeltaResults[2]$conf.int[2]))
-    
-    if (options$hypothesisRec == "greater") {
-      cliffsDeltaUpperCI <- .clean(Inf)
-    } else if (options$hypothesisRec == "less") {
-      cliffsDeltaLowerCI <- .clean(-Inf)
-    }
-    
-    # This is the row that will be added to the table
-    row <- list(variable = variable, test = test, statistic = stat, p = p, VovkSellkeMPR = .VovkSellkeMPR(p),
-                hlEst = hlEst, hlEstLowerCI = hlEstLowerCI, hlEstUpperCI = hlEstUpperCI,
-                rbc = rbc, rbcLowerCI = rbcLowerCI, rbcUpperCI = rbcUpperCI,
-                cliffsDelta = cliffsDelta, cliffsDeltaLowerCI = cliffsDeltaLowerCI, cliffsDeltaUpperCI = cliffsDeltaUpperCI)
-  })
-  
-  # If there has been an error in computing the test, add the error. Otherwise, add the row to the table.
-  if (isTryError(result)) {
-    independentSamplesTTestTableNonParametric$error <- "badData"
-    independentSamplesTTestTableNonParametric$errorMessage <- .extractErrorMessage(result)
-  } else {
-    independentSamplesTTestTableNonParametric$addRows(rows = row, rowNames = variable)
-  }
-  
-  return(NULL)
+  # This function does not return anything
 }
 
 .createIndependentSamplesTTestAssumptionChecksContainer <- function(jaspResults, dataset, options, ready) {
@@ -509,7 +692,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
                                                dataset = dataset, options = options, ready = ready)
   }
   
-  return(NULL)
+  # This function does not return anything
 }
 
 .createIndependentSamplesTTestShapiroWilkTable <- function(independentSamplesTTestAssumptionChecksContainer, 
@@ -545,7 +728,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   independentSamplesTTestShapiroWilkTable$addFootnote(message = "Significant results suggest a deviation from normality.",
                                                       symbol = "<em>Note.</em>")
   
-  return(NULL)
+  # This function does not return anything
 }
 
 .fillUpIndependentSamplesTTestShapiroWilkTable <- function(independentSamplesTTestShapiroWilkTable, dataset, options, ready) {
@@ -565,25 +748,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
     independentSamplesTTestShapiroWilkTable$addRows(rows = row)
   }
   
-  return(NULL)
-}
-
-.addRowForIndependentSamplesTTestShapiroWilkTable <- function(independentSamplesTTestShapiroWilkTable, 
-                                                              dataset, options, variable, level) {
-  
-  # Get the dependent variable at a certain factor level
-  data <- na.omit(dataset[[.v(variable)]][dataset[[.v(options$groupingVariable)]] == level])
-  
-  # Compute results
-  results <- stats::shapiro.test(data)
-  W <- .clean(as.numeric(results$statistic))
-  p <- .clean(results$p.value)
-  
-  # Add row to the table
-  row <- list(dv = variable, level = level, W = W, p = p)
-  independentSamplesTTestShapiroWilkTable$addRows(rows = row, rowNames = paste0(variable, level))
-  
-  return(NULL)
+  # This function does not return anything
 }
 
 .createIndependentSamplesTTestLevenesTable <- function(independentSamplesTTestAssumptionChecksContainer, 
@@ -619,7 +784,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   independentSamplesTTestLevenesTable$addFootnote(message = "Significant results suggest a deviation from equality of variance.",
                                                   symbol = "<em>Note.</em>")
   
-  return(NULL)
+  # This function does not return anything
 }
 
 .fillUpIndependentSamplesTTestLevenesTable <- function(independentSamplesTTestLevenesTable, dataset, options, ready) {
@@ -636,23 +801,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
     independentSamplesTTestLevenesTable$addRows(rows = row)
   }
   
-  return(NULL)
-}
-
-.addRowForIndependentSamplesTTestLevenesTable <- function(independentSamplesTTestLevenesTable, 
-                                                          dataset, options, variable) {
-  # Compute results
-  levene <- car::leveneTest(dataset[[ .v(variable) ]],
-                            dataset[[ .v(options$groupingVariable) ]], "mean")
-  F <- .clean(levene[1, "F value"])
-  df <- .clean(levene[1, "Df"])
-  p <- .clean(levene[1, "Pr(>F)"])
-  
-  # Add row to the table
-  row <- list(variable = variable, F = F, df = df, p = p)
-  independentSamplesTTestLevenesTable$addRows(rows = row, rowNames = variable)
-  
-  return(NULL)
+  # This function does not return anything
 }
 
 .createIndependentSamplesTTestDescriptivesContainer <- function(jaspResults, dataset, options, ready) {
@@ -681,7 +830,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
                                                dataset = dataset, options = options)
   }
   
-  return(NULL)
+  # This function does not return anything
 }
 
 .createIndependentSamplesTTestDescriptivesTable <- function(independentSamplesTTestDescriptivesContainer, 
@@ -717,7 +866,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   .fillUpIndependentSamplesTTestDescriptivesTable(independentSamplesTTestDescriptivesTable = independentSamplesTTestDescriptivesTable,
                                                   dataset = dataset, options = options, ready = ready)
   
-  return(NULL)
+  # This function does not return anything
 }
 
 .fillUpIndependentSamplesTTestDescriptivesTable <- function(independentSamplesTTestDescriptivesTable, 
@@ -738,26 +887,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
     independentSamplesTTestDescriptivesTable$addRows(rows = row)
   }
   
-  return(NULL)
-}
-
-.addRowForIndependentSamplesTTestDescriptivesTable <- function(independentSamplesTTestDescriptivesTable, 
-                                                              dataset, options, variable, level) {
-  
-  # Get the dependent variable at a certain factor level
-  data <- na.omit(dataset[[.v(variable)]][dataset[[.v(options$groupingVariable)]] == level])
-  
-  # Compute results
-  n <- .clean(length(data))
-  mean <- .clean(mean(data))
-  std <- .clean(sd(data))
-  sem <- .clean(sd(data) / sqrt(length(data)))
-  
-  # Add row to the table
-  row <- list(variable = variable, group = level, N = n, mean = mean, sd = std, se = sem)
-  independentSamplesTTestDescriptivesTable$addRows(rows = row, rowNames = paste0(variable, level))
-  
-  return(NULL)
+  # This function does not return anything
 }
 
 .createIndependentSamplesTTestDescriptivesPlotsContainer <- function(independentSamplesTTestDescriptivesContainer,
@@ -781,7 +911,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
                                                 dataset = dataset, options = options, variable = variable)
   }
   
-  return(NULL)
+  # This function does not return anything
 }
 
 .addIndependentSamplesTTestDescriptivesPlot <- function(independentSamplesTTestDescriptivesPlotsContainer,
@@ -799,71 +929,5 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
                                                             "missingValues", "descriptivesPlots",
                                                             "descriptivesPlotsConfidenceInterval"))
         
-  return(NULL)
-}
-
-.makeIndependentSamplesTTestDescriptivesPlots <- function(dataset, options, variable) {
-  
-  # Define base breaks function for x
-  base_breaks_x <- function(x) {
-    b <- unique(as.numeric(x))
-    d <- data.frame(y = -Inf, yend = -Inf, x = min(b), xend = max(b))
-    list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y, xend = xend, yend = yend), 
-                               inherit.aes = FALSE, size = 1))
-  }
-  
-  # Define base breaks function for y
-  base_breaks_y <- function(x) {
-    ci.pos <- c(x[, "dependent"] - x[, "ci"], x[, "dependent"] + x[, "ci"])
-    b <- pretty(ci.pos)
-    d <- data.frame(x = -Inf, xend = -Inf, y = min(b), yend = max(b))
-    list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y,xend = xend, yend = yend),
-                               inherit.aes = FALSE, size = 1),
-         ggplot2::scale_y_continuous(breaks = c(min(b), max(b))))
-  }
-  
-  # Define plot position
-  plotPosition <- ggplot2::position_dodge(0.2)
-  
-  # Put together data frames for plot
-  summaryStat <- .summarySE(as.data.frame(dataset), measurevar = .v(variable),
-                            groupvars = .v(options$groupingVariable),
-                            conf.interval = options$descriptivesPlotsConfidenceInterval,
-                            na.rm = TRUE, .drop = FALSE)
-  
-  colnames(summaryStat)[which(colnames(summaryStat) == .v(variable))] <- "dependent"
-  colnames(summaryStat)[which(colnames(summaryStat) == .v(options$groupingVariable))] <- "groupingVariable"
-  
-  # Make plot
-  descriptivesPlot <- ggplot2::ggplot(summaryStat, ggplot2::aes(x = groupingVariable, y = dependent, group = 1)) +
-    ggplot2::geom_errorbar(ggplot2::aes(ymin = ciLower, ymax = ciUpper), colour = "black", width = 0.2, position = plotPosition) +
-    ggplot2::geom_line(position = plotPosition, size = 0.7) +
-    ggplot2::geom_point(position = plotPosition, size = 4) +
-    ggplot2::ylab(variable) +
-    ggplot2::xlab(options$groupingVariable) +
-    ggplot2::theme_bw() +
-    ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
-                   plot.title = ggplot2::element_text(size = 18),
-                   panel.grid.major = ggplot2::element_blank(), 
-                   axis.title.x = ggplot2::element_text(size = 18, vjust = -0.2),
-                   axis.title.y = ggplot2::element_text(size = 18, vjust = -1),
-                   axis.text.x = ggplot2::element_text(size = 15),
-                   axis.text.y = ggplot2::element_text(size = 15),
-                   panel.background = ggplot2::element_rect(fill = "transparent", colour = NA),
-                   plot.background = ggplot2::element_rect(fill = "transparent",  colour = NA),
-                   legend.background = ggplot2::element_rect(fill = "transparent", colour = NA),
-                   panel.border = ggplot2::element_blank(),
-                   axis.line = ggplot2::element_blank(),
-                   legend.key = ggplot2::element_blank(),
-                   legend.title = ggplot2::element_text(size = 12),
-                   legend.text = ggplot2::element_text(size = 12),
-                   axis.ticks = ggplot2::element_line(size = 0.5),
-                   axis.ticks.margin = grid::unit(1, "mm"),
-                   axis.ticks.length = grid::unit(3, "mm"),
-                   plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) +
-    base_breaks_y(summaryStat) +
-    base_breaks_x(summaryStat$groupingVariable)
-  
-  # Return plot
-  return(descriptivesPlot)
+  # This function does not return anything
 }
