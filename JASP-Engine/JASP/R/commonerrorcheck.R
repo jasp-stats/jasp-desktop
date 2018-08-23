@@ -145,7 +145,6 @@
   checks[['observations']] <- list(callback=.checkObservations, addGroupingMsg=TRUE)
   checks[['varCovMatrix']] <- list(callback=.checkVarCovMatrix, addGroupingMsg=FALSE)
   checks[['limits']] <- list(callback=.checkLimits, addGroupingMsg=FALSE)
-  checks[['nonPositive']] <- list(callback=.checkNonPositive, addGroupingMsg=FALSE)
   checks[['varCovData']] <- list(callback=.checkVarCovData, addGroupingMsg=TRUE)
   
   args <- c(list(dataset=dataset), list(...))
@@ -553,27 +552,6 @@
     rangeOfVar <- range(na.omit(dataset[[.v(v)]]))
     
     if (rangeOfVar[1] < min || rangeOfVar[2] > max) {
-      result$error <- TRUE
-      result$errorVars <- c(result$errorvars, v)
-    }
-    
-  }
-  return(result)
-}
-
-.checkNonPositive <- function(dataset, target) {
-  # Check if the variable contains nonpositive values
-  # Args:
-  #   dataset: JASP dataset.
-  #   target: String vector indicating the target variables.
-
-  result <- list(error=FALSE, errorVars=NULL)
-  
-  for (v in target) {
-    
-    minValue <- min(na.omit(dataset[[.v(v)]]))
-    
-    if (minValue <= 0) {
       result$error <- TRUE
       result$errorVars <- c(result$errorvars, v)
     }

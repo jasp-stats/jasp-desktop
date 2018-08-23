@@ -39,8 +39,6 @@
   "Cannot compute statistic reliably: number of observations {{observations.amount}} in {{variables}}"
   m$error$limits <-
   "Values in {{variables}} outside interval [{{limits.min}}, {{limits.max}}]"
-  m$error$nonPositive <-
-  "Values in {{variables}} are nonpositive"
   m$error$varCovMatrix <- 
   "Dataset is not a proper variance-covariance matrix. Please load only a positive definite symmetrical matrix as your dataset."
   m$error$varCovData <- 
