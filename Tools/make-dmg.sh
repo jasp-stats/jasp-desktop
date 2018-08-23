@@ -1,7 +1,7 @@
 QT_DIR=~/Qt/5.10.1
 R_FRAMEWORK=~/JASP/Build/Frameworks/R.framework
 JASP_DESKTOP=~/JASP/Build/jasp-desktop
-JASP_VERSION=0.9.0.1
+JASP_VERSION=0.9.1.0
 CURRENT_R_VERSION=3.4
 
 if [ ! -d "$QT_DIR" ]; then
@@ -54,6 +54,9 @@ install_name_tool -add_rpath @loader_path/../Libraries JASP
 install_name_tool -add_rpath @loader_path/../Libraries JASPEngine
 cp JASP       app/JASP.app/Contents/MacOS/
 cp JASPEngine app/JASPEngine.app/Contents/MacOS/
+
+#Copy any R-files in buildfolder
+cp *.R       app/JASP.app/Contents/MacOS/
 
 # Create apps from each executable
 # We do this to the JASPEngine, because this process
