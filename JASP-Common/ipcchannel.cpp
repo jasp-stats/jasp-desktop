@@ -29,8 +29,8 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave) : _bas
 {
 	_memoryControl			= new interprocess::managed_shared_memory(interprocess::open_or_create, _baseName.c_str(), 4096);
 
-	_sizeMtoS				= _memoryControl->find_or_construct<size_t>("sizeMasterToSlave")(4096);
-	_sizeStoM				= _memoryControl->find_or_construct<size_t>("sizeSlaveToMaster")(4096);
+	_sizeMtoS				= _memoryControl->find_or_construct<size_t>("sizeMasterToSlave")(1024 * 1024 * 8);
+	_sizeStoM				= _memoryControl->find_or_construct<size_t>("sizeSlaveToMaster")(1024 * 1024 * 8);
 
 	_memoryMasterToSlave	= new interprocess::managed_shared_memory(interprocess::open_or_create, _nameMtS.c_str(), *_sizeMtoS);
 	_memorySlaveToMaster	= new interprocess::managed_shared_memory(interprocess::open_or_create, _nameStM.c_str(), *_sizeStoM);

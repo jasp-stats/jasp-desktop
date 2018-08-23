@@ -310,6 +310,7 @@ QProcess * EngineSync::startSlaveProcess(int no)
 	QProcess *slave = new QProcess(this);
 	slave->setProcessChannelMode(QProcess::ForwardedChannels);
 	slave->setProcessEnvironment(env);
+	slave->setWorkingDirectory(QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir().absolutePath());
 
 #ifdef __WIN32__
 	/*
