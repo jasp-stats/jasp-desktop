@@ -804,7 +804,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     p <-
       JASPgraphs::drawAxis(
         xName = variableName, yName = "Density", xBreaks = xticks,
-        yBreaks = c(0, max(dens$y) + .1), force = TRUE, yLabels = NULL,
+        yBreaks = c(0,  1.05 * yhigh), force = TRUE, yLabels = NULL,
         xLabels = xticks
       )
   }
