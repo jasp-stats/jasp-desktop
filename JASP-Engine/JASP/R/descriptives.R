@@ -798,7 +798,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     p <-
       JASPgraphs::drawAxis(
         xName = variableName, yName = "Counts", xBreaks = xticks,
-        yBreaks = base::pretty(h$counts), force = TRUE, xLabels = xticks
+        yBreaks = base::pretty(c(0, h$counts)), force = TRUE, xLabels = xticks
       )
   } else {
     p <-
