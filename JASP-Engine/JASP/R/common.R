@@ -2228,8 +2228,6 @@ as.list.footnotes <- function(footnotes) {
 	# Initialise output object
 	image <- list()
 
-
-
 	# Create png file location
 	location <- .fromRCPP(".requestTempFileNameNative", "png")
 	# TRUE if called from analysis, FALSE if called from editImage
@@ -2273,8 +2271,10 @@ as.list.footnotes <- function(footnotes) {
       if (obj) plot <- recordPlot() # save plot to R object
     } else if (isRecordedPlot) { # function was called from editImage to resize the plot
         .redrawPlot(plot) #(see below)
+    } else if (inherits(plot, "qgraph")) {
+      qgraph::plot.qgraph(plot)
     } else {
-      print(plot)
+      plot(plot)
     }
     dev.off()
   }
