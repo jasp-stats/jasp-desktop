@@ -303,7 +303,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
   defaults <- c("modelTerms", "dependent", "wlsWeights")
   stateKey <- list(
-    model = c(defaults, "contrasts"),
+    model = c(defaults, "contrasts", "homogeneityCorrections", "homogeneityNone", "homogeneityBrown", "homogeneityWelch"),
     stateContrasts = c(defaults, "contrasts", "contrastAssumeEqualVariance", "confidenceIntervalIntervalContrast", "confidenceIntervalsContrast" ),
     statePostHoc = c(defaults, "postHocTestsVariables", "postHocTestsTypeStandard", "postHocTestsTypeDunn", "postHocTestsTypeDunnett",
                      "postHocTestsTypeGames", "postHocTestsHolm", "postHocTestsScheffe", "postHocTestsTukey", "postHocTestsBonferroni",
@@ -649,8 +649,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	corrections <- NULL
 
 	if (options$homogeneityCorrections) {
-
-	  if (length(options$modelTerms) > 1)
 
 	  if (options$homogeneityNone) {
 	    corrections <- c(corrections, "None")
