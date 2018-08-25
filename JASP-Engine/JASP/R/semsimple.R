@@ -215,6 +215,9 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
   variables <- .getUsedVars(options$model, availableVars)
   model <- .translateModel(options$model, variables)
 
+  if (options$groupingVariable != "")
+    variables <- c(variables, options$groupingVariable)
+
   if (perform == "run" && options$Data != "varcov") {
     dataset <- .readDataSetToEnd(columns = variables)
   } else if (perform == "run" && options$Data == "varcov") {
@@ -274,6 +277,7 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 
   errorMessage <- ""
   groupVar <- NULL
+
   if (.v(options$groupingVariable) %in% names(dataset)) {
     groupVar <- .v(options$groupingVariable)
     # TODO (Sacha): No print I presume (Alexander)
