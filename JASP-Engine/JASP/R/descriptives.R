@@ -15,22 +15,18 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# NB: this file has custom code folding enabled. If you're in atom, install the
-# "custom-folds" package. In other editors you might be able to define
-# the <editor-fold> and </editor-fold> as start- and endpoints of a code fold.
-
 Descriptives <- function(jaspResults, dataset, options, state=NULL)
 {
   variables <- unlist(options$variables)
   splitName <- options$splitby
   makeSplit <- splitName != ""
-  
+
   if(is.null(state))
     state <- list()
 
   if (is.null(dataset)) {
       if (makeSplit) {
-        dataset         <- .readDataSetToEnd(columns.as.numeric=variables, columns.as.factor=splitName)
+        dataset         <- .readDataSetToEnd(columns.as.numeric = variables, columns.as.factor = splitName)
         dataset.factors <- .readDataSetToEnd(columns=variables, columns.as.factor=splitName)
       } else {
         dataset         <- .readDataSetToEnd(columns.as.numeric=variables)
@@ -99,7 +95,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     if(is.null(jaspResults[["distributionPlots"]]))
     {
       jaspResults[["distributionPlots"]] <- createJaspContainer("Distribution Plots")
-      jaspResults[["distributionPlots"]]$dependOnOptions(c("plotVariables", "splitby"))
+      jaspResults[["distributionPlots"]]$dependOnOptions(c("plotVariables", "splitby", "distPlotDensity"))
     }
 
     distPlots <- jaspResults[["distributionPlots"]]
@@ -586,10 +582,8 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     plotResult$setOptionMustContainDependency("variables",  variable)
     plotResult$setOptionMustBeDependency("splitBy",         options$splitBy)
 
-    for (l in split)
-    {
-      plotResult[[l]] <- .descriptivesFrequencyPlots_SubFunc(column=dataset[[l]][[.v(variable)]], variable=l, width=options$plotWidth, height=options$plotHeight)
-      plotResult[[l]]$copyDependenciesFromJaspObject(plotResult)
+    for (l in split) {
+      plotResult[[l]] <- .descriptivesFrequencyPlots_SubFunc(column=dataset[[l]][[.v(variable)]], variable=l, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity)
     }
 
 
@@ -601,7 +595,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 
 
     column <- dataset[[ .v(variable) ]]
-    aPlot <- .descriptivesFrequencyPlots_SubFunc(column=column[!is.na(column)], variable=variable, width=options$plotWidth, height=options$plotHeight)
+    aPlot <- .descriptivesFrequencyPlots_SubFunc(column=column[!is.na(column)], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity)
     aPlot$setOptionMustContainDependency("variables",  variable)
     aPlot$setOptionMustBeDependency("splitBy",         options$splitBy)
 
@@ -609,22 +603,14 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   }
 }
 
-.descriptivesFrequencyPlots_SubFunc <- function(column, variable, width, height)
+.descriptivesFrequencyPlots_SubFunc <- function(column, variable, width, height, displayDensity)
 {
   if (any(is.infinite(column)))   return(createJaspPlot(plot=function() { .barplotJASP(variable=variable, dontPlotData=TRUE) }, title=variable, width=width, height=height, error="badData", errorMessage="Plotting is not possible: Variable contains infinity"))
   else if (length(column) < 3)    return(createJaspPlot(plot=function() { .barplotJASP(variable=variable, dontPlotData=TRUE) }, title=variable, width=width, height=height, error="badData", errorMessage="Plotting is not possible: Too few rows (left)"))
-  else if (
-    (length(column) > 0 && is.factor(column)) ||
-    (is.numeric(column) && all(!is.na(column) & (column %% 1 == 0)) && length(unique(column)) <= 24)
-   )
-  {
-    if (!is.factor(column))
-      column <- as.factor(column)
-
+  else if (length(column) > 0 && is.factor(column))
     return(createJaspPlot(plot=function() { .barplotJASP(column, variable) }, title=variable, width=width, height=height))
-  }
   else if (length(column) > 0 && !is.factor(column))
-    return(createJaspPlot(plot=function() { .plotMarginal(column, variableName=variable) }, title=variable, width=width, height=height))
+    return(createJaspPlot(plot=.plotMarginal(column, variableName=variable, displayDensity = displayDensity ), title=variable, width=width, height=height))
 }
 
 .descriptivesSplitPlot <- function(dataset, options,  variable)
@@ -789,33 +775,81 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 }
 
 
-# <editor-fold> HELPER FUNCTIONS BLOCK ----
+.plotMarginal <- function(column, variableName, cexYlab = 1.3, lwd = 2,
+                          rugs = FALSE, displayDensity = FALSE) {
+  column <- as.numeric(column)
+  variable <- na.omit(column)
 
-.plotMarginal <- function(variable, variableName, cexYlab= 1.3, lwd= 2, rugs= FALSE){
 
-  variable <- na.omit(variable)
+  h <- hist(variable, plot = FALSE)
 
-  par(mar= c(5, 4.5, 4, 2) + 0.1)
+  if (!displayDensity) {
+    yhigh <- max(h$counts)
+  } else {
+    dens <- density(variable)
+    yhigh <- max(max(h$density), max(dens$y))
+  }
 
-  density <- density(variable)
-  h       <- hist(variable, plot = FALSE)
-  jitVar  <- jitter(variable)
-  yhigh   <- max(max(h$density), max(density$y))
-  ylow    <- 0
-  xticks  <- pretty(c(variable, h$breaks), min.n= 3)
+  ylow <- 0
 
-  plot(1, xlim= range(xticks), ylim= c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
+  xticks <- base::pretty(c(variable, h$breaks), min.n = 3)
 
-  h       <- hist(variable, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE, nbreaks= round(length(variable)/5))
-  ax1     <- axis(1, line = 0.3, at= xticks, lab= xticks, cex.axis = 1.2)
-  mtext(text = variableName, side = 1, cex=1.5, line = 3)
-  par(las=0)
-  ax2     <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), cex.axis= 1.5, mgp= c(3, 0.7, 0))
+  if (!displayDensity) {
+    p <-
+      JASPgraphs::drawAxis(
+        xName = variableName, yName = "Counts", xBreaks = xticks,
+        yBreaks = base::pretty(c(0, h$counts)), force = TRUE, xLabels = xticks
+      )
+  } else {
+    p <-
+      JASPgraphs::drawAxis(
+        xName = variableName, yName = "Density", xBreaks = xticks,
+        yBreaks = c(0,  1.05 * yhigh), force = TRUE, yLabels = NULL,
+        xLabels = xticks
+      )
+  }
 
-  if(rugs)
-    rug(jitVar)
+  if (displayDensity) {
+    p <- p +
+      ggplot2::geom_histogram(
+        data = data.frame(variable),
+        mapping = ggplot2::aes(x = variable, y = ..density..),
+        binwidth = (h$breaks[2] - h$breaks[1]),
+        fill = "grey",
+        col = "black",
+        size = .3,
+        center = ((h$breaks[2] - h$breaks[1])/2)
+      ) +
+      ggplot2::geom_line(
+        data = data.frame(x = dens$x, y = dens$y),
+        mapping = ggplot2::aes(x = x, y = y),
+        lwd = 1,
+        col = "black"
+      )
+  } else {
+    p <- p +
+      ggplot2::geom_histogram(
+        data = data.frame(variable),
+        mapping = ggplot2::aes(x = variable, y = ..count..),
+        binwidth = (h$breaks[2] - h$breaks[1]),
+        fill = "grey",
+        col = "black",
+        size = .7,
+        center = ((h$breaks[2] - h$breaks[1])/2)
+      )
+  }
 
-  lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
+  # JASP theme
+  p <- JASPgraphs::themeJasp(p,
+                             axisTickWidth = .7,
+                             bty = list(type = "n", ldwX = .7, lwdY = 1))
+  # TODO: Fix jaspgraphs axis width X vs Y. See @vandenman.
+
+  if (displayDensity) {
+    p <- p + ggplot2::theme(axis.ticks.y = ggplot2::element_blank())
+  }
+
+  return(p)
 }
 
 .barplotJASP <- function(column, variable, dontPlotData= FALSE){

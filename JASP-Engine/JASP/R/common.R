@@ -177,7 +177,7 @@ runJaspResults <- function(name, title, dataKey, options, stateKey)
 {
 	if (identical(.Platform$OS.type, "windows"))
 		compiler::enableJIT(0)
-		
+
   jaspResults <- jaspResultsModule$create_cpp_jaspResults(name)
   jaspResults$setOptions(options)
 
@@ -1888,7 +1888,7 @@ callback <- function(results=NULL, progress=NULL) {
 		if (is.character(response)) {
 
 			ret <- fromJSON(base::paste("[", response, "]"))[[1]]
-			
+
 		} else {
 
 			ret <- response
@@ -2228,18 +2228,8 @@ as.list.footnotes <- function(footnotes) {
 	# Initialise output object
 	image <- list()
 
-	# Operating System information
-	type <- "cairo"
-	if (Sys.info()["sysname"]=="Darwin"){
-	    type <- "quartz"
-	}
-
-	# Calculate pixel multiplier
-	pngMultip <- .fromRCPP(".ppi") / 96
-
 	# Create png file location
 	location <- .fromRCPP(".requestTempFileNameNative", "png")
-
 	# TRUE if called from analysis, FALSE if called from editImage
 	if (is.null(relativePathpng))
 	  relativePathpng <- location$relativePath
@@ -2248,28 +2238,47 @@ as.list.footnotes <- function(footnotes) {
 
 	base::Encoding(relativePathpng) <- "UTF-8"
 
-	root <- location$root
-	base::Encoding(root) <- "UTF-8"
-	oldwd <- getwd()
-	setwd(root)
-	on.exit(setwd(oldwd))
-	isRecordedPlot <- inherits(plot, "recordedplot")
+  root <- location$root
+  base::Encoding(root) <- "UTF-8"
+  oldwd <- getwd()
+  setwd(root)
+  on.exit(setwd(oldwd))
 
-	# Open graphics device and plot
-	grDevices::png(filename=relativePathpng, width=width * pngMultip,
-	               height=height * pngMultip, bg="transparent",
-	               res=72 * pngMultip, type=type)
+  if (ggplot2::is.ggplot(plot)) {
+    ppi <- .fromRCPP(".ppi")
+    ggplot2::ggsave(relativePathpng, plot, "png",
+                    width = width/(ppi*72/96),
+                    height = height/(ppi*72/96),
+                    dpi = 2*ppi*72/96)
+  } else {
+    # Operating System information
+  	type <- "cairo"
+  	if (Sys.info()["sysname"]=="Darwin"){
+  	    type <- "quartz"
+  	}
+  	# Calculate pixel multiplier
+  	pngMultip <- .fromRCPP(".ppi") / 96
+    isRecordedPlot <- inherits(plot, "recordedplot")
 
-	if (is.function(plot) && !isRecordedPlot) {
-		if (obj) dev.control('enable') # enable plot recording
-		eval(plot())
-		if (obj) plot <- recordPlot() # save plot to R object
-	} else if (isRecordedPlot) { # function was called from editImage to resize the plot
-	    .redrawPlot(plot) #(see below)
-	} else {
-		print(plot)
-	}
-	dev.off()
+    # Open graphics device and plot
+    grDevices::png(filename=relativePathpng, width=width * pngMultip,
+                   height=height * pngMultip, bg="transparent",
+                   res=72 * pngMultip, type=type)
+
+    if (is.function(plot) && !isRecordedPlot) {
+      if (obj) dev.control('enable') # enable plot recording
+      eval(plot())
+      if (obj) plot <- recordPlot() # save plot to R object
+    } else if (isRecordedPlot) { # function was called from editImage to resize the plot
+        .redrawPlot(plot) #(see below)
+    } else if (inherits(plot, "qgraph")) {
+      qgraph::plot.qgraph(plot)
+    } else {
+      plot(plot)
+    }
+    dev.off()
+  }
+
 
 	# Save path & plot object to output
 	image[["png"]] <- relativePathpng
@@ -2288,18 +2297,25 @@ saveImage <- function(plotName, format, height, width)
   location  <- .fromRCPP(".requestTempFileNameNative", "png") # create file location string to extract the root location
 
 
-  pngMultip <- .fromRCPP(".ppi") / 96 # Get file size in inches by creating a mock file and closing it
-  png(filename="dpi.png", width=width * pngMultip, height=height * pngMultip,res=72 * pngMultip)
-  insize    <- dev.size("in")
-	dev.off()
+	# create file location string
+	location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
+  relativePath <- paste0("temp.", format)
 
-	relativePath <- paste0("temp.", format)
+  # Get file size in inches by creating a mock file and closing it
+  pngMultip <- .fromRCPP(".ppi") / 96
+  png(filename="dpi.png", width=width * pngMultip,
+      height=height * pngMultip,res=72 * pngMultip)
+  insize <- dev.size("in")
+  dev.off()
 
   # Open correct graphics device
-  if (format == "eps")
-    grDevices::cairo_ps(filename=relativePath, width=insize[1],	height=insize[2], bg="transparent")
-  else if (format == "tiff")
-  {
+	if (format == "eps") {
+
+		grDevices::cairo_ps(filename=relativePath, width=insize[1],
+												height=insize[2], bg="transparent")
+
+	} else if (format == "tiff") {
+
 		hiResMultip <- 300/72
     grDevices::tiff(filename    = relativePath,
                     width       = width * hiResMultip,
@@ -2317,8 +2333,12 @@ saveImage <- function(plotName, format, height, width)
 
 
 	# Plot and close graphics device
-  if (class(plt) == "recordedplot")         .redrawPlot(plt)  #(see below)
-  else if ("gg" %in% tolower(class(plt)))		print(plt)        #ggplots
+	if (inherits(plt, "recordedplot")) {
+		.redrawPlot(plt) #(see below)
+	} else {
+		plot(plt) #ggplots
+	}
+
 	dev.off()
 
   # Create JSON string for interpretation by JASP front-end and return it

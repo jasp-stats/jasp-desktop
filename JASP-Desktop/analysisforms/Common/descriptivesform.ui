@@ -316,7 +316,59 @@
          </sizepolicy>
         </property>
         <layout class="QGridLayout" name="gridLayout_16">
-         <item row="4" column="0">
+         <item row="6" column="2">
+          <spacer name="horizontalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="4" column="1">
+          <widget class="BoundCheckBox" name="plotCorrelationMatrix">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Correlation plot</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="BoundCheckBox" name="splitPlots">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Boxplots</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="BoundCheckBox" name="plotVariables">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Distribution plots</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
           <widget class="QGroupBox" name="splitPlotOptionBox">
            <property name="enabled">
             <bool>false</bool>
@@ -435,56 +487,57 @@
            </layout>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="BoundCheckBox" name="plotVariables">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
+         <item row="3" column="1">
+          <widget class="QGroupBox" name="densityoption">
+           <property name="enabled">
+            <bool>true</bool>
            </property>
-           <property name="text">
-            <string>Distribution plots</string>
+           <property name="title">
+            <string/>
            </property>
-          </widget>
-         </item>
-         <item row="4" column="1">
-          <spacer name="horizontalSpacer_6">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="2" column="0">
-          <widget class="BoundCheckBox" name="splitPlots">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Boxplots</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="BoundCheckBox" name="plotCorrelationMatrix">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Correlation plot</string>
-           </property>
+           <layout class="QGridLayout" name="gridLayout_20" rowstretch="0" rowminimumheight="0">
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <property name="verticalSpacing">
+             <number>1</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="distPlotDensity">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Display density</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <spacer name="horizontalSpacer_7">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
@@ -1507,7 +1560,6 @@
   <tabstop>listAvailableFields</tabstop>
   <tabstop>variables</tabstop>
   <tabstop>pushButton_6</tabstop>
-  <tabstop>plotVariables</tabstop>
   <tabstop>plotCorrelationMatrix</tabstop>
   <tabstop>splitPlots</tabstop>
   <tabstop>splitPlotOutlierLabel</tabstop>
@@ -1599,6 +1651,22 @@
     <hint type="destinationlabel">
      <x>213</x>
      <y>658</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>plotVariables</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>distPlotDensity</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>54</x>
+     <y>577</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>78</x>
+     <y>622</y>
     </hint>
    </hints>
   </connection>

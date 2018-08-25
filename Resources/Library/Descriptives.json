@@ -21,6 +21,10 @@
 			"type": "Boolean"
 		},
 		{
+			"name": "distPlotDensity",
+			"type": "Boolean"
+		},
+		{
 			"name": "plotCorrelationMatrix",
 			"type": "Boolean"
 		},

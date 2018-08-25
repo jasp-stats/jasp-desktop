@@ -3,9 +3,9 @@
 tryToWriteImageJaspResults <- function(...)
 {
   tryCatch(
-      suppressWarnings(return(writeImageJaspResults(...))),
-      error	= function(e) { return(list(error=e$message)) }
-    )
+    suppressWarnings(return(writeImageJaspResults(...))),
+    error	= function(e) { return(list(error = e$message)) }
+  )
 }
 
 writeImageJaspResults <- function(width=320, height=320, plot, obj = TRUE, relativePathpng = NULL)
@@ -13,17 +13,8 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj = TRUE, relat
   # Initialise output object
   image <- list()
 
-  # Operating System information
-  type <- "cairo"
-  if (Sys.info()["sysname"]=="Darwin")
-      type <- "quartz"
-
-  # Calculate pixel multiplier
-  pngMultip <- .fromRCPP(".ppi")  / 96
-
   # Create png file location
   location <- .fromRCPP(".requestTempFileNameNative", "png")
-
   # TRUE if called from analysis, FALSE if called from editImage
   if (is.null(relativePathpng))
     relativePathpng <- location$relativePath
@@ -37,32 +28,49 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj = TRUE, relat
   oldwd <- getwd()
   setwd(root)
   on.exit(setwd(oldwd))
-  isRecordedPlot <- inherits(plot, "recordedplot")
 
-  # Open graphics device and plot
-  grDevices::png(filename=relativePathpng, width=width * pngMultip,
-                 height=height * pngMultip, bg="transparent",
-                 res=72 * pngMultip, type=type)
+  if (ggplot2::is.ggplot(plot)) {
+    ppi <- .fromRCPP(".ppi")
+    ggplot2::ggsave(relativePathpng, plot, "png",
+                    width = width/(ppi*72/96),
+                    height = height/(ppi*72/96),
+                    dpi = 2*ppi*72/96)
+  } else {
+    # Operating System information
+  	type <- "cairo"
+  	if (Sys.info()["sysname"]=="Darwin"){
+  	    type <- "quartz"
+  	}
+  	# Calculate pixel multiplier
+  	pngMultip <- .fromRCPP(".ppi") / 96
+    isRecordedPlot <- inherits(plot, "recordedplot")
 
-  if (is.function(plot) && !isRecordedPlot)
-  {
-    if (obj) dev.control('enable') # enable plot recording
-    eval(plot())
-    if (obj) plot <- recordPlot() # save plot to R object
+    # Open graphics device and plot
+    grDevices::png(filename=relativePathpng, width=width * pngMultip,
+                   height=height * pngMultip, bg="transparent",
+                   res=72 * pngMultip, type=type)
+
+    if (is.function(plot) && !isRecordedPlot) {
+      if (obj) dev.control('enable') # enable plot recording
+      eval(plot())
+      if (obj) plot <- recordPlot() # save plot to R object
+    } else if (isRecordedPlot) { # function was called from editImage to resize the plot
+      .redrawPlot(plot) #(see below)
+    } else if (inherits(plot, "qgraph")) {
+      qgraph::plot.qgraph(plot)
+    } else {
+      plot(plot)
+    }
+    dev.off()
   }
-  else if (isRecordedPlot)  # function was called from editImage to resize the plot
-      redrawPlotJaspResults(plot)
-  else
-    print(plot)
 
-  dev.off()
 
   # Save path & plot object to output
   image[["png"]] <- relativePathpng
   if (obj) image[["obj"]] <- plot
 
   # Return relative paths in list
-  return(image)
+  image
 }
 
 # Source: https://github.com/Rapporter/pander/blob/master/R/evals.R#L1389
