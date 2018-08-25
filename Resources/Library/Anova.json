@@ -160,25 +160,6 @@
 			"name": "homogeneityTests",
 			"type": "Boolean"
 		},
-				{
-			"name": "homogeneityCorrections",
-			"type": "Boolean"
-		},
-		{
-			"name": "homogeneityNone",
-			"type": "Boolean",
-			"default": true
-		},
-		{
-			"name": "homogeneityWelch",
-			"type": "Boolean",
-			"default": true
-		},
-		{
-			"name": "homogeneityBrown",
-			"type": "Boolean",
-			"default": true
-		},
 		{
 			"name": "homogeneityCorrections",
 			"type": "Boolean",
