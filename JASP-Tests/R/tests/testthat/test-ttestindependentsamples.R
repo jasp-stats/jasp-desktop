@@ -14,17 +14,20 @@ test_that("Main table results match", {
   options$effectSize <- TRUE
   options$VovkSellkeMPR <- TRUE
   results <- jasptools::run("TTestIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  table <- results[["results"]][["ttest"]][["data"]]
-  expect_equal_tables(table,
-    list("contNormal", "Student", 98, 0.448976320466698, 0.163364220743842,
-         0.15401876311258, -0.263105943067512, 0.589834384555196, 0,
-         0, 0.214904085649005, 0.760172707980336, 1, "contNormal", "Welch",
-         93.4114683704755, 0.441326472332004, 0.163364220743842, 0.155340050635411,
-         -0.256150680877671, 0.582879122365355, 0, 0, 0.211269449004155,
-         0.773250564688269, 1, "contNormal", "Mann-Whitney", "", 0.617539087467476,
-         0.0932984248674163, 0.0591133004926108, -0.269303374938764,
-         0.553341045241524, -0.169577908162339, 0.281763520076616, "",
-         1290, 1)
+  tableStudent       <- results[["results"]][["independentSamplesTTestTableParametric"]][["data"]][[1]]
+  tableWelch         <- results[["results"]][["independentSamplesTTestTableParametric"]][["data"]][[2]]
+  tableNonParametric <- results[["results"]][["independentSamplesTTestTableNonParametric"]][["data"]]
+  expect_equal_tables(tableStudent,
+    list(1, 0.1540188, -0.2486351, 0.5566726, 98, 0.152837, -0.2467274, 0.5524015,
+         0.1633642, -0.2631059, 0.5898344, 0.4489763, 0.2149041, 0.7601727, "Student", "contNormal")
+  )
+  expect_equal_tables(tableWelch,
+    list(1, 0.1553401, -0.2473238, 0.5580039, 93.41147, 0.1541482, -0.2454262, 0.5537225,
+         0.1633642, -0.2561507, 0.5828791, 0.4413265, 0.2112694, 0.7732506, "Welch", "contNormal")
+  )
+  expect_equal_tables(tableNonParametric,
+    list(1, 0.0591133, -0.1724909, 0.2845237, 0.09329842, -0.2693034, 0.553341, 
+         0.6175391, 0.0591133, -0.1695779, 0.2817635, 1290, "Mann-Whitney", "contNormal")
   )
 })
 
@@ -34,10 +37,10 @@ test_that("Normality table matches", {
   options$groupingVariable <- "contBinom"
   options$normalityTests <- TRUE
   results <- jasptools::run("TTestIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  table <- results[["results"]][["assumptionChecks"]][["shapiroWilk"]][["data"]]
+  table <- results[["results"]][["independentSamplesTTestAssumptionChecksContainer"]][["collection"]][["independentSamplesTTestAssumptionChecksContainer_independentSamplesTTestShapiroWilkTable"]][["data"]]
   expect_equal_tables(table,
-    list("contNormal", 0, 0.933547444665698, 0.00342000811150064, "TRUE",
-         "contNormal", 1, 0.972586424088514, 0.401705854633909, "FALSE")
+    list(0.9335474, "contNormal", 0, 0.003420008,
+         0.9725864, "contNormal", 1, 0.4017059)
   )
 })
 
@@ -47,8 +50,9 @@ test_that("Equality of variances table matches", {
   options$groupingVariable <- "contBinom"
   options$equalityOfVariancesTests<- TRUE
   results <- jasptools::run("TTestIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  table <- results[["results"]][["assumptionChecks"]][["levene"]][["data"]]
-  expect_equal_tables(table, list("contNormal", 0.474760708390762, 1, 0.492433247088434))
+  table <- results[["results"]][["independentSamplesTTestAssumptionChecksContainer"]][["collection"]][["independentSamplesTTestAssumptionChecksContainer_independentSamplesTTestLevenesTable"]][["data"]]
+  expect_equal_tables(table,
+    list(0.4747607, 1, 0.4924332, "contNormal"))
 })
 
 test_that("Descriptives table matches", {
@@ -57,11 +61,10 @@ test_that("Descriptives table matches", {
   options$groupingVariable <- "contBinom"
   options$descriptives <- TRUE
   results <- jasptools::run("TTestIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  table <- results[["results"]][["descriptives"]][["descriptivesTable"]][["data"]]
+  table <- results[["results"]][["independentSamplesTTestDescriptivesContainer"]][["collection"]][["independentSamplesTTestDescriptivesContainer_independentSamplesTTestDescriptivesTable"]][["data"]]
   expect_equal_tables(table,
-    list("contNormal", 0, 58, -0.120135614827586, 1.10575982846952, 0.145193378675912,
-         "TRUE", "contNormal", 1, 42, -0.283499835571429, 0.994612407217046,
-         0.15347202634745)
+    list(58, 0, -0.1201356, 1.10576, 0.1451934, "contNormal",
+         42, 1, -0.2834998, 0.9946124, 0.153472, "contNormal")
   )
 })
 #
@@ -81,24 +84,24 @@ test_that("Analysis handles errors", {
   options$variables <- "debInf"
   options$groupingVariable <- "contBinom"
   results <- jasptools::run("TTestIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
-  expect_true(any(grepl("infinity", notes, ignore.case=TRUE)), label = "Inf check")
+  error <- list(results[["results"]][["error"]], results[["results"]][["errorMessage"]])
+  expect_true(error[[1]] == TRUE && error[[2]] == "The following problem(s) occurred while running the analysis:<ul><li>Infinity found in debInf</li></ul>")
 
   options$variables <- "debSame"
   options$groupingVariable <- "contBinom"
   results <- jasptools::run("TTestIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
-  expect_true(any(grepl("variance", notes, ignore.case=TRUE)), label = "No variance check")
-
+  error <- list(results[["results"]][["error"]], results[["results"]][["errorMessage"]])
+  expect_true(error[[1]] == TRUE && error[[2]] == "The following problem(s) occurred while running the analysis:<ul><li>Variance = 0 in debSame after grouping on contBinom</li></ul>")
+  
   options$variables <- "debMiss99"
   options$groupingVariable <- "contBinom"
   results <- jasptools::run("TTestIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
-  expect_true(any(grepl("observations", notes, ignore.case=TRUE)), label = "Too few obs check")
+  error <- list(results[["results"]][["error"]], results[["results"]][["errorMessage"]])
+  expect_true(error[[1]] == TRUE && error[[2]] == "The following problem(s) occurred while running the analysis:<ul><li>Number of observations < 3 in debMiss99 after grouping on contBinom</li></ul>")
 
   options$dependent <- "contNormal"
   options$groupingVariable <- "debSame"
   results <- jasptools::run("TTestIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  msg <- results[["results"]][["errorMessage"]]
-  expect_true(any(grepl("levels", msg, ignore.case=TRUE)), label = "1-level factor check")
+  error <- list(results[["results"]][["error"]], results[["results"]][["errorMessage"]])
+  expect_true(error[[1]] == TRUE && error[[2]] == "The following problem(s) occurred while running the analysis:<ul><li>Number of factor levels ≠ 2 in debSame</li></ul>")
 })

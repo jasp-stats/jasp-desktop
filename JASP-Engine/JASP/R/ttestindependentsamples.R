@@ -74,67 +74,63 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   # Compute Results for Parametric Independent Samples T-Test Table
   # Student
   if (ready == TRUE && (options$student) && is.null(jaspResults[["independentSamplesTTestTableParametric"]])) {
-    resultsIndependentSamplesTTestStudent <- 
-      .computeResultsIndependentSamplesTTestTableParametric(dataset = dataset, options = options, test = "Student")
+    resultsStudent <- .computeResultsIndependentSamplesTTestTableParametric(dataset = dataset, options = options, 
+                                                                            test = "Student")
   }
   # Welch
   if (ready == TRUE && (options$welchs) && is.null(jaspResults[["independentSamplesTTestTableParametric"]])) {
-    resultsIndependentSamplesTTestWelch <- 
-      .computeResultsIndependentSamplesTTestTableParametric(dataset = dataset, options = options, test = "Welch")
+    resultsWelch <- .computeResultsIndependentSamplesTTestTableParametric(dataset = dataset, options = options, test = "Welch")
   }
-    
+
   # Compute Results for Non-Parametric Independent Samples T-Test Table
   if (ready == TRUE && options$mannWhitneyU && is.null(jaspResults[["independentSamplesTTestTableNonParametric"]])) {
-    resultsIndependentSamplesTTestTableParametric <- 
-      .computeResultsIndependentSamplesTTestTableNonParametric(dataset = dataset, options = options)
+    resultsNonParametric <- .computeResultsIndependentSamplesTTestTableNonParametric(dataset = dataset, options = options)
   }
   
   # Compute Results for Shapiro Wilk Table
   if (ready == TRUE && options$normalityTests && is.null(jaspResults[["independentSamplesTTestAssumptionChecksContainer"]])) {
-    resultsIndependentSamplesTTestShapiroWilkTable <- 
-      .computeResultsIndependentSamplesTTestShapiroWilkTable(dataset = dataset, options = options)
+    resultsShapiroWilk <- .computeResultsIndependentSamplesTTestShapiroWilkTable(dataset = dataset, options = options)
   }
   
   # Compute Results for Levenes Table
   if (ready == TRUE && options$equalityOfVariancesTests && is.null(jaspResults[["independentSamplesTTestAssumptionChecksContainer"]])) {
-    resultsIndependentSamplesTTestLevenesTable <- 
-      .computeResultsIndependentSamplesTTestLevenesTable(dataset = dataset, options = options)
+    resultsLevene <- .computeResultsIndependentSamplesTTestLevenesTable(dataset = dataset, options = options)
   }
 
   # Compute Results for Descriptives Table
   if (ready == TRUE && options$descriptives && is.null(jaspResults[["independentSamplesTTestDescriptivesContainer"]])) {
-    resultsIndependentSamplesTTestDescriptivesTable <- 
-      .computeResultsIndependentSamplesTTestDescriptivesTable(dataset = dataset, options = options)
+    resultsDescriptives <- .computeResultsIndependentSamplesTTestDescriptivesTable(dataset = dataset, options = options)
   }
   
   # Compute Results for Descriptives Plots
   if (ready == TRUE && options$descriptivesPlots && is.null(jaspResults[["independentSamplesTTestDescriptivesContainer"]])) {
-    resultsIndependentSamplesTTestDescriptivesPlots <- 
-      .computeResultsIndependentSamplesTTestDescriptivesPlots(dataset = dataset, options = options)
+    resultsDescriptivesPlots <- .computeResultsIndependentSamplesTTestDescriptivesPlots(dataset = dataset, options = options)
   }
   
   # Create Parametric Independent Samples T-Test Table (if wanted)
   if (options$student || options$welchs) {
     .createIndependentSamplesTTestTableParametric(jaspResults = jaspResults, dataset = dataset, options = options,
-                                                  ready = ready)
+                                                  ready = ready, resultsStudent = resultsStudent, resultsWelch = resultsWelch)
   }
   
   # Create Non-Parametric Independent Samples T-Test Table (if wanted)
   if (options$mannWhitneyU) {
     .createIndependentSamplesTTestTableNonParametric(jaspResults = jaspResults, dataset = dataset, options = options,
-                                                     ready = ready)
+                                                     ready = ready, resultsNonParametric = resultsNonParametric)
   }
   
   # Create Assumption Checks Container (if wanted)
   if (options$normalityTests || options$equalityOfVariancesTests) {
-    .createIndependentSamplesTTestAssumptionChecksContainer(jaspResults = jaspResults, dataset = dataset, 
-                                                            options = options, ready = ready)
+    .createIndependentSamplesTTestAssumptionChecksContainer(jaspResults = jaspResults, dataset = dataset, options = options, 
+                                                            ready = ready, resultsShapiroWilk = resultsShapiroWilk,
+                                                            resultsLevene = resultsLevene)
   }
   
   # Create Descriptives Container and Plots (if wanted)
   if (options$descriptives || options$descriptivesPlots) {
-    .createIndependentSamplesTTestDescriptivesContainer(jaspResults = jaspResults, dataset = dataset, 
-                                                        options = options, ready = ready)
+    .createIndependentSamplesTTestDescriptivesContainer(jaspResults = jaspResults, dataset = dataset, options = options,
+                                                        ready = ready, resultsDescriptives = resultsDescriptives,
+                                                        resultsDescriptivesPlots = resultsDescriptivesPlots)
   }
 
 	# Bring state up-to-date
@@ -174,17 +170,17 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
     
     # Prepare for computing the effect sizes
     # Determine the sd depending on the kind of test and the effect size sd selected by the user
-    if (options$effectSizeSD == "effectSizeSDPooled") {
-      if (test == "Student") {
-        num <- (ns[1] - 1) * sds[1]^2 + (ns[2] - 1) * sds[2]^2
-        sdPooled <- sqrt(num / (ns[1] + ns[2] - 2))
-      } else if (test == "Welch") {
+    if (test == "Student") {
+      num <- (ns[1] - 1) * sds[1]^2 + (ns[2] - 1) * sds[2]^2
+      sdPooled <- sqrt(num / (ns[1] + ns[2] - 2))
+    } else if (test == "Welch") {
+      if (options$effectSizeSD == "effectSizeSDPooled") {
         sdPooled <- sqrt(((sds[1]^2)+(sds[2]^2))/2)
+      } else if (options$effectSizeSD == "effectSizeSDGroup1") {
+        sdPooled <- sds[1]
+      } else if (options$effectSizeSD == "effectSizeSDGroup2") {
+        sdPooled <- sds[2]
       }
-    } else if (options$effectSizeSD == "effectSizeSDGroup1") {
-      sdPooled <- sds[1]
-    } else if (options$effectSizeSD == "effectSizeSDGroup2") {
-      sdPooled <- sds[2]
     }
     
     # Determine the proportion for the effect size ci depending on the kind of hypothesis selected by the user
@@ -285,12 +281,12 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
     }
     
     # Add results for variable to results object
-    results[[variable]] <- list(variable = variable, test = test, statistic = stat, p = p, VovkSellkeMPR = .VovkSellkeMPR(p),
+    results[[variable]] <- list(variable = variable, test = "Mann-Whitney", statistic = stat, p = p, VovkSellkeMPR = .VovkSellkeMPR(p),
                                 hlEst = hlEst, hlEstLowerCI = hlEstLowerCI, hlEstUpperCI = hlEstUpperCI,
                                 rbc = rbc, rbcLowerCI = rbcLowerCI, rbcUpperCI = rbcUpperCI,
                                 cliffsDelta = cliffsDelta, cliffsDeltaLowerCI = cliffsDeltaLowerCI, cliffsDeltaUpperCI = cliffsDeltaUpperCI)
   }
-
+  
   # Return results object
   return(results)
 }
@@ -440,7 +436,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   return(results)
 }
 
-.createIndependentSamplesTTestTableParametric <- function(jaspResults, dataset, options, ready) {
+.createIndependentSamplesTTestTableParametric <- function(jaspResults, dataset, options, ready, resultsStudent, resultsWelch) {
   
   # Check if object can be reused (in case relevant options did not change)
   if (!is.null(jaspResults[["independentSamplesTTestTableParametric"]])) {
@@ -513,13 +509,72 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   }
   
   # Fill up table with results
-  .fillUpIndependentSamplesTTestTable(independentSamplesTTestTableParametric = independentSamplesTTestTableParametric, 
-                                      dataset = dataset, options = options, ready = ready)
+  .fillUpIndependentSamplesTTestTableParametric(independentSamplesTTestTableParametric = independentSamplesTTestTableParametric, 
+                                                dataset = dataset, options = options, ready = ready,
+                                                resultsStudent = resultsStudent, resultsWelch = resultsWelch)
   
   # This function does not return anything
 }
 
-.createIndependentSamplesTTestTableNonParametric <- function(jaspResults, dataset, options, ready) {
+.fillUpIndependentSamplesTTestTableParametric <- function(independentSamplesTTestTableParametric, dataset, options, ready,
+                                                          resultsStudent, resultsWelch) {
+  
+  # If results can be computed, run each test that the users wants for each variable
+  if (ready) {
+    
+    for (variable in options$variables) {
+      
+      # Add results from Student t-test (if wanted)
+      if (options$student == TRUE) {
+        independentSamplesTTestTableParametric$addRows(rows = resultsStudent[[variable]], 
+                                                       rowNames = paste0(variable, " - ", "Student"))
+      }
+      
+      # Add results from Welch t-test (if wanted)
+      if (options$welchs == TRUE) {
+        independentSamplesTTestTableParametric$addRows(rows = resultsWelch[[variable]], 
+                                                       rowNames = paste0(variable, " - ", "Welch"))
+      }
+    }
+    
+    # Add footnote: Check the equality of variance assumption if Welch is not selected
+    if (options$students == TRUE && options$welchs == FALSE) {
+      levene <- car::leveneTest(dataset[[ .v(variable) ]], dataset[[ .v(options$groupingVariable) ]], "mean")
+      if (!is.na(levene[1, 3]) && levene[1, 3] < 0.05) {
+        message <- .messages('footnote', 'leveneSign')
+        independentSamplesTTestTableParametric$addFootnote(message = message, col_names = "p", row_names = variable)
+      }
+    }
+    
+    # Add footnote: VovkSellkeMPR
+    if (options$VovkSellkeMPR) {
+      independentSamplesTTestTableParametric$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A")
+    }
+    
+    # Add footnote: Alternative hypothesis
+    if (options$hypothesisRec == "greater") {
+      message <- paste0("For all tests, the alternative hypothesis specifies that group <em>", levels(dataset[[.v(options$groupingVariable)]])[1],
+                        "</em> is greater than group <em>", levels(dataset[[.v(options$groupingVariable)]])[2], "</em>.")
+      independentSamplesTTestTableParametric$addFootnote(message = message, symbol = "<em>Note.</em>")
+    } else if (options$hypothesisRec == "less") {
+      message <- paste0("For all tests, the alternative hypothesis specifies that group  <em>", levels(dataset[[.v(options$groupingVariable)]])[1],
+                        "</em> is less than group <em>", levels(dataset[[.v(options$groupingVariable)]])[2], "</em>.")
+      independentSamplesTTestTableParametric$addFootnote(message = message, symbol = "<em>Note.</em>")
+    }
+    
+  # If results cannot be computed, add an empty row
+  } else {
+    row <- list(variable = ".", test = ".", statistic = ".", df = ".", p = ".", VovkSellkeMPR = ".",
+                meanDiff = ".", seDiff = ".", meanDiffLowerCI = ".", meanDiffUpperCI = ".",
+                cohensd = ".", cohensdLowerCI = ".", cohensdUpperCI = ".",
+                hedgesg = ".", hedgesgLowerCI = ".", hedgesgUpperCI = ".")
+    independentSamplesTTestTableParametric$addRows(rows = row)
+  }
+  
+  # This function does not return anything
+}
+
+.createIndependentSamplesTTestTableNonParametric <- function(jaspResults, dataset, options, ready, resultsNonParametric) {
   
   # Check if object can be reused (in case relevant options did not change)
   if (!is.null(jaspResults[["independentSamplesTTestTableNonParametric"]])) {
@@ -588,86 +643,53 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   }
   
   # Fill up table with results
-  .fillUpIndependentSamplesTTestTable(independentSamplesTTestTable = independentSamplesTTestTableNonParametric, 
-                                      dataset = dataset, options = options, parametric = FALSE, ready = ready)
+  .fillUpIndependentSamplesTTestTableNonParametric(independentSamplesTTestTableNonParametric = independentSamplesTTestTableNonParametric,
+                                                   dataset = dataset, options = options, ready = ready,
+                                                   resultsNonParametric = resultsNonParametric)
   
   # This function does not return anything
 }
 
-.fillUpIndependentSamplesTTestTableParametric <- function(independentSamplesTTestTableParametric, dataset, options, ready) {
+.fillUpIndependentSamplesTTestTableNonParametric <- function(independentSamplesTTestTableNonParametric, dataset, options, 
+                                                             ready, resultsNonParametric) {
   
   # If results can be computed, run each test that the users wants for each variable
   if (ready) {
     
     for (variable in options$variables) {
-      
-      # Add results from Student t-test (if wanted)
-      if (options$student == TRUE) {
-        independentSamplesTTestTableParametric$addRows(rows = result)
-        .addRowForIndependentSamplesTTestParametric(independentSamplesTTestTableParametric = independentSamplesTTestTable,
-                                                 dataset = dataset, options = options, 
-                                                 variable = variable, test = "Student",
-                                                 formula = formula, sds = sds, means = means, ns = ns)
-      }
-      
-      # Run Welch t-test for the parametric table (if wanted)
-      if (options$welchs == TRUE && parametric == TRUE) {
-        .addRowForIndependentSamplesTTestParametric(independentSamplesTTestTableParametric = independentSamplesTTestTable,
-                                                dataset = dataset, options = options, 
-                                                variable = variable, test = "Welch",
-                                                formula = formula, sds = sds, means = means, ns = ns)
-      }
-      
-      # Run Mann-Whitney-U test for the non-parametric table (if wanted) 
-      if (options$mannWhitneyU == TRUE && parametric == FALSE) {
-        .addRowForIndependentSamplesTTestNonParametric(independentSamplesTTestTableNonParametric = independentSamplesTTestTable,
-                                                       dataset = dataset, options = options,
-                                                       variable = variable, test = "Mann-Whitney",
-                                                       formula = formula, sds = sds, means = means, ns = ns)
-      }
+      independentSamplesTTestTableNonParametric$addRows(rows = resultsNonParametric[[variable]], rowNames = variable)
     }
 
-    # Add footnote: Check the equality of variance assumption if Welch is not selected
-    if (options$students == TRUE && options$welchs == FALSE && parametric == TRUE) {
-      levene <- car::leveneTest(y, groups, "mean")
-      if (!is.na(levene[1, 3]) && levene[1, 3] < 0.05) {
-        message <- .messages('footnote', 'leveneSign')
-        independentSamplesTTestTable$addFootnote(message = message, col_names = "p", row_names = variable)
-      }
-    }
-    
     # Add footnote: VovkSellkeMPR
     if (options$VovkSellkeMPR) {
-      independentSamplesTTestTable$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A")
+      independentSamplesTTestTableNonParametric$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A")
     }
     
     # Add footnote: Alternative hypothesis
     if (options$hypothesisRec == "greater") {
       message <- paste0("For all tests, the alternative hypothesis specifies that group <em>", levels(dataset[[.v(options$groupingVariable)]])[1],
                         "</em> is greater than group <em>", levels(dataset[[.v(options$groupingVariable)]])[2], "</em>.")
-      independentSamplesTTestTable$addFootnote(message = message, symbol = "<em>Note.</em>")
+      independentSamplesTTestTableNonParametric$addFootnote(message = message, symbol = "<em>Note.</em>")
     } else if (options$hypothesisRec == "less") {
       message <- paste0("For all tests, the alternative hypothesis specifies that group  <em>", levels(dataset[[.v(options$groupingVariable)]])[1],
                         "</em> is less than group <em>", levels(dataset[[.v(options$groupingVariable)]])[2], "</em>.")
-      independentSamplesTTestTable$addFootnote(message = message, symbol = "<em>Note.</em>")
+      independentSamplesTTestTableNonParametric$addFootnote(message = message, symbol = "<em>Note.</em>")
     }
     
-  # If results cannot be computed, add an empty row
+    # If results cannot be computed, add an empty row
   } else {
-    row <- list(variable = ".", test = ".", statistic = ".", df = ".", p = ".", VovkSellkeMPR = ".",
-                meanDiff = ".", seDiff = ".", meanDiffLowerCI = ".", meanDiffUpperCI = ".",
-                cohensd = ".", cohensdLowerCI = ".", cohensdUpperCI = ".",
-                hedgesg = ".", hedgesgLowerCI = ".", hedgesgUpperCI = ".",
+    row <- list(variable = ".", test = ".", statistic = ".", p = ".", VovkSellkeMPR = ".",
                 hlEst = ".", hlEstLowerCI = ".", hlEstUpperCI = ".",
                 rbc = ".", rbcLowerCI = ".", rbcUpperCI = ".",
                 cliffsDelta = ".", cliffsDeltaLowerCI = ".", cliffsDeltaUpperCI = ".")
-    independentSamplesTTestTable$addRows(rows = row)
+    independentSamplesTTestTableNonParametric$addRows(rows = row)
   }
   
   # This function does not return anything
 }
 
-.createIndependentSamplesTTestAssumptionChecksContainer <- function(jaspResults, dataset, options, ready) {
+.createIndependentSamplesTTestAssumptionChecksContainer <- function(jaspResults, dataset, options, ready, resultsShapiroWilk,
+                                                                    resultsLevene) {
   
   # Check if object can be reused (in case relevant options did not change)
   if (!is.null(jaspResults[["independentSamplesTTestAssumptionChecksContainer"]])) {
@@ -683,20 +705,22 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   # Create Shapiro-Wilk Table (if wanted)
   if (options$normalityTests == TRUE) {
     .createIndependentSamplesTTestShapiroWilkTable(independentSamplesTTestAssumptionChecksContainer = independentSamplesTTestAssumptionChecksContainer, 
-                                                   dataset = dataset, options = options, ready = ready)
+                                                   dataset = dataset, options = options, ready = ready,
+                                                   resultsShapiroWilk = resultsShapiroWilk)
   }
   
   # Create Levene's Table (if wanted)
   if (options$equalityOfVariancesTests == TRUE) {
     .createIndependentSamplesTTestLevenesTable(independentSamplesTTestAssumptionChecksContainer = independentSamplesTTestAssumptionChecksContainer,
-                                               dataset = dataset, options = options, ready = ready)
+                                               dataset = dataset, options = options, ready = ready, 
+                                               resultsLevene = resultsLevene)
   }
   
   # This function does not return anything
 }
 
 .createIndependentSamplesTTestShapiroWilkTable <- function(independentSamplesTTestAssumptionChecksContainer, 
-                                                           dataset, options, ready) {
+                                                           dataset, options, ready, resultsShapiroWilk) {
   
   # Check if object can be reused (in case relevant options did not change)
   if (!is.null(independentSamplesTTestAssumptionChecksContainer[["independentSamplesTTestShapiroWilkTable"]])) {
@@ -722,7 +746,8 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   
   # Fill up table with results
   .fillUpIndependentSamplesTTestShapiroWilkTable(independentSamplesTTestShapiroWilkTable = independentSamplesTTestShapiroWilkTable,
-                                                 dataset = dataset, options = options, ready = ready)
+                                                 dataset = dataset, options = options, ready = ready, 
+                                                 resultsShapiroWilk = resultsShapiroWilk)
   
   # Add footnote: Interpretation of Results
   independentSamplesTTestShapiroWilkTable$addFootnote(message = "Significant results suggest a deviation from normality.",
@@ -731,15 +756,15 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   # This function does not return anything
 }
 
-.fillUpIndependentSamplesTTestShapiroWilkTable <- function(independentSamplesTTestShapiroWilkTable, dataset, options, ready) {
+.fillUpIndependentSamplesTTestShapiroWilkTable <- function(independentSamplesTTestShapiroWilkTable, dataset, options, ready,
+                                                           resultsShapiroWilk) {
   
   # If results can be computed, compute them and add row for each level of each variable
   if (ready) {
     for (variable in options$variables) {
       for (level in levels(dataset[[.v(options$groupingVariable)]])) {
-        .addRowForIndependentSamplesTTestShapiroWilkTable(independentSamplesTTestShapiroWilkTable = independentSamplesTTestShapiroWilkTable,
-                                                          dataset = dataset, options = options, 
-                                                          variable = variable, level = level)
+        independentSamplesTTestShapiroWilkTable$addRows(rows = resultsShapiroWilk[[variable]][[level]],
+                                                        rowNames = paste0(variable, " - ", level))
       }
     }
   # If results cannot be computed, add an empty row
@@ -752,7 +777,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
 }
 
 .createIndependentSamplesTTestLevenesTable <- function(independentSamplesTTestAssumptionChecksContainer, 
-                                                       dataset, options, ready) {
+                                                       dataset, options, ready, resultsLevene) {
   
   # Check if object can be reused (in case relevant options did not change)
   if (!is.null(independentSamplesTTestAssumptionChecksContainer[["independentSamplesTTestLevenesTable"]])) {
@@ -778,7 +803,8 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   
   # Fill up table with results
   .fillUpIndependentSamplesTTestLevenesTable(independentSamplesTTestLevenesTable = independentSamplesTTestLevenesTable,
-                                             dataset = dataset, options = options, ready = ready)
+                                             dataset = dataset, options = options, ready = ready,
+                                             resultsLevene = resultsLevene)
   
   # Add footnote: Interpretation of Results
   independentSamplesTTestLevenesTable$addFootnote(message = "Significant results suggest a deviation from equality of variance.",
@@ -787,13 +813,13 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   # This function does not return anything
 }
 
-.fillUpIndependentSamplesTTestLevenesTable <- function(independentSamplesTTestLevenesTable, dataset, options, ready) {
+.fillUpIndependentSamplesTTestLevenesTable <- function(independentSamplesTTestLevenesTable, dataset, options, ready,
+                                                       resultsLevene) {
   
   # If results can be computed, compute them and add row for each variable
   if (ready) {
     for (variable in options$variables) {
-      .addRowForIndependentSamplesTTestLevenesTable(independentSamplesTTestLevenesTable, 
-                                                    dataset, options, variable)
+      independentSamplesTTestLevenesTable$addRows(rows = resultsLevene[[variable]], rownames = variable)
     }
   # If results cannot be computed, add an empty row
   } else {
@@ -804,7 +830,8 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   # This function does not return anything
 }
 
-.createIndependentSamplesTTestDescriptivesContainer <- function(jaspResults, dataset, options, ready) {
+.createIndependentSamplesTTestDescriptivesContainer <- function(jaspResults, dataset, options, ready, resultsDescriptives,
+                                                                resultsDescriptivesPlots) {
   
   # Check if object can be reused (in case relevant options did not change)
   if (!is.null(jaspResults[["independentSamplesTTestDescriptivesContainer"]])) {
@@ -821,20 +848,22 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   # Create Descriptives Table (if wanted)
   if (options$descriptives == TRUE) {
     .createIndependentSamplesTTestDescriptivesTable(independentSamplesTTestDescriptivesContainer = independentSamplesTTestDescriptivesContainer, 
-                                                   dataset = dataset, options = options, ready = ready)
+                                                   dataset = dataset, options = options, ready = ready, 
+                                                   resultsDescriptives = resultsDescriptives)
   }
   
   # Create Descriptives Plots Container (if wanted and if results can be computed)
   if (options$descriptivesPlots == TRUE && ready == TRUE) {
     .createIndependentSamplesTTestDescriptivesPlotsContainer(independentSamplesTTestDescriptivesContainer = independentSamplesTTestDescriptivesContainer,
-                                               dataset = dataset, options = options)
+                                               dataset = dataset, options = options,
+                                               resultsDescriptivesPlots = resultsDescriptivesPlots)
   }
   
   # This function does not return anything
 }
 
 .createIndependentSamplesTTestDescriptivesTable <- function(independentSamplesTTestDescriptivesContainer, 
-                                                            dataset, options, ready) {
+                                                            dataset, options, ready, resultsDescriptives) {
   
   # Check if object can be reused (in case relevant options did not change)
   if (!is.null(independentSamplesTTestDescriptivesContainer[["independentSamplesTTestDescriptivesTable"]])) {
@@ -864,21 +893,21 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
   
   # Fill up table with results
   .fillUpIndependentSamplesTTestDescriptivesTable(independentSamplesTTestDescriptivesTable = independentSamplesTTestDescriptivesTable,
-                                                  dataset = dataset, options = options, ready = ready)
+                                                  dataset = dataset, options = options, ready = ready,
+                                                  resultsDescriptives = resultsDescriptives)
   
   # This function does not return anything
 }
 
-.fillUpIndependentSamplesTTestDescriptivesTable <- function(independentSamplesTTestDescriptivesTable, 
-                                                            dataset, options, ready) {
+.fillUpIndependentSamplesTTestDescriptivesTable <- function(independentSamplesTTestDescriptivesTable, dataset, options, ready,
+                                                            resultsDescriptives) {
   
   # If results can be computed, compute them and add row for each level of each variable
   if (ready) {
     for (variable in options$variables) {
       for (level in levels(dataset[[.v(options$groupingVariable)]])) {
-        .addRowForIndependentSamplesTTestDescriptivesTable(independentSamplesTTestDescriptivesTable = independentSamplesTTestDescriptivesTable,
-                                                           dataset = dataset, options = options, 
-                                                           variable = variable, level = level)
+        independentSamplesTTestDescriptivesTable$addRows(rows = resultsDescriptives[[variable]][[level]],
+                                                         rowNames = paste0(variable, " - ", level))
       }
     }
   # If results cannot be computed, add an empty row
@@ -891,7 +920,7 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
 }
 
 .createIndependentSamplesTTestDescriptivesPlotsContainer <- function(independentSamplesTTestDescriptivesContainer,
-                                                                     dataset, options) {
+                                                                     dataset, options, resultsDescriptivesPlots) {
   
   # Check if object can be reused (in case relevant options did not change)
   if (!is.null(independentSamplesTTestDescriptivesContainer[["independentSamplesTTestDescriptivesPlotsContainer"]])) {
@@ -905,29 +934,30 @@ TTestIndependentSamples <- function(jaspResults, dataset, options, state = NULL)
                                                                       "missingValues", "descriptivesPlots",
                                                                       "descriptivesPlotsConfidenceInterval"))
   
-  # For each variable, add plot
-  for (variable in options$variables) {
-    .addIndependentSamplesTTestDescriptivesPlot(independentSamplesTTestDescriptivesPlotsContainer = independentSamplesTTestDescriptivesPlotsContainer,
-                                                dataset = dataset, options = options, variable = variable)
-  }
+  # Fill up container with plots
+  .fillUpIndependentSamplesTTestDescriptivesPlot(independentSamplesTTestDescriptivesPlotsContainer = independentSamplesTTestDescriptivesPlotsContainer,
+                                                 dataset = dataset, options = options, variable = variable,
+                                                 resultsDescriptivesPlots = resultsDescriptivesPlots)
   
   # This function does not return anything
 }
 
-.addIndependentSamplesTTestDescriptivesPlot <- function(independentSamplesTTestDescriptivesPlotsContainer,
-                                                        dataset, options, variable) {
+.fillUpIndependentSamplesTTestDescriptivesPlot <- function(independentSamplesTTestDescriptivesPlotsContainer,
+                                                           dataset, options, variable, resultsDescriptivesPlots) {
   
-  # Make plot
-  descriptivesPlot <- .makeIndependentSamplesTTestDescriptivesPlots(dataset = dataset, options = options,
-                                                                    variable = variable)
-
-  # Add plot to container
-  independentSamplesTTestDescriptivesPlot <- createJaspPlot(plot = descriptivesPlot, title = variable,
+  for (variable in options$variables) {
+    
+    # Get plot
+    descriptivesPlot <- resultsDescriptivesPlots[[variable]]
+    
+    # Add plot to container
+    independentSamplesTTestDescriptivesPlot <- createJaspPlot(plot = descriptivesPlot, title = variable,
                                                             width = 350, height = 300)
-  independentSamplesTTestDescriptivesPlotsContainer[[variable]] <- independentSamplesTTestDescriptivesPlot
-  independentSamplesTTestDescriptivesPlot$dependOnOptions(c("variables", "groupingVariable",
-                                                            "missingValues", "descriptivesPlots",
-                                                            "descriptivesPlotsConfidenceInterval"))
-        
+    independentSamplesTTestDescriptivesPlotsContainer[[variable]] <- independentSamplesTTestDescriptivesPlot
+    independentSamplesTTestDescriptivesPlot$dependOnOptions(c("variables", "groupingVariable",
+                                                              "missingValues", "descriptivesPlots",
+                                                              "descriptivesPlotsConfidenceInterval"))
+  }
+  
   # This function does not return anything
 }
