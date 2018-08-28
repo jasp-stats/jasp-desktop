@@ -491,7 +491,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Pearson's rho</string>
+            <string>Pearson's r</string>
            </property>
           </widget>
          </item>
