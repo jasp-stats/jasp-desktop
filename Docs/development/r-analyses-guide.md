@@ -1,671 +1,869 @@
+## How to Write R Analyses for JASP
 
-JASP Guide For Implementing Analyses in R
-=========================================
+R code for JASP should follow JASP's [R style guide](https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/r-style-guide.md). 
 
-All analyses in JASP written in R should conform to [The JASP R style-guide](r-style-guide.md)
+This document will guide you through writing an R analysis for JASP. Two things should be noted before we get started. First, this guide assumes that you have knowledge about basic R concepts such as functions. Second, writing an R analysis is necessary but **not** sufficient to create a new module for JASP. For this goal, other files (such as the UI, json etc.) need to be created. The creation of these other files is not discussed here.
 
+Every JASP R analysis will consist of several types of functions:
+1. a single main analysis function that organizes the analysis and its output,
+2. one or multiple results functions that compute the results that will be displayed,
+3. one or multiple create functions that create output elements (tables, plots, containers), and
+4. one or multiple fill up functions that fill up output elements with the results.
 
-Function definition
--------------------
+In the remainder of this document, you will learn how to write functions of all four types. Explanations will be illustrated using excerpts from a few JASP analysis, mainly the relatively simple Binomial Test.
 
-Analyses in JASP, when implemented in R, should be of the following form:
+### Step 1: Writing the Main Analysis Function
 
-`AnalysisName <- function(dataset=NULL, options, perform="run", callback=function(...) 0, state=NULL, ...) {`
+Each analysis in JASP needs a main analysis function. This main analysis function will provide an overview of all output elements and steps that are needed to conduct the full analyses.
 
-* `dataset` : will always be `NULL` in JASP. `dataset` is used when an analysis is run outside of JASP. Inside JASP you should read the dataset with the included functions (details below)
-* `options` : a list containing values corresponding to the state of each of the user interface elements in the analysis' user interface
-* `perform` : will either be equal to `"init"` or `"run"`, for initializing and running the analysis respectively
-* `callback` : a function to call periodically to notify JASP that the analysis is still running, and (not implemented yet) to provide progress updates (such as percentage complete). this function will return a non-zero value if the user has aborted the analysis, and your function should terminate in response to this
-* `state` : a list containing re-usable items stored at the end of the previous analysis (granted the analysis uses the state system, omit otherwise).
+#### Step 1.1: The Arguments
 
-The function should return a series of nested lists containing the results. This results object is described below.
+The main analysis function has the following arguments:
+1: jaspResults which is the object that contains all results from this analysis and connects it to the output
+2: dataset which is the dataset that is loaded in JASP (this may already be given or will be defined (i.e. read) in the main analysis function
+3: options which is a list of options selected or deselected by the user
+4: state which consists of the list of options from the last analysis (this determines whether results can be reused from that last analysis or need to be re-computed) and, optionally, a set of results that were saved in the state to be reused in the next run of the analysis
 
+##### Example
+```{r}
+BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
+```
 
-Useful functions inside JASP
-----------------------------
+#### Step 1.2: Updating the Options
 
-An assortment of useful functions are available to JASP R analyses. These are defined in the file *common.R*.
+This is an optional step that can be used to add additional options that should be carried throughout the analysis. For example, in the Binomial Test analysis, several functions will need an hypothesis argument that can take the values "two.sided", "greater", or "less". However, the UI file does not allow a string value containing a "." (like in "two.sided"). Therefore, we can now create a new hypothesis variable that takes the corresponding string values. Note that this needs to be a new variable (i.e. we cannot just recode the hypothesis variable as this would screw up the state system that determines whether a table can be reused or needs to be newly computed.
 
-### Reading Data from JASP
+##### Example
+```{r}
+if (options$hypothesis == "notEqualToTestValue") {
+  options$hypothesisRec <- "two.sided"
+} else if (options$hypothesis == "greaterThanTestValue") {
+  options$hypothesisRec <- "greater"
+} else {
+  options$hypothesisRec <- "less"
+}
+```
 
-In order for the analysis to read the data from JASP, one of two functions must be called:
+#### Step 1.3: Defining the State (if empty)
 
-`.readDataSetHeader(columns, columns.as.numeric, columns.as.ordered, columns.as.factor)`
-`.readDataSetToEnd(columns, columns.as.numeric, columns.as.ordered, columns.as.factor)`
+If the state is not defined yet (i.e. is null), it needs to be defined as an empty list.
 
-- `columns` : a vector of column names to be read
-- `columns.as.numeric` : a vector of column names to be read as numeric (marshalled as necessary)
-- `columns.as.ordered` : a vector of column names to be read as ordered factors (marshalled as necessary)
-- `columns.as.nominal` : a vector of column names to be read as unordered factors (marshalled as necessary)
+##### Example
+```{r}
+if (is.null(state)) {
+  state <- list()
+}
+```
 
-These functions return a data.frame containing the columns requested marshalled (if necessary) to the type requested.
+#### Step 1.4: Reading the Dataset
 
-`.readDataSetHeader()` returns a data.frame with no data (zero rows), and is intended for initialization of an analysis. `.readDataSetToEnd()` returns a data.frame containing all the rows for the requested columns.
+If the dataset has not been read yet, it needs to be read. Note that you can specify whether variables should be read as factors or numeric and whether cases with missing values for certain variables should be deleted.
 
-The names of the columns in these data.frames are encoded with *X-prepended-base64-encoding*. This is so that special characters can be supported. These names can be converted back and forth using the `.v` and `.unv` functions (below)
+##### Example
+```{r}
+if (is.null(dataset)) {
+dataset <- .readDataSetToEnd(columns.as.numeric = options$variables, columns.as.factor = options$groupingVariable,
+                             exclude.na.listwise = options$variables)
+}
+```
 
-The beginning of an analysis function will typically looks as follows:
+#### Step 1.5: Setting the Title
 
-    if (is.null(dataset)) {
-    
-        if (perform == "run") {
-        
-            dataset <- .readDataSetToEnd(columns.as.numeric=...,)
-            
-        } else {
-        
-            dataset <- .readDataSetHeader(columns.as.numeric=...,)
-        }
-        
-    } else {
-    
-        dataset <- .vdf(dataset, columns.as.numeric=...,)
+Each analysis needs a title. This title will be shown at the top of the output.
+
+##### Example
+```{r}
+jaspResults$title <- "Binomial Test"
+```
+
+#### Step 1.6: Checking if Results Can Be Computed
+
+Each analysis requires certain input (for example, dependent variables and independent variables). If this is not given, tables should still be displayed but will be filled with "." instead of actual results. Plots cannot be displayed without the input. Therefore, it makes sense to determine early in the analysis whether we are ready to compute the results for the analyses. For example, in the Binomial Test, at least one dependent variable is needed in order to compute results.
+
+##### Example
+```{r}
+ready <- (length(options$variables) > 0)
+```
+
+#### Step 1.7: Checking for Errors
+
+If we have the input we need, we still need to check for errors that will prevent the results from being computed. The error checks that should be conducted depend on the analysis. For the Binomial Test, we need to make sure that there is a least one factor level for each variable and that we do not have 0 observations for each of the levels of every variable.
+
+##### Example
+```{r}
+if (ready) {
+  # Error Check 1: Number of levels of the variables
+  .hasErrors(dataset = dataset, perform = "run", type = 'factorLevels', factorLevels.target = options$variables,
+             factorLevels.amount = '< 1', exitAnalysisIfErrors = TRUE)
+	     
+  # Error check 2: 0 observations for a level of a variable
+  for (variable in options$variables) {	
+    column <- dataset[[ .v(variable) ]]
+    data <- column[!is.na(column)]
+    levels <- levels(as.factor(data))
+
+    for (level in levels) {
+      .hasErrors(data[data == level], perform = "run", type = 'observations', observations.amount = c('< 1'),  
+                 exitAnalysisIfErrors = TRUE)
     }
-
-### Converting to and from *X-prepended-base64*
-
-Column names in data frames read from JASP are encoded in *X-prepended-base64*. This allows us to use international characters in column names, etc.
-
-`.v(column.names)`  
-`.unv(dp.base64.names)`  
-`.vf(formulas)`  
-`.unvf(formulas)`
-
-`.vdf(dataset, columns, columns.as.numeric, columns.as.ordered, columns.as.factor)`
-
-`.v` returns a vector of column names converted to *X-prepended-base64-encoding*
-
-`.unv` returns a vector of normal column names converted from *X-prepended-base64-encoding*
-
-`.vf` translates formulas to *X-prepended-base64-encoding*
-
-`.unvf` reverts formulas from *X-prepended-base64-encoding*
-
-`.vdf` transforms the column names of a dataframe to be *X-prepended-base64-encoding*, other arguments are the same as
-`.readDataSetToEnd()`
-
-for example:
-
-`.v("fred")`
-returns
-`"XZnJlZA"`
-
-`.unv("XZnJlZA")`
-returns
-`"fred"`
-
-`.unvf("XaXE ~ XZ2VuZGVy + Xc2Vz + XZ2VuZGVy:Xc2Vz")`
-returns
-`"iq ~ gender + ses + gender:ses"`
-
-It is recommended to **only** use `.vf()` for display purposes. Using it to create formulas for models in R code will fail if the variable name contains colons. To create formulas, the variable names should be translated first using the `.v()` function, and then assembled into the formula string.
-
-
-### Saving images
-
-JASP accepts images as SVGs encoded as base64 data URIs. The following functions are useful for creating images in this format.
-
-Recently, we moved to a new system for writing images, to support the saveImage functionality (saving JASP images to a file). Here is the quick overview:
-
-1. Create a `ggplot2` plot in your code. If you're working with (deprecated) base-r plots, wrap your plotting routine in a function (don't choose this option):
-  ```r
-  p <- ggplot2::ggplot(...)
-  ```
-  __OR__
-  ```r
-  .plotFunc() <- function() {
-    # add plotting routine here
-    plot(plotData, plotParameters)
   }
-  ```
-2. Write the image to an object using the function `.writeImage()`:
-  ```r
-  imgObj <- .writeImage(width = options$plotWidth, 
-                         height = options$plotHeight, 
-                         plot = p)
-  ```
-  __OR__
-  ```r
-  imgObj <- .writeImage(width = options$plotWidth, 
-                         height = options$plotHeight, 
-                         plot = .plotFunc)
-  ```
-3. Extract the necessary information from the image object to your plot object that will go into the output:
-  ```r
-  plot[["data"]] <- imgObj[["png"]]
-  plot[["obj"]] <- imgObj[["obj"]]
-  plot[["convertible"]] <- TRUE
-  plot[["status"]] <- "complete"
-  ```
-
-### Cleaning data
-
-`.clean(value)`
-
-`.clean()` sanitizes a value. It performs the following conversions:
-* NaN is converted to "NaN"
-* Inf and -Inf values are converted to the appropriate unicode symbols
-* NULL values are converted to empty strings
-
-### Footnotes
-
-These functions simplify the creation of footnotes by automatically keeping track of what footnotes have already been created.
-
-`.newFootnotes()`
-`.addFootnote(footnotes, text, symbol=NULL)`
-`as.list(footnotes)`
-
-`.newFootnotes()` creates a new footnotes object
-
-`.addFootnote(footnotes, text, symbol)`
-
-* `footnotes` : a footnotes object created with `.newFootnotes()`
-* `text` : the text of the footnote
-* `symbol` : optional, the symbol to use. If omitted, a superscript letter is automatically used.
-
-Adds a new footnote to the footnote object. If a footnote with matching text already exists, a duplicate footnote is *not* created (which is what you want). This function returns the index for the created (or existing) footnote, which can be placed in the `.footnotes` object of a data row (described below).
-
-`as.list(footnotes)`
-
-Converts a footnotes object created with `.newFootnotes()` to a list conforming to the `footnotes` component of `table` described below.
-
-
-Initialization and Running
------------------------------
-
-When selected, an analysis will be called twice (at least), once to initialize it and once to run it; in each case, the `perform` argument will be equal to `"init"` and `"run"` respectively.
-
-The purpose of the initialization is to provide an empty set of results, more or less instantly, that will be subsequently populated by the analysis. This immediate feedback provides for a nice responsive user experience.
-
-**All** tables and images that will make up the final results should have empty images and tables created at initialization.
-
-Initialization should happen very quickly, and use as few resources as possible. For example, a contingency table analysis of *Gender* and *Smoking Status* might create the following empty table:
-
-<table>
-	<tr>
-		<td></td><td>Male</td><td>Female</td>
-	</tr>
-	<tr>
-		<td>Smoker</td><td>.</td><td>.</td>
-	</tr>
-	<tr>
-		<td>Non-smoker</td><td>.</td><td>.</td>
-	</tr>
-</table>
-
-The creation of this table does not require reading the data from JASP at all; however it does require information on what levels the *Gender* and *Smoking Status* columns contain. To access this, `.readDataSetHeader()` will provide a data.frame containing columns (of zero length) that can be queried for what levels they contain.
-
-In place of statistics that will be subsequently created by the analysis, a `"."` is returned. This indicates to the user that the results are yet to be calculated.
-
-(It can be difficult to test the initialization code, because if the analysis proceeds very quickly, the empty tables/images will be replaced very quickly with the proper results, not allowing enough time for inspection. As a temporary measure, it can sometimes be convenient to override the value of `perform` to always be equal to `"init"` at the top of the analysis function.)
-
-
-Results
--------
-
-In the following section, R lists will be represented in JSON notation. In this format, named lists are represented with
-
-    { "name" : "value", "name 2" : "value 2" }
-
-and unnamed lists are represented with
-
-    [ "valueWithouName", "valueWithoutName 2" ]
-
-. JSON is a particularly good format for representing nested/hierachical structures, which is why we make use of it.
-
-The analysis function should return a results bundle and must be a named list.
-
-An example of a results bundle might be:
-
-    {
-        "results" : { ... },
-        "status" : "the status",
-        "state" : { ... }
-        "keep" : [ ... ]
-    }
-
-- `results` : a results object, descriped below
-- `status` : the status, this can be either `"inited"` (typically to be returned when `perform == "init"`) or `"complete"` (typically returned when `perform == "run"`)
-- `state`  : arbitrary data that can be retrieved in a subsequent call of this analysis with a call to `.retrieveState()`, explained below
-- `keep` : a list of file descriptors (from `.writeImage()`). This instructs the temporary file system to keep these files, and not delete them.
-
-### Results
-
-    {
-        ".meta" : [
-            { "name" : "descriptives", "type" : "table" },
-            { "name" : "plot",         "type" : "image" },
-        ],
-        
-        "descriptives" : { ... },
-        "plot"         : { ... }
-    }
-    
-These results contains two items; *descriptives* and *plot*. The *.meta* entry lists these two items, specifies the order in which they should appear, and specifies the type of each. The *descriptives* object is a table, and the *plot* object is an image.
-
-
-### Table
-
-A table object itself is a named list of the form:
-
-    {
-        "title"  : "The Table's Title",
-        "schema" : { ... },
-        "data"   : [ ... ],
-        "footnotes" : [ ... ],
-        "casesAcrossColumns" : false,
-        "error" : { ... }
-    }
-    
-- `title` : the title which appears at the top of the table
-- `schema` : specifies the columns of the table
-- `data`  : specifies the data, or rows of the table
-- `footnotes` : optional, footnotes to appear at the bottom of the table
-- `casesAcrossColumns` : optional, defaults to false, whether the rows and columns of the table should be swapped
-- `error` : optional, specifies an error message to be displayed over the top of the table
-
-
-#### schema
-
-Taken from here: http://dataprotocols.org/json-table-schema/
-
-`schema` is of the following form:
-
-    {
-        "fields" : [
-            {
-                "name"   : "column name",
-                "title"  : "displayed column title",
-                "type"   : "number",
-                "format" : "dp:3"
-            },
-            {
-                "name"   : "next column name",
-                ...
-            }
-        ]
-    }
-
-- `name` : the column name (note the use of [ ] in the name invokes column folding, see below)
-- `title` : optional, displayed at the top of the column; if not specified the column name is used
-- `type` : one of `"string"`, `"number"`, `"integer"`
-- `format` : format specifiers (multiple can be specified, separated with semicolons)
-    - `dp:X` - format to X decimal places
-    - `sf:X` - format to X significant figures
-    - `p:X`  - if the value is less than X, substitute `p < X` in it's place (`p:.001` is common)
-    - `pc`   - format the number as a percentage (multiply it by 100, and add a % sign) (does not work in conjunction with sf)
-
-##### Column folding
-Column folding is where multiple columns are folded into one. This can be done for a number of reasons, but the most common is because a single column requires heterogeneous formatting. For example, the correlation table has a column which contains an r-value, a p-value directly underneath, then another r-value, etc.; these require different formatting. To achieve this, two separate columns are created for r-value and p-value, each with their own formatting, but with special names which instruct the table renderer to combine or fold these columns into one. In the case of the r-value and the p-value, the column names:
-
-- `value[pValue]`
-- `value[rValue]`
-
-might be chosen. The table renderer matches the name before the `[`, and knows to combine or fold these columns into one.
-    
-#### data
-
-`data` represents the rows in the table and is of the form:
-
-    [
-        {
-            "column 1 name" : "row 1 column 1 value",
-            "column 2 name" : 15.44444,
-            ".footnotes" : [ ... ]
-            ".isMainRow" : false
-            ...
-        },
-        {
-            "column 1 name" : "row 2 column 1 value",
-            "column 2 name" : 354.3333333333,
-            ...
-        },
-        ...
-    ]
-    
-The column names must correspond to those specified in the schema
-
-#### .footnotes (in data)
-
-It is recommended to use the footnotes functions described above to generate the indices.
-
-`.footnotes` in row data describes the symbols (typically superscripts) which are displayed beside values
-
-    [
-        "column 1 name" : [ 0, 1 ]
-        "column 2 name" : [ 0 ]
-    ]
-
-The arrays of values are indices which refer to the footnotes object in `table` (see below). The symbols are taken from there.
-
-#### footnotes (in table)
-
-It is recommended to use the footnotes functions described above, rather than creating these objects manually. These functions make it much easier.
-
-`footnotes` is of the form:
-
-    [
-    	{
-        	"symbol" : 0,
-	        "text"   : "Footnote a text"
-    	},
-    	{
-        	"symbol" : 1,
-	        "text"   : "Footnote b text"
-    	},
-    	...
-    ]
-    
-- `symbol` : can be either an integer, or a string. Integers correspond to superscripts, 0 is <sup>a</sup>, 1 is <sup>b</sup>, 2 is <sup>d</sup>, etc. (there's no <sup>c</sup> which is peculiar). If a string is specified, it used as the symbol itself.
-- `text`   : the text of the footnote
-
-#### error
-
-`error` is of the form:
-
-    {
-        "errorType" : "badData",
-        "errorMessage" : "The error message"
-    }
-
-- `errorType` : can be whatever. In the future a set of error types will be developed.
-- `errorMessage` : optional, the message to be displayed. If an analysis produces multiple tables, it is generally best to only put the error message over the top table.
-
-
-### image
-
-`image` is of the form:
-
-    {
-        "title"  : "The images title",
-        "width"  : 640,
-        "height" : 480,
-        "data"   : " ... "
-    }
-    
-* `title` : The title of the image
-* `width` : the width of the image
-* `height`: the height of the image
-* `data`  : the image, returned by `.endSaveImage()`
-
-`data` is most easily produced with the functions:
-    - `.beginSaveImage()`
-    - `.endSaveImage()`
-
-
-Callbacks
----------
-
-Callbacks allow analyses to:
-
-1. Provide partial results back to the UI
-2. Respond to user actions made while the analysis is running
-
-A callback function is passed as an argument into the analysis function. i.e.
-
-`TTestOneSample <- function(dataset=NULL, options, perform="run", callback=function(...) list(status="ok"), ...) {`
-
-### Providing partial results
-
-Providing partial results is useful, because it allows for analyses to progressively fill tables in as the results are calculated (rather than filling them all in in one go). At some point, we'll also have a progress bar.
-
-To send partical results, the results list is simply passed into the callback:
-
-`callback(results)`
-
-Even if results haven't changed, it is good to call the callback periodically, as this allows you to respond to user actions (see below). In this case, you can simply call the callback with no arguments.
-
-### Responding to user actions
-
-During the analysis, the analysis can (and should) periodically call the callback to see if the user has changed their mind. If things have changed, this will be reflected in the *return value* of the callback. the callback will return something like:
-
-    {
-        "status" : ...
-    }
-
-where `status` can be:
-
-- "ok",
-- "aborted"
-- "changed"
-- "stopped"
-
-`ok` indicates that the analysis has not changed, and should continue running
-`aborted` indicates that the analysis has been removed by the user (and there's no point continuing), the analysis can call just call `return()` to terminate itself
-`changed` indicates that the analysis has been changed by the user, more information below.
-`stopped` indicates that the analysis has been stopped by the user (for analyses which are not *autorun* there is a button to stop them, but few analyses aren't autorun, so you can ignore the possibility if receiving "stopped"). "stopped" is for all intents and purposes the same as "aborted", however, if pass partial results into your call to `return()`, these will be displayed.
-
-#### "changed"
-
-When the status is "changed", there will also be an options object present in the callbacks return value; i.e. the return value will be:
-
-    {
-        "status" : "changed",
-        "options" : {
-            ....
-        }
-    }
-
-The `options` object will contain the new options that the user has selected. Changes to options can have one of two consequences:
-
-1. that the analysis can incorporate the changes and continue to run
-2. that the analysis can not incorporate the changes, and must re-run from the beginning
-
-In the instance of 1. (that the analysis can incorporate the changes), the analysis continues to run, and returns a results list appropriate for the new options. If the analysis returns a results list, then JASP assumes that the analysis was able to incorporate the changes.
-
-In the instance of 2. (that the analysis is unable to incorporate the changes, and must re-run from the beginning), the analysis can simply return NULL (i.e. by calling `return()`). If the analysis returns NULL, then JASP assumes that the analysis was unable to incorporate the changes, and will re-run the analysis with the new options.
-
-Generally, only changes to certain settings require the analysis to restart. To determine whether a restart is in order, the `.diff()` function can be useful.
-
-`.diff(options.one, options.two)`
-
-It will return a named list with TRUE/FALSE values indicating which options have changed or not. So, for example, if changes to the options `variables` or `limit` would require a restart, the code might look as follows:
-
-    response <- callback()
-    
-    if (response$status == "aborted")
-	    return()
-	    
-    if (response$status == "changed") {
-    
-        changes <- .diff(options, response$options)
-        
-        if (changes$variables || changes$limit)
-            return()
-    }
-    
-    # otherwise continue
-
-Progress bar
-------------
-
-If an analysis is going to run for a long time it's nice to give the user some reassurance that something is actually happening. Of course we have the spinner, but this provides no actual progress indication. To this purpose the `.newProgressbar` function can be used. The function takes the following arguments:
-
-- `ticks`: integer specifying the number of times the progress bar needs to be updated to reach completion.
-- `callback`: callback function which is supplied to each analysis and described above.
-- `skim`: integer specifying the percentage that should be "skimmed" from the total 100%. The progress bar generally captures only some portion of an analysis. If the remainder might also take some time we can reserve a portion of the progress bar. Default percentage is `5`.
-- `response`: boolean, should the progressbar return the response of the callback? Default is `FALSE`.
-
-Note that `.newProgressbar` itself returns a function. This function takes the optional arguments:
-
-- `results`: results list. See above to read more about the results list structure.
-- `complete`: boolean specifying if the progress bar should be forced to immediate (premature) completion.
-
-### Example:
-
-A typical analysis that takes a while is the Bayesian ANOVA.
-Now, there are parts of this analysis that go quite quick; calculating descriptives or effects takes no time.
-The model calculation is slow, however, in this part of the code a progress indicator makes a lot sense.
-Say we have the number of models we will calculate stored in `nModels`. Before the first model is calculated we then run
+}
 ```
-progressbar <- .newProgressbar(ticks=nModels, callback=callback)
-```
-Now after each calculated model we simply call
-```
-progressbar()
-```
-to update the progress.
 
-If we want to make the analysis responsive to user changes we can set `response` to `TRUE` and check the callback output as described above.
+Other common error checks include checking for weird data (too few observations, infinite values, variance = 0), and for a non-positive definite covariance matrix.
 
-State
------
-
-The state is a storage system. This storage can be used to transfer useful data between different calls to an analysis.
-The main goal of the state is to prevent recalculating things that were already calculated once (and thus make analyses quicker). Let's use the Bayesian ANOVA as an example of its practical relevance. This analysis may take up to several minutes to fully calculate its result -- which is not that unusual for a Bayesian analysis. Now if a user decides he would also like to see descriptive statistics the analysis will be run again. If we had no storage system in place it would take several minutes to give an additional table with descriptive statistics because the ANOVA has to be calculated all over again -- eventhough we already did this. With the state system it becomes possible to store the outcome of the ANOVA and then re-use it. Asking for additional output such as a descriptives table will now result in a very short calculation because the ANOVA calculation can be avoided. It may be clear that it is not always possible to re-use output from an earlier call to the analysis. For example, if the dependent variable of the ANOVA is swapped for a different one, the old results become unusable.
-
-The state must be a named list. It may store any valid R object, as long as it always contains the options the analysis was run with. Example:
+##### Example
+```{r}
+if (ready) {
+  # Error check: Weird data for dependent variable in each level of the grouping variable
+  .hasErrors(dataset, perform = "run", type = c('observations', 'variance', 'infinity'),
+             all.target = options$variables, all.grouping = options$groupingVariable,
+             observations.amount = c('< 3'), exitAnalysisIfErrors = TRUE)
 ```
-state <- list()
+
+##### Example
+```{r}
+  # Error check: Check for non-positive definite variance-covariance matrix
+  covnwt <- stats::cov
+  .hasErrors(dataset, perform = "run", type = c('varCovData'), exitAnalysisIfErrors = TRUE, 
+	     varCovData.target = c(options$dependent.variable, options$main.effects.numeric),
+	     varCovData.corFun = covnwt)
+}
+```
+
+#### Step 1.8: Calling the Results Functions
+
+If we are ready to compute the results and did not encounter any errors, it is time to call the results functions. Notably, this only needs to be done if this is the first run of the analysis or if the results computed during the last run of the analysis cannot be reused. Whereas this may sound complex, there is an essay way to check for it: We can just check whether the object for which we are computing the results is defined (i.e. not null) in jaspResults. If it is not defined (i.e. null), the results need to be computed.
+
+##### Example
+```{r}
+# Compute Results for Binomial Table
+if (ready == TRUE && is.null(jaspResults[["binomialTable"]])) {
+  resultsTable <- .computeBinomialTableResults(dataset = dataset, options = options)
+}
+```
+
+Most of the times, whether results need to be computed also depend on whether the user selected the corresponding options to require an analysis. As can be seen in the example below, the results for the "Descriptives Plots" in the Binomial Test do not need to be computed if the option for these plots was not selected.
+
+##### Example
+```{r}
+# Compute Results for Binomial Plots
+if (ready == TRUE && options$descriptivesPlots == TRUE && is.null(jaspResults[["binomialDescriptivesPlotsContainerTotal"]])) {
+  resultsPlots <- .computeBinomialPlotsResults(dataset = dataset, options = options)
+}
+```
+
+#### Step 1.9: Calling the Create Functions
+
+One of the last steps in the main analysis function is to call the create functions. These functions will create the framework for each table, plot, or container that will later appear in the output. Notably, in case of a table or a container including a table, the create functions can also be called if the required input is not given. In this case, the table will be created but filled with "." instead of actual results.
+
+##### Example
+```{r}
+# Create Binomial Table
+.createBinomialTable(jaspResults = jaspResults, options = options, ready = ready, resultsTable = resultsTable)
+	
+# Create Descriptives Plots Container (if wanted and if results can be computed)
+if (ready == TRUE && options$descriptivesPlots == TRUE) {
+  .createBinomialDescriptivesPlotsContainers(jaspResults = jaspResults, options = options, resultsPlots = resultsPlots)
+}
+```
+
+#### Step 1.10: Updating and Returning the State
+
+Finally, we need to update the options of the state with the current analysis options so that, in the next run, the new options can be compared to the current set of options. This will then determine which output elements can be reused and which ones need to be newly computed.
+
+##### Example
+```{r}
 state[["options"]] <- options
-state[["model"]] <- model
-state[["plot"]] <- plot
-```
-It is possible to let the engine automatically retrieve only the re-usable state items. To do so, you must specify a key in the state. The key should be defined close to the top of the analysis to make it clear to people unfamiliar with the analysis what is stored in the state and what these state items dependent on:
-```
-stateKey <- list()
-stateKey[["model"]] <- c("dependent", "fixedFactors", "sampleMode", "iterations")
-stateKey[["plot"]] <- c("dependent", "fixedFactors")
-```
-To add it as an attribute to the state:
-```
-attr(state, "key") <- stateKey
+return(state)
 ```
 
-Now if the analysis is called again and e.g. `sampleMode` changes, only the plot will be returned.
-If there are state items you would like to keep indefinitely -- regardless of the options a user changes -- you must omit these in the stateKey.
+At this point, you may wonder why the fill up functions were not called in the main analysis function although being one of the four core functions of each analysis. This is because those functions are only needed if an output element is created. Therefore, these functions are called within the create functions.
 
-Error handling
---------------
+#### Step 1.11: Time for Testing
 
-#### Checking for errors
+Now, the main analysis is complete and it is time to test it. Below is an example of the complete main analysis function of the Binomial Test.
 
-There are situations where you know an analysis cannot be performed. For example if an independent samples t-test is run with a grouping variable that only has one level, or when the data in a regression analysis has infinite values. To prevent an analysis from crashing we need to check the data and options beforehand. This can be done with the `.hasErrors()` function.
-
-##### Calling the error check function
-
-By finetuning the arguments given to `.hasErrors()` it can be used in a variety of situations. The main arguments are:
-
-- `dataset`: JASP dataset. [required]
-- `perform`: 'run' or 'init'. [required]
-- `type`: character vector containing any of the following: 'infinity', 'factorLevels', 'variance', 'observations'. [required]
-- `custom`: a (named/unnamed list of) function(s) that perform some check and return an error message. [optional]
-- `message`: 'short' or 'default' [the default]. [optional]
-- `exitAnalysisIfErrors`: TRUE or FALSE [the default]. [optional]
-
-The optional argument `custom` may be used when a small, analysis-specific check has to be performed. In general, if a data check is still missing it should be added to `.hasErrors()` (so others may use it too; as described further below), however, it may be the case that the check is only appropriate for a single analysis. In this case it can be defined in the body of the analysis function and passed to `.hasErrors()`. Example of an object that may be supplied in `custom`:
-```
-customChecks <- list(
-	function() {
-		if (options$Data == 'varcov' && options$groupingVariable != '') {
-			return('Multiple group analysis not (yet) supported when data is variance-covariance matrix')
-		}
-	},
-	function() {
-		if (options$Data == 'varcov' && isTRUE(options$includeMeanStructure)) {
-			return('Mean structure can not be included when data is variance-covariance matrix')
-		}
-	})
-```
-Note that the functions are defined in the environment of the analysis and therefore have access to its variables. It is unlikely you will need to supply arguments, but if you wish to do so, make sure the functions are defined in a named list (e.g., list(meanstruct = function(arg1) {...}) where arg1 can be called by supplying meanstruct.arg1=... to `.hasErrors()`. See below for more details about supplying arguments to check functions).
-
-The argument `message` is used to specify what sort of error message should be returned. When it is set to `short` (for use in footnotes) only the first error encountered will be included in the message. When it is set to `default` it includes all checks that fail and adds the opening statement "The following problem(s) occurred while running the analysis:". 
-
-The argument `exitAnalysisIfErrors` can be used to prevent the analysis from continuing to run when a check fails. It would be sensible to set this to `TRUE` in the case of the independent samples t-test with the single level grouping variable. The t-test package will not be able to run and graphs or tables would be nonsensical. When it is set to `FALSE` the function will simply return to the calling environment regardless of whether any checks failed.
-
-In addition to the main arguments, we can pass arguments to the checks listed after `type` (or to the functions in `custom`).
-These arguments are always prefixed by their type name. So to check if the variance is zero in in the dependent variable 'dependentVar', we would call:
-
-`.hasErrors(dataset=dataset, perform=perform, type='variance', variance.target='dependentVar')`
-
-If we would also like to know if the grouping variable had exactly two factor levels and we wanted to exit if we found zero variance or something other than two levels:
-
-```
-.hasErrors(dataset=dataset, perform=perform, type=c('factorLevels', 'variance'), 
-	factorLevels.target='groupingVar', factorLevels.amount='!= 2', 
-	variance.target='dependentVar', 
-	exitAnalysisIfErrors=TRUE)`
-```
-
-All check arguments:
-
-| type         | argument      | description                                        |
-|--------------|---------------|----------------------------------------------------|
-| infinity     | target        | character vector of variable names                 |
-|              | grouping      | character vector of grouping variable names        |
-|              | groupingLevel | vector with the levels for each grouping variable  |
-| factorLevels | target        | character vector of grouping variable names        |
-|              | amount\*      | (vector of) string(s) (e.g. "!= 2")                |
-| variance     | target        | character vector of variable names                 |
-|              | grouping      | character vector of grouping variable names        |
-|              | groupingLevel | vector with the levels for each grouping variable  |
-|              | equalTo       | numeric value to compare for equality [default: 0] |
-| observations | target        | character vector of variable names                 |
-|              | grouping      | character vector of grouping variable names        |
-|              | groupingLevel | vector with the levels for each grouping variable  |
-|              | amount\*      | (vector of) string(s) (e.g. "> 5000")              |
-\* = required argument
-
-Note that when no target is provided to an error check, it will by default go over every variable in the dataset.
-
-To prevent very long function calls, we can also prefix arguments by `all.` (e.g. instead of using observations.grouping = options$fixedFactor, variance.grouping = options$fixedFactor, etc. we use all.grouping=options$fixedFactor). When this prefix is used `.hasErrors()` will call each check with that specific value; granted a check actually uses a parameter with that name.
-
-##### The return value
-
-`.hasErrors()` will return a named list if any errors were encountered in the data (given `exitAnalysisIfErrors` is not `TRUE`). Each type of check that fails, will be included in the list as `checkName=varsThatFailed`, so in our previous example this would be `variance='dependentVar'`. In addition it will include a `message='...'` entry with the error message. If no errors were encountered it simply returns `FALSE`.
-
-##### General use
-
-There are two ways `.hasErrors()` can be used. Firstly, it may included at the start of the analysis if there are any 'dealbreakers'; problems with the data (or selected options) that would render further computations useless. The argument `exitAnalysisIfErrors` should be set to `TRUE` and for the remainder of the analysis 'dealbreakers' will have no further implications. 
-
-Secondly, the function may be used when data errors only have a local effect. As an example, let's consider an independent samples t-test with multiple dependent variables. If only one of the dependent variables contains infinity, the t-test can still be performed on the other dependent variable. In this case `.hasErrors()` will have to be run multiple times with a different dependent as its target every time. If any errors are found the t-test for that dependent may be omitted and a footnote should be added (a footnote is generated by setting `message` to `short`). 
-
-As an alternative to calling `.hasErrors()` multiple times on parts of the data, the function could be called just once for all variables. The named list that is returned - which details for each check which variables failed it - may then be queried. Note that this method is more complicated to implement, but would save computation time, as data checks are not repeated. The main complication comes from the fact that the relevant error must be distilled from the list and the error message must be manually generated through `.generateErrorMessage()`.
-
-`.generateErrorMessage()` takes the arguments:
-
-- `type`: single character string containing one of the `.hasErrors()` types. [required]
-- `opening`: boolean, should the statement "The following problem(s) occurred while running the analysis:" be included (TRUE) or left out (FALSE) [the default]. [optional]
-- `concatenate`: string with the error message it should be appended to. [optional]
-- `grouping`: character vector of variables that were used to group the dependent variables on. [optional] 
-
-`.generateErrorMessage()` expects the variables that are defined in the error messages to be supplied. All error messages can be found in commonmessages.R. Message variables are denoted by {{}}. If, for example, an error message contains {{levels}}, `.generateErrorMessage()` looks for the argument levels=... in its input.
-
-#### Adding new error checks
-
-It is possible you want to check something that is not implemented. To prevent everyone from reinventing the wheel, it should be added to `.hasErrors()`, so others may use it in the future. There are 3 steps to implementing a new check:
-
-1. Write a function that can perform the check and place it at the bottom of the file `commonerrorcheck.R`. Try to make it as generic as possible so it could also be applied in other situations than your own. Some things to bear in mind:
-  * Its name could, in principle, be whatever you like. But to be consistent and avoid masking, start with .check followed by some short statement in camelCase. 
-  * It may take as many or as few arguments as you like. They can be optional or required, if they are optional they may be omitted in the call to `.hasErrors()`. Note that although `.hasErrors()` requires arguments to be prefixed, they do not need to be prefixed in the actual function definition.
-  * It must return a named list with the entry `error`. If your check determines there is an error it should be set to `TRUE` and otherwise to `FALSE`. If your function performs a check on the data (rather than on options), it should also have the entry `errorVars` which contains the variable names that failed your check.
-  An example:
+##### Example
+```{r}
+BinomialTest <- function(jaspResults, dataset, options, state = NULL) {
   
-  ```
-  .checkImaginary <- function(dataset, target, someArg=NULL) {
-  # This is a short description of my check.
-  # args:
-  #  dataset: JASP dataset.
-  #  target: String vector indicating the target variables.
-  #  someArg: Some description.
+  # Update options
+  if (options$hypothesis == "notEqualToTestValue") {
+    options$hypothesisRec <- "two.sided"
+  } else if (options$hypothesis == "greaterThanTestValue") {
+    options$hypothesisRec <- "greater"
+  } else {
+    options$hypothesisRec <- "less"
+  }
   
-      result <- list(error=FALSE, errorVars=NULL)
+  # Define state if empty
+  if (is.null(state)) {
+	  state <- list()
+	}
+	
+  # Read dataset
+  if (is.null(dataset)) {
+    dataset <- .readDataSetToEnd(columns.as.factor = options$variables)
+  }
+  
+  # Update options (using dataset)
+  options[["levels"]] <- NULL
+  for (variable in options$variables) {
+    column <- dataset[[ .v(variable) ]]
+    data <- column[!is.na(column)]
+    levels <- levels(as.factor(data))
+    options[["levels"]] <- append(options$levels, list(levels))
+    names(options$levels)[which(options$variables %in% variable)] <- variable
+  }
+  
+  # Set title
+  jaspResults$title <- "Binomial Test"
+	
+  # Check if results can be computed
+  ready <- (length(options$variables) > 0)
+	
+  # Check for errors
+  if (ready) {
+	  
+    # Error Check 1: Number of levels of the variables
+    .hasErrors(dataset = dataset, perform = "run", type = 'factorLevels', factorLevels.target = options$variables,
+               factorLevels.amount = '< 1', exitAnalysisIfErrors = TRUE)
+	  
+    # Error check 2: 0 observations for a level of a variable
+    for (variable in options$variables) {
+	    
+      column <- dataset[[ .v(variable) ]]
+      data <- column[!is.na(column)]
+      levels <- levels(as.factor(data))
+
+      for (level in levels) {
+        .hasErrors(data[data == level], perform = "run", type = 'observations', observations.amount = c('< 1'), 
+	           exitAnalysisIfErrors = TRUE)
+      }
+    }
+  }
+	
+  # Compute Results for Binomial Table
+  if (ready == TRUE && is.null(jaspResults[["binomialTable"]])) {
+    resultsTable <- .computeBinomialTableResults(dataset = dataset, options = options)
+  }
+	
+  # Compute Results for Binomial Plots
+  if (ready == TRUE && options$descriptivesPlots == TRUE && is.null(jaspResults[["binomialDescriptivesPlotsContainerTotal"]])) {
+    resultsPlots <- .computeBinomialPlotsResults(dataset = dataset, options = options)
+  }
+	
+  # Create Binomial Table
+  .createBinomialTable(jaspResults = jaspResults, options = options, ready = ready, resultsTable = resultsTable)
+	
+  # Create Descriptives Plots Container (if wanted and if results can be computed)
+  if (ready == TRUE && options$descriptivesPlots == TRUE) {
+    .createBinomialDescriptivesPlotsContainers(jaspResults = jaspResults, options = options, resultsPlots = resultsPlots)
+  }
+	
+  # Bring state up-to-date
+  state[["options"]] <- options
+
+  return(state)
+}
+```
+
+### Step 2: Writing Results Functions
+
+The goal of each results function is to return an object that contains the results. Results function can be written for tables or plots. However, how to compute the results strongly depends on the analysis. Therefore, results functions are the most flexible of the four core functions. Below are three examples. The first example contains only the elements that will be part of each results function (you may want to add additional arguments). The second example is the complete function used to compute the results for the table in the Binomial Test analysis. The third example is the complete function used to compute the results for a plot in the Binomial Test analysis.
+
+##### Example
+```{r}
+.insertFunctionName <- function(dataset, options) { 
+
+  # This will be the return object
+  results <- list()
+  
+  # INSERT CODE HERE
+  
+  # Return results object
+  return(results)
+}
+```
+
+##### Example
+```{r}
+.computeBinomialTableResults <- function(dataset, options) {
+  
+  # This will be the return object
+  results <- list()
+  
+  for (variable in options$variables) {
+    
+    results[[variable]] <- list()
+    
+    # Prepare for running the binomial test
+    column <- dataset[[ .v(variable) ]]
+    data <- column[!is.na(column)]
+    levels <- levels(as.factor(data))
+    
+    for (level in levels) {
       
-      for (v in target) {
+      nObs <- length(data)
+      counts <- sum(data == level)
+      proportion <- counts/nObs
       
-          *[some code]*
-        
-          if (imaginaryError) {
-              result$error <- TRUE
-              result$errorVars <- c(result$errorVars, v)
-          }
-        
+      resultsBinom <- stats::binom.test(x = counts, n = nObs, p = options$testValue, alternative = options$hypothesisRec,
+                                        conf.level = options$confidenceIntervalInterval)
+      p <- resultsBinom$p.value
+      if (p == FALSE) {
+        p <- 0
+      } else if (p == TRUE) {
+        p <- 1
+      }
+      lowerCI <- resultsBinom$conf.int[1]
+      upperCI <- resultsBinom$conf.int[2]
+      
+      # Add results for each level of each variable to results object
+      results[[variable]][[level]] <- list(variable = variable, level = level, counts = counts, total = nObs, 
+                                           proportion = proportion, p = p, VovkSellkeMPR = .VovkSellkeMPR(p), 
+                                           lowerCI = lowerCI, upperCI = upperCI)
+    }
+  }
+  # Return results object
+  return(results)
+}
+```
+
+##### Example
+```{r}
+.computeBinomialPlotsResults <- function(dataset, options) {
+  
+  # This will be the return object
+  results <- list()
+  
+  for (variable in options$variables) {
+    
+    # Prepare for running the binomial test
+    column <- dataset[[ .v(variable) ]]
+    data <- column[!is.na(column)]
+    levels <- levels(as.factor(data))
+    
+    for (level in levels) {
+      
+      # Define base breaks function for y
+      base_breaks_y <- function(x, testValue) {
+        d <- data.frame(x = -Inf, xend = -Inf, y = 0, yend = 1)
+        list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y, xend = xend,
+                                                          yend = yend),
+                                   inherit.aes = FALSE, size = 1),
+             ggplot2::scale_y_continuous(breaks = c(0,  round(testValue,3), 1)))
       }
       
-      return(result)
+      # Define plot position
+      plotPosition <- ggplot2::position_dodge(0.2)
       
+      # Compute data for plot
+      nObs <- length(data)
+      counts <- sum(data == level)
+      proportion <- counts/nObs
+      resultsBinom <- stats::binom.test(x = counts, n = nObs, p = options$testValue, alternative = "two.sided",
+                                        conf.level = options$descriptivesPlotsConfidenceInterval)
+      lowerCI <- resultsBinom$conf.int[1]
+      upperCI <- resultsBinom$conf.int[2]
+      
+      summaryStat <- data.frame(label = level, proportion = proportion, lowerCI = lowerCI, upperCI = upperCI)
+      dfTestValue <- data.frame(testValue = options$testValue)
+      
+      # Make plot
+      descriptivesPlot <- ggplot2::ggplot(summaryStat, ggplot2::aes(x = label, y = proportion, group = 1)) +
+        ggplot2::geom_errorbar(ggplot2::aes(ymin = lowerCI, ymax = upperCI), colour = "black", width = 0.2, 
+                               position = plotPosition) +
+        ggplot2::geom_point(position = plotPosition, size = 4) +
+        ggplot2::geom_hline(data = dfTestValue, ggplot2::aes(yintercept = options$testValue), linetype = "dashed") +
+        ggplot2::ylab(NULL) +
+        ggplot2::xlab(NULL) +
+        ggplot2::theme_bw() +
+        ggplot2::ylim(min = 0, max = 1) +
+        ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
+                       plot.title = ggplot2::element_text(size = 18),
+                       panel.grid.major = ggplot2::element_blank(),
+                       axis.title.x = ggplot2::element_blank(),
+                       axis.title.y = ggplot2::element_text(size = 18, vjust = -1),
+                       axis.text.x = ggplot2::element_text(size = 15),
+                       axis.text.y = ggplot2::element_text(size = 15),
+                       panel.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+                       plot.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+                       legend.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+                       panel.border = ggplot2::element_blank(),
+                       axis.line = ggplot2::element_blank(),
+                       legend.key = ggplot2::element_blank(),
+                       legend.title = ggplot2::element_text(size = 12),
+                       legend.text = ggplot2::element_text(size = 12),
+                       axis.ticks = ggplot2::element_line(size = 0.5),
+                       axis.ticks.margin = grid::unit(1, "mm"),
+                       axis.ticks.length = grid::unit(3, "mm"),
+                       plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) +
+        base_breaks_y(summaryStat, dfTestValue$testValue)
+      
+      # Add results for each level of each variable to results object
+      results[[variable]][[level]] <- descriptivesPlot
+    }
   }
-  ```
-2. Add a new entry to the `checks` list found at the top of `.hasErrors()`. The index value determines how your error check can be called from an analysis. The new entry should have a named list with the slots `callback` and `addGroupingMsg`. `callback` should be assigned the name of the function you just created. `addGroupingMsg` clarifies if your check allows grouping; this option adds the line "after grouping on {{grouping}}" when set to `TRUE` and grouping variables are found.
+  # Return results object
+  return(results)
+}
+```
 
-3. Create a message in `.messages()`, this function can be found in `commonmessages.R`. Variables must be put between {{}}. These will be automatically parsed in `.generateErrorMessage()`.
+### Step 3: Writing Create Functions
+
+The goal of each create function is to create an object that will be displayed in the output. Create function can be written for tables, plots, or containers. Whereas tables and plots are just tables and plots, containers need some further explanation. Containers consist of elements (again tables, plots, or containers) which will be grouped together. For example, if we have one descriptive plot for each variable, all of these plots can be grouped together in a descriptive plots container. Below, we will go through each example.
+
+#### Step 3.1: Creating a Table
+
+Every table consists of columns and rows. The general strategy in JASP is to specify the columns of a table in a create function and then add all of the required rows in a fill up function. Below, an overview is provided about how to create a table and the corresponding columns.
+
+##### Step 3.1.1: The Arguments
+
+A creating a table function has typically the following arguments:
+1: jaspResults which is the object that contains all results from this analysis and connects it to the output
+2: options which is a list of options selected or deselected by the user
+3: ready which is a boolean variable that indicates whether all input is given that is needed to compute the results
+4: resultsTable which is the object that contains the results for this table
+
+###### Example
+```{r}
+.createBinomialTable <- function(jaspResults, options, ready, resultsTable) {
+```
+
+##### Step 3.1.2: Reusing a Table
+
+If the table has been created before and if all options on which the table depends did not change compared to the last time the table was created, the table can be reused and no further steps are necessary. That is, the function can be terminated at this point.
+
+###### Example
+```{r}
+if (!is.null(jaspResults[["binomialTable"]])) {
+  return(NULL)
+}
+```
+
+##### Step 3.1.3: Creating a New Table
+
+If the table cannot be reused, it needs to be newly created. By doing so, it needs to be given a title that will be displayed in the output and added to the jaspResults objects as shown below. Furthermore, we need to specify the analysis options on which the table depends. If the value of any of these options changes, the table will be removed from the output and needs to be newly computed if it should still be displayed. However, if none of these options changes the next time the analysis is called, the table can be reused (see Step 3.1.2).
+
+###### Example
+```{r}
+binomialTable <- createJaspTable(title = "Binomial Test")
+jaspResults[["binomialTable"]] <- binomialTable
+binomialTable$dependOnOptions(c("variables", "testValue", "hypothesis", "confidenceInterval", 
+                                "confidenceIntervalInterval", "VovkSellkeMPR"))
+```
+
+##### Step 3.1.4: Adding Columns to the Table
+
+Next, we need to add all columns to the table that should be displayed. Some columns are always part of the table. Others depend on whether the user selected the corresponding option or not. Each column needs a name, a title (although the title can be ""), and a type ("string", "integer", or "number"). If the type is "number", then the column also needs a format that specifies the number of digits and decimals. Other helpful options are "combine", which ensures that if multiple rows have the same value, that value is shown only in the first row, and "overtitle" which adds an overtitle for multiple columns (often used for confidence intervals).
+
+###### Example
+```{r}
+binomialTable$addColumnInfo(name = "variable",      title = "Variable",     type = "string", combine = TRUE)
+binomialTable$addColumnInfo(name = "level",         title = "Level",        type = "string")
+binomialTable$addColumnInfo(name = "counts",        title = "Counts",       type = "integer")
+binomialTable$addColumnInfo(name = "total",         title = "Total",        type = "integer")
+binomialTable$addColumnInfo(name = "proportion",    title = "Proportion",   type = "number", format = "sf:4")
+binomialTable$addColumnInfo(name = "p",             title = "p",            type = "number", format = "dp:3;p:.001")
+if (options$VovkSellkeMPR) {
+  binomialTable$addColumnInfo(name = "VovkSellkeMPR", title = "VS-MPR\u002A", type = "number", format = "sf:4")
+}
+if (options$confidenceInterval) {
+  binomialTable$addColumnInfo(name = "lowerCI",       title = "Lower",        type = "number", format = "sf:4", 
+                              overtitle = paste0(100*options$confidenceIntervalInterval, "% CI for Proportion"))
+  binomialTable$addColumnInfo(name = "upperCI",       title = "Upper",        type = "number", format = "sf:4", 
+                              overtitle = paste0(100*options$confidenceIntervalInterval, "% CI for Proportion"))
+}
+```
+
+showSpecifiedColumsnOnly is another useful functionality provided by the jaspResults package that can be used in the create table function. If it is set as TRUE, only the columns that we added in this step are actually shown in the output (even if a row that is added to the table contains more statistics). This can be useful as results function are often blown up by complicated, nested if-statements in order to compute only the necessary statistics. By using showSpecifiedColumnsOnly, we can avoid this complexity by computing the results for all statistics (even those that the user does not require).
+
+###### Example
+```{r}
+binomialTable$showSpecifiedColumnsOnly <- TRUE
+```
+
+##### Step 3.1.5: Calling the Fill Up Function
+
+Now that the table has been created, it is time to fill it up with results. In order to do so, we need to call the fill up function.
+
+###### Example
+```{r}
+.fillUpBinomialTable(binomialTable = binomialTable, options = options, ready = ready, resultsTable = resultsTable)
+```
+
+##### Step 3.1.6: Time for Testing
+
+Now, the creating a table function is complete and it is time to test it. Below is an example of the complete creating a table function of the Binomial Test.
+
+###### Example
+```{r}
+.createBinomialTable <- function(jaspResults, options, ready, resultsTable) {
+  
+  # Check if object can be reused (in case relevant options did not change)
+  if (!is.null(jaspResults[["binomialTable"]])) {
+    return(NULL)
+  }
+  
+  # Create table
+  binomialTable <- createJaspTable(title = "Binomial Test")
+  jaspResults[["binomialTable"]] <- binomialTable
+  binomialTable$showSpecifiedColumnsOnly <- TRUE
+  binomialTable$dependOnOptions(c("variables", "testValue", "hypothesis", "confidenceInterval", 
+                                  "confidenceIntervalInterval", "VovkSellkeMPR"))
+  
+  # Add columns to table
+  binomialTable$addColumnInfo(name = "variable",      title = "Variable",     type = "string", combine = TRUE)
+  binomialTable$addColumnInfo(name = "level",         title = "Level",        type = "string")
+  binomialTable$addColumnInfo(name = "counts",        title = "Counts",       type = "integer")
+  binomialTable$addColumnInfo(name = "total",         title = "Total",        type = "integer")
+  binomialTable$addColumnInfo(name = "proportion",    title = "Proportion",   type = "number", format = "sf:4")
+  binomialTable$addColumnInfo(name = "p",             title = "p",            type = "number", format = "dp:3;p:.001")
+  if (options$VovkSellkeMPR) {
+    binomialTable$addColumnInfo(name = "VovkSellkeMPR", title = "VS-MPR\u002A", type = "number", format = "sf:4")
+  }
+  if (options$confidenceInterval) {
+    binomialTable$addColumnInfo(name = "lowerCI",       title = "Lower",        type = "number", format = "sf:4", overtitle = paste0(100*options$confidenceIntervalInterval, "% CI for Proportion"))
+    binomialTable$addColumnInfo(name = "upperCI",       title = "Upper",        type = "number", format = "sf:4", overtitle = paste0(100*options$confidenceIntervalInterval, "% CI for Proportion"))
+  }
+  
+  # Fill up table with results
+  .fillUpBinomialTable(binomialTable = binomialTable, options = options, ready = ready, resultsTable = resultsTable)
+
+  # This function does not return anything
+}
+```
+
+#### Step 3.2: Creating a Container
+
+Every container contains elements (tables, plots, or other containers). The main function of a container is to group such elements together.
+
+##### Step 3.2.1: The Arguments
+
+A creating a container function has typically the following arguments:
+1: jaspResults which is the object that contains all results from this analysis and connects it to the output
+2: options which is a list of options selected or deselected by the user
+3: resultsX which is the object that contains the results for this container
+
+###### Example
+```{r}
+.createBinomialDescriptivesPlotsContainers <- function(jaspResults, options, resultsPlots) {
+```
+
+##### Step 3.2.2: Reusing a Container
+
+If the container has been created before and if all options on which the container depends did not change compared to the last time the container was created, the container can be reused and no further steps are necessary. That is, the function can be terminated at this point.
+
+###### Example
+```{r}
+if (!is.null(jaspResults[["binomialDescriptivesPlotsContainerTotal"]])) {
+  return(NULL)
+}
+```
+
+##### Step 3.2.3: Creating a New Container
+
+If the container cannot be reused, it needs to be newly created. By doing so, it needs to be given a title that will be displayed in the output and added to the jaspResults objects as shown below. Furthermore, we need to specify the analysis options on which the container depends. If the value of any of these options changes, the container will be removed from the output and needs to be newly computed if it should still be displayed. However, if none of these options changes the next time the analysis is called, the container can be reused (see Step 3.2.2).
+
+###### Example
+```{r}
+binomialDescriptivesPlotsContainerTotal <- createJaspContainer(title = "Descriptives Plots")
+jaspResults[["binomialDescriptivesPlotsContainerTotal"]] <- binomialDescriptivesPlotsContainerTotal
+binomialDescriptivesPlotsContainerTotal$dependOnOptions(c("variables", "testValue", "descriptivesPlots",
+                                                          "descriptivesPlotsConfidenceInterval"))
+```
+
+##### Step 3.2.4: Adding Subcontainers to a Container
+
+Sometimes, we want to have subcontainers within a container. For example, for the Binomial Test, we want to have one descriptive plot for each level of each dependent variable. That is, we want to have one container for all descriptives plots (see the last example) and then add a subcontainer for each dependent variable that contains all plots for the levels belonging to that variable. The steps for creating a subcontainer are almost identical to creating a container. The only difference is that the container will be added within the previously defined container (see the second row in the example below).
+
+###### Example
+```{r}
+for (variable in options$variables) {
+  binomialDescriptivesPlotsContainerVariable <- createJaspContainer(title = variable)
+  binomialDescriptivesPlotsContainerTotal[[variable]] <- binomialDescriptivesPlotsContainerVariable
+  binomialDescriptivesPlotsContainerVariable$dependOnOptions(c("variables", "testValue", "descriptivesPlots",
+                                                               "descriptivesPlotsConfidenceInterval"))
+}
+```
+
+##### Step 3.2.5: Calling the Fill Up Function
+
+Now that the container has been created, it is time to fill it up with results. In order to do so, we need to call the fill up function.
+
+###### Example
+```{r}
+.fillUpBinomialDescriptivesPlotsContainers(binomialDescriptivesPlotsContainerTotal, options, resultsPlots)
+```
+
+##### Step 3.2.6: Time for Testing
+
+Now, the creating a container function is complete and it is time to test it. Below is an example of the complete creating a container function of the Binomial Test.
+
+###### Example
+```{r}
+.createBinomialDescriptivesPlotsContainers <- function(jaspResults, options, resultsPlots) {
+  
+  # Check if object can be reused (in case relevant options did not change)
+  if (!is.null(jaspResults[["binomialDescriptivesPlotsContainerTotal"]])) {
+    return(NULL)
+  }
+  
+  # Create container for all variables
+  binomialDescriptivesPlotsContainerTotal <- createJaspContainer(title = "Descriptives Plots")
+  jaspResults[["binomialDescriptivesPlotsContainerTotal"]] <- binomialDescriptivesPlotsContainerTotal
+  binomialDescriptivesPlotsContainerTotal$dependOnOptions(c("variables", "testValue", "descriptivesPlots",
+                                                            "descriptivesPlotsConfidenceInterval"))
+  
+  # Create subcontainer for each variable
+  for (variable in options$variables) {
+    binomialDescriptivesPlotsContainerVariable <- createJaspContainer(title = variable)
+    binomialDescriptivesPlotsContainerTotal[[variable]] <- binomialDescriptivesPlotsContainerVariable
+    binomialDescriptivesPlotsContainerVariable$dependOnOptions(c("variables", "testValue", "descriptivesPlots",
+                                                                 "descriptivesPlotsConfidenceInterval"))
+  }
+  
+  # Fill up containers with plots
+  .fillUpBinomialDescriptivesPlotsContainers(binomialDescriptivesPlotsContainerTotal, options, resultsPlots)
+  
+  # This function does not return anything
+}
+```
+
+#### Step 3.3: Creating a Plot
+
+##### Step 3.3.1: The Arguments
+
+A creating a plot function has typically the following arguments:
+1: jaspResults which is the object that contains all results from this analysis and connects it to the output
+2: options which is a list of options selected or deselected by the user
+3: resultsPlots which is the object that contains the results for the plot
+
+###### Example
+```{r}
+.createBinomialDescriptivesPlot <- function(jaspResults, options, resultsPlots) {
+```
+
+##### Step 3.3.2: Reusing a Plot
+
+If the plot has been created before and if all options on which the plot depends did not change compared to the last time the plot was created, the plot can be reused and no further steps are necessary. That is, the function can be terminated at this point.
+
+###### Example
+```{r}
+if (!is.null(jaspResults[["binomialDescriptivesPlot"]])) {
+  return(NULL)
+}
+```
+
+##### Step 3.3.3: Creating a New Plot
+
+If the plot cannot be reused, it needs to be newly created. By doing so, it needs to be given a title that will be displayed in the output and added to the jaspResults objects as shown below. Furthermore, we need to specify the analysis options on which the plot depends. If the value of any of these options changes, the plot will be removed from the output and needs to be newly computed if it should still be displayed. However, if none of these options changes the next time the analysis is called, the plot can be reused (see Step 3.3.2).
+
+###### Example
+```{r}
+binomialDescriptivesPlot <- createJaspPlot(plot = resultsPlots, title = "Plot")
+jaspResults[["binomialDescriptivesPlot]] <- binomialDescriptivesPlot
+binomialDescriptivesPlot$dependOnOptions(c("variables", "testValue", "descriptivesPlots", "descriptivesPlotsConfidenceInterval"))
+```
+
+##### Step 3.3.5: Adding the Plot Result
+
+Now that the plot has been created, it is time to fill it up with the result. However, this is very straightforward for a plot. Therefore, no extra fill up function is necessary but it can already be done when creating the plot (plot = descriptivesPlot).
+
+###### Example
+```{r}
+binomialDescriptivesPlot <- createJaspPlot(plot = resultsPlots, title = "Plot")
+```
+
+##### Step 3.3.6: Time for Testing
+
+Now, the creating a container function is complete and it is time to test it. Below is an example of the complete creating a plot function adapted from the Binomial Test.
+
+###### Example
+```{r}
+.createBinomialDescriptivesPlot <- function(jaspResults, options, resultsPlots) {
+  
+  # Check if object can be reused (in case relevant options did not change)
+  if (!is.null(jaspResults[["binomialDescriptivesPlot"]])) {
+    return(NULL)
+  }
+  
+  descriptivesPlot <- resultsPlots
+  binomialDescriptivesPlot <- createJaspPlot(plot = descriptivesPlot, title = level)
+  jaspResults[["binomialDescriptivesPlot"]] <- binomialDescriptivesPlot
+  binomialDescriptivesPlot$dependOnOptions(c("variables", "testValue", "descriptivesPlots", "descriptivesPlotsConfidenceInterval"))
+  
+  # This function does not return anything
+}
+```
+
+### Step 4: Writing Fill Up Functions
+
+The goal of each fill up function is to fill up output elements that were created with create functions using objects that were computed in the results function. Fill up functions can be written for tables or containers. In principle, fill up functions can also be written for plots but as this is very straightforward it may not be worth to write a new function for this step (see 3.3.5).
+
+#### Step 4.1: Filling Up a Table
+
+##### Step 4.1.1: The Arguments
+
+A filling up a table function has typically the following arguments:
+1: xTable which is the table that was created in the create function and that we want to fill up
+2: options which is a list of options selected or deselected by the user
+3: ready which is a boolean variable that indicates whether all input is given that is needed to compute the results
+4: resultsX which is the object that contains the results
+
+###### Example
+```{r}
+.fillUpBinomialTable <- function(binomialTable, options, ready, resultsTable) {
+```
+
+##### Step 4.1.2: Adding Results to Tables (If Ready)
+
+If the results could be computed (ready == TRUE), it is time to add the results to the table that we created earlier (Step 3). Oftentimes, we need to add one row for each dependent variable or for each predictor. Therefore, the results are often added in for loops. In the example provided below, one row with results is added for each level of each dependent variable. The results are taken from the results argument computed in the corresponding results function.
+
+###### Example
+```{r}
+for (variable in options$variables) {
+  for (level in options$levels[[variable]]) {
+    row <- resultsTable[[variable]][[level]]
+    binomialTable$addRows(row, rowNames = paste0(variable, " - ", level))
+  }
+}
+```
+
+##### Step 4.1.3: Adding Footnotes to Tables
+
+The fill up function is also a good place to add footnotes to tables. Footnotes provide the user with useful information to interprete the results. Each footnote needs a message that will be displayed. It may also have a symbol (this can also be a text like "Warning"). 
+
+###### Example
+```{r}
+if (options$VovkSellkeMPR) {
+  binomialTable$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A")
+}
+```
+
+If the footnote should be connected with a specific row, column, or cell, it can be matched by using the arguments "row_names" and "col_names". Notably, this requires to name the rows when they are added to the table (see "rowNames" in the last example).
+
+###### Example
+```{r}
+if (!is.na(levene[1, 3]) && levene[1, 3] < 0.05) {
+  message <- .messages('footnote', 'leveneSign')
+  independentSamplesTTestTableParametric$addFootnote(message = message, col_names = "p", row_names = variable)
+}
+```
+
+##### Step 4.1.4: Adding Dots to Tables (If Not Ready)
+
+If the results could NOT be computed (ready == FALSE), a single row with dots should be added to the table such that the table can nonetheless be displayed in the output but also makes it clear that input is missing.
+
+###### Example
+```{r}
+if (ready == TRUE) {
+
+  # INSERT CODE
+
+} else {
+  row <- list(variable = ".", level = ".", counts = ".", total = ".", proportion = ".", p = ".", 
+              VovkSellkeMPR = ".", lowerCI = ".", upperCI = ".")
+  binomialTable$addRows(row)
+}
+```
+
+##### Step 4.1.5: Time for Testing
+
+Now, the filling up a table function is complete and it is time to test it. Below is an example of the complete filling up a table function from the Binomial Test.
+
+###### Example
+```{r}
+.fillUpBinomialTable <- function(binomialTable, options, ready, resultsTable) {
+  
+  # If results can be computed, compute them and add row for each level of each variable
+  if (ready == TRUE) {
+    
+    for (variable in options$variables) {
+      for (level in options$levels[[variable]]) {
+        row <- resultsTable[[variable]][[level]]
+        binomialTable$addRows(row, rowNames = paste0(variable, " - ", level))
+      }
+    }
+    
+    # Add footnote: VovkSellkeMPR
+    if (options$VovkSellkeMPR) {
+      binomialTable$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A")
+    }
+    
+    # Add footnote: Alternative hypothesis
+    if (options$hypothesisRec == "two.sided") {
+      binomialTable$addFootnote(message = .messages("footnote", "binomNeq", value=options$testValue), symbol="<em>Note.</em>")
+    } else if (options$hypothesisRec == "greater") {
+      binomialTable$addFootnote(message = .messages("footnote", "binomGreater", value=options$testValue), symbol="<em>Note.</em>")
+    } else if (options$hypothesisRec == "less") {
+      binomialTable$addFootnote(message = .messages("footnote", "binomLess", value=options$testValue), symbol="<em>Note.</em>")
+    }
+    
+  # If results cannot be computed, add an empty row
+  } else {
+    row <- list(variable = ".", level = ".", counts = ".", total = ".", proportion = ".", p = ".", 
+                VovkSellkeMPR = ".", lowerCI = ".", upperCI = ".")
+    binomialTable$addRows(row)
+  }
+  
+  # This function does not return anything
+}
+```
+
+#### Step 4.2: Filling Up a Container
+
+Filling up a container functions are more variable because what needs to be done depends on the structure of container (does it consists of subcontainers, tables, or plots?). Here we provide an example for filling up a container with plots.
+
+##### Step 4.2.1: The Arguments
+
+A filling up a container with plots function has typically the following arguments:
+1: jaspResults which is the object that contains all results from this analysis and connects it to the output
+2: options which is a list of options selected or deselected by the user
+3: resultsX which is the object that contains the results
+
+###### Example
+```{r}
+.fillUpBinomialDescriptivesPlotsContainers <- function(binomialDescriptivesPlotsContainerTotal, options, resultsPlots) {
+```
+
+##### Step 4.2.2: Adding the Results to a Container
+
+Similarly to filling up a table, we can use for loops to add results to the container that we created earlier (Step 3). In the example provided below, one plot is added for each level of each dependent variable. The results are taken from the results argument computed in the corresponding results function. Note that for plots, we do not offer an equivalent to the table with a dotted line. Instead, we only call the fill up function if all necessary input is given (ready == TRUE).
+
+###### Example
+```{r}
+for (variable in options$variables) {
+  for (level in options$levels[[variable]]) {
+    descriptivesPlot <- resultsPlots[[variable]][[level]]
+    binomialDescriptivesPlot <- createJaspPlot(plot = descriptivesPlot, title = level)
+    binomialDescriptivesPlotsContainerTotal[[variable]][[level]] <- binomialDescriptivesPlot
+    binomialDescriptivesPlot$dependOnOptions(c("variables", "testValue", "descriptivesPlots", "descriptivesPlotsConfidenceInterval"))
+  }
+}
+```
+
+##### Step 4.2.3: Time for Testing
+
+Now, the filling up a container with plots function is complete and it is time to test it. Below is an example of the complete filling up a container with plots function from the Binomial Test.
+
+###### Example
+```{r}
+.fillUpBinomialDescriptivesPlotsContainers <- function(binomialDescriptivesPlotsContainerTotal, options, resultsPlots) {
+  
+  for (variable in options$variables) {
+    for (level in options$levels[[variable]]) {
+      descriptivesPlot <- resultsPlots[[variable]][[level]]
+      binomialDescriptivesPlot <- createJaspPlot(plot = descriptivesPlot, title = level)
+      binomialDescriptivesPlotsContainerTotal[[variable]][[level]] <- binomialDescriptivesPlot
+      binomialDescriptivesPlot$dependOnOptions(c("variables", "testValue", "descriptivesPlots",
+                                                 "descriptivesPlotsConfidenceInterval"))
+      
+    }
+  }
+  
+  # This function does not return anything
+}
+```
