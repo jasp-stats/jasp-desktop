@@ -54,7 +54,7 @@ void DataSetView::setModel(QAbstractTableModel * model)
 		setRolenames();
 
 		QSizeF calcedSizeRowNumber = _metricsFont.size(Qt::TextSingleLine, QString::fromStdString(std::to_string(_model->rowCount()) + "XX"));
-		_rowNumberMaxWidth = calcedSizeRowNumber.width() + 30;
+		setRowNumberWidth(calcedSizeRowNumber.width() + 30);
 
 		//recalculateCellSizes = true;
 		calculateCellSizes();
@@ -122,7 +122,7 @@ void DataSetView::calculateCellSizes()
 	for(int col=0; col<_model->columnCount(); col++)
 		_dataColsMaxWidth[col] = _cellSizes[col].width() + _itemHorizontalPadding * 2;
 
-	_dataRowsMaxHeight = _model->columnCount() == 0 ? 0 : _cellSizes[0].height() + _itemVerticalPadding * 2;
+	setHeaderHeight(_model->columnCount() == 0 ? 0 : _cellSizes[0].height() + _itemVerticalPadding * 2);
 
 	float w=_rowNumberMaxWidth;
 	for(int col=0; col<_model->columnCount(); col++)
@@ -886,49 +886,4 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 	_linesWasChanged = false;
 
 	return oldNode;
-}
-
-
-
-void DataSetView::setViewportX(float newViewportX)
-{
-	if(newViewportX != _viewportX)
-	{
-		//std::cout << "setViewPortX!\n" <<std::flush;
-		_viewportX = newViewportX;
-		emit viewportXChanged();
-	}
-}
-
-void DataSetView::setViewportY(float newViewportY)
-{
-	if(newViewportY != _viewportY)
-	{
-		//std::cout << "setViewPortY!\n" << std::flush;
-		_viewportY = newViewportY;
-		emit viewportYChanged();
-	}
-}
-
-void DataSetView::setViewportW(float newViewportW)
-{
-	newViewportW = std::min(newViewportW, _viewportReasonableMaximumW);
-
-	if(newViewportW != _viewportW)
-	{
-		//std::cout << "setViewPortW!\n" << std::flush;
-		_viewportW = newViewportW;
-		emit viewportWChanged();
-	}
-}
-
-void DataSetView::setViewportH(float newViewportH)
-{
-	newViewportH = std::min(newViewportH, _viewportReasonableMaximumH);
-
-	if(newViewportH != _viewportH)
-	{
-		_viewportH = newViewportH;
-		emit viewportHChanged();
-	}
 }
