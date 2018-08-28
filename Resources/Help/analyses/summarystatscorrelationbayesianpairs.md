@@ -5,7 +5,7 @@ The Bayesian Correlation Pairs allows you to test the null hypothesis that the p
 
 ### Input
 - *n*: Sample size (minimum: 2)
-- Correlation coefficient
+- Sample Correlation coefficient
   - *Pearson's r*:  Pearson product-moment correlation coefficient
   - *Kendall's tau-b*
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>565</width>
-    <height>496</height>
+    <height>502</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -440,7 +440,7 @@
       <item row="0" column="0">
        <widget class="BoundGroupBox" name="correlationCoefficient">
         <property name="title">
-         <string>Correlation Coefficient</string>
+         <string>Sample Correlation Coefficient</string>
         </property>
         <property name="flat">
          <bool>true</bool>
