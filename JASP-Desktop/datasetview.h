@@ -23,6 +23,16 @@ struct ItemContextualized
 	QQmlContext * context;
 };
 
+#define GENERIC_SET_FUNCTION(WHAT_TO_SET, VARIABLE_TO_SET, EMIT_THIS)	\
+void set ## WHAT_TO_SET(float new ## WHAT_TO_SET)			\
+{																		\
+	if(new ## WHAT_TO_SET != VARIABLE_TO_SET)							\
+	{																	\
+		VARIABLE_TO_SET = new ## WHAT_TO_SET;							\
+		emit EMIT_THIS();												\
+	}																	\
+}
+
 class DataSetView : public QQuickItem
 {
 	Q_OBJECT
@@ -43,6 +53,9 @@ class DataSetView : public QQuickItem
 	Q_PROPERTY( QQuickItem * extraColumnItem			READ extraColumnItem		WRITE setExtraColumnItem		NOTIFY extraColumnItemChanged )
 
 	Q_PROPERTY( QFont font	MEMBER _font)
+
+	Q_PROPERTY( float headerHeight		READ headerHeight	NOTIFY headerHeightChanged )
+	Q_PROPERTY( float rowNumberWidth	READ rowNumberWidth	NOTIFY rowNumberWidthChanged )
 
 public:
 	DataSetView();
@@ -68,10 +81,10 @@ public:
 	QQuickItem * leftTopCornerItem()	{ return _leftTopItem; }
 	QQuickItem * extraColumnItem()		{ return _extraColumnItem; }
 
-	void setViewportX(float newViewportX);
-	void setViewportY(float newViewportY);
-	void setViewportW(float newViewportW);
-	void setViewportH(float newViewportH);
+	GENERIC_SET_FUNCTION(ViewportX, _viewportX, viewportXChanged)
+	GENERIC_SET_FUNCTION(ViewportY, _viewportY, viewportYChanged)
+	GENERIC_SET_FUNCTION(ViewportW, _viewportW, viewportWChanged)
+	GENERIC_SET_FUNCTION(ViewportH, _viewportH, viewportHChanged)
 
 	void setItemHorizontalPadding(float newHorizontalPadding)	{ if(newHorizontalPadding != _itemHorizontalPadding)	{ _itemHorizontalPadding = newHorizontalPadding;	emit itemHorizontalPaddingChanged();	update(); }}
 	void setItemVerticalPadding(float newVerticalPadding)		{ if(newVerticalPadding != _itemVerticalPadding)		{ _itemVerticalPadding = newVerticalPadding;		emit itemVerticalPaddingChanged();		update(); }}
@@ -82,6 +95,12 @@ public:
 
 	void setLeftTopCornerItem(QQuickItem * newItem);
 	void setExtraColumnItem(QQuickItem * newItem);
+
+	float headerHeight()	{ return _dataRowsMaxHeight; }
+	float rowNumberWidth()	{ return _rowNumberMaxWidth; }
+
+	GENERIC_SET_FUNCTION(HeaderHeight, _dataRowsMaxHeight, headerHeightChanged)
+	GENERIC_SET_FUNCTION(RowNumberWidth, _rowNumberMaxWidth, rowNumberWidthChanged)
 
 protected:
 	void setRolenames();
@@ -184,6 +203,9 @@ signals:
 
 	void itemSizeChanged();
 
+	void headerHeightChanged();
+	void rowNumberWidthChanged();
+
 
 
 public slots:
@@ -203,5 +225,7 @@ public slots:
 	void modelWasReset()																	{ setRolenames(); calculateCellSizes(); }
 
 };
+
+
 
 #endif // DATASETVIEW_H

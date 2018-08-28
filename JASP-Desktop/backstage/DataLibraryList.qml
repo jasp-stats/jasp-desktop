@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Styles 1.0
 import QtQuick.Window 2.3
+import "qrc:/qml/"
 
 ListView 
 {
@@ -13,13 +14,9 @@ ListView
 	
 	clip: true
 	
-	CustomScrollBar {
-		id:rightscrollbar
-		handleSize: 7
-		bkColor: "white"
-		fgColor: "black"
-		outerradius: false
-		flickable: parent
+	JASPScrollBar {
+		id:				rightscrollbar
+		flickable:		parent
 	}
 	
 	spacing : 10
@@ -49,10 +46,11 @@ ListView
 			
 			id: rectTitleAndDescripton
 			
-			width: listview.width
+			width: listview.width - rightscrollbar.width - (rightscrollbar.width > 0 ? listview.spacing : 0)
 			height: rectTitle.height + rectDescription.height + 3
 			border.width: 1
 			border.color: "darkgray"
+
 			
 			color: "#ececec"  
 			
@@ -118,7 +116,7 @@ ListView
 					width: model.associated_datafile === "" ? 0 : height
 					anchors.right : parent.right
 					anchors.top:rectTitle.top
-					anchors.rightMargin: rightscrollbar.width + 1
+
 					
 					fillMode: Image.PreserveAspectFit
 					source: model.dataiconsource
@@ -130,9 +128,7 @@ ListView
 						anchors.fill: parent
 						hoverEnabled: true
 						
-						onDoubleClicked: {
-							dataLibraryListModel.openFile(model.dirpath + model.associated_datafile)				
-						}
+						onDoubleClicked: dataLibraryListModel.openFile(model.dirpath + model.associated_datafile)
 						cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 					}
 					
@@ -213,8 +209,7 @@ ListView
 					anchors.right: parent.right
 					anchors.top: parent.top
 					
-					anchors.leftMargin: 10					
-					anchors.rightMargin: rightscrollbar.width + 5
+					anchors.leftMargin: 10
 					anchors.topMargin: 10
 					
 					horizontalAlignment: Text.AlignJustify

@@ -5,6 +5,5 @@
         <file>BackstageDataLibrary.qml</file>
         <file>DataLibraryList.qml</file>
         <file>DataLibraryBreadCrumbs.qml</file>
-        <file>CustomScrollBar.qml</file>
     </qresource>
 </RCC>
