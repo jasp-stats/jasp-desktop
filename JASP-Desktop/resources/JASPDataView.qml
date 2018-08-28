@@ -45,17 +45,15 @@ FocusScope
 			viewportW: myFlickable.visibleArea.widthRatio * width
 			viewportH: myFlickable.visibleArea.heightRatio * height
 
-			MouseArea
+			JASPMouseAreaToolTipped
 			{
+				id: datasetMouseArea
 				z: -10
 				property real lastTimeClicked: -1
 				property real doubleClickTime: 500
 
-				anchors.fill: parent
+				toolTipText: "double-click to edit data"
 
-				hoverEnabled: true
-
-				cursorShape: !containsMouse ? Qt.ArrowCursor :  myFlickable.dragging ? Qt.ClosedHandCursor : Qt.OpenHandCursor
 
 				onReleased:
 				{

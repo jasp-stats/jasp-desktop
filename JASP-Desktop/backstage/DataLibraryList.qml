@@ -53,7 +53,6 @@ ListView
 			height: rectTitle.height + rectDescription.height + 3
 			border.width: 1
 			border.color: "darkgray"
-			anchors.right: listview.right
 			
 			color: "#ececec"  
 			
