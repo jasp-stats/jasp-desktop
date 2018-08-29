@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "fsbmexamples.h"
+#include "fsbmdatalibrary.h"
 
 #include <QFile>
 #include <QDir>
@@ -31,9 +31,9 @@
 #include "appdirs.h"
 #include "utils.h"
 
-const QString FSBMExamples::rootelementname = "Categories";
+const QString FSBMDataLibrary::rootelementname = "Categories";
 
-FSBMExamples::FSBMExamples(QObject *parent, QString root)
+FSBMDataLibrary::FSBMDataLibrary(QObject *parent, QString root)
 	: FSBModel(parent)
 {
 	_rootPath = _path = root;
@@ -42,13 +42,13 @@ FSBMExamples::FSBMExamples(QObject *parent, QString root)
 
 }
 
-FSBMExamples::~FSBMExamples()
+FSBMDataLibrary::~FSBMDataLibrary()
 {
 	if (_doc)
 		delete _doc;
 }
 
-void FSBMExamples::refresh()
+void FSBMDataLibrary::refresh()
 {
 
 	if (_doc == NULL)
@@ -58,14 +58,14 @@ void FSBMExamples::refresh()
 
 	_entries.clear();
 
-	if (_path == FSBMExamples::rootelementname)
+	if (_path == FSBMDataLibrary::rootelementname)
 		loadRootElements();
 	else
 		loadFilesAndFolders(_path);
 
 }
 
-void FSBMExamples::loadRootElements()
+void FSBMDataLibrary::loadRootElements()
 {
 
 	if (_doc == NULL)
@@ -110,7 +110,7 @@ void FSBMExamples::loadRootElements()
 
 }
 
-void FSBMExamples::loadFilesAndFolders(const QString &docpath)
+void FSBMDataLibrary::loadFilesAndFolders(const QString &docpath)
 {
 
 	bool found = false;
@@ -182,7 +182,7 @@ void FSBMExamples::loadFilesAndFolders(const QString &docpath)
 
 }
 
-QJsonDocument *FSBMExamples::getJsonDocument()
+QJsonDocument *FSBMDataLibrary::getJsonDocument()
 {
 
 	QString filename = "index";
@@ -219,12 +219,12 @@ QJsonDocument *FSBMExamples::getJsonDocument()
 
 }
 
-bool FSBMExamples::isFolder(const QString &kind)
+bool FSBMDataLibrary::isFolder(const QString &kind)
 {
 	return (kind.toLower() == "folder" ? true : false);
 }
 
-ExtendedFSEntry FSBMExamples::createEntry(const QString &path, const QString &name, const QString &description, FSEntry::EntryType type, const QString &associated_datafile)
+ExtendedFSEntry FSBMDataLibrary::createEntry(const QString &path, const QString &name, const QString &description, FSEntry::EntryType type, const QString &associated_datafile)
 {
 	ExtendedFSEntry entry;
 
@@ -237,7 +237,7 @@ ExtendedFSEntry FSBMExamples::createEntry(const QString &path, const QString &na
 	return entry;
 }
 
-const FSBMExamples::FileSystemExtendedEntryList &FSBMExamples::entries() const
+const FSBMDataLibrary::FileSystemExtendedEntryList &FSBMDataLibrary::entries() const
 {
 	return _entries;
 }

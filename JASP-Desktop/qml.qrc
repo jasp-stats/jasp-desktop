@@ -21,6 +21,5 @@
         <file>components/JASP/Controls/PercentField.qml</file>
         <file>components/JASP/Controls/ComboBox.qml</file>
         <file>components/JASP/Controls/qmldir</file>
-        <file>modules/ModuleInstaller.qml</file>
     </qresource>
 </RCC>

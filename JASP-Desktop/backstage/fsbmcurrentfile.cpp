@@ -16,30 +16,44 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef FSBROWSERMODELRECENT_H
-#define FSBROWSERMODELRECENT_H
+#include "fsbmcurrentfile.h"
 
-#include "fsbmodel.h"
-#include "common.h"
+#include <QStringList>
+#include <QFileInfo>
+#include <QEvent>
+#include <QDebug>
 
-class FSBMRecent : public FSBModel
+FSBMCurrentFile::FSBMCurrentFile(QObject *parent)
+	: FSBModel(parent)
 {
-public:
-	FSBMRecent(QObject *parent = NULL);
+	parent->installEventFilter(this);
+	_current = QString();
+}
 
-	void refresh() OVERRIDE;
+void FSBMCurrentFile::refresh()
+{
+}
 
-	void addRecent(const QString &path);
-	void filter(bool (*filterFunction)(QString));
+void FSBMCurrentFile::setCurrent(const QString &path)
+{
+	if (path.endsWith(".jasp", Qt::CaseInsensitive))
+		return;
 
-protected:
-	bool eventFilter(QObject *object, QEvent *event) OVERRIDE;
+	_current = path;
 
-private:
-	QStringList load();
-	void populate(const QStringList &paths);
-	bool isUrl(const QString &path) const;
+	_entries.clear();
+	FSEntry::EntryType entryType = FSEntry::Other;
+	FSEntry entry = createEntry(path, entryType);
+	_entries.append(entry);
 
-};
+	emit entriesChanged();
+}
 
-#endif // FSBROWSERMODELRECENT_H
+QString FSBMCurrentFile::getCurrent() const {
+	return _current;
+}
+
+bool FSBMCurrentFile::isOnlineFile() const {
+	return _current.startsWith("http");
+}
+

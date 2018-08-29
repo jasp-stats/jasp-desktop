@@ -16,47 +16,34 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BACKSTAGECOMPUTEROLD_H
-#define BACKSTAGECOMPUTEROLD_H
+#ifndef BACKSTAGERECENTFILES_H
+#define BACKSTAGERECENTFILES_H
 
 #include "backstagepage.h"
-#include "computerlistmodel.h"
+#include "recentfileslistmodel.h"
 #include <QQmlContext>
 
 namespace Ui {
 class BackstageForm;
 }
 
-class BackstageComputer : public BackstagePage
+class BackstageRecentFiles : public BackstagePage		
 {
-	Q_OBJECT
+	
+	Q_OBJECT	
 	
 public:
-	explicit BackstageComputer(QWidget *parent = nullptr);
-	~BackstageComputer();
-	
-	FileEvent *browseOpen(const QString &path = "");
-	FileEvent *browseSave(const QString &path = "", FileEvent::FileMode mode = FileEvent::FileSave);
-	
-	void setFileName(const QString &filename);
-	void clearFileName();
-	void addRecentFolder(const QString &path);
-		
-protected:
-	bool eventFilter(QObject *object, QEvent *event) OVERRIDE;
+	explicit BackstageRecentFiles(QWidget *parent = 0);
+	~BackstageRecentFiles();
+	void pushRecentFilePath(const QString & newrecent);
 
 public slots:
-	void browsePath(QString path);
-	void browseMostRecent();
+	void openFile(FileEvent *event);
 	
 private:
-	// these two variables are a hack!
-	bool _hasFileName;
-	QString _fileName;	
-	
-	ComputerListModel *_computerListModel;	
+	RecentFilesListModel *_recentFilesListModel;
 	Ui::BackstageForm *ui;
-
+	
 };
-
-#endif // BACKSTAGECOMPUTEROLD_H
+				
+#endif // BACKSTAGERECENTFILES_H

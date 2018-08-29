@@ -16,6 +16,12 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>330</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>JASP</string>
   </property>
@@ -122,7 +128,7 @@ QPushButton::menu-indicator {
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="BackStageWidget" name="backStage">
        <property name="minimumSize">
@@ -350,7 +356,7 @@ QPushButton::menu-indicator {
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>300</width>
+                       <width>302</width>
                        <height>714</height>
                       </rect>
                      </property>

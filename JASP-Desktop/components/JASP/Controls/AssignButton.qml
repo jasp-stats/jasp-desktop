@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
+import QtQuick 2.10
 import JASP.Theme 1.0
 
 Button {

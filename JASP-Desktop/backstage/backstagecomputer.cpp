@@ -17,33 +17,20 @@
 //
 
 #include "backstagecomputer.h"
-#include "ui_backstagecomputer.h"
-
+#include "ui_backstageform.h"
 #include <QFileDialog>
 
-#include "fsbmrecentfolders.h"
-
-
-BackstageComputer::BackstageComputer(QWidget *parent) :
-	BackstagePage(parent),
-	ui(new Ui::BackstageComputer)
+BackstageComputer::BackstageComputer(QWidget *parent): BackstagePage(parent),
+	ui(new Ui::BackstageForm)
 {
-	_hasFileName = false;
-
 	ui->setupUi(this);
 
-	_model = new FSBMRecentFolders(this);
+	_computerListModel = new ComputerListModel(this);
 
-	ui->browser->setBrowseMode(FSBrowser::BrowseOpenFolder);
-	ui->browser->setViewType(FSBrowser::ListView);
-	ui->browser->setFSModel(_model);
-	ui->browser->setContentsMargins(0, 0, 0, 0); //Position Recent folders
-	ui->label->setContentsMargins(12, 12, 0, 0);  //Position Recent folder label
+	ui->QmlContent->rootContext()->setContextProperty("computerListModel", _computerListModel);
+	ui->QmlContent->rootContext()->setContextProperty("backstagecomputer", this);
+	ui->QmlContent->setSource(QUrl(QStringLiteral("qrc:/backstage/BackstageComputer.qml")));
 
-	installEventFilter(this);
-
-	connect(ui->browser, SIGNAL(entryOpened(QString)), this, SLOT(selectionMade(QString)));
-	connect(ui->browseButton, SIGNAL(clicked(bool)), this, SLOT(browseSelected()));
 }
 
 BackstageComputer::~BackstageComputer()
@@ -55,7 +42,7 @@ FileEvent *BackstageComputer::browseOpen(const QString &path)
 {
 	QString browsePath;
 	if (path == "")
-		browsePath = _model->mostRecent();
+		browsePath = _computerListModel->getMostRecent();
 	else
 		browsePath = path;
 
@@ -81,12 +68,13 @@ FileEvent *BackstageComputer::browseOpen(const QString &path)
 
 FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMode mode)
 {
+
 	QString caption = "Save";
 	QString filter = "JASP Files (*.jasp)";
 
 	QString browsePath = path;
 	if (path == "")
-		browsePath = _model->mostRecent();
+		browsePath = _computerListModel->getMostRecent();
 
 	if (_hasFileName)
 		browsePath += QDir::separator() + _fileName;
@@ -134,9 +122,9 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 
 }
 
-void BackstageComputer::addRecent(const QString &path)
+void BackstageComputer::addRecentFolder(const QString &path)
 {
-	_model->addRecent(path);
+	_computerListModel->addRecentFolder(path);
 }
 
 void BackstageComputer::setFileName(const QString &filename)
@@ -147,18 +135,20 @@ void BackstageComputer::setFileName(const QString &filename)
 
 void BackstageComputer::clearFileName()
 {
+	_fileName = "";
 	_hasFileName = false;
 }
 
 bool BackstageComputer::eventFilter(QObject *object, QEvent *event)
 {
 	if (event->type() == QEvent::Show || event->type() == QEvent::WindowActivate)
-		_model->refresh();
+		_computerListModel->refresh();
 
 	return QWidget::eventFilter(object, event);
 }
 
-void BackstageComputer::selectionMade(QString path)
+//Slots
+void BackstageComputer::browsePath(QString path)
 {
 	if (_mode == FileEvent::FileOpen || _mode == FileEvent::FileSyncData)
 		browseOpen(path);
@@ -166,7 +156,8 @@ void BackstageComputer::selectionMade(QString path)
 		browseSave(path, _mode);
 }
 
-void BackstageComputer::browseSelected()
+void BackstageComputer::browseMostRecent()
 {
-	selectionMade(_model->mostRecent());
+	QString mostrecent = _computerListModel->getMostRecent();
+	browsePath(mostrecent);
 }

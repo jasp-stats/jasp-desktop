@@ -17,181 +17,273 @@
 //
 
 #include "backstageosf.h"
+#include "ui_backstageform.h"
 
-#include <QLabel>
-#include <QFileInfo>
-#include <QHBoxLayout>
-#include <QInputDialog>
 #include <QMessageBox>
-#include <QRegularExpression>
+#include <QInputDialog>
+#include <QQmlEngine>
 
-#include "fsbmosf.h"
+#include "settings.h"
+#include "qutils.h"
 
-BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
+BackstageOSF::BackstageOSF(QWidget *parent): BackstagePage(parent),
+	ui(new Ui::BackstageForm)
 {
-	QGridLayout *layout = new QGridLayout(this);
-	layout->setSpacing(0);
-	layout->setContentsMargins(0, 0, 0, 0);
-	setLayout(layout);
-
-	QWidget *topRow = new QWidget(this);
-	layout->addWidget(topRow);
-
-	QGridLayout *topRowLayout = new QGridLayout();
-	topRowLayout->setContentsMargins(0, 0, 12, 0);
-	topRow->setLayout(topRowLayout);
-
-	QLabel *label = new QLabel("Open Science Framework", topRow);
-	QFont f= QFont("SansSerif");
-	f.setPointSize(18);
-	label->setFont(f);
-	QSizePolicy sp = label->sizePolicy();
-	sp.setHorizontalStretch(1);
-	label->setSizePolicy(sp);
-	label->setContentsMargins(12, 12, 0, 0);  //Position BackstageOSF label
-	topRowLayout->addWidget(label, 0, 0);
-
-	_logoutButton = new QToolButton(topRow);
-	_logoutButton->hide();
-	topRowLayout->addWidget(_logoutButton, 0, 1);
-
-	connect(_logoutButton, SIGNAL(clicked(bool)), this, SLOT(logoutClicked()));
-
-	QWidget *buttonsWidget = new QWidget(this);
-	buttonsWidget->setContentsMargins(0, 0, 0, 0);
-	layout->addWidget(buttonsWidget);
-
-	QGridLayout *buttonsWidgetLayout = new QGridLayout(buttonsWidget);
-	buttonsWidgetLayout->setContentsMargins(0, 0, 12, 0);
-	buttonsWidget->setLayout(buttonsWidgetLayout);
-
-	_breadCrumbs = new BreadCrumbs(buttonsWidget);
-	buttonsWidgetLayout->addWidget(_breadCrumbs, 0, 0);
-
-	_newFolderButton = new QToolButton(buttonsWidget);
-	_newFolderButton->setText("New Folder");
-	_newFolderButton->hide();
-	buttonsWidgetLayout->addWidget(_newFolderButton, 0, 2);
-
-	_fileNameContainer = new QWidget(this);
-	_fileNameContainer->hide();
-	_fileNameContainer->setObjectName("browseContainer");
-	layout->addWidget(_fileNameContainer);
-
-	QHBoxLayout *saveLayout = new QHBoxLayout(_fileNameContainer);
-	_fileNameContainer->setLayout(saveLayout);
-
-	_fileNameTextBox = new QLineEdit(_fileNameContainer);
-	QSizePolicy policy = _fileNameTextBox->sizePolicy();
-	policy.setHorizontalStretch(1);
-	_fileNameTextBox->setSizePolicy(policy);
-	_fileNameTextBox->setEnabled(false);
-
-	saveLayout->addWidget(_fileNameTextBox);
-
-	_saveButton = new QPushButton(_fileNameContainer);
-	_saveButton->setText("Save");
-	_saveButton->setEnabled(true);
-	saveLayout->addWidget(_saveButton, 0, Qt::AlignRight);
-
-	QWidget *line;
-
-	line = new QWidget(this);
-	line->setFixedHeight(1);
-	line->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	line->setStyleSheet("QWidget { background-color: #A3A4A5 ; }");
-	layout->addWidget(line);
-
-	_model = new FSBMOSF();
-
+	ui->setupUi(this);
+				
+	_osfBreadCrumbsListModel = new OSFBreadCrumbsListModel(this);
+	_osfBreadCrumbsListModel->setSeparator(/* QDir::separator() */ QChar('/'));		
+	
+	_model = new FSBMOSF(parent , FSBMOSF::rootelementname);
+	
+	_osfListModel = new OSFListModel(this);		
+	_osfListModel ->setFSBModel(_model);
+	_osfListModel->setBreadCrumbsListModel(_osfBreadCrumbsListModel);
+	
+	ui->QmlContent->engine()->addImportPath("qrc:///components");
+		
+	ui->QmlContent->rootContext()->setContextProperty("osfListModel", _osfListModel);
+	ui->QmlContent->rootContext()->setContextProperty("osfBreadCrumbsListModel",_osfBreadCrumbsListModel);
+	ui->QmlContent->rootContext()->setContextProperty("breadcrumbsmodel",_osfBreadCrumbsListModel);
+	ui->QmlContent->rootContext()->setContextProperty("backstageosf", this);
+	
+	ui->QmlContent->setSource(QUrl(QStringLiteral("qrc:/backstage/BackstageOSF.qml")));
+		
 	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(updateUserDetails()));
 	connect(_model, SIGNAL(authenticationClear()), this, SLOT(updateUserDetails()));
+	connect(_model, SIGNAL(entriesChanged()), this, SLOT(resetOSFListModel()));
+	connect(_model, SIGNAL(stopProcessing()), this, SLOT(stopProcessing()));
+	connect(_osfListModel, SIGNAL(startProcessing()), this, SLOT(startProcessing()));
+	connect(_osfBreadCrumbsListModel, SIGNAL(crumbIndexChanged(const int &)), _osfListModel, SLOT(changePath(const int &)));
+	connect(this, SIGNAL(openFileRequest(const QString &)), this, SLOT(notifyDataSetOpened(const QString &)));
 
 	_fsBrowser = new FSBrowser(this);
 	_fsBrowser->setViewType(FSBrowser::ListView);
 	_fsBrowser->setFSModel(_model);
-	layout->addWidget(_fsBrowser);
+	_fsBrowser->hide();
+		
+}
 
-	_breadCrumbs->setModel(_model);
-	_breadCrumbs->setEnabled(false);
-	_breadCrumbs->setSeperator(QChar('/'));
+bool BackstageOSF::loggedin()
+{
+	return _mLoggedin;
+}
 
-	connect(_fsBrowser, SIGNAL(entryOpened(QString)), this, SLOT(notifyDataSetOpened(QString)));
-	connect(_fsBrowser, SIGNAL(entrySelected(QString)), this, SLOT(notifyDataSetSelected(QString)));
+bool BackstageOSF::rememberme()
+{
+	return _mRememberMe;
+}
 
-	connect(_saveButton, SIGNAL(clicked()), this, SLOT(saveClicked()));
-	connect(_newFolderButton, SIGNAL(clicked(bool)), this, SLOT(newFolderClicked()));
+bool BackstageOSF::processing()
+{
+	return _mProcessing;
+}
 
-	line = new QWidget(this);
-	line->setFixedWidth(1);
-	line->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-	line->setStyleSheet("QWidget { background-color: #A3A4A5 ; }");
-	layout->addWidget(line, 0, 1, 6, 1);
+QString BackstageOSF::username()
+{
+	return _mUserName;
+}
 
-	QWidget *about = new QWidget(this);
-	about->setObjectName("aboutOSF");
-	about->setStyleSheet("#aboutOSF { border-top: 1px solid #A3A4A5 ; }");
-	layout->addWidget(about);
+QString BackstageOSF::password()
+{
+	return _mPassword;
+}
 
-	QHBoxLayout *aboutLayout = new QHBoxLayout(about);
-	aboutLayout->setSpacing(12);
-	about->setLayout(aboutLayout);
+void BackstageOSF::setLoggedin(const bool loggedin)
+{
+	_mLoggedin =  loggedin;
+	emit loggedinChanged();
 
-	HyperlinkLabel *aboutOSF = new HyperlinkLabel(about);
-	aboutOSF->setText("<a href='https://osf.io/getting-started/'>About the OSF</a>");
+}
 
-	HyperlinkLabel *registerOSF = new HyperlinkLabel(about);
-	registerOSF->setText("<a href='https://osf.io/'>Register</a>");
-
-	aboutLayout->addWidget(aboutOSF);
-	aboutLayout->addWidget(registerOSF);
-	aboutLayout->addStretch(1);
+void BackstageOSF::setRememberme(const bool rememberme)
+{	
+	_mRememberMe =  rememberme;
+	emit remembermeChanged();
 	
-	_currentFileName = "";
+	Settings::setValue(Settings::OSF_REMEMBER_ME, _mRememberMe);
+	Settings::sync();
+	
+}
+
+void BackstageOSF::setProcessing(const bool processing)
+{
+	_mProcessing = processing;
+	emit processingChanged();
+}
+
+void BackstageOSF::setUsername(const QString &username)
+{
+
+	_mUserName =  username;
+	emit usernameChanged();
+	
+	if (Settings::value(Settings::OSF_REMEMBER_ME).toBool() == true)
+		Settings::setValue(Settings::OSF_USERNAME, _mUserName);
+	else
+		Settings::remove(Settings::OSF_USERNAME);
+	
+	Settings::sync();	
+}
+
+void BackstageOSF::setPassword(const QString &password)
+{		
+	_mPassword =  password;
+	emit passwordChanged();
+		
+	if (Settings::value(Settings::OSF_REMEMBER_ME).toBool() == true)
+	{
+		//Save password encrypted in settings
+		Settings::setValue(Settings::OSF_PASSWORD, encrypt(password));
+		Settings::setValue(Settings::OSF_ENCRYPTION, SimpleCryptEncryption);
+	}
+	else
+		Settings::remove(Settings::OSF_USERNAME);
+
+	Settings::sync();	
+	
+}
+
+void BackstageOSF::setOnlineDataManager(OnlineDataManager *odm)
+{
+	_odm = odm;
+	_model->setOnlineDataManager(_odm);
+
+	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(authenticatedHandler()));
 }
 
 void BackstageOSF::attemptToConnect()
 {
+	setProcessing(true);
 	_model->attemptToConnect();
+	setLoggedin(_model->isAuthenticated());	
 }
 
 void BackstageOSF::setCurrentFileName(QString currentFileName)
 {
 	_currentFileName = currentFileName;
-	_fileNameTextBox->setText(_currentFileName);
 }
 
-void BackstageOSF::updateUserDetails()
+void BackstageOSF::setMode(FileEvent::FileMode mode)
 {
-	if (_model->isAuthenticated())
+	BackstagePage::setMode(mode);
+}
+
+//private slots
+
+void BackstageOSF::notifyDataSetSelected(QString path)
+{
+	//_fileNameTextBox->setText(QFileInfo(path).fileName());
+}
+
+
+void BackstageOSF::notifyDataSetOpened(QString path)
+{
+	FSBMOSF::OnlineNodeData nodeData = _model->getNodeData(path);
+	openSaveFile(nodeData.nodePath, nodeData.name);
+}
+
+void BackstageOSF::saveClicked()
+{
+	FSBMOSF::OnlineNodeData currentNodeData = _model->currentNodeData();
+
+	if (currentNodeData.canCreateFiles == false)
 	{
-		_breadCrumbs->setEnabled(true);
-		_saveButton->setEnabled(true);
-		_fileNameTextBox->setEnabled(true);
-		_newFolderButton->setEnabled(true);
+		if (currentNodeData.level == 0)
+			QMessageBox::warning(this, "Projects", "Files cannot be added to the projects list.\n\nTo add a new project please use the online OSF services.");
+		else if (currentNodeData.level == 1)
+			QMessageBox::warning(this, "Data Providers", "Files cannot be added to a projects data providers list.\n\nTo add a new data provider (eg. google drive) please use the online OSF services.");
+		else
+			QMessageBox::warning(this, currentNodeData.name, "Files cannot be added to '" + currentNodeData.name + "' for an unknown reason.");
+		return;
+	}
 
-		OnlineUserNode *userNode = _odm->getOnlineUserData("https://staging2-api.osf.io/v2/users/me/", "fsbmosf");
+	///QString filename = _fileNameTextBox->text();
+	QString filename = "IMPLEMENT  ME!";
 
-		userNode->initialise();
+	if (checkEntryName(filename, "File", true) == false)
+		return;
 
-		connect(userNode, SIGNAL(finished()), this, SLOT(userDetailsReceived()));
+	QString path;
+
+	if (_model->hasFileEntry(filename.toLower(), path))
+		notifyDataSetOpened(path);
+	else
+		openSaveFile(currentNodeData.nodePath, filename);
+}
+
+void BackstageOSF::openSaveFile(const QString &nodePath, const QString &filename)
+{
+	bool storedata = (_mode == FileEvent::FileSave || _mode == FileEvent::FileExportResults || _mode == FileEvent::FileExportData);
+
+	FileEvent *event = new FileEvent(this, _mode);
+
+	if (event->setPath(nodePath + "#file://" + filename))
+	{
+		if (storedata)
+		{
+				setProcessing(true);
+
+			connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(openSaveCompleted(FileEvent*)));
+		}
 	}
 	else
 	{
-		_breadCrumbs->setEnabled(false);
-		_saveButton->setEnabled(false);
-		_fileNameTextBox->setEnabled(false);
-		_newFolderButton->setEnabled(false);
+		QMessageBox::warning(this, "File Types", event->getLastError());
+		event->setComplete(false, "Failed to open file from OSF");
+		return;
 	}
+
+	emit dataSetIORequest(event);
 }
 
 void BackstageOSF::userDetailsReceived()
 {
 	OnlineUserNode *userNode = qobject_cast<OnlineUserNode*>(sender());
 
-	_logoutButton->setText("Logout " + userNode->getFullname());
-
 	userNode->deleteLater();
+}
+
+void BackstageOSF::openSaveCompleted(FileEvent* event)
+{
+
+	setProcessing(false);
+
+	if (event->successful())
+		_model->refresh();
+}
+
+
+void BackstageOSF::updateUserDetails()
+{
+	if (_model->isAuthenticated())
+	{
+	
+		OnlineUserNode *userNode = _odm->getOnlineUserData("https://staging2-api.osf.io/v2/users/me/", "fsbmosf");
+
+		userNode->initialise();
+
+		connect(userNode, SIGNAL(finished()), this, SLOT(userDetailsReceived()));
+		
+		setLoggedin(true);
+		
+	}
+	else
+	{
+		setLoggedin(false);
+		
+	}
+	
+}
+
+void BackstageOSF::newFolderCreated()
+{
+	OnlineDataNode *node = qobject_cast<OnlineDataNode *>(sender());
+
+	if (node->error())
+		QMessageBox::warning(this, "", "An error occured and the folder could not be created.");
+	else
+		_model->refresh();
 }
 
 void BackstageOSF::newFolderClicked()
@@ -232,59 +324,102 @@ void BackstageOSF::newFolderClicked()
 	}
 }
 
-void BackstageOSF::newFolderCreated()
-{
-	OnlineDataNode *node = qobject_cast<OnlineDataNode *>(sender());
-
-	if (node->error())
-		QMessageBox::warning(this, "", "An error occured and the folder could not be created.");
-	else
-		_model->refresh();
-}
-
 void BackstageOSF::authenticatedHandler()
 {
-	_newFolderButton->setEnabled(true);
-	_logoutButton->show();
+	//_newFolderButton->setEnabled(true);
+	//_logoutButton->show();
 }
 
+void BackstageOSF::resetOSFListModel()
+{
+	_osfListModel->reload();
+	setProcessing(false);
+}
+
+// public slots
 void BackstageOSF::logoutClicked()
 {
 	_model->clearAuthentication();
-	_logoutButton->hide();
+	//_logoutButton->hide();	
 	_model->refresh();
+	_osfBreadCrumbsListModel->indexChanged(0);
+	
+	setLoggedin(false);
+	setProcessing(false);
 }
 
-void BackstageOSF::setOnlineDataManager(OnlineDataManager *odm)
+void BackstageOSF::remembermeCheckChanged(bool rememberme)
 {
-	_odm = odm;
-	_model->setOnlineDataManager(_odm);
-
-	_newFolderButton->setEnabled(_model->isAuthenticated());
-	_logoutButton->setVisible(_model->isAuthenticated());
-
-	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(authenticatedHandler()));
+	_mRememberMe = rememberme;
+	
+	if (_mRememberMe)
+		Settings::setValue(Settings::OSF_REMEMBER_ME, rememberme);
+	else
+		Settings::remove(Settings::OSF_REMEMBER_ME);
+	
+	setRememberme(rememberme);
 }
 
-void BackstageOSF::setMode(FileEvent::FileMode mode)
+void BackstageOSF::usernameTextChanged(const QString &username)
 {
-	BackstagePage::setMode(mode);
-	bool visible = (mode == FileEvent::FileSave || mode == FileEvent::FileExportResults || mode == FileEvent::FileExportData);
-	_fileNameContainer->setVisible(visible);
-	_newFolderButton->setVisible(visible);
+	_mUserName = username;
+	
+	if (Settings::value(Settings::OSF_REMEMBER_ME).toBool() == true)
+		Settings::setValue(Settings::OSF_USERNAME, _mUserName);
+	else
+		Settings::remove(Settings::OSF_USERNAME);
+	
+	setUsername(username);
 }
 
-void BackstageOSF::notifyDataSetOpened(QString path)
+void BackstageOSF::passwordTextChanged(const QString &password)
 {
-	FSBMOSF::OnlineNodeData nodeData = _model->getNodeData(path);
-	openSaveFile(nodeData.nodePath, nodeData.name);
+	_mPassword = password;
+	
+	if (Settings::value(Settings::OSF_REMEMBER_ME).toBool() == true)
+		Settings::setValue(Settings::OSF_PASSWORD, encrypt(_mPassword));
+	else
+		Settings::remove(Settings::OSF_PASSWORD);
+	
+	setPassword(password);
+	
 }
 
-void BackstageOSF::notifyDataSetSelected(QString path)
+void BackstageOSF::updateLoginScreen()
 {
-	_fileNameTextBox->setText(QFileInfo(path).fileName());
+	setRememberme(Settings::value(Settings::OSF_REMEMBER_ME).toBool());  
+	setUsername(Settings::value(Settings::OSF_USERNAME).toString());
+	setPassword(decrypt(Settings::value(Settings::OSF_PASSWORD).toString()));
 }
 
+void BackstageOSF::loginRequested(const QString &username, const QString &password)
+{
+	if  (password == "" || username =="" )
+	{
+		QMessageBox::warning(this, "Login", " User or password cannot be empty. ");
+		return;
+	}
+	
+	setProcessing(true);
+	_model->authenticate(username, password);
+}
+
+void BackstageOSF::openFile(const QString &path)
+{
+	emit openFileRequest(path);
+}
+
+void BackstageOSF::startProcessing()
+{
+	setProcessing(true);
+}
+
+void BackstageOSF::stopProcessing()
+{
+	setProcessing(false);
+}
+
+//private
 bool BackstageOSF::checkEntryName(QString name, QString entryTitle, bool allowFullStop)
 {
 	if (name.trimmed() == "")
@@ -303,77 +438,4 @@ bool BackstageOSF::checkEntryName(QString name, QString entryTitle, bool allowFu
 	}
 
 	return true;
-}
-
-void BackstageOSF::saveClicked()
-{
-	FSBMOSF::OnlineNodeData currentNodeData = _model->currentNodeData();
-
-	if (currentNodeData.canCreateFiles == false)
-	{
-		if (currentNodeData.level == 0)
-			QMessageBox::warning(this, "Projects", "Files cannot be added to the projects list.\n\nTo add a new project please use the online OSF services.");
-		else if (currentNodeData.level == 1)
-			QMessageBox::warning(this, "Data Providers", "Files cannot be added to a projects data providers list.\n\nTo add a new data provider (eg. google drive) please use the online OSF services.");
-		else
-			QMessageBox::warning(this, currentNodeData.name, "Files cannot be added to '" + currentNodeData.name + "' for an unknown reason.");
-		return;
-	}
-
-	QString filename = _fileNameTextBox->text();
-
-	if (checkEntryName(filename, "File", true) == false)
-		return;
-
-	QString path;
-
-	if (_model->hasFileEntry(filename.toLower(), path))
-		notifyDataSetOpened(path);
-	else
-		openSaveFile(currentNodeData.nodePath, filename);
-}
-
-void BackstageOSF::openSaveFile(const QString &nodePath, const QString &filename)
-{
-	bool storedata = (_mode == FileEvent::FileSave || _mode == FileEvent::FileExportResults || _mode == FileEvent::FileExportData);
-
-	FileEvent *event = new FileEvent(this, _mode);
-
-	if (event->setPath(nodePath + "#file://" + filename))
-	{
-		if (storedata)
-		{
-			_breadCrumbs->setEnabled(false);
-			_saveButton->setEnabled(false);
-			_fileNameTextBox->setEnabled(false);
-			_newFolderButton->setEnabled(false);
-			_fileNameTextBox->setText(filename);
-
-			_fsBrowser->StartProcessing();
-
-			connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(openSaveCompleted(FileEvent*)));
-		}
-	}
-	else
-	{
-		QMessageBox::warning(this, "File Types", event->getLastError());
-		event->setComplete(false, "Failed to open file from OSF");
-		return;
-	}
-
-	emit dataSetIORequest(event);
-}
-
-void BackstageOSF::openSaveCompleted(FileEvent* event)
-{
-
-	_breadCrumbs->setEnabled(true);
-	_saveButton->setEnabled(true);
-	_fileNameTextBox->setEnabled(true);
-	_newFolderButton->setEnabled(true);
-
-	_fsBrowser->StopProcessing();
-
-	if (event->successful())
-		_model->refresh();
 }

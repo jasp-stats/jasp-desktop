@@ -1,4 +1,4 @@
-import QtQuick 2.11
+import QtQuick 2.10
 import JASP.Theme 1.0
 
 FocusScope {
@@ -17,7 +17,7 @@ FocusScope {
     readonly property string iconFolder: "qrc:/icons/"
     
     Component.onCompleted: {
-        if (!DEBUG_MODE && debug)
+        if (typeof(DEBUG_MODE) !== "undefined" && !DEBUG_MODE && debug)
             visible = false;
     }
     
