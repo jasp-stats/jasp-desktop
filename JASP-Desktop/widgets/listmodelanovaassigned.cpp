@@ -18,6 +18,7 @@
 
 #include "listmodelanovaassigned.h"
 #include "utilities/qutils.h"
+#include "analysis/options/optionterm.h"
 #include "analysis/options/optionboolean.h"
 #include "listmodeltermsavailable.h"
 #include "listmodeltermsassigned.h"
@@ -25,17 +26,44 @@
 using namespace std;
 
 ListModelAnovaAssigned::ListModelAnovaAssigned(AnalysisQMLForm *form, QQuickItem* item)
-	: ListModelAssigned(form, item)
+	: ListModelTermsAssignedInterface(form, item)
 {
-	_boundTo = NULL;
+	_copyTermsWhenDropped = true;
+	setTermsAreNotVariables();	
 }
+
+void ListModelAnovaAssigned::initTerms(const std::vector<Options *> &terms, Options* rowTemplate)
+{
+	beginResetModel();
+	
+	_rows = terms;
+	_rowTemplate = rowTemplate;
+
+	_covariates.clear();
+	_fixedFactors.clear();
+	_randomFactors.clear();
+	_anovaTerms.clear();
+	_anovaTerms.removeParent();
+
+	for (Options *row : _rows)
+	{
+		OptionTerm *nameOption = static_cast<OptionTerm*>(row->get(0));
+		vector<string> term = nameOption->term();
+
+		_anovaTerms.add(Term(term));
+	}
+	
+	endResetModel();
+}
+
+
 
 QVariant ListModelAnovaAssigned::data(const QModelIndex &index, int role) const
 {
-	if (_boundTo == NULL || index.isValid() == false)
+	if (index.isValid() == false)
 		return QVariant();
 
-	if (role == Qt::DisplayRole || role == ListModel::NameRole)
+	if (role == Qt::DisplayRole || role == ListModelDraggableTerms::NameRole)
 	{
 		int colNo = index.column();
 		int rowNo = index.row();
@@ -54,53 +82,17 @@ QVariant ListModelAnovaAssigned::data(const QModelIndex &index, int role) const
 
 int ListModelAnovaAssigned::rowCount(const QModelIndex &) const
 {
-	if (_boundTo == NULL)
-		return 0;
-
 	return _rows.size();
 }
 
 
-void ListModelAnovaAssigned::setSource(ListModelAvailable *source)
+void ListModelAnovaAssigned::setSource(ListModelTermsAvailableInterface *source)
 {
-	ListModelAssigned::setSource(source);
-	_terms.setSortParent(source->allTerms());
+	ListModelTermsAssignedInterface::setSource(source);
+	_anovaTerms.setSortParent(source->allTerms());
 }
 
-void ListModelAnovaAssigned::bindTo(Option *option)
-{
-	clear();
-	_boundTo = dynamic_cast<OptionsTable *>(option);
-
-	beginResetModel();
-
-	_rows = _boundTo->value();
-	
-	_terms.clear();
-	_terms.removeParent();
-
-	for (Options *row : _rows)
-	{
-		OptionTerm *nameOption = static_cast<OptionTerm*>(row->get(0));
-		vector<string> term = nameOption->term();
-
-		_terms.add(Term(term));
-	}
-	
-	endResetModel();
-}
-
-void ListModelAnovaAssigned::unbind()
-{
-	beginResetModel();
-
-	_boundTo = NULL;
-	_rows.clear();
-
-	endResetModel();
-}
-
-void ListModelAnovaAssigned::removeTermsAfterBeingDropped(const QList<int> &indices)
+void ListModelAnovaAssigned::removeTerms(const QList<int> &indices)
 {
 	// sort indices, and delete from end to beginning
 
@@ -109,7 +101,7 @@ void ListModelAnovaAssigned::removeTermsAfterBeingDropped(const QList<int> &indi
 
 	int lastRowDeleted = -1;
 
-	Terms terms = _terms;
+	Terms terms = _anovaTerms;
 	Terms toRemove;
 
 	for (const int &index : sorted)
@@ -164,7 +156,12 @@ Terms *ListModelAnovaAssigned::termsFromIndexes(const QList<int> &indexes) const
 
 const Terms &ListModelAnovaAssigned::terms() const
 {
-	return _terms;
+	return _anovaTerms;
+}
+
+const vector<Options *> &ListModelAnovaAssigned::rows() const
+{
+	return _rows;
 }
 
 void ListModelAnovaAssigned::availableTermsChanged(Terms *termsAdded, Terms *termsRemoved)
@@ -181,7 +178,7 @@ void ListModelAnovaAssigned::availableTermsChanged(Terms *termsAdded, Terms *ter
 				fixedFactors.add(term);
 			else if (itemType == "randomFactors")
 				randomFactors.add(term);
-			else if (itemType == "covariate")
+			else if (itemType == "covariates")
 				covariates.add(term);
 		}
 		
@@ -203,9 +200,9 @@ void ListModelAnovaAssigned::addFixedFactors(const Terms &terms)
 {
 	_fixedFactors.add(terms);
 
-	Terms existingTerms = _terms;
+	Terms existingTerms = _anovaTerms;
 
-	Terms newTerms = _terms;
+	Terms newTerms = _anovaTerms;
 	newTerms.discardWhatDoesContainTheseComponents(_randomFactors);
 	newTerms.discardWhatDoesContainTheseComponents(_covariates);
 	existingTerms.add(newTerms.ffCombinations(terms));
@@ -218,7 +215,7 @@ void ListModelAnovaAssigned::addRandomFactors(const Terms &terms)
 {
 	_randomFactors.add(terms);
 
-	Terms newTerms = _terms;
+	Terms newTerms = _anovaTerms;
 	newTerms.add(terms);
 
 	setTerms(newTerms, true);
@@ -229,7 +226,7 @@ void ListModelAnovaAssigned::addCovariates(const Terms &terms)
 {
 	_covariates.add(terms);
 
-	Terms newTerms = _terms;
+	Terms newTerms = _anovaTerms;
 	newTerms.add(terms);
 
 	setTerms(newTerms);
@@ -242,7 +239,7 @@ void ListModelAnovaAssigned::removeVariables(const Terms &terms)
 	_randomFactors.remove(terms);
 	_covariates.remove(terms);
 
-	Terms newTerms = _terms;
+	Terms newTerms = _anovaTerms;
 	newTerms.discardWhatDoesContainTheseComponents(terms);
 
 	setTerms(newTerms);
@@ -258,20 +255,20 @@ QString ListModelAnovaAssigned::getItemType(const Term &term)
 	{
 		type = model->getItemType();
 		if (type.isEmpty() || type == "variables")
-			type = model->getName();
+			type = model->name();
 	}
 	
 	return type;
 }
 
-bool ListModelAnovaAssigned::canDropTerms(const Terms *terms) const
+bool ListModelAnovaAssigned::canAddTerms(Terms *terms) const
 {
 	Q_UNUSED(terms);
 
 	return true;
 }
 
-bool ListModelAnovaAssigned::dropTerms(const Terms *terms, int assignType)
+Terms* ListModelAnovaAssigned::_addTerms(Terms *terms, int assignType)
 {
 	Terms dropped;
 	dropped.setSortParent(_source->allTerms());
@@ -306,14 +303,17 @@ bool ListModelAnovaAssigned::dropTerms(const Terms *terms, int assignType)
 		(void)newTerms;
 	}
 
-	assign(newTerms);
-
-	return true;
+	Terms allTerms = _anovaTerms;
+	allTerms.add(newTerms);
+	setTerms(allTerms);
+	
+	return NULL;
 }
 
-bool ListModelAnovaAssigned::dropTerms(const Terms *terms)
+Terms* ListModelAnovaAssigned::addTerms(Terms *terms, int dropItemIndex)
 {
-	return dropTerms(terms, Cross);
+	Q_UNUSED(dropItemIndex);
+	return _addTerms(terms, Cross);
 }
 
 OptionTerm *ListModelAnovaAssigned::termOptionFromRow(Options *row)
@@ -323,12 +323,10 @@ OptionTerm *ListModelAnovaAssigned::termOptionFromRow(Options *row)
 
 void ListModelAnovaAssigned::setTerms(const Terms &terms, bool newTermsAreNuisance)
 {
-	_terms.set(terms);
-
-	if (_boundTo == NULL)
-		return;
-
+	if (terms.size() == 0) return;
+	
 	beginResetModel();
+	_anovaTerms.set(terms);
 
 	_rows.erase(
 		std::remove_if(
@@ -375,7 +373,7 @@ void ListModelAnovaAssigned::setTerms(const Terms &terms, bool newTermsAreNuisan
 
 			if (existingTerm != term)
 			{
-				Options *row = static_cast<Options *>(_boundTo->rowTemplate()->clone());
+				Options *row = static_cast<Options *>(_rowTemplate->clone());
 				OptionTerms *termCell = static_cast<OptionTerms *>(row->get(0));
 				termCell->setValue(term.scomponents());
 
@@ -390,7 +388,7 @@ void ListModelAnovaAssigned::setTerms(const Terms &terms, bool newTermsAreNuisan
 		}
 		else
 		{
-			Options *row = static_cast<Options *>(_boundTo->rowTemplate()->clone());
+			Options *row = static_cast<Options *>(_rowTemplate->clone());
 			OptionTerms *termCell = static_cast<OptionTerms *>(row->get(0));
 			termCell->setValue(term.scomponents());
 
@@ -408,24 +406,9 @@ void ListModelAnovaAssigned::setTerms(const Terms &terms, bool newTermsAreNuisan
 
 	updateNuisances();
 
-	_boundTo->setValue(_rows);
-
 	endResetModel();
 	
 	emit termsChanged();
-}
-
-void ListModelAnovaAssigned::clear()
-{
-	_boundTo = NULL;
-	setTerms(Terms());
-}
-
-void ListModelAnovaAssigned::assign(const Terms &terms)
-{
-	Terms t = _terms;
-	t.add(terms);
-	setTerms(t);
 }
 
 void ListModelAnovaAssigned::updateNuisances(bool checked)

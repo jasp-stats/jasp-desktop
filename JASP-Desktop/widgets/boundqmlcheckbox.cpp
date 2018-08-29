@@ -23,6 +23,7 @@
 BoundQMLCheckBox::BoundQMLCheckBox(QQuickItem* item, AnalysisQMLForm* form) : BoundQMLItem(item, form)
 {
 	_boundTo = NULL;
+	_checked = false;
 	QQuickItem::connect(item, SIGNAL(clicked()), this, SLOT(checkBoxClickedSlot()));
 }
 
@@ -31,7 +32,10 @@ void BoundQMLCheckBox::bindTo(Option *option)
 	_boundTo = dynamic_cast<OptionBoolean *>(option);
 
 	if (_boundTo != NULL)
-		_item->setProperty("checked", _boundTo->value());
+	{
+		_checked = _boundTo->value();
+		_item->setProperty("checked", _checked);
+	}
 	else
 		qDebug() << "could not bind to OptionBoolean in BoundQuickCheckBox.cpp";
 }
@@ -43,19 +47,24 @@ void BoundQMLCheckBox::unbind()
 
 Option *BoundQMLCheckBox::createOption()
 {
-	bool defaultValue = false;
-	QVariant defaultProp = _item->property("checked");
-	if (!defaultProp.isNull())
-		defaultValue = defaultProp.toBool();
-	return new OptionBoolean(defaultValue);
+	QVariant checkedVariant = _item->property("checked");
+	if (!checkedVariant.isNull())
+		_checked = checkedVariant.toBool();
+	return new OptionBoolean(_checked);
+}
+
+void BoundQMLCheckBox::resetQMLItem(QQuickItem *item)
+{
+	BoundQMLItem::resetQMLItem(item);
+	_item->setProperty("checked", _checked);
+	QQuickItem::connect(_item, SIGNAL(clicked()), this, SLOT(checkBoxClickedSlot()));
 }
 
 void BoundQMLCheckBox::checkBoxClickedSlot()
 {
 	if (_boundTo != NULL)
 	{
-		bool isChecked = QQmlProperty::read(_item, "checked").toBool();
-		
-		_boundTo->setValue(isChecked);
+		_checked = QQmlProperty::read(_item, "checked").toBool();
+		_boundTo->setValue(_checked);
 	}
 }

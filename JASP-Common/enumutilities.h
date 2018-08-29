@@ -64,7 +64,12 @@
 		enumTmp = static_cast<E>(iter->first);																	\
 		return enumTmp;																							\
 	}																											\
-	E E##FromString(std::string enumName)	{ return (E)E##FromNameMap.at(enumName); }							\
+	E E##FromString(std::string enumName)																		\
+	{																											\
+		if(E##FromNameMap.count(enumName) == 0) 																\
+			throw std::runtime_error(#E" enum from string misses requested value \""+enumName+"\"");			\
+		return (E)E##FromNameMap.at(enumName); 																	\
+	}																											\
 	std::string E##ToString(E enumVal)		{ return ~enumVal; }												\
 	bool valid##E(T value) { return (E##MapName.find(value) != E##MapName.end()); }
 
@@ -77,9 +82,9 @@
 	QString operator+(E enumTmp, QString &&str);																\
 	QString &operator+=(QString &str, E enumTmp);
 
-#define DECLARE_ENUM_WITH_TYPE_IMPLEMENTATION(E, T, ...)																\
+#define DECLARE_ENUM_WITH_TYPE_IMPLEMENTATION(E, T, ...)														\
 	DECLARE_ENUM_METHODS_WITH_TYPE_BASE(E, T, __VA_ARGS__)														\
-	E E##FromQString(QString enumName)	{ return (E)E##FromNameMap.at(enumName.toStdString()); }				\
+	E E##FromQString(QString enumName)	{ return (E)E##FromString(enumName.toStdString()); }				\
 	QString E##ToQString(E enumVal)		{ return QString::fromStdString(~enumVal); }							\
 	QString operator+(QString &&str, E enumTmp) { return str + E##ToQString(enumTmp); }							\
 	QString operator+(E enumTmp, QString &&str) { return E##ToQString(enumTmp) + str;	}						\

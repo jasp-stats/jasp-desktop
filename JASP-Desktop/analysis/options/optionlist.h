@@ -24,7 +24,7 @@
 class OptionList : public OptionI<std::string>
 {
 public:
-	OptionList(const std::vector<std::string> &options, std::string selected = "")	: OptionI(selected == "" ? options.at(0) : selected), _options(options)	{}
+	OptionList(const std::vector<std::string> &options, std::string selected = "")	: OptionI(selected == "" && options.size() > 0 ? options.at(0) : selected), _options(options)	{}
 	OptionList()																	: OptionI()																	{}
 
 			void						init(const Json::Value &data)			override;

@@ -19,32 +19,23 @@
 #ifndef LISTMODELPAIRSASSIGNED_H
 #define LISTMODELPAIRSASSIGNED_H
 
-#include "listmodelassigned.h"
-#include "analysis/options/optionvariablesgroups.h"
+#include "listmodeltermsassignedinterface.h"
 
-class ListModelPairsAssigned: public ListModelAssigned 
+class ListModelPairsAssigned: public ListModelTermsAssignedInterface 
 {
 public:
 	explicit ListModelPairsAssigned(AnalysisQMLForm *form, QQuickItem* item);
 
-	virtual void bindTo(Option *option) OVERRIDE;
+	virtual void initTerms(const std::vector<std::vector<std::string> >& terms);
+	
 	virtual int rowCount(const QModelIndex &parent) const OVERRIDE;
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
 
-	virtual void setSource(ListModelAvailable *source) OVERRIDE;
-	
-	virtual Terms *termsFromIndexes(const QList<int> &indexes) const OVERRIDE;
-	virtual const Terms& terms() const OVERRIDE;
-	virtual bool canDropTerms(const Terms *terms) const OVERRIDE;
-	virtual bool dropTerms(const Terms *terms) OVERRIDE;
-	virtual void removeTermsAfterBeingDropped(const QList<int> &indexes) OVERRIDE;
-
-protected:
-	void assignToOption();
-
-private:
-	OptionVariablesGroups *_boundTo;
-	Terms _values;
+	virtual Terms* termsFromIndexes(const QList<int> &indexes) const OVERRIDE;
+	virtual bool canAddTerms(Terms *terms) const OVERRIDE;
+	virtual Terms* addTerms(Terms *terms, int dropItemIndex = -1) OVERRIDE;
+	virtual void moveTerms(const QList<int>& indexes, int dropItemIndex = -1) OVERRIDE;	
+	virtual void removeTerms(const QList<int> &indexes) OVERRIDE;
 
 };
 

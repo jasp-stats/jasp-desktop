@@ -109,7 +109,7 @@
 #include "utilities/settings.h"
 
 #include "analysis/options/optionvariablesgroups.h"
-#include "JASPControls/datasetview.h"
+#include "QML/datasetview.h"
 #include "modules/dynamicmodules.h"
 
 using namespace std;
@@ -312,6 +312,7 @@ void MainWindow::loadQML()
 
 	setFilterConstructorJson(QString::fromStdString(_package->filterConstructorJson()));
 
+	ui->quickWidget_Data->engine()->addImportPath("qrc:///components");	
 	ui->quickWidget_Data->setSource(QUrl(QString("qrc:///qml/dataset.qml")));
 
 	QObject * DataView				= ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataSetTableView");
@@ -1981,6 +1982,7 @@ void MainWindow::showQMLWindow(QString urlQml)
 
 	QQuickView * newQMLWindow = new QQuickView;
 
+	newQMLWindow->engine()->addImportPath("qrc:///components");		
 	newQMLWindow->rootContext()->setContextProperty("dynamicModules", _dynamicModules);
 	newQMLWindow->setSource(urlQml);
 	newQMLWindow->setResizeMode(QQuickView::SizeRootObjectToView);

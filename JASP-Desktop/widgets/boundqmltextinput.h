@@ -40,6 +40,7 @@ public:
 	virtual void unbind() OVERRIDE;
 	
 	virtual Option* createOption() OVERRIDE;
+	virtual void resetQMLItem(QQuickItem *item) OVERRIDE;
 
 signals:
 	
@@ -49,6 +50,9 @@ private slots:
 protected:
 private:
 	void setOptionValue(QString& text);
+	
+	QString _getPercentValue();
+	QString _getIntegerArrayValue();
 	
 	TextInputType _inputType;
 	OptionInteger *_integer;

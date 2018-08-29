@@ -17,7 +17,7 @@
 //
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
-import "qrc:/JASPControls"
+import JASP.Controls 1.0
 
 Form {
     id: form
@@ -73,7 +73,15 @@ Form {
             }
         }
         
-        TextField { name: "sumOfSquares"; label.text: qsTr("Sum of squares"); text: "type3"; enabled: false}
+        ComboBox { name: "sumOfSquares"
+            currentIndex: 0
+            label.text: qsTr("Sum of squares")
+            model: ListModel {    
+                ListElement {key: "Type \u2160"; value: "type1"}
+                ListElement {key: "Type \u2161"; value: "type2"}
+                ListElement {key: "Type \u2162"; value: "type3"}
+            }
+        }
 
     }
 
@@ -87,12 +95,16 @@ Form {
     ExpanderButton {
         text: qsTr("Contrasts")
 
-        TableView {
+        VariablesTable {
             title: qsTr("Factors")
             syncModels: "fixedFactors"
             name: "contrasts"
-            comboModel: ["none", "deviation", "simple", "difference", "Helmert", "repeated", "polynomial"]
-            columns: ["ComboBox"]
+            
+            VariablesTableColumn { 
+                type: "ComboBox"
+                name: "contrast"
+                model: ["none", "deviation", "simple", "difference", "Helmert", "repeated", "polynomial"]
+            }
         }
     }
 
@@ -155,8 +167,16 @@ Form {
             defaultAssignedVariablesList {  name: "marginalMeansTerms"; showVariableIcon: false }
         }
         
-        CheckBox { text: qsTr("Compare marginal means to 0")    ; name: "marginalMeansCompareMainEffects" }
-        TextField { Layout.leftMargin: 15; name: "marginalMeansCIAdjustment"; label.text: qsTr("Confidence interval adjustment"); text: "none"; enabled: false}
+        CheckBox { text: qsTr("Compare marginal means to 0")    ; name: "marginalMeansCompareMainEffects"; id: marginalMeansCompareMainEffects }
+        ComboBox { Layout.leftMargin: 15; name: "marginalMeansCIAdjustment"; 
+            label.text: qsTr("Confidence interval adjustment"); 
+            model: ListModel {
+                ListElement {key: "None"; value: "none"}
+                ListElement {key: "Bonferro"; value: "bonferroni"}
+                ListElement {key: "Sidak"; value: "sidak"}
+            }
+            enabled: marginalMeansCompareMainEffects.checked
+        }
         
         GroupBox {
             title: qsTr("Display")
@@ -165,7 +185,7 @@ Form {
             Row {
                 Layout.leftMargin: 15
                 enabled: effectSizeEstimates.checked
-                CheckBox { text: qsTr("η²")         ; name: "effectSizeEtaSquared" }
+                CheckBox { text: qsTr("η²")         ; name: "effectSizeEtaSquared"; checked: true }
                 CheckBox { text: qsTr("partial η²") ; name: "effectSizePartialEtaSquared" }
                 CheckBox { text: qsTr("ω²")         ; name: "effectSizeOmegaSquared" }
             }

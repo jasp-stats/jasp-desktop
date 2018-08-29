@@ -23,47 +23,25 @@
 using namespace std;
 
 ListModelPairsAssigned::ListModelPairsAssigned(AnalysisQMLForm *form, QQuickItem* item)
-	: ListModelAssigned(form, item)
+	: ListModelTermsAssignedInterface(form, item)
 {
-	_boundTo = NULL;
 	_source = NULL;
-	_removeTermsWhenDropped = true;
+	_copyTermsWhenDropped = true;
 	_variableTypesSuggested = Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale;
 }
 
-void ListModelPairsAssigned::bindTo(Option *option)
+void ListModelPairsAssigned::initTerms(const vector<vector<string> > &terms)
 {
-	_boundTo = dynamic_cast<OptionVariablesGroups *>(option);
-
-	if (_boundTo == NULL)
-	{
-		qDebug() << "ListModelPairAssigned::bindTo(); Could not bind to option";
-		return;
-	}
-
-	if (_source == NULL)
-	{
-		qDebug() << "ListModelPairAssigned::bindTo(); source not set";
-		return;
-	}
-
 	beginResetModel();
-
-	_values = _boundTo->value();
-
+	_terms.set(terms);
 	endResetModel();
-}
-
-void ListModelPairsAssigned::setSource(ListModelAvailable *source)
-{
-	ListModelAssigned::setSource(source);
 }
 
 int ListModelPairsAssigned::rowCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent);
 
-	int size = _values.size();
+	int size = _terms.size();
 	return size * 2;
 }
 
@@ -75,14 +53,19 @@ QVariant ListModelPairsAssigned::data(const QModelIndex &index, int role) const
 		return QVariant();
 	}
 
-	if (role == Qt::DisplayRole || role == ListModel::NameRole)
+	if (role == Qt::DisplayRole || role == ListModelDraggableTerms::NameRole)
 	{
 		int indexRow = index.row();
-		int realRow = indexRow / 2;
-		int realCol = indexRow % 2;
-		const Term &row = _values.at(realRow);
-		QString result = row.at(realCol);
-		return result;
+		uint realRow = indexRow / 2;
+		uint realCol = indexRow % 2;
+		if (realRow < _terms.size())
+		{
+			const Term &row = _terms.at(realRow);
+			QString result = row.at(realCol);
+			return result;
+		}
+		else
+			qDebug() << "ListModelPairsAssigned: row " << realRow << " out of range " << _terms.size();
 	}
 	else
 	{
@@ -92,37 +75,62 @@ QVariant ListModelPairsAssigned::data(const QModelIndex &index, int role) const
 	return QVariant();
 }
 
-Terms *ListModelPairsAssigned::termsFromIndexes(const QList<int> &indexes) const
+Terms* ListModelPairsAssigned::termsFromIndexes(const QList<int> &indexes) const
 {
-	Q_UNUSED(indexes);
-	return new Terms();
+	Terms* terms = new Terms();
+	for (int index : indexes)
+	{
+		uint realRow = index / 2;
+		uint realCol = index % 2;
+		if (realRow < _terms.size())
+		{
+			const Term &row = _terms.at(realRow);
+			QString result = row.at(realCol);
+			terms->add(Term(result));
+		}
+	}
+	
+	return terms;
 }
 
-const Terms &ListModelPairsAssigned::terms() const
+void ListModelPairsAssigned::removeTerms(const QList<int> &indexes)
 {
-	return _values;
-}
-
-void ListModelPairsAssigned::removeTermsAfterBeingDropped(const QList<int> &indexes)
-{
+	if (indexes.length() == 0) return;
+	
 	beginResetModel();
 
-	QSet<int> rows;
-	for (const int &row: indexes)
-		rows.insert(row/2);
+	QList<int> orderedIndexed = indexes;
+	std::sort(orderedIndexed.begin(), orderedIndexed.end(), qGreater<int>());
 
-	QList<int> lrows = rows.toList();
-	std::sort(lrows.begin(), lrows.end(), qGreater<int>());
-
-	for (const int &row: lrows)
-		_values.remove(row);
+	QList<QList<QString>> values = _terms.asQListOfQLists();
+	for (const int &orderedIndexed: orderedIndexed)
+	{
+		int row = orderedIndexed / 2;
+		int col = orderedIndexed % 2;
+		
+		if (row < values.length())
+		{
+			const QList<QString>& pairTerm = values.at(row);
+			const QString& relatedTerm = pairTerm.at(1-col);
+			if (relatedTerm.isEmpty())
+				values.removeAt(row);
+			else
+			{
+				QList<QString> newPair {QString(), QString()};
+				newPair[1-col] = relatedTerm;
+				values.replace(row, newPair);
+			}
+		}
+	}
+	
+	_terms.set(values);
 
 	endResetModel();
 
-	assignToOption();
+	emit termsChanged();
 }
 
-bool ListModelPairsAssigned::canDropTerms(const Terms *terms) const
+bool ListModelPairsAssigned::canAddTerms(Terms *terms) const
 {
 	for (const Term &variable : *terms)
 	{
@@ -133,64 +141,142 @@ bool ListModelPairsAssigned::canDropTerms(const Terms *terms) const
 	return true;
 }
 
-bool ListModelPairsAssigned::dropTerms(const Terms *terms)
+Terms* ListModelPairsAssigned::addTerms(Terms *terms, int dropItemIndex)
 {
-	if ( ! canDropTerms(terms))
-		return false;
-
 	beginResetModel();
-	for (const Term& term: *terms)
+	Terms* removedTerms = new Terms();
+	
+	if (terms->size() == 0)
+		return removedTerms;
+	
+	QList<QList<QString>> values = _terms.asQListOfQLists();
+	bool done = false;
+	if (terms->size() == 1 && dropItemIndex >= 0)
 	{
-		const QString& variableName = term.asQString();
-		if (_values.size() == 0)
+		int realRow = dropItemIndex / 2;
+		int realCol = dropItemIndex % 2;
+		if (realRow < values.size())
 		{
-			QStringList newRow;
-			newRow.push_back(variableName);
-			newRow.push_back(QString());
-			_values.add(Term(newRow));
+			QList<QString> onePair = values[realRow];
+			QString result = onePair[realCol];
+			if (!result.isEmpty())
+				removedTerms->add(Term(result));
+			QString term = QString::fromStdString(terms[0].asString());
+			onePair[realCol] = term;
+			values[realRow] = onePair;
+			done = true;
 		}
-		else
+	}
+	
+	if (!done)
+	{
+		QList<QString> newValues = terms->asQList();
+		int index = 0;
+		for (int row = 0; row < values.length(); row++)
 		{
-			QStringList newRow;
-			const QStringList& lastRow = _values.at(_values.size() - 1).components();
-			if (lastRow[1].isEmpty())
+			QList<QString> rowValues = values.at(row);
+			if (rowValues[0].isEmpty())
 			{
-				newRow.push_back(lastRow[0]);				
-				newRow.push_back(variableName);
-				_values.remove(_values.size() - 1);
+				rowValues[0] = newValues[index];
+				values.replace(row, rowValues);
+				index++;
+			}
+			if (index >= newValues.length())
+				break;
+			
+			rowValues = values.at(row); //re-query the row in case it was changed
+			if (rowValues[1].isEmpty())
+			{
+				rowValues[1] = newValues[index];
+				values.replace(row, rowValues);
+				index++;
+			}
+			if (index >= newValues.length())
+				break;
+		}
+		
+		while (index < newValues.length())
+		{
+			QList<QString> newPair {newValues[index], QString()};
+			index++;
+			if (index < newValues.length())
+			{
+				newPair[1] = newValues[index];
+				index++;
+			}
+			values.push_back(newPair);
+		}
+	}
+	
+	_terms.set(values);
+	endResetModel();
+
+	emit termsChanged();
+
+	return removedTerms;
+}
+
+void ListModelPairsAssigned::moveTerms(const QList<int> &indexes, int dropItemIndex)
+{
+	if (indexes.length() != 1)
+		return;
+	
+	bool isChanged = false;
+	int fromIndex = indexes[0];
+	if (fromIndex == dropItemIndex)
+		return;
+	
+	int fromRow = fromIndex / 2;
+	int fromCol = fromIndex % 2;
+	
+	beginResetModel();
+	QList<QList<QString>> values = _terms.asQListOfQLists();
+	if (fromRow < values.size())
+	{
+		QList<QString>& fromPairValue = values[fromRow];
+		QString fromValue = fromPairValue[fromCol];
+		if (!fromValue.isEmpty())
+		{
+			if (dropItemIndex >= 0)
+			{
+				int dropRow = dropItemIndex / 2;
+				int dropCol = dropItemIndex % 2;
+				if (dropRow < values.size())
+				{
+					QList<QString>& dropPairValue = values[dropRow];
+					QString dropValue = dropPairValue[dropCol];
+					fromPairValue[fromCol] = dropValue;
+					dropPairValue[dropCol] = fromValue;
+					isChanged = true;
+				}
 			}
 			else
 			{
-				newRow.push_back(variableName);
-				newRow.push_back(QString());				
+				QList<QString>& dropPairValue = values[values.size() - 1];
+				if (dropPairValue[0].isEmpty())
+					dropPairValue[0] = fromValue;
+				else if (dropPairValue[1].isEmpty())
+					dropPairValue[1] = fromValue;
+				else
+				{
+					QList<QString> newRow {fromValue, QString()};
+					values.push_back(newRow);
+				}
+				fromPairValue[fromCol] = QString();
+				isChanged = true;
 			}
-			_values.add(Term(newRow));
+			
+			if (fromPairValue[fromCol].isEmpty())
+			{
+				if (fromPairValue[1-fromCol].isEmpty())
+					values.removeAt(fromRow);
+			}
 		}
 	}
+
+	_terms.set(values);	
 	endResetModel();
-
-	assignToOption();
-
-	return true;
+	
+	if (isChanged)
+		emit termsChanged();
 }
-
-void ListModelPairsAssigned::assignToOption()
-{
-	if (_boundTo != NULL)
-	{
-		vector<vector<string> > pairs;
-
-		for (const Term &qPair : _values)
-		{
-			vector<string> pair;
-			pair.push_back(qPair.at(0).toStdString());
-			pair.push_back(qPair.at(1).toStdString());
-			pairs.push_back(pair);
-		}
-
-		_boundTo->setValue(pairs);
-	}
-
-}
-
-

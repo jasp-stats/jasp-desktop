@@ -17,7 +17,7 @@
 //
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
-import "qrc:/JASPControls"
+import JASP.Controls 1.0
 
 Form {
     id: form

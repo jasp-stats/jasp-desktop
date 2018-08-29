@@ -18,12 +18,11 @@
 #ifndef BOUNDQMLLISTVIEWPAIRS_H
 #define BOUNDQMLLISTVIEWPAIRS_H
 
-#include "boundqmllistview.h"
-#include "analysis/options/optionvariables.h"
+#include "boundqmldraggablelistview.h"
 #include "listmodelpairsassigned.h"
+#include "analysis/options/optionvariablesgroups.h"
 
-
-class BoundQMLListViewPairs : public BoundQMLListView
+class BoundQMLListViewPairs : public BoundQMLDraggableListView
 {
 	Q_OBJECT
 	
@@ -32,11 +31,14 @@ public:
 	
 	virtual void bindTo(Option *option) OVERRIDE;
 	virtual void unbind() OVERRIDE;
-	virtual void setUp() OVERRIDE;	
 	virtual Option* createOption() OVERRIDE;
+
+private slots:
+	void modelChangedHandler();
 	
 private:
 	OptionVariablesGroups* _boundTo;
+	ListModelPairsAssigned* _pairsModel;
 	
 };
 

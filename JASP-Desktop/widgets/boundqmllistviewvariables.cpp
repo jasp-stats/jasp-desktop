@@ -25,22 +25,21 @@
 
 using namespace std;
 
-BoundQMLListViewVariables::BoundQMLListViewVariables(QQuickItem* item, AnalysisQMLForm* form) : BoundQMLListView(item, form)
+BoundQMLListViewVariables::BoundQMLListViewVariables(QQuickItem* item, AnalysisQMLForm* form) : BoundQMLDraggableListView(item, form)
 {
 	_boundTo = NULL;
-	_targetModel = new ListModelTermsAssigned(form, item);
 	_singleItem = QQmlProperty(item, "singleItem").read().toBool();
+	_model = _targetModel = new ListModelTermsAssigned(form, item, _singleItem);
+	
+	connect(_targetModel, &ListModelTermsAssigned::termsChanged, this, &BoundQMLListViewVariables::modelChangedHandler);	
 }
 
 void BoundQMLListViewVariables::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionVariables *>(option);
-
-	if (_boundTo != NULL)
-		_targetModel->bindTo(_boundTo);
-	else
-		qDebug() << "could not bind to OptionVariables in BoundQuickListView.cpp";
 	
+	ListModelTermsAssigned* model = dynamic_cast<ListModelTermsAssigned *>(_targetModel);
+	model->initTerms(_boundTo->value());
 }
 
 void BoundQMLListViewVariables::unbind()
@@ -53,4 +52,9 @@ Option* BoundQMLListViewVariables::createOption()
 	OptionVariables *result = _singleItem ? new OptionVariable() : new OptionVariables();
 	
 	return result;
+}
+
+void BoundQMLListViewVariables::modelChangedHandler()
+{
+	_boundTo->setValue(_targetModel->terms().asVectorOfVectors());
 }

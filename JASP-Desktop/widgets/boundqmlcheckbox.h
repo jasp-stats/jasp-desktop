@@ -33,6 +33,7 @@ public:
 	virtual void unbind() OVERRIDE;
 	
 	virtual Option* createOption() OVERRIDE;
+	virtual void resetQMLItem(QQuickItem *item) OVERRIDE;
 
 signals:
 	
@@ -41,6 +42,7 @@ private slots:
     
 protected:
 	OptionBoolean *_boundTo;
+	bool _checked;
 
 };
 

@@ -35,11 +35,14 @@ public:
 	Json::Value asJSON()										const	override;
 	Option*		clone()											const	override;
 	void		setValue(const std::vector<Options *> &value)			override;
+	void		connectOptions(const std::vector<Options *> &value);
 
 	Options*	rowTemplate() const;
 
 private:
 	Options *_template;
+	
+	void optionsChanged(Option *);	
 };
 
 #endif // OPTIONSTABLE_H

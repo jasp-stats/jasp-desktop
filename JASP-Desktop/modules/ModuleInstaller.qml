@@ -19,14 +19,14 @@
 import QtQuick 2.11
 import Qt.labs.folderlistmodel 2.11
 import QtQuick.Window 2.3
-import "../QMLTheme/Theme"
+import JASP.Theme 1.0
 import "qrc:///qml"
 
 Rectangle
 {
 	id:			moduleInstallerRect
 	objectName: "moduleInstallerRect"
-	color:		JASPTheme.grayDarker
+	color:		Theme.grayDarker
 
 	width:		900
 	height:		500
@@ -45,7 +45,7 @@ Rectangle
 
 		onHeightChanged:
 		{
-			if(height <= JASPTheme.generalAnchorMargin * 2)
+			if(height <= Theme.generalAnchorMargin * 2)
 				visible = false
 		}
 
@@ -56,21 +56,21 @@ Rectangle
 			anchors.left:		parent.left
 			anchors.right:		parent.horizontalCenter
 			anchors.bottom:		parent.bottom
-			anchors.margins:	JASPTheme.generalAnchorMargin
+			anchors.margins:	Theme.generalAnchorMargin
 
 
 
-			color:			JASPTheme.whiteBroken
-			border.color:	JASPTheme.grayLighter
+			color:			Theme.whiteBroken
+			border.color:	Theme.grayLighter
 			border.width:	1
 
 			ListView
 			{
 				id:					folderList
 				anchors.fill:		parent
-				anchors.margins:	JASPTheme.generalAnchorMargin
+				anchors.margins:	Theme.generalAnchorMargin
 				clip:				true
-				spacing:			JASPTheme.rowSpacing
+				spacing:			Theme.rowSpacing
 
 				property string currentlySelectedFilePath: ""
 
@@ -88,11 +88,11 @@ Rectangle
 					{
 						id:					fileDelegateRect
 						height:				32
-						width:				folderList.width - (JASPTheme.generalAnchorMargin * 2)
-						x:					JASPTheme.generalAnchorMargin
+						width:				folderList.width - (Theme.generalAnchorMargin * 2)
+						x:					Theme.generalAnchorMargin
 						showIconAndText:	true
 
-						border.color:		JASPTheme.grayDarker
+						border.color:		Theme.grayDarker
 						border.width:		1
 						selected:			folderList.currentlySelectedFilePath !== "" && folderList.currentlySelectedFilePath === filePath
 						disabled:			selected
@@ -157,10 +157,10 @@ Rectangle
 			anchors.left:		folderRect.right
 			anchors.right:		parent.right
 			anchors.bottom:		parent.bottom
-			anchors.margins:	JASPTheme.generalAnchorMargin
+			anchors.margins:	Theme.generalAnchorMargin
 
-			color:				JASPTheme.whiteBroken
-			border.color:		JASPTheme.gray
+			color:				Theme.whiteBroken
+			border.color:		Theme.gray
 			border.width:		1
 
 
@@ -168,7 +168,7 @@ Rectangle
 			{
 				id: descriptionViewer
 				anchors.fill:		parent
-				anchors.margins:	JASPTheme.generalAnchorMargin
+				anchors.margins:	Theme.generalAnchorMargin
 				text:				"<i>Click a JASP Module to see more information here</i>"
 				textFormat:			Text.StyledText
 				wrapMode:			Text.WrapAtWordBoundaryOrAnywhere
@@ -191,7 +191,7 @@ Rectangle
 		anchors.left:		parent.left
 		anchors.right:		parent.right
 		anchors.bottom:		installProgressItem.top
-		anchors.margins:	JASPTheme.generalAnchorMargin
+		anchors.margins:	Theme.generalAnchorMargin
 		disabled:			moduleInstallerRect.currentJSON === null
 
 		text:				"Install"
@@ -201,7 +201,7 @@ Rectangle
 		{
 			if(moduleInstallerRect.currentJSON !== null)
 			{
-				installProgressItem.height = Qt.binding(function() { return moduleInstallerRect.height - (installButton.height + (JASPTheme.generalAnchorMargin * 2) )})
+				installProgressItem.height = Qt.binding(function() { return moduleInstallerRect.height - (installButton.height + (Theme.generalAnchorMargin * 2) )})
 
 				installProgressItem.installText = "Installing Module '"+moduleInstallerRect.currentJSON.moduleDescription.title +"'"
 				text							= installProgressItem.installText + "..."
@@ -240,16 +240,16 @@ Rectangle
 			anchors.left:		parent.left
 			anchors.right:		parent.right
 			anchors.bottom:		closeButton.top
-			anchors.margins:	JASPTheme.generalAnchorMargin
+			anchors.margins:	Theme.generalAnchorMargin
 
-			color:				JASPTheme.whiteBroken
-			border.color:		JASPTheme.grayLighter
+			color:				Theme.whiteBroken
+			border.color:		Theme.grayLighter
 			border.width:		1
 
 			Text
 			{
 				anchors.fill:		parent
-				anchors.margins:	JASPTheme.generalAnchorMargin
+				anchors.margins:	Theme.generalAnchorMargin
 				wrapMode:			Text.WrapAtWordBoundaryOrAnywhere
 				text:				installProgressItem.installText
 			}
@@ -261,7 +261,7 @@ Rectangle
 			anchors.left:		parent.left
 			anchors.right:		parent.right
 			anchors.bottom:		parent.bottom
-			anchors.margins:	JASPTheme.generalAnchorMargin
+			anchors.margins:	Theme.generalAnchorMargin
 			visible:			dynamicModules.currentInstallDone
 			height:				dynamicModules.currentInstallDone ? implicitHeight : 0
 

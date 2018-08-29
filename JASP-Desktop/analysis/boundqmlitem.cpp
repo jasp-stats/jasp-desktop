@@ -42,10 +42,11 @@ const QString& BoundQMLItem::name()
 
 void BoundQMLItem::setUp()
 {
-	Options* options = _form->getAnalysisOptions();
-	string name = _name.toStdString();
-	if (!options->get(name))
-		options->add(name, createOption());
+}
+
+void BoundQMLItem::resetQMLItem(QQuickItem *item)
+{
+	_item = item;
 }
 
 void BoundQMLItem::addError(const QString &error)

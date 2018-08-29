@@ -64,6 +64,36 @@ BoundQMLTextInput::BoundQMLTextInput(QQuickItem* item, AnalysisQMLForm* form) : 
 	QQuickItem::connect(item, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
 }
 
+QString BoundQMLTextInput::_getPercentValue()
+{
+	double doubleValue = _number->value();
+	if (doubleValue <= 1)
+		doubleValue = doubleValue * 100;
+	// Get only max 1 decimal
+	doubleValue = doubleValue * 10;
+	int intValue = (int)doubleValue;
+	doubleValue = (double)intValue / 10;
+	if (doubleValue > 100) doubleValue = 100;
+	else if (doubleValue < 0) doubleValue = 0;
+	return QString::number(doubleValue);
+}
+
+QString BoundQMLTextInput::_getIntegerArrayValue()
+{
+	QString value;
+	vector<int> intValues = _integerArray->value();
+	bool first  = true;
+	for (int intValue : intValues) 
+	{
+		if (!first)
+			value += ",";
+		first = false;
+		value += intValue;
+	}
+	
+	return value;
+}
+
 void BoundQMLTextInput::bindTo(Option *option)
 {
 	QString value;
@@ -86,30 +116,13 @@ void BoundQMLTextInput::bindTo(Option *option)
 		case TextInputType::PercentIntputType:
 		{
 			_number = dynamic_cast<OptionNumber *>(option);
-			double doubleValue = _number->value();
-			if (doubleValue <= 1)
-				doubleValue = doubleValue * 100;
-			// Get only max 1 decimal
-			doubleValue = doubleValue * 10;
-			int intValue = (int)doubleValue;
-			doubleValue = (double)intValue / 10;
-			if (doubleValue > 100) doubleValue = 100;
-			else if (doubleValue < 0) doubleValue = 0;
-			value = QString::number(doubleValue);
+			value = _getPercentValue();
 		}
 		break;
 		case TextInputType::IntegerArrayInputType:
 		{
 			_integerArray = dynamic_cast<OptionIntegerArray *>(option);
-			vector<int> intValues = _integerArray->value();
-			bool first  = true;
-			for (int intValue : intValues) 
-			{
-				if (!first)
-					value += ",";
-				first = false;
-				value += intValue;
-			}
+			value = _getIntegerArrayValue();
 		}
 		break;
 		default:
@@ -132,6 +145,23 @@ Option *BoundQMLTextInput::createOption()
 	QString text = QQmlProperty::read(_item, "text").toString();
 	setOptionValue(text);
 	return _option;
+}
+
+void BoundQMLTextInput::resetQMLItem(QQuickItem *item)
+{
+	BoundQMLItem::resetQMLItem(item);
+	
+	QString value;
+	switch (_inputType) 
+	{
+	case TextInputType::IntegerInputType:		value = QString::number(_integer->value()); break;
+	case TextInputType::NumberInputType:		value = QString::number(_number->value());	break;
+	case TextInputType::PercentIntputType:		value = _getPercentValue();					break;
+	case TextInputType::IntegerArrayInputType:	value = _getIntegerArrayValue();			break;
+	default:									value = QString::fromStdString(_string->value());
+	}
+	_item->setProperty("text", value);
+	QQuickItem::connect(_item, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
 }
 
 void BoundQMLTextInput::setOptionValue(QString& text)

@@ -177,9 +177,7 @@ void Terms::insert(int index, const Terms &terms)
 		for (int i = 0; i < index; i++)
 			itr++;
 
-		vector<Term>::const_iterator ttr = terms.begin();
-		for (; ttr != terms.end(); ttr++)
-			_terms.insert(itr++, *ttr);
+		_terms.insert(itr, terms.begin(), terms.end());
 	}
 	else
 	{

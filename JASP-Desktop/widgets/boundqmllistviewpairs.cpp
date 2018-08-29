@@ -17,29 +17,30 @@
 //
 
 #include "boundqmllistviewpairs.h"
+#include "listmodelpairsassigned.h"
 #include "analysis/analysisqmlform.h"
+#include "analysis/options/optionvariablesgroups.h"
+
 #include <QQmlProperty>
 
 using namespace std;
 
-BoundQMLListViewPairs::BoundQMLListViewPairs(QQuickItem* item, AnalysisQMLForm* form) : BoundQMLListView(item, form)
+BoundQMLListViewPairs::BoundQMLListViewPairs(QQuickItem* item, AnalysisQMLForm* form) : BoundQMLDraggableListView(item, form)
 {
 	_boundTo = NULL;
-	_targetModel = new ListModelPairsAssigned(form, item);
-	_targetModel->setShowVariableIcon(false);
+	_model = _targetModel = _pairsModel = new ListModelPairsAssigned(form, item);
+	_targetModel->setDropMode(qmlDropMode::Replace);
 	QQmlProperty::write(item, "showElementBorder", true);
 	QQmlProperty::write(item, "columns", 2);
+	QQmlProperty::write(item, "showVariableIcon", false);	
+	
+	connect(_targetModel, &ListModelPairsAssigned::termsChanged, this, &BoundQMLListViewPairs::modelChangedHandler);		
 }
 
 void BoundQMLListViewPairs::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionVariablesGroups *>(option);
-
-	if (_boundTo != NULL)
-		_targetModel->bindTo(_boundTo);
-	else
-		qDebug() << "could not bind to OptionVariables in BoundQuickListView.cpp";
-	
+	_pairsModel->initTerms(_boundTo->value());
 }
 
 void BoundQMLListViewPairs::unbind()
@@ -47,16 +48,24 @@ void BoundQMLListViewPairs::unbind()
 	
 }
 
-void BoundQMLListViewPairs::setUp()
-{
-	BoundQMLListView::setUp();
-	if (_sourceModel)
-		_sourceModel->setRemoveTermsWhenDropped(false);
-}
-
 Option* BoundQMLListViewPairs::createOption()
 {
 	OptionVariablesGroups *result = new OptionVariablesGroups();
 	
 	return result;
+}
+
+void BoundQMLListViewPairs::modelChangedHandler()
+{
+	vector<vector<string> > pairs;
+
+	for (const Term &qPair : _targetModel->terms())
+	{
+		vector<string> pair;
+		pair.push_back(qPair.at(0).toStdString());
+		pair.push_back(qPair.at(1).toStdString());
+		pairs.push_back(pair);
+	}
+
+	_boundTo->setValue(pairs);
 }

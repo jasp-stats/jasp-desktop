@@ -19,12 +19,12 @@
 #ifndef LISTMODELTERMSAVAILABLE_H
 #define LISTMODELTERMSAVAILABLE_H
 
-#include "listmodelavailable.h"
+#include "listmodeltermsavailableinterface.h"
 #include "common.h"
 
 class ListModelTermsAssigned;
 
-class ListModelTermsAvailable : public ListModelAvailable
+class ListModelTermsAvailable : public ListModelTermsAvailableInterface
 {
 	Q_OBJECT	
 public:
@@ -33,10 +33,7 @@ public:
 	virtual void setUp() OVERRIDE;
 	
 	virtual void initTerms(const Terms &terms);
-	virtual void termsAlreadyAssigned(const Terms &terms) OVERRIDE;
 	virtual QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const OVERRIDE;
-	
-	virtual void sendBack(Terms &terms) OVERRIDE;
 	
 	virtual void resetTermsFromSyncModels();
 	virtual ListModel* getSyncModelOfTerm(const Term& term);

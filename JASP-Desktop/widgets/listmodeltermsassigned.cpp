@@ -23,43 +23,26 @@
 
 using namespace std;
 
-ListModelTermsAssigned::ListModelTermsAssigned(AnalysisQMLForm *form, QQuickItem* item)
-	: ListModelAssigned(form, item)
+ListModelTermsAssigned::ListModelTermsAssigned(AnalysisQMLForm *form, QQuickItem* item, bool onlyOneTerm)
+	: ListModelTermsAssignedInterface(form, item)
+	, _onlyOneTerm(onlyOneTerm)
 {
-	_boundTo = NULL;
 	_source = NULL;
 }
 
-void ListModelTermsAssigned::bindTo(Option *option)
+void ListModelTermsAssigned::initTerms(const vector<vector<string> > &terms)
 {
-	_boundTo = dynamic_cast<OptionTerms *>(option);
-
-	if (_boundTo != NULL)
+	beginResetModel();
+	_terms.set(terms);
+	endResetModel();
+	
+	if (_source != NULL)
 	{
-		if (_source != NULL)
-		{
-			const vector<vector<string> > assigned = _boundTo->value();
-
-			beginResetModel();
-			_terms.set(assigned);
-			endResetModel();
-
-			_source->termsAlreadyAssigned(_terms);
-		}
-		else
-		{
-			qDebug() << "TableModelTermsAssigned::bindTo(); source not set";
-		}
+		if (!_copyTermsWhenDropped)
+			_source->removeAssignedTerms(_terms);
 	}
 	else
-	{
-		qDebug() << "TableModelTermsAssigned::bindTo(); option not of type OptionVariables*";
-	}
-}
-
-void ListModelTermsAssigned::unbind()
-{
-	_boundTo = NULL;
+		qDebug() << "ListModelTermsAssigned source not set";
 }
 
 void ListModelTermsAssigned::availableTermsChanged(Terms* termsAdded, Terms* termsRemoved)
@@ -69,117 +52,67 @@ void ListModelTermsAssigned::availableTermsChanged(Terms* termsAdded, Terms* ter
 	
 	if (termsRemoved && termsRemoved->size() > 0)
 	{
-		unassign(*termsRemoved);
+		beginResetModel();
+		_terms.remove(*termsRemoved);
+		endResetModel();
 		_tempTermsToRemove.set(termsRemoved);
 		emit termsChanged(NULL, &_tempTermsToRemove);
 	}	
 }
 
-bool ListModelTermsAssigned::canDropTerms(const Terms *terms) const
+bool ListModelTermsAssigned::canAddTerms(Terms *terms) const
 {
-	if (_boundTo == NULL)
+	if ( ! ListModelDraggableTerms::canAddTerms(terms))
 		return false;
 
-	if ( ! ListModel::canDropTerms(terms))
+	if (_onlyOneTerm && terms->size() != 1)
 		return false;
-
-	if (_boundTo->onlyOneTerm())
-	{
-		if (terms->size() != 1)
-			return false;
-	}
 
 	return true;
 }
 
-bool ListModelTermsAssigned::dropTerms(const Terms *terms)
+Terms* ListModelTermsAssigned::addTerms(Terms *terms, int dropItemIndex)
 {
-	if (_boundTo == NULL)
-		return false;
-
-	if ( ! canDropTerms(terms))
-		return false;
-
-	_delayDropped.set(terms->terms());
-	QTimer::singleShot(0, this, SLOT(delayAssignDroppedData()));
-
-	return true;
-}
-
-void ListModelTermsAssigned::delayAssignDroppedData()
-{
-	assign(_delayDropped);
-	emit termsChanged(&_delayDropped, NULL);
-}
-
-void ListModelTermsAssigned::removeTermsAfterBeingDropped(const QList<int> &indices)
-{
-
-	_tempTermsToRemove.clear();
-	for (const int &index : indices)
-		_tempTermsToRemove.add(_terms.at(index));
-	
-	unassign(_tempTermsToRemove);
-
-	emit termsChanged(NULL, &_tempTermsToRemove);	
-}
-
-
-void ListModelTermsAssigned::assign(const Terms &terms)
-{
-	if (_boundTo == NULL)
-		return;
-
 	Terms newTerms;
+	Terms *toSendBack = new Terms;
+	beginResetModel();
 
-	if (_boundTo->onlyOneTerm())
+	if (_onlyOneTerm)
 	{
-		if (terms.size() > 0)
-			newTerms.add(terms.at(0));
+		if (terms->size() > 0)
+			newTerms.add(terms->at(0));
 
 		if (_terms.size() > 0)
-		{
-			_toSendBack.set(_terms);
-			_terms.clear();
-			QTimer::singleShot(0, this, SLOT(sendBackToSource()));
-		}
+			toSendBack->set(_terms);
+	}
+	else if (dropItemIndex >= 0 && dropItemIndex < static_cast<int>(_terms.size()))
+	{
+		newTerms.set(_terms);
+		newTerms.insert(dropItemIndex, *terms);
 	}
 	else
 	{
 		newTerms.set(_terms);
-		newTerms.add(terms);
+		newTerms.add(*terms);
 	}
+	
+	_terms.set(newTerms);
+	endResetModel();	
 
-	setAssigned(newTerms);
+	emit termsChanged(terms, toSendBack);
+	
+	return toSendBack;
 }
 
-void ListModelTermsAssigned::unassign(const Terms &terms)
+void ListModelTermsAssigned::removeTerms(const QList<int> &indices)
 {
-	Terms termsToKeep;
-	termsToKeep.set(_terms);
-	termsToKeep.remove(terms);
-	setAssigned(termsToKeep);
-}
-
-void ListModelTermsAssigned::setAssigned(const Terms &terms)
-{
-	if (_source == NULL)
-	{
-		qDebug() << "TableModelVariablesAssigned::setAssigned() : Source not set!";
-		return;
-	}
-
 	beginResetModel();
-	_terms.set(terms);
-	endResetModel();
+	_tempTermsToRemove.clear();
+	for (const int &index : indices)
+		_tempTermsToRemove.add(_terms.at(index));
+	
+	_terms.remove(_tempTermsToRemove);
+	endResetModel();	
 
-	if (_boundTo != NULL)
-		_boundTo->setValue(_terms.asVectorOfVectors());
+	emit termsChanged(NULL, &_tempTermsToRemove);	
 }
-
-void ListModelTermsAssigned::sendBackToSource()
-{
-	_source->sendBack(_toSendBack);
-	_toSendBack.clear();
-}
-

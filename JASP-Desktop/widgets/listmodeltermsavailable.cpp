@@ -22,34 +22,36 @@
 #include <QQmlProperty>
 
 ListModelTermsAvailable::ListModelTermsAvailable(AnalysisQMLForm *form, QQuickItem* item)
-	: ListModelAvailable(form, item)
+	: ListModelTermsAvailableInterface(form, item)
 {
 }
 
 void ListModelTermsAvailable::setUp()
 {
-	ListModelAvailable::setUp();
+	if (_isSetUp)
+		return;
+	
+	ListModelTermsAvailableInterface::setUp();
+	
 	QStringList syncModels = QQmlProperty(_item, "syncModels").read().toStringList();
-	if (syncModels.isEmpty())
+	if (syncModels.length() > 0)
 	{
-		addError(QString::fromLatin1("Needs sync model for Variables ListView ") + _name);
-	}
-	else
-	{
+		bool areTermsVariables = true;
 		for (const QString& syncModel : syncModels)
 		{
-			if (syncModel != "_JASPAllVariables")
+			ListModel* model = _form->getModel(syncModel);
+			if (model)
 			{
-				ListModel* model = _form->getModel(syncModel);
-				if (model)
-				{
-					_syncModels.push_back(model);
-					connect(model, &ListModel::termsChanged, this, &ListModelTermsAvailable::syncTermsChanged);
-				}
-				else
-					addError(QString::fromLatin1("Unknown sync model ") + syncModel + QString::fromLatin1(" for Variables ListView ") + _name);
+				_syncModels.push_back(model);
+				connect(model, &ListModel::termsChanged, this, &ListModelTermsAvailable::syncTermsChanged);
+				if (!model->areTermsVariables())
+					areTermsVariables = false;
 			}
+			else
+				addError(QString::fromLatin1("Unknown sync model ") + syncModel + QString::fromLatin1(" for Variables ListView ") + _name);
 		}
+		if (!areTermsVariables)
+			setTermsAreNotVariables(); // set it only when it is false
 		resetTermsFromSyncModels();
 	}
 }
@@ -91,40 +93,13 @@ QVariant ListModelTermsAvailable::requestInfo(const Term &term, VariableInfo::In
 	return VariableInfoConsumer::requestInfo(term, info);
 }
 
-void ListModelTermsAvailable::termsAlreadyAssigned(const Terms &terms)
-{
-	if (_removeTermsWhenDropped && terms.size() > 0)
-	{
-		beginResetModel();
-		_terms.remove(terms);
-		endResetModel();
-	}
-}
-
-void ListModelTermsAvailable::sendBack(Terms &terms)
-{
-	if (_removeTermsWhenDropped)
-	{
-		beginResetModel();
-		_terms.add(terms);
-		endResetModel();
-	}
-}
-
 void ListModelTermsAvailable::syncTermsChanged(Terms* termsAdded, Terms* termsRemoved)
 {
 	Q_UNUSED(termsAdded);
 	Q_UNUSED(termsRemoved);
 	
-	Options* options = _form->getAnalysisOptions();
-	if (options != NULL)
-		options->blockSignals(true);
-	
 	resetTermsFromSyncModels();
-	emit termsChanged(&_tempAddedTerms, &_tempRemovedTerms);
-	
-	if (options != NULL)
-		options->blockSignals(false);	
+	emit termsChanged(&_tempAddedTerms, &_tempRemovedTerms);	
 }
 
 void ListModelTermsAvailable::_setChangedTerms(const Terms &newTerms)
@@ -146,6 +121,10 @@ void ListModelTermsAvailable::_setChangedTerms(const Terms &newTerms)
 
 void ListModelTermsAvailable::resetTermsFromSyncModels()
 {
+	if (_syncModels.size() == 0)
+		return;
+	
+	beginResetModel();
 	Terms termsAvailable;
 	_termSyncModelMap.empty();
 	for (ListModel* syncModel : _syncModels)
@@ -159,12 +138,12 @@ void ListModelTermsAvailable::resetTermsFromSyncModels()
 	_setChangedTerms(termsAvailable);
 	initTerms(termsAvailable);
 	
-	for (ListModelAssigned* modelAssign : assignedModels)
+	for (ListModelTermsAssignedInterface* modelAssign : _assignedModels)
 	{
-		ListModel* model = dynamic_cast<ListModel*>(modelAssign);
-		if (model)
-			termsAlreadyAssigned(model->terms());
+		if (!modelAssign->copyTermsWhenDropped())
+			_terms.remove(modelAssign->terms());
 	}
+	endResetModel();
 }
 
 ListModel *ListModelTermsAvailable::getSyncModelOfTerm(const Term &term)

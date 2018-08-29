@@ -1,11 +1,11 @@
 #ifndef BOUNDQMLLISTVIEWANOVA_H
 #define BOUNDQMLLISTVIEWANOVA_H
 
-#include "boundqmllistview.h"
+#include "boundqmldraggablelistview.h"
 #include "analysis/options/optionstable.h"
 #include "listmodelanovaassigned.h"
 
-class BoundQMLListViewAnova : public BoundQMLListView
+class BoundQMLListViewAnova : public BoundQMLDraggableListView
 {
 	Q_OBJECT
 	
@@ -14,11 +14,14 @@ public:
 	
 	virtual void bindTo(Option *option) OVERRIDE;
 	virtual void unbind() OVERRIDE;
-	virtual void setUp() OVERRIDE;
 	virtual Option* createOption() OVERRIDE;
-		
+
+private slots:
+	void modelChangedHandler();
+
 private:
 	OptionsTable* _boundTo;
+	ListModelAnovaAssigned* _anovaModel;
 	
 };
 

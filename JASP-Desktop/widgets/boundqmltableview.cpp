@@ -17,58 +17,31 @@
 //
 
 #include "boundqmltableview.h"
-#include "analysis/options/optionvariable.h"
-#include "analysis/options/optionlist.h"
-#include "analysis/options/optionboolean.h"
+#include "analysis/analysisqmlform.h"
 
 #include <QQmlProperty>
 
-
-BoundQMLTableView::BoundQMLTableView(QQuickItem *item, AnalysisQMLForm *form) : BoundQMLItem(item, form)
-{
-	_tableModel = new ListModelTable(form, item);
-	
-	connect(item, SIGNAL(comboBoxActivated(int, QString)), this, SLOT(comboBoxActivatedHandler(int, QString)));
-}
-
-void BoundQMLTableView::bindTo(Option *option)
-{
-	_boundTo = dynamic_cast<OptionsTable *>(option);
-}
-
-void BoundQMLTableView::unbind()
-{
-	
-}
-
-Option *BoundQMLTableView::createOption()
-{
-	
-	// TODO: make it more generic!!!
-	Options* options = new Options();
-	OptionVariable* optionVariable = new OptionVariable();
-	options->add("variable", optionVariable);
-	OptionList* optionList = new OptionList();
-	optionList->setValue("none");
-	options->add("contrast", optionList);
-	return new OptionsTable(options);	
-	
+BoundQMLTableView::BoundQMLTableView(QQuickItem *item, AnalysisQMLForm *form)
+	: BoundQMLItem(item, form)
+	, _needsSyncModels(true)
+{	
 }
 
 void BoundQMLTableView::setUp()
 {
 	BoundQMLItem::setUp();
-	_tableModel->setUp();
-	QStringList syncModels = QQmlProperty(_item, "syncModels").read().toStringList();
-	if (syncModels.isEmpty())
+	_model->setUp();
+	
+	if (_needsSyncModels)
 	{
-		addError(QString::fromLatin1("Needs sync model for TableView ") + _name);
-	}
-	else
-	{
-		for (const QString& syncModel : syncModels)
+		QStringList syncModels = QQmlProperty(_item, "syncModels").read().toStringList();
+		if (syncModels.isEmpty())
 		{
-			if (syncModel != "_JASPAllVariables")
+			addError(QString::fromLatin1("Needs sync model for VariablesTable ") + _name);
+		}
+		else
+		{
+			for (const QString& syncModel : syncModels)
 			{
 				ListModel* model = _form->getModel(syncModel);
 				if (model)
@@ -79,8 +52,8 @@ void BoundQMLTableView::setUp()
 				else
 					addError(QString::fromLatin1("Unknown sync model ") + syncModel + QString::fromLatin1(" for ModelVIew ") + _name);
 			}
+			resetTermsFromSyncModels();
 		}
-		resetTermsFromSyncModels();
 	}
 	
 }
@@ -91,32 +64,4 @@ void BoundQMLTableView::syncTermsChanged(Terms *termsAdded, Terms *termsRemoved)
 	Q_UNUSED(termsRemoved);
 	
 	resetTermsFromSyncModels();
-}
-
-void BoundQMLTableView::comboBoxActivatedHandler(int row, QString value)
-{
-	qDebug() << "comboBox activated, row " << row << ", value " << value;
-	
-	std::vector<Options *> groups;
-	for (int i = 0; i < _terms.size(); ++i) {
-		Options *newRow = static_cast<Options *>(_boundTo->rowTemplate()->clone());
-		
-		// TODO: set the variables and the combo box
-		groups.push_back(newRow);
-	}
-
-	_boundTo->setValue(groups);
-	
-}
-
-void BoundQMLTableView::resetTermsFromSyncModels()
-{
-	Terms termsAvailable;
-	for (ListModel* syncModel : _syncModels)
-	{
-		const Terms& terms = syncModel->terms();
-		termsAvailable.add(terms);
-	}
-	
-	_tableModel->setTerms(termsAvailable);
 }

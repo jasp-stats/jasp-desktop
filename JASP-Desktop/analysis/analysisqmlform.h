@@ -10,14 +10,14 @@
 #include "analysisform.h"
 #include "analysis.h"
 #include "boundqmlitem.h"
-#include "widgets/listmodel.h"
+#include "widgets/listmodeldraggableterms.h"
 #include "options/variableinfo.h"
 #include "analysisqmldefines.h"
+#include "widgets/listmodeltermsavailable.h"
 
-class ListModelTermsAvailable;
 class ListModelTermsAssigned;
 class BoundQMLItem;
-class ListModel;
+class ListModelDraggableTerms;
 
 class AnalysisQMLForm : public AnalysisForm
 {
@@ -34,8 +34,8 @@ public:
 	
 	void		addError(const QString& error);
 
-	ListModel*	getRelatedModel(QQuickItem* model)						{ return _relatedModel[model];}
-	ListModel*	getModel(const QString& model)							{ return _modelMap[model]; }
+	ListModelDraggableTerms*	getRelatedModel(QQuickItem* item)		{ return _relatedModelMap[item]; }
+	ListModel*	getModel(const QString& modelName)						{ return _modelMap[modelName]; }
 	Options*	getAnalysisOptions()									{ return _analysis->options(); }
 
 public slots:
@@ -58,18 +58,17 @@ protected:
 	QQuickWidget							*_quickWidget;
 	Analysis								*_analysis;
 	std::list<BoundQMLItem* >				_items;
-	std::map<QQuickItem*, ListModel* >		_relatedModel;
+	std::map<QQuickItem*, ListModelDraggableTerms* >	_relatedModelMap;
 	std::vector<ListModelTermsAvailable* >	_availableVariablesModels;
-	std::map<QString, ListModel*>			_modelMap;
+	std::map<QString, ListModel* >			_modelMap;
 
 private:
 	QFileSystemWatcher						_QMLwatcher;
 	QFileSystemWatcher						_Rwatcher;
 	
+	std::vector<ListModelTermsAvailable*>	_allAvailableVariablesModels;
 	QQuickItem								*_errorMessagesItem;
-	QList<QString>							_errorMessages;
-	
-	ListModelTermsAvailable					*_allAvailableVariablesModel;
+	QList<QString>							_errorMessages;	
 };
 
 #endif // ANALYSISQMLFORM_H

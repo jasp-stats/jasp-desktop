@@ -88,6 +88,8 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 #ifdef QT_DEBUG
 	menu->addSeparator();
 	menu->addAction(QString("QML ANOVA"), this, SLOT(itemSelected()))->setObjectName("QMLAnova");
+	menu->addAction(QString("QML Repeated Measures ANOVA"), this, SLOT(itemSelected()))->setObjectName("QMLAnovaRepeatedMeasures");
+	menu->addAction(QString("QML ANCOVA"), this, SLOT(itemSelected()))->setObjectName("QMLAncova");
 #endif
 
 	ui->anovaButton->setMenu(menu);

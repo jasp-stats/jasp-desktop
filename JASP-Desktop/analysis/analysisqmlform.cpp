@@ -24,12 +24,15 @@
 #include <QDebug>
 
 #include "widgets/boundqmlcheckbox.h"
+#include "widgets/boundqmlcombobox.h"
 #include "widgets/boundqmltextinput.h"
 #include "widgets/boundqmlradiobuttons.h"
 #include "widgets/boundqmllistviewpairs.h"
 #include "widgets/boundqmllistviewanova.h"
 #include "widgets/boundqmllistviewvariables.h"
-#include "widgets/boundqmltableview.h"
+#include "widgets/boundqmllistmeasurescells.h"
+#include "widgets/boundqmlfactorslist.h"
+#include "widgets/boundqmlvariablestable.h"
 
 #include "widgets/listmodeltermsavailable.h"
 
@@ -40,9 +43,9 @@
 using namespace std;
 
 AnalysisQMLForm::AnalysisQMLForm(QWidget *parent, Analysis* analysis)
-	:  AnalysisForm("AnalysisQMLForm", parent), _quickWidget(new QQuickWidget(this)), _analysis(analysis), _allAvailableVariablesModel(NULL),	_errorMessagesItem(NULL)
+	:  AnalysisForm("AnalysisQMLForm", parent), _quickWidget(new QQuickWidget(this)), _analysis(analysis),	_errorMessagesItem(NULL)
 {
-	_quickWidget->engine()->addImportPath(":/QMLTheme");
+	_quickWidget->engine()->addImportPath("qrc:///components");
 	_quickWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
 
 	connect(_quickWidget,	&QQuickWidget::statusChanged,	this,	&AnalysisQMLForm::statusChangedWidgetHandler);
@@ -160,15 +163,21 @@ void AnalysisQMLForm::_parseQML()
 		BoundQMLItem *boundQMLItem = NULL;
 		qmlControlType controlType = qmlControlTypeFromQString(controlTypeStr);
 
+		bool isVisible = QQmlProperty(item, "visible").read().toBool();
+		if (!isVisible && controlType == qmlControlType::DraggableListView)
+			continue;
+		
 		switch(controlType)
 		{
-		case qmlControlType::CheckBox:		//fallthrough:
-		case qmlControlType::Switch:		boundQMLItem = new BoundQMLCheckBox(item,		this);	break;
-		case qmlControlType::TextField:		boundQMLItem = new BoundQMLTextInput(item,		this);	break;
-		case qmlControlType::ButtonGroup:	boundQMLItem = new BoundQMLRadioButtons(item,	this);	break;
-		case qmlControlType::TableView:		boundQMLItem = new BoundQMLTableView(item,		this);	break;
+		case qmlControlType::CheckBox:			//fallthrough:
+		case qmlControlType::Switch:			boundQMLItem = new BoundQMLCheckBox(item,		this);	break;
+		case qmlControlType::TextField:			boundQMLItem = new BoundQMLTextInput(item,		this);	break;
+		case qmlControlType::ButtonGroup:		boundQMLItem = new BoundQMLRadioButtons(item,	this);	break;
+		case qmlControlType::ComboBox:			boundQMLItem = new BoundQMLComboBox(item,		this);	break;
+		case qmlControlType::VariablesTable:	boundQMLItem = new BoundQMLVariablesTable(item,	this);	break;
+		case qmlControlType::FactorsList:		boundQMLItem = new BoundQMLFactorsList(item,	this);	break;
 
-		case qmlControlType::ListView:
+		case qmlControlType::DraggableListView:
 		{			
 			QString			listViewTypeStr = QQmlProperty(item, "listViewType").read().toString();
 			qmlListViewType	listViewType;
@@ -176,36 +185,29 @@ void AnalysisQMLForm::_parseQML()
 			try							{ listViewType	= qmlListViewTypeFromQString(listViewTypeStr);	}
 			catch(std::out_of_range)	{ _errorMessages.append(QString::fromLatin1("Unknown listViewType: ") + listViewType + QString::fromLatin1(". Cannot set a model to the VariablesList")); }
 
-			BoundQMLListView *boundQMLListView = NULL;
 			switch(listViewType)
 			{
-			case qmlListViewType::assignedVariables:	boundQMLListView = new BoundQMLListViewVariables(item,	this);	break;
-			case qmlListViewType::assignedPairs:		boundQMLListView = new BoundQMLListViewPairs(item,		this);	break;
-			case qmlListViewType::assignedAnova:		boundQMLListView = new BoundQMLListViewAnova(item,		this);	break;
+			case qmlListViewType::assignedVariables:	boundQMLItem = new BoundQMLListViewVariables(item,	this);	break;
+			case qmlListViewType::assignedPairs:		boundQMLItem = new BoundQMLListViewPairs(item,		this);	break;
+			case qmlListViewType::assignedAnova:		boundQMLItem = new BoundQMLListViewAnova(item,		this);	break;
+			case qmlListViewType::measuresCells:		boundQMLItem = new BoundQMLListMeasuresCells(item,	this);	break;
 			case qmlListViewType::availableVariables:
 			{
-				auto* availableVariablesModel	= new ListModelTermsAvailable(this, item);
-				_modelMap[controlName]			= availableVariablesModel;
-
-				if (QQmlProperty(item, "syncModels").read().toString() == "_JASPAllVariables")
-					_allAvailableVariablesModel	= availableVariablesModel;
-				else
-					_availableVariablesModels.push_back(availableVariablesModel);
+				// Available Variables ListViews are not bound to the options of the analysis,
+				// but they need a model.
+				ListModelTermsAvailable* availableVariablesModel = new ListModelTermsAvailable(this, item);
+				_availableVariablesModels.push_back(availableVariablesModel);
+				_modelMap[controlName] = availableVariablesModel;
+				
+				if (QQmlProperty(item, "syncModels").read().toString().isEmpty()) // If there is no syncModels, set all available variables.
+					_allAvailableVariablesModels.push_back(availableVariablesModel);
 				break;
 			}
 			default:
 				_errorMessages.append(QString::fromLatin1("Unused (in AnalysisQMLForm::_parseQML) listViewType: ") + qmlListViewTypeToQString(listViewType) + QString::fromLatin1(". Cannot set a model to the VariablesList"));
 				break;
 			}
-
 			
-			if (boundQMLListView)
-			{
-				boundQMLItem			= boundQMLListView;
-				auto* listViewAssigned	= boundQMLListView->targetModel();
-				_modelMap[controlName]	= listViewAssigned;
-			}			
-						
 			QList<QVariant> dropKeyList = QQmlProperty(item, "dropKeys").read().toList();
 			QString dropKey				= dropKeyList.isEmpty() ? QQmlProperty(item, "dropKeys").read().toString() : dropKeyList[0].toString(); // The first key gives the default drop item.
 			
@@ -216,21 +218,32 @@ void AnalysisQMLForm::_parseQML()
 
 			break;
 		}
+		case qmlControlType::JASPControl:
+		default:
+			_errorMessages.append(QString::fromLatin1("Unknown type of JASPControl ") + controlName + QString::fromLatin1(" : ") + controlTypeStr);			
 		}
 		
 		if (boundQMLItem)
+		{
 			_items.push_back(boundQMLItem);
+			BoundQMLTableView* boundQMLTableView = dynamic_cast<BoundQMLTableView *>(boundQMLItem);
+			if (boundQMLTableView)
+				_modelMap[controlName] = boundQMLTableView->model();
+		}
 	}
 	
 	for (auto const& pair : dropKeyMap)
 	{
-		ListModel* source = _modelMap[pair.first];
-		ListModel* target = _modelMap[pair.second];
+		ListModelDraggableTerms* sourceModel = dynamic_cast<ListModelDraggableTerms *>(_modelMap[pair.first]);
+		ListModelDraggableTerms* targetModel = dynamic_cast<ListModelDraggableTerms *>(_modelMap[pair.second]);
 
-		if (source && target)
-			_relatedModel[source->getItem()] = target;
+		if (sourceModel && targetModel)
+		{
+			QQuickItem* sourceItem = sourceModel->item();
+			_relatedModelMap[sourceItem] = targetModel;
+		}
 		else
-			_errorMessages.append(QString::fromLatin1("Cannot find a ListView for ") + (!source ? pair.first : pair.second));
+			_errorMessages.append(QString::fromLatin1("Cannot find a ListView for ") + (!sourceModel ? pair.first : pair.second));
 	}
 	
 	for (BoundQMLItem* item : _items)
@@ -263,17 +276,17 @@ void AnalysisQMLForm::_setErrorMessages()
 
 void AnalysisQMLForm::_setAllAvailableVariablesModel()
 {
-	if (_allAvailableVariablesModel != NULL)
-	{
-		vector<string> columnNames;
+	if (_allAvailableVariablesModels.size() == 0)
+		return;
 	
-		if (_dataSet != NULL)
-			for (Column &column: _dataSet->columns())
-				columnNames.push_back(column.name());
-	
-		_allAvailableVariablesModel->initTerms(columnNames);
-	}
-	
+	vector<string> columnNames;
+
+	if (_dataSet != NULL)
+		for (Column &column: _dataSet->columns())
+			columnNames.push_back(column.name());
+
+	for (ListModelTermsAvailable* model : _allAvailableVariablesModels)
+		model->initTerms(columnNames);
 }
 
 void AnalysisQMLForm::bindTo(Options *options, DataSet *dataSet)
@@ -284,30 +297,29 @@ void AnalysisQMLForm::bindTo(Options *options, DataSet *dataSet)
 	_dataSet = dataSet;
 	_options = options;
 	
+	_options->blockSignals(true);
+	
 	_setAllAvailableVariablesModel();	
 	
 	for (BoundQMLItem* item : _items)
 	{
-		Option* option = options->get(item->name().toStdString());
-		if (option)
+		string name = item->name().toStdString();
+		Option* option = options->get(name);
+		if (!option)
 		{
-			item->bindTo(option);
-			item->illegalChanged.connect(boost::bind(&AnalysisForm::illegalValueHandler, this, _1));
+			option = item->createOption();
+			options->add(name, option);
 		}
-		else
-			qDebug() << "Cound not find option " << item->name();
+		item->bindTo(option);
+		item->illegalChanged.connect(boost::bind(&AnalysisForm::illegalValueHandler, this, _1));
 	}
 	
-	if (_options != NULL)
+	for (ListModelTermsAvailable* availableModel : _availableVariablesModels)
 	{
-		_options->blockSignals(true);
-		for (ListModelTermsAvailable* availableModel : _availableVariablesModels)
-		{
-			// The availableModel are not bound, but they have to be updated when the form is initialized.
-			availableModel->resetTermsFromSyncModels();
-		}
-		_options->blockSignals(false);
+		// The availableModel are not bound, but they have to be updated when the form is initialized.
+		availableModel->resetTermsFromSyncModels();
 	}
+	_options->blockSignals(false);
 	
 	updateIllegalStatus();
 }
@@ -352,7 +364,7 @@ void AnalysisQMLForm::QMLFileModifiedHandler(QString path)
 {
 	qDebug() << "Test QML file modified";
 	_items.empty();
-	_relatedModel.empty();
+	_relatedModelMap.empty();
 	_availableVariablesModels.empty();
 	_modelMap.empty();
 	

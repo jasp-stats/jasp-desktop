@@ -19,88 +19,48 @@
 #ifndef LISTMODEL_H
 #define LISTMODEL_H
 
+#include "common.h"
+#include "analysis/options/terms.h"
+
 #include <QAbstractListModel>
 #include <QQuickItem>
-#include "analysis/options/terms.h"
-#include "common.h"
-#include "analysis/options/variableinfo.h"
 
 class AnalysisQMLForm;
 
-class ListModel : public QAbstractListModel, public VariableInfoConsumer
-{	
-Q_OBJECT
+class ListModel : public QAbstractListModel
+{
+	Q_OBJECT
 public:
 	enum ListModelRoles {
         NameRole = Qt::UserRole + 1,
-        TypeRole
+		TypeRole
     };
 	
-	ListModel(AnalysisQMLForm *form, QQuickItem* item);
-	virtual void setUp();
-
-	void setVariableTypesSuggested(int variableTypesSuggested);
-	int variableTypesSuggested() const;
-
-	void setVariableTypesAllowed(int variableTypesAllowed);
-	int variableTypesAllowed() const;
-	
-	bool removeTermsWhenDropped() const;
-	void setRemoveTermsWhenDropped(bool remove);
-	
-	void refresh();
-	
-	QQuickItem* getItem();
-	const QString& getName() const;
-	ListModel* getRelatedModel();
-	const QString& getItemType() const;
-	bool showVariableIcon() const;
-	void setShowVariableIcon(bool show);
-		
+	ListModel(AnalysisQMLForm* form, QQuickItem* item);
 	virtual QHash<int, QByteArray> roleNames() const OVERRIDE;
-	virtual int rowCount(const QModelIndex &parent) const OVERRIDE;
-	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
 	
-	virtual Terms *termsFromIndexes(const QList<int> &indexes) const;
-	virtual bool canDropTerms(const Terms *terms) const;
-	virtual bool dropTerms(const Terms *terms) ;
-	virtual void removeTermsAfterBeingDropped(const QList<int> &indexes);
-	virtual const Terms& terms() const;
-
+	virtual void setUp();
+	virtual void refresh();
+	void addError(const QString& error) const;
+	QQuickItem* item() const			{ return _item; }
+	const QString& name() const			{ return _name; }
+	virtual const Terms& terms() const	{ return _terms; }
+	const QString& getItemType() const	{ return _itemType; }	
+	bool areTermsVariables() const		{ return _areTermsVariables; }
+	virtual void setTermsAreNotVariables();
+	
+	
 signals:
 	void termsChanged(Terms* added = NULL, Terms* removed = NULL);
-
+	
 protected:
-	QQuickItem* _item;
 	AnalysisQMLForm* _form;
+	QQuickItem* _item;
 	QString _name;
-	QString _itemType;
-	int _variableTypesAllowed;
-	int _variableTypesSuggested;
-	bool _removeTermsWhenDropped;
-	bool _showVariableIcon;
-	
-	Terms _terms;
-
-	
-	void addError(const QString& error);
-	bool isAllowed(const Term &term) const;
-	bool isSuggested(const Term &term) const;
-	
-	
-private slots:
-	void moveItemsDelayedHandler();
-	void itemDoubleClickedHandler(int index);
-	void itemsDroppedHandler(QVariant indexes, QVariant vdropList);
-	
-private:
-	QList<int> _tempIndexes;
-	ListModel* _tempDropModel;
 	bool _isSetUp;
-	
-	int _getAllowedColumnsTypes() const;
-	void _setAllowedVariablesToModel();
-	void _moveItems(QList<int> &indexes, ListModel* dropModel);	
+	Terms _terms;
+	QString _itemType;	
+	bool _areTermsVariables;	
 };
 
 #endif // LISTMODEL_H

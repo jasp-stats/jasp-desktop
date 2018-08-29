@@ -20,10 +20,7 @@
 #define BOUNDQMLTABLEVIEW_H
 
 #include "analysis/boundqmlitem.h"
-#include "analysis/options/optionstable.h"
 #include "listmodel.h"
-#include "listmodeltable.h"
-#include <QObject>
 
 class BoundQMLTableView : public BoundQMLItem
 {
@@ -31,25 +28,21 @@ class BoundQMLTableView : public BoundQMLItem
 	
 public:
 	explicit BoundQMLTableView(QQuickItem* item, AnalysisQMLForm* form);
-	virtual void bindTo(Option *option) OVERRIDE;
-	virtual void unbind() OVERRIDE;
-	
-	virtual Option* createOption() OVERRIDE;
 	
 	virtual void setUp() OVERRIDE;	
+	
+	ListModel* model() { return _model; }
 
-private slots:
-	virtual void syncTermsChanged(Terms* termsAdded, Terms* termsRemoved);
-	virtual void comboBoxActivatedHandler(int row, QString value);
-	
-    
 protected:
-	OptionsTable *_boundTo;
-	std::vector<ListModel*> _syncModels;
-	ListModelTable* _tableModel;
-	Terms _terms;
+	virtual void resetTermsFromSyncModels() {}
 	
-	virtual void resetTermsFromSyncModels();	
+	ListModel* _model;
+	std::vector<ListModel*> _syncModels;
+	bool _needsSyncModels;
+
+private slots:	
+	virtual void syncTermsChanged(Terms* termsAdded, Terms* termsRemoved);
+
 };
 
 #endif // BOUNDQMLTABLEVIEW_H

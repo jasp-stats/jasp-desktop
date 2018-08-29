@@ -19,40 +19,28 @@
 #ifndef LISTMODELTERMSASSIGNED_H
 #define LISTMODELTERMSASSIGNED_H
 
-#include "listmodelassigned.h"
-#include "analysis/options/optionterms.h"
+#include "listmodeltermsassignedinterface.h"
 
 
-class ListModelTermsAssigned : public ListModelAssigned
+class ListModelTermsAssigned : public ListModelTermsAssignedInterface
 {
 	Q_OBJECT
 	
 public:
-	explicit ListModelTermsAssigned(AnalysisQMLForm *form, QQuickItem* item);
+	explicit ListModelTermsAssigned(AnalysisQMLForm *form, QQuickItem* item, bool onlyOneTerm = false);
 	
-	virtual void bindTo(Option *option) OVERRIDE;
-	virtual void unbind() OVERRIDE;
+	virtual void initTerms(const std::vector<std::vector<std::string> >& terms);
 	
-	virtual bool canDropTerms(const Terms *terms) const OVERRIDE;
-	virtual bool dropTerms(const Terms *terms) OVERRIDE;
-	virtual void removeTermsAfterBeingDropped(const QList<int> &indices) OVERRIDE;
-	
+	virtual bool canAddTerms(Terms *terms) const OVERRIDE;
+	virtual Terms* addTerms(Terms *terms, int dropItemIndex = -1) OVERRIDE;
+	virtual void removeTerms(const QList<int> &indices) OVERRIDE;
+
 public slots:
 	virtual void availableTermsChanged(Terms* termsToAdd, Terms* termsToRemove) OVERRIDE;
 	
-private slots:
-	void sendBackToSource();
-	void delayAssignDroppedData();	
+private:	
+	bool _onlyOneTerm;
 
-private:
-	void assign(const Terms &terms);
-	void unassign(const Terms &terms);
-	void setAssigned(const Terms &terms);
-
-	OptionTerms *_boundTo;
-
-	Terms _toSendBack;
-	Terms _delayDropped;
 	Terms _tempTermsToRemove;
 
 };

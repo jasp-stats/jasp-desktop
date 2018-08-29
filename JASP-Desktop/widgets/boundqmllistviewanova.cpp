@@ -23,29 +23,18 @@
 
 using namespace std;
 
-BoundQMLListViewAnova::BoundQMLListViewAnova(QQuickItem* item, AnalysisQMLForm* form) : BoundQMLListView(item, form)
+BoundQMLListViewAnova::BoundQMLListViewAnova(QQuickItem* item, AnalysisQMLForm* form) : BoundQMLDraggableListView(item, form)
 {
 	_boundTo = NULL;
-	_targetModel = new ListModelAnovaAssigned(form, item);
-	_targetModel->setShowVariableIcon(false);
-}
-
-void BoundQMLListViewAnova::setUp()
-{
-	BoundQMLListView::setUp();
-	_sourceModel->setRemoveTermsWhenDropped(false);
+	_model = _targetModel = _anovaModel = new ListModelAnovaAssigned(form, item);
 	
+	connect(_targetModel, &ListModelAnovaAssigned::termsChanged, this, &BoundQMLListViewAnova::modelChangedHandler);			
 }
 
 void BoundQMLListViewAnova::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionsTable *>(option);
-
-	if (_boundTo != NULL)
-		_targetModel->bindTo(_boundTo);
-	else
-		qDebug() << "could not bind to OptionVariables in BoundQuickAnovaModelView.cpp";
-	
+	_anovaModel->initTerms(_boundTo->value(), _boundTo->rowTemplate());
 }
 
 void BoundQMLListViewAnova::unbind()
@@ -59,4 +48,10 @@ Option* BoundQMLListViewAnova::createOption()
 	Options* options = new Options();
 	options->add("components", optionTerm);
 	return new OptionsTable(options);	
+}
+
+void BoundQMLListViewAnova::modelChangedHandler()
+{
+	std::vector<Options *> rows = _anovaModel->rows();
+	_boundTo->setValue(rows);
 }

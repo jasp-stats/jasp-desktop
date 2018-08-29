@@ -86,6 +86,19 @@ void OptionsTable::setValue(const vector<Options *> &value)
 	notifyChanged();
 }
 
+void OptionsTable::optionsChanged(Option *)
+{
+	notifyChanged();
+}
+
+void OptionsTable::connectOptions(const vector<Options *> &value)
+{
+	setValue(value);
+	
+	for (Options* options : value)
+		options->changed.connect(boost::bind( &OptionsTable::optionsChanged,	this, _1));	
+}
+
 Options *OptionsTable::rowTemplate() const
 {
 	return _template;

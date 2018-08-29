@@ -19,12 +19,12 @@
 #ifndef BOUNDQMLLISTVIEWVARIABLES_H
 #define BOUNDQMLLISTVIEWVARIABLES_H
 
-#include "boundqmllistview.h"
+#include "boundqmldraggablelistview.h"
 #include "analysis/options/optionvariables.h"
 #include "listmodeltermsassigned.h"
 
 
-class BoundQMLListViewVariables : public BoundQMLListView
+class BoundQMLListViewVariables : public BoundQMLDraggableListView
 {
 	Q_OBJECT
 	
@@ -35,6 +35,9 @@ public:
 	
 	virtual Option* createOption() OVERRIDE;
 		
+private slots:
+	void modelChangedHandler();
+
 private:
 	OptionVariables* _boundTo;
 	bool _singleItem;

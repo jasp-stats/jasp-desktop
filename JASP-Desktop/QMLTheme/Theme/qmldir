@@ -1,2 +1,0 @@
-module JASPTheme
-singleton JASPTheme 1.0 JASPTheme.qml

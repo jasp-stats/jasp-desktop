@@ -38,9 +38,10 @@ public:
 	const QString& name();
 	
 	virtual void setUp();
+	virtual void resetQMLItem(QQuickItem* item);
+	virtual Option* createOption() = 0;
 	
 protected:
-	virtual Option* createOption() = 0;
 	void addError(const QString& error);
 	
 	QQuickItem* _item;

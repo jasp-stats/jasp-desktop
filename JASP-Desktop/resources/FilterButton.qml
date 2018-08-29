@@ -1,13 +1,13 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
-import "qrc:///QMLTheme/Theme/"
+import JASP.Theme 1.0
 
 Rectangle
 {
 	id: filterButtonRoot
 
-	color:			(!filterButtonRoot.disabled && filterButtonRoot.hovered) || filterButtonRoot.selected ? JASPTheme.white : JASPTheme.grayLighter
-	border.color:	(!filterButtonRoot.disabled && filterButtonRoot.hovered) || filterButtonRoot.selected ? JASPTheme.black : JASPTheme.gray
+	color:			(!filterButtonRoot.disabled && filterButtonRoot.hovered) || filterButtonRoot.selected ? Theme.white : Theme.grayLighter
+	border.color:	(!filterButtonRoot.disabled && filterButtonRoot.hovered) || filterButtonRoot.selected ? Theme.black : Theme.gray
 	border.width: 1
 
 	property string text:				""
