@@ -40,7 +40,10 @@
 #include "utilities/jsonutilities.h"
 #include "data/computedcolumnsmodel.h"
 
-#include "analysis/ribbons/ribbonwidget.h"
+#include "modules/dynamicmodule.h"
+#include "modules/ribbonmodel.h"
+#include "modules/ribbonbuttonmodel.h"
+#include "modules/ribbonentry.h"
 
 class ResultsJsInterface;
 
@@ -116,8 +119,9 @@ private:
 	void matchComputedColumnsToAnalyses();
 
 	bool filterShortCut();
+	void setupRibbonModels(QFileInfo);
+	void loadRibbonQML();
 	void loadQML();
-	void connectRibbonButton(RibbonWidget * ribbon)								{ connect(ribbon,										QOverload<QString>::of(&RibbonWidget::itemSelected),				this,	&MainWindow::ribbonEntrySelected); }
 
 	QWebEngineView* getWebViewResults();
 	void			setCurrentTab(QString tabName);
@@ -145,6 +149,7 @@ private slots:
 	void dataSetIOCompleted(FileEvent *event);
 	void populateUIfromDataSet();
 	void ribbonEntrySelected(const QString &item);
+	void onMenuClicked(QAction *);
 
 	void adjustOptionsPanelWidth();
 	void splitterMovedHandler(int, int);
@@ -192,8 +197,10 @@ private slots:
 	void onFilterUpdated();
 
 	void updateExcludeKey();
-	void analysisFormChangedHandler(Analysis *analysis);	
+	void analysisFormChangedHandler(Analysis *analysis);
 	void dataSetChanged(DataSet * dataSet);
+
+	void handleRibbonButtonClicked(QVariant);
 
 
 private:
@@ -213,7 +220,7 @@ private:
 	ComputedColumnsModel			*_computedColumnsModel	= NULL;
 	OnlineDataManager				*_odm					= NULL;
 	DynamicModules					*_dynamicModules		= NULL;
-	
+
 	analysisFormMap					_analysisFormsMap;
 	TableModelVariablesAvailable	_availableVariablesModel;
 
@@ -245,6 +252,9 @@ private:
 
 	QSettings						_settings;
 	CustomWebEnginePage				*_customPage;
+
+	RibbonModel						*_ribbonModel;
+	RibbonButtonModel				*_ribbonButtonModel;
 };
 
 #endif // MAINWIDGET_H

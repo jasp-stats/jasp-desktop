@@ -128,7 +128,7 @@ void FSBrowser::setFSModel(FSBModel *model)
 	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(refresh()));
 	connect(_model, SIGNAL(authenticationClear()), this, SLOT(refresh()));
 	connect(_model, SIGNAL(authenticationFail(QString)), this, SLOT(authenticationFailed(QString)));
-	connect(_model, SIGNAL(hideAuthentication()), this, SLOT(hideAuthentication()));
+//	connect(_model, SIGNAL(hideAuthentication()), this, SLOT(hideAuthentication()));
 }
 
 void FSBrowser::setBrowseMode(FSBrowser::BrowseMode mode)

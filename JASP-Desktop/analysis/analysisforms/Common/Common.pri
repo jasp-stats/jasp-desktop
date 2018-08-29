@@ -1,5 +1,4 @@
 SOURCES += \
-    $$PWD/../../ribbons/ribbonanalysis.cpp \
     $$PWD/ancovabayesianform.cpp \
     $$PWD/ancovaform.cpp \
     $$PWD/ancovamultivariateform.cpp \
@@ -35,7 +34,6 @@ SOURCES += \
     $$PWD/multinomialtestform.cpp
 
 HEADERS += \
-    $$PWD/../../ribbons/ribbonanalysis.h \
     $$PWD/ancovabayesianform.h \
     $$PWD/ancovaform.h \
     $$PWD/ancovamultivariateform.h \
@@ -71,7 +69,6 @@ HEADERS += \
     $$PWD/multinomialtestform.h
 
 FORMS += \
-    $$PWD/../../ribbons/ribbonanalysis.ui \
     $$PWD/ancovabayesianform.ui \
     $$PWD/ancovaform.ui \
     $$PWD/ancovamultivariateform.ui \

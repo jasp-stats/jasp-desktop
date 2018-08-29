@@ -150,41 +150,16 @@ QPushButton::menu-indicator {
          <number>4</number>
         </property>
         <item>
-         <widget class="QStackedWidget" name="ribbon">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
+         <widget class="QQuickWidget" name="quickWidget_Ribbon">
+          <property name="minimumSize">
            <size>
-            <width>16777215</width>
-            <height>16777215</height>
+            <width>0</width>
+            <height>80</height>
            </size>
           </property>
-          <property name="styleSheet">
-           <string notr="true">#ribbon {
-	/* background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgb(255, 255, 255), stop:0.5 rgb(240, 240, 240)); */
-	/*border-bottom: 1.2px solid #C4C4C4 ;*/
-}</string>
+          <property name="resizeMode">
+           <enum>QQuickWidget::SizeRootObjectToView</enum>
           </property>
-          <property name="currentIndex">
-           <number>0</number>
-          </property>
-          <widget class="RibbonAnalysis" name="ribbonAnalysis">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-          </widget>
-          <widget class="RibbonSEM" name="ribbonSEM"/>
-          <widget class="RibbonReinforcementLearning" name="ribbonReinforcementLearning"/>
-          <widget class="RibbonSummaryStatistics" name="ribbonSummaryStatistics"/>
-          <widget class="RibbonMetaAnalysis" name="ribbonMetaAnalysis"/>
-          <widget class="RibbonNetworkAnalysis" name="ribbonNetworkAnalysis"/>
          </widget>
         </item>
         <item>
@@ -350,8 +325,8 @@ QPushButton::menu-indicator {
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>300</width>
-                       <height>714</height>
+                       <width>333</width>
+                       <height>653</height>
                       </rect>
                      </property>
                      <property name="sizePolicy">
@@ -512,33 +487,6 @@ QPushButton::menu-indicator {
    <header>QtQuickWidgets/QQuickWidget</header>
   </customwidget>
   <customwidget>
-   <class>RibbonAnalysis</class>
-   <extends>QWidget</extends>
-   <header>analysis/ribbons/ribbonanalysis.h</header>
-   <container>1</container>
-   <slots>
-    <signal>itemSelected(QString)</signal>
-   </slots>
-  </customwidget>
-  <customwidget>
-   <class>RibbonSEM</class>
-   <extends>QWidget</extends>
-   <header>analysis/ribbons/ribbonsem.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>RibbonSummaryStatistics</class>
-   <extends>QWidget</extends>
-   <header>analysis/ribbons/ribbonsummarystatistics.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>RibbonReinforcementLearning</class>
-   <extends>QWidget</extends>
-   <header>analysis/ribbons/ribbonreinforcementlearning.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>TabBar</class>
    <extends>QWidget</extends>
    <header>widgets/tabbar.h</header>
@@ -554,18 +502,6 @@ QPushButton::menu-indicator {
    <class>BackStageWidget</class>
    <extends>QWidget</extends>
    <header>widgets/backstagewidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>RibbonMetaAnalysis</class>
-   <extends>QWidget</extends>
-   <header>analysis/ribbons/ribbonmeta_analysis.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>RibbonNetworkAnalysis</class>
-   <extends>QWidget</extends>
-   <header>analysis/ribbons/ribbonnetworkanalysis.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

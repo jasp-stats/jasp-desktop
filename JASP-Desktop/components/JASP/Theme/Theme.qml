@@ -41,7 +41,7 @@ QtObject {
     readonly property int formMargin: 10
     
     readonly property int borderRadius: 4
-    readonly property int rowSpacing: 3
+    readonly property int rowSpacing: 5
     readonly property int columnSpacing: 30
     
     readonly property int checkBoxIndicatorLength: 15

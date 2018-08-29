@@ -298,9 +298,9 @@ string Dirs::QMLAnalysesDir()
     string dir = exeDir();
 
 #ifdef __APPLE__
-	dir += "/../Resources/QMLAnalyses";
+	dir += "/../Resources";
 #else
-	dir += "/Resources/QMLAnalyses";
+	dir += "/Resources";
 #endif
 
     return dir;

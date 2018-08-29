@@ -1,3 +1,22 @@
+//
+// Copyright (C) 2013-2018 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public
+// License along with this program.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
+
+
 #include "dynamicmodule.h"
 
 namespace Modules
@@ -49,13 +68,14 @@ bool DynamicModule::loadModule()
 	try
 	{
 		Json::Value & moduleDescription = descriptionJson["moduleDescription"];
-		_title							= moduleDescription.get("title",		_name).asString();
-		_author							= moduleDescription.get("author",		"Unknown").asString();
-		_license						= moduleDescription.get("license",		"Unknown").asString();
-		_website						= moduleDescription.get("website",		"Unknown").asString();
-		_maintainer						= moduleDescription.get("maintainer",	"JASP Team <info@jasp-stats.org>").asString();
-		_description					= moduleDescription.get("description",	"The R Code belonging to module" + _name).asString();
-		_version						= moduleDescription.get("version",		0).asInt();
+		_title							= moduleDescription.get("title",			_name).asString();
+		_author							= moduleDescription.get("author",			"Unknown").asString();
+		_requiresDataset				= moduleDescription.get("requiresDataset",	true).asBool();
+		_license						= moduleDescription.get("license",			"Unknown").asString();
+		_website						= moduleDescription.get("website",			"Unknown").asString();
+		_maintainer						= moduleDescription.get("maintainer",		"JASP Team <info@jasp-stats.org>").asString();
+		_description					= moduleDescription.get("description",		"The R Code belonging to module " + _name).asString();
+		_version						= moduleDescription.get("version",			0).asInt();
 		_requiredPackages				= descriptionJson["requiredPackages"]; //can be sent straight to engine later on!
 
 		for(Json::Value & ribbonEntry : descriptionJson["ribbonEntries"])

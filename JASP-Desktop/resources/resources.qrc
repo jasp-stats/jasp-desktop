@@ -55,6 +55,9 @@
         <file>CreateComputeColumnDialog.qml</file>
         <file>FilterConstructor/ComputedColumnsConstructor.qml</file>
         <file>FilterConstructor/OperatorSelectorComputedColumns.qml</file>
+        <file>Ribbon/Ribbon.qml</file>
+        <file>Ribbon/RibbonButton.qml</file>
+
     </qresource>
     <qresource prefix="/">
         <file>icons/variance.png</file>

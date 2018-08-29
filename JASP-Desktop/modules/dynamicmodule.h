@@ -1,3 +1,22 @@
+//
+// Copyright (C) 2013-2018 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public
+// License along with this program.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
+
+
 #ifndef DYNAMICMODULE_H
 #define DYNAMICMODULE_H
 
@@ -39,14 +58,15 @@ public:
 
 
 
-	std::string		name()				const { return _name;			}
-	std::string		title()				const { return _title;			}
-	std::string		author()			const { return _author;			}
-	int				version()			const { return _version;		}
-	std::string		website()			const { return _website;		}
-	std::string		license()			const { return _license;		}
-	std::string		maintainer()		const { return _maintainer;		}
-	std::string		description()		const { return _description;	}
+	std::string		name()				const { return _name;				}
+	std::string		title()				const { return _title;				}
+	bool			requiresDataset()	const { return _requiresDataset;	}
+	std::string		author()			const { return _author;				}
+	int				version()			const { return _version;			}
+	std::string		website()			const { return _website;			}
+	std::string		license()			const { return _license;			}
+	std::string		maintainer()		const { return _maintainer;			}
+	std::string		description()		const { return _description;		}
 
 	bool			error()				const { return _status == moduleStatus::error;			}
 	bool			readyForUse()		const { return _status == moduleStatus::readyForUse;	}
@@ -64,13 +84,14 @@ public:
 
 	std::string	qmlFilePath(std::string qmlFileName)	const;
 	std::string	rModuleCall(std::string function)		const { return _name + "$" + function + _exposedPostFix; }
+	const std::vector<RibbonEntry*> ribbonEntries()		const	{ return _ribbonEntries; }
 
 	AnalysisEntry* firstAnalysisEntry(); //Just for testing
 	AnalysisEntry* retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile);
 
 	static std::string moduleNameFromFolder(std::string folderName) { folderName.erase(std::remove(folderName.begin(), folderName.end(), ' '), folderName.end());  return folderName;}
 
-	std::string generatedPackageName()					{ return _name+"Pkg"; }
+	std::string generatedPackageName()					{ return _name + "Pkg"; }
 
 private:
 	bool		loadModule(); //returns true if install of package(s) should be done
@@ -94,6 +115,8 @@ private:
 								_license,
 								_maintainer,
 								_description;
+
+	bool						_requiresDataset = true;
 
 	Json::Value					_requiredPackages;
 	std::vector<RibbonEntry*>	_ribbonEntries;

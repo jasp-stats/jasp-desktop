@@ -18,10 +18,13 @@
 
 #include "tabbar.h"
 #include <QMessageBox>
+#include <QQuickWidget>
+#include <QQmlContext>
+
 #include "gui/preferencesdialog.h"
 #include "widgets/ribbonbutton.h"
-#include "modules/module.h"
 #include "modules/dynamicmodules.h"
+#include "modules/dynamicmodule.h"
 
 using namespace std;
 
@@ -57,12 +60,12 @@ QStringList TabBar::getCurrentModules()
 	for (QPushButton *button : _tabButtons)
 	{
 		QString name = button->objectName();
-		if (Module::isModuleName(name))
-			result.append(name);
+		result.append(name);
 	}
 
 	return result;
 }
+
 
 void TabBar::addModulesPlusButton()
 {
@@ -78,26 +81,17 @@ void TabBar::addModulesPlusButton()
 	//Modules menu
 	QMenu *modulesmenu   = new QMenu(this);
 
-	for (auto it = Module::AllModules.begin(); it != Module::AllModules.end(); ++it)
-	{
-		const Module& module = it->second;
-#ifndef JASP_DEBUG
-		if (module.released())
-		{
-#endif
-			QAction *action = new QAction(module.displayName(),modulesmenu);
-			QString name = module.name();
-			action->setObjectName(name);
-			action->setCheckable(true);
-			action->setChecked(currentModules.indexOf(name) >= 0);
-			modulesmenu->addAction(action);
-			_signalModulesMapper->setMapping(action, name);
-			connect(action, &QAction::triggered, _signalModulesMapper, QOverload<>::of(&QSignalMapper::map));
-#ifndef JASP_DEBUG
-		}
-#endif
-	}
+	for (auto i : _ribbonModel->moduleNames()) {
 
+		QAction *action = new QAction(QString::fromStdString(i), modulesmenu);
+		QString name = QString::fromStdString(i);
+		action->setObjectName(name);
+		action->setCheckable(true);
+		action->setChecked(currentModules.indexOf(name) >= 0);
+		modulesmenu->addAction(action);
+		_signalModulesMapper->setMapping(action, name);
+		connect(action, &QAction::triggered, _signalModulesMapper, QOverload<>::of(&QSignalMapper::map));
+	}
 
 	connect(_signalModulesMapper, QOverload<const QString &>::of(&QSignalMapper::mapped), this, &TabBar::toggleModule);
 	modulesmenu->acceptDrops();
@@ -112,7 +106,8 @@ void TabBar::addModulesPlusButton()
 	_tabButtons.append(button);
 }
 
-void TabBar::addModuleInstallerEntryToPlusMenu(DynamicModules * dynamicModules)
+
+void TabBar::addModuleInstallerEntryToPlusMenu()
 {
 	QString name	= "Install Module";
 	QAction *action = new QAction(name,  _modulesButton->menu());
@@ -121,27 +116,28 @@ void TabBar::addModuleInstallerEntryToPlusMenu(DynamicModules * dynamicModules)
 	action->setCheckable(false);
 	_modulesButton->menu()->addAction(action);
 
-	connect(action, &QAction::triggered, dynamicModules, &DynamicModules::openModuleInstallerWindow);
+	connect(action, &QAction::triggered, _dynamicModules, &DynamicModules::openModuleInstallerWindow);
 }
+
 
 void TabBar::addTab(QString name)
 {
-	for (QPushButton *button : _tabButtons)
-	{
+	for (QPushButton *button : _tabButtons) {
+
 		if (button->objectName() == name)
 			return;
 	}
 
 	QPushButton *button = new QPushButton(name, this);
 
-	if (Module::isModuleName(name))
-	{
-		button->setText(Module::getModule(name).displayName());
-		_layout->insertWidget(_tabButtons.size()-1, button);
+	if (_ribbonModel->isModuleName(name.toStdString())) {
+
+		button->setText(name);
+		_layout->insertWidget(_tabButtons.size() - 1, button);
 		_currentModule = button;
-	}
-	else
+	} else {
 		_layout->insertWidget(_tabButtons.size(), button);
+	}
 
 	button->setStyleSheet("border-top-left-radius:4px;border-top-right-radius:4px;");
 	if (_tabButtons.size() == 0)
@@ -154,8 +150,8 @@ void TabBar::addTab(QString name)
 
 	_tabButtons.append(button);
 	button->clicked();
-
 }
+
 
 void TabBar::removeTab(QString tabName)
 {
@@ -174,7 +170,7 @@ void TabBar::removeTab(QString tabName)
 			{
 				// Check whether another available module exists
 				for (QPushButton *button2 : _tabButtons)
-					if (button2 != button && Module::isModuleName(button2->objectName()))
+					if (button2 != button &&  _ribbonModel->isModuleName(button2->objectName().toStdString()))
 						lastButton = button2;
 			}
 			if (button == _currentTab)
@@ -184,7 +180,7 @@ void TabBar::removeTab(QString tabName)
 			}
 			if (button == _currentModule)
 			{
-				if (Module::isModuleName(lastButton->objectName()))
+				if (_ribbonModel->isModuleName(lastButton->objectName().toStdString()))
 					_currentModule = lastButton;
 				else
 					_currentModule = NULL;
@@ -200,8 +196,11 @@ void TabBar::removeTab(QString tabName)
 }
 
 
-void TabBar::init()
+void TabBar::init(DynamicModules * dynamicModules, RibbonModel * ribbonModel)
 {
+	_dynamicModules = dynamicModules;
+	_ribbonModel    = ribbonModel;
+
 	setFocusPolicy(Qt::NoFocus);
 	addTab("File");
 	addModulesPlusButton();
@@ -364,7 +363,7 @@ void TabBar::setCurrentTab(QString name)
 			button->setChecked(true);
 			index = i;
 			_currentTab = button;
-			if (Module::isModuleName(name))
+			if (_ribbonModel->isModuleName(name.toStdString()))
 				_currentModule = button;
 		}
 		else

@@ -219,7 +219,7 @@ std::string Analysis::qmlFormPath() const
 	if(_moduleData != NULL)
 		return _moduleData->qmlFilePath();
 	else
-		return Dirs::QMLAnalysesDir() + "/" + module() + "/"  + name() + ".qml";
+		return Dirs::QMLAnalysesDir() + "/" + module() + "/qml/"  + name() + ".qml";
 }
 
 Json::Value Analysis::createAnalysisRequestJson(int ppi)

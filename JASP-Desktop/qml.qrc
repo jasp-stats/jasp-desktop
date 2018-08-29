@@ -27,7 +27,14 @@
         <file>components/JASP/Controls/ContrastsList.qml</file>
         <file>components/JASP/Controls/Slider.qml</file>
         <file>components/JASP/Controls/TextArea.qml</file>
+<<<<<<< HEAD
         <file>components/JASP/Controls/TableView.qml</file>
         <file>components/JASP/Controls/Chi2TestTableView.qml</file>
+=======
+        <file>components/JASP/Widgets/qmldir</file>
+        <file>components/JASP/Widgets/BayesFactorType.qml</file>
+        <file>components/JASP/Widgets/Divider.qml</file>
+        <file>components/JASP/Widgets/SubjectivePriors.qml</file>
+>>>>>>> 721063cf... Squashed Akash's qml forms commits:
     </qresource>
 </RCC>

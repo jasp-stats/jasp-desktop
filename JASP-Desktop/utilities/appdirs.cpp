@@ -75,8 +75,8 @@ QString AppDirs::userRLibrary()
 QString AppDirs::modulesDir()
 {
 	QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+	qDebug() << path ;
 	path += "/Modules/";
 
 	return path;
 }
-

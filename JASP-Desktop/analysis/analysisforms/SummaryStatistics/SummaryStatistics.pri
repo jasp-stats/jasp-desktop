@@ -1,5 +1,4 @@
 SOURCES += \
-    $$PWD/../../ribbons/ribbonsummarystatistics.cpp \
     $$PWD/summarystatsbinomialtestbayesianform.cpp \
     $$PWD/summarystatscorrelationbayesianpairsform.cpp \
     $$PWD/summarystatsregressionlinearbayesianform.cpp \
@@ -8,7 +7,6 @@ SOURCES += \
     $$PWD/summarystatsttestbayesianpairedsamplesform.cpp
 
 HEADERS += \
-    $$PWD/../../ribbons/ribbonsummarystatistics.h \
     $$PWD/summarystatsbinomialtestbayesianform.h \
     $$PWD/summarystatscorrelationbayesianpairsform.h \
     $$PWD/summarystatsregressionlinearbayesianform.h \
@@ -17,7 +15,6 @@ HEADERS += \
     $$PWD/summarystatsttestbayesianpairedsamplesform.h
 
 FORMS += \
-    $$PWD/../../ribbons/ribbonsummarystatistics.ui \
     $$PWD/summarystatsbinomialtestbayesianform.ui \
     $$PWD/summarystatscorrelationbayesianpairsform.ui \
     $$PWD/summarystatsregressionlinearbayesianform.ui \

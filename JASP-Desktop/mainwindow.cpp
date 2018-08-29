@@ -105,12 +105,13 @@
 #include "utilities/qutils.h"
 #include "column.h"
 #include "sharedmemory.h"
-#include "modules/module.h"
 #include "utilities/settings.h"
 
 #include "analysis/options/optionvariablesgroups.h"
 #include "QML/datasetview.h"
 #include "modules/dynamicmodules.h"
+#include "modules/ribbonentry.h"
+#include "modules/analysismenumodel.h"
 
 using namespace std;
 
@@ -134,10 +135,40 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 
 	StartOnlineDataManager();
+
+	// Add static modules
+	_ribbonModel = new RibbonModel(this);
+	QFileInfo commonModule("Resources/Common/");
+	setupRibbonModels(commonModule);
+	QFileInfo summaryStatisticsModule("Resources/Summary Statistics/");
+	setupRibbonModels(summaryStatisticsModule);
+	QFileInfo networksModule("Resources/Network/");
+	setupRibbonModels(networksModule);
+	QFileInfo metaAnalysisModule("Resources/Meta Analysis/");
+	setupRibbonModels(metaAnalysisModule);
+	QFileInfo semModule("Resources/SEM/");
+	setupRibbonModels(semModule);
+
+	// Add dynamic Modules
+	for (auto it : _dynamicModules->moduleNames()) {
+		Modules::DynamicModule * module = _dynamicModules->dynamicModule(it);
+
+		std::vector<Modules::RibbonEntry*> _ribbonEntries = module->ribbonEntries();
+		std::string _title = module->title();
+
+		_ribbonButtonModel = new RibbonButtonModel(this);
+		_ribbonButtonModel->setRibbonEntries(_ribbonEntries);
+
+		_ribbonModel->addRibbonName(_title);
+		_ribbonModel->addRibbonButtonModel(_ribbonButtonModel);
+	}
+
 	initQWidgetGUIParts();
 	makeConnections();
 
 	qmlRegisterType<DataSetView>("JASP", 1, 0, "DataSetView");
+
+	loadRibbonQML();
 	loadQML();
 
 	QString missingvaluestring = _settings.value("MissingValueList", "").toString();
@@ -234,14 +265,50 @@ void MainWindow::makeConnections()
 	connect(ui->webViewHelp,		&CustomWebEngineView::loadFinished,					this,					&MainWindow::helpFirstLoaded								);
 
 	connect(_dynamicModules,		&DynamicModules::showModuleInstallerWindow,			this,					&MainWindow::showQMLWindow									);
-
-	connectRibbonButton(ui->ribbonAnalysis);
-	connectRibbonButton(ui->ribbonSEM);
-	connectRibbonButton(ui->ribbonReinforcementLearning);
-	connectRibbonButton(ui->ribbonSummaryStatistics);
-	connectRibbonButton(ui->ribbonMetaAnalysis);
-	connectRibbonButton(ui->ribbonNetworkAnalysis);
 }
+
+
+void MainWindow::setupRibbonModels(QFileInfo modulePath)
+{
+	QFile descriptionFile(modulePath.absolutePath() + "/description.json");
+
+	descriptionFile.open(QFile::ReadOnly);
+	std::string	descriptionTxt(descriptionFile.readAll().toStdString());
+
+	Json::Value descriptionJson;
+	Json::Reader().parse(descriptionTxt, descriptionJson);
+
+	int							_version;
+	moduleStatus				_status = moduleStatus::installNeeded;
+	std::string					_title;
+	bool						_requiresDataset;
+	bool						_isDynamicModule;
+
+	Json::Value					_requiredPackages;
+	std::vector<Modules::RibbonEntry*>	_ribbonEntries;
+
+	try {
+		Json::Value & moduleDescription = descriptionJson["moduleDescription"];
+		_title							= moduleDescription.get("title",			"???").asString();
+		_requiresDataset				= moduleDescription.get("requiresDataset",	true).asBool();
+		_isDynamicModule				= moduleDescription.get("dynamic", true).asBool();
+
+		for(Json::Value & ribbonEntry : descriptionJson["ribbonEntries"])
+			_ribbonEntries.push_back(new Modules::RibbonEntry(ribbonEntry, NULL));
+	} catch(std::exception e) {
+
+		throw std::runtime_error("During the parsing of the description.json of the Module " + _title + " something went wrong: " + e.what());
+	}
+
+	_ribbonButtonModel = new RibbonButtonModel(this);
+	_ribbonButtonModel->setRibbonEntries(_ribbonEntries);
+	_ribbonButtonModel->setRequiresDataset(_requiresDataset);
+	_ribbonButtonModel->setDynamic(_isDynamicModule);
+
+	_ribbonModel->addRibbonName(_title);
+	_ribbonModel->addRibbonButtonModel(_ribbonButtonModel);
+}
+
 
 void MainWindow::initQWidgetGUIParts()
 {
@@ -249,8 +316,8 @@ void MainWindow::initQWidgetGUIParts()
 
 	ui->splitter->setSizes(QList<int>({575}));
 
-	ui->tabBar->init();
-	ui->tabBar->addModuleInstallerEntryToPlusMenu(_dynamicModules);
+	ui->tabBar->init(_dynamicModules, _ribbonModel);
+	ui->tabBar->addModuleInstallerEntryToPlusMenu();
 
 #ifdef __APPLE__
 	_scrollbarWidth = 3;
@@ -312,7 +379,7 @@ void MainWindow::loadQML()
 
 	setFilterConstructorJson(QString::fromStdString(_package->filterConstructorJson()));
 
-	ui->quickWidget_Data->engine()->addImportPath("qrc:///components");	
+	ui->quickWidget_Data->engine()->addImportPath("qrc:///components");
 	ui->quickWidget_Data->setSource(QUrl(QString("qrc:///qml/dataset.qml")));
 
 	QObject * DataView				= ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataSetTableView");
@@ -326,6 +393,67 @@ void MainWindow::loadQML()
 	qmlProgressBar			= ui->quickWidget_Data->rootObject()->findChild<QObject*>("progressBarHolder");
 	qmlFilterWindow			= ui->quickWidget_Data->rootObject()->findChild<QObject*>("filterWindow");
 	qmlStatusBar			= ui->quickWidget_Data->rootObject()->findChild<QObject*>("dataStatusBar");
+}
+
+
+void MainWindow::loadRibbonQML()
+{
+	QString currentActiveTab = ui->tabBar->getCurrentActiveTab();
+
+	// TODO: This statement cause a crash if it cannot find the module
+	RibbonButtonModel *currentModel = _ribbonModel->ribbonButtonModel(currentActiveTab.toStdString());
+
+	ui->quickWidget_Ribbon->rootContext()->setContextProperty("currentActiveModule", currentActiveTab);
+	ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonButtonModel", currentModel);
+
+	bool enable = true;
+	if (currentModel->requiresDataset() && _package->dataSet() == NULL) {
+		enable = false;
+	}
+	ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonIsEnabled", enable);
+
+	ui->quickWidget_Ribbon->rootContext()->setContextProperty("modulesPath", AppDirs::modulesDir());
+	ui->quickWidget_Ribbon->setSource(QUrl(QString("qrc:///qml/Ribbon/Ribbon.qml")));
+
+	QObject *ribbonButton = ui->quickWidget_Ribbon->rootObject()->findChild<QObject*>("jaspRibbon");
+	connect(ribbonButton, SIGNAL(ribbonButtonClicked(QVariant)), this, SLOT(handleRibbonButtonClicked(QVariant)));
+}
+
+
+void MainWindow::handleRibbonButtonClicked(QVariant analysisMenuModel)
+{
+	// NOTE: Workaround for now. This will be replaced when mainwindow is made in QML
+	QMenu *menu = new QMenu(this);
+
+	AnalysisMenuModel* model = qvariant_cast<AnalysisMenuModel*>(analysisMenuModel);
+	std::vector<Modules::AnalysisEntry*> entries = model->getAnalysisEntries();
+
+	connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(onMenuClicked(QAction *)));
+
+	for (auto i : entries) {
+
+		if (i->title() == "???") {
+			menu->addSeparator();
+			continue;
+		}
+
+		QAction *action = new QAction();
+		action->setText(QString::fromStdString(i->title()));
+		action->setData(QString::fromStdString(i->function()));
+		menu->addAction(action);
+	}
+
+	menu->exec(QCursor::pos());
+}
+
+void MainWindow::onMenuClicked(QAction *action) {
+
+	ribbonEntrySelected(action->data().toString());
+
+	//
+	// TODO:
+	// 1. Get analysis object
+	// 2. If not _dynamic, call createAnalysisForm
 }
 
 
@@ -428,12 +556,12 @@ bool MainWindow::filterShortCut()
 	connect(timer, SIGNAL(timeout()), this, SLOT(updateExcludeKey()));
 	timer->start(100);
 #endif
-	
+
 	return exclude;
 }
 
 void MainWindow::saveKeysSelected()
-{	
+{
 	if (filterShortCut())
 		return;
 
@@ -455,7 +583,7 @@ void MainWindow::refreshKeysSelected()
 {
 	if (filterShortCut())
 		return;
-	
+
 	refreshAllAnalyses();
 }
 
@@ -463,7 +591,7 @@ void MainWindow::zoomInKeysSelected()
 {
 	if (filterShortCut())
 		return;
-	
+
 	_resultsJsInterface->zoomIn();
 }
 
@@ -471,7 +599,7 @@ void MainWindow::zoomOutKeysSelected()
 {
 	if (filterShortCut())
 		return;
-	
+
 	_resultsJsInterface->zoomOut();
 }
 
@@ -479,7 +607,7 @@ void MainWindow::zoomEqualKeysSelected()
 {
 	if (filterShortCut())
 		return;
-	
+
 	_resultsJsInterface->zoomReset();
 }
 
@@ -760,7 +888,7 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 	//else
 		//We no longer need to do this? _analysisFormsMap[analysis]->connectToAvailableVariablesModel(_package->dataSet());
 
-	
+
 	illegalOptionStateChanged(_analysisFormsMap[analysis]);
 	_analysisFormsMap[analysis]->show();
 
@@ -854,7 +982,7 @@ void MainWindow::showForm(Analysis *analysis)
 
 		theWidget->setMinimumWidth(ui->panel_2_Options->minimumWidth() - _scrollbarWidth);
 		theWidget->show();
-		
+
 		ui->scrollArea->setVerticalScrollBarPolicy(analysis->fromQML() ? Qt::ScrollBarAlwaysOff : Qt::ScrollBarAlwaysOn);
 		ui->optionsContentAreaLayout->addWidget(theWidget);//, 0, 0, Qt::AlignRight | Qt::AlignTop);
 
@@ -911,14 +1039,19 @@ void MainWindow::tabChanged(int index)
 	}
 	else
 	{
-		ui->topLevelWidgets->setCurrentIndex(1); //Should be a reference to the mainPage
+		ui->topLevelWidgets->setCurrentIndex(1);  //Should be a reference to the mainPage
 
 		QString currentActiveTab = ui->tabBar->getCurrentActiveTab();
-		if (Module::isModuleName(currentActiveTab))
-		{
-			const Module& module = Module::getModule(currentActiveTab);
-			ui->ribbon->setCurrentIndex(module.ribbonIndex());
+		RibbonButtonModel *currentModel = _ribbonModel->ribbonButtonModel(currentActiveTab.toStdString());
+
+		ui->quickWidget_Ribbon->rootContext()->setContextProperty("currentActiveModule", currentActiveTab);
+		ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonButtonModel", currentModel);
+
+		bool enable = true;
+		if (currentModel->requiresDataset() && _package->dataSet() == NULL) {
+			enable = false;
 		}
+		ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonIsEnabled", enable);
 	}
 }
 
@@ -1038,7 +1171,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
-		
+
 		if (_package->isModified())
 		{
 			QString title = windowTitle();
@@ -1116,6 +1249,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 					_package->setModified(true);
 				}
 			}
+
+			ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonIsEnabled", true);
 		}
 		else
 		{
@@ -1207,7 +1342,7 @@ void MainWindow::populateUIfromDataSet()
 	}
 
 
-	
+
 	hideProgress();
 
 	bool errorFound = false;
@@ -1291,11 +1426,11 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 {
 	bool loaded = _package->isLoaded();
 
-	ui->ribbonAnalysis->setDataSetLoaded(loaded);
-	ui->ribbonSEM->setDataSetLoaded(loaded);
-	ui->ribbonReinforcementLearning->setDataSetLoaded(loaded);
-	ui->ribbonMetaAnalysis->setDataSetLoaded(loaded);
-	ui->ribbonNetworkAnalysis->setDataSetLoaded(loaded);
+	// ui->ribbonAnalysis->setDataSetLoaded(loaded);
+	// ui->ribbonSEM->setDataSetLoaded(loaded);
+	// ui->ribbonReinforcementLearning->setDataSetLoaded(loaded);
+	// ui->ribbonMetaAnalysis->setDataSetLoaded(loaded);
+	// ui->ribbonNetworkAnalysis->setDataSetLoaded(loaded);
 ///// 5-ribbon updateMenuEnabledDisabledStatus
 }
 
@@ -1435,15 +1570,12 @@ void MainWindow::ribbonEntrySelected(const QString &item)
 	try
 	{
 		QString currentActiveTab	= ui->tabBar->getCurrentActiveTab();
-		const Module& module		= Module::getModule(currentActiveTab);
-
-		_currentAnalysis			= _analyses->create(module.name(), item);
+		_currentAnalysis			= _analyses->create(currentActiveTab, item);
 
 		showForm(_currentAnalysis);
 		_analyses->analysisAdded(_currentAnalysis);
 
 		_resultsJsInterface->showAnalysis(_currentAnalysis->id());
-
 
 		checkUsedModules();
 	}
@@ -1662,7 +1794,7 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 		selected = true;
 		closeCurrentOptionsWidget();
 	}
-	
+
 	delete _analysisFormsMap[analysis];
 	_analysisFormsMap.erase(analysis);
 
@@ -1923,9 +2055,9 @@ void MainWindow::onFilterUpdated()
 	if(_package->hasFilter())	ss << "Data has " << TotalCount << " rows, " << TotalThroughFilter << " (~" << (int)round(PercentageThrough) << "%)  passed through filter";
 
 	setStatusBarText(QString::fromStdString(ss.str()));
-	
+
 	if(_package->refreshAnalysesAfterFilter()) //After loading a JASP package we do not want to rerun all analyses because it might take very long
-		refreshAllAnalyses(); 
+		refreshAllAnalyses();
 	_package->setRefreshAnalysesAfterFilter(true);
 }
 
@@ -1984,7 +2116,7 @@ void MainWindow::showQMLWindow(QString urlQml)
 
 	QQuickView * newQMLWindow = new QQuickView;
 
-	newQMLWindow->engine()->addImportPath("qrc:///components");		
+	newQMLWindow->engine()->addImportPath("qrc:///components");
 	newQMLWindow->rootContext()->setContextProperty("dynamicModules", _dynamicModules);
 	newQMLWindow->setSource(urlQml);
 	newQMLWindow->setResizeMode(QQuickView::SizeRootObjectToView);
@@ -1993,4 +2125,3 @@ void MainWindow::showQMLWindow(QString urlQml)
 	connect(newQMLWindow->rootObject(), SIGNAL(closeWindow()), newQMLWindow, SLOT(close()));
 
 }
-
