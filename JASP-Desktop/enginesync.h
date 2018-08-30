@@ -47,19 +47,17 @@ public:
 	void start();
 
 	bool engineStarted()			{ return _engineStarted; }
-
-	Q_INVOKABLE void sendFilter(QString generatedFilter, QString filter);
-	Q_INVOKABLE QString getFilter() { return _dataFilter; }
 	
 public slots:
+	void sendFilter(QString generatedFilter, QString filter, int requestID);
 	void sendRCode(QString rCode, int requestId);
-	void processNewFilterResult(std::vector<bool> filterResult);
 	void computeColumn(QString columnName, QString computeCode, Column::ColumnType columnType);
 	
 signals:
+	void processNewFilterResult(std::vector<bool> filterResult, int requestID);
+	void processFilterErrorMsg(QString error, int requestID);
 	void engineTerminated();
-	void filterUpdated();
-	void filterErrorTextChanged(QString error);
+	void filterUpdated(int requestID);
 	void rCodeReturned(QString result, int requestId);
 	void ppiChanged(int newPPI);
 	void computeColumnSucceeded(std::string columnName, std::string warning);
@@ -77,14 +75,13 @@ private:
 
 	std::queue<RScriptStore*>			_waitingScripts;
 	std::vector<EngineRepresentation*>	_engines;
+	RFilterStore						*_waitingFilter = nullptr;
 
 
 	std::string _memoryName,
 				_engineInfo;
-	QString		_dataFilter;
 
 private slots:
-	void dataFilterChanged(QString newDataFilter) { _dataFilter = newDataFilter; }
 	void ProcessAnalysisRequests();
 	void deleteOrphanedTempFiles();
 	void heartbeatTempFiles();

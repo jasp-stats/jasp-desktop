@@ -58,11 +58,9 @@ private:
 signals:
 	void engineTerminated();
 
-	void filterUpdated();
-	void filterErrorTextChanged(QString error);
+	void processFilterErrorMsg(QString error, int requestId);
+	void processNewFilterResult(std::vector<bool> filterResult, int requestId);
 	void computeColumnErrorTextChanged(QString error);
-	void processNewFilterResult(std::vector<bool> filterResult);
-	void dataFilterChanged(QString newDataFilter);
 
 	void rCodeReturned(QString result, int requestId);
 

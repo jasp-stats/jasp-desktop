@@ -61,7 +61,6 @@ public:
 				size_t				addColumnToDataSet();
 				int					columnsFilteredCount();
 				int					getMaximumColumnWidthInCharacters(size_t columnIndex) const;
-				void				setColumnsUsedInEasyFilter(std::set<std::string> usedColumns);
 
 				bool				setColumnType(int columnIndex, Column::ColumnType newColumnType);
 				Column::ColumnType	getColumnType(int columnIndex);
@@ -81,6 +80,7 @@ public slots:
 				void				refreshColumn(Column * column);
 				void				columnWasOverwritten(std::string columnName, std::string possibleError);
 				void				notifyColumnFilterStatusChanged(int columnIndex);
+				void				setColumnsUsedInEasyFilter(std::set<std::string> usedColumns);
     
 private:
 	DataSet						*_dataSet;

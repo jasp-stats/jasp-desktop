@@ -137,8 +137,9 @@ void Engine::receiveFilterMessage(Json::Value jsonRequest)
 {
 	currentEngineState = engineState::filter;
 
-	_filter = jsonRequest.get("filter", "").asString();
-	_generatedFilter = jsonRequest.get("generatedFilter", "").asString();
+	_filter				= jsonRequest.get("filter", "").asString();
+	_generatedFilter	= jsonRequest.get("generatedFilter", "").asString();
+	_filterRequestId	= jsonRequest.get("requestId", -1).asInt();
 }
 
 void Engine::receiveRCodeMessage(Json::Value jsonRequest)
@@ -362,6 +363,7 @@ void Engine::sendFilterResult(std::vector<bool> filterResult, std::string warnin
 
 	filterResponse["typeRequest"]	= engineStateToString(engineState::filter);
 	filterResponse["filterResult"]	= Json::arrayValue;
+	filterResponse["requestId"]		= _filterRequestId;
 
 	for(bool f : filterResult)	filterResponse["filterResult"].append(f);
 	if(warning != "")			filterResponse["filterError"] = warning;
@@ -373,8 +375,9 @@ void Engine::sendFilterError(std::string errorMessage)
 {
 	Json::Value filterResponse = Json::Value(Json::objectValue);
 
-	filterResponse["typeRequest"] = engineStateToString(engineState::filter);
-	filterResponse["filterError"] = errorMessage;
+	filterResponse["typeRequest"]	= engineStateToString(engineState::filter);
+	filterResponse["filterError"]	= errorMessage;
+	filterResponse["requestId"]		= _filterRequestId;
 
 	sendString(filterResponse.toStyledString());
 }

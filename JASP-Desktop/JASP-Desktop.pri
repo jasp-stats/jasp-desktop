@@ -151,7 +151,8 @@ SOURCES += \
     $$PWD/backstage/datalibrarybreadcrumbsmodel.cpp \
     $$PWD/settings.cpp \
     $$PWD/enginerepresentation.cpp \
-    $$PWD/computedcolumnsmodel.cpp
+    $$PWD/computedcolumnsmodel.cpp \
+    $$PWD/filtermodel.cpp
 
 
 
@@ -321,7 +322,8 @@ HEADERS  += \
     $$PWD/settings.h \
     $$PWD/enginerepresentation.h \
     $$PWD/rscriptstore.h \
-    $$PWD/computedcolumnsmodel.h
+    $$PWD/computedcolumnsmodel.h \
+    $$PWD/filtermodel.h
 
 FORMS += \
     $$PWD/aboutdialog.ui \

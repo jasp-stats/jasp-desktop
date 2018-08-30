@@ -19,6 +19,21 @@ FocusScope
 
 	//property alias font: theView.font //not properly implemented
 
+	JASPMouseAreaToolTipped
+	{
+		z: -10
+
+
+		anchors.fill: parent
+		anchors.leftMargin: theView.rowNumberWidth
+		anchors.topMargin: theView.headerHeight
+
+		toolTipText: "double-click to edit data"
+
+		acceptedButtons: Qt.NoButton
+
+	}
+
 	signal doubleClicked()
 
 	Flickable
@@ -45,15 +60,15 @@ FocusScope
 			viewportW: myFlickable.visibleArea.widthRatio * width
 			viewportH: myFlickable.visibleArea.heightRatio * height
 
-			JASPMouseAreaToolTipped
+
+			MouseArea
 			{
 				id: datasetMouseArea
 				z: -10
 				property real lastTimeClicked: -1
 				property real doubleClickTime: 500
 
-				toolTipText: "double-click to edit data"
-
+				anchors.fill: parent
 
 				onReleased:
 				{
@@ -83,6 +98,7 @@ FocusScope
 						wheel.accepted = false
 				}
 			}
+
 		}
 
 		//ScrollBar.vertical:

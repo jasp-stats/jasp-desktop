@@ -415,12 +415,10 @@ FocusScope
 
 			height: datafiltertatusText.text.length > 0 ? datafiltertatusText.contentHeight + 16 : 0
 
-			function setText(newText) { datafiltertatusText.text = newText }
-
 			Text
 			{
 				id: datafiltertatusText
-				text: ""
+				text: filterModel.statusBarText
 				anchors.left: parent.left
 				anchors.verticalCenter: parent.verticalCenter
 				anchors.leftMargin: 8

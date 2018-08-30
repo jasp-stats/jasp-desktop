@@ -234,7 +234,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	int filteredRow				= 0;
 
 	for(size_t i=0; i<rbridge_dataSet->rowCount(); i++)
-		if(rbridge_dataSet->filterVector()[i])
+		if(rbridge_dataSet->filterVector().size() > i && rbridge_dataSet->filterVector()[i])
 			resultCols[colMax].ints[filteredRow++] = i + 1; //R needs 1-based index
 
 
@@ -266,7 +266,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 				resultCol.doubles	= (double*)calloc(filteredRowCount, sizeof(double));
 
 				for(double value : column.AsDoubles)
-					if(!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++])
+					if((!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++]) && rowNo < filteredRowCount)
 						resultCol.doubles[rowNo++] = value;
 			}
 			else if (columnType == Column::ColumnTypeOrdinal || columnType == Column::ColumnTypeNominal)
@@ -276,7 +276,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 				resultCol.ints		= (int*)calloc(filteredRowCount, sizeof(int));
 
 				for(int value : column.AsInts)
-					if(!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++])
+					if((!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++]) && rowNo < filteredRowCount)
 						resultCol.ints[rowNo++] = value;
 			}
 			else // columnType == Column::ColumnTypeNominalText
@@ -287,7 +287,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 				resultCol.ints		= (int*)calloc(filteredRowCount, sizeof(int));
 
 				for(int value : column.AsInts)
-					if(!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++])
+					if((!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++]) && rowNo < filteredRowCount)
 					{
 						if (value == INT_MIN)	resultCol.ints[rowNo++] = INT_MIN;
 						else					resultCol.ints[rowNo++] = value + 1;
@@ -314,7 +314,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 					indices[label.value()] = i++;
 
 				for(int value : column.AsInts)
-					if(!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++])
+					if((!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++]) && rowNo < filteredRowCount)
 					{
 						if (value == INT_MIN)	resultCol.ints[rowNo++] = INT_MIN;
 						else					resultCol.ints[rowNo++] = indices.at(value);
@@ -366,7 +366,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 				}
 
 				for(double value : column.AsDoubles)
-					if(!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++])
+					if((!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++]) && rowNo < filteredRowCount)
 					{
 
 						if (std::isnan(value))			resultCol.ints[rowNo] = INT_MIN;
@@ -712,6 +712,9 @@ void rbridge_findColumnsUsedInDataSet()
 std::vector<bool> rbridge_applyFilter(std::string & filterCode, std::string & generatedFilterCode)
 {
 	rbridge_dataSet = rbridge_dataSetSource();
+
+	if(rbridge_dataSet == NULL)
+		throw filterException("No more data!");
 
 	int rowCount = rbridge_dataSet->rowCount();
 

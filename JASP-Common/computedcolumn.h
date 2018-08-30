@@ -47,6 +47,8 @@ public:
 
 			std::set<std::string>	findUsedColumnNames()							{ return findUsedColumnNames(_rCode);		}
 			std::set<std::string>	findUsedColumnNames(std::string searchThis);
+	static	std::set<std::string>	findUsedColumnNamesStatic(std::string searchThis);
+
 			void					findDependencies();
 	static	void					setAllColumnNames(std::set<std::string> names);
 			bool					dependsOn(std::string columnName)				{ return dependsOnColumns().count(columnName) > 0; }

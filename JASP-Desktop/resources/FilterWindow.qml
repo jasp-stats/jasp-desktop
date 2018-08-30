@@ -14,58 +14,64 @@ FocusScope
 
 
     property bool opened: false
-    property int minimumHeightTextBoxes: 50
-    property string lastAppliedFilter: defaultFilter
+	property int minimumHeightTextBoxes: 50
 	property bool showEasyFilter: true
 
-	onShowEasyFilterChanged: if(!showEasyFilter) filterEdit.text = engineSync.getFilter()
+	onShowEasyFilterChanged: if(!showEasyFilter) absorbModelRFilter()
+	onVisibleChanged: if(!visible) filterWindow.close()
 
     function toggle()
     {
         opened = !opened
-        filterEdit.text = engineSync.getFilter()
+		absorbModelRFilter()
 
 		if(opened)
 			height = parent.height / 2
     }
 
-    function open()
-    {
-        if(!opened)
-            toggle();
-    }
+	function open()
+	{
+		if(!opened)
+			toggle();
+	}
 
-    function sendFilter()
-    {
-        engineSync.sendFilter(generatedFilter, lastAppliedFilter)
-    }
+	function close()
+	{
+		if(opened)
+			toggle();
+	}
+
 
     function applyAndSendFilter(newFilter)
     {
-        lastAppliedFilter = newFilter
-
-        sendFilter()
+		filterModel.rFilter = newFilter //Triggers send in FilterModel
+		absorbModelRFilter()
     }
 
 	function resetFilter()
 	{
-		filterEdit.text = defaultFilter
-		applyAndSendFilter(defaultFilter)
+		filterModel.resetRFilter()
+		absorbModelRFilter()
+	}
+
+	function absorbModelRFilter()
+	{
+		filterEdit.text = filterModel.rFilter
 	}
 
 	signal rCodeChanged(string rScript)
 
 	Item
 	{
-		anchors.fill: parent
-		visible: parent.showEasyFilter
+		anchors.fill:	parent
+		visible:		parent.showEasyFilter
 
 		FilterConstructor
 		{
-			anchors.bottom: closeEasyFilterButton.top
-			anchors.right: parent.right
-			anchors.left: parent.left
-			anchors.top: parent.top
+			anchors.bottom:	closeEasyFilterButton.top
+			anchors.right:	parent.right
+			anchors.left:	parent.left
+			anchors.top:	parent.top
 
 			id: easyFilterConstructor
 
@@ -263,7 +269,7 @@ FocusScope
 						anchors.top: filterGeneratedBox.top
 						anchors.left: resetAllGeneratedFilters.right
 						anchors.right: filterGeneratedBox.right
-						text: generatedFilter +"\n"
+						text: filterModel.generatedFilter +"\n"
 						height: contentHeight
 						readOnly: true
 						color: "gray"
@@ -313,7 +319,7 @@ FocusScope
 						selectByMouse: true
 						onActiveFocusChanged: if(!activeFocus) deselect()
 
-						property bool changedSinceLastApply: text !== filterContainer.lastAppliedFilter
+						property bool changedSinceLastApply: text !== filterModel.rFilter
 
 						font.family: "Courier"
 						wrapMode: New.TextArea.WrapAtWordBoundaryOrAnywhere
@@ -399,7 +405,7 @@ FocusScope
 				id: filterError
 				color: "red"
 				readOnly: true
-				text: filterErrorText + "\n"
+				text: filterModel.filterErrorMsg + "\n"
 
 				selectByMouse: true
 				onActiveFocusChanged: if(!activeFocus) deselect()
@@ -411,13 +417,13 @@ FocusScope
 					State {
 						name: "closed"
 						PropertyChanges { target: filterErrorScroll; visible: false; height: 0 }
-						when: filterErrorText.length === 0
+						when: filterModel.filterErrorMsg.length === 0
 					},
 					State {
 						name: "opened"
 						PropertyChanges { target: filterErrorScroll; visible: true; height: filterError.contentHeight} //Math.min( , filterWindow.minimumHeightTextBoxes)
 
-						when: filterErrorText.length > 0
+						when: filterModel.filterErrorMsg.length > 0
 					}
 				]
 			}
@@ -459,7 +465,7 @@ FocusScope
 
 				width: visible ? implicitWidth : 0
 				height: filterContainer.buttonsHeight
-				visible: filterEdit.text !== defaultFilter
+				visible: filterEdit.text !== filterModel.defaultRFilter
 
 				toolTip: "Reset to default filter"
 			}
@@ -468,7 +474,7 @@ FocusScope
 			{
 				id: applyFilter
 
-				property bool filterIsDefault: filterEdit.text === defaultFilter
+				property bool filterIsDefault: filterEdit.text === filterModel.defaultRFilter
 
 				text: filterEdit.changedSinceLastApply ? "Apply pass-through filter" : filterIsDefault ? "Default filter applied" : "Filter applied"
 				disabled: !filterEdit.changedSinceLastApply

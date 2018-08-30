@@ -65,14 +65,14 @@ void EngineRepresentation::runScriptOnProcess(RFilterStore * filterStore)
 	_engineState			= engineState::filter;
 	json["typeRequest"]		= engineStateToString(_engineState);
 	json["generatedFilter"] = filterStore->generatedfilter.toStdString();
+	json["requestId"]		= filterStore->requestId;
+
 
 	QString dataFilter = filterStore->script == "" ? "*" : filterStore->script;
 	json["filter"] = dataFilter.toStdString();
 
 	std::string str = json.toStyledString();
 	_channel->send(str);
-
-	emit dataFilterChanged(dataFilter);
 }
 
 
@@ -87,19 +87,21 @@ void EngineRepresentation::processFilterReply(Json::Value json)
 			std::cout << "msg is filter reply" << std::endl << std::flush;
 #endif
 
+	int requestId = json.get("requestId", -1).asInt();
+
 	if(json.get("filterResult", Json::Value(Json::intValue)).isArray()) //If the result is an array then it came from the engine.
 	{
 		std::vector<bool> filterResult;
 		for(Json::Value & jsonResult : json.get("filterResult", Json::Value(Json::arrayValue)))
 			filterResult.push_back(jsonResult.asBool());
 
-		emit processNewFilterResult(filterResult);
+		emit processNewFilterResult(filterResult, requestId);
 
 		if(json.get("filterError", "").asString() != "")
-			emit filterErrorTextChanged(QString::fromStdString(json.get("filterError", "there was a warning").asString()));
+			emit processFilterErrorMsg(QString::fromStdString(json.get("filterError", "there was a warning").asString()), requestId);
 	}
 	else
-		emit filterErrorTextChanged(QString::fromStdString(json.get("filterError", "something went wrong").asString()));
+		emit processFilterErrorMsg(QString::fromStdString(json.get("filterError", "something went wrong").asString()), requestId);
 
 
 }

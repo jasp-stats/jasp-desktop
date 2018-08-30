@@ -55,13 +55,15 @@ DropArea {
 
 	}
 
-	function destroyAll()
+	function destroyAll(apply)
 	{
 		for(var i=scriptColumn.children.length-1; i >= 0; i--)
 			scriptColumn.children[i].destroy()
 
 		scriptColumn.children = ""
-		filterConstructor.checkAndApplyFilter()
+
+		if(apply === undefined || apply)
+			filterConstructor.checkAndApplyFilter()
 	}
 
 

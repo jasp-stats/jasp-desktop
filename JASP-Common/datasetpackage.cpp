@@ -35,6 +35,8 @@ void DataSetPackage::reset()
 	_analysesHTMLReady			= false;
 	_refreshAnalysesAfterFilter = true;
 	_isArchive					= false;
+	_dataFilter					= DEFAULT_FILTER;
+	_filterConstructorJSON		= DEFAULT_FILTER_JSON;
 
 	setModified(false);
 	resetEmptyValues();

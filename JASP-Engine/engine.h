@@ -105,7 +105,8 @@ private:
 				_progress,
 				_ppi = 96,
 				_slaveNo = 0,
-				_rCodeRequestId = -1;
+				_rCodeRequestId = -1,
+				_filterRequestId = -1;
 
 	bool		_analysisRequiresInit,
 				_analysisJaspResults,

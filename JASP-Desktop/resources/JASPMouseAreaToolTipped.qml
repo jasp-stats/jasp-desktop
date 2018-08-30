@@ -37,7 +37,7 @@ MouseArea
 		interval:		theMouseArea.toolTipDelay
 		running:		false
 
-		onTriggered:	theMouseArea._toolTipVisible = true
+		onTriggered:	theMouseArea._toolTipVisible = theMouseArea.containsMouse
 	}
 
 	onPositionChanged:
