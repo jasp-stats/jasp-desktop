@@ -43,7 +43,6 @@ public:
 			bool			isReady()						const	{ return _analysesHTMLReady;			}
 			DataSet			*dataSet()								{ return _dataSet;						}
 			bool			isLoaded()						const	{ return _isLoaded;						}
-			bool			hasFilter()								{ return _dataFilter != DEFAULT_FILTER || _filterConstructorJSON != DEFAULT_FILTER_JSON; }
 			bool			isArchive()						const	{ return _isArchive;					}
 			bool			isModified()					const	{ return _isModified;					}
 			std::string		dataFilter()					const	{ return _dataFilter;					}

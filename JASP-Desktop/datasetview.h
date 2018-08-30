@@ -11,6 +11,7 @@
 #include <map>
 #include <QFontMetricsF>
 #include <QtQml>
+#include "qutils.h"
 
 //#define DATASETVIEW_DEBUG_VIEWPORT
 //#define DATASETVIEW_DEBUG_CREATION
@@ -23,15 +24,7 @@ struct ItemContextualized
 	QQmlContext * context;
 };
 
-#define GENERIC_SET_FUNCTION(WHAT_TO_SET, VARIABLE_TO_SET, EMIT_THIS)	\
-void set ## WHAT_TO_SET(float new ## WHAT_TO_SET)			\
-{																		\
-	if(new ## WHAT_TO_SET != VARIABLE_TO_SET)							\
-	{																	\
-		VARIABLE_TO_SET = new ## WHAT_TO_SET;							\
-		emit EMIT_THIS();												\
-	}																	\
-}
+
 
 class DataSetView : public QQuickItem
 {
@@ -81,10 +74,10 @@ public:
 	QQuickItem * leftTopCornerItem()	{ return _leftTopItem; }
 	QQuickItem * extraColumnItem()		{ return _extraColumnItem; }
 
-	GENERIC_SET_FUNCTION(ViewportX, _viewportX, viewportXChanged)
-	GENERIC_SET_FUNCTION(ViewportY, _viewportY, viewportYChanged)
-	GENERIC_SET_FUNCTION(ViewportW, _viewportW, viewportWChanged)
-	GENERIC_SET_FUNCTION(ViewportH, _viewportH, viewportHChanged)
+	GENERIC_SET_FUNCTION(ViewportX, _viewportX, viewportXChanged, float)
+	GENERIC_SET_FUNCTION(ViewportY, _viewportY, viewportYChanged, float)
+	GENERIC_SET_FUNCTION(ViewportW, _viewportW, viewportWChanged, float)
+	GENERIC_SET_FUNCTION(ViewportH, _viewportH, viewportHChanged, float)
 
 	void setItemHorizontalPadding(float newHorizontalPadding)	{ if(newHorizontalPadding != _itemHorizontalPadding)	{ _itemHorizontalPadding = newHorizontalPadding;	emit itemHorizontalPaddingChanged();	update(); }}
 	void setItemVerticalPadding(float newVerticalPadding)		{ if(newVerticalPadding != _itemVerticalPadding)		{ _itemVerticalPadding = newVerticalPadding;		emit itemVerticalPaddingChanged();		update(); }}
@@ -99,8 +92,8 @@ public:
 	float headerHeight()	{ return _dataRowsMaxHeight; }
 	float rowNumberWidth()	{ return _rowNumberMaxWidth; }
 
-	GENERIC_SET_FUNCTION(HeaderHeight, _dataRowsMaxHeight, headerHeightChanged)
-	GENERIC_SET_FUNCTION(RowNumberWidth, _rowNumberMaxWidth, rowNumberWidthChanged)
+	GENERIC_SET_FUNCTION(HeaderHeight, _dataRowsMaxHeight, headerHeightChanged, float)
+	GENERIC_SET_FUNCTION(RowNumberWidth, _rowNumberMaxWidth, rowNumberWidthChanged, float)
 
 protected:
 	void setRolenames();
@@ -151,7 +144,7 @@ protected:
 		_previousViewportColMax = -1,
 		_previousViewportRowMin = -1,
 		_previousViewportRowMax = -1,
-		_viewportMargin			= 10,
+		_viewportMargin			= 2,
 		_currentViewportColMin	= -1,
 		_currentViewportColMax	= -1,
 		_currentViewportRowMin	= -1,

@@ -18,7 +18,7 @@ struct RScriptStore
 
 struct RFilterStore : public RScriptStore
 {
-	RFilterStore(QString generatedfilter, QString filter) : RScriptStore(-1, filter, engineState::filter), generatedfilter(generatedfilter)
+	RFilterStore(QString generatedfilter, QString filter, int requestID) : RScriptStore(requestID, filter, engineState::filter), generatedfilter(generatedfilter)
 	{ }
 
 	QString generatedfilter;

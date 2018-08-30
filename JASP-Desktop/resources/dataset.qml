@@ -8,11 +8,6 @@ Rectangle {
     id: rootDataset
     color: systemPalette.window
 
-    //Fancy pants curvy gradient for the columnheaders and rownumbers.
-
-
-
-
     ProgressBarHolder
     {
         id: progressBarHolder
@@ -30,7 +25,7 @@ Rectangle {
         anchors.bottom: rootDataset.bottom
 
         orientation: Qt.Vertical
-        visible: false
+		visible: false
 
         VariablesWindow
         {

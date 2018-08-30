@@ -57,6 +57,12 @@ std::set<std::string> ComputedColumn::findUsedColumnNames(std::string searchThis
 	if(_codeType == computedType::analysis && _analysis != NULL)
 		return _analysis->usedVariables();
 
+	return findUsedColumnNamesStatic(searchThis);
+
+}
+
+std::set<std::string> ComputedColumn::findUsedColumnNamesStatic(std::string searchThis)
+{
 	//sort of based on rbridge_encodeColumnNamesToBase64
 	static std::regex nonNameChar("[^\\.A-Za-z0-9]");
 	std::set<std::string> columnsFound;

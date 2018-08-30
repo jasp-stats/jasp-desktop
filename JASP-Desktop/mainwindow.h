@@ -41,6 +41,7 @@
 #include "computedcolumnsmodel.h"
 
 #include "ribbons/ribbonwidget.h"
+#include "filtermodel.h"
 
 class ResultsJsInterface;
 
@@ -60,7 +61,6 @@ public:
 
 	EngineSync* _engineSync;
 
-	Q_INVOKABLE void setFilterConstructorJson(QString jsonString = DEFAULT_FILTER_JSON);
 	Q_INVOKABLE void showHelpFromQML(QString pageName);
 
 protected:
@@ -176,13 +176,6 @@ private slots:
 	void hideProgress();
 	void setProgressStatus(QString status, int progress);
 
-	void setGeneratedFilter(QString generatedFilter);
-	void setGeneratedFilterAndSend(QString generatedFilter);
-	void setFilterErrorText(QString error);
-	void applyAndSendFilter(QString filter);
-	void setStatusBarText(QString text);
-	void onFilterUpdated();
-
 	void updateExcludeKey();
 	void dataSetChanged(DataSet * dataSet);
 
@@ -202,6 +195,7 @@ private:
 	labelFilterGenerator			*_labelFilterGenerator;
 	ColumnsModel					*_columnsModel			= NULL;
 	ComputedColumnsModel			*_computedColumnsModel	= NULL;
+	FilterModel						*_filterModel			= NULL;
 	OnlineDataManager				*_odm;
 	
 	analysisFormMap					_analysisFormsMap;
@@ -218,9 +212,7 @@ private:
 
 	AsyncLoader						_loader;
 	AsyncLoaderThread				_loaderThread;
-	QObject							*qmlProgressBar				= NULL,
-									*qmlFilterWindow			= NULL,
-									*qmlStatusBar				= NULL;
+	QObject							*qmlProgressBar				= NULL;
 
 	bool							_inited,
 									_applicationExiting		= false,

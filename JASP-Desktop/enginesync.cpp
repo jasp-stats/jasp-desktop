@@ -83,15 +83,13 @@ void EngineSync::start()
 		{
 			_engines[i] = new EngineRepresentation(new IPCChannel(_memoryName, i), startSlaveProcess(i), this);
 
-			connect(_engines[i],	&EngineRepresentation::engineTerminated,				this,			&EngineSync::engineTerminated);
-			connect(_engines[i],	&EngineRepresentation::filterUpdated,					this,			&EngineSync::filterUpdated);
-			connect(_engines[i],	&EngineRepresentation::filterErrorTextChanged,			this,			&EngineSync::filterErrorTextChanged);
-			connect(_engines[i],	&EngineRepresentation::rCodeReturned,					this,			&EngineSync::rCodeReturned);
-			connect(_engines[i],	&EngineRepresentation::processNewFilterResult,			this,			&EngineSync::processNewFilterResult);
-			connect(_engines[i],	&EngineRepresentation::dataFilterChanged,				this,			&EngineSync::dataFilterChanged);
-			connect(_engines[i],	&EngineRepresentation::computeColumnSucceeded,			this,			&EngineSync::computeColumnSucceeded);
-			connect(_engines[i],	&EngineRepresentation::computeColumnFailed,				this,			&EngineSync::computeColumnFailed);
-			connect(this,			&EngineSync::ppiChanged,								_engines[i],	&EngineRepresentation::ppiChanged);
+			connect(_engines[i],	&EngineRepresentation::engineTerminated,				this,			&EngineSync::engineTerminated		);
+			connect(_engines[i],	&EngineRepresentation::rCodeReturned,					this,			&EngineSync::rCodeReturned			);
+			connect(_engines[i],	&EngineRepresentation::processNewFilterResult,			this,			&EngineSync::processNewFilterResult	);
+			connect(_engines[i],	&EngineRepresentation::processFilterErrorMsg,			this,			&EngineSync::processFilterErrorMsg	);
+			connect(_engines[i],	&EngineRepresentation::computeColumnSucceeded,			this,			&EngineSync::computeColumnSucceeded	);
+			connect(_engines[i],	&EngineRepresentation::computeColumnFailed,				this,			&EngineSync::computeColumnFailed	);
+			connect(this,			&EngineSync::ppiChanged,								_engines[i],	&EngineRepresentation::ppiChanged	);
 		}
 	}
 	catch (interprocess_exception e)
@@ -119,22 +117,10 @@ void EngineSync::process()
 	ProcessAnalysisRequests();
 }
 
-void EngineSync::processNewFilterResult(std::vector<bool> filterResult)
+
+void EngineSync::sendFilter(QString generatedFilter, QString filter, int requestID)
 {
-	if(_package == NULL || _package->dataSet() == NULL)
-		return;
-
-	
-	_package->setDataFilter(_dataFilter.toStdString()); //remember the filter that was last used and actually gave results.
-	_package->dataSet()->setFilterVector(filterResult);
-
-	emit filterUpdated();
-	emit filterErrorTextChanged("");
-}
-
-void EngineSync::sendFilter(QString generatedFilter, QString filter)
-{
-	_waitingScripts.push(new RFilterStore(generatedFilter, filter));
+	_waitingFilter = new RFilterStore(generatedFilter, filter, requestID); //There is no point in having more then one waiting filter is there?
 }
 
 void EngineSync::sendRCode(QString rCode, int requestId)
@@ -164,21 +150,30 @@ void EngineSync::processScriptQueue()
 	for(auto engine : _engines)
 		if(engine->isIdle())
 		{
-			if(_waitingScripts.size() == 0)
+			if(_waitingScripts.size() == 0 && _waitingFilter == nullptr)
 				return;
 
-			RScriptStore * waiting = _waitingScripts.front();
-			_waitingScripts.pop();
-			
-			switch(waiting->typeScript)
+			if(_waitingFilter != nullptr)
 			{
-			case engineState::rCode:			engine->runScriptOnProcess(waiting);						break;
-			case engineState::filter:			engine->runScriptOnProcess((RFilterStore*)waiting);			break;
-			case engineState::computeColumn:	engine->runScriptOnProcess((RComputeColumnStore*)waiting);	break;
-			default:							throw std::runtime_error("engineState " + engineStateToString(waiting->typeScript) + " unknown in EngineSync::processScriptQueue()!");
+				engine->runScriptOnProcess(_waitingFilter);
+				_waitingFilter = nullptr;
 			}
-			
-			delete waiting; //clean up
+			else
+			{
+
+				RScriptStore * waiting = _waitingScripts.front();
+				_waitingScripts.pop();
+
+				switch(waiting->typeScript)
+				{
+				case engineState::rCode:			engine->runScriptOnProcess(waiting);						break;
+				case engineState::filter:			engine->runScriptOnProcess((RFilterStore*)waiting);			break;
+				case engineState::computeColumn:	engine->runScriptOnProcess((RComputeColumnStore*)waiting);	break;
+				default:							throw std::runtime_error("engineState " + engineStateToString(waiting->typeScript) + " unknown in EngineSync::processScriptQueue()!");
+				}
+
+				delete waiting; //clean up
+			}
 		}
 }
 

@@ -26,7 +26,9 @@ Item {
 			hints.filterText = ""
 	}
 
-	onVisibleChanged: if(visible) initializeFromJSON(jsonConverter.jaspsFilterConstructorJSON)
+	onVisibleChanged: if(visible && JSON.stringify(filterConstructor.returnFilterJSON()) != filterModel.constructedJSON)	initializeFromJSON(filterModel.constructedJSON)
+
+
 	property string __debugName: "FilterConstructor"
 
 
@@ -60,8 +62,7 @@ Item {
 			else
 				hints.filterText += "Filter applied<br>"
 
-			filterConstructor.rCodeChanged(scriptColumn.convertToR())
-			mainWindow.setFilterConstructorJson(JSON.stringify(filterConstructor.returnFilterJSON()))
+			filterModel.constructedJSON = JSON.stringify(filterConstructor.returnFilterJSON())
 		}
 
 		if(!allCorrect)
@@ -219,13 +220,13 @@ Item {
 		{
 			property string filterText: "Welcome to the drag and drop filter!<br>"
 			id: hints
-			text: filterText + (filterErrorText !== "" ? "<br><i><font color=\"red\">"+filterErrorText+"</font></i>" : "")
+			text: filterText + (filterModel.filterErrorMsg !== "" ? "<br><i><font color=\"red\">"+filterModel.filterErrorMsg+"</font></i>" : "")
 
 			anchors.left: parent.left
 			anchors.right: parent.right
 			anchors.bottom: parent.bottom
 
-			height: font.pixelSize + contentHeight
+			height: filterConstructor.fontPixelSize + contentHeight
 
 			wrapMode: TextArea.WordWrap
 			horizontalAlignment: TextArea.AlignHCenter
@@ -275,35 +276,40 @@ Item {
 	{
 		id: jsonConverter
 		objectName: "jsonConverter"
-		property string jaspsFilterConstructorJSON:  "{\"formulas\":[]}"
+		property string jaspsFilterConstructorJSON:  filterModel.constructedJSON
 		property string lastProperlyConstructedJSON: "{\"formulas\":[]}"
 
 		onJaspsFilterConstructorJSONChanged:
 		{
-			//console.log("onJaspsFilterConstructorJSONChanged ",jaspsFilterConstructorJSON)
-
 			if(jsonConverter.jaspsFilterConstructorJSON !== JSON.stringify(parent.returnFilterJSON()))
 			{
-				parent.initializeFromJSON(jsonConverter.jaspsFilterConstructorJSON)
+				parent.initializeFromJSON()
 				filterConstructor.checkAndApplyFilter()
 			}
 
-			jsonConverter.lastProperlyConstructedJSON = JSON.stringify(returnFilterJSON())
-		}
+			parent.rememberCurrentConstructedJSON()
+			filterModel.constructedR = scriptColumn.convertToR()
 
-		function setNewJSONFromCPP(newJsonString)
-		{
-			jaspsFilterConstructorJSON = newJsonString
 		}
 
 		visible: false
 	}
 
 	function returnFilterJSON()				{ return scriptColumn.convertToJSON() }
-	function initializeFromJSON(jsonString)
+
+	function initializeFromJSON()
 	{
-		trashCan.destroyAll();
-		if(jsonString !== "")
-			jsonConverter.convertJSONtoFormulas(JSON.parse(jsonString))
+		if(filterModel.constructedJSON !== JSON.stringify(returnFilterJSON()))
+		{
+			trashCan.destroyAll(false);
+
+			if(filterModel.constructedJSON !== "")
+				jsonConverter.convertJSONtoFormulas(JSON.parse(filterModel.constructedJSON))
+		}
+	}
+
+	function rememberCurrentConstructedJSON()
+	{
+		jsonConverter.lastProperlyConstructedJSON = JSON.stringify(returnFilterJSON())
 	}
 }
