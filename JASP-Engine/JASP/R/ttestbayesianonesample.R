@@ -15,37 +15,50 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+# abbreviation:
+# ttestBOS = ttestBayesianOneSample
+TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) {
 
-  if(is.null(options()$BFMaxModels)) options(BFMaxModels = 50000)
-  if(is.null(options()$BFpretestIterations)) options(BFpretestIterations = 100)
-  if(is.null(options()$BFapproxOptimizer)) options(BFapproxOptimizer = "optim")
-  if(is.null(options()$BFapproxLimits)) options(BFapproxLimits = c(-15,15))
-  if(is.null(options()$BFprogress)) options(BFprogress = interactive())
-  if(is.null(options()$BFfactorsMax)) options(BFfactorsMax = 5)
+  # initialize & error handling ----
+  jaspResults$title <- "Bayesian One Sample T-Test" 
+  options <- .ttestBayesianInitAnalysisOptions(jaspResults, options, "one-sample")
+  dataset <- .ttestBayesianReadData(options, dataset)
+  errors  <- .ttestBayesianGetErrorsPerVariable(options, dataset)
+  .ttestBayesianInitBayesFactorPackageOptions()
 
-	options[["wilcoxTest"]] <- FALSE
+  # main analysis ----
+	.ttestBOSTTest(jaspResults, dataset, options, errors)
+  jaspResults$send()
+  
+	.ttestBOSDescriptives(jaspResults, options, dataset)
+	jaspResults$send()
+  # descriptives ----
+  
+#   if (is.null(jaspResults[["Descriptives"]])) {
+#     print("remake descriptivesCollection")
+#     descriptivesTable <- createJaspTable(title = "Descriptives")
+#     descriptivesTable$dependOnOptions(options[["stateKey"]][["descriptives"]])
+#     descriptivesPlots <- createJaspContainer(title = "Descriptives Plots")
+#     descriptivesCollection <- createJaspContainer("Descriptives")
+#     jaspResults[["Descriptives"]] <- descriptivesCollection
+#   }	else {
+#     print("descriptivesCollection from state")
+#     descriptivesCollection <- jaspResults[["Descriptives"]]
+#   }
+#   
+#   
+# 
+#   .ttestBayesianDescriptives(descriptives = descriptivesTable, dataset = dataset, dependents = options$variables, 
+#                              grouping = NULL, CRI = if (options$descriptivesPlots) options$descriptivesPlotsCredibleInterval else NULL,
+#                              canRun = options[["canRun"]], dependencies = NULL, stateDescriptivesTable = stateDescriptivesTable)
+# 	.ttestBISDescriptives(descriptivesCollection, dataset, options)
+# 	.ttestBISDescriptivesPlots(descriptivesCollection, options, dataset, errors, ttestResults)
+	# jaspResults$send()  
+	
+	
+  
 
-  all.variables <- unlist(options$variables)
-
-  if (is.null(dataset))
-  {
-    if (perform == "run") {
-
-      if (options$missingValues == "excludeListwise") {
-
-        dataset <- .readDataSetToEnd(columns.as.numeric=all.variables, exclude.na.listwise=all.variables)
-
-      } else {
-
-        dataset <- .readDataSetToEnd(columns.as.numeric=all.variables)
-      }
-
-    } else {
-
-      dataset <- .readDataSetHeader(columns.as.numeric=all.variables)
-    }
-  }
+	return()
 
   results <- list()
 
@@ -61,155 +74,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
                                                                              list(name="BFsequentialPlot", type="image")
                                                                            )))
 
-  results[[".meta"]] <- meta
-  results[["title"]] <- "Bayesian One Sample T-Test"
-
-  ttest <- list()
-
-  ttest[["title"]] <- "Bayesian One Sample T-Test"
-
-  if (options$effectSizeStandardized == "default") {
-    ttest[["citation"]] <- list(
-      "Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
-      "Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
-  } else if (options$effectSizeStandardized == "informative") {
-    ttest[["citation"]] <- list(
-      "Gronau, Q. F., Ly, A., & Wagenmakers, E.-J. (2017). Informed Bayesian T-Tests. Manuscript submitted for publication and uploaded to arXiv: https://arxiv.org/abs/1704.02479")
-  }
-
-
-  bf.type <- options$bayesFactorType
-
-
-  if (bf.type == "BF10") {
-
-    BFH1H0 <- TRUE
-
-    if (options$hypothesis == "notEqualToTestValue") {
-      bf.title <- "BF\u2081\u2080"
-    }
-    if (options$hypothesis == "greaterThanTestValue") {
-      bf.title <- "BF\u208A\u2080"
-    }
-    if (options$hypothesis == "lessThanTestValue") {
-      bf.title <- "BF\u208B\u2080"
-    }
-
-  } else if (bf.type == "LogBF10") {
-
-    BFH1H0 <- TRUE
-
-    if (options$hypothesis == "notEqualToTestValue") {
-      bf.title <- "Log(\u0042\u0046\u2081\u2080)"
-    }
-    if (options$hypothesis == "greaterThanTestValue") {
-      bf.title <- "Log(\u0042\u0046\u208A\u2080)"
-    }
-    if (options$hypothesis == "lessThanTestValue") {
-      bf.title <- "Log(\u0042\u0046\u208B\u2080)"
-    }
-
-  } else if (bf.type == "BF01") {
-
-    BFH1H0 <- FALSE
-
-    if (options$hypothesis == "notEqualToTestValue") {
-      bf.title <- "BF\u2080\u2081"
-    }
-    if (options$hypothesis == "greaterThanTestValue") {
-      bf.title <- "BF\u2080\u208A"
-    }
-    if (options$hypothesis == "lessThanTestValue") {
-      bf.title <- "BF\u2080\u208B"
-    }
-  }
-
-
-  if (options$hypothesis == "notEqualToTestValue") {
-
-    fields <- list(
-      list(name="Variable", type="string", title=""),
-      list(name="BF", type="number", format="sf:4;dp:3", title=bf.title),
-      list(name="error", type="number", format="sf:4;dp:3", title="error %"))
-
-  } else {
-
-    fields <- list(
-      list(name="Variable", type="string", title=""),
-      list(name="BF", type="number", format="sf:4;dp:3", title=bf.title),
-      list(name="error", type="number", format="sf:4;dp:3;~", title="error %"))
-  }
-
-  ttest[["schema"]] <- list(fields=fields)
-
-  results[["ttest"]] <- ttest
-
-  footnotes <- .newFootnotes()
-
-  if (options$hypothesis == "greaterThanTestValue") {
-
-    note <- "For all tests, the alternative hypothesis specifies that the mean
-					is greater than "
-    message <- paste0(note, options$testValue, ".")
-    .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
-
-  } else if (options$hypothesis == "lessThanTestValue") {
-
-    note <- "For all tests, the alternative hypothesis specifies that the mean
-					is less than "
-    message <- paste0(note, options$testValue, ".")
-    .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
-
-  } else {
-
-    if (options$testValue != 0) {
-
-      message <- paste0("For all tests, the alternative hypothesis specifies that the population mean is different from ", options$testValue,".")
-      .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
-    }
-  }
-
-  if (options$hypothesis == "notEqualToTestValue") {
-    nullInterval <- NULL
-    oneSided <- FALSE
-  }
-  if (options$hypothesis == "greaterThanTestValue") {
-    nullInterval <- c(0, Inf)
-    oneSided <- "right"
-  }
-  if (options$hypothesis == "lessThanTestValue") {
-    nullInterval <- c(-Inf, 0)
-    oneSided <- "left"
-  }
-
-  if (options$descriptives || options$descriptivesPlots)
-    results[["descriptives"]] <- list(title="Descriptives")
-
-  plotGroups <- list()
-
-  ttest.rows <- list()
-  plots.ttest <- list()
-  plotTypes <- list()
-  plotVariables <- list()
-  descriptPlotVariables <- list()
-  descriptivesPlots <- list()
-  errorFootnotes <- rep("no", length(options$variables))
-
-  state <- .retrieveState()
-
-  diff <- NULL
-
-  if (!is.null(state)) {
-
-    diff <- .diff(options, state$options)
-
-  }
-
-  status <- rep("ok", length(options$variables))
-  plottingError <- rep("error", length(options$variables))
-  BF10post <- numeric(length(options$variables))
-
-  i <- 1
 
   for (variable in options[["variables"]])
   {
@@ -1105,6 +969,245 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
                                                                BF10post=BF10post, errorFootnotes=errorFootnotes, tValue = tValue, n = n), keep=keep))
   }
 
+}
+
+.ttestBOSTTest <- function(jaspResults, dataset, options, errors) {
+  
+  if (!is.null(jaspResults[["ttestTable"]]) && !options[["anyNewVariables"]]) {
+		print("NOTHING CHANGED IN ttestTable")
+  	return(jaspResults[["stateTTestResults"]]$object)
+  }
+  
+	ttestTable <- createJaspTable(title = "Bayesian One Sample T-Test")
+	jaspResults[["ttestTable"]] <- ttestTable
+	dependencies <- options[["stateKey"]][["ttestResults"]]
+	ttestTable$dependOnOptions(c(dependencies, "bayesFactorType"))
+  .ttestBOSTTestMarkup(ttestTable, options)
+
+	if (!options[["canDoAnalysis"]])
+	  return()
+
+  ttestState <- jaspResults[["stateTTestResults"]]$object # is there useable data?
+  ttest.rows <- ttestState$ttest.rows
+  
+  oneSided <- options[["oneSided"]]
+  bf.type <- options[["bayesFactorType"]]
+	BFH1H0 <- !bf.type == "BF01"
+
+	dependents <- options[["variables"]]
+	nvar <- length(dependents)
+	status <- rep("ok", nvar)
+	BF10post <- numeric(nvar)
+	tValue <- rep(NA, nvar)
+	n <- rep(NA, nvar)
+	plottingError <- rep("error", nvar)
+	errorFootnotes <- rep("no", nvar)
+	
+	names(status) <- names(BF10post) <- names(tValue) <- 
+	  names(n) <- names(plottingError) <- names(errorFootnotes) <- dependents
+
+	for (var in dependents) {
+	  
+	  if (!is.null(ttest.rows[[var]])) {
+	    
+	    # row retrieved from state, only possible change is BF01 to BF10/ log(BF01)
+      ttest.rows[[var]][["BF"]] <-
+        .recodeBFtype(bfOld = ttest.rows[[var]][["BF"]],
+                      newBFtype = options[["bayesFactorType"]],
+                      oldBFtype = ttest.rows[["options"]][["bayesFactorType"]]
+        )
+
+	    # TODO: is this still necessary?
+	    BF10post[var] <- ttest.rows[[var]][["BF"]] # state$BF10post[index]
+	    tValue[var] <- ttest.rows$tValue[var]
+	    n[var] <- ttest.rows$n[var]
+	    status[var] <- ttest.rows$status[var]
+	    plottingError[var] <- ttest.rows$plottingError[var]
+	    
+	    row <- ttest.rows[[var]]
+
+	  } else {
+	    
+	    if (!isFALSE(errors[[var]])) {
+	      errorMessage <- errors[[var]]$message
+	      status[var] <- "error"
+	    } else {
+	      errorMessage <- NULL
+	    }
+	    # browser()
+	    variableData <- dataset[[ .v(var) ]]
+	    variableData <- variableData[ ! is.na(variableData) ]
+	    variableData <- variableData - options$testValue
+
+      r <- try (silent = TRUE, expr = {.generalTtestBF(x = variableData, oneSided = oneSided, options = options)})
+
+	    if (!isTryError(r)) {
+	      
+	      bf.raw <- r[["bf"]]
+	      tValue[var] <- r[["tValue"]]
+	      error <- .clean(r[["error"]])
+	      n[var] <- r[["n1"]]
+	      
+	      bf.raw <- .recodeBFtype(bfOld = bf.raw,
+	                              newBFtype = bf.type,
+	                              oldBFtype = "BF10")
+	      BF10post[var] <- bf.raw
+	      BF <- .clean(bf.raw)
+	      
+	      if (is.na(bf.raw)) {
+	        status[var] <- "error"
+	        plottingError[var] <- "Plotting is not possible: Bayes factor could not be calculated"
+	      } else if(bf.raw == Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)) {
+	        status[var] <- "error"
+	        plottingError[var] <- "Plotting is not possible: Bayes factor is infinite"
+	      } else if (is.infinite(1 / bf.raw)) {
+	        status[var] <- "error"
+	        plottingError[var] <- "Plotting is not possible: The Bayes factor is too small"
+	        
+	      }
+	      
+	      row <- list(Variable=var, BF=BF, error=error)
+	      
+	    } else  {
+
+	      errorMessage <- .extractErrorMessage(r)
+	      status[var] <- "error"
+	      errorFootnotes[var] <- errorMessage
+	      ttestTable$addFootnote(message = errorMessage, row_names = var)
+	      row <- list(Variable = var, BF = .clean(NaN), error = "")
+	      
+	    }
+	  }
+	  ttestTable$addRows(row)
+	}
+  ttestTable$status <- "complete"
+
+  ttestResults <- list(status = status, BFH1H0 = BFH1H0, plottingError = plottingError,
+	       BF10post = BF10post, errorFootnotes = errorFootnotes, tValue = tValue, n=n,
+	       ttestData = ttest.rows, dependents = dependents, grouping = grouping)
+	tmp <- createJaspState(
+	  object = ttestResults,
+	  title = "mainResultsObject"#,
+	  #dependencies = stateKey[["ttestResults"]]
+	)
+	tmp$dependOnOptions(dependencies)
+	jaspResults[["stateTTestResults"]] <- tmp
+
+  return()
+  
+}
+
+.ttestBOSTTestMarkup <- function(jaspTable, options) {
+  
+  if (options$effectSizeStandardized == "default") {
+    citation <- list(
+      "Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
+      "Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
+  } else if (options$effectSizeStandardized == "informative") {
+    citation <- list(
+      "Gronau, Q. F., Ly, A., & Wagenmakers, E.-J. (2017). Informed Bayesian T-Tests. Manuscript submitted for publication and uploaded to arXiv: https://arxiv.org/abs/1704.02479")
+  }
+  
+  bf.type <- options$bayesFactorType
+  if (bf.type == "BF10") {
+    
+    if (options$hypothesis == "notEqualToTestValue") {
+      bf.title <- "BF\u2081\u2080"
+    }
+    if (options$hypothesis == "greaterThanTestValue") {
+      bf.title <- "BF\u208A\u2080"
+    }
+    if (options$hypothesis == "lessThanTestValue") {
+      bf.title <- "BF\u208B\u2080"
+    }
+    
+  } else if (bf.type == "LogBF10") {
+    
+    if (options$hypothesis == "notEqualToTestValue") {
+      bf.title <- "Log(\u0042\u0046\u2081\u2080)"
+    }
+    if (options$hypothesis == "greaterThanTestValue") {
+      bf.title <- "Log(\u0042\u0046\u208A\u2080)"
+    }
+    if (options$hypothesis == "lessThanTestValue") {
+      bf.title <- "Log(\u0042\u0046\u208B\u2080)"
+    }
+    
+  } else if (bf.type == "BF01") {
+    
+    if (options$hypothesis == "notEqualToTestValue") {
+      bf.title <- "BF\u2080\u2081"
+    }
+    if (options$hypothesis == "greaterThanTestValue") {
+      bf.title <- "BF\u2080\u208A"
+    }
+    if (options$hypothesis == "lessThanTestValue") {
+      bf.title <- "BF\u2080\u208B"
+    }
+  }
+  
+  if (!(options[["hypothesis"]] == "notEqualToTestValue" && options[["testValue"]] == 0)) {
+    message <- switch (options[["hypothesis"]],
+                       "greaterThanTestValue" = "For all tests, the alternative hypothesis specifies that the mean	is greater than %.3f.",
+                       "lessThanTestValue"    = "For all tests, the alternative hypothesis specifies that the mean	is less than %.3f.",
+                       "For all tests, the alternative hypothesis specifies that the population mean is different from %.3f."
+    )
+    message <- sprintf(message, options[["testValue"]])
+    jaspTable$addFootnote(message = message, symbol = "<em>Note.</em>")
+  }
+
+  jaspTable$addColumnInfo(name = "Variable", title = "",       type = "string")
+  jaspTable$addColumnInfo(name = "BF",       title = bf.title, type = "number", format="sf:4;dp:3")
+
+  # TODO: git blame, find out who wrote this, ask them why this difference in formats is meaningful
+  if (options$hypothesis == "notEqualToTestValue") {
+      jaspTable$addColumnInfo(name="error", type="number", format="sf:4;dp:3", title="error %")
+  } else {
+      jaspTable$addColumnInfo(name="error", type="number", format="sf:4;dp:3;~", title="error %")
+  }
+  return()
+}
+
+.ttestBOSDescriptives <- function(jaspResults, options, dataset) {
+
+  if (is.null(jaspResults[["Descriptives"]])) {
+    
+    print("remake descriptivesCollection")
+    descriptivesCollection <- createJaspContainer("Descriptives")
+    jaspResults[["Descriptives"]] <- descriptivesCollection
+    
+  } else {
+    print("descriptivesCollection from state")
+    descriptivesCollection <- jaspResults[["Descriptives"]]
+  }
+
+  if (options[["descriptives"]]) {
+    if (is.null(descriptivesCollection[["table"]])) {
+      print("remake descriptivesTable")
+      descriptivesTable <- createJaspTable(title = "Descriptives")
+      descriptivesTable$dependOnOptions(options[["stateKey"]][["descriptives"]])
+      descriptivesCollection[["table"]] <- descriptivesTable
+      # stateDescriptivesTable <- jaspResults[["stateDescriptivesTable"]]
+      .ttestBayesianDescriptives(descriptives = descriptivesTable, dataset = dataset, dependents = options$variables, 
+                                 grouping = NULL, CRI = if (options$descriptivesPlots) options$descriptivesPlotsCredibleInterval else NULL,
+                                 canRun = options[["canDoAnalysis"]], dependencies = NULL, stateDescriptivesTable = NULL)
+      # jaspResults[["stateDescriptivesTable"]]
+    }
+  }
+
+  if (options[["descriptivesPlots"]]) {
+    if (is.null(descriptivesCollection[["plots"]])) {
+        print("remake descriptivesPlots")
+        descriptivesPlots <- createJaspContainer(title = "Descriptives Plots")
+        descriptivesPlots$dependOnOptions(options[["stateKey"]][["descriptives"]])
+        descriptivesCollection[["plots"]] <- descriptivesPlots
+    }
+  	.ttestBayesianDescriptivesPlots(
+  		descriptives = descriptivesTable, dataset = dataset, dependents = options$variables,
+  		grouping = NULL, CRI = if (options$descriptivesPlots) options$descriptivesPlotsCredibleInterval else NULL,
+  		canRun = options[["canRun"]], dependencies = NULL, stateDescriptivesTable = stateDescriptivesTable
+  	)
+  }
 }
 
 .oneSidedTtestBFRichard <- function(x=NULL, y=NULL, paired=FALSE, oneSided="right", r= sqrt(2)/2, iterations=10000) {
