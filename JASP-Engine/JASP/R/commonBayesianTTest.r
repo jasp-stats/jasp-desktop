@@ -1,13 +1,51 @@
-.ttestBayesianReadData <- function(options, dataset = NULL) {
+#
+# Copyright (C) 2013-2018 University of Amsterdam
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
 
-	dependents <- unlist(options$variables)
-  grouping   <- options$groupingVariable
+.ttestBayesianReadData <- function(dataset = NULL,
+                                   dependents, grouping = NULL,
+                                   missing = c("excludeListwise", "excludeAnalysisByAnalysis")) {
+
+  # read in dataset
+  #
+  # Arguments:
+  #
+  # dataset    : Deprecated, should be NULL.
+  # dependents : Either a list of variables, or a list with pairs of variables.
+  # grouping   : An optional grouping variable. Specify "" to indicate there should be a
+  #              grouping variable but none was supplied
+  # missing    : Should missing values be excluded listwise? Always removes rows with
+  #              missings in the grouping variable (if it was supplied).
+  #
+  # returns:
+  #
+  # A dataframe
+
+  missing <- match.arg(missing)
+
+  if (is.list(dependents)) {
+    dependents = unique(unlist(dependents))
+    dependents <- dependents[dependents != ""]
+  }
   if (identical(grouping, ""))
     grouping <- NULL
 
   if (is.null(dataset)) {
     excl <- grouping
-    if (options$missingValues == "excludeListwise") {
+    if (missing == "excludeListwise") {
       excl <- c(excl, dependents)
     }
     dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=excl)
@@ -32,34 +70,56 @@
 		dependents <- unlist(options$variables)
 		grouping   <- options$groupingVariable
 		errors <- list()
-		
+
 		if (!is.null(grouping)) {
-		  
+
 		  # analysis breaking errors
 		  .hasErrors(dataset, "run", type = c('factorLevels', 'variance'),
 		             factorLevels.target = grouping, factorLevels.amount = '!= 2',
 		             variance.target = dependents,
 		             variance.grouping = grouping,
 		             exitAnalysisIfErrors = TRUE)
-		  
+
 		  for (var in dependents) {
-		    
+
 		    errors[[var]] <- .hasErrors(dataset, perform = "run", message = 'short',
 		                                type = c('infinity','observations','variance'),
 		                                all.target = var, observations.amount = "< 2", all.grouping = grouping)
 		  }
 
 		} else {
-		  
+
 	  	  # analysis breaking errors
-		  .hasErrors(dataset, "run", type = 'variance', factorLevels.amount = '!= 2',
+		  .hasErrors(dataset, "run", type = 'variance',
 		             variance.target = dependents, exitAnalysisIfErrors = TRUE)
-		  
-		  for (var in dependents) {
-		    
-		    errors[[var]] <- .hasErrors(dataset, perform = "run", message = 'short',
-		                                type = c('infinity','observations','variance'),
-		                                all.target = var, observations.amount = "< 2")
+
+		  if (is.null(options[["pairs"]])) {
+		    for (var in dependents) {
+		      errors[[var]] <- .hasErrors(dataset, perform = "run", message = 'short',
+		                                  type = c('infinity','observations','variance'),
+		                                  all.target = var, observations.amount = "< 2")
+		    }
+		  } else {
+
+		    for (var in dependents) {
+		      pair <- options[["pairs"]][[var]]
+
+		      if (pair[[1]] == "" || pair[[2]] == "") {
+
+		        errors[[var]] <- list(message = sprintf("Please provide another variable."))
+
+		      } else if (identical(pair[[1]], pair[[2]])) {
+
+		        errors[[var]] <- list(message = sprintf("Variables %s and %s are the same!",
+		                                                pair[[1]], pair[[2]]))
+
+		      } else {
+
+		        errors[[var]] <- .hasErrors(dataset, perform = "run", message = 'short',
+		                                    type = c('infinity','observations','variance'),
+		                                    all.target = c(pair[[1]],pair[[2]]), observations.amount = "< 2")
+		      }
+		    }
 		  }
 		}
 
@@ -75,42 +135,53 @@
   # note that options$... / options[[...]] and options(...) are two COMPLETELY DIFFERENT things!!
   # also, options(...) is, by R's default, global so this works
 
-  if(is.null(options("BFMaxModels"))) options(BFMaxModels = 50000)
+  if(is.null(options("BFMaxModels")))         options(BFMaxModels = 50000)
   if(is.null(options("BFpretestIterations"))) options(BFpretestIterations = 100)
-  if(is.null(options("BFapproxOptimizer"))) options(BFapproxOptimizer = "optim")
-  if(is.null(options("BFapproxLimits"))) options(BFapproxLimits = c(-15,15))
-  if(is.null(options("BFprogress"))) options(BFprogress = interactive())
-  if(is.null(options("BFfactorsMax"))) options(BFfactorsMax = 5)
+  if(is.null(options("BFapproxOptimizer")))   options(BFapproxOptimizer = "optim")
+  if(is.null(options("BFapproxLimits")))      options(BFapproxLimits = c(-15,15))
+  if(is.null(options("BFprogress")))          options(BFprogress = interactive())
+  if(is.null(options("BFfactorsMax")))        options(BFfactorsMax = 5)
 
 }
 
-.ttestBayesianInitAnalysisOptions <- function(jaspResults, options, which = c("independent", "paired", "one-sample")) {
+.ttestBayesianInitOptions <- function(jaspResults, options, analysis = c("independent", "paired", "one-sample")) {
 
 	# initialize options: takes user input and determines:
 	#
 	# - can any analysis be done?
 	# - which variables will need to be computed for plots?
 	#
-	# also defines the dependencies for all objects and adds this to options[["stateKey"]]
+  # in addition:
+  #
+  # - unifies the hypothesis type (larger, smaller or equal) inside options[["oneSided"]]
+  # - defines the dependencies for all objects and adds this to options[["stateKey"]]
+  #
 
-  which <- match.arg(which)
-	dependents <- unlist(options$variables)
-	oldDependents <- NULL
-	if (!is.null(jaspResults[["stateVariables"]]))
-		oldDependents <- jaspResults[["stateVariables"]]$object
+  analysis <- match.arg(analysis)
+  options[["ttestType"]] <- analysis
 
-	if (!is.null(dependents)) {
-		tmp <- createJaspState(object = dependents, title = "dependents")
-		if (which == "independent")
-		  tmp$dependOnOptions("groupingVariable")
-		jaspResults[["stateVariables"]] <- tmp
-	}
+  	# dependencies specified here to pass as depends
+	defaults <- c(
+	  "effectSizeStandardized", "groupingVariable", "hypothesis",
+	  "informativeCauchyLocation", "informativeCauchyScale", "informativeNormalMean",
+	  "informativeNormalStd", "informativeStandardizedEffectSize",
+	  "informativeTDf", "informativeTLocation", "informativeTScale",
+	  "missingValues", "priorWidth", "testStatistic", "wilcoxonSamplesNumber"
+	)
+  options[["stateKey"]] <- list(
+    ttestResults           = defaults,
+    descriptives           = c("groupingVariable", "missingValues", "descriptivesPlotsCredibleInterval",
+                               "descriptivesPlots"),
+    priorAndPosteriorPlots = c(defaults, "plotPriorAndPosteriorAdditionalInfo"),
+    robustnessPlots        = c(defaults, "plotBayesFactorRobustnessAdditionalInfo"),
+    sequentialPlots        = c(defaults, "plotSequentialAnalysisRobustness"),
+    delta                  = c("priorWidth", "groupingVariable", "missingValues", "wilcoxonSamplesNumber")
+  )
 
-	options[["anyNewVariables"]] <- any(!dependents %in% oldDependents)
-	options[["newVariables"]] <- dependents[!dependents %in% oldDependents]
+	if (analysis == "independent") {
 
-	if (which == "independent") {
-	  
+	  dependents <- unlist(options[["variables"]])
+
 	  options[["canDoAnalysis"]] <- length(dependents) > 0 && options$groupingVariable != ""
 	  # options is updated to avoid computing these in multiple functions
 	  options[["wilcoxTest"]] <- options$testStatistic ==  "Wilcoxon"
@@ -129,78 +200,229 @@
 	    options[["plotSequentialAnalysis"]] <- FALSE
 
 	  }
-	  
-	  # dependencies specified here to pass as depends
-	  defaults <- c("priorWidth", "hypothesis", "groupingVariable", "missingValues",
-	                "effectSizeStandardized", "informativeStandardizedEffectSize",
-	                "informativeCauchyLocation", "informativeCauchyScale", "informativeTLocation",
-	                "informativeTScale", "informativeTDf", "informativeNormalMean",
-	                "informativeNormalStd", "testStatistic", "wilcoxonSamplesNumber")
-	  options[["stateKey"]] <- list(
-	    ttestResults           = defaults,
-	    descriptives           = c("groupingVariable", "missingValues", "descriptivesPlotsCredibleInterval"),
-	    priorAndPosteriorPlots = c(defaults, "plotHeight", "plotWidth", "plotPriorAndPosteriorAdditionalInfo"),
-	    robustnessPlots        = c(defaults, "plotHeight", "plotWidth", "plotBayesFactorRobustnessAdditionalInfo"),
-	    sequentialPlots        = c(defaults, "plotHeight", "plotWidth", "plotSequentialAnalysisRobustness"),
-	    delta                  = c("priorWidth", "groupingVariable", "missingValues", "wilcoxonSamplesNumber"),
-	    descriptivesData       = c("descriptives", "groupingVariable", "missingValues", "descriptivesPlotsCredibleInterval")
-	  )
-	  
-	} else if (which == "one-sample") { # one-sample
-	  
+
+	} else if (analysis == "one-sample") { # one-sample
+
+	  dependents <- unlist(options[["variables"]])
 	  options[["canDoAnalysis"]] <- length(dependents) > 0
 	  options[["wilcoxTest"]] <- FALSE
-	  
+
 	  options[["oneSided"]] <- switch(options[["hypothesis"]],
 	                                  "greaterThanTestValue" = "right",
 	                                  "lessThanTestValue" = "left",
 	                                  FALSE
 	  )
-	  
-	  # dependencies specified here to pass as depends
-	  defaults <- c("priorWidth", "hypothesis", "groupingVariable", "missingValues",
-	                "effectSizeStandardized", "informativeStandardizedEffectSize",
-	                "informativeCauchyLocation", "informativeCauchyScale", "informativeTLocation",
-	                "informativeTScale", "informativeTDf", "informativeNormalMean",
-	                "informativeNormalStd", "testStatistic", "wilcoxonSamplesNumber")
-	  options[["stateKey"]] <- list(
-	    ttestResults = defaults,
-	    descriptives = c("groupingVariable", "missingValues", "descriptivesPlotsCredibleInterval"),
-	    priorAndPosteriorPlots = c(defaults, "plotHeight", "plotWidth", "plotPriorAndPosteriorAdditionalInfo"),
-	    robustnessPlots = c(defaults, "plotHeight", "plotWidth", "plotBayesFactorRobustnessAdditionalInfo"),
-	    sequentialPlots = c(defaults, "plotHeight", "plotWidth", "plotSequentialAnalysisRobustness"),
-	    delta = c("priorWidth", "groupingVariable", "missingValues", "wilcoxonSamplesNumber"),
-	    descriptivesData = c("descriptives", "groupingVariable", "missingValues", "descriptivesPlotsCredibleInterval")
-	  )
-	  
+
 	} else { # paired
-	  
+
+	  # this needs to be decided for each pair individually, which is done inside .ttestBPSTTest
+	  options[["canDoAnalysis"]] <- TRUE
+	  options[["wilcoxTest"]] <- FALSE
+
+	  dependents <- sapply(options[["pairs"]], paste, collapse = " - ")
+	  options[["variables"]]    <- dependents
+	  names(options[["pairs"]]) <- dependents
+
+	  options[["oneSided"]] <- switch(options[["hypothesis"]],
+	                                  "groupOneGreater" = "right",
+	                                  "groupTwoGreater" = "left",
+	                                  FALSE
+	  )
+
+	  options[["stateKey"]][["ttestResults"]] <-
+	    c(options[["stateKey"]][["ttestResults"]], "pairs")
+	  options[["stateKey"]][["descriptives"]] <-
+	    c(options[["stateKey"]][["descriptives"]], "pairs")
+
+
 	}
-	
+
 	options[["nullInterval"]] <- switch(options[["oneSided"]],
     "right" = c(0, Inf),
     "left"  = c(-Inf, 0),
     c(-Inf, Inf)
   )
 
+	oldDependents <- NULL
+	if (!is.null(jaspResults[["stateVariables"]]))
+	  oldDependents <- jaspResults[["stateVariables"]]$object
+
+	if (!is.null(dependents)) {
+	  tmp <- createJaspState(object = dependents, title = "dependents")
+	  tmp$dependOnOptions("missingValues")
+	  if (analysis == "independent")
+	    tmp$dependOnOptions("groupingVariable")
+	  jaspResults[["stateVariables"]] <- tmp
+	}
+
+	idx <- !(dependents %in% oldDependents)
+	options[["anyNewVariables"]] <- any(idx)
+	options[["newVariables"]] <- dependents[idx]
+
+	.ttestBayesianInitBayesFactorPackageOptions()
+
   return(options)
 
 }
 
-.ttestBayesianDescriptives <- function(descriptives, dataset, dependents, 
-                                       grouping = NULL, CRI = NULL, canRun = FALSE, 
-                                       dependencies = NULL, stateDescriptivesTable = NULL) {
-  
+.ttestBayesianGetBFTitle <- function(bfType = c("BF10", "BF01", "LogBF10"),
+                                     hypothesis = c("equal", "greater", "smaller")) {
+
+  bfType <- match.arg(bfType)
+  hypothesis <- match.arg(hypothesis)
+
+  if (bfType == "BF10") {
+	  if (hypothesis == "equal") {
+	    bfTitle <- "BF\u2081\u2080"
+	  } else if (hypothesis == "greater") {
+	    bfTitle <- "BF\u208A\u2080"
+	  } else {
+	    bfTitle <- "BF\u208B\u2080"
+	  }
+	} else if (bfType == "LogBF10") {
+	  if (hypothesis == "equal") {
+	    bfTitle <- "Log(\u0042\u0046\u2081\u2080)"
+	  } else if (hypothesis == "greater") {
+	    bfTitle <- "Log(\u0042\u0046\u208A\u2080)"
+	  } else {
+	    bfTitle <- "Log(\u0042\u0046\u208B\u2080)"
+	  }
+	} else if (bfType == "BF01") {
+	  if (hypothesis == "equal") {
+	    bfTitle <- "BF\u2080\u2081"
+	  } else if (hypothesis == "greater") {
+	    bfTitle <- "BF\u2080\u208A"
+	  } else {
+	    bfTitle <- "BF\u2080\u208B"
+	  }
+	}
+  return(bfTitle)
+}
+
+.ttestBayesianEmptyObject <- function(options) {
+
+  # construct a t-test object based on supplied options
+  nvar <- length(options[["variables"]])
+
+  # exception for paired t-test
+  if (nvar == 1L && options[["variables"]] == " - " && options[["ttestType"]] == "paired")
+    nvar <- 0L
+
+  obj <- list(
+    status          = rep("ok", nvar),
+    BF10post        = numeric(nvar),
+    tValue          = rep(NA, nvar),
+    n_group1        = rep(NA, nvar),
+    n_group2        = rep(NA, nvar),
+    plottingError   = vector("list", nvar),
+    errorFootnotes  = rep("no", nvar),
+    delta           = vector("list", nvar),
+    grouping        = options[["groupingVariable"]],
+    paired          = !is.null(options[["pairs"]]),
+    bayesFactorType = options[["bayesFactorType"]],
+    analysis        = options[["ttestType"]]
+  )
+  if (nvar > 0L) {
+    idx <- lengths(obj) == nvar
+    obj[idx] <- lapply(obj[idx], stats::setNames, nm = options[["variables"]])
+  }
+  return(obj)
+
+}
+# descriptives ----
+.ttestBayesianDescriptives <- function(jaspResults, dataset, options, errors) {
+
+  if (is.null(jaspResults[["Descriptives"]])) {
+
+    print("remake descriptivesCollection")
+    descriptivesCollection <- createJaspContainer("Descriptives")
+    descriptivesCollection$dependOnOptions(options[["stateKey"]][["descriptives"]])
+    jaspResults[["Descriptives"]] <- descriptivesCollection
+
+  } else {
+    print("descriptivesCollection from state")
+    descriptivesCollection <- jaspResults[["Descriptives"]]
+  }
+
+  dependents <- options[["variables"]]
+  grouping <- options[["groupingVariable"]]
+  canDoAnalysis <- options[["canDoAnalysis"]]
+
+  if (options[["descriptives"]]) {
+    if (is.null(descriptivesCollection[["table"]])) {
+      print("remake descriptivesTable")
+      descriptivesTable <- createJaspTable(title = "Descriptives")
+      descriptivesTable$dependOnOptions("descriptives")
+      descriptivesCollection[["table"]] <- descriptivesTable
+
+      if (options$descriptivesPlots) {
+        CRI <- options$descriptivesPlotsCredibleInterval
+      } else {
+        CRI <- NULL
+      }
+
+      .ttestBayesianDescriptivesTable(
+        descriptives           = descriptivesTable,
+        dataset                = dataset,
+        dependents             = dependents,
+        grouping               = grouping,
+        CRI                    = CRI,
+        canRun                 = canDoAnalysis,
+        pairs                  = options[["pairs"]]
+      )
+    } else {
+      print("descriptivesTable from state")
+    }
+  }
+
+  if (options[["descriptivesPlots"]]) {
+    if (is.null(descriptivesCollection[["plots"]])) {
+      print("remake descriptivesPlots")
+      descriptivesPlots <- createJaspContainer(title = "Descriptives Plots")
+      descriptivesPlots$copyDependenciesFromJaspObject(descriptivesCollection)
+      descriptivesCollection[["plots"]] <- descriptivesPlots
+      runDescriptives <- TRUE
+
+    } else {
+      print("descriptivesPlots from state")
+      descriptivesPlots <- descriptivesCollection[["plots"]]
+      runDescriptives <- options[["anyNewVariables"]]
+    }
+
+    if (runDescriptives) {
+      .ttestBayesianDescriptivesPlots(
+        descriptivePlots = descriptivesPlots,
+        dataset          = dataset,
+        dependents       = dependents,
+        errors           = errors,
+        grouping         = grouping,
+        CRI              = options[["descriptivesPlotsCredibleInterval"]],
+        canRun           = canDoAnalysis,
+        testValueOpt     = options[["testValue"]],
+        pairs            = options[["pairs"]]
+      )
+      jaspResults$send()
+    }
+  }
+}
+
+.ttestBayesianDescriptivesTable <- function(descriptives, dataset, dependents,
+                                       grouping = NULL, CRI = NULL, canRun = FALSE,
+                                       dependencies = NULL, stateDescriptivesTable = NULL,
+                                       pairs = NULL) {
+
   # general function to make a descriptives tables
   #
   # Arguments
-  # 
+  #
   # descriptivesTable      : a jaspTable
   # dataset                : dataset (duh)
   # dependents             : variables in dataset to get descriptives for
-  # grouping               : an optional grouping variable. If should be a grouping variable but there is none supplied, pass ""
+  # grouping               : an optional grouping variable. If should be a grouping variable but there
+  #                          is none supplied, pass ""
   # CRI                    : credible interval (between 0 and 1)
   # canRun                 : FALSE implies an empty table is generated, TRUE means it will get filled
+  # pairs                  : a list where each element is a sublist indicating pairs of variables
   # dependencies           : dependencies available in options
   # stateDescriptivesTable : the results from previous time, either jaspState or jaspState$object
   #
@@ -219,7 +441,11 @@
 
   hasGrouping <- !is.null(grouping)
 	hasCRI <- !is.null(CRI)
-	
+	if (!is.null(pairs)) {
+	  dependents <- unique(unlist(pairs))
+	  dependents <- dependents[dependents != ""]
+	}
+
 	descriptives$addColumnInfo(name = "variable", title = "",      type = "string", combine = TRUE)
 	if (hasGrouping)
 	  descriptives$addColumnInfo(name = "group",    title = "Group", type = "string")
@@ -249,18 +475,17 @@
   		tmp <- rep(dependents, each = 2)
   		tmp[seq(2, length(tmp), 2)] <- ""
   		dat <- data.frame(variable = tmp)
-		
+
 	  } else {
-	    
-	    tmp <- rep(dependents, each = 2)
-  		tmp[seq(2, length(tmp), 2)] <- ""
+
   		dat <- data.frame(variable = tmp)
-	    
+
 	  }
     descriptives$setData(dat)
+
 	} else {
 	  if (hasGrouping) {
-	    
+
 	    levels <- base::levels(dataset[[ .v(grouping) ]])
 	    nlevels <- length(levels)
 	    groupingData <- dataset[[.v(grouping)]]
@@ -268,13 +493,13 @@
 	    levels <- NULL
 	    nlevels <- 1
 	    groupingData <- NULL
-	    
+
 	  }
-	    
+
 	    for (var in dependents) {
 	      if (is.null(stateDescriptivesTable[[var]])) {
 	        for (i in seq_len(nlevels)) {
-	          
+
 	          if (hasGrouping) {
 	            level <- levels[i]
 	            groupData <- dataset[groupingData == level, .v(var)]
@@ -282,19 +507,19 @@
 	            groupData <- dataset[[.v(var)]]
 	          }
 	          groupDataOm <- groupData[!is.na(groupData)]
-	          
+
 	          if (class(groupDataOm) != "factor") {
-	            
-	            posteriorSummary <- .posteriorSummaryGroupMean(variable=groupDataOm, 
+
+	            posteriorSummary <- .posteriorSummaryGroupMean(variable=groupDataOm,
 	                                                           descriptivesPlotsCredibleInterval=CRI)
 	            ciLower <- .clean(posteriorSummary$ciLower)
 	            ciUpper <- .clean(posteriorSummary$ciUpper)
-	            
+
 	            n <- .clean(length(groupDataOm))
 	            mean <- .clean(mean(groupDataOm))
 	            std <- .clean(sd(groupDataOm))
 	            sem <- .clean(sd(groupDataOm) / sqrt(length(groupDataOm)))
-	            
+
 	            row <- list(variable = var,
 	                        N = n, mean = mean, sd = std, se = sem)
 
@@ -305,7 +530,7 @@
 	              row[c("lowerCI", "upperCI")] <- list(ciLower, ciUpper)
 
 	          } else {
-	            
+
 	            n <- .clean(length(groupDataOm))
 	            row <- list(variable = var, N = n,
 	                        mean = "", sd = "", se = "")
@@ -315,10 +540,10 @@
 	            if (hasCRI)
 	              row[c("lowerCI", "upperCI")] <- list("", "")
 	          }
-	          
+
 	          descriptives$addRows(row)
 	          stateDescriptivesTable[[var]][[i]] <- row
-	          
+
 	        }
 	      } else { # reuse state
           for (i in seq_len(nlevels)) {
@@ -334,46 +559,438 @@
 }
 
 .ttestBayesianDescriptivesPlots <- function(descriptivePlots, dataset, dependents, errors,
-																						grouping = NULL, CRI = NULL, canRun = FALSE,
-																						testValueOpt = NULL) {
+																						grouping = NULL, CRI = .95, canRun = FALSE,
+																						testValueOpt = NULL, pairs = NULL) {
+
+  # general function to make a descriptives plots
+  #
+  # Arguments
+  #
+  # descriptivePlots  :  a jaspCollection
+  # dataset           :  dataset (duh)
+  # dependents        :  variables in dataset to get descriptives for
+  # errors            :  optional list of errors (from .hasErrors). Should be a
+  #                      list(dependent = list(message = ..., ,error = ...))
+  # grouping          :  an optional grouping variable. If should be a grouping variable but there
+  #                      is none supplied, pass ""
+  # CRI               :  credible interval (between 0 and 1)
+  # canRun            :  FALSE implies an empty table is generated, TRUE means it will get filled
+  # testValueOpt      :  test value for Null-hypothesis. Omitted if NULL.
+  # pairs             :  a list where each element is a sublist indicating pairs of variables
+  #
+  # Details:
+  #
+  # Does about everything to make descriptives plots The only things that need to be set by a user
+  # are the dependencies of the descriptivePlots. IMPORTANT: Will automatically make each plot
+  # depend on whether the corresponding variable is present in options[["variables"]].
+  # general dependencies of the plots should be put on the collection
+  #
+  # Returns
+  #
+  # Nothing
 
   hasGrouping <- !is.null(grouping)
-
+  paired <- !is.null(pairs)
 	if (hasGrouping) {
-		grouping <- options$groupingVariable
 		groupingData <- dataset[[.v(grouping)]]
 		levels   <- base::levels(dataset[[.v(grouping)]])
-		
+	} else if (paired) {
+	  grouping <- "group"
+	  groupingData <- factor(rep(0:1, each = nrow(dataset)))
 	}
 
 	for (var in dependents) {
 
-		if (is.null(descriptivesPlotCollection[[var]])) {
+		if (is.null(descriptivePlots[[var]])) {
 			if (isFALSE(errors[[var]])) {
 
-				idxC <- !is.na(dataset[[.v(var)]])
+			  if (paired) {
+			    pair <- pairs[[var]]
+			    levels <- c(pair[[1]], pair[[2]])
 
-				obj <- try({.plot2GroupMeansBayesIndTtest(
-					data = dataset[idxC, c(.v(var), grouping)], var = var, grouping = grouping
+			    dat <- c(dataset[[.v(pair[[1]])]], dataset[[.v(pair[[2]])]])
+			    dat <- data.frame(
+			      value = dat,
+			      group = groupingData
+			    )
+			    dat <- dat[!is.na(dat[[1]]), ]
+
+			  } else {
+			    idxC <- !is.na(dataset[[.v(var)]])
+			    dat <- dataset[idxC, .v(c(var, grouping))]
+			  }
+
+				obj <- try({
+				  .ttestBayesianPlotKGroupMeans(
+					data = dat, var = var, grouping = grouping, paired = paired,
 					groupNames = levels, CRI = CRI, testValueOpt = testValueOpt)
 				})
-				plot <- .addPlotToJaspObj0(var, errors, obj, dependencies)
+				plot <- .addPlotToJaspObj0(var, obj)
 			} else {
-				plot <- .addPlotToJaspObj0(var, errors, NULL, dependencies)
+				plot <- .addPlotToJaspObj0(var, NULL, errors[[var]][["message"]])
 			}
-			descriptivesPlotCollection[[var]] <- plot
+  	  if (paired) {
+  	    plot$setOptionMustContainDependency("pairs", pairs[[var]])
+  	  } else {
+  	    plot$setOptionMustContainDependency("variables",  var)
+  	  }
+			descriptivePlots[[var]] <- plot
 		}
 	}
-	
+
 	return()
 }
 
-.addPlotToJaspObj0 <- function(var, errors, obj = NULL, w = 480, h = 320) {
+# inferential plots ----
+.ttestBayesianInferentialPlots <- function(jaspResults, dataset, options, results, errors) {
+
+  if (is.null(jaspResults[["inferentialPlots"]])) {
+    print("remake inferentialPlotsCollection")
+    inferentialPlotsCollection <- createJaspContainer("Inferential Plots")
+    inferentialPlotsCollection$dependOnOptions("hypothesis")
+    jaspResults[["inferentialPlots"]] <- inferentialPlotsCollection
+
+  } else {
+    print("inferentialPlotsCollection from state")
+    inferentialPlotsCollection <- jaspResults[["inferentialPlots"]]
+  }
+
+  dependents <- unlist(options$variables)
+  b0 <- options[["anyNewVariables"]]
+  grouping <- options[["groupingVariable"]]
+  pairs <- options[["pairs"]]
+
+  if (options[["plotPriorAndPosterior"]]) {
+
+    b1 <- is.null(inferentialPlotsCollection[["plotPriorAndPosterior"]])
+
+    if (b1 || b0) {
+      if (b1) {
+        print("remake plotPriorAndPosterior completely")
+        PriorAndPosteriorPlotCollection <- createJaspContainer("Prior and Posterior Plots")
+        PriorAndPosteriorPlotCollection$dependOnOptions(c(
+          options[["stateKey"]][["priorAndPosteriorPlots"]], "plotPriorAndPosterior"
+        ))
+        inferentialPlotsCollection[["plotPriorAndPosterior"]] <- PriorAndPosteriorPlotCollection
+      } else {
+        print("partial changes in plotPriorAndPosterior")
+        PriorAndPosteriorPlotCollection <- inferentialPlotsCollection[["plotPriorAndPosterior"]]
+      }
+
+      .ttestBayesianPlotPriorAndPosterior(
+        jaspResults    = jaspResults,
+        collection     = PriorAndPosteriorPlotCollection,
+        dependents     = dependents,
+        errors         = errors,
+        t              = results[["tValue"]],
+        n1             = results[["n1"]],
+        n2             = results[["n2"]],
+        BF             = results[["BF10post"]],
+        BFH1H0         = results[["BFH1H0"]],
+        delta          = results[["delta"]],
+        plottingError  = results[["plottingError"]],
+        paired         = results[["paired"]],
+        oneSided       = options[["oneSided"]],
+        rscale         = options[["priorWidth"]],
+        addInformation = options[["plotPriorAndPosteriorAdditionalInfo"]],
+        pairs          = pairs,
+        options        = options
+      )
+
+    } else {
+      print("plotPriorAndPosterior from state")
+    }
+  }
+
+  if (options[["plotBayesFactorRobustness"]]) {
+
+    b1 <- is.null(inferentialPlotsCollection[["plotBayesFactorRobustness"]])
+
+    if (b1 || b0) {
+      if (b1) {
+        print("remake plotBayesFactorRobustness completely")
+        robustnessPlotCollection <- createJaspContainer("Robustness Plots")
+        robustnessPlotCollection$dependOnOptions(c(
+          options[["stateKey"]][["robustnessPlots"]], "plotSequentialAnalysis"
+        ))
+        inferentialPlotsCollection[["plotBayesFactorRobustness"]] <- robustnessPlotCollection
+      } else {
+        print("partial changes in plotBayesFactorRobustness")
+        robustnessPlotCollection <- inferentialPlotsCollection[["plotBayesFactorRobustness"]]
+      }
+
+      .ttestBayesianPlotRobustness(
+        jaspResults            = jaspResults,
+        collection             = robustnessPlotCollection,
+        dependents             = dependents,
+        errors                 = errors,
+        dataset                = dataset,
+        grouping               = grouping,
+        BF10post               = results[["BF10post"]],
+        BFH1H0                 = results[["BFH1H0"]],
+        rscale                 = options[["priorWidth"]],
+        paired                 = results[["paired"]],
+        oneSided               = options[["oneSided"]],
+        additionalInformation  = options[["plotBayesFactorRobustnessAdditionalInfo"]],
+        effectSizeStandardized = options[["effectSizeStandardized"]],
+        pairs                  = pairs,
+        options                = options
+      )
+
+    } else {
+      print("plotBayesFactorRobustness from state")
+    }
+  }
+
+  if (options[["plotSequentialAnalysis"]]) {
+
+    b1 <- is.null(inferentialPlotsCollection[["plotSequentialAnalysis"]])
+
+    if (b1 || b0) {
+      if (b1) {
+        print("remake plotSequentialAnalysis completely")
+        sequentialPlotCollection <- createJaspContainer("Sequential Plots")
+        sequentialPlotCollection$dependOnOptions(c(
+          options[["stateKey"]][["sequentialPlots"]], "plotSequentialAnalysis"
+        ))
+        inferentialPlotsCollection[["plotSequentialAnalysis"]] <- sequentialPlotCollection
+      } else {
+        print("partial changes in plotSequentialAnalysis")
+        sequentialPlotCollection <- inferentialPlotsCollection[["plotSequentialAnalysis"]]
+      }
+
+      .ttestBayesianPlotSequential(
+        jaspResults            = jaspResults,
+        collection             = sequentialPlotCollection,
+        dependents             = dependents,
+        errors                 = errors,
+        dataset                = dataset,
+        grouping               = grouping,
+        BF10post               = results[["BF10post"]],
+        BFH1H0                 = results[["BFH1H0"]],
+        paired                 = results[["paired"]],
+        oneSided               = options[["oneSided"]],
+        rscale                 = options[["priorWidth"]],
+        effectSizeStandardized = options[["effectSizeStandardized"]],
+        pairs                  = pairs,
+        options                = options
+      )
+
+    } else {
+      print("plotSequentialAnalysis from state")
+    }
+  }
+}
+
+.ttestBayesianPlotPriorAndPosterior <- function(jaspResults, collection, dependents, errors,
+                                                tValue, n1, n2 = NULL,
+                                                BF, BFH1H0, oneSided = FALSE,
+                                                rscale = "medium", delta = NULL,
+                                                addInformation = TRUE,
+                                                plottingError = NULL,
+                                                paired = FALSE, pairs = NULL,
+                                                options, ...) {
+
+  for (var in dependents) {
+    if (is.null(collection[[var]])) {
+      if (isFALSE(errors[[var]]) && is.null(plottingError[[var]])) {
+
+        obj <- function() {.plotPosterior.summarystats.ttest(
+          t              = tValue[var],
+          n1             = n1[var],
+          n2             = n2[var],
+          paired         = paired,
+          oneSided       = oneSided,
+          BF             = BF[var],
+          BFH1H0         = BFH1H0,
+          rscale         = rscale,
+          options        = options,
+          delta          = delta[[var]],
+          addInformation = addInformation,
+          ...
+        )}
+
+        plot <- .addPlotToJaspObj0(var, obj)
+      } else {
+        if (!isFALSE(errors[[var]])) {
+          err <- errors[[var]][["message"]]
+        } else {
+          err <- plottingError[[var]]
+        }
+        plot <- .addPlotToJaspObj0(var, NULL, err)
+      }
+      if (paired) {
+        plot$setOptionMustContainDependency("pairs", pairs[[var]])
+      } else {
+        plot$setOptionMustContainDependency("variables",  var)
+      }
+      collection[[var]] <- plot
+      jaspResults$send()
+    }
+  }
+}
+
+.ttestBayesianPlotRobustness <- function(jaspResults, collection, dependents, errors, dataset,
+                                         grouping = NULL, BF10post, BFH1H0,
+                                         rscale = "medium", paired = FALSE,
+                                         oneSided = FALSE,
+                                         additionalInformation = TRUE,
+                                         effectSizeStandardized, pairs = NULL,
+                                         options, ...) {
+
+  hasGrouping <- !is.null(grouping)
+  if (hasGrouping) {
+    levels <- levels(dataset[[.v(grouping)]])
+    g1 <- levels[1]
+    g2 <- levels[2]
+    idxG1 <- dataset[[.v(grouping)]] == g1
+    idxG2 <- dataset[[.v(grouping)]] == g2
+  } else {
+    g1 <- NULL
+    g2 <- NULL
+    group2 <- NULL
+  }
+
+  for (var in dependents) {
+    if (is.null(collection[[var]])) {
+      if (effectSizeStandardized == "informative") {
+        plot <- createJaspPlot(title = var, width = 480, height = 320, error = "badData",
+                               errorMessage = "Bayes factor robustness check plot currently not supported for informed prior.")
+      } else if (isFALSE(errors[[var]])) {
+
+        if (paired) {
+          pair <- options[["pairs"]][[var]]
+          group1 <- dataset[, .v(pair[[1]])]
+          group2 <- dataset[, .v(pair[[2]])]
+          idxC <- !(is.na(group1) | is.na(group2))
+          group1 <- group1[idxC]
+          group2 <- group2[idxC]
+        } else {
+          idxC <- !is.na(dataset[[.v(var)]])
+          if (hasGrouping) {
+            group1 <- dataset[idxG1 & idxC, .v(var)]
+            group2 <- dataset[idxG2 & idxC, .v(var)]
+          } else {
+            group1 <- dataset[idxC, .v(var)]
+            group1 <- group1 - options$testValue
+          }
+        }
+
+        obj <- function() {.plotBF.robustnessCheck.ttest(
+          x                     = group1,
+          y                     = group2,
+          BF10post              = BF10post[var],
+          paired                = paired,
+          oneSided              = oneSided,
+          rscale                = rscale,
+          BFH1H0                = BFH1H0,
+          additionalInformation = additionalInformation,
+          ...
+        )}
+        plot <- .addPlotToJaspObj0(var, obj)
+      } else {
+        plot <- .addPlotToJaspObj0(var, NULL, error[[var]][["message"]])
+      }
+      if (paired) {
+        plot$setOptionMustContainDependency("pairs", pairs[[var]])
+      } else {
+        plot$setOptionMustContainDependency("variables",  var)
+      }
+      collection[[var]] <- plot
+      jaspResults$send()
+    }
+  }
+}
+
+.ttestBayesianPlotSequential <- function(jaspResults, collection, dependents, errors, dataset,
+                                         grouping = NULL, BF10post, BFH1H0,
+                                         rscale = "medium", paired = FALSE,
+                                         oneSided = FALSE,
+                                         plotDifferentPriors = FALSE,
+                                         effectSizeStandardized,
+                                         testValue = NULL, pairs = NULL,
+                                         options, ...) {
+
+  hasGrouping <- !is.null(grouping)
+  if (hasGrouping) {
+    levels <- levels(dataset[[.v(grouping)]])
+    g1 <- levels[1L]
+    g2 <- levels[2L]
+    idxG1 <- dataset[[.v(grouping)]] == g1
+	  idxG2 <- dataset[[.v(grouping)]] == g2
+  } else {
+    g1 <- NULL
+    g2 <- NULL
+    group2 <- NULL
+    subDataSet <- NULL
+  }
+
+  for (var in dependents) {
+    if (is.null(collection[[var]])) {
+      if (effectSizeStandardized == "informative") {
+        plot <- createJaspPlot(title = var, width = 480, height = 320, error = "badData",
+                               errorMessage = "Sequential analysis robustness check plot currently not supported for informed prior.")
+      } else if (isFALSE(errors[[var]])) {
+
+        if (paired) {
+          pair <- options[["pairs"]][[var]]
+          group1 <- dataset[, .v(pair[[1L]])]
+          group2 <- dataset[, .v(pair[[2L]])]
+          idxC <- !(is.na(group1) | is.na(group2))
+          group1 <- group1[idxC]
+          group2 <- group2[idxC]
+        } else {
+          idxC <- !is.na(dataset[[.v(var)]])
+          if (hasGrouping) {
+            group1 <- dataset[idxG1 & idxC, .v(var)]
+            group2 <- dataset[idxG2 & idxC, .v(var)]
+            subDataSet <- dataset[idxC, .v(c(var, grouping))]
+          } else {
+            group1 <- dataset[idxC, .v(var)]
+            group1 <- group1 - options$testValue
+          }
+        }
+
+        obj <- function() {.plotSequentialBF.ttest(
+          x                   = group1,
+          y                   = group2,
+          oneSided            = oneSided,
+          rscale              = rscale,
+          BFH1H0              = BFH1H0,
+          BF10post            = BF10post[var],
+          paired              = paired,
+          plotDifferentPriors = plotDifferentPriors,
+          subDataSet          = subDataSet,
+          level1              = g1,
+          level2              = g2,
+          options             = options,
+          ...
+        )}
+
+        plot <- .addPlotToJaspObj0(var, obj)
+      } else {
+        plot <- .addPlotToJaspObj0(var, NULL, error[[var]][["message"]])
+      }
+
+      if (paired) {
+        plot$setOptionMustContainDependency("pairs", pairs[[var]])
+      } else {
+        plot$setOptionMustContainDependency("variables",  var)
+      }
+
+      collection[[var]] <- plot
+      jaspResults$send()
+    }
+  }
+}
+
+# plot functions  ----
+.addPlotToJaspObj0 <- function(var, obj = NULL, errors = "",  w = 480, h = 320) {
 
 	# convenience function
 	if (is.null(obj)) {
 		plot <- createJaspPlot(title = var, width = w, height = h,
-													 error = "badData", errorMessage = errors[[var]][["message"]])
+													 error = "badData", errorMessage = errors)
 	} else if (identical(obj, "empty")) {
 		plot <- createJaspPlot(title = var, width = w, height = h)
 	} else if (isTryError(obj)) {
@@ -382,37 +999,44 @@
 	} else {
 		plot <- createJaspPlot(title = var, width = w, height = h, plot = obj)
 	}
-	plot$setOptionMustContainDependency("variables",  var)
 	return(plot)
 }
 
-.ttestBayesianPlotKGroupMeans <- function(data, var, grouping = NULL, 
+.ttestBayesianPlotKGroupMeans <- function(data, var, grouping = NULL,
 																					groupNames = NULL, CRI = .95,
-																					testValueOpt = NULL) {
+																					testValueOpt = NULL, paired = FALSE) {
+
+  #
 
 	hasGrouping <- !is.null(grouping)
 	if (hasGrouping) {
-		
+
 		summaryStat <- tapply(data[[1L]], data[[2L]], function(x) {
 			.posteriorSummaryGroupMean(variable = x, descriptivesPlotsCredibleInterval = CRI)
 		})
-		summaryStat <- do.call(rbind, summaryStat)
-		summaryStat$groupingVariable <- groupNames
-		mapping <- ggplot2::aes(x=groupingVariable, y=dependent, group=group)
+		summaryStat <- do.call(rbind.data.frame, summaryStat)
+		summaryStat$groupingVariable <- factor(groupNames)
+		mapping <- ggplot2::aes(x=groupingVariable, y=median, group=group)
+
+	} else {
+
+		summaryStat <- as.data.frame(.posteriorSummaryGroupMean(data, descriptivesPlotsCredibleInterval = CRI))
+		summaryStat$groupingVariable <- var
+		mapping <- ggplot2::aes(x=groupingVariable, y=median, group=group)
+		testValue <- data.frame("testValue" = testValueOpt) # default zero
+
+	}
+
+	if (hasGrouping && !paired) {
 		ylab <- ggplot2::ylab(var)
 		xlab <- ggplot2::xlab(grouping)
-		
 	} else {
-		
-		summaryStat <- as.data.frame(.posteriorSummaryGroupMean(data[[1L]], descriptivesPlotsCredibleInterval = CRI))
-		mapping <- ggplot2::aes(x=groupingVariable, y=dependent, group=group)
-		testValue <- data.frame("testValue" = testValueOpt) # default zero
-		ylab <- ggplot2::ylab(NULL)
-		xlab <- ggplot2::xlab(NULL)
-		
+	  ylab <- ggplot2::ylab(NULL)
+	  xlab <- ggplot2::xlab(NULL)
 	}
+
 	summaryStat$group <- 1
-	
+
 	pd <- ggplot2::position_dodge(.2)
 
 	p <-	ggplot2::ggplot(summaryStat, mapping = mapping) +
@@ -446,7 +1070,7 @@
 
 }
 
-.base_breaks_y4 <- function(x, testValue){
+.base_breaks_y4 <- function(x, testValue) {
 
   values <- c(testValue, x$ciLower, x$ciUpper)
   ci.pos <- c(min(values), max(values))
@@ -455,3 +1079,12 @@
   list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
        ggplot2::scale_y_continuous(breaks=c(min(b), testValue, max(b))))
 }
+
+.base_breaks_x <- function(x) {
+
+	b <- unique(as.numeric(x))
+	d <- data.frame(y=-Inf, yend=-Inf, x=min(b), xend=max(b))
+	list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))
+
+}
+
