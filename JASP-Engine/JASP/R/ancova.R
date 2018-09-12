@@ -27,7 +27,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		if (perform == "run") {
 
 			dataset <- .readDataSetToEnd(columns.as.numeric=numeric.variables, columns.as.factor=factor.variables, exclude.na.listwise=c(numeric.variables, factor.variables))
-
+      dataset <- droplevels(dataset)
+      
 		} else {
 
 			dataset <- .readDataSetHeader(columns.as.numeric=numeric.variables, columns.as.factor=factor.variables)
@@ -39,7 +40,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	}
 
 	results <- list()
-
 
 
 	## Retrieve State
@@ -334,7 +334,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 .anovaContrastCases <- function(column, contrast.type) {
 
-	levels <- levels(column)
+  levels <- levels(column)
 	n.levels <- length(levels)
 
 	cases <- list()
@@ -551,7 +551,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			modelTerms <- options$modelTerms
 			interactions <- TRUE
 		} else {
-			modelTerms <- c(fixedFactors,covariates)
+			modelTerms <- c(fixedFactors, covariates)
+			modelTerms <- modelTerms[match(modelTerms, options$modelTerms)]
 			interactions <- FALSE
 		}
 
@@ -561,7 +562,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		interactions <- FALSE
 	}
 
-	list(modelTerms = modelTerms, interactions = interactions)
+  list(modelTerms = modelTerms, interactions = interactions)
 }
 
 .modelFormula <- function(modelTerms, options) {
@@ -855,7 +856,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				F <- if (is.na(result[term,"F value"])) {""} else { result[term, "F value"] }
 				p <- if (is.na(result[term,"Pr(>F)"] )) {""} else { result[term, "Pr(>F)"] }
 
-				if(i == 1 || term == "Residuals" || (!is.null(unlist(options$covariates)) && terms.normal[i] == options$covariates[[1]] && !reorderModelTerms$interactions)) {
+				if(i == 1 || term == "Residuals" || (!is.null(unlist(options$covariates)) && (terms.normal[i] == options$fixedFactors[[1]] || terms.normal[i] == options$covariates[[1]]) && 
+				                                     !reorderModelTerms$interactions)) {
 					newGroup <- TRUE
 				} else {
 					newGroup <- FALSE
@@ -1041,7 +1043,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			contrast.table[["schema"]] <- list(fields = list(
 				list(name="Comparison", type="string"),
 				list(name="Estimate", type="number", format="sf:4;dp:3"),
-				list(name="Std. Error", type="number", format="sf:4;dp:3"),
+				list(name="SE", type="number", format="sf:4;dp:3"),
 				list(name="df", type="number", format="sf:4;dp:3"),
 				list(name="t", type="number", format="sf:4;dp:3"),
 				list(name="p", type="number", format="dp:3;p:.001")))
@@ -1060,7 +1062,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			v <- .v(variable)
 
 			column <- dataset[[ v ]]
-
 			cases <- .anovaContrastCases(column, contrast.type)
 
 			if (contrast == "polynomial" && length(cases) > 5)
@@ -1094,7 +1095,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				for (i in .indices(cases)) {
 
 					case <- cases[[i]]
-
 					nam <- paste(v, i, sep="")
 
 					est <- contrast.summary[nam,"Estimate"]
@@ -1125,7 +1125,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					if (is.na(p))
 						p <- ""
 
-          row <- list("Comparison"=case, "Estimate"=est, "Std. Error"=SE, "t"=t, "p"=p, "df"=df, "lwrBound"=lwrBound, "uprBound"=uprBound)
+          row <- list("Comparison"=case, "Estimate"=est, "SE"=SE, "t"=t, "p"=p, "df"=df, "lwrBound"=lwrBound, "uprBound"=uprBound)
 
 					if(length(contrast.rows) == 0)  {
 						row[[".isNewGroup"]] <- TRUE
