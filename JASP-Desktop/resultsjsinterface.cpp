@@ -84,10 +84,8 @@ void ResultsJsInterface::resultsPageLoaded(bool success)
 	if (success)
 	{
 		QString version = tq(AppInfo::version.asString());
+
 		runJavaScript("window.setAppVersion('" + version + "')");
-#ifdef JASP_DEBUG
-		version+="-Debug";
-#endif
 
 		setGlobalJsValues();
 

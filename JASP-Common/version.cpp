@@ -171,6 +171,10 @@ string Version::asString() const
 		stream << " Alpha " << (int)build;
 	else if (isBeta())
 		stream << " Beta " << (int)(build - 100);
+	
+#ifdef JASP_DEBUG
+		stream << "-Debug";
+#endif
 
 	return stream.str();
 }
