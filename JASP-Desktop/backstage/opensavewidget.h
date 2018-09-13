@@ -25,14 +25,16 @@
 #include <QFileSystemWatcher>
 
 #include "verticaltabwidget.h"
-#include "fsbmrecent.h"
-#include "fsbmcurrent.h"
-#include "fsbmexamples.h"
+#include "fsbmrecentfiles.h"
+#include "fsbmcurrentfile.h"
+#include "fsbmdatalibrary.h"
 #include "fsbrowser.h"
 
 #include "backstagecomputer.h"
 #include "backstageosf.h"
 #include "backstagedatalibrary.h"
+#include "backstagerecentfiles.h"
+#include "backstagecurrentfile.h"
 
 #include "fileevent.h"
 
@@ -93,13 +95,9 @@ private:
 	FileEvent::FileMode _mode;
 
 	VerticalTabWidget *_tabWidget;
-
-	FSBMRecent   *_fsmRecent;
-	FSBMCurrent   *_fsmCurrent;
-
-	FSBrowser *_bsRecent;
-	FSBrowser *_bsCurrent;
-	
+		
+	BackstageRecentFiles *_bsRecentFiles;
+	BackstageCurrentFile *_bsCurrentFile;
 	BackstageComputer *_bsComputer;
 	BackstageOSF *_bsOSF;
 	BackstageDataLibrary *_bsDataLibrary;

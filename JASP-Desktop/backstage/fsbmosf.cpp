@@ -35,12 +35,15 @@
 #include "simplecrypt.h"
 #include "settings.h"
 
-FSBMOSF::FSBMOSF()
+const QString FSBMOSF::rootelementname = "Projects";
+
+FSBMOSF::FSBMOSF(QObject *parent, QString root)
+	:FSBModel (parent)
 {
 	_dataManager = NULL;
 	_manager = NULL;
 	_isAuthenticated = false;
-	_rootPath = _path = "Projects";
+	_rootPath = _path = root;
 }
 
 FSBMOSF::~FSBMOSF()
@@ -54,7 +57,6 @@ void FSBMOSF::setOnlineDataManager(OnlineDataManager *odm)
 
 	_manager = odm->getNetworkAccessManager(OnlineDataManager::OSF);
 
-
 }
 
 void FSBMOSF::attemptToConnect()
@@ -64,7 +66,10 @@ void FSBMOSF::attemptToConnect()
 	QString username = _dataManager->getUsername(OnlineDataManager::OSF);
 
 	if ( username=="" || password =="" )
+	{
+		emit stopProcessing();
 		return;
+	}
 
 	if ( _isAuthenticated == false && _dataManager != NULL )
 	{
@@ -75,6 +80,8 @@ void FSBMOSF::attemptToConnect()
 		if (!authsuccess)
 			emit entriesChanged();
 	}
+	
+	emit stopProcessing();
 }
 
 
@@ -188,10 +195,7 @@ void FSBMOSF::gotProjects()
 	{
 		QByteArray data = reply->readAll();
 		QString dataString = (QString) data;
-		qDebug() << "------------ OFS got Projects ---------------";
-		qDebug() << dataString;
-		qDebug() << "---------------------------------------------";
-
+	
 		QJsonParseError error;
 		QJsonDocument doc = QJsonDocument::fromJson(dataString.toUtf8(), &error);
 

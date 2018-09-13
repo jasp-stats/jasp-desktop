@@ -2,8 +2,7 @@
 #define BACKSTAGEDATALIBRARY_H
 
 #include "backstagepage.h"
-#include "fsbrowser.h"
-#include "fsbmexamples.h"
+#include "fsbmdatalibrary.h"
 #include "datalibrarylistmodel.h"
 #include "datalibrarybreadcrumbsmodel.h"
 
@@ -13,7 +12,7 @@
 #include <QQmlContext>
 
 namespace Ui {
-class BackstageDataLibrary;
+class BackstageForm;
 }
 
 class BackstageDataLibrary : public BackstagePage
@@ -29,8 +28,8 @@ public slots:
 	
 private:	
 	DataLibraryListModel *_dataLibraryListModel;
-	DataLibraryBreadCrumbsModel *_dataLibraryBreadCrumbsModel;	
-	Ui::BackstageDataLibrary *ui;
+	DataLibraryBreadCrumbsListModel *_dataLibraryBreadCrumbsListModel;	
+	Ui::BackstageForm *ui;
 			
 };
 

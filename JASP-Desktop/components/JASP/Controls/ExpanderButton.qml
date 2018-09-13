@@ -15,7 +15,7 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-import QtQuick 2.11
+import QtQuick 2.10
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
 

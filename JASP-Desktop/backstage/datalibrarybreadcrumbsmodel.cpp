@@ -1,15 +1,14 @@
 #include "datalibrarybreadcrumbsmodel.h"
-#include "fsbmexamples.h"
-#include <QMessageBox>
+#include "fsbmdatalibrary.h"
 
-DataLibraryBreadCrumbsModel::DataLibraryBreadCrumbsModel(QObject *parent)
+DataLibraryBreadCrumbsListModel::DataLibraryBreadCrumbsListModel(QObject *parent)
 	: QAbstractListModel(parent)
 {	
-	_crumbNameList.append(FSBMExamples::rootelementname);
-	_physicalPathList.append(FSBMExamples::rootelementname);
+	_crumbNameList.append(FSBMDataLibrary::rootelementname);
+	_physicalPathList.append(FSBMDataLibrary::rootelementname);
 }
 
-int DataLibraryBreadCrumbsModel::rowCount(const QModelIndex &parent) const
+int DataLibraryBreadCrumbsListModel::rowCount(const QModelIndex &parent) const
 {
 	// For list models only the root node (an invalid parent) should return the list's size. For all
 	// other (valid) parents, rowCount() should return 0 so that it does not become a tree model.
@@ -20,7 +19,7 @@ int DataLibraryBreadCrumbsModel::rowCount(const QModelIndex &parent) const
 	
 }
 
-QVariant DataLibraryBreadCrumbsModel::data(const QModelIndex &index, int role) const
+QVariant DataLibraryBreadCrumbsListModel::data(const QModelIndex &index, int role) const
 {
 	
 	if (!index.isValid())
@@ -38,7 +37,7 @@ QVariant DataLibraryBreadCrumbsModel::data(const QModelIndex &index, int role) c
 	
 }
 
-bool DataLibraryBreadCrumbsModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool DataLibraryBreadCrumbsListModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
 	if (index.row() < 0 || index.row() >= _crumbNameList.count())
         return false;
@@ -52,7 +51,7 @@ bool DataLibraryBreadCrumbsModel::setData(const QModelIndex &index, const QVaria
 	
 }
 
-Qt::ItemFlags DataLibraryBreadCrumbsModel::flags(const QModelIndex &index) const
+Qt::ItemFlags DataLibraryBreadCrumbsListModel::flags(const QModelIndex &index) const
 {
 	if (!index.isValid())
 		return Qt::NoItemFlags;
@@ -60,7 +59,7 @@ Qt::ItemFlags DataLibraryBreadCrumbsModel::flags(const QModelIndex &index) const
 	return Qt::ItemIsEditable; // FIXME: Implement me!
 }
 
-QHash<int, QByteArray> DataLibraryBreadCrumbsModel::roleNames() const
+QHash<int, QByteArray> DataLibraryBreadCrumbsListModel::roleNames() const
 {
 	
 	QHash<int, QByteArray> names;
@@ -69,7 +68,12 @@ QHash<int, QByteArray> DataLibraryBreadCrumbsModel::roleNames() const
 	
 }
 
-void DataLibraryBreadCrumbsModel::appendCrumb(const QString &crumbname, const QString &path)
+void DataLibraryBreadCrumbsListModel::setSeparator(const QChar &separator)
+{
+	_separator = separator;
+}
+
+void DataLibraryBreadCrumbsListModel::appendCrumb(const QString &crumbname, const QString &path)
 {
 	const int lastRowIndex = _crumbNameList.size();
     
@@ -79,14 +83,14 @@ void DataLibraryBreadCrumbsModel::appendCrumb(const QString &crumbname, const QS
 	endInsertRows();
 }
 
-QString DataLibraryBreadCrumbsModel::switchCrumb(const int &index)
+QString DataLibraryBreadCrumbsListModel::switchCrumb(const int &index)
 {
 	removeCrumbsAfterIndex(index+1);
 	return _physicalPathList.at(index);
 }
 
 
-bool DataLibraryBreadCrumbsModel::removeCrumbsAfterIndex(int index)
+bool DataLibraryBreadCrumbsListModel::removeCrumbsAfterIndex(int index)
 {
 	const int lastRowIndex = _crumbNameList.size() - 1;	
 	
@@ -105,24 +109,11 @@ bool DataLibraryBreadCrumbsModel::removeCrumbsAfterIndex(int index)
 	
 }
 
-
-void DataLibraryBreadCrumbsModel::removeLastCrumb()
+void DataLibraryBreadCrumbsListModel::indexChanged(const int &index)
 {
-	if (_crumbNameList.isEmpty())
-        return;
-	
-    const int lastRowIndex = (_crumbNameList.size() - 1);
-
-	beginRemoveRows(QModelIndex(), lastRowIndex, lastRowIndex);
-    _crumbNameList.removeLast();
-    endRemoveRows();
-	
+	emit crumbIndexChanged(index);
 }
 
-void DataLibraryBreadCrumbsModel::setSeperator(const QChar &separator)
-{
-	_separator = separator;
-}
 
 
 

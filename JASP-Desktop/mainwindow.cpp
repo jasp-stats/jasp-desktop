@@ -134,7 +134,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	StartOnlineDataManager();
 	initQWidgetGUIParts();
 	makeConnections();
-
+	
+	// Set the initial tab on Common.
+	tabChanged(1);
+	
 	qmlRegisterType<DataSetView>("JASP", 1, 0, "DataSetView");
 	loadQML();
 

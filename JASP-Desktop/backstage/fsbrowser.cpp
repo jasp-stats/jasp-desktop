@@ -26,7 +26,7 @@
 
 #include "fsentrywidget.h"
 #include <iostream>
-
+#include "qutils.h"
 
 FSBrowser::FSBrowser(QWidget *parent, FSBrowser::BrowseMode mode) : QWidget(parent)
 {
@@ -38,13 +38,7 @@ FSBrowser::FSBrowser(QWidget *parent, FSBrowser::BrowseMode mode) : QWidget(pare
 	QGridLayout *layout = new QGridLayout(this);
 	layout->setContentsMargins(12, 12, 0, 0);  //Position all file and folder elements asn recent file label
 	setLayout(layout);
-	
-#ifdef __APPLE__
-		QString shortCutKey = "\u2318";
-#else
-		QString shortCutKey = "Ctrl";
-#endif	
-	
+		
 	switch(mode)
 		
 	{		
@@ -57,7 +51,7 @@ FSBrowser::FSBrowser(QWidget *parent, FSBrowser::BrowseMode mode) : QWidget(pare
 		break;
 		
 	case FSBrowser::BrowseCurrent:
-		layout->addWidget(new QLabel(QString("Double-click on the file below to synchronize or use ") + shortCutKey + "-Y"));
+		layout->addWidget(new QLabel(QString("Double-click on the file below to synchronize or use ") + getShortCutKey() + "-Y"));
 		break;
 		
 	default:

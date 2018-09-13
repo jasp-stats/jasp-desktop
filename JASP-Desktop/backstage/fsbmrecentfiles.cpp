@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "fsbmrecent.h"
+#include "fsbmrecentfiles.h"
 
 #include <QStringList>
 #include <QFileInfo>
@@ -24,18 +24,18 @@
 #include <QDebug>
 #include "settings.h"
 
-FSBMRecent::FSBMRecent(QObject *parent)
+FSBMRecentFiles::FSBMRecentFiles(QObject *parent)
 	: FSBModel(parent)
 {
 	parent->installEventFilter(this);
 }
 
-void FSBMRecent::refresh()
+void FSBMRecentFiles::refresh()
 {
 	populate(load());
 }
 
-bool FSBMRecent::eventFilter(QObject *object, QEvent *event)
+bool FSBMRecentFiles::eventFilter(QObject *object, QEvent *event)
 {
 	if (event->type() == QEvent::Show || event->type() == QEvent::WindowActivate)
 		refresh();
@@ -44,7 +44,7 @@ bool FSBMRecent::eventFilter(QObject *object, QEvent *event)
 }
 
 
-void FSBMRecent::addRecent(const QString &path)
+void FSBMRecentFiles::addRecent(const QString &path)
 {
 	QStringList recents = load();
 	recents.removeAll(path);
@@ -59,7 +59,7 @@ void FSBMRecent::addRecent(const QString &path)
 	populate(recents);
 }
 
-void FSBMRecent::filter(bool (*filterFunction)(QString))
+void FSBMRecentFiles::filter(bool (*filterFunction)(QString))
 {
 	QStringList recents = load();
 
@@ -78,7 +78,7 @@ void FSBMRecent::filter(bool (*filterFunction)(QString))
 	populate(recents);
 }
 
-void FSBMRecent::populate(const QStringList &paths)
+void FSBMRecentFiles::populate(const QStringList &paths)
 {
 	_entries.clear();
 
@@ -98,11 +98,11 @@ void FSBMRecent::populate(const QStringList &paths)
 	emit entriesChanged();
 }
 
-bool FSBMRecent::isUrl(const QString &path) const {
+bool FSBMRecentFiles::isUrl(const QString &path) const {
 	return path.startsWith("http");
 }
 
-QStringList FSBMRecent::load()
+QStringList FSBMRecentFiles::load()
 {
 	Settings::sync();
 

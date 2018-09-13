@@ -4,11 +4,10 @@ import QtQuick.Controls 2.2
 
 ListView
 {
-	anchors.left:parent.left
-	anchors.right:parent.right
-	
-	model: dataLibraryBreadCrumbsModel
-	
+	id : listView
+		
+	model : breadcrumbsmodel
+			
 	orientation: ListView.Horizontal
 	
 	delegate: RowLayout
@@ -66,7 +65,7 @@ ListView
 						anchors.fill: parent
 						cursorShape: Qt.PointingHandCursor 
 						onClicked: {
-							dataLibraryListModel.changePath(model.index);
+							breadcrumbsmodel.indexChanged(model.index);
 						}					
 					}
 					

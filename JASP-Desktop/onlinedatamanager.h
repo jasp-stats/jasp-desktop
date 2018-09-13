@@ -16,7 +16,6 @@ class OnlineDataManager : public QObject
 public:
 
 	enum Provider { None, OSF };
-	enum Encryption { NoEncryption, SimpleCryptEncryption };
 
 	OnlineDataManager(QObject *parent = 0);
 	~OnlineDataManager();

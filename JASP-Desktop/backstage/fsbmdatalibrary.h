@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef FSBMEXAMPLES_H
-#define FSBMEXAMPLES_H
+#ifndef FSBMDATALIBRARY_H
+#define FSBMDATALIBRARY_H
 
 #include "fsbmodel.h"
 #include "common.h"
@@ -28,13 +28,13 @@ public:
 	QString associated_datafile = "";	
 };
 
-class FSBMExamples : public FSBModel
+class FSBMDataLibrary : public FSBModel
 {
 	Q_OBJECT
 
 public:
-	FSBMExamples(QObject *parent = NULL, QString root = "");
-	~FSBMExamples();
+	FSBMDataLibrary(QObject *parent = NULL, QString root = "");
+	~FSBMDataLibrary();
 	void refresh() OVERRIDE;
 	typedef QList<ExtendedFSEntry> FileSystemExtendedEntryList;
 	static const QString rootelementname; //Root element in index.json
@@ -56,4 +56,4 @@ protected:
 	
 };
 
-#endif // FSBMEXAMPLES_H
+#endif // FSBMDATALIBRARY_H

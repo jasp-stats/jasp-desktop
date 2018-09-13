@@ -32,8 +32,8 @@ class FSBMOSF : public FSBModel
 	Q_OBJECT
 
 public:
-	FSBMOSF();
-	~FSBMOSF();
+	FSBMOSF(QObject *parent = NULL, QString root = "");
+	~FSBMOSF() OVERRIDE;
 	void refresh() OVERRIDE;
 
 	typedef struct {
@@ -50,6 +50,8 @@ public:
 		bool canCreateFiles;
 		int level = 0;
 	} OnlineNodeData;
+	
+	static const QString rootelementname; //Root element in the OSF
 
 	OnlineNodeData getNodeData(QString key);
 	void setOnlineDataManager(OnlineDataManager *odm);
@@ -65,7 +67,8 @@ public:
 signals:
 	void userDataChanged();
 	void hideAuthentication();
-
+	void stopProcessing();
+	
 private slots:
 	void gotProjects();
 	void gotFilesAndFolders();

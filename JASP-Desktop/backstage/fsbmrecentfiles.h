@@ -16,25 +16,30 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef FSBROWSERMODELCURRENT_H
-#define FSBROWSERMODELCURRENT_H
+#ifndef FSBMRECENTFILES_H
+#define FSBMRECENTFILES_H
 
 #include "fsbmodel.h"
 #include "common.h"
 
-class FSBMCurrent : public FSBModel
+class FSBMRecentFiles : public FSBModel
 {
 public:
-	FSBMCurrent(QObject *parent = NULL);
+	FSBMRecentFiles(QObject *parent = NULL);
 
 	void refresh() OVERRIDE;
 
-	void setCurrent(const QString &path);
-	QString getCurrent() const;
-	bool isOnlineFile() const;
+	void addRecent(const QString &path);
+	void filter(bool (*filterFunction)(QString));
+
+protected:
+	bool eventFilter(QObject *object, QEvent *event) OVERRIDE;
 
 private:
-	QString _current;
+	QStringList load();
+	void populate(const QStringList &paths);
+	bool isUrl(const QString &path) const;
+
 };
 
-#endif // FSBROWSERMODELCURRENT_H
+#endif // FSBMRECENTFILES_H

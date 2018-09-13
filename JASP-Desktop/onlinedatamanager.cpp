@@ -26,8 +26,6 @@
 #include "onlinedatanodeosf.h"
 #include "onlineusernodeosf.h"
 #include <QMessageBox>
-#include "simplecrypt.h"
-#include "simplecryptkey.h"
 #include "settings.h"
 
 OnlineDataManager::OnlineDataManager(QObject *parent):
@@ -65,12 +63,9 @@ void OnlineDataManager::savePasswordFromAuthData(OnlineDataManager::Provider pro
 void OnlineDataManager::savePassword(OnlineDataManager::Provider provider, QString password)
 {
 
-	long long key = SIMPLECRYPTKEY;
-	SimpleCrypt crypto(key); //some random number
-
 	if (provider == OnlineDataManager::OSF)
 	{
-		Settings::setValue(Settings::OSF_PASSWORD, crypto.encryptToString(password));
+		Settings::setValue(Settings::OSF_PASSWORD, encrypt(password));
 		Settings::setValue(Settings::OSF_ENCRYPTION, SimpleCryptEncryption);
 		Settings::sync();
 	}
@@ -100,13 +95,10 @@ QString OnlineDataManager::getPassword(OnlineDataManager::Provider provider)
 {
 	QString password = "";
 
-	long long key = SIMPLECRYPTKEY;
-	SimpleCrypt crypto(key); //some random number
-
 	if (provider == OnlineDataManager::OSF)
 	{
 		if (Settings::value(Settings::OSF_ENCRYPTION).toInt() == SimpleCryptEncryption)
-			password = crypto.decryptToString(Settings::value(Settings::OSF_PASSWORD).toString());
+			password = decrypt(Settings::value(Settings::OSF_PASSWORD).toString());
 		else
 		{
 			password = Settings::value(Settings::OSF_PASSWORD).toString();
