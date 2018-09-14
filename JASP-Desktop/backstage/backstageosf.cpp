@@ -22,6 +22,7 @@
 #include <QMessageBox>
 #include <QInputDialog>
 #include <QQmlEngine>
+#include <QRegularExpression>
 
 #include "settings.h"
 #include "qutils.h"
