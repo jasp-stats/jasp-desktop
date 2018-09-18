@@ -70,5 +70,6 @@
         <file>img/snow.gif</file>
         <file>js/backbone-1.1.2.js</file>
         <file>js/qwebchannel.js</file>
+        <file>js/htmlNode.js</file>
     </qresource>
 </RCC>

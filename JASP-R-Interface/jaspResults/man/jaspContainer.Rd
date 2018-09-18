@@ -9,7 +9,7 @@
 }
 \section{Creation}{
   \describe{
-		\item{\code{createJaspContainer(title="")}:}{Creates a jaspContainer with the set title. If the title is "" then, when it is placed in a container(/results), it will use it's fieldname.
+		\item{\code{createJaspContainer(title="", dependencies=NULL)}:}{Creates a jaspContainer with the set title. If the title is "" then, when it is placed in a container(/results), it will use it's fieldname.
 		It will only show up in your results if it or one of it's parents is jaspResults.}
 	}
 }

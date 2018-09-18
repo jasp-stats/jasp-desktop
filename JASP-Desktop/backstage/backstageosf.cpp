@@ -18,9 +18,9 @@
 
 #include "backstageosf.h"
 #include "ui_backstageform.h"
-
-#include <QMessageBox>
+#include <QRegularExpression>
 #include <QInputDialog>
+#include <QMessageBox>
 #include <QQmlEngine>
 
 #include "settings.h"

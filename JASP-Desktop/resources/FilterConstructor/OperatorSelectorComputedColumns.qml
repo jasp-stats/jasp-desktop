@@ -31,7 +31,7 @@ Item
 		OperatorDrag			{ operator: ">=";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "Greater than or equal to" + operatorRow.logicalnessText }
 		OperatorDrag			{ operator: "&";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "And" + operatorRow.logicalnessText }
 		OperatorDrag			{ operator: "|";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "Or" + operatorRow.logicalnessText }
-		//OperatorDrag			{ operator: "%|%";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "Split: applies filter separately to each subgroup" }
+		OperatorDrag			{ operator: "%|%";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "Split: applies filter separately to each subgroup" }
 		FunctionDrag			{ functionName: "!";	acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; parameterNames: []; parameterDropKeys: []; toolTipText: "not" + operatorRow.logicalnessText }
 
 	}

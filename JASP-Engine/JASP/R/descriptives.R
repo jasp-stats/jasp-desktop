@@ -55,6 +55,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     {
       jaspResults[["tables"]] <- createJaspContainer("Frequency Tables")
       jaspResults[["tables"]]$dependOnOptions(c("frequencyTables", "splitby"))
+      jaspResults[["tables"]]$position = 2
     }
 
     .descriptivesFrequencyTables(dataset.factors, options, jaspResults[["tables"]])
@@ -77,6 +78,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
       if (makeSplit)
       {
         jaspResults[["matrixPlot"]] <- createJaspContainer(title="Correlation plots")
+        jaspResults[["matrixPlot"]]$position = 6
         corrPlot <- jaspResults[["matrixPlot"]]
         corrPlot$dependOnOptions(c("plotCorrelationMatrix", "splitby"))
 
@@ -84,8 +86,10 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
         for (i in 1:length(splitLevels))
           corrPlot[[splitLevels[i]]] <- .descriptivesMatrixPlot(splitDat[[i]], options, splitLevels[i])
 
-      } else
+      } else {
         jaspResults[["matrixPlot"]] <- .descriptivesMatrixPlot(dataset, options, "Correlation plot") # Create one plot
+        jaspResults[["matrixPlot"]]$position = 6
+      }
     }
   }
 
@@ -96,9 +100,11 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     {
       jaspResults[["distributionPlots"]] <- createJaspContainer("Distribution Plots")
       jaspResults[["distributionPlots"]]$dependOnOptions(c("plotVariables", "splitby", "distPlotDensity"))
+      jaspResults[["distributionPlots"]]$position = 5
     }
 
     distPlots <- jaspResults[["distributionPlots"]]
+
 
     for (var in variables)
       if(is.null(distPlots[[var]]))
@@ -118,6 +124,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     {
       jaspResults[["splitPlots"]] <- createJaspContainer("Boxplots")
       jaspResults[["splitPlots"]]$dependOnOptions(c("splitPlots", "splitby"))
+      jaspResults[["splitPlots"]]$position = 7
     }
 
     splitPlots <- jaspResults[["splitPlots"]]
@@ -151,6 +158,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   stats                   <- createJaspTable("Descriptive Statistics")
   jaspResults[["stats"]]  <- stats
   stats$transpose         <- TRUE
+  stats$position          <- 1
 
   stats$dependOnOptions(c("splitby", "variables", "percentileValuesEqualGroupsNo", "percentileValuesPercentilesPercentiles", "mean", "standardErrorMean",
     "median", "mode", "standardDeviation", "variance", "skewness", "kurtosis", "range", "minimum", "maximum", "sum", "percentileValuesQuartiles", "percentileValuesEqualGroups", "percentileValuesPercentiles"))
@@ -584,16 +592,14 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 
     for (l in split) {
       plotResult[[l]] <- .descriptivesFrequencyPlots_SubFunc(column=dataset[[l]][[.v(variable)]], variable=l, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity)
+      plotResult[[l]]$copyDependenciesFromJaspObject(plotResult)
     }
-
 
     return(plotResult)
 
   }
   else
   {
-
-
     column <- dataset[[ .v(variable) ]]
     aPlot <- .descriptivesFrequencyPlots_SubFunc(column=column[!is.na(column)], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity)
     aPlot$setOptionMustContainDependency("variables",  variable)
@@ -605,12 +611,24 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 
 .descriptivesFrequencyPlots_SubFunc <- function(column, variable, width, height, displayDensity)
 {
-  if (any(is.infinite(column)))   return(createJaspPlot(plot=function() { .barplotJASP(variable=variable, dontPlotData=TRUE) }, title=variable, width=width, height=height, error="badData", errorMessage="Plotting is not possible: Variable contains infinity"))
-  else if (length(column) < 3)    return(createJaspPlot(plot=function() { .barplotJASP(variable=variable, dontPlotData=TRUE) }, title=variable, width=width, height=height, error="badData", errorMessage="Plotting is not possible: Too few rows (left)"))
+  plotObj <- createJaspPlot(title=variable, width=width, height=height)
+
+  if (any(is.infinite(column))) {
+    plotObj$error         <- "badData"
+    plotObj$errorMessage  <- "Plotting is not possible: Variable contains infinity"
+    plotObj$plotObject    <- function() { .barplotJASP(variable=variable, dontPlotData=TRUE) }
+  }
+  else if (length(column) < 3)  {
+    plotObj$error         <- "badData"
+    plotObj$errorMessage  <- "Plotting is not possible: Too few rows (left)"
+    plotObj$plotObject    <- function() { .barplotJASP(variable=variable, dontPlotData=TRUE) }
+  }
   else if (length(column) > 0 && is.factor(column))
-    return(createJaspPlot(plot=function() { .barplotJASP(column, variable) }, title=variable, width=width, height=height))
+    plotObj$plotObject <- function() { .barplotJASP(column, variable) }
   else if (length(column) > 0 && !is.factor(column))
-    return(createJaspPlot(plot=.plotMarginal(column, variableName=variable, displayDensity = displayDensity ), title=variable, width=width, height=height))
+    plotObj$plotObject <- .plotMarginal(column, variableName=variable, displayDensity = displayDensity )
+
+  return(plotObj)
 }
 
 .descriptivesSplitPlot <- function(dataset, options,  variable)

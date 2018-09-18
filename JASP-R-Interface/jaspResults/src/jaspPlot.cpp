@@ -25,7 +25,7 @@ std::string jaspPlot::dataToString(std::string prefix)
 
 Json::Value jaspPlot::dataEntry()
 {
-	Json::Value data(Json::objectValue);
+	Json::Value data(jaspObject::dataEntry());
 
 	data["title"]		= _title;
 	data["convertible"]	= true;
@@ -33,7 +33,7 @@ Json::Value jaspPlot::dataEntry()
 	data["height"]		= _height;
 	data["width"]		= _width;
 	data["aspectRatio"]	= _aspectRatio;
-	data["status"]		= _error == "" ? "complete" : "error";
+	data["status"]		= _error == "" ? _status : "error";
 	if(_error != "")
     {
 		data["error"]					= Json::objectValue;
@@ -99,6 +99,7 @@ Json::Value jaspPlot::convertToJSON()
 	obj["width"]				= _width;
 	obj["height"]				= _height;
 	obj["error"]				= _error;
+	obj["status"]				= _status;
 	obj["errorMessage"]			= _errorMessage;
 	obj["filePathPng"]			= _filePathPng;
 	obj["footnotes"]			= _footnotes;
@@ -112,13 +113,14 @@ void jaspPlot::convertFromJSON_SetFields(Json::Value in)
 {
 	jaspObject::convertFromJSON_SetFields(in);
 
-	_aspectRatio	= in.get("aspectRatio", 0.0f).asDouble();
-	_width			= in.get("width", -1).asInt();
-	_height			= in.get("height", -1).asInt();
-	_error			= in.get("error", "null").asString();
-	_errorMessage	= in.get("errorMessage", "null").asString();
-	_filePathPng	= in.get("filePathPng", "null").asString();
-	_footnotes		= in.get("footnotes", Json::arrayValue);
+	_aspectRatio	= in.get("aspectRatio",		0.0f).asDouble();
+	_width			= in.get("width",			-1).asInt();
+	_height			= in.get("height",			-1).asInt();
+	_error			= in.get("error",			"null").asString();
+	_status			= in.get("status",			"complete").asString();
+	_errorMessage	= in.get("errorMessage",	"null").asString();
+	_filePathPng	= in.get("filePathPng",		"null").asString();
+	_footnotes		= in.get("footnotes",		Json::arrayValue);
 
 	std::string jsonPlotObjStr = in.get("plotObjSerialized", "").asString();
 	_plotObjSerialized = Rcpp::Vector<RAWSXP>(jsonPlotObjStr.begin(), jsonPlotObjStr.end());

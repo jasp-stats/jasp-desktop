@@ -11,6 +11,7 @@ Item {
 
 	property real extraSpaceUnderColumns: 0
 	property bool somethingChanged: false
+	property bool isColumnConstructor: true
 
 	property bool lastCheckPassed: true
 	property bool showStartupMsg: true
@@ -52,7 +53,7 @@ Item {
 		if(allCorrect )
 		{
 			if(noFormulas)
-				hints.filterText += "Computed columns code cleared<br>"
+				hints.filterText += "Computed columns code clear(ed)<br>"
 			else
 				hints.filterText += "Computed columns code applied<br>"
 

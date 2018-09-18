@@ -12,6 +12,7 @@ Item {
 	signal rCodeChanged(string rScript)
 	property real extraSpaceUnderColumns: 0
 	property bool somethingChanged: false
+	property bool isColumnConstructor: false
 
 	property bool lastCheckPassed: true
 	property bool showStartupMsg: true

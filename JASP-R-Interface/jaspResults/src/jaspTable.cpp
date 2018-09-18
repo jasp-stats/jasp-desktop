@@ -1,7 +1,5 @@
 #include "jaspTable.h"
 
-std::string jaspTable::citation = "";
-
 std::string jaspColRowCombination::toString()
 {
 	bool ColumnsNotRows = colNames.size() + colOvertitles.size() > 0;
@@ -401,12 +399,10 @@ void jaspTable::combineCells(Rcpp::map_named_args & named_args)
 */
 Json::Value jaspTable::dataEntry()
 {
-	Json::Value dataJson(Json::objectValue);
+	Json::Value dataJson(jaspObject::dataEntry());
 
 	dataJson["title"]				= _title;
-    Json::Value citations(Json::arrayValue);
-    citations.append(citation);
-    dataJson["citation"]			= citations;
+
 	dataJson["name"]				= getUniqueNestedName();
 	dataJson["footnotes"]			= _footnotes;
 	dataJson["schema"]				= schemaJson();

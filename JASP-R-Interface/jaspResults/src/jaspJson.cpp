@@ -90,7 +90,7 @@ std::vector<Json::Value> jaspJson::RList_to_VectorJson(Rcpp::List obj)
 
 Json::Value jaspJson::dataEntry()
 {
-	Json::Value data(Json::objectValue);
+	Json::Value data(jaspObject::dataEntry());
 
 	data["title"]		= _title;
 	data["json"]		= data;

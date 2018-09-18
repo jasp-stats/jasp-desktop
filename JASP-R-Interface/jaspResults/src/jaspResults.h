@@ -16,6 +16,9 @@ public:
 	{
 		setStatus(status);
 
+		if(_baseCitation != "")
+			addCitation(_baseCitation);
+
 		if(_saveResultsHere != "")
 			loadResults();
 	}
@@ -25,6 +28,7 @@ public:
 	static void setPollMessagesFunc(pollMessagesFuncDef pollFunc);
 	static void setResponseData(int analysisID, int revision);
 	static void setSaveLocation(const char * newSaveLocation);
+	static void setBaseCitation(std::string baseCitation);
 
 	void send(std::string otherMsg = "");
 	void checkForAnalysisChanged();
@@ -43,6 +47,7 @@ public:
 
 	void loadResults();
 	void setErrorMessage(std::string msg);
+	void changeOptions(std::string opts);
 	void setOptions(std::string opts);
 	void pruneInvalidatedData();
 
@@ -66,6 +71,7 @@ private:
 	static sendFuncDef ipccSendFunc;
 	static pollMessagesFuncDef ipccPollFunc;
 	static std::string _saveResultsHere;
+	static std::string _baseCitation;
 
 	std::string errorMessage = "";
 	static const std::string analysisChangedErrorMessage;
@@ -100,6 +106,7 @@ public:
 	void		startProgressbarMs(int expectedTicks, int timeBetweenUpdatesInMs)	{ ((jaspResults*)myJaspObject)->startProgressbar(expectedTicks, timeBetweenUpdatesInMs); }
 
 	void		setOptions(std::string opts)		{ ((jaspResults*)myJaspObject)->setOptions(opts); }
+	void		changeOptions(std::string opts)		{ ((jaspResults*)myJaspObject)->changeOptions(opts); }
 
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspResults, std::string,	_relativePathKeep, RelativePathKeep)
 };

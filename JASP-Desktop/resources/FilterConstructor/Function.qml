@@ -21,12 +21,16 @@ Item
 
 	property var dragKeys: booleanReturningFunctions.indexOf(functionName) >= 0 ? ["boolean"] : [ "number" ]
 
-	readonly property bool isMean: false //functionName === "mean"
+	readonly property bool isMean: functionName === "mean"
 	readonly property bool isAbs:  functionName === "abs"
 	readonly property bool isRoot: functionName === "sqrt"
-	readonly property bool showParentheses: !isMean && (parameterNames.length > 1 || isAbs || functionImageSource === "")
+	readonly property bool drawMeanSpecial: false
+	readonly property bool showParentheses: !drawMeanSpecial && (parameterNames.length > 1 || isAbs || functionImageSource === "")
 
-	property real extraMeanWidth: (isMean ? 10 : 0)
+	property real extraMeanWidth: (drawMeanSpecial ? 10 : 0)
+
+	property var addNARMFunctions: ["mean", "sd", "var", "sum", "prod", "min", "max", "mean", "round", "median"]
+	property string extraParameterCode: addNARMFunctions.indexOf(functionName) >= 0 ? ", na.rm=TRUE" : ""
 
 	height: meanBar.height + Math.max(dropRow.height, filterConstructor.blockDim)
 	width: functionDef.width + haakjesLinks.width + dropRow.width + haakjesRechts.width + extraMeanWidth
@@ -46,7 +50,7 @@ Item
 		for(var i=0; i<funcRoot.parameterNames.length; i++)
 				compounded += (i > 0 ? ", " : "") + (dropRepeat.itemAt(i) === null ? "null" : dropRepeat.itemAt(i).returnR())
 
-		compounded += ")"
+		compounded += extraParameterCode + ")"
 
 		return compounded
 	}
@@ -60,7 +64,7 @@ Item
 	Item
 	{
 		id: meanBar
-        visible: funcRoot.isMean || funcRoot.isRoot
+		visible: funcRoot.drawMeanSpecial || funcRoot.isRoot
         height: visible ? 6 : 0
 
         anchors.left: funcRoot.isRoot ? functionDef.right : parent.left
@@ -100,7 +104,7 @@ Item
 			verticalAlignment: Text.AlignVCenter
 			horizontalAlignment: Text.AlignHCenter
 
-            text: funcRoot.isMean || funcRoot.isAbs || funcRoot.isRoot ? "" : functionName
+			text: funcRoot.drawMeanSpecial || funcRoot.isAbs || funcRoot.isRoot ? "" : functionName
 			font.pixelSize: filterConstructor.fontPixelSize
 
 			visible: !functionImg.visible
@@ -325,7 +329,7 @@ Item
 					defaultText: funcRoot.parameterNames[index]
 					dropKeys: funcRoot.parameterDropKeys[index]
 
-					droppedShouldBeNested: funcRoot.parameterNames.length === 1 && !funcRoot.isAbs && !funcRoot.isMean
+					droppedShouldBeNested: funcRoot.parameterNames.length === 1 && !funcRoot.isAbs && !funcRoot.drawMeanSpecial
 					shouldShowX: funcRoot.parameterNames <= 1
 				}
 

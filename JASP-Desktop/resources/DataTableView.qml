@@ -240,8 +240,6 @@ FocusScope
 											var columnType = iconRepeater.model[index]
 											popupIcons.close()
 											colIcon.setColumnType(columnType)
-											filterWindow.sendFilter()
-
 										}
 									}
 								}
