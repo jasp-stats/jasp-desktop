@@ -593,3 +593,7 @@ pre {
 	margin-left: .5em ;
 	padding-left: 0.8em ;
 }*/
+
+.jasp-code {
+  font-family: monospace, monospace;
+}

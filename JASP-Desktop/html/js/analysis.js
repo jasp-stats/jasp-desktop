@@ -362,6 +362,50 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			return null;
 	},
 
+   hasCitation: function () {
+
+	   var optCitation = this.model.get("citation");
+
+	   if(optCitation !== null)
+		   return true;
+
+		if (item.views)
+			for (var i = 0; i < item.views.length; i++)
+			{
+				var child = item.views[i];
+				if(child.model.get('citation') !== null)
+						return true;
+			}
+
+		return false;
+   },
+
+   citeMenuClicked: function () {
+	   var exportParams = new JASPWidgets.Exporter.params();
+	   exportParams.format = JASPWidgets.ExportProperties.format.html;
+	   exportParams.process = JASPWidgets.ExportProperties.process.copy;
+	   exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
+	   exportParams.includeNotes = false;
+
+	   var resultsModel = this.model.get("results");
+	   var optCitation = resultsModel === undefined ? undefined : resultsModel.citation;
+
+	   if(optCitation === null || optCitation === undefined)
+		   optCitation = []
+
+	   if (this.views)
+		   for (var i = 0; i < this.views.length; i++)
+				if(this.views[i].getCitations)
+					optCitation = optCitation.concat(this.views[i].getCitations())
+
+	   var htmlCite = '<p>' + optCitation.join("</p><p>") + '</p>';
+
+	   var exportContent = new JASPWidgets.Exporter.data(optCitation.join("\n\n"), htmlCite);
+
+	   pushTextToClipboard(exportContent, exportParams);
+	   return true;
+   },
+
 	passUserDataToView: function (path, itemView) {
 
 		if (itemView.views !== undefined) {

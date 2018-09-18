@@ -2,6 +2,16 @@
 #include "jsonutilities.h"
 #include "sharedmemory.h"
 
+ComputedColumnsModel::ComputedColumnsModel(Analyses * analyses, QObject * parent)
+	: QObject(parent), _analyses(analyses)
+{
+	connect(this, &ComputedColumnsModel::datasetLoadedChanged, this, &ComputedColumnsModel::computeColumnJsonChanged			);
+	connect(this, &ComputedColumnsModel::datasetLoadedChanged, this, &ComputedColumnsModel::computeColumnRCodeChanged			);
+	connect(this, &ComputedColumnsModel::datasetLoadedChanged, this, &ComputedColumnsModel::computeColumnErrorChanged			);
+	connect(this, &ComputedColumnsModel::datasetLoadedChanged, this, &ComputedColumnsModel::computeColumnUsesRCodeChanged		);
+	connect(this, &ComputedColumnsModel::datasetLoadedChanged, this, &ComputedColumnsModel::computeColumnNameSelectedChanged	);
+}
+
 QString ComputedColumnsModel::computeColumnRCode()
 {
 	if(_currentlySelectedName == "" || _computedColumns == NULL)
@@ -222,21 +232,22 @@ void ComputedColumnsModel::checkForDependentAnalyses(std::string columnName)
 	assert(_analyses != NULL);
 
 	for(Analysis * analysis : *_analyses)
-	{
-		std::set<std::string> usedCols = analysis->usedVariables();
-
-		if(usedCols.count(columnName) > 0)
+		if(analysis != NULL)
 		{
-			bool allColsValidated = true;
+			std::set<std::string> usedCols = analysis->usedVariables();
 
-			for(ComputedColumn * col : *_computedColumns)
-				if(usedCols.count(col->name()) > 0 && col->isInvalidated())
-					allColsValidated = false;
+			if(usedCols.count(columnName) > 0)
+			{
+				bool allColsValidated = true;
 
-			if(allColsValidated)
-				analysis->refresh();
+				for(ComputedColumn * col : *_computedColumns)
+					if(usedCols.count(col->name()) > 0 && col->isInvalidated())
+						allColsValidated = false;
+
+				if(allColsValidated)
+					analysis->refresh();
+			}
 		}
-	}
 }
 
 void ComputedColumnsModel::removeColumn()
@@ -365,7 +376,8 @@ void ComputedColumnsModel::requestComputedColumnDestruction(std::string columnNa
 	emit headerDataChanged(Qt::Horizontal, index, _package->dataSet()->columns().columnCount() + 1);
 
 	for(Analysis * analysis : *_analyses)
-		analysis->removeUsedVariable(columnName);
+		if(analysis != NULL)
+			analysis->removeUsedVariable(columnName);
 
 	checkForDependentColumnsToBeSent(columnName);
 }

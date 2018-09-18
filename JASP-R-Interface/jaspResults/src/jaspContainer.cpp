@@ -94,17 +94,28 @@ std::string jaspContainer::dataToString(std::string prefix)
 
 std::vector<std::string> jaspContainer::getSortedDataFields()
 {
-	std::vector<std::pair<int, std::string>> sortvec;
+	std::vector<std::pair<double, std::string>> sortvec;
+
+	int maxOrder = 0;
+	for(auto ord : _data_order)
+		maxOrder = std::max(ord.second, maxOrder);
+
+	double orderDivider = 1.0 / double(maxOrder + 1);
 
 	for(auto ord : _data_order)
-		sortvec.push_back(std::make_pair<int, std::string>(int(ord.second), std::string(ord.first)));
+		if(_data.count(ord.first) > 0) //if it was removed from the data it should probably not be in the ordered list with its field
+		{
+			jaspObject * obj = _data[ord.first];
+			double sortVal = double(obj->_position) + (double(ord.second) * orderDivider);
+
+			sortvec.push_back(std::make_pair<double, std::string>(double(sortVal), std::string(ord.first)));
+		}
 
 	std::sort(sortvec.begin(), sortvec.end());
 
 	std::vector<std::string> out;
 	for(auto sortval : sortvec)
-		if(_data.count(sortval.second) > 0) //if it was removed from the data it should probably not be in the ordered list with its field
-			out.push_back(sortval.second);
+		out.push_back(sortval.second);
 
 	return out;
 }
@@ -142,7 +153,7 @@ Json::Value jaspContainer::metaEntry()
 
 Json::Value jaspContainer::dataEntry()
 {
-	Json::Value dataJson(Json::objectValue);
+	Json::Value dataJson(jaspObject::dataEntry());
 
 	dataJson["title"] = _title;
 	dataJson["name"] = getUniqueNestedName();

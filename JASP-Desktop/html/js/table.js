@@ -41,28 +41,6 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		return true;
 	},
 
-	hasCitation: function () {
-		var optCitation = this.model.get("citation");
-		return optCitation !== null
-	},
-
-	citeMenuClicked: function () {
-		var exportParams = new JASPWidgets.Exporter.params();
-		exportParams.format = JASPWidgets.ExportProperties.format.html;
-		exportParams.process = JASPWidgets.ExportProperties.process.copy;
-		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
-		exportParams.includeNotes = false;
-
-		var optCitation = this.model.get("citation");
-
-		var htmlCite = '<p>' + optCitation.join("</p><p>") + '</p>';
-
-		var exportContent = new JASPWidgets.Exporter.data(optCitation.join("\n\n"), htmlCite);
-
-		pushTextToClipboard(exportContent, exportParams);
-		return true;
-	},
-
 	hasLaTeXCode: function () {
 	  var optLaTeXCode = this.model.get("latexCode");
 	  return optLaTeXCode !== null
@@ -416,7 +394,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 			return self.$el.find('th, td:not(.squash-left)');
 		};
 
-		var tablePrimitive = new JASPWidgets.tablePrimitive({ model: this.model, className: "jasp-table-primative jasp-display-primative" });
+		var tablePrimitive = new JASPWidgets.tablePrimitive({ model: this.model, className: "jasp-table-primitive jasp-display-primitive" });
 		this.localViews.push(tablePrimitive);
 		this.views.push(tablePrimitive);
 	},

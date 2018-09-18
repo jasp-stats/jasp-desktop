@@ -13,6 +13,8 @@ void JASPprint(std::string msg);
 
 enum class jaspObjectType { unknown, container, table, plot, json, list, results, html, state };
 
+#define JASPOBJECT_DEFAULT_POSITION 9999
+
 
 std::string		jaspObjectTypeToString(jaspObjectType type);
 jaspObjectType	jaspObjectTypeStringToObjectType(std::string type);
@@ -46,7 +48,10 @@ public:
 			bool		checkDependencies(Json::Value currentOptions); //returns false if no longer valid and destroys children (if applicable) that are no longer valid
 	virtual	void		checkDependenciesChildren(Json::Value currentOptions) {}
 
+			void		addCitation(std::string fullCitation);
+
 			std::string	_title;
+			int			_position = JASPOBJECT_DEFAULT_POSITION;
 
 			jaspObjectType	getType()						{ return _type; }
 			bool			shouldBePartOfResultsJson()		{ return _type != jaspObjectType::state && _type != jaspObjectType::json; }
@@ -54,7 +59,7 @@ public:
 			Json::Value	constructMetaEntry(std::string type, std::string meta = "");
 
 	virtual	Json::Value	metaEntry() { return Json::Value(Json::nullValue); }
-	virtual	Json::Value	dataEntry() { return Json::Value(Json::nullValue); }
+	virtual	Json::Value	dataEntry();
 
 			///Gives nested name to avoid namingclashes
 			std::string getUniqueNestedName();
@@ -65,7 +70,6 @@ public:
 			void		childFinalized(jaspObject * child);
 			void		finalized();
 	virtual void		finalizedHandler() {}
-
 
 
 	template <typename RCPP_CLASS> static std::vector<std::string> extractElementOrColumnNames(RCPP_CLASS rObj)
@@ -96,8 +100,9 @@ public:
 
 	Rcpp::DataFrame convertFactorsToCharacters(Rcpp::DataFrame df);
 
-
 	static Json::Value currentOptions;
+
+	void			notifyParentOfChanges(); ///let ancestors know about updates
 
 protected:
 	jaspObjectType				_type;
@@ -105,7 +110,9 @@ protected:
 	bool						_warningSet = false;
 
 	std::vector<std::string>	_messages;
+	Json::Value					_citations = Json::arrayValue;
 	std::string					_name;
+
 
 	std::map<std::string, Json::Value> _optionMustBe;
 	std::map<std::string, Json::Value> _optionMustContain;
@@ -115,7 +122,7 @@ protected:
 //Some basic administration of objecttree:
 			bool			hasAncestor(jaspObject * ancestor) { return parent == ancestor || parent == NULL ? false : parent->hasAncestor(ancestor); }
 			void			addChild(jaspObject * child);
-			void			notifyParentOfChanges(); ///let ancestors know about updates
+
 			void			removeChild(jaspObject * child);
 
 
@@ -132,7 +139,7 @@ private:
 
 
 #define JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(JASP_TYPE, PROP_TYPE, PROP_NAME, PROP_CAPITALIZED_NAME) \
-	void set ## PROP_CAPITALIZED_NAME (PROP_TYPE new ## PROP_CAPITALIZED_NAME) { ((JASP_TYPE *)myJaspObject)->PROP_NAME = new ## PROP_CAPITALIZED_NAME; } \
+	void set ## PROP_CAPITALIZED_NAME (PROP_TYPE new ## PROP_CAPITALIZED_NAME) { ((JASP_TYPE *)myJaspObject)->PROP_NAME = new ## PROP_CAPITALIZED_NAME; myJaspObject->notifyParentOfChanges(); } \
 	PROP_TYPE get ## PROP_CAPITALIZED_NAME () { return ((JASP_TYPE *)myJaspObject)->PROP_NAME; }
 
 
@@ -158,12 +165,14 @@ public:
 	void		print()								{ myJaspObject->print(); }
 	void		addMessage(std::string msg)			{ myJaspObject->addMessage(msg); }
 
-	void		setOptionMustBeDependency(std::string optionName, Rcpp::RObject mustBeThis)				{ myJaspObject->setOptionMustBeDependency(optionName, mustBeThis); }
-	void		setOptionMustContainDependency(std::string optionName, Rcpp::RObject mustContainThis)	{ myJaspObject->setOptionMustContainDependency(optionName, mustContainThis); }
-	void		dependOnOptions(Rcpp::CharacterVector listOptions)									{ myJaspObject->dependOnOptions(listOptions); }
-	void		copyDependenciesFromJaspObject(jaspObject_Interface * other)							{ myJaspObject->copyDependenciesFromJaspObject(other->myJaspObject); }
+	void		setOptionMustBeDependency(std::string optionName, Rcpp::RObject mustBeThis)				{ myJaspObject->setOptionMustBeDependency(optionName, mustBeThis);				}
+	void		setOptionMustContainDependency(std::string optionName, Rcpp::RObject mustContainThis)	{ myJaspObject->setOptionMustContainDependency(optionName, mustContainThis);	}
+	void		dependOnOptions(Rcpp::CharacterVector listOptions)										{ myJaspObject->dependOnOptions(listOptions);									}
+	void		copyDependenciesFromJaspObject(jaspObject_Interface * other)							{ myJaspObject->copyDependenciesFromJaspObject(other->myJaspObject);			}
+	void		addCitation(std::string fullCitation)													{ myJaspObject->addCitation(fullCitation);										}
 
-	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspObject, std::string, _title, Title)
+	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspObject, std::string,	_title,		Title)
+	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspObject, int,			_position,	Position)
 
 	void		setWarning(std::string newWarning)	{ myJaspObject->setWarning(newWarning); }
 	std::string getWarning()						{ return myJaspObject->getWarning(); }

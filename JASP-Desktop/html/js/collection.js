@@ -335,5 +335,20 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 	exportComplete: function (exportParams, exportContent) {
 		if (!exportParams.error)
 			pushHTMLToClipboard(exportContent, exportParams);
-	}
+	},
+
+
+	 getCitations: function() {
+		 var cites = [];
+
+		 for (var i = 0; i < this.views.length; i++)
+		 {
+			 var optCitation = this.views[i].getCitations();
+
+			 if(optCitation !== null)
+				 cites = cites.concat(optCitation);
+		 }
+
+		 return cites;
+	 }
 });

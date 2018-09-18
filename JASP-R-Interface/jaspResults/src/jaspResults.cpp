@@ -7,6 +7,7 @@
 sendFuncDef			jaspResults::ipccSendFunc = NULL;
 pollMessagesFuncDef jaspResults::ipccPollFunc = NULL;
 std::string			jaspResults::_saveResultsHere = "";
+std::string			jaspResults::_baseCitation = "";
 
 const std::string jaspResults::analysisChangedErrorMessage = "Analysis changed and will be restarted!";
 
@@ -18,6 +19,11 @@ void jaspResults::setSendFunc(sendFuncDef sendFunc)
 void jaspResults::setPollMessagesFunc(pollMessagesFuncDef pollFunc)
 {
 	ipccPollFunc = pollFunc;
+}
+
+void jaspResults::setBaseCitation(std::string baseCitation)
+{
+	_baseCitation = baseCitation;
 }
 
 void jaspResults::setResponseData(int analysisID, int revision)
@@ -87,6 +93,13 @@ void jaspResults::loadResults()
 	if(!val.isObject()) return;
 
 	convertFromJSON_SetFields(val);
+}
+
+void jaspResults::changeOptions(std::string opts)
+{
+	_previousOptions = _currentOptions;
+
+	setOptions(opts);
 }
 
 void jaspResults::setOptions(std::string opts)
@@ -174,7 +187,7 @@ Json::Value jaspResults::metaEntry()
 
 Json::Value jaspResults::dataEntry()
 {
-	Json::Value dataJson(Json::objectValue);
+	Json::Value dataJson(jaspObject::dataEntry());
 
 	dataJson["title"]	= _title;
 	dataJson["name"]	= getUniqueNestedName();
@@ -186,6 +199,8 @@ Json::Value jaspResults::dataEntry()
 
 	return dataJson;
 }
+
+
 
 void jaspResults::setErrorMessage(std::string msg)
 {

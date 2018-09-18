@@ -21,7 +21,8 @@
 		\item{\code{[[}:}{Retrieve an object from this container as specified under the fieldname. (inherited from jaspContainer)}
 		\item{\code{[[<-}:}{Insert an object into this container under a field-name, if this object is a jaspObject and without a title it will get the field-name as title. (inherited from jaspContainer)}
 
-		\item{\code{setOptions}:}{Uses the passed list as current options. This is usually passed by JASP directly but could be useful to set when developing your analysis.}
+    \item{\code{setOptions}:}{Uses the passed list as current options. This is usually passed by JASP directly but could be useful to set when developing your analysis, aka in jaspTools. }
+    \item{\code{changeOptions}:}{Changes the currently set options and removes all objects that depend on the changed options. Mostly useful for unit tests because this we we can simulate re-running the analysis. Should not be used in an analysis!}
 
 		\item{\code{startProgressbar(expectedTicks, timeBetweenUpdatesInMs=NULL)}:}{Opens a progressbar in the results when running in JASP. The first parameter is the expectedTicks, aka how many steps it should take. The optional second parameter is timeBetweenUpdatesInMs and this will make sure it will only update the progressbar when more ms have passed than this. Call \code{progressbarTick} for each step.}
 		\item{\code{progressbarTick()}:}{Increases the progressbar one tick.}

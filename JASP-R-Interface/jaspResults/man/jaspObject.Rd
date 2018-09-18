@@ -34,13 +34,15 @@
 		\item{\code{dependOnTheseOptions(charVec)}:}{Will make the object depend on the current values of the options specified in the charactervector.}
 		\item{\code{copyDependenciesFromJaspObject(jaspObj)}:}{Will make the object depend on whatever the other jaspObject depends.}
 		
-		\item{\code{addMessage}:}{Adds a message to this object, it is ignored for now.}
+    \item{\code{addMessage}:}{Adds a message to this object, it is ignored for now.}
+    \item{\code{addCitation}:}{Adds a citation to this object, should be specified fully and as you wish it to be shown onscreen or in print.}
 		
 	 }
 }	
 \section{Fields}{
   \describe{
     \item{\code{title}:}{The title of this object.}
+    \item{\code{position}:}{"Set the position of this object in it's container. By default this is at the end in the order of adding. You can specify any other value, they do not need to be next to each other or unique. The rule is: lower values (including negative) are higher in the container and when multiple objects in a container have the same position-value order is derived from adding-order."}
 
 	\item{\code{warning}:}{A field to set a warning, this is ignored for now.}
   }

@@ -101,7 +101,8 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	jaspResults::setSendFunc(sendToDesktopFunction);
 	jaspResults::setPollMessagesFunc(pollMessagesFunction);
-	jaspTable::setCitation(baseCitation);
+	jaspResults::setBaseCitation(baseCitation);
+
 	rInside["jaspResultsModule"]			= givejaspResultsModule();
 
 	//Adding some functions in R to the RefClass (generator) in the module

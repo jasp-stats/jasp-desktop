@@ -11,7 +11,9 @@ DragGeneric {
 	readonly property bool acceptsEverything: everythingOperators.indexOf(operator) >= 0
 	readonly property bool isConditionalOp: operator == "%|%"
 
-	readonly property bool returnsBoolean: booleanOperators.indexOf(operator) >= 0 || numberCompareOperators.indexOf(operator) >= 0 || acceptsEverything || isConditionalOp
+	readonly property bool amInsideColumnConstructor: filterConstructor.isColumnConstructor
+
+	readonly property bool returnsBoolean: booleanOperators.indexOf(operator) >= 0 || numberCompareOperators.indexOf(operator) >= 0 || acceptsEverything || ( isConditionalOp && !amInsideColumnConstructor)
 
 
 	dragKeys: returnsBoolean ? ["boolean"] : ["number"]
@@ -32,7 +34,7 @@ DragGeneric {
 		operator: parent.operator
 		operatorImageSource: parent.opImages[operator] !== null && parent.opImages[operator] !== undefined ? parent.opImages[operator] : ""
 
-		dropKeysLeft:  isConditionalOp ? ["boolean"] : acceptsEverything ? ["boolean", "string", "number"] : acceptsBoolean ? ["boolean"] : ["number"]
+		dropKeysLeft:  isConditionalOp ? (amInsideColumnConstructor ? ["number"] : ["boolean"]) : acceptsEverything ? ["boolean", "string", "number"] : acceptsBoolean ? ["boolean"] : ["number"]
 		dropKeysRight: isConditionalOp ? ["string"]  : acceptsEverything ? ["boolean", "string", "number"] : acceptsBoolean ? ["boolean"] : ["number"]
 		dropKeysMirrorEachother: acceptsEverything
 

@@ -85,9 +85,6 @@ public:
 	Json::Value	metaEntry() override { return constructMetaEntry("table"); }
 	Json::Value	dataEntry() override;
 
-	static std::string citation;
-	static void setCitation(std::string newCitation) { citation = newCitation; }
-
 	Json::Value getCell(int col, int row);
 
 	bool			_transposeTable = false,

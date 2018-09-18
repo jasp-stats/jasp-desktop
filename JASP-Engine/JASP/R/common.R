@@ -2827,12 +2827,17 @@ createJaspPlot <- function(plot=NULL, title="", width=320, height=320, aspectRat
   return(jaspPlotObj)
 }
 
-createJaspContainer <- function(title="")
+createJaspContainer <- function(title="", dependencies=NULL)
 {
-  return(jaspResultsModule$create_cpp_jaspContainer(title)) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspContainer, title))
+  container <- jaspResultsModule$create_cpp_jaspContainer(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspContainer, title))
+
+  if(!is.null(dependencies))
+    container$dependOnTheseOptions(dependencies)
+
+  return(container)
 }
 
-createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL)
+createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL, dependencies=NULL)
 {
   jaspObj <- jaspResultsModule$create_cpp_jaspTable(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspTable, title)
 
@@ -2854,14 +2859,20 @@ createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, 
   if(!is.null(rowTitles))
     jaspObj$setRowTitles(rowTitles)
 
+  if(!is.null(dependencies))
+    jaspObj$dependOnTheseOptions(dependencies)
+
   return(jaspObj)
 }
 
-createJaspHtml <- function(text="", elementType="p")
+createJaspHtml <- function(text="", elementType="p", class="", dependencies=NULL)
 {
-  #return(new(jaspResultsModule$jaspHtml, text, elementType))
-  htmlObj <- jaspResultsModule$create_cpp_jaspHtml(text) # If we use R's constructor it will garbage collect our objects prematurely.. #
+  htmlObj             <- jaspResultsModule$create_cpp_jaspHtml(text) # If we use R's constructor it will garbage collect our objects prematurely.. #
   htmlObj$elementType <- elementType
+  htmlObj$class       <- class
+
+  if(!is.null(dependencies))
+    htmlObj$dependOnTheseOptions(dependencies)
 
   return(htmlObj)
 }

@@ -12,7 +12,7 @@ class ComputedColumns
 public:
 	typedef std::vector<ComputedColumn*>::iterator iterator;
 
-						ComputedColumns() {}
+						ComputedColumns(DataSetPackage * package = NULL) { setPackage(package); }
 	ComputedColumn *	createComputedColumn(std::string name, Column::ColumnType type, ComputedColumn::computedType desiredType);
 	void				removeComputedColumn(std::string name);
 	void				refreshColumnPointers();
