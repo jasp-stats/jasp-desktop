@@ -13,7 +13,8 @@ DESTDIR = ..
 
 windows:TARGET = JASP
    macx:TARGET = JASP
-  linux: exists(/app/lib/*)	{ TARGET = org.jasp.JASP } else { TARGET = jasp }
+  linux:{ exists(/app/lib/*) {TARGET = org.jasp.JASP } else { TARGET = jasp }}
+
 
 TEMPLATE = app
 
