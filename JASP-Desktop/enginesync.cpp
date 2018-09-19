@@ -255,11 +255,11 @@ QProcess * EngineSync::startSlaveProcess(int no)
 		rHomePath = programDir.absoluteFilePath(R_HOME);
 	else
 		rHomePath = R_HOME;
+
 #endif
 #endif
 
 	QDir rHome(rHomePath);
-
 
 #ifdef __WIN32__
 

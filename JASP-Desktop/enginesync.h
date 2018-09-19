@@ -29,7 +29,6 @@
 
 #include "enginerepresentation.h"
 
-
 /* EngineSync is responsible for launching the background
  * processes, scheduling analyses, and for sending and
  * receiving communications with the running analyses.

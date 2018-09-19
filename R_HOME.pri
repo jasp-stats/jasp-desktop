@@ -11,18 +11,20 @@ linux {
 			_R_HOME = /usr/lib64/R
 			INCLUDEPATH += /usr/lib64/R/library/include
 		} else {
-			_R_HOME = /usr/lib/R
+                        _R_HOME = /usr/lib/
 			INCLUDEPATH += /usr/lib/R/library/include
 		}
 	}
 
-    QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
+    #QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
     INCLUDEPATH += /usr/include/R/\
         /usr/share/R/include \
         $$_R_HOME/site-library/Rcpp/include
 
 
     R_EXE  = $$_R_HOME/bin/R
+
+    DEFINES += 'R_HOME=\\\"$$_R_HOME\\\"'
 }
 
 macx {

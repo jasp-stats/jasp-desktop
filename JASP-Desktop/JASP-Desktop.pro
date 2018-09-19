@@ -4,8 +4,7 @@ include(../JASP.pri)
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-
-include(../JASP.pri)
+include(../R_HOME.pri)
 
 CONFIG += c++11
 
