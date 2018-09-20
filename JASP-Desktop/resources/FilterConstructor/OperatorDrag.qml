@@ -9,6 +9,7 @@ DragGeneric {
 	readonly property var booleanOperators: ["&", "|"]
 	readonly property bool acceptsBoolean: booleanOperators.indexOf(operator) >= 0
 	readonly property bool acceptsEverything: everythingOperators.indexOf(operator) >= 0
+	readonly property bool isNumberComparer: numberCompareOperators.indexOf(operator) >= 0
 	readonly property bool isConditionalOp: operator == "%|%"
 
 	readonly property bool amInsideColumnConstructor: filterConstructor.isColumnConstructor
@@ -34,8 +35,8 @@ DragGeneric {
 		operator: parent.operator
 		operatorImageSource: parent.opImages[operator] !== null && parent.opImages[operator] !== undefined ? parent.opImages[operator] : ""
 
-		dropKeysLeft:  isConditionalOp ? (amInsideColumnConstructor ? ["number"] : ["boolean"]) : acceptsEverything ? ["boolean", "string", "number"] : acceptsBoolean ? ["boolean"] : ["number"]
-		dropKeysRight: isConditionalOp ? ["string"]  : acceptsEverything ? ["boolean", "string", "number"] : acceptsBoolean ? ["boolean"] : ["number"]
+		dropKeysLeft:  isNumberComparer ? ["number", "ordered"] : isConditionalOp ? (amInsideColumnConstructor ? ["number"] : ["boolean"]) : acceptsEverything ? ["boolean", "string", "number"] : acceptsBoolean ? ["boolean"] : ["number"]
+		dropKeysRight: isNumberComparer ? ["number", "ordered"] : isConditionalOp ? ["string"]  : acceptsEverything ? ["boolean", "string", "number"] : acceptsBoolean ? ["boolean"] : ["number"]
 		dropKeysMirrorEachother: acceptsEverything
 
 		x: parent.dragX
