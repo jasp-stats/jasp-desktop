@@ -13,9 +13,10 @@ Item
 	height:	filterConstructor.blockDim * colScaler
 	width:	colIcon.width + colName.width
 	property bool isNumerical: columnIcon.indexOf("scale") >= 0
+	property bool isOrdinal: columnIcon.indexOf("ordinal") >= 0
 		//columnIcon.indexOf("scale") >= 0 || columnIcon.indexOf("ordinal") >= 0
 
-	property var dragKeys: isNumerical ? ["number"] : ["string"]
+	property var dragKeys: isOrdinal ? ["string", "ordered"] : isNumerical ? ["number"] : ["string"]
 
 	Image
 	{
