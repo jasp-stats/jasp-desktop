@@ -155,7 +155,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 			rowCount *= maxColumnsInColumn;
 		}
 
-		if (optCasesAcrossColumns) {
+		if (cells !== undefined && cells.length > 0 && optCasesAcrossColumns) {
 			let swapped = swapRowsAndColumns(columnHeaders, cells, optOverTitle);
 			cells = swapped.columns;
 			columnHeaders = swapped.columnHeaders;
@@ -527,7 +527,11 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 			rowCount *= maxColumnsInColumn
 		}
 
-		if (optCasesAcrossColumns) {
+		console.log("cells: ")
+		console.log(cells)
+
+
+		if (cells !== undefined && cells.length > 0 && optCasesAcrossColumns) {
 
 			var swapped = swapRowsAndColumns(columnHeaders, cells, optOverTitle)
 			cells = swapped.columns
