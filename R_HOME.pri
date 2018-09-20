@@ -1,4 +1,4 @@
-LINUX_SPECIAL_CASE = false
+LINUX_SPECIAL_CASE = true
 
 _R_HOME = $$(R_HOME)
 

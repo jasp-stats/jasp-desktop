@@ -40,7 +40,11 @@ FocusScope
 	{
 		id: myFlickable
 
-		anchors.fill: parent
+		//anchors.fill: parent
+		anchors.top:	parent.top
+		anchors.left:	parent.left
+		anchors.right:	vertiScroller.left
+		anchors.bottom: horiScroller.top
 
 		contentWidth:	theView.width
 		contentHeight:	theView.height
@@ -100,16 +104,6 @@ FocusScope
 			}
 
 		}
-
-		//ScrollBar.vertical:
-
-
-		/*ScrollBar.horizontal: ScrollBar
-		{
-			z: 0
-			stepSize: 0.025
-			//onSizeChanged: if(size < 0.02)	size = 0.02
-		}*/
 	}
 
 
@@ -118,8 +112,14 @@ FocusScope
 		id:				vertiScroller;
 		flickable:		myFlickable
 
-		extraMarginRightOrBottom:	horiScroller.height
-		extraMarginLeftOrTop:		theView.headerHeight
+		//extraMarginRightOrBottom:	horiScroller.height
+		//extraMarginLeftOrTop:		theView.headerHeight
+
+		anchors.top:	parent.top
+		anchors.right:	parent.right
+		anchors.bottom: parent.bottom
+
+		anchors.bottomMargin: horiScroller.height
 	}
 
 	JASPScrollBar
@@ -128,8 +128,14 @@ FocusScope
 		flickable:		myFlickable
 		vertical:		false
 
-		extraMarginRightOrBottom:	vertiScroller.width
-		extraMarginLeftOrTop:		theView.rowNumberWidth
+		//extraMarginRightOrBottom:	vertiScroller.width
+		//extraMarginLeftOrTop:		theView.rowNumberWidth
+
+		anchors.left:	parent.left
+		anchors.right:	parent.right
+		anchors.bottom: parent.bottom
+
+		anchors.rightMargin: vertiScroller.width
 	}
 
 

@@ -27,33 +27,35 @@ Item {
 	width:  vertical ? breadth   : undefined;
 	height: vertical ? undefined : breadth;
 
-	property real extraMarginRightOrBottom: 0
-	property real extraMarginLeftOrTop: 0
+	property real extraMarginRightOrBottom	: 0
+	property real extraMarginLeftOrTop		: 0
+	property Flickable flickable			: null;
+	property int handleSize					: 7;
+	property int minimumLength				: 16
+	property string bkColor					: "white"; //Use JASPTheme when available!
+	property string fgColor					: "black";
+	property string pressedColor			: "#72a0cc";
+	property bool outerradius				: false;
+	property bool innerradius				: false;
+	property bool showarrows				: false;
+	property bool vertical					: true;
+	property bool manualAnchor				: false;
 
 	visible: (vertical ? flickable.visibleArea.heightRatio : flickable.visibleArea.widthRatio ) < 1.0;
 
 	anchors {
-		top:			vertical ? flickable.top : undefined;
-		left:			vertical ? undefined	 :	flickable.left;
-		right:			flickable.right;
-		bottom:			flickable.bottom;
-		topMargin:		vertical ? extraMarginLeftOrTop		: 0
-		leftMargin:		vertical ? 0						: extraMarginLeftOrTop
-		rightMargin:	vertical ? 0						: extraMarginRightOrBottom
-		bottomMargin:	vertical ? extraMarginRightOrBottom	: 0
+		top:			manualAnchor ? 0 : vertical ? flickable.top : undefined;
+		left:			manualAnchor ? 0 : vertical ? undefined	 :	flickable.left;
+		right:			manualAnchor ? 0 : flickable.right;
+		bottom:			manualAnchor ? 0 : flickable.bottom;
+		topMargin:		manualAnchor ? 0 : vertical ? extraMarginLeftOrTop		: 0
+		leftMargin:		manualAnchor ? 0 : vertical ? 0						: extraMarginLeftOrTop
+		rightMargin:	manualAnchor ? 0 : vertical ? 0						: extraMarginRightOrBottom
+		bottomMargin:	manualAnchor ? 0 : vertical ? extraMarginRightOrBottom	: 0
 	}
 
 	
-	property Flickable flickable	: null;
-	property int handleSize			: 7;
-	property int minimumLength		: 16
-	property string bkColor			: "white"; //Use JASPTheme when available!
-	property string fgColor			: "black";
-	property string pressedColor	: "#72a0cc" ;
-	property bool outerradius		: false;
-	property bool innerradius		: false;
-	property bool showarrows		: true;
-	property bool vertical			: true;
+
 
 	function scroll(movement)
 	{

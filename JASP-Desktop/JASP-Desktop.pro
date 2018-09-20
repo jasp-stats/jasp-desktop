@@ -49,7 +49,7 @@ windows:LIBS += -lole32 -loleaut32
 
 linux {
 	exists(/app/lib/*)	{ LIBS += -larchive -lrt -L/app/lib -lboost_filesystem -lboost_system
-	} else				{ LIBS += -larchive -lrt -ljsoncpp -lboost_filesystem -lboost_system }
+        } else				{ LIBS += -larchive -lrt -lboost_filesystem -lboost_system }
 }
 
 macx:QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
