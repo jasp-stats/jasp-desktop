@@ -1,13 +1,14 @@
 #!/bin/sh
 #Ought to be run from make-clean-osx.sh because then the necessary variables are set
 echo "Changing directory to $JASP_FULL_BUILD_DIR"
-cd "$JASP_FULL_BUILD_DIR"
+cd $JASP_FULL_BUILD_DIR
+
 . versionScript.sh
 
-R_FRAMEWORK="$JASP_ROOT_DIR/Frameworks/R.framework"
-JASP_DESKTOP="$JASP_FULL_GIT_DIR"
+R_FRAMEWORK=$JASP_ROOT_DIR/Frameworks/R.framework
+JASP_DESKTOP=$JASP_FULL_GIT_DIR
 
-if [ ! -d "$R_FRAMEWORK" ]
+if [ ! -d $R_FRAMEWORK ]
 then
   echo "Wrong R Framework folder"
   exit 1
@@ -15,15 +16,17 @@ else
   echo "Using R Framework folder: $R_FRAMEWORK"
 fi
 
-if [ ! -d "$JASP_DESKTOP" ]; then
-  echo "Wrong JASP_DESKTOP folder"
+if [ ! -d $JASP_DESKTOP ]; then
+  echo "Wrong jasp-desktop folder"
   exit 1
+else
+  echo "Using jasp-desktop folder: $JASP_DESKTOP"
 fi
 
 # This script builds the JASP.dmg installer
 # Check that your R.framework is unique (no other test versions).
 # Check also that the right dylib are placed in the build-jasp-desktop-Release folder
-# Then run this script from the build-jasp-desktop-Release folder 
+# Then run this script from the build-jasp-desktop-Release folder
 
 echo "Remove from last time"
 
@@ -31,10 +34,6 @@ rm -rf app
 rm -rf JASP.zip
 rm -f tmp.dmg
 rm -f JASP*.dmg
-if [ -f "JASP" ]
-then
-rm JASP
-fi
 
 echo "Create output tree under ./app"
 
@@ -54,13 +53,6 @@ ln -s /Applications .
 cd ..
 
 echo "Copy the two executables into place (after renaming jasp -> JASP)"
-if [ ! -f "jasp" ]
-then
-echo "jasp is missing!"
-exit 1
-fi
-
-mv jasp JASP
 install_name_tool -add_rpath @loader_path/../Libraries JASP
 install_name_tool -add_rpath @loader_path/../Libraries JASPEngine
 cp JASP app/JASP.app/Contents/MacOS/
