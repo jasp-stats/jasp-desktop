@@ -30,14 +30,11 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj = TRUE, relat
   on.exit(setwd(oldwd))
 
   if (ggplot2::is.ggplot(plot)) {
-      ppi <- .fromRCPP(".ppi")
-	  pngMultip <- ppi * 3 / 4
-	  if (Sys.info()["sysname"]=="Darwin")
-	      pngMultip <- ppi / 2
-	  ggplot2::ggsave(relativePathpng, plot, "png",
-	                  width = width / pngMultip,
-					  height = height / pngMultip,
-					  dpi = 2 * ppi)
+    ppi <- .fromRCPP(".ppi")
+    ggplot2::ggsave(relativePathpng, plot, "png",
+                    width = width*(ppi/96),
+                    height = height*(ppi/96),
+                    dpi = ppi*72/96)
   } else {
     # Operating System information
   	type <- "cairo"
