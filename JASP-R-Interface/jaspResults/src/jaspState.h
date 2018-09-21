@@ -5,7 +5,7 @@ class jaspState : public jaspObject
 {
 public:
 	jaspState(std::string title = "") : jaspObject(jaspObjectType::state, title) {}
-	~jaspState() {}
+	~jaspState() { _stateObjectSerialized = Rcpp::Vector<RAWSXP>(); }
 
 	void setObject(Rcpp::RObject obj);
 	Rcpp::RObject getObject();

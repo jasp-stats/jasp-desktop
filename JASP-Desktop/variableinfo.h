@@ -41,10 +41,7 @@ protected:
 class VariableInfoConsumer
 {
 public:
-	VariableInfoConsumer()
-	{
-		_provider = NULL;
-	}
+	VariableInfoConsumer() {}
 
 	void setInfoProvider(VariableInfoProvider *provider)
 	{
@@ -53,38 +50,46 @@ public:
 
 	QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const
 	{
-		if (_provider != NULL)
-			return _provider->requestInfo(term, info);
-		else
-			return QVariant();
+		if (_provider != NULL)	return _provider->requestInfo(term, info);
+		else					return QVariant();
+	}
+
+	bool variableIsColumn(const Term &term)
+	{
+		switch (requestInfo(term, VariableInfo::VariableType).toInt())
+		{
+		case Column::ColumnTypeNominalText:
+		case Column::ColumnTypeNominal:
+		case Column::ColumnTypeOrdinal:
+		case Column::ColumnTypeScale:		return true;
+		default:							return false;
+		}
 	}
 
 	QVariant requestIcon(const Term &term) const
 	{
-		static QIcon nominalTextIcon = QIcon(":/icons/variable-nominal-text.svg");
-		static QIcon nominalIcon = QIcon(":/icons/variable-nominal.svg");
-		static QIcon ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
-		static QIcon scaleIcon = QIcon(":/icons/variable-scale.svg");
+		static QIcon nominalTextIcon	= QIcon(":/icons/variable-nominal-text.svg");
+		static QIcon nominalIcon		= QIcon(":/icons/variable-nominal.svg");
+		static QIcon ordinalIcon		= QIcon(":/icons/variable-ordinal.svg");
+		static QIcon scaleIcon			= QIcon(":/icons/variable-scale.svg");
 
-		int type = requestInfo(term, VariableInfo::VariableType).toInt();
-
-		switch (type)
+		switch (requestInfo(term, VariableInfo::VariableType).toInt())
 		{
-		case Column::ColumnTypeNominalText:
-			return nominalTextIcon;
-		case Column::ColumnTypeNominal:
-			return nominalIcon;
-		case Column::ColumnTypeOrdinal:
-			return ordinalIcon;
-		case Column::ColumnTypeScale:
-			return scaleIcon;
-		default:
-			return QVariant();
+		case Column::ColumnTypeNominalText:	return nominalTextIcon;
+		case Column::ColumnTypeNominal:		return nominalIcon;
+		case Column::ColumnTypeOrdinal:		return ordinalIcon;
+		case Column::ColumnTypeScale:		return scaleIcon;
+		default:							return QVariant();
 		}
 	}
 
+	QVariant requestLabel(const Term &term) const
+	{
+		return requestInfo(term, VariableInfo::Labels);
+	}
+
 private:
-	VariableInfoProvider *_provider;
+	VariableInfoProvider *_provider = NULL;
 };
 
 #endif // VARIABLEINFO_H

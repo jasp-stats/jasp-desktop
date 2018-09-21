@@ -193,7 +193,7 @@ void Terms::add(const Terms &terms)
 		add(term);
 }
 
-const Term& Terms::at(int index) const
+const Term& Terms::at(size_t index) const
 {
 	return _terms.at(index);
 }
@@ -477,15 +477,14 @@ void Terms::remove(const Terms &terms)
 	}
 }
 
-void Terms::remove(int pos, int n)
+void Terms::remove(size_t pos, size_t n)
 {
-	int i = 0;
 	vector<Term>::iterator itr = _terms.begin();
 
-	for (; i < pos; i++)
+	for (int i = 0; i < pos && itr != _terms.end(); i++)
 		itr++;
 
-	for (; n > 0; n--)
+	for (; n > 0 && itr != _terms.end(); n--)
 		_terms.erase(itr);
 }
 

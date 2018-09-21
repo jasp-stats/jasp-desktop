@@ -68,14 +68,14 @@ public:
 
 	void remove(const Term &term);
 	void remove(const Terms &terms);
-	void remove(int pos, int n = 1);
+	void remove(size_t pos, size_t n = 1);
 	bool discardWhatDoesntContainTheseComponents(const Terms &terms);
 	bool discardWhatDoesContainTheseComponents(const Terms &terms);
 	bool discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded = NULL);
 
 	void clear();
 
-	const Term &at(int index) const;
+	const Term &at(size_t index) const;
 	bool contains(const Term &term) const;
 	bool contains(const std::string component);
 
@@ -96,6 +96,7 @@ public:
 
 	bool operator==(const Terms &terms) const;
 	bool operator!=(const Terms &terms) const;
+	const Term& operator[](size_t index) const { return at(index); }
 
 private:
 

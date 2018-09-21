@@ -27,6 +27,12 @@
 #include <boost/container/string.hpp>
 #include <boost/container/vector.hpp>
 
+struct columnNotFound : public std::runtime_error
+{
+	columnNotFound(std::string columnName) : std::runtime_error("Column " + columnName + " not found!") {}
+	const char* what() const noexcept override;
+};
+
 typedef boost::interprocess::allocator<Column, boost::interprocess::managed_shared_memory::segment_manager> ColumnAllocator;
 typedef boost::container::vector<Column, ColumnAllocator> ColumnVector;
 
