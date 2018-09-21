@@ -110,7 +110,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
       if(is.null(distPlots[[var]]))
       {
         if(makeSplit) distPlots[[var]] <- .descriptivesFrequencyPlots(dataset = splitDat, options = options, variable = var)
-        else          distPlots[[var]] <- .descriptivesFrequencyPlots(dataset = dataset,  options = options, variable = var)
+        else          distPlots[[var]] <- .descriptivesFrequencyPlots(dataset = dataset.factors, options = options, variable = var)
       }
 
     if(distPlots$length == 0)
