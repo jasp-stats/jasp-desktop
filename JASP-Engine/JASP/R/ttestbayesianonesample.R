@@ -25,7 +25,6 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
   dataset <- .ttestBayesianReadData(dataset, options[["variables"]], missing = options[["missingValues"]])
   errors  <- .ttestBayesianGetErrorsPerVariable(options, dataset)
   .ttestBayesianInitBayesFactorPackageOptions()
-
   # do t-test and create main table
 	ttestResults <- .ttestBOSTTest(jaspResults, dataset, options, errors)
 
@@ -81,52 +80,57 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 	  } else {
 
 	    if (!isFALSE(errors[[var]])) {
+
 	      errorMessage <- errors[[var]]$message
-	      ttestResults$status[var] <- "error"
-	    } else {
-	      errorMessage <- NULL
-	    }
-	    # browser()
-	    variableData <- dataset[[ .v(var) ]]
-	    variableData <- variableData[ ! is.na(variableData) ]
-	    variableData <- variableData - options$testValue
-
-      r <- try (silent = TRUE, expr = {.generalTtestBF(x = variableData, oneSided = oneSided, options = options)})
-
-	    if (!isTryError(r)) {
-
-	      bf.raw <- r[["bf"]]
-	      ttestResults$tValue[var] <- r[["tValue"]]
-	      error <- .clean(r[["error"]])
-	      ttestResults$n1[var] <- r[["n1"]]
-
-	      bf.raw <- .recodeBFtype(bfOld     = bf.raw,
-	                              newBFtype = bf.type,
-	                              oldBFtype = "BF10")
-	      ttestResults$BF10post[var] <- bf.raw
-	      BF <- .clean(bf.raw)
-
-	      if (is.na(bf.raw)) {
-	        ttestResults$status[var] <- "error"
-	        ttestResults$plottingError[var] <- "Plotting is not possible: Bayes factor could not be calculated"
-	      } else if(bf.raw == Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)) {
-	        ttestResults$status[var] <- "error"
-	        ttestResults$plottingError[var] <- "Plotting is not possible: Bayes factor is infinite"
-	      } else if (is.infinite(1 / bf.raw)) {
-	        ttestResults$status[var] <- "error"
-	        ttestResults$plottingError[var] <- "Plotting is not possible: The Bayes factor is too small"
-	      }
-
-	      row <- list(Variable=var, BF=BF, error=error)
-
-	    } else  {
-
-	      errorMessage <- .extractErrorMessage(r)
 	      ttestResults$status[var] <- "error"
 	      ttestResults$errorFootnotes[var] <- errorMessage
 	      ttestTable$addFootnote(message = errorMessage, row_names = var)
 	      row <- list(Variable = var, BF = .clean(NaN), error = "")
 
+	    } else {
+
+	    	errorMessage <- NULL
+	    	variableData <- dataset[[ .v(var) ]]
+	    	variableData <- variableData[ ! is.na(variableData) ]
+	    	variableData <- variableData - options$testValue
+
+	    	r <- try (silent = TRUE, expr = {.generalTtestBF(x = variableData, oneSided = oneSided, options = options)})
+
+	    	if (!isTryError(r)) {
+
+	    		bf.raw <- r[["bf"]]
+	    		ttestResults$tValue[var] <- r[["tValue"]]
+	    		error <- .clean(r[["error"]])
+	    		ttestResults$n1[var] <- r[["n1"]]
+
+	    		bf.raw <- .recodeBFtype(bfOld     = bf.raw,
+	    														newBFtype = bf.type,
+	    														oldBFtype = "BF10")
+	    		ttestResults$BF10post[var] <- bf.raw
+	    		BF <- .clean(bf.raw)
+
+	    		if (is.na(bf.raw)) {
+	    			ttestResults$status[var] <- "error"
+	    			ttestResults$plottingError[var] <- "Plotting is not possible: Bayes factor could not be calculated"
+	    		} else if(bf.raw == Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)) {
+	    			ttestResults$status[var] <- "error"
+	    			ttestResults$plottingError[var] <- "Plotting is not possible: Bayes factor is infinite"
+	    		} else if (is.infinite(1 / bf.raw)) {
+	    			ttestResults$status[var] <- "error"
+	    			ttestResults$plottingError[var] <- "Plotting is not possible: The Bayes factor is too small"
+	    		}
+
+	    		row <- list(Variable=var, BF=BF, error=error)
+
+	    	} else  {
+
+	    		errorMessage <- .extractErrorMessage(r)
+	    		ttestResults$status[var] <- "error"
+	    		ttestResults$errorFootnotes[var] <- errorMessage
+	    		ttestTable$addFootnote(message = errorMessage, row_names = var)
+	    		row <- list(Variable = var, BF = .clean(NaN), error = "")
+
+	    	}
 	    }
 	  }
 	  ttestTable$addRows(row, rowNames = var)

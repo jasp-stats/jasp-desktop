@@ -13,8 +13,8 @@ test_that("Main table results match", {
   options$defaultStandardizedEffectSize <- "cauchy"
   options$priorWidth <- 0.707
   results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
-  table <- results[["results"]][["ttest"]][["data"]]
-  expect_equal_tables(table, list("contNormal", 0.508160332089536, 2.80907441042415e-05))
+  table <- results[["results"]][["ttestTable"]][["data"]]
+  expect_equal_tables(table, list(0.508160332089536, "contNormal", 2.80907441042415e-05))
 })
 
 # test_that("Prior posterior plot matches", {
@@ -62,11 +62,11 @@ test_that("Descriptives table matches", {
   options <- jasptools::analysisOptions("TTestBayesianOneSample")
   options$variables <- "contNormal"
   options$descriptives <- TRUE
+  options$descriptivesPlots <- TRUE
   results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
-  table <- results[["results"]][["descriptives"]][["descriptivesTable"]][["data"]]
+  table <- results[["results"]][["Descriptives"]][["collection"]][["Descriptives_table"]][["data"]]
   expect_equal_tables(table,
-    list("contNormal", 100, -0.18874858754, 1.05841360919316, 0.105841360919316,
-         -0.398760810055083, 0.0212636349750834)
+    list(100, -0.398760810055084, -0.18874858754, 1.05841360919316, 0.105841360919316, 0.0212636349750834, "contNormal")
   )
 })
 
@@ -75,16 +75,16 @@ test_that("Analysis handles errors", {
 
   options$variables <- "debInf"
   results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
+  notes <- unlist(results[["results"]][["ttestTable"]][["footnotes"]])
   expect_true(any(grepl("infinity", notes, ignore.case=TRUE)), label = "Inf check")
 
   options$variables <- "debSame"
   results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
+  notes <- unlist(results[["results"]][["ttestTable"]][["footnotes"]])
   expect_true(any(grepl("variance", notes, ignore.case=TRUE)), label = "No variance check")
 
   options$variables <- "debMiss99"
   results <- jasptools::run("TTestBayesianOneSample", "test.csv", options, view=FALSE, quiet=TRUE)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
+  notes <- unlist(results[["results"]][["ttestTable"]][["footnotes"]])
   expect_true(any(grepl("observations", notes, ignore.case=TRUE)), label = "Too few obs check")
 })

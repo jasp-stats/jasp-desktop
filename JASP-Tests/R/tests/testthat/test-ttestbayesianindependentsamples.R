@@ -15,8 +15,10 @@ test_that("Main table results match", {
   options$informativeCauchyLocation <- 1
   options$informativeCauchyScale <- 0.5
   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  table <- results[["results"]][["ttest"]][["data"]]
-  expect_equal_tables(table, list("contNormal", 0.123677493243643, 0.0895633315624481))
+  table <- results[["results"]][["ttestTable"]][["data"]]
+  # expect_equal_tables(table, list("contNormal", 0.123677493243643, 0.0895633315624481))
+  expect_equal_tables(table, list(0.0280859509755459, 0.0625753671100039, "contNormal")
+)
 })
 
 # test_that("Prior posterior plot matches", {
@@ -69,13 +71,14 @@ test_that("Descriptives table matches", {
   options$variables <- "contNormal"
   options$groupingVariable <- "contBinom"
   options$descriptives <- TRUE
+  options$descriptivesPlots <- TRUE
   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  table <- results[["results"]][["descriptives"]][["descriptivesTable"]][["data"]]
+  table <- results[["results"]][["Descriptives"]][["collection"]][["Descriptives_table"]][["data"]]
   expect_equal_tables(table,
-    list("contNormal", 0, 58, -0.120135614827586, 1.10575982846952, 0.145193378675912,
-         -0.410880340543859, 0.170609110888686, "TRUE", "contNormal",
-         1, 42, -0.283499835571429, 0.994612407217046, 0.15347202634745,
-         -0.593442880596763, 0.0264432094539058)
+    list(58, 0, -0.410880340543859, -0.120135614827586, 1.10575982846952,
+  			 0.145193378675912, 0.170609110888686, "contNormal", 42, 1, -0.593442880596763,
+  			 -0.283499835571428, 0.994612407217046, 0.15347202634745, 0.0264432094539058,
+  			 "contNormal")
   )
 })
 
@@ -85,24 +88,21 @@ test_that("Analysis handles errors", {
   options$variables <- "debInf"
   options$groupingVariable <- "contBinom"
   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
+  notes <- unlist(results[["results"]][["ttestTable"]][["footnotes"]])
   expect_true(any(grepl("infinity", notes, ignore.case=TRUE)), label = "Inf check")
 
   options$variables <- "debSame"
   options$groupingVariable <- "contBinom"
   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  obj <- results
-  obj$results$errorMessage <- NULL # error message can change and shouldn't tested.
-  expect_equal(object = obj, expected = structure(list(
-  	status = "error", results = structure(list(title = "error", error = 1L), .Names = c("title", "error"))),
-  	.Names = c("status", "results")),
+  expect_equal(object = results[["status"]], expected = "error",
   	label = "Variance check"
   )
+  expect_false(startsWith(results[["results"]][["errorMessage"]], "This analysis terminated unexpectedly."))
 
   options$variables <- "debMiss99"
   options$groupingVariable <- "contBinom"
   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
+  notes <- unlist(results[["results"]][["ttestTable"]][["footnotes"]])
   expect_true(any(grepl("observations", notes, ignore.case=TRUE)), label = "Too few obs check")
 
   options$dependent <- "contNormal"
@@ -122,6 +122,6 @@ test_that("Analysis handles integer overflow", {
   options$groupingVariable <- 'grouping'
   results <- jasptools::run("TTestBayesianIndependentSamples", dat, options, view=FALSE, quiet=TRUE)
 
-  table <- results[["results"]][["ttest"]][["data"]]
-  expect_equal_tables(table, list("dependent_var", 0.00511047418810093, 0.311955453811728))
+  table <- results[["results"]][["ttestTable"]][["data"]]
+  expect_equal_tables(table, list(0.00511047419082252, 0.311956739823362, "dependent_var"))
 })

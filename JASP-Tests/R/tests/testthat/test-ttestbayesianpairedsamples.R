@@ -16,8 +16,10 @@ test_that("Main table results match", {
   options$informativeTScale <- 0.5
   options$informativeTDf <- 2
   results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  table <- results[["results"]][["ttest"]][["data"]]
-  expect_equal_tables(table, list("contNormal", "-", "contGamma", 293915424756.037, 1.32616895200622e-19))
+  table <- results[["results"]][["ttestTable"]][["data"]]
+  # expect_equal_tables(table, list("contNormal", "-", "contGamma", 293915424756.037, 1.32616895200622e-19))
+   expect_equal_tables(table, list(3909867771451546, 1.43297769208873e-23, "-", "contNormal", "contGamma"))
+
 })
 
 # test_that("Prior posterior plot matches", {
@@ -65,12 +67,13 @@ test_that("Descriptives table matches", {
   options <- jasptools::analysisOptions("TTestBayesianPairedSamples")
   options$pairs <- list(c("contNormal", "contGamma"))
   options$descriptives <- TRUE
+  options$descriptivesPlots <- TRUE
   results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  table <- results[["results"]][["descriptives"]][["descriptivesTable"]][["data"]]
+  table <- results[["results"]][["Descriptives"]][["collection"]][["Descriptives_table"]][["data"]]
   expect_equal_tables(table,
-    list("contNormal", 100, -0.18874858754, 1.05841360919316, 0.105841360919316,
-         -0.398760810055083, 0.0212636349750834, "contGamma", 100, 2.03296079621,
-         1.53241112621044, 0.153241112621044, 1.72889718286736, 2.33702440955264)
+		list(100, -0.398760810055084, -0.18874858754, 1.05841360919316, 0.105841360919316,
+				 0.0212636349750834, "contNormal", 100, 1.72889718286736, 2.03296079621,
+				 1.53241112621044, 0.153241112621044, 2.33702440955264, "contGamma")
   )
 })
 
@@ -79,16 +82,16 @@ test_that("Analysis handles errors", {
 
   options$pairs <- list(c("contNormal", "debInf"))
   results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
+  notes <- unlist(results[["results"]][["ttestTable"]][["footnotes"]])
   expect_true(any(grepl("infinity", notes, ignore.case=TRUE)), label = "Inf check")
 
   options$pairs <- list(c("contNormal", "debSame"))
   results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
+  notes <- unlist(results[["results"]][["ttestTable"]][["footnotes"]])
   expect_true(any(grepl("variance", notes, ignore.case=TRUE)), label = "No variance check")
 
   options$pairs <- list(c("contNormal", "debMiss99"))
   results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
+  notes <- unlist(results[["results"]][["ttestTable"]][["footnotes"]])
   expect_true(any(grepl("observations", notes, ignore.case=TRUE)), label = "Too few obs check")
 })

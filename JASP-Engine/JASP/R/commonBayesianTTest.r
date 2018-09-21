@@ -90,8 +90,8 @@
 		} else {
 
 	  	  # analysis breaking errors
-		  .hasErrors(dataset, "run", type = 'variance',
-		             variance.target = dependents, exitAnalysisIfErrors = TRUE)
+		  # .hasErrors(dataset, "run", type = 'variance',
+		  #            variance.target = dependents, exitAnalysisIfErrors = TRUE)
 
 		  if (is.null(options[["pairs"]])) {
 		    for (var in dependents) {
@@ -234,7 +234,6 @@
 	  options[["stateKey"]][["descriptives"]] <-
 	    c(options[["stateKey"]][["descriptives"]], "pairs")
 
-
 	}
 
 	options[["nullInterval"]] <- switch(options[["oneSided"]],
@@ -353,6 +352,7 @@
       print("remake descriptivesTable")
       descriptivesTable <- createJaspTable(title = "Descriptives")
       descriptivesTable$dependOnOptions("descriptives")
+      descriptivesTable$position <- 1L
       descriptivesCollection[["table"]] <- descriptivesTable
 
       if (options$descriptivesPlots) {
@@ -380,6 +380,7 @@
       print("remake descriptivesPlots")
       descriptivesPlots <- createJaspContainer(title = "Descriptives Plots")
       descriptivesPlots$copyDependenciesFromJaspObject(descriptivesCollection)
+      descriptivesPlots$position <- 2L
       descriptivesCollection[["plots"]] <- descriptivesPlots
       runDescriptives <- TRUE
 
@@ -401,7 +402,6 @@
         testValueOpt     = options[["testValue"]],
         pairs            = options[["pairs"]]
       )
-      jaspResults$send()
     }
   }
 }
@@ -620,14 +620,18 @@
 			    dat <- dataset[idxC, .v(c(var, grouping))]
 			  }
 
-				obj <- try({
-				  .ttestBayesianPlotKGroupMeans(
-					data = dat, var = var, grouping = grouping, paired = paired,
-					groupNames = levels, CRI = CRI, testValueOpt = testValueOpt)
-				})
-				plot <- .addPlotToJaspObj0(var, obj)
+				obj <- try(.ttestBayesianPlotKGroupMeans(
+					data         = dat,
+          var          = var,
+          grouping     = grouping,
+          paired       = paired,
+					groupNames   = levels,
+          CRI          = CRI,
+          testValueOpt = testValueOpt
+        ))
+				plot <- .addPlotToJaspObj0(title, var, obj)
 			} else {
-				plot <- .addPlotToJaspObj0(var, NULL, errors[[var]][["message"]])
+				plot <- .addPlotToJaspObj0(title, var, NULL, errors[[var]][["message"]])
 			}
   	  if (paired) {
   	    plot$setOptionMustContainDependency("pairs", pairs[[var]])
@@ -644,155 +648,105 @@
 # inferential plots ----
 .ttestBayesianInferentialPlots <- function(jaspResults, dataset, options, results, errors) {
 
+  dependents <- unlist(options$variables)
+  grouping <- options[["groupingVariable"]]
+  pairs    <- options[["pairs"]]
+
   if (is.null(jaspResults[["inferentialPlots"]])) {
     print("remake inferentialPlotsCollection")
     inferentialPlotsCollection <- createJaspContainer("Inferential Plots")
     inferentialPlotsCollection$dependOnOptions("hypothesis")
     jaspResults[["inferentialPlots"]] <- inferentialPlotsCollection
-
   } else {
     print("inferentialPlotsCollection from state")
     inferentialPlotsCollection <- jaspResults[["inferentialPlots"]]
   }
 
-  dependents <- unlist(options$variables)
-  b0 <- options[["anyNewVariables"]]
-  grouping <- options[["groupingVariable"]]
-  pairs <- options[["pairs"]]
+  # make subcontainers for each variable
+  for (var in dependents) {
+  	if (is.null(inferentialPlotsCollection[[var]])) {
+  		print(sprintf("inferentialPlotsCollection[[%s]] remade", var))
+  		container <- createJaspContainer(var)
+  		container$dependOnOptions("hypothesis")
+  		inferentialPlotsCollection[[var]] <- container
+  	} else {
+  		print(sprintf("inferentialPlotsCollection[[%s]] from state", var))
+  	}
+  }
 
   if (options[["plotPriorAndPosterior"]]) {
-
-    b1 <- is.null(inferentialPlotsCollection[["plotPriorAndPosterior"]])
-
-    if (b1 || b0) {
-      if (b1) {
-        print("remake plotPriorAndPosterior completely")
-        PriorAndPosteriorPlotCollection <- createJaspContainer("Prior and Posterior Plots")
-        PriorAndPosteriorPlotCollection$dependOnOptions(c(
-          options[["stateKey"]][["priorAndPosteriorPlots"]], "plotPriorAndPosterior"
-        ))
-        inferentialPlotsCollection[["plotPriorAndPosterior"]] <- PriorAndPosteriorPlotCollection
-      } else {
-        print("partial changes in plotPriorAndPosterior")
-        PriorAndPosteriorPlotCollection <- inferentialPlotsCollection[["plotPriorAndPosterior"]]
-      }
-
-      .ttestBayesianPlotPriorAndPosterior(
-        jaspResults    = jaspResults,
-        collection     = PriorAndPosteriorPlotCollection,
-        dependents     = dependents,
-        errors         = errors,
-        t              = results[["tValue"]],
-        n1             = results[["n1"]],
-        n2             = results[["n2"]],
-        BF             = results[["BF10post"]],
-        BFH1H0         = results[["BFH1H0"]],
-        delta          = results[["delta"]],
-        plottingError  = results[["plottingError"]],
-        paired         = results[["paired"]],
-        oneSided       = options[["oneSided"]],
-        rscale         = options[["priorWidth"]],
-        addInformation = options[["plotPriorAndPosteriorAdditionalInfo"]],
-        pairs          = pairs,
-        options        = options
-      )
-
-    } else {
-      print("plotPriorAndPosterior from state")
-    }
+		.ttestBayesianPlotPriorAndPosterior(
+  		collection     = inferentialPlotsCollection,
+  		dependents     = dependents,
+  		errors         = errors,
+  		t              = results[["tValue"]],
+  		n1             = results[["n1"]],
+  		n2             = results[["n2"]],
+  		BF             = results[["BF10post"]],
+  		BFH1H0         = results[["BFH1H0"]],
+  		delta          = results[["delta"]],
+  		plottingError  = results[["plottingError"]],
+  		paired         = results[["paired"]],
+  		oneSided       = options[["oneSided"]],
+  		rscale         = options[["priorWidth"]],
+  		addInformation = options[["plotPriorAndPosteriorAdditionalInfo"]],
+  		pairs          = pairs,
+  		options        = options,
+      dependencies   = c(options[["stateKey"]][["priorAndPosteriorPlots"]], "plotPriorAndPosterior")
+  	)
   }
 
   if (options[["plotBayesFactorRobustness"]]) {
-
-    b1 <- is.null(inferentialPlotsCollection[["plotBayesFactorRobustness"]])
-
-    if (b1 || b0) {
-      if (b1) {
-        print("remake plotBayesFactorRobustness completely")
-        robustnessPlotCollection <- createJaspContainer("Robustness Plots")
-        robustnessPlotCollection$dependOnOptions(c(
-          options[["stateKey"]][["robustnessPlots"]], "plotSequentialAnalysis"
-        ))
-        inferentialPlotsCollection[["plotBayesFactorRobustness"]] <- robustnessPlotCollection
-      } else {
-        print("partial changes in plotBayesFactorRobustness")
-        robustnessPlotCollection <- inferentialPlotsCollection[["plotBayesFactorRobustness"]]
-      }
-
-      .ttestBayesianPlotRobustness(
-        jaspResults            = jaspResults,
-        collection             = robustnessPlotCollection,
-        dependents             = dependents,
-        errors                 = errors,
-        dataset                = dataset,
-        grouping               = grouping,
-        BF10post               = results[["BF10post"]],
-        BFH1H0                 = results[["BFH1H0"]],
-        rscale                 = options[["priorWidth"]],
-        paired                 = results[["paired"]],
-        oneSided               = options[["oneSided"]],
-        additionalInformation  = options[["plotBayesFactorRobustnessAdditionalInfo"]],
-        effectSizeStandardized = options[["effectSizeStandardized"]],
-        pairs                  = pairs,
-        options                = options
-      )
-
-    } else {
-      print("plotBayesFactorRobustness from state")
-    }
+  	.ttestBayesianPlotRobustness(
+  		collection             = inferentialPlotsCollection,
+  		dependents             = dependents,
+  		errors                 = errors,
+  		dataset                = dataset,
+  		grouping               = grouping,
+  		BF10post               = results[["BF10post"]],
+  		BFH1H0                 = results[["BFH1H0"]],
+  		rscale                 = options[["priorWidth"]],
+  		paired                 = results[["paired"]],
+  		oneSided               = options[["oneSided"]],
+  		additionalInformation  = options[["plotBayesFactorRobustnessAdditionalInfo"]],
+  		effectSizeStandardized = options[["effectSizeStandardized"]],
+  		pairs                  = pairs,
+  		options                = options,
+      dependencies           = c(options[["stateKey"]][["robustnessPlots"]], "plotSequentialAnalysis")
+  	)
   }
 
   if (options[["plotSequentialAnalysis"]]) {
-
-    b1 <- is.null(inferentialPlotsCollection[["plotSequentialAnalysis"]])
-
-    if (b1 || b0) {
-      if (b1) {
-        print("remake plotSequentialAnalysis completely")
-        sequentialPlotCollection <- createJaspContainer("Sequential Plots")
-        sequentialPlotCollection$dependOnOptions(c(
-          options[["stateKey"]][["sequentialPlots"]], "plotSequentialAnalysis"
-        ))
-        inferentialPlotsCollection[["plotSequentialAnalysis"]] <- sequentialPlotCollection
-      } else {
-        print("partial changes in plotSequentialAnalysis")
-        sequentialPlotCollection <- inferentialPlotsCollection[["plotSequentialAnalysis"]]
-      }
-
-      .ttestBayesianPlotSequential(
-        jaspResults            = jaspResults,
-        collection             = sequentialPlotCollection,
-        dependents             = dependents,
-        errors                 = errors,
-        dataset                = dataset,
-        grouping               = grouping,
-        BF10post               = results[["BF10post"]],
-        BFH1H0                 = results[["BFH1H0"]],
-        paired                 = results[["paired"]],
-        oneSided               = options[["oneSided"]],
-        rscale                 = options[["priorWidth"]],
-        effectSizeStandardized = options[["effectSizeStandardized"]],
-        pairs                  = pairs,
-        options                = options
-      )
-
-    } else {
-      print("plotSequentialAnalysis from state")
-    }
+  	.ttestBayesianPlotSequential(
+  		collection             = inferentialPlotsCollection,
+  		dependents             = dependents,
+  		errors                 = errors,
+  		dataset                = dataset,
+  		grouping               = grouping,
+  		BF10post               = results[["BF10post"]],
+  		BFH1H0                 = results[["BFH1H0"]],
+  		paired                 = results[["paired"]],
+  		oneSided               = options[["oneSided"]],
+  		rscale                 = options[["priorWidth"]],
+  		effectSizeStandardized = options[["effectSizeStandardized"]],
+  		pairs                  = pairs,
+  		options                = options,
+      dependencies           = c(options[["stateKey"]][["sequentialPlots"]], "plotSequentialAnalysis")
+  	)
   }
 }
 
-.ttestBayesianPlotPriorAndPosterior <- function(jaspResults, collection, dependents, errors,
+.ttestBayesianPlotPriorAndPosterior <- function(collection, dependents, errors,
                                                 tValue, n1, n2 = NULL,
                                                 BF, BFH1H0, oneSided = FALSE,
                                                 rscale = "medium", delta = NULL,
                                                 addInformation = TRUE,
                                                 plottingError = NULL,
                                                 paired = FALSE, pairs = NULL,
-                                                options, ...) {
-
+                                                options, dependencies = NULL, ...) {
+  title <- "Prior and Posterior Plot"
   for (var in dependents) {
-    if (is.null(collection[[var]])) {
+    if (is.null(collection[[var]][["plotPriorAndPosterior"]])) {
       if (isFALSE(errors[[var]]) && is.null(plottingError[[var]])) {
 
         obj <- function() {.plotPosterior.summarystats.ttest(
@@ -810,34 +764,35 @@
           ...
         )}
 
-        plot <- .addPlotToJaspObj0(var, obj)
+        plot <- .addPlotToJaspObj0(title, var, obj)
       } else {
         if (!isFALSE(errors[[var]])) {
           err <- errors[[var]][["message"]]
         } else {
           err <- plottingError[[var]]
         }
-        plot <- .addPlotToJaspObj0(var, NULL, err)
+        plot <- .addPlotToJaspObj0(title, var, NULL, err)
       }
       if (paired) {
         plot$setOptionMustContainDependency("pairs", pairs[[var]])
       } else {
         plot$setOptionMustContainDependency("variables",  var)
       }
-      collection[[var]] <- plot
-      jaspResults$send()
+    	plot$position <- 1L
+      plot$dependOnOptions(dependencies)
+      collection[[var]][["plotPriorAndPosterior"]] <- plot
     }
   }
 }
 
-.ttestBayesianPlotRobustness <- function(jaspResults, collection, dependents, errors, dataset,
+.ttestBayesianPlotRobustness <- function(collection, dependents, errors, dataset,
                                          grouping = NULL, BF10post, BFH1H0,
                                          rscale = "medium", paired = FALSE,
                                          oneSided = FALSE,
                                          additionalInformation = TRUE,
                                          effectSizeStandardized, pairs = NULL,
-                                         options, ...) {
-
+                                         options, dependencies = NULL, ...) {
+  title <- "Bayes Factor Robustness Plot"
   hasGrouping <- !is.null(grouping)
   if (hasGrouping) {
     levels <- levels(dataset[[.v(grouping)]])
@@ -852,7 +807,7 @@
   }
 
   for (var in dependents) {
-    if (is.null(collection[[var]])) {
+    if (is.null(collection[[var]][["plotRobustness"]])) {
       if (effectSizeStandardized == "informative") {
         plot <- createJaspPlot(title = var, width = 480, height = 320, error = "badData",
                                errorMessage = "Bayes factor robustness check plot currently not supported for informed prior.")
@@ -887,30 +842,31 @@
           additionalInformation = additionalInformation,
           ...
         )}
-        plot <- .addPlotToJaspObj0(var, obj)
+        plot <- .addPlotToJaspObj0(title, var, obj)
       } else {
-        plot <- .addPlotToJaspObj0(var, NULL, error[[var]][["message"]])
+        plot <- .addPlotToJaspObj0(title, var, NULL, error[[var]][["message"]])
       }
       if (paired) {
         plot$setOptionMustContainDependency("pairs", pairs[[var]])
       } else {
         plot$setOptionMustContainDependency("variables",  var)
       }
-      collection[[var]] <- plot
-      jaspResults$send()
+    	plot$position <- 2L
+      plot$dependOnOptions(dependencies)
+      collection[[var]][["plotRobustness"]] <- plot
     }
   }
 }
 
-.ttestBayesianPlotSequential <- function(jaspResults, collection, dependents, errors, dataset,
+.ttestBayesianPlotSequential <- function(collection, dependents, errors, dataset,
                                          grouping = NULL, BF10post, BFH1H0,
                                          rscale = "medium", paired = FALSE,
                                          oneSided = FALSE,
                                          plotDifferentPriors = FALSE,
                                          effectSizeStandardized,
                                          testValue = NULL, pairs = NULL,
-                                         options, ...) {
-
+                                         options, dependencies = NULL, ...) {
+  title <- "Sequential Analysis Plot"
   hasGrouping <- !is.null(grouping)
   if (hasGrouping) {
     levels <- levels(dataset[[.v(grouping)]])
@@ -926,7 +882,7 @@
   }
 
   for (var in dependents) {
-    if (is.null(collection[[var]])) {
+    if (is.null(collection[[var]][["plotSequential"]])) {
       if (effectSizeStandardized == "informative") {
         plot <- createJaspPlot(title = var, width = 480, height = 320, error = "badData",
                                errorMessage = "Sequential analysis robustness check plot currently not supported for informed prior.")
@@ -967,9 +923,9 @@
           ...
         )}
 
-        plot <- .addPlotToJaspObj0(var, obj)
+        plot <- .addPlotToJaspObj0(title, var, obj)
       } else {
-        plot <- .addPlotToJaspObj0(var, NULL, error[[var]][["message"]])
+        plot <- .addPlotToJaspObj0(title, var, NULL, error[[var]][["message"]])
       }
 
       if (paired) {
@@ -977,27 +933,27 @@
       } else {
         plot$setOptionMustContainDependency("variables",  var)
       }
-
-      collection[[var]] <- plot
-      jaspResults$send()
+      plot$dependOnOptions(dependencies)
+			plot$position <- 3L
+      collection[[var]][["plotSequential"]] <- plot
     }
   }
 }
 
 # plot functions  ----
-.addPlotToJaspObj0 <- function(var, obj = NULL, errors = "",  w = 480, h = 320) {
+.addPlotToJaspObj0 <- function(title, var, obj = NULL, errors = "",  w = 480, h = 320) {
 
 	# convenience function
 	if (is.null(obj)) {
-		plot <- createJaspPlot(title = var, width = w, height = h,
+		plot <- createJaspPlot(title = title, width = w, height = h,
 													 error = "badData", errorMessage = errors)
 	} else if (identical(obj, "empty")) {
-		plot <- createJaspPlot(title = var, width = w, height = h)
+		plot <- createJaspPlot(title = title, width = w, height = h)
 	} else if (isTryError(obj)) {
-		plot <- createJaspPlot(title = var, width = w, height = h,
+		plot <- createJaspPlot(title = title, width = w, height = h,
 													 error = "badData", errorMessage = .extractErrorMessage(obj))
 	} else {
-		plot <- createJaspPlot(title = var, width = w, height = h, plot = obj)
+		plot <- createJaspPlot(title = title, width = w, height = h, plot = obj)
 	}
 	return(plot)
 }
@@ -1057,7 +1013,7 @@
 				legend.title = ggplot2::element_text(size=12),
 				legend.text = ggplot2::element_text(size = 12),
 				axis.ticks = ggplot2::element_line(size = 0.5),
-				axis.ticks.margin = grid::unit(1,"mm"),
+				# axis.ticks.margin = grid::unit(1,"mm"),
 				axis.ticks.length = grid::unit(3, "mm"),
 				plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
 				.base_breaks_y4(summaryStat, testValueOpt) +

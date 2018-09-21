@@ -66,184 +66,187 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options, state
 
   # does all addcolumninfo etc.
 	.ttestBISTTestMarkup(ttestTable, options, g1, g2)
-
   ttestResults <- .ttestBayesianEmptyObject(options)
 
-	# user provided no grouping variable or empty columns
 	if (!options[["canDoAnalysis"]]) {
 
+		# user provided no grouping variable or empty columns
     dat <- data.frame(variable = dependents)
     ttestTable$setData(dat)
+  	ttestTable$status <- "complete"
+		return(ttestResults)
 
-	} else { # we can do the analysis
-
-	  # get state
-	  ttestState <- jaspResults[["stateTTestResults"]]$object
-	  ttestRows <- ttestState$ttestRows
-
-	  nvar <- length(dependents)
-
-	  BFH1H0 <- !options$bayesFactorType == "BF01"
-
-	  oneSided <- options[["oneSided"]]
-	  # null.interval <- options[["nullInterval"]]
-
-		if (options$wilcoxTest) {
-
-		  print("ttestState")
-		  print(str(ttestState, max.level = 3))
-		  print("ttestState$delta")
-		  print(str(ttestState$delta, max.level = 3))
-			# all variables - the ones we sampled before
-			todo <- nvar
-			if (!is.null(ttestState$delta))
-				todo <- todo - sum(sapply(ttestState$delta, function(x) isTRUE(!is.null(x) && !is.na(x))))
-			if (todo > 0)
-				jaspResults$startProgressbar(expectedTicks = todo * options[["wilcoxonSamplesNumber"]],
-																		 timeBetweenUpdatesInMs = 100)
-
-		}
-    # r.size <- options[["priorWidth"]]
-
-	  idxg1 <- dataset[[.v(options$groupingVariable)]] == g1
-    idxg2 <- dataset[[.v(options$groupingVariable)]] == g2
-
-	  idxNAg <- is.na(dataset[[.v(grouping)]])
-		for (var in dependents) {
-
-			# BayesFactor package doesn't handle NAs, so it is necessary to exclude them
-			subDataSet <- dataset[, .v(c(var, grouping))]
-			idxNA <- is.na(subDataSet[[1]]) | idxNAg
-      subDataSet <- subDataSet[!idxNA, ]
-
-			group1 <- subDataSet[idxg1[!idxNA], 1L]
-			group2 <- subDataSet[idxg2[!idxNA], 1L]
-
-			# f <- as.formula(paste( .v(var), "~", .v(options$groupingVariable)))
-
-			if (!is.null(ttestRows[[var]])) {
-
-				# row retrieved from state, only possible change is BF01 to BF10/ log(BF01)
-				ttestRows[[var]][["BF"]] <-
-					.recodeBFtype(bfOld     = ttestRows[[var]][["BF"]],
-												newBFtype = options[["bayesFactorType"]],
-												oldBFtype = ttestState[["bayesFactorType"]]
-					)
-
-				row <- ttestRows[[var]]
-
-			} else { # compute row
-
-				if (!isFALSE(errors[[var]])) {
-					errorMessage <- errors[[var]]$message
-				} else {
-					errorMessage <- NULL
-				}
-
-			  ttestResults$n1[var] <- length(group1)
-				ttestResults$n2[var] <- length(group2)
-
-				if (!options$wilcoxTest) {
-
-					r <- try (silent = FALSE, expr = {
-						.generalTtestBF(x = group2, y = group1, paired = FALSE, oneSided = oneSided, options = options)
-					})
-
-					if (isTryError(r))
-						r <- list(bf = NA, error = "", tValue = NA)
-
-					bf.raw <- r[["bf"]]
-					error <- .clean(r[["error"]])
-					ttestResults$tValue[var] <- r[["tValue"]]
-					ttestResults$delta[[var]] <- NA
-
-				} else if (options$wilcoxTest) {
-
-					# If the samples can be reused, don't call the Gibbs sampler again, but recalculate the
-					# Bayes factor with new settings and take the samples from state.
-					if (!is.null(ttestRows$delta[[var]]) && !is.na(ttestRows$delta[[var]])) {
-
-						bf.raw <- try(silent = FALSE, expr = {
-							.ttestBISComputeBayesFactorWilcoxon(
-							  deltaSamples         = ttestRows$delta[[var]],
-							  cauchyPriorParameter = options$priorWidth,
-							  oneSided             = oneSided)
-						})
-
-					} else {
-
-						r <- try(silent = FALSE, expr = {
-							.ttestBISRankSumGibbsSampler(
-							  x = group2, y = group1, nSamples = options$wilcoxonSamplesNumber, nBurnin = 0,
-							  cauchyPriorParameter = options$priorWidth, jaspResults = jaspResults)
-						})
-
-						if (isTryError(r)) {
-							ttestResults$delta[[var]] <- NULL
-							bf.raw <- NA
-						} else {
-							ttestResults$delta[[var]] <- r[["deltaSamples"]]
-							bf.raw <- .ttestBISComputeBayesFactorWilcoxon(
-							  deltaSamples         = r[["deltaSamples"]],
-							  cauchyPriorParameter = options$priorWidth,
-							  oneSided             = oneSided)
-						}
-					}
-
-					wValue <- unname(wilcox.test(group2, group1, paired = FALSE)$statistic)
-					error <- wValue
-					ttestResults$tValue[var] <- median(ttestResults$delta[[var]])
-
-				}
-
-				bf.raw <- .recodeBFtype(bfOld     = bf.raw,
-																newBFtype = options[["bayesFactorType"]],
-																oldBFtype = "BF10"
-				)
-
-				ttestResults$BF10post[var] <- bf.raw
-				BF <- .clean(bf.raw)
-
-				if (is.na(bf.raw)) {
-					ttestResults$status[var] <- "error"
-					plottingError[var] <- "Plotting is not possible: Bayes factor could not be calculated"
-				}
-
-				if (is.infinite(bf.raw) || is.infinite(1 / bf.raw)) {
-				  ttestResults$status[var] <- "error"
-				  if (is.infinite(bf.raw)) {
-				    ttestResults$plottingError[var] <- "Plotting is not possible: Bayes factor is infinite"
-				  } else {
-				    ttestResults$plottingError[var] <- "Plotting is not possible: The Bayes factor is too small"
-				  }
-				}
-
-				if (!is.null(errorMessage)){
-
-					BF <- .clean(NaN)
-					error <- ""
-					ttestTable$addFootnote(message(errorMessage, row_names = var))
-					ttestResults$status[var] <- "error"
-					errorFootnotes[var] <- errorMessage
-
-				}
-				row <- list(variable = var, BF = BF, error = error)
-				ttestRows[[var]] <- row
-			}
-			ttestTable$addRows(row, rowNames = var)
-		}
-	  # this is a standardized object. The names are identical to those in the other Bayesian t-tests
-	  ttestResults$ttestRows <- ttestRows
-	  ttestResults$BFH1H0    <- BFH1H0
-
-	  tmp <- createJaspState(
-	    object = ttestResults,
-	    title = "mainResultsObject"
-	  )
-	  tmp$dependOnOptions(dependencies)
-	  jaspResults[["stateTTestResults"]] <- tmp
 	}
-	ttestTable$status <- "complete"
+
+  # we can do the analysis
+  # get state
+  ttestState <- jaspResults[["stateTTestResults"]]$object
+  ttestRows <- ttestState$ttestRows
+
+  nvar <- length(dependents)
+
+  BFH1H0 <- !options$bayesFactorType == "BF01"
+
+  oneSided <- options[["oneSided"]]
+
+  if (options$wilcoxTest) {
+
+  	print("ttestState")
+  	print(str(ttestState, max.level = 3))
+  	print("ttestState$delta")
+  	print(str(ttestState$delta, max.level = 3))
+  	# all variables - the ones we sampled before
+  	todo <- nvar
+  	if (!is.null(ttestState$delta))
+  		todo <- todo - sum(sapply(ttestState$delta, function(x) isTRUE(!is.null(x) && !is.na(x))))
+  	if (todo > 0)
+  		jaspResults$startProgressbar(expectedTicks = todo * options[["wilcoxonSamplesNumber"]],
+  																 timeBetweenUpdatesInMs = 100)
+
+  }
+
+  idxg1 <- dataset[[.v(options$groupingVariable)]] == g1
+  idxg2 <- dataset[[.v(options$groupingVariable)]] == g2
+
+  idxNAg <- is.na(dataset[[.v(grouping)]])
+  for (var in dependents) {
+
+  	# BayesFactor package doesn't handle NAs, so it is necessary to exclude them
+  	subDataSet <- dataset[, .v(c(var, grouping))]
+  	idxNA <- is.na(subDataSet[[1]]) | idxNAg
+  	subDataSet <- subDataSet[!idxNA, ]
+
+  	group1 <- subDataSet[idxg1[!idxNA], 1L]
+  	group2 <- subDataSet[idxg2[!idxNA], 1L]
+
+  	if (!is.null(ttestRows[[var]])) {
+
+  		# row retrieved from state, only possible change is BF01 to BF10/ log(BF01)
+  		ttestRows[[var]][["BF"]] <-
+  			.recodeBFtype(bfOld     = ttestRows[[var]][["BF"]],
+  										newBFtype = options[["bayesFactorType"]],
+  										oldBFtype = ttestState[["bayesFactorType"]]
+  			)
+
+  		row <- ttestRows[[var]]
+
+  	} else { # compute row
+
+  		if (!isFALSE(errors[[var]])) {
+
+  			errorMessage <- errors[[var]]$message
+  			ttestTable$addFootnote(errorMessage, row_names = var)
+  			ttestResults$status[var] <- "error"
+  			errorFootnotes[var] <- errorMessage
+  			BF = .clean(NaN)
+  			error = ""
+
+  		} else {
+  			errorMessage <- NULL
+
+  			ttestResults$n1[var] <- length(group1)
+  			ttestResults$n2[var] <- length(group2)
+
+  			if (!options$wilcoxTest) {
+
+  				r <- try (silent = FALSE, expr =
+  					.generalTtestBF(x = group2, y = group1, paired = FALSE, oneSided = oneSided, options = options)
+  				)
+
+  				if (isTryError(r))
+  					r <- list(bf = NA, error = "", tValue = NA)
+
+  				bf.raw <- r[["bf"]]
+  				error <- .clean(r[["error"]])
+  				ttestResults$tValue[var] <- r[["tValue"]]
+  				ttestResults$delta[[var]] <- NA
+
+  			} else if (options$wilcoxTest) {
+
+  				# If the samples can be reused, don't call the Gibbs sampler again, but recalculate the
+  				# Bayes factor with new settings and take the samples from state.
+  				if (!is.null(ttestRows$delta[[var]]) && !is.na(ttestRows$delta[[var]])) {
+
+  					bf.raw <- try(silent = FALSE, expr =
+  						.ttestBISComputeBayesFactorWilcoxon(
+  							deltaSamples         = ttestRows$delta[[var]],
+  							cauchyPriorParameter = options$priorWidth,
+  							oneSided             = oneSided)
+  					)
+
+  				} else {
+
+  					r <- try(silent = FALSE, expr =
+  						.ttestBISRankSumGibbsSampler(
+  							x = group2, y = group1, nSamples = options$wilcoxonSamplesNumber, nBurnin = 0,
+  							cauchyPriorParameter = options$priorWidth, jaspResults = jaspResults)
+  					)
+
+  					if (isTryError(r)) {
+  						ttestResults$delta[[var]] <- NULL
+  						bf.raw <- NA
+  					} else {
+  						ttestResults$delta[[var]] <- r[["deltaSamples"]]
+  						bf.raw <- .ttestBISComputeBayesFactorWilcoxon(
+  							deltaSamples         = r[["deltaSamples"]],
+  							cauchyPriorParameter = options$priorWidth,
+  							oneSided             = oneSided)
+  					}
+  				}
+
+  				wValue <- unname(wilcox.test(group2, group1, paired = FALSE)$statistic)
+  				error <- wValue
+  				ttestResults$tValue[var] <- median(ttestResults$delta[[var]])
+
+  			}
+
+  			bf.raw <- .recodeBFtype(bfOld     = bf.raw,
+  															newBFtype = options[["bayesFactorType"]],
+  															oldBFtype = "BF10"
+  			)
+
+  			ttestResults$BF10post[var] <- bf.raw
+  			BF <- .clean(bf.raw)
+
+  			if (is.na(bf.raw)) {
+  				ttestResults$status[var] <- "error"
+  				plottingError[var] <- "Plotting is not possible: Bayes factor could not be calculated"
+  			}
+
+  			if (is.infinite(bf.raw) || is.infinite(1 / bf.raw)) {
+  				ttestResults$status[var] <- "error"
+  				if (is.infinite(bf.raw)) {
+  					ttestResults$plottingError[var] <- "Plotting is not possible: Bayes factor is infinite"
+  				} else {
+  					ttestResults$plottingError[var] <- "Plotting is not possible: The Bayes factor is too small"
+  				}
+  			}
+
+  			if (!is.null(errorMessage)) {
+
+  				BF = .clean(NaN)
+  				error = ""
+  				ttestTable$addFootnote(errorMessage, row_names = var)
+  				ttestResults$status[var] <- "error"
+  				errorFootnotes[var] <- errorMessage
+  			}
+  		}
+  		row <- list(variable = var, BF = BF, error = error)
+  	}
+  	ttestRows[[var]] <- row
+  	ttestTable$addRows(row, rowNames = var)
+  }
+  # this is a standardized object. The names are identical to those in the other Bayesian t-tests
+  ttestResults$ttestRows <- ttestRows
+  ttestResults$BFH1H0    <- BFH1H0
+
+  tmp <- createJaspState(
+  	object = ttestResults,
+  	title = "mainResultsObject"
+  )
+  tmp$dependOnOptions(dependencies)
+  jaspResults[["stateTTestResults"]] <- tmp
+  ttestTable$status <- "complete"
 
 	return(ttestResults)
 }
