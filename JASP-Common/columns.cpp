@@ -24,6 +24,12 @@
 using namespace std;
 using boost::interprocess::offset_ptr;
 
+const char * columnNotFound::what() const noexcept
+{
+	//Just here to have an out-of-line virtual method so that clang and gcc don't complain so much
+	return std::runtime_error::what();
+}
+
 size_t Columns::minRowCount() const
 {
 	if(columnCount() == 0) return 0; //If no columns then rowcount => 0
@@ -98,7 +104,7 @@ size_t Columns::findIndexByName(std::string name) const
 		if(_columnStore[i].name() == name)
 			return i;
 
-	throw std::runtime_error("Cannot find column by name: " + name);
+	throw columnNotFound(name);
 }
 
 

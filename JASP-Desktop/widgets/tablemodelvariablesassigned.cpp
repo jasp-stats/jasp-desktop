@@ -63,12 +63,13 @@ void TableModelVariablesAssigned::unbind()
 void TableModelVariablesAssigned::setSource(TableModelVariablesAvailable *source)
 {
 	_source = source;
+
 	setInfoProvider(source);
 
 	if (_sorted)
 		_variables.setSortParent(_source->allVariables());
 
-	connect(source, SIGNAL(variablesChanged()), this, SLOT(sourceVariablesChanged()));
+	connect(source, &TableModelVariablesAvailable::variablesChanged, this, &TableModelVariablesAssigned::sourceVariablesChanged);
 }
 
 bool TableModelVariablesAssigned::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const
@@ -169,6 +170,9 @@ void TableModelVariablesAssigned::sourceVariablesChanged()
 		setAssigned(variablesToKeep);
 
 	emit assignmentsChanged(variableRemoved);
+
+	if(_source != NULL)
+		_source->notifyAlreadyAssigned(_variables);
 }
 
 void TableModelVariablesAssigned::assign(const Terms &variables)

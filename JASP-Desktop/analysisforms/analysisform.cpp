@@ -37,7 +37,7 @@ int AnalysisForm::_scriptRequestCounter = 0;
 
 AnalysisForm::AnalysisForm(QString name, QWidget *parent) :
 	QWidget(parent),
-	_availableVariablesModel(parent)
+	_availableVariablesModel(this)
 {
 	setObjectName(name);
 	_mainVariables = NULL;
@@ -131,25 +131,32 @@ const QString &AnalysisForm::illegalValueMessage() const
 
 QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info) const
 {
-	if (info == VariableInfo::VariableType)
-	{
-		return _dataSet->column(term.asString()).columnType();
-	}
-	else if (info == VariableInfo::Labels)
-	{
-		QStringList values;
-		Labels &labels = _dataSet->column(term.asString()).labels();
-		for (Labels::const_iterator label_it = labels.begin(); label_it != labels.end(); ++label_it)
-		{
-			values.append(tq(label_it->text()));
-		}
+	try {
 
-		return values;
+		if (info == VariableInfo::VariableType)
+		{
+			return _dataSet->column(term.asString()).columnType();
+		}
+		else if (info == VariableInfo::Labels)
+		{
+			QStringList values;
+			Labels &labels = _dataSet->column(term.asString()).labels();
+			for (Labels::const_iterator label_it = labels.begin(); label_it != labels.end(); ++label_it)
+				values.append(tq(label_it->text()));
+
+			return values;
+		}
 	}
-	else
+	catch(columnNotFound e) {} //just return an empty QVariant right?
+	catch(std::exception e)
 	{
-		return QVariant();
+#ifdef JASP_DEBUG
+		std::cout << "AnalysisForm::requestInfo had an exception! " << e.what() << std::flush;
+#endif
+		throw e;
 	}
+	return QVariant();
+
 }
 
 void AnalysisForm::updateIllegalStatus()
