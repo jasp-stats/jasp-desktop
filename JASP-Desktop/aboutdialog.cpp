@@ -54,6 +54,10 @@ void AboutDialog::aboutPageLoaded(bool success)
 	{
 		QString version = tq(AppInfo::version.asString());
 
+#ifdef JASP_DEBUG
+		version+="-Debug";
+#endif
+
 		QString builddate = tq(AppInfo::builddate);
 		
 		m_aboutDialogJsInterface->setAppInfo(version, builddate);
