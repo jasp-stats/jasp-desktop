@@ -19,21 +19,6 @@
                                    dependents, grouping = NULL,
                                    missing = c("excludeListwise", "excludeAnalysisByAnalysis")) {
 
-  # read in dataset
-  #
-  # Arguments:
-  #
-  # dataset    : Deprecated, should be NULL.
-  # dependents : Either a list of variables, or a list with pairs of variables.
-  # grouping   : An optional grouping variable. Specify "" to indicate there should be a
-  #              grouping variable but none was supplied
-  # missing    : Should missing values be excluded listwise? Always removes rows with
-  #              missings in the grouping variable (if it was supplied).
-  #
-  # returns:
-  #
-  # A dataframe
-
   missing <- match.arg(missing)
 
   if (is.list(dependents)) {
@@ -54,16 +39,6 @@
 }
 
 .ttestBayesianGetErrorsPerVariable <- function(options, dataset) {
-
-	# does all error handling
-	#
-	# return:
-	#
-	# - if no analysis can be done (bad data) returns NULL
-	# - if an analysis breaking error occurs, calls stop
-	# - otherwise returns a named list where each name is an entry of dependents:
-	#   |- element is FALSE if no errors are found
-	#   |- element is a list with a message if errors are found
 
 	if (options[["canDoAnalysis"]]) {
 
@@ -88,10 +63,6 @@
 		  }
 
 		} else {
-
-	  	  # analysis breaking errors
-		  # .hasErrors(dataset, "run", type = 'variance',
-		  #            variance.target = dependents, exitAnalysisIfErrors = TRUE)
 
 		  if (is.null(options[["pairs"]])) {
 		    for (var in dependents) {
@@ -146,11 +117,11 @@
 
 .ttestBayesianInitOptions <- function(jaspResults, options, analysis = c("independent", "paired", "one-sample")) {
 
-	# initialize options: takes user input and determines:
-	#
-	# - can any analysis be done?
-	# - which variables will need to be computed for plots?
-	#
+  # initialize options: takes user input and determines:
+  #
+  # - can any analysis be done?
+  # - which variables will need to be computed for plots?
+  #
   # in addition:
   #
   # - unifies the hypothesis type (larger, smaller or equal) inside options[["oneSided"]]
@@ -333,13 +304,11 @@
 
   if (is.null(jaspResults[["Descriptives"]])) {
 
-    print("remake descriptivesCollection")
     descriptivesCollection <- createJaspContainer("Descriptives")
     descriptivesCollection$dependOnOptions(options[["stateKey"]][["descriptives"]])
     jaspResults[["Descriptives"]] <- descriptivesCollection
 
   } else {
-    print("descriptivesCollection from state")
     descriptivesCollection <- jaspResults[["Descriptives"]]
   }
 
@@ -349,9 +318,8 @@
 
   if (options[["descriptives"]]) {
     if (is.null(descriptivesCollection[["table"]])) {
-      print("remake descriptivesTable")
       descriptivesTable <- createJaspTable(title = "Descriptives")
-      descriptivesTable$dependOnOptions("descriptives")
+      descriptivesTable$dependOnOptions(c("descriptives", "variables"))
       descriptivesTable$position <- 1L
       descriptivesCollection[["table"]] <- descriptivesTable
 
@@ -370,14 +338,12 @@
         canRun                 = canDoAnalysis,
         pairs                  = options[["pairs"]]
       )
-    } else {
-      print("descriptivesTable from state")
     }
   }
 
   if (options[["descriptivesPlots"]]) {
     if (is.null(descriptivesCollection[["plots"]])) {
-      print("remake descriptivesPlots")
+
       descriptivesPlots <- createJaspContainer(title = "Descriptives Plots")
       descriptivesPlots$copyDependenciesFromJaspObject(descriptivesCollection)
       descriptivesPlots$position <- 2L
@@ -385,7 +351,6 @@
       runDescriptives <- TRUE
 
     } else {
-      print("descriptivesPlots from state")
       descriptivesPlots <- descriptivesCollection[["plots"]]
       runDescriptives <- options[["anyNewVariables"]]
     }
@@ -410,34 +375,6 @@
                                        grouping = NULL, CRI = NULL, canRun = FALSE,
                                        dependencies = NULL, stateDescriptivesTable = NULL,
                                        pairs = NULL) {
-
-  # general function to make a descriptives tables
-  #
-  # Arguments
-  #
-  # descriptivesTable      : a jaspTable
-  # dataset                : dataset (duh)
-  # dependents             : variables in dataset to get descriptives for
-  # grouping               : an optional grouping variable. If should be a grouping variable but there
-  #                          is none supplied, pass ""
-  # CRI                    : credible interval (between 0 and 1)
-  # canRun                 : FALSE implies an empty table is generated, TRUE means it will get filled
-  # pairs                  : a list where each element is a sublist indicating pairs of variables
-  # dependencies           : dependencies available in options
-  # stateDescriptivesTable : the results from previous time, either jaspState or jaspState$object
-  #
-  # Details:
-  #
-  # Does about everything to make a descriptives table. The only things that need to be set by a user
-  # are the dependencies of the table and state.
-  #
-  # Returns
-  #
-  # jaspState
-
-	# descriptives <- createJaspTable(title = if (is.null(grouping) "Group Descriptives" else "Descriptives"))
-	# jaspCollection[["descriptivesTable"]] <- descriptives
-	# descriptives$dependOnOptions(c(dependencies))
 
   hasGrouping <- !is.null(grouping)
 	hasCRI <- !is.null(CRI)
@@ -470,124 +407,95 @@
 
 	if (nvar == 0 || nrow(dataset) == 0 || !canRun) {
 
-	  if (hasGrouping) {
+		if (hasGrouping) {
 
-  		tmp <- rep(dependents, each = 2)
-  		tmp[seq(2, length(tmp), 2)] <- ""
-  		dat <- data.frame(variable = tmp)
+			tmp <- rep(dependents, each = 2)
+			tmp[seq(2, length(tmp), 2)] <- ""
+			dat <- data.frame(variable = tmp)
 
-	  } else {
+		} else {
 
-  		dat <- data.frame(variable = tmp)
+			dat <- data.frame(variable = dependents)
 
-	  }
-    descriptives$setData(dat)
+		}
+		descriptives$setData(dat)
 
 	} else {
-	  if (hasGrouping) {
+		if (hasGrouping) {
 
-	    levels <- base::levels(dataset[[ .v(grouping) ]])
-	    nlevels <- length(levels)
-	    groupingData <- dataset[[.v(grouping)]]
-	  } else {
-	    levels <- NULL
-	    nlevels <- 1
-	    groupingData <- NULL
+			levels <- base::levels(dataset[[ .v(grouping) ]])
+			nlevels <- length(levels)
+			groupingData <- dataset[[.v(grouping)]]
+		} else {
+			levels <- NULL
+			nlevels <- 1
+			groupingData <- NULL
 
-	  }
+		}
 
-	    for (var in dependents) {
-	      if (is.null(stateDescriptivesTable[[var]])) {
-	        for (i in seq_len(nlevels)) {
+		for (var in dependents) {
+			if (is.null(stateDescriptivesTable[[var]])) {
+				for (i in seq_len(nlevels)) {
 
-	          if (hasGrouping) {
-	            level <- levels[i]
-	            groupData <- dataset[groupingData == level, .v(var)]
-	          } else {
-	            groupData <- dataset[[.v(var)]]
-	          }
-	          groupDataOm <- groupData[!is.na(groupData)]
+					if (hasGrouping) {
+						level <- levels[i]
+						groupData <- dataset[groupingData == level, .v(var)]
+					} else {
+						groupData <- dataset[[.v(var)]]
+					}
+					groupDataOm <- groupData[!is.na(groupData)]
 
-	          if (class(groupDataOm) != "factor") {
+					if (class(groupDataOm) != "factor") {
 
-	            posteriorSummary <- .posteriorSummaryGroupMean(variable=groupDataOm,
-	                                                           descriptivesPlotsCredibleInterval=CRI)
-	            ciLower <- .clean(posteriorSummary$ciLower)
-	            ciUpper <- .clean(posteriorSummary$ciUpper)
+						posteriorSummary <- .posteriorSummaryGroupMean(variable=groupDataOm,
+																													 descriptivesPlotsCredibleInterval=CRI)
+						ciLower <- .clean(posteriorSummary$ciLower)
+						ciUpper <- .clean(posteriorSummary$ciUpper)
 
-	            n <- .clean(length(groupDataOm))
-	            mean <- .clean(mean(groupDataOm))
-	            std <- .clean(sd(groupDataOm))
-	            sem <- .clean(sd(groupDataOm) / sqrt(length(groupDataOm)))
+						n <- .clean(length(groupDataOm))
+						mean <- .clean(mean(groupDataOm))
+						std <- .clean(sd(groupDataOm))
+						sem <- .clean(sd(groupDataOm) / sqrt(length(groupDataOm)))
 
-	            row <- list(variable = var,
-	                        N = n, mean = mean, sd = std, se = sem)
+						row <- list(variable = var,
+												N = n, mean = mean, sd = std, se = sem)
 
-	            if (hasGrouping)
-	              row[["group"]] <- level
+						if (hasGrouping)
+							row[["group"]] <- level
 
-	            if (hasCRI)
-	              row[c("lowerCI", "upperCI")] <- list(ciLower, ciUpper)
+						if (hasCRI)
+							row[c("lowerCI", "upperCI")] <- list(ciLower, ciUpper)
 
-	          } else {
+					} else {
 
-	            n <- .clean(length(groupDataOm))
-	            row <- list(variable = var, N = n,
-	                        mean = "", sd = "", se = "")
+						n <- .clean(length(groupDataOm))
+						row <- list(variable = var, N = n,
+												mean = "", sd = "", se = "")
 
-	            if (hasGrouping)
-	              row[["group"]] <- ""
-	            if (hasCRI)
-	              row[c("lowerCI", "upperCI")] <- list("", "")
-	          }
+						if (hasGrouping)
+							row[["group"]] <- ""
+						if (hasCRI)
+							row[c("lowerCI", "upperCI")] <- list("", "")
+					}
 
-	          descriptives$addRows(row)
-	          stateDescriptivesTable[[var]][[i]] <- row
+					descriptives$addRows(row)
+					stateDescriptivesTable[[var]][[i]] <- row
 
-	        }
-	      } else { # reuse state
-          for (i in seq_len(nlevels)) {
-            descriptives$addRows(stateDescriptivesTable[[var]][[i]])
-	        }
-	      }
-	    }
-	  }
+				}
+			} else { # reuse state
+				for (i in seq_len(nlevels)) {
+					descriptives$addRows(stateDescriptivesTable[[var]][[i]])
+				}
+			}
+		}
+	}
 	descriptives$status <- "complete"
-
-	return(createJaspState(object = stateDescriptivesTable, title = "stateDescriptivesTable"))
-
+	return()
 }
 
 .ttestBayesianDescriptivesPlots <- function(descriptivePlots, dataset, dependents, errors,
 																						grouping = NULL, CRI = .95, canRun = FALSE,
 																						testValueOpt = NULL, pairs = NULL) {
-
-  # general function to make a descriptives plots
-  #
-  # Arguments
-  #
-  # descriptivePlots  :  a jaspCollection
-  # dataset           :  dataset (duh)
-  # dependents        :  variables in dataset to get descriptives for
-  # errors            :  optional list of errors (from .hasErrors). Should be a
-  #                      list(dependent = list(message = ..., ,error = ...))
-  # grouping          :  an optional grouping variable. If should be a grouping variable but there
-  #                      is none supplied, pass ""
-  # CRI               :  credible interval (between 0 and 1)
-  # canRun            :  FALSE implies an empty table is generated, TRUE means it will get filled
-  # testValueOpt      :  test value for Null-hypothesis. Omitted if NULL.
-  # pairs             :  a list where each element is a sublist indicating pairs of variables
-  #
-  # Details:
-  #
-  # Does about everything to make descriptives plots The only things that need to be set by a user
-  # are the dependencies of the descriptivePlots. IMPORTANT: Will automatically make each plot
-  # depend on whether the corresponding variable is present in options[["variables"]].
-  # general dependencies of the plots should be put on the collection
-  #
-  # Returns
-  #
-  # Nothing
 
   hasGrouping <- !is.null(grouping)
   paired <- !is.null(pairs)
@@ -641,7 +549,6 @@
 			descriptivePlots[[var]] <- plot
 		}
 	}
-
 	return()
 }
 
@@ -653,24 +560,19 @@
   pairs    <- options[["pairs"]]
 
   if (is.null(jaspResults[["inferentialPlots"]])) {
-    print("remake inferentialPlotsCollection")
     inferentialPlotsCollection <- createJaspContainer("Inferential Plots")
     inferentialPlotsCollection$dependOnOptions("hypothesis")
     jaspResults[["inferentialPlots"]] <- inferentialPlotsCollection
   } else {
-    print("inferentialPlotsCollection from state")
     inferentialPlotsCollection <- jaspResults[["inferentialPlots"]]
   }
 
   # make subcontainers for each variable
   for (var in dependents) {
   	if (is.null(inferentialPlotsCollection[[var]])) {
-  		print(sprintf("inferentialPlotsCollection[[%s]] remade", var))
   		container <- createJaspContainer(var)
   		container$dependOnOptions("hypothesis")
   		inferentialPlotsCollection[[var]] <- container
-  	} else {
-  		print(sprintf("inferentialPlotsCollection[[%s]] from state", var))
   	}
   }
 
@@ -962,8 +864,7 @@
 																					groupNames = NULL, CRI = .95,
 																					testValueOpt = NULL, paired = FALSE) {
 
-  #
-
+	# to be remade in jaspGraphs
 	hasGrouping <- !is.null(grouping)
 	if (hasGrouping) {
 
@@ -1043,4 +944,3 @@
 	list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))
 
 }
-

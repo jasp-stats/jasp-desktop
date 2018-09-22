@@ -42,14 +42,13 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options, state = NU
 .ttestBPSTTest <- function(jaspResults, dataset, options, errors) {
 
   if (!is.null(jaspResults[["ttestTable"]]) && !options[["anyNewVariables"]]) {
-    print("NOTHING CHANGED IN ttestTable")
     return(jaspResults[["stateTTestResults"]]$object)
   }
 
   ttestTable <- createJaspTable(title = "Bayesian Paired Samples T-Test")
   jaspResults[["ttestTable"]] <- ttestTable
   dependencies <- options[["stateKey"]][["ttestResults"]]
-  ttestTable$dependOnOptions(c(dependencies, "bayesFactorType"))
+  ttestTable$dependOnOptions(c(dependencies, "bayesFactorType", "pairs"))
   .ttestBPSTTestMarkup(ttestTable, options)
 
   dependents <- options[["variables"]]
@@ -58,7 +57,7 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options, state = NU
   if (!options[["canDoAnalysis"]]) {
     for (var in dependents) {
       pair <- options[["pairs"]][[var]]
-      ttestTable$addRows(list(variable1 = pair[[1]], .separator = "-", variable2 = pair[[2]]))
+      ttestTable$addRows(list(variable1 = pair[[1L]], .separator = "-", variable2 = pair[[2L]]))
     }
   } else {
     ttestState <- jaspResults[["stateTTestResults"]]$object # is there useable data?
@@ -83,9 +82,9 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options, state = NU
       } else {
 
         pair <- options[["pairs"]][[var]]
-        row <- list(variable1 = pair[[1]], separator = "-", variable2 = pair[[2]])
+        row <- list(variable1 = pair[[1L]], separator = "-", variable2 = pair[[2L]])
 
-        if (!(pair[[1]] == "" || pair[[2]] == "")) {
+        if (!(pair[[1L]] == "" || pair[[2L]] == "")) {
 
           if (!isFALSE(errors[[var]])) {
             errorMessage <- errors[[var]]$message
@@ -96,7 +95,7 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options, state = NU
 
           } else {
 
-            subDataSet <- dataset[, .v(c(pair[[1]], pair[[2]]))]
+            subDataSet <- dataset[, .v(c(pair[[1L]], pair[[2L]]))]
             subDataSet <- subDataSet[!is.na(subDataSet), ]
 
             c1 <- subDataSet[[1L]]
@@ -110,7 +109,7 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options, state = NU
               ttestResults$status[var] <- "error"
               ttestResults$errorFootnotes[var] <- errorMessage
               ttestTable$addFootnote(message = errorMessage, row_names = var)
-              row <- list(variable1 = pair[[1]], separator = "-", variable2 = pair[[2]], BF = .clean(NaN), error = "")
+              row <- list(variable1 = pair[[1L]], separator = "-", variable2 = pair[[2L]], BF = .clean(NaN), error = "")
 
             } else {
 
@@ -161,13 +160,15 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options, state = NU
 .ttestBPSTTestMarkup <- function(jaspTable, options) {
 
   if (options$effectSizeStandardized == "default") {
-    citation <- list(
-      "Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
-      "Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
+  	citations <- list(
+  		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
+  		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237."
+  		)
   } else if (options$effectSizeStandardized == "informative") {
-    citation <- list(
-      "Gronau, Q. F., Ly, A., & Wagenmakers, E.-J. (2017). Informed Bayesian T-Tests. Manuscript submitted for publication and uploaded to arXiv: https://arxiv.org/abs/1704.02479")
+    citations <- list("Gronau, Q. F., Ly, A., & Wagenmakers, E.-J. (2017). Informed Bayesian T-Tests. Manuscript submitted for publication and uploaded to arXiv: https://arxiv.org/abs/1704.02479")
   }
+	for (c in citations)
+		jaspTable$addCitation(c)
 
   bfType <- options$bayesFactorType
 
@@ -183,7 +184,6 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options, state = NU
   jaspTable$addColumnInfo(name = "variable2", title = "",      type = "string")
   jaspTable$addColumnInfo(name = "BF",        title = bfTitle, type = "number", format = "sf:4;dp:3")
 
-  # TODO: git blame, find out who wrote this, ask them why this difference in formats is meaningful
   if (options$hypothesis == "notEqualToTestValue") {
     fmt <- "sf:4;dp:3"
   } else {

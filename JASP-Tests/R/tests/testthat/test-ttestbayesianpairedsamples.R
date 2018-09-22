@@ -17,8 +17,7 @@ test_that("Main table results match", {
   options$informativeTDf <- 2
   results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["ttestTable"]][["data"]]
-  # expect_equal_tables(table, list("contNormal", "-", "contGamma", 293915424756.037, 1.32616895200622e-19))
-   expect_equal_tables(table, list(3909867771451546, 1.43297769208873e-23, "-", "contNormal", "contGamma"))
+  expect_equal_tables(table, list(3909867771451546, 1.43297769208873e-23, "-", "contNormal", "contGamma"))
 
 })
 

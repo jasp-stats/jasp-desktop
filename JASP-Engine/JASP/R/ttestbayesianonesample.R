@@ -40,15 +40,13 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 
 .ttestBOSTTest <- function(jaspResults, dataset, options, errors) {
 
-  if (!is.null(jaspResults[["ttestTable"]]) && !options[["anyNewVariables"]]) {
-		print("NOTHING CHANGED IN ttestTable")
+  if (!is.null(jaspResults[["ttestTable"]]) && !options[["anyNewVariables"]])
   	return(jaspResults[["stateTTestResults"]]$object)
-  }
 
 	ttestTable <- createJaspTable(title = "Bayesian One Sample T-Test")
 	jaspResults[["ttestTable"]] <- ttestTable
 	dependencies <- options[["stateKey"]][["ttestResults"]]
-	ttestTable$dependOnOptions(c(dependencies, "bayesFactorType"))
+	ttestTable$dependOnOptions(c(dependencies, "bayesFactorType", "variables", "testValue"))
   .ttestBOSTTestMarkup(ttestTable, options)
 
 	if (!options[["canDoAnalysis"]])
@@ -156,13 +154,16 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 .ttestBOSTTestMarkup <- function(jaspTable, options) {
 
   if (options$effectSizeStandardized == "default") {
-    citation <- list(
+    citations <- list(
       "Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
       "Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
   } else if (options$effectSizeStandardized == "informative") {
-    citation <- list(
+    citations <- list(
       "Gronau, Q. F., Ly, A., & Wagenmakers, E.-J. (2017). Informed Bayesian T-Tests. Manuscript submitted for publication and uploaded to arXiv: https://arxiv.org/abs/1704.02479")
   }
+	for (c in citations)
+		jaspTable$addCitation(c)
+
 
   bfType <- options$bayesFactorType
 	hypothesis <- switch(options[["hypothesis"]],
@@ -173,12 +174,12 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 	bfTitle <- .ttestBayesianGetBFTitle(bfType, hypothesis)
 
   if (!(options[["hypothesis"]] == "notEqualToTestValue" && options[["testValue"]] == 0)) {
-    m0 <- "For all tests, the alternative hypothesis specifies that the"
+    m0 <- "For all tests, the alternative hypothesis specifies that the population"
     m1 <- switch(
       options[["hypothesis"]],
       "greaterThanTestValue" = "mean is greater than %.3f.",
       "lessThanTestValue"    = "mean is less than %.3f.",
-      "lessThanTestValue"    = "population mean is different from %.3f."
+      "notEqualToTestValue"  = "mean differs from %.3f."
     )
     message <- sprintf(paste(m0, m1), options[["testValue"]])
     jaspTable$addFootnote(message = message, symbol = "<em>Note.</em>")
@@ -187,7 +188,6 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
   jaspTable$addColumnInfo(name = "Variable", title = "",       type = "string")
   jaspTable$addColumnInfo(name = "BF",       title = bfTitle, type = "number", format="sf:4;dp:3")
 
-  # TODO: git blame, find out who wrote this, ask them why this difference in formats is meaningful
   if (options$hypothesis == "notEqualToTestValue") {
       jaspTable$addColumnInfo(name="error", type="number", format="sf:4;dp:3", title="error %")
   } else {
@@ -1700,7 +1700,7 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
   for (i in seq_along(rValues)) {
 
     if (oneSided == FALSE) {
-
+debugonce(BayesFactor::ttestBF)
       BF <- BayesFactor::ttestBF(x=x, y=y, paired=paired, nullInterval=nullInterval, rscale=rValues[i])
       BF10[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
 

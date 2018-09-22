@@ -2806,7 +2806,7 @@ editImage <- function(plotName, type, height, width) {
   return(v)
 }
 
-.recodeBFtype <- function(bfOld, newBFtype, oldBFtype) {
+.recodeBFtype <- function(bfOld, newBFtype = c("BF10", "BF01", "LogBF10"), oldBFtype = c("BF10", "BF01", "LogBF10")) {
 
 	# Arguments:
 	# bfOld: the current value of the Bayes factor
@@ -2814,6 +2814,8 @@ editImage <- function(plotName, type, height, width) {
 	# oldBFtype: the current type of the Bayes factor, e.g., BF10, BF01,
 	#
 	# note: log(BF10) is the 'else' type, it is not explicitly checked.
+	newBFtype <- match.arg(newBFtype)
+	oldBFtype <- match.arg(oldBFtype)
 
 	if (oldBFtype == newBFtype)
 		return(bfOld)

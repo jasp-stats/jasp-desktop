@@ -48,16 +48,14 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options, state
 	# this function is the main workhorse, and also makes a table
 
 	# check if we actually need to compute things
-  if (!is.null(jaspResults[["ttestTable"]]) && !options[["anyNewVariables"]]) {
-		print("NOTHING CHANGED IN ttestTable")
+  if (!is.null(jaspResults[["ttestTable"]]) && !options[["anyNewVariables"]])
   	return(jaspResults[["stateTTestResults"]]$object)
-  }
-	print("remake ttestTable from scratch!")
+
 	dependents <- options[["variables"]]
 	ttestTable <- createJaspTable(title = "")
 	jaspResults[["ttestTable"]] <- ttestTable
 	dependencies <- options[["stateKey"]][["ttestResults"]]
-	ttestTable$dependOnOptions(c(dependencies, "bayesFactorType"))
+	ttestTable$dependOnOptions(c(dependencies, "bayesFactorType", "variables"))
 
 	grouping   <- options$groupingVariable
 	levels <- base::levels(dataset[[.v(grouping)]])
@@ -91,10 +89,6 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options, state
 
   if (options$wilcoxTest) {
 
-  	print("ttestState")
-  	print(str(ttestState, max.level = 3))
-  	print("ttestState$delta")
-  	print(str(ttestState$delta, max.level = 3))
   	# all variables - the ones we sampled before
   	todo <- nvar
   	if (!is.null(ttestState$delta))
@@ -150,7 +144,7 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options, state
   			if (!options$wilcoxTest) {
 
   				r <- try (silent = FALSE, expr =
-  					.generalTtestBF(x = group2, y = group1, paired = FALSE, oneSided = oneSided, options = options)
+  					.generalTtestBF(x = group1, y = group2, paired = FALSE, oneSided = oneSided, options = options)
   				)
 
   				if (isTryError(r))
@@ -178,7 +172,7 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options, state
 
   					r <- try(silent = FALSE, expr =
   						.ttestBISRankSumGibbsSampler(
-  							x = group2, y = group1, nSamples = options$wilcoxonSamplesNumber, nBurnin = 0,
+  							x = group1, y = group2, nSamples = options$wilcoxonSamplesNumber, nBurnin = 0,
   							cauchyPriorParameter = options$priorWidth, jaspResults = jaspResults)
   					)
 
@@ -255,21 +249,23 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options, state
 
 	jaspTable$title <- ifelse(options$wilcoxTest, "Bayesian Mann-Whitney U Test", "Bayesian Independent Samples T-Test")
 		if (options$effectSizeStandardized == "default" & !options$wilcoxTest) {
-			citation <- list(
+			citations <- list(
 				"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
 				"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237."
 			)
 		} else if (options$wilcoxTest) {
-			citation <- list(
+			citations <- list(
 				"van Doorn, J., Ly, A., Marsman, M., & Wagenmakers, E. J. (2018). Bayesian Latent-Normal Inference for the Rank Sum Test, the Signed Rank Test, and Spearman's rho. Manuscript submitted for publication and uploaded to arXiv: https://arxiv.org/abs/1703.01805"
 			)
 		} else if (options$effectSizeStandardized == "informative") {
-			citation <- list(
+			citations <- list(
 				"Gronau, Q. F., Ly, A., & Wagenmakers, E.-J. (2017). Informed Bayesian T-Tests. Manuscript submitted for publication and uploaded to arXiv: https://arxiv.org/abs/1704.02479"
 			)
 		}
-		# can jaspResults do this?
-		# jaspTable$citation <- citation
+
+		for (c in citations)
+			jaspTable$addCitation(c)
+
 		jaspTable$addColumnInfo(name = "variable", title = "", type = "string")
 
 		bfType <- options$bayesFactorType

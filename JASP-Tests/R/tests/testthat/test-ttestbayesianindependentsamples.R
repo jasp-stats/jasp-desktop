@@ -16,9 +16,7 @@ test_that("Main table results match", {
   options$informativeCauchyScale <- 0.5
   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["ttestTable"]][["data"]]
-  # expect_equal_tables(table, list("contNormal", 0.123677493243643, 0.0895633315624481))
-  expect_equal_tables(table, list(0.0280859509755459, 0.0625753671100039, "contNormal")
-)
+  expect_equal_tables(table, list(0.123677493243643, 0.0895633315624481, "contNormal"))
 })
 
 # test_that("Prior posterior plot matches", {
@@ -113,6 +111,7 @@ test_that("Analysis handles errors", {
 })
 
 test_that("Analysis handles integer overflow", {
+
   set.seed(4491)
   dat <- data.frame(dependent_var = rnorm(2e5),
                     grouping      = rep(c(1, 2), each = 1e5))
@@ -123,5 +122,5 @@ test_that("Analysis handles integer overflow", {
   results <- jasptools::run("TTestBayesianIndependentSamples", dat, options, view=FALSE, quiet=TRUE)
 
   table <- results[["results"]][["ttestTable"]][["data"]]
-  expect_equal_tables(table, list(0.00511047419082252, 0.311956739823362, "dependent_var"))
+  expect_equal_tables(table, list(0.00511047419082252, 0.309809332885487, "dependent_var"))
 })

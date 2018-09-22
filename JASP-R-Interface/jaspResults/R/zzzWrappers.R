@@ -1,5 +1,4 @@
 .onAttach <- function(libname, pkgname) {
-	
 	require(Rcpp)
 	message(sprintf("jaspResults version: %s", packageVersion("jaspResults")))
 	env <- globalenv()
@@ -164,7 +163,6 @@ createJaspContainer <- function(title="", dependencies=NULL, position=NULL)
   checkForJaspResultsInit()
 
   container <- create_cpp_jaspContainer(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspContainer, title))
-
 
   if(!is.null(dependencies))
     container$dependOnOptions(dependencies)
