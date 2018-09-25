@@ -1,3 +1,20 @@
+//
+// Copyright (C) 2013-2018 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
 import QtQuick 2.0
 
 
@@ -16,40 +33,15 @@ Item {
 
         var toolTip = jsonObj.toolTipText
 
-        if (jsonObj.nodeType === "Operator"
-                || jsonObj.nodeType === "OperatorVertical") {
-            var operatorObj = (jsonObj.nodeType
-                               === "Operator" ? createOperator(
-                                                    jsonObj.operator,
-                                                    toolTip) : createOperatorVertical(
-                                                    jsonObj.operator, toolTip))
+        if (jsonObj.nodeType === "Operator") {
+            var operatorObj = createOperator(jsonObj.operator, toolTip)
             operatorObj.releaseHere(dropItHere)
 
             convertJSONtoItem(jsonObj.leftArgument, operatorObj.leftDrop)
             convertJSONtoItem(jsonObj.rightArgument, operatorObj.rightDrop)
-        } else if (jsonObj.nodeType === "Function") {
-            var parameterNames = []
-            var parameterDropKeys = []
-            for (var i = 0; i < jsonObj.arguments.length; i++) {
-                parameterNames.push(jsonObj.arguments[i].name)
-                parameterDropKeys.push(jsonObj.arguments[i].dropKeys)
-            }
 
-            var funcObj = createFunction(jsonObj.functionName, parameterNames,
-                                         parameterDropKeys, toolTip)
-            funcObj.releaseHere(dropItHere)
-
-            for (var i = 0; i < jsonObj.arguments.length; i++)
-                convertJSONtoItem(jsonObj.arguments[i].argument,
-                                  funcObj.getParameterDropSpot(
-                                      jsonObj.arguments[i].name))
-        } else if (jsonObj.nodeType === "Number")
-            createNumber(jsonObj.value, toolTip).releaseHere(dropItHere)
-        else if (jsonObj.nodeType === "String")
-            createString(jsonObj.text, toolTip).releaseHere(dropItHere)
-        else if (jsonObj.nodeType === "Column")
-            createColumn(jsonObj.columnName,
-                         toolTip).releaseHere(dropItHere)
+        } else if (jsonObj.nodeType === "Column")
+            createColumn(jsonObj.columnName, toolTip).releaseHere(dropItHere)
     }
 
     function createOperator(operator, toolTip) {
@@ -58,47 +50,18 @@ Item {
                                              operator: operator
                                          })
     }
-    function createOperatorVertical(operator, toolTip) {
-        return operatorvertComp.createObject(scriptColumn, {
-                                                 toolTipText: toolTip,
-                                                 operator: operator
-                                             })
-    }
-    function createFunction(functionName, parameterNames, parameterDropKeys, toolTip) {
-        return functionComp.createObject(scriptColumn, {
-                                             toolTipText: toolTip,
-                                             functionName: functionName,
-                                             parameterNames: parameterNames,
-                                             parameterDropKeys: parameterDropKeys
-                                         })
-    }
-    function createNumber(number, toolTip) {
-        return numberComp.createObject(scriptColumn, {
-                                           toolTipText: toolTip,
-                                           value: number
-                                       })
-    }
-    function createString(text, toolTip) {
-        return stringComp.createObject(scriptColumn, {
-                                           toolTipText: toolTip,
-                                           text: text
-                                       })
-    }
-    function createColumn(columnNamn, toolTip) {
-        return columnComp.createObject(scriptColumn, {
-                                           toolTipText: toolTip
-                                       })
+
+    function createColumn(columnName, toolTip) {
+        return columnComp.createObject(scriptColumn, { toolTipText: toolTip })
     }
 
     Component {
         id: operatorComp
-        OperatorDrag {
-        }
+        OperatorDrag { }
     }
 
     Component {
         id: columnComp
-        ColumnDrag {
-        }
+        ColumnDrag { }
     }
 }

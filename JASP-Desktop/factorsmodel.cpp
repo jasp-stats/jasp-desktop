@@ -23,15 +23,11 @@
 
 QVariant FactorsModel::data(const QModelIndex &index, int role) const
 {
-	if(index.row() >= rowCount()) return QVariant();
+	if(index.row() >= rowCount() || _labels.length() <= 0) { return QVariant(); }
 
-	if (_labels.length() <= 0) {
-		return QVariant();
-	}
-
-	if(role == NameRole)
-        return _labels.at(index.row());
-	else if(role == TypeRole)
+	if		(role == NameRole || role == ToolTipRole)
+		return _labels.at(index.row());
+	else if	(role == TypeRole)
 		return "column";
 
 	return QVariant();
@@ -39,8 +35,9 @@ QVariant FactorsModel::data(const QModelIndex &index, int role) const
 
 QHash<int, QByteArray> FactorsModel::roleNames() const {
 	static const auto roles = QHash<int, QByteArray>{
-		{ NameRole,					"columnName"},
-		{ TypeRole,					"type"}
+		{	NameRole,		"columnName"	},
+		{	TypeRole,		"type"			},
+		{	ToolTipRole,	"toolTip"		}
 	};
 
 	return roles;

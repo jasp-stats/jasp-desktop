@@ -1,3 +1,20 @@
+//
+// Copyright (C) 2013-2018 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
 import QtQuick 2.0
 
 
@@ -15,20 +32,16 @@ ListView {
         z     : 5
 
         property var alternativeDropFunctionDef: function (caller) {
-            var obj         = null
-            var _columnName = undefined
+            if (type != "column") { return null }
 
-            if (type == "column") {
-                _columnName = columnName
-                obj         = columnCompBetterContext.createObject(scriptColumn, {
-                                                               toolTipText: "",
-                                                               alternativeDropFunction: null,
-                                                               columnName: _columnName,
-                                                               acceptsDrops: true
-                                                           })
+            var details = {
+                toolTipText            : "",
+                alternativeDropFunction: null,
+                columnName             : columnName,
+                acceptsDrops           : true
             }
 
-            return obj
+            return columnCompBetterContext.createObject(scriptColumn, details)
         }
 
         Loader {
@@ -40,8 +53,7 @@ ListView {
             property string listToolTip: ""
 
             //anchors.centerIn: parent
-            x: isColumn ? listOfStuff.widthMargin / 2 : (parent.width - width)
-                          - (listOfStuff.widthMargin / 2)
+            x: isColumn ? listOfStuff.widthMargin / 2 : (parent.width - width) - (listOfStuff.widthMargin / 2)
 
             sourceComponent: type === "column" ? columnComp : defaultComp
 

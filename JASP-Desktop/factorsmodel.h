@@ -34,7 +34,8 @@ class FactorsModel  : public QAbstractTableModel
 public:
 	enum FactorsModelRoles {
 		NameRole = Qt::UserRole + 1,
-		TypeRole
+		TypeRole,
+		ToolTipRole
 	 };
 
 	FactorsModel(QObject *parent = NULL) : QAbstractTableModel(parent) {}
