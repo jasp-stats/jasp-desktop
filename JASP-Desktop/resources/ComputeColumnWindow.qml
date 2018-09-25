@@ -126,6 +126,22 @@ FocusScope
 
 				property bool changed: text != computedColumnsInterface.computeColumnRCode
 			}
+
+
+			Image
+			{
+				id:							backgroundImage
+
+				source:						"qrc:/icons/columnConstructorBackground.png"
+				anchors.centerIn:			parent
+
+				property real widthScale:	parent.width  / implicitWidth
+				property real heightScale:	parent.height / implicitHeight
+				property real ratio:		Math.min(Math.min(widthScale, heightScale), 1.0) * 0.5
+
+				width:						implicitWidth * ratio
+				height:						implicitHeight * ratio
+			}
 		}
 
 		ComputedColumnsConstructor

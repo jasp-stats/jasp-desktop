@@ -100,6 +100,21 @@ Item {
 
 		anchors.fill: parent
 		z: -3
+
+		Image
+		{
+			id:							backgroundImage
+
+			source:						"qrc:/icons/filterConstructorBackground.png"
+			anchors.centerIn:			parent
+
+			property real widthScale:	parent.width  / implicitWidth
+			property real heightScale:	parent.height / implicitHeight
+			property real ratio:		Math.min(Math.min(widthScale, heightScale), 1.0) * 0.5
+
+			width:						implicitWidth * ratio
+			height:						implicitHeight * ratio
+		}
 	}
 
 	Item
