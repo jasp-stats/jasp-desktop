@@ -92,6 +92,8 @@
         <file>icons/loading.gif</file>
         <file>icons/error.png</file>
         <file>icons/square_trashcan.png</file>
+        <file>icons/columnConstructorBackground.png</file>
+        <file>icons/filterConstructorBackground.png</file>
     </qresource>
     <qresource prefix="/fonts"/>
 </RCC>

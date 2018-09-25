@@ -20,6 +20,6 @@
 CustomWebEngineView::CustomWebEngineView(QWidget* parent) :
 	QWebEngineView(parent)
 {
-	_page = new CustomWebEnginePage(parent);
+	_page = new CustomWebEnginePage(this);
 	setPage(_page);
 }
