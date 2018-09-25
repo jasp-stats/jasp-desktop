@@ -183,8 +183,7 @@ Item {
                         function convertToR() {
                             var uit = ""
                             for (var i = 0; i < children.length; ++i)
-                                uit += (i > 0 ? "& " : "") + children[i].returnR(
-                                            ) + "\n"
+                                uit += (i > 0 ? " & " : "") + children[i].returnR()
 
                             return uit
                         }

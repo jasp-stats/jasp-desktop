@@ -52,21 +52,19 @@ Item {
 
     Component {
         id: operatorComp
-        OperatorDrag {
-        }
+        OperatorDrag { }
     }
 
     property var alternativeDropFunctionDef: function (caller) {
-        var obj = null
+        if (caller.shownChild.objectName !== "Operator") { return null }
 
-        if (caller.shownChild.objectName === "Operator")
-            obj = operatorComp.createObject(scriptColumn, {
-                                                toolTipText: caller.toolTipText,
-                                                alternativeDropFunction: null,
-                                                operator: caller.operator,
-                                                acceptsDrops: true
-                                            })
+        var details = {
+            toolTipText: caller.toolTipText,
+            alternativeDropFunction: null,
+            operator: caller.operator,
+            acceptsDrops: true
+        }
 
-        return obj
+        return operatorComp.createObject(scriptColumn, details)
     }
 }

@@ -19,29 +19,28 @@ import QtQuick 2.9
 
 
 Item {
-    id: opRoot
-    objectName: "Operator"
+    id                         : opRoot
+    objectName                 : "Operator"
     property string __debugName: "Operator " + operator
 
-    property int initialWidth: filterConstructor.blockDim * acceptsDrops ? 4 : 2
-    property string operator: "+"
-    property string operatorImageSource: ""
-    property bool acceptsDrops: true
-    property bool isNested: false
-    property var leftDropSpot: leftDrop
-    property var dropKeys: ["number"]
-    property bool dropKeysMirrorEachother: false
-    property var dropKeysLeft: dropKeys
-    property var dropKeysRight: dropKeys
+    property int    initialWidth           : filterConstructor.blockDim * acceptsDrops ? 4 : 2
+    property string operator               : "+"
+    property string operatorImageSource    : ""
+    property bool   acceptsDrops           : true
+    property bool   isNested               : false
+    property var    leftDropSpot           : leftDrop
+    property var    dropKeys               : ["number"]
+    property bool   dropKeysMirrorEachother: false
+    property var    dropKeysLeft           : dropKeys
+    property var    dropKeysRight          : dropKeys
 
-    property alias leftDrop: leftDrop
-    property alias rightDrop: rightDrop
+    property alias  leftDrop               : leftDrop
+    property alias  rightDrop              : rightDrop
 
-    height: Math.max(filterConstructor.blockDim, leftDrop.height,
-                     rightDrop.height)
-    width: opX + opWidth + rightDrop.width + (haakjesRechts.visible ? haakjesRechts.width : 0)
-    property real opWidth: opImg.visible ? opImg.width + 2 : opText.width
-    property real opX: opImg.visible ? opImg.x : opText.x
+                    height                 : Math.max(filterConstructor.blockDim, leftDrop.height, rightDrop.height)
+                    width                  : opX + opWidth + rightDrop.width + (haakjesRechts.visible ? haakjesRechts.width : 0)
+    property real   opWidth                : opImg.visible ? opImg.width + 2 : opText.width
+    property real   opX                    : opImg.visible ? opImg.x : opText.x
 
     function shouldDrag(mouseX, mouseY) {
         if (!acceptsDrops)
