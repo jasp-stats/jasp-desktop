@@ -50,6 +50,8 @@ linux {
 	else				{ LIBS += -larchive -lboost_filesystem -lboost_system }
 }
 
+linux: LIBS += -L$$_R_HOME/lib -lR -lrt # because linux JASP-R-Interface is staticlib
+macx:  LIBS += -L$$_R_HOME/lib -lR
 
 
 macx {

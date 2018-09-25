@@ -34,12 +34,6 @@ windows {
         R_EXE  = $$_R_HOME/bin/$$ARCH/R
 }
 
-$$BUILDING_JASP_ENGINE {
-	linux: LIBS += -L$$_R_HOME/lib -lR -lrt # because linux JASP-R-Interface is staticlib
-	macx:  LIBS += -L$$_R_HOME/lib -lR
-} else {
-  win32: LIBS += -L$$_R_HOME/bin/$$ARCH -lR
-}
 
 INCLUDEPATH += \
     $$_R_HOME/library/Rcpp/include \

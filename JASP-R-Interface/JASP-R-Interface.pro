@@ -21,6 +21,8 @@ include(../R_HOME.pri)
 INCLUDEPATH += ../../boost_1_64_0
 INCLUDEPATH += ../JASP-Common
 
+win32: LIBS += -L$$_R_HOME/bin/$$ARCH -lR
+
 DEFINES += JASP_R_INTERFACE_LIBRARY
 
 # The following define makes your compiler emit warnings if you use
