@@ -23,6 +23,9 @@ NetworkAnalysis <- function (
 	state = NULL,
 	...
 ) {
+	if (base::isNamespaceLoaded("bootnet") == FALSE) {
+		try(base::loadNamespace("bootnet"), silent=TRUE)
+	}
 
 	## Read Dataset ## ----
 	variables <- unlist(options$variables)

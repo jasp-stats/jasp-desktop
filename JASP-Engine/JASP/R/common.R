@@ -262,7 +262,7 @@ runJaspResults <- function(name, title, dataKey, options, stateKey)
 
 initEnvironment <- function() {
 	Sys.setlocale("LC_CTYPE", "UTF-8")
-	packages <- c("BayesFactor", "bootnet") # Add any package that needs pre-loading
+	packages <- c("BayesFactor") # Add any package that needs pre-loading
 
 	for (package in packages) {
 		if (base::isNamespaceLoaded(package) == FALSE) {
