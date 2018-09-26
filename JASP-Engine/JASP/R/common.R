@@ -2245,14 +2245,16 @@ as.list.footnotes <- function(footnotes) {
   on.exit(setwd(oldwd))
 
   if (ggplot2::is.ggplot(plot)) {
-      ppi <- .fromRCPP(".ppi")
-	  pngMultip <- ppi * 3 / 4
-	  if (Sys.info()["sysname"]=="Darwin")
-	      pngMultip <- ppi / 2
-	  ggplot2::ggsave(relativePathpng, plot, "png",
-	                  width = width / pngMultip,
-					  height = height / pngMultip,
-					  dpi = 2 * pngMultip)
+    ppi <- .fromRCPP(".ppi")
+
+    # fix for mac
+    if (Sys.info()["sysname"] == "Darwin") ppi <- ppi / 2
+
+    ggplot2::ggsave(relativePathpng, plot, "png",
+                    width  = 1.5*width/ppi,
+                    height = 1.5*height/ppi,
+                    dpi    = 2*ppi,
+                    bg     = "transparent")
   } else {
     # Operating System information
   	type <- "cairo"

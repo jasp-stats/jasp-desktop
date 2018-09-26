@@ -110,7 +110,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
       if(is.null(distPlots[[var]]))
       {
         if(makeSplit) distPlots[[var]] <- .descriptivesFrequencyPlots(dataset = splitDat, options = options, variable = var)
-        else          distPlots[[var]] <- .descriptivesFrequencyPlots(dataset = dataset,  options = options, variable = var)
+        else          distPlots[[var]] <- .descriptivesFrequencyPlots(dataset = dataset.factors, options = options, variable = var)
       }
 
     if(distPlots$length == 0)
@@ -835,7 +835,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
         binwidth = (h$breaks[2] - h$breaks[1]),
         fill = "grey",
         col = "black",
-        size = .3,
+        size = .7,
         center = ((h$breaks[2] - h$breaks[1])/2)
       ) +
       ggplot2::geom_line(
