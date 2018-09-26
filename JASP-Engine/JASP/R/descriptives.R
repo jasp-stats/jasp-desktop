@@ -835,7 +835,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
         binwidth = (h$breaks[2] - h$breaks[1]),
         fill = "grey",
         col = "black",
-        size = .3,
+        size = .7,
         center = ((h$breaks[2] - h$breaks[1])/2)
       ) +
       ggplot2::geom_line(
