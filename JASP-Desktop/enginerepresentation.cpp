@@ -181,7 +181,9 @@ void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
 	{
 	case performType::init:		analysis->setStatus(Analysis::Initing);	break;
 	case performType::abort:	analysis->setStatus(Analysis::Aborted);	break;
-	case performType::run:		analysis->setStatus(Analysis::Running);	break;
+	case performType::run:
+	case performType::saveImg:
+	case performType::editImg:	analysis->setStatus(Analysis::Running);	break;
 	default:															break;
 	}
 
