@@ -32,9 +32,10 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj = TRUE, relat
   if (ggplot2::is.ggplot(plot)) {
     ppi <- .fromRCPP(".ppi")
     ggplot2::ggsave(relativePathpng, plot, "png",
-                    width = width*(ppi/96),
-                    height = height*(ppi/96),
-                    dpi = ppi*72/96)
+                    width  = 1.5*width/ppi,
+                    height = 1.5*height/ppi,
+                    dpi    = 2*ppi,
+                    bg     = "transparent")
   } else {
     # Operating System information
   	type <- "cairo"
