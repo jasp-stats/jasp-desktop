@@ -31,6 +31,10 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj = TRUE, relat
 
   if (ggplot2::is.ggplot(plot)) {
     ppi <- .fromRCPP(".ppi")
+
+    # fix for mac
+    if (Sys.info()["sysname"] == "Darwin") ppi <- ppi / 2
+
     ggplot2::ggsave(relativePathpng, plot, "png",
                     width  = 1.5*width/ppi,
                     height = 1.5*height/ppi,
