@@ -12,6 +12,7 @@ LevelsTableModel::LevelsTableModel(QObject *parent)
 	: QAbstractTableModel(parent)
 {
 	_column = NULL;
+	connect(this, &LevelsTableModel::refreshConnectedModels, this, &LevelsTableModel::refreshConnectedModelsToName);
 }
 
 void LevelsTableModel::setColumn(Column *column)

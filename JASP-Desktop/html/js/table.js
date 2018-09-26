@@ -527,10 +527,6 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 			rowCount *= maxColumnsInColumn
 		}
 
-		console.log("cells: ")
-		console.log(cells)
-
-
 		if (cells !== undefined && cells.length > 0 && optCasesAcrossColumns) {
 
 			var swapped = swapRowsAndColumns(columnHeaders, cells, optOverTitle)

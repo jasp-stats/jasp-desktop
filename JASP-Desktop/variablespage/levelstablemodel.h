@@ -53,10 +53,12 @@ public:
 public slots:
 	void refresh();
 	void refreshColumn(Column * column);
+	void refreshConnectedModelsToName(Column * column) { emit refreshConnectedModelsByName(column->name()); }
 
 
 signals:
 	void refreshConnectedModels(Column * column);
+	void refreshConnectedModelsByName(std::string columnName);
 	void resizeLabelColumn();
 	void labelFilterChanged();
 	void notifyColumnHasFilterChanged(int column); //should be on column but column is not a Qt object.
