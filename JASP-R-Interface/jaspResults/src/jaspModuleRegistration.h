@@ -133,7 +133,7 @@ RCPP_MODULE(jaspResults)
 		.property("error",						&jaspTable_Interface::getError,
 												&jaspTable_Interface::setError,						"Stores the kind of error that might've occured during table-generation")
 
-		.method( "[[<-",						&jaspTable_Interface::setColumn,					"Insert a single column into the table,  if a string is used then it will look for an existing column name and set that column with the new data and otherwise will just add it at the end. If it is indexed by integer it will simply set it there.")
+		.method( "[[<-",						&jaspTable_Interface::setColumn,					"Insert a single column into the table, if a string is used then it will look for an existing column name and set that column with the new data and otherwise will just add it at the end. If it is indexed by integer it will simply set it there.")
 	;
 
 	Rcpp::class_<jaspHtml_Interface>("jaspHtml")

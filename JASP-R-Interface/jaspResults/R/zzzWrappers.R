@@ -171,7 +171,7 @@ createJaspContainer <- function(title="", dependencies=NULL)
 {
   checkForJaspResultsInit()
 
-  container <- jaspResultsModule$create_cpp_jaspContainer(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspContainer, title))
+  container <- create_cpp_jaspContainer(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspContainer, title))
 
   if(!is.null(dependencies))
     container$dependOnTheseOptions(dependencies)
@@ -214,7 +214,7 @@ createJaspHtml <- function(text="", elementType="p", class="", dependencies=NULL
 {
   checkForJaspResultsInit()
 
-  htmlObj             <- jaspResultsModule$create_cpp_jaspHtml(text) # If we use R's constructor it will garbage collect our objects prematurely.. #
+  htmlObj             <- create_cpp_jaspHtml(text) # If we use R's constructor it will garbage collect our objects prematurely.. #
   htmlObj$elementType <- elementType
   htmlObj$class       <- class
 
