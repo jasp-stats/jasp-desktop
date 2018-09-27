@@ -150,6 +150,8 @@ FocusScope
 			anchors.fill: parent
 			visible: !computedColumnContainer.userLikesR
 
+			showGeneratedRCode: false
+
 
 			functionModel: ListModel
 			{
@@ -171,8 +173,13 @@ FocusScope
 				ListElement	{ type: "function";	functionName: "cut";	functionParameters: "values,numBreaks";	functionParamTypes: "number,number";			toolTip: "break your data up in numBreaks levels" }
 
 				ListElement	{ type: "separator" }
-				ListElement	{ type: "function";	functionName: "rnorm";	functionParameters: "n,mean,sd";functionParamTypes: "number,number,number";	toolTip: "generates a Gaussian distribution of n elements with specified mean and standard deviation sd" }
-				ListElement	{ type: "function";	functionName: "rexp";	functionParameters: "n,rate";	functionParamTypes: "number,number,number";	toolTip: "generates an exponential distribution of n elements with specified rate" }
+				ListElement	{ type: "function";	functionName: "rnorm";	functionParameters: "n,mean,sd";		functionParamTypes: "number,number,number";	toolTip: "samples n data points from a Gaussian distribution with specified mean and standard deviation sd" }
+				ListElement	{ type: "function";	functionName: "rexp";	functionParameters: "n,rate";			functionParamTypes: "number,number,number";	toolTip: "samples n data points from an exponential distributed with specified rate" }
+				ListElement	{ type: "function";	functionName: "rbeta";	functionParameters: "n,shape1,shape2";	functionParamTypes: "number,number,number";	toolTip: "samples n data points from a beta distribution with specified shape1 and shape2" }
+				ListElement	{ type: "function";	functionName: "rgamma";	functionParameters: "n,shape,scale";	functionParamTypes: "number,number,number";	toolTip: "samples n data points from a gamma distribution with specified shape and scale" }
+				ListElement	{ type: "function";	functionName: "runif";	functionParameters: "n,min,max";		functionParamTypes: "number,number,number";	toolTip: "samples n data points from a uniform distribution between min and max" }
+				ListElement	{ type: "function";	functionName: "rt";		functionParameters: "n,df,ncp";			functionParamTypes: "number,number,number";	toolTip: "samples n data points from t distribution with degrees of freedom df and non-centrality ncp"}
+				ListElement	{ type: "function";	functionName: "rchisq";	functionParameters: "n,df,ncp";			functionParamTypes: "number,number,number";	toolTip: "samples n data points from a chi-squared distribution with degrees of freedom df and non-centrality ncp"}
 
 				ListElement	{ type: "separator" }
 
@@ -243,11 +250,28 @@ FocusScope
 
 		FilterButton
 		{
+			id:			showGeneratedRCode
+			visible:	!computedColumnsInterface.computeColumnUsesRCode
+			width:		visible ? implicitWidth : 0
+
+			toolTip:	"Show generated R code"
+			iconSource: "qrc:/icons/R.png"
+
+			anchors.left:	removeColumnButton.right
+			anchors.bottom:	parent.bottom
+			anchors.top:	closeColumnEditorButton.top
+
+			onClicked:		computedColumnConstructor.showGeneratedRCode = !computedColumnConstructor.showGeneratedRCode
+
+		}
+
+		FilterButton
+		{
 			id: applycomputeColumn
 
 			text: computeColumnEdit.changedSinceLastApply ? "Compute column" : "Column computed"
 			disabled: !computeColumnEdit.changedSinceLastApply
-			anchors.left: removeColumnButton.right
+			anchors.left: showGeneratedRCode.right
 			anchors.right: helpButton.left
 			anchors.bottom: parent.bottom
 			anchors.top: closeColumnEditorButton.top
