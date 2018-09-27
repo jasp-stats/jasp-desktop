@@ -7,16 +7,17 @@ Item {
 	property real blockDim: 20
 	property real fontPixelSize: 14
 	property var allKeys: ["number", "boolean", "string", "variable"]
-	readonly property real desiredMinimumHeight: columnsRow.height + hints.height + (blockDim * 3)
+	readonly property real desiredMinimumHeight: columnsRow.height + hints.height + (blockDim * 3) + generatedRCodeBox.height
 
-	property real extraSpaceUnderColumns: 0
-	property bool somethingChanged: false
-	property bool isColumnConstructor: true
+	property real	extraSpaceUnderColumns: 0
+	property bool	somethingChanged: false
+	property bool	isColumnConstructor: true
+	property bool	showGeneratedRCode: false
 
-	property bool lastCheckPassed: true
-	property bool showStartupMsg: true
+	property bool	lastCheckPassed: true
+	property bool	showStartupMsg: true
 
-	property alias functionModel: functieLijst.model
+	property alias	functionModel: functieLijst.model
 
 	onSomethingChangedChanged:
 	{
@@ -53,19 +54,20 @@ Item {
 		if(allCorrect )
 		{
 			if(noFormulas)
-				hints.filterText += "Computed columns code clear(ed)<br>"
+				hints.filterText += "Computed columns code clear(ed)"
 			else
-				hints.filterText += "Computed columns code applied<br>"
+				hints.filterText += "Computed columns code applied"
 
 			filterConstructor.rCode = scriptColumn.convertToR()
+
 			filterConstructor.jsonConstructed = JSON.stringify(filterConstructor.returnFilterJSON())
 		}
 
 		if(!allCorrect)
-			hints.filterText += "Please enter all arguments - see fields marked in red.<br>"
+			hints.filterText += "Please enter all arguments - see fields marked in red."
 
 		if(!onlyOneFormula && !noFormulas)
-			hints.filterText += (!allCorrect ? "<br>" : "" ) + "Only one formula per computed column allowed.<br>"
+			hints.filterText += (!allCorrect ? "<br>" : "" ) + "Only one formula per computed column allowed."
 
 		lastCheckPassed = allCorrect && onlyOneFormula
 		return lastCheckPassed
@@ -191,7 +193,7 @@ Item {
 						{
 							var uit = ""
 							for (var i = 0; i < children.length; ++i)
-								uit += ( i > 0 ? "& ": "") + children[i].returnR() + "\n"
+								uit += ( i > 0 ? "& ": "") + children[i].returnR() + (i < children.length - 1 ? "\n" : "")
 
 							return uit
 						}
@@ -229,21 +231,74 @@ Item {
 
 		Text
 		{
-			property string filterText: "Welcome to the drag and drop computed column constructor!<br>"
-			id: hints
-			text: filterText
+			property string filterText: "Welcome to the drag and drop computed column constructor!"
 
-			anchors.left: parent.left
-			anchors.right: parent.right
-			anchors.bottom: parent.bottom
+			id:						hints
+			text:					filterText
 
-			height: font.pixelSize + contentHeight
+			anchors.left:			parent.left
+			anchors.right:			parent.right
+			anchors.bottom:			generatedRCodeBox.top
 
-			wrapMode: TextArea.WordWrap
-			horizontalAlignment: TextArea.AlignHCenter
+			height:					font.pixelSize + contentHeight
 
-			textFormat: Text.StyledText
-			font.pixelSize: filterConstructor.fontPixelSize
+			wrapMode:				TextArea.WordWrap
+			horizontalAlignment:	TextArea.AlignHCenter
+
+			textFormat:				Text.StyledText
+			font.pixelSize:			filterConstructor.fontPixelSize
+		}
+
+		Rectangle
+		{
+			id:						generatedRCodeBox
+
+			anchors.left:			parent.left
+			anchors.right:			parent.right
+			anchors.bottom:			parent.bottom
+			anchors.bottomMargin:	2
+
+			height:					visible ? generatedRcode.contentHeight + 8: 0
+			visible:				filterConstructor.showGeneratedRCode
+
+			border.color:			"grey"
+			border.width:			1
+
+			Text
+			{
+				id:							rLetter
+				text:						"R:"
+				anchors.left:				parent.left
+				anchors.verticalCenter:		parent.verticalCenter
+				anchors.leftMargin:			4
+			}
+
+			TextEdit
+			{
+
+				id:						generatedRcode
+				text:					filterConstructor.rCode
+
+				//anchors.top:			parent.top
+				anchors.left:			rLetter.right
+				anchors.right:			parent.right
+				//anchors.bottom:			parent.bottom
+				anchors.verticalCenter:	rLetter.verticalCenter
+				anchors.leftMargin:		4
+
+
+				wrapMode:				TextArea.WordWrap
+				horizontalAlignment:	TextArea.AlignLeft
+				verticalAlignment:		TextArea.AlignVCenter
+
+
+				textFormat:				Text.PlainText
+				font.family:			"Courier"
+				font.pixelSize:			filterConstructor.fontPixelSize
+				selectByMouse:			true
+				selectByKeyboard:		true
+				readOnly:				true
+			}
 		}
 
 	}
@@ -313,7 +368,10 @@ Item {
 	{
 		trashCan.destroyAll();
 		if(jsonString !== "")
+		{
 			jsonConverterComputedColumns.convertJSONtoFormulas(JSON.parse(jsonString))
+			checkAndApplyFilter()
+		}
 
 		filterConstructor.somethingChanged = false
 	}
