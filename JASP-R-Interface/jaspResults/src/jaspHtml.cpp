@@ -20,6 +20,7 @@ Json::Value jaspHtml::dataEntry()
 	Json::Value data(jaspObject::dataEntry());
 
 	data["text"]		= _text;
+	data["title"]		= _title;
 	data["class"]		= _class;
 	data["elementType"]	= _elementType;
 	data["name"]		= getUniqueNestedName();
