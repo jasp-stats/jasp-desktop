@@ -210,13 +210,14 @@ createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, 
   return(jaspObj)
 }
 
-createJaspHtml <- function(text="", elementType="p", class="", dependencies=NULL)
+createJaspHtml <- function(text="", elementType="p", class="", dependencies=NULL, title="hide me") # if you change "hide me" here then also change it in Common.R and in HtmlNode.js or come up with a way to define it in such a way to make it show EVERYWHERE...
 {
   checkForJaspResultsInit()
 
   htmlObj             <- create_cpp_jaspHtml(text) # If we use R's constructor it will garbage collect our objects prematurely.. #
   htmlObj$elementType <- elementType
   htmlObj$class       <- class
+  htmlObj$title       <- title
 
   if(!is.null(dependencies))
     htmlObj$dependOnTheseOptions(dependencies)

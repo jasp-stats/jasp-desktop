@@ -65,9 +65,9 @@ Item
 	{
 		id: meanBar
 		visible: funcRoot.drawMeanSpecial || funcRoot.isRoot
-        height: visible ? 6 : 0
+		height: visible ? 6 : 0
 
-        anchors.left: funcRoot.isRoot ? functionDef.right : parent.left
+		anchors.left: funcRoot.isRoot ? functionDef.right : parent.left
 		anchors.right: parent.right
 		anchors.top: parent.top
 
@@ -79,20 +79,20 @@ Item
 			anchors.left: parent.left
 			anchors.right: parent.right
 			anchors.top: parent.top
-            anchors.topMargin: funcRoot.isRoot ? 0 : 3
+			anchors.topMargin: funcRoot.isRoot ? 0 : 3
 
-            height: 3
+			height: 3
 		}
 	}
 
 	Item
 	{
 		id: functionDef
-        anchors.top: funcRoot.isRoot ? parent.top : meanBar.bottom
+		anchors.top: funcRoot.isRoot ? parent.top : meanBar.bottom
 		anchors.bottom: parent.bottom
 
 		x: extraMeanWidth / 2
-        width: functionImgRoot.visible ? functionImgRoot.width : functionText.visible ? functionText.width : functionImg.width
+		width: functionImgRoot.visible ? functionImgRoot.width : functionText.visible ? functionText.width : functionImg.width
 
 		Text
 		{
@@ -111,38 +111,38 @@ Item
 		}
 
 
-        Image
-        {
-            id: functionImg
+		Image
+		{
+			id: functionImg
 
-            visible: (!funcRoot.isRoot || !funcRoot.acceptsDrops) && functionImageSource !== ""
+			visible: (!funcRoot.isRoot || !funcRoot.acceptsDrops) && functionImageSource !== ""
 
-            source: functionImageSource
+			source: functionImageSource
 
 
-            height: filterConstructor.blockDim
-            width: height
+			height: filterConstructor.blockDim
+			width: height
 			sourceSize.width: filterConstructor.blockDim * 2
 			sourceSize.height: filterConstructor.blockDim * 2
 
-            anchors.verticalCenter: parent.verticalCenter
+			anchors.verticalCenter: parent.verticalCenter
 
-        }
+		}
 
-        Image
-        {
-            id: functionImgRoot
+		Image
+		{
+			id: functionImgRoot
 
-            visible: funcRoot.isRoot &&  funcRoot.acceptsDrops
+			visible: funcRoot.isRoot &&  funcRoot.acceptsDrops
 
-            source: functionImageSource
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            width: filterConstructor.blockDim
+			source: functionImageSource
+			anchors.top: parent.top
+			anchors.bottom: parent.bottom
+			width: filterConstructor.blockDim
 			sourceSize.width: filterConstructor.blockDim * 2
 			sourceSize.height: filterConstructor.blockDim * 3
 			smooth: true
-        }
+		}
 	}
 
 	Text
@@ -157,7 +157,7 @@ Item
 		horizontalAlignment: Text.AlignHCenter
 
 		width: showParentheses ? filterConstructor.blockDim / 3 : 0
-        text: ! showParentheses || funcRoot.isAbs || funcRoot.isRoot ? "" : "("
+		text: ! showParentheses || funcRoot.isAbs || funcRoot.isRoot ? "" : "("
 		font.pixelSize: filterConstructor.fontPixelSize
 
 		Rectangle
@@ -170,7 +170,7 @@ Item
 			color: "black"
 			width: 2
 
-            visible: funcRoot.isAbs
+			visible: funcRoot.isAbs
 		}
 
 	}
@@ -359,7 +359,7 @@ Item
 		horizontalAlignment: Text.AlignHCenter
 
 		width: showParentheses ? filterConstructor.blockDim / 3 : 0
-        text: !showParentheses || funcRoot.isAbs || funcRoot.isRoot ? "" : ")"
+		text: !showParentheses || funcRoot.isAbs || funcRoot.isRoot ? "" : ")"
 		font.pixelSize: filterConstructor.fontPixelSize
 
 		Rectangle
@@ -372,7 +372,7 @@ Item
 			color: "black"
 			width: 2
 
-            visible: funcRoot.isAbs
+			visible: funcRoot.isAbs
 		}
 	}
 }

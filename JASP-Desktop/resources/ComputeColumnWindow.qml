@@ -170,7 +170,10 @@ FocusScope
 				ListElement	{ type: "function";	functionName: "median";	functionParameters: "values";	functionParamTypes: "number";			toolTip: "median" }
 
 				ListElement	{ type: "separator" }
-				ListElement	{ type: "function";	functionName: "cut";	functionParameters: "values,numBreaks";	functionParamTypes: "number,number";			toolTip: "break your data up in numBreaks levels" }
+				ListElement	{ type: "function";	functionName: "cut";		functionParameters: "values,numBreaks";		functionParamTypes: "number,number";	toolTip: "break your data up in numBreaks levels" }
+				ListElement	{ type: "function";	functionName: "replaceNA";	functionParameters: "column,replaceWith";	functionParamTypes: "number,number";	toolTip: "replace any missing values (NA) in column by the value in replaceWith" }
+
+
 
 				ListElement	{ type: "separator" }
 				ListElement	{ type: "function";	functionName: "normalDst";	functionParameters: "mean,sd";		functionParamTypes: "number,number";	toolTip: "samples n data points from a Gaussian distribution with specified mean and standard deviation sd" }

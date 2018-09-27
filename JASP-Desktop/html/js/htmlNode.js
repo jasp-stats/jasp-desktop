@@ -1,6 +1,7 @@
 JASPWidgets.htmlNode = Backbone.Model.extend({
 
 	defaults: {
+		title: "",
 		citation: null,
 		text: "",
 		class: "",
@@ -8,28 +9,68 @@ JASPWidgets.htmlNode = Backbone.Model.extend({
 	}
 });
 
+
+convertModelToHtml = function(model)
+{
+	var optText			= model.get("text");
+	var optClass		= model.get("class");
+	var optElementType	= model.get("elementType");
+
+	if(optElementType === undefined || optElementType === null)
+		optElementType = "p";
+
+	if(optClass === undefined || optClass === null)
+		optClass = "";
+
+	if(optText === undefined || optText === null)
+		optText = "";
+
+	var html;
+	if(optElementType === "")	html =														optText;
+	else if(optClass === "")	html = '<'+ optElementType +'>' +							optText + '</'+ optElementType +'>';
+	else						html = '<'+ optElementType +' class="'+ optClass +'">' +	optText + '</'+ optElementType +'>';
+
+	return html;
+}
+
 JASPWidgets.htmlNodeView = JASPWidgets.objectView.extend({
 
 	menuName: "HtmlNode",
 
 	 attachToolbar: function($toolbar) {
-		 //do nothing
+		 var title = this.model.get("title");
+
+		 // if you change "hide me" here then also change it in Common.R and in zzzWrappers.R or come up with a way to define it in such a way to make it show EVERYWHERE...
+		 if(title !== undefined && title !== "hide me")
+			 this.$el.prepend(this.toolbar.$el);
 	 },
 
-	/*events: {
+	 copyMenuClicked: function () {
+		 var exportParams = new JASPWidgets.Exporter.params();
+		 exportParams.format = JASPWidgets.ExportProperties.format.raw;
+		 exportParams.process = JASPWidgets.ExportProperties.process.copy;
+		 exportParams.includeNotes = false;
+
+		  pushTextToClipboard({raw: this.model.get("text"), html: convertModelToHtml(this.model) } , exportParams)
+		 return true;
+	 },
+
+
+
+	events: {
 		'mouseenter': '_hoveringStart',
 		'mouseleave': '_hoveringEnd',
-	},*/
+	},
 
 	notePositionBottom: true,
-/*
+
 	_hoveringStart: function (e) {
 		this.toolbar.setVisibility(true);
 	},
 
 	_hoveringEnd: function (e) {
 		this.toolbar.setVisibility(false);
-	},*/
+	},
 
 	hasCollapse: function () {
 		return false;
@@ -50,28 +91,11 @@ JASPWidgets.htmlNodeView = JASPWidgets.objectView.extend({
 	disableTitleExport: true,
 });
 
+
 JASPWidgets.htmlNodePrimitive = JASPWidgets.View.extend({
 
 	render: function () {
-		var optText			= this.model.get("text");
-		var optClass		= this.model.get("class");
-		var optElementType	= this.model.get("elementType");
-
-		if(optElementType === undefined || optElementType === null)
-			optElementType = "p";
-
-		if(optClass === undefined || optClass === null)
-			optClass = "";
-
-		if(optText === undefined || optText === null)
-			optText = "";
-
-		var html;
-		if(optElementType === "")	html =														optText;
-		else if(optClass === "")	html = '<'+ optElementType +'>' +							optText + '</'+ optElementType +'>';
-		else						html = '<'+ optElementType +' class="'+ optClass +'">' +	optText + '</'+ optElementType +'>';
-
-		this.$el.append(html);
+		this.$el.append(convertModelToHtml(this.model));
 	},
 
 	getExportAttributes: function (element, exportParams) {
