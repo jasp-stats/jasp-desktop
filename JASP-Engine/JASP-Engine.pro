@@ -161,4 +161,5 @@ OTHER_FILES  += \
 
 DISTFILES += \
     JASP/DESCRIPTION \
-    JASP/NAMESPACE
+    JASP/NAMESPACE \
+    JASP/R/distributionSamplers.R

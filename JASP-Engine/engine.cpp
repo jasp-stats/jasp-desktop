@@ -61,6 +61,8 @@ Engine::Engine(int slaveNo, unsigned long parentPID) : _slaveNo(slaveNo), _paren
 	rbridge_setColumnDataAsNominalSource(		boost::bind(&Engine::setColumnDataAsNominal,		this, _1, _2));
 	rbridge_setColumnDataAsNominalTextSource(	boost::bind(&Engine::setColumnDataAsNominalText,	this, _1, _2));
 
+	rbridge_setGetDataSetRowCountSource( boost::bind(&Engine::dataSetRowCount, this));
+
 	//usleep(10000000);
 
 	rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults);

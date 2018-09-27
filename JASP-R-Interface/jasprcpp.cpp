@@ -23,6 +23,10 @@
 RInside_ConsoleLogging *rinside_consoleLog;
 #endif
 
+static const	std::string NullString = "null";
+static			std::string lastErrorMessage = "";
+static			cetype_t Encoding = CE_UTF8;
+
 RInside						*rinside;
 ReadDataSetCB				readDataSetCB;
 RunCallbackCB				runCallbackCB;
@@ -34,14 +38,13 @@ RequestTempRootNameCB		requestTempRootNameCB;
 ReadDataSetDescriptionCB	readDataSetDescriptionCB;
 RequestSpecificFileSourceCB requestStateFileSourceCB,
 							requestJaspResultsFileSourceCB;
-static const	std::string NullString = "null";
-static			std::string lastErrorMessage = "";
-static			cetype_t Encoding = CE_UTF8;
 
 SetColumnAsScale		dataSetColumnAsScale;
 SetColumnAsOrdinal		dataSetColumnAsOrdinal;
 SetColumnAsNominal		dataSetColumnAsNominal;
 SetColumnAsNominalText	dataSetColumnAsNominalText;
+
+DataSetRowCount			dataSetRowCount;
 
 
 extern "C" {
@@ -63,6 +66,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	runCallbackCB							= callbacks->runCallbackCB;
 	readDataSetCB							= callbacks->readDataSetCB;
+	dataSetRowCount							= callbacks->dataSetRowCount;
 	readFullDataSetCB						= callbacks->readFullDataSetCB;
 	readFilterDataSetCB						= callbacks->readFilterDataSetCB;
 	dataSetColumnAsScale					= callbacks->dataSetColumnAsScale;
@@ -76,6 +80,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	dataSetColumnAsNominalText				= callbacks->dataSetColumnAsNominalText;
 	requestJaspResultsFileSourceCB			= callbacks->requestJaspResultsFileSourceCB;
 
+	rInside[".dataSetRowCount"]				= Rcpp::InternalFunction(&jaspRCPP_dataSetRowCount);
 	rInside[".setRError"]					= Rcpp::InternalFunction(&jaspRCPP_setRError);
 	rInside[".setRWarning"]					= Rcpp::InternalFunction(&jaspRCPP_setRWarning);
 	rInside[".returnString"]				= Rcpp::InternalFunction(&jaspRCPP_returnString);
@@ -414,6 +419,11 @@ void jaspRCPP_setRWarning(SEXP Message)
 void jaspRCPP_setRError(SEXP Message)
 {
 	lastErrorMessage = "Error: " + Rcpp::as<std::string>(Message);
+}
+
+int jaspRCPP_dataSetRowCount()
+{
+	return dataSetRowCount();
 }
 
 void jaspRCPP_setColumnDataAsScale(std::string columnName,			Rcpp::Vector<REALSXP> scalarData)
