@@ -185,10 +185,9 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"which.max",
 	"which.min",
 	"xtabs",
-	".setColumnDataAsScale", ".setColumnDataAsOrdinal", ".setColumnDataAsNominal", ".setColumnDataAsNominalText", "function", "stop"
+	".setColumnDataAsScale", ".setColumnDataAsOrdinal", ".setColumnDataAsNominal", ".setColumnDataAsNominalText", "function", "stop",
+	"normalDst", "expDst", "betaDst", "gammaDst", "unifDst", "tDst", "chiSqDst"
 	};
-
-
 
 std::string R_FunctionWhiteList::returnOrderedWhiteList()
 {

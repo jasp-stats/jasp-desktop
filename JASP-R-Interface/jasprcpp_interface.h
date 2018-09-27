@@ -79,6 +79,7 @@ typedef void						(STDCALL *SetColumnAsScale)				(const char* columnName, double
 typedef void						(STDCALL *SetColumnAsOrdinal)			(const char* columnName, int *			ordinalData,	size_t length);
 typedef void						(STDCALL *SetColumnAsNominal)			(const char* columnName, int *			nominalData,	size_t length);
 typedef void						(STDCALL *SetColumnAsNominalText)		(const char* columnName, const char **	nominalData,	size_t length);
+typedef int							(STDCALL *DataSetRowCount)				();
 
 
 struct RBridgeCallBacks {
@@ -96,6 +97,7 @@ struct RBridgeCallBacks {
 	SetColumnAsOrdinal			dataSetColumnAsOrdinal;
 	SetColumnAsNominal			dataSetColumnAsNominal;
 	SetColumnAsNominalText		dataSetColumnAsNominalText;
+	DataSetRowCount				dataSetRowCount;
 };
 
 typedef void (*sendFuncDef)(const char *);
@@ -114,6 +116,7 @@ RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_getLastErrorMsg();
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_resetErrorMsg();
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_setErrorMsg(const char* msg);
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_freeArrayPointer(bool ** arrayPointer);
+RBRIDGE_TO_JASP_INTERFACE int			STDCALL jaspRCPP_dataSetRowCount();
 
 #ifndef __WIN32__
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_getRConsoleOutput();

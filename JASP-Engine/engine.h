@@ -61,6 +61,8 @@ public:
 	void setColumnDataAsNominal(std::string columnName, std::vector<int> nominalData)				{	provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);	}
 	void setColumnDataAsNominalText(std::string columnName, std::vector<std::string> nominalData)	{	provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);	}
 
+	int dataSetRowCount() { return static_cast<int>(provideDataSet()->rowCount()); }
+
 private:
 // Methods:
 	void receiveFilterMessage(			Json::Value jsonRequest);
