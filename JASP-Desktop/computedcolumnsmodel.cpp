@@ -134,20 +134,25 @@ void ComputedColumnsModel::sendCode(QString code)
 	emitSendComputeCode(_currentlySelectedName, code, (*_computedColumns)[columnName].columnType());
 }
 
-
-void ComputedColumnsModel::invalidate(QString name, bool setDefaultsVals)
+void ComputedColumnsModel::validate(QString columnName)
 {
-	(*_computedColumns)[name.toStdString()].invalidate();
-
-	if(setDefaultsVals)
-		revertToDefaultInvalidatedColumns();
+	(*_computedColumns)[columnName.toStdString()].validate();
+	emitHeaderDataChanged(columnName);
 }
 
-void ComputedColumnsModel::validate(QString name)
+void ComputedColumnsModel::invalidate(QString columnName)
 {
-	(*_computedColumns)[name.toStdString()].validate();
-	emitHeaderDataChanged(name);
+	(*_computedColumns)[columnName.toStdString()].invalidate();
+	emitHeaderDataChanged(columnName);
 }
+
+void ComputedColumnsModel::invalidateDependents(std::string columnName)
+{
+	for(ComputedColumn * col : *_computedColumns)
+		if(col->dependsOn(columnName))
+			invalidate(QString::fromStdString(col->name()));
+}
+
 
 void ComputedColumnsModel::emitHeaderDataChanged(QString name)
 {
@@ -187,21 +192,23 @@ void ComputedColumnsModel::revertToDefaultInvalidatedColumns()
 		}
 }
 
-void ComputedColumnsModel::computeColumnSucceeded(std::string columnName, std::string warning)
+void ComputedColumnsModel::computeColumnSucceeded(std::string columnName, std::string warning, bool dataChanged)
 {
-
 	bool shouldNotifyQML = _currentlySelectedName.toStdString() == columnName;
 
 	if(_computedColumns->setError(columnName, warning) && shouldNotifyQML)
 		emit computeColumnErrorChanged();
 
-	try{
-		emit refreshColumn((*_computedColumns)[columnName].column());
-	}
-	catch(...){}
+	if(dataChanged)
+		try{
+			emit refreshColumn((*_computedColumns)[columnName].column());
+		}
+		catch(...){}
 
 	validate(QString::fromStdString(columnName));
-	checkForDependentColumnsToBeSent(columnName);
+
+	if(dataChanged)
+		checkForDependentColumnsToBeSent(columnName);
 }
 
 void ComputedColumnsModel::computeColumnFailed(std::string columnName, std::string error)
@@ -211,14 +218,33 @@ void ComputedColumnsModel::computeColumnFailed(std::string columnName, std::stri
 	if(areLoopDependenciesOk(columnName) && _computedColumns->setError(columnName, error) && shouldNotifyQML)
 		emit computeColumnErrorChanged();
 
+	clearColumn(columnName);
+
 	validate(QString::fromStdString(columnName));
+	invalidateDependents(columnName);
+
+}
+
+void ComputedColumnsModel::clearColumn(std::string columnName)
+{
+	try
+	{
+		ComputedColumn * col = &((*_computedColumns)[columnName]);
+		col->column()->setDefaultValues();
+
+		emit refreshColumn(col->column());
+		emitHeaderDataChanged(QString::fromStdString(col->name()));
+	}
+	catch(columnNotFound e){}
+
+
 }
 
 void ComputedColumnsModel::checkForDependentColumnsToBeSent(std::string columnName, bool refreshMe)
 {
 	for(ComputedColumn * col : *_computedColumns)
 		if(col->dependsOn(columnName) || (refreshMe && col->name() == columnName))
-			invalidate(QString::fromStdString(col->name()), false);
+			invalidate(QString::fromStdString(col->name()));
 
 	for(ComputedColumn * col : *_computedColumns)
 		if(col->iShouldBeSentAgain())
@@ -305,7 +331,7 @@ void ComputedColumnsModel::packageSynchronized(const std::vector<std::string> & 
 
 
 		if(invalidateMe)
-			invalidate(QString::fromStdString(col->name()), false);
+			invalidate(QString::fromStdString(col->name()));
 
 	}
 

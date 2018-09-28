@@ -32,10 +32,10 @@ boost::function<DataSet *()>	rbridge_dataSetSource = NULL;
 std::unordered_set<std::string> filterColumnsUsed;
 std::vector<std::string>		columnNamesInDataSet;
 
-boost::function<void(std::string&, std::vector<double>&)>		rbridge_setColumnDataAsScaleEngine			= NULL;
-boost::function<void(std::string&, std::vector<int>&)>			rbridge_setColumnDataAsOrdinalEngine		= NULL;
-boost::function<void(std::string&, std::vector<int>&)>			rbridge_setColumnDataAsNominalEngine		= NULL;
-boost::function<void(std::string&, std::vector<std::string>&)>	rbridge_setColumnDataAsNominalTextEngine	= NULL;
+boost::function<bool(std::string&, std::vector<double>&)>		rbridge_setColumnDataAsScaleEngine			= NULL;
+boost::function<bool(std::string&, std::vector<int>&)>			rbridge_setColumnDataAsOrdinalEngine		= NULL;
+boost::function<bool(std::string&, std::vector<int>&)>			rbridge_setColumnDataAsNominalEngine		= NULL;
+boost::function<bool(std::string&, std::vector<std::string>&)>	rbridge_setColumnDataAsNominalTextEngine	= NULL;
 boost::function<int()>											rbridge_getDataSetRowCount					= NULL;
 
 char** rbridge_getLabels(const Labels &levels, int &nbLevels);
@@ -65,15 +65,15 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 	jaspRCPP_init(AppInfo::getBuildYear().c_str(), AppInfo::version.asString().c_str(), &callbacks, sendToDesktopFunction, pollMessagesFunction);
 }
 
-void rbridge_setDataSetSource(boost::function<DataSet* ()> source)													{	rbridge_dataSetSource = source;			}
-void rbridge_setFileNameSource(boost::function<void (const std::string &, std::string &, std::string &)> source)	{	rbridge_fileNameSource = source;		}
-void rbridge_setStateFileSource(boost::function<void (std::string &, std::string &)> source)						{	rbridge_stateFileSource = source;		}
-void rbridge_setJaspResultsFileSource(boost::function<void (std::string &, std::string &)> source)					{	rbridge_jaspResultsFileSource = source;	}
+void rbridge_setDataSetSource(			boost::function<DataSet* ()> source)												{	rbridge_dataSetSource = source;			}
+void rbridge_setFileNameSource(			boost::function<void (const std::string &, std::string &, std::string &)> source)	{	rbridge_fileNameSource = source;		}
+void rbridge_setStateFileSource(		boost::function<void (std::string &, std::string &)> source)						{	rbridge_stateFileSource = source;		}
+void rbridge_setJaspResultsFileSource(	boost::function<void (std::string &, std::string &)> source)						{	rbridge_jaspResultsFileSource = source;	}
 
-void rbridge_setColumnDataAsScaleSource(boost::function<void(std::string &, std::vector<double>&)> source)				{	rbridge_setColumnDataAsScaleEngine = source;		}
-void rbridge_setColumnDataAsOrdinalSource(boost::function<void(std::string &, std::vector<int>&)> source)				{	rbridge_setColumnDataAsOrdinalEngine = source;		}
-void rbridge_setColumnDataAsNominalSource(boost::function<void(std::string &, std::vector<int>&)> source)				{	rbridge_setColumnDataAsNominalEngine = source;		}
-void rbridge_setColumnDataAsNominalTextSource(boost::function<void(std::string &, std::vector<std::string>&)> source)	{	rbridge_setColumnDataAsNominalTextEngine = source;	}
+void rbridge_setColumnDataAsScaleSource(		boost::function<bool(std::string &, std::vector<double>&)> source)		{	rbridge_setColumnDataAsScaleEngine = source;		}
+void rbridge_setColumnDataAsOrdinalSource(		boost::function<bool(std::string &, std::vector<int>&)> source)			{	rbridge_setColumnDataAsOrdinalEngine = source;		}
+void rbridge_setColumnDataAsNominalSource(		boost::function<bool(std::string &, std::vector<int>&)> source)			{	rbridge_setColumnDataAsNominalEngine = source;		}
+void rbridge_setColumnDataAsNominalTextSource(	boost::function<bool(std::string &, std::vector<std::string>&)> source)	{	rbridge_setColumnDataAsNominalTextEngine = source;	}
 
 void rbridge_setGetDataSetRowCountSource(boost::function<int()> source)	{	rbridge_getDataSetRowCount = source;	}
 
@@ -517,36 +517,36 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 	return resultCols;
 }
 
-extern "C" void STDCALL rbridge_setColumnAsScale		(const char* columnName, double *	scalarData,		size_t length)
+extern "C" bool STDCALL rbridge_setColumnAsScale		(const char* columnName, double *	scalarData,		size_t length)
 {
 	std::string colName(rbridge_decodeColumnNamesFromBase64(columnName));
 	std::vector<double> scalars(scalarData, scalarData + length);
 
-	rbridge_setColumnDataAsScaleEngine(colName, scalars);
+	return rbridge_setColumnDataAsScaleEngine(colName, scalars);
 }
 
-extern "C" void STDCALL rbridge_setColumnAsOrdinal		(const char* columnName, int *		ordinalData,	size_t length)
+extern "C" bool STDCALL rbridge_setColumnAsOrdinal		(const char* columnName, int *		ordinalData,	size_t length)
 {
 	std::string colName(rbridge_decodeColumnNamesFromBase64(columnName));
 	std::vector<int> ordinals(ordinalData, ordinalData + length);
 
-	rbridge_setColumnDataAsOrdinalEngine(colName, ordinals);
+	return rbridge_setColumnDataAsOrdinalEngine(colName, ordinals);
 }
 
-extern "C" void STDCALL rbridge_setColumnAsNominal		(const char* columnName, int *		nominalData,	size_t length)
+extern "C" bool STDCALL rbridge_setColumnAsNominal		(const char* columnName, int *		nominalData,	size_t length)
 {
 	std::string colName(rbridge_decodeColumnNamesFromBase64(columnName));
 	std::vector<int> nominals(nominalData, nominalData + length);
 
-	rbridge_setColumnDataAsNominalEngine(colName, nominals);
+	return rbridge_setColumnDataAsNominalEngine(colName, nominals);
 }
 
-extern "C" void STDCALL rbridge_setColumnAsNominalText	(const char* columnName, const char **	nominalData,	size_t length)
+extern "C" bool STDCALL rbridge_setColumnAsNominalText	(const char* columnName, const char **	nominalData,	size_t length)
 {
 	std::string colName(rbridge_decodeColumnNamesFromBase64(columnName));
 	std::vector<std::string> nominals(nominalData, nominalData + length);
 
-	rbridge_setColumnDataAsNominalTextEngine(colName, nominals);
+	return rbridge_setColumnDataAsNominalTextEngine(colName, nominals);
 }
 
 extern "C" int	STDCALL rbridge_dataSetRowCount()

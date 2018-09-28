@@ -75,10 +75,10 @@ typedef bool						(STDCALL *RequestSpecificFileSourceCB)	(const char **root, con
 typedef bool						(STDCALL *RequestTempFileNameCB)		(const char* extensionAsString, const char **root, const char **relativePath);
 typedef const char*					(STDCALL *RequestTempRootNameCB)		();
 typedef bool						(STDCALL *RunCallbackCB)				(const char* in, int progress, const char** out);
-typedef void						(STDCALL *SetColumnAsScale)				(const char* columnName, double *		scalarData,		size_t length);
-typedef void						(STDCALL *SetColumnAsOrdinal)			(const char* columnName, int *			ordinalData,	size_t length);
-typedef void						(STDCALL *SetColumnAsNominal)			(const char* columnName, int *			nominalData,	size_t length);
-typedef void						(STDCALL *SetColumnAsNominalText)		(const char* columnName, const char **	nominalData,	size_t length);
+typedef bool						(STDCALL *SetColumnAsScale)				(const char* columnName, double *		scalarData,		size_t length);
+typedef bool						(STDCALL *SetColumnAsOrdinal)			(const char* columnName, int *			ordinalData,	size_t length);
+typedef bool						(STDCALL *SetColumnAsNominal)			(const char* columnName, int *			nominalData,	size_t length);
+typedef bool						(STDCALL *SetColumnAsNominalText)		(const char* columnName, const char **	nominalData,	size_t length);
 typedef int							(STDCALL *DataSetRowCount)				();
 
 

@@ -56,9 +56,11 @@ private:
 				void	emitHeaderDataChanged(QString name);
 				void	revertToDefaultInvalidatedColumns();
 				void	checkForDependentAnalyses(std::string columnName);
-				void	invalidate(QString name, bool setDefaultsVals = true);
+				void	invalidate(QString name);
+				void	invalidateDependents(std::string columnName);
 				void	checkForDependentColumnsToBeSent(std::string columnName, bool refreshMe = false);
 				void	emitSendComputeCode(QString columnName, QString code, Column::ColumnType colType);
+				void	clearColumn(std::string columnName);
 signals:
 				void	datasetLoadedChanged();
 				void	computeColumnRCodeChanged();
@@ -74,7 +76,7 @@ signals:
 				void	showAnalysisForm(Analysis *analysis);
 
 public slots:
-				void				computeColumnSucceeded(std::string columnName, std::string warning);
+				void				computeColumnSucceeded(std::string columnName, std::string warning, bool dataChanged);
 				void				computeColumnFailed(std::string columnName, std::string error);
 				void				checkForDependentColumnsToBeSentSlot(std::string columnName)							{ checkForDependentColumnsToBeSent(columnName, true); }
 				ComputedColumn *	requestComputedColumnCreation(std::string columnName, Analysis * analysis);

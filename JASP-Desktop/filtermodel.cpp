@@ -152,8 +152,8 @@ void FilterModel::rescanRFilterForColumns()
 	_columnsUsedInRFilter = ComputedColumn::findUsedColumnNamesStatic(_rFilter.toStdString());
 }
 
-void FilterModel::computeColumnSucceeded(std::string columnName, std::string)
+void FilterModel::computeColumnSucceeded(std::string columnName, std::string, bool dataChanged)
 {
-	if(_columnsUsedInConstructedFilter.count(columnName) > 0 || _columnsUsedInRFilter.count(columnName) > 0)
+	if(dataChanged && (_columnsUsedInConstructedFilter.count(columnName) > 0 || _columnsUsedInRFilter.count(columnName) > 0))
 		checkForSendFilter();
 }

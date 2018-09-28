@@ -42,6 +42,7 @@ public:
 
 			bool					isInvalidated()					const			{ return _invalidated;						}
 			void					invalidate();
+			void					invalidateDependents();
 			void					validate()										{ _invalidated = false;						}
 			bool					hasError()						const			{ return _error.size() > 0;					}
 

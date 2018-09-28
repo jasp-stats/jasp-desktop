@@ -58,10 +58,10 @@ public:
 	bool resetEmptyValues(std::map<int, std::string>& emptyValuesMap);
 
 
-	void overwriteDataWithScale(std::vector<double> scalarData);
-	void overwriteDataWithOrdinal(std::vector<int> ordinalData);
-	void overwriteDataWithNominal(std::vector<int> nominalData);
-	void overwriteDataWithNominal(std::vector<std::string> nominalData);
+	bool overwriteDataWithScale(std::vector<double> scalarData);
+	bool overwriteDataWithOrdinal(std::vector<int> ordinalData);
+	bool overwriteDataWithNominal(std::vector<int> nominalData);
+	bool overwriteDataWithNominal(std::vector<std::string> nominalData);
 	void setDefaultValues(ColumnType columnType = ColumnTypeUnknown);
 
 	typedef struct IntsStruct
@@ -198,14 +198,14 @@ public:
 
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
 
-	void						setColumnAsScale(const std::vector<double> &values);
+	bool						setColumnAsScale(const std::vector<double> &values);
 
-	std::map<int, std::string>	setColumnAsNominalText(const std::vector<std::string> &values,	const std::map<std::string, std::string> &labels);
-	std::map<int, std::string>	setColumnAsNominalText(const std::vector<std::string> &values)	{ return setColumnAsNominalText(values, std::map<std::string, std::string>()); }
+	std::map<int, std::string>	setColumnAsNominalText(const std::vector<std::string> &values,	const std::map<std::string, std::string> &labels, bool * changedSomething = NULL);
+	std::map<int, std::string>	setColumnAsNominalText(const std::vector<std::string> &values, bool * changedSomething = NULL)	{ return setColumnAsNominalText(values, std::map<std::string, std::string>(), changedSomething); }
 
-	void						setColumnAsNominalOrOrdinal(const std::vector<int> &values,		const std::set<int> &uniqueValues,			bool is_ordinal = false);
-	void						setColumnAsNominalOrOrdinal(const std::vector<int> &values,		std::map<int, std::string> &uniqueValues,	bool is_ordinal = false);
-	void						setColumnAsNominalOrOrdinal(const std::vector<int> &values,													bool is_ordinal = false)	{ setColumnAsNominalOrOrdinal(values, std::set<int>(values.begin(), values.end()), is_ordinal); }
+	bool						setColumnAsNominalOrOrdinal(const std::vector<int> &values,		const std::set<int> &uniqueValues,			bool is_ordinal = false);
+	bool						setColumnAsNominalOrOrdinal(const std::vector<int> &values,		std::map<int, std::string> &uniqueValues,	bool is_ordinal = false);
+	bool						setColumnAsNominalOrOrdinal(const std::vector<int> &values,													bool is_ordinal = false)	{ return setColumnAsNominalOrOrdinal(values, std::set<int>(values.begin(), values.end()), is_ordinal); }
 
 	bool allLabelsPassFilter() const;
 
@@ -215,7 +215,7 @@ public:
 
 private:	
 
-	void _setColumnAsNominalOrOrdinal(const std::vector<int> &values, bool is_ordinal = false);
+	bool _setColumnAsNominalOrOrdinal(const std::vector<int> &values, bool is_ordinal = false);
 
 	boost::interprocess::managed_shared_memory *_mem;
 

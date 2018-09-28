@@ -59,7 +59,7 @@ signals:
 	void filterUpdated(int requestID);
 	void rCodeReturned(QString result, int requestId);
 	void ppiChanged(int newPPI);
-	void computeColumnSucceeded(std::string columnName, std::string warning);
+	void computeColumnSucceeded(std::string columnName, std::string warning, bool dataChanged);
 	void computeColumnFailed(std::string columnName, std::string error);
 
 

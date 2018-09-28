@@ -48,7 +48,7 @@ public:
 	void removeValues(std::set<int> valuesToRemove);
 	void syncInts(const std::set<int> &values);
 	void syncInts(std::map<int, std::string> &values);
-	std::map<std::string, int> syncStrings(const std::vector<std::string> &new_values, const std::map<std::string, std::string> &new_labels);
+	std::map<std::string, int> syncStrings(const std::vector<std::string> &new_values, const std::map<std::string, std::string> &new_labels, bool *changedSomething);
 	std::set<int> getIntValues();
 
 	void set(std::vector<Label> &labels);
