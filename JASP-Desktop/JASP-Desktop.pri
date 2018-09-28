@@ -358,7 +358,6 @@ RESOURCES += \
     $$PWD/resources/resources.qrc \
     $$PWD/qml.qrc 
 
-
    unix:OTHER_FILES += $$PWD/icon.icns
 windows:OTHER_FILES += $$PWD/icon.rc
 

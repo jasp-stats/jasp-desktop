@@ -11,24 +11,24 @@ FocusScope
 
 	Rectangle
 	{
-		color: "white"
-		anchors.fill: parent
-		z: -1
+		color:			"white"
+		anchors.fill:	parent
+		z:				-1
 
 		JASPDataView
 		{
-			focus: __myRoot.focus
+			focus:				__myRoot.focus
 
-			id: dataTableView
-			anchors.top: parent.top
-			anchors.left: parent.left
-			anchors.right: parent.right
-			anchors.bottom: dataStatusBar.top
+			id:					dataTableView
+			anchors.top:		parent.top
+			anchors.left:		parent.left
+			anchors.right:		parent.right
+			anchors.bottom:		dataStatusBar.top
 
 			//headersGradient: myHeadersGradient
-			model: dataSetModel
+			model:				dataSetModel
 
-			onDoubleClicked: __myRoot.doubleClicked()
+			onDoubleClicked:	__myRoot.doubleClicked()
 
 			leftTopCornerItem:
 				Rectangle
@@ -37,33 +37,33 @@ FocusScope
 					gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
 										GradientStop { position: 1.0;	color: "#DDDDDD" }	GradientStop { position: 0.77;	color: "#DDDDDD" }	}
 
-					ToolTip.text: filterWindow.opened ? "Hide filter" : "Show filter"
-					ToolTip.timeout: 4500
-					ToolTip.delay: 500
-					ToolTip.visible: filterToggleButtonMouseArea.containsMouse
+					ToolTip.text:		filterWindow.opened ? "Hide filter" : "Show filter"
+					ToolTip.timeout:	4500
+					ToolTip.delay:		500
+					ToolTip.visible:	filterToggleButtonMouseArea.containsMouse
 
 					Image
 					{
-						source: "../images/filter.png"
-						anchors.top: parent.top
-						anchors.bottom: parent.bottom
-						anchors.horizontalCenter: parent.horizontalCenter
+						source:				"../images/filter.png"
+						sourceSize.width:	width
+						sourceSize.height:	height
+						width:				height
 
-						anchors.margins: 4
+						anchors.top:				parent.top
+						anchors.bottom:				parent.bottom
+						anchors.horizontalCenter:	parent.horizontalCenter
+						anchors.margins:			4
 
-						sourceSize.width: width
-						sourceSize.height: height
-						width: height
 
 					}
 
 					MouseArea
 					{
-						id: filterToggleButtonMouseArea
-						anchors.fill: parent
-						onClicked: filterWindow.toggle()
-						hoverEnabled: true
-						cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+						id:				filterToggleButtonMouseArea
+						anchors.fill:	parent
+						onClicked:		filterWindow.toggle()
+						hoverEnabled:	true
+						cursorShape:	containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 					}
 				}
 
@@ -72,40 +72,38 @@ FocusScope
 			extraColumnItem:
 				Rectangle
 				{
-					id: addColumnButton
-
-					width: 40
+					id:		addColumnButton
+					width:	40
 
 					gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
 										GradientStop { position: 1.0;	color: "#DDDDDD" }	GradientStop { position: 0.77;	color: "#DDDDDD" }	}
 
-					ToolTip.text: "Add computed column"
-					ToolTip.timeout: 4500
-					ToolTip.delay: 500
-					ToolTip.visible: addColumnButtonMouseArea.containsMouse
+					ToolTip.text:		"Add computed column"
+					ToolTip.timeout:	4500
+					ToolTip.delay:		500
+					ToolTip.visible:	addColumnButtonMouseArea.containsMouse
 
 					Image
 					{
-						source: "/icons/addition.png"
-						anchors.top: parent.top
-						anchors.bottom: parent.bottom
-						anchors.horizontalCenter: parent.horizontalCenter
+						source:				"/icons/addition.png"
+						sourceSize.width:	width
+						sourceSize.height:	height
+						width:				height
 
-						anchors.margins: 4
-
-						sourceSize.width: width
-						sourceSize.height: height
-						width: height
+						anchors.top:				parent.top
+						anchors.bottom:				parent.bottom
+						anchors.horizontalCenter:	parent.horizontalCenter
+						anchors.margins:	4
 
 					}
 
 					MouseArea
 					{
-						id: addColumnButtonMouseArea
-						anchors.fill: parent
-						onClicked: createComputeDialog.open()
-						hoverEnabled: true
-						cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+						id:				addColumnButtonMouseArea
+						anchors.fill:	parent
+						onClicked:		createComputeDialog.open()
+						hoverEnabled:	true
+						cursorShape:	containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 					}
 
 
@@ -122,15 +120,15 @@ FocusScope
 			columnHeaderDelegate: Rectangle
 			{
 				id: headerRoot
-				property real iconTextPadding: 10
-				readonly property int __iconDim: 16
+							property real	iconTextPadding:	10
+				readonly	property int	__iconDim:			16
 
 				Image
 				{
-					id: colIcon
+					id:						colIcon
 					anchors.verticalCenter: parent.verticalCenter
-					anchors.left: parent.left
-					anchors.margins: 4
+					anchors.left:			parent.left
+					anchors.margins:		4
 
 					function myColumnType() {return dataSetModel.columnIcon(columnIndex)}
 
@@ -152,15 +150,15 @@ FocusScope
 
 					MouseArea
 					{
-						anchors.fill: parent
-						onClicked: if(columnIndex > -1) popupIcons.open()
+						anchors.fill:		parent
+						onClicked:			if(columnIndex > -1) popupIcons.open()
 
-						hoverEnabled: true
-						ToolTip.visible: containsMouse
-						ToolTip.text: "Click here to change columntype"
-						ToolTip.timeout: 3000
-						ToolTip.delay: 500
-						cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+						hoverEnabled:		true
+						ToolTip.visible:	containsMouse
+						ToolTip.text:		"Click here to change columntype"
+						ToolTip.timeout:	3000
+						ToolTip.delay:		500
+						cursorShape:		containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 
 					}
 
@@ -182,56 +180,60 @@ FocusScope
 
 							Repeater{
 								id: iconRepeater
-								model: columnIsComputed ? [columnTypeScale, columnTypeOrdinal, columnTypeNominal, columnTypeNominalText] :  [columnTypeScale, columnTypeOrdinal, columnTypeNominal] //these are set in the rootcontext in mainwindow!
+								model: columnIsComputed ? [columnTypeScale, columnTypeOrdinal, columnTypeNominal, columnTypeNominalText] :
+														  [columnTypeScale, columnTypeOrdinal, columnTypeNominal] //these are set in the rootcontext in mainwindow!
 
 								Rectangle
 								{
-									id: columnTypeChangeIcon
+									id:		columnTypeChangeIcon
 
-									width: 90
+									width:	90
 									height: headerRoot.__iconDim * 1.5
 									radius: 15
 
-									color: popupIconMouseArea.useThisColor
+									color:	popupIconMouseArea.useThisColor
 
 									Item
 									{
-										width: (popupIconImage.width + popupText.width)
-										height: headerRoot.__iconDim
+										width:					(popupIconImage.width + popupText.width)
+										height:					headerRoot.__iconDim
+										anchors.left:			parent.left
+										anchors.leftMargin:		10
 										anchors.verticalCenter: parent.verticalCenter
-										anchors.left: parent.left
-										anchors.leftMargin: 10
 
 										Image
 										{
 											id: popupIconImage
 
-											anchors.verticalCenter: parent.verticalCenter
-
-											source: dataSetModel.getColumnTypesWithCorrespondingIcon()[iconRepeater.model[index]]
-											width:	headerRoot.__iconDim
-											height: headerRoot.__iconDim
+											source:				dataSetModel.getColumnTypesWithCorrespondingIcon()[iconRepeater.model[index]]
+											width:				headerRoot.__iconDim
+											height:				headerRoot.__iconDim
 											sourceSize.width:	width
 											sourceSize.height:	height
+
+											anchors.verticalCenter: parent.verticalCenter
 										}
 
 										Text
 										{
-											id: popupText
-											text: iconRepeater.model[index] === columnTypeScale ? "Scale" : iconRepeater.model[index] === columnTypeOrdinal ? "Ordinal" : iconRepeater.model[index] === columnTypeNominal ? "Nominal" : "Text"
+											id:		popupText
+											text:	iconRepeater.model[index] === columnTypeScale ?
+														"Scale" : iconRepeater.model[index] === columnTypeOrdinal ?
+															"Ordinal" : iconRepeater.model[index] === columnTypeNominal ?
+																"Nominal" : "Text"
 
-											anchors.left: popupIconImage.right
+											anchors.left:		popupIconImage.right
 											anchors.leftMargin: 10
 										}
 									}
 
 									MouseArea
 									{
-										id: popupIconMouseArea
-										anchors.fill: parent
+										id:				popupIconMouseArea
+										anchors.fill:	parent
 
-										hoverEnabled: true
-										cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+										hoverEnabled:	true
+										cursorShape:	containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 
 										property color useThisColor: containsMouse ? "lightGray" : "transparent"
 
@@ -250,46 +252,45 @@ FocusScope
 
 				Image
 				{
-					id: colIsComputed
+					id:			colIsComputed
 
-					anchors.left: colIcon.right
+					width:		visible ? headerRoot.__iconDim : 0
+					height:		headerRoot.__iconDim
+					visible:	columnIsComputed
+
+					anchors.left:			colIcon.right
 					anchors.verticalCenter: parent.verticalCenter
+					anchors.margins:		visible ? 1 : 0
 
-					anchors.margins: visible ? 1 : 0
-
-					source: "../icons/computed.png"
-					sourceSize.width:  headerRoot.__iconDim * 2
-					sourceSize.height:  headerRoot.__iconDim * 2
-
-					width: visible ? headerRoot.__iconDim : 0
-					height:  headerRoot.__iconDim
-					visible: columnIsComputed
+					source:				"../icons/computed.png"
+					sourceSize.width:	headerRoot.__iconDim * 2
+					sourceSize.height:	headerRoot.__iconDim * 2
 
 					MouseArea
 					{
-						anchors.fill: parent
-						onClicked: computeColumnWindow.open(dataSetModel.headerData(columnIndex, Qt.Horizontal))
+						anchors.fill:	parent
+						onClicked:		computeColumnWindow.open(dataSetModel.headerData(columnIndex, Qt.Horizontal))
 
-						hoverEnabled: true
-						ToolTip.visible: containsMouse
-						ToolTip.text: "Click here to change the columns formulas"
-						ToolTip.timeout: 3000
-						ToolTip.delay: 500
-						cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+						hoverEnabled:		true
+						ToolTip.visible:	containsMouse
+						ToolTip.text:		"Click here to change the columns formulas"
+						ToolTip.timeout:	3000
+						ToolTip.delay:		500
+						cursorShape:		containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 
 					}
 				}
 
 				Text
 				{
-					id: headerTextItem
+					id:		headerTextItem
 
-					text: headerText
+					text:	headerText
 
-					horizontalAlignment: Text.AlignHCenter
+					horizontalAlignment:		Text.AlignHCenter
 
-					anchors.horizontalCenter: headerRoot.horizontalCenter
-					anchors.verticalCenter: headerRoot.verticalCenter
+					anchors.horizontalCenter:	headerRoot.horizontalCenter
+					anchors.verticalCenter:		headerRoot.verticalCenter
 				}
 
 
@@ -303,48 +304,46 @@ FocusScope
 
 				AnimatedImage
 				{
-					id: colIsInvalidated
+					id:			colIsInvalidated
 
-					anchors.right: colFilterOn.left
-					anchors.verticalCenter: parent.verticalCenter
+					source:		"../icons/loading.gif"
+					width:		visible ? headerRoot.__iconDim : 0
+					height:		headerRoot.__iconDim
+					playing:	visible
+					visible:	columnIsInvalidated
 
-
-					anchors.margins: visible ? 1 : 0
-
-					source: "../icons/loading.gif"
-					width: visible ? headerRoot.__iconDim : 0
-					height:  headerRoot.__iconDim
-					playing: visible
-					visible: columnIsInvalidated
+					anchors.right:			colFilterOn.left
+					anchors.verticalCenter:	parent.verticalCenter
+					anchors.margins:		visible ? 1 : 0
 				}
 
 				Image
 				{
-					id: colHasError
+					id:			colHasError
 
-					anchors.right: colIsInvalidated.left
-					anchors.verticalCenter: parent.verticalCenter
-					anchors.margins: visible ? 1 : 0
+					width:		columnError.length > 0 ? headerRoot.__iconDim : 0
+					height:		headerRoot.__iconDim
+					visible:	columnError.length > 0 // && !columnIsInvalidated
 
-					source: "../icons/error.png"
-					sourceSize.width:  headerRoot.__iconDim
-					sourceSize.height:  headerRoot.__iconDim
+					source:					"../icons/error.png"
+					sourceSize.width:		headerRoot.__iconDim
+					sourceSize.height:		headerRoot.__iconDim
 
-					width: columnError.length > 0 ? headerRoot.__iconDim : 0
-					height:  headerRoot.__iconDim
-					visible: columnError.length > 0 // && !columnIsInvalidated
+					anchors.right:			colIsInvalidated.left
+					anchors.verticalCenter:	parent.verticalCenter
+					anchors.margins:		visible ? 1 : 0
 
 					MouseArea
 					{
-						anchors.fill: parent
-						onClicked: computeColumnWindow.open(dataSetModel.headerData(columnIndex, Qt.Horizontal))
+						anchors.fill:		parent
+						onClicked:			computeColumnWindow.open(dataSetModel.headerData(columnIndex, Qt.Horizontal))
 
-						hoverEnabled: true
-						ToolTip.visible: containsMouse && columnError.length > 0
-						ToolTip.text: columnError
-						ToolTip.timeout: 3000
-						ToolTip.delay: 500
-						cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+						hoverEnabled:		true
+						ToolTip.visible:	containsMouse && columnError.length > 0
+						ToolTip.text:		columnError
+						ToolTip.timeout:	3000
+						ToolTip.delay:		500
+						cursorShape:		containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 
 					}
 
@@ -353,29 +352,29 @@ FocusScope
 
 				Image
 				{
-					id: colFilterOn
+					id:						colFilterOn
 
-					anchors.right: parent.right
-					anchors.margins: columnIsFiltered ? 1 : 0
-					anchors.verticalCenter: parent.verticalCenter
+					width:					columnIsFiltered ? headerRoot.__iconDim : 0
+					height:					headerRoot.__iconDim
 
-					source: "../images/filter.png"
-					sourceSize.width:  headerRoot.__iconDim
-					sourceSize.height:  headerRoot.__iconDim
+					source:					"../images/filter.png"
+					sourceSize.width:		headerRoot.__iconDim
+					sourceSize.height:		headerRoot.__iconDim
 
-					width: columnIsFiltered ? headerRoot.__iconDim : 0
-					height:  headerRoot.__iconDim
-
+					anchors.right:			parent.right
+					anchors.margins:		columnIsFiltered ? 1 : 0
+					anchors.verticalCenter:	parent.verticalCenter
 				}
 
 
 
 				MouseArea
 				{
-					anchors.left: colIsComputed.right
-					anchors.top: parent.top
+					anchors.left:	colIsComputed.right
+					anchors.top:	parent.top
 					anchors.bottom: parent.bottom
-					anchors.right: colHasError.left
+					anchors.right:	colHasError.left
+
 					onClicked:
 					{
 						var chooseThisColumn = (columnIndex > -1 && dataSetModel.columnIcon(columnIndex)  !== columnTypeScale) ? columnIndex : -1
@@ -389,37 +388,37 @@ FocusScope
 
 					}
 
-					hoverEnabled: true
-					ToolTip.visible: containsMouse && dataSetModel.columnIcon(columnIndex)  !== columnTypeScale
-					ToolTip.text: "Click here to change labels" + (columnIsFiltered ? " or inspect filter" : "" )
-					ToolTip.timeout: 3000
-					ToolTip.delay: 500
-					cursorShape: containsMouse && dataSetModel.columnIcon(columnIndex)  !== columnTypeScale ? Qt.PointingHandCursor : Qt.ArrowCursor
+					hoverEnabled:		true
+					ToolTip.visible:	containsMouse && dataSetModel.columnIcon(columnIndex)  !== columnTypeScale
+					ToolTip.text:		"Click here to change labels" + (columnIsFiltered ? " or inspect filter" : "" )
+					ToolTip.timeout:	3000
+					ToolTip.delay:		500
+					cursorShape:		containsMouse && dataSetModel.columnIcon(columnIndex)  !== columnTypeScale ? Qt.PointingHandCursor : Qt.ArrowCursor
 				}
 			}
 		}
 
 		Rectangle
 		{
-			id: dataStatusBar
-			objectName: "dataStatusBar"
-			anchors.left: parent.left
-			anchors.right: parent.right
+			id:				dataStatusBar
+			objectName:		"dataStatusBar"
+			anchors.left:	parent.left
+			anchors.right:	parent.right
 			anchors.bottom: parent.bottom
 
-			color: "#EEEEEE"
-			border.color: "lightGrey"
-			border.width: 1
+			color:			"#EEEEEE"
+			border.color:	"lightGrey"
+			border.width:	1
 
-			height: datafiltertatusText.text.length > 0 ? datafiltertatusText.contentHeight + 16 : 0
+			height:			datafiltertatusText.text.length > 0 ? datafiltertatusText.contentHeight + 16 : 0
 
 			Text
 			{
-				id: datafiltertatusText
-				text: filterModel.statusBarText
-				anchors.left: parent.left
-				anchors.verticalCenter: parent.verticalCenter
-				anchors.leftMargin: 8
+				id:						datafiltertatusText
+				text:					filterModel.statusBarText
+				anchors.left:			parent.left
+				anchors.verticalCenter:	parent.verticalCenter
+				anchors.leftMargin:		8
 			}
 		}
 

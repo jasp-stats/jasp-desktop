@@ -64,7 +64,7 @@ signals:
 
 	void rCodeReturned(QString result, int requestId);
 
-	void computeColumnSucceeded(std::string columnName, std::string warning);
+	void computeColumnSucceeded(std::string columnName, std::string warning, bool dataChanged);
 	void computeColumnFailed(std::string columnName, std::string error);
 
 public slots:

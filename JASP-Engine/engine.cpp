@@ -427,9 +427,13 @@ void Engine::sendRCodeError()
 
 void Engine::runComputeColumn()
 {
-	static const std::map<Column::ColumnType, std::string> setColumnFunction = {{Column::ColumnTypeScale,".setColumnDataAsScale"}, {Column::ColumnTypeOrdinal,".setColumnDataAsOrdinal"}, {Column::ColumnTypeNominal,".setColumnDataAsNominal"}, {Column::ColumnTypeNominalText,".setColumnDataAsNominalText"}};
+	static const std::map<Column::ColumnType, std::string> setColumnFunction = {
+		{Column::ColumnTypeScale,		".setColumnDataAsScale"},
+		{Column::ColumnTypeOrdinal,		".setColumnDataAsOrdinal"},
+		{Column::ColumnTypeNominal,		".setColumnDataAsNominal"},
+		{Column::ColumnTypeNominalText,	".setColumnDataAsNominalText"}};
 
-	std::string computeColumnCodeComplete	= "calcedVals <- {"+_computeColumnCode +"};\n" + setColumnFunction.at(_computeColumnType) + "('" + _computeColumnName +"', calcedVals);\n return('succes');";
+	std::string computeColumnCodeComplete	= "calcedVals <- {"+_computeColumnCode +"};\n"  "return(toString(" + setColumnFunction.at(_computeColumnType) + "('" + _computeColumnName +"', calcedVals)));";
 	std::string computeColumnResultStr		= rbridge_evalRCodeWhiteListed(computeColumnCodeComplete);
 
 	Json::Value computeColumnResponse		= Json::objectValue;

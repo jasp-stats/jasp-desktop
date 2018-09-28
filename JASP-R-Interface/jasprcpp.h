@@ -41,10 +41,10 @@ void jaspRCPP_returnString(SEXP Message);
 void jaspRCPP_setRWarning(SEXP Message);
 void jaspRCPP_setRError(SEXP Message);
 
-void jaspRCPP_setColumnDataAsScale(std::string columnName,			Rcpp::Vector<REALSXP> scalarData);
-void jaspRCPP_setColumnDataAsOrdinal(std::string columnName,		Rcpp::Vector<INTSXP> ordinalData);
-void jaspRCPP_setColumnDataAsNominal(std::string columnName,		Rcpp::Vector<INTSXP> nominalData);
-void jaspRCPP_setColumnDataAsNominalText(std::string columnName,	Rcpp::Vector<STRSXP> nominalData);
+bool jaspRCPP_setColumnDataAsScale(std::string columnName,			Rcpp::Vector<REALSXP> scalarData);
+bool jaspRCPP_setColumnDataAsOrdinal(std::string columnName,		Rcpp::Vector<INTSXP> ordinalData);
+bool jaspRCPP_setColumnDataAsNominal(std::string columnName,		Rcpp::Vector<INTSXP> nominalData);
+bool jaspRCPP_setColumnDataAsNominalText(std::string columnName,	Rcpp::Vector<STRSXP> nominalData);
 
 //Calls from JASPresult (from R)
 typedef void (*sendFuncDef)(const char *);

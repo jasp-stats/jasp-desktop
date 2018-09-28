@@ -46,7 +46,7 @@ size_t ComputedColumns::findIndexByName(std::string name) const
 	for(size_t i=0; i<_computedColumns.size(); i++)
 		if(_computedColumns[i]->name() == name)
 			return i;
-	throw std::runtime_error("Cannot find computed column by name: " + name);
+	throw columnNotFound(name);
 }
 
 bool ComputedColumns::setRCode(std::string name, std::string rCode)

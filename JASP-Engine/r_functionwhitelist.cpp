@@ -174,6 +174,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"tan",
 	"tapply",
 	"tolower",
+	"toString",
 	"toupper",
 	"unclass",
 	"union",
@@ -187,7 +188,10 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"xtabs",
 	".setColumnDataAsScale", ".setColumnDataAsOrdinal", ".setColumnDataAsNominal", ".setColumnDataAsNominalText", "function", "stop",
     "normalDist", "tDist", "chiSqDist", "fDist", "binomDist", "negBinomDist", "geomDist", "poisDist", "integerDist", "betaDist", "unifDist", "gammaDist", "expDist", "logNormDist", "weibullDist",
-    "replaceNA"
+	"replaceNA"
+#ifdef JASP_DEBUG
+	,"Sys.sleep"
+#endif
 	};
 
 std::string R_FunctionWhiteList::returnOrderedWhiteList()
@@ -276,7 +280,7 @@ void R_FunctionWhiteList::scriptIsSafe(const std::string &script)
 	{
 		bool moreThanOne = blackListedFunctions.size() > 1;
 		std::stringstream ssm;
-		ssm << "Illegal function" << (moreThanOne ? "s" : "") << " used:" << (moreThanOne ? "\n" : " ");
+		ssm << "Non-whitelisted function" << (moreThanOne ? "s" : "") << " used:" << (moreThanOne ? "\n" : " ");
 		for(auto & black : blackListedFunctions)
 			ssm << black << "\n";
 		errorMsg = ssm.str();

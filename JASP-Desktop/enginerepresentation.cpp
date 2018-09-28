@@ -160,12 +160,13 @@ void EngineRepresentation::processComputeColumnReply(Json::Value json)
 	_engineState = engineState::idle;
 
 
-	std::string result		= json.get("result", "some string that is not 'succes'").asString();
+	std::string result		= json.get("result", "some string that is not 'TRUE' or 'FALSE'").asString();
 	std::string error		= json.get("error", "").asString();
 	std::string columnName	= json.get("columnName", "").asString();
 
-	if(result == "succes")	emit computeColumnSucceeded(columnName, error);
-	else					emit computeColumnFailed(columnName, error == "" ? "Unknown Error" : error);
+	if(result == "TRUE")		emit computeColumnSucceeded(columnName, error, true);
+	else if(result == "FALSE")	emit computeColumnSucceeded(columnName, error, false);
+	else						emit computeColumnFailed(columnName, error == "" ? "Unknown Error" : error);
 }
 
 void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
@@ -294,8 +295,9 @@ void EngineRepresentation::processAnalysisReply(Json::Value json)
 		analysis->setResults(results);
 		clearAnalysisInProgress();
 
+		//createdColumns and if it succeeded or not should actually be communicated through jaspColumn or something, to be created
 		for(std::string col : analysis->columnsCreated())
-			emit computeColumnSucceeded(col, "");
+			emit computeColumnSucceeded(col, "", true);
 		break;
 
 	case analysisResultStatus::running:

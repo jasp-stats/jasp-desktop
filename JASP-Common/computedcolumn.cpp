@@ -141,11 +141,11 @@ bool ComputedColumn::iShouldBeSentAgain()
 
 void ComputedColumn::invalidate()
 {
-	if(_invalidated)
-		return;
-
 	_invalidated = true;
+}
 
+void ComputedColumn::invalidateDependents()
+{
 	for(ComputedColumn * col : *_computedColumns)
 		if(col->dependsOn(_name))
 			col->invalidate();
