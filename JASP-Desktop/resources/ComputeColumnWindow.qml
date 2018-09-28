@@ -176,13 +176,25 @@ FocusScope
 
 
 				ListElement	{ type: "separator" }
-				ListElement	{ type: "function";	functionName: "normalDst";	functionParameters: "mean,sd";		functionParamTypes: "number,number";	toolTip: "samples n data points from a Gaussian distribution with specified mean and standard deviation sd" }
-				ListElement	{ type: "function";	functionName: "expDst";		functionParameters: "rate";			functionParamTypes: "number,number";	toolTip: "samples n data points from an exponential distributed with specified rate" }
-				ListElement	{ type: "function";	functionName: "betaDst";	functionParameters: "alpha,beta";	functionParamTypes: "number,number";	toolTip: "samples n data points from a beta distribution with specified alpha and beta" }
-				ListElement	{ type: "function";	functionName: "gammaDst";	functionParameters: "shape,scale";	functionParamTypes: "number,number";	toolTip: "samples n data points from a gamma distribution with specified shape and scale" }
-				ListElement	{ type: "function";	functionName: "unifDst";	functionParameters: "min,max";		functionParamTypes: "number,number";	toolTip: "samples n data points from a uniform distribution between min and max" }
-				ListElement	{ type: "function";	functionName: "tDst";		functionParameters: "df,ncp";		functionParamTypes: "number,number";	toolTip: "samples n data points from t distribution with degrees of freedom df and non-centrality ncp"}
-				ListElement	{ type: "function";	functionName: "chiSqDst";	functionParameters: "df,ncp";		functionParamTypes: "number,number";	toolTip: "samples n data points from a chi-squared distribution with degrees of freedom df and non-centrality ncp"}
+                ListElement	{ type: "function";	functionName: "normalDist";     functionParameters: "mean,sd";                  functionParamTypes: "number,number";            toolTip: "generates data from a Gaussian distribution with specified mean and standard deviation sd" }
+                ListElement	{ type: "function";	functionName: "tDist";          functionParameters: "df,ncp";                   functionParamTypes: "number,number";            toolTip: "generates data from t distribution with degrees of freedom df and non-centrality parameter ncp" }
+
+                ListElement	{ type: "function";	functionName: "chiSqDist";      functionParameters: "df,ncp";                   functionParamTypes: "number,number";            toolTip: "generates data from a chi-squared distribution with degrees of freedom df and non-centrality parameter ncp" }
+                ListElement	{ type: "function";	functionName: "fDist";          functionParameters: "df1,df2,ncp";              functionParamTypes: "number,number,number";     toolTip: "generates data from an F distribution with specified degrees of freedoms df1, df2 and non-centrality parameter ncp" }
+
+                ListElement	{ type: "function";	functionName: "binomDist";      functionParameters: "trials,prob";              functionParamTypes: "number,number";            toolTip: "generates data from a binomial distribution with specified trials and probability prob" }
+                ListElement	{ type: "function";	functionName: "negBinomDist";	functionParameters: "targetTrial,prob";         functionParamTypes: "number,number";            toolTip: "generates data from a negative binomial distribution with specified trials and probability prob" }
+                ListElement	{ type: "function";	functionName: "geomDist";		functionParameters: "prob";                     functionParamTypes: "number";                   toolTip: "generates data from a geometric distribution with specified probability prob" }
+                ListElement	{ type: "function";	functionName: "poisDist";		functionParameters: "lambda";                   functionParamTypes: "number";                   toolTip: "generates data from a Poisson distribution with specified rate lambda" }
+                //ListElement	{ type: "function";	functionName: "integerDist";	functionParameters: "categories,replace,prob";  functionParamTypes: "number,bool,number";       toolTip: "generates data between 1 and the specified number of categories either with replacement or without and a vector of specified probabilities prob" }
+
+                ListElement	{ type: "function";	functionName: "betaDist";       functionParameters: "alpha,beta";               functionParamTypes: "number,number";            toolTip: "generates data from a beta distribution with specified shapes alpha and beta" }
+                ListElement	{ type: "function";	functionName: "unifDist";       functionParameters: "min,max";                  functionParamTypes: "number,number";            toolTip: "generates data from a uniform distribution between min and max" }
+
+                ListElement	{ type: "function";	functionName: "gammaDist";      functionParameters: "shape,scale";              functionParamTypes: "number,number";            toolTip: "generates data from a gamma distribution with specified shape and scale" }
+                ListElement	{ type: "function";	functionName: "expDist";		functionParameters: "rate";                     functionParamTypes: "number";                   toolTip: "generates data from an exponential distribution with specified rate" }
+                ListElement	{ type: "function";	functionName: "logNormDist";    functionParameters: "meanLog,sdLog";            functionParamTypes: "number,number";            toolTip: "generates data from a log-normal distribution with specified logarithmic mean meanLog and standard deviation sdLog" }
+                ListElement	{ type: "function";	functionName: "weibullDist";    functionParameters: "shape,scale";              functionParamTypes: "number,number";            toolTip: "generates data from a Weibull distribution with specified shape and scale" }
 
 				ListElement	{ type: "separator" }
 				ListElement	{ type: "function";	functionName: "log";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "natural logarithm" }
