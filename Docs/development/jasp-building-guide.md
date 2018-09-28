@@ -70,7 +70,7 @@ To build JASP on mac you need to clone the JASP repository and download the foll
  0. Clone the JASP repository
  1. [XCode](https://developer.apple.com/xcode/) Easiest would be via the App Store.
  2. [Qt 5.10.1 + QtWebEngine](https://download.qt.io/archive/qt/). Tick: MacOS and Qt WebEngine
- 3. [R 3.4.4](https://static.jasp-stats.org/development/R3.4%20OSX%20JASP%200.9.zip) This contains R and the packages. Unzip this file and set it as a framework in the build folder as shown below.
+ 3. [R 3.4.4](https://static.jasp-stats.org/development/R3.4%20OSX%20JASP%200.9.1.zip) This contains R and the packages. Unzip this file and set it as a framework in the build folder as shown below.
  4. [boost 1.64.0](https://static.jasp-stats.org/development/boost_1_64_0.zip). Unzip this file in the JASP folder.
  5. [boost 1.64.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Build-Binaries-OSX-64-qt510.zip). Unzip this file in both release and debug build folders.
 
