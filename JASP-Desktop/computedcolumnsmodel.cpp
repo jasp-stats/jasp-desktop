@@ -293,12 +293,12 @@ void ComputedColumnsModel::packageSynchronized(const std::vector<std::string> & 
 		bool invalidateMe = false;
 
 		for(const std::string & changed : changedColumns)
-			if(col->dependsOn(changed))
+			if(col->dependsOn(changed, false))
 				invalidateMe = true;
 
 		bool containsAChangedName = false;
 		for(const auto & changedNames : changeNameColumns)
-			if(col->dependsOn(changedNames.first))
+			if(col->dependsOn(changedNames.first, false))
 				containsAChangedName = true;
 
 		if(containsAChangedName)
@@ -315,7 +315,7 @@ void ComputedColumnsModel::packageSynchronized(const std::vector<std::string> & 
 		}
 
 		for(const std::string & missing : missingColumns)
-			if(col->dependsOn(missing))
+			if(col->dependsOn(missing, false))
 			{
 				invalidateMe = true;
 				col->setConstructorJson(JsonUtilities::removeColumnsFromDragNDropFilterJSON(col->constructorJson(), missing));

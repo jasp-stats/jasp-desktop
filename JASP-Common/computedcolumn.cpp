@@ -244,8 +244,14 @@ void ComputedColumn::findDependencies()
 	else															_dependsOnColumns = findUsedColumnNames();
 }
 
-const std::set<std::string> &  ComputedColumn::dependsOnColumns()
+const std::set<std::string> &  ComputedColumn::dependsOnColumns(bool refresh)
 {
-	findDependencies();
+	if(refresh)
+		findDependencies();
 	return _dependsOnColumns;
+}
+
+bool ComputedColumn::dependsOn(std::string columnName, bool refresh)
+{
+	return dependsOnColumns(refresh).count(columnName) > 0;
 }
