@@ -2244,7 +2244,7 @@ as.list.footnotes <- function(footnotes) {
   setwd(root)
   on.exit(setwd(oldwd))
 
-  if (ggplot2::is.ggplot(plot)) {
+  if (ggplot2::is.ggplot(plot) || inherits(plot, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
     ppi <- .fromRCPP(".ppi")
 
     # fix for mac
@@ -2278,9 +2278,7 @@ as.list.footnotes <- function(footnotes) {
         .redrawPlot(plot) #(see below)
     } else if (inherits(plot, "qgraph")) {
       qgraph::plot.qgraph(plot)
-    } else if (inherits(plot, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
-      gridExtra::grid.arrange(plot)
-    }	else {
+    } else {
       plot(plot)
     }
     dev.off()
@@ -2302,7 +2300,6 @@ saveImage <- function(plotName, format, height, width)
   state     <- .retrieveState()     # Retrieve plot object from state
   plt       <- state[["figures"]][[plotName]]
   location  <- .fromRCPP(".requestTempFileNameNative", "png") # create file location string to extract the root location
-
 
 	# create file location string
 	location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
@@ -2342,6 +2339,8 @@ saveImage <- function(plotName, format, height, width)
 	# Plot and close graphics device
 	if (inherits(plt, "recordedplot")) {
 		.redrawPlot(plt) #(see below)
+	} else if (inherits(plt, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
+		gridExtra::grid.arrange(plt)
 	} else {
 		plot(plt) #ggplots
 	}
