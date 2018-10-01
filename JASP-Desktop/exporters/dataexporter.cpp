@@ -41,45 +41,50 @@ void DataExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 
 	DataSet *dataset = package->dataSet();
 
+	std::vector<Column*> cols;
+
 	int columnCount = dataset->columnCount();
 	for (int i = 0; i < columnCount; i++)
 	{
 		Column &column = dataset->column(i);
 		string name = column.name();
 
-		if (escapeValue(name))
-			outfile << '"' << name << '"';
-		else
-			outfile << name;
-
-		if (i != columnCount - 1)
-			outfile << ",";
-		else
-			outfile << "\n";
+		if(!package->isColumnComputed(name))
+			cols.push_back(&column);
 	}
 
-	int rowCount = dataset->rowCount();
-	for (int r = 0; r < rowCount; r++)
-	{
-		for (int i = 0; i < columnCount; i++)
-		{
-			Column &column = dataset->column(i);
 
-			string value = column.getOriginalValue(r);
+	for (size_t i = 0; i < cols.size(); i++)
+	{
+		Column *column		= cols[i];
+		std::string name	= column->name();
+
+		if (escapeValue(name))	outfile << '"' << name << '"';
+		else					outfile << name;
+
+		if (i < cols.size()-1)	outfile << ",";
+		else					outfile << "\n";
+
+	}
+
+	size_t rowCount = dataset->rowCount();
+
+	for (size_t r = 0; r < rowCount; r++)
+		for (size_t i = 0; i < cols.size(); i++)
+		{
+			Column *column = cols[i];
+
+			string value = column->getOriginalValue(r);
 			if (value != ".")
 			{
-				if (escapeValue(value))
-					outfile << '"' << value << '"';
-				else
-					outfile << value;
+				if (escapeValue(value))	outfile << '"' << value << '"';
+				else					outfile << value;
 			}
 
-			if (i != columnCount - 1)
-				outfile << ",";
-			else if (r != rowCount - 1)
-				outfile << "\n";
+			if (i < cols.size()-1)		outfile << ",";
+			else if (r != rowCount-1)	outfile << "\n";
 		}
-	}
+
 	outfile.flush();
 	outfile.close();
 

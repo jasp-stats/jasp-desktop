@@ -52,12 +52,12 @@ public:
 
 			void					findDependencies();
 	static	void					setAllColumnNames(std::set<std::string> names);
-			bool					dependsOn(std::string columnName)				{ return dependsOnColumns().count(columnName) > 0; }
+			bool					dependsOn(std::string columnName, bool refresh = true);
 			std::set<std::string>	findThoseDependingOnMe();
 			bool					iShouldBeSentAgain();
 			void					checkForLoopInDepenedencies(std::string code);
 
-	const	std::set<std::string>&	dependsOnColumns();
+	const	std::set<std::string>&	dependsOnColumns(bool refresh = true);
 
 			Json::Value				convertToJson();
 

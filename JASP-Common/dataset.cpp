@@ -114,7 +114,10 @@ size_t DataSet::rowCount()	const
 	size_t	min = minRowCount(),
 			max = maxRowCount();
 
-	assert(min == max);
+#ifdef JASP_DEBUG
+	if(min != max)
+		std::cout << "DataSet::rowCount() found inconsistent rowCounts min=" << min << " max=" << max << std::endl;
+#endif
 
 	return min;
 }

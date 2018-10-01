@@ -26,9 +26,9 @@ protected:
 	DataSetPackage *_packageData;
 
 private:
-
 	DataSet* setDataSetSize(int columnCount, int rowCount);
-	DataSet* increaseDataSetColCount(int rowCount)	{ return setDataSetSize(_packageData->dataSet()->columnCount() + 1, rowCount); }
+	DataSet* setDataSetRowCount(int rowCount)				{ return setDataSetSize(_packageData->dataSet()->columnCount(), rowCount); }
+	DataSet* increaseDataSetColCount(int rowCount)			{ return setDataSetSize(_packageData->dataSet()->columnCount() + 1, rowCount); }
 
 	void _syncPackage(
 			ImportDataSet *syncDataSet,

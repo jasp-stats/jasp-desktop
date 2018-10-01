@@ -47,7 +47,13 @@ void Importer::syncDataSet(const std::string &locator, boost::function<void(cons
 	int syncColNo		= 0;
 
 	for (Column &orgColumn : orgColumns)
-		missingColumns[orgColumn.name()] = &orgColumn;
+	{
+		std::string colName = orgColumn.name();
+
+		// make sure "missing" columns aren't actually computed columns
+		if(!_packageData->isColumnComputed(colName))
+			missingColumns[orgColumn.name()] = &orgColumn;
+	}
 
 	for (ImportColumn *syncColumn : *importDataSet)
 	{
@@ -83,7 +89,7 @@ void Importer::syncDataSet(const std::string &locator, boost::function<void(cons
 
 	std::map<std::string, Column *> changeNameColumns;
 
-	if (missingColumns.size() > 0 && newColumns.size()) {
+	if (missingColumns.size() > 0 && newColumns.size() > 0) {
 		for (auto nameColMissing : missingColumns)
 			for (auto newColIt = newColumns.begin(); newColIt != newColumns.end(); ++newColIt)
 			{
@@ -255,12 +261,10 @@ void Importer::_syncPackage(
 	}
 
 	int colNo = _packageData->dataSet()->columnCount();
+	setDataSetRowCount(syncDataSet->rowCount());
 
 	if (changedColumns.size() > 0)
 	{
-		if (rowCountChanged)
-			setDataSetSize(colNo, syncDataSet->rowCount());
-
 		for (auto indexColChanged : changedColumns)
 		{
 			std::cout << "Column changed " << indexColChanged.first << std::endl;
