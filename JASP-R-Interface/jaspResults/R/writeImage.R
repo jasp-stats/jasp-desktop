@@ -63,6 +63,8 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj = TRUE, relat
       .redrawPlot(plot) #(see below)
     } else if (inherits(plot, "qgraph")) {
       qgraph::plot.qgraph(plot)
+    } else if (inherits(plot, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
+			gridExtra::grid.arrange(plot)
     } else {
       plot(plot)
     }

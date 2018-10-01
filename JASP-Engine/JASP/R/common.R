@@ -2278,7 +2278,9 @@ as.list.footnotes <- function(footnotes) {
         .redrawPlot(plot) #(see below)
     } else if (inherits(plot, "qgraph")) {
       qgraph::plot.qgraph(plot)
-    } else {
+    } else if (inherits(plot, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
+      gridExtra::grid.arrange(plot)
+    }	else {
       plot(plot)
     }
     dev.off()
