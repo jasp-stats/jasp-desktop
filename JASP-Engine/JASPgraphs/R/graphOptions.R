@@ -1,9 +1,9 @@
 # idea: these are adjustable via a preference menu
 .graphOptions <- list2env(list(
-    fontsize = 16,
+    fontsize = 17,
     legend.cex = 1.25,
     legend.position = "auto",
-    axis.title.cex = 1,
+    axis.title.cex = 1.2,
     family = NULL,
     legend.coordinates = list(left = .15,
                               mid = .5,
@@ -12,9 +12,9 @@
                               mid = .5,
                               bottom = .25),
     horizontal = FALSE,
-    bty = list(type = "n", ldwX = 1.75, lwdY = 1.75),
-    axisTickLength = grid::unit(x = .15, units = "cm"),
-    axisTickWidth = 1.25,
+    bty = list(type = "n", ldwX = .3, lwdY = .3),
+    axisTickLength = grid::unit(x = .3, units = "cm"),
+    axisTickWidth = .3,
     ggVersion = as.character(packageVersion("ggplot2"))
 ))
 
