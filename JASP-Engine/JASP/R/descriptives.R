@@ -545,7 +545,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
       } else if (col > row) {
         if (options$plotCorrelationMatrix) {
           if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
-            plotMat[[row, col]] <- .TEMPplotScatterDescriptives(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
+            plotMat[[row, col]] <- .plotScatterDescriptives(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
           } else {
             errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
             errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
@@ -642,7 +642,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 }
 
 
-.TEMPplotScatterDescriptives <- function(xVar, yVar, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2) {
+.plotScatterDescriptives <- function(xVar, yVar, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2) {
 
   d <- data.frame(xx= xVar, yy= yVar)
   d <- na.omit(d)
@@ -763,15 +763,15 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   if (any(is.infinite(column))) {
     plotObj$error         <- "badData"
     plotObj$errorMessage  <- "Plotting is not possible: Variable contains infinity"
-    plotObj$plotObject    <- function() { .barplotJASP(variable=variable, dontPlotData=TRUE) }
+    plotObj$plotObject    <- .barplotJASP(variable=variable, dontPlotData=TRUE)
   }
   else if (length(column) < 3)  {
     plotObj$error         <- "badData"
     plotObj$errorMessage  <- "Plotting is not possible: Too few rows (left)"
-    plotObj$plotObject    <- function() { .barplotJASP(variable=variable, dontPlotData=TRUE) }
+    plotObj$plotObject    <- .barplotJASP(variable=variable, dontPlotData=TRUE)
   }
   else if (length(column) > 0 && is.factor(column))
-    plotObj$plotObject <- function() { .barplotJASP(column, variable) }
+    plotObj$plotObject <- .barplotJASP(column, variable)
   else if (length(column) > 0 && !is.factor(column))
     plotObj$plotObject <- .plotMarginal(column, variableName=variable, displayDensity = displayDensity )
 
@@ -784,12 +784,12 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 
 
   # Initialisation plot
-  .initSplitPlot <- function()
-  {
-    plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
-    axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
-    mtext(text = variable, side = 1, cex=1.5, line = 3)
-  }
+  # .initSplitPlot <- function()
+  # {
+  #   plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
+  #   axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
+  #   mtext(text = variable, side = 1, cex=1.5, line = 3)
+  # }
 
   # Define custom y axis function
   base_breaks_y <- function(x)
@@ -818,7 +818,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     yWithNAIndex <- yWithNAIndex + 1
   }
 
-  thePlot <- createJaspPlot(plot=.initSplitPlot, title=variable, width=options$plotWidth, height=options$plotHeight, dependencies=depends)
+  thePlot <- createJaspPlot(title=variable, width=options$plotWidth, height=options$plotHeight, dependencies=depends)
 
 
   if (!is.numeric(y))
@@ -1016,113 +1016,188 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 
   return(p)
 }
-
 .barplotJASP <- function(column, variable, dontPlotData= FALSE){
+    
+    # Hardcore xticks
+    xticks <- pretty(c(1,5))
+    yticks <- pretty(c(1,5))
+    
+    p <- JASPgraphs::drawAxis(xName = variable, xBreaks = xticks, yBreaks = yticks)
 
-  if (dontPlotData) {
+    if (dontPlotData) {
 
-    plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
-
-    axis(1, at=0:1, labels=FALSE, cex.axis= 1.4, xlab="")
-    axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
-
-    mtext(text = variable, side = 1, cex=1.5, line = 3)
-
-    return()
-  }
-
-  maxFrequency <- max(summary(column))
-
-  i <- 1
-  step <- 1
-
-  while (maxFrequency / step > 9) {
-
-    if (i == 2) {
-
-      step <- 2 * step
-      i <- i + 1
-
-    } else if (i %% 3 == 0) {
-
-      step <- 2.5 * step
-      i <- i + 1
-
-    } else {
-
-      step <- 2 * step
-      i <- i + 1
+        p <- JASPgraphs::themeJasp(p)
+        
+        return(p)
     }
 
-  }
+    maxFrequency <- max(summary(column))
 
-  yticks <- 0
+    i <- 1
+    step <- 1
 
-  while (yticks[length(yticks)] < maxFrequency) {
+    while (maxFrequency / step > 9) {
 
-    yticks <- c(yticks, yticks[length(yticks)] + step)
-  }
+        if (i == 2) {
+
+            step <- 2 * step
+            i <- i + 1
+
+        } else if (i %% 3 == 0) {
+
+            step <- 2.5 * step
+            i <- i + 1
+
+        } else {
+
+            step <- 2 * step
+            i <- i + 1
+        }
+
+    }
+
+    yticks <- 0
+
+    while (yticks[length(yticks)] < maxFrequency) {
+
+        yticks <- c(yticks, yticks[length(yticks)] + step)
+    }
 
 
-  yLabs <- vector("character", length(yticks))
+    yLabs <- vector("character", length(yticks))
 
-  for(i in seq_along(yticks))
-    if(yticks[i] < 10^6)
-      yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
-    else
-      yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+    for(i in seq_along(yticks)){
 
-  distLab <- max(nchar(yLabs))/1.8
+        if(yticks[i] < 10^6){
 
-  par(mar= c(5, 7.2, 4, 2) + 0.1)
-  barplot(summary(column), cex.names= 1.3, axes= FALSE, ylim= range(yticks))
-  axis(2, las=1, at= yticks, labels= yLabs, cex.axis= 1.4)
-  mtext(text = variable, side = 1, cex=1.5, line = 3)
-  mtext(text = "Frequency", side = 2, cex=1.5, line = distLab+2, las=0)
+            yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
+
+        } else{
+
+            yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+        }
+    }
+
+    distLab <- max(nchar(yLabs))/1.8
+
+    p <- ggplot2::ggplot(data = data.frame(summary(column)), ggplot2::aes(x = levels(column),y = summary(column))) +
+        ggplot2::geom_bar(stat = "identity", fill = "grey", col = "black", size = .3)
+
+    p <- p + ggplot2::xlab(variable)
+    p <- p + ggplot2::ylab("")
+
+    # JASP theme
+    p <- JASPgraphs::themeJasp(p)
+        
+    return(p)
+
 }
+# .barplotJASP <- function(column, variable, dontPlotData= FALSE){
 
-.plotScatterDescriptives <- function(xVar, yVar, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2){
+#   if (dontPlotData) {
 
-  d     <- data.frame(xx= xVar, yy= yVar)
-  d     <- na.omit(d)
-  xVar  <- d$xx
-  yVar  <- d$yy
+#     plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
 
-  # fit different types of regression
-  fit <- vector("list", 1)# vector("list", 4)
+#     axis(1, at=0:1, labels=FALSE, cex.axis= 1.4, xlab="")
+#     axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
 
-  fit[[1]] <- lm(yy ~ poly(xx, 1, raw= TRUE), d)
-  fit[[2]] <- lm(yy ~ poly(xx, 2, raw= TRUE), d)
-  fit[[3]] <- lm(yy ~ poly(xx, 3, raw= TRUE), d)
-  fit[[4]] <- lm(yy ~ poly(xx, 4, raw= TRUE), d)
+#     mtext(text = variable, side = 1, cex=1.5, line = 3)
 
-  # find parsimonious, best fitting regression model
-  Bic <- vector("numeric", 4)
+#     return()
+#   }
 
-  for (i in 1:4)
-    Bic[i] <- BIC(fit[[i]])
+#   maxFrequency <- max(summary(column))
+
+#   i <- 1
+#   step <- 1
+
+#   while (maxFrequency / step > 9) {
+
+#     if (i == 2) {
+
+#       step <- 2 * step
+#       i <- i + 1
+
+#     } else if (i %% 3 == 0) {
+
+#       step <- 2.5 * step
+#       i <- i + 1
+
+#     } else {
+
+#       step <- 2 * step
+#       i <- i + 1
+#     }
+
+#   }
+
+#   yticks <- 0
+
+#   while (yticks[length(yticks)] < maxFrequency) {
+
+#     yticks <- c(yticks, yticks[length(yticks)] + step)
+#   }
+
+
+#   yLabs <- vector("character", length(yticks))
+
+#   for(i in seq_along(yticks))
+#     if(yticks[i] < 10^6)
+#       yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
+#     else
+#       yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+
+#   distLab <- max(nchar(yLabs))/1.8
+
+#   par(mar= c(5, 7.2, 4, 2) + 0.1)
+#   barplot(summary(column), cex.names= 1.3, axes= FALSE, ylim= range(yticks))
+#   axis(2, las=1, at= yticks, labels= yLabs, cex.axis= 1.4)
+#   mtext(text = variable, side = 1, cex=1.5, line = 3)
+#   mtext(text = "Frequency", side = 2, cex=1.5, line = distLab+2, las=0)
+# }
+
+# .plotScatterDescriptives <- function(xVar, yVar, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2){
+
+#   d     <- data.frame(xx= xVar, yy= yVar)
+#   d     <- na.omit(d)
+#   xVar  <- d$xx
+#   yVar  <- d$yy
+
+#   # fit different types of regression
+#   fit <- vector("list", 1)# vector("list", 4)
+
+#   fit[[1]] <- lm(yy ~ poly(xx, 1, raw= TRUE), d)
+#   fit[[2]] <- lm(yy ~ poly(xx, 2, raw= TRUE), d)
+#   fit[[3]] <- lm(yy ~ poly(xx, 3, raw= TRUE), d)
+#   fit[[4]] <- lm(yy ~ poly(xx, 4, raw= TRUE), d)
+
+#   # find parsimonious, best fitting regression model
+#   Bic <- vector("numeric", 4)
+
+#   for (i in 1:4)
+#     Bic[i] <- BIC(fit[[i]])
 
 
 
-  bestModel <- which.min(Bic)
+#   bestModel <- which.min(Bic)
 
-  xlow    <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
-  xhigh   <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
-  xticks  <- pretty(c(xlow, xhigh))
+#   xlow    <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
+#   xhigh   <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
+#   xticks  <- pretty(c(xlow, xhigh))
 
-  ylow    <- min((min(yVar) - 0.1* min(yVar)), min(pretty(yVar)), min(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
-  yhigh   <- max((max(yVar) + 0.1* max(yVar)), max(pretty(yVar)), max(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
-  yticks  <- pretty(c(ylow, yhigh))
+#   ylow    <- min((min(yVar) - 0.1* min(yVar)), min(pretty(yVar)), min(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
+#   yhigh   <- max((max(yVar) + 0.1* max(yVar)), max(pretty(yVar)), max(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
+#   yticks  <- pretty(c(ylow, yhigh))
 
-  plot(xVar, yVar, col="black", pch=21, bg = "grey", ylab="", xlab="", axes=F, ylim= range(yticks), xlim= range(xticks), cex= cexPoints)
+#   plot(xVar, yVar, col="black", pch=21, bg = "grey", ylab="", xlab="", axes=F, ylim= range(yticks), xlim= range(xticks), cex= cexPoints)
 
-  .poly.pred(fit[[bestModel]], line= TRUE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)
+#   .poly.pred(fit[[bestModel]], line= TRUE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)
 
-  par(las=1)
+#   par(las=1)
 
-  axis(1, line= 0.4, labels= xticks, at= xticks, cex.axis= cexXAxis)
-  axis(2, line= 0.2, labels= yticks, at= yticks, cex.axis= cexYAxis)
-}
+#   axis(1, line= 0.4, labels= xticks, at= xticks, cex.axis= cexXAxis)
+#   axis(2, line= 0.2, labels= yticks, at= yticks, cex.axis= cexYAxis)
+# }
 
 .descriptivesKurtosis <- function(x) {
 

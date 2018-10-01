@@ -29,7 +29,7 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj = TRUE, relat
   setwd(root)
   on.exit(setwd(oldwd))
 
-  if (ggplot2::is.ggplot(plot)) {
+  if (ggplot2::is.ggplot(plot) || inherits(plot, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
     ppi <- .fromRCPP(".ppi")
 
     # fix for mac
@@ -63,8 +63,6 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj = TRUE, relat
       .redrawPlot(plot) #(see below)
     } else if (inherits(plot, "qgraph")) {
       qgraph::plot.qgraph(plot)
-    } else if (inherits(plot, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
-			gridExtra::grid.arrange(plot)
     } else {
       plot(plot)
     }
