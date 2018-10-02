@@ -218,6 +218,8 @@ void Engine::receiveAnalysisMessage(Json::Value jsonRequest)
 
 void Engine::runAnalysis()
 {
+	waitForDatasetSync();
+
 	if (_status == saveImg)	{ saveImage(); return; }
 	if (_status == editImg)	{ editImage(); return; }
 
@@ -343,6 +345,8 @@ void Engine::sendAnalysisResults()
 
 void Engine::runFilter()
 {
+	waitForDatasetSync();
+
 	try
 	{
 		std::vector<bool> filterResult	= rbridge_applyFilter(_filter, _generatedFilter);
@@ -388,6 +392,8 @@ void Engine::sendFilterError(std::string errorMessage)
 // Evaluating arbitrary R code (as string) which returns a string
 void Engine::runRCode()
 {
+	waitForDatasetSync();
+
 	std::string rCodeResult = jaspRCPP_evalRCode(_rCode.c_str());
 	
 	if (rCodeResult == "null")	sendRCodeError();
@@ -427,6 +433,8 @@ void Engine::sendRCodeError()
 
 void Engine::runComputeColumn()
 {
+	waitForDatasetSync();
+
 	static const std::map<Column::ColumnType, std::string> setColumnFunction = {
 		{Column::ColumnTypeScale,		".setColumnDataAsScale"},
 		{Column::ColumnTypeOrdinal,		".setColumnDataAsOrdinal"},
@@ -538,4 +546,10 @@ std::string Engine::callback(const std::string &results, int progress)
 	else if (_status == aborted)	return "{ \"status\" : \"aborted\" }";
 
 	return "{ \"status\" : \"ok\" }";
+}
+
+void Engine::waitForDatasetSync()
+{
+	while(SharedMemory::retrieveDataSet(_parentPID)->synchingData())
+		usleep(10000);
 }

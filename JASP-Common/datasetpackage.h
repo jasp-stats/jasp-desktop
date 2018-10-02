@@ -92,8 +92,8 @@ public:
 
 			ComputedColumns	* computedColumnsPointer();
 
-			boost::signals2::signal<void (DataSetPackage *source)>																																					isModifiedChanged;
-			boost::signals2::signal<void (DataSetPackage *source, std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns)>		dataChanged;
+			boost::signals2::signal<void (DataSetPackage *source)>																																									isModifiedChanged;
+			boost::signals2::signal<void (DataSetPackage *source, std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns, bool rowCountChanged)>	dataChanged;
 
 private:
 
@@ -123,6 +123,7 @@ private:
 	uint				_dataFileTimestamp;
 
 	ComputedColumns		_computedColumns;
+	bool				_synchingData;
 };
 
 #endif // FILEPACKAGE_H

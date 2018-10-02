@@ -64,6 +64,7 @@ DataSet *SharedMemory::retrieveDataSet(unsigned long parentPID)
 	}
 
 	DataSet * data = _memory->find<DataSet>(interprocess::unique_instance).first;
+
 	return data;
 }
 

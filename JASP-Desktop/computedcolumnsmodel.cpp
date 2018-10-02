@@ -286,11 +286,11 @@ void ComputedColumnsModel::removeColumn()
 	setComputeColumnNameSelected("");
 }
 
-void ComputedColumnsModel::packageSynchronized(const std::vector<std::string> & changedColumns, const std::vector<std::string> & missingColumns, const std::map<std::string, std::string> & changeNameColumns)
+void ComputedColumnsModel::packageSynchronized(const std::vector<std::string> & changedColumns, const std::vector<std::string> & missingColumns, const std::map<std::string, std::string> & changeNameColumns, bool rowCountChanged)
 {
 	for(ComputedColumn * col : *_computedColumns)
 	{
-		bool invalidateMe = false;
+		bool invalidateMe = rowCountChanged;
 
 		for(const std::string & changed : changedColumns)
 			if(col->dependsOn(changed, false))

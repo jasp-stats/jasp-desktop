@@ -55,16 +55,18 @@ public:
 	std::vector<std::string> resetEmptyValues(emptyValsType emptyValuesMap);
 
 	void				setFilterVector(std::vector<bool> filterResult);
-	const BoolVector&	filterVector()		const { return _filterVector; }
-	int					filteredRowCount()	const { return _filteredRowCount; }
+	const BoolVector&	filterVector()		const	{ return _filterVector; }
+	int					filteredRowCount()	const	{ return _filteredRowCount; }
 
-	bool allColumnsPassFilter()						const;
-
+	bool allColumnsPassFilter()				const;
+	bool synchingData()						const	{ return _synchingData; }
+	void setSynchingData(bool newVal)				{ _synchingData = newVal; }
 
 private:
 	Columns			_columns;
 	int				_filteredRowCount = 0;
 	BoolVector		_filterVector;
+	bool			_synchingData;
 
 	boost::interprocess::managed_shared_memory *_mem;
 };

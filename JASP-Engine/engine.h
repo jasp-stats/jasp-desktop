@@ -76,6 +76,8 @@ private:
 	void runFilter();
 	void runComputeColumn();
 
+	void waitForDatasetSync();
+
 	void removeNonKeepFiles(Json::Value filesToKeepValue);
 	void saveImage();
     void editImage();

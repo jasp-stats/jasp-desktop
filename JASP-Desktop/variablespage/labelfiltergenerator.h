@@ -14,6 +14,8 @@ public:
 	///Generates entire filter
 	std::string generateFilter();
 
+	void regenerateFilter() { emit setGeneratedFilter(QString::fromStdString(generateFilter())); }
+
 public slots:
 	void labelFilterChanged();
 	void easyFilterConstructorRCodeChanged(QString newRScript);

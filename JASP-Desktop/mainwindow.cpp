@@ -162,7 +162,7 @@ Q_DECLARE_METATYPE(Column::ColumnType)
 void MainWindow::makeConnections()
 {
 	_package->isModifiedChanged.connect(boost::bind(&MainWindow::packageChanged,	this,	_1));
-	_package->dataChanged.connect(		boost::bind(&MainWindow::packageDataChanged, this,	_1, _2, _3, _4));
+	_package->dataChanged.connect(		boost::bind(&MainWindow::packageDataChanged, this,	_1, _2, _3, _4, _5));
 
 	CONNECT_SHORTCUT("Ctrl+S",		&MainWindow::saveKeysSelected);
 	CONNECT_SHORTCUT("Ctrl+O",		&MainWindow::openKeysSelected);
@@ -202,6 +202,7 @@ void MainWindow::makeConnections()
 	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshColumn,				_levelsTableModel,		&LevelsTableModel::refreshColumn							);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::dataSetChanged,				_tableModel,			&DataSetTableModel::dataSetChanged							);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshData,					_tableModel,			&DataSetTableModel::refresh									);
+	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshData,					this,					&MainWindow::updateShownVariablesModel						);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			this,					&MainWindow::showForm										);
 
 	connect(this,					&MainWindow::ppiChanged,							_engineSync,			&EngineSync::ppiChanged										);
@@ -519,7 +520,7 @@ void MainWindow::packageChanged(DataSetPackage *package)
 }
 
 
-void MainWindow::refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns,	 std::vector<std::string> &missingColumns,	 std::map<std::string, std::string> &changeNameColumns)
+void MainWindow::refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns,	 std::vector<std::string> &missingColumns,	 std::map<std::string, std::string> &changeNameColumns, bool rowCountChanged)
 {
 	std::vector<std::string> oldColumnNames;
 
@@ -572,7 +573,7 @@ void MainWindow::refreshAnalysesUsingColumns(std::vector<std::string> &changedCo
 		analysis->refresh();
 	}
 
-	_computedColumnsModel->packageSynchronized(changedColumns, missingColumns, changeNameColumns);
+	_computedColumnsModel->packageSynchronized(changedColumns, missingColumns, changeNameColumns, rowCountChanged);
 }
 
 void MainWindow::dataSetChanged(DataSet * dataSet)
@@ -593,11 +594,13 @@ void MainWindow::setDataSetAndPackageInModels(DataSetPackage *package)
 void MainWindow::packageDataChanged(DataSetPackage *package,
 									vector<string> &changedColumns,
 									vector<string> &missingColumns,
-									map<string, string> &changeNameColumns)
+									map<string, string> &changeNameColumns,
+									bool rowCountChanged)
 {
 	setDataSetAndPackageInModels(package);
-	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns);
-	_filterModel->checkForSendFilter();
+
+	_labelFilterGenerator->regenerateFilter();
+	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, rowCountChanged);
 }
 
 
@@ -760,6 +763,12 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 	_analysisFormsMap[analysis]->show();
 
 	return _analysisFormsMap[analysis];
+}
+
+void MainWindow::updateShownVariablesModel()
+{
+	if(_currentOptionsWidget != NULL)
+		_currentOptionsWidget->connectToAvailableVariablesModel(_package->dataSet());
 }
 
 
@@ -1440,7 +1449,7 @@ void MainWindow::emptyValuesChangedHandler()
 		catch (...)			{	cout << "MainWindow::emptyValuesChangedHandler something when wrong...\n" << std::endl; }
 
 		_package->setModified(true);
-		packageDataChanged(_package, colChanged, missingColumns, changeNameColumns);
+		packageDataChanged(_package, colChanged, missingColumns, changeNameColumns, false);
 	}
 }
 
@@ -1706,7 +1715,7 @@ void MainWindow::refreshAnalysesUsingColumn(QString col)
 	std::vector<std::string> changedColumns, missingColumns;
 	std::map<std::string, std::string> changeNameColumns;
 	changedColumns.push_back(col.toStdString());
-	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns);
+	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, false);
 
 	_package->setModified(false);
 }
