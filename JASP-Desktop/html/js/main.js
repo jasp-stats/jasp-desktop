@@ -242,6 +242,12 @@ $(document).ready(function () {
 
 	}
 
+	window.scrollToTopView = function (item) {
+
+		var itemTop = item.offset().top
+		$("html, body").animate({ scrollTop: itemTop  }, { duration: 'slow', easing: 'swing' });
+	}
+
 	window.slideAlpha = function (item, time, cssProperties, targetAlphas, divisions, clearStyleOnZero, completeCallback) {
 
 		var params = {
@@ -421,7 +427,6 @@ $(document).ready(function () {
 			window.select(idAsInt)
 			jasp.analysisSelected(idAsInt)
 		}
-
 	}
 
     var analysisChangedDownstreamHandler = function (event, data) {
@@ -540,9 +545,6 @@ $(document).ready(function () {
 			jaspWidget.model.set(analysis);
 
 		jaspWidget.render();
-
-		//if (selectedAnalysisId === analysis.id && (analysis.status == "inited" || analysis.status == "complete"))
-		//	window.scrollIntoView(jaspWidget.$el);
 	}
 	
 	$("#results").on("click", ".stack-trace-selector", function() {
