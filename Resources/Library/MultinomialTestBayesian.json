@@ -101,6 +101,15 @@
 		{
 			"name": "restrictedHypothesis",
 			"type": "String"
+		},
+		{
+			"name": "plotPriorAndPosterior",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "plotPriorAndPosteriorAdditionalInfo",
+			"type": "Boolean"
 		}
   ]
 }
