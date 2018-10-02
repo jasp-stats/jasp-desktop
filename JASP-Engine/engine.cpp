@@ -551,5 +551,5 @@ std::string Engine::callback(const std::string &results, int progress)
 void Engine::waitForDatasetSync()
 {
 	while(SharedMemory::retrieveDataSet(_parentPID)->synchingData())
-		usleep(10000);
+		Utils::sleep(10);
 }
