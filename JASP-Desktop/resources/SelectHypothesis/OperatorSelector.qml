@@ -42,12 +42,6 @@ Item {
             alternativeDropFunction: alternativeDropFunctionDef
             toolTipText: "Less than"
         }
-        OperatorDrag {
-            operator: ">"
-            acceptsDrops: false
-            alternativeDropFunction: alternativeDropFunctionDef
-            toolTipText: "Greater than"
-        }
     }
 
     Component {

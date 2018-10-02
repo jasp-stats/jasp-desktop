@@ -22,9 +22,9 @@ DragGeneric {
 	shownChild                               : showMe
 	property string       __debugName        : "OperatorDrag"
 
-	readonly property var everythingOperators: ["==", "<", ">"]
+	readonly property var everythingOperators: ["==", "<"]
 	property string       operator           : "+"
-	property          var opImages           : { '==': 'qrc:/icons/equal.png', '<': 'qrc:/icons/lessThan.png', '>': 'qrc:/icons/greaterThan.png'}
+	property          var opImages           : { '==': 'qrc:/icons/equal.png', '<': 'qrc:/icons/lessThan.png'}
 	property bool         acceptsDrops       : true
 
 	leftDropSpot                             : showMe.leftDropSpot
