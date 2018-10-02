@@ -2301,6 +2301,7 @@ saveImage <- function(plotName, format, height, width)
   plt       <- state[["figures"]][[plotName]]
   location  <- .fromRCPP(".requestTempFileNameNative", "png") # create file location string to extract the root location
 
+
 	# create file location string
 	location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
   relativePath <- paste0("temp.", format)
