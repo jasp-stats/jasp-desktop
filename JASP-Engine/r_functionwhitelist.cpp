@@ -161,6 +161,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"solve",
 	"sort",
 	"spline",
+    "sqrt",
 	"stack",
 	"str",
 	"strsplit",
