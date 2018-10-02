@@ -5,11 +5,12 @@
 !include "nsProcess.nsh"
 !include "x64.nsh"
 
-!define VERSION "0.9.1.0"
+#Contains JASP version and content location (32 or 64 bits)
+!include "version.nsi"
+
 !define APP_NAME "JASP"
-!define INSTALLER_NAME "${APP_NAME}-${VERSION}-Setup.exe"
-!define CONTENTS_DIR "C:\Jasp\Install"
-!define APP_DISPLAY_NAME "${APP_NAME} ${VERSION}"
+!define INSTALLER_NAME "${APP_NAME}-${JASPVERSION}-${ARCH_SETUP_NAME}.exe"
+!define APP_DISPLAY_NAME "${APP_NAME} ${JASPVERSION}"
 !define COMP_NAME "The ${APP_NAME} Statistics Project"
 !define WEB_SITE "https://jasp-stats.org"
 !define COPYRIGHT "${APP_NAME} © 2018"
@@ -30,12 +31,12 @@
 
 ######################################################################
 
-VIProductVersion  "${VERSION}"
+VIProductVersion  "${JASPVERSION}"
 VIAddVersionKey "ProductName"  "${APP_DISPLAY_NAME}"
 VIAddVersionKey "CompanyName"  "${COMP_NAME}"
 VIAddVersionKey "LegalCopyright"  "${COPYRIGHT}"
 VIAddVersionKey "FileDescription"  "${DESCRIPTION}"
-VIAddVersionKey "FileVersion"  "${VERSION}"
+VIAddVersionKey "FileVersion"  "${JASPVERSION}"
 
 ######################################################################
 
@@ -200,7 +201,7 @@ WriteRegStr ${REG_ROOT} "${REG_APP_PATH}" "" "$INSTDIR\${MAIN_APP_EXE}"
 WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "DisplayName" "${APP_DISPLAY_NAME}"
 WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "UninstallString" "$INSTDIR\uninstall.exe"
 WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "DisplayIcon" "$INSTDIR\${MAIN_APP_EXE}"
-WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "DisplayVersion" "${VERSION}"
+WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "DisplayVersion" "${JASPVERSION}"
 WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "Publisher" "${COMP_NAME}"
 
 !ifdef WEB_SITE
