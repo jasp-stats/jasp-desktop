@@ -54,10 +54,6 @@ FocusScope
 						anchors.horizontalCenter:	parent.horizontalCenter
 						anchors.margins:			4
 
-						sourceSize.width: width
-						sourceSize.height: height
-						width: height
-
 					}
 
 					MouseArea
@@ -203,8 +199,6 @@ FocusScope
 										anchors.left:			parent.left
 										anchors.leftMargin:		10
 										anchors.verticalCenter: parent.verticalCenter
-										anchors.left: parent.left
-										anchors.leftMargin: 10
 
 										Image
 										{

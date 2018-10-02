@@ -312,7 +312,7 @@ FocusScope
 		FilterButton
 		{
 			id: closeColumnEditorButton
-			iconSource: "../icons/cross.png"
+			iconSource: "../images/cross.png"
 			anchors.right: parent.right
 			anchors.bottom: parent.bottom
 
