@@ -114,9 +114,9 @@ for dependency in dependencies:
 	dep_target = os.path.join(out_lib_dir, dep_base)
 
 	if os.path.isfile(dependency):
-	
-		if dependency != "/opt/X11/lib/libfreetype.6.dylib":
-			shutil.copyfile(dependency, dep_target)
+# For unknown reason libfreetype was excluded from dependencies, but this introduced plot problems on later JASP versions.	
+#		if dependency != "/opt/X11/lib/libfreetype.6.dylib":
+		shutil.copyfile(dependency, dep_target)
 			
 		new_libs.append(dep_target)
 		
