@@ -246,6 +246,8 @@ void Importer::_syncPackage(
 		bool										rowCountChanged)
 
 {
+	_packageData->dataSet()->setSynchingData(true);
+
 	std::vector<std::string>			_changedColumns;
 	std::vector<std::string>			_missingColumns;
 	std::map<std::string, std::string>	_changeNameColumns;
@@ -304,6 +306,6 @@ void Importer::_syncPackage(
 		}
 	}
 
-	_packageData->dataChanged(_packageData, _changedColumns, _missingColumns, _changeNameColumns);
-
+	_packageData->dataSet()->setSynchingData(false);
+	_packageData->dataChanged(_packageData, _changedColumns, _missingColumns, _changeNameColumns, rowCountChanged);
 }

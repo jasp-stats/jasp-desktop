@@ -87,7 +87,7 @@ int DataSetTableModel::columnCount(const QModelIndex &parent) const
 
 QVariant DataSetTableModel::data(const QModelIndex &index, int role) const
 {
-	if (_dataSet == NULL)
+	if (_dataSet == NULL || _dataSet->synchingData())
 		return QVariant();
 
 	int column = index.column();

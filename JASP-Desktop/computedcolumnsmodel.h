@@ -32,7 +32,7 @@ public:
 				void	setComputeColumnNameSelected(QString newName);
 				void	setComputeColumnJson(QString newJson);
 
-				void	packageSynchronized(const std::vector<std::string> & changedColumns, const std::vector<std::string> & missingColumns, const std::map<std::string, std::string> & changeNameColumns);
+				void	packageSynchronized(const std::vector<std::string> & changedColumns, const std::vector<std::string> & missingColumns, const std::map<std::string, std::string> & changeNameColumns, bool rowCountChanged);
 
 	Q_INVOKABLE	void	removeColumn();
 	Q_INVOKABLE void	sendCode(QString code);

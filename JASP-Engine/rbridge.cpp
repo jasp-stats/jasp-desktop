@@ -231,12 +231,12 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	if (resultCols)
 		freeRBridgeColumns(resultCols, lastColMax);
 	lastColMax = colMax;
-	resultCols = (RBridgeColumn*)calloc(colMax + 1, sizeof(RBridgeColumn));
+	resultCols = static_cast<RBridgeColumn*>(calloc(colMax + 1, sizeof(RBridgeColumn)));
 
 	int filteredRowCount = obeyFilter ? rbridge_dataSet->filteredRowCount() : rbridge_dataSet->rowCount();
 
 	// lets make some rownumbers/names for R that takes into account being filtered or not!
-	resultCols[colMax].ints		= (int*)calloc(filteredRowCount, sizeof(int));
+	resultCols[colMax].ints		= static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
 	resultCols[colMax].nbRows	= filteredRowCount;
 	int filteredRow				= 0;
 
@@ -247,14 +247,14 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 
 	for (int colNo = 0; colNo < colMax; colNo++)
 	{
-		RBridgeColumnType& columnInfo = colHeaders[colNo];
-		RBridgeColumn& resultCol = resultCols[colNo];
+		RBridgeColumnType& columnInfo	= colHeaders[colNo];
+		RBridgeColumn& resultCol		= resultCols[colNo];
 
-		std::string columnName = columnInfo.name;
-		resultCol.name = strdup(Base64::encode("X", columnName, Base64::RVarEncoding).c_str());
+		std::string columnName			= columnInfo.name;
+		resultCol.name					= strdup(Base64::encode("X", columnName, Base64::RVarEncoding).c_str());
 
-		Column &column = columns.get(columnName);
-		Column::ColumnType columnType = column.columnType();
+		Column &column					= columns.get(columnName);
+		Column::ColumnType columnType	= column.columnType();
 
 		Column::ColumnType requestedType = (Column::ColumnType)columnInfo.type;
 		if (requestedType == Column::ColumnTypeUnknown)
@@ -560,10 +560,9 @@ void freeRBridgeColumns(RBridgeColumn *columns, int colMax)
 	{
 		RBridgeColumn& column = columns[i];
 		free(column.name);
-		if (column.isScale)
-			free(column.doubles);
-		else
-			free(column.ints);
+		if (column.isScale)	free(column.doubles);
+		else				free(column.ints);
+
 		if (column.hasLabels)
 			freeLabels(column.labels, column.nbLabels);
 	}

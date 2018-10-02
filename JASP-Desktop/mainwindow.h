@@ -74,17 +74,10 @@ private:
 	void initQWidgetGUIParts();
 	void StartOnlineDataManager();
 
-	void refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns
-									, std::vector<std::string> &missingColumns
-									, std::map<std::string, std::string> &changeNameColumns);
-
 
 	void packageChanged(DataSetPackage *package);
-	void packageDataChanged(DataSetPackage *package
-							, std::vector<std::string> &changedColumns
-							, std::vector<std::string> &missingColumns
-							, std::map<std::string, std::string> &changeNameColumns
-							);
+	void packageDataChanged(DataSetPackage *package, std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns,	bool rowCountChanged);
+	void refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns, bool rowCountChanged);
 
 	void setDataSetAndPackageInModels(DataSetPackage *package);
 	bool closeRequestCheck(bool &isSaving);
@@ -129,6 +122,7 @@ private slots:
 	void removeAllAnalyses();
 	void refreshAllAnalyses();
 	void refreshAnalysesUsingColumn(QString col);
+	void updateShownVariablesModel();
 
 	void tabChanged(int index);
 	void helpToggled(bool on);
