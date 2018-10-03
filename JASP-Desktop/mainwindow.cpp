@@ -600,6 +600,7 @@ void MainWindow::packageDataChanged(DataSetPackage *package,
 	setDataSetAndPackageInModels(package);
 
 	_labelFilterGenerator->regenerateFilter();
+	_filterModel->checkForSendFilter();
 	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, rowCountChanged);
 }
 

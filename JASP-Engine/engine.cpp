@@ -100,6 +100,8 @@ void Engine::run()
 		default:
 			throw std::runtime_error("Enginestate " + engineStateToString(currentEngineState) + " not checked in Engine::run()!");
 		}
+
+		freeRBridgeColumns();
 	}
 
 	boost::interprocess::shared_memory_object::remove(memoryName.c_str());
@@ -218,6 +220,7 @@ void Engine::receiveAnalysisMessage(Json::Value jsonRequest)
 
 void Engine::runAnalysis()
 {
+	std::cout << "Engine::runAnalysis()" << std::endl;
 	waitForDatasetSync();
 
 	if (_status == saveImg)	{ saveImage(); return; }
@@ -345,6 +348,9 @@ void Engine::sendAnalysisResults()
 
 void Engine::runFilter()
 {
+#ifdef JASP_DEBUG
+	std::cout << "Engine::runFilter()" << std::endl;
+#endif
 	waitForDatasetSync();
 
 	try
@@ -392,6 +398,9 @@ void Engine::sendFilterError(std::string errorMessage)
 // Evaluating arbitrary R code (as string) which returns a string
 void Engine::runRCode()
 {
+#ifdef JASP_DEBUG
+	std::cout << "Engine::runRCode()" << std::endl;
+#endif
 	waitForDatasetSync();
 
 	std::string rCodeResult = jaspRCPP_evalRCode(_rCode.c_str());
@@ -420,7 +429,9 @@ void Engine::sendRCodeResult(std::string rCodeResult)
 
 void Engine::sendRCodeError()
 {
+#ifdef JASP_DEBUG
 	std::cout << "R Code yielded error" << std::endl << std::flush;
+#endif
 
 	Json::Value rCodeResponse		= Json::objectValue;
 	std::string RError				= jaspRCPP_getLastErrorMsg();
@@ -433,6 +444,9 @@ void Engine::sendRCodeError()
 
 void Engine::runComputeColumn()
 {
+#ifdef JASP_DEBUG
+	std::cout << "Engine::runComputeColumn()" << std::endl;
+#endif
 	waitForDatasetSync();
 
 	static const std::map<Column::ColumnType, std::string> setColumnFunction = {
@@ -552,4 +566,5 @@ void Engine::waitForDatasetSync()
 {
 	while(SharedMemory::retrieveDataSet(_parentPID)->synchingData())
 		Utils::sleep(10);
+
 }

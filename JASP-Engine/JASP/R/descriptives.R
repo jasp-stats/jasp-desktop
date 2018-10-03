@@ -27,7 +27,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   if (is.null(dataset)) {
       if (makeSplit) {
         dataset         <- .readDataSetToEnd(columns.as.numeric = variables, columns.as.factor = splitName)
-	      dataset.factors <- .readDataSetToEnd(columns=variables, columns.as.factor=splitName)
+        dataset.factors <- .readDataSetToEnd(columns=variables, columns.as.factor=splitName)
       } else {
         dataset         <- .readDataSetToEnd(columns.as.numeric=variables)
 	      dataset.factors <- .readDataSetToEnd(columns=variables)
@@ -945,6 +945,8 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   column <- as.numeric(column)
   variable <- na.omit(column)
 
+  if(length(variable) == 0)
+    return(NULL)
 
   h <- hist(variable, plot = FALSE)
 

@@ -47,7 +47,6 @@ extern "C" {
 	RBridgeColumn*				STDCALL rbridge_readDataSet(RBridgeColumnType* columns, int colMax, bool obeyFilter);
 	RBridgeColumn*				STDCALL rbridge_readFullDataSet(int * colMax);
 	RBridgeColumn*				STDCALL rbridge_readDataSetForFiltering(int * colMax);
-	RBridgeColumn*				STDCALL rbridge_readDataSetForEvalRCode(int * colMax);
 	char**						STDCALL rbridge_readDataColumnNames(int *colMax);
 	RBridgeColumnDescription*	STDCALL rbridge_readDataSetDescription(RBridgeColumnType* columns, int colMax);
 	bool						STDCALL rbridge_test(char** root);
@@ -67,6 +66,7 @@ extern "C" {
 
 	void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction);
 
+
 	void rbridge_setFileNameSource(			boost::function<void(const std::string &, std::string &, std::string &)> source);
 	void rbridge_setStateFileSource(		boost::function<void(std::string &, std::string &)> source);
 	void rbridge_setJaspResultsFileSource(	boost::function<void(std::string &, std::string &)> source);
@@ -81,7 +81,7 @@ extern "C" {
 	std::string rbridge_run(const std::string &name, const std::string &title, bool &requiresInit, const std::string &dataKey, const std::string &options, const std::string &resultsMeta, const std::string &stateKey, int analysisID, int analysisRevision, const std::string &perform = "run", int ppi = 96, RCallback callback = NULL, bool useJaspResults = false);
 	std::string rbridge_check();
 
-
+	void freeRBridgeColumns();
 	void freeRBridgeColumns(RBridgeColumn *columns, int colMax);
 	void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, int colMax);
 	void freeLabels(char** labels, int nbLabels);
