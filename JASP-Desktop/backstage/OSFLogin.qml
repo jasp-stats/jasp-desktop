@@ -171,20 +171,30 @@ Rectangle {
 	Button {
 		id: loginButton
 		
-		width: 60
-		height: 20
+		background: Rectangle {
+			anchors.fill: parent
+			gradient: Gradient {
+				GradientStop { position: 0 ; color:  "#e5e5e5" }
+				GradientStop { position: 1 ; color:  "white" }
+			}
+			border.color: "gray"
+			border.width: 1
+		}
+		
+		width: 65
+		height: 20		
 		anchors.top: passwordInput.bottom
 		anchors.topMargin: 12
 		anchors.right: parent.right
 		anchors.rightMargin: 12
 		
-		text : "Login"
+		text: "Login"
 		
 		onClicked: {
 			backstageosf.loginRequested(backstageosf.username, password)
 		}
-		
-	}	
+	}
+	
 }
 
 

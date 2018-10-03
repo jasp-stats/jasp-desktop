@@ -88,7 +88,6 @@ private slots:
 	void openSaveCompleted(FileEvent* event);
 	void updateUserDetails();
 	void newFolderCreated();
-//	void newFolderClicked();
 	void authenticatedHandler();
 	void resetOSFListModel();
 	
@@ -105,7 +104,7 @@ public slots:
 	void startProcessing();
 	void stopProcessing();
 	void newFolderClicked();
-	
+	void closeFileDialog();
 	
 private:	
 	bool checkEntryName(QString name, QString entryTitle, bool allowFullStop);	

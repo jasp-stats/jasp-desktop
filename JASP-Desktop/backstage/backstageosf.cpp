@@ -62,6 +62,8 @@ BackstageOSF::BackstageOSF(QWidget *parent): BackstagePage(parent),
 	_fsBrowser->setViewType(FSBrowser::ListView);
 	_fsBrowser->setFSModel(_model);
 	_fsBrowser->hide();
+	
+	setShowfiledialog(false);
 		
 }
 
@@ -191,6 +193,8 @@ void BackstageOSF::setCurrentFileName(QString currentFileName)
 void BackstageOSF::setMode(FileEvent::FileMode mode)
 {
 	BackstagePage::setMode(mode);
+	bool showfiledialog = (mode == FileEvent::FileExportResults || mode == FileEvent::FileExportData || mode == FileEvent::FileSave );
+	setShowfiledialog(showfiledialog);
 }
 
 //private slots
@@ -242,6 +246,8 @@ void BackstageOSF::openSaveFile(const QString &nodePath, const QString &filename
 	bool storedata = (_mode == FileEvent::FileSave || _mode == FileEvent::FileExportResults || _mode == FileEvent::FileExportData);
 
 	FileEvent *event = new FileEvent(this, _mode);
+	
+	setProcessing(true);
 
 	if (event->setPath(nodePath + "#file://" + filename))
 	{
@@ -250,8 +256,6 @@ void BackstageOSF::openSaveFile(const QString &nodePath, const QString &filename
 
 			setSavefilename(filename);
 			
-			setProcessing(true);
-
 			connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(openSaveCompleted(FileEvent*)));
 		}
 	}
@@ -275,10 +279,12 @@ void BackstageOSF::userDetailsReceived()
 void BackstageOSF::openSaveCompleted(FileEvent* event)
 {
 
-	setProcessing(false);
-
 	if (event->successful())
+	{
 		_model->refresh();
+	}
+	
+	setProcessing(false);
 }
 
 
@@ -354,6 +360,11 @@ void BackstageOSF::newFolderClicked()
 			connect(node, SIGNAL(finished()), this, SLOT(newFolderCreated()));
 		}
 	}
+}
+
+void BackstageOSF::closeFileDialog()
+{
+	setShowfiledialog(false);
 }
 
 void BackstageOSF::authenticatedHandler()
