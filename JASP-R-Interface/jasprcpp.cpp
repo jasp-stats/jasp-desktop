@@ -48,11 +48,6 @@ DataSetRowCount			dataSetRowCount;
 
 
 extern "C" {
-void jaspRCPP_send(const char * msg)
-{
-	printf("void jaspRCPP_send(const char * msg) got called!\nWith: \"%s\"\n", msg);
-}
-
 void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks* callbacks, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction)
 {
 	rinside = new RInside();
@@ -371,18 +366,11 @@ SEXP jaspRCPP_requestStateFileNameSEXP()
 
 SEXP jaspRCPP_callbackSEXP(SEXP in, SEXP progress)
 {
-	std::string inStr = Rf_isNull(in) ? "null" : Rcpp::as<std::string>(in);
-	int progressInt = Rf_isNull(progress) ? -1 : Rcpp::as<int>(progress);
+	std::string inStr	= Rf_isNull(in)			? "null"	: Rcpp::as<std::string>(in);
+	int progressInt		= Rf_isNull(progress)	? -1		: Rcpp::as<int>(progress);
 	const char *out;
-	bool ok = runCallbackCB(inStr.c_str(), progressInt, &out);
-	if (ok)
-	{
-		return Rcpp::CharacterVector(out);
-	}
-	else
-	{
-		return 0;
-	}
+
+	return runCallbackCB(inStr.c_str(), progressInt, &out) ? Rcpp::CharacterVector(out) : 0;
 }
 
 void jaspRCPP_returnDataFrame(Rcpp::DataFrame frame)
@@ -552,7 +540,7 @@ Rcpp::DataFrame jaspRCPP_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SE
 	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
 }
 
-Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(RBridgeColumn* colResults, int colMax)
+Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(const RBridgeColumn* colResults, int colMax)
 {
 	Rcpp::DataFrame dataFrame = Rcpp::DataFrame();
 
@@ -563,7 +551,7 @@ Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(RBridgeColumn* colRe
 
 		for (int i = 0; i < colMax; i++)
 		{
-			RBridgeColumn& colResult = colResults[i];
+			const RBridgeColumn& colResult = colResults[i];
 			Rcpp::String colName = colResult.name;
 			colName.set_encoding(Encoding);
 			columnNames[i] = colName;
