@@ -966,7 +966,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 			}
 
-			if ((options$homogeneityBrown || options$homogeneityWelch) && length(options$modelTerms) > 1) {
+			if ((options$homogeneityBrown || options$homogeneityWelch) && options$homogeneityCorrections && length(options$modelTerms) > 1) {
 			  errorMessage <- "The Brown-Forsythe and Welch corrections are only available for one-way ANOVA"
 			}
 
