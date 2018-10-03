@@ -34,11 +34,13 @@ class BackstageOSF: public BackstagePage
 {
 	Q_OBJECT
 	
-	Q_PROPERTY(bool loggedin	READ loggedin	WRITE setLoggedin		NOTIFY loggedinChanged)
-	Q_PROPERTY(bool rememberme	READ rememberme WRITE setRememberme		NOTIFY remembermeChanged)
-	Q_PROPERTY(bool processing	READ processing WRITE setProcessing		NOTIFY processingChanged)
-	Q_PROPERTY(QString username	READ username	WRITE setUsername		NOTIFY usernameChanged)
-	Q_PROPERTY(QString password	READ password	WRITE setPassword		NOTIFY passwordChanged)
+	Q_PROPERTY(	bool	loggedin		READ loggedin		WRITE setLoggedin		NOTIFY loggedinChanged)
+	Q_PROPERTY(	bool	processing		READ processing		WRITE setProcessing		NOTIFY processingChanged)
+	Q_PROPERTY(	bool	showfiledialog	READ showfiledialog WRITE setShowfiledialog NOTIFY showfiledialogChanged)
+	Q_PROPERTY(	QString	savefilename	READ savefilename	WRITE setSavefilename	NOTIFY savefilenameChanged)	
+	Q_PROPERTY(	bool	rememberme		READ rememberme		WRITE setRememberme		NOTIFY remembermeChanged)
+	Q_PROPERTY(	QString	username		READ username		WRITE setUsername		NOTIFY usernameChanged)
+	Q_PROPERTY(	QString	password		READ password		WRITE setPassword		NOTIFY passwordChanged)
 	
 	
 public:
@@ -47,14 +49,18 @@ public:
 	bool loggedin();	
 	bool rememberme();
 	bool processing();
+	bool showfiledialog();
+	QString savefilename();
 	QString username();
 	QString password();
 	
 	void setLoggedin(const bool loggedin);	
 	void setRememberme(const bool rememberme);
-	void setProcessing(const bool processing);	
+	void setProcessing(const bool processing);
+	void setSavefilename(const QString &savefilename);	
+	void setShowfiledialog(const bool showdialog);
 	void setUsername(const QString &username);		
-	void setPassword(const QString &username);	
+	void setPassword(const QString &password);	
 		
 	void setOnlineDataManager(OnlineDataManager *odm);
 	void attemptToConnect();
@@ -67,6 +73,8 @@ signals:
 	void loggedinChanged();
 	void remembermeChanged();
 	void processingChanged();
+	void savefilenameChanged();
+	void showfiledialogChanged();
 	void usernameChanged();
 	void passwordChanged();
 	void openFileRequest(QString path);
@@ -80,7 +88,7 @@ private slots:
 	void openSaveCompleted(FileEvent* event);
 	void updateUserDetails();
 	void newFolderCreated();
-	void newFolderClicked();
+//	void newFolderClicked();
 	void authenticatedHandler();
 	void resetOSFListModel();
 	
@@ -93,8 +101,11 @@ public slots:
 	void updateLoginScreen();
 	void loginRequested(const QString &username, const QString &password);
 	void openFile(const QString &name);
+	void saveFile(const QString &name);
 	void startProcessing();
 	void stopProcessing();
+	void newFolderClicked();
+	
 	
 private:	
 	bool checkEntryName(QString name, QString entryTitle, bool allowFullStop);	
@@ -110,6 +121,8 @@ private:
 	bool _mLoggedin;
 	bool _mRememberMe;
 	bool _mProcessing;
+	bool _mShowFileDialog;
+	QString _mSaveFileName;
 	QString _mUserName;
 	QString _mPassword;
 		

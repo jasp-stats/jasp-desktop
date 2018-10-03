@@ -22,6 +22,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QQmlEngine>
+#include <QFileInfo>
 
 #include "settings.h"
 #include "qutils.h"
@@ -79,6 +80,16 @@ bool BackstageOSF::processing()
 	return _mProcessing;
 }
 
+bool BackstageOSF::showfiledialog()
+{
+	return _mShowFileDialog;
+}
+
+QString BackstageOSF::savefilename()
+{
+	return _mSaveFileName;
+}
+
 QString BackstageOSF::username()
 {
 	return _mUserName;
@@ -110,6 +121,18 @@ void BackstageOSF::setProcessing(const bool processing)
 {
 	_mProcessing = processing;
 	emit processingChanged();
+}
+
+void BackstageOSF::setSavefilename(const QString &savefilename)
+{
+	_mSaveFileName = savefilename;
+	emit savefilenameChanged();
+}
+
+void BackstageOSF::setShowfiledialog(const bool showdialog)
+{
+	_mShowFileDialog = showdialog;
+	emit showfiledialogChanged();
 }
 
 void BackstageOSF::setUsername(const QString &username)
@@ -162,6 +185,7 @@ void BackstageOSF::attemptToConnect()
 void BackstageOSF::setCurrentFileName(QString currentFileName)
 {
 	_currentFileName = currentFileName;
+	setSavefilename(currentFileName);
 }
 
 void BackstageOSF::setMode(FileEvent::FileMode mode)
@@ -174,6 +198,7 @@ void BackstageOSF::setMode(FileEvent::FileMode mode)
 void BackstageOSF::notifyDataSetSelected(QString path)
 {
 	//_fileNameTextBox->setText(QFileInfo(path).fileName());
+	setSavefilename(QFileInfo(path).fileName());
 }
 
 
@@ -199,7 +224,7 @@ void BackstageOSF::saveClicked()
 	}
 
 	///QString filename = _fileNameTextBox->text();
-	QString filename = "IMPLEMENT  ME!";
+	QString filename = _mSaveFileName;
 
 	if (checkEntryName(filename, "File", true) == false)
 		return;
@@ -222,7 +247,10 @@ void BackstageOSF::openSaveFile(const QString &nodePath, const QString &filename
 	{
 		if (storedata)
 		{
-				setProcessing(true);
+
+			setSavefilename(filename);
+			
+			setProcessing(true);
 
 			connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(openSaveCompleted(FileEvent*)));
 		}
@@ -284,6 +312,8 @@ void BackstageOSF::newFolderCreated()
 		QMessageBox::warning(this, "", "An error occured and the folder could not be created.");
 	else
 		_model->refresh();
+	
+	setProcessing(false);
 }
 
 void BackstageOSF::newFolderClicked()
@@ -314,6 +344,8 @@ void BackstageOSF::newFolderClicked()
 
 	if (ok)
 	{
+		setProcessing(true);
+		
 		emit newFolderRequested(name);
 
 		if (_model->hasFolderEntry(name.toLower()) == false)
@@ -407,6 +439,13 @@ void BackstageOSF::loginRequested(const QString &username, const QString &passwo
 void BackstageOSF::openFile(const QString &path)
 {
 	emit openFileRequest(path);
+}
+
+void BackstageOSF::saveFile(const QString &name)
+{
+	_mSaveFileName = name;
+	saveClicked();
+	
 }
 
 void BackstageOSF::startProcessing()
