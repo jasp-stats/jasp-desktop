@@ -533,19 +533,20 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 
 
   plotMat <- matrix(list(), l, l)
-
+  # scy <- ggplot2::scale_x_continuous(labels = scales::number)
+  # scx <- ggplot2::scale_y_continuous(labels = scales::number)
   for (row in seq_len(l)) {
     for (col in seq_len(l)) {
       if (row == col) {
         if ( ! variable.statuses[[row]]$unplotable) {
-          plotMat[[row, col]] <- .plotMarginalCorDescriptives(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
+          plotMat[[row, col]] <- .plotMarginalCorDescriptives(dataset[[variables[row]]]) #+ scy + scx # plot marginal (histogram with density estimator)
         } else {
           plotMat[[row, col]] <- .displayErrorDescriptives(variable.statuses[[row]]$plottingError, cexText=cexText)
         }
       } else if (col > row) {
         if (options$plotCorrelationMatrix) {
           if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
-            plotMat[[row, col]] <- .plotScatterDescriptives(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
+            plotMat[[row, col]] <- .plotScatterDescriptives(dataset[[variables[col]]], dataset[[variables[row]]]) #+ scy + scx # plot scatterplot
           } else {
             errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
             errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
@@ -554,16 +555,15 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
         } else {
 
           p <- JASPgraphs::drawAxis(xName = "", yName = "", force = TRUE)
-          p <- p + ggplot2::xlab("")
-          p <- p + ggplot2::ylab("")
+          p <- p + ggplot2::xlab("") + ggplot2::ylab("") #+ scy + scx
+
           p <- JASPgraphs::themeJasp(p)
 
           plotMat[[row, col]] <- p
         }
       } else if (col < row) {
         p <- JASPgraphs::drawAxis(xName = "", yName = "", force = TRUE)
-        p <- p + ggplot2::xlab("")
-        p <- p + ggplot2::ylab("")
+        p <- p + ggplot2::xlab("") + ggplot2::ylab("") #+ scy + scx
         p <- JASPgraphs::themeJasp(p)
 
         plotMat[[row, col]] <- p
@@ -571,7 +571,6 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
       }
     }
   }
-
 
   p <- JASPgraphs::ggMatrixPlot(plotList = plotMat, leftLabels = .unv(variables), topLabels = .unv(variables))
 

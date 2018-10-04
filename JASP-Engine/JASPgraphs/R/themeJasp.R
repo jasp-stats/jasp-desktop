@@ -99,77 +99,76 @@ themeJasp = function(graph, xName, yName,
     }
 
     # determine legend position
-    if (hasData && legend.position == "auto") {
+    # if (hasData && legend.position == "auto") {
 
-        if (inherits(gBuild$plot$coordinates, "CoordCartesian")) { # normal coordinates
+    #     if (inherits(gBuild$plot$coordinates, "CoordCartesian")) { # normal coordinates
 
-            xCoords <- unlist(lapply(gBuild$data, `[[`, "x"))
-            yCoords <- unlist(lapply(gBuild$data, `[[`, "y"))
+    #         xCoords <- unlist(lapply(gBuild$data, `[[`, "x"))
+    #         yCoords <- unlist(lapply(gBuild$data, `[[`, "y"))
 
-            idxYmax = which.max(yCoords)[1]
-            xAtYmax = xCoords[idxYmax]
+    #         idxYmax = which.max(yCoords)[1]
+    #         xAtYmax = xCoords[idxYmax]
 
-            plotCenter = mean(getRanges(gBuild)$x, na.rm = TRUE)
+    #         plotCenter = mean(getRanges(gBuild)$x, na.rm = TRUE)
 
-            if (isTRUE(xAtYmax > plotCenter)) { # mode right of middle
+    #         if (isTRUE(xAtYmax > plotCenter)) { # mode right of middle
 
-                legendXY = c(legend.coordinates[["left"]], legend.coordinates[["top"]])
+    #             legendXY = c(legend.coordinates[["left"]], legend.coordinates[["top"]])
 
-            } else { # mode left of middle
+    #         } else { # mode left of middle
 
-                legendXY = c(legend.coordinates[["right"]], legend.coordinates[["top"]])
+    #             legendXY = c(legend.coordinates[["right"]], legend.coordinates[["top"]])
 
-            }
+    #         }
 
-            if (!is.null(plotType)) {
-                if (plotType == "priorPosterior")
-                    legendXY[2] <- legend.coordinates[["top"]]
-            }
+    #         if (!is.null(plotType)) {
+    #             if (plotType == "priorPosterior")
+    #                 legendXY[2] <- legend.coordinates[["top"]]
+    #         }
 
-        } else if (inherits(gBuild$plot$coordinates, "CoordPolar")) { # polar coordinates
+    #     } else if (inherits(gBuild$plot$coordinates, "CoordPolar")) { # polar coordinates
 
-            legendXY = "none"
+    #         legendXY = "none"
 
-        } else { # something went wrong
+    #     } else { # something went wrong
 
-            legendXY = "none"
+    #         legendXY = "none"
 
-        }
-    } else if (legend.position == "topright") {
+    #     }
+    # } else if (legend.position == "topright") {
 
-        legendXY = c(legend.coordinates[["right"]], legend.coordinates[["top"]])
+    #     legendXY = c(legend.coordinates[["right"]], legend.coordinates[["top"]])
 
-    } else if (legend.position %in% c("top", "left", "right", "bottom")) {
+    # } else if (legend.position %in% c("top", "left", "right", "bottom")) {
 
-        legendXY <- legend.position
+    #     legendXY <- legend.position
 
-    } else {
+    # } else {
 
-        legendXY = "none"
+    #     legendXY = "none"
 
-    }
-    
+    # }
+
     # determine axis breaks
-    if (hasData && isTRUE(setAxesBreaks) || (is.character(setAxesBreaks) && any(setAxesBreaks %in% c("x", "y")))) {
-        stop("Not implemented yet!")
-        browser()
-        data <- gBuild[["data"]]
-        scaleX <- NULL
-        if (isTRUE(setAxesBreaks) || (is.character(setAxesBreaks) && any(setAxesBreaks %in% "x"))) {
-            xBreaks <- getPrettyAxisBreaks(data[["x"]])
-            
-        }
-        if (isTRUE(setAxesBreaks) || (is.character(setAxesBreaks) && any(setAxesBreaks %in% "y"))) {
-            yBreaks <- getPrettyAxisBreaks(data[["y"]])
-            
-        }
-        
-    }
+    # if (hasData && isTRUE(setAxesBreaks) || (is.character(setAxesBreaks) && any(setAxesBreaks %in% c("x", "y")))) {
+    #     stop("Not implemented yet!")
+    #     browser()
+    #     data <- gBuild[["data"]]
+    #     scaleX <- NULL
+    #     if (isTRUE(setAxesBreaks) || (is.character(setAxesBreaks) && any(setAxesBreaks %in% "x"))) {
+    #         xBreaks <- getPrettyAxisBreaks(data[["x"]])
+
+    #     }
+    #     if (isTRUE(setAxesBreaks) || (is.character(setAxesBreaks) && any(setAxesBreaks %in% "y"))) {
+    #         yBreaks <- getPrettyAxisBreaks(data[["y"]])
+
+    #     }
+
+    # }
 
     # remake R's bty = "n" ----
     if (is.list(bty) && bty[["type"]] == "n") {
 
-        # browser()
         # panelRanges <- gBuild$layout$panel_ranges[[1]]
         # anyXhasLength0 <- any(lengths(panelRanges[1:7]) == 0)
         # anyYhasLength0 <- any(lengths(panelRanges[8:14]) == 0)
@@ -203,16 +202,6 @@ themeJasp = function(graph, xName, yName,
             yLine <- NULL
         }
 
-        # xLine <- ggplot2::annotate(geom = "segment", y = -Inf, yend = -Inf, x = xLim[1], xend = xLim[2], lwd = 2.5, inherit.aes = FALSE)
-        # yLine <- ggplot2::annotate(geom = "segment", x = -Inf, xend = -Inf, y = yLim[1], yend = yLim[2], lwd = 2.5, inherit.aes = FALSE)
-        # xLine <- ggplot2::geom_segment(y = -Inf, yend = -Inf, x = xLim[1], xend = xLim[2], lwd = 2.5,
-        #                                position = ggplot2::PositionIdentity, stat = ggplot2::StatIdentity)
-        # yLine <- ggplot2::geom_segment(x = -Inf, xend = -Inf, y = yLim[1], yend = yLim[2], lwd = 2.5,
-        #                                position = ggplot2::PositionIdentity, stat = ggplot2::StatIdentity)
-        # browser()
-
-
-
         graph <- graph + xLine + yLine
     }
 
@@ -223,7 +212,7 @@ themeJasp = function(graph, xName, yName,
 
     }
 
-    graph <- graph + themeJaspRaw(legend.position = legendXY, xMargin = xMargin, yMargin = yMargin,
+    graph <- graph + themeJaspRaw(legend.position = legend.position, xMargin = xMargin, yMargin = yMargin,
                                   legend.cex = legend.cex, axis.title.cex = axis.title.cex, family = family,
                                   fontsize = fontsize, legend.title = legend.title,
                                   axisTickLength = axisTickLength, axisTickWidth = axisTickWidth)
@@ -258,7 +247,7 @@ themeJaspRaw = function(legend.position = "none",
         axis.ticks = ggplot2::element_line(size = axisTickWidth, color = "black"), # tick width
         axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10)),
         axis.title.y = ggplot2::element_text(margin = ggplot2::margin(r = 10)),
-        axis.text.x = ggplot2::element_text(family = family, colour = "black", size = fontsize, 
+        axis.text.x = ggplot2::element_text(family = family, colour = "black", size = fontsize,
                                             margin = ggplot2::margin(t = 7), vjust = Xvjust),
         axis.text.y = ggplot2::element_text(family = family, colour = "black", size = fontsize,
                                             margin = ggplot2::margin(r = 7), vjust = Yvjust),
@@ -276,7 +265,7 @@ themeJaspRaw = function(legend.position = "none",
         panel.spacing = grid::unit(2, "cm"),
         panel.grid = ggplot2::element_blank(),
         panel.background = ggplot2::element_rect(color = "white", fill = "white"),
-        
+
         # plot
         plot.background = ggplot2::element_rect(fill = "transparent"),
         plot.margin = ggplot2::unit(c(1, 1, 1, 1), "cm"),
@@ -286,6 +275,8 @@ themeJaspRaw = function(legend.position = "none",
 
 
 }
+
+
 
 # see http://stackoverflow.com/questions/43050399/ggplot-with-bty-n-or-how-to-add-grid-coordinates-to-plot-coordinates?noredirect=1&lq=1
 x_custom <- function(...) {
