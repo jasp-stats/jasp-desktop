@@ -175,6 +175,8 @@ void BackstageOSF::setOnlineDataManager(OnlineDataManager *odm)
 	_model->setOnlineDataManager(_odm);
 
 	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(authenticatedHandler()));
+	connect(_odm, SIGNAL(startUploading()), this, SLOT(startProcessing()));
+	connect(_odm, SIGNAL(finishedUploading()), this, SLOT(stopProcessing()));
 }
 
 void BackstageOSF::attemptToConnect()
