@@ -131,7 +131,6 @@ void OnlineDataManager::clearAuthenticationOnExit(OnlineDataManager::Provider pr
 
 void OnlineDataManager::initAuthentication(OnlineDataManager::Provider provider)
 {
-
 	QString username = getUsername(provider);
 	QString password = getPassword(provider);
 
@@ -333,6 +332,8 @@ OnlineDataNode *OnlineDataManager::getOnlineNodeData(QString nodePath, QString i
 
 		OnlineDataNodeOSF *nodeData = new OnlineDataNodeOSF(getLocalPath(nodePath), manager, id, this);
 		nodeData->setPath(nodePath);
+
+		connect(nodeData, &OnlineDataNodeOSF::progress, this, &OnlineDataManager::progress);
 		return nodeData;
 	}
 

@@ -61,7 +61,6 @@ void FSBMOSF::setOnlineDataManager(OnlineDataManager *odm)
 
 void FSBMOSF::attemptToConnect()
 {
-
 	QString password = _dataManager->getPassword(OnlineDataManager::OSF);
 	QString username = _dataManager->getUsername(OnlineDataManager::OSF);
 

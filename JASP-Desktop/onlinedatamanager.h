@@ -25,25 +25,28 @@ public:
 		QString password;
 	} AuthData;
 
-	void setAuthentication(OnlineDataManager::Provider provider, QString username, QString password);
-	void initAuthentication(OnlineDataManager::Provider provider);
-	void clearAuthenticationOnExit(OnlineDataManager::Provider provider);
-	void savePasswordFromAuthData(OnlineDataManager::Provider provider);
-	void savePassword(OnlineDataManager::Provider provider, QString password);
-	void removePassword(OnlineDataManager::Provider provider);
-	void saveUsername(OnlineDataManager::Provider provider, QString username);
-	QString getUsername(OnlineDataManager::Provider provider);
-	QString getPassword(OnlineDataManager::Provider provider);
-	AuthData getAuthData(OnlineDataManager::Provider provider);
-	bool authenticationSuccessful(OnlineDataManager::Provider provider) const;
-	QNetworkAccessManager* getNetworkAccessManager(OnlineDataManager::Provider provider) const;
-	void setNetworkAccessManager(OnlineDataManager::Provider provider, QNetworkAccessManager*);
-	void clearAuthentication(OnlineDataManager::Provider provider);
+	void		setAuthentication(OnlineDataManager::Provider provider, QString username, QString password);
+	void		initAuthentication(OnlineDataManager::Provider provider);
+	void		clearAuthenticationOnExit(OnlineDataManager::Provider provider);
+	AuthData	getAuthData(OnlineDataManager::Provider provider);
+	bool		authenticationSuccessful(OnlineDataManager::Provider provider) const;
 
-	OnlineDataNode* uploadFileAsync(QString nodePath, QString id, OnlineDataNode::ActionFilter *filter = NULL);
-	OnlineDataNode* downloadFileAsync(QString nodePath, QString id, OnlineDataNode::ActionFilter *filter = NULL);
-	OnlineDataNode* createNewFileAsync(QString nodePath, QString filename, QString id);
-	OnlineDataNode* createNewFolderAsync(QString nodePath, QString name, QString id);
+	void		savePasswordFromAuthData(OnlineDataManager::Provider provider);
+	void		savePassword(OnlineDataManager::Provider provider, QString password);
+	void		removePassword(OnlineDataManager::Provider provider);
+	QString		getPassword(OnlineDataManager::Provider provider);
+
+	void		saveUsername(OnlineDataManager::Provider provider, QString username);
+	QString		getUsername(OnlineDataManager::Provider provider);
+
+	QNetworkAccessManager*	getNetworkAccessManager(OnlineDataManager::Provider provider) const;
+	void					setNetworkAccessManager(OnlineDataManager::Provider provider, QNetworkAccessManager*);
+	void					clearAuthentication(OnlineDataManager::Provider provider);
+
+	OnlineDataNode* uploadFileAsync(		QString nodePath, QString id, OnlineDataNode::ActionFilter *filter = NULL);
+	OnlineDataNode* downloadFileAsync(		QString nodePath, QString id, OnlineDataNode::ActionFilter *filter = NULL);
+	OnlineDataNode* createNewFileAsync(		QString nodePath, QString filename, QString id);
+	OnlineDataNode* createNewFolderAsync(	QString nodePath, QString name, QString id);
 
 	OnlineUserNode* getOnlineUserData(QString nodePath, QString id);
 
@@ -64,6 +67,7 @@ signals:
 	void newFileFinished(QString id);
 	void downloadFileFinished(QString id);
 	void uploadFileFinished(QString id);
+	void progress(const QString &status, int progress);
 	//void error(QString msg, QString id);
 
 private slots:
