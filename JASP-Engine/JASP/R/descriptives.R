@@ -765,16 +765,15 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     plotObj$errorMessage  <- "Plotting is not possible: Variable contains infinity"
     plotObj$plotObject    <- .barplotJASP(variable=variable, dontPlotData=TRUE)
   }
-  else if (length(column) < 3)  {
+  else if (length(column) < 3) {
     plotObj$error         <- "badData"
     plotObj$errorMessage  <- "Plotting is not possible: Too few rows (left)"
     plotObj$plotObject    <- .barplotJASP(variable=variable, dontPlotData=TRUE)
-  }
-  else if (length(column) > 0 && is.factor(column))
+  } else if (length(column) > 0 && is.factor(column)) {
     plotObj$plotObject <- .barplotJASP(column, variable)
-  else if (length(column) > 0 && !is.factor(column))
+  } else if (length(column) > 0 && !is.factor(column)) {
     plotObj$plotObject <- .plotMarginal(column, variableName=variable, displayDensity = displayDensity )
-
+  }
   return(plotObj)
 }
 
@@ -996,20 +995,20 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   } else {
     p <- p +
       ggplot2::geom_histogram(
-        data = data.frame(variable),
-	mapping = ggplot2::aes(x = variable, y = ..count..),
-	binwidth = (h$breaks[2] - h$breaks[1]),
-	fill = "grey",
-	col = "black",
-	size = .7,
-	center = ((h$breaks[2] - h$breaks[1])/2)
+        data     = data.frame(variable),
+        mapping  = ggplot2::aes(x = variable, y = ..count..),
+        binwidth = (h$breaks[2] - h$breaks[1]),
+        fill     = "grey",
+        col      = "black",
+        size     = .7,
+        center    = ((h$breaks[2] - h$breaks[1])/2)
       )
   }
 
   # JASP theme
   p <- JASPgraphs::themeJasp(p,
                              axisTickWidth = .7,
-			     bty = list(type = "n", ldwX = .7, lwdY = 1))
+                             bty = list(type = "n", ldwX = .7, lwdY = 1))
   # TODO: Fix jaspgraphs axis width X vs Y. See @vandenman.
 
   if (displayDensity) {
@@ -1019,78 +1018,16 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   return(p)
 }
 .barplotJASP <- function(column, variable, dontPlotData= FALSE){
-    
-    # Hardcore xticks
-    xticks <- pretty(c(1,5))
-    yticks <- pretty(c(1,5))
-    
-    p <- JASPgraphs::drawAxis(xName = variable, xBreaks = xticks, yBreaks = yticks)
 
-    if (dontPlotData) {
+  tb <- table(column)
+  p <- ggplot2::ggplot(data = data.frame(x = names(tb), y = c(tb)), ggplot2::aes(x = x, y = y)) +
+    ggplot2::geom_bar(stat = "identity", fill = "grey", col = "black", size = .3) +
+    ggplot2::xlab(variable) +
+    ggplot2::ylab("")
 
-        p <- JASPgraphs::themeJasp(p)
-        
-        return(p)
-    }
+  # JASP theme
+  p <- JASPgraphs::themeJasp(p)
 
-    maxFrequency <- max(summary(column))
-
-    i <- 1
-    step <- 1
-
-    while (maxFrequency / step > 9) {
-
-        if (i == 2) {
-
-            step <- 2 * step
-            i <- i + 1
-
-        } else if (i %% 3 == 0) {
-
-            step <- 2.5 * step
-            i <- i + 1
-
-        } else {
-
-            step <- 2 * step
-            i <- i + 1
-        }
-
-    }
-
-    yticks <- 0
-
-    while (yticks[length(yticks)] < maxFrequency) {
-
-        yticks <- c(yticks, yticks[length(yticks)] + step)
-    }
-
-
-    yLabs <- vector("character", length(yticks))
-
-    for(i in seq_along(yticks)){
-
-        if(yticks[i] < 10^6){
-
-            yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
-
-        } else{
-
-            yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
-        }
-    }
-
-    distLab <- max(nchar(yLabs))/1.8
-
-    p <- ggplot2::ggplot(data = data.frame(summary(column)), ggplot2::aes(x = levels(column),y = summary(column))) +
-        ggplot2::geom_bar(stat = "identity", fill = "grey", col = "black", size = .3)
-
-    p <- p + ggplot2::xlab(variable)
-    p <- p + ggplot2::ylab("")
-
-    # JASP theme
-    p <- JASPgraphs::themeJasp(p)
-        
     return(p)
 
 }
