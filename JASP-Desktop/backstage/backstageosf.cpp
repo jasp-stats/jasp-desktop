@@ -50,13 +50,13 @@ BackstageOSF::BackstageOSF(QWidget *parent): BackstagePage(parent),
 	
 	ui->QmlContent->setSource(QUrl(QStringLiteral("qrc:/backstage/BackstageOSF.qml")));
 		
-	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(updateUserDetails()));
-	connect(_model, SIGNAL(authenticationClear()), this, SLOT(updateUserDetails()));
-	connect(_model, SIGNAL(entriesChanged()), this, SLOT(resetOSFListModel()));
-	connect(_model, SIGNAL(stopProcessing()), this, SLOT(stopProcessing()));
-	connect(_osfListModel, SIGNAL(startProcessing()), this, SLOT(startProcessing()));
-	connect(_osfBreadCrumbsListModel, SIGNAL(crumbIndexChanged(const int &)), _osfListModel, SLOT(changePath(const int &)));
-	connect(this, SIGNAL(openFileRequest(const QString &)), this, SLOT(notifyDataSetOpened(const QString &)));
+	connect(_model,						&FSBMOSF::authenticationSuccess,				this,			&BackstageOSF::updateUserDetails);
+	connect(_model,						&FSBMOSF::authenticationClear,					this,			&BackstageOSF::updateUserDetails);
+	connect(_model,						&FSBMOSF::entriesChanged,						this,			&BackstageOSF::resetOSFListModel);
+	connect(_model,						&FSBMOSF::stopProcessing,						this,			&BackstageOSF::stopProcessing);
+	connect(_osfListModel,				&OSFListModel::startProcessing,					this,			&BackstageOSF::startProcessing);
+	connect(_osfBreadCrumbsListModel,	SIGNAL(crumbIndexChanged(const int &index)),	_osfListModel,	SLOT(changePath(const int &index)));
+	connect(this,						&BackstageOSF::openFileRequest,					this,			&BackstageOSF::notifyDataSetOpened);
 
 	_fsBrowser = new FSBrowser(this);
 	_fsBrowser->setViewType(FSBrowser::ListView);

@@ -219,12 +219,15 @@ void MainWindow::makeConnections()
 	connect(ui->backStage,			&BackStageWidget::dataSetIORequest,					this,					&MainWindow::dataSetIORequest								);
 	connect(ui->backStage,			&BackStageWidget::exportSelected,					_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
 
+	connect(_odm,					&OnlineDataManager::progress,						this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
+
 	connect(ui->tabBar,				&TabBar::dataAutoSynchronizationChanged,			ui->backStage,			&BackStageWidget::dataAutoSynchronizationChanged			);
 	connect(ui->tabBar,				&TabBar::setExactPValuesHandler,					_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler					);
 	connect(ui->tabBar,				&TabBar::setFixDecimalsHandler,						_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler					);
 	connect(ui->tabBar,				&TabBar::emptyValuesChangedHandler,					this,					&MainWindow::emptyValuesChangedHandler						);
 
 	connect(&_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus								);
+
 
 	connect(_okButton,				&QPushButton::clicked,								this,					&MainWindow::analysisOKed									);
 
