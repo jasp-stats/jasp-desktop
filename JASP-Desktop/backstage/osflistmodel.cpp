@@ -95,7 +95,6 @@ void OSFListModel::changePath(const QString &name, const QString &path)
 	_osfBreadCrumbsListModel->appendCrumb(name , path);
 	
 	_fsbmOSF->setPath(path);
-	_fsbmOSF->refresh();
 	
 	endResetModel();
 }
@@ -114,7 +113,6 @@ void OSFListModel::changePath(const int &index)
 	path = _osfBreadCrumbsListModel->switchCrumb(index);
 		
 	_fsbmOSF->setPath(path);
-	_fsbmOSF->refresh();
 	
 	endResetModel();
 }
