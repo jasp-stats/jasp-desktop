@@ -1018,6 +1018,8 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   return(p)
 }
 .barplotJASP <- function(column, variable, dontPlotData= FALSE){
+  p <- JASPgraphs::drawAxis(xName = variable, xBreaks = 1:5, yBreaks = 1:5)
+  if (dontPlotData) return(JASPgraphs::themeJasp(p))
 
   tb <- table(column)
   p <- ggplot2::ggplot(data = data.frame(x = names(tb), y = c(tb)), ggplot2::aes(x = x, y = y)) +
