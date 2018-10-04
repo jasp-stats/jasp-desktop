@@ -266,6 +266,7 @@ void OpenSaveWidget::dataSetIOCompleted(FileEvent *event)
 			_currentFileType = event->type();
 			_currentFileReadOnly = event->isReadOnly();
 			_bsCurrentFile->setCurrentFileInfo(event->path(), event->type(), event->isReadOnly());
+			_bsOSF->setProcessing(false);
 		}
 	}
 	else if (event->operation() == FileEvent::FileSyncData)

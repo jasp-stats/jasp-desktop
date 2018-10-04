@@ -22,6 +22,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QQmlEngine>
+#include <QFileInfo>
 
 #include "settings.h"
 #include "qutils.h"
@@ -61,6 +62,8 @@ BackstageOSF::BackstageOSF(QWidget *parent): BackstagePage(parent),
 	_fsBrowser->setViewType(FSBrowser::ListView);
 	_fsBrowser->setFSModel(_model);
 	_fsBrowser->hide();
+	
+	setShowfiledialog(false);
 		
 }
 
@@ -77,6 +80,16 @@ bool BackstageOSF::rememberme()
 bool BackstageOSF::processing()
 {
 	return _mProcessing;
+}
+
+bool BackstageOSF::showfiledialog()
+{
+	return _mShowFileDialog;
+}
+
+QString BackstageOSF::savefilename()
+{
+	return _mSaveFileName;
 }
 
 QString BackstageOSF::username()
@@ -110,6 +123,18 @@ void BackstageOSF::setProcessing(const bool processing)
 {
 	_mProcessing = processing;
 	emit processingChanged();
+}
+
+void BackstageOSF::setSavefilename(const QString &savefilename)
+{
+	_mSaveFileName = savefilename;
+	emit savefilenameChanged();
+}
+
+void BackstageOSF::setShowfiledialog(const bool showdialog)
+{
+	_mShowFileDialog = showdialog;
+	emit showfiledialogChanged();
 }
 
 void BackstageOSF::setUsername(const QString &username)
@@ -162,11 +187,14 @@ void BackstageOSF::attemptToConnect()
 void BackstageOSF::setCurrentFileName(QString currentFileName)
 {
 	_currentFileName = currentFileName;
+	setSavefilename(currentFileName);
 }
 
 void BackstageOSF::setMode(FileEvent::FileMode mode)
 {
 	BackstagePage::setMode(mode);
+	bool showfiledialog = (mode == FileEvent::FileExportResults || mode == FileEvent::FileExportData || mode == FileEvent::FileSave );
+	setShowfiledialog(showfiledialog);
 }
 
 //private slots
@@ -174,6 +202,7 @@ void BackstageOSF::setMode(FileEvent::FileMode mode)
 void BackstageOSF::notifyDataSetSelected(QString path)
 {
 	//_fileNameTextBox->setText(QFileInfo(path).fileName());
+	setSavefilename(QFileInfo(path).fileName());
 }
 
 
@@ -199,7 +228,7 @@ void BackstageOSF::saveClicked()
 	}
 
 	///QString filename = _fileNameTextBox->text();
-	QString filename = "IMPLEMENT  ME!";
+	QString filename = _mSaveFileName;
 
 	if (checkEntryName(filename, "File", true) == false)
 		return;
@@ -217,13 +246,16 @@ void BackstageOSF::openSaveFile(const QString &nodePath, const QString &filename
 	bool storedata = (_mode == FileEvent::FileSave || _mode == FileEvent::FileExportResults || _mode == FileEvent::FileExportData);
 
 	FileEvent *event = new FileEvent(this, _mode);
+	
+	setProcessing(true);
 
 	if (event->setPath(nodePath + "#file://" + filename))
 	{
 		if (storedata)
 		{
-				setProcessing(true);
 
+			setSavefilename(filename);
+			
 			connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(openSaveCompleted(FileEvent*)));
 		}
 	}
@@ -247,10 +279,12 @@ void BackstageOSF::userDetailsReceived()
 void BackstageOSF::openSaveCompleted(FileEvent* event)
 {
 
-	setProcessing(false);
-
 	if (event->successful())
+	{
 		_model->refresh();
+	}
+	
+	setProcessing(false);
 }
 
 
@@ -284,6 +318,8 @@ void BackstageOSF::newFolderCreated()
 		QMessageBox::warning(this, "", "An error occured and the folder could not be created.");
 	else
 		_model->refresh();
+	
+	setProcessing(false);
 }
 
 void BackstageOSF::newFolderClicked()
@@ -314,6 +350,8 @@ void BackstageOSF::newFolderClicked()
 
 	if (ok)
 	{
+		setProcessing(true);
+		
 		emit newFolderRequested(name);
 
 		if (_model->hasFolderEntry(name.toLower()) == false)
@@ -322,6 +360,11 @@ void BackstageOSF::newFolderClicked()
 			connect(node, SIGNAL(finished()), this, SLOT(newFolderCreated()));
 		}
 	}
+}
+
+void BackstageOSF::closeFileDialog()
+{
+	setShowfiledialog(false);
 }
 
 void BackstageOSF::authenticatedHandler()
@@ -407,6 +450,13 @@ void BackstageOSF::loginRequested(const QString &username, const QString &passwo
 void BackstageOSF::openFile(const QString &path)
 {
 	emit openFileRequest(path);
+}
+
+void BackstageOSF::saveFile(const QString &name)
+{
+	_mSaveFileName = name;
+	saveClicked();
+	
 }
 
 void BackstageOSF::startProcessing()
