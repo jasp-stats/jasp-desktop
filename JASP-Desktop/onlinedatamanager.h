@@ -64,6 +64,8 @@ signals:
 	void newFileFinished(QString id);
 	void downloadFileFinished(QString id);
 	void uploadFileFinished(QString id);
+	void startUploading();
+	void finishedUploading();
 	//void error(QString msg, QString id);
 
 private slots:
