@@ -54,5 +54,7 @@ void ColumnsModel::refreshColumn(Column * column)
 
 void ColumnsModel::datasetHeaderDataChanged(Qt::Orientation orientation, int first, int last)
 {
-	emit dataChanged(index(first, 0), index(last, columnCount()-1));
+	//emit dataChanged(index(first, 0), index(last, rowCount()-1));
+	beginResetModel();
+	endResetModel();
 }
