@@ -36,7 +36,7 @@ DragGeneric {
 		operatorImageSource: parent.opImages[operator] !== null && parent.opImages[operator] !== undefined ? parent.opImages[operator] : ""
 
 		dropKeysLeft:  isNumberComparer ? ["number", "ordered"] : isConditionalOp ? (amInsideColumnConstructor ? ["number"] : ["boolean"]) : acceptsEverything ? ["boolean", "string", "number"] : acceptsBoolean ? ["boolean"] : ["number"]
-		dropKeysRight: isNumberComparer ? ["number", "ordered"] : isConditionalOp ? ["string"]  : acceptsEverything ? ["boolean", "string", "number"] : acceptsBoolean ? ["boolean"] : ["number"]
+		dropKeysRight: isNumberComparer ? ["number", "ordered"] : isConditionalOp ? ["string", "boolean"]  : acceptsEverything ? ["boolean", "string", "number"] : acceptsBoolean ? ["boolean"] : ["number"]
 		dropKeysMirrorEachother: acceptsEverything
 
 		x: parent.dragX

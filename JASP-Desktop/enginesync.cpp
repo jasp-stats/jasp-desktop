@@ -120,7 +120,14 @@ void EngineSync::process()
 
 void EngineSync::sendFilter(QString generatedFilter, QString filter, int requestID)
 {
-	_waitingFilter = new RFilterStore(generatedFilter, filter, requestID); //There is no point in having more then one waiting filter is there?
+	if(_waitingFilter == nullptr || _waitingFilter->requestId < requestID)
+	{
+#ifdef JASP_DEBUG
+		std::cout << "waiting filter  with requestid: " << requestID << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
+#endif
+
+		_waitingFilter = new RFilterStore(generatedFilter, filter, requestID); //There is no point in having more then one waiting filter is there?
+	}
 }
 
 void EngineSync::sendRCode(QString rCode, int requestId)

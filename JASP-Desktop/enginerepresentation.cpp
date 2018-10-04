@@ -71,6 +71,10 @@ void EngineRepresentation::runScriptOnProcess(RFilterStore * filterStore)
 	QString dataFilter = filterStore->script == "" ? "*" : filterStore->script;
 	json["filter"] = dataFilter.toStdString();
 
+#ifdef JASP_DEBUG
+	std::cout << "sending filter with requestID " << filterStore->requestId << " to engine" << std::endl;
+#endif
+
 	std::string str = json.toStyledString();
 	_channel->send(str);
 }
