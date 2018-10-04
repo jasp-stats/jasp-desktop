@@ -3,6 +3,7 @@ JASPWidgets.htmlNode = Backbone.Model.extend({
 	defaults: {
 		title: "",
 		citation: null,
+        rawtext: "",
 		text: "",
 		class: "",
 		elementType: "p"
@@ -51,7 +52,7 @@ JASPWidgets.htmlNodeView = JASPWidgets.objectView.extend({
 		 exportParams.process = JASPWidgets.ExportProperties.process.copy;
 		 exportParams.includeNotes = false;
 
-		  pushTextToClipboard({raw: this.model.get("text"), html: convertModelToHtml(this.model) } , exportParams)
+          pushTextToClipboard({raw: this.model.get("rawtext"), html: convertModelToHtml(this.model) } , exportParams)
 		 return true;
 	 },
 
