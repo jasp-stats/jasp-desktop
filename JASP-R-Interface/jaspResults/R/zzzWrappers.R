@@ -127,7 +127,7 @@ destroyAllAllocatedRObjects <- function() {
 # if title is left unset (aka "") then, when added to a container/results, it will take the fieldname as title.
 # width and height should be set to some global default setting and only in exceptional cases manually. Maybe we could take it from JASPplot?
 # aspectRatio of > 0 sets height to width * aspectRatio.
-createJaspPlot <- function(plot=NULL, title="", width=320, height=320, aspectRatio=0, error=NULL, errorMessage="", dependencies=NULL)
+createJaspPlot <- function(plot=NULL, title="", width=320, height=320, aspectRatio=0, error=NULL, errorMessage="", dependencies=NULL, position=NULL)
 {
   checkForJaspResultsInit()
 
@@ -164,10 +164,13 @@ createJaspPlot <- function(plot=NULL, title="", width=320, height=320, aspectRat
   if(!is.null(dependencies))
     jaspPlotObj$dependOnTheseOptions(dependencies)
 
+	if(is.numeric(position))
+		jaspPlotObj$position = position
+
   return(jaspPlotObj)
 }
 
-createJaspContainer <- function(title="", dependencies=NULL)
+createJaspContainer <- function(title="", dependencies=NULL, position=NULL)
 {
   checkForJaspResultsInit()
 
@@ -176,10 +179,13 @@ createJaspContainer <- function(title="", dependencies=NULL)
   if(!is.null(dependencies))
     container$dependOnTheseOptions(dependencies)
 
+	if(is.numeric(position))
+		container$position = position
+
   return(container)
 }
 
-createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL, dependencies=NULL)
+createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL, dependencies=NULL, position=NULL)
 {
   checkForJaspResultsInit()
 
@@ -207,10 +213,13 @@ createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, 
   if(!is.null(dependencies))
     jaspObj$dependOnTheseOptions(dependencies)
 
+	if(is.numeric(position))
+		jaspObj$position = position
+
   return(jaspObj)
 }
 
-createJaspHtml <- function(text="", elementType="p", class="", dependencies=NULL, title="hide me") # if you change "hide me" here then also change it in Common.R and in HtmlNode.js or come up with a way to define it in such a way to make it show EVERYWHERE...
+createJaspHtml <- function(text="", elementType="p", class="", dependencies=NULL, title="hide me", position=NULL) # if you change "hide me" here then also change it in Common.R and in HtmlNode.js or come up with a way to define it in such a way to make it show EVERYWHERE...
 {
   checkForJaspResultsInit()
 
@@ -222,11 +231,15 @@ createJaspHtml <- function(text="", elementType="p", class="", dependencies=NULL
   if(!is.null(dependencies))
     htmlObj$dependOnTheseOptions(dependencies)
 
+	if(is.numeric(position))
+		htmlObj$position = position
+
+
   return(htmlObj)
 }
 
 
-createJaspState <- function(object=NULL, title="", dependencies=NULL)
+createJaspState <- function(object=NULL, title="", dependencies=NULL, position=NULL)
 {
   checkForJaspResultsInit()
 
@@ -237,6 +250,9 @@ createJaspState <- function(object=NULL, title="", dependencies=NULL)
 
   if(!is.null(dependencies))
     stateObj$dependOnTheseOptions(dependencies)
+
+	if(is.numeric(position))
+		htmlObj$stateObj = position
 
   return(stateObj)
 }
