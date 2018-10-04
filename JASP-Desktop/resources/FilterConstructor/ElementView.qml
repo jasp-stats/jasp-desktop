@@ -8,6 +8,7 @@ ListView {
 	property real maxWidth: 200
 	property real widthMargin: 10
 	spacing: 4
+	maximumFlickVelocity: 400
 
 	delegate: MouseArea
 	{
