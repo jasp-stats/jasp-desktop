@@ -261,12 +261,14 @@ void OnlineDataManager::beginUploadFile(QString nodePath, QString actionId, QStr
 	OnlineDataNode *dataNode = uploadFileAsync(nodePath, actionId, filter);
 	_actionNodes[actionId] = dataNode;
 	connect(dataNode, SIGNAL(finished()), this, SLOT(uploadFileFinished()));
+	emit startUploading();
 }
 
 void OnlineDataManager::uploadFileFinished()
 {
 	OnlineDataNode *dataNode = qobject_cast<OnlineDataNode *>(sender());
 	emit uploadFileFinished(dataNode->id());
+	emit finishedUploading();
 }
 
 

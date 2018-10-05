@@ -68,7 +68,8 @@ signals:
 	void downloadFileFinished(QString id);
 	void uploadFileFinished(QString id);
 	void progress(const QString &status, int progress);
-	//void error(QString msg, QString id);
+	void startUploading();
+	void finishedUploading();
 
 private slots:
 	void newFolderFinished();

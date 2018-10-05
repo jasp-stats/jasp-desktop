@@ -55,7 +55,7 @@ BackstageOSF::BackstageOSF(QWidget *parent): BackstagePage(parent),
 	connect(_model,						&FSBMOSF::entriesChanged,						this,			&BackstageOSF::resetOSFListModel);
 	connect(_model,						&FSBMOSF::stopProcessing,						this,			&BackstageOSF::stopProcessing);
 	connect(_osfListModel,				&OSFListModel::startProcessing,					this,			&BackstageOSF::startProcessing);
-	connect(_osfBreadCrumbsListModel,	SIGNAL(crumbIndexChanged(const int &index)),	_osfListModel,	SLOT(changePath(const int &index)));
+	connect(_osfBreadCrumbsListModel,	SIGNAL(crumbIndexChanged(const int &)),			_osfListModel,	SLOT(changePath(const int &)));
 	connect(this,						&BackstageOSF::openFileRequest,					this,			&BackstageOSF::notifyDataSetOpened);
 
 	_fsBrowser = new FSBrowser(this);
@@ -175,6 +175,8 @@ void BackstageOSF::setOnlineDataManager(OnlineDataManager *odm)
 	_model->setOnlineDataManager(_odm);
 
 	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(authenticatedHandler()));
+	connect(_odm, SIGNAL(startUploading()), this, SLOT(startProcessing()));
+	connect(_odm, SIGNAL(finishedUploading()), this, SLOT(stopProcessing()));
 }
 
 void BackstageOSF::attemptToConnect()
