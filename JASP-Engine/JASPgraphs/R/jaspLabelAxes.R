@@ -7,9 +7,9 @@ axesLabeller <- function(x, ...) {
   if (all(is.na(xnum))) {
     return(x)
   } else if (max(abs(xnum), na.rm = TRUE) > 1e4) {
-    return(jaspLabelScientific(xnum, ...))
+    return(axesLabelScientific(xnum, ...))
   } else {
-    return(jaspLabelNumber(xnum, ...))
+    return(axesLabelNumber(xnum, ...))
   }
 }
 
@@ -38,6 +38,7 @@ axesLabelNumber <- function(x, accuracy = 1, scale = 1, prefix = "", suffix = ""
   ret
 }
 
+# some imports from scales
 precision <- function(x) {
   if (all(is.infinite(x))) {
     return(1)
@@ -72,32 +73,3 @@ zero_range <- function(x, tol = 1000 * .Machine$double.eps) {
     return(FALSE)
   abs((x[1] - x[2])/m) < tol
 }
-
-#' @export
-scale_x_continuous <- function(name = waiver(), breaks = axesTicks, minor_breaks = waiver(),
-    labels = axesLabeller, limits = NA, expand = waiver(), oob = censor,
-    na.value = NA_real_, trans = "identity", position = "bottom",
-    sec.axis = waiver()) {
-    sc <- continuous_scale(c("x", "xmin", "xmax", "xend", "xintercept",
-        "xmin_final", "xmax_final", "xlower", "xmiddle", "xupper"),
-        "position_c", identity, name = name, breaks = breaks,
-        minor_breaks = minor_breaks, labels = labels, limits = limits,
-        expand = expand, oob = oob, na.value = na.value, trans = trans,
-        guide = "none", position = position, super = ScaleContinuousPosition)
-    if (!is.waive(sec.axis)) {
-        if (is.formula(sec.axis))
-            sec.axis <- sec_axis(sec.axis)
-        if (!is.sec_axis(sec.axis))
-            stop("Secondary axes must be specified using 'sec_axis()'")
-        sc$secondary.axis <- sec.axis
-    }
-    sc
-}
-
-
-# TODO:
-# with functions
-# JASPgraphs::scale_*_*(name = waiver(), breaks = JASPfunction,
-#  minor_breaks = waiver(), labels = JASPfunction, limits = NA,
-#  expand = waiver(), oob = censor, na.value = NA_real_,
-#  trans = "identity", position = "bottom", sec.axis = waiver())

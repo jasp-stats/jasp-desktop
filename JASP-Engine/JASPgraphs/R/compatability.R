@@ -2,7 +2,7 @@
 # it also imports some functions from ggplot
 
 #' @importFrom ggplot2 waiver aes xlab ylab element_blank continuous_scale ScaleContinuousPosition sec_axis
-
+#' @importFrom scales censor
 
 
 getMajorSource <- function(gb) {
@@ -51,5 +51,6 @@ isContinuousScale <- function(x) inherits(x, c("ScaleContinuousPosition", "Scale
 
 
 
-is.waive <- function(x) inherits(x, "waiver")
+is.waive    <- function(x) inherits(x, "waiver")
 is.sec_axis <- function(x) inherits(x, "AxisSecondary")
+is.formula  <- function(x) inherits(x, "formula")

@@ -98,74 +98,6 @@ themeJasp = function(graph, xName, yName,
 
     }
 
-    # determine legend position
-    # if (hasData && legend.position == "auto") {
-
-    #     if (inherits(gBuild$plot$coordinates, "CoordCartesian")) { # normal coordinates
-
-    #         xCoords <- unlist(lapply(gBuild$data, `[[`, "x"))
-    #         yCoords <- unlist(lapply(gBuild$data, `[[`, "y"))
-
-    #         idxYmax = which.max(yCoords)[1]
-    #         xAtYmax = xCoords[idxYmax]
-
-    #         plotCenter = mean(getRanges(gBuild)$x, na.rm = TRUE)
-
-    #         if (isTRUE(xAtYmax > plotCenter)) { # mode right of middle
-
-    #             legendXY = c(legend.coordinates[["left"]], legend.coordinates[["top"]])
-
-    #         } else { # mode left of middle
-
-    #             legendXY = c(legend.coordinates[["right"]], legend.coordinates[["top"]])
-
-    #         }
-
-    #         if (!is.null(plotType)) {
-    #             if (plotType == "priorPosterior")
-    #                 legendXY[2] <- legend.coordinates[["top"]]
-    #         }
-
-    #     } else if (inherits(gBuild$plot$coordinates, "CoordPolar")) { # polar coordinates
-
-    #         legendXY = "none"
-
-    #     } else { # something went wrong
-
-    #         legendXY = "none"
-
-    #     }
-    # } else if (legend.position == "topright") {
-
-    #     legendXY = c(legend.coordinates[["right"]], legend.coordinates[["top"]])
-
-    # } else if (legend.position %in% c("top", "left", "right", "bottom")) {
-
-    #     legendXY <- legend.position
-
-    # } else {
-
-    #     legendXY = "none"
-
-    # }
-
-    # determine axis breaks
-    # if (hasData && isTRUE(setAxesBreaks) || (is.character(setAxesBreaks) && any(setAxesBreaks %in% c("x", "y")))) {
-    #     stop("Not implemented yet!")
-    #     browser()
-    #     data <- gBuild[["data"]]
-    #     scaleX <- NULL
-    #     if (isTRUE(setAxesBreaks) || (is.character(setAxesBreaks) && any(setAxesBreaks %in% "x"))) {
-    #         xBreaks <- getPrettyAxisBreaks(data[["x"]])
-
-    #     }
-    #     if (isTRUE(setAxesBreaks) || (is.character(setAxesBreaks) && any(setAxesBreaks %in% "y"))) {
-    #         yBreaks <- getPrettyAxisBreaks(data[["y"]])
-
-    #     }
-
-    # }
-
     # remake R's bty = "n" ----
     if (is.list(bty) && bty[["type"]] == "n") {
 
@@ -216,8 +148,8 @@ themeJasp = function(graph, xName, yName,
                                   legend.cex = legend.cex, axis.title.cex = axis.title.cex, family = family,
                                   fontsize = fontsize, legend.title = legend.title,
                                   axisTickLength = axisTickLength, axisTickWidth = axisTickWidth)
-
-     return(graph)
+    # class(graph) <- c("JASPgraphs", class(graph))
+    return(graph)
 
 }
 
@@ -271,9 +203,6 @@ themeJaspRaw = function(legend.position = "none",
         plot.margin = ggplot2::unit(c(1, 1, 1, 1), "cm"),
         plot.title = ggplot2::element_text(family = family, size = fontsize, hjust = 0.5) # center title
     )
-
-
-
 }
 
 
@@ -294,58 +223,65 @@ y_custom <- function(...) {
 
 }
 
-element_grob.element_custom_x <- function (element, x = 0:1, y = 0:1, colour = NULL, size = NULL,
-                                           linetype = NULL, lineend = "butt", default.units = "npc", id.lengths = NULL,
-                                           ...) {
-    gp <- grid::gpar(lwd = ggplot2:::len0_null(size * ggplot2::.pt), col = colour,
-                     lty = linetype, lineend = lineend)
-    element_gp <- grid::gpar(lwd = ggplot2:::len0_null(element$size * ggplot2::.pt), col = element$colour,
-                             lty = element$linetype, lineend = element$lineend)
+element_grob.element_custom_x <- function(element, x = 0:1, y = 0:1, colour = NULL, size = NULL,
+                                          linetype = NULL, lineend = "butt", default.units = "npc", id.lengths = NULL,
+                                          ...) {
+  gp <- grid::gpar(lwd = ggplot2:::len0_null(size * ggplot2::.pt), col = colour,
+                   lty = linetype, lineend = lineend)
+  element_gp <- grid::gpar(lwd = ggplot2:::len0_null(element$size * ggplot2::.pt), col = element$colour,
+                           lty = element$linetype, lineend = element$lineend)
 
-    if (is.logical(element$arrow) && !element$arrow) {
-        arrow <- NULL
-    } else {
-        arrow <- element$arrow
-    }
+  if (is.logical(element$arrow) && !element$arrow) {
+    arrow <- NULL
+  } else {
+    arrow <- element$arrow
+  }
 
-    g1 <- grid::polylineGrob(x, y, default.units = default.units,
-                             gp = utils::modifyList(element_gp, gp),
-                             id.lengths = id.lengths, arrow = arrow, ...)
+  g1 <- grid::polylineGrob(x, y, default.units = default.units,
+                           gp = utils::modifyList(element_gp, gp),
+                           id.lengths = id.lengths, arrow = arrow, ...)
 
-    vertical <- length(unique(element$x)) == 1 && length(unique(element$y)) >= 1
+  vertical <- length(unique(element$x)) == 1 && length(unique(element$y)) >= 1
 
-    g2 <- grid::editGrob(g1, y=y + grid::unit(2, "pt"),
-                         gp=utils::modifyList(gp, list(col="black")),
-                         name="new")
+  g2 <- grid::editGrob(g1, y=y + grid::unit(2, "pt"),
+                       gp=utils::modifyList(gp, list(col="black")),
+                       name="new")
 
-    return(grid::grobTree(g2, g1))
+  return(grid::grobTree(g2, g1))
+
+}
+
+element_grob.element_custom_y <- function(element, x = 0:1, y = 0:1, colour = NULL, size = NULL,
+                                          linetype = NULL, lineend = "butt", default.units = "npc", id.lengths = NULL,
+                                          ...) {
+
+  gp <- grid::gpar(lwd = ggplot2:::len0_null(size * ggplot2::.pt), col = colour,
+                   lty = linetype, lineend = lineend)
+
+  element_gp <- grid::gpar(lwd = ggplot2:::len0_null(element$size * ggplot2::.pt), col = element$colour,
+                           lty = element$linetype, lineend = element$lineend)
+
+  if (is.logical(element$arrow) && !element$arrow) {
+    arrow <- NULL
+  } else {
+    arrow <- element$arrow
+  }
+
+  g1 <- grid::polylineGrob(x, y, default.units = default.units,
+                           gp = utils::modifyList(element_gp, gp),
+                           id.lengths = id.lengths, arrow = arrow, ...)
+
+  g2 <- grid::editGrob(grob = g1, x = x + grid::unit(2, "pt"),
+                       gp = utils::modifyList(gp, list(col="black")),
+                       name = "new")
+
+  grid::grobTree(g2, g1)
 
 }
 
-element_grob.element_custom_y <- function (element, x = 0:1, y = 0:1, colour = NULL, size = NULL,
-                                           linetype = NULL, lineend = "butt", default.units = "npc", id.lengths = NULL,
-                                           ...) {
 
-    gp <- grid::gpar(lwd = ggplot2:::len0_null(size * ggplot2::.pt), col = colour,
-                     lty = linetype, lineend = lineend)
-
-    element_gp <- grid::gpar(lwd = ggplot2:::len0_null(element$size * ggplot2::.pt), col = element$colour,
-                             lty = element$linetype, lineend = element$lineend)
-
-    if (is.logical(element$arrow) && !element$arrow) {
-        arrow <- NULL
-    } else {
-        arrow <- element$arrow
-    }
-
-    g1 <- grid::polylineGrob(x, y, default.units = default.units,
-                             gp = utils::modifyList(element_gp, gp),
-                             id.lengths = id.lengths, arrow = arrow, ...)
-
-    g2 <- grid::editGrob(grob = g1, x = x + grid::unit(2, "pt"),
-                         gp = utils::modifyList(gp, list(col="black")),
-                         name = "new")
-
-    grid::grobTree(g2, g1)
-
-}
+themeTest <- ggplot2::theme(
+  axis.ticks.x = x_custom(size = 1.25, color = "black"),
+  axis.ticks.y = y_custom(size = 1.25, color = "black"),
+  axis.ticks.length = grid::unit(2, "mm")
+)
