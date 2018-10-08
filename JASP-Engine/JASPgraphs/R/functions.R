@@ -469,47 +469,6 @@ drawViolin <- function(graph = drawAxis(), dat = NULL, mapping = NULL, size = 2,
 
 }
 
-#' @export
-drawWheel = function(graph = NULL, dat, mapping = NULL, size = 3, show.legend = FALSE, label.cex = .75) {
-
-	if (is.null(mapping)) {
-
-		if (ncol(dat) == 1)
-		    dat$group <- factor(seq_along(dat[[1]]))
-
-		nms <- colnames(dat)
-		mapping <- ggplot2::aes_string(x = 1, y = nms[1], group = nms[2], fill = nms[2], color = nms[2])
-
-	}
-
-	# rotate the wheel so that smaller half is always facing up
-	ma = max(dat$y)
-	mi = min(dat$y)
-	area = mi / (mi + ma)
-	start = 0 + area * pi
-	top = -.5*mi
-	bottom = .5*ma
-
-	return(
-	    ggplot2::ggplot(data = dat, mapping = mapping) +
-	        ggplot2::geom_bar(width = 1, stat = "identity", show.legend = show.legend, size = size) +
-	        ggplot2::coord_polar("y", start = start) +
-	        ggplot2::scale_fill_manual(values = c("white", "darkred")) +
-	        ggplot2::scale_color_manual(values = c("black", "black")) +
-	        ggplot2::theme(
-	            plot.margin = grid::unit(c(2, 1, 2, 1.0), "cm"),
-	            panel.background = ggplot2::element_rect(fill = "white"),
-	            panel.grid = ggplot2::element_blank(),
-	            axis.text = ggplot2::element_blank(),
-	            axis.ticks = ggplot2::element_blank(),
-	            axis.title = ggplot2::element_blank(),
-	            axis.line = ggplot2::element_blank(),
-	            legend.position = "none"
-	        )
-	)
-}
-
-
 # convenience plots ----
 #' @export
 makeGraph <- function(dat, graphType, xName, yName, breaks = NULL, graphArgs = NULL, themeArgs = NULL) {

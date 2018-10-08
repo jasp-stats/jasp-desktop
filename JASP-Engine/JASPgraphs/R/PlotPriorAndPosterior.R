@@ -3,18 +3,16 @@ drawWheel <- function(dat, size = 2, show.legend = FALSE, label.cex = .75) {
 
 
 	if (ncol(dat) == 1)
-	  dat$group <- factor(seq_along(dat[[1]]))
+	  dat$group <- factor(seq(dat[[1]]))
 
 	nms <- colnames(dat)
-  mapping <- ggplot2::aes_string(x = 1, y = nms[1], group = nms[2], fill = nms[2], color = nms[2])
+  mapping <- ggplot2::aes_string(x = factor(1), y = nms[1], group = nms[2], fill = nms[2], color = nms[2])
 
 	# rotate the wheel so that smaller half is always facing up
 	ma = max(dat[[1]])
 	mi = min(dat[[1]])
 	area = mi / (mi + ma)
 	start = 0 + area * pi
-	top = -.5*mi
-	bottom = .5*ma
 
 	return(
 	    ggplot2::ggplot(data = dat, mapping = mapping) +
@@ -23,7 +21,7 @@ drawWheel <- function(dat, size = 2, show.legend = FALSE, label.cex = .75) {
 	        ggplot2::scale_fill_manual(values  = c("white", "darkred")) +
 	        ggplot2::scale_color_manual(values = c("black", "black")) +
 	        ggplot2::theme(
-	            plot.margin      = grid::unit(c(2, 1, 2, 1.0), "cm"),
+	            plot.margin      = grid::unit(rep(0, 4), "cm"),
 	            panel.background = ggplot2::element_rect(fill = "white"),
 	            panel.grid       = ggplot2::element_blank(),
 	            axis.text        = ggplot2::element_blank(),
@@ -52,30 +50,67 @@ getEmptyPlot <- function(axes = TRUE) {
 }
 
 
-draw2Lines <- function(labels, parse = FALSE) {
+draw2Lines <- function(labels, x = 0, parse = FALSE) {
 
-  dfTextBF <- data.frame(
-      x = 0,
-      y = c(.4, .6),
+	nLabels <- length(labels)
+	y <- rep(.5, nLabels)
+	diff <- seq(0, nLabels * 0.1, length.out = nLabels)
+	diff <- diff - mean(diff)
+	y <- y + diff
+  dfText <- data.frame(
+      x = x,
+      y = y,
       l = labels
     )
   return(
-    ggplot2::ggplot(data = dfTextBF, ggplot2::aes(x = x, y = y, label = l)) +
-      ggplot2::geom_text(size = .5 * JASPgraphs::getGraphOption("fontsize"), parse = parse) +
+    ggplot2::ggplot(data = dfText, ggplot2::aes(x = x, y = y, label = l)) +
+      ggplot2::geom_text(size = .5 * getGraphOption("fontsize"), parse = parse, hjust = "left") +
       ggplot2::scale_y_continuous(limits = c(0, 1)) +
+    	ggplot2::scale_x_continuous(limits = c(-1, 1)) +
       getEmptyTheme()
   )
 }
 
+errCheckPlotPriorAndPosterior <- function(x, length = 1L) {
+	return(!is.null(x) && (length(x) != length || !is.numeric(x) || anyNA(x)))
+}
+
 #' @export
-PlotPriorAndPosterior <- function(dfLines, dfPoints, dfCI = NULL, dfBF = NULL, xName = "", yName = "Density",
-                              bfSubscripts = 0:1, ...) {
+PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, CRI = NULL, median = NULL, BF = NULL, xName = "", yName = "Density",
+																	hypothesis = c("equal", "smaller", "greater"), addDataText = !is.null(BF), ...) {
+
+	hypothesis <- match.arg(hypothesis)
+	switch(
+		hypothesis,
+		"equal" = {
+			bfSubscripts <- 0:1
+			wheelTxt <- c("data | H0", "data | H1")
+		},
+		"smaller" = {
+			bfSubscripts <- c(0, "\'-\'")
+			wheelTxt <- c("data | H0", "data | H-")
+		},
+		"greater" = {
+			bfSubscripts <- c(0, "\'+\'")
+			wheelTxt <- c("data | H0", "data | H+")
+		}
+	)
+
+	if (!all(is.data.frame(dfLines), !is.null(dfLines$x), !is.null(dfLines$y), !is.null(dfLines$g)))
+		stop("dfLines should be a data.frame with $x, $y, and $g!")
+	if (!is.null(dfPoints) && !all(is.data.frame(dfPoints), !is.null(dfPoints$x), !is.null(dfPoints$y), !is.null(dfPoints$g)))
+		stop("dfPoints should be a data.frame with $x, $y, and $g!")
+	if (errCheckPlotPriorAndPosterior(CRI, 2L))
+		stop("CRI should be numeric and have length 2! (left bound, right bound)")
+	if (errCheckPlotPriorAndPosterior(median))
+		stop("median should be numeric and have length 1!")
+	if (errCheckPlotPriorAndPosterior(BF))
+		stop("BF should be numeric and have length 1!")
 
   ymax <- max(dfLines$y)
-  newymax <-  1.1 * ymax
+  newymax <-  1.15 * ymax
   maxheight <- (newymax - ymax)
   emptyPlot <- getEmptyPlot(FALSE)
-  emptyTheme <- getEmptyTheme()
   plotArrange <- FALSE
 
   g <- ggplot2::ggplot(data = dfLines, ggplot2::aes(x = x, y = y, group = g, linetype = g)) +
@@ -87,22 +122,38 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints, dfCI = NULL, dfBF = NULL, x
     g <- g + ggplot2::geom_point(data = dfPoints, ggplot2::aes(x = x, y = y), inherit.aes = FALSE,
                           size = 4, shape = 21, stroke = 1.25, fill = "grey")
   }
-  if (!is.null(dfCI)) {
-    if (is.null(dfCI$y))
-      dfCI$y <- maxheight <- (newymax - ymax) / 2 + ymax
+
+  labelsCRI <- NULL
+
+  if (!is.null(CRI)) {
+  	dfCI <- data.frame(
+  		xmin = CRI[1],
+  		xmax = CRI[2],
+  		y    = maxheight <- (newymax - ymax) / 2 + ymax
+  	)
 
     g <- g + ggplot2::geom_errorbarh(
       data = dfCI, ggplot2::aes(y = y, xmin = xmin, xmax = xmax), inherit.aes = FALSE,
-      size = 1.25, height = maxheight
+      size = 1.25, height = maxheight / 8
     )
-    labels <- paste("95% CI: [",
-                 bquote(.(formatC(dfCI$y[1], 3, format="f"))), ", ",
-                 bquote(.(formatC(dfCI$y[2], 3, format="f"))), "]", sep="")
-    gTextCI <- draw2Lines(labels)
+    labelsCRI <- paste("95% CI: [",
+    							 			bquote(.(formatC(dfCI$xmin, 3, format = "f"))), ", ",
+    							 			bquote(.(formatC(dfCI$xmax, 3, format = "f"))), "]", sep = "")
     plotArrange <- TRUE
-  } else {
-    gTextCI <- emptyPlot
   }
+
+  if (!is.null(median)) {
+  	labelsCRI <- c(labelsCRI, paste("Median:", formatC(median, 3, format = "f")))
+  }
+
+  if (length(labelsCRI) > 0) {
+  	gTextCI <- draw2Lines(labelsCRI, x = -1)
+  	plotArrange <- TRUE
+  } else {
+  	gTextCI <- emptyPlot
+  }
+
+
 
   xr   <- range(dfLines$x)
   idx  <- which.max(dfLines$y)
@@ -113,17 +164,27 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints, dfCI = NULL, dfBF = NULL, x
     legend.coordinates = c(0.85, 0.875)
   }
 
-  g <- JASPgraphs::themeJasp(
+  g <- themeJasp(
     graph                   = g,
-    legend.title            = "none"#,
-    # legend.position         = "manual",
+    legend.title            = "none",
+    legend.position         = legend.coordinates
     # legend.coordinates      = legend.coordinates
-  ) + ggplot2::theme(legend.position = legend.coordinates)
+  )# + ggplot2::theme(legend.position = legend.coordinates)
 
-  if (!is.null(dfBF)) {
+  if (!is.null(BF)) {
+  	dfBF <- data.frame(y = c(1 / BF, BF))
     gWheel <- drawWheel(dat = dfBF)
     labels <- paste0("BF[", bfSubscripts, "][", rev(bfSubscripts),  "] == ", digits = format(dfBF$y, digits = 3))
     gTextBF <- draw2Lines(labels, parse = TRUE)
+    if (addDataText) {
+    	dfTxt <- data.frame(
+    		x     = 2,
+    		y     = c(dfBF$y[2] / 2, dfBF$y[2] + dfBF$y[1] / 2),
+    		label = wheelTxt
+    	)
+    	gWheel <- gWheel + ggplot2::geom_text(data = dfTxt, aes(x = x, y = y, label = label),
+						size = .75 * getGraphOption("fontsize"), inherit.aes = FALSE)
+    }
     plotArrange <- TRUE
   } else {
     gWheel <- emptyPlot
@@ -131,61 +192,9 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints, dfCI = NULL, dfBF = NULL, x
   }
 
   if (plotArrange) {
-    lay <- rbind(c(1, 2, 3), matrix(4, 3, 3))
-    return(gridExtra::arrangeGrob(gTextBF, gWheel, gTextCI, g, layout_matrix = lay))
+    lay <- rbind(c(2, 1, 3), matrix(4, 3, 3))
+    return(gridExtra::arrangeGrob(gWheel, gTextBF, gTextCI, g, layout_matrix = lay))
   } else {
     return(g)
   }
 }
-
-xcoords   <- seq(0, 1, length.out = 1e3)
-prior     <- dbeta(xcoords, 1, 1)
-posterior <- dbeta(xcoords, 3, 2)
-
-
-dfLines <- data.frame(
-  x = xcoords,
-  y = c(prior, posterior),
-  g = factor(rep(c("prior", "posterior"), c(length(prior), length(posterior))))
-)
-
-dfPoints <- data.frame(
-  x = 0.75,
-  y = c(dbeta(0.75, 1, 1), dbeta(0.75, 3, 2)),
-  g = factor(c("prior", "posterior"))
-)
-
-dfBF <- data.frame(
-  y = c(dfPoints$y[1] / dfPoints$y[2], dfPoints$y[2] / dfPoints$y[1])
-)
-
-dfCI <- data.frame(
-  xmin = .5,
-  xmax = .7,
-  y    = 2
-)
-
-# drawWheel(dat = dfBF)
-
-# g0 <- PlotPriorAndPosterior(dfLines, dfPoints, xName = expression(theta))
-# print(g0)
-# g1 <- PlotPriorAndPosterior(dfLines, dfPoints, dfCI, NULL, expression(theta))
-# gridExtra::grid.arrange(g1)
-# g2 <- PlotPriorAndPosterior(dfLines, dfPoints, NULL, dfBF, expression(theta))
-# gridExtra::grid.arrange(g2)
-# undebug(PlotPriorAndPosterior)
-g3 <- PlotPriorAndPosterior(dfLines, dfPoints, dfCI, dfBF, expression(theta))
-gridExtra::grid.arrange(g3)
-
-
-#   gridExtra::arrangeGrob(gPlot)
-#
-#   lay <- rbind(c(1, 2, 3), matrix(4, 3, 3))
-#   grid.arrange(grobs = gs[1:4], layout_matrix = lay)
-#
-# library(gridExtra)
-# library(grid)
-# library(ggplot2)
-# gs <- lapply(1:9, function(ii)
-#   grobTree(rectGrob(gp=gpar(fill=ii, alpha=0.5)), textGrob(ii)))
-#

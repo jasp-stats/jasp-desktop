@@ -6,10 +6,11 @@ axesLabeller <- function(x, ...) {
   xnum <- suppressWarnings(as.numeric(x))
   if (all(is.na(xnum))) {
     return(x)
-  } else if (max(abs(xnum), na.rm = TRUE) > 1e4) {
+  } else if (max(abs(xnum), na.rm = TRUE) > 1e4 || max(abs(xnum), na.rm = TRUE) < 1e-4) {
     return(axesLabelScientific(xnum, ...))
   } else {
-    return(axesLabelNumber(xnum, ...))
+  	x
+    # return(axesLabelNumber(xnum, ...))
   }
 }
 

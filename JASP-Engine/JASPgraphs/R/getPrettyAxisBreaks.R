@@ -9,13 +9,23 @@ axesBreaks <- function(x, ...) {
   getPrettyAxisBreaks(x, ...)
 }
 
-#' @method getPrettyAxisBreaks numeric
+# @method getPrettyAxisBreaks numeric
 #' @export
 getPrettyAxisBreaks.numeric <- function(x, ...) {
     return(pretty(x, ...))
 }
 
-#' @method getPrettyAxisBreaks default
+#' @export
+getPrettyAxisBreaks.factor <- function(x, ...) {
+    return(unique(x))
+}
+
+#' @export
+getPrettyAxisBreaks.character <- function(x, ...) {
+    return(unique(x))
+}
+
+# @method getPrettyAxisBreaks default
 #' @export
 getPrettyAxisBreaks.default <- function(x, ...) {
     if (is.numeric(x))
@@ -23,7 +33,8 @@ getPrettyAxisBreaks.default <- function(x, ...) {
     else return(unique(x))
 }
 
-#' @method getPrettyAxisBreaks data.frame
+# @method getPrettyAxisBreaks data.frame
+
 #' @export
 getPrettyAxisBreaks.data.frame <- function(x, ...) {
 
