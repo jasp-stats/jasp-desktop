@@ -19,7 +19,9 @@ Item
 	property bool isNested: false
 	property var booleanReturningFunctions: ["!"]
 
-	property var dragKeys: booleanReturningFunctions.indexOf(functionName) >= 0 ? ["boolean"] : [ "number" ]
+	readonly property bool isIfElse: functionName === "ifelse"
+	property var ifElseReturn: ["string", "number", "boolean"]
+	property var dragKeys: isIfElse ? ifElseReturn : booleanReturningFunctions.indexOf(functionName) >= 0 ? ["boolean"] : [ "number" ]
 
 	readonly property bool isMean: functionName === "mean"
 	readonly property bool isAbs:  functionName === "abs"

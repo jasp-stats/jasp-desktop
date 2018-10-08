@@ -28,7 +28,16 @@ ListView {
 
 			if(type == "operator")			{ _operator = operator }
 			else if(type == "operatorvert")	{ _operator = operator }
-			else if(type == "function")		{ _functionName = functionName; _parameterNames = functionParameters.split(","); _parameterDropKeys = functionParamTypes.split(",") }
+			else if(type == "function")
+			{
+				_functionName		= functionName;
+				_parameterNames		= functionParameters.split(",");
+				_parameterDropKeys	= functionParamTypes.split(",");
+
+				for(var param=0; param<_parameterDropKeys.length; param++)
+					_parameterDropKeys[param] = _parameterDropKeys[param].split(":");
+
+			}
 			else if(type == "number")		{ _value = number }
 			else if(type == "string")		{ _text = text }
 			else if(type == "column")		{ _columnName = columnName; _columnIcon = columnIcon }

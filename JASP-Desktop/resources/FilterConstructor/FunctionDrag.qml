@@ -18,7 +18,7 @@ DragGeneric {
 		id: showMe
 		functionName:		parent.functionName
 		parameterNames:		parent.parameterNames
-		parameterDropKeys:	parent.parameterDropKeys.indexOf("any") >= 0 ? [filterConstructor.allKeys] : parent.parameterDropKeys
+		parameterDropKeys:	parent.parameterDropKeys //parent.convertedParameterDropKeys //parameterDropKeys.indexOf("any") >= 0 ? [filterConstructor.allKeys] : parent.parameterDropKeys
 
 		x: parent.dragX
 		y: parent.dragY
