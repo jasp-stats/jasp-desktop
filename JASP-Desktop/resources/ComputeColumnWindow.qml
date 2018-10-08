@@ -156,23 +156,23 @@ FocusScope
 			functionModel: ListModel
 			{
 
-				ListElement	{ type: "function";	functionName: "abs";	functionParameters: "values";	functionParamTypes: "number";			toolTip: "absolute value" }
-				ListElement	{ type: "function";	functionName: "sd";		functionParameters: "values";	functionParamTypes: "number";			toolTip: "standard deviation" }
-				ListElement	{ type: "function";	functionName: "var";	functionParameters: "values";	functionParamTypes: "number";			toolTip: "variance" }
-				ListElement	{ type: "function";	functionName: "sum";	functionParameters: "values";	functionParamTypes: "number";			toolTip: "summation" }
-				ListElement	{ type: "function";	functionName: "prod";	functionParameters: "values";	functionParamTypes: "number";			toolTip: "product of values" }
+				ListElement	{ type: "function";	functionName: "abs";	functionParameters: "values";	functionParamTypes: "number";	toolTip: "absolute value" }
+				ListElement	{ type: "function";	functionName: "sd";		functionParameters: "values";	functionParamTypes: "number";	toolTip: "standard deviation" }
+				ListElement	{ type: "function";	functionName: "var";	functionParameters: "values";	functionParamTypes: "number";	toolTip: "variance" }
+				ListElement	{ type: "function";	functionName: "sum";	functionParameters: "values";	functionParamTypes: "number";	toolTip: "summation" }
+				ListElement	{ type: "function";	functionName: "prod";	functionParameters: "values";	functionParamTypes: "number";	toolTip: "product of values" }
 
-				ListElement	{ type: "function";	functionName: "min";	functionParameters: "values";	functionParamTypes: "number";			toolTip: "returns minimum of values" }
-				ListElement	{ type: "function";	functionName: "max";	functionParameters: "values";	functionParamTypes: "number";			toolTip: "returns maximum of values" }
-				ListElement	{ type: "function";	functionName: "mean";	functionParameters: "values";	functionParamTypes: "number";			toolTip: "mean" }
-				ListElement	{ type: "function";	functionName: "round";	functionParameters: "y,n";		functionParamTypes: "number,number";	toolTip: "rounds y to n decimals" }
-				ListElement	{ type: "function";	functionName: "length";	functionParameters: "y";		functionParamTypes: "any";				toolTip: "returns number of elements in y" }
-				ListElement	{ type: "function";	functionName: "median";	functionParameters: "values";	functionParamTypes: "number";			toolTip: "median" }
+				ListElement	{ type: "function";	functionName: "min";	functionParameters: "values";	functionParamTypes: "number";					toolTip: "returns minimum of values" }
+				ListElement	{ type: "function";	functionName: "max";	functionParameters: "values";	functionParamTypes: "number";					toolTip: "returns maximum of values" }
+				ListElement	{ type: "function";	functionName: "mean";	functionParameters: "values";	functionParamTypes: "number";					toolTip: "mean" }
+				ListElement	{ type: "function";	functionName: "round";	functionParameters: "y,n";		functionParamTypes: "number,number";			toolTip: "rounds y to n decimals" }
+				ListElement	{ type: "function";	functionName: "length";	functionParameters: "y";		functionParamTypes: "string:number:boolean";	toolTip: "returns number of elements in y" }
+				ListElement	{ type: "function";	functionName: "median";	functionParameters: "values";	functionParamTypes: "number";					toolTip: "median" }
 
 				ListElement	{ type: "separator" }
-				ListElement	{ type: "function";	functionName: "cut";		functionParameters: "values,numBreaks";		functionParamTypes: "number,number";	toolTip: "break your data up in numBreaks levels" }
-				ListElement	{ type: "function";	functionName: "replaceNA";	functionParameters: "column,replaceWith";	functionParamTypes: "number,number";	toolTip: "replace any missing values (NA) in column by the value in replaceWith" }
-
+				ListElement	{ type: "function";	functionName: "cut";		functionParameters: "values,numBreaks";		functionParamTypes: "number,number";						toolTip: "break your data up in numBreaks levels" }
+				ListElement	{ type: "function";	functionName: "replaceNA";	functionParameters: "column,replaceWith";	functionParamTypes: "number,number";						toolTip: "replace any missing values (NA) in column by the value in replaceWith" }
+				ListElement	{ type: "function";	functionName: "ifelse";		functionParameters: "test,then,else";		functionParamTypes: "boolean,boolean:string:number,boolean:string:number";	toolTip: "if-else statement" }
 
 
 				ListElement	{ type: "separator" }
