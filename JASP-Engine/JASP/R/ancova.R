@@ -1112,7 +1112,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
             dv <- dataset[[ .v(options$dependent) ]]
 
             contrastMat <- (model[['contrasts']][[v]])
-            contrastMat <- (solve(cbind((contrastMat), 1/nLevelsFac))[-nLevelsFac,])
+            contrastMat <- matrix((solve(cbind((contrastMat), 1/nLevelsFac))[-nLevelsFac,]), ncol = nLevelsFac)
             sds <- tapply(dv, column, sd)
             ns <- tapply(dv, column, length)
 
