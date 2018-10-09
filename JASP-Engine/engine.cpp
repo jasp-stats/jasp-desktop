@@ -220,8 +220,10 @@ void Engine::receiveAnalysisMessage(Json::Value jsonRequest)
 
 void Engine::runAnalysis()
 {
+#ifdef JASP_DEBUG
 	std::cout << "Engine::runAnalysis()" << std::endl;
-	waitForDatasetSync();
+#endif
+	//waitForDatasetSync(); For SummaryStats, there is no data!!!
 
 	if (_status == saveImg)	{ saveImage(); return; }
 	if (_status == editImg)	{ editImage(); return; }
