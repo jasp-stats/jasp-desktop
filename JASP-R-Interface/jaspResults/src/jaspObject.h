@@ -9,7 +9,7 @@
 #include "lib_json/json.h"
 #endif
 
-void JASPprint(std::string msg);
+void jaspPrint(std::string msg);
 
 enum class jaspObjectType { unknown, container, table, plot, json, list, results, html, state };
 
@@ -18,6 +18,10 @@ enum class jaspObjectType { unknown, container, table, plot, json, list, results
 
 std::string		jaspObjectTypeToString(jaspObjectType type);
 jaspObjectType	jaspObjectTypeStringToObjectType(std::string type);
+
+std::string					stringExtend(std::string & str, size_t len, char kar = ' ');
+std::string					stringRemove(std::string str, char kar = ' ');
+std::vector<std::string>	stringSplit(std::string str, char kar = ';');
 
 //Simple base-class for all JASP-objects, containing things like a title or a warning and stuff like that
 class jaspObject
@@ -29,14 +33,17 @@ public:
 						jaspObject(const jaspObject& that) = delete;
 	virtual				~jaspObject();
 
-			std::string objectTitleString()					{ return jaspObjectTypeToString(_type) + "(\"" + _title + "\")"; }
-	virtual	std::string dataToString(std::string prefix)	{ return ""; }
+			std::string objectTitleString(std::string prefix)	{ return prefix + jaspObjectTypeToString(_type) + " " + _title; }
+	virtual	std::string dataToString(std::string)				{ return ""; }
 			std::string toString(std::string prefix = "");
+
+	virtual std::string toHtml() { return ""; }
+			std::string htmlTitle() { return "<h2>" + _title + "</h2>"; }
 
 			std::string	getWarning()						{ return _warning; }
 			void		setWarning(std::string warning)		{ _warning = warning; _warningSet = true; }
 
-			void		print()								{ try { JASPprint(toString()); } catch(std::exception e) { JASPprint(std::string("toString failed because of: ") + e.what()); } }
+			void		print()								{ try { jaspPrint(toString()); } catch(std::exception e) { jaspPrint(std::string("toString failed because of: ") + e.what()); } }
 			void		addMessage(std::string msg)			{ _messages.push_back(msg); }
 	virtual void		childrenUpdatedCallbackHandler()	{} ///Can be caugt by jaspResults to send changes and stuff like that.
 
@@ -164,6 +171,8 @@ public:
 
 	void		print()								{ myJaspObject->print(); }
 	void		addMessage(std::string msg)			{ myJaspObject->addMessage(msg); }
+	std::string	toHtml()							{ return myJaspObject->toHtml(); }
+	void		printHtml()							{ jaspPrint(myJaspObject->toHtml()); }
 
 	void		setOptionMustBeDependency(std::string optionName, Rcpp::RObject mustBeThis)				{ myJaspObject->setOptionMustBeDependency(optionName, mustBeThis);				}
 	void		setOptionMustContainDependency(std::string optionName, Rcpp::RObject mustContainThis)	{ myJaspObject->setOptionMustContainDependency(optionName, mustContainThis);	}

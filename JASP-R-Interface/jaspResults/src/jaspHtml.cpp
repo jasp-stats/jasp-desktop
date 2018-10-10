@@ -33,6 +33,11 @@ std::string jaspHtml::convertTextToHtml(std::string text)
     return out.str();
 }
 
+std::string jaspHtml::toHtml()
+{
+	return "<div class=\"jaspHtml\">" "\n" + htmlTitle() + "\n" + dataToString() + "</div>" "\n";
+}
+
 Json::Value jaspHtml::dataEntry()
 {
 	Json::Value data(jaspObject::dataEntry());

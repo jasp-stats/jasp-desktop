@@ -63,7 +63,7 @@ void jaspResults::saveResults()
 {
 	if(_saveResultsHere == "")
 	{
-		JASPprint("Did not store jaspResults");
+		jaspPrint("Did not store jaspResults");
 		return;
 	}
 

@@ -21,6 +21,8 @@ RCPP_MODULE(jaspResults)
 	Rcpp::class_<jaspObject_Interface>("jaspObject")
 
 		.method("print",							&jaspObject_Interface::print,											"Prints the contents of the jaspObject")
+		.method("toHtml",							&jaspObject_Interface::toHtml,											"gives a string with the contents of the jaspObject nicely formatted as html")
+		.method("printHtml",						&jaspObject_Interface::printHtml,										"Prints the contents of the jaspObject nicely formatted as html")
 
 		.method("addMessage",						&jaspObject_Interface::addMessage,										"Add a message to this object")
 		.method("addCitation",						&jaspObject_Interface::addCitation,										"Add a citation to this object")

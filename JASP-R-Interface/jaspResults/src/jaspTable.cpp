@@ -278,67 +278,577 @@ int jaspTable::equalizeColumnsLengths()
 	return maximumFoundColumnLength;
 }
 
+Json::Value jaspTable::getCell(size_t col, size_t row)
+{
+	if(_data.size() <= col || _data[col].size() <= row)
+		return Json::nullValue;
+	return _data[col][row];
+}
+
+std::string	jaspTable::getCellFormatted(size_t col, size_t row)
+{
+	Json::Value val(getCell(col, row));
+
+	std::string format = "";
+	if(_colFormats.containsField(getColName(col)))
+		format = _colFormats[getColName(col)];
+	else if(_colFormats.rowCount() > col)
+		format = _colFormats[col];
+
+	if(val.isNull())
+		return "";
+
+	if(val.isString())
+		return val.asString();
+
+	if(val.isBool())
+		return val.asBool() ? "true" : "false";
+
+	if(format == "")
+	{
+		if(val.isInt())			return std::to_string(val.asInt());
+		if(val.isDouble())
+		{
+			std::stringstream out;
+			out << std::defaultfloat << val.asDouble();
+			return out.str();
+		}
+	}
+
+	if(!val.isDouble() && !val.isInt())
+		return "";
+
+	//now, format != "" and the value is a number of some sort, lets apply the format!
+	double value = val.isDouble() ? val.asDouble() : val.asInt();
+
+	auto formats = stringSplit(format, ';');
+
+	int		decPts	= -1,
+			sigFig	= -1;
+	double	pVal	= 0;
+	bool	round	= false,
+			log10	= false,
+			prcnt	= false;
+
+	std::string pValOri = "";
+
+	for(auto & f : formats)
+		if		(f == "~")		round = true;
+		else if	(f == "log10")	log10 = true;
+		else if(f == "pc")		prcnt = true;
+		else if(f.find(':') != std::string::npos)
+		{
+			auto fmtval = stringSplit(f, ':');
+			try
+			{
+				if		(fmtval[0] == "dp")	decPts	= std::stoi(fmtval[1]);
+				else if	(fmtval[0] == "sf")	sigFig	= std::stoi(fmtval[1]);
+				else if	(fmtval[0] == "p" )
+				{
+					pVal	= std::stod(fmtval[1]);
+					pValOri = fmtval[1];
+				}
+				else
+					std::cout << "unknown formatting option '" << fmtval[0] << "'" << std::endl;
+
+			}
+			catch(std::invalid_argument & e)	{}
+			catch(std::out_of_range & e)		{}
+		}
+	else
+		std::cout << "unknown formatting option '" << f << "'" << std::endl;
+
+	if(log10)
+		std::cout << "jaspTable doesnt know what to do with the formatting option 'log10', if you DO know, contact Joris Goosen or your local jaspResults-programmer..." << std::endl;
+
+	if(prcnt)
+	{
+		if(sigFig > 0)
+			prcnt = false;
+		else
+			value *= 100.0f;
+	}
+
+	if(pValOri != "" && pVal > value)
+		return "p < " + pValOri;
+
+	std::stringstream out;
+
+	if(sigFig > 0)			out << std::scientific		<< std::setprecision(sigFig) << value;
+	else if(decPts > 0)		out << std::fixed			<< std::setprecision(decPts) << value;
+	else if(round)			out << std::defaultfloat	<<								std::round(value);
+	else					out << std::defaultfloat	<<								value;
+
+	if(prcnt)
+		out << "%";
+
+	return out.str();
+}
+
+std::vector<std::vector<std::string>> jaspTable::dataToRectangularVector(bool normalizeColLengths, bool normalizeRowLengths, bool onlySpecifiedColumns)
+{
+	size_t maxRow=0, maxCol=0;
+
+	for(size_t col=0; col<_data.size(); col++)
+	{
+		if(!onlySpecifiedColumns || columnSpecified(col))
+			maxCol++;
+
+		maxRow = std::max(maxRow, _data[col].size());
+	}
+
+	std::vector<std::vector<std::string>> uit;
+
+	uit.resize(maxCol);
+	size_t colDst = 0;
+	for(size_t colSrc=0; colSrc<_data.size() && colDst<maxCol; colSrc++)
+	{
+		if(!onlySpecifiedColumns || columnSpecified(colSrc))
+		{
+			uit[colDst].resize(maxRow);
+
+			for(size_t row=0; row<maxRow; row++)
+				uit[colDst][row] = getCellFormatted(colSrc, row);
+
+			colDst++;
+		}
+	}
+
+	if(normalizeColLengths)
+		for(size_t col=0; col<maxCol; col++)
+		{
+			size_t maxLen = 0;
+
+			for(size_t row=0; row<maxRow; row++)
+				maxLen = std::max(uit[col][row].size(), maxLen);
+
+			for(size_t row=0; row<maxRow; row++)
+				stringExtend(uit[col][row], maxLen);
+		}
+
+	if(normalizeRowLengths)
+		for(size_t row=0; row<maxRow; row++)
+		{
+			size_t maxLen = 0;
+
+			for(size_t col=0; col<maxCol; col++)
+				maxLen = std::max(uit[col][row].size(), maxLen);
+
+			for(size_t col=0; col<maxCol; col++)
+				stringExtend(uit[col][row], maxLen);
+		}
+
+	return uit;
+}
+
+std::vector<std::string> jaspTable::getDisplayableColTitles(bool normalizeLengths, bool onlySpecifiedColumns)
+{
+	std::vector<std::string> names;
+	size_t maxLength = 0;
+
+	for(size_t col=0; col<_data.size(); col++)
+		if(!onlySpecifiedColumns || columnSpecified(col))
+		{
+			std::string name		= _colNames[col],
+						showName	= getColName(col),
+						title		= "";
+
+
+
+			if(name != "" && _colTitles[name] != "")	title = _colTitles[name];
+			else if(_colTitles[col] != "")				title = _colTitles[col];
+
+			if(title != "")
+				showName = title;
+
+			maxLength = std::max(showName.size(), maxLength);
+
+			names.push_back(showName);
+		}
+
+	if(normalizeLengths)
+		for(auto & str : names)
+			stringExtend(str, maxLength);
+
+	return names;
+}
+
+std::vector<std::string> jaspTable::getDisplayableRowTitles(bool normalizeLengths)
+{
+	std::vector<std::string> names;
+	size_t	maxLength	= 0,
+			rowMax		= 0;
+
+	for(size_t col=0; col<_data.size(); col++)
+		rowMax = std::max(rowMax, _data[col].size());
+
+	for(size_t row=0; row<rowMax; row++)
+	{
+		std::string name		= _rowNames[row],
+					showName	= getRowName(row),
+					title		= "";
+
+		if(name != "" && _rowTitles[name] != "")	title = _rowTitles[name];
+		else if(_colTitles[row] != "")				title = _rowTitles[row];
+
+		if(title != "")
+			showName = title;
+
+		maxLength = std::max(showName.size(), maxLength);
+
+		names.push_back(showName);
+	}
+
+	if(normalizeLengths)
+		for(auto & str : names)
+			stringExtend(str, maxLength);
+
+	return names;
+}
+
+std::vector<std::vector<std::string>> jaspTable::transposeRectangularVector(const std::vector<std::vector<std::string>> & in)
+{
+	if(in.size() == 0)
+		return in;
+
+	std::vector<std::vector<std::string>> uit;
+
+	uit.resize(in[0].size());
+
+	for(auto & vec : uit)
+		vec.resize(in.size());
+
+	for(size_t col=0; col<in.size(); col++)
+		for(size_t row=0; row<in[col].size(); row++)
+			uit[row][col] = in[col][row];
+
+	return uit;
+}
+
+std::map<std::string, std::map<size_t, size_t>> jaspTable::getOvertitleRanges(std::vector<std::string> names, std::map<std::string,std::string> overtitles)
+{
+	std::map<std::string, std::map<size_t, size_t>> overtitleSpread;
+
+	for(size_t top=0; top<names.size(); top++)
+	{
+
+		std::string trimmedName	= stringRemove(names[top]),
+					overTitle	= overtitles.count(trimmedName) > 0 ? overtitles[trimmedName] : "";
+
+		if(overtitleSpread.count(overTitle) == 0)
+			overtitleSpread[overTitle][top] = top;
+		else
+		{
+			bool foundIt = false;
+
+			for(size_t begin=0; begin < top; begin++)
+				if(overtitleSpread[overTitle].count(begin) > 0 && overtitleSpread[overTitle][begin] == top - 1)
+				{
+					overtitleSpread[overTitle][begin] = top;
+					foundIt = true;
+					break;
+				}
+
+			if(!foundIt)
+				overtitleSpread[overTitle][top] = top;
+		}
+	}
+
+	return overtitleSpread;
+}
+
+void jaspTable::rectangularDataWithNamesToString(std::stringstream & out, std::string prefix, std::vector<std::vector<std::string>> vierkant, std::vector<std::string> sideNames, std::vector<std::string> topNames, std::map<std::string,std::string> sideOvertitles, std::map<std::string,std::string> topOvertitles)
+{
+	if(vierkant.size() == 0)
+		return;
+
+	size_t	sideOvertitleSpace = 0;
+
+	for(auto & keyval : sideOvertitles)
+		sideOvertitleSpace = std::max(sideOvertitleSpace, keyval.second.size());
+
+	if(sideOvertitleSpace > 0) sideOvertitleSpace += 1;
+
+	std::vector<std::string> sideOverTitleRow;
+	std::string prevSideTitle = "";
+	for(auto & sideName : sideNames)
+	{
+		std::string sideTrim = stringRemove(sideName);
+
+		if(sideOvertitles.count(sideTrim) > 0)
+		{
+				std::string sideTitle = sideOvertitles[sideTrim];
+				if(sideTitle != prevSideTitle)
+				{
+					sideOverTitleRow.push_back(sideTitle + " ");
+					prevSideTitle = sideTitle;
+				}
+				else
+					sideOverTitleRow.push_back(std::string(sideOvertitleSpace, ' '));
+		}
+		else
+			sideOverTitleRow.push_back(std::string(sideOvertitleSpace, ' '));
+	}
+
+
+	//If there are overtitles above the top we need to make sure they fit, so we expand the topnames if needed.
+	std::map<std::string, std::map<size_t, size_t>> overtitleSpread = getOvertitleRanges(topNames, topOvertitles);
+
+	for(auto & overtitleRange : overtitleSpread)
+		for(auto & range : overtitleRange.second)
+		{
+			std::string overtitle = overtitleRange.first + "  "; //extra "  " space to make it align better
+			size_t topNamesLength = 0;
+
+			do
+			{
+				topNamesLength	= 0;
+
+				for(size_t tops = range.first; tops <= range.second; tops++)
+				{
+					topNamesLength += topNames[tops].size();
+
+					if(tops > range.first)
+						topNamesLength += 3; // because of the ' | ' added to the print later
+				}
+
+				if(topNamesLength < overtitle.size())
+				{
+					for(size_t tops = range.first; tops <= range.second; tops++)
+						topNames[tops] += ' ';
+					topNamesLength += 3;
+				}
+			}
+			while(topNamesLength < overtitle.size());
+		}
+
+	//we want to display rownames above the "columns of cells", which means they must fit!
+	//So either we make all cols of a row bigger to correspond to the rowname size or vice versa!
+	for(size_t row=0; row<topNames.size(); row++)
+		if(topNames[row].size() > vierkant[0][row].size())
+			for(size_t col=0; col<vierkant.size(); col++)
+				stringExtend(vierkant[col][row], topNames[row].size());
+		else if(topNames[row].size() < vierkant[0][row].size())
+			stringExtend(topNames[row], vierkant[0][row].size());
+
+	size_t extraSpaceSide = sideNames[0].size() + sideOvertitleSpace;
+
+	//lets print the topOvertitles
+	{
+		out << prefix << std::string(extraSpaceSide, ' ') << "    ";
+		size_t overTitleEnd = 0, topNameEnd = 0;
+
+		for(size_t row=0; row<topNames.size(); row++)
+		{
+			std::string topName = topNames[row];
+			std::string trimmed = stringRemove(topName);
+
+			if(topOvertitles.count(trimmed) > 0)
+			{
+				std::string overTitle = topOvertitles[trimmed];
+				if(overtitleSpread.count(overTitle) > 0 && overtitleSpread[overTitle].count(row) > 0)
+				{
+					out << overTitle;
+					overTitleEnd += overTitle.size();
+				}
+			}
+
+			topNameEnd += topName.size() + 3; //3 because of " | "
+
+			if(overTitleEnd < topNameEnd)
+			{
+				out << std::string(topNameEnd - overTitleEnd, ' ');
+				overTitleEnd = topNameEnd;
+			}
+		}
+		out << "  \n";
+	}
+
+	//lets print the topnames
+	out << prefix << std::string(extraSpaceSide, ' ') << "    ";
+	for(size_t row=0; row<topNames.size(); row++)
+		out << (row>0? "   " : "") << topNames[row];
+	out << "  \n";
+
+	//lets create a nice reusable layer of ----
+	std::stringstream colSep;
+
+	colSep << prefix << std::string(extraSpaceSide, ' ') << "  |-";
+
+	for(size_t row=0; row<vierkant[0].size(); row++)
+		colSep << (row>0? "-|-" : "") << std::string(vierkant[0][row].size(), '-');
+	colSep << "-|\n";
+
+	//then the actual columns X rows
+	for(size_t col=0; col<vierkant.size(); col++)
+	{
+		//put the side overtitle here
+		out << colSep.str();
+		out << prefix << sideOverTitleRow[col] << sideNames[col] << "  | ";
+
+		for(size_t row=0; row<vierkant[col].size(); row++)
+			out << (row>0? " | " : "") << vierkant[col][row];
+
+		out << " |\n";
+	}
+
+	out << colSep.str();
+}
+
+std::map<std::string, std::string> jaspTable::getOvertitlesMap()
+{
+	std::map<std::string, std::string> map;
+
+	for(size_t col=0; col<_data.size(); col++)
+	{
+		std::string colName = getColName(col);
+		if(_colOvertitles.containsField(colName))
+			map[stringRemove(colName)] = _colOvertitles[colName];
+	}
+
+	return map;
+}
+
 std::string jaspTable::dataToString(std::string prefix)
 {
 	std::stringstream out;
 
-	out << "data (printed transposed!):\n";
+	std::vector<std::vector<std::string>>	vierkant = dataToRectangularVector(!_transposeTable, _transposeTable, _showSpecifiedColumnsOnly);
+	std::vector<std::string>				colNames = getDisplayableColTitles(true, _showSpecifiedColumnsOnly),
+											rowNames = getDisplayableRowTitles();
 
-	for(size_t col=0; col<_data.size(); col++)
+	out << prefix << "status: " << _status << "\n";
+
+	if(_error != "" || _errorMessage != "")
 	{
-		std::string colName = _colNames[col];
-
-		out << prefix << (colName == "" ? "col_" + std::to_string(col) : colName);
-
-		std::string colTitle = "";
-
-		if(colName != "" && _colTitles[colName] != "")
-			colTitle = _colTitles[colName];
-		else if(_colTitles[col] != "")
-			colTitle = _colTitles[col];
-
-		if(colTitle != "")
-			out << " (" << colTitle << ")";
-
-		 out << ": [";
-
-		for(size_t row=0; row<_data[col].size(); row++)
-		{
-			std::string JsonPrintWithNewLine = _data[col][row].toStyledString();
-			out << (row>0? ", " : "") << JsonPrintWithNewLine.substr(0, JsonPrintWithNewLine.length() - 1);
-		}
-
-		out << "]\n";
+		out << prefix;
+		if(_error		 != "") out << "error: '" << _error << "'";
+		if(_errorMessage != "") out << (_error != "" ? " msg: '" : "errormessage: '") << _errorMessage << "'";
+		out << "\n";
 	}
-
-	std::string newPrefix = prefix + '\t';
-
-	if(_colFormats.rowCount() > 0 || _colFormats.fieldCount() > 0)
-		out << prefix << "colFormats: " << _colFormats.toString(newPrefix) << "\n";
-
-	if(_rowNames.rowCount() > 0 || _rowNames.fieldCount() > 0)
-		out << prefix << "rowNames: " << _rowNames.toString(newPrefix) << "\n";
-
-	if(_rowTitles.rowCount() > 0 || _rowTitles.fieldCount() > 0)
-		out << prefix << "rowTitles: " << _rowTitles.toString(newPrefix) << "\n";
+	else
+	{
+		if(_transposeTable) rectangularDataWithNamesToString(out, prefix, vierkant,								colNames, rowNames, getOvertitlesMap(),	{});
+		else				rectangularDataWithNamesToString(out, prefix, transposeRectangularVector(vierkant),	rowNames, colNames,	{},						getOvertitlesMap());
+	}
 
 
 	if(_footnotes.size() > 0)
 	{
-		out << prefix << "footnotes: ";
-		out << jaspJson::jsonToPrefixedStrings(_footnotes, newPrefix) << "\n";
-	}
-
-	if(_colRowCombinations.size() > 0)
-	{
-		out << prefix << "column- or row-combinations:\n";
-		for(auto colrowcombo : _colRowCombinations)
-			out << prefix << "\t" << colrowcombo.toString() << "\n";
+		out << "\n" << prefix << "footnotes:   \n";
+		for(Json::Value::UInt i=0; i<_footnotes.size(); i++)
+		{
+			std::string sym = _footnotes[i]["symbol"].asString() ;
+			out << prefix << "\t" << (sym == "" ? "" : "(" + sym  + ") " ) << "'" << _footnotes[i]["text"].asString() << "'\n";
+		}
 	}
 
 	return out.str();
 }
 
+std::string jaspTable::toHtml()
+{
+	std::stringstream out;
+
+	std::vector<std::vector<std::string>>	vierkant = dataToRectangularVector(false, false, _showSpecifiedColumnsOnly);
+	std::vector<std::string>				colNames = getDisplayableColTitles(false, _showSpecifiedColumnsOnly),
+											rowNames = getDisplayableRowTitles(false);
+	out		<< "<div class=\"status " << _status << " jaspTable\">\n"
+			<< htmlTitle() << "\n";
+
+	if(_error != "" || _errorMessage != "")
+	{
+		out << "<p class=\"error\">\n";
+		if(_error		 != "") out << "error: <i>'" << _error << "'</i>";
+		if(_errorMessage != "") out << (_error != "" ? " msg: <i>'" : "errormessage: <i>'") << _errorMessage << "'</i>";
+		out << "\n</p>";
+	}
+	else
+	{
+		if(_transposeTable) rectangularDataWithNamesToHtml(out, vierkant,								colNames, rowNames, getOvertitlesMap(),	{});
+		else				rectangularDataWithNamesToHtml(out, transposeRectangularVector(vierkant),	rowNames, colNames,	{},						getOvertitlesMap());
+	}
+
+
+	if(_footnotes.size() > 0)
+	{
+		out << "<h4>footnotes</h4>" "\n" "<ul>";
+
+		for(Json::Value::UInt i=0; i<_footnotes.size(); i++)
+		{
+			std::string sym = _footnotes[i]["symbol"].asString() ;
+			out << "<li>" << (sym == "" ? "" : "<i>(" + sym  + ")</i> " ) << _footnotes[i]["text"].asString() << "</li>" "\n";
+		}
+
+		out << "</ul>\n";
+	}
+
+	out << "</div>\n";
+
+	return out.str();
+}
+
+void jaspTable::rectangularDataWithNamesToHtml(std::stringstream & out, std::vector<std::vector<std::string>> vierkant, std::vector<std::string> sideNames, std::vector<std::string> topNames, std::map<std::string,std::string> sideOvertitles, std::map<std::string,std::string> topOvertitles)
+{
+	if(vierkant.size() == 0)
+	{
+		out << "\t<table>empty</table>\n";
+		return;
+	}
+
+	auto	topOvertitleSpread	= getOvertitleRanges(topNames,	topOvertitles),
+			sideOvertitleSpread = getOvertitleRanges(sideNames, sideOvertitles);
+
+	bool	topOvertitlesPresent  = topOvertitleSpread.size()  > (topOvertitleSpread.count("")  > 0 ? 1 : 0),
+			sideOvertitlesPresent = sideOvertitleSpread.size() > (sideOvertitleSpread.count("") > 0 ? 1 : 0);
+
+	out << "\t<table>\n";
+
+	if(topOvertitlesPresent)
+	{
+		out << "\t\t"   "<tr>\n"
+			   "\t\t\t" "<th rowspan=\"2\" colspan=\"" << (sideOvertitlesPresent ? 2 : 1) << "\"></th>" "\n";
+
+		for(size_t top=0; top<topNames.size(); top++)
+		{
+			std::string topName		= topNames[top],
+						trimmed		= stringRemove(topName),
+						overtitle	= topOvertitles.count(trimmed) > 0 ? topOvertitles[trimmed] : "";
+
+			if(topOvertitleSpread.count(overtitle) > 0 && topOvertitleSpread[overtitle].count(top) > 0)
+				out << "\t\t\t" "<th colspan=\"" <<  topOvertitleSpread[overtitle][top] - (top - 1) << "\">" << overtitle << "</th>" "\n";
+
+		}
+		out << "\t\t" "</tr>" "\n";
+	}
+
+	out << "\t\t" "<tr>\n";
+	for(auto & topName : topNames)
+			out << "\t\t\t" "<th>" << topName << "</th>" "\n";
+	out << "\t\t" "</tr>" "\n";
+
+	//then the actual columns X rows
+	for(size_t side=0; side<vierkant.size(); side++)
+	{
+		out << "\t\t" "<tr>" "\n";
+
+		std::string name		= sideNames[side],
+					trimmed		= stringRemove(name),
+					overtitle	= topOvertitles.count(trimmed) > 0 ? topOvertitles[trimmed] : "";
+
+		if(sideOvertitlesPresent && sideOvertitleSpread.count(overtitle) > 0 && sideOvertitleSpread[overtitle].count(side) > 0)
+			out << "\t\t\t" "<th rowspan=\"" << sideOvertitleSpread[overtitle][side] - (side - 1) << "\">" << overtitle << "</th>" "\n";
+
+		out << "\t\t\t" "<th>" << name << "</th>" "\n";
+
+		for(size_t top=0; top<vierkant[side].size(); top++)
+			out << "\t\t\t" "<td>" << vierkant[side][top] << "</td>" "\n";
+
+		out << "\t\t" "</tr>" "\n";
+	}
+
+	out << "\t</table>\n";
+}
 
 void jaspTable::addFootnote(Rcpp::RObject message, Rcpp::RObject symbol, Rcpp::RObject col_names, Rcpp::RObject row_names)
 {
@@ -462,13 +972,6 @@ Json::Value	jaspTable::schemaJson()
     return schema;
 }
 
-Json::Value jaspTable::getCell(int col, int row)
-{
-	if(_data.size() <= col || _data[col].size() <= row)
-		return Json::nullValue;
-	return _data[col][row];
-}
-
 Json::Value	jaspTable::rowsJson()
 {
 	Json::Value rows(Json::arrayValue);
@@ -546,15 +1049,12 @@ std::string jaspTable::deriveColumnType(int col)
 	}
 }
 
-std::string jaspTable::getColType(int col)
+std::string jaspTable::getColType(size_t col)
 {
 	std::string colName = getColName(col);
 
-	if(_colTypes[colName] != "")
-		return _colTypes[colName];
-
-	if(_colTypes[col] != "")
-		return _colTypes[col];
+	if(_colTypes[colName] != "")	return _colTypes[colName];
+	if(_colTypes[col] != "")		return _colTypes[col];
 
 	return deriveColumnType(col);
 }
@@ -562,7 +1062,7 @@ std::string jaspTable::getColType(int col)
 ///Going to assume it is called like addColumInfo(name=NULL, title=NULL, type=NULL, format=NULL, combine=NULL)
 void jaspTable::addColumnInfo(Rcpp::RObject name, Rcpp::RObject title, Rcpp::RObject type, Rcpp::RObject format, Rcpp::RObject combine, Rcpp::RObject overtitle)
 {
-	std::string colName = name.isNULL() ? "col"+ std::to_string(_colNames.rowCount()) : Rcpp::as<std::string>(name);
+	std::string colName = name.isNULL() ? defaultColName(_colNames.rowCount()) : Rcpp::as<std::string>(name);
 	_specifiedColumns.insert(colName);
 
 	_colNames.add(colName);
