@@ -315,7 +315,7 @@ void FSBMOSF::gotFilesAndFolders()
 					entryType = FSEntry::CSV;
 				else if (nodeData.name.endsWith(".html", Qt::CaseInsensitive) || nodeData.name.endsWith(".pdf", Qt::CaseInsensitive))
 					entryType = FSEntry::Other;
-				else if (nodeData.name.endsWith(".spss", Qt::CaseInsensitive))
+				else if (nodeData.name.endsWith(".spss", Qt::CaseInsensitive) || nodeData.name.endsWith(".sav", Qt::CaseInsensitive))
 					entryType = FSEntry::SPSS;
 				else
 					continue;
