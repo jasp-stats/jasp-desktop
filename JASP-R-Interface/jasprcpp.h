@@ -40,6 +40,8 @@ void jaspRCPP_returnDataFrame(Rcpp::DataFrame frame);
 void jaspRCPP_returnString(SEXP Message);
 void jaspRCPP_setRWarning(SEXP Message);
 void jaspRCPP_setRError(SEXP Message);
+int jaspRCPP_dataSetRowCount();
+
 
 bool jaspRCPP_setColumnDataAsScale(std::string columnName,			Rcpp::Vector<REALSXP> scalarData);
 bool jaspRCPP_setColumnDataAsOrdinal(std::string columnName,		Rcpp::Vector<INTSXP> ordinalData);

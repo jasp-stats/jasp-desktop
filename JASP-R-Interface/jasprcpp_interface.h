@@ -116,7 +116,6 @@ RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_getLastErrorMsg();
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_resetErrorMsg();
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_setErrorMsg(const char* msg);
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_freeArrayPointer(bool ** arrayPointer);
-RBRIDGE_TO_JASP_INTERFACE int			STDCALL jaspRCPP_dataSetRowCount();
 
 #ifndef __WIN32__
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_getRConsoleOutput();
