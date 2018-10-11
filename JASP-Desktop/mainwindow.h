@@ -173,6 +173,7 @@ private slots:
 	void updateExcludeKey();
 	void dataSetChanged(DataSet * dataSet);
 
+	void setPPIHandler(int ppi);
 
 private:
 	typedef std::map<Analysis*, AnalysisForm*> analysisFormMap;

@@ -20,6 +20,8 @@ public:
 	explicit PreferencesDialog(QWidget *parent = 0);
 	~PreferencesDialog();
 
+	void setDefaultPPI(int ppi);
+
 private:
 	Ui::PreferencesDialog *ui;
 	TabBar *_tabBar;

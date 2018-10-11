@@ -15,7 +15,9 @@ const Settings::Setting Settings::Values[] = {
 	{"OSFUsername", ""},
 	{"OSFPassword", ""},
 	{"OSFEncryption", 0},
-	{"OSFRememberMe", false}
+	{"OSFRememberMe", false},
+	{"PPI_USE_DEFAULT", true},
+	{"PPI_CUSTOM_VALUE", 96}
 };
 
 QVariant Settings::value(Settings::Type key)

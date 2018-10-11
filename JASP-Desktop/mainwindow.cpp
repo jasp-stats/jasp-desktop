@@ -225,6 +225,8 @@ void MainWindow::makeConnections()
 	connect(ui->tabBar,				&TabBar::setExactPValuesHandler,					_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler					);
 	connect(ui->tabBar,				&TabBar::setFixDecimalsHandler,						_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler					);
 	connect(ui->tabBar,				&TabBar::emptyValuesChangedHandler,					this,					&MainWindow::emptyValuesChangedHandler						);
+	connect(ui->tabBar,				&TabBar::useDefaultPPIHandler,						_resultsJsInterface,	&ResultsJsInterface::getDefaultPPI							);
+	connect(ui->tabBar,				&TabBar::setPPIHandler,								this,					&MainWindow::setPPIHandler									);
 
 	connect(&_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus								);
 
@@ -328,7 +330,6 @@ void MainWindow::loadQML()
 
 	qmlProgressBar			= ui->quickWidget_Data->rootObject()->findChild<QObject*>("progressBarHolder");
 }
-
 
 void MainWindow::open(QString filepath)
 {
@@ -583,6 +584,13 @@ void MainWindow::dataSetChanged(DataSet * dataSet)
 {
 	_package->setDataSet(dataSet);
 	setDataSetAndPackageInModels(_package);
+}
+
+void MainWindow::setPPIHandler(int ppi)
+{
+	emit ppiChanged(ppi);
+
+	refreshAllAnalyses();
 }
 
 void MainWindow::setDataSetAndPackageInModels(DataSetPackage *package)
@@ -1352,6 +1360,16 @@ void MainWindow::resultsPageLoaded(bool success, int ppi)
 
 	if (_engineSync->engineStarted() == false)
 		_engineSync->start();
+
+	PreferencesDialog *rd = ui->tabBar->getPreferencesDialog();
+	rd->setDefaultPPI(ppi);
+
+	bool useDefaultPPI = Settings::value(Settings::PPI_USE_DEFAULT).toBool();
+	if (!useDefaultPPI)
+	{
+		int customPPI = Settings::value(Settings::PPI_CUSTOM_VALUE).toInt();
+		ppi = customPPI;
+	}
 
 	emit ppiChanged(ppi);
 }

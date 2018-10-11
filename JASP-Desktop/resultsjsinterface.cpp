@@ -246,6 +246,11 @@ void ResultsJsInterface::latexCodeSelected()
 	runJavaScript("window.latexCodeMenuClicked();");
 }
 
+void ResultsJsInterface::getDefaultPPI()
+{
+	runJavaScript("window.getPPI()", std::bind(&ResultsJsInterface::cbSetPPIAndRefresh, this, std::placeholders::_1));
+}
+
 void ResultsJsInterface::saveImage()
 {
 	runJavaScript("window.saveImageClicked();");
@@ -600,9 +605,8 @@ void ResultsJsInterface::runJavaScript(const QString &str, std::function<void(co
 	_webViewResults->page()->runJavaScript(str,  [cb] (const QVariant &result) { cb(result); });
 }
 
-void ResultsJsInterface::cbSetPPI(const QVariant &vppi)
+int ResultsJsInterface::_getPPIFromVariant(const QVariant &vppi, bool& success)
 {
-	bool success;
 	int ppi = vppi.toInt(&success);
 	if (success == false)
 	{
@@ -610,16 +614,24 @@ void ResultsJsInterface::cbSetPPI(const QVariant &vppi)
 		std::cout.flush();
 		ppi = 96;
 	}
-	else
-	{
-		std::cout << "PPI: " << vppi.toString().toStdString() << "." << std::endl;
-		std::cout.flush();
 
-	}
+	return ppi;
+}
 
+void ResultsJsInterface::cbSetPPI(const QVariant &vppi)
+{
+	bool success = false;
+	int ppi = _getPPIFromVariant(vppi, success);
 	_webViewZoom = 1;
 
 	_mainWindow->resultsPageLoaded(success, ppi);
+}
+
+void ResultsJsInterface::cbSetPPIAndRefresh(const QVariant &vppi)
+{
+	bool success = false;
+	int ppi = _getPPIFromVariant(vppi, success);
+	_mainWindow->setPPIHandler(ppi);
 }
 
 void ResultsJsInterface::cbSetResultstMeta(const QVariant &vMetaData)

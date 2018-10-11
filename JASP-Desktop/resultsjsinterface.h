@@ -82,7 +82,8 @@ public slots:
 	void exportSelected(const QString &filename);
 	void getImageInBase64(int id, const QString &path);
 	void openFileTab();
-	
+
+	void getDefaultPPI();
 
 private:
 	MainWindow *_mainWindow;
@@ -102,8 +103,11 @@ private:
 	void runJavaScript(const QString &str, std::function<void(const QVariant&)> cb);
 
 	void cbSetPPI(const QVariant &vppi);
+	void cbSetPPIAndRefresh(const QVariant &vppi);
 	void cbSetResultstMeta(const QVariant &vMetaData);
 	void cbSetAllUserData(const QVariant &vAllUserData);
+
+	int _getPPIFromVariant(const QVariant &vppi, bool &success);
 
 private slots:
 	void resultsPageLoaded(bool success);

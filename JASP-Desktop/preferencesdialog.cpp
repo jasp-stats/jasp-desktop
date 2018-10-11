@@ -41,6 +41,14 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 	if (spreadsheetEditorName != "")
 		ui->spreadsheetEditorName->setText(spreadsheetEditorName);
 
+	//PPI
+	bool useDefaultPPI = Settings::value(Settings::PPI_USE_DEFAULT).toBool();
+	ui->useDefaultPPI->setChecked(useDefaultPPI);
+	QString customPPI = Settings::value(Settings::PPI_CUSTOM_VALUE).toString();
+	ui->customPPI->setText(customPPI);
+
+	ui->customPPI->setEnabled(!useDefaultPPI);
+
 	// Remove Question mark Help sign (Only on windows )
 	this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
@@ -61,6 +69,13 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 PreferencesDialog::~PreferencesDialog()
 {
 	delete ui;
+}
+
+void PreferencesDialog::setDefaultPPI(int ppi)
+{
+	QString ppiStr;
+	ppiStr.setNum(ppi);
+	ui->labelDefaultPPI->setText(QString::fromLatin1(": ") + ppiStr);
 }
 
 std::vector<std::string> PreferencesDialog::getStdVectorFromEmptyValueList()
@@ -228,7 +243,25 @@ void PreferencesDialog::savePreferences()
 	Settings::setValue(Settings::NUM_DECIMALS, numDecimals);
 	if (numDecimals != savedNumDecimals)
         _tabBar->setFixDecimals(numDecimals);
-	
+
+	//PPI
+	checked = (ui->useDefaultPPI->checkState()==Qt::Checked) ? 1 : 0;
+	int previousChecked = Settings::value(Settings::PPI_USE_DEFAULT).toInt();
+	Settings::setValue(Settings::PPI_USE_DEFAULT, checked);
+	if (checked)
+	{
+		if (checked != previousChecked)
+			_tabBar->useDefaultPPI();
+	}
+	else
+	{
+		int customPPI = ui->customPPI->text().toInt();
+		int previousCustomPPI = Settings::value(Settings::PPI_CUSTOM_VALUE).toInt();
+		Settings::setValue(Settings::PPI_CUSTOM_VALUE, customPPI);
+		if (checked != previousChecked || customPPI != previousCustomPPI)
+			_tabBar->setPPI(customPPI);
+	}
+
 	//Done
 	Settings::sync();
 

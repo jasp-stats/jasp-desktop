@@ -20,7 +20,9 @@ public:
 		OSF_USERNAME,
 		OSF_PASSWORD,
 		OSF_ENCRYPTION,
-		OSF_REMEMBER_ME
+		OSF_REMEMBER_ME,
+		PPI_USE_DEFAULT,
+		PPI_CUSTOM_VALUE
 	};
 
 	static QVariant value(Settings::Type key);
