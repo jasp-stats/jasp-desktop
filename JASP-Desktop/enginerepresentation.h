@@ -44,7 +44,13 @@ public:
 	void setSlaveProcess(QProcess * slaveProcess)	{ _slaveProcess = slaveProcess; }
 	int channelNumber()								{ return _channel->channelNumber(); }
 
-	void sendString(std::string str) { _channel->send(str); }
+	void sendString(std::string str)
+	{
+#ifdef PRINT_ENGINE_MESSAGES
+		std::cout << "sending to jaspEngine: " << str << "\n" << std::endl;
+#endif
+		_channel->send(str);
+	}
 
 private:
 	Analysis::Status analysisResultStatusToAnalysStatus(analysisResultStatus result, Analysis * analysis);

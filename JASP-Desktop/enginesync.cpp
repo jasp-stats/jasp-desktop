@@ -43,11 +43,12 @@ EngineSync::EngineSync(Analyses *analyses, DataSetPackage *package, QObject *par
 	_analyses = analyses;
 	_package = package;
 
+	/* commented out because it makes JASP crash after synchronizing, also quite pointless because enginseSync calls ProcessAnalysisRequests anyway from process, but then after filter, rscript and compute column requests..
 	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
 	connect(_analyses, SIGNAL(analysisOptionsChanged(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
 	connect(_analyses, SIGNAL(analysisToRefresh(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
 	connect(_analyses, SIGNAL(analysisSaveImage(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
-	connect(_analyses, SIGNAL(analysisEditImage(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
+	connect(_analyses, SIGNAL(analysisEditImage(Analysis*)), this, SLOT(ProcessAnalysisRequests()));*/
 
 	// delay start so as not to increase program start up time
 	QTimer::singleShot(100, this, SLOT(deleteOrphanedTempFiles()));
