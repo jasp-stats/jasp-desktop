@@ -262,6 +262,12 @@ void Importer::_syncPackage(
 		changedCol->setName(newColName);
 	}
 
+	std::map<int, std::string> tempChangedNameList;
+	if (changedColumns.size() > 0)
+		for (auto indexColChanged : changedColumns)
+			tempChangedNameList[indexColChanged.first] = indexColChanged.second->name();
+
+
 	int colNo = _packageData->dataSet()->columnCount();
 	setDataSetRowCount(syncDataSet->rowCount());
 
@@ -271,11 +277,12 @@ void Importer::_syncPackage(
 		{
 			std::cout << "Column changed " << indexColChanged.first << std::endl;
 			//Column &column		= _packageData->dataSet()->column(indexColChanged.first);
-			std::string colName	= indexColChanged.second->name();
+			std::string colName	= tempChangedNameList[indexColChanged.first];//indexColChanged.second->name();
 			_changedColumns.push_back(colName);
 			initColumn(colName, syncDataSet->getColumn(colName));
 		}
 	}
+
 
 	if (newColumns.size() > 0)
 	{

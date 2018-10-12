@@ -288,6 +288,8 @@ void ComputedColumnsModel::removeColumn()
 
 void ComputedColumnsModel::packageSynchronized(const std::vector<std::string> & changedColumns, const std::vector<std::string> & missingColumns, const std::map<std::string, std::string> & changeNameColumns, bool rowCountChanged)
 {
+	_computedColumns->refreshColumnPointers();
+
 	for(ComputedColumn * col : *_computedColumns)
 	{
 		bool invalidateMe = rowCountChanged;

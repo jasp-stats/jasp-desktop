@@ -243,7 +243,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	int filteredRow					= 0;
 
 	for(size_t i=0; i<rbridge_dataSet->rowCount(); i++)
-		if(rbridge_dataSet->filterVector().size() > i && rbridge_dataSet->filterVector()[i])
+		if(!obeyFilter || (rbridge_dataSet->filterVector().size() > i && rbridge_dataSet->filterVector()[i]))
 			datasetStatic[colMax].ints[filteredRow++] = i + 1; //R needs 1-based index
 
 
