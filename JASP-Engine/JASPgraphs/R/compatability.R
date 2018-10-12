@@ -7,35 +7,32 @@
 
 getMajorSource <- function(gb) {
 
-  # gb: output from ggplot2::ggbuild(ggplot)
-  return(
-    switch(graphOptions("ggVersion"),
-           "2.2.1" = list(
-             x = gb$layout$panel_ranges[[1]]$x.major_source,
-             y = gb$layout$panel_ranges[[1]]$y.major_source
-           ),
-           list(
-             x = gb$layout$panel_params[[1]]$x.major_source,
-             y = gb$layout$panel_params[[1]]$y.major_source
-           )
-    )
-  )
+  if (graphOptions("ggVersion") <= 2.21) {
+    return(list(
+      x = gb$layout$panel_ranges[[1]]$x.major_source,
+      y = gb$layout$panel_ranges[[1]]$y.major_source
+    ))
+  } else {
+    return(list(
+      x = gb$layout$panel_params[[1]]$x.major_source,
+      y = gb$layout$panel_params[[1]]$y.major_source
+    ))
+  }
 }
 
 getRanges <- function(gb) {
 
-  return(
-    switch(graphOptions("ggVersion"),
-           "2.2.1" = list(
-             x = gb$layout$panel_ranges[[1]]$x.range,
-             y = gb$layout$panel_ranges[[1]]$y.range
-           ),
-           list(
-             x = gb$layout$panel_params[[1]]$x.range,
-             y = gb$layout$panel_params[[1]]$y.range
-           )
-    )
-  )
+  if (graphOptions("ggVersion") <= 2.21) {
+    return(list(
+      x = gb$layout$panel_ranges[[1]]$x.range,
+      y = gb$layout$panel_ranges[[1]]$y.range
+    ))
+  } else {
+    return(list(
+      x = gb$layout$panel_params[[1]]$x.range,
+      y = gb$layout$panel_params[[1]]$y.range
+    ))
+  }
 }
 
 getAxesScales <- function(gb) {

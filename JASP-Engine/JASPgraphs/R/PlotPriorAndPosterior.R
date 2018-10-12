@@ -33,7 +33,7 @@ drawWheel <- function(dat, size = 2, show.legend = FALSE, label.cex = .75) {
 	)
 }
 
-
+#' @export
 getEmptyTheme <- function() {
   ggplot2::theme_void()
 }
