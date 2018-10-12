@@ -1069,65 +1069,83 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 # 2.4 The Marsman MH sampler
 
-.logTarget <- function(z, n, r, kappa) {
-	# z is Fisher's transformation for r, but also use it for rho
-	# The Fisher z transform and the log (likelihood*prior*Jacobian) of the tranformation
-	(0.5*(n - 1))*log(1 - tanh(z)^2) - (n - 1 - 0.5)*log(1 - tanh(z)*r)+log(1-tanh(z)^2)/kappa
+# .logTarget <- function(z, n, r, kappa) {
+# 	# z is Fisher's transformation for r, but also use it for rho
+# 	# The Fisher z transform and the log (likelihood*prior*Jacobian) of the tranformation
+# 	(0.5*(n - 1))*log(1 - tanh(z)^2) - (n - 1 - 0.5)*log(1 - tanh(z)*r)+log(1-tanh(z)^2)/kappa
+# }
+
+.logTarget <- function(rho, n, r, kappa=1) {
+  # More correctly, with rho=rhoProp, this is upper term of the acceptance ratio. 
+  # Recall that in the numerator and denominator of the acceptance ratio are given by
+  # 
+  #   likelihood(rhoProp)*prior(rhoProp)*proposal(rhoCurrent | rhoProp)
+  #   likelihood(rhoCurrent)*prior(rhoCurrent)*proposal(rhoProp | rhoCurrent)
+  # 
+  # respectively, Christian Robert (2015). As the proposal is defined on Fisher transform atanh(rho), 
+  # we have a Jocobian. The Jacobian in the upper part is (1-rhoCurrent^2)^(-1) and in the lower part
+  # is (1-rhoProp^2)^(-1).
+  # Note that since prior(rhoProp) \propto (1-rhoProp^2)^(alpha-1), we can drop the one due 
+  # to the Jacobian term of the denominator ending up in the numerator.
+  # 
+  # For the likelihood we use Jeffreys's approximation 
+  #   rho \propto (1-rho^2)^((n-1)/2)*(1-rho*r)^((3-2*n)/2)
+  # 
+  # The log prior is (alpha-1)*log(1-rho^2) # where alpha=1/kappa
+  # 
+  (1/kappa+(n-1)/2)*log(1-rho^2)-(2*n-3)/2*log(1-rho*r)
 }
 
-.logProposal <- function(z, n, r) {
-	# z is Fisher's transformation for r, but also use it for rho
-	# The log sampling distribution as per Fisher approximation, however, swtiched the role of r and rho
-	# in the mean. This is reasonable as the sampling distribution of r looks a bit like that of rho (the real one)
-	# Hence, this is normal distribution
-	# A Rabbi and a Priest buy a car together and it's being stored at the Priest's house. One day the
-	# Rabbi goes over to use the car and he sees him sprinkling water on it. The Rabbi asked, ''What are
-	# you doing?'' The Priest responded, ''I'm blessing the car.'' So the Rabbi said ''Okay, since we're
-	# doing that....'' and takes out a hacksaw and cuts two inches off the tail pipe.
-	-(n-3)/2*(z-atanh(r))^2
-}
 
-
-.metropolisOneStep <- function (rhoCurrent, n, r, kappa=1) {
-	#
-	zCurrent <- atanh(rhoCurrent)
-
-	if (n <= 3) {
-		std <- 1
-	} else {
-		std <- 1 / sqrt(n - 3)
-	}
-
-	zCandidate <- rnorm(1, mean=atanh(r), sd=std)
-
-	candidateAcceptance <- .logTarget(zCandidate, n=n, r=r, kappa)+.logProposal(zCurrent, n, r)-
-		(.logTarget(zCurrent, n=n, r=r, kappa)+.logProposal(zCandidate, n, r))
-
-	if (log(runif (1)) <= candidateAcceptance) {
-		rhoCandidate <- tanh(zCandidate)
-		return(rhoCandidate)
-	} else {
-		return (rhoCurrent)
-	}
+.logProposal <- function(rho, n, r, z=NULL) {
+  # The proposal is defined on Fisher hyperbolic tangent transform of rho, 
+  # the Jacobian is absorbed in .logTarget
+  if (!is.null(z)) {
+    return(-(n-3)/2*(z-atanh(r))^2)
+  } else {
+    -(n-3)/2*(atanh(rho)-atanh(r))^2
+  }
 }
 
 .marsmanMHSampler <- function(n, r, kappa=1, nIters=50000) {
-	rhoMetropolisChain <- NULL
-	yTemp <- r
-
-	for (iter in 1:nIters) {
-		yTemp <- .metropolisOneStep(yTemp, n=n, r=r, kappa)
-		rhoMetropolisChain[iter] <- yTemp
-	}
-
-	acceptanceRate <- length (unique (rhoMetropolisChain)) / nIters
-
-	metropolisVar <- var(rhoMetropolisChain)/2^2
-	metropolisMean <- mean((rhoMetropolisChain+1)/2)
-
-	mhFit <- .betaParameterEstimates(metropolisMean, metropolisVar)
-	mhFit$acceptanceRate <- acceptanceRate
-	return(mhFit)
+  rhoMetropolisChain <- numeric(nIters)
+  
+  if (n <= 3) {
+    std <- 1
+  } else {
+    std <- 1 / sqrt(n - 3)
+  }
+  
+  zCandidates <- rnorm(nIters, mean=atanh(r), sd=std)
+  rhoCandidates <- tanh(zCandidates)
+  logTargetCandidates <- .logTarget(rho=rhoCandidates, n=n, r=r, kappa=kappa)
+  logPropCandidates <- .logProposal(z=zCandidates, n=n, r=r)
+  acceptMechanism <- runif(nIters)
+  candidateAcceptance <- numeric(nIters)
+  
+  rhoCurrent <- r
+  
+  for (iter in 1:nIters) {
+    zCurrent <- atanh(rhoCurrent)
+    
+    candidateAcceptance[iter] <- logTargetCandidates[iter]+.logProposal(z=zCurrent, n=n, r=r)-
+      (.logTarget(rho=rhoCurrent, n=n, r=r, kappa=kappa)+logPropCandidates[iter])
+    
+    if (log(acceptMechanism[iter]) <= candidateAcceptance[iter]) {
+      # Accept candidate and update rhoCurrent for next iteration
+      rhoCurrent <- rhoCandidates[iter]
+    } 
+    rhoMetropolisChain[iter] <- rhoCurrent
+  }
+  
+  acceptanceRate <- length(unique(rhoMetropolisChain))/nIters
+  
+  metropolisVar <- var(rhoMetropolisChain)/2^2
+  metropolisMean <- mean((rhoMetropolisChain+1)/2)
+  
+  mhFit <- .betaParameterEstimates(metropolisMean, metropolisVar)
+  mhFit[["acceptanceRate"]] <- acceptanceRate
+  return(mhFit)
 }
 
 # 2.5. Two-sided asymptotic approximation of the Bayes factor
