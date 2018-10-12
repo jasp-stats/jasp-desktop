@@ -75,8 +75,7 @@ void EngineRepresentation::runScriptOnProcess(RFilterStore * filterStore)
 	std::cout << "sending filter with requestID " << filterStore->requestId << " to engine" << std::endl;
 #endif
 
-	std::string str = json.toStyledString();
-	_channel->send(str);
+	sendString(json.toStyledString());
 }
 
 
@@ -221,12 +220,7 @@ void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
 		}
 	}
 
-	std::string str = json.toStyledString();
-	_channel->send(str);
-
-#ifdef PRINT_ENGINE_MESSAGES
-	std::cout << "sending: " << str << std::endl;
-#endif
+	sendString(json.toStyledString());
 
 	if(analysis->isAborted())
 		clearAnalysisInProgress();
