@@ -1,36 +1,88 @@
 # this file exists because ggplot has a habit of changing standards over time
 # it also imports some functions from ggplot
 
-#' @importFrom ggplot2 waiver aes xlab ylab element_blank continuous_scale ScaleContinuousPosition sec_axis
+# cat(paste0(sort(strsplit(..., " ")[[1]]), collapse = " "))
+#' @importFrom ggplot2 aes continuous_scale element_blank ggproto layer ScaleContinuousPosition sec_axis
+#' @importFrom ggplot2 waiver xlab ylab
 #' @importFrom scales censor
 
+#' @export
+getAxisBreaks <- function(x) {
+  UseMethod("getAxisBreaks", x)
+}
 
-getMajorSource <- function(gb) {
+#' @export
+getAxisBreaks.gg <- function(x) getAxisBreaks.ggplot_built(ggplot2::ggplot_build(x))
+
+#' @export
+getAxisBreaks.ggplot <- function(x) getAxisBreaks.ggplot_built(ggplot2::ggplot_build(x))
+
+#' @export
+getAxisBreaks.list <- function(x) getAxisBreaks.ggplot_built(x)
+
+#' @export
+getAxisBreaks.ggplot_built <- function(x) {
 
   if (graphOptions("ggVersion") <= 2.21) {
     return(list(
-      x = gb$layout$panel_ranges[[1]]$x.major_source,
-      y = gb$layout$panel_ranges[[1]]$y.major_source
+      x = x$layout$panel_scales$x[[1]]$break_positions(),
+      y = x$layout$panel_scales$y[[1]]$break_positions()
+      # x = x$layout$panel_ranges[[1]]$x.major_source,
+      # y = x$layout$panel_ranges[[1]]$y.major_source
     ))
   } else {
     return(list(
-      x = gb$layout$panel_params[[1]]$x.major_source,
-      y = gb$layout$panel_params[[1]]$y.major_source
+      x = x$layout$panel_scales_x[[1]]$breaks,
+      y = x$layout$panel_scales_y[[1]]$breaks
     ))
   }
 }
 
-getRanges <- function(gb) {
+#' @export
+getMajorSource <- function(x) {
+  UseMethod("getMajorSource", x)
+}
+
+getMajorSource.gg     <- function(x) getMajorSource.ggplot_built(ggplot2::ggplot_build(x))
+getMajorSource.ggplot <- function(x) getMajorSource.ggplot_built(ggplot2::ggplot_build(x))
+getMajorSource.list   <- function(x) getMajorSource.ggplot_built(x)
+
+#' @export
+getMajorSource.ggplot_built <- function(x) {
 
   if (graphOptions("ggVersion") <= 2.21) {
     return(list(
-      x = gb$layout$panel_ranges[[1]]$x.range,
-      y = gb$layout$panel_ranges[[1]]$y.range
+      x = x$layout$panel_ranges[[1]]$x.major_source,
+      y = x$layout$panel_ranges[[1]]$y.major_source
     ))
   } else {
     return(list(
-      x = gb$layout$panel_params[[1]]$x.range,
-      y = gb$layout$panel_params[[1]]$y.range
+      x = x$layout$panel_params[[1]]$x.major_source,
+      y = x$layout$panel_params[[1]]$y.major_source
+    ))
+  }
+}
+
+#' @export
+getRanges <- function(x) {
+  UseMethod("getMajorSouce", x)
+}
+
+getRanges.gg     <- function(x) getRanges.ggplot_built(ggplot2::ggplot_build(x))
+getRanges.ggplot <- function(x) getRanges.ggplot_built(ggplot2::ggplot_build(x))
+getRanges.list   <- function(x) getRanges.ggplot_built(x)
+
+getRanges.ggplot_built <- function(x) {
+
+  if (graphOptions("ggVersion") <= 2.21) {
+    return(list(
+      x = x$layout$panel_ranges[[1]]$x.range,
+      y = x$layout$panel_ranges[[1]]$y.range
+    ))
+  } else {
+    return(list(
+      x = x$layout$panel_params[[1]]$x.range,
+      y = x$layout$panel_params[[1]]$y.range
     ))
   }
 }

@@ -29,23 +29,29 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj = TRUE, relat
   setwd(root)
   on.exit(setwd(oldwd))
 
+  # Operating System information
+  type <- "cairo"
+  if (Sys.info()["sysname"]=="Darwin"){
+    type <- "quartz"
+  }
   if (ggplot2::is.ggplot(plot) || inherits(plot, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
     ppi <- .fromRCPP(".ppi")
 
-    # fix for mac
-    if (Sys.info()["sysname"] == "Darwin") ppi <- ppi / 2
-
-    ggplot2::ggsave(relativePathpng, plot, "png",
-                    width  = 1.5*width/ppi,
-                    height = 1.5*height/ppi,
-                    dpi    = 2*ppi,
-                    bg     = "transparent")
+    pngMultip <- .fromRCPP(".ppi") / 96
+    ggplot2::ggsave(
+    	filename  = relativePathpng, 
+    	plot      = plot, 
+    	device    = grDevices::png,
+    	width     = width  * pngMultip,
+    	height    = height * pngMultip,
+    	dpi       = ppi,
+    	bg        = "transparent",
+    	res       = 72 * pngMultip,
+    	type      = type,
+    	limitsize = FALSE # because we supply png as a function, we specify pixels rather than inches
+    )
   } else {
-    # Operating System information
-  	type <- "cairo"
-  	if (Sys.info()["sysname"]=="Darwin"){
-  	    type <- "quartz"
-  	}
+    
   	# Calculate pixel multiplier
   	pngMultip <- .fromRCPP(".ppi") / 96
     isRecordedPlot <- inherits(plot, "recordedplot")

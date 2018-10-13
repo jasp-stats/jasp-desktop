@@ -39,8 +39,8 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   {
     splitFactor     <- dataset[[.v(splitName)]]
     splitLevels     <- levels(splitFactor)
-    splitDat        <- lapply(splitLevels, function(l) { return(dataset.factors[splitFactor == l,]) })
-    names(splitDat) <- splitLevels
+    splitDat         <- split(dataset[.v(variables)],         splitFactor)
+    splitDat.factors <- split(dataset.factors[.v(variables)], splitFactor)
   }
 
   # Initialise the results
@@ -84,10 +84,10 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 
 
         for (i in 1:length(splitLevels))
-	  corrPlot[[splitLevels[i]]] <- .descriptivesMatrixPlot(splitDat[[i]], options, splitLevels[i])
+	  corrPlot[[splitLevels[i]]] <- .descriptivesMatrixPlot(splitDat.factors[[i]], options, splitLevels[i])
 
       } else {
-        jaspResults[["matrixPlot"]] <- .descriptivesMatrixPlot(dataset, dataset.factors, options, "Correlation plot") # Create one plot
+        jaspResults[["matrixPlot"]] <- .descriptivesMatrixPlot(dataset.factors, options, "Correlation plot") # Create one plot
 	jaspResults[["matrixPlot"]]$position = 6
       }
     }
@@ -488,13 +488,13 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   }
 }
 
-.descriptivesMatrixPlot <- function(dataset, dataset.factors, options, name)
-{
+.descriptivesMatrixPlot <- function(dataset, options, name) {
+
   variables <- unlist(options$variables)
   l         <- length(variables)
   depends   <- c("plotCorrelationMatrix", "variables", "splitBy")
 
-  if (l == 0) #Nothing to plot I guess?
+  if (l == 0) #Nothing to plot
     return(NULL)
 
   if (nrow(dataset) < 3)
@@ -531,91 +531,105 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     variable.statuses[[i]]$unplotable <- !is.null(variable.statuses[[i]]$plottingError)
   }
 
-
   plotMat <- matrix(list(), l, l)
+	axisBreaks <- vector("list", l)
 
-  for (row in seq_len(l)) {
-    for (col in seq_len(l)) {
-      if (row == col) {
-        if ( ! variable.statuses[[row]]$unplotable) {
-          browser()
-          plotMat[[row, col]] <- .plotMarginalCorDescriptives(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
-        } else {
-          plotMat[[row, col]] <- .displayErrorDescriptives(variable.statuses[[row]]$plottingError)
-        }
-      } else if (col > row) {
-        if (options$plotCorrelationMatrix) {
-          if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
-            plotMat[[row, col]] <- .plotScatterDescriptives(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
-          } else {
-            errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
-            errorMessagePlot <- paste("Correlation coefficient undefined:", errorMessages[1])
-            plotMat[[row, col]] <- .displayErrorDescriptives(errorMessagePlot)
-          }
-        } else {
+	# minor adjustments to plot margin to avoid cutting off the x-axis labels
+	adjMargin <- ggplot2::theme(plot.margin = ggplot2::unit(c(.25, .40, .25, .25), "cm"))
 
-          p <- JASPgraphs::drawAxis(xName = "", yName = "", force = TRUE)
-          p <- p + ggplot2::xlab("")
-          p <- p + ggplot2::ylab("")
-          p <- JASPgraphs::themeJasp(p)
+  oldFontSize <- JASPgraphs::getGraphOption("fontsize")
+  JASPgraphs::setGraphOption("fontsize", .85 * oldFontSize)
 
-          plotMat[[row, col]] <- p
-        }
-      } else if (col < row) {
-        p <- JASPgraphs::drawAxis(xName = "", yName = "", force = TRUE)
-        p <- p + ggplot2::xlab("")
-        p <- p + ggplot2::ylab("")
-        p <- JASPgraphs::themeJasp(p)
-
-        plotMat[[row, col]] <- p
-
-      }
-    }
+  # first do the diagonal and store breaks
+  for (row in seq_along(variables)) {
+  	plotMat[[row, row]] <- .plotMarginalCorDescriptives(dataset[[variables[[row]]]]) + adjMargin
+  	axisBreaks[[row]] <- JASPgraphs::getAxisBreaks(plotMat[[row, row]])
   }
 
-  p <- JASPgraphs::ggMatrixPlot(plotList = plotMat, leftLabels = .unv(variables), topLabels = .unv(variables))
+  # now do off-diagonal and use the same breaks
+  for (row in seq_len(l-1)) {
+  	for (col in seq(row+1, l)) {
+  		plotMat[[row, col]] <- .plotScatterDescriptives(
+  			xVar    = dataset[[variables[[col]]]],
+  			yVar    = dataset[[variables[[row]]]],
+  			xBreaks = axisBreaks[[col]]$x,
+  			yBreaks = axisBreaks[[row]]$x
+  		) + adjMargin
+  	}
+  }
 
+  JASPgraphs::setGraphOption("fontsize", oldFontSize)
+
+	# slightly adjust the positions of the labels left and above the plots.
+  labelPos <- matrix(.5, 4, 2)
+  labelPos[1, 1] <- .55
+  labelPos[4, 2] <- .65
+  p <- JASPgraphs::ggMatrixPlot(plotList = plotMat, leftLabels = .unv(variables), topLabels = .unv(variables),
+  															scaleXYlabels = NULL, labelPos = labelPos)
+	# browser()
+	# gridExtra::grid.arrange(p)
   return(createJaspPlot(plot=p, width=250 * l + 20, aspectRatio=1, title=name, dependencies=depends))
 }
 
 # temporaryly copied from correlation.R in koenderks
 #### histogram with density estimator ####
-.plotMarginalCorDescriptives <- function(variable, rugs= FALSE) {
+.plotMarginalCorDescriptives <- function(variable, xName = NULL, yName = "Density") {
 
-  variable <- na.omit(as.numeric(variable))
+  variable <- na.omit(variable)
+	isNumeric <- !(is.factor(variable) || (is.integer(variable) && length(unique(variable)) <= 10))
 
-  density <- density(variable)
 
-  h <- hist(variable, plot = FALSE)
-  hdiff <- h$breaks[2L] - h$breaks[1L]
+	if (isNumeric) {
+		p <- ggplot2::ggplot(data = data.frame(x = variable))
+		h <- hist(variable, plot = FALSE)
+  	hdiff <- h$breaks[2L] - h$breaks[1L]
+		xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(variable, h$breaks), min.n = 3)
+		dens <- h$density
+  	yBreaks <- c(0, 1.2*max(h$density))
 
-  dens <- h$density
-  yhigh <- 1.2*max(h$density)
-  ylow <- 0
-  xticks <- base::pretty(c(variable, h$breaks), min.n= 3)
+  	p <- p + ggplot2::geom_histogram(
+  		mapping  = ggplot2::aes(x = x, y = ..density..),
+  		binwidth = hdiff,
+  		fill     = "grey",
+  		col      = "black",
+  		size     = .3,
+  		center   = hdiff / 2,
+  		stat     = "bin"
+  	) +
+  		ggplot2::scale_x_continuous(name = xName, breaks = xBreaks, limits = range(xBreaks))
+	} else {
 
-  p <- ggplot2::ggplot(data = data.frame(x = variable), ggplot2::aes(x = x, y = ..density..)) + 
-    ggplot2::geom_histogram(binwidth = hdiff,
-                            fill     = "grey",
-                            col      = "black",
-                            size     = .3,
-                            center   = hdiff / 2) +
-    ggplot2::scale_x_continuous("", breaks = xticks) +
-    ggplot2::ylab("Density") +
-    ggplot2::theme(axis.ticks.y = ggplot2::element_blank()) 
-  # p <- JASPgraphs::drawAxis(xName = "", yName = "Density", xBreaks = xticks, yBreaks = c(0,max(density$y)+.1), force = TRUE, yLabels = NULL, xLabels = xticks)
-  # p <- p + ggplot2::geom_histogram(data = data.frame(variable), mapping = ggplot2::aes(x = variable, y = ..density..),
-  #                                  binwidth = (h$breaks[2] - h$breaks[1]),
-  #                                  fill = "grey",
-  #                                  col = "black",
-  #                                  size = .3,
-  #                                  center = ((h$breaks[2] - h$breaks[1])/2)) 
-  # p <- p + ggplot2::geom_line(data = data.frame(x = density$x, y = density$y), mapping = ggplot2::aes(x = x, y = y), lwd = .7, col = "black")
-  # 
-  # p <- p + ggplot2::theme(axis.ticks.y = ggplot2::element_blank())
-  # p <- p + ggplot2::xlab("")
+		p <- ggplot2::ggplot(data = data.frame(x = factor(variable)))
+		hdiff <- 1L
+		xBreaks <- unique(variable)
+		yBreaks <- c(0, max(table(variable)))
 
-  return(JASPgraphs::themeJasp(p))
+		p <- p + ggplot2::geom_bar(
+			mapping  = ggplot2::aes(x = x),
+			fill     = "grey",
+			col      = "black",
+			size     = .3,
+			stat     = "count"
+		) +
+			ggplot2::scale_x_discrete(name = xName, breaks = xBreaks)
+	}
+
+	yLim <- range(yBreaks)
+
+  if (isNumeric) {
+  	density <- density(variable)
+  	p <- p + ggplot2::geom_line(data = data.frame(x = density$x, y = density$y),
+  															mapping = ggplot2::aes(x = x, y = y), lwd = .7, col = "black")
+  }
+
+	thm <- ggplot2::theme(
+		axis.ticks.y = ggplot2::element_blank(),
+		axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = -5, b = 0, l = 0))
+	)
+  p <- p +
+  	ggplot2::scale_y_continuous(name = yName, breaks = yBreaks, labels = c("", ""), limits = yLim) +
+  	ggplot2::theme()
+  return(JASPgraphs::themeJasp(p) + thm)
 
 }
 
@@ -649,59 +663,75 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 }
 
 
-.plotScatterDescriptives <- function(xVar, yVar, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2) {
+.plotScatterDescriptives <- function(xVar, yVar, xBreaks = NULL, yBreaks = NULL, xName = NULL, yName = NULL) {
 
+	isNumericX <- !(is.factor(xVar) || (is.integer(xVar) && length(unique(xVar)) <= 10))
+	isNumericY <- !(is.factor(yVar) || (is.integer(yVar) && length(unique(yVar)) <= 10))
+	bothNumeric <- isNumericX && isNumericY
   d <- data.frame(x = xVar, y = yVar)
   d <- na.omit(d)
 
-  fit <- lm(y ~ poly(x, 1, raw= TRUE), d)
+  if (!isNumericX)
+  	d$x <- as.factor(d$x)
 
-  xr <- range(pretty(xVar))
-  xticks <- pretty(xr)
-  
-  lineObj <- .poly.predDescriptives(fit, line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)
-  rangeLineObj <- range(lineObj)
-  
-  yr <- range(c(pretty(yVar)), rangeLineObj)
-  yticks <- pretty(yr)
-  
-  dfLine <- data.frame(x = xr, y = rangeLineObj)
+  if (!isNumericY)
+  	d$y <- as.factor(d$y)
 
-  p <- ggplot2::ggplot(data = d, ggplot2::aes(x = x, y = y)) + 
-    JASPgraphs::geom_point() + 
-    ggplot2::geom_line(data = dfLine, ggplot2::aes(x = x, y = y), size = .7, inherit.aes = FALSE) +
-    JASPgraphs::scale_x_continuous(name = "", breaks = xticks) + 
-    JASPgraphs::scale_y_continuous(name = "", breaks = yticks)
-  
-  p <- JASPgraphs::themeJasp(p)
+  if (is.null(xBreaks))
+    xBreaks <- JASPgraphs::getPrettyAxisBreaks(d$x)
 
-  return(p)
+  fit <- NULL
+  if (bothNumeric) {
+
+  	fit <- lm(y ~ poly(x, 1, raw = TRUE), d)
+  	lineObj <- .poly.predDescriptives(fit, line = FALSE, xMin= xBreaks[1], xMax = xBreaks[length(xBreaks)], lwd = lwd)
+  	rangeLineObj <- range(lineObj)
+  	yLimits <- range(c(pretty(yVar)), rangeLineObj)
+
+  	if (is.null(yBreaks))
+  		yBreaks <- JASPgraphs::getPrettyAxisBreaks(yLimits)
+
+  } else if (is.null(yBreaks)) {
+
+  	yBreaks <- JASPgraphs::getPrettyAxisBreaks(d$y)
+
+  }
+
+  p <- ggplot2::ggplot(data = d, ggplot2::aes(x = x, y = y)) +
+    JASPgraphs::geom_point()
+
+  if (bothNumeric) {
+  	xr <- range(xBreaks)
+  	dfLine <- data.frame(x = xr, y = rangeLineObj)
+    p <- p + ggplot2::geom_line(data = dfLine, ggplot2::aes(x = x, y = y), size = .7, inherit.aes = FALSE)
+  }
+
+  if (isNumericX) {
+  	p <- p + ggplot2::scale_x_continuous(name = xName, breaks = xBreaks, limits = range(xBreaks))
+  } else {
+  	p <- p + ggplot2::scale_x_discrete(name = xName)
+  }
+  if (isNumericY) {
+  	p <- p + ggplot2::scale_y_continuous(name = yName, breaks = yBreaks, limits = range(yBreaks))
+  } else {
+  	p <- p + ggplot2::scale_y_discrete(name = yName)
+  }
+
+  return(JASPgraphs::themeJasp(p))
 }
 
 
 ### empty Plot with error message ###
 .displayErrorDescriptives <- function(errorMessage=NULL) {
   df <- data.frame(
-    x = 0, y = 1, 
+    x = 0, y = 1,
     # automatically places \n after about 40 characters (but does not split words)
     label = stringr::str_wrap(errorMessage, width = 40)
   )
   p <- ggplot2::ggplot(data = df, ggplot2::aes(x = x, y = y, label = label)) +
     ggplot2::geom_text(size = .4*JASPgraphs::getGraphOption("fontsize")) +
     JASPgraphs::getEmptyTheme()
-    # ggplot2::theme(
-    #   panel.border     = ggplot2::element_blank(),
-    #   panel.grid.major = ggplot2::element_blank(),
-    #   panel.grid.minor = ggplot2::element_blank(),
-    #   panel.background = ggplot2::element_blank(),
-    #   axis.line        = ggplot2::element_blank(),
-    #   axis.ticks.y     = ggplot2::element_blank(),
-    #   axis.ticks.x     = ggplot2::element_blank(),
-    #   axis.text.y      = ggplot2::element_blank(),
-    #   plot.margin      = grid::unit(c(0, 0, 0, 0), "cm"),
-    #   axis.text.x      = ggplot2::element_blank(),
-    #   axis.title       = ggplot2::element_blank()
-    # ) 
+
   return(p)
 }
 
@@ -955,7 +985,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
         xLabels = xticks
       )
   }
-  
+
   if (displayDensity) {
     p <- p +
       ggplot2::geom_histogram(
@@ -984,15 +1014,14 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
         size     = .7,
         center    = ((h$breaks[2] - h$breaks[1])/2)
       )
-      
   }
-  
+
   # JASP theme
   p <- JASPgraphs::themeJasp(p,
                              axisTickWidth = .7,
                              bty = list(type = "n", ldwX = .7, lwdY = 1))
   # TODO: Fix jaspgraphs axis width X vs Y. See @vandenman.
-  
+
   if (displayDensity) {
     p <- p + ggplot2::theme(axis.ticks.y = ggplot2::element_blank())
   }

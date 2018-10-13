@@ -332,7 +332,7 @@ drawHeatmap <- function(graph = drawAxis(), dat, mapping = NULL, fillColor = TRU
     args = list(data = dat, mapping = mapping, interpolate = interpolate, show.legend = show.legend, ...)
     args[names(args) %in% names(mapping)] <- NULL
 
-    f <- getFromNamespace(paste0("geom_", geom), "ggplot2")
+    f <- utils::getFromNamespace(paste0("geom_", geom), "ggplot2")
     if (geom != "raster")
         args[["interpolate"]] <- NULL
 

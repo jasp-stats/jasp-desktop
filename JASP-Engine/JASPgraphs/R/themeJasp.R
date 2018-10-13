@@ -101,15 +101,6 @@ themeJasp = function(graph, xName, yName,
     # remake R's bty = "n" ----
     if (is.list(bty) && bty[["type"]] == "n") {
 
-        # panelRanges <- gBuild$layout$panel_ranges[[1]]
-        # anyXhasLength0 <- any(lengths(panelRanges[1:7]) == 0)
-        # anyYhasLength0 <- any(lengths(panelRanges[8:14]) == 0)
-        # if (anyXhasLength0 || anyYhasLength0) {
-        #
-        #     prettyBreak <- getPrettyAxisBreaks(gBuild$data[[2]])
-        #     if (anyXhasLength0)
-        #
-        # }
         mapLines <- ggplot2::aes(x = x, y = y, xend = xend, yend = yend)
 
         xyBreaks <- getMajorSource(gBuild)
@@ -148,7 +139,7 @@ themeJasp = function(graph, xName, yName,
                                   legend.cex = legend.cex, axis.title.cex = axis.title.cex, family = family,
                                   fontsize = fontsize, legend.title = legend.title,
                                   axisTickLength = axisTickLength, axisTickWidth = axisTickWidth)
-    # class(graph) <- c("JASPgraphs", class(graph))
+
     return(graph)
 
 }
@@ -199,7 +190,7 @@ themeJaspRaw = function(legend.position = "none",
         panel.background = ggplot2::element_rect(color = "white", fill = "white"),
 
         # plot
-        plot.background = ggplot2::element_rect(fill = "transparent"),
+        plot.background = ggplot2::element_rect(fill = "transparent", color = "transparent"),
         plot.margin = ggplot2::unit(c(1, 1, 1, 1), "cm"),
         plot.title = ggplot2::element_text(family = family, size = fontsize, hjust = 0.5) # center title
     )

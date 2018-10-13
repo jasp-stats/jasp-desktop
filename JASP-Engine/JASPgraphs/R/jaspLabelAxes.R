@@ -1,3 +1,5 @@
+# this can mostly be imported from scales once we upgrade that package
+
 #' @export
 axesLabeller <- function(x, ...) {
 
