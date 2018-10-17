@@ -19,14 +19,13 @@
 #ifndef LISTMODELPAIRSASSIGNED_H
 #define LISTMODELPAIRSASSIGNED_H
 
-#include "listmodeltermsassignedinterface.h"
+#include "listmodelassignedinterface.h"
 
-class ListModelPairsAssigned: public ListModelTermsAssignedInterface 
+class ListModelPairsAssigned: public ListModelAssignedInterface 
 {
+	Q_OBJECT
 public:
-	explicit ListModelPairsAssigned(AnalysisQMLForm *form, QQuickItem* item);
-
-	virtual void initTerms(const std::vector<std::vector<std::string> >& terms);
+	ListModelPairsAssigned(QMLListView* listView);
 	
 	virtual int rowCount(const QModelIndex &parent) const OVERRIDE;
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;

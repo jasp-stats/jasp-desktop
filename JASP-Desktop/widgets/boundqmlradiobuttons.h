@@ -23,14 +23,15 @@
 #include "analysis/options/optionstring.h"
 #include <QObject>
 
-class BoundQMLRadioButtons : public BoundQMLItem
+class BoundQMLRadioButtons : public QObject, public BoundQMLItem
 {
 	Q_OBJECT
 	
 public:
-	explicit BoundQMLRadioButtons(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLRadioButtons(QQuickItem* item, AnalysisQMLForm* form);
 	virtual void bindTo(Option *option) OVERRIDE;
 	virtual void unbind() OVERRIDE;
+	virtual Option* boundTo() OVERRIDE { return _boundTo; }	
 	
 	virtual Option* createOption() OVERRIDE;
 

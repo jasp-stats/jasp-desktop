@@ -24,17 +24,19 @@ import JASP.Theme 1.0
 JASPControl
 {
     id: variablesList
-    controlType: "DraggableListView"
+    controlType: "VariablesListView"
     controlBackground: rectangle
-    implicitWidth: parent.implicitWidth / 3
-    implicitHeight: singleItem ? Theme.defaultSingleItemListHeight : Theme.defaultListHeight
+    implicitWidth: parent.width
+    height: singleItem ? Theme.defaultSingleItemListHeight : Theme.defaultListHeight
+    implicitHeight: height
     
     property var model
-    property string listViewType: "availableVariables"
+    property string listViewType: "AvailableVariables"
     property string itemType: "variables"
     property string title
     property alias dropKeys: dropArea.keys
     property bool singleItem: false
+    property bool hasExtraControlColumns: false
     property bool hasSelectedItems: false; // Binding does not work on array length: listView.selectedItems.length > 0;
     property var syncModels
     
@@ -47,22 +49,28 @@ JASPControl
     property bool showVariableIcon: true
     property bool showElementBorder: false
     property int columns: 1
+    property bool draggable: true
     property string dropMode: "None"
     property bool dropModeInsert: dropMode === "Insert"
     property bool dropModeReplace: dropMode === "Replace"
     property bool dragOnlyVariables: false
     
+    property var components: []
+    property var controlColumns: []
+    
     property int indexInDroppedListViewOfDraggedItem: -1
         
     signal itemDoubleClicked(int index);
     signal itemsDropped(var indexes, var dropList, int dropItemIndex);
+    signal removeRowWithControls(string name);
+    signal addRowWithControls(string name, var columns);
+    
         
     function selectedItemsChanged() {
         hasSelectedItems = (listView.selectedItems.length > 0);
     }
     
     function moveSelectedItems(target) {
-        console.log('move');
         if (!hasSelectedItems) {
             console.log('no item selected');
             return;
@@ -114,7 +122,7 @@ JASPControl
         anchors.top: parent.top
         anchors.left: parent.left
         text: title
-        height: title ? 20 : 0
+        height: title ? Theme.variablesListTitle : 0
     }    
     
     Rectangle {
@@ -182,12 +190,31 @@ JASPControl
                     icon.visible = true;
                 }
             }
+            
+            var previousTitle;
+            var length = variablesList.resources.length
+            for (var i = length - 1; i >= 0; i--) {
+                var column = variablesList.resources[i];
+                if (column instanceof ExtraControlColumn) {
+                    variablesList.hasExtraControlColumns = true;
+                    variablesList.controlColumns.push(column)
+                    var columnType = column.type
+                    var component = Qt.createComponent(columnType + ".qml");
+                    var labelComponent = Qt.createComponent("Label.qml");
+                    components.push(component);
+                    if (column.title) {
+                        var extraTitle = labelComponent.createObject(variablesList, {text: column.title});
+                        extraTitle.anchors.right = previousTitle ? previousTitle.left : variablesList.right;
+                        extraTitle.anchors.top = variablesList.top;
+                    }
+                }
+            }
         }
         
         GridView {
             id: listView
             ScrollBar.vertical: ScrollBar {
-                policy: ScrollBar.AsNeeded
+                policy: ScrollBar.AlwaysOff
             }
             cellHeight: 20
             cellWidth: width / variablesList.columns
@@ -206,9 +233,7 @@ JASPControl
             property var itemContainingDrag
             
             onCurrentItemChanged: {
-                console.log(variablesList.name + ": index changed: " + listView.currentIndex)
                 if (shiftPressed) {
-                    console.log("item changed with shift pressed")
                     if (endShiftSelected >= 0)
                         selectShiftItems(false);
                     endShiftSelected = listView.currentIndex;
@@ -228,17 +253,14 @@ JASPControl
             
             Keys.onPressed: {
                 if (event.modifiers & Qt.ShiftModifier) {
-                    console.log("Shift pressed")
                     shiftPressed = true;
                 } else {
-                    console.log("Shift not pressed")
                     shiftPressed = false;
                 }
             }
             
             Keys.onReleased: {
                 if (event.modifiers & Qt.ShiftModifier) {
-                    console.log("Shift released")
                     shiftPressed = false;            
                 }
             }
@@ -272,7 +294,6 @@ JASPControl
                 }
                 if (!added)
                     selectedItems.push(item);
-                console.log(variablesList.name + ": selected item added");
                 variablesList.selectedItemsChanged();
             }
             
@@ -401,6 +422,8 @@ JASPControl
                     id: colName
                     x: variablesList.showVariableIcon ? 20 : 4  
                     text: model.name
+                    width: itemRectangle.width - x
+                    elide: Text.ElideRight
                     anchors.verticalCenter: parent.verticalCenter
                     color: itemRectangle.color === Theme.itemSelectedColor ? Theme.white : Theme.black
                 }
@@ -431,13 +454,12 @@ JASPControl
                     hoverEnabled: true
                     
                     onDoubleClicked: {
-                        console.log("onDoubleClicked");
                         listView.clearSelectedItems(); // Must be before itemDoubleClicked: listView does not exist anymore afterwards
                         itemDoubleClicked(index);
                     }
                     
                     onClicked: {
-                        console.log(variablesList.name + ": onClicked");
+                        console.log("MouseArea click");
                         if (itemRectangle.clearOtherSelectedItemsWhenClicked) {
                             listView.clearSelectedItems();
                             listView.selectItem(itemRectangle, true);
@@ -445,7 +467,6 @@ JASPControl
                     }
                     
                     onPressed: {
-                        console.log(variablesList.name + ": onPressed");
                         listView.mousePressed = true;
                         listView.currentIndex = index;
                         itemRectangle.clearOtherSelectedItemsWhenClicked = false;
@@ -472,12 +493,10 @@ JASPControl
                         }                        
                     }
                     onReleased: {
-                        console.log(variablesList.name + ": onReleased")
                         listView.mousePressed = false;
                     }
                     
                     drag.onActiveChanged: {
-                        console.log(variablesList.name + ": drag.onActiveChanged: " + (drag.active ? "true" : "false"));
                         if (drag.active) {
                             if (itemRectangle.selected) {
                                 itemRectangle.dragging = true;
@@ -502,9 +521,7 @@ JASPControl
                             for (var i = 0; i < listView.selectedItems.length; i++) {
                                 var selectedItem = listView.selectedItems[i];
                                 selectedIndexes.push(selectedItem.rank);
-                                console.log(variablesList.name + ": dropped item " + selectedItem.rank);
                                 selectedItem.dragging = false;
-                                console.log(variablesList.name + ": dragging set to true " + selectedItem.rank);
                                 selectedItem.x = selectedItem.x; // break bindings
                                 selectedItem.y = selectedItem.y;
                             }
@@ -516,12 +533,38 @@ JASPControl
                                 listView.clearSelectedItems(); // Must be before itemsDropped: listView does not exist anymore afterwards
                                 var variablesListName = variablesList.name
                                 itemsDropped(selectedIndexes, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem);                               
-                                console.log(variablesListName + ": items dropped");
                             }
                         }
                     }
                 }
             }
+            
+            Component.onDestruction: {
+                if (variablesList.hasExtraControlColumns)
+                    removeRowWithControls(colName.text);
+            }
+            
+            Component.onCompleted: {
+                if (variablesList.hasExtraControlColumns) {
+                    var length = variablesList.controlColumns.length;
+                    var previousColumn;
+                    var controls = [];
+                    for (var i = 0; i < length; i++) {
+                        var newControl = components[i].createObject(itemRectangle, variablesList.controlColumns[i]);
+                        newControl.isBound = false;
+                        newControl.anchors.right = previousColumn ? previousColumn.left : itemRectangle.right;
+                        newControl.anchors.top = itemRectangle.top;
+                        newControl.height = parent.height;
+                        if (!variablesList.controlColumns[i].width)
+                            newControl.width = newControl.implicitWidth;
+                        colName.width -= newControl.width;
+                        controls.push(newControl);
+                        previousColumn = newControl;
+                    }
+                    
+                    addRowWithControls(colName.text, controls);
+                }
+            }
         }
-    }
+    }    
 }

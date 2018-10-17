@@ -23,7 +23,9 @@
 
 using namespace std;
 
-BoundQMLRadioButtons::BoundQMLRadioButtons(QQuickItem* item, AnalysisQMLForm* form) : BoundQMLItem(item, form)
+BoundQMLRadioButtons::BoundQMLRadioButtons(QQuickItem* item, AnalysisQMLForm* form)
+	: QMLItem(item, form)
+	, BoundQMLItem(item, form)
 {
 	_boundTo = NULL;
 	_checkedButton = NULL;
@@ -98,33 +100,31 @@ Option *BoundQMLRadioButtons::createOption()
 
 void BoundQMLRadioButtons::radioButtonClickedHandler(const QVariant& button)
 {
-	if (_boundTo != NULL)
+	QObject* objButton = button.value<QObject*>();
+	if (objButton)
+		objButton = objButton->parent();
+	QQuickItem *quickButton = qobject_cast<QQuickItem*>(objButton);
+	if (quickButton)
 	{
-		QObject* objButton = button.value<QObject*>();
-		if (objButton)
-			objButton = objButton->parent();
-		QQuickItem *quickButton = qobject_cast<QQuickItem*>(objButton);
-		if (quickButton)
+		QString buttonName = QQmlProperty(quickButton, "name").read().toString();
+		QQuickItem* foundButton = _buttons[buttonName.toStdString()];
+		if (foundButton)
 		{
-			QString buttonName = QQmlProperty(quickButton, "name").read().toString();
-			QQuickItem* foundButton = _buttons[buttonName.toStdString()];
-			if (foundButton)
+			if (_checkedButton != foundButton)
 			{
-				if (_checkedButton != foundButton)
-				{
-					QQmlProperty(_checkedButton, "checked").write(false);
-					_checkedButton = foundButton;
+				QQmlProperty(_checkedButton, "checked").write(false);
+				_checkedButton = foundButton;
+				if (_boundTo)
 					_boundTo->setValue(buttonName.toStdString());
-				}
-			}
-			else
-			{
-				addError(QString::fromLatin1("Radio button clicked is unknown: ") + buttonName);
 			}
 		}
 		else
 		{
-			addError(QString::fromLatin1("Object clicked is not a quick item! Name: ") + objButton->objectName());
+			addError(QString::fromLatin1("Radio button clicked is unknown: ") + buttonName);
 		}
+	}
+	else
+	{
+		addError(QString::fromLatin1("Object clicked is not a quick item! Name: ") + objButton->objectName());
 	}
 }

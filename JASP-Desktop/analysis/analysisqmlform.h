@@ -10,14 +10,13 @@
 #include "analysisform.h"
 #include "analysis.h"
 #include "boundqmlitem.h"
-#include "widgets/listmodeldraggableterms.h"
+#include "widgets/listmodel.h"
 #include "options/variableinfo.h"
 #include "analysisqmldefines.h"
 #include "widgets/listmodeltermsavailable.h"
 
 class ListModelTermsAssigned;
 class BoundQMLItem;
-class ListModelDraggableTerms;
 
 class AnalysisQMLForm : public AnalysisForm
 {
@@ -34,9 +33,9 @@ public:
 	
 	void		addError(const QString& error);
 
-	ListModelDraggableTerms*	getRelatedModel(QQuickItem* item)		{ return _relatedModelMap[item]; }
-	ListModel*	getModel(const QString& modelName)						{ return _modelMap[modelName]; }
-	Options*	getAnalysisOptions()									{ return _analysis->options(); }
+	ListModel*	getRelatedModel(QMLListView* listView)	{ return _relatedModelMap[listView]; }
+	ListModel*	getModel(const QString& modelName)		{ return _modelMap[modelName]; }
+	Options*	getAnalysisOptions()					{ return _analysis->options(); }
 
 public slots:
 	void		sceneGraphErrorHandler(QQuickWindow::SceneGraphError error, QString message)	{ QMessageBox::warning(this, "Error", "Error when painting analysis form: " + message); }
@@ -57,8 +56,8 @@ private slots:
 protected:	
 	QQuickWidget							*_quickWidget;
 	Analysis								*_analysis;
-	std::list<BoundQMLItem* >				_items;
-	std::map<QQuickItem*, ListModelDraggableTerms* >	_relatedModelMap;
+	std::list<BoundQMLItem* >				_boundItems;
+	std::map<QMLListView*, ListModel* >		_relatedModelMap;
 	std::vector<ListModelTermsAvailable* >	_availableVariablesModels;
 	std::map<QString, ListModel* >			_modelMap;
 

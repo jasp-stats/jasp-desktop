@@ -16,21 +16,24 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef LISTMODELMEASURESCELLS_H
-#define LISTMODELMEASURESCELLS_H
+#ifndef LISTMODELMEASURESCELLSASSIGNED_H
+#define LISTMODELMEASURESCELLSASSIGNED_H
 
-#include "listmodeltermsassignedinterface.h"
+#include "listmodelassignedinterface.h"
 
-class ListModelMeasuresCells : public ListModelTermsAssignedInterface
+class ListModelFactors;
+
+class ListModelMeasuresCellsAssigned : public ListModelAssignedInterface
 {
+	Q_OBJECT
 public:
-	explicit ListModelMeasuresCells(AnalysisQMLForm *form, QQuickItem* item);
+	ListModelMeasuresCellsAssigned(QMLListView* listView);
 
 	virtual int rowCount(const QModelIndex &parent) const OVERRIDE;
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
 
-	virtual void initLevels(const Terms& terms);
-	virtual void initVariables(const Terms& terms);
+	void initLevels(const Terms& terms);
+	void initVariables(const Terms& terms);
 	
 	virtual Terms* termsFromIndexes(const QList<int> &indexes) const OVERRIDE;	
 	virtual Terms* addTerms(Terms* terms, int dropItemIndex = -1)  OVERRIDE;
@@ -39,9 +42,12 @@ public:
 
 	const QList<QString>& variables() const { return _variables; }	
 
+public slots:	
+	virtual void syncTermsChanged(Terms* termsAdded, Terms* termsRemoved) OVERRIDE;	
+	
 private:
 	QList<QString> _levels;
-	QList<QString> _variables;
+	QList<QString> _variables;	
 };
 
-#endif // LISTMODELMEASURESCELLS_H
+#endif // LISTMODELMEASURESCELLSASSIGNED_H

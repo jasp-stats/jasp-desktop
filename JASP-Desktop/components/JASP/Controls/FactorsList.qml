@@ -27,7 +27,7 @@ JASPControl
     id: factorsList
     controlType: "FactorsList"
     useDefaultBackground: true
-    implicitWidth: parent.implicitWidth / 3
+    implicitWidth: parent.width
     implicitHeight: Theme.defaultListHeight
     
     property var model
@@ -90,9 +90,10 @@ JASPControl
                     text: itemRectangle.isVirtual ? "" : model.name
                     placeholderText: itemRectangle.isVirtual ? model.name : ""
                     anchors.verticalCenter: parent.verticalCenter
-                    control.implicitWidth: parent.width
+                    textWidth: parent.width - 6
+                    showBorder: false
                     control.horizontalAlignment: itemRectangle.isLevel ? TextInput.AlignLeft : TextInput.AlignHCenter 
-                    onEditingFinished: itemChanged(index, text)                    
+                    onEditingFinished: itemChanged(index, text)                      
                 }
                 
                 Image {

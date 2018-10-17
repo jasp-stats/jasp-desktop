@@ -36,17 +36,20 @@ Form {
             singleItem: true
             allowedColumns: ["scale"]
         }
+        
         AssignedVariablesList {
             name: "fixedFactors"
             title: qsTr("Fixed Factors")
             allowedColumns: ["ordinal", "nominal"]
         }
+        
         AssignedVariablesList {
             name: "randomFactors"
             title: qsTr("Random Factors")
             allowedColumns: ["ordinal", "nominal"]
             debug: true
         }
+        
         AssignedVariablesList {
             name: "wlsWeights"
             title: qsTr("WLS Weights")
@@ -60,7 +63,7 @@ Form {
         text: qsTr("Model")
 
         VariablesForm {
-            formHeight: 200
+            height: 200
             availableVariablesList {
                 title: qsTr("Components")
                 name: "components"
@@ -69,7 +72,7 @@ Form {
             defaultAssignedVariablesList {
                 title: qsTr("Model terms")
                 name: "modelTerms"
-                listViewType: "assignedAnova"
+                listViewType: "AssignedAnova"
             }
         }
         
@@ -94,25 +97,15 @@ Form {
     
     ExpanderButton {
         text: qsTr("Contrasts")
-
-        VariablesTable {
-            title: qsTr("Factors")
-            syncModels: "fixedFactors"
-            name: "contrasts"
-            
-            VariablesTableColumn { 
-                type: "ComboBox"
-                name: "contrast"
-                model: ["none", "deviation", "simple", "difference", "Helmert", "repeated", "polynomial"]
-            }
-        }
+   
+        ContrastsList {}
     }
 
     ExpanderButton {
         text: qsTr("Post Hoc Tests")
         
         VariablesForm {
-            formHeight: 200
+            height: 200
             availableVariablesList {
                 name: "postHocTestsAvailable"
                 syncModels: "fixedFactors"
@@ -137,7 +130,7 @@ Form {
         text: qsTr("Descriptives Plots")
 
         VariablesForm {
-            formHeight: 200
+            height: 200
             availableVariablesList {        title: qsTr("Factors")          ; name: "descriptivePlotsVariables" ; syncModels: "fixedFactors" }
             defaultAssignedVariablesList {  title: qsTr("Horizontal axis")  ; name: "plotHorizontalAxis"    ; singleItem: true }
             AssignedVariablesList {         title: qsTr("Separate lines")   ; name: "plotSeparateLines"     ; singleItem: true }
@@ -162,7 +155,7 @@ Form {
         Label { text: qsTr("Marginal means") }
             
         VariablesForm {
-            formHeight: 200
+            height: 200
             availableVariablesList {        name: "marginalMeansTermsAvailable" ; syncModels: "modelTerms"; showVariableIcon: false }
             defaultAssignedVariablesList {  name: "marginalMeansTerms"; showVariableIcon: false }
         }
@@ -197,7 +190,7 @@ Form {
         text: qsTr("Simple Main Effects")
         
         VariablesForm {
-            formHeight: 200
+            height: 200
             availableVariablesList {        title: qsTr("Factors")              ; name: "effectsVariables"      ; syncModels: "fixedFactors" }
             defaultAssignedVariablesList {  title: qsTr("Simple effect factor") ; name: "simpleFactor"          ; singleItem: true }
             AssignedVariablesList {         title: qsTr("Moderator factor 1")   ; name: "moderatorFactorOne"    ; singleItem: true }
@@ -209,7 +202,7 @@ Form {
         text: qsTr("Nonparametrics")
         
         VariablesForm {
-            formHeight: 200
+            height: 200
             availableVariablesList {        title: qsTr("Kruskal-Wallis test")  ; name: "kruskalVariablesAvailable";  syncModels: "fixedFactors" }
             defaultAssignedVariablesList {  name: "kruskalVariablesAssigned" }
         }

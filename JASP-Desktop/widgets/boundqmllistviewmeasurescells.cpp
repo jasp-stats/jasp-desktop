@@ -16,9 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "boundqmllistmeasurescells.h"
-#include "listmodelmeasurescells.h"
-#include "listmodeldraggableterms.h"
+#include "boundqmllistviewmeasurescells.h"
+#include "listmodelmeasurescellsassigned.h"
 #include "listmodelfactors.h"
 #include "analysis/analysisqmlform.h"
 #include "utilities/qutils.h"
@@ -29,34 +28,29 @@
 using namespace std;
 
 
-BoundQMLListMeasuresCells::BoundQMLListMeasuresCells(QQuickItem* item, AnalysisQMLForm* form) : BoundQMLDraggableListView(item, form)
+BoundQMLListViewMeasuresCells::BoundQMLListViewMeasuresCells(QQuickItem* item, AnalysisQMLForm* form) 
+	: QMLItem(item, form)
+	, BoundQMLListViewDraggable(item, form)
 {
 	_boundTo = NULL;
-	_needsSyncModels = true;
-	_model = _targetModel = _measuresCellsModel = new ListModelMeasuresCells(form, item);
+	_needsSyncModels = true;	
+	_measuresCellsModel = new ListModelMeasuresCellsAssigned(this);
 	
-	_measuresCellsModel->setDropMode(qmlDropMode::Replace);
-	QQmlProperty::write(item, "showElementBorder", true);
-	QQmlProperty::write(item, "columns", 2);
-	QQmlProperty::write(item, "dragOnlyVariables", true);
-	QQmlProperty::write(item, "showVariableIcon", false);	
-	
-	connect(_measuresCellsModel, &ListModelMeasuresCells::termsChanged, this, &BoundQMLListMeasuresCells::modelChangedHandler);			
+	setDropMode(qmlDropMode::Replace);
+	QQmlProperty::write(_item, "showElementBorder", true);
+	QQmlProperty::write(_item, "columns", 2);
+	QQmlProperty::write(_item, "dragOnlyVariables", true);
+	QQmlProperty::write(_item, "showVariableIcon", false);		
 }
 
-void BoundQMLListMeasuresCells::bindTo(Option *option)
+void BoundQMLListViewMeasuresCells::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionVariables *>(option);
-	resetTermsFromSyncModels();
+	_measuresCellsModel->initLevels(getLevels());
 	_measuresCellsModel->initVariables(_boundTo->value());
 }
 
-void BoundQMLListMeasuresCells::unbind()
-{
-	
-}
-
-void BoundQMLListMeasuresCells::resetTermsFromSyncModels()
+const Terms& BoundQMLListViewMeasuresCells::getLevels()
 {
 	_tempTerms.clear();
 	for (ListModelFactors* factorsModel : _syncFactorsModels)
@@ -65,20 +59,19 @@ void BoundQMLListMeasuresCells::resetTermsFromSyncModels()
 		_tempTerms.add(terms);
 	}
 	
-	_measuresCellsModel->initLevels(_tempTerms);
-	
+	return _tempTerms;
 }
 
-Option* BoundQMLListMeasuresCells::createOption()
+Option* BoundQMLListViewMeasuresCells::createOption()
 {
 	OptionVariables *result = new OptionVariables();
 	
 	return result;
 }
 
-void BoundQMLListMeasuresCells::setUp()
+void BoundQMLListViewMeasuresCells::setUp()
 {
-	BoundQMLDraggableListView::setUp();
+	BoundQMLListViewDraggable::setUp();
 	
 	for (ListModel* model : _syncModels)
 	{
@@ -89,7 +82,7 @@ void BoundQMLListMeasuresCells::setUp()
 	}
 }
 
-void BoundQMLListMeasuresCells::modelChangedHandler()
+void BoundQMLListViewMeasuresCells::modelChangedHandler()
 {
 	const QList<QString>& variables = _measuresCellsModel->variables();
 	vector<string> terms;

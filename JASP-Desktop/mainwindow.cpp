@@ -261,7 +261,7 @@ void MainWindow::initQWidgetGUIParts()
 	_buttonPanel		= new QWidget(ui->panel_2_Options);
 	_buttonPanelLayout	= new QVBoxLayout(_buttonPanel);
 	_buttonPanelLayout->setSpacing(6);
-	_buttonPanelLayout->setContentsMargins(0, _buttonPanelLayout->contentsMargins().top(), _buttonPanelLayout->contentsMargins().right(), 0);
+	_buttonPanelLayout->setContentsMargins(0, _buttonPanelLayout->contentsMargins().top() - 5, _buttonPanelLayout->contentsMargins().right(), 0);
 
 	_buttonPanel->setLayout(_buttonPanelLayout);
 
@@ -275,8 +275,8 @@ void MainWindow::initQWidgetGUIParts()
 	_mMenuBar->addMenu(aboutMenu);
 
 	_buttonPanelLayout->addWidget(_okButton);
-	_buttonPanelLayout->addWidget(_runButton);
-	_buttonPanelLayout->addStretch();
+	//_buttonPanelLayout->addWidget(_runButton);
+	//_buttonPanelLayout->addStretch();
 
 	_buttonPanel->resize(_buttonPanel->sizeHint());
 	_buttonPanel->move(ui->panel_2_Options->width() - _buttonPanel->width() - _scrollbarWidth, 0);
@@ -736,14 +736,17 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		AnalysisForm * formCreated	= createAnalysisForm(analysis);
 		_analysisFormsMap[analysis] = formCreated;
 
-		//sizing of options widget and panel to fit buttons and conform to largest size for consistency
-		for (QObject * child : formCreated->children())
+		if (!analysis->fromQML())
 		{
-			QWidget* w = dynamic_cast<QWidget*>(child);
-			if (w != NULL && w->objectName() == "topWidget")
+			//sizing of options widget and panel to fit buttons and conform to largest size for consistency
+			for (QObject * child : formCreated->children())
 			{
-				w->setContentsMargins(0, 0, _buttonPanel->width(), 0);
-				break;
+				QWidget* w = dynamic_cast<QWidget*>(child);
+				if (w != NULL && w->objectName() == "topWidget")
+				{
+					w->setContentsMargins(0, 0, _buttonPanel->width(), 0);
+					break;
+				}
 			}
 		}
 
@@ -850,10 +853,9 @@ void MainWindow::showForm(Analysis *analysis)
 		}
 
 		theWidget->setMinimumWidth(ui->panel_2_Options->minimumWidth() - _scrollbarWidth);
-
 		theWidget->show();
+		
 		ui->scrollArea->setVerticalScrollBarPolicy(analysis->fromQML() ? Qt::ScrollBarAlwaysOff : Qt::ScrollBarAlwaysOn);
-
 		ui->optionsContentAreaLayout->addWidget(theWidget);//, 0, 0, Qt::AlignRight | Qt::AlignTop);
 
 		if (ui->panel_2_Options->isVisible() == false)

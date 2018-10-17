@@ -251,9 +251,6 @@ HEADERS += \
     $$PWD/widgets/boundmodel.h \
     $$PWD/widgets/boundpairstable.h \
     $$PWD/widgets/boundqmlcheckbox.h \
-    $$PWD/widgets/boundqmllistviewanova.h \
-    $$PWD/widgets/boundqmllistviewpairs.h \
-    $$PWD/widgets/boundqmllistviewvariables.h \
     $$PWD/widgets/boundqmlradiobuttons.h \
     $$PWD/widgets/boundqmltextinput.h \
     $$PWD/widgets/boundqmlcombobox.h \
@@ -304,18 +301,23 @@ HEADERS += \
     $$PWD/mainwindow.h \
     $$PWD/analysis/ribbons/ribbonwidget.h \
     $$PWD/utilities/extractarchive.h \
-    $$PWD/widgets/boundqmlvariablestable.h \
-    $$PWD/widgets/listmodelvariablestable.h \
-    $$PWD/widgets/boundqmllistmeasurescells.h \
-    $$PWD/widgets/listmodelmeasurescells.h \
     $$PWD/widgets/boundqmlfactorslist.h \
     $$PWD/widgets/listmodelfactors.h \
-    $$PWD/widgets/listmodeltermsavailableinterface.h \
-    $$PWD/widgets/listmodeltermsassignedinterface.h \
     $$PWD/widgets/listmodel.h \
-    $$PWD/widgets/listmodeldraggableterms.h \
-    $$PWD/widgets/boundqmldraggablelistview.h \
-    $$PWD/widgets/boundqmltableview.h
+    $$PWD/widgets/qmllistview.h \
+    $$PWD/widgets/qmlitem.h \
+    $$PWD/widgets/listmodelassignedinterface.h \
+    $$PWD/widgets/listmodelavailableinterface.h \
+    $$PWD/widgets/listmodeldraggable.h \
+    $$PWD/widgets/qmllistviewdraggable.h \
+    $$PWD/widgets/boundqmllistviewmeasurescells.h \
+    $$PWD/widgets/boundqmllistviewpairs.h \
+    $$PWD/widgets/boundqmllistviewdraggable.h \
+    $$PWD/widgets/listmodelmeasurescellsassigned.h \
+    $$PWD/widgets/qmllistviewtermsavailable.h \
+    $$PWD/widgets/boundqmllistviewterms.h \
+    $$PWD/widgets/boundqmllistviewanovamodels.h \
+    $$PWD/widgets/boundqmlslider.h
 
 SOURCES += \
     $$PWD/analysis/analysisform.cpp \
@@ -458,9 +460,6 @@ SOURCES += \
     $$PWD/widgets/boundlistview.cpp \
     $$PWD/widgets/boundpairstable.cpp \
     $$PWD/widgets/boundqmlcheckbox.cpp \
-    $$PWD/widgets/boundqmllistviewanova.cpp \
-    $$PWD/widgets/boundqmllistviewpairs.cpp \
-    $$PWD/widgets/boundqmllistviewvariables.cpp \
     $$PWD/widgets/boundqmlradiobuttons.cpp \
     $$PWD/widgets/boundqmltextinput.cpp \
     $$PWD/widgets/boundqmlcombobox.cpp \
@@ -507,17 +506,23 @@ SOURCES += \
     $$PWD/mainwindow.cpp \
     $$PWD/analysis/ribbons/ribbonwidget.cpp \
     $$PWD/utilities/extractarchive.cpp \
-    $$PWD/widgets/boundqmlvariablestable.cpp \
-    $$PWD/widgets/listmodelvariablestable.cpp \
-    $$PWD/widgets/boundqmllistmeasurescells.cpp \
-    $$PWD/widgets/listmodelmeasurescells.cpp \
     $$PWD/widgets/boundqmlfactorslist.cpp \
     $$PWD/widgets/listmodelfactors.cpp \
     $$PWD/widgets/listmodel.cpp \
-    $$PWD/widgets/listmodeldraggableterms.cpp \
-    $$PWD/widgets/boundqmldraggablelistview.cpp \
-    $$PWD/widgets/boundqmltableview.cpp \
-    $$PWD/widgets/listmodeltermsavailableinterface.cpp
+    $$PWD/widgets/qmllistview.cpp \
+    $$PWD/widgets/qmlitem.cpp \
+    $$PWD/widgets/listmodelavailableinterface.cpp \
+    $$PWD/widgets/listmodelassignedinterface.cpp \
+    $$PWD/widgets/listmodeldraggable.cpp \
+    $$PWD/widgets/qmllistviewdraggable.cpp \
+    $$PWD/widgets/boundqmllistviewmeasurescells.cpp \
+    $$PWD/widgets/boundqmllistviewpairs.cpp \
+    $$PWD/widgets/boundqmllistviewdraggable.cpp \
+    $$PWD/widgets/listmodelmeasurescellsassigned.cpp \
+    $$PWD/widgets/qmllistviewtermsavailable.cpp \
+    $$PWD/widgets/boundqmllistviewterms.cpp \
+    $$PWD/widgets/boundqmllistviewanovamodels.cpp \
+    $$PWD/widgets/boundqmlslider.cpp
 
 FORMS += \
     $$PWD/gui/aboutdialog.ui \

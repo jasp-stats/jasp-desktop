@@ -19,41 +19,12 @@
 #include "listmodeltermsavailable.h"
 #include "listmodeltermsassigned.h"
 #include "analysis/analysisqmlform.h"
+#include "qmllistviewtermsavailable.h"
 #include <QQmlProperty>
 
-ListModelTermsAvailable::ListModelTermsAvailable(AnalysisQMLForm *form, QQuickItem* item)
-	: ListModelTermsAvailableInterface(form, item)
+ListModelTermsAvailable::ListModelTermsAvailable(QMLListView* listView)
+	: ListModelAvailableInterface(listView)
 {
-}
-
-void ListModelTermsAvailable::setUp()
-{
-	if (_isSetUp)
-		return;
-	
-	ListModelTermsAvailableInterface::setUp();
-	
-	QStringList syncModels = QQmlProperty(_item, "syncModels").read().toStringList();
-	if (syncModels.length() > 0)
-	{
-		bool areTermsVariables = true;
-		for (const QString& syncModel : syncModels)
-		{
-			ListModel* model = _form->getModel(syncModel);
-			if (model)
-			{
-				_syncModels.push_back(model);
-				connect(model, &ListModel::termsChanged, this, &ListModelTermsAvailable::syncTermsChanged);
-				if (!model->areTermsVariables())
-					areTermsVariables = false;
-			}
-			else
-				addError(QString::fromLatin1("Unknown sync model ") + syncModel + QString::fromLatin1(" for Variables ListView ") + _name);
-		}
-		if (!areTermsVariables)
-			setTermsAreNotVariables(); // set it only when it is false
-		resetTermsFromSyncModels();
-	}
 }
 
 void ListModelTermsAvailable::initTerms(const Terms &terms)
@@ -99,7 +70,7 @@ void ListModelTermsAvailable::syncTermsChanged(Terms* termsAdded, Terms* termsRe
 	Q_UNUSED(termsRemoved);
 	
 	resetTermsFromSyncModels();
-	emit termsChanged(&_tempAddedTerms, &_tempRemovedTerms);	
+	emit modelChanged(&_tempAddedTerms, &_tempRemovedTerms);	
 }
 
 void ListModelTermsAvailable::_setChangedTerms(const Terms &newTerms)
@@ -121,13 +92,14 @@ void ListModelTermsAvailable::_setChangedTerms(const Terms &newTerms)
 
 void ListModelTermsAvailable::resetTermsFromSyncModels()
 {
-	if (_syncModels.size() == 0)
+	const QList<ListModel*>& syncModels = listView()->syncModels();
+	if (syncModels.size() == 0)
 		return;
 	
 	beginResetModel();
 	Terms termsAvailable;
 	_termSyncModelMap.empty();
-	for (ListModel* syncModel : _syncModels)
+	for (ListModel* syncModel : syncModels)
 	{
 		const Terms& terms = syncModel->terms();
 		for (const Term& term : terms)
@@ -138,10 +110,15 @@ void ListModelTermsAvailable::resetTermsFromSyncModels()
 	_setChangedTerms(termsAvailable);
 	initTerms(termsAvailable);
 	
-	for (ListModelTermsAssignedInterface* modelAssign : _assignedModels)
+	QMLListViewTermsAvailable* qmlAvailableListView = dynamic_cast<QMLListViewTermsAvailable*>(listView());
+	if (qmlAvailableListView)
 	{
-		if (!modelAssign->copyTermsWhenDropped())
-			_terms.remove(modelAssign->terms());
+		const QList<ListModelAssignedInterface*>& assignedModels = qmlAvailableListView->assignedModel();	
+		for (ListModelAssignedInterface* modelAssign : assignedModels)
+		{
+			if (!modelAssign->copyTermsWhenDropped())
+				_terms.remove(modelAssign->terms());
+		}
 	}
 	endResetModel();
 }

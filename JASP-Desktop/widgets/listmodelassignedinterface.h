@@ -16,34 +16,31 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef LISTMODELTERMSASSIGNEDINTERFACE_H
-#define LISTMODELTERMSASSIGNEDINTERFACE_H
+#ifndef LISTMODELASSIGNEDINTERFACE_H
+#define LISTMODELASSIGNEDINTERFACE_H
 
-#include "listmodeldraggableterms.h"
-#include "boundmodel.h"
+#include "listmodeldraggable.h"
 
-#include "listmodeltermsavailableinterface.h"
+#include "listmodelavailableinterface.h"
 
-class ListModelTermsAssignedInterface : public ListModelDraggableTerms
+class ListModelAssignedInterface : public ListModelDraggable
 {
+	Q_OBJECT
 public:
-	ListModelTermsAssignedInterface(AnalysisQMLForm *form, QQuickItem* item) 
-		: ListModelDraggableTerms(form, item)
+	ListModelAssignedInterface(QMLListView* listView) 
+		: ListModelDraggable(listView)
 		, _source(NULL) 
 	{}
 	
-	virtual void setSource(ListModelTermsAvailableInterface *source) {
-		_source = source;
-		_source->addAssignedModel(this);
-		if (!_source->areTermsVariables())
-			setTermsAreNotVariables();
-	}
+	virtual void setSource(ListModelAvailableInterface *source);
+	
+	ListModelAvailableInterface* source()									{ return _source; }
 
 public slots:
 	virtual void availableTermsChanged(Terms *termsAdded, Terms *termsRemoved) {}
-
+	
 protected:
-	ListModelTermsAvailableInterface* _source;
+	ListModelAvailableInterface* _source;
 };
 
-#endif // LISTMODELTERMSASSIGNEDINTERFACE_H
+#endif // LISTMODELASSIGNEDINTERFACE_H

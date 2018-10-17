@@ -6,7 +6,7 @@ Form {
     id: form
 
     VariablesForm {
-        formHeight: 200
+        height: 200
         defaultAssignedVariablesList {
             title: qsTr("Variables")
             allowedColumns: ["scale"]

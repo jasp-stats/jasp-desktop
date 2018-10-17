@@ -19,17 +19,17 @@
 #ifndef LISTMODELTERMSASSIGNED_H
 #define LISTMODELTERMSASSIGNED_H
 
-#include "listmodeltermsassignedinterface.h"
+#include "listmodelassignedinterface.h"
 
 
-class ListModelTermsAssigned : public ListModelTermsAssignedInterface
+class ListModelTermsAssigned : public ListModelAssignedInterface
 {
 	Q_OBJECT
 	
 public:
-	explicit ListModelTermsAssigned(AnalysisQMLForm *form, QQuickItem* item, bool onlyOneTerm = false);
+	ListModelTermsAssigned(QMLListView* listView, bool onlyOneTerm = false);
 	
-	virtual void initTerms(const std::vector<std::vector<std::string> >& terms);
+	virtual void initTerms(const Terms& terms) OVERRIDE;
 	
 	virtual bool canAddTerms(Terms *terms) const OVERRIDE;
 	virtual Terms* addTerms(Terms *terms, int dropItemIndex = -1) OVERRIDE;

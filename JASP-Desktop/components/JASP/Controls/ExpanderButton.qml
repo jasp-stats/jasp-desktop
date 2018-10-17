@@ -22,7 +22,7 @@ import JASP.Theme 1.0
 FocusScope {
     id: expanderWrapper
     implicitHeight: expanderButton.height + (expanded ? 15 + expanderArea.height : 0)
-    implicitWidth: form.formWidthAvailable
+    implicitWidth: parent.width
     anchors.topMargin: 15
     default property alias content: expanderArea.children
     

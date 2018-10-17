@@ -17,10 +17,14 @@
 //
 
 #include "boundqmlcheckbox.h"
+#include "analysis/analysisqmlform.h"
 #include <QQmlProperty>
 #include <QQuickItem>
 
-BoundQMLCheckBox::BoundQMLCheckBox(QQuickItem* item, AnalysisQMLForm* form) : BoundQMLItem(item, form)
+BoundQMLCheckBox::BoundQMLCheckBox(QQuickItem* item, AnalysisQMLForm* form) 
+	: QMLItem(item, form)
+	, QObject(form)
+	, BoundQMLItem(item, form)
 {
 	_boundTo = NULL;
 	_checked = false;
@@ -62,9 +66,7 @@ void BoundQMLCheckBox::resetQMLItem(QQuickItem *item)
 
 void BoundQMLCheckBox::checkBoxClickedSlot()
 {
+	_checked = QQmlProperty::read(_item, "checked").toBool();
 	if (_boundTo != NULL)
-	{
-		_checked = QQmlProperty::read(_item, "checked").toBool();
 		_boundTo->setValue(_checked);
-	}
 }

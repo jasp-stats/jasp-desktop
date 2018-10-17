@@ -23,14 +23,15 @@ import JASP.Theme 1.0
 
 
 Rectangle {
+    id: form
     default property alias content: column.children
-    property bool usesJaspResults: false
-    property int formMargin: Theme.formMargin
-    property int formWidthAvailable: width - 2 * formMargin
-    property int majorVersion: 1
-    property int minorVersion: 0
     width: Theme.formWidth
     color: Theme.analysisBackgroundColor
+    
+    property bool usesJaspResults: false
+    property int majorVersion: 1
+    property int minorVersion: 0
+    property bool usesVariablesModel: false
     
     property var jaspControls: []
     
@@ -60,7 +61,12 @@ Rectangle {
     Flickable {
         id: flickable
         anchors.fill: parent
-        anchors.margins: formMargin
+        anchors.leftMargin: Theme.formMargin
+        anchors.topMargin: Theme.formMargin
+        anchors.bottomMargin: Theme.formMargin
+        // Do not set the rightMargin, but set a contentWidth as if there was a rightMargin:
+        // this space at the right side will be used by the scroller.
+        contentWidth: parent.width - 2 * Theme.formMargin
         contentHeight: column.childrenRect.height
         
         Rectangle {
@@ -77,13 +83,14 @@ Rectangle {
                 id: errorMessagesText
             }
         }
-
+        
         ColumnLayout {
             id: column
             anchors.top: errorMessagesBox.visible ? errorMessagesBox.bottom : parent.top
             spacing: 10
             width: parent.width            
         }
+        
 
         ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded}
     }

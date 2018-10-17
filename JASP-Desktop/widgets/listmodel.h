@@ -20,14 +20,13 @@
 #define LISTMODEL_H
 
 #include "common.h"
+#include "analysis/options/variableinfo.h"
 #include "analysis/options/terms.h"
+#include "qmllistview.h"
 
 #include <QAbstractListModel>
-#include <QQuickItem>
 
-class AnalysisQMLForm;
-
-class ListModel : public QAbstractListModel
+class ListModel : public QAbstractListModel, public VariableInfoConsumer
 {
 	Q_OBJECT
 public:
@@ -36,30 +35,35 @@ public:
 		TypeRole
     };
 	
-	ListModel(AnalysisQMLForm* form, QQuickItem* item);
+	ListModel(QMLListView* listView);
 	virtual QHash<int, QByteArray> roleNames() const OVERRIDE;
 	
-	virtual void setUp();
-	virtual void refresh();
+	QMLListView* listView() const							{ return _listView; }
+	const QString& name() const								{ return _listView->name(); }
+	virtual const Terms& terms() const						{ return _terms; }
+	bool areTermsVariables() const							{ return _areTermsVariables; }
+	const QString& getItemType() const						{ return _itemType; }	
+	void setTermsAreVariables(bool areVariables)			{ _areTermsVariables = areVariables; }
+	void setItemType(QString type)							{ _itemType = type; }
+
 	void addError(const QString& error) const;
-	QQuickItem* item() const			{ return _item; }
-	const QString& name() const			{ return _name; }
-	virtual const Terms& terms() const	{ return _terms; }
-	const QString& getItemType() const	{ return _itemType; }	
-	bool areTermsVariables() const		{ return _areTermsVariables; }
-	virtual void setTermsAreNotVariables();
-	
-	
+		
+	virtual int rowCount(const QModelIndex &parent) const OVERRIDE;
+	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
+
+	virtual void refresh();
+	virtual void initTerms(const Terms &terms);
+
 signals:
-	void termsChanged(Terms* added = NULL, Terms* removed = NULL);
-	
+	void modelChanged(Terms* added = NULL, Terms* removed = NULL);
+
+public slots:	
+	virtual void syncTermsChanged(Terms* termsAdded, Terms* termsRemoved);
+
 protected:
-	AnalysisQMLForm* _form;
-	QQuickItem* _item;
-	QString _name;
-	bool _isSetUp;
+	QMLListView* _listView;
+	QString _itemType;		
 	Terms _terms;
-	QString _itemType;	
 	bool _areTermsVariables;	
 };
 

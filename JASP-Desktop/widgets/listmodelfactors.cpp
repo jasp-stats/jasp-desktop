@@ -22,15 +22,14 @@
 #include "analysis/options/optionvariables.h"
 #include "utilities/qutils.h"
 
+#include <QDebug>
+
 using namespace std;
 
-ListModelFactors::ListModelFactors(AnalysisQMLForm *form, QQuickItem *item)
-	: ListModel(form, item)
+ListModelFactors::ListModelFactors(QMLListView* listView)
+	: ListModel(listView)
 {
 	_itemType = "fixedFactors";
-	setTermsAreNotVariables();
-	QObject::connect(_item, SIGNAL(itemChanged(int, QVariant)), this, SLOT(itemChanged(int, QVariant)));	
-	QObject::connect(_item, SIGNAL(itemRemoved(int)), this, SLOT(itemRemoved(int)));	
 }
 
 int ListModelFactors::rowCount(const QModelIndex &parent) const
@@ -198,12 +197,16 @@ void ListModelFactors::itemChanged(int row, QVariant value)
 		qDebug() << "Index " << row << " in ListModelFactors is greater than the maximum " << _factors.length();
 		return;
 	}
+
+	QString val = value.toString();
+	Factor& factor = _factors[row];
+	
+	if (factor.value == val || (factor.isVirtual && val.isEmpty()))
+		return;
 	
 	beginResetModel();
 	
-	Factor& factor = _factors[row];
-	factor.value = value.toString();
-	
+	factor.value = val;	
 	if (factor.value.isEmpty())
 	{
 		if (factor.isLevel)
@@ -260,7 +263,7 @@ void ListModelFactors::itemChanged(int row, QVariant value)
 	
 	_setAllLevelsCombinations();
 	
-	emit termsChanged();
+	emit modelChanged();
 }
 
 void ListModelFactors::itemRemoved(int row)
@@ -304,5 +307,5 @@ void ListModelFactors::itemRemoved(int row)
 	
 	_setAllLevelsCombinations();
 	
-	emit termsChanged();
+	emit modelChanged();
 }

@@ -28,18 +28,18 @@
 #include <QObject>
 
 
-class BoundQMLTextInput : public BoundQMLItem
+class BoundQMLTextInput : public QObject, public BoundQMLItem
 {
 	Q_OBJECT
 	
 public:
 	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType };
 	
-	explicit BoundQMLTextInput(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLTextInput(QQuickItem* item, AnalysisQMLForm* form);
 	virtual void bindTo(Option *option) OVERRIDE;
-	virtual void unbind() OVERRIDE;
 	
 	virtual Option* createOption() OVERRIDE;
+	virtual Option* boundTo() OVERRIDE { return _option; }	
 	virtual void resetQMLItem(QQuickItem *item) OVERRIDE;
 
 signals:
@@ -49,7 +49,7 @@ private slots:
     
 protected:
 private:
-	void setOptionValue(QString& text);
+	void _setOptionValue(Option* option, QString& text);
 	
 	QString _getPercentValue();
 	QString _getIntegerArrayValue();
@@ -60,6 +60,7 @@ private:
 	OptionNumber *_number;
 	OptionString *_string;
 	Option *_option;
+	QString _value;
 
 };
 

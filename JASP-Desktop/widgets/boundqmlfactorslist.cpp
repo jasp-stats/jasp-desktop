@@ -21,15 +21,20 @@
 #include "analysis/options/optionvariables.h"
 
 #include <QQmlProperty>
+#include <QQuickItem>
 
 using namespace std;
 
-BoundQMLFactorsList::BoundQMLFactorsList(QQuickItem *item, AnalysisQMLForm *form) : BoundQMLTableView(item, form)
+BoundQMLFactorsList::BoundQMLFactorsList(QQuickItem *item, AnalysisQMLForm *form)
+	: QMLItem(item, form)
+	, QMLListView(item, form)
+	, BoundQMLItem(item, form)
 {
-	_needsSyncModels = false;
-	_model = _factorsModel = new ListModelFactors(form, item);
+	_factorsModel = new ListModelFactors(this);
+	setTermsAreNotVariables();
 	
-	QObject::connect(_factorsModel, SIGNAL(termsChanged(Terms*,Terms*)), this, SLOT(setOptionsFromFactors()));
+	QQuickItem::connect(_item, SIGNAL(itemChanged(int, QVariant)), _factorsModel, SLOT(itemChanged(int, QVariant)));	
+	QQuickItem::connect(_item, SIGNAL(itemRemoved(int)), _factorsModel, SLOT(itemRemoved(int)));		
 }
 
 void BoundQMLFactorsList::bindTo(Option *option)
@@ -73,7 +78,7 @@ Option* BoundQMLFactorsList::createOption()
 	return optionsTable;
 }
 
-void BoundQMLFactorsList::setOptionsFromFactors()
+void BoundQMLFactorsList::modelChangedHandler()
 {
 	const vector<pair<string, vector<string> > > &factors = _factorsModel->getFactors();
 	vector<Options *> allOptions;

@@ -32,6 +32,6 @@ TextField {
     inputType: "percent"
     control.width: Theme.font.pixelSize * (with1Decimal ? 3 : 2)
     validator: with1Decimal ? doubleVal : intVal
-    text: Number.parseInt(defaultValue);
+    value: Number.parseInt(defaultValue);
     afterLabel.text: showPercent ? "%" : ""
 }

@@ -16,33 +16,9 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BOUNDQMLTABLEVIEW_H
-#define BOUNDQMLTABLEVIEW_H
+#include "listmodelassignedinterface.h"
 
-#include "analysis/boundqmlitem.h"
-#include "listmodel.h"
-
-class BoundQMLTableView : public BoundQMLItem
+void ListModelAssignedInterface::setSource(ListModelAvailableInterface *source)
 {
-	Q_OBJECT
-	
-public:
-	explicit BoundQMLTableView(QQuickItem* item, AnalysisQMLForm* form);
-	
-	virtual void setUp() OVERRIDE;	
-	
-	ListModel* model() { return _model; }
-
-protected:
-	virtual void resetTermsFromSyncModels() {}
-	
-	ListModel* _model;
-	std::vector<ListModel*> _syncModels;
-	bool _needsSyncModels;
-
-private slots:	
-	virtual void syncTermsChanged(Terms* termsAdded, Terms* termsRemoved);
-
-};
-
-#endif // BOUNDQMLTABLEVIEW_H
+	_source = source;
+}

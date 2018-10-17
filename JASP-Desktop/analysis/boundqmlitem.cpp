@@ -18,38 +18,12 @@
 
 #include "boundqmlitem.h"
 #include "analysisqmlform.h"
-#include <QQmlProperty>
-#include <QQuickItem>
-
-
-using namespace std;
 
 BoundQMLItem::BoundQMLItem(QQuickItem *item, AnalysisQMLForm* form)
-	: QObject(form), _item(item), _form(form)
+	: QMLItem(item, form)
 {
-	_name = QQmlProperty(_item, "name").read().toString();
 }
 
 BoundQMLItem::~BoundQMLItem()
-{
-	
-}
-
-const QString& BoundQMLItem::name()
-{
-	return _name;
-}
-
-void BoundQMLItem::setUp()
-{
-}
-
-void BoundQMLItem::resetQMLItem(QQuickItem *item)
-{
-	_item = item;
-}
-
-void BoundQMLItem::addError(const QString &error)
-{
-	_form->addError(error);
+{	
 }

@@ -17,15 +17,27 @@
 //
 
 #include "boundqmlcombobox.h"
+#include "analysis/analysisqmlform.h"
 #include <QQmlProperty>
 #include <QQuickItem>
 #include <QAbstractListModel>
 
 
-BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisQMLForm* form) : BoundQMLItem(item, form)
+BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisQMLForm* form) 
+	: QMLItem(item, form)
+	, QMLListView(item, form)
+	, BoundQMLItem(item, form)
 {
 	_boundTo = NULL;
+	_model = NULL;
 	_currentIndex = -1;
+	
+	if (QQmlProperty(item, "model").read().isNull())
+	{
+		QQmlProperty::write(item, "modelType", "variables");
+		_model = new ListModelTermsAvailable(this);
+	}
+	
 	QQuickItem::connect(item, SIGNAL(activated(int)), this, SLOT(comboBoxChangeValueSlot(int)));
 }
 
@@ -46,7 +58,7 @@ void BoundQMLComboBox::bindTo(Option *option)
 				if (val == currentValue)
 					break;
 			}
-			if (_currentIndex >= options.size()) 
+			if ((size_t)_currentIndex >= options.size()) 
 			{
 				if (!currentValue.empty())
 					addError(QString::fromLatin1("Option ") + QString::fromStdString(currentValue) + " is unknown in ComboBox " + name());
@@ -57,11 +69,6 @@ void BoundQMLComboBox::bindTo(Option *option)
 	}
 	else
 		addError(QString::fromLatin1("Unkonwn error ComboBox ") + name());
-}
-
-void BoundQMLComboBox::unbind()
-{
-	
 }
 
 void BoundQMLComboBox::resetQMLItem(QQuickItem *item)
@@ -112,11 +119,30 @@ Option *BoundQMLComboBox::createOption()
 	return new OptionList(options, selected);
 }
 
+void BoundQMLComboBox::modelChangedHandler()
+{
+	const Terms& terms = _model->terms();
+	int maxLength = 0;
+	QString maxValue;
+	for (const Term& term : terms)
+	{
+		int length = term.asQString().length();
+		if (length > maxLength)
+		{
+			maxLength = length;
+			maxValue = term.asQString();
+		}
+	}
+	
+	QMetaObject::invokeMethod(_item, "resetWidth", Q_ARG(QVariant, QVariant(maxValue)));
+}
+
 void BoundQMLComboBox::comboBoxChangeValueSlot(int index)
 {
-	if (_boundTo != NULL && _currentIndex != index)
+	if (_currentIndex != index)
 	{
 		_currentIndex = index;
-		_boundTo->set(index);
+		if (_boundTo != NULL)
+			_boundTo->set(index);
 	}
 }

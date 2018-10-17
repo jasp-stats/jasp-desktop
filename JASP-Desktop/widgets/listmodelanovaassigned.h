@@ -19,25 +19,25 @@
 #ifndef LISTMODELANOVAASSIGNED_H
 #define LISTMODELANOVAASSIGNED_H
 
-#include "listmodeltermsassignedinterface.h"
-#include "listmodeltermsavailableinterface.h"
+#include "listmodelassignedinterface.h"
+#include "listmodelavailableinterface.h"
 #include "analysis/options/options.h"
 #include "analysis/options/optionterm.h"
 
-class ListModelAnovaAssigned : public ListModelTermsAssignedInterface
+class ListModelAnovaAssigned : public ListModelAssignedInterface
 {
 	Q_OBJECT
 	
 	enum AssignType { Cross = 0, MainEffects, Interaction, All2Way, All3Way, All4Way, All5Way };
 	
 public:
-	explicit ListModelAnovaAssigned(AnalysisQMLForm *form, QQuickItem* item);
+	ListModelAnovaAssigned(QMLListView* listView);
 
-	void initTerms(const std::vector<Options*> &terms, Options* rowTemplate);
+	void initTermsWithTemplate(const std::vector<Options*> &terms, Options* rowTemplate);
 	
 	virtual int rowCount(const QModelIndex &parent) const OVERRIDE;	
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;	
-	virtual void setSource(ListModelTermsAvailableInterface *source) OVERRIDE;
+	virtual void setSource(ListModelAvailableInterface *source) OVERRIDE;
 	
 	virtual Terms *termsFromIndexes(const QList<int> &indexes) const OVERRIDE;
 	virtual bool canAddTerms(Terms *terms) const OVERRIDE;

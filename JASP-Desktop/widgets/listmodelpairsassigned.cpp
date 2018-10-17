@@ -22,19 +22,10 @@
 
 using namespace std;
 
-ListModelPairsAssigned::ListModelPairsAssigned(AnalysisQMLForm *form, QQuickItem* item)
-	: ListModelTermsAssignedInterface(form, item)
+ListModelPairsAssigned::ListModelPairsAssigned(QMLListView* listView)
+	: ListModelAssignedInterface(listView)
 {
-	_source = NULL;
 	_copyTermsWhenDropped = true;
-	_variableTypesSuggested = Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale;
-}
-
-void ListModelPairsAssigned::initTerms(const vector<vector<string> > &terms)
-{
-	beginResetModel();
-	_terms.set(terms);
-	endResetModel();
 }
 
 int ListModelPairsAssigned::rowCount(const QModelIndex &parent) const
@@ -53,7 +44,7 @@ QVariant ListModelPairsAssigned::data(const QModelIndex &index, int role) const
 		return QVariant();
 	}
 
-	if (role == Qt::DisplayRole || role == ListModelDraggableTerms::NameRole)
+	if (role == Qt::DisplayRole || role == ListModel::NameRole)
 	{
 		int indexRow = index.row();
 		uint realRow = indexRow / 2;
@@ -127,7 +118,7 @@ void ListModelPairsAssigned::removeTerms(const QList<int> &indexes)
 
 	endResetModel();
 
-	emit termsChanged();
+	emit modelChanged();
 }
 
 bool ListModelPairsAssigned::canAddTerms(Terms *terms) const
@@ -211,7 +202,7 @@ Terms* ListModelPairsAssigned::addTerms(Terms *terms, int dropItemIndex)
 	_terms.set(values);
 	endResetModel();
 
-	emit termsChanged();
+	emit modelChanged();
 
 	return removedTerms;
 }
@@ -278,5 +269,5 @@ void ListModelPairsAssigned::moveTerms(const QList<int> &indexes, int dropItemIn
 	endResetModel();
 	
 	if (isChanged)
-		emit termsChanged();
+		emit modelChanged();
 }

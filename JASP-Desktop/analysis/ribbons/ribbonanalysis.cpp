@@ -40,8 +40,8 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu = new QMenu(this);
 	menu->addAction(QString("Descriptive Statistics"), this, SLOT(itemSelected()))->setObjectName("Descriptives");
 	menu->addAction(QString("Reliability Analysis"), this, SLOT(itemSelected()))->setObjectName("ReliabilityAnalysis");
-	menu->addSeparator();
 #ifdef QT_DEBUG
+	menu->addSeparator();
 	menu->addAction(QString("QML Descriptives Statistics"), this, SLOT(itemSelected()))->setObjectName("QMLDescriptives");
 	menu->addAction(QString("QML Reliability Analysis"), this, SLOT(itemSelected()))->setObjectName("QMLReliabilityAnalysis");
 	menu->addAction(QString("QML Analysis Test"), this, SLOT(itemSelected()))->setObjectName("QMLAnalysisTest");
@@ -90,6 +90,11 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu->addAction(QString("QML ANOVA"), this, SLOT(itemSelected()))->setObjectName("QMLAnova");
 	menu->addAction(QString("QML Repeated Measures ANOVA"), this, SLOT(itemSelected()))->setObjectName("QMLAnovaRepeatedMeasures");
 	menu->addAction(QString("QML ANCOVA"), this, SLOT(itemSelected()))->setObjectName("QMLAncova");
+	
+	menu->addSeparator();
+
+	menu->addAction(QString("QML Bayesian ANOVA"), this, SLOT(itemSelected()))->setObjectName("QMLAnovaBayesian");
+	menu->addAction(QString("QML Bayesian ANCOVA"), this, SLOT(itemSelected()))->setObjectName("QMLAncovaBayesian");
 #endif
 
 	ui->anovaButton->setMenu(menu);
@@ -127,7 +132,10 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu = new QMenu(this);
 	menu->addAction(QString("Principal Component Analysis"), this, SLOT(itemSelected()))->setObjectName("PrincipalComponentAnalysis");
 	menu->addAction(QString("Exploratory Factor Analysis"), this, SLOT(itemSelected()))->setObjectName("ExploratoryFactorAnalysis");
-
+#ifdef QT_DEBUG
+	menu->addSeparator();
+	menu->addAction(QString("QML Principal Component Analysis"), this, SLOT(itemSelected()))->setObjectName("QMLPrincipalComponentAnalysis");
+#endif
 	ui->factoranalysisButton->setMenu(menu);
 }
 

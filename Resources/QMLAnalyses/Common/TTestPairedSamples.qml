@@ -6,12 +6,12 @@ Form {
     id: form
 
     VariablesForm {
-        formHeight: 200
+        height: 200
         defaultAssignedVariablesList {
             title: qsTr("Variables")
             name: "pairs"
             allowedColumns: ["scale"]
-            listViewType: "assignedPairs"
+            listViewType: "AssignedPairs"
         }
     }
     

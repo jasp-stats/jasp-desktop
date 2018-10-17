@@ -23,26 +23,23 @@
 
 using namespace std;
 
-ListModelTermsAssigned::ListModelTermsAssigned(AnalysisQMLForm *form, QQuickItem* item, bool onlyOneTerm)
-	: ListModelTermsAssignedInterface(form, item)
+ListModelTermsAssigned::ListModelTermsAssigned(QMLListView* listView, bool onlyOneTerm)
+	: ListModelAssignedInterface(listView)
 	, _onlyOneTerm(onlyOneTerm)
 {
-	_source = NULL;
 }
 
-void ListModelTermsAssigned::initTerms(const vector<vector<string> > &terms)
+void ListModelTermsAssigned::initTerms(const Terms &terms)
 {
 	beginResetModel();
 	_terms.set(terms);
 	endResetModel();
 	
-	if (_source != NULL)
+	if (source() != NULL)
 	{
 		if (!_copyTermsWhenDropped)
-			_source->removeAssignedTerms(_terms);
+			source()->removeAssignedTerms(_terms);
 	}
-	else
-		qDebug() << "ListModelTermsAssigned source not set";
 }
 
 void ListModelTermsAssigned::availableTermsChanged(Terms* termsAdded, Terms* termsRemoved)
@@ -56,13 +53,13 @@ void ListModelTermsAssigned::availableTermsChanged(Terms* termsAdded, Terms* ter
 		_terms.remove(*termsRemoved);
 		endResetModel();
 		_tempTermsToRemove.set(termsRemoved);
-		emit termsChanged(NULL, &_tempTermsToRemove);
+		emit modelChanged(NULL, &_tempTermsToRemove);
 	}	
 }
 
 bool ListModelTermsAssigned::canAddTerms(Terms *terms) const
 {
-	if ( ! ListModelDraggableTerms::canAddTerms(terms))
+	if ( ! ListModelDraggable::canAddTerms(terms))
 		return false;
 
 	if (_onlyOneTerm && terms->size() != 1)
@@ -99,7 +96,7 @@ Terms* ListModelTermsAssigned::addTerms(Terms *terms, int dropItemIndex)
 	_terms.set(newTerms);
 	endResetModel();	
 
-	emit termsChanged(terms, toSendBack);
+	emit modelChanged(terms, toSendBack);
 	
 	return toSendBack;
 }
@@ -114,5 +111,5 @@ void ListModelTermsAssigned::removeTerms(const QList<int> &indices)
 	_terms.remove(_tempTermsToRemove);
 	endResetModel();	
 
-	emit termsChanged(NULL, &_tempTermsToRemove);	
+	emit modelChanged(NULL, &_tempTermsToRemove);	
 }

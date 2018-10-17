@@ -20,33 +20,21 @@
 #define BOUNDQMLITEM_H
 
 #include "options/bound.h"
-#include "common.h"
-
-#include <QObject>
+#include "widgets/qmlitem.h"
 
 class QQuickItem;
 class AnalysisQMLForm;
 
-class BoundQMLItem : public QObject, public Bound
+class BoundQMLItem : public virtual QMLItem, public Bound
 {
-Q_OBJECT
 
 public:
-	explicit BoundQMLItem(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLItem(QQuickItem* item, AnalysisQMLForm* form);
 	virtual ~BoundQMLItem();
 	
-	const QString& name();
-	
-	virtual void setUp();
-	virtual void resetQMLItem(QQuickItem* item);
 	virtual Option* createOption() = 0;
+	virtual Option* boundTo() = 0;
 	
-protected:
-	void addError(const QString& error);
-	
-	QQuickItem* _item;
-	QString _name;
-	AnalysisQMLForm* _form;
 };
 
 #endif // BOUNDQMLITEM_H

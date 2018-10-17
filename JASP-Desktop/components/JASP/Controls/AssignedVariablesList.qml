@@ -18,6 +18,6 @@
 
 VariablesList {
     id: variablesList
-    listViewType: "assignedVariables"
+    listViewType: "AssignedVariables"
     dropMode: "Insert"
 }

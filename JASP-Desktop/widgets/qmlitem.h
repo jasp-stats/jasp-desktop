@@ -16,39 +16,32 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BOUNDQMLVARIABLESTABLE_H
-#define BOUNDQMLVARIABLESTABLE_H
+#ifndef QMLITEM_H
+#define QMLITEM_H
 
-#include "boundqmltableview.h"
-#include "analysis/options/optionstable.h"
-#include "listmodeldraggableterms.h"
-#include "listmodelvariablestable.h"
-#include <QObject>
+#include <QString>
 
-class BoundQMLVariablesTable : public BoundQMLTableView
+class QQuickItem;
+class AnalysisQMLForm;
+
+class QMLItem
 {
-	Q_OBJECT
-	
+
 public:
-	explicit BoundQMLVariablesTable(QQuickItem* item, AnalysisQMLForm* form);
-	virtual void bindTo(Option *option) OVERRIDE;
-	virtual void unbind() OVERRIDE;
+	QMLItem(QQuickItem* item, AnalysisQMLForm* form);
+	virtual ~QMLItem();
 	
-	virtual Option* createOption() OVERRIDE;
+	virtual void setUp() {}
+	const QString& name() { return _name; }
+	AnalysisQMLForm* form() { return _form; }
+	virtual void resetQMLItem(QQuickItem* item);
+	void addError(const QString& error);
 	
-private slots:
-	void _setOptions();
-    
 protected:
-	OptionsTable *_boundTo;
-	ListModelVariablesTable* _variablesTableModel;
 	
-	QString _variableName;
-	
-	virtual void resetTermsFromSyncModels() OVERRIDE;	
-	
-private:
-	Terms _tempTerms;
+	QQuickItem* _item;
+	QString _name;
+	AnalysisQMLForm* _form;
 };
 
-#endif // BOUNDQMLVARIABLESTABLE_H
+#endif // QMLITEM_H

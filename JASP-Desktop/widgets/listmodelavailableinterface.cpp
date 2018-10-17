@@ -16,27 +16,12 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BOUNDQMLDRAGGABLELISTVIEW_H
-#define BOUNDQMLDRAGGABLELISTVIEW_H
+#include "listmodelavailableinterface.h"
+#include "listmodelassignedinterface.h"
 
-#include "boundqmltableview.h"
-#include "listmodeltermsassignedinterface.h"
-
-class BoundQMLDraggableListView : public BoundQMLTableView
+void ListModelAvailableInterface::removeAssignedTerms(const Terms &terms)
 {
-public:
-	explicit BoundQMLDraggableListView(QQuickItem* item, AnalysisQMLForm* form) 
-		: BoundQMLTableView(item, form) 
-	{ _needsSyncModels = false; }
-	
-	virtual ListModelTermsAssignedInterface* targetModel() { return _targetModel; }
-	virtual ListModelTermsAvailableInterface* sourceModel() { return _sourceModel; }
-
-	virtual void setUp() OVERRIDE;
-
-protected:
-	ListModelTermsAvailableInterface* _sourceModel;
-	ListModelTermsAssignedInterface* _targetModel;
-};
-
-#endif // BOUNDQMLDRAGGABLELISTVIEW_H
+	beginResetModel();
+	_terms.remove(terms);
+	endResetModel();
+}

@@ -25,27 +25,23 @@
 
 using namespace std;
 
-BoundQMLListViewPairs::BoundQMLListViewPairs(QQuickItem* item, AnalysisQMLForm* form) : BoundQMLDraggableListView(item, form)
+BoundQMLListViewPairs::BoundQMLListViewPairs(QQuickItem* item, AnalysisQMLForm* form) 
+	: QMLItem(item, form)
+	, BoundQMLListViewDraggable(item, form)
 {
 	_boundTo = NULL;
-	_model = _targetModel = _pairsModel = new ListModelPairsAssigned(form, item);
-	_targetModel->setDropMode(qmlDropMode::Replace);
-	QQmlProperty::write(item, "showElementBorder", true);
-	QQmlProperty::write(item, "columns", 2);
-	QQmlProperty::write(item, "showVariableIcon", false);	
-	
-	connect(_targetModel, &ListModelPairsAssigned::termsChanged, this, &BoundQMLListViewPairs::modelChangedHandler);		
+	_variableTypesSuggested = Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale;	
+	_pairsModel = new ListModelPairsAssigned(this);
+	setDropMode(qmlDropMode::Replace);
+	QQmlProperty::write(_item, "showElementBorder", true);
+	QQmlProperty::write(_item, "columns", 2);
+	QQmlProperty::write(_item, "showVariableIcon", false);		
 }
 
 void BoundQMLListViewPairs::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionVariablesGroups *>(option);
 	_pairsModel->initTerms(_boundTo->value());
-}
-
-void BoundQMLListViewPairs::unbind()
-{
-	
 }
 
 Option* BoundQMLListViewPairs::createOption()
@@ -59,7 +55,7 @@ void BoundQMLListViewPairs::modelChangedHandler()
 {
 	vector<vector<string> > pairs;
 
-	for (const Term &qPair : _targetModel->terms())
+	for (const Term &qPair : _pairsModel->terms())
 	{
 		vector<string> pair;
 		pair.push_back(qPair.at(0).toStdString());

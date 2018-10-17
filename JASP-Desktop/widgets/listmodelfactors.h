@@ -20,14 +20,13 @@
 #define LISTMODELMEASURESFACTORS_H
 
 #include "listmodel.h"
-#include "boundmodel.h"
 
 class ListModelFactors : public ListModel
 {
 	Q_OBJECT
 public:
 	
-	ListModelFactors(AnalysisQMLForm *form, QQuickItem *item);
+	ListModelFactors(QMLListView* listView);
 	virtual int rowCount(const QModelIndex &parent) const OVERRIDE;
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
 	
@@ -36,7 +35,7 @@ public:
 	const Terms& getLevels() const;
 	virtual const Terms& terms() const OVERRIDE;
 	
-private slots:
+public slots:
 	void itemChanged(int row, QVariant value);
 	void itemRemoved(int row);
 		

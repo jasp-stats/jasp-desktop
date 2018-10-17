@@ -16,19 +16,21 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "listmodelmeasurescells.h"
+#include "listmodelmeasurescellsassigned.h"
+#include "listmodelfactors.h"
+#include "boundqmllistviewmeasurescells.h"
+
 #include <QDebug>
 
 using namespace std;
 
 
-ListModelMeasuresCells::ListModelMeasuresCells(AnalysisQMLForm *form, QQuickItem* item)
-	: ListModelTermsAssignedInterface(form, item)
+ListModelMeasuresCellsAssigned::ListModelMeasuresCellsAssigned(QMLListView* listView)
+	: ListModelAssignedInterface(listView)
 {
-	_source = NULL;
 }
 
-void ListModelMeasuresCells::initLevels(const Terms &terms)
+void ListModelMeasuresCellsAssigned::initLevels(const Terms &terms)
 {
 	beginResetModel();
 	_levels.clear();
@@ -54,12 +56,19 @@ void ListModelMeasuresCells::initLevels(const Terms &terms)
 	endResetModel();
 }
 
-void ListModelMeasuresCells::initVariables(const Terms &terms)
+void ListModelMeasuresCellsAssigned::initVariables(const Terms &terms)
 {
-	
+	//TODO: set the variables
 }
 
-Terms *ListModelMeasuresCells::termsFromIndexes(const QList<int> &indexes) const
+void ListModelMeasuresCellsAssigned::syncTermsChanged(Terms *termsAdded, Terms *termsRemoved)
+{
+	BoundQMLListViewMeasuresCells* measureCellsModel = dynamic_cast<BoundQMLListViewMeasuresCells*>(listView());
+	initLevels(measureCellsModel->getLevels());
+	emit modelChanged(termsAdded, termsRemoved);
+}
+
+Terms *ListModelMeasuresCellsAssigned::termsFromIndexes(const QList<int> &indexes) const
 {
 	Terms* terms = new Terms;
 	for (const int &index : indexes)
@@ -72,7 +81,7 @@ Terms *ListModelMeasuresCells::termsFromIndexes(const QList<int> &indexes) const
 	return terms;
 }
 
-Terms *ListModelMeasuresCells::addTerms(Terms *terms, int dropItemIndex)
+Terms *ListModelMeasuresCellsAssigned::addTerms(Terms *terms, int dropItemIndex)
 {
 	beginResetModel();
 	if (dropItemIndex >= 0)
@@ -114,12 +123,12 @@ Terms *ListModelMeasuresCells::addTerms(Terms *terms, int dropItemIndex)
 	
 	endResetModel();
 	
-	emit termsChanged();
+	emit modelChanged();
 	
 	return termsToSendBack;
 }
 
-void ListModelMeasuresCells::moveTerms(const QList<int> &indexes, int dropItemIndex)
+void ListModelMeasuresCellsAssigned::moveTerms(const QList<int> &indexes, int dropItemIndex)
 {
 	if (indexes.length() != 1 || dropItemIndex < 0)
 		return;
@@ -138,10 +147,10 @@ void ListModelMeasuresCells::moveTerms(const QList<int> &indexes, int dropItemIn
 	_variables.replace(dropCol, fromValue);
 	endResetModel();
 	
-	emit termsChanged();
+	emit modelChanged();
 }
 
-void ListModelMeasuresCells::removeTerms(const QList<int> &indexes)
+void ListModelMeasuresCellsAssigned::removeTerms(const QList<int> &indexes)
 {
 	beginResetModel();
 	for (int i = 0; i < indexes.length(); i++)
@@ -152,17 +161,17 @@ void ListModelMeasuresCells::removeTerms(const QList<int> &indexes)
 	}
 	endResetModel();
 	
-	emit termsChanged();
+	emit modelChanged();
 }
 
-int ListModelMeasuresCells::rowCount(const QModelIndex &parent) const
+int ListModelMeasuresCellsAssigned::rowCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent);
 
 	return _levels.size() * 2;
 }
 
-QVariant ListModelMeasuresCells::data(const QModelIndex &index, int role) const
+QVariant ListModelMeasuresCellsAssigned::data(const QModelIndex &index, int role) const
 {
 	if ( ! index.isValid())
 	{
@@ -175,7 +184,7 @@ QVariant ListModelMeasuresCells::data(const QModelIndex &index, int role) const
 	int realRow = indexRow / 2;
 	int realCol = indexRow % 2;
 	
-	if (role == Qt::DisplayRole || role == ListModelDraggableTerms::NameRole)
+	if (role == Qt::DisplayRole || role == ListModel::NameRole)
 	{
 		if (realCol < _levels.size())
 		{
@@ -185,7 +194,7 @@ QVariant ListModelMeasuresCells::data(const QModelIndex &index, int role) const
 				result = _levels[realRow];
 		}
 	}
-	else if (role == ListModelDraggableTerms::TypeRole)
+	else if (role == ListModel::TypeRole)
 	{
 		if (realCol == 0)
 			result = "variable";

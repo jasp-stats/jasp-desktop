@@ -23,16 +23,17 @@
 #include "analysis/options/optionboolean.h"
 #include <QObject>
 
-class BoundQMLCheckBox : public BoundQMLItem
+class BoundQMLCheckBox : public QObject, public BoundQMLItem
 {
 	Q_OBJECT
 	
 public:
-	explicit BoundQMLCheckBox(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLCheckBox(QQuickItem* item, AnalysisQMLForm* form);
 	virtual void bindTo(Option *option) OVERRIDE;
 	virtual void unbind() OVERRIDE;
 	
 	virtual Option* createOption() OVERRIDE;
+	virtual Option* boundTo() OVERRIDE { return _boundTo; }
 	virtual void resetQMLItem(QQuickItem *item) OVERRIDE;
 
 signals:

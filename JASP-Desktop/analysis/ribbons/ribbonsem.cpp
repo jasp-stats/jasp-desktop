@@ -18,6 +18,7 @@
 
 #include "ribbonsem.h"
 #include "ui_ribbonsem.h"
+#include <QMenu>
 
 RibbonSEM::RibbonSEM(QWidget *parent) :
 	RibbonWidget(parent),
@@ -26,6 +27,17 @@ RibbonSEM::RibbonSEM(QWidget *parent) :
 	ui->setupUi(this);
 
 	addRibbonButton(ui->SEMSimple);
+#ifdef QT_DEBUG
+	QMenu *menu;
+
+	menu = new QMenu(this);
+	
+	menu->addAction(QString("SEM"), this, SLOT(itemSelected()))->setObjectName("SEMSimple");
+	menu->addSeparator();
+	menu->addAction(QString("QML SEM"), this, SLOT(itemSelected()))->setObjectName("QMLSEMSimple");
+	ui->SEMSimple->setMenu(menu);
+#endif
+
 }
 
 RibbonSEM::~RibbonSEM()

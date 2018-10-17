@@ -5,6 +5,7 @@ Button 1.0 Button.qml
 ButtonGroup 1.0 ButtonGroup.qml
 CheckBox 1.0 CheckBox.qml
 ComboBox 1.0 ComboBox.qml
+ContrastsList 1.0 ContrastsList.qml
 ExpanderButton 1.0 ExpanderButton.qml
 FactorsList 1.0 FactorsList.qml
 Form 1.0 Form.qml
@@ -14,9 +15,9 @@ JASPControl 1.0 JASPControl.qml
 Label 1.0 Label.qml
 PercentField 1.0 PercentField.qml
 RadioButton 1.0 RadioButton.qml
+Slider 1.0 Slider.qml
 Switch 1.0 Switch.qml
 TextField 1.0 TextField.qml
 VariablesForm 1.0 VariablesForm.qml
 VariablesList 1.0 VariablesList.qml
-VariablesTable 1.0 VariablesTable.qml
-VariablesTableColumn 1.0 VariablesTableColumn.qml
+ExtraControlColumn 1.0 ExtraControlColumn.qml

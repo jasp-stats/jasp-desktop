@@ -20,10 +20,11 @@
         <file>components/JASP/Controls/TextField.qml</file>
         <file>components/JASP/Controls/VariablesList.qml</file>
         <file>components/JASP/Controls/VariablesForm.qml</file>
-        <file>components/JASP/Controls/VariablesTable.qml</file>
-        <file>components/JASP/Controls/VariablesTableColumn.qml</file>
         <file>components/JASP/Controls/Switch.qml</file>
         <file>modules/ModuleInstaller.qml</file>
         <file>components/JASP/Controls/FactorsList.qml</file>
+        <file>components/JASP/Controls/ExtraControlColumn.qml</file>
+        <file>components/JASP/Controls/ContrastsList.qml</file>
+        <file>components/JASP/Controls/Slider.qml</file>
     </qresource>
 </RCC>

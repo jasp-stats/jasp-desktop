@@ -22,14 +22,14 @@ import JASP.Controls 1.0
 Form {
     id: form
     usesJaspResults: true
-
+    
     VariablesForm {
         defaultAssignedVariablesList.title: qsTr("Variables")
         AssignedVariablesList {
             name: "splitby"
             title: qsTr("Split")
             singleItem: true
-            allowedColumns: ["ordinal", "nominal"]
+            allowedColumns: ["ordinal", "nominal"]            
         }
     }
 

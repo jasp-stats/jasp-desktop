@@ -16,32 +16,45 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BOUNDQMLLISTVIEWVARIABLES_H
-#define BOUNDQMLLISTVIEWVARIABLES_H
+#ifndef BOUNDQMLLISTVIEWTERMS_H
+#define BOUNDQMLLISTVIEWTERMS_H
 
-#include "boundqmldraggablelistview.h"
-#include "analysis/options/optionvariables.h"
+#include "boundqmllistviewdraggable.h"
 #include "listmodeltermsassigned.h"
+#include "analysis/options/optionvariables.h"
+#include "analysis/options/optionstable.h"
 
-
-class BoundQMLListViewVariables : public BoundQMLDraggableListView
+class BoundQMLListViewTerms : public BoundQMLListViewDraggable
 {
 	Q_OBJECT
 	
 public:
-	explicit BoundQMLListViewVariables(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLListViewTerms(QQuickItem* item, AnalysisQMLForm* form);
+	
+	virtual ListModel* model() OVERRIDE	{ return _variablesModel; }
+	virtual Option* boundTo() OVERRIDE
+	{
+		if (_hasExtraControlColumns)
+			return _optionsTable;
+		else
+			return _optionVariables; 
+	}	
+	
 	virtual void bindTo(Option *option) OVERRIDE;
 	virtual void unbind() OVERRIDE;
 	
 	virtual Option* createOption() OVERRIDE;
-		
-private slots:
-	void modelChangedHandler();
+	
+protected slots:
+	virtual void modelChangedHandler() OVERRIDE;
 
 private:
-	OptionVariables* _boundTo;
+	OptionVariables* _optionVariables;
+	OptionsTable* _optionsTable;
+	ListModelTermsAssigned* _variablesModel;
 	bool _singleItem;
 	
+	void _connectControlOptions();		
 };
 
-#endif // BOUNDQMLLISTVIEWVARIABLES_H
+#endif // BOUNDQMLLISTVIEWTERMS_H

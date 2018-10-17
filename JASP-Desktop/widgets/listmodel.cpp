@@ -19,18 +19,12 @@
 #include "listmodel.h"
 #include "analysis/analysisqmlform.h"
 
-#include <QQmlProperty>
-
-ListModel::ListModel(AnalysisQMLForm *form, QQuickItem *item) 
-	: QAbstractListModel(form)
-	, _form(form)
-	, _item(item)
+ListModel::ListModel(QMLListView* listView) 
+	: QAbstractListModel(listView)
+	, _listView(listView)
 {
-	// Cannot set the model to item during the constructor: it crashes.
-	// It is done during the setUp.
-	_isSetUp = false;
+	setInfoProvider(listView->form());
 	_areTermsVariables = true;
-	_name = QQmlProperty(_item, "name").read().toString();
 }
 
 QHash<int, QByteArray> ListModel::roleNames() const
@@ -41,13 +35,6 @@ QHash<int, QByteArray> ListModel::roleNames() const
 	return roles;
 }
 
-void ListModel::setUp()
-{
-	if (!_isSetUp)
-		QQmlProperty(_item, "model").write(QVariant::fromValue(this));					
-	_isSetUp = true;
-}
-
 void ListModel::refresh() {
 	beginResetModel(); 
 	endResetModel();
@@ -55,11 +42,71 @@ void ListModel::refresh() {
 
 void ListModel::addError(const QString &error) const
 {
-	_form->addError(error);
+	_listView->addError(error);
 }
 
-void ListModel::setTermsAreNotVariables()
+void ListModel::initTerms(const Terms &terms)
 {
-	_areTermsVariables = false;
-	QQmlProperty::write(_item, "showVariableIcon", false);
+	beginResetModel();
+	_terms.set(terms);
+	endResetModel();
+}
+
+void ListModel::syncTermsChanged(Terms *termsAdded, Terms *termsRemoved)
+{
+	const QList<ListModel*>& syncModels = listView()->syncModels();
+	if (syncModels.empty())
+		return;
+	
+	Terms tempTerms;
+	for (ListModel* syncModel : syncModels)
+	{
+		const Terms& terms = syncModel->terms();
+		tempTerms.add(terms);
+	}
+	
+	initTerms(tempTerms);
+	
+	emit modelChanged(termsAdded, termsRemoved);
+}
+
+int ListModel::rowCount(const QModelIndex &) const
+{
+	return _terms.size();
+}
+
+QVariant ListModel::data(const QModelIndex &index, int role) const
+{
+	int row = index.row();
+
+	if (role == Qt::DisplayRole || role == ListModel::NameRole)
+	{
+		Term term = _terms.at(row);
+		return QVariant(term.asQString());
+	}
+	else if (role == ListModel::TypeRole && areTermsVariables())
+	{
+		Term term = _terms.at(row);
+		if (term.size() != 1) return QVariant();
+		
+		int variableType = requestInfo(term, VariableInfo::VariableType).toInt();
+
+		switch (variableType)
+		{
+		case Column::ColumnTypeNominalText:
+			return QVariant(QString("qrc:/icons/variable-nominal-text.svg"));
+		case Column::ColumnTypeNominal:
+			return QVariant(QString("qrc:/icons/variable-nominal.svg"));
+		case Column::ColumnTypeOrdinal:
+			return QVariant(QString("qrc:/icons/variable-ordinal.svg"));
+		case Column::ColumnTypeScale:
+			return QVariant(QString("qrc:/icons/variable-scale.svg"));
+		default:
+			return QVariant();
+		}		
+	}
+	else
+	{
+		return QVariant();
+	}
 }

@@ -19,24 +19,27 @@
 #ifndef BOUNDQMLFACTORSLIST_H
 #define BOUNDQMLFACTORSLIST_H
 
-#include "boundqmltableview.h"
-#include "analysis/options/optionstable.h"
+#include "analysis/boundqmlitem.h"
 #include "listmodelfactors.h"
+#include "qmllistview.h"
+#include "analysis/options/optionstable.h"
 
-
-class BoundQMLFactorsList : public BoundQMLTableView
+class BoundQMLFactorsList :  public QMLListView, public BoundQMLItem
 {
 	Q_OBJECT
 	
 public:
-	explicit BoundQMLFactorsList(QQuickItem* item, AnalysisQMLForm* form);	
+	BoundQMLFactorsList(QQuickItem* item, AnalysisQMLForm* form);	
 
+	virtual ListModel* model() OVERRIDE		{ return _factorsModel; }
+	virtual Option* boundTo() OVERRIDE		{ return _boundTo; }
+	
 	virtual void bindTo(Option *option) OVERRIDE;
 	virtual void unbind() OVERRIDE;	
 	virtual Option* createOption() OVERRIDE;
 
-private slots:
-	void setOptionsFromFactors();
+protected slots:
+	virtual void modelChangedHandler() OVERRIDE;
 	
 private:
 	ListModelFactors* _factorsModel;

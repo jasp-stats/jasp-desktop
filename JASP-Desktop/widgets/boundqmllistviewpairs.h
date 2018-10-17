@@ -18,23 +18,25 @@
 #ifndef BOUNDQMLLISTVIEWPAIRS_H
 #define BOUNDQMLLISTVIEWPAIRS_H
 
-#include "boundqmldraggablelistview.h"
+#include "boundqmllistviewdraggable.h"
 #include "listmodelpairsassigned.h"
 #include "analysis/options/optionvariablesgroups.h"
 
-class BoundQMLListViewPairs : public BoundQMLDraggableListView
+class BoundQMLListViewPairs : public BoundQMLListViewDraggable
 {
 	Q_OBJECT
 	
 public:
-	explicit BoundQMLListViewPairs(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLListViewPairs(QQuickItem* item, AnalysisQMLForm* form);
+	
+	virtual ListModel* model() OVERRIDE	{ return _pairsModel; }
+	virtual Option* boundTo() OVERRIDE	{ return _boundTo; }
 	
 	virtual void bindTo(Option *option) OVERRIDE;
-	virtual void unbind() OVERRIDE;
 	virtual Option* createOption() OVERRIDE;
 
-private slots:
-	void modelChangedHandler();
+protected slots:
+	virtual void modelChangedHandler() OVERRIDE;
 	
 private:
 	OptionVariablesGroups* _boundTo;

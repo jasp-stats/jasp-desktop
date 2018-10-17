@@ -16,19 +16,17 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "listmodeltermsavailableinterface.h"
-#include "listmodeltermsassignedinterface.h"
+VariablesList {
+    title: qsTr("Factors")
+    syncModels: "fixedFactors"
+    name: "contrasts"
+    listViewType: "AssignedVariables"
+    height: 200
+    draggable: false            
 
-void ListModelTermsAvailableInterface::removeAssignedTerms(const Terms &terms)
-{
-	beginResetModel();
-	_terms.remove(terms);
-	endResetModel();
-}
-
-void ListModelTermsAvailableInterface::setTermsAreNotVariables() 
-{
-	ListModelDraggableTerms::setTermsAreNotVariables();
-	for (ListModelTermsAssignedInterface* model : _assignedModels)
-		model->setTermsAreNotVariables();
+    ExtraControlColumn {
+        type: "ComboBox"
+        name: "contrast"
+        model: ["none", "deviation", "simple", "difference", "Helmert", "repeated", "polynomial"]
+    }
 }

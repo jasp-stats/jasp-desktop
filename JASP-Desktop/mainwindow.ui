@@ -303,7 +303,7 @@ QPushButton::menu-indicator {
                    <height>16777215</height>
                   </size>
                  </property>
-                 <layout class="QGridLayout" name="gridLayout_4">
+                 <layout class="QGridLayout" name="pageOptionsLayout">
                   <property name="leftMargin">
                    <number>0</number>
                   </property>

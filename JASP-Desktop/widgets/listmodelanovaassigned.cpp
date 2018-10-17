@@ -25,14 +25,13 @@
 
 using namespace std;
 
-ListModelAnovaAssigned::ListModelAnovaAssigned(AnalysisQMLForm *form, QQuickItem* item)
-	: ListModelTermsAssignedInterface(form, item)
+ListModelAnovaAssigned::ListModelAnovaAssigned(QMLListView* listView)
+	: ListModelAssignedInterface(listView)
 {
 	_copyTermsWhenDropped = true;
-	setTermsAreNotVariables();	
 }
 
-void ListModelAnovaAssigned::initTerms(const std::vector<Options *> &terms, Options* rowTemplate)
+void ListModelAnovaAssigned::initTermsWithTemplate(const std::vector<Options *> &terms, Options* rowTemplate)
 {
 	beginResetModel();
 	
@@ -63,7 +62,7 @@ QVariant ListModelAnovaAssigned::data(const QModelIndex &index, int role) const
 	if (index.isValid() == false)
 		return QVariant();
 
-	if (role == Qt::DisplayRole || role == ListModelDraggableTerms::NameRole)
+	if (role == Qt::DisplayRole || role == ListModel::NameRole)
 	{
 		int colNo = index.column();
 		int rowNo = index.row();
@@ -86,9 +85,9 @@ int ListModelAnovaAssigned::rowCount(const QModelIndex &) const
 }
 
 
-void ListModelAnovaAssigned::setSource(ListModelTermsAvailableInterface *source)
+void ListModelAnovaAssigned::setSource(ListModelAvailableInterface *source)
 {
-	ListModelTermsAssignedInterface::setSource(source);
+	ListModelAssignedInterface::setSource(source);
 	_anovaTerms.setSortParent(source->allTerms());
 }
 
@@ -159,7 +158,7 @@ const Terms &ListModelAnovaAssigned::terms() const
 	return _anovaTerms;
 }
 
-const vector<Options *> &ListModelAnovaAssigned::rows() const
+const vector<Options *>& ListModelAnovaAssigned::rows() const
 {
 	return _rows;
 }
@@ -249,8 +248,8 @@ void ListModelAnovaAssigned::removeVariables(const Terms &terms)
 QString ListModelAnovaAssigned::getItemType(const Term &term)
 {
 	QString type;
-	ListModelTermsAvailable* source = dynamic_cast<ListModelTermsAvailable*>(_source);	
-	ListModel* model = source->getSyncModelOfTerm(term);
+	ListModelTermsAvailable* _source = dynamic_cast<ListModelTermsAvailable*>(source());	
+	ListModel* model = _source->getSyncModelOfTerm(term);
 	if (model)
 	{
 		type = model->getItemType();
@@ -271,7 +270,7 @@ bool ListModelAnovaAssigned::canAddTerms(Terms *terms) const
 Terms* ListModelAnovaAssigned::_addTerms(Terms *terms, int assignType)
 {
 	Terms dropped;
-	dropped.setSortParent(_source->allTerms());
+	dropped.setSortParent(source()->allTerms());
 	dropped.set(*terms);
 
 	Terms newTerms;
@@ -322,9 +321,7 @@ OptionTerm *ListModelAnovaAssigned::termOptionFromRow(Options *row)
 }
 
 void ListModelAnovaAssigned::setTerms(const Terms &terms, bool newTermsAreNuisance)
-{
-	if (terms.size() == 0) return;
-	
+{	
 	beginResetModel();
 	_anovaTerms.set(terms);
 
@@ -408,7 +405,7 @@ void ListModelAnovaAssigned::setTerms(const Terms &terms, bool newTermsAreNuisan
 
 	endResetModel();
 	
-	emit termsChanged();
+	emit modelChanged();
 }
 
 void ListModelAnovaAssigned::updateNuisances(bool checked)
@@ -456,6 +453,6 @@ void ListModelAnovaAssigned::updateNuisances(bool checked)
 		}
 	}
 
-	emit dataChanged(this->index(0,1), this->index(_rows.size() - 1, 1));
+//	emit dataChanged(this->index(0,1), this->index(_rows.size() - 1, 1));
 }
 

@@ -16,35 +16,27 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef LISTMODELVARIABLESTABLE_H
-#define LISTMODELVARIABLESTABLE_H
+#ifndef LISTMODELAVAILABLEINTERFACE_H
+#define LISTMODELAVAILABLEINTERFACE_H
 
-#include "listmodel.h"
+#include "listmodeldraggable.h"
 #include "analysis/options/terms.h"
-#include "analysis/boundqmlitem.h"
+#include "analysis/options/variableinfo.h"
 
-class ListModelVariablesTable : public ListModel
+class ListModelAssignedInterface;
+
+class ListModelAvailableInterface: public ListModelDraggable, public VariableInfoProvider
 {
 	Q_OBJECT
 public:
+	ListModelAvailableInterface(QMLListView* listView) : ListModelDraggable(listView) {}
 	
-	ListModelVariablesTable(AnalysisQMLForm *form, QQuickItem *item);
-	virtual int rowCount(const QModelIndex &parent) const OVERRIDE;
-	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;	
-	
-	virtual void initTerms(const Terms& terms);
-	
-	const QMap<QString, QList<BoundQMLItem*> >& rows() const;
-	
+	virtual const Terms& allTerms() const { return _allTerms; }
+	virtual void removeAssignedTerms(const Terms& terms);
+
 protected:
-	
-	Terms _terms;
-	QMap<QString, QList<BoundQMLItem*> > _rows;
-	QMap<QString, QList<BoundQMLItem*> > _cachedRows;
-	
-private slots:
-	void removeRowSlot(QString term);
-	void addRowSlot(QString term, QVariant controls);
+	std::map<QString, ListModel*> _termSyncModelMap;
+	Terms _allTerms;
 };
 
-#endif // LISTMODELVARIABLESTABLE_H
+#endif // LISTMODELTERMSAVAILABLEINTERFACE_H

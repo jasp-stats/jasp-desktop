@@ -63,7 +63,7 @@ Form {
         text: qsTr("Reverse-Scaled Items")
 
         VariablesForm {
-            formHeight: 150
+            height: 150
             availableVariablesList {
                 title: qsTr("Normal-Scaled Items")
                 name: "normalScaledItems"

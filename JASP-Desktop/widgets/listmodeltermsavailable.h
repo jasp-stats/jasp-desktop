@@ -19,20 +19,18 @@
 #ifndef LISTMODELTERMSAVAILABLE_H
 #define LISTMODELTERMSAVAILABLE_H
 
-#include "listmodeltermsavailableinterface.h"
+#include "listmodelavailableinterface.h"
 #include "common.h"
 
 class ListModelTermsAssigned;
 
-class ListModelTermsAvailable : public ListModelTermsAvailableInterface
+class ListModelTermsAvailable : public ListModelAvailableInterface
 {
 	Q_OBJECT	
 public:
-	explicit ListModelTermsAvailable(AnalysisQMLForm *form, QQuickItem* item);
+	ListModelTermsAvailable(QMLListView* listView);
 	
-	virtual void setUp() OVERRIDE;
-	
-	virtual void initTerms(const Terms &terms);
+	virtual void initTerms(const Terms &terms) OVERRIDE;
 	virtual QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const OVERRIDE;
 	
 	virtual void resetTermsFromSyncModels();

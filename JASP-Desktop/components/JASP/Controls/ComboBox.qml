@@ -7,6 +7,7 @@ JASPControl {
     id: comboBox
     controlType: "ComboBox"
     implicitHeight: control.height
+    implicitWidth: control.width + (label.visible ? labelSpacing + label.implicitWidth : 0)
     controlBackground: comboBoxBackground
     
     property int labelSpacing: 4
@@ -14,11 +15,23 @@ JASPControl {
     property alias label: label
     property alias currentText: control.currentText
     property alias model: control.model
+    property string modelType: Array.isArray(model) ? "array" : "keyvalue"
     property alias textRole: control.textRole
+    property bool showVariableTypeIcon: false
+    property var syncModels
     property alias currentIndex: control.currentIndex
     property alias control: control
     
     signal activated(int index);
+    
+    function resetWidth(value) {
+        textMetrics.font = control.font
+        textMetrics.text = value
+        var newWidth = textMetrics.width + (comboBox.showVariableTypeIcon ? 20 : 4);
+        console.log("New width for value " + value + ": " + newWidth);
+        if (newWidth > control.modelWidth)
+            control.modelWidth = newWidth;
+    }
     
     Component.onCompleted: {
         control.activated.connect(activated);
@@ -38,30 +51,43 @@ JASPControl {
             spacing: 5
             height: Theme.comboBoxHeight
             property int modelWidth : 30
-            implicitWidth: modelWidth + 2*leftPadding + 2*rightPadding + canvas.width + 2*spacing
-            property bool isArrayModel: Array.isArray(model)
-            textRole: isArrayModel ? "" : "key"
+            implicitWidth: modelWidth + leftPadding + rightPadding + canvas.width
+            textRole: "key"
             
             TextMetrics {
                 id: textMetrics
             }
 
             onModelChanged: {
-                textMetrics.font = control.font
-                var length = control.isListModel ? control.model.rowCount() : control.model.length
-                for(var i = 0; i < length; i++) {
-                    textMetrics.text = control.isListModel ? control.model.get(i)[control.textRole] : model[i]
-                    modelWidth = Math.max(textMetrics.width, modelWidth)
+                console.log("model changed")
+                var length = comboBox.modelType == "array" ? control.model.length : control.model.rowCount();
+                for (var i = 0; i < length; i++) {
+                    var value = comboBox.modelType === "array" ? model[i] : (comboBox.modelType === "variables" ? "" : control.model.get(i)[control.textRole]);
+                    resetWidth(value);
                 }
+                
             }
             
             delegate: ItemDelegate {
                 height: control.height
-                contentItem: Text {
-                    text: control.isArrayModel ? modelData : model[control.textRole] 
-                    font: control.font
-                    elide: Text.ElideRight
-                    verticalAlignment: Text.AlignVCenter
+                contentItem: Rectangle {
+                    anchors.fill: parent
+                    Image {
+                        id: contentIcon
+                        height: 15; width: 15
+                        anchors.verticalCenter: parent.verticalCenter
+                        source: comboBox.showVariableTypeIcon ? model.type : ""
+                        visible: comboBox.showVariableTypeIcon
+                    }
+                    
+                    Text {
+                        id: contentText
+                        x: comboBox.showVariableTypeIcon ? 20 : 4                          
+                        text: comboBox.modelType === "variables" ? model.name : (comboBox.modelType === "array" ? modelData : model[control.textRole])
+                        font: control.font
+                        elide: Text.ElideNone
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
 
                 highlighted: control.highlightedIndex === index
@@ -99,7 +125,7 @@ JASPControl {
                 text: control.displayText
                 font: control.font
                 verticalAlignment: Text.AlignVCenter
-                elide: Text.ElideRight
+                //elide: Text.ElideRight
                 color: enabled ? Theme.black : Theme.grayDarker
             }
         

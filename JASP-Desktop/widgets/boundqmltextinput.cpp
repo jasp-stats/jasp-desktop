@@ -17,49 +17,34 @@
 //
 
 #include "boundqmltextinput.h"
+#include "analysis/analysisqmlform.h"
 #include <QQmlProperty>
 #include <QQuickItem>
 
 using namespace std;
 
-BoundQMLTextInput::BoundQMLTextInput(QQuickItem* item, AnalysisQMLForm* form) : BoundQMLItem(item, form)
+BoundQMLTextInput::BoundQMLTextInput(QQuickItem* item, AnalysisQMLForm* form) 
+	: QMLItem(item, form)
+	, QObject(form)
+	, BoundQMLItem(item, form)
 {
 	_integer = NULL;
 	_integerArray = NULL;
 	_number = NULL;
 	_string = NULL;
+	_option = NULL;
 	
 	QString type = QQmlProperty(item, "inputType").read().toString();
 	if (type == "integer")
-	{
 		_inputType = TextInputType::IntegerInputType;
-		_integer = new OptionInteger();
-		_option = _integer;
-	}
 	else if (type == "number")
-	{
 		_inputType = TextInputType::NumberInputType;
-		_number = new OptionNumber();
-		_option = _number;
-	}
 	else if (type == "percent")
-	{
 		_inputType = TextInputType::PercentIntputType;
-		_number = new OptionNumber();
-		_option = _number;
-	}
 	else if (type == "integerArray")
-	{
 		_inputType = TextInputType::IntegerArrayInputType;
-		_integerArray = new OptionIntegerArray();
-		_option = _integerArray;
-	}
 	else
-	{
-		_inputType = TextInputType::StringInputType;
-		_string = new OptionString();
-		_option = _string;
-	}
+		_inputType = TextInputType::StringInputType;	
 	
 	QQuickItem::connect(item, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
 }
@@ -96,116 +81,113 @@ QString BoundQMLTextInput::_getIntegerArrayValue()
 
 void BoundQMLTextInput::bindTo(Option *option)
 {
-	QString value;
 	setLegal();
 	
 	switch (_inputType) 
 	{
 		case TextInputType::IntegerInputType:
 		{
-			_integer = dynamic_cast<OptionInteger *>(option);
-			value = QString::number(_integer->value());
+			_option = _integer = dynamic_cast<OptionInteger *>(option);
+			_value = QString::number(_integer->value());
 		}
 		break;
 		case TextInputType::NumberInputType:
 		{
-			_number = dynamic_cast<OptionNumber *>(option);
-			value = QString::number(_number->value());
+			_option = _number = dynamic_cast<OptionNumber *>(option);
+			_value = QString::number(_number->value());
 		}
 		break;
 		case TextInputType::PercentIntputType:
 		{
-			_number = dynamic_cast<OptionNumber *>(option);
-			value = _getPercentValue();
+			_option = _number = dynamic_cast<OptionNumber *>(option);
+			_value = _getPercentValue();
 		}
 		break;
 		case TextInputType::IntegerArrayInputType:
 		{
-			_integerArray = dynamic_cast<OptionIntegerArray *>(option);
-			value = _getIntegerArrayValue();
+			_option = _integerArray = dynamic_cast<OptionIntegerArray *>(option);
+			_value = _getIntegerArrayValue();
 		}
 		break;
 		default:
 		{
-			_string = dynamic_cast<OptionString *>(option);
-			value = QString::fromStdString(_string->value());
+			_option = _string = dynamic_cast<OptionString *>(option);
+			_value = QString::fromStdString(_string->value());
 		}
 	}
 
-	_item->setProperty("text", value);
-}
-
-void BoundQMLTextInput::unbind()
-{
-	
+	_item->setProperty("text", _value);
 }
 
 Option *BoundQMLTextInput::createOption()
 {
-	QString text = QQmlProperty::read(_item, "text").toString();
-	setOptionValue(text);
-	return _option;
+	Option* option = NULL;
+	_value = QQmlProperty::read(_item, "text").toString();
+	switch (_inputType)
+	{
+	case TextInputType::IntegerInputType:		option = new OptionInteger();		break;
+	case TextInputType::NumberInputType:		option = new OptionNumber();		break;
+	case TextInputType::PercentIntputType:		option = new OptionNumber();		break;
+	case TextInputType::IntegerArrayInputType:	option = new OptionIntegerArray();	break;
+	case TextInputType::StringInputType:
+	default:									option = new OptionString();		break;
+	}
+	
+	_setOptionValue(option, _value);
+	return option;
 }
 
 void BoundQMLTextInput::resetQMLItem(QQuickItem *item)
 {
 	BoundQMLItem::resetQMLItem(item);
 	
-	QString value;
-	switch (_inputType) 
-	{
-	case TextInputType::IntegerInputType:		value = QString::number(_integer->value()); break;
-	case TextInputType::NumberInputType:		value = QString::number(_number->value());	break;
-	case TextInputType::PercentIntputType:		value = _getPercentValue();					break;
-	case TextInputType::IntegerArrayInputType:	value = _getIntegerArrayValue();			break;
-	default:									value = QString::fromStdString(_string->value());
-	}
-	_item->setProperty("text", value);
+	_item->setProperty("text", _value);
 	QQuickItem::connect(_item, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
 }
 
-void BoundQMLTextInput::setOptionValue(QString& text)
+void BoundQMLTextInput::_setOptionValue(Option* option, QString& text)
 {
 	switch (_inputType) {
-		case TextInputType::IntegerInputType:
-			_integer->setValue(text.toInt());
-			break;
-		case TextInputType::NumberInputType:
-			_number->setValue(text.toDouble());
-			break;
-		case TextInputType::PercentIntputType:
+	case TextInputType::IntegerInputType:
+		dynamic_cast<OptionInteger*>(option)->setValue(text.toInt());
+		break;
+	case TextInputType::NumberInputType:
+		dynamic_cast<OptionNumber*>(option)->setValue(text.toDouble());
+		break;
+	case TextInputType::PercentIntputType:
+		{
+			double value = text.toDouble();
+			if (value > 100) value = 100;
+			else if (value < 0) value = 0;
+			value = value / 100;
+			dynamic_cast<OptionNumber*>(option)->setValue(value);
+		}	
+		break;
+	case TextInputType::IntegerArrayInputType:
+		{
+			text.replace(QString(" "), QString(","));
+			std::vector<int> values;
+			QStringList chunks = text.split(QChar(','), QString::SkipEmptyParts);
+		
+			for (QString &chunk: chunks)
 			{
-				double value = text.toDouble();
-				if (value > 100) value = 100;
-				else if (value < 0) value = 0;
-				value = value / 100;
-				_number->setValue(value);
-			}	
-			break;
-		case TextInputType::IntegerArrayInputType:
-			{
-				text.replace(QString(" "), QString(","));
-				std::vector<int> values;
-				QStringList chunks = text.split(QChar(','), QString::SkipEmptyParts);
-			
-				for (QString &chunk: chunks)
-				{
-					bool ok;
-					int value = chunk.toInt(&ok);
-			
-					if (ok)
-						values.push_back(value);
-				}
-				_integerArray->setValue(values);			
+				bool ok;
+				int value = chunk.toInt(&ok);
+		
+				if (ok)
+					values.push_back(value);
 			}
-			break;
-		default:
-			_string->setValue(text.toStdString());
+			dynamic_cast<OptionIntegerArray*>(option)->setValue(values);			
+		}
+		break;
+	default:
+		dynamic_cast<OptionString*>(option)->setValue(text.toStdString());
 	}
 }
 
 void BoundQMLTextInput::textChangedSlot()
 {
-	QString text = QQmlProperty::read(_item, "text").toString();
-	setOptionValue(text);
+	_value = QQmlProperty::read(_item, "text").toString();
+	if (_option)
+		_setOptionValue(_option, _value);
 }

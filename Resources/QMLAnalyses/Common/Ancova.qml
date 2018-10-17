@@ -75,7 +75,7 @@ Form {
             defaultAssignedVariablesList {
                 title: qsTr("Model terms")
                 name: "modelTerms"
-                listViewType: "assignedAnova"
+                listViewType: "AssignedAnova"
             }
         }
 
@@ -102,17 +102,8 @@ Form {
     ExpanderButton {
         text: qsTr("Contrasts")
 
-        VariablesTable {
-            title: qsTr("Factors")
-            syncModels: "fixedFactors"
-            name: "contrasts"
-
-            VariablesTableColumn {
-                type: "ComboBox"
-                name: "contrast"
-                model: ["none", "deviation", "simple", "difference", "Helmert", "repeated", "polynomial"]
-            }
-        }
+        ContrastsList {}
+        
         CheckBox { text: qsTr("Assume equal variances") ; name: "contrastAssumeEqualVariance"; checked: true}
         RowLayout {
             CheckBox { text: qsTr("Confidence intervals")  ; name: "confidenceIntervalsContrast"; id: confidenceIntervalsContrast }

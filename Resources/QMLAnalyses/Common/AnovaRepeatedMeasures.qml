@@ -29,18 +29,18 @@ Form {
 
 
     VariablesForm {
-        formHeight: 520
+        height: 520
         showDefaultAssignedVariablesList: false
         FactorsList {
             name: "repeatedMeasuresFactors"
-            title: qsTr("Reapeted Measures Factors")
+            title: qsTr("Repeated Measures Factors")
             height: 180
         }
         AssignedVariablesList {
             name: "repeatedMeasuresCells"
             title: qsTr("Repeated Measures Cells")
             allowedColumns: ["scale"]
-            listViewType: "measuresCells"
+            listViewType: "MeasuresCells"
             syncModels: "repeatedMeasuresFactors"
             height: 140
         }
@@ -61,7 +61,7 @@ Form {
         text: qsTr("Model")
 
         VariablesForm {
-            formHeight: 150
+            height: 150
             availableVariablesList {
                 title: qsTr("Repeated Measures Components")
                 name: "withinComponents"
@@ -70,12 +70,12 @@ Form {
             defaultAssignedVariablesList {
                 title: qsTr("Model terms")
                 name: "withinModelTerms"
-                listViewType: "assignedAnova"
+                listViewType: "AssignedAnova"
             }
         }
         
         VariablesForm {
-            formHeight: 150
+            height: 150
             availableVariablesList {
                 title: qsTr("Between Subjects Components")
                 name: "betweenComponents"
@@ -84,7 +84,7 @@ Form {
             defaultAssignedVariablesList {
                 title: qsTr("Model terms")
                 name: "betweenModelTerms"
-                listViewType: "assignedAnova"
+                listViewType: "AssignedAnova"
             }
         }
 
@@ -118,16 +118,8 @@ Form {
     ExpanderButton {
         text: qsTr("Contrasts")
 
-        VariablesTable {
-            title: qsTr("Factors")
-            syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors"]
-            name: "contrasts"
-
-            VariablesTableColumn {
-                type: "ComboBox"
-                name: "contrast"
-                model: ["none", "deviation", "simple", "difference", "Helmert", "repeated", "polynomial"]
-            }
+        ContrastsList {
+            syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors"]            
         }
     }
 
@@ -135,7 +127,7 @@ Form {
         text: qsTr("Post Hoc Tests")
 
         VariablesForm {
-            formHeight: 150
+            height: 150
             availableVariablesList {
                 name: "postHocTestsAvailable"
                 syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors"]
@@ -163,7 +155,7 @@ Form {
         text: qsTr("Descriptives Plots")
 
         VariablesForm {
-            formHeight: 150
+            height: 150
             availableVariablesList {        title: qsTr("Factors")          ; name: "descriptivePlotsVariables" ; syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
             defaultAssignedVariablesList {  title: qsTr("Horizontal axis")  ; name: "plotHorizontalAxis"    ; singleItem: true }
             AssignedVariablesList {         title: qsTr("Separate lines")   ; name: "plotSeparateLines"     ; singleItem: true }
@@ -195,7 +187,7 @@ Form {
             debug: true
 
             VariablesForm {
-                formHeight: 150
+                height: 150
                 availableVariablesList {        name: "marginalMeansTermsAvailable" ; syncModels: "withinModelTerms"; showVariableIcon: false }
                 defaultAssignedVariablesList {  name: "marginalMeansTerms"; showVariableIcon: false }
             }
@@ -231,7 +223,7 @@ Form {
         text: qsTr("Simple Main Effects")
 
         VariablesForm {
-            formHeight: 150
+            height: 150
             availableVariablesList {        title: qsTr("Factors")              ; name: "effectsVariables"      ; syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
             defaultAssignedVariablesList {  title: qsTr("Simple effect factor") ; name: "simpleFactor"          ; singleItem: true }
             AssignedVariablesList {         title: qsTr("Moderator factor 1")   ; name: "moderatorFactorOne"    ; singleItem: true }
@@ -245,7 +237,7 @@ Form {
         text: qsTr("Nonparametrics")
 
         VariablesForm {
-            formHeight: 150
+            height: 150
             availableVariablesList {        title: qsTr("Factors")                  ; name: "kruskalVariablesAvailable";  syncModels: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
             defaultAssignedVariablesList {  title: qsTr("RM Factor")                ; name: "friedmanWithinFactor" }
             AssignedVariablesList {         title: qsTr("Optional grouping factor") ; name: "friedmanBetweenFactor"    ; singleItem: true }

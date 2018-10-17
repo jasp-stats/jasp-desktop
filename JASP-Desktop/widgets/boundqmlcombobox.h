@@ -21,26 +21,30 @@
 
 #include "analysis/boundqmlitem.h"
 #include "analysis/options/optionlist.h"
-#include <QObject>
+#include "listmodel.h"
+#include "listmodeltermsavailable.h"
 
-class BoundQMLComboBox : public BoundQMLItem
+class BoundQMLComboBox : public QMLListView, public BoundQMLItem
 {
 	Q_OBJECT
 	
 public:
-	explicit BoundQMLComboBox(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLComboBox(QQuickItem* item, AnalysisQMLForm* form);
 	virtual void bindTo(Option *option) OVERRIDE;
-	virtual void unbind() OVERRIDE;
 	virtual void resetQMLItem(QQuickItem *item) OVERRIDE;
 	virtual Option* createOption() OVERRIDE;
+	virtual Option* boundTo() OVERRIDE { return _boundTo; }
+	
+	virtual ListModel* model() OVERRIDE { return _model; }
 
-private slots:
+protected slots:
+	virtual void modelChangedHandler() OVERRIDE;
 	void comboBoxChangeValueSlot(int index);
-    
+
 protected:
 	OptionList *_boundTo;
 	int _currentIndex;
-
+	ListModel* _model;
 };
 
 #endif // BOUNDQMLCOMBOBOX_H

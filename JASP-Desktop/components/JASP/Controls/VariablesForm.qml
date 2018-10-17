@@ -21,29 +21,31 @@ import JASP.Theme 1.0
 
 Item {
     id: variablesForm
-    implicitWidth: form.formWidthAvailable
-    implicitHeight: availableVariablesList.height
+    implicitWidth: parent.width
+    height: Theme.defaultListHeight
+    implicitHeight: height
     
     default property alias content: items.children
-    property alias formHeight: availableVariablesList.height
+    property int listWidth: parent.width * 2 / 5
     property alias availableVariablesList: availableVariablesList
-    property alias defaultAssignedVariablesList: assignedVariablesList
+    property alias defaultAssignedVariablesList: defaultAssignedVariablesList
     
     property int marginBetweenVariablesLists: 8
     property bool showDefaultAssignedVariablesList: true
-    
-    readonly property int defaultListHeight: Theme.defaultListHeight
 
     VariablesList {
         id: availableVariablesList
         name: "allAvailableVariables"
+        width: listWidth
+        height: parent.height
         anchors.top: parent.top
         anchors.left: parent.left
     }
 
     AssignedVariablesList {
-        id: assignedVariablesList
-        name: "variables"
+        id: defaultAssignedVariablesList
+        name: showDefaultAssignedVariablesList ? "variables" : ""
+        width: listWidth
         visible: showDefaultAssignedVariablesList
     }
     
@@ -52,64 +54,59 @@ Item {
     }
     
     Component.onCompleted: {
-        var titleHeight = 20;
-        var marginBetweenList = marginBetweenVariablesLists;
+        var titleHeight = Theme.variablesListTitle;
         
-        if (availableVariablesList.title && !assignedVariablesList.title)
-            assignedVariablesList.title = " "; // Add a space as title so that the assignedList aligns with the availableList
-        var allAssignedVariablesList = showDefaultAssignedVariablesList ? [assignedVariablesList] : [];
-        var allJASPControls = showDefaultAssignedVariablesList ? [assignedVariablesList] : []
-        var minHeight = 0;
-        var multiItemsAssignedVariables = [];
-        if (showDefaultAssignedVariablesList) {
-            if (assignedVariablesList.singleItem)
-                minHeight = assignedVariablesList.implicitHeight;
-            else {
-                multiItemsAssignedVariables.push(assignedVariablesList);
-                if (assignedVariablesList.title)
-                    minHeight = titleHeight;
-            }
-        }
+        if (availableVariablesList.title && !defaultAssignedVariablesList.title)
+            defaultAssignedVariablesList.title = " "; // Add a space as title so that the assignedList aligns with the availableList
+        var allJASPControls = showDefaultAssignedVariablesList ? [defaultAssignedVariablesList] : []
+        
         for (var i = 0; i < items.children.length; ++i) {
             var child = items.children[i];
             if (child.name && child.visible) {
-                if (child instanceof AssignedVariablesList)
-                    allAssignedVariablesList.push(child);
-                minHeight += marginBetweenList;
-                if (child.singleItem)
-                    minHeight += child.implicitHeight;
-                else if (child.height !== defaultListHeight)
-                    minHeight += child.height
-                else {
-                    multiItemsAssignedVariables.push(child);
-                    if (child.title)
-                        minHeight += titleHeight;
-                }
                 allJASPControls.push(child);                
             }
         }
         
+        var minHeight = 0;
+        var allAssignedVariablesList = [];
+        var changeableHeightControls = [];
         for (i = 0; i < allJASPControls.length; i++) {
+            var control = allJASPControls[i];
+            if (control instanceof AssignedVariablesList)
+                allAssignedVariablesList.push(control);
+            if (i > 0)
+                minHeight += marginBetweenVariablesLists;
+            if (control.singleItem)
+                minHeight += control.height;
+            else if (control.height !== Theme.defaultListHeight)
+                // If the height of this List item was changed, don't change it
+                minHeight += control.height
+            else {
+                changeableHeightControls.push(control);
+                if (control.title)
+                    minHeight += titleHeight;
+            }
             // Do not set the parent in the previous loop: this removes it from the items children. 
             allJASPControls[i].parent = variablesForm;
-        }
+        }        
         
-        if (multiItemsAssignedVariables.length > 0) {
-            var multiItemsHeight = (availableVariablesList.height - minHeight) / multiItemsAssignedVariables.length;
-            if (multiItemsHeight < 25)
-                multiItemsHeight = 25;
-            for (i = 0; i < multiItemsAssignedVariables.length; i++) {
-                var _height = multiItemsAssignedVariables[i].title ? (titleHeight + multiItemsHeight) : multiItemsHeight;
-                multiItemsAssignedVariables[i].height = _height;
-                multiItemsAssignedVariables[i].implicitHeight = _height;
+        // Set the height of controls (that have not singleItem set or where the height is already specifically set)
+        // so that the AssignedVariablesList column is as long as the AvailableVariablesList column. 
+        if (changeableHeightControls.length > 0) {
+            var controlHeight = (availableVariablesList.height - minHeight) / changeableHeightControls.length;
+            if (controlHeight < 25)
+                controlHeight = 25; // Set a minimum height
+            for (i = 0; i < changeableHeightControls.length; i++) {
+                changeableHeightControls[i].height = changeableHeightControls[i].title ? (titleHeight + controlHeight) : controlHeight;
             }
         }
+        
         var anchorTop = variablesForm.top;
         for (i = 0; i < allJASPControls.length; ++i) {
+            allJASPControls[i].width = Qt.binding(function (){ return variablesForm.listWidth});
             allJASPControls[i].anchors.top = anchorTop;
-            allJASPControls[i].anchors.topMargin = i === 0 ? 0 : marginBetweenList;
-            allJASPControls[i].anchors.right = variablesForm.right
-            allJASPControls[i].anchors.rightMargin = 40 // Due to the f...g OK button            
+            allJASPControls[i].anchors.topMargin = i === 0 ? 0 : marginBetweenVariablesLists;
+            allJASPControls[i].anchors.right = variablesForm.right;
             anchorTop = allJASPControls[i].bottom;
         }
                 

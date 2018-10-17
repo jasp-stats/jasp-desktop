@@ -16,40 +16,41 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BOUNDQMLLISTMEASURESCELLS_H
-#define BOUNDQMLLISTMEASURESCELLS_H
+#ifndef BOUNDQMLLISTVIEWMEASURESCELLS_H
+#define BOUNDQMLLISTVIEWMEASURESCELLS_H
 
-#include "boundqmldraggablelistview.h"
-#include "listmodelmeasurescells.h"
+#include "boundqmllistviewdraggable.h"
+#include "listmodelmeasurescellsassigned.h"
 #include "listmodelfactors.h"
 #include "analysis/options/optionvariables.h"
 
-class BoundQMLListMeasuresCells : public BoundQMLDraggableListView
+class BoundQMLListViewMeasuresCells : public BoundQMLListViewDraggable
 {
 	Q_OBJECT
 	
 public:
-	explicit BoundQMLListMeasuresCells(QQuickItem* item, AnalysisQMLForm* form);
+	BoundQMLListViewMeasuresCells(QQuickItem* item, AnalysisQMLForm* form);
+	
+	virtual ListModel* model() OVERRIDE	{ return _measuresCellsModel; }
+	virtual Option* boundTo() OVERRIDE	{ return _boundTo; }
 	
 	virtual void bindTo(Option *option) OVERRIDE;
-	virtual void unbind() OVERRIDE;
 	virtual Option* createOption() OVERRIDE;
 	virtual void setUp() OVERRIDE;
 	
-private slots:
-	void modelChangedHandler();
+	const Terms& getLevels();
 	
-protected:
-	OptionVariables* _boundTo;
-	ListModelMeasuresCells* _measuresCellsModel;
-	std::vector<ListModelFactors*> _syncFactorsModels;
+protected slots:
+	virtual void modelChangedHandler() OVERRIDE;
 	
-	
-	virtual void resetTermsFromSyncModels() OVERRIDE;	
-
 private:
+	OptionVariables* _boundTo;
+	ListModelMeasuresCellsAssigned* _measuresCellsModel;
+	QList<ListModelFactors*> _syncFactorsModels;
+	
 	Terms _tempTerms;
 	
+	void _initLevels();
 };
 
-#endif // BOUNDQMLLISTMEASURESCELLS_H
+#endif // BOUNDQMLLISTVIEWMEASURESCELLS_H
