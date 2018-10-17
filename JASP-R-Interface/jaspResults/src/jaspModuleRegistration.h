@@ -139,6 +139,7 @@ RCPP_MODULE(jaspResults)
 	Rcpp::class_<jaspHtml_Interface>("jaspHtml")
 		.derives<jaspObject_Interface>("jaspObject")
 		.property("text",			&jaspHtml_Interface::getText,			&jaspHtml_Interface::setText,			"The text of this element")
+        .property("html",			&jaspHtml_Interface::getHtml,													"The text of this element")
 		.property("elementType",	&jaspHtml_Interface::getElementType,	&jaspHtml_Interface::setElementType,	"The type of this html element, default is 'p' but other useful values include 'H1', 'h2' etc. If you want to write your own html element completely set this to \"\"")
 		.property("class",			&jaspHtml_Interface::getClass,			&jaspHtml_Interface::setClass,			"The Css-class of this element, for monospace one could use jasp-code or simply leave it empty.")
 	;
