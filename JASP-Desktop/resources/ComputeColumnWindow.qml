@@ -169,11 +169,19 @@ FocusScope
 				ListElement	{ type: "function";	functionName: "length";	functionParameters: "y";		functionParamTypes: "string:number:boolean";	toolTip: "returns number of elements in y" }
 				ListElement	{ type: "function";	functionName: "median";	functionParameters: "values";	functionParamTypes: "number";					toolTip: "median" }
 
+                ListElement	{ type: "separator" }
+                ListElement	{ type: "function";	functionName: "log";        functionParameters: "y";		functionParamTypes: "number";			toolTip: "natural logarithm" }
+                ListElement	{ type: "function";	functionName: "log2";       functionParameters: "y";		functionParamTypes: "number";			toolTip: "base 2 logarithm" }
+                ListElement	{ type: "function";	functionName: "log10";      functionParameters: "y";		functionParamTypes: "number";			toolTip: "base 10 logarithm" }
+                ListElement	{ type: "function";	functionName: "logb";       functionParameters: "y,base";	functionParamTypes: "number";			toolTip: "logarithm of y in 'base'" }
+                ListElement	{ type: "function";	functionName: "exp";        functionParameters: "y";		functionParamTypes: "number";			toolTip: "exponential" }
+                ListElement	{ type: "function";	functionName: "fishZ";      functionParameters: "y";		functionParamTypes: "number";			toolTip: "Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform correlations, numbers between -1 and 1 to the real line" }
+                ListElement	{ type: "function";	functionName: "invFishZ";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform real numbers to numbers between -1 and 1" }
+
 				ListElement	{ type: "separator" }
 				ListElement	{ type: "function";	functionName: "cut";		functionParameters: "values,numBreaks";		functionParamTypes: "number,number";						toolTip: "break your data up in numBreaks levels" }
 				ListElement	{ type: "function";	functionName: "replaceNA";	functionParameters: "column,replaceWith";	functionParamTypes: "number,number";						toolTip: "replace any missing values (NA) in column by the value in replaceWith" }
 				ListElement	{ type: "function";	functionName: "ifelse";		functionParameters: "test,then,else";		functionParamTypes: "boolean,boolean:string:number,boolean:string:number";	toolTip: "if-else statement" }
-
 
 				ListElement	{ type: "separator" }
                 ListElement	{ type: "function";	functionName: "normalDist";     functionParameters: "mean,sd";                  functionParamTypes: "number,number";            toolTip: "generates data from a Gaussian distribution with specified mean and standard deviation sd" }
@@ -196,16 +204,8 @@ FocusScope
                 ListElement	{ type: "function";	functionName: "logNormDist";    functionParameters: "meanLog,sdLog";            functionParamTypes: "number,number";            toolTip: "generates data from a log-normal distribution with specified logarithmic mean meanLog and standard deviation sdLog" }
                 ListElement	{ type: "function";	functionName: "weibullDist";    functionParameters: "shape,scale";              functionParamTypes: "number,number";            toolTip: "generates data from a Weibull distribution with specified shape and scale" }
 
-				ListElement	{ type: "separator" }
-				ListElement	{ type: "function";	functionName: "log";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "natural logarithm" }
-				ListElement	{ type: "function";	functionName: "log2";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "base 2 logarithm" }
-				ListElement	{ type: "function";	functionName: "log10";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "base 10 logarithm" }
-				ListElement	{ type: "function";	functionName: "logb";	functionParameters: "y,base";	functionParamTypes: "number";			toolTip: "logarithm of y in 'base'" }
-				ListElement	{ type: "function";	functionName: "exp";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "exponential" }
-
 				//cut?
 				//match?
-
 			}
 		}
 
