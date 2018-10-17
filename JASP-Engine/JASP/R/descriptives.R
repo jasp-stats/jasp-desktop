@@ -197,7 +197,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 
   if (options$percentileValuesEqualGroups)  # I've read that there are several ways how to estimate percentiles so it should be checked if it match the SPSS way
     for (i in seq(equalGroupsNo - 1))
-      stats$addColumnInfo(name=paste("eg", i, sep=""), title=paste(as.integer(100 * i / equalGroupsNo), "th percentile", sep=""), type="number", format="sf:4")
+      stats$addColumnInfo(name=paste("eg", i, sep=""), title=paste(round(as.numeric(100 * i / equalGroupsNo), 2), "th percentile", sep=""), type="number", format="sf:4")
 
   if (options$percentileValuesPercentiles)
     for (i in percentilesPercentiles)
