@@ -566,8 +566,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   labelPos[4, 2] <- .65
   p <- JASPgraphs::ggMatrixPlot(plotList = plotMat, leftLabels = .unv(variables), topLabels = .unv(variables),
   															scaleXYlabels = NULL, labelPos = labelPos)
-	# browser()
-	# gridExtra::grid.arrange(p)
+
   return(createJaspPlot(plot=p, width=250 * l + 20, aspectRatio=1, title=name, dependencies=depends))
 }
 
@@ -688,7 +687,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   	rangeLineObj <- range(lineObj)
   	yLimits <- range(c(pretty(yVar)), rangeLineObj)
 
-  	if (is.null(yBreaks))
+  	if (is.null(yBreaks) || yLimits[1L] <= yBreaks[1L] || yLimits[2L] >= yBreaks[length(yBreaks)])
   		yBreaks <- JASPgraphs::getPrettyAxisBreaks(yLimits)
 
   } else if (is.null(yBreaks)) {
