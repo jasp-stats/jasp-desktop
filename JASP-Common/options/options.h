@@ -32,81 +32,54 @@ class Options : public Option
 {
 
 public:
-	Options();
+	Options() : Option(), names(&_options) {}
 	~Options();
 
-	virtual Json::Value asJSON() const OVERRIDE;
-	Json::Value asJSON(bool includeTransient) const;
-	void init(const Json::Value &data) OVERRIDE;
-	virtual void set(const Json::Value &json) OVERRIDE;
-	Option* createOption(std::string typeString);
-	void add(std::string name, Option *option);
-	Option *get(std::string name) const;
-	Option *get(int index);
-	void get(int index, std::string &name, Option *&option);
+	void		init(const Json::Value &data)					override;
+	Option*		clone()									const	override;
+	void		set(const Json::Value &json)					override;
+	Json::Value asJSON()								const	override;
+	Json::Value asJSON(bool includeTransient)			const;
+	void		add(std::string name, Option *option);
+	size_t		size()									const				{ return _options.size(); }
 
-	virtual Option* clone() const OVERRIDE;
+	Option*		get(std::string name)					const;
+	Option*		get(int index)												{ return _options.at(index).second; }
+	void		get(int index, std::string &name, Option *&option);
 
-	size_t size() const;
+	Option*		createOption(std::string typeString);
+
+	std::set<std::string>	usedVariables()													override;
+	void					removeUsedVariable(std::string var)								override;
+	void					replaceVariableName(std::string oldName, std::string newName)	override;
+	std::set<std::string>	columnsCreated()												override;
 
 	class Names
 	{
 		friend class Options;
-
-	private:
-
-		std::vector<OptionNamed> *_options;
-
-
-
-		Names(std::vector<OptionNamed> *options)
-		{
-			_options = options;
-		}
-
 	public:
 
-		class iterator : public boost::iterator_facade<
-				iterator, const std::string, boost::forward_traversal_tag>
+		class iterator : public boost::iterator_facade<iterator, const std::string, boost::forward_traversal_tag>
 		{
 			friend class boost::iterator_core_access;
 			friend class Names;
 
 		private:
+			explicit	iterator(std::vector<OptionNamed>::const_iterator parent) { _parent = parent; }
 
-			explicit iterator(std::vector<OptionNamed>::const_iterator parent)
-			{
-				_parent = parent;
-			}
+						void			increment()								{ _parent++; }
+						bool			equal(iterator const& other)	const	{ return _parent == other._parent;	}
+			const		std::string&	dereference()					const	{ return (*_parent).first;			}
 
 			std::vector<OptionNamed>::const_iterator _parent;
-
-			void increment()
-			{
-				_parent++;
-			}
-
-			bool equal(iterator const& other) const
-			{
-				return _parent == other._parent;
-			}
-
-			const std::string& dereference() const
-			{
-				return (*_parent).first;
-			}
-
 		};
 
-		iterator begin() const
-		{
-			return iterator(_options->begin());
-		}
+		iterator begin()	const { return iterator(_options->begin()); }
+		iterator end()		const { return iterator(_options->end());	}
 
-		iterator end() const
-		{
-			return iterator(_options->end());
-		}
+	private:
+		std::vector<OptionNamed> *_options;
+		Names(std::vector<OptionNamed> *options) { _options = options; }
 	};
 
 	Names names;
@@ -118,7 +91,8 @@ private:
 	static void insertValue(const std::string &name, Json::Value& value, Json::Value &root);
 	static bool extractValue(const std::string &name, const Json::Value &root, Json::Value &value);
 
-	void optionsChanged(Option *option);
+	void optionsChanged(Option *);
+
 
 };
 

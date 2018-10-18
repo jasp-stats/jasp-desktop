@@ -23,16 +23,18 @@
 
 #include <QWebEngineView>
 #include <QFileSystemWatcher>
-#include <QSettings>
 
 #include "verticaltabwidget.h"
-#include "fsbmrecent.h"
-#include "fsbmcurrent.h"
-#include "fsbmexamples.h"
+#include "fsbmrecentfiles.h"
+#include "fsbmcurrentfile.h"
+#include "fsbmdatalibrary.h"
 #include "fsbrowser.h"
 
 #include "backstagecomputer.h"
 #include "backstageosf.h"
+#include "backstagedatalibrary.h"
+#include "backstagerecentfiles.h"
+#include "backstagecurrentfile.h"
 
 #include "fileevent.h"
 
@@ -60,6 +62,7 @@ public:
 
 	Utils::FileType getCurrentFileType();
 	QString getCurrentFilePath();
+	bool isCurrentFileReadOnly();
 	QString getDefaultOutFileName();
 
 public slots:
@@ -87,23 +90,19 @@ private:
 
 	QString _currentFilePath;
 	Utils::FileType _currentFileType;
+	bool _currentFileReadOnly;
 
 	FileEvent::FileMode _mode;
 
 	VerticalTabWidget *_tabWidget;
-
-	FSBMRecent   *_fsmRecent;
-	FSBMCurrent   *_fsmCurrent;
-	FSBMExamples *_fsmExamples;
-
-	FSBrowser *_bsRecent;
-	FSBrowser *_bsCurrent;
+		
+	BackstageRecentFiles *_bsRecentFiles;
+	BackstageCurrentFile *_bsCurrentFile;
 	BackstageComputer *_bsComputer;
 	BackstageOSF *_bsOSF;
-	FSBrowser *_bsExamples;
-
+	BackstageDataLibrary *_bsDataLibrary;
+	
 	QFileSystemWatcher _watcher;
-	QSettings _settings;
 };
 
 #endif // OPENWIDGET_H

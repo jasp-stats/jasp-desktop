@@ -19,50 +19,50 @@ test_that("Main table results match", {
   expect_equal_tables(table, list("contNormal", 0.123677493243643, 0.0895633315624481))
 })
 
-test_that("Prior posterior plot matches", {
-  set.seed(0)
-  options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
-  options$variables <- "contNormal"
-  options$groupingVariable <- "contBinom"
-  options$plotPriorAndPosterior <- TRUE
-  options$plotPriorAndPosteriorAdditionalInfo <- TRUE
-  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "prior-posterior", dir="TTestBayesianIndependentSamples")
-})
-
-test_that("BF robustness check plot matches", {
-  options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
-  options$variables <- "contNormal"
-  options$groupingVariable <- "contBinom"
-  options$plotBayesFactorRobustness <- TRUE
-  options$plotBayesFactorRobustnessAdditionalInfo <- FALSE
-  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "robustness-check", dir="TTestBayesianIndependentSamples")
-})
-
-test_that("Sequential analysis plot matches", {
-  options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
-  options$variables <- "contNormal"
-  options$groupingVariable <- "contBinom"
-  options$plotSequentialAnalysis <- TRUE
-  options$plotSequentialAnalysisRobustness <- TRUE
-  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "sequential-analysis", dir="TTestBayesianIndependentSamples")
-})
-
-test_that("Descriptives plot matches", {
-  options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
-  options$variables <- "contNormal"
-  options$groupingVariable <- "contBinom"
-  options$descriptivesPlots <- TRUE
-  options$descriptivesPlotsCredibleInterval <- 0.90
-  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "descriptives", dir="TTestBayesianIndependentSamples")
-})
+# test_that("Prior posterior plot matches", {
+#   set.seed(0)
+#   options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
+#   options$variables <- "contNormal"
+#   options$groupingVariable <- "contBinom"
+#   options$plotPriorAndPosterior <- TRUE
+#   options$plotPriorAndPosteriorAdditionalInfo <- TRUE
+#   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "prior-posterior", dir="TTestBayesianIndependentSamples")
+# })
+#
+# test_that("BF robustness check plot matches", {
+#   options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
+#   options$variables <- "contNormal"
+#   options$groupingVariable <- "contBinom"
+#   options$plotBayesFactorRobustness <- TRUE
+#   options$plotBayesFactorRobustnessAdditionalInfo <- FALSE
+#   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "robustness-check", dir="TTestBayesianIndependentSamples")
+# })
+#
+# test_that("Sequential analysis plot matches", {
+#   options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
+#   options$variables <- "contNormal"
+#   options$groupingVariable <- "contBinom"
+#   options$plotSequentialAnalysis <- TRUE
+#   options$plotSequentialAnalysisRobustness <- TRUE
+#   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "sequential-analysis", dir="TTestBayesianIndependentSamples")
+# })
+#
+# test_that("Descriptives plot matches", {
+#   options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
+#   options$variables <- "contNormal"
+#   options$groupingVariable <- "contBinom"
+#   options$descriptivesPlots <- TRUE
+#   options$descriptivesPlotsCredibleInterval <- 0.90
+#   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "descriptives", dir="TTestBayesianIndependentSamples")
+# })
 
 test_that("Descriptives table matches", {
   options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
@@ -91,8 +91,13 @@ test_that("Analysis handles errors", {
   options$variables <- "debSame"
   options$groupingVariable <- "contBinom"
   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options, view=FALSE, quiet=TRUE)
-  notes <- unlist(results[["results"]][["ttest"]][["footnotes"]])
-  expect_true(any(grepl("variance", notes, ignore.case=TRUE)), label = "No variance check")
+  obj <- results
+  obj$results$errorMessage <- NULL # error message can change and shouldn't tested.
+  expect_equal(object = obj, expected = structure(list(
+  	status = "error", results = structure(list(title = "error", error = 1L), .Names = c("title", "error"))),
+  	.Names = c("status", "results")),
+  	label = "Variance check"
+  )
 
   options$variables <- "debMiss99"
   options$groupingVariable <- "contBinom"
@@ -111,12 +116,12 @@ test_that("Analysis handles integer overflow", {
   set.seed(4491)
   dat <- data.frame(dependent_var = rnorm(2e5),
                     grouping      = rep(c(1, 2), each = 1e5))
-  
+
   options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
   options$variables <- 'dependent_var'
   options$groupingVariable <- 'grouping'
   results <- jasptools::run("TTestBayesianIndependentSamples", dat, options, view=FALSE, quiet=TRUE)
-  
+
   table <- results[["results"]][["ttest"]][["data"]]
   expect_equal_tables(table, list("dependent_var", 0.00511047418810093, 0.311955453811728))
 })

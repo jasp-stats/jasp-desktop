@@ -25,22 +25,22 @@
 class OptionTerms : public OptionI<std::vector<std::vector<std::string> > >
 {
 public:
-	OptionTerms();
+			OptionTerms() : OptionI(true), _onlyOneComponent(false), _onlyOneTerm(false) {}
 
-	virtual void set(const Json::Value& value) OVERRIDE;
-	virtual Json::Value asJSON() const OVERRIDE;
-	virtual Option* clone() const OVERRIDE;
-	virtual void init(const Json::Value &data) OVERRIDE;
+			void		set(const Json::Value& value) override;
+			Json::Value asJSON() const override;
+			Option		*clone() const override;
+			void		init(const Json::Value &data) override;
 
-	virtual void setValue(const std::vector<std::vector<std::string> > &value) OVERRIDE;
-	virtual void setValue(const std::vector<std::string> &value);
-	virtual void setValue(const std::string &value);
+			void		setValue(const std::vector<std::vector<std::string> > &value) override;
+	virtual void		setValue(const std::vector<std::string> &value);
+	virtual void		setValue(const std::string &value);
 
-	bool onlyOneTerm() const;
-	bool onlyOneComponent() const;
+	bool				onlyOneTerm() const;
+	bool				onlyOneComponent() const;
 
 protected:
-	OptionTerms(bool onlyOneComponent, bool onlyOneTerm = false);
+	OptionTerms(bool onlyOneComponent, bool onlyOneTerm = false) : OptionI(true), _onlyOneComponent(onlyOneComponent), _onlyOneTerm(onlyOneTerm) {}
 
 	bool _onlyOneComponent;
 	bool _onlyOneTerm;

@@ -2,7 +2,6 @@
 #define AUTHWIDGET_H
 
 #include <QWidget>
-#include<QSettings>
 
 #include "common.h"
 
@@ -31,7 +30,6 @@ signals:
 
 private:
 	Ui::AuthWidget *ui;
-	QSettings _settings;
 };
 
 #endif // AUTHWIDGET_H

@@ -45,3 +45,5 @@ Resources/TestFiles
 *.autosave
 JASP-Engine/JASP/R/.Rhistory
 JASP-Tests/.Rhistory
+
+flatpak-builder-folder/

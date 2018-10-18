@@ -28,7 +28,6 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QAction>
-#include <QSettings>
 #include <QSignalMapper>
 
 class PreferencesDialog;
@@ -57,6 +56,9 @@ public:
     void setFixDecimals(QString numDecimals);
     void emptyValuesChanged();
 
+	void useDefaultPPI();
+	void setPPI(int ppi);
+
 
 	int count() const;
 	PreferencesDialog *getPreferencesDialog();
@@ -68,6 +70,8 @@ signals:
 	void setExactPValuesHandler(bool exactPValues);
 	void setFixDecimalsHandler(QString numDecimals);
 	void emptyValuesChangedHandler();
+	void useDefaultPPIHandler();
+	void setPPIHandler(int ppi);
 
 private slots:
 	void tabSelectedHandler();
@@ -85,7 +89,6 @@ private:
 	QHBoxLayout *_layout;
 
 	QPushButton *_helpTab;
-	QSettings _settings;
 	QPushButton *_currentTab = NULL;
 	QPushButton *_currentModule = NULL;
 

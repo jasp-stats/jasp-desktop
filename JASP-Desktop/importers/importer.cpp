@@ -2,8 +2,6 @@
 #include "sharedmemory.h"
 #include <iostream>
 
-using namespace std;
-
 Importer::Importer(DataSetPackage *packageData)
 {
 	_packageData = packageData;
@@ -11,12 +9,12 @@ Importer::Importer(DataSetPackage *packageData)
 
 Importer::~Importer() {}
 
-void Importer::loadDataSet(const string &locator, boost::function<void(const string &, int)> progressCallback)
+void Importer::loadDataSet(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback)
 {
 	ImportDataSet *importDataSet = loadFile(locator, progressCallback);
 
 	int columnCount = importDataSet->columnCount();
-	_packageData->dataSet = SharedMemory::createDataSet(); // this is required incase the loading of the data fails so that the SharedMemory::createDataSet() can be later freed.
+	_packageData->setDataSet(SharedMemory::createDataSet()); // this is required incase the loading of the data fails so that the SharedMemory::createDataSet() can be later freed.
 
 	if (columnCount == 0)
 		return;
@@ -25,89 +23,90 @@ void Importer::loadDataSet(const string &locator, boost::function<void(const str
 	setDataSetSize(columnCount, rowCount);
 
 	int colNo = 0;
-	for (ImportColumns::iterator it = importDataSet->begin(); it != importDataSet->end(); ++it, ++colNo)
+	for (ImportColumn *importColumn : *importDataSet)
 	{
 		progressCallback("Loading Data Set", 50 + 50 * colNo / columnCount);
-		initColumn(colNo, *it);
+		initColumn(colNo, importColumn);
+		colNo++;
 	}
 
 	delete importDataSet;
 }
 
-void Importer::syncDataSet(const string &locator, boost::function<void(const string &, int)> progress)
+void Importer::syncDataSet(const std::string &locator, boost::function<void(const std::string &, int)> progress)
 {
-	ImportDataSet *importDataSet = loadFile(locator, progress);
+	ImportDataSet *importDataSet	= loadFile(locator, progress);
+	DataSet *dataSet				= _packageData->dataSet();
+	bool rowCountChanged			= importDataSet->rowCount() != dataSet->rowCount();
 
-	DataSet *dataSet = _packageData->dataSet;
-	bool rowCountChanged = importDataSet->rowCount() != dataSet->rowCount();
-	vector<pair<string, int> > newColumns;
-	vector<pair<int, Column *> >changedColumns;
-	map<string, Column *> missingColumns;
+	std::vector<std::pair<std::string, int> >	newColumns;
+	std::vector<std::pair<int, Column *> >		changedColumns;
+	std::map<std::string, Column *>				missingColumns;
 
-	Columns &orgColumns = dataSet->columns();
-	int syncColNo = 0;
+	Columns &orgColumns	= dataSet->columns();
+	int syncColNo		= 0;
 
-	for (Columns::iterator orgColIt = orgColumns.begin(); orgColIt != orgColumns.end(); ++orgColIt)
+	for (Column &orgColumn : orgColumns)
 	{
-		Column &orgColumn = *orgColIt;
-		missingColumns[orgColumn.name()] = &orgColumn;
+		std::string colName = orgColumn.name();
+
+		// make sure "missing" columns aren't actually computed columns
+		if(!_packageData->isColumnComputed(colName))
+			missingColumns[orgColumn.name()] = &orgColumn;
 	}
 
-	for (ImportColumns::iterator syncColumnIt = importDataSet->begin(); syncColumnIt != importDataSet->end(); ++syncColumnIt, ++syncColNo)
+	for (ImportColumn *syncColumn : *importDataSet)
 	{
-		ImportColumn *syncColumn = *syncColumnIt;
-		string syncColumnName = syncColumn->getName();
+		std::string syncColumnName = syncColumn->getName();
 
-		if (missingColumns.find(syncColumnName) == missingColumns.end()) {
-			newColumns.push_back(pair<string, int>(syncColumnName, syncColNo));
-		}
+		if (missingColumns.find(syncColumnName) == missingColumns.end())
+			newColumns.push_back(std::pair<std::string, int>(syncColumnName, syncColNo));
 		else
 		{
-			Column &orgColumn = orgColumns.get(syncColumnName);
 			missingColumns.erase(syncColumnName);
-			int orgRowCount = orgColumn.rowCount();
-			int syncRowCount = syncColumn->size();
+
+			Column &orgColumn	= orgColumns.get(syncColumnName);
+			int orgRowCount		= orgColumn.rowCount();
+			int syncRowCount	= syncColumn->size();
+
 			if (orgRowCount != syncRowCount)
-			{
-				changedColumns.push_back(pair<int, Column *>(syncColNo, &orgColumn));
-			}
+				changedColumns.push_back(std::pair<int, Column *>(syncColNo, &orgColumn));
 			else
 			{
 				for (int r = 0; r < orgRowCount; r++)
-				{
 					if (!syncColumn->isValueEqual(orgColumn, r))
 					{
 						std::cout << "Value Changed, col: " << syncColumnName << ", row " << (r+1) << std::endl;
 						std::cout.flush();
-						changedColumns.push_back(pair<int, Column *>(syncColNo, &orgColumn));
+						changedColumns.push_back(std::pair<int, Column *>(syncColNo, &orgColumn));
 						break;
 					}
-				}
 			}
 		}
+
+		syncColNo++;
 	}
 
-	map<string, Column *> changeNameColumns;
+	std::map<std::string, Column *> changeNameColumns;
 
-	if (missingColumns.size() > 0 && newColumns.size()) {
-		for (map<string, Column *>::iterator misColIt = missingColumns.begin(); misColIt != missingColumns.end(); ++misColIt)
-		{
-			Column* missingColumn = misColIt->second;
-			for (vector<pair<string, int> >::iterator newColIt = newColumns.begin(); newColIt != newColumns.end(); ++newColIt)
+	if (missingColumns.size() > 0 && newColumns.size() > 0) {
+		for (auto nameColMissing : missingColumns)
+			for (auto newColIt = newColumns.begin(); newColIt != newColumns.end(); ++newColIt)
 			{
-				string newColName = newColIt->first;
+				Column * missingColumn	= nameColMissing.second;
+				std::string newColName	= newColIt->first;
 				ImportColumn *newValues = importDataSet->getColumn(newColName);
-				if ((int)(newValues->size()) == missingColumn->rowCount())
+
+				if (newValues->size()== missingColumn->rowCount())
 				{
 					bool same_values = true;
 					for (size_t r = 0; r < newValues->size(); r++)
-					{
 						if (!newValues->isValueEqual(*missingColumn, r))
 						{
 							same_values = false;
 							break;
 						}
-					}
+
 					if (same_values)
 					{
 						changeNameColumns[newColName] = missingColumn;
@@ -116,7 +115,6 @@ void Importer::syncDataSet(const string &locator, boost::function<void(const str
 					}
 				}
 			}
-		}
 	}
 
 	_syncPackage(importDataSet, newColumns, changedColumns, missingColumns, changeNameColumns, rowCountChanged);
@@ -124,28 +122,26 @@ void Importer::syncDataSet(const string &locator, boost::function<void(const str
 	delete importDataSet;
 }
 
-void Importer::fillSharedMemoryColumnWithStrings(const std::vector<string> &values, Column &column)
+void Importer::fillSharedMemoryColumnWithStrings(const std::vector<std::string> &values, Column &column)
 {
 	// try to make the column nominal
 	bool success = false;
-	set<int> uniqueValues;
+	std::set<int> uniqueValues;
 	std::vector<int> intValues;
 	intValues.reserve(values.size());
-	std::map<int, string> emptyValuesMap;
+	std::map<int, std::string> emptyValuesMap;
 
-	if (ImportColumn::convertToInt(values, intValues, uniqueValues, emptyValuesMap))
+	if (ImportColumn::convertToInt(values, intValues, uniqueValues, emptyValuesMap) && uniqueValues.size() <= 24)
 	{
-		if (uniqueValues.size() <= 24)
-		{
-			column.setColumnAsNominalOrOrdinal(intValues, uniqueValues);
-			success = true;
-		}
+		column.setColumnAsNominalOrOrdinal(intValues, uniqueValues);
+		success = true;
 	}
+
 
 	if (!success)
 	{
 		// try to make the column scale
-		vector<double> doubleValues;
+		std::vector<double> doubleValues;
 		doubleValues.reserve(values.size());
 		emptyValuesMap.clear();
 
@@ -162,158 +158,154 @@ void Importer::fillSharedMemoryColumnWithStrings(const std::vector<string> &valu
 		emptyValuesMap = column.setColumnAsNominalText(values);
 	}
 
-	_packageData->emptyValuesMap.insert(make_pair(column.name(), emptyValuesMap));
+	_packageData->storeInEmptyValues(column.name(), emptyValuesMap);
 }
 
 DataSet* Importer::setDataSetSize(int columnCount, int rowCount)
 {
-	DataSet *dataSet = _packageData->dataSet;
-	bool success = true;
+	DataSet *dataSet	= _packageData->dataSet();
+	bool success		= true;
 	do
 	{
 		try {
-			success = true;
 			dataSet->setColumnCount(columnCount);
 			if (rowCount > 0)
 				dataSet->setRowCount(rowCount);
 
+			success = true;
 		}
 		catch (boost::interprocess::bad_alloc &e)
 		{
 			try {
 
-				cout << "Enlarge dataset " << std::endl;
-				cout.flush();
+				std::cout << "Enlarge dataset " << std::endl;
+				std::cout.flush();
 
 				dataSet = SharedMemory::enlargeDataSet(dataSet);
 				success = false;
 			}
-			catch (exception &e)
+			catch (std::exception &e)
 			{
-				throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
+				throw std::runtime_error("Out of memory: this data set is too large for your computer's available memory");
 			}
 		}
-		catch (exception &e)
+		catch (std::exception &e)
 		{
-			cout << "Exception " << e.what() << "\n";
-			cout.flush();
+			std::cout << "Exception " << e.what() << "\n";
+			std::cout.flush();
 		}
 		catch (...)
 		{
-			cout << "something else\n ";
-			cout.flush();
+			std::cout << "something else\n ";
+			std::cout.flush();
 		}
 	}
 	while ( ! success);
 
-	_packageData->dataSet = dataSet;
+	_packageData->setDataSet(dataSet);
 	return dataSet;
 }
 
+void Importer::initColumn(std::string colName, ImportColumn *importColumn)
+{
+	initColumn(_packageData->dataSet()->getColumnIndex(colName), importColumn);
+}
 
 void Importer::initColumn(int colNo, ImportColumn *importColumn)
 {
-	bool success;
+	bool success = true;
 
 	do {
-
-		success = true;
-
 		try {
-			Column &column = _packageData->dataSet->column(colNo);
+			Column &column = _packageData->dataSet()->column(colNo);
 			column.setName(importColumn->getName());
 			fillSharedMemoryColumn(importColumn, column);
-
+			success = true;
 		}
 		catch (boost::interprocess::bad_alloc &e)
 		{
 			try {
-
-				_packageData->dataSet = SharedMemory::enlargeDataSet(_packageData->dataSet);
+				_packageData->setDataSet(SharedMemory::enlargeDataSet(_packageData->dataSet()));
 				success = false;
 			}
-			catch (exception &e)
-			{
-				throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
-			}
+			catch (std::exception &e)	{ throw std::runtime_error("Out of memory: this data set is too large for your computer's available memory");	}
 		}
-		catch (exception e)
-		{
-			cout << "n " << e.what();
-			cout.flush();
-		}
-		catch (...)
-		{
-			cout << "something else\n ";
-			cout.flush();
-		}
+		catch (std::exception e)	{ std::cout << "n " << e.what() << std::endl;		}
+		catch (...)					{ std::cout << "something else\n " << std::endl;	}
 
 	} while (success == false);
 }
 
 
 void Importer::_syncPackage(
-		ImportDataSet *syncDataSet,
-		vector<pair<string, int> > &newColumns,
-		vector<pair<int, Column *> > &changedColumns,
-		map<string, Column *> &missingColumns,
-		map<string, Column *> &changeNameColumns,
-		bool rowCountChanged)
+		ImportDataSet								*syncDataSet,
+		std::vector<std::pair<std::string, int>>	&newColumns,
+		std::vector<std::pair<int, Column *>>		&changedColumns,
+		std::map<std::string, Column *>				&missingColumns,
+		std::map<std::string, Column *>				&changeNameColumns,
+		bool										rowCountChanged)
 
 {
-	vector<string> _changedColumns;
-	vector<string> _missingColumns;
-	map<string, string> _changeNameColumns;
+	_packageData->dataSet()->setSynchingData(true);
 
-	for (map<string, Column *>::iterator changeNameColumnIt = changeNameColumns.begin(); changeNameColumnIt != changeNameColumns.end(); ++changeNameColumnIt)
+	std::vector<std::string>			_changedColumns;
+	std::vector<std::string>			_missingColumns;
+	std::map<std::string, std::string>	_changeNameColumns;
+
+	for (auto changeNameColumnIt : changeNameColumns)
 	{
-		string newColName = changeNameColumnIt->first;
-		Column *changedCol = changeNameColumnIt->second;
+		std::string newColName	= changeNameColumnIt.first;
+		Column *changedCol		= changeNameColumnIt.second;
 		missingColumns.erase(changedCol->name());
 		std::cout << "Column name changed, from: " << changedCol->name() << " to " << newColName << std::endl;
-		std::cout.flush();
 		_changeNameColumns[changedCol->name()] = newColName;
 		changedCol->setName(newColName);
 	}
-	int colNo = _packageData->dataSet->columnCount();
+
+	int colNo = _packageData->dataSet()->columnCount();
+	setDataSetRowCount(syncDataSet->rowCount());
+
 	if (changedColumns.size() > 0)
 	{
-		if (rowCountChanged)
-			setDataSetSize(colNo, syncDataSet->rowCount());
-
-		for (vector<pair<int, Column *> >::iterator it = changedColumns.begin(); it != changedColumns.end(); ++it)
+		for (auto indexColChanged : changedColumns)
 		{
-			std::cout << "Column changed " << it->first << std::endl;
-			std::cout.flush();
-			Column &column = _packageData->dataSet->column(it->first);
-			string colName = column.name();
+			std::cout << "Column changed " << indexColChanged.first << std::endl;
+			//Column &column		= _packageData->dataSet()->column(indexColChanged.first);
+			std::string colName	= indexColChanged.second->name();
 			_changedColumns.push_back(colName);
-			initColumn(it->first, syncDataSet->getColumn(colName));
+			initColumn(colName, syncDataSet->getColumn(colName));
 		}
 	}
 
 	if (newColumns.size() > 0)
 	{
-		setDataSetSize(colNo + newColumns.size(), syncDataSet->rowCount());
-		for (vector<pair<string, int> >::iterator it = newColumns.begin(); it != newColumns.end(); ++it, ++colNo)
+		//setDataSetSize(colNo + newColumns.size(), syncDataSet->rowCount());
+
+		for (auto it = newColumns.begin(); it != newColumns.end(); ++it, ++colNo)
 		{
+			increaseDataSetColCount(syncDataSet->rowCount());
+
 			std::cout << "New column " << it->first << std::endl;
-			std::cout.flush();
-			initColumn(colNo, syncDataSet->getColumn(it->first));
+			initColumn(_packageData->dataSet()->columnCount() - 1, syncDataSet->getColumn(it->first));
 		}
 	}
 
 	if (missingColumns.size() > 0)
 	{
-		for (map<string, Column *>::iterator misColIt = missingColumns.begin(); misColIt != missingColumns.end(); ++misColIt)
+
+		for (auto misColIt = missingColumns.begin(); misColIt != missingColumns.end(); ++misColIt)
 		{
-			std::cout << "Column deleted " << misColIt->first << std::endl;
-			std::cout.flush();
-			_missingColumns.push_back(misColIt->first);
-			_packageData->dataSet->removeColumn(misColIt->first);
+			std::string columnName = misColIt->first;
+
+			if(!_packageData->isColumnComputed(columnName))
+			{
+				std::cout << "Column deleted " << columnName << std::endl;
+				_missingColumns.push_back(columnName);
+				_packageData->removeColumn(columnName);
+			}
 		}
 	}
 
-	_packageData->dataChanged(_packageData, _changedColumns, _missingColumns, _changeNameColumns);
-
+	_packageData->dataSet()->setSynchingData(false);
+	_packageData->dataChanged(_packageData, _changedColumns, _missingColumns, _changeNameColumns, rowCountChanged);
 }

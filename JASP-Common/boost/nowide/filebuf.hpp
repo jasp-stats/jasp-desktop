@@ -10,7 +10,7 @@
 
 #include <iosfwd>
 #include <boost/config.hpp>
-#include <boost/nowide/stackstring.hpp>
+#include "stackstring.hpp"
 #include <fstream>
 #include <streambuf>
 #include <stdio.h>

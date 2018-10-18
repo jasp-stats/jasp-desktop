@@ -258,3 +258,16 @@ void SubjectivePriorsWidget::on_uniformDienes_toggled(bool checked)
 		ui->uniformDienesUpperBound->show();
 	}
 }
+
+void SubjectivePriorsWidget::changeStandardizedPriorsStatus(bool disable) {
+    ui->informativeStandardEffectSize->setEnabled(!disable);
+    ui->informativeStandardizedEffectSize->setEnabled(!disable);
+
+    ui->_2dienesRawEffectSize->setEnabled(!disable);
+    ui->dienesEffectSize->setEnabled(!disable);
+
+    if (disable) {
+        ui->informativeStandardEffectSize->setChecked(true);
+        ui->defaultStandardEffectSize->setChecked(true);
+    }
+}

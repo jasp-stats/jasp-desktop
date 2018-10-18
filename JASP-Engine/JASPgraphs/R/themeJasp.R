@@ -2,6 +2,8 @@
 themeJasp = function(graph, xName, yName,
                      setAxesBreaks = FALSE,
                      plotType = NULL,
+                     xAxis = TRUE,
+                     yAxis = TRUE,
                      axis.title.cex = getGraphOption("axis.title.cex"),
                      bty = getGraphOption("bty"),
                      fontsize = getGraphOption("fontsize"),
@@ -182,7 +184,7 @@ themeJasp = function(graph, xName, yName,
         xyBreaks <- getMajorSource(gBuild)
 
         xBreaks <- xyBreaks$x
-        if (length(xBreaks) > 0) {
+        if (length(xBreaks) > 0 && isTRUE(xAxis)) {
             xLim <- range(xBreaks)
             dfX <- data.frame(y = -Inf, yend = -Inf, x = xLim[1], xend = xLim[2])
             xLine <- ggplot2::geom_segment(data = dfX, mapping = mapLines, lwd = bty[["ldwX"]],
@@ -192,7 +194,7 @@ themeJasp = function(graph, xName, yName,
         }
 
         yBreaks <- xyBreaks$y
-        if (length(yBreaks) > 0) {
+        if (length(yBreaks) > 0 && isTRUE(yAxis)) {
             yLim <- range(yBreaks)
             dfY <- data.frame(x = -Inf, xend = -Inf, y = yLim[1], yend = yLim[2])
             yLine <- ggplot2::geom_segment(data = dfY, mapping = mapLines, lwd = bty[["lwdY"]],
@@ -276,6 +278,7 @@ themeJaspRaw = function(legend.position = "none",
         panel.background = ggplot2::element_rect(color = "white", fill = "white"),
         
         # plot
+        plot.background = ggplot2::element_rect(fill = "transparent"),
         plot.margin = ggplot2::unit(c(1, 1, 1, 1), "cm"),
         plot.title = ggplot2::element_text(family = family, size = fontsize, hjust = 0.5) # center title
     )

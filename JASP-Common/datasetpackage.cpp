@@ -19,22 +19,28 @@
 
 DataSetPackage::DataSetPackage()
 {
-	hasAnalyses = false;
+	reset();
+	informComputedColumnsOfPackage();
 }
 
 void DataSetPackage::reset()
 {
-	dataSet = NULL;
-	emptyValuesMap.clear();
-	archiveVersion = Version();
-	dataArchiveVersion = Version();
-	analysesHTML = std::string();
-	analysesData = Json::arrayValue;
-	hasAnalyses = false;
-	warningMessage = std::string();
-	_isLoaded = false;
-	_analysesHTMLReady = false;
+	setDataSet(NULL);
+	_archiveVersion				= Version();
+	_dataArchiveVersion			= Version();
+	_analysesHTML				= std::string();
+	_analysesData				= Json::arrayValue;
+	_warningMessage				= std::string();
+	_isLoaded					= false;
+	_analysesHTMLReady			= false;
+	_refreshAnalysesAfterFilter = true;
+	_isArchive					= false;
+	_dataFilter					= DEFAULT_FILTER;
+	_filterConstructorJSON		= DEFAULT_FILTER_JSON;
+	_computedColumns			= ComputedColumns(this);
+
 	setModified(false);
+	resetEmptyValues();
 }
 
 void DataSetPackage::setModified(bool value)
@@ -46,34 +52,72 @@ void DataSetPackage::setModified(bool value)
 	}
 }
 
-bool DataSetPackage::isModified() const
+
+bool DataSetPackage::isColumnNameFree(std::string name) const
 {
-	return _isModified;
+	try			{ _dataSet->columns().findIndexByName(name); return false;}
+	catch(...)	{ }
+
+	return true;
 }
 
-void DataSetPackage::setLoaded()
+bool DataSetPackage::isColumnComputed(size_t colIndex) const
 {
-	_isLoaded = true;
+	try
+	{
+		const Column & normalCol = _dataSet->columns().at(colIndex);
+		_computedColumns.findIndexByName(normalCol.name());
+		return true;
+	}
+	catch(...) {}
+
+	return false;
+
 }
 
-bool DataSetPackage::isLoaded() const
+bool DataSetPackage::isColumnComputed(std::string name) const
 {
-	return _isLoaded;
+	try
+	{
+		_computedColumns.findIndexByName(name);
+		return true;
+	}
+	catch(...) {}
+
+	return false;
+
 }
 
-bool DataSetPackage::isReady() const
+bool DataSetPackage::isColumnInvalidated(size_t colIndex) const
 {
-	return _analysesHTMLReady;
+	try
+	{
+		const Column & normalCol		= _dataSet->columns().at(colIndex);
+		const ComputedColumn & compCol	= _computedColumns[normalCol.name()];
+
+		return compCol.isInvalidated();
+	}
+	catch(...) {}
+
+	return false;
+}
+
+std::string DataSetPackage::getComputedColumnError(size_t colIndex) const
+{
+	try
+	{
+		const Column & normalCol		= _dataSet->columns().at(colIndex);
+		const ComputedColumn & compCol	= _computedColumns[normalCol.name()];
+
+		return compCol.error();
+	}
+	catch(...) {}
+
+	return "";
 }
 
 
-void DataSetPackage::setAnalysesHTMLReady()
+ComputedColumns	* DataSetPackage::computedColumnsPointer()
 {
-	_analysesHTMLReady = true;
+	return &_computedColumns;
 }
-
-void DataSetPackage::setWaitingForReady()
-{
-	_analysesHTMLReady = false;
-}
-

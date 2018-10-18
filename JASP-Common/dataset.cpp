@@ -18,113 +18,63 @@
 #include "dataset.h"
 
 using namespace std;
-/*
- * DataSet is implemented as a set of columns
- */
+/* DataSet is implemented as a set of columns */
 
-DataSet::DataSet(boost::interprocess::managed_shared_memory *mem) :
-	_columns(mem)
-{
-	_rowCount = 0;
-	_columnCount = 0;
-}
 
-DataSet::~DataSet()
+void DataSet::setRowCount(size_t newRowCount)
 {
-}
-
-Columns &DataSet::columns()
-{
-	return _columns;
-}
-
-Column &DataSet::column(int index)
-{
-	return _columns.at(index);
-}
-
-Column &DataSet::column(string name)
-{
-	return _columns.get(name);
-}
-
-void DataSet::setRowCount(int rowCount)
-{
-	_columns.setRowCount(rowCount);
-	_rowCount = rowCount;
-}
-
-void DataSet::setColumnCount(int columnCount)
-{
-	if (columnCount != _columnCount)
+	if(newRowCount != minRowCount() || newRowCount != maxRowCount())
 	{
-		_columns.setColumnCount(columnCount);
-		_columnCount = columnCount;
+		_columns.setRowCount(newRowCount);
+
+		_filterVector.clear();
+		for(size_t i=0; i<newRowCount; i++)
+			_filterVector.push_back(true);
 	}
 }
 
-void DataSet::removeColumn(string name)
+void DataSet::setColumnCount(size_t newColumnCount)
 {
-	int index = getColumnIndex(name);
-	_columns.removeColumn(index);
-	_columnCount--;
+	if (newColumnCount != columnCount())
+	{
+		_columns.setColumnCount(newColumnCount);
+		_columns.setRowCount(maxRowCount());
+	}
 }
 
 void DataSet::setSharedMemory(boost::interprocess::managed_shared_memory *mem)
 {
+	_mem = mem;
 	_columns.setSharedMemory(mem);
+
+	_filterVector = BoolVector(mem->get_segment_manager());
+	for(size_t i=0; i<maxRowCount(); i++)
+		_filterVector.push_back(true);
 }
 
-int DataSet::rowCount() const
-{
-	return _rowCount;
-}
-
-int DataSet::columnCount() const
-{
-	return _columnCount;
-}
-
-int DataSet::getColumnIndex(string name)
-{
-	int i = 0;
-	for (Columns::iterator colIt = _columns.begin(); colIt != _columns.end(); ++colIt, ++i)
-	{
-		if (colIt->name() == name)
-			break;
-	}
-	return i == _columnCount ? -1 : i;
-}
 
 string DataSet::toString()
 {
 	stringstream ss;
-	ss << "Column count: " << _columnCount << std::endl;
-	ss << "Row count: " << _rowCount << std::endl;
+	ss << "Column count: " << columnCount() << "\nRow count:    " << minRowCount() << " -> " << maxRowCount() << std::endl;
 
-	for (int colNr = 0; colNr < _columnCount; ++colNr)
+	for (auto & col : _columns)
 	{
-		Column& col = _columns.at(colNr);
-		ss << "Column name: " << col.name() << std::endl;
-		Labels& labels = col.labels();
-		ss << "  " << labels.size() << "Labels" << std::endl;
-		for (LabelVector::const_iterator label_it = labels.begin(); label_it != labels.end(); ++label_it)
-		{
-			const Label& label = *label_it;
+		ss << "Column name: " << col.name() << "  " << col.labels().size() << "Labels" << std::endl;
+
+		for (auto & label : col.labels())
 			ss << "    "  << ", Label Text: " << label.text() << " Label Value : " << label.value() << std::endl;
-		}
+
 		ss << "  Ints" << std::endl;
-		for (Column::Ints::iterator int_it = col.AsInts.begin(); int_it != col.AsInts.end(); ++int_it)
-		{
-			int key = *int_it;
+		for (int key : col.AsInts)
 			ss << "    " << key << ": " << col._getLabelFromKey(key) << std::endl;
-		}
+
 	}
 
 	return ss.str();
 }
 
-vector<string> DataSet::resetEmptyValues(map<string, map<int, string> > &emptyValuesPerColumnMap)
+vector<string> DataSet::resetEmptyValues(map<string, map<int, string> > emptyValuesPerColumnMap)
 {
 	vector<string> colChanged;
 	for (Columns::iterator col_it = _columns.begin(); col_it != _columns.end(); ++col_it)
@@ -141,4 +91,33 @@ vector<string> DataSet::resetEmptyValues(map<string, map<int, string> > &emptyVa
 	}
 
 	return colChanged;
+}
+
+void DataSet::setFilterVector(std::vector<bool> filterResult)
+{
+	_filteredRowCount = 0;
+	for(size_t i=0; i<filterResult.size(); i++)
+		if((_filterVector[i] = filterResult[i])) //economy
+			_filteredRowCount++;
+}
+
+bool DataSet::allColumnsPassFilter() const
+{
+	for(const Column & col : _columns)
+		if(!col.allLabelsPassFilter())
+			return false;
+	return true;
+}
+
+size_t DataSet::rowCount()	const
+{
+	size_t	min = minRowCount(),
+			max = maxRowCount();
+
+#ifdef JASP_DEBUG
+	if(min != max)
+		std::cout << "DataSet::rowCount() found inconsistent rowCounts min=" << min << " max=" << max << std::endl;
+#endif
+
+	return min;
 }

@@ -215,10 +215,9 @@ drawAxis <- function(graph = NULL, xName = waiver(), yName = waiver(), breaks = 
 
     if (force && is.waive(graph[["data"]])) {
         dftmp <- data.frame(x = range(xBreaks), y = range(yBreaks))
-        graph <- graph + ggplot2::geom_line(data = dftmp, mapping = ggplot2::aes(x = x, y = y), color = "white")
-    } else {
-        graph <- graph + ggplot2::xlab(xName) + ggplot2::ylab(yName)
+        graph <- graph + ggplot2::geom_line(data = dftmp, mapping = ggplot2::aes(x = x, y = y), color = "white", alpha = 0)
     }
+    graph <- graph + ggplot2::xlab(xName) + ggplot2::ylab(yName)
 
     if (!is.waive(secondaryXaxis) && !inherits(secondaryXaxis, "AxisSecondary"))
         secondaryXaxis <- do.call(ggplot2::sec_axis, secondaryXaxis)

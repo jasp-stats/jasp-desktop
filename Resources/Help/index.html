@@ -6,10 +6,15 @@
 	</script>
 	<link href="s.css" rel="stylesheet">
 	<script type="text/javascript">
-		window.render = function(content) {
-			document.body.innerHTML = marked(content)
-			window.scrollTo(0, 0)
-		}
+  window.render = function(content) {
+    document.body.innerHTML = marked(content)
+    window.scrollTo(0, 0)
+  }
+
+  window.renderHtml = function(content) {
+    document.body.innerHTML = content
+    window.scrollTo(0, 0)
+  }
 	</script>
 </head>
 <body>

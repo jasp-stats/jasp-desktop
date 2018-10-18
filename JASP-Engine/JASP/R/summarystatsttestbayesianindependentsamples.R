@@ -20,6 +20,8 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset = NULL, options,
 	run <- (perform == "run")
 	state <- .retrieveState()
 
+	options[["wilcoxTest"]] <- FALSE
+
 	# difference between the previous state options and current options
 	diff <- NULL
 

@@ -1,6 +1,10 @@
-QT += core gui webenginewidgets webchannel svg network printsupport xml
+QT += core gui webenginewidgets webchannel svg network printsupport xml qml quick quickwidgets
+
+include(../JASP.pri)
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+include(../R_HOME.pri)
 
 CONFIG += c++11
 
@@ -8,7 +12,8 @@ DESTDIR = ..
 
 windows:TARGET = JASP
    macx:TARGET = JASP
-  linux: exists(/app/lib/*)	{ TARGET = org.jasp.JASP } else { TARGET = jasp }
+  linux:{ exists(/app/lib/*) {TARGET = org.jasp.JASP } else { TARGET = jasp }}
+
 
 TEMPLATE = app
 
@@ -44,7 +49,7 @@ windows:LIBS += -lole32 -loleaut32
 
 linux {
 	exists(/app/lib/*)	{ LIBS += -larchive -lrt -L/app/lib -lboost_filesystem -lboost_system
-	} else				{ LIBS += -larchive -lrt -ljsoncpp -lboost_filesystem -lboost_system }
+        } else				{ LIBS += -larchive -lrt -lboost_filesystem -lboost_system }
 }
 
 macx:QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
@@ -54,14 +59,6 @@ macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 macx:QMAKE_CXXFLAGS += -stdlib=libc++
 
 windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__ -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
-
-linux {
-    _R_HOME = $$(R_HOME)
-    isEmpty(_R_HOME):_R_HOME = /usr/lib/R
-    QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
-}
-
-macx | windows | exists(/app/lib/*) { DEFINES += JASP_LIBJSON_STATIC } else	{ linux:LIBS += -ljsoncpp }
 
 INCLUDEPATH += $$PWD/../JASP-Common/
 
@@ -121,7 +118,41 @@ exists(/app/lib/*) {
 	flatpak_appinfo_icon128.files = ../Tools/flatpak/128/org.jasp.JASP.png
 	flatpak_appinfo_icon128.path = /app/share/app-info/icons/flatpak/128x128
 	INSTALLS += flatpak_appinfo_icon128
-} else {
-	CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG }
+}
+
+#Lets create a nice shellscript that tells us which version of JASP and R we are building/using!
+unix {
+    SCRIPTFILENAME=$${OUT_PWD}/../versionScript.sh
+
+    createVersionScript.commands += echo \"$${LITERAL_HASH}!/bin/sh\"                                                                           >  $$SCRIPTFILENAME ;
+    createVersionScript.commands += echo \"JASP_VERSION_MAJOR=$$JASP_VERSION_MAJOR\"                                                            >> $$SCRIPTFILENAME ;
+    createVersionScript.commands += echo \"JASP_VERSION_MINOR=$$JASP_VERSION_MINOR\"                                                            >> $$SCRIPTFILENAME ;
+    createVersionScript.commands += echo \"JASP_VERSION_REVISION=$$JASP_VERSION_REVISION\"                                                      >> $$SCRIPTFILENAME ;
+    createVersionScript.commands += echo \"JASP_VERSION_BUILD=$$JASP_VERSION_BUILD\n\"                                                          >> $$SCRIPTFILENAME ;
+    createVersionScript.commands += echo \"JASP_VERSION=$${JASP_VERSION_MAJOR}.$${JASP_VERSION_MINOR}.$${JASP_VERSION_REVISION}.$${JASP_VERSION_BUILD}\n\"  >> $$SCRIPTFILENAME ;
+    createVersionScript.commands += echo \"CURRENT_R_VERSION=$$CURRENT_R_VERSION\"                                                              >> $$SCRIPTFILENAME ;
+
+    QMAKE_EXTRA_TARGETS += createVersionScript
+    POST_TARGETDEPS     += createVersionScript
+}
+
+#And of course also a version description to include in the Windows installer
+windows {
+	NSIFILENAME=$${OUT_PWD}/../../jasp-desktop/Tools/version.nsi
+	createVersionNsi.commands += $$quote(echo "!define JASPVERSION \"$${JASP_VERSION_MAJOR}.$${JASP_VERSION_MINOR}.$${JASP_VERSION_REVISION}.$${JASP_VERSION_BUILD}\"" >  $${NSIFILENAME})&&
+	contains(QT_ARCH, i386) {
+	createVersionNsi.commands += $$quote(echo "!define CONTENTS_DIR \"C:\Jasp\Install-32\"" >>  $${NSIFILENAME})&&
+	createVersionNsi.commands += $$quote(echo "!define ARCH_SETUP_NAME \"Setup-32\"" >>  $${NSIFILENAME})
+	} else {
+	createVersionNsi.commands += $$quote(echo "!define CONTENTS_DIR \"C:\Jasp\Install-64\"" >>  $${NSIFILENAME})&&
+	createVersionNsi.commands += $$quote(echo "!define ARCH_SETUP_NAME \"Setup-64\"" >>  $${NSIFILENAME})
+	}
+	QMAKE_EXTRA_TARGETS += createVersionNsi
+	POST_TARGETDEPS     += createVersionNsi
+}
+#ENVIRONMENT_CRYPTKEY="$(SIMPLECRYPTKEY)"
+#message("ENVIRONMENT_CRYPTKEY: $$[ENVIRONMENT_CRYPTKEY]")
+!isEmpty($$[ENVIRONMENT_CRYPTKEY]) {
+    DEFINES+="ENVIRONMENT_CRYPTKEY=$$[ENVIRONMENT_CRYPTKEY]"
 }
 

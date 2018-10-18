@@ -6,14 +6,15 @@ JASPWidgets.object = Backbone.Model.extend({
 });
 
 JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
-	var metaData = params.meta;
-	var status = params.status;
-	var name = metaData.name;
-	var childOfCollection = params.childOfCollection;
-	var indent = params.indent;
-	var embeddedLevel = params.embeddedLevel;
-	var namespace = params.namespace;
-	var type = metaData;
+	var metaData			= params.meta;
+	var status				= params.status;
+	var name				= metaData.name;
+	var childOfCollection	= params.childOfCollection;
+	var indent				= params.indent;
+	var embeddedLevel		= params.embeddedLevel;
+	var namespace			= params.namespace;
+	var type				= metaData;
+
 	if (metaData.type)
 		type = metaData.type;
 
@@ -360,5 +361,38 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 	exportComplete: function (exportParams, exportContent) {
 		if (!exportParams.error)
 			pushHTMLToClipboard(exportContent, exportParams);
+	},
+
+	hasCitation: function () {
+		var optCitation = this.model.get("citation");
+		return optCitation !== null
+	},
+
+	citeMenuClicked: function () {
+		var exportParams = new JASPWidgets.Exporter.params();
+		exportParams.format = JASPWidgets.ExportProperties.format.html;
+		exportParams.process = JASPWidgets.ExportProperties.process.copy;
+		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
+		exportParams.includeNotes = false;
+
+		var optCitation = this.getCitations();
+
+		var htmlCite = '<p>' + optCitation.join("</p><p>") + '</p>';
+
+		var exportContent = new JASPWidgets.Exporter.data(optCitation.join("\n\n"), htmlCite);
+
+		pushTextToClipboard(exportContent, exportParams);
+		return true;
+	},
+
+	getCitations: function() {
+		var cites = [];
+
+		var optCitation = this.model.get("citation");
+
+		if(optCitation !== null)
+			cites = cites.concat(optCitation);
+
+		return cites;
 	}
 });

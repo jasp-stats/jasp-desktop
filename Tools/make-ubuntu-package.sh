@@ -5,8 +5,8 @@ MinorVersion=`grep -oP		'VersionMinor\(\K[0123456789]+(?=\))' ../JASP-Common/app
 RevisionVersion=`grep -oP	'VersionRevision\(\K[0123456789]+(?=\))' ../JASP-Common/appinfo.cpp`
 BuildVersion=`grep -oP		'VersionBuildNumber\(\K[0123456789]+(?=\))' ../JASP-Common/appinfo.cpp`
 
-JASPFolder=jasp-$MajorVersion.$MinorVersion.$RevisionVersion.6
-JASPTar=jasp_$MajorVersion.$MinorVersion.$RevisionVersion.6.orig.tar.gz
+JASPFolder=jasp-$MajorVersion.$MinorVersion.$RevisionVersion.7
+JASPTar=jasp_$MajorVersion.$MinorVersion.$RevisionVersion.7.orig.tar.gz
 
 echo Making ubuntu package $JASPFolder
 
@@ -18,7 +18,7 @@ mkdir ../../$JASPFolder/$JASPFolder
 cp -R ../* ../../$JASPFolder/$JASPFolder
 
 #now we need to set up a folderstructure that the ubuntu debialbuild likes
-UbuntuVersionThing=jasp_`grep -oP 'jasp \(\K[^)]+(?=\) artful; urgency=high)' ubuntu/changelog`
+UbuntuVersionThing=jasp_`grep -oP 'jasp \(\K[^)]+(?=\) \w+; urgency=high)' ubuntu/changelog`
 UbuntuDebianFolderHolder=$UbuntuVersionThing.debian
 
 echo $UbuntuDebianFolderHolder

@@ -33,33 +33,7 @@ using namespace std;
 
 int Column::count = 0;
 
-Column::Column(managed_shared_memory *mem) :
-	_name(mem->get_segment_manager()),
-	_blocks(std::less<ull>(), mem->get_segment_manager()),
-	_labels(mem)
-{
-	_id = ++count;
-	_mem = mem;
-	_rowCount = 0;
-	_columnType = Column::ColumnTypeNominal;
-}
 
-Column::Column(const Column &col) :
-	_name(col._name),
-	_blocks(col._blocks),
-	_labels(col._labels)
-{
-	_id = ++count;
-	_mem = col._mem;
-	_rowCount = col._rowCount;
-	_columnType = col._columnType;
-}
-
-Column::~Column()
-{
-	//BOOST_FOREACH(BlockEntry &entry, _blocks)
-		//_mem->destroy_ptr(&*entry.second);
-}
 
 Column &Column::operator=(const Column &column)
 {
@@ -618,25 +592,98 @@ bool Column::changeColumnType(Column::ColumnType newColumnType)
 	return success;
 }
 
-void Column::setColumnAsNominalOrOrdinal(const vector<int> &values, map<int, string> &uniqueValues, bool is_ordinal)
+bool Column::overwriteDataWithScale(std::vector<double> scalarData)
 {
-	_labels.syncInts(uniqueValues);
-	_setColumnAsNominalOrOrdinal(values, is_ordinal);
+	size_t setVals = scalarData.size();
+
+	if(scalarData.size() != rowCount())
+		scalarData.resize(rowCount());
+
+	for(size_t setThis = setVals; setThis<scalarData.size(); setThis++)
+		scalarData[setThis] = static_cast<double>(std::nanf(""));
+
+	return setColumnAsScale(scalarData);
 }
 
-void Column::setColumnAsNominalOrOrdinal(const vector<int> &values, const set<int> &uniqueValues, bool is_ordinal)
+bool Column::overwriteDataWithOrdinal(std::vector<int> ordinalData)
 {
-	_labels.syncInts(uniqueValues);
-	_setColumnAsNominalOrOrdinal(values, is_ordinal);
+	size_t setVals = ordinalData.size();
+
+	if(ordinalData.size() != rowCount())
+		ordinalData.resize(rowCount());
+
+	for(size_t setThis = setVals; setThis<ordinalData.size(); setThis++)
+		ordinalData[setThis] = INT_MIN;
+
+	return setColumnAsNominalOrOrdinal(ordinalData, true);
 }
 
-void Column::_setColumnAsNominalOrOrdinal(const vector<int> &values, bool is_ordinal)
+bool Column::overwriteDataWithNominal(std::vector<int> nominalData)
 {
-	Ints::iterator intInputItr = AsInts.begin();
-	int nb_values = 0;
+	size_t setVals = nominalData.size();
 
-	BOOST_FOREACH(int value, values)
+	if(nominalData.size() != rowCount())
+		nominalData.resize(rowCount());
+
+	for(size_t setThis = setVals; setThis<nominalData.size(); setThis++)
+		nominalData[setThis] = INT_MIN;
+
+	return setColumnAsNominalOrOrdinal(nominalData, false);
+}
+
+bool Column::overwriteDataWithNominal(std::vector<std::string> nominalData)
+{
+	if(nominalData.size() != rowCount())
+		nominalData.resize(rowCount());
+
+	bool changedSomething;
+	setColumnAsNominalText(nominalData, &changedSomething);
+
+	return changedSomething;
+}
+
+void Column::setDefaultValues(Column::ColumnType columnType)
+{
+	if(columnType == ColumnTypeUnknown)
+		columnType = _columnType;
+
+	switch(columnType)
 	{
+	case ColumnTypeScale:		overwriteDataWithScale(std::vector<double>(rowCount(), static_cast<double>(std::nanf(""))));	break;
+	case ColumnTypeOrdinal:		overwriteDataWithOrdinal(std::vector<int>(rowCount(), INT_MIN));								break;
+	case ColumnTypeNominal:		overwriteDataWithNominal(std::vector<int>(rowCount(), INT_MIN));								break;
+	case ColumnTypeNominalText:	overwriteDataWithNominal(std::vector<std::string>(rowCount()));									break;
+	case ColumnTypeUnknown:		throw std::runtime_error("Trying to set default values of a column with unknown column type...");
+	}
+	_labels.clear();
+}
+
+bool Column::setColumnAsNominalOrOrdinal(const vector<int> &values, map<int, string> &uniqueValues, bool is_ordinal)
+{
+	_labels.syncInts(uniqueValues);
+	return _setColumnAsNominalOrOrdinal(values, is_ordinal);
+}
+
+bool Column::setColumnAsNominalOrOrdinal(const vector<int> &values, const set<int> &uniqueValues, bool is_ordinal)
+{
+	_labels.syncInts(uniqueValues);
+	return _setColumnAsNominalOrOrdinal(values, is_ordinal);
+}
+
+bool Column::_setColumnAsNominalOrOrdinal(const vector<int> &values, bool is_ordinal)
+{
+	Ints::iterator	intInputItr			= AsInts.begin();
+	size_t			nb_values			= 0;
+	bool			changedSomething	= false;
+
+	for(int value : values)
+	{
+		if(intInputItr == AsInts.end())
+			throw std::runtime_error("Column::_setColumnAsNominalOrOrdinal ran out of Ints in assigning..");
+
+		if(*intInputItr != value)
+			changedSomething = true;
+
 		*intInputItr = value;
 		intInputItr++;
 		nb_values++;
@@ -644,6 +691,9 @@ void Column::_setColumnAsNominalOrOrdinal(const vector<int> &values, bool is_ord
 
 	while (nb_values < _rowCount)
 	{
+		if(*intInputItr != INT_MIN)
+			changedSomething = true;
+
 		*intInputItr = INT_MIN;
 		intInputItr++;
 		nb_values++;
@@ -651,68 +701,82 @@ void Column::_setColumnAsNominalOrOrdinal(const vector<int> &values, bool is_ord
 
 	setColumnType(is_ordinal ? Column::ColumnTypeOrdinal : Column::ColumnTypeNominal);
 
+	return changedSomething;
+
 }
 
-void Column::setColumnAsScale(const std::vector<double> &values)
+bool Column::setColumnAsScale(const std::vector<double> &values)
 {
+	bool changedSomething = false;
 	_labels.clear();
 	Doubles::iterator doubleInputItr = AsDoubles.begin();
 
-	BOOST_FOREACH(double value, values)
+	for(double value : values)
 	{
+		if(doubleInputItr == AsDoubles.end())
+			throw std::runtime_error("Column::setColumnAsScale ran out of Doubles in assigning..");
+
+		if(*doubleInputItr != value) //clang warns us this is unsafe but what does IT know?! If it changes it changes!
+			changedSomething = true;
+
 		*doubleInputItr = value;
 		doubleInputItr++;
 	}
 
 	setColumnType(Column::ColumnTypeScale);
 
+	return changedSomething;
 }
 
-map<int, string> Column::setColumnAsNominalText(const vector<string> &values)
+std::map<int, std::string> Column::setColumnAsNominalText(const std::vector<std::string> &values, const std::map<std::string, std::string>&labels, bool * changedSomething)
 {
-	return setColumnAsNominalText(values, map<string, string>());
-}
+	if(changedSomething != NULL)
+		*changedSomething = false;
 
-map<int, string> Column::setColumnAsNominalText(const vector<string> &values, const map<string, string>&labels)
-{
-	map<int, string> emptyValuesMap;
+	std::map<int, std::string>	emptyValuesMap;
+	std::set<std::string>		cases(values.begin(), values.end());
+	std::vector<std::string>	sortedCases(cases.begin(), cases.end());
 
-	vector<string> sorted = values;
-	sort(sorted.begin(), sorted.end());
-	vector<string> cases;
-	unique_copy(sorted.begin(), sorted.end(), back_inserter(cases));
-	sort(cases.begin(), cases.end());
+	std::sort(sortedCases.begin(), sortedCases.end());
 
-	cases.erase(std::remove_if(
-					cases.begin(),
-					cases.end(),
-					[](string x){
-						return isEmptyValue(x);
-					}), cases.end());
+	sortedCases.erase(std::remove_if(sortedCases.begin(),	sortedCases.end(), [](std::string x){	return isEmptyValue(x);}), sortedCases.end());
 
-	std::map<string, int> map = _labels.syncStrings(cases, labels);
+	std::map<std::string, int> map = _labels.syncStrings(sortedCases, labels, changedSomething);
 
-	Column::Ints::iterator intInputItr = AsInts.begin();
-	int nb_values = 0;
+	auto	intInputItr = AsInts.begin();
+	int		nb_values	= 0;
 
-	BOOST_FOREACH (const string &value, values)
+	for(const std::string &value : values)
 	{
+		if(intInputItr == AsInts.end())
+			throw std::runtime_error("Column::setColumnAsNominalText ran out of Ints in assigning..");
+
 		if (isEmptyValue(value))
 		{
+			if(changedSomething != NULL && *intInputItr != INT_MIN)
+				*changedSomething = true;
+
 			*intInputItr = INT_MIN;
 			if (!value.empty())
 				emptyValuesMap.insert(make_pair(nb_values, value));
 		}
 		else
 		{
+			if(changedSomething != NULL && *intInputItr != map[value])
+				*changedSomething = true;
+
 			*intInputItr = map[value];
 		}
+
 		intInputItr++;
 		nb_values++;
 	}
 
 	while (nb_values < _rowCount)
 	{
+		if(changedSomething != NULL && *intInputItr != INT_MIN)
+			*changedSomething = true;
+
 		*intInputItr = INT_MIN;
 		intInputItr++;
 		nb_values++;
@@ -721,11 +785,6 @@ map<int, string> Column::setColumnAsNominalText(const vector<string> &values, co
 	setColumnType(Column::ColumnTypeNominalText);
 
 	return emptyValuesMap;
-}
-
-int Column::rowCount() const
-{
-	return _rowCount;
 }
 
 string Column::_getLabelFromKey(int key) const
@@ -1059,24 +1118,27 @@ void Column::truncate(int rows)
 	}
 }
 
-string Column::getColumnTypeAsString(ColumnType type)
+
+
+string Column::columnTypeToString(ColumnType type)
 {
-	string result;
 	switch (type)
 	{
-	case ColumnTypeScale:
-		result = "Scale";
-		break;
-	case ColumnTypeOrdinal:
-		result = "Ordinal";
-		break;
-	case ColumnTypeNominalText:
-	case ColumnTypeNominal:
-	default:
-		result = "Nominal";
+	case ColumnTypeScale:		return "ColumnTypeScale";
+	case ColumnTypeOrdinal:		return "ColumnTypeOrdinal";
+	case ColumnTypeNominal:		return "ColumnTypeNominal";
+	case ColumnTypeNominalText:	return "ColumnTypeNominalText";
+	default:					return "ColumnTypeUnknown";
 	}
+}
 
-	return result;
+Column::ColumnType Column::columnTypeFromString(std::string type)
+{
+	if(type == "ColumnTypeScale")				return ColumnTypeScale;
+	else if(type == "ColumnTypeOrdinal")		return ColumnTypeOrdinal;
+	else if(type == "ColumnTypeNominal")		return ColumnTypeNominal;
+	else if(type == "ColumnTypeNominalText")	return ColumnTypeNominalText;
+	else										return ColumnTypeUnknown;
 }
 
 void Column::setColumnType(Column::ColumnType columnType)
@@ -1166,10 +1228,6 @@ int& Column::Ints::iterator::dereference() const
 	return _blockItr->second->Data[_currentPos].i;
 }
 
-Column::Doubles::DoublesStruct::DoublesStruct()
-{
-}
-
 Column::Doubles::iterator Column::Doubles::begin()
 {
 	Column *parent = getParent();
@@ -1243,4 +1301,32 @@ bool Column::Doubles::iterator::equal(iterator const& other) const
 double& Column::Doubles::iterator::dereference() const
 {
 	return _blockItr->second->Data[_currentPos].d;
+}
+
+bool Column::allLabelsPassFilter() const
+{
+	for(const Label & label : _labels)
+		if(!label.filterAllows())
+			return false;
+	return true;
+}
+
+bool Column::hasFilter() const
+{
+	if(_columnType == ColumnTypeScale)
+	{
+//#ifdef JASP_DEBUG
+//		std::cout << "Scale columns do not yet have their own specific filtertype..\n" << std::flush;
+//#endif
+		//Maybe check filterConstructor-thingy?
+		return false;
+	}
+	else
+		return !allLabelsPassFilter();
+}
+
+void Column::resetFilter()
+{
+	for(size_t i=0; i< labels().size(); i++)
+		labels()[i].setFilterAllows(true);
 }

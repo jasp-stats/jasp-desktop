@@ -23,6 +23,9 @@ NetworkAnalysis <- function (
 	state = NULL,
 	...
 ) {
+	if (base::isNamespaceLoaded("bootnet") == FALSE) {
+		try(base::loadNamespace("bootnet"), silent=TRUE)
+	}
 
 	## Read Dataset ## ----
 	variables <- unlist(options$variables)
@@ -513,7 +516,8 @@ NetworkAnalysis <- function (
 			t1 <- Sys.time()
 
 			dev.off() # close the fake png
-			file.remove(tempFileName) # remove the fake png file
+			if (file.exists(tempFileName))
+				file.remove(tempFileName) # remove the fake png file
 
 			timing[nw] <- difftime(t1, t0, units = "secs") # ensure times are always seconds
 			network[["corMessage"]] <- msg
@@ -661,7 +665,8 @@ NetworkAnalysis <- function (
 											repulsion = options[["repulsion"]])
 
 			dev.off() # close the fake png
-			file.remove(tempFileName) # remove the fake png file
+			if (file.exists(tempFileName))
+				file.remove(tempFileName) # remove the fake png file
 
 		} else {
 
@@ -777,7 +782,8 @@ NetworkAnalysis <- function (
 		}
 
 		dev.off() # close the fake png
-		file.remove(tempFileName) # remove the fake png file
+		if (file.exists(tempFileName))
+			file.remove(tempFileName) # remove the fake png file
 
 	}
 
@@ -805,7 +811,7 @@ NetworkAnalysis <- function (
 
 	footnotes <- .newFootnotes()
 	msg <- NULL
-  # browser()
+
 	if (is.null(network[["network"]])) { # fill in with .
 
 	  TBcolumns <- list(
@@ -1664,14 +1670,22 @@ NetworkAnalysis <- function (
 
 			bt <- allBootstraps[[v]]
 
-			content <- .writeImage(width = subPlot[["width"]], height = subPlot[["height"]],
-								   plot = plot(bt, statistic = statistic, order = "sample") # returns a ggplot object
-			)
+            p <- try(plot(bt, statistic = statistic, order = "sample"))
 
-			subPlot[["convertible"]] <- TRUE
-			subPlot[["data"]] <- content[["png"]]
-			subPlot[["obj"]] <- content[["obj"]]
-			subPlot[["status"]] <- "complete"
+            if (!isTryError(p)) {
+
+                content <- .writeImage(width = subPlot[["width"]], height = subPlot[["height"]], plot = p)
+                subPlot[["convertible"]] <- TRUE
+                subPlot[["data"]] <- content[["png"]]
+                subPlot[["obj"]] <- content[["obj"]]
+                subPlot[["status"]] <- "complete"
+
+            } else {
+
+                errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
+    			subPlot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+
+            }
 			plot[["collection"]][[v]] <- subPlot
 
 		}

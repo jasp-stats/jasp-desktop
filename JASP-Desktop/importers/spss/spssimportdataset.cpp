@@ -56,7 +56,7 @@ void SPSSImportDataSet::numCases(int64_t num)
 		_numCases = num;
 }
 
-int SPSSImportDataSet::rowCount() const
+size_t SPSSImportDataSet::rowCount() const
 {
 	return numCases();
 }

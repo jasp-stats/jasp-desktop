@@ -40,12 +40,14 @@ AncovaForm::AncovaForm(QWidget *parent) :
 	_fixedFactorsListModel = new TableModelVariablesAssigned(this);
 	_fixedFactorsListModel->setSource(&_availableVariablesModel);
     _fixedFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->fixedFactors->setModel(_fixedFactorsListModel);
+    _fixedFactorsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeNominalText | Column::ColumnTypeOrdinal);
+    ui->fixedFactors->setModel(_fixedFactorsListModel);
 
 	_randomFactorsListModel = new TableModelVariablesAssigned(this);
 	_randomFactorsListModel->setSource(&_availableVariablesModel);
 	_randomFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->randomFactors->setModel(_randomFactorsListModel);
+    _randomFactorsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeNominalText | Column::ColumnTypeOrdinal);
+    ui->randomFactors->setModel(_randomFactorsListModel);
 
 	_covariatesListModel = new TableModelVariablesAssigned(this);
 	_covariatesListModel->setSource(&_availableVariablesModel);
@@ -122,10 +124,20 @@ AncovaForm::AncovaForm(QWidget *parent) :
     _moderatorTwoTableModel = new TableModelVariablesAssigned(this);
     _moderatorTwoTableModel->setSource(_simpleEffectsAvailableTableModel);
 	ui->moderatorFactorTwo->setModel(_moderatorTwoTableModel);
-
+	
 	ui->buttonAssignSimpleFactor->setSourceAndTarget(ui->simpleEffectsVariables, ui->simpleFactor);
 	ui->buttonAssignModeratorOne->setSourceAndTarget(ui->simpleEffectsVariables, ui->moderatorFactorOne);
 	ui->buttonAssignModeratorTwo->setSourceAndTarget(ui->simpleEffectsVariables, ui->moderatorFactorTwo);
+
+		_kruskalAvailableTableModel = new TableModelVariablesAvailable();
+		_kruskalAvailableTableModel->setInfoProvider(this);
+	ui->kruskalVariables->setModel(_kruskalAvailableTableModel);
+
+		_kruskalTableModel = new TableModelVariablesAssigned(this);
+		_kruskalTableModel->setSource(_kruskalAvailableTableModel);
+	ui->kruskalVariablesAssigned->setModel(_kruskalTableModel);
+
+	ui->buttonAssignKruskal->setSourceAndTarget(ui->kruskalVariables, ui->kruskalVariablesAssigned);
 
 	ui->containerModel->hide();
 	ui->containerFactors->hide();
@@ -134,6 +146,7 @@ AncovaForm::AncovaForm(QWidget *parent) :
 	ui->containerPostHocTests->hide();
 	ui->containerDescriptivesPlot->hide();
 	ui->containerAssumptions->hide();
+	ui->containerKruskal->hide();
 
 	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 
@@ -184,6 +197,7 @@ void AncovaForm::factorsChanged()
 	_contrastsModel->setVariables(factorsAvailable);
 	_plotFactorsAvailableTableModel->setVariables(factorsAvailable);
 	_simpleEffectsAvailableTableModel->setVariables(factorsAvailable);
+	_kruskalAvailableTableModel->setVariables(factorsAvailable);
 
 	Terms plotVariablesAssigned;
 	plotVariablesAssigned.add(_horizontalAxisTableModel->assigned());
@@ -197,6 +211,10 @@ void AncovaForm::factorsChanged()
 	simpleEffectsVariablesAssigned.add(_moderatorTwoTableModel->assigned());
 	_simpleEffectsAvailableTableModel->notifyAlreadyAssigned(simpleEffectsVariablesAssigned);
 
+	Terms kruskalVariablesAssigned;
+	kruskalVariablesAssigned.add(_kruskalTableModel->assigned());
+	_kruskalAvailableTableModel->notifyAlreadyAssigned(kruskalVariablesAssigned);
+	
     	ui->postHocTestsVariables->setVariables(factorsAvailable);
 
 	if (_options != NULL)

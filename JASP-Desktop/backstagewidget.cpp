@@ -84,10 +84,6 @@ void BackStageWidget::setOnlineDataManager(OnlineDataManager *odm)
 	_openAndSaveWidget->setOnlineDataManager(odm);
 }
 
-void BackStageWidget::setLog(ActivityLog *log)
-{
-
-}
 
 FileEvent *BackStageWidget::open()
 {
@@ -159,7 +155,7 @@ void BackStageWidget::tabPageChanging(int index, bool &cancel)
 		break;
 
 	case FileOperation::Save:  // Save
-		if (_openAndSaveWidget->getCurrentFileType() == Utils::FileType::jasp)
+		if (_openAndSaveWidget->getCurrentFileType() == Utils::FileType::jasp && !_openAndSaveWidget->isCurrentFileReadOnly())
 			_openAndSaveWidget->save();
 		else
 		{

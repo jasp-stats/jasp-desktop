@@ -16,16 +16,16 @@ test_that("Main table results match", {
   )
 })
 
-test_that("Descriptives plots match", {
-  options <- jasptools::analysisOptions("BinomialTest")
-  options$variables <- "contBinom"
-  options$descriptivesPlots <- TRUE
-  options$descriptivesPlotsConfidenceInterval <- 0.90
-  results <- jasptools::run("BinomialTest", "test.csv", options, view=FALSE, quiet=TRUE)
-
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "descriptives-1", dir="BinomialTest")
-
-  testPlot <- results[["state"]][["figures"]][[2]]
-  expect_equal_plots(testPlot, "descriptives-2", dir="BinomialTest")
-})
+# test_that("Descriptives plots match", {
+#   options <- jasptools::analysisOptions("BinomialTest")
+#   options$variables <- "contBinom"
+#   options$descriptivesPlots <- TRUE
+#   options$descriptivesPlotsConfidenceInterval <- 0.90
+#   results <- jasptools::run("BinomialTest", "test.csv", options, view=FALSE, quiet=TRUE)
+#
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "descriptives-1", dir="BinomialTest")
+#
+#   testPlot <- results[["state"]][["figures"]][[2]]
+#   expect_equal_plots(testPlot, "descriptives-2", dir="BinomialTest")
+# })

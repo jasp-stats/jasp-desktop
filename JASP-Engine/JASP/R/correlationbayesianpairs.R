@@ -83,7 +83,8 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	if (usePearson) {
 	    correlation[["title"]] <- "Bayesian Pearson Correlation"
 	    correlation[["citation"]] <- list(
-	        "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2016). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Journal of Mathematical Psychology, 72, 19-32."
+	        "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2016). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Journal of Mathematical Psychology, 72, 19-32.",
+	        "Ly, A., Marsman, M., Wagenmakers, E.-J. (2018). Analytic Posteriors for Pearson’s Correlation Coefficient. Statistica Neerlandica, 72(1), 4-13."
 	    )
 	    nameForFields <- "r"
 	} else if (useKendall) {
@@ -96,6 +97,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	    correlation[["title"]] <- "Bayesian Correlation Table"
 	    correlation[["citation"]] <- list(
 	        "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2016). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Journal of Mathematical Psychology, 72, 19-32.",
+	        "Ly, A., Marsman, M., Wagenmakers, E.-J. (2018). Analytic Posteriors for Pearson’s Correlation Coefficient. Statistica Neerlandica, 72(1), 4-13.",
 	        "van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (in press). Bayesian Inference for Kendall’s Rank Correlation Coefficient. The American Statistician."
 	    )
 	    nameForFields <- "Statistic"

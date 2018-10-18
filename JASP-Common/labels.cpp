@@ -50,12 +50,12 @@ int Labels::add(int display)
 
 int Labels::add(const std::string &display)
 {
-	return add(_labels.size(), display);
+	return add(_labels.size(), display, true);
 }
 
-int Labels::add(int key, const std::string &display)
+int Labels::add(int key, const std::string &display, bool filterAllows)
 {
-	Label label(display, key);
+	Label label(display, key, filterAllows);
 	_labels.push_back(label);
 
 	return key;
@@ -120,29 +120,29 @@ void Labels::syncInts(const std::set<int> &values)
 		add(value);
 }
 
-map<string, int> Labels::syncStrings(const vector<string> &new_values, const map<string, string> &new_labels)
+std::map<std::string, int> Labels::syncStrings(const std::vector<std::string> &new_values, const std::map<std::string, std::string> &new_labels, bool *changedSomething)
 {
-	map<string,string> valuesToAdd;
-	for (const string& newValue : new_values)
+	std::map<std::string,std::string> valuesToAdd;
+
+	for (const std::string& newValue : new_values)
 	{
-		string shortValue = (newValue.length() > Label::MAX_LABEL_LENGTH ? newValue.substr(0, Label::MAX_LABEL_LENGTH) : newValue);
+		std::string shortValue	= newValue.length() > Label::MAX_LABEL_LENGTH ? newValue.substr(0, Label::MAX_LABEL_LENGTH) : newValue;
 		valuesToAdd[shortValue] = newValue;
 	}
 	
-	std::set<int> valuesToRemove;
-	map<string, int> result;
+	std::set<int>				valuesToRemove;
+	std::map<std::string, int>	result;
+	int							maxLabelKey = 0;
 
-
-	int maxLabelKey = 0;
 	for (const Label &label : _labels)
 	{
-		string labelText = _getOrgValueFromLabel(label);
-		int labelValue = label.value();
+		std::string labelText	= _getOrgValueFromLabel(label);
+		int labelValue			= label.value();
 		
 		if (labelValue > maxLabelKey)
 			maxLabelKey = labelValue;
 
-		map<string, string>::const_iterator elt = valuesToAdd.find(labelText);
+		auto elt = valuesToAdd.find(labelText);
 		if (elt != valuesToAdd.end())
 		{
 			result[elt->second] = labelValue;
@@ -152,24 +152,32 @@ map<string, int> Labels::syncStrings(const vector<string> &new_values, const map
 			valuesToRemove.insert(labelValue);
 	}
 
+	if(changedSomething != NULL && (valuesToRemove.size() > 0 || valuesToAdd.size() > 0))
+		*changedSomething = true;
+
 	removeValues(valuesToRemove);
 	
 	for (auto elt : valuesToAdd)
 	{
 		maxLabelKey++;
-		add(maxLabelKey, elt.first);
+		add(maxLabelKey, elt.first, true);
 		result[elt.second] = maxLabelKey;
 	}
 
 	for (Label& label : _labels)
 	{
-		string labelText = _getOrgValueFromLabel(label);
-		map<string, string>::const_iterator newLabelIt = new_labels.find(labelText);
+		std::string labelText = _getOrgValueFromLabel(label);
+		auto newLabelIt = new_labels.find(labelText);
 		if (newLabelIt != new_labels.end())
 		{
-			string newStringLabel = newLabelIt->second;
+			std::string newStringLabel = newLabelIt->second;
 			if (labelText != newStringLabel)
+			{
 				_setNewStringForLabel(label, newStringLabel);
+
+				if(changedSomething != NULL)
+					*changedSomething = true;
+			}
 		}
 	}
 	return result;
@@ -215,17 +223,25 @@ const Label &Labels::getLabelObjectFromKey(int index) const
 
 bool Labels::setLabelFromRow(int row, const string &display)
 {
-	if (row >= (int)_labels.size())
+	if (row >= (int)_labels.size() || row < 0)
 	{
 		std::cout << "Set label with wrong row: " << row << ", size: " << _labels.size() << std::endl;
 		std::cout.flush();
 		return false;
 	}
-	Label &label = _labels.at(row);
-	if (label.text() == display)
-		return false;
 
-	_setNewStringForLabel(label, display);
+	try
+	{
+		Label &label = _labels.at(row);
+		if (label.text() == display)
+			return false;
+
+		_setNewStringForLabel(label, display);
+	}
+	catch(...)
+	{
+		return false;
+	}
 	return true;
 }
 
@@ -279,6 +295,11 @@ string Labels::getValueFromRow(int row)
 	}
 	const Label &label = _labels.at(row);
 	return _getValueFromLabel(label);
+}
+
+Label& Labels::operator[](size_t index)
+{
+	return _labels.at(index);
 }
 
 std::string Labels::getLabelFromRow(int row)

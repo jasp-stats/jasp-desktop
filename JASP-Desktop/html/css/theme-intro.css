@@ -180,6 +180,15 @@ section{
     font-size: 1.2rem;
 }
 
+.cta-title a {
+	color: black;
+	text-decoration-line: none;
+}
+
+.cta-title:hover {
+	text-decoration-line: underline;
+}
+
 /*--------------------------------------------------------------
 # Note
 --------------------------------------------------------------*/

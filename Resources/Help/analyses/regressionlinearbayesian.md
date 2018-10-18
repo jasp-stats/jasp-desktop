@@ -69,9 +69,10 @@ Prior distribution on the models.
 
 #### Sampling method:
 Indicates the sampling method to be used
-- *BAS*: Uses Bayesian Adaptive Sampling (without replacement). These can be updated based on estimates of the marginal inclusion. *No. models* indicates the number of models to sample either without replacement probabilities.
-- *MCMC*: Samples with replacement via a MCMC algorithm that combines the birth/death random walk with a random swap move to interchange a variable in the model.
+- *BAS*: Uses Bayesian Adaptive Sampling (without replacement). These can be updated based on estimates of the marginal inclusion. *No. models* indicates the number of models to sample without replacement. Setting the value to 0 implies the analysis will attempt to enumerate all models.
+- *MCMC*: Samples with replacement via a MCMC algorithm that combines the birth/death random walk with a random swap move to interchange a variable in the model. *No. samples* indicates the number of MCMC samples to draw. Setting the value to 0 implies the number of MCMC iterations is equal to 10 times the number of models. Sampling stops when min(number of models, MCMC iterations) is reached.
 
+It is recommended to use *BAS* when the model space can be enumerated.
 
 Output Tables
 -------

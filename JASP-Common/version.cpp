@@ -171,7 +171,7 @@ string Version::asString() const
 		stream << " Alpha " << (int)build;
 	else if (isBeta())
 		stream << " Beta " << (int)(build - 100);
-
+	
 	return stream.str();
 }
 

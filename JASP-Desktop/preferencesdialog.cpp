@@ -3,6 +3,7 @@
 #include "ui_preferencesdialog.h"
 #include <QMessageBox>
 #include <QDebug>
+#include "settings.h"
 
 using namespace std;
 
@@ -15,40 +16,46 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 	ui->setupUi(this);
 	_tabBar = dynamic_cast<TabBar *>(parent);
 
-	//Fix decimals
-	int check_fix_decimals = _settings.value("fixDecimals", 0).toInt();
-	ui->fixDecimals->setChecked(check_fix_decimals > 0);
-	QString input_num_decimals = _settings.value("numDecimals").toString();
-	if (input_num_decimals != "")
+	//Num decimals
+	QString input_num_decimals = Settings::value(Settings::NUM_DECIMALS).toString();
+	bool fix_decimals = !input_num_decimals.isEmpty();
+	ui->fixDecimals->setChecked(fix_decimals);
+	if (fix_decimals)
 		ui->numDecimals->setValue(input_num_decimals.toInt());
 	
 	//Exact p-value
-	int check_exact_pval = _settings.value("displayExactPVals", 0).toInt();
-	ui->displayExactPVals->setChecked(check_exact_pval > 0);
+	bool check_exact_pval = Settings::value(Settings::EXACT_PVALUES).toBool();
+	ui->displayExactPVals->setChecked(check_exact_pval);
 
 	//Auto Sync
-	int check_data_sync = _settings.value("dataAutoSynchronization", 1).toInt();
-	ui->syncAutoCheckBox->setChecked(check_data_sync > 0);
+	bool check_data_sync = Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION).toBool();
+	ui->syncAutoCheckBox->setChecked(check_data_sync);
 
 	//Default Editor
-	int check_default_editor = _settings.value("useDefaultSpreadsheetEditor", 1).toInt();
-	bool defaulteditor = check_default_editor > 0;
-	ui->useDefaultSpreadsheetEditor->setChecked(defaulteditor);
-	setDefaultEditorCheck(defaulteditor);
+	bool defaultEditor = Settings::value(Settings::USE_DEFAULT_SPREADSHEET_EDITOR).toBool();
+	ui->useDefaultSpreadsheetEditor->setChecked(defaultEditor);
+	setDefaultEditorCheck(defaultEditor);
 	
 	//Selected Editor
-	QString spreadsheetEditorName = _settings.value("spreadsheetEditorName","").toString();
+	QString spreadsheetEditorName = Settings::value(Settings::SPREADSHEET_EDITOR_NAME).toString();
 	if (spreadsheetEditorName != "")
 		ui->spreadsheetEditorName->setText(spreadsheetEditorName);
+
+	//PPI
+	bool useDefaultPPI = Settings::value(Settings::PPI_USE_DEFAULT).toBool();
+	ui->useDefaultPPI->setChecked(useDefaultPPI);
+	QString customPPI = Settings::value(Settings::PPI_CUSTOM_VALUE).toString();
+	ui->customPPI->setText(customPPI);
+
+	ui->customPPI->setEnabled(!useDefaultPPI);
 
 	// Remove Question mark Help sign (Only on windows )
 	this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-  //this->ui->numDecimals->setValidator(new QIntValidator(1,10, this));
   QSizePolicy retain = ui->numDecimals->sizePolicy();
   retain.setRetainSizeWhenHidden(true);
   ui->numDecimals->setSizePolicy(retain);
-	if (check_fix_decimals == 0)
+	if (!fix_decimals)
 		this->ui->numDecimals->hide();
 
 	connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(savePreferences()));
@@ -62,6 +69,13 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 PreferencesDialog::~PreferencesDialog()
 {
 	delete ui;
+}
+
+void PreferencesDialog::setDefaultPPI(int ppi)
+{
+	QString ppiStr;
+	ppiStr.setNum(ppi);
+	ui->labelDefaultPPI->setText(QString::fromLatin1(": ") + ppiStr);
 }
 
 std::vector<std::string> PreferencesDialog::getStdVectorFromEmptyValueList()
@@ -128,7 +142,7 @@ bool PreferencesDialog::addStringToEmptyValueList(const QString &in)
 
 	if (!prepare.isEmpty())
 	{
-		for (unsigned int i=0; i<ui->missingValuesList->count(); ++i)
+		for (int i=0; i<ui->missingValuesList->count(); ++i)
 		{
 			if (ui->missingValuesList->item(i)->text() == prepare)
 			{
@@ -191,7 +205,7 @@ void PreferencesDialog::checkEmptyValueList()
 	
 	if (settingmissingvalues != "" && missingvalues != org_missingvalues)
 	{
-		_settings.setValue("MissingValueList", settingmissingvalues);
+		Settings::setValue(Settings::MISSING_VALUES_LIST, settingmissingvalues);
 		Utils::setEmptyValues(missingvalues);
 		emit _tabBar->emptyValuesChanged();
 	}
@@ -204,36 +218,52 @@ void PreferencesDialog::savePreferences()
 
 	//Auto Sync Switch
 	int checked = (ui->syncAutoCheckBox->checkState()==Qt::Checked) ? 1 : 0;
-	int dataAutoSynchronization = _settings.value("dataAutoSynchronization", 1).toInt();
-	_settings.setValue("dataAutoSynchronization", checked);
+	int dataAutoSynchronization = Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION).toInt();
+	Settings::setValue(Settings::DATA_AUTO_SYNCHRONIZATION, checked);
 	if (checked != dataAutoSynchronization)
 		emit _tabBar->dataAutoSynchronizationChanged(checked);
 	
 	//Use Default Editor Switch
 	checked = (ui->useDefaultSpreadsheetEditor->checkState()==Qt::Checked) ? 1 : 0;
-	_settings.setValue("useDefaultSpreadsheetEditor", checked);
+	Settings::setValue(Settings::USE_DEFAULT_SPREADSHEET_EDITOR, checked);
 
-	_settings.setValue("spreadsheetEditorName", ui->spreadsheetEditorName->text());
+	Settings::setValue(Settings::SPREADSHEET_EDITOR_NAME, ui->spreadsheetEditorName->text());
 			
 	//Exact p values
-  checked = (ui->displayExactPVals->checkState()==Qt::Checked) ? 1 : 0;
-  int displayExactPVals = _settings.value("displayExactPVals", 1).toInt();
-  _settings.setValue("displayExactPVals", checked);
-  if (checked != displayExactPVals)
-      _tabBar->setExactPValues(checked);
+	checked = (ui->displayExactPVals->checkState()==Qt::Checked) ? 1 : 0;
+	int displayExactPVals = Settings::value(Settings::EXACT_PVALUES).toInt();
+	Settings::setValue(Settings::EXACT_PVALUES, checked);
+	if (checked != displayExactPVals)
+		_tabBar->setExactPValues(checked);
 
 	//Fix decimals
-  checked = (ui->fixDecimals->checkState()==Qt::Checked) ? 1 : 0;
-	_settings.setValue("fixDecimals", checked);
-	
+	checked = (ui->fixDecimals->checkState()==Qt::Checked) ? 1 : 0;	
 	QString numDecimals = (checked == 0) ? "" : ui->numDecimals->cleanText();
-	QString savedNumDecimals = _settings.value("numDecimals").toString();
-	_settings.setValue("numDecimals", numDecimals);
+	QString savedNumDecimals = Settings::value(Settings::NUM_DECIMALS).toString();
+	Settings::setValue(Settings::NUM_DECIMALS, numDecimals);
 	if (numDecimals != savedNumDecimals)
         _tabBar->setFixDecimals(numDecimals);
-	
+
+	//PPI
+	checked = (ui->useDefaultPPI->checkState()==Qt::Checked) ? 1 : 0;
+	int previousChecked = Settings::value(Settings::PPI_USE_DEFAULT).toInt();
+	Settings::setValue(Settings::PPI_USE_DEFAULT, checked);
+	if (checked)
+	{
+		if (checked != previousChecked)
+			_tabBar->useDefaultPPI();
+	}
+	else
+	{
+		int customPPI = ui->customPPI->text().toInt();
+		int previousCustomPPI = Settings::value(Settings::PPI_CUSTOM_VALUE).toInt();
+		Settings::setValue(Settings::PPI_CUSTOM_VALUE, customPPI);
+		if (checked != previousChecked || customPPI != previousCustomPPI)
+			_tabBar->setPPI(customPPI);
+	}
+
 	//Done
-	_settings.sync();
+	Settings::sync();
 
 	this->close();
 	

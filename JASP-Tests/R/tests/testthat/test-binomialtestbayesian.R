@@ -16,29 +16,29 @@ test_that("Main table results match", {
   )
 })
 
-test_that("Prior posterior plots match", {
-  options <- jasptools::analysisOptions("BinomialTestBayesian")
-  options$variables <- "contBinom"
-  options$plotPriorAndPosterior <- TRUE
-  options$plotPriorAndPosteriorAdditionalInfo <- TRUE
-  results <- jasptools::run("BinomialTestBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
-
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "prior-posterior-1", dir="BinomialTestBayesian")
-
-  testPlot <- results[["state"]][["figures"]][[2]]
-  expect_equal_plots(testPlot, "prior-posterior-2", dir="BinomialTestBayesian")
-})
-
-test_that("Sequential analysis plots match", {
-  options <- jasptools::analysisOptions("BinomialTestBayesian")
-  options$variables <- "contBinom"
-  options$plotSequentialAnalysis <- TRUE
-  results <- jasptools::run("BinomialTestBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
-
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "sequential-analysis-1", dir="BinomialTestBayesian")
-
-  testPlot <- results[["state"]][["figures"]][[2]]
-  expect_equal_plots(testPlot, "sequential-analysis-2", dir="BinomialTestBayesian")
-})
+# test_that("Prior posterior plots match", {
+#   options <- jasptools::analysisOptions("BinomialTestBayesian")
+#   options$variables <- "contBinom"
+#   options$plotPriorAndPosterior <- TRUE
+#   options$plotPriorAndPosteriorAdditionalInfo <- TRUE
+#   results <- jasptools::run("BinomialTestBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+#
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "prior-posterior-1", dir="BinomialTestBayesian")
+#
+#   testPlot <- results[["state"]][["figures"]][[2]]
+#   expect_equal_plots(testPlot, "prior-posterior-2", dir="BinomialTestBayesian")
+# })
+# 
+# test_that("Sequential analysis plots match", {
+#   options <- jasptools::analysisOptions("BinomialTestBayesian")
+#   options$variables <- "contBinom"
+#   options$plotSequentialAnalysis <- TRUE
+#   results <- jasptools::run("BinomialTestBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+#
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "sequential-analysis-1", dir="BinomialTestBayesian")
+#
+#   testPlot <- results[["state"]][["figures"]][[2]]
+#   expect_equal_plots(testPlot, "sequential-analysis-2", dir="BinomialTestBayesian")
+# })

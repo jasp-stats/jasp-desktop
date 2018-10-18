@@ -32,62 +32,51 @@ class Analyses : public QObject
 	friend class EngineSync;
 	friend class boost::iterator_core_access;
 
-	typedef QMap<int, Analysis *> ById;
-
+	typedef QMap<int, Analysis *>				ById;
 public:
-	Analyses();
 
-	Analysis *create(const QString &module, const QString &name);
-	Analysis *create(const QString &module, const QString &name, int id, const Version &version, Json::Value *options = NULL, Analysis::Status status = Analysis::Empty);
-	Analysis *get(int id) const;
-	void clear();
+				Analyses() : _nextId(0) {}
 
-	typedef QList<Analysis*>::iterator iterator;
-	iterator begin();
-	iterator end();
+	Analysis*	create(const QString &module, const QString &name, int id, const Version &version, Json::Value *options = NULL, Analysis::Status status = Analysis::Empty);
+	Analysis*	create(const QString &module, const QString &name);
 
-	int count() const;
+	Analysis*	get(int id) const	{ return id < _analyses.size() ? _analyses.at(id) : NULL; }
+	void		clear();
+
+
+	typedef std::vector<Analysis*>::iterator	iterator;
+
+	iterator	begin()		{ return _analyses.begin(); }
+	iterator	end()		{ return _analyses.end(); }
+
+	int			count() const;
 
 signals:
-	void analysisInitialised(Analysis *source);
-	void analysisOptionsChanged(Analysis *source);
-	void analysisToRefresh(Analysis *source);
-	void analysisSaveImage(Analysis *source);
-	void analysisImageSaved(Analysis *source);
-    void analysisEditImage(Analysis *source);
-    void analysisImageEdited(Analysis *source);
-	void analysisResultsChanged(Analysis *source);
-	void analysisAdded(Analysis *source);
+	void analysisAdded(					Analysis *source);
+	void analysisEditImage(				Analysis *source);
+	void analysisSaveImage(				Analysis *source);
+	void analysisToRefresh(				Analysis *source);
+	void analysisImageSaved(			Analysis *source);
+	void analysisInitialised(			Analysis *source);
+	void analysisImageEdited(			Analysis *source);
+	void analysisResultsChanged(		Analysis *source);
+	void analysisOptionsChanged(		Analysis *source);
 
-private slots:
-	void flushDefaultsToDisk();
+	ComputedColumn *	requestComputedColumnCreation(std::string columnName, Analysis *source);
+	void				requestComputedColumnDestruction(std::string columnName);
 
 private:
+	void analysisOptionsChangedHandler(	Analysis *analysis)							{ analysisOptionsChanged(analysis); }
+	void analysisImageSavedHandler(		Analysis *analysis)							{ analysisImageSaved(analysis); }
+	void analysisImageEditedHandler(	Analysis *analysis)							{ analysisImageEdited(analysis); }
+	void analysisResultsChangedHandler(	Analysis *analysis)							{ analysisResultsChanged(analysis); }
+	void analysisToRefreshHandler(		Analysis *analysis);
+	void analysisSaveImageHandler(		Analysis *analysis, Json::Value &options);
+	void analysisEditImageHandler(		Analysis *analysis, Json::Value &options);
 
-	typedef struct {
-		QString analysisName;
-		Options *options;
-		bool needsSync;
-	} Defaults;
-
-	void assignDefaults(Analysis *analysis);
-
-	void analysisOptionsChangedHandler(Analysis *analysis);
-	void analysisToRefreshHandler(Analysis *analysis);
-	void analysisSaveImageHandler(Analysis *analysis, Json::Value &options);
-    void analysisEditImageHandler(Analysis *analysis, Json::Value &options);
-	void analysisImageSavedHandler(Analysis *analysis);
-    void analysisImageEditedHandler(Analysis *analysis);
-	void analysisResultsChangedHandler(Analysis *analysis);
-
-	QList<Analysis*> _analyses;
+	 std::vector<Analysis*> _analyses;
 
 	int _nextId;
-
-	QMap<QString, Defaults> _defaults;
-
-
-
 };
 
 

@@ -53,3 +53,13 @@ TTestBayesianIndependentSamplesForm::~TTestBayesianIndependentSamplesForm()
 {
 	delete ui;
 }
+
+void TTestBayesianIndependentSamplesForm::on_StudentStatistic_clicked(bool checked)
+{
+    ui->subjectivePriors->changeStandardizedPriorsStatus(!checked);
+}
+
+void TTestBayesianIndependentSamplesForm::on_WilcoxonStatistic_clicked(bool checked)
+{
+    ui->subjectivePriors->changeStandardizedPriorsStatus(checked);
+}

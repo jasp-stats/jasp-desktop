@@ -40,6 +40,9 @@ public:
 	explicit ResultsJsInterface(QWidget *parent = 0);
 
 	void setZoom(double zoom);
+	void zoomIn();
+	void zoomOut();
+	void zoomReset();
 
 	void showAnalysis(int id);
 	void analysisChanged(Analysis *analysis);
@@ -78,7 +81,9 @@ public slots:
 
 	void exportSelected(const QString &filename);
 	void getImageInBase64(int id, const QString &path);
-	
+	void openFileTab();
+
+	void getDefaultPPI();
 
 private:
 	MainWindow *_mainWindow;
@@ -86,6 +91,7 @@ private:
 	QWebChannel *_channel;
 
 	QMenu *_analysisMenu;
+	QMenu *_copySpecialMenu;
 	double _webViewZoom;
 
 	Json::Value _resultsMeta;
@@ -97,8 +103,11 @@ private:
 	void runJavaScript(const QString &str, std::function<void(const QVariant&)> cb);
 
 	void cbSetPPI(const QVariant &vppi);
+	void cbSetPPIAndRefresh(const QVariant &vppi);
 	void cbSetResultstMeta(const QVariant &vMetaData);
 	void cbSetAllUserData(const QVariant &vAllUserData);
+
+	int _getPPIFromVariant(const QVariant &vppi, bool &success);
 
 private slots:
 	void resultsPageLoaded(bool success);
@@ -109,6 +118,7 @@ private slots:
 	void editTitleSelected();
 	void copySelected();
 	void citeSelected();
+	void latexCodeSelected();
 	void saveImage();
 	void editImage();
 	void noteSelected();

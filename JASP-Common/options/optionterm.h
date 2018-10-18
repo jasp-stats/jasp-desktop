@@ -23,13 +23,12 @@
 class OptionTerm : public OptionTerms
 {
 public:
-	OptionTerm();
+	OptionTerm() : OptionTerms(false, true) {}
 
-	virtual Json::Value asJSON()const OVERRIDE;
-	virtual void set(const Json::Value& value) OVERRIDE;
-	virtual Option* clone() const OVERRIDE;
-
-	virtual void setValue(const std::vector<std::string> &value) OVERRIDE;
+	Json::Value		asJSON()										const	override;
+	void			set(const Json::Value& value)							override;
+	Option			*clone()										const	override;
+	void			setValue(const std::vector<std::string> &value)			override;
 
 	std::vector<std::string> term() const;
 

@@ -27,23 +27,21 @@
 class OptionNumber : public OptionI<double>
 {
 public:
-	OptionNumber();
-	OptionNumber(double value, double minimum = -999999, double maximum = 999999, std::string format = "");
+	OptionNumber()																								: OptionI() {}
+	OptionNumber(double value, double minimum = -999999, double maximum = 999999, std::string format = "")		: OptionI(value), _min(minimum), _max(maximum), _format(format) {}
 
-	virtual void init(const Json::Value &data) OVERRIDE;
+	void		init(const Json::Value &data)			override;
+	void		set(const Json::Value& value)			override;
+	Json::Value asJSON()						const	override;
+	Option*		clone()							const	override;
 
-	virtual Json::Value asJSON() const OVERRIDE;
-	virtual void set(const Json::Value& value) OVERRIDE;
-	virtual Option* clone() const OVERRIDE;
-
-	double minimum() const;
-	double maximum() const;
-
-	std::string format() const;
+	double		minimum()	const;
+	double		maximum()	const;
+	std::string	format()	const;
 
 protected:
-	double _min;
-	double _max;
+	double		_min;
+	double		_max;
 	std::string _format;
 };
 

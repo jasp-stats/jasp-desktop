@@ -334,6 +334,16 @@ void TabBar::setFixDecimals(QString numDecimals)
 	emit setFixDecimalsHandler(numDecimals);
 }
 
+void TabBar::useDefaultPPI()
+{
+	emit useDefaultPPIHandler();
+}
+
+void TabBar::setPPI(int ppi)
+{
+	emit setPPIHandler(ppi);
+}
+
 
 void TabBar::emptyValuesChanged()
 {

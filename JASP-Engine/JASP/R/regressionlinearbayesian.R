@@ -29,10 +29,12 @@ RegressionLinearBayesian <- function (
 						 		 "priorRegressionCoefficients", "alpha", "rScale",
 						 	 	 "modelPrior", "betaBinomialParamA", "betaBinomialParamB", "bernoulliParam",
 						 	 	 "samplingMethod", "iterationsMCMC", "numberOfModels")
+	summaryOpts <- c("summaryType", "posteriorSummaryPlotCredibleIntervalValue", "nSimForCRI")
 	stateKey <- list(
 		bas_obj = modelOpts,
-		postSummary = c(modelOpts, "postSummary", "summaryType", "posteriorSummaryPlotCredibleIntervalValue"),
-		postSummaryPlot = c(modelOpts, "postSummaryPlot", "summaryType", "posteriorSummaryPlotCredibleIntervalValue", "omitIntercept"),
+		postSummary = c(modelOpts, summaryOpts),
+		postSummaryTable = c(modelOpts, summaryOpts, "postSummaryTable"),
+		postSummaryPlot = c(modelOpts, summaryOpts, "postSummaryPlot", "omitIntercept"),
 		descriptives = c("dependent", "covariates"),
 		plotPosteriorLogOdds = c(modelOpts, "plotLogPosteriorOdds"),
 		plotCoefficientsPosterior = c(modelOpts, "plotCoefficientsPosterior"),
@@ -40,11 +42,12 @@ RegressionLinearBayesian <- function (
 		plotModelProbabilities = c(modelOpts, "plotModelProbabilities"),
 		plotModelComplexity = c(modelOpts, "plotModelComplexity"),
 		plotInclusionProbabilities = c(modelOpts, "plotInclusionProbabilities")
-	) # TODO: check if this dependence is correct
+	)
 
 	# Initialize the variables
 	bas_obj <- state$bas_obj
 	postSummary <- state[["postSummary"]] # otherwise postSummaryPlot could get retrieved instead of postSummary
+	postSummaryTable <- state[["postSummaryTable"]]
 	postSummaryPlot <- state$postSummaryPlot
 	descriptives <- state$descriptives
 	plotPosteriorLogOdds <- state$plotPosteriorLogOdds
@@ -81,11 +84,17 @@ RegressionLinearBayesian <- function (
 
 			if (! status$error) {
 				# use the actual column names
-				len.bas_obj <- length(bas_obj$namesx)
-				bas_obj$namesx[2:len.bas_obj] <- .unvf(bas_obj$namesx[2:len.bas_obj]) # first is intercept
+				bas_obj$namesx[-1] <- .unvf(bas_obj$namesx[-1])
 			}
 		}
 
+		# calculate summary information
+		if (is.null(postSummary) && !status$error) {
+			postSummary <- .calculatePosteriorSummary(bas_obj, dataset, options)
+			
+			# keep all relevant information in one object
+			bas_obj[["posteriorSummary"]] <- postSummary
+		}
 	}
 
 	regTableData <- NULL
@@ -98,8 +107,8 @@ RegressionLinearBayesian <- function (
 		)
 	}
 
-	if (options$postSummary && is.null(postSummary)) {
-		postSummary <- .posteriorSummaryTable.basReg(
+	if (options$postSummaryTable && is.null(postSummaryTable)) {
+		postSummaryTable <- .posteriorSummaryTable.basReg(
 			bas_obj, status, perform, options
 		)
 	}
@@ -162,7 +171,7 @@ RegressionLinearBayesian <- function (
 	
 	results[["posteriorSummary"]] <- list(
 		title = "Posterior Summary",
-		posteriorSummaryTable = postSummary,
+		posteriorSummaryTable = postSummaryTable,
 		posteriorSummaryPlot = postSummaryPlot
 	)
 
@@ -211,6 +220,7 @@ RegressionLinearBayesian <- function (
 			options = options,
 			bas_obj = bas_obj,
 			postSummary = postSummary,
+			postSummaryTable = postSummaryTable,
 			postSummaryPlot = postSummaryPlot,
 			descriptives = descriptives,
 			plotPosteriorLogOdds = plotPosteriorLogOdds,
@@ -292,9 +302,9 @@ RegressionLinearBayesian <- function (
 	}
 
 	if (perform == "run") {
-		dataset <- .readDataSetToEnd(columns.as.numeric = vars, exclude.na.listwise = vars)
+		dataset <- .readDataSetToEnd(columns = vars, exclude.na.listwise = vars)
 	} else {
-		dataset <- .readDataSetHeader(columns.as.numeric = vars)
+		dataset <- .readDataSetHeader(columns = vars)
 	}
 
 	return(dataset)
@@ -412,6 +422,7 @@ RegressionLinearBayesian <- function (
 	}
 	names(isNuisance) <- .vf(names(isNuisance))
 	formula <- as.formula(.vf(paste(formula, collapse="")))
+	hasInteraction <- any(attr(stats::terms.formula(formula), "order") > 1)
 
 	# set initprobs (BAS' method for nuisance terms)
 	initProbs <- rep(0.5, nPreds + 1) # the + 1 is the intercept
@@ -426,12 +437,20 @@ RegressionLinearBayesian <- function (
 	}
 
 	# select the type of model prior
+	footnoteInteraction <- NULL
+	pInteraction <- 0.5 # probability of model inclusion conditional on inclusion parents
 	if (options$modelPrior == "beta.binomial") {
 		modelPrior <- BAS::beta.binomial(options$betaBinomialParamA, options$betaBinomialParamB)
+		if (hasInteraction) {
+			footnoteInteraction <- paste("Prior model probabilities for models with interaction effects",
+																	 "are obtained from a Bernoulli (p = 0.5) prior.",
+																	 "We advice using a different model prior, or excluding interaction effects.")
+		}
 	} else if (options$modelPrior == "uniform") {
 		modelPrior <- BAS::uniform()
 	} else if (options$modelPrior == "Bernoulli") {
 		modelPrior <- BAS::Bernoulli(options$bernoulliParam)
+		pInteraction <- options$bernoulliParam
 	}
 
 	# number of models
@@ -443,7 +462,7 @@ RegressionLinearBayesian <- function (
 	# iterations for MCMC
 	MCMC.iterations <- NULL
 	if (options$samplingMethod == "MCMC" && options$iterationsMCMC > 0) {
-		MCMC.iterations <- options$numberOfModels
+		MCMC.iterations <- options$iterationsMCMC
 	}
 
 	# parameter for hyper-g's or jzs (all use same alpha param in bas.lm)
@@ -476,13 +495,21 @@ RegressionLinearBayesian <- function (
 		status$error <- TRUE
 		status$error.message <- .extractErrorMessage(bas_lm)
 	} else {
+		if (bas_lm$n.models > 1 && nPreds > 1) # can crash without this check
+			bas_lm <- BAS::force.heredity.bas(bas_lm)
+		bas_lm[["interaction"]] <- list(
+			hasInteraction = hasInteraction,
+			footnote = footnoteInteraction,
+			pInteraction = pInteraction
+		)
+		
 		bas_lm[["nuisanceTerms"]] <- isNuisance
 		# fix for prior probs all returning 1 with uniform and bernoulli 0.5 priors
 		bas_lm[["priorprobs"]] <- bas_lm[["priorprobs"]] / sum(bas_lm[["priorprobs"]])
 		bas_lm[["priorprobsPredictor"]] <- .calcPriorMarginalInclusionProbs(bas_lm)
 		bas_lm[["formula"]] <- formula
 		bas_lm[["weights"]] <- wlsWeights
-		bas_lm[["posteriorSummary"]] <- .calculatePosteriorSummary(bas_lm, dataset, options)
+		bas_lm[["BFinclusion"]] <- .calcInlusionBF(bas_lm)
 	}
 
 	return(list(bas_obj = bas_lm, status = status))
@@ -504,6 +531,22 @@ RegressionLinearBayesian <- function (
 	}
 
 	nuisanceTerms <- bas_obj$nuisanceTerms # vector of TRUE / FALSE
+	if (length(nuisanceTerms) != length(bas_obj$namesx) - 1) {
+	# if there are categorical predictors
+
+		nuisanceTerms2 <- logical(length(bas_obj$namesx) - 1)
+		names(nuisanceTerms2) <- bas_obj$namesx[-1]
+		for (i in which(nuisanceTerms[nuisanceTerms])) {
+
+			idx <- grep(pattern = names(nuisanceTerms[i],
+				x = names(nuisanceTerms2)[i]), fixed = TRUE)
+			nuisanceTerms2[idx] <- TRUE
+		}
+		nuisanceTerms <- nuisanceTerms2
+
+	} else {
+		names(nuisanceTerms) <- .unvf(names(nuisanceTerms))
+	}
 
 	# default number of models to be shown
 	nRows <- NULL
@@ -534,12 +577,13 @@ RegressionLinearBayesian <- function (
   # null model name
 	null.model <- "Null model"
 	if (sum(nuisanceTerms) > 0) {
-		null.model <- paste("Null model (incl. ", paste(.unvf(names(which(nuisanceTerms))), collapse = ", "), ")", sep = "")
+		null.model <- paste("Null model (incl. ", paste(names(which(nuisanceTerms)), collapse = ", "), ")", sep = "")
 	}
 
 	# generate all model names
   allModelsVisited <- any(lengths(models) == 0) # analysis will chrash if TRUE
   model.names <- vector("character", length(models))
+
   for (i in 1:length(models)) {
     model <- models[[i]]
     if (length(model) == 1) { # only has intercept
@@ -552,7 +596,7 @@ RegressionLinearBayesian <- function (
       model.names[i] <- null.model
     } else {
       nonNuisance <- which(!nuisanceTerms[model])
-      model.names[i] <- paste(.unvf(names(nonNuisance)), collapse = " + ")
+      model.names[i] <- paste(names(nonNuisance), collapse = " + ")
     }
   }
 
@@ -572,15 +616,10 @@ RegressionLinearBayesian <- function (
 	nModels <- length(bas_obj$postprobs)
 	postProbs <- bas_obj$postprobs
 	priorProbs <- bas_obj$priorprobs
-	index <- which(is.finite(postProbs))
-	BFM <- sapply(1:nModels, function(m) {
-		if (m %in% index) {
-			i <- which(index == m)
-			(postProbs[m] / (1 - postProbs[m])) / (priorProbs[m] / (1 - priorProbs[m]))
-		} else {
-			NA
-		}
-	})
+	index <- is.finite(postProbs)
+	BFM <- numeric(length(postProbs))
+	BFM[index] <- (postProbs[index] / (1 - postProbs[index])) / (priorProbs[index] / (1 - priorProbs[index]))
+	BFM[!index] <- NA
 	BFM <- BFM[models.ordered]
 
 	# populate the row list
@@ -598,8 +637,12 @@ RegressionLinearBayesian <- function (
 
 	# notes
 	footnotes <- .newFootnotes()
+	if (!is.null(bas_obj[["interaction"]][["footnote"]])) {
+		footnote <- bas_obj[["interaction"]][["footnote"]]
+		.addFootnote(footnotes, symbol = "<em>Warning.</em>", text = footnote)
+	}
 	if (sum(nuisanceTerms) > 0) {
-		footnote <- paste("All models include ", paste(.unvf(names(which(nuisanceTerms))), collapse = ", "), ".", sep = "")
+		footnote <- paste("All models include ", paste(names(which(nuisanceTerms)), collapse = ", "), ".", sep = "")
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = footnote)
 	}
 	# if (!allModelsVisited) {
@@ -622,25 +665,54 @@ RegressionLinearBayesian <- function (
 	allModels <- bas_obj$which
 	modelProbs <- bas_obj$priorprobs
 	nPreds <- length(bas_obj$probne0)
-	if (all(diff(modelProbs) < sqrt(.Machine$double.eps))) {
 
-		# all prior model probabilities are equal, shortcut for calculation
-		priorProbs <- c(1, rep(0.5, nPreds - 1L))
+	# model prior has been modified, recalculate the prior inclusion probs
+	nModels <- length(allModels)
+	priorProbs <- numeric(nPreds)
 
-	} else {
+	for (i in 1:nModels) {
 
-		# model prior has been modified, recalculate the prior inclusion probs
-		nModels <- length(allModels)
-		priorProbs <- numeric(nPreds)
+		idx <- allModels[[i]] + 1 # +1 to change 0 for intercept into a 1 so it can be used as an index
+		priorProbs[idx] = priorProbs[idx] + modelProbs[i]
 
-		for (i in 1:nModels) {
-
-			idx <- allModels[[i]] + 1 # +1 to change 0 for intercept into a 1 so it can be used as an index
-			priorProbs[idx] = priorProbs[idx] + modelProbs[i]
-
-		}
 	}
+
 	return(priorProbs)
+}
+
+.calcInlusionBF <- function(bas_obj) {
+
+	nModels <- bas_obj[["n.models"]]
+	nPred <- length(bas_obj[["probne0"]])
+	
+	# should this work on a log scale??
+	# first row is numerator of the odds; second row is denominator
+	priorOdds <- matrix(0, 2, nPred)
+	posteriorOdds <- matrix(0, 2, nPred)
+	for (i in seq_len(nModels)) {
+
+		idxN <- bas_obj[["which"]][[i]] + 1
+		idxD <- (1:nPred)[-idxN]
+		
+		# increment numerators
+		priorOdds[1, idxN] <- priorOdds[1, idxN] + bas_obj[["priorprobs"]][i]
+		posteriorOdds[1, idxN] <- posteriorOdds[1, idxN] + bas_obj[["postprobs"]][i]	
+		
+		# increment denominators
+		priorOdds[2, idxD] <- priorOdds[2, idxD] + bas_obj[["priorprobs"]][i]
+		posteriorOdds[2, idxD] <- posteriorOdds[2, idxD] + bas_obj[["postprobs"]][i]	
+		
+	}
+
+	priOdds <- priorOdds[1, ] / priorOdds[2, ]
+	posOdds <- posteriorOdds[1, ] / posteriorOdds[2, ]
+	BFinclusion <- posOdds / priOdds
+
+	# nuisance terms and intercept are always included
+	BFinclusion[-1][bas_obj[["nuisanceTerms"]]] <- 1 # nuisance terms
+	BFinclusion[1] <- 1 # intercept
+	return(BFinclusion)
+	
 }
 
 .fillRegTable.basReg <- function(data = NULL, status, perform, options) {
@@ -718,7 +790,9 @@ RegressionLinearBayesian <- function (
 			list(name="coefficient", title="Coefficient", type="string"),
 			list(name="mean", title="Mean", type="number", format="sf:4;dp:3"),
 			list(name="sd", title="SD", type="number", format="sf:4;dp:3"),
+			list(name="pInclprior", title ="P(incl)", type="number", format="sf:4;dp:3"),
 			list(name="pIncl", title ="P(incl|data)", type="number", format="sf:4;dp:3"),
+			list(name="BFincl", title ="BF<sub>inclusion</sub>", type="number", format="sf:4;dp:3"),
 			list(name="lowerCri", title = "Lower", type="number", format="sf:4;dp:3", overTitle = overTitle),
 			list(name="upperCri", title = "Upper", type="number", format="sf:4;dp:3", overTitle = overTitle)
 	)
@@ -728,11 +802,13 @@ RegressionLinearBayesian <- function (
 	if (status$ready && perform == "run") {
 		rows <- list()
 
+		BFinclusion <- bas_obj[["BFinclusion"]]
 		coef <- bas_obj[["posteriorSummary"]][["coef"]]
 		coefficients <- bas_obj[["posteriorSummary"]][["coefficients"]]
 		probne0 <- bas_obj[["posteriorSummary"]][["probne0"]]
+		priorProbs <- bas_obj[["priorprobsPredictor"]]
 		loopIdx <- bas_obj[["posteriorSummary"]][["loopIdx"]]
-		confInt <- confint(coef, level = options[["posteriorSummaryPlotCredibleIntervalValue"]])
+		confInt <- bas_obj[["posteriorSummary"]][["conf95"]]
 
 		nModels <- coef$n.models
 		topm <- order(-bas_obj$postprobs)[1:nModels]
@@ -742,6 +818,9 @@ RegressionLinearBayesian <- function (
 
 				coefficient <- .clean(coefficients[i])
 				pIncl <- .clean(probne0[i])
+				pInclprior <- .clean(priorProbs[i])
+				BFincl <- .clean(BFinclusion[i])
+
 				if (options$summaryType == "complex") {
 					mean <- .clean(unname(coef$conditionalmeans[mostComplex, i]))
 					sd <- .clean(unname(coef$conditionalsd[mostComplex, i]))
@@ -753,10 +832,18 @@ RegressionLinearBayesian <- function (
 				upperCri <- .clean(confInt[i, 2])
 
 				rows[[length(rows) + 1]] <- list(coefficient = coefficient, mean = mean, sd = sd, pIncl = pIncl,
-												 lowerCri = lowerCri, upperCri = upperCri)
+												 pInclprior = pInclprior, BFincl = BFincl, lowerCri = lowerCri, upperCri = upperCri)
 
 			}
 			posterior[["data"]] <- rows
+			
+			footnotes <- .newFootnotes()
+        	if (!is.null(bas_obj[["posteriorSummary"]][["footnotes"]])) {
+        		footnote <- bas_obj[["posteriorSummary"]][["footnotes"]]
+        		.addFootnote(footnotes, symbol = "<em>Warning.</em>", text = footnote)
+        	}
+			
+			posterior[["footnotes"]] <- as.list(footnotes)
 
 		} else {
 			names <- sapply(fields, function(x) x$name)
@@ -896,6 +983,8 @@ RegressionLinearBayesian <- function (
 		number.parameters <- length(bas_obj$namesx)
 		plots <- list()
 
+		coefBas <- bas_obj[["posteriorSummary"]][["coefBMA"]]
+		conf95 <- bas_obj[["posteriorSummary"]][["conf95BMA"]]
 		for (i in 1:number.parameters) {
 
 			terms <- .unvf(names(isNuisance))
@@ -909,8 +998,7 @@ RegressionLinearBayesian <- function (
 
 			p <- try(silent = FALSE, expr = {
 
-			    # the function BAS:::coef.bas calls list2matrix.bas which appears pretty broken
-				plotObj <- .plotCoef.basReg(BAS:::coef.bas(bas_obj), subset = list(i))
+				plotObj <- .plotCoef.basReg(coefBas, subset = list(i), conf95 = conf95)
 				content <- .writeImage(width = 530, height = 400, plot = plotObj)
 
 				plot[["convertible"]] <- TRUE
@@ -1058,7 +1146,7 @@ RegressionLinearBayesian <- function (
 	return(plot)
 }
 
-.plotCoef.basReg <- function (x, e = 1e-04, subset = 1:x$n.vars, ...) {
+.plotCoef.basReg <- function (x, e = 1e-04, subset = 1:x$n.vars, conf95 = NULL, ...) {
 
 	# based on BAS:::plot.coef.bas.
 
@@ -1155,24 +1243,23 @@ RegressionLinearBayesian <- function (
 	)
 
     # obtain credible interval given that predictor is in model
-    d0 <- dens
-    cdf <- cumsum(d0)
-    cdf <- cdf / cdf[length(cdf)]
+	cri <- conf95[i, 1:2]
+	# find closest x-locations on grid to credible interval
     idxCri <- c(
-        which.min(abs(cdf - 0.025)),
-        which.min(abs(cdf - 0.975))
+        which.min(abs(xx - cri[1])),
+        which.min(abs(xx - cri[2]))
     )
     dfCri <- data.frame(
         x    = mean(xx[idxCri]), # not required in newer ggplot2 versions
-        xmin = xx[idxCri][1],
-        xmax = xx[idxCri][2],
+        xmin = xx[idxCri[1]],
+        xmax = xx[idxCri[2]],
         y = 0.9 * yBreaks[length(yBreaks)]
     )
     hBarHeight <- 0.05 * yBreaks[length(yBreaks)]
     dfCriText <- data.frame(
         x = xx[idxCri],
         y = 0.975 * yBreaks[length(yBreaks)],
-        label = format(xx[idxCri], digits = 3, scientific = -2)
+        label = format(cri, digits = 3, scientific = -2)
     )
 
 	g <- JASPgraphs::drawLines(dat = dfLines,
@@ -1236,7 +1323,6 @@ RegressionLinearBayesian <- function (
 	# one.fig <- prod(par("mfcol")) == 1
 
 	if (show[1]) {
-		# browser()
 		dfPoints <- data.frame(
 			x = yhat,
 			y = r
@@ -1255,7 +1341,6 @@ RegressionLinearBayesian <- function (
 
 	}
 	if (show[2]) {
-		# browser()
 		cum.prob = cumsum(x$postprobs)
 		m.index = 1:x$n.models
 
@@ -1273,7 +1358,6 @@ RegressionLinearBayesian <- function (
 		return(g)
 	}
 	if (show[3]) {
-		# browser()
 		logmarg = x$logmarg
 		dim = x$size
 
@@ -1293,7 +1377,6 @@ RegressionLinearBayesian <- function (
 
 	}
 	if (show[4]) {
-		# browser()
 		probne0 = x$probne0[-1]
 		variables = x$namesx[-1] # 1:x$n.vars
 		priorProb <- x$priorprobsPredictor[1:x$n.vars][-1]
@@ -1315,16 +1398,22 @@ RegressionLinearBayesian <- function (
 			g = rep(factor(variables), each = 2),
 			g0 = factor(1)
 		)
+		base <- .1
+		yLimits <- c(0, base * ceiling(max(c(priorProb, probne0)) / base))
+		yBreaks <- seq(yLimits[1], yLimits[2], length.out = 5)
 
 		g <- JASPgraphs::drawBars(dat = dfBar, width = width)
 		g <- JASPgraphs::drawLines(g, dat = dfLine,
 								   mapping = ggplot2::aes(x = x, y = y, group = g, linetype = g0), show.legend = TRUE) +
-			ggplot2::ylab("Marginal Inclusion Probability") +
+			ggplot2::scale_y_continuous("Marginal Inclusion Probability", breaks = yBreaks, limits = yLimits) +
 			ggplot2::xlab("") +
-			ggplot2::scale_linetype_manual(name = "", values = 2, labels = "Prior\nInclusion\nProbabilities") 
-
-		g <- JASPgraphs::themeJasp(g, horizontal = TRUE, legend.position = "right")
-
+			ggplot2::scale_linetype_manual(name = "", values = 2, labels = "Prior\nInclusion\nProbabilities")
+		
+		g <- JASPgraphs::themeJasp(g, horizontal = TRUE, legend.position = "right") +
+			ggplot2::theme(
+				legend.title = ggplot2::element_text(size = .8*JASPgraphs::graphOptions("fontsize"))
+			)
+		
 		return(g)
 
 	}
@@ -1387,7 +1476,6 @@ RegressionLinearBayesian <- function (
 		g = factor(rep(1:(length(mat)+1), each = 2))
 	)
 
-	# browser()
 	discrete <- TRUE
 	if (discrete) {
 		show.legend <- FALSE
@@ -1435,7 +1523,7 @@ RegressionLinearBayesian <- function (
     if (status$ready && perform == "run") {
 
     	coef <- bas_obj[["posteriorSummary"]][["coef"]]
-    	confInt <- confint(coef, level = options[["posteriorSummaryPlotCredibleIntervalValue"]])
+		confInt <- bas_obj[["posteriorSummary"]][["conf95"]]
         loopIdx <- bas_obj[["posteriorSummary"]][["loopIdx"]]
         coefficients <- bas_obj[["posteriorSummary"]][["coefficients"]]
         
@@ -1492,11 +1580,40 @@ RegressionLinearBayesian <- function (
 		"BMA"
 	)
 
-	coef <- .coefBas(bas_obj, estimator = estimator, dataset = dataset, weights = bas_obj[["weights"]])
+	# required for the marginal posterior plots
+	# done here such that the information in the plots and tables always matches
+	# if a user selects the same options. (The method uses approximations and otherwise decimals are off)
+	footnote <- NULL
+	if (!is.null(bas_obj[["posteriorSummary"]]) && 
+		identical(bas_obj[["posteriorSummary"]][["nSimForCRI"]], options[["nSimForCRI"]])) {
+		coefBMA <- bas_obj[["posteriorSummary"]][["coefBMA"]]
+		conf95BMA <- bas_obj[["posteriorSummary"]][["conf95BMA"]]
+	} else {
+		# only need to recalculate this if bas_obj was remade (which implies bas_obj[["posteriorSummary"]] is NULL)
+		coefBMA <- .coefBas(bas_obj, estimator = "BMA", dataset = dataset, weights = bas_obj[["weights"]])
+		
+		conf95BMA <- try(stats::confint(coefBMA, level = 0.95, nsim = options$nSimForCRI))
+		if (isTryError(conf95BMA)) {
+		    conf95BMA <- cbind(NA, NA, coefBMA$postmean)
+		    rownames(conf95BMA) <- coefBMA$namesx
+		    colnames(conf95BMA) <- c("2.5%", "97.5%", "beta")
+		    conf95BMA[is.nan(conf95BMA)] <- NA
+		    footnote <- "Parameters estimates and/ or credible intervals could not be calculated."
+		}
+	}
+
+	# check if results of table and plots should match
+	criVal <- options[["posteriorSummaryPlotCredibleIntervalValue"]]
+	if (estimator == "BMA" && isTRUE(all.equal(criVal, 0.95))) { # what we show under Marginal Posterior distributions
+		coef <- coefBMA
+		conf95 <- conf95BMA
+	} else {
+		coef <- .coefBas(bas_obj, estimator = estimator, dataset = dataset, weights = bas_obj[["weights"]])
+		conf95 <- stats::confint(coef, level = criVal, nsim = options$nSimForCRI)
+	}
+
 	probne0 <- coef[["probne0"]]
-	coefficients <- coef[["namesx"]]
-	coefficients[-1] <- d64(coefficients[-1])
-	
+	coefficients <- bas_obj[["namesx"]]
 	if (estimator == "HPM") {
 		loopIdx <- which(abs(coef$postmean) > sqrt(.Machine$double.eps))
 	} else if (estimator == "MPM") {
@@ -1505,9 +1622,10 @@ RegressionLinearBayesian <- function (
 	} else {
 		loopIdx <- seq_along(coefficients)
 	}
-	
-	return(list(coef = coef, loopIdx = loopIdx, coefficients = coefficients, probne0 = probne0))
-	
+
+	return(list(coef = coef, loopIdx = loopIdx, coefficients = coefficients, probne0 = probne0,
+				conf95 = conf95, coefBMA = coefBMA, conf95BMA = conf95BMA, footnote = footnote,
+				nSimForCRI = options[["nSimForCRI"]]))
 }
 
 .coefBas <- function (object, n.models, estimator = "BMA",

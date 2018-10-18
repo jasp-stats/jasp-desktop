@@ -146,6 +146,9 @@ void TableModelAnovaModel::bindTo(Option *option)
 	beginResetModel();
 
 	_rows = _boundTo->value();
+	
+	_terms.clear();
+	_terms.removeParent();
 
 	foreach (Options *row, _rows)
 	{
@@ -154,6 +157,8 @@ void TableModelAnovaModel::bindTo(Option *option)
 
 		_terms.add(Term(term));
 	}
+	
+	_terms.setSortParent(_variables);
 
 	endResetModel();
 }

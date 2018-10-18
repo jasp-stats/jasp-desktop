@@ -23,7 +23,6 @@
 #include <QGridLayout>
 #include <QButtonGroup>
 #include <QLabel>
-#include <QSettings>
 #include <QCheckBox>
 
 #include "fsbmodel.h"
@@ -81,7 +80,6 @@ private:
 	FSBModel *_model;
 
 	AuthWidget *_authWidget;
-	QSettings _settings;
 
 };
 

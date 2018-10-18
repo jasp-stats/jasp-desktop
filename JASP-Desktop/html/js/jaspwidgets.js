@@ -125,7 +125,7 @@ JASPWidgets.Exporter = {
 			exportParams = new JASPWidgets.Exporter.params();
 		else if (exportParams.error)
 			return false;
-		
+
 		if (exportObj.views) {
 			var viewList = [];
 			for (var i = 0; i < exportObj.views.length; i++) {
@@ -148,7 +148,7 @@ JASPWidgets.Exporter = {
 			exportObj.exportBegin(exportParams, completedCallback);
 		else
 			return false;
-		
+
 
 		return true;
 	},
@@ -170,7 +170,7 @@ JASPWidgets.Exporter = {
 					if (!self.disableTitleExport && self.toolbar !== undefined) {
 						completeText += JASPWidgets.Exporter.getTitleHtml(self.toolbar, exportParams)
 					}
-					var firstItem = true;	
+					var firstItem = true;
 					for (var j = 0; j < self.buffer.length; j++) {
 						if (self.buffer[j]) {
 							if (self.buffer[j].raw !== null && self.buffer[j].raw !== '')
@@ -530,7 +530,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 				event.originalEvent.clipboardData.setData('text/plain', text);
 			if (html)
 				event.originalEvent.clipboardData.setData('text/html', html);
-			
+
 
 			event.preventDefault();
 		});
@@ -698,7 +698,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		});
 
 		this.editing = true;
-		
+
 		//Only for linux that doesn't have relatedTarget for focusOut event
 		if (this.$editor !== undefined)
 			this.$editor.off("mousedown", this.editorClicked);
@@ -713,7 +713,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$textbox.attr('contenteditable', true);
 		this.$textbox.focus();
 		this.updateView();
-		
+
 		this.$el.addClass('jasp-text-editing');
 
 		this._checkTags();
@@ -732,20 +732,20 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 	_endEditing: function () {
 		if (this.editing === false || this.editingSetup === true)
 			return;
-		
+
 		this.editing = false;
 
 		if (JASPWidgets.NoteBox.activeNoteBox === this)
 			JASPWidgets.NoteBox.activeNoteBox = null;
 
 		this.$el.removeClass('jasp-text-editing');
-		
+
 		this.updateView();
 		this.$textbox.attr('contenteditable', false);
 		if (this.$editor !== undefined) {
 			this.$editor.off("mousedown", this.editorClicked);
 			etch.closeEditor(this.$editor, this.$textbox);
-			delete this.$editor;	
+			delete this.$editor;
 		}
 	},
 
@@ -780,7 +780,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		var html = '';
 		if (this.isTextboxEmpty() === false && this.visible === true)
 			html += '<div ' + JASPWidgets.Exporter.getNoteStyles(this.$el, exportParams) + '">' + this.$textbox.html() + '</div>';
-		
+
 
 		callback.call(this, exportParams, new JASPWidgets.Exporter.data(null, html));
 	},
@@ -950,7 +950,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 	},
 
 	_mouseDown: function (e) {
-		
+
 		if (this.editing)
 			return true;
 
@@ -1009,11 +1009,12 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			hasRemoveAllAnalyses: parent.menuName === 'All',
 			hasRefreshAllAnalyses: parent.menuName === 'All',
 			hasCollapse: (parent.hasCollapse === undefined || parent.hasCollapse()) && parent.collapseMenuClicked !== undefined,
+			hasLaTeXCode: (parent.hasLaTeXCode === undefined || parent.hasLaTeXCode()) && parent.latexCodeMenuClicked !== undefined,
 
 			objectName: parent.menuName,
 		};
 
-        this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasSaveImg || this.options.hasEditImg || this.options.hasNotes || this.options.hasRemove || this.options.hasRemoveAll || this.options.hasEditTitle || this.options.hasCollapse;
+		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasSaveImg || this.options.hasEditImg || this.options.hasNotes || this.options.hasRemove || this.options.hasRemoveAll || this.options.hasEditTitle || this.options.hasCollapse || this.options.hasLaTeXCode;
 	},
 
 	selectionElement: function() {
@@ -1051,9 +1052,9 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 })
 
 JASPWidgets.Progressbar = function() {
-	
+
 	var containerProgressbar = $("<div class='jasp-progressbar-container'></div>");
-	
+
 	this._get = function(attr) {
 		var $bar = containerProgressbar.find(".jasp-progressbar");
 		if (typeof attr !== "undefined") {
@@ -1061,7 +1062,7 @@ JASPWidgets.Progressbar = function() {
 		}
 		return $bar;
 	}
-	
+
 	this._update = function(attr, value) {
 		var $bar = this._get();
 		if ($bar.length > 0) {
@@ -1072,7 +1073,7 @@ JASPWidgets.Progressbar = function() {
 			}
 		}
 	}
-	
+
 	this._create = function(value, id) {
 		var $bar = this._get();
 		if ($bar.length == 0) {
@@ -1086,14 +1087,14 @@ JASPWidgets.Progressbar = function() {
 			containerProgressbar.append($bar);
 		}
 	}
-	
+
 	this._reset = function() {
 		var $bar = this._get();
 		if ($bar.length > 0)
 		containerProgressbar = $("<div class='jasp-progressbar-container'></div>");
 		//containerProgressbar.find(".jasp-progressbar").remove();
 	}
-	
+
 	this.init = function(value, id, status) {
 		var haveProgressbar = this._get().length > 0;
 		if (this.status() == "progress-complete" || (status != "running" && status != "complete")) {
@@ -1113,7 +1114,7 @@ JASPWidgets.Progressbar = function() {
 		}
 		return(containerProgressbar)
 	}
-	
+
 	this.status = function() {
 		var status = "progress-init";
 		if (this._get().length > 0) {
@@ -1125,7 +1126,7 @@ JASPWidgets.Progressbar = function() {
 		}
 		return status;
 	}
-	
+
 }
 
 JASPWidgets.ActionView = JASPWidgets.View.extend({
@@ -1196,7 +1197,7 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 		this.listenTo(this.model, 'change:height', this.onModelChange);
 	},
 
-	/** 
+	/**
 	* Returns the DOM tree element whos size attributes with be affected during resizing.
 	This allows for the inheriting class to choose another element when required. See image.js
 	* @return {Object} DOM Tree element
@@ -1205,8 +1206,8 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 		return null;
 	},
 
-	/** 
-	* Renders the mouse resize button to the targeted DOM tree element. 
+	/**
+	* Renders the mouse resize button to the targeted DOM tree element.
 	* @return {Object} 'this' for chaining.
 	*/
 	render: function () {
@@ -1231,7 +1232,7 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 		this.trigger("ResizeableView:resized", w, h)
 	},
 
-	/** 
+	/**
 	* Refreshes the size of the view using the model information.
 	* @return {Object} The size of the view. The object has a width and height property.
 	*/
@@ -1245,7 +1246,7 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 		}
 	},
 
-	/** 
+	/**
 	* Defines the maximum and minimum sizes the view can be resied to.
 	* @return {Object} The object has a minWidth, minHeight, maxWidth, maxHeight properties.
 	*/
@@ -1258,7 +1259,7 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 		};
 	},
 
-	/** 
+	/**
 	* Defines the maximum and minimum sizes the view can be resied to.
 	* @return {Object} The object has a minWidth, minHeight, maxWidth, maxHeight properties.
 	*/
@@ -1308,7 +1309,7 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	},
 
 	resizeStop: function (w, h) {
-		this.model.setDim(w, h);		
+		this.model.setDim(w, h);
 		this.resizing = false;
 		this.mouseResizing = false;
 		this.silent = false;

@@ -24,10 +24,25 @@
 #include <string>
 #include <vector>
 
+enum Encryption { NoEncryption, SimpleCryptEncryption };
+
 std::string fq(const QString &from);
 QString tq(const std::string &from);
 QStringList tql(const std::vector<std::string> &from);
 std::vector<std::string> fromQstringToStdVector(const QString &input, const QString &delimetor);
 QString stripFirstAndLastChar(const QString &in, const QString &strip);
+QString getShortCutKey();
+QString encrypt(const QString &input);
+QString decrypt(const QString &input);
+
+#define GENERIC_SET_FUNCTION(WHAT_TO_SET, VARIABLE_TO_SET, EMIT_THIS, TYPE)	\
+void set##WHAT_TO_SET(TYPE new##WHAT_TO_SET)								\
+{																			\
+	if(new##WHAT_TO_SET != VARIABLE_TO_SET)									\
+	{																		\
+		VARIABLE_TO_SET = new##WHAT_TO_SET;									\
+		emit EMIT_THIS();													\
+	}																		\
+}
 
 #endif // QUTILS_H

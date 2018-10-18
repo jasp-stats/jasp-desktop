@@ -24,7 +24,8 @@ public:
 	virtual bool beginUploadFile(QString name) OVERRIDE;
 	virtual bool beginNewFolder(QString name) OVERRIDE;
 
-
+signals:
+	void progress(const QString &status, int progress);
 
 private slots:
 	void nodeInfoReceived();

@@ -27,15 +27,7 @@
 
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
 
-#include <QProcess>
-#include <QTimer>
-#include <vector>
-
-#include "options/options.h"
-#include "analysis.h"
-#include "analyses.h"
-#include "ipcchannel.h"
-#include "activitylog.h"
+#include "enginerepresentation.h"
 
 /* EngineSync is responsible for launching the background
  * processes, scheduling analyses, and for sending and
@@ -43,49 +35,53 @@
  * It keeps track of which analyses are executing on
  * which background process.
  */
-
 class EngineSync : public QObject
 {
 	Q_OBJECT
 
 public:
-	EngineSync(Analyses *analyses, QObject *parent);
+	EngineSync(Analyses *analyses, DataSetPackage *package, QObject *parent);
 	~EngineSync();
 
 	void start();
 
-	bool engineStarted();
-	void setLog(ActivityLog *log);
-
-	void setPPI(int ppi);
-
+	bool engineStarted()			{ return _engineStarted; }
+	
+public slots:
+	void sendFilter(QString generatedFilter, QString filter, int requestID);
+	void sendRCode(QString rCode, int requestId);
+	void computeColumn(QString columnName, QString computeCode, Column::ColumnType columnType);
+	
 signals:
-
+	void processNewFilterResult(std::vector<bool> filterResult, int requestID);
+	void processFilterErrorMsg(QString error, int requestID);
 	void engineTerminated();
+	void filterUpdated(int requestID);
+	void rCodeReturned(QString result, int requestId);
+	void ppiChanged(int newPPI);
+	void computeColumnSucceeded(std::string columnName, std::string warning, bool dataChanged);
+	void computeColumnFailed(std::string columnName, std::string error);
+
 
 private:
+	bool		idleEngineAvailable();
+	QProcess*	startSlaveProcess(int no);
+	void		processScriptQueue();
 
-	Analyses *_analyses;
-	bool _engineStarted;
-	ActivityLog *_log;
+	Analyses		*_analyses;
+	bool			_engineStarted = false;
+	DataSetPackage	*_package;
 
-	int _ppi;
+	std::queue<RScriptStore*>			_waitingScripts;
+	std::vector<EngineRepresentation*>	_engines;
+	RFilterStore						*_waitingFilter = nullptr;
 
-	std::vector<QProcess *> _slaveProcesses;
-	std::vector<IPCChannel *> _channels;
-	std::vector<Analysis *> _analysesInProgress;
 
-	IPCChannel *nextFreeProcess(Analysis *analysis);
-	void sendToProcess(int processNo, Analysis *analysis);
-
-	void startSlaveProcess(int no);
-
-	std::string _memoryName;
-	std::string _engineInfo;
+	std::string _memoryName,
+				_engineInfo;
 
 private slots:
-
-	void sendMessages();
+	void ProcessAnalysisRequests();
 	void deleteOrphanedTempFiles();
 	void heartbeatTempFiles();
 

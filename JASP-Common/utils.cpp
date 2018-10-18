@@ -150,10 +150,9 @@ long Utils::getFileSize(const string &filename)
 
 	uintmax_t fileSize = filesystem::file_size(path, ec);
 
-	if (ec == 0)
+	if (!ec)
 		return fileSize;
-	else
-		return -1;
+	return -1;
 }
 
 void Utils::touch(const string &filename)
@@ -206,7 +205,7 @@ bool Utils::renameOverwrite(const string &oldName, const string &newName)
 
 	boost::filesystem::rename(o, n, ec);
 
-	return ec == 0;
+	return !ec;
 }
 
 bool Utils::removeFile(const string &path)
@@ -216,7 +215,7 @@ bool Utils::removeFile(const string &path)
 
 	boost::filesystem::remove(p, ec);
 
-	return ec == 0;
+	return !ec;
 }
 
 filesystem::path Utils::osPath(const string &path)
@@ -256,7 +255,7 @@ void Utils::sleep(int ms)
 #endif
 }
 
-const string Utils::emptyValue = ".";
+const string Utils::emptyValue = "";
 const vector<string> Utils::_defaultEmptyValues = {"NaN", "nan", ".", "NA"};
 vector<double> Utils::_currentDoubleEmptyValues = {};
 vector<string> Utils::_currentEmptyValues = Utils::_defaultEmptyValues;

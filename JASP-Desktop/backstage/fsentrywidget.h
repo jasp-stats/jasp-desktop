@@ -40,6 +40,8 @@ public:
 
 	void setEntryInfo(const FSEntry &entry);
 	void setCompact(bool compact);
+	static QPixmap * getEntryTypeIcons (bool compact);
+	static QHash<int, QString> sourcesIcons() ;
 
 	const QString &path() const;
 	FSEntry::EntryType entryType() const;

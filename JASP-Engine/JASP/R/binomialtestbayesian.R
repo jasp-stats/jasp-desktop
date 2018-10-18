@@ -125,7 +125,7 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 		list(name="counts", title="Counts", type="integer"),
 		list(name="total", title="Total", type="integer"),
 		list(name="proportion", title="Proportion", type="number", format="sf:4;dp:3"),
-		list(name="BF", title="BF", type="number", format="sf:4;dp:3", title = bf.title)
+		list(name="BF", title=bf.title, type="number", format="sf:4;dp:3", title = bf.title)
 		))
 	
 	table[["schema"]] <- schema

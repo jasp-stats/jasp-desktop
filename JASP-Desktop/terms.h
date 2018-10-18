@@ -21,6 +21,7 @@
 
 #include <vector>
 #include <string>
+#include <set>
 
 #include <QString>
 #include <QList>
@@ -67,40 +68,42 @@ public:
 
 	void remove(const Term &term);
 	void remove(const Terms &terms);
-	void remove(int pos, int n = 1);
+	void remove(size_t pos, size_t n = 1);
 	bool discardWhatDoesntContainTheseComponents(const Terms &terms);
 	bool discardWhatDoesContainTheseComponents(const Terms &terms);
 	bool discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded = NULL);
 
 	void clear();
 
-	const Term &at(int index) const;
+	const Term &at(size_t index) const;
 	bool contains(const Term &term) const;
 	bool contains(const std::string component);
 
-	std::vector<std::string> asVector() const;
-	std::vector<std::vector<std::string> > asVectorOfVectors() const;
-	QList<QString> asQList() const;
-	QList<QList<QString> > asQListOfQLists() const;
+	std::vector<std::string>				asVector()			const;
+	std::set<std::string>					asSet()				const;
+	std::vector<std::vector<std::string> >	asVectorOfVectors()	const;
+	QList<QString>							asQList()			const;
+	QList<QList<QString> >					asQListOfQLists()	const;
 
-	Term sortComponents(const Term &term) const;
-	Terms sortComponents(const Terms &terms) const;
+	Term	sortComponents(const Term &term)	const;
+	Terms	sortComponents(const Terms &terms)	const;
 
-	Terms crossCombinations() const;
-	Terms wayCombinations(int ways) const;
+	Terms crossCombinations()					const;
+	Terms wayCombinations(int ways)				const;
 	Terms ffCombinations(const Terms &terms);
 
 	std::string asString() const;
 
 	bool operator==(const Terms &terms) const;
 	bool operator!=(const Terms &terms) const;
+	const Term& operator[](size_t index) const { return at(index); }
 
 private:
 
-	int rankOf(const QString &component) const;
-	int termCompare(const Term& t1, const Term& t2) const;
-	bool termLessThan(const Term &t1, const Term &t2) const;
-	bool componentLessThan(const QString &c1, const QString &c2) const;
+	int		rankOf(const QString &component)						const;
+	int		termCompare(const Term& t1, const Term& t2)				const;
+	bool	termLessThan(const Term &t1, const Term &t2)			const;
+	bool	componentLessThan(const QString &c1, const QString &c2)	const;
 
 	const Terms *_parent;
 	std::vector<Term> _terms;

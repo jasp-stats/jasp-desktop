@@ -29,6 +29,7 @@
 #include "tempfiles.h"
 #include "analysis.h"
 #include <functional>
+#include "settings.h"
 
 ResultsJsInterface::ResultsJsInterface(QWidget *parent) : QObject(parent)
 {
@@ -54,8 +55,25 @@ ResultsJsInterface::ResultsJsInterface(QWidget *parent) : QObject(parent)
 void ResultsJsInterface::setZoom(double zoom)
 {
 	_webViewZoom = zoom;
+	QString js = "window.setZoom(" + QString::number(zoom) + ")";
+	runJavaScript(js);
 }
 
+void ResultsJsInterface::zoomIn()
+{
+	setZoom(_webViewZoom + 0.2);
+}
+
+void ResultsJsInterface::zoomOut()
+{
+	if (_webViewZoom >= 0.4)
+		setZoom(_webViewZoom - 0.2);
+}
+
+void ResultsJsInterface::zoomReset()
+{
+	setZoom(1);
+}
 
 
 void ResultsJsInterface::resultsPageLoaded(bool success)
@@ -66,10 +84,12 @@ void ResultsJsInterface::resultsPageLoaded(bool success)
 	if (success)
 	{
 		QString version = tq(AppInfo::version.asString());
-		runJavaScript("window.setAppVersion('" + version + "')");
+
 #ifdef JASP_DEBUG
 		version+="-Debug";
-#endif		
+#endif
+
+		runJavaScript("window.setAppVersion('" + version + "')");
 
 		setGlobalJsValues();
 
@@ -91,6 +111,7 @@ void ResultsJsInterface::showAnalysesMenu(QString options)
 
 	QIcon _copyIcon = QIcon(":/icons/copy.png");
 	QIcon _citeIcon = QIcon(":/icons/cite.png");
+	QIcon _codeIcon = QIcon(":/icons/code-icon.png");
 	QIcon _collapseIcon = QIcon(":/icons/collapse.png");
 	QIcon _expandIcon = QIcon(":/icons/expand.png");
 	QIcon _saveImageIcon = QIcon(":/icons/document-save-as.png");
@@ -116,6 +137,18 @@ void ResultsJsInterface::showAnalysesMenu(QString options)
 
 	if (menuOptions["hasCopy"].asBool())
 		_analysisMenu->addAction(_copyIcon, "Copy", this, SLOT(copySelected()));
+
+	if (menuOptions["hasLaTeXCode"].asBool())  // TODO: || menuOptions["hasPlainText"].asBool())
+	{
+		_copySpecialMenu = _analysisMenu->addMenu(tr("&Copy special"));
+
+		_copySpecialMenu->addAction(_codeIcon, "LaTeX code", this, SLOT(latexCodeSelected()));
+
+		QAction *copyTextAction = new QAction("Copy text");
+		// connect(copyTextAction, SIGNAL(triggered), this, SLOT(copyTextSelected));
+		copyTextAction->setEnabled(false);
+		_copySpecialMenu->addAction(copyTextAction);
+	}
 
 	if (menuOptions["hasCite"].asBool())
 	{
@@ -207,6 +240,17 @@ void ResultsJsInterface::citeSelected()
 	runJavaScript("window.citeMenuClicked();");
 }
 
+void ResultsJsInterface::latexCodeSelected()
+{
+	tempfiles_purgeClipboard();
+	runJavaScript("window.latexCodeMenuClicked();");
+}
+
+void ResultsJsInterface::getDefaultPPI()
+{
+	runJavaScript("window.getPPI()", std::bind(&ResultsJsInterface::cbSetPPIAndRefresh, this, std::placeholders::_1));
+}
+
 void ResultsJsInterface::saveImage()
 {
 	runJavaScript("window.saveImageClicked();");
@@ -283,15 +327,13 @@ void ResultsJsInterface::setFixDecimalsHandler(QString numDecimals)
 
 void ResultsJsInterface::setGlobalJsValues()
 {
-	bool exactPValues = _mainWindow->_settings.value("exactPVals", 0).toBool();
-	QString exactPValueString = (exactPValues ? "true" : "false");	
-	QString numDecimals = _mainWindow->_settings.value("numDecimals", 3).toString();
-	if (numDecimals.isEmpty())
-		numDecimals = "3";
+	bool exactPValues = Settings::value(Settings::EXACT_PVALUES).toBool();
+	QString exactPValueString = (exactPValues ? "true" : "false");
+	QString numDecimals = Settings::value(Settings::NUM_DECIMALS).toString();
 	QString tempFolder = "file:///" + tq(tempfiles_sessionDirName());
 
 	QString js = "window.globSet.pExact = " + exactPValueString;
-	js += "; window.globSet.decimals = " + numDecimals;
+	js += "; window.globSet.decimals = " + (numDecimals.isEmpty() ? "\"\"" : numDecimals);
 	js += "; window.globSet.tempFolder = \"" + tempFolder + "/\"";
 	runJavaScript(js);
 }
@@ -319,11 +361,11 @@ void ResultsJsInterface::saveTempImage(int id, QString path, QByteArray data)
 void ResultsJsInterface::analysisImageEditedHandler(Analysis *analysis)
 {
 	Json::Value imgJson = analysis->getImgResults();
-	QString	results = tq(imgJson.toStyledString());   
+	QString	results = tq(imgJson.toStyledString());
 	results = escapeJavascriptString(results);
 	results = "window.modifySelectedImage(" + QString::number(analysis->id()) + ", JSON.parse('" + results + "'));";
 	runJavaScript(results);
-	
+
     return;
 }
 
@@ -379,10 +421,10 @@ void ResultsJsInterface::getImageInBase64(int id, const QString &path)
 	file->open(QIODevice::ReadOnly);
 	QByteArray image = file->readAll();
 	QString result = QString(image.toBase64());
-	
+
 	QString eval = QString("window.convertToBase64Done({ id: %1, result: '%2'});").arg(id).arg(result);
 	runJavaScript(eval);
-	
+
 }
 
 void ResultsJsInterface::pushToClipboard(const QString &mimeType, const QString &data, const QString &html)
@@ -513,6 +555,11 @@ void ResultsJsInterface::exportHTML()
 	runJavaScript("window.exportHTML('%EXPORT%');");
 }
 
+void ResultsJsInterface::openFileTab()
+{
+	_mainWindow->ui->tabBar->setCurrentTab("first");
+}
+
 QString ResultsJsInterface::escapeJavascriptString(const QString &str)
 {
 	QString out;
@@ -558,9 +605,8 @@ void ResultsJsInterface::runJavaScript(const QString &str, std::function<void(co
 	_webViewResults->page()->runJavaScript(str,  [cb] (const QVariant &result) { cb(result); });
 }
 
-void ResultsJsInterface::cbSetPPI(const QVariant &vppi)
+int ResultsJsInterface::_getPPIFromVariant(const QVariant &vppi, bool& success)
 {
-	bool success;
 	int ppi = vppi.toInt(&success);
 	if (success == false)
 	{
@@ -568,16 +614,24 @@ void ResultsJsInterface::cbSetPPI(const QVariant &vppi)
 		std::cout.flush();
 		ppi = 96;
 	}
-	else
-	{
-		std::cout << "PPI: " << vppi.toString().toStdString() << "." << std::endl;
-		std::cout.flush();
 
-	}
+	return ppi;
+}
 
+void ResultsJsInterface::cbSetPPI(const QVariant &vppi)
+{
+	bool success = false;
+	int ppi = _getPPIFromVariant(vppi, success);
 	_webViewZoom = 1;
 
 	_mainWindow->resultsPageLoaded(success, ppi);
+}
+
+void ResultsJsInterface::cbSetPPIAndRefresh(const QVariant &vppi)
+{
+	bool success = false;
+	int ppi = _getPPIFromVariant(vppi, success);
+	_mainWindow->setPPIHandler(ppi);
 }
 
 void ResultsJsInterface::cbSetResultstMeta(const QVariant &vMetaData)
@@ -593,4 +647,3 @@ void ResultsJsInterface::cbSetAllUserData(const QVariant &vAllUserData)
 	_allUserData = vAllUserData;
 	emit getAllUserDataCompleted();
 }
-

@@ -284,7 +284,7 @@
 						BFH1H0 = BFH1H0, dontPlotData = dontPlotData, rscale = options$priorWidth,
 						addInformation = options$plotPriorAndPosteriorAdditionalInfo,
 						BF = ifelse(BFH1H0, bayesFactorObject$bf, 1/bayesFactorObject$bf),
-						oneSided = oneSided, options = options
+						oneSided = oneSided, options = options, delta = delta
 				)
 			}
 			content <- .writeImage(width = width, height = height, plot = .plotFunc, obj = TRUE)
@@ -300,7 +300,11 @@
 			errorMessage <- .extractErrorMessage(p)
 
 			if (errorMessage == "'from' cannot be NA, NaN or infinite") {
-				errorMessage <- "The Bayes factor is infinite"
+				errorMessage <- "The Bayes factor is infinite."
+			} else if (errorMessage == "Infinite value encountered.") {
+				if (options$effectSizeStandardized == 'informative') {
+					errorMessage <- "Posterior too peaked."
+				}
 			} else if (!is.null(bayesFactorObject)) {
 				if (.clean(exp(bayesFactorObject$bf)) == "\u221E") {
 					errorMessage <- "The Bayes factor is infinite"
@@ -1320,7 +1324,7 @@
 				oneSided = FALSE, BF, BFH1H0, callback = function(...) 0, iterations = 10000,
 				rscale = "medium", lwd = 2, cexPoints = 1.5, cexAxis = 1.2, cexYlab = 1.5, cexXlab = 1.5,
 				cexTextBF = 1.4, cexCI = 1.1, cexLegend = 1.2, lwdAxis = 1.2, addInformation = TRUE,
-				dontPlotData = FALSE, options = NULL) {
+				dontPlotData = FALSE, options = NULL, delta = NULL) {
 
     # Function outputs the prior and posterior plot for t-test in the summary stats module.
 
@@ -1392,7 +1396,7 @@
   }
 
 
-  if ("effectSizeStandardized" %in% names(options) && options$effectSizeStandardized == "informative") {
+  if ("effectSizeStandardized" %in% names(options) && options$effectSizeStandardized == "informative" && !options$wilcoxTest) {
     # informative prior
     xlim <- vector("numeric", 2)
     if (options[["informativeStandardizedEffectSize"]] == "cauchy") {
@@ -1507,11 +1511,13 @@
 
   } else {
     # sample from delta posterior
-    bfObject <- BayesFactor::meta.ttestBF(t = t, n1 = n1, n2 = n2, rscale = r)
-    library(BayesFactor)
-    samples <- BayesFactor::posterior(model = bfObject, iterations = iterations,
-                                      index = 1)
-    delta <- samples[,"delta"]
+    if (!options$wilcoxTest) {
+      bfObject <- BayesFactor::meta.ttestBF(t = t, n1 = n1, n2 = n2, rscale = r)
+      library(BayesFactor)
+      samples <- BayesFactor::posterior(model = bfObject, iterations = iterations,
+                                        index = 1)
+      delta <- samples[,"delta"]
+    }
 
     if (! .shouldContinue(callback())) {
       return()

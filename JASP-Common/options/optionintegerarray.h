@@ -24,12 +24,12 @@
 class OptionIntegerArray : public OptionI<std::vector<int> >
 {
 public:
-	OptionIntegerArray();
+	OptionIntegerArray() : OptionI() {}
 
-	virtual void init(const Json::Value &data) OVERRIDE;
-	virtual Json::Value asJSON() const OVERRIDE;
-	virtual void set(const Json::Value& value) OVERRIDE;
-	virtual Option* clone() const OVERRIDE;
+	void		init(const Json::Value &data)			override;
+	Json::Value asJSON()						const	override;
+	void		set(const Json::Value& value)			override;
+	Option*		clone()							const	override;
 };
 
 #endif // OPTIONINTEGERARRAY_H

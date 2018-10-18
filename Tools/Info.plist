@@ -27,8 +27,8 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 
-	<key>CFBundleGetInfoString</key>
-	<string>Created by Qt/QMake</string>
+    <key>NSHumanReadableCopyright</key>
+	<string>Copyright © 2013-2018 University of Amsterdam</string>
 
 	<key>CFBundleSignature</key>
 	<string>JASP</string>

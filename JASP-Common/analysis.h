@@ -24,98 +24,125 @@
 #include "version.h"
 
 #include "options/options.h"
+#include "enginedefinitions.h"
+
+#include <set>
+
+class ComputedColumn;
 
 class Analysis
 {
+	typedef std::map<std::string, std::set<std::string>> optionColumns;
+
 public:
 
 	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted, Error, SaveImg, EditImg, Exception };
 
-	Analysis(int id, std::string module, std::string name, std::string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Options *options, const Version &version, bool isAutorun = true, bool usedata = true);
+	Analysis(int id, std::string module, std::string name, std::string title, Json::Value &requiresInit, Json::Value &dataKey, Json::Value &stateKey, Json::Value &resultsMeta, Json::Value optionsJson, const Version &version, Json::Value *data, bool isAutorun = true, bool usedata = true, bool useJaspResults = false);
+
 	virtual ~Analysis();
 
-	Options *options() const;
+	Options *options() const { return _options; }
 
-	boost::signals2::signal<void (Analysis *source)> optionsChanged;
-	boost::signals2::signal<void (Analysis *source)> toRefresh;
-	boost::signals2::signal<void (Analysis *source, Json::Value &options)> saveImage;
-	boost::signals2::signal<void (Analysis *source)> imageSaved;
-    boost::signals2::signal<void (Analysis *source, Json::Value &options)> editImage;
-    boost::signals2::signal<void (Analysis *source)> imageEdited;
-	boost::signals2::signal<void (Analysis *source)> resultsChanged;
+	boost::signals2::signal<void (Analysis *source)>						optionsChanged;
+	boost::signals2::signal<void (Analysis *source)>						toRefresh;
+	boost::signals2::signal<void (Analysis *source, Json::Value &options)>	saveImage;
+	boost::signals2::signal<void (Analysis *source)>						imageSaved;
+	boost::signals2::signal<void (Analysis *source, Json::Value &options)>	editImage;
+	boost::signals2::signal<void (Analysis *source)>						imageEdited;
+	boost::signals2::signal<void (Analysis *source)>						resultsChanged;
+
+	boost::signals2::signal<void				(std::string columnName)>														requestComputedColumnDestruction;
+	boost::signals2::signal<ComputedColumn *	(std::string columnName, Analysis *source), return_not_NULL<ComputedColumn *>>	requestComputedColumnCreation;
+
+
 
 	void setResults(Json::Value results, int progress = -1);
 	void setImageResults(Json::Value results);
-  void setImageEdited(Json::Value results);
-	void setUserData(Json::Value userData);
-	const Json::Value &results() const;
-	const Json::Value &userData() const;
-	Json::Value asJSON() const;
-	const Json::Value &requiresInit() const;
-	const Json::Value &dataKey() const;
-	const Json::Value &stateKey() const;
-	const Json::Value &resultsMeta() const;
-	const std::string &name() const;
-	const std::string &title() const;
-	const std::string &module() const;
-	int id() const;
-	bool isAutorun() const;
-	bool useData() const;
-
-	void refresh();
-
-	virtual void abort();
-	void scheduleRun();
-
-	Status status() const;
+	void setImageEdited(Json::Value results);
 	void setStatus(Status status);
 
-	bool isVisible();
-	void setVisible(bool visible);
+	void setUserData(Json::Value userData)				{ _userData = userData;			}
+	void setVisible(bool visible)						{ _visible = visible;			}
+	void setRefreshBlocked(bool block)					{ _refreshBlocked = block;		}
+	void setSaveImgOptions(Json::Value &options)		{ _saveImgOptions = options;	}
 
-	bool isRefreshBlocked();
-	void setRefreshBlocked(bool block);
+	//getters
+	const	Json::Value &results()				const	{ return _results;				}
+	const	Json::Value &userData()				const	{ return _userData;				}
+	const	Json::Value &requiresInit()			const	{ return _requiresInit;			}
+	const	Json::Value &dataKey()				const	{ return _dataKey;				}
+	const	Json::Value &stateKey()				const	{ return _stateKey;				}
+	const	Json::Value &resultsMeta()			const	{ return _resultsMeta;			}
+	const	std::string &name()					const	{ return _name;					}
+	const	std::string &title()				const	{ return _title;				}
+	const	std::string &module()				const	{ return _module;				}
+			int			id()					const	{ return _id;					}
+			bool		isAutorun()				const	{ return _autorun;				}
+			bool		useData()				const	{ return _usedata;				}
+			bool		usesJaspResults()		const	{ return _jaspResultsAnalysis;	}
+			Status		status()				const	{ return _status;				}
+			int			revision()				const	{ return _revision;				}
+			bool		isVisible()				const	{ return _visible;				}
+			bool		isRefreshBlocked()		const	{ return _refreshBlocked;		}
+	const	Json::Value	&getSaveImgOptions()	const	{ return _saveImgOptions;		}
+	const	Json::Value	&getImgResults()		const	{ return _imgResults;			}
 
-	int revision();
+			void		refresh();
+	virtual void		abort();
+			void		scheduleRun();
 
-	void setSaveImgOptions(Json::Value &options);
-	Json::Value getSaveImgOptions();
-	Json::Value getImgResults();
+			Json::Value asJSON()			const;
 
-	static Status parseStatus(std::string name);
+	static	Status		parseStatus(std::string name);
+
+	bool isEmpty()		const { return status() == Empty; }
+	bool isAborted()	const { return status() == Aborted; }
+	bool isSaveImg()	const { return status() == SaveImg; }
+	bool isEditImg()	const { return status() == EditImg; }
+	bool isInited()		const { return status() == Inited; }
+
+	performType desiredPerformTypeFromAnalysisStatus() const;
+
+	std::set<std::string>	usedVariables()													{ return _options->usedVariables();					}
+	std::set<std::string>	columnsCreated()												{ return _options->columnsCreated();					}
+	void					removeUsedVariable(std::string var)								{ _options->removeUsedVariable(var);				}
+	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}
 
 protected:
-
-	Status _status;
-	bool _visible = true;
-	bool _refreshBlocked = false;
-
-	Options* _options;
-	Json::Value _results;
-	Json::Value _imgResults;
-	Json::Value _userData;
-	Json::Value _saveImgOptions;
-	int _progress;
-
 	int callback(Json::Value results);
 
+	Status		_status;
+	bool		_visible		= true;
+	bool		_refreshBlocked	= false;
+
+	Options*	_options;
+	Json::Value	_results		= Json::nullValue,
+				_imgResults		= Json::nullValue,
+				_userData		= Json::nullValue,
+				_saveImgOptions	= Json::nullValue;
+	int			_progress;
+
+
 private:
+	void				optionsChangedHandler(Option *option);
+	ComputedColumn *	requestComputedColumnCreationHandler(std::string columnName)	{ return requestComputedColumnCreation(columnName, this); }
+	void				requestComputedColumnDestructionHandler(std::string columnName) { requestComputedColumnDestruction(columnName); }
 
-	std::string _name;
-	std::string _title;
-	Json::Value _requiresInit;
-	std::string _module;
-	Json::Value _dataKey;
-	Json::Value _stateKey;
-	Json::Value _resultsMeta;
-	int _id;
-	bool _autorun;
-	bool _usedata;
-	Version _version;
+	int			_id;
+	std::string	_module,
+				_name,
+				_title;
+	Json::Value _requiresInit,
+				_dataKey,
+				_stateKey,
+				_resultsMeta;
+	bool		_autorun,
+				_usedata,
+				_jaspResultsAnalysis;
+	Version		_version;
+	int			_revision		= 0;
 
-	int _revision;
-
-	void optionsChangedHandler(Option *option);
 };
 
 #endif // ANALYSIS_H

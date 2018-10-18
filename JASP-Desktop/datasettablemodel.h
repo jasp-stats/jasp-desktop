@@ -24,39 +24,68 @@
 #include <QIcon>
 
 #include "common.h"
-#include "dataset.h"
+#include "datasetpackage.h"
+
 
 class DataSetTableModel : public QAbstractTableModel
 {
     Q_OBJECT
+	Q_PROPERTY(int columnsFilteredCount READ columnsFilteredCount NOTIFY columnsFilteredCountChanged)
 
 public:
-    explicit DataSetTableModel(QObject *parent = 0);
+	enum class	specialRoles { active = Qt::UserRole, lines, maxColString, columnIsComputed, computedColumnIsInvalidated, columnIsFiltered, computedColumnError };
 
-    void setDataSet(DataSet *dataSet);
-	void clearDataSet();
+	explicit						DataSetTableModel(QObject *parent = 0);
 
-    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
-    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
-    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
-    virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const OVERRIDE;
-    virtual bool setData(const QModelIndex &index, const QVariant &value, int role) OVERRIDE;
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const OVERRIDE;
+	QHash<int, QByteArray>			roleNames() const override;
 
-	bool setColumnType(int columnIndex, Column::ColumnType newColumnType);
-	Column::ColumnType getColumnType(int columnIndex);
-    
+				int					rowCount(const QModelIndex &parent = QModelIndex())									const	override;
+				int					columnCount(const QModelIndex &parent = QModelIndex())								const	override;
+				QVariant			data(const QModelIndex &index, int role = Qt::DisplayRole)							const	override;
+				QVariant			headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole )	const	override;
+				bool				setData(const QModelIndex &index, const QVariant &value, int role)							override;
+				Qt::ItemFlags		flags(const QModelIndex &index)														const	override;
+
+	Q_INVOKABLE bool				isColumnNameFree(QString name)						{ return _package->isColumnNameFree(name.toStdString()); }
+	Q_INVOKABLE bool				getRowFilter(int row)					const		{ return (row >=0 && row < rowCount()) ? _dataSet->filterVector()[row] : true; }
+	Q_INVOKABLE	QVariant			columnTitle(int column)					const;
+	Q_INVOKABLE QVariant			columnIcon(int column)					const;
+	Q_INVOKABLE QVariant			getColumnTypesWithCorrespondingIcon()	const;
+	Q_INVOKABLE bool				columnHasFilter(int column)				const;
+	Q_INVOKABLE bool				columnUsedInEasyFilter(int column)		const;
+	Q_INVOKABLE void				resetAllFilters();
+	Q_INVOKABLE int					setColumnTypeFromQML(int columnIndex, int newColumnType);
+
+				void				setDataSetPackage(DataSetPackage *package);
+				void				clearDataSet() { setDataSetPackage(NULL); }
+				size_t				addColumnToDataSet();
+				int					columnsFilteredCount();
+				int					getMaximumColumnWidthInCharacters(size_t columnIndex) const;
+
+				bool				setColumnType(int columnIndex, Column::ColumnType newColumnType);
+				Column::ColumnType	getColumnType(int columnIndex);
+				bool				isComputedColumn(int colIndex)				const { return _package->isColumnComputed(colIndex); }
+				bool				isComputedColumnInvalided(int colIndex)		const { return _package->isColumnInvalidated(colIndex); }
+				QString				getComputedColumnError(int colIndex)		const { return QString::fromStdString(_package->getComputedColumnError(colIndex)); }
+
 signals:
+				void				columnsFilteredCountChanged();
+				void				badDataEntered(const QModelIndex index);
+				void				allFiltersReset();
+				void				dataSetChanged(DataSet * newDataSet);
+				void				columnDataTypeChanged(std::string columnName);
 
-	void badDataEntered(const QModelIndex index);
+public slots:
+				void				refresh() { beginResetModel(); endResetModel(); }
+				void				refreshColumn(Column * column);
+				void				columnWasOverwritten(std::string columnName, std::string possibleError);
+				void				notifyColumnFilterStatusChanged(int columnIndex);
+				void				setColumnsUsedInEasyFilter(std::set<std::string> usedColumns);
     
 private:
-	DataSet *_dataSet;
-
-	QIcon _nominalTextIcon;
-	QIcon _nominalIcon;
-	QIcon _ordinalIcon;
-	QIcon _scaleIcon;
+	DataSet						*_dataSet;
+	DataSetPackage				*_package;
+	std::map<std::string, bool> columnNameUsedInEasyFilter;
 };
 
 #endif // DATASETTABLEMODEL_H

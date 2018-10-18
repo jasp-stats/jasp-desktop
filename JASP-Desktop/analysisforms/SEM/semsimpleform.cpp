@@ -18,7 +18,6 @@
 
 #include "semsimpleform.h"
 #include "ui_semsimpleform.h"
-
 #include "widgets/itemmodelselectvariable.h"
 
 SEMSimpleForm::SEMSimpleForm(QWidget *parent) :
@@ -26,7 +25,7 @@ SEMSimpleForm::SEMSimpleForm(QWidget *parent) :
 	ui(new Ui::SEMSimpleForm)
 {
 	ui->setupUi(this);
-
+	
 	ItemModelSelectVariable *model = new ItemModelSelectVariable(this);
 	model->setSource(&_availableVariablesModel);
 
@@ -35,9 +34,55 @@ SEMSimpleForm::SEMSimpleForm(QWidget *parent) :
 	ui->containerStatistics->hide();
 	ui->containerOptions->hide();
 	ui->containerAdvanced->hide();
+	
+	connect(ui->model, &BoundTextEdit::applyRequest, this, &SEMSimpleForm::checkSyntax);
 }
 
 SEMSimpleForm::~SEMSimpleForm()
 {
 	delete ui;
+}
+
+void SEMSimpleForm::checkSyntax()
+{
+	// create an R vector of available column names
+	// TODO: Proper handling of end-of-string characters and funny colnames
+	QString colNames = "c(";
+	bool firstCol = true;
+	QList<QString> vars = _availableVariablesModel.allVariables().asQList();
+	for (QString &var : vars)
+	{
+		if (!firstCol)
+			colNames.append(',');
+		colNames.append('\'')
+				.append(var.replace("\'", "\\u0027")
+						   .replace("\"", "\\u0022")
+						   .replace("\\", "\\\\"))
+				.append('\'');
+		firstCol = false;
+	}
+	colNames.append(')');
+	
+	// Get lavaan model code
+	QString lavaanCode = ui->model->toPlainText();
+	// replace ' and " with their unicode counterparts
+	// This protects against arbitrary code being run through string escaping.
+	lavaanCode.replace("\'", "\\u0027").replace("\"", "\\u0022");
+	// This protects against crashes due to backslashes
+	lavaanCode.replace("\\", "\\\\");
+	
+	// Create R code string	
+	QString checkCode = "checkLavaanModel('";
+	checkCode
+		.append(lavaanCode)
+		.append("', ")
+		.append(colNames)
+		.append(")");
+	
+	runRScript(checkCode);
+}
+
+void SEMSimpleForm::rScriptDoneHandler(QVariant key, const QString & result)
+{
+	ui->model->applyModel(result);
 }

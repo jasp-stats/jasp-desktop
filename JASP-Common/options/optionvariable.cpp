@@ -19,11 +19,6 @@
 
 using namespace std;
 
-OptionVariable::OptionVariable()
-	: OptionVariables(true)
-{
-}
-
 void OptionVariable::set(const Json::Value &value)
 {
 	vector<string> v;
@@ -59,4 +54,22 @@ string OptionVariable::variable() const
 		return _value.front().front();
 	else
 		return "";
+}
+
+void  OptionVariable::removeUsedVariable(std::string var)
+{
+	bool iContainVar = false;
+	for(std::string v : variables())
+		if(v == var)
+		{
+			iContainVar = true;
+			break;
+		}
+
+	if(iContainVar)
+	{
+		Json::Value nuller(Json::nullValue);
+		set(nuller);
+	}
+
 }

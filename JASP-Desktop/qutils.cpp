@@ -21,6 +21,9 @@
 #include <QStringList>
 #include <boost/foreach.hpp>
 
+#include "simplecrypt.h"
+#include "simplecryptkey.h"
+
 using namespace std;
 
 std::string fq(const QString &from)
@@ -71,4 +74,28 @@ QString stripFirstAndLastChar(const QString &in, const QString &strip)
 	return result;	
 }
 
+QString getShortCutKey()
+{
+#ifdef __APPLE__
+		QString shortCutKey = "\u2318";
+#else
+		QString shortCutKey = "Ctrl";
+#endif	
+		return shortCutKey;
+}
+
+QString encrypt(const QString &input)
+{
+	long long key = SIMPLECRYPTKEY;
+	SimpleCrypt crypto(key); //some random number
 	
+	return crypto.encryptToString(input);	
+}
+
+QString decrypt(const QString &input)
+{	
+	long long key = SIMPLECRYPTKEY;
+	SimpleCrypt crypto(key); //some random number
+	
+	return crypto.decryptToString(input);
+}

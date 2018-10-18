@@ -10,6 +10,7 @@
 #include <QUrlQuery>
 
 #include <stdexcept>
+#include <iostream>
 
 using namespace std;
 
@@ -18,7 +19,8 @@ OnlineDataNodeOSF::OnlineDataNodeOSF(QString localPath, QNetworkAccessManager *m
 {
 }
 
-void OnlineDataNodeOSF::initialise() {
+void OnlineDataNodeOSF::initialise()
+{
 
 	startInit();
 
@@ -46,28 +48,33 @@ void OnlineDataNodeOSF::processUrl(QUrl url)
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.api+json");
 	request.setRawHeader("Accept", "application/vnd.api+json");
 
+	emit progress("Initiating download of "+_expectedName, 0);
+
 	QNetworkReply* reply = _manager->get(request);
 
-	connect(reply, SIGNAL(finished()), this, SLOT(nodeInfoReceived()));
+	connect(reply, &QNetworkReply::finished,			this, &OnlineDataNodeOSF::nodeInfoReceived);
 }
+
+
 
 
 void OnlineDataNodeOSF::nodeInfoReceived() {
 
-	QNetworkReply *reply = (QNetworkReply*)this->sender();
+	QNetworkReply *reply = static_cast<QNetworkReply*>(this->sender());
 
 	bool success = false;
 	bool finished = false;
 
 	if (reply->error() != QNetworkReply::NoError)
 	{
+		emit progress("Download of "+_expectedName+" failed because " +reply->errorString(), 0);
+
 		setError(true, reply->errorString());
 		finished = true;
 	}
 	else
 	{
-		QByteArray data = reply->readAll();
-		QString dataString = (QString) data;
+		QString dataString = (QString) reply->readAll();
 
 		QJsonParseError error;
 		QJsonDocument doc = QJsonDocument::fromJson(dataString.toUtf8(), &error);
@@ -76,11 +83,13 @@ void OnlineDataNodeOSF::nodeInfoReceived() {
 
 		QJsonObject nodeObject;
 
+		emit progress("Download of "+_expectedName+" in progress", 10);
+
 
 		if (json.value("data").isArray() && _expectedName != "")
 		{
 			bool lastItem = _subPath.count() == 1;
-			QString searchName =_subPath.first();
+			QString searchName = _subPath.first();
 			searchName = searchName.right(searchName.length() - searchName.lastIndexOf("/") - 1);
 
 			QJsonArray arrayObject = json.value("data").toArray();

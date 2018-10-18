@@ -83,7 +83,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title=bf.title)
 
-	fields[[length(fields)+1]] <- list(name="properror", type="number", format="sf:4;dp:3", title="% error")
+	fields[[length(fields)+1]] <- list(name="properror", type="number", format="sf:4;dp:3", title="error %")
 
 	table <- list()
 	if(nullModelSpecified)
@@ -98,7 +98,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	table[["citation"]] <- list("Liang, F. and Paulo, R. and Molina, G. and Clyde, M. A. and Berger, J. O. (2008). Mixtures of g-priors for Bayesian Variable Selection. Journal of the American Statistical Association, 103, pp. 410-423",
 															"Rouder, J. N. and Morey, R. D. (in press). Bayesian testing in regression. Multivariate Behavioral Research.")
 
-	#add footnotes to the analysis result
+	# add footnotes to the analysis result
 	footnotes <- .newFootnotes()
 
 	message <- paste0("r scale used is: ", options$priorWidth, ".")
@@ -217,7 +217,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 				{
 					if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
 							diff$sampleSize==FALSE && diff$numberOfCovariatesAlternative==FALSE && diff$unadjustedRSquaredAlternative==FALSE && diff$numberOfCovariatesNull==FALSE && diff$unadjustedRSquaredNull==FALSE &&
-							diff$priorWidth == FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
+							diff$priorWidth == FALSE && diff$plotBayesFactorRobustnessAdditionalInfo == FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
 					{
 						bayesFactorRobustnessPlot <- state$bayesFactorRobustnessPlot
 					}
@@ -238,7 +238,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 										.plotFunc <- function() {
 											.plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariatesNull=options$numberOfCovariatesNull, unadjustedRSquaredNull=options$unadjustedRSquaredNull, nullModelSpecified=nullModelSpecified,, numberOfCovariatesAlternative=options$numberOfCovariatesAlternative, unadjustedRSquaredAlternative=options$unadjustedRSquaredAlternative, rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"),
-															BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObjectAlternative[["bf"]])/exp(bayesFactorObjectNull[["bf"]])), .clean(exp(bayesFactorObjectNull[["bf"]])/exp(bayesFactorObjectAlternative[["bf"]]))))
+															BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObjectAlternative[["bf"]])/exp(bayesFactorObjectNull[["bf"]])), .clean(exp(bayesFactorObjectNull[["bf"]])/exp(bayesFactorObjectAlternative[["bf"]]))), addInformation = options$plotBayesFactorRobustnessAdditionalInfo)
 										}
 										content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
 										plot[["convertible"]] <- TRUE
@@ -257,7 +257,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 										.plotFunc <- function() {
 											.plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariatesNull=options$numberOfCovariatesNull, unadjustedRSquaredNull=options$unadjustedRSquaredNull, numberOfCovariatesAlternative=options$numberOfCovariatesAlternative, unadjustedRSquaredAlternative=options$unadjustedRSquaredAlternative,
-														rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), nullModelSpecified=nullModelSpecified, BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObject[["bf"]])), .clean(1/exp(bayesFactorObject[["bf"]]))))
+														rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), nullModelSpecified=nullModelSpecified, BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObject[["bf"]])), .clean(1/exp(bayesFactorObject[["bf"]]))), addInformation = options$plotBayesFactorRobustnessAdditionalInfo)
 										}
 										content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
 										plot[["convertible"]] <- TRUE
@@ -339,7 +339,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		{
 			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
 					diff$sampleSize==FALSE && diff$numberOfCovariatesAlternative==FALSE && diff$unadjustedRSquaredAlternative==FALSE && diff$numberOfCovariatesNull==FALSE && diff$unadjustedRSquaredNull==FALSE &&
-					diff$priorWidth == FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
+					diff$priorWidth == FALSE && diff$plotBayesFactorRobustnessAdditionalInfo == FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
 			{
 				bayesFactorRobustnessPlot <- state$bayesFactorRobustnessPlot
 			}
@@ -358,7 +358,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 							# plot[["data"]] <- .endSaveImage(image)
 
 							.plotFunc <- function() {
-								.plotBF.robustnessCheck.regression.summaryStatistics(BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= TRUE)
+								.plotBF.robustnessCheck.regression.summaryStatistics(BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= TRUE, addInformation = options$plotBayesFactorRobustnessAdditionalInfo)
 							}
 							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
 							plot[["convertible"]] <- TRUE
@@ -502,29 +502,29 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 
 #function to plot the Bayes factor Robustness Check plots
-.plotBF.robustnessCheck.regression.summaryStatistics <- function(sampleSize= NULL, numberOfCovariatesNull= NULL, unadjustedRSquaredNull=NULL, numberOfCovariatesAlternative= NULL, unadjustedRSquaredAlternative=NULL, nullModelSpecified=FALSE,
-	BF10post, callback=function(...) 0, formula= NULL, data= NULL, rscale= 1, lwd= 2, cexPoints= 1.4, cexAxis= 1.2, cexYXlab= 1.5,  cexText=1.2, cexLegend= 1.4, lwdAxis= 1.2, cexEvidence= 1.6, BFH1H0 = TRUE, dontPlotData= FALSE)
+.plotBF.robustnessCheck.regression.summaryStatistics <- function(sampleSize = NULL, numberOfCovariatesNull = NULL,
+	unadjustedRSquaredNull = NULL, numberOfCovariatesAlternative = NULL, unadjustedRSquaredAlternative = NULL,
+	nullModelSpecified = FALSE, BF10post, callback = function(...) 0, formula = NULL, data = NULL, rscale = 1,
+	lwd = 2, cexPoints = 1.4, cexAxis = 1.2, cexYXlab = 1.5,  cexText = 1.2, cexLegend = 1.4, lwdAxis = 1.2, cexEvidence = 1.6,
+	BFH1H0 = TRUE, dontPlotData = FALSE, addInformation = FALSE)
 {
 	#### settings ####
-	if (rscale == "medium")
-	{
+	if (rscale == "medium") {
 		r <- sqrt(2) / 2
-	}
-	else if (rscale == "wide")
-	{
+	} else if (rscale == "wide") {
 		r <- 1
-	}
-	else if (rscale == "ultrawide")
-	{
+	} else if (rscale == "ultrawide") {
 		r <- sqrt(2)
-	}
-	else if (mode(rscale) == "numeric")
-	{
+	} else if (mode(rscale) == "numeric") {
 		r <- rscale
 	}
 
-
-	par(mar= c(5, 6, 6, 7) + 0.1, las=1)
+	# par(mar= c(5, 6, 6, 7) + 0.1, las=1)
+	if (addInformation) {
+		par(mar = c(5, 6, 6, 7) + 0.1, las = 1)
+	} else {
+		par(mar = c(5.6, 5, 4, 7) + 0.1, las = 1)
+	}
 
 	if (dontPlotData)
 	{
@@ -547,20 +547,16 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	}
 
 	#### get BFs ###
-	if(r > 1.5)
-	{
+	if(r > 1.5) {
 		rValues <- seq(0.0005, 2, length.out = 535)
-	}
-	else
-	{
+	} else {
 		rValues <- seq(0.0005, 1.5, length.out = 400)
 	}
 
 	# BF10
 	BF10 <- vector("numeric", length(rValues))
 
-	if(nullModelSpecified)
-	{
+	if(nullModelSpecified) {
 		for (i in seq_along(rValues)) {
 
 			BFNull <- BayesFactor::linearReg.R2stat(N = sampleSize, p = numberOfCovariatesNull, R2 = unadjustedRSquaredNull, rscale = rValues[i])
@@ -570,9 +566,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 			if ( ! .shouldContinue(callback()))
 				return()
 		}
-	}
-	else
-	{
+	} else {
 		for (i in seq_along(rValues)) {
 
 			BF <- BayesFactor::linearReg.R2stat(N = sampleSize, p=numberOfCovariatesAlternative, R2=unadjustedRSquaredAlternative, rscale = rValues[i])
@@ -588,23 +582,21 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		# BF10 "medium" prior
 		BF10mNull <- BayesFactor::linearReg.R2stat(N = sampleSize, p=numberOfCovariatesNull, R2=unadjustedRSquaredNull, rscale = sqrt(2) / 2)
 		BF10mAlternative <- BayesFactor::linearReg.R2stat(N = sampleSize, p=numberOfCovariatesAlternative, R2=unadjustedRSquaredAlternative, rscale = sqrt(2) / 2)
-		BF10m <- .clean(exp(BF10mAlternative[["bf"]])/exp(BF10mNull[["bf"]]))
+		BF10m <- .clean(exp(BF10mAlternative[["bf"]]) / exp(BF10mNull[["bf"]]))
 		BF10mText <- BF10m
 
 		# BF10 "wide" prior
 		BF10wNull <- BayesFactor::linearReg.R2stat(N = sampleSize, p=numberOfCovariatesNull, R2=unadjustedRSquaredNull, rscale = 1)
 		BF10wAlternative <- BayesFactor::linearReg.R2stat(N = sampleSize, p=numberOfCovariatesAlternative, R2=unadjustedRSquaredAlternative, rscale = 1)
-		BF10w <- .clean(exp(BF10wAlternative[["bf"]])/exp(BF10wNull[["bf"]]))
+		BF10w <- .clean(exp(BF10wAlternative[["bf"]]) / exp(BF10wNull[["bf"]]))
 		BF10wText <- BF10w
 
 		# BF10 "ultrawide" prior
 		BF10ultraNull <- BayesFactor::linearReg.R2stat(N = sampleSize, p=numberOfCovariatesNull, R2=unadjustedRSquaredNull, rscale = sqrt(2))
 		BF10ultraAlternative <- BayesFactor::linearReg.R2stat(N = sampleSize, p=numberOfCovariatesAlternative, R2=unadjustedRSquaredAlternative, rscale = sqrt(2))
-		BF10ultra <- .clean(exp(BF10ultraAlternative[["bf"]])/exp(BF10ultraNull[["bf"]]))
+		BF10ultra <- .clean(exp(BF10ultraAlternative[["bf"]]) / exp(BF10ultraNull[["bf"]]))
 		BF10ultraText <- BF10ultra
-	}
-	else
-	{
+	} else {
 		# BF10 "medium" prior
 		BF10m <- BayesFactor::linearReg.R2stat(N = sampleSize, p=numberOfCovariatesAlternative, R2=unadjustedRSquaredAlternative, rscale = sqrt(2) / 2)
 		BF10m <- .clean(exp(BF10m[["bf"]]))
@@ -625,6 +617,11 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	BF10user <- BF10post
 	BF10userText <- BF10user
 
+	# maximum BF value
+	maxBF10 <- max(BF10)
+	maxBFrVal <- rValues[which.max(BF10)]
+	BF10maxText <- .clean(maxBF10)
+
 	if (!(.shouldContinue(callback())))
 	{
 		return()
@@ -632,7 +629,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 	####################### scale y axis ###########################
 
-	BF <- c(BF10, BF10m, BF10w, BF10ultra, BF10user)
+	BF <- c(BF10, BF10m, BF10w, BF10ultra, BF10user, maxBF10)
 
 	if (!BFH1H0) {
 
@@ -641,6 +638,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		BF10m  <- 1 / BF10m
 		BF10w <- 1 / BF10w
 		BF10ultra <- 1 / BF10ultra
+		maxBF10 <- 1 / maxBF10
 	}
 
 	# y-axis labels larger than 1
@@ -1195,111 +1193,116 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	# display BF10
 	lines(rValues,log(BF10), col="black", lwd = 2.7)
 
-	# display "wide", user, and "ultrawide" prior BFs
-	points(r, log(BF10user), pch=21, bg="grey", cex= cexPoints, lwd = 1.3) # user prior
-	points(1, log(BF10w), pch=21, bg= "black", cex= 1.1, lwd= 1.3) # "wide" prior
-	points(sqrt(2), log(BF10ultra), pch=21, bg= "white", cex= 1.1, lwd= 1.3) # "ultrawide" prior
+	if (addInformation) {
+		# display "wide", user, and "ultrawide" prior BFs
+		points(r, log(BF10user), pch=21, bg="grey", cex= cexPoints, lwd = 1.3) # user prior
+		points(1, log(BF10w), pch=21, bg= "black", cex= 1.1, lwd= 1.3) # "wide" prior
+		points(sqrt(2), log(BF10ultra), pch=21, bg= "white", cex= 1.1, lwd= 1.3) # "ultrawide" prior
+		points(maxBFrVal, log(maxBF10), pch=21, bg="red", cex=1.1, lwd=1.3)  # max BF value
 
-	#### add legend
-	# BF values
-	# BFuser
+		#### add legend
+		# BF values
+		# BFuser
 
-	if (BFH1H0)
-	{
-		BF01userText <- 1 / BF10userText
+		if (BFH1H0) {
+			BF01userText <- 1 / BF10userText
+		} else {
+			BF10userText <- 1 / BF10userText
+			BF01userText <- 1 / BF10userText
+		}
+
+		if (BF10userText >= 1000000 | BF01userText >= 1000000) {
+			BF10usert <- format(BF10userText, digits= 4, scientific = TRUE)
+			BF01usert <- format(BF01userText, digits= 4, scientific = TRUE)
+		}
+
+		if (BF10userText < 1000000 & BF01userText < 1000000) {
+			BF10usert <- formatC(BF10userText, 3, format = "f")
+			BF01usert <- formatC(BF01userText, 3, format = "f")
+		}
+
+		if( BF10userText >= BF01userText) {
+			userBF <- bquote(BF[10]==.(BF10usert))
+		} else {
+			userBF <- bquote(BF[0][1]==.(BF01usert))
+		}
+
+
+		# BFwide
+		BF01wText <- 1 / BF10wText
+
+		if (BF10wText >= 1000000 | BF01wText >= 1000000) {
+			BF10wt <- format(BF10wText, digits= 4, scientific = TRUE)
+			BF01wt <- format(BF01wText, digits= 4, scientific = TRUE)
+		}
+
+		if (BF10wText < 1000000 & BF01wText < 1000000) {
+			BF10wt <- formatC(BF10wText, 3, format = "f")
+			BF01wt <- formatC(BF01wText, 3, format = "f")
+		}
+
+		if (BF10wText >= BF01wText) {
+			wBF <- bquote(BF[10]==.(BF10wt))
+		} else {
+			wBF <- bquote(BF[0][1]==.(BF01wt))
+		}
+
+		# BFultrawide
+		BF01ultraText <- 1 / BF10ultraText
+
+		if (BF10ultraText >= 1000000 | BF01ultraText >= 1000000) {
+			BF10ultrat <- format(BF10ultraText, digits= 4, scientific = TRUE)
+			BF01ultrat <- format(BF01ultraText, digits= 4, scientific = TRUE)
+		}
+
+		if (BF10ultraText < 1000000 & BF01ultraText < 1000000) {
+			BF10ultrat <- formatC(BF10ultraText, 3, format = "f")
+			BF01ultrat <- formatC(BF01ultraText, 3, format = "f")
+		}
+
+		if (BF10ultraText >= BF01ultraText) {
+			ultraBF <- bquote(BF[10]==.(BF10ultrat))
+		} else {
+			ultraBF <- bquote(BF[0][1]==.(BF01ultrat))
+		}
+
+		# maxBF
+		if (BF10maxText >= 1000000) {
+			BF10maxt <- format(BF10maxText, digits = 3, scientific = TRUE)
+		}
+
+		if (BF10maxText < 1000000) {
+			BF10maxt <- formatC(BF10maxText, digits = 3, format = "f", drop0trailing = TRUE)
+		}
+
+		maxBFrValt <- formatC(maxBFrVal, digits = 4, format = "f", drop0trailing = TRUE )
+		maxBF <- bquote(.(BF10maxt) ~ .('at r') == .(maxBFrValt))
+
+		maxBF10LegendText <- bquote(max~BF[1][0]*":")
+
+		xx <- grconvertX(0.2, "ndc", "user")
+		yy <- grconvertY(0.999, "ndc", "user")
+
+		BFind <- sort(c(BF10userText, BF10ultraText, BF10wText, BF10maxText), decreasing = TRUE, index.return=TRUE)$ix
+		BFsort <- sort(c(BF10userText, BF10ultraText, BF10wText, BF10maxText), decreasing = TRUE, index.return=TRUE)$x
+
+		legend <- c("user prior:", "ultrawide prior:", "wide prior:", as.expression(maxBF10LegendText))
+		pt.bg <-  c("grey", "white", "black", "red")
+		pt.cex <-  c(cexPoints, 1.1, 1.1, 1.1)
+
+		legend(xx, yy, legend = legend[BFind], pch = rep(21,4), pt.bg = pt.bg[BFind], bty = "n",
+			cex = cexLegend, lty = rep(NULL,4), pt.lwd = rep(1.3,4), pt.cex = pt.cex[BFind])
+
+		xx <- grconvertX(0.47, "ndc", "user")
+		y1 <- grconvertY(0.946, "ndc", "user")
+		y2 <- grconvertY(0.890, "ndc", "user")
+		y3 <- grconvertY(0.843, "ndc", "user")
+		y4 <- grconvertY(0.790, "ndc", "user")
+		yy <- c(y1, y2, y3, y4)
+
+		text(xx, yy[BFsort == BF10userText], userBF, cex = 1.3, pos = 4)
+		text(xx, yy[BFsort == BF10ultraText], ultraBF, cex = 1.3, pos = 4)
+		text(xx, yy[BFsort == BF10wText], wBF, cex = 1.3, pos = 4)
+		text(xx, yy[BFsort == BF10maxText], maxBF, cex = 1.3, pos = 4)
 	}
-	else
-	{
-		BF10userText <- 1 / BF10userText
-		BF01userText <- 1 / BF10userText
-	}
-
-	if (BF10userText >= 1000000 | BF01userText >= 1000000)
-	{
-		BF10usert <- format(BF10userText, digits= 4, scientific = TRUE)
-		BF01usert <- format(BF01userText, digits= 4, scientific = TRUE)
-	}
-
-	if (BF10userText < 1000000 & BF01userText < 1000000)
-	{
-		BF10usert <- formatC(BF10userText, 3, format = "f")
-		BF01usert <- formatC(BF01userText, 3, format = "f")
-	}
-
-	if( BF10userText >= BF01userText)
-	{
-		userBF <- bquote(BF[10]==.(BF10usert))
-	}
-	else
-	{
-		userBF <- bquote(BF[0][1]==.(BF01usert))
-	}
-
-	# BFwide
-	BF01wText <- 1 / BF10wText
-
-	if (BF10wText >= 1000000 | BF01wText >= 1000000)
-	{
-		BF10wt <- format(BF10wText, digits= 4, scientific = TRUE)
-		BF01wt <- format(BF01wText, digits= 4, scientific = TRUE)
-	}
-	if (BF10wText < 1000000 & BF01wText < 1000000)
-	{
-		BF10wt <- formatC(BF10wText, 3, format = "f")
-		BF01wt <- formatC(BF01wText, 3, format = "f")
-	}
-
-	if (BF10wText >= BF01wText)
-	{
-		wBF <- bquote(BF[10]==.(BF10wt))
-	}
-	else
-	{
-		wBF <- bquote(BF[0][1]==.(BF01wt))
-	}
-
-	# BFultrawide
-	BF01ultraText <- 1 / BF10ultraText
-
-	if (BF10ultraText >= 1000000 | BF01ultraText >= 1000000)
-	{
-		BF10ultrat <- format(BF10ultraText, digits= 4, scientific = TRUE)
-		BF01ultrat <- format(BF01ultraText, digits= 4, scientific = TRUE)
-	}
-	if (BF10ultraText < 1000000 & BF01ultraText < 1000000)
-	{
-		BF10ultrat <- formatC(BF10ultraText, 3, format = "f")
-		BF01ultrat <- formatC(BF01ultraText, 3, format = "f")
-	}
-
-	if (BF10ultraText >= BF01ultraText)
-	{
-		ultraBF <- bquote(BF[10]==.(BF10ultrat))
-	}
-	else
-	{
-		ultraBF <- bquote(BF[0][1]==.(BF01ultrat))
-	}
-
-	xx <- grconvertX(0.2, "ndc", "user")
-	yy <- grconvertY(0.965, "ndc", "user")
-
-	BFind <- sort(c(BF10userText, BF10ultraText, BF10wText), decreasing = TRUE, index.return=TRUE)$ix
-	BFsort <- sort(c(BF10userText, BF10ultraText, BF10wText), decreasing = TRUE, index.return=TRUE)$x
-
-	legend <- c("user prior:", "ultrawide prior:", "wide prior:")
-	pt.bg <-  c("grey", "white", "black")
-	pt.cex <-  c(cexPoints, 1.1, 1.1)
-
-	legend(xx, yy, legend = legend[BFind], pch=rep(21,3), pt.bg= pt.bg[BFind], bty= "n", cex= cexLegend, lty=rep(NULL,3), pt.lwd=rep(1.3,3), pt.cex= pt.cex[BFind])
-
-	xx <- grconvertX(0.5, "ndc", "user")
-	y1 <- grconvertY(0.902, "ndc", "user")
-	y2 <- grconvertY(0.852, "ndc", "user")
-	y3 <- grconvertY(0.802, "ndc", "user")
-	yy <- c(y1, y2, y3)
-
-	text(xx, yy[BFsort== BF10userText], userBF, cex= 1.3,pos = 4)
-	text(xx, yy[BFsort== BF10ultraText], ultraBF, cex= 1.3, pos= 4)
-	text(xx, yy[BFsort== BF10wText], wBF, cex= 1.3, pos= 4)
 }

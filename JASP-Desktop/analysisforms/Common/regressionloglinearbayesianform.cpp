@@ -36,7 +36,8 @@ RegressionLogLinearBayesianForm::RegressionLogLinearBayesianForm(QWidget *parent
 	_factorsListModel = new TableModelVariablesAssigned(this);
 	_factorsListModel->setSource(&_availableVariablesModel);
 	_factorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->factors->setModel(_factorsListModel);
+    _factorsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeNominalText | Column::ColumnTypeOrdinal);
+    ui->factors->setModel(_factorsListModel);
 
 	ui->buttonAssignCounts->setSourceAndTarget(ui->listAvailableFields, ui->counts);
 	ui->buttonAssignFactors->setSourceAndTarget(ui->listAvailableFields, ui->factors);

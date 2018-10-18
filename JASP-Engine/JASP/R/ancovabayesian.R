@@ -181,8 +181,8 @@ AncovaBayesian	 <- function(dataset = NULL, options, perform = "run", callback =
 	new.state <- list(options = options, model = model, status = status, keep = keepDescriptivesPlot)
 	
 	if (perform == "run" || ! status$ready || ! is.null(state)) {
-		return(list(results = results, status = "complete", state = new.state))
+		return(list(results = results, status = "complete", state = new.state, keep = keepDescriptivesPlot))
 	} else {
-		return(list(results = results, status = "inited"))
+		return(list(results = results, status = "inited", keep = keepDescriptivesPlot))
 	}
 }

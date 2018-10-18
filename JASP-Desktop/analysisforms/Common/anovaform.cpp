@@ -40,12 +40,14 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	_fixedFactorsListModel = new TableModelVariablesAssigned(this);
 	_fixedFactorsListModel->setSource(&_availableVariablesModel);
     _fixedFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->fixedFactors->setModel(_fixedFactorsListModel);
+    _fixedFactorsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeNominalText | Column::ColumnTypeOrdinal);
+    ui->fixedFactors->setModel(_fixedFactorsListModel);
 
 	_randomFactorsListModel = new TableModelVariablesAssigned(this);
 	_randomFactorsListModel->setSource(&_availableVariablesModel);
 	_randomFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->randomFactors->setModel(_randomFactorsListModel);
+    _randomFactorsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeNominalText | Column::ColumnTypeOrdinal);
+    ui->randomFactors->setModel(_randomFactorsListModel);
 
 	_wlsWeightsListModel = new TableModelVariablesAssigned(this);
 	_wlsWeightsListModel->setSource(&_availableVariablesModel);
@@ -112,9 +114,19 @@ AnovaForm::AnovaForm(QWidget *parent) :
     _moderatorTwoTableModel->setSource(_simpleEffectsAvailableTableModel);
 	ui->moderatorFactorTwo->setModel(_moderatorTwoTableModel);
 
+    _kruskalAvailableTableModel = new TableModelVariablesAvailable();
+    _kruskalAvailableTableModel->setInfoProvider(this);
+	ui->kruskalVariables->setModel(_kruskalAvailableTableModel);
+
+    _kruskalTableModel = new TableModelVariablesAssigned(this);
+    _kruskalTableModel->setSource(_kruskalAvailableTableModel);
+	ui->kruskalVariablesAssigned->setModel(_kruskalTableModel);
+
 	ui->buttonAssignSimpleFactor->setSourceAndTarget(ui->simpleEffectsVariables, ui->simpleFactor);
 	ui->buttonAssignModeratorOne->setSourceAndTarget(ui->simpleEffectsVariables, ui->moderatorFactorOne);
 	ui->buttonAssignModeratorTwo->setSourceAndTarget(ui->simpleEffectsVariables, ui->moderatorFactorTwo);
+
+	ui->buttonAssignKruskal->setSourceAndTarget(ui->kruskalVariables, ui->kruskalVariablesAssigned);
 
 	ui->containerModel->hide();
 	ui->containerFactors->hide();
@@ -123,6 +135,8 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	ui->containerDescriptivesPlot->hide();
 	ui->containerAssumptions->hide();
 	ui->containerSimpleEffect->hide();
+  ui->containerKruskal->hide();
+
 		
 
 	ui->confidenceIntervalInterval->setLabel("Confidence interval");
@@ -172,6 +186,7 @@ void AnovaForm::factorsChanged()
 	_contrastsModel->setVariables(factorsAvailable);
 	_plotFactorsAvailableTableModel->setVariables(factorsAvailable);
 	_simpleEffectsAvailableTableModel->setVariables(factorsAvailable);
+	_kruskalAvailableTableModel->setVariables(factorsAvailable);
 
 	Terms plotVariablesAssigned;
 	plotVariablesAssigned.add(_horizontalAxisTableModel->assigned());
@@ -185,6 +200,10 @@ void AnovaForm::factorsChanged()
 	simpleEffectsVariablesAssigned.add(_moderatorTwoTableModel->assigned());
 	_simpleEffectsAvailableTableModel->notifyAlreadyAssigned(simpleEffectsVariablesAssigned);
 
+	Terms kruskalVariablesAssigned;
+	kruskalVariablesAssigned.add(_kruskalTableModel->assigned());
+	_kruskalAvailableTableModel->notifyAlreadyAssigned(kruskalVariablesAssigned);
+
     	ui->postHocTestsVariables->setVariables(factorsAvailable);
 
 
@@ -195,4 +214,5 @@ void AnovaForm::factorsChanged()
 void AnovaForm::termsChanged()
 {
     ui->marginalMeansTerms->setVariables(_anovaModel->terms());
+
 }

@@ -7,6 +7,8 @@ TARGET = JASP-Common
 TEMPLATE = lib
 CONFIG += staticlib
 CONFIG += c++11
+ 
+include(../JASP.pri)
 
    macx:INCLUDEPATH += ../../boost_1_64_0
 windows:INCLUDEPATH += ../../boost_1_64_0
@@ -62,7 +64,11 @@ SOURCES += \
 	sharedmemory.cpp \
 	tempfiles.cpp \
 	utils.cpp \
-	version.cpp
+	version.cpp \
+    computedcolumn.cpp \
+    computedcolumns.cpp \
+    enginedefinitions.cpp \
+    options/optioncomputedcolumn.cpp
 
 HEADERS += \
 	analysis.h \
@@ -118,11 +124,15 @@ HEADERS += \
 	utils.h \
 	version.h \
     options/optionvariablei.h \
-    jsonredirect.h
+    jsonredirect.h \
+    computedcolumn.h \
+    computedcolumns.h \
+    enginedefinitions.h \
+    options/optioncomputedcolumn.h
 
 #exists(/app/lib/*) should only be true when building flatpak
-macx | windows | exists(/app/lib/*) {
-	DEFINES += JASP_LIBJSON_STATIC
+#macx | windows | exists(/app/lib/*)
+contains(DEFINES, JASP_LIBJSON_STATIC) {
 
     SOURCES += \
             lib_json/json_internalarray.inl \
@@ -142,9 +152,5 @@ macx | windows | exists(/app/lib/*) {
             lib_json/reader.h \
             lib_json/value.h \
             lib_json/writer.h
-} else {
-	linux: LIBS += -ljsoncpp
-	CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG }
 }
-
 

@@ -31,6 +31,11 @@
 		<binary>org.jasp.JASP</binary>
 	</provides>
 	<releases>
+		<release version="0.9.0" data="2018-06-27">
+			<description>
+				New version of JASP with filtering, a partially rebuilt interface and many other things.
+			</description>
+		</release>
 		<release version="0.8.6" date="2018-02-22">
 			<description>
 				First flatpak release

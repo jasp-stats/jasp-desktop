@@ -660,19 +660,7 @@
       </item>
       <item>
        <widget class="QWidget" name="containerFactors" native="true">
-        <layout class="QVBoxLayout" name="verticalLayout_4">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
          <item>
           <widget class="QLabel" name="label_15">
            <property name="text">
@@ -691,6 +679,113 @@
            <property name="showGrid">
             <bool>false</bool>
            </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QWidget" name="confidenceIntervalsIntervalContainer_2" native="true">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_26">
+            <item row="0" column="1">
+             <spacer name="horizontalSpacer_6">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="0" column="2">
+             <widget class="BoundCheckBox" name="confidenceIntervalsContrast">
+              <property name="text">
+               <string>Confidence intervals</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QWidget" name="widgetConfidenceIntervalIntervalContrast" native="true">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_38">
+               <property name="leftMargin">
+                <number>9</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="2">
+                <widget class="QLabel" name="label_23">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>%</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="BoundTextBox" name="confidenceIntervalIntervalContrast">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>60</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>60</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>95</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="contrastAssumeEqualVariance">
+              <property name="text">
+               <string>Assume equal variances</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
@@ -730,19 +825,17 @@
       <item row="1" column="0">
        <widget class="QWidget" name="containerPostHocTests" native="true">
         <layout class="QGridLayout" name="gridLayout_19">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item row="2" column="0">
+         <item row="0" column="0" colspan="4">
+          <widget class="BoundAssignWidget" name="postHocTestsVariables" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>160</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
           <widget class="GroupBox" name="groupPostHocOptions">
            <property name="title">
             <string>Correction</string>
@@ -755,17 +848,17 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsBonferroni">
-              <property name="text">
-               <string>Bonferroni</string>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="0">
              <widget class="BoundCheckBox" name="postHocTestsTukey">
               <property name="text">
                <string>Tukey</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsBonferroni">
+              <property name="text">
+               <string>Bonferroni</string>
               </property>
              </widget>
             </item>
@@ -779,21 +872,154 @@
            </layout>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="BoundAssignWidget" name="postHocTestsVariables" native="true">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>160</height>
-            </size>
+         <item row="1" column="0" colspan="4">
+          <widget class="QWidget" name="confidenceIntervalsIntervalContainer" native="true">
+           <property name="enabled">
+            <bool>true</bool>
            </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_9">
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="postHocTestEffectSize">
+              <property name="text">
+               <string>Effect size</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="BoundCheckBox" name="confidenceIntervalsPostHoc">
+              <property name="text">
+               <string>Confidence intervals</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QWidget" name="widgetConfidenceIntervalIntervalPostHoc" native="true">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_37">
+               <property name="leftMargin">
+                <number>9</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="2">
+                <widget class="QLabel" name="label_22">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>%</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="BoundTextBox" name="confidenceIntervalIntervalPostHoc">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>60</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>60</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>95</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <spacer name="horizontalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="BoundCheckBox" name="postHocTestEffectSize">
-           <property name="text">
-            <string>Effect size</string>
+         <item row="4" column="2" colspan="2">
+          <widget class="GroupBox" name="groupPostHocTypes">
+           <property name="title">
+            <string>Type</string>
            </property>
+           <layout class="QGridLayout" name="gridLayout_10">
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsTypeStandard">
+              <property name="text">
+               <string>Standard</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsTypeGames">
+              <property name="text">
+               <string>Games-Howell</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsTypeDunnett">
+              <property name="text">
+               <string>Dunnett</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsTypeDunn">
+              <property name="text">
+               <string>Dunn</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
@@ -2042,7 +2268,187 @@
      </layout>
     </widget>
    </item>
-   <item row="8" column="0">
+   <item row="8" column="0" colspan="2">
+    <widget class="QWidget" name="groupKruskal" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_34">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>3</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>3</number>
+      </property>
+      <item row="4" column="0">
+       <widget class="QWidget" name="containerKruskal" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>200</height>
+         </size>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_7">
+         <item row="0" column="2">
+          <widget class="QWidget" name="widget_27" native="true">
+           <layout class="QGridLayout" name="gridLayout_36">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>3</number>
+            </property>
+            <property name="horizontalSpacing">
+             <number>0</number>
+            </property>
+            <property name="verticalSpacing">
+             <number>3</number>
+            </property>
+            <item row="1" column="0">
+             <widget class="BoundListView" name="kruskalVariablesAssigned">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_19">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="AssignButton" name="buttonAssignKruskal">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>50</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>50</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QWidget" name="widget_25" native="true">
+           <layout class="QGridLayout" name="gridLayout_35">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>3</number>
+            </property>
+            <property name="horizontalSpacing">
+             <number>0</number>
+            </property>
+            <property name="verticalSpacing">
+             <number>3</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_18">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Kruskal-Wallis test</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="AvailableFieldsListView" name="kruskalVariables">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="ExpanderButton" name="expanderOptionsKruskal">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Nonparametrics</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="9" column="0">
     <spacer name="verticalSpacer_3">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -2216,12 +2622,44 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>102</x>
-     <y>2219</y>
+     <x>114</x>
+     <y>2158</y>
     </hint>
     <hint type="destinationlabel">
-     <x>119</x>
-     <y>2249</y>
+     <x>127</x>
+     <y>2191</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>confidenceIntervalsPostHoc</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetConfidenceIntervalIntervalPostHoc</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>207</x>
+     <y>1646</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>207</x>
+     <y>1676</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>confidenceIntervalsContrast</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetConfidenceIntervalIntervalContrast</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>533</x>
+     <y>1423</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>657</x>
+     <y>1423</y>
     </hint>
    </hints>
   </connection>

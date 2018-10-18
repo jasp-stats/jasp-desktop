@@ -23,6 +23,7 @@
         <file>js/jquery-ui-1.10.1.custom.js</file>
         <file>js/jquery-ui-1.10.1.custom.min.js</file>
         <file>js/table.js</file>
+        <file>js/utils.js</file>
         <file>css/theme-spss.css</file>
         <file>css/theme-jasp.css</file>
         <file>css/images/copy.png</file>
@@ -69,5 +70,6 @@
         <file>img/snow.gif</file>
         <file>js/backbone-1.1.2.js</file>
         <file>js/qwebchannel.js</file>
+        <file>js/htmlNode.js</file>
     </qresource>
 </RCC>

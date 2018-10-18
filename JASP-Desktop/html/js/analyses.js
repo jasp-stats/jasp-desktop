@@ -73,6 +73,8 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 		analysis.$el.css("opacity", 0)
 		this.$el.append(analysis.$el);
 		analysis.$el.animate({ "opacity": 1 }, 400, "easeOutCubic")
+
+		window.scrollToTopView(analysis.$el);
 	},
 
 	removeAnalysis: function (analysis) {

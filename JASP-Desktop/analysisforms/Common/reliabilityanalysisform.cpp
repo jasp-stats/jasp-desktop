@@ -31,7 +31,7 @@ ReliabilityAnalysisForm::ReliabilityAnalysisForm(QWidget *parent) :
 
 	_variableListModel = new TableModelVariablesAssigned(this);
 	_variableListModel->setSource(&_availableVariablesModel);
-	_variableListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+    _variableListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	_variableListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	ui->variables->setModel(_variableListModel);
 

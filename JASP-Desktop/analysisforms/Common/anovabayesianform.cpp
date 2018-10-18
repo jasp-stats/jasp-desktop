@@ -36,12 +36,14 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 	_fixedFactorsListModel = new TableModelVariablesAssigned(this);
 	_fixedFactorsListModel->setSource(&_availableVariablesModel);
 	_fixedFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->fixedFactors->setModel(_fixedFactorsListModel);
+    _fixedFactorsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeNominalText | Column::ColumnTypeOrdinal);
+    ui->fixedFactors->setModel(_fixedFactorsListModel);
 
 	_randomFactorsListModel = new TableModelVariablesAssigned(this);
 	_randomFactorsListModel->setSource(&_availableVariablesModel);
 	_randomFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->randomFactors->setModel(_randomFactorsListModel);
+    _randomFactorsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeNominalText | Column::ColumnTypeOrdinal);
+    ui->randomFactors->setModel(_randomFactorsListModel);
 
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);
 	ui->buttonAssignFixed->setSourceAndTarget(ui->listAvailableFields, ui->fixedFactors);

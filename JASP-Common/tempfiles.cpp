@@ -20,7 +20,7 @@
 #include <sstream>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
-#include <boost/nowide/fstream.hpp>
+#include "boost/nowide/fstream.hpp"
 
 #include "base64.h"
 #include "dirs.h"
@@ -31,9 +31,9 @@ using namespace std;
 using namespace boost;
 
 long _tempfiles_sessionId;
-string _tempfiles_sessionDirName;
-string _tempfiles_statusFileName;
-string _tempfiles_clipboard;
+string	_tempfiles_sessionDirName,
+		_tempfiles_statusFileName,
+		_tempfiles_clipboard;
 int _tempfiles_nextFileId;
 vector<string> tempfiles_shmemNames;
 
@@ -41,27 +41,11 @@ void tempfiles_init(long sessionId)
 {
 	system::error_code error;
 
-	_tempfiles_sessionId = sessionId;
-	_tempfiles_nextFileId = 0;
-
-	stringstream ss;
-	ss << Dirs::tempDir();
-	ss << "/";
-	ss << sessionId;
-
-	_tempfiles_sessionDirName = ss.str();
-
-	ss << "/status";
-
-	_tempfiles_statusFileName = ss.str();
-
-	stringstream ss2;
-	ss2 << Dirs::tempDir();
-	ss2 << "/";
-	ss2 << "clipboard";
-
-	_tempfiles_clipboard = ss2.str();
-
+	_tempfiles_sessionId		= sessionId;
+	_tempfiles_nextFileId		= 0;
+	_tempfiles_sessionDirName	= Dirs::tempDir() + "/" + std::to_string(sessionId);
+	_tempfiles_statusFileName	= _tempfiles_sessionDirName +  "/status";
+	_tempfiles_clipboard		= Dirs::tempDir() + "/clipboard";
 
 	filesystem::path sessionPath = Utils::osPath(_tempfiles_sessionDirName);
 
@@ -72,8 +56,7 @@ void tempfiles_init(long sessionId)
 	f.open(_tempfiles_statusFileName.c_str(), ios_base::out);
 	f.close();
 
-	filesystem::path clipboardPath = Utils::osPath(_tempfiles_clipboard);
-
+	//filesystem::path clipboardPath = Utils::osPath(_tempfiles_clipboard);
 	//if ( ! filesystem::exists(clipboardPath, error))
 	//	filesystem::create_directories(clipboardPath, error);
 }
@@ -279,32 +262,15 @@ string tempfiles_createSpecific(const string &dir, const string &filename)
 
 void tempfiles_createSpecific(const string &name, int id, string &root, string &relativePath)
 {
-	stringstream ssAbsolute, ssRelative;
+	root					= _tempfiles_sessionDirName;
+	relativePath			= "resources" + (id >= 0 ? "/" + std::to_string(id) : "");
+	filesystem::path path	= Utils::osPath(root + "/" + relativePath);
+
 	system::error_code error;
-
-	root = _tempfiles_sessionDirName;
-
-	ssAbsolute << root << "/";
-
-	ssAbsolute << "resources";
-	ssRelative << "resources";
-
-	if (id >= 0)
-	{
-		ssRelative << "/" << id;
-		ssAbsolute << "/" << id;
-	}
-
-	string dir = ssAbsolute.str();
-	filesystem::path path = Utils::osPath(dir);
-
 	if (filesystem::exists(path, error) == false || error)
 		filesystem::create_directories(path, error);
 
-	ssAbsolute << "/" << name;
-	ssRelative << "/" << name;
-
-	relativePath = ssRelative.str();
+	relativePath += "/" + name;
 }
 
 void tempfiles_create(const string &extension, int id, string &root, string &relativePath)

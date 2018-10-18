@@ -20,6 +20,8 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 	run <- (perform == "run")
 	state <- .retrieveState()
 
+	options[["wilcoxTest"]] <- FALSE
+
 	# difference between the previous state options and current options
 	diff <- NULL
 
@@ -112,7 +114,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 	    list(name = "errorEstimate", type = "number", format = "sf:4;dp:3", title = "error %")
 	}
 	fields[[length(fields)+1]] <- list(name = "pValue", type = "number", format = "sf:4;dp:3", title = "p")
-	table[["schema"]] <- list(fields = fields) 
+	table[["schema"]] <- list(fields = fields)
 
 	# Populate the table
 	table[["data"]] <- list(rowsTTestBayesianOneSample)

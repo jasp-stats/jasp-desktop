@@ -3,9 +3,8 @@ QT += core gui webenginewidgets svg network testlib printsupport xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-windows:CONFIG += c++11
-linux:CONFIG += c++11
-macx:CONFIG += c++11
+CONFIG += c++11
+
 linux:CONFIG += -pipe
 
 DESTDIR = ..
@@ -106,3 +105,6 @@ linux {
     QMAKE_EXTRA_TARGETS += copyres
     POST_TARGETDEPS     += copyres
 }
+
+macx | windows { DEFINES += JASP_NOT_LINUX }
+

@@ -16,21 +16,11 @@
 //
 
 #include "option.h"
+#include "analysis.h"
 
 using namespace std;
 
-Option::Option(bool transient)
-{
-	_isTransient = transient;
-	_signalsBlocked = 0;
-	_shouldSignalOnceUnblocked = false;
-}
-
-Option::~Option()
-{
-}
-
-void Option::blockSignals(bool block)
+void Option::blockSignals(bool block, bool notifyOnceUnblocked)
 {
 	if (block)
 	{
@@ -42,10 +32,10 @@ void Option::blockSignals(bool block)
 		if (_signalsBlocked < 0)
 			_signalsBlocked = 0;
 
-		if (_signalsBlocked == 0 && _shouldSignalOnceUnblocked)
+		if (_signalsBlocked == 0 && notifyOnceUnblocked && _shouldSignalChangedOnceUnblocked)
 		{
 			changed(this);
-			_shouldSignalOnceUnblocked = false;
+			_shouldSignalChangedOnceUnblocked = false;
 		}
 	}
 }
@@ -55,20 +45,13 @@ bool Option::isTransient() const
 	return _isTransient;
 }
 
-void Option::doesNotSignalOnceUnblocked()
-{
-	_shouldSignalOnceUnblocked = false;
-}
-
 void Option::notifyChanged()
 {
 	if (_signalsBlocked)
-		_shouldSignalOnceUnblocked = true;
+		_shouldSignalChangedOnceUnblocked = true;
 	else
 		changed(this);
 }
-
-
 
 
 

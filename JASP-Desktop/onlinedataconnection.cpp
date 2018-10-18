@@ -2,6 +2,7 @@
 
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <iostream>
 
 OnlineDataConnection::OnlineDataConnection(QNetworkAccessManager *manager, QObject *parent):
 	QObject(parent)
@@ -82,7 +83,9 @@ void OnlineDataConnection::beginAction(QUrl url, OnlineDataConnection::Type type
 		else
 			reply = _manager->get(request);
 
-		connect(reply, SIGNAL(finished()), this, SLOT(actionFinished()));
+
+		connect(reply, SIGNAL(finished), this, SLOT(actionFinished));
+
 	}
 	else
 		actionFinished(NULL);
@@ -139,3 +142,7 @@ void OnlineDataConnection::setError(bool value, QString msg)
 	_errorMsg = msg;
 }
 
+void OnlineDataConnection::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
+{
+	float percent = std::max(0.0f, 100.0f * (static_cast<float>(bytesReceived) / static_cast<float>(bytesTotal)));
+}

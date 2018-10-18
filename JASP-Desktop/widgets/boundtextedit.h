@@ -32,12 +32,14 @@ class BoundTextEdit : public QTextEdit, public Bound
 public:
 	explicit BoundTextEdit(QWidget *parent = 0);
 
-	virtual void bindTo(Option *option) OVERRIDE;
+	void bindTo(Option *option) override;
 	void populateFromOption(Option *option);
 
 signals:
-
+	void applyRequest();
+	
 public slots:
+	void applyModel(QString result);
 
 private slots:
 	void cursorPositionChangedHandler();
@@ -45,19 +47,19 @@ private slots:
 	void contentsChangedHandler();
 
 protected:
-	void keyPressEvent(QKeyEvent *event) OVERRIDE;
-	void resizeEvent(QResizeEvent *e) OVERRIDE;
-	void paintEvent(QPaintEvent *event) OVERRIDE;
-	void insertFromMimeData(const QMimeData *source) OVERRIDE;
+	void keyPressEvent(QKeyEvent *event) override;
+	void resizeEvent(QResizeEvent *e) override;
+	void insertFromMimeData(const QMimeData *source) override;
 
 private:
 
-	QString _errorStylesheet;
-	QString _okStylesheet;
-	QString _okMessage;
+	QString _errorStylesheet,
+			_okStylesheet,
+			_okMessage;
 
-	bool _applied;
-	QLabel *_status;
+	bool	_applied;
+	QLabel	*_status;
+
 	TextModelLavaan *_model;
 
 };

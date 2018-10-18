@@ -44,28 +44,41 @@ DataSet *SharedMemory::createDataSet()
 		_memory = new interprocess::managed_shared_memory(interprocess::create_only, _memoryName.c_str(), 6 * 1024 * 1024);
 	}
 
-	return _memory->construct<DataSet>(interprocess::unique_instance)(_memory);
+	DataSet * data = _memory->construct<DataSet>(interprocess::unique_instance)(_memory);
+	return data;
 }
 
-DataSet *SharedMemory::retrieveDataSet()
+DataSet *SharedMemory::retrieveDataSet(unsigned long parentPID)
 {
 	if (_memory == NULL)
 	{
+		if(parentPID == 0)
+			parentPID = ProcessInfo::parentPID();
+
 		stringstream ss;
 		ss << "JASP-DATA-";
-		ss << ProcessInfo::parentPID();
+		ss << parentPID;
 		_memoryName = ss.str();
 
-
-		_memory = new interprocess::managed_shared_memory(interprocess::open_read_only, _memoryName.c_str());
+		_memory = new interprocess::managed_shared_memory(interprocess::open_only, _memoryName.c_str());
 	}
 
-	return _memory->find<DataSet>(interprocess::unique_instance).first;
+	DataSet * data = _memory->find<DataSet>(interprocess::unique_instance).first;
+
+	return data;
 }
 
 DataSet *SharedMemory::enlargeDataSet(DataSet *)
 {
-	interprocess::managed_shared_memory::grow(_memoryName.c_str(), _memory->get_size());
+	size_t extraSize = _memory->get_size();
+
+#ifdef JASP_DEBUG
+	std::cout << "SharedMemory::enlargeDataSet to " << extraSize << std::endl;
+#endif
+
+	delete _memory;
+
+	interprocess::managed_shared_memory::grow(_memoryName.c_str(), extraSize);
 	_memory = new interprocess::managed_shared_memory(interprocess::open_only, _memoryName.c_str());
 
 	DataSet *dataSet = retrieveDataSet();

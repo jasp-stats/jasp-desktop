@@ -62,7 +62,7 @@ private slots:
 	void on_eb_local_clicked();
 	void factorsChanging();
 	void factorsChanged();
-	void on_postSummary_toggled(bool checked);
+	void on_postSummaryTable_toggled(bool checked);
 	void on_postSummaryPlot_toggled(bool checked);
 
 private:

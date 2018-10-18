@@ -5,7 +5,6 @@
 #include "column.h"
 #include "qutils.h"
 #include <QDialog>
-#include <QSettings>
 #include <QFileDialog>
 #include <QSizePolicy>
 
@@ -21,9 +20,10 @@ public:
 	explicit PreferencesDialog(QWidget *parent = 0);
 	~PreferencesDialog();
 
+	void setDefaultPPI(int ppi);
+
 private:
 	Ui::PreferencesDialog *ui;
-	QSettings _settings;
 	TabBar *_tabBar;
 	static int _currentTab;
 	std::vector<std::string> getStdVectorFromEmptyValueList();

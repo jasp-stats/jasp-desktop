@@ -45,9 +45,11 @@ void OnlineNode::setPath(const QString &path)
 
 OnlineDataConnection* OnlineNode::connection()
 {
-	if (_connection == NULL) {
+	if (_connection == NULL)
+	{
 		_connection = new OnlineDataConnection(_manager, this);
-		connect(_connection, SIGNAL(finished()), this, SLOT(connectionFinished()));
+
+		connect(_connection, &OnlineDataConnection::finished, this, &OnlineNode::connectionFinished);
 	}
 
 	return _connection;

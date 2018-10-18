@@ -43,9 +43,13 @@ $(document).ready(function () {
 
 	var $instructions = $("#instructions")
 	var showInstructions = false;
-	
+
 	var analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
 
+    window.setZoom = function (zoom) {
+        var zoomProcent = "" + Math.floor(zoom * 100) + "%"
+        document.body.style.zoom = zoomProcent
+    }
 
 	window.reRenderAnalyses = function () {
 		analyses.reRender();
@@ -56,7 +60,7 @@ $(document).ready(function () {
 		jaspWidget.imageToEdit = image;
 		jaspWidget.render();
 	}
-	
+
 	window.select = function (id) {
 
 		if (selectedAnalysis != null)
@@ -145,6 +149,13 @@ $(document).ready(function () {
 		window.menuObject = null;
 	}
 
+	window.latexCodeMenuClicked = function () {
+		if (window.menuObject.latexCodeMenuClicked | window.menuObject.latexCodeMenuClicked())
+			window.menuObject.toolbar.displayMessage("LaTeX code copied to clipboard");
+
+		window.menuObject = null;
+	}
+
 	window.notesMenuClicked = function (noteType, visibility) {
 		if (window.menuObject.notesMenuClicked | window.menuObject.notesMenuClicked(noteType, visibility))
 			window.menuObject.toolbar.displayMessage();
@@ -229,6 +240,12 @@ $(document).ready(function () {
 				complete.call(item);
 		}
 
+	}
+
+	window.scrollToTopView = function (item) {
+
+		var itemTop = item.offset().top
+		$("html, body").animate({ scrollTop: itemTop  }, { duration: 'slow', easing: 'swing' });
 	}
 
 	window.slideAlpha = function (item, time, cssProperties, targetAlphas, divisions, clearStyleOnZero, completeCallback) {
@@ -410,7 +427,6 @@ $(document).ready(function () {
 			window.select(idAsInt)
 			jasp.analysisSelected(idAsInt)
 		}
-
 	}
 
     var analysisChangedDownstreamHandler = function (event, data) {
@@ -529,9 +545,6 @@ $(document).ready(function () {
 			jaspWidget.model.set(analysis);
 
 		jaspWidget.render();
-
-		if (selectedAnalysisId === analysis.id && (analysis.status == "inited" || analysis.status == "complete"))
-			window.scrollIntoView(jaspWidget.$el);
 	}
 	
 	$("#results").on("click", ".stack-trace-selector", function() {

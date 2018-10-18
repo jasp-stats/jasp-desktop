@@ -1,4 +1,4 @@
-	{
+{
 	"name": "SummaryStatsRegressionLinearBayesian",
 	"autorun": true,
 	"usedata": false,
@@ -29,6 +29,11 @@
 		{
 			"default": false,
 			"name": "plotBayesFactorRobustness",
+			"type": "Boolean"
+		},
+		{
+			"default": true,
+			"name": "plotBayesFactorRobustnessAdditionalInfo",
 			"type": "Boolean"
 		},
 		{

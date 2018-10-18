@@ -44,17 +44,18 @@ public:
 	void clear();
 	int add(int display);
 	int add(const std::string &display);
-	int add(int key, const std::string &display);
+	int add(int key, const std::string &display, bool filterAllows);
 	void removeValues(std::set<int> valuesToRemove);
 	void syncInts(const std::set<int> &values);
 	void syncInts(std::map<int, std::string> &values);
-	std::map<std::string, int> syncStrings(const std::vector<std::string> &new_values, const std::map<std::string, std::string> &new_labels);
+	std::map<std::string, int> syncStrings(const std::vector<std::string> &new_values, const std::map<std::string, std::string> &new_labels, bool *changedSomething);
 	std::set<int> getIntValues();
 
 	void set(std::vector<Label> &labels);
 	size_t size() const;
 
 	Labels& operator=(const Labels& labels);
+	Label& operator[](size_t index);
 
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
 	typedef LabelVector::const_iterator const_iterator;

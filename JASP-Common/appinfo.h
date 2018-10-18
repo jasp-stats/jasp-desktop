@@ -20,8 +20,6 @@
 
 #include "version.h"
 
-const std::string CURRENT_R_VERSION = "3.3";
-
 class AppInfo
 {
 public:
@@ -31,6 +29,7 @@ public:
 
 	static std::string getShortDesc();
 	static std::string getBuildYear();
+	static std::string getRVersion();
 };
 
 #endif // APPINFO_H

@@ -24,12 +24,12 @@
 class OptionDoubleArray : public OptionI<std::vector<double> >
 {
 public:
-	OptionDoubleArray();
+	OptionDoubleArray() : OptionI() {}
 
-	virtual void init(const Json::Value &data) OVERRIDE;
-	virtual Json::Value asJSON() const OVERRIDE;
-	virtual void set(const Json::Value& value) OVERRIDE;
-	virtual Option* clone() const OVERRIDE;
+	void		init(const Json::Value &data)			override;
+	void		set(const Json::Value& value)			override;
+	Json::Value asJSON()						const	override;
+	Option		*clone()						const	override;
 };
 
 #endif // OPTIONDOUBLEARRAY_H

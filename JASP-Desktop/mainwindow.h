@@ -20,21 +20,28 @@
 #define MAINWIDGET_H
 
 #include <QMainWindow>
+#include <QSettings>
 
 #include "dataset.h"
 
 #include "datasettablemodel.h"
+#include "variablespage/levelstablemodel.h"
+#include "variablespage/labelfiltergenerator.h"
 #include "enginesync.h"
 #include "analyses.h"
-#include "widgets/progresswidget.h"
 
 #include "analysisforms/analysisform.h"
 #include "asyncloader.h"
 #include "asyncloaderthread.h"
-#include "activitylog.h"
 #include "fileevent.h"
 #include "resultsjsinterface.h"
 #include "customwebenginepage.h"
+#include "columnsmodel.h"
+#include "jsonutilities.h"
+#include "computedcolumnsmodel.h"
+
+#include "ribbons/ribbonwidget.h"
+#include "filtermodel.h"
 
 class ResultsJsInterface;
 
@@ -52,6 +59,9 @@ public:
 	void open(QString filepath);
 	virtual ~MainWindow();
 
+	EngineSync* _engineSync;
+
+	Q_INVOKABLE void showHelpFromQML(QString pageName);
 
 protected:
 	virtual void resizeEvent(QResizeEvent *event) OVERRIDE;
@@ -60,65 +70,23 @@ protected:
 	virtual void closeEvent(QCloseEvent *event) OVERRIDE;
 
 private:
-	Ui::MainWindow *ui;
-
-	ResultsJsInterface *_resultsJsInterface;
-	AnalysisForm *_currentOptionsWidget;
-	DataSetPackage *_package;
-	DataSetTableModel *_tableModel;
-	Analysis *_currentAnalysis;
-
-	int _scrollbarWidth = 0;
-
-	OnlineDataManager *_odm;
-
-	Analyses *_analyses;
-	EngineSync* _engineSync;
-
-	void refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns
-									, std::vector<std::string> &missingColumns
-									, std::map<std::string, std::string> &changeNameColumns);
+	void makeConnections();
+	void initQWidgetGUIParts();
+	void StartOnlineDataManager();
 
 
 	void packageChanged(DataSetPackage *package);
-	void packageDataChanged(DataSetPackage *package
-							, std::vector<std::string> &changedColumns
-							, std::vector<std::string> &missingColumns
-							, std::map<std::string, std::string> &changeNameColumns
-							);
+	void packageDataChanged(DataSetPackage *package, std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns,	bool rowCountChanged);
+	void refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns, bool rowCountChanged);
 
-
+	void setDataSetAndPackageInModels(DataSetPackage *package);
 	bool closeRequestCheck(bool &isSaving);
-
-	AsyncLoader _loader;
-	AsyncLoaderThread _loaderThread;
-	ProgressWidget *_progressIndicator;
-
-	bool _inited;
-	bool _applicationExiting = false;
 
 	AnalysisForm* loadForm(Analysis *analysis);
 	AnalysisForm* loadForm(const std::string name);
-	void showForm(Analysis *analysis);
+
 	void closeCurrentOptionsWidget();
 	void removeAnalysis(Analysis *analysis);
-
-	QWidget *_buttonPanel;
-	QVBoxLayout *_buttonPanelLayout;
-	QPushButton *_okButton;
-	QPushButton *_runButton;
-
-	int _tableViewWidthBeforeOptionsMadeVisible;
-
-	bool _resultsViewLoaded = false;
-	bool _openedUsingArgs = false;
-	QString _openOnLoadFilename;
-	QSettings _settings;
-	ActivityLog *_log;
-	QString _fatalError;
-	QString _currentFilePath;
-
-	CustomWebEnginePage* _customPage;
 
 	QString escapeJavascriptString(const QString &str);
 	void getAnalysesUserData();
@@ -133,20 +101,28 @@ private:
 	void saveTextToFileHandler(const QString &filename, const QString &data);
 	void analysisChangedDownstreamHandler(int id, QString options);
 	void analysisSaveImageHandler(int id, QString options);
-    void analysisEditImageHandler(int id, QString options);
+	void analysisEditImageHandler(int id, QString options);
 	void removeAnalysisRequestHandler(int id);
+	void matchComputedColumnsToAnalyses();
+
+	bool filterShortCut();
+	void loadQML();
+	void connectRibbonButton(RibbonWidget * ribbon)								{ connect(ribbon,										QOverload<QString>::of(&RibbonWidget::itemSelected),				this,	&MainWindow::itemSelected); }
 
 signals:
 	void updateAnalysesUserData(QString userData);
+	void ppiChanged(int newPPI);
 
 private slots:
+	void showForm(Analysis *analysis);
+
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisImageSavedHandler(Analysis* analysis);
 
 	void removeAllAnalyses();
 	void refreshAllAnalyses();
 	void refreshAnalysesUsingColumn(QString col);
-	void resetTableView();
+	void updateShownVariablesModel();
 
 	void tabChanged(int index);
 	void helpToggled(bool on);
@@ -163,7 +139,6 @@ private slots:
 	void showOptionsPanel();
 	void showDataPanel();
 	void hideDataPanel();
-	void showVariablesPage();
 	void startDataEditorHandler();
 	void startDataEditorEventCompleted(FileEvent *event);
 
@@ -176,14 +151,77 @@ private slots:
 	void openKeysSelected();
 	void syncKeysSelected();
 	void refreshKeysSelected();
+	void zoomInKeysSelected();
+	void zoomOutKeysSelected();
+	void zoomEqualKeysSelected();
 
-	void illegalOptionStateChanged();
+	void illegalOptionStateChanged(AnalysisForm * form);
 	void fatalError();
 
 	void helpFirstLoaded(bool ok);
 	void requestHelpPage(const QString &pageName);
 
-    void emptyValuesChangedHandler();
+	void emptyValuesChangedHandler();
+
+	void resizeVariablesWindowLabelColumn();
+	void closeVariablesPage();
+
+	void showProgress();
+	void hideProgress();
+	void setProgressStatus(QString status, int progress);
+
+	void updateExcludeKey();
+	void dataSetChanged(DataSet * dataSet);
+
+	void setPPIHandler(int ppi);
+
+private:
+	typedef std::map<Analysis*, AnalysisForm*> analysisFormMap;
+
+	Ui::MainWindow					*ui;
+
+	Analyses						*_analyses;
+	ResultsJsInterface				*_resultsJsInterface;
+	AnalysisForm					*_currentOptionsWidget	= NULL;
+	DataSetPackage					*_package;
+	DataSetTableModel				*_tableModel			= NULL;
+	LevelsTableModel				*_levelsTableModel;
+	Analysis						*_currentAnalysis		= NULL;
+	labelFilterGenerator			*_labelFilterGenerator;
+	ColumnsModel					*_columnsModel			= NULL;
+	ComputedColumnsModel			*_computedColumnsModel	= NULL;
+	FilterModel						*_filterModel			= NULL;
+	OnlineDataManager				*_odm;
+	
+	analysisFormMap					_analysisFormsMap;
+	TableModelVariablesAvailable	_availableVariablesModel;
+
+	int								_scrollbarWidth = 0,
+									_tableViewWidthBeforeOptionsMadeVisible;
+
+
+	QString							_lastRequestedHelpPage,
+									_openOnLoadFilename,
+									_fatalError,
+									_currentFilePath;
+
+	AsyncLoader						_loader;
+	AsyncLoaderThread				_loaderThread;
+	QObject							*qmlProgressBar				= NULL;
+
+	bool							_inited,
+									_applicationExiting		= false,
+									_resultsViewLoaded		= false,
+									_openedUsingArgs		= false,
+									_excludeKey				= false;
+
+	QWidget							*_buttonPanel;
+	QVBoxLayout						*_buttonPanelLayout;
+	QPushButton						*_okButton,
+									*_runButton;
+
+	QSettings						_settings;
+	CustomWebEnginePage				*_customPage;
 };
 
 #endif // MAINWIDGET_H

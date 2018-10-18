@@ -10,11 +10,11 @@
 
 #include <iosfwd>
 #include <boost/config.hpp>
-#include <boost/nowide/convert.hpp>
+#include "convert.hpp"
 #include <boost/scoped_ptr.hpp>
 #include <fstream>
 #include <memory>
-#include <boost/nowide/filebuf.hpp>
+#include "filebuf.hpp"
 
 namespace boost {
 ///

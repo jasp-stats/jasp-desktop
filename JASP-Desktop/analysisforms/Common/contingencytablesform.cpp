@@ -29,12 +29,14 @@ ContingencyTablesForm::ContingencyTablesForm(QWidget *parent) :
 
 	_rowsModel = new TableModelVariablesAssigned();
 	_rowsModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	_rowsModel->setSource(&_availableVariablesModel);
+    _rowsModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeNominalText | Column::ColumnTypeOrdinal);
+    _rowsModel->setSource(&_availableVariablesModel);
 	ui->rows->setModel(_rowsModel);
 
 	_columnsModel = new TableModelVariablesAssigned();
 	_columnsModel->setSource(&_availableVariablesModel);
 	_columnsModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+    _columnsModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeNominalText | Column::ColumnTypeOrdinal);
 	ui->columns->setModel(_columnsModel);
 
 	_countsModel = new TableModelVariablesAssigned();
@@ -46,7 +48,8 @@ ContingencyTablesForm::ContingencyTablesForm(QWidget *parent) :
 	_layersModel = new TableModelVariablesLevels();
 	_layersModel->setSource(&_availableVariablesModel);
 	_layersModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->layers->setModel(_layersModel);
+    _layersModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeNominalText | Column::ColumnTypeOrdinal);
+    ui->layers->setModel(_layersModel);
 
 	ui->buttonAssignRows->setSourceAndTarget(ui->listAvailableFields, ui->rows);
 	ui->buttonAssignColumns->setSourceAndTarget(ui->listAvailableFields, ui->columns);

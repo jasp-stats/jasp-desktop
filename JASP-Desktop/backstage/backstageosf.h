@@ -20,79 +20,112 @@
 #define BACKSTAGEOSF_H
 
 #include "backstagepage.h"
-
-#include "fsbmosf.h"
+#include "osflistmodel.h"
+#include "osfbreadcrumbslistmodel.h"
 #include "fsbrowser.h"
-#include "breadcrumbs.h"
 
-#include <QLabel>
-#include <QCursor>
-#include <QSettings>
-#include <QLineEdit>
+#include <QQmlContext>
 
-class BackstageOSF : public BackstagePage
+namespace Ui {
+class BackstageForm;
+}
+
+class BackstageOSF: public BackstagePage
 {
 	Q_OBJECT
+	
+	Q_PROPERTY(	bool	loggedin		READ loggedin		WRITE setLoggedin		NOTIFY loggedinChanged)
+	Q_PROPERTY(	bool	processing		READ processing		WRITE setProcessing		NOTIFY processingChanged)
+	Q_PROPERTY(	bool	showfiledialog	READ showfiledialog WRITE setShowfiledialog NOTIFY showfiledialogChanged)
+	Q_PROPERTY(	QString	savefilename	READ savefilename	WRITE setSavefilename	NOTIFY savefilenameChanged)	
+	Q_PROPERTY(	bool	rememberme		READ rememberme		WRITE setRememberme		NOTIFY remembermeChanged)
+	Q_PROPERTY(	QString	username		READ username		WRITE setUsername		NOTIFY usernameChanged)
+	Q_PROPERTY(	QString	password		READ password		WRITE setPassword		NOTIFY passwordChanged)
+	
+	
 public:
-	explicit BackstageOSF(QWidget *parent = 0);
-
+	explicit BackstageOSF(QWidget *parent = nullptr);
+	
+	bool loggedin();	
+	bool rememberme();
+	bool processing();
+	bool showfiledialog();
+	QString savefilename();
+	QString username();
+	QString password();
+	
+	void setLoggedin(const bool loggedin);	
+	void setRememberme(const bool rememberme);
+	void setProcessing(const bool processing);
+	void setSavefilename(const QString &savefilename);	
+	void setShowfiledialog(const bool showdialog);
+	void setUsername(const QString &username);		
+	void setPassword(const QString &password);	
+		
 	void setOnlineDataManager(OnlineDataManager *odm);
 	void attemptToConnect();
 	void setCurrentFileName(QString currentFileName);
-
 	void setMode(FileEvent::FileMode mode) OVERRIDE;
 
 signals:
-	void dataSetOpened(QString path);
+	//void dataSetOpened(QString path); dead code
 	void newFolderRequested(QString folderName);
-
+	void loggedinChanged();
+	void remembermeChanged();
+	void processingChanged();
+	void savefilenameChanged();
+	void showfiledialogChanged();
+	void usernameChanged();
+	void passwordChanged();
+	void openFileRequest(QString path);
+		
 private slots:
 	void notifyDataSetSelected(QString path);
 	void notifyDataSetOpened(QString path);
 	void saveClicked();
-
 	void openSaveFile(const QString &nodePath, const QString &filename);
 	void userDetailsReceived();
 	void openSaveCompleted(FileEvent* event);
 	void updateUserDetails();
-
 	void newFolderCreated();
-
-	void newFolderClicked();
 	void authenticatedHandler();
+	void resetOSFListModel();
+	
+
+public slots:
 	void logoutClicked();
-
-private:
-
-	bool checkEntryName(QString name, QString entryTitle, bool allowFullStop);
-
-	OnlineDataManager *_odm;
-
-	BreadCrumbs *_breadCrumbs;
+	void remembermeCheckChanged(bool check);
+	void usernameTextChanged(const QString &username);
+	void passwordTextChanged(const QString &password);
+	void updateLoginScreen();
+	void loginRequested(const QString &username, const QString &password);
+	void openFile(const QString &name);
+	void saveFile(const QString &name);
+	void startProcessing();
+	void stopProcessing();
+	void newFolderClicked();
+	void closeFileDialog();
+	
+private:	
+	bool checkEntryName(QString name, QString entryTitle, bool allowFullStop);	
+	
+	OnlineDataManager *_odm;	
+	OSFListModel *_osfListModel;
+	OSFBreadCrumbsListModel *_osfBreadCrumbsListModel;
 	FSBMOSF *_model;
-	FSBrowser *_fsBrowser;
-	QToolButton *_logoutButton;
-	QWidget *_fileNameContainer;
-	QLineEdit *_fileNameTextBox;
-	QPushButton *_saveButton;
-	QToolButton *_newFolderButton;
-	QString _currentFileName;
-
-	QSettings _settings;
-
-	class HyperlinkLabel : public QLabel
-	{
-	public:
-		HyperlinkLabel(QWidget *parent)
-			: QLabel(parent)
-		{
-			setOpenExternalLinks(true);
-			setCursor(Qt::PointingHandCursor);
-			setTextFormat(Qt::RichText);
-			setStyleSheet("color : blue ; text-decoration: underline ;");
-		}
-	};
-
+	FSBrowser *_fsBrowser;	
+	QString _currentFileName;	
+	Ui::BackstageForm *ui;
+	
+	bool _mLoggedin;
+	bool _mRememberMe;
+	bool _mProcessing;
+	bool _mShowFileDialog;
+	QString _mSaveFileName;
+	QString _mUserName;
+	QString _mPassword;
+		
 };
+
 
 #endif // BACKSTAGEOSF_H

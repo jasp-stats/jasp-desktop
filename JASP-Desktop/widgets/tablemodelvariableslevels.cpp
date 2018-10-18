@@ -147,7 +147,7 @@ void TableModelVariablesLevels::setLimitToOneLevel(bool limitToOne)
 bool TableModelVariablesLevels::isSuggested(const Term &term) const
 {
 	QVariant v = requestInfo(term, VariableInfo::VariableType);
-	int variableType = v.toInt();
+	Column::ColumnType variableType = (Column::ColumnType)v.toInt();
 
 	return variableType & _variableTypesSuggested;
 }
@@ -155,7 +155,7 @@ bool TableModelVariablesLevels::isSuggested(const Term &term) const
 bool TableModelVariablesLevels::isAllowed(const Term &term) const
 {
 	QVariant v = requestInfo(term, VariableInfo::VariableType);
-	int variableType = v.toInt();
+	Column::ColumnType variableType = (Column::ColumnType)v.toInt();
 
 	return variableType == 0 || variableType & _variableTypesAllowed;
 }

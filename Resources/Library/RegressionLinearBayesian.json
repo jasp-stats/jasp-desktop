@@ -36,7 +36,7 @@
 			"default": false
 		},
 		{
-			"name": "postSummary",
+			"name": "postSummaryTable",
 			"type": "Boolean",
 			"default": false
 		},
@@ -84,7 +84,7 @@
 		{
 			"name": "shownModels",
 			"options": [ "limited", "unlimited" ],
-			"default": "unlimited",
+			"default": "limited",
 			"type": "List"
 		},
 		{
@@ -185,6 +185,13 @@
 				}
 			],
 			"type": "Table"
+		},
+		{
+			"name": "nSimForCRI",
+			"type": "Integer",
+			"default": 1000,
+			"min": 100,
+			"max": 1000000
 		}
 	]
 }

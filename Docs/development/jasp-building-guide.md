@@ -32,9 +32,9 @@ Windows
 
 Building JASP under windows is the most temperamental, and the versions listed here are known to work; slight variations on these numbers probably won't work.
 
- - [R 3.3.3 win64](https://static.jasp-stats.org/development/R3.3%20Win%20JASP%200.8.6.zip)
+ - [R 3.4.4 win64](https://static.jasp-stats.org/development/R3.4%20Win%20JASP%200.9.1.zip)
  - [boost 1.64.0](https://static.jasp-stats.org/development/boost_1_64_0.zip)
- - [boost 1.64.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Build-Binaries-Windows-64-qt510.zip)
+ - [boost 1.64.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Build-Binaries-Windows-64-qt510.zip) Update 14-08-2018 (incl. JASP-R-Interface-3.1).
  - [Visual Studio 2017] (https://www.visualstudio.com/downloads/) Download community version
 
 Qt: JASP for windows is built as 64-bit and is built with Visual Studio 2017.
@@ -70,33 +70,33 @@ To build JASP on mac you need to clone the JASP repository and download the foll
  0. Clone the JASP repository
  1. [XCode](https://developer.apple.com/xcode/) Easiest would be via the App Store.
  2. [Qt 5.10.1 + QtWebEngine](https://download.qt.io/archive/qt/). Tick: MacOS and Qt WebEngine
- 3. [R 3.3.3](https://static.jasp-stats.org/development/R3.3%20OSX%20JASP%200.8.6.zip) This contains R and the packages. Unzip this file and set it as a framework in the build folder as shown below.
+ 3. [R 3.4.4](https://static.jasp-stats.org/development/R3.4%20OSX%20JASP%200.9.1.zip) This contains R and the packages. Unzip this file and set it as a framework in the build folder as shown below.
  4. [boost 1.64.0](https://static.jasp-stats.org/development/boost_1_64_0.zip). Unzip this file in the JASP folder.
  5. [boost 1.64.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Build-Binaries-OSX-64-qt510.zip). Unzip this file in both release and debug build folders.
 
 The directory structure should be as follows:
 
-    [+] JASP
-    	[-] jasp-desktop  < from github >
-    	[-] buildDebug510 < Build debug directory for QtCreator >
-    		- libboost_system-clang-mt-1_64.a
-		- libboost_filesystem-clang-mt-1_64.a
-		- libarchive.a
-		- libz.a
-		- libJASP-R-Interface.1.0.0.dylib
-		- libJASP-R-Interface.dylib
-	[-] buildRelease510 < Build release directory for QtCreator  >
-		- libboost_system-clang-mt-1_64.a
-		- libboost_filesystem-clang-mt-1_64.a
-		- libarchive.a
-		- libz.a
-		- libJASP-R-Interface.1.0.0.dylib
-		- libJASP-R-Interface.dylib
-    	[-] boost_1_64_0
-	[-] Frameworks
-		[-] R.framework
-			[-] Versions
-				[+] 3.3
+	[+] JASP
+		[-] jasp-desktop  < from github >
+		[-] buildDebug510 < Build debug directory for QtCreator >
+			- libboost_system-clang-mt-1_64.a
+			- libboost_filesystem-clang-mt-1_64.a
+			- libarchive.a
+			- libz.a
+			- libJASP-R-Interface.1.0.0.dylib
+			- libJASP-R-Interface.dylib
+		[-] buildRelease510 < Build release directory for QtCreator  >
+			- libboost_system-clang-mt-1_64.a
+			- libboost_filesystem-clang-mt-1_64.a
+			- libarchive.a
+			- libz.a
+			- libJASP-R-Interface.1.0.0.dylib
+			- libJASP-R-Interface.dylib
+		[-] boost_1_64_0
+		[-] Frameworks
+                        [-] R.framework
+				[-] Versions
+					[+] 3.3
 
  0. **Clone** the JASP repository into a folder of your choice. Our default choice is *~/desktop/JASP/* and cloning results in the creating of *~/desktop/JASP/jasp-desktop*.
  1. **XCode**: Qt on OS X relies on XCode to function, you can install this through the App Store. It's easiest if you install this, run it, accept the license agreement, and then close it down before installing Qt.

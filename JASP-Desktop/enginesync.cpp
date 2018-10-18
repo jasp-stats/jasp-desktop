@@ -35,22 +35,19 @@
 #include "tempfiles.h"
 
 using namespace boost::interprocess;
-using namespace std;
 
-EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
+
+EngineSync::EngineSync(Analyses *analyses, DataSetPackage *package, QObject *parent = 0)
 	: QObject(parent)
 {
 	_analyses = analyses;
-	_engineStarted = false;
+	_package = package;
 
-	_log = NULL;
-	_ppi = 96;
-
-	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), this, SLOT(sendMessages()));
-	connect(_analyses, SIGNAL(analysisOptionsChanged(Analysis*)), this, SLOT(sendMessages()));
-	connect(_analyses, SIGNAL(analysisToRefresh(Analysis*)), this, SLOT(sendMessages()));
-	connect(_analyses, SIGNAL(analysisSaveImage(Analysis*)), this, SLOT(sendMessages()));
-    connect(_analyses, SIGNAL(analysisEditImage(Analysis*)), this, SLOT(sendMessages()));
+	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
+	connect(_analyses, SIGNAL(analysisOptionsChanged(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
+	connect(_analyses, SIGNAL(analysisToRefresh(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
+	connect(_analyses, SIGNAL(analysisSaveImage(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
+	connect(_analyses, SIGNAL(analysisEditImage(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
 
 	// delay start so as not to increase program start up time
 	QTimer::singleShot(100, this, SLOT(deleteOrphanedTempFiles()));
@@ -60,12 +57,7 @@ EngineSync::~EngineSync()
 {
 	if (_engineStarted)
 	{
-		for (size_t i = 0; i < _slaveProcesses.size(); i++)
-		{
-			_slaveProcesses[i]->terminate();
-			_slaveProcesses[i]->kill();
-		}
-
+		_engines.clear();
 		tempfiles_deleteAll();
 	}
 
@@ -80,22 +72,25 @@ void EngineSync::start()
 	_engineStarted = true;
 
 	try {
+		_memoryName = "JASP-IPC-" + std::to_string(ProcessInfo::currentPID());
 
-		unsigned long pid = ProcessInfo::currentPID();
-
-		stringstream ss;
-		ss << "JASP-IPC-" << pid;
-
-		_memoryName = ss.str();
-
-		_channels.push_back(new IPCChannel(_memoryName, 0));
-
-#ifndef JASP_DEBUG
-		_channels.push_back(new IPCChannel(_memoryName, 1));
-		_channels.push_back(new IPCChannel(_memoryName, 2));
-		_channels.push_back(new IPCChannel(_memoryName, 3));
+#ifdef JASP_DEBUG
+		_engines.resize(1);
+#else
+		_engines.resize(4);
 #endif
+		for(size_t i=0; i<_engines.size(); i++)
+		{
+			_engines[i] = new EngineRepresentation(new IPCChannel(_memoryName, i), startSlaveProcess(i), this);
 
+			connect(_engines[i],	&EngineRepresentation::engineTerminated,				this,			&EngineSync::engineTerminated		);
+			connect(_engines[i],	&EngineRepresentation::rCodeReturned,					this,			&EngineSync::rCodeReturned			);
+			connect(_engines[i],	&EngineRepresentation::processNewFilterResult,			this,			&EngineSync::processNewFilterResult	);
+			connect(_engines[i],	&EngineRepresentation::processFilterErrorMsg,			this,			&EngineSync::processFilterErrorMsg	);
+			connect(_engines[i],	&EngineRepresentation::computeColumnSucceeded,			this,			&EngineSync::computeColumnSucceeded	);
+			connect(_engines[i],	&EngineRepresentation::computeColumnFailed,				this,			&EngineSync::computeColumnFailed	);
+			connect(this,			&EngineSync::ppiChanged,								_engines[i],	&EngineRepresentation::ppiChanged	);
+		}
 	}
 	catch (interprocess_exception e)
 	{
@@ -103,15 +98,7 @@ void EngineSync::start()
 		throw e;
 	}
 
-	for (uint i = 0; i < _channels.size(); i++)
-	{
-		_analysesInProgress.push_back(NULL);
-		startSlaveProcess(i);
-	}
-
-	QTimer *timer;
-
-	timer = new QTimer(this);
+	QTimer *timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(process()));
 	timer->start(50);
 
@@ -120,252 +107,132 @@ void EngineSync::start()
 	timer->start(30000);
 }
 
-bool EngineSync::engineStarted()
-{
-	return _engineStarted;
-}
-
-void EngineSync::setLog(ActivityLog *log)
-{
-	_log = log;
-}
-
-void EngineSync::setPPI(int ppi)
-{
-	_ppi = ppi;
-}
-
-void EngineSync::sendToProcess(int processNo, Analysis *analysis)
-{
-#ifdef JASP_DEBUG
-	std::cout << "send " << analysis->id() << " to process " << processNo << "\n";
-	std::cout.flush();
-#endif
-
-	string perform;
-
-	if (analysis->status() == Analysis::Empty)
-	{
-		perform = "init";
-		analysis->setStatus(Analysis::Initing);
-	}
-	else if (analysis->status() == Analysis::SaveImg)
-	{
-		perform = "saveImg";
-	}
-    else if (analysis->status() == Analysis::EditImg)
-    {
-        perform = "editImg";
-    }
-	else if (analysis->status() == Analysis::Aborting)
-	{
-		perform = "abort";
-		analysis->setStatus(Analysis::Aborted);
-	}
-	else
-	{
-		perform = "run";
-		analysis->setStatus(Analysis::Running);
-	}
-
-	_analysesInProgress[processNo] = analysis;
-
-	Json::Value json = Json::Value(Json::objectValue);
-
-	json["id"] = analysis->id();
-	json["perform"] = perform;
-	json["requiresInit"] = analysis->requiresInit();
-	json["revision"] = analysis->revision();
-
-	if (analysis->status() != Analysis::Aborted)
-	{
-		json["name"] = analysis->name();
-		json["title"] = analysis->title();
-        if (perform == "saveImg" || perform == "editImg") {
-			json["image"] = analysis->getSaveImgOptions();
-		}
-		else
-		{
-			json["dataKey"] = analysis->dataKey();
-			json["stateKey"] = analysis->stateKey();
-			json["resultsMeta"] = analysis->resultsMeta();
-			json["options"] = analysis->options()->asJSON();
-		}
-		Json::Value settings;
-		settings["ppi"] = _ppi;
-
-		json["settings"] = settings;
-	}
-
-	string str = json.toStyledString();
-	_channels[processNo]->send(str);
-
-#ifdef JASP_DEBUG
-	cout << str << "\n";
-	cout.flush();
-#endif
-
-}
 
 void EngineSync::process()
 {
-	for (size_t i = 0; i < _channels.size(); i++)
+	for (auto engine : _engines)
+		engine->process();
+	
+	processScriptQueue();
+	ProcessAnalysisRequests();
+}
+
+
+void EngineSync::sendFilter(QString generatedFilter, QString filter, int requestID)
+{
+	if(_waitingFilter == nullptr || _waitingFilter->requestId < requestID)
 	{
-		Analysis *analysis = _analysesInProgress[i];
-
-		if (analysis == NULL)
-			continue;
-
-		IPCChannel *channel = _channels[i];
-		string data;
-
-		if (channel->receive(data))
-		{
 #ifdef JASP_DEBUG
-			std::cout << "message received\n";
-			std::cout << data << "\n";
-			std::cout.flush();
+		std::cout << "waiting filter  with requestid: " << requestID << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
 #endif
 
-			Json::Reader reader;
-			Json::Value json;
-			reader.parse(data, json);
+		_waitingFilter = new RFilterStore(generatedFilter, filter, requestID); //There is no point in having more then one waiting filter is there?
+	}
+}
 
-			int id = json.get("id", -1).asInt();
-			int revision = json.get("revision", -1).asInt();
-			int progress = json.get("progress", -1).asInt();
-			Json::Value results = json.get("results", Json::nullValue);
-			string status = json.get("status", "error").asString();
+void EngineSync::sendRCode(QString rCode, int requestId)
+{
+	_waitingScripts.push(new RScriptStore(requestId, rCode));
+}
 
-			if (analysis->id() != id || analysis->revision() != revision)
-				continue;
+void EngineSync::computeColumn(QString columnName, QString computeCode, Column::ColumnType columnType)
+{
+	//first we remove the previously sent requests!
+	std::queue<RScriptStore*> copiedWaiting(_waitingScripts);
+	_waitingScripts = std::queue<RScriptStore*>() ;
 
-			if (status == "error" || status == "exception")
-			{
-				analysis->setStatus(status == "error" ? Analysis::Error : Analysis::Exception);
-				analysis->setResults(results);
-				_analysesInProgress[i] = NULL;
-				sendMessages();
+	while(copiedWaiting.size() > 0)
+	{
+		RScriptStore * cur = copiedWaiting.front();
+		if(cur->typeScript != engineState::computeColumn || static_cast<RComputeColumnStore*>(cur)->columnName != columnName)
+			_waitingScripts.push(cur);
+		copiedWaiting.pop();
+	}
 
-				if (_log != NULL)
-				{
-					QString errorMessage = tq(results.get("errorMessage", "").asString());
-					QString info = QString("%1,%2").arg(id).arg(errorMessage);
-					_log->log("Analysis Error", info);
-				}
-			}
-			else if (status == "imageSaved")
-			{
-				analysis->setStatus(Analysis::Complete);
-				analysis->setImageResults(results);
-				_analysesInProgress[i] = NULL;
-				sendMessages();
-			}
-            else if (status == "imageEdited")
-            {
-                analysis->setStatus(Analysis::Complete);
-                analysis->setImageEdited(results);
-                _analysesInProgress[i] = NULL;
-                sendMessages();
-            }
-			else if (status == "complete")
-			{
-				analysis->setStatus(Analysis::Complete);
-				analysis->setResults(results);
-				_analysesInProgress[i] = NULL;
-				sendMessages();
-			}
-			else if (status == "inited")
-			{
-				if (analysis->isAutorun())
-					analysis->setStatus(Analysis::Inited);
-				else
-					analysis->setStatus(Analysis::InitedAndWaiting);
+	_waitingScripts.push(new RComputeColumnStore(columnName, computeCode, columnType));
+}
 
-				analysis->setResults(results);
-				_analysesInProgress[i] = NULL;
-				sendMessages();
-			}
-			else if (status == "running" && analysis->status() == Analysis::Initing)
+void EngineSync::processScriptQueue()
+{
+	for(auto engine : _engines)
+		if(engine->isIdle())
+		{
+			if(_waitingScripts.size() == 0 && _waitingFilter == nullptr)
+				return;
+
+			if(_waitingFilter != nullptr)
 			{
-				analysis->setStatus(Analysis::Running);
-				analysis->setResults(results, progress);
-			}
-			else if (analysis->status() == Analysis::Running)
-			{
-				analysis->setResults(results, progress);
+				engine->runScriptOnProcess(_waitingFilter);
+				_waitingFilter = nullptr;
 			}
 			else
 			{
-				sendMessages();
+
+				RScriptStore * waiting = _waitingScripts.front();
+				_waitingScripts.pop();
+
+				switch(waiting->typeScript)
+				{
+				case engineState::rCode:			engine->runScriptOnProcess(waiting);						break;
+				case engineState::filter:			engine->runScriptOnProcess((RFilterStore*)waiting);			break;
+				case engineState::computeColumn:	engine->runScriptOnProcess((RComputeColumnStore*)waiting);	break;
+				default:							throw std::runtime_error("engineState " + engineStateToString(waiting->typeScript) + " unknown in EngineSync::processScriptQueue()!");
+				}
+
+				delete waiting; //clean up
 			}
 		}
-
-	}
 }
 
-void EngineSync::sendMessages()
+bool EngineSync::idleEngineAvailable()
 {
-	for (size_t i = 0; i < _analysesInProgress.size(); i++) // this loop handles changes in running analyses
-	{
-		Analysis *analysis = _analysesInProgress[i];
-		if (analysis != NULL)
-		{
-			if (analysis->status() == Analysis::Empty)
-			{
-				sendToProcess(i, analysis);
-			}
-			else if (analysis->status() == Analysis::Aborting)
-			{
-				sendToProcess(i, analysis);
-				_analysesInProgress[i] = NULL;
-			}
-		}
-	}
+	for(auto engine : _engines)
+		if(engine->isIdle())
+			return true;
+	return false;
+}
 
-	for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
+
+void EngineSync::ProcessAnalysisRequests()
+{	
+	const size_t initedAnalysesStartIndex =
+#ifndef JASP_DEBUG
+			1; // don't perform 'runs' on process 0, "only" inits & filters & rCode & columnCoputes.
+#else
+			0;
+#endif
+
+	for(auto engine : _engines)
+		engine->handleRunningAnalysisStatusChanges();
+
+	for (Analysis *analysis : *_analyses)
 	{
-		Analysis *analysis = *itr;
+		if(!idleEngineAvailable())
+			return;
+
 		if (analysis == NULL)
 			continue;
-
-		if (analysis->status() == Analysis::Empty || analysis->status() == Analysis::SaveImg || analysis->status() == Analysis::EditImg)
+		
+		if (analysis->isEmpty() || analysis->isSaveImg() || analysis->isEditImg())
 		{
-			bool sent = false;
-
-			for (size_t i = 0; i < _analysesInProgress.size(); i++)
-			{
-				if (_analysesInProgress[i] == NULL)
+			for(auto engine : _engines)
+				if(engine->isIdle())
 				{
-					sendToProcess(i, analysis);
-					sent = true;
+					engine->runAnalysisOnProcess(analysis);
 					break;
 				}
-			}
-
-			if (sent == false)  // no free processes left
-				return;
 		}
-		else if (analysis->status() == Analysis::Inited)
-		{
-#ifndef JASP_DEBUG
-			for (size_t i = 1; i < _analysesInProgress.size(); i++) // don't perform 'runs' on process 0, only inits.
-#else
-			for (size_t i = 0; i < _analysesInProgress.size(); i++)
-#endif
-			{
-				if (_analysesInProgress[i] == NULL)
+		else if (analysis->isInited())
+			for (size_t i = initedAnalysesStartIndex; i<_engines.size(); i++)
+				if (_engines[i]->isIdle())
 				{
-					sendToProcess(i, analysis);
+					_engines[i]->runAnalysisOnProcess(analysis);
 					break;
 				}
-			}
-		}
 	}
-
 }
 
-void EngineSync::startSlaveProcess(int no)
+QProcess * EngineSync::startSlaveProcess(int no)
 {
 	QDir programDir = QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir();
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
@@ -373,29 +240,33 @@ void EngineSync::startSlaveProcess(int no)
 
 	QStringList args;
 	args << QString::number(no);
+	args << QString::number(ProcessInfo::currentPID());
 
 #ifdef __WIN32__
 	QString rHomePath = programDir.absoluteFilePath("R");
 #elif __APPLE__
-	QString rHomePath = programDir.absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(CURRENT_R_VERSION) + "/Resources");
+    QString rHomePath = programDir.absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(AppInfo::getRVersion()) + "/Resources");
 #else //linux
 
 #ifndef R_HOME
 	QString rHomePath = programDir.absoluteFilePath("R/lib/libR.so");
 	if (QFileInfo(rHomePath).exists() == false)
-		rHomePath = "/usr/lib/R";
+#ifdef FLATPAK_USED
+		rHomePath = "/app/lib64/R/";
+#else
+		rHomePath = "/usr/lib/R/";
+#endif
 #else
 	QString rHomePath;
 	if (QDir::isRelativePath(R_HOME))
 		rHomePath = programDir.absoluteFilePath(R_HOME);
 	else
 		rHomePath = R_HOME;
-#endif
 
+#endif
 #endif
 
 	QDir rHome(rHomePath);
-
 
 #ifdef __WIN32__
 
@@ -407,9 +278,6 @@ void EngineSync::startSlaveProcess(int no)
 
 	env.insert("PATH", programDir.absoluteFilePath("R\\library\\RInside\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\library\\Rcpp\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\bin\\" ARCH_SUBPATH));
 	env.insert("R_HOME", rHome.absolutePath());
-
-	unsigned long processId = ProcessInfo::currentPID();
-    args << QString::number(processId);
 
 #undef ARCH_SUBPATH
 
@@ -435,7 +303,6 @@ void EngineSync::startSlaveProcess(int no)
 	env.insert("R_LIBS_USER", "something-which-doesnt-exist");
 
 #else  // linux
-
 	env.insert("LD_LIBRARY_PATH",	rHome.absoluteFilePath("lib") + ":" + rHome.absoluteFilePath("library/RInside/lib") + ":" + rHome.absoluteFilePath("library/Rcpp/lib") + ":" + rHome.absoluteFilePath("site-library/RInside/lib") + ":" + rHome.absoluteFilePath("site-library/Rcpp/lib") + ":/app/lib/:/app/lib64/");
 	env.insert("R_HOME",			rHome.absolutePath());
 	env.insert("R_LIBS",			programDir.absoluteFilePath("R/library") + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
@@ -445,6 +312,7 @@ void EngineSync::startSlaveProcess(int no)
 	QProcess *slave = new QProcess(this);
 	slave->setProcessChannelMode(QProcess::ForwardedChannels);
 	slave->setProcessEnvironment(env);
+	slave->setWorkingDirectory(QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir().absolutePath());
 
 #ifdef __WIN32__
 	/*
@@ -470,13 +338,13 @@ void EngineSync::startSlaveProcess(int no)
 
 	slave->start(engineExe, args);
 
-	_slaveProcesses.push_back(slave);
-
 	connect(slave, SIGNAL(readyReadStandardOutput()), this, SLOT(subProcessStandardOutput()));
 	connect(slave, SIGNAL(readyReadStandardError()), this, SLOT(subProcessStandardError()));
 	connect(slave, SIGNAL(error(QProcess::ProcessError)), this, SLOT(subProcessError(QProcess::ProcessError)));
 	connect(slave, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(subprocessFinished(int,QProcess::ExitStatus)));
 	connect(slave, SIGNAL(started()), this, SLOT(subProcessStarted()));
+
+	return slave;
 }
 
 void EngineSync::deleteOrphanedTempFiles()

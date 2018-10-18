@@ -26,13 +26,13 @@
 #include "onlinedatanodeosf.h"
 #include "onlineusernodeosf.h"
 #include <QMessageBox>
-#include "simplecrypt.h"
-#include "simplecryptkey.h"
+#include "settings.h"
 
 OnlineDataManager::OnlineDataManager(QObject *parent):
 	QObject(parent)
 {
 	setNetworkAccessManager(OnlineDataManager::OSF, new OSFNAM(this));
+	initAuthentication(OnlineDataManager::OSF);
 }
 
 OnlineDataManager::~OnlineDataManager()
@@ -63,14 +63,11 @@ void OnlineDataManager::savePasswordFromAuthData(OnlineDataManager::Provider pro
 void OnlineDataManager::savePassword(OnlineDataManager::Provider provider, QString password)
 {
 
-	long long key = SIMPLECRYPTKEY;
-	SimpleCrypt crypto(key); //some random number
-
 	if (provider == OnlineDataManager::OSF)
 	{
-		_settings.setValue("OSFPassword", crypto.encryptToString(password));
-		_settings.setValue("OSFEncryption", SimpleCryptEncryption);
-		_settings.sync();
+		Settings::setValue(Settings::OSF_PASSWORD, encrypt(password));
+		Settings::setValue(Settings::OSF_ENCRYPTION, SimpleCryptEncryption);
+		Settings::sync();
 	}
 }
 
@@ -78,8 +75,8 @@ void OnlineDataManager::saveUsername(OnlineDataManager::Provider provider, QStri
 {
 	if (provider == OnlineDataManager::OSF)
 	{
-		_settings.setValue("OSFUsername", username);
-		_settings.sync();
+		Settings::setValue(Settings::OSF_USERNAME, username);
+		Settings::sync();
 	}
 }
 
@@ -88,7 +85,7 @@ QString OnlineDataManager::getUsername(OnlineDataManager::Provider provider)
 	QString username = "";
 
 	if (provider == OnlineDataManager::OSF)
-		username = _settings.value("OSFUsername", "").toString();
+		username = Settings::value(Settings::OSF_USERNAME).toString();
 
 	return username;
 
@@ -98,16 +95,13 @@ QString OnlineDataManager::getPassword(OnlineDataManager::Provider provider)
 {
 	QString password = "";
 
-	long long key = SIMPLECRYPTKEY;
-	SimpleCrypt crypto(key); //some random number
-
 	if (provider == OnlineDataManager::OSF)
 	{
-		if (_settings.value("OSFEncryption", 0).toInt() == SimpleCryptEncryption)
-			password = crypto.decryptToString(_settings.value("OSFPassword", "").toString());
+		if (Settings::value(Settings::OSF_ENCRYPTION).toInt() == SimpleCryptEncryption)
+			password = decrypt(Settings::value(Settings::OSF_PASSWORD).toString());
 		else
 		{
-			password = _settings.value("OSFPassword", "").toString();
+			password = Settings::value(Settings::OSF_PASSWORD).toString();
 			if (password!="") savePassword(OnlineDataManager::OSF, password);
 		}
 	}
@@ -119,8 +113,8 @@ void OnlineDataManager::removePassword(OnlineDataManager::Provider provider)
 {
 	if (provider == OnlineDataManager::OSF)
 	{
-		_settings.remove("OSFPassword");
-		_settings.sync();
+		Settings::remove(Settings::OSF_PASSWORD);
+		Settings::sync();
 	}
 }
 
@@ -129,15 +123,14 @@ void OnlineDataManager::clearAuthenticationOnExit(OnlineDataManager::Provider pr
 	if (provider == OnlineDataManager::OSF)
 	{
 		//If User switch 'Remember me' is off remove OSF settings
-		if (_settings.value("OSFRememberMe", false).toBool() == false)
-			_settings.remove("OSFPassword");
-		_settings.sync();
+		if (Settings::value(Settings::OSF_REMEMBER_ME).toBool() == false)
+			Settings::remove(Settings::OSF_PASSWORD);
+		Settings::sync();
 	}
 }
 
 void OnlineDataManager::initAuthentication(OnlineDataManager::Provider provider)
 {
-
 	QString username = getUsername(provider);
 	QString password = getPassword(provider);
 
@@ -268,12 +261,14 @@ void OnlineDataManager::beginUploadFile(QString nodePath, QString actionId, QStr
 	OnlineDataNode *dataNode = uploadFileAsync(nodePath, actionId, filter);
 	_actionNodes[actionId] = dataNode;
 	connect(dataNode, SIGNAL(finished()), this, SLOT(uploadFileFinished()));
+	emit startUploading();
 }
 
 void OnlineDataManager::uploadFileFinished()
 {
 	OnlineDataNode *dataNode = qobject_cast<OnlineDataNode *>(sender());
 	emit uploadFileFinished(dataNode->id());
+	emit finishedUploading();
 }
 
 
@@ -339,6 +334,8 @@ OnlineDataNode *OnlineDataManager::getOnlineNodeData(QString nodePath, QString i
 
 		OnlineDataNodeOSF *nodeData = new OnlineDataNodeOSF(getLocalPath(nodePath), manager, id, this);
 		nodeData->setPath(nodePath);
+
+		connect(nodeData, &OnlineDataNodeOSF::progress, this, &OnlineDataManager::progress);
 		return nodeData;
 	}
 

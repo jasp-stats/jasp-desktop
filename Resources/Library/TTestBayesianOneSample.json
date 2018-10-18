@@ -38,7 +38,9 @@
 			"format": "",
 			"name": "testValue",
 			"type": "Number",
-			"value": 0.0
+			"value": 0.0,
+			"max": 10000,
+			"min": -10000
 		},
 		{
 			"name": "descriptives",

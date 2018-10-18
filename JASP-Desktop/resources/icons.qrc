@@ -55,7 +55,7 @@
         <file>icons/analysis-bayesian-crosstabs.svg</file>
         <file>icons/analysis-classical-crosstabs.svg</file>
         <file>icons/analysis-bayesian-regression.svg</file>
-		<file>icons/analysis-network.svg</file>
+        <file>icons/analysis-network.svg</file>
         <file>icons/toolbutton-menu-indicator.svg</file>
         <file>icons/variable-scale-inactive.svg</file>
         <file>icons/variable-ordinal-inactive.svg</file>
@@ -64,6 +64,7 @@
         <file>icons/analysis-classical-sem.svg</file>
         <file>icons/copy.png</file>
         <file>icons/cite.png</file>
+        <file>icons/code-icon.png</file>
         <file>icons/logo-osf.png</file>
         <file>icons/spreadsheet.svg</file>
         <file>icons/folder.svg</file>
@@ -75,5 +76,7 @@
         <file>icons/addition-sign.svg</file>
         <file>icons/addition.png</file>
         <file>icons/editImage.png</file>
+        <file>icons/right-arrow.png</file>
+        <file>icons/computed.png</file>
     </qresource>
 </RCC>

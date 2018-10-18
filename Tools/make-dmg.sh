@@ -1,21 +1,41 @@
-QT_DIR=~/Qt/5.10.0
-R_FRAMEWORK=~/JASP/Build/Frameworks/R.framework
-JASP_DESKTOP=~/JASP/Build/jasp-desktop
-JASP_VERSION=0.8.6
+#!/bin/sh
+#Ought to be run from make-clean-osx.sh because then the necessary variables are set
+echo "Changing directory to $JASP_FULL_BUILD_DIR"
+cd $JASP_FULL_BUILD_DIR
+
+. versionScript.sh
+
+R_FRAMEWORK=$JASP_ROOT_DIR/Frameworks/R.framework
+JASP_DESKTOP=$JASP_FULL_GIT_DIR
+
+if [ ! -d $R_FRAMEWORK ]
+then
+  echo "Wrong R Framework folder"
+  exit 1
+else
+  echo "Using R Framework folder: $R_FRAMEWORK"
+fi
+
+if [ ! -d $JASP_DESKTOP ]; then
+  echo "Wrong jasp-desktop folder"
+  exit 1
+else
+  echo "Using jasp-desktop folder: $JASP_DESKTOP"
+fi
 
 # This script builds the JASP.dmg installer
-# Check that you R.framework is unique (no other test versions).
+# Check that your R.framework is unique (no other test versions).
 # Check also that the right dylib are placed in the build-jasp-desktop-Release folder
-# Then run this script from the build-jasp-desktop-Release folder 
+# Then run this script from the build-jasp-desktop-Release folder
 
-# Remove from last time
+echo "Remove from last time"
 
 rm -rf app
 rm -rf JASP.zip
 rm -f tmp.dmg
 rm -f JASP*.dmg
 
-# Create output tree
+echo "Create output tree under ./app"
 
 mkdir app/
 mkdir app/JASP.app/
@@ -26,49 +46,66 @@ mkdir app/JASPEngine.app/
 mkdir app/JASPEngine.app/Contents/
 mkdir app/JASPEngine.app/Contents/MacOS
 
-# Create a symbolic link to Applications 
+echo "Create a symbolic link to Applications"
 
 cd app
 ln -s /Applications .
 cd ..
 
-
-# Copy the two executables into place
+echo "Copy the two executables into place (after renaming jasp -> JASP)"
 install_name_tool -add_rpath @loader_path/../Libraries JASP
 install_name_tool -add_rpath @loader_path/../Libraries JASPEngine
-cp JASP       app/JASP.app/Contents/MacOS/
+cp JASP app/JASP.app/Contents/MacOS/
 cp JASPEngine app/JASPEngine.app/Contents/MacOS/
 
-# Create apps from each executable
-# We do this to the JASPEngine, because this process
-# fixes the rpaths
+echo "Copy any R-files in buildfolder"
+cp *.R app/JASP.app/Contents/MacOS/
 
-$QT_DIR/clang_64/bin/macdeployqt app/JASP.app/
-$QT_DIR/clang_64/bin/macdeployqt app/JASPEngine.app/
+echo "Create apps from each executable"
+echo "We do this to the JASPEngine, because this process fixes the rpaths"
 
-# Copy the JASPEngine out of the JASPEngine.app into the JASP.app
-# This will now have had it's rpaths fixed
+$QT_KIT_FULL/bin/macdeployqt app/JASP.app/ -qmldir=$JASP_DESKTOP/JASP-Desktop
+$QT_KIT_FULL/bin/macdeployqt app/JASPEngine.app/
 
-cp app/JASPEngine.app/Contents/MacOS/JASPEngine app/JASP.app/Contents/MacOS/
+echo "Copy the JASPEngine out of the JASPEngine.app into the JASP.app"
+echo "This will now have had it's rpaths fixed"
+
+mv app/JASPEngine.app/Contents/MacOS/JASPEngine app/JASP.app/Contents/MacOS/
 rm -rf app/JASPEngine.app/
 
-# Copy the R.framework in, the Resources, App info, icon, etc.
-
-cp -r $R_FRAMEWORK app/JASP.app/Contents/Frameworks
-cp -r $JASP_DESKTOP/Resources/* app/JASP.app/Contents/Resources
+echo "Copy the R.framework in, the Resources, App info, icon, etc."
+APP_R_FRAMEWORK=app/JASP.app/Contents/Frameworks/R.framework
+cp -R $R_FRAMEWORK $APP_R_FRAMEWORK
+cp -R $JASP_DESKTOP/Resources/* app/JASP.app/Contents/Resources
 rm app/JASP.app/Contents/Resources/TestFiles.zip
-cp -r R           app/JASP.app/Contents/MacOS
+cp -R R app/JASP.app/Contents/MacOS
 
-#Copy the Openssl from Qt to our Framework because OSF no longer supports tlsv1 traffic
+cd $APP_R_FRAMEWORK/Versions
+ln -s $CURRENT_R_VERSION Current
+cd Current
+ln -s ./Resources/include Headers
+ln -s ./Resources/lib/libR.dylib R
+cd ../..
+ln -s ./Versions/Current/Headers Headers
+ln -s ./Versions/Current/Libraries Libraries
+ln -s ./Versions/Current/PrivateHeaders PrivateHeaders
+ln -s ./Versions/Current/Resources Resources
+find . -name '*.cpp' -exec rm {} \;
+find . -name '*.c' -exec rm {} \;
+find . -name '*.h' -exec rm {} \;
+find . -name '*.f' -exec rm {} \;
+cd ../../../../..
+
+echo "Copy the Openssl from Qt to our Framework because OSF no longer supports tlsv1 traffic"
 cp libcrypto.1.0.0.dylib app/JASP.app/Contents/Libraries/
 cp libssl.1.0.0.dylib app/JASP.app/Contents/Libraries/
-cp libJASP-R-Interface.1.0.0.dylib app/JASP.app/Contents/Libraries/
 
 cp $JASP_DESKTOP/Tools/icon.icns app/JASP.app/Contents/Resources
 cp $JASP_DESKTOP/Tools/Info.plist.template app/JASP.app/Contents/Info.plist
+
 sed -ie s/JASP_VERSION/$JASP_VERSION/g app/JASP.app/Contents/Info.plist
 
-# Create the .dmg
+echo "Create the .dmg"
 hdiutil create -size 800m tmp.dmg -ov -volname "JASP" -fs HFS+ -srcfolder "app"
 hdiutil convert tmp.dmg -format UDZO -o JASP.dmg
 mv JASP.dmg JASP-$JASP_VERSION.dmg

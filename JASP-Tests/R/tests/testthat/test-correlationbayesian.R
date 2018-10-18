@@ -30,16 +30,16 @@ test_that("Main table results match", {
   )
 })
 
-test_that("Correlation plot matches", {
-  options <- jasptools::analysisOptions("CorrelationBayesian")
-  options$variables <- c("contcor1", "contcor2")
-  options$plotCorrelationMatrix <- TRUE
-  options$plotDensitiesForVariables <- TRUE
-  options$plotPosteriors <- TRUE
-  results <- jasptools::run("CorrelationBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "correlation", dir="CorrelationBayesian")
-})
+# test_that("Correlation plot matches", {
+#   options <- jasptools::analysisOptions("CorrelationBayesian")
+#   options$variables <- c("contcor1", "contcor2")
+#   options$plotCorrelationMatrix <- TRUE
+#   options$plotDensitiesForVariables <- TRUE
+#   options$plotPosteriors <- TRUE
+#   results <- jasptools::run("CorrelationBayesian", "test.csv", options, view=FALSE, quiet=TRUE)
+#   testPlot <- results[["state"]][["figures"]][[1]]
+#   expect_equal_plots(testPlot, "correlation", dir="CorrelationBayesian")
+# })
 
 test_that("Analysis handles errors", {
   options <- jasptools::analysisOptions("CorrelationBayesian")
