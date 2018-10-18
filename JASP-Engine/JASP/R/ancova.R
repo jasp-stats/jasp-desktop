@@ -1315,7 +1315,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       # Results using the Holm method
       resultPostHoc[[postHocVar]]$resultHolm <- summary(r,test=multcomp::adjusted("holm"))
 
-      confIntResult <- TukeyHSD(model, conf.level = options$confidenceIntervalIntervalPostHoc)
+      confIntResult <- TukeyHSD(model, conf.level = options$confidenceIntervalIntervalPostHoc, which = .v(postHocVar))
       resultPostHoc[[postHocVar]]$confidenceIntervals <-  matrix(ncol = 2, confIntResult[[.v(postHocVar)]][,2:3])
 
       resultPostHoc[[postHocVar]]$comparisonsTukSchef <- strsplit(names(resultPostHoc[[postHocVar]]$resultTukey$test$coefficients)," - ")
