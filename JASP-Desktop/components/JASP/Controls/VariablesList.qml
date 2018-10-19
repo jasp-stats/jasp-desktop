@@ -46,7 +46,7 @@ JASPControl
     readonly property string scaleIconFile: "variable-scale-inactive.svg"
     property var suggestedColumns: []
     property var allowedColumns: []
-    property bool showVariableIcon: true
+    property bool showVariableTypeIcon: true
     property bool showElementBorder: false
     property int columns: 1
     property bool draggable: true
@@ -415,12 +415,12 @@ JASPControl
                     id: icon
                     height: 15; width: 15
                     anchors.verticalCenter: parent.verticalCenter
-                    source: variablesList.showVariableIcon ? model.type : ""
-                    visible: variablesList.showVariableIcon
+                    source: variablesList.showVariableTypeIcon ? model.type : ""
+                    visible: variablesList.showVariableTypeIcon
                 }
                 Text {
                     id: colName
-                    x: variablesList.showVariableIcon ? 20 : 4  
+                    x: variablesList.showVariableTypeIcon ? 20 : 4  
                     text: model.name
                     width: itemRectangle.width - x
                     elide: Text.ElideRight

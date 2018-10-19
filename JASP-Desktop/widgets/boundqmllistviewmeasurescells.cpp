@@ -40,7 +40,7 @@ BoundQMLListViewMeasuresCells::BoundQMLListViewMeasuresCells(QQuickItem* item, A
 	QQmlProperty::write(_item, "showElementBorder", true);
 	QQmlProperty::write(_item, "columns", 2);
 	QQmlProperty::write(_item, "dragOnlyVariables", true);
-	QQmlProperty::write(_item, "showVariableIcon", false);		
+	QQmlProperty::write(_item, "showVariableTypeIcon", false);		
 }
 
 void BoundQMLListViewMeasuresCells::bindTo(Option *option)

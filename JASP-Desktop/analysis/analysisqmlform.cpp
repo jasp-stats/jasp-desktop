@@ -189,7 +189,7 @@ void AnalysisQMLForm::_parseQML()
 			ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(boundQMLComboBox->model());
 			if (availableModel)
 			{
-				if (boundQMLComboBox->syncModelsList().isEmpty())
+				if (boundQMLComboBox->hasAllVariablesModel)
 					_allAvailableVariablesModels.push_back(availableModel);
 			}
 			break;
@@ -313,10 +313,7 @@ void AnalysisQMLForm::_setAllAvailableVariablesModel()
 			columnNames.push_back(column.name());
 
 	for (ListModelTermsAvailable* model : _allAvailableVariablesModels)
-	{
 		model->initTerms(columnNames);
-		model->modelChanged();
-	}
 }
 
 void AnalysisQMLForm::bindTo(Options *options, DataSet *dataSet)
@@ -349,6 +346,7 @@ void AnalysisQMLForm::bindTo(Options *options, DataSet *dataSet)
 		// The availableModel are not bound, but they have to be updated when the form is initialized.
 		availableModel->resetTermsFromSyncModels();
 	}
+
 	_options->blockSignals(false);
 	
 	updateIllegalStatus();

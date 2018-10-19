@@ -174,7 +174,10 @@ void BoundQMLListViewDraggable::addRowWithControlsHandler(QString termName, QVar
 			}
 			
 			if (boundQMLItem)
+			{
+				boundQMLItem->setUp();
 				row[boundQMLItem->name()] = boundQMLItem;
+			}
 		}
 	}
 	_rowsWithControls[termName] = row;

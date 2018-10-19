@@ -23,6 +23,7 @@
 #include "analysis/options/optionlist.h"
 #include "listmodel.h"
 #include "listmodeltermsavailable.h"
+#include <QMap>
 
 class BoundQMLComboBox : public QMLListView, public BoundQMLItem
 {
@@ -34,8 +35,11 @@ public:
 	virtual void resetQMLItem(QQuickItem *item) OVERRIDE;
 	virtual Option* createOption() OVERRIDE;
 	virtual Option* boundTo() OVERRIDE { return _boundTo; }
+	virtual void setUp() OVERRIDE;
 	
 	virtual ListModel* model() OVERRIDE { return _model; }
+	
+	bool hasAllVariablesModel = false;
 
 protected slots:
 	virtual void modelChangedHandler() OVERRIDE;
@@ -44,7 +48,12 @@ protected slots:
 protected:
 	OptionList *_boundTo;
 	int _currentIndex;
+	QString _currentText;
 	ListModel* _model;
+	QMap<QString, QString> _keyToValueMap;
+	QMap<QString, QString> _valueToKeyMap;
+	
+	void _resetItemWidth();
 };
 
 #endif // BOUNDQMLCOMBOBOX_H

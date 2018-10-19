@@ -56,7 +56,7 @@ void ListModelTermsAvailable::initTerms(const Terms &terms)
 
 	_terms.setSortParent(_allTerms);
 
-	endResetModel();
+	endResetModel();	
 }
 
 QVariant ListModelTermsAvailable::requestInfo(const Term &term, VariableInfo::InfoType info) const

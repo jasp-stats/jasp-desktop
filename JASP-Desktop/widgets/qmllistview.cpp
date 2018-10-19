@@ -29,6 +29,7 @@ QMLListView::QMLListView(QQuickItem *item, AnalysisQMLForm *form)
 	, _needsSyncModels(false)
 	  
 {
+	_setAllowedVariables();	
 	_syncModelsList = QQmlProperty(_item, "syncModels").read().toStringList();	
 }
 
@@ -36,7 +37,6 @@ void QMLListView::setUp()
 {
 	QMLItem::setUp();
 	
-	_setAllowedVariables();	
 	
 	ListModel* _model = model();
 	if (!_model)
@@ -75,7 +75,7 @@ void QMLListView::setUp()
 void QMLListView::setTermsAreNotVariables()
 {
 	model()->setTermsAreVariables(false);
-	QQmlProperty::write(_item, "showVariableIcon", false);
+	QQmlProperty::write(_item, "showVariableTypeIcon", false);
 }
 
 int QMLListView::_getAllowedColumnsTypes()

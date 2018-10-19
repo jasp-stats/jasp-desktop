@@ -35,7 +35,7 @@ BoundQMLListViewPairs::BoundQMLListViewPairs(QQuickItem* item, AnalysisQMLForm* 
 	setDropMode(qmlDropMode::Replace);
 	QQmlProperty::write(_item, "showElementBorder", true);
 	QQmlProperty::write(_item, "columns", 2);
-	QQmlProperty::write(_item, "showVariableIcon", false);		
+	QQmlProperty::write(_item, "showVariableTypeIcon", false);		
 }
 
 void BoundQMLListViewPairs::bindTo(Option *option)

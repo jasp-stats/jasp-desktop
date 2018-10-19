@@ -13,14 +13,17 @@ JASPControl {
     property int labelSpacing: 4
     
     property alias label: label
-    property alias currentText: control.currentText
+    property string currentText
+    property string currentIcon
+    property alias currentIndex: control.currentIndex
     property alias model: control.model
-    property string modelType: Array.isArray(model) ? "array" : "keyvalue"
-    property alias textRole: control.textRole
+    property string textRole: "key"
+    property string valueRole: "value"
     property bool showVariableTypeIcon: false
     property var syncModels
-    property alias currentIndex: control.currentIndex
+    property string placeholderText: qsTr("<no choice>")
     property alias control: control
+    property bool initialized: false
     
     signal activated(int index);
     
@@ -28,7 +31,6 @@ JASPControl {
         textMetrics.font = control.font
         textMetrics.text = value
         var newWidth = textMetrics.width + (comboBox.showVariableTypeIcon ? 20 : 4);
-        console.log("New width for value " + value + ": " + newWidth);
         if (newWidth > control.modelWidth)
             control.modelWidth = newWidth;
     }
@@ -52,40 +54,27 @@ JASPControl {
             height: Theme.comboBoxHeight
             property int modelWidth : 30
             implicitWidth: modelWidth + leftPadding + rightPadding + canvas.width
-            textRole: "key"
+            textRole:comboBox.textRole
             
             TextMetrics {
                 id: textMetrics
             }
 
-            onModelChanged: {
-                console.log("model changed")
-                var length = comboBox.modelType == "array" ? control.model.length : control.model.rowCount();
-                for (var i = 0; i < length; i++) {
-                    var value = comboBox.modelType === "array" ? model[i] : (comboBox.modelType === "variables" ? "" : control.model.get(i)[control.textRole]);
-                    resetWidth(value);
-                }
-                
-            }
-            
             delegate: ItemDelegate {
                 height: control.height
                 contentItem: Rectangle {
                     anchors.fill: parent
                     Image {
-                        id: contentIcon
                         height: 15; width: 15
                         anchors.verticalCenter: parent.verticalCenter
-                        source: comboBox.showVariableTypeIcon ? model.type : ""
+                        source: comboBox.showVariableTypeIcon &&  comboBox.initialized ? model.type : ""
                         visible: comboBox.showVariableTypeIcon
                     }
                     
                     Text {
-                        id: contentText
                         x: comboBox.showVariableTypeIcon ? 20 : 4                          
-                        text: comboBox.modelType === "variables" ? model.name : (comboBox.modelType === "array" ? modelData : model[control.textRole])
+                        text: comboBox.initialized ? model.name : ""
                         font: control.font
-                        elide: Text.ElideNone
                         verticalAlignment: Text.AlignVCenter
                     }
                 }
@@ -118,17 +107,24 @@ JASPControl {
                 }
             }
         
-            contentItem: Text {
-                leftPadding: control.spacing
-                rightPadding: control.indicator.width + control.spacing
-        
-                text: control.displayText
-                font: control.font
-                verticalAlignment: Text.AlignVCenter
-                //elide: Text.ElideRight
-                color: enabled ? Theme.black : Theme.grayDarker
+            contentItem: Item {
+                Image {
+                    id: contentIcon
+                    height: 15; width: 15
+                    anchors.verticalCenter: parent.verticalCenter
+                    source: comboBox.currentIcon
+                    visible: comboBox.showVariableTypeIcon && comboBox.currentIcon
+                }
+                
+                Text {
+                    x: contentIcon.visible ? 20 : 4
+                    text: comboBox.currentText
+                    font: control.font
+                    anchors.verticalCenter: parent.verticalCenter
+                    color: enabled ? Theme.black : Theme.grayDarker
+                }
             }
-        
+                
             background: Rectangle {
                 id: comboBoxBackground
                 implicitHeight: control.height

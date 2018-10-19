@@ -34,7 +34,7 @@ void QMLListViewDraggable::setUp()
 	
 	_draggableModel = dynamic_cast<ListModelDraggable*>(model());
 	_draggableModel->setItemType(QQmlProperty(_item, "itemType").read().toString());
-	_draggableModel->setTermsAreVariables(QQmlProperty(_item, "showVariableIcon").read().toBool());
+	_draggableModel->setTermsAreVariables(QQmlProperty(_item, "showVariableTypeIcon").read().toBool());
 	QString dropMode = QQmlProperty(_item, "dropMode").read().toString();
 	if (dropMode.isEmpty()) dropMode = "None";
 	_draggableModel->setDropMode(qmlDropModeFromQString(dropMode));

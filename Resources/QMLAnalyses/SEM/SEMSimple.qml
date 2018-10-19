@@ -52,6 +52,7 @@ Form {
                 RadioButton { text: qsTr("Robust")     ; name: "robust"       }
                 RadioButton { text: qsTr("Bootstrap")  ; name: "bootstrap"; id: boostrapOption  }
                 TextField   { label.text: qsTr("Bootstrap samples") ; name: "errorCalculationBootstrapSamples"
+                    textWidth: 60
                     text: "1000"
                     validator: IntValidator { bottom: 1 }
                     enabled: boostrapOption.checked

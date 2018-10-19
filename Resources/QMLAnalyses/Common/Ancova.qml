@@ -181,8 +181,8 @@ Form {
 
         VariablesForm {
             formHeight: 200
-            availableVariablesList {        name: "marginalMeansTermsAvailable" ; syncModels: "modelTerms"; showVariableIcon: false }
-            defaultAssignedVariablesList {  name: "marginalMeansTerms"; showVariableIcon: false }
+            availableVariablesList {        name: "marginalMeansTermsAvailable" ; syncModels: "modelTerms"; showVariableTypeIcon: false }
+            defaultAssignedVariablesList {  name: "marginalMeansTerms"; showVariableTypeIcon: false }
         }
 
         CheckBox { text: qsTr("Compare marginal means to 0")    ; name: "marginalMeansCompareMainEffects"; id: marginalMeansCompareMainEffects }
