@@ -20,15 +20,12 @@
 # }
 
 #' @method print JASPgraphs
-#' @export
 print.JASPgraphs <- function(x, ...) {
 
   if (ggplot2::is.ggplot(x)) {
     ggplot2:::print.ggplot(x, ...)
   } else if (inherits(x, c("gtable", "gTree", "grob", "gDesc"))) {
     gridExtra::grid.arrange(x, ...)
-  } else if (length(class(x)) > 1L) {
-    NextMethod()
   } else {
     stop(sprintf(
       "unsupported plot object of class: %s",
@@ -38,6 +35,3 @@ print.JASPgraphs <- function(x, ...) {
   return(invisible(TRUE))
 }
 
-#' @method plot JASPgraphs
-#' @export
-plot.JASPgraphs <- function(x, ...) print.JASPgraphs(x)
