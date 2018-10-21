@@ -207,7 +207,7 @@
 
 	}
 
-	options[["nullInterval"]] <- switch(options[["oneSided"]],
+	options[["nullInterval"]] <- switch(as.character(options[["oneSided"]]),
     "right" = c(0, Inf),
     "left"  = c(-Inf, 0),
     c(-Inf, Inf)
@@ -600,20 +600,21 @@
 
   if (options[["plotBayesFactorRobustness"]]) {
   	.ttestBayesianPlotRobustness(
-  		collection             = inferentialPlotsCollection,
-  		dependents             = dependents,
-  		errors                 = errors,
-  		dataset                = dataset,
-  		grouping               = grouping,
-  		BF10post               = results[["BF10post"]],
-  		BFH1H0                 = results[["BFH1H0"]],
-  		rscale                 = options[["priorWidth"]],
-  		paired                 = results[["paired"]],
-  		oneSided               = options[["oneSided"]],
-  		additionalInformation  = options[["plotBayesFactorRobustnessAdditionalInfo"]],
-  		effectSizeStandardized = options[["effectSizeStandardized"]],
-  		pairs                  = pairs,
-  		options                = options,
+      collection             = inferentialPlotsCollection,
+      dependents             = dependents,
+      errors                 = errors,
+      dataset                = dataset,
+      grouping               = grouping,
+      BF10post               = results[["BF10post"]],
+      BFH1H0                 = results[["BFH1H0"]],
+      rscale                 = options[["priorWidth"]],
+      paired                 = results[["paired"]],
+      oneSided               = options[["oneSided"]],
+      additionalInformation  = options[["plotBayesFactorRobustnessAdditionalInfo"]],
+      effectSizeStandardized = options[["effectSizeStandardized"]],
+      nullInterval           = options[["nullInterval"]],
+      pairs                  = pairs,
+      options                = options,
       dependencies           = c(options[["stateKey"]][["robustnessPlots"]], "plotSequentialAnalysis")
   	)
   }
@@ -631,6 +632,8 @@
   		oneSided               = options[["oneSided"]],
   		rscale                 = options[["priorWidth"]],
   		effectSizeStandardized = options[["effectSizeStandardized"]],
+  		plotDifferentPriors    = options[["plotSequentialAnalysisRobustness"]],
+  		nullInterval           = options[["nullInterval"]],
   		pairs                  = pairs,
   		options                = options,
       dependencies           = c(options[["stateKey"]][["sequentialPlots"]], "plotSequentialAnalysis")
@@ -690,7 +693,7 @@
 .ttestBayesianPlotRobustness <- function(collection, dependents, errors, dataset,
                                          grouping = NULL, BF10post, BFH1H0,
                                          rscale = "medium", paired = FALSE,
-                                         oneSided = FALSE,
+                                         oneSided = FALSE, nullInterval = c(-Inf, Inf),
                                          additionalInformation = TRUE,
                                          effectSizeStandardized, pairs = NULL,
                                          options, dependencies = NULL, ...) {
@@ -733,17 +736,19 @@
           }
         }
 
-        obj <- function() {.plotBF.robustnessCheck.ttest(
+        obj <- .plotBF.robustnessCheck.ttest2(
           x                     = group1,
           y                     = group2,
           BF10post              = BF10post[var],
           paired                = paired,
           oneSided              = oneSided,
+          nullInterval          = nullInterval,
           rscale                = rscale,
           BFH1H0                = BFH1H0,
           additionalInformation = additionalInformation,
           ...
-        )}
+        )
+
         plot <- .addPlotToJaspObj0(title, var, obj)
       } else {
         plot <- .addPlotToJaspObj0(title, var, NULL, error[[var]][["message"]])
@@ -763,7 +768,7 @@
 .ttestBayesianPlotSequential <- function(collection, dependents, errors, dataset,
                                          grouping = NULL, BF10post, BFH1H0,
                                          rscale = "medium", paired = FALSE,
-                                         oneSided = FALSE,
+                                         oneSided = FALSE, nullInterval = c(-Inf, Inf),
                                          plotDifferentPriors = FALSE,
                                          effectSizeStandardized,
                                          testValue = NULL, pairs = NULL,
@@ -809,7 +814,23 @@
           }
         }
 
-        obj <- function() {.plotSequentialBF.ttest(
+        # obj <- function() {.plotSequentialBF.ttest(
+        #   x                   = group1,
+        #   y                   = group2,
+        #   oneSided            = oneSided,
+        #   rscale              = rscale,
+        #   BFH1H0              = BFH1H0,
+        #   BF10post            = BF10post[var],
+        #   paired              = paired,
+        #   plotDifferentPriors = plotDifferentPriors,
+        #   subDataSet          = subDataSet,
+        #   level1              = g1,
+        #   level2              = g2,
+        #   options             = options,
+        #   ...
+        # )}
+        # browser()
+        obj <- .plotSequentialBF.ttest2(
           x                   = group1,
           y                   = group2,
           oneSided            = oneSided,
@@ -821,9 +842,10 @@
           subDataSet          = subDataSet,
           level1              = g1,
           level2              = g2,
+          nullInterval        = nullInterval,
           options             = options,
           ...
-        )}
+        )
 
         plot <- .addPlotToJaspObj0(title, var, obj)
       } else {
@@ -944,3 +966,120 @@
 	list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))
 
 }
+
+.ttestBayesianGetBFnamePlots <- function(BFH1H0, nullInterval) {
+
+  if (BFH1H0) {
+	  if (identical(nullInterval, c(-Inf, Inf))) {
+	    bfTitle <- "BF[1][0]"
+	  } else if (identical(nullInterval, c(0, Inf))) {
+	    bfTitle <- "BF['+'][0]"
+	  } else {
+	    bfTitle <- "BF['-'][0]"
+	  }
+	} else {
+	  if (identical(nullInterval, c(-Inf, Inf))) {
+	    bfTitle <- "BF[0][1]"
+	  } else if (identical(nullInterval, c(0, Inf))) {
+	    bfTitle <- "BF[0]['+']"
+	  } else {
+	    bfTitle <- "BF[0]['-']"
+	  }
+	}
+  return(bfTitle)
+}
+
+.plotBF.robustnessCheck.ttest2 <- function(
+  x = NULL, y = NULL, paired = FALSE, BF10post, nullInterval, formula = NULL, data = NULL, rscale = 1, oneSided = FALSE,
+  BFH1H0 = TRUE, additionalInformation = FALSE) {
+
+	if (is.numeric(rscale)) {
+		r <- rscale
+	} else if (is.character(rscale)) {
+		r <- switch (rscale,
+			"medium"    = sqrt(2) / 2,
+			"wide"      = 1.0,
+			"ultrawide" = sqrt(2)
+		)
+	} else {
+		.quitInternal(message = sprintf("Expected numeric or character rscale but got %s.", class(rscale)))
+	}
+
+  if(r > 1.5) {
+    rValues <- seq(0.0005, 2.0, length.out = 535)
+  } else {
+    rValues <- seq(0.0005, 1.5, length.out = 400)
+  }
+
+  # BF10
+  BF10 <- vector("numeric", length(rValues))
+  for (i in seq_along(rValues)) {
+    if (oneSided) {
+      BF10[i] <- .oneSidedTtestBFRichard(x = x, y = y, paired = paired, oneSided = oneSided, r = rValues[i])
+    } else {
+      BF <- BayesFactor::ttestBF(x = x, y = y, paired = paired, nullInterval = nullInterval, rscale = rValues[i])
+      BF10[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = FALSE)[1, "bf"]
+    }
+  }
+
+  # maximum BF value
+  idx <- which.max(BF10)
+  maxBF10 <- BF10[idx]
+  maxBFrVal <- rValues[idx]
+
+  if (isFALSE(oneSided)) {
+
+    # BF10 "medium" prior
+    BF10m     <- BayesFactor::ttestBF(x = x, y = y, paired = paired, nullInterval = nullInterval, rscale = "medium")
+    BF10w     <- BayesFactor::ttestBF(x = x, y = y, paired = paired, nullInterval = nullInterval, rscale= "wide")
+    BF10ultra <- BayesFactor::ttestBF(x = x, y = y, paired = paired, nullInterval = nullInterval, rscale = "ultrawide")
+
+    BF10m     <- BayesFactor::extractBF(BF10m,     logbf = FALSE, onlybf = FALSE)[1L, "bf"]
+    BF10w     <- BayesFactor::extractBF(BF10w,     logbf = FALSE, onlybf = FALSE)[1L, "bf"]
+    BF10ultra <- BayesFactor::extractBF(BF10ultra, logbf = FALSE, onlybf = FALSE)[1L, "bf"]
+
+  } else {
+
+    # BF10 "medium" prior
+    BF10m     <- .oneSidedTtestBFRichard(x = x, y = y, paired = paired, oneSided = oneSided, r = "medium")
+    BF10w     <- .oneSidedTtestBFRichard(x = x, y = y, paired = paired, oneSided = oneSided, r = "wide")
+    BF10ultra <- .oneSidedTtestBFRichard(x = x, y = y, paired = paired, oneSided = oneSided, r = "ultrawide")
+  }
+
+  # BF10 user prior
+  BF10user <- BF10post
+
+  dfLines <- data.frame(
+    x = rValues,
+    y = log(BF10)
+  )
+browser()
+  BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, nullInterval)
+  dfPoints <- data.frame(
+    x = c(maxBFrVal, r, 1, sqrt(2)),
+    y = log(c(maxBF10, BF10user, BF10w, BF10ultra)),
+    g = c(
+      sprintf("'max'~%s~':'~%s~'at'~r==%s", BFsubscript, format(maxBF10,   digits = 3), format(maxBFrVal, digits = 3)),
+      sprintf("'user prior:'~%s==%s",       BFsubscript, format(BF10user,  digits = 3)),
+      sprintf("'wide prior:'~%s==%s",       BFsubscript, format(BF10ultra, digits = 3)),
+      sprintf("'ultrawide prior:'~%s==%s",  BFsubscript, format(BF10w,     digits = 3))
+    )
+  )
+
+  plot <- JASPgraphs::PlotRobustnessSequential(
+    dfLines     = dfLines,
+    dfPoints    = dfPoints,
+    pointLegend = additionalInformation,
+    pointColors = c("red", "grey", "black", "white")
+  )
+  plot <- JASPgraphs::PlotRobustnessSequential(
+    dfLines     = dfLines,
+    dfPoints    = dfPoints,
+    pointLegend = FALSE,
+    pointColors = c("red", "grey", "black", "white")
+  )
+
+  return(plot)
+
+}
+

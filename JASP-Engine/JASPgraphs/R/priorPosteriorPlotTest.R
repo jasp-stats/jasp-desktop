@@ -21,6 +21,7 @@
 # # add CRI to plot
 # CRI <- qbeta(c(.025, 0.975), a, b)
 #
+# # debug(PlotPriorAndPosterior)
 # p <- PlotPriorAndPosterior(dfLines, dfPoints, CRI = CRI)
 # p
 #
@@ -35,3 +36,7 @@
 # BF <- dfPoints$y[2] / dfPoints$y[1]
 # p <- PlotPriorAndPosterior(dfLines, dfPoints, CRI = CRI, median = median, BF = BF)
 # p
+#
+#
+#
+# debugonce(PlotPriorAndPosterior)

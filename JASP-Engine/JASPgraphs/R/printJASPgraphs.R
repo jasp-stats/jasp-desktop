@@ -20,6 +20,7 @@
 # }
 
 #' @method print JASPgraphs
+#' @export
 print.JASPgraphs <- function(x, ...) {
 
   if (ggplot2::is.ggplot(x)) {
