@@ -62,7 +62,7 @@ public:
 	bool setColumnDataAsNominal(std::string columnName, std::vector<int> nominalData)				{	return provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);	}
 	bool setColumnDataAsNominalText(std::string columnName, std::vector<std::string> nominalData)	{	return provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);	}
 
-	int dataSetRowCount() { return static_cast<int>(provideDataSet()->rowCount()); }
+	int dataSetRowCount()	{ return static_cast<int>(provideDataSet()->rowCount()); }
 
 private:
 // Methods:

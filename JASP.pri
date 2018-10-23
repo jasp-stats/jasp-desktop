@@ -45,9 +45,9 @@ DEFINES += PRINT_ENGINE_MESSAGES
 exists(/app/lib/*) {
   linux:  DEFINES += FLATPAK_USED
 } else {
-  linux:	CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG }
+  linux:	CONFIG(debug, debug|release)  {  DEFINES += JASP_DEBUG }
 }
-macx | windows { CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG } }
+macx | windows { CONFIG(debug, debug|release) {  DEFINES += JASP_DEBUG } }
 
 
 windows {
@@ -60,3 +60,10 @@ windows {
 }
 
 unix: QMAKE_CXXFLAGS += -Werror=return-type
+
+#want to use JASPTIMER_* ? set JASPTIMER_USED to true, run qmake and rebuild the objects that use these macros (or just rebuild everything to be sure)
+JASPTIMER_USED = false
+
+$$JASPTIMER_USED {
+    DEFINES += PROFILE_JASP
+}

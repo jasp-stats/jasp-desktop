@@ -68,7 +68,8 @@ SOURCES += \
     computedcolumn.cpp \
     computedcolumns.cpp \
     enginedefinitions.cpp \
-    options/optioncomputedcolumn.cpp
+    options/optioncomputedcolumn.cpp \
+    timers.cpp
 
 HEADERS += \
 	analysis.h \
@@ -128,7 +129,8 @@ HEADERS += \
     computedcolumn.h \
     computedcolumns.h \
     enginedefinitions.h \
-    options/optioncomputedcolumn.h
+    options/optioncomputedcolumn.h \
+    timers.h
 
 #exists(/app/lib/*) should only be true when building flatpak
 #macx | windows | exists(/app/lib/*)
@@ -153,4 +155,5 @@ contains(DEFINES, JASP_LIBJSON_STATIC) {
             lib_json/value.h \
             lib_json/writer.h
 }
+
 

@@ -23,6 +23,7 @@
 #include <QLayout>
 #include <QDebug>
 
+
 #include "application.h"
 
 int main(int argc, char *argv[])

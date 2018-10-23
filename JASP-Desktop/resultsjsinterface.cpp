@@ -30,25 +30,31 @@
 #include "analysis.h"
 #include <functional>
 #include "settings.h"
+#include "timers.h"
 
 ResultsJsInterface::ResultsJsInterface(QWidget *parent) : QObject(parent)
 {
+	JASPTIMER_START(ResultsJsInterface());
 	_mainWindow = dynamic_cast<MainWindow *>(parent);
 	_webViewResults = _mainWindow->ui->webViewResults;
 	_webViewResults->setContextMenuPolicy(Qt::NoContextMenu);
+	//_webViewResults->
 
 	_channel = new QWebChannel(this);
 	_channel->registerObject(QStringLiteral("jasp"), this);
 	_webViewResults->page()->setWebChannel(_channel);
 
 	_analysisMenu = new QMenu(_mainWindow);
-	connect(_analysisMenu, SIGNAL(aboutToHide()), this, SLOT(menuHidding()));
+	connect(_analysisMenu, &QMenu::aboutToHide, this, &ResultsJsInterface::menuHidding);
 
-	_webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));
-	connect(_webViewResults, SIGNAL(loadFinished(bool)), this, SLOT(resultsPageLoaded(bool)));
+	JASPTIMER_START(ResultsLaden);
+	_webViewResults->load(QUrl(QString("qrc:///core/index.html")));
+	connect(_webViewResults, &QWebEngineView::loadFinished, this, &ResultsJsInterface::resultsPageLoaded);
 // TODO: This signal does not exist anymore, the WebEngine does not support paintEvent anymore, and WebView used this function
 // to emit the scrollValuesChanged signal.
 //	connect(_webViewResults, SIGNAL(scrollValueChanged()), this, SLOT(scrollValueChangedHandle()));
+
+	JASPTIMER_FINISH(ResultsJsInterface());
 
 }
 
@@ -76,12 +82,17 @@ void ResultsJsInterface::zoomReset()
 }
 
 
-void ResultsJsInterface::resultsPageLoaded(bool success)
+void ResultsJsInterface::resultsPageLoaded(bool succes)
 {
+	//Show the mainwindow now!
+	static_cast<MainWindow*>(parent())->show();
+
+	JASPTIMER_FINISH(ResultsLaden);
+
 	// clear history, to prevent backspace from going 'back'
 	_webViewResults->history()->clear();
 
-	if (success)
+	if (succes)
 	{
 		QString version = tq(AppInfo::version.asString());
 

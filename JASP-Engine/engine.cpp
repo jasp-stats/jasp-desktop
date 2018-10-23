@@ -24,6 +24,7 @@
 #include "../JASP-Common/tempfiles.h"
 #include "../JASP-Common/utils.h"
 #include "../JASP-Common/sharedmemory.h"
+#include <csignal>
 
 #include "rbridge.h"
 
@@ -86,7 +87,7 @@ void Engine::run()
 	std::string memoryName = "JASP-IPC-" + std::to_string(_parentPID);
 	_channel = new IPCChannel(memoryName, _slaveNo, true);
 
-	while (ProcessInfo::isParentRunning())
+	while(ProcessInfo::isParentRunning())
 	{
 		receiveMessages(100);
 

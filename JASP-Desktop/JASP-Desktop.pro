@@ -48,8 +48,16 @@ windows:CONFIG(DebugBuild) {
 windows:LIBS += -lole32 -loleaut32
 
 linux {
-	exists(/app/lib/*)	{ LIBS += -larchive -lrt -L/app/lib -lboost_filesystem -lboost_system
-        } else				{ LIBS += -larchive -lrt -lboost_filesystem -lboost_system }
+    LIBS += -larchive
+    exists(/app/lib/*)	{ LIBS += -L/app/lib }
+    LIBS += -lboost_filesystem -lboost_system
+}
+
+$$JASPTIMER_USED {
+    windows:CONFIG(ReleaseBuild)    LIBS += -llibboost_timer-vc141-mt-1_64
+    windows:CONFIG(DebugBuild)      LIBS += -llibboost_timer-vc141-mt-gd-1_64
+    linux:                          LIBS += -lboost_timer
+    macx:                           LIBS += -lboost_timer-clang-mt-1_64
 }
 
 macx:QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef

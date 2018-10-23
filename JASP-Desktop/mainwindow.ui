@@ -128,7 +128,7 @@ QPushButton::menu-indicator {
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="BackStageWidget" name="backStage">
        <property name="minimumSize">
@@ -356,8 +356,8 @@ QPushButton::menu-indicator {
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>302</width>
-                       <height>714</height>
+                       <width>223</width>
+                       <height>722</height>
                       </rect>
                      </property>
                      <property name="sizePolicy">
@@ -467,6 +467,9 @@ QPushButton::menu-indicator {
                </property>
                <item row="0" column="1">
                 <widget class="CustomWebEngineView" name="webViewResults" native="true">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
                  <property name="cursor">
                   <cursorShape>ArrowCursor</cursorShape>
                  </property>
