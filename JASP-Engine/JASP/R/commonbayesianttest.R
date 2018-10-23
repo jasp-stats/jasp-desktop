@@ -654,7 +654,7 @@
     if (is.null(collection[[var]][["plotPriorAndPosterior"]])) {
       if (isFALSE(errors[[var]]) && is.null(plottingError[[var]])) {
 
-        obj <- function() {.plotPosterior.summarystats.ttest(
+        obj <- .plotPriorPosterior2(
           t              = tValue[var],
           n1             = n1[var],
           n2             = n2[var],
@@ -667,7 +667,7 @@
           delta          = delta[[var]],
           addInformation = addInformation,
           ...
-        )}
+        )
 
         plot <- .addPlotToJaspObj0(title, var, obj)
       } else {
@@ -814,22 +814,6 @@
           }
         }
 
-        # obj <- function() {.plotSequentialBF.ttest(
-        #   x                   = group1,
-        #   y                   = group2,
-        #   oneSided            = oneSided,
-        #   rscale              = rscale,
-        #   BFH1H0              = BFH1H0,
-        #   BF10post            = BF10post[var],
-        #   paired              = paired,
-        #   plotDifferentPriors = plotDifferentPriors,
-        #   subDataSet          = subDataSet,
-        #   level1              = g1,
-        #   level2              = g2,
-        #   options             = options,
-        #   ...
-        # )}
-        # browser()
         obj <- .plotSequentialBF.ttest2(
           x                   = group1,
           y                   = group2,
@@ -865,7 +849,7 @@
 }
 
 # plot functions  ----
-.addPlotToJaspObj0 <- function(title, var, obj = NULL, errors = "",  w = 480, h = 320) {
+.addPlotToJaspObj0 <- function(title, var, obj = NULL, errors = "",  w = 530, h = 400) {
 
 	# convenience function
 	if (is.null(obj)) {
@@ -989,21 +973,27 @@
   return(bfTitle)
 }
 
+.ttestBayesianGetRScale <- function(rscale) {
+
+  if (is.numeric(rscale)) {
+		return(rscale)
+	} else if (is.character(rscale)) {
+	  return(switch(
+	    rscale,
+	    "medium"    = sqrt(2) / 2,
+	    "wide"      = 1.0,
+	    "ultrawide" = sqrt(2)
+	  ))
+	} else {
+		.quitInternal(message = sprintf("Expected numeric or character rscale but got %s.", class(rscale)))
+	}
+}
+
 .plotBF.robustnessCheck.ttest2 <- function(
   x = NULL, y = NULL, paired = FALSE, BF10post, nullInterval, formula = NULL, data = NULL, rscale = 1, oneSided = FALSE,
   BFH1H0 = TRUE, additionalInformation = FALSE) {
 
-	if (is.numeric(rscale)) {
-		r <- rscale
-	} else if (is.character(rscale)) {
-		r <- switch (rscale,
-			"medium"    = sqrt(2) / 2,
-			"wide"      = 1.0,
-			"ultrawide" = sqrt(2)
-		)
-	} else {
-		.quitInternal(message = sprintf("Expected numeric or character rscale but got %s.", class(rscale)))
-	}
+	r <- .ttestBayesianGetRScale(rscale)
 
   if(r > 1.5) {
     rValues <- seq(0.0005, 2.0, length.out = 535)
@@ -1053,29 +1043,24 @@
     x = rValues,
     y = log(BF10)
   )
-browser()
+
   BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, nullInterval)
   dfPoints <- data.frame(
     x = c(maxBFrVal, r, 1, sqrt(2)),
     y = log(c(maxBF10, BF10user, BF10w, BF10ultra)),
-    g = c(
+    g = JASPgraphs::parseThis(c(
       sprintf("'max'~%s~':'~%s~'at'~r==%s", BFsubscript, format(maxBF10,   digits = 3), format(maxBFrVal, digits = 3)),
       sprintf("'user prior:'~%s==%s",       BFsubscript, format(BF10user,  digits = 3)),
       sprintf("'wide prior:'~%s==%s",       BFsubscript, format(BF10ultra, digits = 3)),
       sprintf("'ultrawide prior:'~%s==%s",  BFsubscript, format(BF10w,     digits = 3))
-    )
+    ))
   )
-
+  # attr(dfPoints$g, "parse") <- TRUE
+# browser()
   plot <- JASPgraphs::PlotRobustnessSequential(
     dfLines     = dfLines,
     dfPoints    = dfPoints,
     pointLegend = additionalInformation,
-    pointColors = c("red", "grey", "black", "white")
-  )
-  plot <- JASPgraphs::PlotRobustnessSequential(
-    dfLines     = dfLines,
-    dfPoints    = dfPoints,
-    pointLegend = FALSE,
     pointColors = c("red", "grey", "black", "white")
   )
 
@@ -1083,3 +1068,735 @@ browser()
 
 }
 
+.plotSequentialBF.ttest2 <- function(
+	x = NULL, y = NULL, paired = FALSE, BF10post, formula = NULL, data = NULL, rscale = 1, oneSided = FALSE,
+	plotDifferentPriors = FALSE, BFH1H0 = TRUE, dontPlotData = FALSE, level1 = NULL, level2 = NULL,
+	subDataSet = NULL, nullInterval = c(-Inf, Inf), options) {
+
+	r <- .ttestBayesianGetRScale(rscale)
+  evidenceText <- !plotDifferentPriors
+  BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, nullInterval)
+
+  if (is.null(y) || paired) {
+
+    BF10 <- vector("numeric", max(length(x), length(y)))
+    BF10w <- vector("numeric", max(length(x), length(y)))
+    BF10u <- vector("numeric", max(length(x), length(y)))
+
+    idData <- 1
+
+    if (is.null(y)) {
+
+      ind <- which(x == x[1])
+      idData <- sum((ind+1)-(1:(length(ind))) == 1)
+
+    } else {
+
+      idData <- 1
+
+
+      for (i in 2:(min(c(length(x), length(y))))) {
+
+        previous  <- c(x[i-1], y[i-1])
+
+        if (all(c(x[i], y[i]) == previous)) {
+
+          idData <- idData + 1
+
+        } else if (x[i] == y[i]) {
+
+          idData <- idData + 1
+
+        } else {
+
+          break
+        }
+      }
+    }
+
+    BF10[1:idData] <- 1
+    BF10w[1:idData] <- 1
+    BF10u[1:idData] <- 1
+
+
+    if (idData < length(x)) {
+
+      i <- idData + 1
+
+    } else {
+
+      i <- idData
+
+    }
+
+    if (idData < length(y)) {
+
+      j <- idData + 1
+
+    } else {
+
+      j <- idData
+
+    }
+
+    k <- idData + 1
+
+
+    while ((i <= length(x) | j <= length(y)) & k <= length(BF10)) {
+
+      bfObject <- .generalTtestBF(x = x[1:i], y = y[1:j], paired = paired, oneSided = oneSided, options = options)
+      BF10[k] <- bfObject[["bf"]]
+      # if (oneSided == FALSE) {
+      #
+      # 	BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale=r, nullInterval = nullInterval)
+      # 	BF10[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+      #
+      # } else {
+      #
+      # 	BF10[k] <- .oneSidedTtestBFRichard(x = x[1:i], y= y[1:j], paired = paired, r=r, oneSided=oneSided)
+      # }
+
+      k <- k + 1
+
+      if (i < length(x)) {
+
+        i <- i + 1
+      }
+      if (j < length(y)) {
+
+        j <- j + 1
+      }
+
+      if ( ! .shouldContinue(callback()))
+        return()
+    }
+
+
+    BF10 <- BF10[is.finite(BF10)]
+
+    if ( ! .shouldContinue(callback()))
+      return()
+
+    if (plotDifferentPriors) {
+
+      if (idData < length(x)) {
+
+        i <- idData + 1
+
+      } else {
+
+        i <- idData
+
+      }
+
+      if (idData < length(y)) {
+
+        j <- idData + 1
+
+      } else {
+
+        j <- idData
+
+      }
+
+      k <- idData + 1
+
+
+      while ((i <= length(x) | j <= length(y)) & k <= length(BF10u)) {
+
+        if (oneSided == FALSE) {
+
+          BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale="ultrawide", nullInterval = nullInterval)
+          BF10u[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+
+        } else {
+
+          BF10u[k] <- .oneSidedTtestBFRichard(x = x[1:i], y= y[1:j], paired = paired, r="ultrawide", oneSided=oneSided)
+        }
+
+        k <- k + 1
+
+        if (i < length(x)) {
+
+          i <- i + 1
+        }
+        if (j < length(y)) {
+
+          j <- j + 1
+        }
+
+        if ( ! .shouldContinue(callback()))
+          return()
+      }
+
+
+      BF10u <- BF10u[is.finite(BF10u)]
+
+      if ( ! .shouldContinue(callback()))
+        return()
+
+
+      if (idData < length(x)) {
+
+        i <- idData + 1
+
+      } else {
+
+        i <- idData
+
+      }
+
+      if (idData < length(y)) {
+
+        j <- idData + 1
+
+      } else {
+
+        j <- idData
+
+      }
+
+      k <- idData + 1
+
+
+      while ((i <= length(x) | j <= length(y)) & k <= length(BF10w)) {
+
+        if (oneSided == FALSE) {
+
+          BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale= "wide", nullInterval = nullInterval)
+          BF10w[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+
+        } else {
+
+          BF10w[k] <- .oneSidedTtestBFRichard(x = x[1:i], y= y[1:j], paired = paired, r="wide", oneSided=oneSided)
+        }
+
+        k <- k + 1
+
+        if (i < length(x)) {
+
+          i <- i + 1
+        }
+        if (j < length(y)) {
+
+          j <- j + 1
+        }
+
+        if ( ! .shouldContinue(callback()))
+          return()
+      }
+
+      BF10w <- BF10w[is.finite(BF10w)]
+
+      if ( ! .shouldContinue(callback()))
+        return()
+
+    }
+
+  } else if (!is.null(y) && !paired) {
+
+    idData <- 1
+
+    xx <- numeric()
+    yy <- numeric()
+
+    BF10 <- vector("numeric", nrow(subDataSet))
+    BF10w <- vector("numeric", nrow(subDataSet))
+    BF10u <- vector("numeric", nrow(subDataSet))
+
+    # # this loop is an alternative to calling sd(x) > 0 && sd(y) > 0 during each iteration in the loop below
+    # xx <- subDataSet[subDataSet[, 2L] == level1, 1L]
+    # yy <- subDataSet[subDataSet[, 2L] == level2, 1L]
+    #
+    # diffX <- diffY <- TRUE
+    # for (i in 2:nrow(subDataSet)) {
+    #   diffX <- diffX && (xx[i] != xx[1L])
+    #   if (diffX)
+    #     break
+    # }
+    # idx <- i
+    # for (i in 2:length(yy)) {
+    #   diffY <- diffY && (yy[i] != yy[1L])
+    #   if (diffY)
+    #     break
+    # }
+    # idxy <- i
+    #
+    # browser()
+    # sp <- split(sub)
+    #
+    # iStart <- i
+    # BF10[1:iStart] <- 1.0
+    #
+    # for (i in iStart:nrow(subDataSet)) {
+    #   bfObject <- .generalTtestBF(x = subDataSet[1:i, 1L], y = subDataSet[1:i, 2L], paired = paired, oneSided = oneSided, options = options)
+    #   BF10[i] <- bfObject[["bf"]]
+    # }
+    #
+    # if (plotDifferentPriors) {
+    #
+    #   if (oneSided == FALSE) {
+    #     for (i in iStart:nrow(subDataSet)) {
+    #       BFtmpu <- BayesFactor::ttestBF(x = xx, y = yy, paired = paired, rscale = "ultrawide", nullInterval = nullInterval)
+    #       BFtmpw <- BayesFactor::ttestBF(x = xx, y = yy, paired = paired, rscale = "wide",      nullInterval = nullInterval)
+    #
+    #       BF10u[i] <- BayesFactor::extractBF(BFtmpu, logbf = FALSE, onlybf = FALSE)[1L, "bf"]
+    #       BF10w[i] <- BayesFactor::extractBF(BFtmpw, logbf = FALSE, onlybf = FALSE)[1L, "bf"]
+    #
+    #     }
+    #   } else if (oneSided == "right") {
+    #     for (i in iStart:nrow(subDataSet)) {
+    #       BF10u[i] <- .oneSidedTtestBFRichard(xx, yy, oneSided = oneSided, r = "ultrawide")
+    #       BF10w[i] <- .oneSidedTtestBFRichard(xx, yy, oneSided = oneSided, r = "wide")
+    #     }
+    #   }
+    # }
+
+    for (i in seq_len(nrow(subDataSet))) {
+
+      if (subDataSet[i, 2] == level1) {
+
+        xx <- c(xx, subDataSet[i, 1])
+
+      } else if (subDataSet[i, 2] == level2) {
+
+        yy <- c(yy, subDataSet[i, 1])
+
+      }
+
+      if (length(xx) > 1 && length(yy) > 1 && (sd(xx) > 0 || sd(yy) > 0)) {
+
+        bfObject <- .generalTtestBF(x = xx, y = yy, paired = paired, oneSided = oneSided, options = options)
+        BF10[i] <- bfObject[["bf"]]
+        # if (oneSided == FALSE) {
+        #
+        # 	BF <- BayesFactor::ttestBF(x = xx, y= yy, paired = paired, rscale= r, nullInterval = nullInterval)
+        # 	BF10[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+        #
+        # } else if (oneSided == "right") {
+        #
+        # 	BF10[i] <- .oneSidedTtestBFRichard(xx, yy, oneSided= "right", r=r)
+        #
+        # } else if (oneSided == "left") {
+        #
+        # 	BF10[i] <- .oneSidedTtestBFRichard(xx, yy, oneSided= "left", r=r)
+        # }
+
+      } else {
+
+        BF10[i] <- 1
+      }
+    }
+
+    if (plotDifferentPriors) {
+
+      xx <- numeric()
+      yy <- numeric()
+
+      for (i in seq_len(nrow(subDataSet))) {
+
+        if (subDataSet[i, 2] == level1) {
+
+          xx <- c(xx, subDataSet[i, 1])
+
+        } else if (subDataSet[i, 2] == level2) {
+
+          yy <- c(yy, subDataSet[i, 1])
+
+        }
+
+        if (length(xx) > 1 && length(yy) > 1 && (sd(xx) > 0 || sd(yy) > 0)) {
+
+          if (oneSided == FALSE) {
+
+            BF <- BayesFactor::ttestBF(x = xx, y= yy, paired = paired, rscale= "ultrawide", nullInterval = nullInterval)
+            BF10u[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+
+          } else if (oneSided == "right") {
+
+            BF10u[i] <- .oneSidedTtestBFRichard(xx, yy, oneSided= "right", r="ultrawide")
+
+          } else if (oneSided == "left") {
+
+            BF10u[i] <- .oneSidedTtestBFRichard(xx, yy, oneSided= "left", r="ultrawide")
+          }
+
+        } else {
+
+          BF10u[i] <- 1
+        }
+      }
+
+      xx <- numeric()
+      yy <- numeric()
+
+      for (i in seq_len(nrow(subDataSet))) {
+
+        if (subDataSet[i, 2] == level1) {
+
+          xx <- c(xx, subDataSet[i, 1])
+
+        } else if (subDataSet[i, 2] == level2) {
+
+          yy <- c(yy, subDataSet[i, 1])
+
+        }
+
+        if (length(xx) > 1 && length(yy) > 1 && (sd(xx) > 0 || sd(yy) > 0)) {
+
+          if (oneSided == FALSE) {
+
+            BF <- BayesFactor::ttestBF(x = xx, y= yy, paired = paired, rscale= "wide", nullInterval = nullInterval)
+            BF10w[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+
+          } else if (oneSided == "right") {
+
+            BF10w[i] <- .oneSidedTtestBFRichard(xx, yy, oneSided= "right", r="wide")
+
+          } else if (oneSided == "left") {
+
+            BF10w[i] <- .oneSidedTtestBFRichard(xx, yy, oneSided= "left", r="wide")
+          }
+
+        } else {
+
+          BF10w[i] <- 1
+        }
+      }
+    }
+
+  }
+
+  if (plotDifferentPriors) {
+    dfLines <- data.frame(
+      x = seq_along(BF10),
+      y = c(BF10, BF10u, BF10w),
+      g = factor(rep(c("user", "ultrawide", "wide"), c(length(BF10), length(BF10u), length(BF10w))),
+                 levels = c("user", "wide", "ultrawide"))
+    )
+  } else {
+    dfLines <- data.frame(
+      x = seq_along(BF10),
+      y = BF10
+    )
+  }
+  if (!BFH1H0)
+    dfLines$y <- 1 / dfLines$y
+  dfLines$y <- log(dfLines$y)
+# browser()
+  plot <- JASPgraphs::PlotRobustnessSequential(
+    dfLines      = dfLines,
+    xName        = "N",
+    BF01         = 1 / BF10[length(BF10)],
+    bfSubscripts = BFsubscript
+  )
+  return(plot)
+}
+
+.plotPriorPosterior2 <- function(
+  t = NULL, n1 = NULL, n2 = NULL, paired = FALSE, oneSided = FALSE, BF, BFH1H0, iterations = 10000, rscale = "medium",
+  addInformation = TRUE, options = NULL, delta = NULL, nullInterval = c(-Inf, Inf)) {
+
+  r <- .ttestBayesianGetRScale(rscale)
+
+  if (BFH1H0) {
+    BF10 <- BF
+    BF01 <- 1 / BF10
+  } else {
+    BF01 <- BF
+    BF10 <- 1 / BF01
+  }
+
+  if ("effectSizeStandardized" %in% names(options) && options$effectSizeStandardized == "informative" && !options$wilcoxTest) {
+    # informative prior
+    xlim <- vector("numeric", 2)
+    if (options[["informativeStandardizedEffectSize"]] == "cauchy") {
+      ci99PlusMedian <- .ciPlusMedian_t(t = t, ny = n1, nx = n2, independentSamples = ! paired && !is.null(n2),
+                                        prior.location = options[["informativeCauchyLocation"]],
+                                        prior.scale = options[["informativeCauchyScale"]],
+                                        prior.df = 1, ci = .99, oneSided = oneSided)
+      priorLower <- .qShiftedT(.15, parameters = c(options[["informativeCauchyLocation"]],
+                                                    options[["informativeCauchyScale"]],
+                                                    1), oneSided = oneSided)
+      priorUpper <- .qShiftedT(.85, parameters = c(options[["informativeCauchyLocation"]],
+                                                    options[["informativeCauchyScale"]],
+                                                    1), oneSided = oneSided)
+      # compute 95% credible interval & median:
+      ci95PlusMedian <- .ciPlusMedian_t(t = t, ny = n1, nx = n2, independentSamples = ! paired && !is.null(n2),
+                                        prior.location = options[["informativeCauchyLocation"]],
+                                        prior.scale = options[["informativeCauchyScale"]],
+                                        prior.df = 1, ci = .95, oneSided = oneSided)
+      CIlow <- ci95PlusMedian[["ciLower"]]
+      CIhigh <- ci95PlusMedian[["ciUpper"]]
+      medianPosterior <- ci95PlusMedian[["median"]]
+
+    } else if (options[["informativeStandardizedEffectSize"]] == "t") {
+      ci99PlusMedian <- .ciPlusMedian_t(t = t, ny = n1, nx = n2, independentSamples = ! paired && !is.null(n2),
+                                        prior.location = options[["informativeTLocation"]],
+                                        prior.scale = options[["informativeTScale"]],
+                                        prior.df = options[["informativeTDf"]],
+                                        ci = .99, oneSided = oneSided)
+      priorLower <- .qShiftedT(.15, parameters = c(options[["informativeTLocation"]],
+                                                    options[["informativeTScale"]],
+                                                    options[["informativeTDf"]]),
+                               oneSided = oneSided)
+      priorUpper <- .qShiftedT(.85, parameters = c(options[["informativeTLocation"]],
+                                                    options[["informativeTScale"]],
+                                                    options[["informativeTDf"]]),
+                               oneSided = oneSided)
+      # compute 95% credible interval & median:
+      ci95PlusMedian <- .ciPlusMedian_t(t = t, ny = n1, nx = n2, independentSamples = ! paired && !is.null(n2),
+                                        prior.location = options[["informativeTLocation"]],
+                                        prior.scale = options[["informativeTScale"]],
+                                        prior.df = options[["informativeTDf"]], ci = .95, oneSided = oneSided)
+      CIlow <- ci95PlusMedian[["ciLower"]]
+      CIhigh <- ci95PlusMedian[["ciUpper"]]
+      medianPosterior <- ci95PlusMedian[["median"]]
+    } else if (options[["informativeStandardizedEffectSize"]] == "normal") {
+      ci99PlusMedian <- .ciPlusMedian_normal(t = t, ny = n1, nx = n2, independentSamples = ! paired && !is.null(n2),
+                                             prior.mean = options[["informativeNormalMean"]],
+                                             prior.variance = options[["informativeNormalStd"]]^2,
+                                             ci = .99, oneSided = oneSided)
+
+      priorAreaSmaller0 <- pnorm(0, options[["informativeNormalMean"]], options[["informativeNormalStd"]])
+      if (oneSided == "right") {
+        lowerp <- priorAreaSmaller0 + (1 - priorAreaSmaller0)*0.15
+        upperp <- priorAreaSmaller0 + (1 - priorAreaSmaller0)*0.85
+      } else if (oneSided == "left") {
+        lowerp <- priorAreaSmaller0*0.15
+        upperp <- priorAreaSmaller0*0.85
+      } else {
+        lowerp <- 0.15
+        upperp <- 0.85
+      }
+
+      priorLower <- qnorm(lowerp, options[["informativeNormalMean"]], options[["informativeNormalStd"]])
+      priorUpper <- qnorm(upperp, options[["informativeNormalMean"]], options[["informativeNormalStd"]])
+
+      # compute 95% credible interval & median:
+      ci95PlusMedian <- .ciPlusMedian_normal(t = t, ny = n1, nx = n2, independentSamples = ! paired && !is.null(n2),
+                                             prior.mean = options[["informativeNormalMean"]],
+                                             prior.variance = options[["informativeNormalStd"]]^2,
+                                             ci = .95, oneSided = oneSided)
+      CIlow <- ci95PlusMedian[["ciLower"]]
+      CIhigh <- ci95PlusMedian[["ciUpper"]]
+      medianPosterior <- ci95PlusMedian[["median"]]
+
+    }
+
+    xlim[1] <- min(-2, ci99PlusMedian[["ciLower"]], priorLower)
+    xlim[2] <- max(2, ci99PlusMedian[["ciUpper"]], priorUpper)
+    xticks <- pretty(xlim)
+
+    ylim <- vector("numeric", 2)
+
+    ylim[1] <- 0
+    dmax1 <- optimize(function(x).dposterior_informative(x, t = t, n1 = n1, n2 = n2, paired = paired,
+                                                        oneSided = oneSided, options = options),
+                     interval = range(xticks),
+                     maximum = TRUE)$objective
+    dmax2 <- optimize(function(x).dprior_informative(x, oneSided = oneSided, options = options),
+                     interval = range(xticks),
+                     maximum = TRUE)$objective
+    dmax <- max(c(dmax1, dmax2))
+
+    # get maximum density
+    # ylim[2] <- stretch * max(c(dmax, dmax2))
+
+    # calculate position of "nice" tick marks and create labels
+    # yticks <- pretty(ylim)
+    xlabels <- formatC(xticks, 1, format= "f")
+    # ylabels <- formatC(yticks, 1, format= "f")
+
+    xxx <- seq(min(xticks), max(xticks), length.out = 1000)
+    priorLine <- .dprior_informative(xxx, oneSided = oneSided, options = options)
+    posteriorLine <- .dposterior_informative(xxx, t = t, n1 = n1, n2 = n2, paired = paired,
+                                             oneSided = oneSided, options = options)
+
+    xlim <- c(min(CIlow,range(xticks)[1]), max(range(xticks)[2], CIhigh))
+
+  } else {
+    # sample from delta posterior
+    if (!options$wilcoxTest) {
+      bfObject <- BayesFactor::meta.ttestBF(t = t, n1 = n1, n2 = n2, rscale = r)
+      # library(BayesFactor)
+      samples <- BayesFactor::posterior(model = bfObject, iterations = iterations,
+                                        index = 1)
+      delta <- samples[,"delta"]
+    }
+
+    # fit shifted t distribution
+    if (is.null(n2) || paired) {
+      deltaHat <- t * sqrt(1 / n1)
+      N <- n1
+      df <- N - 1
+      sigmaStart <- 1 / N
+    } else if (!is.null(n2) && !paired) {
+      deltaHat <- t * sqrt((n1 + n2) / (n1 * n2))
+      df <- n1 + n2 - 2
+      sigmaStart <- sqrt((n1 * n2) / (n1 + n2))
+    }
+
+    if (sigmaStart < .01) {
+      sigmaStart <- .01
+    }
+
+    parameters <- try(silent = TRUE,
+                      expr = optim(par = c(deltaHat, sigmaStart, df),
+                                   fn =.likelihoodShiftedT, data = delta,
+                                   method = "BFGS")$par)
+
+    if (isTryError(parameters)) {
+      parameters <- try(silent = TRUE,
+                        expr = optim(par = c(deltaHat, sigmaStart, df),
+                                     fn = .likelihoodShiftedT, data = delta,
+                                     method ="Nelder-Mead")$par)
+    }
+
+    # set limits plot
+    xlim <- vector("numeric", 2)
+
+    if (oneSided == FALSE) {
+      xlim[1] <- min(-2, quantile(delta, probs = 0.01)[[1]])
+      xlim[2] <- max(2, quantile(delta, probs = 0.99)[[1]])
+    }
+
+    if (oneSided == "right") {
+      # if (length(delta[delta >= 0]) < 10)
+      #	return("Plotting is not possible: To few posterior samples in tested interval")
+
+      xlim[1] <- min(-2, quantile(delta[delta >= 0], probs = 0.01)[[1]])
+      xlim[2] <- max(2, quantile(delta[delta >= 0], probs = 0.99)[[1]])
+
+      if (any(is.na(xlim))) {
+        xlim[1] <- min(-2, .qShiftedT(0.01, parameters, oneSided="right"))
+        xlim[2] <- max(2, .qShiftedT(0.99, parameters, oneSided="right"))
+      }
+    }
+
+    if (oneSided == "left") {
+      #if (length(delta[delta <= 0]) < 10)
+      #	return("Plotting is not possible: To few posterior samples in tested interval")
+
+      xlim[1] <- min(-2, quantile(delta[delta <= 0], probs = 0.01)[[1]])
+      xlim[2] <- max(2, quantile(delta[delta <= 0], probs = 0.99)[[1]])
+
+      if (any(is.na(xlim))) {
+        xlim[1] <-  min(-2, .qShiftedT(0.01, parameters, oneSided="left"))
+        xlim[2] <- max(2,.qShiftedT(0.99, parameters, oneSided="left"))
+      }
+    }
+
+    xticks <- pretty(xlim)
+
+    ylim <- vector("numeric", 2)
+
+    ylim[1] <- 0
+    dmax <- optimize(function(x).dposteriorShiftedT(x, parameters = parameters,
+                                                    oneSided = oneSided), interval = range(xticks),
+                     maximum = TRUE)$objective
+    # get maximum density
+    # ylim[2] <- max(stretch * .dprior(0,r, oneSided= oneSided), stretch * dmax)
+
+    # calculate position of "nice" tick marks and create labels
+    # yticks <- pretty(ylim)
+    xlabels <- formatC(xticks, 1, format= "f")
+    # ylabels <- formatC(yticks, 1, format= "f")
+
+    # compute 95% credible interval & median:
+    if (oneSided == FALSE) {
+      CIlow <- quantile(delta, probs = 0.025)[[1]]
+      CIhigh <- quantile(delta, probs = 0.975)[[1]]
+      medianPosterior <- median(delta)
+
+      if (any(is.na(c(CIlow, CIhigh, medianPosterior)))) {
+        CIlow <- .qShiftedT(0.025, parameters, oneSided=FALSE)
+        CIhigh <- .qShiftedT(0.975, parameters, oneSided=FALSE)
+        medianPosterior <- .qShiftedT(0.5, parameters, oneSided=FALSE)
+      }
+    }
+
+    if (oneSided == "right") {
+      CIlow <- quantile(delta[delta >= 0], probs = 0.025)[[1]]
+      CIhigh <- quantile(delta[delta >= 0], probs = 0.975)[[1]]
+      medianPosterior <- median(delta[delta >= 0])
+
+      if (any(is.na(c(CIlow, CIhigh, medianPosterior)))) {
+        CIlow <- .qShiftedT(0.025, parameters, oneSided="right")
+        CIhigh <- .qShiftedT(0.975, parameters, oneSided="right")
+        medianPosterior <- .qShiftedT(0.5, parameters, oneSided="right")
+      }
+    }
+
+    if (oneSided == "left") {
+      CIlow <- quantile(delta[delta <= 0], probs = 0.025)[[1]]
+      CIhigh <- quantile(delta[delta <= 0], probs = 0.975)[[1]]
+      medianPosterior <- median(delta[delta <= 0])
+
+      if (any(is.na(c(CIlow, CIhigh, medianPosterior)))) {
+        CIlow <- .qShiftedT(0.025, parameters, oneSided="left")
+        CIhigh <- .qShiftedT(0.975, parameters, oneSided="left")
+        medianPosterior <- .qShiftedT(0.5, parameters, oneSided="left")
+      }
+    }
+
+    priorLine <- .dprior(seq(min(xticks), max(xticks),length.out = 1000), r=r, oneSided= oneSided)
+    posteriorLine <- .dposteriorShiftedT(x = seq(min(xticks), max(xticks),
+                                                 length.out = 1000), parameters = parameters,
+                                         oneSided = oneSided)
+
+    # xlim <- c(min(CIlow,range(xticks)[1]), max(range(xticks)[2], CIhigh))
+
+  }
+
+  if ("effectSizeStandardized" %in% names(options) && options$effectSizeStandardized == "informative") {
+	  heightPriorAtZero <- .dprior_informative(0, oneSided = oneSided, options = options)
+	  heightPosteriorAtZero <- .dposterior_informative(0, t = t, n1 = n1, n2 = n2, paired = paired,
+	                                                   oneSided = oneSided, options = options)
+	} else {
+	  heightPriorAtZero <- .dprior(0, r, oneSided = oneSided)
+
+	  if (oneSided == FALSE) {
+	    heightPosteriorAtZero <- .dposteriorShiftedT(0, parameters=parameters, oneSided=oneSided)
+	  } else if (oneSided == "right") {
+	    posteriorLineLargerZero <- posteriorLine[posteriorLine > 0]
+	    heightPosteriorAtZero <- posteriorLineLargerZero[1]
+	  } else if (oneSided == "left") {
+	    posteriorLineLargerZero <- posteriorLine[posteriorLine > 0]
+	    heightPosteriorAtZero <- posteriorLineLargerZero[length(posteriorLineLargerZero)]
+	  }
+	}
+
+  dfLines <- data.frame(
+    x = seq(min(xticks), max(xticks),length.out = 1000L),
+    y = c(posteriorLine, priorLine),
+    g = factor(rep(c("Posterior", "Prior"), each = 1000L)) # 1000 is apparently a fixed number
+  )
+  dfPoints <- data.frame(
+    x = 0.0,
+    y = c(heightPosteriorAtZero, heightPriorAtZero),
+    g = c("Posterior", "Prior")
+  )
+  CRI <- c(CIlow, CIhigh)
+  median <- medianPosterior
+
+  BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, nullInterval)
+  if (!addInformation) {
+    BF01 <- NULL
+    median <- NULL
+
+  }
+
+  plot <- JASPgraphs::PlotPriorAndPosterior(
+    dfLines      = dfLines,
+    dfPoints     = dfPoints,
+    BF01         = BF01,
+    CRI          = CRI,
+    CRItxt       = addInformation,
+    median       = median,
+    bfSubscripts = BFsubscript,
+    xName        = expression(paste("Effect size", ~delta))
+  )
+  return(plot)
+
+}

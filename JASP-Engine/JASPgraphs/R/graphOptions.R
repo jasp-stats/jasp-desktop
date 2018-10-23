@@ -14,7 +14,7 @@
     bty = list(type = "n", ldwX = .3, lwdY = .3),
     axisTickLength = grid::unit(x = .3, units = "cm"),
     axisTickWidth = .3,
-    digits = list(axes = 3L, BF = 3L),
+    digits = 3L,
     ggVersion = packageVersion("ggplot2"),
     debug = TRUE
 ))

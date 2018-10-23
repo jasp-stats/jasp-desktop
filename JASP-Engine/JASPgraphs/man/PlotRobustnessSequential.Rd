@@ -11,8 +11,7 @@ PlotRobustnessSequential(dfLines, dfPoints = NULL, BF01 = NULL,
   linesLegend = !is.null(dfLines$g), bfSubscripts = "BF[0][1]",
   pizzaTxt = pizzaTxtFromBF(bfSubscripts), pointColors = c("grey",
   "white", "black", "red"), lineColors = c("black", "grey", "black"),
-  lineTypes = c("dotted", "solid", "solid"), addLineAtOne = TRUE,
-  bty = list(type = "n", ldwX = 0.5, lwdY = 0.5), ...)
+  lineTypes = c("solid", "dashed", "dotted"), ...)
 }
 \arguments{
 \item{dfLines}{A dataframe with \code{$x}, \code{$y}, and optionally \code{$g}.}
@@ -47,10 +46,6 @@ Ignored if \code{!is.null(dfLines$g) && linesLegend}.}
 \item{lineColors}{String vector, colors for lines if \code{dfLines$g} is not \code{NULL}.}
 
 \item{lineTypes}{String vector, line types if \code{dfLines$g} is not \code{NULL}.}
-
-\item{addLineAtOne}{Logical, should a black line be draw at BF = 1?}
-
-\item{bty}{List of three elements. Type specifies the box type, ldwX the width of the x-axis, lwdY the width of the y-axis.}
 
 \item{...}{Unused.}
 }
