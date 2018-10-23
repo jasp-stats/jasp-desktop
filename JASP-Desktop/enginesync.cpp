@@ -33,6 +33,7 @@
 #include "appinfo.h"
 #include "qutils.h"
 #include "tempfiles.h"
+#include "timers.h"
 
 using namespace boost::interprocess;
 
@@ -57,7 +58,7 @@ EngineSync::EngineSync(Analyses *analyses, DataSetPackage *package, QObject *par
 EngineSync::~EngineSync()
 {
 	if (_engineStarted)
-	{
+	{		
 		_engines.clear();
 		tempfiles_deleteAll();
 	}
@@ -69,6 +70,9 @@ void EngineSync::start()
 {
 	if (_engineStarted)
 		return;
+
+
+	JASPTIMER_START(EngineSync::start());
 
 	_engineStarted = true;
 
@@ -106,6 +110,8 @@ void EngineSync::start()
 	timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(heartbeatTempFiles()));
 	timer->start(30000);
+
+	JASPTIMER_FINISH(EngineSync::start());
 }
 
 

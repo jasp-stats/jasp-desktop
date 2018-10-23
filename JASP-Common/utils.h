@@ -21,6 +21,7 @@
 #include <string>
 #include <vector>
 #include <boost/filesystem.hpp>
+#include "timers.h"
 
 class Utils
 {

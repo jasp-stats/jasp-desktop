@@ -109,12 +109,14 @@
 #include "options/optionvariablesgroups.h"
 #include "datasetview.h"
 
+#include "timers.h"
+
 using namespace std;
-
-
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
+	JASPTIMER_START(MainWindowConstructor);
+
 	ui->setupUi(this);
 
 	tempfiles_init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
@@ -144,6 +146,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	QString missingvaluestring = _settings.value("MissingValueList", "").toString();
 	if (missingvaluestring != "")
 		Utils::setEmptyValues(fromQstringToStdVector(missingvaluestring, "|"));
+
+	JASPTIMER_FINISH(MainWindowConstructor);
 }
 
 void MainWindow::StartOnlineDataManager()
@@ -258,6 +262,7 @@ void MainWindow::makeConnections()
 
 void MainWindow::initQWidgetGUIParts()
 {
+	JASPTIMER_START(MainWindow::initQWidgetGUIParts());
 	updateMenuEnabledDisabledStatus();
 
 	ui->splitter->setSizes(QList<int>({575}));
@@ -295,7 +300,7 @@ void MainWindow::initQWidgetGUIParts()
 
 	_tableViewWidthBeforeOptionsMadeVisible = -1;
 
-	ui->webViewHelp->setUrl(QUrl::fromLocalFile(AppDirs::help() + "/index.html"));
+	ui->webViewHelp->load(QUrl::fromLocalFile(AppDirs::help() + "/index.html"));
 
 	ui->panel_4_Help->hide();
 
@@ -303,6 +308,8 @@ void MainWindow::initQWidgetGUIParts()
 
 	ui->panel_1_Data->hide();
 	ui->panel_2_Options->hide();
+
+	JASPTIMER_FINISH(MainWindow::initQWidgetGUIParts());
 }
 
 void MainWindow::loadQML()
@@ -1179,6 +1186,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
+		std::cout << "else if (event->operation() == FileEvent::FileClose)"<< std::endl;
+
 		if (event->successful())
 		{
 			closeCurrentOptionsWidget();

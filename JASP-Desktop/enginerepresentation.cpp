@@ -5,6 +5,7 @@ EngineRepresentation::~EngineRepresentation()
 {
 	if(_slaveProcess != NULL)
 	{
+
 		_slaveProcess->terminate();
 		_slaveProcess->kill();
 	}
@@ -77,8 +78,6 @@ void EngineRepresentation::runScriptOnProcess(RFilterStore * filterStore)
 
 	sendString(json.toStyledString());
 }
-
-
 
 void EngineRepresentation::processFilterReply(Json::Value json)
 {

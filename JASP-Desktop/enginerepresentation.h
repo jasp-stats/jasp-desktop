@@ -33,6 +33,7 @@ public:
 	void runScriptOnProcess(RScriptStore * scriptStore);
 	void runScriptOnProcess(RComputeColumnStore * computeColumnStore);
 	void runAnalysisOnProcess(Analysis *analysis);
+	void terminateJaspEngine();
 
 	void process();
 	void processFilterReply(		Json::Value json);

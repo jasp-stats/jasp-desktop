@@ -27,7 +27,7 @@ Application::Application(int &argc, char **argv) :
 	QApplication(argc, argv)
 {
 	_mainWindow = new MainWindow();
-	_mainWindow->show();
+	//Show when welcome page is loaded (ResultsJsInterface::resultsPageLoaded)
 
 	QStringList args = QApplication::arguments();
 

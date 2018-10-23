@@ -60,8 +60,8 @@ $QT_KIT_FULL/bin/qmake -set ENVIRONMENT_CRYPTKEY \"\" || exit 1
 
 echo "Compiling JASP!"
 cd ../$JASP_BUILD_DIR
-#make -j`sysctl -n hw.ncpu` || exit 1
-make || exit 1 #multiple processes can fill up memory apparently?
+make -j`sysctl -n hw.ncpu` || exit 1
+#make || exit 1 #multiple processes can fill up memory apparently?
 echo "Compiling finished succesfully!"
 
 echo "Now making DMG"

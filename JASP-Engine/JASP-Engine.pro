@@ -36,30 +36,40 @@ LIBS += -L.. -l$$JASP_R_INTERFACE_NAME -lJASP-Common
 include(../R_HOME.pri) #needed to build r-packages
 
 windows:CONFIG(ReleaseBuild) {
-	LIBS += -llibboost_filesystem-vc141-mt-1_64 -llibboost_system-vc141-mt-1_64 -larchive.dll
+        LIBS += -llibboost_filesystem-vc141-mt-1_64 -llibboost_system-vc141-mt-1_64 -larchive.dll
 }
 
 windows:CONFIG(DebugBuild) {
-	LIBS += -llibboost_filesystem-vc141-mt-gd-1_64 -llibboost_system-vc141-mt-gd-1_64 -larchive.dll
+        LIBS += -llibboost_filesystem-vc141-mt-gd-1_64 -llibboost_system-vc141-mt-gd-1_64 -larchive.dll
 }
 
 macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz
 
 linux {
-	exists(/app/lib/*)	{ LIBS += -larchive -L/app/lib -lboost_filesystem -lboost_system }
-	else				{ LIBS += -larchive -lboost_filesystem -lboost_system }
+    LIBS += -larchive
+    exists(/app/lib/*)	{ LIBS += -L/app/lib }
+    LIBS += -lboost_filesystem -lboost_system
+}
+
+$$JASPTIMER_USED {
+    windows:CONFIG(ReleaseBuild)    LIBS += -llibboost_timer-vc141-mt-1_64
+    windows:CONFIG(DebugBuild)      LIBS += -llibboost_timer-vc141-mt-gd-1_64
+    linux:                          LIBS += -lboost_timer
+    macx:                           LIBS += -lboost_timer-clang-mt-1_64
 }
 
 linux: LIBS += -L$$_R_HOME/lib -lR -lrt # because linux JASP-R-Interface is staticlib
 macx:  LIBS += -L$$_R_HOME/lib -lR
 
 
+
+
 macx {
-	INCLUDEPATH += ../../boost_1_64_0
+        INCLUDEPATH += ../../boost_1_64_0
 }
 
 windows {
-	INCLUDEPATH += ../../boost_1_64_0
+        INCLUDEPATH += ../../boost_1_64_0
 }
 
 INCLUDEPATH += $$PWD/../JASP-Common/
