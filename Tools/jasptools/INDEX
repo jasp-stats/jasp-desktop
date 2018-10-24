@@ -1,9 +1,0 @@
-analysisOptions         Obtain options to run JASP analyses with.
-inspectTestPlots        Visually inspect new/failed test plots.
-makeTestTable           Aids in the creation of tests for tables.
-run                     Run a JASP analysis in R.
-setPkgOption            Change the value of an option in jasptools.
-testAll                 Test all JASP analyses.
-testAnalysis            Test a specific JASP analysis.
-view                    View the tables and plots in a results object.
-viewPkgOptions          View the configuration of jasptools.

@@ -34,6 +34,13 @@ options("repos" = "https://cloud.r-project.org")
 
 if (travis) {
 
+  if (!"devtools" %in% installed)
+    install.packages("devtools", INSTALL_opts = INSTALL_opts)
+
+  # install jasptools if necessary
+  if (!"jasptools" %in% installed)
+    devtools::install("Tools/jasptools/", upgrade = "always", quick = TRUE)
+
   # create ~/.R/makevars for C/   C++ compilation flags
   dir.create("~/.R")
   fileConn <- file("~/.R/Makevars")
