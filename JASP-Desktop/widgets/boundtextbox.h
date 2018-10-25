@@ -24,6 +24,7 @@
 
 #include "options/optioninteger.h"
 #include "options/optionintegerarray.h"
+#include "options/optiondoublearray.h"
 #include "options/optionnumber.h"
 #include "options/optionstring.h"
 
@@ -38,7 +39,7 @@ public:
 	void bindTo(Option *option)				override;
 	void setLabel(const QString &label);
     void finalise();
-	
+
 protected:
 	void keyPressEvent(QKeyEvent *event)	override;
 	void focusOutEvent(QFocusEvent *event)	override;
@@ -46,6 +47,7 @@ protected:
 private:
 	OptionInteger		*_integer;
 	OptionIntegerArray	*_integerArray;
+    OptionDoubleArray	*_doubleArray;
 	OptionNumber		*_number;
 	OptionString		*_string;
 
@@ -58,14 +60,25 @@ private:
 	class QIntArrayValidator : public QValidator
 	{
 	public:
-									QIntArrayValidator();
-				QValidator::State	validate(QString & input, int&pos)	const override;
+                                    QIntArrayValidator() {}
+                QValidator::State	validate(QString & input, int & pos)	const override;
 				void				fixup(QString &input)				const override;
 
 		static	std::vector<int>	parse(QString &input);
 		static	QString				stringify(std::vector<int> &input);
 
 	};
+
+    class QDoubleArrayValidator : public QValidator
+    {
+    public:
+                                    QDoubleArrayValidator() {}
+                QValidator::State	validate(QString & input, int & pos)	const override;
+                void				fixup(QString &input)                   const override;
+
+         static	std::vector<double>	parse(QString &input);
+         static	QString				stringify(std::vector<double> &input);
+    };
 };
 
 #endif // BOUNDTEXTBOX_H
