@@ -27,7 +27,6 @@
 
 #include "fsbmodel.h"
 #include "breadcrumbs.h"
-#include "authwidget.h"
 #include "verticalscrollarea.h"
 
 class FSBrowser : public QWidget
@@ -62,7 +61,6 @@ private slots:
 	void entrySelectedHandler();
 	void entryOpenedHandler();
 	void authenticationFailed(QString message);
-	void hideAuthentication();
 
 private:
 
@@ -78,8 +76,6 @@ private:
 	VerticalScrollArea *_scrollArea;
 
 	FSBModel *_model;
-
-	AuthWidget *_authWidget;
 
 };
 

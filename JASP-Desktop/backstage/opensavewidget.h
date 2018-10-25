@@ -38,6 +38,10 @@
 
 #include "fileevent.h"
 
+namespace Ui {
+class BackstageForm;
+}
+
 class OpenSaveWidget : public QWidget
 {
 	Q_OBJECT
@@ -77,7 +81,6 @@ private slots:
 	void dataSetOpenExampleRequestHandler(QString path);
 	void dataSetOpenCurrentRequestHandler(QString path);
 	void dataFileModifiedHandler(QString path);
-	void clearOnlineDataFromRecentList(int provider);
 	void tabWidgetChanged(int id);
 	void tabWidgetChanging(int index, bool &cancel);
 
@@ -95,6 +98,7 @@ private:
 	FileEvent::FileMode _mode;
 
 	VerticalTabWidget *_tabWidget;
+	Ui::BackstageForm *ui;
 		
 	BackstageRecentFiles *_bsRecentFiles;
 	BackstageCurrentFile *_bsCurrentFile;

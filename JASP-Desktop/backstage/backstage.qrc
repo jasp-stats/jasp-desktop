@@ -14,5 +14,6 @@
         <file>OSFList.qml</file>
         <file>OSFLogin.qml</file>
         <file>BreadCrumbs.qml</file>
+        <file>VerticalTabBar.qml</file>
     </qresource>
 </RCC>

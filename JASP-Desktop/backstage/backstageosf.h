@@ -88,7 +88,6 @@ private slots:
 	void openSaveCompleted(FileEvent* event);
 	void updateUserDetails();
 	void newFolderCreated();
-	void authenticatedHandler();
 	void resetOSFListModel();
 	
 

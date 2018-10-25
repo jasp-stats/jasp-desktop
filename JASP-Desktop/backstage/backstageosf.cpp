@@ -174,7 +174,6 @@ void BackstageOSF::setOnlineDataManager(OnlineDataManager *odm)
 	_odm = odm;
 	_model->setOnlineDataManager(_odm);
 
-	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(authenticatedHandler()));
 	connect(_odm, SIGNAL(startUploading()), this, SLOT(startProcessing()));
 	connect(_odm, SIGNAL(finishedUploading()), this, SLOT(stopProcessing()));
 }
@@ -203,7 +202,6 @@ void BackstageOSF::setMode(FileEvent::FileMode mode)
 
 void BackstageOSF::notifyDataSetSelected(QString path)
 {
-	//_fileNameTextBox->setText(QFileInfo(path).fileName());
 	setSavefilename(QFileInfo(path).fileName());
 }
 
@@ -229,7 +227,6 @@ void BackstageOSF::saveClicked()
 		return;
 	}
 
-	///QString filename = _fileNameTextBox->text();
 	QString filename = _mSaveFileName;
 
 	if (checkEntryName(filename, "File", true) == false)
@@ -367,12 +364,6 @@ void BackstageOSF::newFolderClicked()
 void BackstageOSF::closeFileDialog()
 {
 	setShowfiledialog(false);
-}
-
-void BackstageOSF::authenticatedHandler()
-{
-	//_newFolderButton->setEnabled(true);
-	//_logoutButton->show();
 }
 
 void BackstageOSF::resetOSFListModel()

@@ -66,7 +66,6 @@ public:
 
 signals:
 	void userDataChanged();
-	void hideAuthentication();
 	void stopProcessing();
 	
 private slots:
