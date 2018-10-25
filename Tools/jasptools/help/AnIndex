@@ -1,9 +1,0 @@
-analysisOptions	analysisOptions
-inspectTestPlots	inspectTestPlots
-makeTestTable	makeTestTable
-run	run
-setPkgOption	setPkgOption
-testAll	testAll
-testAnalysis	testAnalysis
-view	view
-viewPkgOptions	viewPkgOptions

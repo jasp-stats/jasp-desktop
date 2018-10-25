@@ -1,5 +1,6 @@
-library(jasptools, lib.loc=file.path("..", "..", "..", "Tools"))
+library(jasptools)
 library(testthat)
+develop(path = "../../../")
 result <- test_dir("testthat")
 result <- as.data.frame(result)
 
