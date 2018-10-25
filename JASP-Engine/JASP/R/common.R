@@ -2906,8 +2906,7 @@ createJaspState <- function(object=NULL, title="", dependencies=NULL, position=N
 {
   stateObj <- jaspResultsModule$create_cpp_jaspState(title) # If we use R's constructor it will garbage collect our objects prematurely.. #
 
-  if(!is.null(object))
-    stateObj$object <- object
+  stateObj$object <- object
 
   if(!is.null(dependencies))
       stateObj$dependOnTheseOptions(dependencies)

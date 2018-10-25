@@ -159,6 +159,10 @@ createJaspPlot <- function(plot=NULL, title="", width=320, height=320, aspectRat
 			jaspPlotObj$filePathPng <- writtenImage[["png"]]
       jaspPlotObj$plotObject <- plot
 		}
+  } 
+  else
+  {
+		jaspPlotObj$plotObject <- plot
 	}
 
   if(!is.null(dependencies))
@@ -245,8 +249,7 @@ createJaspState <- function(object=NULL, title="", dependencies=NULL, position=N
 
   stateObj <- create_cpp_jaspState(title) # If we use R's constructor it will garbage collect our objects prematurely.. #
 
-  if(!is.null(object))
-    stateObj$object <- object
+  stateObj$object <- object
 
   if(!is.null(dependencies))
     stateObj$dependOnTheseOptions(dependencies)
