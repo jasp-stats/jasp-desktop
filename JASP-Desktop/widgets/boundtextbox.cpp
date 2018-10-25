@@ -33,6 +33,7 @@ BoundTextBox::BoundTextBox(QWidget *parent) :
 {
 	_integer = NULL;
 	_integerArray = NULL;
+    _doubleArray = NULL;
 	_number = NULL;
 	_string = NULL;
 
@@ -80,6 +81,14 @@ void BoundTextBox::bindTo(Option *option)
 		this->setValidator(new QIntArrayValidator());
 		return;
 	}
+
+    _doubleArray = dynamic_cast<OptionDoubleArray *>(option);
+
+    if (_doubleArray != NULL)
+    {
+        this->setValidator(new QDoubleArrayValidator());
+        return;
+    }
 
 	_number = dynamic_cast<OptionNumber *>(option);
 
@@ -135,7 +144,11 @@ void BoundTextBox::finalise()
 	while (value.endsWith(","))
 		value = value.left(value.length() - 1);
 
-	if (_integerArray != NULL)
+    if (_doubleArray != NULL)
+    {
+        _doubleArray->setValue(QDoubleArrayValidator::parse(value));
+    }
+    else if (_integerArray != NULL)
 	{
 		_integerArray->setValue(QIntArrayValidator::parse(value));
 	}
@@ -220,10 +233,6 @@ void BoundTextBox::textEditedHandler(QString text)
 		_number->setValue(text.toDouble());*/
 }
 
-BoundTextBox::QIntArrayValidator::QIntArrayValidator()
-{
-}
-
 QValidator::State BoundTextBox::QIntArrayValidator::validate(QString &input, int &pos) const
 {
 	// this needs some TLC
@@ -287,4 +296,71 @@ QString BoundTextBox::QIntArrayValidator::stringify(std::vector<int> &input)
 		result += QString(",%1").arg(*itr);
 
 	return result;
+}
+
+
+QValidator::State BoundTextBox::QDoubleArrayValidator::validate(QString &input, int &pos) const
+{
+    // this needs some TLC
+
+    if (pos > input.length())
+        pos = input.length();
+
+    if (pos == 0 || input.at(pos-1) == ',' || input.at(pos-1) == '.')
+        return QValidator::Intermediate;
+
+    fixup(input);
+
+    if (pos > input.size())
+        pos = input.size();
+
+    return QValidator::Acceptable;
+}
+
+void BoundTextBox::QDoubleArrayValidator::fixup(QString &input) const
+{
+    QString trimmed = input.trimmed();
+
+    std::vector<double> array = parse(input);
+    input = stringify(array);
+
+    if (trimmed.length() > 0 && trimmed.at(trimmed.length() - 1) == ',')
+        input = input + ",";
+}
+
+
+std::vector<double> BoundTextBox::QDoubleArrayValidator::parse(QString &input)
+{
+    input.replace(QString(" "), QString(","));
+
+    std::vector<double> result;
+
+    QStringList chunks = input.split(QChar(','), QString::SkipEmptyParts);
+
+    for(QString &chunk : chunks)
+    {
+        bool ok;
+        double value = chunk.toDouble(&ok);
+
+        if (ok)
+            result.push_back(value);
+    }
+
+    return result;
+}
+
+QString BoundTextBox::QDoubleArrayValidator::stringify(std::vector<double> &input)
+{
+    if (input.size() == 0)
+        return QString();
+
+    std::vector<double>::iterator itr = input.begin();
+
+    QString result = QString::number(*itr);
+    itr++;
+
+    for (; itr != input.end(); itr++)
+        result += QString(",%1").arg(*itr);
+
+    return result;
 }
