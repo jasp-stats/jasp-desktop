@@ -2,7 +2,7 @@
 
 In the past we've had many different styles for the `R` analyses, as people from different backgrounds have been creating analyses for JASP. This has created different structures and different styles which makes it fundamentally hard to read our code. With the new backend of `jaspResults`, we have an opportunity to fix this issue. This document outlines a style guide for our R files. A `linter` will be implemented on Travis CI to preclude style deviations from happening in the future: any code that does not follow this style guide will be rejected because of errors in the CI checks. In other words: _strictly adhere to the style guide._
 
-This style was influenced by the [google style guide]() and how our repository behaves on GitHub.
+This style was influenced by the [Google style guide](https://google.github.io/styleguide/Rguide.xml) and how our repository behaves on GitHub.
 
 ## Style Guide
 
@@ -56,8 +56,8 @@ otherwise, return may be used but is not required.
 ```
 - `camelCasing` or `lowercase` for variable names.
 - Main analysis functions have the format `SomeCoolAnalysis()`, as well as all other functions called by the user interface.
-- R internal functions have the format `.coolAnalysisHelperFunc()`.
-- Follow the `analysisSkeleton.R` file for structuring analyses.
+- R internal functions have the format `.[name]ReadData()` where `[name]` is a unique short identifier of the analysis.
+- Follow the (`analysis-skeleton.R`)[https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/analysis-skeleton.R] file for structuring analyses.
 - Each file starts with the following copyright notice (edit the date if necessary):
 ```r
 #
@@ -78,4 +78,4 @@ otherwise, return may be used but is not required.
 #
 ```
 - Put comments where necessary.
-- Denote to-dos with `# TODO my thing todo in this code section`.
+- Denote to-dos with `# TODO(username) my thing todo in this code section`.
