@@ -12,6 +12,7 @@ public:
 
 	Json::Value convertToJSON() override;
 	void		convertFromJSON_SetFields(Json::Value in) override;
+	std::string dataToString(std::string prefix) override;
 
 private:
 	Rcpp::Vector<RAWSXP> _stateObjectSerialized;

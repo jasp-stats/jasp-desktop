@@ -82,12 +82,25 @@ Rcpp::RObject jaspContainer::at(std::string field)
 std::string jaspContainer::dataToString(std::string prefix)
 {
 	std::stringstream out;
-	out << prefix << "{\n";
 
 	for(auto key : getSortedDataFields())
-		out << prefix << "\t\"" << key << "\": " << _data[key]->toString(prefix + "\t") << ",\n";
+		out << prefix << "\"" << key << "\":\n" << _data[key]->toString(prefix + "\t") << "\n";
 
-	out << prefix << "}";
+	return out.str();
+}
+
+std::string jaspContainer::toHtml()
+{
+	std::stringstream out;
+
+	out		<< "<div class=\"jaspHtml\">" "\n"
+			<< htmlTitle() << "\n"
+			<< "<ul>";
+
+	for(auto key : getSortedDataFields())
+		out << "<li><p><b>" << key << "</b></p>" << _data[key]->toHtml() << "</li>\n";
+
+	out << "</ul>" "\n" "</div>" "\n";
 
 	return out.str();
 }

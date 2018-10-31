@@ -34,3 +34,13 @@ Rcpp::RObject jaspState::getObject()
 	Rcpp::Function unserialize("unserialize");
 	return unserialize(_stateObjectSerialized);
 }
+
+
+std::string jaspState::dataToString(std::string prefix)
+{
+	std::stringstream out;
+
+	out << prefix << "object stored: "	<< ( _stateObjectSerialized.size() == 0 ? "no" : "yes") << "\n";
+
+	return out.str();
+}

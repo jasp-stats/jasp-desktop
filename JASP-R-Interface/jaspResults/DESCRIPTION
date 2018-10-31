@@ -1,8 +1,8 @@
 Package: jaspResults
 Type: Package
 Title: Easy results for your JASP analysis
-Version: 1.0
-Date: 2018-02-23
+Version: 1.1
+Date: 2018-10-11
 Author: Joris Goosen
 Maintainer: JASP Team <info@jasp-stats.org>
 Description: This package helps you build your analysis for JASP (http://jasp-stats.org).

@@ -13,12 +13,20 @@ std::string jaspPlot::dataToString(std::string prefix)
 {
 	std::stringstream out;
 
-	out << "{\n" <<
+	out <<
 		prefix << "aspectRatio: "	<< _aspectRatio << "\n" <<
-		prefix << "dims: "			<< _width << "X" << _height << "\n" <<
-		prefix << "error: '"		<< _errorMessage << "'\n" <<
-		prefix << "filePath: "		<< _filePathPng << "\n" <<
-		"}";
+		prefix << "dims:        "	<< _width << "X" << _height << "\n" <<
+		prefix << "error:       '"	<< _error << "': '" << _errorMessage << "'\n" <<
+		prefix << "filePath:    "	<< _filePathPng << "\n" <<
+		prefix << "status:      "	<< _status << "\n" <<
+		prefix << "has plot:    "	<< (_plotObjSerialized.size() > 0 ? "yes" : "no") << "\n";
+
+	if(_footnotes.size() > 0)
+	{
+		out << prefix << "footnotes:   \n";
+		for(int i=0; i<_footnotes.size(); i++)
+			out << prefix << "\t[" << i << "]:\t(" << _footnotes[i]["symbol"] << ") " << _footnotes[i]["text"] << "\n";
+	}
 
 	return out.str();
 }
@@ -41,6 +49,7 @@ Json::Value jaspPlot::dataEntry()
 		data["error"]["errorMessage"]	= _errorMessage;
     }
 	data["name"]		= getUniqueNestedName();
+	data["footnotes"]	= _footnotes;
 
 	return data;
 }
@@ -124,4 +133,40 @@ void jaspPlot::convertFromJSON_SetFields(Json::Value in)
 
 	std::string jsonPlotObjStr = in.get("plotObjSerialized", "").asString();
 	_plotObjSerialized = Rcpp::Vector<RAWSXP>(jsonPlotObjStr.begin(), jsonPlotObjStr.end());
+}
+
+std::string jaspPlot::toHtml()
+{
+	std::stringstream out;
+
+	out << "<div class=\"status " << _status << "\">" "\n"
+		<< htmlTitle() << "\n";
+
+	if(_error != "" || _errorMessage != "")
+	{
+		out << "<p class=\"error\">\n";
+		if(_error		 != "") out << "error: <i>'" << _error << "'</i>";
+		if(_errorMessage != "") out << (_error != "" ? " msg: <i>'" : "errormessage: <i>'") << _errorMessage << "'</i>";
+		out << "\n</p>";
+	}
+	else
+		out << "<img src=\"" << _filePathPng << "\" height=\"" << _height << "\" width=\"" << _width << "\" alt=\"a plot called " << _title << "\">";
+
+
+	if(_footnotes.size() > 0)
+	{
+		out << "<h4>footnotes</h4>" "\n" "<ul>";
+
+		for(Json::Value::UInt i=0; i<_footnotes.size(); i++)
+		{
+			std::string sym = _footnotes[i]["symbol"].asString() ;
+			out << "<li>" << (sym == "" ? "" : "<i>(" + sym  + ")</i> " ) << _footnotes[i]["text"].asString() << "</li>" "\n";
+		}
+
+		out << "</ul>\n";
+	}
+
+	out << "</div>\n";
+
+	return out.str();
 }

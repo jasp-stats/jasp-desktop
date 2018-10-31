@@ -147,29 +147,13 @@ createJaspPlot <- function(plot=NULL, title="", width=320, height=320, aspectRat
     jaspPlotObj$errorMessage  <- errorMessage
   }
 
-  if(!is.null(plot))
-	{
-		writtenImage <- tryCatch(
-			.writeImage(width=width, height=height, plot),
-			error	= function(e) { jaspPlotObj$errorMessage <- e$message; return(NULL) }
-		)
-
-		if(!is.null(writtenImage))
-		{
-			jaspPlotObj$filePathPng <- writtenImage[["png"]]
-      jaspPlotObj$plotObject <- plot
-		}
-  } 
-  else
-  {
-		jaspPlotObj$plotObject <- plot
-	}
+  jaspPlotObj$plotObject <- plot
 
   if(!is.null(dependencies))
     jaspPlotObj$dependOnTheseOptions(dependencies)
 
-	if(is.numeric(position))
-		jaspPlotObj$position = position
+  if(is.numeric(position))
+    jaspPlotObj$position = position
 
   return(jaspPlotObj)
 }
@@ -183,8 +167,8 @@ createJaspContainer <- function(title="", dependencies=NULL, position=NULL)
   if(!is.null(dependencies))
     container$dependOnTheseOptions(dependencies)
 
-	if(is.numeric(position))
-		container$position = position
+  if(is.numeric(position))
+    container$position = position
 
   return(container)
 }
@@ -194,7 +178,7 @@ createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, 
   checkForJaspResultsInit()
 
   jaspObj <- create_cpp_jaspTable(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspTable, title)
-  jaspObj <- as(jaspObj, "jaspTableExtended") #We extend it so we may use addColumnInfo and addFootnote. Sadly enough this breaks for tables coming from a container.. This does however work in JASP and I cant get it to work in stand-alone. (This might be fixed by DvB)
+  jaspObj <- as(jaspObj, "jaspTableExtended") #We extend it so we may use addColumnInfo and addFootnote. Sadly enough this breaks for tables coming from a container.. This does however work in JASP but I cant get it to work in stand-alone. (This might be fixed by DvB)
 
   if(!is.null(data))
     jaspObj$setData(data)

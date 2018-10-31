@@ -22,6 +22,7 @@ public:
 
 	Json::Value	metaEntry() override { return constructMetaEntry("image"); }
 	Json::Value	dataEntry() override;
+	std::string toHtml()	override;
 
 	Json::Value convertToJSON() override;
 	void		convertFromJSON_SetFields(Json::Value in) override;
