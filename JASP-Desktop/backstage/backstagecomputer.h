@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BACKSTAGECOMPUTEROLD_H
-#define BACKSTAGECOMPUTEROLD_H
+#ifndef BACKSTAGECOMPUTER_H
+#define BACKSTAGECOMPUTER_H
 
 #include "backstagepage.h"
 #include "computerlistmodel.h"
@@ -59,4 +59,4 @@ private:
 
 };
 
-#endif // BACKSTAGECOMPUTEROLD_H
+#endif // BACKSTAGECOMPUTER_H

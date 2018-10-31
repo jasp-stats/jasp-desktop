@@ -31,14 +31,14 @@
 FSBrowser::FSBrowser(QWidget *parent, FSBrowser::BrowseMode mode) : QWidget(parent)
 {
 	QLabel *label = NULL;
-
+	
 	_browseMode = mode;
 	_viewType = FSBrowser::IconView;
-
+	
 	QGridLayout *layout = new QGridLayout(this);
 	layout->setContentsMargins(12, 12, 0, 0);  //Position all file and folder elements asn recent file label
 	setLayout(layout);
-		
+	
 	switch(mode)
 		
 	{		
@@ -73,28 +73,24 @@ FSBrowser::FSBrowser(QWidget *parent, FSBrowser::BrowseMode mode) : QWidget(pare
 	_scrollArea = new VerticalScrollArea(this);
 	_scrollArea->setFrameShape(QScrollArea::NoFrame);
 	layout->addWidget(_scrollArea);
-
+	
 	_scrollPane = new QWidget;
 	_scrollArea->setWidget(_scrollPane);
-
+	
 	_scrollPaneLayout = new QVBoxLayout(_scrollPane);
 	_scrollPaneLayout->setSpacing(1);
 	_scrollPaneLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
 	_scrollPane->setLayout(_scrollPaneLayout);
-
+	
 	_buttonGroup = new QButtonGroup(this);
-
-	_authWidget = new AuthWidget(this);
-	_authWidget->hide();
-
+	
 	_processLabel = new QLabel(this);
 	_processLabel->setAlignment(Qt::AlignCenter);
 	_processLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	_processLabel->setMovie(new QMovie(":/icons/loading.gif", QByteArray(), _processLabel));
 	_processLabel->setHidden(true);
 	layout->addWidget(_processLabel);
-
-	connect(_authWidget, SIGNAL(loginRequested(QString,QString)), this, SLOT(loginRequested(QString,QString)));
+	
 }
 
 void FSBrowser::StartProcessing()
@@ -116,13 +112,12 @@ void FSBrowser::setFSModel(FSBModel *model)
 	_model = model;
 	_model->refresh();
 	refresh();
-
+	
 	connect(_model, SIGNAL(entriesChanged()), this, SLOT(refresh()));
 	connect(_model, SIGNAL(processingEntries()), this, SLOT(processingEntries()));
 	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(refresh()));
 	connect(_model, SIGNAL(authenticationClear()), this, SLOT(refresh()));
 	connect(_model, SIGNAL(authenticationFail(QString)), this, SLOT(authenticationFailed(QString)));
-	connect(_model, SIGNAL(hideAuthentication()), this, SLOT(hideAuthentication()));
 }
 
 void FSBrowser::setBrowseMode(FSBrowser::BrowseMode mode)
@@ -133,11 +128,6 @@ void FSBrowser::setBrowseMode(FSBrowser::BrowseMode mode)
 void FSBrowser::setViewType(FSBrowser::ViewType viewType)
 {
 	_viewType = viewType;
-}
-
-void FSBrowser::hideAuthentication()
-{
-	_authWidget->hide();
 }
 
 void FSBrowser::clearItems()
@@ -154,20 +144,14 @@ void FSBrowser::processingEntries()
 void FSBrowser::refresh()
 {
 	clearItems();
-
+	
 	StopProcessing();
-
-	if (_model->requiresAuthentication() && !_model->isAuthenticated())
+	
+	if (!_model->requiresAuthentication() || _model->isAuthenticated())
 	{
-		_authWidget->setUsernameclearPassword();
-		_authWidget->show();
-	}
-	else
-	{
-		_authWidget->hide();
-
+		
 		bool compact = false;
-
+		
 		if (_viewType == ListView)
 		{
 			compact = true;
@@ -179,23 +163,21 @@ void FSBrowser::refresh()
 			_scrollPaneLayout->setContentsMargins(12, 12, 12, 12); //Position Files in recent
 			_scrollPaneLayout->setSpacing(8);
 		}
-
+		
 		int id = 0;
-
+		
 		foreach (const FSEntry &entry, _model->entries())
 		{
 			FSEntryWidget *button = new FSEntryWidget(entry, _scrollPane);
 			button->setCompact(compact);
-
+			
 			_buttonGroup->addButton(button, id++);
 			_scrollPaneLayout->addWidget(button);
-
+			
 			connect(button, SIGNAL(selected()), this, SLOT(entrySelectedHandler()));
 			connect(button, SIGNAL(opened()), this, SLOT(entryOpenedHandler()));
-		}
-
-
-	}
+		}			
+	}	
 }
 
 void FSBrowser::loginRequested(QString username, QString password)
@@ -213,7 +195,7 @@ void FSBrowser::entrySelectedHandler()
 void FSBrowser::entryOpenedHandler()
 {
 	FSEntryWidget *entry = qobject_cast<FSEntryWidget*>(this->sender());
-
+	
 	if (_browseMode == BrowseOpenFolder)
 	{
 		emit entryOpened(entry->path());
@@ -230,6 +212,6 @@ void FSBrowser::entryOpenedHandler()
 void FSBrowser::authenticationFailed(QString message)
 {
 	QMessageBox::warning(this, "", message);
-
+	
 }
 

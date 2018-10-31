@@ -72,7 +72,6 @@ void FSBMOSF::attemptToConnect()
 
 	if ( _isAuthenticated == false && _dataManager != NULL )
 	{
-		emit hideAuthentication();
 		emit processingEntries();
 		bool authsuccess = _dataManager->authenticationSuccessful(OnlineDataManager::OSF);
 		setAuthenticated(authsuccess);
