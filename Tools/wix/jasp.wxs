@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Add xmlns:util namespace definition to be able to use stuff from WixUtilExtension dll-->
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+    <?include $(sys.CURRENTDIR)jasp.wxi ?>
+    <?define VersionNumber="$(var.MajorVersion).$(var.MinorVersion).$(var.Revision).$(var.BuildVersion)" ?>
+  
+    <?if $(sys.BUILDARCH)="x86"?>
+        <?define Program_Files="ProgramFilesFolder"?>
+    <?elseif $(sys.BUILDARCH)="x64"?>
+        <?define Program_Files="ProgramFiles64Folder"?>
+    <?else?>
+        <?error Unsupported value of sys.BUILDARCH=$(sys.BUILDARCH)?>
+    <?endif?>
+
+  <?define ExeProcessName="JASP.exe" ?>
+  <?define UpgradeCode="32d502cb-4752-4861-bc86-b8b4252a7a68" ?>
+
+  <Product Id="*" Name="JASP $(var.VersionNumber) $(var.JaspType)" Language="1033" Version="$(var.VersionNumber)" Manufacturer="Universiteit van Amsterdam" UpgradeCode="$(var.UpgradeCode)">
+    <!-- Define the minimum supported installer version (3.0) and that the install should be done for the whole machine not just the current user -->
+    <Package InstallerVersion="301" Compressed="yes" InstallScope="perMachine"/>
+    <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />    
+    <!-- Upgrade settings. This will be explained in more detail in a future post -->
+    <Upgrade Id="$(var.UpgradeCode)">
+      <UpgradeVersion OnlyDetect="yes" Minimum="$(var.VersionNumber)" IncludeMinimum="no" Property="NEWER_VERSION_FOUND" />
+      <UpgradeVersion OnlyDetect="yes" Minimum="$(var.VersionNumber)" IncludeMinimum="yes" Maximum="$(var.VersionNumber)" IncludeMaximum="yes" Property="SAME_VERSION_FOUND" />
+      <UpgradeVersion Minimum="0.0.0.0" IncludeMinimum="yes" Maximum="$(var.VersionNumber)" IncludeMaximum="no" Property="OLDER_VERSION_FOUND" />
+    </Upgrade>    
+
+    <DirectoryRef Id="TARGETDIR">
+        <Merge Id="VCRedist" SourceFile="$(var.RedistMergeModule)" DiskId="1" Language="0"/>
+    </DirectoryRef>
+
+    <!-- 
+    Startup conditions that checks if we're running the OS Windows 7 or higher.
+    If not the installation is aborted.
+    By doing the (Installed OR ...) property means that this condition will only 
+    be evaluated if the app is being installed and not on uninstall or changing
+    -->
+    <Condition Message="JASP only supports Windows 7 and newer!">
+      <![CDATA[Installed OR (VersionNT >= 601)]]>
+    </Condition>
+
+    <!-- 
+    This custom action in the InstallExecuteSequence is needed to 
+    stop silent install (passing /qb to msiexec) from going around it. 
+    -->
+    <CustomAction Id="NewerVersionFound" Error="A newer version of JASP is already installed!" />
+    <CustomAction Id="SameVersionFound" Error="This version of JASP is already installed!" />
+
+    <InstallExecuteSequence>
+      <!-- Check for newer versions with FindRelatedProducts and execute the custom action after it -->
+        <Custom Action="NewerVersionFound" After="FindRelatedProducts">   <![CDATA[NEWER_VERSION_FOUND]]> </Custom>
+        <Custom Action="SameVersionFound" After="FindRelatedProducts">    <![CDATA[SAME_VERSION_FOUND]]>  </Custom>
+
+      <!-- Remove the previous versions of the product -->
+      <RemoveExistingProducts After="InstallInitialize"/>
+      <!-- WixCloseApplications is a built in custom action that uses util:CloseApplication below -->
+      <Custom Action="WixCloseApplications" Before="InstallInitialize" />
+    </InstallExecuteSequence>
+
+    <!-- This will ask the user to close JASP if it's running while upgrading -->
+    <util:CloseApplication Id="CloseJASP" CloseMessage="no" Description="Before you can install JASP you must close any running instances of JASP." 
+                           ElevatedCloseMessage="no" RebootPrompt="no" Target="$(var.ExeProcessName)" />
+    <!-- Use the built in WixUI_InstallDir GUI -->
+    <UIRef Id="WixUI_InstallDir" />
+   <!-- <UI>
+       These dialog references are needed for CloseApplication above to work correctly 
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="MsiRMFilesInUse" />   -->   
+      <!-- Here we'll add the GUI logic for installation and updating in a future pos   
+    </UI>t-->   
+
+    <!-- Set the icon to show next to the program name in Add/Remove programs -->
+    <Icon Id="JASP.ico" SourceFile="$(var.JASP_DESKTOP_DIR)\JASP-Desktop\icon.ico" />
+    <Property Id="ARPPRODUCTICON" Value="JASP.ico" />
+
+    <WixVariable Id="WixUIDialogBmp" Value="$(var.JASP_DESKTOP_DIR)\Tools\wix\installerBackground.png" />
+    <WixVariable Id="WixUIBannerBmp" Value="$(var.JASP_DESKTOP_DIR)\Tools\wix\installerBanner.png" />
+
+    <!-- the default directory structure -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+        <Directory Id="$(var.Program_Files)">
+            <Directory Id="INSTALLLOCATION" Name="JASP">
+                <!-- files added in JASPFilesFragment.wxs -->
+            </Directory>
+        </Directory>
+
+        <Directory Id="ProgramMenuFolder">
+            <Directory Id="ProgramMenuSubfolder" Name="JASP">
+                <Component Id="ApplicationShortcut" Guid="553ab265-b401-48f6-a080-752abbed57c8"> 
+                    <Shortcut Id="ApplicationStartMenuShortcut" Name="JASP $(var.VersionNumber) $(var.JaspType)" Description="A fresh way to do statistics" Target="[INSTALLLOCATION]JASP.exe" WorkingDirectory="INSTALLLOCATION"/>
+                    <RemoveFolder Id="CleanUpShortCut" Directory="INSTALLLOCATION" On="uninstall"/> 
+                    <RegistryValue Root="HKCU" Key="Software\Microsoft\JASP\JASP" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+                    <RemoveFolder Id="ProgramMenuSubfolder" On="uninstall"/>
+                </Component>
+            </Directory>
+        </Directory>
+    </Directory>
+
+    <UI>
+        <UIRef Id="WixUI_InstallDir" />
+
+        <!-- Skip license dialog -->
+        <Publish    Dialog="WelcomeDlg"
+                    Control="Next"
+                    Event="NewDialog"
+                    Value="InstallDirDlg"
+                    Order="2">
+            1
+        </Publish>
+        <Publish    Dialog="InstallDirDlg"
+                    Control="Back"
+                    Event="NewDialog"
+                    Value="WelcomeDlg"
+                    Order="2">
+            1
+        </Publish>
+        <Publish    Dialog="ExitDialog"
+                    Control="Finish" 
+                    Event="DoAction" 
+                    Value="LaunchApplication">
+            WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed
+        </Publish>
+    </UI>
+    
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch JASP" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1"/>
+
+    <!-- WIX complains about [INSTALLLOCATION]JASP.exe but it seems to work so you know, whatever. -->
+    <Property Id="WixShellExecTarget" Value="[INSTALLLOCATION]JASP.exe" />
+    <CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
+
+    <!-- Set the components defined in our fragment files that will be used for our feature  -->
+    <Feature Id="JASPFeature" Title="JASP" Level="1">
+      <ComponentGroupRef Id="JASPFiles" />
+      <ComponentRef Id="ApplicationShortcut" />
+    </Feature>
+
+    <Feature Id="VCRedist" Title="Visual C++ 14.0 Runtime" AllowAdvertise="no" Display="hidden" Level="1">
+        <MergeRef Id="VCRedist"/>
+    </Feature>
+  </Product>
+</Wix>

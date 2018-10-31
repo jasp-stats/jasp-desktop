@@ -146,17 +146,16 @@ unix {
 
 #And of course also a version description to include in the Windows installer
 windows {
-	NSIFILENAME=$${OUT_PWD}/../../jasp-desktop/Tools/version.nsi
-	createVersionNsi.commands += $$quote(echo "!define JASPVERSION \"$${JASP_VERSION_MAJOR}.$${JASP_VERSION_MINOR}.$${JASP_VERSION_REVISION}.$${JASP_VERSION_BUILD}\"" >  $${NSIFILENAME})&&
-	contains(QT_ARCH, i386) {
-	createVersionNsi.commands += $$quote(echo "!define CONTENTS_DIR \"C:\Jasp\Install-32\"" >>  $${NSIFILENAME})&&
-	createVersionNsi.commands += $$quote(echo "!define ARCH_SETUP_NAME \"Setup-32\"" >>  $${NSIFILENAME})
-	} else {
-	createVersionNsi.commands += $$quote(echo "!define CONTENTS_DIR \"C:\Jasp\Install-64\"" >>  $${NSIFILENAME})&&
-	createVersionNsi.commands += $$quote(echo "!define ARCH_SETUP_NAME \"Setup-64\"" >>  $${NSIFILENAME})
-	}
-	QMAKE_EXTRA_TARGETS += createVersionNsi
-	POST_TARGETDEPS     += createVersionNsi
+        WIXFILENAME=$${OUT_PWD}/../jasp.wxi
+        createVersionWix.commands += $$quote(echo ^<?xml version=\"1.0\" encoding=\"utf-8\"?^>^<Include^> >  $${WIXFILENAME}) &&
+        createVersionWix.commands += $$quote(echo ^<?define MajorVersion=\"$${JASP_VERSION_MAJOR}\" ?^> >>  $${WIXFILENAME}) &&
+        createVersionWix.commands += $$quote(echo ^<?define MinorVersion=\"$${JASP_VERSION_MINOR}\" ?^> >>  $${WIXFILENAME}) &&
+        createVersionWix.commands += $$quote(echo ^<?define BuildVersion=\"$${JASP_VERSION_BUILD}\" ?^> >>  $${WIXFILENAME}) &&
+        createVersionWix.commands += $$quote(echo ^<?define Revision=\"$${JASP_VERSION_REVISION}\" ?^> >>  $${WIXFILENAME}) &&
+        createVersionWix.commands += $$quote(echo ^<?define JaspType=\"$${JASP_VERSION_TYPE}\"?^>^</Include^> >>  $${WIXFILENAME})
+
+        QMAKE_EXTRA_TARGETS += createVersionWix
+        POST_TARGETDEPS     += createVersionWix
 }
 #ENVIRONMENT_CRYPTKEY="$(SIMPLECRYPTKEY)"
 #message("ENVIRONMENT_CRYPTKEY: $$[ENVIRONMENT_CRYPTKEY]")

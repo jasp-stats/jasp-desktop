@@ -85,11 +85,11 @@ mkpath($$OUT_PWD/../R/library)
 
 exists(/app/lib/*) {
 	#for flatpak we can just use R's own library as it is contained anyway
-  InstallJASPRPackage.commands        = \"$$R_EXE\" CMD INSTALL $$PWD/JASP
-	InstallJASPgraphsRPackage.commands	= \"$$R_EXE\" CMD INSTALL $$PWD/JASPgraphs
+    InstallJASPRPackage.commands        = \"$$R_EXE\" CMD INSTALL --no-multiarch $$PWD/JASP
+    InstallJASPgraphsRPackage.commands	= \"$$R_EXE\" CMD INSTALL --no-multiarch $$PWD/JASPgraphs
 } else {
-  InstallJASPRPackage.commands        = \"$$R_EXE\" CMD INSTALL --library=$$OUT_PWD/../R/library $$PWD/JASP
-  InstallJASPgraphsRPackage.commands  = \"$$R_EXE\" CMD INSTALL --library=$$OUT_PWD/../R/library $$PWD/JASPgraphs
+    InstallJASPRPackage.commands        = \"$$R_EXE\" CMD INSTALL --no-multiarch --library=$$OUT_PWD/../R/library $$PWD/JASP
+    InstallJASPgraphsRPackage.commands  = \"$$R_EXE\" CMD INSTALL --no-multiarch --library=$$OUT_PWD/../R/library $$PWD/JASPgraphs
 }
 
 QMAKE_EXTRA_TARGETS += InstallJASPgraphsRPackage
