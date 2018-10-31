@@ -39,7 +39,7 @@ geom_point <- function(mapping = NULL, data = NULL, stat = "identity", position 
 jaspGeomLine <- ggplot2::ggproto(
 	`_class`    = "jaspGeomLine",
 	`_inherit`  = ggplot2::GeomLine,
-	default_aes = aes(size = 1.25, colour = "black", linetype = 1, alpha = NA)
+	default_aes = aes(size = 1.05, colour = "black", linetype = 1, alpha = NA)
 )
 
 #' @export

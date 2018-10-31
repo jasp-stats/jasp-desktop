@@ -1,51 +1,3 @@
-#' @export
-drawBFpizza <- function(dat, size = 1, show.legend = FALSE, labels = NULL) {
-
-  if (!is.data.frame(dat))
-    dat <- data.frame(y = dat)
-
-  errCheckPlotPriorAndPosterior(dat[["y"]], 2L)
-
-
-	dat$group <- factor(seq(dat[[1]]))
-
-
-	dat$y <- dat$y / sum(dat$y)
-	nms <- colnames(dat)
-	mapping <- ggplot2::aes_string(x = factor(1), y = nms[1], group = nms[2], fill = nms[2], color = nms[2])
-
-	# rotate the wheel so that smaller half is always facing up
-	ma <- max(dat[[1]])
-	mi <- min(dat[[1]])
-
-	if (dat$y[1L] <= dat$y[2L]) {
-	  area <- mi / (mi + ma)
-	} else {
-	  area <- ma / (mi + ma)
-	}
-	start <- 0 + area * pi
-
-	g <- ggplot(data = dat, mapping = mapping) +
-	  ggplot2::geom_bar(width = 1, stat = "identity", show.legend = show.legend, size = size) +
-	  ggplot2::scale_x_discrete(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) +
-	  ggplot2::coord_polar(theta = "y", start = start) +
-	  ggplot2::scale_fill_manual(values  = c("darkred", "white")) +
-	  ggplot2::scale_color_manual(values = c("black", "black")) +
-	  getEmptyTheme()
-
-	if (!is.null(labels)) {
-	  dfTxt <- data.frame(
-	    x = 2,
-	    y = c(dat$y[2L] / 2.0, dat$y[2L] + dat$y[1L] / 2),
-	    l = labels
-	  )
-	  g <- g + ggplot2::geom_text(data = dfTxt, aes(x = x, y = y, label = l),
-	                              size = .4 * getGraphOption("fontsize"), inherit.aes = FALSE)
-	}
-
-	return(g)
-}
-
 getBackgroundRect <- function(debug) {
   if (debug) {
     element_rect(colour = "red", fill = "transparent", size = 5, linetype = 1)
@@ -60,7 +12,7 @@ getEmptyTheme <- function() {
   t <- theme(
     rect              = getBackgroundRect(getGraphOption("debug")),
     panel.spacing     = unit(0, "null"),
-    plot.margin       = rep(unit(0, "null"), 4),
+    plot.margin       = ggplot2::margin(),
     panel.background  = element_blank(),
     panel.grid.major  = element_blank(),
     panel.grid.minor  = element_blank(),
@@ -94,15 +46,20 @@ getEmptyPlot <- function(axes = FALSE) {
 
 }
 
-draw2Lines <- function(l, x = NULL, parse = isParsed(l), align = c("center", "left", "right")) {
+draw2Lines <- function(l, x = 0.5, parse = isParsed(l), align = c("center", "left", "right"), scaleFont = 0.35) {
 
-  if (is.null(x)) {
+  if (is.numeric(align)) {
+    hjust <- align
+  } else if (is.character(align)) {
     align <- match.arg(align)
-    x <- switch(align,
+    hjust <- switch(
+      align,
       "center" = 0.5,
       "left"   = 0.0,
       "right"  = 1.0
     )
+  } else {
+    stop("incorrect class for align. Expected character of numeric.")
   }
 
 	nLabels <- length(l)
@@ -117,9 +74,10 @@ draw2Lines <- function(l, x = NULL, parse = isParsed(l), align = c("center", "le
 	)
   return(
     ggplot2::ggplot(data = dfText, ggplot2::aes(x = x, y = y, label = l)) +
-      ggplot2::geom_text(size = .35 * getGraphOption("fontsize"), parse = parse, hjust = "left") +
-      ggplot2::scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
-    	ggplot2::scale_x_continuous(limits = c(0, 1), expand = c(0, 0)) +
+      ggplot2::geom_text(size = scaleFont * getGraphOption("fontsize"), parse = parse, hjust = hjust) +
+      ggplot2::scale_y_continuous(limits = c(0, 1)) +#, expand = c(0, 0)) +
+    	ggplot2::scale_x_continuous(limits = c(0, 1)) +#, expand = c(0, 0)) +
+      # ggplot2::coord_fixed(ratio = 1) +
       getEmptyTheme()
   )
 }
@@ -165,8 +123,8 @@ makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetyp
     )
 
     legendPlot <- ggplot(data = dfLegendPlot, aes(x = x, y = y, fill = y, label = l)) +
-      geom_point(show.legend = FALSE, size = 1.5 * jaspGeomPoint$default_aes$size) +
-      ggplot2::geom_text(nudge_x = 0.1, size = .6 * getGraphOption("fontsize"), hjust = 0,
+      geom_point(show.legend = FALSE, size = 1.15 * jaspGeomPoint$default_aes$size) +
+      ggplot2::geom_text(nudge_x = 0.1, size = .35 * getGraphOption("fontsize"), hjust = 0,
                          parse = parse) +
       ggplot2::xlim(c(0, 1)) +
       getEmptyTheme()
@@ -183,8 +141,8 @@ makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetyp
 
     legendPlot <- ggplot(data = dfLegendPlot,  aes(x = x, y = y, xend = xend, yend = yend, label = l)) +
       ggplot2::geom_segment(mapping = aes(color = y, linetype = y), show.legend = FALSE,
-                            size = 1.5 * jaspGeomLine$default_aes$size) +
-      ggplot2::geom_text(nudge_x = 0.15, size = .6 * getGraphOption("fontsize"), hjust = 0,
+                            size = 1.15 * jaspGeomLine$default_aes$size) +
+      ggplot2::geom_text(nudge_x = 0.15, size = .35 * getGraphOption("fontsize"), hjust = 0,
                          parse = parse) +
       ggplot2::xlim(c(0, 1)) +
       getEmptyTheme()
@@ -199,6 +157,17 @@ makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetyp
     legendPlot <- legendPlot + ggplot2::scale_linetype_manual(values = linetypes)
 
   return(legendPlot)
+}
+
+makeBFlabels <- function(bfSubscripts, BFvalues, subs = NULL) {
+  if (is.null(subs))
+    subs <- unlist(stringr::str_extract_all(bfSubscripts, "(?<=\\[).+?(?=\\])")) # get everything between []
+  if (length(subs) != length(BFvalues))
+    stop("bfSubscripts and BFvalues have different length!")
+  lab <- paste0("BF[", subs[2:1], "]", "[", subs[1:2], "] == ",
+    format(BFvalues, digits = getGraphOption("digits")[["BF"]])
+  )
+  return(parseThis(lab))
 }
 
 #' @export
@@ -237,6 +206,18 @@ pizzaTxtFromBF <- function(x) {
   pizzaTxt
 }
 
+makeBFwheelAndText <- function(BF01, bfSubscripts, pizzaTxt, drawPizzaTxt = is.null(pizzaTxt)) {
+
+  labels <- makeBFlabels(bfSubscripts, c(BF01, 1 / BF01))
+  return(list(
+    gTextBF = draw2Lines(labels, x = 0.7),
+    gWheel = drawBFpizza(
+      dat = data.frame(y = c(1, BF01)),
+      labels = if (drawPizzaTxt) pizzaTxt else NULL
+    )
+  ))
+}
+
 #' @title Create a prior-posterior plot.
 #' @param dfLines A dataframe with \code{$x}, \code{$y}, and optionally \code{$g}.
 #' @param dfPoints A dataframe with \code{$x}, \code{$y}, and optionally \code{$g}.
@@ -249,18 +230,19 @@ pizzaTxtFromBF <- function(x) {
 #' @param drawCRItxt Logical, should the credible interval be displayed in text?
 #' @param bfSubscripts String, to be parsed as expression. Indicates what BF type to display.
 #' @param pizzaTxt String vector of length 2, text to be drawn above and below pizza plot.
+#' @param bty List of three elements. Type specifies the box type, ldwX the width of the x-axis, lwdY the width of the y-axis.
 #' @param ... Unused.
 #'
 #' @export
 PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF01 = NULL, CRI = NULL, median = NULL, xName = NULL,
                                   yName = "Density", drawPizzaTxt = !is.null(BF01), drawCRItxt = !is.null(CRI),
                                   bfSubscripts = "BF[0][1]",
-                                  pizzaTxt = pizzaTxtFromBF(bfSubscripts), ...) {
-
+                                  pizzaTxt = pizzaTxtFromBF(bfSubscripts),
+                                  bty = list(type = "n", ldwX = .5, lwdY = .5), ...) {
+  
 	errCheckPlots(dfLines, dfPoints, CRI, median, BF01)
 
   emptyPlot <- list()
-  plotArrange <- logical(2L)
 
   yBreaks <- getPrettyAxisBreaks(c(0, dfLines$y))
   breaksYmax <- yBreaks[length(yBreaks)] # max(dfLines$y)
@@ -304,8 +286,8 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF01 = NULL, CRI = N
   }
 
   if (length(labelsCRI) > 0) {
-  	gTextCI <- draw2Lines(labelsCRI, align = "left")
-  	plotArrange[1L] <- TRUE
+
+  	gTextCI <- draw2Lines(labelsCRI, x = 1, align = "right")
   } else {
   	gTextCI <- emptyPlot
   }
@@ -319,7 +301,7 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF01 = NULL, CRI = N
     legend.position = c(0.80, 0.875)
   }
 
-  g <- themeJasp(graph = g, legend.title = "none", legend.position = legend.position) +
+  g <- themeJasp(graph = g, legend.title = "none", legend.position = legend.position, bty = bty) +
     theme(
       legend.text = element_text(margin = ggplot2::margin(0, 0, 2, 0)),
       legend.key.height = unit(1, "cm"),
@@ -327,51 +309,37 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF01 = NULL, CRI = N
     )
 
   if (!is.null(BF01)) {
+    tmp <- makeBFwheelAndText(BF01, bfSubscripts, pizzaTxt, drawPizzaTxt)
+    gTextBF <- tmp$gTextBF
+    gWheel <- tmp$gWheel
 
-  	subs <- stringr::str_extract_all(bfSubscripts, "(?<=\\[).+?(?=\\])")[[1]] # get everything between []
-    labels <- parseThis(paste0("BF[", subs[1L], "][", subs[2L],  "] == ", format(c(BF01, 1 / BF01), digits = 3)))
-  	gTextBF <- draw2Lines(labels, x = 0.2)
-    gWheel <- drawBFpizza(
-      dat = data.frame(y = c(1, BF01)),
-      labels = if (drawPizzaTxt) pizzaTxt else NULL
-    )
-
-    plotArrange[2L] <- TRUE
   } else {
     gWheel <- emptyPlot
     gTextBF <- emptyPlot
   }
 
-  if (!any(plotArrange)) {
+  topPlotList <- list(gTextBF, gWheel, gTextCI)
+  if (all(lengths(topPlotList) == 0)) {
     plot <- g
   } else {
 
-    topPlotList <- list(gTextBF, gWheel, gTextCI)
     idx <- lengths(topPlotList) == 0L
     layout <- matrix(1:3, 1, 3)
     layout[idx] <- NA_integer_
+    layout <- rbind(layout, 4)
 # browser()
-    print("dev.cur()0")
-    print(grDevices::dev.cur())
     f <- tempfile()
-    grDevices::png(f)
-    print("dev.cur()1")
-    print(grDevices::dev.cur())
-    topplot <- gridExtra::arrangeGrob(grobs = topPlotList[!idx],# heights = rep(5, 3), widths = rep(5, 3),
-                                      layout_matrix = layout, padding = grid::unit(0.0, "line"))
-    print("dev.cur()2")
-    print(grDevices::dev.cur())
-    plot    <- gridExtra::arrangeGrob(grobs = list(topplot, g), nrow = 2L, ncol = 1L, heights = c(.2, .8),
-                                      padding = grid::unit(0.0, "line"))
-    print("dev.cur()3")
-    print(grDevices::dev.cur())
-    grDevices::dev.off()
-    print("dev.cur()4")
-    print(grDevices::dev.cur())
-    if (file.exists(f))
-      file.remove(f)
-    print("dev.cur()5")
-    print(grDevices::dev.cur())
+    png(f)
+    plot <- arrangeGrob(
+      grobs         = list(gTextBF, gWheel, gTextCI, g),
+      heights       = c(.2, .8),
+      layout_matrix = layout,
+      widths        = c(.4, .2, .4)
+    )
+    # grid.arrange(plot)
+    dev.off()
+    if (file.exists(f)) file.remove(f)
+
   }
   class(plot) <- c("JASPgraphs", class(plot))
   return(plot)

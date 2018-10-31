@@ -718,9 +718,7 @@ A filling up a table function has typically the following arguments:
 .fillUpBinomialTable <- function(binomialTable, options, ready, resultsTable) {
 ```
 
-
-Now if the analysis is called again and e.g. `sampleMode` changes, only the plot will be returned.
-If there are state items you would like to keep indefinitely -- regardless of the options a user changes -- you must omit these in the stateKey.
+##### Step 4.1.2: Adding Results to Tables (If Ready)
 
 If the results could be computed (ready == TRUE), it is time to add the results to the table that we created earlier (Step 3). Oftentimes, we need to add one row for each dependent variable or for each predictor. Therefore, the results are often added in for loops. In the example provided below, one row with results is added for each level of each dependent variable. The results are taken from the results argument computed in the corresponding results function.
 

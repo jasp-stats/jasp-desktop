@@ -8,7 +8,7 @@ PlotPriorAndPosterior(dfLines, dfPoints = NULL, BF01 = NULL,
   CRI = NULL, median = NULL, xName = NULL, yName = "Density",
   drawPizzaTxt = !is.null(BF01), drawCRItxt = !is.null(CRI),
   bfSubscripts = "BF[0][1]", pizzaTxt = pizzaTxtFromBF(bfSubscripts),
-  ...)
+  bty = list(type = "n", ldwX = 0.5, lwdY = 0.5), ...)
 }
 \arguments{
 \item{dfLines}{A dataframe with \code{$x}, \code{$y}, and optionally \code{$g}.}
@@ -32,6 +32,8 @@ PlotPriorAndPosterior(dfLines, dfPoints = NULL, BF01 = NULL,
 \item{bfSubscripts}{String, to be parsed as expression. Indicates what BF type to display.}
 
 \item{pizzaTxt}{String vector of length 2, text to be drawn above and below pizza plot.}
+
+\item{bty}{List of three elements. Type specifies the box type, ldwX the width of the x-axis, lwdY the width of the y-axis.}
 
 \item{...}{Unused.}
 }

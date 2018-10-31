@@ -36,3 +36,6 @@ print.JASPgraphs <- function(x, ...) {
   return(invisible(TRUE))
 }
 
+#' @method plot JASPgraphs
+#' @export
+plot.JASPgraphs <- function(x, ...) print.JASPgraphs(x)

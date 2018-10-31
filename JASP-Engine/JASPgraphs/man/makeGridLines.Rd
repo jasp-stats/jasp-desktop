@@ -4,7 +4,7 @@
 \alias{makeGridLines}
 \title{custom Gridlines for ggplot objects}
 \usage{
-makeGridLines(x, xend, y, size = 0.85, ...)
+makeGridLines(x, xend, y, size = 1.1, ...)
 }
 \arguments{
 \item{x}{Left bound of gridline.}

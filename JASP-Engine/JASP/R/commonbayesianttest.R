@@ -537,9 +537,9 @@
           CRI          = CRI,
           testValueOpt = testValueOpt
         ))
-				plot <- .addPlotToJaspObj0(title, var, obj)
+				plot <- .addPlotToJaspObj0(var, var, obj)
 			} else {
-				plot <- .addPlotToJaspObj0(title, var, NULL, errors[[var]][["message"]])
+				plot <- .addPlotToJaspObj0(var, var, NULL, errors[[var]][["message"]])
 			}
   	  if (paired) {
   	    plot$setOptionMustContainDependency("pairs", pairs[[var]])
@@ -649,7 +649,7 @@
                                                 plottingError = NULL,
                                                 paired = FALSE, pairs = NULL,
                                                 options, dependencies = NULL, ...) {
-  title <- "Prior and Posterior Plot"
+  title <- "Prior and Posterior"
   for (var in dependents) {
     if (is.null(collection[[var]][["plotPriorAndPosterior"]])) {
       if (isFALSE(errors[[var]]) && is.null(plottingError[[var]])) {
@@ -697,7 +697,7 @@
                                          additionalInformation = TRUE,
                                          effectSizeStandardized, pairs = NULL,
                                          options, dependencies = NULL, ...) {
-  title <- "Bayes Factor Robustness Plot"
+  title <- "Bayes Factor Robustness Check"
   hasGrouping <- !is.null(grouping)
   if (hasGrouping) {
     levels <- levels(dataset[[.v(grouping)]])
@@ -773,7 +773,7 @@
                                          effectSizeStandardized,
                                          testValue = NULL, pairs = NULL,
                                          options, dependencies = NULL, ...) {
-  title <- "Sequential Analysis Plot"
+  title <- "Sequential Analysis"
   hasGrouping <- !is.null(grouping)
   if (hasGrouping) {
     levels <- levels(dataset[[.v(grouping)]])
@@ -1053,15 +1053,18 @@
       sprintf("'user prior:'~%s==%s",       BFsubscript, format(BF10user,  digits = 3)),
       sprintf("'wide prior:'~%s==%s",       BFsubscript, format(BF10ultra, digits = 3)),
       sprintf("'ultrawide prior:'~%s==%s",  BFsubscript, format(BF10w,     digits = 3))
-    ))
+    )),
+    stringsAsFactors = FALSE
   )
-  # attr(dfPoints$g, "parse") <- TRUE
-# browser()
+
   plot <- JASPgraphs::PlotRobustnessSequential(
-    dfLines     = dfLines,
-    dfPoints    = dfPoints,
-    pointLegend = additionalInformation,
-    pointColors = c("red", "grey", "black", "white")
+    dfLines      = dfLines,
+    dfPoints     = dfPoints,
+    pointLegend  = additionalInformation,
+    bfSubscripts = BFsubscript,
+    pointColors  = c("red", "grey", "black", "white"),
+    xName        = "Cauchy prior width",
+
   )
 
   return(plot)
@@ -1480,13 +1483,14 @@
       y = BF10
     )
   }
+
   if (!BFH1H0)
     dfLines$y <- 1 / dfLines$y
   dfLines$y <- log(dfLines$y)
-# browser()
+
   plot <- JASPgraphs::PlotRobustnessSequential(
     dfLines      = dfLines,
-    xName        = "N",
+    xName        = "n",
     BF01         = 1 / BF10[length(BF10)],
     bfSubscripts = BFsubscript
   )

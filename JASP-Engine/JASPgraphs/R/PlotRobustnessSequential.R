@@ -17,6 +17,8 @@
 #' @param pointColors String vector, colors for points if \code{dfPoints$g} is not \code{NULL}.
 #' @param lineColors String vector, colors for lines if \code{dfLines$g} is not \code{NULL}.
 #' @param lineTypes String vector, line types if \code{dfLines$g} is not \code{NULL}.
+#' @param addLineAtOne Logical, should a black line be draw at BF = 1?
+#' @param bty List of three elements. Type specifies the box type, ldwX the width of the x-axis, lwdY the width of the y-axis.
 #' @param ... Unused.
 #'
 #' @export
@@ -25,7 +27,8 @@ PlotRobustnessSequential <- function(
   addEvidenceArrowText = TRUE, drawPizzaTxt = !is.null(BF01), evidenceLeveltxt = !is.null(BF01),
   pointLegend = !is.null(dfPoints), linesLegend = !is.null(dfLines$g), bfSubscripts = "BF[0][1]",
   pizzaTxt = pizzaTxtFromBF(bfSubscripts), pointColors  = c("grey", "white", "black", "red"),
-  lineColors = c("black", "grey", "black"), lineTypes = c("solid", "dashed", "dotted"), ...) {
+  lineColors = c("black", "grey", "black"), lineTypes = c("dotted", "solid", "solid"),
+  addLineAtOne = TRUE, bty = list(type = "n", ldwX = .5, lwdY = .5), ...) {
 
   errCheckPlots(dfLines = dfLines, dfPoints = dfPoints, BF01 = BF01)
   if (!is.null(dfPoints) && !is.null(BF01)) {
@@ -39,11 +42,21 @@ PlotRobustnessSequential <- function(
     # steps from 1, 3, 10, 30
     yBreaksL  <- log(c(1 / 100, 1 / 30, 1 / 10, 1 / 3, 1, 3, 10, 30, 100))
     yLabelsL <- c("1 / 100", "1 / 30", "1 / 10", "1 / 3", "1", "3", "10", "30", "100")
+    # yLabelsL <- c(paste0("frac(1,", c(100, 30, 10, 3), ")"), "1", "3", "10", "30", "100")
 
     # find the interval bounds, raw index corresponds to left bound of the interval
-    # +1 takes the right bound of the interval
-    idx <- findInterval(yRange, yBreaksL, rightmost.closed = FALSE, left.open = FALSE) + 0:1
-    idx <- idx[1L]:idx[2L]
+    # 1.05 allows the data to cross the upper gridlines
+    # e.g., so that a yRange of c(..., 1.02) means an upper bound of 1 rather than 3.
+    idx <- findInterval(yRange, 1.05 * yBreaksL, all.inside = TRUE)
+    if (idx[2L] == 5L && abs(yRange[2L]) <= 0.05493061) # near zero exception, since 1.05 * 0 = 0
+      idx[2L] <- 4L
+
+    if (addEvidenceArrowText) { # if we have arrows, add space for them
+      # -1 extra room for lb, +2, because findInterval returns LEFT bound of interval and we need one extra for ub.
+      idx <- max(1L, idx[1L] - 1L):min(length(yBreaksL), idx[2L] + 2L)
+    } else {
+      idx <- idx[1L]:idx[2L]
+    }
     yBreaksL <- yBreaksL[idx]
     yLabelsL <- yLabelsL[idx]
 
@@ -108,17 +121,35 @@ PlotRobustnessSequential <- function(
   } else {
     if (length(unique(dfLines$g)) != length(lineColors) || length(lineColors) != length(lineTypes))
       stop("lineColors and lineTypes must have the same length as the number of groups in dfLines.")
-    mapping <- aes(x = x, y = y, group = g, linetype = g, color = g)
+    mapping  <- aes(x = x, y = y, group = g, linetype = g, color = g)
     scaleCol <- ggplot2::scale_color_manual(values = lineColors)
     scaleLty <- ggplot2::scale_linetype_manual(values = lineTypes)
   }
 
+  nYbreaksL <- length(yBreaksL)
+  gridCols <- rep("gray", nYbreaksL)
+  gridLtys <- rep("dashed", nYbreaksL)
+  if (addLineAtOne) { # color line at 1 differently
+    i <- which(abs(yBreaksL) <= .Machine$double.eps)
+    gridCols[i] <- "black"
+    gridLtys[i] <- "solid"
+  }
+
+  gridLines <- makeGridLines(
+    x        = xBreaks[1L], #rep(xBreaks[c(1, length(xBreaks))], nYbreaksL),
+    y        = yBreaksL, #rep(yBreaksL, each = 2),
+    xend     = xBreaks[length(xBreaks)],
+    colour   = gridCols,
+    linetype = gridLtys
+  )
+
   g <- ggplot(data = dfLines, mapping = mapping) +
+    gridLines +
     geom_line() +
     scale_y_continuous(
       name     = parse(text = yName),
       breaks   = yBreaksL,
-      labels   = yLabelsL,
+      labels   = parse(text = yLabelsL),
       limits   = range(yBreaksL),
       sec.axis = sexAcis
     ) +
@@ -137,35 +168,13 @@ PlotRobustnessSequential <- function(
 
       legendPlot <- makeLegendPlot(dfPoints$g, fill = pointColors, type = "point")
 
-      # if (is.factor(dfPoints$g)) {
-      #   l <- as.character(levels(dfPoints$g))
-      # } else {
-      #   l <- unique(dfPoints$g)
-      # }
-      # dfLegendPlot <- data.frame(
-      #   x = 0.1,
-      #   y = factor(seq_along(dfPoints$x)),
-      #   l = rev(l) # y = 1, 2, ... so first one at the bottom, hence reverse the labels
-      # )
-      #
-      # legendPlot <- ggplot(data = dfLegendPlot, aes(x = x, y = y, fill = y, label = l)) +
-      #   geom_point(show.legend = FALSE, size = 1.5 * jaspGeomPoint$default_aes$size) +
-      #   ggplot2::geom_text(nudge_x = 0.1, size = .6 * getGraphOption("fontsize"), hjust = 0, parse = TRUE) +
-      #   ggplot2::xlim(c(0, 1)) +
-      #   ggplot2::scale_fill_manual(values = pointColors) +
-      #   getEmptyTheme()
     }
   }
 
   if (!is.null(BF01)) {
-
-    subs <- stringr::str_extract_all(bfSubscripts, "(?<=\\[).+?(?=\\])")[[1]]
-    labels <- paste0("BF[", subs, "][", rev(subs),  "] == ", format(c(1 / BF01, BF01), digits = 3))
-  	gTextBF <- draw2Lines(labels, parse = TRUE)
-    gWheel <- drawBFpizza(
-      dat = data.frame(y = c(1, BF01)),
-      labels = if (drawPizzaTxt) pizzaTxt else NULL
-    )
+    tmp <- makeBFwheelAndText(BF01, bfSubscripts, pizzaTxt, drawPizzaTxt)
+    gTextBF <- tmp$gTextBF
+    gWheel <- tmp$gWheel
   }
 
   linesLegendPlot <- gTextEvidence <- NULL
@@ -182,105 +191,39 @@ PlotRobustnessSequential <- function(
     idx <- findInterval(val, c(1, 3, 10, 30, 100), rightmost.closed = FALSE)
     evidenceLevel <- c("Anecdotal", "Moderate", "Strong", "Very Strong", "Extreme")[idx]
 
-    evidenceTxt <- c(evidenceLevel, "paste('Evidence for ', H[0], ':')")
-    gTextEvidence <- draw2Lines(evidenceTxt, parse = TRUE)
+    evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H[0], ':')"))
+    gTextEvidence <- draw2Lines(evidenceTxt, x = 0.75, align = "right")
   }
 
   if (addEvidenceArrowText) {
 
-    r <- yBreaksL[2L] - yBreaksL[1L]
-    n <- length(yBreaksL)  - 1L
+    n <- length(yBreaksL) - 1L
+    # distance from one gridline to the next
+    d1 <- yBreaksL[1L]     - yBreaksL[2L]
+    d2 <- yBreaksL[n + 1L] - yBreaksL[n]
+
+    # start at 10% of x-range
+    xlocation <- (xBreaks[length(xBreaks)] - xBreaks[1L]) * 0.1
 
     dfArrow <- data.frame(
-      y    = c(yBreaksL[1L] + r * 3 / 4, yBreaksL[n] + r * 1 / 4),
-      yend = c(yBreaksL[1L] + r * 1 / 4, yBreaksL[n] + r * 3 / 4)
+      x    = xlocation,
+      xend = xlocation,
+      y    = c(yBreaksL[2L] + 0.25 * d1, yBreaksL[n] + 0.25 * d2),
+      yend = c(yBreaksL[2L] + 0.75 * d1, yBreaksL[n] + 0.75 * d2)
     )
 
-    # which x-values are in which area?
-    xlocation <- c(NA, NA)
-    ranges <- findInterval(dfLines$x, xBreaks, rightmost.closed = TRUE, left.open = TRUE)
-    yCont <- matrix(NA, length(xBreaks), 2L)
-
-    # perhaps this should be a generic function, could help for legend placement?
-    for (i in 1:(ranges[length(ranges)])) {
-
-      # coordinates of y-values in this x-range
-      idx <- ranges == i
-
-      if (is.na(xlocation[1L])) {
-        # percentage of y-values in that area
-        yCont[i, 1L] <- mean(findInterval(
-          dfLines$y[idx],
-          sort(c(dfArrow$y[1L], dfArrow$yend[1L])),
-          rightmost.closed = TRUE, left.open = TRUE
-        ) == 1L)
-
-        if (yCont[i, 1L] == 0.0) { # no y-points in this area!
-          if (i == length(xBreaks)) {
-            xlocation[1L] <- (xBreaks[i] + xBreaks[i - 1L]) / 2.0
-          } else {
-            xlocation[1L] <- (xBreaks[i] + xBreaks[i + 1L]) / 2.0
-          }
-        }
-      }
-
-      if (is.na(xlocation[2L])) {
-        # percentage of y-values in that area
-        yCont[i, 2L] <- mean(findInterval(
-          dfLines$y[idx],
-          sort(c(dfArrow$y[2L], dfArrow$yend[2L])),
-          rightmost.closed = TRUE, left.open = TRUE
-        ) == 1L)
-
-        if (yCont[i, 2L] == 0.0) { # no y-points in this area!
-          if (i == length(xBreaks)) {
-            xlocation[2L] <- (xBreaks[i] + xBreaks[i - 1L]) / 2.0
-          } else {
-            xlocation[2L] <- (xBreaks[i] + xBreaks[i + 1L]) / 2.0
-          }
-        }
-      }
-
-      if (!anyNA(xlocation)) {
-        break
-      }
-    }
-
-    # fallback, minimum percentage
-    if (is.na(xlocation[1L])) {
-      i <- which.min(yCont[, 1L])
-      if (i == length(xBreaks)) {
-        xlocation[1L] <- (xBreaks[i] + xBreaks[i - 1L]) / 2.0
-      } else {
-        xlocation[1L] <- (xBreaks[i] + xBreaks[i + 1L]) / 2.0
-      }
-    }
-    if (is.na(xlocation[2L])) {
-      i <- which.min(yCont[, 2L])
-      if (i == length(xBreaks)) {
-        xlocation[2L] <- (xBreaks[i] + xBreaks[i - 1L]) / 2.0
-      } else {
-        xlocation[2L] <- (xBreaks[i] + xBreaks[i + 1L]) / 2.0
-      }
-    }
-
-    dfArrow$x    <- xlocation
-    dfArrow$xend <- xlocation
-
-    yvals <- numeric(6)
-    yvals[1:3] <- seq(dfArrow$y[1L], dfArrow$yend[1L], length.out = 3L)
-    yvals[4:6] <- seq(dfArrow$yend[2L], dfArrow$y[2L], length.out = 3L)
     dfArrowTxt <- data.frame(
-      y = yvals,
-      x = rep(xlocation + (xBreaks[2L] - xBreaks[1L]) / 4.0, each = 3),
+      y = (dfArrow$y + dfArrow$yend) / 2,
+      x = 1.5 * xlocation, # 15% of x-range
       # additional '' around for are necessary because otherwise it's parsed as a for loop
-      label = c("Evidence", "'for'", "H[0]", "Evidence", "'for'", "H[1]")
+      # label = c("Evidence", "'for'", "H[0]", "Evidence", "'for'", "H[1]")
+      label = c("Evidence~'for'~H[0]", "Evidence~'for'~H[1]")
     )
-
     g <- g + ggplot2::geom_segment(
-      data = dfArrow, aes(x = x, y = y, xend = xend, yend = yend),
+      data    = dfArrow, aes(x = x, y = y, xend = xend, yend = yend),
       lineend = "round", linejoin = "bevel",
-      arrow = grid::arrow(length = grid::unit(0.3, "inches")),
+      arrow   = grid::arrow(length = grid::unit(0.4, "cm")),
+      size    = 1,
       inherit.aes = FALSE
     ) +
       ggplot2::geom_text(
@@ -288,38 +231,58 @@ PlotRobustnessSequential <- function(
         mapping     = aes(x = x, y = y, label = label),
         parse       = TRUE,
         size        = .40 * getGraphOption("fontsize"),
-        inherit.aes = FALSE
+        inherit.aes = FALSE,
+        hjust       = 0.0
       )
-
   }
 
+  # if (addLineAtOne) {
+  #   idx <- 1L + (yBreaksL == 0)
+  #   gridLines <- element_line(colour = c("gray", "black")[idx], linetype = c("dashed", "solid")[idx])
+  # } else {
+  #   gridLines <- element_line(colour = "grey", linetype = "dashed")
+  # }
   thm <- theme(
-    panel.grid.major.y = ggplot2::element_line(colour = "grey", linetype = "dashed"),
-    axis.ticks.y.right = ggplot2::element_line(colour = colsRight)
-    # axis.text.y.right  = ggplot2::element_text(debug = TRUE)
+    # panel.grid.major.y = gridLines,
+    axis.ticks.y.right = element_line(colour = colsRight),
+    axis.text.y.right  = element_text(margin = ggplot2::margin(r = 5))
   )
-  g <- themeJasp(g) + rightAxisLine + thm
+  g <- themeJasp(g, bty = bty) + rightAxisLine + thm
 
   if (pointLegend && !is.null(dfPoints)) {
-    plot <- gridExtra::arrangeGrob(grobs = list(legendPlot, g), nrow = 2L, ncol = 1L, heights = c(.3, .7))
-  } else if (!is.null(BF01)) {
-
-    if (!is.null(linesLegendPlot)) {
-      topPlotList <- list(gTextBF, gWheel, linesLegendPlot)
-    } else {
-      topPlotList <- list(gTextBF, gWheel, gTextEvidence)
-    }
-    idx <- lengths(topPlotList) == 0L
-    layout <- matrix(1:3, 1, 3)
-    layout[idx] <- NA_integer_
-
     f <- tempfile()
     grDevices::png(f)
-    topplot <- gridExtra::arrangeGrob(grobs = topPlotList[!idx], layout_matrix = layout)
-    plot    <- gridExtra::arrangeGrob(grobs = list(topplot, g), nrow = 2L, ncol = 1L, heights = c(.2, .8))
+    plot <- gridExtra::arrangeGrob(grobs = list(legendPlot, g), nrow = 2L, ncol = 1L, heights = c(.2, .8))
     grDevices::dev.off()
     if (file.exists(f))
       file.remove(f)
+
+  } else if (!is.null(BF01)) {
+
+    if (!is.null(linesLegendPlot)) {
+      topPlotList <- list(gTextBF, gWheel, linesLegendPlot, g)
+    } else {
+      topPlotList <- list(gTextBF, gWheel, gTextEvidence, g)
+    }
+    idx <- lengths(topPlotList[1:3]) == 0L
+    layout <- matrix(1:3, 1, 3)
+    layout[idx] <- NA_integer_
+    layout <- rbind(layout, 4)
+
+    f <- tempfile()
+    png(f)
+    plot <- arrangeGrob(
+      grobs         = topPlotList,
+      heights       = c(.2, .8),
+      layout_matrix = layout,
+      widths        = c(.4, .2, .4)
+    )
+    # topplot <- gridExtra::arrangeGrob(grobs = topPlotList[!idx], layout_matrix = layout,
+    #                                   padding = grid::unit(0.0, "line"))
+    # plot    <- gridExtra::arrangeGrob(grobs = list(topplot, g), nrow = 2L, ncol = 1L, heights = c(.2, .8),
+    #                                   padding = grid::unit(0.0, "line"))
+    dev.off()
+    if (file.exists(f)) file.remove(f)
 
   } else {
     plot <- g
@@ -327,4 +290,34 @@ PlotRobustnessSequential <- function(
 
   class(plot) <- c("JASPgraphs", class(plot))
   return(plot)
+}
+
+
+
+#' custom Gridlines for ggplot objects
+#'
+#' @param x Left bound of gridline.
+#' @param xend Right bound of gridline.
+#' @param y height of gridline.
+#' @param ... Further arguments to \code{\link[ggplot2:geom_segment]{geom_segment}}, e.g., colour.
+#' @param linetypes solid, dashed, dotted, etc.
+#' @param size size of the line.
+#'
+#' @details This function exists only when gridlines need to exist at specific locations, for example from x1 to x2 but
+#' don't extend further than x2. Otherwise, use the build in functionality inside \code{\link[ggplot2:theme]{theme}}.
+#' This function is a wrapper around \code{\link[ggplot2:geom_segment]{geom_segment}}.
+#' @return a ggproto object.
+#'
+#' @export
+makeGridLines <- function(x, xend, y, size = 1.05, ...) {
+
+  return(
+    ggplot2::geom_segment(
+      data        = data.frame(x = x, y = y, xend = xend),
+      mapping     =        aes(x = x, y = y, xend = xend, yend = y),
+      inherit.aes = FALSE,
+      size        = size,
+      ...,
+    )
+  )
 }
