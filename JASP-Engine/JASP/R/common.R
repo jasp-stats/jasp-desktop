@@ -15,16 +15,24 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 fromJSON  <- function(x) jsonlite::fromJSON(x, TRUE, FALSE, FALSE)
-toJSON    <- function(x) jsonlite::toJSON(x, auto_unbox = TRUE, digits = NA, null="null")
+toJSON    <- function(x)
+{
+    print(paste0("toJSON got: ", x))
+    result <- jsonlite::toJSON(x, auto_unbox = TRUE, digits = NA, null="null")
+    print(paste0("toJSON result: ", result))
+
+    return(result)
+}
+
 
 run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresInit=TRUE, perform="run")
 {
-	if (identical(.Platform$OS.type, "windows"))
-		compiler::enableJIT(0)
-	dataKey <- fromJSON(dataKey)
-	options <- fromJSON(options)
-	resultsMeta <- fromJSON(resultsMeta)
-	stateKey <- fromJSON(stateKey)
+    if (identical(.Platform$OS.type, "windows"))
+            compiler::enableJIT(0)
+    dataKey <- fromJSON(dataKey)
+    options <- fromJSON(options)
+    resultsMeta <- fromJSON(resultsMeta)
+    stateKey <- fromJSON(stateKey)
 
 
   if (base::exists(".requestStateFileNameNative")) {
