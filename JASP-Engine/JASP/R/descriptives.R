@@ -183,7 +183,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   if (options$skewness) {           stats$addColumnInfo(name="Skewness",                    type="number", format="sf:4")
                                     stats$addColumnInfo(name="Std. Error of Skewness",      type="number", format="sf:4") }
   if (options$kurtosis) {           stats$addColumnInfo(name="Kurtosis",                    type="number", format="sf:4")
-                                    stats$addColumnInfo(name="Std. Error of Kurtosis",      type="string", format="sf:4") }
+                                    stats$addColumnInfo(name="Std. Error of Kurtosis",      type="number", format="sf:4") }
   if (options$range)                stats$addColumnInfo(name="Range",                       type="number", format="sf:4")
   if (options$minimum)              stats$addColumnInfo(name="Minimum",                     type="number", format="sf:4")
   if (options$maximum)              stats$addColumnInfo(name="Maximum",                     type="number", format="sf:4")
