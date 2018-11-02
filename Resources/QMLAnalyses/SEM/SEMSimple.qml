@@ -22,8 +22,9 @@ import JASP.Controls 1.0
 Form {
     id: form
     
-    VariablesForm {
-        id: variablesForm
+    TextArea {
+        name: "model"
+        textType: "lavaan"
     }
 
     ButtonGroup {
@@ -84,52 +85,82 @@ Form {
             columns: 3
             GroupBox {
                 title: qsTr("Grouping variable")
-                ComboBox { name: "groupingVariable"; showVariableTypeIcon: true } // No model or syncModels: it takes all variables per default
+                ComboBox { name: "groupingVariable"; showVariableTypeIcon: true; addEmptyValue: true} // No model or syncModels: it takes all variables per default
+                GroupBox {
+                    title: qsTr("Equality Constraits")
+                    
+                    CheckBox { text: qsTr("Loadings")           ; name: "eq_loadings" }
+                    CheckBox { text: qsTr("Intercepts")         ; name: "eq_intercepts" }
+                    CheckBox { text: qsTr("Residuals")          ; name: "eq_residuals" }
+                    CheckBox { text: qsTr("Residual covariances") ; name: "eq_residualcovariances" }
+                    CheckBox { text: qsTr("Means")              ; name: "eq_means" }
+                    CheckBox { text: qsTr("Threashold")         ; name: "eq_thresholds" }
+                    CheckBox { text: qsTr("Regressions")        ; name: "eq_regressions" }
+                    CheckBox { text: qsTr("Latent Variances")   ; name: "eq_variances" }
+                    CheckBox { text: qsTr("Latent Covariances") ; name: "eq_lvcovariances" }
+                }
             }
 
-            GroupBox {
-                title: qsTr("Central Tendency")
-
-                CheckBox {  text: qsTr("Mean")      ; name: "mean";  checked: true}
-                CheckBox {  text: qsTr("Median")    ; name: "median"              }
-                CheckBox {  text: qsTr("Mode")      ; name: "mode"                }
-                CheckBox {  text: qsTr("Sum")       ; name: "sum"                 }
+            ButtonGroup {
+                title: qsTr("Estimator")
+                name: "estimator"
+                RadioButton { text: qsTr("Auto")    ; name: "automatic"; checked: true }
+                RadioButton { text: qsTr("ML")      ; name: "ML" }
+                RadioButton { text: qsTr("GLS")     ; name: "GLS" }
+                RadioButton { text: qsTr("WLS")     ; name: "WLS" }
+                RadioButton { text: qsTr("ULS")     ; name: "ULS" }
+                RadioButton { text: qsTr("DWLS")    ; name: "DWLS" }
             }
             
             GroupBox {
-                title: qsTr("Dispersion")
-                CheckBox {  text: qsTr("Std.deviation") ; name: "standardDeviation"       }
-                CheckBox {  text: qsTr("Minimum")       ; name: "minimum"; checked: true  }
-                CheckBox {  text: qsTr("Variance")      ; name: "variance"                }
-                CheckBox {  text: qsTr("Maximum")       ; name: "maximum"                 }
-                CheckBox {  text: qsTr("Range")         ; name: "range"                   }
-                CheckBox {  text: qsTr("S. E. mean")    ; name: "standardErrorMean"       }
+                title: qsTr("Model Options")
+                CheckBox {  text: qsTr("Include mean structure")        ; name: "includeMeanStructure"          }
+                CheckBox {  text: qsTr("Assume factors uncorrelated")   ; name: "assumeFactorsUncorrelated"     }
+                CheckBox {  text: qsTr("Fix exogenous covariates")      ; name: "fixExogenousCovariates" ; checked: true }
+                
+                ComboBox {
+                    label.text: qsTr("Factor Scaling")
+                    name: "factorStandardisation"
+                    model: ListModel {
+                        ListElement { key: "Factor Loadings"    ; value: "factorLoadings" }
+                        ListElement { key: "Residual Variance"  ; value: "residualVariance" }
+                        ListElement { key: "None"               ; value: "none" }
+                    }
+                }
             }
-            GroupBox {
-                title: qsTr("Distribution")
-                CheckBox {  text: qsTr("Skewness")      ; name: "skewness"                }
-                CheckBox {  text: qsTr("Kurtosis")      ; name: "kurtosis"                }
-            }
+            
         }
     }
     
     ExpanderButton {
         text: qsTr("Advanced")
         GridLayout {
-            ButtonGroup {
-                name: "chartType"
-                title: qsTr("Chart Type")
-                RadioButton {   text: qsTr("None")          ; name: "_1noCharts"    }
-                RadioButton {   text: qsTr("Bar charts")    ; name: "_2barCharts"   }
-                RadioButton {   text: qsTr("Pie Charts")    ; name: "_3pieCharts"   }
-                RadioButton {   text: qsTr("Histograms")    ; name: "_4histograms"  }                
+            GroupBox {
+                title: qsTr("Options")
+                CheckBox {  text: qsTr("Fix manifest intercepts to zero")   ; name: "fixManifestInterceptsToZero"   }
+                CheckBox {  text: qsTr("Fix latent intercepts to zero")     ; name: "fixLatentInterceptsToZero"     ; checked: true }
+                CheckBox {  text: qsTr("Omit residual single indicator")    ; name: "omitResidualSingleIndicator"   ; checked: true }
+                CheckBox {  text: qsTr("Residual variances")                ; name: "residualVariances"             ; checked: true }
+                CheckBox {  text: qsTr("Correlate exogenous latents")       ; name: "correlateExogenousLatents"     ; checked: true }
+                CheckBox {  text: qsTr("Add thresholdds")                   ; name: "addThresholds"                 ; checked: true }
+                CheckBox {  text: qsTr("Add scalings parameters")           ; name: "addScalingParameters"          ; checked: true }
+                CheckBox {  text: qsTr("Correlate dependent variables")     ; name: "correlateDependentVariables"   ; checked: true }
             }
             
-            ButtonGroup {
-                name: "chartValues"
-                title: qsTr("Chart Values")
-                RadioButton {   text: qsTr("Frequencies")   ; name: "_1frequencies" }
-                RadioButton {   text: qsTr("Percentages")   ; name: "_2percentages" }                
+            GroupBox {
+                ButtonGroup {
+                    title: qsTr("Emulation")
+                    name: "emulation"
+                    RadioButton { text: qsTr("None")    ; name: "none"; checked: true}
+                    RadioButton { text: qsTr("Mplus")   ; name: "Mplus" }
+                    RadioButton { text: qsTr("EQS")     ; name: "EQS" }
+                }
+                
+                ComboBox {
+                    name: "modelName"
+                    label.text: qsTr("Model Name")
+                    model: ["Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6", "Model 7", "Model 8", "Model 8", "Model 9", "Model 10"]
+                }
             }
         }
     }

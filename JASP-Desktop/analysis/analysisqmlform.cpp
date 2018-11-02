@@ -27,6 +27,7 @@
 #include "widgets/boundqmlcombobox.h"
 #include "widgets/boundqmlslider.h"
 #include "widgets/boundqmltextinput.h"
+#include "widgets/boundqmltextarea.h"
 #include "widgets/boundqmlradiobuttons.h"
 #include "widgets/boundqmllistviewpairs.h"
 #include "widgets/boundqmllistviewanovamodels.h"
@@ -119,6 +120,18 @@ QString AnalysisQMLForm::_getAnalysisQMLPath()
 	return path;
 }
 
+void AnalysisQMLForm::rScriptDoneHandler(QVariant key, const QString &result)
+{
+	BoundQMLItem* item = getBoundItem(key.toString());
+	if (item)
+		item->rScriptDoneHandler(result);
+#ifdef JASP_DEBUG
+	else
+		std::cout << "Unknown item " << key.toString().toStdString() << std::endl;
+#endif
+		
+}
+
 void AnalysisQMLForm::_parseQML()
 {	
 	QQuickItem *root = _quickWidget->rootObject();
@@ -181,6 +194,15 @@ void AnalysisQMLForm::_parseQML()
 		case qmlControlType::TextField:			boundQMLItem = new BoundQMLTextInput(item,		this);	break;
 		case qmlControlType::ButtonGroup:		boundQMLItem = new BoundQMLRadioButtons(item,	this);	break;
 		case qmlControlType::Slider:			boundQMLItem = new BoundQMLSlider(item,			this);	break;
+		case qmlControlType::TextArea:
+		{
+			BoundQMLTextArea* boundQMLTextArea = new BoundQMLTextArea(item,	this);
+			boundQMLItem = boundQMLTextArea;
+			ListModelTermsAvailable* allVariablesModel = boundQMLTextArea->allVariablesModel();
+			if (allVariablesModel)
+				_allAvailableVariablesModels.push_back(allVariablesModel);
+			break;
+		}
 		case qmlControlType::ComboBox:
 		{
 			BoundQMLComboBox* boundQMLComboBox = new BoundQMLComboBox(item, this);
@@ -256,7 +278,7 @@ void AnalysisQMLForm::_parseQML()
 		}
 		
 		if (boundQMLItem)
-			_boundItems.push_back(boundQMLItem);
+			_boundItems[boundQMLItem->name()] = boundQMLItem;
 	}
 	
 	for (auto const& pair : dropKeyMap)
@@ -328,9 +350,12 @@ void AnalysisQMLForm::bindTo(Options *options, DataSet *dataSet)
 	
 	_setAllAvailableVariablesModel();	
 	
-	for (BoundQMLItem* item : _boundItems)
+	QMapIterator<QString, BoundQMLItem*> it(_boundItems);
+	while (it.hasNext())
 	{
-		string name = item->name().toStdString();
+		it.next();
+		BoundQMLItem* item = it.value();
+		string name = it.key().toStdString();
 		Option* option = options->get(name);
 		if (!option)
 		{
@@ -360,7 +385,7 @@ void AnalysisQMLForm::unbind()
 	if (_options == NULL)
 		return;
 	
-	for (BoundQMLItem* item : _boundItems)
+	for (BoundQMLItem* item : _boundItems.values())
 		item->unbind();
 
 	_options = NULL;

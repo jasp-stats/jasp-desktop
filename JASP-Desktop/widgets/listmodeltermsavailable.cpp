@@ -24,6 +24,8 @@
 
 ListModelTermsAvailable::ListModelTermsAvailable(QMLListView* listView)
 	: ListModelAvailableInterface(listView)
+	, _addEmptyValue(false)
+	
 {
 }
 
@@ -46,6 +48,9 @@ void ListModelTermsAvailable::initTerms(const Terms &terms)
 	}
 	Terms ordered; // present them in a nice order
 
+	if (_addEmptyValue)
+		ordered.add(_emptyValue);
+	
 	ordered.add(suggested);
 	ordered.add(allowed);
 	ordered.add(forbidden);
@@ -62,6 +67,14 @@ void ListModelTermsAvailable::initTerms(const Terms &terms)
 QVariant ListModelTermsAvailable::requestInfo(const Term &term, VariableInfo::InfoType info) const
 {
 	return VariableInfoConsumer::requestInfo(term, info);
+}
+
+QVariant ListModelTermsAvailable::data(const QModelIndex &index, int role) const
+{
+	if (_addEmptyValue && role == ListModel::TypeRole && index.row() == 0)
+		return QVariant();
+	else
+		return ListModelAvailableInterface::data(index, role);
 }
 
 void ListModelTermsAvailable::syncTermsChanged(Terms* termsAdded, Terms* termsRemoved)

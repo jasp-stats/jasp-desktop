@@ -64,6 +64,7 @@ private:
 	OptionString *_boundTo;
 	QSyntaxHighlighter *_highlighter;
 
+public:
 	class SyntaxHighlighter : public QSyntaxHighlighter
 	{
 	public:

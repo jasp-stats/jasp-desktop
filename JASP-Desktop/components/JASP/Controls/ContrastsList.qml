@@ -22,7 +22,7 @@ VariablesList {
     name: "contrasts"
     listViewType: "AssignedVariables"
     height: 200
-    draggable: false            
+    draggable: false
 
     ExtraControlColumn {
         type: "ComboBox"

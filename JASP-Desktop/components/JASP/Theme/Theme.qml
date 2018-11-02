@@ -56,6 +56,7 @@ QtObject {
     readonly property int groupContentPadding: 10
     readonly property int defaultListHeight: 350
     readonly property int defaultSingleItemListHeight: 45
+    readonly property int defaultTextAreaHeight: 250
     readonly property int variablesListTitle: 20
 
 	readonly property int generalAnchorMargin: 8

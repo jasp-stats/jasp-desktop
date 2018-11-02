@@ -31,8 +31,17 @@ BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisQMLForm* form)
 	_boundTo = NULL;
 	_model = NULL;
 	_currentIndex = -1;
+	bool addEmptyValue = _item->property("addEmptyValue").toBool();
+	QString emptyValue = _item->property("emptyValue").toString();
 	
 	_model = new ListModelTermsAvailable(this);
+	if (addEmptyValue)
+	{
+		_model->setEmptyValue(emptyValue);
+		_keyToValueMap[emptyValue] = "";
+		_valueToKeyMap[""] = emptyValue;
+	}
+
 	QVariant model = QQmlProperty(item, "model").read();
 	if (model.isNull())
 	{
@@ -41,6 +50,7 @@ BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisQMLForm* form)
 	}
 	else
 	{
+		_model->setTermsAreVariables(false);
 		Terms terms;
 		QList<QVariant> list = model.toList();
 		if (!list.isEmpty())
@@ -50,7 +60,7 @@ BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisQMLForm* form)
 			_model->initTerms(terms);
 		}
 		else
-		{			
+		{
 			QAbstractListModel *srcModel = qobject_cast<QAbstractListModel *>(model.value<QObject *>());
 			if (srcModel)
 			{
@@ -92,33 +102,25 @@ void BoundQMLComboBox::bindTo(Option *option)
 	if (_boundTo != NULL)
 	{
 		QString selectedValue = QString::fromStdString(_boundTo->value());
-		_currentIndex = -1;
-		_currentText.clear();
+		int index = -1;
 		QList<QString> values = _model->terms().asQList();
 		if (values.size() > 0)
 		{
 			if (selectedValue.isEmpty())
-			{
-				_currentIndex = 0;
-				_currentText = values[0];
-			}
+				index = 0;
 			else
 			{
 				if (_valueToKeyMap.contains(selectedValue))
 					selectedValue = _valueToKeyMap[selectedValue];
-				_currentIndex = values.indexOf(selectedValue);
-				if (_currentIndex == -1)
+				index = values.indexOf(selectedValue);
+				if (index == -1)
 				{
 					addError(QString::fromLatin1("Unknown option ") + selectedValue + " in ComboBox " + name());
-					_currentIndex = 0;
-					_currentText = values[0];
+					index = 0;
 				}
-				else
-					_currentText = selectedValue;
 			}
 		}
-		_item->setProperty("currentIndex", _currentIndex);
-		_item->setProperty("currentText", _currentText);
+		_setCurrentValue(index, false, false);
 		
 		_resetItemWidth();
 	}
@@ -130,8 +132,12 @@ void BoundQMLComboBox::resetQMLItem(QQuickItem *item)
 {
 	BoundQMLItem::resetQMLItem(item);
 	
+	QQmlProperty(_item, "model").write(QVariant::fromValue(_model));
 	_item->setProperty("currentIndex", _currentIndex);
 	_item->setProperty("currentText", _currentText);
+	_item->setProperty("currentIconPath", _currentIconPath);
+	_item->setProperty("initialized", true);
+	_resetItemWidth();
 	QQuickItem::connect(_item, SIGNAL(activated(int)), this, SLOT(comboBoxChangeValueSlot(int)));
 }
 
@@ -171,19 +177,17 @@ void BoundQMLComboBox::setUp()
 
 void BoundQMLComboBox::modelChangedHandler()
 {
+	std::vector<std::string> options;
 	const Terms& terms = _model->terms();
 	bool found = false;
 	int index = 0;
 	for (const Term& term : terms)
 	{
-		if (term.asQString() == _currentText)
+		QString val = term.asQString();		
+		options.push_back(val.toStdString());		
+		if (val == _currentText)
 		{
 			found = true;
-			if (_currentIndex != index)
-			{
-				_currentIndex = index;
-				_item->setProperty("currentIndex", _currentIndex);
-			}
 			break;
 		}
 		index++;
@@ -191,16 +195,16 @@ void BoundQMLComboBox::modelChangedHandler()
 	
 	if (!found)
 	{
-		_currentText.clear();
-		_currentIndex = -1;
+		index = -1;
 		if (terms.size() >= 0)
-		{
-			_currentText = terms.at(0).asQString();
-			_currentIndex = 0;
-		}
-		_item->setProperty("currentIndex", _currentIndex);
-		_item->setProperty("currentText", _currentText);
+			index = 0;
 	}
+	
+	if (_boundTo)
+		_boundTo->resetOptions(options, index);
+	
+	_setCurrentValue(index, true, false);
+	
 	_resetItemWidth();
 }
 
@@ -211,13 +215,7 @@ void BoundQMLComboBox::comboBoxChangeValueSlot(int index)
 		return;
 	
 	if (_currentIndex != index)
-	{
-		_currentIndex = index;
-		_currentText = terms.at(_currentIndex).asQString();
-		_item->setProperty("currentText", _currentText);
-		if (_boundTo != NULL)
-			_boundTo->set(index);
-	}
+		_setCurrentValue(index);
 }
 
 void BoundQMLComboBox::_resetItemWidth()
@@ -236,4 +234,27 @@ void BoundQMLComboBox::_resetItemWidth()
 	}
 	
 	QMetaObject::invokeMethod(_item, "resetWidth", Q_ARG(QVariant, QVariant(maxValue)));	
+}
+
+void BoundQMLComboBox::_setCurrentValue(int index, bool setComboBoxIndex, bool setOption)
+{
+	_currentIndex = index;
+	_currentText.clear();
+	_currentIconPath.clear();
+	if (_currentIndex >= 0)
+	{
+		const Terms& terms = _model->terms();
+		if (_currentIndex < terms.size())
+		{
+			_currentText = terms.at(_currentIndex).asQString();
+			QModelIndex index(_model->index(_currentIndex));
+			_currentIconPath = _model->data(index, ListModel::TypeRole).toString();			
+		}
+	}
+	_item->setProperty("currentText", _currentText);
+	_item->setProperty("currentIconPath", _currentIconPath);
+	if (setComboBoxIndex)
+		_item->setProperty("currentIndex", _currentIndex);
+	if (setOption && _boundTo)
+		_boundTo->set(_currentIndex);
 }

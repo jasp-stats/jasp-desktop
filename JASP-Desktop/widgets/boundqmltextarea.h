@@ -16,46 +16,51 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BOUNDQMLCOMBOBOX_H
-#define BOUNDQMLCOMBOBOX_H
+
+#ifndef BOUNDQMLTEXTAREA_H
+#define BOUNDQMLTEXTAREA_H
 
 #include "analysis/boundqmlitem.h"
-#include "analysis/options/optionlist.h"
-#include "listmodel.h"
+#include "analysis/options/optionstring.h"
+#include "textmodellavaan.h"
 #include "listmodeltermsavailable.h"
-#include <QMap>
 
-class BoundQMLComboBox : public QMLListView, public BoundQMLItem
+#include <QObject>
+
+
+class BoundQMLTextArea : public QObject, public BoundQMLItem
 {
 	Q_OBJECT
 	
+	enum TextType {Default, Lavaan};
+	
 public:
-	BoundQMLComboBox(QQuickItem* item, AnalysisQMLForm* form);
+	
+	BoundQMLTextArea(QQuickItem* item, AnalysisQMLForm* form);
 	virtual void bindTo(Option *option) OVERRIDE;
-	virtual void resetQMLItem(QQuickItem *item) OVERRIDE;
+	
 	virtual Option* createOption() OVERRIDE;
 	virtual Option* boundTo() OVERRIDE { return _boundTo; }
-	virtual void setUp() OVERRIDE;
+	virtual void resetQMLItem(QQuickItem *item) OVERRIDE;
 	
-	virtual ListModel* model() OVERRIDE { return _model; }
+	virtual void rScriptDoneHandler(const QString &result) OVERRIDE;
 	
-	bool hasAllVariablesModel = false;
+	ListModelTermsAvailable* allVariablesModel() { return _allVariablesModel; }
 
-protected slots:
-	virtual void modelChangedHandler() OVERRIDE;
-	void comboBoxChangeValueSlot(int index);
-
+signals:
+	
+private slots:
+	void checkSyntax();
+    
 protected:
-	OptionList *_boundTo;
-	int _currentIndex;
-	QString _currentText;
-	QString _currentIconPath;
-	ListModelTermsAvailable* _model;
-	QMap<QString, QString> _keyToValueMap;
-	QMap<QString, QString> _valueToKeyMap;
+	OptionString *_boundTo;
+	QString _text;
+	TextType _textType;
+	QString _applyScriptInfo;
 	
-	void _resetItemWidth();
-	void _setCurrentValue(int index, bool setComboBoxIndex = true, bool setOption = true);
+	TextModelLavaan::SyntaxHighlighter *_lavaanHighlighter;
+	ListModelTermsAvailable* _allVariablesModel;
 };
 
-#endif // BOUNDQMLCOMBOBOX_H
+
+#endif // BOUNDQMLTEXTAREA_H

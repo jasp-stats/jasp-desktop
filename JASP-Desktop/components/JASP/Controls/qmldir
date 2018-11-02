@@ -18,6 +18,7 @@ RadioButton 1.0 RadioButton.qml
 Slider 1.0 Slider.qml
 Switch 1.0 Switch.qml
 TextField 1.0 TextField.qml
+TextArea 1.0 TextArea.qml
 VariablesForm 1.0 VariablesForm.qml
 VariablesList 1.0 VariablesList.qml
 ExtraControlColumn 1.0 ExtraControlColumn.qml

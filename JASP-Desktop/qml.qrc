@@ -26,5 +26,6 @@
         <file>components/JASP/Controls/ExtraControlColumn.qml</file>
         <file>components/JASP/Controls/ContrastsList.qml</file>
         <file>components/JASP/Controls/Slider.qml</file>
+        <file>components/JASP/Controls/TextArea.qml</file>
     </qresource>
 </RCC>

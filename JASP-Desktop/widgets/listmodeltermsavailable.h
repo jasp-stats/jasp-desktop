@@ -32,9 +32,12 @@ public:
 	
 	virtual void initTerms(const Terms &terms) OVERRIDE;
 	virtual QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const OVERRIDE;
+	virtual QVariant data(const QModelIndex &index, int role) const OVERRIDE;
 	
 	virtual void resetTermsFromSyncModels();
 	virtual ListModel* getSyncModelOfTerm(const Term& term);
+	
+	void setEmptyValue(QString emptyValue)	{ _addEmptyValue = true; _emptyValue = emptyValue; }	
 
 public slots:
 	virtual void syncTermsChanged(Terms* termsAdded, Terms* termsRemoved) OVERRIDE;
@@ -43,7 +46,9 @@ private:
 	void _setChangedTerms(const Terms& newTerms);
 	Terms _tempRemovedTerms;
 	Terms _tempAddedTerms;
-		
+	
+	bool _addEmptyValue;
+	QString _emptyValue;		
 };
 
 #endif // LISTMODELTERMSAVAILABLE_H

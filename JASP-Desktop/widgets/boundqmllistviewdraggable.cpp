@@ -123,30 +123,31 @@ void BoundQMLListViewDraggable::removeRowWithControlsHandler(QString termName)
 void BoundQMLListViewDraggable::addRowWithControlsHandler(QString termName, QVariant controls)
 {
 	QList<QVariant> controlList = controls.toList();
-	QList<QQuickItem*> controlItems;
+	QMap<QString, QQuickItem*> controlItems;
 	
 	for (const QVariant& controlVariant : controlList)
 	{
 		QQuickItem* controlItem = qvariant_cast<QQuickItem *>(controlVariant);
-		controlItems.push_back(controlItem);
+		QString controlName = controlItem->property("name").toString();
+		if (controlName.isEmpty())
+			addError(QString::fromLatin1("An Extra control Column in ") + name() + QString::fromLatin1(" has no name"));
+		else
+			controlItems[controlName] = controlItem;
 	}
 	
 	QMap<QString, BoundQMLItem *> row;
 	if (_cachedRowsWithControls.contains(termName))
 	{
 		row = _cachedRowsWithControls[termName];
-		QList<BoundQMLItem*> boundItems = row.values();
-		int i = 0;
-		for (QQuickItem* controlItem : controlItems)
-		{
-			if (i >= boundItems.size())
-			{
-				qDebug() << "Cached Row has only " << boundItems.size() << " item(s) but QML has " << controlItems.length() << " control(s)!!!!";
-				break;
-			}
-			BoundQMLItem* boundItem = boundItems[i];
-			boundItem->resetQMLItem(controlItem);
-			i++;
+		QMapIterator<QString, QQuickItem*> it(controlItems);
+		while (it.hasNext()) {
+			it.next();
+			BoundQMLItem* boundItem = row[it.key()];
+			if (!boundItem)
+				qDebug() << "Cached Row does not have " << it.key();
+			else
+				boundItem->resetQMLItem(it.value());
+				
 		}
 	}
 	else

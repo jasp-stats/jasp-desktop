@@ -7,21 +7,23 @@ JASPControl {
     id: comboBox
     controlType: "ComboBox"
     implicitHeight: control.height
-    implicitWidth: control.width + (label.visible ? labelSpacing + label.implicitWidth : 0)
+    implicitWidth: control.implicitWidth + (label.visible ? labelSpacing + label.implicitWidth : 0)
+    width: implicitWidth
     controlBackground: comboBoxBackground
     
     property int labelSpacing: 4
     
     property alias label: label
     property string currentText
-    property string currentIcon
+    property string currentIconPath
     property alias currentIndex: control.currentIndex
     property alias model: control.model
     property string textRole: "key"
     property string valueRole: "value"
     property bool showVariableTypeIcon: false
     property var syncModels
-    property string placeholderText: qsTr("<no choice>")
+    property bool addEmptyValue: false
+    property string emptyValue: qsTr("<no choice>")
     property alias control: control
     property bool initialized: false
     
@@ -31,12 +33,15 @@ JASPControl {
         textMetrics.font = control.font
         textMetrics.text = value
         var newWidth = textMetrics.width + (comboBox.showVariableTypeIcon ? 20 : 4);
-        if (newWidth > control.modelWidth)
+        if (newWidth > control.modelWidth) {
             control.modelWidth = newWidth;
+            comboBox.width = comboBox.implicitWidth; // the width is not automatically updated by the implicitWidth...
+        }
     }
     
     Component.onCompleted: {
         control.activated.connect(activated);
+        console.log("currentIndex: " + currentIndex)
     }
     
     RowLayout {
@@ -52,9 +57,11 @@ JASPControl {
             focus: true
             spacing: 5
             height: Theme.comboBoxHeight
-            property int modelWidth : 30
+            property int modelWidth: 30
+            property bool isEmptyValue: comboBox.addEmptyValue && currentIndex <= 0
             implicitWidth: modelWidth + leftPadding + rightPadding + canvas.width
             textRole:comboBox.textRole
+            
             
             TextMetrics {
                 id: textMetrics
@@ -63,19 +70,25 @@ JASPControl {
             delegate: ItemDelegate {
                 height: control.height
                 contentItem: Rectangle {
+                    id: itemRectangle
                     anchors.fill: parent
+                    property bool isEmptyValue: comboBox.addEmptyValue && index == 0
                     Image {
+                        id: delegateIcon
+                        x: 1
                         height: 15; width: 15
                         anchors.verticalCenter: parent.verticalCenter
-                        source: comboBox.showVariableTypeIcon &&  comboBox.initialized ? model.type : ""
-                        visible: comboBox.showVariableTypeIcon
+                        source: (visible && comboBox.initialized) ? model.type : ""
+                        visible: comboBox.showVariableTypeIcon && !itemRectangle.isEmptyValue
                     }
                     
                     Text {
-                        x: comboBox.showVariableTypeIcon ? 20 : 4                          
+                        x: delegateIcon.visible ? 20 : 4                          
                         text: comboBox.initialized ? model.name : ""
                         font: control.font
+                        color: itemRectangle.isEmptyValue ? Theme.grayDarker : Theme.black
                         verticalAlignment: Text.AlignVCenter
+                        anchors.horizontalCenter: itemRectangle.isEmptyValue ? parent.horizontalCenter : undefined
                     }
                 }
 
@@ -111,17 +124,19 @@ JASPControl {
                 Image {
                     id: contentIcon
                     height: 15; width: 15
+                    x: 3
                     anchors.verticalCenter: parent.verticalCenter
-                    source: comboBox.currentIcon
-                    visible: comboBox.showVariableTypeIcon && comboBox.currentIcon
+                    source: comboBox.currentIconPath
+                    visible: comboBox.showVariableTypeIcon && comboBox.currentIconPath && !control.isEmptyValue
                 }
                 
                 Text {
-                    x: contentIcon.visible ? 20 : 4
+                    x: contentIcon.visible ? 23 : 4
                     text: comboBox.currentText
                     font: control.font
                     anchors.verticalCenter: parent.verticalCenter
-                    color: enabled ? Theme.black : Theme.grayDarker
+                    anchors.horizontalCenter: control.isEmptyValue ? parent.horizontalCenter : undefined
+                    color: (!enabled || control.isEmptyValue) ? Theme.grayDarker : Theme.black
                 }
             }
                 

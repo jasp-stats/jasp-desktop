@@ -26,16 +26,17 @@ public:
 	explicit	AnalysisQMLForm(QWidget *parent, Analysis* analysis);
 				~AnalysisQMLForm() {}
 
-	void		bindTo(Options *options, DataSet *dataSet)	override;
-	void		unbind()									override;
+	void		bindTo(Options *options, DataSet *dataSet)	OVERRIDE;
+	void		unbind()									OVERRIDE;
 	
-	QWidget*	getWidget()									override	{ return _quickWidget; }
+	QWidget*	getWidget()									OVERRIDE	{ return _quickWidget; }
 	
 	void		addError(const QString& error);
 
 	ListModel*	getRelatedModel(QMLListView* listView)	{ return _relatedModelMap[listView]; }
 	ListModel*	getModel(const QString& modelName)		{ return _modelMap[modelName]; }
 	Options*	getAnalysisOptions()					{ return _analysis->options(); }
+	BoundQMLItem* getBoundItem(const QString& name)		{ return _boundItems[name]; }
 
 public slots:
 	void		sceneGraphErrorHandler(QQuickWindow::SceneGraphError error, QString message)	{ QMessageBox::warning(this, "Error", "Error when painting analysis form: " + message); }
@@ -44,7 +45,8 @@ public slots:
 protected:
 	void		_setAllAvailableVariablesModel();
 	QString		_getAnalysisQMLPath();
-
+	virtual	void rScriptDoneHandler(QVariant key, const QString & result) OVERRIDE;
+	
 private:
 	void		_parseQML();
 	void		_setErrorMessages();
@@ -56,7 +58,7 @@ private slots:
 protected:	
 	QQuickWidget							*_quickWidget;
 	Analysis								*_analysis;
-	std::list<BoundQMLItem* >				_boundItems;
+	QMap<QString, BoundQMLItem* >			_boundItems;
 	std::map<QMLListView*, ListModel* >		_relatedModelMap;
 	std::vector<ListModelTermsAvailable* >	_availableVariablesModels;
 	std::map<QString, ListModel* >			_modelMap;

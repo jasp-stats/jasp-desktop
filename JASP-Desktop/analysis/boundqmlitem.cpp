@@ -27,3 +27,13 @@ BoundQMLItem::BoundQMLItem(QQuickItem *item, AnalysisQMLForm* form)
 BoundQMLItem::~BoundQMLItem()
 {	
 }
+
+void BoundQMLItem::runRScript(const QString &script)
+{
+	_form->runRScript(script, name());
+}
+
+void BoundQMLItem::rScriptDoneHandler(const QString &result)
+{
+	throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler\n");
+}

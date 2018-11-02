@@ -34,10 +34,10 @@ public:
         NameRole = Qt::UserRole + 1,
 		TypeRole
     };
-	
+
 	ListModel(QMLListView* listView);
 	virtual QHash<int, QByteArray> roleNames() const OVERRIDE;
-	
+
 	QMLListView* listView() const							{ return _listView; }
 	const QString& name() const								{ return _listView->name(); }
 	virtual const Terms& terms() const						{ return _terms; }
@@ -47,7 +47,7 @@ public:
 	void setItemType(QString type)							{ _itemType = type; }
 
 	void addError(const QString& error) const;
-		
+
 	virtual int rowCount(const QModelIndex &parent) const OVERRIDE;
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
 
@@ -62,9 +62,13 @@ public slots:
 
 protected:
 	QMLListView* _listView;
-	QString _itemType;		
+	QString _itemType;
 	Terms _terms;
-	bool _areTermsVariables;	
+	bool _areTermsVariables;
+	
+	static QString _iconPath;
+	static QMap<int, QString> _iconFiles;
+	
 };
 
 #endif // LISTMODEL_H

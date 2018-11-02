@@ -317,7 +317,8 @@ HEADERS += \
     $$PWD/widgets/qmllistviewtermsavailable.h \
     $$PWD/widgets/boundqmllistviewterms.h \
     $$PWD/widgets/boundqmllistviewanovamodels.h \
-    $$PWD/widgets/boundqmlslider.h
+    $$PWD/widgets/boundqmlslider.h \
+    $$PWD/widgets/boundqmltextarea.h
 
 SOURCES += \
     $$PWD/analysis/analysisform.cpp \
@@ -522,7 +523,8 @@ SOURCES += \
     $$PWD/widgets/qmllistviewtermsavailable.cpp \
     $$PWD/widgets/boundqmllistviewterms.cpp \
     $$PWD/widgets/boundqmllistviewanovamodels.cpp \
-    $$PWD/widgets/boundqmlslider.cpp
+    $$PWD/widgets/boundqmlslider.cpp \
+    $$PWD/widgets/boundqmltextarea.cpp
 
 FORMS += \
     $$PWD/gui/aboutdialog.ui \

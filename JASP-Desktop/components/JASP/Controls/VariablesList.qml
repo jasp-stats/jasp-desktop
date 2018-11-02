@@ -63,8 +63,7 @@ JASPControl
     signal itemDoubleClicked(int index);
     signal itemsDropped(var indexes, var dropList, int dropItemIndex);
     signal removeRowWithControls(string name);
-    signal addRowWithControls(string name, var columns);
-    
+    signal addRowWithControls(string name, var columns);    
         
     function selectedItemsChanged() {
         hasSelectedItems = (listView.selectedItems.length > 0);

@@ -41,11 +41,9 @@ JASPControl {
     property string inputType: "string"
     property int labelSpacing: 4
     signal editingFinished()
-    signal textEdited()
     
     Component.onCompleted: {
         control.editingFinished.connect(editingFinished);
-        control.textEdited.connect(textEdited);
     }
     
     RowLayout {

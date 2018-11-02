@@ -19,6 +19,14 @@
 #include "listmodel.h"
 #include "analysis/analysisqmlform.h"
 
+QString ListModel::_iconPath = "qrc:/icons/";
+QMap<int, QString> ListModel::_iconFiles {
+	{ Column::ColumnTypeNominalText	, "variable-nominal-text.svg" },
+	{ Column::ColumnTypeNominal		, "variable-nominal.svg"},
+	{ Column::ColumnTypeOrdinal		, "variable-ordinal.svg"},
+	{ Column::ColumnTypeScale		, "variable-scale.svg"}
+};
+
 ListModel::ListModel(QMLListView* listView) 
 	: QAbstractListModel(listView)
 	, _listView(listView)
@@ -91,19 +99,7 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 		
 		int variableType = requestInfo(term, VariableInfo::VariableType).toInt();
 
-		switch (variableType)
-		{
-		case Column::ColumnTypeNominalText:
-			return QVariant(QString("qrc:/icons/variable-nominal-text.svg"));
-		case Column::ColumnTypeNominal:
-			return QVariant(QString("qrc:/icons/variable-nominal.svg"));
-		case Column::ColumnTypeOrdinal:
-			return QVariant(QString("qrc:/icons/variable-ordinal.svg"));
-		case Column::ColumnTypeScale:
-			return QVariant(QString("qrc:/icons/variable-scale.svg"));
-		default:
-			return QVariant();
-		}		
+		return QVariant(_iconPath + _iconFiles[variableType]);
 	}
 	else
 	{

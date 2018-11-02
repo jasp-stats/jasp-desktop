@@ -80,9 +80,9 @@ Form {
             currentIndex: 0
             label.text: qsTr("Sum of squares")
             model: ListModel {    
-                ListElement {key: "Type \u2160"; value: "type1"}
-                ListElement {key: "Type \u2161"; value: "type2"}
-                ListElement {key: "Type \u2162"; value: "type3"}
+                ListElement { key: "Type \u2160"; value: "type1"}
+                ListElement { key: "Type \u2161"; value: "type2"}
+                ListElement { key: "Type \u2162"; value: "type3"}
             }
         }
 

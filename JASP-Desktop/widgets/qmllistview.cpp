@@ -38,8 +38,8 @@ void QMLListView::setUp()
 	QMLItem::setUp();
 	
 	
-	ListModel* _model = model();
-	if (!_model)
+	ListModel* listModel = model();
+	if (!listModel)
 		return;
 	
 	if (_syncModelsList.isEmpty())
@@ -58,18 +58,18 @@ void QMLListView::setUp()
 				if (!syncModel->areTermsVariables())
 					areTermsVariables = false;
 				_syncModels.push_back(syncModel);
-				connect(syncModel, &ListModel::modelChanged, _model, &ListModel::syncTermsChanged);
+				connect(syncModel, &ListModel::modelChanged, listModel, &ListModel::syncTermsChanged);
 			}
 			else
 				addError(QString::fromLatin1("Unknown sync model ") + syncModelName + QString::fromLatin1(" for ModelVIew ") + name());
 		}
 		
 		if (!areTermsVariables)
-			setTermsAreNotVariables(); // set it only when it is false			
-	}	
-	
-	connect(_model, &ListModel::modelChanged, this, &QMLListView::modelChangedHandler);	
-	QQmlProperty(_item, "model").write(QVariant::fromValue(_model));
+			setTermsAreNotVariables(); // set it only when it is false
+	}
+
+	connect(listModel, &ListModel::modelChanged, this, &QMLListView::modelChangedHandler);
+	QQmlProperty(_item, "model").write(QVariant::fromValue(listModel));
 }
 
 void QMLListView::setTermsAreNotVariables()
