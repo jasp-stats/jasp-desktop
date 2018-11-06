@@ -105,7 +105,7 @@ styleAnalysis <- function(analysis, silent = FALSE, safetyCopy = tempfile(fileex
     obj <- lintAnalysis(analysis)
   }
 
-  if (!file.copy(from = filename, to = safetyCopy, overwrite = FALSE))
+  if (!file.copy(from = fullname, to = safetyCopy, overwrite = FALSE))
     stop("Could not create safety copy. Aborting styling.")
   if (!silent)
     message(sprintf("A safety-copy is available at %s", safetyCopy))
