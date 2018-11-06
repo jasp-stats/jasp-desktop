@@ -194,7 +194,7 @@ void BackstageOSF::setCurrentFileName(QString currentFileName)
 void BackstageOSF::setMode(FileEvent::FileMode mode)
 {
 	BackstagePage::setMode(mode);
-	bool showfiledialog = (mode == FileEvent::FileExportResults || mode == FileEvent::FileExportData || mode == FileEvent::FileSave );
+	bool showfiledialog = (mode == FileEvent::FileExportResults || mode == FileEvent::FileGenerateData || mode == FileEvent::FileExportData || mode == FileEvent::FileSave );
 	setShowfiledialog(showfiledialog);
 }
 

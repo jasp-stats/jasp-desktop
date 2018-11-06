@@ -408,17 +408,18 @@ QString OpenSaveWidget::getDefaultOutFileName()
 		QString ext = QFileInfo(path).suffix();
 		switch (_mode)
 		{
-			case FileEvent::FileSave:
-				ext="jasp";
-				break;
-			case FileEvent::FileExportResults:
-				ext="html";
-				break;
-			case FileEvent::FileExportData:
-				ext = "csv";
-				break;
-			default:
-				break;
+		case FileEvent::FileSave:
+			ext="jasp";
+			break;
+		case FileEvent::FileExportResults:
+			ext="html";
+			break;
+		case FileEvent::FileExportData:
+		case FileEvent::FileGenerateData:
+			ext = "csv";
+			break;
+		default:
+			break;
 		}
 		DefaultOutFileName = name + "." + ext;
 	}

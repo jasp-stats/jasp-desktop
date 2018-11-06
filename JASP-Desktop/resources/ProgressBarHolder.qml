@@ -14,6 +14,7 @@ Rectangle
         id: loadingText
         horizontalAlignment: Text.AlignHCenter
         text: "Load some data or a .jasp file"
+		font.pixelSize: baseFontSize * ppiScale
 
         anchors.left: parent.left
         anchors.right: parent.right

@@ -29,6 +29,7 @@
 #include <QMenuBar>
 #include <QAction>
 #include <QSignalMapper>
+#include "mainwindow.h"
 
 class PreferencesDialog;
 
@@ -40,7 +41,7 @@ class TabBar : public QWidget
 
 public:
 	explicit TabBar(QWidget *parent = 0);
-	void init();
+	void init(MainWindow * mainWindow);
 
 	void addTab(QString name);
 	void addModulesPlusButton();
@@ -71,7 +72,9 @@ signals:
 	void setFixDecimalsHandler(QString numDecimals);
 	void emptyValuesChangedHandler();
 	void useDefaultPPIHandler();
-	void setPPIHandler(int ppi);
+	void setPPIHandler(int ppi, bool refreshAllAnalyses);
+	void UIScaleChanged(float scale);
+
 
 private slots:
 	void tabSelectedHandler();

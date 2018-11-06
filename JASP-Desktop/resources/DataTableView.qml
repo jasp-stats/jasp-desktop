@@ -25,6 +25,8 @@ FocusScope
 			anchors.right:		parent.right
 			anchors.bottom:		dataStatusBar.top
 
+			font.pixelSize:		baseFontSize * ppiScale
+
 			//headersGradient: myHeadersGradient
 			model:				dataSetModel
 
@@ -45,8 +47,8 @@ FocusScope
 					Image
 					{
 						source:				"../images/filter.png"
-						sourceSize.width:	width
-						sourceSize.height:	height
+						sourceSize.width:	width * 2
+						sourceSize.height:	height * 2
 						width:				height
 
 						anchors.top:				parent.top
@@ -114,14 +116,18 @@ FocusScope
 				{
 					gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
 										GradientStop { position: 0.77;	color: "#DDDDDD" }	GradientStop { position: 1.0;	color: "#DDDDDD" }	}
-					Text { text: rowIndex; anchors.centerIn: parent }
+					Text {
+						text:				rowIndex
+						anchors.centerIn:	parent
+						font:				dataTableView.font
+					}
 				}
 
 			columnHeaderDelegate: Rectangle
 			{
 				id: headerRoot
 							property real	iconTextPadding:	10
-				readonly	property int	__iconDim:			16
+				readonly	property int	__iconDim:			baseBlockDim * ppiScale
 
 				Image
 				{
@@ -135,6 +141,9 @@ FocusScope
 					source: dataSetModel.getColumnTypesWithCorrespondingIcon()[myColumnType()]
 					width:	headerRoot.__iconDim
 					height: headerRoot.__iconDim
+
+					sourceSize {	width:	width * 2
+									height:	height * 2 }
 
 
 					function setColumnType(columnType)
@@ -187,7 +196,7 @@ FocusScope
 								{
 									id:		columnTypeChangeIcon
 
-									width:	90
+									width:	headerRoot.__iconDim + (baseFontSize * 7 * ppiScale)
 									height: headerRoot.__iconDim * 1.5
 									radius: 15
 
@@ -195,6 +204,7 @@ FocusScope
 
 									Item
 									{
+										id:						popupLabelIcon
 										width:					(popupIconImage.width + popupText.width)
 										height:					headerRoot.__iconDim
 										anchors.left:			parent.left
@@ -205,11 +215,11 @@ FocusScope
 										{
 											id: popupIconImage
 
-											source:				dataSetModel.getColumnTypesWithCorrespondingIcon()[iconRepeater.model[index]]
-											width:				headerRoot.__iconDim
-											height:				headerRoot.__iconDim
-											sourceSize.width:	width
-											sourceSize.height:	height
+											source:					dataSetModel.getColumnTypesWithCorrespondingIcon()[iconRepeater.model[index]]
+											width:					headerRoot.__iconDim
+											height:					headerRoot.__iconDim
+											sourceSize {	width:	width * 2
+															height:	height * 2 }
 
 											anchors.verticalCenter: parent.verticalCenter
 										}
@@ -224,6 +234,8 @@ FocusScope
 
 											anchors.left:		popupIconImage.right
 											anchors.leftMargin: 10
+
+											font:				dataTableView.font
 										}
 									}
 
@@ -263,8 +275,8 @@ FocusScope
 					anchors.margins:		visible ? 1 : 0
 
 					source:				"../icons/computed.png"
-					sourceSize.width:	headerRoot.__iconDim * 2
-					sourceSize.height:	headerRoot.__iconDim * 2
+					sourceSize {	width:	headerRoot.__iconDim * 2
+									height:	headerRoot.__iconDim * 2 }
 
 					MouseArea
 					{
@@ -276,6 +288,7 @@ FocusScope
 						ToolTip.text:		"Click here to change the columns formulas"
 						ToolTip.timeout:	3000
 						ToolTip.delay:		500
+
 						cursorShape:		containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 
 					}
@@ -283,9 +296,10 @@ FocusScope
 
 				Text
 				{
-					id:		headerTextItem
+					id:				headerTextItem
 
-					text:	headerText
+					text:			headerText
+					font:			dataTableView.font
 
 					horizontalAlignment:		Text.AlignHCenter
 
@@ -326,8 +340,8 @@ FocusScope
 					visible:	columnError.length > 0 // && !columnIsInvalidated
 
 					source:					"../icons/error.png"
-					sourceSize.width:		headerRoot.__iconDim
-					sourceSize.height:		headerRoot.__iconDim
+					sourceSize {	width:	headerRoot.__iconDim * 2
+									height:	headerRoot.__iconDim * 2 }
 
 					anchors.right:			colIsInvalidated.left
 					anchors.verticalCenter:	parent.verticalCenter
@@ -358,8 +372,8 @@ FocusScope
 					height:					headerRoot.__iconDim
 
 					source:					"../images/filter.png"
-					sourceSize.width:		headerRoot.__iconDim
-					sourceSize.height:		headerRoot.__iconDim
+					sourceSize {	width:	headerRoot.__iconDim * 2
+									height:	headerRoot.__iconDim * 2 }
 
 					anchors.right:			parent.right
 					anchors.margins:		columnIsFiltered ? 1 : 0
@@ -416,11 +430,11 @@ FocusScope
 			{
 				id:						datafiltertatusText
 				text:					filterModel.statusBarText
+				font:					dataTableView.font
 				anchors.left:			parent.left
 				anchors.verticalCenter:	parent.verticalCenter
 				anchors.leftMargin:		8
 			}
 		}
-
 	}
 }

@@ -67,3 +67,8 @@ JASPTIMER_USED = false
 $$JASPTIMER_USED {
     DEFINES += PROFILE_JASP
 }
+
+exists(/app/lib/*)	{ INSTALLPATH = /app/bin
+ } else	{
+  INSTALLPATH = /usr/bin
+}

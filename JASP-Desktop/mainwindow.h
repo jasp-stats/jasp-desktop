@@ -63,6 +63,10 @@ public:
 
 	Q_INVOKABLE void showHelpFromQML(QString pageName);
 
+public slots:
+	void setPPIHandler(int ppi, bool refreshAllAnalyses = true);
+	void setUIScaleHandler(float scale);
+
 protected:
 	virtual void resizeEvent(QResizeEvent *event) OVERRIDE;
 	virtual void dragEnterEvent(QDragEnterEvent *event) OVERRIDE;
@@ -173,7 +177,6 @@ private slots:
 	void updateExcludeKey();
 	void dataSetChanged(DataSet * dataSet);
 
-	void setPPIHandler(int ppi);
 
 private:
 	typedef std::map<Analysis*, AnalysisForm*> analysisFormMap;

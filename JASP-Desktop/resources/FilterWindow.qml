@@ -14,7 +14,7 @@ FocusScope
 
 
     property bool opened: false
-	property int minimumHeightTextBoxes: 50
+	property int minimumHeightTextBoxes: 50 * ppiScale
 	property bool showEasyFilter: true
 
 	onShowEasyFilterChanged: if(!showEasyFilter) absorbModelRFilter()
@@ -293,6 +293,7 @@ FocusScope
 						onActiveFocusChanged: if(!activeFocus) deselect()
 
 						font.family: "Courier"
+						font.pixelSize: baseFontSize * ppiScale
 						wrapMode: New.TextArea.WrapAtWordBoundaryOrAnywhere
 
 					}
@@ -338,6 +339,7 @@ FocusScope
 						property bool changedSinceLastApply: text !== filterModel.rFilter
 
 						font.family: "Courier"
+						font.pixelSize: baseFontSize * ppiScale
 						wrapMode: New.TextArea.WrapAtWordBoundaryOrAnywhere
 					}
 				}
@@ -427,7 +429,7 @@ FocusScope
 				onActiveFocusChanged: if(!activeFocus) deselect()
 
 				font.family: "Courier"
-
+				font.pixelSize: baseFontSize * ppiScale
 
 				states: [
 					State {

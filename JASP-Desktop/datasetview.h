@@ -45,10 +45,11 @@ class DataSetView : public QQuickItem
 	Q_PROPERTY( QQuickItem * leftTopCornerItem			READ leftTopCornerItem		WRITE setLeftTopCornerItem		NOTIFY leftTopCornerItemChanged )
 	Q_PROPERTY( QQuickItem * extraColumnItem			READ extraColumnItem		WRITE setExtraColumnItem		NOTIFY extraColumnItemChanged )
 
-	Q_PROPERTY( QFont font	MEMBER _font)
+	Q_PROPERTY( QFont font	MEMBER _font NOTIFY fontChanged)
 
-	Q_PROPERTY( float headerHeight		READ headerHeight	NOTIFY headerHeightChanged )
-	Q_PROPERTY( float rowNumberWidth	READ rowNumberWidth	NOTIFY rowNumberWidthChanged )
+	Q_PROPERTY( float headerHeight		READ headerHeight							NOTIFY headerHeightChanged )
+	Q_PROPERTY( float rowNumberWidth	READ rowNumberWidth							NOTIFY rowNumberWidthChanged )
+
 
 public:
 	DataSetView();
@@ -57,8 +58,6 @@ public:
 	QAbstractTableModel * model() { return _model; }
 	void setModel(QAbstractTableModel * model);
 
-
-	float fontPixelSize()			{ return _fontPixelSize;}
 	float itemHorizontalPadding()	{ return _itemHorizontalPadding;}
 	float itemVerticalPadding()		{ return _itemVerticalPadding;}
 
@@ -89,11 +88,12 @@ public:
 	void setLeftTopCornerItem(QQuickItem * newItem);
 	void setExtraColumnItem(QQuickItem * newItem);
 
-	float headerHeight()	{ return _dataRowsMaxHeight; }
-	float rowNumberWidth()	{ return _rowNumberMaxWidth; }
+	float headerHeight()		{ return _dataRowsMaxHeight; }
+	float rowNumberWidth()		{ return _rowNumberMaxWidth; }
 
-	GENERIC_SET_FUNCTION(HeaderHeight, _dataRowsMaxHeight, headerHeightChanged, float)
-	GENERIC_SET_FUNCTION(RowNumberWidth, _rowNumberMaxWidth, rowNumberWidthChanged, float)
+	GENERIC_SET_FUNCTION(HeaderHeight,		_dataRowsMaxHeight, headerHeightChanged,		float)
+	GENERIC_SET_FUNCTION(RowNumberWidth,	_rowNumberMaxWidth, rowNumberWidthChanged,		float)
+
 
 protected:
 	void setRolenames();
@@ -122,7 +122,6 @@ protected:
 	_ignoreViewpoint = true;
 
 	float	_dataRowsMaxHeight,
-			_fontPixelSize			= 20,
 			_itemHorizontalPadding	= 8,
 			_itemVerticalPadding	= 8,
 			_dataWidth				= -1;
@@ -179,7 +178,7 @@ protected:
 
 signals:
 	void modelChanged();
-	void fontPixelSizeChanged();
+	void fontChanged();
 	void itemHorizontalPaddingChanged();
 	void itemVerticalPaddingChanged();
 
@@ -198,8 +197,6 @@ signals:
 
 	void headerHeightChanged();
 	void rowNumberWidthChanged();
-
-
 
 public slots:
 	void aContentSizeChanged() { _recalculateCellSizes = true; }

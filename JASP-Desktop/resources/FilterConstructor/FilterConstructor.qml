@@ -2,22 +2,21 @@ import QtQuick.Controls 2.2
 import QtQuick 2.9
 
 Item {
-	id: filterConstructor
-	objectName:  "filterConstructor"
+								id:						filterConstructor
+								objectName:				"filterConstructor"
+				property string __debugName:			"FilterConstructor"
+				property real	fontPixelSize:			baseFontSize * ppiScale
+				property real	blockDim:				baseBlockDim * ppiScale
+				property var	allKeys:				["number", "boolean", "string", "variable"]
+	readonly	property real	desiredMinimumHeight:	columnsRow.height + hints.height + applyFilter.height + (blockDim * 3)
+				property real	extraSpaceUnderColumns:	0
+				property bool	somethingChanged:		false
+				property bool	isColumnConstructor:	false
+				property bool	lastCheckPassed:		true
+				property bool	showStartupMsg:			true
+				property alias	functionModel:			functieLijst.model
 
-	property real blockDim: 20
-	property real fontPixelSize: 14
-	property var allKeys: ["number", "boolean", "string", "variable"]
-	readonly property real desiredMinimumHeight: columnsRow.height + hints.height + applyFilter.height + (blockDim * 3)
 	signal rCodeChanged(string rScript)
-	property real extraSpaceUnderColumns: 0
-	property bool somethingChanged: false
-	property bool isColumnConstructor: false
-
-	property bool lastCheckPassed: true
-	property bool showStartupMsg: true
-
-	property alias functionModel: functieLijst.model
 
 	onSomethingChangedChanged:
 	{
@@ -28,12 +27,6 @@ Item {
 	}
 
 	onVisibleChanged: if(visible && JSON.stringify(filterConstructor.returnFilterJSON()) != filterModel.constructedJSON)	initializeFromJSON(filterModel.constructedJSON)
-
-
-	property string __debugName: "FilterConstructor"
-
-
-
 
 	function checkAndApplyFilter()
 	{
@@ -226,7 +219,7 @@ Item {
 				anchors.bottom: parent.bottom
 				anchors.right: parent.right
 
-				height: Math.min(60, scrollScriptColumn.height)
+				height: Math.min(60 * ppiScale, scrollScriptColumn.height)
 			}
 
 
@@ -275,7 +268,7 @@ Item {
 			anchors.margins: 2
 			anchors.bottomMargin: filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
 
-			width: 80
+			width: 80 * ppiScale
 		}
 	}
 

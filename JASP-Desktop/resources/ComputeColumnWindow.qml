@@ -5,9 +5,9 @@ import "FilterConstructor"
 
 FocusScope
 {
-	id: computedColumnContainer
-	height: desiredMinimumHeight
-	Layout.minimumHeight: desiredMinimumHeight
+	id:						computedColumnContainer
+	height:					desiredMinimumHeight
+	Layout.minimumHeight:	desiredMinimumHeight
 
     visible: opened
 
@@ -17,7 +17,7 @@ FocusScope
 	property bool	dataSetLoaded:				computedColumnsInterface.datasetLoaded
 	property string jsonConstructedModel:		computedColumnsInterface.computeColumnJson
 	property string computeColumnRCode:			computedColumnsInterface.computeColumnRCode
-	property int	minimumHeightTextBoxes:		50
+	property int	minimumHeightTextBoxes:		50 * ppiScale
 	property string selectedColumnNameMirror:	computedColumnsInterface.computeColumnNameSelected
 
 	onDataSetLoadedChanged:				if(!dataSetLoaded) close();
@@ -67,7 +67,7 @@ FocusScope
 		else								close()
 	}
 
-	property real desiredMinimumHeight: computeColumnButtons.height + computeColumnErrorScroll.height + (computedColumnsInterface.computeColumnUsesRCode ? computeColumnEditRectangle.desiredMinimumHeight : computedColumnConstructor.desiredMinimumHeight) + computeColumnTitle.height
+	property real desiredMinimumHeight:  computeColumnButtons.height + computeColumnErrorScroll.height + (computedColumnsInterface.computeColumnUsesRCode ? computeColumnEditRectangle.desiredMinimumHeight : computedColumnConstructor.desiredMinimumHeight) + computeColumnTitle.height
 
 
 
@@ -79,7 +79,7 @@ FocusScope
 		anchors.horizontalCenter: parent.horizontalCenter
 
 		horizontalAlignment: Text.AlignHCenter
-		font.pixelSize: 20
+		font.pixelSize: (baseFontSize + 4) * ppiScale
 		font.bold: true
 
 	}
@@ -115,13 +115,14 @@ FocusScope
 				anchors.top: parent.top
 				anchors.left: parent.left
 				anchors.right: parent.right
-				height: contentHeight + 30
+				height: Math.max(contentHeight + 30, parent.height - 10)
 				selectByMouse: true
 				onActiveFocusChanged: if(!activeFocus) deselect()
 
 				property bool changedSinceLastApply: text !== computedColumnContainer.lastAppliedcomputeColumn
 
 				font.family: "Courier"
+				font.pixelSize: baseFontSize * ppiScale
 				wrapMode: TextArea.WrapAtWordBoundaryOrAnywhere
 
 				property bool changed: text != computedColumnsInterface.computeColumnRCode
@@ -233,6 +234,7 @@ FocusScope
 			onActiveFocusChanged: if(!activeFocus) deselect()
 
 			font.family: "Courier"
+			font.pixelSize: baseFontSize * ppiScale
 			height: text.length === 0 ? 0 : computeColumnError.contentHeight
 		}
 	}

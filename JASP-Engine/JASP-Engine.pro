@@ -15,17 +15,13 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
-exists(/app/lib/*)	{ INSTALLPATH = /app/bin
- } else	{
-	INSTALLPATH = /usr/bin
-}
-
 target.path = $$INSTALLPATH
 INSTALLS += target
 
 analysis_jsons.path = $$INSTALLPATH
 analysis_jsons.files = ../Resources
 INSTALLS += analysis_jsons
+
 
 DEPENDPATH = ..
 PRE_TARGETDEPS += ../JASP-Common

@@ -8,6 +8,7 @@
 #include <QFileDialog>
 #include <QSizePolicy>
 
+
 namespace Ui {
 class PreferencesDialog;
 }
@@ -31,11 +32,14 @@ private:
 	bool addStringToEmptyValueList(const QString &in);
 	void checkEmptyValueList();
 	void fillMissingValueList(const std::vector<std::string> &emptyValues);
+	void setSliderUIScale(float scale);
+	float sliderUIScale();
 	
 public slots:
 	void savePreferences();
 	void setDefaultEditorCheck(bool defaulteditor);
 	void getSpreadsheetEditor();
+	void sliderUIScaleChanged(int value);
 
 protected:
 	void virtual showEvent(QShowEvent * event);

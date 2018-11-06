@@ -7,18 +7,18 @@ Rectangle
 
 	color:			(!filterButtonRoot.disabled && filterButtonRoot.hovered) || filterButtonRoot.selected ? "white" : "lightGrey"
 	border.color:	(!filterButtonRoot.disabled && filterButtonRoot.hovered) || filterButtonRoot.selected ? "black" : "grey"
-	border.width: 1
+	border.width:	1
 
-	property string text: ""
-	property string toolTip: "This is a button"
-	property bool disabled: false
-	property bool selected: false
-	property string iconSource: ""
-	property real buttonPadding: buttonIcon.visible ? 4 : 16
-	property alias hovered: buttonMouseArea.containsMouse
+	property string	text:			""
+	property string	toolTip:		"This is a button"
+	property bool	disabled:		false
+	property bool	selected:		false
+	property string	iconSource:		""
+	property real	buttonPadding:	(buttonIcon.visible ? 4 : 16) * ppiScale
+	property alias	hovered:		buttonMouseArea.containsMouse
 
-	implicitWidth: buttonIcon.visible ? 32 : buttonText.width + buttonPadding
-	implicitHeight: 32
+	implicitWidth:	(buttonIcon.visible ? 32 * ppiScale : buttonText.width + buttonPadding)
+	implicitHeight: 32 * ppiScale
 
 
 	ToolTip.delay: 500
@@ -62,7 +62,7 @@ Rectangle
 		text: filterButtonRoot.text
 		visible: filterButtonRoot.iconSource == ""
 
-		font.pixelSize: Math.max(filterButtonRoot.height * 0.4, Math.min(12, filterButtonRoot.height - 2))
+		font.pixelSize: Math.max(filterButtonRoot.height * 0.4, Math.min(12 * ppiScale, filterButtonRoot.height - 2))
 
 		height: contentHeight
 		width: contentWidth

@@ -22,7 +22,8 @@ public:
 		OSF_ENCRYPTION,
 		OSF_REMEMBER_ME,
 		PPI_USE_DEFAULT,
-		PPI_CUSTOM_VALUE
+		PPI_CUSTOM_VALUE,
+		UI_SCALE
 	};
 
 	static QVariant value(Settings::Type key);

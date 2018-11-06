@@ -16,8 +16,7 @@ FocusScope
 
 	property alias itemHorizontalPadding:	theView.itemHorizontalPadding
 	property alias itemVerticalPadding:		theView.itemVerticalPadding
-
-	//property alias font: theView.font //not properly implemented
+	property alias font:					theView.font
 
 	JASPMouseAreaToolTipped
 	{
@@ -59,11 +58,10 @@ FocusScope
 			id: theView
 			model: null
 
-			viewportX: myFlickable.visibleArea.xPosition * width
-			viewportY: myFlickable.visibleArea.yPosition * height
-			viewportW: myFlickable.visibleArea.widthRatio * width
-			viewportH: myFlickable.visibleArea.heightRatio * height
-
+			viewportX:	myFlickable.visibleArea.xPosition * width
+			viewportY:	myFlickable.visibleArea.yPosition * height
+			viewportW:	myFlickable.visibleArea.widthRatio * width
+			viewportH:	myFlickable.visibleArea.heightRatio * height
 
 			MouseArea
 			{
@@ -94,10 +92,22 @@ FocusScope
 				onWheel:
 				{
 					//console.log("wheel.angleDelta ",wheel.angleDelta)
+
+
 					if(wheel.angleDelta.y == 120)
-						vertiScroller.scrollUp()
+					{
+						if(wheel.modifiers & Qt.ShiftModifier)
+							horiScroller.scrollUp()
+						else
+							vertiScroller.scrollUp()
+					}
 					else if(wheel.angleDelta.y == -120)
+					{
+						if(wheel.modifiers & Qt.ShiftModifier)
+							horiScroller.scrollDown()
+						else
 							vertiScroller.scrollDown()
+					}
 					else
 						wheel.accepted = false
 				}

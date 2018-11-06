@@ -231,6 +231,7 @@ FocusScope {
                                 id: headerTextVars
                                 text: styleData.value
                                 color: systemPalette.text
+								font.pixelSize: baseFontSize * ppiScale
 
 								anchors.verticalCenter: parent.verticalCenter
 								x: 4
@@ -244,7 +245,7 @@ FocusScope {
 					{
 						color: levelsTableView.selection.timesUpdated, levelsTableView.selection.contains(styleData.row) ? systemPalette.dark : (styleData.row % 2 == 1 ? systemPalette.midlight : systemPalette.light)
 
-						height: 30
+						height: 30 * ppiScale
 
 						New.Button
 						{
@@ -271,7 +272,7 @@ FocusScope {
 								source: filterCheckButton.checked ? "qrc:/icons/check-mark.png" : "../images/cross.png"
 								sourceSize.width: Math.max(40, width)
 								sourceSize.height: Math.max(40, height)
-								width: filterCheckButton.width
+								width:	filterCheckButton.width
 								height: filterCheckButton.height
 
 							}
@@ -281,23 +282,25 @@ FocusScope {
 						Text {
 							visible: styleData.column === 1
 
-							color: systemPalette.text
-							text: styleData.value
-							elide: Text.ElideMiddle
-							anchors.fill: parent
+							color:			systemPalette.text
+							text:			styleData.value
+							elide:			Text.ElideMiddle
+							font.pixelSize: baseFontSize * ppiScale
+							anchors.fill:	parent
 						}
 
 						TextInput {
-							visible: styleData.column === 2
+							visible:		styleData.column === 2
 
-							color: systemPalette.text
+							color:			systemPalette.text
 
-							text: styleData.value
-							clip: true
-							selectByMouse: true
-							autoScroll: true
+							text:			styleData.value
+							font.pixelSize: baseFontSize * ppiScale
+							clip:			true
+							selectByMouse:	true
+							autoScroll:		true
 
-							anchors.fill: parent
+							anchors.fill:	parent
 							function acceptChanges()
 							{
 								if(styleData.row >= 0 && styleData.column >= 0)
@@ -333,75 +336,80 @@ FocusScope {
 
                 ColumnLayout
                 {
-                    id: buttonColumnVariablesWindow
+									id:					buttonColumnVariablesWindow
 
-                    anchors.top: parent.top
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-					spacing: 2
-					property int shownButtons: 4 + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
-					property real minimumHeight: (buttonHeight + spacing) * shownButtons + (3 * spacing)
-					property real buttonHeight: 26
+									anchors.top:		parent.top
+									anchors.right:		parent.right
+									anchors.bottom:		parent.bottom
+									spacing:			Math.max(1, 2 * ppiScale)
+					property int	shownButtons:		4 + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
+					property real	minimumHeight:		(buttonHeight + spacing) * shownButtons + (3 * spacing)
+					property real	buttonHeight:		26 * ppiScale
 
 					FilterButton
                     {
                         //text: "UP"
 						iconSource: "../images/arrow-up.png"
 
-                        onClicked: levelsTableView.moveUp()
-						toolTip: "Move selected labels up"
+						onClicked:		levelsTableView.moveUp()
+						toolTip:		"Move selected labels up"
 
-						height: buttonColumnVariablesWindow.buttonHeight
+						height:			buttonColumnVariablesWindow.buttonHeight
 						implicitHeight: buttonColumnVariablesWindow.buttonHeight
+						width:			height
                     }
 
 					FilterButton
                     {
                         //text: "DOWN"
-						iconSource: "../images/arrow-down.png"
+						iconSource:		"../images/arrow-down.png"
 
-                        onClicked: levelsTableView.moveDown()
-						toolTip: "Move selected labels down"
+						onClicked:		levelsTableView.moveDown()
+						toolTip:		"Move selected labels down"
 
-						height: buttonColumnVariablesWindow.buttonHeight
+						height:			buttonColumnVariablesWindow.buttonHeight
 						implicitHeight: buttonColumnVariablesWindow.buttonHeight
+						width:			height
                     }
 
 					FilterButton
 					{
 						//text: "REVERSE"
-						iconSource: "../images/arrow-reverse.png"
-						onClicked: levelsTableView.reverse()
+						iconSource:		"../images/arrow-reverse.png"
+						onClicked:		levelsTableView.reverse()
 
-						toolTip: "Reverse order of all labels"
+						toolTip:		"Reverse order of all labels"
 
-						height: buttonColumnVariablesWindow.buttonHeight
+						height:			buttonColumnVariablesWindow.buttonHeight
 						implicitHeight: buttonColumnVariablesWindow.buttonHeight
+						width:			height
 					}
 
 					FilterButton
 					{
-						id: eraseFiltersOnThisColumn
-						iconSource: "../images/eraser.png"
-						onClicked: levelsTableModel.resetFilterAllows()
-						visible: levelsTableModel.filteredOut > 0
+						id:				eraseFiltersOnThisColumn
+						iconSource:		"../images/eraser.png"
+						onClicked:		levelsTableModel.resetFilterAllows()
+						visible:		levelsTableModel.filteredOut > 0
 
-						toolTip: "Reset all filter checkmarks for this column"
+						toolTip:		"Reset all filter checkmarks for this column"
 
-						height: buttonColumnVariablesWindow.buttonHeight
+						height:			buttonColumnVariablesWindow.buttonHeight
 						implicitHeight: buttonColumnVariablesWindow.buttonHeight
+						width:			height
 					}
 
 					FilterButton
 					{
-						id: eraseFiltersOnAllColumns
-						iconSource: "../images/eraser_all.png"
-						onClicked: dataSetModel.resetAllFilters()
-						visible: dataSetModel.columnsFilteredCount > (levelsTableModel.filteredOut > 0 ? 1 : 0)
-						height: buttonColumnVariablesWindow.buttonHeight
+						id:				eraseFiltersOnAllColumns
+						iconSource:		"../images/eraser_all.png"
+						onClicked:		dataSetModel.resetAllFilters()
+						visible:		dataSetModel.columnsFilteredCount > (levelsTableModel.filteredOut > 0 ? 1 : 0)
+						height:			buttonColumnVariablesWindow.buttonHeight
 						implicitHeight: buttonColumnVariablesWindow.buttonHeight
+						width:			height
 
-						toolTip: "Reset all filter checkmarks for all columns"
+						toolTip:		"Reset all filter checkmarks for all columns"
 					}
 
                     Item //Spacer
@@ -411,11 +419,12 @@ FocusScope {
 
 					FilterButton
                     {
-                        id: variablesWindowCloseButton
-						iconSource: "../images/cross.png"
-                        onClicked: variablesWindow.chooseColumn(-1)
-						height: buttonColumnVariablesWindow.buttonHeight
+						id:				variablesWindowCloseButton
+						iconSource:		"../images/cross.png"
+						onClicked:		variablesWindow.chooseColumn(-1)
+						height:			buttonColumnVariablesWindow.buttonHeight
 						implicitHeight: buttonColumnVariablesWindow.buttonHeight
+						width:			height
 
 						toolTip: "Close this view"
                     }
