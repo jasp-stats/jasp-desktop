@@ -427,28 +427,93 @@ bool jaspRCPP_setColumnDataAsScale(std::string columnName,			Rcpp::Vector<REALSX
 	return somethingChanged;
 }
 
-bool jaspRCPP_setColumnDataAsOrdinal(std::string columnName,		Rcpp::Vector<INTSXP> ordinalData)
+void jaspRCPP_setColumnDataHelper_FactorsLevels(Rcpp::Vector<INTSXP> data, int *& outputData, size_t & numLevels, const char **& labelPointers, std::string *& labels)
+{
+	Rcpp::CharacterVector	levels;
+	numLevels = 0;
+
+	if(!Rf_isNull(data.attr("levels")))
+	{
+		levels = data.attr("levels");
+		numLevels = size_t(levels.size());
+	}
+
+	if(numLevels > 0)
+	{
+		labels			= new std::string [numLevels];
+		labelPointers	= new const char * [numLevels];
+
+		for(int i=0; i<numLevels; i++)
+		{
+			labels[i]			= levels[i];
+			labelPointers[i]	= labels[i].c_str();
+		}
+	}
+	else
+	{
+		std::set<int> unique;
+		for(int i=0; i<data.size(); i++)
+			unique.insert(outputData[i]);
+		numLevels = unique.size();
+
+		std::vector<int> sorted(unique.begin(), unique.end());
+		std::sort(sorted.begin(), sorted.end());
+
+		labels			= new std::string [numLevels];
+		labelPointers	= new const char * [numLevels];
+
+		std::map<std::string, int> levelToVal;
+
+		for(size_t i=0; i<sorted.size(); i++)
+		{
+			labels[i]				= std::to_string(sorted[i]);
+			labelPointers[i]		= labels[i].c_str();
+			levelToVal[labels[i]]	= i + 1;
+		}
+
+		for(int i=0; i<data.size(); i++)
+			outputData[i] = levelToVal[std::to_string(outputData[i])];;
+	}
+}
+
+bool jaspRCPP_setColumnDataAsOrdinal(std::string columnName, Rcpp::Vector<INTSXP> ordinalData)
 {
 	int *ordinals = new int[ordinalData.size()];
 	for(int i=0; i<ordinalData.size(); i++)
 		ordinals[i] = ordinalData[i];
 
-	bool somethingChanged =  dataSetColumnAsOrdinal(columnName.c_str(), ordinals, static_cast<size_t>(ordinalData.size()));
+	size_t			numLevels;
+	const char **	labelPointers;
+	std::string *	labels;
+
+	jaspRCPP_setColumnDataHelper_FactorsLevels(ordinalData, ordinals, numLevels, labelPointers, labels);
+
+	bool somethingChanged =  dataSetColumnAsOrdinal(columnName.c_str(), ordinals, static_cast<size_t>(ordinalData.size()), labelPointers, numLevels);
 
 	delete[] ordinals;
+	delete[] labels;
+	delete[] labelPointers;
 
 	return somethingChanged;
 }
 
-bool jaspRCPP_setColumnDataAsNominal(std::string columnName,		Rcpp::Vector<INTSXP> nominalData)
+bool jaspRCPP_setColumnDataAsNominal(std::string columnName, Rcpp::Vector<INTSXP> nominalData)
 {
 	int *nominals = new int[nominalData.size()];
 	for(int i=0; i<nominalData.size(); i++)
 		nominals[i] = nominalData[i];
 
-	bool somethingChanged =  dataSetColumnAsNominal(columnName.c_str(), nominals, static_cast<size_t>(nominalData.size()));
+	size_t			numLevels;
+	const char **	labelPointers;
+	std::string *	labels;
+
+	jaspRCPP_setColumnDataHelper_FactorsLevels(nominalData, nominals, numLevels, labelPointers, labels);
+
+	bool somethingChanged =  dataSetColumnAsNominal(columnName.c_str(), nominals, static_cast<size_t>(nominalData.size()), labelPointers, numLevels);
 
 	delete[] nominals;
+	delete[] labels;
+	delete[] labelPointers;
 
 	return somethingChanged;
 }

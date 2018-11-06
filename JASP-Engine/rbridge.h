@@ -56,8 +56,8 @@ extern "C" {
 	const char*					STDCALL rbridge_requestTempRootName();
 	bool						STDCALL rbridge_runCallback(const char* in, int progress, const char** out);
 	bool						STDCALL rbridge_setColumnAsScale		(const char* columnName, double *		scalarData,		size_t length);
-	bool						STDCALL rbridge_setColumnAsOrdinal		(const char* columnName, int *			ordinalData,	size_t length);
-	bool						STDCALL rbridge_setColumnAsNominal		(const char* columnName, int *			nominalData,	size_t length);
+	bool						STDCALL rbridge_setColumnAsOrdinal		(const char* columnName, int *			ordinalData,	size_t length,	const char ** levels, size_t numLevels);
+	bool						STDCALL rbridge_setColumnAsNominal		(const char* columnName, int *			nominalData,	size_t length,	const char ** levels, size_t numLevels);
 	bool						STDCALL rbridge_setColumnAsNominalText	(const char* columnName, const char **	nominalData,	size_t length);
 	int							STDCALL rbridge_dataSetRowCount();
 }
@@ -72,10 +72,10 @@ extern "C" {
 	void rbridge_setJaspResultsFileSource(	boost::function<void(std::string &, std::string &)> source);
 	void rbridge_setDataSetSource(			boost::function<DataSet *()> source);
 
-	void rbridge_setColumnDataAsScaleSource(		boost::function<bool(std::string&, std::vector<double>&)>		source);
-	void rbridge_setColumnDataAsOrdinalSource(		boost::function<bool(std::string&, std::vector<int>&)>			source);
-	void rbridge_setColumnDataAsNominalSource(		boost::function<bool(std::string&, std::vector<int>&)>			source);
-	void rbridge_setColumnDataAsNominalTextSource(	boost::function<bool(std::string&, std::vector<std::string>&)>	source);
+	void rbridge_setColumnDataAsScaleSource(		boost::function<bool(std::string&, std::vector<double>&)>							source);
+	void rbridge_setColumnDataAsOrdinalSource(		boost::function<bool(std::string&, std::vector<int>&, std::map<int, std::string>&)>	source);
+	void rbridge_setColumnDataAsNominalSource(		boost::function<bool(std::string&, std::vector<int>&, std::map<int, std::string>&)>	source);
+	void rbridge_setColumnDataAsNominalTextSource(	boost::function<bool(std::string&, std::vector<std::string>&)>						source);
 	void rbridge_setGetDataSetRowCountSource(		boost::function<int()> source);
 
 	std::string rbridge_run(const std::string &name, const std::string &title, bool &requiresInit, const std::string &dataKey, const std::string &options, const std::string &resultsMeta, const std::string &stateKey, int analysisID, int analysisRevision, const std::string &perform = "run", int ppi = 96, RCallback callback = NULL, bool useJaspResults = false);

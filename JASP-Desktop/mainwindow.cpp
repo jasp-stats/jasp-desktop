@@ -177,9 +177,6 @@ void MainWindow::makeConnections()
 	CONNECT_SHORTCUT("Ctrl+-",		&MainWindow::zoomOutKeysSelected);
 	CONNECT_SHORTCUT("Ctrl+=",		&MainWindow::zoomEqualKeysSelected);
 
-	connect(ui->tabBar,				&TabBar::currentChanged,							this,					&MainWindow::tabChanged										);
-	connect(ui->tabBar,				&TabBar::helpToggled,								this,					&MainWindow::helpToggled									);
-
 	connect(_levelsTableModel,		&LevelsTableModel::resizeLabelColumn,				this,					&MainWindow::resizeVariablesWindowLabelColumn				);
 	connect(_levelsTableModel,		&LevelsTableModel::labelFilterChanged,				_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged					);
 	connect(_levelsTableModel,		&LevelsTableModel::notifyColumnHasFilterChanged,	_tableModel,			&DataSetTableModel::notifyColumnFilterStatusChanged			);
@@ -192,7 +189,7 @@ void MainWindow::makeConnections()
 	connect(_tableModel,			&DataSetTableModel::modelReset,						_levelsTableModel,		&LevelsTableModel::refresh									);
 	connect(_tableModel,			&DataSetTableModel::headerDataChanged,				_columnsModel,			&ColumnsModel::datasetHeaderDataChanged						);
 	connect(_tableModel,			&DataSetTableModel::modelReset,						_columnsModel,			&ColumnsModel::refresh										);
-	connect(_tableModel,			&DataSetTableModel::columnDataTypeChanged,			_computedColumnsModel,	&ComputedColumnsModel::checkForDependentColumnsToBeSentSlot	);
+	connect(_tableModel,			&DataSetTableModel::columnDataTypeChanged,			_computedColumnsModel,	&ComputedColumnsModel::checkForDependentColumnsAndMeToBeSentSlot	);
 
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_computedColumnsModel,	&ComputedColumnsModel::computeColumnSucceeded				);
 	connect(_engineSync,			&EngineSync::computeColumnFailed,					_computedColumnsModel,	&ComputedColumnsModel::computeColumnFailed					);
@@ -212,8 +209,6 @@ void MainWindow::makeConnections()
 
 	connect(this,					&MainWindow::ppiChanged,							_engineSync,			&EngineSync::ppiChanged										);
 
-	connect(_engineSync,			&EngineSync::engineTerminated,						this,					&MainWindow::fatalError										);
-
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
 	connect(_analyses,				&Analyses::analysisImageSaved,						this,					&MainWindow::analysisImageSavedHandler						);
 	connect(_analyses,				&Analyses::analysisAdded,							ui->backStage,			&BackStageWidget::analysisAdded								);
@@ -221,28 +216,24 @@ void MainWindow::makeConnections()
 	connect(_analyses,				&Analyses::requestComputedColumnCreation,			_computedColumnsModel,	&ComputedColumnsModel::requestComputedColumnCreation,		Qt::UniqueConnection);
 	connect(_analyses,				&Analyses::requestComputedColumnDestruction,		_computedColumnsModel,	&ComputedColumnsModel::requestComputedColumnDestruction,	Qt::UniqueConnection);
 
-	connect(ui->backStage,			&BackStageWidget::dataSetIORequest,					this,					&MainWindow::dataSetIORequest								);
 	connect(ui->backStage,			&BackStageWidget::exportSelected,					_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
+	connect(ui->backStage,			&BackStageWidget::dataSetIORequest,					this,					&MainWindow::dataSetIORequest								);
 
 	connect(_odm,					&OnlineDataManager::progress,						this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
+	connect(&_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus								);
+	connect(_engineSync,			&EngineSync::engineTerminated,						this,					&MainWindow::fatalError										);
+	connect(_okButton,				&QPushButton::clicked,								this,					&MainWindow::analysisOKed									);
+	connect(_runButton,				&QPushButton::clicked,								this,					&MainWindow::analysisRunned									);
+	connect(ui->splitter,			&QSplitter::splitterMoved,							this,					&MainWindow::splitterMovedHandler							);
+	connect(ui->webViewHelp,		&CustomWebEngineView::loadFinished,					this,					&MainWindow::helpFirstLoaded								);
 
+	connect(ui->tabBar,				&TabBar::currentChanged,							this,					&MainWindow::tabChanged										);
+	connect(ui->tabBar,				&TabBar::helpToggled,								this,					&MainWindow::helpToggled									);
 	connect(ui->tabBar,				&TabBar::dataAutoSynchronizationChanged,			ui->backStage,			&BackStageWidget::dataAutoSynchronizationChanged			);
 	connect(ui->tabBar,				&TabBar::setExactPValuesHandler,					_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler					);
 	connect(ui->tabBar,				&TabBar::setFixDecimalsHandler,						_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler					);
 	connect(ui->tabBar,				&TabBar::emptyValuesChangedHandler,					this,					&MainWindow::emptyValuesChangedHandler						);
 	connect(ui->tabBar,				&TabBar::useDefaultPPIHandler,						_resultsJsInterface,	&ResultsJsInterface::getDefaultPPI							);
-
-
-	connect(&_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus								);
-
-
-	connect(_okButton,				&QPushButton::clicked,								this,					&MainWindow::analysisOKed									);
-
-	connect(_runButton,				&QPushButton::clicked,								this,					&MainWindow::analysisRunned									);
-
-	connect(ui->splitter,			&QSplitter::splitterMoved,							this,					&MainWindow::splitterMovedHandler							);
-
-	connect(ui->webViewHelp,		&CustomWebEngineView::loadFinished,					this,					&MainWindow::helpFirstLoaded								);
 
 	connect(_filterModel,			&FilterModel::refreshAllAnalyses,					this,					&MainWindow::refreshAllAnalyses								);
 	connect(_filterModel,			&FilterModel::updateColumnsUsedInConstructedFilter, _tableModel,			&DataSetTableModel::setColumnsUsedInEasyFilter				);
