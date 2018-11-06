@@ -58,17 +58,50 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 	if (!fix_decimals)
 		this->ui->numDecimals->hide();
 
-	connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(savePreferences()));
-	connect(ui->useDefaultSpreadsheetEditor, SIGNAL(clicked(bool)), this, SLOT(setDefaultEditorCheck(bool)));
-	connect(ui->openEditor, SIGNAL(pressed()),this, SLOT(getSpreadsheetEditor()));
-	connect(ui->tabsPreferences, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
+	connect(ui->buttonBox,						&QDialogButtonBox::accepted,	this, &PreferencesDialog::savePreferences		);
+	connect(ui->useDefaultSpreadsheetEditor,	&QCheckBox::clicked,			this, &PreferencesDialog::setDefaultEditorCheck	);
+	connect(ui->openEditor,						&QPushButton::pressed,			this, &PreferencesDialog::getSpreadsheetEditor	);
+	connect(ui->tabsPreferences,				&QTabWidget::currentChanged,	this, &PreferencesDialog::currentTabChanged		);
+	connect(ui->sliderUIScale,					&QSlider::valueChanged,			this, &PreferencesDialog::sliderUIScaleChanged	);
 	
 	ui->tabsPreferences->setCurrentIndex(_currentTab);
+
+	setSliderUIScale(Settings::value(Settings::UI_SCALE).toFloat());
+	ui->sliderUIScale->setTracking(true);
+	//sliderUIScaleChanged(ui->sliderUIScale->value());
+
 }
 
 PreferencesDialog::~PreferencesDialog()
 {
 	delete ui;
+}
+
+const float sliderMult = 0.33333f;
+
+void PreferencesDialog::setSliderUIScale(float scale)
+{
+	float	scaleX		= std::log((scale) / sliderMult) * 32.0f;
+	int		minSlider	= ui->sliderUIScale->minimum(),
+			maxSlider	= ui->sliderUIScale->maximum(),
+			newPos		= std::max(minSlider, std::min(maxSlider, int(scaleX)));
+
+	ui->sliderUIScale->setValue(newPos);
+}
+
+float PreferencesDialog::sliderUIScale()
+{
+	float curPos = ui->sliderUIScale->value();
+
+	return std::exp(curPos / 32.0f) * sliderMult;
+
+}
+
+void PreferencesDialog::sliderUIScaleChanged(int)
+{
+	float scale = sliderUIScale();
+	Settings::setValue(Settings::UI_SCALE, scale);
+	emit _tabBar->UIScaleChanged(scale);
 }
 
 void PreferencesDialog::setDefaultPPI(int ppi)

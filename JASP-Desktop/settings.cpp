@@ -17,7 +17,8 @@ const Settings::Setting Settings::Values[] = {
 	{"OSFEncryption", 0},
 	{"OSFRememberMe", false},
 	{"PPIUseDefault", false},
-	{"PPICustomValue", 300}
+	{"PPICustomValue", 300},
+	{"UIScale", 1.0f}
 };
 
 QVariant Settings::value(Settings::Type key)
@@ -42,7 +43,7 @@ void Settings::remove(Settings::Type key)
 
 QSettings *Settings::getSettings()
 {
-	// if _settings is created immediately, it use a wrong place to store its data.
+	// if _settings is created immediately, it does not use the right place to store its data.
 	if (!_settings)
 		_settings = new QSettings();
 	return _settings;

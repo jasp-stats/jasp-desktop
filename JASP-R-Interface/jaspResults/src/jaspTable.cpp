@@ -310,7 +310,8 @@ std::string	jaspTable::getCellFormatted(size_t col, size_t row)
 		if(val.isDouble())
 		{
 			std::stringstream out;
-			out << std::defaultfloat << val.asDouble();
+			out.unsetf(std::ios_base::floatfield); //is std::defaultfloat for old compilers... RTools Im looking at you
+			out << val.asDouble();
 			return out.str();
 		}
 	}
@@ -373,11 +374,12 @@ std::string	jaspTable::getCellFormatted(size_t col, size_t row)
 		return "p < " + pValOri;
 
 	std::stringstream out;
+	out.unsetf(std::ios_base::floatfield); //is std::defaultfloat for old compilers... RTools Im looking at you
 
 	if(sigFig > 0)			out << std::scientific		<< std::setprecision(sigFig) << value;
 	else if(decPts > 0)		out << std::fixed			<< std::setprecision(decPts) << value;
-	else if(round)			out << std::defaultfloat	<<								std::round(value);
-	else					out << std::defaultfloat	<<								value;
+	else if(round)			out << std::round(value);
+	else					out << value;
 
 	if(prcnt)
 		out << "%";

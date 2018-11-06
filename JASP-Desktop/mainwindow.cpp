@@ -87,6 +87,7 @@
 #include <QDesktopServices>
 #include <QQmlContext>
 #include <QQuickItem>
+#include <QScreen>
 
 #include "analysisloader.h"
 
@@ -230,7 +231,7 @@ void MainWindow::makeConnections()
 	connect(ui->tabBar,				&TabBar::setFixDecimalsHandler,						_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler					);
 	connect(ui->tabBar,				&TabBar::emptyValuesChangedHandler,					this,					&MainWindow::emptyValuesChangedHandler						);
 	connect(ui->tabBar,				&TabBar::useDefaultPPIHandler,						_resultsJsInterface,	&ResultsJsInterface::getDefaultPPI							);
-	connect(ui->tabBar,				&TabBar::setPPIHandler,								this,					&MainWindow::setPPIHandler									);
+
 
 	connect(&_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus								);
 
@@ -267,7 +268,7 @@ void MainWindow::initQWidgetGUIParts()
 
 	ui->splitter->setSizes(QList<int>({575}));
 
-	ui->tabBar->init();
+	ui->tabBar->init(this);
 
 #ifdef __APPLE__
 	_scrollbarWidth = 3;
@@ -321,6 +322,9 @@ void MainWindow::loadQML()
 	ui->quickWidget_Data->rootContext()->setContextProperty("computedColumnsInterface",	_computedColumnsModel);
 	ui->quickWidget_Data->rootContext()->setContextProperty("engineSync",				_engineSync);
 	ui->quickWidget_Data->rootContext()->setContextProperty("filterModel",				_filterModel);
+	ui->quickWidget_Data->rootContext()->setContextProperty("baseBlockDim",				20);
+	ui->quickWidget_Data->rootContext()->setContextProperty("baseFontSize",				16);
+	ui->quickWidget_Data->rootContext()->setContextProperty("ppiScale",					Settings::value(Settings::UI_SCALE).toFloat());
 
 	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeScale",			int(Column::ColumnType::ColumnTypeScale));
 	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeOrdinal",		int(Column::ColumnType::ColumnTypeOrdinal));
@@ -593,11 +597,17 @@ void MainWindow::dataSetChanged(DataSet * dataSet)
 	setDataSetAndPackageInModels(_package);
 }
 
-void MainWindow::setPPIHandler(int ppi)
+void MainWindow::setPPIHandler(int ppi, bool refreshAllAnalyses)
 {
 	emit ppiChanged(ppi);
 
-	refreshAllAnalyses();
+	if(refreshAllAnalyses)
+		MainWindow::refreshAllAnalyses();
+}
+
+void MainWindow::setUIScaleHandler(float scale)
+{
+	ui->quickWidget_Data->rootContext()->setContextProperty("ppiScale",	scale);
 }
 
 void MainWindow::setDataSetAndPackageInModels(DataSetPackage *package)
@@ -1051,7 +1061,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 		_loader.io(event, _package);
 		showProgress();
 	}
-	else if (event->operation() == FileEvent::FileExportData)
+	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileGenerateData)
 	{
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 		_loader.io(event, _package);
@@ -1180,7 +1190,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		_package->setModified(true);
 		showAnalysis = true;
 	}
-	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileExportResults)
+	else if (event->operation() == FileEvent::FileGenerateData || event->operation() == FileEvent::FileExportResults)
 	{
 		showAnalysis = true;
 	}
@@ -1380,7 +1390,7 @@ void MainWindow::resultsPageLoaded(bool success, int ppi)
 		ppi = customPPI;
 	}
 
-	emit ppiChanged(ppi);
+	setPPIHandler(ppi, false);
 }
 
 
@@ -1840,7 +1850,7 @@ void MainWindow::startDataEditorHandler()
 			if (!path.endsWith(".csv", Qt::CaseInsensitive))
 				path.append(".csv");
 
-			event = new FileEvent(this, FileEvent::FileExportData);
+			event = new FileEvent(this, FileEvent::FileGenerateData);
 		}
 		else
 		{

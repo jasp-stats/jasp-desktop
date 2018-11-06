@@ -82,6 +82,10 @@ windows{
 SRC_WRITE_IMAGE = $${PWD}/jaspResults/R/writeImage.R
 DEST_WRITE_IMAGE = $$OUT_PWD/$$DESTDIR/
 
+auxillaryRFiles.path = $$INSTALLPATH
+auxillaryRFiles.files = $${PWD}/jaspResults/R/writeImage.R
+INSTALLS += auxillaryRFiles
+
 win32 {
     SRC_WRITE_IMAGE ~= s,/,\\,g
     DEST_WRITE_IMAGE ~= s,/,\\,g

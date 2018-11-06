@@ -27,6 +27,7 @@ DataSetView::DataSetView() : _metricsFont(_font)
 	connect(this, &DataSetView::itemHorizontalPaddingChanged,	this, &DataSetView::calculateCellSizes);
 	connect(this, &DataSetView::itemVerticalPaddingChanged,		this, &DataSetView::calculateCellSizes);
 	connect(this, &DataSetView::extraColumnItemChanged,			this, &DataSetView::calculateCellSizes);
+	connect(this, &DataSetView::fontChanged,					this, &DataSetView::calculateCellSizes);
 
 	connect(this, &DataSetView::itemSizeChanged, this, &DataSetView::reloadTextItems);
 	connect(this, &DataSetView::itemSizeChanged, this, &DataSetView::reloadRowNumbers);
@@ -108,6 +109,8 @@ void DataSetView::calculateCellSizes()
 	_cellSizes.resize(_model->columnCount());
 	_colXPositions.resize(_model->columnCount());
 	_cellTextItems.clear();
+
+	_metricsFont = QFontMetricsF(_font);
 
 	for(int col=0; col<_model->columnCount(); col++)
 	{
@@ -318,7 +321,7 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 		if(_itemDelegate == NULL)
 		{
 			_itemDelegate = new QQmlComponent(qmlEngine(this));
-            _itemDelegate->setData("import QtQuick 2.9\nText { text: itemText; color: itemActive ? 'black' : 'grey' }", QUrl());
+			_itemDelegate->setData("import QtQuick 2.9\nText { text: itemText; color: itemActive ? 'black' : 'grey'; font: dataFont }", QUrl());
 		}
 
 		QQuickItem * textItem = NULL;
@@ -404,7 +407,7 @@ QQuickItem * DataSetView::createRowNumber(int row)
 		_rowNumberDelegate = new QQmlComponent(qmlEngine(this));
         _rowNumberDelegate->setData("import QtQuick 2.9\nItem {\n"
 			"Rectangle	{ color: \"lightGrey\";	anchors.fill: parent }\n"
-			"Text		{ text: rowIndex; anchors.centerIn: parent }\n"
+			"Text		{ text: rowIndex; anchors.centerIn: parent; font: dataFont }\n"
 		"}", QUrl());
 	}
 
@@ -488,7 +491,7 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 		_columnHeaderDelegate = new QQmlComponent(qmlEngine(this));
         _columnHeaderDelegate->setData("import QtQuick 2.9\nItem {\n"
 			"Rectangle	{ color: \"lightGrey\";	anchors.fill: parent }\n"
-			"Text		{ text: headerText; anchors.centerIn: parent }\n"
+			"Text		{ text: headerText; anchors.centerIn: parent; font: dataFont }\n"
 		"}", QUrl());
 	}
 
@@ -627,10 +630,13 @@ QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, QStri
 	if(previousContext == NULL)
 		previousContext = new QQmlContext(qmlContext(this), this);
 
-	previousContext->setContextProperty("itemText",		text);
-	previousContext->setContextProperty("itemActive",	active);
-	previousContext->setContextProperty("columnIndex",	column);
-	previousContext->setContextProperty("rowIndex",		row);
+	previousContext->setContextProperty("itemText",			text);
+	previousContext->setContextProperty("itemActive",		active);
+	previousContext->setContextProperty("columnIndex",		column);
+	previousContext->setContextProperty("rowIndex",			row);
+	previousContext->setContextProperty("dataFont",			_font);
+
+
 
 	return previousContext;
 }
@@ -640,7 +646,8 @@ QQmlContext * DataSetView::setStyleDataRowNumber(QQmlContext * previousContext, 
 	if(previousContext == NULL)
 		previousContext = new QQmlContext(qmlContext(this), this);
 
-	previousContext->setContextProperty("rowIndex",		row);
+	previousContext->setContextProperty("rowIndex",			row);
+	previousContext->setContextProperty("dataFont",			_font);
 
 	return previousContext;
 }
@@ -656,6 +663,7 @@ QQmlContext * DataSetView::setStyleDataColumnHeader(QQmlContext * previousContex
 	previousContext->setContextProperty("columnIsInvalidated",	isInvalidated);
 	previousContext->setContextProperty("columnIsFiltered",		isFiltered);
 	previousContext->setContextProperty("columnError",			computedError);
+	previousContext->setContextProperty("dataFont",				_font);
 
 	return previousContext;
 }

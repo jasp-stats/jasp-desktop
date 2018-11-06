@@ -28,7 +28,7 @@
 
 using namespace std;
 
-DataExporter::DataExporter() {
+DataExporter::DataExporter(bool includeComputeColumns) : _includeComputeColumns(includeComputeColumns) {
 	_defaultFileType = Utils::csv;
     _allowedFileTypes.push_back(Utils::csv);
     _allowedFileTypes.push_back(Utils::txt);
@@ -49,7 +49,7 @@ void DataExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 		Column &column = dataset->column(i);
 		string name = column.name();
 
-		if(!package->isColumnComputed(name))
+		if(!package->isColumnComputed(name) || _includeComputeColumns)
 			cols.push_back(&column);
 	}
 

@@ -5,10 +5,18 @@ ListView {
 	property string __debugName: "ElementView"
 	//clip: true
 
-	property real maxWidth: 200
+	property real maxWidth: 300 * ppiScale
 	property real widthMargin: 10
 	spacing: 4
 	maximumFlickVelocity: 400
+
+	onMaxWidthChanged:
+	{
+        listOfStuff.width = 10;
+        var modelTmp = model;
+        model = null;
+        model = modelTmp;
+	}
 
 	delegate: MouseArea
 	{
