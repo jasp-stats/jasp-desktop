@@ -53,7 +53,7 @@ test_that("Factor correlation table matches", {
   options$incl_correlations <- TRUE
   results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options, view=FALSE, quiet=TRUE, sideEffects="pkgLoading")
   table <- results[["results"]][["factorCorrelations"]][["data"]]
-  expect_equal_tables(table, list("RC 1", 1, "RC 2", 0.0433504307183835, 1))
+  expect_equal_tables(table, list("RC 1", 1))
 })
 
 test_that("Missing values works", {
