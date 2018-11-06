@@ -605,6 +605,19 @@ bool Column::overwriteDataWithScale(std::vector<double> scalarData)
 	return setColumnAsScale(scalarData);
 }
 
+bool Column::overwriteDataWithOrdinal(std::vector<int> ordinalData, std::map<int, std::string> levels)
+{
+	size_t setVals = ordinalData.size();
+
+	if(ordinalData.size() != rowCount())
+		ordinalData.resize(rowCount());
+
+	for(size_t setThis = setVals; setThis<ordinalData.size(); setThis++)
+		ordinalData[setThis] = INT_MIN;
+
+	return setColumnAsNominalOrOrdinal(ordinalData, levels, true);
+}
+
 bool Column::overwriteDataWithOrdinal(std::vector<int> ordinalData)
 {
 	size_t setVals = ordinalData.size();
@@ -616,6 +629,19 @@ bool Column::overwriteDataWithOrdinal(std::vector<int> ordinalData)
 		ordinalData[setThis] = INT_MIN;
 
 	return setColumnAsNominalOrOrdinal(ordinalData, true);
+}
+
+bool Column::overwriteDataWithNominal(std::vector<int> nominalData, std::map<int, std::string> levels)
+{
+	size_t setVals = nominalData.size();
+
+	if(nominalData.size() != rowCount())
+		nominalData.resize(rowCount());
+
+	for(size_t setThis = setVals; setThis<nominalData.size(); setThis++)
+		nominalData[setThis] = INT_MIN;
+
+	return setColumnAsNominalOrOrdinal(nominalData, levels, false);
 }
 
 bool Column::overwriteDataWithNominal(std::vector<int> nominalData)

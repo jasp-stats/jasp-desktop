@@ -19,6 +19,7 @@ void LevelsTableModel::setColumn(Column *column)
 {
 	beginResetModel();
 	_column = column;
+	_colName = column != NULL ? column->name() : "";
 	endResetModel();
 	emit resizeLabelColumn();
 }
@@ -45,7 +46,11 @@ void LevelsTableModel::clearColumn()
 void LevelsTableModel::setDataSet(DataSet * thisDataSet)
 {
 	_dataSet = thisDataSet;
-	clearColumn(); //also resets model
+
+	int newIndex = _dataSet == NULL ? -1 : _dataSet->getColumnIndex(_colName);
+
+	if(newIndex == -1)	clearColumn(); //also resets model
+	else				setColumn(&(_dataSet->column(newIndex)));
 }
 
 int LevelsTableModel::rowCount(const QModelIndex &parent) const

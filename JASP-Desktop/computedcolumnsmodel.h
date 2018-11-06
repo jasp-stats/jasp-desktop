@@ -78,7 +78,8 @@ signals:
 public slots:
 				void				computeColumnSucceeded(std::string columnName, std::string warning, bool dataChanged);
 				void				computeColumnFailed(std::string columnName, std::string error);
-				void				checkForDependentColumnsToBeSentSlot(std::string columnName)							{ checkForDependentColumnsToBeSent(columnName, true); }
+				void				checkForDependentColumnsToBeSentSlot(std::string columnName)					{ checkForDependentColumnsToBeSent(columnName, false); }
+				void				checkForDependentColumnsAndMeToBeSentSlot(std::string columnName)				{ checkForDependentColumnsToBeSent(columnName, true); }
 				ComputedColumn *	requestComputedColumnCreation(std::string columnName, Analysis * analysis);
 				void				requestComputedColumnDestruction(std::string columnName);
 

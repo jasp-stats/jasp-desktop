@@ -57,10 +57,10 @@ public:
 	analysisResultStatus getStatusToAnalysisStatus();
 
 	//return true if changed:
-	bool setColumnDataAsScale(std::string columnName, std::vector<double> scalarData)				{	return provideDataSet()->columns()[columnName].overwriteDataWithScale(scalarData);		}
-	bool setColumnDataAsOrdinal(std::string columnName, std::vector<int> ordinalData)				{	return provideDataSet()->columns()[columnName].overwriteDataWithOrdinal(ordinalData);	}
-	bool setColumnDataAsNominal(std::string columnName, std::vector<int> nominalData)				{	return provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);	}
-	bool setColumnDataAsNominalText(std::string columnName, std::vector<std::string> nominalData)	{	return provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);	}
+	bool setColumnDataAsScale(std::string columnName, std::vector<double> scalarData)										{	return provideDataSet()->columns()[columnName].overwriteDataWithScale(scalarData);				}
+	bool setColumnDataAsOrdinal(std::string columnName, std::vector<int> ordinalData, std::map<int, std::string> levels)	{	return provideDataSet()->columns()[columnName].overwriteDataWithOrdinal(ordinalData, levels);	}
+	bool setColumnDataAsNominal(std::string columnName, std::vector<int> nominalData, std::map<int, std::string> levels)	{	return provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData, levels);	}
+	bool setColumnDataAsNominalText(std::string columnName, std::vector<std::string> nominalData)							{	return provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);			}
 
 	int dataSetRowCount()	{ return static_cast<int>(provideDataSet()->rowCount()); }
 

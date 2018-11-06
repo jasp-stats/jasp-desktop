@@ -59,6 +59,8 @@ public:
 
 
 	bool overwriteDataWithScale(std::vector<double> scalarData);
+	bool overwriteDataWithOrdinal(std::vector<int> ordinalData, std::map<int, std::string> levels);
+	bool overwriteDataWithNominal(std::vector<int> nominalData, std::map<int, std::string> levels);
 	bool overwriteDataWithOrdinal(std::vector<int> ordinalData);
 	bool overwriteDataWithNominal(std::vector<int> nominalData);
 	bool overwriteDataWithNominal(std::vector<std::string> nominalData);
