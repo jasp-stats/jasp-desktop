@@ -87,7 +87,7 @@ reorderFactor <- function(someFactor) {
   stopifnot(is.factor(someFactor))
   
   theLevels <- levels(someFactor)
-  numericalOrder <- as.numeric(theLevels)
+  numericalOrder <- suppressWarnings(as.numeric(theLevels))
   numericalOrderWorks <- all(!is.na(numericalOrder))
   
   if (isTRUE(numericalOrderWorks)) {
