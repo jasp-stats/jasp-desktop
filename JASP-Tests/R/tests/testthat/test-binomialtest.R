@@ -7,7 +7,7 @@ test_that("Main table results match", {
   options$hypothesis <- "greaterThanTestValue"
   options$confidenceInterval <- TRUE
   options$VovkSellkeMPR <- TRUE
-  results <- jasptools::run("BinomialTest", "test.csv", options, view=FALSE, quiet=TRUE)
+  results <- jasptools::run("BinomialTest", "test.csv", options, view = FALSE, quiet = TRUE)
   table <- results[["results"]][["binomialTable"]][["data"]]
   expect_equal_tables(table,
 		list(1, 58, 0, 0.4928415, 0.6967399, 0.58, 100, 1, "contBinom", 
