@@ -1,12 +1,8 @@
 {
 	"version": "2.00",
 	"autorun": true,
-	"init": true,
 	"name": "BinomialTest",
-	"title": "Binomial Test",
-	"dataset": {
-		"factor": "variables"
-	},
+    "jaspResults": true,
 	"options": [
 		{
 			"name": "variables",
@@ -38,6 +34,11 @@
 			"type": "Number",
 			"value": 0.950
 		},
+        {
+            "name": "VovkSellkeMPR",
+            "type": "Boolean",
+            "default": false
+        },
 		{
 			"name": "descriptivesPlots",
 			"type": "Boolean"
@@ -49,84 +50,6 @@
 			"name": "descriptivesPlotsConfidenceInterval",
 			"type": "Number",
 			"value": 0.950
-		},
-		{
-			"name": "VovkSellkeMPR",
-			"type": "Boolean",
-			"default": false
-		}
-	],
-	"results": {
-		"binomial": {
-			"type": "table",
-			"title": "Binomial Test",
-			"columns": [
-				{
-					"name": "case",
-					"title": "",
-					"type": "string",
-					"combine": true
-				},
-				{
-					"name": "level",
-					"title": "Level",
-					"type": "string"
-				},
-				{
-					"name": "counts",
-					"title": "Counts",
-					"type": "integer"
-				},
-				{
-					"name": "total",
-					"title": "Total",
-					"type": "string"
-				},
-				{
-					"name": "proportion",
-					"title": "Proportion",
-					"type": "number",
-					"format": "sf:4;dp:3"
-				},
-				{
-					"name": "p",
-					"title": "p",
-					"type": "number",
-					"format": "dp:3;p:.001"
-				},
-				{
-					"name": "VovkSellkeMPR",
-					"title": "VS-MPR\u002A",
-					"type": "number",
-					"format": "sf:4;dp:3"
-				},
-				{
-					"name": "lowerCI",
-					"title": "Lower",
-					"type": "number",
-					"format": "sf:4;dp:3"
-				},
-				{
-					"name": "upperCI",
-					"title": "Upper",
-					"type": "number",
-					"format": "sf:4;dp:3"
-				}
-			]
-		},
-		"descriptives": {
-			"type": "container",
-			"items": [{
-				"descriptivesPlot": {
-					"type": "image",
-					"width": 160,
-					"height": 300
-				}
-			}]
-		}
-	},
-	"state": {
-		"binomResults": ["variables", "confidenceIntervalInterval", "hypothesis", "testValue"],
-		"descriptPlots": ["variables", "descriptivesPlots", "descriptivesPlotsConfidenceInterval", "plotWidth", "plotHeight"]
-	}
+        }
+    ]
 }
