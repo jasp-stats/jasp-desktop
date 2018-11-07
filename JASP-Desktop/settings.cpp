@@ -18,7 +18,7 @@ const Settings::Setting Settings::Values[] = {
 	{"OSFRememberMe", false},
 	{"PPIUseDefault", false},
 	{"PPICustomValue", 300},
-	{"UIScale", 1.0f}
+	{"UIScale", 0.7f}
 };
 
 QVariant Settings::value(Settings::Type key)

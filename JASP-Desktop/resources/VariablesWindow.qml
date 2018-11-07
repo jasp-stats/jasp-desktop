@@ -349,7 +349,7 @@ FocusScope {
 					FilterButton
                     {
                         //text: "UP"
-						iconSource: "../images/arrow-up.png"
+						iconSource:		"../images/arrow-up.png"
 
 						onClicked:		levelsTableView.moveUp()
 						toolTip:		"Move selected labels up"

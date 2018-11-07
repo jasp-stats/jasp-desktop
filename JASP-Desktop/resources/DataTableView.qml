@@ -189,7 +189,7 @@ FocusScope
 
 							Repeater{
 								id: iconRepeater
-								model: columnIsComputed ? [columnTypeScale, columnTypeOrdinal, columnTypeNominal, columnTypeNominalText] :
+								model: //columnIsComputed ? [columnTypeScale, columnTypeOrdinal, columnTypeNominal, columnTypeNominalText] :
 														  [columnTypeScale, columnTypeOrdinal, columnTypeNominal] //these are set in the rootcontext in mainwindow!
 
 								Rectangle

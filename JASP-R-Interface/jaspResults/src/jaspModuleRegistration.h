@@ -33,7 +33,7 @@ RCPP_MODULE(jaspResults)
 
 		.method("setOptionMustBeDependency",		&jaspObject_Interface::setOptionMustBeDependency,						"Specifies an option and it's required value, if the analysis is restarted and this option is no longer defined (like that) it will automatically destroy the object. Otherwise it will keep it.")
 		.method("setOptionMustContainDependency",	&jaspObject_Interface::setOptionMustContainDependency,					"Specifies an option that should define an array and a required value that should be in it, if the analysis is restarted and this option is no longer defined or no longer contains the specified value it will automatically destroy the object. Otherwise it will keep it.")
-		.method("dependOnOptions",				&jaspObject_Interface::dependOnOptions,							"Will make the object depend on the current values of the options specified in the charactervector.")
+		.method("dependOnOptions",					&jaspObject_Interface::dependOnOptions,									"Will make the object depend on the current values of the options specified in the charactervector.")
 		.method("copyDependenciesFromJaspObject",	&jaspObject_Interface::copyDependenciesFromJaspObject,					"Will make the object depend on whatever the other jaspObject depends.")
 
 
