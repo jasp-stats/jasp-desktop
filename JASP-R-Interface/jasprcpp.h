@@ -43,10 +43,15 @@ void jaspRCPP_setRError(SEXP Message);
 int jaspRCPP_dataSetRowCount();
 
 
-bool jaspRCPP_setColumnDataAsScale(std::string columnName,			Rcpp::Vector<REALSXP> scalarData);
-bool jaspRCPP_setColumnDataAsOrdinal(std::string columnName,		Rcpp::Vector<INTSXP> ordinalData);
-bool jaspRCPP_setColumnDataAsNominal(std::string columnName,		Rcpp::Vector<INTSXP> nominalData);
-bool jaspRCPP_setColumnDataAsNominalText(std::string columnName,	Rcpp::Vector<STRSXP> nominalData);
+bool jaspRCPP_setColumnDataAsScale(std::string columnName,			Rcpp::RObject scalarData);
+bool jaspRCPP_setColumnDataAsOrdinal(std::string columnName,		Rcpp::RObject ordinalData);
+bool jaspRCPP_setColumnDataAsNominal(std::string columnName,		Rcpp::RObject nominalData);
+bool jaspRCPP_setColumnDataAsNominalText(std::string columnName,	Rcpp::RObject nominalData);
+
+bool _jaspRCPP_setColumnDataAsScale(std::string columnName,			Rcpp::Vector<REALSXP> scalarData);
+bool _jaspRCPP_setColumnDataAsOrdinal(std::string columnName,		Rcpp::Vector<INTSXP> ordinalData);
+bool _jaspRCPP_setColumnDataAsNominal(std::string columnName,		Rcpp::Vector<INTSXP> nominalData);
+bool _jaspRCPP_setColumnDataAsNominalText(std::string columnName,	Rcpp::Vector<STRSXP> nominalData);
 
 void jaspRCPP_setColumnDataHelper_FactorsLevels(Rcpp::Vector<INTSXP> data, int *& outputData, size_t & numLevels, const char **& labelPointers, std::string *& labels);
 

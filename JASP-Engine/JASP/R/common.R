@@ -2847,7 +2847,7 @@ createJaspContainer <- function(title="", dependencies=NULL, position=NULL)
   container <- jaspResultsModule$create_cpp_jaspContainer(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspContainer, title))
 
   if(!is.null(dependencies))
-    container$dependOnTheseOptions(dependencies)
+    container$dependOnOptions(dependencies)
 
   if(is.numeric(position))
     container$position = position
@@ -2878,7 +2878,7 @@ createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, 
     jaspObj$setRowTitles(rowTitles)
 
   if(!is.null(dependencies))
-    jaspObj$dependOnTheseOptions(dependencies)
+    jaspObj$dependOnOptions(dependencies)
 
   if(is.numeric(position))
     jaspObj$position = position
@@ -2894,7 +2894,7 @@ createJaspHtml <- function(text="", elementType="p", class="", dependencies=NULL
   htmlObj$title       <- title
 
   if(!is.null(dependencies))
-    htmlObj$dependOnTheseOptions(dependencies)
+    htmlObj$dependOnOptions(dependencies)
 
   if(is.numeric(position))
     htmlObj$position = position
@@ -2909,7 +2909,7 @@ createJaspState <- function(object=NULL, title="", dependencies=NULL, position=N
   stateObj$object <- object
 
   if(!is.null(dependencies))
-      stateObj$dependOnTheseOptions(dependencies)
+      stateObj$dependOnOptions(dependencies)
 
   if(is.numeric(position))
     stateObj$position = position

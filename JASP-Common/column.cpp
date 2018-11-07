@@ -686,14 +686,18 @@ void Column::setDefaultValues(Column::ColumnType columnType)
 
 bool Column::setColumnAsNominalOrOrdinal(const vector<int> &values, map<int, string> &uniqueValues, bool is_ordinal)
 {
-	_labels.syncInts(uniqueValues);
-	return _setColumnAsNominalOrOrdinal(values, is_ordinal);
+	bool labelChanged	= _labels.syncInts(uniqueValues);
+	bool dataChanged	= _setColumnAsNominalOrOrdinal(values, is_ordinal);
+
+	return labelChanged || dataChanged;
 }
 
 bool Column::setColumnAsNominalOrOrdinal(const vector<int> &values, const set<int> &uniqueValues, bool is_ordinal)
 {
-	_labels.syncInts(uniqueValues);
-	return _setColumnAsNominalOrOrdinal(values, is_ordinal);
+	bool labelChanged	= _labels.syncInts(uniqueValues);
+	bool dataChanged	= _setColumnAsNominalOrOrdinal(values, is_ordinal);
+
+	return labelChanged || dataChanged;
 }
 
 bool Column::_setColumnAsNominalOrOrdinal(const vector<int> &values, bool is_ordinal)
