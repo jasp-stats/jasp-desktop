@@ -27,11 +27,9 @@
 #include "utilities/settings.h"
 #include "utilities/qutils.h"
 
-BackstageOSF::BackstageOSF(QWidget *parent): BackstagePage(parent),
-	ui(new Ui::BackstageForm)
-{
-	ui->setupUi(this);
-				
+BackstageOSF::BackstageOSF(QWidget *parent, QQuickWidget *qquickfilemenu): BackstagePage(parent)
+{				
+	
 	_osfBreadCrumbsListModel = new OSFBreadCrumbsListModel(this);
 	_osfBreadCrumbsListModel->setSeparator(/* QDir::separator() */ QChar('/'));		
 	
@@ -41,15 +39,13 @@ BackstageOSF::BackstageOSF(QWidget *parent): BackstagePage(parent),
 	_osfListModel ->setFSBModel(_model);
 	_osfListModel->setBreadCrumbsListModel(_osfBreadCrumbsListModel);
 	
-	ui->QmlContent->engine()->addImportPath("qrc:///components");
+	qquickfilemenu->engine()->addImportPath("qrc:///components");
 		
-	ui->QmlContent->rootContext()->setContextProperty("osfListModel", _osfListModel);
-	ui->QmlContent->rootContext()->setContextProperty("osfBreadCrumbsListModel",_osfBreadCrumbsListModel);
-	ui->QmlContent->rootContext()->setContextProperty("breadcrumbsmodel",_osfBreadCrumbsListModel);
-	ui->QmlContent->rootContext()->setContextProperty("backstageosf", this);
+	qquickfilemenu->rootContext()->setContextProperty("osfListModel", _osfListModel);
+	qquickfilemenu->rootContext()->setContextProperty("osfBreadCrumbsListModel",_osfBreadCrumbsListModel);
+	qquickfilemenu->rootContext()->setContextProperty("breadcrumbsmodel",_osfBreadCrumbsListModel);
+	qquickfilemenu->rootContext()->setContextProperty("backstageosf", this);
 	
-	ui->QmlContent->setSource(QUrl(QStringLiteral("qrc:/backstage/BackstageOSF.qml")));
-		
 	connect(_model,						&FSBMOSF::authenticationSuccess,				this,			&BackstageOSF::updateUserDetails);
 	connect(_model,						&FSBMOSF::authenticationClear,					this,			&BackstageOSF::updateUserDetails);
 	connect(_model,						&FSBMOSF::entriesChanged,						this,			&BackstageOSF::resetOSFListModel);

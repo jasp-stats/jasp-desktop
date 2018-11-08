@@ -172,7 +172,6 @@ HEADERS += \
     widgets/backstage/fsbrowser.h \
     widgets/backstage/fsentry.h \
     widgets/backstage/fsentrywidget.h \
-    widgets/backstage/opensavewidget.h \
     widgets/backstage/verticalscrollarea.h \
     widgets/backstage/verticaltabbar.h \
     widgets/backstage/verticaltabwidget.h \
@@ -180,7 +179,6 @@ HEADERS += \
     widgets/assignbutton.h \
     widgets/assignbuttonmenu.h \
     widgets/availablefieldslistview.h \
-    widgets/backstage/backstagewidget.h \
     widgets/boundassignwidget.h \
     widgets/boundcheckbox.h \
     widgets/boundcombobox.h \
@@ -272,7 +270,8 @@ HEADERS += \
     widgets/backstage/osflistmodel.h \
     widgets/backstage/osfbreadcrumbslistmodel.h \
     resultstesting/compareresults.h \
-    resultstesting/resultscomparetable.h
+    resultstesting/resultscomparetable.h \
+    filemenu.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -399,7 +398,6 @@ SOURCES += \
     widgets/backstage/fsbmrecentfolders.cpp \
     widgets/backstage/fsbrowser.cpp \
     widgets/backstage/fsentrywidget.cpp \
-    widgets/backstage/opensavewidget.cpp \
     widgets/backstage/verticalscrollarea.cpp \
     widgets/backstage/verticaltabbar.cpp \
     widgets/backstage/verticaltabwidget.cpp \
@@ -407,7 +405,6 @@ SOURCES += \
     widgets/assignbutton.cpp \
     widgets/assignbuttonmenu.cpp \
     widgets/availablefieldslistview.cpp \
-    widgets/backstage/backstagewidget.cpp \
     widgets/boundassignwidget.cpp \
     widgets/boundcheckbox.cpp \
     widgets/boundcombobox.cpp \
@@ -494,7 +491,8 @@ SOURCES += \
     widgets/backstage/osflistmodel.cpp \
     widgets/backstage/osfbreadcrumbslistmodel.cpp \
     resultstesting/compareresults.cpp \
-    resultstesting/resultscomparetable.cpp
+    resultstesting/resultscomparetable.cpp \
+    filemenu.cpp
 
 FORMS += \
     gui/aboutdialog.ui \
@@ -570,4 +568,3 @@ DISTFILES += \
     modules/ModuleInstaller.qml \
     QMLTheme/Theme/JASPTheme.qml \
     components/JASP/Controls/tableviewcolumn.qmodel
-

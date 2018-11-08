@@ -2,22 +2,17 @@
 #include "ui_backstageform.h"
 
 
-BackstageRecentFiles::BackstageRecentFiles(QWidget *parent): BackstagePage(parent),
-	ui(new Ui::BackstageForm)
-{
+BackstageRecentFiles::BackstageRecentFiles(QWidget *parent, QQuickWidget *qquickfilemenu): BackstagePage(parent)
+{	
 	
-	ui->setupUi(this);
-
 	_recentFilesListModel = new RecentFilesListModel(this);
 	
-	ui->QmlContent->rootContext()->setContextProperty("recentFilesListModel",_recentFilesListModel);
-	ui->QmlContent->setSource(QUrl(QStringLiteral("qrc:/backstage/BackstageRecentFiles.qml")));
+	qquickfilemenu->rootContext()->setContextProperty("recentFilesListModel", _recentFilesListModel);
 	
 }
 
 BackstageRecentFiles::~BackstageRecentFiles()
 {
-	delete ui;
 }
 
 void BackstageRecentFiles::pushRecentFilePath(const QString &newrecent)

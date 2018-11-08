@@ -1,7 +1,7 @@
 import "qrc:/qml/"
 import QtQuick 2.0
 import QtQuick.Controls 2.2
-import JASP.Controls 1.0
+//import JASP.Controls 1.0
 
 
 ListView {

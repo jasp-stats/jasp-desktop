@@ -17,25 +17,20 @@
 //
 
 #include "backstagecomputer.h"
-#include "ui_backstageform.h"
 #include <QFileDialog>
+#include <QQmlContext>
 
-BackstageComputer::BackstageComputer(QWidget *parent): BackstagePage(parent),
-	ui(new Ui::BackstageForm)
+BackstageComputer::BackstageComputer(QWidget *parent, QQuickWidget *qquickfilemenu): BackstagePage(parent)
+
 {
-	ui->setupUi(this);
-
 	_computerListModel = new ComputerListModel(this);
 
-	ui->QmlContent->rootContext()->setContextProperty("computerListModel", _computerListModel);
-	ui->QmlContent->rootContext()->setContextProperty("backstagecomputer", this);
-	ui->QmlContent->setSource(QUrl(QStringLiteral("qrc:/backstage/BackstageComputer.qml")));
-
+	qquickfilemenu->rootContext()->setContextProperty("computerListModel", _computerListModel);
+	qquickfilemenu->rootContext()->setContextProperty("backstagecomputer", this);
 }
 
 BackstageComputer::~BackstageComputer()
 {
-	delete ui;
 }
 
 FileEvent *BackstageComputer::browseOpen(const QString &path)

@@ -36,10 +36,11 @@ TabBar::TabBar(QWidget *parent) :
 
 	_background = new QWidget(this);
 	_background->setObjectName("background");
-
+	
 	_backgroundLayout = new QGridLayout(this);
-	_backgroundLayout->setMargin(0);
+	_backgroundLayout->setMargin(15);
 	_backgroundLayout->addWidget(_background);
+	_backgroundLayout->setContentsMargins(95, 0, 0, 0);
 
 	_layout = new QHBoxLayout(_background);
 	_layout->setMargin(0);

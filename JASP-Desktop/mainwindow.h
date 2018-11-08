@@ -27,6 +27,7 @@
 #include "data/datasettablemodel.h"
 #include "variablespage/levelstablemodel.h"
 #include "variablespage/labelfiltergenerator.h"
+
 #include "engine/enginesync.h"
 #include "analysis/analyses.h"
 
@@ -45,8 +46,10 @@
 #include "modules/ribbonbuttonmodel.h"
 #include "modules/ribbonentry.h"
 #include "data/filtermodel.h"
+#include "filemenu.h"
 
 class ResultsJsInterface;
+class FileMenu;
 
 namespace Ui {
 class MainWindow;
@@ -57,6 +60,7 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 
 	friend class ResultsJsInterface;
+	friend class FileMenu;
 public:
 	explicit MainWindow(QApplication *application);
 	void open(QString filepath);
@@ -157,7 +161,7 @@ private slots:
 	void tabChanged(int index);
 	void helpToggled(bool on);
 
-	void dataSetIORequest(FileEvent *event);
+	void dataSetIORequestHandler(FileEvent *event);
 	void dataSetIOCompleted(FileEvent *event);
 	void populateUIfromDataSet();
 	void ribbonEntrySelected(const QString &item);
@@ -208,7 +212,7 @@ private slots:
 
 	void saveJaspFileHandler();
 	void handleRibbonButtonClicked(QVariant);
-	
+
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);
 
@@ -226,7 +230,7 @@ private:
 	labelFilterGenerator			*_labelFilterGenerator	= nullptr;
 	ColumnsModel					*_columnsModel			= nullptr;
 	ComputedColumnsModel			*_computedColumnsModel	= nullptr;
-	FilterModel						*_filterModel			= nullptr;	
+	FilterModel						*_filterModel			= nullptr;
 	OnlineDataManager				*_odm					= nullptr;
 	DynamicModules					*_dynamicModules		= nullptr;
 	QWidget							*_buttonPanel			= nullptr;
@@ -236,10 +240,11 @@ private:
 	CustomWebEnginePage				*_customPage			= nullptr;
 	RibbonModel						*_ribbonModel			= nullptr;
 	RibbonButtonModel				*_ribbonButtonModel		= nullptr;
-	QObject							*qmlProgressBar			= nullptr;
+	QObject							*_qmlProgressBar		= nullptr;
 	QApplication					*_application 			= nullptr;
 
 	QSettings						_settings;
+
 	analysisFormMap					_analysisFormsMap;
 	TableModelVariablesAvailable	_availableVariablesModel;
 
@@ -254,13 +259,14 @@ private:
 
 	AsyncLoader						_loader;
 	AsyncLoaderThread				_loaderThread;
-	
 
 	bool							_inited,
 									_applicationExiting		= false,
 									_resultsViewLoaded		= false,
 									_openedUsingArgs		= false,
 									_excludeKey				= false;
+	FileMenu						*_fileMenu;
+
 
 };
 
