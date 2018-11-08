@@ -15,15 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 fromJSON  <- function(x) jsonlite::fromJSON(x, TRUE, FALSE, FALSE)
-toJSON    <- function(x)
-{
-    print(paste0("toJSON got: ", x))
-    result <- jsonlite::toJSON(x, auto_unbox = TRUE, digits = NA, null="null")
-    print(paste0("toJSON result: ", result))
-
-    return(result)
-}
-
+toJSON    <- function(x) jsonlite::toJSON(x, auto_unbox = TRUE, digits = NA, null="null")
 
 run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresInit=TRUE, perform="run")
 {
