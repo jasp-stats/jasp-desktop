@@ -1031,8 +1031,8 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   p <- JASPgraphs::drawAxis(xName = variable, xBreaks = 1:5, yBreaks = 1:5)
   if (dontPlotData) return(JASPgraphs::themeJasp(p))
 
-  tb <- table(column)
-  p <- ggplot2::ggplot(data = data.frame(x = names(tb), y = c(tb)), ggplot2::aes(x = x, y = y)) +
+  tb <- as.data.frame(table(column))
+  p <- ggplot2::ggplot(data = data.frame(x = tb[, 1], y = tb[, 2]), ggplot2::aes(x = x, y = y)) +
     ggplot2::geom_bar(stat = "identity", fill = "grey", col = "black", size = .3) +
     ggplot2::xlab(variable) +
     ggplot2::ylab("")

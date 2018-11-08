@@ -166,7 +166,7 @@
       <item row="2" column="2">
        <widget class="QLabel" name="countsLabel">
         <property name="text">
-         <string>Counts</string>
+         <string>Counts (optional)</string>
         </property>
        </widget>
       </item>
