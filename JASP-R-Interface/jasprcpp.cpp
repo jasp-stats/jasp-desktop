@@ -752,6 +752,9 @@ Rcpp::IntegerVector jaspRCPP_makeFactor(Rcpp::IntegerVector v, char** levels, in
 
 	v.attr("class") = rClass;
 
+	if(v.size() == 0)
+		return v;
+
 	static Rcpp::Function droplevels("droplevels");
 	return droplevels(Rcpp::_["x"] = v);
 }
