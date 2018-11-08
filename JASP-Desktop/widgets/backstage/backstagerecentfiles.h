@@ -22,10 +22,8 @@
 #include "backstagepage.h"
 #include "recentfileslistmodel.h"
 #include <QQmlContext>
+#include <QQuickWidget>
 
-namespace Ui {
-class BackstageForm;
-}
 
 class BackstageRecentFiles : public BackstagePage		
 {
@@ -33,7 +31,7 @@ class BackstageRecentFiles : public BackstagePage
 	Q_OBJECT	
 	
 public:
-	explicit BackstageRecentFiles(QWidget *parent = 0);
+	explicit BackstageRecentFiles(QWidget *parent = nullptr, QQuickWidget *qquickfilemenu = nullptr);
 	~BackstageRecentFiles();
 	void pushRecentFilePath(const QString & newrecent);
 
@@ -42,7 +40,6 @@ public slots:
 	
 private:
 	RecentFilesListModel *_recentFilesListModel;
-	Ui::BackstageForm *ui;
 	
 };
 				

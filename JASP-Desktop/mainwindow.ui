@@ -130,13 +130,22 @@ QPushButton::menu-indicator {
       <property name="currentIndex">
        <number>1</number>
       </property>
-      <widget class="BackStageWidget" name="backStage">
+      <widget class="QWidget" name="backStage">
        <property name="minimumSize">
         <size>
          <width>20</width>
          <height>20</height>
         </size>
        </property>
+       <layout class="QGridLayout" name="gridLayout_8">
+        <item row="0" column="0">
+         <widget class="QQuickWidget" name="quickWidget_FileMenu">
+          <property name="resizeMode">
+           <enum>QQuickWidget::SizeRootObjectToView</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="mainPage">
        <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,1">
@@ -505,12 +514,6 @@ QPushButton::menu-indicator {
    <class>CustomWebEngineView</class>
    <extends>QWidget</extends>
    <header>widgets/customwebengineview.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BackStageWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/backstage/backstagewidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

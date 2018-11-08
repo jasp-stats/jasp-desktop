@@ -25,10 +25,7 @@
 #include "fsbrowser.h"
 
 #include <QQmlContext>
-
-namespace Ui {
-class BackstageForm;
-}
+#include <QQuickWidget>
 
 class BackstageOSF: public BackstagePage
 {
@@ -44,7 +41,7 @@ class BackstageOSF: public BackstagePage
 	
 	
 public:
-	explicit BackstageOSF(QWidget *parent = nullptr);
+	explicit BackstageOSF(QWidget *parent = nullptr, QQuickWidget *qquickfilemenu = nullptr);
 	
 	bool loggedin();	
 	bool rememberme();
@@ -114,7 +111,6 @@ private:
 	FSBMOSF *_model;
 	FSBrowser *_fsBrowser;	
 	QString _currentFileName;	
-	Ui::BackstageForm *ui;
 	
 	bool _mLoggedin;
 	bool _mRememberMe;

@@ -21,18 +21,14 @@
 
 #include "backstagepage.h"
 #include "computerlistmodel.h"
-#include <QQmlContext>
-
-namespace Ui {
-class BackstageForm;
-}
+#include <QQuickWidget>
 
 class BackstageComputer : public BackstagePage
 {
 	Q_OBJECT
 	
 public:
-	explicit BackstageComputer(QWidget *parent = nullptr);
+	explicit BackstageComputer(QWidget *parent = nullptr,  QQuickWidget *qquickfilemenu = nullptr);
 	~BackstageComputer();
 	
 	FileEvent *browseOpen(const QString &path = "");
@@ -55,7 +51,6 @@ private:
 	QString _fileName;	
 	
 	ComputerListModel *_computerListModel;	
-	Ui::BackstageForm *ui;
 
 };
 

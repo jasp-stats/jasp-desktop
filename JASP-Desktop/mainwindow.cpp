@@ -116,6 +116,7 @@
 
 #include "timers.h"
 #include "resultstesting/compareresults.h"
+#include "filemenu.h"
 
 using namespace std;
 
@@ -140,6 +141,8 @@ MainWindow::MainWindow(QApplication * application) : QMainWindow(nullptr), ui(ne
 	_computedColumnsModel	= new ComputedColumnsModel(_analyses, this);
 	_filterModel			= new FilterModel(_package, this);
 	_ribbonModel			= new RibbonModel(this);
+	_fileMenu				= new FileMenu(this);
+
 
 
 	StartOnlineDataManager();
@@ -156,10 +159,13 @@ MainWindow::MainWindow(QApplication * application) : QMainWindow(nullptr), ui(ne
 
 	initQWidgetGUIParts();
 	makeConnections();
-	
+
 	// Set the initial tab on Common.
+
 	showMainPage();
-	
+
+	tabChanged(1);
+
 	qmlRegisterType<DataSetView>("JASP", 1, 0, "DataSetView");
 
 	loadRibbonQML();
@@ -178,7 +184,8 @@ void MainWindow::StartOnlineDataManager()
 	_loaderThread.start();
 	_loader.setOnlineDataManager(_odm);
 
-	ui->backStage->setOnlineDataManager(_odm);
+	_fileMenu->setOnlineDataManager(_odm);
+
 }
 
 #define CONNECT_SHORTCUT(shortcut, method) connect(new QShortcut(QKeySequence(shortcut), this),	&QShortcut::activated,	this,	method);
@@ -238,11 +245,11 @@ void MainWindow::makeConnections()
 
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
 	connect(_analyses,				&Analyses::analysisImageSaved,						this,					&MainWindow::analysisImageSavedHandler						);
-	connect(_analyses,				&Analyses::analysisAdded,							ui->backStage,			&BackStageWidget::analysisAdded								);
+	connect(_analyses,				&Analyses::analysisAdded,							_fileMenu,				&FileMenu::analysisAdded									);
 	connect(_analyses,				&Analyses::analysisImageEdited,						_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler				);
 
-	connect(ui->backStage,			&BackStageWidget::exportSelected,					_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
-	connect(ui->backStage,			&BackStageWidget::dataSetIORequest,					this,					&MainWindow::dataSetIORequest								);
+	connect(_fileMenu,				&FileMenu::exportSelected,							_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
+	connect(_fileMenu,				&FileMenu::dataSetIORequest,						this,					&MainWindow::dataSetIORequestHandler						);
 
 	connect(_odm,					&OnlineDataManager::progress,						this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
 	connect(&_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus								);
@@ -254,7 +261,7 @@ void MainWindow::makeConnections()
 
 	connect(ui->tabBar,				&TabBar::currentChanged,							this,					&MainWindow::tabChanged										);
 	connect(ui->tabBar,				&TabBar::helpToggled,								this,					&MainWindow::helpToggled									);
-	connect(ui->tabBar,				&TabBar::dataAutoSynchronizationChanged,			ui->backStage,			&BackStageWidget::dataAutoSynchronizationChanged			);
+	connect(ui->tabBar,				&TabBar::dataAutoSynchronizationChanged,			_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
 	connect(ui->tabBar,				&TabBar::setExactPValuesHandler,					_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler					);
 	connect(ui->tabBar,				&TabBar::setFixDecimalsHandler,						_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler					);
 	connect(ui->tabBar,				&TabBar::emptyValuesChangedHandler,					this,					&MainWindow::emptyValuesChangedHandler						);
@@ -270,6 +277,7 @@ void MainWindow::makeConnections()
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_filterModel,			&FilterModel::computeColumnSucceeded						);
 
 	connect(_dynamicModules,		&DynamicModules::showModuleInstallerWindow,			this,					&MainWindow::showQMLWindow									);
+
 }
 
 
@@ -329,6 +337,7 @@ void MainWindow::initQWidgetGUIParts()
 
 void MainWindow::loadQML()
 {
+
 	ui->quickWidget_Data->rootContext()->setContextProperty("mainWindow",				this);
 	ui->quickWidget_Data->rootContext()->setContextProperty("dataSetModel",				_tableModel);
 	ui->quickWidget_Data->rootContext()->setContextProperty("levelsTableModel",			_levelsTableModel);
@@ -339,7 +348,6 @@ void MainWindow::loadQML()
 	ui->quickWidget_Data->rootContext()->setContextProperty("baseBlockDim",				20);
 	ui->quickWidget_Data->rootContext()->setContextProperty("baseFontSize",				16);
 	ui->quickWidget_Data->rootContext()->setContextProperty("ppiScale",					Settings::value(Settings::UI_SCALE).toFloat());
-
 	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeScale",			int(Column::ColumnType::ColumnTypeScale));
 	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeOrdinal",		int(Column::ColumnType::ColumnTypeOrdinal));
 	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeNominal",		int(Column::ColumnType::ColumnTypeNominal));
@@ -354,7 +362,8 @@ void MainWindow::loadQML()
 	connect(DataView,				SIGNAL(dataTableDoubleClicked()),	this,					SLOT(startDataEditorHandler()));
 	connect(levelsTableView,		SIGNAL(columnChanged(QString)),		this,					SLOT(refreshAnalysesUsingColumn(QString)));
 
-	qmlProgressBar			= ui->quickWidget_Data->rootObject()->findChild<QObject*>("progressBarHolder");
+	_qmlProgressBar			= ui->quickWidget_Data->rootObject()->findChild<QObject*>("progressBarHolder");
+
 }
 
 
@@ -455,7 +464,9 @@ void MainWindow::open(QString filepath)
 
 	_openedUsingArgs = true;
 	if (_resultsViewLoaded)
-		ui->backStage->open(filepath);
+	{
+		_fileMenu->open(filepath);
+	}
 	else
 		_openOnLoadFilename = filepath;
 }
@@ -524,7 +535,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 	if (_package->isModified())
 	{
-		ui->backStage->close();
+		_fileMenu->close();
 		event->ignore();
 	}
 	else
@@ -560,7 +571,7 @@ void MainWindow::saveKeysSelected()
 
 	if (_package->isModified())
 	{
-		ui->backStage->save();
+		_fileMenu->save();
 	}
 }
 
@@ -610,7 +621,7 @@ void MainWindow::syncKeysSelected()
 	if (filterShortCut())
 		return;
 
-	ui->backStage->sync();
+	_fileMenu->sync();
 }
 
 
@@ -1155,7 +1166,7 @@ void MainWindow::checkUsedModules()
 	ui->tabBar->setModulePlusMenu(usedModules);
 }
 
-void MainWindow::dataSetIORequest(FileEvent *event)
+void MainWindow::dataSetIORequestHandler(FileEvent *event)
 {
 	if (event->operation() == FileEvent::FileOpen)
 	{
@@ -1225,6 +1236,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
+
 		if (_package->isModified())
 		{
 			QString title = windowTitle();
@@ -1233,9 +1245,10 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 
 			if (reply == QMessageBox::Save)
 			{
-				FileEvent *saveEvent = ui->backStage->save();
-				event->chain(saveEvent);
-				connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted);
+				//FileEvent *saveEvent = _backStage->save();
+				//event->chain(saveEvent);
+				//connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+
 				ui->panel_1_Data->hide();
 			}
 			else if (reply == QMessageBox::Cancel)
@@ -1410,7 +1423,7 @@ void MainWindow::populateUIfromDataSet()
 		_filterModel->setDataSetPackage(_package);
 		_filterModel->init();
 	}
-	
+
 	hideProgress();
 
 	bool errorFound = false;
@@ -1519,7 +1532,7 @@ void MainWindow::resultsPageLoaded(bool success, int ppi)
 
 		if (_openOnLoadFilename != "")
 		{
-			ui->backStage->open(_openOnLoadFilename);
+			_fileMenu->open(_openOnLoadFilename);
 			_openOnLoadFilename = "";
 		}
 
@@ -2030,7 +2043,7 @@ void MainWindow::startDataEditorHandler()
 		}
 
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(startDataEditorEventCompleted(FileEvent*)));
-		connect(event, SIGNAL(completed(FileEvent*)), ui->backStage, SLOT(setSyncFile(FileEvent*)));
+		//connect(event, SIGNAL(completed(FileEvent*)), _backStage, SLOT(setSyncFile(FileEvent*)));
 		event->setPath(path);
 		_loader.io(event, _package);
 		showProgress();
@@ -2096,17 +2109,17 @@ void MainWindow::startDataEditor(QString path)
 void MainWindow::showProgress()
 {
 	ui->panel_1_Data->show();
-	QMetaObject::invokeMethod(qmlProgressBar, "show");
+	QMetaObject::invokeMethod(_qmlProgressBar, "show");
 }
 
 void MainWindow::hideProgress()
 {
-	QMetaObject::invokeMethod(qmlProgressBar, "hide");
+	QMetaObject::invokeMethod(_qmlProgressBar, "hide");
 }
 
 void MainWindow::setProgressStatus(QString status, int progress)
 {
-	QMetaObject::invokeMethod(qmlProgressBar, "setStatus", Q_ARG(QVariant, QVariant(status)), Q_ARG(QVariant, QVariant(progress)));
+	QMetaObject::invokeMethod(_qmlProgressBar, "setStatus", Q_ARG(QVariant, QVariant(status)), Q_ARG(QVariant, QVariant(progress)));
 }
 
 
@@ -2186,7 +2199,7 @@ void MainWindow::saveJaspFileHandler()
 
 	saveEvent->setPath(resultXmlCompare::compareResults::theOne()->filePath());
 
-	dataSetIORequest(saveEvent);
+	dataSetIORequestHandler(saveEvent);
 
 }
 

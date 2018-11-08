@@ -5,16 +5,13 @@
 #include <QFileInfo>
 #include <QDir>
 
-BackstageCurrentFile::BackstageCurrentFile(QWidget *parent): BackstagePage(parent),
-	ui(new Ui::BackstageForm)
-{
-	ui->setupUi(this);
+BackstageCurrentFile::BackstageCurrentFile(QWidget *parent, QQuickWidget *qquickfilemenu): BackstagePage(parent)
+{	
 	
 	_currentFileListModel = new CurrentFileListModel(this);
 	
-	ui->QmlContent->rootContext()->setContextProperty("backstageCurrentFile",this);
-	ui->QmlContent->rootContext()->setContextProperty("currentFileListModel",_currentFileListModel);
-	ui->QmlContent->setSource(QUrl(QStringLiteral("qrc:/backstage/BackstageCurrentFile.qml")));
+	qquickfilemenu->rootContext()->setContextProperty("backstageCurrentFile",this);
+	qquickfilemenu->rootContext()->setContextProperty("currentFileListModel",_currentFileListModel);
 	
 	_currentFilePath = "";
 	_currentDataFilePath = "";
@@ -27,7 +24,6 @@ BackstageCurrentFile::BackstageCurrentFile(QWidget *parent): BackstagePage(paren
 
 BackstageCurrentFile::~BackstageCurrentFile()
 {
-	delete ui;
 }
 
 void BackstageCurrentFile::setCurrentFilePath(const QString &path)
