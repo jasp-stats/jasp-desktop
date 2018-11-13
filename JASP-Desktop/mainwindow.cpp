@@ -1069,7 +1069,6 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
-		
 		if (_package->isModified())
 		{
 			QString title = windowTitle();
@@ -1187,8 +1186,6 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
-		std::cout << "else if (event->operation() == FileEvent::FileClose)"<< std::endl;
-
 		if (event->successful())
 		{
 			closeCurrentOptionsWidget();
@@ -1749,7 +1746,7 @@ void MainWindow::refreshAnalysesUsingColumn(QString col)
 	changedColumns.push_back(col.toStdString());
 	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, false);
 
-	_package->setModified(false);
+	//_package->setModified(false); //Why would we do this?
 }
 
 void MainWindow::removeAnalysisRequestHandler(int id)
