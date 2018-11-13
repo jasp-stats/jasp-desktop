@@ -571,3 +571,36 @@ void Engine::waitForDatasetSync()
 		Utils::sleep(10);
 
 }
+
+bool Engine::setColumnDataAsNominalOrOrdinal(bool isOrdinal, std::string columnName, std::vector<int> data, std::map<int, std::string> levels)
+{
+	std::map<int, int> uniqueInts;
+
+	for(auto keyval : levels)
+	{
+		size_t convertedChars;
+
+		try {
+			int asInt = std::stoi(keyval.second, &convertedChars);
+
+			if(convertedChars == keyval.second.size()) //It was a number!
+				uniqueInts[keyval.first] = asInt;
+		}
+		catch(std::invalid_argument e) {}
+	}
+
+	if(uniqueInts.size() == levels.size()) //everything was an int!
+	{
+		for(auto & dat : data)
+			if(dat != INT_MIN)
+				dat = uniqueInts[dat];
+
+		if(isOrdinal)	return	provideDataSet()->columns()[columnName].overwriteDataWithOrdinal(data);
+		else			return	provideDataSet()->columns()[columnName].overwriteDataWithNominal(data);
+	}
+	else
+	{
+		if(isOrdinal)	return	provideDataSet()->columns()[columnName].overwriteDataWithOrdinal(data, levels);
+		else			return	provideDataSet()->columns()[columnName].overwriteDataWithNominal(data, levels);
+	}
+}

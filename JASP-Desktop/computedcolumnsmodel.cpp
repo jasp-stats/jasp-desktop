@@ -240,6 +240,20 @@ void ComputedColumnsModel::clearColumn(std::string columnName)
 
 }
 
+void ComputedColumnsModel::recomputeColumn(std::string columnName)
+{
+	clearColumn(columnName);
+	_computedColumns->findAllColumnNames();
+	try
+	{
+		ComputedColumn * col = &((*_computedColumns)[columnName]);
+		col->findDependencies();
+	}
+	catch(columnNotFound e){}
+
+	checkForDependentColumnsToBeSent(columnName, true);
+}
+
 void ComputedColumnsModel::checkForDependentColumnsToBeSent(std::string columnName, bool refreshMe)
 {
 	for(ComputedColumn * col : *_computedColumns)
