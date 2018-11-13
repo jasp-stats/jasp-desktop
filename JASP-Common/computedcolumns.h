@@ -35,6 +35,8 @@ public:
 	iterator			end()			{ return _computedColumns.end();	}
 	size_t				columnCount()	{ return _computedColumns.size();	}
 
+	void setPackageModified();
+
 			ComputedColumn & operator[](size_t i)					{ return *_computedColumns[i]; }
 	const	ComputedColumn & operator[](size_t i)			const	{ return *_computedColumns[i]; }
 			ComputedColumn & operator[](std::string name)			{ return *_computedColumns[findIndexByName(name)]; }
