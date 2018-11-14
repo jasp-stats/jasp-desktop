@@ -1,4 +1,4 @@
-replaceNA <- function(column, replaceWith) { 
+replaceNA <- function(column, replaceWith) {
   UseMethod("replaceNA", column)
 }
 
@@ -10,22 +10,17 @@ replaceNA.numeric <- function(column, replaceWith) {
 replaceNA.character <- function(column, replaceWith) {
   charReplaceWith <- as.character(replaceWith)
   charColumn <- as.character(column) 
-  print("character")
   result <- ifelse(is.na(charColumn), charReplaceWith, charColumn)
-  print(result)
   return(result)
 }
 
 replaceNA.factor <- function(column, replaceWith) {
-  print("factor")
   result <- as.factor(replaceNA.character(column, replaceWith))
   return(result)
 }
   
 replaceNA.ordered <- function(column, replaceWith) {
-  print("ordered")
   result <- reorderFactor(replaceNA.factor(column, replaceWith))
-  print(result)
   return(result)
 }
 
