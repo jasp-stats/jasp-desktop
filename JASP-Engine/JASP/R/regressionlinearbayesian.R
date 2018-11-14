@@ -1250,7 +1250,6 @@ RegressionLinearBayesian <- function (
         which.min(abs(xx - cri[2]))
     )
     dfCri <- data.frame(
-        x    = mean(xx[idxCri]), # not required in newer ggplot2 versions
         xmin = xx[idxCri[1]],
         xmax = xx[idxCri[2]],
         y = 0.9 * yBreaks[length(yBreaks)]
@@ -1262,16 +1261,19 @@ RegressionLinearBayesian <- function (
         label = format(cri, digits = 3, scientific = -2)
     )
 
-	g <- JASPgraphs::drawLines(dat = dfLines,
-							   mapping = ggplot2::aes(x = x, y = y, group = g, color = g),
-							   show.legend = FALSE) +
-	    ggplot2::scale_y_continuous(name = "Density", breaks = yBreaks, limits = range(yBreaks)) + 
-	    ggplot2::scale_x_continuous(name = name, breaks = xBreaks, limits = range(xBreaks))
-	g <- g + ggplot2::scale_color_manual(values = c("gray", "black"))
+  g <- ggplot2::ggplot(data = dfLines, mapping = ggplot2::aes(x = x, y = y, group = g, color = g)) +
+    ggplot2::geom_line(size = 1.25, show.legend = FALSE) +
+    ggplot2::scale_y_continuous(name = "Density", breaks = yBreaks, limits = range(yBreaks)) + 
+	  ggplot2::scale_x_continuous(name = name, breaks = xBreaks, limits = range(xBreaks)) +
+	  ggplot2::scale_color_manual(values = c("gray", "black"))
 	if (prob0 > 0.01)
-	    g <- g + ggplot2::geom_text(data = dfText, mapping = ggplot2::aes(x = x, y = y, label = label), size = 6, hjust = hjust)
-	g <- g + ggplot2::geom_errorbarh(data = dfCri, mapping = ggplot2::aes(x = x, xmin = xmin, xmax = xmax, y = y), height = hBarHeight)
-	g <- g + ggplot2::geom_text(data = dfCriText, mapping = ggplot2::aes(x = x, y = y, label = label), size = 6, hjust = "center")
+	    g <- g + ggplot2::geom_text(data = dfText, mapping = ggplot2::aes(x = x, y = y, label = label), 
+	                                size = 6, hjust = hjust, inherit.aes = FALSE)
+	g <- g + ggplot2::geom_errorbarh(data = dfCri, mapping = ggplot2::aes(xmin = xmin, xmax = xmax, y = y), 
+	                          height = hBarHeight, inherit.aes = FALSE) + 
+	  ggplot2::geom_text(data = dfCriText, mapping = ggplot2::aes(x = x, y = y, label = label), size = 6, 
+	                     hjust = c("right", "left"), inherit.aes = FALSE)
+	
 	g <- JASPgraphs::themeJasp(g)
 
 	return(g)
