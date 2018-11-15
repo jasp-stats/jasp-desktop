@@ -299,7 +299,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 					if(rowNo < filteredRowCount && (!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++]))
 					{
 						if (value == INT_MIN)	resultCol.ints[rowNo++] = INT_MIN;
-						else					resultCol.ints[rowNo++] = value + 1;
+						else					resultCol.ints[rowNo++] = value;
 					}
 
 				resultCol.labels = rbridge_getLabels(column.labels(), resultCol.nbLabels);
