@@ -42,9 +42,11 @@ public:
 	void addColumnToPriorTable();
 	bool deleteColumnFromTable();
 	void resetTable();
+	void resetPriorTable();
 	// void resetRestrictedHypothesis();
 	void setTableVerticalHeaders();
-	Q_INVOKABLE void sendFilter(QString);
+	void setPriorTableVerticalHeaders();
+	// Q_INVOKABLE void sendFilter(QString);
 
 	void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
 
@@ -52,6 +54,7 @@ private slots:
 	void on_addColumn_clicked(bool checked);
 	void on_deleteColumn_clicked(bool checked);
 	void on_resetColumns_clicked(bool checked);
+	void on_resetPriorColumn_clicked(bool checked);
 	void addFixedFactors();
 	void expectedCountsHandler();
 	void countModelHandler();

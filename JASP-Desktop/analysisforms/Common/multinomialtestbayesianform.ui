@@ -766,7 +766,7 @@
             </spacer>
            </item>
            <item>
-            <widget class="QPushButton" name="resetColumns_3">
+            <widget class="QPushButton" name="resetPriorColumn">
              <property name="text">
               <string>Reset</string>
              </property>

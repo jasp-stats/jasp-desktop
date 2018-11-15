@@ -99,10 +99,10 @@ MultinomialTestBayesianForm::~MultinomialTestBayesianForm() {
 // 	ui->restrictedHypotheses->setSource(QUrl(QString("qrc:///qml/hypothesesWidget.qml")));
 // }
 
-void MultinomialTestBayesianForm::sendFilter(QString generatedFilter) {
-	ui->restrictedHypothesis->setText(generatedFilter);
-	ui->restrictedHypothesis->finalise();
-}
+// void MultinomialTestBayesianForm::sendFilter(QString generatedFilter) {
+// 	ui->restrictedHypothesis->setText(generatedFilter);
+// 	ui->restrictedHypothesis->finalise();
+// }
 
 void MultinomialTestBayesianForm::bindTo(Options *options, DataSet *dataSet) {
 	AnalysisForm::bindTo(options, dataSet);
@@ -122,6 +122,7 @@ void MultinomialTestBayesianForm::bindTo(Options *options, DataSet *dataSet) {
 			}
 
 			setTableVerticalHeaders();
+			setPriorTableVerticalHeaders();
 			ui->tableWidget->updateTableValues(true);
 			ui->priorCounts->updateTableValues(true);
 		}
@@ -169,7 +170,6 @@ void MultinomialTestBayesianForm::countModelHandler() {
 
 void MultinomialTestBayesianForm::setTableVerticalHeaders() {
 	ui->tableWidget->blockSignals(true);
-	ui->priorCounts->blockSignals(true);
 
 	int row = 0;
 	for (QStringList::iterator it = verticalLabels.begin(); it != verticalLabels.end(); ++it, ++row)
@@ -185,10 +185,30 @@ void MultinomialTestBayesianForm::setTableVerticalHeaders() {
 
 		headerItem->setText(s);
 		ui->tableWidget->setVerticalHeaderItem(row, headerItem);
-		ui->priorCounts->setVerticalHeaderItem(row, headerItem);
 	}
 
 	ui->tableWidget->blockSignals(false);
+}
+
+void MultinomialTestBayesianForm::setPriorTableVerticalHeaders() {
+	ui->priorCounts->blockSignals(true);
+
+	int row = 0;
+	for (QStringList::iterator it = verticalLabels.begin(); it != verticalLabels.end(); ++it, ++row)
+	{
+		QString s = *it;
+		QTableWidgetItem *headerItem = new QTableWidgetItem();
+		headerItem->setToolTip(s);
+		// Handle very long column names
+		if (s.length() > 7) {
+			s.truncate(4);
+			s += "...";
+		}
+
+		headerItem->setText(s);
+		ui->priorCounts->setVerticalHeaderItem(row, headerItem);
+	}
+
 	ui->priorCounts->blockSignals(false);
 }
 
@@ -208,6 +228,7 @@ void MultinomialTestBayesianForm::addFixedFactors() {
 
 	_previous = factorModel->assigned().asString();
 	resetTable();
+	resetPriorTable();
 
 	// TODO: Restricted Hypothesis widget is for future release
 	// resetRestrictedHypothesis();
@@ -236,9 +257,39 @@ void MultinomialTestBayesianForm::resetTable() {
 	ui->tableWidget->setRowCount(0);
 	ui->tableWidget->setColumnCount(0);
 
+	// Get the column from dataSet
+	if (_dataSet != NULL && factorModel->assigned().size() > 0) {
+		Labels labels = _dataSet->column(factorModel->assigned().asString()).labels();
+		verticalLabels = QStringList();
+		int rowCount = 0;
+
+		// labels for the current column
+		for (LabelVector::const_iterator it = labels.begin(); it != labels.end(); ++it, rowCount++) {
+			const Label &label = *it;
+			verticalLabels << QString::fromStdString(label.text());
+		}
+
+		ui->tableWidget->setRowCount(rowCount);
+		setTableVerticalHeaders();
+		addColumnToTable();
+	}
+
+	ui->tableWidget->blockSignals(false);
+	ui->tableWidget->updateTableValues();
+
+	int columns = ui->tableWidget->columnCount();
+	if (columns <= 1) {
+		ui->deleteColumn->setEnabled(false);
+	}
+	ui->addColumn->setEnabled(true);
+}
+
+void MultinomialTestBayesianForm::resetPriorTable() {
+
 	ui->priorCounts->blockSignals(true);
 	ui->priorCounts->clearContents();
-	ui->priorCounts->setRowCount(0);
+	ui->priorCounts->model()->removeRows(0, ui->priorCounts->rowCount());
+	// ui->priorCounts->setRowCount(0);
 	ui->priorCounts->setColumnCount(0);
 
 	// Get the column from dataSet
@@ -253,25 +304,13 @@ void MultinomialTestBayesianForm::resetTable() {
 			verticalLabels << QString::fromStdString(label.text());
 		}
 
-		ui->tableWidget->setRowCount(rowCount);
 		ui->priorCounts->setRowCount(rowCount);
-		// ui->tableWidget->setVerticalHeaderLabels(verticalLabels);
-		setTableVerticalHeaders();
-		addColumnToTable();
+		setPriorTableVerticalHeaders();
 		addColumnToPriorTable();
 	}
 
-	ui->tableWidget->blockSignals(false);
-	ui->tableWidget->updateTableValues();
-
 	ui->priorCounts->blockSignals(false);
 	ui->priorCounts->updateTableValues();
-
-	int columns = ui->tableWidget->columnCount();
-	if (columns <= 1) {
-		ui->deleteColumn->setEnabled(false);
-	}
-	ui->addColumn->setEnabled(true);
 }
 
 void MultinomialTestBayesianForm::addColumnToTable() {
@@ -367,4 +406,8 @@ void MultinomialTestBayesianForm::on_deleteColumn_clicked(bool checked) {
 
 void MultinomialTestBayesianForm::on_resetColumns_clicked(bool checked) {
 	resetTable();
+}
+
+void MultinomialTestBayesianForm::on_resetPriorColumn_clicked(bool checked) {
+	resetPriorTable();
 }
