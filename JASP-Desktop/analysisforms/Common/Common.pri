@@ -19,6 +19,8 @@ SOURCES += \
     $$PWD/correlationpartialform.cpp \
     $$PWD/descriptivesform.cpp \
     $$PWD/exploratoryfactoranalysisform.cpp \
+    $$PWD/multinomialtestbayesianform.cpp \
+    $$PWD/multinomialtestform.cpp \
     $$PWD/principalcomponentanalysisform.cpp \
     $$PWD/regressionlinearbayesianform.cpp \
     $$PWD/regressionlinearform.cpp \
@@ -31,8 +33,7 @@ SOURCES += \
     $$PWD/ttestbayesianpairedsamplesform.cpp \
     $$PWD/ttestindependentsamplesform.cpp \
     $$PWD/ttestonesampleform.cpp \
-    $$PWD/ttestpairedsamplesform.cpp \
-    $$PWD/multinomialtestform.cpp
+    $$PWD/ttestpairedsamplesform.cpp
 
 HEADERS += \
     $$PWD/../../ribbons/ribbonanalysis.h \
@@ -55,6 +56,8 @@ HEADERS += \
     $$PWD/correlationpartialform.h \
     $$PWD/descriptivesform.h \
     $$PWD/exploratoryfactoranalysisform.h \
+    $$PWD/multinomialtestbayesianform.h \
+    $$PWD/multinomialtestform.h \
     $$PWD/principalcomponentanalysisform.h \
     $$PWD/regressionlinearbayesianform.h \
     $$PWD/regressionlinearform.h \
@@ -67,8 +70,7 @@ HEADERS += \
     $$PWD/ttestbayesianpairedsamplesform.h \
     $$PWD/ttestindependentsamplesform.h \
     $$PWD/ttestonesampleform.h \
-    $$PWD/ttestpairedsamplesform.h \
-    $$PWD/multinomialtestform.h
+    $$PWD/ttestpairedsamplesform.h
 
 FORMS += \
     $$PWD/../../ribbons/ribbonanalysis.ui \
@@ -91,6 +93,8 @@ FORMS += \
     $$PWD/correlationpartialform.ui \
     $$PWD/descriptivesform.ui \
     $$PWD/exploratoryfactoranalysisform.ui \
+    $$PWD/multinomialtestbayesianform.ui \
+    $$PWD/multinomialtestform.ui \
     $$PWD/principalcomponentanalysisform.ui \
     $$PWD/regressionlinearbayesianform.ui \
     $$PWD/regressionlinearform.ui \
@@ -103,5 +107,4 @@ FORMS += \
     $$PWD/ttestbayesianpairedsamplesform.ui \
     $$PWD/ttestindependentsamplesform.ui \
     $$PWD/ttestonesampleform.ui \
-    $$PWD/ttestpairedsamplesform.ui \
-    $$PWD/multinomialtestform.ui
+    $$PWD/ttestpairedsamplesform.ui

@@ -1,0 +1,107 @@
+{
+	"name": "MultinomialTestBayesian",
+	"autorun": true,
+	"version": "2.00",
+	"jaspResults":true,
+	"options": [
+		{
+			"name": "tableWidget",
+			"type": "Table",
+			"template": [
+				{
+					"name": "name",
+					"type": "String"
+				},
+				{
+					"name": "levels",
+					"type": "Variables",
+					"default": []
+				},
+				{
+					"name": "values",
+					"type": "DoubleArray",
+					"default": []
+				}
+			],
+			"default": []
+		},
+		{
+			"name": "factor",
+			"type": "Variable"
+		},
+		{
+			"name": "counts",
+			"type": "Variable"
+		},
+		{
+			"name": "exProbVar",
+			"type": "Variable"
+		},
+		{
+			"name": "hypothesis",
+			"options": [ "multinomialTest", "expectedProbs", "restrictedHypotheses" ],
+			"default": "multinomialTest",
+			"type": "List"
+		},
+		{
+			"name": "bayesFactorType",
+			"options": [ "BF10", "BF01", "LogBF10" ],
+			"default": "BF10",
+			"type": "List"
+		},
+		{
+			"name": "countProp",
+			"options": [ "descCounts", "descProps" ],
+			"default": "descCounts",
+			"type": "List"
+		},
+		{
+			"name": "descriptives",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "credibleInterval",
+			"type": "Boolean"
+		},
+		{
+			"format": "%",
+			"max": 0.999,
+			"min": 0.001,
+			"name": "credibleIntervalInterval",
+			"type": "Number",
+			"value": 0.950
+		},
+		{
+			"name": "descriptivesPlot",
+			"type": "Boolean"
+		},
+		{
+			"format": "%",
+			"max": 0.999,
+			"min": 0.001,
+			"name": "descriptivesPlotCredibleInterval",
+			"type": "Number",
+			"value": 0.950
+		},
+		{
+		  "name": "simulatepval",
+		  "type": "Boolean",
+		  "default": false
+		},
+		{
+			"name": "plotWidth",
+			"type": "Integer",
+			"default": 450
+		},
+		{
+			"name": "plotHeight",
+			"type": "Integer",
+			"default": 300
+		},
+		{
+			"name": "restrictedHypothesis",
+			"type": "String"
+		}
+  ]
+}
