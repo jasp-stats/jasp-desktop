@@ -39,6 +39,7 @@ public:
 	explicit MultinomialTestBayesianForm(QWidget *parent = 0);
 	~MultinomialTestBayesianForm();
 	void addColumnToTable();
+	void addColumnToPriorTable();
 	bool deleteColumnFromTable();
 	void resetTable();
 	// void resetRestrictedHypothesis();
@@ -55,6 +56,7 @@ private slots:
 	void expectedCountsHandler();
 	void countModelHandler();
 	void cellChangedHandler();
+	void priorCellChangedHandler();
 	// void loadQML();
 
 private:

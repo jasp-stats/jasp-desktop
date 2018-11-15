@@ -750,16 +750,6 @@
       <item row="2" column="0">
        <widget class="QWidget" name="widget_prior" native="true">
         <layout class="QGridLayout" name="layout_expectedProbsTable_4">
-         <item row="0" column="0">
-          <widget class="BoundTableWidget" name="tableWidget_prior">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>200</height>
-            </size>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="1">
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
@@ -783,6 +773,29 @@
             </widget>
            </item>
           </layout>
+         </item>
+         <item row="0" column="0">
+          <widget class="BoundTableWidget" name="priorCounts">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>200</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </widget>

@@ -26,6 +26,27 @@
 			"default": []
 		},
 		{
+			"name": "priorCounts",
+			"type": "Table",
+			"template": [
+				{
+					"name": "name",
+					"type": "String"
+				},
+				{
+					"name": "levels",
+					"type": "Variables",
+					"default": []
+				},
+				{
+					"name": "values",
+					"type": "DoubleArray",
+					"default": []
+				}
+			],
+			"default": []
+		},
+		{
 			"name": "factor",
 			"type": "Variable"
 		},

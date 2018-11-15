@@ -19,7 +19,7 @@
 #include "multinomialtestbayesianform.h"
 #include "ui_multinomialtestbayesianform.h"
 
-#include <QQmlContext>
+// #include <QQmlContext>
 #include <QDebug>
 
 MultinomialTestBayesianForm::MultinomialTestBayesianForm(QWidget *parent) :
@@ -70,6 +70,7 @@ MultinomialTestBayesianForm::MultinomialTestBayesianForm(QWidget *parent) :
 	connect(factorModel, SIGNAL(assignmentsChanged()), this, SLOT(addFixedFactors()));
 	connect(probVarModel, SIGNAL(assignmentsChanged()), this, SLOT(expectedCountsHandler()));
 	connect(ui->tableWidget, SIGNAL(cellChanged(int, int)), this, SLOT(cellChangedHandler()));
+	connect(ui->priorCounts, SIGNAL(cellChanged(int, int)), this, SLOT(priorCellChangedHandler()));
 
 #ifndef JASP_DEBUG
 	// temporarily hides until the appropriate R code is implemented
@@ -122,7 +123,7 @@ void MultinomialTestBayesianForm::bindTo(Options *options, DataSet *dataSet) {
 
 			setTableVerticalHeaders();
 			ui->tableWidget->updateTableValues(true);
-			ui->tableWidget_prior->updateTableValues(true);
+			ui->priorCounts->updateTableValues(true);
 		}
 	}
 
@@ -168,7 +169,7 @@ void MultinomialTestBayesianForm::countModelHandler() {
 
 void MultinomialTestBayesianForm::setTableVerticalHeaders() {
 	ui->tableWidget->blockSignals(true);
-	ui->tableWidget_prior->blockSignals(true);
+	ui->priorCounts->blockSignals(true);
 
 	int row = 0;
 	for (QStringList::iterator it = verticalLabels.begin(); it != verticalLabels.end(); ++it, ++row)
@@ -184,15 +185,19 @@ void MultinomialTestBayesianForm::setTableVerticalHeaders() {
 
 		headerItem->setText(s);
 		ui->tableWidget->setVerticalHeaderItem(row, headerItem);
-		ui->tableWidget_prior->setVerticalHeaderItem(row, headerItem);
+		ui->priorCounts->setVerticalHeaderItem(row, headerItem);
 	}
 
 	ui->tableWidget->blockSignals(false);
-	ui->tableWidget_prior->blockSignals(false);
+	ui->priorCounts->blockSignals(false);
 }
 
 void MultinomialTestBayesianForm::cellChangedHandler() {
 	ui->tableWidget->updateTableValues();
+}
+
+void MultinomialTestBayesianForm::priorCellChangedHandler() {
+	ui->priorCounts->updateTableValues();
 }
 
 void MultinomialTestBayesianForm::addFixedFactors() {
@@ -231,6 +236,11 @@ void MultinomialTestBayesianForm::resetTable() {
 	ui->tableWidget->setRowCount(0);
 	ui->tableWidget->setColumnCount(0);
 
+	ui->priorCounts->blockSignals(true);
+	ui->priorCounts->clearContents();
+	ui->priorCounts->setRowCount(0);
+	ui->priorCounts->setColumnCount(0);
+
 	// Get the column from dataSet
 	if (_dataSet != NULL && factorModel->assigned().size() > 0) {
 		Labels labels = _dataSet->column(factorModel->assigned().asString()).labels();
@@ -244,13 +254,18 @@ void MultinomialTestBayesianForm::resetTable() {
 		}
 
 		ui->tableWidget->setRowCount(rowCount);
+		ui->priorCounts->setRowCount(rowCount);
 		// ui->tableWidget->setVerticalHeaderLabels(verticalLabels);
 		setTableVerticalHeaders();
 		addColumnToTable();
+		addColumnToPriorTable();
 	}
 
 	ui->tableWidget->blockSignals(false);
 	ui->tableWidget->updateTableValues();
+
+	ui->priorCounts->blockSignals(false);
+	ui->priorCounts->updateTableValues();
 
 	int columns = ui->tableWidget->columnCount();
 	if (columns <= 1) {
@@ -287,6 +302,27 @@ void MultinomialTestBayesianForm::addColumnToTable() {
 	}
 	ui->deleteColumn->setEnabled(true);
 	ui->tableWidget->blockSignals(false);
+}
+
+void MultinomialTestBayesianForm::addColumnToPriorTable() {
+	ui->priorCounts->blockSignals(true);
+
+	int columnCount = ui->priorCounts->columnCount() + 1;
+	int rowCount = ui->priorCounts->rowCount();
+
+	// Add column labels (Hypotheses labels)
+	QStringList horizontalLabelsPrior = (QStringList() << "Counts");
+	ui->priorCounts->setColumnCount(columnCount);
+	ui->priorCounts->setHorizontalHeaderLabels(horizontalLabelsPrior);
+
+	// Initialize each cell in the new column with 1
+	for (int row = 0; row < rowCount; ++row) {
+		QTableWidgetItem *cellItem = new QTableWidgetItem(QString::number(1));
+		ui->priorCounts->setItem(row, columnCount - 1, cellItem);
+	}
+
+	ui->priorCounts->blockSignals(false);
+	ui->priorCounts->resizeColumnsToContents();
 }
 
 bool MultinomialTestBayesianForm::deleteColumnFromTable() {
