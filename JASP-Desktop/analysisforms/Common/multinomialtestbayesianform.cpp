@@ -65,9 +65,7 @@ MultinomialTestBayesianForm::MultinomialTestBayesianForm(QWidget *parent) :
 
 	ui->widget_prior->hide();
 
-#ifdef JASP_DEBUG
-	loadQML();
-#endif
+	// loadQML();
 
 	connect(factorModel, SIGNAL(assignmentsChanged()), this, SLOT(addFixedFactors()));
 	connect(probVarModel, SIGNAL(assignmentsChanged()), this, SLOT(expectedCountsHandler()));
@@ -89,16 +87,16 @@ MultinomialTestBayesianForm::~MultinomialTestBayesianForm() {
 	delete ui;
 }
 
-void MultinomialTestBayesianForm::loadQML() {
-
-	_fModel = new FactorsModel(this);
-
-	ui->restrictedHypotheses->rootContext()->setContextProperty("analysisObject",	this);
-	ui->restrictedHypotheses->rootContext()->setContextProperty("filterErrorText",	QString(""));
-	ui->restrictedHypotheses->rootContext()->setContextProperty("columnsModel",		_fModel);
-
-	ui->restrictedHypotheses->setSource(QUrl(QString("qrc:///qml/hypothesesWidget.qml")));
-}
+// void MultinomialTestBayesianForm::loadQML() {
+//
+// 	_fModel = new FactorsModel(this);
+//
+// 	ui->restrictedHypotheses->rootContext()->setContextProperty("analysisObject",	this);
+// 	ui->restrictedHypotheses->rootContext()->setContextProperty("filterErrorText",	QString(""));
+// 	ui->restrictedHypotheses->rootContext()->setContextProperty("columnsModel",		_fModel);
+//
+// 	ui->restrictedHypotheses->setSource(QUrl(QString("qrc:///qml/hypothesesWidget.qml")));
+// }
 
 void MultinomialTestBayesianForm::sendFilter(QString generatedFilter) {
 	ui->restrictedHypothesis->setText(generatedFilter);
@@ -206,26 +204,25 @@ void MultinomialTestBayesianForm::addFixedFactors() {
 	_previous = factorModel->assigned().asString();
 	resetTable();
 
-#ifdef JASP_DEBUG
-	resetRestrictedHypothesis();
-#endif
+	// TODO: Restricted Hypothesis widget is for future release
+	// resetRestrictedHypothesis();
 }
 
-void MultinomialTestBayesianForm::resetRestrictedHypothesis() {
-
-	Labels labels = _dataSet->column(factorModel->assigned().asString()).labels();
-	verticalLabels = QStringList();
-
-	if (_dataSet != NULL && factorModel->assigned().size() > 0) {
-		// labels for the current column
-		for (LabelVector::const_iterator it = labels.begin(); it != labels.end(); ++it) {
-			const Label &label = *it;
-			verticalLabels << QString::fromStdString(label.text());
-		}
-	}
-
-	_fModel->setFactors(verticalLabels);
-}
+// void MultinomialTestBayesianForm::resetRestrictedHypothesis() {
+//
+// 	Labels labels = _dataSet->column(factorModel->assigned().asString()).labels();
+// 	verticalLabels = QStringList();
+//
+// 	if (_dataSet != NULL && factorModel->assigned().size() > 0) {
+// 		// labels for the current column
+// 		for (LabelVector::const_iterator it = labels.begin(); it != labels.end(); ++it) {
+// 			const Label &label = *it;
+// 			verticalLabels << QString::fromStdString(label.text());
+// 		}
+// 	}
+//
+// 	_fModel->setFactors(verticalLabels);
+// }
 
 void MultinomialTestBayesianForm::resetTable() {
 	ui->tableWidget->blockSignals(true);
