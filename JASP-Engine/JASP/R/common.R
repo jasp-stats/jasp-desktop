@@ -30,6 +30,7 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
   if (base::exists(".requestStateFileNameNative")) {
     location <- .fromRCPP(".requestStateFileNameNative")
     root <- location$root
+    dir.create(root)
     base::Encoding(root) <- "UTF-8"
     setwd(root)
   }
