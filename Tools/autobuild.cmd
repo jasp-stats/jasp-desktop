@@ -252,7 +252,8 @@ call %JASP_DESKTOP%\Tools\copyR.cmd %JASP_REQUIRED_FILES_DIR%\R %JASP_BASE_DIR%\
 cd %JASP_BASE_DIR%\%JASP_WIX_DIR%
 
 SET MERGEMODULENAME=Microsoft_VC141_CRT_%WIXARCH%.msm
-COPY "%MSVCDIR%\VC\Redist\MSVC\%VCToolsVersion%\MergeModules\%MERGEMODULENAME%" /Y
+
+COPY "%VCToolsRedistDir%\MergeModules\%MERGEMODULENAME%" /Y
 "%WIX%\bin\heat.exe" dir .\%JASP_INSTALL_DIR% -cg JASPFiles -gg -scom -sreg -sfrag -srd -dr INSTALLLOCATION -var var.JASP_INSTALL_DIR -out JASPFilesFragment.wxs || exit /B 7
 
 COPY %JASP_BASE_DIR%\%JASP_WIX_DIR%\%JASP_BUILD_DIR%\jasp.wxi /Y
