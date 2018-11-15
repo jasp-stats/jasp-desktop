@@ -28,7 +28,7 @@ QMap<int, QString> ListModel::_iconFiles {
 };
 
 ListModel::ListModel(QMLListView* listView) 
-	: QAbstractListModel(listView)
+	: QAbstractTableModel(listView)
 	, _listView(listView)
 {
 	setInfoProvider(listView->form());

@@ -32,6 +32,7 @@ Rectangle {
     property int majorVersion: 1
     property int minorVersion: 0
     property bool usesVariablesModel: false
+    property int availableWidth: form.width - 2 * Theme.formMargin
     
     property var jaspControls: []
     

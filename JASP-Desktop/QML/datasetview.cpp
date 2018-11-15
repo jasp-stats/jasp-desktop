@@ -356,8 +356,16 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 			textItem->setParentItem(this);
 		}
 
+		QString name = QString(textItem->metaObject()->className());
+		bool isTextItem = name == "QQuickText";
+		
+		if (!isTextItem)
+		{
+			textItem->setHeight(_dataRowsMaxHeight);
+			textItem->setWidth(_dataColsMaxWidth[col]);
+		}
 		textItem->setX(_colXPositions[col] + _itemHorizontalPadding);
-		textItem->setY(-2 + _dataRowsMaxHeight + _itemVerticalPadding + row * _dataRowsMaxHeight);
+		textItem->setY((isTextItem ? (-2 + _itemVerticalPadding) : 0) + (row + 1) * _dataRowsMaxHeight);
 		textItem->setZ(-4);
 		textItem->setVisible(true);
 
@@ -404,7 +412,7 @@ QQuickItem * DataSetView::createRowNumber(int row)
 		_rowNumberDelegate = new QQmlComponent(qmlEngine(this));
         _rowNumberDelegate->setData("import QtQuick 2.9\nItem {\n"
 			"Rectangle	{ color: \"lightGrey\";	anchors.fill: parent }\n"
-			"Text		{ text: rowIndex; anchors.centerIn: parent }\n"
+			"Text		{ text: headerText; anchors.centerIn: parent }\n"
 		"}", QUrl());
 	}
 
@@ -420,9 +428,11 @@ QQuickItem * DataSetView::createRowNumber(int row)
 #endif
 			 itemCon = _rowNumberStorage.top();
 			_rowNumberStorage.pop();
-
 			rowNumber = itemCon->item;
-			setStyleDataRowNumber(itemCon->context, row + 1);
+			
+			setStyleDataRowNumber(itemCon->context,
+								  _model->headerData(row, Qt::Orientation::Vertical).toString(),
+								  row);
 		}
 		else
 		{
@@ -430,7 +440,9 @@ QQuickItem * DataSetView::createRowNumber(int row)
 			std::cout << "createRowNumber("<<row<<") ex nihilo!\n" << std::flush;
 #endif
 			QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
-			itemCon = new ItemContextualized(setStyleDataRowNumber(NULL, row + 1));
+			itemCon = new ItemContextualized(setStyleDataRowNumber(NULL,
+																   _model->headerData(row, Qt::Orientation::Vertical).toString(),
+																   row));
 
 			_rowNumberDelegate->create(localIncubator, itemCon->context);
 			rowNumber = qobject_cast<QQuickItem*>(localIncubator.object());
@@ -440,7 +452,6 @@ QQuickItem * DataSetView::createRowNumber(int row)
 			rowNumber->setParentItem(this);
 		}
 
-		rowNumber->setProperty("z", 10);
 		//rowNumber->setProperty("text", QString::fromStdString(std::to_string(row + 1))); //Nobody wants zero-based rows...
 
 		rowNumber->setY(_dataRowsMaxHeight * (1 + row));
@@ -538,8 +549,6 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 			columnHeader->setParentItem(this);
 		}
 
-		columnHeader->setProperty("z", 10);
-
 		columnHeader->setZ(-3);
 		columnHeader->setHeight(_dataRowsMaxHeight);
 		columnHeader->setWidth(_dataColsMaxWidth[col]);
@@ -594,8 +603,6 @@ QQuickItem * DataSetView::createleftTopCorner()
 		_leftTopItem->setParent(this);
 		_leftTopItem->setParentItem(this);
 
-		_leftTopItem->setProperty("z", 12);
-
 		_leftTopItem->setZ(-1);
 
 
@@ -635,11 +642,12 @@ QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, QStri
 	return previousContext;
 }
 
-QQmlContext * DataSetView::setStyleDataRowNumber(QQmlContext * previousContext, int row)
+QQmlContext * DataSetView::setStyleDataRowNumber(QQmlContext * previousContext, QString text, int row)
 {
 	if(previousContext == NULL)
 		previousContext = new QQmlContext(qmlContext(this), this);
-
+	
+	previousContext->setContextProperty("headerText",	text);
 	previousContext->setContextProperty("rowIndex",		row);
 
 	return previousContext;
@@ -710,7 +718,6 @@ void DataSetView::setLeftTopCornerItem(QQuickItem * newItem)
 			_leftTopItem->setParentItem(this);
 
 
-			_leftTopItem->setProperty("z", 12);
 			_leftTopItem->setProperty("text", "?");
 
 			_leftTopItem->setZ(-1);

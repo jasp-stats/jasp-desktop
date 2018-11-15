@@ -21,32 +21,54 @@ import QtQuick.Controls 2.4
 import JASP.Theme 1.0
 
 
-Button {
+JASPControl {
     id: button
+    controlType: "Button"
+    implicitHeight: control.implicitHeight
+    implicitWidth: control.implicitWidth
+    controlBackground: rectangle
+    isBound: false
+    property alias control: control
+    property alias text: control.text
+    property alias image: image
+    
+    signal clicked()
+    
+    Component.onCompleted: {
+        control.clicked.connect(clicked);
+    }
 
-    implicitWidth: height
-    width: 50
-    height: 30
-
-    background: Rectangle {
-        id: rectangle
-        border.width: 1
-        border.color: Theme.borderColor
-        radius: Theme.borderRadius
-        color: Theme.controlBackgroundColor
+    Button {
+        id: control
         
-        Behavior on color {        
-            ColorAnimation {
-                duration: 500
+        Image {
+            id: image
+            fillMode: Image.PreserveAspectFit
+            anchors.centerIn: parent
+            sourceSize.height: rectangle.height - 6
+            height: sourceSize.height
+            visible: source ? true : false
+        }
+    
+        background: Rectangle {
+            id: rectangle
+            border.width: 1
+            border.color: Theme.borderColor
+            radius: Theme.borderRadius
+            color: control.down ? Theme.gray : Theme.controlBackgroundColor
+            
+            Behavior on color {
+                ColorAnimation {
+                    duration: 100
+                }
             }
         }
         
+        states: [
+            State {
+                name: "disabled"
+                PropertyChanges { target: rectangle; color: Theme.disableControlBackgroundColor }
+            }
+        ]
     }
-    
-    states: [
-        State {
-            name: "disabled"
-            PropertyChanges { target: rectangle; color: Theme.disableControlBackgroundColor }
-        }
-    ]
 }

@@ -32,6 +32,7 @@ BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisQMLForm* form)
 {
 	_boundTo = NULL;
 	_lavaanHighlighter = NULL;
+	_allVariablesModel = NULL;
 	QString textType = _item->property("textType").toString();
 	if (textType == "lavaan")
 	{

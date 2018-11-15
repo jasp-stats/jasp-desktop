@@ -37,6 +37,7 @@ public:
 	ListModel*	getModel(const QString& modelName)		{ return _modelMap[modelName]; }
 	Options*	getAnalysisOptions()					{ return _analysis->options(); }
 	BoundQMLItem* getBoundItem(const QString& name)		{ return _boundItems[name]; }
+	DataSet*	getDataSet()							{ return _dataSet; }
 
 public slots:
 	void		sceneGraphErrorHandler(QQuickWindow::SceneGraphError error, QString message)	{ QMessageBox::warning(this, "Error", "Error when painting analysis form: " + message); }

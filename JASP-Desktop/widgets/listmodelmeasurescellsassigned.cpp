@@ -63,8 +63,8 @@ void ListModelMeasuresCellsAssigned::initVariables(const Terms &terms)
 
 void ListModelMeasuresCellsAssigned::syncTermsChanged(Terms *termsAdded, Terms *termsRemoved)
 {
-	BoundQMLListViewMeasuresCells* measureCellsModel = dynamic_cast<BoundQMLListViewMeasuresCells*>(listView());
-	initLevels(measureCellsModel->getLevels());
+	BoundQMLListViewMeasuresCells* measureCellsListView = dynamic_cast<BoundQMLListViewMeasuresCells*>(listView());
+	initLevels(measureCellsListView->getLevels());
 	emit modelChanged(termsAdded, termsRemoved);
 }
 

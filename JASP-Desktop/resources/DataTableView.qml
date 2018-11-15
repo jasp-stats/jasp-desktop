@@ -116,7 +116,7 @@ FocusScope
 				{
 					gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
 										GradientStop { position: 0.77;	color: "#DDDDDD" }	GradientStop { position: 1.0;	color: "#DDDDDD" }	}
-					Text { text: rowIndex; anchors.centerIn: parent }
+					Text { text: headerText; anchors.centerIn: parent }
 				}
 
 			columnHeaderDelegate: Rectangle

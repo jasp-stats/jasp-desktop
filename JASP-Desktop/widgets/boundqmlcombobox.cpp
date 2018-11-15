@@ -247,7 +247,7 @@ void BoundQMLComboBox::_setCurrentValue(int index, bool setComboBoxIndex, bool s
 		if (_currentIndex < terms.size())
 		{
 			_currentText = terms.at(_currentIndex).asQString();
-			QModelIndex index(_model->index(_currentIndex));
+			QModelIndex index(_model->index(_currentIndex, 0));
 			_currentIconPath = _model->data(index, ListModel::TypeRole).toString();			
 		}
 	}

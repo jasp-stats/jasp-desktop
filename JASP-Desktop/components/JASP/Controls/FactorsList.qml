@@ -91,7 +91,7 @@ JASPControl
                     placeholderText: itemRectangle.isVirtual ? model.name : ""
                     anchors.verticalCenter: parent.verticalCenter
                     textWidth: parent.width - 6
-                    showBorder: false
+                    useExternalBorder: false
                     control.horizontalAlignment: itemRectangle.isLevel ? TextInput.AlignLeft : TextInput.AlignHCenter 
                     onEditingFinished: itemChanged(index, text)                      
                 }

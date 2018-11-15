@@ -34,6 +34,7 @@
 #include "widgets/boundqmllistviewterms.h"
 #include "widgets/boundqmllistviewmeasurescells.h"
 #include "widgets/boundqmlfactorslist.h"
+#include "widgets/boundqmltableview.h"
 #include "widgets/qmllistviewtermsavailable.h"
 
 #include "widgets/listmodeltermsavailable.h"
@@ -140,7 +141,7 @@ void AnalysisQMLForm::_parseQML()
 	
 	map<QString, QString>	dropKeyMap;
 	QList<QString>			controls;
-	QList<QMLListView*>		listViews;
+	QList<QMLItem*>			items;
 		
 	for (QQuickItem* item : root->findChildren<QQuickItem *>())
 	{
@@ -206,7 +207,7 @@ void AnalysisQMLForm::_parseQML()
 		case qmlControlType::ComboBox:
 		{
 			BoundQMLComboBox* boundQMLComboBox = new BoundQMLComboBox(item, this);
-			listViews.push_back(boundQMLComboBox);
+			items.push_back(boundQMLComboBox);
 			boundQMLItem = boundQMLComboBox;
 			ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(boundQMLComboBox->model());
 			if (availableModel)
@@ -221,7 +222,14 @@ void AnalysisQMLForm::_parseQML()
 			BoundQMLFactorsList* factorList = new BoundQMLFactorsList(item, this);
 			boundQMLItem = factorList;
 			_modelMap[controlName] = factorList->model();
-			listViews.push_back(factorList);
+			items.push_back(factorList);
+			break;
+		}
+		case qmlControlType::TableView:
+		{
+			BoundQMLTableView* tableView = new BoundQMLTableView(item, this);
+			boundQMLItem = tableView;
+			items.push_back(tableView);
 			break;
 		}
 		case qmlControlType::VariablesListView:
@@ -256,7 +264,7 @@ void AnalysisQMLForm::_parseQML()
 			}
 			
 			_modelMap[controlName] = listView->model();
-			listViews.push_back(listView);
+			items.push_back(listView);
 			boundQMLItem = dynamic_cast<BoundQMLItem*>(listView);
 			QList<QVariant> dropKeyList = QQmlProperty(item, "dropKeys").read().toList();
 			QString dropKey				= dropKeyList.isEmpty() ? QQmlProperty(item, "dropKeys").read().toString() : dropKeyList[0].toString(); // The first key gives the default drop item.
@@ -295,8 +303,8 @@ void AnalysisQMLForm::_parseQML()
 			_errorMessages.append(QString::fromLatin1("Cannot find a ListView for ") + (!sourceModel ? pair.first : pair.second));
 	}
 	
-	for (QMLListView* listView : listViews)
-		listView->setUp();
+	for (QMLItem* item : items)
+		item->setUp();
 	
 	if (!_errorMessagesItem)
 		qDebug() << "No errorMessages Item found!!!";

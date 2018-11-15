@@ -27,5 +27,7 @@
         <file>components/JASP/Controls/ContrastsList.qml</file>
         <file>components/JASP/Controls/Slider.qml</file>
         <file>components/JASP/Controls/TextArea.qml</file>
+        <file>components/JASP/Controls/TableView.qml</file>
+        <file>components/JASP/Controls/Chi2TestTableView.qml</file>
     </qresource>
 </RCC>

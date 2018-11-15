@@ -41,7 +41,6 @@ JASPControl {
     
     Component.onCompleted: {
         control.activated.connect(activated);
-        console.log("currentIndex: " + currentIndex)
     }
     
     RowLayout {

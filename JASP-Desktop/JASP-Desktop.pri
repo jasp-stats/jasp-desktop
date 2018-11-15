@@ -318,7 +318,9 @@ HEADERS += \
     $$PWD/widgets/boundqmllistviewterms.h \
     $$PWD/widgets/boundqmllistviewanovamodels.h \
     $$PWD/widgets/boundqmlslider.h \
-    $$PWD/widgets/boundqmltextarea.h
+    $$PWD/widgets/boundqmltextarea.h \
+    $$PWD/widgets/boundqmltableview.h \
+    $$PWD/widgets/listmodelmultinomialchi2test.h
 
 SOURCES += \
     $$PWD/analysis/analysisform.cpp \
@@ -524,7 +526,9 @@ SOURCES += \
     $$PWD/widgets/boundqmllistviewterms.cpp \
     $$PWD/widgets/boundqmllistviewanovamodels.cpp \
     $$PWD/widgets/boundqmlslider.cpp \
-    $$PWD/widgets/boundqmltextarea.cpp
+    $$PWD/widgets/boundqmltextarea.cpp \
+    $$PWD/widgets/boundqmltableview.cpp \
+    $$PWD/widgets/listmodelmultinomialchi2test.cpp
 
 FORMS += \
     $$PWD/gui/aboutdialog.ui \

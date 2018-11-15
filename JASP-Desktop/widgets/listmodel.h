@@ -26,7 +26,7 @@
 
 #include <QAbstractListModel>
 
-class ListModel : public QAbstractListModel, public VariableInfoConsumer
+class ListModel : public QAbstractTableModel, public VariableInfoConsumer
 {
 	Q_OBJECT
 public:
@@ -49,7 +49,8 @@ public:
 	void addError(const QString& error) const;
 
 	virtual int rowCount(const QModelIndex &parent) const OVERRIDE;
-	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
+	virtual int columnCount(const QModelIndex &parent) const OVERRIDE { return 1; }
+	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;	
 
 	virtual void refresh();
 	virtual void initTerms(const Terms &terms);

@@ -142,7 +142,7 @@ protected:
 	void			updateExtraColumnItem();
 
 	QQmlContext * setStyleDataItem(			QQmlContext * previousContext, QString text, bool active, int column, int row);
-	QQmlContext * setStyleDataRowNumber(	QQmlContext * previousContext, int row);
+	QQmlContext * setStyleDataRowNumber(	QQmlContext * previousContext, QString text, int row);
 	QQmlContext * setStyleDataColumnHeader(	QQmlContext * previousContext, QString text, int column, bool isComputed, bool isInvalidated, bool isFiltered,  QString computedError);
 
 

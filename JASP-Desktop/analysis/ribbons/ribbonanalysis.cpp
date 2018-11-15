@@ -127,6 +127,11 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu->addAction(QString("Bayesian Contingency Tables"), this, SLOT(itemSelected()))->setObjectName("ContingencyTablesBayesian");
     menu->addAction(QString("Bayesian Log-Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLogLinearBayesian");
 
+#ifdef QT_DEBUG
+	menu->addSeparator();
+	menu->addAction(QString("QML Multinomial Test"), this, SLOT(itemSelected()))->setObjectName("QMLMultinomialTest");
+#endif
+	
 	ui->frequenciesButton->setMenu(menu);
 
 	menu = new QMenu(this);

@@ -21,6 +21,11 @@ import JASP.Theme 1.0
 
 Button {
     id: button
+    readonly property string iconToLeft: "qrc:/images/arrow-left.png"
+    readonly property string iconToRight: "qrc:/images/arrow-right.png"
+    
+    hasTabFocus: false    
+    
     property var leftSource;
     property var rightSource;
     property bool leftToRight: true
@@ -28,24 +33,15 @@ Button {
     property var source: leftToRight ? leftSource : rightSource;
     property var target: leftToRight ? rightSource : leftSource;
 
-    readonly property string iconToLeft: "qrc:/images/arrow-left.png"
-    readonly property string iconToRight: "qrc:/images/arrow-right.png"
-    text: ""
-    x: (rightSource.x + leftSource.width - width) / 2
+    image.source: leftToRight ? iconToRight : iconToLeft
+    
+    control.width: 40
+    control.height: 20
+    
+    x: (rightSource.x + leftSource.width - control.width) / 2
     y: rightSource.y + rightSource.rectangleY
 
-    width: 40
-    height: 20
-
-    Image {
-        id: image
-        fillMode: Image.PreserveAspectFit
-        anchors.centerIn: parent
-        sourceSize.height: button.background.height - 6
-        height: sourceSize.height
-        source: leftToRight ? iconToRight : iconToLeft
-    }
-
+    
     onClicked: source.moveSelectedItems(target)
 
     function setIconToRight() {

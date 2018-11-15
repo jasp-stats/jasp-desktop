@@ -26,12 +26,12 @@ JASPControl {
     controlType: "TextField"
     implicitHeight: row.implicitHeight
     implicitWidth: row.implicitWidth
-    controlBackground: showBorder ? backgroundTextField : controlBackground
+    controlBackground: useExternalBorder ? externalControlBackround : controlBackground
     property alias text: control.text
     property alias value: control.text
     property int textWidth: Theme.textFieldWidth
     property int textHeight: Theme.textFieldHeight
-    property bool showBorder: true
+    property bool useExternalBorder: true
     property alias placeholderText: control.placeholderText
     property alias validator: control.validator
     property alias control: control
@@ -41,9 +41,13 @@ JASPControl {
     property string inputType: "string"
     property int labelSpacing: 4
     signal editingFinished()
+    signal pressed()
+    signal released()
     
     Component.onCompleted: {
         control.editingFinished.connect(editingFinished);
+        control.pressed.connect(pressed);
+        control.released.connect(released);
     }
     
     RowLayout {
@@ -53,34 +57,36 @@ JASPControl {
             id: beforeLabel
             visible: beforeLabel.text && textField.visible ? true : false
         }
-        Rectangle {
-            id: backgroundTextField
-            height: textField.textHeight + 6
-            width: textField.textWidth + 6
-            color: "transparent"
-            border.width: 1
-            border.color: "transparent"
-            TextField {
-                id: control
-                focus: true
-                anchors.margins: 3
-                anchors.top: parent.top
-                anchors.left: parent.left                
-                height: textField.textHeight
-                width: textField.textWidth
-                padding: 1
-                rightPadding: 5
-                selectByMouse: true
-                background: Rectangle {
-                    id: controlBackground
-                    anchors.fill: parent
-                    color: Theme.controlBackgroundColor
-                    border.width: textField.showBorder ? 1 : 0
-                    border.color: backgroundTextField.border.width === 1 ? Theme.borderColor : "transparent"
-                }
+        
+        TextField {
+            id: control
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.preferredWidth: textField.textWidth
+            Layout.preferredHeight: textField.textHeight
+            focus: true
+            padding: 1
+            rightPadding: 5
+            selectByMouse: true
+            background: Rectangle {
+                id: controlBackground
+                color: Theme.controlBackgroundColor
+                border.width: textField.useExternalBorder && !control.activeFocus ? 1 : 0
+                border.color: textField.useExternalBorder ? Theme.borderColor : "transparent"
             }
             
+            Rectangle {
+                id: externalControlBackround
+                height: textField.textHeight + 6
+                width: textField.textWidth + 6
+                color: "transparent"
+                border.width: 1
+                border.color: "transparent"
+                anchors.centerIn: parent
+                visible: textField.useExternalBorder
+            }
         }
+            
         Label {
             id: afterLabel
             visible: afterLabel.text && textField.visible ? true : false
