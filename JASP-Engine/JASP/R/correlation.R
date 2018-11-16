@@ -521,16 +521,22 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
     .plotFunc <- function() {
 
-        plotList <- list()
+        plotMat <- matrix(list(), l, l) 
+        
+        # minor adjustments to plot margin to avoid cutting off the x-axis labels
+	       adjMargin <- ggplot2::theme(plot.margin = ggplot2::unit(c(.25, .40, .25, .25), "cm"))
+
+         oldFontSize <- JASPgraphs::getGraphOption("fontsize")
+         JASPgraphs::setGraphOption("fontsize", .85 * oldFontSize)
 
             for (row in seq_len(l)) {
                 for (col in seq_len(l)) {
                     if (row == col) {
                         if (options$plotDensities) {
                             if ( ! variable.statuses[[row]]$unplotable) {
-                                plotList[[length(plotList)+1]] <- .plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
+                                plotMat[[row, col]] <- .plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
                             } else {
-                                plotList[[length(plotList)+1]] <- .displayError(variable.statuses[[row]]$plottingError, cexText=cexText)
+                                plotMat[[row, col]] <- .displayError(variable.statuses[[row]]$plottingError, cexText=cexText)
                             }
                         } else {
                             
@@ -539,18 +545,18 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                             p <- p + ggplot2::ylab("")
                             p <- JASPgraphs::themeJasp(p)
 
-                            plotList[[length(plotList)+1]] <- p
+                            plotMat[[row, col]] <- p
                         }
                     }
 
                     if (col > row) {
                         if (options$plotCorrelationMatrix) {
                             if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
-                                plotList[[length(plotList)+1]] <- .plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
+                                plotMat[[row, col]] <- .plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
                             } else {
                                 errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
                                 errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
-                                plotList[[length(plotList)+1]] <- .displayError(errorMessagePlot, cexText=cexText)
+                                plotMat[[row, col]] <- .displayError(errorMessagePlot, cexText=cexText)
                             }
                         } else {
                             
@@ -559,7 +565,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                             p <- p + ggplot2::ylab("")
                             p <- JASPgraphs::themeJasp(p)
                             
-                            plotList[[length(plotList)+1]] <- p
+                            plotMat[[row, col]] <- p
                         }
                     }
 
@@ -567,12 +573,12 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                         if (l < 7) {
                             if (options$plotStatistics) {
                                 if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
-                                    plotList[[length(plotList)+1]] <- .plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], hypothesis= options$hypothesis,
+                                    plotMat[[row, col]] <- .plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], hypothesis= options$hypothesis,
                                                   pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval) # plot r= ...
                                 } else {
                                     errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
                                     errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
-                                    plotList[[length(plotList)+1]] <- .displayError(errorMessagePlot, cexText=cexText)
+                                    plotMat[[row, col]] <- .displayError(errorMessagePlot, cexText=cexText)
                                 }
                             } else {
                                 
@@ -581,14 +587,14 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                                 p <- p + ggplot2::ylab("")
                                 p <- JASPgraphs::themeJasp(p)
                                 
-                                plotList[[length(plotList)+1]] <- p
+                                plotMat[[row, col]] <- p
                             }
                         }
 
                         if (l >= 7) {
                             if (options$plotStatistics) {
                                 if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
-                                    plotList[[length(plotList)+1]] <- .plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], cexCI= 1.2, hypothesis= options$hypothesis,
+                                    plotMat[[row, col]] <- .plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], cexCI= 1.2, hypothesis= options$hypothesis,
                                                   pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval)
                                                   # if(col == 1){
                                                   #     plotList[[length(plotList)]] <- plotList[[length(plotList)]] + ggplot2::annotate("text", x = 0, y = 1.5, label = .unv(variables)[row], angle = 90, size = 6, fontface = 2)
@@ -596,7 +602,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                                 } else {
                                     errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
                                     errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
-                                    plotList[[length(plotList)+1]] <- .displayError(errorMessagePlot, cexText=cexText)
+                                    plotMat[[row, col]] <- .displayError(errorMessagePlot, cexText=cexText)
                                 }
                             } else {
                                 p <- JASPgraphs::drawAxis(xName = "", yName = "", force = TRUE)
@@ -604,16 +610,22 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                                 p <- p + ggplot2::ylab("")
                                 p <- JASPgraphs::themeJasp(p)
 
-                                plotList[[length(plotList)+1]] <- p
+                                plotMat[[row, col]] <- p
                             }
                         }
                     }
                 }
             }
+            
+        JASPgraphs::setGraphOption("fontsize", oldFontSize)
         
-        plotMat <- matrix(plotList, ncol = length(variables), nrow = length(variables))
-
-        p <- JASPgraphs::ggMatrixPlot(plotList = t(plotMat), leftLabels = .unv(variables), topLabels = .unv(variables))
+        # slightly adjust the positions of the labels left and above the plots.
+        labelPos <- matrix(.5, 4, 2)
+        labelPos[1, 1] <- .55
+        labelPos[4, 2] <- .65
+        
+        p <- JASPgraphs::ggMatrixPlot(plotList = plotMat, leftLabels = .unv(variables), topLabels = .unv(variables),
+  															scaleXYlabels = NULL, labelPos = labelPos)
 
         return(p)
     }
