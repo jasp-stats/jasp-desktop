@@ -952,7 +952,7 @@ Json::Value	jaspTable::schemaJson()
 	Json::Value fields(Json::arrayValue);
 
 	std::map<std::string, std::vector<int>> footnotesPerCol;
-	for(uint i=0; i<_footnotes.size(); i++)
+	for(Json::Value::UInt i=0; i<_footnotes.size(); i++)
 	{
 		const Json::Value & note = _footnotes[i];
 
