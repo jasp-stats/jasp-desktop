@@ -645,7 +645,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
     dens <- h$density
     yhigh <- 1.2*max(h$density)
     ylow <- 0
-    xticks <- base::pretty(c(variable, h$breaks), min.n= 3)
+    #xticks <- base::pretty(c(variable, h$breaks), min.n= 3)
+    xticks <- JASPgraphs::getPrettyAxisBreaks(variable)
 
     p <- JASPgraphs::drawAxis(xName = "", yName = "Density", xBreaks = xticks, yBreaks = c(0,max(density$y)+.1), force = TRUE, yLabels = NULL, xLabels = xticks)
     p <- p + ggplot2::geom_histogram(data = data.frame(variable), mapping = ggplot2::aes(x = variable, y = ..density..),
@@ -699,67 +700,61 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
     }
 }
 
+.plotScatter <- function(xVar, yVar, xBreaks = NULL, yBreaks = NULL, xName = NULL, yName = NULL) {
 
-.plotScatter <- function(xVar, yVar, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2) {
-        
-    d <- data.frame(xx= xVar, yy= yVar)
-    d <- na.omit(d)
-    xVar <- d$xx
-    yVar <- d$yy
+	isNumericX <- !(is.factor(xVar) || (is.integer(xVar) && length(unique(xVar)) <= 10))
+	isNumericY <- !(is.factor(yVar) || (is.integer(yVar) && length(unique(yVar)) <= 10))
+	bothNumeric <- isNumericX && isNumericY
+  d <- data.frame(x = xVar, y = yVar)
+  d <- na.omit(d)
 
-    # fit different types of regression
-    fit <- vector("list", 1)# vector("list", 4)
-    fit[[1]] <- lm(yy ~ poly(xx, 1, raw= TRUE), d)
-    # fit[[2]] <- lm(yy ~ poly(xx, 2, raw= TRUE), d)
-    # fit[[3]] <- lm(yy ~ poly(xx, 3, raw= TRUE), d)
-    # fit[[4]] <- lm(yy ~ poly(xx, 4, raw= TRUE), d)
+  if (!isNumericX)
+  	d$x <- as.factor(d$x)
 
-    # find parsimonioust, best fitting regression model
-    # Bic <- vector("numeric", 4)
-    # for(i in 1:4){
+  if (!isNumericY)
+  	d$y <- as.factor(d$y)
 
-    #	Bic[i] <- BIC(fit[[i]])
-    # }
+  if (is.null(xBreaks))
+    xBreaks <- JASPgraphs::getPrettyAxisBreaks(d$x)
 
-    bestModel <- 1 # which.min(Bic)
+  fit <- NULL
+  if (bothNumeric) {
 
-    xlow <- min(pretty(xVar))
-    xhigh <- max(pretty(xVar))
-    xticks <- pretty(c(xlow, xhigh))
-    ylow <- min(min(pretty(yVar)), min(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
-    yhigh <- max(max(pretty(yVar)), max(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
+  	fit <- lm(y ~ poly(x, 1, raw = TRUE), d)
+  	lineObj <- .poly.predDescriptives(fit, line = FALSE, xMin= xBreaks[1], xMax = xBreaks[length(xBreaks)], lwd = lwd)
+  	rangeLineObj <- range(lineObj)
+  	yLimits <- range(c(pretty(yVar)), rangeLineObj)
 
+  	if (is.null(yBreaks) || yLimits[1L] <= yBreaks[1L] || yLimits[2L] >= yBreaks[length(yBreaks)])
+  		yBreaks <- JASPgraphs::getPrettyAxisBreaks(yLimits)
 
-    yticks <- pretty(c(ylow, yhigh))
-    yLabs <- vector("character", length(yticks))
-    
+  } else if (is.null(yBreaks)) {
 
-    for (i in seq_along(yticks)) {
-        if (yticks[i] < 10^6 && yticks[i] > 10^-6) {
-            yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
-        } else {
-            yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
-        }
-    }
-    
-    xLabs <- vector("character", length(xticks))
-    
-    for (i in seq_along(xticks)) {
-        if (xticks[i] < 10^6 && xticks[i] > 10^-6) {
-            xLabs[i] <- format(xticks[i], digits= 3, scientific = FALSE)
-        } else {
-            xLabs[i] <- format(xticks[i], digits= 3, scientific = TRUE)
-        }
-    }
-    
-    p <- JASPgraphs::drawAxis(xName = "", yName = "", xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE)
-    p <- JASPgraphs::drawPoints(p, dat = d, size = 3)
-    p <- .poly.pred(fit[[bestModel]], plot = p, line= TRUE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd = 1)    
+  	yBreaks <- JASPgraphs::getPrettyAxisBreaks(d$y)
 
-    # JASP theme
-    p <- JASPgraphs::themeJasp(p)
+  }
 
-    return(p)
+  p <- ggplot2::ggplot(data = d, ggplot2::aes(x = x, y = y)) +
+    JASPgraphs::geom_point()
+
+  if (bothNumeric) {
+  	xr <- range(xBreaks)
+  	dfLine <- data.frame(x = xr, y = rangeLineObj)
+    p <- p + ggplot2::geom_line(data = dfLine, ggplot2::aes(x = x, y = y), size = .7, inherit.aes = FALSE)
+  }
+
+  if (isNumericX) {
+  	p <- p + ggplot2::scale_x_continuous(name = xName, breaks = xBreaks, limits = range(xBreaks))
+  } else {
+  	p <- p + ggplot2::scale_x_discrete(name = xName)
+  }
+  if (isNumericY) {
+  	p <- p + ggplot2::scale_y_continuous(name = yName, breaks = yBreaks, limits = range(yBreaks))
+  } else {
+  	p <- p + ggplot2::scale_y_discrete(name = yName)
+  }
+
+  return(JASPgraphs::themeJasp(p))
 }
 
 #### display correlation value ####

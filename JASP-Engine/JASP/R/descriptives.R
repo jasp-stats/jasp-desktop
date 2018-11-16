@@ -492,7 +492,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 
   variables <- unlist(options$variables)
   l         <- length(variables)
-  depends   <- c("plotCorrelationMatrix", "variables", "splitBy")
+  depends   <- c("plotCorrelationMatrix", "variables", "splitby")
 
   if (l == 0) #Nothing to plot
     return(NULL)
@@ -629,7 +629,36 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   	ggplot2::scale_y_continuous(name = yName, breaks = yBreaks, labels = c("", ""), limits = yLim) +
   	ggplot2::theme()
   return(JASPgraphs::themeJasp(p) + thm)
-  
+
+}
+
+.poly.predDescriptives <- function(fit, plot = NULL, line=FALSE, xMin, xMax, lwd) {
+  # create function formula
+  f <- vector("character", 0)
+
+  for (i in seq_along(coef(fit))) {
+    if (i == 1) {
+      temp <- paste(coef(fit)[[i]])
+      f <- paste(f, temp, sep="")
+    }
+
+    if (i > 1) {
+      temp <- paste("(", coef(fit)[[i]], ")*", "x^", i-1, sep="")
+      f <- paste(f, temp, sep="+")
+    }
+  }
+
+  x <- seq(xMin, xMax, length.out = 100)
+  predY <- eval(parse(text=f))
+
+  if (line == FALSE) {
+    return(predY)
+  }
+
+  if (line) {
+    plot <- plot + ggplot2::geom_line(data = data.frame(x, predY),mapping = ggplot2::aes(x = x, y = predY), size=lwd)
+    return(plot)
+  }
 }
 
 
@@ -716,10 +745,10 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 
     plotResult <- createJaspContainer(title=variable)
     plotResult$setOptionMustContainDependency("variables",  variable)
-    plotResult$setOptionMustBeDependency("splitBy",         options$splitBy)
+    plotResult$setOptionMustBeDependency("splitby",         options$splitby)
 
     for (l in split) {
-      plotResult[[l]] <- .descriptivesFrequencyPlots_SubFunc(column=dataset[[l]][[.v(variable)]], variable=l, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity)
+      plotResult[[l]] <- .descriptivesFrequencyPlots_SubFunc(column=dataset[[l]][[.v(variable)]], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, title = l)
       plotResult[[l]]$copyDependenciesFromJaspObject(plotResult)
     }
 
@@ -729,17 +758,17 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   else
   {
     column <- dataset[[ .v(variable) ]]
-    aPlot <- .descriptivesFrequencyPlots_SubFunc(column=column[!is.na(column)], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity)
+    aPlot <- .descriptivesFrequencyPlots_SubFunc(column=column[!is.na(column)], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, title = variable)
     aPlot$setOptionMustContainDependency("variables",  variable)
-    aPlot$setOptionMustBeDependency("splitBy",         options$splitBy)
+    aPlot$setOptionMustBeDependency("splitby",         options$splitby)
 
     return(aPlot)
   }
 }
 
-.descriptivesFrequencyPlots_SubFunc <- function(column, variable, width, height, displayDensity)
+.descriptivesFrequencyPlots_SubFunc <- function(column, variable, width, height, displayDensity, title)
 {
-  plotObj <- createJaspPlot(title=variable, width=width, height=height)
+  plotObj <- createJaspPlot(title=title, width=width, height=height)
 
   if (any(is.infinite(column))) {
     plotObj$error         <- "badData"
@@ -1014,53 +1043,112 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     return(p)
 
 }
+# .barplotJASP <- function(column, variable, dontPlotData= FALSE){
 
-.plotScatterDescriptives <- function(xVar, yVar, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2){
+#   if (dontPlotData) {
 
-    d <- data.frame(xx= xVar, yy= yVar)
-    d <- na.omit(d)
-    xVar <- d$xx
-    yVar <- d$yy
+#     plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
 
-    # fit different types of regression
-    fit <- vector("list", 1)# vector("list", 4)
+#     axis(1, at=0:1, labels=FALSE, cex.axis= 1.4, xlab="")
+#     axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
 
-    fit[[1]] <- lm(yy ~ poly(xx, 1, raw= TRUE), d)
-    fit[[2]] <- lm(yy ~ poly(xx, 2, raw= TRUE), d)
-    fit[[3]] <- lm(yy ~ poly(xx, 3, raw= TRUE), d)
-    fit[[4]] <- lm(yy ~ poly(xx, 4, raw= TRUE), d)
+#     mtext(text = variable, side = 1, cex=1.5, line = 3)
 
-    # find parsimonious, best fitting regression model
-    Bic <- vector("numeric", 4)
+#     return()
+#   }
 
-    for (i in 1:4) {
+#   maxFrequency <- max(summary(column))
 
-        Bic[i] <- BIC(fit[[i]])
+#   i <- 1
+#   step <- 1
 
-    }
+#   while (maxFrequency / step > 9) {
 
-    bestModel <- which.min(Bic)
+#     if (i == 2) {
 
-    xlow <- min(pretty(xVar))
-    xhigh <- max(pretty(xVar))
-    xticks <- pretty(c(xlow, xhigh))
+#       step <- 2 * step
+#       i <- i + 1
 
-    ylow <- min(min(pretty(yVar)), min(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
-    yhigh <- max(max(pretty(yVar)), max(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
-    yticks <- pretty(c(ylow, yhigh))
+#     } else if (i %% 3 == 0) {
 
-    p <- ggplot2::ggplot(data = data.frame(xVar,yVar), mapping = ggplot2::aes(x = xVar, y = yVar))
-    p <- .poly.pred(fit[[bestModel]],plot = p, line= TRUE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)
-    p <- ggplot2::geom_point(size = 2, fill = "grey", col = "black", stroke = .5, shape = 21)
-    
-    p <- p + ggplot2::xlab("")
-    p <- p + ggplot2::ylab("")
+#       step <- 2.5 * step
+#       i <- i + 1
 
-    # JASP theme
-    p <- JASPgraphs::themeJasp(p)
-        
-    return(p)
-}
+#     } else {
+
+#       step <- 2 * step
+#       i <- i + 1
+#     }
+
+#   }
+
+#   yticks <- 0
+
+#   while (yticks[length(yticks)] < maxFrequency) {
+
+#     yticks <- c(yticks, yticks[length(yticks)] + step)
+#   }
+
+
+#   yLabs <- vector("character", length(yticks))
+
+#   for(i in seq_along(yticks))
+#     if(yticks[i] < 10^6)
+#       yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
+#     else
+#       yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+
+#   distLab <- max(nchar(yLabs))/1.8
+
+#   par(mar= c(5, 7.2, 4, 2) + 0.1)
+#   barplot(summary(column), cex.names= 1.3, axes= FALSE, ylim= range(yticks))
+#   axis(2, las=1, at= yticks, labels= yLabs, cex.axis= 1.4)
+#   mtext(text = variable, side = 1, cex=1.5, line = 3)
+#   mtext(text = "Frequency", side = 2, cex=1.5, line = distLab+2, las=0)
+# }
+
+# .plotScatterDescriptives <- function(xVar, yVar, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2){
+
+#   d     <- data.frame(xx= xVar, yy= yVar)
+#   d     <- na.omit(d)
+#   xVar  <- d$xx
+#   yVar  <- d$yy
+
+#   # fit different types of regression
+#   fit <- vector("list", 1)# vector("list", 4)
+
+#   fit[[1]] <- lm(yy ~ poly(xx, 1, raw= TRUE), d)
+#   fit[[2]] <- lm(yy ~ poly(xx, 2, raw= TRUE), d)
+#   fit[[3]] <- lm(yy ~ poly(xx, 3, raw= TRUE), d)
+#   fit[[4]] <- lm(yy ~ poly(xx, 4, raw= TRUE), d)
+
+#   # find parsimonious, best fitting regression model
+#   Bic <- vector("numeric", 4)
+
+#   for (i in 1:4)
+#     Bic[i] <- BIC(fit[[i]])
+
+
+
+#   bestModel <- which.min(Bic)
+
+#   xlow    <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
+#   xhigh   <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
+#   xticks  <- pretty(c(xlow, xhigh))
+
+#   ylow    <- min((min(yVar) - 0.1* min(yVar)), min(pretty(yVar)), min(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
+#   yhigh   <- max((max(yVar) + 0.1* max(yVar)), max(pretty(yVar)), max(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
+#   yticks  <- pretty(c(ylow, yhigh))
+
+#   plot(xVar, yVar, col="black", pch=21, bg = "grey", ylab="", xlab="", axes=F, ylim= range(yticks), xlim= range(xticks), cex= cexPoints)
+
+#   .poly.pred(fit[[bestModel]], line= TRUE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)
+
+#   par(las=1)
+
+#   axis(1, line= 0.4, labels= xticks, at= xticks, cex.axis= cexXAxis)
+#   axis(2, line= 0.2, labels= yticks, at= yticks, cex.axis= cexYAxis)
+# }
 
 .descriptivesKurtosis <- function(x) {
 
@@ -1117,21 +1205,6 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   SEK <- 2 * .descriptivesSES(x) * sqrt((n^2 - 1) / ((n - 3) * (n + 5)))
 
   return(SEK)
-}
-
-.suppressPlotCorMat <- function(plots = NULL) {
-    tempfile <- tempfile()
-    png(filename=tempfile)
-    result <- gridExtra::arrangeGrob(grobs = plots)
-
-    .as_ggplot <- function (x){
-        cowplot::ggdraw() + cowplot::draw_grob(grid::grobTree(x))
-    }
-
-    result <- .as_ggplot(result)
-    dev.off()
-    unlink(tempfile)
-    return(result)
 }
 
 # </editor-fold> HELPER FUNCTIONS BLOCK
