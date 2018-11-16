@@ -751,9 +751,10 @@ std::vector<bool> rbridge_applyFilter(std::string & filterCode, std::string & ge
 
 	static std::string errorMsg;
 
-	R_FunctionWhiteList::scriptIsSafe(filterCode); //can throw filterExceptions
+	std::string	concatenated = generatedFilterCode + "\n" + filterCode,
+				filter64	 = rbridge_encodeColumnNamesToBase64(concatenated);
 
-	std::string concatenated = generatedFilterCode + "\n" + filterCode, filter64(rbridge_encodeColumnNamesToBase64(concatenated));
+	R_FunctionWhiteList::scriptIsSafe(filter64); //can throw filterExceptions
 
 	bool * arrayPointer = NULL;
 
@@ -799,10 +800,10 @@ std::string rbridge_evalRCodeWhiteListed(std::string & rCode)
 	rbridge_dataSet = rbridge_dataSetSource();
 	jaspRCPP_resetErrorMsg();
 
-	try							{ R_FunctionWhiteList::scriptIsSafe(rCode); }
-	catch(filterException e)	{ jaspRCPP_setErrorMsg(e.what()); return "script is not safe..";	}
-
 	std::string rCode64(rbridge_encodeColumnNamesToBase64(rCode));
+
+	try							{ R_FunctionWhiteList::scriptIsSafe(rCode64); }
+	catch(filterException e)	{ jaspRCPP_setErrorMsg(e.what()); return "script is not safe..";	}
 
 	if(filterColumnsUsed.size() > 0)	jaspRCPP_runScript("data <- .readFilterDatasetToEnd();\nattach(data);\noptions(warn=1, showWarnCalls=TRUE, showErrorCalls=TRUE, show.error.messages=TRUE)"); //first we load the data to be filtered
 	std::string result = jaspRCPP_evalRCode(rCode64.c_str());
