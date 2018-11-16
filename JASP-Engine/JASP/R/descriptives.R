@@ -55,7 +55,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     {
       jaspResults[["tables"]] <- createJaspContainer("Frequency Tables")
       jaspResults[["tables"]]$dependOnOptions(c("frequencyTables", "splitby"))
-      jaspResults[["tables"]]$position = 2
+      jaspResults[["tables"]]$position <- 3
     }
 
     .descriptivesFrequencyTables(dataset.factors, options, jaspResults[["tables"]])
@@ -65,6 +65,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
       jaspResults[["frequenciesHeading"]] <- createJaspHtml("Frequencies", "h1")
       jaspResults[["frequenciesHeading"]]$copyDependenciesFromJaspObject(jaspResults[["tables"]])
       jaspResults[["frequenciesHeading"]]$dependOnOptions("variables")
+      jaspResults[["frequenciesHeading"]]$position <- 2
     }
   }
 
@@ -78,17 +79,15 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
       if (makeSplit)
       {
         jaspResults[["matrixPlot"]] <- createJaspContainer(title="Correlation plots")
-	jaspResults[["matrixPlot"]]$position = 6
 	corrPlot <- jaspResults[["matrixPlot"]]
 	corrPlot$dependOnOptions(c("plotCorrelationMatrix", "splitby"))
 
 
         for (i in 1:length(splitLevels))
-	  corrPlot[[splitLevels[i]]] <- .descriptivesMatrixPlot(splitDat.factors[[i]], options, splitLevels[i])
-
+	         corrPlot[[splitLevels[i]]] <- .descriptivesMatrixPlot(splitDat.factors[[i]], options, splitLevels[i])
       } else {
         jaspResults[["matrixPlot"]] <- .descriptivesMatrixPlot(dataset.factors, options, "Correlation plot") # Create one plot
-	jaspResults[["matrixPlot"]]$position = 6
+	       jaspResults[["matrixPlot"]]$position <- 6
       }
     }
   }
@@ -100,7 +99,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     {
       jaspResults[["distributionPlots"]] <- createJaspContainer("Distribution Plots")
       jaspResults[["distributionPlots"]]$dependOnOptions(c("plotVariables", "splitby", "distPlotDensity"))
-      jaspResults[["distributionPlots"]]$position = 5
+      jaspResults[["distributionPlots"]]$position <- 5
     }
 
     distPlots <- jaspResults[["distributionPlots"]]
@@ -124,7 +123,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     {
       jaspResults[["splitPlots"]] <- createJaspContainer("Boxplots")
       jaspResults[["splitPlots"]]$dependOnOptions(c("splitPlots", "splitby"))
-      jaspResults[["splitPlots"]]$position = 7
+      jaspResults[["splitPlots"]]$position <- 7
     }
 
     splitPlots <- jaspResults[["splitPlots"]]
