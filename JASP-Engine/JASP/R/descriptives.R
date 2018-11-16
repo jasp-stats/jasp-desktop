@@ -1032,7 +1032,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   p <- ggplot2::ggplot(data = data.frame(x = tb[, 1], y = tb[, 2]), ggplot2::aes(x = x, y = y)) +
     ggplot2::geom_bar(stat = "identity", fill = "grey", col = "black", size = .3) +
     ggplot2::xlab(variable) +
-    ggplot2::ylab("")
+    ggplot2::ylab("Counts")
 
   # JASP theme
   p <- JASPgraphs::themeJasp(p)
