@@ -613,7 +613,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
         
         plotMat <- matrix(plotList, ncol = length(variables), nrow = length(variables))
 
-        p <- JASPgraphs::ggMatrixPlot(plotList = plotMat, leftLabels = .unv(variables), topLabels = .unv(variables))
+        p <- JASPgraphs::ggMatrixPlot(plotList = t(plotMat), leftLabels = .unv(variables), topLabels = .unv(variables))
 
         return(p)
     }
@@ -634,37 +634,64 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 }
 
 #### histogram with density estimator ####
-.plotMarginalCor <- function(variable, cexYlab= 1.3, lwd= 2, rugs= FALSE) {
-    
-    variable <- na.omit(as.numeric(variable))
-    
-    density <- density(variable)
-    
-    h <- hist(variable, plot = FALSE)
+.plotMarginalCor <- function(variable, xName = NULL, yName = "Density") {
 
-    dens <- h$density
-    yhigh <- 1.2*max(h$density)
-    ylow <- 0
-    #xticks <- base::pretty(c(variable, h$breaks), min.n= 3)
-    xticks <- JASPgraphs::getPrettyAxisBreaks(variable)
+  variable <- na.omit(variable)
+	isNumeric <- !(is.factor(variable) || (is.integer(variable) && length(unique(variable)) <= 10))
 
-    p <- JASPgraphs::drawAxis(xName = "", yName = "Density", xBreaks = xticks, yBreaks = c(0,max(density$y)+.1), force = TRUE, yLabels = NULL, xLabels = xticks)
-    p <- p + ggplot2::geom_histogram(data = data.frame(variable), mapping = ggplot2::aes(x = variable, y = ..density..),
-            binwidth = (h$breaks[2] - h$breaks[1]),
-            fill = "grey",
-            col = "black",
-            size = .3,
-            center = ((h$breaks[2] - h$breaks[1])/2))
-    p <- p + ggplot2::geom_line(data = data.frame(x = density$x, y = density$y), mapping = ggplot2::aes(x = x, y = y), lwd = .7, col = "black")
-    
-    p <- p + ggplot2::theme(axis.ticks.y = ggplot2::element_blank())
-    p <- p + ggplot2::xlab("")
-    
-    # JASP theme
-    p <- JASPgraphs::themeJasp(p)
-    
-    return(p)
-    
+
+	if (isNumeric) {
+		p <- ggplot2::ggplot(data = data.frame(x = variable))
+		h <- hist(variable, plot = FALSE)
+  	hdiff <- h$breaks[2L] - h$breaks[1L]
+		xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(variable, h$breaks), min.n = 3)
+		dens <- h$density
+  	yBreaks <- c(0, 1.2*max(h$density))
+
+  	p <- p + ggplot2::geom_histogram(
+  		mapping  = ggplot2::aes(x = x, y = ..density..),
+  		binwidth = hdiff,
+  		fill     = "grey",
+  		col      = "black",
+  		size     = .3,
+  		center   = hdiff / 2,
+  		stat     = "bin"
+  	) +
+  		ggplot2::scale_x_continuous(name = xName, breaks = xBreaks, limits = range(xBreaks))
+	} else {
+
+		p <- ggplot2::ggplot(data = data.frame(x = factor(variable)))
+		hdiff <- 1L
+		xBreaks <- unique(variable)
+		yBreaks <- c(0, max(table(variable)))
+
+		p <- p + ggplot2::geom_bar(
+			mapping  = ggplot2::aes(x = x),
+			fill     = "grey",
+			col      = "black",
+			size     = .3,
+			stat     = "count"
+		) +
+			ggplot2::scale_x_discrete(name = xName, breaks = xBreaks)
+	}
+
+	yLim <- range(yBreaks)
+
+  if (isNumeric) {
+  	density <- density(variable)
+  	p <- p + ggplot2::geom_line(data = data.frame(x = density$x, y = density$y),
+  															mapping = ggplot2::aes(x = x, y = y), lwd = .7, col = "black")
+  }
+
+	thm <- ggplot2::theme(
+		axis.ticks.y = ggplot2::element_blank(),
+		axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = -5, b = 0, l = 0))
+	)
+  p <- p +
+  	ggplot2::scale_y_continuous(name = yName, breaks = yBreaks, labels = c("", ""), limits = yLim) +
+  	ggplot2::theme()
+  return(JASPgraphs::themeJasp(p) + thm)
+
 }
 
 
