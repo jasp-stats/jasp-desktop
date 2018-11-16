@@ -52,6 +52,7 @@
 #include "analysisforms/Common/ttestonesampleform.h"
 #include "analysisforms/Common/ttestpairedsamplesform.h"
 #include "analysisforms/Common/multinomialtestform.h"
+#include "analysisforms/Common/multinomialtestbayesianform.h"
 
 #include "analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.h"
 #include "analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
@@ -137,10 +138,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	StartOnlineDataManager();
 	initQWidgetGUIParts();
 	makeConnections();
-	
+
 	// Set the initial tab on Common.
 	tabChanged(1);
-	
+
 	qmlRegisterType<DataSetView>("JASP", 1, 0, "DataSetView");
 	loadQML();
 
@@ -432,12 +433,12 @@ bool MainWindow::filterShortCut()
 	connect(timer, SIGNAL(timeout()), this, SLOT(updateExcludeKey()));
 	timer->start(100);
 #endif
-	
+
 	return exclude;
 }
 
 void MainWindow::saveKeysSelected()
-{	
+{
 	if (filterShortCut())
 		return;
 
@@ -459,7 +460,7 @@ void MainWindow::refreshKeysSelected()
 {
 	if (filterShortCut())
 		return;
-	
+
 	refreshAllAnalyses();
 }
 
@@ -467,7 +468,7 @@ void MainWindow::zoomInKeysSelected()
 {
 	if (filterShortCut())
 		return;
-	
+
 	_resultsJsInterface->zoomIn();
 }
 
@@ -475,7 +476,7 @@ void MainWindow::zoomOutKeysSelected()
 {
 	if (filterShortCut())
 		return;
-	
+
 	_resultsJsInterface->zoomOut();
 }
 
@@ -483,7 +484,7 @@ void MainWindow::zoomEqualKeysSelected()
 {
 	if (filterShortCut())
 		return;
-	
+
 	_resultsJsInterface->zoomReset();
 }
 
@@ -778,7 +779,7 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 	}
 	else
 		_analysisFormsMap[analysis]->connectToAvailableVariablesModel(_package->dataSet());
-	
+
 	illegalOptionStateChanged(_analysisFormsMap[analysis]);
 	_analysisFormsMap[analysis]->show();
 
@@ -812,6 +813,7 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	else if (name == "RegressionLogLinear")							form = new RegressionLogLinearForm(contentArea);
 	else if (name == "AnovaRepeatedMeasures")						form = new AnovaRepeatedMeasuresForm(contentArea);
 	else if (name == "TTestBayesianOneSample")						form = new TTestBayesianOneSampleForm(contentArea);
+	else if (name == "MultinomialTestBayesian")						form = new MultinomialTestBayesianForm(contentArea);
 	else if (name == "CorrelationBayesianPairs")					form = new CorrelationBayesianPairsForm(contentArea);
 	else if (name == "ExploratoryFactorAnalysis")					form = new ExploratoryFactorAnalysisForm(contentArea);
 	else if (name == "PrincipalComponentAnalysis")					form = new PrincipalComponentAnalysisForm(contentArea);
@@ -1235,7 +1237,7 @@ void MainWindow::populateUIfromDataSet()
 		_filterModel->setDataSetPackage(_package);
 		_filterModel->init();
 	}
-	
+
 	hideProgress();
 
 	bool errorFound = false;
@@ -1693,7 +1695,7 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 		selected = true;
 		closeCurrentOptionsWidget();
 	}
-	
+
 	delete _analysisFormsMap[analysis];
 	_analysisFormsMap.erase(analysis);
 

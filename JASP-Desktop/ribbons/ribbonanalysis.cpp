@@ -98,6 +98,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 
 	menu->addSeparator();
 	menu->addAction(QString("Bayesian Binomial Test"), this, SLOT(itemSelected()))->setObjectName("BinomialTestBayesian");
+	menu->addAction(QString("Bayesian Multinomial Test"), this, SLOT(itemSelected()))->setObjectName("MultinomialTestBayesian");
 	menu->addAction(QString("Bayesian Contingency Tables"), this, SLOT(itemSelected()))->setObjectName("ContingencyTablesBayesian");
     menu->addAction(QString("Bayesian Log-Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLogLinearBayesian");
 
