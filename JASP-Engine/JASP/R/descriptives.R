@@ -69,8 +69,6 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     }
   }
 
-
-
   # Correlation plot
   if (options$plotCorrelationMatrix)
   {
@@ -79,16 +77,16 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
       if (makeSplit)
       {
         jaspResults[["matrixPlot"]] <- createJaspContainer(title="Correlation plots")
-	corrPlot <- jaspResults[["matrixPlot"]]
-	corrPlot$dependOnOptions(c("plotCorrelationMatrix", "splitby"))
-
+        corrPlot <- jaspResults[["matrixPlot"]]
+        corrPlot$dependOnOptions(c("plotCorrelationMatrix", "splitby"))
 
         for (i in 1:length(splitLevels))
-	         corrPlot[[splitLevels[i]]] <- .descriptivesMatrixPlot(splitDat.factors[[i]], options, splitLevels[i])
-      } else {
-        jaspResults[["matrixPlot"]] <- .descriptivesMatrixPlot(dataset.factors, options, "Correlation plot") # Create one plot
-	       jaspResults[["matrixPlot"]]$position <- 6
+          corrPlot[[splitLevels[i]]] <- .descriptivesMatrixPlot(splitDat.factors[[i]], options, splitLevels[i])
       }
+      else
+        jaspResults[["matrixPlot"]] <- .descriptivesMatrixPlot(dataset.factors, options, "Correlation plot") # Create one plot
+
+      jaspResults[["matrixPlot"]]$position <- 6
     }
   }
 
