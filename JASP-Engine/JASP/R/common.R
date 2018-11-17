@@ -2667,6 +2667,7 @@ editImage <- function(plotName, type, height, width) {
 
 			# copy plot and check if we edit it
 			plot <- oldPlot
+			#if (type == "interactive" && isGgplot) {
 			if (FALSE && type == "interactive" && isGgplot) {
 			  editedPlot <- ggedit::ggedit(oldPlot, viewer = shiny::browserViewer())
 				plot <- editedPlot[["UpdatedPlots"]][[1]]

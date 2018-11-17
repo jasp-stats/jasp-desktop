@@ -40,6 +40,10 @@ if (travis) {
   # install jasptools if necessary
   if (!"jasptools" %in% installed)
     devtools::install("Tools/jasptools/", upgrade = "always", quick = TRUE)
+    
+  # install JASPgraphs if necessary
+  if (!"JASPgraphs" %in% installed)
+    devtools::install("JASP-Engine/JASPgraphs", upgrade = "always", quick = TRUE)
 
   # create ~/.R/makevars for C/   C++ compilation flags
   dir.create("~/.R")

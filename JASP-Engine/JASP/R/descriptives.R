@@ -68,8 +68,6 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
     }
   }
 
-
-
   # Correlation plot
   if (options$plotCorrelationMatrix)
   {
@@ -488,7 +486,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 
   variables <- unlist(options$variables)
   l         <- length(variables)
-  depends   <- c("plotCorrelationMatrix", "variables", "splitBy")
+  depends   <- c("plotCorrelationMatrix", "variables", "splitby")
 
   if (l == 0) #Nothing to plot
     return(NULL)
@@ -741,10 +739,10 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 
     plotResult <- createJaspContainer(title=variable)
     plotResult$setOptionMustContainDependency("variables",  variable)
-    plotResult$setOptionMustBeDependency("splitBy",         options$splitBy)
+    plotResult$setOptionMustBeDependency("splitby",         options$splitby)
 
     for (l in split) {
-      plotResult[[l]] <- .descriptivesFrequencyPlots_SubFunc(column=dataset[[l]][[.v(variable)]], variable=l, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity)
+      plotResult[[l]] <- .descriptivesFrequencyPlots_SubFunc(column=dataset[[l]][[.v(variable)]], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, title = l)
       plotResult[[l]]$copyDependenciesFromJaspObject(plotResult)
     }
 
@@ -754,17 +752,17 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   else
   {
     column <- dataset[[ .v(variable) ]]
-    aPlot <- .descriptivesFrequencyPlots_SubFunc(column=column[!is.na(column)], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity)
+    aPlot <- .descriptivesFrequencyPlots_SubFunc(column=column[!is.na(column)], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, title = variable)
     aPlot$setOptionMustContainDependency("variables",  variable)
-    aPlot$setOptionMustBeDependency("splitBy",         options$splitBy)
+    aPlot$setOptionMustBeDependency("splitby",         options$splitby)
 
     return(aPlot)
   }
 }
 
-.descriptivesFrequencyPlots_SubFunc <- function(column, variable, width, height, displayDensity)
+.descriptivesFrequencyPlots_SubFunc <- function(column, variable, width, height, displayDensity, title)
 {
-  plotObj <- createJaspPlot(title=variable, width=width, height=height)
+  plotObj <- createJaspPlot(title=title, width=width, height=height)
 
   if (any(is.infinite(column))) {
     plotObj$error         <- "badData"
@@ -1033,7 +1031,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
   p  <- ggplot2::ggplot(data = data.frame(x = tb[, 1], y = tb[, 2]), ggplot2::aes(x = x, y = y)) +
     ggplot2::geom_bar(stat = "identity", fill = "grey", col = "black", size = .3) +
     ggplot2::xlab(variable) +
-    ggplot2::ylab("")
+    ggplot2::ylab("Counts")
 
   # JASP theme
   p <- JASPgraphs::themeJasp(p)
