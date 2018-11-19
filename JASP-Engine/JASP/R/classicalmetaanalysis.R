@@ -127,12 +127,12 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
                exitAnalysisIfErrors=TRUE)
   }
 
-  method = switch(options$method, `Fixed Effects` = "FE", `Maximum Likelihood` = "ML",
+  method <- switch(options$method, `Fixed Effects` = "FE", `Maximum Likelihood` = "ML",
                   `Restricted ML` = "REML", `DerSimonian-Laird` = "DL", `Hedges` = "HE",
                   `Hunter-Schmidt` = "HS", `Sidik-Jonkman` = "SJ", `Empirical Bayes` = "EB",
                   `Paule-Mandel` = "PM", "REML")
 
-  can.run = all(c(effsizeName, stderrName) != "")
+  can.run <- all(c(effsizeName, stderrName) != "")
 
   ## Run the analysis. ####
   if (is.null(rma.fit)) {
@@ -142,13 +142,14 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     if (run && can.run) {
 
       # infer model formula
-      .vmodelTerms = b64(options$modelTerms)
+      .vmodelTerms <- b64(options$modelTerms)
+
       formula.rhs <- as.formula(as.modelTerms(.vmodelTerms))
       if (is.null(formula.rhs))
-        formula.rhs = ~1
+        formula.rhs <- ~1
 
       if (!options$includeConstant)
-        formula.rhs = update(formula.rhs, ~ . + 0)
+        formula.rhs <- update(formula.rhs, ~ . + 0)
 
       if (identical(formula.rhs, ~ 1 - 1))
         .quitAnalysis("The model should contain at least one predictor or an intercept.")
@@ -202,7 +203,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
 
     table <- list(title = "Coefficients")
     if (!is.null(coefficients)) {
-      table$x <- coefficients
+      table$x <- d64(coefficients)
       colnames(table$x) <- cols
       if (! options$regressionCoefficientsConfidenceIntervals) {
         table$x <- table$x[1:4] # remove confidence interval bounds
@@ -272,7 +273,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     rows <- c("<em>&tau;&sup2;</em>", "<em>&tau;</em>", "<em>I&sup2;</em> (%)", "<em>H&sup2;</em>")
 
     if (is.null(residPars) && run && can.run)
-      residPars = confint(rma.fit, digits = 12, level = options$regressionCoefficientsConfidenceIntervalsInterval)$random
+      residPars <- confint(rma.fit, digits = 12, level = options$regressionCoefficientsConfidenceIntervalsInterval)$random
 
     table <- list(title = title)
     if (! is.null(residPars)) {
@@ -291,7 +292,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
       }
     }
 
-    residParsTable = do.call(as.jaspTable, table) # FIXME: we want an overtitle above upper/lower bounds
+    residParsTable <- do.call(as.jaspTable, table) # FIXME: we want an overtitle above upper/lower bounds
     results[["residPars"]] <- residParsTable
 
   }
@@ -310,7 +311,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     table <- list(title = "Parameter Covariances", x = "...", y = "...")
     if (!is.null(coeffVcov)) table$x = coeffVcov
 
-    vcovTable = do.call(as.jaspTable, table)
+    vcovTable <- do.call(as.jaspTable, table)
     results[["vcov"]] <- vcovTable
 
   }
@@ -380,7 +381,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     options(jasp_number_format = "sf:5;dp:4")
 
     if (is.null(influ) && run && can.run)
-      influ = influence(rma.fit)
+      influ <- influence(rma.fit)
 
     table <- list(title = "Influence Measures")
     cols <- c("Std. Residual", "DFFITS", "Cook's Distance", "Cov. Ratio",
@@ -388,18 +389,18 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
     if (!is.null(influ)) {
       table$x <- influ$inf
       colnames(table$x) <- cols
-      influential = rownames(influ$inf)[which(influ$is.infl)]
-      postfix = ifelse(!is.na(influ$is.infl) & influ$is.infl, "*","")
-      rownames(table$x) = paste0(rownames(table$x), postfix)
+      influential <- rownames(influ$inf)[which(influ$is.infl)]
+      postfix <- ifelse(!is.na(influ$is.infl) & influ$is.infl, "*","")
+      rownames(table$x) <- paste0(rownames(table$x), postfix)
     } else {
       table$x <- cols
-      influential = c()
+      influential <- c()
     }
 
-    influTable = do.call(as.jaspTable, table)
+    influTable <- do.call(as.jaspTable, table)
 
     # Markup influential cases in a footnote
-    ninfl = length(influential)
+    ninfl <- length(influential)
 
     if (ninfl > 0) {
       infl.footn <- .newFootnotes()
@@ -420,19 +421,17 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
 
     fsn.fit <-
       metafor::fsn(yi = get(b64(effsizeName)), sei = get(b64(stderrName)), data = dataset)
-    fsn.fit = d64(fsn.fit)
+    fsn.fit <- d64(fsn.fit)
 
-    failsnTable = do.call(data.frame, fsn.fit[c('fsnum','alpha','pval')])
+    failsnTable <- do.call(data.frame, fsn.fit[c('fsnum','alpha','pval')])
     colnames(failsnTable) = c('Fail-safe N', 'Target Significance', 'Observed Significance')
     rownames(failsnTable) = fsn.fit[['type']]
 
     options(jasp_number_format = "sf:5;dp:4")
-    failsnTable = as.jaspTable(.clean(failsnTable), title = "File Drawer Analysis")
+    failsnTable <- as.jaspTable(.clean(failsnTable), title = "File Drawer Analysis")
     results[["failsafen"]] <- failsnTable
 
   }
-
-
 
   ### Prepare Plot Output ####
 
@@ -452,7 +451,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
   if (options$forestPlot && (! is.null(forestPlot) || run && can.run)) {
 
     if (is.null(forestPlot)) {
-      img.height = max(520, nobs(rma.fit) * 20) # very heuristic! needs improvement...
+      img.height <- max(520, nobs(rma.fit) * 20) # very heuristic! needs improvement...
       forest.img <- .writeImage(width = 520, height = img.height, function() cmaForest(rma.fit, cex.lab=1.2, las=1, efac=15 / nobs(rma.fit)))
       forestPlot <- list(title="Forest plot", width = 500, height = img.height, convertible = TRUE,
                          obj = forest.img[["obj"]], data = forest.img[["png"]],
@@ -628,24 +627,24 @@ b64.rma <- function(object, ...) {
   ## Translate names in object x to base64
 
   # which elements in object have a names or dimnames attribute?
-  idx = which(sapply(object, function(x) !is.null(names(x)) || !is.null(dimnames(x))))
+  idx <- which(sapply(object, function(x) !is.null(names(x)) || !is.null(dimnames(x))))
   if (is.null(list(...)$values)) {
 
     # infer the values to be translated from the object call
-    formula = eval(object$call$mods)
+    formula <- eval(object$call$mods)
     if (!inherits(formula, "formula"))
       stop("Currently cannot infer 'values' when 'mods' is not a formula. Please provide 'values'.")
-    values = all.vars(formula)
+    values <- all.vars(formula)
 
     # translate object
-    object$call$mods = formula
-    object[idx] = b64(object[idx], values = values, ...)
+    object$call$mods <- formula
+    object[idx] <- b64(object[idx], values = values, ...)
 
   }
   else {
 
     # translate object
-    object[idx] = b64(object[idx], ...)
+    object[idx] <- b64(object[idx], ...)
   }
   object
 }
@@ -653,24 +652,24 @@ d64.rma <- function(object, ...) {
   ## Untranslate names in object x from base64
 
   # which elements in object have a names or dimnames attribute?
-  idx = which(sapply(object, function(x) !is.null(names(x)) || !is.null(dimnames(x))))
+  idx <- which(sapply(object, function(x) !is.null(names(x)) || !is.null(dimnames(x))))
 
   if (is.null(list(...)$values)) {
 
     # infer the values to be untranslated from the object call
-    formula = try(eval(object$call$mods))
+    formula <- try(eval(object$call$mods))
     if (!inherits(formula, "formula"))
       stop("Currently cannot infer 'values' when 'mods' is not a formula. Please provide 'values'.")
-    values = all.vars(formula)
+    values <- all.vars(formula)
 
     # untranslate object
-    object$call$mods = formula
-    object[idx] = d64(object[idx], values = values, ...)
+    object$call$mods <- formula
+    object[idx] <- d64(object[idx], values = values, ...)
   }
   else {
 
     # untranslate object
-    object[idx] = d64(object[idx], ...)
+    object[idx] <- d64(object[idx], ...)
   }
   object
 }
@@ -684,22 +683,22 @@ d64.fsn <- function(object, ...) {
 options(jasp_number_format = "sf:4;dp:3")
 as.jaspTable <- function(x, ...) UseMethod("as_jaspTable")
 as_jaspTable.data.frame <- function(x, title = "", ...) {
-  jaspTable = list(data = NULL, schema = NULL, title = title)
+  jaspTable <- list(data = NULL, schema = NULL, title = title)
 
   # Extract table schema
-  fields = lapply(c("name", names(x)), function(name) {
+  fields <- lapply(c("name", names(x)), function(name) {
     if (is.null(x[[name]]))
       return(list(name = "name", type = "string", format = "", title = ""))
-    y = na.omit(x[[name]])
+    y <- na.omit(x[[name]])
 
-    type = ""
+    type <- ""
     tryCatch(if (all(is.numeric(y))) {
       if (any(abs(y - floor(y)) > 0L))
-        type = "number"
+        type <- "number"
       else
-        type = "integer"
+        type <- "integer"
     } else {
-      type = "string"
+      type <- "string"
     }, error = function(e) .quitAnalysis(paste(capture.output({print(x); print(name); print(y)}), collapse = "\n")))
 
     format <- ""
