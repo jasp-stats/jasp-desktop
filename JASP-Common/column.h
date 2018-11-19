@@ -203,11 +203,11 @@ public:
 	bool						setColumnAsScale(const std::vector<double> &values);
 
 	std::map<int, std::string>	setColumnAsNominalText(const std::vector<std::string> &values,	const std::map<std::string, std::string> &labels, bool * changedSomething = NULL);
-	std::map<int, std::string>	setColumnAsNominalText(const std::vector<std::string> &values, bool * changedSomething = NULL)	{ return setColumnAsNominalText(values, std::map<std::string, std::string>(), changedSomething); }
+	std::map<int, std::string>	setColumnAsNominalText(const std::vector<std::string> &values, bool * changedSomething = NULL);
 
 	bool						setColumnAsNominalOrOrdinal(const std::vector<int> &values,		const std::set<int> &uniqueValues,			bool is_ordinal = false);
 	bool						setColumnAsNominalOrOrdinal(const std::vector<int> &values,		std::map<int, std::string> &uniqueValues,	bool is_ordinal = false);
-	bool						setColumnAsNominalOrOrdinal(const std::vector<int> &values,													bool is_ordinal = false)	{ return setColumnAsNominalOrOrdinal(values, std::set<int>(values.begin(), values.end()), is_ordinal); }
+	bool						setColumnAsNominalOrOrdinal(const std::vector<int> &values,													bool is_ordinal = false);
 
 	bool allLabelsPassFilter() const;
 

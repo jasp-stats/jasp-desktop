@@ -1028,25 +1028,11 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		ggplot2::geom_point(position=pd, size=4) +
 		ggplot2::ylab(NULL) +
 		ggplot2::xlab(NULL) +
-		ggplot2::theme_bw() +
-		ggplot2::theme(panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
-			panel.grid.major=ggplot2::element_blank(),
-			axis.title.x = ggplot2::element_text(size=18,vjust=-.2), axis.title.y = ggplot2::element_text(size=18,vjust=-1),
-			axis.text.x = ggplot2::element_text(size=15), axis.text.y = ggplot2::element_text(size=15),
-			panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-			plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-			legend.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-			panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(),
-			legend.key = ggplot2::element_blank(),
-			legend.title = ggplot2::element_text(size=12),
-			legend.text = ggplot2::element_text(size = 12),
-			axis.ticks = ggplot2::element_line(size = 0.5),
-			axis.ticks.margin = grid::unit(1,"mm"),
-			axis.ticks.length = grid::unit(3, "mm"),
-			plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
 		.base_breaks_y3(summaryStat) +
 		.base_breaks_x(summaryStat$groupingVariable) +
-		ggplot2::scale_x_discrete(labels=c(nameV1, nameV2))
+		ggplot2::scale_x_discrete(labels=c(nameV1, nameV2)) 
+		
+	p <- JASPgraphs::themeJasp(p)
 
 	return(p)
 }

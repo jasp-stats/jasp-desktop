@@ -916,7 +916,6 @@ Json::Value jaspTable::dataEntry()
 	dataJson["title"]				= _title;
 
 	dataJson["name"]				= getUniqueNestedName();
-	dataJson["footnotes"]			= _footnotes;
 	dataJson["schema"]				= schemaJson();
 
 	dataJson["data"]				= rowsJson();
@@ -932,6 +931,16 @@ Json::Value jaspTable::dataEntry()
 		dataJson["error"]["errorMessage"]	= _errorMessage;
 	}
 
+	//We do this so that any unset symbols will be filled in by the javascriptside of things
+	Json::Value footnotesSymbols	= _footnotes;
+	int symbolCounter				= 0;
+	for(int i=0; i<footnotesSymbols.size(); i++)
+		if(footnotesSymbols[i]["symbol"].asString() == "")
+			footnotesSymbols[i]["symbol"] = symbolCounter++;
+
+	dataJson["footnotes"]			= footnotesSymbols;
+
+
 	return dataJson;
 }
 
@@ -941,6 +950,19 @@ Json::Value	jaspTable::schemaJson()
 {
     Json::Value schema(Json::objectValue);
 	Json::Value fields(Json::arrayValue);
+
+	std::map<std::string, std::vector<int>> footnotesPerCol;
+	for(Json::Value::UInt i=0; i<_footnotes.size(); i++)
+	{
+		const Json::Value & note = _footnotes[i];
+
+		if(!note["cols"].isNull())
+		{
+			if(note["rows"].isNull())
+				for(const Json::Value & colName : note["cols"])
+					footnotesPerCol[colName.asString()].push_back(int(i));
+		}
+	}
 
 	for(int col=0; col<_colNames.rowCount(); col++)
 	{
@@ -965,9 +987,16 @@ Json::Value	jaspTable::schemaJson()
 		if(colFormat != "")
 			field["format"]	= colFormat;
 
+		if(footnotesPerCol.count(colName) > 0)
+		{
+			Json::Value notes(Json::arrayValue);
+			for(int noteIndex : footnotesPerCol[colName])
+				notes.append(noteIndex);
+			field[".footnotes"] = notes;
+		}
+
 		if(colName[0] != '.' && (!_showSpecifiedColumnsOnly || _specifiedColumns.count(_colNames[col]) > 0))
 			fields.append(field);
-
 	}
 
     schema["fields"] = fields;
@@ -978,11 +1007,24 @@ Json::Value	jaspTable::rowsJson()
 {
 	Json::Value rows(Json::arrayValue);
 
+	std::map<std::string, std::map<std::string, std::vector<int>>> footnotesPerRowCol;
+	for(Json::Value::UInt i=0; i<_footnotes.size(); i++)
+	{
+		const Json::Value & note = _footnotes[i];
+
+		if(!note["cols"].isNull() && !note["rows"].isNull())
+			for(const Json::Value & rowName : note["rows"])
+				for(const Json::Value & colName : note["cols"])
+					footnotesPerRowCol[rowName.asString()][colName.asString()].push_back(int(i));
+	}
+
 	bool keepGoing = true;
 	for(int row=0; keepGoing; row++)
 	{
 		Json::Value aRow(Json::objectValue);
 		bool aColumnKeepsGoing = false;
+
+
 
 		for(int col=0; col<_data.size(); col++)
 		{
@@ -990,6 +1032,23 @@ Json::Value	jaspTable::rowsJson()
 				aColumnKeepsGoing = true;
 
 			aRow[getColName(col)] = getCell(col, row);
+		}
+
+		std::string rowName = getRowName(row);
+		if(footnotesPerRowCol.count(rowName) > 0)
+		{
+			Json::Value notes(Json::objectValue);
+
+			for(auto & keyval : footnotesPerRowCol[rowName])
+			{
+				auto colName = keyval.first;
+				notes[colName] = Json::arrayValue;
+
+				for(int noteIndex : keyval.second)
+					notes[colName].append(noteIndex);
+			}
+
+			aRow[".footnotes"] = notes;
 		}
 
 		if(aColumnKeepsGoing)
@@ -1099,8 +1158,6 @@ Json::Value jaspTable::convertToJSON()
 	obj["colOvertitles"]		= _colOvertitles.convertToJSON();
 	obj["colFormats"]			= _colFormats.convertToJSON();
 	obj["colCombines"]			= _colCombines.convertToJSON();
-
-
 
 	Json::Value dataColumns(Json::arrayValue);
 

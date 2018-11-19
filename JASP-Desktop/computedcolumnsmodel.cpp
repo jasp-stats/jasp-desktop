@@ -240,6 +240,20 @@ void ComputedColumnsModel::clearColumn(std::string columnName)
 
 }
 
+void ComputedColumnsModel::recomputeColumn(std::string columnName)
+{
+	clearColumn(columnName);
+	_computedColumns->findAllColumnNames();
+	try
+	{
+		ComputedColumn * col = &((*_computedColumns)[columnName]);
+		col->findDependencies();
+	}
+	catch(columnNotFound e){}
+
+	checkForDependentColumnsToBeSent(columnName, true);
+}
+
 void ComputedColumnsModel::checkForDependentColumnsToBeSent(std::string columnName, bool refreshMe)
 {
 	for(ComputedColumn * col : *_computedColumns)
@@ -371,8 +385,8 @@ ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int co
 	}
 	while (!success);
 
-	if(theData != _package->dataSet())
-		emit dataSetChanged(_package->dataSet());
+	//if(theData != _package->dataSet())
+	emit dataSetChanged(_package->dataSet());
 
 	ComputedColumn  * createdColumn = computedColumnsPointer()->createComputedColumn(name.toStdString(), (Column::ColumnType)columnType, computeType);
 	emit refreshData();

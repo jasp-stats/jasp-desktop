@@ -300,6 +300,7 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
                                inherit.aes = FALSE, size = 1),
          ggplot2::scale_y_continuous(breaks = c(0,  round(testValue, 3), 1)))
   }
+  
   plotPosition <- ggplot2::position_dodge(0.2)
 
   p <-

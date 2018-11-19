@@ -2644,7 +2644,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 					if ( ! variable.statuses[[1]]$unplotable && ! variable.statuses[[2]]$unplotable) {
 
-						maxYlab <- .plotScatter(dataset[[variables[1]]], dataset[[variables[2]]])
+						maxYlab <- .plotScatterBayesianCorrelationMatrix(dataset[[variables[1]]], dataset[[variables[2]]])
 						distLab <- maxYlab / 1.8
 
 						mtext(text = .unv(variables)[1], side = 1, cex=1.5, line = 3)
@@ -2673,7 +2673,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								if (options$plotDensities) {
 
 									if ( ! variable.statuses[[row]]$unplotable) {
-										.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
+										.plotMarginalCorBayesianCorrelationMatrix(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
 									} else {
 										.displayError(variable.statuses[[row]]$plottingError, cexText=cexText)
 									}
@@ -2687,7 +2687,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							if (col > row) {
 								if (options$plotCorrelationMatrix) {
 									if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
-										.plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
+										.plotScatterBayesianCorrelationMatrix(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
 									} else {
 										errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
 										errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
@@ -2767,4 +2767,92 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	}
 
 	correlation.plot
+}
+
+.plotScatterBayesianCorrelationMatrix <- function(xVar, yVar, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2) {
+  d <- data.frame(xx= xVar, yy= yVar)
+  d <- na.omit(d)
+  xVar <- d$xx
+  yVar <- d$yy
+
+  # fit different types of regression
+  fit <- vector("list", 1)# vector("list", 4)
+  fit[[1]] <- lm(yy ~ poly(xx, 1, raw= TRUE), d)
+  # fit[[2]] <- lm(yy ~ poly(xx, 2, raw= TRUE), d)
+  # fit[[3]] <- lm(yy ~ poly(xx, 3, raw= TRUE), d)
+  # fit[[4]] <- lm(yy ~ poly(xx, 4, raw= TRUE), d)
+
+  # find parsimonioust, best fitting regression model
+  # Bic <- vector("numeric", 4)
+  # for(i in 1:4){
+
+  #	Bic[i] <- BIC(fit[[i]])
+  # }
+
+  bestModel <- 1 # which.min(Bic)
+	
+	xticks <- JASPgraphs::getPrettyAxisBreaks(d$x)
+	yticks <- JASPgraphs::getPrettyAxisBreaks(d$y)
+	yLabs <- JASPgraphs::axesLabeller(yticks)
+	xLabs <- JASPgraphs::axesLabeller(xticks)
+
+  plot(xVar, yVar, col="black", pch=21, bg = "grey", ylab="", xlab="", axes=F, ylim= range(yticks), xlim= range(xticks), cex= cexPoints)
+  .poly.predBayesianCorrelationMatrix(fit[[bestModel]], line= TRUE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)
+
+  par(las=1)
+
+  axis(1, line= 0.4, labels= xLabs, at= xticks, cex.axis= cexXAxis)
+  axis(2, line= 0.2, labels= yLabs, at= yticks, cex.axis= cexYAxis)
+
+  invisible(max(nchar(yLabs)))
+}
+
+.plotMarginalCorBayesianCorrelationMatrix <- function(variable, cexYlab= 1.3, lwd= 2, rugs= FALSE) {
+  variable <- variable[!is.na(variable)]
+
+  density <- density(variable)
+  h <- hist(variable, plot = FALSE)
+  jitVar <- jitter(variable)
+  yhigh <- max(max(h$density), max(density$y))
+  ylow <- 0
+  xticks <- pretty(c(variable, h$breaks), min.n= 3)
+  plot(range(xticks), c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
+  h <- hist(variable, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE, nbreaks= round(length(variable)/5))
+  ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks)
+  par(las=0)
+  ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.08*diff(range(ax1)), cex.axis= 1.7, mgp= c(3, 0.7, 0))
+
+  if (rugs) {
+    rug(jitVar)
+  }
+
+  lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
+}
+
+.poly.predBayesianCorrelationMatrix <- function(fit, line=FALSE, xMin, xMax, lwd) {
+  # create function formula
+  f <- vector("character", 0)
+
+  for (i in seq_along(coef(fit))) {
+    if (i == 1) {
+      temp <- paste(coef(fit)[[i]])
+      f <- paste(f, temp, sep="")
+    }
+
+    if (i > 1) {
+      temp <- paste("(", coef(fit)[[i]], ")*", "x^", i-1, sep="")
+      f <- paste(f, temp, sep="+")
+    }
+  }
+
+  x <- seq(xMin, xMax, length.out = 100)
+  predY <- eval(parse(text=f))
+
+  if (line == FALSE) {
+    return(predY)
+  }
+
+  if (line) {
+    lines(x, predY, lwd=lwd)
+  }
 }

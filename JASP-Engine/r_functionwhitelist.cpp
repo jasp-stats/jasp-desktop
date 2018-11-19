@@ -74,6 +74,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"gsub",
 	"if",
 	"ifelse",
+    "ifElse",
 	"intersect",
     "invFishZ",
 	"is.array",

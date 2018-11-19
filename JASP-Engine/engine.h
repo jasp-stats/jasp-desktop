@@ -58,9 +58,11 @@ public:
 
 	//return true if changed:
 	bool setColumnDataAsScale(std::string columnName, std::vector<double> scalarData)										{	return provideDataSet()->columns()[columnName].overwriteDataWithScale(scalarData);				}
-	bool setColumnDataAsOrdinal(std::string columnName, std::vector<int> ordinalData, std::map<int, std::string> levels)	{	return provideDataSet()->columns()[columnName].overwriteDataWithOrdinal(ordinalData, levels);	}
-	bool setColumnDataAsNominal(std::string columnName, std::vector<int> nominalData, std::map<int, std::string> levels)	{	return provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData, levels);	}
+	bool setColumnDataAsOrdinal(std::string columnName, std::vector<int> ordinalData, std::map<int, std::string> levels)	{	return setColumnDataAsNominalOrOrdinal(true,  columnName, ordinalData, levels);					}
+	bool setColumnDataAsNominal(std::string columnName, std::vector<int> nominalData, std::map<int, std::string> levels)	{	return setColumnDataAsNominalOrOrdinal(false, columnName, nominalData, levels);					}
 	bool setColumnDataAsNominalText(std::string columnName, std::vector<std::string> nominalData)							{	return provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);			}
+
+	bool setColumnDataAsNominalOrOrdinal(bool isOrdinal, std::string columnName, std::vector<int> data, std::map<int, std::string> levels);
 
 	int dataSetRowCount()	{ return static_cast<int>(provideDataSet()->rowCount()); }
 

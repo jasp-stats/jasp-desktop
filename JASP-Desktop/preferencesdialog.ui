@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>537</width>
-    <height>300</height>
+    <height>401</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -166,7 +166,7 @@ border-top-right-radius:4px;
            <x>12</x>
            <y>12</y>
            <width>441</width>
-           <height>82</height>
+           <height>84</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -528,7 +528,7 @@ border-top-right-radius:4px;
            <x>10</x>
            <y>20</y>
            <width>271</width>
-           <height>109</height>
+           <height>71</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -609,9 +609,9 @@ border-top-right-radius:4px;
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>140</y>
+           <y>100</y>
            <width>271</width>
-           <height>51</height>
+           <height>91</height>
           </rect>
          </property>
          <property name="title">

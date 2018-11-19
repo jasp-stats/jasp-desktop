@@ -239,10 +239,9 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				# .plotScatter.Bcorrelationpairs(xlab=pair[[1]], ylab=pair[[2]], dontPlotData=TRUE)
 				# plot[["data"]] <- .endSaveImage(image)
 
-				.plotFunc <- function() {
-					.plotScatter.Bcorrelationpairs(xlab=pair[[1]], ylab=pair[[2]], dontPlotData=TRUE)
-				}
-				content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+				p <- .plotScatter.Bcorrelationpairs(xlab=pair[[1]], ylab=pair[[2]], dontPlotData=TRUE)
+
+				content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
 				plot[["convertible"]] <- TRUE
 				plot[["obj"]] <- content[["obj"]]
 				plot[["data"]] <- content[["png"]]
@@ -513,7 +512,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					    unplotableMessage <- errorMessage
 					    unplotableScatter <- TRUE
 					    unplotableMessageScatter <- errorMessage
-					    
+
 					    obsFootnote <- errors$message
 					    index <- .addFootnote(footnotes, obsFootnote)
 					    errorFootnotes[i] <- errorMessage
@@ -710,10 +709,9 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 							# .plotScatter.Bcorrelationpairs(xVar=vs1, yVar=vs2, xlab=pair[[1]], ylab=pair[[2]])
 							# plot[["data"]] <- .endSaveImage(image)
 
-							.plotFunc <- function() {
-								.plotScatter.Bcorrelationpairs(xVar=vs1, yVar=vs2, xlab=pair[[1]], ylab=pair[[2]])
-							}
-							content <- .writeImage(width = 530, height = 400, plot = .plotFunc, obj = TRUE)
+							p <- .plotScatter.Bcorrelationpairs(xVar=vs1, yVar=vs2, xlab=pair[[1]], ylab=pair[[2]])
+
+							content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
 							plot[["convertible"]] <- TRUE
 							plot[["obj"]] <- content[["obj"]]
 							plot[["data"]] <- content[["png"]]
@@ -996,65 +994,63 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 
 
 .plotScatter.Bcorrelationpairs <- function(xVar=NULL, yVar=NULL, xlab, ylab, dontPlotData=FALSE, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2) {
+        
+    if (dontPlotData) {
+        
+        p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, force = TRUE)
+        
+        p <- JASPgraphs::themeJasp(p)
 
-	op <- par(mar= c(5.6, 7, 4, 4) + 0.1, las=1, xpd=FALSE)
+        return(p)
+    }
+    
+    d <- data.frame(xx= xVar, yy= yVar)
+    d <- na.omit(d)
+    xVar <- d$xx
+    yVar <- d$yy
+    
+    fit <- vector("list", 1)# vector("list", 4)
+    fit[[1]] <- lm(yy ~ poly(xx, 1, raw= TRUE), data = d)
+    
+    bestModel <- 1 # which.min(Bic)
 
-	if (dontPlotData) {
+    xlow <- min(pretty(xVar))
+    xhigh <- max(pretty(xVar))
+    xticks <- pretty(c(xlow, xhigh))
+    ylow <- min(min(pretty(yVar)), min(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
+    yhigh <- max(max(pretty(yVar)), max(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
+        
+    yticks <- pretty(c(ylow, yhigh))
+    
+    # format x labels
+    xLabs <- vector("character", length(xticks))
+    for (i in seq_along(xticks)) {
+        if (xticks[i] < 10^6) {
+            xLabs[i] <- format(xticks[i], digits= 3, scientific = FALSE)
+        } else {
+            xLabs[i] <- format(xticks[i], digits= 3, scientific = TRUE)
+        }
+    }
+    
+    # Format y labels
+    yLabs <- vector("character", length(yticks))
+    for (i in seq_along(yticks)) {
+        if (yticks[i] < 10^6 && yticks[i] > 10^-6) {
+            yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
+        } else {
+            yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+        }
+    }
 
-		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
+    p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE)
+    p <- JASPgraphs::drawPoints(p, dat = d, size = 3)
+    p <- .poly.pred(fit[[bestModel]], plot = p, line= TRUE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd = 1)    
 
-		axis(1, at=0:1, labels=FALSE, cex.axis=cexXAxis, lwd=lwdAxis, xlab="")
-		axis(2, at=0:1, labels=FALSE, cex.axis=cexYAxis, lwd=lwdAxis, ylab="")
-		mtext(text = xlab, side = 1, cex=1.5, line = 2.9)
-		mtext(text = ylab, side = 2, cex=1.5, line = 3.25, las=0)
-
-		return()
-	}
-
-	d <- data.frame(xx= xVar, yy= yVar)
-	d <- na.omit(d)
-	xVar <- d$xx
-	yVar <- d$yy
-
-	fit <- lm(yy ~ xx, data=d)
-
-	xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
-	xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
-	xticks <- pretty(c(xlow, xhigh))
-	ylow <- min((min(yVar) - 0.1* min(yVar)), min(pretty(yVar)), min(.poly.pred(fit, line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
-	yhigh <- max((max(yVar) + 0.1* max(yVar)), max(pretty(yVar)), max(.poly.pred(fit, line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
-
-	yticks <- pretty(c(ylow, yhigh))
-
-	yLabs <- vector("character", length(yticks))
-
-	for (i in seq_along(yticks)) {
-
-		if (yticks[i] < 10^6) {
-
-			yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
-
-		} else {
-
-			yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
-		}
-	}
-
-	plot(xVar, yVar, col="black", pch=21, bg = "grey", ylab="", xlab="", axes=F, ylim= range(yticks), xlim= range(xticks), cex= cexPoints)
-	.poly.pred(fit, line= TRUE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)
-
-	par(las=1)
-
-	axis(1, line= 0.4, labels= xticks, at= xticks, cex.axis= cexXAxis, lwd=lwdAxis)
-	axis(2, line= 0.2, labels= yLabs, at= yticks, cex.axis= cexYAxis, lwd=lwdAxis)
-
-	maxYlab <- max(nchar(yLabs))
-	distLab <- maxYlab / 1.8
-	mtext(text = xlab, side = 1, cex=1.5, line = 2.9)
-	mtext(text = ylab, side = 2, cex=1.5, line = distLab + 2.1, las=0)
-
-	par(op)
-
+    # JASP theme
+    p <- JASPgraphs::themeJasp(p)
+    
+    return(p)
+    
 }
 
 .plotPosterior.correlation <- function(n, r, kappa=1, oneSided= FALSE, BF, BFH1H0, addInformation= TRUE, dontPlotData=FALSE, lwd= 2,corCoefficient="Pearson",
