@@ -84,9 +84,9 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
 
 # Results functions ----
 .binomComputeResults <- function(jaspResults, dataset, options, errors) {
-  
+
   if (!is.null(errors) && errors == "No variables") return()
-  
+
   # Take results from state if possible
   if (!is.null(jaspResults[["stateBinomResults"]])) return(jaspResults[["stateBinomResults"]]$object)
 
@@ -94,11 +94,12 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
   results <- list()
 
   # First, we perform precalculation of variables we use throughout the analysis
-  results$spec <- .binomCalcSpecs(dataset, options)
+  results[["spec"]] <- .binomCalcSpecs(dataset, options)
+  results[["binom"]] <- list()
 
   for (variable in options$variables) {
 
-    results[[variable]] <- list()
+    results[["binom"]][[variable]] <- list()
 
     # Prepare for running the binomial test
     column <- dataset[[.v(variable)]]
@@ -142,7 +143,7 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
       )
 
       # Add results for each level of each variable to results object
-      results[[variable]][[level]] <- list(
+      results[["binom"]][[variable]][[level]] <- list(
         variable      = variable,
         level         = level,
         counts        = counts,
@@ -195,7 +196,7 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
 # Output functions ----
 .binomTableMain <- function(jaspResults, dataset, options, binomResults, errors) {
   if (!is.null(jaspResults[["binomialTable"]])) return()
-  
+
   # Create table
   binomialTable <- createJaspTable(title = "Binomial Test")
   jaspResults[["binomialTable"]] <- binomialTable
@@ -222,15 +223,15 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
     binomialTable$addColumnInfo(name = "upperCI", title = "Upper", type = "number", format = "sf:4",
       overtitle = paste0(100 * options$confidenceIntervalInterval, "% CI for Proportion"))
   }
-  
+
   if (!is.null(errors) && errors == "No variables") {
     .binomEmptyMainTable(binomialTable)
     return()
   }
 
   for (variable in options$variables) {
-    for (level in binomResults$spec$levels[[variable]]) {
-      row <- binomResults[[variable]][[level]][1:9]
+    for (level in binomResults[["spec"]][["levels"]][[variable]]) {
+      row <- binomResults[["binom"]][[variable]][[level]][1:9]
       binomialTable$addRows(row, rowNames = paste0(variable, " - ", level))
     }
   }
@@ -241,12 +242,12 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
   }
 
   # Add footnote: Alternative hypothesis
-  message <- switch(binomResults$spec$hypothesisRec,
+  message <- switch(binomResults[["spec"]][["hypothesisRec"]],
                     "two.sided" = .messages("footnote", "binomNeq",     value = options$testValue),
                     "greater"   = .messages("footnote", "binomGreater", value = options$testValue),
                     "less"      = .messages("footnote", "binomLess",    value = options$testValue)
   )
-  
+
   binomialTable$addFootnote(message = message, symbol = "<em>Note.</em>")
 }
 
@@ -282,8 +283,8 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
     pct[[variable]]$dependOnOptions(c("testValue", "descriptivesPlotsConfidenceInterval"))
 
 
-    for (level in binomResults$spec$levels[[variable]]) {
-      descriptivesPlot <- .binomPlotHelper(binomResults[[variable]][[level]]$plotDat, options$testValue)
+    for (level in binomResults[["spec"]][["levels"]][[variable]]) {
+      descriptivesPlot <- .binomPlotHelper(binomResults[["binom"]][[variable]][[level]]$plotDat, options$testValue)
       pct[[variable]][[level]] <- createJaspPlot(plot = descriptivesPlot, title = level, width = 160, height = 320)
       pct[[variable]][[level]]$dependOnOptions("descriptivesPlots")
     }
@@ -300,7 +301,7 @@ BinomialTest <- function(jaspResults, dataset, options, ...) {
                                inherit.aes = FALSE, size = 1),
          ggplot2::scale_y_continuous(breaks = c(0,  round(testValue, 3), 1)))
   }
-  
+
   plotPosition <- ggplot2::position_dodge(0.2)
 
   p <-
