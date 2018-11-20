@@ -856,7 +856,15 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				F <- if (is.na(result[term,"F value"])) {""} else { result[term, "F value"] }
 				p <- if (is.na(result[term,"Pr(>F)"] )) {""} else { result[term, "Pr(>F)"] }
 
-				if(i == 1 || term == "Residuals" || (!is.null(unlist(options$covariates)) && (terms.normal[i] == options$fixedFactors[[1]] || terms.normal[i] == options$covariates[[1]]) && 
+				if (length(options$fixedFactors) == 0) {
+				  firstFixedFactor <- ""
+				} else {
+				  firstFixedFactor <- options$fixedFactors[[1]]
+				}
+				
+				if (i == 1 || term == "Residuals" || (!is.null(unlist(options$covariates)) && 
+				                                     (terms.normal[i] == firstFixedFactor || 
+				                                      terms.normal[i] == options$covariates[[1]]) && 
 				                                     !reorderModelTerms$interactions)) {
 					newGroup <- TRUE
 				} else {
