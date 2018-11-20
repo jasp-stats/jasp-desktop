@@ -451,6 +451,12 @@
             </item>
             <item>
              <widget class="BoundComboBox" name="sumOfSquares">
+              <property name="minimumSize">
+               <size>
+                <width>108</width>
+                <height>0</height>
+               </size>
+              </property>
               <item>
                <property name="text">
                 <string>Type I</string>
