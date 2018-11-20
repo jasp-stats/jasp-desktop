@@ -164,7 +164,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
           control = list(maxiter = 500)
         ), error = function(e) .quitAnalysis(e$message))
 
-      rma.fit <- d64(rma.fit, values = all.vars(b64(formula.rhs)))
+      rma.fit <- d64(rma.fit, values = all.vars(formula.rhs))
 
     }
   }
@@ -203,7 +203,7 @@ ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback
 
     table <- list(title = "Coefficients")
     if (!is.null(coefficients)) {
-      table$x <- d64(coefficients)
+      table$x <- coefficients
       colnames(table$x) <- cols
       if (! options$regressionCoefficientsConfidenceIntervals) {
         table$x <- table$x[1:4] # remove confidence interval bounds
