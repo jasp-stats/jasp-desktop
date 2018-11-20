@@ -859,7 +859,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				if (length(options$fixedFactors) == 0) {
 				  firstFixedFactor <- ""
 				} else {
-				  firstFixedFactor <- options$fixedFactors[[1]]) 
+				  firstFixedFactor <- options$fixedFactors[[1]]
 				}
 				
 				if (i == 1 || term == "Residuals" || (!is.null(unlist(options$covariates)) && 
