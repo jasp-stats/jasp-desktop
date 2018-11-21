@@ -130,7 +130,8 @@ private:
 				_generatedFilter = "",
 				_rCode = "",
 				_computeColumnCode = "",
-				_computeColumnName = "";
+				_computeColumnName = "",
+				_imageBackground = "white";
 
 	Column::ColumnType		_computeColumnType = Column::ColumnTypeUnknown;
 

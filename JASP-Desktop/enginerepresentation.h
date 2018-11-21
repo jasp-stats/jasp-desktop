@@ -20,7 +20,7 @@ class EngineRepresentation : public QObject
 	Q_OBJECT
 
 public:
-	EngineRepresentation(IPCChannel * channel, QProcess * slaveProcess, QObject * parent = NULL) : QObject(parent), _slaveProcess(slaveProcess), _channel(channel) {}
+	EngineRepresentation(IPCChannel * channel, QProcess * slaveProcess, QObject * parent = NULL);
 	~EngineRepresentation();
 	void clearAnalysisInProgress();
 	void setAnalysisInProgress(Analysis* analysis);
@@ -61,6 +61,7 @@ private:
 	Analysis*	_analysisInProgress = NULL;
 	engineState	_engineState		= engineState::idle;
 	int			_ppi				= 96;
+	QString		_imageBackground	= "white";
 
 signals:
 	void engineTerminated();
@@ -75,7 +76,8 @@ signals:
 	void computeColumnFailed(std::string columnName, std::string error);
 
 public slots:
-	void ppiChanged(int newPPI) { _ppi = newPPI; }
+	void ppiChanged(int newPPI)					{ _ppi = newPPI; }
+	void imageBackgroundChanged(QString value)	{ _imageBackground = value; }
 };
 
 #endif // ENGINEREPRESENTATION_H

@@ -65,6 +65,7 @@ public:
 
 public slots:
 	void setPPIHandler(int ppi, bool refreshAllAnalyses = true);
+	void setImageBackgroundHandler(QString value);
 	void setUIScaleHandler(float scale);
 
 protected:
@@ -116,6 +117,7 @@ private:
 signals:
 	void updateAnalysesUserData(QString userData);
 	void ppiChanged(int newPPI);
+	void imageBackgroundChanged(QString value);
 
 private slots:
 	void showForm(Analysis *analysis);

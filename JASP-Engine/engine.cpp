@@ -211,6 +211,7 @@ void Engine::receiveAnalysisMessage(Json::Value jsonRequest)
 		_analysisJaspResults	= jsonRequest.get("jaspResults",	false).asBool();
 		_analysisRequiresInit	= jsonRequest.get("requiresInit", Json::nullValue).isNull() ? true : jsonRequest.get("requiresInit", true).asBool();
 		_ppi					= jsonRequest.get("ppi",			96).asInt();
+		_imageBackground		= jsonRequest.get("imageBackground", "white").asString();
 
 		currentEngineState = engineState::analysis;
 	}
@@ -241,7 +242,7 @@ void Engine::runAnalysis()
 	RCallback callback					= boost::bind(&Engine::callback, this, _1, _2);
 
 	_currentAnalysisKnowsAboutChange	= false;
-	_analysisResultsString				= rbridge_run(_analysisName, _analysisTitle, _analysisRequiresInit, _analysisDataKey, _analysisOptions, _analysisResultsMeta, _analysisStateKey, _analysisId, _analysisRevision, perform, _ppi, callback, _analysisJaspResults);
+	_analysisResultsString				= rbridge_run(_analysisName, _analysisTitle, _analysisRequiresInit, _analysisDataKey, _analysisOptions, _analysisResultsMeta, _analysisStateKey, _analysisId, _analysisRevision, perform, _ppi, _imageBackground, callback, _analysisJaspResults);
 
 	if (_status == initing || _status == running)  // if status hasn't changed
 		receiveMessages();
@@ -288,7 +289,7 @@ void Engine::saveImage()
 	int height			= _imageOptions.get("height", Json::nullValue).asInt();
 	int width			= _imageOptions.get("width", Json::nullValue).asInt();
 
-	std::string result = jaspRCPP_saveImage(name.c_str(), type.c_str(), height, width, _ppi);
+	std::string result = jaspRCPP_saveImage(name.c_str(), type.c_str(), height, width, _ppi, _imageBackground.c_str());
 
 	Json::Reader().parse(result, _analysisResults, false);
 

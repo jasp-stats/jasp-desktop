@@ -59,6 +59,7 @@ public:
 
 	void useDefaultPPI();
 	void setPPI(int ppi);
+	void setImageBackground(QString value);
 
 
 	int count() const;
@@ -73,6 +74,7 @@ signals:
 	void emptyValuesChangedHandler();
 	void useDefaultPPIHandler();
 	void setPPIHandler(int ppi, bool refreshAllAnalyses);
+	void setImageBackgroundHandler(QString value);
 	void UIScaleChanged(float scale);
 
 

@@ -52,11 +52,25 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 	// Remove Question mark Help sign (Only on windows )
 	this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-  QSizePolicy retain = ui->numDecimals->sizePolicy();
-  retain.setRetainSizeWhenHidden(true);
-  ui->numDecimals->setSizePolicy(retain);
+	QSizePolicy retain = ui->numDecimals->sizePolicy();
+	retain.setRetainSizeWhenHidden(true);
+	ui->numDecimals->setSizePolicy(retain);
 	if (!fix_decimals)
 		this->ui->numDecimals->hide();
+
+	setSliderUIScale(Settings::value(Settings::UI_SCALE).toFloat());
+	ui->sliderUIScale->setTracking(true);
+	//sliderUIScaleChanged(ui->sliderUIScale->value());
+
+	//ImageBackground
+	QString imageBackground = Settings::value(Settings::IMAGE_BACKGROUND).toString();
+	if (imageBackground == "white")
+		ui->whiteBackground->setChecked(true);
+	else
+		ui->transparentBackground->setChecked(true);
+	_imageBackgroundGroup = new QButtonGroup(this);
+	_imageBackgroundGroup->addButton(ui->whiteBackground, 1);
+	_imageBackgroundGroup->addButton(ui->transparentBackground, 2);
 
 	connect(ui->buttonBox,						&QDialogButtonBox::accepted,	this, &PreferencesDialog::savePreferences		);
 	connect(ui->useDefaultSpreadsheetEditor,	&QCheckBox::clicked,			this, &PreferencesDialog::setDefaultEditorCheck	);
@@ -66,9 +80,6 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 	
 	ui->tabsPreferences->setCurrentIndex(_currentTab);
 
-	setSliderUIScale(Settings::value(Settings::UI_SCALE).toFloat());
-	ui->sliderUIScale->setTracking(true);
-	//sliderUIScaleChanged(ui->sliderUIScale->value());
 
 }
 
@@ -293,6 +304,16 @@ void PreferencesDialog::savePreferences()
 		Settings::setValue(Settings::PPI_CUSTOM_VALUE, customPPI);
 		if (checked != previousChecked || customPPI != previousCustomPPI)
 			_tabBar->setPPI(customPPI);
+	}
+
+	//ImageBackground
+	QAbstractButton* imageBackgroundButton = _imageBackgroundGroup->checkedButton();
+	QString imageBackgroundValue = imageBackgroundButton->objectName().remove("Background");
+	QString currentImageBackgroundValue = Settings::value(Settings::IMAGE_BACKGROUND).toString();
+	if (imageBackgroundValue != currentImageBackgroundValue)
+	{
+		Settings::setValue(Settings::IMAGE_BACKGROUND, imageBackgroundValue);
+		_tabBar->setImageBackground(imageBackgroundValue);
 	}
 
 	//Done

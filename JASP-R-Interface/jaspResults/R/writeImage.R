@@ -29,6 +29,8 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj = TRUE, relat
   setwd(root)
   on.exit(setwd(oldwd))
 
+  backgroundColor <- .fromRCPP(".imageBackground")
+
   # Operating System information
   type <- "cairo"
   if (Sys.info()["sysname"]=="Darwin"){
@@ -45,7 +47,7 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj = TRUE, relat
     	width     = width  * pngMultip,
     	height    = height * pngMultip,
     	dpi       = ppi,
-      bg        = "white",
+		bg        = backgroundColor,
     	res       = 72 * pngMultip,
     	type      = type,
     	limitsize = FALSE # because we supply png as a function, we specify pixels rather than inches
@@ -58,7 +60,7 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj = TRUE, relat
 
     # Open graphics device and plot
     grDevices::png(filename=relativePathpng, width=width * pngMultip,
-                   height=height * pngMultip, bg="white",
+	               height=height * pngMultip, bg=backgroundColor,
                    res=72 * pngMultip, type=type)
 
     if (is.function(plot) && !isRecordedPlot) {

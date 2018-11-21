@@ -1598,7 +1598,8 @@ isTryError <- function(obj){
 		".callbackNative",
 		".requestStateFileNameNative",
 		".baseCitation",
-		".ppi")
+		".ppi",
+		".imageBackground")
 
 	if (! x %in% collection) {
 		stop("Unknown RCPP object")
@@ -2249,6 +2250,7 @@ as.list.footnotes <- function(footnotes) {
   if (Sys.info()["sysname"]=="Darwin"){
     type <- "quartz"
   }
+  backgroundColor <- .fromRCPP(".imageBackground")
   if (ggplot2::is.ggplot(plot) || inherits(plot, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
     ppi <- .fromRCPP(".ppi")
 
@@ -2260,7 +2262,7 @@ as.list.footnotes <- function(footnotes) {
     	width     = width  * pngMultip,
     	height    = height * pngMultip,
     	dpi       = ppi,
-    	bg        = "white",
+		bg        = backgroundColor,
     	res       = 72 * pngMultip,
     	type      = type,
     	limitsize = FALSE # because we supply png as a function, we specify pixels rather than inches
@@ -2272,7 +2274,7 @@ as.list.footnotes <- function(footnotes) {
 
     # Open graphics device and plot
     grDevices::png(filename=relativePathpng, width=width * pngMultip,
-                   height=height * pngMultip, bg="white",
+	               height=height * pngMultip, bg=backgroundColor,
                    res=72 * pngMultip, type=type)
 
     if (is.function(plot) && !isRecordedPlot) {
@@ -2305,7 +2307,7 @@ saveImage <- function(plotName, format, height, width)
   state     <- .retrieveState()     # Retrieve plot object from state
   plt       <- state[["figures"]][[plotName]]
   location  <- .fromRCPP(".requestTempFileNameNative", "png") # create file location string to extract the root location
-
+  backgroundColor <- .fromRCPP(".imageBackground")
 
 	# create file location string
 	location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
@@ -2322,7 +2324,7 @@ saveImage <- function(plotName, format, height, width)
 	if (format == "eps") {
 
 		grDevices::cairo_ps(filename=relativePath, width=insize[1],
-												height=insize[2], bg="white")
+		                                        height=insize[2], bg=backgroundColor)
 
 	} else if (format == "tiff") {
 
@@ -2331,7 +2333,7 @@ saveImage <- function(plotName, format, height, width)
                     width       = width * hiResMultip,
                     height      = height * hiResMultip,
                     res         = 300,
-                    bg          = "white",
+					bg          = backgroundColor,
                     compression = "lzw",
                     type        = "cairo")
 

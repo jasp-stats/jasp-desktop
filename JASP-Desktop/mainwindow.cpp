@@ -208,6 +208,7 @@ void MainWindow::makeConnections()
 	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			this,					&MainWindow::showForm										);
 
 	connect(this,					&MainWindow::ppiChanged,							_engineSync,			&EngineSync::ppiChanged										);
+	connect(this,					&MainWindow::imageBackgroundChanged,				_engineSync,			&EngineSync::imageBackgroundChanged							);
 
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
 	connect(_analyses,				&Analyses::analysisImageSaved,						this,					&MainWindow::analysisImageSavedHandler						);
@@ -594,6 +595,12 @@ void MainWindow::setPPIHandler(int ppi, bool refreshAllAnalyses)
 
 	if(refreshAllAnalyses)
 		MainWindow::refreshAllAnalyses();
+}
+
+void MainWindow::setImageBackgroundHandler(QString value)
+{
+	emit imageBackgroundChanged(value);
+	refreshAllAnalyses();
 }
 
 void MainWindow::setUIScaleHandler(float scale)

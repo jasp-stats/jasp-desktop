@@ -23,7 +23,8 @@ public:
 		OSF_REMEMBER_ME,
 		PPI_USE_DEFAULT,
 		PPI_CUSTOM_VALUE,
-		UI_SCALE
+		UI_SCALE,
+		IMAGE_BACKGROUND
 	};
 
 	static QVariant value(Settings::Type key);

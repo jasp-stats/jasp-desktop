@@ -119,7 +119,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 }
 
 
-const char* STDCALL jaspRCPP_run(const char* name, const char* title, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults)
+const char* STDCALL jaspRCPP_run(const char* name, const char* title, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, const char* imageBackground, int analysisID, int analysisRevision, bool usesJaspResults)
 {
 	SEXP results;
 
@@ -140,6 +140,7 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, bool requi
 	rInside["stateKey"]		= stateKey;
 	rInside["perform"]		= perform;
 	rInside[".ppi"]			= ppi;
+	rInside[".imageBackground"]	= imageBackground;
 
 #ifndef __WIN32__
 	rinside_consoleLog->clearConsoleBuffer();
@@ -242,7 +243,7 @@ void STDCALL jaspRCPP_freeArrayPointer(bool ** arrayPointer)
     free(*arrayPointer);
 }
 
-const char* STDCALL jaspRCPP_saveImage(const char *name, const char *type, const int height, const int width, const int ppi)
+const char* STDCALL jaspRCPP_saveImage(const char *name, const char *type, const int height, const int width, const int ppi, const char* imageBackground)
 {
 	RInside &rInside = rinside->instance();
 
@@ -252,6 +253,7 @@ const char* STDCALL jaspRCPP_saveImage(const char *name, const char *type, const
 	rInside["height"]	= height;
 	rInside["width"]	= width;
 	rInside[".ppi"]		= ppi;
+	rInside[".imageBackground"] = imageBackground;
 
 	SEXP result = rinside->parseEvalNT("saveImage(plotName,format,height,width)");
 	static std::string staticResult;

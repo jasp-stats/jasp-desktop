@@ -1,5 +1,11 @@
 #include "enginerepresentation.h"
+#include "settings.h"
 
+EngineRepresentation::EngineRepresentation(IPCChannel * channel, QProcess * slaveProcess, QObject * parent)
+	: QObject(parent), _slaveProcess(slaveProcess), _channel(channel)
+{
+	_imageBackground = Settings::value(Settings::IMAGE_BACKGROUND).toString();
+}
 
 EngineRepresentation::~EngineRepresentation()
 {
@@ -207,6 +213,7 @@ void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
 		json["name"]	= analysis->name();
 		json["title"]	= analysis->title();
 		json["ppi"]		= _ppi;
+		json["imageBackground"] = _imageBackground.toStdString();
 
 		if (perform == performType::saveImg || perform == performType::editImg)
 			json["image"] = analysis->getSaveImgOptions();
