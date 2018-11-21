@@ -111,10 +111,11 @@
 #include "datasetview.h"
 
 #include "timers.h"
+#include "resultstesting/compareresults.h"
 
 using namespace std;
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(QApplication * application) : QMainWindow(NULL), ui(new Ui::MainWindow), _application(application)
 {
 	JASPTIMER_START(MainWindowConstructor);
 
@@ -342,7 +343,6 @@ void MainWindow::open(QString filepath)
 	else
 		_openOnLoadFilename = filepath;
 }
-
 
 MainWindow::~MainWindow()
 {
@@ -666,8 +666,10 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 
 	if (_package->isLoaded())
 		_package->setModified(true);
-}
 
+	if(resultXmlCompare::compareResults::theOne()->testMode())
+		analysesForComparingDoneAlready();
+}
 
 void MainWindow::analysisSaveImageHandler(int id, QString options)
 {
@@ -1153,6 +1155,9 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 					_package->setModified(true);
 				}
 			}
+
+			if (resultXmlCompare::compareResults::theOne()->testMode())
+				startComparingResults();
 		}
 		else
 		{
@@ -1521,6 +1526,8 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 	{
 		_package->setAnalysesHTML(fq(data));
 		_package->setAnalysesHTMLReady();
+
+		finishComparingResults();
 	}
 	else
 	{
@@ -1943,4 +1950,61 @@ void MainWindow::setProgressStatus(QString status, int progress)
 void MainWindow::updateExcludeKey()
 {
 	_excludeKey = false;
+}
+
+
+void MainWindow::testLoadedJaspFile(int timeOut)
+{
+	std::cout << "Enabling testmode for JASP with a timeout of " << timeOut << " minutes!" << std::endl;
+	resultXmlCompare::compareResults::theOne()->enableTestMode();
+
+	QTimer::singleShot(60000 * timeOut, this, &MainWindow::unitTestTimeOut);
+}
+
+void MainWindow::unitTestTimeOut()
+{
+	std::cerr << "Time out for unit test!" << std::endl;
+	_application->exit(2);
+}
+
+void MainWindow::startComparingResults()
+{
+	if (resultXmlCompare::compareResults::theOne()->testMode())
+	{
+		refreshAllAnalyses();
+		resultXmlCompare::compareResults::theOne()->setRefreshCalled();
+	}
+}
+
+
+
+void MainWindow::analysesForComparingDoneAlready()
+{
+	if(resultXmlCompare::compareResults::theOne()->testMode() && resultXmlCompare::compareResults::theOne()->refreshed())
+	{
+		bool allCompleted = true;
+
+		for(Analysis * analysis : *_analyses)
+			if(analysis != NULL && !analysis->isFinished())
+				allCompleted = false;
+
+		if(allCompleted)
+		{
+			_resultsJsInterface->exportPreviewHTML();
+			resultXmlCompare::compareResults::theOne()->setExportCalled();
+		}
+	}
+}
+
+void MainWindow::finishComparingResults()
+{
+	if(resultXmlCompare::compareResults::theOne()->testMode() && resultXmlCompare::compareResults::theOne()->exportCalled())
+	{
+		std::string resultHtml = _package->analysesHTML();
+		resultXmlCompare::compareResults::theOne()->setRefreshResult(QString::fromStdString(resultHtml));
+
+		bool success = resultXmlCompare::compareResults::theOne()->compare();
+
+		_application->exit(success ? 0 : 1);
+	}
 }

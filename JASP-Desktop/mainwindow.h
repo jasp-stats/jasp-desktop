@@ -55,9 +55,11 @@ class MainWindow : public QMainWindow
 
 	friend class ResultsJsInterface;
 public:
-	explicit MainWindow(QWidget *parent = 0);
+	explicit MainWindow(QApplication *application);
 	void open(QString filepath);
-	virtual ~MainWindow();
+	void testLoadedJaspFile(int timeOut);
+
+	~MainWindow() override;
 
 	EngineSync* _engineSync;
 
@@ -69,10 +71,10 @@ public slots:
 	void setUIScaleHandler(float scale);
 
 protected:
-	virtual void resizeEvent(QResizeEvent *event) OVERRIDE;
-	virtual void dragEnterEvent(QDragEnterEvent *event) OVERRIDE;
-	virtual void dropEvent(QDropEvent *event) OVERRIDE;
-	virtual void closeEvent(QCloseEvent *event) OVERRIDE;
+	void resizeEvent(QResizeEvent *event)		override;
+	void dragEnterEvent(QDragEnterEvent *event) override;
+	void dropEvent(QDropEvent *event)			override;
+	void closeEvent(QCloseEvent *event)			override;
 
 private:
 	void makeConnections();
@@ -109,6 +111,10 @@ private:
 	void analysisEditImageHandler(int id, QString options);
 	void removeAnalysisRequestHandler(int id);
 	void matchComputedColumnsToAnalyses();
+
+	void startComparingResults();
+	void analysesForComparingDoneAlready();
+	void finishComparingResults();
 
 	bool filterShortCut();
 	void loadQML();
@@ -178,6 +184,7 @@ private slots:
 
 	void updateExcludeKey();
 	void dataSetChanged(DataSet * dataSet);
+	void unitTestTimeOut();
 
 
 private:
@@ -227,6 +234,7 @@ private:
 
 	QSettings						_settings;
 	CustomWebEnginePage				*_customPage;
+	QApplication					*_application = nullptr;
 };
 
 #endif // MAINWIDGET_H

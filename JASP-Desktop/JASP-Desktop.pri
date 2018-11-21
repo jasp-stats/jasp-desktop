@@ -158,7 +158,9 @@ SOURCES += \
     $$PWD/backstage/computerlistmodel.cpp \
     $$PWD/backstage/backstageosf.cpp \
     $$PWD/backstage/osflistmodel.cpp \
-    $$PWD/backstage/osfbreadcrumbslistmodel.cpp
+    $$PWD/backstage/osfbreadcrumbslistmodel.cpp \
+    $$PWD/resultstesting/compareresults.cpp \
+    $$PWD/resultstesting/resultscomparetable.cpp
 
 
 
@@ -335,7 +337,9 @@ HEADERS  += \
     $$PWD/backstage/computerlistmodel.h \
     $$PWD/backstage/backstageosf.h \
     $$PWD/backstage/osflistmodel.h \
-    $$PWD/backstage/osfbreadcrumbslistmodel.h
+    $$PWD/backstage/osfbreadcrumbslistmodel.h \
+    $$PWD/resultstesting/compareresults.h \
+    $$PWD/resultstesting/resultscomparetable.h
 
 FORMS += \
     $$PWD/aboutdialog.ui \
