@@ -45,7 +45,7 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj = TRUE, relat
     	width     = width  * pngMultip,
     	height    = height * pngMultip,
     	dpi       = ppi,
-    	bg        = "transparent",
+      bg        = "white",
     	res       = 72 * pngMultip,
     	type      = type,
     	limitsize = FALSE # because we supply png as a function, we specify pixels rather than inches
@@ -58,7 +58,7 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj = TRUE, relat
 
     # Open graphics device and plot
     grDevices::png(filename=relativePathpng, width=width * pngMultip,
-                   height=height * pngMultip, bg="transparent",
+                   height=height * pngMultip, bg="white",
                    res=72 * pngMultip, type=type)
 
     if (is.function(plot) && !isRecordedPlot) {

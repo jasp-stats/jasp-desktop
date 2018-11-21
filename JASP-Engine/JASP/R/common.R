@@ -2260,7 +2260,7 @@ as.list.footnotes <- function(footnotes) {
     	width     = width  * pngMultip,
     	height    = height * pngMultip,
     	dpi       = ppi,
-    	bg        = "transparent",
+    	bg        = "white",
     	res       = 72 * pngMultip,
     	type      = type,
     	limitsize = FALSE # because we supply png as a function, we specify pixels rather than inches
@@ -2272,7 +2272,7 @@ as.list.footnotes <- function(footnotes) {
 
     # Open graphics device and plot
     grDevices::png(filename=relativePathpng, width=width * pngMultip,
-                   height=height * pngMultip, bg="transparent",
+                   height=height * pngMultip, bg="white",
                    res=72 * pngMultip, type=type)
 
     if (is.function(plot) && !isRecordedPlot) {
@@ -2322,7 +2322,7 @@ saveImage <- function(plotName, format, height, width)
 	if (format == "eps") {
 
 		grDevices::cairo_ps(filename=relativePath, width=insize[1],
-												height=insize[2], bg="transparent")
+												height=insize[2], bg="white")
 
 	} else if (format == "tiff") {
 
@@ -2331,7 +2331,7 @@ saveImage <- function(plotName, format, height, width)
                     width       = width * hiResMultip,
                     height      = height * hiResMultip,
                     res         = 300,
-                    bg          = "transparent",
+                    bg          = "white",
                     compression = "lzw",
                     type        = "cairo")
 
