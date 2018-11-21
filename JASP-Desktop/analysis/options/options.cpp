@@ -97,30 +97,22 @@ Option* Options::createOption(string typeString)
 
 string Options::getType(Option* option) const
 {
-	if (dynamic_cast<OptionBoolean*>(option))
-		return "Boolean";
-	if (dynamic_cast<OptionInteger*>(option))
-		return "Integer";
-	if (dynamic_cast<OptionIntegerArray*>(option))
-		return "IntegerArray";
-	if (dynamic_cast<OptionList*>(option))
-		return "List";
-	if (dynamic_cast<OptionNumber*>(option))
-		return "Number";
-	if (dynamic_cast<OptionsTable*>(option))
-		return "Table";
-	if (dynamic_cast<OptionString*>(option))
-		return "String";
-	if (dynamic_cast<OptionVariable*>(option))
-		return "Variable";
-	if (dynamic_cast<OptionVariables*>(option))
-		return "Variables";
-	if (dynamic_cast<OptionTerm*>(option))
-		return "Term";
-	if (dynamic_cast<OptionTerms*>(option))
-		return "Terms";
-	if (dynamic_cast<OptionVariablesGroups*>(option))
-		return "VariablesGroups";
+	// Be careful on the order: e.g. an OptionVariables is an OptionTerms
+	// so dynamic_cast test on OptionVariables has to be done before OptionTerms
+	if (dynamic_cast<OptionList*>(option))					return "List";				
+	else if (dynamic_cast<OptionVariablesGroups*>(option))	return "VariablesGroups";	
+	else if (dynamic_cast<OptionComputedColumn*>(option))	return "ComputedColumn";
+	else if (dynamic_cast<OptionIntegerArray*>(option))		return "IntegerArray";
+	else if (dynamic_cast<OptionDoubleArray*>(option))		return "DoubleArray";
+	else if (dynamic_cast<OptionVariable*>(option))			return "Variable";
+	else if (dynamic_cast<OptionVariables*>(option))		return "Variables";
+	else if (dynamic_cast<OptionTerm*>(option))				return "Term";
+	else if (dynamic_cast<OptionTerms*>(option))			return "Terms";
+	else if (dynamic_cast<OptionsTable*>(option))			return "Table";
+	else if (dynamic_cast<OptionNumber*>(option))			return "Number";
+	else if (dynamic_cast<OptionString*>(option))			return "String";
+	else if (dynamic_cast<OptionBoolean*>(option))			return "Boolean";
+	else if (dynamic_cast<OptionInteger*>(option))			return "Integer";
 
 	return "";
 }

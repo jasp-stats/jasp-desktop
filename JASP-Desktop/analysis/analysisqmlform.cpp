@@ -39,6 +39,7 @@
 
 #include "widgets/listmodeltermsavailable.h"
 
+#include "utilities/qutils.h"
 #include "utils.h"
 #include "dirs.h"
 #include "utilities/settings.h"
@@ -303,13 +304,49 @@ void AnalysisQMLForm::_parseQML()
 			_errorMessages.append(QString::fromLatin1("Cannot find a ListView for ") + (!sourceModel ? pair.first : pair.second));
 	}
 	
-	for (QMLItem* item : items)
-		item->setUp();
+	_setUpItems(items);
 	
 	if (!_errorMessagesItem)
 		qDebug() << "No errorMessages Item found!!!";
 	
 	_setErrorMessages();
+}
+
+void AnalysisQMLForm::_setUpItems(QList<QMLItem *> &items)
+{
+	for (QMLItem* item : items)
+		item->setUp();
+	
+	// set the order of the BoundItems according to their dependencies (for binding purpose)
+	for (QMLItem* item : items)
+	{
+		QVector<QMLItem*> depends = item->depends();
+		int index = 0;
+		while (index < depends.length())
+		{
+			QMLItem* depend = depends[index];
+			const QVector<QMLItem*>& dependdepends = depend->depends();
+			for (QMLItem* dependdepend : dependdepends)
+			{
+				if (dependdepend == item)
+					addError(tq("Circular dependency between control ") + item->name() + tq(" and ") + depend->name());
+				else
+				{
+					if (item->addDependency(dependdepend))
+						depends.push_back(dependdepend);
+				}
+			}
+			index++;
+		}
+	}
+	std::sort(items.begin(), items.end(), 
+			  [](QMLItem* a, QMLItem* b) { return !a->depends().contains(b); });
+	
+	for (QMLItem* item : items)
+	{
+		if (_boundItems.contains(item->name()))
+			_boundItemsOrdered.push_back(_boundItems[item->name()]);
+	}	
 }
 
 void AnalysisQMLForm::_setErrorMessages()
@@ -358,12 +395,9 @@ void AnalysisQMLForm::bindTo(Options *options, DataSet *dataSet)
 	
 	_setAllAvailableVariablesModel();	
 	
-	QMapIterator<QString, BoundQMLItem*> it(_boundItems);
-	while (it.hasNext())
+	for (BoundQMLItem* item : _boundItemsOrdered)
 	{
-		it.next();
-		BoundQMLItem* item = it.value();
-		string name = it.key().toStdString();
+		string name = item->name().toStdString();
 		Option* option = options->get(name);
 		if (!option)
 		{

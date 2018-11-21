@@ -86,13 +86,6 @@ Form {
                 orientation: Qt.Vertical
             }
 
-            Slider {
-                title: "Highlight2"
-                name: "highlightText2"
-                value: 0.4
-                from: 0
-                to: 1
-            }
             GroupBox {
                 title: qsTr("Includes tables")
                 CheckBox { text: qsTr("Factor correlations"); name: "incl_correlations" }

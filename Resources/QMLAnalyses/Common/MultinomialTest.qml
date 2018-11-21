@@ -49,7 +49,7 @@ Form {
 
     ButtonGroup {
         id: hypothesisGroup
-        title: qsTr("Hypothesis")
+        title: qsTr("Alt. Hypothesis")
         name: "hypothesis"
         RadioButton { text: qsTr("Multinomial test"); name: "multinomialTest"; checked: true }
         RadioButton { text: qsTr("χ² test"); name: "expectedProbs"; id: expectedProbs }

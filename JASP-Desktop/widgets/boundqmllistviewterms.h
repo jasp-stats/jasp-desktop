@@ -47,6 +47,8 @@ public:
 	
 protected slots:
 	virtual void modelChangedHandler() OVERRIDE;
+	
+	void _bindExtraControls();
 
 private:
 	OptionVariables* _optionVariables;

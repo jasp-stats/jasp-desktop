@@ -56,17 +56,23 @@ void OptionsTable::set(const Json::Value &value)
 		delete row;
 	_value.clear();
 
-	for (uint i = 0; i < value.size(); i++)
+	if (_template)
 	{
-		Options *row = static_cast<Options *>(_template->clone());
-		row->set(value[i]);
-		_value.push_back(row);
+		for (uint i = 0; i < value.size(); i++)
+		{
+			Options *row = static_cast<Options *>(_template->clone());
+			row->set(value[i]);
+			_value.push_back(row);
+		}
 	}
+	else
+		_cachedValue = value; // keep the value until a template is given
 }
 
 Option *OptionsTable::clone() const
 {
-	Options *rowTemplate = static_cast<Options*>(this->rowTemplate()->clone());
+	Options* templote = this->rowTemplate();
+	Options* rowTemplate = templote ? static_cast<Options*>(templote->clone()) : NULL;
 
 	OptionsTable *c = new OptionsTable(rowTemplate);
 
@@ -102,4 +108,15 @@ void OptionsTable::connectOptions(const vector<Options *> &value)
 Options *OptionsTable::rowTemplate() const
 {
 	return _template;
+}
+
+void OptionsTable::setTemplate(Options *templote)
+{
+	_template = templote;
+	
+	if (_cachedValue != Json::nullValue)
+	{
+		set(_cachedValue);
+		_cachedValue = Json::nullValue;
+	}
 }

@@ -36,10 +36,19 @@ BoundQMLListViewTerms::BoundQMLListViewTerms(QQuickItem* item, AnalysisQMLForm* 
 }
 
 void BoundQMLListViewTerms::bindTo(Option *option)
-{
+{	
 	if (_hasExtraControlColumns)
 	{
 		_optionsTable = dynamic_cast<OptionsTable *>(option);
+		if (!_optionsTable)
+		{
+			qDebug() << "Options for list view " << name() << " is not of type Table!";
+			return;
+		}
+		Options* templote = new Options();
+		templote->add("variable", new OptionVariable());
+		addExtraOptions(templote);
+		_optionsTable->setTemplate(templote);
 		
 		Terms terms;
 		std::vector<Options*> optionsList = _optionsTable->value();
@@ -49,13 +58,18 @@ void BoundQMLListViewTerms::bindTo(Option *option)
 			if (variableOption)
 				terms.add(variableOption->variable());
 		}
-			
-		_variablesModel->initTerms(terms);		
+		
+		// This will draw the table, and call addRowWithControlsHandler that will make the right Bound objects
+		_variablesModel->initTerms(terms);
+		QTimer::singleShot(0, this, SLOT(_bindExtraControls()));
 	}
 	else
 	{
 		_optionVariables = dynamic_cast<OptionVariables *>(option);
-		_variablesModel->initTerms(_optionVariables->value());
+		if (_optionVariables)
+			_variablesModel->initTerms(_optionVariables->value());
+		else
+			qDebug() << "Options for list view " << name() << " is not of type Variables!";
 	}
 }
 
@@ -67,7 +81,11 @@ Option* BoundQMLListViewTerms::createOption()
 {
 	Option* result;
 	if (_hasExtraControlColumns)
-		result = new OptionsTable();
+	{
+		Options* options = new Options();
+		addExtraOptions(options);
+		result = new OptionsTable(options);
+	}
 	else
 		result = _singleItem ? new OptionVariable() : new OptionVariables();
 	
@@ -80,6 +98,39 @@ void BoundQMLListViewTerms::modelChangedHandler()
 		_connectControlOptions();
 	else
 		_optionVariables->setValue(_variablesModel->terms().asVectorOfVectors());
+}
+
+void BoundQMLListViewTerms::_bindExtraControls()
+{
+	std::vector<Options*> optionsList = _optionsTable->value();
+	for (Options* options : optionsList)
+	{
+		OptionVariable* variableOption = dynamic_cast<OptionVariable*>(options->get(0));
+		if (variableOption)
+		{
+			QString variable = QString::fromStdString(variableOption->variable());
+			if (!_rowsWithControls.contains(variable))
+			{
+				qDebug() << "Could not find " << variable << " in rows!!!";
+				continue;
+			}
+			const QMap<QString, BoundQMLItem*>& row = _rowsWithControls[variable];
+			QMapIterator<QString, BoundQMLItem*> it(row);
+			while (it.hasNext())
+			{
+				it.next();
+				std::string name = it.key().toStdString();
+				BoundQMLItem* boundItem = it.value();
+				Option* option = options->get(name);
+				if (!option)
+				{
+					qDebug() << "Cannot find option " << QString::fromStdString(name);
+					continue;
+				}
+				boundItem->bindTo(option);
+			}
+		}
+	}
 }
 
 void BoundQMLListViewTerms::_connectControlOptions()

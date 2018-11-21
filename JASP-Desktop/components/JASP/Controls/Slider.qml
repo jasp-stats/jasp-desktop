@@ -33,6 +33,7 @@ JASPControl {
     }
     
     ColumnLayout {
+        id: columnLayout;
         spacing: label.visible ? labelSpacing : 0
         
         Label {
@@ -42,7 +43,8 @@ JASPControl {
         
         Slider {
             id: control
-            Layout.alignment: control.orientation === Qt.Vertical ? Qt.AlignHCenter : Qt.AlignLeft
+            Layout.alignment: control.orientation === Qt.Vertical ? Qt.AlignCenter : Qt.AlignLeft
+            Layout.leftMargin: control.orientation === Qt.Vertical ? leftPadding + Theme.sliderWidth : 0
             value: 0.5
             stepSize: 1 / slider.power
         
@@ -97,6 +99,7 @@ JASPControl {
             text: control.value
             inputType: "number";
             isBound: false
+            Layout.alignment: Qt.AlignCenter
             validator: DoubleValidator { bottom: control.from; top: control.to; decimals: slider.decimals }
             
             onEditingFinished: {

@@ -60,6 +60,8 @@ BoundQMLListViewDraggable::BoundQMLListViewDraggable(QQuickItem *item, AnalysisQ
 					
 			if (columnName.isEmpty())
 				addError(QString::fromLatin1("An Extra column in ") + name() + QString::fromLatin1(" has no name"));
+			else if (!properties.contains("type"))
+				addError(QString::fromLatin1("An Extra column in ") + name() + QString::fromLatin1(" has no type"));
 			else
 				_extraControlColumns[columnName] = properties;
 		}
@@ -97,7 +99,10 @@ void BoundQMLListViewDraggable::setUp()
 			_assignedModel->setSource(_sourceModel);
 			QMLListViewTermsAvailable* qmlAvailableListView = dynamic_cast<QMLListViewTermsAvailable*>(_sourceModel->listView());
 			if (qmlAvailableListView)
+			{
 				qmlAvailableListView->addAssignedModel(_assignedModel);
+				addDependency(qmlAvailableListView);
+			}
 			connect(_sourceModel, &ListModelAvailableInterface::modelChanged, _assignedModel, &ListModelAssignedInterface::availableTermsChanged);			
 		}
 	}
@@ -106,6 +111,29 @@ void BoundQMLListViewDraggable::setUp()
 ListModelAssignedInterface* BoundQMLListViewDraggable::assignedModel()
 {
 	return dynamic_cast<ListModelAssignedInterface*>(model());
+}
+
+void BoundQMLListViewDraggable::addExtraOptions(Options *options)
+{
+	QMapIterator<QString, QMap<QString, QString> > it(_extraControlColumns);
+	while (it.hasNext())
+	{
+		it.next();
+		const QMap<QString, QString>& properties = it.value();
+		QString type = properties["type"];
+		Option* option = NULL;
+		if (type == "CheckBox")
+			option = new OptionBoolean();
+		else if (type == "ComboBox")
+			option = new OptionList(std::vector<std::string>());
+		else if (type == "TextField")
+			option = new OptionString();
+		if (option)
+			options->add(it.key().toStdString(), option);
+		else
+			addError(QString::fromLatin1("Extra column in ") + name() + " has an unsupported type: " + type);
+	}
+	
 }
 
 

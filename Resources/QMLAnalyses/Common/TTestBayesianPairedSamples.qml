@@ -25,7 +25,7 @@ Form {
             }
             
             ButtonGroup {
-                title: qsTr("Hypothesis")
+                title: qsTr("Alt. Hypothesis")
                 name: "hypothesis"
                 RadioButton {   text: qsTr("Measure 1 ≠ Measure 2") ; name: "groupsNotEqual"       ; checked: true}
                 RadioButton {   text: qsTr("Measure 1 > Measure 2") ; name: "groupOneGreater"    }

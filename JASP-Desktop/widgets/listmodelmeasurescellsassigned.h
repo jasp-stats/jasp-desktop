@@ -32,8 +32,8 @@ public:
 	virtual int rowCount(const QModelIndex &parent) const OVERRIDE;
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
 
-	void initLevels(const Terms& terms);
-	void initVariables(const Terms& terms);
+	void initLevels(const Terms& levels, bool refreshModel = true);
+	void initVariables(const Terms& variables);
 	
 	virtual Terms* termsFromIndexes(const QList<int> &indexes) const OVERRIDE;	
 	virtual Terms* addTerms(Terms* terms, int dropItemIndex = -1)  OVERRIDE;

@@ -20,6 +20,7 @@
 #define QMLITEM_H
 
 #include <QString>
+#include <QVector>
 
 class QQuickItem;
 class AnalysisQMLForm;
@@ -36,12 +37,15 @@ public:
 	AnalysisQMLForm* form() { return _form; }
 	virtual void resetQMLItem(QQuickItem* item);
 	void addError(const QString& error);
+	bool addDependency(QMLItem* item);
+	const QVector<QMLItem*>& depends() { return _depends; }
 	
 protected:
 	
 	QQuickItem* _item;
 	QString _name;
 	AnalysisQMLForm* _form;
+	QVector<QMLItem*>	_depends;
 };
 
 #endif // QMLITEM_H

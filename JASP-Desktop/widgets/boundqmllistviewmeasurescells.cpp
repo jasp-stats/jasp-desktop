@@ -46,7 +46,7 @@ BoundQMLListViewMeasuresCells::BoundQMLListViewMeasuresCells(QQuickItem* item, A
 void BoundQMLListViewMeasuresCells::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionVariables *>(option);
-	_measuresCellsModel->initLevels(getLevels());
+	_measuresCellsModel->initLevels(getLevels(), false);
 	_measuresCellsModel->initVariables(_boundTo->value());
 }
 
@@ -78,6 +78,7 @@ void BoundQMLListViewMeasuresCells::setUp()
 		ListModelFactors* factorsModel = dynamic_cast<ListModelFactors*>(model);
 		if (!factorsModel)
 			addError(tq("Sync model of ") + name() + tq(" must be from a Factor List"));
+		addDependency(factorsModel->listView());
 		_syncFactorsModels.push_back(factorsModel);
 	}
 }

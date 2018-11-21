@@ -120,6 +120,8 @@ void BoundQMLComboBox::bindTo(Option *option)
 				}
 			}
 		}
+		_boundTo->resetOptions(_model->terms().asVector(), index);
+		
 		_setCurrentValue(index, false, false);
 		
 		_resetItemWidth();

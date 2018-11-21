@@ -23,7 +23,7 @@ Form {
         ColumnLayout {
             spacing: 15
             ButtonGroup {
-                title: qsTr("Hypothesis")                       ; name: "hypothesis"
+                title: qsTr("Alt.Hypothesis")                   ; name: "hypothesis"
                 RadioButton {   text: qsTr("Group 1 ≠ Group 2") ; name: "groupsNotEqual"       ; checked: true}
                 RadioButton {   text: qsTr("Group 1 > Group 2") ; name: "groupOneGreater"    }
                 RadioButton {   text: qsTr("Group 1 < Group 2") ; name: "groupTwoGreater"    }

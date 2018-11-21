@@ -34,10 +34,15 @@ Analysis::Analysis(int id, string module, string name, string title, Json::Value
 {
 	if (!fromQML)
 	{
-		if (optionsJson != Json::nullValue)	_options->init(optionsJson);
-		else								perror("malformed analysis definition");
+		if (optionsJson != Json::nullValue)
+			_options->init(optionsJson);
+		else
+			perror("malformed analysis definition");
+		if (data != NULL)
+			_options->set(*data);
 	}
-	if (data != NULL)						_options->set(*data);
+	else if (data)
+		_options->init(*data);
 
 	bindOptionHandlers();
 }

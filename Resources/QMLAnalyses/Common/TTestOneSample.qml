@@ -29,7 +29,7 @@ Form {
             }
             
             ButtonGroup {
-                title: qsTr("Hypothesis")
+                title: qsTr("Alt. Hypothesis")
                 name: "hypothesis"
                 RadioButton {   text: qsTr("≠ Test value") ; name: "notEqualToTestValue"       ; checked: true}
                 RadioButton {   text: qsTr("> Test value") ; name: "greaterThanTestValue"    }

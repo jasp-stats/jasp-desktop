@@ -50,6 +50,7 @@ protected:
 	
 private:
 	void		_parseQML();
+	void		_setUpItems(QList<QMLItem*>& items);
 	void		_setErrorMessages();
 
 private slots:
@@ -60,6 +61,7 @@ protected:
 	QQuickWidget							*_quickWidget;
 	Analysis								*_analysis;
 	QMap<QString, BoundQMLItem* >			_boundItems;
+	QVector<BoundQMLItem*>					_boundItemsOrdered;
 	std::map<QMLListView*, ListModel* >		_relatedModelMap;
 	std::vector<ListModelTermsAvailable* >	_availableVariablesModels;
 	std::map<QString, ListModel* >			_modelMap;

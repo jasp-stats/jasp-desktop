@@ -45,6 +45,8 @@ protected:
 	QMap<QString, QMap<QString, BoundQMLItem*> > _rowsWithControls;
 	QMap<QString, QMap<QString, BoundQMLItem*> > _cachedRowsWithControls;
 	
+	void addExtraOptions(Options* options);
+	
 protected slots:
 	void removeRowWithControlsHandler(QString term);
 	void addRowWithControlsHandler(QString termName, QVariant controls);

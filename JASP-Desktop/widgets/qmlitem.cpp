@@ -40,3 +40,12 @@ void QMLItem::addError(const QString &error)
 {
 	_form->addError(error);
 }
+
+bool QMLItem::addDependency(QMLItem *item)
+{
+	if (_depends.contains(item))
+		return false;
+	
+	_depends.push_back(item);
+	return true;
+}

@@ -59,8 +59,7 @@ JASPControl {
             property int modelWidth: 30
             property bool isEmptyValue: comboBox.addEmptyValue && currentIndex <= 0
             implicitWidth: modelWidth + leftPadding + rightPadding + canvas.width
-            textRole:comboBox.textRole
-            
+            textRole:comboBox.textRole            
             
             TextMetrics {
                 id: textMetrics

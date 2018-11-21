@@ -45,6 +45,9 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, DynamicMod
 		QString name				= QString::fromStdString(analysisData["name"].asString());
 		QString module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common";
 
+		bool fromQML				= analysisData.get("fromQML", false).asBool();
+		if (fromQML)
+			name = QString::fromLatin1("QML") + name; // temporary hack: remove this when everything is build with QML
 		Json::Value &optionsJson	= analysisData["options"];
 		Json::Value &versionJson	= analysisData["version"];
 

@@ -41,11 +41,13 @@ JASPControl {
     property string inputType: "string"
     property int labelSpacing: 4
     signal editingFinished()
+    signal textEdited()
     signal pressed()
     signal released()
     
     Component.onCompleted: {
         control.editingFinished.connect(editingFinished);
+        control.textEdited.connect(textEdited);
         control.pressed.connect(pressed);
         control.released.connect(released);
     }

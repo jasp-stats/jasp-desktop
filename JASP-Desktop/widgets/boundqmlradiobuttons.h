@@ -20,8 +20,9 @@
 #define BOUNDQMLRADIOBUTTONS_H
 
 #include "analysis/boundqmlitem.h"
-#include "analysis/options/optionstring.h"
+#include "analysis/options/optionlist.h"
 #include <QObject>
+#include <QMap>
 
 class BoundQMLRadioButtons : public QObject, public BoundQMLItem
 {
@@ -41,9 +42,9 @@ private slots:
 	void radioButtonClickedHandler(const QVariant& button);
     
 protected:
-	OptionString *_boundTo;
-	std::map<std::string, QQuickItem *> _buttons;
-	QQuickItem *_checkedButton;
+	OptionList* _boundTo;
+	QMap<QString, QQuickItem *> _buttons;
+	QQuickItem* _checkedButton;
 	
 	void _getRadioButtons(QQuickItem* item, QList<QQuickItem* >& buttons);
 };

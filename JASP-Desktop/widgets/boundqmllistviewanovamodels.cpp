@@ -36,6 +36,12 @@ BoundQMLListViewAnovaModels::BoundQMLListViewAnovaModels(QQuickItem* item, Analy
 void BoundQMLListViewAnovaModels::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionsTable *>(option);
+	Options* options = new Options();
+	options->add("components", new OptionTerm());
+	if (_hasExtraControlColumns)
+		addExtraOptions(options);
+	_boundTo->setTemplate(options);
+	
 	_anovaModel->initTermsWithTemplate(_boundTo->value(), _boundTo->rowTemplate());
 }
 
@@ -46,23 +52,11 @@ void BoundQMLListViewAnovaModels::unbind()
 
 Option* BoundQMLListViewAnovaModels::createOption()
 {
-	OptionTerm* optionTerm = new OptionTerm();
 	Options* options = new Options();
-	options->add("components", optionTerm);
+	options->add("components", new OptionTerm());
 	if (_hasExtraControlColumns)
-	{
-		QMapIterator<QString, QMap<QString, QString> > i(_extraControlColumns);
-		while (i.hasNext())
-		{
-			i.next();
-			const QMap<QString, QString>& properties = i.value();
-			if (properties["type"] == "CheckBox")
-			{
-				OptionBoolean* optionBoolean = new OptionBoolean();
-				options->add(i.key().toStdString(), optionBoolean);
-			}
-		}
-	}
+		addExtraOptions(options);
+	
 	return new OptionsTable(options);	
 }
 

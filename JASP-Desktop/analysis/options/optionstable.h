@@ -38,10 +38,11 @@ public:
 	void		connectOptions(const std::vector<Options *> &value);
 
 	Options*	rowTemplate() const;
-
+	void		setTemplate(Options* templote);
 private:
 	Options *_template;
 	
+	Json::Value _cachedValue; // this is used when a template does not yet exist and the set function is called
 	void optionsChanged(Option *);	
 };
 

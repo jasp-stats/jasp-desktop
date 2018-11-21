@@ -58,6 +58,7 @@ void QMLListView::setUp()
 				if (!syncModel->areTermsVariables())
 					areTermsVariables = false;
 				_syncModels.push_back(syncModel);
+				addDependency(syncModel->listView());
 				connect(syncModel, &ListModel::modelChanged, listModel, &ListModel::syncTermsChanged);
 			}
 			else
