@@ -28,7 +28,7 @@ class Application : public QApplication
 {
 	Q_OBJECT
 public:
-	explicit Application(int &argc, char **argv);
+	explicit Application(int &argc, char **argv, QString filePath, bool unitTest, int timeOut);
 	~Application();
 
 	virtual bool notify(QObject *receiver, QEvent *event) OVERRIDE;

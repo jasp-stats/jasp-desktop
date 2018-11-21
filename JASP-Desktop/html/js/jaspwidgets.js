@@ -779,7 +779,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 		var html = '';
 		if (this.isTextboxEmpty() === false && this.visible === true)
-			html += '<div ' + JASPWidgets.Exporter.getNoteStyles(this.$el, exportParams) + '">' + this.$textbox.html() + '</div>';
+			html += '<div ' + JASPWidgets.Exporter.getNoteStyles(this.$el, exportParams) + '>' + this.$textbox.html() + '</div>';
 
 
 		callback.call(this, exportParams, new JASPWidgets.Exporter.data(null, html));

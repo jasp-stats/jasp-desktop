@@ -35,6 +35,7 @@
 #include "tempfiles.h"
 #include "exporters/jaspexporter.h"
 #include <iostream>
+#include "resultstesting/compareresults.h"
 
 void JASPImporter::loadDataSet(DataSetPackage *packageData, const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
 {	
@@ -270,6 +271,20 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 		}
 	}
 	dataEntry.close();
+
+	if(resultXmlCompare::compareResults::theOne()->testMode())
+	{
+		//Read the results from when the JASP file was saved and store them in compareResults field
+
+		FileReader	resultsEntry	= FileReader(path, "index.html");
+		int			errorCode		= 0;
+		std::string	html			= resultsEntry.readAllData(sizeof(char), errorCode);
+
+		if (errorCode != 0)
+			throw std::runtime_error("Could not read result from 'index.html' in JASP archive.");
+
+		resultXmlCompare::compareResults::theOne()->setOriginalResult(QString::fromStdString(html));
+	}
 
 	packageData->computedColumnsPointer()->convertFromJson(metaData.get("computedColumns", Json::arrayValue));
 
