@@ -22,6 +22,7 @@ public:
 
 				bool	datasetLoaded()					{ return _package != NULL; }
 				QString	computeColumnRCode();
+				QString computeColumnRCodeCommentStripped();
 				QString computeColumnError();
 				QString computeColumnNameSelected();
 				QString computeColumnJson();

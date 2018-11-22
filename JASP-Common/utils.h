@@ -56,6 +56,8 @@ public:
 	static bool getIntValue(const double& value, int& intValue);
 	static bool getDoubleValue(const std::string& value, double& doubleValue);
 
+	static std::string stripRComments(const std::string & rCode);
+
 private:
 	static std::vector<std::string> _currentEmptyValues;
 	static const std::vector<std::string> _defaultEmptyValues;

@@ -1,4 +1,5 @@
 #include "r_functionwhitelist.h"
+#include "utils.h"
 
 	//The following functions (and keywords that can be followed by a '(') will be allowed in user-entered R-code, such as filters or computed columns. This is for security because otherwise JASP-files could become a vector of attack and that doesn't refer to an R-datatype.
 const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
@@ -278,9 +279,11 @@ std::set<std::string> R_FunctionWhiteList::findIllegalFunctionsAliases(std::stri
 
 void R_FunctionWhiteList::scriptIsSafe(const std::string &script)
 {
+	std::string commentFree = Utils::stripRComments(script);
+
 	static std::string errorMsg;
 
-	std::set<std::string> blackListedFunctions = findIllegalFunctions(script);
+	std::set<std::string> blackListedFunctions = findIllegalFunctions(commentFree);
 
 	if(blackListedFunctions.size() > 0)
 	{
@@ -294,7 +297,7 @@ void R_FunctionWhiteList::scriptIsSafe(const std::string &script)
 		throw filterException(errorMsg);
 	}
 
-	std::set<std::string> illegalAliasesFound = findIllegalFunctionsAliases(script);
+	std::set<std::string> illegalAliasesFound = findIllegalFunctionsAliases(commentFree);
 
 	if(illegalAliasesFound.size() > 0)
 	{

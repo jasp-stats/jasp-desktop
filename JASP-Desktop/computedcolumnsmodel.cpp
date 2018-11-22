@@ -20,6 +20,14 @@ QString ComputedColumnsModel::computeColumnRCode()
 	return QString::fromStdString(_computedColumns->getRCode(_currentlySelectedName.toStdString()));
 }
 
+QString ComputedColumnsModel::computeColumnRCodeCommentStripped()
+{
+	if(_currentlySelectedName == "" || _computedColumns == NULL)
+		return "";
+
+	return QString::fromStdString(_computedColumns->getRCodeCommentStripped(_currentlySelectedName.toStdString()));
+}
+
 bool ComputedColumnsModel::computeColumnUsesRCode()
 {
 	if(_currentlySelectedName == "" || _computedColumns == NULL)
@@ -87,7 +95,7 @@ void ComputedColumnsModel::setComputeColumnNameSelected(QString newName)
 bool ComputedColumnsModel::areLoopDependenciesOk(std::string columnName)
 {
 
-	return areLoopDependenciesOk(columnName, (*_computedColumns)[columnName].analysis() != NULL ? "" : (*_computedColumns)[columnName].rCode());
+	return areLoopDependenciesOk(columnName, (*_computedColumns)[columnName].analysis() != NULL ? "" : (*_computedColumns)[columnName].rCodeCommentStripped());
 }
 
 bool ComputedColumnsModel::areLoopDependenciesOk(std::string columnName, std::string code)
@@ -131,7 +139,7 @@ void ComputedColumnsModel::sendCode(QString code)
 {
 	std::string columnName = _currentlySelectedName.toStdString();
 	setComputeColumnRCode(code);
-	emitSendComputeCode(_currentlySelectedName, code, (*_computedColumns)[columnName].columnType());
+	emitSendComputeCode(_currentlySelectedName, computeColumnRCodeCommentStripped(), (*_computedColumns)[columnName].columnType());
 }
 
 void ComputedColumnsModel::validate(QString columnName)
@@ -262,7 +270,7 @@ void ComputedColumnsModel::checkForDependentColumnsToBeSent(std::string columnNa
 
 	for(ComputedColumn * col : *_computedColumns)
 		if(col->iShouldBeSentAgain())
-			emitSendComputeCode(QString::fromStdString(col->name()), QString::fromStdString(col->rCode()), col->columnType());
+			emitSendComputeCode(QString::fromStdString(col->name()), QString::fromStdString(col->rCodeCommentStripped()), col->columnType());
 
 	checkForDependentAnalyses(columnName);
 }
@@ -358,7 +366,7 @@ void ComputedColumnsModel::packageSynchronized(const std::vector<std::string> & 
 		col->findDependencies(); //columnNames might have changed right? so check it again
 
 		if(col->iShouldBeSentAgain())
-			emitSendComputeCode(QString::fromStdString(col->name()), QString::fromStdString(col->rCode()), col->columnType());
+			emitSendComputeCode(QString::fromStdString(col->name()), QString::fromStdString(col->rCodeCommentStripped()), col->columnType());
 	}
 }
 

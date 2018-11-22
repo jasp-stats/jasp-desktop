@@ -1,12 +1,15 @@
 #include <regex>
 #include "computedcolumn.h"
 #include "analysis.h"
+#include "utils.h"
 
 bool ComputedColumn::setRCode(std::string rCode)
 {
 	if(_rCode != rCode)
 	{
-		_rCode = rCode;
+		_rCode			= rCode;
+		_rCodeStripped	= Utils::stripRComments(rCode);
+
 		findDependencies();
 		invalidate();
 		return true;
@@ -234,8 +237,8 @@ ComputedColumn::ComputedColumn(std::vector<ComputedColumn*> * allComputedColumns
 	_error				= json["error"].asString();
 	_name				= json["name"].asString();
 
+	_rCodeStripped		= Utils::stripRComments(_rCode);
 	_outputColumn		= &(*columns)[_name];
-
 }
 
 void ComputedColumn::findDependencies()

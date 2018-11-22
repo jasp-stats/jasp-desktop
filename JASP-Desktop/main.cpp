@@ -143,7 +143,7 @@ void recursiveFileOpener(QFileInfo file, int & failures, int & total, int & time
 #ifdef SEPARATE_PROCESS
 				QProcess subJasp;
 				subJasp.setProgram(argv[0]);
-				subJasp.setArguments({file.absoluteFilePath(), "--unitTest", QString::fromStdString("--timeOut="+std::to_string(timeOut)) });
+				subJasp.setArguments({file.absoluteFilePath(), "--unitTest", QString::fromStdString("--timeOut="+std::to_string(timeOut)), "-platform", "minimal" });
 				subJasp.start();
 
 				subJasp.waitForFinished((timeOut * 60000) + 10000);
@@ -179,13 +179,6 @@ int main(int argc, char *argv[])
 	// qputenv("QT_QUICK_BACKEND", "software");
 	QCoreApplication::setAttribute(Qt::AA_UseOpenGLES); //might fix weirdlooking QML on Windows when using not-so-goo drivers? ( https://github.com/jasp-stats/jasp-desktop/issues/2669 )
 #endif
-	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-	QCoreApplication::setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false); //To avoid weird splitterbehaviour with QML and a touchscreen
-	QCoreApplication::setOrganizationName("JASP");
-	QCoreApplication::setOrganizationDomain("jasp-stats.org");
-	QCoreApplication::setApplicationName("JASP");
-
-	QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
 
 	std::string filePath;
 	bool		unitTest,
@@ -199,6 +192,14 @@ int main(int argc, char *argv[])
 	if(!dirTest)
 		try
 		{
+			QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+			QCoreApplication::setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false); //To avoid weird splitterbehaviour with QML and a touchscreen
+			QCoreApplication::setOrganizationName("JASP");
+			QCoreApplication::setOrganizationDomain("jasp-stats.org");
+			QCoreApplication::setApplicationName("JASP");
+
+			QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
+
 			Application a(argc, argv, filePathQ, unitTest, timeOut);
 			return a.exec();
 		}

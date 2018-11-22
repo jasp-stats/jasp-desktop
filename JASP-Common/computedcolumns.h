@@ -27,6 +27,7 @@ public:
 
 	std::string			getConstructorJson(std::string name);
 	std::string			getRCode(std::string name);
+	std::string			getRCodeCommentStripped(std::string name);
 	std::string			getError(std::string name);
 
 	size_t				findIndexByName(std::string name)			const;

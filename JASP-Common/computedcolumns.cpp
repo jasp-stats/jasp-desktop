@@ -105,6 +105,16 @@ std::string ComputedColumns::getRCode(std::string name)
 	return "";
 }
 
+std::string ComputedColumns::getRCodeCommentStripped(std::string name)
+{
+	try
+	{
+		return (*this)[name].rCodeCommentStripped();
+	}
+	catch(...){}
+	return "";
+}
+
 bool ComputedColumns::usesRCode(std::string name)
 {
 	try
