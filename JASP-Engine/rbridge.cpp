@@ -752,7 +752,7 @@ std::vector<bool> rbridge_applyFilter(std::string & filterCode, std::string & ge
 	static std::string errorMsg;
 
 	std::string	concatenated = generatedFilterCode + "\n" + filterCode,
-				filter64	 = rbridge_encodeColumnNamesToBase64(concatenated);
+				filter64	 = "local({" + rbridge_encodeColumnNamesToBase64(concatenated) + "})";
 
 	R_FunctionWhiteList::scriptIsSafe(filter64); //can throw filterExceptions
 
