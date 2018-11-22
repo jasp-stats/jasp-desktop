@@ -22,7 +22,7 @@
     <!-- Upgrade settings. This will be explained in more detail in a future post -->
     <Upgrade Id="$(var.UpgradeCode)">
       <UpgradeVersion OnlyDetect="yes" Minimum="$(var.VersionNumber)" IncludeMinimum="no" Property="NEWER_VERSION_FOUND" />
-      <UpgradeVersion OnlyDetect="yes" Minimum="$(var.VersionNumber)" IncludeMinimum="yes" Maximum="$(var.VersionNumber)" IncludeMaximum="yes" Property="SAME_VERSION_FOUND" />
+      <UpgradeVersion Minimum="$(var.VersionNumber)" IncludeMinimum="yes" Maximum="$(var.VersionNumber)" IncludeMaximum="yes" Property="SAME_VERSION_FOUND" />
       <UpgradeVersion Minimum="0.0.0.0" IncludeMinimum="yes" Maximum="$(var.VersionNumber)" IncludeMaximum="no" Property="OLDER_VERSION_FOUND" />
     </Upgrade>    
 
@@ -45,12 +45,12 @@
     stop silent install (passing /qb to msiexec) from going around it. 
     -->
     <CustomAction Id="NewerVersionFound" Error="A newer version of JASP is already installed!" />
-    <CustomAction Id="SameVersionFound" Error="This version of JASP is already installed!" />
+    <!-- <CustomAction Id="SameVersionFound" Error="This version of JASP is already installed!" /> -->
 
     <InstallExecuteSequence>
       <!-- Check for newer versions with FindRelatedProducts and execute the custom action after it -->
         <Custom Action="NewerVersionFound" After="FindRelatedProducts">   <![CDATA[NEWER_VERSION_FOUND]]> </Custom>
-        <Custom Action="SameVersionFound" After="FindRelatedProducts">    <![CDATA[SAME_VERSION_FOUND]]>  </Custom>
+        <!-- <Custom Action="SameVersionFound" After="FindRelatedProducts">    <![CDATA[SAME_VERSION_FOUND]]>  </Custom> -->
 
       <!-- Remove the previous versions of the product -->
       <RemoveExistingProducts After="InstallInitialize"/>
