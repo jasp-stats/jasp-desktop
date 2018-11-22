@@ -359,7 +359,8 @@ void Engine::runFilter()
 
 	try
 	{
-		std::vector<bool> filterResult	= rbridge_applyFilter(_filter, _generatedFilter);
+		std::string strippedFilter		= Utils::stripRComments(_filter);
+		std::vector<bool> filterResult	= rbridge_applyFilter(strippedFilter, _generatedFilter);
 		std::string RPossibleWarning	= jaspRCPP_getLastErrorMsg();
 
 		sendFilterResult(filterResult, RPossibleWarning);
