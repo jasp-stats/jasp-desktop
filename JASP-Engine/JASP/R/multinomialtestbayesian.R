@@ -27,40 +27,19 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
   .multinomialBayesCheckErrors(dataset, options)
 
   # Compute Results for Tables
-  multinomialTableResults <- .computeMultBayesTableResults(jaspResults, dataset, options)
-  
+  multinomialTableResults <- .computeMultBayesTableResults(jaspResults, dataset, options) # main table and descriptives info
+  descriptivesTable       <- .computeMultBayesDescriptivesTableResults(dataset, options, multinomialTableResults)
+  # descriptivesPlot <- .computeMultBayesDescriptivesPlotResults(dataset, options, factorVariable)
+  # priorPosteriorPlot <- .computeMultBayesPriorPosteriorPlotResults(dataset, options, factorVariable)
+
   # Output tables and plots
   .createMultBayesTable(jaspResults, options, multinomialTableResults) # results table
-
-  # if (ready == TRUE && is.null(jaspResults[["descriptivesTable"]])) {
-  #   descriptivesTable <- .computeMultBayesDescriptivesTableResults(dataset, options, factorVariable)
-  # }
-  
-  # # Compute Results for Plots
-  # if (ready == TRUE && is.null(jaspResults[["descriptivesPlot"]])) {
-  #   descriptivesPlot <- .computeMultBayesDescriptivesPlotResults(dataset, options, factorVariable)
-  # }
-  # 
-  # if (ready == TRUE && is.null(jaspResults[["priorPosteriorPlot"]])) {
-  #   priorPosteriorPlot <- .computeMultBayesPriorPosteriorPlotResults(dataset, options, factorVariable)
-  # }
-  #
-  # # Create Table
-  # if (options[["descriptives"]] && is.null(jaspResults[["descriptivesTable"]])) {
   #     descriptivesTable <- .createMultBayesDescriptivesTable(jaspResults = jaspResults, options = options, descriptivesTable = descriptivesTable)
-  # }
-  
-  # # Create Plots
-  # if (ready == TRUE && options[["descriptivesPlot"]]) {
   #   .createMultBayesDescriptivesPlot(jaspResults = jaspResults, options = options, descriptivesPlot = descriptivesPlot)
-  # }
-  # 
-  # if (ready == TRUE && options[["priorPosteriorPlot"]]) {
   #   descriptivesPlot <- .computeMultBayesDescriptivesTableResultsPlot(jaspResults = jaspResults, options = options, priorPosteriorPlot = priorPosteriorPlot)
-  # }
-  
+
   return()
-  
+
 }
 
 # Results functions
@@ -162,7 +141,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
   multinomialTable$addColumnInfo(name = "case",    title = "",       type = "string", combine = TRUE)
   multinomialTable$addColumnInfo(name = "level",   title = "Levels", type = "integer")
   multinomialTable$addColumnInfo(name = "BF",      title = bf.title, type = "number", format="sf:4;dp:3")
-
+  
   # Add rows
   fact  <- multinomialTableResults$specs$factorVariable
   nhyps <- length(multinomialTableResults[[fact]])
@@ -187,7 +166,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
 }
 
 # Functions for JASP output: Descriptives
-.computeMultBayesDescriptivesTableResults <- function(multinomialTableResults, fact, options) {
+.computeMultBayesDescriptivesTableResults <- function(dataset, options, multinomialTableResults) {
   # Create multinomial descriptives table
   #
   # Args:
@@ -198,6 +177,9 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, state = NULL)
   #
   # Return:
   #   Descriptives table
+  browser()
+  specs <- multinomialTableResults$specs
+  fact  <- specs$factorVariable
   footnotes <- .newFootnotes()
 
   if (options[["countProp"]]=="descCounts"){
