@@ -1,5 +1,6 @@
 #include "resultscomparetable.h"
 #include <sstream>
+#include <algorithm>
 
 namespace resultXmlCompare
 {
