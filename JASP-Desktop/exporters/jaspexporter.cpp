@@ -274,8 +274,8 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 	archive_entry_set_perm(entry, 0644); // Not sure what this does
 	archive_write_header(a, entry);
 
-	ssize_t ws = archive_write_data(a, html.c_str(), htmlSize);
-	if (ws != ssize_t(htmlSize))
+	size_t ws = archive_write_data(a, html.c_str(), htmlSize);
+	if (ws != size_t(htmlSize))
 		throw std::runtime_error("Can't save jasp archive writing ERROR");
 
 	archive_entry_free(entry);
