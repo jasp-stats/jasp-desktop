@@ -459,7 +459,7 @@ void Engine::runComputeColumn()
 		{Column::ColumnTypeNominal,		".setColumnDataAsNominal"},
 		{Column::ColumnTypeNominalText,	".setColumnDataAsNominalText"}};
 
-	std::string computeColumnCodeComplete	= "calcedVals <- {"+_computeColumnCode +"};\n"  "return(toString(" + setColumnFunction.at(_computeColumnType) + "('" + _computeColumnName +"', calcedVals)));";
+	std::string computeColumnCodeComplete	= "local({;calcedVals <- {"+_computeColumnCode +"};\n"  "return(toString(" + setColumnFunction.at(_computeColumnType) + "('" + _computeColumnName +"', calcedVals)));})";
 	std::string computeColumnResultStr		= rbridge_evalRCodeWhiteListed(computeColumnCodeComplete);
 
 	Json::Value computeColumnResponse		= Json::objectValue;
