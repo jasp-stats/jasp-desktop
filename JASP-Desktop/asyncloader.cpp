@@ -250,7 +250,7 @@ void AsyncLoader::loadPackage(QString id)
 		catch (runtime_error e)
 		{
 			std::cout << "Runtime Exception in loadPackage: " << e.what() << std::endl;
-			std::cout.flush();
+
 			if (dataNode != NULL)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());
@@ -258,7 +258,7 @@ void AsyncLoader::loadPackage(QString id)
 		catch (exception e)
 		{
 			std::cout << "Exception in loadPackage: " << e.what() << std::endl;
-			std::cout.flush();
+
 			if (dataNode != NULL)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());

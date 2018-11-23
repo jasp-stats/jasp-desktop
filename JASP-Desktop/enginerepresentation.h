@@ -35,11 +35,18 @@ public:
 	void runAnalysisOnProcess(Analysis *analysis);
 	void terminateJaspEngine();
 
+	void pauseEngine();
+	void resumeEngine();
+	bool paused()  const { return _engineState == engineState::paused && _enginePaused;							}
+	bool resumed() const { return _engineState != engineState::paused && _engineState != engineState::resuming;	}
+
 	void process();
 	void processFilterReply(		Json::Value json);
 	void processRCodeReply(			Json::Value json);
 	void processComputeColumnReply(	Json::Value json);
 	void processAnalysisReply(		Json::Value json);
+	void processEngineResumedReply();
+	void processEnginePausedReply();
 
 	void setChannel(IPCChannel * channel)			{ _channel = channel; }
 	void setSlaveProcess(QProcess * slaveProcess)	{ _slaveProcess = slaveProcess; }
@@ -62,6 +69,7 @@ private:
 	engineState	_engineState		= engineState::idle;
 	int			_ppi				= 96;
 	QString		_imageBackground	= "white";
+	bool		_enginePaused		= false;
 
 signals:
 	void engineTerminated();

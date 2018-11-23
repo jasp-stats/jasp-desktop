@@ -10,7 +10,9 @@ std::string engineStateToString(engineState e)
 	case engineState::filter:			return "filter";
 	case engineState::rCode:			return "rCode";
 	case engineState::computeColumn:	return "computeColumn";
-	default:			throw std::logic_error("When you define new engineStates you should add them to engineStateToString and engineStateFromString!");
+	case engineState::paused:			return "paused";
+	case engineState::resuming:			return "resuming";
+	default:							throw std::logic_error("When you define new engineStates you should add them to engineStateToString and engineStateFromString!");
 	}
 }
 
@@ -21,6 +23,8 @@ engineState engineStateFromString(std::string e)
 	else if(e == "filter")			return engineState::filter;
 	else if(e == "rCode")			return engineState::rCode;
 	else if(e == "computeColumn")	return engineState::computeColumn;
+	else if(e == "paused")			return engineState::paused;
+	else if(e == "resuming")		return engineState::resuming;
 	else							throw std::logic_error("Unknown engineState " + e +"! When you define new engineStates you should add them to engineStateToString and engineStateFromString!");
 }
 

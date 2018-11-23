@@ -228,7 +228,10 @@ void Importer::initColumn(int colNo, ImportColumn *importColumn)
 				_packageData->setDataSet(SharedMemory::enlargeDataSet(_packageData->dataSet()));
 				success = false;
 			}
-			catch (std::exception &e)	{ throw std::runtime_error("Out of memory: this data set is too large for your computer's available memory");	}
+			catch (std::exception &e)
+			{
+				throw std::runtime_error("Out of memory: this data set is too large for your computer's available memory");
+			}
 		}
 		catch (std::exception e)	{ std::cout << "n " << e.what() << std::endl;		}
 		catch (...)					{ std::cout << "something else\n " << std::endl;	}
@@ -246,6 +249,7 @@ void Importer::_syncPackage(
 		bool										rowCountChanged)
 
 {
+	_packageData->pauseEngines();
 	_packageData->dataSet()->setSynchingData(true);
 
 	std::vector<std::string>			_changedColumns;
@@ -313,6 +317,8 @@ void Importer::_syncPackage(
 		}
 	}
 
+
 	_packageData->dataSet()->setSynchingData(false);
 	_packageData->dataChanged(_packageData, _changedColumns, _missingColumns, _changeNameColumns, rowCountChanged);
+	_packageData->resumeEngines();
 }

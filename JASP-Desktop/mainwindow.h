@@ -120,6 +120,9 @@ private:
 	void loadQML();
 	void connectRibbonButton(RibbonWidget * ribbon)								{ connect(ribbon,										QOverload<QString>::of(&RibbonWidget::itemSelected),				this,	&MainWindow::itemSelected); }
 
+	void pauseEngines();
+	void resumeEngines();
+
 signals:
 	void updateAnalysesUserData(QString userData);
 	void ppiChanged(int newPPI);

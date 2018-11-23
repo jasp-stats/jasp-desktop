@@ -38,11 +38,11 @@ class SharedMemory
 {
 public:
 
-	static DataSet *createDataSet();
-	static DataSet *retrieveDataSet(unsigned long parentPID = 0);
-	static DataSet *enlargeDataSet(DataSet *dataSet);
-	static void deleteDataSet(DataSet *dataSet);
-
+	static DataSet	*createDataSet();
+	static DataSet	*retrieveDataSet(unsigned long parentPID = 0);
+	static DataSet	*enlargeDataSet(DataSet *dataSet);
+	static void		deleteDataSet(DataSet *dataSet);
+	static void		unloadDataSet();
 private:
 
 	static std::string _memoryName;

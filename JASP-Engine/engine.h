@@ -52,8 +52,8 @@ public:
 	void setSlaveNo(int no);
 	void sendString(std::string message) { _channel->send(message); }
 
-	typedef enum { empty, toInit, initing, inited, toRun, running, changed, complete, error, exception, aborted, stopped, saveImg, editImg} Status;
-	Status getStatus() { return _status; }
+	typedef enum { empty, toInit, initing, inited, toRun, running, changed, complete, error, exception, aborted, stopped, saveImg, editImg, synchingData } Status;
+	Status getStatus() { return _analysisStatus; }
 	analysisResultStatus getStatusToAnalysisStatus();
 
 	//return true if changed:
@@ -65,6 +65,8 @@ public:
 	bool setColumnDataAsNominalOrOrdinal(bool isOrdinal, std::string columnName, std::vector<int> data, std::map<int, std::string> levels);
 
 	int dataSetRowCount()	{ return static_cast<int>(provideDataSet()->rowCount()); }
+
+	bool paused() { return currentEngineState == engineState::paused; }
 
 private:
 // Methods:
@@ -78,7 +80,10 @@ private:
 	void runFilter();
 	void runComputeColumn();
 
-	void waitForDatasetSync();
+	void pauseEngine();
+	void resumeEngine();
+	void sendEnginePaused();
+	void sendEngineResumed();
 
 	void removeNonKeepFiles(Json::Value filesToKeepValue);
 	void saveImage();
@@ -104,7 +109,7 @@ private:
 // Data:
 	static Engine * _EngineInstance;
 
-	Status _status = empty;
+	Status _analysisStatus = empty;
 
 
 	int			_analysisId,

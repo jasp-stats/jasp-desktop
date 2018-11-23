@@ -53,12 +53,19 @@ void EngineRepresentation::process()
 		Json::Value json;
 		Json::Reader().parse(data, json);
 
-		switch(_engineState)
+		if(!json.get("typeRequest", Json::nullValue).isString())
+			throw std::runtime_error("Malformed reply from engine!");
+
+		engineState typeRequest = engineStateFromString(json["typeRequest"].asString());
+
+		switch(typeRequest)
 		{
 		case engineState::filter:			processFilterReply(json);			break;
 		case engineState::rCode:			processRCodeReply(json);			break;
 		case engineState::analysis:			processAnalysisReply(json);			break;
 		case engineState::computeColumn:	processComputeColumnReply(json);	break;
+		case engineState::paused:			processEnginePausedReply();			break;
+		case engineState::resuming:			processEngineResumedReply();		break;
 		default:							throw std::logic_error("If you define new engineStates you should add them to the switch in EngineRepresentation::process()!");
 		}
 	}
@@ -110,13 +117,10 @@ void EngineRepresentation::processFilterReply(Json::Value json)
 	}
 	else
 		emit processFilterErrorMsg(QString::fromStdString(json.get("filterError", "something went wrong").asString()), requestId);
-
-
 }
 
 void EngineRepresentation::runScriptOnProcess(RScriptStore * scriptStore)
 {
-
 	Json::Value json = Json::Value(Json::objectValue);
 
 	_engineState			= engineState::rCode;
@@ -250,8 +254,11 @@ Analysis::Status EngineRepresentation::analysisResultStatusToAnalysStatus(analys
 
 void EngineRepresentation::processAnalysisReply(Json::Value json)
 {
+	if(_engineState == engineState::paused || _engineState == engineState::resuming || _engineState == engineState::idle)
+		return;
+
 	if(_engineState != engineState::analysis)
-		throw std::runtime_error("Received an unexpected analysis reply!");
+		return;
 
 #ifdef PRINT_ENGINE_MESSAGES
 	std::cout << "Analysis reply: " << json.toStyledString() << std::endl;
@@ -318,4 +325,51 @@ void EngineRepresentation::handleRunningAnalysisStatusChanges()
 
 	if(_analysisInProgress->isEmpty() || _analysisInProgress->isAborted())
 		runAnalysisOnProcess(_analysisInProgress);
+}
+
+void EngineRepresentation::pauseEngine()
+{
+	Json::Value json		= Json::Value(Json::objectValue);
+	_engineState			= engineState::paused;
+	json["typeRequest"]		= engineStateToString(_engineState);
+
+#ifdef JASP_DEBUG
+	std::cout << "informing engine that it ought to pause for a bit" << std::endl;
+#endif
+
+	sendString(json.toStyledString());
+
+	_enginePaused = false;
+}
+
+void EngineRepresentation::resumeEngine()
+{
+	if(_engineState != engineState::paused && !_enginePaused)
+		throw std::runtime_error("Attempt to resume engine made but it isn't paused");
+
+	_engineState			= engineState::resuming;
+	Json::Value json		= Json::Value(Json::objectValue);
+	json["typeRequest"]		= engineStateToString(_engineState);
+
+#ifdef JASP_DEBUG
+	std::cout << "informing engine that it may resume" << std::endl;
+#endif
+
+	sendString(json.toStyledString());
+}
+
+void EngineRepresentation::processEnginePausedReply()
+{
+	if(_engineState != engineState::paused)
+		throw std::runtime_error("Received an unexpected engine resumed reply!");
+
+	_enginePaused = true;
+}
+
+void EngineRepresentation::processEngineResumedReply()
+{
+	if(_engineState != engineState::resuming)
+		throw std::runtime_error("Received an unexpected engine paused reply!");
+
+	_engineState = engineState::idle;
 }

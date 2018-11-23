@@ -40,25 +40,25 @@
 extern "C" {
 
 struct RBridgeColumn {
-	char*	name;
-	bool	isScale;
-	bool	hasLabels;
-	bool	isOrdinal;
-	double*	doubles;
-	int*	ints;
-	char**	labels;
-	int		nbRows;
-	int		nbLabels;
+  char*   name;
+  bool    isScale;
+  bool    hasLabels;
+  bool    isOrdinal;
+  double* doubles;
+  int*    ints;
+  char**  labels;
+  size_t  nbRows;
+  size_t  nbLabels;
 } ;
 
 struct RBridgeColumnDescription {
-	int		type;
-	char*	name;
-	bool	isScale;
-	bool	hasLabels;
-	bool	isOrdinal;
+  int     type;
+  char*   name;
+  bool    isScale;
+  bool    hasLabels;
+  bool    isOrdinal;
 	char**	labels;
-	int		nbLabels;
+  size_t  nbLabels;
 } ;
 
 struct RBridgeColumnType {
@@ -67,19 +67,19 @@ struct RBridgeColumnType {
 };
 
 // Callbacks from jaspRCPP to rbridge
-typedef RBridgeColumn*				(STDCALL *ReadDataSetCB)				(RBridgeColumnType* columns, int colMax, bool obeyFilter);
-typedef RBridgeColumn*				(STDCALL *ReadADataSetCB)				(int * colMax);
-typedef char**						(STDCALL *ReadDataColumnNamesCB)		(int *maxCol);
-typedef RBridgeColumnDescription*	(STDCALL *ReadDataSetDescriptionCB)		(RBridgeColumnType* columns, int colMax);
-typedef bool						(STDCALL *RequestSpecificFileSourceCB)	(const char **root, const char **relativePath);
-typedef bool						(STDCALL *RequestTempFileNameCB)		(const char* extensionAsString, const char **root, const char **relativePath);
-typedef const char*					(STDCALL *RequestTempRootNameCB)		();
-typedef bool						(STDCALL *RunCallbackCB)				(const char* in, int progress, const char** out);
-typedef bool						(STDCALL *SetColumnAsScale)				(const char* columnName, double *		scalarData,		size_t length);
-typedef bool						(STDCALL *SetColumnAsOrdinal)			(const char* columnName, int *			ordinalData,	size_t length, const char ** levels, size_t numLevels);
-typedef bool						(STDCALL *SetColumnAsNominal)			(const char* columnName, int *			nominalData,	size_t length, const char ** levels, size_t numLevels);
-typedef bool						(STDCALL *SetColumnAsNominalText)		(const char* columnName, const char **	nominalData,	size_t length);
-typedef int							(STDCALL *DataSetRowCount)				();
+typedef RBridgeColumn*            (STDCALL *ReadDataSetCB)                (RBridgeColumnType* columns, size_t colMax, bool obeyFilter);
+typedef RBridgeColumn*            (STDCALL *ReadADataSetCB)               (size_t * colMax);
+typedef char**                    (STDCALL *ReadDataColumnNamesCB)        (size_t * maxCol);
+typedef RBridgeColumnDescription*	(STDCALL *ReadDataSetDescriptionCB)     (RBridgeColumnType* columns, size_t colMax);
+typedef bool                      (STDCALL *RequestSpecificFileSourceCB)	(const char **root, const char **relativePath);
+typedef bool                      (STDCALL *RequestTempFileNameCB)        (const char* extensionAsString, const char **root, const char **relativePath);
+typedef const char*               (STDCALL *RequestTempRootNameCB)        ();
+typedef bool						          (STDCALL *RunCallbackCB)                (const char* in, int progress, const char** out);
+typedef bool						          (STDCALL *SetColumnAsScale)             (const char* columnName, double *       scalarData,		size_t length);
+typedef bool				          		(STDCALL *SetColumnAsOrdinal)           (const char* columnName, int *          ordinalData,	size_t length, const char ** levels, size_t numLevels);
+typedef bool          						(STDCALL *SetColumnAsNominal)           (const char* columnName, int *          nominalData,	size_t length, const char ** levels, size_t numLevels);
+typedef bool			          			(STDCALL *SetColumnAsNominalText)       (const char* columnName, const char **	nominalData,	size_t length);
+typedef int				          			(STDCALL *DataSetRowCount)              ();
 
 
 struct RBridgeCallBacks {

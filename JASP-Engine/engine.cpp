@@ -32,7 +32,12 @@ void SendFunctionForJaspresults(const char * msg) { Engine::theEngine()->sendStr
 bool PollMessagesFunctionForJaspResults()
 {
 	if(Engine::theEngine()->receiveMessages())
-		return Engine::theEngine()->getStatus() == Engine::changed;
+	{
+		if(Engine::theEngine()->paused())
+			return true;
+		else
+			return Engine::theEngine()->getStatus() == Engine::changed;
+	}
 	return false;
 }
 
@@ -98,8 +103,10 @@ void Engine::run()
 		case engineState::filter:			runFilter();		break;
 		case engineState::rCode:			runRCode();			break;
 		case engineState::computeColumn:	runComputeColumn();	break;
-		default:
-			throw std::runtime_error("Enginestate " + engineStateToString(currentEngineState) + " not checked in Engine::run()!");
+		case engineState::paused:			/* Do nothing */	break;
+
+		case engineState::resuming:			throw std::runtime_error("Enginestate " + engineStateToString(currentEngineState) + " should not be set as currentState!");
+		default:							throw std::runtime_error("Enginestate " + engineStateToString(currentEngineState) + " not checked in Engine::run()!");
 		}
 
 		freeRBridgeColumns();
@@ -131,7 +138,9 @@ bool Engine::receiveMessages(int timeout)
 		case engineState::filter:			receiveFilterMessage(jsonRequest);			break;
 		case engineState::rCode:			receiveRCodeMessage(jsonRequest);			break;
 		case engineState::computeColumn:	receiveComputeColumnMessage(jsonRequest);	break;
-		default:							throw std::runtime_error("Engine::receiveMessages implement your new engineState!");
+		case engineState::paused:			pauseEngine();								break;
+		case engineState::resuming:			resumeEngine();								break;
+		default:							throw std::runtime_error("Engine::receiveMessages begs you to implement your newly added engineState!");
 		}
 	}
 
@@ -140,6 +149,9 @@ bool Engine::receiveMessages(int timeout)
 
 void Engine::receiveFilterMessage(Json::Value jsonRequest)
 {
+	if(currentEngineState != engineState::idle)
+		throw std::runtime_error("Unexpected filter message, current state is not idle (" + engineStateToString(currentEngineState) + ")");
+
 	currentEngineState = engineState::filter;
 
 	_filter				= jsonRequest.get("filter", "").asString();
@@ -149,6 +161,9 @@ void Engine::receiveFilterMessage(Json::Value jsonRequest)
 
 void Engine::receiveRCodeMessage(Json::Value jsonRequest)
 {
+	if(currentEngineState != engineState::idle)
+		throw std::runtime_error("Unexpected rCode message, current state is not idle (" + engineStateToString(currentEngineState) + ")");
+
 	currentEngineState = engineState::rCode;
 
 	_rCode			= jsonRequest.get("rCode", "").asString();
@@ -157,6 +172,9 @@ void Engine::receiveRCodeMessage(Json::Value jsonRequest)
 
 void Engine::receiveComputeColumnMessage(Json::Value jsonRequest)
 {
+	if(currentEngineState != engineState::idle)
+		throw std::runtime_error("Unexpected compute column message, current state is not idle (" + engineStateToString(currentEngineState) + ")");
+
 	currentEngineState = engineState::computeColumn;
 
 	_computeColumnName	= jsonRequest.get("columnName", "").asString();
@@ -166,6 +184,9 @@ void Engine::receiveComputeColumnMessage(Json::Value jsonRequest)
 
 void Engine::receiveAnalysisMessage(Json::Value jsonRequest)
 {
+	if(currentEngineState != engineState::idle && currentEngineState != engineState::analysis)
+		throw std::runtime_error("Unexpected compute column message, current state is not idle or analysis (" + engineStateToString(currentEngineState) + ")");
+
 #ifdef PRINT_ENGINE_MESSAGES
 	std::cout << jsonRequest.toStyledString() << std::endl;
 	std::cout.flush();
@@ -174,13 +195,13 @@ void Engine::receiveAnalysisMessage(Json::Value jsonRequest)
 	int analysisId		= jsonRequest.get("id", -1).asInt();
 	performType perform	= performTypeFromString(jsonRequest.get("perform", "run").asString());
 
-	if (analysisId == _analysisId && _status == running)
+	if (analysisId == _analysisId && _analysisStatus == running)
 	{
 		// if the current running analysis has changed
 		if (perform == performType::init || (_analysisJaspResults && perform == performType::run))
-			_status = changed;
+			_analysisStatus = changed;
 		else
-			_status = aborted;
+			_analysisStatus = aborted;
 	}
 	else
 	{
@@ -189,16 +210,16 @@ void Engine::receiveAnalysisMessage(Json::Value jsonRequest)
 
 		switch(perform)
 		{
-		case performType::init:		_status = toInit;	break;
-		case performType::run:		_status = toRun;	break;
-		case performType::saveImg:	_status = saveImg;	break;
-		case performType::editImg:	_status = editImg;	break;
-		default:					_status = error;	break;
+		case performType::init:		_analysisStatus = toInit;	break;
+		case performType::run:		_analysisStatus = toRun;	break;
+		case performType::saveImg:	_analysisStatus = saveImg;	break;
+		case performType::editImg:	_analysisStatus = editImg;	break;
+		default:					_analysisStatus = error;	break;
 		}
 
 	}
 
-	if (_status == toInit || _status == toRun || _status == changed || _status == saveImg || _status == editImg)
+	if (_analysisStatus == toInit || _analysisStatus == toRun || _analysisStatus == changed || _analysisStatus == saveImg || _analysisStatus == editImg)
 	{
 		_analysisName			= jsonRequest.get("name",			Json::nullValue).asString();
 		_analysisTitle			= jsonRequest.get("title",			Json::nullValue).asString();
@@ -209,7 +230,7 @@ void Engine::receiveAnalysisMessage(Json::Value jsonRequest)
 		_analysisRevision		= jsonRequest.get("revision",		-1).asInt();
 		_imageOptions			= jsonRequest.get("image",			Json::nullValue);
 		_analysisJaspResults	= jsonRequest.get("jaspResults",	false).asBool();
-		_analysisRequiresInit	= jsonRequest.get("requiresInit", Json::nullValue).isNull() ? true : jsonRequest.get("requiresInit", true).asBool();
+		_analysisRequiresInit	= jsonRequest.get("requiresInit",	Json::nullValue).isNull() ? true : jsonRequest.get("requiresInit", true).asBool();
 		_ppi					= jsonRequest.get("ppi",			96).asInt();
 		_imageBackground		= jsonRequest.get("imageBackground", "white").asString();
 
@@ -225,39 +246,36 @@ void Engine::runAnalysis()
 #ifdef JASP_DEBUG
 	std::cout << "Engine::runAnalysis()" << std::endl;
 #endif
-	//waitForDatasetSync(); For SummaryStats, there is no data!!!
+	if (_analysisStatus == saveImg)	{ saveImage(); return; }
+	if (_analysisStatus == editImg)	{ editImage(); return; }
 
-	if (_status == saveImg)	{ saveImage(); return; }
-	if (_status == editImg)	{ editImage(); return; }
-
-	if (_status == empty || _status == aborted)
+	if (_analysisStatus == empty || _analysisStatus == aborted)
 		return;
 
-	if (_status == toInit && !_analysisJaspResults)	_status = initing;
-	else											_status = running;
+	if (_analysisStatus == toInit && !_analysisJaspResults)	_analysisStatus = initing;
+	else											_analysisStatus = running;
 
-	std::string perform = _status == initing ? "init" : "run";
-
+	std::string perform					= _analysisStatus == initing ? "init" : "run";
 
 	RCallback callback					= boost::bind(&Engine::callback, this, _1, _2);
 
 	_currentAnalysisKnowsAboutChange	= false;
 	_analysisResultsString				= rbridge_run(_analysisName, _analysisTitle, _analysisRequiresInit, _analysisDataKey, _analysisOptions, _analysisResultsMeta, _analysisStateKey, _analysisId, _analysisRevision, perform, _ppi, _imageBackground, callback, _analysisJaspResults);
 
-	if (_status == initing || _status == running)  // if status hasn't changed
+	if (_analysisStatus == initing || _analysisStatus == running)  // if status hasn't changed
 		receiveMessages();
 
-	if (_status == toInit || _status == aborted || _status == error || _status == exception)
+	if (_analysisStatus == toInit || _analysisStatus == aborted || _analysisStatus == error || _analysisStatus == exception)
 	{
 		// analysis was aborted, and we shouldn't send the results
 		return;
 	}
-	else if (_status == changed && (_currentAnalysisKnowsAboutChange == false || _analysisResultsString == "null"))
+	else if (_analysisStatus == changed && (_currentAnalysisKnowsAboutChange == false || _analysisResultsString == "null"))
 	{
 		// analysis was changed, and the analysis either did not know about the change (because it did not call a callback),
 		// or it could not incorporate the changes (returned null). In both cases it needs to be re-run, and results should not be sent
 
-		_status = toInit;
+		_analysisStatus = toInit;
 
 		if (_analysisResultsString == "null")
 			tempfiles_deleteList(tempfiles_retrieveList(_analysisId));
@@ -270,13 +288,13 @@ void Engine::runAnalysis()
 
 		if(!_analysisJaspResults)
 		{
-			_status		= _status == initing ? inited : complete;
+			_analysisStatus		= _analysisStatus == initing ? inited : complete;
 			_progress	= -1;
 			sendAnalysisResults();
 		}
 
 		currentEngineState = engineState::idle;
-		_status		= empty;
+		_analysisStatus		= empty;
 		removeNonKeepFiles(_analysisResults.isObject() ? _analysisResults.get("keep", Json::nullValue) : Json::nullValue);
 
 	}
@@ -293,11 +311,11 @@ void Engine::saveImage()
 
 	Json::Reader().parse(result, _analysisResults, false);
 
-	_status										= complete;
+	_analysisStatus										= complete;
 	_analysisResults["results"]["inputOptions"]	= _imageOptions;
 	_progress									= -1;
 	sendAnalysisResults();
-	_status										= empty;
+	_analysisStatus										= empty;
 	currentEngineState							= engineState::idle;
 
 }
@@ -312,16 +330,16 @@ void Engine::editImage()
 
 	Json::Reader().parse(result, _analysisResults, false);
 
-	_status				= complete;
+	_analysisStatus				= complete;
 	_progress			= -1;
 	sendAnalysisResults();
-	_status				= empty;
+	_analysisStatus				= empty;
 	currentEngineState	= engineState::idle;
 }
 
 analysisResultStatus Engine::getStatusToAnalysisStatus()
 {
-	switch (_status)
+	switch (_analysisStatus)
 	{
 	case inited:	return analysisResultStatus::inited;
 	case running:
@@ -355,7 +373,6 @@ void Engine::runFilter()
 #ifdef JASP_DEBUG
 	std::cout << "Engine::runFilter()" << std::endl;
 #endif
-	waitForDatasetSync();
 
 	try
 	{
@@ -406,7 +423,6 @@ void Engine::runRCode()
 #ifdef JASP_DEBUG
 	std::cout << "Engine::runRCode()" << std::endl;
 #endif
-	waitForDatasetSync();
 
 	std::string rCodeResult = jaspRCPP_evalRCode(_rCode.c_str());
 	
@@ -435,7 +451,7 @@ void Engine::sendRCodeResult(std::string rCodeResult)
 void Engine::sendRCodeError()
 {
 #ifdef JASP_DEBUG
-	std::cout << "R Code yielded error" << std::endl << std::flush;
+	std::cout << "R Code yielded error" << std::endl;
 #endif
 
 	Json::Value rCodeResponse		= Json::objectValue;
@@ -452,7 +468,6 @@ void Engine::runComputeColumn()
 #ifdef JASP_DEBUG
 	std::cout << "Engine::runComputeColumn()" << std::endl;
 #endif
-	waitForDatasetSync();
 
 	static const std::map<Column::ColumnType, std::string> setColumnFunction = {
 		{Column::ColumnTypeScale,		".setColumnDataAsScale"},
@@ -528,12 +543,12 @@ std::string Engine::callback(const std::string &results, int progress)
 {
 	receiveMessages();
 
-	if (_status == aborted || _status == toInit || _status == toRun)
+	if (_analysisStatus == aborted || _analysisStatus == toInit || _analysisStatus == toRun)
 		return "{ \"status\" : \"aborted\" }"; // abort
 
-	if (_status == changed && _currentAnalysisKnowsAboutChange)
+	if (_analysisStatus == changed && _currentAnalysisKnowsAboutChange)
 	{
-		_status = running;
+		_analysisStatus = running;
 		_currentAnalysisKnowsAboutChange = false;
 	}
 
@@ -547,7 +562,7 @@ std::string Engine::callback(const std::string &results, int progress)
 
 		sendAnalysisResults();
 	}
-	else if (progress >= 0 && _status == running)
+	else if (progress >= 0 && _analysisStatus == running)
 	{
 		_analysisResultsString	= "";
 		_analysisResults		= Json::nullValue;
@@ -557,21 +572,14 @@ std::string Engine::callback(const std::string &results, int progress)
 
 	}
 
-	if (_status == changed)
+	if (_analysisStatus == changed)
 	{
 		_currentAnalysisKnowsAboutChange = true; // because we're telling it now
 		return "{ \"status\" : \"changed\", \"options\" : " + _analysisOptions + " }";
 	}
-	else if (_status == aborted)	return "{ \"status\" : \"aborted\" }";
+	else if (_analysisStatus == aborted)	return "{ \"status\" : \"aborted\" }";
 
 	return "{ \"status\" : \"ok\" }";
-}
-
-void Engine::waitForDatasetSync()
-{
-	while(SharedMemory::retrieveDataSet(_parentPID)->synchingData())
-		Utils::sleep(10);
-
 }
 
 bool Engine::setColumnDataAsNominalOrOrdinal(bool isOrdinal, std::string columnName, std::vector<int> data, std::map<int, std::string> levels)
@@ -605,4 +613,52 @@ bool Engine::setColumnDataAsNominalOrOrdinal(bool isOrdinal, std::string columnN
 		if(isOrdinal)	return	provideDataSet()->columns()[columnName].overwriteDataWithOrdinal(data, levels);
 		else			return	provideDataSet()->columns()[columnName].overwriteDataWithNominal(data, levels);
 	}
+}
+
+void Engine::pauseEngine()
+{
+	switch(currentEngineState)
+	{
+	default:							/* everything not mentioned is fine */	break;
+	case engineState::analysis:			_analysisStatus = aborted;				break;
+	case engineState::filter:
+	case engineState::computeColumn:	throw std::runtime_error("Unexpected data synch during " + engineStateToString(currentEngineState) + " somehow, you should not expect to see this exception ever.");
+	};
+
+	currentEngineState = engineState::paused;
+
+	freeRBridgeColumns();
+	SharedMemory::unloadDataSet();
+	sendEnginePaused();
+}
+
+void Engine::resumeEngine()
+{
+	currentEngineState = engineState::idle;
+	sendEngineResumed();
+}
+
+
+void Engine::sendEnginePaused()
+{
+#ifdef JASP_DEBUG
+	std::cout << "Engine paused" << std::endl;
+#endif
+
+	Json::Value rCodeResponse		= Json::objectValue;
+	rCodeResponse["typeRequest"]	= engineStateToString(engineState::paused);
+
+	sendString(rCodeResponse.toStyledString());
+}
+
+void Engine::sendEngineResumed()
+{
+#ifdef JASP_DEBUG
+	std::cout << "Engine resuming" << std::endl;
+#endif
+
+	Json::Value rCodeResponse		= Json::objectValue;
+	rCodeResponse["typeRequest"]	= engineStateToString(engineState::resuming);
+
+	sendString(rCodeResponse.toStyledString());
 }
