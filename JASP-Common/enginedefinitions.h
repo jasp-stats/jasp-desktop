@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <string>
 
-enum class engineState	{ idle, analysis, filter, rCode, computeColumn };
+enum class engineState	{ idle, analysis, filter, rCode, computeColumn, paused, resuming };
 std::string engineStateToString(engineState e);
 engineState engineStateFromString(std::string e);
 

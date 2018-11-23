@@ -121,3 +121,13 @@ size_t DataSet::rowCount()	const
 
 	return min;
 }
+
+
+void DataSet::setSynchingData(bool newVal)
+{
+#ifdef JASP_DEBUG
+	std::cout << "dataset synching ? " << (newVal ? "yes" : "no") << std::endl;
+#endif
+
+	_synchingData = newVal;
+}

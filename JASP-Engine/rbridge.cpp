@@ -31,15 +31,15 @@ boost::function<void(std::string &, std::string &)>							rbridge_stateFileSourc
 boost::function<DataSet *()>	rbridge_dataSetSource = NULL;
 std::unordered_set<std::string> filterColumnsUsed;
 std::vector<std::string>		columnNamesInDataSet;
-boost::function<int()>			rbridge_getDataSetRowCount = NULL;
+boost::function<size_t()>		rbridge_getDataSetRowCount = NULL;
 
 boost::function<bool(std::string&, std::vector<double>&)>										rbridge_setColumnDataAsScaleEngine			= NULL;
 boost::function<bool(std::string&, std::vector<int>&,			std::map<int, std::string>&)>	rbridge_setColumnDataAsOrdinalEngine		= NULL;
 boost::function<bool(std::string&, std::vector<int>&,			std::map<int, std::string>&)>	rbridge_setColumnDataAsNominalEngine		= NULL;
 boost::function<bool(std::string&, std::vector<std::string>&)>									rbridge_setColumnDataAsNominalTextEngine	= NULL;
 
-char** rbridge_getLabels(const Labels &levels, int &nbLevels);
-char** rbridge_getLabels(const std::vector<std::string> &levels, int &nbLevels);
+char** rbridge_getLabels(const Labels &levels, size_t &nbLevels);
+char** rbridge_getLabels(const std::vector<std::string> &levels, size_t &nbLevels);
 
 
 void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction)
@@ -158,7 +158,7 @@ std::string rbridge_run(const std::string &name, const std::string &title, bool 
 	return str;
 }
 
-extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSet(int * colMax)
+extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSet(size_t * colMax)
 {
 	if (rbridge_dataSet == NULL)
 		rbridge_dataSet = rbridge_dataSetSource();
@@ -187,7 +187,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSet(int * colMax)
 	return returnThis;
 }
 
-extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFiltering(int * colMax)
+extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFiltering(size_t * colMax)
 {
 	if (rbridge_dataSet == NULL)
 		rbridge_dataSet = rbridge_dataSetSource();
@@ -195,6 +195,10 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFiltering(int * colMax)
 	Columns &columns = rbridge_dataSet->columns();
 
 	(*colMax) = filterColumnsUsed.size();
+
+	if(*colMax == 0)
+		return NULL;
+
 	RBridgeColumnType* colHeaders = (RBridgeColumnType*)calloc((*colMax), sizeof(RBridgeColumnType));
 
 	for(size_t iIn=0, iOut=0; iIn < columns.columnCount() && iOut < filterColumnsUsed.size(); iIn++)
@@ -219,7 +223,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFiltering(int * colMax)
 static RBridgeColumn*	datasetStatic = NULL;
 static int				datasetColMax = 0;
 
-extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHeaders, int colMax, bool obeyFilter)
+extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHeaders, size_t colMax, bool obeyFilter)
 {
 	if (colHeaders == NULL)
 		return NULL;
@@ -230,21 +234,21 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	Columns &columns = rbridge_dataSet->columns();
 
 	if (datasetStatic != NULL)
-		freeRBridgeColumns(datasetStatic, datasetColMax);
+		freeRBridgeColumns();
 
 	datasetColMax = colMax;
 	datasetStatic = static_cast<RBridgeColumn*>(calloc(datasetColMax + 1, sizeof(RBridgeColumn)));
 
-	int filteredRowCount = obeyFilter ? rbridge_dataSet->filteredRowCount() : rbridge_dataSet->rowCount();
+	size_t filteredRowCount = obeyFilter ? rbridge_dataSet->filteredRowCount() : rbridge_dataSet->rowCount();
 
 	// lets make some rownumbers/names for R that takes into account being filtered or not!
-	datasetStatic[colMax].ints		= static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
+	datasetStatic[colMax].ints		= filteredRowCount == 0 ? NULL : static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
 	datasetStatic[colMax].nbRows	= filteredRowCount;
 	int filteredRow					= 0;
 
-	for(size_t i=0; i<rbridge_dataSet->rowCount(); i++)
+	for(size_t i=0; i<rbridge_dataSet->rowCount() && i<datasetStatic[colMax].nbRows; i++)
 		if(!obeyFilter || (rbridge_dataSet->filterVector().size() > i && rbridge_dataSet->filterVector()[i]))
-			datasetStatic[colMax].ints[filteredRow++] = i + 1; //R needs 1-based index
+			datasetStatic[colMax].ints[filteredRow++] = int(i + 1); //R needs 1-based index
 
 
 	for (int colNo = 0; colNo < colMax; colNo++)
@@ -282,7 +286,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 			{
 				resultCol.isScale	= false;
 				resultCol.hasLabels	= false;
-				resultCol.ints		= (int*)calloc(filteredRowCount, sizeof(int));
+				resultCol.ints		= filteredRowCount == 0 ? NULL : static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
 
 				for(int value : column.AsInts)
 					if(rowNo < filteredRowCount && (!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++]))
@@ -293,7 +297,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 				resultCol.isScale	= false;
 				resultCol.hasLabels = true;
 				resultCol.isOrdinal = false;
-				resultCol.ints		= (int*)calloc(filteredRowCount, sizeof(int));
+				resultCol.ints		= filteredRowCount == 0 ? NULL : static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
 
 				for(int value : column.AsInts)
 					if(rowNo < filteredRowCount && (!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++]))
@@ -309,7 +313,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 		{
 			resultCol.isScale	= false;
 			resultCol.hasLabels	= true;
-			resultCol.ints		= (int*)calloc(filteredRowCount, sizeof(int));
+			resultCol.ints		= filteredRowCount == 0 ? NULL : static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
 			resultCol.isOrdinal = (requestedType == Column::ColumnTypeOrdinal);
 
 			if (columnType != Column::ColumnTypeScale)
@@ -337,7 +341,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 				resultCol.isScale	= false;
 				resultCol.hasLabels = true;
 				resultCol.isOrdinal = false;
-				resultCol.ints		= (int*)calloc(filteredRowCount, sizeof(int));
+				resultCol.ints		= filteredRowCount == 0 ? NULL : static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
 
 				std::set<int> uniqueValues;
 
@@ -394,7 +398,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	return datasetStatic;
 }
 
-extern "C" char** STDCALL rbridge_readDataColumnNames(int *colMax)
+extern "C" char** STDCALL rbridge_readDataColumnNames(size_t * colMax)
 {
 	if (rbridge_dataSet == NULL)
 			rbridge_dataSet = rbridge_dataSetSource();
@@ -419,12 +423,12 @@ extern "C" char** STDCALL rbridge_readDataColumnNames(int *colMax)
 	return staticResult;
 }
 
-extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBridgeColumnType* columnsType, int colMax)
+extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBridgeColumnType* columnsType, size_t colMax)
 {
 	if (!columnsType)
 		return NULL;
 
-	static int lastColMax = 0;
+	static size_t lastColMax = 0;
 	static RBridgeColumnDescription* resultCols = NULL;
 	if (resultCols != NULL)
 		freeRBridgeColumnDescription(resultCols, lastColMax);
@@ -566,17 +570,12 @@ extern "C" int	STDCALL rbridge_dataSetRowCount()
 
 void freeRBridgeColumns()
 {
-	if(datasetStatic != NULL)
-		freeRBridgeColumns(datasetStatic, datasetColMax);
-	datasetStatic = NULL;
-	datasetColMax = 0;
-}
+	if(datasetStatic == NULL)
+		return;
 
-void freeRBridgeColumns(RBridgeColumn *columns, int colMax)
-{
-	for (int i = 0; i < colMax; i++)
+	for (int i = 0; i < datasetColMax; i++)
 	{
-		RBridgeColumn& column = columns[i];
+		RBridgeColumn& column = datasetStatic[i];
 		free(column.name);
 		if (column.isScale)	free(column.doubles);
 		else				free(column.ints);
@@ -584,11 +583,14 @@ void freeRBridgeColumns(RBridgeColumn *columns, int colMax)
 		if (column.hasLabels)
 			freeLabels(column.labels, column.nbLabels);
 	}
-	free(columns[colMax].ints); //rownames/numbers
-	free(columns);
+	free(datasetStatic[datasetColMax].ints); //rownames/numbers
+	free(datasetStatic);
+
+	datasetStatic = NULL;
+	datasetColMax = 0;
 }
 
-void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, int colMax)
+void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, size_t colMax)
 {
 	for (int i = 0; i < colMax; i++)
 	{
@@ -600,14 +602,14 @@ void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, int colMax)
 	free(columns);
 }
 
-void freeLabels(char** labels, int nbLabels)
+void freeLabels(char** labels, size_t nbLabels)
 {
 	for (int i = 0; i < nbLabels; i++)
 		free(labels[i]);
 	free(labels);
 }
 
-char** rbridge_getLabels(const Labels &levels, int &nbLevels)
+char** rbridge_getLabels(const Labels &levels, size_t &nbLevels)
 {
 	char** results = NULL;
 	nbLevels = 0;
@@ -628,7 +630,7 @@ char** rbridge_getLabels(const Labels &levels, int &nbLevels)
 	return results;
 }
 
-char** rbridge_getLabels(const std::vector<std::string> &levels, int &nbLevels)
+char** rbridge_getLabels(const std::vector<std::string> &levels, size_t &nbLevels)
 {
 	char** results = NULL;
 	nbLevels = 0;

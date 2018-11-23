@@ -167,8 +167,10 @@ Q_DECLARE_METATYPE(Column::ColumnType)
 
 void MainWindow::makeConnections()
 {
-	_package->isModifiedChanged.connect(boost::bind(&MainWindow::packageChanged,	this,	_1));
-	_package->dataChanged.connect(		boost::bind(&MainWindow::packageDataChanged, this,	_1, _2, _3, _4, _5));
+	_package->isModifiedChanged.connect(boost::bind(&MainWindow::packageChanged,		this,	_1));
+	_package->dataChanged.connect(		boost::bind(&MainWindow::packageDataChanged,	this,	_1, _2, _3, _4, _5));
+	_package->pauseEngines.connect(		boost::bind(&MainWindow::pauseEngines,			this));
+	_package->resumeEngines.connect(	boost::bind(&MainWindow::resumeEngines,			this));
 
 	CONNECT_SHORTCUT("Ctrl+S",		&MainWindow::saveKeysSelected);
 	CONNECT_SHORTCUT("Ctrl+O",		&MainWindow::openKeysSelected);
@@ -1484,7 +1486,10 @@ void MainWindow::emptyValuesChangedHandler()
 				_package->setDataSet(SharedMemory::enlargeDataSet(_package->dataSet()));
 				colChanged = _package->dataSet()->resetEmptyValues(_package->emptyValuesMap());
 			}
-			catch (exception &e)	{	throw runtime_error("Out of memory: this data set is too large for your computer's available memory");	}
+			catch (exception &e)
+			{
+				throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
+			}
 		}
 		catch (exception e)	{	cout << "MainWindow::emptyValuesChangedHandler n " << e.what() << std::endl; 	}
 		catch (...)			{	cout << "MainWindow::emptyValuesChangedHandler something when wrong...\n" << std::endl; }
@@ -2007,4 +2012,14 @@ void MainWindow::finishComparingResults()
 
 		_application->exit(success ? 0 : 1);
 	}
+}
+
+void MainWindow::pauseEngines()
+{
+	_engineSync->pause();
+}
+
+void MainWindow::resumeEngines()
+{
+	_engineSync->resume();
 }

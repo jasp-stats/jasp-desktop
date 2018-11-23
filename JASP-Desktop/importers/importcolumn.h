@@ -4,8 +4,6 @@
 #include <string>
 #include <map>
 #include <vector>
-
-#include "importdataset.h"
 #include "column.h"
 
 class ImportDataSet;

@@ -25,7 +25,6 @@
 
 #endif
 
-
 #include <string>
 #include <map>
 #include <unordered_set>
@@ -44,11 +43,11 @@
  * application, and the R analyses
  */
 extern "C" {
-	RBridgeColumn*				STDCALL rbridge_readDataSet(RBridgeColumnType* columns, int colMax, bool obeyFilter);
-	RBridgeColumn*				STDCALL rbridge_readFullDataSet(int * colMax);
-	RBridgeColumn*				STDCALL rbridge_readDataSetForFiltering(int * colMax);
-	char**						STDCALL rbridge_readDataColumnNames(int *colMax);
-	RBridgeColumnDescription*	STDCALL rbridge_readDataSetDescription(RBridgeColumnType* columns, int colMax);
+	RBridgeColumn*				STDCALL rbridge_readDataSet(RBridgeColumnType* columns, size_t colMax, bool obeyFilter);
+	RBridgeColumn*				STDCALL rbridge_readFullDataSet(size_t * colMax);
+	RBridgeColumn*				STDCALL rbridge_readDataSetForFiltering(size_t * colMax);
+	char**						STDCALL rbridge_readDataColumnNames(size_t *colMax);
+	RBridgeColumnDescription*	STDCALL rbridge_readDataSetDescription(RBridgeColumnType* columns, size_t colMax);
 	bool						STDCALL rbridge_test(char** root);
 	bool						STDCALL rbridge_requestStateFileSource(const char **root, const char **relativePath);
 	bool						STDCALL rbridge_requestJaspResultsFileSource(const char **root, const char **relativePath);
@@ -82,9 +81,8 @@ extern "C" {
 	std::string rbridge_check();
 
 	void freeRBridgeColumns();
-	void freeRBridgeColumns(RBridgeColumn *columns, int colMax);
-	void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, int colMax);
-	void freeLabels(char** labels, int nbLabels);
+	void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, size_t colMax);
+	void freeLabels(char** labels, size_t nbLabels);
 
 	std::vector<bool>	rbridge_applyFilter(std::string & filterCode, std::string & generatedFilterCode);
 	std::string			rbridge_encodeColumnNamesToBase64(std::string & filterCode);

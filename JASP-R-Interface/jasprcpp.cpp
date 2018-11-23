@@ -589,7 +589,7 @@ void jaspRCPP_setColumnDataHelper_FactorsLevels(Rcpp::Vector<INTSXP> data, int *
 }
 
 
-RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns, int *colMax)
+RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns, size_t * colMax)
 {
 	std::map<std::string, ColumnType> columnsRequested;
 
@@ -598,7 +598,7 @@ RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, S
 		char** columns = readDataColumnNamesCB(colMax);
 		if (columns)
 		{
-			for (int i = 0; i < *colMax; i++)
+			for (size_t i = 0; i < *colMax; i++)
 				columnsRequested[columns[i]] = ColumnTypeUnknown;
 		}
 	}
@@ -631,7 +631,7 @@ RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, S
 	return result;
 }
 
-void freeRBridgeColumnType(RBridgeColumnType *columns, int colMax)
+void freeRBridgeColumnType(RBridgeColumnType *columns, size_t colMax)
 {
 	for (int i = 0; i < colMax; i++)
 		free(columns[i].name);
@@ -641,21 +641,25 @@ void freeRBridgeColumnType(RBridgeColumnType *columns, int colMax)
 
 Rcpp::DataFrame jaspRCPP_readFullDataSet()
 {
-	int colMax = 0;
+	size_t colMax = 0;
 	RBridgeColumn* colResults = readFullDataSetCB(&colMax);
 	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
 }
 
 Rcpp::DataFrame jaspRCPP_readFilterDataSet()
 {
-	int colMax = 0;
+	size_t colMax = 0;
 	RBridgeColumn* colResults = readFilterDataSetCB(&colMax);
+
+	if(colMax == 0)
+		return Rcpp::DataFrame();
+
 	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
 }
 
 Rcpp::DataFrame jaspRCPP_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)
 {
-	int colMax = 0;
+	size_t colMax = 0;
 	RBridgeColumnType* columnsRequested = jaspRCPP_marshallSEXPs(columns, columnsAsNumeric, columnsAsOrdinal, columnsAsNominal, allColumns, &colMax);
 	RBridgeColumn* colResults = readDataSetCB(columnsRequested, colMax, true);
 	freeRBridgeColumnType(columnsRequested, colMax);
@@ -663,7 +667,7 @@ Rcpp::DataFrame jaspRCPP_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SE
 	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
 }
 
-Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(const RBridgeColumn* colResults, int colMax)
+Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(const RBridgeColumn* colResults, size_t colMax)
 {
 	Rcpp::DataFrame dataFrame = Rcpp::DataFrame();
 
@@ -698,7 +702,7 @@ Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(const RBridgeColumn*
 
 Rcpp::DataFrame jaspRCPP_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)
 {
-	int colMax = 0;
+	size_t colMax = 0;
 	RBridgeColumnType* columnsRequested				= jaspRCPP_marshallSEXPs(columns, columnsAsNumeric, columnsAsOrdinal, columnsAsNominal, allColumns, &colMax);
 	RBridgeColumnDescription* columnsDescription	= readDataSetDescriptionCB(columnsRequested, colMax);
 
