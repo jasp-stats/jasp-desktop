@@ -62,7 +62,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 	{
 		std::string argFirst = argv[1];
 
-		if (argFirst.find("--") != 0)
+		if (argFirst[0] != '-')
 		{
 			const std::string	jaspExtension	= ".jasp",
 								unitTestArg		= "--unitTest";
@@ -93,7 +93,8 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 
 				checkTimeOut(argc, argv, 3, timeOut);
 			}
-			else if(argFirst.find("--remote-debugging-port=") == std::string::npos) //only other excepted argument
+			else if(argFirst.find("--remote-debugging-port=")	== std::string::npos &&
+					argFirst.find("-qmljsdebugger")				== std::string::npos) //only other excepted argument
 			{
 				std::cout	<< "JASP can be started without arguments, or the following: filename {--unitTest {--timeOut=10}} | --unitTestRecursive folder {--timeOut=10}\n"
 							<< "If a filename is supplied JASP will try to load it. If --unitTest is specified JASP will refresh all analyses in the JASP file and see if the output remains the same and will then exit with an errorcode indicating succes or failure.\n"
