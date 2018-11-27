@@ -37,7 +37,10 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
             } else {
                 if (typeof content === "string") {
                     if (html) {
-                        content = content.replace(/\u273B/g, "<small>\u273B</small>");
+						content = content.replace(/\u273B/g, "<small>\u273B</small>");
+						content = content.replace(/</gi, "&lt;");
+						content = content.replace(/>/gi, "&gt;");
+						content = content.replace(/&/gi, "&amp;");
                     }
                 }
                 formatted = { content: content, "class": clazz };
