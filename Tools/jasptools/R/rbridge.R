@@ -48,3 +48,5 @@
 .callbackNative <- function(...) {
   list(status="ok")
 }
+
+.imageBackground <- function(...) return("white")
