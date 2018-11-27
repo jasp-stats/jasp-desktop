@@ -678,7 +678,7 @@ Descriptives <- function(jaspResults, dataset, options, state=NULL)
 
   	fit <- lm(y ~ poly(x, 1, raw = TRUE), d)
   	lineObj <- .poly.predDescriptives(fit, line = FALSE, xMin= xBreaks[1], xMax = xBreaks[length(xBreaks)], lwd = lwd)
-  	rangeLineObj <- range(lineObj)
+  	rangeLineObj <- c(lineObj[1], lineObj[length(lineObj)])
   	yLimits <- range(c(pretty(yVar)), rangeLineObj)
 
   	if (is.null(yBreaks) || yLimits[1L] <= yBreaks[1L] || yLimits[2L] >= yBreaks[length(yBreaks)])

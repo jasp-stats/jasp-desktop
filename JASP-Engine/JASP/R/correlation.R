@@ -521,8 +521,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
     .plotFunc <- function() {
 
-        plotMat <- matrix(list(), l, l) 
-        
+        plotMat <- matrix(list(), l, l)
+
         # minor adjustments to plot margin to avoid cutting off the x-axis labels
 	       adjMargin <- ggplot2::theme(plot.margin = ggplot2::unit(c(.25, .40, .25, .25), "cm"))
 
@@ -539,11 +539,11 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                                 plotMat[[row, col]] <- .displayError(variable.statuses[[row]]$plottingError, cexText=cexText) + adjMargin
                             }
                         } else {
-                            
+
                             p <- JASPgraphs::drawAxis(xName = "", yName = "", force = TRUE) + adjMargin
                             p <- p + ggplot2::xlab("")
                             p <- p + ggplot2::ylab("")
-                            p <- JASPgraphs::themeJasp(p) 
+                            p <- JASPgraphs::themeJasp(p)
 
                             plotMat[[row, col]] <- p
                         }
@@ -559,12 +559,12 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                                 plotMat[[row, col]] <- .displayError(errorMessagePlot, cexText=cexText) + adjMargin
                             }
                         } else {
-                            
+
                             p <- JASPgraphs::drawAxis(xName = "", yName = "", force = TRUE) + adjMargin
                             p <- p + ggplot2::xlab("")
                             p <- p + ggplot2::ylab("")
                             p <- JASPgraphs::themeJasp(p)
-                            
+
                             plotMat[[row, col]] <- p
                         }
                     }
@@ -581,12 +581,12 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                                     plotMat[[row, col]] <- .displayError(errorMessagePlot, cexText=cexText) + adjMargin
                                 }
                             } else {
-                                
+
                                 p <- JASPgraphs::drawAxis(xName = "", yName = "", force = TRUE) + adjMargin
                                 p <- p + ggplot2::xlab("")
                                 p <- p + ggplot2::ylab("")
                                 p <- JASPgraphs::themeJasp(p)
-                                
+
                                 plotMat[[row, col]] <- p
                             }
                         }
@@ -616,14 +616,14 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                     }
                 }
             }
-            
+
         JASPgraphs::setGraphOption("fontsize", oldFontSize)
-        
+
         # slightly adjust the positions of the labels left and above the plots.
         labelPos <- matrix(.5, 4, 2)
         labelPos[1, 1] <- .55
         labelPos[4, 2] <- .65
-        
+
         p <- JASPgraphs::ggMatrixPlot(plotList = plotMat, leftLabels = .unv(variables), topLabels = .unv(variables),
   															scaleXYlabels = NULL, labelPos = labelPos)
 
@@ -761,7 +761,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
   	fit <- lm(y ~ poly(x, 1, raw = TRUE), d)
   	lineObj <- .poly.predDescriptives(fit, line = FALSE, xMin= xBreaks[1], xMax = xBreaks[length(xBreaks)], lwd = lwd)
-  	rangeLineObj <- range(lineObj)
+  	rangeLineObj <- c(lineObj[1], lineObj[length(lineObj)])
   	yLimits <- range(c(pretty(yVar)), rangeLineObj)
 
   	if (is.null(yBreaks) || yLimits[1L] <= yBreaks[1L] || yLimits[2L] >= yBreaks[length(yBreaks)])
@@ -821,7 +821,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
             ) + ggplot2::xlim(0,2) + ggplot2::ylim(0,2)
 
     lab <- vector("list")
-    
+
     if (length(tests) == 1) {
         ypos <- 1.5
     }
@@ -837,29 +837,29 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
     for (i in seq_along(tests)) {
         if (round(cor.test(xVar, yVar, method=tests[i])$estimate, 8) == 1){
             CIPossible <- FALSE
-    
+
             if(tests[i] == "pearson"){
                 lab[[i]] <- paste("italic(r) == '1.000'")
             }
-    
+
             if(tests[i] == "spearman"){
                 lab[[i]] <- paste("italic(rho) == '1.000'")
             }
-    
+
             if(tests[i] == "kendall"){
                 lab[[i]] <- paste("italic(tau) == '1.000'")
             }
         } else if (round(cor.test(xVar, yVar, method=tests[i])$estimate, 8) == -1){
             CIPossible <- FALSE
-    
+
             if(tests[i] == "pearson"){
                 lab[[i]] <- paste("italic(r) == '-1.000'")
             }
-    
+
             if(tests[i] == "spearman"){
                 lab[[i]] <- paste("italic(rho) == '-1.000'")
             }
-    
+
             if(tests[i] == "kendall"){
                 lab[[i]] <- paste("italic(tau) == '-1.000'")
             }
@@ -868,19 +868,19 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
                 #lab[[i]] <- paste0("italic(r) == ",as.character(formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format="f", digits= 3))[1])
                 lab[[i]] <- .corValueString(cor.test(xVar, yVar, method=tests[i])$estimate, "pearson", 3) # fix for rounding off decimals
             }
-    
+
             if(tests[i] == "spearman"){
                 #lab[[i]] <- paste0("italic(rho) == ",as.character(formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format="f", digits= 3)))
                 lab[[i]] <- .corValueString(cor.test(xVar, yVar, method=tests[i])$estimate, "spearman", 3) # fix for rounding off decimals
             }
-    
+
             if(tests[i] == "kendall"){
                 #lab[[i]] <- paste0("italic(tau) == ",as.character(formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format="f", digits= 3)))
                 lab[[i]] <- .corValueString(cor.test(xVar, yVar, method=tests[i])$estimate, "kendall", 3) # fix for rounding off decimals
             }
         }
     }
-        
+
     for(i in seq_along(tests)){
         p <- p + ggplot2::geom_text(data = data.frame(x = rep(1, length(ypos)), y = ypos), mapping = ggplot2::aes(x = x, y = y, label = unlist(lab)), size = 7, parse = TRUE)
     }
@@ -1001,7 +1001,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 }
 
 .corValueString <- function(corValue = NULL, testType = NULL, decimals = 3){
-    
+
     if (testType == "pearson"){
         string <- as.character(as.expression(substitute(italic(r)~"="~r2, list(r2 = formatC(round(corValue,decimals), format = "f", digits = decimals)))))
     } else if (testType == "spearman"){
@@ -1009,7 +1009,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
     } else if (testType == "kendall"){
         string <- as.character(as.expression(substitute(italic(tau)~"="~r2, list(r2 = formatC(round(corValue,decimals), format = "f", digits = decimals)))))
     }
-    
+
     return(string)
-    
+
 }
