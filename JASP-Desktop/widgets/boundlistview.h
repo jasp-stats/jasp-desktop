@@ -20,13 +20,13 @@
 #define BOUNDLISTVIEW_H
 
 
-#include "bound.h"
+#include "analysis/options/bound.h"
 
 #include <QStringListModel>
 #include <QListView>
 #include <QIcon>
 
-#include "options/optionvariables.h"
+#include "analysis/options/optionvariables.h"
 
 #include "availablefieldslistview.h"
 #include "dataset.h"

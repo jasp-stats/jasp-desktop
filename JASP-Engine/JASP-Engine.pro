@@ -166,7 +166,11 @@ OTHER_FILES  += \
 	JASP/R/networkanalysis.R
 
 DISTFILES += \
+<<<<<<< HEAD
     JASP/DESCRIPTION \
     JASP/NAMESPACE \
     JASP/R/distributionSamplers.R \
     JASP/R/friendlyConstructorFunctions.R
+=======
+    JASP/R/exposeUs.R
+>>>>>>> qmlFormsB

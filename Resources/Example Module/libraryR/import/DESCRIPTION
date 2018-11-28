@@ -1,0 +1,21 @@
+Package: import
+Type: Package
+Title: An Import Mechanism for R
+Version: 1.0.2
+Author: Stefan Milton Bache
+Maintainer: Stefan Milton Bache <stefan@stefanbache.dk>
+Description: This is an alternative mechanism for importing
+  objects from packages. The syntax allows for importing multiple objects
+  from a package with a single command in an expressive way. The import
+  package bridges some of the gap between using library (or require) and
+  direct (single-object) imports. Furthermore the imported objects are not
+  placed in the current environment.
+License: MIT + file LICENSE
+ByteCompile: TRUE
+URL: https://github.com/smbache/import
+BugReports: https://github.com/smbache/import/issues
+Packaged: 2015-04-09 17:26:29 UTC; shb
+NeedsCompilation: no
+Repository: CRAN
+Date/Publication: 2015-04-10 01:28:45
+Built: R 3.4.4; ; 2018-07-20 13:38:38 UTC; unix

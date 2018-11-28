@@ -24,23 +24,26 @@
 
 #include "dataset.h"
 
-#include "datasettablemodel.h"
+#include "data/datasettablemodel.h"
 #include "variablespage/levelstablemodel.h"
 #include "variablespage/labelfiltergenerator.h"
-#include "enginesync.h"
-#include "analyses.h"
+#include "engine/enginesync.h"
+#include "analysis/analyses.h"
 
-#include "analysisforms/analysisform.h"
-#include "asyncloader.h"
-#include "asyncloaderthread.h"
-#include "fileevent.h"
-#include "resultsjsinterface.h"
-#include "customwebenginepage.h"
-#include "columnsmodel.h"
-#include "jsonutilities.h"
-#include "computedcolumnsmodel.h"
+#include "analysis/analysisform.h"
+#include "data/asyncloader.h"
+#include "data/asyncloaderthread.h"
+#include "data/fileevent.h"
+#include "utilities/resultsjsinterface.h"
+#include "widgets/customwebenginepage.h"
+#include "data/columnsmodel.h"
+#include "utilities/jsonutilities.h"
+#include "data/computedcolumnsmodel.h"
 
-#include "ribbons/ribbonwidget.h"
+#include "modules/dynamicmodule.h"
+#include "modules/ribbonmodel.h"
+#include "modules/ribbonbuttonmodel.h"
+#include "modules/ribbonentry.h"
 #include "filtermodel.h"
 
 class ResultsJsInterface;
@@ -90,10 +93,11 @@ private:
 	bool closeRequestCheck(bool &isSaving);
 
 	AnalysisForm* loadForm(Analysis *analysis);
-	AnalysisForm* loadForm(const std::string name);
+	AnalysisForm* createAnalysisForm(Analysis *analysis);
 
 	void closeCurrentOptionsWidget();
 	void removeAnalysis(Analysis *analysis);
+	void addAnalysisFromDynamicModule(Modules::AnalysisEntry * entry);
 
 	QString escapeJavascriptString(const QString &str);
 	void getAnalysesUserData();
@@ -117,8 +121,13 @@ private:
 	void finishComparingResults();
 
 	bool filterShortCut();
+	void setupRibbonModels(QFileInfo);
+	void loadRibbonQML();
 	void loadQML();
-	void connectRibbonButton(RibbonWidget * ribbon)								{ connect(ribbon,										QOverload<QString>::of(&RibbonWidget::itemSelected),				this,	&MainWindow::itemSelected); }
+
+	QWebEngineView* getWebViewResults();
+	void			setCurrentTab(QString tabName);
+
 
 	void pauseEngines();
 	void resumeEngines();
@@ -130,6 +139,7 @@ signals:
 
 private slots:
 	void showForm(Analysis *analysis);
+	void showQMLWindow(QString urlQml);
 
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisImageSavedHandler(Analysis* analysis);
@@ -145,7 +155,8 @@ private slots:
 	void dataSetIORequest(FileEvent *event);
 	void dataSetIOCompleted(FileEvent *event);
 	void populateUIfromDataSet();
-	void itemSelected(const QString &item);
+	void ribbonEntrySelected(const QString &item);
+	void onMenuClicked(QAction *);
 
 	void adjustOptionsPanelWidth();
 	void splitterMovedHandler(int, int);
@@ -186,8 +197,11 @@ private slots:
 	void setProgressStatus(QString status, int progress);
 
 	void updateExcludeKey();
+	void analysisFormChangedHandler(Analysis *analysis);
 	void dataSetChanged(DataSet * dataSet);
 	void unitTestTimeOut();
+
+	void handleRibbonButtonClicked(QVariant);
 
 
 private:
@@ -205,9 +219,10 @@ private:
 	labelFilterGenerator			*_labelFilterGenerator;
 	ColumnsModel					*_columnsModel			= NULL;
 	ComputedColumnsModel			*_computedColumnsModel	= NULL;
-	FilterModel						*_filterModel			= NULL;
-	OnlineDataManager				*_odm;
-	
+	FilterModel						*_filterModel			= NULL;	
+	OnlineDataManager				*_odm					= NULL;
+	DynamicModules					*_dynamicModules		= NULL;
+
 	analysisFormMap					_analysisFormsMap;
 	TableModelVariablesAvailable	_availableVariablesModel;
 
@@ -238,6 +253,8 @@ private:
 	QSettings						_settings;
 	CustomWebEnginePage				*_customPage;
 	QApplication					*_application = nullptr;
+	RibbonModel						*_ribbonModel;
+	RibbonButtonModel				*_ribbonButtonModel;
 };
 
 #endif // MAINWIDGET_H

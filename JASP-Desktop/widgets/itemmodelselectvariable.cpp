@@ -18,7 +18,7 @@
 
 #include "itemmodelselectvariable.h"
 
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include "column.h"
 
 using namespace std;

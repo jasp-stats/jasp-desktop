@@ -15,14 +15,22 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
+<<<<<<< HEAD
 import QtQuick 2.10
+=======
+import QtQuick 2.11
+>>>>>>> qmlFormsB
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
 
 FocusScope {
     id: expanderWrapper
     implicitHeight: expanderButton.height + (expanded ? 15 + expanderArea.height : 0)
+<<<<<<< HEAD
     implicitWidth: form.formWidthAvailable
+=======
+    implicitWidth: parent.width
+>>>>>>> qmlFormsB
     anchors.topMargin: 15
     default property alias content: expanderArea.children
     
@@ -49,7 +57,11 @@ FocusScope {
         id: expanderButton
         controlType: "Expander"
         isBound: false
+<<<<<<< HEAD
         backgroundRectangle: expanderRectangle
+=======
+        controlBackground: expanderRectangle
+>>>>>>> qmlFormsB
         width: parent.width
         height: 22
         

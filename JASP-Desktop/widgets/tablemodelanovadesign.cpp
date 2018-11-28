@@ -23,8 +23,8 @@
 #include <QIcon>
 #include <QBrush>
 
-#include "qutils.h"
-#include "variableinfo.h"
+#include "utilities/qutils.h"
+#include "analysis/options/variableinfo.h"
 #include "column.h"
 
 using namespace std;

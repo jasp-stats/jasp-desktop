@@ -73,3 +73,6 @@ exists(/app/lib/*)	{ INSTALLPATH = /app/bin
  } else	{
   INSTALLPATH = /usr/bin
 }
+
+DEFINES += QT_NO_FOREACH #Common Qt we can just use the nice new ranged for from c++11 and higher, we dont need your help!
+QMAKE_CXXFLAGS += -Wunused-parameter

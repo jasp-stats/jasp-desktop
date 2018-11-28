@@ -3,6 +3,7 @@
 #include <set>
 #include <sstream>
 #include <queue>
+#include "enumutilities.h"
 #ifdef JASP_R_INTERFACE_LIBRARY
 #include "jsonredirect.h"
 #else
@@ -11,6 +12,7 @@
 
 void jaspPrint(std::string msg);
 
+<<<<<<< HEAD
 enum class jaspObjectType { unknown, container, table, plot, json, list, results, html, state };
 
 #define JASPOBJECT_DEFAULT_POSITION 9999
@@ -18,6 +20,10 @@ enum class jaspObjectType { unknown, container, table, plot, json, list, results
 
 std::string		jaspObjectTypeToString(jaspObjectType type);
 jaspObjectType	jaspObjectTypeStringToObjectType(std::string type);
+=======
+DECLARE_ENUM(jaspObjectType, unknown, container, table, plot, json, list, results, html, state);
+jaspObjectType jaspObjectTypeStringToObjectType(std::string type);
+>>>>>>> qmlFormsB
 
 std::string					stringExtend(std::string & str, size_t len, char kar = ' ');
 std::string					stringRemove(std::string str, char kar = ' ');

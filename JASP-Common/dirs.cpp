@@ -292,3 +292,16 @@ string Dirs::libraryDir()
 
     return dir;
 }
+
+string Dirs::QMLAnalysesDir()
+{
+    string dir = exeDir();
+
+#ifdef __APPLE__
+	dir += "/../Resources";
+#else
+	dir += "/Resources";
+#endif
+
+    return dir;
+}

@@ -16,17 +16,34 @@
 // <http://www.gnu.org/licenses/>.
 //
 
+<<<<<<< HEAD
 import QtQuick 2.10
 import QtQuick.Controls 2.3
+=======
+import QtQuick 2.11
+import QtQuick.Controls 2.4
+>>>>>>> qmlFormsB
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
 
 JASPControl {
     id: textField
     controlType: "TextField"
+<<<<<<< HEAD
     implicitHeight: control.height
     implicitWidth: control.width + (beforeLabel.visible ? (labelSpacing + beforeLabel.implicitWidth) : 0) + (afterLabel.visible ? (labelSpacing + afterLabel.implicitWidth) : 0)
     property alias text: control.text
+=======
+    implicitHeight: row.implicitHeight
+    implicitWidth: row.implicitWidth
+    controlBackground: useExternalBorder ? externalControlBackround : controlBackground
+    property alias text: control.text
+    property alias value: control.text
+    property int textWidth: Theme.textFieldWidth
+    property int textHeight: Theme.textFieldHeight
+    property bool useExternalBorder: true
+    property alias placeholderText: control.placeholderText
+>>>>>>> qmlFormsB
     property alias validator: control.validator
     property alias control: control
     property alias label: beforeLabel
@@ -35,6 +52,7 @@ JASPControl {
     property string inputType: "string"
     property int labelSpacing: 4
     signal editingFinished()
+<<<<<<< HEAD
     
     Component.onCompleted: {
         control.editingFinished.connect(editingFinished);
@@ -57,6 +75,56 @@ JASPControl {
             rightPadding: 5
             background: backgroundRectangle
         }
+=======
+    signal textEdited()
+    signal pressed()
+    signal released()
+    
+    Component.onCompleted: {
+        control.editingFinished.connect(editingFinished);
+        control.textEdited.connect(textEdited);
+        control.pressed.connect(pressed);
+        control.released.connect(released);
+    }
+    
+    RowLayout {
+        id: row
+        spacing: labelSpacing
+        Label {
+            id: beforeLabel
+            visible: beforeLabel.text && textField.visible ? true : false
+        }
+        
+        TextField {
+            id: control
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.preferredWidth: textField.textWidth
+            Layout.preferredHeight: textField.textHeight
+            focus: true
+            padding: 1
+            rightPadding: 5
+            selectByMouse: true
+            background: Rectangle {
+                id: controlBackground
+                color: Theme.controlBackgroundColor
+                border.width: textField.useExternalBorder && !control.activeFocus ? 1 : 0
+                border.color: textField.useExternalBorder ? Theme.borderColor : "transparent"
+            }
+            
+            Rectangle {
+                id: externalControlBackround
+                height: textField.textHeight + 6
+                width: textField.textWidth + 6
+                color: "transparent"
+                border.width: 1
+                border.color: "transparent"
+                anchors.centerIn: parent
+                visible: textField.useExternalBorder
+            }
+        }
+            
+>>>>>>> qmlFormsB
         Label {
             id: afterLabel
             visible: afterLabel.text && textField.visible ? true : false

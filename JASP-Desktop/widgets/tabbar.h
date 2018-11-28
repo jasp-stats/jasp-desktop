@@ -32,8 +32,10 @@
 #include "mainwindow.h"
 
 class PreferencesDialog;
+class DynamicModules;
 
-#include "aboutdialog.h"
+#include "gui/aboutdialog.h"
+#include "modules/ribbonmodel.h"
 
 class TabBar : public QWidget
 {
@@ -41,7 +43,11 @@ class TabBar : public QWidget
 
 public:
 	explicit TabBar(QWidget *parent = 0);
+<<<<<<< HEAD
 	void init(MainWindow * mainWindow);
+=======
+	void init(DynamicModules * dynamicModules, RibbonModel * ribbonModel);
+>>>>>>> qmlFormsB
 
 	void addTab(QString name);
 	void addModulesPlusButton();
@@ -52,6 +58,7 @@ public:
 	void setCurrentTab(QString name);
 	QStringList getCurrentModules();
 	void setModulePlusMenu(QStringList usedModules = QStringList());
+	void addModuleInstallerEntryToPlusMenu();
 
 	void setExactPValues(bool exactPValues);
     void setFixDecimals(QString numDecimals);
@@ -60,6 +67,7 @@ public:
 	void useDefaultPPI();
 	void setPPI(int ppi);
 	void setImageBackground(QString value);
+
 
 
 	int count() const;
@@ -101,6 +109,9 @@ private:
 	PreferencesDialog *_preferencesDialog;
 	QPushButton *_modulesButton;
 	QSignalMapper *_signalModulesMapper;
+
+	DynamicModules * _dynamicModules;
+	RibbonModel * _ribbonModel;
 
 };
 

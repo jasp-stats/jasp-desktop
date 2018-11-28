@@ -1,0 +1,11 @@
+Version 1.0.2
+=============
+
+* You can now specify which library to use, and only one library is ever
+  used in a single call: there is no ambiguity about where imports come from.
+* There is a distinction between using double- and triple colon syntax;
+  analogously to using :: and ::: operators.
+* If the package is attached (e.g. via library) there is a startup message
+  informing the user that the package is not meant to be attached.
+* It is only possible to use the functions with the `import::` / `import:::`
+  syntax.

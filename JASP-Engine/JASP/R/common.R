@@ -173,8 +173,10 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 }
 
 
-runJaspResults <- function(name, title, dataKey, options, stateKey)
+runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall=name)
 {
+  print("runJaspResults called!");
+
 	if (identical(.Platform$OS.type, "windows"))
 		compiler::enableJIT(0)
 
@@ -192,7 +194,9 @@ runJaspResults <- function(name, title, dataKey, options, stateKey)
     setwd(root)
   }
 
-  analysis    <- eval(parse(text=name))
+  print("analysis    <- eval(parse(text=functionCall)), analysis: ");
+  analysis    <- eval(parse(text=functionCall))
+  print(analysis)
 
   dataset <- NULL
   if (! is.null(dataKey)) {
@@ -1478,7 +1482,6 @@ isTryError <- function(obj){
 
 	dataset
 }
-
 
 .vdf <- function(df, columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, exclude.na.listwise=c(), ...) {
 	new.df <- NULL

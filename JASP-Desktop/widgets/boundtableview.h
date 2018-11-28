@@ -20,7 +20,7 @@
 #define BOUNDTABLEVIEW_H
 
 #include "tableview.h"
-#include "bound.h"
+#include "analysis/options/bound.h"
 #include "boundmodel.h"
 
 class BoundTableView : public TableView, public Bound

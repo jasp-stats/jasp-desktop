@@ -24,7 +24,7 @@
 #include <QDebug>
 #include <QDir>
 
-#include "application.h"
+#include "utilities/application.h"
 
 void checkTimeOut(int argc, char *argv[], int index, int & timeOut)
 {

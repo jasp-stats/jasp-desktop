@@ -40,26 +40,42 @@
  * considered orphaned and is deleted.
  */
 
-void tempfiles_init(long sessionId);
-void tempfiles_attach(long sessionId);
-void tempfiles_heartbeat();
+class TempFiles
+{
+	typedef std::vector<std::string> stringvec;
 
-std::string tempfiles_createSpecific_clipboard(const std::string &filename);
-void tempfiles_purgeClipboard();
+public:
+	static void			init(long _sessionId);
+	static void			attach(long _sessionId);
+	static void			heartbeat();
 
-void tempfiles_create(const std::string &extension, int id, std::string &root, std::string &relativePath);
-void tempfiles_createSpecific(const std::string &name, int id, std::string &root, std::string &relativePath);
-std::string tempfiles_createSpecific(const std::string &dir, const std::string &filename);
+	static std::string	createSpecific_clipboard(const std::string &filename);
+	static void			purgeClipboard();
 
-std::vector<std::string> tempfiles_retrieveList(int id = -1);
-std::string tempfiles_sessionDirName();
+	static void			create(const std::string &extension, int id, std::string &root, std::string &relativePath);
+	static void			createSpecific(const std::string &name, int id, std::string &root, std::string &relativePath);
+	static std::string	createSpecific(const std::string &dir, const std::string &filename);
+	static std::string	createTmpFolder();
 
-void tempfiles_deleteList(const std::vector<std::string> &files);
+	static std::string	sessionDirName() { return _sessionDirName; }
+	static stringvec	retrieveList(int id = -1);
 
-void tempfiles_deleteAll(int id = -1);
-void tempfiles_deleteOrphans();
+	static void			deleteList(const stringvec &files);
+	static void			deleteAll(int id = -1);
+	static void			deleteOrphans();
 
-void tempFiles_addShmemFileName(std::string &name);
+	static void			addShmemFileName(std::string &name);
+
+private:
+						TempFiles() {}
+	static long			_sessionId;
+	static std::string	_sessionDirName,
+						_statusFileName,
+						_clipboard;
+	static int			_nextFileId,
+						_nextTmpFolderId;
+	static stringvec	_shmemNames;
+};
 
 
 #endif // TEMPFILES_H

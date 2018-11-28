@@ -16,11 +16,23 @@
 // <http://www.gnu.org/licenses/>.
 //
 
+<<<<<<< HEAD
 import QtQuick 2.10
+=======
+import QtQuick 2.11
+>>>>>>> qmlFormsB
 import JASP.Theme 1.0
 
 Button {
     id: button
+<<<<<<< HEAD
+=======
+    readonly property string iconToLeft: "qrc:/images/arrow-left.png"
+    readonly property string iconToRight: "qrc:/images/arrow-right.png"
+    
+    hasTabFocus: false    
+    
+>>>>>>> qmlFormsB
     property var leftSource;
     property var rightSource;
     property bool leftToRight: true
@@ -28,6 +40,7 @@ Button {
     property var source: leftToRight ? leftSource : rightSource;
     property var target: leftToRight ? rightSource : leftSource;
 
+<<<<<<< HEAD
     readonly property string iconToLeft: "qrc:/images/arrow-left.png"
     readonly property string iconToRight: "qrc:/images/arrow-right.png"
     text: ""
@@ -46,6 +59,17 @@ Button {
         source: leftToRight ? iconToRight : iconToLeft
     }
 
+=======
+    image.source: leftToRight ? iconToRight : iconToLeft
+    
+    control.width: 40
+    control.height: 20
+    
+    x: (rightSource.x + leftSource.width - control.width) / 2
+    y: rightSource.y + rightSource.rectangleY
+
+    
+>>>>>>> qmlFormsB
     onClicked: source.moveSelectedItems(target)
 
     function setIconToRight() {

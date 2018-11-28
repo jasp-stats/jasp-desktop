@@ -26,7 +26,7 @@
 #include <QRadioButton>
 #include <QGroupBox>
 
-#include "bound.h"
+#include "analysis/options/bound.h"
 #include "itemmodelselectitem.h"
 #include "groupbox.h"
 

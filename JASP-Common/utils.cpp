@@ -25,7 +25,7 @@
 #endif
 
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/foreach.hpp>
+
 #include <boost/filesystem.hpp>
 #include <boost/nowide/convert.hpp>
 #include <boost/algorithm/string/predicate.hpp>
@@ -238,7 +238,7 @@ string Utils::osPath(const filesystem::path &path)
 
 void Utils::remove(vector<string> &target, const vector<string> &toRemove)
 {
-	BOOST_FOREACH (const string &remove, toRemove)
+	for (const string &remove : toRemove)
 	{
 		target.erase(std::remove_if(target.begin(), target.end(), [&remove](const string& str){return (str == remove);}), target.end());
 	}

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.10
+import QtQuick 2.11
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
 
@@ -25,8 +25,8 @@ GridLayout {
     rowSpacing: Theme.rowSpacing
     columnSpacing: Theme.columnSpacing
     columns: 2
-    width: parent.width
-        
+    Layout.minimumWidth: parent.width
+    
     Component.onCompleted: {
         for (var i = 0; i < children.length; i++)
             children[i].Layout.alignment = Qt.AlignTop | Qt.AlignLeft

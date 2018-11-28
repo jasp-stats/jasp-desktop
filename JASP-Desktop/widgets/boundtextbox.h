@@ -22,13 +22,20 @@
 #include <QLineEdit>
 #include <QValidator>
 
+<<<<<<< HEAD
 #include "options/optioninteger.h"
 #include "options/optionintegerarray.h"
 #include "options/optiondoublearray.h"
 #include "options/optionnumber.h"
 #include "options/optionstring.h"
+=======
+#include "analysis/options/optioninteger.h"
+#include "analysis/options/optionintegerarray.h"
+#include "analysis/options/optionnumber.h"
+#include "analysis/options/optionstring.h"
+>>>>>>> qmlFormsB
 
-#include "bound.h"
+#include "analysis/options/bound.h"
 
 class BoundTextBox : public QLineEdit, public Bound
 {

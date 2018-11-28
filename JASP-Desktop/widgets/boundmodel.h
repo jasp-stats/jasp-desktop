@@ -19,7 +19,7 @@
 #ifndef BOUNDMODEL_H
 #define BOUNDMODEL_H
 
-#include "options/option.h"
+#include "analysis/options/option.h"
 
 class BoundModel
 {

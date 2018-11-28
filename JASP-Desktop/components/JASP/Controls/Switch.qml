@@ -16,13 +16,22 @@
 // <http://www.gnu.org/licenses/>.
 //
 
+<<<<<<< HEAD
 import QtQuick 2.10
 import QtQuick.Controls 2.3
+=======
+import QtQuick 2.11
+import QtQuick.Controls 2.4
+>>>>>>> qmlFormsB
 import JASP.Theme 1.0
 
 JASPControl {
     controlType: "Switch"
     implicitWidth: control.width; implicitHeight: control.height
+<<<<<<< HEAD
+=======
+    useDefaultBackground: true
+>>>>>>> qmlFormsB
     property alias text: control.text
     property alias checked: control.checked
     signal clicked();
@@ -36,9 +45,13 @@ JASPControl {
         height: control.indicator.height + 4
         width: control.indicator.width + label.implicitWidth + control.spacing + 6
         focus: true
+<<<<<<< HEAD
         
         background: backgroundRectangle
         
+=======
+                
+>>>>>>> qmlFormsB
         indicator: Rectangle {
             id: switchHandle
             width: Theme.switchHeight * 2.2

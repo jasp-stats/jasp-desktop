@@ -19,11 +19,11 @@
 #ifndef TABLEMODELANOVAWITHINSUBJECTCELLS_H
 #define TABLEMODELANOVAWITHINSUBJECTCELLS_H
 
-#include "options/optionvariables.h"
+#include "analysis/options/optionvariables.h"
 #include "widgets/tablemodel.h"
 #include "boundmodel.h"
 #include "tablemodelvariablesavailable.h"
-#include "variableinfo.h"
+#include "analysis/options/variableinfo.h"
 
 #include "common.h"
 

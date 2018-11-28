@@ -1,0 +1,11 @@
+Package: ExampleModulePkg
+Type: Package
+Title: A generated package for JASP's ExampleModule Module
+Version: 1.0
+Date: 2018-07-20
+Author: Someone
+Maintainer: Someone <Someone@Somewhere.org>
+Description: An example of a module that doesn't do much except show the general structure of a JASP module and how it can be set up.
+License: GPL (>= 2)
+Imports: devtools, import (>= 1.0.2)
+Built: R 3.4.4; ; 2018-07-20 13:38:38 UTC; unix

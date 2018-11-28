@@ -16,7 +16,11 @@
 // <http://www.gnu.org/licenses/>.
 //
 
+<<<<<<< HEAD
 import QtQuick 2.10
+=======
+import QtQuick 2.11
+>>>>>>> qmlFormsB
 import JASP.Controls 1.0
 import JASP.Theme 1.0
 
@@ -32,6 +36,10 @@ TextField {
     inputType: "percent"
     control.width: Theme.font.pixelSize * (with1Decimal ? 3 : 2)
     validator: with1Decimal ? doubleVal : intVal
+<<<<<<< HEAD
     text: Number.parseInt(defaultValue);
+=======
+    value: Number.parseInt(defaultValue);
+>>>>>>> qmlFormsB
     afterLabel.text: showPercent ? "%" : ""
 }

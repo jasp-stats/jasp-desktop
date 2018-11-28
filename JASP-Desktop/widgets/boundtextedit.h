@@ -22,7 +22,7 @@
 #include <QTextEdit>
 #include <QLabel>
 
-#include "bound.h"
+#include "analysis/options/bound.h"
 #include "common.h"
 #include "textmodellavaan.h"
 

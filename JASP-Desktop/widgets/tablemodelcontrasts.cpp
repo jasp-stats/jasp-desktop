@@ -18,7 +18,7 @@
 
 #include "tablemodelcontrasts.h"
 
-#include "options/optionvariables.h"
+#include "analysis/options/optionvariables.h"
 
 #include <QColor>
 #include <QBrush>

@@ -18,7 +18,12 @@
 
 VariablesList {
     id: variablesList
+<<<<<<< HEAD
     anchors.right: parent.right
     anchors.rightMargin: 50 // Due to the f...g OK button
     listViewType: "assignedVariables"    
+=======
+    listViewType: "AssignedVariables"
+    dropMode: "Insert"
+>>>>>>> qmlFormsB
 }

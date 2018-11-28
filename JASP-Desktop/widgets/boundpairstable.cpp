@@ -20,7 +20,7 @@
 #include "QDebug"
 #include <QHeaderView>
 
-#include <boost/foreach.hpp>
+
 
 #include <QHBoxLayout>
 #include <QLabel>

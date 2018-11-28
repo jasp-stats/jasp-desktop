@@ -1,0 +1,64 @@
+{
+	"moduleDescription" :
+	{
+		"title" : 			"Example Module",
+		"description" : 	"An example of a module that doesn't do much except show the general structure of a JASP module and how it can be set up.",
+		"version":			1,
+		"author":			"Someone",
+		"maintainer":		"Someone <Someone@Somewhere.org>",
+		"license":			"GPL (>= 2)"
+	},
+
+	"requiredPackages":
+	[
+		{	"package": "devtools",		"version": null		},
+		{	"package": "import",		"version": "1.0.2"	}
+	],
+
+	"ribbonEntries":
+	[
+		{
+			"title": "Ribbon Entry",
+			"icon": "QuestionMark.png",
+			"analyses":
+			[
+				{
+					"title":		"Example 0",
+					"qml":			"example0.qml",
+					"function":		"example0_run",
+					"usesJaspResults":	true
+				},
+				{
+					"title":		"Example 1",
+					"qml":			"example1.qml",
+					"function":		"example1_run",
+					"usesJaspResults":	true
+				},
+				{
+					"title":		"Example 2",
+					"qml":			"example2.qml",
+					"function":		"example2_run",
+					"usesJaspResults":	false
+				}
+			]
+		},
+
+		{
+			"title": "Ribbon Entry 2",
+			"icon": "QuestionMark.png",
+			"analyses":
+			[
+				{
+					"title":		"Example 3",
+					"qml":			"example3.qml",
+					"function":		"example3_run"
+				},
+				{
+					"title":		"Example 4",
+					"qml": 			"Descriptives or some other analysis",
+					"function":		"example4_run"
+				}
+			]
+		}
+	]
+}

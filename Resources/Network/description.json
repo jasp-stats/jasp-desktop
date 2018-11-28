@@ -1,0 +1,35 @@
+{
+	"moduleDescription" :
+	{
+		"title" : 		"Network",
+		"description" : "Network module.",
+		"version":		1,
+		"author":		"JASP Team",
+		"maintainer":	"JASP Team <jasp-stats.org>",
+		"website":		"jasp-stats.org",
+		"license":		"GPL (>= 2)",
+		"dynamic":		false
+	},
+
+	"requiredPackages":	[],
+
+	"ribbonEntries":
+	[
+		{
+			"title": 	"Network",
+			"icon": 	"analysis-network.svg",
+			"analyses":  [
+				{
+					"title":	"Network",
+					"function":	"NetworkAnalysis"
+				},
+				{
+				},
+				{
+					"title":	"QML Network",
+					"function":	"QMLNetworkAnalysis"
+				}
+			]
+		}
+	]
+}

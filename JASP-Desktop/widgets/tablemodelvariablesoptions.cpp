@@ -18,15 +18,15 @@
 
 #include "tablemodelvariablesoptions.h"
 
-#include <boost/foreach.hpp>
+
 #include <sstream>
 
 #include <QSize>
 
-#include "options/optionlist.h"
-#include "options/optionterms.h"
+#include "analysis/options/optionlist.h"
+#include "analysis/options/optionterms.h"
 
-#include "qutils.h"
+#include "utilities/qutils.h"
 
 using namespace std;
 
@@ -162,14 +162,12 @@ void TableModelVariablesOptions::setVariables(const Terms &variables)
     std::vector<Options*> oldRows = _rows;
     _rows.clear();
 
-
-    //
-	BOOST_FOREACH(const Term &term, variables)
+	for(const Term &term : variables)
 	{
 		Options *row = static_cast<Options *>(_boundTo->rowTemplate()->clone());
         OptionTerms *termCell = static_cast<OptionTerms *>(row->get(0));
         bool found = false;
-        BOOST_FOREACH(Options* option, oldRows)
+		for(Options* option : oldRows)
         {
             Json::Value json = option->asJSON();
             string var = json["variable"].asString();

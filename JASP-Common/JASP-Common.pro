@@ -29,8 +29,6 @@ windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -D__WIN32__ -DBOOST_I
 INCLUDEPATH += $$PWD/
 
 SOURCES += \
-	analysis.cpp \
-	analysisloader.cpp \
 	appinfo.cpp \
 	base64.cpp \
 	base64/cdecode.cpp \
@@ -39,27 +37,11 @@ SOURCES += \
 	columns.cpp \
 	datablock.cpp \
 	dataset.cpp \
-	datasetpackage.cpp \
 	dirs.cpp \
 	filereader.cpp \
 	ipcchannel.cpp \
 	label.cpp \
 	labels.cpp \
-	options/option.cpp \
-	options/optionboolean.cpp \
-	options/optiondoublearray.cpp \
-	options/optioninteger.cpp \
-	options/optionintegerarray.cpp \
-	options/optionlist.cpp \
-	options/optionnumber.cpp \
-	options/options.cpp \
-	options/optionstable.cpp \
-	options/optionstring.cpp \
-	options/optionterm.cpp \
-	options/optionterms.cpp \
-	options/optionvariable.cpp \
-	options/optionvariables.cpp \
-	options/optionvariablesgroups.cpp \
 	processinfo.cpp \
 	sharedmemory.cpp \
 	tempfiles.cpp \
@@ -72,8 +54,6 @@ SOURCES += \
     timers.cpp
 
 HEADERS += \
-	analysis.h \
-	analysisloader.h \
 	appinfo.h \
 	base64.h \
 	base64/cdecode.h \
@@ -95,7 +75,6 @@ HEADERS += \
 	common.h \
 	datablock.h \
 	dataset.h \
-	datasetpackage.h \
 	dirs.h \
 	filereader.h \
 	ipcchannel.h \
@@ -103,22 +82,6 @@ HEADERS += \
 	labels.h \
 	libzip/archive.h \
 	libzip/archive_entry.h \
-	options/option.h \
-	options/optionboolean.h \
-	options/optiondoublearray.h \
-	options/optioni.h \
-	options/optioninteger.h \
-	options/optionintegerarray.h \
-	options/optionlist.h \
-	options/optionnumber.h \
-	options/options.h \
-	options/optionstable.h \
-	options/optionstring.h \
-	options/optionterm.h \
-	options/optionterms.h \
-	options/optionvariable.h \
-	options/optionvariables.h \
-	options/optionvariablesgroups.h \
 	processinfo.h \
 	sharedmemory.h \
 	tempfiles.h \
@@ -130,7 +93,8 @@ HEADERS += \
     computedcolumns.h \
     enginedefinitions.h \
     options/optioncomputedcolumn.h \
-    timers.h
+    timers.h \
+  	enumutilities.h
 
 #exists(/app/lib/*) should only be true when building flatpak
 #macx | windows | exists(/app/lib/*)

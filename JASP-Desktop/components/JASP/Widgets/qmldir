@@ -1,0 +1,4 @@
+module JASP.Widgets
+BayesFactorType 1.0 BayesFactorType.qml
+Divider 1.0 Divider.qml
+SubjectivePriors 1.0 SubjectivePriors.qml

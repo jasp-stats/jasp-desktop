@@ -220,18 +220,13 @@ bool TableModelPairsAssigned::canDropMimeData(const QMimeData *data, Qt::DropAct
 		Terms variables;
 		variables.set(encodedData);
 
-		foreach (const Term &variable, variables)
-		{
+		for (const Term &variable : variables)
 			if ( ! isAllowed(variable))
 				return false;
-		}
-
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+
+	return false;
 }
 
 bool TableModelPairsAssigned::isAllowed(const Term &term) const
@@ -267,7 +262,7 @@ void TableModelPairsAssigned::mimeDataMoved(const QModelIndexList &indexes)
 
 	qSort(sorted.begin(), sorted.end(), qGreater<QModelIndex>());
 
-	foreach (const QModelIndex &index, sorted)
+	for (const QModelIndex &index : sorted)
 	{
 		int row = index.row();
 		if (row != lastRowDeleted)
@@ -286,7 +281,7 @@ void TableModelPairsAssigned::assignToOption()
 	{
 		vector<vector<string> > pairs;
 
-		foreach (const QStringList &qPair, _values)
+		for (const QStringList &qPair : _values)
 		{
 			vector<string> pair;
 			pair.push_back(qPair.first().toStdString());
