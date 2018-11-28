@@ -1069,65 +1069,83 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 # 2.4 The Marsman MH sampler
 
-.logTarget <- function(z, n, r, kappa) {
-	# z is Fisher's transformation for r, but also use it for rho
-	# The Fisher z transform and the log (likelihood*prior*Jacobian) of the tranformation
-	(0.5*(n - 1))*log(1 - tanh(z)^2) - (n - 1 - 0.5)*log(1 - tanh(z)*r)+log(1-tanh(z)^2)/kappa
+# .logTarget <- function(z, n, r, kappa) {
+# 	# z is Fisher's transformation for r, but also use it for rho
+# 	# The Fisher z transform and the log (likelihood*prior*Jacobian) of the tranformation
+# 	(0.5*(n - 1))*log(1 - tanh(z)^2) - (n - 1 - 0.5)*log(1 - tanh(z)*r)+log(1-tanh(z)^2)/kappa
+# }
+
+.logTarget <- function(rho, n, r, kappa=1) {
+  # More correctly, with rho=rhoProp, this is upper term of the acceptance ratio. 
+  # Recall that in the numerator and denominator of the acceptance ratio are given by
+  # 
+  #   likelihood(rhoProp)*prior(rhoProp)*proposal(rhoCurrent | rhoProp)
+  #   likelihood(rhoCurrent)*prior(rhoCurrent)*proposal(rhoProp | rhoCurrent)
+  # 
+  # respectively, Christian Robert (2015). As the proposal is defined on Fisher transform atanh(rho), 
+  # we have a Jocobian. The Jacobian in the upper part is (1-rhoCurrent^2)^(-1) and in the lower part
+  # is (1-rhoProp^2)^(-1).
+  # Note that since prior(rhoProp) \propto (1-rhoProp^2)^(alpha-1), we can drop the one due 
+  # to the Jacobian term of the denominator ending up in the numerator.
+  # 
+  # For the likelihood we use Jeffreys's approximation 
+  #   rho \propto (1-rho^2)^((n-1)/2)*(1-rho*r)^((3-2*n)/2)
+  # 
+  # The log prior is (alpha-1)*log(1-rho^2) # where alpha=1/kappa
+  # 
+  (1/kappa+(n-1)/2)*log(1-rho^2)-(2*n-3)/2*log(1-rho*r)
 }
 
-.logProposal <- function(z, n, r) {
-	# z is Fisher's transformation for r, but also use it for rho
-	# The log sampling distribution as per Fisher approximation, however, swtiched the role of r and rho
-	# in the mean. This is reasonable as the sampling distribution of r looks a bit like that of rho (the real one)
-	# Hence, this is normal distribution
-	# A Rabbi and a Priest buy a car together and it's being stored at the Priest's house. One day the
-	# Rabbi goes over to use the car and he sees him sprinkling water on it. The Rabbi asked, ''What are
-	# you doing?'' The Priest responded, ''I'm blessing the car.'' So the Rabbi said ''Okay, since we're
-	# doing that....'' and takes out a hacksaw and cuts two inches off the tail pipe.
-	-(n-3)/2*(z-atanh(r))^2
-}
 
-
-.metropolisOneStep <- function (rhoCurrent, n, r, kappa=1) {
-	#
-	zCurrent <- atanh(rhoCurrent)
-
-	if (n <= 3) {
-		std <- 1
-	} else {
-		std <- 1 / sqrt(n - 3)
-	}
-
-	zCandidate <- rnorm(1, mean=atanh(r), sd=std)
-
-	candidateAcceptance <- .logTarget(zCandidate, n=n, r=r, kappa)+.logProposal(zCurrent, n, r)-
-		(.logTarget(zCurrent, n=n, r=r, kappa)+.logProposal(zCandidate, n, r))
-
-	if (log(runif (1)) <= candidateAcceptance) {
-		rhoCandidate <- tanh(zCandidate)
-		return(rhoCandidate)
-	} else {
-		return (rhoCurrent)
-	}
+.logProposal <- function(rho, n, r, z=NULL) {
+  # The proposal is defined on Fisher hyperbolic tangent transform of rho, 
+  # the Jacobian is absorbed in .logTarget
+  if (!is.null(z)) {
+    return(-(n-3)/2*(z-atanh(r))^2)
+  } else {
+    -(n-3)/2*(atanh(rho)-atanh(r))^2
+  }
 }
 
 .marsmanMHSampler <- function(n, r, kappa=1, nIters=50000) {
-	rhoMetropolisChain <- NULL
-	yTemp <- r
-
-	for (iter in 1:nIters) {
-		yTemp <- .metropolisOneStep(yTemp, n=n, r=r, kappa)
-		rhoMetropolisChain[iter] <- yTemp
-	}
-
-	acceptanceRate <- length (unique (rhoMetropolisChain)) / nIters
-
-	metropolisVar <- var(rhoMetropolisChain)/2^2
-	metropolisMean <- mean((rhoMetropolisChain+1)/2)
-
-	mhFit <- .betaParameterEstimates(metropolisMean, metropolisVar)
-	mhFit$acceptanceRate <- acceptanceRate
-	return(mhFit)
+  rhoMetropolisChain <- numeric(nIters)
+  
+  if (n <= 3) {
+    std <- 1
+  } else {
+    std <- 1 / sqrt(n - 3)
+  }
+  
+  zCandidates <- rnorm(nIters, mean=atanh(r), sd=std)
+  rhoCandidates <- tanh(zCandidates)
+  logTargetCandidates <- .logTarget(rho=rhoCandidates, n=n, r=r, kappa=kappa)
+  logPropCandidates <- .logProposal(z=zCandidates, n=n, r=r)
+  acceptMechanism <- runif(nIters)
+  candidateAcceptance <- numeric(nIters)
+  
+  rhoCurrent <- r
+  
+  for (iter in 1:nIters) {
+    zCurrent <- atanh(rhoCurrent)
+    
+    candidateAcceptance[iter] <- logTargetCandidates[iter]+.logProposal(z=zCurrent, n=n, r=r)-
+      (.logTarget(rho=rhoCurrent, n=n, r=r, kappa=kappa)+logPropCandidates[iter])
+    
+    if (log(acceptMechanism[iter]) <= candidateAcceptance[iter]) {
+      # Accept candidate and update rhoCurrent for next iteration
+      rhoCurrent <- rhoCandidates[iter]
+    } 
+    rhoMetropolisChain[iter] <- rhoCurrent
+  }
+  
+  acceptanceRate <- length(unique(rhoMetropolisChain))/nIters
+  
+  metropolisVar <- var(rhoMetropolisChain)/2^2
+  metropolisMean <- mean((rhoMetropolisChain+1)/2)
+  
+  mhFit <- .betaParameterEstimates(metropolisMean, metropolisVar)
+  mhFit[["acceptanceRate"]] <- acceptanceRate
+  return(mhFit)
 }
 
 # 2.5. Two-sided asymptotic approximation of the Bayes factor
@@ -2626,7 +2644,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 					if ( ! variable.statuses[[1]]$unplotable && ! variable.statuses[[2]]$unplotable) {
 
-						maxYlab <- .plotScatter(dataset[[variables[1]]], dataset[[variables[2]]])
+						maxYlab <- .plotScatterBayesianCorrelationMatrix(dataset[[variables[1]]], dataset[[variables[2]]])
 						distLab <- maxYlab / 1.8
 
 						mtext(text = .unv(variables)[1], side = 1, cex=1.5, line = 3)
@@ -2655,7 +2673,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								if (options$plotDensities) {
 
 									if ( ! variable.statuses[[row]]$unplotable) {
-										.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
+										.plotMarginalCorBayesianCorrelationMatrix(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
 									} else {
 										.displayError(variable.statuses[[row]]$plottingError, cexText=cexText)
 									}
@@ -2669,7 +2687,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							if (col > row) {
 								if (options$plotCorrelationMatrix) {
 									if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
-										.plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
+										.plotScatterBayesianCorrelationMatrix(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
 									} else {
 										errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
 										errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
@@ -2749,4 +2767,92 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	}
 
 	correlation.plot
+}
+
+.plotScatterBayesianCorrelationMatrix <- function(xVar, yVar, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2) {
+  d <- data.frame(xx= xVar, yy= yVar)
+  d <- na.omit(d)
+  xVar <- d$xx
+  yVar <- d$yy
+
+  # fit different types of regression
+  fit <- vector("list", 1)# vector("list", 4)
+  fit[[1]] <- lm(yy ~ poly(xx, 1, raw= TRUE), d)
+  # fit[[2]] <- lm(yy ~ poly(xx, 2, raw= TRUE), d)
+  # fit[[3]] <- lm(yy ~ poly(xx, 3, raw= TRUE), d)
+  # fit[[4]] <- lm(yy ~ poly(xx, 4, raw= TRUE), d)
+
+  # find parsimonioust, best fitting regression model
+  # Bic <- vector("numeric", 4)
+  # for(i in 1:4){
+
+  #	Bic[i] <- BIC(fit[[i]])
+  # }
+
+  bestModel <- 1 # which.min(Bic)
+	
+	xticks <- JASPgraphs::getPrettyAxisBreaks(d$x)
+	yticks <- JASPgraphs::getPrettyAxisBreaks(d$y)
+	yLabs <- JASPgraphs::axesLabeller(yticks)
+	xLabs <- JASPgraphs::axesLabeller(xticks)
+
+  plot(xVar, yVar, col="black", pch=21, bg = "grey", ylab="", xlab="", axes=F, ylim= range(yticks), xlim= range(xticks), cex= cexPoints)
+  .poly.predBayesianCorrelationMatrix(fit[[bestModel]], line= TRUE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)
+
+  par(las=1)
+
+  axis(1, line= 0.4, labels= xLabs, at= xticks, cex.axis= cexXAxis)
+  axis(2, line= 0.2, labels= yLabs, at= yticks, cex.axis= cexYAxis)
+
+  invisible(max(nchar(yLabs)))
+}
+
+.plotMarginalCorBayesianCorrelationMatrix <- function(variable, cexYlab= 1.3, lwd= 2, rugs= FALSE) {
+  variable <- variable[!is.na(variable)]
+
+  density <- density(variable)
+  h <- hist(variable, plot = FALSE)
+  jitVar <- jitter(variable)
+  yhigh <- max(max(h$density), max(density$y))
+  ylow <- 0
+  xticks <- pretty(c(variable, h$breaks), min.n= 3)
+  plot(range(xticks), c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
+  h <- hist(variable, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE, nbreaks= round(length(variable)/5))
+  ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks)
+  par(las=0)
+  ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.08*diff(range(ax1)), cex.axis= 1.7, mgp= c(3, 0.7, 0))
+
+  if (rugs) {
+    rug(jitVar)
+  }
+
+  lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
+}
+
+.poly.predBayesianCorrelationMatrix <- function(fit, line=FALSE, xMin, xMax, lwd) {
+  # create function formula
+  f <- vector("character", 0)
+
+  for (i in seq_along(coef(fit))) {
+    if (i == 1) {
+      temp <- paste(coef(fit)[[i]])
+      f <- paste(f, temp, sep="")
+    }
+
+    if (i > 1) {
+      temp <- paste("(", coef(fit)[[i]], ")*", "x^", i-1, sep="")
+      f <- paste(f, temp, sep="+")
+    }
+  }
+
+  x <- seq(xMin, xMax, length.out = 100)
+  predY <- eval(parse(text=f))
+
+  if (line == FALSE) {
+    return(predY)
+  }
+
+  if (line) {
+    lines(x, predY, lwd=lwd)
+  }
 }

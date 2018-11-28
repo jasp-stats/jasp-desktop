@@ -25,7 +25,6 @@
 
 #endif
 
-
 #include <string>
 #include <map>
 #include <unordered_set>
@@ -44,11 +43,11 @@
  * application, and the R analyses
  */
 extern "C" {
-	RBridgeColumn*				STDCALL rbridge_readDataSet(RBridgeColumnType* columns, int colMax, bool obeyFilter);
-	RBridgeColumn*				STDCALL rbridge_readFullDataSet(int * colMax);
-	RBridgeColumn*				STDCALL rbridge_readDataSetForFiltering(int * colMax);
-	char**						STDCALL rbridge_readDataColumnNames(int *colMax);
-	RBridgeColumnDescription*	STDCALL rbridge_readDataSetDescription(RBridgeColumnType* columns, int colMax);
+	RBridgeColumn*				STDCALL rbridge_readDataSet(RBridgeColumnType* columns, size_t colMax, bool obeyFilter);
+	RBridgeColumn*				STDCALL rbridge_readFullDataSet(size_t * colMax);
+	RBridgeColumn*				STDCALL rbridge_readDataSetForFiltering(size_t * colMax);
+	char**						STDCALL rbridge_readDataColumnNames(size_t *colMax);
+	RBridgeColumnDescription*	STDCALL rbridge_readDataSetDescription(RBridgeColumnType* columns, size_t colMax);
 	bool						STDCALL rbridge_test(char** root);
 	bool						STDCALL rbridge_requestStateFileSource(const char **root, const char **relativePath);
 	bool						STDCALL rbridge_requestJaspResultsFileSource(const char **root, const char **relativePath);
@@ -56,8 +55,8 @@ extern "C" {
 	const char*					STDCALL rbridge_requestTempRootName();
 	bool						STDCALL rbridge_runCallback(const char* in, int progress, const char** out);
 	bool						STDCALL rbridge_setColumnAsScale		(const char* columnName, double *		scalarData,		size_t length);
-	bool						STDCALL rbridge_setColumnAsOrdinal		(const char* columnName, int *			ordinalData,	size_t length);
-	bool						STDCALL rbridge_setColumnAsNominal		(const char* columnName, int *			nominalData,	size_t length);
+	bool						STDCALL rbridge_setColumnAsOrdinal		(const char* columnName, int *			ordinalData,	size_t length,	const char ** levels, size_t numLevels);
+	bool						STDCALL rbridge_setColumnAsNominal		(const char* columnName, int *			nominalData,	size_t length,	const char ** levels, size_t numLevels);
 	bool						STDCALL rbridge_setColumnAsNominalText	(const char* columnName, const char **	nominalData,	size_t length);
 	int							STDCALL rbridge_dataSetRowCount();
 }
@@ -72,19 +71,18 @@ extern "C" {
 	void rbridge_setJaspResultsFileSource(	boost::function<void(std::string &, std::string &)> source);
 	void rbridge_setDataSetSource(			boost::function<DataSet *()> source);
 
-	void rbridge_setColumnDataAsScaleSource(		boost::function<bool(std::string&, std::vector<double>&)>		source);
-	void rbridge_setColumnDataAsOrdinalSource(		boost::function<bool(std::string&, std::vector<int>&)>			source);
-	void rbridge_setColumnDataAsNominalSource(		boost::function<bool(std::string&, std::vector<int>&)>			source);
-	void rbridge_setColumnDataAsNominalTextSource(	boost::function<bool(std::string&, std::vector<std::string>&)>	source);
+	void rbridge_setColumnDataAsScaleSource(		boost::function<bool(std::string&, std::vector<double>&)>							source);
+	void rbridge_setColumnDataAsOrdinalSource(		boost::function<bool(std::string&, std::vector<int>&, std::map<int, std::string>&)>	source);
+	void rbridge_setColumnDataAsNominalSource(		boost::function<bool(std::string&, std::vector<int>&, std::map<int, std::string>&)>	source);
+	void rbridge_setColumnDataAsNominalTextSource(	boost::function<bool(std::string&, std::vector<std::string>&)>						source);
 	void rbridge_setGetDataSetRowCountSource(		boost::function<int()> source);
 
-	std::string rbridge_run(const std::string &name, const std::string &title, bool &requiresInit, const std::string &dataKey, const std::string &options, const std::string &resultsMeta, const std::string &stateKey, int analysisID, int analysisRevision, const std::string &perform = "run", int ppi = 96, RCallback callback = NULL, bool useJaspResults = false);
+	std::string rbridge_run(const std::string &name, const std::string &title, bool &requiresInit, const std::string &dataKey, const std::string &options, const std::string &resultsMeta, const std::string &stateKey, int analysisID, int analysisRevision, const std::string &perform = "run", int ppi = 96, const std::string &imageBackground = "white", RCallback callback = NULL, bool useJaspResults = false);
 	std::string rbridge_check();
 
 	void freeRBridgeColumns();
-	void freeRBridgeColumns(RBridgeColumn *columns, int colMax);
-	void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, int colMax);
-	void freeLabels(char** labels, int nbLabels);
+	void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, size_t colMax);
+	void freeLabels(char** labels, size_t nbLabels);
 
 	std::vector<bool>	rbridge_applyFilter(std::string & filterCode, std::string & generatedFilterCode);
 	std::string			rbridge_encodeColumnNamesToBase64(std::string & filterCode);

@@ -1700,6 +1700,12 @@
                </item>
                <item row="0" column="1">
                 <widget class="BoundComboBox" name="marginalMeansCIAdjustment">
+                 <property name="minimumSize">
+                  <size>
+                   <width>120</width>
+                   <height>0</height>
+                  </size>
+                 </property>
                  <item>
                   <property name="text">
                    <string>None</string>

@@ -3,7 +3,7 @@
 #Jasp-R-Interface
 JASP_R_INTERFACE_TARGET = JASP-R-Interface
 
-JASP_R_INTERFACE_MAJOR_VERSION = 4 # Interface changes
+JASP_R_INTERFACE_MAJOR_VERSION = 5 # Interface changes
 JASP_R_INTERFACE_MINOR_VERSION = 1 # Code changes
 
 JASP_R_INTERFACE_NAME = $$JASP_R_INTERFACE_TARGET$$JASP_R_INTERFACE_MAJOR_VERSION'.'$$JASP_R_INTERFACE_MINOR_VERSION
@@ -15,13 +15,14 @@ DEFINES += "CURRENT_R_VERSION=\"$$CURRENT_R_VERSION\""
 #JASP Version
 JASP_VERSION_MAJOR      = 0
 JASP_VERSION_MINOR      = 9
-JASP_VERSION_REVISION   = 1
+JASP_VERSION_REVISION   = 2
 JASP_VERSION_BUILD      = 0 #Should be incremented or retrieved from somewhere
+JASP_VERSION_TYPE       = nightly
 
-DEFINES +=    "JASP_VERSION_MAJOR=$$JASP_VERSION_MAJOR"
-DEFINES +=    "JASP_VERSION_MINOR=$$JASP_VERSION_MINOR"
+DEFINES += "JASP_VERSION_MAJOR=$$JASP_VERSION_MAJOR"
+DEFINES += "JASP_VERSION_MINOR=$$JASP_VERSION_MINOR"
 DEFINES += "JASP_VERSION_REVISION=$$JASP_VERSION_REVISION"
-DEFINES +=    "JASP_VERSION_BUILD=$$JASP_VERSION_BUILD"
+DEFINES += "JASP_VERSION_BUILD=$$JASP_VERSION_BUILD"
 
 
 BUILDING_JASP_ENGINE=false
@@ -45,9 +46,9 @@ DEFINES += PRINT_ENGINE_MESSAGES
 exists(/app/lib/*) {
   linux:  DEFINES += FLATPAK_USED
 } else {
-  linux:	CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG }
+  linux:	CONFIG(debug, debug|release)  {  DEFINES += JASP_DEBUG }
 }
-macx | windows { CONFIG(debug, debug|release) {  DEFINES+=JASP_DEBUG } }
+macx | windows { CONFIG(debug, debug|release) {  DEFINES += JASP_DEBUG } }
 
 
 windows {
@@ -60,3 +61,15 @@ windows {
 }
 
 unix: QMAKE_CXXFLAGS += -Werror=return-type
+
+#want to use JASPTIMER_* ? set JASPTIMER_USED to true, run qmake and rebuild the objects that use these macros (or just rebuild everything to be sure)
+JASPTIMER_USED = false
+
+$$JASPTIMER_USED {
+    DEFINES += PROFILE_JASP
+}
+
+exists(/app/lib/*)	{ INSTALLPATH = /app/bin
+ } else	{
+  INSTALLPATH = /usr/bin
+}

@@ -68,7 +68,6 @@ FileEvent *BackstageComputer::browseOpen(const QString &path)
 
 FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMode mode)
 {
-
 	QString caption = "Save";
 	QString filter = "JASP Files (*.jasp)";
 
@@ -79,8 +78,9 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 	if (_hasFileName)
 		browsePath += QDir::separator() + _fileName;
 
-	if (mode==FileEvent::FileExportResults)
+	switch(mode)
 	{
+	case FileEvent::FileExportResults:
 		caption = "Export Result as HTML";
 #ifdef JASP_DEBUG
 		// In debug mode enable pdf export
@@ -89,16 +89,24 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 		// For future use of pdf export switch to line above
 		filter = "HTML Files (*.html)";
 #endif
-	}
-	else if (mode==FileEvent::FileExportData)
-	{
-		caption = "Export Data as CSV";
-		filter = "CSV Files (*.csv *.txt)";
-	}
-	else if (mode==FileEvent::FileSyncData)
-	{
+		break;
+
+	case FileEvent::FileGenerateData:
+	case FileEvent::FileExportData:
+		caption	= "Export Data as CSV";
+		filter	= "CSV Files (*.csv *.txt)";
+		break;
+
+	case FileEvent::FileSyncData:
 		caption = "Sync Data";
 		filter = "Data Files (*.csv *.txt *.sav *.ods)";
+		break;
+
+	case FileEvent::FileSave:
+		break;
+
+	default:
+		throw std::runtime_error("Wrong FileEvent type for saving!");
 	}
 
 	QString finalPath = QFileDialog::getSaveFileName(this, caption, browsePath, filter);
@@ -107,12 +115,18 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 
 	if (finalPath != "")
 	{
-		// force the filename end with .jasp - workaround for linux saving issue
-		if (mode == FileEvent::FileSave && !finalPath.endsWith(".jasp", Qt::CaseInsensitive))
+		// Default file extensions if not specified
+		if		(mode == FileEvent::FileSave			&&	!finalPath.endsWith(".jasp", Qt::CaseInsensitive))
 			finalPath.append(QString(".jasp"));
+		else if	(mode == FileEvent::FileExportResults	&&	(!finalPath.endsWith(".html", Qt::CaseInsensitive) &&
+															!finalPath.endsWith(".pdf", Qt::CaseInsensitive)))
+			finalPath.append(QString(".html"));
+		else if	(mode == FileEvent::FileExportData		&&	(!finalPath.endsWith(".csv", Qt::CaseInsensitive) &&
+															!finalPath.endsWith(".txt", Qt::CaseInsensitive)))
+
+			finalPath.append(QString(".csv"));
 
 		event->setPath(finalPath);
-
 		emit dataSetIORequest(event);
 	}
 	else

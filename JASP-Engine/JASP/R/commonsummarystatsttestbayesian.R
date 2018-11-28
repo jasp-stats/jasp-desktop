@@ -1512,7 +1512,13 @@
   } else {
     # sample from delta posterior
     if (!options$wilcoxTest) {
-      bfObject <- BayesFactor::meta.ttestBF(t = t, n1 = n1, n2 = n2, rscale = r)
+      if (isTRUE(paired) || is.null(n2)) {
+        bfObject <- BayesFactor::meta.ttestBF(t = t, n1 = n1, n2 = NULL, rscale = r)
+      } else {
+        bfObject <- BayesFactor::meta.ttestBF(t = t, n1 = n1, n2 = n2, rscale = r)
+      }
+      
+      
       library(BayesFactor)
       samples <- BayesFactor::posterior(model = bfObject, iterations = iterations,
                                         index = 1)

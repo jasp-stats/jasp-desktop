@@ -196,9 +196,6 @@ public:
 			else if(std::is_same<T, int>::value)	_field_to_val[memberName] = convertIntFromJson(fieldVal);
 			else if(std::is_same<T, bool>::value)	_field_to_val[memberName] = convertBoolFromJson(fieldVal);
 		}
-
-
-
 	}
 
 private:
@@ -223,9 +220,9 @@ class jaspList_Interface : public jaspObject_Interface
 public:
 	jaspList_Interface(jaspObject * dataObj) : jaspObject_Interface(dataObj) {}
 
-	void insert(Rcpp::RObject field, T value)	{ ((jaspList<T>*)myJaspObject)->insert(field, value); }
-	T at(Rcpp::RObject field)					{ return ((jaspList<T>*)myJaspObject)->at(field); }
-	void add(T value)							{ ((jaspList<T>*)myJaspObject)->add(value); }
+	void insert(Rcpp::RObject field, T value)	{			static_cast<jaspList<T>*>(myJaspObject)->insert(field, value);	}
+	T at(Rcpp::RObject field)					{ return	static_cast<jaspList<T>*>(myJaspObject)->at(field);				}
+	void add(T value)							{			static_cast<jaspList<T>*>(myJaspObject)->add(value);			}
 };
 
 typedef jaspList_Interface<std::string>	jaspStringlist_Interface;

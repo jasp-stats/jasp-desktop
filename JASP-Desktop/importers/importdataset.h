@@ -1,7 +1,6 @@
 #ifndef IMPORTDATASET_H
 #define IMPORTDATASET_H
 
-#include "importer.h"
 #include "importcolumn.h"
 
 class Importer;

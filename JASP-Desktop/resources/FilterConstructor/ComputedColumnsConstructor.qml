@@ -2,22 +2,22 @@ import QtQuick.Controls 2.2
 import QtQuick 2.9
 
 Item {
-	id: filterConstructor
-	objectName:  "computedColumnsConstructor"
-	property real blockDim: 20
-	property real fontPixelSize: 14
-	property var allKeys: ["number", "boolean", "string", "variable"]
-	readonly property real desiredMinimumHeight: columnsRow.height + hints.height + (blockDim * 3) + generatedRCodeBox.height
-
-	property real	extraSpaceUnderColumns: 0
-	property bool	somethingChanged: false
-	property bool	isColumnConstructor: true
-	property bool	showGeneratedRCode: false
-
-	property bool	lastCheckPassed: true
-	property bool	showStartupMsg: true
-
-	property alias	functionModel: functieLijst.model
+								id:						filterConstructor
+								objectName:				"computedColumnsConstructor"
+				property string	__debugName:			"filterConstructorComputedColumns"
+				property real	fontPixelSize:			baseFontSize * ppiScale
+				property real	blockDim:				baseBlockDim * ppiScale
+				property var	allKeys:				["number", "boolean", "string", "variable"]
+	readonly	property real	desiredMinimumHeight:	columnsRow.height + hints.height + (blockDim * 3) + generatedRCodeBox.height
+				property real	extraSpaceUnderColumns: 0
+				property bool	somethingChanged:		false
+				property bool	isColumnConstructor:	true
+				property bool	showGeneratedRCode:		false
+				property bool	lastCheckPassed:		true
+				property bool	showStartupMsg:			true
+				property alias	functionModel:			functieLijst.model
+				property string	rCode:					""
+				property string jsonConstructed:		""
 
 	onSomethingChangedChanged:
 	{
@@ -26,12 +26,6 @@ Item {
 		if(somethingChanged)
 			hints.filterText = ""
 	}
-
-	property string __debugName: "filterConstructorComputedColumns"
-
-	property string rCode: ""
-	property string jsonConstructed: ""
-
 
 	function checkAndApplyFilter()
 	{
@@ -271,6 +265,7 @@ Item {
 				anchors.left:				parent.left
 				anchors.verticalCenter:		parent.verticalCenter
 				anchors.leftMargin:			4
+				font.pixelSize:				filterConstructor.fontPixelSize
 			}
 
 			TextEdit

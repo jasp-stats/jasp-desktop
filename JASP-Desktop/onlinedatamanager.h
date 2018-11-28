@@ -62,7 +62,6 @@ public slots:
 	void beginDownloadFile(QString nodePath, QString actionId);
 
 signals:
-	void authenticationCleared(int provider);
 	void newFolderFinished(QString id);
 	void newFileFinished(QString id);
 	void downloadFileFinished(QString id);

@@ -228,7 +228,10 @@ void Importer::initColumn(int colNo, ImportColumn *importColumn)
 				_packageData->setDataSet(SharedMemory::enlargeDataSet(_packageData->dataSet()));
 				success = false;
 			}
-			catch (std::exception &e)	{ throw std::runtime_error("Out of memory: this data set is too large for your computer's available memory");	}
+			catch (std::exception &e)
+			{
+				throw std::runtime_error("Out of memory: this data set is too large for your computer's available memory");
+			}
 		}
 		catch (std::exception e)	{ std::cout << "n " << e.what() << std::endl;		}
 		catch (...)					{ std::cout << "something else\n " << std::endl;	}
@@ -246,6 +249,7 @@ void Importer::_syncPackage(
 		bool										rowCountChanged)
 
 {
+	_packageData->pauseEngines();
 	_packageData->dataSet()->setSynchingData(true);
 
 	std::vector<std::string>			_changedColumns;
@@ -262,6 +266,12 @@ void Importer::_syncPackage(
 		changedCol->setName(newColName);
 	}
 
+	std::map<int, std::string> tempChangedNameList;
+	if (changedColumns.size() > 0)
+		for (auto indexColChanged : changedColumns)
+			tempChangedNameList[indexColChanged.first] = indexColChanged.second->name();
+
+
 	int colNo = _packageData->dataSet()->columnCount();
 	setDataSetRowCount(syncDataSet->rowCount());
 
@@ -271,11 +281,12 @@ void Importer::_syncPackage(
 		{
 			std::cout << "Column changed " << indexColChanged.first << std::endl;
 			//Column &column		= _packageData->dataSet()->column(indexColChanged.first);
-			std::string colName	= indexColChanged.second->name();
+			std::string colName	= tempChangedNameList[indexColChanged.first];//indexColChanged.second->name();
 			_changedColumns.push_back(colName);
 			initColumn(colName, syncDataSet->getColumn(colName));
 		}
 	}
+
 
 	if (newColumns.size() > 0)
 	{
@@ -306,6 +317,8 @@ void Importer::_syncPackage(
 		}
 	}
 
+
 	_packageData->dataSet()->setSynchingData(false);
 	_packageData->dataChanged(_packageData, _changedColumns, _missingColumns, _changeNameColumns, rowCountChanged);
+	_packageData->resumeEngines();
 }

@@ -44,12 +44,42 @@ jaspObjectType jaspObjectTypeStringToObjectType(std::string type)
 
 }
 
-void JASPprint(std::string msg)
+std::string stringExtend(std::string & str, size_t len, char kar)
+{
+	if(str.size() < len)
+		str += std::string(len - str.size(), kar);
+
+	return str;
+}
+
+std::string stringRemove(std::string str, char kar)
+{
+	for(size_t removeMe = str.find_first_of(kar); removeMe != std::string::npos; removeMe = str.find_first_of(kar))
+		str.erase(removeMe, 1);
+	return str;
+}
+
+std::vector<std::string> stringSplit(std::string str, char kar)
+{
+	std::vector<std::string> strs;
+
+	strs.push_back("");
+	for(char k : str)
+		if(k == kar)
+			strs.push_back("");
+		else
+			strs[strs.size() - 1].push_back(k);
+
+	return strs;
+}
+
+void jaspPrint(std::string msg)
 {
 #ifdef JASP_R_INTERFACE_LIBRARY
 	std::cout << msg << std::endl << std::flush;
 #else
-	Rprintf(msg.c_str());
+	Rcpp::Rcout << msg << "\n";
+	//Rprintf(msg.c_str());
 #endif
 }
 
@@ -168,8 +198,8 @@ void jaspObject::childrenUpdatedCallback()
 
 std::string jaspObject::toString(std::string prefix)
 {
-	std::string dataString = dataToString(prefix);
-	return objectTitleString() + (dataString == "" ? "" : "\n" + dataString);
+	std::string dataString = dataToString(prefix + "\t");
+	return objectTitleString(prefix) + (dataString == "" ? "\n" : ":\n" + dataString);
 }
 
 Rcpp::DataFrame jaspObject::convertFactorsToCharacters(Rcpp::DataFrame df)

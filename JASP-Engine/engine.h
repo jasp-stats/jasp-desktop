@@ -52,17 +52,21 @@ public:
 	void setSlaveNo(int no);
 	void sendString(std::string message) { _channel->send(message); }
 
-	typedef enum { empty, toInit, initing, inited, toRun, running, changed, complete, error, exception, aborted, stopped, saveImg, editImg} Status;
-	Status getStatus() { return _status; }
+	typedef enum { empty, toInit, initing, inited, toRun, running, changed, complete, error, exception, aborted, stopped, saveImg, editImg, synchingData } Status;
+	Status getStatus() { return _analysisStatus; }
 	analysisResultStatus getStatusToAnalysisStatus();
 
 	//return true if changed:
-	bool setColumnDataAsScale(std::string columnName, std::vector<double> scalarData)				{	return provideDataSet()->columns()[columnName].overwriteDataWithScale(scalarData);		}
-	bool setColumnDataAsOrdinal(std::string columnName, std::vector<int> ordinalData)				{	return provideDataSet()->columns()[columnName].overwriteDataWithOrdinal(ordinalData);	}
-	bool setColumnDataAsNominal(std::string columnName, std::vector<int> nominalData)				{	return provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);	}
-	bool setColumnDataAsNominalText(std::string columnName, std::vector<std::string> nominalData)	{	return provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);	}
+	bool setColumnDataAsScale(std::string columnName, std::vector<double> scalarData)										{	return provideDataSet()->columns()[columnName].overwriteDataWithScale(scalarData);				}
+	bool setColumnDataAsOrdinal(std::string columnName, std::vector<int> ordinalData, std::map<int, std::string> levels)	{	return setColumnDataAsNominalOrOrdinal(true,  columnName, ordinalData, levels);					}
+	bool setColumnDataAsNominal(std::string columnName, std::vector<int> nominalData, std::map<int, std::string> levels)	{	return setColumnDataAsNominalOrOrdinal(false, columnName, nominalData, levels);					}
+	bool setColumnDataAsNominalText(std::string columnName, std::vector<std::string> nominalData)							{	return provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);			}
 
-	int dataSetRowCount() { return static_cast<int>(provideDataSet()->rowCount()); }
+	bool setColumnDataAsNominalOrOrdinal(bool isOrdinal, std::string columnName, std::vector<int> data, std::map<int, std::string> levels);
+
+	int dataSetRowCount()	{ return static_cast<int>(provideDataSet()->rowCount()); }
+
+	bool paused() { return currentEngineState == engineState::paused; }
 
 private:
 // Methods:
@@ -76,7 +80,10 @@ private:
 	void runFilter();
 	void runComputeColumn();
 
-	void waitForDatasetSync();
+	void pauseEngine();
+	void resumeEngine();
+	void sendEnginePaused();
+	void sendEngineResumed();
 
 	void removeNonKeepFiles(Json::Value filesToKeepValue);
 	void saveImage();
@@ -102,7 +109,7 @@ private:
 // Data:
 	static Engine * _EngineInstance;
 
-	Status _status = empty;
+	Status _analysisStatus = empty;
 
 
 	int			_analysisId,
@@ -128,7 +135,8 @@ private:
 				_generatedFilter = "",
 				_rCode = "",
 				_computeColumnCode = "",
-				_computeColumnName = "";
+				_computeColumnName = "",
+				_imageBackground = "white";
 
 	Column::ColumnType		_computeColumnType = Column::ColumnTypeUnknown;
 

@@ -21,6 +21,8 @@ RCPP_MODULE(jaspResults)
 	Rcpp::class_<jaspObject_Interface>("jaspObject")
 
 		.method("print",							&jaspObject_Interface::print,											"Prints the contents of the jaspObject")
+		.method("toHtml",							&jaspObject_Interface::toHtml,											"gives a string with the contents of the jaspObject nicely formatted as html")
+		.method("printHtml",						&jaspObject_Interface::printHtml,										"Prints the contents of the jaspObject nicely formatted as html")
 
 		.method("addMessage",						&jaspObject_Interface::addMessage,										"Add a message to this object")
 		.method("addCitation",						&jaspObject_Interface::addCitation,										"Add a citation to this object")
@@ -31,7 +33,7 @@ RCPP_MODULE(jaspResults)
 
 		.method("setOptionMustBeDependency",		&jaspObject_Interface::setOptionMustBeDependency,						"Specifies an option and it's required value, if the analysis is restarted and this option is no longer defined (like that) it will automatically destroy the object. Otherwise it will keep it.")
 		.method("setOptionMustContainDependency",	&jaspObject_Interface::setOptionMustContainDependency,					"Specifies an option that should define an array and a required value that should be in it, if the analysis is restarted and this option is no longer defined or no longer contains the specified value it will automatically destroy the object. Otherwise it will keep it.")
-		.method("dependOnOptions",				&jaspObject_Interface::dependOnOptions,							"Will make the object depend on the current values of the options specified in the charactervector.")
+		.method("dependOnOptions",					&jaspObject_Interface::dependOnOptions,									"Will make the object depend on the current values of the options specified in the charactervector.")
 		.method("copyDependenciesFromJaspObject",	&jaspObject_Interface::copyDependenciesFromJaspObject,					"Will make the object depend on whatever the other jaspObject depends.")
 
 
@@ -139,6 +141,7 @@ RCPP_MODULE(jaspResults)
 	Rcpp::class_<jaspHtml_Interface>("jaspHtml")
 		.derives<jaspObject_Interface>("jaspObject")
 		.property("text",			&jaspHtml_Interface::getText,			&jaspHtml_Interface::setText,			"The text of this element")
+        .property("html",			&jaspHtml_Interface::getHtml,													"The text of this element")
 		.property("elementType",	&jaspHtml_Interface::getElementType,	&jaspHtml_Interface::setElementType,	"The type of this html element, default is 'p' but other useful values include 'H1', 'h2' etc. If you want to write your own html element completely set this to \"\"")
 		.property("class",			&jaspHtml_Interface::getClass,			&jaspHtml_Interface::setClass,			"The Css-class of this element, for monospace one could use jasp-code or simply leave it empty.")
 	;

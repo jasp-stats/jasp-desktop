@@ -63,7 +63,7 @@ void jaspResults::saveResults()
 {
 	if(_saveResultsHere == "")
 	{
-		JASPprint("Did not store jaspResults");
+		jaspPrint("Did not store jaspResults");
 		return;
 	}
 
@@ -149,10 +149,11 @@ void jaspResults::childrenUpdatedCallbackHandler()
 	send();
 }
 
-Json::Value jaspResults::response				= Json::Value(Json::objectValue);
+Json::Value jaspResults::response = Json::Value(Json::objectValue);
 
 const char * jaspResults::constructResultJson()
 {
+	response["typeRequest"]	= "analysis"; // Should correspond to engineState::analysis to string
 	response["results"]		= dataEntry();
 	response["name"]		= response["results"]["title"];
 

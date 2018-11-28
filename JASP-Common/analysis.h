@@ -101,6 +101,7 @@ public:
 	bool isSaveImg()	const { return status() == SaveImg; }
 	bool isEditImg()	const { return status() == EditImg; }
 	bool isInited()		const { return status() == Inited; }
+	bool isFinished()	const { return status() == Complete || status() == Error || status() == Exception; }
 
 	performType desiredPerformTypeFromAnalysisStatus() const;
 

@@ -44,39 +44,38 @@ void AsyncLoader::io(FileEvent *event, DataSetPackage *package)
 
 	switch (event->operation())
 	{
-		case FileEvent::FileOpen:
-			emit progress("Loading Data Set", 0);
-			emit beginLoad(event, package);
-			break;
+	case FileEvent::FileOpen:
+		emit progress("Loading Data Set", 0);
+		emit beginLoad(event, package);
+		break;
 
-		case FileEvent::FileSave:
-			emit progress("Saving Data Set", 0);
-			emit beginSave(event, package);
-			break;
+	case FileEvent::FileSave:
+		emit progress("Saving Data Set", 0);
+		emit beginSave(event, package);
+		break;
 
-		case FileEvent::FileExportResults:
-			emit progress("Exporting Result Set", 0);
-			emit beginSave(event, package);
-			break;
+	case FileEvent::FileExportResults:
+		emit progress("Exporting Result Set", 0);
+		emit beginSave(event, package);
+		break;
 
-		case FileEvent::FileExportData:
-			emit progress("Exporting Data Set", 0);
-			emit beginSave(event, package);
-			break;
+	case FileEvent::FileExportData:
+	case FileEvent::FileGenerateData:
+		emit progress("Exporting Data Set", 0);
+		emit beginSave(event, package);
+		break;
 
-		case FileEvent::FileSyncData:
-		{
-			emit progress("Sync Data Set", 0);
-			emit beginLoad(event, package);
-			break;
-		}
-
-		case FileEvent::FileClose:
-			event->setComplete();
-			break;
-
+	case FileEvent::FileSyncData:
+	{
+		emit progress("Sync Data Set", 0);
+		emit beginLoad(event, package);
+		break;
 	}
 
+	case FileEvent::FileClose:
+		event->setComplete();
+		break;
+	}
 }
 
 void AsyncLoader::free(DataSet *dataSet)
@@ -251,7 +250,7 @@ void AsyncLoader::loadPackage(QString id)
 		catch (runtime_error e)
 		{
 			std::cout << "Runtime Exception in loadPackage: " << e.what() << std::endl;
-			std::cout.flush();
+
 			if (dataNode != NULL)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());
@@ -259,7 +258,7 @@ void AsyncLoader::loadPackage(QString id)
 		catch (exception e)
 		{
 			std::cout << "Exception in loadPackage: " << e.what() << std::endl;
-			std::cout.flush();
+
 			if (dataNode != NULL)
 				_odm->deleteActionDataNode(id);
 			_currentEvent->setComplete(false, e.what());

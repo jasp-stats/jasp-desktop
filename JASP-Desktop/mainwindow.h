@@ -55,19 +55,26 @@ class MainWindow : public QMainWindow
 
 	friend class ResultsJsInterface;
 public:
-	explicit MainWindow(QWidget *parent = 0);
+	explicit MainWindow(QApplication *application);
 	void open(QString filepath);
-	virtual ~MainWindow();
+	void testLoadedJaspFile(int timeOut);
+
+	~MainWindow() override;
 
 	EngineSync* _engineSync;
 
 	Q_INVOKABLE void showHelpFromQML(QString pageName);
 
+public slots:
+	void setPPIHandler(int ppi, bool refreshAllAnalyses = true);
+	void setImageBackgroundHandler(QString value);
+	void setUIScaleHandler(float scale);
+
 protected:
-	virtual void resizeEvent(QResizeEvent *event) OVERRIDE;
-	virtual void dragEnterEvent(QDragEnterEvent *event) OVERRIDE;
-	virtual void dropEvent(QDropEvent *event) OVERRIDE;
-	virtual void closeEvent(QCloseEvent *event) OVERRIDE;
+	void resizeEvent(QResizeEvent *event)		override;
+	void dragEnterEvent(QDragEnterEvent *event) override;
+	void dropEvent(QDropEvent *event)			override;
+	void closeEvent(QCloseEvent *event)			override;
 
 private:
 	void makeConnections();
@@ -105,13 +112,21 @@ private:
 	void removeAnalysisRequestHandler(int id);
 	void matchComputedColumnsToAnalyses();
 
+	void startComparingResults();
+	void analysesForComparingDoneAlready();
+	void finishComparingResults();
+
 	bool filterShortCut();
 	void loadQML();
 	void connectRibbonButton(RibbonWidget * ribbon)								{ connect(ribbon,										QOverload<QString>::of(&RibbonWidget::itemSelected),				this,	&MainWindow::itemSelected); }
 
+	void pauseEngines();
+	void resumeEngines();
+
 signals:
 	void updateAnalysesUserData(QString userData);
 	void ppiChanged(int newPPI);
+	void imageBackgroundChanged(QString value);
 
 private slots:
 	void showForm(Analysis *analysis);
@@ -172,8 +187,8 @@ private slots:
 
 	void updateExcludeKey();
 	void dataSetChanged(DataSet * dataSet);
+	void unitTestTimeOut();
 
-	void setPPIHandler(int ppi);
 
 private:
 	typedef std::map<Analysis*, AnalysisForm*> analysisFormMap;
@@ -222,6 +237,7 @@ private:
 
 	QSettings						_settings;
 	CustomWebEnginePage				*_customPage;
+	QApplication					*_application = nullptr;
 };
 
 #endif // MAINWIDGET_H

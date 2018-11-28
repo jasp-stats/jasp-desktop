@@ -7,6 +7,8 @@
 #include <QDialog>
 #include <QFileDialog>
 #include <QSizePolicy>
+#include <QButtonGroup>
+#include <QAbstractButton>
 
 namespace Ui {
 class PreferencesDialog;
@@ -25,17 +27,21 @@ public:
 private:
 	Ui::PreferencesDialog *ui;
 	TabBar *_tabBar;
+	QButtonGroup* _imageBackgroundGroup;
 	static int _currentTab;
 	std::vector<std::string> getStdVectorFromEmptyValueList();
 	QString getTokenStringFromEmptyValueList();
 	bool addStringToEmptyValueList(const QString &in);
 	void checkEmptyValueList();
 	void fillMissingValueList(const std::vector<std::string> &emptyValues);
+	void setSliderUIScale(float scale);
+	float sliderUIScale();
 	
 public slots:
 	void savePreferences();
 	void setDefaultEditorCheck(bool defaulteditor);
 	void getSpreadsheetEditor();
+	void sliderUIScaleChanged(int value);
 
 protected:
 	void virtual showEvent(QShowEvent * event);

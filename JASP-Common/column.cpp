@@ -594,6 +594,8 @@ bool Column::changeColumnType(Column::ColumnType newColumnType)
 
 bool Column::overwriteDataWithScale(std::vector<double> scalarData)
 {
+	labels().clear();
+
 	size_t setVals = scalarData.size();
 
 	if(scalarData.size() != rowCount())
@@ -605,8 +607,25 @@ bool Column::overwriteDataWithScale(std::vector<double> scalarData)
 	return setColumnAsScale(scalarData);
 }
 
+bool Column::overwriteDataWithOrdinal(std::vector<int> ordinalData, std::map<int, std::string> levels)
+{
+	labels().clear();
+
+	size_t setVals = ordinalData.size();
+
+	if(ordinalData.size() != rowCount())
+		ordinalData.resize(rowCount());
+
+	for(size_t setThis = setVals; setThis<ordinalData.size(); setThis++)
+		ordinalData[setThis] = INT_MIN;
+
+	return setColumnAsNominalOrOrdinal(ordinalData, levels, true);
+}
+
 bool Column::overwriteDataWithOrdinal(std::vector<int> ordinalData)
 {
+	labels().clear();
+
 	size_t setVals = ordinalData.size();
 
 	if(ordinalData.size() != rowCount())
@@ -618,8 +637,25 @@ bool Column::overwriteDataWithOrdinal(std::vector<int> ordinalData)
 	return setColumnAsNominalOrOrdinal(ordinalData, true);
 }
 
+bool Column::overwriteDataWithNominal(std::vector<int> nominalData, std::map<int, std::string> levels)
+{
+	labels().clear();
+
+	size_t setVals = nominalData.size();
+
+	if(nominalData.size() != rowCount())
+		nominalData.resize(rowCount());
+
+	for(size_t setThis = setVals; setThis<nominalData.size(); setThis++)
+		nominalData[setThis] = INT_MIN;
+
+	return setColumnAsNominalOrOrdinal(nominalData, levels, false);
+}
+
 bool Column::overwriteDataWithNominal(std::vector<int> nominalData)
 {
+	labels().clear();
+
 	size_t setVals = nominalData.size();
 
 	if(nominalData.size() != rowCount())
@@ -633,6 +669,8 @@ bool Column::overwriteDataWithNominal(std::vector<int> nominalData)
 
 bool Column::overwriteDataWithNominal(std::vector<std::string> nominalData)
 {
+	labels().clear();
+
 	if(nominalData.size() != rowCount())
 		nominalData.resize(rowCount());
 
@@ -658,16 +696,27 @@ void Column::setDefaultValues(Column::ColumnType columnType)
 	_labels.clear();
 }
 
+bool Column::setColumnAsNominalOrOrdinal(const std::vector<int> &values, bool is_ordinal)
+{
+	std::set<int> uniqueValues(values.begin(), values.end());
+	uniqueValues.erase(INT_MIN);
+	return setColumnAsNominalOrOrdinal(values, uniqueValues, is_ordinal);
+}
+
 bool Column::setColumnAsNominalOrOrdinal(const vector<int> &values, map<int, string> &uniqueValues, bool is_ordinal)
 {
-	_labels.syncInts(uniqueValues);
-	return _setColumnAsNominalOrOrdinal(values, is_ordinal);
+	bool labelChanged	= _labels.syncInts(uniqueValues);
+	bool dataChanged	= _setColumnAsNominalOrOrdinal(values, is_ordinal);
+
+	return labelChanged || dataChanged;
 }
 
 bool Column::setColumnAsNominalOrOrdinal(const vector<int> &values, const set<int> &uniqueValues, bool is_ordinal)
 {
-	_labels.syncInts(uniqueValues);
-	return _setColumnAsNominalOrOrdinal(values, is_ordinal);
+	bool labelChanged	= _labels.syncInts(uniqueValues);
+	bool dataChanged	= _setColumnAsNominalOrOrdinal(values, is_ordinal);
+
+	return labelChanged || dataChanged;
 }
 
 bool Column::_setColumnAsNominalOrOrdinal(const vector<int> &values, bool is_ordinal)
@@ -726,6 +775,11 @@ bool Column::setColumnAsScale(const std::vector<double> &values)
 	setColumnType(Column::ColumnTypeScale);
 
 	return changedSomething;
+}
+
+std::map<int, std::string> Column::setColumnAsNominalText(const std::vector<std::string> &values, bool * changedSomething)
+{
+	return setColumnAsNominalText(values, std::map<std::string, std::string>(), changedSomething);
 }
 
 std::map<int, std::string> Column::setColumnAsNominalText(const std::vector<std::string> &values, const std::map<std::string, std::string>&labels, bool * changedSomething)

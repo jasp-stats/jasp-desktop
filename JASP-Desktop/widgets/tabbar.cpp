@@ -44,9 +44,6 @@ TabBar::TabBar(QWidget *parent) :
 	setLayout(_backgroundLayout);
 
 	_layout->addStretch(1);
-
-	_aboutDialog = new AboutDialog(this);
-	_preferencesDialog = new PreferencesDialog(this);
 	_modulesButton = NULL;
 }
 
@@ -185,8 +182,15 @@ void TabBar::removeTab(QString tabName)
 }
 
 
-void TabBar::init()
+void TabBar::init(MainWindow * mainWindow)
 {
+	connect(this,	&TabBar::setPPIHandler,				mainWindow,	&MainWindow::setPPIHandler				);
+	connect(this,	&TabBar::setImageBackgroundHandler,	mainWindow,	&MainWindow::setImageBackgroundHandler	);
+	connect(this,	&TabBar::UIScaleChanged,			mainWindow,	&MainWindow::setUIScaleHandler			);
+
+	_aboutDialog = new AboutDialog(this);
+	_preferencesDialog = new PreferencesDialog(this);
+
 	setFocusPolicy(Qt::NoFocus);
 	addTab("File");
 	addModulesPlusButton();
@@ -341,7 +345,12 @@ void TabBar::useDefaultPPI()
 
 void TabBar::setPPI(int ppi)
 {
-	emit setPPIHandler(ppi);
+	emit setPPIHandler(ppi, true);
+}
+
+void TabBar::setImageBackground(QString value)
+{
+	emit setImageBackgroundHandler(value);
 }
 
 

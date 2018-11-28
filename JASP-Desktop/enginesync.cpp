@@ -33,6 +33,7 @@
 #include "appinfo.h"
 #include "qutils.h"
 #include "tempfiles.h"
+#include "timers.h"
 
 using namespace boost::interprocess;
 
@@ -43,11 +44,12 @@ EngineSync::EngineSync(Analyses *analyses, DataSetPackage *package, QObject *par
 	_analyses = analyses;
 	_package = package;
 
+	/* commented out because it makes JASP crash after synchronizing, also quite pointless because enginseSync calls ProcessAnalysisRequests anyway from process, but then after filter, rscript and compute column requests..
 	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
 	connect(_analyses, SIGNAL(analysisOptionsChanged(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
 	connect(_analyses, SIGNAL(analysisToRefresh(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
 	connect(_analyses, SIGNAL(analysisSaveImage(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
-	connect(_analyses, SIGNAL(analysisEditImage(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
+	connect(_analyses, SIGNAL(analysisEditImage(Analysis*)), this, SLOT(ProcessAnalysisRequests()));*/
 
 	// delay start so as not to increase program start up time
 	QTimer::singleShot(100, this, SLOT(deleteOrphanedTempFiles()));
@@ -56,7 +58,7 @@ EngineSync::EngineSync(Analyses *analyses, DataSetPackage *package, QObject *par
 EngineSync::~EngineSync()
 {
 	if (_engineStarted)
-	{
+	{		
 		_engines.clear();
 		tempfiles_deleteAll();
 	}
@@ -68,6 +70,9 @@ void EngineSync::start()
 {
 	if (_engineStarted)
 		return;
+
+
+	JASPTIMER_START(EngineSync::start());
 
 	_engineStarted = true;
 
@@ -90,6 +95,7 @@ void EngineSync::start()
 			connect(_engines[i],	&EngineRepresentation::computeColumnSucceeded,			this,			&EngineSync::computeColumnSucceeded	);
 			connect(_engines[i],	&EngineRepresentation::computeColumnFailed,				this,			&EngineSync::computeColumnFailed	);
 			connect(this,			&EngineSync::ppiChanged,								_engines[i],	&EngineRepresentation::ppiChanged	);
+			connect(this,			&EngineSync::imageBackgroundChanged,					_engines[i],	&EngineRepresentation::imageBackgroundChanged );
 		}
 	}
 	catch (interprocess_exception e)
@@ -105,6 +111,8 @@ void EngineSync::start()
 	timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(heartbeatTempFiles()));
 	timer->start(30000);
+
+	JASPTIMER_FINISH(EngineSync::start());
 }
 
 
@@ -154,7 +162,7 @@ void EngineSync::computeColumn(QString columnName, QString computeCode, Column::
 
 void EngineSync::processScriptQueue()
 {
-	for(auto engine : _engines)
+	for(auto * engine : _engines)
 		if(engine->isIdle())
 		{
 			if(_waitingScripts.size() == 0 && _waitingFilter == nullptr)
@@ -169,7 +177,6 @@ void EngineSync::processScriptQueue()
 			{
 
 				RScriptStore * waiting = _waitingScripts.front();
-				_waitingScripts.pop();
 
 				switch(waiting->typeScript)
 				{
@@ -179,6 +186,7 @@ void EngineSync::processScriptQueue()
 				default:							throw std::runtime_error("engineState " + engineStateToString(waiting->typeScript) + " unknown in EngineSync::processScriptQueue()!");
 				}
 
+				_waitingScripts.pop();
 				delete waiting; //clean up
 			}
 		}
@@ -382,11 +390,49 @@ void EngineSync::subProcessError(QProcess::ProcessError error)
 	qDebug() << "subprocess error" << error;
 }
 
-void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus)
 {
-	(void)exitStatus;
-
 	emit engineTerminated();
 
 	qDebug() << "subprocess finished" << exitCode;
+}
+
+void EngineSync::pause()
+{
+	//make sure we process any received messages first.
+	for(auto engine : _engines)
+		engine->process();
+
+	for(EngineRepresentation * e : _engines)
+		e->pauseEngine();
+
+	while(!allEnginesPaused())
+		for (auto engine : _engines)
+			engine->process();
+}
+
+void EngineSync::resume()
+{
+	for(auto * engine : _engines)
+		engine->resumeEngine();
+
+	while(!allEnginesResumed())
+		for (auto * engine : _engines)
+			engine->process();
+}
+
+bool EngineSync::allEnginesPaused()
+{
+	for(auto * engine : _engines)
+		if(!engine->paused())
+			return false;
+	return true;
+}
+
+bool EngineSync::allEnginesResumed()
+{
+	for(auto * engine : _engines)
+		if(!engine->resumed())
+			return false;
+	return true;
 }

@@ -87,6 +87,7 @@
 #include <QDesktopServices>
 #include <QQmlContext>
 #include <QQuickItem>
+#include <QScreen>
 
 #include "analysisloader.h"
 
@@ -109,12 +110,15 @@
 #include "options/optionvariablesgroups.h"
 #include "datasetview.h"
 
+#include "timers.h"
+#include "resultstesting/compareresults.h"
+
 using namespace std;
 
-
-
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(QApplication * application) : QMainWindow(NULL), ui(new Ui::MainWindow), _application(application)
 {
+	JASPTIMER_START(MainWindowConstructor);
+
 	ui->setupUi(this);
 
 	tempfiles_init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
@@ -144,6 +148,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	QString missingvaluestring = _settings.value("MissingValueList", "").toString();
 	if (missingvaluestring != "")
 		Utils::setEmptyValues(fromQstringToStdVector(missingvaluestring, "|"));
+
+	JASPTIMER_FINISH(MainWindowConstructor);
 }
 
 void MainWindow::StartOnlineDataManager()
@@ -161,8 +167,10 @@ Q_DECLARE_METATYPE(Column::ColumnType)
 
 void MainWindow::makeConnections()
 {
-	_package->isModifiedChanged.connect(boost::bind(&MainWindow::packageChanged,	this,	_1));
-	_package->dataChanged.connect(		boost::bind(&MainWindow::packageDataChanged, this,	_1, _2, _3, _4, _5));
+	_package->isModifiedChanged.connect(boost::bind(&MainWindow::packageChanged,		this,	_1));
+	_package->dataChanged.connect(		boost::bind(&MainWindow::packageDataChanged,	this,	_1, _2, _3, _4, _5));
+	_package->pauseEngines.connect(		boost::bind(&MainWindow::pauseEngines,			this));
+	_package->resumeEngines.connect(	boost::bind(&MainWindow::resumeEngines,			this));
 
 	CONNECT_SHORTCUT("Ctrl+S",		&MainWindow::saveKeysSelected);
 	CONNECT_SHORTCUT("Ctrl+O",		&MainWindow::openKeysSelected);
@@ -172,9 +180,6 @@ void MainWindow::makeConnections()
 	CONNECT_SHORTCUT("Ctrl+-",		&MainWindow::zoomOutKeysSelected);
 	CONNECT_SHORTCUT("Ctrl+=",		&MainWindow::zoomEqualKeysSelected);
 
-	connect(ui->tabBar,				&TabBar::currentChanged,							this,					&MainWindow::tabChanged										);
-	connect(ui->tabBar,				&TabBar::helpToggled,								this,					&MainWindow::helpToggled									);
-
 	connect(_levelsTableModel,		&LevelsTableModel::resizeLabelColumn,				this,					&MainWindow::resizeVariablesWindowLabelColumn				);
 	connect(_levelsTableModel,		&LevelsTableModel::labelFilterChanged,				_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged					);
 	connect(_levelsTableModel,		&LevelsTableModel::notifyColumnHasFilterChanged,	_tableModel,			&DataSetTableModel::notifyColumnFilterStatusChanged			);
@@ -183,11 +188,11 @@ void MainWindow::makeConnections()
 
 	connect(_tableModel,			&DataSetTableModel::dataSetChanged,					this,					&MainWindow::dataSetChanged									);
 	connect(_tableModel,			&DataSetTableModel::allFiltersReset,				_labelFilterGenerator,	&labelFilterGenerator::labelFilterChanged					);
-	connect(_tableModel,			&DataSetTableModel::allFiltersReset,				_levelsTableModel,		&LevelsTableModel::refresh									);
-	connect(_tableModel,			&DataSetTableModel::modelReset,						_levelsTableModel,		&LevelsTableModel::refresh									);
+	connect(_tableModel,			&DataSetTableModel::allFiltersReset,				_levelsTableModel,		&LevelsTableModel::refresh,									Qt::QueuedConnection);
+	connect(_tableModel,			&DataSetTableModel::modelReset,						_levelsTableModel,		&LevelsTableModel::refresh,									Qt::QueuedConnection);
 	connect(_tableModel,			&DataSetTableModel::headerDataChanged,				_columnsModel,			&ColumnsModel::datasetHeaderDataChanged						);
 	connect(_tableModel,			&DataSetTableModel::modelReset,						_columnsModel,			&ColumnsModel::refresh										);
-	connect(_tableModel,			&DataSetTableModel::columnDataTypeChanged,			_computedColumnsModel,	&ComputedColumnsModel::checkForDependentColumnsToBeSentSlot	);
+	connect(_tableModel,			&DataSetTableModel::columnDataTypeChanged,			_computedColumnsModel,	&ComputedColumnsModel::recomputeColumn						);
 
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_computedColumnsModel,	&ComputedColumnsModel::computeColumnSucceeded				);
 	connect(_engineSync,			&EngineSync::computeColumnFailed,					_computedColumnsModel,	&ComputedColumnsModel::computeColumnFailed					);
@@ -199,15 +204,14 @@ void MainWindow::makeConnections()
 	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshColumn,				_tableModel,			&DataSetTableModel::refreshColumn,							Qt::QueuedConnection);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::headerDataChanged,			_tableModel,			&DataSetTableModel::headerDataChanged,						Qt::QueuedConnection);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::sendComputeCode,				_engineSync,			&EngineSync::computeColumn,									Qt::QueuedConnection);
-	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshColumn,				_levelsTableModel,		&LevelsTableModel::refreshColumn							);
+	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshColumn,				_levelsTableModel,		&LevelsTableModel::refreshColumn,							Qt::QueuedConnection);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::dataSetChanged,				_tableModel,			&DataSetTableModel::dataSetChanged							);
-	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshData,					_tableModel,			&DataSetTableModel::refresh									);
+	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshData,					_tableModel,			&DataSetTableModel::refresh,								Qt::QueuedConnection);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshData,					this,					&MainWindow::updateShownVariablesModel						);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			this,					&MainWindow::showForm										);
 
 	connect(this,					&MainWindow::ppiChanged,							_engineSync,			&EngineSync::ppiChanged										);
-
-	connect(_engineSync,			&EngineSync::engineTerminated,						this,					&MainWindow::fatalError										);
+	connect(this,					&MainWindow::imageBackgroundChanged,				_engineSync,			&EngineSync::imageBackgroundChanged							);
 
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
 	connect(_analyses,				&Analyses::analysisImageSaved,						this,					&MainWindow::analysisImageSavedHandler						);
@@ -216,28 +220,24 @@ void MainWindow::makeConnections()
 	connect(_analyses,				&Analyses::requestComputedColumnCreation,			_computedColumnsModel,	&ComputedColumnsModel::requestComputedColumnCreation,		Qt::UniqueConnection);
 	connect(_analyses,				&Analyses::requestComputedColumnDestruction,		_computedColumnsModel,	&ComputedColumnsModel::requestComputedColumnDestruction,	Qt::UniqueConnection);
 
-	connect(ui->backStage,			&BackStageWidget::dataSetIORequest,					this,					&MainWindow::dataSetIORequest								);
 	connect(ui->backStage,			&BackStageWidget::exportSelected,					_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
+	connect(ui->backStage,			&BackStageWidget::dataSetIORequest,					this,					&MainWindow::dataSetIORequest								);
 
 	connect(_odm,					&OnlineDataManager::progress,						this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
+	connect(&_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus								);
+	connect(_engineSync,			&EngineSync::engineTerminated,						this,					&MainWindow::fatalError										);
+	connect(_okButton,				&QPushButton::clicked,								this,					&MainWindow::analysisOKed									);
+	connect(_runButton,				&QPushButton::clicked,								this,					&MainWindow::analysisRunned									);
+	connect(ui->splitter,			&QSplitter::splitterMoved,							this,					&MainWindow::splitterMovedHandler							);
+	connect(ui->webViewHelp,		&CustomWebEngineView::loadFinished,					this,					&MainWindow::helpFirstLoaded								);
 
+	connect(ui->tabBar,				&TabBar::currentChanged,							this,					&MainWindow::tabChanged										);
+	connect(ui->tabBar,				&TabBar::helpToggled,								this,					&MainWindow::helpToggled									);
 	connect(ui->tabBar,				&TabBar::dataAutoSynchronizationChanged,			ui->backStage,			&BackStageWidget::dataAutoSynchronizationChanged			);
 	connect(ui->tabBar,				&TabBar::setExactPValuesHandler,					_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler					);
 	connect(ui->tabBar,				&TabBar::setFixDecimalsHandler,						_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler					);
 	connect(ui->tabBar,				&TabBar::emptyValuesChangedHandler,					this,					&MainWindow::emptyValuesChangedHandler						);
 	connect(ui->tabBar,				&TabBar::useDefaultPPIHandler,						_resultsJsInterface,	&ResultsJsInterface::getDefaultPPI							);
-	connect(ui->tabBar,				&TabBar::setPPIHandler,								this,					&MainWindow::setPPIHandler									);
-
-	connect(&_loader,				&AsyncLoader::progress,								this,					&MainWindow::setProgressStatus								);
-
-
-	connect(_okButton,				&QPushButton::clicked,								this,					&MainWindow::analysisOKed									);
-
-	connect(_runButton,				&QPushButton::clicked,								this,					&MainWindow::analysisRunned									);
-
-	connect(ui->splitter,			&QSplitter::splitterMoved,							this,					&MainWindow::splitterMovedHandler							);
-
-	connect(ui->webViewHelp,		&CustomWebEngineView::loadFinished,					this,					&MainWindow::helpFirstLoaded								);
 
 	connect(_filterModel,			&FilterModel::refreshAllAnalyses,					this,					&MainWindow::refreshAllAnalyses								);
 	connect(_filterModel,			&FilterModel::updateColumnsUsedInConstructedFilter, _tableModel,			&DataSetTableModel::setColumnsUsedInEasyFilter				);
@@ -258,11 +258,12 @@ void MainWindow::makeConnections()
 
 void MainWindow::initQWidgetGUIParts()
 {
+	JASPTIMER_START(MainWindow::initQWidgetGUIParts());
 	updateMenuEnabledDisabledStatus();
 
 	ui->splitter->setSizes(QList<int>({575}));
 
-	ui->tabBar->init();
+	ui->tabBar->init(this);
 
 #ifdef __APPLE__
 	_scrollbarWidth = 3;
@@ -295,7 +296,7 @@ void MainWindow::initQWidgetGUIParts()
 
 	_tableViewWidthBeforeOptionsMadeVisible = -1;
 
-	ui->webViewHelp->setUrl(QUrl::fromLocalFile(AppDirs::help() + "/index.html"));
+	ui->webViewHelp->load(QUrl::fromLocalFile(AppDirs::help() + "/index.html"));
 
 	ui->panel_4_Help->hide();
 
@@ -303,6 +304,8 @@ void MainWindow::initQWidgetGUIParts()
 
 	ui->panel_1_Data->hide();
 	ui->panel_2_Options->hide();
+
+	JASPTIMER_FINISH(MainWindow::initQWidgetGUIParts());
 }
 
 void MainWindow::loadQML()
@@ -314,6 +317,9 @@ void MainWindow::loadQML()
 	ui->quickWidget_Data->rootContext()->setContextProperty("computedColumnsInterface",	_computedColumnsModel);
 	ui->quickWidget_Data->rootContext()->setContextProperty("engineSync",				_engineSync);
 	ui->quickWidget_Data->rootContext()->setContextProperty("filterModel",				_filterModel);
+	ui->quickWidget_Data->rootContext()->setContextProperty("baseBlockDim",				20);
+	ui->quickWidget_Data->rootContext()->setContextProperty("baseFontSize",				16);
+	ui->quickWidget_Data->rootContext()->setContextProperty("ppiScale",					Settings::value(Settings::UI_SCALE).toFloat());
 
 	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeScale",			int(Column::ColumnType::ColumnTypeScale));
 	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeOrdinal",		int(Column::ColumnType::ColumnTypeOrdinal));
@@ -339,7 +345,6 @@ void MainWindow::open(QString filepath)
 	else
 		_openOnLoadFilename = filepath;
 }
-
 
 MainWindow::~MainWindow()
 {
@@ -586,11 +591,23 @@ void MainWindow::dataSetChanged(DataSet * dataSet)
 	setDataSetAndPackageInModels(_package);
 }
 
-void MainWindow::setPPIHandler(int ppi)
+void MainWindow::setPPIHandler(int ppi, bool refreshAllAnalyses)
 {
 	emit ppiChanged(ppi);
 
+	if(refreshAllAnalyses)
+		MainWindow::refreshAllAnalyses();
+}
+
+void MainWindow::setImageBackgroundHandler(QString value)
+{
+	emit imageBackgroundChanged(value);
 	refreshAllAnalyses();
+}
+
+void MainWindow::setUIScaleHandler(float scale)
+{
+	ui->quickWidget_Data->rootContext()->setContextProperty("ppiScale",	scale);
 }
 
 void MainWindow::setDataSetAndPackageInModels(DataSetPackage *package)
@@ -651,8 +668,10 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 
 	if (_package->isLoaded())
 		_package->setModified(true);
-}
 
+	if(resultXmlCompare::compareResults::theOne()->testMode())
+		analysesForComparingDoneAlready();
+}
 
 void MainWindow::analysisSaveImageHandler(int id, QString options)
 {
@@ -1044,7 +1063,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 		_loader.io(event, _package);
 		showProgress();
 	}
-	else if (event->operation() == FileEvent::FileExportData)
+	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileGenerateData)
 	{
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 		_loader.io(event, _package);
@@ -1061,7 +1080,6 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
-		
 		if (_package->isModified())
 		{
 			QString title = windowTitle();
@@ -1139,6 +1157,9 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 					_package->setModified(true);
 				}
 			}
+
+			if (resultXmlCompare::compareResults::theOne()->testMode())
+				startComparingResults();
 		}
 		else
 		{
@@ -1173,7 +1194,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		_package->setModified(true);
 		showAnalysis = true;
 	}
-	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileExportResults)
+	else if (event->operation() == FileEvent::FileGenerateData || event->operation() == FileEvent::FileExportResults)
 	{
 		showAnalysis = true;
 	}
@@ -1371,7 +1392,7 @@ void MainWindow::resultsPageLoaded(bool success, int ppi)
 		ppi = customPPI;
 	}
 
-	emit ppiChanged(ppi);
+	setPPIHandler(ppi, false);
 }
 
 
@@ -1465,7 +1486,10 @@ void MainWindow::emptyValuesChangedHandler()
 				_package->setDataSet(SharedMemory::enlargeDataSet(_package->dataSet()));
 				colChanged = _package->dataSet()->resetEmptyValues(_package->emptyValuesMap());
 			}
-			catch (exception &e)	{	throw runtime_error("Out of memory: this data set is too large for your computer's available memory");	}
+			catch (exception &e)
+			{
+				throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
+			}
 		}
 		catch (exception e)	{	cout << "MainWindow::emptyValuesChangedHandler n " << e.what() << std::endl; 	}
 		catch (...)			{	cout << "MainWindow::emptyValuesChangedHandler something when wrong...\n" << std::endl; }
@@ -1507,6 +1531,8 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 	{
 		_package->setAnalysesHTML(fq(data));
 		_package->setAnalysesHTMLReady();
+
+		finishComparingResults();
 	}
 	else
 	{
@@ -1739,7 +1765,7 @@ void MainWindow::refreshAnalysesUsingColumn(QString col)
 	changedColumns.push_back(col.toStdString());
 	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, false);
 
-	_package->setModified(false);
+	//_package->setModified(false); //Why would we do this?
 }
 
 void MainWindow::removeAnalysisRequestHandler(int id)
@@ -1831,7 +1857,7 @@ void MainWindow::startDataEditorHandler()
 			if (!path.endsWith(".csv", Qt::CaseInsensitive))
 				path.append(".csv");
 
-			event = new FileEvent(this, FileEvent::FileExportData);
+			event = new FileEvent(this, FileEvent::FileGenerateData);
 		}
 		else
 		{
@@ -1929,4 +1955,71 @@ void MainWindow::setProgressStatus(QString status, int progress)
 void MainWindow::updateExcludeKey()
 {
 	_excludeKey = false;
+}
+
+
+void MainWindow::testLoadedJaspFile(int timeOut)
+{
+	std::cout << "Enabling testmode for JASP with a timeout of " << timeOut << " minutes!" << std::endl;
+	resultXmlCompare::compareResults::theOne()->enableTestMode();
+
+	QTimer::singleShot(60000 * timeOut, this, &MainWindow::unitTestTimeOut);
+}
+
+void MainWindow::unitTestTimeOut()
+{
+	std::cerr << "Time out for unit test!" << std::endl;
+	_application->exit(2);
+}
+
+void MainWindow::startComparingResults()
+{
+	if (resultXmlCompare::compareResults::theOne()->testMode())
+	{
+		refreshAllAnalyses();
+		resultXmlCompare::compareResults::theOne()->setRefreshCalled();
+	}
+}
+
+
+
+void MainWindow::analysesForComparingDoneAlready()
+{
+	if(resultXmlCompare::compareResults::theOne()->testMode() && resultXmlCompare::compareResults::theOne()->refreshed())
+	{
+		bool allCompleted = true;
+
+		for(Analysis * analysis : *_analyses)
+			if(analysis != NULL && !analysis->isFinished())
+				allCompleted = false;
+
+		if(allCompleted)
+		{
+			_resultsJsInterface->exportPreviewHTML();
+			resultXmlCompare::compareResults::theOne()->setExportCalled();
+		}
+	}
+}
+
+void MainWindow::finishComparingResults()
+{
+	if(resultXmlCompare::compareResults::theOne()->testMode() && resultXmlCompare::compareResults::theOne()->exportCalled())
+	{
+		std::string resultHtml = _package->analysesHTML();
+		resultXmlCompare::compareResults::theOne()->setRefreshResult(QString::fromStdString(resultHtml));
+
+		bool success = resultXmlCompare::compareResults::theOne()->compare();
+
+		_application->exit(success ? 0 : 1);
+	}
+}
+
+void MainWindow::pauseEngines()
+{
+	_engineSync->pause();
+}
+
+void MainWindow::resumeEngines()
+{
+	_engineSync->resume();
 }

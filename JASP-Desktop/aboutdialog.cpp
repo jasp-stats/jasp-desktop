@@ -34,12 +34,9 @@ AboutDialog::AboutDialog(QWidget *parent) :
 	m_pBuffer = new QByteArray();
 	
 	setWindowFlags(Qt::Tool | Qt::WindowTitleHint | Qt::WindowCloseButtonHint | Qt::WindowMaximizeButtonHint | Qt::CustomizeWindowHint);
-	
-	//About core informataion with current version info
-	ui->aboutView->setUrl((QUrl(QString("qrc:///core/about.html"))));
-	
-	connect(ui->aboutView, SIGNAL(loadFinished(bool)), this, SLOT(aboutPageLoaded(bool)));
- }
+
+	//loading the about-page at construction time makes JASP start slow! Its better if we load it later (in showEvent)
+}
 
 AboutDialog::~AboutDialog()
 {
@@ -61,7 +58,10 @@ void AboutDialog::aboutPageLoaded(bool success)
 		QString builddate = tq(AppInfo::builddate);
 		
 		m_aboutDialogJsInterface->setAppInfo(version, builddate);
-		checkForJaspUpdate();
+
+		delayedVersionCheck = new QTimer();
+		delayedVersionCheck->setInterval(200);
+		connect(delayedVersionCheck, &QTimer::timeout, this, &AboutDialog::checkForJaspUpdate);
 	}
 }
 
@@ -71,7 +71,7 @@ void AboutDialog::checkForJaspUpdate()
 	QUrl url("https://jasp-stats.org/jasp-version/");
 	QNetworkRequest request(url);
 	m_network_reply = m_network_manager->get(request);	
-	connect(m_network_reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
+	connect(m_network_reply, &QNetworkReply::finished, this, &AboutDialog::downloadFinished);
 
 }
 
@@ -114,5 +114,17 @@ void AboutDialog::downloadFinished()
 #endif
 		}
 	}
-	
+}
+
+void AboutDialog::showEvent(QShowEvent * e)
+{
+	static QUrl aboutUrl = QUrl(QString("qrc:///core/about.html"));
+
+	if(ui->aboutView->url() != aboutUrl)
+	{
+		ui->aboutView->load(aboutUrl);
+		connect(ui->aboutView, &CustomWebEngineView::loadFinished, this, &AboutDialog::aboutPageLoaded);
+	}
+
+	QDialog::showEvent(e);
 }

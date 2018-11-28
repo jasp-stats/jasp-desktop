@@ -14,7 +14,7 @@ public:
 	///Generates entire filter
 	std::string generateFilter();
 
-	void regenerateFilter() { emit setGeneratedFilter(QString::fromStdString(generateFilter())); }
+	void regenerateFilter()	{ emit setGeneratedFilter(QString::fromStdString(generateFilter())); }
 
 public slots:
 	void labelFilterChanged();

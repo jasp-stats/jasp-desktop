@@ -9,7 +9,6 @@ SOURCES += \
     $$PWD/application.cpp \
     $$PWD/asyncloader.cpp \
     $$PWD/availablefields.cpp \
-    $$PWD/backstage/authwidget.cpp \
     $$PWD/backstage/backstagepage.cpp \
     $$PWD/backstage/breadcrumbs.cpp \
     $$PWD/backstage/elidelabel.cpp \
@@ -159,7 +158,9 @@ SOURCES += \
     $$PWD/backstage/computerlistmodel.cpp \
     $$PWD/backstage/backstageosf.cpp \
     $$PWD/backstage/osflistmodel.cpp \
-    $$PWD/backstage/osfbreadcrumbslistmodel.cpp
+    $$PWD/backstage/osfbreadcrumbslistmodel.cpp \
+    $$PWD/resultstesting/compareresults.cpp \
+    $$PWD/resultstesting/resultscomparetable.cpp
 
 
 
@@ -171,7 +172,6 @@ HEADERS  += \
     $$PWD/application.h \
     $$PWD/asyncloader.h \
     $$PWD/availablefields.h \
-    $$PWD/backstage/authwidget.h \
     $$PWD/backstage/backstagepage.h \
     $$PWD/backstage/breadcrumbs.h \
     $$PWD/backstage/elidelabel.h \
@@ -337,12 +337,12 @@ HEADERS  += \
     $$PWD/backstage/computerlistmodel.h \
     $$PWD/backstage/backstageosf.h \
     $$PWD/backstage/osflistmodel.h \
-    $$PWD/backstage/osfbreadcrumbslistmodel.h
+    $$PWD/backstage/osfbreadcrumbslistmodel.h \
+    $$PWD/resultstesting/compareresults.h \
+    $$PWD/resultstesting/resultscomparetable.h
 
 FORMS += \
     $$PWD/aboutdialog.ui \
-    $$PWD/backstage/authwidget.ui\
-    $$PWD/backstage/backstagecomputer.ui \
     $$PWD/mainwindow.ui \
     $$PWD/preferencesdialog.ui \
     $$PWD/ribbons/ribbonhome.ui \

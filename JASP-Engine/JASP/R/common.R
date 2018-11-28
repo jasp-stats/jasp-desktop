@@ -19,12 +19,12 @@ toJSON    <- function(x) jsonlite::toJSON(x, auto_unbox = TRUE, digits = NA, nul
 
 run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresInit=TRUE, perform="run")
 {
-	if (identical(.Platform$OS.type, "windows"))
-		compiler::enableJIT(0)
-	dataKey <- fromJSON(dataKey)
-	options <- fromJSON(options)
-	resultsMeta <- fromJSON(resultsMeta)
-	stateKey <- fromJSON(stateKey)
+    if (identical(.Platform$OS.type, "windows"))
+            compiler::enableJIT(0)
+    dataKey <- fromJSON(dataKey)
+    options <- fromJSON(options)
+    resultsMeta <- fromJSON(resultsMeta)
+    stateKey <- fromJSON(stateKey)
 
 
   if (base::exists(".requestStateFileNameNative")) {
@@ -1598,7 +1598,8 @@ isTryError <- function(obj){
 		".callbackNative",
 		".requestStateFileNameNative",
 		".baseCitation",
-		".ppi")
+		".ppi",
+		".imageBackground")
 
 	if (! x %in% collection) {
 		stop("Unknown RCPP object")
@@ -2244,30 +2245,36 @@ as.list.footnotes <- function(footnotes) {
   setwd(root)
   on.exit(setwd(oldwd))
 
+  # Operating System information
+  type <- "cairo"
+  if (Sys.info()["sysname"]=="Darwin"){
+    type <- "quartz"
+  }
+  backgroundColor <- .fromRCPP(".imageBackground")
   if (ggplot2::is.ggplot(plot) || inherits(plot, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
     ppi <- .fromRCPP(".ppi")
 
-    # fix for mac
-    if (Sys.info()["sysname"] == "Darwin") ppi <- ppi / 2
-
-    ggplot2::ggsave(relativePathpng, plot, "png",
-                    width  = 1.5*width/ppi,
-                    height = 1.5*height/ppi,
-                    dpi    = 2*ppi,
-                    bg     = "transparent")
+    pngMultip <- .fromRCPP(".ppi") / 96
+    ggplot2::ggsave(
+    	filename  = relativePathpng,
+    	plot      = plot,
+    	device    = grDevices::png,
+    	width     = width  * pngMultip,
+    	height    = height * pngMultip,
+    	dpi       = ppi,
+		bg        = backgroundColor,
+    	res       = 72 * pngMultip,
+    	type      = type,
+    	limitsize = FALSE # because we supply png as a function, we specify pixels rather than inches
+    )
   } else {
-    # Operating System information
-  	type <- "cairo"
-  	if (Sys.info()["sysname"]=="Darwin"){
-  	    type <- "quartz"
-  	}
   	# Calculate pixel multiplier
   	pngMultip <- .fromRCPP(".ppi") / 96
     isRecordedPlot <- inherits(plot, "recordedplot")
 
     # Open graphics device and plot
     grDevices::png(filename=relativePathpng, width=width * pngMultip,
-                   height=height * pngMultip, bg="transparent",
+	               height=height * pngMultip, bg=backgroundColor,
                    res=72 * pngMultip, type=type)
 
     if (is.function(plot) && !isRecordedPlot) {
@@ -2300,7 +2307,7 @@ saveImage <- function(plotName, format, height, width)
   state     <- .retrieveState()     # Retrieve plot object from state
   plt       <- state[["figures"]][[plotName]]
   location  <- .fromRCPP(".requestTempFileNameNative", "png") # create file location string to extract the root location
-
+  backgroundColor <- .fromRCPP(".imageBackground")
 
 	# create file location string
 	location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
@@ -2317,7 +2324,7 @@ saveImage <- function(plotName, format, height, width)
 	if (format == "eps") {
 
 		grDevices::cairo_ps(filename=relativePath, width=insize[1],
-												height=insize[2], bg="transparent")
+		                                        height=insize[2], bg=backgroundColor)
 
 	} else if (format == "tiff") {
 
@@ -2326,7 +2333,7 @@ saveImage <- function(plotName, format, height, width)
                     width       = width * hiResMultip,
                     height      = height * hiResMultip,
                     res         = 300,
-                    bg          = "transparent",
+					bg          = backgroundColor,
                     compression = "lzw",
                     type        = "cairo")
 
@@ -2662,6 +2669,7 @@ editImage <- function(plotName, type, height, width) {
 
 			# copy plot and check if we edit it
 			plot <- oldPlot
+			#if (type == "interactive" && isGgplot) {
 			if (FALSE && type == "interactive" && isGgplot) {
 			  editedPlot <- ggedit::ggedit(oldPlot, viewer = shiny::browserViewer())
 				plot <- editedPlot[["UpdatedPlots"]][[1]]
@@ -2842,7 +2850,7 @@ createJaspContainer <- function(title="", dependencies=NULL, position=NULL)
   container <- jaspResultsModule$create_cpp_jaspContainer(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspContainer, title))
 
   if(!is.null(dependencies))
-    container$dependOnTheseOptions(dependencies)
+    container$dependOnOptions(dependencies)
 
   if(is.numeric(position))
     container$position = position
@@ -2873,7 +2881,7 @@ createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, 
     jaspObj$setRowTitles(rowTitles)
 
   if(!is.null(dependencies))
-    jaspObj$dependOnTheseOptions(dependencies)
+    jaspObj$dependOnOptions(dependencies)
 
   if(is.numeric(position))
     jaspObj$position = position
@@ -2889,7 +2897,7 @@ createJaspHtml <- function(text="", elementType="p", class="", dependencies=NULL
   htmlObj$title       <- title
 
   if(!is.null(dependencies))
-    htmlObj$dependOnTheseOptions(dependencies)
+    htmlObj$dependOnOptions(dependencies)
 
   if(is.numeric(position))
     htmlObj$position = position
@@ -2901,11 +2909,10 @@ createJaspState <- function(object=NULL, title="", dependencies=NULL, position=N
 {
   stateObj <- jaspResultsModule$create_cpp_jaspState(title) # If we use R's constructor it will garbage collect our objects prematurely.. #
 
-  if(!is.null(object))
-    stateObj$object <- object
+  stateObj$object <- object
 
   if(!is.null(dependencies))
-      stateObj$dependOnTheseOptions(dependencies)
+      stateObj$dependOnOptions(dependencies)
 
   if(is.numeric(position))
     stateObj$position = position

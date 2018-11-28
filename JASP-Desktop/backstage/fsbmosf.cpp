@@ -72,7 +72,6 @@ void FSBMOSF::attemptToConnect()
 
 	if ( _isAuthenticated == false && _dataManager != NULL )
 	{
-		emit hideAuthentication();
 		emit processingEntries();
 		bool authsuccess = _dataManager->authenticationSuccessful(OnlineDataManager::OSF);
 		setAuthenticated(authsuccess);
@@ -123,8 +122,9 @@ void FSBMOSF::setAuthenticated(bool value)
 	}
 	else
 	{
+		emit stopProcessing();
 		_isAuthenticated = false;
-		emit authenticationFail("Username and/or password are not correct. Please try again.");
+		emit authenticationFail("Username and/or password are not correct. Please try again.");		
 	}
 }
 

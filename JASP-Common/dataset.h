@@ -60,7 +60,7 @@ public:
 
 	bool allColumnsPassFilter()				const;
 	bool synchingData()						const	{ return _synchingData; }
-	void setSynchingData(bool newVal)				{ _synchingData = newVal;  std::cout << "dataset synching ? " << (newVal ? "yes" : "no") << std::endl; }
+	void setSynchingData(bool newVal);
 
 private:
 	Columns			_columns;

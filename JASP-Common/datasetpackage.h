@@ -92,12 +92,16 @@ public:
 
 			ComputedColumns	* computedColumnsPointer();
 
-			boost::signals2::signal<void (DataSetPackage *source)>																																									isModifiedChanged;
-			boost::signals2::signal<void (DataSetPackage *source, std::vector<std::string> &changedColumns, std::vector<std::string> &missingColumns, std::map<std::string, std::string> &changeNameColumns, bool rowCountChanged)>	dataChanged;
+			boost::signals2::signal<void (DataSetPackage *source)>										isModifiedChanged;
+			boost::signals2::signal<void (DataSetPackage *						source,
+										  std::vector<std::string> &			changedColumns,
+										  std::vector<std::string> &			missingColumns,
+										  std::map<std::string, std::string> &	changeNameColumns,
+										  bool									rowCountChanged)>		dataChanged;
+			boost::signals2::signal<void ()>															pauseEngines,
+																										resumeEngines;
 
 private:
-
-
 	DataSet				*_dataSet = NULL;
 	emptyValsType		_emptyValuesMap;
 

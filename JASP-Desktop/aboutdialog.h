@@ -26,6 +26,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QUrl>
+#include <QTimer>
 
 #include "aboutdialogjsinterface.h"
 
@@ -39,22 +40,25 @@ class AboutDialog : public QDialog
 {
 	Q_OBJECT
 	friend class AboutDialogJsInterface;
+
 public:
-	explicit AboutDialog(QWidget *parent = 0);
-	~AboutDialog();	
+	explicit	AboutDialog(QWidget *parent = 0);
+				~AboutDialog();
+
+	void showEvent(QShowEvent * e) override;
 	
 private slots:
 	void aboutPageLoaded(bool success);
 	void downloadFinished();
+	void checkForJaspUpdate();
 
 private:
-	void checkForJaspUpdate();
-	Ui::AboutDialog *ui;
-	QNetworkAccessManager *m_network_manager;	// make the HTTP GET request
-	QNetworkReply *m_network_reply;
-	QByteArray *m_pBuffer;
-	
-	AboutDialogJsInterface *m_aboutDialogJsInterface;
+	Ui::AboutDialog			*ui;
+	QNetworkAccessManager	*m_network_manager;	// make the HTTP GET request
+	QNetworkReply			*m_network_reply;
+	QByteArray				*m_pBuffer;
+	AboutDialogJsInterface	*m_aboutDialogJsInterface;
+	QTimer					*delayedVersionCheck = nullptr;
 	
 };
 

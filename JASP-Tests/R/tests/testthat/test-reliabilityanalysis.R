@@ -18,9 +18,9 @@ test_that("Main table results match", {
   results <- jasptools::run("ReliabilityAnalysis", "test.csv", options, view=FALSE, quiet=TRUE)
   table <- results[["results"]][["reliabilityScale"]][["data"]]
   expect_equal_tables(table,
-    list("scale", -0.757822989578577, -0.0677657928415725, 0.667932535083157,
-         0.622700230679449, -0.175972651899464, -0.02217061461, 0.144515070286093,
-         -1.45211881901153, -0.235388804018903)
+    list("scale", 0.535041083185576, 0.558313196445623, 0.667932535083157,
+         0.622700230679449, 0.283327270506343, -0.02217061461, 0.144515070286093,
+         0.351394015923524, 0.673229304903445)
   )
 })
 

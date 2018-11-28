@@ -17,6 +17,7 @@
 //
 
 #include "opensavewidget.h"
+#include "ui_backstageform.h"
 
 #include <QGridLayout>
 #include <QLabel>
@@ -26,7 +27,8 @@
 #include <iostream>
 #include "settings.h"
 
-OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
+OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent),
+	ui(new Ui::BackstageForm)
 {
 	_mode = FileEvent::FileOpen;
 	_currentFileType = Utils::FileType::unknown;
@@ -35,6 +37,9 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	QGridLayout *layout = new QGridLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
 	setLayout(layout);
+	
+	//ui->setupUi(this);	
+	//ui->QmlContent->setSource(QUrl(QStringLiteral("qrc:/backstage/VerticalTabBar.qml")));
 
 	_tabWidget = new VerticalTabWidget(this);
 
@@ -125,7 +130,6 @@ void OpenSaveWidget::setOnlineDataManager(OnlineDataManager *odm)
 {
 	_odm = odm;
 	_bsOSF->setOnlineDataManager(odm);
-	connect(_odm, SIGNAL(authenticationCleared(int)), this, SLOT(clearOnlineDataFromRecentList(int)));
 }
 
 void OpenSaveWidget::setSaveMode(FileEvent::FileMode mode)
@@ -229,12 +233,6 @@ FileEvent *OpenSaveWidget::close()
 	dataSetIORequestHandler(event);
 
 	return event;
-}
-
-void OpenSaveWidget::clearOnlineDataFromRecentList(int provider)
-{
-	//if ((OnlineDataManager::Provider)provider == OnlineDataManager::OSF)
-	//	_fsmRecent->filter(&clearOSFFromRecentList);
 }
 
 bool OpenSaveWidget::clearOSFFromRecentList(QString path)
@@ -410,17 +408,18 @@ QString OpenSaveWidget::getDefaultOutFileName()
 		QString ext = QFileInfo(path).suffix();
 		switch (_mode)
 		{
-			case FileEvent::FileSave:
-				ext="jasp";
-				break;
-			case FileEvent::FileExportResults:
-				ext="html";
-				break;
-			case FileEvent::FileExportData:
-				ext = "csv";
-				break;
-			default:
-				break;
+		case FileEvent::FileSave:
+			ext="jasp";
+			break;
+		case FileEvent::FileExportResults:
+			ext="html";
+			break;
+		case FileEvent::FileExportData:
+		case FileEvent::FileGenerateData:
+			ext = "csv";
+			break;
+		default:
+			break;
 		}
 		DefaultOutFileName = name + "." + ext;
 	}

@@ -22,6 +22,7 @@ public:
 
 				bool	datasetLoaded()					{ return _package != NULL; }
 				QString	computeColumnRCode();
+				QString computeColumnRCodeCommentStripped();
 				QString computeColumnError();
 				QString computeColumnNameSelected();
 				QString computeColumnJson();
@@ -78,9 +79,10 @@ signals:
 public slots:
 				void				computeColumnSucceeded(std::string columnName, std::string warning, bool dataChanged);
 				void				computeColumnFailed(std::string columnName, std::string error);
-				void				checkForDependentColumnsToBeSentSlot(std::string columnName)							{ checkForDependentColumnsToBeSent(columnName, true); }
+				void				checkForDependentColumnsToBeSentSlot(std::string columnName)					{ checkForDependentColumnsToBeSent(columnName, false); }
 				ComputedColumn *	requestComputedColumnCreation(std::string columnName, Analysis * analysis);
 				void				requestComputedColumnDestruction(std::string columnName);
+				void				recomputeColumn(std::string columnName);
 
 private:
 

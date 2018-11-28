@@ -15,7 +15,7 @@
     bty = list(type = "n", ldwX = .3, lwdY = .3),
     axisTickLength = grid::unit(x = .3, units = "cm"),
     axisTickWidth = .3,
-    ggVersion = as.character(packageVersion("ggplot2"))
+    ggVersion = packageVersion("ggplot2")
 ))
 
 #' @export

@@ -1,4 +1,5 @@
 #include "r_functionwhitelist.h"
+#include "utils.h"
 
 	//The following functions (and keywords that can be followed by a '(') will be allowed in user-entered R-code, such as filters or computed columns. This is for security because otherwise JASP-files could become a vector of attack and that doesn't refer to an R-datatype.
 const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
@@ -27,7 +28,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"as.numeric",
 	"asin",
 	"atan",
-    "atanh",
+	"atanh",
 	"atan2",
 	"attr",
 	"attributes",
@@ -64,6 +65,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"fft",
 	"filter",
 	"fitted",
+	"fishZ",
 	"for",
 	"format",
 	"function",
@@ -73,7 +75,9 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"gsub",
 	"if",
 	"ifelse",
+	"ifElse",
 	"intersect",
+	"invFishZ",
 	"is.array",
 	"is.character",
 	"is.complex",
@@ -86,6 +90,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"length",
 	"library",
 	"list",
+	"local",
 	"lm",
 	"loess",
 	"log",
@@ -162,7 +167,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"solve",
 	"sort",
 	"spline",
-    "sqrt",
+	"sqrt",
 	"stack",
 	"str",
 	"strsplit",
@@ -174,7 +179,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"t.test",
 	"table",
 	"tan",
-    "tanh",
+	"tanh",
 	"tapply",
 	"tolower",
 	"toString",
@@ -190,7 +195,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"which.min",
 	"xtabs",
 	".setColumnDataAsScale", ".setColumnDataAsOrdinal", ".setColumnDataAsNominal", ".setColumnDataAsNominalText", "function", "stop",
-    "normalDist", "tDist", "chiSqDist", "fDist", "binomDist", "negBinomDist", "geomDist", "poisDist", "integerDist", "betaDist", "unifDist", "gammaDist", "expDist", "logNormDist", "weibullDist",
+	"normalDist", "tDist", "chiSqDist", "fDist", "binomDist", "negBinomDist", "geomDist", "poisDist", "integerDist", "betaDist", "unifDist", "gammaDist", "expDist", "logNormDist", "weibullDist",
 	"replaceNA"
 #ifdef JASP_DEBUG
 	,"Sys.sleep"
@@ -275,9 +280,11 @@ std::set<std::string> R_FunctionWhiteList::findIllegalFunctionsAliases(std::stri
 
 void R_FunctionWhiteList::scriptIsSafe(const std::string &script)
 {
+	std::string commentFree = Utils::stripRComments(script);
+
 	static std::string errorMsg;
 
-	std::set<std::string> blackListedFunctions = findIllegalFunctions(script);
+	std::set<std::string> blackListedFunctions = findIllegalFunctions(commentFree);
 
 	if(blackListedFunctions.size() > 0)
 	{
@@ -291,7 +298,7 @@ void R_FunctionWhiteList::scriptIsSafe(const std::string &script)
 		throw filterException(errorMsg);
 	}
 
-	std::set<std::string> illegalAliasesFound = findIllegalFunctionsAliases(script);
+	std::set<std::string> illegalAliasesFound = findIllegalFunctionsAliases(commentFree);
 
 	if(illegalAliasesFound.size() > 0)
 	{

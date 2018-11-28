@@ -27,6 +27,7 @@ public:
 
 	std::string			getConstructorJson(std::string name);
 	std::string			getRCode(std::string name);
+	std::string			getRCodeCommentStripped(std::string name);
 	std::string			getError(std::string name);
 
 	size_t				findIndexByName(std::string name)			const;
@@ -34,6 +35,8 @@ public:
 	iterator			begin()			{ return _computedColumns.begin();	}
 	iterator			end()			{ return _computedColumns.end();	}
 	size_t				columnCount()	{ return _computedColumns.size();	}
+
+	void setPackageModified();
 
 			ComputedColumn & operator[](size_t i)					{ return *_computedColumns[i]; }
 	const	ComputedColumn & operator[](size_t i)			const	{ return *_computedColumns[i]; }

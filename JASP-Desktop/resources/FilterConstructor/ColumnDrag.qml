@@ -6,7 +6,6 @@ DragGeneric {
 
 	shownChild: showMe
 	dragKeys: showMe.dragKeys
-	property real colScaler: 1
 
 	JASPColumn
 	{
@@ -16,8 +15,5 @@ DragGeneric {
 
 		x: parent.dragX
 		y: parent.dragY
-
-		colScaler: parent.colScaler
-
 	}
 }

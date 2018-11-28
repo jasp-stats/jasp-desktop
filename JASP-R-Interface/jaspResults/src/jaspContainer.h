@@ -21,7 +21,8 @@ public:
 
 	jaspContainer(const jaspContainer& that) = delete;
 
-	std::string dataToString(std::string prefix = "") override;
+	std::string dataToString(std::string prefix = "")	override;
+	std::string toHtml()								override;
 
 	void			insert(std::string field, Rcpp::RObject value);
 	Rcpp::RObject	at(std::string field);

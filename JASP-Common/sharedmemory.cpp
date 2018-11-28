@@ -55,12 +55,8 @@ DataSet *SharedMemory::retrieveDataSet(unsigned long parentPID)
 		if(parentPID == 0)
 			parentPID = ProcessInfo::parentPID();
 
-		stringstream ss;
-		ss << "JASP-DATA-";
-		ss << parentPID;
-		_memoryName = ss.str();
-
-		_memory = new interprocess::managed_shared_memory(interprocess::open_only, _memoryName.c_str());
+		_memoryName = "JASP-DATA-" + std::to_string(parentPID);
+		_memory		= new interprocess::managed_shared_memory(interprocess::open_only, _memoryName.c_str());
 	}
 
 	DataSet * data = _memory->find<DataSet>(interprocess::unique_instance).first;
@@ -90,4 +86,12 @@ DataSet *SharedMemory::enlargeDataSet(DataSet *)
 void SharedMemory::deleteDataSet(DataSet *dataSet)
 {
 	_memory->destroy_ptr(dataSet);
+}
+
+void SharedMemory::unloadDataSet()
+{
+	if(_memory != NULL)
+		delete _memory;
+
+	_memory = NULL;
 }

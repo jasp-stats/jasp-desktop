@@ -52,48 +52,57 @@ Popup {
 
 		Text
 		{
-			id:	title
-			text: "Create Computed Column"
-			font.bold: true
-			anchors.top: parent.top
-			font.pixelSize: 20
-			verticalAlignment: Text.AlignVCenter
-			anchors.topMargin: 10
-			anchors.horizontalCenter: parent.horizontalCenter
+			id:					title
+			text:				"Create Computed Column"
+			font.bold:			true
+			font.pixelSize:		20 * ppiScale
+			verticalAlignment:	Text.AlignVCenter
+			anchors
+			{
+				top:				parent.top
+				topMargin:			10
+				horizontalCenter:	parent.horizontalCenter
+			}
 		}
 
 		Item
 		{
-			id: nameItem
-			anchors.top: title.bottom
-			anchors.left: parent.left
-			anchors.right: parent.right
-			anchors.topMargin: 10
-			anchors.leftMargin: 10
-			anchors.rightMargin: 10
-			height: 36
+			id:		nameItem
+			property real marge: 10 * ppiScale
+			height:	marge * 2 + (baseFontSize * 1.5 * ppiScale)
+
+			anchors
+			{
+				top:			title.bottom
+				left:			parent.left
+				right:			parent.right
+				topMargin:		marge
+				leftMargin:		marge
+				rightMargin:	marge
+			}
+
 
 			Text
 			{
-				id: nameLabel
-				text: "Name:"
-				anchors.left: parent.left
+				id:						nameLabel
+				text:					"Name:"
+				anchors.left:			parent.left
 				anchors.verticalCenter: parent.verticalCenter
-				verticalAlignment: Text.AlignVCenter
+				verticalAlignment:		Text.AlignVCenter
 			}
 
 			Rectangle
 			{
-				id: nameBox
-				anchors.top:	parent.top
-				anchors.left:	nameLabel.right
-				anchors.right:	parent.right
-				anchors.bottom: parent.bottom
-				anchors.margins: 6
+				id:					nameBox
+				anchors.top:		parent.top
+				anchors.left:		nameLabel.right
+				anchors.right:		parent.right
+				anchors.bottom:		parent.bottom
+				anchors.margins:	6 * ppiScale
 
-				color: "white"
-				border.color: "black"
-				border.width: 1
+				color:				"white"
+				border.color:		"black"
+				border.width:		1
 
 				TextEdit
 				{
@@ -104,6 +113,7 @@ Popup {
 					anchors.margins: 2
 
 					text: defaultText
+					font.pixelSize: baseFontSize * ppiScale
 					onActiveFocusChanged:
 					{
 						if(activeFocus && text === defaultText) text = ""
@@ -147,7 +157,7 @@ Popup {
 			anchors.top:				nameItem.bottom
 			anchors.topMargin:			10
 			anchors.horizontalCenter:	parent.horizontalCenter
-			height: 45
+			height:						45 * ppiScale
 
 			FilterButton
 			{
@@ -193,7 +203,7 @@ Popup {
 		Row
 		{
 			id:			computeColumnIconRow
-			height:		25
+			height:		25 * ppiScale
 			spacing:	2
 
 			anchors.top:				computeTypeSelector.bottom

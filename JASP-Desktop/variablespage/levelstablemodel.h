@@ -1,4 +1,4 @@
-#ifndef LEVELSTABLEMODEL_H
+﻿#ifndef LEVELSTABLEMODEL_H
 #define LEVELSTABLEMODEL_H
 
 #include <QAbstractTableModel>
@@ -53,7 +53,7 @@ public:
 public slots:
 	void refresh();
 	void refreshColumn(Column * column);
-	void refreshConnectedModelsToName(Column * column) { emit refreshConnectedModelsByName(column->name()); }
+	void refreshConnectedModelsToName(Column * column) { emit refreshConnectedModelsByName(column->name());	}
 
 
 signals:
@@ -65,8 +65,9 @@ signals:
 	void filteredOutChanged();
 
 private:
-	Column *_column;
-	DataSet * _dataSet = NULL;
+	Column		*_column;
+	DataSet		*_dataSet = NULL;
+	std::string _colName = "";
 
 	void _moveRows(QModelIndexList &selection, bool up = true);
 	int currentColumnIndex();

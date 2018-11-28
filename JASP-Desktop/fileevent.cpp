@@ -36,7 +36,10 @@ FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
 		_exporter = new ResultExporter();
 		break;
 	case FileEvent::FileExportData:
-		_exporter = new DataExporter();
+		_exporter = new DataExporter(true);
+		break;
+	case FileEvent::FileGenerateData:
+		_exporter = new DataExporter(false);
 		break;
 	case FileEvent::FileSave:
 		_exporter = new JASPExporter();

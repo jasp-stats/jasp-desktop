@@ -6,6 +6,13 @@ Columns& ComputedColumns::columns()
 	return _package->dataSet()->columns();
 }
 
+
+void ComputedColumns::setPackageModified()
+{
+	if(_package != NULL)
+		_package->setModified(true);
+}
+
 ComputedColumn * ComputedColumns::createComputedColumn(std::string name, Column::ColumnType type, ComputedColumn::computedType desiredType)
 {
 	Column			* column			= columns().createColumn(name);
@@ -15,6 +22,7 @@ ComputedColumn * ComputedColumns::createComputedColumn(std::string name, Column:
 	column->setDefaultValues(type);
 
 	refreshColumnPointers();
+	setPackageModified();
 
 	return newComputedColumn;
 }
@@ -28,6 +36,8 @@ void ComputedColumns::removeComputedColumn(std::string name)
 			_computedColumns.erase(it);
 			break;
 		}
+
+	setPackageModified();
 
 	columns().removeColumn(name);  //This moves the columns, meaning the pointers in the other computeColumns are now no longer valid..
 	refreshColumnPointers();
@@ -53,7 +63,9 @@ bool ComputedColumns::setRCode(std::string name, std::string rCode)
 {
 	try
 	{
-		return (*this)[name].setRCode(rCode);
+		bool changed = (*this)[name].setRCode(rCode);
+		if(changed) setPackageModified();
+		return changed;
 	}
 	catch(...){}
 	return false;
@@ -63,7 +75,9 @@ bool ComputedColumns::setConstructorJson(std::string name, std::string json)
 {
 	try
 	{
-		return (*this)[name].setConstructorJson(json);
+		bool changed = (*this)[name].setConstructorJson(json);
+		if(changed) setPackageModified();
+		return changed;
 	}
 	catch(...){}
 	return false;
@@ -73,7 +87,9 @@ bool ComputedColumns::setError(std::string name, std::string error)
 {
 	try
 	{
-		return (*this)[name].setError(error);
+		bool changed = (*this)[name].setError(error);
+		if(changed) setPackageModified();
+		return changed;
 	}
 	catch(...){}
 	return false;
@@ -84,6 +100,16 @@ std::string ComputedColumns::getRCode(std::string name)
 	try
 	{
 		return (*this)[name].rCode();
+	}
+	catch(...){}
+	return "";
+}
+
+std::string ComputedColumns::getRCodeCommentStripped(std::string name)
+{
+	try
+	{
+		return (*this)[name].rCodeCommentStripped();
 	}
 	catch(...){}
 	return "";

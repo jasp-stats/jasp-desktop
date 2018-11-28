@@ -1,27 +1,27 @@
-LINUX_SPECIAL_CASE = true
+LINUX_SPECIAL_CASE =
 
 _R_HOME = $$(R_HOME)
 
 linux {
 	exists(/app/lib/*) {
-        _R_HOME = /app/lib64/R
-    } else {
-		$$LINUX_SPECIAL_CASE {
+      _R_HOME = /app/lib64/R
+  } else {
+    exists(/usr/lib64/R) {
       isEmpty(_R_HOME): _R_HOME = /usr/lib64/R
 		} else {
       isEmpty(_R_HOME): _R_HOME = /usr/lib/R
 		}
 	}
 
-    #QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
-    INCLUDEPATH += $$_R_HOME/library/include  \
-        /usr/include/R/                       \
-        /usr/share/R/include                  \
-        $$_R_HOME/site-library/Rcpp/include
+  #QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
+  INCLUDEPATH += $$_R_HOME/library/include  \
+      /usr/include/R/                       \
+      /usr/share/R/include                  \
+      $$_R_HOME/site-library/Rcpp/include
 
-    R_EXE  = $$_R_HOME/bin/R
+  R_EXE  = $$_R_HOME/bin/R
 
-    DEFINES += 'R_HOME=\\\"$$_R_HOME\\\"'
+  DEFINES += 'R_HOME=\\\"$$_R_HOME\\\"'
 }
 
 macx {

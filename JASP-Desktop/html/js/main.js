@@ -178,11 +178,11 @@ $(document).ready(function () {
 
 	window.exportHTML = function (filename) {
 
-		var exportParams = new JASPWidgets.Exporter.params();
-		exportParams.format = JASPWidgets.ExportProperties.format.formattedHTML;
-		exportParams.process = JASPWidgets.ExportProperties.process.save;
-		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.embedded;
-		exportParams.includeNotes = true;
+		var exportParams				= new JASPWidgets.Exporter.params();
+		exportParams.format				= JASPWidgets.ExportProperties.format.formattedHTML;
+		exportParams.process			= JASPWidgets.ExportProperties.process.save;
+		exportParams.htmlImageFormat	= JASPWidgets.ExportProperties.htmlImageFormat.embedded;
+		exportParams.includeNotes		= true;
 
 		if (filename === "%PREVIEW%") {
 			exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.resource;

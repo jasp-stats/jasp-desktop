@@ -46,11 +46,13 @@ public:
 	void start();
 
 	bool engineStarted()			{ return _engineStarted; }
-	
+
 public slots:
 	void sendFilter(QString generatedFilter, QString filter, int requestID);
 	void sendRCode(QString rCode, int requestId);
 	void computeColumn(QString columnName, QString computeCode, Column::ColumnType columnType);
+	void pause();
+	void resume();
 	
 signals:
 	void processNewFilterResult(std::vector<bool> filterResult, int requestID);
@@ -59,12 +61,15 @@ signals:
 	void filterUpdated(int requestID);
 	void rCodeReturned(QString result, int requestId);
 	void ppiChanged(int newPPI);
+	void imageBackgroundChanged(QString value);
 	void computeColumnSucceeded(std::string columnName, std::string warning, bool dataChanged);
 	void computeColumnFailed(std::string columnName, std::string error);
 
 
 private:
 	bool		idleEngineAvailable();
+	bool		allEnginesPaused();
+	bool		allEnginesResumed();
 	QProcess*	startSlaveProcess(int no);
 	void		processScriptQueue();
 

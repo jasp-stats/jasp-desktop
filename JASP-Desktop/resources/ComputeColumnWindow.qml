@@ -5,9 +5,9 @@ import "FilterConstructor"
 
 FocusScope
 {
-	id: computedColumnContainer
-	height: desiredMinimumHeight
-	Layout.minimumHeight: desiredMinimumHeight
+	id:						computedColumnContainer
+	height:					desiredMinimumHeight
+	Layout.minimumHeight:	desiredMinimumHeight
 
     visible: opened
 
@@ -17,7 +17,7 @@ FocusScope
 	property bool	dataSetLoaded:				computedColumnsInterface.datasetLoaded
 	property string jsonConstructedModel:		computedColumnsInterface.computeColumnJson
 	property string computeColumnRCode:			computedColumnsInterface.computeColumnRCode
-	property int	minimumHeightTextBoxes:		50
+	property int	minimumHeightTextBoxes:		50 * ppiScale
 	property string selectedColumnNameMirror:	computedColumnsInterface.computeColumnNameSelected
 
 	onDataSetLoadedChanged:				if(!dataSetLoaded) close();
@@ -67,7 +67,7 @@ FocusScope
 		else								close()
 	}
 
-	property real desiredMinimumHeight: computeColumnButtons.height + computeColumnErrorScroll.height + (computedColumnsInterface.computeColumnUsesRCode ? computeColumnEditRectangle.desiredMinimumHeight : computedColumnConstructor.desiredMinimumHeight) + computeColumnTitle.height
+	property real desiredMinimumHeight:  computeColumnButtons.height + computeColumnErrorScroll.height + (computedColumnsInterface.computeColumnUsesRCode ? computeColumnEditRectangle.desiredMinimumHeight : computedColumnConstructor.desiredMinimumHeight) + computeColumnTitle.height
 
 
 
@@ -79,7 +79,7 @@ FocusScope
 		anchors.horizontalCenter: parent.horizontalCenter
 
 		horizontalAlignment: Text.AlignHCenter
-		font.pixelSize: 20
+		font.pixelSize: (baseFontSize + 4) * ppiScale
 		font.bold: true
 
 	}
@@ -115,13 +115,14 @@ FocusScope
 				anchors.top: parent.top
 				anchors.left: parent.left
 				anchors.right: parent.right
-				height: contentHeight + 30
+				height: Math.max(contentHeight + 30, parent.height - 10)
 				selectByMouse: true
 				onActiveFocusChanged: if(!activeFocus) deselect()
 
 				property bool changedSinceLastApply: text !== computedColumnContainer.lastAppliedcomputeColumn
 
 				font.family: "Courier"
+				font.pixelSize: baseFontSize * ppiScale
 				wrapMode: TextArea.WrapAtWordBoundaryOrAnywhere
 
 				property bool changed: text != computedColumnsInterface.computeColumnRCode
@@ -169,11 +170,19 @@ FocusScope
 				ListElement	{ type: "function";	functionName: "length";	functionParameters: "y";		functionParamTypes: "string:number:boolean";	toolTip: "returns number of elements in y" }
 				ListElement	{ type: "function";	functionName: "median";	functionParameters: "values";	functionParamTypes: "number";					toolTip: "median" }
 
-				ListElement	{ type: "separator" }
-				ListElement	{ type: "function";	functionName: "cut";		functionParameters: "values,numBreaks";		functionParamTypes: "number,number";						toolTip: "break your data up in numBreaks levels" }
-				ListElement	{ type: "function";	functionName: "replaceNA";	functionParameters: "column,replaceWith";	functionParamTypes: "number,number";						toolTip: "replace any missing values (NA) in column by the value in replaceWith" }
-				ListElement	{ type: "function";	functionName: "ifelse";		functionParameters: "test,then,else";		functionParamTypes: "boolean,boolean:string:number,boolean:string:number";	toolTip: "if-else statement" }
+                ListElement	{ type: "separator" }
+                ListElement	{ type: "function";	functionName: "log";        functionParameters: "y";		functionParamTypes: "number";			toolTip: "natural logarithm" }
+                ListElement	{ type: "function";	functionName: "log2";       functionParameters: "y";		functionParamTypes: "number";			toolTip: "base 2 logarithm" }
+                ListElement	{ type: "function";	functionName: "log10";      functionParameters: "y";		functionParamTypes: "number";			toolTip: "base 10 logarithm" }
+                ListElement	{ type: "function";	functionName: "logb";       functionParameters: "y,base";	functionParamTypes: "number";			toolTip: "logarithm of y in 'base'" }
+                ListElement	{ type: "function";	functionName: "exp";        functionParameters: "y";		functionParamTypes: "number";			toolTip: "exponential" }
+                ListElement	{ type: "function";	functionName: "fishZ";      functionParameters: "y";		functionParamTypes: "number";			toolTip: "Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform correlations, numbers between -1 and 1 to the real line" }
+                ListElement	{ type: "function";	functionName: "invFishZ";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform real numbers to numbers between -1 and 1" }
 
+				ListElement	{ type: "separator" }
+                ListElement	{ type: "function";	functionName: "cut";		functionParameters: "values,numBreaks";		functionParamTypes: "number,number";                                            toolTip: "break your data up in numBreaks levels" }
+                ListElement	{ type: "function";	functionName: "replaceNA";	functionParameters: "column,replaceWith";	functionParamTypes: "string:boolean:number,string:boolean:number";                            toolTip: "replace any missing values (NA) in column by the value in replaceWith" }
+                ListElement	{ type: "function";	functionName: "ifElse";		functionParameters: "test,then,else";		functionParamTypes: "boolean,boolean:string:number,boolean:string:number";      toolTip: "if-else statement" }
 
 				ListElement	{ type: "separator" }
                 ListElement	{ type: "function";	functionName: "normalDist";     functionParameters: "mean,sd";                  functionParamTypes: "number,number";            toolTip: "generates data from a Gaussian distribution with specified mean and standard deviation sd" }
@@ -196,16 +205,8 @@ FocusScope
                 ListElement	{ type: "function";	functionName: "logNormDist";    functionParameters: "meanLog,sdLog";            functionParamTypes: "number,number";            toolTip: "generates data from a log-normal distribution with specified logarithmic mean meanLog and standard deviation sdLog" }
                 ListElement	{ type: "function";	functionName: "weibullDist";    functionParameters: "shape,scale";              functionParamTypes: "number,number";            toolTip: "generates data from a Weibull distribution with specified shape and scale" }
 
-				ListElement	{ type: "separator" }
-				ListElement	{ type: "function";	functionName: "log";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "natural logarithm" }
-				ListElement	{ type: "function";	functionName: "log2";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "base 2 logarithm" }
-				ListElement	{ type: "function";	functionName: "log10";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "base 10 logarithm" }
-				ListElement	{ type: "function";	functionName: "logb";	functionParameters: "y,base";	functionParamTypes: "number";			toolTip: "logarithm of y in 'base'" }
-				ListElement	{ type: "function";	functionName: "exp";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "exponential" }
-
 				//cut?
 				//match?
-
 			}
 		}
 
@@ -233,6 +234,7 @@ FocusScope
 			onActiveFocusChanged: if(!activeFocus) deselect()
 
 			font.family: "Courier"
+			font.pixelSize: baseFontSize * ppiScale
 			height: text.length === 0 ? 0 : computeColumnError.contentHeight
 		}
 	}

@@ -2,53 +2,64 @@ import QtQuick 2.9
 
 Item
 {
-	id: jaspColumnRoot
-	objectName: "Column"
-	property string __debugName: "JASPColumn " + columnName
-	property string columnName: "?"
-	property string columnIcon: ""
+					id:				jaspColumnRoot
+					objectName:		"Column"
+	property string __debugName:	"JASPColumn " + columnName
+	property string columnName:		"?"
+	property string columnIcon:		""
 
-	property real maxSize: 200
-	property real colScaler: 0.8
-	height:	filterConstructor.blockDim * colScaler
-	width:	colIcon.width + colName.width
-	property bool isNumerical: columnIcon.indexOf("scale") >= 0
-	property bool isOrdinal: columnIcon.indexOf("ordinal") >= 0
-		//columnIcon.indexOf("scale") >= 0 || columnIcon.indexOf("ordinal") >= 0
+	property real	maxSize:		baseFontSize * 10 * ppiScale
+					height:			filterConstructor.blockDim
+					width:			colIcon.width + colName.width
+	property bool	isNumerical:	columnIcon.indexOf("scale") >= 0
+	property bool	isOrdinal:		columnIcon.indexOf("ordinal") >= 0
 
-	property var dragKeys: isOrdinal ? ["string", "ordered"] : isNumerical ? ["number"] : ["string"]
+
+	property var	dragKeys:		isOrdinal ? ["string", "ordered"] : isNumerical ? ["number"] : ["string"]
 
 	Image
 	{
-		id: colIcon
-		source: columnIcon
-		width: height
-		sourceSize.width: width
-		sourceSize.height: height
-
-		anchors.top: parent.top
-		anchors.left: parent.left
-		anchors.bottom: parent.bottom
-
-		anchors.margins: 4
+		id:				colIcon
+		source:			columnIcon
+		width:			height
+		sourceSize
+		{
+			width:		width * 2
+			height:		height * 2
+		}
+		anchors
+		{
+			top:		parent.top
+			left:		parent.left
+			bottom:		parent.bottom
+			margins:	4 * ppiScale
+		}
 	}
 
-	TextMetrics { id: columnNameMeasure; text: columnName}
+	TextMetrics
+	{
+		id:				columnNameMeasure
+		font.pixelSize:	colName.font.pixelSize
+		text:			colName.text
+	}
 
 	Text
 	{
-		id:colName
-		anchors.top: parent.top
-		anchors.left: colIcon.right
-		anchors.bottom: parent.bottom
-		width: Math.min(columnNameMeasure.width + 10, jaspColumnRoot.maxSize)
+		id:				colName
+		anchors
+		{
+			top:		parent.top
+			left:		colIcon.right
+			bottom:		parent.bottom
+		}
 
-		font.pixelSize: filterConstructor.fontPixelSize * colScaler
+		width:			Math.min(columnNameMeasure.width + 10, jaspColumnRoot.maxSize)
+		font.pixelSize: baseFontSize * ppiScale
 
-		leftPadding: 2
+		leftPadding:	2
 
-		text: columnName
-		elide: Text.ElideMiddle
+		text:			columnName
+		elide:			Text.ElideMiddle
 
 	}
 
@@ -59,7 +70,7 @@ Item
 	function checkCompletenessFormulas()		{ return true }
 	function convertToJSON()
 	{
-		var jsonObj = { "nodeType":"Column", "columnName":columnName, "columnIcon":columnIcon }
+		var jsonObj = { "nodeType": "Column", "columnName": columnName, "columnIcon": columnIcon }
 		return jsonObj
 	}
 }

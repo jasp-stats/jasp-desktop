@@ -73,13 +73,13 @@ void Labels::removeValues(std::set<int> valuesToRemove)
 		_labels.end());
 }
 
-void Labels::syncInts(map<int, string> &values)
+bool Labels::syncInts(map<int, string> &values)
 {
 	std::set<int> keys;
 	for (const auto &value : values)
 		keys.insert(value.first);
 
-	syncInts(keys);
+	bool changed = syncInts(keys);
 
 	for (Label& label : _labels)
 	{
@@ -87,12 +87,16 @@ void Labels::syncInts(map<int, string> &values)
 		string &new_string_label = values[value];
 		string old_string_label = label.text();
 		if (new_string_label != old_string_label)
+		{
 			_setNewStringForLabel(label, new_string_label);
+			changed = true;
+		}
 	}
 
+	return changed;
 }
 
-void Labels::syncInts(const std::set<int> &values)
+bool Labels::syncInts(const std::set<int> &values)
 {
 	std::set<int> valuesToAdd = values;
 	std::set<int> valuesToRemove;
@@ -114,10 +118,13 @@ void Labels::syncInts(const std::set<int> &values)
 		}
 	}
 
+
 	removeValues(valuesToRemove);	
 
 	for (int value : valuesToAdd)
 		add(value);
+
+	return valuesToAdd.size() + valuesToRemove.size() > 0;
 }
 
 std::map<std::string, int> Labels::syncStrings(const std::vector<std::string> &new_values, const std::map<std::string, std::string> &new_labels, bool *changedSomething)

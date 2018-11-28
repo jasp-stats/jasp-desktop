@@ -49,7 +49,7 @@
 		},
 		{
 			"name": "percentileValuesPercentilesPercentiles",
-			"type": "IntegerArray"
+            "type": "DoubleArray"
 		},
 		{
 			"name": "mean",

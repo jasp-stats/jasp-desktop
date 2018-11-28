@@ -5,10 +5,18 @@ ListView {
 	property string __debugName: "ElementView"
 	//clip: true
 
-	property real maxWidth: 200
+	property real maxWidth: 300 * ppiScale
 	property real widthMargin: 10
 	spacing: 4
 	maximumFlickVelocity: 400
+
+	property int _recalculateWidth: 0 //To trigger a recalculation of the width from the delegates
+
+	onMaxWidthChanged:
+	{
+		listOfStuff.width = 0;
+		_recalculateWidth++;
+	}
 
 	delegate: MouseArea
 	{
@@ -86,14 +94,24 @@ ListView {
 														 separatorComp :
 														 defaultComp
 
-			onLoaded:
+			function calcWidth()
 			{
-				//console.log("elementLoader onLoaded")
-
 				if(listOfStuff.orientation !== ListView.Horizontal && listOfStuff.width < width + listOfStuff.widthMargin)
 					listOfStuff.width = width + listOfStuff.widthMargin
 
 			}
+
+			property int _recalculateWidth: 0
+
+			onLoaded:
+			{
+				_recalculateWidth = Qt.binding(function() { return listOfStuff._recalculateWidth; } )
+
+				calcWidth()
+			}
+
+			on_RecalculateWidthChanged: calcWidth()
+			onWidthChanged: calcWidth()
 		}
 
 		onDoubleClicked: alternativeDropFunctionDef()

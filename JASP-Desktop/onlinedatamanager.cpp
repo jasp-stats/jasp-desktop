@@ -162,7 +162,6 @@ void OnlineDataManager::clearAuthentication(OnlineDataManager::Provider provider
 
 	removePassword(provider);
 
-	emit authenticationCleared((int)provider);
 }
 
 void OnlineDataManager::setNetworkAccessManager(OnlineDataManager::Provider provider, QNetworkAccessManager* manager) {

@@ -1,13 +1,12 @@
 Package: jasptools
 Type: Package
 Title: Helps preview and debug JASP analyses
-Version: 0.5.4
+Version: 0.5.6
 Author: Tim de Jong
 Maintainer: Tim de Jong <tim_jong@hotmail.com>
 Description: This package assists JASP developers when writing R code. It removes the necessity of building JASP every time a change is made. Rather, analyses can be called directly in R and be debugged interactively.
 License: GNU General Public License
 Encoding: UTF-8
 LazyData: true
-Imports: jsonlite, stringi, testthat
-RoxygenNote: 6.0.1
-Built: R 3.4.4; ; 2018-08-15 10:08:15 UTC; windows
+Imports: jsonlite, stringi, testthat, crayon, lintr, methods, stringr, dplyr, styler
+RoxygenNote: 6.1.0

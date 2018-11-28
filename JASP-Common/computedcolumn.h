@@ -21,11 +21,10 @@ public:
 			ComputedColumn(std::vector<ComputedColumn*> * allComputedColumns, Columns * columns, Json::Value json); //Conversion from JSON!
 
 
-			std::string				name()							const			{ return _name;					}
-			void					setColumn(Column * newPointer)					{ _outputColumn = newPointer;	}
-			Column					*column()										{ return _outputColumn;			}
-
-			Column::ColumnType		columnType()					const			{ return _outputColumn->columnType();	}
+			std::string				name()							const			{ return _name;								}
+			void					setColumn(Column * newPointer)					{ _outputColumn = newPointer;				}
+			Column					*column()										{ return _outputColumn;						}
+			Column::ColumnType		columnType()					const			{ return _outputColumn->columnType();		}
 
 			bool					setRCode(std::string rCode);
 			bool					setError(std::string error);
@@ -35,6 +34,7 @@ public:
 
 			int						analysisId()					const			{ return _analysisId;						}
 			std::string				rCode()							const			{ return _rCode;							}
+			std::string				rCodeCommentStripped()			const			{ return _rCodeStripped;					}
 			std::string				error()							const			{ return _error;							}
 			computedType			codeType()						const			{ return _codeType;							}
 			std::string				constructorJson()				const			{ return _constructorCode.toStyledString(); }
@@ -65,6 +65,7 @@ public:
 	static	computedType			computedTypeFromString(std::string type);
 
 			void					replaceChangedColumnNamesInRCode(std::map<std::string, std::string> changedNames);
+
 private:
 			void					_checkForLoopInDepenedencies(std::set<std::string> foundNames, std::list<std::string> loopList);
 
@@ -73,7 +74,8 @@ private:
 			computedType					_codeType;
 			std::string						_name,
 											_rCode				= "#Enter your R code here :)",
-											_error				= "";
+											_error				= "",
+											_rCodeStripped		= "";
 			Json::Value						_constructorCode	= Json::objectValue;
 			Analysis						*_analysis			= NULL;
 
