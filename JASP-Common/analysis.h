@@ -75,6 +75,7 @@ public:
 	const	Json::Value &stateKey()				const	{ return _stateKey;				}
 	const	Json::Value &resultsMeta()			const	{ return _resultsMeta;			}
 	const	std::string &name()					const	{ return _name;					}
+	const	Version		&version()				const	{ return _version;				}
 	const	std::string &title()				const	{ return _title;				}
 	const	std::string &module()				const	{ return _module;				}
 			int			id()					const	{ return _id;					}

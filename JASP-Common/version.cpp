@@ -97,7 +97,7 @@ Version::Version(std::string versionString)
 	}
 }
 
-bool Version::operator>(const Version& version)
+bool Version::operator>(const Version& version) const
 {
 	return ((this->major > version.major) ||
 		(this->major == version.major && this->minor > version.minor) ||
@@ -105,7 +105,7 @@ bool Version::operator>(const Version& version)
 		(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build > version.build));
 }
 
-bool Version::operator<(const Version& version)
+bool Version::operator<(const Version& version) const
 {
 	return ((this->major < version.major) ||
 		(this->major == version.major && this->minor < version.minor) ||
@@ -113,7 +113,7 @@ bool Version::operator<(const Version& version)
 		(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build < version.build));
 }
 
-bool Version::operator>=(const Version& version)
+bool Version::operator>=(const Version& version) const
 {
 	return ((this->major > version.major) ||
 		(this->major == version.major && this->minor > version.minor) ||
@@ -121,7 +121,7 @@ bool Version::operator>=(const Version& version)
 		(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build >= version.build));
 }
 
-bool Version::operator<=(const Version& version)
+bool Version::operator<=(const Version& version) const
 {
 	return ((this->major < version.major) ||
 		(this->major == version.major && this->minor < version.minor) ||
@@ -129,12 +129,12 @@ bool Version::operator<=(const Version& version)
 		(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build <= version.build));
 }
 
-bool Version::operator==(const Version& version)
+bool Version::operator==(const Version& version) const
 {
 	return this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build == version.build;
 }
 
-bool Version::operator!=(const Version& version)
+bool Version::operator!=(const Version& version) const
 {
 	return this->major != version.major || this->minor != version.minor || this->revision != version.revision || this->build != version.build;
 }
@@ -158,8 +158,8 @@ string Version::asString() const
 {
 	stringstream stream;
 
-	stream << (int)major;
-	stream  << "." << (int)minor;
+	stream << (int)major << "." << (int)minor;
+
 	if (revision != 0 || build > 255 )
 		stream << "." << (int)revision;
 
@@ -177,8 +177,9 @@ string Version::asString() const
 
 bool Version::isEmpty() const
 {
-	return major == 0 &&
-		minor == 0 &&
-		revision == 0 &&
-		build == 0;
+	return
+		major		== 0 &&
+		minor		== 0 &&
+		revision	== 0 &&
+		build		== 0;
 }

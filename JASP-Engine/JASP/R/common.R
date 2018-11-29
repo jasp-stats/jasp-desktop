@@ -2304,9 +2304,9 @@ as.list.footnotes <- function(footnotes) {
 # not .saveImage() because RInside (interface to CPP) cannot handle that
 saveImage <- function(plotName, format, height, width)
 {
-  state     <- .retrieveState()     # Retrieve plot object from state
-  plt       <- state[["figures"]][[plotName]]
-  location  <- .fromRCPP(".requestTempFileNameNative", "png") # create file location string to extract the root location
+  state           <- .retrieveState()     # Retrieve plot object from state
+  plt             <- state[["figures"]][[plotName]]
+  location        <- .fromRCPP(".requestTempFileNameNative", "png") # create file location string to extract the root location
   backgroundColor <- .fromRCPP(".imageBackground")
 
 	# create file location string
@@ -2322,10 +2322,8 @@ saveImage <- function(plotName, format, height, width)
 
   # Open correct graphics device
 	if (format == "eps") {
-
 		grDevices::cairo_ps(filename=relativePath, width=insize[1],
 		                                        height=insize[2], bg=backgroundColor)
-
 	} else if (format == "tiff") {
 
 		hiResMultip <- 300/72
@@ -2346,13 +2344,13 @@ saveImage <- function(plotName, format, height, width)
 
 	# Plot and close graphics device
 	if (inherits(plt, "recordedplot")) {
+	print("recordedplot")
 		.redrawPlot(plt) #(see below)
 	} else if (inherits(plt, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
 		gridExtra::grid.arrange(plt)
 	} else {
 		plot(plt) #ggplots
 	}
-
 	dev.off()
 
   # Create JSON string for interpretation by JASP front-end and return it

@@ -27,12 +27,12 @@ public:
 	Version(std::string version);
 	Version();
 
-	bool operator<(const Version&);
-	bool operator>(const Version&);
-	bool operator<=(const Version&);
-	bool operator>=(const Version&);
-	bool operator==(const Version&);
-	bool operator!=(const Version&);
+	bool operator<(const Version&) const;
+	bool operator>(const Version&) const;
+	bool operator<=(const Version&) const;
+	bool operator>=(const Version&) const;
+	bool operator==(const Version&) const;
+	bool operator!=(const Version&) const;
 
 	bool isRelease() const;
 	bool isAlpha() const;

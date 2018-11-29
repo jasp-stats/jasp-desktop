@@ -633,8 +633,6 @@ void MainWindow::packageDataChanged(DataSetPackage *package,
 }
 
 
-
-
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 {
 	static bool showInstructions = true;
@@ -679,6 +677,19 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 	if (analysis == NULL)
 		return;
 
+	if (analysis->version() != AppInfo::version)
+	{
+		QMessageBox::StandardButton reply = QMessageBox::warning(this, "Version incompatibility", QString("This analysis was created in an older version of JASP, to save the image it must be refreshed first.\n\nRefresh the analysis?"), QMessageBox::Ok|QMessageBox::Cancel);
+
+		if (reply == QMessageBox::Ok)
+			analysis->refresh();
+	}
+	else
+		_analysisSaveImageHandler(analysis, options);
+}
+
+void MainWindow::_analysisSaveImageHandler(Analysis* analysis, QString options)
+{
 	string utf8 = fq(options);
 	Json::Value root;
 	Json::Reader parser;
@@ -731,6 +742,7 @@ void MainWindow::analysisImageSavedHandler(Analysis *analysis)
 
 	QString imagePath = QString::fromStdString(tempfiles_sessionDirName()) + "/" + results.get("name", Json::nullValue).asCString();
 	QString finalPath = QString::fromStdString(inputOptions.get("finalPath", Json::nullValue).asCString());
+
 	if (!finalPath.isEmpty())
 	{
 		std::cout << "analysisImageSavedHandler, imagePath: " << imagePath.toStdString() << ", finalPath: " << finalPath.toStdString() << std::endl;
