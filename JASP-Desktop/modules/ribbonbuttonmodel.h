@@ -21,9 +21,11 @@
 
 #include <QAbstractListModel>
 #include <QStringList>
+#include <QDir>
 
-#include "modules/ribbonentry.h"
+#include "modules/dynamicmodules.h"
 #include "modules/analysismenumodel.h"
+
 
 
 class RibbonButtonModel : public QAbstractListModel
@@ -37,24 +39,28 @@ public:
 		IconSourceRole
 	};
 
-	RibbonButtonModel(QObject *parent) : QAbstractListModel(parent) {}
+	RibbonButtonModel(QObject *parent, Json::Value description);
+	RibbonButtonModel(QObject *parent, Modules::DynamicModule * module);
 
 	int								rowCount(const QModelIndex &parent = QModelIndex())			const override	{	return _ribbonEntries.size();	}
 	QVariant						data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	virtual	QHash<int, QByteArray>	roleNames()													const override;
 	// Utility functions
-	void							setRequiresDataset(bool requiresDataset)									{	_requiresDataset = requiresDataset;	}
-	void							setDynamic(bool isDynamicModule)											{	_isDynamicModule = isDynamicModule;	}
-	Q_INVOKABLE bool				requiresDataset()															{	return _requiresDataset;	}
-	Q_INVOKABLE bool				isDynamic()																	{	return _isDynamicModule;	}
-	void							setRibbonEntries(std::vector<Modules::RibbonEntry*>);
+	void							setRequiresDataset(bool requiresDataset)									{ _requiresDataset = requiresDataset;	}
+	void							setDynamic(bool isDynamicModule)											{ _isDynamicModule = isDynamicModule;	}
+	void							setTitle(std::string title)													{ _title = title;						}
+	Q_INVOKABLE bool				requiresDataset()											const			{ return _requiresDataset;				}
+	Q_INVOKABLE bool				isDynamic()													const			{ return _isDynamicModule;				}
+	std::string						title()														const			{ return _title;						}
+	void							setRibbonEntries(Modules::RibbonEntries ribbonEntries);
 
 private:
-	std::vector<Modules::RibbonEntry*>	_ribbonEntries;
-	std::vector<AnalysisMenuModel*> 	_analysisMenuModels;
+	Modules::RibbonEntries			_ribbonEntries;
+	AnalysisMenuModels				_analysisMenuModels;
 
-	bool								_requiresDataset = true;
-	bool								_isDynamicModule = true;
+	bool							_requiresDataset = true;
+	bool							_isDynamicModule = true;
+	std::string						_title = "";
 };
 
 

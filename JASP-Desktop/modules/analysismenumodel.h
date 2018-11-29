@@ -46,8 +46,9 @@ public:
 
 
 private:
-	std::vector<Modules::AnalysisEntry*> _analysisEntries;
+	Modules::AnalysisEntries _analysisEntries;
 };
 
+typedef std::vector<AnalysisMenuModel*> AnalysisMenuModels;
 
 #endif

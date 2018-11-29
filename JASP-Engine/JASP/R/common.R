@@ -194,9 +194,9 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
     setwd(root)
   }
 
-  print("analysis    <- eval(parse(text=functionCall)), analysis: ");
+  #print("analysis    <- eval(parse(text=functionCall)), analysis: ");
   analysis    <- eval(parse(text=functionCall))
-  print(analysis)
+  #print(analysis)
 
   dataset <- NULL
   if (! is.null(dataKey)) {
@@ -211,7 +211,7 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
 
   newState <-
     tryCatch(
-      expr=withCallingHandlers(expr=analysis(jaspResults=jaspResults, dataset=dataset, options=options, state=oldState), error=.addStackTrace),
+      expr=withCallingHandlers(expr=analysis(jaspResults=jaspResults, dataset=dataset, options=options), error=.addStackTrace),
       error=function(e) e
     )
 

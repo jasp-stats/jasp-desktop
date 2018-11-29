@@ -139,6 +139,7 @@ MainWindow::MainWindow(QApplication * application) : QMainWindow(NULL), ui(new U
 	_engineSync				= new EngineSync(_analyses, _package, _dynamicModules, this);
 	_computedColumnsModel	= new ComputedColumnsModel(_analyses, this);
 	_filterModel			= new FilterModel(_package, this);
+	_ribbonModel			= new RibbonModel(this);
 
 
 	StartOnlineDataManager();
@@ -151,27 +152,14 @@ MainWindow::MainWindow(QApplication * application) : QMainWindow(NULL), ui(new U
 #endif
 
 	// Add static modules
-	_ribbonModel = new RibbonModel(this);
-
 	setupRibbonModels(QFileInfo(debugPath + "Resources/Common/"				));
 	setupRibbonModels(QFileInfo(debugPath + "Resources/Summary Statistics/"	));
 	setupRibbonModels(QFileInfo(debugPath + "Resources/Network/"			));
 	setupRibbonModels(QFileInfo(debugPath + "Resources/Meta Analysis/"		));
 	setupRibbonModels(QFileInfo(debugPath + "Resources/SEM/"				));
 
-	// Add dynamic Modules
-	for (auto it : _dynamicModules->moduleNames()) {
-		Modules::DynamicModule * module = _dynamicModules->dynamicModule(it);
-
-		std::vector<Modules::RibbonEntry*> _ribbonEntries = module->ribbonEntries();
-		std::string _title = module->title();
-
-		_ribbonButtonModel = new RibbonButtonModel(this);
-		_ribbonButtonModel->setRibbonEntries(_ribbonEntries);
-
-		_ribbonModel->addRibbonName(_title);
-		_ribbonModel->addRibbonButtonModel(_ribbonButtonModel);
-	}
+	// Add dynamic modules and connect signals to slots
+	_ribbonModel->connectToDynamicModules(_dynamicModules);
 
 	initQWidgetGUIParts();
 	makeConnections();
@@ -288,47 +276,6 @@ void MainWindow::makeConnections()
 	connect(_dynamicModules,		&DynamicModules::showModuleInstallerWindow,			this,					&MainWindow::showQMLWindow									);
 }
 
-
-void MainWindow::setupRibbonModels(QFileInfo modulePath)
-{
-	QFile descriptionFile(modulePath.absolutePath() + "/description.json");
-
-	descriptionFile.open(QFile::ReadOnly);
-	std::string	descriptionTxt(descriptionFile.readAll().toStdString());
-
-	Json::Value descriptionJson;
-	Json::Reader().parse(descriptionTxt, descriptionJson);
-
-	int							_version;
-	moduleStatus				_status = moduleStatus::installNeeded;
-	std::string					_title;
-	bool						_requiresDataset;
-	bool						_isDynamicModule;
-
-	Json::Value					_requiredPackages;
-	std::vector<Modules::RibbonEntry*>	_ribbonEntries;
-
-	try {
-		Json::Value & moduleDescription = descriptionJson["moduleDescription"];
-		_title							= moduleDescription.get("title",			"???").asString();
-		_requiresDataset				= moduleDescription.get("requiresDataset",	true).asBool();
-		_isDynamicModule				= moduleDescription.get("dynamic", true).asBool();
-
-		for(Json::Value & ribbonEntry : descriptionJson["ribbonEntries"])
-			_ribbonEntries.push_back(new Modules::RibbonEntry(ribbonEntry, NULL));
-	} catch(std::exception e) {
-
-		throw std::runtime_error("During the parsing of the description.json of the Module " + _title + " something went wrong: " + e.what());
-	}
-
-	_ribbonButtonModel = new RibbonButtonModel(this);
-	_ribbonButtonModel->setRibbonEntries(_ribbonEntries);
-	_ribbonButtonModel->setRequiresDataset(_requiresDataset);
-	_ribbonButtonModel->setDynamic(_isDynamicModule);
-
-	_ribbonModel->addRibbonName(_title);
-	_ribbonModel->addRibbonButtonModel(_ribbonButtonModel);
-}
 
 
 void MainWindow::initQWidgetGUIParts()
@@ -2198,6 +2145,7 @@ void MainWindow::showQMLWindow(QString urlQml)
 
 	newQMLWindow->engine()->addImportPath("qrc:///components");
 	newQMLWindow->rootContext()->setContextProperty("dynamicModules", _dynamicModules);
+	newQMLWindow->rootContext()->setContextProperty("ppiScale", 1);
 	newQMLWindow->setSource(urlQml);
 	newQMLWindow->setResizeMode(QQuickView::SizeRootObjectToView);
 	newQMLWindow->show();

@@ -22,6 +22,14 @@
 namespace Modules
 {
 
+AnalysisEntry::AnalysisEntry(Json::Value & analysisEntry, RibbonEntry * parentRibbonEntry) :
+	_title(				analysisEntry.get("title",				"???").asString()),
+	_function(			analysisEntry.get("function",			"???").asString()),
+	_qml(				analysisEntry.get("qml",				"???").asString()),
+	_ribbonEntry(		parentRibbonEntry)
+{}
+
+
 DynamicModule*	AnalysisEntry::dynamicModule() const
 {
 	return _ribbonEntry->dynamicModule();

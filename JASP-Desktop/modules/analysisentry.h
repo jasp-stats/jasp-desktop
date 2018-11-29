@@ -32,12 +32,7 @@ class DynamicModule;
 class AnalysisEntry
 {
 public:
-	AnalysisEntry(Json::Value & analysisEntry, RibbonEntry * parentRibbonEntry) :
-		_title(				analysisEntry.get("title",				"???").asString()),
-		_function(			analysisEntry.get("function",			"???").asString()),
-		_qml(				analysisEntry.get("qml",				"???").asString()),
-		_ribbonEntry(		parentRibbonEntry)
-	{}
+	AnalysisEntry(Json::Value & analysisEntry, RibbonEntry * parentRibbonEntry);
 
 	std::string		title()					const { return _title;				}
 	std::string		function()				const { return _function;			}
@@ -48,7 +43,7 @@ public:
 	std::string		qmlFilePath()			const;
 	std::string		getFullRCall()			const;
 	Json::Value		getDefaultResults()		const;
-	Json::Value		asJsonForJaspFile()	const;
+	Json::Value		asJsonForJaspFile()		const;
 
 private:
 	std::string		_title		= "",
@@ -57,6 +52,8 @@ private:
 
 	RibbonEntry*	_ribbonEntry = NULL;
 };
+
+typedef std::vector<AnalysisEntry*> AnalysisEntries;
 
 }
 

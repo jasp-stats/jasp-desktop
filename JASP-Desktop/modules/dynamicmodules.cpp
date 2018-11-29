@@ -51,6 +51,8 @@ void DynamicModules::uninstallModule(std::string moduleName)
 
 	if(boost::filesystem::exists(modulePath))
 		boost::filesystem::remove_all(modulePath);
+
+	emit dynamicModuleRemoved(moduleName);
 }
 
 std::string DynamicModules::installModule(std::string moduleZipFilename)
@@ -84,7 +86,12 @@ void DynamicModules::unloadModule(std::string moduleName)
 	_modulesToBeLoaded.erase(moduleName);
 
 	if(_modules.count(moduleName) > 0)
+	{
 		delete _modules[moduleName];
+		for(int i=_moduleNames.size() - 1; i>=0; i--)
+			if(_moduleNames[size_t(i)] == moduleName)
+				_moduleNames.erase(_moduleNames.begin() + i);
+	}
 	_modules.erase(moduleName);
 }
 
@@ -117,10 +124,13 @@ std::string DynamicModules::loadModuleFromDir(std::string moduleDir)
 			unloadModule(modName);
 
 		_modules[modName] = newMod;
+		_moduleNames.push_back(modName);
 
 		if(newMod->installNeeded())			_modulesInstallPackagesNeeded.insert(modName);
 		else if(newMod->loadingNeeded())	_modulesToBeLoaded.insert(modName);
 		else								throw std::runtime_error("A module("+ newMod->name() +") that does not require installing or loading was \"loaded\" into JASP, this can't be right.");
+
+		emit dynamicModuleAdded(newMod);
 
 		return modName;
 	}
@@ -231,15 +241,4 @@ void DynamicModules::setCurrentInstallDone(bool currentInstallDone)
 		if(currentInstallDone)
 			setCurrentInstallName("");
 	}
-}
-
-std::vector<std::string> DynamicModules::moduleNames()
-{
-	std::vector<std::string> names;
-
-	for(auto dynamic : _modules) {
-        names.push_back(dynamic.first);
-	}
-
-	return names;
 }

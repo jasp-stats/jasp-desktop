@@ -199,8 +199,8 @@ void TabBar::init(MainWindow * mainWindow, DynamicModules * dynamicModules, Ribb
 	connect(this,	&TabBar::setImageBackgroundHandler,	mainWindow,	&MainWindow::setImageBackgroundHandler	);
 	connect(this,	&TabBar::UIScaleChanged,			mainWindow,	&MainWindow::setUIScaleHandler			);
 
-	_aboutDialog = new AboutDialog(this);
-	_preferencesDialog = new PreferencesDialog(this);
+	_aboutDialog		= new AboutDialog(this);
+	_preferencesDialog	= new PreferencesDialog(this);
 
 	_dynamicModules = dynamicModules;
 	_ribbonModel    = ribbonModel;

@@ -26,7 +26,6 @@
 
 #include "modules/ribbonbuttonmodel.h"
 
-
 class RibbonModel : public QAbstractListModel
 {
 	Q_OBJECT
@@ -39,22 +38,35 @@ public:
 
 	RibbonModel(QObject *parent) : QAbstractListModel(parent) {}
 
-	int								rowCount(const QModelIndex &parent = QModelIndex())			const override	{	return _moduleNames.size();	}
+	int								rowCount(const QModelIndex & = QModelIndex())				const override	{	return int(_moduleNames.size());	}
 	QVariant						data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	virtual QHash<int, QByteArray>	roleNames()													const override;
 
 	// custom functions
-	void 						addRibbonName(std::string name)					{	_moduleNames.push_back(name);	}
-	void 						addRibbonButtonModel(RibbonButtonModel* model)	{	_ribbonButtonModels.push_back(model);	}
-	std::vector<std::string>	moduleNames()									{	return _moduleNames;	}
 
-	bool						isModuleName(std::string);
+	void						addRibbonButtonModelFromModulePath(QFileInfo modulePath);
+	void						addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module) { addRibbonButtonModel(new RibbonButtonModel(this, module)); }
+
+	void						removeRibbonButtonModel(std::string moduleName);
+
+	const
+	std::vector<std::string> &	moduleNames()						const	{ return _moduleNames;	}
+
+	bool						isModuleName(std::string name)		const	{ return _modulesByName.count(name) > 0; }
 	RibbonButtonModel*			ribbonButtonModel(std::string);
 
-private:
-	// TODO: Replace the two lists below with QMap<QString, RibbonButtonModel*>
-	std::vector<std::string>		_moduleNames;
-	std::vector<RibbonButtonModel*>	_ribbonButtonModels;
+	void						connectToDynamicModules(DynamicModules * dynamicModules);
+
+public slots:
+	void addDynamicRibbonButtonModel(Modules::DynamicModule * module)	{ addRibbonButtonModelFromDynamicModule(module);	}
+	void removeDynamicRibbonButtonModel(std::string moduleName)			{ removeRibbonButtonModel(moduleName);				}
+
+private: // functions
+	void										addRibbonButtonModel(RibbonButtonModel* model);
+
+private: // fields
+	std::map<std::string, RibbonButtonModel*>	_modulesByName;
+	std::vector<std::string>					_moduleNames; //To keep order
 };
 
 

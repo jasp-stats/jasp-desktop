@@ -61,7 +61,8 @@ public:
 	Json::Value	requestJsonForPackageLoadingRequest()		{ return requestModuleForSomethingAndRemoveIt(_modulesToBeLoaded)->requestJsonForPackageLoadingRequest(); }
 	Json::Value	requestJsonForPackageInstallationRequest()	{ return requestModuleForSomethingAndRemoveIt(_modulesInstallPackagesNeeded)->requestJsonForPackageInstallationRequest(); }
 
-	Modules::DynamicModule*	dynamicModule(std::string moduleName) { return _modules.count(moduleName) == 0 ? NULL : _modules[moduleName]; }
+	Modules::DynamicModule*	dynamicModule(const std::string & moduleName)	const { return _modules.count(moduleName) == 0 ? NULL : _modules.at(moduleName); }
+	Modules::DynamicModule*	operator[](const std::string & moduleName)		const { return dynamicModule(moduleName); }
 
 	Modules::AnalysisEntry* retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile);
 
@@ -82,13 +83,16 @@ public:
 
 	int numberOfModules()										{ return _modules.size(); }
 
-	std::vector<std::string> moduleNames();
+	const std::vector<std::string> & moduleNames() const		{ return _moduleNames; }
 
 signals:
 	void showModuleInstallerWindow(QString url);
 	void currentInstallMsgChanged();
 	void currentInstallNameChanged();
 	void currentInstallDoneChanged();
+
+	void dynamicModuleAdded(Modules::DynamicModule * dynamicModule);
+	void dynamicModuleRemoved(std::string moduleName);
 
 private:
 	Modules::DynamicModule* requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet);
@@ -102,6 +106,7 @@ public slots:
 	void openModuleInstallerWindow();
 
 private:
+	std::vector<std::string>						_moduleNames;
 	std::map<std::string, Modules::DynamicModule*>	_modules;
 	std::set<std::string>							_modulesInstallPackagesNeeded,
 													_modulesToBeLoaded;

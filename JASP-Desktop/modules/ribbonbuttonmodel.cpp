@@ -18,6 +18,40 @@
 
 #include <QDebug>
 #include "ribbonbuttonmodel.h"
+#include "enginedefinitions.h"
+#include "modules/dynamicmodule.h"
+
+RibbonButtonModel::RibbonButtonModel(QObject *parent, Json::Value descriptionJson)  : QAbstractListModel(parent)
+{
+	try
+	{
+		Json::Value & moduleDescription = descriptionJson["moduleDescription"];
+
+		setRequiresDataset(	moduleDescription.get("requiresDataset",	true).asBool()		);
+		setDynamic(			moduleDescription.get("dynamic",			true).asBool()		);
+		setTitle(			moduleDescription.get("title",				"???").asString()	);
+
+		std::vector<Modules::RibbonEntry*>	ribbonEntries;
+
+		for(Json::Value & ribbonEntry : descriptionJson["ribbonEntries"])
+			ribbonEntries.push_back(new Modules::RibbonEntry(ribbonEntry, NULL));
+
+		setRibbonEntries(ribbonEntries);
+	}
+	catch(std::exception e)
+	{
+
+		throw std::runtime_error("During the parsing of the description.json of the Module " + _title + " something went wrong: " + e.what());
+	}
+}
+
+RibbonButtonModel::RibbonButtonModel(QObject *parent, Modules::DynamicModule * module)  : QAbstractListModel(parent)
+{
+	setRibbonEntries(	module->ribbonEntries()		);
+	setTitle(			module->title()				);
+	setDynamic(			true						);
+	setRequiresDataset(	module->requiresDataset()	);
+}
 
 
 QVariant RibbonButtonModel::data(const QModelIndex &index, int role) const
@@ -28,14 +62,13 @@ QVariant RibbonButtonModel::data(const QModelIndex &index, int role) const
 	Modules::RibbonEntry* entry = _ribbonEntries.at(index.row());
     AnalysisMenuModel *menuModel = qobject_cast<AnalysisMenuModel *>(_analysisMenuModels.at(index.row()));
 
-	if		(role == AnalysisMenuRole)
-        return QVariant::fromValue(menuModel);
-	else if	(role == DisplayRole)
-		return QString::fromStdString(entry->title());
-	else if	(role == IconSourceRole)
-		return QString::fromStdString(entry->icon());
-
-	return QVariant();
+	switch(role)
+	{
+	case AnalysisMenuRole:      return QVariant::fromValue(menuModel);
+	case DisplayRole:			return QString::fromStdString(entry->title());
+	case IconSourceRole:		return QString::fromStdString(entry->icon());
+	default:					return QVariant();
+	}
 }
 
 
@@ -50,14 +83,14 @@ QHash<int, QByteArray> RibbonButtonModel::roleNames() const
 	return roles;
 }
 
-void RibbonButtonModel::setRibbonEntries(std::vector<Modules::RibbonEntry*> ribbonEntries)
+void RibbonButtonModel::setRibbonEntries(Modules::RibbonEntries ribbonEntries)
 {
-    _ribbonEntries = ribbonEntries;
-    AnalysisMenuModel *model;
+	_ribbonEntries = ribbonEntries;
 
-    for (auto ribbonEntry : _ribbonEntries) {
-        model = new AnalysisMenuModel(this);
-        model->setAnalysisEntries(ribbonEntry->analysisEntries());
-        _analysisMenuModels.push_back(model);
+	for (auto * ribbonEntry : _ribbonEntries)
+	{
+		AnalysisMenuModel * model = new AnalysisMenuModel(this);
+		model->setAnalysisEntries(ribbonEntry->analysisEntries());
+		_analysisMenuModels.push_back(model);
     }
 }

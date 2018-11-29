@@ -274,14 +274,6 @@ std::string DynamicModule::generateModuleLoadingR()
 	return out.str();
 }
 
-AnalysisEntry * DynamicModule::firstAnalysisEntry()
-{
-	if(_ribbonEntries.size() == 0)
-		throw std::runtime_error("Module has no entries!");
-	else
-		return _ribbonEntries[0]->firstAnalysisEntry();
-}
-
 std::string	DynamicModule::qmlFilePath(std::string qmlFileName)	const
 {
 	return _moduleFolder.absolutePath().toStdString() + "/qml/" + qmlFileName;

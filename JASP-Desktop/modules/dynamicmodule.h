@@ -58,40 +58,39 @@ public:
 
 
 
-	std::string		name()				const { return _name;				}
-	std::string		title()				const { return _title;				}
-	bool			requiresDataset()	const { return _requiresDataset;	}
-	std::string		author()			const { return _author;				}
-	int				version()			const { return _version;			}
-	std::string		website()			const { return _website;			}
-	std::string		license()			const { return _license;			}
-	std::string		maintainer()		const { return _maintainer;			}
-	std::string		description()		const { return _description;		}
+	std::string			name()				const { return _name;				}
+	std::string			title()				const { return _title;				}
+	bool				requiresDataset()	const { return _requiresDataset;	}
+	std::string			author()			const { return _author;				}
+	int					version()			const { return _version;			}
+	std::string			website()			const { return _website;			}
+	std::string			license()			const { return _license;			}
+	std::string			maintainer()		const { return _maintainer;			}
+	std::string			description()		const { return _description;		}
 
-	bool			error()				const { return _status == moduleStatus::error;			}
-	bool			readyForUse()		const { return _status == moduleStatus::readyForUse;	}
-	bool			installNeeded()		const { return _status == moduleStatus::installNeeded;	}
-	bool			loadingNeeded()		const { return _status == moduleStatus::loadingNeeded;	}
-	QString			moduleRLibrary()	const { return  _moduleFolder.absolutePath() + "/" + _libraryRName + "/"; }
-	Json::Value		requiredPackages()	const { return _requiredPackages; }
+	bool				error()				const { return _status == moduleStatus::error;			}
+	bool				readyForUse()		const { return _status == moduleStatus::readyForUse;	}
+	bool				installNeeded()		const { return _status == moduleStatus::installNeeded;	}
+	bool				loadingNeeded()		const { return _status == moduleStatus::loadingNeeded;	}
+	QString				moduleRLibrary()	const { return  _moduleFolder.absolutePath() + "/" + _libraryRName + "/"; }
+	Json::Value			requiredPackages()	const { return _requiredPackages; }
 
-	Json::Value		requestJsonForPackageLoadingRequest();
-	Json::Value		requestJsonForPackageInstallationRequest();
+	std::string			generatedPackageName()					const { return _name + "Pkg"; }
+	std::string			qmlFilePath(std::string qmlFileName)	const;
+	std::string			rModuleCall(std::string function)		const { return _name + "$" + function + _exposedPostFix; }
 
+	Json::Value			requestJsonForPackageLoadingRequest();
+	Json::Value			requestJsonForPackageInstallationRequest();
 
-	void		setInstalled(bool succes)	{ _status = succes ? moduleStatus::loadingNeeded	: moduleStatus::error; }
-	void		setLoaded(bool succes)		{ _status = succes ? moduleStatus::readyForUse		: moduleStatus::error; }
+	void				setInstalled(bool succes)	{ _status = succes ? moduleStatus::loadingNeeded	: moduleStatus::error; }
+	void				setLoaded(bool succes)		{ _status = succes ? moduleStatus::readyForUse		: moduleStatus::error; }
 
-	std::string	qmlFilePath(std::string qmlFileName)	const;
-	std::string	rModuleCall(std::string function)		const { return _name + "$" + function + _exposedPostFix; }
-	const std::vector<RibbonEntry*> ribbonEntries()		const	{ return _ribbonEntries; }
+	const RibbonEntries ribbonEntries()		const	{ return _ribbonEntries; }
 
-	AnalysisEntry* firstAnalysisEntry(); //Just for testing
-	AnalysisEntry* retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile);
+	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile);
 
-	static std::string moduleNameFromFolder(std::string folderName) { folderName.erase(std::remove(folderName.begin(), folderName.end(), ' '), folderName.end());  return folderName;}
+	static std::string	moduleNameFromFolder(std::string folderName) { folderName.erase(std::remove(folderName.begin(), folderName.end(), ' '), folderName.end());  return folderName;}
 
-	std::string generatedPackageName()					{ return _name + "Pkg"; }
 
 private:
 	bool		loadModule(); //returns true if install of package(s) should be done
@@ -104,27 +103,29 @@ private:
 
 
 private:
-	QDir						_generatedPackageFolder;
-	QFileInfo					_moduleFolder;
-	int							_version;
-	moduleStatus				_status = moduleStatus::installNeeded;
-	std::string					_name,
-								_title,
-								_author,
-								_website,
-								_license,
-								_maintainer,
-								_description;
+	QDir			_generatedPackageFolder;
+	QFileInfo		_moduleFolder;
+	int				_version;
+	moduleStatus	_status = moduleStatus::installNeeded;
+	std::string		_name,
+					_title,
+					_author,
+					_website,
+					_license,
+					_maintainer,
+					_description;
 
-	bool						_requiresDataset = true;
+	bool			_requiresDataset = true;
 
-	Json::Value					_requiredPackages;
-	std::vector<RibbonEntry*>	_ribbonEntries;
-	const char					*_libraryRName = "libraryR",
-								*_exposedPostFix = "_exposed";
+	Json::Value		_requiredPackages;
+	RibbonEntries	_ribbonEntries;
+	const char		*_libraryRName = "libraryR",
+					*_exposedPostFix = "_exposed";
 
 
 };
+
+typedef std::vector<DynamicModule*> DynamicModuleVec;
 
 }
 

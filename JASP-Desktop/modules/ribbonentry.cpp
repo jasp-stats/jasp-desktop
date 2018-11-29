@@ -22,6 +22,23 @@
 
 namespace Modules
 {
+
+RibbonEntry::RibbonEntry(Json::Value & ribbonEntry, DynamicModule * parentDynamicModule) :
+	_title(ribbonEntry.get("title",	"???").asString()),
+	_icon( ribbonEntry.get("icon",	"???").asString()),
+	_dynamicModule(parentDynamicModule)
+{
+	for(Json::Value & analysisEntry : ribbonEntry["analyses"])
+		_analysisEntries.push_back(new AnalysisEntry(analysisEntry, this));
+}
+
+RibbonEntry::~RibbonEntry()
+{
+	for(auto * entry : _analysisEntries)
+		delete entry;
+	_analysisEntries.clear();
+}
+
 AnalysisEntry * RibbonEntry::firstAnalysisEntry()
 {
 	if(_analysisEntries.size() == 0)

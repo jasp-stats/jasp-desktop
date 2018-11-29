@@ -19,23 +19,52 @@
 #include <QDebug>
 #include "ribbonmodel.h"
 
+void RibbonModel::connectToDynamicModules(DynamicModules * dynamicModules)
+{
+	connect(dynamicModules, &DynamicModules::dynamicModuleAdded,	this, &RibbonModel::addDynamicRibbonButtonModel);
+	connect(dynamicModules, &DynamicModules::dynamicModuleRemoved,	this, &RibbonModel::removeDynamicRibbonButtonModel);
 
-QVariant RibbonModel::data(const QModelIndex &index, int role) const {
-	if (index.row() >= rowCount()) {
-		return QVariant();
-	}
-
-	if		(role == ClusterRole)
-		return QVariant();  // TODO
-	else if	(role == DisplayRole)
-		return QString::fromStdString(_moduleNames.at(index.row()));
-
-	return QVariant();
+	for(const std::string & modName : dynamicModules->moduleNames())
+		addRibbonButtonModelFromDynamicModule((*dynamicModules)[modName]);
 }
 
 
-QHash<int, QByteArray> RibbonModel::roleNames() const {
+void RibbonModel::addRibbonButtonModelFromModulePath(QFileInfo modulePath)
+{
+	if(!modulePath.exists())
+		return;
 
+	QFile descriptionFile(modulePath.absolutePath() + "/description.json");
+	if(!descriptionFile.exists())
+		return;
+
+	descriptionFile.open(QFile::ReadOnly);
+	std::string	descriptionTxt(descriptionFile.readAll().toStdString());
+
+	Json::Value descriptionJson;
+
+	if(Json::Reader().parse(descriptionTxt, descriptionJson))
+		addRibbonButtonModel(new RibbonButtonModel(this, descriptionJson));
+}
+
+
+QVariant RibbonModel::data(const QModelIndex &index, int role) const
+{
+	if (index.row() >= rowCount())
+		return QVariant();
+
+
+	switch(role)
+	{
+	case DisplayRole:	return QString::fromStdString(_moduleNames.at(index.row()));
+	case ClusterRole:	//To Do!
+	default:			return QVariant();
+	}
+}
+
+
+QHash<int, QByteArray> RibbonModel::roleNames() const
+{
 	static const auto roles = QHash<int, QByteArray>{
 		{ ClusterRole,		"clusterMenu"	},
 		{ DisplayRole,		"displayText"	}
@@ -44,26 +73,42 @@ QHash<int, QByteArray> RibbonModel::roleNames() const {
 	return roles;
 }
 
-
-RibbonButtonModel* RibbonModel::ribbonButtonModel(std::string name) {
-
-	auto it = std::find(_moduleNames.begin(), _moduleNames.end(), name);
-	if (it != _moduleNames.end())
-	{
-		auto index = std::distance(_moduleNames.begin(), it);
-		return _ribbonButtonModels.at(index);
-	}
-	//TODO: if it doesn't exist
+RibbonButtonModel* RibbonModel::ribbonButtonModel(std::string name)
+{
+	if(_modulesByName.count(name) > 0)
+		return _modulesByName[name];
 
 	return NULL;
 }
 
+void RibbonModel::addRibbonButtonModel(RibbonButtonModel* model)
+{
+	//Should also somehow be represented in the plus-button of the tabbar... see void TabBar::addModulesPlusButton(). But maybe this is better to be done in QML
 
-bool RibbonModel::isModuleName(std::string name) {
+	if(isModuleName(model->title()))
+		removeRibbonButtonModel(model->title());
 
-	if (std::find(_moduleNames.begin(), _moduleNames.end(), name) != _moduleNames.end()) {
-		return true;
-	}
+	emit beginResetModel();
 
-	return false;
+	_moduleNames.push_back(model->title());
+	_modulesByName[model->title()] = model;
+
+	emit endResetModel();
+}
+
+void RibbonModel::removeRibbonButtonModel(std::string moduleName)
+{
+	emit beginResetModel();
+
+	if(!isModuleName(moduleName))
+		return;
+
+	delete _modulesByName[moduleName];
+	_modulesByName.erase(moduleName);
+
+	for(int i=_moduleNames.size() - 1; i>=0; i--)
+		if(_moduleNames[i] == moduleName)
+			_moduleNames.erase(_moduleNames.begin() + i);
+
+	emit endResetModel();
 }

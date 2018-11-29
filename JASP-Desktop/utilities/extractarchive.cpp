@@ -1,5 +1,6 @@
 #include "extractarchive.h"
 #include <iostream>
+#include <cstring>
 #include <sstream>
 
 int ExtractArchive::copy_data(struct archive *ar, struct archive *aw)
@@ -190,7 +191,7 @@ std::string ExtractArchive::extractSingleTextFileFromArchive(std::string archive
 				size_t minSize	= archive_entry_size(entry);
 				char * buff		= new char[minSize + 1];
 
-				memset(buff, NULL, minSize + 1);
+				std::memset(buff, NULL, minSize + 1);
 
 				archive_read_data(a, buff, minSize);
 
