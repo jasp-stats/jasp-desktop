@@ -2,7 +2,7 @@
 #define EXTRACTARCHIVE_H
 
 #include <set>
-#include <string.h>
+#include <string>
 #include <functional>
 #include "libzip/archive.h"
 #include "libzip/archive_entry.h"

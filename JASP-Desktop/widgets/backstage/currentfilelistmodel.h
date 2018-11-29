@@ -1,17 +1,17 @@
-#ifndef RECENTFILESLISTMODEL_H
-#define RECENTFILESLISTMODEL_H
+#ifndef CURRENTFILELISTMODEL_H
+#define CURRENTFILELISTMODEL_H
 
 #include <QAbstractListModel>
-#include "fileevent.h"
-#include "fsbmrecentfiles.h"
+#include "fsbmcurrentfile.h"
+#include "data/fileevent.h"
 
-class RecentFilesListModel : public QAbstractListModel
+class CurrentFileListModel : public QAbstractListModel
 {
 	Q_OBJECT
-
+	
 public:
-	explicit RecentFilesListModel(QObject *parent = nullptr);
-
+	explicit CurrentFileListModel(QObject *parent = nullptr);
+	
 	enum
 	{
 		NameRole = Qt::UserRole,
@@ -20,29 +20,31 @@ public:
 		TypeRole,
 		IconSourceRole
 	};
-
+	
 	// Basic functionality:
-	int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+	int rowCount(const QModelIndex &parent = QModelIndex()) const override;	
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-
+		
 	// Editable:
 	bool setData(const QModelIndex &index, const QVariant &value,
 				 int role = Qt::EditRole) override;
 	Qt::ItemFlags flags(const QModelIndex& index) const override;
 	virtual QHash<int, QByteArray> roleNames() const override;
 	
-	void addRecentFilePath(const QString &newpath);
-
+	//Special
+	FSBMCurrentFile* getCurrentFileFSBModel();
+	void setCurrentFilePath(const QString &newcurrent);
+	
 signals:
-	void openFile(FileEvent *event);
+	void syncFile(FileEvent *event);
 
 public slots:
-	void openFile(const QString& path);
-
+	void syncFile(const QString& path);	
+	
+	
 private:
-	FSBMRecentFiles *_fsbmRecentFiles;
+	FSBMCurrentFile *_fsbmCurrentFile;
 	QHash<int, QString> _iconsources;
-
 };
 
-#endif // RECENTFILESLISTMODEL_H
+#endif // CURRENTFILELISTMODEL_H

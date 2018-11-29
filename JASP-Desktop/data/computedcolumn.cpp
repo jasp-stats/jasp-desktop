@@ -1,11 +1,7 @@
 #include <regex>
 #include "computedcolumn.h"
-<<<<<<< HEAD:JASP-Common/computedcolumn.cpp
-#include "analysis.h"
 #include "utils.h"
-=======
 #include "analysis/analysis.h"
->>>>>>> qmlFormsB:JASP-Desktop/data/computedcolumn.cpp
 
 bool ComputedColumn::setRCode(std::string rCode)
 {

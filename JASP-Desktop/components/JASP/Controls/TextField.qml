@@ -16,66 +16,35 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-<<<<<<< HEAD
-import QtQuick 2.10
-import QtQuick.Controls 2.3
-=======
 import QtQuick 2.11
 import QtQuick.Controls 2.4
->>>>>>> qmlFormsB
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
 
 JASPControl {
     id: textField
     controlType: "TextField"
-<<<<<<< HEAD
-    implicitHeight: control.height
-    implicitWidth: control.width + (beforeLabel.visible ? (labelSpacing + beforeLabel.implicitWidth) : 0) + (afterLabel.visible ? (labelSpacing + afterLabel.implicitWidth) : 0)
-    property alias text: control.text
-=======
+
     implicitHeight: row.implicitHeight
     implicitWidth: row.implicitWidth
     controlBackground: useExternalBorder ? externalControlBackround : controlBackground
-    property alias text: control.text
-    property alias value: control.text
-    property int textWidth: Theme.textFieldWidth
-    property int textHeight: Theme.textFieldHeight
-    property bool useExternalBorder: true
-    property alias placeholderText: control.placeholderText
->>>>>>> qmlFormsB
-    property alias validator: control.validator
-    property alias control: control
-    property alias label: beforeLabel
-    property alias beforeLabel: beforeLabel
-    property alias afterLabel: afterLabel
-    property string inputType: "string"
-    property int labelSpacing: 4
+
+	property alias	text:				control.text
+	property alias	value:				control.text
+	property int	textWidth:			Theme.textFieldWidth
+	property int	textHeight:			Theme.textFieldHeight
+	property bool	useExternalBorder:	true
+	property alias	placeholderText:	control.placeholderText
+
+	property alias	validator:			control.validator
+	property alias	control:			control
+	property alias	label:				beforeLabel
+	property alias	beforeLabel:		beforeLabel
+	property alias	afterLabel:			afterLabel
+	property string	inputType:			"string"
+	property int	labelSpacing:		4
+
     signal editingFinished()
-<<<<<<< HEAD
-    
-    Component.onCompleted: {
-        control.editingFinished.connect(editingFinished);
-        control.background.color = "white"
-    }
-    
-    RowLayout {
-        spacing: labelSpacing
-        anchors.fill: parent
-        Label {
-            id: beforeLabel
-            visible: beforeLabel.text && textField.visible ? true : false
-        }    
-        TextField {
-            id: control
-            focus: true
-            width: 40
-            height: 20
-            padding: 1
-            rightPadding: 5
-            background: backgroundRectangle
-        }
-=======
     signal textEdited()
     signal pressed()
     signal released()
@@ -123,8 +92,7 @@ JASPControl {
                 visible: textField.useExternalBorder
             }
         }
-            
->>>>>>> qmlFormsB
+
         Label {
             id: afterLabel
             visible: afterLabel.text && textField.visible ? true : false

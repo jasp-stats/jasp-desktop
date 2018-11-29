@@ -156,9 +156,7 @@ HEADERS += \
     variablespage/labelfiltergenerator.h \
     variablespage/levelstablemodel.h \
     widgets/backstage/authwidget.h \
-    widgets/backstage/backstagecomputer.h \
     widgets/backstage/backstagedatalibrary.h \
-    widgets/backstage/backstageosf.h \
     widgets/backstage/backstagepage.h \
     widgets/backstage/breadcrumbs.h \
     widgets/backstage/datalibrarybreadcrumbsmodel.h \
@@ -182,7 +180,7 @@ HEADERS += \
     widgets/assignbutton.h \
     widgets/assignbuttonmenu.h \
     widgets/availablefieldslistview.h \
-    widgets/backstagewidget.h \
+    widgets/backstage/backstagewidget.h \
     widgets/boundassignwidget.h \
     widgets/boundcheckbox.h \
     widgets/boundcombobox.h \
@@ -260,7 +258,7 @@ HEADERS += \
     widgets/boundqmltextarea.h \
     widgets/boundqmltableview.h \
     widgets/listmodelmultinomialchi2test.h  \
-    filtermodel.h \
+    data/filtermodel.h \
     widgets/backstage/backstagerecentfiles.h \
     widgets/backstage/recentfileslistmodel.h \
     widgets/backstage/fsbmdatalibrary.h \
@@ -386,9 +384,7 @@ SOURCES += \
     variablespage/labelfiltergenerator.cpp \
     variablespage/levelstablemodel.cpp \
     widgets/backstage/authwidget.cpp \
-    widgets/backstage/backstagecomputer.cpp \
     widgets/backstage/backstagedatalibrary.cpp \
-    widgets/backstage/backstageosf.cpp \
     widgets/backstage/backstagepage.cpp \
     widgets/backstage/breadcrumbs.cpp \
     widgets/backstage/datalibrarybreadcrumbsmodel.cpp \
@@ -411,7 +407,7 @@ SOURCES += \
     widgets/assignbutton.cpp \
     widgets/assignbuttonmenu.cpp \
     widgets/availablefieldslistview.cpp \
-    widgets/backstagewidget.cpp \
+    widgets/backstage/backstagewidget.cpp \
     widgets/boundassignwidget.cpp \
     widgets/boundcheckbox.cpp \
     widgets/boundcombobox.cpp \
@@ -484,7 +480,7 @@ SOURCES += \
     widgets/boundqmltextarea.cpp \
     widgets/boundqmltableview.cpp \
     widgets/listmodelmultinomialchi2test.cpp \
-    filtermodel.cpp \
+    data/filtermodel.cpp \
     widgets/backstage/backstagerecentfiles.cpp \
     widgets/backstage/recentfileslistmodel.cpp \
     widgets/backstage/fsbmdatalibrary.cpp \
@@ -508,7 +504,7 @@ FORMS += \
     widgets/backstage/backstagedatalibrary.ui \
     mainwindow.ui \
     widgets/anovamodelwidget.ui \
-    widgets/backstageform.ui \
+    widgets/backstage/backstageform.ui \
     widgets/boundassignwidget.ui \
     widgets/datasetbrowser.ui \
     widgets/subjectivepriorswidget.ui \
@@ -526,8 +522,6 @@ RESOURCES += \
 windows:OTHER_FILES += icon.rc
 
 DISTFILES += \
-    backstage/firsttabsstylesheet.qss \
-    backstage/secondtabsstylesheet.qss \
     widgets/backstage/firsttabsstylesheet.qss \
     widgets/backstage/secondtabsstylesheet.qss \
     JASPControls/AssignButton.qml \

@@ -43,12 +43,8 @@ class TabBar : public QWidget
 
 public:
 	explicit TabBar(QWidget *parent = 0);
-<<<<<<< HEAD
-	void init(MainWindow * mainWindow);
-=======
-	void init(DynamicModules * dynamicModules, RibbonModel * ribbonModel);
->>>>>>> qmlFormsB
 
+	void init(MainWindow * mainWindow, DynamicModules * dynamicModules, RibbonModel * ribbonModel);
 	void addTab(QString name);
 	void addModulesPlusButton();
 	void removeTab(QString tabName);
@@ -67,8 +63,6 @@ public:
 	void useDefaultPPI();
 	void setPPI(int ppi);
 	void setImageBackground(QString value);
-
-
 
 	int count() const;
 	PreferencesDialog *getPreferencesDialog();

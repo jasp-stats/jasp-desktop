@@ -24,8 +24,8 @@
 #include <QQmlEngine>
 #include <QFileInfo>
 
-#include "settings.h"
-#include "qutils.h"
+#include "utilities/settings.h"
+#include "utilities/qutils.h"
 
 BackstageOSF::BackstageOSF(QWidget *parent): BackstagePage(parent),
 	ui(new Ui::BackstageForm)

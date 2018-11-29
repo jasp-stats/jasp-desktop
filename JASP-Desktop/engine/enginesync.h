@@ -44,7 +44,6 @@ public:
 	~EngineSync();
 
 	void start();
-
 	bool engineStarted()			{ return _engineStarted; }
 
 public slots:
@@ -58,32 +57,20 @@ signals:
 	void processNewFilterResult(std::vector<bool> filterResult, int requestID);
 	void processFilterErrorMsg(QString error, int requestID);
 	void engineTerminated();
-<<<<<<< HEAD:JASP-Desktop/enginesync.h
 	void filterUpdated(int requestID);
-=======
-
-	void filterUpdated();
 	void filterErrorTextChanged(QString error);
 
->>>>>>> qmlFormsB:JASP-Desktop/engine/enginesync.h
 	void rCodeReturned(QString result, int requestId);
 
 	void ppiChanged(int newPPI);
-<<<<<<< HEAD:JASP-Desktop/enginesync.h
 	void imageBackgroundChanged(QString value);
 	void computeColumnSucceeded(std::string columnName, std::string warning, bool dataChanged);
 	void computeColumnFailed(std::string columnName, std::string error);
-=======
-
-	void computeColumnSucceeded(std::string columnName, std::string warning);
-	void computeColumnFailed(	std::string columnName, std::string error);
 
 	void moduleInstallationSucceeded(	std::string moduleName);
 	void moduleInstallationFailed(		std::string moduleName, std::string errorMessage);
 	void moduleLoadingSucceeded(		std::string moduleName);
 	void moduleLoadingFailed(			std::string moduleName, std::string errorMessage);
->>>>>>> qmlFormsB:JASP-Desktop/engine/enginesync.h
-
 
 private:
 	bool		idleEngineAvailable();
@@ -92,24 +79,9 @@ private:
 	QProcess*	startSlaveProcess(int no);
 	void		processScriptQueue();
 	void		processDynamicModules();
-
-<<<<<<< HEAD:JASP-Desktop/enginesync.h
-	Analyses		*_analyses;
-	bool			_engineStarted = false;
-	DataSetPackage	*_package;
-
-	std::queue<RScriptStore*>			_waitingScripts;
-	std::vector<EngineRepresentation*>	_engines;
-	RFilterStore						*_waitingFilter = nullptr;
-
-
-	std::string _memoryName,
-				_engineInfo;
-=======
 	void		checkModuleWideCastDone();
 	void		resetModuleWideCastVars();
 	bool		amICastingAModuleRequestWide()	{ return !_requestWideCastModuleJson.isNull(); }
->>>>>>> qmlFormsB:JASP-Desktop/engine/enginesync.h
 
 private slots:
 	void ProcessAnalysisRequests();
@@ -131,15 +103,14 @@ private:
 	Analyses		*_analyses;
 	bool			_engineStarted = false;
 	DataSetPackage	*_package;
-	DynamicModules	*_dynamicModules;
+	DynamicModules	*_dynamicModules = nullptr;;
 
 	std::queue<RScriptStore*>			_waitingScripts;
 	std::vector<EngineRepresentation*>	_engines;
-
+	RFilterStore						*_waitingFilter = nullptr;
 
 	std::string _memoryName,
 				_engineInfo;
-	QString		_dataFilter;
 
 	std::string					_requestWideCastModuleName	= "";
 	Json::Value					_requestWideCastModuleJson	= Json::nullValue;

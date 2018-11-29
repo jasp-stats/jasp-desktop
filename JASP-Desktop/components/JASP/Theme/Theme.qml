@@ -41,20 +41,11 @@ QtObject {
     readonly property int formMargin: 10
     
     readonly property int borderRadius: 4
-<<<<<<< HEAD
-    readonly property int rowSpacing: 3
-=======
     readonly property int rowSpacing: 5
->>>>>>> qmlFormsB
     readonly property int columnSpacing: 30
     
     readonly property int checkBoxIndicatorLength: 15
     readonly property int radioIndicatorDiameter: 16
-<<<<<<< HEAD
-    readonly property int comboBoxHeight: 25
-    readonly property int switchHeight: 15
-    readonly property int groupContentPadding: 10
-=======
     readonly property int sliderHandleDiameter: 16
     readonly property int sliderLength: 80
     readonly property int sliderWidth: 4
@@ -67,11 +58,10 @@ QtObject {
     readonly property int defaultSingleItemListHeight: 45
     readonly property int defaultTextAreaHeight: 250
     readonly property int variablesListTitle: 20
->>>>>>> qmlFormsB
 
 	readonly property int generalAnchorMargin: 8
 
-    property font font
+	property font font
     font.bold: true
     font.underline: false
     font.pixelSize: 14
@@ -86,19 +76,15 @@ QtObject {
     property color analysisBackgroundColor: grayMuchLighter
     readonly property color controlBackgroundColor: white
     readonly property color disableControlBackgroundColor: whiteBroken
-<<<<<<< HEAD
-=======
     readonly property color rowEvenColor: controlBackgroundColor
     readonly property color rowOnevenColor: whiteBroken
->>>>>>> qmlFormsB
+
     readonly property color buttonBackgroundColor: blue
     readonly property color tooltipBackgroundColor: yellowLight
     readonly property color debugBackgroundColor: rose
     readonly property color errorMessagesBackgroundColor: red
-<<<<<<< HEAD
-=======
     readonly property color sliderPartOn: blue
     readonly property color sliderPartOff: grayDarker
->>>>>>> qmlFormsB
+
     
 }

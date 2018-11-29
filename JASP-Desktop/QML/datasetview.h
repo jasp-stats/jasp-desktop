@@ -11,7 +11,7 @@
 #include <map>
 #include <QFontMetricsF>
 #include <QtQml>
-#include "qutils.h"
+#include "utilities/qutils.h"
 
 //#define DATASETVIEW_DEBUG_VIEWPORT
 //#define DATASETVIEW_DEBUG_CREATION
@@ -88,14 +88,12 @@ public:
 	void setLeftTopCornerItem(QQuickItem * newItem);
 	void setExtraColumnItem(QQuickItem * newItem);
 
-<<<<<<< HEAD:JASP-Desktop/datasetview.h
 	float headerHeight()		{ return _dataRowsMaxHeight; }
 	float rowNumberWidth()		{ return _rowNumberMaxWidth; }
 
 	GENERIC_SET_FUNCTION(HeaderHeight,		_dataRowsMaxHeight, headerHeightChanged,		float)
 	GENERIC_SET_FUNCTION(RowNumberWidth,	_rowNumberMaxWidth, rowNumberWidthChanged,		float)
 
-=======
 signals:
 	void modelChanged();
 	void fontPixelSizeChanged();
@@ -115,7 +113,10 @@ signals:
 
 	void itemSizeChanged();
 
+	void fontChanged();
 
+	void headerHeightChanged();
+	void rowNumberWidthChanged();
 
 public slots:
 	void aContentSizeChanged() { _recalculateCellSizes = true; }
@@ -132,7 +133,6 @@ public slots:
 	void modelHeaderDataChanged(Qt::Orientation, int, int)									{ calculateCellSizes(); }
 	void modelAboutToBeReset()																{}
 	void modelWasReset()																	{ setRolenames(); calculateCellSizes(); }
->>>>>>> qmlFormsB:JASP-Desktop/QML/datasetview.h
 
 protected:
 	void setRolenames();
@@ -213,48 +213,6 @@ protected:
 	float _rowNumberMaxWidth = 0;
 	
 	bool _linesWasChanged = false;
-<<<<<<< HEAD:JASP-Desktop/datasetview.h
-
-signals:
-	void modelChanged();
-	void fontChanged();
-	void itemHorizontalPaddingChanged();
-	void itemVerticalPaddingChanged();
-
-	void viewportXChanged();
-	void viewportYChanged();
-	void viewportWChanged();
-	void viewportHChanged();
-
-	void rowNumberDelegateChanged();
-	void columnHeaderDelegateChanged();
-	void itemDelegateChanged();
-	void leftTopCornerItemChanged();
-	void extraColumnItemChanged();
-
-	void itemSizeChanged();
-
-	void headerHeightChanged();
-	void rowNumberWidthChanged();
-
-public slots:
-	void aContentSizeChanged() { _recalculateCellSizes = true; }
-	void viewportChanged();
-	void myParentChanged(QQuickItem *);
-
-	void reloadTextItems();
-	void reloadRowNumbers();
-	void reloadColumnHeaders();
-
-	void calculateCellSizes();
-
-	void modelDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)	{ calculateCellSizes(); }
-	void modelHeaderDataChanged(Qt::Orientation, int, int)									{ calculateCellSizes(); }
-	void modelAboutToBeReset()																{}
-	void modelWasReset()																	{ setRolenames(); calculateCellSizes(); }
-
-=======
->>>>>>> qmlFormsB:JASP-Desktop/QML/datasetview.h
 };
 
 

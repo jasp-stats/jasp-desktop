@@ -22,7 +22,7 @@
 #include <QFileInfo>
 #include <QEvent>
 #include <QDebug>
-#include "settings.h"
+#include "utilities/settings.h"
 
 FSBMRecentFiles::FSBMRecentFiles(QObject *parent)
 	: FSBModel(parent)

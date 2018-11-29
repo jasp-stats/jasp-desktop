@@ -143,18 +143,21 @@ MainWindow::MainWindow(QApplication * application) : QMainWindow(NULL), ui(new U
 
 	StartOnlineDataManager();
 
+	const QString debugPath =
+#ifdef JASP_DEBUG
+		"../jasp-desktop/";
+#else
+		"";
+#endif
+
 	// Add static modules
 	_ribbonModel = new RibbonModel(this);
-	QFileInfo commonModule("Resources/Common/");
-	setupRibbonModels(commonModule);
-	QFileInfo summaryStatisticsModule("Resources/Summary Statistics/");
-	setupRibbonModels(summaryStatisticsModule);
-	QFileInfo networksModule("Resources/Network/");
-	setupRibbonModels(networksModule);
-	QFileInfo metaAnalysisModule("Resources/Meta Analysis/");
-	setupRibbonModels(metaAnalysisModule);
-	QFileInfo semModule("Resources/SEM/");
-	setupRibbonModels(semModule);
+
+	setupRibbonModels(QFileInfo(debugPath + "Resources/Common/"				));
+	setupRibbonModels(QFileInfo(debugPath + "Resources/Summary Statistics/"	));
+	setupRibbonModels(QFileInfo(debugPath + "Resources/Network/"			));
+	setupRibbonModels(QFileInfo(debugPath + "Resources/Meta Analysis/"		));
+	setupRibbonModels(QFileInfo(debugPath + "Resources/SEM/"				));
 
 	// Add dynamic Modules
 	for (auto it : _dynamicModules->moduleNames()) {
@@ -399,8 +402,6 @@ void MainWindow::loadQML()
 	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeNominal",		int(Column::ColumnType::ColumnTypeNominal));
 	ui->quickWidget_Data->rootContext()->setContextProperty("columnTypeNominalText",	int(Column::ColumnType::ColumnTypeNominalText));
 
-	setFilterConstructorJson(QString::fromStdString(_package->filterConstructorJson()));
-
 	ui->quickWidget_Data->engine()->addImportPath("qrc:///components");
 	ui->quickWidget_Data->setSource(QUrl(QString("qrc:///qml/dataset.qml")));
 
@@ -424,8 +425,8 @@ void MainWindow::loadRibbonQML()
 	ui->quickWidget_Ribbon->rootContext()->setContextProperty("currentActiveModule", currentActiveTab);
 	ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonButtonModel", currentModel);
 
-	bool enable = true;
-	if (currentModel->requiresDataset() && _package->dataSet() == NULL) {
+	bool enable = currentModel != NULL;
+	if (enable && currentModel->requiresDataset() && _package->dataSet() == NULL) {
 		enable = false;
 	}
 	ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonIsEnabled", enable);
@@ -939,8 +940,12 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 
 void MainWindow::updateShownVariablesModel()
 {
-	if(_currentOptionsWidget != NULL)
-		_currentOptionsWidget->connectToAvailableVariablesModel(_package->dataSet());
+	//if(_currentOptionsWidget != NULL)
+		//_currentOptionsWidget->connectToAvailableVariablesModel(_package->dataSet());
+
+#ifdef JASP_DEBUG
+	std::cout << "void MainWindow::updateShownVariablesModel() does not do anything anymore because connectToAvailableVariablesModel is gone, this however is no problem if any new added columns show up in you analysisform. If they do It is probably also nice to remove this warning and function etc!" << std::endl;
+#endif
 }
 
 AnalysisForm* MainWindow::createAnalysisForm(Analysis *analysis)
@@ -1095,8 +1100,8 @@ void MainWindow::tabChanged(int index)
 		ui->quickWidget_Ribbon->rootContext()->setContextProperty("currentActiveModule", currentActiveTab);
 		ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonButtonModel", currentModel);
 
-		bool enable = true;
-		if (currentModel->requiresDataset() && _package->dataSet() == NULL) {
+		bool enable = currentModel != NULL;
+		if (enable && currentModel->requiresDataset() && _package->dataSet() == NULL) {
 			enable = false;
 		}
 		ui->quickWidget_Ribbon->rootContext()->setContextProperty("ribbonIsEnabled", enable);
@@ -1219,10 +1224,6 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
-<<<<<<< HEAD
-=======
-
->>>>>>> qmlFormsB
 		if (_package->isModified())
 		{
 			QString title = windowTitle();

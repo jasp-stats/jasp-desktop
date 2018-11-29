@@ -2,7 +2,6 @@
 #include "utilities/jsonutilities.h"
 #include "sharedmemory.h"
 
-<<<<<<< HEAD:JASP-Desktop/computedcolumnsmodel.cpp
 ComputedColumnsModel::ComputedColumnsModel(Analyses * analyses, QObject * parent)
 	: QObject(parent), _analyses(analyses)
 {
@@ -11,12 +10,9 @@ ComputedColumnsModel::ComputedColumnsModel(Analyses * analyses, QObject * parent
 	connect(this, &ComputedColumnsModel::datasetLoadedChanged, this, &ComputedColumnsModel::computeColumnErrorChanged			);
 	connect(this, &ComputedColumnsModel::datasetLoadedChanged, this, &ComputedColumnsModel::computeColumnUsesRCodeChanged		);
 	connect(this, &ComputedColumnsModel::datasetLoadedChanged, this, &ComputedColumnsModel::computeColumnNameSelectedChanged	);
-=======
-ComputedColumnsModel::ComputedColumnsModel(Analyses * analyses, QObject * parent) : QObject(parent), _analyses(analyses)
-{
 	connect(_analyses,	&Analyses::requestComputedColumnCreation,		this,	&ComputedColumnsModel::requestComputedColumnCreation,		Qt::UniqueConnection);
 	connect(_analyses,	&Analyses::requestComputedColumnDestruction,	this,	&ComputedColumnsModel::requestComputedColumnDestruction,	Qt::UniqueConnection);
->>>>>>> qmlFormsB:JASP-Desktop/data/computedcolumnsmodel.cpp
+
 }
 
 QString ComputedColumnsModel::computeColumnRCode()

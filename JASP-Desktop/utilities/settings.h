@@ -21,15 +21,12 @@ public:
 		OSF_PASSWORD,
 		OSF_ENCRYPTION,
 		OSF_REMEMBER_ME,
-<<<<<<< HEAD:JASP-Desktop/settings.h
 		PPI_USE_DEFAULT,
 		PPI_CUSTOM_VALUE,
 		UI_SCALE,
-		IMAGE_BACKGROUND
-=======
+		IMAGE_BACKGROUND,
 		TEST_ANALYSIS_QML,
 		TEST_ANALYSIS_R
->>>>>>> qmlFormsB:JASP-Desktop/utilities/settings.h
 	};
 
 	static QVariant value(Settings::Type key);

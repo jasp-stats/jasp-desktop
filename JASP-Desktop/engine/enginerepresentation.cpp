@@ -1,5 +1,5 @@
 #include "enginerepresentation.h"
-#include "settings.h"
+#include "utilities/settings.h"
 
 EngineRepresentation::EngineRepresentation(IPCChannel * channel, QProcess * slaveProcess, QObject * parent)
 	: QObject(parent), _slaveProcess(slaveProcess), _channel(channel)
@@ -64,12 +64,9 @@ void EngineRepresentation::process()
 		case engineState::rCode:			processRCodeReply(json);			break;
 		case engineState::analysis:			processAnalysisReply(json);			break;
 		case engineState::computeColumn:	processComputeColumnReply(json);	break;
-<<<<<<< HEAD:JASP-Desktop/enginerepresentation.cpp
 		case engineState::paused:			processEnginePausedReply();			break;
 		case engineState::resuming:			processEngineResumedReply();		break;
-=======
 		case engineState::moduleRequest:	processModuleRequestReply(json);	break;
->>>>>>> qmlFormsB:JASP-Desktop/engine/enginerepresentation.cpp
 		default:							throw std::logic_error("If you define new engineStates you should add them to the switch in EngineRepresentation::process()!");
 		}
 	}
@@ -189,61 +186,16 @@ void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
 {
 #ifdef PRINT_ENGINE_MESSAGES
 	std::cout << "send " << analysis->id() << " to process " << channelNumber() << std::endl;
-
-<<<<<<< HEAD:JASP-Desktop/enginerepresentation.cpp
-	switch(perform)
-	{
-	case performType::init:		analysis->setStatus(Analysis::Initing);	break;
-	case performType::abort:	analysis->setStatus(Analysis::Aborted);	break;
-	case performType::run:
-	case performType::saveImg:
-	case performType::editImg:	analysis->setStatus(Analysis::Running);	break;
-	default:															break;
-	}
-
-	setAnalysisInProgress(analysis);
-
-	Json::Value json = Json::Value(Json::objectValue);
-
-	json["typeRequest"]		= engineStateToString(_engineState);
-	json["id"]				= analysis->id();
-	json["perform"]			= performTypeToString(perform);
-	json["requiresInit"]	= analysis->requiresInit();
-	json["revision"]		= analysis->revision();
-	json["jaspResults"]		= analysis->usesJaspResults();
-
-
-	if (!analysis->isAborted())
-	{
-		json["name"]	= analysis->name();
-		json["title"]	= analysis->title();
-		json["ppi"]		= _ppi;
-		json["imageBackground"] = _imageBackground.toStdString();
-
-		if (perform == performType::saveImg || perform == performType::editImg)
-			json["image"] = analysis->getSaveImgOptions();
-		else
-		{
-			json["dataKey"]		= analysis->dataKey();
-			json["stateKey"]	= analysis->stateKey();
-			json["resultsMeta"]	= analysis->resultsMeta();
-			json["options"]		= analysis->options()->asJSON();
-		}
-	}
-
-	sendString(json.toStyledString());
-=======
 #endif
 
 	setAnalysisInProgress(analysis);
 
-	Json::Value json(analysis->createAnalysisRequestJson(_ppi));
+	Json::Value json(analysis->createAnalysisRequestJson(_ppi, _imageBackground.toStdString()));
 	_channel->send(json.toStyledString());
 
 #ifdef PRINT_ENGINE_MESSAGES
 	std::cout << "sending: " << json.toStyledString() << std::endl;
 #endif
->>>>>>> qmlFormsB:JASP-Desktop/engine/enginerepresentation.cpp
 
 	if(analysis->isAborted())
 		clearAnalysisInProgress();
@@ -340,7 +292,6 @@ void EngineRepresentation::handleRunningAnalysisStatusChanges()
 		runAnalysisOnProcess(_analysisInProgress);
 }
 
-<<<<<<< HEAD:JASP-Desktop/enginerepresentation.cpp
 void EngineRepresentation::pauseEngine()
 {
 	Json::Value json		= Json::Value(Json::objectValue);
@@ -386,7 +337,8 @@ void EngineRepresentation::processEngineResumedReply()
 		throw std::runtime_error("Received an unexpected engine paused reply!");
 
 	_engineState = engineState::idle;
-=======
+}
+
 void EngineRepresentation::runModuleRequestOnProcess(Json::Value request)
 {
 	_engineState			= engineState::moduleRequest;
@@ -421,6 +373,4 @@ void EngineRepresentation::processModuleRequestReply(Json::Value json)
 	default:
 		throw std::runtime_error("Unsupported module request reply to EngineRepresentation::processModuleRequestReply!");
 	}
-
->>>>>>> qmlFormsB:JASP-Desktop/engine/enginerepresentation.cpp
 }

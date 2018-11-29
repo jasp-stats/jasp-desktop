@@ -1,50 +1,31 @@
-<<<<<<< HEAD
-import QtQuick 2.10
-import QtQuick.Controls 2.3
-=======
 import QtQuick 2.11
 import QtQuick.Controls 2.4
->>>>>>> qmlFormsB
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
 
 JASPControl {
-    id: comboBox
-    controlType: "ComboBox"
-    implicitHeight: control.height
-<<<<<<< HEAD
-    backgroundRectangle: comboBoxBackground
-=======
-    implicitWidth: control.implicitWidth + (label.visible ? labelSpacing + label.implicitWidth : 0)
-    width: implicitWidth
-    controlBackground: comboBoxBackground
->>>>>>> qmlFormsB
+	id:					comboBox
+	controlType:		"ComboBox"
+	implicitHeight:		control.height
+	implicitWidth:		control.implicitWidth + (label.visible ? labelSpacing + label.implicitWidth : 0)
+	width:				implicitWidth
+	controlBackground:	comboBoxBackground
+
     
-    property int labelSpacing: 4
-    
-    property alias label: label
-<<<<<<< HEAD
-    property alias currentText: control.currentText
-    property alias model: control.model
-    property alias textRole: control.textRole
-    property alias currentIndex: control.currentIndex
-    property alias control: control
-    
-    signal activated(int index);
-    
-=======
-    property string currentText
-    property string currentIconPath
-    property alias currentIndex: control.currentIndex
-    property alias model: control.model
-    property string textRole: "key"
-    property string valueRole: "value"
-    property bool showVariableTypeIcon: false
-    property var syncModels
-    property bool addEmptyValue: false
-    property string emptyValue: qsTr("<no choice>")
-    property alias control: control
-    property bool initialized: false
+	property int	labelSpacing:			4
+	property alias	label:					label
+	property string	currentText				//Am i empty or what?
+	property string	currentIconPath			//Same here
+	property alias	currentIndex:			control.currentIndex
+	property alias	model:					control.model
+	property string	textRole:				"key"
+	property string	valueRole:				"value"
+	property bool	showVariableTypeIcon:	false
+	property var	syncModels				//defaults would be nice
+	property bool	addEmptyValue:			false
+	property string	emptyValue:				qsTr("<no choice>")
+	property alias	control:				control
+	property bool	initialized:			false
     
     signal activated(int index);
     
@@ -58,7 +39,6 @@ JASPControl {
         }
     }
     
->>>>>>> qmlFormsB
     Component.onCompleted: {
         control.activated.connect(activated);
     }
@@ -72,44 +52,19 @@ JASPControl {
         }
         
         ComboBox {
-            id:control
-            focus: true
-            spacing: 5
-            height: Theme.comboBoxHeight
-<<<<<<< HEAD
-            property int modelWidth : 30
-            implicitWidth: modelWidth + 2*leftPadding + 2*rightPadding + canvas.width + 2*spacing
-            property bool isArrayModel: Array.isArray(model)
-            textRole: isArrayModel ? "" : "key"
-=======
-            property int modelWidth: 30
-            property bool isEmptyValue: comboBox.addEmptyValue && currentIndex <= 0
-            implicitWidth: modelWidth + leftPadding + rightPadding + canvas.width
-            textRole:comboBox.textRole            
->>>>>>> qmlFormsB
+							id:				control
+							focus:			true
+							spacing:		5
+							height:			Theme.comboBoxHeight
+			property int	modelWidth:		30
+			property bool	isEmptyValue:	comboBox.addEmptyValue && currentIndex <= 0
+							implicitWidth:	modelWidth + leftPadding + rightPadding + canvas.width
+							textRole:		comboBox.textRole
             
             TextMetrics {
                 id: textMetrics
             }
 
-<<<<<<< HEAD
-            onModelChanged: {
-                textMetrics.font = control.font
-                var length = control.isListModel ? control.model.rowCount() : control.model.length
-                for(var i = 0; i < length; i++) {
-                    textMetrics.text = control.isListModel ? control.model.get(i)[control.textRole] : model[i]
-                    modelWidth = Math.max(textMetrics.width, modelWidth)
-                }
-            }
-            
-            delegate: ItemDelegate {
-                height: control.height
-                contentItem: Text {
-                    text: control.isArrayModel ? modelData : model[control.textRole] 
-                    font: control.font
-                    elide: Text.ElideRight
-                    verticalAlignment: Text.AlignVCenter
-=======
             delegate: ItemDelegate {
                 height: control.height
                 contentItem: Rectangle {
@@ -133,7 +88,7 @@ JASPControl {
                         verticalAlignment: Text.AlignVCenter
                         anchors.horizontalCenter: itemRectangle.isEmptyValue ? parent.horizontalCenter : undefined
                     }
->>>>>>> qmlFormsB
+
                 }
 
                 highlighted: control.highlightedIndex === index
@@ -164,19 +119,7 @@ JASPControl {
                 }
             }
         
-<<<<<<< HEAD
-            contentItem: Text {
-                leftPadding: control.spacing
-                rightPadding: control.indicator.width + control.spacing
-        
-                text: control.displayText
-                font: control.font
-                verticalAlignment: Text.AlignVCenter
-                elide: Text.ElideRight
-                color: enabled ? Theme.black : Theme.grayDarker
-            }
-        
-=======
+
             contentItem: Item {
                 Image {
                     id: contentIcon
@@ -196,8 +139,7 @@ JASPControl {
                     color: (!enabled || control.isEmptyValue) ? Theme.grayDarker : Theme.black
                 }
             }
-                
->>>>>>> qmlFormsB
+
             background: Rectangle {
                 id: comboBoxBackground
                 implicitHeight: control.height

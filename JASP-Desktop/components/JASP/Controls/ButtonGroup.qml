@@ -16,13 +16,10 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-<<<<<<< HEAD
-import QtQuick 2.10
-import QtQuick.Controls 2.3
-=======
+
 import QtQuick 2.11
 import QtQuick.Controls 2.4
->>>>>>> qmlFormsB
+
 import QtQuick.Layouts 1.3
 import JASP.Theme 1.0
 

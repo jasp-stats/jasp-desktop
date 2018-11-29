@@ -30,8 +30,8 @@ std::string fq(const QString &from);
 QString tq(const std::string &from);
 QStringList tql(const std::vector<std::string> &from);
 std::vector<std::string> fromQstringToStdVector(const QString &input, const QString &delimetor);
-<<<<<<< HEAD:JASP-Desktop/qutils.h
-QString stripFirstAndLastChar(const QString &in, const QString &strip);
+
+QString stripFirstAndLastChar(QString in, const QString &strip);
 QString getShortCutKey();
 QString encrypt(const QString &input);
 QString decrypt(const QString &input);
@@ -45,8 +45,7 @@ void set##WHAT_TO_SET(TYPE new##WHAT_TO_SET)								\
 		emit EMIT_THIS();													\
 	}																		\
 }
-=======
-QString stripFirstAndLastChar(QString result, const QString &strip);
->>>>>>> qmlFormsB:JASP-Desktop/utilities/qutils.h
+
+
 
 #endif // QUTILS_H

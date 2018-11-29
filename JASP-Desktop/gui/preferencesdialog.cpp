@@ -41,7 +41,6 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 	if (spreadsheetEditorName != "")
 		ui->spreadsheetEditorName->setText(spreadsheetEditorName);
 
-<<<<<<< HEAD:JASP-Desktop/preferencesdialog.cpp
 	//PPI
 	bool useDefaultPPI = Settings::value(Settings::PPI_USE_DEFAULT).toBool();
 	ui->useDefaultPPI->setChecked(useDefaultPPI);
@@ -50,16 +49,14 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 
 	ui->customPPI->setEnabled(!useDefaultPPI);
 
-=======
-	QString testAnalyseQMLName = Settings::value(Settings::TEST_ANALYSIS_QML).toString();
+	/*QString testAnalyseQMLName = Settings::value(Settings::TEST_ANALYSIS_QML).toString();
 	if (testAnalyseQMLName != "")
 		ui->testAnalyseQMLName->setText(testAnalyseQMLName);
 	
 	QString testAnalyseRName = Settings::value(Settings::TEST_ANALYSIS_R).toString();
 	if (testAnalyseRName != "")
-		ui->testAnalyseRName->setText(testAnalyseRName);
-	
->>>>>>> qmlFormsB:JASP-Desktop/gui/preferencesdialog.cpp
+		ui->testAnalyseRName->setText(testAnalyseRName);*/
+
 	// Remove Question mark Help sign (Only on windows )
 	this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
@@ -69,7 +66,6 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 	if (!fix_decimals)
 		this->ui->numDecimals->hide();
 
-<<<<<<< HEAD:JASP-Desktop/preferencesdialog.cpp
 	setSliderUIScale(Settings::value(Settings::UI_SCALE).toFloat());
 	ui->sliderUIScale->setTracking(true);
 	//sliderUIScaleChanged(ui->sliderUIScale->value());
@@ -89,14 +85,10 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 	connect(ui->openEditor,						&QPushButton::pressed,			this, &PreferencesDialog::getSpreadsheetEditor	);
 	connect(ui->tabsPreferences,				&QTabWidget::currentChanged,	this, &PreferencesDialog::currentTabChanged		);
 	connect(ui->sliderUIScale,					&QSlider::valueChanged,			this, &PreferencesDialog::sliderUIScaleChanged	);
-=======
-	connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(savePreferences()));
-	connect(ui->useDefaultSpreadsheetEditor, SIGNAL(clicked(bool)), this, SLOT(setDefaultEditorCheck(bool)));
-	connect(ui->openEditor, SIGNAL(pressed()),this, SLOT(getSpreadsheetEditor()));
-	connect(ui->openQMLFile, SIGNAL(pressed()),this, SLOT(getQMLFile()));
-	connect(ui->openRFile, SIGNAL(pressed()),this, SLOT(getRFile()));
-	connect(ui->tabsPreferences, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
->>>>>>> qmlFormsB:JASP-Desktop/gui/preferencesdialog.cpp
+
+	//connect(ui->openQMLFile, pressed,this, getQMLFile);
+	//connect(ui->openRFile, pressed,this, getRFile);
+
 	
 	ui->tabsPreferences->setCurrentIndex(_currentTab);
 
@@ -307,7 +299,6 @@ void PreferencesDialog::savePreferences()
 	Settings::setValue(Settings::NUM_DECIMALS, numDecimals);
 	if (numDecimals != savedNumDecimals)
         _tabBar->setFixDecimals(numDecimals);
-<<<<<<< HEAD:JASP-Desktop/preferencesdialog.cpp
 
 	//PPI
 	checked = (ui->useDefaultPPI->checkState()==Qt::Checked) ? 1 : 0;
@@ -337,11 +328,10 @@ void PreferencesDialog::savePreferences()
 		_tabBar->setImageBackground(imageBackgroundValue);
 	}
 
-=======
-	
-	Settings::setValue(Settings::TEST_ANALYSIS_QML, ui->testAnalyseQMLName->text());
-	Settings::setValue(Settings::TEST_ANALYSIS_R, ui->testAnalyseRName->text());
->>>>>>> qmlFormsB:JASP-Desktop/gui/preferencesdialog.cpp
+
+	//Settings::setValue(Settings::TEST_ANALYSIS_QML, ui->testAnalyseQMLName->text());
+	//Settings::setValue(Settings::TEST_ANALYSIS_R, ui->testAnalyseRName->text());
+
 	//Done
 	Settings::sync();
 
@@ -386,6 +376,7 @@ void PreferencesDialog::getSpreadsheetEditor()
 	
 }
 
+/*
 void PreferencesDialog::getQMLFile()
 {
 	QString filter = "File Description (*.qml)";
@@ -421,7 +412,7 @@ void PreferencesDialog::getRFile()
 	if (filename != "")
 		ui->testAnalyseRName->setText(filename);	
 }
-
+*/
 
 void PreferencesDialog::showEvent(QShowEvent * event)
 {

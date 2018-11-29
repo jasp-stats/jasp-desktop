@@ -16,48 +16,27 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-<<<<<<< HEAD
-import QtQuick 2.10
-import QtQuick.Controls 2.3
-=======
 import QtQuick 2.11
 import QtQuick.Controls 2.4
->>>>>>> qmlFormsB
 import JASP.Theme 1.0
 
 JASPControl {
-    controlType: "RadioButton"
-    isBound: false
-<<<<<<< HEAD
-=======
-    useDefaultBackground: true
->>>>>>> qmlFormsB
-    property alias text: control.text
+	controlType:			"RadioButton"
+	isBound:				false
+	useDefaultBackground:	true
+	implicitHeight:			control.height
+	implicitWidth:			control.width
+
+	property alias text:	control.text
     property alias checked: control.checked
-    implicitHeight: control.height
-    implicitWidth: control.width
-<<<<<<< HEAD
-    
-    property var buttonGroup
-    
-=======
-
     property var buttonGroup
 
->>>>>>> qmlFormsB
     RadioButton {
         id: control
         height: Theme.radioIndicatorDiameter + 4
         width: Theme.radioIndicatorDiameter + label.implicitWidth + control.spacing + 6
         focus: true
         ButtonGroup.group: buttonGroup
-<<<<<<< HEAD
-        
-        background: backgroundRectangle
-        
-=======
-
->>>>>>> qmlFormsB
         indicator: Rectangle {
             width: Theme.radioIndicatorDiameter
             height: Theme.radioIndicatorDiameter
@@ -69,11 +48,6 @@ JASPControl {
             color: control.checked ? (control.enabled ? Theme.buttonBackgroundColor : Theme.disableControlBackgroundColor) : Theme.controlBackgroundColor
             border.color: control.enabled ? (control.checked ? Theme.buttonBackgroundColor : Theme.borderColor) : Theme.disableControlBackgroundColor
             border.width: 1
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> qmlFormsB
             Rectangle {
                 anchors.centerIn: parent
                 implicitWidth: Theme.radioIndicatorDiameter / 2
@@ -83,11 +57,6 @@ JASPControl {
                 color: Theme.controlBackgroundColor
             }
         }
-<<<<<<< HEAD
-        
-=======
-
->>>>>>> qmlFormsB
         contentItem: Label {
             id: label
             anchors.left: control.indicator.right
@@ -96,9 +65,5 @@ JASPControl {
             anchors.topMargin: 2
             text: control.text
         }
-<<<<<<< HEAD
-=======
-
->>>>>>> qmlFormsB
     }
 }

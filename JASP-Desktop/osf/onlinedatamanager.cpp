@@ -26,13 +26,9 @@
 #include "onlinedatanodeosf.h"
 #include "onlineusernodeosf.h"
 #include <QMessageBox>
-<<<<<<< HEAD:JASP-Desktop/onlinedatamanager.cpp
-#include "settings.h"
-=======
 #include "utilities/simplecrypt.h"
 #include "utilities/simplecryptkey.h"
 #include "utilities/settings.h"
->>>>>>> qmlFormsB:JASP-Desktop/osf/onlinedatamanager.cpp
 
 OnlineDataManager::OnlineDataManager(QObject *parent):
 	QObject(parent)

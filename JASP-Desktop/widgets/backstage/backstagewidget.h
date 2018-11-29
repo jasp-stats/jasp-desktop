@@ -23,8 +23,8 @@
 
 #include <QStackedWidget>
 
-#include "backstage/verticaltabbar.h"
-#include "backstage/opensavewidget.h"
+#include "verticaltabbar.h"
+#include "opensavewidget.h"
 #include "data/fileevent.h"
 #include "analysis/analysis.h"
 

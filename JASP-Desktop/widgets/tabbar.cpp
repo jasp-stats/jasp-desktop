@@ -193,8 +193,7 @@ void TabBar::removeTab(QString tabName)
 }
 
 
-<<<<<<< HEAD
-void TabBar::init(MainWindow * mainWindow)
+void TabBar::init(MainWindow * mainWindow, DynamicModules * dynamicModules, RibbonModel * ribbonModel)
 {
 	connect(this,	&TabBar::setPPIHandler,				mainWindow,	&MainWindow::setPPIHandler				);
 	connect(this,	&TabBar::setImageBackgroundHandler,	mainWindow,	&MainWindow::setImageBackgroundHandler	);
@@ -202,12 +201,9 @@ void TabBar::init(MainWindow * mainWindow)
 
 	_aboutDialog = new AboutDialog(this);
 	_preferencesDialog = new PreferencesDialog(this);
-=======
-void TabBar::init(DynamicModules * dynamicModules, RibbonModel * ribbonModel)
-{
+
 	_dynamicModules = dynamicModules;
 	_ribbonModel    = ribbonModel;
->>>>>>> qmlFormsB
 
 	setFocusPolicy(Qt::NoFocus);
 	addTab("File");

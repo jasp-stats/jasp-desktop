@@ -28,13 +28,9 @@
 #include "tempfiles.h"
 #include "analysis/analysis.h"
 #include <functional>
-<<<<<<< HEAD:JASP-Desktop/resultsjsinterface.cpp
-#include "settings.h"
 #include "timers.h"
-=======
 #include "utilities/settings.h"
 #include <QApplication>
->>>>>>> qmlFormsB:JASP-Desktop/utilities/resultsjsinterface.cpp
 
 ResultsJsInterface::ResultsJsInterface(QWidget *parent) : QObject(parent)
 {

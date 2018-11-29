@@ -41,12 +41,9 @@ public slots:
 	void savePreferences();
 	void setDefaultEditorCheck(bool defaulteditor);
 	void getSpreadsheetEditor();
-<<<<<<< HEAD:JASP-Desktop/preferencesdialog.h
 	void sliderUIScaleChanged(int value);
-=======
-	void getQMLFile();
-	void getRFile();
->>>>>>> qmlFormsB:JASP-Desktop/gui/preferencesdialog.h
+	//void getQMLFile();
+	//void getRFile();
 
 protected:
 	void virtual showEvent(QShowEvent * event);

@@ -1,6 +1,6 @@
 #include "filtermodel.h"
 #include "variablespage/labelfiltergenerator.h"
-#include "jsonutilities.h"
+#include "utilities/jsonutilities.h"
 
 void FilterModel::reset()
 {

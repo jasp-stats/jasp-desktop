@@ -1,10 +1,7 @@
 exportPattern("^[[:alpha:]]+")
 export(`%|%`)
-<<<<<<< HEAD
 export('.fromRCPP')
-=======
 export('.readDataSetToEnd')
 export('.readDataSetHeader')
 export('.unv')
 export('.v')
->>>>>>> qmlFormsB

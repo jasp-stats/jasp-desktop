@@ -47,11 +47,8 @@ SOURCES += \
 	tempfiles.cpp \
 	utils.cpp \
 	version.cpp \
-    computedcolumn.cpp \
-    computedcolumns.cpp \
-    enginedefinitions.cpp \
-    options/optioncomputedcolumn.cpp \
-    timers.cpp
+  enginedefinitions.cpp \
+  timers.cpp
 
 HEADERS += \
 	appinfo.h \
@@ -87,14 +84,10 @@ HEADERS += \
 	tempfiles.h \
 	utils.h \
 	version.h \
-    options/optionvariablei.h \
-    jsonredirect.h \
-    computedcolumn.h \
-    computedcolumns.h \
-    enginedefinitions.h \
-    options/optioncomputedcolumn.h \
-    timers.h \
-  	enumutilities.h
+  jsonredirect.h \
+  enginedefinitions.h \
+  timers.h \
+  enumutilities.h
 
 #exists(/app/lib/*) should only be true when building flatpak
 #macx | windows | exists(/app/lib/*)

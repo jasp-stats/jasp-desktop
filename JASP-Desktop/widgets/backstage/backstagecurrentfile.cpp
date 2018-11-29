@@ -1,6 +1,6 @@
 #include "backstagecurrentfile.h"
 #include "ui_backstageform.h"
-#include "qutils.h"
+#include "utilities/qutils.h"
 #include <QQmlContext>
 #include <QFileInfo>
 #include <QDir>

@@ -56,7 +56,6 @@ public:
 	Status getStatus() { return _analysisStatus; }
 	analysisResultStatus getStatusToAnalysisStatus();
 
-<<<<<<< HEAD
 	//return true if changed:
 	bool setColumnDataAsScale(std::string columnName, std::vector<double> scalarData)										{	return provideDataSet()->columns()[columnName].overwriteDataWithScale(scalarData);				}
 	bool setColumnDataAsOrdinal(std::string columnName, std::vector<int> ordinalData, std::map<int, std::string> levels)	{	return setColumnDataAsNominalOrOrdinal(true,  columnName, ordinalData, levels);					}
@@ -67,13 +66,8 @@ public:
 
 	int dataSetRowCount()	{ return static_cast<int>(provideDataSet()->rowCount()); }
 
-	bool paused() { return currentEngineState == engineState::paused; }
-=======
-	void setColumnDataAsScale(		std::string columnName, std::vector<double>			scalarData)		{	provideDataSet()->columns()[columnName].overwriteDataWithScale(scalarData);		}
-	void setColumnDataAsOrdinal(	std::string columnName, std::vector<int>			ordinalData)	{	provideDataSet()->columns()[columnName].overwriteDataWithOrdinal(ordinalData);	}
-	void setColumnDataAsNominal(	std::string columnName, std::vector<int>			nominalData)	{	provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);	}
-	void setColumnDataAsNominalText(std::string columnName, std::vector<std::string>	nominalData)	{	provideDataSet()->columns()[columnName].overwriteDataWithNominal(nominalData);	}
->>>>>>> qmlFormsB
+	bool paused() { return _currentEngineState == engineState::paused; }
+
 
 private: // Methods:
 	void receiveRCodeMessage(			Json::Value jsonRequest);
@@ -85,25 +79,22 @@ private: // Methods:
 	void runModuleRequest();
 	void runComputeColumn(	std::string computeColumnName, std::string computeColumnCode, Column::ColumnType computeColumnType);
 	void runAnalysis();
-	void runFilter(			std::string filter, std::string generatedFilter);
+	void runFilter(			std::string filter, std::string generatedFilter, int filterRequestId);
 	void runRCode(			std::string rCode,	int rCodeRequestId);
 
-<<<<<<< HEAD
+
 	void pauseEngine();
 	void resumeEngine();
 	void sendEnginePaused();
 	void sendEngineResumed();
 
-	void removeNonKeepFiles(Json::Value filesToKeepValue);
-=======
->>>>>>> qmlFormsB
 	void saveImage();
     void editImage();
 	void removeNonKeepFiles(	Json::Value filesToKeepValue);
 
 	void sendAnalysisResults();
-	void sendFilterResult(		std::vector<bool> filterResult, std::string warning = "");
-	void sendFilterError(		std::string errorMessage);
+	void sendFilterResult(		int filterRequestId,	std::vector<bool> filterResult, std::string warning = "");
+	void sendFilterError(		int filterRequestId,	std::string errorMessage);
 	void sendRCodeResult(		std::string rCodeResult,		int rCodeRequestId);
 	void sendRCodeError(		int rCodeRequestId);
 
@@ -124,13 +115,7 @@ private: // Data:
 				_analysisRevision,
 				_progress,
 				_ppi = 96,
-<<<<<<< HEAD
-				_slaveNo = 0,
-				_rCodeRequestId = -1,
-				_filterRequestId = -1;
-=======
 				_slaveNo = 0;
->>>>>>> qmlFormsB
 
 	bool		_analysisRequiresInit,
 				_analysisJaspResults,
@@ -142,21 +127,10 @@ private: // Data:
 				_analysisOptions,
 				_analysisResultsMeta,
 				_analysisStateKey,
-
 				_analysisResultsString,
-<<<<<<< HEAD
-				_filter = "",
-				_generatedFilter = "",
-				_rCode = "",
-				_computeColumnCode = "",
-				_computeColumnName = "",
-				_imageBackground = "white";
-=======
+				_imageBackground = "white",
 				_analysisRFile		= "",
 				_dynamicModuleCall	= "";
->>>>>>> qmlFormsB
-
-	Column::ColumnType		_computeColumnType = Column::ColumnTypeUnknown;
 
 	Json::Value _imageOptions,
 				_analysisResults;

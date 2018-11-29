@@ -59,7 +59,6 @@ public:
 
 	bool isWaitingForModule() { return _moduleData == NULL ? false : !_moduleData->dynamicModule()->readyForUse(); }
 
-
 	void setResults(Json::Value results, int progress = -1);
 	void setImageResults(Json::Value results);
 	void setImageEdited(Json::Value results);
@@ -100,7 +99,7 @@ public:
 			void		scheduleRun();
 
 			Json::Value asJSON()		const;
-			Json::Value createAnalysisRequestJson(int ppi);
+			Json::Value createAnalysisRequestJson(int ppi, std::string imageBackground);
 
 	static	Status		parseStatus(std::string name);
 

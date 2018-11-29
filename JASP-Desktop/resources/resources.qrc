@@ -55,14 +55,10 @@
         <file>CreateComputeColumnDialog.qml</file>
         <file>FilterConstructor/ComputedColumnsConstructor.qml</file>
         <file>FilterConstructor/OperatorSelectorComputedColumns.qml</file>
-<<<<<<< HEAD
         <file>JASPMouseAreaToolTipped.qml</file>
         <file>JASPScrollBar.qml</file>
-=======
         <file>Ribbon/Ribbon.qml</file>
         <file>Ribbon/RibbonButton.qml</file>
-
->>>>>>> qmlFormsB
     </qresource>
     <qresource prefix="/">
         <file>icons/variance.png</file>

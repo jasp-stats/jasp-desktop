@@ -112,32 +112,21 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside.parseEvalQ("jaspResultsModule$jaspTable$methods(addColumnInfo = function(name=NULL, title=NULL, overtitle=NULL, type=NULL, format=NULL, combine=NULL) { addColumnInfoHelper(name, title, type, format, combine, overtitle) })");
 	rInside.parseEvalQ("jaspResultsModule$jaspTable$methods(addFootnote =   function(message='', symbol=NULL, col_names=NULL, row_names=NULL) { addFootnoteHelper(message, symbol, col_names, row_names) })");
 	rInside["jasp.analyses"] = Rcpp::List();
-<<<<<<< HEAD
-=======
+
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"modules\"))");
->>>>>>> qmlFormsB
-
-	rInside.parseEvalQNT("suppressPackageStartupMessages(library('JASP'))");
-	rInside.parseEvalQNT("suppressPackageStartupMessages(library('methods'))");
 
 	rInside.parseEvalQNT("source(file='writeImage.R')");
 
-<<<<<<< HEAD
     rinside->parseEvalNT("initEnvironment()");
-}
 
-
-const char* STDCALL jaspRCPP_run(const char* name, const char* title, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, const char* imageBackground, int analysisID, int analysisRevision, bool usesJaspResults)
-=======
 	//rinside->parseEvalNT("print('installing modules!'); install.packages('modules', repos='https://cloud.r-project.org', Ncpus=4, lib='/Users/jorisgoosen/.JASP/library'); print('installing modules worked?'); ");
 
 }
 
 
-const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char* rfile, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults)
->>>>>>> qmlFormsB
+const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char* rfile, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults, const char* imageBackground)
 {
 	SEXP results;
 
@@ -149,15 +138,15 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char
 	jsonResultsMeta.set_encoding(Encoding);
 
 
-	rInside["name"]			= name;
-	rInside["title"]		= title;
-	rInside["requiresInit"]	= requiresInit;
-	rInside["dataKey"]		= dataKey;
-	rInside["options"]		= jsonOptions;
-	rInside["resultsMeta"]	= jsonResultsMeta;
-	rInside["stateKey"]		= stateKey;
-	rInside["perform"]		= perform;
-	rInside[".ppi"]			= ppi;
+	rInside["name"]				= name;
+	rInside["title"]			= title;
+	rInside["requiresInit"]		= requiresInit;
+	rInside["dataKey"]			= dataKey;
+	rInside["options"]			= jsonOptions;
+	rInside["resultsMeta"]		= jsonResultsMeta;
+	rInside["stateKey"]			= stateKey;
+	rInside["perform"]			= perform;
+	rInside[".ppi"]				= ppi;
 	rInside[".imageBackground"]	= imageBackground;
 
 #ifndef __WIN32__

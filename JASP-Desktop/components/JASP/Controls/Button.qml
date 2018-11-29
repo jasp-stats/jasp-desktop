@@ -15,42 +15,6 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-
-<<<<<<< HEAD
-import QtQuick 2.10
-import QtQuick.Controls 2.3
-import JASP.Theme 1.0
-
-
-Button {
-    id: button
-
-    implicitWidth: height
-    width: 50
-    height: 30
-
-    background: Rectangle {
-        id: rectangle
-        border.width: 1
-        border.color: Theme.borderColor
-        radius: Theme.borderRadius
-        color: Theme.controlBackgroundColor
-        
-        Behavior on color {        
-            ColorAnimation {
-                duration: 500
-            }
-        }
-        
-    }
-    
-    states: [
-        State {
-            name: "disabled"
-            PropertyChanges { target: rectangle; color: Theme.disableControlBackgroundColor }
-        }
-    ]
-=======
 import QtQuick 2.11
 import QtQuick.Controls 2.4
 import JASP.Theme 1.0
@@ -106,5 +70,4 @@ JASPControl {
             }
         ]
     }
->>>>>>> qmlFormsB
 }

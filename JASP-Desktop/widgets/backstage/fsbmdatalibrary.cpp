@@ -28,8 +28,8 @@
 
 #include <QDebug>
 
-#include "appdirs.h"
-#include "utils.h"
+#include "utilities/appdirs.h"
+#include "utilities/qutils.h"
 
 const QString FSBMDataLibrary::rootelementname = "Categories";
 
@@ -80,7 +80,7 @@ void FSBMDataLibrary::loadRootElements()
 	_entries.clear();
 
 	//Loop over different children
-	foreach (const QJsonValue & value, children)
+	for(const QJsonValue & value : children)
 	{
 		QJsonObject file_or_folder = value.toObject();
 
@@ -124,7 +124,7 @@ void FSBMDataLibrary::loadFilesAndFolders(const QString &docpath)
 
 	QStringList list = docpath.split(QChar( QDir::separator() ), QString::SkipEmptyParts);
 
-	foreach (QString itm, list)
+	for(QString itm : list)
 	{
 		if (itm == _rootPath)
 			continue;
@@ -133,7 +133,7 @@ void FSBMDataLibrary::loadFilesAndFolders(const QString &docpath)
 
 		found = false;
 
-		foreach (const QJsonValue & value, folder)
+		for(const QJsonValue & value : folder)
 		{
 			QJsonObject file_or_folder = value.toObject();
 			QString path = file_or_folder["path"].toString();
@@ -151,7 +151,7 @@ void FSBMDataLibrary::loadFilesAndFolders(const QString &docpath)
 		_entries.clear();
 
 		//Loop over different children
-		foreach (const QJsonValue & value, folder)
+		for(const QJsonValue & value : folder)
 		{
 			QJsonObject file_or_folder = value.toObject();
 

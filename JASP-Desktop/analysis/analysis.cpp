@@ -222,7 +222,7 @@ std::string Analysis::qmlFormPath() const
 		return Dirs::QMLAnalysesDir() + "/" + module() + "/qml/"  + name() + ".qml";
 }
 
-Json::Value Analysis::createAnalysisRequestJson(int ppi)
+Json::Value Analysis::createAnalysisRequestJson(int ppi, std::string imageBackground)
 {
 	performType perform = desiredPerformTypeFromAnalysisStatus();
 
@@ -230,7 +230,9 @@ Json::Value Analysis::createAnalysisRequestJson(int ppi)
 	{
 	case performType::init:		setStatus(Analysis::Initing);	break;
 	case performType::abort:	setStatus(Analysis::Aborted);	break;
-	case performType::run:		setStatus(Analysis::Running);	break;
+	case performType::run:
+	case performType::saveImg:
+	case performType::editImg:	setStatus(Analysis::Running);	break;
 	default:													break;
 	}
 
@@ -248,9 +250,10 @@ Json::Value Analysis::createAnalysisRequestJson(int ppi)
 
 	if (!isAborted())
 	{
-		json["name"]	= name();
-		json["title"]	= title();
-		json["ppi"]		= ppi;
+		json["name"]			= name();
+		json["title"]			= title();
+		json["ppi"]				= ppi;
+		json["imageBackground"] = imageBackground; //comes from engine representation!
 
 		if (perform == performType::saveImg || perform == performType::editImg)
 			json["image"] = getSaveImgOptions();

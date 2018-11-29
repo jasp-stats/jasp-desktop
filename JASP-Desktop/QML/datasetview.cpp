@@ -415,11 +415,7 @@ QQuickItem * DataSetView::createRowNumber(int row)
 		_rowNumberDelegate = new QQmlComponent(qmlEngine(this));
         _rowNumberDelegate->setData("import QtQuick 2.9\nItem {\n"
 			"Rectangle	{ color: \"lightGrey\";	anchors.fill: parent }\n"
-<<<<<<< HEAD:JASP-Desktop/datasetview.cpp
 			"Text		{ text: rowIndex; anchors.centerIn: parent; font: dataFont }\n"
-=======
-			"Text		{ text: headerText; anchors.centerIn: parent }\n"
->>>>>>> qmlFormsB:JASP-Desktop/QML/datasetview.cpp
 		"}", QUrl());
 	}
 
@@ -656,15 +652,11 @@ QQmlContext * DataSetView::setStyleDataRowNumber(QQmlContext * previousContext, 
 {
 	if(previousContext == NULL)
 		previousContext = new QQmlContext(qmlContext(this), this);
-<<<<<<< HEAD:JASP-Desktop/datasetview.cpp
 
 	previousContext->setContextProperty("rowIndex",			row);
 	previousContext->setContextProperty("dataFont",			_font);
-=======
-	
 	previousContext->setContextProperty("headerText",	text);
-	previousContext->setContextProperty("rowIndex",		row);
->>>>>>> qmlFormsB:JASP-Desktop/QML/datasetview.cpp
+
 
 	return previousContext;
 }

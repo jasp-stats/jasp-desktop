@@ -16,15 +16,12 @@ const Settings::Setting Settings::Values[] = {
 	{"OSFPassword", ""},
 	{"OSFEncryption", 0},
 	{"OSFRememberMe", false},
-<<<<<<< HEAD:JASP-Desktop/settings.cpp
 	{"PPIUseDefault", false},
 	{"PPICustomValue", 300},
 	{"UIScale", 0.7f},
-	{"ImageBackground", "white"}
-=======
+	{"ImageBackground", "white"},
 	{"testAnalysisQML", ""},
 	{"testAnalysisR", ""}
->>>>>>> qmlFormsB:JASP-Desktop/utilities/settings.cpp
 };
 
 QVariant Settings::value(Settings::Type key)
@@ -49,11 +46,7 @@ void Settings::remove(Settings::Type key)
 
 QSettings *Settings::getSettings()
 {
-<<<<<<< HEAD:JASP-Desktop/settings.cpp
 	// if _settings is created immediately, it does not use the right place to store its data.
-=======
-	// if _settings is created immediately, it uses an invalid place to store its data.
->>>>>>> qmlFormsB:JASP-Desktop/utilities/settings.cpp
 	if (!_settings)
 		_settings = new QSettings();
 	return _settings;

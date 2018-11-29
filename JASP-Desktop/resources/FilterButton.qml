@@ -6,38 +6,23 @@ Rectangle
 {
 	id: filterButtonRoot
 
-<<<<<<< HEAD
-	color:			(!filterButtonRoot.disabled && filterButtonRoot.hovered) || filterButtonRoot.selected ? "white" : "lightGrey"
-	border.color:	(!filterButtonRoot.disabled && filterButtonRoot.hovered) || filterButtonRoot.selected ? "black" : "grey"
-	border.width:	1
-
-	property string	text:			""
-	property string	toolTip:		"This is a button"
-	property bool	disabled:		false
-	property bool	selected:		false
-	property string	iconSource:		""
-	property real	buttonPadding:	(buttonIcon.visible ? 4 : 16) * ppiScale
-	property alias	hovered:		buttonMouseArea.containsMouse
-
-	implicitWidth:	(buttonIcon.visible ? 32 * ppiScale : buttonText.width + buttonPadding)
-	implicitHeight: 32 * ppiScale
-=======
 	color:			(!filterButtonRoot.disabled && filterButtonRoot.hovered) || filterButtonRoot.selected ? Theme.white : Theme.grayLighter
 	border.color:	(!filterButtonRoot.disabled && filterButtonRoot.hovered) || filterButtonRoot.selected ? Theme.black : Theme.gray
-	border.width: 1
+	border.width:	1
 
-	property string text:				""
-	property string toolTip:			"This is a button"
+	property string	text:				""
+	property string	toolTip:			"This is a button"
 	property bool	disabled:			false
 	property bool	selected:			false
-	property string iconSource:			""
-	property real	buttonPadding:		buttonIcon.visible ? 4 : 16
+	property string	iconSource:			""
+	property real	buttonPadding:		(buttonIcon.visible ? 4 : 16) * ppiScale
 	property alias	hovered:			buttonMouseArea.containsMouse
 	property bool	showIconAndText:	false
 
-	implicitWidth:	showIconAndText ? buttonText.width + buttonPadding + 32 + buttonPadding : buttonIcon.visible ? 32 : buttonText.width + buttonPadding
-	implicitHeight: 32
->>>>>>> qmlFormsB
+	property real	_scaledDim:			32 * ppiScale
+
+	implicitWidth:	showIconAndText ? buttonText.width + buttonPadding + _scaledDim + buttonPadding : buttonIcon.visible ? _scaledDim : buttonText.width + buttonPadding
+	implicitHeight: _scaledDim
 
 
 	ToolTip.delay:		500

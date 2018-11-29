@@ -26,7 +26,7 @@
 
 #include "fsentrywidget.h"
 #include <iostream>
-#include "qutils.h"
+#include "utilities/qutils.h"
 
 FSBrowser::FSBrowser(QWidget *parent, FSBrowser::BrowseMode mode) : QWidget(parent)
 {
@@ -118,10 +118,6 @@ void FSBrowser::setFSModel(FSBModel *model)
 	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(refresh()));
 	connect(_model, SIGNAL(authenticationClear()), this, SLOT(refresh()));
 	connect(_model, SIGNAL(authenticationFail(QString)), this, SLOT(authenticationFailed(QString)));
-<<<<<<< HEAD:JASP-Desktop/backstage/fsbrowser.cpp
-=======
-//	connect(_model, SIGNAL(hideAuthentication()), this, SLOT(hideAuthentication()));
->>>>>>> qmlFormsB:JASP-Desktop/widgets/backstage/fsbrowser.cpp
 }
 
 void FSBrowser::setBrowseMode(FSBrowser::BrowseMode mode)
@@ -169,13 +165,7 @@ void FSBrowser::refresh()
 		}
 		
 		int id = 0;
-<<<<<<< HEAD:JASP-Desktop/backstage/fsbrowser.cpp
-		
-		foreach (const FSEntry &entry, _model->entries())
-=======
-
 		for (const FSEntry &entry : _model->entries())
->>>>>>> qmlFormsB:JASP-Desktop/widgets/backstage/fsbrowser.cpp
 		{
 			FSEntryWidget *button = new FSEntryWidget(entry, _scrollPane);
 			button->setCompact(compact);

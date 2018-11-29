@@ -2,7 +2,7 @@
 #define COMPUTERLISTMODEL_H
 
 #include <QAbstractListModel>
-#include "fileevent.h"
+#include "data/fileevent.h"
 #include "fsbmrecentfolders.h"
 
 class ComputerListModel : public QAbstractListModel

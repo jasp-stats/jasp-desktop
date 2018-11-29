@@ -1,5 +1,5 @@
-import QtQuick 2.0
-import QtQuick.Controls 2.2
+import QtQuick 2.11
+import QtQuick.Controls 2.4
 import JASP.Controls 1.0
 import JASP.Theme 1.0
 
@@ -171,7 +171,7 @@ Rectangle {
 	Button {
 		id: loginButton
 		
-		background: Rectangle {
+	/*	background: Rectangle {
 			anchors.fill: parent
 			gradient: Gradient {
 				GradientStop { position: 0 ; color:  "#e5e5e5" }
@@ -179,7 +179,7 @@ Rectangle {
 			}
 			border.color: "gray"
 			border.width: 1
-		}
+		}*/
 		
 		width: 65
 		height: 20		

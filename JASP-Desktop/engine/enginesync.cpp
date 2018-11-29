@@ -33,11 +33,8 @@
 #include "appinfo.h"
 #include "utilities/qutils.h"
 #include "tempfiles.h"
-<<<<<<< HEAD:JASP-Desktop/enginesync.cpp
 #include "timers.h"
-=======
 #include "utilities/appdirs.h"
->>>>>>> qmlFormsB:JASP-Desktop/engine/enginesync.cpp
 
 using namespace boost::interprocess;
 
@@ -50,20 +47,10 @@ EngineSync::EngineSync(Analyses *analyses, DataSetPackage *package, DynamicModul
 	connect(_analyses,	&Analyses::analysisSaveImage,						this,					&EngineSync::ProcessAnalysisRequests	);
 	connect(_analyses,	&Analyses::analysisEditImage,						this,					&EngineSync::ProcessAnalysisRequests	);
 	connect(_analyses,	&Analyses::analysisOptionsChanged,					this,					&EngineSync::ProcessAnalysisRequests	);
-
-<<<<<<< HEAD:JASP-Desktop/enginesync.cpp
-	/* commented out because it makes JASP crash after synchronizing, also quite pointless because enginseSync calls ProcessAnalysisRequests anyway from process, but then after filter, rscript and compute column requests..
-	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
-	connect(_analyses, SIGNAL(analysisOptionsChanged(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
-	connect(_analyses, SIGNAL(analysisToRefresh(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
-	connect(_analyses, SIGNAL(analysisSaveImage(Analysis*)), this, SLOT(ProcessAnalysisRequests()));
-	connect(_analyses, SIGNAL(analysisEditImage(Analysis*)), this, SLOT(ProcessAnalysisRequests()));*/
-=======
 	connect(this,		&EngineSync::moduleLoadingFailed,					_dynamicModules,		&DynamicModules::loadingFailed			);
 	connect(this,		&EngineSync::moduleLoadingSucceeded,				_dynamicModules,		&DynamicModules::loadingSucceeded		);
 	connect(this,		&EngineSync::moduleInstallationFailed,				_dynamicModules,		&DynamicModules::installationPackagesFailed		);
 	connect(this,		&EngineSync::moduleInstallationSucceeded,			_dynamicModules,		&DynamicModules::installationPackagesSucceeded	);
->>>>>>> qmlFormsB:JASP-Desktop/engine/enginesync.cpp
 
 	// delay start so as not to increase program start up time
 	QTimer::singleShot(100, this, &EngineSync::deleteOrphanedTempFiles);
@@ -102,7 +89,6 @@ void EngineSync::start()
 		{
 			_engines[i] = new EngineRepresentation(new IPCChannel(_memoryName, i), startSlaveProcess(i), this);
 
-<<<<<<< HEAD:JASP-Desktop/enginesync.cpp
 			connect(_engines[i],	&EngineRepresentation::engineTerminated,				this,			&EngineSync::engineTerminated		);
 			connect(_engines[i],	&EngineRepresentation::rCodeReturned,					this,			&EngineSync::rCodeReturned			);
 			connect(_engines[i],	&EngineRepresentation::processNewFilterResult,			this,			&EngineSync::processNewFilterResult	);
@@ -111,26 +97,10 @@ void EngineSync::start()
 			connect(_engines[i],	&EngineRepresentation::computeColumnFailed,				this,			&EngineSync::computeColumnFailed	);
 			connect(this,			&EngineSync::ppiChanged,								_engines[i],	&EngineRepresentation::ppiChanged	);
 			connect(this,			&EngineSync::imageBackgroundChanged,					_engines[i],	&EngineRepresentation::imageBackgroundChanged );
-=======
-			connect(_engines[i],	&EngineRepresentation::rCodeReturned,					this,			&EngineSync::rCodeReturned);
-
-			connect(_engines[i],	&EngineRepresentation::filterUpdated,					this,			&EngineSync::filterUpdated);
-			connect(_engines[i],	&EngineRepresentation::dataFilterChanged,				this,			&EngineSync::dataFilterChanged);
-			connect(_engines[i],	&EngineRepresentation::processNewFilterResult,			this,			&EngineSync::processNewFilterResult);
-			connect(_engines[i],	&EngineRepresentation::filterErrorTextChanged,			this,			&EngineSync::filterErrorTextChanged);
-
-			connect(_engines[i],	&EngineRepresentation::computeColumnSucceeded,			this,			&EngineSync::computeColumnSucceeded);
-			connect(_engines[i],	&EngineRepresentation::computeColumnFailed,				this,			&EngineSync::computeColumnFailed);
-
-			connect(_engines[i],	&EngineRepresentation::engineTerminated,				this,			&EngineSync::engineTerminated);
-
 			connect(_engines[i],	&EngineRepresentation::moduleLoadingFailed,				this,			&EngineSync::moduleLoadingFailedHandler);
 			connect(_engines[i],	&EngineRepresentation::moduleLoadingSucceeded,			this,			&EngineSync::moduleLoadingSucceededHandler);
 			connect(_engines[i],	&EngineRepresentation::moduleInstallationFailed,		this,			&EngineSync::moduleInstallationFailed);
 			connect(_engines[i],	&EngineRepresentation::moduleInstallationSucceeded,		this,			&EngineSync::moduleInstallationSucceeded);
-
-			connect(this,			&EngineSync::ppiChanged,								_engines[i],	&EngineRepresentation::ppiChanged);
->>>>>>> qmlFormsB:JASP-Desktop/engine/enginesync.cpp
 		}
 	}
 	catch (interprocess_exception e)
@@ -141,17 +111,8 @@ void EngineSync::start()
 
 	QTimer *timerProcess = new QTimer(this), *timerBeat = new QTimer(this);
 
-<<<<<<< HEAD:JASP-Desktop/enginesync.cpp
-	timer = new QTimer(this);
-	connect(timer, SIGNAL(timeout()), this, SLOT(heartbeatTempFiles()));
-	timer->start(30000);
-
-	JASPTIMER_FINISH(EngineSync::start());
-}
-=======
 	connect(timerProcess,	&QTimer::timeout, this, &EngineSync::process);
 	connect(timerBeat,		&QTimer::timeout, this, &EngineSync::heartbeatTempFiles);
->>>>>>> qmlFormsB:JASP-Desktop/engine/enginesync.cpp
 
 	timerProcess->start(50);
 	timerBeat->start(30000);
@@ -167,24 +128,7 @@ void EngineSync::process()
 	ProcessAnalysisRequests();
 }
 
-<<<<<<< HEAD:JASP-Desktop/enginesync.cpp
-
 void EngineSync::sendFilter(QString generatedFilter, QString filter, int requestID)
-=======
-void EngineSync::processNewFilterResult(std::vector<bool> filterResult)
-{
-	if(_package == NULL || _package->dataSet() == NULL)
-		return;
-	
-	_package->setDataFilter(_dataFilter.toStdString()); //remember the filter that was last used and actually gave results.
-	_package->dataSet()->setFilterVector(filterResult);
-
-	emit filterUpdated();
-	emit filterErrorTextChanged("");
-}
-
-void EngineSync::sendFilter(QString generatedFilter, QString filter)
->>>>>>> qmlFormsB:JASP-Desktop/engine/enginesync.cpp
 {
 	if(_waitingFilter == nullptr || _waitingFilter->requestId < requestID)
 	{
@@ -226,14 +170,7 @@ void EngineSync::processScriptQueue()
 			if(_waitingScripts.size() == 0 && _waitingFilter == nullptr)
 				return;
 
-<<<<<<< HEAD:JASP-Desktop/enginesync.cpp
 			if(_waitingFilter != nullptr)
-=======
-			RScriptStore * waiting = _waitingScripts.front();
-			_waitingScripts.pop();
-
-			switch(waiting->typeScript)
->>>>>>> qmlFormsB:JASP-Desktop/engine/enginesync.cpp
 			{
 				engine->runScriptOnProcess(_waitingFilter);
 				_waitingFilter = nullptr;
@@ -254,11 +191,6 @@ void EngineSync::processScriptQueue()
 				_waitingScripts.pop();
 				delete waiting; //clean up
 			}
-<<<<<<< HEAD:JASP-Desktop/enginesync.cpp
-=======
-
-			delete waiting; //clean up
->>>>>>> qmlFormsB:JASP-Desktop/engine/enginesync.cpp
 		}
 }
 
@@ -347,16 +279,7 @@ QProcess * EngineSync::startSlaveProcess(int no)
 		rHomePath = "/usr/lib/R/";
 #endif
 #else
-<<<<<<< HEAD:JASP-Desktop/enginesync.cpp
-	QString rHomePath;
-	if (QDir::isRelativePath(R_HOME))
-		rHomePath = programDir.absoluteFilePath(R_HOME);
-	else
-		rHomePath = R_HOME;
-
-=======
 	QString rHomePath = QDir::isRelativePath(R_HOME) ? programDir.absoluteFilePath(R_HOME) : R_HOME;
->>>>>>> qmlFormsB:JASP-Desktop/engine/enginesync.cpp
 #endif
 #endif
 
@@ -485,7 +408,6 @@ void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus)
 	qDebug() << "subprocess finished" << exitCode;
 }
 
-<<<<<<< HEAD:JASP-Desktop/enginesync.cpp
 void EngineSync::pause()
 {
 	//make sure we process any received messages first.
@@ -524,7 +446,8 @@ bool EngineSync::allEnginesResumed()
 		if(!engine->resumed())
 			return false;
 	return true;
-=======
+}
+
 void EngineSync::moduleLoadingFailedHandler(std::string moduleName, std::string errorMessage, int channelID)
 {
 #ifdef JASP_DEBUG
@@ -584,5 +507,4 @@ void EngineSync::resetModuleWideCastVars()
 	_requestWideCastModuleName			= "";
 	_requestWideCastModuleJson	= Json::nullValue;
 	_requestWideCastModuleResults.clear();
->>>>>>> qmlFormsB:JASP-Desktop/engine/enginesync.cpp
 }
