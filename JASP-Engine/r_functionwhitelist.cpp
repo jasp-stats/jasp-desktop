@@ -184,6 +184,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"tolower",
 	"toString",
 	"toupper",
+	"trimws",
 	"unclass",
 	"union",
 	"unique",
