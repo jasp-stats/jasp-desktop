@@ -44,7 +44,7 @@
 #include "modules/ribbonmodel.h"
 #include "modules/ribbonbuttonmodel.h"
 #include "modules/ribbonentry.h"
-#include "filtermodel.h"
+#include "data/filtermodel.h"
 
 class ResultsJsInterface;
 
