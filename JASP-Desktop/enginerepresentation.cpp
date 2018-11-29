@@ -53,7 +53,7 @@ void EngineRepresentation::process()
 		Json::Value json;
 		Json::Reader().parse(data, json);
 
-		if(!json.get("typeRequest", Json::nullValue).isString())
+		if(!json.get("typeRequest", Json::nullValue).isString() && _engineState != engineState::analysis)
 			throw std::runtime_error("Malformed reply from engine!");
 
 		engineState typeRequest = engineStateFromString(json["typeRequest"].asString());
