@@ -2344,7 +2344,6 @@ saveImage <- function(plotName, format, height, width)
 
 	# Plot and close graphics device
 	if (inherits(plt, "recordedplot")) {
-	print("recordedplot")
 		.redrawPlot(plt) #(see below)
 	} else if (inherits(plt, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
 		gridExtra::grid.arrange(plt)
