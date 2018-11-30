@@ -61,30 +61,21 @@ Rectangle {
         anchors.bottom          : parent.bottom
         anchors.topMargin       : 5
 
-        color: mice.enabled ? "black" : "lightgrey"
-        font.bold: false
+		color:		mice.enabled ? "black" : "lightgrey"
+		font.bold:	false
     }
 
     MouseArea {
-        id: mice
-        anchors.fill: parent
-        hoverEnabled: true
-        onClicked: {
-            // button.clicked();
-            jaspRibbon.dispatchButtonClickSignal(button.menu)
-        }
-        onPressed: {
-            button.color = Qt.tint("grey", "#EEEEEE")
-        }
-        onReleased: {
-            button.color = "transparent"
-        }
-        onEntered: {
-            button.border.color = Qt.tint("grey", "#10FF0000")
-        }
+		id:				mice
+		anchors.fill:	parent
+		hoverEnabled:	true
+		onClicked:		jaspRibbon.dispatchButtonClickSignal(button.menu)
+		onPressed:		button.color = Qt.tint("grey", "#EEEEEE")
+		onReleased:		button.color = "transparent"
+		onEntered:		button.border.color = Qt.tint("grey", "#10FF0000")
         onExited: {
-            button.border.color = "transparent";
-            button.color = "#FFFFFF";
+						button.border.color = "transparent";
+						button.color = "#FFFFFF";
         }
     }
 }

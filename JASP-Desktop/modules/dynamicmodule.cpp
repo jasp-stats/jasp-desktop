@@ -279,7 +279,21 @@ std::string	DynamicModule::qmlFilePath(std::string qmlFileName)	const
 	return _moduleFolder.absolutePath().toStdString() + "/qml/" + qmlFileName;
 }
 
-AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile)
+std::string	DynamicModule::iconFilePath(std::string iconFileName)	const
+{
+	return _moduleFolder.absolutePath().toStdString() + "/icons/" + iconFileName;
+}
+
+RibbonEntry* DynamicModule::ribbonEntry(const std::string & ribbonTitle) const
+{
+	for(RibbonEntry * entry : _ribbonEntries)
+		if(entry->title() == ribbonTitle)
+			return entry;
+
+	throw ModuleException(name(), "Couldn't find RibbonEntry " + ribbonTitle);
+}
+
+AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile) const
 {
 	std::string moduleName		= jsonFromJaspFile.get("moduleName", "Modulename wasn't actually filled!").asString();
 	int			moduleVersion	= jsonFromJaspFile.get("moduleVersion", -1).asInt();
@@ -292,11 +306,12 @@ AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const Json::Val
 
 	std::string ribbonTitle = jsonFromJaspFile.get("ribbonEntry", "RibbonEntry's title wasn't actually specified!").asString();
 
-	for(RibbonEntry * entry : _ribbonEntries)
-		if(entry->title() == ribbonTitle)
-			return entry->retrieveCorrespondingAnalysisEntry(jsonFromJaspFile);
+	return ribbonEntry(ribbonTitle)->retrieveCorrespondingAnalysisEntry(jsonFromJaspFile);
+}
 
-	throw ModuleException(name(), "Couldn't find RibbonEntry " + ribbonTitle);
+AnalysisEntry*  DynamicModule::retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisTitle) const
+{
+	return ribbonEntry(ribbonTitle)->analysisEntry(analysisTitle);
 }
 
 }

@@ -11,6 +11,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include "utils.h"
 
 #ifdef JASP_USES_QT_HERE
 #include <QString>
@@ -113,28 +114,12 @@
 #define DECLARE_ENUM_WITH_TYPE(E, T, ...)	DECLARE_ENUM_WITH_TYPE_HEADER(E, T, __VA_ARGS__)
 #endif
 
-
-
 template <typename T> std::map<T, std::string> generateEnumMap(std::string strMap)
 {
 	STRING_REMOVE_CHAR(strMap, ' ');
 	STRING_REMOVE_CHAR(strMap, '(');
 
-	auto splitString = [](std::string str, char sep = ',')
-	{
-		std::vector<std::string>	vecString;
-		std::string					item;
-		std::stringstream			stringStream(str);
-
-		while (std::getline(stringStream, item, sep))
-		{
-			vecString.push_back(item);
-		}
-
-		return vecString;
-	};
-
-	std::vector<std::string> enumTokens(splitString(strMap));
+	std::vector<std::string> enumTokens(Utils::splitString(strMap));
 	std::map<T, std::string> retMap;
 	T inxMap;
 
@@ -148,7 +133,7 @@ template <typename T> std::map<T, std::string> generateEnumMap(std::string strMa
 			enumName = tokenString;
 		else
 		{
-			std::vector<std::string> enumNameValue(splitString(tokenString, '='));
+			std::vector<std::string> enumNameValue(Utils::splitString(tokenString, '='));
 			enumName = enumNameValue[0];
 			//inxMap = static_cast<T>(enumNameValue[1]);
 			if (std::is_unsigned<T>::value)		inxMap = static_cast<T>(std::stoull(enumNameValue[1], 0, 0));

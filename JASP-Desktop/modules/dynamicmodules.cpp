@@ -134,7 +134,7 @@ std::string DynamicModules::loadModuleFromDir(std::string moduleDir)
 
 		return modName;
 	}
-	catch(std::runtime_error e)
+	catch(std::runtime_error & e)
 	{
 		std::cerr << "An error occured trying to load a module from dir " << moduleDir << ", the error was: " << e.what();
 		return "";
@@ -200,6 +200,20 @@ Modules::AnalysisEntry* DynamicModules::retrieveCorrespondingAnalysisEntry(const
 		return _modules[moduleName]->retrieveCorrespondingAnalysisEntry(jsonFromJaspFile);
 
 	throw Modules::ModuleException(moduleName, "Couldn't find Module " + moduleName +", to use this JASP file you will need to install that first.\nTry the module's website: "  + jsonFromJaspFile.get("moduleWebsite", "jasp-stats.org").asString()	 +  " or, if that doesn't help, you could try to contact the module's maintainer: " + jsonFromJaspFile.get("moduleAuthor", "the JASP team").asString());
+}
+
+Modules::AnalysisEntry*	DynamicModules::retrieveCorrespondingAnalysisEntry(const std::string & codedReference)
+{
+	auto parts = Utils::splitString(codedReference, '~');
+
+	if(parts.size() != 3)
+		return nullptr;
+
+	std::string moduleName		= parts[0],
+				ribbonTitle		= parts[1],
+				analysisTitle	= parts[2];
+
+	return dynamicModule(moduleName)->retrieveCorrespondingAnalysisEntry(ribbonTitle, analysisTitle);
 }
 
 void DynamicModules::openModuleInstallerWindow()

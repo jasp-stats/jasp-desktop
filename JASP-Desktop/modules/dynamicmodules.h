@@ -65,6 +65,7 @@ public:
 	Modules::DynamicModule*	operator[](const std::string & moduleName)		const { return dynamicModule(moduleName); }
 
 	Modules::AnalysisEntry* retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile);
+	Modules::AnalysisEntry*	retrieveCorrespondingAnalysisEntry(const std::string & codedReference);
 
 	Q_INVOKABLE bool	isFileAnArchive(QString filepath);
 	Q_INVOKABLE QString getDescriptionFromArchive(QString filepath);
@@ -84,6 +85,8 @@ public:
 	int numberOfModules()										{ return _modules.size(); }
 
 	const std::vector<std::string> & moduleNames() const		{ return _moduleNames; }
+
+
 
 signals:
 	void showModuleInstallerWindow(QString url);

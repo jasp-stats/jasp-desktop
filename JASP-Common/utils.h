@@ -58,6 +58,8 @@ public:
 
 	static std::string stripRComments(const std::string & rCode);
 
+	static std::vector<std::string> splitString(const std::string & str, const char sep = ',');
+
 private:
 	static std::vector<std::string> _currentEmptyValues;
 	static const std::vector<std::string> _defaultEmptyValues;

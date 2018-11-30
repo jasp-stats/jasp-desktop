@@ -35,20 +35,21 @@ public:
 	RibbonEntry(Json::Value & ribbonEntry, DynamicModule * parentDynamicModule);
 	~RibbonEntry();
 
-	std::string				title()				const	{ return _title;				}
-	std::string				icon()				const	{ return _icon;				}
+	std::string				title()				const	{ return _title;			}
+	std::string				icon()				const;
 	const AnalysisEntries&	analysisEntries()	const	{ return _analysisEntries;	}
-	DynamicModule*			dynamicModule()		const	{ return _dynamicModule;		}
+	DynamicModule*			dynamicModule()		const	{ return _dynamicModule;	}
 
-	AnalysisEntry*			firstAnalysisEntry();
 	AnalysisEntry*			retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile);
+	AnalysisEntry*			analysisEntry(const std::string & analysisTitle) const;
+	AnalysisEntry*			operator[](const std::string & analysisTitle) const { return analysisEntry(analysisTitle); }
 
 private:
 	std::string				_title,
 							_icon;
 
 	AnalysisEntries			_analysisEntries;
-	DynamicModule			*_dynamicModule = NULL;
+	DynamicModule			*_dynamicModule = nullptr;
 };
 
 typedef std::vector<RibbonEntry*>	RibbonEntries;

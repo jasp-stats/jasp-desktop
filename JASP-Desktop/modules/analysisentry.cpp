@@ -78,4 +78,13 @@ Json::Value AnalysisEntry::asJsonForJaspFile()	const
 	return json;
 }
 
+std::string AnalysisEntry::codedReference() const
+{
+	std::string modName  = dynamicModule()->name(),
+				ribTitle = ribbonEntry()->title(),
+				coded    = modName + '~' + ribTitle + '~' + title();
+
+	return coded;
+}
+
 } // namespace Modules

@@ -17,19 +17,19 @@
 //
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
-import "qrc:/JASPControls"
+import JASP.Controls 1.0
 
 Form {
     id: form
     usesJaspResults: true
-
+    
     VariablesForm {
         defaultAssignedVariablesList.title: qsTr("Variables")
         AssignedVariablesList {
             name: "splitby"
             title: qsTr("Split")
             singleItem: true
-            allowedColumns: ["ordinal", "nominal"]
+            allowedColumns: ["ordinal", "nominal"]            
         }
     }
 
@@ -143,6 +143,7 @@ Form {
             
             ButtonGroup {
                 name: "chartValues"
+                title: qsTr("Chart Values")
                 RadioButton {   text: qsTr("Frequencies")   ; name: "_1frequencies" }
                 RadioButton {   text: qsTr("Percentages")   ; name: "_2percentages" }                
             }

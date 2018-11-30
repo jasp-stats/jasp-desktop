@@ -39,13 +39,6 @@ RibbonEntry::~RibbonEntry()
 	_analysisEntries.clear();
 }
 
-AnalysisEntry * RibbonEntry::firstAnalysisEntry()
-{
-	if(_analysisEntries.size() == 0)
-		throw std::runtime_error("RibbonEntry has no entries!");
-	else
-		return _analysisEntries[0];
-}
 
 AnalysisEntry* RibbonEntry::retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile)
 {
@@ -56,11 +49,21 @@ AnalysisEntry* RibbonEntry::retrieveCorrespondingAnalysisEntry(const Json::Value
 
 	std::string analysisTitle = jsonFromJaspFile.get("analysisEntry", "AnalysisEntry's title wasn't actually specified!").asString();
 
+	return analysisEntry(analysisTitle);
+}
+
+AnalysisEntry* RibbonEntry::analysisEntry(const std::string & analysisTitle) const
+{
 	for(AnalysisEntry * entry : _analysisEntries)
 		if(entry->title() == analysisTitle)
 			return entry;
 
 	throw ModuleException(dynamicModule()->name(), "Couldn't find AnalysisEntry " + analysisTitle);
+}
+
+std::string RibbonEntry::icon() const
+{
+	return _dynamicModule == nullptr ? _icon : _dynamicModule->iconFilePath(_icon);
 }
 
 }

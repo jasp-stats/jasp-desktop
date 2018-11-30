@@ -366,7 +366,7 @@ void MainWindow::loadRibbonQML()
 {
 	QString currentActiveTab = ui->tabBar->getCurrentActiveTab();
 
-	// TODO: This statement cause a crash if it cannot find the module
+	// TODO: This statement causes a crash if it cannot find the module
 	RibbonButtonModel *currentModel = _ribbonModel->ribbonButtonModel(currentActiveTab.toStdString());
 
 	ui->quickWidget_Ribbon->rootContext()->setContextProperty("currentActiveModule", currentActiveTab);
@@ -391,12 +391,12 @@ void MainWindow::handleRibbonButtonClicked(QVariant analysisMenuModel)
 	// NOTE: Workaround for now. This will be replaced when mainwindow is made in QML
 	QMenu *menu = new QMenu(this);
 
-	AnalysisMenuModel* model = qvariant_cast<AnalysisMenuModel*>(analysisMenuModel);
-	std::vector<Modules::AnalysisEntry*> entries = model->getAnalysisEntries();
+	AnalysisMenuModel* model			= qvariant_cast<AnalysisMenuModel*>(analysisMenuModel);
+	Modules::AnalysisEntries entries	= model->getAnalysisEntries();
 
 	connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(onMenuClicked(QAction *)));
 
-	for (auto i : entries) {
+	for (auto * i : entries) {
 
 		if (i->title() == "???") {
 			menu->addSeparator();
@@ -405,21 +405,26 @@ void MainWindow::handleRibbonButtonClicked(QVariant analysisMenuModel)
 
 		QAction *action = new QAction();
 		action->setText(QString::fromStdString(i->title()));
-		action->setData(QString::fromStdString(i->function()));
+		action->setData(QString::fromStdString(i->codedReference()));
 		menu->addAction(action);
 	}
 
 	menu->exec(QCursor::pos());
 }
 
-void MainWindow::onMenuClicked(QAction *action) {
+void MainWindow::onMenuClicked(QAction *action)
+{
+	std::string possiblyCodedReference = action->data().toString().toStdString();
 
-	ribbonEntrySelected(action->data().toString());
-
-	//
-	// TODO:
-	// 1. Get analysis object
-	// 2. If not _dynamic, call createAnalysisForm
+	try
+	{
+		addAnalysisFromDynamicModule(_dynamicModules->retrieveCorrespondingAnalysisEntry(possiblyCodedReference));
+	}
+	catch(Modules::ModuleException &)
+	{
+		// It probably is a "normal entry"
+		ribbonEntrySelected(action->data().toString());
+	}
 }
 
 

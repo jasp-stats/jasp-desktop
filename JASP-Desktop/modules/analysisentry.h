@@ -45,6 +45,8 @@ public:
 	Json::Value		getDefaultResults()		const;
 	Json::Value		asJsonForJaspFile()		const;
 
+	std::string		codedReference()		const;
+
 private:
 	std::string		_title		= "",
 					_function	= "",

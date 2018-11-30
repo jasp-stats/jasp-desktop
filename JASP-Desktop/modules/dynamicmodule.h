@@ -77,6 +77,7 @@ public:
 
 	std::string			generatedPackageName()					const { return _name + "Pkg"; }
 	std::string			qmlFilePath(std::string qmlFileName)	const;
+	std::string			iconFilePath(std::string iconFileName)	const;
 	std::string			rModuleCall(std::string function)		const { return _name + "$" + function + _exposedPostFix; }
 
 	Json::Value			requestJsonForPackageLoadingRequest();
@@ -87,7 +88,11 @@ public:
 
 	const RibbonEntries ribbonEntries()		const	{ return _ribbonEntries; }
 
-	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile);
+	RibbonEntry*		ribbonEntry(const std::string & ribbonTitle) const;
+	RibbonEntry*		operator[](const std::string & ribbonTitle) const { return ribbonEntry(ribbonTitle); }
+
+	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile) const;
+	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & ribbonTitle, const std::string & analysisTitle) const;
 
 	static std::string	moduleNameFromFolder(std::string folderName) { folderName.erase(std::remove(folderName.begin(), folderName.end(), ' '), folderName.end());  return folderName;}
 
