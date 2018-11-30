@@ -1,5 +1,6 @@
 #include "extractarchive.h"
 #include <iostream>
+#include <cstring>
 #include <sstream>
 
 int ExtractArchive::copy_data(struct archive *ar, struct archive *aw)
