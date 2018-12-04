@@ -8,7 +8,7 @@ bool ComputedColumn::setRCode(std::string rCode)
 	if(_rCode != rCode)
 	{
 		_rCode			= rCode;
-		_rCodeStripped	= Utils::stripRComments(rCode);
+        _rCodeStripped	= stringUtils::stripRComments(rCode);
 
 		findDependencies();
 		invalidate();
@@ -237,7 +237,7 @@ ComputedColumn::ComputedColumn(std::vector<ComputedColumn*> * allComputedColumns
 	_error				= json["error"].asString();
 	_name				= json["name"].asString();
 
-	_rCodeStripped		= Utils::stripRComments(_rCode);
+    _rCodeStripped		= stringUtils::stripRComments(_rCode);
 	_outputColumn		= &(*columns)[_name];
 }
 

@@ -41,7 +41,7 @@ public:
 	static bool removeFile(const std::string &path);
 
 	static boost::filesystem::path osPath(const std::string &path);
-	static std::string osPath(const boost::filesystem::path &path);
+    static std::string osPath(const boost::filesystem::path &path);
 
 	static void remove(std::vector<std::string> &target, const std::vector<std::string> &toRemove);
 	static void sleep(int ms);
@@ -56,9 +56,6 @@ public:
 	static bool getIntValue(const double& value, int& intValue);
 	static bool getDoubleValue(const std::string& value, double& doubleValue);
 
-	static std::string stripRComments(const std::string & rCode);
-
-	static std::vector<std::string> splitString(const std::string & str, const char sep = ',');
 
 private:
 	static std::vector<std::string> _currentEmptyValues;

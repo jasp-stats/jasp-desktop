@@ -11,7 +11,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "utils.h"
+#include "stringutils.h"
 
 #ifdef JASP_USES_QT_HERE
 #include <QString>
@@ -119,7 +119,7 @@ template <typename T> std::map<T, std::string> generateEnumMap(std::string strMa
 	STRING_REMOVE_CHAR(strMap, ' ');
 	STRING_REMOVE_CHAR(strMap, '(');
 
-	std::vector<std::string> enumTokens(Utils::splitString(strMap));
+    std::vector<std::string> enumTokens(stringUtils::splitString(strMap));
 	std::map<T, std::string> retMap;
 	T inxMap;
 
@@ -133,7 +133,7 @@ template <typename T> std::map<T, std::string> generateEnumMap(std::string strMa
 			enumName = tokenString;
 		else
 		{
-			std::vector<std::string> enumNameValue(Utils::splitString(tokenString, '='));
+            std::vector<std::string> enumNameValue(stringUtils::splitString(tokenString, '='));
 			enumName = enumNameValue[0];
 			//inxMap = static_cast<T>(enumNameValue[1]);
 			if (std::is_unsigned<T>::value)		inxMap = static_cast<T>(std::stoull(enumNameValue[1], 0, 0));
