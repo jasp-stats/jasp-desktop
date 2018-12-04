@@ -100,7 +100,6 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	char baseCitation[200];
 	sprintf(baseCitation, baseCitationFormat, buildYear, version);
 	rInside[".baseCitation"]		= baseCitation;
-	rInside[".imageBackground"]		= "transparent"; //a default value
 
 	jaspResults::setSendFunc(sendToDesktopFunction);
 	jaspResults::setPollMessagesFunc(pollMessagesFunction);
@@ -189,7 +188,7 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char
 	return str.c_str();
 }
 
-const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision)
+const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, const char* imageBackground)
 {
 	SEXP results;
 
@@ -198,16 +197,17 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	jsonOptions.set_encoding(Encoding);
 
 
-	rInside["name"]			= name;
-	rInside["title"]		= title;
-	rInside["requiresInit"]	= false;
-	rInside["dataKey"]		= dataKey;
-	rInside["options"]		= jsonOptions;
-	rInside["resultsMeta"]	= "null";
-	rInside["stateKey"]		= stateKey;
-	rInside["perform"]		= perform;
-	rInside["moduleCall"]	= moduleCall;
-	rInside[".ppi"]			= ppi;
+	rInside["name"]				= name;
+	rInside["title"]			= title;
+	rInside["requiresInit"]		= false;
+	rInside["dataKey"]			= dataKey;
+	rInside["options"]			= jsonOptions;
+	rInside["resultsMeta"]		= "null";
+	rInside["stateKey"]			= stateKey;
+	rInside["perform"]			= perform;
+	rInside["moduleCall"]		= moduleCall;
+	rInside[".ppi"]				= ppi;
+	rInside[".imageBackground"]	= imageBackground;
 
 #ifndef __WIN32__
 	rinside_consoleLog->clearConsoleBuffer();

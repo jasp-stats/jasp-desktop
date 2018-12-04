@@ -67,19 +67,19 @@ struct RBridgeColumnType {
 };
 
 // Callbacks from jaspRCPP to rbridge
-typedef RBridgeColumn*            (STDCALL *ReadDataSetCB)                (RBridgeColumnType* columns, size_t colMax, bool obeyFilter);
-typedef RBridgeColumn*            (STDCALL *ReadADataSetCB)               (size_t * colMax);
-typedef char**                    (STDCALL *ReadDataColumnNamesCB)        (size_t * maxCol);
+typedef RBridgeColumn*				(STDCALL *ReadDataSetCB)                (RBridgeColumnType* columns, size_t colMax, bool obeyFilter);
+typedef RBridgeColumn*				(STDCALL *ReadADataSetCB)               (size_t * colMax);
+typedef char**						(STDCALL *ReadDataColumnNamesCB)        (size_t * maxCol);
 typedef RBridgeColumnDescription*	(STDCALL *ReadDataSetDescriptionCB)     (RBridgeColumnType* columns, size_t colMax);
-typedef bool                      (STDCALL *RequestSpecificFileSourceCB)	(const char **root, const char **relativePath);
-typedef bool                      (STDCALL *RequestTempFileNameCB)        (const char* extensionAsString, const char **root, const char **relativePath);
-typedef const char*               (STDCALL *RequestTempRootNameCB)        ();
-typedef bool						          (STDCALL *RunCallbackCB)                (const char* in, int progress, const char** out);
-typedef bool						          (STDCALL *SetColumnAsScale)             (const char* columnName, double *       scalarData,		size_t length);
-typedef bool				          		(STDCALL *SetColumnAsOrdinal)           (const char* columnName, int *          ordinalData,	size_t length, const char ** levels, size_t numLevels);
-typedef bool          						(STDCALL *SetColumnAsNominal)           (const char* columnName, int *          nominalData,	size_t length, const char ** levels, size_t numLevels);
-typedef bool			          			(STDCALL *SetColumnAsNominalText)       (const char* columnName, const char **	nominalData,	size_t length);
-typedef int				          			(STDCALL *DataSetRowCount)              ();
+typedef bool						(STDCALL *RequestSpecificFileSourceCB)	(const char **root, const char **relativePath);
+typedef bool						(STDCALL *RequestTempFileNameCB)        (const char* extensionAsString, const char **root, const char **relativePath);
+typedef const char*					(STDCALL *RequestTempRootNameCB)        ();
+typedef bool						(STDCALL *RunCallbackCB)                (const char* in, int progress, const char** out);
+typedef bool						(STDCALL *SetColumnAsScale)             (const char* columnName, double *       scalarData,		size_t length);
+typedef bool						(STDCALL *SetColumnAsOrdinal)           (const char* columnName, int *          ordinalData,	size_t length, const char ** levels, size_t numLevels);
+typedef bool						(STDCALL *SetColumnAsNominal)           (const char* columnName, int *          nominalData,	size_t length, const char ** levels, size_t numLevels);
+typedef bool						(STDCALL *SetColumnAsNominalText)       (const char* columnName, const char **	nominalData,	size_t length);
+typedef int							(STDCALL *DataSetRowCount)              ();
 
 
 struct RBridgeCallBacks {
@@ -112,7 +112,7 @@ RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_check();
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_saveImage(const char *name, const char *type, const int height, const int width, const int ppi, const char* imageBackground);
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_editImage(const char *name, const char *type, const int height, const int width, const int ppi);
 
-RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision);
+RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, const char* imageBackground);
 
 
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_check();
