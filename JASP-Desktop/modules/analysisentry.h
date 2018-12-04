@@ -46,6 +46,7 @@ public:
 	Json::Value		asJsonForJaspFile()		const;
 
 	std::string		codedReference()		const;
+	std::string		buttonMenuString()		const;
 
 private:
 	std::string		_title		= "",

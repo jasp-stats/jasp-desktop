@@ -99,8 +99,8 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	static const char *baseCitationFormat	= "JASP Team (%s). JASP (Version %s) [Computer software].";
 	char baseCitation[200];
 	sprintf(baseCitation, baseCitationFormat, buildYear, version);
-    rInside[".baseCitation"] = baseCitation;
-
+	rInside[".baseCitation"]		= baseCitation;
+	rInside[".imageBackground"]		= "transparent"; //a default value
 
 	jaspResults::setSendFunc(sendToDesktopFunction);
 	jaspResults::setPollMessagesFunc(pollMessagesFunction);
@@ -114,6 +114,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside["jasp.analyses"] = Rcpp::List();
 
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");
+	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASPgraphs\"))");
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"modules\"))");
 

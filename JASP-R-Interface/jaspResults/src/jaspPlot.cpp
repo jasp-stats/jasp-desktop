@@ -73,7 +73,7 @@ void jaspPlot::setPlotObject(Rcpp::RObject obj)
 
 	if(!obj.isNULL())
 	{
-		Rcpp::Function tryToWriteImage("tryToWriteImageJaspResults");
+		static Rcpp::Function tryToWriteImage("tryToWriteImageJaspResults");
 		Rcpp::List writeResult = tryToWriteImage(Rcpp::_["width"] = _width, Rcpp::_["height"] = _height, Rcpp::_["plot"] = obj);
 
 		if(writeResult.containsElementNamed("png"))

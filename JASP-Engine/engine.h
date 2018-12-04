@@ -76,7 +76,6 @@ private: // Methods:
 	void receiveComputeColumnMessage(	Json::Value jsonRequest);
 	void receiveModuleRequestMessage(	Json::Value jsonRequest);
 
-	void runModuleRequest();
 	void runComputeColumn(	std::string computeColumnName, std::string computeColumnCode, Column::ColumnType computeColumnType);
 	void runAnalysis();
 	void runFilter(			std::string filter, std::string generatedFilter, int filterRequestId);

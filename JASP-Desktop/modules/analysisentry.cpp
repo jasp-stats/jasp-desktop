@@ -32,7 +32,7 @@ AnalysisEntry::AnalysisEntry(Json::Value & analysisEntry, RibbonEntry * parentRi
 
 DynamicModule*	AnalysisEntry::dynamicModule() const
 {
-	return _ribbonEntry->dynamicModule();
+	return _ribbonEntry == NULL ? NULL : _ribbonEntry->dynamicModule();
 }
 
 std::string AnalysisEntry::qmlFilePath() const
@@ -85,6 +85,11 @@ std::string AnalysisEntry::codedReference() const
 				coded    = modName + '~' + ribTitle + '~' + title();
 
 	return coded;
+}
+
+std::string	AnalysisEntry::buttonMenuString() const
+{
+	return dynamicModule() == NULL ? function() : codedReference();
 }
 
 } // namespace Modules
