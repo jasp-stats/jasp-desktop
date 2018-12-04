@@ -117,10 +117,10 @@ void RegressionLinearBayesianForm::defaultOptions()
 
 void RegressionLinearBayesianForm::defaultOptionsModelPrior()
 {
-	ui->label_betaBinomialParamA->hide();
-	ui->label_betaBinomialParamB->hide();
-	ui->betaBinomialParamA->hide();
-	ui->betaBinomialParamB->hide();
+    ui->label_betaBinomialParamA->show();
+    ui->label_betaBinomialParamB->show();
+    ui->betaBinomialParamA->show();
+    ui->betaBinomialParamB->show();
 	ui->label_bernoulliParam->hide();
 	ui->bernoulliParam->hide();
 }
