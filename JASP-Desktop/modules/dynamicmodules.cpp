@@ -204,7 +204,7 @@ Modules::AnalysisEntry* DynamicModules::retrieveCorrespondingAnalysisEntry(const
 
 Modules::AnalysisEntry*	DynamicModules::retrieveCorrespondingAnalysisEntry(const std::string & codedReference)
 {
-	auto parts = Utils::splitString(codedReference, '~');
+    auto parts = stringUtils::splitString(codedReference, '~');
 
 	if(parts.size() != 3)
 		return nullptr;

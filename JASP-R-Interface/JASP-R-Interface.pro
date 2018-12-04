@@ -18,7 +18,6 @@ windows:QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_TARGET'*.lib' $$OU
 macx: QMAKE_CLEAN +=$$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.dylib'
 
 include(../R_HOME.pri)
-INCLUDEPATH += ../../boost_1_64_0
 INCLUDEPATH += ../JASP-Common
 
 win32: LIBS += -L$$_R_HOME/bin/$$ARCH -lR
