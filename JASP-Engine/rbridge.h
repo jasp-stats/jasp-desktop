@@ -70,7 +70,7 @@ extern "C" {
 	void rbridge_setJaspResultsFileSource(	boost::function<void(std::string &, std::string &)> source);
 	void rbridge_setDataSetSource(			boost::function<DataSet *()> source);
 
-	std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, const std::string &perform, int ppi, int analysisID, int analysisRevision);
+	std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, const std::string &perform, int ppi, int analysisID, int analysisRevision, const std::string &imageBackground);
 
 	void rbridge_setColumnDataAsScaleSource(		boost::function<bool(std::string&, std::vector<double>&)>							source);
 	void rbridge_setColumnDataAsOrdinalSource(		boost::function<bool(std::string&, std::vector<int>&, std::map<int, std::string>&)>	source);

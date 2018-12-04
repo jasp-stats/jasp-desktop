@@ -392,7 +392,7 @@ void Engine::runAnalysis()
 	_currentAnalysisKnowsAboutChange	= false;
 
 	_analysisResultsString = _dynamicModuleCall != "" ?
-			rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey, perform, _ppi, _analysisId, _analysisRevision)
+			rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey, perform, _ppi, _analysisId, _analysisRevision, _imageBackground)
 		:	rbridge_run(_analysisName, _analysisTitle, _analysisRFile, _analysisRequiresInit, _analysisDataKey, _analysisOptions, _analysisResultsMeta, _analysisStateKey, _analysisId, _analysisRevision, perform, _ppi, _imageBackground, callback, _analysisJaspResults);
 
 	if (_analysisStatus == initing || _analysisStatus == running)  // if status hasn't changed
