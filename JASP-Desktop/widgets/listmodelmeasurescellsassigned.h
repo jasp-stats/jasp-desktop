@@ -29,11 +29,10 @@ class ListModelMeasuresCellsAssigned : public ListModelAssignedInterface
 public:
 	ListModelMeasuresCellsAssigned(QMLListView* listView);
 
-	virtual int rowCount(const QModelIndex &parent) const OVERRIDE;
+	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
 
-	void initLevels(const Terms& levels, bool refreshModel = true);
-	void initVariables(const Terms& variables);
+	void initLevels(const Terms& levels, const Terms &variables = Terms(), bool initVariables = false);
 	
 	virtual Terms* termsFromIndexes(const QList<int> &indexes) const OVERRIDE;	
 	virtual Terms* addTerms(Terms* terms, int dropItemIndex = -1)  OVERRIDE;

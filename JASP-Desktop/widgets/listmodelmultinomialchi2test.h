@@ -50,7 +50,7 @@ public:
 				const QVector<QVector<double> >& values() const { return _values; }
 				const QVector<QString>&	rowNames() const { return _rowNames; }
 				const QVector<QString>& colNames() const { return _colNames; }
-				void				initValues(const std::vector<std::vector<double> >& values);
+				void				initValues(const std::vector<std::string>& colNames, std::vector<std::string>& levels, const std::vector<std::vector<double> >& values);
 				
 public slots:	
 	virtual void syncTermsChanged(Terms* termsAdded, Terms* termsRemoved) OVERRIDE;

@@ -71,7 +71,7 @@ Form {
                 Layout.leftMargin: 15
                 enabled: descriptives.checked
                 CheckBox { text: qsTr("Confidence interval"); name: "confidenceInterval" }
-                PercentField { name: "confidenceIntervalInterval"; value: "0.95" }
+                PercentField { name: "confidenceIntervalInterval"; value: "95" }
             }
             CheckBox { text: qsTr("Vovk-Dellke maximum p-ratio"); name: "VovkSellkeMPR" }
         }

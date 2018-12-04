@@ -65,8 +65,8 @@ JASPControl
         
     signal itemDoubleClicked(int index);
     signal itemsDropped(var indexes, var dropList, int dropItemIndex);
-    signal removeRowWithControls(string name);
-    signal addRowWithControls(string name, var columns);    
+    signal removeRowWithControls(int id, string name);
+    signal addRowWithControls(int id, string name, var columns);    
         
     function selectedItemsChanged() {
         hasSelectedItems = (listView.selectedItems.length > 0);
@@ -380,6 +380,7 @@ JASPControl
                 property int offsetX: 0
                 property int offsetY: 0
                 property int rank: index
+                property int uniqueId // Do not set it here to index, but in the onCompleted event 
                 property bool containsDragItem: listView.itemContainingDrag === itemRectangle
                 property bool draggable: !variablesList.dragOnlyVariables || model.type === "variable"
 
@@ -555,10 +556,11 @@ JASPControl
             
             Component.onDestruction: {
                 if (variablesList.hasExtraControlColumns)
-                    removeRowWithControls(colName.text);
+                    removeRowWithControls(itemRectangle.uniqueId, colName.text);
             }
             
             Component.onCompleted: {
+                itemRectangle.uniqueId = index; // this is done here so that uniqueId is not bound to index
                 if (variablesList.hasExtraControlColumns) {
                     var length = variablesList.controlColumns.length;
                     var previousColumn;
@@ -576,7 +578,7 @@ JASPControl
                         previousColumn = newControl;
                     }
                     
-                    addRowWithControls(colName.text, controls);
+                    addRowWithControls(itemRectangle.uniqueId, colName.text, controls);
                 }
             }
         }

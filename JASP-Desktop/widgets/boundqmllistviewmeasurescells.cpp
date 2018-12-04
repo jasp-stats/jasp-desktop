@@ -46,8 +46,7 @@ BoundQMLListViewMeasuresCells::BoundQMLListViewMeasuresCells(QQuickItem* item, A
 void BoundQMLListViewMeasuresCells::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionVariables *>(option);
-	_measuresCellsModel->initLevels(getLevels(), false);
-	_measuresCellsModel->initVariables(_boundTo->value());
+	_measuresCellsModel->initLevels(getLevels(), _boundTo->value(), true);
 }
 
 const Terms& BoundQMLListViewMeasuresCells::getLevels()

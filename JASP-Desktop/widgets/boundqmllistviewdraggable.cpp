@@ -79,8 +79,8 @@ void BoundQMLListViewDraggable::setUp()
 		// The QML VariableList adds automatically the controls dynamically
 		// This class had to build the right Bound objects and associate them with each control
 		// The concrete classes (BoundQMLListViewAnovaModels and BoundQMLListViewTerms) will have to bind the options with the bound objects.
-		QQuickItem::connect(_item, SIGNAL(removeRowWithControls(QString)), this, SLOT(removeRowWithControlsHandler(QString)));
-		QQuickItem::connect(_item, SIGNAL(addRowWithControls(QString, QVariant)), this, SLOT(addRowWithControlsHandler(QString, QVariant)));	
+		QQuickItem::connect(_item, SIGNAL(removeRowWithControls(int, QString)), this, SLOT(removeRowWithControlsHandler(int, QString)));
+		QQuickItem::connect(_item, SIGNAL(addRowWithControls(int, QString, QVariant)), this, SLOT(addRowWithControlsHandler(int, QString, QVariant)));	
 	}
 	ListModel* sourceModel = _form->getRelatedModel(this);
 	if (!sourceModel)
@@ -136,20 +136,22 @@ void BoundQMLListViewDraggable::addExtraOptions(Options *options)
 	
 }
 
-
-void BoundQMLListViewDraggable::removeRowWithControlsHandler(QString termName)
-{
-	if (_rowsWithControls.contains(termName))
+void BoundQMLListViewDraggable::removeRowWithControlsHandler(int index, QString name)
+{	
+	qDebug() << "Remove index " << index << ", name " << name;
+	if (_rowsWithControls.contains(name))
 	{
-		_cachedRowsWithControls[termName] = _rowsWithControls[termName];
-		_rowsWithControls.remove(termName);
+		_cachedRows.insert(name, qMakePair(index, _rowsWithControls[name]));
+		_rowsWithControls.remove(name);
+		_addedRows.remove(name);
 	}
 	else
-		qDebug() << termName + " is unknown!!!";	
+		qDebug() << "removeRowWithControlsHandler: Row " << name << " is unknown!!!";	
 }
 
-void BoundQMLListViewDraggable::addRowWithControlsHandler(QString termName, QVariant controls)
+void BoundQMLListViewDraggable::addRowWithControlsHandler(int index, QString name, QVariant controls)
 {
+	qDebug() << "Add index " << index << ", name " << name;
 	QList<QVariant> controlList = controls.toList();
 	QMap<QString, QQuickItem*> controlItems;
 	
@@ -158,29 +160,85 @@ void BoundQMLListViewDraggable::addRowWithControlsHandler(QString termName, QVar
 		QQuickItem* controlItem = qvariant_cast<QQuickItem *>(controlVariant);
 		QString controlName = controlItem->property("name").toString();
 		if (controlName.isEmpty())
-			addError(QString::fromLatin1("An Extra control Column in ") + name() + QString::fromLatin1(" has no name"));
+			addError(QString::fromLatin1("An Extra control Column in ") + this->name() + QString::fromLatin1(" has no name"));
 		else
 			controlItems[controlName] = controlItem;
 	}
-	
-	QMap<QString, BoundQMLItem *> row;
-	if (_cachedRowsWithControls.contains(termName))
+
+	_addedRows.insert(name, qMakePair(index, controlItems));
+
+	// When all rows have been added in QML, map them with the right BoundItems
+	if (model()->rowCount() == index + 1)
 	{
-		row = _cachedRowsWithControls[termName];
-		QMapIterator<QString, QQuickItem*> it(controlItems);
-		while (it.hasNext()) {
-			it.next();
-			BoundQMLItem* boundItem = row[it.key()];
-			if (!boundItem)
-				qDebug() << "Cached Row does not have " << it.key();
-			else
-				boundItem->resetQMLItem(it.value());
-				
+		_rowsWithControls.clear();
+		_mapRowsWithBoundItems();
+		_cachedRows.clear();
+		_addedRows.clear();
+	}
+}
+	
+void BoundQMLListViewDraggable::_mapRowsWithBoundItems()
+{
+	qDebug() << "Map rows with Bound Items";
+	QMap<int, QPair<QString, QMap<QString, QQuickItem*> > > rowsNotFound;
+	
+	// First find the rows in the cache with the same name
+	QMapIterator<QString, RowQuickItemType> addedRowsIt(_addedRows);	
+	while(addedRowsIt.hasNext())
+	{
+		addedRowsIt.next();
+		QString name = addedRowsIt.key();
+		const RowQuickItemType& row = addedRowsIt.value();
+		int index = row.first;
+		const QMap<QString, QQuickItem*>& quickItems = row.second;
+		
+		if (_cachedRows.contains(name))
+		{
+			qDebug() << "A cached row had been found for " << name;
+			QMap<QString, BoundQMLItem*>& cachedRow = _cachedRows[name].second;
+			_resetQuickItems(quickItems, cachedRow);
+			_rowsWithControls[name] = cachedRow;
+			_cachedRows.remove(name);
+		}
+		else
+			rowsNotFound[index] = qMakePair(name, quickItems);
+	}
+	
+	// It there are some rows not found via the name of the variable,
+	// Check if there is a cached row having the same index
+	if (rowsNotFound.size() > 0 && _cachedRows.size() > 0)
+	{
+		QMap<int, QMap<QString, BoundQMLItem*> > remainingCachedRows;
+		QMapIterator<QString, RowBoundItemType> cachedRowsIt(_cachedRows);
+		while (cachedRowsIt.hasNext())
+		{
+			cachedRowsIt.next();
+			const RowBoundItemType& cachedRow = cachedRowsIt.value();
+			remainingCachedRows[cachedRow.first] = cachedRow.second;
+		}
+		
+		QMapIterator<int, QMap<QString, BoundQMLItem*> > remainingCachedRowsIt(remainingCachedRows);
+		while (remainingCachedRowsIt.hasNext())
+		{
+			remainingCachedRowsIt.next();
+			int index = remainingCachedRowsIt.key();
+			if (rowsNotFound.contains(index))
+			{
+				qDebug() << "Rows index " << index << " has apparently a new name: " << rowsNotFound[index].first;
+				const QMap<QString, BoundQMLItem*>& cachedRow = remainingCachedRowsIt.value();
+				_resetQuickItems(rowsNotFound[index].second, cachedRow);
+				_rowsWithControls[rowsNotFound[index].first] = cachedRow;
+				rowsNotFound.remove(index);
+			}
 		}
 	}
-	else
-	{
-		for (QQuickItem* controlItem : controlItems)
+	
+	// If there are still some rows not found in the cache: build the BoundItem
+	for (const QPair<QString, QMap<QString, QQuickItem*> >& quickItemRow : rowsNotFound.values())
+	{	
+		QString name = quickItemRow.first;
+		QMap<QString, BoundQMLItem*> boundItemRow;
+		for (QQuickItem* controlItem : quickItemRow.second.values())
 		{
 			QString controlTypeStr = QQmlProperty(controlItem, "controlType").read().toString();
 			if (controlTypeStr.isEmpty())
@@ -205,9 +263,23 @@ void BoundQMLListViewDraggable::addRowWithControlsHandler(QString termName, QVar
 			if (boundQMLItem)
 			{
 				boundQMLItem->setUp();
-				row[boundQMLItem->name()] = boundQMLItem;
+				boundItemRow[boundQMLItem->name()] = boundQMLItem;
 			}
 		}
+		qDebug() << "A new row has been added " << name;
+		_rowsWithControls[name] = boundItemRow;
 	}
-	_rowsWithControls[termName] = row;
+}
+
+void BoundQMLListViewDraggable::_resetQuickItems(const QMap<QString, QQuickItem*>& quickItems, const QMap<QString, BoundQMLItem*>& boundItems)
+{
+	QMapIterator<QString, QQuickItem*> quickItemsIt(quickItems);
+	while (quickItemsIt.hasNext()) {
+		quickItemsIt.next();
+		BoundQMLItem* boundItem = boundItems[quickItemsIt.key()];
+		if (!boundItem)
+			qDebug() << "Cached Row does not have " << quickItemsIt.key();
+		else
+			boundItem->resetQMLItem(quickItemsIt.value());
+	}
 }

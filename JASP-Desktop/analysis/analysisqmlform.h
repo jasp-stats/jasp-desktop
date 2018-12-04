@@ -36,7 +36,7 @@ public:
 	ListModel*	getRelatedModel(QMLListView* listView)	{ return _relatedModelMap[listView]; }
 	ListModel*	getModel(const QString& modelName)		{ return _modelMap[modelName]; }
 	Options*	getAnalysisOptions()					{ return _analysis->options(); }
-	BoundQMLItem* getBoundItem(const QString& name)		{ return _boundItems[name]; }
+	QMLItem*	getControl(const QString& name)			{ return _controls[name]; }
 	DataSet*	getDataSet()							{ return _dataSet; }
 
 public slots:
@@ -50,7 +50,7 @@ protected:
 	
 private:
 	void		_parseQML();
-	void		_setUpItems(QList<QMLItem*>& items);
+	void		_setUpItems();
 	void		_setErrorMessages();
 
 private slots:
@@ -60,7 +60,7 @@ private slots:
 protected:	
 	QQuickWidget							*_quickWidget;
 	Analysis								*_analysis;
-	QMap<QString, BoundQMLItem* >			_boundItems;
+	QMap<QString, QMLItem* >				_controls;
 	QVector<BoundQMLItem*>					_boundItemsOrdered;
 	std::map<QMLListView*, ListModel* >		_relatedModelMap;
 	std::vector<ListModelTermsAvailable* >	_availableVariablesModels;

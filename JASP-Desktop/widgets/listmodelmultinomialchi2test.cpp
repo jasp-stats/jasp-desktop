@@ -155,8 +155,14 @@ void ListModelMultinomialChi2Test::itemChanged(int column, int row, double value
 	}
 }
 
-void ListModelMultinomialChi2Test::initValues(const std::vector<std::vector<double> > &values)
+void ListModelMultinomialChi2Test::initValues(const std::vector<std::string>& colNames, std::vector<std::string>& levels, const std::vector<std::vector<double> > &values)
 {
+	_columnCount = colNames.size();
+	for (std::string colName : colNames)
+		_colNames.push_back(QString::fromStdString(colName));
+	for (std::string level : levels)
+		_rowNames.push_back(QString::fromStdString(level));
+	
 	if (values.size() != _columnCount)
 		addError("Wrong number of columns for Chi2 Test!!!");
 	else if (values.size() > 0 && values[0].size() != _rowNames.size())
@@ -164,7 +170,7 @@ void ListModelMultinomialChi2Test::initValues(const std::vector<std::vector<doub
 		
 	beginResetModel();
 	
-	for (int i = values.size(); i < _columnCount; ++i)
+	for (int i = 0; i < values.size(); ++i)
 	{
 		QVector<double> colValues;
 		for (double val : values[i])
@@ -179,6 +185,7 @@ void ListModelMultinomialChi2Test::initValues(const std::vector<std::vector<doub
 		QVector<double> extraColumn(_rowNames.length(), 1);
 		_values.push_back(extraColumn);
 	}
+	
 	endResetModel();
 }
 
