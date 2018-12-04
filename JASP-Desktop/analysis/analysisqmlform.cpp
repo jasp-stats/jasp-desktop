@@ -36,7 +36,6 @@
 #include "widgets/boundqmlfactorslist.h"
 #include "widgets/boundqmltableview.h"
 #include "widgets/qmllistviewtermsavailable.h"
-
 #include "widgets/listmodeltermsavailable.h"
 
 #include "utilities/qutils.h"
@@ -124,7 +123,7 @@ QString AnalysisQMLForm::_getAnalysisQMLPath()
 
 void AnalysisQMLForm::rScriptDoneHandler(QVariant key, const QString &result)
 {
-	BoundQMLItem* item = getBoundItem(key.toString());
+	BoundQMLItem* item = dynamic_cast<BoundQMLItem*>(getControl(key.toString()));
 	if (item)
 		item->rScriptDoneHandler(result);
 #ifdef JASP_DEBUG
@@ -141,32 +140,31 @@ void AnalysisQMLForm::_parseQML()
 	_analysis->setUsesJaspResults(QQmlProperty(root, "usesJaspResults").read().toBool());
 	
 	map<QString, QString>	dropKeyMap;
-	QList<QString>			controls;
-	QList<QMLItem*>			items;
+	QList<QString>			controlNames;
 		
-	for (QQuickItem* item : root->findChildren<QQuickItem *>())
+	for (QQuickItem* quickItem : root->findChildren<QQuickItem *>())
 	{
-		if (item->objectName() == "errorMessagesBox")
+		if (quickItem->objectName() == "errorMessagesBox")
 		{
-			_errorMessagesItem = item;
+			_errorMessagesItem = quickItem;
 			continue;			
 		}
 		
-		QString controlTypeStr = QQmlProperty(item, "controlType").read().toString();
+		QString controlTypeStr = QQmlProperty(quickItem, "controlType").read().toString();
 		if (controlTypeStr.isEmpty())
 			continue;
 		
-		if (! QQmlProperty(item, "isBound").read().toBool())
+		if (! QQmlProperty(quickItem, "isBound").read().toBool())
 			continue;
 		
 #ifndef QT_DEBUG
-		bool isDebug = QQmlProperty(item, "debug").read().toBool();
+		bool isDebug = QQmlProperty(quickItem, "debug").read().toBool();
 		if (isDebug)
 			continue;
 #endif
 		
-		bool isVisible = QQmlProperty(item, "visible").read().toBool();
-		QString controlName = QQmlProperty(item, "name").read().toString();
+		bool isVisible = QQmlProperty(quickItem, "visible").read().toBool();
+		QString controlName = QQmlProperty(quickItem, "name").read().toString();
 		
 		if (isVisible)
 		{
@@ -175,15 +173,15 @@ void AnalysisQMLForm::_parseQML()
 				_errorMessages.append(QString::fromLatin1("A control ") + controlTypeStr + QString::fromLatin1(" has no name"));
 				continue;
 			}
-			if (controls.contains(controlName))
+			if (controlNames.contains(controlName))
 			{
 				_errorMessages.append(QString::fromLatin1("2 controls have the same name: ") + controlName);
 				continue;
 			}
-			controls.append(controlName);
+			controlNames.append(controlName);
 		}
 		
-		BoundQMLItem *boundQMLItem = NULL;
+		QMLItem *control = NULL;
 		qmlControlType controlType = qmlControlTypeFromQString(controlTypeStr);
 
 		if (!isVisible && controlType == qmlControlType::VariablesListView)
@@ -192,14 +190,14 @@ void AnalysisQMLForm::_parseQML()
 		switch(controlType)
 		{
 		case qmlControlType::CheckBox:			//fallthrough:
-		case qmlControlType::Switch:			boundQMLItem = new BoundQMLCheckBox(item,		this);	break;
-		case qmlControlType::TextField:			boundQMLItem = new BoundQMLTextInput(item,		this);	break;
-		case qmlControlType::ButtonGroup:		boundQMLItem = new BoundQMLRadioButtons(item,	this);	break;
-		case qmlControlType::Slider:			boundQMLItem = new BoundQMLSlider(item,			this);	break;
+		case qmlControlType::Switch:			control = new BoundQMLCheckBox(quickItem,		this);	break;
+		case qmlControlType::TextField:			control = new BoundQMLTextInput(quickItem,		this);	break;
+		case qmlControlType::ButtonGroup:		control = new BoundQMLRadioButtons(quickItem,	this);	break;
+		case qmlControlType::Slider:			control = new BoundQMLSlider(quickItem,			this);	break;
 		case qmlControlType::TextArea:
 		{
-			BoundQMLTextArea* boundQMLTextArea = new BoundQMLTextArea(item,	this);
-			boundQMLItem = boundQMLTextArea;
+			BoundQMLTextArea* boundQMLTextArea = new BoundQMLTextArea(quickItem,	this);
+			control = boundQMLTextArea;
 			ListModelTermsAvailable* allVariablesModel = boundQMLTextArea->allVariablesModel();
 			if (allVariablesModel)
 				_allAvailableVariablesModels.push_back(allVariablesModel);
@@ -207,9 +205,8 @@ void AnalysisQMLForm::_parseQML()
 		}
 		case qmlControlType::ComboBox:
 		{
-			BoundQMLComboBox* boundQMLComboBox = new BoundQMLComboBox(item, this);
-			items.push_back(boundQMLComboBox);
-			boundQMLItem = boundQMLComboBox;
+			BoundQMLComboBox* boundQMLComboBox = new BoundQMLComboBox(quickItem, this);
+			control = boundQMLComboBox;
 			ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(boundQMLComboBox->model());
 			if (availableModel)
 			{
@@ -220,23 +217,21 @@ void AnalysisQMLForm::_parseQML()
 		}
 		case qmlControlType::FactorsList:
 		{
-			BoundQMLFactorsList* factorList = new BoundQMLFactorsList(item, this);
-			boundQMLItem = factorList;
+			BoundQMLFactorsList* factorList = new BoundQMLFactorsList(quickItem, this);
+			control = factorList;
 			_modelMap[controlName] = factorList->model();
-			items.push_back(factorList);
 			break;
 		}
 		case qmlControlType::TableView:
 		{
-			BoundQMLTableView* tableView = new BoundQMLTableView(item, this);
-			boundQMLItem = tableView;
-			items.push_back(tableView);
+			BoundQMLTableView* tableView = new BoundQMLTableView(quickItem, this);
+			control = tableView;
 			break;
 		}
 		case qmlControlType::VariablesListView:
 		{
 			QMLListView* listView = NULL;
-			QString			listViewTypeStr = QQmlProperty(item, "listViewType").read().toString();
+			QString			listViewTypeStr = QQmlProperty(quickItem, "listViewType").read().toString();
 			qmlListViewType	listViewType;
 
 			try							{ listViewType	= qmlListViewTypeFromQString(listViewTypeStr);	}
@@ -244,13 +239,13 @@ void AnalysisQMLForm::_parseQML()
 
 			switch(listViewType)
 			{
-			case qmlListViewType::AssignedVariables:	listView = new BoundQMLListViewTerms(item, this); break;
-			case qmlListViewType::AssignedPairs:		listView = new BoundQMLListViewPairs(item,this); break;
-			case qmlListViewType::AssignedAnova:		listView = new BoundQMLListViewAnovaModels(item, this); break;
-			case qmlListViewType::MeasuresCells:		listView = new BoundQMLListViewMeasuresCells(item, this); break;
+			case qmlListViewType::AssignedVariables:	listView = new BoundQMLListViewTerms(quickItem, this); break;
+			case qmlListViewType::AssignedPairs:		listView = new BoundQMLListViewPairs(quickItem,this); break;
+			case qmlListViewType::AssignedAnova:		listView = new BoundQMLListViewAnovaModels(quickItem, this); break;
+			case qmlListViewType::MeasuresCells:		listView = new BoundQMLListViewMeasuresCells(quickItem, this); break;
 			case qmlListViewType::AvailableVariables:
 			{
-				QMLListViewTermsAvailable* availableVariablesListView = new QMLListViewTermsAvailable(item, this);
+				QMLListViewTermsAvailable* availableVariablesListView = new QMLListViewTermsAvailable(quickItem, this);
 				listView = availableVariablesListView;
 				ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(availableVariablesListView->model());
 				_availableVariablesModels.push_back(availableModel);
@@ -265,16 +260,16 @@ void AnalysisQMLForm::_parseQML()
 			}
 			
 			_modelMap[controlName] = listView->model();
-			items.push_back(listView);
-			boundQMLItem = dynamic_cast<BoundQMLItem*>(listView);
-			QList<QVariant> dropKeyList = QQmlProperty(item, "dropKeys").read().toList();
-			QString dropKey				= dropKeyList.isEmpty() ? QQmlProperty(item, "dropKeys").read().toString() : dropKeyList[0].toString(); // The first key gives the default drop item.
+			control = dynamic_cast<QMLItem*>(listView);
+				
+			QList<QVariant> dropKeyList = QQmlProperty(quickItem, "dropKeys").read().toList();
+			QString dropKey				= dropKeyList.isEmpty() ? QQmlProperty(quickItem, "dropKeys").read().toString() : dropKeyList[0].toString(); // The first key gives the default drop item.
 			
 			if (!dropKey.isEmpty())
 				dropKeyMap[controlName] = dropKey;
 			else
 			{
-				bool draggable = QQmlProperty(item, "draggabble").read().toBool();
+				bool draggable = QQmlProperty(quickItem, "draggabble").read().toBool();
 				if (draggable)
 					_errorMessages.append(QString::fromLatin1("No drop key found for ") + controlName);
 			}
@@ -286,8 +281,8 @@ void AnalysisQMLForm::_parseQML()
 			_errorMessages.append(QString::fromLatin1("Unknown type of JASPControl ") + controlName + QString::fromLatin1(" : ") + controlTypeStr);			
 		}
 		
-		if (boundQMLItem)
-			_boundItems[boundQMLItem->name()] = boundQMLItem;
+		if (control)
+			_controls[control->name()] = control;
 	}
 	
 	for (auto const& pair : dropKeyMap)
@@ -304,7 +299,7 @@ void AnalysisQMLForm::_parseQML()
 			_errorMessages.append(QString::fromLatin1("Cannot find a ListView for ") + (!sourceModel ? pair.first : pair.second));
 	}
 	
-	_setUpItems(items);
+	_setUpItems();
 	
 	if (!_errorMessagesItem)
 		qDebug() << "No errorMessages Item found!!!";
@@ -312,15 +307,16 @@ void AnalysisQMLForm::_parseQML()
 	_setErrorMessages();
 }
 
-void AnalysisQMLForm::_setUpItems(QList<QMLItem *> &items)
+void AnalysisQMLForm::_setUpItems()
 {
-	for (QMLItem* item : items)
-		item->setUp();
+	QList<QMLItem*> controls = _controls.values();
+	for (QMLItem* control : controls)
+		control->setUp();
 	
 	// set the order of the BoundItems according to their dependencies (for binding purpose)
-	for (QMLItem* item : items)
+	for (QMLItem* control : controls)
 	{
-		QVector<QMLItem*> depends = item->depends();
+		QVector<QMLItem*> depends = control->depends();
 		int index = 0;
 		while (index < depends.length())
 		{
@@ -328,24 +324,27 @@ void AnalysisQMLForm::_setUpItems(QList<QMLItem *> &items)
 			const QVector<QMLItem*>& dependdepends = depend->depends();
 			for (QMLItem* dependdepend : dependdepends)
 			{
-				if (dependdepend == item)
-					addError(tq("Circular dependency between control ") + item->name() + tq(" and ") + depend->name());
+				if (dependdepend == control)
+					addError(tq("Circular dependency between control ") + control->name() + tq(" and ") + depend->name());
 				else
 				{
-					if (item->addDependency(dependdepend))
+					if (control->addDependency(dependdepend))
 						depends.push_back(dependdepend);
 				}
 			}
 			index++;
 		}
 	}
-	std::sort(items.begin(), items.end(), 
-			  [](QMLItem* a, QMLItem* b) { return !a->depends().contains(b); });
+	std::sort(controls.begin(), controls.end(), 
+			  [](QMLItem* a, QMLItem* b) { 
+					return a->depends().length() > b->depends().length(); 
+			});
 	
-	for (QMLItem* item : items)
+	for (QMLItem* control : controls)
 	{
-		if (_boundItems.contains(item->name()))
-			_boundItemsOrdered.push_back(_boundItems[item->name()]);
+		BoundQMLItem* boundItem = dynamic_cast<BoundQMLItem*>(control);
+		if (boundItem)
+			_boundItemsOrdered.push_back(boundItem);
 	}	
 }
 
@@ -427,7 +426,7 @@ void AnalysisQMLForm::unbind()
 	if (_options == NULL)
 		return;
 	
-	for (BoundQMLItem* item : _boundItems.values())
+	for (BoundQMLItem* item : _boundItemsOrdered)
 		item->unbind();
 
 	_options = NULL;
@@ -458,7 +457,7 @@ void AnalysisQMLForm::statusChangedWidgetHandler(QQuickWidget::Status status)
 void AnalysisQMLForm::QMLFileModifiedHandler(QString path)
 {
 	qDebug() << "Test QML file modified";
-	_boundItems.empty();
+	_controls.empty();
 	_relatedModelMap.empty();
 	_availableVariablesModels.empty();
 	_modelMap.empty();

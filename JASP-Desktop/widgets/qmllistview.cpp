@@ -37,7 +37,6 @@ void QMLListView::setUp()
 {
 	QMLItem::setUp();
 	
-	
 	ListModel* listModel = model();
 	if (!listModel)
 		return;
@@ -45,7 +44,7 @@ void QMLListView::setUp()
 	if (_syncModelsList.isEmpty())
 	{
 		if (_needsSyncModels)
-			addError(QString::fromLatin1("Needs sync model for VariablesTable ") + name());
+			addError(QString::fromLatin1("Needs sync model for VariablesList ") + name());
 	}
 	else
 	{

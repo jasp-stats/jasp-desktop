@@ -27,7 +27,7 @@ class ListModelFactors : public ListModel
 public:
 	
 	ListModelFactors(QMLListView* listView);
-	virtual int rowCount(const QModelIndex &parent) const OVERRIDE;
+	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
 	
 	void initFactors(const std::vector<std::pair<std::string, std::vector<std::string> > > &factors);

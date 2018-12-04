@@ -30,10 +30,9 @@ ListModelMeasuresCellsAssigned::ListModelMeasuresCellsAssigned(QMLListView* list
 {
 }
 
-void ListModelMeasuresCellsAssigned::initLevels(const Terms &levels, bool refreshModel)
+void ListModelMeasuresCellsAssigned::initLevels(const Terms &levels, const Terms &variables, bool initVariables)
 {
-	if (refreshModel)
-		beginResetModel();
+	beginResetModel();
 	_levels.clear();
 	
 	vector<vector<string> > allLevels = levels.asVectorOfVectors();
@@ -48,20 +47,15 @@ void ListModelMeasuresCellsAssigned::initLevels(const Terms &levels, bool refres
 		_levels.push_back(QString::fromStdString(concatLevels));
 	}
 	
+	if (initVariables)
+		_variables = variables.asQList();
+	
 	while (_variables.size() < _levels.size())
 		_variables.push_back(QString());
 	
 	while (_variables.size() > _levels.size())
 		_variables.pop_back();
 	
-	if (refreshModel)
-		endResetModel();
-}
-
-void ListModelMeasuresCellsAssigned::initVariables(const Terms &variables)
-{
-	beginResetModel();
-	_variables = variables.asQList();
 	endResetModel();
 }
 

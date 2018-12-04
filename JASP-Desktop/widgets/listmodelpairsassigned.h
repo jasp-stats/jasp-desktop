@@ -27,7 +27,7 @@ class ListModelPairsAssigned: public ListModelAssignedInterface
 public:
 	ListModelPairsAssigned(QMLListView* listView);
 	
-	virtual int rowCount(const QModelIndex &parent) const OVERRIDE;
+	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
 
 	virtual Terms* termsFromIndexes(const QList<int> &indexes) const OVERRIDE;

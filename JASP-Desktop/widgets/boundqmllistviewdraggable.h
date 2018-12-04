@@ -29,13 +29,15 @@ class ListModelAssignedInterface;
 class BoundQMLListViewDraggable : public QMLListViewDraggable, public BoundQMLItem
 {
 	Q_OBJECT
+	
+	typedef QPair<int, QMap<QString, BoundQMLItem*> > RowBoundItemType;
+	typedef QPair<int, QMap<QString, QQuickItem*> > RowQuickItemType;
+	
 public:
 	BoundQMLListViewDraggable(QQuickItem* item, AnalysisQMLForm* form);
 	
 	virtual void setUp() OVERRIDE;
 	
-	const QMap<QString, QMap<QString, BoundQMLItem*> >& rowsWithControls() const	{ return _rowsWithControls; }	
-
 protected:
 	ListModelAvailableInterface* _sourceModel;
 	ListModelAssignedInterface* assignedModel();
@@ -43,19 +45,20 @@ protected:
 	bool _hasExtraControlColumns;
 	QMap<QString, QMap<QString, QString> > _extraControlColumns;
 	QMap<QString, QMap<QString, BoundQMLItem*> > _rowsWithControls;
-	QMap<QString, QMap<QString, BoundQMLItem*> > _cachedRowsWithControls;
 	
 	void addExtraOptions(Options* options);
 	
 protected slots:
-	void removeRowWithControlsHandler(QString term);
-	void addRowWithControlsHandler(QString termName, QVariant controls);
+	void removeRowWithControlsHandler(int index, QString name);
+	void addRowWithControlsHandler(int index, QString name, QVariant controls);
 
 private:
 	Terms _tempTerms;
+	QMap<QString, RowBoundItemType> _cachedRows;
+	QMap<QString, RowQuickItemType> _addedRows;
 	
-	
-	
+	void _mapRowsWithBoundItems();
+	void _resetQuickItems(const QMap<QString, QQuickItem*>& quickItems, const QMap<QString, BoundQMLItem*>& boundItems);
 };
 
 #endif // BOUNDQMLLISTVIEWDRAGGABLE_H

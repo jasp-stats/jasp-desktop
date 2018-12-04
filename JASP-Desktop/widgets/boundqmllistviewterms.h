@@ -56,7 +56,7 @@ private:
 	ListModelTermsAssigned* _variablesModel;
 	bool _singleItem;
 	
-	void _connectControlOptions();		
+	void _connectExtraControlOptions();		
 };
 
 #endif // BOUNDQMLLISTVIEWTERMS_H

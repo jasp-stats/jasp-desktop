@@ -48,12 +48,13 @@ public:
 
 	void addError(const QString& error) const;
 
-	virtual int rowCount(const QModelIndex &parent) const OVERRIDE;
-	virtual int columnCount(const QModelIndex &parent) const OVERRIDE { return 1; }
+	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
+	virtual int columnCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE { return 1; }
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;	
 
 	virtual void refresh();
 	virtual void initTerms(const Terms &terms);
+	virtual Terms getSyncTerms();
 
 signals:
 	void modelChanged(Terms* added = NULL, Terms* removed = NULL);

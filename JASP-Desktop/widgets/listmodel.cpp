@@ -60,20 +60,23 @@ void ListModel::initTerms(const Terms &terms)
 	endResetModel();
 }
 
-void ListModel::syncTermsChanged(Terms *termsAdded, Terms *termsRemoved)
+Terms ListModel::getSyncTerms()
 {
 	const QList<ListModel*>& syncModels = listView()->syncModels();
-	if (syncModels.empty())
-		return;
 	
-	Terms tempTerms;
+	Terms result;
 	for (ListModel* syncModel : syncModels)
 	{
 		const Terms& terms = syncModel->terms();
-		tempTerms.add(terms);
+		result.add(terms);
 	}
 	
-	initTerms(tempTerms);
+	return result;
+}
+
+void ListModel::syncTermsChanged(Terms *termsAdded, Terms *termsRemoved)
+{
+	initTerms(getSyncTerms());
 	
 	emit modelChanged(termsAdded, termsRemoved);
 }

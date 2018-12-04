@@ -51,17 +51,34 @@ void BoundQMLTableView::bindTo(Option *option)
 
 	if (_boundTo != NULL)
 	{
+		Options* templote = new Options();
+		templote->add("name", new OptionString());
+		templote->add("levels", new OptionVariables());
+		templote->add("values", new OptionDoubleArray());
+		_boundTo->setTemplate(templote);	
+		
 		std::vector<Options *> _groups = _boundTo->value();
 		std::vector<std::vector<double> > values;
+		std::vector<std::string> levels;
+		std::vector<std::string> colNames;
+		
 		for (std::vector<Options *>::iterator it = _groups.begin(); it != _groups.end(); ++it) {
 	
 			Options *newRow = static_cast<Options *>(*it);
+			OptionString *optionName = static_cast<OptionString *>(newRow->get("name"));
+			OptionVariables *optionLevels = static_cast<OptionVariables *>(newRow->get("levels"));
 			OptionDoubleArray *optionValues = static_cast<OptionDoubleArray *>(newRow->get("values"));
+			colNames.push_back(optionName->value());
+			levels = optionLevels->variables();
 			values.push_back(optionValues->value());
 		}
 		
 		if (_multinomialChi2TestModel)
-			_multinomialChi2TestModel->initValues(values);
+			_multinomialChi2TestModel->initValues(colNames, levels, values);
+		
+		_item->setProperty("columnCount", (int)(colNames.size()));
+		_item->setProperty("rowCount", (int)(levels.size()));
+		
 	}
 	else
 		qDebug() << "could not bind to OptionBoolean in BoundQuickCheckBox.cpp";
@@ -70,7 +87,11 @@ void BoundQMLTableView::bindTo(Option *option)
 
 Option *BoundQMLTableView::createOption()
 {	
-	return new OptionsTable();
+	Options* templote = new Options();
+	templote->add("name", new OptionString());
+	templote->add("levels", new OptionVariables());
+	templote->add("values", new OptionDoubleArray());
+	return new OptionsTable(templote);
 }
 
 void BoundQMLTableView::setUp()

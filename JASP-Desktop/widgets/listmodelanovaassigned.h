@@ -35,7 +35,7 @@ public:
 
 	void initTermsWithTemplate(const std::vector<Options*> &terms, Options* rowTemplate);
 	
-	virtual int rowCount(const QModelIndex &parent) const OVERRIDE;	
+	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;	
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;	
 	virtual void setSource(ListModelAvailableInterface *source) OVERRIDE;
 	
