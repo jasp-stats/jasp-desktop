@@ -389,27 +389,38 @@ void MainWindow::loadRibbonQML()
 void MainWindow::handleRibbonButtonClicked(QVariant analysisMenuModel)
 {
 	// NOTE: Workaround for now. This will be replaced when mainwindow is made in QML
-	QMenu *menu = new QMenu(this);
 
 	AnalysisMenuModel* model			= qvariant_cast<AnalysisMenuModel*>(analysisMenuModel);
 	Modules::AnalysisEntries entries	= model->getAnalysisEntries();
 
-	connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(onMenuClicked(QAction *)));
+	if(entries.size() == 1)
+	{
+		QAction *action = new QAction();
+		action->setText(QString::fromStdString(entries[0]->title()));
+		action->setData(QString::fromStdString(entries[0]->buttonMenuString()));
+		onMenuClicked(action);
+	}
+	else
+	{
 
-	for (auto * i : entries) {
+		QMenu *menu = new QMenu(this); //Who cleans this up?
+		connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(onMenuClicked(QAction *)));
 
-		if (i->title() == "???") {
-			menu->addSeparator();
-			continue;
+		for (auto * i : entries) {
+
+			if (i->title() == "???") {
+				menu->addSeparator();
+				continue;
+			}
+
+			QAction *action = new QAction();
+			action->setText(QString::fromStdString(i->title()));
+			action->setData(QString::fromStdString(i->buttonMenuString()));
+			menu->addAction(action);
 		}
 
-		QAction *action = new QAction();
-		action->setText(QString::fromStdString(i->title()));
-		action->setData(QString::fromStdString(i->codedReference()));
-		menu->addAction(action);
+		menu->exec(QCursor::pos());
 	}
-
-	menu->exec(QCursor::pos());
 }
 
 void MainWindow::onMenuClicked(QAction *action)

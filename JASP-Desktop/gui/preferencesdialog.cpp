@@ -49,13 +49,13 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 
 	ui->customPPI->setEnabled(!useDefaultPPI);
 
-	/*QString testAnalyseQMLName = Settings::value(Settings::TEST_ANALYSIS_QML).toString();
+	QString testAnalyseQMLName = Settings::value(Settings::TEST_ANALYSIS_QML).toString();
 	if (testAnalyseQMLName != "")
 		ui->testAnalyseQMLName->setText(testAnalyseQMLName);
 	
 	QString testAnalyseRName = Settings::value(Settings::TEST_ANALYSIS_R).toString();
 	if (testAnalyseRName != "")
-		ui->testAnalyseRName->setText(testAnalyseRName);*/
+		ui->testAnalyseRName->setText(testAnalyseRName);
 
 	// Remove Question mark Help sign (Only on windows )
 	this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -85,14 +85,10 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 	connect(ui->openEditor,						&QPushButton::pressed,			this, &PreferencesDialog::getSpreadsheetEditor	);
 	connect(ui->tabsPreferences,				&QTabWidget::currentChanged,	this, &PreferencesDialog::currentTabChanged		);
 	connect(ui->sliderUIScale,					&QSlider::valueChanged,			this, &PreferencesDialog::sliderUIScaleChanged	);
+	connect(ui->openQMLFile,					&QPushButton::pressed,			this, &PreferencesDialog::getQMLFile			);
+	connect(ui->openRFile,						&QPushButton::pressed,			this, &PreferencesDialog::getRFile				);
 
-	//connect(ui->openQMLFile, pressed,this, getQMLFile);
-	//connect(ui->openRFile, pressed,this, getRFile);
-
-	
 	ui->tabsPreferences->setCurrentIndex(_currentTab);
-
-
 }
 
 PreferencesDialog::~PreferencesDialog()
@@ -329,8 +325,8 @@ void PreferencesDialog::savePreferences()
 	}
 
 
-	//Settings::setValue(Settings::TEST_ANALYSIS_QML, ui->testAnalyseQMLName->text());
-	//Settings::setValue(Settings::TEST_ANALYSIS_R, ui->testAnalyseRName->text());
+	Settings::setValue(Settings::TEST_ANALYSIS_QML, ui->testAnalyseQMLName->text());
+	Settings::setValue(Settings::TEST_ANALYSIS_R, ui->testAnalyseRName->text());
 
 	//Done
 	Settings::sync();
@@ -376,7 +372,7 @@ void PreferencesDialog::getSpreadsheetEditor()
 	
 }
 
-/*
+
 void PreferencesDialog::getQMLFile()
 {
 	QString filter = "File Description (*.qml)";
@@ -412,7 +408,7 @@ void PreferencesDialog::getRFile()
 	if (filename != "")
 		ui->testAnalyseRName->setText(filename);	
 }
-*/
+
 
 void PreferencesDialog::showEvent(QShowEvent * event)
 {

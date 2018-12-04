@@ -42,8 +42,8 @@ public slots:
 	void setDefaultEditorCheck(bool defaulteditor);
 	void getSpreadsheetEditor();
 	void sliderUIScaleChanged(int value);
-	//void getQMLFile();
-	//void getRFile();
+	void getQMLFile();
+	void getRFile();
 
 protected:
 	void virtual showEvent(QShowEvent * event);

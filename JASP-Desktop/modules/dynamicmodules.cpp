@@ -207,7 +207,7 @@ Modules::AnalysisEntry*	DynamicModules::retrieveCorrespondingAnalysisEntry(const
 	auto parts = Utils::splitString(codedReference, '~');
 
 	if(parts.size() != 3)
-		return nullptr;
+		throw Modules::ModuleException("No module", "This isnt a coded reference");
 
 	std::string moduleName		= parts[0],
 				ribbonTitle		= parts[1],

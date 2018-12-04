@@ -175,7 +175,6 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 
 runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall=name)
 {
-  print("runJaspResults called!");
 
 	if (identical(.Platform$OS.type, "windows"))
 		compiler::enableJIT(0)
@@ -1590,7 +1589,7 @@ isTryError <- function(obj){
 .fromRCPP <- function(x, ...) {
 
 	if (length(x) != 1 || ! is.character(x)) {
-		stop("Invalid type supplied, expected character")
+    stop("Invalid type supplied to .fromRCPP, expected character")
 	}
 
 	collection <- c(
@@ -1613,7 +1612,7 @@ isTryError <- function(obj){
 	} else {
 		location <- getAnywhere(x)
 		if (length(location[["objs"]]) == 0) {
-			stop("Could not locate object")
+      stop(paste0("Could not locate ",x," in environment (.fromRCPP)"))
 		}
 		obj <- location[["objs"]][[1]]
 	}
