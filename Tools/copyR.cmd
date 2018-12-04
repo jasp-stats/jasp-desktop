@@ -18,7 +18,7 @@ set DESTDIR=%2
 
 
 SET ARCH=i386
-if NOT "%3"=="32" (
+if NOT "%3"=="i386" (
     SET ARCH=x64
 )
 
