@@ -14,7 +14,7 @@ win32 {
 }
 
 macx {
-    RESOURCES_PATH_DEST = $${OUT_PWD}/../../Resources/
+    RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
 
     copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
     copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
