@@ -628,7 +628,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 		if (sum(index) == 0 ) {
 
-			epsilonTable[i,"W"] <- 1
+		  epsilonTable[i,"W"] <- 1
 			epsilonTable[i,"p"] <- NaN
 			epsilonTable[i,"GG"] <- 1
 			epsilonTable[i,"HF"] <- 1
@@ -1920,7 +1920,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 			if (stateSphericity$twoLevels[i]) {
 
-				foot.index <- .addFootnote(footnotes, text="The repeated measure has only two levels. When the repeated measure has two levels, the assumption of sphericity is always met.")
+				foot.index <- .addFootnote(footnotes, text="Singular error SSP matrix: The repeated measure has only two levels, or more levels than observations. When the repeated measure has two levels, the assumption of sphericity is always met.")
 				row.footnotes <- list(W=list(foot.index), p=list(foot.index), GG=list(foot.index), HF=list(foot.index))
 
 			} else {
